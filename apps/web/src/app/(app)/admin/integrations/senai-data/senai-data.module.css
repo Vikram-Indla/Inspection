@@ -6,6 +6,7 @@
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .tab {
@@ -37,6 +38,8 @@
   gap: 16px;
   max-width: 1080px;
   width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .note {
@@ -59,6 +62,32 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 14px;
+}
+
+.body :global(.table-wrap) {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+.body :global(.panel),
+.body :global(.kpi) {
+  min-width: 0;
+}
+
+@media (max-width: 480px) {
+  .tab {
+    flex: 1 1 calc(50% - 4px);
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .kpis {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .warnValue {

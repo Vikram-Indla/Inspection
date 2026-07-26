@@ -63,3 +63,16 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 :focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+/* Motion durations. --transition-fast / --transition-base were referenced by the
+   r5 chrome and by admin-shell.css but never defined, so every transition
+   declaration using them was invalid at computed-value time and simply did not
+   run (no hover/focus easing anywhere). */
+:root {
+  --transition-fast: 120ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 320ms cubic-bezier(.2, .8, .2, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --transition-fast: 1ms linear; --transition-base: 1ms linear; --transition-slow: 1ms linear; }
+}

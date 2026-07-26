@@ -8,238 +8,732 @@
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="saqeel/styles.css">
-<style> html, body { height: 100%; margin: 0; } </style>
+<link rel="stylesheet" href="saqeel/styles.css?v=r7">
+<link rel="stylesheet" href="saqeel/admin-shell.css?v=r7">
+<script src="admin-shell.js?v=r7"></script>
+<style>
+  html, body { height: 100%; margin: 0; }
+  /* Governed-control grammar shared by the builder surfaces. Every editable
+     control sits in a .gv-field and carries its provenance: the requirement it
+     satisfies and the table/RPC it reads or writes. Nothing here renders a
+     sample record — the design shows the CONTROL and its states, never invented
+     content. */
+  .gv-cols { display:grid; grid-template-columns:300px minmax(0,1fr) 320px; gap:16px; align-items:start; }
+  @media (max-width:1200px){ .gv-cols { grid-template-columns:280px minmax(0,1fr); } .gv-cols > :nth-child(3){ grid-column:1 / -1; } }
+  @media (max-width:860px){ .gv-cols { grid-template-columns:minmax(0,1fr); } .gv-cols > :nth-child(3){ grid-column:auto; } }
+  .gv-field { display:flex; flex-direction:column; gap:5px; min-inline-size:0; }
+  .gv-field > label, .gv-lbl { font:500 13.5px/1.4 var(--font-body); color:var(--text-secondary); }
+  .gv-src { display:flex; align-items:baseline; gap:6px; flex-wrap:wrap;
+    font:500 11.5px/1.5 var(--font-mono); color:var(--text-muted); }
+  .gv-src b { font-weight:700; color:var(--text-secondary); }
+  .gv-src code { font:inherit; padding:0 4px; border-radius:3px; background:var(--surface-sunken); color:var(--text-secondary); }
+  .gv-set { display:flex; flex-direction:column; gap:13px; }
+  .gv-row2 { display:grid; grid-template-columns:1fr 1fr; gap:13px; }
+  @media (max-width:520px){ .gv-row2 { grid-template-columns:1fr; } }
+  .gv-note { margin:0; font:400 13px/1.6 var(--font-body); color:var(--text-secondary); text-wrap:pretty; }
+  .gv-ph { color:var(--text-muted); font-style:normal; }
+  .gv-skel { display:block; block-size:34px; border-radius:var(--radius-sm);
+    background:linear-gradient(90deg, var(--surface-sunken) 25%, var(--surface-secondary) 50%, var(--surface-sunken) 75%);
+    background-size:220% 100%; animation:gv-shimmer 1.4s linear infinite; }
+  @keyframes gv-shimmer { to { background-position:-120% 0; } }
+  @media (prefers-reduced-motion: reduce){ .gv-skel { animation-duration:6s; } }
+  .gv-lock { display:inline-flex; align-items:center; gap:5px; padding:2px 8px; border-radius:var(--radius-full);
+    background:color-mix(in srgb, var(--status-warning-text) 14%, transparent); color:var(--status-warning-text);
+    font:600 10.5px/1.6 var(--font-mono); }
+  .gv-panel { padding:16px 18px; }
+  .gv-panel > h2 { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin:0 0 4px;
+    font:600 15.5px/1.35 var(--font-body); color:var(--text-primary); }
+  .gv-panel > h2 [lang="ar"] { font-size:14px; color:var(--text-secondary); font-weight:500; }
+  .gv-panel > .gv-note { margin-block-end:12px; }
+
+  .fb-route { display:flex; align-items:center; gap:10px 14px; flex-wrap:wrap; margin-block-end:14px;
+    padding:9px 12px; border:1px solid var(--border-subtle); border-radius:var(--radius-md); background:var(--surface-secondary); }
+  .fb-route__spacer { flex:1 1 auto; }
+  .fb-route .btn, .fb-btns .btn { min-block-size:44px; }
+  .gv-cols.is-focus { grid-template-columns:minmax(0,1fr); }
+  .gv-cols.is-focus .fb-rail, .gv-cols.is-focus .fb-aside { display:none; }
+  .fb-btns { display:flex; gap:8px; flex-wrap:wrap; }
+  .fb-scroll { overflow-x:auto; }
+  .fb-tbl { inline-size:100%; border-collapse:collapse; font:400 13px/1.55 var(--font-body); }
+  .fb-tbl th { text-align:start; font:600 12px/1.5 var(--font-body); color:var(--text-secondary);
+    padding:7px 8px; border-block-end:1px solid var(--border-strong); white-space:nowrap; }
+  .fb-tbl td { padding:8px; border-block-end:1px solid var(--border-subtle); color:var(--text-secondary); }
+  .fb-tbl td.is-empty { color:var(--text-muted); text-align:center; padding:16px 8px; }
+  .fb-chips { display:flex; gap:6px; flex-wrap:wrap; list-style:none; margin:0 0 12px; padding:0; }
+  .fb-chip { display:inline-flex; align-items:center; gap:5px; padding:5px 9px; border-radius:var(--radius-full);
+    border:1px solid var(--border-subtle); font:600 12px/1.5 var(--font-body); color:var(--text-muted); }
+  .fb-chip.is-now { border-color:var(--border-strong); color:var(--text-primary); background:var(--surface-sunken); }
+  .fb-check { display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-block-end:1px solid var(--border-subtle); }
+  .fb-check:last-of-type { border-block-end:0; }
+  .fb-check__st { flex:0 0 auto; font:600 11.5px/1.7 var(--font-mono); padding:1px 7px; border-radius:var(--radius-full);
+    background:var(--surface-sunken); color:var(--text-secondary); border:1px solid var(--border-subtle); }
+  .fb-check__b { font:500 13.5px/1.45 var(--font-body); color:var(--text-primary); margin:0 0 2px; }
+  .fb-seg { display:flex; border:1px solid var(--border-subtle); border-radius:var(--radius-sm); overflow:hidden; }
+  .fb-seg label { flex:1 1 0; min-block-size:44px; display:flex; align-items:center; justify-content:center;
+    padding:0 8px; font:500 12.5px/1.4 var(--font-body); color:var(--text-secondary); cursor:pointer; text-align:center; }
+  .fb-seg label + label { border-inline-start:1px solid var(--border-subtle); }
+  .fb-seg input { position:absolute; inline-size:1px; block-size:1px; opacity:0; }
+  .fb-seg label.is-on { background:var(--surface-sunken); color:var(--text-primary); font-weight:600; }
+  .fb-seg label:focus-within { outline:2px solid var(--focus-ring, var(--text-primary)); outline-offset:-2px; }
+  .fb-frame { border:1px solid var(--border-subtle); border-radius:var(--radius-md); background:var(--surface-canvas);
+    padding:14px; min-block-size:96px; display:grid; place-items:center; text-align:center; margin-inline:auto; max-inline-size:100%; }
+  .fb-warn { display:flex; gap:8px; align-items:flex-start; padding:10px 12px; border-radius:var(--radius-md);
+    border:1px solid var(--border-strong); background:var(--surface-secondary); color:var(--text-primary);
+    font:400 13px/1.6 var(--font-body); margin-block-end:12px; }
+  .fb-warn b { display:block; font:600 13.5px/1.4 var(--font-body); }
+  .fb-mono { font:500 12px/1.55 var(--font-mono); color:var(--text-secondary); }
+  .fb-kv { display:grid; grid-template-columns:auto 1fr; gap:6px 12px; font:400 13px/1.55 var(--font-body); margin:0; }
+  .fb-kv dt { color:var(--text-muted); }
+  .fb-kv dd { margin:0; color:var(--text-primary); }
+
+  .ur-cols { display:grid; grid-template-columns:320px minmax(0,1fr); gap:16px; align-items:start; }
+  @media (max-width:900px){ .ur-cols { grid-template-columns:minmax(0,1fr); } }
+  .ur-panel { padding:16px 18px; }
+  .ur-panel > h2 { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin:0 0 4px;
+    font:600 15.5px/1.35 var(--font-body); color:var(--text-primary); }
+  .ur-panel > h2 [lang] { font-size:14px; color:var(--text-secondary); font-weight:500; }
+  .ur-note { margin:0 0 12px; font:400 13px/1.6 var(--font-body); color:var(--text-secondary); text-wrap:pretty; }
+  .ur-src { display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; font:500 11.5px/1.5 var(--font-mono); color:var(--text-muted); }
+  .ur-src b { font-weight:700; color:var(--text-secondary); }
+  .ur-src code { font:inherit; padding:0 4px; border-radius:3px; background:var(--surface-sunken); color:var(--text-secondary); }
+  .ur-seg { display:flex; flex-wrap:wrap; border:1px solid var(--border-subtle); border-radius:var(--radius-sm); overflow:hidden; margin-block-end:14px; }
+  .ur-seg a { flex:1 1 140px; min-block-size:44px; display:flex; align-items:center; justify-content:center; padding:0 12px;
+    font:500 13.5px/1.4 var(--font-body); color:var(--text-secondary); text-align:center; }
+  .ur-seg a + a { border-inline-start:1px solid var(--border-subtle); }
+  .ur-seg a.is-on { background:var(--surface-sunken); color:var(--text-primary); font-weight:600; }
+  .ur-scroll { overflow-x:auto; }
+  .ur-tbl { inline-size:100%; border-collapse:collapse; font:400 13px/1.55 var(--font-body); }
+  .ur-tbl th { text-align:start; font:600 12px/1.5 var(--font-body); color:var(--text-secondary);
+    padding:7px 8px; border-block-end:1px solid var(--border-strong); white-space:nowrap; }
+  .ur-tbl td { padding:8px; border-block-end:1px solid var(--border-subtle); color:var(--text-secondary); vertical-align:top; }
+  .ur-tbl td.is-empty { color:var(--text-muted); text-align:center; padding:16px 8px; }
+  .ur-tbl tr[tabindex]:focus-visible { outline:2px solid var(--focus-ring); outline-offset:-2px; }
+  .ur-kv { display:grid; grid-template-columns:auto 1fr; gap:6px 12px; font:400 13px/1.55 var(--font-body); margin:0; }
+  .ur-kv dt { color:var(--text-muted); }
+  .ur-kv dd { margin:0; color:var(--text-primary); }
+  .ur-mono { font:500 12px/1.55 var(--font-mono); color:var(--text-secondary); }
+  .ur-legend { display:grid; gap:8px; margin:0; padding:0; list-style:none; }
+  .ur-legend li { display:grid; grid-template-columns:auto 1fr; gap:9px; align-items:start;
+    font:400 13px/1.55 var(--font-body); color:var(--text-secondary); }
+  .ur-tag { font:600 11.5px/1.7 var(--font-mono); padding:1px 7px; border-radius:var(--radius-full);
+    border:1px solid var(--border-subtle); background:var(--surface-sunken); color:var(--text-secondary); white-space:nowrap; }
+  .ur-tag--deny { border-style:dashed; }
+  .ur-tag--lock { border-width:2px; }
+  .ur-warn { display:flex; gap:8px; align-items:flex-start; padding:10px 12px; border-radius:var(--radius-md);
+    border:1px solid var(--border-strong); background:var(--surface-secondary); color:var(--text-primary);
+    font:400 13px/1.6 var(--font-body); margin-block-end:12px; }
+  .ur-warn b { display:block; font:600 13.5px/1.4 var(--font-body); }
+  .ur-btns { display:flex; gap:8px; flex-wrap:wrap; }
+  .ur-btns .btn, .ur-seg a { min-block-size:44px; }
+  .ur-skel { display:block; block-size:34px; border-radius:var(--radius-sm);
+    background:linear-gradient(90deg, var(--surface-sunken) 25%, var(--surface-secondary) 50%, var(--surface-sunken) 75%);
+    background-size:220% 100%; animation:ur-shimmer 1.4s linear infinite; }
+  @keyframes ur-shimmer { to { background-position:-120% 0; } }
+  @media (prefers-reduced-motion: reduce){ .ur-skel { animation-duration:6s; } }
+</style>
 </helmet>
-<div data-theme="{{ theme }}" style="height:100vh; display:grid; grid-template-columns:248px 1fr; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+<div class="ad-shell" data-theme="{{ theme }}">
 
-  <aside class="sidebar" id="saqeel-primary-nav" aria-label="Primary navigation" style="height:100vh;">
-    <div class="sidebar-brand" style="gap:11px; min-height:64px;">
-      <img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40">
-      <img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32">
-      <button class="r5-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
-    </div>
-    <div style="flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
-      <details class="r5-group" open="open">
-        <summary><span class="nav-label">Overview</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
-        <a class="nav-item" href="../SAQEEL%20M1%20Dashboard.dc.html" data-route="/dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Dashboard</span></a>
-        <a class="nav-item" href="../SAQEEL%20M3%20Operations%20Center%20-%20WA-DES-033-C3.dc.html" data-route="/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">Operations Center</span></a>
-        <a class="nav-item" href="../SAQEEL%20Factory%20360.dc.html" data-route="/factories"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M7 17h2M13 17h2M18 9h3"/></svg></span><span class="nav-label">Factory 360</span></a>
-      </details>
-      <details class="r5-group" open="open">
-        <summary><span class="nav-label">Operations</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
-        <a class="nav-item" href="../SAQEEL%20Planning.dc.html" data-route="/planning"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="nav-label">Planning</span></a>
-        <div role="group" aria-labelledby="r5-p-inspection">
-          <div class="r5-sub" id="r5-p-inspection"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Inspection</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
-          <a class="nav-item r5-child" href="SAQEEL%20Item%20Execution.dc.html" data-route="/field"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Execution</span></a>
-          <a class="nav-item r5-child" href="../SAQEEL%20Review%20&%20Approval.dc.html" data-route="/reviews"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Review &amp; Approval</span></a>
-        </div>
-      </details>
-      <details class="r5-group" open="open">
-        <summary><span class="nav-label">Compliance</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
-        <a class="nav-item" href="../SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/regulations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Inspection Rules</span></a>
-        <a class="nav-item" href="../SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/compliance-approvals"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Awaiting Approval</span></a>
-        <a class="nav-item" href="../SAQEEL%20Enforcement.dc.html" data-route="/admin/violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violations &amp; Penalties</span></a>
-      </details>
-    </div>
-    <div style="border-block-start:1px solid var(--nav-border); padding-block-start:6px;">
-      <details class="r5-group r5-group--admin">
-        <summary><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Administration</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
-        <a class="nav-item is-active" href="SAQEEL%20Users%20Roles.dc.html" data-route="/admin/access" aria-current="page"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Users</span></a>
-        <span class="nav-item is-locked" role="link" aria-disabled="true" tabindex="0" title="Roles — Administrator access required." aria-label="Roles. Administrator access required."><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Roles</span><span class="r5-lock" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span></span>
-        <a class="nav-item" href="SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Reference Lists</span></a>
-        <a class="nav-item" href="#planning-lookups" data-route="/admin/planning/lookups"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Planning Lookups</span></a>
-        <a class="nav-item" href="#planning-expiry" data-route="/admin/planning/expiry"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Expiry Rules</span></a>
-        <a class="nav-item" href="#planning-status" data-route="/admin/planning/status"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Status Rules</span></a>
-        <a class="nav-item" href="SAQEEL%20Risk.dc.html" data-route="/admin/risk"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="nav-label">Risk Settings</span></a>
-        <a class="nav-item" href="SAQEEL%20Admin%20Form%20Builder.dc.html" data-route="/admin/packages"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Forms</span></a>
-        <a class="nav-item" href="#notifications" data-route="/admin/notifications"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></span><span class="nav-label">Notification Settings</span></a>
-        <a class="nav-item" href="SAQEEL%20Admin%20Integrations.dc.html" data-route="/admin/integrations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">System Connections</span></a>
-        <div role="group" aria-labelledby="r5-p-advanced-administration">
-          <div class="r5-sub" id="r5-p-advanced-administration"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Advanced Administration</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
-          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Execution.dc.html" data-route="/admin/execution"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Execution Settings</span></a>
-          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-route="/admin/workflows"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Workflow Settings</span></a>
-          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Geofence.dc.html" data-route="/admin/gis"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg></span><span class="nav-label">Map Settings</span></a>
-          <a class="nav-item r5-child" href="#audit" data-route="/admin/audit"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Activity Log</span></a>
-          <a class="nav-item r5-child" href="#platform-operations" data-route="/admin/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">System Operations</span></a>
-          <a class="nav-item r5-child" href="#security-access" data-route="/admin/security-access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Security &amp; Access Review</span></a>
-          <a class="nav-item r5-child" href="#devices" data-route="/admin/devices"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Trusted Devices</span></a>
-          <a class="nav-item r5-child" href="SAQEEL%20Control%20Panel.dc.html" data-route="/admin"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Approval &amp; Configuration</span></a>
-          <a class="nav-item r5-child" href="#items" data-route="/admin/items"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Items</span></a>
-          <a class="nav-item r5-child" href="../SAQEEL%20Enforcement.dc.html" data-route="/admin/enforcement-recommendations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Enforcement Recommendations</span></a>
-          <a class="nav-item r5-child" href="../SAQEEL%20Enforcement.dc.html" data-route="/admin/bulk-violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Issue Multiple Violations</span></a>
-          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Language &amp; Translations</span></a>
-          <a class="nav-item r5-child" href="../SAQEEL%20Cases.dc.html" data-route="/enforcement"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violation Cases</span></a>
-        </div>
-      </details>
-    </div>
-  </aside>
+  <aside class="ad-rail" id="saqeel-primary-nav" aria-label="Control Panel navigation" data-held-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner ops">
+  <div class="ad-rail__brand">
+    <img class="ad-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL" width="260" height="40">
+    <img class="ad-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="28" height="28">
+    <button class="ad-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5v14"/><path d="m14 8-4 4 4 4"/></svg></button>
+  </div>
+  <button class="ad-cmdk" type="button" aria-keyshortcuts="Meta+K Control+K" data-ar="ابحث في الأدوات"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><span class="ad-cmdk__label">Find a tool</span><kbd>⌘K</kbd></button>
+  <nav class="ad-rail__body">
+    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html" data-hub="cp" data-ar="لوحة التحكم" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/></svg></span><span class="ad-hub__label">Control Panel</span></a>
+    <a class="ad-hub is-active" href="SAQEEL%20Users%20Roles.dc.html" data-hub="people" data-ar="المستخدمون والصلاحيات" data-roles="security_admin compliance_admin" aria-current="true"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M3 20v-1.6A5.4 5.4 0 0 1 8.4 13h1.2A5.4 5.4 0 0 1 15 18.4V20"/><path d="M16 8.2a3 3 0 0 1 0 5.6M18 20v-1.4a4 4 0 0 0-1.6-3.2"/></svg></span><span class="ad-hub__label">People & Access</span></a>
+    <a class="ad-hub" href="SAQEEL%20Admin%20Form%20Builder.dc.html" data-hub="rules" data-ar="القواعد والمحتوى" data-roles="form_admin compliance_admin workflow_admin security_admin"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="ad-hub__label">Rules & Content</span></a>
+    <a class="ad-hub" href="SAQEEL%20Admin%20Execution.dc.html" data-hub="planning" data-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="ad-hub__label">Planning & Execution</span></a>
+    <a class="ad-hub" href="SAQEEL%20Risk.dc.html" data-hub="risk" data-ar="المخاطر والذكاء" data-roles="risk_owner compliance_admin form_admin workflow_admin security_admin gis_admin"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="ad-hub__label">Risk & Intelligence</span></a>
+    <a class="ad-hub" href="SAQEEL%20Admin%20Integrations.dc.html" data-hub="connections" data-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin gis_admin compliance_admin form_admin risk_owner"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v5M15 3v5M7 8h10v4a5 5 0 0 1-10 0z"/><path d="M12 17v4"/></svg></span><span class="ad-hub__label">Connections & Geography</span></a>
+    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-governance" data-hub="governance" data-ar="الحوكمة والعمليات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner ops"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg></span><span class="ad-hub__label">Governance & Operations</span></a>
+  </nav>
+  <div class="ad-rail__foot">
+    <a class="ad-viewall" href="SAQEEL%20Control%20Panel.dc.html#all-tools" data-ar="عرض كل الأدوات المصرّح بها"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>View all authorized tools</span></a>
+  </div>
+</aside>
 
-  <main id="main-content" tabindex="-1" style="height:100vh; overflow-y:auto; display:flex; flex-direction:column;">
-    <a class="r5-skip" href="#page-body">Skip to content</a>
-    <div class="r5-progress" role="status" aria-busy="false"><i></i><span class="sr-only">Loading destination</span></div>
-    <div class="r5-topbar">
-      <button class="r5-iconbtn r5-menu" type="button" aria-label="Open menu" aria-controls="saqeel-primary-nav" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-      <details class="r5-search">
-        <summary><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input class="r5-search__input" type="search" role="combobox" aria-expanded="false" aria-controls="r5-search-results" aria-autocomplete="list" aria-label="Search navigation, factories, visits" placeholder="Search navigation, factories, visits"></summary>
-        <div class="r5-pop r5-pop--search" id="r5-search-results" role="listbox" aria-label="Search results"><p class="r5-pop__note">Type to search. Navigation matches and backend results are returned together; loading, no-match and unavailable are distinct states.</p></div>
-      </details>
-      <button class="r5-scope is-off" type="button" disabled="disabled" aria-label="Date scope: not applicable on this route" title="Not applicable"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Not applicable</span></button>
-      <label class="r5-scope is-off"><span class="sr-only">Region scope</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg><select aria-label="Region scope" disabled="disabled"><option>Not applicable</option><option>Riyadh</option><option>Makkah</option><option>Eastern Province</option></select></label>
-      <span class="r5-spacer"></span>
-      <button class="r5-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>
-      <button class="r5-iconbtn r5-notif" type="button" aria-label="Notifications, 4 unread"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg><span class="r5-badge">4</span></button>
-      <a class="r5-iconbtn" href="#ai" aria-label="AI Insights" title="AI Insights"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" fill="currentColor" stroke="none"/><path d="M19 3v2.5M20.25 4.25H17.75"/></svg></a>
-      <details class="r5-account"><summary aria-label="Account"><span class="r5-avatar" aria-hidden="true">FA</span><span class="r5-who"><strong>f.admin</strong><small>compliance_admin · ops</small></span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary><div class="r5-pop r5-pop--account"><strong>f.admin@mim.gov.sa</strong><span class="t-caption">Roles: compliance_admin, ops</span><hr><a href="#locale">العربية</a><a href="#profile">Profile &amp; settings</a><a href="#signout" class="r5-signout">Sign out</a></div></details>
-    </div>
-    <header style="position:sticky; top:0; z-index:20; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); padding:14px 24px; display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap;">
-      <div><h1 style="font-family:var(--font-body); font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;">Roles &amp; permissions</h1><div class="t-caption" style="margin-block-start:3px;">RBAC — access is enforced by Row Level Security, not UI</div></div>
-      <span class="badge badge-info">..014 · EXE-ACCESS</span>
-      <span class="grow"></span>
-      <div class="seg"><button class="seg-opt" aria-pressed="{{ isUsers }}" onClick="{{ pickUsers }}">Users</button><button class="seg-opt" aria-pressed="{{ isRoles }}" onClick="{{ pickRoles }}">Roles</button></div>
-    </header>
+  <main id="main-content" tabindex="-1" class="ad-main">
+    <a class="btn btn-secondary sr-only sr-only-focusable" href="#page-body">Skip to content</a>
+    <div class="ad-util">
+  <span class="ad-util__here" data-ar="الإدارة">Administration</span>
+  <span class="ad-util__spacer"></span>
+  <button class="ad-iconbtn ad-locale" type="button" aria-label="Switch to Arabic" lang="ar">ع</button>
+  <button class="ad-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.5 1.5M17.3 17.3l1.5 1.5M18.8 5.2l-1.5 1.5M6.7 17.3l-1.5 1.5"/></svg></button>
+  <button class="ad-iconbtn" type="button" aria-label="{{ t.notifLabel }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></button>
+  <details class="ad-account"><summary aria-label="Account"><span class="ad-avatar" aria-hidden="true">—</span><span class="ad-who"><strong>—</strong><small data-ar="غير مُهيّأ">Not configured</small></span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg></summary><div class="ad-pop"><strong data-ar="غير مُهيّأ">Not configured</strong><span class="t-caption" data-ar="الأدوار المصرّح بها: غير مُهيّأ">Authorized roles: Not configured</span><button type="button" class="ad-popact" aria-disabled="true" data-ar="الملف الشخصي والإعدادات — غير مُهيّأ">Profile &amp; settings — not configured</button><button type="button" class="ad-popact ad-signout" aria-disabled="true" data-ar="تسجيل الخروج — غير مُهيّأ">Sign out — not configured</button></div></details>
+</div>
+    <header class="ad-head">
+  <div class="ad-head__id">
+    <h1 class="ad-head__title">Users &amp; Roles<span class="ad-head__title-ar" lang="ar" dir="rtl">المستخدمون والأدوار</span></h1>
+    <p class="ad-head__sub">{{ t.sub }}</p>
+  </div>
+  <div class="ad-head__ctx"><span class="badge badge-neutral">{{ modeLabel }}</span></div>
+  <div class="ad-head__actions"><a class="btn btn-secondary" href="SAQEEL%20Admin%20Extended.dc.html#audit">{{ t.openAudit }}</a><button class="btn btn-secondary" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.submitReview }}</button><button class="btn btn-primary" aria-disabled="{{ approveDisabled }}" style="{{ approveStyle }}">{{ t.approveApply }}</button></div>
+</header>
+    <nav class="ad-subnav" aria-label="People &amp; Access">
+  <a class="ad-subnav__up" href="SAQEEL%20Control%20Panel.dc.html#hub-people" data-ar="المستخدمون والصلاحيات"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg><span>People &amp; Access</span></a>
+  <span class="ad-subnav__rule" aria-hidden="true"></span>
+  <ul class="ad-subnav__list">
+    <li><a class="ad-subnav__item is-active" href="SAQEEL%20Users%20Roles.dc.html" data-ar="المستخدمون" aria-current="page" data-roles="security_admin">Users</a></li>
+    <li><a class="ad-subnav__item" href="SAQEEL%20Users%20Roles.dc.html?view=roles" data-ar="الأدوار" data-roles="security_admin">Roles</a></li>
+    <li><a class="ad-subnav__item" href="SAQEEL%20Admin%20Role%20Override.dc.html" data-ar="تجاوزات الأدوار" data-roles="security_admin">Role Overrides</a></li>
+    <li><a class="ad-subnav__item" href="SAQEEL%20Admin%20Virtual%20Premium.dc.html" data-ar="الأجهزة الموثوقة" data-roles="security_admin">Trusted Devices</a></li>
+    <li><a class="ad-subnav__item" href="SAQEEL%20Users%20Roles.dc.html?view=review" data-ar="مراجعة الأمن والوصول" data-roles="security_admin">Security &amp; Access Review</a></li>
+    <li><a class="ad-subnav__item" href="SAQEEL%20Delegation.dc.html" data-ar="التفويض" data-roles="security_admin compliance_admin">Delegation</a></li>
+  </ul>
+</nav>
 
     <a id="page-body" tabindex="-1"></a>
-    <div style="padding:20px 24px 80px; max-width:1080px; width:100%; display:flex; flex-direction:column; gap:16px;">
-      <div class="panel" style="padding:16px 18px; border-inline-start:3px solid var(--action-primary);">
-        <div style="font-weight:600; font-size:13.5px;">Access is enforced by Row Level Security, not UI.</div>
-        <p class="t-caption" style="margin:4px 0 0;">54 policies realize the frozen RBAC matrix; role grants are audited automatically (this roster itself passed through RLS to render). Menu visibility is never authorization.</p>
-      </div>
+    <div class="ad-body" style="max-inline-size:none;">
 
-      <!-- ═══ USERS ═══ -->
-      <sc-if value="{{ isUsers }}" hint-placeholder-val="{{ true }}">
-        <div class="table-wrap"><table class="table"><thead><tr><th>User</th><th>Email</th><th>Region</th><th>Roles</th><th></th></tr></thead><tbody>
-          <sc-for list="{{ users }}" as="u" hint-placeholder-count="5">
-            <tr style="background:{{ u.bg }};"><td><strong>{{ u.name }}</strong></td><td class="t-caption"><span class="id-code">{{ u.email }}</span></td><td>{{ u.region }}</td>
-              <td><span style="display:inline-flex; gap:6px; flex-wrap:wrap;"><sc-for list="{{ u.roles }}" as="r" hint-placeholder-count="2"><span class="badge {{ r.badge }}">{{ r.key }}</span></sc-for></span></td>
-              <td><button class="btn btn-ghost btn-sm" onClick="{{ u.pick }}">Manage access</button></td></tr>
-          </sc-for>
-        </tbody></table></div>
-        <p class="t-caption" style="margin:0; color:var(--text-muted);">This roster is filtered to your access: users outside your visibility are absent, not hidden rows. The panel below changes access only through the governed RPCs.</p>
+      <div dir="{{ dir }}" lang="{{ lang }}">
+      <p class="sr-only" role="status" aria-live="polite">{{ liveStatus }}</p>
 
-        <!-- AccessManager -->
-        <div class="panel" style="padding:20px;">
-          <h2 style="font-size:15px; font-weight:600; margin:0 0 4px;">Access management — {{ sel.name }}</h2>
-          <p class="t-caption" style="margin:0 0 16px; max-width:78ch;">Grant or revoke roles and direct capability overrides. Every change runs through the governed RPCs: the <strong>self-escalation guard</strong> blocks changes to your own access, the <strong>last remaining security administrator cannot be revoked</strong>, and every change is recorded in the activity log.</p>
+      <nav class="ur-seg" aria-label="{{ t.workspaceLbl }}">
+        <a class="{{ onUsersCls }}" href="SAQEEL%20Users%20Roles.dc.html?view=users" aria-current="{{ onUsersCur }}" onClick="{{ goUsers }}">{{ t.tabUsers }}</a>
+        <a class="{{ onRolesCls }}" href="SAQEEL%20Users%20Roles.dc.html?view=roles" aria-current="{{ onRolesCur }}" onClick="{{ goRoles }}">{{ t.tabRoles }}</a>
+        <a class="{{ onOverCls }}" href="SAQEEL%20Users%20Roles.dc.html?view=overrides" aria-current="{{ onOverCur }}" onClick="{{ goOver }}">{{ t.tabOverrides }}</a>
+        <a class="{{ onRevCls }}" href="SAQEEL%20Users%20Roles.dc.html?view=review" aria-current="{{ onRevCur }}" onClick="{{ goRev }}">{{ t.tabReview }}</a>
+      </nav>
 
-          <sc-if value="{{ sel.isSelf }}" hint-placeholder-val="{{ false }}">
-            <div class="panel" style="padding:12px 14px; background:var(--status-warning-soft); border-color:transparent; margin-block-end:16px;"><span style="font-size:13px; color:var(--status-warning-text);">⚠ This is your own user. The self-escalation guard refuses access changes you make to yourself — another security administrator must make them.</span></div>
+      <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ false }}">
+        <div class="panel ur-panel" role="status" aria-busy="true">
+          <h2>{{ t.loadingTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.loadingTitle }}</span></h2>
+          <p class="ur-note">{{ t.loadingBody }}</p>
+          <div class="stack" style="gap:8px;" aria-hidden="true"><span class="ur-skel"></span><span class="ur-skel"></span><span class="ur-skel"></span></div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isUnauth }}" hint-placeholder-val="{{ false }}">
+        <div class="ad-state ad-state--denied" role="alert">
+          <span class="ad-state__icon"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+          <h2 class="ad-state__title">{{ t.unauthTitle }}</h2>
+          <p class="ad-state__body">{{ t.unauthBody }}</p>
+          <dl class="ur-kv" style="margin-block-start:10px;"><dt>{{ t.serverReason }}</dt><dd><bdi class="ur-mono">{{ slotNC }}</bdi></dd><dt>{{ t.authorizedFor }}</dt><dd><bdi class="ur-mono">{{ slotNC }}</bdi></dd></dl>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isError }}" hint-placeholder-val="{{ false }}">
+        <div class="ad-state ad-state--error" role="alert">
+          <span class="ad-state__icon"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></span>
+          <h2 class="ad-state__title">{{ t.errorTitle }}</h2>
+          <p class="ad-state__body">{{ t.errorBody }}</p>
+          <dl class="ur-kv" style="margin:10px 0 12px;"><dt>{{ t.serverReason }}</dt><dd><bdi class="ur-mono">{{ slotNC }}</bdi></dd></dl>
+          <button class="btn btn-secondary btn-sm" type="button">{{ t.retry }}</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showWork }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <sc-if value="{{ isDegraded }}" hint-placeholder-val="{{ false }}">
+            <div class="ur-warn" role="status">
+              <span aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l9 16H3z"/><path d="M12 9v4M12 16h.01"/></svg></span>
+              <span><b>{{ t.degTitle }}</b>{{ t.degBody }} <bdi class="ur-mono">{{ t.degSources }} {{ slotNC }}</bdi></span>
+            </div>
+          </sc-if>
+          <sc-if value="{{ isReadOnly }}" hint-placeholder-val="{{ false }}">
+            <div class="ur-warn" role="status">
+              <span aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+              <span><b>{{ t.roTitle }}</b>{{ t.roBody }}</span>
+            </div>
+          </sc-if>
+          <sc-if value="{{ isConflict }}" hint-placeholder-val="{{ false }}">
+            <div class="ur-warn" role="alert">
+              <span aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></span>
+              <span><b>{{ t.conflictTitle }}</b>{{ t.conflictBody }}
+                <span class="ur-btns" style="margin-block-start:8px;"><button class="btn btn-secondary btn-sm" type="button">{{ t.reload }}</button><button class="btn btn-secondary btn-sm" type="button">{{ t.compare }}</button></span>
+              </span>
+            </div>
           </sc-if>
 
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start;">
-            <div>
-              <div class="t-label" style="margin-block-end:10px;">Roles</div>
-              <div class="stack" style="gap:8px;">
-                <sc-for list="{{ sel.roles }}" as="r" hint-placeholder-count="2">
-                  <div style="display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid var(--border-subtle); border-radius:8px;">
-                    <span class="badge {{ r.badge }}">{{ r.key }}</span>
-                    <span style="flex:1; min-width:0;" class="t-caption">granted <span class="id-code">{{ r.at }}</span></span>
-                    <button class="btn btn-ghost btn-sm" aria-disabled="{{ sel.selfDisabled }}" style="opacity:{{ sel.selfOpacity }};">Revoke</button>
-                  </div>
-                </sc-for>
-                <div style="display:flex; gap:8px; align-items:end; margin-block-start:4px;">
-                  <label class="stack" style="gap:4px; flex:1;"><span class="t-label">Grant role</span><select class="select"><sc-for list="{{ grantableRoles }}" as="g" hint-placeholder-count="4"><option>{{ g }}</option></sc-for></select></label>
-                  <button class="btn btn-primary" aria-disabled="{{ sel.selfDisabled }}" style="opacity:{{ sel.selfOpacity }};">Grant role</button>
+        <!-- ═══ USERS ═══ -->
+        <sc-if value="{{ onUsers }}" hint-placeholder-val="{{ true }}">
+          <div class="ur-cols">
+            <div class="stack" style="gap:16px;">
+              <section class="panel ur-panel">
+                <h2>{{ t.rosterTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.rosterTitle }}</span></h2>
+                <p class="ur-note">{{ t.rosterNote }}</p>
+                <div class="stack" style="gap:10px; margin-block-end:12px;">
+                  <label class="stack" style="gap:4px;"><span class="ur-src"><b>{{ t.searchLbl }}</b></span><input class="input" type="search" placeholder="{{ slotNC }}" disabled="{{ selDisabled }}"></label>
+                  <label class="stack" style="gap:4px;"><span class="ur-src"><b>{{ t.filterState }}</b></span><select class="select" disabled="{{ selDisabled }}"><option>{{ slotNR }}</option></select></label>
                 </div>
-                <div class="panel" style="padding:10px 12px; background:var(--surface-sunken); border-style:dashed; margin-block-start:4px;">
-                  <span class="t-caption">Granting an <strong>admin</strong> role prompts: “Grant the administrator role “{key}” to this user? This gives them admin-level access and is recorded.” → Confirm / Cancel.</span>
+                <div class="ur-scroll">
+                  <table class="ur-tbl">
+                    <thead><tr><th scope="col">{{ t.colUser }}</th><th scope="col">{{ t.colState }}</th><th scope="col">{{ t.colScope }}</th></tr></thead>
+                    <tbody><tr tabindex="0"><td class="is-empty" colspan="3">{{ t.noUsers }}</td></tr></tbody>
+                  </table>
                 </div>
-              </div>
+                <p class="ur-note" style="margin:10px 0 0;">{{ t.rowKeyboard }}</p>
+                <span class="ur-src" style="margin-block-start:10px;"><b>{{ t.reqRoster }}</b><bdi><code>profiles</code><code>user_roles</code></bdi></span>
+              </section>
+
+              <section class="panel ur-panel">
+                <h2>{{ t.lifecycleTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.lifecycleTitle }}</span></h2>
+                <p class="ur-note">{{ t.lifecycleNote }}</p>
+                <ul class="ur-legend">
+                  <li><span class="ur-tag">{{ t.stInvited }}</span><span>{{ t.stInvitedB }}</span></li>
+                  <li><span class="ur-tag">{{ t.stPending }}</span><span>{{ t.stPendingB }}</span></li>
+                  <li><span class="ur-tag">{{ t.stActive }}</span><span>{{ t.stActiveB }}</span></li>
+                  <li><span class="ur-tag ur-tag--deny">{{ t.stSuspended }}</span><span>{{ t.stSuspendedB }}</span></li>
+                  <li><span class="ur-tag ur-tag--deny">{{ t.stDeactivated }}</span><span>{{ t.stDeactivatedB }}</span></li>
+                </ul>
+                <span class="ur-src" style="margin-block-start:12px;"><b>{{ t.reqLifecycle }}</b><bdi><code>profiles.status</code></bdi></span>
+              </section>
             </div>
-            <div>
-              <div class="t-label" style="margin-block-end:10px;">Effective capabilities</div>
-              <p class="t-caption" style="margin:0 0 10px;">Role-derived capabilities plus direct grant overrides, each labelled with its source.</p>
-              <div class="stack" style="gap:6px;">
-                <sc-for list="{{ sel.caps }}" as="c" hint-placeholder-count="4">
-                  <div style="display:flex; align-items:center; gap:8px; padding:7px 10px; border:1px solid var(--border-subtle); border-radius:7px;">
-                    <span class="id-code" style="flex:1; font-size:12px;">{{ c.key }}</span>
-                    <span class="badge {{ c.badge }}" style="height:18px;">{{ c.source }}</span>
-                    <sc-if value="{{ c.isDirect }}" hint-placeholder-val="{{ false }}"><button class="btn btn-ghost btn-sm">Revoke</button></sc-if>
-                  </div>
-                </sc-for>
-                <div style="display:flex; gap:8px; align-items:end; margin-block-start:4px;">
-                  <label class="stack" style="gap:4px; flex:1;"><span class="t-label">Grant capability override</span><select class="select"><option>view_factory_360</option><option>create_inspection</option><option>approve_l2</option><option>export_factory</option></select></label>
-                  <button class="btn btn-secondary">Grant</button>
+
+            <div class="stack" style="gap:16px;">
+              <section class="panel ur-panel">
+                <h2>{{ t.identityTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.identityTitle }}</span></h2>
+                <p class="ur-note">{{ t.identityNote }}</p>
+                <dl class="ur-kv">
+                  <dt>{{ t.kName }}</dt><dd><bdi class="ur-mono">{{ slotNC }}</bdi></dd>
+                  <dt>{{ t.kAccount }}</dt><dd><bdi class="ur-mono">{{ slotNC }}</bdi></dd>
+                  <dt>{{ t.kState }}</dt><dd><bdi class="ur-mono">{{ slotNC }}</bdi></dd>
+                  <dt>{{ t.kScope }}</dt><dd><bdi class="ur-mono">{{ slotNC }}</bdi></dd>
+                  <dt>{{ t.kLastSignIn }}</dt><dd><bdi class="ur-mono">{{ slotNC }}</bdi></dd>
+                  <dt>{{ t.kExpiry }}</dt><dd><bdi class="ur-mono">{{ slotNC }}</bdi></dd>
+                  <dt>{{ t.kMfa }}</dt><dd><bdi class="ur-mono">{{ notVerified }}</bdi></dd>
+                  <dt>{{ t.kPasskey }}</dt><dd><bdi class="ur-mono">{{ notVerified }}</bdi></dd>
+                </dl>
+                <p class="ur-note" style="margin:12px 0 0;">{{ t.postureNote }}</p>
+                <div class="ur-btns" style="margin-block-start:12px;">
+                  <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.suspend }}</button>
+                  <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.recover }}</button>
+                  <a class="btn btn-secondary btn-sm" href="SAQEEL%20Admin%20Virtual%20Premium.dc.html">{{ t.openDevices }}</a>
+                  <a class="btn btn-secondary btn-sm" href="SAQEEL%20Admin%20Extended.dc.html#audit">{{ t.openAudit }}</a>
                 </div>
-              </div>
+                <span class="ur-src" style="margin-block-start:10px;"><b>{{ t.reqIdentity }}</b><bdi><code>profiles</code><code>auth.mfa_factors</code></bdi></span>
+              </section>
+
+              <section class="panel ur-panel">
+                <h2>{{ t.matrixTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.matrixTitle }}</span></h2>
+                <p class="ur-note">{{ t.matrixNote }}</p>
+                <div class="ur-scroll">
+                  <table class="ur-tbl">
+                    <thead><tr><th scope="col">{{ t.colCapability }}</th><th scope="col">{{ t.colDecision }}</th><th scope="col">{{ t.colSource }}</th><th scope="col">{{ t.colScope }}</th><th scope="col">{{ t.colChannel }}</th><th scope="col">{{ t.colAction }}</th></tr></thead>
+                    <tbody><tr tabindex="0"><td class="is-empty" colspan="6">{{ t.noCaps }}</td></tr></tbody>
+                  </table>
+                </div>
+                <ul class="ur-legend" style="margin-block-start:14px;">
+                  <li><span class="ur-tag">{{ t.dAllowed }}</span><span>{{ t.dAllowedB }}</span></li>
+                  <li><span class="ur-tag">{{ t.dInherited }}</span><span>{{ t.dInheritedB }}</span></li>
+                  <li><span class="ur-tag ur-tag--deny">{{ t.dDenied }}</span><span>{{ t.dDeniedB }}</span></li>
+                  <li><span class="ur-tag ur-tag--lock">{{ t.dLocked }}</span><span>{{ t.dLockedB }}</span></li>
+                  <li><span class="ur-tag">{{ t.dOverride }}</span><span>{{ t.dOverrideB }}</span></li>
+                  <li><span class="ur-tag ur-tag--deny">{{ t.dUnavailable }}</span><span>{{ t.dUnavailableB }}</span></li>
+                </ul>
+                <p class="ur-note" style="margin:12px 0 0;">{{ t.matrixTruth }}</p>
+                <span class="ur-src" style="margin-block-start:10px;"><b>{{ t.reqMatrix }}</b><bdi><code>role_capabilities</code><code>capability_overrides</code></bdi></span>
+              </section>
+
+              <section class="panel ur-panel">
+                <h2>{{ t.sodTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.sodTitle }}</span></h2>
+                <p class="ur-note">{{ t.sodNote }}</p>
+                <div class="ur-scroll">
+                  <table class="ur-tbl">
+                    <thead><tr><th scope="col">{{ t.colConflict }}</th><th scope="col">{{ t.colRolesInvolved }}</th><th scope="col">{{ t.colDisposition }}</th></tr></thead>
+                    <tbody><tr><td class="is-empty" colspan="3">{{ t.notRun }}</td></tr></tbody>
+                  </table>
+                </div>
+                <span class="ur-src" style="margin-block-start:10px;"><b>{{ t.reqSod }}</b><bdi><code>sod_rules</code></bdi></span>
+              </section>
+
+              <section class="panel ur-panel">
+                <h2>{{ t.stageTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.stageTitle }}</span></h2>
+                <p class="ur-note">{{ t.stageNote }}</p>
+                <div class="ur-scroll">
+                  <table class="ur-tbl">
+                    <thead><tr><th scope="col">{{ t.colChange }}</th><th scope="col">{{ t.colCurrent }}</th><th scope="col">{{ t.colProposed }}</th></tr></thead>
+                    <tbody><tr><td class="is-empty" colspan="3">{{ t.noStaged }}</td></tr></tbody>
+                  </table>
+                </div>
+                <dl class="ur-kv" style="margin-block-start:12px;">
+                  <dt>{{ t.maker }}</dt><dd><bdi class="ur-mono">{{ slotNC }}</bdi></dd>
+                  <dt>{{ t.checker }}</dt><dd><bdi class="ur-mono">{{ slotNC }}</bdi></dd>
+                  <dt>{{ t.reasonLbl }}</dt><dd><bdi class="ur-mono">{{ slotNC }}</bdi></dd>
+                </dl>
+                <label class="stack" style="gap:4px; margin-block-start:12px;"><span class="ur-src"><b>{{ t.reasonRequired }}</b></span><input class="input" placeholder="{{ slotNC }}" disabled="{{ actDisabledAttr }}"></label>
+                <div class="ur-btns" style="margin-block-start:12px;">
+                  <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.submitReview }}</button>
+                  <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ approveDisabled }}" style="{{ approveStyle }}">{{ t.approveApply }}</button>
+                </div>
+                <p class="ur-note" style="margin:10px 0 0;">{{ t.mcNote }}</p>
+                <p class="ur-note">{{ t.selfEscalationNote }}</p>
+                <span class="ur-src" style="margin-block-start:10px;"><b>{{ t.reqMakerChecker }}</b><bdi><code>access_change_requests</code></bdi></span>
+              </section>
             </div>
           </div>
-          <p class="t-caption" style="margin:16px 0 0; padding-block-start:14px; border-block-start:1px solid var(--border-subtle); color:var(--text-muted);">Role and capability changes take effect on the target’s next request. Nothing is applied silently: every change is confirmed here and recorded in the activity log with the actor, before/after state and requirement reference <span class="id-code">EXE-ACCESS</span>.</p>
-        </div>
-      </sc-if>
+        </sc-if>
 
-      <!-- ═══ ROLES ═══ -->
-      <sc-if value="{{ isRoles }}" hint-placeholder-val="{{ false }}">
-        <div class="panel" style="padding:14px 16px; display:flex; gap:12px; align-items:flex-start;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.6" style="width:18px; height:18px; flex:none; margin-block-start:2px;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
-          <p class="t-caption" style="margin:0;"><strong style="color:var(--text-primary);">Roles are the frozen RBAC matrix</strong> — the role set and role→capability mapping are governed platform configuration (..014), not free-form CRUD. This screen shows the catalogue and mapping; net-new roles change through the governed matrix, not an ad-hoc “add role” form.</p>
+        <!-- ═══ ROLES ═══ -->
+        <sc-if value="{{ onRoles }}" hint-placeholder-val="{{ false }}">
+          <div class="stack" style="gap:16px;">
+            <section class="panel ur-panel">
+              <h2>{{ t.roleCatTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.roleCatTitle }}</span></h2>
+              <p class="ur-note">{{ t.roleCatNote }}</p>
+              <div class="ur-scroll">
+                <table class="ur-tbl">
+                  <thead><tr><th scope="col">{{ t.colRole }}</th><th scope="col">{{ t.colTitle }}</th><th scope="col">{{ t.colType }}</th><th scope="col">{{ t.colScope }}</th><th scope="col">{{ t.colChannel }}</th><th scope="col">{{ t.colCapCount }}</th></tr></thead>
+                  <tbody><tr tabindex="0"><td class="is-empty" colspan="6">{{ t.noRoles }}</td></tr></tbody>
+                </table>
+              </div>
+              <p class="ur-note" style="margin:12px 0 0;">{{ t.roleFrozenNote }}</p>
+              <span class="ur-src" style="margin-block-start:10px;"><b>{{ t.reqRoles }}</b><bdi><code>roles</code><code>role_capabilities</code></bdi></span>
+            </section>
+
+            <section class="panel ur-panel">
+              <h2>{{ t.roleMatrixTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.roleMatrixTitle }}</span></h2>
+              <p class="ur-note">{{ t.roleMatrixNote }}</p>
+              <div class="ur-scroll">
+                <table class="ur-tbl">
+                  <thead><tr><th scope="col">{{ t.colCapability }}</th><th scope="col">{{ t.colDecision }}</th><th scope="col">{{ t.colScope }}</th><th scope="col">{{ t.colChannel }}</th><th scope="col">{{ t.colActionCol }}</th></tr></thead>
+                  <tbody><tr tabindex="0"><td class="is-empty" colspan="5">{{ t.noCaps }}</td></tr></tbody>
+                </table>
+              </div>
+              <div class="ur-scroll" style="margin-block-start:14px;">
+                <table class="ur-tbl">
+                  <thead><tr><th scope="col">{{ t.colChange }}</th><th scope="col">{{ t.colPublished }}</th><th scope="col">{{ t.colDraft }}</th></tr></thead>
+                  <tbody><tr><td class="is-empty" colspan="3">{{ t.noStaged }}</td></tr></tbody>
+                </table>
+              </div>
+              <div class="ur-btns" style="margin-block-start:12px;">
+                <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.submitReview }}</button>
+                <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ approveDisabled }}" style="{{ approveStyle }}">{{ t.publishMatrix }}</button>
+                <a class="btn btn-secondary btn-sm" href="SAQEEL%20Admin%20Extended.dc.html#audit">{{ t.openAudit }}</a>
+              </div>
+              <p class="ur-note" style="margin:10px 0 0;">{{ t.matrixImmutable }}</p>
+              <span class="ur-src" style="margin-block-start:10px;"><b>{{ t.reqMatrixPublish }}</b><bdi><code>role_capability_versions</code></bdi></span>
+            </section>
+          </div>
+        </sc-if>
+
+        <!-- ═══ OVERRIDES ═══ -->
+        <sc-if value="{{ onOver }}" hint-placeholder-val="{{ false }}">
+          <div class="stack" style="gap:16px;">
+            <section class="panel ur-panel">
+              <h2>{{ t.overTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.overTitle }}</span></h2>
+              <p class="ur-note">{{ t.overNote }}</p>
+              <div class="ur-scroll">
+                <table class="ur-tbl">
+                  <thead><tr><th scope="col">{{ t.colUser }}</th><th scope="col">{{ t.colCapability }}</th><th scope="col">{{ t.colBaseline }}</th><th scope="col">{{ t.colOverride }}</th><th scope="col">{{ t.colReason }}</th><th scope="col">{{ t.colApprover }}</th><th scope="col">{{ t.colExpiry }}</th><th scope="col">{{ t.colActionCol }}</th></tr></thead>
+                  <tbody><tr tabindex="0"><td class="is-empty" colspan="8">{{ t.noOverrides }}</td></tr></tbody>
+                </table>
+              </div>
+              <p class="ur-note" style="margin:12px 0 0;">{{ t.overRules }}</p>
+              <p class="ur-note">{{ t.overConflict }}</p>
+              <div class="ur-btns" style="margin-block-start:12px;">
+                <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.newOverride }}</button>
+                <a class="btn btn-secondary btn-sm" href="SAQEEL%20Admin%20Role%20Override.dc.html">{{ t.openOverrideAdmin }}</a>
+              </div>
+              <span class="ur-src" style="margin-block-start:10px;"><b>{{ t.reqOverrides }}</b><bdi><code>capability_overrides</code></bdi></span>
+            </section>
+          </div>
+        </sc-if>
+
+        <!-- ═══ ACCESS REVIEW ═══ -->
+        <sc-if value="{{ onRev }}" hint-placeholder-val="{{ false }}">
+          <div class="stack" style="gap:16px;">
+            <section class="panel ur-panel">
+              <h2>{{ t.revTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.revTitle }}</span></h2>
+              <p class="ur-note">{{ t.revNote }}</p>
+              <dl class="ur-kv">
+                <dt>{{ t.revCampaign }}</dt><dd><bdi class="ur-mono">{{ slotNC }}</bdi></dd>
+                <dt>{{ t.revDue }}</dt><dd><bdi class="ur-mono">{{ slotNC }}</bdi></dd>
+                <dt>{{ t.revProgress }}</dt><dd><bdi class="ur-mono">{{ slotNC }}</bdi></dd>
+              </dl>
+              <div class="ur-scroll" style="margin-block-start:12px;">
+                <table class="ur-tbl">
+                  <thead><tr><th scope="col">{{ t.colUser }}</th><th scope="col">{{ t.colFinding }}</th><th scope="col">{{ t.colEvidence }}</th><th scope="col">{{ t.colDisposition }}</th></tr></thead>
+                  <tbody><tr tabindex="0"><td class="is-empty" colspan="4">{{ t.noReview }}</td></tr></tbody>
+                </table>
+              </div>
+              <div class="ur-btns" style="margin-block-start:12px;">
+                <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.attest }}</button>
+                <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.revoke }}</button>
+                <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.escalate }}</button>
+                <a class="btn btn-secondary btn-sm" href="SAQEEL%20Users%20Roles.dc.html?view=review">{{ t.openSecurityReview }}</a>
+              </div>
+              <p class="ur-note" style="margin:10px 0 0;">{{ t.receiptNote }}</p>
+              <span class="ur-src" style="margin-block-start:10px;"><b>{{ t.reqReview }}</b><bdi><code>access_reviews</code><code>audit_events</code></bdi></span>
+            </section>
+          </div>
+        </sc-if>
         </div>
-        <div class="table-wrap"><table class="table"><thead><tr><th>Role</th><th>Title</th><th>Type</th><th class="cell-num">Capabilities</th><th>Key capabilities (role_capabilities)</th></tr></thead><tbody>
-          <sc-for list="{{ roleRows }}" as="r" hint-placeholder-count="6">
-            <tr><td><span class="id-code" style="font-weight:600;">{{ r.key }}</span></td><td>{{ r.title }}</td><td><span class="badge {{ r.badge }}">{{ r.type }}</span></td><td class="cell-num">{{ r.count }}</td><td class="t-caption">{{ r.caps }}</td></tr>
-          </sc-for>
-        </tbody></table></div>
-        <p class="t-caption" style="margin:0; color:var(--text-muted);">Assigning any of these roles to a user happens on the <a href="#" onClick="{{ pickUsers }}">Users</a> tab through the governed grant RPC — with the self-escalation and sole-security_admin guards.</p>
       </sc-if>
+      </div>
     </div>
+    </div>
+  <div class="ad-pal" id="ad-palette" hidden="hidden">
+  <button class="ad-pal__scrim" type="button" aria-label="Close"></button>
+  <div class="ad-pal__box" role="dialog" aria-modal="true" aria-label="Find a tool">
+    <input class="ad-pal__input" type="text" role="combobox" aria-expanded="true" aria-controls="ad-pal-list" aria-autocomplete="list" placeholder="Find a tool…" data-ar-ph="ابحث عن أداة…">
+    <ul class="ad-pal__list" id="ad-pal-list" role="listbox">
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Control%20Panel.dc.html" data-ar="الاعتماد والتهيئة" data-hub-ar="لوحة التحكم" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Approval & Configuration</span><span class="ad-pal__hub">Control Panel</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Extended.dc.html" data-ar="التهيئة الموسّعة" data-hub-ar="لوحة التحكم" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Extended Configuration</span><span class="ad-pal__hub">Control Panel</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Detail.dc.html" data-ar="تفاصيل التهيئة" data-hub-ar="لوحة التحكم" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Configuration Detail</span><span class="ad-pal__hub">Control Panel</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Users%20Roles.dc.html" data-ar="المستخدمون" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Users</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Users%20Roles.dc.html?view=roles" data-ar="الأدوار" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Roles</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Role%20Override.dc.html" data-ar="تجاوزات الأدوار" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Role Overrides</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Virtual%20Premium.dc.html" data-ar="الأجهزة الموثوقة" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Trusted Devices</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Users%20Roles.dc.html?view=review" data-ar="مراجعة الأمن والوصول" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Security & Access Review</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Delegation.dc.html" data-ar="التفويض" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin compliance_admin"><span class="ad-pal__name">Delegation</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Form%20Builder.dc.html" data-ar="نماذج التفتيش" data-hub-ar="القواعد والمحتوى" data-roles="form_admin compliance_admin"><span class="ad-pal__name">Inspection Forms</span><span class="ad-pal__hub">Rules & Content</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Item%20Execution.dc.html" data-ar="بنود التفتيش" data-hub-ar="القواعد والمحتوى" data-roles="compliance_admin form_admin"><span class="ad-pal__name">Inspection Items</span><span class="ad-pal__hub">Rules & Content</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Lookups.dc.html" data-ar="القوائم المرجعية" data-hub-ar="القواعد والمحتوى" data-roles="compliance_admin workflow_admin security_admin"><span class="ad-pal__name">Reference Lists</span><span class="ad-pal__hub">Rules & Content</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Lookups.dc.html#i18n" data-ar="اللغة والترجمة" data-hub-ar="القواعد والمحتوى" data-roles="compliance_admin security_admin workflow_admin"><span class="ad-pal__name">Language & Translations</span><span class="ad-pal__hub">Rules & Content</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Lookups.dc.html" data-ar="قوائم التخطيط" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Planning Lookups</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Control%20Panel.dc.html#hub-planning" data-ar="قواعد انتهاء التخطيط" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Planning Expiry Rules</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Control%20Panel.dc.html#hub-planning" data-ar="قواعد حالة التخطيط" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Planning Status Rules</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Execution.dc.html" data-ar="إعدادات التنفيذ" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Execution Settings</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-ar="إعدادات سير العمل" data-hub-ar="التخطيط والتنفيذ" data-roles="workflow_admin"><span class="ad-pal__name">Workflow Settings</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Risk.dc.html" data-ar="إعدادات المخاطر" data-hub-ar="المخاطر والذكاء" data-roles="risk_owner"><span class="ad-pal__name">Risk Settings</span><span class="ad-pal__hub">Risk & Intelligence</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Dashboard%20Config.dc.html" data-ar="تهيئة لوحة القيادة" data-hub-ar="المخاطر والذكاء" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Dashboard Configuration</span><span class="ad-pal__hub">Risk & Intelligence</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20KPI%20Management.dc.html" data-ar="إدارة المؤشرات" data-hub-ar="المخاطر والذكاء" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">KPI Management</span><span class="ad-pal__hub">Risk & Intelligence</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Integrations.dc.html" data-ar="اتصالات النظام" data-hub-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin"><span class="ad-pal__name">System Connections</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20SENAI%20Data.dc.html" data-ar="بيانات سناعي" data-hub-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin"><span class="ad-pal__name">SENAI Data</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Integrations%20Data.dc.html" data-ar="بيانات التكامل" data-hub-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin"><span class="ad-pal__name">Integration Data</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Geofence.dc.html" data-ar="إعدادات الخرائط" data-hub-ar="الاتصالات والجغرافيا" data-roles="gis_admin"><span class="ad-pal__name">Map Settings</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Virtual%20Premium.dc.html" data-ar="مزودو الزيارة الافتراضية" data-hub-ar="الاتصالات والجغرافيا" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Virtual Visit Providers</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Extended.dc.html#audit" data-ar="سجل النشاط" data-hub-ar="الحوكمة والعمليات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Activity Log</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Control%20Panel.dc.html#hub-governance" data-ar="إعدادات الإشعارات" data-hub-ar="الحوكمة والعمليات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Notification Settings</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Extended.dc.html#platform-operations" data-ar="عمليات النظام" data-hub-ar="الحوكمة والعمليات" data-roles="security_admin workflow_admin"><span class="ad-pal__name">System Operations</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="../web/SAQEEL%20Enforcement.dc.html" data-ar="توصيات الإنفاذ" data-hub-ar="الحوكمة والعمليات" data-roles="ops compliance_admin"><span class="ad-pal__name">Enforcement Recommendations</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="../web/SAQEEL%20Enforcement.dc.html" data-ar="إصدار عدة مخالفات" data-hub-ar="الحوكمة والعمليات" data-roles="ops compliance_admin"><span class="ad-pal__name">Issue Multiple Violations</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="../web/SAQEEL%20Cases.dc.html" data-ar="قضايا المخالفات" data-hub-ar="الحوكمة والعمليات" data-roles="compliance_admin"><span class="ad-pal__name">Violation Cases</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+    </ul>
+    <p class="ad-pal__empty" hidden="hidden">No authorized tool matches.</p>
+    <p class="ad-pal__live sr-only" role="status" aria-live="polite"></p>
+  </div>
+</div>
   </main>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200,&quot;height&quot;:900}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900},&quot;view&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;users&quot;,&quot;roles&quot;,&quot;overrides&quot;,&quot;review&quot;],&quot;default&quot;:&quot;users&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Route&quot;},&quot;dataState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;loading&quot;,&quot;empty&quot;,&quot;readonly&quot;,&quot;degraded&quot;,&quot;conflict&quot;,&quot;unauthorized&quot;,&quot;error&quot;],&quot;default&quot;:&quot;empty&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Data state&quot;},&quot;locale&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;ar&quot;],&quot;default&quot;:&quot;en&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Data state&quot;},&quot;themeMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Data state&quot;},&quot;isApprover&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Governance&quot;}}">
 class Component extends DCLogic {
-  state = { theme: "dark", view: "users", user: 1 };
+  // SAQEEL Users & Roles — route-aware access workspace.
+  // NO FIXTURES: no invented person, account, email, role assignment, capability
+  // decision, sign-in time or review finding. Every value is a live slot that
+  // reads "Not configured" / "Not verified" until the governed read returns.
+  // Authorization is decided by the route guard and RLS; this surface reports
+  // the server's reason and never asserts a role set of its own.
+  state = { theme: "dark", lang: "en", view: "users", data: "empty" };
+
+  componentDidMount() {
+    const q = (typeof location !== "undefined" && location.search) || "";
+    const m = q.match(/[?&]view=(users|roles|overrides|review)/);
+    const v = this.props.view || (m && m[1]) || "users";
+    this.setState({ view: v });
+    if (this.props.dataState) this.setState({ data: this.props.dataState });
+    if (this.props.locale) this.setState({ lang: this.props.locale });
+    if (this.props.themeMode) this.setState({ theme: this.props.themeMode });
+    this.syncShell();
+    this.watchShell();
+  }
+
+  // The shell owns locale and theme (admin-shell.js?v=r7 writes dir/lang and the
+  // theme onto .ad-shell). Seed from it and watch it, so the ع toggle flips the
+  // page body too — the host Tweaks props remain an override.
+  syncShell() {
+    if (typeof document === "undefined") return;
+    const shell = document.querySelector(".ad-shell");
+    let lang = null, theme = null;
+    try { lang = localStorage.getItem("saqeel-admin-locale"); } catch (e) { lang = null; }
+    if (shell) {
+      lang = shell.getAttribute("lang") || lang;
+      theme = shell.getAttribute("data-theme");
+    }
+    const next = {};
+    if (lang === "ar" || lang === "en") next.lang = lang;
+    if (theme === "dark" || theme === "light") next.theme = theme;
+    if (Object.keys(next).length) this.setState(next);
+  }
+
+  watchShell() {
+    if (typeof MutationObserver === "undefined" || typeof document === "undefined") return;
+    this._shellObs = new MutationObserver(() => this.syncShell());
+    this._shellObs.observe(document.documentElement, {
+      subtree: true, childList: true, attributes: true,
+      attributeFilter: ["lang", "dir", "data-theme"],
+    });
+  }
+
+  componentWillUnmount() { if (this._shellObs) this._shellObs.disconnect(); }
 
   renderVals() {
-    const users = this.state.view === "users";
-    const ADMIN = "badge-warning", BIZ = "badge-info";
-    const USERS = [
-      { name: "Sara Al-Dossari", email: "s.aldossari@mim.gov.sa", region: "HQ", roles: [["security_admin", ADMIN]], self: true },
-      { name: "Mansour Al-Harbi", email: "m.alharbi@mim.gov.sa", region: "Eastern", roles: [["reviewer", BIZ]], self: false },
-      { name: "Khalid Al-Otaibi", email: "k.alotaibi@mim.gov.sa", region: "Riyadh", roles: [["inspector", BIZ]], self: false },
-      { name: "Noura Al-Qahtani", email: "n.alqahtani@mim.gov.sa", region: "Makkah", roles: [["planner", BIZ], ["ops", BIZ]], self: false },
-      { name: "Faisal Al-Ghamdi", email: "f.alghamdi@mim.gov.sa", region: "HQ", roles: [["compliance_admin", ADMIN]], self: false },
-    ];
-    const SEL_CAPS = [
-      { key: "view_factory_360", source: "via role: reviewer", badge: "badge-neutral", isDirect: false },
-      { key: "review_inspection", source: "via role: reviewer", badge: "badge-neutral", isDirect: false },
-      { key: "decide_l2", source: "via role: reviewer", badge: "badge-neutral", isDirect: false },
-      { key: "export_factory", source: "direct grant", badge: "badge-compliant", isDirect: true },
-    ];
-    const ROLES = [
-      ["security_admin", "Security Administrator", "admin", ADMIN, 14, "manage_users · manage_roles · view_audit · manage_devices"],
-      ["compliance_admin", "Compliance Administrator", "admin", ADMIN, 11, "publish_regulation · manage_packages · approve_config"],
-      ["form_admin", "Form Administrator", "admin", ADMIN, 6, "manage_items · edit_package_draft"],
-      ["workflow_admin", "Workflow Administrator", "admin", ADMIN, 7, "manage_workflows · manage_integrations"],
-      ["gis_admin", "GIS Administrator", "admin", ADMIN, 4, "manage_gis · manage_spatial_layers"],
-      ["risk_owner", "Risk Owner", "admin", ADMIN, 3, "configure_risk · publish_risk_model"],
-      ["planner", "Planner", "business", BIZ, 6, "create_plan · bulk_target · publish_visit"],
-      ["inspector", "Inspector", "business", BIZ, 5, "execute_inspection · capture_evidence (field channel)"],
-      ["reviewer", "Reviewer", "business", BIZ, 5, "review_inspection · decide_l2 · view_factory_360"],
-      ["ops", "Operations", "business", BIZ, 7, "approve_override · manage_exceptions · bulk_violations"],
-      ["leadership", "Leadership", "business", BIZ, 4, "view_dashboard · view_operations (read)"],
-    ];
-    const su = USERS[this.state.user];
-    const set = (k, v) => () => this.setState({ [k]: v });
+    const view = this.state.view || this.props.view;
+    const d = this.props.dataState || this.state.data;
+    const AR = (this.state.lang || this.props.locale) === "ar";
+    const EN = {
+      workspaceLbl: "Access workspace",
+      tabUsers: "Users", tabRoles: "Roles & capabilities", tabOverrides: "Overrides", tabReview: "Access review",
+      loadingTitle: "Loading governed access records", loadingBody: "Reading the roster, the role catalogue and the capability matrix for your authorized scope. No control is offered until the read succeeds.",
+      unauthTitle: "Not authorized for access administration", unauthBody: "The server refused this route for your session. Which roles may read or change access is decided by the route guard and row-level security; the reason the server returned is shown below.",
+      serverReason: "Server reason", authorizedFor: "Your authorized scope",
+      errorTitle: "Access records could not be read", errorBody: "The read failed. Nothing was written and no grant changed. Retry; the attempt is recorded as an audit event.",
+      retry: "Retry", reload: "Reload latest", compare: "Compare",
+      degTitle: "Partial read — some sources did not answer. ", degBody: "Readable facts are shown; anything depending on a failed source reads as Not configured rather than being guessed, and no change can be submitted while the read is incomplete.", degSources: "Unavailable sources:",
+      roTitle: "Read-only. ", roBody: "Your session may read access records but not change them. Controls that would write are unavailable rather than hidden, so the boundary is visible and explainable.",
+      conflictTitle: "These records changed while you were working. ", conflictBody: "Another administrator saved a newer revision. Nothing you entered was applied. Reload, or compare before deciding — no change is merged for you.",
+      rosterTitle: "Roster", rosterNote: "Users inside your authorized scope. Selection is reflected in the URL so a link returns to the same user, filters and page.",
+      searchLbl: "Search", filterState: "Lifecycle state",
+      colUser: "User", colState: "State", colScope: "Scope", noUsers: "No users returned for this scope",
+      rowKeyboard: "Rows are focusable: Enter or Space opens the user, and the selection is announced.",
+      lifecycleTitle: "Lifecycle states", lifecycleNote: "These states are distinct and are never collapsed into one badge.",
+      stInvited: "Invited", stInvitedB: "An invitation exists and has not been accepted.",
+      stPending: "Pending", stPendingB: "Accepted, waiting on a governed step such as approval or first sign-in.",
+      stActive: "Active", stActiveB: "May sign in and act inside the granted scope.",
+      stSuspended: "Suspended", stSuspendedB: "Blocked from signing in; grants are retained and recoverable.",
+      stDeactivated: "Deactivated", stDeactivatedB: "No access; history is retained and nothing is deleted.",
+      identityTitle: "Selected user", identityNote: "Read from the governed profile. No account, sign-in time or security posture is shown unless the server returned it.",
+      kName: "Name", kAccount: "Account", kState: "Lifecycle state", kLastSignIn: "Last sign-in", kExpiry: "Access expiry",
+      kMfa: "MFA posture", kPasskey: "Passkey / WebAuthn",
+      postureNote: "Security posture reads Not verified until a live check confirms it. An unverified posture is never displayed as enrolled or as secure.",
+      suspend: "Suspend access", recover: "Recovery action", openDevices: "Trusted devices", openAudit: "Open Activity Log",
+      matrixTitle: "Effective capabilities", matrixNote: "One row per capability with the decision, where it comes from, the data scope it applies to and the channel it applies in.",
+      colCapability: "Capability", colDecision: "Decision", colSource: "Source", colChannel: "Channel", colAction: "Action", colActionCol: "Action",
+      noCaps: "No capability decisions returned",
+      dAllowed: "Allowed", dAllowedB: "Granted directly on this user.",
+      dInherited: "Inherited", dInheritedB: "Granted through a role; changing it means changing the role or adding an override.",
+      dDenied: "Denied", dDeniedB: "Explicitly denied. A deny always wins over an allow.",
+      dLocked: "Locked", dLockedB: "Fixed by policy. Even an authorized administrator cannot change it here.",
+      dOverride: "Override", dOverrideB: "A time-boxed exception on top of the role baseline, with a reason and an approver.",
+      dUnavailable: "Unavailable", dUnavailableB: "The capability does not exist in this deployment — different from being denied to you.",
+      matrixTruth: "Hidden, denied, locked and unavailable are four different answers and are shown as four different states. Nothing is greyed out without saying which of them applies.",
+      sodTitle: "Separation-of-duties conflicts", sodNote: "Conflicts are reported by the governed rule set. Nothing is flagged by this screen's own judgement.",
+      colConflict: "Conflict", colRolesInvolved: "Roles involved", colDisposition: "Disposition",
+      notRun: "Not run",
+      stageTitle: "Staged changes & approval", stageNote: "Access changes are staged, compared against the current state, and applied only after a distinct approver accepts them.",
+      colChange: "Change", colCurrent: "Current", colProposed: "Proposed", noStaged: "No staged changes",
+      maker: "Requested by", checker: "Approved by", reasonLbl: "Recorded reason", reasonRequired: "Reason (required, recorded in the audit event)",
+      submitReview: "Submit for review", approveApply: "Approve & apply",
+      mcNote: "The administrator who requests a change cannot approve it. The constraint is enforced server-side, not by this screen.",
+      selfEscalationNote: "Self-escalation and removing the last security administrator are refused by the server; the refusal is shown here with its reason rather than being pre-empted silently.",
+      roleCatTitle: "Role catalogue", roleCatNote: "The role set is governed platform configuration. Roles are not created ad hoc from this screen.",
+      colRole: "Role", colTitle: "Title", colType: "Type", colCapCount: "Capabilities", noRoles: "No roles returned",
+      roleFrozenNote: "Assigning a role happens on the Users tab through the governed grant path, with the self-escalation and last-administrator guards applied server-side.",
+      roleMatrixTitle: "Role × capability matrix", roleMatrixNote: "The mapping is edited as a draft and published as an immutable version. Scope and channel are part of the decision, not a note.",
+      colPublished: "Published", colDraft: "Draft", publishMatrix: "Publish matrix version",
+      matrixImmutable: "A published matrix version is immutable; a change is a new version. Sessions pick up the new mapping on their next request.",
+      overTitle: "Capability overrides", overNote: "Every override is an exception on top of a role baseline: it carries the baseline value, the override value, a reason, an approver and an expiry.",
+      colBaseline: "Baseline", colOverride: "Override", colReason: "Reason", colApprover: "Approver", colExpiry: "Expires", noOverrides: "No overrides in this scope",
+      overRules: "An override without an expiry is not accepted. Expiry reverts to the baseline automatically, and the reversion is recorded.",
+      overConflict: "An override that conflicts with a policy lock or a separation-of-duties rule is refused, and the conflicting rule is named.",
+      newOverride: "Request override", openOverrideAdmin: "Open role overrides",
+      revTitle: "Access review", revNote: "A reviewer works a queue of findings with evidence, and each disposition produces a receipt.",
+      revCampaign: "Review campaign", revDue: "Due", revProgress: "Progress",
+      colFinding: "Finding", colEvidence: "Evidence", noReview: "No review findings assigned to you",
+      attest: "Attest", revoke: "Revoke", escalate: "Escalate", openSecurityReview: "Security & access review",
+      receiptNote: "Each disposition writes an append-only audit event with the reviewer, the finding, the decision and the evidence reference. Labels are localized; identifiers are preserved verbatim.",
+      reqRoster: "Roster & scope", reqLifecycle: "User lifecycle", reqIdentity: "Identity & security posture",
+      reqMatrix: "Capability matrix", reqSod: "Separation of duties", reqMakerChecker: "Maker-checker on access change",
+      reqRoles: "Governed role catalogue", reqMatrixPublish: "Immutable matrix versions",
+      reqOverrides: "Time-boxed overrides", reqReview: "Access review & receipts",
+    };
+    const ARA = {
+      workspaceLbl: "مساحة إدارة الوصول",
+      tabUsers: "المستخدمون", tabRoles: "الأدوار والصلاحيات", tabOverrides: "التجاوزات", tabReview: "مراجعة الوصول",
+      loadingTitle: "جارٍ تحميل سجلات الوصول المعتمدة", loadingBody: "تُقرأ قائمة المستخدمين وكتالوج الأدوار ومصفوفة الصلاحيات داخل نطاقك المصرّح به. لا يُتاح أي عنصر قبل نجاح القراءة.",
+      unauthTitle: "غير مصرّح بإدارة الوصول", unauthBody: "رفض الخادم هذا المسار لجلستك. تحديد من يقرأ أو يغيّر الوصول يتم عبر حماية المسار وأمن الصفوف؛ وسبب الخادم معروض أدناه.",
+      serverReason: "سبب الخادم", authorizedFor: "نطاقك المصرّح به",
+      errorTitle: "تعذّر قراءة سجلات الوصول", errorBody: "فشلت القراءة. لم يُكتب شيء ولم يتغيّر أي منح. أعد المحاولة؛ تُسجَّل المحاولة في سجل النشاط.",
+      retry: "إعادة المحاولة", reload: "تحميل الأحدث", compare: "مقارنة",
+      degTitle: "قراءة جزئية — لم تستجب بعض المصادر. ", degBody: "تُعرض الحقائق المقروءة فقط؛ وما يعتمد على مصدر فاشل يظهر «غير مُهيّأ» بدل التخمين، ولا يمكن إرسال أي تغيير حتى تكتمل القراءة.", degSources: "المصادر غير المتاحة:",
+      roTitle: "للقراءة فقط. ", roBody: "جلستك تقرأ سجلات الوصول ولا تغيّرها. عناصر الكتابة تظهر غير متاحة بدل إخفائها، ليكون الحد ظاهراً وقابلاً للتفسير.",
+      conflictTitle: "تغيّرت هذه السجلات أثناء عملك. ", conflictBody: "حفظ مسؤول آخر مراجعة أحدث. لم يُطبَّق ما أدخلته. حمّل الأحدث أو قارن قبل القرار — لا يُدمج أي تغيير تلقائياً.",
+      rosterTitle: "قائمة المستخدمين", rosterNote: "المستخدمون داخل نطاقك المصرّح به. يُعكس التحديد في الرابط ليعود إلى المستخدم والمرشّحات والصفحة نفسها.",
+      searchLbl: "بحث", filterState: "حالة الحساب",
+      colUser: "المستخدم", colState: "الحالة", colScope: "النطاق", noUsers: "لا مستخدمين في هذا النطاق",
+      rowKeyboard: "الصفوف قابلة للتركيز: Enter أو مسافة تفتح المستخدم، ويُعلن التحديد.",
+      lifecycleTitle: "حالات الحساب", lifecycleNote: "هذه الحالات منفصلة ولا تُدمج في وسم واحد.",
+      stInvited: "مدعو", stInvitedB: "توجد دعوة لم تُقبل بعد.",
+      stPending: "معلّق", stPendingB: "قُبلت الدعوة وينتظر خطوة محكومة كالاعتماد أو أول دخول.",
+      stActive: "نشط", stActiveB: "يمكنه الدخول والعمل داخل النطاق الممنوح.",
+      stSuspended: "موقوف", stSuspendedB: "ممنوع من الدخول مع بقاء المنح قابلة للاستعادة.",
+      stDeactivated: "معطّل", stDeactivatedB: "لا وصول، مع الاحتفاظ بالتاريخ دون حذف.",
+      identityTitle: "المستخدم المحدد", identityNote: "تُقرأ من الملف المعتمد. لا يُعرض حساب أو وقت دخول أو حالة أمنية إلا إذا أعادها الخادم.",
+      kName: "الاسم", kAccount: "الحساب", kState: "حالة الحساب", kLastSignIn: "آخر دخول", kExpiry: "انتهاء الوصول",
+      kMfa: "التحقق متعدد العوامل", kPasskey: "مفتاح المرور / WebAuthn",
+      postureNote: "تظهر الحالة الأمنية «غير مُتحقَّق منها» حتى يؤكّدها فحص حقيقي، ولا تُعرض قط كمسجّلة أو آمنة قبل ذلك.",
+      suspend: "إيقاف الوصول", recover: "إجراء استعادة", openDevices: "الأجهزة الموثوقة", openAudit: "فتح سجل النشاط",
+      matrixTitle: "الصلاحيات الفعلية", matrixNote: "صف لكل صلاحية مع القرار ومصدره ونطاق البيانات الذي ينطبق عليه والقناة التي ينطبق فيها.",
+      colCapability: "الصلاحية", colDecision: "القرار", colSource: "المصدر", colChannel: "القناة", colAction: "إجراء", colActionCol: "إجراء",
+      noCaps: "لا قرارات صلاحيات مُعادة",
+      dAllowed: "مسموح", dAllowedB: "ممنوح مباشرةً لهذا المستخدم.",
+      dInherited: "موروث", dInheritedB: "ممنوح عبر دور؛ وتغييره يعني تغيير الدور أو إضافة تجاوز.",
+      dDenied: "مرفوض", dDeniedB: "رفض صريح، والرفض يتقدّم دائماً على السماح.",
+      dLocked: "مقفل", dLockedB: "مثبّت بالسياسة، ولا يمكن لأي مسؤول تغييره هنا.",
+      dOverride: "تجاوز", dOverrideB: "استثناء محدّد المدة فوق أساس الدور، بسبب ومعتمد.",
+      dUnavailable: "غير متوفّر", dUnavailableB: "الصلاحية غير موجودة في هذا التطبيق — وهذا مختلف عن رفضها لك.",
+      matrixTruth: "«مخفي» و«مرفوض» و«مقفل» و«غير متوفّر» أربعة أجوبة مختلفة وتُعرض كأربع حالات مختلفة، ولا يُعطَّل عنصر دون بيان أيّها ينطبق.",
+      sodTitle: "تعارضات فصل المهام", sodNote: "تُبلَّغ التعارضات من مجموعة القواعد المعتمدة، ولا تُحكم من هذه الشاشة.",
+      colConflict: "التعارض", colRolesInvolved: "الأدوار المعنية", colDisposition: "القرار",
+      notRun: "لم يُنفَّذ",
+      stageTitle: "التغييرات المرحّلة والاعتماد", stageNote: "تُرحّل تغييرات الوصول وتُقارن بالحالة الحالية ولا تُطبَّق إلا بعد قبول معتمد مختلف.",
+      colChange: "التغيير", colCurrent: "الحالي", colProposed: "المقترح", noStaged: "لا تغييرات مرحّلة",
+      maker: "طلبه", checker: "اعتمده", reasonLbl: "السبب المسجّل", reasonRequired: "السبب (مطلوب، يُسجَّل في سجل النشاط)",
+      submitReview: "إرسال للمراجعة", approveApply: "الاعتماد والتطبيق",
+      mcNote: "لا يجوز لمن طلب التغيير أن يعتمده. القيد مفروض في الخادم لا في هذه الشاشة.",
+      selfEscalationNote: "يرفض الخادم رفع صلاحيات الذات وإزالة آخر مسؤول أمن، ويُعرض الرفض هنا بسببه بدل استباقه صامتاً.",
+      roleCatTitle: "كتالوج الأدوار", roleCatNote: "مجموعة الأدوار تهيئة منصّة محكومة، ولا تُنشأ الأدوار من هذه الشاشة.",
+      colRole: "الدور", colTitle: "المسمّى", colType: "النوع", colCapCount: "عدد الصلاحيات", noRoles: "لا أدوار مُعادة",
+      roleFrozenNote: "إسناد الدور يتم في تبويب المستخدمين عبر المسار المحكوم، مع تطبيق قيود رفع الذات وآخر مسؤول في الخادم.",
+      roleMatrixTitle: "مصفوفة الدور × الصلاحية", roleMatrixNote: "تُحرَّر المصفوفة كمسودة وتُنشر كإصدار غير قابل للتغيير. والنطاق والقناة جزء من القرار لا ملاحظة عليه.",
+      colPublished: "المنشور", colDraft: "المسودة", publishMatrix: "نشر إصدار المصفوفة",
+      matrixImmutable: "الإصدار المنشور غير قابل للتغيير، وأي تعديل يُنشئ إصداراً جديداً. وتلتقط الجلسات المصفوفة الجديدة في طلبها التالي.",
+      overTitle: "تجاوزات الصلاحيات", overNote: "كل تجاوز استثناء فوق أساس الدور: يحمل قيمة الأساس وقيمة التجاوز وسبباً ومعتمداً وتاريخ انتهاء.",
+      colBaseline: "الأساس", colOverride: "التجاوز", colReason: "السبب", colApprover: "المعتمد", colExpiry: "ينتهي", noOverrides: "لا تجاوزات في هذا النطاق",
+      overRules: "لا يُقبل تجاوز بلا تاريخ انتهاء. وعند الانتهاء يعود إلى الأساس تلقائياً ويُسجَّل الرجوع.",
+      overConflict: "التجاوز المتعارض مع قفل سياسة أو قاعدة فصل مهام يُرفض، وتُسمّى القاعدة المتعارضة.",
+      newOverride: "طلب تجاوز", openOverrideAdmin: "فتح تجاوزات الأدوار",
+      revTitle: "مراجعة الوصول", revNote: "يعمل المراجع على قائمة نتائج مع أدلتها، وكل قرار يُنتج إيصالاً.",
+      revCampaign: "حملة المراجعة", revDue: "تاريخ الاستحقاق", revProgress: "التقدّم",
+      colFinding: "النتيجة", colEvidence: "الدليل", noReview: "لا نتائج مراجعة مسندة إليك",
+      attest: "إقرار", revoke: "إلغاء", escalate: "تصعيد", openSecurityReview: "مراجعة الأمن والوصول",
+      receiptNote: "كل قرار يكتب حدثاً غير قابل للتعديل يضم المراجع والنتيجة والقرار ومرجع الدليل. تُترجم التسميات وتُحفظ المعرّفات كما هي.",
+      reqRoster: "القائمة والنطاق", reqLifecycle: "حالة الحساب", reqIdentity: "الهوية والحالة الأمنية",
+      reqMatrix: "مصفوفة الصلاحيات", reqSod: "فصل المهام", reqMakerChecker: "فصل المُنشئ والمعتمد",
+      reqRoles: "كتالوج الأدوار المعتمد", reqMatrixPublish: "إصدارات المصفوفة غير القابلة للتغيير",
+      reqOverrides: "تجاوزات محدّدة المدة", reqReview: "مراجعة الوصول والإيصالات",
+    };
+    const t = AR ? ARA : EN, alt = AR ? EN : ARA;
+
+    const loading = d === "loading", error = d === "error", unauth = d === "unauthorized";
+    const degraded = d === "degraded", readOnly = d === "readonly", conflict = d === "conflict";
+    const gate = loading || error || unauth;
+    const frozen = gate || readOnly || degraded;
+    const off = "opacity:.58; pointer-events:none;";
+    const approver = this.props.isApprover === true;
+    const nav = (v) => (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ view: v }); };
+
     return {
-      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
-      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
-      isUsers: users, isRoles: !users,
-      usersActive: users ? "is-active" : "", rolesActive: users ? "" : "is-active",
-      pickUsers: set("view", "users"), pickRoles: set("view", "roles"),
-      users: USERS.map((u, i) => ({
-        name: u.name, email: u.email, region: u.region,
-        roles: u.roles.map(([key, badge]) => ({ key, badge })),
-        bg: i === this.state.user ? "var(--accent-soft)" : "transparent",
-        pick: () => this.setState({ user: i, view: "users" }),
-      })),
-      sel: {
-        name: su.name, isSelf: su.self,
-        selfDisabled: su.self ? "true" : "false", selfOpacity: su.self ? ".45" : "1",
-        roles: su.roles.map(([key, badge]) => ({ key, badge, at: "2026-05-14" })),
-        caps: SEL_CAPS,
-      },
-      grantableRoles: ["planner", "reviewer", "ops", "leadership", "compliance_admin", "security_admin"],
-      roleRows: ROLES.map(([key, title, type, badge, count, caps]) => ({ key, title, type, badge, count, caps })),
+      theme: this.state.theme || this.props.themeMode,
+      t, alt, dir: AR ? "rtl" : "ltr", lang: AR ? "ar" : "en",
+      altLang: AR ? "en" : "ar", altDir: AR ? "ltr" : "rtl",
+      slotNC: AR ? "غير مُهيّأ" : "Not configured",
+      slotNR: loading ? (AR ? "جارٍ التحميل…" : "Loading…") : (AR ? "لا سجلات نشطة" : "No active records"),
+      notVerified: AR ? "غير مُتحقَّق منه" : "Not verified",
+
+      isLoading: loading, isError: error, isUnauth: unauth,
+      isDegraded: degraded, isReadOnly: readOnly, isConflict: conflict, showWork: !gate,
+      liveStatus: loading ? t.loadingTitle : unauth ? t.unauthTitle : error ? t.errorTitle
+        : degraded ? t.degTitle : readOnly ? t.roTitle : conflict ? t.conflictTitle : t.notRun,
+
+      onUsers: view === "users", onRoles: view === "roles", onOver: view === "overrides", onRev: view === "review",
+      onUsersCls: view === "users" ? "is-on" : "", onRolesCls: view === "roles" ? "is-on" : "",
+      onOverCls: view === "overrides" ? "is-on" : "", onRevCls: view === "review" ? "is-on" : "",
+      onUsersCur: view === "users" ? "page" : "false", onRolesCur: view === "roles" ? "page" : "false",
+      onOverCur: view === "overrides" ? "page" : "false", onRevCur: view === "review" ? "page" : "false",
+      goUsers: nav("users"), goRoles: nav("roles"), goOver: nav("overrides"), goRev: nav("review"),
+
+      modeLabel: readOnly ? (AR ? "للقراءة فقط" : "Read-only") : approver ? (AR ? "معتمد · مراجعة" : "Checker · review") : (AR ? "مُنشئ · طلب" : "Maker · request"),
+      selDisabled: gate ? "disabled" : "",
+      actDisabled: frozen ? "true" : "false", actStyle: frozen ? off : "",
+      actDisabledAttr: frozen ? "disabled" : "",
+      approveDisabled: approver && !frozen ? "false" : "true",
+      approveStyle: approver && !frozen ? "" : off,
     };
   }
 }

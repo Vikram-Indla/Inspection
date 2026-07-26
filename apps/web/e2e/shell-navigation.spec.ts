@@ -1,5 +1,14 @@
 import { test, expect } from "@playwright/test";
-import { buildShellNavigation, isShellRouteCurrent, shellScopeForRoute, isFieldOnlyPersona } from "../src/lib/shell-navigation";
+import { readFileSync } from "node:fs";
+import { join, resolve } from "node:path";
+import {
+  buildAuthorizedAdminDiscovery,
+  buildShellNavigation,
+  isAdminOnlyPersona,
+  isShellRouteCurrent,
+  shellScopeForRoute,
+  isFieldOnlyPersona,
+} from "../src/lib/shell-navigation";
 import { homeForRoles } from "../src/lib/role-home";
 import { storageStatePath } from "./personas";
 
@@ -11,7 +20,7 @@ const enabledHrefsFor = (roles: string[]) => itemsFor(roles).filter(item => item
 // role-specific additions on top of this shared set.)
 const businessHrefsFor = (roles: string[]) =>
   itemsFor(roles).filter(item => item.visibility === "business" && item.enabled).map(item => item.href);
-const businessHrefs = ["/dashboard", "/operations", "/factories", "/planning", "/field", "/reviews", "/admin/regulations", "/admin/compliance-approvals", "/admin/violations", "/ai/suggestions"];
+const businessHrefs = ["/dashboard", "/operations", "/factories", "/planning", "/field", "/reviews", "/admin/regulations", "/admin/compliance-approvals", "/admin/violations"];
 
 test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
   // TASK-WEB-CHANNEL-ACCESS-GATE-001 (change-control of CMP-REQ-SHELL-001..003):
@@ -19,34 +28,69 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
   // The Inspector is an iPad-channel persona (rbac_matrix.csv RBAC-009/010) and
   // is redirected off the web portal, so it no longer receives the web nav or a
   // locked Administration group. See the "field channel" describe block below.
-  test("every WEB business persona receives the same business catalogue and ten locked admin entries", () => {
+  test("every WEB business persona receives the business catalogue without unauthorized admin entries", () => {
     for (const role of ["planner", "reviewer", "ops", "leadership"]) {
       const groups = buildShellNavigation([role]);
-      expect(groups.map(group => group.id)).toEqual(["overview", "operations", "compliance", "insights", "administration"]);
       expect(businessHrefsFor([role])).toEqual(businessHrefs);
-      const adminItems = groups.find(group => group.id === "administration")!.items;
-      // 7 original + 3 M9 planning control-plane entries (lookups/expiry/status).
-      expect(adminItems.filter(item => item.visibility === "admin-primary")).toHaveLength(10);
-      expect(adminItems.filter(item => item.visibility === "admin-primary").every(item => !item.enabled && item.disabledReasonEn === "Administrator access required.")).toBe(true);
+      const adminItems = groups.find(group => group.id === "administration")?.items ?? [];
+      expect(adminItems.every(item => item.enabled)).toBe(true);
+      expect(adminItems.every(item => item.roles.includes(role))).toBe(true);
     }
   });
 
-  test("admin primary and advanced options compose from existing role families", () => {
+  test("admin-only personas receive only their authorized admin destinations", () => {
     const security = itemsFor(["security_admin"]);
     expect(security.find(item => item.id === "users")?.enabled).toBe(true);
     expect(security.find(item => item.id === "roles")?.enabled).toBe(true);
-    expect(security.find(item => item.id === "risk")?.enabled).toBe(false);
-    expect(security.find(item => item.id === "surveys")?.enabled).toBe(false);
+    expect(security.find(item => item.id === "risk")).toBeUndefined();
+    expect(security.find(item => item.id === "surveys")).toBeUndefined();
     expect(security.find(item => item.id === "devices")?.enabled).toBe(true);
     expect(security.find(item => item.id === "gis")).toBeUndefined();
+    expect(security.some(item => item.visibility === "business")).toBe(false);
 
     const composed = itemsFor(["compliance_admin", "form_admin", "workflow_admin", "security_admin", "gis_admin", "risk_owner"]);
     expect(composed.filter(item => item.visibility === "admin-primary").every(item => item.enabled)).toBe(true);
-    expect(composed.filter(item => item.visibility === "admin-advanced").map(item => item.id)).toEqual([
+    expect(new Set(composed.filter(item => item.visibility === "admin-advanced").map(item => item.id))).toEqual(new Set([
       "execution", "workflows", "gis", "audit", "platform-operations", "security-access", "devices",
       "admin-home", "inspection-items", "enforcement-recommendations", "bulk-violations", "localization",
       "enforcement-cases",
-    ]);
+    ]));
+    expect(buildShellNavigation(["compliance_admin", "form_admin", "workflow_admin", "security_admin", "gis_admin", "risk_owner"])
+      .filter(group => group.id.startsWith("admin-")).map(group => group.id)).toEqual([
+        "admin-control", "admin-people", "admin-rules", "admin-planning",
+        "admin-risk", "admin-connections", "admin-governance",
+      ]);
+    expect(composed.some(item => item.visibility === "business")).toBe(false);
+  });
+
+  test("authorized admin discovery is the least-privilege hub and destination registry", () => {
+    const security = buildAuthorizedAdminDiscovery(["security_admin"]);
+    const securityItems = security.flatMap(hub => hub.items);
+    expect(securityItems.length).toBeGreaterThan(0);
+    expect(securityItems.every(item => item.enabled && item.roles.includes("security_admin"))).toBe(true);
+    expect(securityItems.map(item => item.id)).toContain("users");
+    expect(securityItems.map(item => item.id)).toContain("devices");
+    expect(securityItems.map(item => item.id)).not.toContain("risk");
+    expect(securityItems.map(item => item.id)).not.toContain("surveys");
+    expect(security.flatMap(hub => [hub.labelEn, hub.labelAr]).every(Boolean)).toBe(true);
+
+    expect(buildAuthorizedAdminDiscovery(["planner"])).toEqual([]);
+    expect(buildAuthorizedAdminDiscovery(["inspector"])).toEqual([]);
+    expect(buildAuthorizedAdminDiscovery([])).toEqual([]);
+
+    const projectedAdmin = buildShellNavigation(["security_admin"])
+      .filter(group => group.id.startsWith("admin-"));
+    expect(projectedAdmin).toEqual(security);
+  });
+
+  test("admin discovery chrome keeps keyboard and mobile accessibility contracts", () => {
+    const source = readFileSync(resolve(__dirname, "../src/components/ShellClient.tsx"), "utf8");
+    expect(source).toContain('event.key.toLocaleLowerCase() === "k"');
+    expect(source).toContain('event.key !== "Escape"');
+    expect(source).toContain('role="status" aria-live="polite"');
+    expect(source).toContain('dir={locale === "ar" ? "rtl" : "ltr"}');
+    expect(source).toContain('aria-label={locale === "ar" ? "العودة إلى مجموعات الإدارة" : "Back to admin hubs"}');
+    expect(source).toContain("adminPaletteRestoreRef.current");
   });
 
   test("dashboard and live operations have distinct active states", () => {
@@ -60,6 +104,39 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
     expect(shellScopeForRoute("/dashboard")).toEqual({ date: true, region: true });
     expect(shellScopeForRoute("/operations")).toEqual({ date: false, region: true });
     expect(shellScopeForRoute("/planning")).toEqual({ date: false, region: false });
+  });
+});
+
+test.describe("ADMIN-SHELL-PERSONA-001 admin-only channel", () => {
+  test("admin-only detection requires an admin grant and no business grant", () => {
+    expect(isAdminOnlyPersona(["security_admin"])).toBe(true);
+    expect(isAdminOnlyPersona(["compliance_admin", "form_admin"])).toBe(true);
+    expect(isAdminOnlyPersona(["security_admin", "planner"])).toBe(false);
+    expect(isAdminOnlyPersona(["planner"])).toBe(false);
+    expect(isAdminOnlyPersona([])).toBe(false);
+  });
+
+  test("server channel guard protects copied business URLs while preserving admin deep links", () => {
+    const layout = readFileSync(join(process.cwd(), "src/app/(app)/layout.tsx"), "utf8");
+    expect(layout).toContain("isAdminOnlyPersona(roleKeys) && isBusinessOnlyPath(pathname)");
+    expect(layout).toContain('redirect(homeForRoles(roleKeys) ?? "/admin")');
+    for (const prefix of ["/dashboard", "/operations", "/factories", "/planning", "/reviews", "/ai"]) {
+      expect(layout).toContain(`"${prefix}"`);
+    }
+    expect(layout).not.toContain('"/admin",\n].some');
+  });
+
+  test("admin chrome omits the business global-search and scope cluster", () => {
+    const shell = readFileSync(join(process.cwd(), "src/components/ShellClient.tsx"), "utf8");
+    const css = readFileSync(join(process.cwd(), "src/app/astryx.css"), "utf8");
+    expect(shell).toContain('{!adminOnly ? <div className="ax-shell-controls">');
+    expect(shell).toContain('adminOnly ? " is-admin-only" : ""');
+    expect(shell).toContain("routeScope.date ? (");
+    expect(shell).toContain("sq-shell-scope--region");
+    expect(shell).toContain(") : null}");
+    expect(css).toContain("@media (min-width: 1025px)");
+    expect(css).toContain(".ax-shell.is-admin-only .ax-shell__groups");
+    expect(css).toContain("overflow: visible");
   });
 });
 
@@ -78,10 +155,10 @@ test.describe("TASK-WEB-CHANNEL-ACCESS-GATE-001 field channel (rbac_matrix.csv R
     }
   });
 
-  test("an operational grant wins: a multi-role Inspector+Planner keeps the full web catalogue", () => {
+  test("an operational grant wins: a multi-role Inspector+Planner keeps only the business catalogue", () => {
     expect(isFieldOnlyPersona(["inspector", "planner"])).toBe(false);
     expect(businessHrefsFor(["inspector", "planner"])).toEqual(businessHrefs);
-    expect(buildShellNavigation(["inspector", "planner"]).find(group => group.id === "administration")).toBeDefined();
+    expect(buildShellNavigation(["inspector", "planner"]).find(group => group.id === "administration")).toBeUndefined();
   });
 
   test("field-only detection is precise and never locks out web or no-role sessions", () => {
@@ -99,7 +176,7 @@ test.describe("TASK-WEB-CHANNEL-ACCESS-GATE-001 field channel (rbac_matrix.csv R
 test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
   test.use({ storageState: storageStatePath("planner") });
 
-  test("desktop navigation collapses with unified business and accessible locked admin options", async ({ page }) => {
+  test("desktop navigation collapses with the authorized business catalogue only", async ({ page }) => {
     await page.goto("/locale?set=en");
     await page.goto("/planning");
     const nav = page.getByRole("navigation", { name: "Primary navigation" });
@@ -108,10 +185,8 @@ test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
     await expect(nav.getByRole("link", { name: "Factory 360" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Review & Approval" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Inspection Rules" })).toBeVisible();
-    await nav.getByRole("button", { name: "Administration" }).click();
-    await expect(nav.locator('[data-nav-state="disabled"]')).toHaveCount(10);
-    await expect(nav.getByRole("link", { name: /Users.*Administrator access required/ })).toHaveAttribute("aria-disabled", "true");
-    await expect(nav.getByRole("link", { name: /Users.*Administrator access required/ })).not.toHaveAttribute("href");
+    await expect(nav.getByRole("button", { name: "Administration" })).toHaveCount(0);
+    await expect(nav.locator('[data-nav-state="disabled"]')).toHaveCount(0);
 
     await page.getByRole("button", { name: "Collapse navigation" }).click();
     await expect(page.locator(".ax-shell")).toHaveClass(/is-collapsed/);

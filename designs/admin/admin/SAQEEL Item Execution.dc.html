@@ -8,236 +8,683 @@
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="saqeel/styles.css">
+<link rel="stylesheet" href="saqeel/styles.css?v=r7">
+<link rel="stylesheet" href="saqeel/admin-shell.css?v=r7">
+<script src="admin-shell.js?v=r7"></script>
 <style>
-  html, body { height:100%; margin:0; }
-  .ie-wrap { max-width:920px; margin:0 auto; padding:16px 18px 130px; display:flex; flex-direction:column; gap:14px; }
-  .ie-strip { display:flex; gap:8px; flex-wrap:wrap; }
-  .ie-stat { flex:1 1 120px; border:1px solid var(--border-subtle); border-radius:10px; background:var(--surface-primary); padding:10px 12px; box-shadow:var(--shadow-card); }
-  .ie-stat .n { font-size:20px; font-weight:700; }
-  .ie-stat .l { font-size:11.5px; color:var(--text-muted); }
-  .ie-item { border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:14px 15px; display:flex; flex-direction:column; gap:11px; }
-  .ie-num { width:26px; height:26px; border-radius:50%; background:var(--accent-soft); color:var(--accent-text); display:grid; place-items:center; font-size:13px; font-weight:600; flex:none; }
-  .ie-opt { display:flex; align-items:center; gap:9px; flex:1 1 110px; padding:10px 13px; border:1.5px solid var(--border-input); border-radius:var(--radius-md); background:var(--surface-primary); cursor:pointer; font:inherit; min-height:44px; color:var(--text-primary); }
-  .ie-opt[aria-pressed="true"]{ border-color:var(--action-primary); background:var(--accent-soft); }
-  .ie-ind { width:18px; height:18px; border-radius:50%; border:2px solid var(--border-strong); flex:none; display:grid; place-items:center; }
-  .ie-opt[aria-pressed="true"] .ie-ind{ border-color:var(--action-primary); background:var(--action-primary); }
-  .ie-radios { display:flex; gap:8px; flex-wrap:wrap; }
-  .ie-k { font-size:11.5px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; }
-  .up-btn { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border:1.5px dashed var(--border-strong); border-radius:var(--radius-md); background:var(--surface-sunken); font:inherit; font-size:13px; cursor:pointer; color:var(--text-secondary); }
-  .ie-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
-  .switch { display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-size:12.5px; white-space:nowrap; }
-  .switch > span { white-space:nowrap; }
-  .switch input { appearance:none; -webkit-appearance:none; box-sizing:border-box; width:34px; min-width:34px; height:20px; margin:0; border:0; border-radius:999px; background:var(--border-strong); position:relative; cursor:pointer; transition:background .15s; flex:none; }
-  .switch input:checked { background:var(--action-primary); }
-  .switch input::after { content:""; position:absolute; top:2px; inset-inline-start:2px; width:16px; height:16px; border-radius:50%; background:#fff; transition:inset-inline-start .15s; }
-  .switch input:checked::after { inset-inline-start:16px; }
-  .extract { display:inline-flex; align-items:center; gap:6px; padding:3px 9px; border-radius:999px; font-size:11px; font-weight:700; background:var(--status-warning-soft); color:var(--status-warning-text); }
+  html, body { height: 100%; margin: 0; }
+  .it-cols { display:grid; grid-template-columns:minmax(0,1fr) 350px; gap:16px; align-items:start; }
+  @media (max-width:1040px){ .it-cols { grid-template-columns:minmax(0,1fr); } }
+  .it-panel { padding:16px 18px; }
+  .it-panel > h2 { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin:0 0 4px;
+    font:600 15.5px/1.35 var(--font-body); color:var(--text-primary); }
+  .it-panel > h2 [lang] { font-size:14px; color:var(--text-secondary); font-weight:500; }
+  .it-note { margin:0 0 12px; font:400 13px/1.6 var(--font-body); color:var(--text-secondary); text-wrap:pretty; }
+  .it-src { display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; font:500 11.5px/1.5 var(--font-mono); color:var(--text-muted); }
+  .it-src b { font-weight:700; color:var(--text-secondary); }
+  .it-src code { font:inherit; padding:0 4px; border-radius:3px; background:var(--surface-sunken); color:var(--text-secondary); }
+  .it-seg { display:flex; flex-wrap:wrap; border:1px solid var(--border-subtle); border-radius:var(--radius-sm); overflow:hidden; margin-block-end:14px; }
+  .it-seg a { flex:1 1 150px; min-block-size:44px; display:flex; align-items:center; justify-content:center; padding:0 12px;
+    font:500 13.5px/1.4 var(--font-body); color:var(--text-secondary); text-align:center; }
+  .it-seg a + a { border-inline-start:1px solid var(--border-subtle); }
+  .it-seg a.is-on { background:var(--surface-sunken); color:var(--text-primary); font-weight:600; }
+  .it-scroll { overflow-x:auto; }
+  .it-tbl { inline-size:100%; border-collapse:collapse; font:400 13px/1.55 var(--font-body); }
+  .it-tbl th { text-align:start; font:600 12px/1.5 var(--font-body); color:var(--text-secondary);
+    padding:7px 8px; border-block-end:1px solid var(--border-strong); white-space:nowrap; }
+  .it-tbl td { padding:8px; border-block-end:1px solid var(--border-subtle); color:var(--text-secondary); vertical-align:top; }
+  .it-tbl td.is-empty { color:var(--text-muted); text-align:center; padding:16px 8px; }
+  .it-tbl tr[tabindex]:focus-visible { outline:2px solid var(--focus-ring); outline-offset:-2px; }
+  @media (max-width:640px){
+    .it-tbl, .it-tbl tbody, .it-tbl tr, .it-tbl td { display:block; inline-size:100%; }
+    .it-tbl thead { position:absolute; inline-size:1px; block-size:1px; overflow:hidden; clip:rect(0 0 0 0); }
+    .it-tbl tr { border:1px solid var(--border-subtle); border-radius:var(--radius-md); margin-block-end:10px; padding:6px; }
+    .it-tbl td { border-block-end:0; }
+  }
+  .it-kv { display:grid; grid-template-columns:auto 1fr; gap:6px 12px; font:400 13px/1.55 var(--font-body); margin:0; }
+  .it-kv dt { color:var(--text-muted); }
+  .it-kv dd { margin:0; color:var(--text-primary); }
+  .it-mono { font:500 12px/1.55 var(--font-mono); color:var(--text-secondary); }
+  .it-tag { font:600 11.5px/1.7 var(--font-mono); padding:1px 7px; border-radius:var(--radius-full);
+    border:1px solid var(--border-subtle); background:var(--surface-sunken); color:var(--text-secondary); white-space:nowrap; }
+  .it-tag--off { border-style:dashed; }
+  .it-legend { display:grid; gap:8px; margin:0; padding:0; list-style:none; }
+  .it-legend li { display:grid; grid-template-columns:auto 1fr; gap:9px; align-items:start; font:400 13px/1.55 var(--font-body); color:var(--text-secondary); }
+  .it-warn { display:flex; gap:8px; align-items:flex-start; padding:10px 12px; border-radius:var(--radius-md);
+    border:1px solid var(--border-strong); background:var(--surface-secondary); color:var(--text-primary);
+    font:400 13px/1.6 var(--font-body); margin-block-end:12px; }
+  .it-warn b { display:block; font:600 13.5px/1.4 var(--font-body); }
+  .it-btns { display:flex; gap:8px; flex-wrap:wrap; }
+  .it-btns .btn { min-block-size:44px; }
+  .it-field { display:flex; flex-direction:column; gap:5px; min-inline-size:0; }
+  .it-field > label, .it-lbl { font:500 13.5px/1.4 var(--font-body); color:var(--text-secondary); }
+  .it-row2 { display:grid; grid-template-columns:1fr 1fr; gap:13px; }
+  @media (max-width:520px){ .it-row2 { grid-template-columns:1fr; } }
+  .it-set { display:flex; flex-direction:column; gap:13px; }
+  .it-skel { display:block; block-size:34px; border-radius:var(--radius-sm);
+    background:linear-gradient(90deg, var(--surface-sunken) 25%, var(--surface-secondary) 50%, var(--surface-sunken) 75%);
+    background-size:220% 100%; animation:it-shimmer 1.4s linear infinite; }
+  @keyframes it-shimmer { to { background-position:-120% 0; } }
+  @media (prefers-reduced-motion: reduce){ .it-skel { animation-duration:6s; } }
+  textarea.it-json { inline-size:100%; min-block-size:150px; resize:vertical; box-sizing:border-box;
+    font:500 13px/1.65 var(--font-mono); direction:ltr; text-align:start; color:var(--text-primary);
+    background:var(--surface-canvas); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:10px; }
 </style>
 </helmet>
-<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+<div class="ad-shell" data-theme="{{ theme }}">
 
-  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
-    <button class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:20px;height:20px;"><path d="m9 6 6 6-6 6"/></svg></button>
-    <div style="flex:1; min-width:0; line-height:1.35;"><div style="font-weight:600; font-size:15px;">{{ t.headerTitle }}</div><div class="t-caption" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.headerSub }} · <span class="id-code">VS-40219</span></div></div>
-    <span class="badge badge-info">{{ t.batchTag }}</span>
-    <button class="ie-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
-    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
-      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
-      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
-    </button>
-  </header>
-
-  <div class="ie-wrap">
-    <div class="panel" style="padding:11px 14px; display:flex; align-items:flex-start; gap:10px; background:var(--status-info-soft); border-color:color-mix(in srgb,var(--status-info) 26%,transparent); box-shadow:none;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="var(--status-info-text)" stroke-width="1.7" style="width:18px;height:18px;flex:none;margin-top:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
-      <span class="t-compact" style="color:var(--status-info-text);">{{ t.engineNote }}</span>
-    </div>
-
-    <div class="ie-strip">{{ strip }}</div>
-
-    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:2px;">
-      <h4 style="margin:0; font-size:15px;">{{ t.sectionName }}</h4>
-      <span class="badge badge-info">{{ t.weight }}</span>
-    </div>
-
-    <sc-for list="{{ items }}" as="it" hint-placeholder-count="3">
-      <div class="ie-item">{{ it.body }}</div>
-    </sc-for>
-
-    <div class="ie-item">{{ samplesBody }}</div>
-    <div class="ie-item">{{ seizureBody }}</div>
-    <div class="ie-item" style="border-color:{{ blockerBorder }};">{{ blockersBody }}</div>
+  <aside class="ad-rail" id="saqeel-primary-nav" aria-label="Control Panel navigation" data-held-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner ops">
+  <div class="ad-rail__brand">
+    <img class="ad-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL" width="260" height="40">
+    <img class="ad-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="28" height="28">
+    <button class="ad-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5v14"/><path d="m14 8-4 4 4 4"/></svg></button>
   </div>
+  <button class="ad-cmdk" type="button" aria-keyshortcuts="Meta+K Control+K" data-ar="ابحث في الأدوات"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><span class="ad-cmdk__label">Find a tool</span><kbd>⌘K</kbd></button>
+  <nav class="ad-rail__body">
+    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html" data-hub="cp" data-ar="لوحة التحكم" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/></svg></span><span class="ad-hub__label">Control Panel</span></a>
+    <a class="ad-hub" href="SAQEEL%20Users%20Roles.dc.html" data-hub="people" data-ar="المستخدمون والصلاحيات" data-roles="security_admin compliance_admin"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M3 20v-1.6A5.4 5.4 0 0 1 8.4 13h1.2A5.4 5.4 0 0 1 15 18.4V20"/><path d="M16 8.2a3 3 0 0 1 0 5.6M18 20v-1.4a4 4 0 0 0-1.6-3.2"/></svg></span><span class="ad-hub__label">People & Access</span></a>
+    <a class="ad-hub is-active" href="SAQEEL%20Admin%20Form%20Builder.dc.html" data-hub="rules" data-ar="القواعد والمحتوى" data-roles="form_admin compliance_admin workflow_admin security_admin" aria-current="true"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="ad-hub__label">Rules & Content</span></a>
+    <a class="ad-hub" href="SAQEEL%20Admin%20Execution.dc.html" data-hub="planning" data-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="ad-hub__label">Planning & Execution</span></a>
+    <a class="ad-hub" href="SAQEEL%20Risk.dc.html" data-hub="risk" data-ar="المخاطر والذكاء" data-roles="risk_owner compliance_admin form_admin workflow_admin security_admin gis_admin"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="ad-hub__label">Risk & Intelligence</span></a>
+    <a class="ad-hub" href="SAQEEL%20Admin%20Integrations.dc.html" data-hub="connections" data-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin gis_admin compliance_admin form_admin risk_owner"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v5M15 3v5M7 8h10v4a5 5 0 0 1-10 0z"/><path d="M12 17v4"/></svg></span><span class="ad-hub__label">Connections & Geography</span></a>
+    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-governance" data-hub="governance" data-ar="الحوكمة والعمليات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner ops"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg></span><span class="ad-hub__label">Governance & Operations</span></a>
+  </nav>
+  <div class="ad-rail__foot">
+    <a class="ad-viewall" href="SAQEEL%20Control%20Panel.dc.html#all-tools" data-ar="عرض كل الأدوات المصرّح بها"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>View all authorized tools</span></a>
+  </div>
+</aside>
 
-  <div style="position:sticky; bottom:0; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
-    <span class="badge {{ submitBadgeClass }}"><span class="dot"></span>{{ submitBadge }}</span>
-    <span style="flex:1;"></span>
-    <button class="btn btn-secondary">{{ t.saveDraft }}</button>
-    <button class="btn btn-primary" aria-disabled="{{ submitDisabled }}" style="{{ submitStyle }}">{{ t.submit }}</button>
+  <main id="main-content" tabindex="-1" class="ad-main">
+    <a class="btn btn-secondary sr-only sr-only-focusable" href="#page-body">Skip to content</a>
+    <div class="ad-util">
+  <span class="ad-util__here" data-ar="الإدارة">Administration</span>
+  <span class="ad-util__spacer"></span>
+  <button class="ad-iconbtn ad-locale" type="button" aria-label="Switch to Arabic" lang="ar">ع</button>
+  <button class="ad-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.5 1.5M17.3 17.3l1.5 1.5M18.8 5.2l-1.5 1.5M6.7 17.3l-1.5 1.5"/></svg></button>
+  <button class="ad-iconbtn" type="button" aria-label="{{ t.notifLabel }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></button>
+  <details class="ad-account"><summary aria-label="Account"><span class="ad-avatar" aria-hidden="true">—</span><span class="ad-who"><strong>—</strong><small data-ar="غير مُهيّأ">Not configured</small></span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg></summary><div class="ad-pop"><strong data-ar="غير مُهيّأ">Not configured</strong><span class="t-caption" data-ar="الأدوار المصرّح بها: غير مُهيّأ">Authorized roles: Not configured</span><button type="button" class="ad-popact" aria-disabled="true" data-ar="الملف الشخصي والإعدادات — غير مُهيّأ">Profile &amp; settings — not configured</button><button type="button" class="ad-popact ad-signout" aria-disabled="true" data-ar="تسجيل الخروج — غير مُهيّأ">Sign out — not configured</button></div></details>
+</div>
+    <header class="ad-head">
+  <div class="ad-head__id">
+    <h1 class="ad-head__title">Inspection Items<span class="ad-head__title-ar" lang="ar" dir="rtl">بنود التفتيش</span></h1>
+    <p class="ad-head__sub">{{ t.sub }}</p>
+  </div>
+  <div class="ad-head__ctx"><span class="badge badge-neutral">{{ modeLabel }}</span></div>
+  <div class="ad-head__actions"><a class="btn btn-secondary" href="SAQEEL%20Admin%20Extended.dc.html#audit">{{ t.openAudit }}</a><button class="btn btn-secondary" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.submitRequest }}</button></div>
+</header>
+    <nav class="ad-subnav" aria-label="Rules &amp; Content">
+  <a class="ad-subnav__up" href="SAQEEL%20Control%20Panel.dc.html#hub-rules" data-ar="القواعد والمحتوى"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg><span>Rules &amp; Content</span></a>
+  <span class="ad-subnav__rule" aria-hidden="true"></span>
+  <ul class="ad-subnav__list">
+    <li><a class="ad-subnav__item" href="SAQEEL%20Admin%20Form%20Builder.dc.html" data-ar="نماذج التفتيش" data-roles="form_admin compliance_admin">Inspection Forms</a></li>
+    <li><a class="ad-subnav__item is-active" href="SAQEEL%20Item%20Execution.dc.html" data-ar="بنود التفتيش" aria-current="page" data-roles="compliance_admin form_admin">Inspection Items</a></li>
+    <li><a class="ad-subnav__item" href="SAQEEL%20Admin%20Lookups.dc.html" data-ar="القوائم المرجعية" data-roles="compliance_admin workflow_admin security_admin">Reference Lists</a></li>
+    <li><a class="ad-subnav__item" href="SAQEEL%20Admin%20Lookups.dc.html#i18n" data-ar="اللغة والترجمة" data-roles="compliance_admin security_admin workflow_admin">Language &amp; Translations</a></li>
+  </ul>
+</nav>
+
+    <a id="page-body" tabindex="-1"></a>
+    <div class="ad-body" style="max-inline-size:none;">
+      <div dir="{{ dir }}" lang="{{ lang }}">
+      <p class="sr-only" role="status" aria-live="polite">{{ liveStatus }}</p>
+      <nav class="it-seg" aria-label="{{ t.workspaceLbl }}">
+        <a class="{{ onRegisterCls }}" href="SAQEEL%20Item%20Execution.dc.html?view=register" aria-current="{{ onRegisterCur }}" onClick="{{ goRegister }}">{{ t.tabRegister }}</a>
+        <a class="{{ onItemCls }}" href="SAQEEL%20Item%20Execution.dc.html?view=item" aria-current="{{ onItemCur }}" onClick="{{ goItem }}">{{ t.tabItem }}</a>
+        <a class="{{ onResponsesCls }}" href="SAQEEL%20Item%20Execution.dc.html?view=responses" aria-current="{{ onResponsesCur }}" onClick="{{ goResponses }}">{{ t.tabResponses }}</a>
+        <a class="{{ onUsageCls }}" href="SAQEEL%20Item%20Execution.dc.html?view=usage" aria-current="{{ onUsageCur }}" onClick="{{ goUsage }}">{{ t.tabUsage }}</a>
+      </nav>
+      <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ false }}">
+        <div class="panel it-panel" role="status" aria-busy="true">
+          <h2>{{ t.loadingTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.loadingTitle }}</span></h2>
+          <p class="it-note">{{ t.loadingBody }}</p>
+          <div class="stack" style="gap:8px;" aria-hidden="true"><span class="it-skel"></span><span class="it-skel"></span></div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isUnauth }}" hint-placeholder-val="{{ false }}">
+        <div class="ad-state ad-state--denied" role="alert">
+          <span class="ad-state__icon"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+          <h2 class="ad-state__title">{{ t.unauthTitle }}</h2>
+          <p class="ad-state__body">{{ t.unauthBody }}</p>
+          <dl class="it-kv" style="margin-block-start:10px;"><dt>{{ t.serverReason }}</dt><dd><bdi class="it-mono">{{ slotNC }}</bdi></dd><dt>{{ t.authorizedFor }}</dt><dd><bdi class="it-mono">{{ slotNC }}</bdi></dd></dl>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isError }}" hint-placeholder-val="{{ false }}">
+        <div class="ad-state ad-state--error" role="alert">
+          <span class="ad-state__icon"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></span>
+          <h2 class="ad-state__title">{{ t.errorTitle }}</h2>
+          <p class="ad-state__body">{{ t.errorBody }}</p>
+          <dl class="it-kv" style="margin:10px 0 12px;"><dt>{{ t.serverReason }}</dt><dd><bdi class="it-mono">{{ slotNC }}</bdi></dd></dl>
+          <button class="btn btn-secondary btn-sm" type="button">{{ t.retry }}</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ showWork }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <sc-if value="{{ isDegraded }}" hint-placeholder-val="{{ false }}">
+            <div class="it-warn" role="status">
+              <span aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l9 16H3z"/><path d="M12 9v4M12 16h.01"/></svg></span>
+              <span><b>{{ t.degTitle }}</b>{{ t.degBody }} <bdi class="it-mono">{{ t.degSources }} {{ slotNC }}</bdi></span>
+            </div>
+          </sc-if>
+          <sc-if value="{{ isReadOnly }}" hint-placeholder-val="{{ false }}">
+            <div class="it-warn" role="status">
+              <span aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+              <span><b>{{ t.roTitle }}</b>{{ t.roBody }}</span>
+            </div>
+          </sc-if>
+        <sc-if value="{{ onRegister }}" hint-placeholder-val="{{ true }}">
+          <div class="it-cols">
+            <section class="panel it-panel">
+              <h2>{{ t.regTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.regTitle }}</span></h2>
+              <p class="it-note">{{ t.regNote }}</p>
+              <div class="it-set" style="margin-block-end:12px;">
+                <div class="it-row2">
+                  <div class="it-field"><label for="it-q">{{ t.searchLbl }}</label><input class="input" id="it-q" type="search" placeholder="{{ slotNC }}" disabled="{{ selDisabled }}"></div>
+                  <div class="it-field"><label for="it-reg">{{ t.regulationLbl }}</label><select class="select" id="it-reg" disabled="{{ selDisabled }}"><option>{{ slotNR }}</option></select></div>
+                </div>
+              </div>
+              <div class="it-scroll">
+                <table class="it-tbl">
+                  <thead><tr><th scope="col">{{ t.colItem }}</th><th scope="col">{{ t.colRegulation }}</th><th scope="col">{{ t.colSection }}</th><th scope="col">{{ t.colType }}</th><th scope="col">{{ t.colState }}</th></tr></thead>
+                  <tbody><tr tabindex="0"><td class="is-empty" colspan="5">{{ t.noItems }}</td></tr></tbody>
+                </table>
+              </div>
+              <p class="it-note" style="margin:10px 0 0;">{{ t.rowKeyboard }}</p>
+              <p class="it-note">{{ t.governedTruth }}</p>
+              <div class="it-btns" style="margin-block-start:12px;">
+                <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.newItem }}</button>
+                <a class="btn btn-secondary btn-sm" href="SAQEEL%20Admin.dc.html?view=request">{{ t.openRequest }}</a>
+              </div>
+              <span class="it-src" style="margin-block-start:10px;"><b>{{ t.reqRegister }}</b><bdi><code>inspection_items</code></bdi></span>
+            </section>
+            <aside class="stack" style="gap:16px;">
+              <section class="panel it-panel">
+                <h2>{{ t.hierarchyTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.hierarchyTitle }}</span></h2>
+                <p class="it-note">{{ t.hierarchyNote }}</p>
+                <ol class="it-legend" style="counter-reset:none;">
+                  <li><span class="it-tag">1</span><span>{{ t.hRegulation }}</span></li>
+                  <li><span class="it-tag">2</span><span>{{ t.hItem }}</span></li>
+                  <li><span class="it-tag">3</span><span>{{ t.hViolation }}</span></li>
+                  <li><span class="it-tag">4</span><span>{{ t.hPenalty }}</span></li>
+                </ol>
+                <p class="it-note" style="margin:12px 0 0;">{{ t.cascadeTruth }}</p>
+                <span class="it-src" style="margin-block-start:10px;"><b>{{ t.reqHierarchy }}</b><bdi><code>regulations</code><code>violation_codes</code></bdi></span>
+              </section>
+            </aside>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ onItem }}" hint-placeholder-val="{{ false }}">
+          <div class="it-cols">
+            <div class="stack" style="gap:16px;">
+              <section class="panel it-panel">
+                <h2>{{ t.itemTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.itemTitle }}</span></h2>
+                <p class="it-note">{{ t.itemNote }}</p>
+                <div class="it-set">
+                  <div class="it-row2">
+                    <div class="it-field"><label for="it-name-en">{{ t.nameEn }}</label><input class="input" id="it-name-en" dir="ltr" lang="en" placeholder="Not configured" disabled="{{ selDisabled }}"></div>
+                    <div class="it-field"><label for="it-name-ar">{{ t.nameAr }}</label><input class="input" id="it-name-ar" dir="rtl" lang="ar" placeholder="غير مُهيّأ" disabled="{{ selDisabled }}"></div>
+                  </div>
+                  <p class="it-note">{{ t.bilingualTruth }}</p>
+                  <div class="it-row2">
+                    <div class="it-field"><label for="it-type">{{ t.typeLbl }}</label><select class="select" id="it-type" disabled="{{ selDisabled }}"><option>{{ t.typeViolation }}</option><option>{{ t.typeObservation }}</option></select><span class="it-src"><b>{{ t.reqType }}</b><bdi><code>inspection_items.item_type</code></bdi></span></div>
+                    <div class="it-field"><label for="it-section">{{ t.sectionLbl }}</label><select class="select" id="it-section" disabled="{{ selDisabled }}"><option>{{ slotNR }}</option></select><span class="it-src"><b>{{ t.reqSection }}</b><bdi><code>lookup.inspection_sections</code></bdi></span></div>
+                  </div>
+                  <div class="it-row2">
+                    <div class="it-field"><label for="it-report">{{ t.reportLbl }}</label><select class="select" id="it-report" multiple="multiple" size="1" disabled="{{ selDisabled }}"><option>{{ slotNR }}</option></select></div>
+                    <div class="it-field"><span class="it-lbl">{{ t.flagsLbl }}</span>
+                      <label style="display:flex; gap:9px; align-items:center; min-block-size:44px;"><input type="checkbox" disabled="{{ selDisabled }}"><span class="it-note" style="margin:0; color:var(--text-primary);">{{ t.mandatoryLbl }}</span></label>
+                      <label style="display:flex; gap:9px; align-items:center; min-block-size:44px;"><input type="checkbox" disabled="{{ selDisabled }}"><span class="it-note" style="margin:0; color:var(--text-primary);">{{ t.selfAssessLbl }}</span></label>
+                      <label style="display:flex; gap:9px; align-items:center; min-block-size:44px;"><input type="checkbox" disabled="{{ selDisabled }}"><span class="it-note" style="margin:0; color:var(--text-primary);">{{ t.notifyLbl }}</span></label>
+                    </div>
+                  </div>
+                  <p class="it-note">{{ t.notifyTruth }}</p>
+                  <div class="it-field"><label for="it-guidance">{{ t.guidanceLbl }}</label><textarea class="input" id="it-guidance" rows="2" placeholder="{{ slotNC }}" disabled="{{ selDisabled }}"></textarea></div>
+                </div>
+                <span class="it-src" style="margin-block-start:12px;"><b>{{ t.reqItem }}</b><bdi><code>inspection_items</code></bdi></span>
+              </section>
+
+              <section class="panel it-panel">
+                <h2>{{ t.evidTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.evidTitle }}</span></h2>
+                <p class="it-note">{{ t.evidNote }}</p>
+                <div class="it-scroll">
+                  <table class="it-tbl">
+                    <thead><tr><th scope="col">{{ t.colEvidType }}</th><th scope="col">{{ t.colRequired }}</th></tr></thead>
+                    <tbody>
+                      <tr><td>{{ t.evPhoto }}</td><td><bdi class="it-mono">{{ slotNC }}</bdi></td></tr>
+                      <tr><td>{{ t.evVideo }}</td><td><bdi class="it-mono">{{ slotNC }}</bdi></td></tr>
+                      <tr><td>{{ t.evAttachment }}</td><td><bdi class="it-mono">{{ slotNC }}</bdi></td></tr>
+                      <tr><td>{{ t.evComment }}</td><td><bdi class="it-mono">{{ slotNC }}</bdi></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p class="it-note" style="margin:12px 0 0;">{{ t.evidTruth }}</p>
+                <span class="it-src" style="margin-block-start:10px;"><b>{{ t.reqEvidence }}</b><bdi><code>inspection_items.evidence_types</code></bdi></span>
+              </section>
+            </div>
+
+            <aside class="stack" style="gap:16px;">
+              <section class="panel it-panel">
+                <h2>{{ t.lifeTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.lifeTitle }}</span></h2>
+                <p class="it-note">{{ t.lifeNote }}</p>
+                <dl class="it-kv">
+                  <dt>{{ t.lRequest }}</dt><dd><bdi class="it-mono">{{ slotNC }}</bdi></dd>
+                  <dt>{{ t.lApproval }}</dt><dd><bdi class="it-mono">{{ slotNC }}</bdi></dd>
+                  <dt>{{ t.lOperational }}</dt><dd><bdi class="it-mono">{{ slotNC }}</bdi></dd>
+                  <dt>{{ t.lVersion }}</dt><dd><bdi class="it-mono" dir="ltr">{{ slotNC }}</bdi></dd>
+                </dl>
+                <p class="it-note" style="margin:12px 0 0;">{{ t.lifeTruth }}</p>
+                <div class="it-btns" style="margin-block-start:12px;">
+                  <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.submitRequest }}</button>
+                  <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.activate }}</button>
+                  <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.deactivate }}</button>
+                </div>
+                <p class="it-note" style="margin:10px 0 0;">{{ t.activationTruth }}</p>
+                <span class="it-src" style="margin-block-start:10px;"><b>{{ t.reqLifecycle }}</b><bdi><code>configuration_requests</code></bdi></span>
+              </section>
+            </aside>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ onResponses }}" hint-placeholder-val="{{ false }}">
+          <section class="panel it-panel">
+            <h2>{{ t.respTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.respTitle }}</span></h2>
+            <p class="it-note">{{ t.respNote }}</p>
+            <div class="it-field" style="max-inline-size:360px; margin-block-end:12px;"><label for="it-rt">{{ t.responseTypeLbl }}</label><select class="select" id="it-rt" disabled="{{ selDisabled }}"><option>{{ slotNR }}</option></select></div>
+            <div class="it-scroll">
+              <table class="it-tbl">
+                <thead><tr><th scope="col">{{ t.colResponse }}</th><th scope="col">{{ t.colLabelEn }}</th><th scope="col">{{ t.colLabelAr }}</th><th scope="col">{{ t.colEvaluation }}</th><th scope="col">{{ t.colViolationLink }}</th></tr></thead>
+                <tbody><tr tabindex="0"><td class="is-empty" colspan="5">{{ t.noResponses }}</td></tr></tbody>
+              </table>
+            </div>
+            <p class="it-note" style="margin:12px 0 0;">{{ t.respReadOnly }}</p>
+            <p class="it-note">{{ t.violationOwner }}</p>
+            <div class="it-btns" style="margin-block-start:12px;"><a class="btn btn-secondary btn-sm" href="../web/SAQEEL%20Enforcement.dc.html">{{ t.openViolations }}</a></div>
+            <span class="it-src" style="margin-block-start:10px;"><b>{{ t.reqResponses }}</b><bdi><code>response_types</code><code>response_values</code></bdi></span>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{ onUsage }}" hint-placeholder-val="{{ false }}">
+          <section class="panel it-panel">
+            <h2>{{ t.useTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.useTitle }}</span></h2>
+            <p class="it-note">{{ t.useNote }}</p>
+            <div class="it-scroll">
+              <table class="it-tbl">
+                <thead><tr><th scope="col">{{ t.colPackage }}</th><th scope="col">{{ t.colVersion }}</th><th scope="col">{{ t.colState }}</th><th scope="col">{{ t.colObligation }}</th><th scope="col">{{ t.colActionCol }}</th></tr></thead>
+                <tbody><tr tabindex="0"><td class="is-empty" colspan="5">{{ t.noUsage }}</td></tr></tbody>
+              </table>
+            </div>
+            <dl class="it-kv" style="margin-block-start:12px;">
+              <dt>{{ t.uInFlight }}</dt><dd><bdi class="it-mono">{{ t.notRun }}</bdi></dd>
+              <dt>{{ t.uFuture }}</dt><dd><bdi class="it-mono">{{ t.notRun }}</bdi></dd>
+            </dl>
+            <p class="it-note" style="margin:12px 0 0;">{{ t.useTruth }}</p>
+            <div class="it-btns" style="margin-block-start:12px;"><a class="btn btn-secondary btn-sm" href="SAQEEL%20Admin%20Form%20Builder.dc.html">{{ t.openForms }}</a><a class="btn btn-secondary btn-sm" href="SAQEEL%20Admin%20Extended.dc.html#audit">{{ t.openAudit }}</a></div>
+            <span class="it-src" style="margin-block-start:10px;"><b>{{ t.reqUsage }}</b><bdi><code>package_versions.items</code></bdi></span>
+          </section>
+        </sc-if>
+        </div>
+      </sc-if>
+      </div>
+    </div>
+  <div class="ad-pal" id="ad-palette" hidden="hidden">
+  <button class="ad-pal__scrim" type="button" aria-label="Close"></button>
+  <div class="ad-pal__box" role="dialog" aria-modal="true" aria-label="Find a tool">
+    <input class="ad-pal__input" type="text" role="combobox" aria-expanded="true" aria-controls="ad-pal-list" aria-autocomplete="list" placeholder="Find a tool…" data-ar-ph="ابحث عن أداة…">
+    <ul class="ad-pal__list" id="ad-pal-list" role="listbox">
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Control%20Panel.dc.html" data-ar="الاعتماد والتهيئة" data-hub-ar="لوحة التحكم" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Approval & Configuration</span><span class="ad-pal__hub">Control Panel</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Extended.dc.html" data-ar="التهيئة الموسّعة" data-hub-ar="لوحة التحكم" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Extended Configuration</span><span class="ad-pal__hub">Control Panel</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Detail.dc.html" data-ar="تفاصيل التهيئة" data-hub-ar="لوحة التحكم" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Configuration Detail</span><span class="ad-pal__hub">Control Panel</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Users%20Roles.dc.html" data-ar="المستخدمون" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Users</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Users%20Roles.dc.html?view=roles" data-ar="الأدوار" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Roles</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Role%20Override.dc.html" data-ar="تجاوزات الأدوار" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Role Overrides</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Virtual%20Premium.dc.html" data-ar="الأجهزة الموثوقة" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Trusted Devices</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Users%20Roles.dc.html?view=review" data-ar="مراجعة الأمن والوصول" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Security & Access Review</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Delegation.dc.html" data-ar="التفويض" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin compliance_admin"><span class="ad-pal__name">Delegation</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Form%20Builder.dc.html" data-ar="نماذج التفتيش" data-hub-ar="القواعد والمحتوى" data-roles="form_admin compliance_admin"><span class="ad-pal__name">Inspection Forms</span><span class="ad-pal__hub">Rules & Content</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Item%20Execution.dc.html" data-ar="بنود التفتيش" data-hub-ar="القواعد والمحتوى" data-roles="compliance_admin form_admin"><span class="ad-pal__name">Inspection Items</span><span class="ad-pal__hub">Rules & Content</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Lookups.dc.html" data-ar="القوائم المرجعية" data-hub-ar="القواعد والمحتوى" data-roles="compliance_admin workflow_admin security_admin"><span class="ad-pal__name">Reference Lists</span><span class="ad-pal__hub">Rules & Content</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Lookups.dc.html#i18n" data-ar="اللغة والترجمة" data-hub-ar="القواعد والمحتوى" data-roles="compliance_admin security_admin workflow_admin"><span class="ad-pal__name">Language & Translations</span><span class="ad-pal__hub">Rules & Content</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Lookups.dc.html" data-ar="قوائم التخطيط" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Planning Lookups</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Control%20Panel.dc.html#hub-planning" data-ar="قواعد انتهاء التخطيط" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Planning Expiry Rules</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Control%20Panel.dc.html#hub-planning" data-ar="قواعد حالة التخطيط" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Planning Status Rules</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Execution.dc.html" data-ar="إعدادات التنفيذ" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Execution Settings</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-ar="إعدادات سير العمل" data-hub-ar="التخطيط والتنفيذ" data-roles="workflow_admin"><span class="ad-pal__name">Workflow Settings</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Risk.dc.html" data-ar="إعدادات المخاطر" data-hub-ar="المخاطر والذكاء" data-roles="risk_owner"><span class="ad-pal__name">Risk Settings</span><span class="ad-pal__hub">Risk & Intelligence</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Dashboard%20Config.dc.html" data-ar="تهيئة لوحة القيادة" data-hub-ar="المخاطر والذكاء" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Dashboard Configuration</span><span class="ad-pal__hub">Risk & Intelligence</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20KPI%20Management.dc.html" data-ar="إدارة المؤشرات" data-hub-ar="المخاطر والذكاء" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">KPI Management</span><span class="ad-pal__hub">Risk & Intelligence</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Integrations.dc.html" data-ar="اتصالات النظام" data-hub-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin"><span class="ad-pal__name">System Connections</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20SENAI%20Data.dc.html" data-ar="بيانات سناعي" data-hub-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin"><span class="ad-pal__name">SENAI Data</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Integrations%20Data.dc.html" data-ar="بيانات التكامل" data-hub-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin"><span class="ad-pal__name">Integration Data</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Geofence.dc.html" data-ar="إعدادات الخرائط" data-hub-ar="الاتصالات والجغرافيا" data-roles="gis_admin"><span class="ad-pal__name">Map Settings</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Virtual%20Premium.dc.html" data-ar="مزودو الزيارة الافتراضية" data-hub-ar="الاتصالات والجغرافيا" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Virtual Visit Providers</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Extended.dc.html#audit" data-ar="سجل النشاط" data-hub-ar="الحوكمة والعمليات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Activity Log</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Control%20Panel.dc.html#hub-governance" data-ar="إعدادات الإشعارات" data-hub-ar="الحوكمة والعمليات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Notification Settings</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Extended.dc.html#platform-operations" data-ar="عمليات النظام" data-hub-ar="الحوكمة والعمليات" data-roles="security_admin workflow_admin"><span class="ad-pal__name">System Operations</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="../web/SAQEEL%20Enforcement.dc.html" data-ar="توصيات الإنفاذ" data-hub-ar="الحوكمة والعمليات" data-roles="ops compliance_admin"><span class="ad-pal__name">Enforcement Recommendations</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="../web/SAQEEL%20Enforcement.dc.html" data-ar="إصدار عدة مخالفات" data-hub-ar="الحوكمة والعمليات" data-roles="ops compliance_admin"><span class="ad-pal__name">Issue Multiple Violations</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="../web/SAQEEL%20Cases.dc.html" data-ar="قضايا المخالفات" data-hub-ar="الحوكمة والعمليات" data-roles="compliance_admin"><span class="ad-pal__name">Violation Cases</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+    </ul>
+    <p class="ad-pal__empty" hidden="hidden">No authorized tool matches.</p>
+    <p class="ad-pal__live sr-only" role="status" aria-live="polite"></p>
   </div>
 </div>
+
+  </main>
+</div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:920,&quot;height&quot;:1200}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900},&quot;view&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;register&quot;,&quot;item&quot;,&quot;responses&quot;,&quot;usage&quot;],&quot;default&quot;:&quot;register&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Route&quot;},&quot;dataState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;loading&quot;,&quot;empty&quot;,&quot;readonly&quot;,&quot;degraded&quot;,&quot;unauthorized&quot;,&quot;error&quot;],&quot;default&quot;:&quot;empty&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Data state&quot;},&quot;locale&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;ar&quot;],&quot;default&quot;:&quot;en&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Data state&quot;},&quot;themeMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Data state&quot;},&quot;isApprover&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Governance&quot;}}">
 class Component extends DCLogic {
-  state = { theme:"dark", lang:"ar",
-    ans:{ i1:{applied:true,value:"expired",att:0}, i2:{applied:true,value:"no",att:1}, i3:{applied:true,value:"yes",att:0} },
-    samplesGate:"yes", seizureGate:"no", afOptional:false };
+  // SAQEEL Inspection Items — the governed item register.
+  // NO FIXTURES: no item, regulation, section, response value, evidence rule or
+  // usage count is invented. Response values are read-only here (owned by
+  // response type management); violations and penalties are authored in the
+  // violation module. Request status and operational status stay separate.
+  state = { theme: "dark", lang: "en", view: "register", data: "empty" };
 
-  renderVals(){
-    const ar=this.state.lang==="ar", h=React.createElement, st=this.state;
-    const t = ar ? {
-      back:"رجوع", headerTitle:"تنفيذ البنود والتبعات", headerSub:"شركة الأمل لتدريب العمال", batchTag:"الدفعة 2",
-      theme:"الوضع", langBtnLabel:"EN", saveDraft:"حفظ كمسودة", submit:"إرسال",
-      engineNote:"يرسم محرّك التنفيذ العام كل بند من تعريفه: قابلية التطبيق ثم الحالة، دليل حسب قاعدة البند، ومرشّح مخالفة يُلغى تلقائياً عند تغيّر الإجابة إلى مطابق. لا تُبرمَج التبعات في الواجهة.",
-      sectionName:"القسم: السلامة المهنية والتراخيص", weight:"الوزن 20%",
-      applied:"يُطبَّق البند", state:"حالة البند", notes:"ملاحظات", evidence:"الدليل", attach:"إرفاق دليل", clause:"المرجع النظامي",
-      prelim:"الامتثال المبدئي", compliant:"مطابق", noncompliant:"غير مطابق", na:"لا ينطبق",
-      vioCand:"مرشّح مخالفة", severity:"الشدّة", corrective:"الإجراء التصحيحي", grace:"المهلة التصحيحية", penalty:"الجزاء المقترح", afTrig:"نموذج إجراء مُستدعى (إجباري)", afMand:"إجباري — لا يمكن إزالته",
-      vioInval:"أُلغي مرشّح المخالفة بعد تغيير الإجابة إلى «مطابق».",
-      evReq:"مطلوب دليل: صورة واحدة على الأقل عند «{v}».", evOk:"الدليل مُرفق.", evMissing:"الدليل ناقص.",
-      afSecTitle:"نماذج الإجراء", afOptAdd:"إضافة نموذج إجراء اختياري (طلب توصية إجراء إداري)", afIncomplete:"نموذج غير مكتمل — يمنع الإرسال.",
-      strip:["مُجاب","معلّق","مطابق","غير مطابق","مخالفات","أدلة"],
-      blockersTitle:"معوّقات الإرسال", noBlockers:"لا معوّقات — جاهز للإرسال.", bUnanswered:"بنود غير مُجابة", bEvidence:"دليل ناقص", bForms:"نماذج غير مكتملة",
-      submitReady:"جاهز للإرسال", submitBlocked:"إرسال محظور",
-      samplesTitle:"تفاصيل العينات", samplesGate:"هل تم سحب عينات من المنشأة؟", yes:"نعم", no:"لا",
-      addSample:"إضافة عينة جديدة", samplePhoto:"إضافة صورة العينة", samplePhotoHelp:"للحصول على أفضل نتيجة ارفع صورة بعرض 550 بكسل × 340 بكسل، بصيغة jpg، بحجم أقصى 2 ميجابايت.",
-      seizureTitle:"تفاصيل الحجز", seizureGate:"هل تم حجز منتجات؟", addالسeized:"إضافة منتجات جديدة", productN:"المنتج ({n})",
-      itemFieldsExtract:"حقول تفاصيل العنصر بانتظار استخراج من فيغما (VR-043/044/046 قيم بيانات لا تسميات).",
-      seizureLink:"يعكس هذا القسم بيانات «محضر حجز منتجات».", attMax:"الحد الأقصى للمرفق العام 5 ميجابايت (NF004).",
-    } : {
-      back:"Back", headerTitle:"Item execution & consequences", headerSub:"Al-Amal Worker Training Co.", batchTag:"Batch 2",
-      theme:"Theme", langBtnLabel:"AR", saveDraft:"Save as draft", submit:"Submit",
-      engineNote:"The generic engine renders each item from its definition: applicability then state, evidence per the item's rule, and a violation candidate that auto-invalidates when the answer changes to compliant. Consequences are never hardcoded in the UI.",
-      sectionName:"Section: Occupational safety & permits", weight:"Weight 20%",
-      applied:"Item applied", state:"Item state", notes:"Notes", evidence:"Evidence", attach:"Attach evidence", clause:"Legal reference",
-      prelim:"Preliminary compliance", compliant:"Compliant", noncompliant:"Non-compliant", na:"Not applicable",
-      vioCand:"Violation candidate", severity:"Severity", corrective:"Corrective action", grace:"Corrective period", penalty:"Proposed penalty", afTrig:"Action form triggered (mandatory)", afMand:"Mandatory — cannot be removed",
-      vioInval:"Violation candidate invalidated after the answer changed to “compliant”.",
-      evReq:"Evidence required: at least one photo on “{v}”.", evOk:"Evidence attached.", evMissing:"Evidence missing.",
-      afSecTitle:"Action forms", afOptAdd:"Add optional action form (admin-action recommendation)", afIncomplete:"Form incomplete — blocks submission.",
-      strip:["Answered","Pending","Compliant","Non-compliant","Violations","Evidence"],
-      blockersTitle:"Submit blockers", noBlockers:"No blockers — ready to submit.", bUnanswered:"Unanswered items", bEvidence:"Missing evidence", bForms:"Incomplete forms",
-      submitReady:"Ready to submit", submitBlocked:"Submit blocked",
-      samplesTitle:"Sample details", samplesGate:"Were samples collected from the establishment?", yes:"Yes", no:"No",
-      addSample:"Add new sample", samplePhoto:"Add sample photo", samplePhotoHelp:"For best results upload an image 550 px wide × 340 px high, jpg format, max size 2 MB.",
-      seizureTitle:"Seizure details", seizureGate:"Were products seized?", addالسeized:"Add new products", productN:"Product ({n})",
-      itemFieldsExtract:"Item detail fields pending live-Figma extraction (VR-043/044/046 are sample data, not labels).",
-      seizureLink:"This section reflects the “Product Seizure Report” record.", attMax:"General attachment cap 5 MB (NF004).",
+  componentDidMount() {
+    const q = (typeof location !== "undefined" && location.search) || "";
+    const m = q.match(/[?&]view=(register|item|responses|usage)/);
+    this.setState({ view: this.props.view || (m && m[1]) || "register" });
+    if (this.props.dataState) this.setState({ data: this.props.dataState });
+    if (this.props.locale) this.setState({ lang: this.props.locale });
+    if (this.props.themeMode) this.setState({ theme: this.props.themeMode });
+    this.syncShell();
+    this.watchShell();
+  }
+
+  // The shell owns locale and theme (admin-shell.js?v=r7 writes dir/lang and the
+  // theme onto .ad-shell). Seed from it and watch it, so the ع toggle flips the
+  // page body too — the host Tweaks props remain an override.
+  syncShell() {
+    if (typeof document === "undefined") return;
+    const shell = document.querySelector(".ad-shell");
+    let lang = null, theme = null;
+    try { lang = localStorage.getItem("saqeel-admin-locale"); } catch (e) { lang = null; }
+    if (shell) {
+      lang = shell.getAttribute("lang") || lang;
+      theme = shell.getAttribute("data-theme");
+    }
+    const next = {};
+    if (lang === "ar" || lang === "en") next.lang = lang;
+    if (theme === "dark" || theme === "light") next.theme = theme;
+    if (Object.keys(next).length) this.setState(next);
+  }
+
+  watchShell() {
+    if (typeof MutationObserver === "undefined" || typeof document === "undefined") return;
+    this._shellObs = new MutationObserver(() => this.syncShell());
+    this._shellObs.observe(document.documentElement, {
+      subtree: true, childList: true, attributes: true,
+      attributeFilter: ["lang", "dir", "data-theme"],
+    });
+  }
+
+  componentWillUnmount() { if (this._shellObs) this._shellObs.disconnect(); }
+
+  renderVals() {
+    const view = this.state.view || this.props.view;
+    const d = this.props.dataState || this.state.data;
+    const AR = (this.state.lang || this.props.locale) === "ar";
+    const EN = {
+          "serverReason": "Server reason",
+          "authorizedFor": "Your authorized scope",
+          "retry": "Retry",
+          "openAudit": "Open Activity Log",
+          "notRun": "Not run",
+          "degTitle": "Partial read — some sources did not answer. ",
+          "degBody": "Readable facts are shown; anything depending on a failed source reads as Not configured rather than being guessed, and nothing can be published while the read is incomplete.",
+          "degSources": "Unavailable sources:",
+          "roTitle": "Read-only. ",
+          "roBody": "Your session may read this configuration but not change it. Controls that would write are unavailable rather than hidden, so the boundary stays explainable.",
+          "sub": "Governed inspection items, their responses and where they are used",
+          "workspaceLbl": "Inspection items workspace",
+          "tabRegister": "Register",
+          "tabItem": "Item",
+          "tabResponses": "Responses",
+          "tabUsage": "Usage",
+          "loadingTitle": "Loading inspection items",
+          "loadingBody": "Reading the item register, response types and package usage for your authorized scope. No editing control is offered until the read succeeds.",
+          "unauthTitle": "Not authorized for inspection items",
+          "unauthBody": "The server refused this route for your session. Who may read or author an item is decided by the route guard and row-level security; the reason the server returned is shown below.",
+          "errorTitle": "Inspection items could not be read",
+          "errorBody": "The read failed. No item changed. Retry; the attempt is recorded as an audit event.",
+          "regTitle": "Item register",
+          "regNote": "Governed inspection items within your authorized scope.",
+          "searchLbl": "Search",
+          "regulationLbl": "Regulation",
+          "colItem": "Item",
+          "colRegulation": "Regulation",
+          "colSection": "Section",
+          "colType": "Type",
+          "colState": "State",
+          "noItems": "No inspection items returned",
+          "rowKeyboard": "Rows are focusable: Enter or Space opens the item, and the selection is announced.",
+          "governedTruth": "Items are created and modified through a compliance configuration request. Activation and deactivation are direct authorized actions and do not create a request.",
+          "newItem": "New item",
+          "openRequest": "Open a configuration request",
+          "hierarchyTitle": "Compliance hierarchy",
+          "hierarchyNote": "Where an item sits, and what depends on it.",
+          "hRegulation": "Regulation — the parent that owns the item and its lifecycle.",
+          "hItem": "Inspection item — what the inspector evaluates, with its response type and evidence rules.",
+          "hViolation": "Violation — configured separately, triggered by a non-compliant response.",
+          "hPenalty": "Penalty — the enforcement consequence attached to a violation, decided by a human.",
+          "cascadeTruth": "Deactivating a regulation makes its items, violations and penalties unavailable for future execution. Reactivating the regulation does not reactivate them, and historical inspections keep the configuration that was effective when they ran.",
+          "itemTitle": "Item definition",
+          "itemNote": "What the inspector sees and how the item behaves in the field.",
+          "nameEn": "Item name (English)",
+          "nameAr": "Item name (Arabic)",
+          "bilingualTruth": "Both names are required and are entered by an authorized editor. Neither is machine-translated, and a name present in only one language blocks approval.",
+          "typeLbl": "Item type",
+          "typeViolation": "Violation",
+          "typeObservation": "Observation",
+          "sectionLbl": "Inspection section",
+          "reportLbl": "Report types",
+          "flagsLbl": "Behaviour",
+          "mandatoryLbl": "Mandatory item",
+          "selfAssessLbl": "Display in self-assessment",
+          "notifyLbl": "Notify entity (observation only)",
+          "notifyTruth": "Notify entity applies to observations. An item of type violation carries enforcement configuration instead, which is authored in the violation module rather than here.",
+          "guidanceLbl": "Inspector guidance",
+          "evidTitle": "Evidence",
+          "evidNote": "What the inspector must capture when answering.",
+          "colEvidType": "Evidence type",
+          "colRequired": "Required",
+          "evPhoto": "Photo",
+          "evVideo": "Video",
+          "evAttachment": "Attachment",
+          "evComment": "Comment",
+          "evidTruth": "When evidence is required, at least one type must be configured. An item that requires evidence with no type set is a blocker naming the item.",
+          "lifeTitle": "Lifecycle",
+          "lifeNote": "Request status and operational status are separate facts.",
+          "lRequest": "Request status",
+          "lApproval": "Approved by",
+          "lOperational": "Operational status",
+          "lVersion": "Version",
+          "lifeTruth": "A request is draft, pending, returned, approved or rejected. A published item is active or inactive. This panel never merges the two into one badge.",
+          "submitRequest": "Submit configuration request",
+          "activate": "Activate",
+          "deactivate": "Deactivate",
+          "activationTruth": "Activation and deactivation take effect for future execution only. Inspections already created keep the item version they were created against.",
+          "respTitle": "Response type & values",
+          "respNote": "The response model the item uses during execution.",
+          "responseTypeLbl": "Response type",
+          "colResponse": "Response",
+          "colLabelEn": "Label (EN)",
+          "colLabelAr": "Label (AR)",
+          "colEvaluation": "Evaluation",
+          "colViolationLink": "Violation link",
+          "noResponses": "No response type selected",
+          "respReadOnly": "Response values and their compliant / non-compliant / neutral evaluation are maintained in response type management and are read-only here. Changing them for one item would silently change every item that shares the type.",
+          "violationOwner": "Only values evaluated as non-compliant can carry a violation. The violation, its penalty and any action form are configured in the violation module; this panel shows the resulting link so an author can see it.",
+          "openViolations": "Open violation configuration",
+          "useTitle": "Where this item is used",
+          "useNote": "Packages that assign this item, and the work that depends on them.",
+          "colPackage": "Package",
+          "colVersion": "Version",
+          "colObligation": "Obligation",
+          "colActionCol": "Action",
+          "noUsage": "This item is not assigned to any package version",
+          "uInFlight": "In-flight inspections",
+          "uFuture": "Future-only",
+          "useTruth": "Counts come from the server. An item assigned to a published package cannot be deactivated without the impact being read first, because inspections already created keep running on it.",
+          "openForms": "Open inspection forms",
+          "reqRegister": "Governed item register",
+          "reqHierarchy": "Compliance hierarchy",
+          "reqItem": "Item definition",
+          "reqType": "Item type",
+          "reqSection": "Inspection section",
+          "reqEvidence": "Evidence types",
+          "reqLifecycle": "Request & operational lifecycle",
+          "reqResponses": "Response model",
+          "reqUsage": "Package usage & impact"
     };
-    const ck=h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"#fff",strokeWidth:3,style:{width:11,height:11}},h("path",{d:"m5 12 5 5 9-10"}));
-    const set=(id,patch)=>this.setState(s=>({ans:{...s.ans,[id]:{...s.ans[id],...patch}}}));
-
-    // Item definitions — the generic engine model (runtime.ts): responses + mapping{result,violation,action_form} + evidence_rule + clause
-    const ITEMS = [
-      { id:"i1", n:1, cat: ar?"التراخيص والتصاريح":"Licenses & permits",
-        title: ar?"عدم وجود تصريح سلامة ساري":"No valid safety permit", type:"validity",
-        clause: ar?"نظام الدفاع المدني · م.121":"Civil Defense Code · Art.121",
-        map:{ valid:{result:"compliant"}, expired:{result:"non_compliant", violation:{sev:ar?"جسمية":"Major", corr:ar?"الحصول على تصريح سلامة من الدفاع المدني.":"Obtain a Civil Defense safety permit.", grace:ar?"15 يوماً":"15 days", pen:ar?"إيقاف النشاط.":"Suspend activity."}, action_form:{mandatory:true}}, notAvailable:{result:"non_compliant", violation:{sev:ar?"جسمية":"Major", corr:ar?"استخراج تصريح السلامة.":"Issue the safety permit.", grace:ar?"15 يوماً":"15 days", pen:ar?"إيقاف النشاط.":"Suspend activity."}, action_form:{mandatory:true}} },
-        evidence:{ on:["expired","notAvailable"], min:1, type:"photo", mandatory:true } },
-      { id:"i2", n:2, cat: ar?"التراخيص والتصاريح":"Licenses & permits",
-        title: ar?"عدم وجود لوحة خارجية باسم المصنع ورقم الترخيص":"No external signboard with factory name & license no.", type:"yesNo",
-        clause: ar?"نظام الصناعة · م.39":"Industry Code · Art.39",
-        map:{ yes:{result:"compliant"}, no:{result:"non_compliant", violation:{sev:ar?"جسيمة":"Major", corr:ar?"تركيب لوحة خارجية تحمل اسم المصنع ورقم الترخيص.":"Install a signboard with factory name & license no.", grace:ar?"15 يوماً":"15 days", pen:ar?"إنذار.":"Warning."}} },
-        evidence:{ on:["no"], min:1, type:"photo", mandatory:true } },
-      { id:"i3", n:3, cat: ar?"السلامة المهنية":"Occupational safety",
-        title: ar?"مطابقة بطاقات السلامة الكيميائية (SDS) وشروط التخزين":"SDS chemical safety sheets & storage compliance", type:"yesNo",
-        clause: ar?"لائحة السلامة · بند 4.2":"Safety Regulation · 4.2",
-        map:{ yes:{result:"compliant"}, no:{result:"non_compliant", violation:{sev:ar?"متوسطة":"Moderate", corr:ar?"توفير بطاقات السلامة وتصحيح شروط التخزين.":"Provide SDS sheets & correct storage.", grace:ar?"30 يوماً":"30 days", pen:ar?"إنذار.":"Warning."}} },
-        evidence:{ on:["no"], min:1, type:"photo", mandatory:false } },
-    ];
-    const optsFor = (type)=> type==="validity"
-      ? (ar?[["valid","ساري"],["expired","منتهي"],["notAvailable","لا يوجد"]]:[["valid","Valid"],["expired","Expired"],["notAvailable","Not available"]])
-      : (ar?[["yes","ينطبق"],["no","لا ينطبق"]]:[["yes","Applies"],["no","Does not apply"]]);
-    const sevClass=(sev)=> /أمن|Security/.test(sev)?"badge-critical":/جسيم|جسم|Major/.test(sev)?"badge-major":"badge-warning";
-
-    const resultOf=(it)=>{ const a=st.ans[it.id]; if(!a.applied) return "na"; const v=a.value; return it.map[v]?.result ?? null; };
-    const vioOf=(it)=>{ const a=st.ans[it.id]; if(!a.applied) return null; return it.map[a.value]?.violation ?? null; };
-    const evMiss=(it)=>{ const a=st.ans[it.id]; if(!a.applied) return false; const r=it.evidence; if(!r||!r.mandatory) return false; return r.on.includes(a.value) && (a.att||0)<r.min; };
-    const afMiss=(it)=>{ const a=st.ans[it.id]; if(!a.applied) return false; const af=it.map[a.value]?.action_form; return !!(af&&af.mandatory); }; // mandatory form present but treated incomplete in this demo
-
-    // live summary (summarize())
-    let answered=0,pending=0,comp=0,non=0,vio=0,ev=0;
-    ITEMS.forEach(it=>{ const a=st.ans[it.id]; if(!a.applied){return;} if(!a.value){pending++;return;} answered++; const r=resultOf(it); if(r==="compliant")comp++; if(r==="non_compliant")non++; if(vioOf(it))vio++; ev+=(a.att||0); });
-    const stripVals=[answered,pending,comp,non,vio,ev];
-    const strip = t.strip.map((l,i)=>h("div",{key:i,className:"ie-stat"}, h("div",{className:"n"},String(stripVals[i])), h("div",{className:"l"},l)));
-
-    const chip=(cls,txt)=>h("span",{className:"badge "+cls},txt);
-    const compChip=(r)=> r==="compliant"?chip("badge-compliant",t.compliant): r==="non_compliant"?chip("badge-critical",t.noncompliant): chip("badge-outline",t.na);
-
-    const itemBody=(it)=>{ const a=st.ans[it.id]; const r=resultOf(it); const vio=vioOf(it);
-      return h(React.Fragment,null,
-        h("div",{style:{display:"flex",alignItems:"flex-start",gap:"10px"}},
-          h("span",{className:"ie-num"},String(it.n)),
-          h("div",{style:{flex:1,minWidth:0}},
-            h("div",{style:{display:"flex",gap:"6px",flexWrap:"wrap",marginBottom:"3px"}}, chip("tag",it.cat), chip("tag",it.clause)),
-            h("div",{style:{fontSize:"13.5px",fontWeight:600,lineHeight:1.5}},it.title)),
-          h("label",{className:"switch",style:{flex:"none"}}, h("input",{type:"checkbox",checked:a.applied,onChange:e=>set(it.id,{applied:e.target.checked})}), h("span",null,t.applied))),
-        a.applied ? h(React.Fragment,null,
-          h("div",null, h("div",{className:"ie-k",style:{marginBottom:"6px"}},t.state),
-            h("div",{className:"ie-radios"}, optsFor(it.type).map(([v,l])=>{ const on=a.value===v;
-              return h("button",{key:v,className:"ie-opt","aria-pressed":on,onClick:()=>set(it.id,{value:v})}, h("span",{className:"ie-ind"},on?ck:null), l); }))),
-          h("div",{style:{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}}, h("span",{className:"ie-k"},t.prelim), compChip(r)),
-          h("label",{className:"fld",style:{display:"flex",flexDirection:"column",gap:"5px"}}, h("span",{style:{fontSize:"13px",color:"var(--text-secondary)"}},t.notes), h("textarea",{className:"input",rows:2})),
-          // evidence leg
-          h("div",{style:{display:"flex",flexDirection:"column",gap:"6px"}},
-            h("button",{className:"up-btn",onClick:()=>set(it.id,{att:(a.att||0)+1})}, h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.7,style:{width:15,height:15}},h("path",{d:"M12 16V4M8 8l4-4 4 4M4 20h16"})), t.attach+(a.att?` · ${a.att}`:"")),
-            it.evidence && it.evidence.on.includes(a.value) ? h("span",{className:"t-caption",style:{color: evMiss(it)?"var(--status-critical-text)":"var(--status-compliant-text)"}}, evMiss(it)? t.evMissing : (a.att?t.evOk:t.evReq.replace("{v}", optsFor(it.type).find(o=>o[0]===a.value)[1]))) : null),
-          // violation candidate / invalidation
-          vio ? h("div",{style:{border:"1px solid color-mix(in srgb,var(--status-critical) 30%,transparent)",background:"var(--status-critical-soft)",borderRadius:"8px",padding:"11px 13px",display:"flex",flexDirection:"column",gap:"7px"}},
-            h("div",{style:{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}}, chip("badge "+sevClass(vio.sev),vio.sev), h("span",{style:{fontSize:"13px",fontWeight:600,color:"var(--status-critical-text)"}},t.vioCand)),
-            h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px 16px",fontSize:"12px"}},
-              h("div",null,h("span",{className:"ie-k"},t.corrective),h("div",{style:{fontWeight:600}},vio.corr)),
-              h("div",null,h("span",{className:"ie-k"},t.penalty),h("div",{style:{fontWeight:600}},vio.pen)),
-              h("div",null,h("span",{className:"ie-k"},t.grace),h("div",{style:{fontWeight:600}},vio.grace))),
-            it.map[a.value]?.action_form ? h("div",{style:{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap",borderBlockStart:"1px solid color-mix(in srgb,var(--status-critical) 20%,transparent)",paddingBlockStart:"7px"}}, chip("badge-major",t.afTrig), h("span",{className:"t-caption"},t.afMand)) : null)
-          : (r==="compliant" ? h("div",{className:"t-caption",style:{color:"var(--status-compliant-text)"}}, "✓ "+t.vioInval) : null)
-        ) : null);
+    const ARA = {
+          "serverReason": "سبب الخادم",
+          "authorizedFor": "نطاقك المصرّح به",
+          "retry": "إعادة المحاولة",
+          "openAudit": "فتح سجل النشاط",
+          "notRun": "لم يُنفَّذ",
+          "degTitle": "قراءة جزئية — لم تستجب بعض المصادر. ",
+          "degBody": "تُعرض الحقائق المقروءة فقط؛ وما يعتمد على مصدر فاشل يظهر «غير مُهيّأ» بدل التخمين، ولا يُنشر شيء حتى تكتمل القراءة.",
+          "degSources": "المصادر غير المتاحة:",
+          "roTitle": "للقراءة فقط. ",
+          "roBody": "جلستك تقرأ هذه التهيئة ولا تغيّرها. عناصر الكتابة تظهر غير متاحة بدل إخفائها ليبقى الحد قابلاً للتفسير.",
+          "sub": "بنود التفتيش المحكومة واستجاباتها وأماكن استخدامها",
+          "workspaceLbl": "مساحة بنود التفتيش",
+          "tabRegister": "السجل",
+          "tabItem": "البند",
+          "tabResponses": "الاستجابات",
+          "tabUsage": "الاستخدام",
+          "loadingTitle": "جارٍ تحميل بنود التفتيش",
+          "loadingBody": "يُقرأ سجل البنود وأنواع الاستجابة والاستخدام في الحزم داخل نطاقك المصرّح به. لا يُتاح أي عنصر تحرير قبل نجاح القراءة.",
+          "unauthTitle": "غير مصرّح ببنود التفتيش",
+          "unauthBody": "رفض الخادم هذا المسار لجلستك. تحديد من يقرأ البند أو يؤلّفه يتم عبر حماية المسار وأمن الصفوف؛ وسبب الخادم معروض أدناه.",
+          "errorTitle": "تعذّر قراءة بنود التفتيش",
+          "errorBody": "فشلت القراءة. لم يتغيّر أي بند. أعد المحاولة؛ تُسجَّل المحاولة في سجل النشاط.",
+          "regTitle": "سجل البنود",
+          "regNote": "بنود التفتيش المحكومة داخل نطاقك المصرّح به.",
+          "searchLbl": "بحث",
+          "regulationLbl": "اللائحة",
+          "colItem": "البند",
+          "colRegulation": "اللائحة",
+          "colSection": "القسم",
+          "colType": "النوع",
+          "colState": "الحالة",
+          "noItems": "لا بنود تفتيش مُعادة",
+          "rowKeyboard": "الصفوف قابلة للتركيز: Enter أو مسافة تفتح البند، ويُعلن التحديد.",
+          "governedTruth": "تُنشأ البنود وتُعدَّل عبر طلب تهيئة التزام. أما التفعيل والتعطيل فإجراءان مباشران لمصرّح له ولا يُنشئان طلباً.",
+          "newItem": "بند جديد",
+          "openRequest": "فتح طلب تهيئة",
+          "hierarchyTitle": "التسلسل الرقابي",
+          "hierarchyNote": "أين يقع البند وما الذي يعتمد عليه.",
+          "hRegulation": "اللائحة — الأصل الذي يملك البند ودورة حياته.",
+          "hItem": "بند التفتيش — ما يقيّمه المفتّش، بنوع استجابته وقواعد أدلته.",
+          "hViolation": "المخالفة — تُهيّأ منفصلة وتُحرَّك باستجابة غير ممتثلة.",
+          "hPenalty": "الجزاء — أثر الإنفاذ المرتبط بالمخالفة، ويقرّره إنسان.",
+          "cascadeTruth": "تعطيل اللائحة يجعل بنودها ومخالفاتها وجزاءاتها غير متاحة للتنفيذ المستقبلي. وإعادة تفعيلها لا يعيد تفعيلها، والتفتيشات التاريخية تحتفظ بالتهيئة السارية وقت تنفيذها.",
+          "itemTitle": "تعريف البند",
+          "itemNote": "ما يراه المفتّش وكيف يتصرّف البند في الميدان.",
+          "nameEn": "اسم البند (بالإنجليزية)",
+          "nameAr": "اسم البند (بالعربية)",
+          "bilingualTruth": "الاسمان مطلوبان ويُدخلهما محرّر مصرّح له. ولا يُترجم أيّهما آلياً، والاسم بلغة واحدة يمنع الاعتماد.",
+          "typeLbl": "نوع البند",
+          "typeViolation": "مخالفة",
+          "typeObservation": "ملاحظة",
+          "sectionLbl": "قسم التفتيش",
+          "reportLbl": "أنواع التقارير",
+          "flagsLbl": "السلوك",
+          "mandatoryLbl": "بند إجباري",
+          "selfAssessLbl": "يظهر في التقييم الذاتي",
+          "notifyLbl": "إشعار الجهة (للملاحظات فقط)",
+          "notifyTruth": "«إشعار الجهة» يخص الملاحظات. أما البند من نوع مخالفة فيحمل تهيئة إنفاذ تُؤلَّف في وحدة المخالفات لا هنا.",
+          "guidanceLbl": "إرشاد المفتّش",
+          "evidTitle": "الأدلة",
+          "evidNote": "ما يجب على المفتّش التقاطه عند الإجابة.",
+          "colEvidType": "نوع الإثبات",
+          "colRequired": "مطلوب",
+          "evPhoto": "صورة",
+          "evVideo": "فيديو",
+          "evAttachment": "مرفق",
+          "evComment": "تعليق",
+          "evidTruth": "عند اشتراط الإثبات يجب تهيئة نوع واحد على الأقل. والبند الذي يشترط إثباتاً دون نوع مانعٌ يُسمّى باسمه.",
+          "lifeTitle": "دورة الحياة",
+          "lifeNote": "حالة الطلب والحالة التشغيلية حقيقتان منفصلتان.",
+          "lRequest": "حالة الطلب",
+          "lApproval": "اعتمده",
+          "lOperational": "الحالة التشغيلية",
+          "lVersion": "الإصدار",
+          "lifeTruth": "الطلب مسودة أو معلّق أو مُعاد أو معتمد أو مرفوض. والبند المنشور نشط أو غير نشط. ولا تدمج هذه اللوحة الاثنين في وسم واحد.",
+          "submitRequest": "إرسال طلب تهيئة",
+          "activate": "تفعيل",
+          "deactivate": "تعطيل",
+          "activationTruth": "التفعيل والتعطيل يسريان على التنفيذ المستقبلي فقط. والتفتيشات المُنشأة تحتفظ بإصدار البند الذي أُنشئت عليه.",
+          "respTitle": "نوع الاستجابة وقيمها",
+          "respNote": "نموذج الاستجابة الذي يستخدمه البند أثناء التنفيذ.",
+          "responseTypeLbl": "نوع الاستجابة",
+          "colResponse": "الاستجابة",
+          "colLabelEn": "التسمية (إنجليزي)",
+          "colLabelAr": "التسمية (عربي)",
+          "colEvaluation": "التقييم",
+          "colViolationLink": "ارتباط المخالفة",
+          "noResponses": "لم يُختر نوع استجابة",
+          "respReadOnly": "قيم الاستجابة وتصنيفها (ممتثل/غير ممتثل/محايد) تُدار في إدارة أنواع الاستجابة وهي للقراءة فقط هنا، إذ إن تغييرها لبند واحد يغيّر صامتاً كل بند يشاركه النوع.",
+          "violationOwner": "القيم المصنّفة «غير ممتثل» وحدها يمكن أن تحمل مخالفة. وتُهيّأ المخالفة وجزاؤها ونموذج إجرائها في وحدة المخالفات؛ وتعرض هذه اللوحة الارتباط الناتج ليراه المؤلّف.",
+          "openViolations": "فتح تهيئة المخالفات",
+          "useTitle": "أين يُستخدم هذا البند",
+          "useNote": "الحزم التي تُسند هذا البند والعمل المعتمد عليها.",
+          "colPackage": "الحزمة",
+          "colVersion": "الإصدار",
+          "colObligation": "الإلزام",
+          "colActionCol": "إجراء",
+          "noUsage": "هذا البند غير مسنَد إلى أي إصدار حزمة",
+          "uInFlight": "التفتيشات الجارية",
+          "uFuture": "مستقبلي فقط",
+          "useTruth": "الأعداد من الخادم. والبند المسنَد إلى حزمة منشورة لا يُعطَّل قبل قراءة الأثر، لأن التفتيشات المُنشأة تستمر عليه.",
+          "openForms": "فتح نماذج التفتيش",
+          "reqRegister": "سجل البنود المحكوم",
+          "reqHierarchy": "التسلسل الرقابي",
+          "reqItem": "تعريف البند",
+          "reqType": "نوع البند",
+          "reqSection": "قسم التفتيش",
+          "reqEvidence": "أنواع الإثبات",
+          "reqLifecycle": "دورة الطلب والدورة التشغيلية",
+          "reqResponses": "نموذج الاستجابة",
+          "reqUsage": "الاستخدام في الحزم والأثر"
     };
-    const items = ITEMS.map(it=>({body:itemBody(it)}));
+    const t = AR ? ARA : EN, alt = AR ? EN : ARA;
+    const loading = d === "loading", error = d === "error", unauth = d === "unauthorized";
+    const degraded = d === "degraded", readOnly = d === "readonly";
+    const gate = loading || error || unauth;
+    const frozen = gate || readOnly || degraded;
+    const off = "opacity:.58; pointer-events:none;";
+    const approver = this.props.isApprover === true;
+    const nav = (v) => (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ view: v }); };
+    const extra = {};
+    ["register","item","responses","usage"].forEach((v) => {
+      const k = v.charAt(0).toUpperCase() + v.slice(1);
+      extra["on" + k] = view === v;
+      extra["on" + k + "Cls"] = view === v ? "is-on" : "";
+      extra["on" + k + "Cur"] = view === v ? "page" : "false";
+      extra["go" + k] = nav(v);
+    });
 
-    // Samples / Seizure (gated repeater — captured scaffold; per-item detail EXTRACT)
-    const gate=(val,setKey,label)=>h("div",null, h("div",{style:{fontSize:"13px",color:"var(--text-secondary)",marginBottom:"7px"}},label),
-      h("div",{className:"ie-radios"}, [["yes",t.yes],["no",t.no]].map(([v,l])=>{ const on=val===v;
-        return h("button",{key:v,className:"ie-opt",style:{flex:"0 0 auto"},"aria-pressed":on,onClick:()=>this.setState({[setKey]:v})}, h("span",{className:"ie-ind"},on?ck:null), l); })));
-    const extractRow=h("div",{style:{display:"flex",alignItems:"center",gap:"8px",marginTop:"6px"}},h("span",{className:"extract"},"EXTRACT"),h("span",{className:"t-caption"},t.itemFieldsExtract));
-    const samplesBody=h(React.Fragment,null,
-      h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",gap:"10px",flexWrap:"wrap"}}, h("h4",{style:{margin:0,fontSize:"14.5px"}},t.samplesTitle)),
-      gate(st.samplesGate,"samplesGate",t.samplesGate),
-      st.samplesGate==="yes"?h("div",{style:{border:"1px dashed var(--border-strong)",borderRadius:"8px",padding:"11px 12px",display:"flex",flexDirection:"column",gap:"8px",marginTop:"2px"}},
-        h("strong",{style:{fontSize:"13px"}}, (ar?"عينة (1)":"Sample (1)")),
-        h("button",{className:"up-btn"}, h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.7,style:{width:15,height:15}},h("path",{d:"M12 16V4M8 8l4-4 4 4M4 20h16"})), t.samplePhoto),
-        h("span",{className:"t-caption"},t.samplePhotoHelp),
-        extractRow,
-        h("button",{className:"up-btn",style:{borderStyle:"solid",borderColor:"var(--action-primary)",color:"var(--action-primary)"}}, "+ "+t.addSample)):null);
-    const seizureBody=h(React.Fragment,null,
-      h("h4",{style:{margin:0,fontSize:"14.5px"}},t.seizureTitle),
-      gate(st.seizureGate,"seizureGate",t.seizureGate),
-      st.seizureGate==="yes"?h("div",{style:{border:"1px dashed var(--border-strong)",borderRadius:"8px",padding:"11px 12px",display:"flex",flexDirection:"column",gap:"8px",marginTop:"2px"}},
-        h("strong",{style:{fontSize:"13px"}}, t.productN.replace("{n}","1")),
-        extractRow,
-        h("button",{className:"up-btn",style:{borderStyle:"solid",borderColor:"var(--action-primary)",color:"var(--action-primary)"}}, "+ "+t["addالسeized"])):null,
-      h("div",{className:"t-caption",style:{marginTop:"2px"}}, t.seizureLink+" · "+t.attMax));
-
-    // Grouped submit blockers (computeBlockers)
-    const un=ITEMS.filter(it=>st.ans[it.id].applied && !st.ans[it.id].value);
-    const evb=ITEMS.filter(evMiss);
-    const fmb=ITEMS.filter(afMiss);
-    const anyBlock=un.length||evb.length||fmb.length;
-    const bLine=(label,arr)=> arr.length?h("div",{style:{fontSize:"12.5px"}}, h("span",{className:"ie-k"},label+": "), arr.map((it,i)=>((i?"، ":"")+it.title)).join("")):null;
-    const blockersBody=h(React.Fragment,null,
-      h("div",{style:{display:"flex",alignItems:"center",gap:"8px"}}, h("h4",{style:{margin:0,fontSize:"14.5px"}},t.blockersTitle), anyBlock?chip("badge-critical",String(un.length+evb.length+fmb.length)):chip("badge-compliant","✓")),
-      anyBlock?h("div",{style:{display:"flex",flexDirection:"column",gap:"6px"}}, bLine(t.bUnanswered,un), bLine(t.bEvidence,evb), bLine(t.bForms,fmb)) : h("div",{className:"t-caption",style:{color:"var(--status-compliant-text)"}}, t.noBlockers));
-
-    return {
-      theme:st.theme, isLight:st.theme==="light", isDark:st.theme==="dark",
-      toggleTheme:()=>this.setState(s=>({theme:s.theme==="dark"?"light":"dark"})),
-      lang:st.lang, dir:ar?"rtl":"ltr", toggleLang:()=>this.setState(s=>({lang:s.lang==="ar"?"en":"ar"})), t,
-      strip, items, samplesBody, seizureBody, blockersBody,
-      blockerBorder: anyBlock?"color-mix(in srgb,var(--status-critical) 30%,transparent)":"var(--border-subtle)",
-      submitBadge: anyBlock?t.submitBlocked:t.submitReady, submitBadgeClass: anyBlock?"badge-critical":"badge-completed",
-      submitDisabled: anyBlock?"true":"false", submitStyle: anyBlock?"opacity:.5; pointer-events:none;":"",
-    };
+    return Object.assign({
+      theme: this.state.theme || this.props.themeMode,
+      t, alt, dir: AR ? "rtl" : "ltr", lang: AR ? "ar" : "en",
+      altLang: AR ? "en" : "ar", altDir: AR ? "ltr" : "rtl",
+      slotNC: AR ? "غير مُهيّأ" : "Not configured",
+      slotNR: loading ? (AR ? "جارٍ التحميل…" : "Loading…") : (AR ? "لا سجلات نشطة" : "No active records"),
+      isLoading: loading, isError: error, isUnauth: unauth, isDegraded: degraded, isReadOnly: readOnly, showWork: !gate,
+      liveStatus: loading ? t.loadingTitle : unauth ? t.unauthTitle : error ? t.errorTitle
+        : degraded ? t.degTitle : readOnly ? t.roTitle : t.notRun,
+      modeLabel: readOnly ? (AR ? "للقراءة فقط" : "Read-only") : approver ? (AR ? "معتمد · مراجعة" : "Checker · review") : (AR ? "مُنشئ · مسودة" : "Maker · draft"),
+      selDisabled: frozen ? "disabled" : "",
+      actDisabled: frozen ? "true" : "false", actStyle: frozen ? off : "",
+      rowDisabled: frozen ? "true" : "false", rowStyle: frozen ? off : "",
+      approveDisabled: approver && !frozen ? "false" : "true", approveStyle: approver && !frozen ? "" : off,
+    }, extra);
   }
 }
 </script>

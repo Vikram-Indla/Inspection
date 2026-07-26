@@ -5,6 +5,45 @@
 The board's law: *a card is 100% on Design only when the shipped route matches
 its `.dc.html` pixel-to-pixel at every declared width, in EN/LTR and AR/RTL.*
 
+### 0. Admin design-quality gate
+
+Run this before proposing or applying an admin design change. It is additive to
+the parity procedure below; it does not replace Claude Design authority.
+
+1. Open a neighboring ChatGPT/Codex review session with repository access.
+2. Give it the relevant route and shared-shell files, requirement/acceptance
+   rows, current `.dc.html`, runtime screenshots, and known defects.
+3. Require at least 20 concrete design recommendations grounded in that
+   repository evidence.
+4. Score every candidate on:
+   - user impact;
+   - permission and data-safety preservation;
+   - regression risk;
+   - accessibility and EN/AR RTL quality;
+   - implementation feasibility.
+5. Select the highest-rated 10. Record the score and why each survived.
+6. Apply a no-functionality-loss qualification to every selected item. Reject
+   any recommendation that removes or weakens an authorized destination, deep
+   link, route guard, RBAC/RLS policy, workflow transition, immutable version,
+   audit/data-truth behavior, responsive state, accessibility behavior, or
+   EN/AR RTL outcome.
+7. Send Claude Design only the ranked top-10 design brief, page-specific
+   constraints, and measurable acceptance criteria. Do **not** paste workflow
+   instructions such as "ask ChatGPT first" into Claude Design; those belong in
+   the builder packet and session handoff.
+8. Have Claude Design resolve the design, then verify all 10 against the
+   rendered result before re-vendoring or implementing.
+
+Required evidence:
+
+- ChatGPT/Codex review task or conversation id;
+- the 20+ candidate list;
+- the scored top 10;
+- the concise brief sent to Claude Design;
+- Claude Design project/file revision;
+- a pass/fail table for the 10 items;
+- the no-functionality-loss regression results.
+
 ### 1. Get the authoritative design
 
 ```

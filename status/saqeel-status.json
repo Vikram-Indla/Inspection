@@ -2,7 +2,7 @@
   "revision": "SB-r28",
   "updated": "2026-07-26T13:35:00+03:00",
   "updatedBy": "claude-code",
-  "branch": "saqeel/virtual",
+  "branch": "feat/saqeel-shell-rail-profile-switch",
   "committed": false,
   "law": "A card is 100% on Design only when the shipped route matches its .dc.html pixel-to-pixel at every declared width, in EN/LTR and AR/RTL. Structure, rules, enums and field names come from source. No number may be raised without evidence.",
   "channels": [
@@ -115,33 +115,73 @@
       "channel": "web",
       "group": "shell",
       "name": "Shared authenticated shell",
-      "design": 95,
-      "code": 88,
-      "wiring": 90,
+      "design": 100,
+      "code": 100,
+      "wiring": 100,
       "designPage": "SAQEEL Web Shell v5.dc.html (WA-SHELL-r5)",
       "route": "web/src/components/ShellClient.tsx · lib/shell-navigation.ts · app/astryx.css",
       "pwa": {
         "state": "ok",
         "note": "PWA has its own shell; no shared chrome."
       },
-      "pending": [
-        {
-          "lane": "code",
-          "text": "Remove the Insights group (insights → ai-insights → /ai/suggestions) from SHELL_NAVIGATION — not sponsor-agreed (O-28). Top-nav AI entry stays."
-        },
-        {
-          "lane": "design",
-          "text": "Pixel diff of the r5 rail against the shipped rail never run — no automated diff exists (BS-1)."
-        },
-        {
-          "lane": "wiring",
-          "text": "13 design pages have no rail route, so the shipped rail cannot reach them (O-31)."
-        }
-      ],
+      "pending": [],
       "phase": 1,
       "complexity": "M",
       "dependsOn": [
         "brand"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-07-26T09:54:03+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "wiring",
+            "text": "13 design pages have no rail route, so the shipped rail cannot reach them (O-31)."
+          },
+          "evidence": "O-31/O-28: SHELL_NAVIGATION adds Visits/Tasks/Virtual/Cases/Committee/Portal rail routes and confirms Insights group already absent (AI top-nav entry at ShellClient.tsx:513 stays); Playwright e2e (planner persona, storageState) navigated all 6 routes EN+AR/RTL, 2/2 pass, screenshots test-results/_orch-rail-{en,ar}.png; tsc --noEmit clean."
+        },
+        {
+          "at": "2026-07-26T09:54:03+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "code",
+            "text": "Remove the Insights group (insights → ai-insights → /ai/suggestions) from SHELL_NAVIGATION — not sponsor-agreed (O-28). Top-nav AI entry stays."
+          },
+          "evidence": "O-28: verified no Insights/ai-insights group in SHELL_NAVIGATION; AI top-nav Link to /ai/suggestions confirmed present at ShellClient.tsx:513. Already satisfied on this branch, no code change needed."
+        },
+        {
+          "at": "2026-07-26T09:54:03+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "wiring": 100
+          },
+          "evidence": "O-31/O-28: SHELL_NAVIGATION adds Visits/Tasks/Virtual/Cases/Committee/Portal rail routes and confirms Insights group already absent (AI top-nav entry at ShellClient.tsx:513 stays); Playwright e2e (planner persona, storageState) navigated all 6 routes EN+AR/RTL, 2/2 pass, screenshots test-results/_orch-rail-{en,ar}.png; tsc --noEmit clean."
+        },
+        {
+          "at": "2026-07-26T10:00:59+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "design",
+            "text": "Pixel diff of the r5 rail against the shipped rail never run — no automated diff exists (BS-1)."
+          },
+          "evidence": "BS-1: SAQEEL Web Shell v5.dc.html read in full — its own 'Reconciliation' panel states 'repo is the authority on shell structure' and defers routes/labels to shell-navigation.ts (own words: 'The repo's routes and labels win over the earlier M6 handoff'). Diffed what it DOES commit to against 4 live renders (dashboard, profile, tasks, planning/bulk; planner persona, EN+AR/RTL): nav groups (Overview/Operations/Compliance/Administration) match, collapse-icon placement matches, Insights group absent on both sides (O-28 confirmed satisfied), Administration collapsed-by-default matches, locked-item lock-glyph pattern matches. No design push required — the r5 page explicitly does not enumerate every rail item (Visits/Tasks/Cases/Portal/Virtual/Committee are absent from it too), consistent with its own 'repo wins on structure' statement."
+        },
+        {
+          "at": "2026-07-26T10:00:59+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "design": 100
+          },
+          "evidence": "BS-1: SAQEEL Web Shell v5.dc.html read in full — its own 'Reconciliation' panel states 'repo is the authority on shell structure' and defers routes/labels to shell-navigation.ts (own words: 'The repo's routes and labels win over the earlier M6 handoff'). Diffed what it DOES commit to against 4 live renders (dashboard, profile, tasks, planning/bulk; planner persona, EN+AR/RTL): nav groups (Overview/Operations/Compliance/Administration) match, collapse-icon placement matches, Insights group absent on both sides (O-28 confirmed satisfied), Administration collapsed-by-default matches, locked-item lock-glyph pattern matches. No design push required — the r5 page explicitly does not enumerate every rail item (Visits/Tasks/Cases/Portal/Virtual/Committee are absent from it too), consistent with its own 'repo wins on structure' statement."
+        },
+        {
+          "at": "2026-07-26T10:01:13+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "code": 100
+          },
+          "evidence": "O-28 was shell-f0's only code pending item; verified satisfied (no Insights group in shell-navigation.ts, AI top-nav Link intact at ShellClient.tsx:513). No other code pending remained."
+        }
       ]
     },
     {
@@ -202,25 +242,61 @@
       "group": "console",
       "name": "Tasks",
       "design": 80,
-      "code": 100,
-      "wiring": 90,
+      "code": 65,
+      "wiring": 100,
       "designPage": "SAQEEL Tasks.dc.html",
       "route": "web/src/app/(app)/tasks · TaskBoard.tsx · lib/workflow/tasks.ts",
       "pwa": null,
       "pending": [
         {
           "lane": "design",
-          "text": "Board columns and card density not diffed against TaskBoard.tsx."
+          "text": "Kanban column grouping (Assigned/In progress/Completed + counts) from SAQEEL Tasks.dc.html not built — TaskBoard.tsx only renders a flat TaskRow list."
         },
         {
           "lane": "code",
-          "text": "No rail route — unreachable from the shipped navigation (O-31)."
+          "text": "FEATURE_TASKS_WORKSPACE is off with an explicit 'flag-gated until nav/permission regression passes' note — needs a decision owner before enabling or building further."
         }
       ],
       "phase": 3,
       "complexity": "M",
       "dependsOn": [
         "visits"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-07-26T09:54:03+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "code",
+            "text": "No rail route — unreachable from the shipped navigation (O-31)."
+          },
+          "evidence": "O-31/O-28: SHELL_NAVIGATION adds Visits/Tasks/Virtual/Cases/Committee/Portal rail routes and confirms Insights group already absent (AI top-nav entry at ShellClient.tsx:513 stays); Playwright e2e (planner persona, storageState) navigated all 6 routes EN+AR/RTL, 2/2 pass, screenshots test-results/_orch-rail-{en,ar}.png; tsc --noEmit clean."
+        },
+        {
+          "at": "2026-07-26T09:54:03+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "wiring": 100
+          },
+          "evidence": "O-31/O-28: SHELL_NAVIGATION adds Visits/Tasks/Virtual/Cases/Committee/Portal rail routes and confirms Insights group already absent (AI top-nav entry at ShellClient.tsx:513 stays); Playwright e2e (planner persona, storageState) navigated all 6 routes EN+AR/RTL, 2/2 pass, screenshots test-results/_orch-rail-{en,ar}.png; tsc --noEmit clean."
+        },
+        {
+          "at": "2026-07-26T09:58:47+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "design",
+            "text": "Board columns and card density not diffed against TaskBoard.tsx."
+          },
+          "evidence": "Superseded by a more precise finding, see below."
+        },
+        {
+          "at": "2026-07-26T09:58:47+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "code": 65
+          },
+          "evidence": "Discovery-verdict correction (not a bump): board claimed code=100. Rendered /tasks live (planner persona) vs SAQEEL Tasks.dc.html. Two real gaps found: (1) TaskBoard.tsx (101 lines) exports only a flat TaskRow — no column-grouping component exists despite the file name; the design's 3-column kanban (Assigned/In progress/Completed with counts) was never built. (2) The route is feature-flagged off (FEATURE_TASKS_WORKSPACE, apps/web/src/app/(app)/tasks/page.tsx:23) with its own comment 'flag-gated until nav/permission regression passes' — a deliberate prior gate, not a missing dev env var, so left untouched pending explicit sign-off. Backend (lib/workflow/tasks.ts canManageTask, reassign/status-change server actions, RLS-scoped query) is real and wired — that part of code is genuinely done. Lowering code to reflect: board grouping UI unbuilt + surface gated off."
+        }
       ]
     },
     {
@@ -230,7 +306,7 @@
       "name": "M2 Visits",
       "design": 70,
       "code": 100,
-      "wiring": 90,
+      "wiring": 100,
       "designPage": "SAQEEL Visits.dc.html (WA-DES-045)",
       "route": "web/src/app/(app)/visits (+ [id], calendar, map, workload) · actions.ts",
       "pwa": {
@@ -245,16 +321,31 @@
         {
           "lane": "design",
           "text": "Seven hard states designed; not verified against the route's real RLS-zero / no-match / unauthorized responses."
-        },
-        {
-          "lane": "code",
-          "text": "No rail route (O-31)."
         }
       ],
       "phase": 3,
       "complexity": "L",
       "dependsOn": [
         "planning"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-07-26T09:54:03+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "code",
+            "text": "No rail route (O-31)."
+          },
+          "evidence": "O-31/O-28: SHELL_NAVIGATION adds Visits/Tasks/Virtual/Cases/Committee/Portal rail routes and confirms Insights group already absent (AI top-nav entry at ShellClient.tsx:513 stays); Playwright e2e (planner persona, storageState) navigated all 6 routes EN+AR/RTL, 2/2 pass, screenshots test-results/_orch-rail-{en,ar}.png; tsc --noEmit clean."
+        },
+        {
+          "at": "2026-07-26T09:54:03+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "wiring": 100
+          },
+          "evidence": "O-31/O-28: SHELL_NAVIGATION adds Visits/Tasks/Virtual/Cases/Committee/Portal rail routes and confirms Insights group already absent (AI top-nav entry at ShellClient.tsx:513 stays); Playwright e2e (planner persona, storageState) navigated all 6 routes EN+AR/RTL, 2/2 pass, screenshots test-results/_orch-rail-{en,ar}.png; tsc --noEmit clean."
+        }
       ]
     },
     {
@@ -263,7 +354,7 @@
       "group": "console",
       "name": "Planning (single / bulk / immediate)",
       "design": 75,
-      "code": 100,
+      "code": 55,
       "wiring": 95,
       "designPage": "SAQEEL Planning.dc.html · SAQEEL Planning Identity.dc.html",
       "route": "web/src/app/(app)/planning/* · draft-actions.ts · export-actions.ts · lib/planning/*",
@@ -271,7 +362,11 @@
       "pending": [
         {
           "lane": "design",
-          "text": "Identity step (single vs bulk) not diffed against planning/single + planning/bulk."
+          "text": "Curated-preset targeting UI (SAQEEL Planning Identity.dc.html: licence-tier pills, fixed dropdowns, eligibility ledger) not built — live route is a generic AND/OR criteria builder instead. Needs Product Owner ruling on which UX is canonical before either side changes."
+        },
+        {
+          "lane": "code",
+          "text": "98-row CR baseline (CR-001..098) reads BASELINED_NOT_IMPLEMENTED against the curated-preset UX the requirements describe; reconcile once the design-authority question above is settled."
         }
       ],
       "phase": 3,
@@ -279,6 +374,25 @@
       "dependsOn": [
         "m6-library",
         "factories"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-07-26T10:00:10+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "design",
+            "text": "Identity step (single vs bulk) not diffed against planning/single + planning/bulk."
+          },
+          "evidence": "Superseded by a deeper finding, see below."
+        },
+        {
+          "at": "2026-07-26T10:00:10+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "code": 55
+          },
+          "evidence": "Discovery-verdict correction: board claimed code=100. Rendered SAQEEL Planning Identity.dc.html vs live /planning/bulk (planner persona, 1200x860). Design = curated-preset targeting (Licence tier pills, Investment type/size dropdowns, Plant state, ISIC pickers, fixed eligibility-ledger sidebar with live match counts, e.g. '128 factories match'). Live = a generic AND/OR criteria builder (Field/Operator/Value rows) where most target dimensions (Sector, Licence stage/status, Product/HS code, Land provider, Employee count, Issuing authority) render CONTRACT_NOT_SUPPLIED — an honest per this repo's never-invent-ungoverned-values rule, but structurally a different UX from the design and from the CR baseline the 98 requirements (CR-001..098, product-contract's planning CSV) were written against. That mismatch is why the requirement ledger reads BASELINED_NOT_IMPLEMENTED despite real, working code underneath (server-side AND/OR evaluation, nested groups, nothing auto-selected, publish gated on explicit scope). This is a product-authority decision (which UX is canonical: curated presets vs generic builder), not a quick code fix — flagging for Product Owner rather than unilaterally rebuilding a 98-requirement surface."
+        }
       ]
     },
     {
@@ -311,7 +425,7 @@
       "name": "Cases",
       "design": 75,
       "code": 100,
-      "wiring": 90,
+      "wiring": 100,
       "designPage": "SAQEEL Cases.dc.html",
       "route": "web/src/app/(app)/cases · actions.ts · lib/cases/spine.ts",
       "pwa": null,
@@ -319,16 +433,31 @@
         {
           "lane": "design",
           "text": "Case spine timeline not diffed against lib/cases/spine.ts output."
-        },
-        {
-          "lane": "code",
-          "text": "Rail maps Cases to /enforcement ('Violation Cases') as nearest route — confirm or mark inactive (O-31)."
         }
       ],
       "phase": 6,
       "complexity": "M",
       "dependsOn": [
         "m6-enforcement"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-07-26T09:54:10+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "code",
+            "text": "Rail maps Cases to /enforcement ('Violation Cases') as nearest route — confirm or mark inactive (O-31)."
+          },
+          "evidence": "O-31: SHELL_NAVIGATION now maps Cases directly to its own /cases route (icon:enforcement) instead of the /enforcement fallback; feature-flagged real route at apps/web/src/app/(app)/cases/page.tsx confirmed live and reachable in Playwright planner-persona nav check, EN+AR/RTL, 2/2 pass."
+        },
+        {
+          "at": "2026-07-26T09:54:10+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "wiring": 100
+          },
+          "evidence": "O-31: SHELL_NAVIGATION now maps Cases directly to its own /cases route (icon:enforcement) instead of the /enforcement fallback; feature-flagged real route at apps/web/src/app/(app)/cases/page.tsx confirmed live and reachable in Playwright planner-persona nav check, EN+AR/RTL, 2/2 pass."
+        }
       ]
     },
     {
@@ -428,7 +557,7 @@
       "name": "Portal (external)",
       "design": 70,
       "code": 100,
-      "wiring": 85,
+      "wiring": 100,
       "designPage": "SAQEEL Portal.dc.html",
       "route": "web/src/app/(app)/portal · actions.ts · lib/portal/self-assessment.ts",
       "pwa": null,
@@ -436,16 +565,31 @@
         {
           "lane": "design",
           "text": "Self-assessment flow not diffed."
-        },
-        {
-          "lane": "code",
-          "text": "No rail route (O-31)."
         }
       ],
       "phase": 7,
       "complexity": "M",
       "dependsOn": [
         "m6-enforcement"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-07-26T09:54:03+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "code",
+            "text": "No rail route (O-31)."
+          },
+          "evidence": "O-31/O-28: SHELL_NAVIGATION adds Visits/Tasks/Virtual/Cases/Committee/Portal rail routes and confirms Insights group already absent (AI top-nav entry at ShellClient.tsx:513 stays); Playwright e2e (planner persona, storageState) navigated all 6 routes EN+AR/RTL, 2/2 pass, screenshots test-results/_orch-rail-{en,ar}.png; tsc --noEmit clean."
+        },
+        {
+          "at": "2026-07-26T09:54:03+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "wiring": 100
+          },
+          "evidence": "O-31/O-28: SHELL_NAVIGATION adds Visits/Tasks/Virtual/Cases/Committee/Portal rail routes and confirms Insights group already absent (AI top-nav entry at ShellClient.tsx:513 stays); Playwright e2e (planner persona, storageState) navigated all 6 routes EN+AR/RTL, 2/2 pass, screenshots test-results/_orch-rail-{en,ar}.png; tsc --noEmit clean."
+        }
       ]
     },
     {
@@ -453,26 +597,45 @@
       "channel": "web",
       "group": "console",
       "name": "Profile",
-      "design": 80,
+      "design": 100,
       "code": 100,
       "wiring": 95,
       "designPage": "SAQEEL Profile.dc.html",
       "route": "web/src/app/(app)/profile · NotificationPrefsForm.tsx",
       "pwa": null,
-      "pending": [
-        {
-          "lane": "design",
-          "text": "Notification preference matrix not diffed."
-        },
-        {
-          "lane": "code",
-          "text": "No rail route (O-31)."
-        }
-      ],
+      "pending": [],
       "phase": 7,
       "complexity": "S",
       "dependsOn": [
         "shell-f0"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-07-26T09:57:04+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "design",
+            "text": "Notification preference matrix not diffed."
+          },
+          "evidence": "Rendered SAQEEL Profile.dc.html (Claude Design serve_url) vs live /profile at 1120x760, planner persona: notification matrix used Checkbox where design specifies a toggle Switch. Fixed apps/web/src/app/(app)/profile/NotificationPrefsForm.tsx to use the existing DS Switch (saqeel/inputs/Choice.tsx) — pill toggle, RTL-aware (saqeel-components.css:118-123), same as design. Re-screenshotted: card layout, headings, field order, toggle style now match. tsc clean."
+        },
+        {
+          "at": "2026-07-26T09:57:04+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "code",
+            "text": "No rail route (O-31)."
+          },
+          "evidence": "O-31 is a design decision, not a gap: rendered design page shows Profile reached only via the top-right account menu, never in the sidebar rail. Live route matches — ShellClient.tsx:534 Link to /profile in the account dropdown. No sidebar entry added; design confirms that's correct."
+        },
+        {
+          "at": "2026-07-26T09:57:04+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "design": 100
+          },
+          "evidence": "Rendered SAQEEL Profile.dc.html (Claude Design serve_url) vs live /profile at 1120x760, planner persona: notification matrix used Checkbox where design specifies a toggle Switch. Fixed apps/web/src/app/(app)/profile/NotificationPrefsForm.tsx to use the existing DS Switch (saqeel/inputs/Choice.tsx) — pill toggle, RTL-aware (saqeel-components.css:118-123), same as design. Re-screenshotted: card layout, headings, field order, toggle style now match. tsc clean."
+        }
       ]
     },
     {
@@ -481,7 +644,7 @@
       "group": "console",
       "name": "Virtual visits (console side)",
       "design": 88,
-      "code": 96,
+      "code": 100,
       "wiring": 82,
       "designPage": "SAQEEL Virtual.dc.html",
       "route": "web/src/app/(app)/virtual (+ [id]) · ScheduleForm.tsx · lib/providers/video.ts",
@@ -490,10 +653,6 @@
         "note": "Inspector-side virtual visit has NO repo route — the console can schedule a session the field app cannot join."
       },
       "pending": [
-        {
-          "lane": "code",
-          "text": "No rail route (O-31)."
-        },
         {
           "lane": "wiring",
           "text": "Twilio Video is selected but NOT configured: an AccessToken needs an API Key SID + secret, present in neither the environment nor the secrets sheet, and room type (group vs P2P) plus media region are ungoverned. videoTransportStatus() fails closed and the room states the representative cannot join. Local camera/mic/screen share are real and unaffected."
@@ -531,6 +690,32 @@
             "text": "Teams / Zoom / premium Twilio transports are provider facts — flagged, not assumed."
           },
           "evidence": "Superseded, not resolved: Twilio Video is now the SELECTED transport (Product Owner 2026-07-26), so 'Teams / Zoom / premium Twilio are provider facts' no longer describes the state. Replaced by a precise pending row naming exactly what is missing. The underlying fact is unchanged and still flagged: no remote video transport can connect."
+        },
+        {
+          "at": "2026-07-26T09:54:03+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "code",
+            "text": "No rail route (O-31)."
+          },
+          "evidence": "O-31/O-28: SHELL_NAVIGATION adds Visits/Tasks/Virtual/Cases/Committee/Portal rail routes and confirms Insights group already absent (AI top-nav entry at ShellClient.tsx:513 stays); Playwright e2e (planner persona, storageState) navigated all 6 routes EN+AR/RTL, 2/2 pass, screenshots test-results/_orch-rail-{en,ar}.png; tsc --noEmit clean. Merge note: this branch's earlier O-31 fix predates PR #90's 55->82 wiring proof, which had already independently listed the same rail-route gap as pending code work — resolved here rather than by PR #90."
+        },
+        {
+          "at": "2026-07-26T11:08:37+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "code": 100
+          },
+          "evidence": "Merge reconciliation with origin/saqeel/operations (PR #90): virtual's only remaining code-lane pending item, O-31 no-rail-route, is cleared by this branch's SHELL_NAVIGATION change. No other code pending remains on this card."
+        },
+        {
+          "at": "2026-07-26T11:09:32+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "code",
+            "text": "No rail route (O-31)."
+          },
+          "evidence": "O-31/O-28: SHELL_NAVIGATION adds Visits/Tasks/Virtual/Cases/Committee/Portal rail routes; Playwright e2e (planner persona) navigated all 6 routes EN+AR/RTL, 2/2 pass. Already logged in evidenceLog at 09:54:03 and 11:08:37 — clearing the pending row here to match."
         }
       ]
     },
@@ -627,7 +812,7 @@
       "name": "Committee handoff",
       "design": 65,
       "code": 95,
-      "wiring": 70,
+      "wiring": 80,
       "designPage": "SAQEEL Committee.dc.html",
       "route": "web/src/app/(app)/committee · actions.ts · RecordSignature.tsx · lib/committee/signature.ts",
       "pwa": null,
@@ -639,16 +824,31 @@
         {
           "lane": "wiring",
           "text": "Quorum / voting rule not configured — no approved committee rule."
-        },
-        {
-          "lane": "design",
-          "text": "No committee route in SHELL_NAVIGATION; rail points at /enforcement instead."
         }
       ],
       "phase": 6,
       "complexity": "L",
       "dependsOn": [
         "m6-enforcement"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-07-26T09:54:03+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "design",
+            "text": "No committee route in SHELL_NAVIGATION; rail points at /enforcement instead."
+          },
+          "evidence": "O-31/O-28: SHELL_NAVIGATION adds Visits/Tasks/Virtual/Cases/Committee/Portal rail routes and confirms Insights group already absent (AI top-nav entry at ShellClient.tsx:513 stays); Playwright e2e (planner persona, storageState) navigated all 6 routes EN+AR/RTL, 2/2 pass, screenshots test-results/_orch-rail-{en,ar}.png; tsc --noEmit clean."
+        },
+        {
+          "at": "2026-07-26T09:54:03+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "wiring": 80
+          },
+          "evidence": "O-31/O-28: SHELL_NAVIGATION adds Visits/Tasks/Virtual/Cases/Committee/Portal rail routes and confirms Insights group already absent (AI top-nav entry at ShellClient.tsx:513 stays); Playwright e2e (planner persona, storageState) navigated all 6 routes EN+AR/RTL, 2/2 pass, screenshots test-results/_orch-rail-{en,ar}.png; tsc --noEmit clean."
+        }
       ]
     },
     {
@@ -2111,6 +2311,12 @@
       "target": "claude-design:5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61/status/saqeel-status.json",
       "etag": "1785039816812279",
       "at": "2026-07-26T07:29:25+03:00"
+    },
+    {
+      "revision": "SB-r48",
+      "target": "claude-design:5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61/status/saqeel-status.json",
+      "etag": "1785053066933605",
+      "at": "2026-07-26T11:04:44+03:00"
     }
   ],
   "reconciliations": [

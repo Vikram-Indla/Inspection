@@ -31,6 +31,15 @@ export function isFieldOnlyPersona(roleKeys: readonly string[]): boolean {
     && roleKeys.every(role => (FIELD_CHANNEL_ROLE_KEYS as readonly string[]).includes(role));
 }
 
+// ADMIN-SHELL-PERSONA-001 — a control-plane-only account receives only its
+// authorized administration destinations. A concurrent business grant still
+// wins, so multi-role operators retain the business console they are assigned.
+export function isAdminOnlyPersona(roleKeys: readonly string[]): boolean {
+  const roles = new Set(roleKeys);
+  return roleKeys.some(role => (ADMIN_ROLE_KEYS as readonly string[]).includes(role))
+    && !BUSINESS_ROLE_KEYS.some(role => roles.has(role));
+}
+
 export type ShellGlobalSearchResultType =
   | "commercial_registration"
   | "industrial_license"
@@ -125,12 +134,29 @@ export type BuiltShellNavGroup = Omit<ShellNavGroupDefinition, "items"> & {
   items: BuiltShellNavItem[];
 };
 
+export const ADMIN_HUBS = [
+  { id: "admin-control", labelKey: "admin.hub.control", labelEn: "Control Panel", labelAr: "لوحة التحكم", itemIds: ["admin-home"] },
+  { id: "admin-people", labelKey: "admin.hub.people", labelEn: "People & Access", labelAr: "المستخدمون والوصول", itemIds: ["users", "roles", "security-access", "devices"] },
+  { id: "admin-rules", labelKey: "admin.hub.rules", labelEn: "Rules & Content", labelAr: "القواعد والمحتوى", itemIds: ["lookups", "surveys", "inspection-items", "localization"] },
+  { id: "admin-planning", labelKey: "admin.hub.planning", labelEn: "Planning & Execution", labelAr: "التخطيط والتنفيذ", itemIds: ["planning-lookups", "planning-expiry", "planning-status", "workflows", "execution", "notifications"] },
+  { id: "admin-risk", labelKey: "admin.hub.risk", labelEn: "Risk & Intelligence", labelAr: "المخاطر والذكاء", itemIds: ["risk"] },
+  { id: "admin-connections", labelKey: "admin.hub.connections", labelEn: "Connections & Geography", labelAr: "التكاملات والجغرافيا", itemIds: ["integrations", "gis"] },
+  { id: "admin-governance", labelKey: "admin.hub.governance", labelEn: "Governance & Operations", labelAr: "الحوكمة والعمليات", itemIds: ["audit", "platform-operations", "enforcement-recommendations", "bulk-violations", "enforcement-cases"] },
+] as const;
+
+export type AuthorizedAdminHub = {
+  id: (typeof ADMIN_HUBS)[number]["id"];
+  labelKey: string;
+  labelEn: string;
+  labelAr: string;
+  items: BuiltShellNavItem[];
+};
+
 const adminRoles = ADMIN_ROLE_KEYS as readonly string[];
-// Web-portal business roles exclude the field-only Inspector (RBAC-009/010).
-// Inspector reaches Execution through the field channel, not the web nav.
+// Web-portal business roles exclude both the field-only Inspector and the
+// admin-only role family. A business grant, not an admin grant, opens this set.
 const businessRoles = [
   ...BUSINESS_ROLE_KEYS.filter(role => !(FIELD_CHANNEL_ROLE_KEYS as readonly string[]).includes(role)),
-  ...ADMIN_ROLE_KEYS,
 ] as readonly string[];
 const primaryAdmin = (
   item: Omit<ShellNavItemDefinition, "visibility">,
@@ -158,8 +184,14 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     labelAr: "العمليات",
     items: [
       { id: "planning", labelKey: "nav.planning", labelEn: "Planning", labelAr: "التخطيط", href: "/planning", icon: "calendar", roles: businessRoles, businessTab: "Planning", visibility: "business" },
+      { id: "visits", labelKey: "shell.nav.visits", labelEn: "Visits", labelAr: "الزيارات", href: "/visits", icon: "visits", roles: businessRoles, businessTab: "Visits", visibility: "business" },
+      { id: "tasks", labelKey: "shell.nav.tasks", labelEn: "Tasks", labelAr: "المهام", href: "/tasks", icon: "workflow", roles: businessRoles, businessTab: "Tasks", visibility: "business" },
       { id: "inspection-execution", labelKey: "shell.nav.execution", labelEn: "Execution", labelAr: "التنفيذ", href: "/field", icon: "inspect", roles: businessRoles, businessTab: "Inspection / Execution", visibility: "business", channels: ["web", "field"], parentId: "inspection", parentLabelKey: "shell.nav.inspection", parentLabelEn: "Inspection", parentLabelAr: "التفتيش" },
       { id: "inspection-review", labelKey: "nav.reviews", labelEn: "Review & Approval", labelAr: "المراجعة والاعتماد", href: "/reviews", icon: "review", roles: businessRoles, businessTab: "Inspection / Review & Approval", visibility: "business", parentId: "inspection", parentLabelKey: "shell.nav.inspection", parentLabelEn: "Inspection", parentLabelAr: "التفتيش" },
+      { id: "virtual-visits", labelKey: "shell.nav.virtual", labelEn: "Virtual Inspections", labelAr: "التفتيش الافتراضي", href: "/virtual", icon: "virtual", roles: businessRoles, businessTab: "Virtual", visibility: "business" },
+      { id: "cases", labelKey: "shell.nav.cases", labelEn: "Cases", labelAr: "القضايا", href: "/cases", icon: "enforcement", roles: businessRoles, businessTab: "Cases", visibility: "business" },
+      { id: "committee", labelKey: "shell.nav.committee", labelEn: "Committee & Signatures", labelAr: "اللجنة والتوقيعات", href: "/committee", icon: "review", roles: businessRoles, businessTab: "Committee", visibility: "business" },
+      { id: "external-portal", labelKey: "shell.nav.portal", labelEn: "External Portal", labelAr: "البوابة الخارجية", href: "/portal", icon: "factory", roles: businessRoles, businessTab: "Portal", visibility: "business" },
     ],
   },
   {
@@ -210,6 +242,28 @@ export function isAdminPersona(roleKeys: readonly string[]) {
   return roleKeys.some(role => adminRoles.includes(role));
 }
 
+/**
+ * Authorization-aware hub registry used by admin discovery surfaces.
+ * Unauthorized destinations are removed before the UI receives them.
+ */
+export function buildAuthorizedAdminDiscovery(roleKeys: readonly string[]): AuthorizedAdminHub[] {
+  const roles = new Set(roleKeys);
+  const administration = SHELL_NAVIGATION.find(group => group.id === "administration");
+  if (!administration) return [];
+
+  const authorizedItems = administration.items.flatMap(item =>
+    item.roles.some(role => roles.has(role)) ? [{ ...item, enabled: true }] : [],
+  );
+
+  return ADMIN_HUBS.flatMap(hub => {
+    const items = hub.itemIds.flatMap(id => {
+      const item = authorizedItems.find(candidate => candidate.id === id);
+      return item ? [item] : [];
+    });
+    return items.length ? [{ ...hub, items }] : [];
+  });
+}
+
 // `narrowToFieldChannel` (default true) is the TASK-WEB-CHANNEL-ACCESS-GATE-001
 // gate: in the WEB chrome a field-only Inspector is shown the field channel
 // only. The FIELD channel's own side panel opts out — the Product Owner ruled on
@@ -226,23 +280,30 @@ export function buildShellNavigation(
   // Field-only personas get the field channel only: no web-portal destinations,
   // no admin group (not even a locked one). Web/admin personas are unaffected.
   const fieldOnly = (options?.narrowToFieldChannel ?? true) && isFieldOnlyPersona(roleKeys);
-  return SHELL_NAVIGATION.map(group => ({
+  const adminOnly = isAdminOnlyPersona(roleKeys);
+  const projected = SHELL_NAVIGATION.map(group => ({
     ...group,
     items: group.items.flatMap(item => {
       if (fieldOnly && !(item.channels ?? ["web"]).includes("field")) return [];
+      if (adminOnly && item.visibility === "business") return [];
       const allowed = item.roles.some(role => roles.has(role));
-      if (item.visibility === "admin-advanced" && !allowed) return [];
+      // Navigation is a least-privilege projection, not a catalogue. A
+      // destination the persona cannot use must not be disclosed as a locked
+      // or disabled option. Route guards and RLS remain the enforcement layer.
+      if (!allowed) return [];
       return [{
         ...item,
-        enabled: item.visibility === "business" || allowed,
-        ...(item.visibility === "admin-primary" && !allowed ? {
-          disabledReasonKey: "shell.adminRequired",
-          disabledReasonEn: "Administrator access required.",
-          disabledReasonAr: "يتطلب الوصول صلاحية المسؤول.",
-        } : {}),
+        enabled: true,
       }];
     }),
   })).filter(group => group.items.length > 0);
+
+  // Admin navigation is hub-first. Authorization still happens above, before
+  // hub construction, so empty hubs and unauthorized child destinations never
+  // reach the DOM. Existing hrefs remain unchanged for deep-link compatibility.
+  return projected.flatMap(group =>
+    group.id === "administration" ? buildAuthorizedAdminDiscovery(roleKeys) : [group]
+  );
 }
 
 export function isShellRouteCurrent(current: string, href: string) {
