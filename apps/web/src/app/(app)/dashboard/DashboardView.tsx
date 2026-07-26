@@ -312,14 +312,69 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
   const violation = findMetric(projection, "STR-KPI-003");
 
   return <div id="dashboard-strategic" role="tabpanel" aria-labelledby="dashboard-tab-strategic" className={styles.view}>
-    <div className={styles.statusRail}>
-      <span className="exc-chip exc-pending"><span className="exc-mark" />{copy(locale, "Risk and compliance thresholds: not configured", "عتبات المخاطر والامتثال: غير مهيأة")}</span>
-      <span className="exc-chip exc-info"><span className="exc-mark" />{copy(locale, `${strategic.scopedViolations.length} linked violations`, `${strategic.scopedViolations.length} مخالفة مرتبطة`)}</span>
-      <span className="exc-chip exc-pending"><span className="exc-mark" />{copy(locale, "Coverage and repeat rules: policy blocked", "قواعد التغطية والتكرار: محجوبة بالسياسة")}</span>
-    </div>
+    {/* National assurance — the strongest available fact leads the surface.
+        SAQEEL Executive Overview: the denominator is eligible ANSWERS, never
+        factories, so it is stated beside the rate and never implied to be
+        coverage. */}
+    <section className={styles.assurance} aria-labelledby="ex-assurance-h">
+      <h2 id="ex-assurance-h" className={styles.panelTitle}>
+        {copy(locale, "National approved position", "الوضع الوطني المعتمد")}
+      </h2>
+      <div className={styles.assuranceGrid}>
+        <div className={styles.assuranceLead}>
+          <span className={styles.kpiLabel}>
+            {copy(locale, "Compliance in approved inspections", "الالتزام في عمليات التفتيش المعتمدة")}
+          </span>
+          <strong className={styles.assuranceValue}>
+            {strategic.complianceRate == null
+              ? copy(locale, "Not available", "غير متاح")
+              : `${strategic.complianceRate}%`}
+          </strong>
+          <span className={styles.assuranceDen}>
+            {copy(
+              locale,
+              `${strategic.approvedCompliant} compliant of ${strategic.approvedAnsweredForCompliance} eligible answers`,
+              `${strategic.approvedCompliant} إجابة مطابقة من ${strategic.approvedAnsweredForCompliance} إجابة مؤهلة`,
+            )}
+          </span>
+          <span className={styles.assuranceNote}>
+            {copy(
+              locale,
+              "The denominator is eligible answers, not factories. This is not a share of compliant factories.",
+              "المقام هو الإجابات المؤهلة، وليس عدد المصانع. لا يُقرأ هذا الرقم كنسبة المصانع الملتزمة.",
+            )}
+          </span>
+        </div>
+        <div className={styles.assuranceFact}>
+          <span className={styles.kpiLabel}>{copy(locale, "Linked violations recorded", "مخالفات مرتبطة مسجّلة")}</span>
+          <strong className={styles.assuranceFactValue}>{strategic.scopedViolations.length}</strong>
+          <a className={styles.linkAction} href="/enforcement">{copy(locale, "Open records", "عرض السجلات")}</a>
+        </div>
+        <div className={styles.assuranceFact}>
+          <span className={styles.kpiLabel}>{copy(locale, "Approved of submitted", "قرارات معتمدة مقابل مُرسلة")}</span>
+          <strong className={styles.assuranceFactValue}>
+            {strategic.approvedScoped}<span className={styles.assuranceOf}> / {strategic.completedInspections}</span>
+          </strong>
+          <a className={styles.linkAction} href="/reviews">{copy(locale, "Review queue", "طابور المراجعة")}</a>
+        </div>
+      </div>
+      {/* Governed absence consolidated into one register — repeated warning
+          pills made disciplined absence read as a broken product. */}
+      <div className={styles.governanceNote}>
+        <span className="badge badge-neutral">
+          {copy(locale, "Measures awaiting governance", "قياسات بانتظار الحوكمة")}
+        </span>
+        <span>
+          {copy(
+            locale,
+            "Risk and compliance thresholds, and coverage and repeat rules, are not configured. No substitute is used.",
+            "عتبات المخاطر والامتثال وقواعد التغطية والتكرار غير مهيأة. ولم يُستخدم أي بديل.",
+          )}
+        </span>
+      </div>
+    </section>
 
     <MetricStrip metrics={strip.metrics} methodology={strip.methodology} strings={stripStrings(locale)} />
-    <DecisionCanvas markers={markers} layers={layers} ranking={ranking} strings={canvasStrings} />
 
     <div className={styles.analyticGrid}>
       <Panel title={copy(locale, "Compliance performance explorer", "مستكشف أداء الامتثال")} meta={copy(locale, "approved inspections only", "التفتيشات المعتمدة فقط")}>
@@ -356,6 +411,11 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
         </div>
       </Panel>
     </div>
+
+    {/* Geographic evidence sits below the assurance read: a point map proves
+        location, it cannot carry a regional position without a classification
+        policy that is not supplied. */}
+    <DecisionCanvas markers={markers} layers={layers} ranking={ranking} strings={canvasStrings} />
 
     <Panel title={copy(locale, "Strategic requirement coverage", "تغطية المتطلبات الاستراتيجية")} meta="STR-KPI-001..012">
       <MetricCoverage projection={projection} category="strategic" locale={locale} excluded={representedIds} partialSources={partialSources} />
