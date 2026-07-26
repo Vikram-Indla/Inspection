@@ -7,10 +7,14 @@ import { useEffect, useRef, useState } from "react";
 import Modal from "@/components/Modal";
 import styles from "./factory-verification.module.css";
 
+// The attendance block is optional. The inspection acknowledgement records
+// whether the representative was present, absent or objected; a feedback
+// rating is only ever signed by a representative who is already there, so that
+// surface supplies no attendance copy and the control is not rendered.
 export type SignaturePadStrings = {
   title: string; hint: string;
-  attendance: string; present: string; absent: string; objected: string;
-  reasonLabel: string; unsupported: string;
+  attendance?: string; present?: string; absent?: string; objected?: string;
+  reasonLabel?: string; unsupported?: string;
   nameLabel: string; namePlaceholder: string;
   clear: string; cancel: string; confirm: string;
   required: string;
@@ -85,7 +89,10 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
     if (!c || !hasInk || !name.trim()) { setErr(strings.required); return; }
     onConfirm({ signature_data_url: c.toDataURL("image/png"), name: name.trim(), signed_at: new Date().toISOString() });
   }
-  const present = attendance === "present";
+  // Without attendance copy there is no attendance question, so the signer is
+  // present by definition and the capture path is the only path.
+  const asksAttendance = strings.attendance !== undefined;
+  const present = !asksAttendance || attendance === "present";
 
   return (
     <Modal
@@ -100,7 +107,7 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
       </>}
     >
       <div className={styles.signatureBlock}>
-        <fieldset className={styles.attendanceGroup}>
+        {asksAttendance && <fieldset className={styles.attendanceGroup}>
           <legend className={styles.fieldLabel}>{strings.attendance}</legend>
           <div className={styles.attendanceOptions}>
             {([
@@ -120,7 +127,7 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
               </button>
             ))}
           </div>
-        </fieldset>
+        </fieldset>}
         <p className="t-caption">{strings.hint}</p>
         {present ? <>
           <label className={styles.signatureField}>
