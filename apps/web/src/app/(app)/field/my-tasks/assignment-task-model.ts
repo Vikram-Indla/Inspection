@@ -23,6 +23,8 @@ export type AssignmentTask = {
 
 export type AssignmentFilter = "all" | "today" | "active" | "upcoming" | "alerts" | "returned" | "expired";
 export type AssignmentSort = "asc" | "desc";
+export type VisitSegment = "today" | "upcoming" | "completed";
+export type VisitPriority = "high" | "medium" | "low";
 
 const ACTIVE_OPERATIONAL_STATES = new Set(["prepared", "on_the_way", "arrived", "executing"]);
 
@@ -94,4 +96,29 @@ export function connectivityPresentation(
   return online
     ? { tone: "online", message: labels.online, refreshAvailable: true }
     : { tone: "offline", message: labels.offline, refreshAvailable: false };
+}
+
+const TERMINAL_OPERATIONAL_STATES = new Set(["submitted"]);
+const TERMINAL_INSPECTION_STATES = new Set(["submitted", "approved", "rejected"]);
+
+/** CR-100/101 shared, additive projection for the inspector visit surfaces. */
+export function visitSegment(
+  task: Pick<AssignmentTask, "windowStart" | "operationalState" | "inspectionStatus">,
+  now: string | number | Date,
+): VisitSegment {
+  if (TERMINAL_OPERATIONAL_STATES.has(task.operationalState)
+      || TERMINAL_INSPECTION_STATES.has(task.inspectionStatus ?? "")) return "completed";
+  return riyadhDay(task.windowStart) === riyadhDay(now) ? "today" : "upcoming";
+}
+
+export function visitSegmentCounts(tasks: AssignmentTask[], now: string | number | Date) {
+  return {
+    today: tasks.filter((task) => visitSegment(task, now) === "today").length,
+    upcoming: tasks.filter((task) => visitSegment(task, now) === "upcoming").length,
+    completed: tasks.filter((task) => visitSegment(task, now) === "completed").length,
+  };
+}
+
+export function isVisitPriority(value: string | null): value is VisitPriority {
+  return value === "high" || value === "medium" || value === "low";
 }

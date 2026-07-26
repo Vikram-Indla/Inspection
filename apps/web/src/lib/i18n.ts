@@ -2,7 +2,7 @@
 // English lives in code as the source string; Arabic comes from ui_strings
 // (managed in /admin/localization). Missing Arabic falls back to English so
 // the app never breaks while translation review is in flight.
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
 import { cache as requestCache } from "react";
 
@@ -91,9 +91,35 @@ const MVP3_AR_FALLBACK: Dict = {
   "mvp3.enforcement.badge": "حالات مرتبطة بالمصدر",
 };
 
+/**
+ * Highest-priority language the browser actually asked for, by q-value.
+ * `*` is a wildcard, not a preference, so it never decides the answer.
+ */
+function prefersArabic(acceptLanguage: string): boolean {
+  const ranked = acceptLanguage
+    .split(",")
+    .map((part) => {
+      const [tag, ...params] = part.trim().split(";");
+      const q = params.find((p) => p.trim().startsWith("q="));
+      const weight = q ? Number.parseFloat(q.split("=")[1]) : 1;
+      return { tag: tag.trim().toLowerCase(), weight };
+    })
+    .filter((e) => e.tag && e.tag !== "*" && Number.isFinite(e.weight) && e.weight > 0)
+    .sort((a, b) => b.weight - a.weight);
+  const top = ranked[0];
+  return !!top && (top.tag === "ar" || top.tag.startsWith("ar-"));
+}
+
 export async function getLocale(): Promise<Locale> {
   const c = await cookies();
-  return c.get("locale")?.value === "en" ? "en" : "ar";
+  const chosen = c.get("locale")?.value;
+  // An explicit choice on the AR/EN switch always wins and persists (1-year cookie).
+  if (chosen === "en" || chosen === "ar") return chosen;
+  // No choice made yet — follow the browser rather than forcing a language on it.
+  // This previously returned "ar" for every non-"en" state, so a first load on an
+  // English browser (or incognito, or a cleared cookie) was served Arabic.
+  const accept = (await headers()).get("accept-language") ?? "";
+  return prefersArabic(accept) ? "ar" : "en";
 }
 
 // Module-level cache: one dictionary fetch per server process per TTL window.

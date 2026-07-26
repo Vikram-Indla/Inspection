@@ -220,13 +220,13 @@ a:hover { color: var(--nav-indicator); text-decoration: underline; text-underlin
   </main>
 
   <!-- ══ ATLAS COLUMN — StoryPanel (.lg-story) ══ -->
-  <aside class="lg-story-col" style="position:relative; min-inline-size:0; overflow:hidden; display:{{ atlasDisplay }}; background:var(--nav-bg); border-inline-start:1px solid color-mix(in srgb, var(--nav-text) 14%, transparent);">
+  <aside class="lg-story-col" style="position:relative; min-inline-size:0; overflow:hidden; display:{{ atlasDisplay }}; background:var(--nav-bg);">
 
     <div class="lg-atlas" style="background:var(--nav-bg);">
       <div class="lg-plane" style="transform:{{ planeTransform }};">
         <!-- the raster is pulled toward the card's graphite ground so the two
              halves read as one surface instead of two palettes -->
-        <div class="lg-base" style="filter:{{ baseFilter }};"><img src="saqeel/atlas/inspection-atlas-scene-base-v2.png" alt="{{ st.title }}" style="filter:saturate(.58) hue-rotate(-10deg) brightness(.93);"></div>
+        <div class="lg-base" style="filter:{{ baseFilter }};"><img src="assets/saudi-atlas/inspection-atlas-scene-base-v2.png" alt="{{ st.title }}" style="filter:saturate(.58) hue-rotate(-10deg) brightness(.93);"></div>
         <div style="position:absolute; inset:0; z-index:6; pointer-events:none; background:var(--nav-bg); opacity:.34; mix-blend-mode:color;"></div>
         <div style="position:absolute; inset:0; z-index:6; pointer-events:none; background:color-mix(in srgb, var(--nav-bg) 18%, transparent); mix-blend-mode:multiply;"></div>
 
@@ -289,8 +289,8 @@ a:hover { color: var(--nav-indicator); text-decoration: underline; text-underlin
             <sc-for list="{{ zones }}" as="z" hint-placeholder-count="5">
               <g class="lg-slab">
                 <path class="lg-slab-cavity" d="{{ z.path }}" style="opacity:{{ z.cavityOp }}; transform:{{ z.cavityTf }}; filter:{{ z.cavityFilter }};"></path>
-                <g class="lg-slab-wall" clipPath="{{ z.clip }}" style="opacity:{{ z.wallOp }}; transform:{{ z.wallTf }}; filter:{{ z.wallFilter }};"><image href="saqeel/atlas/inspection-atlas-scene-base-v2.png" x="0" y="0" width="1000" height="563" preserveAspectRatio="none"></image></g>
-                <g class="lg-slab-terrain" clipPath="{{ z.clip }}" style="opacity:{{ z.topOp }}; transform:{{ z.topTf }}; filter:{{ z.topFilter }};"><image href="saqeel/atlas/inspection-atlas-scene-base-v2.png" x="0" y="0" width="1000" height="563" preserveAspectRatio="none"></image></g>
+                <g class="lg-slab-wall" clipPath="{{ z.clip }}" style="opacity:{{ z.wallOp }}; transform:{{ z.wallTf }}; filter:{{ z.wallFilter }};"><image href="assets/saudi-atlas/inspection-atlas-scene-base-v2.png" x="0" y="0" width="1000" height="563" preserveAspectRatio="none"></image></g>
+                <g class="lg-slab-terrain" clipPath="{{ z.clip }}" style="opacity:{{ z.topOp }}; transform:{{ z.topTf }}; filter:{{ z.topFilter }};"><image href="assets/saudi-atlas/inspection-atlas-scene-base-v2.png" x="0" y="0" width="1000" height="563" preserveAspectRatio="none"></image></g>
                 <path class="lg-slab-edge" d="{{ z.path }}" tabIndex="0" role="button" aria-label="{{ z.aria }}" onPointerEnter="{{ z.enter }}" onPointerLeave="{{ z.leave }}" onFocus="{{ z.enter }}" onBlur="{{ z.leave }}" style="stroke:{{ z.edgeStroke }}; stroke-width:{{ z.edgeWidth }}; transform:{{ z.topTf }};"></path>
               </g>
             </sc-for>
@@ -552,7 +552,7 @@ class Component extends DCLogic {
       className: "lg-suvs", viewBox: "0 0 1000 563", preserveAspectRatio: "none",
       style: { opacity: travel ? 1 : 0 },
     }, RT.map((r, i) => React.createElement("image", {
-      key: i, href: "saqeel/atlas/inspection-suv-topdown-v1.png",
+      key: i, href: "assets/saudi-atlas/inspection-suv-topdown-v1.png",
       x: -13.5, y: -27, width: 27, height: 54, opacity: 0, transform: "rotate(90)",
       style: { filter: `drop-shadow(0 2px 3px ${shadow(68)})` },
     },
@@ -589,7 +589,7 @@ class Component extends DCLogic {
             ? "translate(-50%,-50%) translateY(-3px) scale(1)"
             : "translate(-50%,-50%) translateY(8px) scale(.82)",
         },
-      }, React.createElement("img", { src: `saqeel/atlas/inspector-character-v2-${a[2]}.png`, alt: "", draggable: false })));
+      }, React.createElement("img", { src: `assets/saudi-atlas/inspector-character-v2-${a[2]}.png`, alt: "", draggable: false })));
     const shown = on("inspect");
     const outcomes = [[73.7, 32.5, 0], [22, 42, 1], [44, 78.5, 1]].map((o, i) => ({
       left: o[0] + "%", top: o[1] + "%", delay: (i * 0.65) + "s",

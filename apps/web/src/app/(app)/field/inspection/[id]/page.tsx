@@ -735,6 +735,12 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     sig: {
       title: t("field.ws.sig.title", "Factory representative acknowledgement"),
       hint: t("field.ws.sig.hint", "Sign in the box below. The signature image, name and timestamp are stored inside the final submitted version (DEC-009)."),
+      attendance: tr("field.ws.sig.attendance", "Representative attendance", "حضور ممثل المنشأة"),
+      present: tr("field.ws.sig.present", "Present & signs", "حاضر ووقّع"),
+      absent: tr("field.ws.sig.absent", "Did not attend", "لم يحضر"),
+      objected: tr("field.ws.sig.objected", "Objected to signing", "اعترض على التوقيع"),
+      reasonLabel: tr("field.ws.sig.reason", "Reason for absence / objection", "سبب عدم الحضور/الاعتراض"),
+      unsupported: tr("field.ws.sig.unsupported", "Not configured — the submission service does not yet accept or audit this acknowledgement branch.", "غير مهيأ — لا تقبل خدمة الإرسال مسار الإقرار هذا أو تدققه بعد."),
       nameLabel: t("field.ws.sig.name", "Representative name"),
       namePlaceholder: t("field.ws.sig.namePh", "Full name as recorded on site"),
       clear: t("field.ws.sig.clear", "Clear"),

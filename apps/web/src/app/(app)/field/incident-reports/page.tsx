@@ -52,7 +52,7 @@ type ReportKind = "immediate" | "incident";
 
 export default async function FieldIncidentReportsPage({ searchParams }: { searchParams: Promise<{ visit?: string; factory?: string; inspection?: string; kind?: string }> }) {
   const { visit: visitId, factory: factoryId, inspection: inspectionId, kind: kindParam } = await searchParams;
-  const kind: ReportKind = kindParam === "immediate" ? "immediate" : "incident";
+  const kind: ReportKind = kindParam === "incident" ? "incident" : "immediate";
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
@@ -101,6 +101,19 @@ export default async function FieldIncidentReportsPage({ searchParams }: { searc
     "Log an incident during an active visit — a capability distinct from a violation. It is documented and surfaces in the visit outputs.",
     "رصد حادث أثناء زيارة نشطة — قدرة مستقلة عن المخالفة. يُوثّق ويظهر ضمن مخرجات الزيارة.",
   );
+  const immediateLabels = {
+    target: tr("field.incidents.target", "Establishment", "المنشأة"),
+    registered: tr("field.incidents.registered", "Registered on Senaei", "مسجّلة على صناعي"),
+    unlicensed: tr("field.incidents.unlicensed", "Unlicensed (manual entry)", "غير مرخّصة (إدخال يدوي)"),
+    establishmentName: tr("field.incidents.establishmentName", "Establishment name", "اسم المنشأة"),
+    establishmentNumber: tr("field.incidents.establishmentNumber", "Establishment / license no.", "رقم المنشأة/الترخيص"),
+    reason: tr("field.incidents.reason", "Reason for immediate inspection", "سبب التفتيش الفوري"),
+    reportType: tr("field.incidents.reportType", "Report type", "نوع التقرير"),
+    executionMode: tr("field.incidents.executionMode", "Execution mode", "نمط التنفيذ"),
+    physical: tr("field.incidents.physical", "Physical", "ميداني"),
+    virtual: tr("field.incidents.virtual", "Virtual", "عن بُعد"),
+    notConfigured: tr("common.notConfigured", "Not configured", "غير مهيأ"),
+  };
 
   // Segment links keep whatever real context the route was reached with.
   const kindHref = (target: ReportKind) => {
@@ -143,14 +156,34 @@ export default async function FieldIncidentReportsPage({ searchParams }: { searc
           <>
             <div className="alert alert-info"><div>{immediateNote}</div></div>
             <div className={styles.card}>
-              <div className="alert-title">{seg.immediate}</div>
-              <ul className={styles.immList}>
-                <li>{tr("field.incidents.immediateStepIdentity", "Registered establishment, or unlicensed manual entry where your role and the visit type allow it.", "منشأة مسجّلة، أو إدخال يدوي لمنشأة غير مرخّصة عندما يسمح دورك ونوع الزيارة بذلك.")}</li>
-                <li>{tr("field.incidents.immediateStepReason", "A governed urgency reason and the inspection package for the visit.", "سبب استعجال معتمد وحزمة التفتيش الخاصة بالزيارة.")}</li>
-                <li>{tr("field.incidents.immediateStepLocation", "A confirmed visit location before the visit can be created.", "تأكيد موقع الزيارة قبل إمكانية إنشائها.")}</li>
-              </ul>
-              <div className="alert alert-warning" role="note" style={{ marginBlockStart: "var(--space-3)" }}><div>{lockNote}</div></div>
-              <Link href={immediateHref} prefetch={false} className={`btn btn-primary ${styles.immCta}`}>
+              <fieldset className={styles.choiceGroup}>
+                <legend>{immediateLabels.target}</legend>
+                <div className={styles.options}>
+                  <label className={styles.option}><input type="radio" name="target-preview" defaultChecked /><span className={styles.indicator} />{immediateLabels.registered}</label>
+                  <label className={styles.option}><input type="radio" name="target-preview" /><span className={styles.indicator} />{immediateLabels.unlicensed}</label>
+                </div>
+              </fieldset>
+              <div className={styles.grid2}>
+                <label className={styles.field}><span>{immediateLabels.establishmentName}</span><input className="input" value="" readOnly /></label>
+                <label className={styles.field}><span>{immediateLabels.establishmentNumber}</span><input className="input" value="" readOnly /></label>
+              </div>
+              <label className={styles.field}><span>{immediateLabels.reason}<span className={styles.req}> *</span></span><textarea className="input" rows={2} value="" readOnly /></label>
+              <div className={styles.grid2}>
+                <label className={styles.field}><span>{immediateLabels.reportType}</span><select className="select" defaultValue=""><option value="" disabled>{immediateLabels.notConfigured}</option></select></label>
+                <fieldset className={styles.choiceGroup}>
+                  <legend>{immediateLabels.executionMode}</legend>
+                  <div className={styles.options}>
+                    <label className={styles.option}><input type="radio" name="mode-preview" defaultChecked /><span className={styles.indicator} />{immediateLabels.physical}</label>
+                    <label className={styles.option}><input type="radio" name="mode-preview" /><span className={styles.indicator} />{immediateLabels.virtual}</label>
+                  </div>
+                </fieldset>
+              </div>
+              <div className="alert alert-warning" role="note"><div>{lockNote}</div></div>
+            </div>
+            <div className={styles.actionbar}>
+              <span className="badge badge-info"><span className="dot" />{tr("field.incidents.immediatePath", "Immediate path", "مسار فوري")}</span>
+              <span className={styles.grow} />
+              <Link href={immediateHref} prefetch={false} className="btn btn-primary">
                 {tr("field.incidents.startImmediate", "Start immediate inspection", "بدء التفتيش الفوري")}
               </Link>
             </div>

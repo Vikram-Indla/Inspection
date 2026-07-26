@@ -18,6 +18,15 @@ type SessionRow = {
   } | null;
 };
 
+const STATE_LABELS: Record<string, { en: string; ar: string }> = {
+  scheduled: { en: "Scheduled", ar: "مجدولة" },
+  waiting: { en: "Waiting room", ar: "غرفة الانتظار" },
+  joined: { en: "Joined", ar: "تم الانضمام" },
+  verified: { en: "Verified", ar: "تم التحقق" },
+  in_progress: { en: "In progress", ar: "قيد التنفيذ" },
+  closed: { en: "Closed", ar: "مغلقة" },
+};
+
 export default async function FieldVirtualSessionsPage() {
   const [sb, { t, locale }] = await Promise.all([supabaseServer(), useT()]);
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
@@ -29,6 +38,7 @@ export default async function FieldVirtualSessionsPage() {
   const sessions = ((data ?? []) as unknown as SessionRow[]).filter(
     session => session.visits?.assignments?.some(a => a.inspector_id === user.id),
   );
+  const partial = sessions.some(session => !session.visits?.factories);
 
   return (
     <>
@@ -52,22 +62,33 @@ export default async function FieldVirtualSessionsPage() {
             <span>{tr("field.virtual.emptyBody", "A confirmed virtual appointment will appear here when it is assigned to you.", "سيظهر الموعد الافتراضي المؤكد هنا عند إسناده إليك.")}</span>
           </div>
         ) : (
-          <section className={styles.list} aria-label={tr("field.virtual.list", "Virtual sessions", "الجلسات الافتراضية")}>
-            {sessions.map(session => (
-              <Link key={session.id} href={`/field/virtual/${session.id}`} className={styles.sessionRow}>
-                <span className={styles.videoIcon} aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><rect x="2" y="5" width="14" height="14" rx="2" /><path d="m16 9 6-3v12l-6-3" /></svg>
-                </span>
-                <span className={styles.sessionCopy}>
-                  <strong>{session.visits?.factories?.name}</strong>
-                  <span><bdi>{session.visits?.factories?.factory_code}</bdi> · {formatDateTime(session.appointment_at, locale)}</span>
-                  <span className="id-code"><bdi>{session.id.slice(0, 8)}</bdi></span>
-                </span>
-                <span className="badge badge-info">{tr(`enum.${session.state}`, session.state.replaceAll("_", " "), session.state.replaceAll("_", " "))}</span>
-                <span aria-hidden="true">›</span>
-              </Link>
-            ))}
-          </section>
+          <>
+            {partial && <div className={styles.alert} role="status">
+              {tr("field.virtual.partial", "Some linked appointment details are unavailable. Missing values are left blank.", "بعض تفاصيل المواعيد المرتبطة غير متاحة. تُترك القيم الناقصة فارغة.")}
+            </div>}
+            <section className={styles.list} aria-label={tr("field.virtual.list", "Virtual sessions", "الجلسات الافتراضية")}>
+              {sessions.map(session => {
+                const label = STATE_LABELS[session.state];
+                return (
+                  <Link key={session.id} href={`/field/virtual/${session.id}`} className={styles.sessionRow}>
+                    <span className={styles.videoIcon} aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><rect x="2" y="5" width="14" height="14" rx="2" /><path d="m16 9 6-3v12l-6-3" /></svg>
+                    </span>
+                    <span className={styles.sessionCopy}>
+                      <strong>{session.visits?.factories?.name ?? null}</strong>
+                      <span>
+                        {session.visits?.factories?.factory_code ? <><bdi>{session.visits.factories.factory_code}</bdi> · </> : null}
+                        {session.appointment_at ? formatDateTime(session.appointment_at, locale) : null}
+                      </span>
+                      <span className="id-code"><bdi>{session.id.slice(0, 8)}</bdi></span>
+                    </span>
+                    {label ? <span className="badge badge-info">{locale === "ar" ? label.ar : label.en}</span> : null}
+                    <span aria-hidden="true">›</span>
+                  </Link>
+                );
+              })}
+            </section>
+          </>
         )}
       </main>
     </>

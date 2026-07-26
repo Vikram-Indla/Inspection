@@ -6,6 +6,7 @@ import {
   beginRemote, closeSession, joinParticipant, markSessionVerified,
   openWaitingRoom, rescheduleSession, type RoomActionResult,
 } from "./actions";
+import RoomStage, { type RoomStageStrings } from "./RoomStage";
 
 type P = { id: string; display_name: string; role: string; joined_at: string | null; verified_at: string | null };
 type Visit = {
@@ -47,7 +48,6 @@ export type RoomStrings = {
   statePath: string; statePathHint: string;
   s_scheduled: string; s_waiting: string; s_joined: string; s_verified: string; s_inprogress: string; s_closed: string;
   now: string; done: string; next: string; nowLabel: string;
-  room: string; roomPending: string; roomBody: string; roomTag: string; roomContinue: string;
   transition: string; transHint: string;
   actOpenSub: string; actJoinSub: string;
   actBegin: string; actBeginSub: string; actContinue: string; actContinueSub: string;
@@ -61,13 +61,31 @@ export type RoomStrings = {
   closedTitle: string; closedBody: string; closedHandoff: string;
   offlineTitle: string; offlineBody: string;
   staleTitle: string; staleBody: string; reload: string;
+  // WA-DES-044 — the timeline moved into the side column, so its headings come
+  // in with the rest of the room strings rather than living on the page.
+  timelineHeading: string; timelineEmpty: string;
+  /** Heading of the left identity panel. Distinct from partLink, which names the
+   *  contract row on the right — two panels titled "Participants" read as a
+   *  duplicate rather than as the design's identity step. */
+  identityHeading: string;
 };
+
+/** One rendered timeline row. Dates are formatted server-side so the client
+ *  never reformats them in a different locale (a hydration-mismatch source). */
+export type RoomTimelineRow = { at: string; label: string; detail: string };
 
 const fmt = (s: string, vars: Record<string, string | number>) => { return s.replace(/\{(\w+)\}/g, (m, k) => (vars[k] ?? m) as string); };
 
 const ORDER = ["scheduled", "waiting", "joined", "verified", "in_progress", "closed"];
 
-export default function Room({ session, strings: t, rev }: { session: S; strings: RoomStrings; rev: string }) {
+export default function Room({ session, strings: t, rev, stage, transportConfigured, timeline }: {
+  session: S; strings: RoomStrings; rev: string;
+  stage: RoomStageStrings;
+  /** Server truth from videoTransportStatus() — the client never infers it. */
+  transportConfigured: boolean;
+  /** Newest-first, pre-formatted server-side. */
+  timeline: RoomTimelineRow[];
+}) {
   const [parts] = useState(session.virtual_participants);
   const [otpInfo, setOtpInfo] = useState({} as Record<string, { dev_code?: string; msg: string }>);
   const [otpStatus, setOtpStatus] = useState({} as Record<string, OtpStatus>);
@@ -164,6 +182,11 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
   }
 
   const reps = parts.filter(p => { return p.role === "factory_rep"; });
+  // The remote tile names the representative the room is waiting on — a real
+  // participant row, never a placeholder person.
+  const stageRemoteName = reps[0]?.display_name ?? t.repRole;
+  const stageRemoteInitials = (stageRemoteName.trim().split(/\s+/)
+    .map(w => { return w[0] ?? ""; }).join("").slice(0, 2) || "—").toUpperCase();
   // Client-optimistic aggregate — drives the informational participant link only.
   const allVerified = reps.length > 0 && reps.every(p => { return verifiedIds.has(p.id); });
   // WA-04: the begin transition gate is server-authoritative — a session is only
@@ -199,6 +222,49 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
   const canReschedule = ["scheduled", "waiting"].includes(session.state);
   const v = session.visits;
   const degraded = !v?.factories || !v?.package_versions;
+
+  // WA-DES-044 — the five contract rows. Every value is a stored session fact;
+  // nothing is derived that the server does not already hold, and an absent
+  // fact renders as an em dash rather than an assumption.
+  const partState = allVerified ? "ready" : reps.some(p => { return p.joined_at; }) ? "pending" : "missing";
+  const gates = [
+    {
+      key: "scope", label: t.apptLink, exc: "exc-compliant", badge: "badge-compliant", state: t.ready,
+      detail: [
+        `${v?.factories?.name ?? "—"}${v?.factories?.factory_code ? ` ${v.factories.factory_code}` : ""}`,
+        `${t.visitWord} ${session.visit_id.slice(0, 8)}`,
+        `${t.pkg} ${v?.package_versions?.packages?.code ?? "—"} ${v?.package_versions?.version_label ?? "—"}`,
+        `${t.inspectionWord} ${v?.inspections ? `${v.inspections.id.slice(0, 8)} (${v.inspections.status})` : t.inspNone}`,
+      ].join(" · "),
+    },
+    {
+      key: "time", label: t.timeLink,
+      exc: late ? "exc-critical" : session.state === "scheduled" ? "exc-pending" : "exc-compliant",
+      badge: late ? "badge-critical" : session.state === "scheduled" ? "badge-pending" : "badge-compliant",
+      state: late ? t.blocked : session.state === "scheduled" ? t.pendingWord : t.ready,
+      detail: `${session.appointment_at} · ${late ? t.late : session.state === "scheduled" ? t.early : t.onwindow} · ${t.tzBlocked}`,
+    },
+    {
+      key: "participants", label: t.partLink,
+      exc: partState === "ready" ? "exc-compliant" : partState === "pending" ? "exc-warning" : "exc-critical",
+      badge: partState === "ready" ? "badge-compliant" : partState === "pending" ? "badge-warning" : "badge-critical",
+      state: partState === "ready" ? t.ready : partState === "pending" ? t.pendingWord : t.missing,
+      detail: parts.length === 0 ? t.emptyPart : parts.map(p => {
+        return `${p.display_name} — ${verifiedIds.has(p.id) ? t.verified : p.joined_at ? t.awaiting : t.notJoined}`;
+      }).join(" · "),
+    },
+    {
+      key: "state", label: t.stateLink,
+      exc: session.state === "closed" ? "exc-critical" : "exc-compliant",
+      badge: session.state === "closed" ? "badge-critical" : "badge-compliant",
+      state: session.state === "closed" ? t.blocked : t.ready,
+      detail: `${stLabel[session.state] ?? session.state} · ${t.statePathHint}`,
+    },
+    {
+      key: "fallback", label: t.fbLink, exc: "exc-pending", badge: "badge-pending", state: t.pendingWord,
+      detail: `${t.fallbackBody} ${t.fallbackResched}`,
+    },
+  ];
 
   return (
     <div className="cd-vir">
@@ -244,70 +310,70 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
 
       <div className="cd-grid">
         <div className="cd-grid__main">
-          {/* six-link readiness contract */}
-          <section className="panel cd-contract" aria-label={t.contract}>
-            <div className="cd-sectionhead"><h3>{t.contract}</h3></div>
-            <p className="cd-sub">{t.contractHint}</p>
-            <ol className="cd-links">
-              <li className="cd-link cd-link--ready">
-                <span className="cd-link__n" aria-hidden="true">1</span>
-                <div className="cd-link__b">
-                  <div className="cd-link__head"><h4>{t.apptLink}</h4><span className="cd-linkstate cd-linkstate--ready">{t.ready}</span></div>
-                  <div className="cd-kv"><span className="cd-kv__k">{t.factory}</span><span>{v?.factories?.name ?? "—"} {v?.factories?.factory_code ? <span className="cd-mono">{v.factories.factory_code}</span> : ""}</span></div>
-                  <div className="cd-kv"><span className="cd-kv__k">{t.visitWord}</span><span className="cd-mono">{session.visit_id.slice(0, 8)}</span></div>
-                  <div className="cd-kv"><span className="cd-kv__k">{t.pkg}</span><span className="cd-mono">{v?.package_versions?.packages?.code ?? "—"} · {v?.package_versions?.version_label ?? "—"}</span></div>
-                  <div className="cd-kv"><span className="cd-kv__k">{t.inspectionWord}</span><span>
-                    {v?.inspections ? <><span className="cd-mono">{v.inspections.id.slice(0, 8)}</span> <span className="sq-lozenge sq-lozenge--review">{v.inspections.status}</span></> : <span className="cd-sub">{t.inspNone}</span>}
-                  </span></div>
-                  <span className="cd-tag cd-tag--ok">{t.scopeOk}</span>
+          {/* WA-DES-044 — the room leads the column: device checks and screen
+              share are usable before anyone joins, and the remote leg states
+              its own availability. */}
+          <RoomStage strings={stage} remoteName={stageRemoteName}
+            remoteInitials={stageRemoteInitials} transportConfigured={transportConfigured} />
+
+          {/* WA-DES-044 — identity verification is the human work of the room:
+              who is present, who is proven, and the one code entry that gates
+              execution. The readiness contract moved to the side column, so the
+              per-participant controls live here beside the people they act on
+              instead of being split across two columns. */}
+          <section className="panel cd-contract" aria-label={t.identityHeading}>
+            <div className="cd-sectionhead"><h3>{t.identityHeading}</h3></div>
+            <p className="cd-sub">{t.partHint}</p>
+            {parts.length === 0 && <p className="cd-sub">{t.emptyPart}</p>}
+            {parts.map(p => {
+              const isVerified = verifiedIds.has(p.id);
+              const st = otpStatus[p.id];
+              const initials = (p.display_name.trim().split(/\s+/)
+                .map(w => { return w[0] ?? ""; }).join("").slice(0, 2) || "—").toUpperCase();
+              return (
+                <div className="cd-idrow" key={p.id}>
+                  <span className="avatar" aria-hidden="true">{initials}</span>
+                  <div className="cd-idrow__b">
+                    <div><strong>{p.display_name}</strong>{" "}
+                      <span className="cd-sub">{t.roles[p.role] ?? p.role.replace(/_/g, " ")}</span></div>
+                    {open && !p.joined_at && (
+                      <form action={joinAction} className="row" style={{ marginBlockStart: 6 }}>
+                        <input type="hidden" name="session_id" value={session.id} />
+                        <input type="hidden" name="participant_id" value={p.id} />
+                        <button className="btn btn-secondary btn-touch" disabled={joinPending}>{joinPending ? t.working : t.markJoined}</button>
+                      </form>
+                    )}
+                    {open && !isVerified && p.role === "factory_rep" && (
+                      <div className="cd-otp">
+                        <div className="row" style={{ alignItems: "flex-end", marginBlockStart: 6 }}>
+                          <button className="btn btn-secondary btn-touch" onClick={() => requestOtp(p)} disabled={busy || !!st?.locked}>
+                            {st?.has_active_code || (st?.resends_used ?? 0) > 0 ? t.resendOtp : t.sendOtp}
+                          </button>
+                          {otpInfo[p.id]?.dev_code && <span className="badge badge-warning">{t.devCode} {otpInfo[p.id].dev_code}</span>}
+                          <div className="sq-field cd-otpfield" style={{ maxInlineSize: 160 }}><label className="sq-field__label" htmlFor={`virtual-otp-code-${p.id}`}>{t.codeLabel}</label>
+                            <input className="sq-input numeric" id={`virtual-otp-code-${p.id}`} value={codes[p.id] ?? ""} onChange={e => setCodes(c => ({ ...c, [p.id]: e.target.value }))} maxLength={6} /></div>
+                          <button className="btn btn-primary btn-touch" onClick={() => verify(p)} disabled={busy || !!st?.locked}>{t.verify}</button>
+                        </div>
+                        {st?.status === "ok" && (
+                          <p className="cd-sub cd-mono">
+                            {fmt(t.otpCounters, { a: st.attempts_used ?? 0, b: st.attempts_max ?? 0, c: st.resends_used ?? 0, d: st.resends_max ?? 0 })}
+                            {st.locked && <> · <span className="badge badge-critical">{t.otpLocked}</span></>}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    {otpInfo[p.id]?.msg && <p className="cd-sub">{otpInfo[p.id].msg}</p>}
+                  </div>
+                  <div className="cd-idrow__st">
+                    {isVerified
+                      ? <span className="badge badge-compliant">{t.verified}</span>
+                      : p.joined_at
+                        ? <span className="badge badge-warning">{t.awaiting}</span>
+                        : <span className="badge">{t.notJoined}</span>}
+                  </div>
                 </div>
-              </li>
-              <li className={`cd-link ${late ? "cd-link--blocked" : session.state === "scheduled" ? "cd-link--info" : "cd-link--ready"}`}>
-                <span className="cd-link__n" aria-hidden="true">2</span>
-                <div className="cd-link__b">
-                  <div className="cd-link__head"><h4>{t.timeLink}</h4><span className={`cd-linkstate ${late ? "cd-linkstate--blocked" : session.state === "scheduled" ? "cd-linkstate--info" : "cd-linkstate--ready"}`}>{late ? t.blocked : session.state === "scheduled" ? t.pendingWord : t.ready}</span></div>
-                  <div className="cd-kv"><span className="cd-kv__k">{t.apptStored}</span><span className="cd-mono cd-time">{session.appointment_at}</span></div>
-                  <p className="cd-sub">{late ? t.late : session.state === "scheduled" ? t.early : t.onwindow}</p>
-                  <p className="cd-sub"><span className="cd-tag cd-tag--blocked">{t.tzBlocked}</span> {t.apptTz}</p>
-                  {late && <p className="cd-sub cd-warn">{t.lateDerived}</p>}
-                </div>
-              </li>
-              <li className={`cd-link ${allVerified ? "cd-link--ready" : reps.some(p => { return p.joined_at; }) ? "cd-link--pending" : "cd-link--missing"}`}>
-                <span className="cd-link__n" aria-hidden="true">3</span>
-                <div className="cd-link__b">
-                  <div className="cd-link__head"><h4>{t.partLink}</h4><span className={`cd-linkstate ${allVerified ? "cd-linkstate--ready" : reps.some(p => { return p.joined_at; }) ? "cd-linkstate--pending" : "cd-linkstate--missing"}`}>{allVerified ? t.ready : reps.some(p => { return p.joined_at; }) ? t.pendingWord : t.missing}</span></div>
-                  {parts.length === 0 && <p className="cd-sub">{t.emptyPart}</p>}
-                  {parts.map(p => (
-                    <div className="cd-kv" key={p.id}><span className="cd-kv__k">{t.roles[p.role] ?? p.role}</span><span>{p.display_name} · {verifiedIds.has(p.id) ? <span className="badge badge-compliant">{t.verified}</span> : p.joined_at ? <span className="badge badge-warning">{t.joinedAwaiting}</span> : <span className="badge">{t.notJoined}</span>}</span></div>
-                  ))}
-                  <p className="cd-sub">{t.partHint}</p>
-                </div>
-              </li>
-              <li className={`cd-link ${session.state === "closed" ? "cd-link--blocked" : "cd-link--ready"}`}>
-                <span className="cd-link__n" aria-hidden="true">4</span>
-                <div className="cd-link__b">
-                  <div className="cd-link__head"><h4>{t.stateLink}</h4><span className={`cd-linkstate ${session.state === "closed" ? "cd-linkstate--blocked" : "cd-linkstate--ready"}`}>{session.state === "closed" ? t.blocked : t.ready}</span></div>
-                  <div className="cd-kv"><span className="cd-kv__k">{t.nowLabel}</span><span><span className="sq-lozenge sq-lozenge--virtual">{stLabel[session.state] ?? session.state}</span></span></div>
-                  <p className="cd-sub">{t.statePathHint}</p>
-                </div>
-              </li>
-              <li className={`cd-link ${next.blocked ? "cd-link--blocked" : "cd-link--ready"}`}>
-                <span className="cd-link__n" aria-hidden="true">5</span>
-                <div className="cd-link__b">
-                  <div className="cd-link__head"><h4>{t.transLink}</h4><span className={`cd-linkstate ${next.blocked ? "cd-linkstate--blocked" : "cd-linkstate--ready"}`}>{next.blocked ? t.blocked : t.ready}</span></div>
-                  <div className="cd-kv"><span className="cd-kv__k">{t.next}</span><span><strong>{next.label}</strong></span></div>
-                  <p className="cd-sub">{next.blocked ? next.why : next.sub}</p>
-                </div>
-              </li>
-              <li className="cd-link cd-link--pending">
-                <span className="cd-link__n" aria-hidden="true">6</span>
-                <div className="cd-link__b">
-                  <div className="cd-link__head"><h4>{t.fbLink}</h4><span className="cd-linkstate cd-linkstate--pending">{t.pendingWord}</span></div>
-                  <p className="cd-sub"><span className="cd-tag cd-tag--blocked">{t.fallbackTag}</span> {t.fallbackBody}</p>
-                  <p className="cd-sub">{t.fallbackResched}</p>
-                </div>
-              </li>
-            </ol>
+              );
+            })}
           </section>
 
           {/* action zone — gated primary + reschedule + close-with-reason */}
@@ -357,94 +423,65 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
         </div>
 
         <aside className="cd-grid__side">
-          {/* canonical state path */}
-          <section className="panel cd-path" aria-label={t.statePath}>
+          {/* WA-DES-044 — the readiness contract, as compact evidence rows.
+              Same stored facts as the earlier card grid: the transition is
+              promoted to its own action panel on the left and the fallback
+              rides the last row, so nothing is dropped by the denser form. */}
+          <section className="panel cd-side" aria-label={t.contract}>
+            <div className="cd-sectionhead"><h3>{t.contract}</h3></div>
+            <p className="cd-sub">{t.contractHint}</p>
+            <div className="cd-gates">
+              {gates.map(g => (
+                <div className="cd-gate" key={g.key}>
+                  <span className={`exc ${g.exc} cd-gate__mark`} aria-hidden="true"><span className="exc-mark"></span></span>
+                  <div className="cd-gate__b">
+                    <div className="cd-gate__label">{g.label}</div>
+                    <div className="cd-gate__detail">{g.detail}</div>
+                  </div>
+                  <span className={`badge ${g.badge}`}>{g.state}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* canonical state path — horizontal compact spine */}
+          <section className="panel cd-side" aria-label={t.statePath}>
             <div className="cd-sectionhead"><h3>{t.statePath}</h3></div>
-            <ol className="cd-nodes">
+            <div className="spine is-horizontal is-compact">
               {ORDER.map((s, i) => {
                 const curIdx = ORDER.indexOf(session.state);
-                const cls = i < curIdx ? "is-done" : i === curIdx ? "is-now" : "is-next";
+                const cls = i < curIdx ? "is-done" : i === curIdx ? "is-current" : "";
                 return (
-                  <li className={`cd-node ${cls}`} key={s}>
-                    <span className="cd-node__dot" aria-hidden="true"></span>
-                    {i < curIdx ? <span className="cd-node__badge" aria-hidden="true">✓</span> : i === curIdx ? <span className="cd-node__badge cd-node__badge--now">{t.now}</span> : <span className="cd-node__badge" aria-hidden="true">{i + 1}</span>}
-                    <span className="cd-node__label">{stLabel[s]}</span>
+                  <div className={`spine-node ${cls}`} key={s}>
+                    <span className="spine-dot" aria-hidden="true">{i < curIdx ? "✓" : i + 1}</span>
+                    <span className="spine-label">{stLabel[s]}</span>
                     <span className="sr-only"> — {i < curIdx ? t.done : i === curIdx ? t.now : t.next}</span>
-                  </li>
+                  </div>
                 );
               })}
-            </ol>
+            </div>
             <p className="cd-sub">{t.statePathHint}</p>
           </section>
 
-          {/* participant register */}
-          <section className="panel cd-side" aria-label={t.partLink}>
-            <div className="cd-sectionhead"><h3>{t.partLink}</h3></div>
-            {parts.length === 0 && <p className="cd-sub">{t.emptyPart}</p>}
-            <ul className="cd-plist">
-              {parts.map(p => {
-                const isVerified = verifiedIds.has(p.id);
-                const st = otpStatus[p.id];
-                return (
-                  <li key={p.id} className="cd-prow">
-                    <div><strong>{p.display_name}</strong><div className="cd-sub">{t.roles[p.role] ?? p.role.replace(/_/g, " ")}</div>
-                      {open && !p.joined_at && (
-                        <form action={joinAction} className="row" style={{ marginBlockStart: 6 }}>
-                          <input type="hidden" name="session_id" value={session.id} />
-                          <input type="hidden" name="participant_id" value={p.id} />
-                          <button className="btn btn-secondary btn-touch" disabled={joinPending}>{joinPending ? t.working : t.markJoined}</button>
-                        </form>
-                      )}
-                      {open && !isVerified && p.role === "factory_rep" && (
-                        <div className="cd-otp">
-                          <div className="row" style={{ alignItems: "flex-end", marginBlockStart: 6 }}>
-                            <button className="btn btn-secondary btn-touch" onClick={() => requestOtp(p)} disabled={busy || !!st?.locked}>
-                              {st?.has_active_code || (st?.resends_used ?? 0) > 0 ? t.resendOtp : t.sendOtp}
-                            </button>
-                            {otpInfo[p.id]?.dev_code && <span className="badge badge-warning">{t.devCode} {otpInfo[p.id].dev_code}</span>}
-                            <div className="sq-field cd-otpfield" style={{ maxInlineSize: 160 }}><label className="sq-field__label" htmlFor={`virtual-otp-code-${p.id}`}>{t.codeLabel}</label>
-                              <input className="sq-input numeric" id={`virtual-otp-code-${p.id}`} value={codes[p.id] ?? ""} onChange={e => setCodes(c => ({ ...c, [p.id]: e.target.value }))} maxLength={6} /></div>
-                            <button className="btn btn-primary btn-touch" onClick={() => verify(p)} disabled={busy || !!st?.locked}>{t.verify}</button>
-                          </div>
-                          {st?.status === "ok" && (
-                            <p className="cd-sub cd-mono">
-                              {fmt(t.otpCounters, { a: st.attempts_used ?? 0, b: st.attempts_max ?? 0, c: st.resends_used ?? 0, d: st.resends_max ?? 0 })}
-                              {st.locked && <> · <span className="badge badge-critical">{t.otpLocked}</span></>}
-                            </p>
-                          )}
-                        </div>
-                      )}
-                      {otpInfo[p.id]?.msg && <p className="cd-sub">{otpInfo[p.id].msg}</p>}
-                    </div>
-                    <div className="cd-prow__st">
-                      {isVerified
-                        ? <span className="badge badge-compliant">{t.verified}</span>
-                        : p.joined_at
-                          ? <span className="sq-lozenge sq-lozenge--virtual sq-lozenge--info">{t.joinedAwaiting}</span>
-                          : <span className="badge">{t.notJoined}</span>}
-                    </div>
-                  </li>
-                );
-              })}
+          {/* session timeline — append-only, server-authoritative. Rendered on
+              the DS timeline component (was loose paragraphs under the page). */}
+          <section className="panel cd-side" aria-label={t.timelineHeading}>
+            <div className="cd-sectionhead"><h3>{t.timelineHeading}</h3></div>
+            {timeline.length === 0 && <p className="cd-sub">{t.timelineEmpty}</p>}
+            <ul className="timeline">
+              {timeline.map((e, i) => (
+                <li key={i}>
+                  <span className={`tl-dot ${i === 0 ? "is-accent" : ""}`}></span>
+                  <div className="tl-title">{e.label}</div>
+                  <div className="tl-meta"><span className="cd-mono">{e.at}</span>{e.detail}</div>
+                </li>
+              ))}
             </ul>
           </section>
 
-          {/* Provider fact boundary — fail closed. lib/providers/video.ts has
-              only an opt-in non-production stub and no real adapter. The
-              console must not turn that fixture into a joinable room. */}
-          <section className="panel cd-side cd-room" aria-label={t.room}>
-            <div className="cd-sectionhead"><h3>{t.room}</h3><span className="cd-tag cd-tag--blocked">{t.roomTag}</span></div>
-            <div className="cd-roombox" role="img" aria-label={t.roomPending}><span className="cd-roombox__glyph" aria-hidden="true">▲</span><span className="cd-roombox__lab">{t.roomPending}</span></div>
-            <p className="cd-sub">{t.roomBody}</p>
-            <p className="cd-sub">{t.roomContinue}</p>
-          </section>
-
-          {/* fallback route — bounded, no invented policy */}
-          <section className="panel cd-side" aria-label={t.fallback}>
-            <div className="cd-sectionhead"><h3>{t.fallback}</h3><span className="cd-tag cd-tag--blocked">{t.fallbackTag}</span></div>
-            <p className="cd-sub">{t.fallbackBody}</p>
-            <p className="cd-sub">{t.fallbackResched}</p>
-          </section>
+          {/* The participant register moved into the identity panel on the left,
+              beside the controls that act on it; the standalone fallback panel is
+              now the last contract row. Both facts are preserved, not dropped. */}
         </aside>
       </div>
     </div>

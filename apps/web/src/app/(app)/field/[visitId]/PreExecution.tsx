@@ -14,6 +14,7 @@
 import { useState } from "react";
 
 import { confirmReady, reopenPreparation, savePreparation } from "./preparation-actions";
+import styles from "./startup.module.css";
 
 export type PreExecutionStrings = {
   heading: string;
@@ -71,28 +72,6 @@ export type PreparationDraft = {
 };
 
 const fmt = (s: string, vars: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (m, k) => String(vars[k] ?? m));
-const cardStyle = {
-  padding: "16px 18px",
-  border: "1px solid var(--border-subtle)",
-  borderRadius: 14,
-  background: "var(--surface-primary)",
-  boxShadow: "var(--shadow-card)",
-} as const;
-const sectionStyle = {
-  ...cardStyle,
-  display: "flex",
-  flexDirection: "column",
-  gap: 10,
-} as const;
-const detailRowStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  gap: 12,
-  paddingBlock: 8,
-  borderBlockStart: "1px solid var(--border-subtle)",
-  fontSize: 13,
-} as const;
-
 export default function PreExecution(props: {
   visitId: string;
   ready: boolean;
@@ -184,7 +163,7 @@ export default function PreExecution(props: {
 
   return (
     <div className="stack" style={{ gap: 14 }} data-testid="pre-execution-panel">
-      <div style={cardStyle}>
+      <div className={styles.sectionCard}>
       <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", marginBlockEnd: "var(--space-3)" }}>
         <h4>{s.heading}</h4>
         {ready && <span className="badge badge-compliant" data-testid="pre-execution-ready"><span className="dot" />{s.readyTitle}</span>}
@@ -193,21 +172,21 @@ export default function PreExecution(props: {
       {/* 1 · read-only Planning + factory context */}
       <div>
         <h5 style={{ marginBlockEnd: 4 }}>{s.contextHeading}</h5>
-        <div style={detailRowStyle}>
+        <div className={styles.detailRow}>
           <span className="t-caption">{s.lblFactory}</span>
           <strong>{props.context.factoryName}{props.context.factoryCode ? ` (${props.context.factoryCode})` : ""}</strong>
         </div>
           {/* Phase 7 (§24) — unregistered immediate factory identity, existing
               temporary/unverified marker only (same copy as the visit detail). */}
           {props.context.unverifiedLabel && <span className="badge badge-warning">{props.context.unverifiedLabel}</span>}
-        <div style={detailRowStyle}><span className="t-caption">{s.lblVisitType}</span><strong>{props.context.visitType}</strong></div>
-        <div style={detailRowStyle}><span className="t-caption">{s.lblWindow}</span><strong className="id-code">{props.context.windowLabel}</strong></div>
-        {props.context.priority && <div style={detailRowStyle}><span className="t-caption">{s.lblPriority}</span><strong>{props.context.priority}</strong></div>}
+        <div className={styles.detailRow}><span className="t-caption">{s.lblVisitType}</span><strong>{props.context.visitType}</strong></div>
+        <div className={styles.detailRow}><span className="t-caption">{s.lblWindow}</span><strong className="id-code">{props.context.windowLabel}</strong></div>
+        {props.context.priority && <div className={styles.detailRow}><span className="t-caption">{s.lblPriority}</span><strong>{props.context.priority}</strong></div>}
       </div>
       </div>
 
       {ready ? (
-        <div className="stack" style={sectionStyle}>
+        <div className={styles.sectionCard}>
           <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
             <span className="tag">{s.dateHeading}: <span className="id-code">{date ?? "—"}</span></span>
             <span className="tag">{s.modeHeading}: {modeWord(mode)}</span>
@@ -229,7 +208,7 @@ export default function PreExecution(props: {
       ) : (
         <div className="stack" style={{ gap: 14 }}>
           {/* 2 · Execution Date — window-constrained, per-day availability */}
-          <section aria-label={s.dateHeading} style={sectionStyle}>
+          <section aria-label={s.dateHeading} className={styles.sectionCard}>
             <h5 style={{ marginBlockEnd: 4 }}>{s.dateHeading}</h5>
             <p className="t-caption" style={{ marginBlockEnd: "var(--space-2)" }}>{s.dateCaption}</p>
             {props.capacityNote === "unavailable" && <p className="t-caption">{s.availabilityUnknown}</p>}
@@ -258,7 +237,7 @@ export default function PreExecution(props: {
           </section>
 
           {/* 3 · Visit Mode — planning-set mode + governed alternatives */}
-          <section aria-label={s.modeHeading} style={sectionStyle}>
+          <section aria-label={s.modeHeading} className={styles.sectionCard}>
             <h5 style={{ marginBlockEnd: 4 }}>{s.modeHeading}</h5>
             <div className="stack" style={{ gap: 8 }}>
               {(["physical", "virtual"] as const).map(m => {
@@ -285,7 +264,7 @@ export default function PreExecution(props: {
           </section>
 
           {/* 4 · Package — read-only when Planning selected one, governed selector otherwise */}
-          <section aria-label={s.packageHeading} style={sectionStyle}>
+          <section aria-label={s.packageHeading} className={styles.sectionCard}>
             <h5 style={{ marginBlockEnd: 4 }}>{s.packageHeading}</h5>
             {props.plannedPackage ? (
               <div className="stack" style={{ gap: 4 }}>
@@ -322,7 +301,7 @@ export default function PreExecution(props: {
 
           {/* 5 · Form / Action Form configuration (pre-Ready only; D-007 fail closed) */}
           {activePackage && (
-            <section aria-label={s.formsHeading} style={sectionStyle}>
+            <section aria-label={s.formsHeading} className={styles.sectionCard}>
               <h5 style={{ marginBlockEnd: 4 }}>{s.formsHeading}</h5>
               <div className="stack" style={{ gap: 8 }}>
                 {activePackage.hasOptionalityMetadata ? (
@@ -381,7 +360,7 @@ export default function PreExecution(props: {
           )}
 
           {/* 6 · actions: save (no state change) + confirm Ready */}
-          <div className="row" style={{ ...cardStyle, gap: 8, alignItems: "center", flexWrap: "wrap", position: "sticky", bottom: 0, zIndex: 2 }}>
+          <div className={styles.stickyActions}>
             <button className="btn btn-secondary" onClick={onSave} disabled={busy} data-testid="prep-save">
               {busy ? s.working : s.save}
             </button>

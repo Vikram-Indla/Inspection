@@ -1,0 +1,306 @@
+schema_version: "1.0"
+change_control_id: "CC-DEMO-SEED-EXPANSION-20260726-001"
+decision_id: "DEC-036"
+task_id: "TASK-DEMO-SEED-EXPANSION-20260726-001"
+title: "One-batch deterministic demo-data expansion"
+raised_at: "2026-07-26"
+raised_by: "Codex change-control author"
+state: "PRODUCT_OWNER_AUTHORIZED_PACKET_READY_NOT_EXECUTED"
+
+sponsor_authority:
+  authority: "Vikram Indla / Product Owner"
+  direction: >
+    Authorize one deterministic demo seed batch in Supabase project
+    iiozvqntawxfwbgffzqu, including three fictional accounts for each of the
+    thirteen canonical roles, while preserving all workflow, RLS/RBAC, audit,
+    immutability, provenance, cleanup and evidence controls.
+  authorization_effect: >
+    This record supersedes the CURRENT_SLICE standing boundary limiting visible
+    data to 24 clean factories and five test accounts, and its blanket
+    no-new-submissions consequence, for exactly one registered seed_batch_id.
+    It does not change production policy, create a reusable standing exception,
+    authorize a second batch, or resolve a technical defect by declaration.
+
+supersession_boundary:
+  supersedes_for_this_batch_only:
+    - "CURRENT_SLICE.yaml standing boundary: only 24 clean factories F-1101..F-6602 may be surfaced"
+    - "CURRENT_SLICE.yaml standing boundary: only five test accounts may be surfaced"
+    - "DEC-032-derived policy prohibition on attempting new canonical submissions"
+  remains_in_force:
+    - "DEC-032 remains OPEN/P0 until the database trigger is repaired and independently proven."
+    - "No direct insert into submission_versions is permitted."
+    - "No workflow status column may be updated directly."
+    - "No immutable submitted or published version may be edited."
+    - "No direct audit_events insert, update or delete is permitted."
+    - "No production project, provider, deployment or main-branch mutation is authorized."
+  expiry: >
+    The exception is consumed when the single approved seed_batch_id reaches
+    completed, partial, failed, or cleaned status. Any rerun may only resume the
+    same deterministic batch; a new batch root requires new Product Owner
+    change control.
+
+dec_032_authority_reconciliation:
+  conflict: >
+    CURRENT_SLICE.yaml, OPEN_DECISIONS.yaml, decision_register.csv and the
+    V5-era control board still describe DEC-032 as OPEN/P0. Later evidence at
+    product-contract/evidence/TASK-QA-R3-CLOSURE-20260722.md states that
+    migration 20260722090000_fix_submission_snapshot_trigger_search_path.sql
+    was applied and that a disposable golden journey passed 11/11, including
+    submission v1/v2, return, resubmit and approve with v1 immutable.
+  source_migration: "supabase/migrations/20260722090000_fix_submission_snapshot_trigger_search_path.sql"
+  rule: >
+    This packet does not silently rewrite or close the older frozen authority
+    records. Before seeding, the operator must inspect the target project's
+    applied migration/object state and run a fresh canonical persona-JWT
+    submission probe. If the function search_path includes public, extensions,
+    pg_temp and the probe succeeds without 42883, record DEC-032 as
+    REMEDIATED_FOR_THIS_TARGET_RUN with both the R3 evidence and fresh probe.
+    If either check fails, retain BLOCKED_DEC_032. Chat, migration-file
+    presence, or stale status prose alone is insufficient.
+  no_bypass: >
+    In both outcomes, direct submission_versions insertion remains prohibited;
+    only the canonical submission path can generate a seeded submitted version.
+
+target_environment:
+  supabase_project_ref: "iiozvqntawxfwbgffzqu"
+  classification: "explicitly allow-listed non-production demo/test target for this packet only"
+  allow_list:
+    - "iiozvqntawxfwbgffzqu"
+  hard_refusal:
+    - "Resolved project ref differs from the allow-list."
+    - "NODE_ENV is production."
+    - "The operator cannot prove environment identity without printing secrets."
+    - "The baseline or collision report detects an unowned deterministic ID."
+  refusal_token: "SEEDING_BLOCKED_ENVIRONMENT_NOT_PROVEN"
+
+authoritative_provenance:
+  drive_folder:
+    id: "1-yI5BCwgKlEDI438koKi0GWCeAo0RvuK"
+    name: "Seeders"
+  drive_package:
+    id: "1yKyVhgCWoUyX_fjDtwz1OwxHi7C1YYxK"
+    name: "MIM_Inspection_Supabase_Seeding_Discovery_Handoff.zip"
+    mime_type: "application/zip"
+    size_bytes: 183726
+    modified_time: "2026-07-23T23:09:53.000Z"
+    sha256_from_registered_local_authority: "350fb8f7443692173dae6c8c2fc1ffb71aaf79eb481663834db90b86cae64f3a"
+    verification_rule: >
+      Downloaded bytes must match the registered size and SHA-256 before any
+      implementation or run. Drive file ID, not a local path or filename match,
+      is the source identity.
+  required_package_contracts:
+    - "SEEDER_IMPLEMENTATION_PLAN.md"
+    - "SEED_MANIFEST_SCHEMA.md"
+    - "PERSONA_AND_ORGANISATION_SEED_PLAN.csv"
+    - "RLS_SEED_ACCEPTANCE_MATRIX.csv"
+    - "SEED_CLEANUP_AND_ROLLBACK.md"
+    - "SEED_SCENARIO_CATALOG.csv"
+    - "SEED_DEPENDENCY_DAG.md"
+    - "SEED_VALIDATION_PLAN.md"
+
+account_batch:
+  total_accounts: 39
+  per_role: 3
+  canonical_role_source: "supabase/migrations/0001_foundation.sql"
+  canonical_roles:
+    - "compliance_admin"
+    - "form_admin"
+    - "workflow_admin"
+    - "risk_owner"
+    - "gis_admin"
+    - "security_admin"
+    - "planner"
+    - "inspector"
+    - "reviewer"
+    - "ops"
+    - "auditor"
+    - "leadership"
+    - "factory_rep"
+  identity_rules:
+    - "All names, emails, phone-like values and employee references are fictional and visibly synthetic."
+    - "Use a reserved test-only email namespace approved by preflight; do not use @mim.gov.sa or any real person's address."
+    - "No real PII, copied employee identity, personal phone number or external recipient is permitted."
+    - "Account UUIDs and aliases are deterministic functions of seed_batch_id, role_key and ordinal 01..03."
+  password_rules:
+    - "Passwords are generated or supplied outside Git through the approved secret store/operator environment."
+    - "No password, password pattern, service-role key or persona JWT appears in source, manifest, logs, evidence or PR text."
+    - "Evidence records only secret references and redacted authentication outcomes."
+  auth_and_profile_sequence:
+    - "The service-role credential may be used only by the server-side Auth Admin module to create or reconcile the 39 auth.users identities."
+    - "The service-role credential is destroyed from runner memory before any domain/profile/role write."
+    - "All later writes use authenticated persona JWTs and existing RLS/canonical RPCs."
+    - "Role grants use admin_grant_role authenticated as an existing security_admin; never insert user_roles directly."
+    - >
+      The current repository does not prove an RLS-authorized profile bootstrap
+      path for a newly-created auth user. Execution must stop after Auth dry-run
+      unless an existing canonical mechanism is proven. Any new self-profile
+      RPC/policy requires a separately reviewed forward migration and may not be
+      improvised by the seeder.
+
+seed_batch_contract:
+  batch_count: 1
+  seed_batch_id: "DERIVE_AND_FREEZE_IN_SIGNED_PREFLIGHT_MANIFEST"
+  deterministic_anchor: "FREEZE_ONCE_IN_SIGNED_PREFLIGHT_MANIFEST"
+  profile: "demo"
+  manifest_required_before_write: true
+  manifest_fields:
+    - "seed_batch_id"
+    - "anchor_date"
+    - "runner_commit_sha"
+    - "target_project_ref"
+    - "Drive package ID, size and SHA-256"
+    - "exact deterministic IDs by table and scenario"
+    - "reused reference IDs, never cleanup-owned"
+    - "insert/reuse/skip/conflict expected counts"
+    - "canonical RPC and persona actor for every transition"
+    - "reverse-dependency cleanup order"
+    - "secret references only, never secret values"
+  immutable_handling: >
+    Immutable rows are skip-only. If an immutable deterministic ID already
+    exists and is not proven to belong to the same exact batch, stop with a
+    collision; never overwrite, update, delete or silently reuse it.
+  rerun_rule: >
+    A rerun with the same batch ID and anchor is resume/idempotency proof only.
+    Mutable seed-owned rows may converge only through their canonical write
+    contracts. Immutable rows remain skip-only. A different batch ID is denied.
+
+allowed_data_surface:
+  read_only_reference_tables:
+    - "roles"
+    - "capabilities"
+    - "permissions"
+    - "engine_settings"
+    - "regulations"
+    - "regulation_clauses"
+    - "inspection_items"
+    - "configuration_templates"
+    - "packages"
+    - "package_versions"
+    - "violation_codes"
+    - "penalty_mappings"
+    - "existing geography/reference lookups"
+  batch_owned_candidates_subject_to_schema_preflight:
+    - "auth.users (Auth Admin API only)"
+    - "profiles (canonical bootstrap only; currently blocked until proven)"
+    - "user_roles (admin_grant_role RPC only)"
+    - "factories"
+    - "factory_representatives"
+    - "factory_documents"
+    - "industrial_licenses"
+    - "plant_production_line_items"
+    - "visit_plans"
+    - "visits"
+    - "assignments / visit_assignments as confirmed by live schema"
+    - "journey_sessions"
+    - "geo_events"
+    - "inspections"
+    - "checklist_responses"
+    - "evidence metadata and approved seed-owned storage objects"
+    - "findings"
+    - "violations"
+    - "action_forms"
+    - "submission_versions (canonical submission transition only; skip-only afterward)"
+    - "reviews (canonical review transitions only)"
+    - "virtual_sessions and virtual_participants"
+    - "notifications generated by canonical transitions/adapters only"
+  generated_not_directly_written:
+    - "audit_events"
+    - "workflow/lifecycle event ledgers"
+    - "outbox/notification rows where canonical transitions own generation"
+  prohibited:
+    - "Any table absent from the signed preflight schema inventory and manifest"
+    - "Any untagged or non-batch-owned row mutation"
+    - "Real provider delivery or real external-recipient contact"
+    - "Production-shaped external provider payloads presented as live"
+    - "Policy, SLA, threshold, risk weight, geofence, retention or legal values not already governed"
+
+workflow_and_submission_rules:
+  - "Use only canonical create/validate/publish/assign/prepare/arrive/submit/review/approve/return/reject/cancel/expire RPCs or application services confirmed by live function inventory."
+  - "Do not invent an RPC name. Record the exact discovered signature and actor before execution."
+  - "Every transition runs under the persona JWT whose role owns it and must pass RLS and guards."
+  - "Audit evidence must be generated by the canonical transition/trigger and correlated back to that actor and batch."
+  - >
+    Before any submission scenario, reconcile DEC-032 using the R3 closure
+    evidence, live applied-object state and a sacrificial canonical submit
+    probe. If 42883 reproduces or the repaired object cannot be proven, mark
+    submission scenarios BLOCKED_DEC_032, perform no direct insert and continue
+    only with scenarios that do not claim a submission. The batch cannot be
+    declared fully complete.
+
+cleanup_and_rollback:
+  cleanup_entrypoint: "scripts/seed/cleanup.ts --batch <exact-id> --dry-run"
+  default: "dry-run; explicit operator confirmation required for mutation"
+  target_rule: "Exact signed manifest members only, in reverse dependency order"
+  never_delete_or_rewrite:
+    - "audit_events"
+    - "immutable submitted versions"
+    - "immutable published configuration history"
+    - "reused reference rows"
+    - "any row not owned by the exact batch"
+  auth_cleanup: >
+    Auth users may be deleted only when their deterministic IDs are exact
+    members of this batch, have no non-batch dependencies, and all domain
+    cleanup validations pass first. A dry-run collision stops cleanup.
+  rollback_definition: >
+    Cleanup removes only safely removable batch-owned mutable/demo identities
+    and records residual immutable/generated history truthfully. A rollback
+    claim must list residual rows; it may not claim zero residue if immutable
+    audit or submitted history remains.
+
+repository_path_authorization:
+  allowed_implementation_paths:
+    - "scripts/seed/**"
+    - "apps/web/package.json (seed script entry only)"
+    - "apps/web/package-lock.json (only if the approved runner needs an already-approved dependency)"
+    - "product-contract/evidence/seed-runs/** (redacted manifests and validation only)"
+    - "product-contract/seeding-discovery/** (implementation addenda only; do not rewrite registered source evidence)"
+  allowed_governance_paths_for_this_authoring_task:
+    - "product-contract/governance/CC-DEMO-SEED-EXPANSION-20260726-001.yaml"
+    - "product-contract/governance/decision_register.csv"
+    - "product-contract/execution/TASK-DEMO-SEED-EXPANSION-20260726-001.yaml"
+    - "product-contract/execution/WORK_QUEUE.yaml"
+  prohibited_paths:
+    - "product application source"
+    - "existing migrations and frozen product-contract baselines"
+    - "apps/web/e2e/personas.ts"
+    - "committed password or secret files"
+    - "status/saqeel-status.json"
+  migration_boundary: >
+    No DDL is authorized by this packet. If seed registry/profile bootstrap
+    cannot be implemented with the signed external manifest and existing
+    canonical contracts, raise a separate migration change control.
+
+acceptance:
+  preflight:
+    - "Target ref equals iiozvqntawxfwbgffzqu and production guard passes."
+    - "Drive package bytes match ID, size and registered SHA-256."
+    - "Live schema/function inventory maps every intended row and transition."
+    - "Signed exact-ID manifest has zero unowned collisions."
+    - "39 auth identities equal exactly 3 x 13 canonical role keys."
+    - "Profile bootstrap and role-grant paths are proven canonical before Auth creation is committed."
+    - "Cleanup dry-run enumerates the exact batch and no other rows."
+    - "DEC-032 stale-authority conflict is reconciled against R3 evidence, live object state and a fresh canonical probe."
+  execution:
+    - "Service role is used for Auth Admin only, never domain/RLS proof."
+    - "Persona-JWT positive and negative RLS probes pass for all 13 roles."
+    - "All workflow changes use canonical transitions and guards."
+    - "No direct audit insert or workflow-status mutation occurs."
+    - "No real PII, real external recipient, invented policy or provider success is present."
+    - "Immutable rows are created only through canonical paths and are skip-only on rerun."
+  evidence:
+    - "Redacted manifest hash and runner commit SHA"
+    - "Environment identity and pre/post counts without credentials"
+    - "Auth create/reuse/skip/conflict report and exact account-role cardinality"
+    - "Persona JWT/RLS positive and denied matrix"
+    - "Canonical RPC transition and generated-audit correlation"
+    - "DEC-032 submission probe result"
+    - "Same-batch idempotent rerun report"
+    - "Cleanup dry-run, cleanup result if approved, and residual immutable-history report"
+    - "Post-cleanup exact member reconciliation"
+
+authorization_exclusions:
+  - "This authoring task performs no database, Auth, storage or provider writes."
+  - "No push, merge, deployment or production mutation."
+  - "No second seed batch."
+  - "No DEC-032 migration or application workaround."
+  - "No completion claim until every applicable acceptance item is evidenced."

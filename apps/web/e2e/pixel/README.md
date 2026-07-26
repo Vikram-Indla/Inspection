@@ -4,14 +4,19 @@ This harness reads the 24 shippable PWA cards from
 `status/saqeel-status.json`. The exact `route` field is the only join key used
 to associate shipped route targets with each card's `designPage` values.
 Routes and designs are arrays, so the manifest is many-to-many.
+Prototype pages and their runtime assets are served from the tracked canonical
+tree at `designs/pwa/pwa/`.
 
 Set these values in `apps/web/.env.local`, `apps/web/.env`, or a file selected
 by `PIXEL_ENV_FILE`:
 
 ```text
 PIXEL_INSPECTOR_EMAIL=inspector@mim.gov.sa
-PIXEL_INSPECTOR_PASSWORD=...
+PIXEL_INSPECTOR_PASSWORD=
 ```
+
+An explicitly assigned empty password is valid in the governed local test
+project. A missing assignment is not; the loader distinguishes those states.
 
 Run against the existing server on port 3000:
 

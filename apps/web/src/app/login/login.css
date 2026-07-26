@@ -185,7 +185,17 @@
    remaps the fixed-dark atlas tokens onto the theme-aware base tokens so every
    overlay reads correctly on the daylight render (dark stays native). */
 .lg-story { position: relative; min-inline-size: 0; min-block-size: 100dvh;
-  overflow: hidden; background: var(--atlas-canvas); }
+  overflow: hidden; background: var(--atlas-canvas);
+  /* SAQEEL Login v2: the atlas is grounded on the credential column's graphite
+     nav palette, not the standalone violet atlas palette, so the two halves of
+     the page read as one surface instead of two. Remapping the --atlas-* set
+     here re-grounds every downstream overlay, fade, label and rail in one
+     place. The light-theme block below still wins on specificity. */
+  --atlas-canvas:  var(--nav-bg);
+  --atlas-surface: var(--surface-primary);
+  --atlas-text:    var(--nav-text-active);
+  --atlas-muted:   var(--nav-text);
+  --atlas-border:  color-mix(in srgb, var(--nav-text) 18%, transparent); }
 :root[data-theme="light"] .lg-story {
   --atlas-canvas:  var(--surface-canvas);
   --atlas-surface: var(--surface-primary);
@@ -221,6 +231,16 @@
   background: linear-gradient(to top,
     color-mix(in srgb, var(--atlas-canvas) 52%, transparent),
     color-mix(in srgb, var(--atlas-canvas) 12%, transparent) 58%, transparent); }
+/* seam gradient: dissolves the boundary with the credential column so the two
+   halves meet without a visible edge */
+.lg-story__seam { position: absolute; inset-block: 0; inset-inline-start: 0;
+  inline-size: 190px; z-index: 24; pointer-events: none;
+  background: linear-gradient(to right, var(--atlas-canvas),
+    color-mix(in srgb, var(--atlas-canvas) 55%, transparent) 46%, transparent); }
+[dir="rtl"] .lg-story__seam {
+  background: linear-gradient(to left, var(--atlas-canvas),
+    color-mix(in srgb, var(--atlas-canvas) 55%, transparent) 46%, transparent); }
+
 .lg-story__summary { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; overflow: hidden;
   border: 1px solid var(--atlas-border); border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--atlas-surface) 94%, transparent); }
@@ -315,7 +335,9 @@
 .lg-atlas-image { position: absolute; inset: 0; overflow: hidden;
   container-type: size; background: var(--atlas-canvas); }
 .lg-atlas-image__plane { position: absolute; inset-block-start: 50%; inset-inline-start: 50%;
-  inline-size: min(100cqw, calc(100cqh * 1.776833)); aspect-ratio: 1672 / 941;
+  /* the approved 1672×941 composition is over-scaled to 132% so the camera
+     sits inside the landmass rather than framing the whole plate */
+  inline-size: min(132cqw, calc(100cqh * 1.776833)); aspect-ratio: 1672 / 941;
   transform: translate(-50%, -50%); transform-style: preserve-3d;
   transition: transform 1050ms cubic-bezier(.16,.84,.25,1), filter 1050ms ease; }
 [dir="rtl"] .lg-atlas-image__plane { transform: translate(50%, -50%); }
@@ -325,8 +347,17 @@
 .lg-atlas-image.is-zone-engaged .lg-atlas-image__plane picture { filter: brightness(.73) saturate(.82); }
 .lg-atlas-image__media { position: absolute; inset: 0; inline-size: 100%; block-size: 100%;
   object-fit: fill; opacity: 0;
+  /* the raster is graded toward the credential column's graphite ground */
+  filter: saturate(.58) hue-rotate(-10deg) brightness(.93);
   transition: opacity var(--transition-base); user-select: none; }
 .lg-atlas-image.is-ready .lg-atlas-image__media { opacity: 1; }
+/* two wash layers finish pulling the plate onto the nav palette: a colour pass
+   that restates the hue, then a multiply pass that seats the shadows */
+.lg-atlas-image__wash { position: absolute; inset: 0; z-index: 6; pointer-events: none; }
+.lg-atlas-image__wash--color { background: var(--atlas-canvas); opacity: .34;
+  mix-blend-mode: color; }
+.lg-atlas-image__wash--shade { background: color-mix(in srgb, var(--atlas-canvas) 18%, transparent);
+  mix-blend-mode: multiply; }
 
 /* ---- Arabic-first human journey + restrained zone depth -----------------
    These are illustrative overlays on the approved public-safe atlas. Zone
@@ -360,7 +391,9 @@
 /* Five-scene reveal -------------------------------------------------------
    The accepted atlas controls remain accessible, but the automatic story
    introduces exactly one visual layer per scene to keep cognitive load low. */
-.lg-atlas-motion__zones path { opacity: 0; animation: none; transition: none;
+/* Scene changes cross-fade over 2s so one story dissolves into the next
+   instead of cutting. */
+.lg-atlas-motion__zones path { opacity: 0; animation: none; transition: opacity 2s ease;
   fill: color-mix(in srgb, var(--zone-tone) 2%, transparent);
   stroke: color-mix(in srgb, var(--zone-tone) 56%, transparent); stroke-width: 1.2;
   stroke-dasharray: 5 6; vector-effect: non-scaling-stroke; }
@@ -369,23 +402,58 @@
 .lg-atlas-motion[data-stage="decide"] .lg-atlas-motion__zones path { opacity: .68; }
 
 .lg-atlas-motion__route-line { fill: none; opacity: 0; animation: none; stroke-dashoffset: 100;
+  transition: opacity 2s ease;
   stroke: var(--status-info); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 4 7; }
-.lg-atlas-motion[data-stage="travel"] .lg-atlas-motion__route-line {
+/* Scene 05 (Zones) is the composite: every layer on at once. Each other scene
+   shows exactly one story. This is the `SC === sc || SC === "decide"` gate. */
+.lg-atlas-motion[data-stage="travel"] .lg-atlas-motion__route-line,
+.lg-atlas-motion[data-stage="decide"] .lg-atlas-motion__route-line {
   opacity: .72; stroke-dashoffset: 0; }
-.lg-atlas-motion__route-stops circle { fill: var(--atlas-canvas); stroke: var(--status-info); stroke-width: 1.6; }
+.lg-atlas-motion__route-stops circle { fill: var(--atlas-canvas); stroke: var(--status-info);
+  stroke-width: 1.6; opacity: 0; transition: opacity 2s ease; }
+.lg-atlas-motion[data-stage="travel"] .lg-atlas-motion__route-stops circle,
+.lg-atlas-motion[data-stage="decide"] .lg-atlas-motion__route-stops circle { opacity: 1; }
+.lg-atlas-motion__suvs { opacity: 0; transition: opacity 2s ease; }
+.lg-atlas-motion[data-stage="travel"] .lg-atlas-motion__suvs,
+.lg-atlas-motion[data-stage="decide"] .lg-atlas-motion__suvs { opacity: 1; }
+
+/* geofenced site perimeters — scenes 01 and 05 */
+.lg-atlas-motion__fence { position: absolute; z-index: 3; transform: translate(-50%, -50%);
+  inline-size: 64px; block-size: 64px; border-radius: 50%;
+  border: 1.4px dashed var(--status-info);
+  background: color-mix(in srgb, var(--status-info) 7%, transparent);
+  opacity: 0; transition: opacity 2s ease; }
+.lg-atlas-motion[data-stage="plan"] .lg-atlas-motion__fence,
+.lg-atlas-motion[data-stage="decide"] .lg-atlas-motion__fence { opacity: 1; }
+.lg-atlas-motion__fence::after { content: ""; position: absolute; inset: -7px; border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--status-info) 34%, transparent);
+  animation: lg-atlas-fence-pulse 2.8s ease-out infinite; }
+@keyframes lg-atlas-fence-pulse {
+  from { transform: scale(.84); opacity: .9; }
+  to { transform: scale(1.18); opacity: 0; }
+}
+
+/* illustrative trip distance, carried while a vehicle is on the road */
+.lg-atlas-motion__km { position: absolute; z-index: 3; transform: translate(-50%, -50%);
+  white-space: nowrap; padding: 2px 7px; border-radius: var(--radius-full);
+  color: var(--atlas-text); background: color-mix(in srgb, var(--atlas-canvas) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--status-info) 42%, transparent);
+  font: 700 11px/1.4 var(--font-body); letter-spacing: 0;
+  opacity: 0; transition: opacity 2s ease; }
+[lang="en"] .lg-atlas-motion__km { font: 700 10px/1.4 var(--font-mono); letter-spacing: .4px; }
+.lg-atlas-motion[data-stage="travel"] .lg-atlas-motion__km,
+.lg-atlas-motion[data-stage="decide"] .lg-atlas-motion__km { opacity: 1; }
 .lg-atlas-motion__route-vehicle { filter: drop-shadow(0 2px 3px color-mix(in srgb, var(--shadow-base) 68%, transparent)); }
 
 .lg-atlas-motion__inspector { position: absolute; z-index: 3; opacity: 0; left: auto; top: auto;
   inline-size: 42px; block-size: 67px; transform: translate(-50%, -50%); }
 .lg-atlas-motion__inspector img { display: block; inline-size: 100%; block-size: 100%; object-fit: contain;
   filter: drop-shadow(0 5px 6px color-mix(in srgb, var(--shadow-base) 68%, transparent)); }
-.lg-atlas-motion[data-stage="arrive"] .lg-atlas-motion__inspector {
-  animation: lg-atlas-inspector-in 520ms ease-out both;
-  animation-delay: var(--actor-delay); }
-@keyframes lg-atlas-inspector-in {
-  from { opacity: 0; transform: translate(-50%, -50%) translateY(8px) scale(.82); }
-  to { opacity: 1; transform: translate(-50%, -50%) translateY(-3px) scale(1); }
-}
+.lg-atlas-motion__inspector { transform: translate(-50%, -50%) translateY(8px) scale(.82);
+  transition: opacity 2s ease-out var(--actor-delay), transform 2s ease-out var(--actor-delay); }
+.lg-atlas-motion[data-stage="arrive"] .lg-atlas-motion__inspector,
+.lg-atlas-motion[data-stage="decide"] .lg-atlas-motion__inspector {
+  opacity: 1; transform: translate(-50%, -50%) translateY(-3px) scale(1); }
 
 .lg-atlas-motion__outcome { position: absolute; z-index: 3; opacity: 0;
   transform: translate(-50%, -50%); display: flex; align-items: center; gap: 5px;
@@ -393,16 +461,15 @@
   border-radius: var(--radius-full); color: var(--text-inverse);
   box-shadow: var(--shadow-xs); font: 700 11px/1 var(--font-body); }
 [dir="rtl"] .lg-atlas-motion__outcome { font-family: var(--font-body); }
-.lg-atlas-motion__outcome b { font: 900 15px/1 var(--font-body); }
+.lg-atlas-motion__outcome b { inline-size: 6px; block-size: 6px; border-radius: 50%;
+  background: currentColor; }
 .lg-atlas-motion__outcome--passed { background: var(--status-compliant); }
 .lg-atlas-motion__outcome--failed { background: var(--status-critical); }
-.lg-atlas-motion[data-stage="inspect"] .lg-atlas-motion__outcome {
-  animation: lg-atlas-outcome-in 460ms ease-out both;
-  animation-delay: var(--actor-delay); }
-@keyframes lg-atlas-outcome-in {
-  from { opacity: 0; transform: translate(-50%, -50%) scale(.68); }
-  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-}
+.lg-atlas-motion__outcome { transform: translate(-50%, -50%) scale(.68);
+  transition: opacity 2s ease-out var(--actor-delay), transform 2s ease-out var(--actor-delay); }
+.lg-atlas-motion[data-stage="inspect"] .lg-atlas-motion__outcome,
+.lg-atlas-motion[data-stage="decide"] .lg-atlas-motion__outcome {
+  opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
 /* Hover-driven terrain extraction: cavity, earth depth and raised top surface.
    This is a spatial map interaction, not a tooltip or highlighted polygon. */
@@ -414,6 +481,7 @@
 .lg-zone-lift__edge { fill: transparent; stroke: color-mix(in srgb, var(--status-info) 0%, transparent);
   stroke-width: .8; vector-effect: non-scaling-stroke; pointer-events: all; cursor: pointer; }
 .lg-zone-lift__slab:hover .lg-zone-lift__edge { stroke: color-mix(in srgb, var(--status-info) 34%, transparent); }
+.lg-zone-lift__edge:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 /* The recess left behind: an opaque dark cavity over the resting terrain. */
 .lg-zone-lift__cavity { fill: color-mix(in srgb, var(--shadow-base) 96%, #000); opacity: 0; }
 /* Exposed earth/rock sidewall — a darkened copy of the same terrain slice. */
@@ -441,18 +509,18 @@
 
 /* Scene one is deliberately clean. Interactive anchors stay in the DOM but
    reveal their visual focus affordance only on direct hover/keyboard focus. */
-.lg-atlas-image__hotspot-core, .lg-atlas-image__hotspot-label { opacity: 0; }
+.lg-atlas-image__hotspot-core, .lg-atlas-image__hotspot-label { opacity: 0;
+  transition: opacity 200ms ease; }
 .lg-atlas-image__hotspot:hover .lg-atlas-image__hotspot-core,
 .lg-atlas-image__hotspot:focus-visible .lg-atlas-image__hotspot-core,
 .lg-atlas-image__hotspot:hover .lg-atlas-image__hotspot-label,
 .lg-atlas-image__hotspot:focus-visible .lg-atlas-image__hotspot-label { opacity: 1; }
-.lg-atlas-image__zones span { opacity: 1; transform: translate(-50%, -50%); }
 
 .lg-story.is-motion-paused .lg-atlas-motion *,
 .lg-story.is-motion-paused .lg-atlas-image__hotspot::after { animation-play-state: paused !important; }
 .lg-atlas-image__hotspots { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
 .lg-atlas-image__hotspot { --tone: var(--action-primary); position: absolute;
-  inline-size: 44px; block-size: 44px; transform: translate(-50%, -50%);
+  inline-size: 46px; block-size: 46px; transform: translate(-50%, -50%);
   display: grid; place-items: center; border: 0; border-radius: var(--radius-full);
   padding: 0; background: transparent; cursor: pointer; pointer-events: auto; }
 .lg-atlas-image__hotspot--arrival { --tone: var(--status-compliant); }
@@ -460,40 +528,55 @@
 .lg-atlas-image__hotspot--virtual { --tone: var(--status-info); }
 .lg-atlas-image__hotspot--route { --tone: var(--action-primary); }
 .lg-atlas-image__hotspot::before { content: ""; position: absolute; inset: 5px;
-  border: 1px solid color-mix(in srgb, var(--tone) 72%, transparent);
-  border-radius: inherit; opacity: 0; transform: scale(0.72);
-  transition: opacity var(--transition-fast), transform var(--transition-fast); }
+  border: 1.5px solid var(--tone);
+  border-radius: inherit; opacity: 0; transform: scale(0.7);
+  transition: opacity 220ms ease, transform 220ms cubic-bezier(.2,.8,.2,1); }
 .lg-atlas-image__hotspot:hover::before,
-.lg-atlas-image__hotspot:focus-visible::before,
-.lg-atlas-image__hotspot.is-active::before { opacity: 1; transform: scale(1); }
+.lg-atlas-image__hotspot:focus-visible::before { opacity: 1; transform: scale(1); }
 .lg-atlas-image__hotspot-core { inline-size: 10px; block-size: 10px;
-  border: 2px solid var(--atlas-canvas); border-radius: var(--radius-full);
-  background: var(--tone); box-shadow: var(--shadow-xs); }
+  border-radius: var(--radius-full); background: var(--tone); }
+/* silent at rest, named on hover / keyboard focus — no chrome around the name */
 .lg-atlas-image__hotspot-label { position: absolute; z-index: 2; min-inline-size: max-content;
-  padding: 2px 7px; border-radius: var(--radius-full); pointer-events: none;
-  color: var(--atlas-text); background: color-mix(in srgb, var(--atlas-canvas) 88%, transparent);
-  border: 1px solid color-mix(in srgb, var(--tone) 34%, transparent);
-  font: 700 11px/16px var(--font-body); box-shadow: 0 2px 8px color-mix(in srgb, var(--shadow-base) 40%, transparent); }
+  padding: 1px 6px; border-radius: var(--radius-full); pointer-events: none;
+  color: var(--atlas-text); background: color-mix(in srgb, var(--atlas-canvas) 86%, transparent);
+  font: 700 11px/15px var(--font-body); }
 .lg-atlas-image__hotspot-label--ar { font-family: var(--font-body); }
 .lg-atlas-image__hotspot-label--en { font: 700 10px/15px var(--font-mono); letter-spacing: 0.4px; }
-.lg-atlas-image__hotspot-label--below { inset-block-start: calc(100% - 4px); left: 50%; transform: translateX(-50%); }
+.lg-atlas-image__hotspot-label--below { inset-block-start: calc(100% - 8px); left: 50%; transform: translateX(-50%); }
 .lg-atlas-image__hotspot-label--above { inset-block-end: calc(100% - 4px); left: 50%; transform: translateX(-50%); }
 .lg-atlas-image__hotspot-label--right { left: calc(100% - 4px); }
 .lg-atlas-image__hotspot-label--left { right: calc(100% - 4px); }
-.lg-atlas-image__zones { position: absolute; inset: 0; pointer-events: none; }
-.lg-atlas-image__zones span { position: absolute; transform: translate(-50%, -50%);
-  padding: 1px 6px; border-radius: var(--radius-full); white-space: nowrap;
-  color: var(--atlas-muted); background: color-mix(in srgb, var(--atlas-canvas) 82%, transparent);
-  font: 600 10px/15px var(--font-body); letter-spacing: 0; }
-.lg-atlas-image__zones--en span { font-family: var(--font-mono); letter-spacing: 1px; }
+.lg-atlas-image__zones { position: absolute; inset: 0; z-index: 14; pointer-events: none; }
+/* Set into the terrain, not onto a card: bare type carried by a text shadow. */
+.lg-atlas-image__zones > span { position: absolute; transform: translate(-50%, -50%);
+  white-space: nowrap; opacity: 0;
+  color: var(--atlas-muted);
+  text-shadow: 0 1px 10px color-mix(in srgb, var(--shadow-base) 92%, transparent),
+    0 0 4px color-mix(in srgb, var(--shadow-base) 85%, transparent);
+  font: 600 10px/15px var(--font-body); letter-spacing: 0;
+  transition: transform 900ms cubic-bezier(.16,.84,.25,1), opacity 680ms ease; }
+.lg-atlas-image__zones--en > span { font-family: var(--font-mono); letter-spacing: 1px; }
+/* visible on the inspection and zones scenes — or whenever lifted */
+.lg-atlas-image__zones[data-stage="inspect"] > span,
+.lg-atlas-image__zones[data-stage="decide"] > span { opacity: 1; }
+.lg-atlas-image__zones > span.is-dimmed { opacity: .35; }
+.lg-atlas-image__zones > span.is-lifted { opacity: 1;
+  transform: translate(-50%, -50%) translateY(-26px); }
+/* the label is a column: the name, and the readout it becomes once lifted */
+.lg-atlas-image__zones > span { display: flex; flex-direction: column; gap: 3px; }
+.lg-atlas-image__zones > span.is-lifted .lg-atlas-image__zone-name {
+  color: var(--atlas-text); font: 700 15px/1.2 var(--font-body); letter-spacing: 0; }
+.lg-atlas-image__zone-name { display: block; white-space: nowrap; }
+.lg-atlas-image__zone-stats { display: flex; align-items: baseline; gap: 9px;
+  white-space: nowrap; opacity: 0; font: 600 11px/1.3 var(--font-body);
+  letter-spacing: 0; transition: opacity 520ms ease; }
+.lg-atlas-image__zones > span.is-lifted .lg-atlas-image__zone-stats { opacity: 1; }
+.lg-atlas-image__zone-stats b { color: var(--atlas-text); font-weight: 700; }
+.lg-atlas-image__zone-stats span:nth-of-type(1) { color: var(--status-compliant); }
+.lg-atlas-image__zone-stats span:nth-of-type(2) { color: var(--status-warning); }
 .lg-atlas-image__hotspot:focus-visible { outline: none; box-shadow: var(--focus-ring-shadow); }
-.lg-atlas-image__hotspot.is-active::after { content: ""; position: absolute; inset: 6px;
-  border: 1.5px solid var(--tone); border-radius: inherit;
-  animation: lg-atlas-image-stage 1.8s ease-out infinite; }
-@keyframes lg-atlas-image-stage {
-  0% { opacity: 0.8; transform: scale(0.65); }
-  100% { opacity: 0; transform: scale(1.35); }
-}
+/* No stage-linked "active site": every anchor rests silent until hovered or
+   focused. The pulsing halo and its keyframes are gone with it. */
 /* ---- Layer 3: connection network (illustrative spokes) ------------------- */
 .lg-atlas3d__net { stroke-dasharray: 2 7; }
 
@@ -652,7 +735,8 @@
 .lg-atlas3d__stage.is-active .lg-atlas3d__stage-n { color: var(--atlas-text); }
 .lg-atlas3d__stage:focus-visible { outline: none; box-shadow: var(--focus-ring-shadow); }
 .lg-atlas3d__stage-n { font: 700 10px var(--font-mono); color: var(--status-info); }
-.lg-atlas3d__stage-label { font: 600 12px var(--font-body); overflow: hidden; text-overflow: ellipsis; }
+.lg-atlas3d__stage-label { font: 600 12px var(--font-body); overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; }
 [dir="rtl"] .lg-atlas3d__stage-label { font-family: var(--font-body); }
 [dir="rtl"] .lg-atlas3d__stage-n { unicode-bidi: isolate; }
 
@@ -691,14 +775,14 @@
   .lg-atlas3d__dossier { animation: none; }
   .lg-atlas3d__event { animation: none; }
   .lg-atlas-image__media { transition: none; }
-  .lg-atlas-image__hotspot.is-active::after { animation: none; opacity: 0.55; transform: scale(1); }
+  .lg-atlas-image__fence::after { animation: none; }
   .lg-atlas-motion *, .lg-atlas-motion__zones path { animation: none !important; transition: none !important; }
   .lg-atlas-motion__zones path { opacity: 0; transform: none; }
   .lg-atlas-motion[data-stage="arrive"] .lg-atlas-motion__inspector { opacity: 1; transform: translate(-50%, -50%) translateY(-3px); }
   .lg-atlas-motion[data-stage="travel"] .lg-atlas-motion__route-line { opacity: .52; stroke-dashoffset: 0; }
   .lg-atlas-motion[data-stage="inspect"] .lg-atlas-motion__outcome { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   .lg-atlas-motion[data-stage="decide"] .lg-atlas-motion__zones path { opacity: .68; }
-  .lg-atlas-image__zones span { opacity: 1; transform: translate(-50%, -50%); }
+  .lg-atlas-image__zones > span { opacity: 1; transform: translate(-50%, -50%); }
   /* Terrain lift retains its full extracted state and readout, but snaps into
      place instead of animating, and the camera settles without a transition. */
   .lg-zone-lift__slab > *, .lg-atlas-image__plane { transition: none !important; }
@@ -715,14 +799,14 @@
    so those get the card only. Token-only.
    ========================================================================== */
 
-/* Field card is the start-side column; a hairline divides it from the atlas. */
-.lg-page--split .fl-root { min-inline-size: 0;
-  border-inline-end: 1px solid color-mix(in srgb, var(--nav-text) 14%, transparent); }
+/* Field card is the start-side column. No hairline between the columns: the
+   seam gradient already dissolves the boundary, and a rule drawn over it read
+   as a split screen rather than one surface. */
+.lg-page--split .fl-root { min-inline-size: 0; }
 
 /* Narrow (phones, iPad portrait): card only, atlas hidden. Base .lg-page--split
    already collapses to one column at ≤960px. */
 @media (max-width: 960px) {
-  .lg-page--split .fl-root { border-inline-end: none; }
   .lg-page--split .lg-story { display: none; }
 }
 
@@ -732,12 +816,10 @@
    laptop keeps the wide split + atlas. */
 @media (hover: none) and (pointer: coarse) {
   .lg-page--split { grid-template-columns: 1fr; }
-  .lg-page--split .fl-root { border-inline-end: none; }
   .lg-page--split .lg-story { display: none; }
 }
 
 /* Belt-and-suspenders for iPad "Request Desktop Website" mode: DeviceScript
    sets data-device="ipad" pre-paint from navigator.maxTouchPoints + platform. */
 :root[data-device="ipad"] .lg-page--split { grid-template-columns: 1fr; }
-:root[data-device="ipad"] .lg-page--split .fl-root { border-inline-end: none; }
 :root[data-device="ipad"] .lg-page--split .lg-story { display: none; }
