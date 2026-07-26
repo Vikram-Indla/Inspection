@@ -70,6 +70,24 @@ export type CachedRouteEstimate = {
   stale?: boolean;
 };
 
+// CR-327 / CR-334 / CR-403 — a local report is evidence of a real immutable
+// submission, never a client-created approximation. `submittedAt` and the
+// server-assigned version are recorded only after submit_inspection succeeds,
+// or copied from an RLS-authorized submission_versions read.
+export type CachedSubmittedReport = {
+  schema: "saqeel-submitted-report-v1";
+  inspectionId: string;
+  submissionVersionId: string;
+  versionNumber: number;
+  submittedAt: string | null;
+  snapshot: unknown;
+  acknowledgement: unknown;
+  factoryName: string | null;
+  factoryCode: string | null;
+  inspectorName: string | null;
+  cachedAt: string;
+};
+
 function idb(userId: string): Promise<IDBDatabase> {
   return new Promise((res, rej) => {
     const r = indexedDB.open(offlineDatabaseName(userId), 1);
@@ -146,6 +164,33 @@ function createUserOfflineStore(userId: string) {
     // value. It never mutates workflow state and is always surfaced as stale.
     cacheRouteEstimate: (visit: string, estimate: CachedRouteEstimate) => tx(verifiedUserId, "packages", "readwrite", s => s.put(estimate, `route:${visit}`)),
     getRouteEstimate: (visit: string) => tx<CachedRouteEstimate | undefined>(verifiedUserId, "packages", "readonly", s => s.get(`route:${visit}`)),
+    cacheSubmittedReport: (report: CachedSubmittedReport) =>
+      tx(verifiedUserId, "packages", "readwrite", s => s.put(report, `report:${report.inspectionId}`)),
+    getSubmittedReport: (inspectionId: string) =>
+      tx<CachedSubmittedReport | undefined>(verifiedUserId, "packages", "readonly", s => s.get(`report:${inspectionId}`)),
+    getSubmittedReports: async () => {
+      const reports: CachedSubmittedReport[] = [];
+      await tx<CachedSubmittedReport[]>(verifiedUserId, "packages", "readonly", s => {
+        const request = s.openCursor();
+        request.onsuccess = () => {
+          const cursor = request.result;
+          if (!cursor) return;
+          if (String(cursor.key).startsWith("report:")) {
+            const value = cursor.value as Partial<CachedSubmittedReport>;
+            if (
+              value.schema === "saqeel-submitted-report-v1"
+              && typeof value.inspectionId === "string"
+              && typeof value.submissionVersionId === "string"
+              && typeof value.versionNumber === "number"
+              && (value.submittedAt === null || typeof value.submittedAt === "string")
+            ) reports.push(value as CachedSubmittedReport);
+          }
+          cursor.continue();
+        };
+        return { get result() { return reports; } } as unknown as IDBRequest<CachedSubmittedReport[]>;
+      });
+      return reports;
+    },
     enqueue: (op: OutboxOp) => tx(verifiedUserId, "outbox", "readwrite", s => s.add(op)),
     peekAll: () => tx<OutboxOp[]>(verifiedUserId, "outbox", "readonly", s => s.getAll() as IDBRequest<OutboxOp[]>),
     keys: () => tx<IDBValidKey[]>(verifiedUserId, "outbox", "readonly", s => s.getAllKeys()),
@@ -405,6 +450,7 @@ export async function processOutbox(verifiedUserId: string, onState: (s: SyncSta
           p_idempotency_key: op.idempotency_key,
           p_acknowledgement: op.acknowledgement,
         }));
+        let submitted: SubmitSynced | null = null;
         if (rpcError) {
           const missing =
             rpcError.code === "42883" || rpcError.code === "PGRST202" ||
@@ -420,9 +466,33 @@ export async function processOutbox(verifiedUserId: string, onState: (s: SyncSta
           }));
           if (error && !String(error.message).includes("duplicate")) throw error;  // 409 duplicate = already submitted (ERR-SUB-002)
           await guard.network(() => sb.from("inspections").update({ status: "submitted" }).eq("id", op.inspection_id));
+          submitted = {
+            submission_version_id: op.idempotency_key,
+            version_number: op.version_number,
+            reused: Boolean(error),
+          };
         } else if (rpcResult) {
           await guard.assertLive();
-          onSubmitSynced?.(op.inspection_id, rpcResult as SubmitSynced);
+          submitted = rpcResult as SubmitSynced;
+          onSubmitSynced?.(op.inspection_id, submitted);
+        }
+        if (submitted) {
+          await guard.assertLive();
+          await local.cacheSubmittedReport({
+            schema: "saqeel-submitted-report-v1",
+            inspectionId: op.inspection_id,
+            submissionVersionId: submitted.submission_version_id,
+            versionNumber: submitted.version_number,
+            // The RPC does not return the server submitted_at timestamp. The
+            // queued_at device value is not substituted as authoritative time.
+            submittedAt: null,
+            snapshot: op.snapshot,
+            acknowledgement: op.acknowledgement,
+            factoryName: null,
+            factoryCode: null,
+            inspectorName: null,
+            cachedAt: new Date().toISOString(),
+          });
         }
       } else if (op.kind === "factory_check") {
         // M04-103/104/105/113 — observed value + Verified/Updated status persisted
