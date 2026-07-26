@@ -6,6 +6,15 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import VirtualSessionClient, { type FieldVirtualSession } from "./VirtualSessionClient";
 
+const STATE_LABELS: Record<string, { en: string; ar: string }> = {
+  scheduled: { en: "Scheduled", ar: "مجدولة" },
+  waiting: { en: "Waiting room", ar: "غرفة الانتظار" },
+  joined: { en: "Joined", ar: "تم الانضمام" },
+  verified: { en: "Verified", ar: "تم التحقق" },
+  in_progress: { en: "In progress", ar: "قيد التنفيذ" },
+  closed: { en: "Closed", ar: "مغلقة" },
+};
+
 export default async function FieldVirtualSessionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const [sb, { t, locale }] = await Promise.all([supabaseServer(), useT()]);
@@ -18,6 +27,7 @@ export default async function FieldVirtualSessionPage({ params }: { params: Prom
   const session = data as unknown as FieldVirtualSession;
   if (!session.visits?.assignments?.some(a => a.inspector_id === user.id)) notFound();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
+  const stateLabel = STATE_LABELS[session.state];
 
   return (
     <>
@@ -27,7 +37,7 @@ export default async function FieldVirtualSessionPage({ params }: { params: Prom
         </Link>}
         title={tr("field.virtual.sessionTitle", "Remote inspection session", "جلسة تفتيش عن بُعد")}
         subtitle={<>{session.visits.factories?.name} · <span className="id-code"><bdi>{session.id.slice(0, 8)}</bdi></span></>}
-        right={<span className="badge badge-info">{tr(`enum.${session.state}`, session.state.replaceAll("_", " "), session.state.replaceAll("_", " "))}</span>}
+        right={stateLabel ? <span className="badge badge-info">{locale === "ar" ? stateLabel.ar : stateLabel.en}</span> : null}
         langHref={locale === "ar" ? "/locale?set=en" : "/locale?set=ar"}
         langLabel={locale === "ar" ? "EN" : "AR"}
       />
