@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-DEMO-SEED-EXPANSION-20260726-001"
+    gate: "Exclusive shared-data seeder lease and signed deterministic preflight"
+    priority: "P0"
+    status: "COMPLETE_REMOTE_EVIDENCED"
+    owner: "Codex seeder implementer + transaction/RLS contract verifier"
+    blocked_by: []
+    blocks: []
+    note: "Completed 2026-07-26 on allow-listed project iiozvqntawxfwbgffzqu as seed batch saqeel-demo-v1-20260726: 39 confirmed fictional Auth identities, profiles and exactly one role each (3 x 13); six scrambled bilingual demo factories; three physical and three virtual visits; three linked factory-representative sessions; three five-item completed forms with real private-bucket evidence metadata/object, finding, violation and corrective action; one approved, returned and rejected immutable submission/review outcome. Profile bootstrap pgTAP 18/18 and atomic review/virtual transaction contract pass remotely. Persona-JWT/RLS probes deny cross-inspector, cross-representative, auditor mutation and reviewer response mutation. Same-batch rerun reused all three immutable scenarios. Cleanup dry-run refuses destructive cleanup because three immutable histories remain. DEC-032 is REMEDIATED_FOR_THIS_TARGET_RUN by live repaired function state and three successful canonical submit_inspection calls; frozen OPEN authority is not silently rewritten. Passwords remain outside Git in a mode-0600 operator handoff."
   - task_id: "TASK-WEB-ADMIN-SHARED-BRAND-REGRESSION-001"
     gate: "Web/Admin shared-shell regression correction"
     priority: "P0"

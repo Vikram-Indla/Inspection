@@ -19,7 +19,7 @@ export default function FieldLogoutClient({ message }: { message: string }) {
         clearFieldSessionIdentity();
       }
       await sb.auth.signOut();
-      if (active) window.location.replace("/login/field?reason=signedout");
+      if (active) window.location.replace("/login?reason=signedout");
     })();
     return () => { active = false; };
   }, []);

@@ -1,0 +1,80 @@
+/* SAQEEL Admin Form Builder canvas — page-local layout rules transcribed from
+   designs/admin/admin/SAQEEL Admin Form Builder.dc.html <helmet><style>.
+   Colour is token-only; nothing here introduces a bare colour. */
+
+.grid {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr) 320px;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 1180px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+.node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: start;
+  border: 0;
+  background: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 9px 11px;
+  text-decoration: none;
+}
+.node:hover { background: var(--surface-sunken); color: var(--text-primary); }
+.nodeActive { background: var(--accent-soft); color: var(--accent-text); font-weight: 600; }
+.nodeActive:hover { background: var(--accent-soft); color: var(--accent-text); }
+
+.section {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 6px 11px;
+}
+.sectionNext { padding: 10px 11px 6px; }
+
+.fld { display: flex; flex-direction: column; gap: 5px; }
+.fld > span { font-size: 12.5px; color: var(--text-secondary); }
+
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 700px) {
+  .pair { grid-template-columns: 1fr; }
+}
+
+.flags {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: var(--surface-sunken);
+  border-radius: 10px;
+}
+
+.rail { position: sticky; top: 132px; }
+
+.previewCard {
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 14px;
+  background: var(--surface-canvas);
+}
+.previewQuestion { font-size: 15px; font-weight: 600; margin-block-start: 10px; }
+.previewOptions { display: flex; gap: 8px; margin-block-start: 12px; flex-wrap: wrap; }
+.previewOption {
+  flex: 1;
+  min-width: 70px;
+  text-align: center;
+  padding: 10px;
+  border: 1.5px solid var(--border-input);
+  border-radius: 8px;
+  font-size: 13px;
+}
+.previewOptionFirst { border-color: var(--action-primary); background: var(--accent-soft); }
+.previewNote { margin-block-start: 12px; font-size: 12px; color: var(--status-critical-text); }

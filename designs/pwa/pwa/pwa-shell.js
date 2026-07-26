@@ -8,11 +8,6 @@
    The sticky footer is pwa-tabbar.js, already on every field page. This file adds
    the other half: the burger, and the drawer it opens.
 
-   The drawer carries the WEB SIDE PANEL — the four accepted groups from
-   SAQEEL Web Shell v5.dc.html (Overview, Operations, Compliance,
-   Administration). Nothing here is authored: every label and its Arabic come
-   from the shipped navigation.
-
    ADMINISTRATOR VISIBILITY (Product Owner, 2026-07-26 — supersedes the earlier
    "show it locked" rule). Administrator destinations are NOT shown to every
    persona: a group marked `admin` is OMITTED ENTIRELY unless the signed-in role
@@ -27,60 +22,82 @@
    enforcement is server-side RLS; this is presentation only and must never be
    the only gate.
 
+   HIERARCHY. The drawer reproduces the side panel from SAQEEL Web Shell
+   v5.dc.html at its real depth, not flattened:
+     • groups collapse, with a chevron and aria-expanded
+     • Operations nests an "Inspection" subgroup; Administration nests
+       "Advanced Administration" — both indent their children
+     • Administration is pinned below the scroll region and closed by default
+   Labels, their Arabic, the parent labels and the nesting all come from the
+   shipped navigation (shell-navigation.ts parentId / parentLabelEn /
+   parentLabelAr). Nothing here is authored.
+
    Idempotent, safe-area aware, logical-axis only so RTL mirrors for free.
    Colors are design tokens only — no literals. */
 (function () {
   if (window.__saqeelPwaShell) return;
   window.__saqeelPwaShell = true;
 
-  /* Transcribed from the shipped shell navigation. `admin: true` on a group
-     means administrator-only — hidden from every other persona. `lock` marks an
-     item that is administrator-governed; it is never rendered to a non-admin
-     (the group carrying it is already gone) and renders unlocked to an admin. */
+  var ICON = {
+    dashboard: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+    ops: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/>',
+    factory: '<path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M7 17h2M13 17h2M18 9h3"/>',
+    planning: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
+    shield: '<path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/>',
+    review: '<path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/>',
+    book: '<path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/>',
+    gavel: '<path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/>',
+    users: '<circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/>',
+    lists: '<path d="M4 4h6v16H4zM14 4h6v16h-6z"/>',
+    risk: '<path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/>',
+    forms: '<path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/>',
+    gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14H3a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/>',
+    nodes: '<circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/>'
+  };
+
+  /* The v5 tree. `sub: true` marks a subgroup parent — a label, not a link, with
+     indented children beneath it. `admin: true` on a GROUP means
+     administrator-only: omitted entirely from every other persona's markup. */
   var GROUPS = [
-    { en: "Overview", ar: "نظرة عامة", items: [
-      { en: "Dashboard", ar: "لوحة القيادة", route: "/dashboard",
-        d: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>' },
-      { en: "Operations Center", ar: "مركز العمليات", route: "/operations",
-        d: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/>' },
-      { en: "Factory 360", ar: "المصنع 360", route: "/factories",
-        d: '<path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M7 17h2M13 17h2M18 9h3"/>' }
+    { en: "Overview", ar: "نظرة عامة", open: true, items: [
+      { en: "Dashboard", ar: "لوحة القيادة", route: "/dashboard", d: ICON.dashboard },
+      { en: "Operations Center", ar: "مركز العمليات", route: "/operations", d: ICON.ops },
+      { en: "Factory 360", ar: "المصنع 360", route: "/factories", d: ICON.factory }
     ]},
-    { en: "Operations", ar: "العمليات", items: [
-      { en: "Planning", ar: "التخطيط", route: "/planning",
-        d: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>' },
-      { en: "Execution", ar: "التنفيذ", route: "/field",
-        d: '<path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/>' },
-      { en: "Review & Approval", ar: "المراجعة والاعتماد", route: "/reviews",
-        d: '<path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/>' }
+    { en: "Operations", ar: "العمليات", open: true, items: [
+      { en: "Planning", ar: "التخطيط", route: "/planning", d: ICON.planning },
+      { sub: true, en: "Inspection", ar: "التفتيش", d: ICON.shield, children: [
+        { en: "Execution", ar: "التنفيذ", route: "/field", d: ICON.shield },
+        { en: "Review & Approval", ar: "المراجعة والاعتماد", route: "/reviews", d: ICON.review }
+      ]}
     ]},
-    { en: "Compliance", ar: "الامتثال", items: [
-      { en: "Inspection Rules", ar: "قواعد التفتيش", route: "/admin/regulations",
-        d: '<path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/>' },
-      { en: "Awaiting Approval", ar: "بانتظار الاعتماد", route: "/admin/compliance-approvals",
-        d: '<path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/>' },
-      { en: "Violations & Penalties", ar: "المخالفات والعقوبات", route: "/admin/violations",
-        d: '<path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/>' }
+    { en: "Compliance", ar: "الامتثال", open: true, items: [
+      { en: "Inspection Rules", ar: "قواعد التفتيش", route: "/admin/regulations", d: ICON.book },
+      { en: "Awaiting Approval", ar: "بانتظار الاعتماد", route: "/admin/compliance-approvals", d: ICON.review },
+      { en: "Violations & Penalties", ar: "المخالفات والعقوبات", route: "/admin/violations", d: ICON.gavel }
     ]},
-    { en: "Administration", ar: "الإدارة", admin: true, items: [
-      { en: "Users", ar: "المستخدمون", route: "/admin/access", lock: true,
-        d: '<circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/>' },
-      { en: "Roles", ar: "الأدوار", route: "/admin/access?view=roles", lock: true,
-        d: '<circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/>' },
-      { en: "Reference Lists", ar: "القوائم المرجعية", route: "/admin/localization", lock: true,
-        d: '<path d="M4 4h6v16H4zM14 4h6v16h-6z"/>' },
-      { en: "Risk Settings", ar: "إعدادات المخاطر", route: "/admin/risk", lock: true,
-        d: '<path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/>' },
-      { en: "Inspection Forms", ar: "نماذج التفتيش", route: "/admin/packages", lock: true,
-        d: '<path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/>' }
+    /* Administrator-only, and pinned below the scroll region closed by default,
+       as v5 renders it. An inspector never receives this markup at all. */
+    { en: "Administration", ar: "الإدارة", admin: true, pinned: true, open: false, d: ICON.gear, items: [
+      { en: "Users", ar: "المستخدمون", route: "/admin/access", d: ICON.users },
+      { en: "Roles", ar: "الأدوار", route: "/admin/access?view=roles", d: ICON.users },
+      { en: "Reference Lists", ar: "القوائم المرجعية", route: "/admin/localization", d: ICON.lists },
+      { en: "Risk Settings", ar: "إعدادات المخاطر", route: "/admin/risk", d: ICON.risk },
+      { en: "Inspection Forms", ar: "نماذج التفتيش", route: "/admin/packages", d: ICON.forms },
+      { sub: true, en: "Advanced Administration", ar: "الإدارة المتقدمة", d: ICON.nodes, children: [
+        { en: "Execution Settings", ar: "إعدادات التنفيذ", route: "/admin/execution" },
+        { en: "Workflow Settings", ar: "إعدادات سير العمل", route: "/admin/workflows" },
+        { en: "Map Settings", ar: "إعدادات الخرائط", route: "/admin/gis" },
+        { en: "Activity Log", ar: "سجل النشاط", route: "/admin/audit" },
+        { en: "Issue Multiple Violations", ar: "إصدار عدة مخالفات", route: "/admin/bulk-violations" }
+      ]}
     ]}
   ];
 
   var STR = {
-    open:   { en: "Open menu", ar: "فتح القائمة" },
-    close:  { en: "Close menu", ar: "إغلاق القائمة" },
-    nav:    { en: "Primary navigation", ar: "التنقل الرئيسي" },
-    locked: { en: "Administrator access required.", ar: "يتطلب الوصول صلاحية المسؤول." }
+    open:  { en: "Open menu", ar: "فتح القائمة" },
+    close: { en: "Close menu", ar: "إغلاق القائمة" },
+    nav:   { en: "Primary navigation", ar: "التنقل الرئيسي" }
   };
 
   /* Administrator roles, per the shipped role vocabulary. Anything else — and
@@ -113,17 +130,12 @@
     "flex:0 0 auto;border:0;border-radius:9px;background:transparent;color:inherit;cursor:pointer;}",
     ".pwa-shell-menu:hover{background:var(--nav-bg-hover);}",
     ".pwa-shell-menu:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}",
-
-    /* Pages with no <header> of their own (login, biometric, the index and the
-       reference diagrams) still need a way into the side panel, so the button
-       floats in the top inline-start corner instead of being placed in a header.
-       Tokens only, safe-area aware, logical axis so RTL mirrors for free. */
-    ".pwa-shell-menu.is-floating{position:fixed;z-index:72;",
-    "inset-block-start:max(12px,env(safe-area-inset-top));",
-    "inset-inline-start:max(12px,env(safe-area-inset-left));",
-    "background:var(--surface-primary);color:var(--text-primary);",
-    "border:1px solid var(--border-subtle);box-shadow:var(--shadow-card);}",
-    ".pwa-shell-menu.is-floating:hover{background:var(--surface-sunken);}",
+    /* Pages that render no <header> of their own (Account, Biometric) still need
+       the burger, so it floats at the start edge instead of being dropped. */
+    ".pwa-shell-menu--floating{position:fixed;z-index:62;",
+    "inset-block-start:max(10px,env(safe-area-inset-top));",
+    "inset-inline-start:max(10px,env(safe-area-inset-left));",
+    "background:var(--nav-bg);box-shadow:var(--shadow-md);}",
 
     ".pwa-shell-backdrop{position:fixed;inset:0;z-index:70;border:0;padding:0;",
     "background:var(--nav-bg);opacity:0;visibility:hidden;cursor:pointer;",
@@ -141,24 +153,37 @@
 
     ".pwa-shell-drawer__head{display:flex;align-items:center;gap:10px;flex:none;",
     "padding:14px 16px;border-block-end:1px solid var(--nav-border);}",
-    /* WA-BRAND lockup: shield mark + bilingual wordmark, matching the sign-in screen. */
-    ".pwa-shell-drawer__lockup{display:flex;align-items:center;gap:9px;min-inline-size:0;}",
-    ".pwa-shell-drawer__mark{inline-size:22px;block-size:22px;flex:none;color:var(--nav-indicator);}",
     ".pwa-shell-drawer__brand{font:700 15px var(--font-body);letter-spacing:.14em;",
     "color:var(--nav-text-active);}",
-    ".pwa-shell-drawer__brand-ar{font:700 14px var(--font-body);color:var(--nav-text-active);}",
     ".pwa-shell-close{display:grid;place-items:center;inline-size:34px;block-size:34px;",
     "margin-inline-start:auto;border:0;border-radius:8px;background:transparent;",
     "color:var(--nav-text);cursor:pointer;}",
     ".pwa-shell-close:hover{background:var(--nav-bg-hover);}",
     ".pwa-shell-close:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}",
 
-    /* Scroll area clears the sticky footer using the height the tab bar publishes. */
-    ".pwa-shell-drawer__scroll{flex:1;overflow-y:auto;overflow-x:hidden;",
-    "padding:10px 10px calc(14px + var(--pwa-tabbar-height,0px));}",
-    ".pwa-shell-group{margin-block-end:12px;}",
-    ".pwa-shell-group__label{font:700 10.5px var(--font-body);letter-spacing:.08em;",
-    "text-transform:uppercase;color:var(--nav-indicator);padding:0 10px;margin-block-end:4px;}",
+    ".pwa-shell-drawer__scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 10px;}",
+    /* Administration is pinned below the scroll region and clears the footer. */
+    ".pwa-shell-drawer__pin{flex:none;border-block-start:1px solid var(--nav-border);",
+    "padding:6px 10px calc(10px + var(--pwa-tabbar-height,0px));}",
+    ".pwa-shell-drawer__pin:empty{display:none;}",
+
+    /* Group header — collapsible, chevron rotates when closed. */
+    ".pwa-shell-trigger{inline-size:100%;display:flex;align-items:center;gap:8px;",
+    "padding:8px 10px 5px;border:0;background:none;cursor:pointer;text-align:start;",
+    "color:color-mix(in srgb, var(--nav-text) 65%, transparent);",
+    "font:600 10.5px var(--font-body);letter-spacing:.08em;text-transform:uppercase;",
+    "border-radius:6px;overflow:hidden;}",
+    ".pwa-shell-trigger:hover{color:var(--nav-text-active);background:var(--nav-bg-hover);}",
+    ".pwa-shell-trigger:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}",
+    ".pwa-shell-chev{margin-inline-start:auto;flex:none;transition:transform 140ms;}",
+    ".pwa-shell-trigger[aria-expanded=false] .pwa-shell-chev{transform:rotate(-90deg);}",
+    "[dir=rtl] .pwa-shell-trigger[aria-expanded=false] .pwa-shell-chev{transform:rotate(90deg);}",
+    ".pwa-shell-body[hidden]{display:none;}",
+
+    /* Subgroup parent: a label, not a link. Children indent beneath it. */
+    ".pwa-shell-sub{display:flex;align-items:center;gap:12px;min-block-size:36px;",
+    "padding:0 10px;color:var(--nav-text-active);font:600 13px var(--font-body);overflow:hidden;}",
+    ".pwa-shell-child{margin-inline-start:24px;inline-size:calc(100% - 24px);}",
 
     /* Fixed 20px icon slot that never shrinks; label ellipses instead of pushing
        the glyph out of place. This is what stops the row overflowing. */
@@ -167,12 +192,12 @@
     "font:600 13px var(--font-body);overflow:hidden;}",
     ".pwa-shell-row:hover{background:var(--nav-bg-hover);color:var(--nav-text-active);}",
     ".pwa-shell-row:focus-visible{outline:2px solid var(--focus-ring);outline-offset:-2px;}",
-    ".pwa-shell-row__icon{display:grid;place-items:center;inline-size:20px;block-size:20px;flex:none;}",
-    ".pwa-shell-row__label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-inline-size:0;}",
-    ".pwa-shell-row.is-locked{opacity:.5;cursor:not-allowed;}",
-    ".pwa-shell-row.is-locked:hover{background:transparent;color:var(--nav-text);}",
-    ".pwa-shell-row__lock{margin-inline-start:auto;display:grid;place-items:center;flex:none;}",
-    "@media (prefers-reduced-motion:reduce){.pwa-shell-drawer,.pwa-shell-backdrop{transition:none;}}"
+    ".pwa-shell-row__icon,.pwa-shell-sub__icon{display:grid;place-items:center;",
+    "inline-size:20px;block-size:20px;flex:none;}",
+    ".pwa-shell-row__label,.pwa-shell-sub__label{overflow:hidden;text-overflow:ellipsis;",
+    "white-space:nowrap;min-inline-size:0;}",
+    "@media (prefers-reduced-motion:reduce){.pwa-shell-drawer,.pwa-shell-backdrop,",
+    ".pwa-shell-chev{transition:none;}}"
   ].join("");
 
   function injectCss() {
@@ -183,79 +208,82 @@
     document.head.appendChild(st);
   }
 
-  /* Language comes from the PAGE, so the drawer's own bilingual lockup (which
-     carries a lang="ar" span) must not be read back as evidence the page is
-     Arabic — nodes inside the shell are skipped. */
   function isArabic() {
-    var els = document.querySelectorAll("[dir=rtl],[lang=ar]");
-    for (var i = 0; i < els.length; i++) {
-      if (!els[i].closest(".pwa-shell-drawer")) return true;
-    }
-    return document.documentElement.lang === "ar";
+    var el = document.querySelector("[dir=rtl],[lang=ar]");
+    return !!el || document.documentElement.lang === "ar";
   }
   function L(o, ar) { return ar ? o.ar : o.en; }
   function esc(s) {
     return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
   }
-
-  var parts = null, btn = null, builtRole = null, builtLang = null;
-
   function icon(d) {
+    if (!d) return "";
     return '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" ' +
       'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + d + "</svg>";
   }
 
-  /* Group markup for the current persona. Extracted so the drawer can be rebuilt
-     in place when the role changes, without re-mounting the burger. */
-  function groupsHtml(ar) {
-    var admin = isAdmin();
-    builtRole = currentRole();
-    builtLang = ar ? "ar" : "en";
-    return visibleGroups().map(function (g) {
-      var rows = g.items.map(function (it) {
-        var label = L(it, ar);
-        var lockGlyph = '<span class="pwa-shell-row__lock" aria-hidden="true">' +
-          '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" ' +
-          'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
-          '<rect x="5" y="10" width="14" height="11" rx="2"/>' +
-          '<path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>';
-        var body = '<span class="pwa-shell-row__icon">' + icon(it.d) + "</span>" +
-          '<span class="pwa-shell-row__label">' + esc(label) + "</span>";
-        if (it.lock && !admin) {
-          return '<span class="pwa-shell-row is-locked" role="link" aria-disabled="true" tabindex="0"' +
-            ' title="' + esc(label + " — " + L(STR.locked, ar)) + '"' +
-            ' aria-label="' + esc(label + ". " + L(STR.locked, ar)) + '">' + body + lockGlyph + "</span>";
-        }
-        /* Design mock: the route is recorded on the row rather than linked, because
-           these are application routes and the design set has no page for them. */
-        return '<a class="pwa-shell-row" href="#" title="' + esc(label + " — " + it.route) + '">' +
-          body + "</a>";
-      }).join("");
-      return '<div class="pwa-shell-group"><div class="pwa-shell-group__label">' +
-        esc(L(g, ar)) + "</div>" + rows + "</div>";
+  var parts = null, btn = null, builtRole = null, uid = 0;
+
+  /* Design mock: the route is recorded on the row rather than linked, because
+     these are application routes and the design set has no page for them. */
+  function row(it, ar, child) {
+    var label = L(it, ar);
+    return '<a class="pwa-shell-row' + (child ? " pwa-shell-child" : "") +
+      '" href="#" title="' + esc(label + " — " + it.route) + '">' +
+      '<span class="pwa-shell-row__icon">' + icon(it.d) + "</span>" +
+      '<span class="pwa-shell-row__label">' + esc(label) + "</span></a>";
+  }
+
+  function itemsHtml(items, ar) {
+    return items.map(function (it) {
+      if (!it.sub) return row(it, ar, false);
+      var pid = "pwa-sub-" + (++uid);
+      return '<div role="group" aria-labelledby="' + pid + '">' +
+        '<div class="pwa-shell-sub" id="' + pid + '">' +
+        '<span class="pwa-shell-sub__icon">' + icon(it.d) + "</span>" +
+        '<span class="pwa-shell-sub__label">' + esc(L(it, ar)) + "</span></div>" +
+        it.children.map(function (c) { return row(c, ar, true); }).join("") +
+        "</div>";
     }).join("");
+  }
+
+  function groupHtml(g, ar) {
+    var gid = "pwa-grp-" + (++uid);
+    return "<section>" +
+      '<button type="button" class="pwa-shell-trigger" aria-expanded="' +
+      (g.open ? "true" : "false") + '" aria-controls="' + gid + '">' +
+      (g.d ? '<span class="pwa-shell-row__icon">' + icon(g.d) + "</span>" : "") +
+      '<span class="pwa-shell-row__label">' + esc(L(g, ar)) + "</span>" +
+      '<svg class="pwa-shell-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" ' +
+      'stroke="currentColor" stroke-width="1.8" stroke-linecap="round">' +
+      '<path d="m8 10 4 4 4-4"/></svg></button>' +
+      '<div class="pwa-shell-body" id="' + gid + '"' + (g.open ? "" : " hidden") + ">" +
+      itemsHtml(g.items, ar) + "</div></section>";
+  }
+
+  /* Markup for the current persona. Extracted so the drawer can be rebuilt in
+     place when the role changes, without re-mounting the burger. */
+  function scrollHtml(ar) {
+    builtRole = currentRole();
+    return visibleGroups().filter(function (g) { return !g.pinned; })
+      .map(function (g) { return groupHtml(g, ar); }).join("");
+  }
+  function pinHtml(ar) {
+    return visibleGroups().filter(function (g) { return g.pinned; })
+      .map(function (g) { return groupHtml(g, ar); }).join("");
   }
 
   function rebuild() {
     if (!parts || !parts.drawer) return;
     var ar = isArabic();
     var sc = parts.drawer.querySelector(".pwa-shell-drawer__scroll");
-    if (sc) sc.innerHTML = groupsHtml(ar);
-    parts.drawer.setAttribute("aria-label", L(STR.nav, ar));
-    parts.backdrop.setAttribute("aria-label", L(STR.close, ar));
-    if (parts.close) parts.close.setAttribute("aria-label", L(STR.close, ar));
-    if (btn) btn.setAttribute("aria-label", L(STR.open, ar));
+    var pin = parts.drawer.querySelector(".pwa-shell-drawer__pin");
+    if (sc) sc.innerHTML = scrollHtml(ar);
+    if (pin) pin.innerHTML = pinHtml(ar);
   }
 
-  function buildDrawerScroll(ar) {
-    var scroll = document.createElement("div");
-    scroll.className = "pwa-shell-drawer__scroll";
-    scroll.innerHTML = groupsHtml(ar);
-    return scroll;
-  }
-
-  function buildDrawerParts(ar) {
+  function buildDrawer(ar) {
     var backdrop = document.createElement("button");
     backdrop.type = "button";
     backdrop.className = "pwa-shell-backdrop";
@@ -269,19 +297,22 @@
     var head = document.createElement("div");
     head.className = "pwa-shell-drawer__head";
     head.innerHTML =
-      '<span class="pwa-shell-drawer__lockup">' +
-      '<svg class="pwa-shell-drawer__mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
-      'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-      '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>' +
       '<span class="pwa-shell-drawer__brand">SAQEEL</span>' +
-      '<span class="pwa-shell-drawer__brand-ar" lang="ar">\u0635\u0642\u064a\u0644</span>' +
-      '</span>' +
       '<button type="button" class="pwa-shell-close" aria-label="' + esc(L(STR.close, ar)) + '">' +
       '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" ' +
       'stroke-width="1.8" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg></button>';
 
+    var scroll = document.createElement("div");
+    scroll.className = "pwa-shell-drawer__scroll";
+    scroll.innerHTML = scrollHtml(ar);
+
+    var pin = document.createElement("div");
+    pin.className = "pwa-shell-drawer__pin";
+    pin.innerHTML = pinHtml(ar);
+
     drawer.appendChild(head);
-    drawer.appendChild(buildDrawerScroll(ar));
+    drawer.appendChild(scroll);
+    drawer.appendChild(pin);
     return { backdrop: backdrop, drawer: drawer, close: head.querySelector(".pwa-shell-close") };
   }
 
@@ -299,19 +330,17 @@
   }
 
   /* The page's <header> can arrive after the first pass (DC renders async), so
-     placement is re-checked on every pass. Without this the button would sit in
-     the floating fallback on top of the page's own back control. */
+     placement is re-checked on every pass. Pages that render no <header> at all
+     get the floating variant rather than losing the burger. */
   function placeButton() {
     var header = document.querySelector("header");
     if (!header) {
-      /* No header on this page — float it. Re-checked on every pass, so if a
-         header streams in later the button moves into it and drops the class. */
-      btn.classList.add("is-floating");
       if (btn.parentElement !== document.body) document.body.appendChild(btn);
-      return true;
+      btn.classList.add("pwa-shell-menu--floating");
+      return false;
     }
-    btn.classList.remove("is-floating");
     if (btn.parentElement === header && header.firstElementChild === btn) return true;
+    btn.classList.remove("pwa-shell-menu--floating");
     header.insertBefore(btn, header.firstChild);
     return true;
   }
@@ -319,7 +348,7 @@
   function mount() {
     injectCss();
     var ar = isArabic();
-    parts = buildDrawerParts(ar);
+    parts = buildDrawer(ar);
     document.body.appendChild(parts.backdrop);
     document.body.appendChild(parts.drawer);
     btn = buildButton(ar);
@@ -332,32 +361,38 @@
       parts.drawer.setAttribute("data-open", "");
       parts.backdrop.setAttribute("data-open", "");
       btn.setAttribute("aria-expanded", "true");
-      /* A floating burger sits over the drawer's own brand row, so it steps
-         aside while the drawer is open; a header-placed one is covered anyway. */
-      if (btn.classList.contains("is-floating")) btn.style.visibility = "hidden";
-      var f = parts.drawer.querySelector("a,button,[tabindex]");
+      var f = parts.drawer.querySelector("a,button");
       if (f) f.focus();
     }
     function close() {
       parts.drawer.removeAttribute("data-open");
       parts.backdrop.removeAttribute("data-open");
       btn.setAttribute("aria-expanded", "false");
-      btn.style.visibility = "";
       if (lastFocus && lastFocus.focus) lastFocus.focus(); else btn.focus();
     }
 
     btn.addEventListener("click", function () { isOpen() ? close() : open(); });
     parts.backdrop.addEventListener("click", close);
     parts.close.addEventListener("click", close);
+
     parts.drawer.addEventListener("click", function (e) {
+      var trigger = e.target.closest(".pwa-shell-trigger");
+      if (trigger) {
+        var expanded = trigger.getAttribute("aria-expanded") === "true";
+        trigger.setAttribute("aria-expanded", expanded ? "false" : "true");
+        var body = document.getElementById(trigger.getAttribute("aria-controls"));
+        if (body) body.hidden = expanded;
+        return;
+      }
       if (e.target.closest("a.pwa-shell-row")) close();
     });
+
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && isOpen()) { e.preventDefault(); close(); }
     });
     parts.drawer.addEventListener("keydown", function (e) {
       if (e.key !== "Tab" || !isOpen()) return;
-      var f = parts.drawer.querySelectorAll("a,button,[tabindex]");
+      var f = parts.drawer.querySelectorAll("a,button");
       if (!f.length) return;
       var first = f[0], last = f[f.length - 1];
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
@@ -368,20 +403,10 @@
   function ensure() {
     if (!document.body) return;
     if (!btn || !document.querySelector(".pwa-shell-menu")) { mount(); return; }
-    /* A page may declare its persona or its language after the shell mounts (DC
-       renders async), so the drawer is rebuilt when either actually changes —
-       otherwise an inspector could keep an Administration group built for an
-       earlier role, or an Arabic page could keep English labels. */
-    if (currentRole() !== builtRole || (isArabic() ? "ar" : "en") !== builtLang) rebuild();
     placeButton();
+    /* A DC re-render can swap the role attribute — rebuild if the persona moved. */
+    if (builtRole !== null && builtRole !== currentRole()) rebuild();
   }
-
-  /* Lets a design flip persona (a Tweak, a demo control) and have the drawer
-     honour it immediately. Presentation only — never an authorisation path. */
-  window.saqeelSetRole = function (role) {
-    document.documentElement.setAttribute("data-saqeel-role", String(role || "inspector"));
-    rebuild();
-  };
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", ensure);

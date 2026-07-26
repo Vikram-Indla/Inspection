@@ -83,12 +83,14 @@
 
   function activeKey() {
     var f = decodeURIComponent(location.pathname.split("/").pop() || "");
+    // Mirrors fieldTabFor() in web/src/app/(app)/field/layout.tsx: the more
+    // specific sections win, Factory 360 belongs to Establishments, and
+    // anything else (a visit, an inspection, the map, search) falls back Home.
     if (/My Tasks/i.test(f)) return "tasks";
-    if (/Establishment/i.test(f)) return "est";
+    if (/Establishment|Factory 360/i.test(f)) return "est";
     if (/Notifications/i.test(f)) return "notif";
     if (/Account|Settings|Trusted|Biometric/i.test(f)) return "account";
-    if (/Dashboard/i.test(f)) return "home";
-    return null;
+    return "home";
   }
 
   function reserve(el) {
@@ -175,4 +177,18 @@
     });
     mo.observe(document.documentElement, { childList: true, subtree: true });
   }
+})();
+
+/* Shell bootstrap (WA-SHELL-r6). The viewport rule gives every field page a
+   burger alongside this sticky footer. Every field page already loads THIS file,
+   so the shell is pulled in from here rather than adding an include to 35
+   accepted .dc.html pages — no accepted page is edited to carry it. Loading it
+   here is a delivery mechanism, not a merge: pwa-shell.js stays a separate file
+   and can be moved into the pages' <helmet> later without changing behaviour. */
+(function () {
+  if (document.querySelector("script[data-pwa-shell]")) return;
+  var s = document.createElement("script");
+  s.src = "./pwa-shell.js";
+  s.setAttribute("data-pwa-shell", "");
+  (document.head || document.documentElement).appendChild(s);
 })();

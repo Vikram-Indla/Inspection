@@ -9,7 +9,6 @@ interface SpineCard {
   route?: string;
   designPage?: string;
 }
-
 interface Spine {
   cards: SpineCard[];
 }

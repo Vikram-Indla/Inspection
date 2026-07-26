@@ -61,6 +61,7 @@ export default async function Login({ searchParams }: {
         offlineNote:
           "التطبيق يعمل دون اتصال: تُحفظ زياراتك وأدلّتك محلياً وتُزامَن تلقائياً عند عودة الشبكة. القفل الحيوي متاح فقط على هذا الجهاز الموثوق.",
         copyright: "صقيل © 2026",
+        dismiss: "تجاهل هذا التنبيه",
         bioUnavailable: "تعذّر إكمال الفتح بالتعرف على الوجه على هذا الجهاز. استخدم كلمة المرور.",
         bioFallback: "استخدم كلمة المرور بدلاً من ذلك",
         directoryBlocked:
@@ -97,6 +98,7 @@ export default async function Login({ searchParams }: {
         offlineNote:
           "The app works offline: your visits and evidence are saved locally and sync automatically when the network returns. Biometric unlock is available only on this trusted device.",
         copyright: "SAQEEL © 2026",
+        dismiss: "Dismiss this note",
         bioUnavailable: "Face ID unlock could not be completed on this device. Use your password.",
         bioFallback: "Use password instead",
         directoryBlocked:
@@ -118,7 +120,10 @@ export default async function Login({ searchParams }: {
 
   // Atlas / story strings — accepted CD-001 inspection-story copy.
   const story: StoryStrings = {
-    title: ar ? "أطلس التفتيش الصناعي في صقيل" : "The Saqeel industrial inspection atlas",
+    // Login v2: the panel is the platform, not "the Saqeel atlas". The product
+    // name already sits on the credential card beside it, so repeating it here
+    // read as branding twice and called the panel by its mechanism.
+    title: ar ? "منصة التفتيش الصناعي" : "Industrial inspection platform",
     overline: ar ? "رحلة تفتيش واحدة · من البداية إلى النهاية" : "ONE VISIT · END TO END",
     riyadhLabel: ar ? "الرياض · مسيّجة جغرافيًا" : "RIYADH · GEOFENCED",
     stagesLabel: ar ? "مشاهد قصة التفتيش" : "Inspection story scenes",

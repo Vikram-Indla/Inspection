@@ -373,53 +373,50 @@ export default function ShellClient({
   }
 
   return (
-    <div className={`ax-shell${fieldOnly ? " is-field-nav-hidden" : ""}${collapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}${pendingHref ? " is-navigating" : ""}`}
+    <div className={`ax-shell${collapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}${pendingHref ? " is-navigating" : ""}`}
       aria-busy={pendingHref ? "true" : undefined} onClickCapture={handleShellNavigation}>
       {pendingHref ? <div className="ax-route-progress" role="status"><span className="ax-sr-only">{strings.loadingDestination}</span></div> : null}
       <a className="ax-shell__skip" href="#main-content">{strings.skipToContent}</a>
-      {/* Field-only Inspector sessions have no console sidebar: the field
-          design (SAQEEL Field *.dc.html) navigates only via the top-bar icons
-          and the bottom tab bar. The shared web-console drawer — and the
-          hamburger that opens it — must not render for this persona. */}
-      {!fieldOnly && (
-        <>
-          <button className="ax-shell__backdrop" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)} />
-          <nav ref={navRef} id="saqeel-primary-nav" className="ax-shell__nav" aria-label={strings.primary}>
-            <div className="ax-shell__brand">
-              {/* WA-BRAND-r1 — canonical authenticated-shell identity. The design
-                  (SAQEEL Brand Identity Proof.dc.html) ships both marks in the
-                  markup and lets the shared rules decide which one shows:
-                  wordmark expanded, favicon collapsed, wordmark restored in the
-                  mobile drawer. Do not re-add the retired صقيل صناعي lockup. */}
-              <img className="ax-shell__brand-lockup" src="/saqeel-wordmark-dark-mode.svg"
-                alt="SAQEEL | صقيل" width={260} height={40} />
-              <img className="ax-shell__brand-mark" src="/saqeel-favicon.svg"
-                alt="SAQEEL" width={26} height={26} />
-              <button className="ax-shell__close" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
-              </button>
-              <button className="ax-shell__collapse" type="button" onClick={toggleCollapsed} aria-label={collapsed ? strings.expand : strings.collapse} aria-expanded={!collapsed}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
-              </button>
-            </div>
+      {/* Product-Owner decision (2026-07-26): the console shell is NOT
+          persona-based. Every persona gets the same chrome — sidebar, drawer,
+          hamburger, bell and account menu — at every width. What differs is the
+          CONTENTS, which buildShellNavigation() still filters by role and
+          channel (shell-navigation.ts), so a field persona's drawer holds only
+          field-channel destinations. Same shell, role-appropriate items.
+          Do not re-introduce a `fieldOnly` guard on this markup. */}
+      <button className="ax-shell__backdrop" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)} />
+      <nav ref={navRef} id="saqeel-primary-nav" className="ax-shell__nav" aria-label={strings.primary}>
+        <div className="ax-shell__brand">
+          {/* WA-BRAND-r1 — canonical authenticated-shell identity. The design
+              (SAQEEL Brand Identity Proof.dc.html) ships both marks in the
+              markup and lets the shared rules decide which one shows:
+              wordmark expanded, favicon collapsed, wordmark restored in the
+              mobile drawer. Do not re-add the retired صقيل صناعي lockup. */}
+          <img className="ax-shell__brand-lockup" src="/saqeel-wordmark-dark-mode.svg"
+            alt="SAQEEL | صقيل" width={260} height={40} />
+          <img className="ax-shell__brand-mark" src="/saqeel-favicon.svg"
+            alt="SAQEEL" width={26} height={26} />
+          <button className="ax-shell__close" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+          </button>
+          <button className="ax-shell__collapse" type="button" onClick={toggleCollapsed} aria-label={collapsed ? strings.expand : strings.collapse} aria-expanded={!collapsed}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+          </button>
+        </div>
 
-            <div className="ax-shell__groups">
-              {groups.filter(group => group.id !== "administration").map(renderNavGroup)}
-            </div>
-            <div className="ax-shell__admin-pin">{groups.filter(group => group.id === "administration").map(renderNavGroup)}</div>
-          </nav>
-        </>
-      )}
+        <div className="ax-shell__groups">
+          {groups.filter(group => group.id !== "administration").map(renderNavGroup)}
+        </div>
+        <div className="ax-shell__admin-pin">{groups.filter(group => group.id === "administration").map(renderNavGroup)}</div>
+      </nav>
 
       <main id="main-content" className="ax-shell__main" tabIndex={-1}>
         <header className="ax-pagehead">
           <div className="ax-pagehead__topbar">
-            {!fieldOnly && (
-              <button ref={menuRef} className="ax-topbar-icon ax-shell__menu" type="button" aria-label={strings.openMenu}
-                aria-controls="saqeel-primary-nav" aria-expanded={drawerOpen} onClick={() => setDrawerOpen(true)}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
-              </button>
-            )}
+            <button ref={menuRef} className="ax-topbar-icon ax-shell__menu" type="button" aria-label={strings.openMenu}
+              aria-controls="saqeel-primary-nav" aria-expanded={drawerOpen} onClick={() => setDrawerOpen(true)}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+            </button>
             <div className="ax-shell-controls">
                 <div className="ax-shell-search" ref={searchWrapRef}>
                   <span className="ax-shell-search__icon" aria-hidden="true">
@@ -483,17 +480,14 @@ export default function ShellClient({
             </div>
             <div className="ax-pagehead__actions">
               <ThemeToggle className="ax-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
-              {/* Notifications and Account are destinations in the bottom tab
-                  bar, so for a field-only inspector showing them here is the
-                  same destination twice — hence the persona guard.
-                  A console persona has NO tab bar (CC-SHELL-TABLET-001 option
-                  B), at any width, so the bell is their only route to
-                  notifications and must stay at every size. */}
-              {!fieldOnly && <NotificationBell strings={bellStrings} locale={locale} fieldOnly={fieldOnly} />}
+              {/* The bell renders for every persona (2026-07-26 ruling: one
+                  shell for everybody). `fieldOnly` is still passed down because
+                  it rewrites each notification's href onto the field channel —
+                  that is routing, not chrome. */}
+              <NotificationBell strings={bellStrings} locale={locale} fieldOnly={fieldOnly} />
               <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true" prefetch={false}>
                 <Icon name="ai" />
               </Link>
-              {!fieldOnly && (
               <div ref={accountRef} className="ax-shell-account">
                 <button className="ax-shell-account__trigger" type="button" aria-label={strings.account} aria-expanded={accountOpen}
                   onClick={() => setAccountOpen(value => !value)}>
@@ -509,6 +503,9 @@ export default function ShellClient({
                     {/* /locale and /signout are route handlers (cookie/session
                         mutations), so they intentionally stay plain anchors. */}
                     <a href={languageHref} lang={languageLang}>{languageLabel}</a>
+                    {/* The menu itself is universal; only this destination stays
+                        persona-aware, because an Inspector's settings live on
+                        the field channel. Routing, not chrome. */}
                     <Link href={fieldOnly ? "/field/settings" : "/profile"} prefetch={false}>
                       {fieldOnly ? strings.fieldSettings : strings.profileSettings}
                     </Link>
@@ -517,7 +514,6 @@ export default function ShellClient({
                   document.body,
                 )}
               </div>
-              )}
             </div>
           </div>
         </header>

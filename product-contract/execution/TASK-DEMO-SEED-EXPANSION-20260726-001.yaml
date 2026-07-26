@@ -1,0 +1,126 @@
+schema_version: "1.0"
+task_id: "TASK-DEMO-SEED-EXPANSION-20260726-001"
+change_control_id: "CC-DEMO-SEED-EXPANSION-20260726-001"
+decision_id: "DEC-036"
+title: "Implement, preflight and execute one deterministic demo seed batch"
+priority: "P0"
+status: "COMPLETE_REMOTE_EVIDENCED"
+owner: "Approved seeder implementer + independent database/RLS verifier"
+target_project_ref: "iiozvqntawxfwbgffzqu"
+batch_limit: 1
+remote_writes_performed_by_packet_author: false
+
+objective: >
+  Produce exactly one deterministic, isolated and reversible demo batch,
+  including 39 fictional accounts (three for each of 13 canonical roles), and
+  enough governed scenario data for truthful product demonstrations without
+  weakening RLS/RBAC, workflow, audit, versioning or immutable history.
+
+required_context:
+  - "product-contract/00_START_HERE.md"
+  - "product-contract/CURRENT_STATE.md"
+  - "product-contract/GATE_STATUS.md"
+  - "product-contract/execution/CURRENT_SLICE.yaml"
+  - "product-contract/execution/TASK_ROUTER.yaml"
+  - "product-contract/governance/OPEN_DECISIONS.yaml"
+  - "product-contract/governance/decision_register.csv"
+  - "product-contract/governance/CC-DEMO-SEED-EXPANSION-20260726-001.yaml"
+  - "product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md"
+  - "product-contract/seeding-discovery/SEEDER_IMPLEMENTATION_PLAN.md"
+  - "product-contract/seeding-discovery/SEED_MANIFEST_SCHEMA.md"
+  - "product-contract/seeding-discovery/SEED_CLEANUP_AND_ROLLBACK.md"
+  - "product-contract/seeding-discovery/SEED_DEPENDENCY_DAG.md"
+  - "product-contract/seeding-discovery/SEED_VALIDATION_PLAN.md"
+  - "product-contract/seeding-discovery/PERSONA_AND_ORGANISATION_SEED_PLAN.csv"
+  - "product-contract/seeding-discovery/RLS_SEED_ACCEPTANCE_MATRIX.csv"
+  - "product-contract/seeding-discovery/SEED_SCENARIO_CATALOG.csv"
+
+lease:
+  required: true
+  kind: "exclusive shared-data seeder lease"
+  allowed_repository_paths:
+    - "scripts/seed/**"
+    - "apps/web/package.json (seed script entry only)"
+    - "apps/web/package-lock.json (approved runner dependency only)"
+    - "product-contract/evidence/seed-runs/**"
+    - "product-contract/seeding-discovery/** (addenda only)"
+  prohibited_repository_paths:
+    - "apps/web/src/**"
+    - "apps/web/e2e/personas.ts"
+    - "supabase/migrations/**"
+    - "status/saqeel-status.json"
+    - "frozen requirement, acceptance, screen, engine or design authority"
+
+execution_phases:
+  - id: "S0"
+    name: "Authority and environment preflight"
+    writes: false
+    exit:
+      - "Project allow-list, Drive provenance, schema/functions and secrets posture pass."
+      - "Exact manifest and cleanup dry-run are signed."
+  - id: "S1"
+    name: "Runner implementation and local dry-run"
+    writes: false
+    exit:
+      - "Static secret scan and deterministic-ID tests pass."
+      - "Insert/reuse/skip/conflict plan is exact."
+  - id: "S2"
+    name: "Auth and access bootstrap"
+    writes: true
+    exit:
+      - "Auth Admin created/reused exactly 39 deterministic fictional users."
+      - "Service-role credential is discarded."
+      - "Canonical profile bootstrap is proven; roles granted via admin_grant_role under security_admin JWT."
+    stop_if:
+      - "Canonical profile bootstrap is absent or requires unapproved DDL."
+  - id: "S3"
+    name: "Persona-JWT/RLS domain seeding"
+    writes: true
+    exit:
+      - "Only signed-manifest rows exist and every workflow change used a canonical transition."
+  - id: "S4"
+    name: "Submission probe and immutable scenarios"
+    writes: true
+    exit:
+      - "R3 closure evidence, live repaired-object state and a fresh canonical submit probe agree, or submission scenarios are recorded blocked without bypass."
+    stop_if:
+      - "Any path proposes direct submission_versions or audit insertion."
+  - id: "S5"
+    name: "Validation, idempotent rerun and cleanup proof"
+    writes: true
+    exit:
+      - "All role/RLS, transition, audit, rerun and cleanup evidence is complete."
+
+hard_stops:
+  - "Wrong or unproven target environment"
+  - "Drive package hash mismatch"
+  - "Any unowned deterministic-ID collision"
+  - "Missing canonical profile bootstrap"
+  - "Service-role token used after Auth Admin"
+  - "Direct user_roles, workflow-status, submission_versions or audit_events write"
+  - "Real PII or real external recipient"
+  - "Invented policy/provider/SLA/risk/geofence/legal value"
+  - "Cleanup target includes a non-batch or immutable historical row"
+
+completion_definition:
+  - "Exactly one batch root; exactly 39 accounts; exactly 3 accounts per canonical role."
+  - "All created mutable rows are exact manifest members and cleanup-addressable."
+  - "All immutable/generated residuals are reported rather than overwritten or erased."
+  - "Persona-JWT/RLS positive and denied probes pass."
+  - "Canonical transition/audit evidence passes."
+  - "Same-batch rerun is idempotent."
+  - "Cleanup dry-run and approved cleanup/reconciliation pass."
+  - "DEC-032 state is reported truthfully; no bypass is credited."
+  - "The stale OPEN authority versus TASK-QA-R3-CLOSURE-20260722 remediation evidence is explicitly reconciled, not silently rewritten."
+
+handoff_required:
+  - "branch, HEAD, runner hash and dirty paths"
+  - "seed_batch_id and anchor"
+  - "redacted exact-member manifest"
+  - "pre/post/cleanup counts"
+  - "role-account cardinality"
+  - "RLS matrix"
+  - "transition/audit correlations"
+  - "DEC-032 probe"
+  - "residual immutable/generated history"
+  - "all blockers and next safe action"

@@ -229,7 +229,7 @@ export default function VirtualSessionClient({ session, locale, userId }: { sess
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="5" width="14" height="14" rx="2" /><path d="m16 9 6-3v12l-6-3" /><path d="m3 3 18 18" /></svg>
                 <strong>{tx("No video provider is configured", "لم تتم تهيئة أي مزوّد فيديو")}</strong>
                 <span>{tx("Reason: no provider adapter is enabled for this environment, so no call surface exists and none is offered.", "السبب: لا يوجد محوّل مزوّد مُفعّل في هذه البيئة، لذا لا توجد واجهة اتصال ولا تُعرض أي واجهة.")}</span>
-                <span>{tx("No provider name, service level or retention policy is assumed.", "لا يُفترض اسم مزوّد أو مستوى خدمة أو سياسة احتفاظ.")}</span>
+                <span>{tx("Teams, Zoom and premium Twilio are provider facts that have not been selected or contracted — they are not assumed here.", "Teams وZoom وTwilio المدفوع حقائق تخص المزوّد لم يتم اختيارها أو التعاقد عليها — ولا تُفترض هنا.")}</span>
               </>
             ) : video ? (
               <>

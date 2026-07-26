@@ -10,7 +10,6 @@
     "geo:regions": "node scripts/fetch-ksa-regions.mjs",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
-    "test:pixel": "PIXEL_HARNESS=1 playwright test --project=pixel",
     "check:design-system-v5": "node scripts/check-design-system-v5.mjs",
     "verify:dates": "node scripts/verify-dates.mjs"
   },
@@ -36,6 +35,6 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.2.3",
     "@types/web-push": "^3.6.4",
-    "typescript": "^5.7.0"
+    "typescript": "^5.9.3"
   }
 }

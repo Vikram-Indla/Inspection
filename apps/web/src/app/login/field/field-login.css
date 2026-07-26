@@ -14,6 +14,9 @@
  */
 
 .fl-root {
+  /* positioning context for the out-of-flow assurance footer (Login v2) —
+     without it the footer would anchor to the viewport and escape the column */
+  position: relative;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -78,7 +81,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24px 24px 12px;
+  /* Login v2: 190px block-end reserves the out-of-flow assurance footer, so the
+     credential block stays optically centred whether or not the note is shown. */
+  padding: 24px 24px 190px;
   text-align: center;
 }
 .fl-col {
@@ -351,14 +356,40 @@
   max-width: 34ch;
 }
 
-/* footer: offline-first assurance */
+/* footer: offline-first assurance.
+   Login v2 takes this out of flow and centres the credential block against the
+   full column, so dismissing the offline note cannot shift the form under the
+   user's cursor. The centred block reserves the footer's height as padding. */
 .fl-foot {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
   padding: 0 24px 24px;
   max-width: 440px;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
 }
+/* the note is advisory copy, so it can be dismissed (Login v2) */
+.fl-foot-dismiss {
+  flex: none;
+  margin-block-start: -2px;
+  margin-inline-end: -4px;
+  border: 0;
+  background: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--nav-text);
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+}
+.fl-foot-dismiss:hover {
+  color: var(--nav-text-active);
+  background: color-mix(in srgb, var(--nav-text-active) 10%, transparent);
+}
+.fl-foot-dismiss svg { width: 14px; height: 14px; }
+.fl-foot-note span { flex: 1; }
 .fl-foot-note {
   display: flex;
   align-items: flex-start;
