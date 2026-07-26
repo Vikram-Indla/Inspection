@@ -166,7 +166,8 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     stateConnected: t("virtual.stage.stateConnected", "Connected"),
     stateLocalOnly: t("virtual.stage.stateLocalOnly", "Your devices only"),
     stateUnavailable: t("virtual.stage.stateUnavailable", "Room not available"),
-    remoteWaiting: t("virtual.stage.remoteWaiting", "Waiting for the factory representative to join."),
+    remoteWaiting: t("virtual.stage.remoteWaiting", "No one else is in this room yet."),
+    remoteRepNoRoute: t("virtual.stage.remoteRepNoRoute", "The factory representative cannot join yet — there is no route for them to enter a room, so this room is reachable only from the console."),
     // Same "cannot join" outcome, two different causes — and telling the
     // operator the wrong one wastes their time. Before the API key existed the
     // service was genuinely off; now it is configured and the gap is this build.
@@ -190,6 +191,12 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     errBusy: t("virtual.stage.errBusy", "The device is already in use by another application. Close it and try again."),
     errUnsupported: t("virtual.stage.errUnsupported", "This browser does not support camera, microphone or screen sharing here."),
     errGeneric: t("virtual.stage.errGeneric", "The device could not be started. Try again or use a different device."),
+    join: t("virtual.stage.join", "Join room"),
+    joining: t("virtual.stage.joining", "Joining…"),
+    stateNotJoined: t("virtual.stage.stateNotJoined", "Not in the room"),
+    joinedWith: t("virtual.stage.joinedWith", "Connected · {n} other in the room"),
+    joinedAlone: t("virtual.stage.joinedAlone", "Connected · waiting for others"),
+    errJoin: t("virtual.stage.errJoin", "The room could not be joined. Check your connection and try again."),
   };
   // S13 — server-authoritative revision the client acts against (state + append-only
   // timeline length). A mismatch on submit means the session moved on concurrently.

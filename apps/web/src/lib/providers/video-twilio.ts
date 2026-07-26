@@ -93,7 +93,7 @@ export const MEDIA_REGION = "ie1" as const;
  * strength of that message has lost real time. Separating the two facts keeps
  * the surface honest while the credentials are genuinely in place.
  */
-export const CLIENT_CONNECT_SHIPPED = false;
+export const CLIENT_CONNECT_SHIPPED = true;
 
 /** True only when a participant could really join: credentials AND a client. */
 export function videoRoomJoinable(): boolean {
@@ -126,10 +126,10 @@ const b64url = (input: Buffer | string): string =>
  */
 export async function mintRoomToken(
   sessionId: string,
-  participantId: string,
+  identity: string,
 ): Promise<string | null> {
   if (!videoTransportStatus().configured) return null;
-  if (!sessionId || !participantId) return null;
+  if (!sessionId || !identity) return null;
 
   const accountSid = process.env.TWILIO_ACCOUNT_SID as string;
   const apiKeySid = process.env.TWILIO_API_KEY_SID as string;
@@ -150,7 +150,10 @@ export async function mintRoomToken(
     iat: nowSeconds,
     exp: nowSeconds + TOKEN_TTL_SECONDS,
     grants: {
-      identity: participantId,
+      // Server-derived. The browser never supplies this: a client that could
+      // choose its own identity could impersonate another participant in a
+      // governed session.
+      identity,
       video: { room: sessionId },
     },
   };
