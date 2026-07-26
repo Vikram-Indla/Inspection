@@ -14,29 +14,25 @@ test.describe("Prompt 01 shared shell source contract", () => {
       ["overview", "Overview", "نظرة عامة"],
       ["operations", "Operations", "العمليات"],
       ["compliance", "Compliance", "الامتثال"],
-      ["insights", "Insights", "الرؤى"],
       ["administration", "Administration", "الإدارة"],
     ]);
     const business = buildShellNavigation(["planner"]).flatMap(group => group.items).filter(item => item.visibility === "business");
     expect(business.map(item => item.labelEn)).toEqual([
       "Dashboard", "Operations Center", "Factory 360", "Planning", "Execution", "Review & Approval",
-      "Inspection Rules", "Awaiting Approval", "Violations & Penalties", "AI Insights",
+      "Inspection Rules", "Awaiting Approval", "Violations & Penalties",
     ]);
     expect(business.filter(item => item.parentId === "inspection").map(item => item.labelEn)).toEqual(["Execution", "Review & Approval"]);
   });
 
-  test("ten primary Administration options are locked without permission and never navigate", () => {
-    const items = buildShellNavigation(["reviewer"]).find(group => group.id === "administration")!.items;
-    expect(items.map(item => item.labelEn)).toEqual([
-      "Users", "Roles", "Reference Lists", "Planning Lookups", "Planning Expiry Rules",
-      "Planning Status Rules", "Risk Settings", "Inspection Forms", "Notification Settings",
-      "System Connections",
-    ]);
-    expect(items.every(item => !item.enabled && item.disabledReasonEn === "Administrator access required.")).toBe(true);
-    const shell = read("src/components/ShellClient.tsx");
-    expect(shell).toContain('role="link" aria-disabled="true"');
-    expect(shell).toContain('data-nav-state="disabled"');
-    expect(shell).toContain("tabIndex={0}");
+  test("unauthorized Administration options are absent rather than advertised as locked", () => {
+    expect(buildShellNavigation(["reviewer"]).find(group => group.id === "administration")).toBeUndefined();
+    const securityItems = buildShellNavigation(["security_admin"])
+      .flatMap(group => group.items)
+      .map(item => item.labelEn);
+    expect(securityItems).toContain("Users");
+    expect(securityItems).toContain("Roles");
+    expect(securityItems).not.toContain("Risk Settings");
+    expect(securityItems).not.toContain("Inspection Forms");
   });
 
   test("topbar contains global search, scopes, theme, notifications, AI and account without sample truth", () => {

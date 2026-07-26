@@ -75,7 +75,7 @@ def resolve(spine: dict, needle: str) -> dict:
 def design_dir(channel: str) -> Path:
     base = REPO / "designs" / channel
     for cand in (base, *sorted(p for p in base.glob("*") if p.is_dir())):
-        if any(cand.glob("*.dc.html")):
+        if any(cand.glob("*.html")):
             return cand
     return base
 
@@ -90,11 +90,11 @@ def design_files(card: dict) -> list[dict]:
     """
     raw = card.get("designPage") or ""
     ddir = design_dir(card["channel"])
-    on_disk = sorted(p.name for p in ddir.glob("*.dc.html"))
+    on_disk = sorted(p.name for p in ddir.glob("*.html"))
 
     out: list[dict] = []
     seen: set[str] = set()
-    for cand in re.findall(r"[^·,()]+?\.dc\.html", raw):
+    for cand in re.findall(r"[^·,()]+?\.(?:dc\.)?html", raw):
         # Cards sometimes prefix the channel folder ('pwa/SAQEEL ….dc.html');
         # designs/<channel>/ already is that folder.
         cand = cand.strip().lstrip("… .").split("/")[-1]
@@ -257,10 +257,9 @@ def build_brief(spine: dict, card: dict) -> dict:
                 **f,
                 "vendored": str((ddir / f["title"]).relative_to(REPO)),
                 "vendored_exists": (ddir / f["title"]).exists(),
-                "claude_design_path": (
-                    f"admin/{f['title']}" if ch == "admin"
-                    else (f"pwa/{f['title']}" if ch == "pwa" else f["title"])
-                ),
+                # Every channel lives in its own folder in the design project.
+                # The root holds only SAQEEL Status Board.dc.html.
+                "claude_design_path": f"{ch}/{f['title']}",
             }
             for f in files
         ],

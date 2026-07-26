@@ -26,7 +26,12 @@ Read these files in order at every session start:
 - Never remove or weaken an accepted requirement, field, rule, permission, state, audit event, offline behavior, or usability outcome.
 - Do not push, merge, or modify `main` without explicit human approval.
 - Do not edit frozen product-contract artifacts without an approved change-control task.
-- `setup/Inspection` is the single canonical branch — GitHub's configured default branch and the only branch normal work targets. `main` is a fast-forward-only mirror: it is updated by fast-forwarding to a commit already on `setup/Inspection` after explicit human approval, never developed on independently and never diverged from `setup/Inspection`. If the two are ever not identical, treat that as a bug to reconcile immediately, not a normal state.
+- `main` is the single canonical branch — GitHub's configured default branch (`origin/HEAD` points at it) and the branch every pull request targets. Product Owner ruling, 2026-07-26.
+- There is no second trunk. `setup/Inspection` and `saqeel/operations` were both treated as the trunk at different points on 2026-07-25/26; both are retired. `setup/Inspection` has been deleted (its history was fully contained in `main`), and `saqeel/operations` must not be used as an integration target.
+- Work happens on a short-lived branch per card, and lands via a pull request into `main`. Do not push, merge, or modify `main` without explicit human approval.
+- Branch names are not authority. Two different boards both called `SB-r9`, and two different heads both called `main`, caused real reconciliation work on 2026-07-26. Verify with `git merge-base --is-ancestor` and `git cherry` (patch-id), never with a name, a date or a revision string.
+- Before deleting any branch or worktree, prove the work is not lost: `git cherry origin/main <branch>` must show no `+` lines. A `+` means that content exists nowhere else and deleting it destroys it. Never force-push `main`.
+- Why this is written down: on 2026-07-26 history split five times in one evening because sessions merged in parallel against different trunks while `origin/HEAD` pointed somewhere else again. One named trunk plus the default branch agreeing with it is what prevents it.
 
 ## Work protocol
 Before work:

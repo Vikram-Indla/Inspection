@@ -138,6 +138,15 @@ BASELINE: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
 <allowed_paths — nothing else>
 
 ### Hard rules
+- Before any admin design change, ask a neighboring repository-aware
+  ChatGPT/Codex session for at least 20 concrete recommendations. Score them
+  for user impact, permission safety, regression risk, accessibility and
+  feasibility; send only the ranked top 10 and measurable acceptance criteria
+  to Claude Design. Keep this process prose out of the Claude Design prompt.
+- No design recommendation may remove or weaken an authorized destination,
+  deep link, route guard, RBAC/RLS rule, workflow transition, immutable-version
+  rule, audit/data-truth behavior, responsive state, accessibility behavior, or
+  EN/AR RTL outcome.
 - Design-system tokens only. No hex, no rgb()/hsl(), no Tailwind colour
   utilities, no colour constant maps. Let components own their colour.
 - EN/LTR and AR/RTL both.

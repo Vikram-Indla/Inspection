@@ -32,6 +32,7 @@ export type Labels = {
   emptyTitle: string; emptyBody: string;
   colEvent: string; colChannel: string; colRecipient: string; colSla: string; colStatus: string; colVersion: string; colActions: string;
   missingRecipient: string;
+  rolesUnavailable: string;
 };
 
 const EVENT_KEYS = ["assignment", "reschedule", "review_decision", "virtual_closed", "virtual_rescheduled", "virtual_scheduled", "visit_cancelled"];
@@ -43,10 +44,10 @@ function Msg({ state }: { state: NotifRuleResult }) {
   return null;
 }
 
-function CreateForm({ roles, l }: { roles: { role_key: string; title: string }[]; l: Labels }) {
+function CreateForm({ roles, rolesAvailable, l }: { roles: { role_key: string; title: string }[]; rolesAvailable: boolean; l: Labels }) {
   const [state, action, pending] = useActionState<NotifRuleResult, FormData>(createNotificationRule, {});
   return (
-    <form action={action} className="stack" style={{ gap: "var(--space-3)" }}>
+    <form action={action} className="stack" style={{ gap: "var(--space-3)" }} aria-disabled={!rolesAvailable}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "var(--space-3)" }}>
         <label className="sq-field"><span>{l.eventKey}</span>
           <select name="event_key" required defaultValue="">
@@ -60,7 +61,7 @@ function CreateForm({ roles, l }: { roles: { role_key: string; title: string }[]
           </select>
         </label>
         <label className="sq-field"><span>{l.recipientRole}</span>
-          <select name="recipient_role" required defaultValue="">
+          <select name="recipient_role" required defaultValue="" disabled={!rolesAvailable}>
             <option value="" disabled>—</option>
             {roles.map(r => <option key={r.role_key} value={r.role_key}>{r.title}</option>)}
           </select>
@@ -69,7 +70,7 @@ function CreateForm({ roles, l }: { roles: { role_key: string; title: string }[]
           <input type="number" name="sla_minutes" min={1} />
         </label>
         <label className="sq-field"><span>{l.escalationRole}</span>
-          <select name="escalation_role" defaultValue="">
+          <select name="escalation_role" defaultValue="" disabled={!rolesAvailable}>
             <option value="">—</option>
             {roles.map(r => <option key={r.role_key} value={r.role_key}>{r.title}</option>)}
           </select>
@@ -79,7 +80,7 @@ function CreateForm({ roles, l }: { roles: { role_key: string; title: string }[]
         <textarea name="template" required rows={2} placeholder="e.g. Review decision recorded: {decision}" />
       </label>
       <div className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
-        <button type="submit" className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? l.creating : l.create}</button>
+        <button type="submit" className="btn btn-primary btn-lg btn-touch" disabled={pending || !rolesAvailable}>{pending ? l.creating : l.create}</button>
         <Msg state={state} />
       </div>
     </form>
@@ -120,11 +121,11 @@ function RowActions({ row, l }: { row: NotificationRuleRow; l: Labels }) {
   return <span className="t-caption">{row.deactivation_reason ?? "—"}</span>;
 }
 
-export default function NotificationRulesManager({ rows, roles, l }: { rows: NotificationRuleRow[]; roles: { role_key: string; title: string }[]; l: Labels }) {
+export default function NotificationRulesManager({ rows, roles, rolesAvailable, l }: { rows: NotificationRuleRow[]; roles: { role_key: string; title: string }[]; rolesAvailable: boolean; l: Labels }) {
   return (
     <div className="stack" style={{ gap: "var(--space-4)" }}>
       <section className="panel stack" style={{ padding: "var(--space-6)", gap: "var(--space-3)" }}>
-        <CreateForm roles={roles} l={l} />
+        <CreateForm roles={roles} rolesAvailable={rolesAvailable} l={l} />
       </section>
 
       {rows.length === 0 ? (

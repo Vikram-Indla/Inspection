@@ -1,0 +1,82 @@
+schema_version: 1
+status: SUPERSEDED_BY_SCOPE_RESET_2026-07-24
+superseded_note: >
+  This file was written during the original (Field-Login-pilot) phase of
+  this session, before an explicit sponsor scope reset narrowed active work
+  to Claude Design connection/tracking with a different pilot (SAQEEL
+  Profile). Field Login is deferred, not implemented, per that reset. The
+  live-scope mapping registry is mapping/design-to-code-map.csv /.json,
+  which correctly marks SAQEEL PWA-Field Login as out-of-scope for the
+  current phase. This file's VERIFIED/high mapping was correct for its own
+  phase but must not be read as current without this note. Corrections to
+  the Field Login provenance below (commit hashes, project-ID typo, page
+  filename typo) were applied 2026-07-24 in response to Codex's independent
+  review even though the pilot itself remains deferred, so the historical
+  record stays accurate if anyone resumes it later.
+project:
+  provider: claude-design
+  project_id: 5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61
+  project_name: SAQEEL Design System
+repository:
+  root: /Users/vikramindla/Developer/Inspection
+  app: apps/web
+
+pages:
+  - page_path: "SAQEEL PWA-Field Login.dc.html"
+    canonical_name: SAQEEL PWA-Field Login
+    aliases: ["SAQEEL Field Login"]  # handoff's filename claim; actual file has PWA- prefix
+    classification: production_candidate
+    latest_observed:
+      etag_as_revision: "1784884213895548"
+      semantic_hash: null  # not computed this session; normalizer not built (Phase 8 deferred)
+    accepted_baseline:
+      revision: null
+      semantic_hash: null
+      implementing_commit: "e31193b6"  # CORRECTED 2026-07-24 (was 68ee0a23/75486695 — neither is an ancestor of review HEAD 3323a8ef; verified via `git merge-base --is-ancestor`). e31193b6 "fix(field): correct the biometric mental model" and e2e9775e "feat(field): fix the field channel to dark" ARE ancestors and match current file content. Informational only — not a formal accepted-baseline record; no consent event exists for it.
+      accepted_at: null
+      acceptance_record: null
+    application:
+      route: /login/field
+      entry_component: apps/web/src/app/login/field/page.tsx
+      client_component: apps/web/src/app/login/field/FieldLoginClient.tsx
+      styles: apps/web/src/app/login/field/field-login.css
+      state_modules:
+        - apps/web/src/lib/field-device.ts
+        - apps/web/src/lib/field-biometric-unlock.ts
+      services:
+        - "apps/web/src/app/(app)/field/settings/actions.ts (readFieldDeviceEnrollment, selfEnrollFieldDevice)"
+        - "Supabase Auth (signInWithPassword)"
+      api_contracts:
+        - "Supabase auth.getSession / auth.signInWithPassword"
+        - "field device-trust register (server action, backed by a DB row exposing trust_status)"
+      permissions: []  # not traced this session — pre-auth screen has none
+      analytics: []  # none found in FieldLoginClient.tsx
+      tests: []  # no existing automated test targets this route found this session; not exhaustively searched
+      runtime_ids: {}
+    mapping:
+      status: verified
+      confidence: high
+      evidence:
+        - "FieldLoginClient.tsx header comment cites the same Claude Design project id and exact filename SAQEEL Field Login.dc.html (page name mismatch noted, file mismatch not — team clearly means SAQEEL PWA-Field Login.dc.html, only page in the project matching that role)"
+        - "CORRECTED 2026-07-24: code provenance is e31193b6/e2e9775e (verified ancestors of HEAD), not 68ee0a23/75486695 (neither is an ancestor — original claim was a methodology error, caught by Codex's independent review)."
+        - "CONFIRMED DEFECT 2026-07-24 (grep): apps/web/src/app/login/field/page.tsx:9 and FieldLoginClient.tsx:11 both cite project id 5e8154ad-9a7d-4e3d-9b7a-c66ca020bd61 — a typo. The live project id is 5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61. The comments also cite the filename SAQEEL Field Login.dc.html, not the real SAQEEL PWA-Field Login.dc.html. Both are code-comment defects, not application-behavior defects — flagged for whichever change control eventually touches this file, not fixed here."
+        - "OPEN QUESTION 2026-07-24: repository does contain virtual-session OTP RPCs and a historical accepted OTP configuration (separate capability). product-contract/governance/OPEN_DECISIONS.yaml still lists DEC-007 as open. This is an authority conflict for any future Field Login OTP build — must be resolved explicitly, not inferred from the virtual-session capability existing."
+        - "CONFIRMED 2026-07-24: the 'Keep me signed in' checkbox in FieldLoginClient.tsx changes local component state but that state is not read by the sign-in call or any persistence logic — an unwired control, not previously flagged in the original delta."
+      blockers: []
+
+  - page_path: "SAQEEL Login.dc.html"
+    canonical_name: SAQEEL Login
+    classification: production_candidate
+    mapping:
+      status: probable
+      confidence: medium
+      evidence:
+        - "Governed by separate closed task TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001 per FieldLoginClient.tsx comment; likely maps to /login (web console), not independently verified this session"
+      blockers:
+        - "Not content-read or route-traced this session — out of pilot scope"
+
+  # HISTORICAL FOOTER — do not treat as current (see this file's top-level `status`/`superseded_note`).
+  # At the time this footer was written, 95 other pages were UNMAPPED. That is no longer true.
+  # Current authoritative mapping state (98 pages total, 46 high / 7 medium / 1 low confidence,
+  # 44 correctly out-of-scope PWA/non-screen): mapping/design-to-code-map.csv, .json
+  # Current inventory (98 rows): inventory/design-pages.json, inventory/design-pages.csv

@@ -12,6 +12,8 @@ document remains the authority on anything this skill does not state.
 ## The law, in four lines
 
 1. **Design authority is Claude Design**, not the running app and not memory.
+   For admin design work, repository-aware ChatGPT critique precedes Claude
+   Design; critique proposes, Claude Design resolves the design.
 2. **A lane number never rises without evidence.** Ungoverned values render
    "Not configured" — never an invented value.
 3. **Done means the functionality works in Google Chrome** against real data
@@ -72,13 +74,31 @@ Read `references/PHASES.md` §Parity for the full procedure. In short:
 1. Read the card's `.dc.html` from `designs/<channel>/` (vendored) **and**
    confirm it matches the live Claude Design project file — the project is the
    authority; the vendored copy can be stale.
-2. Render the design and the shipped route side by side at every declared width,
+2. For an **admin** card, run the repository-aware design-quality gate before
+   asking Claude Design to change anything:
+   - send the relevant route files, shared-shell files, requirement rows,
+     current design, runtime evidence and known regressions to a neighboring
+     ChatGPT/Codex review session that can read the repository;
+   - require at least 20 concrete recommendations;
+   - score them for user impact, permission safety, regression risk,
+     accessibility and implementation feasibility;
+   - retain the best 10, with scores and an explicit no-functionality-loss
+     check;
+   - send Claude Design only that concise ranked design brief and its acceptance
+     criteria. Keep builder-process prose in the orchestrator handoff, never in
+     the Claude Design conversation.
+3. Render the design and the shipped route side by side at every declared width,
    in **EN/LTR and AR/RTL**, and enumerate every difference: structure, spacing,
    type, states, empty/loading/error, token usage.
-3. Where the shipped route is wrong → fix the code.
-4. Where the **design** is wrong or missing → do not invent it in code. Post the
+4. Where the shipped route is wrong → fix the code.
+5. Where the **design** is wrong or missing → do not invent it in code. Post the
    change request into Claude Design (`mcp__claude-design__*`), get the page
    updated, re-vendor it into `designs/<channel>/`, then implement.
+
+The admin gate may reorganize or progressively disclose functionality, but it
+may not remove or weaken any authorized destination, deep link, route guard,
+RBAC/RLS rule, workflow transition, immutable-version rule, audit/data-truth
+behavior, responsive state, accessibility behavior, or EN/AR RTL outcome.
 
 Colour law applies with no exception: design-system tokens only, never a hex,
 `rgb()`, `hsl()`, or a Tailwind colour utility.

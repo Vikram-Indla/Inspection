@@ -14,6 +14,7 @@ import SignaturePad, { type SignaturePadStrings, type SignatureAck } from "./Sig
 import { findingSubmitBlockers, type FindingOp, type FindingSyncState } from "./finding-outbox";
 import EvidenceReview, { type EvidenceReviewStrings, type EvidenceReviewRow } from "./EvidenceReview";
 import { evidenceRowStatus, evidenceSyncWarning, evidenceReviewCounts } from "./evidence-review-status";
+import { detectServerAdvance, sectionKeyForItem, type RecoveryState } from "./recovery-runtime";
 import FieldConnectivityBanner from "@/components/field/FieldConnectivityBanner";
 import LiveRegion from "@/components/field/LiveRegion";
 import { focusAndScrollTo, firstBlocker } from "@/components/field/a11y";
@@ -44,7 +45,8 @@ type Review = {
   decision_reason: string | null;
   decided_at: string | null;
 };
-type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: Section[]; action_forms?: FormDef[]; item_snapshot?: Record<string, unknown>; item_rules?: Record<string, { requirement?: "required" | "optional" | "conditional" }> } }; submission_versions?: SubmissionVersion[]; reviews?: Review[] };
+type AcknowledgementConfig = { required?: boolean; mode?: "signature" | "declaration"; label?: string };
+type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: Section[]; action_forms?: FormDef[]; acknowledgement?: AcknowledgementConfig; item_snapshot?: Record<string, unknown>; item_rules?: Record<string, { requirement?: "required" | "optional" | "conditional" }> } }; submission_versions?: SubmissionVersion[]; reviews?: Review[] };
 type SResp = { item_id: string; response: Answer | null; updated_at: string };
 type SEv = {
   id: string; linked_type: string; linked_id: string; evidence_type: string;
@@ -86,7 +88,15 @@ export type WorkspaceStrings = {
   // outcome, not network quality).
   connectivityOffline: string; connectivityWeak: string;
   answered: string;
-  conflictHead: string; thisDevice: string; server: string; keepMine: string; keepServer: string;
+  conflictHead: string; thisDevice: string; server: string; keepMine: string; keepServer: string; conflictReview: string;
+  // SCR-IPAD stale submitted-version recovery
+  recoveryAdvancedTitle: string; recoveryAdvancedBody: string;
+  recoveryReturnedTitle: string; recoveryReturnedBody: string;
+  recoveryReload: string; recoveryBlockSubmit: string;
+  // SCR-IPAD pre-submit final review
+  reviewTitle: string; reviewHint: string; reviewAnswers: string; reviewEvidence: string;
+  reviewViolations: string; reviewActions: string; reviewBlockers: string; reviewBack: string;
+  reviewContinue: string; jumpToSection: string; declarationRequired: string;
   returnedScope: string; returnedNote: string;
   returnedBadge: string; openCorrection: string; correctionOpen: string; resubmitBtn: string;
   compareVersions: string; compareHeading: string; compareBefore: string; compareAfter: string;
@@ -190,6 +200,17 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const [evState, setEvState] = useState({} as Record<string, { archived?: boolean; deleted?: boolean }>);
   const [deleting, setDeleting] = useState(null as { ev: SEv; reason: string } | null);
   const [conflicts, setConflicts] = useState([] as Conflict[]);
+  // SCR-IPAD Offline Conflict & Recovery — the highest submission version this
+  // device loaded, and whether the SERVER copy has since advanced past it
+  // (submitted/returned/newer version). Recovery is fail-closed: it never
+  // overwrites the server, it warns and offers a reload.
+  const loadedVersion = useMemo(() => Math.max(0, ...(inspection.submission_versions ?? []).map(s => s.version_number)), [inspection.submission_versions]);
+  const [recovery, setRecovery] = useState<RecoveryState>("none");
+  // Pre-submit final review (SCR-IPAD). A plain gate, not a phase machine: the
+  // post-submit path already has server-confirmed receipt, pending-sync, failed
+  // and retry states (SCR-IPAD-660) and is left exactly as it is.
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [declarationAccepted, setDeclarationAccepted] = useState(false);
   const [msg, setMsg] = useState(null as string | null);
   const [retrying, setRetrying] = useState(false);
   const [validation, setValidation] = useState(null as SectionBlockers[] | null);
@@ -277,6 +298,8 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const sections = inspection.package_versions.definition.sections.filter(s => { return !!s.items?.length; });
   const itemRules = inspection.package_versions.definition.item_rules ?? {};
   const formDefs = useMemo(() => inspection.package_versions.definition.action_forms ?? [], [inspection]);
+  const acknowledgement = inspection.package_versions.definition.acknowledgement;
+  const acknowledgementRequired = acknowledgement?.required === true;
   // §15/§20 — effective scope: snapshot MINUS actively deselected PLUS added
   // (added land in the synthetic "Added items" section; no item→section
   // metadata exists outside the frozen section code lists).
@@ -376,6 +399,32 @@ export default function Workspace({ inspection, items, library, serverResponses,
     const iv = setInterval(tick, 8000);
     return () => { clearInterval(iv); window.removeEventListener("online", tick); window.removeEventListener("offline", goOffline); };
   }, [onState, refreshQueued, userId]);
+
+  // Reconnect stale-version guard: re-read the server inspection's status +
+  // latest submission version and compare to what this device loaded. Runs on
+  // mount and on every reconnect (not a poll). RLS authorizes the assigned
+  // inspector's own inspection read; a failed read leaves recovery untouched
+  // (never a false alarm). This is DETECTION only — it changes no server state.
+  useEffect(() => {
+    if (submitted) return;   // already-terminal at load → the normal read-only lock owns this
+    let cancelled = false;
+    const check = async () => {
+      if (typeof navigator !== "undefined" && !navigator.onLine) return;
+      const { data } = await supabaseBrowser()
+        .from("inspections").select("status, submission_versions(version_number)")
+        .eq("id", inspection.id).maybeSingle();
+      if (cancelled || !data) return;
+      const serverVersion = Math.max(0, ...(((data.submission_versions ?? []) as { version_number: number }[]).map(s => s.version_number)));
+      setRecovery(detectServerAdvance(
+        { status: inspection.status, version: loadedVersion },
+        { status: data.status as string, version: serverVersion },
+      ));
+    };
+    void check();
+    const onOnline = () => void check();
+    window.addEventListener("online", onOnline);
+    return () => { cancelled = true; window.removeEventListener("online", onOnline); };
+  }, [inspection.id, inspection.status, loadedVersion, submitted]);
 
   // --- Persistence beyond the outbox (context · action forms · runtime violations) ---
   // The offline engine is untouched: these use direct writes when online plus a
@@ -844,6 +893,12 @@ export default function Workspace({ inspection, items, library, serverResponses,
     .map(code => ({ code, config: vioConfig[code] ?? null })), [invalidatedVios, vioConfig]);
 
   async function submit() {
+    // Stale submitted-version protection: refuse to submit over a server copy
+    // that has advanced (submitted/returned/newer version) since this device
+    // loaded — the immutable submitted version is never overwritten from a stale
+    // session. The inspector reloads the latest via the recovery banner. This
+    // runs before every other gate: a stale device must not even be evaluated.
+    if (recovery !== "none") { setMsg(strings.recoveryBlockSubmit); return; }
     // Findings gate (FLD-FND-003): every implied violation needs a narrative that
     // has PERSISTED. Read the outbox authoritatively (not the ≤8s-stale tick
     // state) so an empty, still-queued (unsynced) or failed finding all block
@@ -872,6 +927,22 @@ export default function Workspace({ inspection, items, library, serverResponses,
       return;
     }
     setValidation(null);
+    // Final review before acknowledgement: the inspector sees what is about to
+    // become an immutable submitted version — counts, remaining blockers with a
+    // jump to the owning section, and the declaration when the package requires
+    // one. Acknowledgement is only reached from here.
+    setReviewOpen(true);
+  }
+
+  // Leaves review for the acknowledgement the package asks for: a signature
+  // (DEC-009, captured in SignaturePad) or a declaration checkbox already
+  // accepted in the review card, which submits directly with no signature.
+  function continueFromReview() {
+    setReviewOpen(false);
+    if (acknowledgementRequired && acknowledgement?.mode === "declaration") {
+      void finalizeSubmit({ signature_data_url: "", name: "", signed_at: new Date().toISOString() });
+      return;
+    }
     setSigning(true);   // DEC-009: acknowledgement signature captured at submit; enqueue happens in finalizeSubmit
   }
 
@@ -882,7 +953,10 @@ export default function Workspace({ inspection, items, library, serverResponses,
     // (submit_inspection computes max+1 under a row lock). This client-side
     // number is computed ONLY as the legacy-fallback payload for
     // pre-20260721160000 servers and for the optimistic queue message.
-    const legacyVersion = Math.max(0, ...(inspection.submission_versions ?? []).map(s => s.version_number)) + 1;
+    // Derive from the version this device actually loaded, not from a re-read of
+    // the prop: both express the same number, but loadedVersion is the value the
+    // stale-version guard compares against, so the two can never disagree.
+    const legacyVersion = loadedVersion + 1;
     const byCode = (id: string) => (items.find(i => i.id === id) ?? library.find(i => i.id === id))?.code ?? id;
     // Phase 6 (§21/§22, D-020/D-022) — the snapshot carries the frozen
     // contract the server enforces: per-section comparable sub-objects
@@ -1165,19 +1239,41 @@ export default function Workspace({ inspection, items, library, serverResponses,
         {/* M04-136/137 — source of the previous-inspection comparison shown per item below */}
         {prev && <p className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>{fmt(strings.prevSource, { ref: prev.label, date: prev.date ?? "—" })}</p>}
       </details>
-      {conflicts.map(c => (
-        <div key={c.key} className={styles.conflict}>
-          <div className={styles.conflictHead}>{fmt(strings.conflictHead, { code: items.find(i => i.id === c.item_id)?.code ?? "" })}</div>
+      {/* SCR-IPAD stale submitted-version recovery — fail-closed: the server copy
+          advanced past this device, so submission is blocked and the inspector is
+          offered a reload of the current server state. No silent overwrite. */}
+      {recovery !== "none" && (
+        <div className={styles.recovery} role="alert" data-testid="recovery-banner" data-recovery={recovery}>
+          <div className={styles.recoveryText}>
+            <strong>{recovery === "returned" ? strings.recoveryReturnedTitle : strings.recoveryAdvancedTitle}</strong>
+            <p className="t-caption" style={{ margin: 0 }}>{recovery === "returned" ? strings.recoveryReturnedBody : strings.recoveryAdvancedBody}</p>
+          </div>
+          <button type="button" className="btn btn-primary btn-sm" onClick={() => router.refresh()} data-testid="recovery-reload">{strings.recoveryReload}</button>
+        </div>
+      )}
+      {conflicts.map(c => {
+        const code = items.find(i => i.id === c.item_id)?.code ?? "";
+        const sectionKey = code ? sectionKeyForItem(displaySections, code) : null;
+        return (
+        <div key={c.key} className={styles.conflict} data-testid="conflict-card">
+          <div className={styles.conflictHead}>{fmt(strings.conflictHead, { code })}</div>
           <div className={styles.conflictGrid}>
             <div className={styles.conflictSide}><h5>{strings.thisDevice}</h5><p>{JSON.stringify(c.local)}</p></div>
             <div className={styles.conflictSide}><h5>{strings.server}</h5><p>{JSON.stringify(c.server)}</p></div>
           </div>
           <div className={styles.conflictFoot}>
+            {sectionKey && (
+              <button type="button" className="btn btn-ghost" data-testid="conflict-review"
+                onClick={() => document.getElementById(`ax-section-${sectionKey}`)?.scrollIntoView({ behavior: "smooth", block: "start" })}>
+                {strings.conflictReview}
+              </button>
+            )}
             <button className="btn btn-secondary" onClick={async () => { const it = items.find(i => i.id === c.item_id)!; await local.resolveConflict(c.key); await answer(it, c.local as Answer); }}>{strings.keepMine}</button>
             <button className="btn btn-primary" onClick={async () => { setAnswers(a => ({ ...a, [c.item_id]: c.server as Answer })); await local.resolveConflict(c.key); setConflicts(await local.conflicts()); }}>{strings.keepServer}</button>
           </div>
         </div>
-      ))}
+        );
+      })}
       {inspection.status === "returned" && lastReturn && (
         <div className="alert alert-warning">
           <div className="stack" style={{ gap: "var(--space-2)" }}>
@@ -1758,6 +1854,39 @@ export default function Workspace({ inspection, items, library, serverResponses,
         </div>
       )}
       </fieldset>
+      {/* SCR-IPAD final review — the last look before an immutable submitted
+          version exists. Counts what is about to be submitted, lists any
+          remaining blocker with a jump to its section, and carries the
+          declaration when the package asks for one instead of a signature. */}
+      {!submitted && reviewOpen && (
+        <section className={styles.card} aria-labelledby="final-review-title" style={{ padding: "var(--space-4)", display: "grid", gap: "var(--space-3)", scrollMarginBlockStart: "var(--space-8)" }}>
+          <div><h3 id="final-review-title">{strings.reviewTitle}</h3><p className="t-caption">{strings.reviewHint}</p></div>
+          <div className="row" style={{ flexWrap: "wrap", gap: "var(--space-2)" }}>
+            <span className="badge">{strings.reviewAnswers} <span className="id-code">{summary.answered}/{summary.answered + summary.pending}</span></span>
+            <span className="badge">{strings.reviewEvidence} <span className="id-code">{summary.evidence}</span></span>
+            <span className={`badge ${summary.violations ? "badge-critical" : ""}`}>{strings.reviewViolations} <span className="id-code">{summary.violations}</span></span>
+            <span className={`badge ${Object.keys(forms).length ? "badge-info" : ""}`}>{strings.reviewActions} <span className="id-code">{Object.keys(forms).length}</span></span>
+            <span className={`badge ${blockCount ? "badge-critical" : "badge-compliant"}`}>{strings.reviewBlockers} <span className="id-code">{blockCount}</span></span>
+          </div>
+          {liveBlockers.map(group => (
+            <div key={`review-${group.key}`} className="alert alert-warning">
+              <div><strong>{group.title}</strong> · {[...group.unanswered, ...group.evidence, ...group.forms].join(", ")}
+                <div><a className="btn btn-ghost btn-sm" href={`#ax-section-${group.key}`} onClick={() => setReviewOpen(false)}>{strings.jumpToSection}</a></div>
+              </div>
+            </div>
+          ))}
+          {acknowledgementRequired && acknowledgement?.mode === "declaration" && (
+            <label className="row" style={{ gap: "var(--space-2)", alignItems: "flex-start" }}>
+              <input type="checkbox" checked={declarationAccepted} onChange={event => setDeclarationAccepted(event.target.checked)} />
+              <span>{acknowledgement.label ?? strings.declarationRequired}</span>
+            </label>
+          )}
+          <div className="row" style={{ justifyContent: "flex-end", gap: "var(--space-2)", flexWrap: "wrap" }}>
+            <button type="button" className="btn btn-secondary" onClick={() => setReviewOpen(false)}>{strings.reviewBack}</button>
+            <button type="button" className="btn btn-primary" disabled={blockCount > 0 || (acknowledgementRequired && acknowledgement?.mode === "declaration" && !declarationAccepted)} onClick={continueFromReview}>{strings.reviewContinue}</button>
+          </div>
+        </section>
+      )}
       {/* DEC-009 — acknowledgement signature gate; the dataURL rides in the queued submit op */}
       {signing && !submitted && (
         <SignaturePad strings={strings.sig} onCancel={() => setSigning(false)} onConfirm={finalizeSubmit} />

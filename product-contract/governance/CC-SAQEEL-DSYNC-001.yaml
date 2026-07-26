@@ -1,0 +1,83 @@
+schema_version: "1.0"
+change_control_id: "CC-SAQEEL-DSYNC-001"
+task_id: "SAQEEL-DSYNC-001"
+title: "Codex Web/Admin convergence discovery lane"
+status: "DISCOVERY_PACKET_READY_AWAITING_SPONSOR_DECISIONS"
+prepared_on: "2026-07-24"
+approved_on: "2026-07-24"
+approved_by: "Vikram Indla / Sponsor"
+approval_evidence: "CODEX_RESUME_PROMPT.md: explicit authorization to register SAQEEL-DSYNC-001 as a concurrent governed discovery task"
+
+baseline:
+  canonical_repository: "/Users/vikramindla/Developer/Inspection"
+  canonical_sha: "3323a8ef3d788c1c157a9bf0d63e32a3d9334e42"
+  branch: "codex/saqeel-web-admin-convergence-discovery"
+  worktree: "/Users/vikramindla/Developer/Inspection-codex-web-admin-convergence"
+
+authority:
+  discovery_authorized: true
+  application_implementation_authorized: false
+  design_mutation_authorized: false
+  accepted_baseline_advance_authorized: false
+  commit_discovery_artifacts_authorized: false
+  push_merge_deploy_authorized: false
+
+scope:
+  requirements: "CR-001..CR-478 from product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv remain mandatory; this is the Git-backed mirror of the Excel requirement-management baseline"
+  channels: ["SAQEEL business web", "SAQEEL admin portal"]
+  first_convergence_unit:
+    - "Business web landing/homepage"
+    - "Admin landing/homepage"
+    - "Navigation and module entry structure"
+    - "Planning and Operations Centre entry points"
+  read_only_references: ["Field PWA", "Inspector iPad"]
+  engines:
+    - "Claude Design inventory and revision identity"
+    - "Requirement-design-code reconciliation"
+    - "Web/Admin route and wiring inventory"
+    - "Shared backend/API/workflow/data/permission contract mapping"
+
+source_hierarchy:
+  product_intent:
+    - "Latest explicit sponsor instruction"
+    - "Sponsor-provided HTML, Excel requirement-management workbook, document, or named artifact"
+    - "Latest sponsor-accepted Claude Design revision"
+    - "Current code"
+  functional_security_truth: "Verified backend and API contracts remain authoritative until a governed sponsor-approved contract change."
+
+required_context:
+  - "product-contract/governance/CC-WEB-ADMIN-PHASE1-001.yaml"
+  - "product-contract/web-admin-phase1/00_START_HERE.md"
+  - "product-contract/web-admin-phase1/BASELINE_SUMMARY.json"
+  - "product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv"
+  - "product-contract/web-admin-phase1/ROUTE_INVENTORY.csv"
+  - "product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv"
+  - "product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv"
+  - "product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md"
+  - "product-contract/screens/screen_route_catalogue.csv"
+  - "product-contract/domain/rbac_matrix.csv"
+  - "product-contract/domain/state_transitions.csv"
+  - "product-contract/governance/decision_register.csv"
+  - "artifacts/saqeel-convergence/codex/"
+
+do_not_touch:
+  - "Do not modify application source, routes, styles, components, migrations, or tests."
+  - "Do not modify Field Login; preserve its consent packet as read-only evidence."
+  - "Do not modify PWA or iPad frontend code, routes, styles, components, or tests."
+  - "Do not modify main, setup/Inspection, design-sync/discovery, or another worktree or branch."
+  - "Do not inspect, apply, drop, rename, rewrite, or otherwise touch any stash."
+  - "Do not modify Claude Code's uncommitted .design-sync files or use them as an implementation base."
+  - "Do not edit Claude Design or advance an accepted design baseline."
+  - "Do not push, merge, deploy, execute remote DDL, mutate shared data, enable providers, or expose credentials."
+
+known_missing_source:
+  file: "SHARED_GOVERNANCE.md"
+  status: "REFERENCED_BY_RESUME_PROMPT_NOT_FOUND"
+  search_scope: "Attachment dump, Codex attachments, approved documentation root, canonical repository, and supplied ZIP manifests"
+  handling: "Continue only within explicit resume boundaries; do not infer absent rules; block final governance-complete claim until supplied or sponsor waives."
+
+exit_condition: >-
+  Produce the fourteen Codex-owned discovery outputs and a sponsor-ready
+  landing-page convergence consent packet. Stop before application or design
+  implementation, accepted-baseline advancement, cross-review of Claude Code
+  reports, or implementation-lease activation.

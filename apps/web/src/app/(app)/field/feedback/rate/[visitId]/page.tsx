@@ -136,6 +136,10 @@ export default async function RateVisitPage({ params }: { params: Promise<{ visi
           submitRating: tr("field.feedback.submit", "Submit rating", "إرسال التقييم"),
           confidentialNote: tr("field.feedback.confidential", "The rating is confidential and used to improve service · does not affect the inspection outcome.", "التقييم سري ويُستخدم لتحسين الخدمة · لا يؤثر على نتيجة التفتيش."),
           sig: {
+            // Capture mode: a feedback rating is signed by a representative who is
+            // already present, so the attendance question does not apply. Passing
+            // attendance copy here is now a compile error, not a silent no-op.
+            mode: "capture" as const,
             title: tr("field.feedback.sigTitle", "Representative signature", "توقيع الممثل"),
             hint: tr("field.feedback.sigHint", "Have the establishment representative sign to confirm this rating.", "اطلب من ممثل المنشأة التوقيع لتأكيد هذا التقييم."),
             nameLabel: tr("field.feedback.sigName", "Representative name", "اسم الممثل"),

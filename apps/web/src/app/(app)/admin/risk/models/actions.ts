@@ -1,4 +1,5 @@
 "use server";
+import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { logProviderError, NEUTRAL_LOAD_ERROR, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
@@ -30,6 +31,7 @@ export async function createRiskDraft(_: RiskResult, formData: FormData): Promis
     model_key: "risk", version_label, status: "draft", payload, created_by: user.id,
   });
   if (error) { logProviderError("risk draft create", error); return { error: `${NEUTRAL_WRITE_ERROR} (risk_owner scope required).` }; }
+  revalidatePath("/admin/risk/models");
   return { ok: true };
 }
 
@@ -48,5 +50,6 @@ export async function transitionRiskModel(_: RiskResult, formData: FormData): Pr
     p_model_id: id, p_to_status: to, p_expected_row_version: Number.isFinite(expected) ? expected : 0, p_reason: reason,
   });
   if (error) { logProviderError("risk model transition", error); return { error: `Transition rejected: ${error.message}` }; }
+  revalidatePath("/admin/risk/models");
   return { ok: true };
 }

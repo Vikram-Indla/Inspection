@@ -27,7 +27,7 @@
   /* ── Text ───────────────────────────────────────────────── */
   --text-primary:   #1a1d1f;
   --text-secondary: #4c5258;
-  --text-muted:     #71787e;
+  --text-muted:     #5f666c;  /* AA on the warm canvas and on white at 11.5px */
   --text-disabled:  #a4aab0;
   --text-inverse:   #f5f6f7;
   --text-on-action: #ffffff;
@@ -125,7 +125,7 @@
 
   --text-primary:   #e8eaec;
   --text-secondary: #b1b6bc;
-  --text-muted:     #82888f;
+  --text-muted:     #99a0a8;  /* AA on --surface-raised at 11.5px */
   --text-disabled:  #565c63;
   --text-inverse:   #1a1d1f;
   --text-on-action: #08120e;

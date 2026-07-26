@@ -19,7 +19,7 @@ import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagina
 import { computeResubmissionFlags, type ResubmissionSource } from "./sla";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { redirect } from "next/navigation";
-import { buildShellNavigation } from "@/lib/shell-navigation";
+import { buildShellNavigation, BUSINESS_ROLE_KEYS, FIELD_CHANNEL_ROLE_KEYS } from "@/lib/shell-navigation";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import OperationsMapWorkspace, {
   type OperationsMapEntry,
@@ -217,7 +217,15 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     : buildShellNavigation(routeRoleKeys)
       .flatMap(group => group.items)
       .find(item => item.href === "/operations");
-  const mayViewOperations = operationsDestination?.enabled === true;
+  // DSG-CMD-020 — direct-route authorization: business-visible shell items are
+  // unconditionally enabled for every web-portal persona, including admin-only
+  // ones, so nav visibility cannot be the authorization. The route verifies the
+  // caller independently holds an operational role.
+  const webBusinessRoles = BUSINESS_ROLE_KEYS.filter(
+    role => !(FIELD_CHANNEL_ROLE_KEYS as readonly string[]).includes(role)
+  );
+  const hasOperationalRole = routeRoleKeys.some(role => webBusinessRoles.includes(role));
+  const mayViewOperations = operationsDestination?.enabled === true && hasOperationalRole;
   if (!mayViewOperations) {
     return (
       <Shell current="/operations" title={t("ops.title", "Operations Center")}>

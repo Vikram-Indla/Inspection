@@ -43,10 +43,14 @@ export function validateBands(bands: RiskBands): ValidationResult {
   return { ok: true, why: "Bands valid." };
 }
 
-export function validateRiskModelPayload(payload: RiskModelPayload): ValidationResult {
-  const w = validateWeights(payload.factors ?? []);
+export function validateRiskModelPayload(payload: unknown): ValidationResult {
+  if (!payload || typeof payload !== "object") return { ok: false, why: "Model payload must be an object." };
+  const candidate = payload as Partial<RiskModelPayload>;
+  if (!Array.isArray(candidate.factors)) return { ok: false, why: "Model payload must include factors[]." };
+  if (!candidate.bands || typeof candidate.bands !== "object") return { ok: false, why: "Model payload must include bands." };
+  const w = validateWeights(candidate.factors);
   if (!w.ok) return w;
-  return validateBands(payload.bands);
+  return validateBands(candidate.bands as RiskBands);
 }
 
 /** Weighted score in [0,100]. Weights come from the model (never invented here);

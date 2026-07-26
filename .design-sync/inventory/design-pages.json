@@ -1,0 +1,982 @@
+[
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "Canvas.dc.html",
+    "canonical_name": "Canvas",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784830510499088",
+    "size_bytes": 206,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL AI Studio.dc.html",
+    "canonical_name": "SAQEEL AI Studio",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805971473854",
+    "size_bytes": 16674,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Admin.dc.html",
+    "canonical_name": "SAQEEL Admin",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805992533435",
+    "size_bytes": 42070,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Admin Detail.dc.html",
+    "canonical_name": "SAQEEL Admin Detail",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805971473854",
+    "size_bytes": 27540,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Admin Execution.dc.html",
+    "canonical_name": "SAQEEL Admin Execution",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805971473854",
+    "size_bytes": 13247,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Admin Extended.dc.html",
+    "canonical_name": "SAQEEL Admin Extended",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805971473854",
+    "size_bytes": 21560,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Admin Form Builder.dc.html",
+    "canonical_name": "SAQEEL Admin Form Builder",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805971473854",
+    "size_bytes": 14333,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Admin Geofence.dc.html",
+    "canonical_name": "SAQEEL Admin Geofence",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805971473854",
+    "size_bytes": 10140,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Admin Integrations.dc.html",
+    "canonical_name": "SAQEEL Admin Integrations",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805971473854",
+    "size_bytes": 9038,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Admin Integrations Data.dc.html",
+    "canonical_name": "SAQEEL Admin Integrations Data",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805971473854",
+    "size_bytes": 12587,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Admin Lookups.dc.html",
+    "canonical_name": "SAQEEL Admin Lookups",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805971473854",
+    "size_bytes": 12357,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Admin Lookups copy.dc.html",
+    "canonical_name": "SAQEEL Admin Lookups copy",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805971473854",
+    "size_bytes": 12357,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Admin Role Override.dc.html",
+    "canonical_name": "SAQEEL Admin Role Override",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805971473854",
+    "size_bytes": 10978,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Admin SENAI Data.dc.html",
+    "canonical_name": "SAQEEL Admin SENAI Data",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805971473854",
+    "size_bytes": 16211,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Admin Virtual Premium.dc.html",
+    "canonical_name": "SAQEEL Admin Virtual Premium",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805992533435",
+    "size_bytes": 9731,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Admin Workflow Builder.dc.html",
+    "canonical_name": "SAQEEL Admin Workflow Builder",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805992533435",
+    "size_bytes": 12722,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Auth States.dc.html",
+    "canonical_name": "SAQEEL Auth States",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784618956418580",
+    "size_bytes": 10088,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Cases.dc.html",
+    "canonical_name": "SAQEEL Cases",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805992533435",
+    "size_bytes": 16518,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Committee.dc.html",
+    "canonical_name": "SAQEEL Committee",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805992533435",
+    "size_bytes": 13333,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Compliance Requests.dc.html",
+    "canonical_name": "SAQEEL Compliance Requests",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805992533435",
+    "size_bytes": 12556,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Control Panel.dc.html",
+    "canonical_name": "SAQEEL Control Panel",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805992533435",
+    "size_bytes": 17008,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Dashboard Config.dc.html",
+    "canonical_name": "SAQEEL Dashboard Config",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805992533435",
+    "size_bytes": 9685,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Delegation.dc.html",
+    "canonical_name": "SAQEEL Delegation",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805992533435",
+    "size_bytes": 11645,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Design System.dc.html",
+    "canonical_name": "SAQEEL Design System",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784619219725011",
+    "size_bytes": 115322,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Enforcement.dc.html",
+    "canonical_name": "SAQEEL Enforcement",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805992533435",
+    "size_bytes": 15479,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Establishment Violations.dc.html",
+    "canonical_name": "SAQEEL Establishment Violations",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784812839858290",
+    "size_bytes": 13986,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Evidence OCR.dc.html",
+    "canonical_name": "SAQEEL Evidence OCR",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784805992533435",
+    "size_bytes": 10645,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Executive Overview.html",
+    "canonical_name": "SAQEEL Executive Overview",
+    "stable_identity_note": "plain .html top-level page, not .dc.html \u2014 same identity convention (file path), etag used as revision proxy. Added 2026-07-24 after Codex re-review flagged it missing from the machine inventory.",
+    "etag_as_revision": "1784633455496212",
+    "size_bytes": 19504,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Factories.dc.html",
+    "canonical_name": "SAQEEL Factories",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806013700217",
+    "size_bytes": 11274,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Factory 360.dc.html",
+    "canonical_name": "SAQEEL Factory 360",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806013700217",
+    "size_bytes": 29250,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Feedback.dc.html",
+    "canonical_name": "SAQEEL Feedback",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806013700217",
+    "size_bytes": 29590,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Figma Parity Grid.dc.html",
+    "canonical_name": "SAQEEL Figma Parity Grid",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784755870195219",
+    "size_bytes": 9269,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Incident Reports.dc.html",
+    "canonical_name": "SAQEEL Incident Reports",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806070831883",
+    "size_bytes": 8015,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Inspection Report.dc.html",
+    "canonical_name": "SAQEEL Inspection Report",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806070831883",
+    "size_bytes": 10670,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Item Execution.dc.html",
+    "canonical_name": "SAQEEL Item Execution",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784827421554930",
+    "size_bytes": 25769,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL KPI Management.dc.html",
+    "canonical_name": "SAQEEL KPI Management",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806070831883",
+    "size_bytes": 18884,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Login.dc.html",
+    "canonical_name": "SAQEEL Login",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784614966655898",
+    "size_bytes": 15163,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Operations Center.dc.html",
+    "canonical_name": "SAQEEL Operations Center",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806070831883",
+    "size_bytes": 21743,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Operations Live.dc.html",
+    "canonical_name": "SAQEEL Operations Live",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784721421916945",
+    "size_bytes": 10021,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Account.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Account",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213131638",
+    "size_bytes": 25418,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field App.dc.html",
+    "canonical_name": "SAQEEL PWA-Field App",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213156018",
+    "size_bytes": 13693,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field App EN.dc.html",
+    "canonical_name": "SAQEEL PWA-Field App EN",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213057622",
+    "size_bytes": 11487,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Biometric.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Biometric",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213070462",
+    "size_bytes": 11410,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Challenge Report.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Challenge Report",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213072510",
+    "size_bytes": 12391,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Completion.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Completion",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213343626",
+    "size_bytes": 26964,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Conflict Resolution.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Conflict Resolution",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213063617",
+    "size_bytes": 11139,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Dashboard.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Dashboard",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213313329",
+    "size_bytes": 43580,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Drafts.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Drafts",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213116997",
+    "size_bytes": 8999,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Establishment File.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Establishment File",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213338101",
+    "size_bytes": 60100,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Establishments.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Establishments",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213899506",
+    "size_bytes": 24776,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Execution Shell.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Execution Shell",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213930831",
+    "size_bytes": 25505,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Factory 360.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Factory 360",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213915312",
+    "size_bytes": 60216,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Global Search.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Global Search",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213888514",
+    "size_bytes": 12982,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Immediate & Incident.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Immediate & Incident",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213917131",
+    "size_bytes": 12314,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Inspection.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Inspection",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213903345",
+    "size_bytes": 24372,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Inspection Form.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Inspection Form",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213910732",
+    "size_bytes": 43531,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Journey.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Journey",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213910376",
+    "size_bytes": 26396,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Login.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Login",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213895548",
+    "size_bytes": 17590,
+    "is_pilot_page": true
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field My Tasks.dc.html",
+    "canonical_name": "SAQEEL PWA-Field My Tasks",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884213910464",
+    "size_bytes": 23549,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Notifications.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Notifications",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884221221019",
+    "size_bytes": 15718,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field OCR Capture.dc.html",
+    "canonical_name": "SAQEEL PWA-Field OCR Capture",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884214807442",
+    "size_bytes": 11274,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Ops Console.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Ops Console",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884214631774",
+    "size_bytes": 18088,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Preparation.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Preparation",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884214824413",
+    "size_bytes": 10414,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Reopening Notices.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Reopening Notices",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884214795287",
+    "size_bytes": 11863,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Reports.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Reports",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884214824500",
+    "size_bytes": 35534,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Reports Library.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Reports Library",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884214802474",
+    "size_bytes": 13757,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Seizure Records.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Seizure Records",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884214849505",
+    "size_bytes": 13605,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Settings.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Settings",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884214839370",
+    "size_bytes": 13058,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Travel.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Travel",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884214856649",
+    "size_bytes": 12544,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Trusted Devices.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Trusted Devices",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884215808529",
+    "size_bytes": 6342,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Virtual Session.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Virtual Session",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884215765726",
+    "size_bytes": 25053,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Virtual Visit.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Virtual Visit",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884215782935",
+    "size_bytes": 10368,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Visit Results.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Visit Results",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884215762518",
+    "size_bytes": 16312,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Visit Statement.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Visit Statement",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884215760889",
+    "size_bytes": 8932,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Field Visits.dc.html",
+    "canonical_name": "SAQEEL PWA-Field Visits",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884215771900",
+    "size_bytes": 17509,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Index.dc.html",
+    "canonical_name": "SAQEEL PWA-Index",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884783731280",
+    "size_bytes": 12473,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Inspector Architecture.dc.html",
+    "canonical_name": "SAQEEL PWA-Inspector Architecture",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884215755564",
+    "size_bytes": 21809,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Inspector Golden Journey.dc.html",
+    "canonical_name": "SAQEEL PWA-Inspector Golden Journey",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884215763253",
+    "size_bytes": 14457,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Inspector Journey Mindmap.dc.html",
+    "canonical_name": "SAQEEL PWA-Inspector Journey Mindmap",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884215785464",
+    "size_bytes": 17630,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Inspector iPad.dc.html",
+    "canonical_name": "SAQEEL PWA-Inspector iPad",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884216460050",
+    "size_bytes": 24036,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL PWA-Inspector iPad Field.dc.html",
+    "canonical_name": "SAQEEL PWA-Inspector iPad Field",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884216467763",
+    "size_bytes": 31642,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Planning.dc.html",
+    "canonical_name": "SAQEEL Planning",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806070831883",
+    "size_bytes": 23038,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Planning Identity.dc.html",
+    "canonical_name": "SAQEEL Planning Identity",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806070831883",
+    "size_bytes": 11575,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Portal.dc.html",
+    "canonical_name": "SAQEEL Portal",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806070831883",
+    "size_bytes": 9734,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Profile.dc.html",
+    "canonical_name": "SAQEEL Profile",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806070831883",
+    "size_bytes": 7810,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Report Deltas.dc.html",
+    "canonical_name": "SAQEEL Report Deltas",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784824954925455",
+    "size_bytes": 51982,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Report Inventory.dc.html",
+    "canonical_name": "SAQEEL Report Inventory",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784821207917790",
+    "size_bytes": 15291,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Report Package Foundation.dc.html",
+    "canonical_name": "SAQEEL Report Package Foundation",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784826099620006",
+    "size_bytes": 20889,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Review & Approval.dc.html",
+    "canonical_name": "SAQEEL Review & Approval",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806080184527",
+    "size_bytes": 25565,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Risk.dc.html",
+    "canonical_name": "SAQEEL Risk",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806070831883",
+    "size_bytes": 16192,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL States System.dc.html",
+    "canonical_name": "SAQEEL States System",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806070831883",
+    "size_bytes": 14927,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Tasks.dc.html",
+    "canonical_name": "SAQEEL Tasks",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806070831883",
+    "size_bytes": 14101,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Users Roles.dc.html",
+    "canonical_name": "SAQEEL Users Roles",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806070831883",
+    "size_bytes": 16533,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Virtual.dc.html",
+    "canonical_name": "SAQEEL Virtual",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806070831883",
+    "size_bytes": 15593,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Visits.dc.html",
+    "canonical_name": "SAQEEL Visits",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806070831883",
+    "size_bytes": 28501,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Web Dashboard.dc.html",
+    "canonical_name": "SAQEEL Web Dashboard",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806070831883",
+    "size_bytes": 47088,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL Web-Index.dc.html",
+    "canonical_name": "SAQEEL Web-Index",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784884829104992",
+    "size_bytes": 12473,
+    "is_pilot_page": false
+  },
+  {
+    "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "project_name": "SAQEEL Design System",
+    "page_path": "SAQEEL iPad Dashboard.dc.html",
+    "canonical_name": "SAQEEL iPad Dashboard",
+    "stable_identity_note": "no MCP-exposed node/page id beyond file path; etag used as revision proxy",
+    "etag_as_revision": "1784806070831883",
+    "size_bytes": 20740,
+    "is_pilot_page": false
+  }
+]

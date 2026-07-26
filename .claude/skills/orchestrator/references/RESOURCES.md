@@ -10,7 +10,8 @@ URL: https://claude.ai/design/p/5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61
 
 | Path in project | Holds |
 | --- | --- |
-| *(root)* | 42 web `.dc.html` pages, `SAQEEL Design System.dc.html`, `SAQEEL Web Shell v5.dc.html`, `support.js` |
+| *(root)* | `SAQEEL Status Board.dc.html` only. Design pages are **not** at the root. |
+| `web/` | The web design pages + `support.js`. Note `SAQEEL Executive Overview.html` is plain `.html`, not `.dc.html`. |
 | `admin/` | 21 admin `.dc.html` pages + `support.js` |
 | `pwa/` | 43 PWA pages. Read-only while `config.json` sets `channelOwners.pwa` to `other-developer`. |
 | `status/saqeel-status.json` | **The published board.** `SAQEEL Status Board.dc.html` renders this file and nothing else. Publishing = writing the repo copy here. |

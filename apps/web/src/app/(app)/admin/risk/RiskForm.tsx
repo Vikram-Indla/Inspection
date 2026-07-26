@@ -9,6 +9,7 @@
 // There is no draft/approval step: a successful save is effective immediately.
 import { useMemo, useState, useActionState } from "react";
 import { saveRiskSettings } from "./actions";
+import { validateBands, validateWeights, type RiskBands } from "@/lib/risk/model";
 
 // Factor names are resolved to strings on the server — a function prop cannot
 // cross the server→client boundary (Next throws at render).
@@ -31,6 +32,8 @@ export type RiskLabels = {
   bandLow: string;
   bandMedium: string;
   bandHigh: string;
+  invalidBands: string;
+  confirmLive: string;
 };
 
 export default function RiskForm({
@@ -51,6 +54,7 @@ export default function RiskForm({
   );
   const [lowMax, setLowMax] = useState(initialLow);
   const [medMax, setMedMax] = useState(initialMed);
+  const [confirmedLive, setConfirmedLive] = useState(false);
 
   // useActionState wrapper keeps the server action's signature untouched.
   const [state, formAction, pending] = useActionState<SaveState, FormData>(
@@ -62,7 +66,16 @@ export default function RiskForm({
     () => Object.values(weights).reduce((s, w) => s + (Number.isFinite(w) ? w : 0), 0),
     [weights],
   );
-  const sumOk = Math.abs(sum - 1) <= 0.001;
+  const weightValidation = validateWeights(
+    initialFactors.map(f => ({ key: f.key, weight: weights[f.key] })),
+  );
+  const bands: RiskBands = {
+    low: [0, lowMax],
+    medium: [lowMax + 1, medMax],
+    high: [medMax + 1, 100],
+  };
+  const bandValidation = validateBands(bands);
+  const sumOk = weightValidation.ok;
   const maxWeight = Math.max(0.0001, ...Object.values(weights).map(w => (Number.isFinite(w) ? w : 0)));
 
   return (
@@ -107,16 +120,21 @@ export default function RiskForm({
         <span className="rk-bandchip"><span className="rk-bandchip__dot" style={{ background: "var(--status-warning)" }} />{labels.bandMedium} {lowMax + 1}–{medMax}</span>
         <span className="rk-bandchip"><span className="rk-bandchip__dot" style={{ background: "var(--status-critical)" }} />{labels.bandHigh} {medMax + 1}–100</span>
       </div>
+      {!bandValidation.ok && <p className="t-caption rk-validation" role="alert">{labels.invalidBands}</p>}
 
       <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--space-3)" }}>
         <p className="t-caption numeric">{labels.lastUpdated} {updatedAt ? new Date(updatedAt).toISOString().slice(0, 16).replace("T", " ") : "—"}</p>
         <span className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
           {state.ok && !pending && <span className="badge badge-compliant">{labels.saved}</span>}
-          <button className="btn btn-primary btn-lg btn-touch" disabled={pending || !sumOk} aria-disabled={!sumOk}>
+          <button className="btn btn-primary btn-lg btn-touch" disabled={pending || !sumOk || !bandValidation.ok || !confirmedLive} aria-disabled={!sumOk || !bandValidation.ok || !confirmedLive}>
             {pending ? labels.saving : labels.save}
           </button>
         </span>
       </div>
+      <label className="rk-live-confirm">
+        <input type="checkbox" checked={confirmedLive} onChange={e => setConfirmedLive(e.target.checked)} />
+        <span>{labels.confirmLive}</span>
+      </label>
       {state.error && <p className="t-caption" role="alert" style={{ color: "var(--status-critical-text)" }}>{state.error}</p>}
       <p className="t-caption">{labels.savedNote}</p>
     </form>

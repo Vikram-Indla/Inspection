@@ -1,0 +1,19 @@
+{
+  "page_id": "WA-DES-038",
+  "page_name": "SAQEEL Profile",
+  "design_path": "SAQEEL Profile.dc.html",
+  "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+  "observed_revision": "1784896277489148",
+  "observed_hash": null,
+  "accepted_revision": "1784896277489148",
+  "accepted_hash": null,
+  "accepted_at": "2026-07-24",
+  "acceptance_record": "consent/WA-DES-038/1784806070831883/consent-packet.md",
+  "mapped_route": "/profile",
+  "mapped_component": "apps/web/src/app/(app)/profile/page.tsx",
+  "consent_status": "APPROVED",
+  "consent_packet": "consent/WA-DES-038/1784806070831883/consent-packet.md",
+  "implementation_status": "NOT_APPLICABLE_DESIGN_ONLY_CHANGE",
+  "verification_status": "NOT_APPLICABLE_NO_APPLICATION_CODE_CHANGED",
+  "notes": "Design-only correction applied (bdi/dir=ltr isolation, matching shipped code) via mcp__claude-design__write_files, 2026-07-24. Prior revision 1784806070831883 is now historical; accepted_revision 1784896277489148 is the first accepted baseline for this page. No application code changed, so no implementation/verification cycle applies to this acceptance event. observed_hash remains null — no semantic normalizer was built this session; etag is the only revision marker in use."
+}

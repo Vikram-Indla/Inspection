@@ -6,6 +6,8 @@ import { storageStatePath } from "./personas";
 const read = (path: string) => readFileSync(join(process.cwd(), path), "utf8");
 
 const operationsPage = read("src/app/(app)/operations/page.tsx");
+const operationsLivePage = read("src/app/(app)/operations/live/page.tsx");
+const fieldVisitPage = read("src/app/(app)/field/[visitId]/page.tsx");
 const operationsActions = read("src/app/(app)/operations/actions.ts");
 const overrideMigration = read("../../supabase/migrations/20260716161605_ipad_geo_override_approval_workflow.sql");
 
@@ -36,6 +38,38 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 route safety", () => {
     expect(expiryGuard).toBeGreaterThan(-1);
     expect(arrivalMutation).toBeGreaterThan(expiryGuard);
   });
+
+  // The field visit page is the other GET that used to call the expiry RPC.
+  // That RPC is a security-definer UPDATE across every past-due row, so a single
+  // inspector opening a visit decided unrelated pending requests. The page now
+  // relabels a past-due row in memory only.
+  test("the field visit GET is read-only and only relabels a past-due row in memory", () => {
+    expect(fieldVisitPage).not.toContain('sb.rpc("expire_stale_geo_override_requests")');
+    expect(fieldVisitPage).toContain("Number.isFinite(fieldOverrideExpiresAtMs)");
+    expect(fieldVisitPage).toContain('status: "expired" as const');
+  });
+});
+
+test.describe("DSG-CMD-020 Operations direct-route authorization", () => {
+  // A business-visible shell item is enabled for every web-portal persona, so
+  // nav visibility alone is not authorization: an admin-only role could reach
+  // the Operations Center by typing the URL. Both routes must check the role
+  // independently of the nav item.
+  for (const [name, source] of [
+    ["/operations", operationsPage],
+    ["/operations/live", operationsLivePage],
+  ] as const) {
+    test(`${name} verifies an operational role independently of nav visibility`, () => {
+      expect(source).toContain("BUSINESS_ROLE_KEYS");
+      expect(source).toContain("FIELD_CHANNEL_ROLE_KEYS");
+      expect(source).toContain("const hasOperationalRole = routeRoleKeys.some");
+      expect(source).toContain(
+        "const mayViewOperations = operationsDestination?.enabled === true && hasOperationalRole;"
+      );
+      // the nav flag must never be the sole condition again
+      expect(source).not.toContain("const mayViewOperations = operationsDestination?.enabled === true;");
+    });
+  }
 });
 
 test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 repeated GET", () => {
