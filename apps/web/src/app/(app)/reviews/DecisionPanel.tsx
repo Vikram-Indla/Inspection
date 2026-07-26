@@ -135,7 +135,7 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
     <div className="cd-queue">
       {/* fingerprint legend — states the contract before the table */}
       <section className="panel cd-panelpad">
-        <div className="cd-sectionhead"><h3>{strings.fpTitle}</h3></div>
+        <div className="cd-sectionhead"><h2>{strings.fpTitle}</h2></div>
         <p className="cd-sub">{strings.fpHint}</p>
       </section>
       {/* M06-014/030 — client search + status + risk + overdue-only over the RLS page */}
@@ -161,7 +161,7 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
       {filtered.length === 0 ? (
         <section className="panel cd-panelpad cd-result" role="status">
           <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--neutral" aria-hidden="true">🔍</div>
-            <div className="cd-stack"><h3 tabIndex={-1}>{strings.noMatch}</h3><p>{strings.noMatchBody}</p></div></div>
+            <div className="cd-stack"><h2 tabIndex={-1}>{strings.noMatch}</h2><p>{strings.noMatchBody}</p></div></div>
         </section>
       ) : (
         <div className="sq-tablewrap"><table className="sq-table cd-table">
