@@ -165,7 +165,25 @@
   gap: 12px;
 }
 
-.checkinCaption { margin: 0; flex: 1; min-inline-size: 0; }
+.footerSpacer { flex: 1; }
+
+.advisory {
+  padding: 16px 18px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  color: var(--text-secondary);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.advisoryGlyph {
+  inline-size: 16px;
+  block-size: 16px;
+  flex: none;
+  margin-block-start: 2px;
+  color: var(--action-primary);
+}
 
 /* Field-channel touch target floor. */
 .footerAction {
@@ -177,7 +195,5 @@
 }
 
 @media (max-width: 600px) {
-  .footerInner { flex-direction: column; align-items: stretch; gap: 8px; }
-  .checkinCaption { text-align: center; }
-  .footerAction { inline-size: 100%; }
+  .footerAction { min-inline-size: 0; }
 }

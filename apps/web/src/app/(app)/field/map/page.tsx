@@ -60,7 +60,7 @@ export default async function FieldMapPage() {
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError || !user) redirect("/login");
 
-  const { data: asg } = await sb.from("assignments")
+  const { data: asg, error: assignmentsError } = await sb.from("assignments")
     .select("visit_id, visits(id, planning_status, window_start, factory_id, factories(name, factory_code, official_lat, official_lng, risk_band))")
     .eq("inspector_id", user.id)
     .order("created_at", { ascending: false });
@@ -111,7 +111,15 @@ export default async function FieldMapPage() {
         langHref={langHref} langLabel={locale === "ar" ? "EN" : "AR"}
       />
 
-      {markers.length ? (
+      {assignmentsError ? (
+        <div className={styles.empty}>
+          <EmptyState
+            glyph="!"
+            title={tr("field.map.errorTitle", "Task map unavailable", "خريطة المهام غير متاحة")}
+            body={tr("field.map.errorBody", "Your assigned establishments could not be loaded. Try again when the service is available.", "تعذر تحميل منشآتك المسندة. حاول مرة أخرى عند توفر الخدمة.")}
+          />
+        </div>
+      ) : markers.length ? (
         <>
           <FieldFullMap markers={markers} center={center}
             ariaLabel={tr("field.map.aria", "Map of your assigned tasks", "خريطة مهامك المسندة")} />
