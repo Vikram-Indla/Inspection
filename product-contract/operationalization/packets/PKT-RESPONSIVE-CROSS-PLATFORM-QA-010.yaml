@@ -1,0 +1,84 @@
+schema_version: "1.0"
+packet_id: "PKT-RESPONSIVE-CROSS-PLATFORM-QA-010"
+task_id: "TASK-SAQEEL-RESPONSIVE-REVAMP-001"
+change_control_id: "CC-SAQEEL-RESPONSIVE-REVAMP-001"
+branch: "revamp/cross-platform-qa"
+baseline: "03acb9a7e63b0cf44cd7f1d9995d3e81fa07bcba"
+state: "TECHNICAL_PASS_WITH_OPEN_RELEASE_BLOCKERS"
+verified_at: "2026-07-27T01:16:02+03:00"
+authorized_by: "Vikram Indla / Product Owner"
+authorization_evidence: "Locked migration execution configuration plus explicit instruction that all approvals are granted and execution must continue."
+
+process_ids:
+  - "G10"
+  - "G11"
+  - "M1..M11"
+requirements:
+  - "CR-001..CR-478"
+screens:
+  - "All active unified responsive routes represented by the ten migration verticals"
+  - "Canonical shared shell, navigation drawer, topbar, unauthorized state and role homes"
+browsers:
+  - "Current stable Google Chrome"
+  - "Playwright WebKit"
+  - "Real Safari smoke"
+widths: [320, 375, 390, 768, 1024, 1280, 1440, 1920]
+locales: ["en", "ar"]
+directions: ["ltr", "rtl"]
+themes: ["light", "dark"]
+
+engines:
+  - "Shared shell and responsive navigation"
+  - "Cross-module routing and role authorization"
+  - "Planning, execution, review, compliance, enforcement, Factory 360 and administration regressions"
+  - "Offline business-state and Web Push preservation"
+  - "Accessibility, keyboard, locale, direction and theme contracts"
+
+acceptance:
+  - "The closed mobile navigation drawer is visually absent, non-interactive and excluded from focus in LTR and RTL; opening restores the complete drawer and focus trap."
+  - "Mobile topbar search and scope controls remain inside the viewport at 320, 375 and 390 CSS pixels."
+  - "No tested route has horizontal document overflow or fixed/off-canvas shell overlap at the mandated widths."
+  - "Chrome and WebKit pass the protected cross-vertical route, role, locale, theme, accessibility and offline-delivery contracts."
+  - "Real Safari smoke covers sign-in/session continuity, English/Arabic direction, light/dark, responsive drawer and representative Planner, Inspector and Administrator routes."
+  - "No protected route, server action or administration payload is exposed before authorization."
+  - "No P0/P1 acceptance row remains failed or unevidenced."
+  - "No test-only mock is represented as production integration evidence."
+
+dependencies:
+  - "All prior migration packets 001..009"
+  - "PKT-RESPONSIVE-PWA-DECOUPLING-009 at 03acb9a7e63b0cf44cd7f1d9995d3e81fa07bcba"
+  - "Existing excluded persona storage states and development Supabase"
+
+allowed_paths:
+  - "apps/web/src/app/astryx.css (shared-shell responsive remediation only)"
+  - "apps/web/src/app/(app)/field/settings/readiness/** (narrow status-row reflow only)"
+  - "apps/web/playwright.config.ts"
+  - "apps/web/e2e/cross-platform-responsive-qa.spec.ts"
+  - "apps/web/e2e/responsive-browser-delivery-contract.spec.ts (final inherited-shell assertion only)"
+  - "product-contract/operationalization/packets/PKT-RESPONSIVE-CROSS-PLATFORM-QA-010.yaml"
+  - "product-contract/evidence/PKT-RESPONSIVE-CROSS-PLATFORM-QA-010.md"
+
+prohibited:
+  - "Business workflow, authorization, RLS, RPC, offline engine, notification provider or database behavior changes"
+  - "Supabase migrations, production DDL, shared-data mutation or applied migration-history edits"
+  - "New design composition, policy value, role, route, provider, SLA, legal meaning or test mock"
+  - "main or integration branch mutation"
+
+evidence:
+  - "Typecheck and production build"
+  - "Chrome and WebKit protected suites"
+  - "Real Safari smoke evidence"
+  - "EN/AR, LTR/RTL, light/dark and eight-width route matrix"
+  - "Mobile drawer closed/open geometry, pointer, focus and screenshot proof"
+  - "Keyboard and Axe evidence"
+  - "Cross-vertical positive and authorization-negative paths"
+  - "Final P0/P1 acceptance and blocker register"
+
+rollback:
+  - "Revert the packet commit; no data or schema rollback is required."
+
+stop_conditions:
+  - "Any P0/P1 protected regression"
+  - "Any browser, locale, theme, width, authorization or accessibility acceptance gap"
+  - "Any use of mocks as proof of a live integration"
+  - "Any unapproved product/business change outside the shared-shell remediation"

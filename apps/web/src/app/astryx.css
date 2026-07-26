@@ -758,9 +758,19 @@ button.ax-shell-scope { cursor: pointer; }
    Pro in landscape, which is wider than 1024 but still an iPad. */
 @media (max-width: 1024px), (pointer: coarse) {
   .ax-shell, .ax-shell.is-collapsed { grid-template-columns: minmax(0, 1fr); }
-  .ax-shell__nav, .ax-shell.is-collapsed .ax-shell__nav { position: fixed; z-index: var(--ax-z-drawer); inset-block: 0; inset-inline-start: 0; inline-size: min(var(--ax-shell-nav-width), 88vw); block-size: 100dvh; padding: var(--ax-space-200); transform: translateX(-105%); transition: transform var(--ax-motion-standard); box-shadow: var(--ax-shadow-overlay); overflow: hidden; }
+  .ax-shell__nav, .ax-shell.is-collapsed .ax-shell__nav {
+    position: fixed; z-index: var(--ax-z-drawer); inset-block: 0; inset-inline-start: 0;
+    inline-size: min(var(--ax-shell-nav-width), 88vw); block-size: 100dvh;
+    padding: var(--ax-space-200); transform: translateX(-105%);
+    visibility: hidden; pointer-events: none;
+    transition: transform var(--ax-motion-standard), visibility 0s linear var(--ax-motion-standard);
+    box-shadow: none; overflow: hidden;
+  }
   [dir="rtl"] .ax-shell__nav, [dir="rtl"] .ax-shell.is-collapsed .ax-shell__nav { transform: translateX(105%); }
-  .ax-shell.is-drawer-open .ax-shell__nav { transform: translateX(0); }
+  .ax-shell.is-drawer-open .ax-shell__nav {
+    transform: translateX(0); visibility: visible; pointer-events: auto;
+    transition-delay: 0s; box-shadow: var(--ax-shadow-overlay);
+  }
   [dir="rtl"] .ax-shell.is-drawer-open .ax-shell__nav,
   [dir="rtl"] .ax-shell.is-collapsed.is-drawer-open .ax-shell__nav { transform: translateX(0); }
   /* The collapsed rail packs brand into a 28px/28px grid. The drawer is a full
@@ -1582,6 +1592,36 @@ button.ax-shell-scope { cursor: pointer; }
   .ax-shell-search:focus-within { inline-size: min(420px, 62vw); }
   .ax-shell-search:focus-within input { color: var(--ax-color-text); }
   .ax-shell-search:focus-within input::placeholder { color: var(--ax-color-text-subtlest); }
+}
+
+/* The tablet icon treatment above intentionally comes last, but phones need
+   the search field to reclaim its full grid row. Without this final narrow
+   override, the 44px icon rule won over the earlier phone layout and pushed
+   the date/region controls beyond the viewport in both LTR and RTL. */
+@media (max-width: 560px) {
+  .ax-shell-controls { flex: 0 0 100%; }
+  .ax-shell-search,
+  .ax-shell-search:focus-within { inline-size: 100%; }
+  .ax-shell-search input,
+  .ax-shell-search:focus-within input {
+    padding-inline: 40px var(--ax-space-150);
+    background: var(--ax-color-surface-sunken);
+    border-color: var(--ax-color-border);
+    color: var(--ax-color-text);
+  }
+  .ax-shell-search input::placeholder,
+  .ax-shell-search:focus-within input::placeholder {
+    color: var(--ax-color-text-subtlest);
+  }
+}
+
+@media (max-width: 360px) {
+  .ax-shell-controls { grid-template-columns: minmax(0, 1fr); }
+  .sq-shell-scope--date,
+  .sq-shell-scope--region {
+    inline-size: 100%; max-inline-size: none; justify-self: stretch;
+  }
+  .sq-shell-scope select { inline-size: 100%; max-inline-size: none; }
 }
 
 

@@ -1,0 +1,18 @@
+.statusBadge {
+  display: inline-flex;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+@media (max-width: 420px) {
+  .statusRow {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .statusBadge {
+    align-self: flex-start;
+    white-space: normal;
+  }
+}

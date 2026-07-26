@@ -20,27 +20,44 @@ export default defineConfig({
   ],
   use: {
     baseURL: playwrightOrigin,
-    // The standalone macOS headless-shell binary intermittently exits with
-    // SIGSEGV while opening a fresh context. Full Chromium's new headless mode
-    // exercises the same engine and keeps the release suite reproducible.
-    channel: "chromium",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     ...devices["Desktop Chrome"],
   },
   projects: [
-    { name: "setup", testMatch: /auth\.setup\.ts/ },
+    {
+      name: "setup",
+      testMatch: /auth\.setup\.ts/,
+      // The standalone macOS headless-shell binary intermittently exits with
+      // SIGSEGV while opening a fresh context. Full Chromium's new headless mode
+      // exercises the same engine and keeps the release suite reproducible.
+      use: { channel: "chromium" },
+    },
     {
       name: "e2e",
       testMatch: /.*\.spec\.ts/,
       testIgnore: /pixel\/.*\.spec\.ts/,
       dependencies: ["setup"],
+      use: { channel: "chromium" },
     },
     {
       // BS-1 owns its inspector-only, environment-sourced authentication and
       // must not run the multi-persona setup or mutate shared journey data.
       name: "pixel",
       testMatch: /pixel\/.*\.spec\.ts/,
+      use: { channel: "chromium" },
+    },
+    {
+      // Safari-family certification uses Playwright's current WebKit engine.
+      // Stored persona state is supplied by the selected specs; do not rerun
+      // the Chromium-oriented shared-auth setup as a project dependency.
+      name: "webkit",
+      testMatch: /.*\.spec\.ts/,
+      testIgnore: /pixel\/.*\.spec\.ts/,
+      use: {
+        ...devices["Desktop Safari"],
+        browserName: "webkit",
+      },
     },
   ],
   webServer: process.env.PIXEL_HARNESS === "1" ? undefined : {

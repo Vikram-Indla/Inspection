@@ -8,6 +8,7 @@ import {
   type DeviceReadinessSnapshot,
 } from "@/lib/device-readiness";
 import styles from "../settings.module.css";
+import readinessStyles from "./readiness.module.css";
 
 type Locale = "en" | "ar";
 type Tone = "ok" | "warn" | "muted";
@@ -23,12 +24,12 @@ function Badge({ tone, children }: { tone: Tone; children: ReactNode }) {
 
 function StatusRow({ label, tone, badge, note }: { label: string; tone: Tone; badge: string; note?: string }) {
   return (
-    <div className={styles.row}>
+    <div className={`${styles.row} ${readinessStyles.statusRow}`}>
       <span className={styles.rowLabel}>
         {label}
         {note ? <span className="t-caption" style={{ display: "block", color: "var(--text-secondary)" }}>{note}</span> : null}
       </span>
-      <Badge tone={tone}>{badge}</Badge>
+      <span className={readinessStyles.statusBadge}><Badge tone={tone}>{badge}</Badge></span>
     </div>
   );
 }
