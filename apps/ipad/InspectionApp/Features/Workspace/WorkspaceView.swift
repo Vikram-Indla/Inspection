@@ -29,9 +29,17 @@ struct WorkspaceView: View {
 
     @ObservedObject var store: WorkspaceStore
 
+    /// The inspection identifier shown in the header (e.g. "INS-0042").
+    /// Defaults to "Inspection" so existing call sites compile without change.
+    /// Task 11 injects the real inspection number here.
+    var title: String = "Inspection"
+
     /// Task 10: wire signature/submit sheet here.
     /// Call this closure (or present a sheet) instead of building capture here.
     var onSubmitTapped: (() -> Void)?
+
+    /// Fixed width shared by the progress bar and submit button in the submit bar.
+    private let submitControlWidth: CGFloat = 140
 
     @EnvironmentObject private var theme: SaqeelTheme
 
@@ -39,7 +47,7 @@ struct WorkspaceView: View {
         VStack(spacing: 0) {
             // MARK: Header
             InspectionHeader(
-                title: "Inspection",
+                title: title,
                 sync: componentsSyncState(from: store.sync)
             )
 
@@ -146,7 +154,7 @@ struct WorkspaceView: View {
 
                     ProgressView(value: total > 0 ? Double(answered) / Double(total) : 0)
                         .tint(theme.colors.primary)
-                        .frame(width: 140)
+                        .frame(width: submitControlWidth)
                 }
 
                 Spacer(minLength: 0)
@@ -160,7 +168,7 @@ struct WorkspaceView: View {
                     // Task 10: replace this stub with signature capture sheet
                     onSubmitTapped?()
                 }
-                .frame(width: 140)
+                .frame(width: submitControlWidth)
             }
             .padding(.horizontal, SaqeelSpacing.lg)
             .padding(.vertical, SaqeelSpacing.md)

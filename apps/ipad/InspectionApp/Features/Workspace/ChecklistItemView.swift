@@ -76,7 +76,7 @@ struct ChecklistItemView: View {
                     Text("Required")
                         .font(SaqeelTypography.micro)
                         .foregroundColor(theme.colors.critical)
-                        .padding(.vertical, 3)
+                        .padding(.vertical, SaqeelSpacing.hairline)
                         .padding(.horizontal, SaqeelSpacing.xs)
                         .overlay(
                             RoundedRectangle(cornerRadius: SaqeelRadius.small)
@@ -94,7 +94,7 @@ struct ChecklistItemView: View {
                 } label: {
                     HStack(spacing: SaqeelSpacing.xs) {
                         Image(systemName: isGuidanceExpanded ? "chevron.up" : "chevron.down")
-                            .font(.system(size: 11, weight: .medium))
+                            .font(SaqeelTypography.micro)
                         Text("Guidance")
                             .font(SaqeelTypography.caption)
                     }
