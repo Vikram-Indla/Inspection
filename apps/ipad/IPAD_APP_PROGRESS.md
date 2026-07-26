@@ -11,7 +11,7 @@ Related docs:
 - Follow-ups: [[apps/ipad/PHASE1-FOLLOWUPS]]
 - Setup / how to run: [[apps/ipad/README]]
 
-_Last updated: 2026-07-26_
+_Last updated: 2026-07-26 (Phase 2/3 complete)_
 
 ---
 
@@ -22,8 +22,8 @@ _Last updated: 2026-07-26_
 | Phase 0 — Foundation (design system, components, login, tab shell) | ✅ Done |
 | Phase 1 — Dashboard + Visits (live Supabase data) | ✅ Done |
 | Design polish (real font, cards, status pills, segmented, login, KPIs) | ✅ Done |
-| Phase 2 — Inspection Workspace (checklist/evidence/signature) | ⬜ Not started |
-| Phase 3 — Offline-first (GRDB) · Phase 4 — Geofence · Phase 5 — Factory360/Virtual/Profile | ⬜ Not started |
+| Phase 2/3 — Inspection Workspace + Offline-first (GRDB drafts/outbox/sync, checklist/evidence/signature/submit) | ✅ Done |
+| Phase 4 — Geofence · Phase 5 — Factory360/Virtual/Profile | ⬜ Not started |
 
 Runs end-to-end against the **real Supabase backend**: login → dashboard → visits with live data.
 
@@ -41,6 +41,8 @@ Runs end-to-end against the **real Supabase backend**: login → dashboard → v
 **Phase 1** — Domain models + safe enums, `VisitRow` DTO (PostgREST embed decode), `VisitRepository`/`ProfileRepository` (Supabase + stubs), pure `DashboardKPIs` + `VisitFilter`, `@MainActor` stores, and the Dashboard (KPI cards + attention rail), Visits (counted segmented filter + cards), and Profile (identity + sign out) screens.
 
 **Design polish** — bundled the real **IBM Plex Sans Arabic** font (converted from the design-system woff2, weights normalised), custom **SaqeelSegmented** control, **StatusPill** (colour dot + label), reference-matched **VisitCard** (mono code, bold name, subtitle, status pills, dates), tone-aware **KPI cards**, branded **Login**, and a header with a date subtitle. Matched against the design reference `design/saqeel/screens/png/tablet-field-offline_en_light_834x1000.png`.
+
+**Phase 2/3 — Inspection Workspace + Offline-first** (commits `eef6006..3fd92ab`, 102 tests). GRDB `OfflineStore` (drafts/packages/outbox/conflicts) + `SyncEngine` (replay evidence→response→submit, response conflict detection, idempotent submit) mirroring the PWA `lib/offline.ts`. Workspace domain models + DTOs (schema-verbatim), `WorkspaceRepository` + `SupabaseSyncGateway`, `@MainActor WorkspaceStore` (answer autosave → GRDB draft + outbox → sync; submit snapshot keyed by item code), checklist UI (`WorkspaceView`/`ChecklistItemView` with segmented/text/date controls), photo evidence capture (CryptoKit sha, outbox → Storage), PencilKit signature + submit, and Visits→Workspace navigation (`@StateObject`-owned `WorkspaceScreen`, not-started placeholder, header sync badge). Built via subagent-driven TDD with per-task review + a final whole-slice review; the final review caught and fixed two runtime-critical schema mismatches (`item_rules` object shape; evidence `content_sha256`/`inspection_id`).
 
 ---
 
