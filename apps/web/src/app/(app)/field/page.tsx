@@ -526,6 +526,13 @@ export default async function Field() {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 16, height: 16 }}><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
               {tr("field.home.qa.search", "Search factory", "بحث منشأة")}
             </Link>
+            {/* CR-100/101/102 — the assigned-visits surface (list · calendar · map).
+                FieldNav has no slot for it and is shared shell under CC-SHELL-TABLET-001,
+                so this rail is the entry point. */}
+            <Link href="/field/visits" prefetch={false} className={styles.qbtnPill}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 16, height: 16 }}><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M8 2v4M16 2v4M3 10h18" /></svg>
+              {tr("field.home.qa.myVisits", "My visits", "زياراتي")}
+            </Link>
             <Link href="/field/my-tasks" prefetch={false} className={styles.qbtnPill}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 16, height: 16 }}><rect x="4" y="4" width="16" height="16" rx="2" /><path d="M9 9h6M9 13h6M9 17h3" /></svg>
               {tr("field.home.qa.allTasks", "All tasks", "كل المهام")}
