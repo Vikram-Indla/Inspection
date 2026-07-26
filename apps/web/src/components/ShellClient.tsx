@@ -120,6 +120,8 @@ export default function ShellClient({
   const router = useRouter();
   const current = usePathname() || "/";
   const fieldOnly = isFieldOnlyPersona(roles);
+  const adminWorkspace = current === "/admin" || current.startsWith("/admin/");
+  const aiVisible = groups.some(group => group.items.some(item => item.enabled && item.href === "/ai/suggestions"));
   // Same precedence as the design's activeKey(): the more specific field
   // sections win, and anything else falls back to Home.
   const tabbarActive: FieldNavKey =
@@ -141,7 +143,10 @@ export default function ShellClient({
   const [regionScope, setRegionScope] = useState("");
   const [pendingHref, setPendingHref] = useState<string | null>(null);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(groups.map(group => [group.id, group.id !== "administration"])),
+    Object.fromEntries(groups.map(group => [
+      group.id,
+      group.id !== "administration" || groups.length === 1,
+    ])),
   );
   const navRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLButtonElement>(null);
@@ -429,10 +434,9 @@ export default function ShellClient({
           </button>
         </div>
 
-        <div className="ax-shell__groups">
-          {groups.filter(group => group.id !== "administration").map(renderNavGroup)}
-        </div>
-        <div className="ax-shell__admin-pin">{groups.filter(group => group.id === "administration").map(renderNavGroup)}</div>
+            <div className="ax-shell__groups">
+              {groups.map(renderNavGroup)}
+            </div>
       </nav>
 
       <main id="main-content" className="ax-shell__main" tabIndex={-1}>
@@ -442,7 +446,7 @@ export default function ShellClient({
               aria-controls="saqeel-primary-nav" aria-expanded={drawerOpen} onClick={() => setDrawerOpen(true)}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
             </button>
-            <div className="ax-shell-controls">
+            {!adminWorkspace ? <div className="ax-shell-controls">
                 <div className="ax-shell-search" ref={searchWrapRef}>
                   <span className="ax-shell-search__icon" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -502,7 +506,7 @@ export default function ShellClient({
                     {regions.map(region => <option value={region} key={region}>{region}</option>)}
                   </select>
                 </label>
-            </div>
+            </div> : <div className="ax-pagehead__workspace-label">{strings.primary}</div>}
             <div className="ax-pagehead__actions">
               <ThemeToggle className="ax-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
               {/* The bell renders for every persona (2026-07-26 ruling: one
@@ -510,9 +514,11 @@ export default function ShellClient({
                   it rewrites each notification's href onto the field channel —
                   that is routing, not chrome. */}
               <NotificationBell strings={bellStrings} locale={locale} fieldOnly={fieldOnly} />
-              <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true" prefetch={false}>
-                <Icon name="ai" />
-              </Link>
+              {aiVisible ? (
+                <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true" prefetch={false}>
+                  <Icon name="ai" />
+                </Link>
+              ) : null}
               <div ref={accountRef} className="ax-shell-account">
                 <button className="ax-shell-account__trigger" type="button" aria-label={strings.account} aria-expanded={accountOpen}
                   onClick={() => setAccountOpen(value => !value)}>

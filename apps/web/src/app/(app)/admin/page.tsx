@@ -140,7 +140,6 @@ export default async function AdminHome() {
     : t("admin.overview.r2.scope.none", "none");
   const roleSet = new Set(roles);
 
-  const readAt = new Date().toISOString().slice(0, 16).replace("T", " ");
   const engines = enginesRes.data ?? [];
 
   // Read-state chip: glyph + word (never colour-only). "en" carries the count-unit noun;
@@ -210,27 +209,16 @@ export default async function AdminHome() {
     { href: "/admin/audit", key: "shell.nav.audit", en: "Audit Trail" },
   ];
 
-  const readAtNode = withSlot(
-    t("admin.overview.r2.readAt", "page read {time} — a source fact not a platform-health verdict"),
-    "time",
-    <bdi dir="ltr" className="numeric">{readAt}</bdi>,
-  );
-
   return (
     <Shell
       current="/admin"
       title={t("admin.controlPanel.title", "Control Panel")}
-      context={
-        <span className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
-          <span role="status" aria-live="polite" className="t-caption">{readAtNode}</span>
-          {failed > 0 ? (
-            <span className="badge badge-warning">
-              <span aria-hidden="true">⚠</span>{" "}
-              {fill(t("admin.overview.r2.lozenge.partial", "{n} source unavailable"), { n: failed })}
-            </span>
-          ) : null}
+      context={failed > 0 ? (
+        <span className="badge badge-warning" role="status" aria-live="polite">
+          <span aria-hidden="true">⚠</span>{" "}
+          {fill(t("admin.overview.r2.lozenge.partial", "{n} source unavailable"), { n: failed })}
         </span>
-      }
+      ) : undefined}
     >
       {/* Singleton assertive region (spec §8). Total failure is shown; a partial
           failure is announced sr-only, the visible fact living in the header lozenge. */}
@@ -245,12 +233,11 @@ export default async function AdminHome() {
       ) : null}
 
       <section
-        className="stack"
+        className="stack admin-control-panel"
         aria-labelledby="admin-control-panel-heading"
         data-saqeel-design="WA-DES-020"
-        style={{ gap: "var(--space-7)" }}
       >
-        <div className="stack" style={{ gap: "var(--space-2)" }}>
+        <div className="admin-control-panel__intro">
           <h3 id="admin-control-panel-heading" style={{ margin: 0 }}>
             {t("admin.controlPanel.heading", "Platform configuration")}
           </h3>
@@ -262,14 +249,14 @@ export default async function AdminHome() {
           </p>
         </div>
         {CONTROL_GROUPS.map(group => (
-          <section className="stack" key={group.titleEn} style={{ gap: "var(--space-3)" }}>
-            <div className="row" style={{ alignItems: "baseline", gap: "var(--space-3)", flexWrap: "wrap" }}>
+          <section className="stack admin-control-group" key={group.titleEn}>
+            <div className="admin-control-group__heading">
               <h4 style={{ margin: 0 }}>{locale === "ar" ? group.titleAr : group.titleEn}</h4>
               <span className="t-caption" lang={locale === "ar" ? "en" : "ar"} dir={locale === "ar" ? "ltr" : "rtl"}>
                 {locale === "ar" ? group.titleEn : group.titleAr}
               </span>
             </div>
-            <div className="sq-grid">
+            <div className="admin-control-grid">
               {group.cards.map(card => {
                 const enabled = !card.roles?.length || card.roles.some(role => roleSet.has(role));
                 const title = locale === "ar" ? card.titleAr : card.titleEn;
@@ -293,18 +280,15 @@ export default async function AdminHome() {
                   </>
                 );
                 const style = {
-                  minHeight: 118,
-                  padding: "var(--space-4)",
                   textDecoration: "none",
                   color: "inherit",
-                  gap: "var(--space-2)",
                 };
                 return enabled ? (
-                  <a className="panel stack sq-link" data-control-card href={card.href} key={card.href} style={style}>
+                  <a className="panel stack sq-link admin-control-card" data-control-card href={card.href} key={card.href} style={style}>
                     {content}
                   </a>
                 ) : (
-                  <div className="panel stack" data-control-card aria-disabled="true" key={card.href} style={style}>
+                  <div className="panel stack admin-control-card is-restricted" data-control-card aria-disabled="true" key={card.href} style={style}>
                     {content}
                   </div>
                 );

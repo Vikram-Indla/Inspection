@@ -462,7 +462,7 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .ax-shell__nav {
   background: var(--nav-bg); border-inline-end: 1px solid var(--nav-border); color: var(--nav-text);
   padding: var(--ax-space-150); display: flex; flex-direction: column; gap: var(--ax-space-100);
-  position: sticky; inset-block-start: 0; block-size: 100dvh; min-inline-size: 0; overflow: hidden;
+  position: sticky; inset-block-start: 0; min-block-size: 100dvh; min-inline-size: 0; align-self: start;
 }
 .ax-shell__brand { display:flex; align-items:center; gap: var(--ax-space-100); min-block-size: 64px; padding: var(--ax-space-100) var(--ax-space-100) var(--ax-space-150); border-block-end: 1px solid var(--nav-border); margin-block-end: var(--ax-space-050); }
 /* WA-BRAND-r1 — canonical authenticated-shell identity, sized from the design
@@ -473,7 +473,7 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .ax-shell__brand-lockup { display: block; block-size: 22px; inline-size: auto; flex: 0 0 auto; }
 .ax-shell__brand-mark { display: none; inline-size: 26px; block-size: 26px; flex: 0 0 auto; }
 .ax-shell__close { display: none; margin-inline-start: auto; inline-size: var(--ax-control-height); block-size: var(--ax-control-height); border: 1px solid var(--nav-border); border-radius: var(--ax-radius-small); background: var(--nav-bg-hover); color: var(--nav-text-active); cursor: pointer; font-size: 24px; }
-.ax-shell__groups { display: flex; flex: 1; min-block-size: 0; overflow-y: auto; flex-direction: column; gap: var(--ax-space-100); scrollbar-width: thin; }
+.ax-shell__groups { display: flex; flex-direction: column; gap: var(--ax-space-100); }
 .ax-nav-group { display: flex; flex-direction: column; gap: var(--ax-space-050); }
 .ax-nav-group__trigger { inline-size: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--ax-space-100); padding: var(--ax-space-100) var(--ax-space-150) var(--ax-space-050); border: 0; background: none; color: color-mix(in srgb, var(--nav-text) 65%, transparent); cursor: pointer; font: var(--ax-text-micro); letter-spacing: .01em; text-align: start; border-radius: var(--ax-radius-small); }
 .ax-nav-group__trigger:hover { color: var(--nav-text-active); background: var(--nav-bg-hover); }
@@ -544,6 +544,7 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 }
 .ax-pagehead__topbar { display: flex; align-items: center; gap: var(--ax-space-150); min-block-size: var(--ax-control-height-field); position: relative; z-index: 1; }
 .ax-pagehead__actions { margin-inline-start: auto; display: flex; align-items: center; gap: var(--ax-space-100); }
+.ax-pagehead__workspace-label { color: var(--ax-color-text-secondary); font: var(--ax-text-caption); }
 .ax-shell-controls { display: flex; align-items: center; gap: var(--ax-space-100); min-inline-size: 0; flex: 1; }
 .ax-topbar-icon { display: grid; place-items: center; inline-size: var(--ax-control-height); block-size: var(--ax-control-height); border: 1px solid transparent; border-radius: var(--ax-radius-standard); background: transparent; color: var(--ax-color-text-secondary); cursor: pointer; transition: color var(--ax-motion-fast), background var(--ax-motion-fast), border-color var(--ax-motion-fast); }
 .ax-topbar-icon:hover { color: var(--ax-color-text); background: var(--ax-color-neutral-tint); border-color: var(--ax-color-border); }
@@ -615,6 +616,37 @@ button.ax-shell-scope { cursor: pointer; }
 .ax-shell em, .ax-content em { font-style: normal; }
 .ax-shell__backdrop { display: none; }
 
+/* WA-DES-020 — compact admin control-plane composition. The gateway is a
+   dense launch surface, not a stack of oversized marketing cards. */
+.admin-control-panel { gap: var(--ax-space-400); }
+.admin-control-panel__intro {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: var(--ax-space-200); padding-block-end: var(--ax-space-200);
+  border-block-end: 1px solid var(--ax-color-border);
+}
+.admin-control-panel__intro h3,
+.admin-control-panel__intro p { margin: 0; }
+.admin-control-panel__intro p { max-inline-size: 72ch; }
+.admin-control-group { gap: var(--ax-space-150); }
+.admin-control-group__heading {
+  display: flex; align-items: baseline; gap: var(--ax-space-150); flex-wrap: wrap;
+}
+.admin-control-group__heading h4 { margin: 0; }
+.admin-control-grid {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--ax-space-150);
+}
+.admin-control-card {
+  min-block-size: 132px; padding: var(--ax-space-200); gap: var(--ax-space-100);
+  border-color: var(--ax-color-border); box-shadow: none;
+  transition: border-color var(--ax-motion-fast), background var(--ax-motion-fast), transform var(--ax-motion-fast);
+}
+.admin-control-card:hover {
+  border-color: color-mix(in srgb, var(--ax-color-primary) 45%, var(--ax-color-border));
+  background: var(--ax-color-primary-tint); transform: translateY(-1px);
+}
+.admin-control-card.is-restricted { opacity: .62; background: var(--ax-color-surface-sunken); }
+
 /* Drawer breakpoint. Product-Owner decision 2026-07-26: at iPad size — real
    device or responsive window — the console shows the hamburger AND the tab
    bar. Previously this began at 899px, so an iPad sat above it and got a
@@ -668,6 +700,7 @@ button.ax-shell-scope { cursor: pointer; }
   }
   [dir="rtl"] .ax-shell.is-drawer-open .ax-shell__brand-lockup { object-position: right center; }
   .ax-shell__collapse { display: none; }
+  .ax-shell__groups { flex: 1; min-block-size: 0; overflow-y: auto; scrollbar-width: thin; }
   .ax-shell__menu { display: grid; }
   .ax-shell__backdrop { position: fixed; z-index: calc(var(--ax-z-drawer) - 1); inset: 0; inline-size: 100%; block-size: 100%; border: 0; background: var(--ax-color-overlay); cursor: pointer; }
   .ax-shell.is-drawer-open .ax-shell__backdrop { display: block; }
@@ -675,6 +708,7 @@ button.ax-shell-scope { cursor: pointer; }
   .ax-shell-controls { flex-wrap: wrap; }
   .ax-shell-account__identity { display: none; }
   .ax-content { padding: var(--ax-space-200); }
+  .admin-control-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* DEF-UX-002 — between the full desktop sidebar (>=900px, no drawer collapse
@@ -705,6 +739,10 @@ button.ax-shell-scope { cursor: pointer; }
   .ax-pagehead__row { padding-block-start: var(--ax-space-050); }
   .ax-pagehead__context { min-inline-size: 0; max-inline-size: 100%; }
   .ax-pagehead__context > h2 { min-inline-size: 0; overflow-wrap: anywhere; word-break: break-word; }
+  .admin-control-panel { gap: var(--ax-space-300); }
+  .admin-control-panel__intro { align-items: flex-start; flex-direction: column; }
+  .admin-control-grid { grid-template-columns: minmax(0, 1fr); }
+  .admin-control-card { min-block-size: 0; }
 }
 
 /* Command / filter bar */

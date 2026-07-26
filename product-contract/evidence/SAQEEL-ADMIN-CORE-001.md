@@ -87,6 +87,63 @@ mutations.
 7. The focused test uses accessible current login controls instead of retired
    `#email` / `#pw` selectors and does not depend on a pre-generated inspector
    storage state.
+8. The shared navigation is now a least-privilege projection: destinations
+   without a matching assigned role are absent from the DOM instead of exposed
+   as enabled business links or disabled administration links.
+9. Admin-only personas no longer receive Dashboard, Operations Center,
+   Factory 360, Planning, Execution, Review & Approval, or the business
+   compliance rail.
+10. The Administration group opens by default when it is the persona's only
+    navigation group, and the former separately pinned/hanging admin rail is
+    folded into the single navigation flow.
+11. Desktop navigation participates in the document scroll instead of owning a
+    nested scrollbar; the bounded mobile drawer retains its own necessary
+    scroll region.
+12. Admin routes suppress global factory/visit search and inapplicable
+    date/region controls. AI appears only when the resolved navigation grants
+    it. Theme, notifications, account and language controls remain available.
+13. The gateway removes the long read-timestamp sentence from the title row,
+    retaining only a concise partial-source warning when one is real.
+14. The 24 control areas now use a compact three-column desktop, two-column
+    tablet and one-column mobile launch grid with reduced card height, clearer
+    section rhythm, logical-property RTL support and restrained interaction
+    feedback.
+
+## Design critique consolidation
+
+The Product Owner supplied three runtime screenshots and required a minimum
+20-change critique. Claude Design project
+`5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61` was updated through Computer Use with
+an admin-only shared chrome generator and a channel-wide page sweep. The
+consolidated implementation contract is:
+
+1. Exact-role destination projection.
+2. No unauthorized locked or disabled navigation disclosure.
+3. No business groups in an admin-only rail.
+4. One Administration group, open when it is the only group.
+5. No separately pinned bottom rail.
+6. One desktop document scrollbar.
+7. A bounded, dismissible mobile drawer.
+8. No admin-global factory/visit search.
+9. No inapplicable date control.
+10. No inapplicable region control.
+11. No AI entry without an explicit grant.
+12. Compact single-row admin utilities.
+13. Concise title row without provenance prose.
+14. Partial-source state only when a failure exists.
+15. Three-column desktop control grid.
+16. Two-column tablet grid.
+17. One-column phone grid.
+18. Reduced card height and padding.
+19. Consistent low-elevation surfaces.
+20. Clear hover and focus-visible feedback.
+21. Bilingual primary/secondary labels.
+22. Logical-property EN/LTR and AR/RTL parity.
+23. Responsive intro and section rhythm.
+24. Preserved evidence spine and real-data semantics.
+25. Shared empty/error/unauthorized-state treatment without invented data.
+26. Route guards, RLS, workflow guards and append-only audit remain the
+    enforcement authority.
 
 ## Certification boundary
 

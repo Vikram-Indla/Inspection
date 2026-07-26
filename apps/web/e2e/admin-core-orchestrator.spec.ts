@@ -61,6 +61,7 @@ async function signIn(page: Page) {
 }
 
 test("admin-core routes load under the real admin persona without console failures", async ({ page }) => {
+  test.setTimeout(120_000);
   const consoleErrors: string[] = [];
   const routesOutsideShell: string[] = [];
   page.on("console", message => {
@@ -86,8 +87,18 @@ test("admin-core gateway reports the seeded persona's enabled families truthfull
   await signIn(page);
   const scope = page.getByRole("region", { name: /Your scope/i });
   const controlPanel = page.locator('[data-saqeel-design="WA-DES-020"]');
+  const nav = page.getByRole("navigation", { name: "Primary navigation" });
+  const hrefs = await nav.locator("a[href]").evaluateAll(links =>
+    links.map(link => (link as HTMLAnchorElement).getAttribute("href")),
+  );
 
   await expect(controlPanel.locator("[data-control-card]")).toHaveCount(24);
+  for (const forbidden of ["/dashboard", "/operations", "/factories", "/planning", "/field", "/reviews"]) {
+    expect(hrefs, `${forbidden} must not be disclosed to an admin-only persona`).not.toContain(forbidden);
+  }
+  await expect(page.getByRole("combobox", { name: "Search factories, visits, inspections…" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /Date scope:/ })).toHaveCount(0);
+  await expect(page.getByRole("combobox", { name: "Region scope" })).toHaveCount(0);
   await expect(scope).toContainText("Users");
   await expect(scope).toContainText("Inspection Forms");
   await expect(scope).toContainText("Workflow Settings");

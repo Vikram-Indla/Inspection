@@ -130,7 +130,6 @@ const adminRoles = ADMIN_ROLE_KEYS as readonly string[];
 // Inspector reaches Execution through the field channel, not the web nav.
 const businessRoles = [
   ...BUSINESS_ROLE_KEYS.filter(role => !(FIELD_CHANNEL_ROLE_KEYS as readonly string[]).includes(role)),
-  ...ADMIN_ROLE_KEYS,
 ] as readonly string[];
 const primaryAdmin = (
   item: Omit<ShellNavItemDefinition, "visibility">,
@@ -220,15 +219,13 @@ export function buildShellNavigation(roleKeys: readonly string[]): BuiltShellNav
     items: group.items.flatMap(item => {
       if (fieldOnly && !(item.channels ?? ["web"]).includes("field")) return [];
       const allowed = item.roles.some(role => roles.has(role));
-      if (item.visibility === "admin-advanced" && !allowed) return [];
+      // Navigation is a least-privilege projection, not a catalogue. A
+      // destination the persona cannot use must not be disclosed as a locked
+      // or disabled option. Route guards and RLS remain the enforcement layer.
+      if (!allowed) return [];
       return [{
         ...item,
-        enabled: item.visibility === "business" || allowed,
-        ...(item.visibility === "admin-primary" && !allowed ? {
-          disabledReasonKey: "shell.adminRequired",
-          disabledReasonEn: "Administrator access required.",
-          disabledReasonAr: "يتطلب الوصول صلاحية المسؤول.",
-        } : {}),
+        enabled: true,
       }];
     }),
   })).filter(group => group.items.length > 0);
