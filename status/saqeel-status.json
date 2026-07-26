@@ -1906,5 +1906,13 @@
     ],
     "conflicts": "none — the two lineages touched disjoint cards",
     "note": "The earlier SB-r9 claude-design lineage is not represented: it was already overwritten in the project by SB-r20 before this reconcile, and never existed in the repo's history."
-  }
+  },
+  "published": [
+    {
+      "revision": "SB-r25",
+      "target": "claude-design:5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61/status/saqeel-status.json",
+      "etag": "1785039816812279",
+      "at": "2026-07-26T07:29:25+03:00"
+    }
+  ]
 }
