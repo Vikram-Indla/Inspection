@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getFieldDeviceIdentifier } from "@/lib/field-device";
 import {
   readFieldDeviceEnrollment,
   selfEnrollFieldDevice,
+  type DeviceTrustStatus,
   type FieldDeviceEnrollmentResult,
 } from "../actions";
+import { listFieldDevices, type FieldDeviceListResult, type FieldDeviceListRow } from "./actions";
 import {
   clearBiometricUnlock,
   enrollBiometricUnlock,
@@ -23,14 +25,26 @@ type Locale = "en" | "ar";
 // WHAT IS AND IS NOT REAL ON THIS SCREEN — read before changing anything here.
 //
 // REAL (backend-authoritative):
-//   • The device register. `mvp3_devices` is a real table with real RLS
-//     (`mvp3_devices_read` scopes a row to its `assigned_user_id`). Everything
-//     this screen renders about trust comes from that row; nothing is inferred
-//     client-side, ever.
+//   • The device register LIST. `listFieldDevices()` (./actions.ts) returns
+//     every `mvp3_devices` row RLS releases for this user — that is the design's
+//     `sc-for`, and it is the real register, not a sample. Every trust value
+//     rendered comes from that row; nothing is inferred client-side, ever.
 //   • Trust transitions. Only `mvp3_issue_device_command` (Operations /
 //     security_admin) moves a row between trust states. This screen cannot.
 //
 // NOT REAL (and must never be presented as if it were):
+//   • Per-device Revoke. The design mock puts one on every card. The schema has
+//     no UPDATE and no DELETE policy on `mvp3_devices`, so no revoke exists that
+//     an inspector may call. The control is therefore ABSENT rather than
+//     present-and-broken, and `registerNote` names Operations as its owner.
+//   • Device NAME. `mvp3_devices` has no name/model column. The bold line is the
+//     `platform` check-constraint value rendered in words; an unrecognised value
+//     renders an em dash rather than a plausible-looking model name.
+//   • Separate Face ID and Touch ID switches. The design shows two. WebAuthn
+//     exposes only `isUserVerifyingPlatformAuthenticatorAvailable()` — a single
+//     boolean that never says which modality the hardware offers. Two
+//     independently-togglable rows would be two invented capabilities, so this
+//     renders the one control the platform actually reports.
 //   • Self-enrolment is gated on the `mvp3_devices_self_enroll_insert` policy.
 //     Where that policy is not applied the insert fails with 42501 and the
 //     action returns `policy_pending` — enrolment genuinely cannot complete, so
@@ -62,7 +76,11 @@ function trustLabel(result: FieldDeviceEnrollmentResult | null, s: TrustedDevice
     case "policy_pending": return s.stPolicyPending;
     default: break;
   }
-  switch (result.trustStatus) {
+  return statusLabel(result.trustStatus, s);
+}
+
+function statusLabel(status: DeviceTrustStatus, s: TrustedDevicesStrings): string {
+  switch (status) {
     case "pending": return s.stPending;
     case "trusted": return s.stTrusted;
     case "suspended": return s.stSuspended;
@@ -71,6 +89,30 @@ function trustLabel(result: FieldDeviceEnrollmentResult | null, s: TrustedDevice
     case "wiped": return s.stWiped;
     default: return s.stUnavailable;
   }
+}
+
+/** Badge tone per real backend trust state. No state borrows another's colour. */
+function statusBadge(status: DeviceTrustStatus): string {
+  switch (status) {
+    case "trusted": return "badge-compliant";
+    case "pending": return "badge-pending";
+    case "suspended": return "badge-warning";
+    case "wipe_pending": return "badge-warning";
+    case "revoked": return "badge-critical";
+    case "wiped": return "badge-disabled";
+    default: return "badge-outline";
+  }
+}
+
+/**
+ * The design's bold device line. `mvp3_devices` carries no name or model, so
+ * this renders the `platform` enum in words. An unrecognised value renders an
+ * em dash — never a guessed device name.
+ */
+function platformLabel(platform: string, s: TrustedDevicesStrings): string {
+  if (platform === "ipad_os") return s.platformIpadOs;
+  if (platform === "web_managed") return s.platformWebManaged;
+  return "—";
 }
 
 function trustDetail(result: FieldDeviceEnrollmentResult | null, s: TrustedDevicesStrings): string {
@@ -100,16 +142,24 @@ export default function TrustedDevicesClient({
   locale,
   userId,
   userLabel,
+  initialList,
   strings: s,
 }: {
   locale: Locale;
   userId: string;
   userLabel: string;
+  initialList: FieldDeviceListResult;
   strings: TrustedDevicesStrings;
 }) {
   const [deviceIdentifier, setDeviceIdentifier] = useState("");
   const [enrollment, setEnrollment] = useState<FieldDeviceEnrollmentResult | null>(null);
   const [enrolling, setEnrolling] = useState(false);
+
+  // Seeded from the server render, so the register is on screen at first paint
+  // and there is no state in which a device silently fails to appear.
+  const [list, setList] = useState<FieldDeviceListResult>(initialList);
+  const [refreshing, setRefreshing] = useState(false);
+  const [online, setOnline] = useState(true);
 
   const [bioSupport, setBioSupport] = useState<BioSupport>("checking");
   const [bioRecord, setBioRecord] = useState<BiometricUnlockRecord | null>(null);
@@ -121,21 +171,46 @@ export default function TrustedDevicesClient({
     setDeviceIdentifier(identifier);
     void readFieldDeviceEnrollment(identifier).then(setEnrollment);
     setBioRecord(readBiometricUnlock(userId));
+
+    setOnline(navigator.onLine);
+    const goOnline = () => setOnline(true);
+    const goOffline = () => setOnline(false);
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+
     // WebAuthn is unavailable outside a secure context. Reporting that as
     // "your device doesn't support Face ID" would be a false statement about
     // the hardware, so it is a distinct, separately-worded state.
     if (!window.isSecureContext) {
       setBioSupport("insecure");
-      return;
+    } else {
+      void platformAuthenticatorAvailable().then(ok => setBioSupport(ok ? "available" : "unsupported"));
     }
-    void platformAuthenticatorAvailable().then(ok => setBioSupport(ok ? "available" : "unsupported"));
+
+    return () => {
+      window.removeEventListener("online", goOnline);
+      window.removeEventListener("offline", goOffline);
+    };
   }, [userId]);
 
+  const refreshList = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      setList(await listFieldDevices());
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
+
   async function enroll() {
-    if (!deviceIdentifier || enrolling) return;
+    if (!deviceIdentifier || enrolling || !online) return;
     setEnrolling(true);
     try {
-      setEnrollment(await selfEnrollFieldDevice(deviceIdentifier));
+      const result = await selfEnrollFieldDevice(deviceIdentifier);
+      setEnrollment(result);
+      // The register is re-read rather than patched locally: the row the
+      // backend actually holds is the only thing allowed on screen.
+      if (result.kind === "enrolled" || result.kind === "already_registered") await refreshList();
     } finally {
       setEnrolling(false);
     }
@@ -206,30 +281,80 @@ export default function TrustedDevicesClient({
     </span>
   );
 
+  const rows: FieldDeviceListRow[] = list.kind === "ok" ? list.devices : [];
+  const currentInRegister = rows.some(d => d.deviceIdentifier === deviceIdentifier);
+
   return (
     <div className={styles.wrap}>
       <p className={`t-caption ${styles.intro}`}>{s.intro}</p>
 
-      {/* The ONE real, RLS-scoped device register row for this device. When the
-          backend has no row, the same card shape carries the honest status
-          instead of a fabricated device. */}
-      <div className={styles.card} data-enrollment-state={enrollment?.kind ?? "checking"}>
-        {deviceIcon}
-        <div className={styles.body}>
-          <div className={styles.name}>
-            <span className={styles.nameText}>{s.thisDevice}</span>
-            <span className={`badge ${trusted ? "badge-compliant" : "badge-warning"}`}>{trustLabel(enrollment, s)}</span>
-          </div>
-          <div className={`t-caption id-code ${styles.id}`}><bdi>{deviceIdentifier || s.loading}</bdi></div>
-          {registered && (
-            <>
-              <div className={`t-caption ${styles.meta}`}>{s.lastAuth}: {fmt(enrollment.lastSeenAt)}</div>
-              <div className="t-caption">{s.enrolled}: {fmt(enrollment.enrolledAt)}</div>
-            </>
-          )}
-          <p className={`t-caption ${styles.reason}`}>{trustDetail(enrollment, s)}</p>
+      {!online && (
+        <p className={`t-caption ${styles.reason} ${styles.reasonWarn}`} role="status">{s.listOffline}</p>
+      )}
+
+      {/* The device register. Every card below is one real, RLS-released
+          `mvp3_devices` row — the design's `sc-for`, with no fabricated entry
+          and no per-device Revoke, because no revoke exists for this actor. */}
+      {list.kind === "signed_out" && (
+        <div className={styles.card} data-list-state="signed-out">
+          {deviceIcon}
+          <div className={styles.body}><p className={`t-caption ${styles.reasonFirst}`} role="status">{s.listSignedOut}</p></div>
         </div>
-      </div>
+      )}
+
+      {list.kind === "unavailable" && (
+        <div className={styles.card} data-list-state="unavailable">
+          {deviceIcon}
+          <div className={styles.body}><p className={`t-caption ${styles.reasonFirst} ${styles.reasonWarn}`} role="alert">{s.listUnavailable}</p></div>
+        </div>
+      )}
+
+      {list.kind === "ok" && rows.length === 0 && (
+        <div className={`${styles.card} ${styles.empty}`} data-list-state="empty">
+          {deviceIcon}
+          <div className={styles.body}>
+            <div className={styles.nameText}>{s.listEmptyTitle}</div>
+            <p className={`t-caption ${styles.reasonFirst}`}>{s.listEmptyDetail}</p>
+          </div>
+        </div>
+      )}
+
+      {rows.map(d => {
+        const isCurrent = d.deviceIdentifier === deviceIdentifier;
+        return (
+          <div key={d.deviceIdentifier} className={styles.card} data-trust-status={d.trustStatus}>
+            {deviceIcon}
+            <div className={styles.body}>
+              <div className={styles.name}>
+                <span className={styles.nameText}>{platformLabel(d.platform, s)}</span>
+                {isCurrent && <span className={`badge badge-info ${styles.badgeSm}`}>{s.thisDevice}</span>}
+                <span className={`badge ${statusBadge(d.trustStatus)} ${styles.badgeSm}`}>{statusLabel(d.trustStatus, s)}</span>
+              </div>
+              <div className={`t-caption id-code ${styles.id}`}><bdi>{d.deviceIdentifier}</bdi></div>
+              <div className={`t-caption ${styles.meta}`}>{s.lastAuth}: {fmt(d.lastSeenAt)}</div>
+              <div className="t-caption">{s.enrolled}: {fmt(d.enrolledAt)}</div>
+            </div>
+          </div>
+        );
+      })}
+
+      {refreshing && <p className={`t-caption ${styles.intro}`} role="status">{s.listRefreshing}</p>}
+
+      {/* This device, when the register does not hold it. Same card shape, real
+          status, no invented row. */}
+      {!currentInRegister && list.kind === "ok" && (
+        <div className={styles.card} data-enrollment-state={enrollment?.kind ?? "checking"}>
+          {deviceIcon}
+          <div className={styles.body}>
+            <div className={styles.name}>
+              <span className={styles.nameText}>{s.thisDevice}</span>
+              <span className={`badge badge-warning ${styles.badgeSm}`}>{trustLabel(enrollment, s)}</span>
+            </div>
+            <div className={`t-caption id-code ${styles.id}`}><bdi>{deviceIdentifier || s.loading}</bdi></div>
+            <p className={`t-caption ${styles.reason}`}>{trustDetail(enrollment, s)}</p>
+          </div>
+        </div>
+      )}
 
       {enrollState !== "hidden" && (
         <div>
@@ -237,7 +362,7 @@ export default function TrustedDevicesClient({
             type="button"
             className={`btn btn-primary btn-block btn-lg ${styles.touch}`}
             onClick={() => void enroll()}
-            disabled={enrollState === "blocked" || enrolling}
+            disabled={enrollState === "blocked" || enrolling || !online}
           >
             {enrolling ? s.enrolling : s.enroll}
           </button>
@@ -249,54 +374,51 @@ export default function TrustedDevicesClient({
 
       {/* Biometric unlock. Always rendered, never hidden — hiding it would leave
           the inspector unable to tell whether the capability is missing or
-          merely unavailable. The control is enabled only in the `ready` gate. */}
-      <div className={styles.card} data-bio-gate={bioGate}>
-        <span className={styles.icn} aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={styles.icnSvg}>
-            <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" />
-            <path d="M9 10h.01M15 10h.01M9.5 15c.9.7 4.1.7 5 0" />
-          </svg>
-        </span>
-        <div className={styles.body}>
-          <div className={styles.name}>
-            <span className={styles.nameText}>{s.bioTitle}</span>
-            <span className={`badge ${bioGate === "active" ? "badge-compliant" : "badge-warning"}`}>
-              {bioRecord ? s.bioOn : s.bioOff}
-            </span>
-          </div>
-
-          <p className={`t-caption ${styles.reason}`}>{bioReason}</p>
-
-          {bioError && (
-            <p className={`t-caption ${styles.reason} ${styles.reasonWarn}`} role="alert">{s.bioError}</p>
-          )}
-
-          {/* Scope note — states plainly that this is not a passkey, not a
-              credential, and not a second factor. */}
-          <div className={styles.callout}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={styles.calloutIcon} aria-hidden="true">
-              <circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v4h1" />
+          merely unavailable. The switch is enabled only in the `ready` gate, and
+          only ever reflects a credential this browser genuinely holds. */}
+      <div className={`panel ${styles.bioPanel}`} data-bio-gate={bioGate}>
+        <div className={styles.bioRow}>
+          <span className={`${styles.bioIcn} ${bioGate === "active" ? "" : styles.bioIcnMuted}`} aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={styles.icnSvg}>
+              <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" />
+              <path d="M9 10h.01M15 10h.01M9.5 15c.9.7 4.1.7 5 0" />
             </svg>
-            <span className={styles.calloutText}>{s.bioScopeNote}</span>
+          </span>
+          <div className={styles.bioText}>
+            <div className={styles.bioTitle}>{s.bioTitle}</div>
+            <div className="t-caption">{s.bioSubtitle}</div>
           </div>
-
-          <div className={styles.actions}>
-            {bioRecord ? (
-              <button type="button" className={`btn btn-ghost ${styles.touch}`} onClick={disableBiometric}>
-                {s.bioDisable}
-              </button>
-            ) : (
-              <button
-                type="button"
-                className={`btn btn-primary ${styles.touch}`}
-                onClick={() => void enrollBiometric()}
-                disabled={bioBusy || bioGate !== "ready"}
-              >
-                {bioBusy ? s.bioEnabling : s.bioEnable}
-              </button>
-            )}
-          </div>
+          <span className={`badge ${bioGate === "active" ? "badge-compliant" : "badge-disabled"} ${styles.badgeSm}`}>
+            {bioRecord ? s.bioOn : s.bioOff}
+          </span>
+          <label className={`switch ${styles.bioSwitch}`}>
+            <input
+              type="checkbox"
+              checked={bioRecord != null}
+              disabled={bioBusy || (bioRecord == null && bioGate !== "ready")}
+              aria-label={bioRecord ? s.bioDisable : s.bioEnable}
+              onChange={event => {
+                if (event.currentTarget.checked) void enrollBiometric();
+                else disableBiometric();
+              }}
+            />
+          </label>
         </div>
+
+        <p className={`t-caption ${styles.reason}`}>{bioBusy ? s.bioEnabling : bioReason}</p>
+
+        {bioError && (
+          <p className={`t-caption ${styles.reason} ${styles.reasonWarn}`} role="alert">{s.bioError}</p>
+        )}
+      </div>
+
+      {/* Scope note — states plainly that this is not a passkey, not a
+          credential, and not a second factor. */}
+      <div className={`panel ${styles.callout}`}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={styles.calloutIcon} aria-hidden="true">
+          <circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v4h1" />
+        </svg>
+        <span className={styles.calloutText}>{s.bioScopeNote}</span>
       </div>
 
       <div className={`panel ${styles.hint}`}>

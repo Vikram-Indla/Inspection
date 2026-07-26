@@ -487,7 +487,13 @@ export default function FieldLoginClient({
               Before authentication there is no sync history to report, so the
               chip states connectivity instead of inventing a timestamp. */}
           <span className="t-caption fl-sync">
-            <span className="fl-sync-dot" />
+            {/* The dot states the same connectivity fact as the label beside
+                it — an offline device must never show a compliant indicator. */}
+            <span
+              className={`fl-sync-dot ${online ? "fl-sync-dot-online" : "fl-sync-dot-offline"}`}
+              data-online={online ? "true" : "false"}
+              aria-hidden="true"
+            />
             {netLabel}
           </span>
         </div>

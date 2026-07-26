@@ -83,13 +83,18 @@
   gap: 9px;
 }
 
+/* Design geometry: two equal single-purpose buttons on one row (btn-sm, flex:1).
+   The DS `.btn` is nowrap and a fixed control height; at 390px the design's own
+   full labels ("Keep Server Value (discard my response)") cannot fit on one
+   line, so wrapping is allowed and the height is driven by content. The 50px
+   floor is the settled field-channel touch minimum and is never lowered. */
 .actions :global(.btn) {
-  flex-direction: column;
-  gap: 1px;
   height: auto;
-  /* Settled field-channel geometry: touch controls are never below 50px. */
   min-height: 50px;
   padding-block: 8px;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.25;
 }
 
 /* Resolution-policy callout (design: .panel on --accent-soft). */
@@ -100,12 +105,6 @@
   gap: 8px;
   align-items: flex-start;
   font-size: 12px;
-}
-
-.btnHint {
-  font-size: 11px;
-  color: inherit;
-  opacity: 0.85;
 }
 
 .failed {

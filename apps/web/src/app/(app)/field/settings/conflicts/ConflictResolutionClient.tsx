@@ -16,6 +16,7 @@ import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import FieldHeader from "@/components/field/FieldHeader";
 import { localForUser, processOutbox, promptLegacyOfflineRestore, type Conflict, type OutboxOp } from "@/lib/offline";
+import { supabaseBrowser } from "@/lib/supabase";
 import styles from "./conflicts.module.css";
 
 export type ConflictStrings = {
@@ -27,9 +28,7 @@ export type ConflictStrings = {
   localValue: string;
   serverValue: string;
   keepServer: string;
-  keepServerHint: string;
   keepMine: string;
-  keepMineHint: string;
   applicable: string;
   compliant: string;
   notes: string;
@@ -46,12 +45,66 @@ export type ConflictStrings = {
 
 type Field = { label: string; value: string };
 
+/** The governed identity of a checklist item, as frozen into the package the
+ *  inspector executed. Either half may be absent — nothing is ever invented. */
+type ItemIdentity = { code: string | null; title: string | null };
+
 // Ordered first so the two compare columns read in the checklist's own order;
 // any further response keys follow, sorted, so both sides stay aligned.
 const PRIMARY_KEYS = ["applicable", "compliant", "notes"];
 
 const asPlainObject = (payload: unknown): Record<string, unknown> | null =>
   payload && typeof payload === "object" && !Array.isArray(payload) ? (payload as Record<string, unknown>) : null;
+
+// ── Checklist item identity ────────────────────────────────────────────────
+// The design's card heading is "Checklist item #12 — Fire Safety": an item
+// reference plus its human title. Both are real, governed data and are already
+// on this device.
+//
+// The offline `packages` store holds the FROZEN package definition the
+// inspector downloaded (lib/offline.ts cachePackage / cacheVerifiedPackage).
+// That definition carries `item_snapshot`, built by
+// admin/packages/actions.ts::freezeDefinition as
+//     item_snapshot[<item code>] = { id, code, title, response_model, ... }
+// i.e. the complete `inspection_items` row, and it is exactly what the
+// inspection workspace reads to render item titles
+// (field/inspection/[id]/page.tsx: `frozenDefinition.item_snapshot?.[code]`).
+// Conflicts are keyed by the item UUID (`item_id` on the response outbox op is
+// `item.id`), so the snapshot is inverted here into id → { code, title }.
+//
+// The store holds two shapes under different keys — the legacy raw
+// `package_versions` row (key: the inspection id) and the sealed
+// saqeel-inspection-package-v1 envelope (key: `inspection:<id>`). Both expose
+// the definition on `.definition`, so one accessor covers each.
+const definitionOf = (cached: unknown): unknown => {
+  if (!cached || typeof cached !== "object") return null;
+  return (cached as { definition?: unknown }).definition ?? null;
+};
+
+const itemIdentitiesFrom = (definition: unknown): [string, ItemIdentity][] => {
+  const snapshot = definition && typeof definition === "object"
+    ? (definition as { item_snapshot?: unknown }).item_snapshot
+    : null;
+  if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)) return [];
+  const rows: [string, ItemIdentity][] = [];
+  for (const row of Object.values(snapshot as Record<string, unknown>)) {
+    if (!row || typeof row !== "object") continue;
+    const { id, code, title } = row as { id?: unknown; code?: unknown; title?: unknown };
+    if (typeof id !== "string" || !id) continue;
+    rows.push([id, {
+      code: typeof code === "string" && code ? code : null,
+      title: typeof title === "string" && title ? title : null,
+    }]);
+  }
+  return rows;
+};
+
+/** `<inspection_id>:<item_id>` — the conflict key the outbox writes. */
+const inspectionIdOf = (c: Conflict): string | null => {
+  const suffix = `:${c.item_id}`;
+  if (!c.item_id || !c.key.endsWith(suffix)) return null;
+  return c.key.slice(0, c.key.length - suffix.length) || null;
+};
 
 export default function ConflictResolutionClient({
   locale,
@@ -76,6 +129,9 @@ export default function ConflictResolutionClient({
   const [conflicts, setConflicts] = useState<Conflict[] | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [failed, setFailed] = useState<string | null>(null);
+  // item UUID → governed { code, title }. Only ever holds entries that were
+  // actually read from a frozen package or the governed catalogue.
+  const [itemIdentities, setItemIdentities] = useState<Record<string, ItemIdentity>>({});
 
   const refresh = useCallback(async () => {
     try {
@@ -96,6 +152,47 @@ export default function ConflictResolutionClient({
       window.removeEventListener("offline", on);
     };
   }, [refresh, userId]);
+
+  // Resolve each conflicting item's governed code + title. Offline-first: the
+  // frozen package cached for execution is read first, so this works with no
+  // network exactly like the rest of the field channel. Only ids the frozen
+  // packages did not cover are then topped up from the governed
+  // `inspection_items` catalogue under the inspector's own RLS scope — a read
+  // only, never a write. Anything still unresolved stays unresolved and renders
+  // as the raw id; no title is ever guessed or derived from the id.
+  useEffect(() => {
+    if (!conflicts || conflicts.length === 0) return;
+    let cancelled = false;
+    void (async () => {
+      const resolved = new Map<string, ItemIdentity>();
+      const inspectionIds = new Set(conflicts.map(inspectionIdOf).filter((id): id is string => !!id));
+      for (const inspectionId of inspectionIds) {
+        for (const cacheKey of [inspectionId, `inspection:${inspectionId}`]) {
+          try {
+            for (const [id, identity] of itemIdentitiesFrom(definitionOf(await local.getPackage(cacheKey)))) {
+              if (!resolved.has(id)) resolved.set(id, identity);
+            }
+          } catch {
+            // A cache miss or unreadable entry is not an error here — the
+            // fallback render below is already honest.
+          }
+        }
+      }
+      const missing = [...new Set(conflicts.map(c => c.item_id).filter(id => !!id && !resolved.has(id)))];
+      if (missing.length && typeof navigator !== "undefined" && navigator.onLine) {
+        try {
+          const { data } = await supabaseBrowser().from("inspection_items").select("id, code, title").in("id", missing);
+          for (const row of (data ?? []) as { id: string; code: string | null; title: string | null }[]) {
+            resolved.set(row.id, { code: row.code ?? null, title: row.title ?? null });
+          }
+        } catch {
+          // Offline, out of scope, or a non-UUID id — leave it unresolved.
+        }
+      }
+      if (!cancelled) setItemIdentities(Object.fromEntries(resolved));
+    })();
+    return () => { cancelled = true; };
+  }, [conflicts, local]);
 
   // Honest, readable rendering of a stored response payload. Known checklist
   // response keys get localized labels; everything else is stringified verbatim.
@@ -176,8 +273,7 @@ export default function ConflictResolutionClient({
       setFailed(null);
       setBusy(c.key);
       try {
-        const suffix = `:${c.item_id}`;
-        const inspectionId = c.key.endsWith(suffix) ? c.key.slice(0, c.key.length - suffix.length) : "";
+        const inspectionId = inspectionIdOf(c);
         if (!inspectionId) {
           // Cannot safely reconstruct the target op — do not fabricate one.
           setFailed(c.key);
@@ -216,23 +312,24 @@ export default function ConflictResolutionClient({
 
   // The header renders unconditionally so the screen never paints chrome-less
   // while IndexedDB is read; only the pending-count badge waits for the real
-  // count (design: badge-critical "{n} pending"). Zero-assumption — no count is
-  // shown until one is actually known.
+  // count (design: badge-critical "{n} pending"). Zero-assumption — the count
+  // is rendered once it is genuinely known (including a real 0), never before.
   const header = (
     <FieldHeader
       leading={leading}
       title={title}
       langHref={langHref}
       langLabel={langLabel}
-      right={conflicts && conflicts.length > 0
+      right={conflicts !== null
         ? <span className="badge badge-critical" style={{ height: 19, flex: "none" }}>{conflicts.length} {strings.pending}</span>
         : null}
     />
   );
 
-  // SSR-safe: nothing about conflict state until the store has been read.
-  if (conflicts === null) return header;
-
+  // The static chrome the design shows on every state — intro, resolution-policy
+  // callout, grounding note — renders immediately; only the conflict list itself
+  // waits for the IndexedDB read (SSR-safe, and no claim about conflict state is
+  // made before one is known).
   return (
     <>
       {header}
@@ -246,7 +343,7 @@ export default function ConflictResolutionClient({
         <span>{strings.policyNote}</span>
       </div>
 
-      {conflicts.length === 0 ? (
+      {conflicts === null ? null : conflicts.length === 0 ? (
         <div className={`${styles.card} ${styles.empty}`}>
           <span className={styles.check} aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: 22, height: 22 }}>
@@ -260,6 +357,14 @@ export default function ConflictResolutionClient({
         conflicts.map((c) => {
           const { local: localFields, server: serverFields } = toComparedFields(c.local, c.server);
           const rowBusy = busy === c.key;
+          // Design heading: "Checklist item #12 — Fire Safety". Rendered from
+          // the governed item code and title once resolved; while (or if) they
+          // are not, the raw item id is shown rather than a plausible name.
+          const identity = itemIdentities[c.item_id];
+          const itemRef = identity?.code ?? c.item_id;
+          const itemHeading = identity?.title
+            ? `${strings.itemLabel} ${itemRef} — ${identity.title}`
+            : `${strings.itemLabel} · ${c.item_id}`;
           return (
             <div className={styles.card} key={c.key}>
               <div className={styles.head}>
@@ -267,7 +372,7 @@ export default function ConflictResolutionClient({
                   <path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
                   <path d="M12 9v4M12 17h.01" />
                 </svg>
-                <span style={{ fontWeight: 600, fontSize: 14 }}>{strings.itemLabel} · {c.item_id}</span>
+                <span style={{ fontWeight: 600, fontSize: 14 }} data-testid="conflict-item-heading">{itemHeading}</span>
                 <span className="grow" />
                 <span className="t-caption id-code">{strings.detected} {c.detected_at}</span>
               </div>
@@ -300,12 +405,10 @@ export default function ConflictResolutionClient({
 
               <div className={styles.actions}>
                 <button type="button" className="btn btn-secondary btn-sm" style={{ flex: 1 }} disabled={rowBusy} onClick={() => void keepServer(c)}>
-                  <span>{strings.keepServer}</span>
-                  <span className={`t-caption ${styles.btnHint}`}>{strings.keepServerHint}</span>
+                  {strings.keepServer}
                 </button>
                 <button type="button" className="btn btn-primary btn-sm" style={{ flex: 1 }} disabled={rowBusy} onClick={() => void keepMine(c)}>
-                  <span>{rowBusy ? strings.resolving : strings.keepMine}</span>
-                  {!rowBusy ? <span className={`t-caption ${styles.btnHint}`}>{strings.keepMineHint}</span> : null}
+                  {rowBusy ? strings.resolving : strings.keepMine}
                 </button>
               </div>
             </div>

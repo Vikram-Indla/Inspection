@@ -178,7 +178,16 @@ test("BS-1 diagnostic sweep", async ({ browser }) => {
             const root = page.locator("#dc-root > .sc-host [dir]").first();
             let rendered = await root.getAttribute("dir");
             if (rendered !== direction) {
-              const control = page.getByRole("button").filter({ hasText: /^(?:AR|EN|العربية|English)$/i }).first();
+              // Was a single filter over AR|EN|العربية|English with .first(), which
+              // clicked whichever control happened to come first in the DOM — so a
+              // prototype rendering EN before AR was measured in EN while the probe
+              // asked for Arabic, and reported "prototype stayed dir=ltr". Select the
+              // control for the locale actually being measured, matching
+              // pixel-diff.spec.ts, which has always done this correctly.
+              const wantedLocale = locale === "ar"
+                ? /^\s*(?:AR|العربية)\s*$/i
+                : /^\s*(?:EN|English)\s*$/i;
+              const control = page.getByRole("button").filter({ hasText: wantedLocale }).first();
               const count = await control.count();
               if (!count) throw new Error(`no locale control for ${locale}`);
               await control.click();
