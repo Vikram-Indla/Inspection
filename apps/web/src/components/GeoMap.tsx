@@ -312,8 +312,17 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
   // string in a custom property lets ::before carry localised text with no
   // structural change. JSON.stringify supplies the CSS quoting.
   const loadingLabel = mapLocale === "ar" ? "جارٍ تحميل الخريطة…" : "Loading map…";
+  // `mapboxgl-map` is carried explicitly because React owns className on the
+  // very element Mapbox uses as its container. Mapbox adds that class itself at
+  // construction, but the next React render overwrites the attribute — when
+  // `ready` flipped to true the old value was `undefined`, which removes the
+  // attribute outright and takes `mapboxgl-map` with it. That class is what
+  // supplies `position: relative`; without it the absolutely positioned
+  // .mapboxgl-canvas resolves against the viewport and paints the map over the
+  // entire page. Keeping the class in every value React writes makes the
+  // positioning context survive re-renders; Mapbox re-adding it is idempotent.
   return <div ref={containerRef} aria-label={ariaLabel} data-map-provider="mapbox"
-    className={ready ? undefined : "sq-map-loading"}
+    className={ready ? "mapboxgl-map" : "mapboxgl-map sq-map-loading"}
     data-map-ready={ready ? "true" : "false"} aria-busy={ready ? undefined : "true"}
     style={{
       blockSize: height, inlineSize: "100%",
