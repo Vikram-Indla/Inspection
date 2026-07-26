@@ -13,8 +13,8 @@ test.describe("M8 admin access route-aware contract", () => {
     expect(page).toContain('href="/admin/access?view=roles"');
     expect(page).toContain('aria-current={view === "users" ? "page" : undefined}');
     expect(page).toContain('aria-current={view === "roles" ? "page" : undefined}');
-    expect(page).toContain('"Users & access"');
-    expect(page).toContain('"Roles & capabilities"');
+    expect(page).toContain('"Users & roles"');
+    expect(page).toContain('"Roles & capability profiles"');
   });
 
   test("management controls fail closed when gates or required sources fail", () => {
@@ -32,6 +32,15 @@ test.describe("M8 admin access route-aware contract", () => {
     expect(page).toContain("Role capability details are unavailable.");
     expect(page).toContain("The authorized user roster remains visible");
     expect(page).toContain("The role catalogue remains visible");
-    expect(page).toContain('rolesError ? t("common.unavailable", "Unavailable")');
+    expect(page).toContain('? t("common.unavailable", "Unavailable")');
+  });
+
+  test("canonical role presentation never replaces guarded legacy write keys", () => {
+    expect(page).toContain("CANONICAL_ROLE_PRESENTATION.map");
+    expect(page).toContain("canonicalRolesForLegacy(legacyRoles)");
+    expect(page).toContain("rolePresentationLabel(r.role_key, locale)");
+    expect(page).toContain("roleKey: r.role_key");
+    expect(page).toContain('sb.rpc("has_role", { r: "security_admin" })');
+    expect(page).toContain('sb.rpc("has_planning_capability", { p_capability: "admin.access.manage" })');
   });
 });

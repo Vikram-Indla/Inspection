@@ -9,7 +9,7 @@ import { useState, useTransition } from "react";
 import { grantCapability, grantRole, revokeCapability, revokeRole, type AccessActionResult } from "./actions";
 
 export type AccessUser = { userId: string; name: string; email: string | null };
-export type RoleInfo = { roleKey: string; title: string; isAdmin: boolean };
+export type RoleInfo = { roleKey: string; title: string; presentationLabel: string; isAdmin: boolean };
 export type CapabilityInfo = { capabilityKey: string; description: string };
 export type RoleGrant = { roleKey: string; grantedBy: string | null; grantedAt: string };
 export type CapabilityGrant = { capabilityKey: string; grantedBy: string | null; grantedAt: string };
@@ -44,6 +44,9 @@ export type AccessManagerLabels = {
   effectNote: string;
   working: string;
   saved: string;
+  capabilityColumn: string;
+  sourceColumn: string;
+  actionsColumn: string;
 };
 
 type PendingChange =
@@ -58,6 +61,7 @@ export default function AccessManager({
   access,
   currentUserId,
   labels,
+  responsiveTableClassName,
 }: {
   users: AccessUser[];
   roles: RoleInfo[];
@@ -65,6 +69,7 @@ export default function AccessManager({
   access: UserAccess[];
   currentUserId: string;
   labels: AccessManagerLabels;
+  responsiveTableClassName: string;
 }) {
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [confirming, setConfirming] = useState<PendingChange | null>(null);
@@ -108,9 +113,9 @@ export default function AccessManager({
   const grantableCapabilities = capabilities.filter(c => !heldGrants.has(c.capabilityKey));
 
   const confirmText = confirming?.kind === "revoke_role"
-    ? labels.confirmRevokeRole.replace("{key}", confirming.key)
+    ? labels.confirmRevokeRole.replace("{key}", roles.find(role => role.roleKey === confirming.key)?.presentationLabel ?? confirming.key)
     : confirming?.kind === "grant_admin_role"
-      ? labels.confirmGrantAdminRole.replace("{key}", confirming.key)
+      ? labels.confirmGrantAdminRole.replace("{key}", roles.find(role => role.roleKey === confirming.key)?.presentationLabel ?? confirming.key)
       : confirming?.kind === "revoke_capability"
         ? labels.confirmRevokeCapability.replace("{key}", confirming.key)
         : "";
@@ -150,7 +155,7 @@ export default function AccessManager({
                 const role = roles.find(r => r.roleKey === grant.roleKey);
                 return (
                   <span key={grant.roleKey} className={`sq-lozenge ${role?.isAdmin ? "sq-lozenge--warning" : "sq-lozenge--info"}`}>
-                    {grant.roleKey}
+                    {role?.presentationLabel ?? grant.roleKey}
                     <span className="sq-caption" style={{ marginInlineStart: 6 }}>
                       {labels.grantedAt} {new Date(grant.grantedAt).toLocaleDateString()}
                     </span>
@@ -168,7 +173,7 @@ export default function AccessManager({
             <div style={{ display: "flex", gap: "var(--space-3)", alignItems: "center" }}>
               <select className="sq-input" id="access-role-grant-select" style={{ maxInlineSize: 280 }} disabled={disabled}>
                 {grantableRoles.map(r => (
-                  <option key={r.roleKey} value={r.roleKey}>{r.roleKey}{r.isAdmin ? " (admin)" : ""}</option>
+                  <option key={r.roleKey} value={r.roleKey}>{r.presentationLabel}</option>
                 ))}
               </select>
               <button
@@ -189,25 +194,25 @@ export default function AccessManager({
             {selected.effective.length === 0 ? (
               <p className="sq-caption" style={{ margin: 0 }}>{labels.noCapabilities}</p>
             ) : (
-              <div className="sq-tablewrap"><table className="sq-table">
+              <div className={`sq-tablewrap ${responsiveTableClassName}`}><table className="sq-table" data-responsive-access-table>
                 <thead><tr>
-                  <th scope="col">Capability</th>
-                  <th scope="col">Source</th>
-                  <th scope="col">Actions</th>
+                  <th scope="col">{labels.capabilityColumn}</th>
+                  <th scope="col">{labels.sourceColumn}</th>
+                  <th scope="col">{labels.actionsColumn}</th>
                 </tr></thead>
                 <tbody>
                   {selected.effective.map(cap => (
                     <tr key={cap.capabilityKey}>
-                      <td><strong>{cap.capabilityKey}</strong></td>
-                      <td>
+                      <td data-label={labels.capabilityColumn}><strong>{cap.capabilityKey}</strong></td>
+                      <td data-label={labels.sourceColumn}>
                         {cap.viaRoles.map(role => (
                           <span key={role} className="sq-lozenge sq-lozenge--info" style={{ marginInlineEnd: 6 }}>
-                            {labels.viaRole} {role}
+                            {labels.viaRole} {roles.find(item => item.roleKey === role)?.presentationLabel ?? role}
                           </span>
                         ))}
                         {cap.direct && <span className="sq-lozenge sq-lozenge--warning">{labels.directGrant}</span>}
                       </td>
-                      <td>
+                      <td data-label={labels.actionsColumn}>
                         {cap.direct && (
                           <button
                             type="button"

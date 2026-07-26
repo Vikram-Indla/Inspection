@@ -7,7 +7,7 @@
 import { useState, useTransition } from "react";
 import { grantRoleCapability, revokeRoleCapability, type RoleCapabilityResult } from "./role-capability-actions";
 
-export type RoleCapRole = { roleKey: string; title: string; isAdmin: boolean };
+export type RoleCapRole = { roleKey: string; title: string; presentationLabel: string; isAdmin: boolean };
 export type RoleCapPermission = { permissionKey: string; title: string; description: string };
 export type RoleCapGrant = { roleKey: string; permissionKey: string; grantedAt: string };
 
@@ -65,9 +65,11 @@ export default function RoleCapabilityPanel({ roles, permissions, grants, labels
   };
 
   const confirmText = confirming?.kind === "revoke"
-    ? labels.confirmRevoke.replace("{role}", roleKey).replace("{permission}", confirming.permissionKey)
+    ? labels.confirmRevoke
+      .replace("{role}", roles.find(role => role.roleKey === roleKey)?.presentationLabel ?? roleKey)
+      .replace("{permission}", confirming.permissionKey)
     : confirming?.kind === "grant_sod"
-      ? labels.confirmGrantSod.replace("{role}", roleKey)
+      ? labels.confirmGrantSod.replace("{role}", roles.find(role => role.roleKey === roleKey)?.presentationLabel ?? roleKey)
       : "";
 
   return (
@@ -80,7 +82,7 @@ export default function RoleCapabilityPanel({ roles, permissions, grants, labels
         <select className="sq-input" id="role-cap-role-select" value={roleKey}
           onChange={e => { setRoleKey(e.target.value); setConfirming(null); setFeedback({}); }}>
           <option value="">—</option>
-          {roles.map(r => <option key={r.roleKey} value={r.roleKey}>{r.roleKey}{r.isAdmin ? " (admin)" : ""}</option>)}
+          {roles.map(r => <option key={r.roleKey} value={r.roleKey}>{r.presentationLabel}</option>)}
         </select>
       </div>
 

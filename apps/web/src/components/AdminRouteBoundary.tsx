@@ -6,6 +6,7 @@ import EmptyState from "@/components/EmptyState";
 import { IconShieldCheck } from "@/app/icons";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { homeForRoles } from "@/lib/role-home";
 
 /** Route-level visibility guard. Database RLS remains the write/read authority. */
 export default async function AdminRouteBoundary({ allowedRoles, children }: { allowedRoles: readonly string[]; children: ReactNode }) {
@@ -20,12 +21,18 @@ export default async function AdminRouteBoundary({ allowedRoles, children }: { a
   if (allowedRoles.some(role => roles.has(role))) return children;
 
   const { t } = await useT();
+  const authorizedHome = homeForRoles(roles) ?? "/launch";
   return (
-    <Shell current="/admin" title={t("admin.unauthorized.title", "Authorized configuration role required")}>
-      <EmptyState icon={<IconShieldCheck size={28} />} role="alert"
-        title={t("admin.unauthorized.heading", "This control-plane module is outside your role")}
-        body={t("admin.unauthorized.body", "No configuration data has been loaded. Return to your assigned workspace or ask an administrator for the required role.")}>
-        <a className="btn btn-secondary sq-link btn-touch" href="/launch">{t("admin.unauthorized.return", "Return to my workspace")}</a>
+    <Shell current="/admin" title={t("admin.unauthorized.destinationTitle", "Administration access restricted")}>
+      <h1 className="ax-sr-only">
+        {t("admin.unauthorized.destinationHeading", "You do not have access to this destination")}
+      </h1>
+      <EmptyState icon={<IconShieldCheck size={28} />} role="alert" headingLevel={2}
+        title={t("admin.unauthorized.destinationHeading", "You do not have access to this destination")}
+        body={t("admin.unauthorized.destinationBody", "Administration remains visible so the system structure is clear, but your assigned role is not authorized to load administration data.")}>
+        <a className="btn btn-secondary sq-link btn-touch" href={authorizedHome}>
+          {t("admin.unauthorized.destinationReturn", "Back to an authorized area")}
+        </a>
       </EmptyState>
     </Shell>
   );

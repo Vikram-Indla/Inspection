@@ -1,0 +1,116 @@
+schema_version: "1.0"
+packet_id: "PKT-RESPONSIVE-ADMIN-RBAC-008"
+task_id: "TASK-SAQEEL-RESPONSIVE-REVAMP-001"
+change_control_id: "CC-SAQEEL-RESPONSIVE-REVAMP-001"
+branch: "revamp/admin-rbac"
+baseline: "3278fb91466fbb85dc7c17caaa5d81f2e069d69b"
+state: "TECHNICAL_PASS_READY_FOR_REVIEW"
+authorized_by: "Vikram Indla / Product Owner"
+authorization_evidence: "Locked migration execution configuration plus explicit instruction that all approvals are granted and execution must continue."
+
+process_ids:
+  - "M8"
+requirements:
+  - "CR-001..CR-478 (RBAC and administration preservation boundary only)"
+  - "RBAC-001..014"
+  - "RBAC-006"
+  - "EXE-ACCESS"
+  - "PLN-REQ-004"
+  - "PLN-CON-013"
+  - "MVP2-REQ-0192"
+  - "MVP2-REQ-0227"
+  - "MVP2-REQ-0241"
+  - "MVP2-REQ-0256"
+screens:
+  - "SCR-ADM-090"
+  - "Saqeel Revamp.dc.html — Users & Roles"
+  - "Saqeel Revamp.dc.html — unauthorized Administration state"
+routes:
+  - "/admin"
+  - "/admin/access"
+  - "/admin/access?view=roles"
+  - "/admin/security-access"
+  - "/admin/devices"
+engines:
+  - "Canonical Planner, Inspector and Administrator presentation mapping"
+  - "Legacy capability-profile compatibility without destructive role migration"
+  - "Route admission before protected administration reads"
+  - "RLS-scoped user roster and effective-access explanation"
+  - "Governed grant and revoke actions with self-escalation and sole-security-administrator guards"
+  - "Role-permission mapping with existing capability and RLS guards"
+  - "Shared responsive shell, navigation visibility, i18n, RTL and light/dark themes"
+
+acceptance:
+  - "WA-M8-AC-001..006"
+  - "MVP2-AC-0192"
+  - "MVP2-AC-0227"
+  - "MVP2-AC-0241"
+  - "MVP2-AC-0256"
+  - "The user-facing role model presents exactly Planner, Inspector and Administrator while retaining explicit legacy capability-profile compatibility."
+  - "Administrator capability profiles preserve existing least-privilege, maker-checker, RLS, RPC, audit and next-request behavior."
+  - "Planner receives the canonical shell and a designed localized unauthorized Administration state before any protected child route renders."
+  - "Inspector authorization remains governed by DEC-042 and the accepted field-channel gate; no web-shell expansion is introduced."
+  - "Administration remains discoverable in the canonical navigation; visibility never grants route, service, action or database authority."
+  - "Direct URLs, refreshes and deep links cannot load protected administration data before the route boundary."
+  - "English/Arabic, LTR/RTL, light/dark, keyboard and mandated responsive behavior remain available."
+
+open_decisions:
+  - id: "EXTERNAL-FACTORY-REPRESENTATIVE"
+    disposition: "Remain outside the three internal presentation roles. Do not collapse or expose it silently."
+  - id: "ROLE-STORAGE-MIGRATION"
+    disposition: "No production DDL or destructive role migration is authorized. Deliver the approved compatibility/presentation mapping and preserve all existing authorization outcomes."
+  - id: "ACCESS-DUAL-CONTROL"
+    disposition: "Preserve the accepted single-security-administrator model and current database guards. Do not invent the unapproved secondary-approval workflow."
+  - id: "DEC-042"
+    disposition: "Keep the Inspector field-channel gate. Do not edit FIELD_CHANNEL_ROLE_KEYS, isFieldOnlyPersona or the app-route persona redirect."
+
+dependencies:
+  - "PKT-RESPONSIVE-FOUNDATION-SHELL-001"
+  - "PKT-RESPONSIVE-FACTORY-360-007 at 3278fb91466fbb85dc7c17caaa5d81f2e069d69b"
+  - "Approved Role Migration worksheet in SAQEEL_Responsive_Revamp_Impact_Traceability.xlsx"
+  - "Existing development Supabase and excluded persona storage states"
+
+allowed_paths:
+  - "apps/web/src/app/(app)/admin/layout.tsx"
+  - "apps/web/src/app/(app)/admin/access/**"
+  - "apps/web/src/components/AdminRouteBoundary.tsx"
+  - "apps/web/src/components/EmptyState.tsx (backward-compatible optional heading level only)"
+  - "apps/web/src/lib/admin-role-convergence.ts"
+  - "apps/web/src/lib/admin-rbac-arabic.ts"
+  - "apps/web/src/lib/i18n.ts (Admin/RBAC reviewed fallback registration only)"
+  - "apps/web/e2e/admin-access-route-aware.spec.ts"
+  - "apps/web/e2e/responsive-admin-rbac.spec.ts"
+  - "apps/web/e2e/shell-navigation.spec.ts (Admin/RBAC assertions only)"
+  - "product-contract/operationalization/packets/PKT-RESPONSIVE-ADMIN-RBAC-008.yaml"
+  - "product-contract/evidence/PKT-RESPONSIVE-ADMIN-RBAC-008.md"
+
+prohibited:
+  - "Production or remote DDL, role storage replacement, RLS/RPC changes, shared data mutation or applied migration-history edits"
+  - "FIELD_CHANNEL_ROLE_KEYS, isFieldOnlyPersona or the accepted Inspector route gate"
+  - "New role, permission, maker-checker, request-access, SSO, MFA, retention, SLA, legal, risk or compliance policy"
+  - "Direct role or permission mutation outside existing guarded actions"
+  - "Factory representative collapse into an internal canonical role"
+  - "PWA product source or delivery infrastructure"
+  - "main or integration branch mutation"
+
+evidence:
+  - "Typecheck and production build"
+  - "Focused canonical-role, route-boundary, access action and shell-navigation contracts"
+  - "Authenticated Administrator positive path and Planner unauthorized path"
+  - "Inspector gate preservation proof"
+  - "RLS/RBAC, self-escalation, sole-security-administrator and fail-closed source negatives"
+  - "EN/AR, LTR/RTL, light/dark responsive matrix at 320, 375, 390, 768, 1024, 1280, 1440 and 1920 widths"
+  - "No horizontal document overflow at every mandated width"
+  - "Accessibility, keyboard, direct-link, refresh and protected regression evidence"
+
+rollback:
+  - "Revert the packet commit; database, role storage, RLS, RPC, audit and Inspector channel contracts remain unchanged."
+  - "No destructive data or schema rollback is required."
+
+stop_conditions:
+  - "Any protected administration child data read before route authorization"
+  - "Any role mapping that expands authorization or loses historical capability-profile attribution"
+  - "Any Inspector web-shell widening contrary to DEC-042"
+  - "Any unapproved role-storage, RLS, RPC, maker-checker or remote-data change"
+  - "Any invented policy, legal, SLA, risk, penalty or compliance meaning"
+  - "Any P0/P1 focused or protected regression"

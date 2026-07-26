@@ -1,3 +1,44 @@
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-block-end: var(--space-4);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+.breadcrumbs a {
+  color: var(--action-primary);
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-block-end: var(--space-4);
+}
+
+.summary article {
+  display: grid;
+  gap: var(--space-1);
+  min-inline-size: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+}
+
+.summary strong {
+  color: var(--text-primary);
+  font-size: var(--text-xl);
+}
+
+.summary span {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
 .views {
   display: flex;
   flex-wrap: wrap;
@@ -39,9 +80,106 @@
   padding: var(--space-4);
 }
 
+.roleCards p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.roleCards details {
+  margin-block-start: var(--space-2);
+  border-block-start: 1px solid var(--border-subtle);
+  padding-block-start: var(--space-3);
+}
+
+.roleCards summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+
+.roleCards ul {
+  display: grid;
+  gap: var(--space-1);
+  margin-block: var(--space-2) 0;
+  padding-inline-start: var(--space-5);
+  color: var(--text-secondary);
+}
+
+.rosterTable td:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
 @media (max-width: 40rem) {
+  .summary {
+    grid-template-columns: 1fr;
+  }
+
   .views a {
-    flex: 1 1 0;
+    flex: 1 1 calc(50% - var(--space-2));
     justify-content: center;
+  }
+
+  .rosterTable {
+    overflow: visible;
+  }
+
+  .rosterTable table,
+  .accessPanelTable table {
+    display: block;
+  }
+
+  .rosterTable thead,
+  .accessPanelTable thead {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .rosterTable tbody,
+  .rosterTable tr,
+  .rosterTable td,
+  .accessPanelTable tbody,
+  .accessPanelTable tr,
+  .accessPanelTable td {
+    display: block;
+    inline-size: 100%;
+  }
+
+  .rosterTable tr,
+  .accessPanelTable tr {
+    margin-block-end: var(--space-3);
+    padding: var(--space-3);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    background: var(--surface-raised);
+  }
+
+  .rosterTable td,
+  .accessPanelTable td {
+    padding: var(--space-2) 0;
+    border: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .rosterTable td::before,
+  .accessPanelTable td::before {
+    display: block;
+    margin-block-end: var(--space-1);
+    color: var(--text-secondary);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    content: attr(data-label);
+  }
+
+  .rosterTable td:last-child {
+    display: flex;
+  }
+
+  .rosterTable td:last-child::before {
+    flex-basis: 100%;
   }
 }

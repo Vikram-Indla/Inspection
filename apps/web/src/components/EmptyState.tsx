@@ -18,13 +18,15 @@ type EmptyStateProps = {
   children?: React.ReactNode;   // extra content after the body (e.g. a CTA link)
   role?: string;                // e.g. "status" for a live-region announcement (WCAG)
   ariaBusy?: boolean;           // used on loading (not just empty) variants of this same markup
+  headingLevel?: 2 | 3 | 4;     // callers with a route h1 may preserve heading order; defaults to legacy h4
 };
 
-export default function EmptyState({ icon, glyph, title, body, inline, bare, children, role, ariaBusy }: EmptyStateProps) {
+export default function EmptyState({ icon, glyph, title, body, inline, bare, children, role, ariaBusy, headingLevel = 4 }: EmptyStateProps) {
+  const Heading = `h${headingLevel}` as "h2" | "h3" | "h4";
   const inner = (
     <div className={inline ? "sq-state sq-state--inline" : "sq-state"} role={role} aria-busy={ariaBusy}>
       <span className="sq-state__glyph" aria-hidden="true">{icon ?? glyph}</span>
-      <h4>{title}</h4>
+      <Heading>{title}</Heading>
       {body ? <p className="t-caption">{body}</p> : null}
       {children}
     </div>

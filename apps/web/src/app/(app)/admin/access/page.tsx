@@ -6,6 +6,14 @@ import { logProviderError } from "@/lib/neutral-error";
 import AccessManager, { type UserAccess } from "./AccessManager";
 import RoleCapabilityPanel from "./RoleCapabilityPanel";
 import styles from "./access.module.css";
+import {
+  CANONICAL_ROLE_PRESENTATION,
+  canonicalRoleForLegacy,
+  canonicalRoleLabel,
+  canonicalRolesForLegacy,
+  capabilityProfileLabel,
+  rolePresentationLabel,
+} from "@/lib/admin-role-convergence";
 
 // TASK-EXECUTION-MODULE-001 · Phase 2B — governed role/capability grants.
 // The roster below stays read-only and exactly as before. For security_admin
@@ -31,7 +39,7 @@ export default async function Access({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { t } = await useT();
+  const { t, locale } = await useT();
   const sb = await supabaseServer();
   const requestedView = (await searchParams).view;
   const view: AccessView = requestedView === "roles" ? "roles" : "users";
@@ -132,9 +140,35 @@ export default async function Access({
 
   return (
     <Shell current="/admin/access" title={view === "users"
-      ? t("admin.access.users.title", "Users & access")
-      : t("admin.access.roles.title", "Roles & capabilities")}
+      ? t("admin.access.users.title", "Users & roles")
+      : t("admin.access.roles.title", "Roles & capability profiles")}
       context={<span className="sq-lozenge sq-lozenge--info">SCR-ADM-090 · RBAC-001..014 · EXE-ACCESS</span>}>
+      <h1 className="ax-sr-only">
+        {view === "users"
+          ? t("admin.access.users.title", "Users & roles")
+          : t("admin.access.roles.title", "Roles & capability profiles")}
+      </h1>
+      <nav className={styles.breadcrumbs} aria-label={t("common.breadcrumb", "Breadcrumb")}>
+        <a href="/admin">{t("admin.access.breadcrumb.admin", "Administration")}</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">{t("admin.access.breadcrumb.people", "People & access")}</span>
+      </nav>
+      <section className={styles.summary} aria-label={t("admin.access.summary.label", "Access summary")}>
+        <article>
+          <strong>{profilesError ? "—" : (profiles ?? []).length}</strong>
+          <span>{t("admin.access.summary.visibleAccounts", "Visible accounts")}</span>
+        </article>
+        <article>
+          <strong>3</strong>
+          <span>{t("admin.access.summary.canonicalRoles", "Canonical roles")}</span>
+        </article>
+        <article>
+          <strong>{canManage || canManageRoleCaps
+            ? t("admin.access.summary.available", "Available")
+            : t("admin.access.summary.readOnly", "Read-only")}</strong>
+          <span>{t("admin.access.summary.management", "Access management")}</span>
+        </article>
+      </section>
       <nav className={styles.views} aria-label={t("admin.access.views.label", "Access administration views")}>
         <a className="sq-btn" href="/admin/access?view=users" aria-current={view === "users" ? "page" : undefined}>
           {t("admin.access.views.users", "Users")}
@@ -142,8 +176,17 @@ export default async function Access({
         <a className="sq-btn" href="/admin/access?view=roles" aria-current={view === "roles" ? "page" : undefined}>
           {t("admin.access.views.roles", "Roles")}
         </a>
+        <a className="sq-btn" href="/admin/security-access">
+          {t("admin.access.views.reviews", "Access review")}
+        </a>
+        <a className="sq-btn" href="/admin/devices">
+          {t("admin.access.views.devices", "Trusted devices")}
+        </a>
       </nav>
-      <div className="sq-banner"><div><strong>{t("admin.access.banner.title", "Access is enforced by Row Level Security, not UI.")}</strong> {t("admin.access.banner.body", "54 policies realize the frozen RBAC matrix; role grants are audited automatically (this page's data itself passed through RLS to render).")}</div></div>
+      <div className="sq-banner"><div>
+        <strong>{t("admin.access.canonicalBanner.title", "There are three canonical roles: Planner, Inspector and Administrator.")}</strong>{" "}
+        {t("admin.access.canonicalBanner.body", "Internal capability profiles remain separate to preserve least privilege. Changes are audited, take effect on the next request, and self-elevation is refused.")}
+      </div></div>
       {(gateError || capGateError) && (
         <div className="sq-banner sq-banner--warning" role="alert"><div>
           <strong>{t("admin.access.permissions.error.title", "Permissions unavailable.")}</strong>{" "}
@@ -156,18 +199,31 @@ export default async function Access({
           {profilesError && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("admin.access.error.title", "Couldn’t load the authorized user roster. Nothing was changed. Try again.")}</strong></div></div>}
           {rolesError && !profilesError && <div className="sq-banner sq-banner--warning" role="alert"><div><strong>{t("admin.access.roles.error.title", "Role details are unavailable.")}</strong> {t("admin.access.roles.error.body", "The authorized user roster remains visible, but role labels and all access changes are unavailable.")}</div></div>}
           {!profilesError && (
-            <div className="sq-tablewrap"><table className="sq-table">
+            <div className={`sq-tablewrap ${styles.rosterTable}`}><table className="sq-table">
               <thead><tr><th scope="col">{t("admin.access.table.user", "User")}</th><th scope="col">{t("admin.access.table.email", "Email")}</th><th scope="col">{t("admin.access.table.region", "Region")}</th><th scope="col">{t("admin.access.table.roles", "Roles")}</th></tr></thead>
               <tbody>
-                {(profiles ?? []).map(p => (
-                  <tr key={p.user_id}>
-                    <td><strong>{p.full_name}</strong></td>
-                    <td className="sq-caption">{p.email}</td>
-                    <td>{p.region}</td>
-                    <td>{rolesError ? t("common.unavailable", "Unavailable") : (p.user_roles as { role_key: string }[]).map(r =>
-                      <span key={r.role_key} className={`sq-lozenge ${(roles ?? []).find(x => x.role_key === r.role_key)?.is_admin ? "sq-lozenge--warning" : "sq-lozenge--info"}`} style={{ marginInlineEnd: 6 }}>{r.role_key}</span>)}</td>
-                  </tr>
-                ))}
+                {(profiles ?? []).map(p => {
+                  const legacyRoles = ((p.user_roles ?? []) as { role_key: string }[]).map(role => role.role_key);
+                  const canonicalRoles = canonicalRolesForLegacy(legacyRoles);
+                  return (
+                    <tr key={p.user_id}>
+                      <td data-label={t("admin.access.table.user", "User")}><strong>{p.full_name}</strong></td>
+                      <td data-label={t("admin.access.table.email", "Email")} className="sq-caption">{p.email}</td>
+                      <td data-label={t("admin.access.table.region", "Region")}>{p.region}</td>
+                      <td data-label={t("admin.access.table.roles", "Roles")}>
+                        {rolesError
+                          ? t("common.unavailable", "Unavailable")
+                          : canonicalRoles.length
+                            ? canonicalRoles.map(role => (
+                              <span key={role} className={`sq-lozenge ${role === "administrator" ? "sq-lozenge--warning" : "sq-lozenge--info"}`}>
+                                {canonicalRoleLabel(role, locale)}
+                              </span>
+                            ))
+                            : <span className="sq-caption">{t("admin.access.table.noRole", "No canonical internal role")}</span>}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table></div>
           )}
@@ -182,10 +238,16 @@ export default async function Access({
       {view === "users" && canManage && user && !profilesError && !rolesError && !userAccessSourcesUnavailable && (
         <AccessManager
           users={(profiles ?? []).map(p => ({ userId: p.user_id, name: p.full_name, email: p.email }))}
-          roles={((roles ?? []) as RoleRow[]).map(r => ({ roleKey: r.role_key, title: r.title, isAdmin: r.is_admin }))}
+          roles={((roles ?? []) as RoleRow[]).map(r => ({
+            roleKey: r.role_key,
+            title: r.title,
+            presentationLabel: rolePresentationLabel(r.role_key, locale),
+            isAdmin: r.is_admin,
+          }))}
           capabilities={capabilityCatalogue.map(c => ({ capabilityKey: c.capability_key, description: c.description }))}
           access={access}
           currentUserId={user.id}
+          responsiveTableClassName={styles.accessPanelTable}
           labels={{
             panelTitle: t("admin.access.manage.title", "Access management"),
             panelIntro: t("admin.access.manage.intro", "Grant or revoke roles and direct capability overrides. Every change runs through the governed RPCs: the self-escalation guard blocks changes to your own access, the last remaining security administrator cannot be revoked, and every change is recorded in the activity log."),
@@ -195,7 +257,7 @@ export default async function Access({
             grantRole: t("admin.access.manage.grantRole", "Grant role"),
             revoke: t("admin.access.manage.revoke", "Revoke"),
             confirmRevokeRole: t("admin.access.manage.confirmRevokeRole", "Revoke the role “{key}” from this user? The change is recorded and takes effect on their next request."),
-            confirmGrantAdminRole: t("admin.access.manage.confirmGrantAdminRole", "Grant the administrator role “{key}” to this user? This gives them admin-level access and is recorded."),
+            confirmGrantAdminRole: t("admin.access.manage.confirmGrantAdminRole", "Grant the Administrator capability profile “{key}” to this user? The change is recorded and remains limited to that profile."),
             confirmRevokeCapability: t("admin.access.manage.confirmRevokeCapability", "Revoke the direct capability override “{key}” from this user? Role-derived access is unaffected."),
             confirm: t("admin.access.manage.confirm", "Confirm"),
             cancel: t("common.cancel", "Cancel"),
@@ -209,6 +271,9 @@ export default async function Access({
             effectNote: t("admin.access.manage.effectNote", "Role and capability changes take effect on the target's next request. Nothing is applied silently: every change is confirmed here and recorded in the activity log with the actor, before/after state and requirement reference EXE-ACCESS."),
             working: t("admin.access.manage.working", "Applying…"),
             saved: t("admin.access.manage.saved", "saved — effective on the user's next request"),
+            capabilityColumn: t("admin.access.manage.capabilityColumn", "Capability"),
+            sourceColumn: t("admin.access.manage.sourceColumn", "Source"),
+            actionsColumn: t("admin.access.manage.actionsColumn", "Actions"),
           }}
         />
       )}
@@ -226,24 +291,44 @@ export default async function Access({
       {view === "roles" && !rolesError && (
         <section className={styles.roleCatalogue} aria-labelledby="role-catalogue-title">
           <div>
-            <h2 id="role-catalogue-title">{t("admin.access.roles.catalogue.title", "Role catalogue")}</h2>
-            <p className="sq-caption">{t("admin.access.roles.catalogue.body", "Only roles visible to your session through Row Level Security are listed.")}</p>
+            <h2 id="role-catalogue-title">{t("admin.access.roles.catalogue.title", "Canonical roles")}</h2>
+            <p className="sq-caption">{t("admin.access.roles.catalogue.body", "The interface presents exactly three canonical roles. Current capability profiles remain separate behind this presentation so every authorization and audit boundary is preserved.")}</p>
           </div>
           <div className={styles.roleCards}>
-            {((roles ?? []) as RoleRow[]).map(role => (
-              <article className="sq-surface" key={role.role_key}>
-                <strong>{role.title || role.role_key}</strong>
-                <bdi className="sq-caption" dir="ltr">{role.role_key}</bdi>
-                {role.is_admin && <span className="sq-lozenge sq-lozenge--warning">{t("admin.access.roles.admin", "Administrator role")}</span>}
-              </article>
-            ))}
+            {CANONICAL_ROLE_PRESENTATION.map(role => {
+              const profiles = ((roles ?? []) as RoleRow[]).filter(item => canonicalRoleForLegacy(item.role_key) === role.key);
+              return (
+                <article className="sq-surface" key={role.key}>
+                  <strong>{role.label[locale]}</strong>
+                  <p>{role.description[locale]}</p>
+                  <span className="sq-lozenge sq-lozenge--info">
+                    {role.key === "administrator"
+                      ? t("admin.access.roles.leastPrivilege", "Administrator is not blanket authority; every capability profile retains its existing guard.")
+                      : role.key === "inspector"
+                        ? t("admin.access.roles.fieldGate", "The accepted Inspector field-channel gate remains in force.")
+                        : t("admin.access.roles.direct", "Direct canonical role")}
+                  </span>
+                  <details>
+                    <summary>{t("admin.access.roles.profiles", "Compatible capability profiles")} ({profiles.length})</summary>
+                    <ul>
+                      {profiles.map(profile => <li key={profile.role_key}>{capabilityProfileLabel(profile.role_key, locale)}</li>)}
+                    </ul>
+                  </details>
+                </article>
+              );
+            })}
           </div>
         </section>
       )}
 
       {view === "roles" && canManageRoleCaps && user && !rolesError && !roleCapabilitySourcesUnavailable && (
         <RoleCapabilityPanel
-          roles={((roles ?? []) as RoleRow[]).map(r => ({ roleKey: r.role_key, title: r.title, isAdmin: r.is_admin }))}
+          roles={((roles ?? []) as RoleRow[]).map(r => ({
+            roleKey: r.role_key,
+            title: r.title,
+            presentationLabel: rolePresentationLabel(r.role_key, locale),
+            isAdmin: r.is_admin,
+          }))}
           permissions={permissionCatalogue.map(p => ({ permissionKey: p.permission_key, title: p.title, description: p.description }))}
           grants={rolePermissionGrants.map(g => ({ roleKey: g.role_key, permissionKey: g.permission_key, grantedAt: g.granted_at }))}
           labels={{
@@ -259,7 +344,7 @@ export default async function Access({
             confirm: t("admin.access.manage.confirm", "Confirm"),
             cancel: t("common.cancel", "Cancel"),
             working: t("admin.access.manage.working", "Applying…"),
-            auditNote: t("admin.access.rolecaps.auditNote", "Audit note: user_roles changes are recorded by the existing audit trigger; role_permissions audit coverage is migration 20260722120000 (authored, pending apply)."),
+            auditNote: t("admin.access.rolecaps.auditNote", "Audit note: user-role changes use the existing audit trigger. Role-capability audit is not claimed as applied without environment evidence."),
           }}
         />
       )}
