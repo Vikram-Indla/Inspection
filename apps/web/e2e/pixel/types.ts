@@ -7,14 +7,41 @@ export const PIXEL_LOCALES = [
 export type PixelLocale = (typeof PIXEL_LOCALES)[number];
 export type PixelWidth = (typeof PIXEL_WIDTHS)[number];
 
+export interface RouteTargetCommon {
+  // /login is the signed-out surface. Browsing it with an authenticated
+  // storage state aborts the navigation, so the login card is measured in a
+  // clean context. This proves the real screen, it does not relax anything.
+  unauthenticated?: boolean;
+  // A route that deliberately delegates elsewhere. /field/reports/[id] is a
+  // one-line redirect to the governed /reports/inspection/[id] projection, so
+  // the shipped surface an inspector actually sees lives at that path. The
+  // allowance is per-target and explicit; an undeclared redirect still fails.
+  allowRedirectTo?: string;
+}
+
 export type RouteTarget =
-  | { kind: "static"; path: string; label: string }
-  | {
+  | ({ kind: "static"; path: string; label: string } & RouteTargetCommon)
+  | ({
       kind: "discover";
       seedPath: string;
       hrefPattern: string;
       label: string;
-    };
+      // The field shell renders its tab bar in field/layout.tsx, so every page
+      // carries /field/my-tasks, /field/establishments, /field/notifications and
+      // /field/account anchors. A visit-shaped pattern such as ^/field/[^/]+$
+      // matches those nav links too, and would silently measure the wrong route.
+      // Excluding them keeps discovery honest rather than lucky.
+      excludePattern?: string;
+      // Some routes are reachable but never linked. /field/[visitId]/travel is
+      // only ever entered from inside the visit, so the visit id is discovered
+      // and the documented suffix appended. The route is still proven by
+      // navigation; nothing is assumed to exist.
+      suffix?: string;
+      // Ordered intermediate hops. Some surfaces are only linked from inside
+      // another record (the visit page links its own travel screen), so the
+      // harness walks the real user path instead of guessing an identifier.
+      via?: { hrefPattern: string; excludePattern?: string }[];
+    } & RouteTargetCommon);
 
 export interface ManifestCard {
   cardId: string;
