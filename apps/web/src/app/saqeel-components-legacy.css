@@ -1188,6 +1188,14 @@ button.sq-shell-scope { cursor: pointer; }
 .cd-stage__avatar { inline-size: 48px; aspect-ratio: 1; border-radius: var(--radius-full); background: var(--surface-sunken); border: 1px solid var(--border-subtle); display: grid; place-items: center; font: var(--type-micro); letter-spacing: .04em; }
 .cd-stage__feed { inline-size: 100%; block-size: 100%; object-fit: cover; }
 .cd-stage__pip { position: absolute; inset-block-end: 12px; inset-inline-end: 12px; inline-size: 148px; aspect-ratio: 4 / 3; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--surface-sunken); display: grid; place-items: center; overflow: hidden; text-align: center; padding: 6px; }
+/* Narrow widths: the self-view is absolutely positioned, and at 320px it covered
+   the stage note — the reason the room cannot open was the text being hidden.
+   Below 560px it becomes a normal block under the note, and the frame drops its
+   16/9 lock so nothing is clipped. */
+@media (max-width: 560px) {
+  .cd-stage__frame { aspect-ratio: auto; min-block-size: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-4); }
+  .cd-stage__pip { position: static; inline-size: 100%; max-inline-size: 160px; aspect-ratio: 4 / 3; }
+}
 .cd-stage__controls { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-block-start: 1px solid var(--border-subtle); flex-wrap: wrap; }
 .cd-stage__btn { display: inline-flex; align-items: center; gap: 8px; }
 .cd-stage__btn[aria-pressed="true"] { border-color: var(--action-primary); color: var(--action-primary); }
