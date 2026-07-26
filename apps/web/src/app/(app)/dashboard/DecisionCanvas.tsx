@@ -65,18 +65,20 @@ const KSA_ZOOM = 5;
 export default function DecisionCanvas({
   markers,
   layers,
-  ranking,
+  region,
+  onRegionChange,
   strings: s,
 }: {
   markers: CanvasMarker[];
   layers: CanvasLayer[];
-  ranking: CanvasRankRow[];
+  /** Controlled by RegionalScope so the queue above stays cross-filtered. */
+  region: string | null;
+  onRegionChange: (region: string | null) => void;
   strings: DecisionCanvasStrings;
 }) {
   const [layer, setLayer] = useState<"locations" | "compliance" | "risk" | null>(
     layers.find((candidate) => candidate.available)?.id ?? null,
   );
-  const [region, setRegion] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const shown = useMemo(
@@ -170,39 +172,6 @@ export default function DecisionCanvas({
         </div>
       </section>
 
-      <section className={styles.panel} aria-label={s.rankTitle}>
-        <div className={styles.panelHeader}>
-          <h3 className={styles.panelTitle}>{s.rankTitle}</h3>
-          <span className={styles.idCode}>{s.syncedToMap}</span>
-        </div>
-        <div className={styles.rankList}>
-          <button
-            type="button"
-            className={`${styles.rankRow} ${region === null ? styles.rankActive : ""}`}
-            aria-pressed={region === null}
-            onClick={() => { setRegion(null); setSelectedId(null); }}
-          >
-            <span className={`${styles.exc} ${styles.tone_info}`}><span className={styles.excMark} /></span>
-            <span className={styles.rankBody}><span className={styles.rankName}>{s.allRegions}</span></span>
-          </button>
-          {ranking.map((r) => (
-            <button
-              key={r.key}
-              type="button"
-              className={`${styles.rankRow} ${region === r.name ? styles.rankActive : ""}`}
-              aria-pressed={region === r.name}
-              onClick={() => { setRegion(r.name); setSelectedId(null); }}
-            >
-              <span className={`${styles.exc} ${styles[`tone_${r.tone}`]}`}><span className={styles.excMark} /></span>
-              <span className={styles.rankBody}>
-                <span className={styles.rankName}>{r.name}</span>
-                <span className={styles.rankDetail}>{r.detail}</span>
-              </span>
-              <span className={`${styles.idCode} ${styles[`tone_${r.tone}`]}`}>{r.value}</span>
-            </button>
-          ))}
-        </div>
-      </section>
     </div>
   );
 }

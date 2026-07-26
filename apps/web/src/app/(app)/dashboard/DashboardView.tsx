@@ -29,6 +29,8 @@ import {
   type MethodologyEntry,
 } from "./dashboard-format";
 import MetricStrip, { type MetricStripStrings } from "./MetricStrip";
+import RegionalScope from "./RegionalScope";
+import BasisDrawer from "./BasisDrawer";
 import DecisionCanvas, {
   type CanvasLayer,
   type CanvasMarker,
@@ -344,6 +346,16 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
               "المقام هو الإجابات المؤهلة، وليس عدد المصانع. لا يُقرأ هذا الرقم كنسبة المصانع الملتزمة.",
             )}
           </span>
+          {strip.methodology["STR-KPI-001"] && (
+            <BasisDrawer
+              entry={strip.methodology["STR-KPI-001"]}
+              strings={{
+                action: copy(locale, "Basis and source", "الأساس والمصدر"),
+                close: copy(locale, "Close", "إغلاق"),
+                sourceRecords: copy(locale, "Open source records", "فتح سجلات المصدر"),
+              }}
+            />
+          )}
         </div>
         <div className={styles.assuranceFact}>
           <span className={styles.kpiLabel}>{copy(locale, "Linked violations recorded", "مخالفات مرتبطة مسجّلة")}</span>
@@ -376,6 +388,25 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
 
     <MetricStrip metrics={strip.metrics} methodology={strip.methodology} strings={stripStrings(locale)} />
 
+    {/* Queue above, geographic evidence below, one shared region selection.
+        A point map proves location; it cannot carry a regional position while
+        classification policy is unsupplied. */}
+    <RegionalScope
+      ranking={ranking}
+      markers={markers}
+      layers={layers}
+      canvasStrings={canvasStrings}
+      strings={{
+        queueTitle: copy(locale, "Regions requiring examination", "مناطق تستدعي الفحص"),
+        queueMeta: copy(locale, "worst first · unavailable last", "الأسوأ أولاً · غير المتاح في النهاية"),
+        allRegions: copy(locale, "All regions", "كل المناطق"),
+        noTargetNote: copy(
+          locale,
+          "Order is assurance triage, not a performance ranking. No governed target exists to compare against.",
+          "الترتيب فحصٌ للضمان وليس تقييم أداء. لا يوجد مستهدف معتمد للمقارنة.",
+        ),
+      }}
+    >
     <div className={styles.analyticGrid}>
       <Panel title={copy(locale, "Compliance performance explorer", "مستكشف أداء الامتثال")} meta={copy(locale, "approved inspections only", "التفتيشات المعتمدة فقط")}>
         <nav className={styles.dimensions} aria-label={copy(locale, "Group compliance by", "تجميع الامتثال حسب")}>
@@ -412,10 +443,7 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
       </Panel>
     </div>
 
-    {/* Geographic evidence sits below the assurance read: a point map proves
-        location, it cannot carry a regional position without a classification
-        policy that is not supplied. */}
-    <DecisionCanvas markers={markers} layers={layers} ranking={ranking} strings={canvasStrings} />
+    </RegionalScope>
 
     <Panel title={copy(locale, "Strategic requirement coverage", "تغطية المتطلبات الاستراتيجية")} meta="STR-KPI-001..012">
       <MetricCoverage projection={projection} category="strategic" locale={locale} excluded={representedIds} partialSources={partialSources} />
