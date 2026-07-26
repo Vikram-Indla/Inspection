@@ -158,8 +158,14 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     labelAr: "العمليات",
     items: [
       { id: "planning", labelKey: "nav.planning", labelEn: "Planning", labelAr: "التخطيط", href: "/planning", icon: "calendar", roles: businessRoles, businessTab: "Planning", visibility: "business" },
+      { id: "visits", labelKey: "shell.nav.visits", labelEn: "Visits", labelAr: "الزيارات", href: "/visits", icon: "visits", roles: businessRoles, businessTab: "Visits", visibility: "business" },
+      { id: "tasks", labelKey: "shell.nav.tasks", labelEn: "Tasks", labelAr: "المهام", href: "/tasks", icon: "workflow", roles: businessRoles, businessTab: "Tasks", visibility: "business" },
       { id: "inspection-execution", labelKey: "shell.nav.execution", labelEn: "Execution", labelAr: "التنفيذ", href: "/field", icon: "inspect", roles: businessRoles, businessTab: "Inspection / Execution", visibility: "business", channels: ["web", "field"], parentId: "inspection", parentLabelKey: "shell.nav.inspection", parentLabelEn: "Inspection", parentLabelAr: "التفتيش" },
       { id: "inspection-review", labelKey: "nav.reviews", labelEn: "Review & Approval", labelAr: "المراجعة والاعتماد", href: "/reviews", icon: "review", roles: businessRoles, businessTab: "Inspection / Review & Approval", visibility: "business", parentId: "inspection", parentLabelKey: "shell.nav.inspection", parentLabelEn: "Inspection", parentLabelAr: "التفتيش" },
+      { id: "virtual-visits", labelKey: "shell.nav.virtual", labelEn: "Virtual Inspections", labelAr: "التفتيش الافتراضي", href: "/virtual", icon: "virtual", roles: businessRoles, businessTab: "Virtual", visibility: "business" },
+      { id: "cases", labelKey: "shell.nav.cases", labelEn: "Cases", labelAr: "القضايا", href: "/cases", icon: "enforcement", roles: businessRoles, businessTab: "Cases", visibility: "business" },
+      { id: "committee", labelKey: "shell.nav.committee", labelEn: "Committee & Signatures", labelAr: "اللجنة والتوقيعات", href: "/committee", icon: "review", roles: businessRoles, businessTab: "Committee", visibility: "business" },
+      { id: "external-portal", labelKey: "shell.nav.portal", labelEn: "External Portal", labelAr: "البوابة الخارجية", href: "/portal", icon: "factory", roles: businessRoles, businessTab: "Portal", visibility: "business" },
     ],
   },
   {
