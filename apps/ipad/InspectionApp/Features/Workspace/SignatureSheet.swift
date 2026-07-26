@@ -102,6 +102,8 @@ private struct PKCanvasRepresentable: UIViewRepresentable {
 
 // MARK: - SignatureSheet
 
+private let canvasHeight: CGFloat = 220
+
 /// Full-screen sheet that collects a signer name + PencilKit signature, then
 /// calls `store.submit(ack:)` with a real acknowledgement payload on confirm.
 struct SignatureSheet: View {
@@ -152,7 +154,7 @@ struct SignatureSheet: View {
                 dismiss()
             } label: {
                 Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 24))
+                    .font(SaqeelTypography.title)
                     .foregroundColor(theme.colors.textSecondary)
             }
             .accessibilityLabel("Close")
@@ -216,7 +218,7 @@ struct SignatureSheet: View {
                                 canvasIsEmpty = newDrawing.strokes.isEmpty
                             }
                     }
-                    .frame(height: 220)
+                    .frame(height: canvasHeight)
                 }
             }
             .padding(SaqeelSpacing.lg)
@@ -259,18 +261,16 @@ struct SignatureSheet: View {
 
         isSubmitting = true
 
-        // Rasterize the canvas drawing to PNG
-        let bounds = canvasView.drawing.bounds.isEmpty
-            ? CGRect(x: 0, y: 0, width: canvasView.bounds.width, height: 220)
-            : canvasView.drawing.bounds
-
-        let image = canvasView.drawing.image(from: bounds, scale: UIScreen.main.scale)
-        let pngBase64: String
-        if let pngData = image.pngData() {
-            pngBase64 = pngData.base64EncodedString()
-        } else {
-            pngBase64 = ""
+        // Rasterize the canvas drawing to PNG.
+        // canvasIsEmpty guard above guarantees a non-empty drawing; render within
+        // the view bounds so PencilKit clips the output to the visible area.
+        let image = canvasView.drawing.image(from: canvasView.bounds, scale: UIScreen.main.scale)
+        guard let pngData = image.pngData() else {
+            nameError = "Couldn't capture the signature. Please try again."
+            isSubmitting = false
+            return
         }
+        let pngBase64 = pngData.base64EncodedString()
 
         let signedAt = ISO8601DateFormatter().string(from: Date())
         let ack = SnapshotBuilder.buildAcknowledgement(
