@@ -1,0 +1,74 @@
+.panels {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.panel {
+  min-inline-size: 0;
+  padding: var(--space-6);
+}
+
+.panelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-block-end: var(--space-4);
+}
+
+.panelHeader h3,
+.panelHeader p {
+  margin: 0;
+}
+
+.panelHeader p {
+  margin-block-start: var(--space-1);
+}
+
+.workTable th[scope="row"] {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.workTable bdi {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 48rem) {
+  .panel {
+    padding: var(--space-4);
+  }
+
+  .panelHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .panelHeader a {
+    align-self: flex-start;
+  }
+
+  .workTable,
+  .workTable tbody,
+  .workTable tr,
+  .workTable th,
+  .workTable td {
+    display: block;
+  }
+
+  .workTable thead {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .workTable tr {
+    padding-block: var(--space-3);
+  }
+
+  .workTable td {
+    padding-block: var(--space-2);
+  }
+}
