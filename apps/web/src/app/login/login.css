@@ -799,14 +799,14 @@
    so those get the card only. Token-only.
    ========================================================================== */
 
-/* Field card is the start-side column; a hairline divides it from the atlas. */
-.lg-page--split .fl-root { min-inline-size: 0;
-  border-inline-end: 1px solid color-mix(in srgb, var(--nav-text) 14%, transparent); }
+/* Field card is the start-side column. No hairline between the columns: the
+   seam gradient already dissolves the boundary, and a rule drawn over it read
+   as a split screen rather than one surface. */
+.lg-page--split .fl-root { min-inline-size: 0; }
 
 /* Narrow (phones, iPad portrait): card only, atlas hidden. Base .lg-page--split
    already collapses to one column at ≤960px. */
 @media (max-width: 960px) {
-  .lg-page--split .fl-root { border-inline-end: none; }
   .lg-page--split .lg-story { display: none; }
 }
 
@@ -816,12 +816,10 @@
    laptop keeps the wide split + atlas. */
 @media (hover: none) and (pointer: coarse) {
   .lg-page--split { grid-template-columns: 1fr; }
-  .lg-page--split .fl-root { border-inline-end: none; }
   .lg-page--split .lg-story { display: none; }
 }
 
 /* Belt-and-suspenders for iPad "Request Desktop Website" mode: DeviceScript
    sets data-device="ipad" pre-paint from navigator.maxTouchPoints + platform. */
 :root[data-device="ipad"] .lg-page--split { grid-template-columns: 1fr; }
-:root[data-device="ipad"] .lg-page--split .fl-root { border-inline-end: none; }
 :root[data-device="ipad"] .lg-page--split .lg-story { display: none; }
