@@ -436,7 +436,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
                   <td>{t("enum.draft", "draft")}</td>
                   <td>{d.profiles?.full_name ?? "—"}</td>
                   <td className="sq-td-num sq-numeric">{fmt(d.created_at)}</td>
-                  <td><a className="sq-link" href={continueHref(d)}>{tr("plan.list.continue", "Continue →", "متابعة ←")}</a></td>
+                  <td><a className="sq-link" href={continueHref(d)}>{tr("plan.list.continue", "Continue", "متابعة")}</a></td>
                   <td>
                     {/* M8 / PLN-CON-018 — discard is offered on OWN drafts only
                         (same ownership boundary as resume); the copy stays
@@ -455,10 +455,10 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       )}
 
       {/* FIX WAVE F4 — M02-035 plan register entry point (preserved) */}
-      <p><a className="sq-link" href="/planning/plans">{t("plan.home.registerLink", "Visit plans — status, child visits and progress of every plan (M02-035) →")}</a></p>
+      <p><a className="sq-link" href="/planning/plans">{t("plan.home.registerLink", "Visit plans — status, child visits and progress of every plan (M02-035)")}</a></p>
       {/* M8 — /visits is the accepted management alias surface; the two are
           cross-linked in both directions (canonical §5/§6 reconciliation). */}
-      <p><a className="sq-link" href="/visits">{tr("plan.home.visitsLink", "Visit management — bulk actions and lenses over the same visits (/visits) →", "إدارة الزيارات — إجراءات جماعية وعدسات على نفس الزيارات ←")}</a></p>
+      <p><a className="sq-link" href="/visits">{tr("plan.home.visitsLink", "Visit management — bulk actions and lenses over the same visits (/visits)", "إدارة الزيارات — إجراءات جماعية وعدسات على نفس الزيارات")}</a></p>
     </Shell>
   );
 }

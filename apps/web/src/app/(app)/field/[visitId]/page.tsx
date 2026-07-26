@@ -346,7 +346,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     step2: t("field.start.step2", "2 · Start journey"),
     step3: t("field.start.step3", "3 · Geofence check-in"),
     step4: t("field.start.step4", "4 · Start inspection"),
-    resume: t("field.start.resume", "Resume inspection →"),
+    resume: t("field.start.resume", "Resume inspection"),
     officialLabel: t("field.start.officialLabel", "{name} — official location (FND-007)"),
     plannedLabel: t("field.start.plannedLabel", "{name} — visit location confirmed at planning (M01-046; not official master data)"),
     youLabel: t("field.start.youLabel", "You — ±{acc}m · {state} fence ({d}m)"),

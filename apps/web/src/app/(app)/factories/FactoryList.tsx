@@ -91,7 +91,7 @@ export default function FactoryList({ factories, strings }: { factories: Factory
               <td><span className="badge badge-info">{f.region ?? "—"}</span></td>
               <td>{f.city}</td>
               <td className="sq-td-num"><span className={`sq-lozenge ${f.risk_band === "high" ? "sq-lozenge--critical" : f.risk_band === "medium" ? "sq-lozenge--warning" : "sq-lozenge--success"}`}>{(f.risk_band && strings.bandLabels[f.risk_band]) ?? f.risk_band} · {f.risk_score}</span></td>
-              <td><a className="sq-link" href={f.dossier_href ?? `/factories/${f.id}`}>{strings.dossier} →</a></td>
+              <td><a className="sq-link" href={f.dossier_href ?? `/factories/${f.id}`}>{strings.dossier}</a></td>
             </tr>
           ))}</tbody>
         </table></div>

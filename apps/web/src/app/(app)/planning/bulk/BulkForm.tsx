@@ -245,7 +245,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
           {saveFailed && (
             <>
               <span className="sq-caption sq-lozenge sq-lozenge--critical" role="alert">{strings.draftSaveFailed}</span>
-              <a className="sq-btn sq-btn--secondary" href="/planning/bulk/review">{strings.reviewFallback} →</a>
+              <a className="sq-btn sq-btn--secondary" href="/planning/bulk/review">{strings.reviewFallback}</a>
             </>
           )}
           {selected.size > 0 && (
@@ -254,8 +254,8 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
             </button>
           )}
           {selected.size > 0
-            ? <button type="button" className="sq-btn sq-btn--prominent" disabled={saving} onClick={() => { void onReviewClick(); }}>{strings.reviewContinue} →</button>
-            : <button type="button" className="sq-btn sq-btn--prominent" disabled>{strings.reviewContinue} →</button>}
+            ? <button type="button" className="sq-btn sq-btn--prominent" disabled={saving} onClick={() => { void onReviewClick(); }}>{strings.reviewContinue}</button>
+            : <button type="button" className="sq-btn sq-btn--prominent" disabled>{strings.reviewContinue}</button>}
         </div>
       </div>
     </div>

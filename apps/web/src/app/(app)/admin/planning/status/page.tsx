@@ -80,7 +80,7 @@ export default async function PlanningStatus() {
       <div className="sq-banner"><div>
         <strong>{t("admin.planning.status.banner.title", "These rules are governed by workflow configuration.")}</strong>{" "}
         {t("admin.planning.status.banner.body", "Status transitions are defined by the published workflow configuration and enforced by the database. This screen is read-only; changes go through the governed publish flow.")}{" "}
-        <Link href="/admin/workflows">{t("admin.planning.status.banner.link", "Open workflow configuration →")}</Link>
+        <Link href="/admin/workflows">{t("admin.planning.status.banner.link", "Open workflow configuration")}</Link>
       </div></div>
 
       {isFallback ? (

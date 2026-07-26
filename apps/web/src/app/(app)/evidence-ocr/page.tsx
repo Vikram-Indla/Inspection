@@ -48,7 +48,7 @@ export default async function EvidenceOcrPage() {
     extracted: t("ocr.extracted", "Extracted text (advisory — verify against the source image)"),
     noText: t("ocr.noText", "No text detected in this image."),
     unavailable: t("ocr.unavailable", "OCR provider unavailable — recorded as a request only; no extraction was attempted."),
-    openInspection: t("ocr.openInspection", "Open the inspection item that owns this evidence →"),
+    openInspection: t("ocr.openInspection", "Open the inspection item that owns this evidence"),
     notExtracted: t("ocr.notExtracted", "not extracted"), extractedBadge: t("ocr.extractedBadge", "extracted"),
     failedBadge: t("ocr.failedBadge", "failed"),
     extractHint: t("ocr.extractHint", "Runs Gemini vision on the stored file. The result is stored as an advisory extraction, timestamped, and shown here for a human to read."),

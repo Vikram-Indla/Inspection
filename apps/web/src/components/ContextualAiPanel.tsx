@@ -35,7 +35,7 @@ export default function ContextualAiPanel({ surface, title, description, context
         </div>
       </form>
       {state.error && <p role="alert" className="t-caption" style={{ color: "var(--status-critical)", marginBlockStart: "var(--space-3)" }}>{state.error.includes("unavailable") ? unavailableLabel : state.error}</p>}
-      {state.ok && state.text && <div className="sq-banner sq-banner--immutable" role="status" style={{ marginBlockStart: "var(--space-4)", whiteSpace: "pre-wrap" }}><strong>{advisoryLabel}</strong><div>{state.text}</div><div className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>{evidenceLabel}: {evidenceRefs.join(" · ")}</div>{state.insightId && reviewLabel && <a className="sq-link" href={`/ai/suggestions#ai-suggestion-${state.insightId}`}>{reviewLabel} →</a>}</div>}
+      {state.ok && state.text && <div className="sq-banner sq-banner--immutable" role="status" style={{ marginBlockStart: "var(--space-4)", whiteSpace: "pre-wrap" }}><strong>{advisoryLabel}</strong><div>{state.text}</div><div className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>{evidenceLabel}: {evidenceRefs.join(" · ")}</div>{state.insightId && reviewLabel && <a className="sq-link" href={`/ai/suggestions#ai-suggestion-${state.insightId}`}>{reviewLabel}</a>}</div>}
     </section>
   );
 }

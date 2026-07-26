@@ -23,9 +23,11 @@ h2 { font: var(--type-title); margin: 0; }
 h3 { font: var(--type-heading-lg); margin: 0; }
 h4 { font: var(--type-subheading); margin: 0; }
 p  { margin: 0; }
+/* No underline anywhere on .sq-link (sponsor ruling, 2026-07-26). Hover is
+   carried by colour + surface, matching the canonical shell's link treatment
+   in designs/web/export-saqeel-web/saqeel/components.css (.s5-results a). */
 a.sq-link { color: var(--action-primary); text-decoration: none; border-radius: var(--space-1); }
-a.sq-link:not(.sq-btn) { text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: .08em; }
-a.sq-link:hover { text-decoration: underline; color: var(--action-primary-hover); }
+a.sq-link:hover { text-decoration: none; color: var(--action-primary-hover); }
 a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .sq-inline-target {
   display: inline-flex;

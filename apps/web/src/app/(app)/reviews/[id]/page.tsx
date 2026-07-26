@@ -266,7 +266,7 @@ const panelStrings: WorkspaceDecisionStrings = {
   };
   return (
     <Shell current="/reviews" title={t("review.ws.title", "Review — {factory}").replace("{factory}", f.name)}
-      context={<><span className="sq-version">v{latest?.version_number} · {t("review.ws.latest", "latest")}</span><span className="sq-lozenge sq-lozenge--review sq-lozenge--info">{t(`enum.${ins.status}`, ins.status.replace(/_/g, " "))}</span>{!canDecide && <span className="sq-lozenge sq-lozenge--warning">{t("review.ws.readOnlyRole", "{role} · read-only").replace("{role}", viewerRole ? t(`enum.${viewerRole}`, viewerRole) : "—")}</span>}<a className="sq-btn sq-btn--secondary" href={`/reports/inspection/${ins.id}`}>{t("review.ws.reportLink", "Official report →")}</a></>}>
+      context={<><span className="sq-version">v{latest?.version_number} · {t("review.ws.latest", "latest")}</span><span className="sq-lozenge sq-lozenge--review sq-lozenge--info">{t(`enum.${ins.status}`, ins.status.replace(/_/g, " "))}</span>{!canDecide && <span className="sq-lozenge sq-lozenge--warning">{t("review.ws.readOnlyRole", "{role} · read-only").replace("{role}", viewerRole ? t(`enum.${viewerRole}`, viewerRole) : "—")}</span>}<a className="sq-btn sq-btn--secondary" href={`/reports/inspection/${ins.id}`}>{t("review.ws.reportLink", "Official report")}</a></>}>
       <div className="sq-banner sq-banner--immutable"><div><strong>{t("review.ws.readOnlyTitle", "Read-only submitted version.")}</strong> {t("review.ws.readOnlyBody", "Content edits are impossible — the database rejects them (proven B3). Corrections happen only via Return with exact scope.")}</div></div>
       <FindingTraceChain traces={traceRows} strings={traceStrings} />
       <div className="cd-review-workspace-grid">

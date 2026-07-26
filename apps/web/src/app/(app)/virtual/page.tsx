@@ -67,7 +67,7 @@ export default async function VirtualList() {
                 <td>{v.factories.name} <span className="sq-caption">{v.factories.factory_code}</span></td>
                 <td className="sq-td-num sq-numeric">{formatDateTime(s.appointment_at, dLang)}</td>
                 <td><span className={`sq-lozenge sq-lozenge--virtual ${s.state === "verified" ? "sq-lozenge--success" : "sq-lozenge--info"}`}>{t(`enum.${s.state}`, s.state.replace(/_/g, " "))}</span></td>
-                <td><a className="sq-link" href={`/virtual/${s.id}`}>{t("virtual.list.openRoom", "open room →")}</a></td>
+                <td><a className="sq-link" href={`/virtual/${s.id}`}>{t("virtual.list.openRoom", "open room")}</a></td>
               </tr>
           ))}
         </tbody>

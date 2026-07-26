@@ -226,9 +226,10 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
             The empty-state "Create a plan" link below only renders with zero
             rows, so the populated board needs its own always-visible route. */}
         <Link className="sq-btn sq-btn--subtle" href="/planning" prefetch={false}>
-          {planningOwnedPreview
-            ? t("visit.list.planningLink", "Planning — drafts and plans →").replace(/[←→]\s*$/u, "").trim()
-            : t("visit.list.planningLink", "Planning — drafts and plans →")}
+          {/* Trailing direction arrows are removed from every CTA label
+              (sponsor ruling, 2026-07-26). The strip stays because t() may
+              still resolve a locale override that carries one. */}
+          {t("visit.list.planningLink", "Planning — drafts and plans").replace(/[←→]\s*$/u, "").trim()}
         </Link>
         <span className={targetPreview ? "sq-numeric" : "sq-caption sq-numeric"}>{t("visit.list.scope", "RLS-scoped — showing {shown} of {total}").replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}</span>
       </div>

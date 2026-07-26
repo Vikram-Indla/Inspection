@@ -297,7 +297,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         <div id="config" className="sq-surface" style={{ padding: "var(--space-6)" }}>
           <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.configuration", "Configuration")}</h4>
           <p>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)} · {t("visit.detail.window", "window")} <span className="sq-numeric">{new Date(v.window_start).toISOString().slice(0, 16).replace("T", " ")} → {new Date(v.window_end).toISOString().slice(5, 16).replace("T", " ")}</span></p>
-          <p style={{ marginBlockStart: 8 }}>{t("visit.detail.assignment", "Assignment:")} <strong>{asg?.profiles?.full_name ?? "—"}</strong> ({asg ? t(`enum.${asg.method}`, asg.method) : "—"}) · <a className="sq-link" href={`/factories/${f.id}`}>{t("visit.detail.factory360", "Factory 360 →")}</a></p>
+          <p style={{ marginBlockStart: 8 }}>{t("visit.detail.assignment", "Assignment:")} <strong>{asg?.profiles?.full_name ?? "—"}</strong> ({asg ? t(`enum.${asg.method}`, asg.method) : "—"}) · <a className="sq-link" href={`/factories/${f.id}`}>{t("visit.detail.factory360", "Factory 360")}</a></p>
 
           {(v.immediate_creator_role || v.source_channel) && (
             <p className="sq-caption" style={{ marginBlockStart: 8 }}>
@@ -322,7 +322,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
                 <p key={i} className="sq-caption">{t("visit.detail.reviewPrefix", "review:")} {r.decision ? t(`enum.${r.decision}`, r.decision) : t(`enum.${r.status}`, r.status.replace(/_/g, " "))}{r.returned_sections ? ` · ${t("visit.detail.returnedSections", "returned")} ${r.returned_sections.join(",")}` : ""}</p>
               ))}
               {/* M04-215 — official report (browser print-to-PDF is the production PDF path) */}
-              <p><a className="sq-link" href={`/reports/inspection/${insp.id}`}>{t("visit.detail.reportLink", "Official inspection report →")}</a></p>
+              <p><a className="sq-link" href={`/reports/inspection/${insp.id}`}>{t("visit.detail.reportLink", "Official inspection report")}</a></p>
             </div>
           ) : <p className="sq-caption">{t("visit.detail.notStarted", "Not started.")}</p>}
         </div>
@@ -341,7 +341,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
             {" "}· <span className={`sq-lozenge sq-lozenge--plan ${PLAN_TONE[plan.status] ?? ""}`}>{t(`enum.${plan.status}`, plan.status)}</span>
             {/* M8 — bulk context: this visit is one of N under the plan */}
             {" "}· {t("visit.detail.siblings", "{n} visits under this plan").replace("{n}", String(siblingCount))}
-            {" "}· <a className="sq-link" href={`/planning/plans/${plan.id}`}>{t("visit.detail.openPlan", "Open plan →")}</a>
+            {" "}· <a className="sq-link" href={`/planning/plans/${plan.id}`}>{t("visit.detail.openPlan", "Open plan")}</a>
           </p>
         ) : (
           <p className="sq-caption">{t("visit.detail.noPlan", "Immediate visit — created without a plan (M01-050).")}</p>
