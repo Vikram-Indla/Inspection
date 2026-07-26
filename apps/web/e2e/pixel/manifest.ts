@@ -47,8 +47,16 @@ const ROUTES_BY_JOIN_KEY = new Map<string, RouteTarget[]>([
     [{ kind: "static", path: "/field/my-tasks", label: "my tasks" }],
   ],
   [
-    "web/src/app/(app)/field/[visitId]/travel/* · field/map/page.tsx · FieldFullMap.tsx",
+    // The join key is the spine's route field verbatim, so it moves with the
+    // card. /field/visits shipped without either half of this pair being
+    // updated: the card still described only travel and map, and the manifest
+    // had no target for the new screen. A card with no target for a route is
+    // not reported as a failure — it simply measures nothing, which reads as
+    // "covered" on the board. Both halves are corrected together here.
+    "web/src/app/(app)/field/visits (+ calendar) · field/[visitId]/travel/* · field/map/page.tsx · FieldFullMap.tsx",
     [
+      { kind: "static", path: "/field/visits", label: "assigned visits list" },
+      { kind: "static", path: "/field/visits/calendar", label: "assigned visits calendar" },
       { kind: "static", path: "/field/map", label: "field map" },
       {
         // /field/my-tasks links the visit, and the visit page links its own
