@@ -245,14 +245,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
   const unverifiedManualLabel = locale === "ar"
     ? "إدخال يدوي غير موثّق — بانتظار المطابقة"
     : t("visit.detail.unverifiedManual", "Unverified manual entry — pending reconciliation");
-  // F360IPAD-ENTRY-001 — assigned visit opens the iPad Factory 360 with the
-  // visit's license selected, carrying a return context to this startup.
   const facIds = v.factories as unknown as { cr_number: string | null; license_number: string | null };
-  const factory360Href = facIds.license_number
-    ? `/field/factory-360?license_no=${encodeURIComponent(facIds.license_number)}&return=${encodeURIComponent(`/field/${v.id}`)}`
-    : facIds.cr_number
-      ? `/field/factory-360?cr_no=${encodeURIComponent(facIds.cr_number)}&return=${encodeURIComponent(`/field/${v.id}`)}`
-      : null;
   const dispatchLat = v.planner_lat ?? factory.official_lat;
   const dispatchLng = v.planner_lng ?? factory.official_lng;
   const dispatchSource = v.visit_location_source === "official" ? "official" : "planned";
@@ -580,7 +573,6 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
       READINESS_WINDOW_INVALID: t("field.prep.err.window", "The visit window is invalid."),
     },
   };
-  const modeWord = (m: string) => m === "virtual" ? t("enum.virtual", "virtual") : t("enum.physical", "physical");
   // CODEX 03 — Pre-Inspection Pack. Mounted in the preparation surface behind
   // its own "Open pack" trigger. Data is sourced strictly from what this route
   // already loads: visit identity, factory master (CR / licence / official
@@ -675,59 +667,27 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
         registeredMessage={t("field.start.createdToast", "Visit created and dispatched.")}
         unregisteredMessage={t("field.start.createdToastUnregistered", "Unregistered establishment recorded and visit dispatched.")} />
       <div className={styles.page}>
-        <nav className={styles.lifecycle} aria-label={tr("field.start.lifecycle", "Visit lifecycle", "مراحل الزيارة")}>
-          <a className={styles.lifecycleStep} href="#preparation" aria-current={showPreparation ? "step" : undefined}>
-            <span className={styles.lifecycleIndex}>1</span>
-            <span>{tr("field.start.preparationStage", "Preparation", "التحضير")}</span>
-          </a>
-          <a className={styles.lifecycleStep} href="#startup" aria-current={!showPreparation ? "step" : undefined}>
-            <span className={styles.lifecycleIndex}>2</span>
-            <span>{tr("field.start.journeyStage", "Journey & arrival", "الرحلة والوصول")}</span>
-          </a>
-        </nav>
-        <div className={styles.quickActions}>
-          {factory360Href && (
-            <a className={styles.quickAction} href={factory360Href}>
-              <span className={styles.quickActionIcon} aria-hidden>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M3 9l9-6 9 6v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><path d="M9 22V12h6v10" /></svg>
-              </span>
-              <span className={styles.quickActionLabel}>{t("field.start.openFactory360", "Open Factory 360")}</span>
-              <svg className={styles.quickActionChevron} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" data-directional><path d="m9 18 6-6-6-6" /></svg>
-            </a>
-          )}
-          <Link href={`/field/${v.id}/travel`} prefetch={false} className={styles.quickAction}>
-            <span className={styles.quickActionIcon} aria-hidden>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M12 21s-7-5.686-7-11a7 7 0 0 1 14 0c0 5.314-7 11-7 11z" /><circle cx="12" cy="10" r="2.5" /></svg>
-            </span>
-            <span className={styles.quickActionLabel}>{tr("field.start.openTravel", "Journey to site", "الرحلة إلى الموقع")}</span>
-            <svg className={styles.quickActionChevron} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" data-directional><path d="m9 18 6-6-6-6" /></svg>
-          </Link>
-        </div>
-        {/* M03-011 — execution-mode eligibility from engine rules, with the why */}
-        <div className={`panel ${styles.preparationCard}`}>
-          <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("field.start.eligibilityHeading", "Execution mode eligibility (M03-011)")}</h4>
-          <div className="stack" style={{ gap: 8 }}>
-            <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-              <span className={`badge ${physicalEligible ? "badge-compliant" : "badge-critical"}`}>
-                {physicalEligible ? t("field.start.eligible", "eligible") : t("field.start.notEligible", "not eligible")}
-              </span>
-              <span>{dispatchSource === "official"
-                ? t("field.start.physicalRule", "Physical — using GIS-verified official coordinates for geofence arrival (M04-004 · ENG-06)")
-                : t("field.start.physicalImmediateRule", "Physical Immediate Visit — using the location confirmed with the visit (M01-046); factory master coordinates remain unchanged (FND-007)")}</span>
-              {v.execution_mode !== "virtual" && <span className="badge badge-info">{t("field.start.plannedMode", "planned mode")}</span>}
-            </div>
-            <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-              <span className={`badge ${virtualEligible ? "badge-compliant" : "badge-critical"}`}>
-                {virtualEligible ? t("field.start.eligible", "eligible") : t("field.start.notEligible", "not eligible")}
-              </span>
-              <span>{t("field.start.virtualRule", "Virtual — requires OTP identity-verification engine configured (ENG · REF-011)")}</span>
-              {v.execution_mode === "virtual" && <span className="badge badge-info">{t("field.start.plannedMode", "planned mode")}</span>}
-            </div>
-            <p className="t-caption">
-              {t("field.start.eligibilityCaption", "This visit is planned as {mode}. Eligibility is evaluated from engine configuration and factory master data — not selectable here.").replace("{mode}", modeWord(v.execution_mode))}
-            </p>
-          </div>
-        </div>
+        {!showPreparation && (
+          <nav className={styles.lifecycle} aria-label={tr("field.start.executionStages", "Execution stages", "مراحل التنفيذ")}>
+            {[
+              tr("field.start.journeyStage", "Journey", "الرحلة"),
+              tr("field.start.establishmentStage", "Establishment", "ملف المنشأة"),
+              tr("field.start.itemsStage", "Items", "البنود"),
+              tr("field.start.resultsStage", "Results", "المخرجات"),
+              tr("field.start.recordsStage", "Records", "المحاضر"),
+              tr("field.start.completionStage", "Completion", "الإنهاء"),
+            ].map((label, index) => (
+              <a key={label} className={styles.lifecycleStep}
+                href={index === 0 ? "#startup" : normalizedInspection ? `/field/inspection/${normalizedInspection.id}` : "#startup"}
+                aria-current={index === 0 ? "step" : undefined}
+                aria-disabled={index > 0 && !normalizedInspection}>
+                <span className={styles.lifecycleIndex}>{index + 1}</span>
+                <span>{label}</span>
+                <span className={styles.lifecycleProgress} aria-hidden><i /></span>
+              </a>
+            ))}
+          </nav>
+        )}
         {/* Phase 3B — Pre-Execution panel above the startup steps. While the
             readiness contract is incomplete, package download and journey
             start stay locked inside Startup (preparationGated) with the
