@@ -17,8 +17,8 @@
 | Lane | Board claim | Evidenced verdict |
 | --- | ---: | --- |
 | Design | 60 | The section and operation audits are complete. DEC-037 resolves the discovered authority conflict: the 24-card Control Panel design governs `/admin`; `/admin/operations` remains the System Operations control plane. Pixel parity is not claimed by this audit, so the design percentage is not raised. |
-| Code | 95 | The 24-card gateway is implemented above the existing Configuration Evidence Spine. All 23 admin destinations exercised by the shared shell return under the seeded Admin persona. The false `/admin` act-scope summary, shellless `/admin/execution`, and shellless `/admin/dashboard-config` route were repaired. |
-| Wiring | 85 | Every gateway card links to its governed runtime destination and representative cross-card routes were exercised. The gateway reads real RLS-scoped configuration facts. Registry mutation coverage exists for the governed mutable families below; oversight surfaces remain read-only by contract. Full `CR-449..CR-478` certification is not inferred from route coverage alone. |
+| Code | 95 | The 24-card gateway is mounted above the governed approval and immutable-change work panels. All 23 admin destinations exercised by the shared shell return under the seeded Admin persona. A later merge had left the approved gateway component dead and `/admin` without the directory; the 2026-07-27 certification repair restores the route contract without removing the newer work panels. |
+| Wiring | 85 | Every gateway card links to its governed runtime destination and representative cross-card routes were exercised. The work panels read real RLS-scoped request and append-only audit facts. Registry mutation coverage exists for the governed mutable families below; oversight surfaces remain read-only by contract. Full `CR-449..CR-478` certification is not inferred from route coverage alone. |
 
 ## Control Panel card and operation audit
 
@@ -56,8 +56,11 @@ mutations.
 
 ## Runtime evidence
 
-- `npm run typecheck` — PASS after the current changes.
+- `./node_modules/.bin/tsc --noEmit` — PASS after the current changes.
+- `./node_modules/.bin/next build` — PASS; optimized production build
+  compiled, type-checked, and generated all static pages.
 - `admin-core-orchestrator.spec.ts`:
+  - PASS `9/9` in Chromium against the live local application;
   - real seeded Admin login;
   - all 23 shared-shell admin destinations return below HTTP 400;
   - all destinations render inside the authenticated shell;
@@ -65,8 +68,7 @@ mutations.
   - the Control Panel renders exactly 24 governed cards;
   - representative cards navigate to AI Insights, Dashboard KPIs,
     Configuration Requests, and Violation Cases;
-  - `/admin` reports the enabled families instead of the false
-    `You can act in none`;
+  - `/admin` renders only destinations allowed by the verified role set;
   - anonymous `/admin` access redirects to login;
   - `/admin` and `/admin/operations` pass EN/LTR and AR/RTL at
     `1440×900`, `1024×768`, `412×915`, `390×844`, and `320×800`;
@@ -74,19 +76,17 @@ mutations.
 
 ## Corrections made
 
-1. `/admin` now resolves the current `administration` navigation group and
-   lists only enabled destinations.
-2. `/admin/execution` now mounts inside the authenticated shared shell.
-3. `/admin/dashboard-config` now mounts inside the authenticated shared shell.
-4. The Package designer preview child has a stable key; the route sweep no
-   longer emits the React missing-key warning.
-5. DEC-037 assigns the gateway design to `/admin` and preserves
+1. DEC-037 assigns the gateway design to `/admin` and preserves
    `/admin/operations` as System Operations.
-6. `/admin` now renders the bilingual, role-aware 24-card Control Panel
-   gateway while retaining the evidence spine below it.
-7. The focused test uses accessible current login controls instead of retired
-   `#email` / `#pw` selectors and does not depend on a pre-generated inspector
-   storage state.
+2. `/admin` once again renders the bilingual, server-filtered 24-card Control
+   Panel directory while retaining the newer “Waiting on you” and “Recent
+   configuration changes” panels below it.
+3. The route-matrix assertion now selects a visible page heading. This avoids a
+   false failure on client-hydrated routes that briefly retain a hidden loading
+   heading, while still failing any route with no visible `h1` or `h2`.
+4. The route sweep has an explicit 180-second budget for 23 live RLS-backed
+   destinations; the default 60-second per-test budget was shorter than the
+   measured 48.5-second sweep plus cold compilation variance.
 
 ## Certification boundary
 
