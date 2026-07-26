@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 
 // TASK-WEB-CHANNEL-ACCESS-GATE-001 / M6-CD-023 reconciliation.
 // The original middleware.ts sat at the package root, but this app uses src/ —
@@ -14,10 +15,34 @@ import { NextResponse, type NextRequest } from "next/server";
 // routes reachable), and the login locale preference is handled by the login
 // flow itself — re-introducing a catch-all auth redirect here would change
 // behaviour for public routes that currently work.
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-pathname", request.nextUrl.pathname);
-  return NextResponse.next({ request: { headers: requestHeaders } });
+  let response = NextResponse.next({ request: { headers: requestHeaders } });
+
+  // Keep the browser and Server Components on the same Supabase session.
+  // Without this refresh boundary, a client sign-in can render the first
+  // destination but the next router.refresh() (used by locale switching)
+  // reaches AppShell without a usable auth cookie and falls back to /login.
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (url && anonKey) {
+    const supabase = createServerClient(url, anonKey, {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          response = NextResponse.next({ request: { headers: requestHeaders } });
+          cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
+        },
+      },
+    });
+    await supabase.auth.getClaims();
+  }
+
+  return response;
 }
 
 export const config = { matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"] };

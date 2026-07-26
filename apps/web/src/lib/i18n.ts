@@ -4,7 +4,6 @@
 // the app never breaks while translation review is in flight.
 import { cookies, headers } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
-import { cache as requestCache } from "react";
 
 export type Locale = "en" | "ar";
 export type Dict = Record<string, string>;
@@ -165,8 +164,8 @@ export function tr(dict: Dict, key: string, en: string): string {
 }
 
 /** Convenience for server components: locale + dict + bound t() in one call. */
-export const useT = requestCache(async () => {
+export async function useT() {
   const locale = await getLocale();
   const dict = await getDict(locale);
   return { locale, dict, t: (key: string, en: string) => tr(dict, key, en), dir: locale === "ar" ? "rtl" : "ltr" as "rtl" | "ltr" };
-});
+}
