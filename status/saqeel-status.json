@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r34",
-  "updated": "2026-07-26T11:12:44+03:00",
+  "revision": "SB-r35",
+  "updated": "2026-07-26T11:25:36+03:00",
   "updatedBy": "claude-code",
   "branch": "saqeel/exec",
   "committed": false,
@@ -628,8 +628,8 @@
       "channel": "web",
       "group": "exec",
       "name": "Executive Overview",
-      "design": 88,
-      "code": 88,
+      "design": 93,
+      "code": 96,
       "wiring": 95,
       "designPage": "SAQEEL Executive Overview.html",
       "route": "web/src/app/(app)/dashboard (persona view) · lib/role-home.ts",
@@ -759,6 +759,15 @@
             "design": 88
           },
           "evidence": "Section-order parity achieved and measured, not asserted. Captured the .dc.html at 1440/1024/412 from a local static server and the shipped route at the same widths, then compared section order programmatically. BEFORE: design ran assurance, queue, exceptions, geography, sector, governance while the route ran assurance, queue, sector, exceptions, boundaries, map(7th), coverage, summary — geography sat 3 positions late and sector 2 early. Moved the Compliance performance explorer and Governed boundaries out of the pre-map group. AFTER, the route reads: National approved position, Regions requiring examination, Decision mix + Violation evidence, National factory map, Compliance performance explorer, Governed boundaries + coverage + summary — a 1:1 match to the six .dc.html sections. Gate re-run 12/12; design captures stored beside the route captures in INSPECTION_DOCS_ROOT/.../screens/exec. NOT 100: this is section-order and content parity, not a pixel diff — no per-element geometry comparison has been run, and the seven declared hard states are still unverified as a set."
+        },
+        {
+          "at": "2026-07-26T11:25:36+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "design": 93,
+            "code": 96
+          },
+          "evidence": "SEVEN HARD STATES — verified as a set, each deliberately provoked, 12/12 passing (apps/web/e2e/exec-hard-states.spec.ts). unauthorized: no session, redirects to /login. loading: busy affordance attached. empty: scope 1990-01-01..02 renders governed absence, not a zero dressed as a value. error: every **/rest/v1/** request aborted, failure is stated rather than shown as empty success. degraded: violations alone aborted, that section degrades while the assurance heading survives. provider-unavailable: 'Measures awaiting governance' names the missing decision. stale-conflict: inverted scope (from 2027 to 2026) fabricates nothing. Captures at state-*.png. GEOMETRY — measured per section at 1440 against the correct scroll container (.ex-main on the design, document on the route; a first pass wrongly read documentElement and reported sections at 143% and 164%). Section tops: assurance 8.6 vs 8.9, queue 27.1 vs 25.8, exceptions 39.2 vs 35.4, geography 48.4 vs 43.1, sector 69.7 vs 63.2, governance 79.8 vs 69.4. Drift grows from 0.3 to 10.4 points; geography height matches at 20.1 vs 19.5. NOT 100 on either lane: the route splits Evidence-and-governance into three panels (28.6% of height) where the design consolidates one (16.3%), which is the whole residual drift, and this is proportional geometry rather than a rendered-pixel comparison in a fixed font environment."
         }
       ]
     },
