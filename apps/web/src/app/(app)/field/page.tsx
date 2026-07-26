@@ -81,9 +81,9 @@ export default async function Field() {
   const nowMs = Date.now();
   const arLocale = locale === "ar";
   const dt = (value: string | null | undefined) =>
-    value ? new Intl.DateTimeFormat(arLocale ? "ar-SA" : "en-SA", { dateStyle: "medium" }).format(new Date(value)) : "—";
+    value ? new Intl.DateTimeFormat(arLocale ? "ar-SA-u-ca-gregory" : "en-SA", { dateStyle: "medium" }).format(new Date(value)) : "—";
   const tm = (value: string | null | undefined) =>
-    value ? new Intl.DateTimeFormat(arLocale ? "ar-SA" : "en-US", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Riyadh" }).format(new Date(value)) : "—";
+    value ? new Intl.DateTimeFormat(arLocale ? "ar-SA-u-ca-gregory" : "en-US", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Riyadh" }).format(new Date(value)) : "—";
   const label = (value: string | null | undefined) => (value ? t(`enum.${value}`, value.replaceAll("_", " ")) : "—");
 
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
@@ -126,10 +126,10 @@ export default async function Field() {
   const firstName = fullName ? fullName.split(/\s+/)[0] : tr("field.home.inspector", "Inspector", "مفتش");
   const greeting = `${greetWord}${arLocale ? "، " : ", "}${firstName}`;
   const avatarLetter = (firstName[0] ?? "I").toUpperCase();
-  const dateStr = new Intl.DateTimeFormat(arLocale ? "ar-SA" : "en-US", {
+  const dateStr = new Intl.DateTimeFormat(arLocale ? "ar-SA-u-ca-gregory" : "en-US", {
     weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Riyadh",
   }).format(nowMs);
-  const dateShort = new Intl.DateTimeFormat(arLocale ? "ar-SA" : "en-US", { day: "numeric", month: "short", timeZone: "Asia/Riyadh" }).format(nowMs);
+  const dateShort = new Intl.DateTimeFormat(arLocale ? "ar-SA-u-ca-gregory" : "en-US", { day: "numeric", month: "short", timeZone: "Asia/Riyadh" }).format(nowMs);
   const region = profileRead.data?.region?.trim();
   const dateLine = region ? `${dateStr} · ${region}` : dateStr;
   const todayKey = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Riyadh" }).format(nowMs); // YYYY-MM-DD Riyadh

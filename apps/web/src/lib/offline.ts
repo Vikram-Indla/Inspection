@@ -20,6 +20,85 @@ const LEGACY_RESOLUTION_KEY = "mim-field-v1:legacy-resolution";
 const STORE_NAMES = ["drafts", "packages", "outbox", "conflicts"] as const;
 type StoreName = typeof STORE_NAMES[number];
 
+/**
+ * D7 diagnostic for the immutable readiness snapshot checksum.
+ *
+ * Server authority is:
+ *   encode(digest(v_resolved::text, 'sha256'), 'hex')
+ *
+ * `v_resolved` is PostgreSQL jsonb. PostgREST parses that JSON before this
+ * client sees it, so JSON number lexemes (for example `1.0` versus `1`) are
+ * irretrievably lost. Until the server also supplies the exact
+ * `v_resolved::text` bytes, numeric definitions cannot be safely enforced.
+ * Non-numeric definitions can still be recomputed byte-exactly for agreement
+ * evidence; the result is deliberately diagnostic and never caches data.
+ */
+export type AuthorityPackageChecksumResult =
+  | { state: "match"; computedChecksum: string; enforcementSafe: false }
+  | { state: "mismatch"; computedChecksum: string; enforcementSafe: false }
+  | { state: "unverifiable"; reason: "missing_checksum" | "numeric_lexeme_lost" | "unsupported_value"; enforcementSafe: false };
+
+const utf8Encoder = new TextEncoder();
+
+function compareJsonbKeys(a: string, b: string): number {
+  const left = utf8Encoder.encode(a);
+  const right = utf8Encoder.encode(b);
+  if (left.length !== right.length) return left.length - right.length;
+  for (let index = 0; index < left.length; index += 1) {
+    if (left[index] !== right[index]) return left[index] - right[index];
+  }
+  return 0;
+}
+
+function postgresJsonbText(value: unknown): { text?: string; reason?: "numeric_lexeme_lost" | "unsupported_value" } {
+  if (value === null) return { text: "null" };
+  if (typeof value === "boolean" || typeof value === "string") return { text: JSON.stringify(value) };
+  // JSON.parse has already discarded PostgreSQL jsonb's original numeric
+  // spelling/scale. Guessing here would reject valid field packages.
+  if (typeof value === "number") return { reason: "numeric_lexeme_lost" };
+  if (Array.isArray(value)) {
+    const parts: string[] = [];
+    for (const item of value) {
+      const encoded = postgresJsonbText(item);
+      if (encoded.reason) return encoded;
+      parts.push(encoded.text as string);
+    }
+    return { text: `[${parts.join(", ")}]` };
+  }
+  if (typeof value === "object") {
+    const parts: string[] = [];
+    for (const [key, item] of Object.entries(value as Record<string, unknown>).sort(([a], [b]) => compareJsonbKeys(a, b))) {
+      if (item === undefined) return { reason: "unsupported_value" };
+      const encoded = postgresJsonbText(item);
+      if (encoded.reason) return encoded;
+      parts.push(`${JSON.stringify(key)}: ${encoded.text}`);
+    }
+    return { text: `{${parts.join(", ")}}` };
+  }
+  return { reason: "unsupported_value" };
+}
+
+async function sha256Utf8(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", utf8Encoder.encode(value));
+  return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("");
+}
+
+export async function recomputeAuthorityPackageChecksum(
+  definition: unknown,
+  authorityChecksum: string | null | undefined,
+): Promise<AuthorityPackageChecksumResult> {
+  const expected = authorityChecksum?.trim().toLowerCase();
+  if (!expected) return { state: "unverifiable", reason: "missing_checksum", enforcementSafe: false };
+  const canonical = postgresJsonbText(definition);
+  if (canonical.reason) return { state: "unverifiable", reason: canonical.reason, enforcementSafe: false };
+  const computedChecksum = await sha256Utf8(canonical.text as string);
+  return {
+    state: computedChecksum === expected ? "match" : "mismatch",
+    computedChecksum,
+    enforcementSafe: false,
+  };
+}
+
 export function offlineDatabaseName(userId: string): string {
   return packageCacheNamespace(userId);
 }
