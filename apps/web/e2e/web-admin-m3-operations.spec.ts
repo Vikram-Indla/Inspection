@@ -84,6 +84,8 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 composition contract", ()
     expect(pageSource).toContain("buildShellNavigation(routeRoleKeys)");
     expect(pageSource).toContain('.find(item => item.href === "/operations")');
     expect(pageSource).toContain("operationsDestination?.enabled === true");
+    expect(pageSource).toContain("BUSINESS_ROLE_KEYS.includes(role)");
+    expect(pageSource).not.toContain("FIELD_CHANNEL_ROLE_KEYS");
     expect(pageSource).not.toContain("operationsRoleKeys");
     expect(pageSource).toContain('"Operations access required"');
     expect(pageSource.indexOf("if (!mayViewOperations)")).toBeLessThan(pageSource.indexOf("await Promise.all(["));
@@ -102,23 +104,27 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 composition contract", ()
   test("scopes every widget — visits, factories, override and cancellation queues — to the caller's authorized geography [positive: unassigned region keeps existing RLS grant]", () => {
     expect(pageSource).toContain('.from("profiles")');
     expect(pageSource).toContain('.select("region")');
-    expect(pageSource).toContain("resolveRegionId(profileRow?.region ?? null)");
-    expect(pageSource).toContain("authorizedRegionId === null || resolveRegionId(r) === authorizedRegionId");
-    expect(pageSource).toContain("inAuthorizedGeography(visit.factories?.region ?? null)");
-    expect(pageSource).toContain("inAuthorizedGeography(factory.region)");
+    expect(pageSource).toContain("resolveRegionId(authorizedScope || null)");
+    expect(pageSource).toContain("if (!authorizedScope) return true");
+    expect(pageSource).toContain("inAuthorizedGeography(visit.factories?.region ?? null, visit.factories?.city ?? null)");
+    expect(pageSource).toContain("inAuthorizedGeography(factory.region, factory.city)");
     expect(pageSource.indexOf('.from("profiles")')).toBeGreaterThan(pageSource.indexOf("if (!mayViewOperations)"));
     expect(pageSource).not.toMatch(/\.(insert|update|upsert|delete)\(/);
   });
 
   test("[negative: out-of-region] visits, override and cancellation rows outside the authorized region are excluded and disclosed, never silently dropped", () => {
     expect(pageSource).toContain("outOfScopeVisitCount");
-    expect(pageSource).toContain("inAuthorizedGeography(row.visits?.factories?.region ?? null)");
+    expect(pageSource).toMatch(
+      /inAuthorizedGeography\(\s*row\.visits\?\.factories\?\.region \?\? null,\s*row\.visits\?\.factories\?\.city \?\? null,\s*\)/,
+    );
     expect(pageSource).toContain("outOfScopeOverrideCount");
     expect(pageSource).toContain("outOfScopeCancellationCount");
     expect(pageSource).toContain("outOfScopeRecordCount = outOfScopeVisitCount + outOfScopeOverrideCount + outOfScopeCancellationCount");
     expect(pageSource).toContain("outOfScopeRecordCount > 0");
-    expect(pageSource).toContain("visits(factories(name, region), assignments(profiles(full_name)))");
-    expect(pageSource).toContain("visits(factories(name, region)");
+    expect(pageSource).toContain(
+      "visits(factories(name, region, city, factory_code), assignments(profiles(full_name)))",
+    );
+    expect(pageSource).toContain("visits(factories(name, region, city");
   });
 
   test("[positive: partial-source retry] a failed source degrades only its own banner and offers a real same-route retry, never a dead affordance", () => {
@@ -151,6 +157,8 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
     expect(livePageSource).toContain("getVerifiedUser(sb)");
     expect(livePageSource).toContain("buildShellNavigation(routeRoleKeys)");
     expect(livePageSource).toContain('.find(item => item.href === "/operations")');
+    expect(livePageSource).toContain("BUSINESS_ROLE_KEYS.includes(role)");
+    expect(livePageSource).not.toContain("FIELD_CHANNEL_ROLE_KEYS");
     expect(livePageSource.indexOf("if (!mayViewOperations)")).toBeLessThan(livePageSource.indexOf("await Promise.all(["));
     expect(livePageSource).not.toMatch(/\.(insert|update|upsert|delete)\(/);
   });
@@ -204,8 +212,9 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
   test("scopes reads to the caller's authorized geography and discloses out-of-scope exclusions separately", () => {
     expect(livePageSource).toContain('.from("profiles")');
     expect(livePageSource).toContain('.select("region")');
-    expect(livePageSource).toContain("resolveRegionId(profileRow?.region ?? null)");
-    expect(livePageSource).toContain("inAuthorizedGeography(visit.factories?.region ?? null)");
+    expect(livePageSource).toContain("resolveRegionId(authorizedScope || null)");
+    expect(livePageSource).toContain("if (!authorizedScope) return true");
+    expect(livePageSource).toContain("inAuthorizedGeography(visit.factories?.region ?? null, visit.factories?.city ?? null)");
     expect(livePageSource).toContain("outOfScopeRecordCount");
     expect(livePageSource.indexOf('.from("profiles")')).toBeGreaterThan(livePageSource.indexOf("if (!mayViewOperations)"));
     expect(liveShellSource).toContain("outOfScopeRecordCount");
@@ -252,6 +261,17 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await page.goto("/operations");
     await expect(page.getByRole("heading", { name: "Operations Center", exact: true })).toBeVisible();
     await expect(page.getByTestId("operations-kpi-grid")).toBeVisible();
+    await context.close();
+  });
+
+  test("Inspector retains read access after field-shell convergence", async ({ browser }) => {
+    const context = await browser.newContext({ storageState: storageStatePath("inspector") });
+    const page = await context.newPage();
+    for (const route of ["/operations", "/operations/live"]) {
+      await page.goto(route);
+      await expect(page.getByRole("heading", { name: "Operations access required", exact: true })).toHaveCount(0);
+      await expect(page.getByRole("heading", { name: /Operations Center|Live Operations/ }).first()).toBeVisible();
+    }
     await context.close();
   });
 
@@ -307,7 +327,7 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
 
   test("Operations Live exposes the bounded disclaimer, freshness and accessible list", async ({ page }) => {
     await page.goto("/operations/live");
-    await expect(page.getByText("Recorded positions — not live GPS", { exact: true })).toHaveCount(2);
+    await expect(page.getByText(/(?:Recorded positions — not live GPS|Last recorded position — not guaranteed live)/)).toHaveCount(2);
     await expect(page.getByText("Staleness cadence not yet configured — showing last-observed time only.", { exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Active inspectors", exact: true })).toBeVisible();
     await expect(page.getByText("Snapshot generated:", { exact: false })).toBeVisible();
@@ -341,16 +361,47 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
   test("planner Operations Live access matches the canonical navigation contract", async ({ browser }) => {
     const context = await browser.newContext({ storageState: storageStatePath("planner") });
     const page = await context.newPage();
+    await page.goto("/locale?set=en");
     await page.goto("/operations/live");
     await expect(page.getByTestId("operations-live")).toBeVisible();
-    await expect(page.getByText("Recorded positions — not live GPS", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText(/(?:Recorded positions — not live GPS|Last recorded position — not guaranteed live)/).first()).toBeVisible();
+    await context.close();
+  });
+
+  test("Inspector Operations reflows across the unified responsive width continuum", async ({ browser }) => {
+    test.setTimeout(120_000);
+    const context = await browser.newContext({ storageState: storageStatePath("inspector") });
+    const page = await context.newPage();
+    const matrix = [
+      { width: 320, height: 800, locale: "en", theme: "light" },
+      { width: 375, height: 812, locale: "ar", theme: "dark" },
+      { width: 390, height: 844, locale: "en", theme: "dark" },
+      { width: 768, height: 1024, locale: "ar", theme: "light" },
+      { width: 1024, height: 768, locale: "en", theme: "light" },
+      { width: 1280, height: 800, locale: "ar", theme: "dark" },
+      { width: 1440, height: 900, locale: "en", theme: "dark" },
+      { width: 1920, height: 1080, locale: "ar", theme: "light" },
+    ] as const;
+
+    for (const state of matrix) {
+      await page.setViewportSize({ width: state.width, height: state.height });
+      await page.goto(`/locale?set=${state.locale}`);
+      await page.evaluate(theme => localStorage.setItem("saqeel-theme", theme), state.theme);
+      await page.goto("/operations");
+      await expect(page.getByTestId("operations-kpi-grid")).toBeVisible();
+      await expect(page.locator("html")).toHaveAttribute("dir", state.locale === "ar" ? "rtl" : "ltr");
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow, `${state.width}px ${state.locale}/${state.theme}`).toBeLessThanOrEqual(1);
+    }
     await context.close();
   });
 
   test("wallboard is a real route state and keeps the non-GPS disclosure", async ({ page }) => {
     await page.goto("/operations/live?wallboard=1");
     await expect(page.getByRole("link", { name: "Exit wallboard", exact: true })).toBeVisible();
-    await expect(page.getByText("Recorded positions — not live GPS", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText(/(?:Recorded positions — not live GPS|Last recorded position — not guaranteed live)/).first()).toBeVisible();
   });
 
   test("Arabic Live Operations is complete, RTL and uses localized operational labels", async ({ page }) => {
@@ -384,6 +435,6 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await page.goto("/operations/live");
     await expect(page.getByText("Live map unavailable — basemap provider failed.", { exact: true })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByRole("heading", { name: "Active inspectors", exact: true })).toBeVisible();
-    await expect(page.getByText("Recorded positions — not live GPS", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText(/(?:Recorded positions — not live GPS|Last recorded position — not guaranteed live)/).first()).toBeVisible();
   });
 });

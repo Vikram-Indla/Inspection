@@ -6,7 +6,7 @@ import LiveOps, { type LiveOpsStrings } from "./LiveOps";
 import type { LiveFactory, LiveRegion, LiveInspector } from "./types";
 import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
 import { getVerifiedUser } from "@/lib/verified-user";
-import { buildShellNavigation, BUSINESS_ROLE_KEYS, FIELD_CHANNEL_ROLE_KEYS } from "@/lib/shell-navigation";
+import { buildShellNavigation, BUSINESS_ROLE_KEYS } from "@/lib/shell-navigation";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { resolveRegionId, type KsaRegionCollection } from "@/lib/ksa-regions";
 import ksaRegionsJson from "../../../../../public/geo/sau-regions.geo.json";
@@ -120,10 +120,9 @@ export default async function LiveOperations({ searchParams }: {
   // unconditionally enabled for every web-portal persona, including admin-only
   // ones, so nav visibility cannot be the authorization. The route verifies the
   // caller independently holds an operational role.
-  const webBusinessRoles = BUSINESS_ROLE_KEYS.filter(
-    role => !(FIELD_CHANNEL_ROLE_KEYS as readonly string[]).includes(role)
-  );
-  const hasOperationalRole = routeRoleKeys.some(role => webBusinessRoles.includes(role));
+  // PKT-RESPONSIVE-DASHBOARD-OPERATIONS-002 — the Inspector remains an
+  // authorized read persona after the former field-only shell is removed.
+  const hasOperationalRole = routeRoleKeys.some(role => BUSINESS_ROLE_KEYS.includes(role));
   const mayViewOperations = operationsDestination?.enabled === true && hasOperationalRole;
   if (!mayViewOperations) {
     return (
@@ -151,7 +150,9 @@ export default async function LiveOperations({ searchParams }: {
   const authorizedScope = profileRow?.region?.trim() ?? "";
   const authorizedRegionId = resolveRegionId(authorizedScope || null);
   const inAuthorizedGeography = (region: string | null, city: string | null) => {
-    if (!authorizedScope) return false;
+    // Preserve the existing RLS grant when no narrower profile geography is
+    // assigned. A configured assignment still fails closed on unknown rows.
+    if (!authorizedScope) return true;
     if (authorizedRegionId) return resolveRegionId(region) === authorizedRegionId;
     const normalized = authorizedScope.toLocaleLowerCase("en");
     return [region, city].some(value => value?.trim().toLocaleLowerCase("en") === normalized);
@@ -197,6 +198,7 @@ export default async function LiveOperations({ searchParams }: {
       .select("id, visit_id, observed_lat, observed_lng, occurred_at, integration_mode, kind")
       .in("visit_id", activeVisitIds)
       .or("integration_mode.is.null,integration_mode.eq.production")
+      .lte("occurred_at", observedAt.toISOString())
       .order("occurred_at", { ascending: false })
       .order("id", { ascending: true })
       .range(from, to) as unknown as PromiseLike<PostgrestPage<GeoPositionRow>>)

@@ -1,0 +1,80 @@
+schema_version: "1.0"
+packet_id: "PKT-RESPONSIVE-DASHBOARD-OPERATIONS-002"
+task_id: "TASK-SAQEEL-RESPONSIVE-REVAMP-001"
+change_control_id: "CC-SAQEEL-RESPONSIVE-REVAMP-001"
+branch: "revamp/dashboard-operations"
+baseline: "c78882a74c2dc116c80d8320d764f0900a7655e9"
+state: "IMPLEMENTED_EVIDENCED_AWAITING_MERGE"
+authorized_by: "Vikram Indla / Product Owner"
+authorization_evidence: "Persistent goal: continue until the entire application is built; all approvals granted."
+
+requirements:
+  - "CR-430..CR-448"
+  - "CR-001..CR-478 Dashboard preservation boundary"
+screens:
+  - "WA-DES-025"
+  - "WA-DES-046"
+  - "WA-DES-033-C3"
+  - "WA-DES-034-C3"
+routes:
+  - "/dashboard"
+  - "/operations"
+  - "/operations/live"
+  - "/operations/exceptions"
+engines:
+  - "Dashboard projection and KPI provenance"
+  - "Operations monitoring and geography scope"
+  - "Route/server authorization"
+  - "Responsive layout, i18n and RTL"
+acceptance:
+  - "WA-M1-AC-001..006"
+  - "WA-M3-AC-001..006"
+  - "WA-AC-0430..0448"
+  - "Inspector access to Operations is preserved after field-shell convergence."
+  - "Planner and capability-backed Operations/Reviewer/Leadership profiles retain existing scoped access."
+  - "Administrator profiles without an operational capability remain denied before operational reads."
+  - "Dashboard and Operations retain source-backed data, RLS geography scope, partial/error/degraded states and honest unconfigured values."
+  - "Dashboard and Operations reflow without document overflow at 320, 375, 390, 768, 1024, 1280, 1440 and 1920 CSS pixels."
+  - "English/Arabic, LTR/RTL, light/dark and keyboard/accessibility behavior remain intact."
+
+dependencies:
+  - "PKT-RESPONSIVE-FOUNDATION-SHELL-001 at c78882a7"
+  - "Existing development Supabase and excluded persona storage states for browser evidence"
+  - "DEC-032 remains out of scope; these routes do not create inspection submissions"
+
+allowed_paths:
+  - "apps/web/src/app/(app)/dashboard/**"
+  - "apps/web/src/app/(app)/operations/**"
+  - "apps/web/e2e/web-admin-m1-dashboard.spec.ts"
+  - "apps/web/e2e/web-admin-m3-operations.spec.ts"
+  - "apps/web/e2e/responsive-dashboard-operations.spec.ts"
+  - "apps/web/playwright.static.config.ts"
+  - "product-contract/operationalization/packets/PKT-RESPONSIVE-DASHBOARD-OPERATIONS-002.yaml"
+  - "product-contract/evidence/PKT-RESPONSIVE-DASHBOARD-OPERATIONS-002.md"
+
+prohibited:
+  - "Shared shell files owned by the foundation PR"
+  - "Planning, field execution, review, compliance, Factory 360 and administration source"
+  - "Supabase migrations, RLS, RPCs, shared data or production DDL"
+  - "Invented KPI, SLA, risk, location, provider or refresh values"
+  - "PWA delivery infrastructure"
+  - "main or integration branch mutation"
+
+evidence:
+  - "Typecheck and production build"
+  - "Focused source and authorization contracts"
+  - "Authenticated Planner, Inspector, Operations and admin-negative runtime checks"
+  - "EN/AR, LTR/RTL, light/dark responsive matrix"
+  - "No horizontal document overflow at every mandated width"
+  - "Accessibility and protected regression"
+evidence_record: "product-contract/evidence/PKT-RESPONSIVE-DASHBOARD-OPERATIONS-002.md"
+environment_limitations:
+  - "The development Supabase rejected fresh ops and reviewer authentication with HTTP 400 on 2026-07-26. No credential or authorization behavior was bypassed."
+  - "Positive Operations runtime used the accepted Planner and Inspector access contracts; admin-only and Dashboard-denied profiles were exercised negatively."
+
+stop_conditions:
+  - "Any operational data read before route authorization"
+  - "Any weakening of Supabase RLS or authorized geography filtering"
+  - "Any invented source value or live-GPS claim"
+  - "Any loss of partial/error/provider-unavailable behavior"
+  - "Any P0/P1 focused or protected regression"
