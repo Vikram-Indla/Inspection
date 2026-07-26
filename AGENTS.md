@@ -99,6 +99,28 @@ Before completion:
 - Update `CURRENT_STATE.md`, `SESSION_LEDGER.json`, `WORK_QUEUE.yaml`, and acceptance/evidence records.
 - Do not declare completion while any required P0/P1 criterion is failed or unevidenced.
 
+## Board delivery — the orchestrator procedure
+When the work is a card on the 55-card board in `status/saqeel-status.json`, the
+delivery procedure is `.claude/skills/orchestrator/`. Read `SKILL.md` and the
+three files in `references/` before starting. It is plain markdown and two Python
+scripts — nothing in it is specific to the CLI that reads it.
+
+- `scripts/brief.py <card-id>` prints the card, its design page, its route files,
+  its requirement-baseline rows and the git state. Run it first.
+- `scripts/board.py` is the only way to move a lane number. It refuses a raise
+  without `--evidence` and refuses any card on a channel you do not own.
+- `config.json` declares channel ownership: `web` → Claude Code, `admin` → Codex,
+  `pwa` → a different developer. Only the Product Owner changes it.
+
+Codex normally receives a packet for an `admin` card from Claude Code rather than
+running the whole procedure — that split is what keeps the verifier independent
+of the builder. Running both roles yourself removes that check; do it only when
+the Product Owner asks.
+
+The MCP tool names in the procedure (`mcp__claude-design__*`,
+`mcp__claude-in-chrome__*`) are Claude Code's. Substitute your own equivalents or
+hand those steps back; do not skip the gate they serve.
+
 ## Memory policy
 - Git-backed files are authoritative.
 - Obsidian is a human interface over the same repository, not a separate copy.

@@ -11,16 +11,19 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  padding-block-end: 120px; /* clear the sticky action bar + bottom nav */
+  gap: 18px;
+  inline-size: 100%;
+  max-inline-size: 880px;
+  margin-inline: auto;
+  padding: 20px 18px 120px;
 }
 
 .header {
   background: var(--surface-primary);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
+  padding: 18px 19px;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -92,8 +95,10 @@
 .section {
   background: var(--surface-primary);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
   padding: 0;
+  overflow: clip;
 }
 .section > summary {
   cursor: pointer;
@@ -102,13 +107,16 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
+  padding: 18px 19px 14px;
   min-block-size: 48px;
   font-weight: 600;
+  font-size: 15px;
 }
 .section > summary::-webkit-details-marker { display: none; }
 .sectionBody {
-  padding: 0 var(--space-4) var(--space-4);
+  margin-inline: 19px;
+  padding: 14px 0 18px;
+  border-block-start: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -136,7 +144,7 @@
   inset-block-end: 64px;
   background: var(--surface-primary);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: 14px;
   display: flex;
   gap: var(--space-2);
   overflow-x: auto;
@@ -147,3 +155,12 @@
 
 .link { color: var(--text-link); text-decoration: underline; }
 .statBig { font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+@media (max-width: 560px) {
+  .page { padding: 14px 12px 120px; }
+  .header { padding: 18px 19px; }
+  .section > summary { padding-inline: 19px; }
+  .sectionBody { margin-inline: 19px; }
+  .facts > div { flex-direction: column; align-items: flex-start; }
+  .facts dd { text-align: start; }
+}

@@ -6,9 +6,9 @@ import { localForUser, promptLegacyOfflineRestore, type SyncState } from "@/lib/
 import styles from "./settings.module.css";
 
 type Locale = "en" | "ar";
-type OfflineSnapshot = { state: SyncState; queued: number; conflicts: number };
+type OfflineSnapshot = { state: SyncState; queued: number | null; conflicts: number | null };
 
-const initialOffline: OfflineSnapshot = { state: "pending", queued: 0, conflicts: 0 };
+const initialOffline: OfflineSnapshot = { state: "pending", queued: null, conflicts: null };
 
 function copy(locale: Locale, en: string, ar: string): string {
   return locale === "ar" ? ar : en;
@@ -70,7 +70,7 @@ export default function FieldSettingsClient({
             : "synced";
       setOffline({ state, queued: queued.length, conflicts: conflicts.length });
     } catch {
-      setOffline({ state: "failed", queued: 0, conflicts: 0 });
+      setOffline({ state: "failed", queued: null, conflicts: null });
     }
   }, [local]);
 
@@ -87,15 +87,13 @@ export default function FieldSettingsClient({
   const stateLabel: Record<SyncState, string> = {
     synced: copy(locale, "Synced", "متزامن"),
     offline: copy(locale, "Offline", "غير متصل"),
-    pending: copy(locale, "Pending", "معلّق"),
+    pending: copy(locale, "Loading…", "جارٍ التحميل…"),
     syncing: copy(locale, "Syncing", "جارٍ التزامن"),
     conflict: copy(locale, "Conflict", "تعارض"),
     failed: copy(locale, "Unavailable", "غير متاح"),
   };
 
-  const notAvailable = copy(locale, "Not available here", "غير متاح هنا");
-  const notYet = copy(locale, "Not yet available", "غير متاح بعد");
-  const managedByDevice = copy(locale, "Managed in device settings", "تُدار من إعدادات الجهاز");
+  const notConfigured = copy(locale, "Not configured", "غير مهيأ");
   const synced = offline.state === "synced";
   const chevron = locale === "ar" ? "M15 6l-6 6 6 6" : "M9 6l6 6-6 6";
 
@@ -108,7 +106,7 @@ export default function FieldSettingsClient({
       <div className={styles.card}>
         <GovernedRow
           label={copy(locale, "Appearance", "المظهر")}
-          note={copy(locale, "Always dark in the field", "داكن دائمًا في الميدان")}
+          note={copy(locale, "Dark", "داكن")}
         />
         <div className={styles.row}>
           <span className={styles.rowLabel}>{copy(locale, "Language", "اللغة")}</span>
@@ -117,20 +115,15 @@ export default function FieldSettingsClient({
             <a className="seg-opt" href="/locale?set=en" lang="en" aria-pressed={locale === "en"}>English</a>
           </div>
         </div>
-        <GovernedRow label={copy(locale, "Text size", "حجم النص")} note={copy(locale, "Use device Display settings", "من إعدادات العرض بالجهاز")} />
+        <GovernedRow label={copy(locale, "Text size", "حجم النص")} note={notConfigured} />
       </div>
 
       {/* Notifications — no in-app preference store; iPadOS owns delivery */}
       <SectionLabel>{copy(locale, "Notifications", "الإشعارات")}</SectionLabel>
       <div className={styles.card}>
-        <GovernedRow label={copy(locale, "Task & appointment notifications", "إشعارات المهام والمواعيد")} note={managedByDevice} />
-        <GovernedRow label={copy(locale, "Urgent alerts", "التنبيهات العاجلة")} note={managedByDevice} />
-        <GovernedRow label={copy(locale, "Notification sound", "صوت الإشعارات")} note={managedByDevice} />
-        <div className={styles.row}>
-          <p className={`t-caption ${styles.note}`}>
-            {copy(locale, "Alert delivery is controlled by your device's notification settings, not stored by this app.", "يتحكم في تسليم التنبيهات إعدادات الإشعارات على جهازك، ولا يخزّنها هذا التطبيق.")}
-          </p>
-        </div>
+        <GovernedRow label={copy(locale, "Task & appointment notifications", "إشعارات المهام والمواعيد")} note={notConfigured} />
+        <GovernedRow label={copy(locale, "Urgent alerts", "التنبيهات العاجلة")} note={notConfigured} />
+        <GovernedRow label={copy(locale, "Notification sound", "صوت الإشعارات")} note={notConfigured} />
       </div>
 
       {/* Security — trusted-devices link is REAL; delegation has no route yet */}
@@ -139,15 +132,12 @@ export default function FieldSettingsClient({
         <Link href="/field/settings/devices" prefetch={false} className={styles.link}>
           <span className={styles.rowLabel}>
             {copy(locale, "Biometric lock & trusted devices", "القفل الحيوي والأجهزة الموثوقة")}
-            <span className="t-caption" style={{ display: "block" }}>
-              {copy(locale, "Trust is granted only by the backend approval process.", "تُمنح الثقة فقط من خلال عملية الموافقة في الخادم.")}
-            </span>
           </span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15, color: "var(--text-muted)", flex: "none" }} aria-hidden="true">
             <path d={chevron} />
           </svg>
         </Link>
-        <GovernedRow label={copy(locale, "Absence delegation", "تفويض الغياب")} note={notYet} />
+        <GovernedRow label={copy(locale, "Absence delegation", "تفويض الغياب")} note={notConfigured} />
         <div className={styles.row}>
           <p className={`t-caption ${styles.note}`}>
             {copy(locale, "Every action in your session is logged and audited · Encrypted connection", "كل إجراء داخل جلستك موثّق ومراجَع · اتصال مشفّر")}
@@ -163,42 +153,24 @@ export default function FieldSettingsClient({
           <span className={styles.rowLabel}>{copy(locale, "Sync status", "حالة المزامنة")}</span>
           <span className={`badge ${synced ? "badge-compliant" : "badge-warning"}`}>{stateLabel[offline.state]}</span>
         </div>
-        <div className={styles.row}>
-          <span className={styles.rowLabel}>{copy(locale, "Queued operations", "العمليات في قائمة الانتظار")}</span>
-          <span className="t-mono">{offline.queued}</span>
-        </div>
-        <div className={styles.row}>
-          <span className={styles.rowLabel}>{copy(locale, "Unresolved conflicts", "التعارضات غير المحلولة")}</span>
-          <span className="t-mono">{offline.conflicts}</span>
-        </div>
-        <GovernedRow label={copy(locale, "Auto-sync", "مزامنة تلقائية")} note={copy(locale, "Managed by the sync engine", "يديرها محرك المزامنة")} />
-        <GovernedRow label={copy(locale, "Offline maps", "خرائط بدون اتصال")} note={notYet} />
         <Link href="/field/settings/conflicts" prefetch={false} className={styles.link}>
-          <span className={styles.rowLabel}>
-            {copy(locale, "Resolve sync conflicts", "حل تعارضات المزامنة")}
-            <span className="t-caption" style={{ display: "block" }}>
-              {copy(locale, "Compare your local response against the server and choose which to keep.", "قارن إجابتك المحلية بقيمة الخادم واختر أيّهما تبقي.")}
-            </span>
-          </span>
+          <span className={styles.rowLabel}>{copy(locale, "Conflict Resolution", "حل التعارضات")}</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15, color: "var(--text-muted)", flex: "none" }} aria-hidden="true">
             <path d={chevron} />
           </svg>
         </Link>
+        <GovernedRow label={copy(locale, "Auto-sync", "مزامنة تلقائية")} note={notConfigured} />
+        <GovernedRow label={copy(locale, "Offline maps", "خرائط بدون اتصال")} note={notConfigured} />
         <button type="button" className={styles.link} onClick={() => void refreshOffline()}>
-          <span className={styles.actionLabel}>{copy(locale, "Refresh sync status", "تحديث حالة المزامنة")}</span>
+          <span className={styles.actionLabel}>{copy(locale, "Sync now", "مزامنة الآن")}</span>
         </button>
-        <div className={styles.row}>
-          <p className={`t-caption ${styles.note}`}>
-            {copy(locale, "This screen shows status only — it cannot clear drafts, packages, queued work, or conflicts.", "تعرض هذه الشاشة الحالة فقط — ولا يمكنها مسح المسودات أو الحزم أو الأعمال في قائمة الانتظار أو التعارضات.")}
-          </p>
-        </div>
       </div>
 
       {/* Data & Storage — no device-storage API here; no fake size or clear action */}
       <SectionLabel>{copy(locale, "Data & Storage", "البيانات والتخزين")}</SectionLabel>
       <div className={styles.card}>
-        <GovernedRow label={copy(locale, "Storage used", "المساحة المستخدمة")} note={copy(locale, "Reported in device settings", "تُعرض في إعدادات الجهاز")} />
-        <GovernedRow label={copy(locale, "Clear cache", "مسح الذاكرة المؤقتة")} note={notAvailable} />
+        <GovernedRow label={copy(locale, "Storage used", "المساحة المستخدمة")} note={notConfigured} />
+        <GovernedRow label={copy(locale, "Clear cache", "مسح الذاكرة المؤقتة")} note={notConfigured} />
       </div>
 
       {/* About — real deployment version when injected; help/privacy have no routes */}
@@ -208,8 +180,8 @@ export default function FieldSettingsClient({
           <span className={styles.rowLabel}>{copy(locale, "App version", "إصدار التطبيق")}</span>
           <span className="t-mono">{appVersion ?? copy(locale, "Set by deployment", "يُحدَّد عند النشر")}</span>
         </div>
-        <GovernedRow label={copy(locale, "Help & Support", "المساعدة والدعم")} note={notAvailable} />
-        <GovernedRow label={copy(locale, "Privacy Policy", "سياسة الخصوصية")} note={notAvailable} />
+        <GovernedRow label={copy(locale, "Help & Support", "المساعدة والدعم")} note={notConfigured} />
+        <GovernedRow label={copy(locale, "Privacy Policy", "سياسة الخصوصية")} note={notConfigured} />
       </div>
 
       <a href="/signout" className="btn btn-danger btn-block">

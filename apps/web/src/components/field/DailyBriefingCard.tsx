@@ -1,126 +1,130 @@
 "use client";
-// Redesigned "My daily inspection briefing" card (TASK-FIELD-BRIEFING-AUTOLOAD-001,
-// sponsor-owned deviation, verbatim, overrides Figma default if one exists).
+// SAQEEL Field Dashboard.dc.html — SECTION 2, the AI Daily Brief card.
 //
-// - No manual "Generate" button as the primary path: `daily` / `weekly` are
-//   already-fetched, already-cached briefings passed in as props from the
-//   server component (field/page.tsx via lib/ai/briefing.ts). The card is
-//   populated the instant it renders.
-// - A small icon-only "Refresh" affordance stays as a secondary path for an
-//   inspector whose assignments changed intraday.
-// - ONE advisory disclosure (a small caption line), not three overlapping
-//   elements. No source-reference IDs (MVP1-M03-001 etc.) in visible text —
-//   they are still recorded server-side in ai_suggestions for audit and are
-//   carried here only as a non-visible data attribute.
-// - "Review or reject this advisory" stays functional, styled as a plain text
-//   link (human-in-the-loop governance affordance, unchanged).
-// - Daily/Weekly segmented toggle: both scopes are pre-fetched server-side, so
-//   switching is instant (no extra network round trip). Shared with the KPI
-//   strip's Daily/Weekly toggle (see FieldScopeProvider) — one toggle, one
-//   mental model, since both surfaces answer "today or this week".
+// Rebuilt from the design's composition: a header row (sparkle + title +
+// "Advisory only" badge), then the brief as ONE PROSE PARAGRAPH, then a rule,
+// then the "AI Recommendation — Start Here" block (factory name + governed risk
+// badge + reason) with the two pill actions on the trailing edge.
+//
+// The route previously rendered the brief as a five-bullet list. That was the
+// wrong FORM, and the design is authority on form. The words themselves are
+// unchanged: `text` is the real governed briefing from lib/ai/briefing.ts
+// (getOrGenerateBriefing), reflowed into a paragraph, never re-narrated. If the
+// generator produced nothing, the governed unavailable line is shown — no
+// synthesised mission sentence, ever.
+//
+// Scope comes from the SHARED FieldScopeProvider, so the Daily/Weekly control
+// that lives in the mission card above switches this text too — the design's
+// `briefRange` drives `briefMissionText` in exactly the same way.
+//
+// CR-107 (AI Preparation Assistant): "AI recommendations are advisory only" —
+// carried by the always-on `Advisory only` badge.
 
-import { useEffect, useState, useTransition } from "react";
-import { refreshBriefingAction, type BriefingPayload, type BriefingScope } from "@/lib/ai/briefing";
+import Link from "next/link";
 import { useFieldScope } from "./FieldScopeProvider";
+import styles from "@/app/(app)/field/field-home.module.css";
 
-export type DailyBriefingStrings = {
-  titleDaily: string;
-  titleWeekly: string;
-  advisory: string;           // "AI-advisory · not a decision"
-  refreshAria: string;        // "Refresh briefing"
-  refreshing: string;         // "Refreshing…"
-  review: string;             // "Review or reject this advisory"
-  unavailable: string;        // "Briefing unavailable — nothing was generated or changed."
-  cachedFrom: string;         // "Generated {time}" (time already localized by caller if needed)
+export type BriefRecommendation = {
+  factoryName: string;
+  /** Governed risk-band badge. Omitted entirely when the backend has no band. */
+  badgeText: string | null;
+  badgeClass: string;
+  reason: string;
+  factoryHref: string;
+  startHref: string;
 };
 
-// New generations come back "- one fact per line" (ai-gemini.ts) and split
-// cleanly on "\n". Older cached rows, generated before that fix landed, are
-// one continuous prose paragraph with no line breaks at all — split("\n")
-// on those returns a single giant line, i.e. no list at all. Fall back to
-// splitting on sentence boundaries so legacy cache entries still render as a
-// scannable list instead of a wall of text until they naturally expire and
-// regenerate in the new format.
-function toBulletLines(text: string): string[] {
-  const lines = text.split("\n").map((line) => line.replace(/^- /, "").trim()).filter(Boolean);
-  if (lines.length > 1) return lines;
-  return (lines[0] ?? text).split(/(?<=[.!?])\s+(?=[A-Z0-9])/).map((s) => s.trim()).filter(Boolean);
+export type DailyBriefingStrings = {
+  title: string;
+  advisory: string;
+  unavailable: string;
+  recoLabel: string;
+  viewCard: string;
+  startJourney: string;
+};
+
+const Sparkle = ({ size }: { size: number }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" strokeWidth="1.7"
+    style={{ width: size, height: size, flex: "none" }} aria-hidden="true">
+    <path d="M12 2l1.6 5.2L19 9l-5.4 1.8L12 16l-1.6-5.2L5 9l5.4-1.8L12 2z" />
+  </svg>
+);
+
+/** Reflow a generated briefing into one paragraph. Line breaks and leading
+ *  list markers are formatting, not content — nothing is added or dropped. */
+function toProse(text: string): string {
+  return text
+    .split("\n")
+    .map((line) => line.replace(/^[-•]\s*/, "").trim())
+    .filter(Boolean)
+    .join(" ");
 }
 
 export default function DailyBriefingCard({
   daily,
   weekly,
+  reco,
   strings,
   evidenceRefs,
 }: {
-  daily: BriefingPayload;
-  weekly: BriefingPayload;
+  daily: { text: string | null; error: string | null };
+  weekly: { text: string | null; error: string | null };
+  reco: BriefRecommendation | null;
   strings: DailyBriefingStrings;
-  /** Internal traceability only — never rendered as visible text (sponsor
-   *  direction); carried as a non-visible data attribute for audit/debug. */
-  evidenceRefs: string[];
+  /** Internal traceability only — never rendered (sponsor direction). */
+  evidenceRefs?: string[];
 }) {
   const { scope } = useFieldScope();
-  const [current, setCurrent] = useState<Record<BriefingScope, BriefingPayload>>({ daily, weekly });
-  const [pending, startTransition] = useTransition();
-
-  // Keep in sync if the server component re-renders with newer initial data
-  // (e.g. after a full navigation), without clobbering a client-side refresh.
-  useEffect(() => { setCurrent((c) => ({ ...c, daily })); }, [daily]);
-  useEffect(() => { setCurrent((c) => ({ ...c, weekly })); }, [weekly]);
-
-  const active = current[scope];
-  const title = scope === "weekly" ? strings.titleWeekly : strings.titleDaily;
-
-  function onRefresh() {
-    startTransition(async () => {
-      const fresh = await refreshBriefingAction(scope);
-      setCurrent((c) => ({ ...c, [scope]: fresh }));
-    });
-  }
+  const active = scope === "weekly" ? weekly : daily;
+  const prose = active.text ? toProse(active.text) : "";
 
   return (
     <section
-      className="ax-surface ax-panel"
-      aria-labelledby="inspector-briefing-heading"
+      className={`${styles.card} ${styles.briefCard}`}
+      aria-labelledby="fd-brief-title"
       data-testid="inspector-daily-briefing-panel"
-      data-evidence-refs={evidenceRefs.join(",")}
-      style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}
+      data-evidence-refs={evidenceRefs?.join(",")}
+      data-scope={scope}
     >
-      <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: "var(--ax-space-150)" }}>
-        <h3 id="inspector-briefing-heading" style={{ font: "var(--ax-text-heading)", margin: 0 }}>{title}</h3>
-        <div className="ax-row" style={{ alignItems: "center", gap: "var(--ax-space-100)" }}>
-          <span className="ax-caption" style={{ color: "var(--ax-color-text-secondary)" }}>{strings.advisory}</span>
-          <button
-            type="button"
-            className="ax-btn ax-btn--subtle ax-btn--icon"
-            aria-label={strings.refreshAria}
-            title={strings.refreshAria}
-            disabled={pending}
-            onClick={onRefresh}
-          >
-            <span aria-hidden style={pending ? { display: "inline-block", animation: "ax-spin 0.9s linear infinite" } : undefined}>⟳</span>
-          </button>
-        </div>
+      <div className={styles.briefHead}>
+        <Sparkle size={18} />
+        <span id="fd-brief-title" className={styles.briefTitle}>{strings.title}</span>
+        <span className="grow" />
+        <span className="badge badge-info" style={{ height: 19 }}>{strings.advisory}</span>
       </div>
 
-      {pending ? (
-        <p className="ax-caption" style={{ color: "var(--ax-color-text-secondary)" }}>{strings.refreshing}</p>
-      ) : active.text ? (
-        <ul style={{ font: "var(--ax-text-body)", lineHeight: 1.5, margin: 0, paddingInlineStart: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-050)" }}
-          data-briefing-period={active.periodDate ?? undefined}>
-          {toBulletLines(active.text).map((line, index) => (
-            <li key={index}>{line}</li>
-          ))}
-        </ul>
+      {prose ? (
+        <p className={styles.briefProse}>{prose}</p>
       ) : (
-        <p role="status" className="ax-caption" style={{ color: "var(--ax-color-text-secondary)" }}>{strings.unavailable}</p>
+        <p className={`${styles.briefProse} t-caption`} role="status">
+          {active.error ?? strings.unavailable}
+        </p>
       )}
 
-      {active.insightId && (
-        <a className="ax-link ax-caption" href={`/ai/suggestions#ai-suggestion-${active.insightId}`}>
-          {strings.review} →
-        </a>
+      {reco && (
+        <div className={styles.reco}>
+          <div style={{ flex: 1, minWidth: 260 }}>
+            <div className="t-label" style={{ marginBlockEnd: 6 }}>{strings.recoLabel}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 9, marginBlockEnd: 6, flexWrap: "wrap" }}>
+              <span className={styles.recoName}><bdi>{reco.factoryName}</bdi></span>
+              {reco.badgeText && (
+                <span className={`badge ${reco.badgeClass}`} style={{ height: 18 }}>{reco.badgeText}</span>
+              )}
+            </div>
+            {reco.reason && (
+              <div className={styles.recoReason}>
+                <Sparkle size={14} />
+                <span>{reco.reason}</span>
+              </div>
+            )}
+          </div>
+          <div style={{ display: "flex", gap: 9, flex: "none", flexWrap: "wrap" }}>
+            <Link href={reco.factoryHref} prefetch={false} className={styles.qbtnPill}>{strings.viewCard}</Link>
+            <Link href={reco.startHref} prefetch={false} className={`${styles.qbtnPill} ${styles.qbtnPrimary}`}>
+              {strings.startJourney}
+            </Link>
+          </div>
+        </div>
       )}
     </section>
   );

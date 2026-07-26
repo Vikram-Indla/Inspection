@@ -9,7 +9,6 @@ interface SpineCard {
   route?: string;
   designPage?: string;
 }
-
 interface Spine {
   cards: SpineCard[];
 }
@@ -17,10 +16,19 @@ interface Spine {
 const WEB_ROOT = resolve(__dirname, "../..");
 export const REPOSITORY_ROOT = resolve(WEB_ROOT, "../..");
 export const SPINE_PATH = join(REPOSITORY_ROOT, "status", "saqeel-status.json");
-export const DESIGNS_ROOT = join(REPOSITORY_ROOT, "designs", "pwa");
+export const DESIGNS_ROOT = join(REPOSITORY_ROOT, "designs", "pwa", "pwa");
 
 // These targets are keyed by the spine's exact route field. The field remains
 // the only code/design join key; card ids are labels and are never used to join.
+// A visit id is a uuid. The field shell renders its tab bar from
+// field/layout.tsx (CC-SHELL-TABLET-001), so /field/my-tasks, /field/establishments,
+// /field/notifications and /field/account appear as anchors on every page. A
+// loose ^/field/[^/]+$ therefore matches a nav link before it matches a visit,
+// which measured the wrong route. Both guards below are deliberate.
+const VISIT_HREF = "^/field/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$";
+const FIELD_NAV_HREF =
+  "^/field/(?:my-tasks|establishments|notifications|account|settings|drafts|reports|search|map|virtual|incident-reports|factory-360|feedback)(?:/|$)";
+
 const ROUTES_BY_JOIN_KEY = new Map<string, RouteTarget[]>([
   [
     "web/src/app/(app)/field/layout.tsx · components/field/FieldNav.tsx · FieldHeader.tsx · field-home.module.css",
@@ -43,8 +51,12 @@ const ROUTES_BY_JOIN_KEY = new Map<string, RouteTarget[]>([
     [
       { kind: "static", path: "/field/map", label: "field map" },
       {
+        // /field/my-tasks links the visit, and the visit page links its own
+        // travel screen. Nothing links travel directly from the task list, so
+        // the harness walks the real two-step path.
         kind: "discover",
         seedPath: "/field/my-tasks",
+        via: [{ hrefPattern: VISIT_HREF, excludePattern: FIELD_NAV_HREF }],
         hrefPattern: "^/field/[^/]+/travel(?:/|$)",
         label: "assigned visit travel",
       },
@@ -56,9 +68,14 @@ const ROUTES_BY_JOIN_KEY = new Map<string, RouteTarget[]>([
       { kind: "static", path: "/field/establishments", label: "establishments" },
       { kind: "static", path: "/field/factory-360", label: "factory 360 resolver" },
       {
+        // /field/factory-360 is a resolver that redirects; it renders no
+        // dossier links at all. /field/establishments is the surface that
+        // lists them, and it already scopes itself to the clean factory set,
+        // so the dossier reached here is clean by construction. The rendered
+        // page is still checked by assertCleanFactories.
         kind: "discover",
-        seedPath: "/field/factory-360",
-        hrefPattern: "^/field/factory-360/F-(?:110[1-5]|220[1-5]|330[1-5]|440[1-2]|550[1-2]|660[1-2])$",
+        seedPath: "/field/establishments",
+        hrefPattern: "^/field/factory-360/[^/]+$",
         label: "clean factory dossier",
       },
     ],
@@ -90,9 +107,13 @@ const ROUTES_BY_JOIN_KEY = new Map<string, RouteTarget[]>([
     "web/src/app/(app)/field/[visitId]/Startup.tsx · PreExecution.tsx · preparation-actions.ts · PreInspectionPackSheet.tsx",
     [
       {
+        // Was ^/field/[^/]+(?:/startup|/preparation)?$, which matched the
+        // shell's own /field/my-tasks nav anchor first and silently measured
+        // the task list as if it were the visit startup screen.
         kind: "discover",
         seedPath: "/field/my-tasks",
-        hrefPattern: "^/field/[^/]+(?:/startup|/preparation)?$",
+        hrefPattern: VISIT_HREF,
+        excludePattern: FIELD_NAV_HREF,
         label: "assigned visit startup",
       },
     ],
@@ -102,7 +123,9 @@ const ROUTES_BY_JOIN_KEY = new Map<string, RouteTarget[]>([
     [
       {
         kind: "discover",
-        seedPath: "/field/my-tasks",
+        // /field/my-tasks links visits, not inspections. /field/drafts is the
+        // surface that links resumable /field/inspection/[id] workspaces.
+        seedPath: "/field/drafts",
         hrefPattern: "^/field/inspection/[^/]+$",
         label: "inspection workspace",
       },
@@ -113,7 +136,9 @@ const ROUTES_BY_JOIN_KEY = new Map<string, RouteTarget[]>([
     [
       {
         kind: "discover",
-        seedPath: "/field/my-tasks",
+        // /field/my-tasks links visits, not inspections. /field/drafts is the
+        // surface that links resumable /field/inspection/[id] workspaces.
+        seedPath: "/field/drafts",
         hrefPattern: "^/field/inspection/[^/]+$",
         label: "factory verification state",
       },
@@ -124,7 +149,9 @@ const ROUTES_BY_JOIN_KEY = new Map<string, RouteTarget[]>([
     [
       {
         kind: "discover",
-        seedPath: "/field/my-tasks",
+        // /field/my-tasks links visits, not inspections. /field/drafts is the
+        // surface that links resumable /field/inspection/[id] workspaces.
+        seedPath: "/field/drafts",
         hrefPattern: "^/field/inspection/[^/]+$",
         label: "samples and seizure section",
       },
@@ -139,9 +166,40 @@ const ROUTES_BY_JOIN_KEY = new Map<string, RouteTarget[]>([
     [
       {
         kind: "discover",
-        seedPath: "/field/my-tasks",
+        // /field/my-tasks links visits, not inspections. /field/drafts is the
+        // surface that links resumable /field/inspection/[id] workspaces.
+        seedPath: "/field/drafts",
         hrefPattern: "^/field/inspection/[^/]+$",
         label: "in-form OCR state",
+      },
+    ],
+  ],
+  [
+    "lib/providers/ocr-gemini.ts (no /field/ocr route)",
+    [
+      {
+        kind: "discover",
+        // /field/my-tasks links visits, not inspections. /field/drafts is the
+        // surface that links resumable /field/inspection/[id] workspaces.
+        seedPath: "/field/drafts",
+        hrefPattern: "^/field/inspection/[^/]+$",
+        label: "in-form OCR state",
+      },
+    ],
+  ],
+  [
+    "web/src/app/(app)/field/reports/page.tsx · reports/[id]/page.tsx · reports.module.css",
+    [
+      { kind: "static", path: "/field/reports", label: "reports library" },
+      {
+        kind: "discover",
+        seedPath: "/field/reports",
+        hrefPattern: "^/field/reports/[^/]+$",
+        // field/reports/[id] is a one-line redirect to the governed immutable
+        // projection, so that page is the surface an inspector actually sees.
+        // Declared per target: any other redirect still fails the variant.
+        allowRedirectTo: "^/reports/inspection/[^/]+$",
+        label: "submitted report detail",
       },
     ],
   ],
@@ -159,7 +217,18 @@ const ROUTES_BY_JOIN_KEY = new Map<string, RouteTarget[]>([
   ],
   [
     "web/src/app/login/field/* (FieldLoginClient + field-login.css, rendered by /login)",
-    [{ kind: "static", path: "/login", label: "field login" }],
+    // An authenticated session is bounced off /login, which aborted the
+    // navigation. The sign-in screen is only real when signed out.
+    [{ kind: "static", path: "/login", label: "field login", unauthenticated: true }],
+  ],
+  [
+    "web/src/app/login/field/* (field-login.css, separate from console login)",
+    [{
+      kind: "static",
+      path: "/login",
+      label: "consolidated field login presentation",
+      unauthenticated: true,
+    }],
   ],
   [
     "/field/virtual · /field/virtual/[id]",
@@ -178,7 +247,9 @@ const ROUTES_BY_JOIN_KEY = new Map<string, RouteTarget[]>([
     [
       {
         kind: "discover",
-        seedPath: "/field/my-tasks",
+        // /field/my-tasks links visits, not inspections. /field/drafts is the
+        // surface that links resumable /field/inspection/[id] workspaces.
+        seedPath: "/field/drafts",
         hrefPattern: "^/field/inspection/[^/]+$",
         label: "inspection completion state",
       },
@@ -243,4 +314,3 @@ export function loadManifest(): ManifestCard[] {
       };
     });
 }
-

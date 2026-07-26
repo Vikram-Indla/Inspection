@@ -16,7 +16,7 @@
 
 | Lane | Board claim | Evidenced verdict |
 | --- | ---: | --- |
-| Design | 60 | The section and operation audits are complete. DEC-036 resolves the discovered authority conflict: the 24-card Control Panel design governs `/admin`; `/admin/operations` remains the System Operations control plane. Pixel parity is not claimed by this audit, so the design percentage is not raised. |
+| Design | 60 | The section and operation audits are complete. DEC-037 resolves the discovered authority conflict: the 24-card Control Panel design governs `/admin`; `/admin/operations` remains the System Operations control plane. Pixel parity is not claimed by this audit, so the design percentage is not raised. |
 | Code | 95 | The 24-card gateway is implemented above the existing Configuration Evidence Spine. All 23 admin destinations exercised by the shared shell return under the seeded Admin persona. The false `/admin` act-scope summary, shellless `/admin/execution`, and shellless `/admin/dashboard-config` route were repaired. |
 | Wiring | 85 | Every gateway card links to its governed runtime destination and representative cross-card routes were exercised. The gateway reads real RLS-scoped configuration facts. Registry mutation coverage exists for the governed mutable families below; oversight surfaces remain read-only by contract. Full `CR-449..CR-478` certification is not inferred from route coverage alone. |
 
@@ -80,7 +80,7 @@ mutations.
 3. `/admin/dashboard-config` now mounts inside the authenticated shared shell.
 4. The Package designer preview child has a stable key; the route sweep no
    longer emits the React missing-key warning.
-5. DEC-036 assigns the gateway design to `/admin` and preserves
+5. DEC-037 assigns the gateway design to `/admin` and preserves
    `/admin/operations` as System Operations.
 6. `/admin` now renders the bilingual, role-aware 24-card Control Panel
    gateway while retaining the evidence spine below it.
@@ -90,7 +90,7 @@ mutations.
 
 ## Certification boundary
 
-DEC-036 removes the route-authority blocker. This evidence closes the two
+DEC-037 removes the route-authority blocker. This evidence closes the two
 board pending audits and establishes route, shell, responsive, bilingual,
 permission-summary, representative navigation, console, and anonymous-access
 behavior. It does not claim measured pixel parity or complete requirement-level

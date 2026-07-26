@@ -2,9 +2,11 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
-import Room, { type RoomStrings } from "./Room";
+import Room, { type RoomStrings, type RoomTimelineRow } from "./Room";
+import { type RoomStageStrings } from "./RoomStage";
 import EmptyState from "@/components/EmptyState";
 import { IconShieldCheck } from "@/app/icons";
+import { videoTransportStatus } from "@/lib/providers/video-twilio";
 
 type TimelineEvent = { event: string; at: string; actor?: string | null; detail?: Record<string, unknown> | null };
 
@@ -109,11 +111,6 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     done: t("virtual.room.done", "done"),
     next: t("virtual.room.next", "next"),
     nowLabel: t("virtual.room.nowLabel", "Current state"),
-    room: t("virtual.room.room", "Room"),
-    roomPending: t("virtual.room.roomPending", "Not configured"),
-    roomBody: t("virtual.room.roomBody", "No Teams, Zoom or Twilio Video adapter is present. The available non-production stub is not a join transport and is not exposed here."),
-    roomTag: t("virtual.room.roomTag", "join unavailable"),
-    roomContinue: t("virtual.room.roomContinue", "Scheduling, identity, readiness and audit remain available. Joining stays disabled until a real provider is selected and configured."),
     transition: t("virtual.room.transition", "Next transition"),
     transHint: t("virtual.room.transHint", "Use the single allowed transition below."),
     actOpenSub: t("virtual.room.actOpenSub", "Open the governed waiting room."),
@@ -148,11 +145,45 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     staleTitle: t("virtual.room.staleTitle", "This session changed"),
     staleBody: t("virtual.room.staleBody", "A concurrent change was detected, so nothing was submitted. Reload to see the latest state before acting again."),
     reload: t("virtual.room.reload", "Reload"),
+    timelineHeading: t("virtual.room.timelineHeading", "Session timeline (M05-003 · audited)"),
+    timelineEmpty: t("virtual.room.timelineEmpty", "No events yet — the timeline records scheduling, joins, verification, start and close."),
+    identityHeading: t("virtual.room.identityHeading", "Identity verification — OTP (no bypass)"),
+  };
+  // WA-DES-044 — the room panel. Local media is a browser capability and works
+  // now; the remote leg needs Twilio Video credentials, so its availability is
+  // read from the server and never inferred in the browser.
+  const transport = videoTransportStatus();
+  const stage: RoomStageStrings = {
+    title: t("virtual.stage.title", "Inspection room"),
+    statusReady: t("virtual.stage.statusReady", "ready to connect"),
+    statusNotReady: t("virtual.stage.statusNotReady", "no one can join yet"),
+    stateConnected: t("virtual.stage.stateConnected", "Connected"),
+    stateLocalOnly: t("virtual.stage.stateLocalOnly", "Your devices only"),
+    stateUnavailable: t("virtual.stage.stateUnavailable", "Room not available"),
+    remoteWaiting: t("virtual.stage.remoteWaiting", "Waiting for the factory representative to join."),
+    remoteUnavailable: t("virtual.stage.remoteUnavailable", "The video service is not switched on for this environment, so the representative cannot join yet."),
+    remoteUnavailableReason: t("virtual.stage.remoteUnavailableReason", "Your camera, microphone and screen sharing still work below, and the rest of the session — identity checks, the appointment, the decision to begin and the audit trail — runs now."),
+    selfView: t("virtual.stage.selfView", "Your camera"),
+    cameraOff: t("virtual.stage.cameraOff", "Camera off"),
+    cameraOn: t("virtual.stage.cameraOn", "Camera on"),
+    micOff: t("virtual.stage.micOff", "Microphone off"),
+    micOn: t("virtual.stage.micOn", "Microphone on"),
+    share: t("virtual.stage.share", "Share screen"),
+    shareStop: t("virtual.stage.shareStop", "Stop sharing"),
+    leave: t("virtual.stage.leave", "Leave room"),
+    stopDevices: t("virtual.stage.stopDevices", "Turn off my devices"),
+    sharingLabel: t("virtual.stage.sharingLabel", "Sharing your screen"),
+    note: t("virtual.stage.note", "Your devices are released when you leave the room or close this page. Nothing here is a simulated call."),
+    errDenied: t("virtual.stage.errDenied", "Your browser blocked access. Allow camera and microphone for this site, then try again."),
+    errNotFound: t("virtual.stage.errNotFound", "No camera or microphone was found on this device."),
+    errBusy: t("virtual.stage.errBusy", "The device is already in use by another application. Close it and try again."),
+    errUnsupported: t("virtual.stage.errUnsupported", "This browser does not support camera, microphone or screen sharing here."),
+    errGeneric: t("virtual.stage.errGeneric", "The device could not be started. Try again or use a different device."),
   };
   // S13 — server-authoritative revision the client acts against (state + append-only
   // timeline length). A mismatch on submit means the session moved on concurrently.
   const rev = `${s.state}:${((s.timeline as unknown[]) ?? []).length}`;
-  const timeline = ((s.timeline as unknown as TimelineEvent[]) ?? []).slice().reverse();
+  const events = ((s.timeline as unknown as TimelineEvent[]) ?? []).slice().reverse();
   const eventLabels: Record<string, string> = {
     scheduled: t("virtual.tl.scheduled", "session scheduled"),
     rescheduled: t("virtual.tl.rescheduled", "appointment rescheduled"),
@@ -162,26 +193,28 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     begin: t("virtual.tl.begin", "remote inspection started"),
     closed: t("virtual.tl.closed", "session closed"),
   };
+  // WA-DES-044 — the timeline renders in the room's side column now, so its rows
+  // are formatted here (server-side) and handed over ready to display. Dates
+  // formatted in the browser instead would drift from the SSR output.
+  const timelineRows: RoomTimelineRow[] = events.map(ev => {
+    return {
+      at: ev.at ? formatDateTime(ev.at, dLang) : "—",
+      label: eventLabels[ev.event] ?? ev.event.replace(/_/g, " "),
+      detail: [
+        ev.detail?.participant ? String(ev.detail.participant) : "",
+        ev.detail?.reason ? String(ev.detail.reason) : "",
+        ev.detail?.appointment_at ? String(ev.detail.appointment_at).slice(0, 16).replace("T", " ") : "",
+      ].filter(Boolean).map(part => { return ` · ${part}`; }).join(""),
+    };
+  });
   return (
     <Shell current="/virtual" title={t("virtual.room.title", "Virtual room — {factory}").replace("{factory}", (s.visits as unknown as { factories: { name: string } }).factories.name)}
       context={<>
         <span className="sq-numeric sq-caption">{formatDateTime(s.appointment_at, dLang)}</span>
         <span className={`sq-lozenge sq-lozenge--virtual ${STATE_TONE[s.state] ?? "sq-lozenge--info"}`}>{t(`enum.${s.state}`, s.state.replace(/_/g, " "))}</span>
       </>}>
-      <Room session={s as never} strings={strings} rev={rev} />
-      <div className="sq-surface" style={{ padding: "var(--space-6)", marginBlockStart: "var(--space-6)" }}>
-        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("virtual.room.timelineHeading", "Session timeline (M05-003 · audited)")}</h4>
-        {timeline.length === 0 && <p className="sq-caption">{t("virtual.room.timelineEmpty", "No events yet — the timeline records scheduling, joins, verification, start and close.")}</p>}
-        {timeline.map((ev, i) => (
-          <p key={i} className="sq-caption" style={{ marginBlockStart: 4 }}>
-            <span className="sq-numeric">{ev.at ? formatDateTime(ev.at, dLang) : "—"}</span>
-            {" · "}<strong>{eventLabels[ev.event] ?? ev.event.replace(/_/g, " ")}</strong>
-            {ev.detail?.participant ? ` · ${String(ev.detail.participant)}` : ""}
-            {ev.detail?.reason ? ` · ${String(ev.detail.reason)}` : ""}
-            {ev.detail?.appointment_at ? <span className="sq-numeric"> · {String(ev.detail.appointment_at).slice(0, 16).replace("T", " ")}</span> : ""}
-          </p>
-        ))}
-      </div>
+      <Room session={s as never} strings={strings} rev={rev} stage={stage}
+        transportConfigured={transport.configured} timeline={timelineRows} />
     </Shell>
   );
 }

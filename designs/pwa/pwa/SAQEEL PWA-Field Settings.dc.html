@@ -33,7 +33,7 @@
 <div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
 
   <header style="display:flex; align-items:center; gap:10px; padding:14px 18px; padding-block-start:max(14px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
-    <a href="SAQEEL%20PWA-Field%20Account.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="{{ t.backArrow }}"/></svg></a>
+    <a href="SAQEEL%20PWA-Field%20Account.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" data-directional="true"><path d="{{ t.backArrow }}"/></svg></a>
     <div style="flex:1; font-weight:700; font-size:16px;">{{ t.title }}</div>
     <button class="st-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
   </header>
@@ -119,7 +119,7 @@ class Component extends DCLogic {
         secAbout:"حول", appVersion:"إصدار التطبيق", helpSupport:"المساعدة والدعم", privacyPolicy:"سياسة الخصوصية",
         logout:"تسجيل الخروج", footer:"صقيل — وزارة الصناعة والثروة المعدنية © 2026",
         syncedLabel:"محدّثة الآن", offlineLabel:"غير متصل — بانتظار المزامنة" },
-      en: { back:"Back", title:"Settings", langBtnLabel:"AR", backArrow:"M9 6l6 6-6 6", chevron:"m9 18 6-6-6-6",
+      en: { back:"Back", title:"Settings", langBtnLabel:"AR", backArrow:"M15 6l-6 6 6 6", chevron:"m9 18 6-6-6-6",
         secGeneral:"General", appearance:"Appearance", light:"Light", dark:"Dark", language:"Language", textSize:"Text size", standard:"Standard", large:"Large",
         secNotif:"Notifications", notifTasks:"Task & appointment notifications", notifUrgent:"Urgent alerts", notifSound:"Notification sound",
         secSecurity:"Security", biometric:"Biometric lock & trusted devices", enabledTag:"Enabled", delegation:"Absence delegation",

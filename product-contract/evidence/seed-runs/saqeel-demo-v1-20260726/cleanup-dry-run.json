@@ -1,0 +1,14 @@
+{
+  "mode": "cleanup-dry-run",
+  "seed_batch_id": "saqeel-demo-v1-20260726",
+  "target_project_ref": "iiozvqntawxfwbgffzqu",
+  "exact_members": {
+    "auth_users": 39,
+    "factories": 6,
+    "visits": 6,
+    "inspections": 3
+  },
+  "immutable_residuals": 3,
+  "mutation_performed": false,
+  "decision": "REFUSED_IMMUTABLE_HISTORY_PRESENT"
+}

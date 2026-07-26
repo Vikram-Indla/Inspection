@@ -25,6 +25,14 @@ function parseEnvFile(path: string): Record<string, string> {
   return values;
 }
 
+// The governed inspector persona under either naming. `inspector@mim.gov.sa` is
+// the pre-existing Drive-sourced account; `inspector.test@mim.gov.sa` is the
+// per-role QA account this repository's .env.local actually provisions.
+const INSPECTOR_PERSONAS = new Set([
+  "inspector@mim.gov.sa",
+  "inspector.test@mim.gov.sa",
+]);
+
 export function loadPixelCredentials(webRoot: string): PixelCredentials {
   const explicit = process.env.PIXEL_ENV_FILE?.trim();
   const candidates = explicit
@@ -34,20 +42,33 @@ export function loadPixelCredentials(webRoot: string): PixelCredentials {
     (merged, path) => ({ ...merged, ...parseEnvFile(path) }),
     {},
   );
+  // PIXEL_* wins when supplied; otherwise fall back to the SAQEEL_TEST_*
+  // convention that apps/web/.env.local actually carries, so the harness reads
+  // the environment this repository provisions instead of a parallel one.
   const email =
     process.env.PIXEL_INSPECTOR_EMAIL?.trim() ||
-    fileValues.PIXEL_INSPECTOR_EMAIL?.trim();
+    fileValues.PIXEL_INSPECTOR_EMAIL?.trim() ||
+    process.env.SAQEEL_TEST_INSPECTOR_EMAIL?.trim() ||
+    fileValues.SAQEEL_TEST_INSPECTOR_EMAIL?.trim();
+  // The per-role QA accounts carry a genuinely EMPTY password, so "absent" and
+  // "empty" are different states here: ?? preserves "" as a real, usable value
+  // where || would discard it and fall through to a misleading "unavailable".
   const password =
-    process.env.PIXEL_INSPECTOR_PASSWORD ||
-    fileValues.PIXEL_INSPECTOR_PASSWORD;
-  if (!email || !password) {
+    process.env.PIXEL_INSPECTOR_PASSWORD ??
+    fileValues.PIXEL_INSPECTOR_PASSWORD ??
+    process.env.SAQEEL_TEST_PASSWORD ??
+    fileValues.SAQEEL_TEST_PASSWORD;
+  if (!email || password === undefined) {
     throw new Error(
       "Pixel credentials unavailable. Define PIXEL_INSPECTOR_EMAIL and " +
-      "PIXEL_INSPECTOR_PASSWORD in apps/web/.env.local, apps/web/.env, or PIXEL_ENV_FILE.",
+      "PIXEL_INSPECTOR_PASSWORD, or SAQEEL_TEST_INSPECTOR_EMAIL and " +
+      "SAQEEL_TEST_PASSWORD, in apps/web/.env.local, apps/web/.env, or PIXEL_ENV_FILE.",
     );
   }
-  if (email.toLowerCase() !== "inspector@mim.gov.sa") {
-    throw new Error("PIXEL_INSPECTOR_EMAIL must identify the governed inspector persona.");
+  if (!INSPECTOR_PERSONAS.has(email.toLowerCase())) {
+    throw new Error(
+      `Pixel credentials must identify the governed inspector persona; got ${email}.`,
+    );
   }
   return { email, password };
 }

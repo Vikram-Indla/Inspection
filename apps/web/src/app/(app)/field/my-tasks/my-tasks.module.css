@@ -1,28 +1,61 @@
-/* SAQEEL Field My Tasks — master/detail layout ported verbatim from
-   SAQEEL Field My Tasks.dc.html. Consumes the SAQEEL design-system tokens
+/* SAQEEL Field My Tasks — composition ported from
+   SAQEEL PWA-Field My Tasks.dc.html. Consumes the SAQEEL design-system tokens
    (var(--surface-*), var(--text-*), var(--action-primary), --border-subtle)
    linked by (app)/field/layout.tsx. The design's one bare color (#fff on an
-   active chip) is replaced by the DS token var(--text-on-action). */
+   active chip) is replaced by the DS token var(--text-on-action).
 
+   The design's list pane is a FLAT, hairline-separated row list — not a card
+   feed. Rows are `.item`/`.itemMain`; the previous bordered radius-14 card
+   chrome is gone. Controls the contract mandates but the design does not draw
+   (CR-102 search/filter/sort, CR-104 return) reuse the design's own chip and
+   button vocabulary so the pane still reads as the design's list. */
+
+/* Design: grid-template-columns:340px 1fr, collapsing at max-width:899px.
+   834 / 600 / 390 are therefore all single-pane in the design. */
 .grid { display: grid; grid-template-columns: 340px 1fr; flex: 1; min-height: 0; }
 .list { border-inline-end: 1px solid var(--border-subtle); overflow-y: auto; background: var(--surface-primary); }
 .detail { overflow-y: auto; min-width: 0; display: flex; flex-direction: column; }
 .back { display: none; }
 
-@media (max-width: 600px) {
+@media (max-width: 899px) {
   .grid { grid-template-columns: 1fr; }
   .paneList .detail { display: none; }
   .paneDetail .list { display: none; }
   .paneDetail .back { display: inline-flex; }
 }
 
-.item {
-  display: flex; align-items: flex-start; gap: 12px; width: 100%; text-align: start;
-  padding: 15px 18px; border: 0; border-block-end: 1px solid var(--border-subtle);
-  background: none; cursor: pointer; font: inherit; text-decoration: none; color: inherit;
+/* ---- header status cluster (design header: online pill + sync-now) ---- */
+.headerCluster { display: flex; align-items: center; gap: 10px; }
+.statusPill {
+  display: flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: 999px;
+  border: 1px solid currentColor; font-size: 12px; font-weight: 600; white-space: nowrap;
 }
+.statusPillOnline { background: var(--status-compliant-soft); color: var(--status-compliant-text); }
+.statusPillOffline { background: var(--status-critical-soft); color: var(--status-critical-text); }
+.statusDot { inline-size: 7px; block-size: 7px; border-radius: 50%; background: currentColor; flex: none; }
+.syncIcon { inline-size: 18px; block-size: 18px; }
+
+/* ---- list rows (design .mt-item) ---- */
+.item { border-block-end: 1px solid var(--border-subtle); background: none; }
 .item:hover { background: var(--surface-secondary); }
-.itemActive { background: var(--accent-soft); }
+/* selection must survive hover — design tints the picked row accent-soft */
+.item.itemActive, .item.itemActive:hover { background: var(--accent-soft); }
+.itemMain {
+  display: flex; align-items: flex-start; gap: 12px; inline-size: 100%; text-align: start;
+  padding: 15px 18px; font: inherit; color: inherit; text-decoration: none;
+}
+.itemId { font-size: 12px; color: var(--text-muted); }
+.itemName { font-weight: 600; font-size: 14.5px; overflow-wrap: anywhere; }
+.itemBadges { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex: none; }
+/* design fixes the status badge at 20px; the governed signal badges below it
+   keep their component height so longer labels are never clipped */
+.itemStatus { block-size: 20px; }
+/* CR-104/MVP1-M03-002 governed per-assignment actions. The design draws no
+   row action, so these carry no card chrome: they sit inside the flat row. */
+.itemActions { display: flex; gap: 8px; padding: 0 18px 12px; }
+.itemActions > * { flex: 1; min-inline-size: 0; }
+.itemActions :global(.btn) { inline-size: 100%; justify-content: center; white-space: normal; text-align: center; }
+.itemActionForm { display: grid; gap: 6px; }
 
 .kv { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .kv dt, .kv .k { font-size: 11.5px; color: var(--text-muted); }
@@ -38,24 +71,33 @@
 .sec h3 { font-size: 14px; font-weight: 600; margin: 0 0 14px; }
 .secHead { display: flex; align-items: center; gap: 10px; margin-block-end: 10px; }
 .secHead h3 { margin: 0; }
+.secHeadIcon { inline-size: 14px; block-size: 14px; }
 .title { font-size: 19px; font-weight: 700; margin-block-end: 14px; }
 
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 0; }
 
 .chiprow { display: flex; gap: 8px; overflow-x: auto; padding-block-end: 8px; margin-block-end: 14px; }
-/* Settled field-channel geometry: touch/option controls are never below 50px.
-   The design's 8px/14px padding alone yields ~33px — fine with a mouse, not
-   with a gloved thumb on the regulatory-section selector. */
-.chip {
-  flex: none; display: inline-flex; align-items: center; min-block-size: 50px;
+/* Design geometry (8px/14px, ~33px tall). Touch uplift is applied only where
+   the pointer is actually coarse, so the design's geometry is what renders on
+   the measured 834/600/390 viewports. */
+.chip,
+.filter {
+  flex: none; display: inline-flex; align-items: center;
   padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border-subtle);
   background: var(--surface-sunken); font: inherit; font-size: 13px; cursor: pointer;
   white-space: nowrap; color: var(--text-secondary); text-decoration: none;
 }
-.chipActive { background: var(--action-primary); border-color: var(--action-primary); color: var(--text-on-action); }
+.chipActive,
+.filterActive { background: var(--action-primary); border-color: var(--action-primary); color: var(--text-on-action); }
+
+@media (pointer: coarse) {
+  .chip, .filter { min-block-size: 44px; }
+  .search input, .sort { min-block-size: 44px; }
+}
 
 .regstack { display: flex; flex-direction: column; gap: 10px; }
 .regcard { border: 1px solid var(--border-subtle); border-radius: 12px; padding: 14px 16px; }
+.regcardTitle { font-weight: 600; font-size: 14px; margin-block-end: 8px; }
 
 .map {
   height: 160px; border-radius: 12px; background: var(--surface-sunken);
@@ -63,20 +105,27 @@
 }
 /* real map fills the whole card; the governed fallback keeps the centering */
 .map :global([data-map-provider]) { position: absolute; inset: 0; }
+.mapCaption {
+  position: absolute; inset-block-end: 8px; inset-inline-end: 10px;
+  font-size: 10px; color: var(--text-muted); z-index: 1;
+}
 
 /* Sticks to the bottom of the .detail scrollport, which now ends exactly at the
    top of the fixed FieldNav (z-index 60). Stays on the sticky layer so it can
-   never paint over the tab bar. Settled field-channel bottom-bar padding. */
+   never paint over the tab bar. Design: padding 14px 20px, gap 12px. */
 .actionbar {
   position: sticky; inset-block-end: 0; z-index: var(--z-sticky);
   display: flex; gap: 12px; padding: 14px 20px;
-  padding-block-end: max(var(--space-3), env(safe-area-inset-bottom));
+  padding-block-end: max(14px, env(safe-area-inset-bottom));
   background: var(--surface-primary); border-block-start: 1px solid var(--border-subtle);
 }
 
+/* Governed partial-service states. The design draws no banner, so these render
+   only when the degraded condition is real (offline, notifications source
+   unavailable) — never as steady-state chrome. */
 .connectivity,
 .alertUnavailable {
-  margin: 12px 14px 0;
+  margin: 12px 18px 0;
   border-radius: 12px;
   padding: 10px 12px;
   font-size: 12px;
@@ -87,70 +136,17 @@
 .connectivityDot { inline-size: 8px; block-size: 8px; border-radius: 50%; background: currentColor; flex: none; }
 .connectivityOnline { color: var(--status-compliant-text); background: var(--status-compliant-soft); }
 .connectivityOffline { color: var(--status-critical-text); background: var(--status-critical-soft); }
-.alertSummary {
-  display: flex; align-items: center; gap: 8px; min-block-size: 50px;
-  inline-size: calc(100% - 28px); margin: 10px 14px 0; padding: 10px 12px;
-  border: 1px solid var(--border-subtle); border-radius: 12px;
-  background: var(--status-warning-soft); color: var(--status-warning-text);
-  font: inherit; text-align: start; cursor: pointer;
-}
 
-.taskTools { display: grid; gap: 10px; padding: 14px; }
+/* CR-102 Search / Filter & Sort. Not drawn by the design; built from the
+   design's own chip geometry so the pane keeps one visual vocabulary. */
+.taskTools { display: grid; gap: 8px; padding: 12px 18px; border-block-end: 1px solid var(--border-subtle); }
 .search input,
 .sort {
-  inline-size: 100%; min-block-size: 50px; border: 1px solid var(--border-subtle);
-  border-radius: 12px; padding-inline: 12px; background: var(--surface-primary);
-  color: var(--text-primary); font: inherit;
+  inline-size: 100%; border: 1px solid var(--border-subtle); border-radius: 999px;
+  padding: 8px 14px; background: var(--surface-sunken);
+  color: var(--text-primary); font: inherit; font-size: 13px;
 }
 .filters { display: flex; gap: 8px; overflow-x: auto; padding-block-end: 2px; }
-.filter {
-  flex: none; min-block-size: 50px; padding-inline: 14px;
-  border: 1px solid var(--border-subtle); border-radius: 999px;
-  background: var(--surface-sunken); color: var(--text-secondary);
-  font: inherit; cursor: pointer; white-space: nowrap;
-}
-.filterActive {
-  border-color: var(--action-primary); background: var(--action-primary);
-  color: var(--text-on-action);
-}
 
-.taskResults { display: grid; gap: 12px; padding: 0 14px 14px; }
-.taskCard {
-  overflow: hidden; border: 1px solid var(--border-subtle); border-radius: 14px;
-  background: var(--surface-primary);
-}
-.taskMain {
-  display: flex; flex-direction: column; gap: 6px; padding: 14px;
-  color: inherit; text-decoration: none;
-}
-.taskTop { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.taskFactory { display: block; font-size: 14px; overflow-wrap: anywhere; }
-.taskDate {
-  display: block; padding-block-start: 6px;
-  border-block-start: 1px solid var(--border-subtle);
-}
-.taskSignals { display: flex; flex-wrap: wrap; gap: 6px; }
-.taskActions {
-  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 8px; padding: 12px; border-block-start: 1px solid var(--border-subtle);
-}
-.taskActions > *,
-.taskActionForm,
-.taskActionForm > button {
-  min-inline-size: 0; inline-size: 100%;
-}
-.taskActions :global(.btn) {
-  min-block-size: 50px; justify-content: center; white-space: normal; text-align: center;
-}
-.taskActionForm { display: grid; gap: 6px; }
-.empty { padding: 20px 14px; text-align: center; color: var(--text-secondary); }
-
-@media (max-width: 600px) {
-  .grid { grid-template-columns: 1fr; }
-  .paneList .detail { display: none; }
-  .paneDetail .list { display: none; }
-  .paneDetail .back { display: inline-flex; }
-  .taskResults { gap: 12px; }
-  .taskCard { border-radius: 14px; }
-  .taskActions { gap: 8px; }
-}
+.taskResults { display: block; }
+.empty { padding: 20px 18px; text-align: center; color: var(--text-secondary); }
