@@ -125,7 +125,7 @@ export type BuiltShellNavGroup = Omit<ShellNavGroupDefinition, "items"> & {
   items: BuiltShellNavItem[];
 };
 
-const ADMIN_HUBS = [
+export const ADMIN_HUBS = [
   { id: "admin-control", labelKey: "admin.hub.control", labelEn: "Control Panel", labelAr: "لوحة التحكم", itemIds: ["admin-home"] },
   { id: "admin-people", labelKey: "admin.hub.people", labelEn: "People & Access", labelAr: "المستخدمون والوصول", itemIds: ["users", "roles", "security-access", "devices"] },
   { id: "admin-rules", labelKey: "admin.hub.rules", labelEn: "Rules & Content", labelAr: "القواعد والمحتوى", itemIds: ["lookups", "surveys", "inspection-items", "localization"] },
@@ -134,6 +134,14 @@ const ADMIN_HUBS = [
   { id: "admin-connections", labelKey: "admin.hub.connections", labelEn: "Connections & Geography", labelAr: "التكاملات والجغرافيا", itemIds: ["integrations", "gis"] },
   { id: "admin-governance", labelKey: "admin.hub.governance", labelEn: "Governance & Operations", labelAr: "الحوكمة والعمليات", itemIds: ["audit", "platform-operations", "enforcement-recommendations", "bulk-violations", "enforcement-cases"] },
 ] as const;
+
+export type AuthorizedAdminHub = {
+  id: (typeof ADMIN_HUBS)[number]["id"];
+  labelKey: string;
+  labelEn: string;
+  labelAr: string;
+  items: BuiltShellNavItem[];
+};
 
 const adminRoles = ADMIN_ROLE_KEYS as readonly string[];
 // Web-portal business roles exclude the field-only Inspector (RBAC-009/010).
@@ -219,6 +227,30 @@ export function isAdminPersona(roleKeys: readonly string[]) {
   return roleKeys.some(role => adminRoles.includes(role));
 }
 
+/**
+ * The single authorization-aware discovery registry for admin chrome, command
+ * palettes and hub surfaces. Callers receive only destinations granted to the
+ * supplied role set; unauthorized labels and hrefs never leave this boundary.
+ */
+export function buildAuthorizedAdminDiscovery(roleKeys: readonly string[]): AuthorizedAdminHub[] {
+  const roles = new Set(roleKeys);
+  const administration = SHELL_NAVIGATION.find(group => group.id === "administration");
+  if (!administration) return [];
+
+  const authorizedItems = administration.items.flatMap(item => {
+    if (!item.roles.some(role => roles.has(role))) return [];
+    return [{ ...item, enabled: true }];
+  });
+
+  return ADMIN_HUBS.flatMap(hub => {
+    const items = hub.itemIds.flatMap(id => {
+      const item = authorizedItems.find(candidate => candidate.id === id);
+      return item ? [item] : [];
+    });
+    return items.length ? [{ ...hub, items }] : [];
+  });
+}
+
 export function buildShellNavigation(roleKeys: readonly string[]): BuiltShellNavGroup[] {
   const roles = new Set(roleKeys);
   // Field-only personas get the field channel only: no web-portal destinations,
@@ -243,16 +275,9 @@ export function buildShellNavigation(roleKeys: readonly string[]): BuiltShellNav
   // Admin navigation is hub-first. Authorization still happens above, before
   // hub construction, so empty hubs and unauthorized child destinations never
   // reach the DOM. Existing hrefs remain unchanged for deep-link compatibility.
-  return projected.flatMap(group => {
-    if (group.id !== "administration") return [group];
-    return ADMIN_HUBS.flatMap(hub => {
-      const items = hub.itemIds.flatMap(id => {
-        const item = group.items.find(candidate => candidate.id === id);
-        return item ? [item] : [];
-      });
-      return items.length ? [{ ...hub, items }] : [];
-    });
-  });
+  return projected.flatMap(group =>
+    group.id === "administration" ? buildAuthorizedAdminDiscovery(roleKeys) : [group]
+  );
 }
 
 export function isShellRouteCurrent(current: string, href: string) {

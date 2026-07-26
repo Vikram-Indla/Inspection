@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
 import Shell from "@/components/Shell";
+import AdminControlPanel, {
+  type AdminControlHub,
+} from "@/components/admin/AdminControlPanel";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
@@ -19,77 +22,15 @@ export const dynamic = "force-dynamic";
 type Res = { error: unknown; count: number | null };
 const ok = (r: Res) => !r.error;
 
-type ControlCard = {
-  glyph: string;
-  titleEn: string;
-  titleAr: string;
-  descEn: string;
-  descAr: string;
-  href: string;
-  roles?: readonly string[];
-};
-type ControlGroup = {
-  titleEn: string;
-  titleAr: string;
-  cards: readonly ControlCard[];
-};
-
-const CONTROL_GROUPS: readonly ControlGroup[] = [
-  {
-    titleEn: "People & access",
-    titleAr: "المستخدمون والصلاحيات",
-    cards: [
-      { glyph: "Us", titleEn: "Users", titleAr: "المستخدمون", descEn: "Assign people to governed roles and review access.", descAr: "إسناد المستخدمين إلى الأدوار المحكومة ومراجعة الوصول.", href: "/admin/access", roles: ["security_admin"] },
-      { glyph: "Ro", titleEn: "Roles", titleAr: "الأدوار", descEn: "Review role capabilities and governed grants.", descAr: "مراجعة قدرات الأدوار والمنح المحكومة.", href: "/admin/access?view=roles", roles: ["security_admin"] },
-      { glyph: "Ac", titleEn: "Security & Access Review", titleAr: "مراجعة الأمن والوصول", descEn: "Purpose-bound grants and access oversight.", descAr: "المنح محددة الغرض والرقابة على الوصول.", href: "/admin/security-access", roles: ["security_admin"] },
-    ],
-  },
-  {
-    titleEn: "Inspection rules & forms",
-    titleAr: "قواعد ونماذج التفتيش",
-    cards: [
-      { glyph: "Ru", titleEn: "Inspection Rules", titleAr: "قواعد التفتيش", descEn: "Regulations, clauses and linked inspection items.", descAr: "اللوائح والبنود وعناصر التفتيش المرتبطة.", href: "/admin/regulations", roles: ["compliance_admin"] },
-      { glyph: "It", titleEn: "Inspection Items", titleAr: "بنود التفتيش", descEn: "Response, evidence and violation rules.", descAr: "قواعد الاستجابة والأدلة والمخالفات.", href: "/admin/items", roles: ["compliance_admin", "form_admin"] },
-      { glyph: "Fm", titleEn: "Inspection Forms", titleAr: "نماذج التفتيش", descEn: "Checklist packages and immutable published versions.", descAr: "حزم قوائم التحقق والإصدارات المنشورة غير القابلة للتغيير.", href: "/admin/packages", roles: ["form_admin", "compliance_admin"] },
-      { glyph: "Vn", titleEn: "Violations & Penalties", titleAr: "المخالفات والعقوبات", descEn: "Violation codes and governed penalty mappings.", descAr: "رموز المخالفات وربط العقوبات المحكوم.", href: "/admin/violations", roles: ["compliance_admin"] },
-    ],
-  },
-  {
-    titleEn: "Scoring & intelligence",
-    titleAr: "التقييم والذكاء",
-    cards: [
-      { glyph: "Rk", titleEn: "Risk Settings", titleAr: "إعدادات المخاطر", descEn: "Versioned risk models and policy-held settings.", descAr: "نماذج مخاطر ذات إصدارات وإعدادات خاضعة للسياسة.", href: "/admin/risk", roles: ["risk_owner"] },
-      { glyph: "AI", titleEn: "AI Insights", titleAr: "رؤى الذكاء الاصطناعي", descEn: "Advisory dockets with mandatory human disposition.", descAr: "ملفات استشارية تتطلب قراراً بشرياً.", href: "/ai/suggestions" },
-      { glyph: "KP", titleEn: "Dashboard KPIs", titleAr: "مؤشرات لوحة القيادة", descEn: "Metric definitions, formulae and delivery state.", descAr: "تعريفات المؤشرات وصيغها وحالة إتاحتها.", href: "/admin/dashboard-config", roles: ["compliance_admin"] },
-    ],
-  },
-  {
-    titleEn: "Operations setup",
-    titleAr: "إعداد العمليات",
-    cards: [
-      { glyph: "Wf", titleEn: "Workflow Settings", titleAr: "إعدادات سير العمل", descEn: "Versioned lifecycle transitions and guarded publication.", descAr: "انتقالات دورة الحياة ذات الإصدارات والنشر المحكوم.", href: "/admin/workflows", roles: ["workflow_admin"] },
-      { glyph: "Ex", titleEn: "Execution Settings", titleAr: "إعدادات التنفيذ", descEn: "Capacity, visit modes, evidence and offline policy.", descAr: "السعة وأنماط الزيارة وسياسة الأدلة والعمل دون اتصال.", href: "/admin/execution" },
-      { glyph: "Nt", titleEn: "Notification Settings", titleAr: "إعدادات الإشعارات", descEn: "Channels, rule versions and delivery testing.", descAr: "القنوات وإصدارات القواعد واختبار التسليم.", href: "/admin/notifications" },
-      { glyph: "Mp", titleEn: "Map Settings", titleAr: "إعدادات الخريطة", descEn: "Governed geofence settings and spatial layers.", descAr: "إعدادات السياج الجغرافي والطبقات المكانية المحكومة.", href: "/admin/gis", roles: ["gis_admin"] },
-      { glyph: "Cx", titleEn: "System Connections", titleAr: "اتصالات النظام", descEn: "Endpoint contracts and fail-closed dependency truth.", descAr: "عقود نقاط التكامل وحقيقة الاعتماد الآمنة.", href: "/admin/integrations", roles: ["security_admin", "workflow_admin"] },
-      { glyph: "Dv", titleEn: "Trusted Devices", titleAr: "الأجهزة الموثوقة", descEn: "Registered field devices and trust status.", descAr: "أجهزة الميدان المسجلة وحالة الثقة.", href: "/admin/devices", roles: ["security_admin"] },
-    ],
-  },
-  {
-    titleEn: "Records & oversight",
-    titleAr: "السجلات والرقابة",
-    cards: [
-      { glyph: "Ap", titleEn: "Awaiting Approval", titleAr: "بانتظار الاعتماد", descEn: "Configuration changes pending maker-checker review.", descAr: "تغييرات التهيئة بانتظار مراجعة المُعدّ والمراجع.", href: "/admin/compliance-approvals" },
-      { glyph: "Rq", titleEn: "Configuration Requests", titleAr: "طلبات التهيئة", descEn: "Change envelopes and their review workspace.", descAr: "حزم التغيير ومساحة عمل مراجعتها.", href: "/admin/compliance-requests" },
-      { glyph: "Lg", titleEn: "Activity Log", titleAr: "سجل النشاط", descEn: "Append-only audit of governed changes.", descAr: "سجل تدقيق إلحاقي للتغييرات المحكومة.", href: "/admin/audit" },
-      { glyph: "Op", titleEn: "System Operations", titleAr: "عمليات النظام", descEn: "Error queue, endpoint state and feature flags.", descAr: "قائمة الأخطاء وحالة نقاط التكامل وميزات النظام.", href: "/admin/operations", roles: ["security_admin", "workflow_admin"] },
-      { glyph: "Ln", titleEn: "Language & Translations", titleAr: "اللغة والترجمة", descEn: "Reference strings, coverage and revision history.", descAr: "النصوص المرجعية والتغطية وسجل المراجعات.", href: "/admin/localization", roles: ["compliance_admin", "security_admin", "workflow_admin"] },
-      { glyph: "Bv", titleEn: "Issue Multiple Violations", titleAr: "إصدار عدة مخالفات", descEn: "Bulk issuance behind a permanent-write gate.", descAr: "إصدار جماعي خلف بوابة كتابة دائمة.", href: "/admin/bulk-violations", roles: ["compliance_admin"] },
-      { glyph: "Er", titleEn: "Enforcement Recommendations", titleAr: "توصيات الإنفاذ", descEn: "Human decisions for enforcement recommendations.", descAr: "قرارات بشرية لتوصيات الإنفاذ.", href: "/admin/enforcement-recommendations", roles: ["compliance_admin"] },
-      { glyph: "Ca", titleEn: "Violation Cases", titleAr: "قضايا المخالفات", descEn: "Case lifecycle from inspections and violations.", descAr: "دورة حياة القضايا الناتجة عن التفتيش والمخالفات.", href: "/enforcement", roles: ["compliance_admin"] },
-    ],
-  },
-];
+const ADMIN_HUB_ORDER = [
+  { id: "admin-control", en: "Control Panel", ar: "لوحة التحكم" },
+  { id: "admin-people", en: "People & Access", ar: "المستخدمون والوصول" },
+  { id: "admin-rules", en: "Rules & Content", ar: "القواعد والمحتوى" },
+  { id: "admin-planning", en: "Planning & Execution", ar: "التخطيط والتنفيذ" },
+  { id: "admin-risk", en: "Risk & Intelligence", ar: "المخاطر والذكاء" },
+  { id: "admin-connections", en: "Connections & Geography", ar: "التكاملات والجغرافيا" },
+  { id: "admin-governance", en: "Governance & Operations", ar: "الحوكمة والعمليات" },
+] as const;
 
 // Interpolate a translated template's single {slot} with a JSX node, preserving order.
 function withSlot(tmpl: string, slot: string, node: ReactNode): ReactNode {
@@ -138,7 +79,22 @@ export default async function AdminHome() {
   const familiesLabel = actFamilies.length
     ? actFamilies.join(sep)
     : t("admin.overview.r2.scope.none", "none");
-  const roleSet = new Set(roles);
+  const administrationById = new Map(administration.map(group => [group.id, group]));
+  // The seven-hub IA mirrors the shared navigation contract. The projection has
+  // already removed unauthorized destinations, so no unavailable tool name or
+  // href is sent to the client.
+  const controlHubs: AdminControlHub[] = ADMIN_HUB_ORDER.map(hub => {
+    const group = administrationById.get(hub.id);
+    return {
+      id: hub.id,
+      label: locale === "ar" ? hub.ar : hub.en,
+      tools: (group?.items ?? []).map(item => ({
+        id: item.id,
+        href: item.href,
+        label: t(item.labelKey, locale === "ar" ? item.labelAr : item.labelEn),
+      })),
+    };
+  });
 
   const engines = enginesRes.data ?? [];
 
@@ -232,49 +188,12 @@ export default async function AdminHome() {
         </div>
       ) : null}
 
-      <section
-        className="stack admin-control-panel"
-        aria-labelledby="admin-control-panel-heading"
-        data-saqeel-design="WA-DES-020"
-      >
-        <div className="admin-control-panel__intro">
-          <h3 id="admin-control-panel-heading" style={{ margin: 0 }}>
-            {t("admin.controlPanel.heading", "Platform configuration")}
-          </h3>
-          <p className="t-caption" style={{ margin: 0, maxWidth: "70ch" }}>
-            {t(
-              "admin.controlPanel.intro",
-              "Configure people, rules, forms, scoring and connections. Each area opens its governed workspace; visibility does not grant permission.",
-            )}
-          </p>
-        </div>
-        {CONTROL_GROUPS.map(group => {
-          const authorizedCards = group.cards.filter(card =>
-            !card.roles?.length || card.roles.some(role => roleSet.has(role)),
-          );
-          if (!authorizedCards.length) return null;
-          const first = authorizedCards[0];
-          return (
-          <section className="stack admin-control-group" key={group.titleEn}>
-            <div className="admin-control-grid">
-              <a className="panel stack sq-link admin-control-card admin-hub-card" data-control-card
-                href={first.href} style={{ textDecoration: "none", color: "inherit" }}>
-                <strong>{locale === "ar" ? group.titleAr : group.titleEn}</strong>
-                <span className="t-caption">
-                  {fill(
-                    t("admin.controlPanel.authorizedTools", "{count} authorized tools"),
-                    { count: authorizedCards.length },
-                  )}
-                </span>
-                <span className="admin-hub-card__links">
-                  {authorizedCards.slice(0, 3).map(card => locale === "ar" ? card.titleAr : card.titleEn).join(locale === "ar" ? "، " : ", ")}
-                </span>
-              </a>
-            </div>
-          </section>
-          );
-        })}
-      </section>
+      <AdminControlPanel
+        hubs={controlHubs}
+        locale={locale}
+        preferenceOwner={user?.id ?? "anonymous"}
+        unavailableSources={failed}
+      />
 
       <section className="panel stack" aria-labelledby="cd004-spine-h" style={{ padding: "var(--space-6)" }}>
         <h3 id="cd004-spine-h" style={{ margin: 0 }}>{t("admin.overview.r2.spine.caption", "Configuration evidence spine")}</h3>

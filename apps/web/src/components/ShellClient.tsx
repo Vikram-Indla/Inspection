@@ -132,9 +132,13 @@ export default function ShellClient({
     : "home";
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [compactNavigation, setCompactNavigation] = useState(false);
+  const [activeMobileAdminHub, setActiveMobileAdminHub] = useState<string | null>(null);
   const [accountOpen, setAccountOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [adminPaletteOpen, setAdminPaletteOpen] = useState(false);
+  const [adminPaletteQuery, setAdminPaletteQuery] = useState("");
   const [globalResults, setGlobalResults] = useState<GlobalSearchResult[]>([]);
   const [searchState, setSearchState] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const initialDates = useMemo(defaultDateRange, []);
@@ -156,6 +160,9 @@ export default function ShellClient({
   const accountMenuRef = useRef<HTMLDivElement>(null);
   const [accountMenuPos, setAccountMenuPos] = useState<{ top: number; left?: number; right?: number } | null>(null);
   const searchWrapRef = useRef<HTMLDivElement>(null);
+  const adminPaletteTriggerRef = useRef<HTMLButtonElement>(null);
+  const adminPaletteInputRef = useRef<HTMLInputElement>(null);
+  const adminPaletteRestoreRef = useRef<HTMLElement | null>(null);
   const [searchRect, setSearchRect] = useState<{ top: number; left: number; width: number } | null>(null);
 
   useEffect(() => {
@@ -165,6 +172,18 @@ export default function ShellClient({
     setDateTo(params.get("to") ?? initialDates.to);
     setRegionScope(params.get("region") ?? "");
   }, []);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 1024px), (pointer: coarse)");
+    const update = () => setCompactNavigation(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    if (!drawerOpen) setActiveMobileAdminHub(null);
+  }, [drawerOpen]);
 
   // The persistent route-group layout survives navigation. Pathname changes
   // only after the destination commits, so this clears acknowledgement without
@@ -272,6 +291,40 @@ export default function ShellClient({
   }, [accountOpen]);
 
   useEffect(() => {
+    if (!adminWorkspace) return;
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLocaleLowerCase() === "k") {
+        event.preventDefault();
+        adminPaletteRestoreRef.current = document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : adminPaletteTriggerRef.current;
+        setAdminPaletteOpen(true);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [adminWorkspace]);
+
+  useEffect(() => {
+    if (!adminPaletteOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    requestAnimationFrame(() => adminPaletteInputRef.current?.focus());
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      setAdminPaletteOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onKey);
+      (adminPaletteRestoreRef.current ?? adminPaletteTriggerRef.current)?.focus();
+      adminPaletteRestoreRef.current = null;
+    };
+  }, [adminPaletteOpen]);
+
+  useEffect(() => {
     if (!accountOpen) return;
     // The menu is portaled to document.body — no longer a DOM descendant of
     // accountRef — so a click inside the portaled menu must also count as
@@ -293,6 +346,40 @@ export default function ShellClient({
     if (!normalized) return [];
     return groups.flatMap(group => group.items).filter(item => item.enabled && item.label.toLocaleLowerCase(locale).includes(normalized));
   }, [groups, locale, query]);
+
+  const adminPaletteCopy = locale === "ar"
+    ? {
+        open: "فتح أدوات الإدارة",
+        title: "الانتقال إلى أداة إدارية",
+        search: "ابحث في أدوات الإدارة المصرح بها",
+        results: (count: number) => `${count} نتيجة مصرح بها`,
+        empty: "لا توجد أدوات مطابقة",
+        close: "إغلاق",
+      }
+    : {
+        open: "Open admin tools",
+        title: "Go to an admin tool",
+        search: "Search authorized admin tools",
+        results: (count: number) => `${count} authorized ${count === 1 ? "result" : "results"}`,
+        empty: "No matching tools",
+        close: "Close",
+      };
+  const adminPaletteResults = useMemo(() => {
+    const normalized = adminPaletteQuery.trim().toLocaleLowerCase(locale);
+    return groups
+      .filter(group => group.id.startsWith("admin-"))
+      .flatMap(group => group.items.map(item => ({ ...item, hubLabel: group.label })))
+      .filter(item =>
+        !normalized
+        || item.label.toLocaleLowerCase(locale).includes(normalized)
+        || item.hubLabel.toLocaleLowerCase(locale).includes(normalized)
+      );
+  }, [adminPaletteQuery, groups, locale]);
+
+  function closeAdminPalette() {
+    setAdminPaletteOpen(false);
+    setAdminPaletteQuery("");
+  }
 
   const routeScope = shellScopeForRoute(current);
 
@@ -404,6 +491,38 @@ export default function ShellClient({
     );
   }
 
+  function renderMobileAdminDiscovery() {
+    const adminGroups = groups.filter(group => group.id.startsWith("admin-"));
+    const activeHub = adminGroups.find(group => group.id === activeMobileAdminHub);
+    if (activeHub) {
+      return (
+        <section className="ax-nav-group" data-mobile-admin-hub={activeHub.id}>
+          <button className="ax-nav-group__trigger is-administration" type="button"
+            aria-label={locale === "ar" ? "العودة إلى مجموعات الإدارة" : "Back to admin hubs"}
+            onClick={() => setActiveMobileAdminHub(null)}>
+            <span aria-hidden="true">{locale === "ar" ? "→" : "←"}</span>
+            <span className="ax-nav-label">{locale === "ar" ? "رجوع" : "Back"}</span>
+          </button>
+          <h2 className="ax-nav-subgroup__label">{activeHub.label}</h2>
+          {activeHub.items.map(item => renderNavItem(item))}
+        </section>
+      );
+    }
+    return (
+      <div aria-label={locale === "ar" ? "مجموعات الإدارة" : "Admin hubs"}>
+        {adminGroups.map(group => (
+          <button className="ax-nav-group__trigger is-administration" type="button"
+            key={group.id} aria-label={group.label}
+            onClick={() => setActiveMobileAdminHub(group.id)}>
+            <span className="ax-nav-icon"><Icon name="admin" /></span>
+            <span className="ax-nav-label">{group.label}</span>
+            <span aria-hidden="true">{locale === "ar" ? "←" : "→"}</span>
+          </button>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className={`ax-shell${collapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}${pendingHref ? " is-navigating" : ""}`}
       aria-busy={pendingHref ? "true" : undefined} onClickCapture={handleShellNavigation}>
@@ -437,7 +556,9 @@ export default function ShellClient({
         </div>
 
             <div className="ax-shell__groups">
-              {groups.map(renderNavGroup)}
+              {adminWorkspace && compactNavigation && drawerOpen
+                ? renderMobileAdminDiscovery()
+                : groups.map(renderNavGroup)}
             </div>
       </nav>
 
@@ -508,7 +629,20 @@ export default function ShellClient({
                     {regions.map(region => <option value={region} key={region}>{region}</option>)}
                   </select>
                 </label>
-            </div> : <div className="ax-pagehead__workspace-label">{strings.primary}</div>}
+            </div> : (
+              <div className="ax-pagehead__workspace-label">
+                <span>{strings.primary}</span>
+                <button ref={adminPaletteTriggerRef} type="button"
+                  aria-label={`${adminPaletteCopy.open} (Ctrl/⌘ K)`}
+                  aria-haspopup="dialog" aria-expanded={adminPaletteOpen}
+                  onClick={() => {
+                    adminPaletteRestoreRef.current = adminPaletteTriggerRef.current;
+                    setAdminPaletteOpen(true);
+                  }}>
+                  {adminPaletteCopy.open} <kbd>⌘K</kbd>
+                </button>
+              </div>
+            )}
             <div className="ax-pagehead__actions">
               <ThemeToggle className="ax-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
               {/* The bell renders for every persona (2026-07-26 ruling: one
@@ -552,6 +686,67 @@ export default function ShellClient({
         </header>
         {children}
       </main>
+
+      {adminWorkspace && adminPaletteOpen && typeof document !== "undefined" && createPortal(
+        <div role="presentation" onMouseDown={event => {
+          if (event.target === event.currentTarget) closeAdminPalette();
+        }} style={{
+          position: "fixed", inset: 0, zIndex: 10000, display: "grid",
+          alignItems: "start", justifyItems: "center", padding: "min(12vh, 7rem) 1rem 1rem",
+          background: "rgba(4, 9, 14, .72)", backdropFilter: "blur(4px)",
+        }}>
+          <section role="dialog" aria-modal="true" aria-labelledby="admin-palette-title"
+            dir={locale === "ar" ? "rtl" : "ltr"}
+            style={{
+              inlineSize: "min(42rem, 100%)", maxBlockSize: "min(42rem, 78vh)",
+              display: "flex", flexDirection: "column", overflow: "hidden",
+              border: "1px solid var(--sq-border, #39434d)", borderRadius: "1rem",
+              background: "var(--sq-surface, #171c22)", color: "var(--sq-text, #f4f6f8)",
+              boxShadow: "0 24px 80px rgba(0,0,0,.45)",
+            }}>
+            <div style={{ display: "flex", alignItems: "center", gap: ".75rem", padding: "1rem 1rem .75rem" }}>
+              <strong id="admin-palette-title" style={{ flex: 1 }}>{adminPaletteCopy.title}</strong>
+              <button type="button" aria-label={adminPaletteCopy.close} onClick={closeAdminPalette}>Esc</button>
+            </div>
+            <input ref={adminPaletteInputRef} type="search" value={adminPaletteQuery}
+              aria-controls="admin-palette-results" aria-describedby="admin-palette-count"
+              placeholder={adminPaletteCopy.search} aria-label={adminPaletteCopy.search}
+              onChange={event => setAdminPaletteQuery(event.target.value)}
+              style={{
+                margin: "0 1rem .75rem", padding: ".8rem 1rem", borderRadius: ".65rem",
+                border: "1px solid var(--sq-border, #39434d)",
+                background: "var(--sq-surface-raised, #20262d)", color: "inherit",
+              }} />
+            <p id="admin-palette-count" role="status" aria-live="polite"
+              style={{ margin: "0 1rem .5rem", color: "var(--sq-text-muted, #aab2bd)", fontSize: ".875rem" }}>
+              {adminPaletteCopy.results(adminPaletteResults.length)}
+            </p>
+            <div id="admin-palette-results" role="listbox" aria-label={adminPaletteCopy.title}
+              style={{ overflowY: "auto", padding: "0 .5rem 1rem" }}>
+              {adminPaletteResults.map(item => (
+                <Link key={item.id} role="option" href={item.href} data-next-spa="true" prefetch={false}
+                  onClick={closeAdminPalette}
+                  style={{
+                    display: "flex", alignItems: "center", gap: ".75rem", padding: ".75rem",
+                    borderRadius: ".6rem", color: "inherit", textDecoration: "none",
+                  }}>
+                  <span aria-hidden="true"><Icon name={item.icon} /></span>
+                  <span style={{ display: "grid" }}>
+                    <strong>{item.label}</strong>
+                    <small style={{ color: "var(--sq-text-muted, #aab2bd)" }}>{item.hubLabel}</small>
+                  </span>
+                </Link>
+              ))}
+              {!adminPaletteResults.length ? (
+                <p style={{ padding: "1rem", textAlign: "center", color: "var(--sq-text-muted, #aab2bd)" }}>
+                  {adminPaletteCopy.empty}
+                </p>
+              ) : null}
+            </div>
+          </section>
+        </div>,
+        document.body,
+      )}
 
       {/* Persistent tab bar — WA-PWA-TAB-r1 (designs/pwa/pwa/pwa-tabbar.js).
           The five tabs, their labels and their icons are the design's, not ours:

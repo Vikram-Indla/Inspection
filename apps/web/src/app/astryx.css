@@ -618,7 +618,7 @@ button.ax-shell-scope { cursor: pointer; }
 
 /* WA-DES-020 — compact admin control-plane composition. The gateway is a
    dense launch surface, not a stack of oversized marketing cards. */
-.admin-control-panel { gap: var(--ax-space-400); }
+.admin-control-panel { display: flex; flex-direction: column; gap: var(--ax-space-300); }
 .admin-control-panel__intro {
   display: flex; align-items: flex-end; justify-content: space-between;
   gap: var(--ax-space-200); padding-block-end: var(--ax-space-200);
@@ -627,25 +627,70 @@ button.ax-shell-scope { cursor: pointer; }
 .admin-control-panel__intro h3,
 .admin-control-panel__intro p { margin: 0; }
 .admin-control-panel__intro p { max-inline-size: 72ch; }
-.admin-control-group { gap: var(--ax-space-150); }
-.admin-control-group__heading {
-  display: flex; align-items: baseline; gap: var(--ax-space-150); flex-wrap: wrap;
-}
-.admin-control-group__heading h4 { margin: 0; }
-.admin-control-grid {
+.admin-hub-grid {
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--ax-space-150);
 }
-.admin-control-card {
-  min-block-size: 104px; padding: var(--ax-space-200); gap: var(--ax-space-100);
-  border-color: var(--ax-color-border); box-shadow: none;
-  transition: border-color var(--ax-motion-fast), background var(--ax-motion-fast), transform var(--ax-motion-fast);
+.admin-hub-summary {
+  min-inline-size: 0; padding: 0; overflow: clip; box-shadow: none;
 }
-.admin-control-card:hover {
-  border-color: color-mix(in srgb, var(--ax-color-primary) 45%, var(--ax-color-border));
-  background: var(--ax-color-primary-tint); transform: translateY(-1px);
+.admin-hub-summary summary {
+  min-block-size: 88px; display: flex; align-items: center;
+  justify-content: space-between; gap: var(--ax-space-150);
+  padding: var(--ax-space-200); cursor: pointer; list-style: none;
+  transition: background var(--ax-motion-fast);
 }
-.admin-hub-card__links { color: var(--ax-color-text-secondary); font: var(--ax-text-caption); }
+.admin-hub-summary summary::-webkit-details-marker { display: none; }
+.admin-hub-summary summary:hover { background: var(--ax-color-primary-tint); }
+.admin-hub-summary summary:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -3px; }
+.admin-hub-summary summary > span:first-child {
+  min-inline-size: 0; display: flex; flex-direction: column; gap: var(--ax-space-050);
+}
+.admin-hub-summary summary strong { overflow-wrap: anywhere; }
+.admin-hub-summary summary small { color: var(--ax-color-text-secondary); font: var(--ax-text-micro); }
+.admin-hub-summary__chevron { flex: 0 0 auto; transition: transform var(--ax-motion-fast); }
+.admin-hub-summary[open] .admin-hub-summary__chevron { transform: rotate(180deg); }
+.admin-tool-list {
+  display: flex; flex-direction: column; gap: 0; margin: 0;
+  padding: 0 var(--ax-space-150) var(--ax-space-150); list-style: none;
+}
+.admin-tool-list li {
+  min-inline-size: 0; display: flex; align-items: center;
+  border-block-start: 1px solid var(--ax-color-border);
+}
+.admin-tool-list a {
+  min-inline-size: 0; flex: 1; padding: var(--ax-space-100) var(--ax-space-050);
+  color: var(--ax-color-text); font: var(--ax-text-caption);
+  text-decoration: none; overflow-wrap: anywhere;
+}
+.admin-tool-list a:hover { color: var(--ax-color-primary-hover); text-decoration: underline; text-underline-offset: 3px; }
+.admin-tool-list a:focus-visible,
+.admin-favorite:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.admin-favorite {
+  flex: 0 0 auto; inline-size: 36px; block-size: 36px; display: grid;
+  place-items: center; border: 0; border-radius: var(--ax-radius-standard);
+  background: transparent; color: var(--ax-color-text-secondary); cursor: pointer;
+}
+.admin-favorite:hover,
+.admin-favorite.is-active { background: var(--ax-color-primary-tint); color: var(--ax-color-primary-strong); }
+.admin-all-tools,
+.admin-personal-card { padding: var(--ax-space-200); box-shadow: none; }
+.admin-all-tools h4,
+.admin-personal-card h4 { margin: 0; }
+.admin-all-tools .admin-tool-list {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 var(--ax-space-200); padding: var(--ax-space-100) 0 0;
+}
+.admin-personal-grid {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--ax-space-150);
+}
+.admin-personal-card { min-inline-size: 0; display: flex; flex-direction: column; gap: var(--ax-space-100); }
+.admin-personal-card .admin-tool-list { padding: 0; }
+.admin-local-note {
+  margin: 0; color: var(--ax-color-text-secondary); font: var(--ax-text-micro);
+}
+.admin-empty { margin: 0; color: var(--ax-color-text-secondary); }
 
 /* Drawer breakpoint. Product-Owner decision 2026-07-26: at iPad size — real
    device or responsive window — the console shows the hamburger AND the tab
@@ -708,7 +753,9 @@ button.ax-shell-scope { cursor: pointer; }
   .ax-shell-controls { flex-wrap: wrap; }
   .ax-shell-account__identity { display: none; }
   .ax-content { padding: var(--ax-space-200); }
-  .admin-control-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-hub-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-personal-grid { grid-template-columns: minmax(0, 1fr); }
+  .admin-all-tools .admin-tool-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* DEF-UX-002 — between the full desktop sidebar (>=900px, no drawer collapse
@@ -741,8 +788,10 @@ button.ax-shell-scope { cursor: pointer; }
   .ax-pagehead__context > h2 { min-inline-size: 0; overflow-wrap: anywhere; word-break: break-word; }
   .admin-control-panel { gap: var(--ax-space-300); }
   .admin-control-panel__intro { align-items: flex-start; flex-direction: column; }
-  .admin-control-grid { grid-template-columns: minmax(0, 1fr); }
-  .admin-control-card { min-block-size: 0; }
+  .admin-control-panel__intro .btn { inline-size: 100%; }
+  .admin-hub-grid { grid-template-columns: minmax(0, 1fr); }
+  .admin-hub-summary summary { min-block-size: 72px; }
+  .admin-all-tools .admin-tool-list { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* Command / filter bar */

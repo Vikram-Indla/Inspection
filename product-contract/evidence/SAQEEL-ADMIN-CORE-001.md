@@ -72,6 +72,32 @@ mutations.
     `1440×900`, `1024×768`, `412×915`, `390×844`, and `320×800`;
   - horizontal overflow is at most one pixel at every matrix point.
 
+The post-consolidation suite additionally covers:
+
+- the seven authorization-filtered admin hubs;
+- equality between the authorized rail destinations and the `Ctrl/Cmd+K`
+  command-palette results;
+- absence of an unauthorized Dashboard result from the palette;
+- direct reachability of every destination projected by the authorized
+  discovery registry;
+- palette focus entry, Escape dismissal, and trigger-focus restoration;
+- honest empty states plus device-local, per-user favorite persistence;
+- the added `768×1024` EN/LTR and AR/RTL matrix point;
+- mobile hub drill-in with localized Back, plus drawer Escape dismissal and
+  focus restoration in both languages.
+
+The repository's governed credential loader is used by the suite:
+`SAQEEL_TEST_PASSWORD` and `SAQEEL_TEST_COMPLIANCE_ADMIN_EMAIL` may come from
+the process, `apps/web/.env.local`, `apps/web/.env`, or `E2E_ENV_FILE`.
+An existing generated session may instead be supplied read-only through
+`SAQEEL_TEST_ADMIN_STORAGE_STATE`. Credentials and session values are not
+committed or printed. The canonical checkout environment available during
+this audit contained Supabase connectivity but no `SAQEEL_TEST_*` persona
+settings. Its existing generated Admin state was attempted but was no longer
+accepted by the application, so the new signed-in assertions remain pending
+rerun rather than being reported as passed. Typecheck, 15
+source/authorization tests, and the anonymous gateway test passed.
+
 ## Corrections made
 
 1. `/admin` now resolves the current `administration` navigation group and
@@ -108,6 +134,18 @@ mutations.
     tablet and one-column mobile launch grid with reduced card height, clearer
     section rhythm, logical-property RTL support and restrained interaction
     feedback.
+15. Administration discovery is organized into seven role-filtered hubs backed
+    by the same authorization registry as the rail and command palette.
+16. `Ctrl/Cmd+K` opens an authorized-only bilingual admin command palette with
+    result-count announcements, Escape handling and focus restoration.
+17. The Control Panel exposes a deliberate “View all authorized tools” path so
+    consolidation does not remove functionality or deep-link reachability.
+18. Favorites and recent areas are capped at five, namespaced per authenticated
+    user, filtered against the current authorization set, and explicitly
+    described as device-local rather than authoritative server activity.
+19. Empty favorites and recents remain honest; no activity is invented.
+20. “Needs attention” reports only observed configuration-read failures and
+    explicitly avoids presenting a platform-health verdict.
 
 ## Design critique consolidation
 
@@ -147,9 +185,12 @@ consolidated implementation contract is:
 
 ## Certification boundary
 
-DEC-036 removes the route-authority blocker. This evidence closes the two
-board pending audits and establishes route, shell, responsive, bilingual,
-permission-summary, representative navigation, console, and anonymous-access
-behavior. It does not claim measured pixel parity or complete requirement-level
-certification for `CR-449..CR-478`; those require their named visual and
-acceptance evidence rather than a percentage inferred from this focused suite.
+DEC-036 removes the route-authority blocker. Earlier evidence established
+route, shell, responsive, bilingual, permission-summary, representative
+navigation, console, and anonymous-access behavior. The consolidated source
+and authorization contracts pass, but this revision is not recertified as
+100% until the signed-in suite above runs with an externally supplied seeded
+persona. It also does not claim measured pixel parity or complete
+requirement-level certification for `CR-449..CR-478`; those require their
+named visual and acceptance evidence rather than a percentage inferred from
+this focused suite.

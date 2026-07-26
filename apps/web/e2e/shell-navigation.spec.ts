@@ -1,5 +1,13 @@
 import { test, expect } from "@playwright/test";
-import { buildShellNavigation, isShellRouteCurrent, shellScopeForRoute, isFieldOnlyPersona } from "../src/lib/shell-navigation";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import {
+  buildAuthorizedAdminDiscovery,
+  buildShellNavigation,
+  isShellRouteCurrent,
+  shellScopeForRoute,
+  isFieldOnlyPersona,
+} from "../src/lib/shell-navigation";
 import { homeForRoles } from "../src/lib/role-home";
 import { storageStatePath } from "./personas";
 
@@ -52,6 +60,36 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
         "admin-risk", "admin-connections", "admin-governance",
       ]);
     expect(composed.some(item => item.visibility === "business")).toBe(false);
+  });
+
+  test("authorized admin discovery is the least-privilege hub and destination registry", () => {
+    const security = buildAuthorizedAdminDiscovery(["security_admin"]);
+    const securityItems = security.flatMap(hub => hub.items);
+    expect(securityItems.length).toBeGreaterThan(0);
+    expect(securityItems.every(item => item.enabled && item.roles.includes("security_admin"))).toBe(true);
+    expect(securityItems.map(item => item.id)).toContain("users");
+    expect(securityItems.map(item => item.id)).toContain("devices");
+    expect(securityItems.map(item => item.id)).not.toContain("risk");
+    expect(securityItems.map(item => item.id)).not.toContain("surveys");
+    expect(security.flatMap(hub => [hub.labelEn, hub.labelAr]).every(Boolean)).toBe(true);
+
+    expect(buildAuthorizedAdminDiscovery(["planner"])).toEqual([]);
+    expect(buildAuthorizedAdminDiscovery(["inspector"])).toEqual([]);
+    expect(buildAuthorizedAdminDiscovery([])).toEqual([]);
+
+    const projectedAdmin = buildShellNavigation(["security_admin"])
+      .filter(group => group.id.startsWith("admin-"));
+    expect(projectedAdmin).toEqual(security);
+  });
+
+  test("admin discovery chrome keeps keyboard and mobile accessibility contracts", () => {
+    const source = readFileSync(resolve(__dirname, "../src/components/ShellClient.tsx"), "utf8");
+    expect(source).toContain('event.key.toLocaleLowerCase() === "k"');
+    expect(source).toContain('event.key !== "Escape"');
+    expect(source).toContain('role="status" aria-live="polite"');
+    expect(source).toContain('dir={locale === "ar" ? "rtl" : "ltr"}');
+    expect(source).toContain('aria-label={locale === "ar" ? "العودة إلى مجموعات الإدارة" : "Back to admin hubs"}');
+    expect(source).toContain("adminPaletteRestoreRef.current");
   });
 
   test("dashboard and live operations have distinct active states", () => {
