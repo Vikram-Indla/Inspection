@@ -2,6 +2,19 @@
 // sections in Visit Report · Results (Step 3 of 4). All visible component copy
 // stays here; EN and AR text comes from the supplied PWA design and existing
 // governed ui_strings where a registered key exists.
+//
+// COPY DIVERGENCE — governed registry vs Claude design. Four strings resolve
+// from ui_strings (seeded by 20260719000000_mim_ipad_figma_localization_seed)
+// to wording the PWA design states differently. The registry wins at runtime
+// and the fallbacks below deliberately mirror the seeded values so unregistered
+// environments render identically; the design cannot be satisfied from this
+// file, only by a change-controlled edit to the seed:
+//   vr037  registry "Were samples collected from the establishment?"
+//          design   "Were samples taken from the establishment?"
+//   vr047  registry "Add New Sample"        design "Add new sample"
+//   vr048  registry "Product (1)"           design "Seized product 1"
+//   vr049  registry "Add New Products"      design "Add seized product"
+// Raised for the product owner rather than overridden here.
 
 type T = (key: string, en: string) => string;
 
@@ -26,7 +39,8 @@ export type SeizureSectionStrings = {
   gateNo: string;
   addCta: string;
   itemHeader: string;
-  deleteLabel: string;
+  // No deleteLabel: the Visit Results design gives the seizure row a badge only.
+  // The remove affordance exists on the samples row, not this one.
   productNameLabel: string;
   productNamePlaceholder: string;
   quantityLabel: string;
@@ -89,7 +103,6 @@ export function buildSeizureSectionStrings(t: T): SeizureSectionStrings {
     // are sample DATA values, not labels — so its row badge stays design copy.
     addCta: t("figma.visitreports.vr049", "Add New Products"),
     itemHeader: t("figma.visitreports.vr048", "Product (1)"),
-    deleteLabel: designString(locale, "Delete", "حذف"),
     productNameLabel: t("figma.establishmentmanagement.em101", "Product Name"),
     productNamePlaceholder: designString(locale, "Seized product name", "اسم المنتج المحجوز"),
     quantityLabel: designString(locale, "Quantity", "الكمية"),

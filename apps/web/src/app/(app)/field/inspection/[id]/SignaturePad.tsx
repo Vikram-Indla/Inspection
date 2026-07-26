@@ -26,7 +26,11 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
   const last = useRef({ x: 0, y: 0 });
   const [hasInk, setHasInk] = useState(false);
   const [name, setName] = useState("");
-  const [err, setErr] = useState(null as string | null);
+  // Design authority (SAQEEL PWA-Field Completion.dc.html, `ack` panel): the
+  // readiness requirement is stated continuously while the acknowledgement is
+  // incomplete, not only after a rejected confirm. Presentation only — the
+  // submit guard below is unchanged and still refuses without ink AND a name.
+  const ready = hasInk && name.trim().length > 0;
 
   // Size the backing store to CSS pixels × DPR so strokes stay crisp in the PNG.
   useEffect(() => {
@@ -78,7 +82,7 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
   }
   function confirm() {
     const c = canvasRef.current;
-    if (!c || !hasInk || !name.trim()) { setErr(strings.required); return; }
+    if (!c || !hasInk || !name.trim()) return;          // DEC-009 gate — unchanged
     onConfirm({ signature_data_url: c.toDataURL("image/png"), name: name.trim(), signed_at: new Date().toISOString() });
   }
 
@@ -91,14 +95,17 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
       closeLabel={strings.cancel}
       footer={<>
         <button type="button" className="btn btn-secondary" onClick={onCancel}>{strings.cancel}</button>
-        <button type="button" className="btn btn-primary" aria-disabled={!hasInk || !name.trim()} onClick={confirm}>{strings.confirm}</button>
+        <button type="button" className="btn btn-primary" aria-disabled={!ready} onClick={confirm}>{strings.confirm}</button>
       </>}
     >
       <div className={styles.signatureBlock}>
         <p className="t-caption">{strings.hint}</p>
         <label className={styles.signatureField}>
-          <span className={styles.fieldLabel}>{strings.nameLabel}<span className="req">*</span></span>
-          <input className="input" value={name} placeholder={strings.namePlaceholder} onChange={e => { setName(e.target.value); setErr(null); }} />
+          {/* Design: `t.sigName + " *"` — the required marker is part of the
+              label text (the global `.req` rule is scoped to `.field`, so it
+              never applied inside this CSS-module label). */}
+          <span className={styles.fieldLabel}>{strings.nameLabel} *</span>
+          <input className="input" aria-required="true" value={name} placeholder={strings.namePlaceholder} onChange={e => setName(e.target.value)} />
         </label>
         <div className={styles.signatureCapture}>
           <canvas
@@ -109,7 +116,7 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
           />
           <button type="button" className="btn btn-secondary" onClick={clear}>{strings.clear}</button>
         </div>
-        {err && <p className="field-error">{err}</p>}
+        {!ready && <p className="t-caption" style={{ margin: 0, color: "var(--status-warning-text)" }}>{strings.required}</p>}
       </div>
     </Modal>
   );
