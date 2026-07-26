@@ -1,14 +1,15 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { cache, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { getShellRegions, getUserRoles } from "@/lib/persona";
 import { useT } from "@/lib/i18n";
 import { getServerUser } from "@/lib/supabase-server";
 import { buildShellNavigation } from "@/lib/shell-navigation";
 import ShellClient, { type ShellClientStrings } from "@/components/ShellClient";
+import AdminShellClient from "@/components/admin/AdminShellClient";
 import { type BellStrings } from "@/components/NotificationBell";
 
-const loadShellData = cache(async () => {
+const loadShellData = async () => {
   const [{ t, locale }, { data: { user } }] = await Promise.all([
     useT(),
     getServerUser(),
@@ -23,7 +24,7 @@ const loadShellData = cache(async () => {
     ? []
     : Array.from(new Set((regionRead.data ?? []).map(row => row.region).filter((value): value is string => !!value))).sort();
   return { t, locale, user, roles, regions };
-});
+};
 
 /**
  * Compatibility no-op for the three pages that used to start per-page shell
@@ -36,12 +37,12 @@ export function preloadShell(current: string) {
 
 export async function AppShell({ children }: { children: ReactNode }) {
   const { t, locale, user, roles, regions } = await loadShellData();
+  const pathname = (await headers()).get("x-pathname") ?? "";
   if (!user) {
     // SCR-PWA-001: a deep link into the field channel while signed out lands
     // on the field-specific biometric sign-in (SAQEEL Field Login.dc.html),
     // matching the /field top-level entry — not the desktop /login
     // story-panel surface.
-    const pathname = (await headers()).get("x-pathname") ?? "";
     redirect("/login");
   }
   const groups = buildShellNavigation(roles).map(group => ({
@@ -144,6 +145,33 @@ export async function AppShell({ children }: { children: ReactNode }) {
   };
 
   const languageHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+    const adminItems = groups
+      .filter(group => group.id === "administration")
+      .flatMap(group => group.items);
+    return (
+      <AdminShellClient
+        items={adminItems}
+        locale={locale}
+        email={user.email ?? user.id}
+        roles={roles}
+        languageLabel={locale === "ar" ? "English" : "العربية"}
+        bellStrings={bellStrings}
+        labels={{
+          navigation: t("admin.shell.navigation", locale === "ar" ? "تنقل لوحة التحكم" : "Control Panel navigation"),
+          controlPanel: t("admin.shell.controlPanel", locale === "ar" ? "لوحة التحكم" : "Control Panel"),
+          collapse: shellStrings.collapse,
+          expand: shellStrings.expand,
+          light: shellStrings.themeLight,
+          dark: shellStrings.themeDark,
+          signOut: shellStrings.signOut,
+          authorized: t("admin.shell.authorized", locale === "ar" ? "منطقة مصرح بها" : "areas authorized"),
+        }}
+      >
+        {children}
+      </AdminShellClient>
+    );
+  }
   return (
     <ShellClient
       groups={groups}

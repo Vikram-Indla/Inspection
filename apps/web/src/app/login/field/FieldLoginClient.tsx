@@ -272,14 +272,18 @@ export default function FieldLoginClient({
       // contract, which is not supplied. Rather than silently treating the
       // value as an email, the unresolvable case is stated plainly.
       const id = identifier.trim();
-      if (!id.includes("@")) {
+      // DEMO-ADMIN-ALIAS-001 — explicit Product Owner demo credential. Supabase
+      // Auth remains email-based; this single alias resolves to the separately
+      // seeded synthetic account and does not claim a ministry-directory lookup.
+      const email = id.toLocaleLowerCase() === "admin1" ? "admin1@mim.gov.sa" : id;
+      if (!email.includes("@")) {
         setMessage(s.directoryBlocked);
         return;
       }
 
       setBusy(true);
       const { data, error } = await supabaseBrowser().auth.signInWithPassword({
-        email: id,
+        email,
         password,
       });
       setBusy(false);
