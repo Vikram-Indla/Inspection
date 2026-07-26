@@ -60,8 +60,8 @@ export default async function Login({ searchParams }: {
         signIn: "تسجيل الدخول",
         offlineNote:
           "التطبيق يعمل دون اتصال: تُحفظ زياراتك وأدلّتك محلياً وتُزامَن تلقائياً عند عودة الشبكة. القفل الحيوي متاح فقط على هذا الجهاز الموثوق.",
+        dismiss: "إخفاء الملاحظة",
         copyright: "صقيل © 2026",
-        dismiss: "تجاهل هذا التنبيه",
         bioUnavailable: "تعذّر إكمال الفتح بالتعرف على الوجه على هذا الجهاز. استخدم كلمة المرور.",
         bioFallback: "استخدم كلمة المرور بدلاً من ذلك",
         directoryBlocked:
@@ -97,8 +97,8 @@ export default async function Login({ searchParams }: {
         signIn: "Sign in",
         offlineNote:
           "The app works offline: your visits and evidence are saved locally and sync automatically when the network returns. Biometric unlock is available only on this trusted device.",
-        copyright: "SAQEEL © 2026",
         dismiss: "Dismiss this note",
+        copyright: "SAQEEL © 2026",
         bioUnavailable: "Face ID unlock could not be completed on this device. Use your password.",
         bioFallback: "Use password instead",
         directoryBlocked:
