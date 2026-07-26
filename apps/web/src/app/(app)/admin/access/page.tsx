@@ -5,6 +5,7 @@ import { useT } from "@/lib/i18n";
 import { logProviderError } from "@/lib/neutral-error";
 import AccessManager, { type UserAccess } from "./AccessManager";
 import RoleCapabilityPanel from "./RoleCapabilityPanel";
+import styles from "./access.module.css";
 
 // TASK-EXECUTION-MODULE-001 · Phase 2B — governed role/capability grants.
 // The roster below stays read-only and exactly as before. For security_admin
@@ -23,15 +24,24 @@ type CapGrantRow = { user_id: string; capability_key: string; granted_by: string
 type RoleCapRow = { role_key: string; capability_key: string };
 type CapabilityRow = { capability_key: string; description: string };
 
-export default async function Access() {
+type AccessView = "users" | "roles";
+
+export default async function Access({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { t } = await useT();
   const sb = await supabaseServer();
-  const [{ data: profiles, error }, { data: roles }, { data: { user } }] = await Promise.all([
+  const requestedView = (await searchParams).view;
+  const view: AccessView = requestedView === "roles" ? "roles" : "users";
+  const [{ data: profiles, error: profilesError }, { data: roles, error: rolesError }, { data: { user } }] = await Promise.all([
     sb.from("profiles").select("user_id, full_name, email, region, user_roles!user_roles_user_id_fkey(role_key)").order("full_name"),
     sb.from("roles").select("role_key, title, is_admin").order("role_key"),
     getVerifiedUser(sb),
   ]);
-  if (error) console.error("[admin access] load failed", error);
+  if (profilesError) logProviderError("admin access profiles read", profilesError);
+  if (rolesError) logProviderError("admin access roles read", rolesError);
 
   // The management panel is security_admin-only. The has_role RPC is the same
   // definer helper RLS policies use; the guarded RPCs re-check on every write.
@@ -52,6 +62,7 @@ export default async function Access() {
 
   let access: UserAccess[] = [];
   let capabilityCatalogue: CapabilityRow[] = [];
+  let userAccessSourcesUnavailable = false;
   if (canManage) {
     const [userRolesRes, capGrantsRes, roleCapsRes, capsRes] = await Promise.all([
       sb.from("user_roles").select("user_id, role_key, granted_by, granted_at"),
@@ -62,6 +73,7 @@ export default async function Access() {
     for (const [scope, res] of [["user_roles", userRolesRes], ["user_capability_grants", capGrantsRes], ["role_capabilities", roleCapsRes], ["capabilities", capsRes]] as const) {
       if (res.error) logProviderError(`admin access ${scope} read`, res.error);
     }
+    userAccessSourcesUnavailable = [userRolesRes, capGrantsRes, roleCapsRes, capsRes].some(result => !!result.error);
     const allUserRoles = (userRolesRes.data ?? []) as UserRoleRow[];
     const allCapGrants = (capGrantsRes.data ?? []) as CapGrantRow[];
     capabilityCatalogue = (capsRes.data ?? []) as CapabilityRow[];
@@ -105,6 +117,7 @@ export default async function Access() {
   // authenticated-wide by RLS; writes stay behind the server-action guards.
   let permissionCatalogue: { permission_key: string; title: string; description: string }[] = [];
   let rolePermissionGrants: { role_key: string; permission_key: string; granted_at: string }[] = [];
+  let roleCapabilitySourcesUnavailable = false;
   if (canManageRoleCaps) {
     const [permsRes, grantsRes] = await Promise.all([
       sb.from("permissions").select("permission_key, title, description").order("permission_key"),
@@ -112,36 +125,61 @@ export default async function Access() {
     ]);
     if (permsRes.error) logProviderError("admin access permissions read", permsRes.error);
     if (grantsRes.error) logProviderError("admin access role_permissions read", grantsRes.error);
+    roleCapabilitySourcesUnavailable = !!permsRes.error || !!grantsRes.error;
     permissionCatalogue = (permsRes.data ?? []) as typeof permissionCatalogue;
     rolePermissionGrants = (grantsRes.data ?? []) as typeof rolePermissionGrants;
   }
 
   return (
-    <Shell current="/admin/access" title={t("admin.access.title", "Roles & permissions")}
+    <Shell current="/admin/access" title={view === "users"
+      ? t("admin.access.users.title", "Users & access")
+      : t("admin.access.roles.title", "Roles & capabilities")}
       context={<span className="sq-lozenge sq-lozenge--info">SCR-ADM-090 · RBAC-001..014 · EXE-ACCESS</span>}>
+      <nav className={styles.views} aria-label={t("admin.access.views.label", "Access administration views")}>
+        <a className="sq-btn" href="/admin/access?view=users" aria-current={view === "users" ? "page" : undefined}>
+          {t("admin.access.views.users", "Users")}
+        </a>
+        <a className="sq-btn" href="/admin/access?view=roles" aria-current={view === "roles" ? "page" : undefined}>
+          {t("admin.access.views.roles", "Roles")}
+        </a>
+      </nav>
       <div className="sq-banner"><div><strong>{t("admin.access.banner.title", "Access is enforced by Row Level Security, not UI.")}</strong> {t("admin.access.banner.body", "54 policies realize the frozen RBAC matrix; role grants are audited automatically (this page's data itself passed through RLS to render).")}</div></div>
-      {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("admin.access.error.title", "Couldn’t load roster. Nothing was changed. Try again.")}</strong></div></div>}
-      <div className="sq-tablewrap"><table className="sq-table">
-        <thead><tr><th scope="col">{t("admin.access.table.user", "User")}</th><th scope="col">{t("admin.access.table.email", "Email")}</th><th scope="col">{t("admin.access.table.region", "Region")}</th><th scope="col">{t("admin.access.table.roles", "Roles")}</th></tr></thead>
-        <tbody>
-          {(profiles ?? []).map(p => (
-            <tr key={p.user_id}>
-              <td><strong>{p.full_name}</strong></td>
-              <td className="sq-caption">{p.email}</td>
-              <td>{p.region}</td>
-              <td>{(p.user_roles as { role_key: string }[]).map(r =>
-                <span key={r.role_key} className={`sq-lozenge ${(roles ?? []).find(x => x.role_key === r.role_key)?.is_admin ? "sq-lozenge--warning" : "sq-lozenge--info"}`} style={{ marginInlineEnd: 6 }}>{r.role_key}</span>)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table></div>
-      <p className="sq-caption" style={{ marginBlockStart: "var(--space-3)" }}>
-        {canManage
-          ? t("admin.access.rlsNote.manage", "This roster is filtered to your access: users outside your visibility are absent, not hidden rows. The management panel below changes access only through the governed RPCs.")
-          : t("admin.access.rlsNote", "This roster is filtered to your access: users outside your visibility are absent, not hidden rows. This screen is read-only.")}
-      </p>
+      {(gateError || capGateError) && (
+        <div className="sq-banner sq-banner--warning" role="alert"><div>
+          <strong>{t("admin.access.permissions.error.title", "Permissions unavailable.")}</strong>{" "}
+          {t("admin.access.permissions.error.body", "Your access-management permissions could not be verified. All write controls are unavailable; retry the page.")}
+        </div></div>
+      )}
 
-      {canManage && user && (
+      {view === "users" && (
+        <>
+          {profilesError && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("admin.access.error.title", "Couldn’t load the authorized user roster. Nothing was changed. Try again.")}</strong></div></div>}
+          {rolesError && !profilesError && <div className="sq-banner sq-banner--warning" role="alert"><div><strong>{t("admin.access.roles.error.title", "Role details are unavailable.")}</strong> {t("admin.access.roles.error.body", "The authorized user roster remains visible, but role labels and all access changes are unavailable.")}</div></div>}
+          {!profilesError && (
+            <div className="sq-tablewrap"><table className="sq-table">
+              <thead><tr><th scope="col">{t("admin.access.table.user", "User")}</th><th scope="col">{t("admin.access.table.email", "Email")}</th><th scope="col">{t("admin.access.table.region", "Region")}</th><th scope="col">{t("admin.access.table.roles", "Roles")}</th></tr></thead>
+              <tbody>
+                {(profiles ?? []).map(p => (
+                  <tr key={p.user_id}>
+                    <td><strong>{p.full_name}</strong></td>
+                    <td className="sq-caption">{p.email}</td>
+                    <td>{p.region}</td>
+                    <td>{rolesError ? t("common.unavailable", "Unavailable") : (p.user_roles as { role_key: string }[]).map(r =>
+                      <span key={r.role_key} className={`sq-lozenge ${(roles ?? []).find(x => x.role_key === r.role_key)?.is_admin ? "sq-lozenge--warning" : "sq-lozenge--info"}`} style={{ marginInlineEnd: 6 }}>{r.role_key}</span>)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table></div>
+          )}
+          <p className="sq-caption" style={{ marginBlockStart: "var(--space-3)" }}>
+            {canManage
+              ? t("admin.access.rlsNote.manage", "This roster is filtered to your access: users outside your visibility are absent, not hidden rows. Access changes use only governed server actions.")
+              : t("admin.access.rlsNote", "This roster is filtered to your access: users outside your visibility are absent, not hidden rows. This screen is read-only.")}
+          </p>
+        </>
+      )}
+
+      {view === "users" && canManage && user && !profilesError && !rolesError && !userAccessSourcesUnavailable && (
         <AccessManager
           users={(profiles ?? []).map(p => ({ userId: p.user_id, name: p.full_name, email: p.email }))}
           roles={((roles ?? []) as RoleRow[]).map(r => ({ roleKey: r.role_key, title: r.title, isAdmin: r.is_admin }))}
@@ -175,7 +213,35 @@ export default async function Access() {
         />
       )}
 
-      {canManageRoleCaps && user && (
+      {view === "users" && canManage && user && userAccessSourcesUnavailable && (
+        <div className="sq-banner sq-banner--warning" role="alert"><div>
+          <strong>{t("admin.access.manage.error.title", "Access details are partially unavailable.")}</strong>{" "}
+          {t("admin.access.manage.error.body", "The user roster remains visible, but access changes are unavailable because one or more governed sources could not be read.")}
+        </div></div>
+      )}
+
+      {view === "roles" && rolesError && (
+        <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("admin.access.roles.catalogue.error", "Couldn’t load the authorized role catalogue. No controls are available.")}</strong></div></div>
+      )}
+      {view === "roles" && !rolesError && (
+        <section className={styles.roleCatalogue} aria-labelledby="role-catalogue-title">
+          <div>
+            <h2 id="role-catalogue-title">{t("admin.access.roles.catalogue.title", "Role catalogue")}</h2>
+            <p className="sq-caption">{t("admin.access.roles.catalogue.body", "Only roles visible to your session through Row Level Security are listed.")}</p>
+          </div>
+          <div className={styles.roleCards}>
+            {((roles ?? []) as RoleRow[]).map(role => (
+              <article className="sq-surface" key={role.role_key}>
+                <strong>{role.title || role.role_key}</strong>
+                <bdi className="sq-caption" dir="ltr">{role.role_key}</bdi>
+                {role.is_admin && <span className="sq-lozenge sq-lozenge--warning">{t("admin.access.roles.admin", "Administrator role")}</span>}
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {view === "roles" && canManageRoleCaps && user && !rolesError && !roleCapabilitySourcesUnavailable && (
         <RoleCapabilityPanel
           roles={((roles ?? []) as RoleRow[]).map(r => ({ roleKey: r.role_key, title: r.title, isAdmin: r.is_admin }))}
           permissions={permissionCatalogue.map(p => ({ permissionKey: p.permission_key, title: p.title, description: p.description }))}
@@ -196,6 +262,12 @@ export default async function Access() {
             auditNote: t("admin.access.rolecaps.auditNote", "Audit note: user_roles changes are recorded by the existing audit trigger; role_permissions audit coverage is migration 20260722120000 (authored, pending apply)."),
           }}
         />
+      )}
+      {view === "roles" && canManageRoleCaps && user && roleCapabilitySourcesUnavailable && (
+        <div className="sq-banner sq-banner--warning" role="alert"><div>
+          <strong>{t("admin.access.rolecaps.error.title", "Role capability details are unavailable.")}</strong>{" "}
+          {t("admin.access.rolecaps.error.body", "The role catalogue remains visible, but capability changes are unavailable because a governed source could not be read.")}
+        </div></div>
       )}
     </Shell>
   );
