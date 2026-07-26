@@ -110,16 +110,6 @@ export default function AdminShellClient({
     try { localStorage.setItem("saqeel-admin-rail-compact", value ? "1" : "0"); } catch {}
   }
 
-  function switchLocale() {
-    const nextLocale = locale === "ar" ? "en" : "ar";
-    const maxAge = 60 * 60 * 24 * 365;
-    document.cookie = `locale=${nextLocale}; path=/; max-age=${maxAge}; samesite=lax`;
-    document.cookie = `login_locale=${nextLocale}; path=/; max-age=${maxAge}; samesite=lax`;
-    document.documentElement.lang = nextLocale;
-    document.documentElement.dir = nextLocale === "ar" ? "rtl" : "ltr";
-    window.location.reload();
-  }
-
   return (
     <div className={`${styles.shell}${compact ? ` ${styles.compact}` : ""}`} lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
       <a className={styles.skip} href="#main-content">{labels.navigation}</a>
@@ -152,7 +142,13 @@ export default function AdminShellClient({
         <header className={styles.utilityBar}>
           <span className={styles.location}>{locale === "ar" ? activeHub?.ar : activeHub?.en}</span>
           <span className={styles.utilitySpacer} />
-          <button type="button" className={styles.language} lang={locale === "ar" ? "en" : "ar"} onClick={switchLocale}>{languageLabel}</button>
+          <Link
+            className={styles.language}
+            href={`/locale?set=${locale === "ar" ? "en" : "ar"}`}
+            hrefLang={locale === "ar" ? "en" : "ar"}
+          >
+            {languageLabel}
+          </Link>
           <ThemeToggle className={styles.utilityButton} labels={{ toLight: labels.light, toDark: labels.dark }} />
           <NotificationBell strings={bellStrings} locale={locale} fieldOnly={false} />
           <details className={styles.account}>

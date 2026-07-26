@@ -83,6 +83,15 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
     expect(projectedAdmin).toEqual(security);
   });
 
+  test("dedicated admin shell consumes projected hubs instead of the removed monolithic group", () => {
+    const shell = readFileSync(resolve(__dirname, "../src/components/Shell.tsx"), "utf8");
+    const adminShell = readFileSync(resolve(__dirname, "../src/components/admin/AdminShellClient.tsx"), "utf8");
+    expect(shell).toContain('group.id.startsWith("admin-")');
+    expect(shell).not.toContain('filter(group => group.id === "administration")');
+    expect(adminShell).toContain('href={`/locale?set=${locale === "ar" ? "en" : "ar"}`}');
+    expect(adminShell).not.toContain("document.cookie");
+  });
+
   test("admin discovery chrome keeps keyboard and mobile accessibility contracts", () => {
     const source = readFileSync(resolve(__dirname, "../src/components/ShellClient.tsx"), "utf8");
     expect(source).toContain('event.key.toLocaleLowerCase() === "k"');
