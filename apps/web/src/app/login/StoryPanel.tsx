@@ -1,0 +1,172 @@
+"use client";
+// CD-001 V7 Atlas — story panel host. Owns the single source of stage truth
+// (the five story scenes) and the 30s motion loop, and lays out the
+// map-bound stage event and lifecycle tablist (roving tabindex). The premium 3D atlas
+// (SaudiIndustrialAtlas) is dynamically imported (ssr:false) exactly like the
+// old map; if Layer 1 cannot initialise (offline, tiles blocked, boundary
+// missing) the static SaqeelHero SVG takes the frame instead. Motion is
+// disabled under prefers-reduced-motion — the tablist becomes the only driver.
+import { useCallback, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import SaqeelHero from "./SaqeelHero";
+import { STORY_SCENE_ORDER, type AtlasStageId } from "./saudi-atlas-locations";
+import { createAtlasTimeline, type AtlasTimeline } from "./saudi-atlas-motion";
+import type { DossierStrings } from "./SaudiAtlasDossier";
+
+// The art-directed raster atlas (real rendered POIs, inspectors, SUVs, glowing
+// coastline, elevated relief, zone-lift interaction) is the beauty. The
+// hand-built low-poly three.js scene (atlas3d/SaudiAtlas3D) could free-orbit
+// but downgraded the art, so it is parked; a true 3D asset would come from the
+// design team's render, not primitives.
+const Atlas = dynamic(() => import("./SaudiIndustrialAtlas"), { ssr: false });
+
+// How long a hand-picked scene holds before the loop resumes from it.
+const MANUAL_HOLD_MS = 12000;
+
+export type StoryStrings = {
+  title: string;
+  overline: string;
+  stagesLabel: string;                            // tablist aria-label
+  stages: { id: AtlasStageId; label: string; event: string }[];
+  dossier: DossierStrings;
+  riyadhLabel: string;                            // SaqeelHero fallback SVG city-chip
+};
+
+export default function StoryPanel({ strings: s, locale, subdued = false, paused = false }: {
+  strings: StoryStrings;
+  locale: "ar" | "en";
+  // CD-002: recovery views (forgot / forgot-sent / /reset) subordinate the
+  // atlas to a quiet static KSA trust motif — no lifecycle chips, interactive
+  // markers or photo rail. Default false = byte-identical accepted CD-001
+  // rendering. Reuses the existing SaqeelHero fallback motif; no new asset.
+  subdued?: boolean;
+  // Credential interaction always wins over decorative storytelling. This is
+  // driven by the sibling login panel so typing, reset and submit states do
+  // not compete with motion.
+  paused?: boolean;
+}) {
+  const [mapFailed, setMapFailed] = useState(false);
+  // Sign-in opens on the Zones scene — the regional-intelligence view — and the
+  // five-scene loop takes over after the manual hold expires.
+  const [stage, setStage] = useState<AtlasStageId>("decide");
+  const activeStage = s.stages.find(item => item.id === stage) ?? s.stages[0];
+  const activeIndex = Math.max(0, s.stages.findIndex(item => item.id === stage));
+
+  const tlRef = useRef<AtlasTimeline | null>(null);
+  const manualRef = useRef(true);    // user took control via the tablist
+  const resumeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pausedRef = useRef(false);
+  const atlasInteractingRef = useRef(false);
+  const [atlasInteracting, setAtlasInteracting] = useState(false);
+  const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
+
+  pausedRef.current = paused;
+
+  // A picked scene holds for 12s, then the five-scene loop resumes from it — so
+  // the dispatch vehicles and arriving inspectors always come back round. The
+  // opening Zones scene is itself a hold, so the loop starts on its own.
+  const armResume = useCallback(() => {
+    if (resumeRef.current) clearTimeout(resumeRef.current);
+    resumeRef.current = setTimeout(() => {
+      manualRef.current = false;
+      if (!pausedRef.current && !atlasInteractingRef.current) tlRef.current?.resume();
+    }, MANUAL_HOLD_MS);
+  }, []);
+
+  // Motion loop runs only while the live interactive atlas is on screen.
+  useEffect(() => {
+    if (mapFailed || subdued) return;
+    const tl = createAtlasTimeline(i => { if (!manualRef.current) setStage(STORY_SCENE_ORDER[i]); });
+    tlRef.current = tl;
+    tl.start();
+    tl.pause();          // held on the opening Zones scene
+    armResume();
+    return () => {
+      tl.stop();
+      tlRef.current = null;
+      if (resumeRef.current) clearTimeout(resumeRef.current);
+    };
+  }, [mapFailed, subdued, armResume]);
+
+  useEffect(() => {
+    if (paused) tlRef.current?.pause();
+    else if (!manualRef.current && !atlasInteractingRef.current) tlRef.current?.resume();
+  }, [paused]);
+
+  const onInteracting = useCallback((on: boolean) => {
+    atlasInteractingRef.current = on;
+    setAtlasInteracting(on);
+    if (on) tlRef.current?.pause();
+    else if (!manualRef.current && !pausedRef.current) tlRef.current?.resume();
+  }, []);
+
+  const pickStage = useCallback((id: AtlasStageId) => {
+    manualRef.current = true;
+    tlRef.current?.pause();
+    setStage(id);
+    armResume();
+  }, [armResume]);
+
+  const onTabKey = (e: React.KeyboardEvent, idx: number) => {
+    const n = s.stages.length;
+    let next = idx;
+    const forwardKey = locale === "ar" ? "ArrowLeft" : "ArrowRight";
+    const backKey = locale === "ar" ? "ArrowRight" : "ArrowLeft";
+    if (e.key === forwardKey || e.key === "ArrowDown") next = (idx + 1) % n;
+    else if (e.key === backKey || e.key === "ArrowUp") next = (idx - 1 + n) % n;
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = n - 1;
+    else return;
+    e.preventDefault();
+    pickStage(s.stages[next].id);
+    tabsRef.current[next]?.focus();
+  };
+
+  return (
+    <aside className={`lg-story${subdued ? " lg-story--subdued" : ""}${paused || atlasInteracting ? " is-motion-paused" : ""}`}>
+      <header className="lg-story__head">
+        <div className="lg-story__heading">
+          <span className="lg-story__title">{s.title}</span>
+          <span className="lg-story__overline" dir={locale === "ar" ? "rtl" : "ltr"}>{s.overline}</span>
+        </div>
+      </header>
+
+      <div className="lg-story__frame" id="saqeel-industrial-atlas">
+        {subdued ? (
+          <div className="lg-story__fallback"><SaqeelHero riyadhLabel={s.riyadhLabel} /></div>
+        ) : mapFailed ? (
+          <div className="lg-story__fallback"><SaqeelHero riyadhLabel={s.riyadhLabel} /></div>
+        ) : (
+          <Atlas locale={locale} activeStage={stage} dossierStrings={s.dossier}
+            onInteractingChange={onInteracting} onFail={() => setMapFailed(true)} />
+        )}
+
+        {/* dissolves the boundary with the credential column */}
+        <div className="lg-story__seam" aria-hidden="true" />
+
+        {/* No event card: the stage rail is the only chrome over the atlas, and
+            the selected scene reads on the map itself. The scene copy is still
+            announced to assistive tech, without painting a panel over the art. */}
+        {!subdued && !mapFailed && (
+          <p className="sr-only" role="status" aria-live="polite">{activeStage.event}</p>
+        )}
+
+        {/* One lifecycle strip, physically attached to and controlling the atlas. */}
+        {!subdued && !mapFailed && (
+          <div className="lg-atlas3d__stages" role="tablist" aria-label={s.stagesLabel}>
+            {s.stages.map((st, i) => (
+              <button key={st.id} ref={el => { tabsRef.current[i] = el; }} type="button" role="tab"
+                aria-controls="saqeel-industrial-atlas" aria-selected={stage === st.id}
+                tabIndex={stage === st.id ? 0 : -1}
+                className={`lg-atlas3d__stage${stage === st.id ? " is-active" : ""}`}
+                onClick={() => pickStage(st.id)} onKeyDown={e => onTabKey(e, i)}>
+                <span className="lg-atlas3d__stage-n" dir="ltr">{String(i + 1).padStart(2, "0")}</span>
+                <span className="lg-atlas3d__stage-label">{st.label}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </aside>
+  );
+}

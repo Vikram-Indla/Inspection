@@ -1,11 +1,27 @@
 import "./login.css";
 import { cookies } from "next/headers";
 import FieldLoginClient, { type FieldLoginStrings } from "./field/FieldLoginClient";
+import StoryPanel, { type StoryStrings } from "./StoryPanel";
 
 export const dynamic = "force-dynamic";
 
-// Single authentication surface. Decorative story/atlas implementations are
-// intentionally absent: /login renders only the real credential experience.
+// Unified sign-in. Per Product-Owner direction (2026-07-25): ONE responsive
+// page that reuses the EXISTING, design-true pieces — no card is rebuilt here.
+//   • Credential column = the real field/PWA login card (FieldLoginClient, the
+//     SAQEEL PWA-Field Login.dc implementation): shield, SAQEEL lockup, trusted-
+//     device + Face-ID path, National-ID / password, offline footer.
+//   • Wide screens additionally show the inspection atlas (StoryPanel).
+//   • Narrow screens and iPad (both orientations) show the card only — the
+//     atlas is hidden by the media rules in login.css.
+// The card is dark-locked (ThemeScript / ThemeChannelSync force dark on /login)
+// and carries no theme control. Field-card strings are transcribed verbatim
+// from the same DC used by /login/field; atlas strings are the accepted CD-001
+// story copy.
+//
+// NOTE (flagged to PO): reusing the field card verbatim means its sign-in flow
+// (national-ID/staff → work email, redirect to /field) now governs /login. This
+// is the informed choice recorded in the session log; role-routed web-console
+// entry is not offered on this surface.
 
 type Locale = "ar" | "en";
 
@@ -102,11 +118,36 @@ export default async function Login({ searchParams }: {
         continueOffline: "Continue offline",
       };
 
+  // Atlas / story strings — accepted CD-001 inspection-story copy.
+  const story: StoryStrings = {
+    // Login v2: the panel is the platform, not "the Saqeel atlas". The product
+    // name already sits on the credential card beside it, so repeating it here
+    // read as branding twice and called the panel by its mechanism.
+    title: ar ? "منصة التفتيش الصناعي" : "Industrial inspection platform",
+    overline: ar ? "رحلة تفتيش واحدة · من البداية إلى النهاية" : "ONE VISIT · END TO END",
+    riyadhLabel: ar ? "الرياض · مسيّجة جغرافيًا" : "RIYADH · GEOFENCED",
+    stagesLabel: ar ? "مشاهد قصة التفتيش" : "Inspection story scenes",
+    stages: [
+      { id: "plan", label: ar ? "الخريطة" : "Map", event: ar ? "خريطة المملكة والمنشآت الصناعية فقط" : "The Kingdom map and industrial sites establish context" },
+      { id: "travel", label: ar ? "الإرسال" : "Dispatch", event: ar ? "مركبتان تنطلقان من الرياض، والثالثة من جازان، لكل منها وجهة تفتيش محددة" : "Two vehicles deploy from Riyadh and a third from Jazan, each on a defined inspection mission" },
+      { id: "arrive", label: ar ? "الوصول" : "Arrival", event: ar ? "وصول الفرق إلى المواقع وتأكيد الحضور في نطاق المنشأة" : "Teams arrive at their sites and confirm geofenced attendance" },
+      { id: "inspect", label: ar ? "التفتيش" : "Inspection", event: ar ? "توثيق الأدلة وإظهار نتيجة التفتيش والإجراءات المطلوبة" : "Evidence is captured and each inspection reaches an illustrated outcome" },
+      { id: "decide", label: ar ? "المناطق" : "Zones", event: ar ? "مرّر المؤشر على منطقة لرفعها ككتلة أرضية ثلاثية الأبعاد وعرض ذكاء التفتيش" : "Hover a zone to lift it from the landmass and reveal regional inspection intelligence" },
+    ],
+    dossier: {
+      industry: ar ? "الصناعة" : "Industry",
+      state: ar ? "مرحلة الدورة" : "Lifecycle stage",
+      close: ar ? "إغلاق" : "Close",
+      mapLabel: ar ? "مواقع الأطلس الصناعي التفاعلية" : "Interactive industrial atlas locations",
+    },
+  };
+
   return (
-    <div className="lg-page" dir={ar ? "rtl" : "ltr"} lang={locale}>
+    <div className="lg-page lg-page--split" dir={ar ? "rtl" : "ltr"} lang={locale}>
       <FieldLoginClient s={fieldStrings} dir={ar ? "rtl" : "ltr"} lang={locale}
         localeHref={ar ? "/locale?set=en" : "/locale?set=ar"}
         returnTo={sp.next} reason={sp.reason} />
+      <StoryPanel strings={story} locale={locale} />
     </div>
   );
 }
