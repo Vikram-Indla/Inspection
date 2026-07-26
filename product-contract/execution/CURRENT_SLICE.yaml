@@ -127,11 +127,35 @@ leases:
   - lease_id: "LEASE-SAQEEL-VIRTUAL-001"
     card: "virtual"
     channel: "web"
-    holder: "claude-build"
+    holder: "claude-code"
     state: "GRANTED"
-    note: "Unblocks pwa-virtual, which is a hard cross-channel BREAK: the console can schedule a virtual visit the inspector has no route to join."
+    note: >
+      Unblocks pwa-virtual, which is a hard cross-channel BREAK: the console can
+      schedule a virtual visit the inspector has no route to join. NOTE that the
+      "no route" half of that claim is now stale — apps/web/src/app/(app)/field/
+      virtual/[id]/ exists (page.tsx + VirtualSessionClient.tsx) and commit
+      5fa170a7 hardened it; the board card still carries pwa.state "break" and
+      that belongs to pwa-virtual's owner to reconcile, not this lease.
+    amendment:
+      at: "2026-07-26T06:30:00+03:00"
+      by: "Product Owner (direct instruction)"
+      recorded_by: "claude-code"
+      holder_change: >
+        holder was "claude-build"; corrected to "claude-code" to match
+        .claude/skills/orchestrator/config.json, which assigns the web channel to
+        claude-code, and the evidenceLog entries on the board card.
+      paths_widened_because: >
+        The original two-path fence did not cover work the card genuinely
+        requires, and PR #90 was written before this was noticed — four files
+        below were touched OUTSIDE the fence as it then stood. Disclosed rather
+        than back-dated. Two of them are SHARED surfaces and are called out as
+        such so a future holder does not read this lease as exclusive ownership.
     allowed_paths:
       - "apps/web/src/app/(app)/virtual/**"
+      - "apps/web/src/lib/providers/video-twilio.ts"
+      - "apps/web/src/lib/providers/sms-twilio.ts (SHARED: the sms delivery adapter serves every channel — coordinate before changing send behaviour)"
+      - "apps/web/src/app/saqeel-components-legacy.css (SHARED design-system layer: ADDITIVE rules only — cd-stage*, cd-gate*, cd-idrow*, spine.is-horizontal/.is-compact, spine-label; never redefine another card's rules)"
+      - "designs/web/export-saqeel-web/SAQEEL Virtual.dc.html (this card's vendored design mirror; the Claude Design project remains authority)"
       - "status/saqeel-status.json (card 'virtual' only)"
   - lease_id: "LEASE-SAQEEL-FEEDBACK-001"
     card: "feedback"

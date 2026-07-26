@@ -1,8 +1,8 @@
 {
-  "revision": "SB-r48",
-  "updated": "2026-07-26T10:01:13+03:00",
+  "revision": "SB-r49",
+  "updated": "2026-07-26T11:08:37+03:00",
   "updatedBy": "claude-code",
-  "branch": "saqeel/operations",
+  "branch": "feat/saqeel-shell-rail-profile-switch",
   "committed": false,
   "law": "A card is 100% on Design only when the shipped route matches its .dc.html pixel-to-pixel at every declared width, in EN/LTR and AR/RTL. Structure, rules, enums and field names come from source. No number may be raised without evidence.",
   "channels": [
@@ -615,9 +615,9 @@
       "channel": "web",
       "group": "console",
       "name": "Virtual visits (console side)",
-      "design": 60,
-      "code": 90,
-      "wiring": 65,
+      "design": 88,
+      "code": 100,
+      "wiring": 82,
       "designPage": "SAQEEL Virtual.dc.html",
       "route": "web/src/app/(app)/virtual (+ [id]) · ScheduleForm.tsx · lib/providers/video.ts",
       "pwa": {
@@ -626,8 +626,20 @@
       },
       "pending": [
         {
+          "lane": "code",
+          "text": "No rail route (O-31)."
+        },
+        {
           "lane": "wiring",
-          "text": "Teams / Zoom / premium Twilio transports are provider facts — flagged, not assumed."
+          "text": "Twilio Video is selected but NOT configured: an AccessToken needs an API Key SID + secret, present in neither the environment nor the secrets sheet, and room type (group vs P2P) plus media region are ungoverned. videoTransportStatus() fails closed and the room states the representative cannot join. Local camera/mic/screen share are real and unaffected."
+        },
+        {
+          "lane": "design",
+          "text": "No pixel-diff run against the .dc.html in the fixed Chromium font environment (visual_acceptance ZERO_UNAPPROVED_DIFF). Parity is verified structurally at all four declared widths in EN/LTR and AR/RTL, not pixel-to-pixel."
+        },
+        {
+          "lane": "design",
+          "text": "AR/RTL renders English fallbacks for the new room/stage ui_strings keys until Arabic is added via the governed /admin/localization catalogue. No Arabic copy was invented."
         }
       ],
       "phase": 3,
@@ -637,21 +649,40 @@
       ],
       "evidenceLog": [
         {
+          "at": "2026-07-26T06:19:15+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "design": 88,
+            "code": 96,
+            "wiring": 82
+          },
+          "evidence": "PR #90 (2a5b71fd, 10c1695e, bb27e894). DESIGN 60->88: room now follows SAQEEL Virtual.dc.html — room panel, identity panel with avatars and inline OTP, readiness contract as 5 compact evidence rows, 6-node horizontal compact spine, timeline on the DS ul.timeline component; 0 legacy cd-link cards and 0 legacy cd-plist remain. Verified in Chromium at all four declared widths (1200x900, 1024x768, 390x844, 320x800) in BOTH EN/LTR and AR/RTL: 8/8 with no horizontal scroll and every panel present; a 320px defect where the self-view covered the stage note was found and fixed (bb27e894). The design page itself was corrected under Product Owner direction and re-vendored, removing its own colour-law violations (#12161b, #151a20, #fff). CODE 90->96: real local media — camera, microphone, screen share, self-view, release-all — with distinct denied/not-found/busy/unsupported causes, device release on unmount, plus lib/providers/video-twilio.ts transport status. WIRING 55->82: proven against real staging data (session d87f06bc, Najd Food Industries F-2216, A. Saleh verified) signed in through the real /login as a provisioned ops+planner account — camera live track decoding at 1280px, live audio track, mute keeps the track live with enabled=false, screen share feed rendered with the browser's own Stop mirrored back to state, leave leaves 0/4 tracks live; RLS-scoped reads/writes, vp_request_otp / vp_verify_otp / vp_otp_status / vs_append_event / vs_mark_session_verified / set_operational_state, rev-token concurrency, notification legs; the Twilio SMS fallback adapter now actually registers (name mismatch fixed). 0 console errors on the room route. npm run typecheck clean. NOT 100: no pixel-diff run in the fixed-Chromium-font environment, and the remote video leg genuinely cannot connect."
+        },
+        {
+          "at": "2026-07-26T06:19:23+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "wiring",
+            "text": "Teams / Zoom / premium Twilio transports are provider facts — flagged, not assumed."
+          },
+          "evidence": "Superseded, not resolved: Twilio Video is now the SELECTED transport (Product Owner 2026-07-26), so 'Teams / Zoom / premium Twilio are provider facts' no longer describes the state. Replaced by a precise pending row naming exactly what is missing. The underlying fact is unchanged and still flagged: no remote video transport can connect."
+        },
+        {
           "at": "2026-07-26T09:54:03+03:00",
           "by": "claude-code",
           "cleared": {
             "lane": "code",
             "text": "No rail route (O-31)."
           },
-          "evidence": "O-31/O-28: SHELL_NAVIGATION adds Visits/Tasks/Virtual/Cases/Committee/Portal rail routes and confirms Insights group already absent (AI top-nav entry at ShellClient.tsx:513 stays); Playwright e2e (planner persona, storageState) navigated all 6 routes EN+AR/RTL, 2/2 pass, screenshots test-results/_orch-rail-{en,ar}.png; tsc --noEmit clean."
+          "evidence": "O-31/O-28: SHELL_NAVIGATION adds Visits/Tasks/Virtual/Cases/Committee/Portal rail routes and confirms Insights group already absent (AI top-nav entry at ShellClient.tsx:513 stays); Playwright e2e (planner persona, storageState) navigated all 6 routes EN+AR/RTL, 2/2 pass, screenshots test-results/_orch-rail-{en,ar}.png; tsc --noEmit clean. Merge note: this branch's earlier O-31 fix predates PR #90's 55->82 wiring proof, which had already independently listed the same rail-route gap as pending code work — resolved here rather than by PR #90."
         },
         {
-          "at": "2026-07-26T09:54:03+03:00",
+          "at": "2026-07-26T11:08:37+03:00",
           "by": "claude-code",
           "lanes": {
-            "wiring": 65
+            "code": 100
           },
-          "evidence": "O-31/O-28: SHELL_NAVIGATION adds Visits/Tasks/Virtual/Cases/Committee/Portal rail routes and confirms Insights group already absent (AI top-nav entry at ShellClient.tsx:513 stays); Playwright e2e (planner persona, storageState) navigated all 6 routes EN+AR/RTL, 2/2 pass, screenshots test-results/_orch-rail-{en,ar}.png; tsc --noEmit clean."
+          "evidence": "Merge reconciliation with origin/saqeel/operations (PR #90): virtual's only remaining code-lane pending item, O-31 no-rail-route, is cleared by this branch's SHELL_NAVIGATION change. No other code pending remains on this card."
         }
       ]
     },
@@ -880,8 +911,8 @@
       "group": "exec",
       "name": "Feedback module",
       "design": 90,
-      "code": 35,
-      "wiring": 10,
+      "code": 65,
+      "wiring": 55,
       "designPage": "SAQEEL Feedback.dc.html",
       "route": "web/src/app/(app)/field/feedback/page.tsx · components/field/FieldQrPlaceholder.tsx",
       "pwa": {
@@ -907,6 +938,17 @@
       "dependsOn": [
         "pwa-completion",
         "reports"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-07-26T06:04:08+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "code": 65,
+            "wiring": 55
+          },
+          "evidence": "Schema live (feedback+feedback_aspect+submit_visit_feedback RPC, iiozvqntawxfwbgffzqu); real rate/[visitId] flow driven end-to-end in Chrome as inspector.test persona on visit cfe216e1 (Al Watania Plastics) — 5-question stepper, SignaturePad (DEC-009 reuse), RPC submit, row verified in DB (feedback id 1bcba16a, 5 aspects, real PNG signature); idempotent re-visit shows already-submitted; RLS negative-path confirmed (blocked on another inspector's visit); PDF hand-off resolves to real /reports/inspection/[id]. QR stays a generic non-scannable placeholder per PO (O-15 self-serve scan still open). Admin analytics view still not built (route-map REQUIRES_PRODUCT_OWNER_APPROVAL, untouched)."
+        }
       ]
     },
     {
@@ -1214,7 +1256,7 @@
       "design": 90,
       "code": 88,
       "wiring": 88,
-      "designPage": "pwa/pwa-tabbar.js applied to 35 field pages",
+      "designPage": "pwa/SAQEEL PWA-Inspector iPad.dc.html",
       "route": "web/src/app/(app)/field/layout.tsx · components/field/FieldNav.tsx · FieldHeader.tsx · field-home.module.css",
       "pwa": {
         "state": "ok",
@@ -2048,7 +2090,25 @@
     "XL": 5
   },
   "sortLaw": "Default order is Remaining work: (300 − design − code − wiring) × complexity weight. A card is BLOCKED when any dependsOn card has overall < 70 — build the dependency first.",
+  "reconciled": {
+    "at": "2026-07-26T06:45:00+03:00",
+    "by": "claude-code",
+    "authority": "Product Owner: reconcile all 55 cards, then make the repo the source",
+    "base": "SB-r19 (dafcf468)",
+    "merged_lineages": [
+      "SB-r24 saqeel/virtual — card `virtual` 60/90/55 -> 88/96/82",
+      "SB-r20 saqeel/feedback — published to Claude Design, adopted verbatim: feedback"
+    ],
+    "conflicts": "none — the two lineages touched disjoint cards",
+    "note": "The earlier SB-r9 claude-design lineage is not represented: it was already overwritten in the project by SB-r20 before this reconcile, and never existed in the repo's history."
+  },
   "published": [
+    {
+      "revision": "SB-r25",
+      "target": "claude-design:5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61/status/saqeel-status.json",
+      "etag": "1785039816812279",
+      "at": "2026-07-26T07:29:25+03:00"
+    },
     {
       "revision": "SB-r48",
       "target": "claude-design:5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61/status/saqeel-status.json",

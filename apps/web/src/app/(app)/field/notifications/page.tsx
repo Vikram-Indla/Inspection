@@ -84,18 +84,16 @@ export default async function FieldNotificationsList({ searchParams }: {
           all: tr("field.notifications.all", "All", "الكل"),
           unread: tr("field.notifications.unreadFilter", "Unread", "غير مقروءة"),
           newBadge: tr("field.notifications.newBadge", "New", "جديد"),
+          // The design writes one empty string, and it already reads "in this
+          // view", so it covers the unread filter too.
           empty: tr("field.notifications.empty", "No notifications in this view.", "لا توجد إشعارات في هذا القسم."),
-          emptyUnread: tr("field.notifications.emptyUnread", "No unread notifications.", "لا توجد إشعارات غير مقروءة."),
           offlineCached: tr("field.notifications.offlineCached", "Offline — showing the cached attention state from {time}. It may be out of date.", "غير متصل — يتم عرض حالة التنبيهات المحفوظة من {time}. قد تكون قديمة."),
           offlineEmpty: tr("field.notifications.offlineEmpty", "Offline — no notification snapshot is cached on this device.", "غير متصل — لا توجد نسخة إشعارات محفوظة على هذا الجهاز."),
-          live: tr("field.notifications.live", "Online — notification state is current.", "متصل — حالة الإشعارات محدثة."),
           refreshFailed: tr("field.notifications.refreshFailed", "Could not refresh notifications. The last cached state remains visible.", "تعذر تحديث الإشعارات. تظل آخر حالة محفوظة معروضة."),
           reconnecting: tr("field.notifications.reconnecting", "Connection restored — refreshing notifications.", "تمت استعادة الاتصال — جارٍ تحديث الإشعارات."),
           markRead: tr("field.notifications.markRead", "Mark read", "تحديد كمقروء"),
           acknowledgementOffline: tr("field.notifications.ackOffline", "Reconnect before marking this notification read. No acknowledgement was recorded.", "أعد الاتصال قبل تحديد الإشعار كمقروء. لم يتم تسجيل أي إقرار."),
           acknowledgementFailed: tr("field.notifications.ackFailed", "The read acknowledgement was not saved. Refresh and try again.", "لم يتم حفظ إقرار القراءة. حدّث الصفحة وحاول مرة أخرى."),
-          open: tr("field.notifications.open", "Open", "فتح"),
-          eventFallback: title,
           kinds: {
             assigned: tr("field.notifications.kind.assigned", "Visit assigned", "تم تعيين زيارة"),
             reassigned: tr("field.notifications.kind.reassigned", "Visit reassigned to you", "تمت إعادة تعيين الزيارة إليك"),

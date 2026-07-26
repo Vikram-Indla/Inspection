@@ -23,7 +23,7 @@
 <div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
 
   <header style="display:flex; align-items:center; gap:10px; padding:14px 18px; padding-block-start:max(14px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
-    <a href="SAQEEL%20PWA-Field%20Dashboard.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="{{ t.backArrow }}"/></svg></a>
+    <a href="SAQEEL%20PWA-Field%20Dashboard.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" data-directional="true"><path d="{{ t.backArrow }}"/></svg></a>
     <div style="flex:1; min-width:0;"><div style="font-weight:600; font-size:15px;">{{ t.title }}</div><div class="t-caption">{{ v.factory }}</div></div>
     <span class="badge badge-info">{{ t.step }}</span>
     <button class="pr-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
@@ -99,7 +99,7 @@ class Component extends DCLogic {
         aiBriefNote:"بناءً على آخر تفتيش، ركّز على سلامة الحريق وتخزين المواد الكيميائية — كانت هذه أعلى نقاط المخالفة سابقاً.",
         requiredDocs:"المستندات المطلوبة", startJourney:"بدء الرحلة",
       },
-      en: { back:"Back", title:"Visit Preparation", backArrow:"M9 6l6 6-6 6", step:"Pre-execution", langBtnLabel:"AR",
+      en: { back:"Back", title:"Visit Preparation", backArrow:"M15 6l-6 6 6 6", step:"Pre-execution", langBtnLabel:"AR",
         visitDetails:"Visit Details", visitType:"Visit Type", executionMode:"Execution Mode", window:"Window", priority:"Priority",
         factorySnapshot:"Factory Snapshot", crNumber:"CR Number", licenseNumber:"Industrial License No.", activityClass:"Activity", riskBand:"Risk Band", employees:"Employees", saudi:"Saudi",
         previousInspections:"Previous Inspections", aiBrief:"AI Brief",

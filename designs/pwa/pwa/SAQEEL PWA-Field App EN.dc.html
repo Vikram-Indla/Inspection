@@ -74,7 +74,12 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:720,&quot;height&quot;:860}}">
 class Component extends DCLogic {
-  state = { theme: "dark", locale: "en" };
+  // The locale is seeded from ?lang= so the prototype opens directly in the
+  // requested direction. The EN/AR segment is rendered EN-first, so anything
+  // that drove the locale by clicking the first language control clicked EN
+  // while asking for Arabic and the prototype stayed dir="ltr". Reading the
+  // query removes that dependency on control order; the segment still toggles.
+  state = { theme: "dark", locale: DC_INITIAL_LOCALE() };
   renderVals() {
     const EN = {
       greeting: "Good morning, Khalid", sub: "Wednesday, 22 Jul 2026 · Riyadh",
@@ -109,6 +114,18 @@ class Component extends DCLogic {
       setEn: () => this.setState({ locale: "en" }), setAr: () => this.setState({ locale: "ar" }),
       t: en ? EN : AR, visits: V,
     };
+  }
+}
+
+// Hoisted so the class field initialiser above can call it. Returns "ar" only
+// when the URL explicitly asks for Arabic; every other input stays "en".
+function DC_INITIAL_LOCALE() {
+  try {
+    var q = new URLSearchParams(window.location.search);
+    var v = (q.get("lang") || q.get("locale") || "").toLowerCase();
+    return v === "ar" ? "ar" : "en";
+  } catch (e) {
+    return "en";
   }
 }
 </script>

@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import FieldHeader from "@/components/field/FieldHeader";
+import ThemeToggle from "@/components/ThemeToggle";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { performShellSearch, type GlobalSearchResult, type GlobalSearchType, type ShellSearchOutcome } from "@/lib/shell-search";
 import { shellGlobalSearchHref } from "@/lib/shell-navigation";
 import { useT } from "@/lib/i18n";
 import styles from "./search.module.css";
+import SearchRecents from "./SearchRecents";
 
 // SAQEEL Field Global Search.dc.html — dedicated results screen (previously only
 // the header dropdown existed). Same query/ranking as the dropdown: both call
@@ -27,16 +28,15 @@ const TYPE_META: Record<GlobalSearchType, { en: string; ar: string; iconPath: st
   inspection: { en: "Inspection", ar: "تفتيش", iconPath: "M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11", iconBg: "var(--status-warning-soft)", iconColor: "var(--status-warning-text)" },
 };
 
-// Design chip order: All, Factory, CR, License, Visit, Inspection. Plant is a
-// real search type with no design chip; kept last so filtering it stays possible
-// (no accepted capability is weakened).
-const ORDERED_TYPES: GlobalSearchType[] = ["factory", "commercial_registration", "industrial_license", "visit", "inspection", "plant"];
+// Exact design chip order. Plant remains visible in the unfiltered real-result
+// projection, but the authority does not grant it a seventh filter control.
+const FILTER_TYPES: GlobalSearchType[] = ["factory", "commercial_registration", "industrial_license", "visit", "inspection"];
 
 export default async function FieldSearchPage({ searchParams }: { searchParams: Promise<{ q?: string; type?: string }> }) {
   const { q, type } = await searchParams;
   const query = (q ?? "").trim();
   const rawType = (type ?? "").trim();
-  const activeType = ORDERED_TYPES.includes(rawType as GlobalSearchType) ? (rawType as GlobalSearchType) : null;
+  const activeType = FILTER_TYPES.includes(rawType as GlobalSearchType) ? (rawType as GlobalSearchType) : null;
   const sb = await supabaseServer();
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => (locale === "ar" ? ar : t(key, en));
@@ -92,33 +92,23 @@ export default async function FieldSearchPage({ searchParams }: { searchParams: 
   const emptyByFilter = !searchUnavailable && visibleResults.length === 0 && outcome.results.length > 0;
   const emptyOverall = !searchUnavailable && query.length >= 2 && outcome.results.length === 0;
 
-  // Result grouping. The design's result list is flat, but it does carry a
-  // section-header idiom on this same screen (the "Recent searches" t-label), so
-  // grouped results reuse that exact treatment rather than a new one. Grouping is
-  // presentation only — the source order from performShellSearch is preserved
-  // inside each group, and a single-type result set stays flat.
-  const groups = ORDERED_TYPES
-    .map(type => ({ type, rows: visibleResults.filter(r => r.type === type) }))
-    .filter(group => group.rows.length > 0);
-  const grouped = !activeType && groups.length > 1;
-
   const resultRow = (result: GlobalSearchResult) => {
     const meta = TYPE_META[result.type];
     return (
       <Link key={`${result.type}-${result.id}`} href={shellGlobalSearchHref(result, true)} prefetch={false} className={styles.row}>
         <span className={styles.icn} style={{ background: meta.iconBg, color: meta.iconColor }}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 19, height: 19 }} aria-hidden="true">
+          <svg className={styles.resultIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
             <path d={meta.iconPath} />
           </svg>
         </span>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontWeight: 600, fontSize: 14, flex: 1 }}><bdi>{result.label ?? result.id.slice(0, 8)}</bdi></span>
+        <div className={styles.resultBody}>
+          <div className={styles.resultHeading}>
+            <span className={styles.resultTitle}><bdi>{result.label ?? result.id.slice(0, 8)}</bdi></span>
             <span className={`badge ${styles.typeBadge}`}>{typeLabel(result.type)}</span>
           </div>
-          {result.detail && <div className="t-caption" style={{ marginBlockStart: 3 }}><bdi>{result.detail}</bdi></div>}
+          {result.detail && <div className={`t-caption ${styles.resultDetail}`}><bdi>{result.detail}</bdi></div>}
         </div>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15, color: "var(--text-muted)", flex: "none" }} aria-hidden="true">
+        <svg className={styles.chevron} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
           <path d={chevron} />
         </svg>
       </Link>
@@ -127,11 +117,18 @@ export default async function FieldSearchPage({ searchParams }: { searchParams: 
 
   return (
     <>
-      <FieldHeader
-        leading={backBtn}
-        title={tr("field.search.title", "Global Search", "البحث الشامل")}
-        langHref={langHref} langLabel={langLabel}
-      />
+      <header className={styles.header}>
+        {backBtn}
+        <div className={styles.headerTitle}>{tr("field.search.title", "Global Search", "البحث الشامل")}</div>
+        <a href={langHref} className={styles.langButton}>{langLabel}</a>
+        <ThemeToggle
+          className="btn btn-icon btn-ghost"
+          labels={{
+            toLight: tr("theme.light", "Light mode", "الوضع الفاتح"),
+            toDark: tr("theme.dark", "Dark mode", "الوضع الداكن"),
+          }}
+        />
+      </header>
 
       {/* Search bar — GET form; submits on Enter (no client JS). */}
       <form className={styles.searchbar} method="GET" action="/field/search" role="search">
@@ -151,7 +148,7 @@ export default async function FieldSearchPage({ searchParams }: { searchParams: 
           className={`${styles.chip} ${!activeType ? styles.chipActive : ""}`}>
           {tr("field.search.filter.all", "All", "الكل")}
         </Link>
-        {ORDERED_TYPES.map(key => (
+        {FILTER_TYPES.map(key => (
           <Link key={key} href={chipHref(key)} prefetch={false} aria-pressed={activeType === key}
             className={`${styles.chip} ${activeType === key ? styles.chipActive : ""}`}>
             {typeLabel(key)}
@@ -168,15 +165,11 @@ export default async function FieldSearchPage({ searchParams }: { searchParams: 
           </div>
         )}
 
-        {query.length === 0 && (
-          <div className={styles.state} role="status">
-            {tr("field.search.prompt", "Start typing to search factories, CRs, licenses, plants, visits and inspections.", "ابدأ الكتابة للبحث في المصانع والسجلات التجارية والتراخيص والمنشآت والزيارات وعمليات التفتيش.")}
-          </div>
-        )}
-
-        {query.length > 0 && query.length < 2 && (
-          <div className={styles.state} role="status">{tr("field.search.tooShort", "Type at least 2 characters.", "أدخل حرفين على الأقل.")}</div>
-        )}
+        <SearchRecents
+          query={query}
+          recentLabel={tr("field.search.recent", "Recent searches", "عمليات بحث سابقة")}
+          emptyLabel={tr("field.search.recentEmpty", "Not configured", "غير مهيأ")}
+        />
 
         {/* ERROR — search could not run. Deliberately does NOT claim an empty
             scope, and offers the same query again rather than a dead end. */}
@@ -190,7 +183,7 @@ export default async function FieldSearchPage({ searchParams }: { searchParams: 
         )}
 
         {/* EMPTY — the query ran and genuinely matched nothing in scope. */}
-        {emptyOverall && (
+        {(emptyOverall || (!searchUnavailable && query.length > 0 && query.length < 2)) && (
           <div className={styles.state} role="status">{tr("field.search.empty", "No matching results in your scope.", "لا توجد نتائج مطابقة ضمن صلاحياتك.")}</div>
         )}
 
@@ -206,16 +199,7 @@ export default async function FieldSearchPage({ searchParams }: { searchParams: 
           </div>
         )}
 
-        {grouped
-          ? groups.map(group => (
-              <div key={group.type}>
-                <div className={`t-label ${styles.groupLabel}`}>
-                  {typeLabel(group.type)} ({group.rows.length})
-                </div>
-                {group.rows.map(resultRow)}
-              </div>
-            ))
-          : visibleResults.map(resultRow)}
+        {visibleResults.map(resultRow)}
       </div>
     </>
   );

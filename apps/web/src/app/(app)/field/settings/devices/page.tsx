@@ -5,26 +5,35 @@ import { useT } from "@/lib/i18n";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import TrustedDevicesClient from "./TrustedDevicesClient";
+import { listFieldDevices } from "./actions";
 import type { TrustedDevicesStrings } from "./strings";
 
-// SAQEEL PWA-Field Trusted Devices.dc.html — dedicated field Trusted Devices
-// screen. Chrome ported pixel-to-pixel from the design (back-arrow header, no
-// bottom nav, device card, enroll action, security note).
+// This route composes TWO design pages, in this order:
+//   • SAQEEL PWA-Field Trusted Devices.dc.html — the whole page. Its header is
+//     ported here (back arrow, title, language pill, no bottom nav); its intro,
+//     register list, enrol action and closing note are slots 2-5 in
+//     TrustedDevicesClient.
+//   • SAQEEL PWA-Field Biometric.dc.html — its "Device Enrollment" column only,
+//     as slots 6-11. That column's own segmented chrome and its full-screen
+//     "Biometric Lock" view are not here: the lock screen lives in
+//     login/field/**, and the segment bar's language/theme controls are already
+//     this route's header (the field channel is fixed dark). See the
+//     composition block at the top of TrustedDevicesClient.
 //
-// Two deliberate, governed departures from the design mock:
-//   1. The mock lists two fabricated iPads with a per-device Revoke. The app
-//      renders ONLY the real, RLS-scoped `mvp3_devices` row for this user and
-//      offers no Revoke, because revocation exists solely as an Operations
-//      command (`mvp3_issue_device_command`) that this surface cannot call. A
-//      Revoke button here would be a control with nothing behind it.
-//   2. The mock's "Enroll new device" links to the Biometric screen as though
-//      biometric enrolment were a sign-in factor. It is not — see the scope
-//      note rendered inside the biometric card and the comment block in
-//      TrustedDevicesClient.
+// The design's device LIST is real: `listFieldDevices()` reads every
+// `mvp3_devices` row the RLS policy releases for this inspector, server-side,
+// so the first paint carries the register instead of a spinner.
+//
+// The governed departures from the mocks are documented, one by one, in
+// TrustedDevicesClient's "WHAT IS AND IS NOT REAL" block — chiefly: no
+// per-device Revoke (no UPDATE/DELETE policy exists and the requirements
+// baseline names revocation zero times), and one platform-authenticator control
+// rather than separate Face ID / Touch ID switches.
 export default async function FieldTrustedDevicesPage() {
   const [sb, { t, locale }] = await Promise.all([supabaseServer(), useT()]);
   const { data: { user }, error } = await getVerifiedUser(sb);
   if (error || !user) redirect("/login");
+  const initialList = await listFieldDevices();
   const tr = (key: string, en: string, ar: string) => (locale === "ar" ? ar : t(key, en));
 
   const strings: TrustedDevicesStrings = {
@@ -37,6 +46,32 @@ export default async function FieldTrustedDevicesPage() {
     thisDevice: tr("field.devices.thisDevice", "This device", "هذا الجهاز"),
     lastAuth: tr("field.devices.lastAuth", "Last seen", "آخر ظهور"),
     enrolled: tr("field.devices.enrolledOn", "Enrolled", "تاريخ التسجيل"),
+
+    listRefreshing: tr("field.devices.list.refreshing", "Refreshing the device register…", "جارٍ تحديث سجل الأجهزة…"),
+    listEmptyTitle: tr("field.devices.list.emptyTitle", "No registered devices", "لا توجد أجهزة مسجلة"),
+    listEmptyDetail: tr(
+      "field.devices.list.emptyDetail",
+      "The device register holds no device for your account yet.",
+      "لا يحتوي سجل الأجهزة على أي جهاز لحسابك حتى الآن.",
+    ),
+    listUnavailable: tr(
+      "field.devices.list.unavailable",
+      "The device register could not be read, so no device can be listed. No trust is inferred.",
+      "تعذرت قراءة سجل الأجهزة، لذا لا يمكن عرض أي جهاز. لا يتم استنتاج الثقة.",
+    ),
+    listSignedOut: tr(
+      "field.devices.list.signedOut",
+      "Sign in again to read the device register.",
+      "سجّل الدخول مجدداً لقراءة سجل الأجهزة.",
+    ),
+    listOffline: tr(
+      "field.devices.list.offline",
+      "You are offline. This is the register as it was last read; it cannot be re-read or changed until the connection returns.",
+      "أنت غير متصل. هذا هو السجل كما قُرئ آخر مرة؛ لا يمكن إعادة قراءته أو تغييره حتى تعود الشبكة.",
+    ),
+
+    platformIpadOs: tr("field.devices.platform.ipadOs", "iPadOS device", "جهاز iPadOS"),
+    platformWebManaged: tr("field.devices.platform.webManaged", "Managed web client", "عميل ويب مُدار"),
 
     stChecking: tr("field.devices.st.checking", "Checking enrollment…", "جارٍ التحقق من التسجيل…"),
     stNotEnrolled: tr("field.devices.st.notEnrolled", "Not enrolled", "غير مسجل"),
@@ -120,8 +155,39 @@ export default async function FieldTrustedDevicesPage() {
       "Enrollment from this screen is disabled in this environment. Ask Operations to enroll this device.",
       "التسجيل من هذه الشاشة معطّل في هذه البيئة. اطلب من قسم العمليات تسجيل هذا الجهاز.",
     ),
+    enrollRegistered: tr(
+      "field.devices.enrollRegistered",
+      "This device is already in the register above, so there is nothing to enroll from here.",
+      "هذا الجهاز موجود بالفعل في السجل أعلاه، لذا لا يوجد ما يمكن تسجيله من هنا.",
+    ),
+
+    // Biometric.dc.html "Device Enrollment" column — heading block.
+    bioSectionTitle: tr("field.devices.bio.sectionTitle", "Enroll Biometric Lock", "تسجيل القفل الحيوي"),
+    // The design says biometric enrolment links the trusted device to Apple
+    // biometrics "to unlock the field app". That is exactly what this does —
+    // it gates re-entry to an existing session. It is NOT worded as sign-in.
+    bioSectionDesc: tr(
+      "field.devices.bio.sectionDesc",
+      "Link this trusted device's built-in authenticator so you can reopen the field app quickly and securely.",
+      "اربط المُصادِق المدمج في هذا الجهاز الموثوق لإعادة فتح التطبيق الميداني بسرعة وأمان.",
+    ),
+
+    // Biometric.dc.html "Trusted Device" summary panel.
+    bioSummaryLabel: tr("field.devices.bio.summaryLabel", "Trusted Device", "الجهاز الموثوق"),
+    bioSummaryDevice: tr("field.devices.bio.summaryDevice", "Device", "الجهاز"),
+    bioSummaryDeviceId: tr("field.devices.bio.summaryDeviceId", "Device ID", "معرّف الجهاز"),
+    bioSummaryStatus: tr("field.devices.bio.summaryStatus", "Status", "الحالة"),
+    bioSummaryLastAuth: tr("field.devices.bio.summaryLastAuth", "Last authentication", "آخر مصادقة"),
 
     bioTitle: tr("field.devices.bio.title", "Face ID unlock", "فتح بالتعرف على الوجه"),
+    // The platform reports only that a built-in authenticator exists — never
+    // which one — so the subtitle does not claim Face ID or Touch ID
+    // specifically for the hardware in hand.
+    bioSubtitle: tr(
+      "field.devices.bio.subtitle",
+      "This device's built-in authenticator",
+      "المُصادِق المدمج في هذا الجهاز",
+    ),
     bioOn: tr("field.devices.bio.on", "On", "مُفعّل"),
     bioOff: tr("field.devices.bio.off", "Off", "غير مُفعّل"),
     bioEnable: tr("field.devices.bio.enable", "Enable Face ID unlock", "تفعيل الفتح بالتعرف على الوجه"),
@@ -199,6 +265,7 @@ export default async function FieldTrustedDevicesPage() {
         locale={locale}
         userId={user.id}
         userLabel={user.email ?? user.id}
+        initialList={initialList}
         strings={strings}
       />
     </>

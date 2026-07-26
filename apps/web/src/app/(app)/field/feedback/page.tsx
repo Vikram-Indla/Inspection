@@ -6,13 +6,14 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 
-// SAQEEL Field — Establishment Feedback QR (O-15 STUB / provision).
-// The site representative is meant to scan this QR to give feedback / receive
-// their acknowledgement copy. Per O-15 the QR PAYLOAD and the public scan/PDF
-// destination are undecided, so this is intentionally a PROVISION ONLY:
-// a real route + a real linkage payload (inspector, optional visit) + a
-// placeholder QR graphic. The scan does NOT resolve to anything yet — clearly
-// labelled as pending — and no unauthenticated public flow is built.
+// SAQEEL Field — Establishment Feedback QR (O-15 partial).
+// The QR graphic itself stays a generic, non-scannable placeholder — the
+// external self-serve scan flow (O-15: public QR payload encoding, unauth
+// scan destination) remains an open decision and is intentionally not built.
+// What IS real: when a visit is completed, the assigned inspector can open
+// the rating form directly on their own device (rate/[visitId]) and hand it
+// to the representative in person — the same device-handoff pattern already
+// accepted for factory-representative acknowledgement (DEC-009/M04-197).
 export default async function FieldFeedbackQrPage({ searchParams }: { searchParams: Promise<{ visit?: string }> }) {
   const { visit } = await searchParams;
   const sb = await supabaseServer();
@@ -50,8 +51,8 @@ export default async function FieldFeedbackQrPage({ searchParams }: { searchPara
 
           <p className="t-caption" style={{ textAlign: "center", margin: 0, maxWidth: 360 }}>
             {tr("field.qr.note",
-              "Placeholder only. When the representative scans this code they will reach their feedback / acknowledgement copy — the scan destination and code generation are not built yet.",
-              "عنصر مؤقت فقط. عند مسح ممثل الموقع لهذا الرمز سيصل إلى نسخة التقييم / الإقرار الخاصة به — لم يتم بعد بناء وجهة المسح ولا توليد الرمز.")}
+              "Illustrative only — the self-serve scan flow is not built (open decision O-15). To capture a rating now, use the button below on this device.",
+              "توضيحي فقط — لم يُبنَ بعد مسار المسح الذاتي (قرار مفتوح O-15). لتسجيل تقييم الآن، استخدم الزر أدناه على هذا الجهاز.")}
           </p>
 
           <div style={{ width: "100%", borderBlockStart: "1px solid var(--border-subtle)", paddingBlockStart: 14, display: "flex", flexDirection: "column", gap: 6 }}>
@@ -60,6 +61,12 @@ export default async function FieldFeedbackQrPage({ searchParams }: { searchPara
               <span className="id-code" dir="ltr" style={{ overflowWrap: "anywhere", textAlign: "end" }}>{payload}</span>
             </div>
           </div>
+
+          {visit && uuidShape.test(visit) && (
+            <Link href={`/field/feedback/rate/${visit}`} prefetch={false} className="btn btn-secondary btn-block">
+              {tr("field.qr.openForm", "Open rating form on this device", "افتح نموذج التقييم على هذا الجهاز")}
+            </Link>
+          )}
         </div>
       </div>
     </>

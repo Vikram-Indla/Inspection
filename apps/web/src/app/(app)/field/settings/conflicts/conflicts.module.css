@@ -39,12 +39,12 @@
   margin-block-end: 12px;
 }
 
-/* Settled field-channel breakpoint (600px, not 640px). At phone widths two
-   label/value columns compress until neither side is readable, so the compare
-   stacks — local above server, same row order, same content. */
-@media (max-width: 599px) {
-  .sides { flex-direction: column; }
-}
+/* The design declares NO breakpoint here: the local/server compare is two
+   columns side by side at every width, which is the whole point of a compare.
+   A previous pass stacked them below 600px; that broke the design's core
+   composition on the narrowest mandated width, so it is removed. At 390px each
+   side is ~172px wide (~146px of content) which carries the design's own
+   12.5px label/value rows; long values wrap via .fieldV overflow-wrap. */
 
 .side {
   flex: 1;
@@ -83,13 +83,27 @@
   gap: 9px;
 }
 
-.actions :global(.btn) {
-  flex-direction: column;
-  gap: 1px;
-  height: auto;
-  /* Settled field-channel geometry: touch controls are never below 50px. */
-  min-height: 50px;
-  padding-block: 8px;
+/* Design geometry: two equal single-purpose buttons on one row, `btn-sm` with
+   flex:1 and NO height override — the design's own control height (the DS
+   --control-h-sm, 28px in this channel, which the design preview resolves to
+   as well) is what ships. A previous pass forced a 50px two-line block here;
+   that is not the design and is removed.
+   The one thing the design cannot answer is 390px: `.btn` is white-space:nowrap
+   and the design's own full label ("Keep Server Value (discard my response)")
+   is wider than the ~172px each button gets there, so it would overflow the
+   control. Below the field breakpoint the label is allowed to wrap and the
+   control grows from — never below — the design's height. Declared judgment:
+   the design is silent on this width, and the design's row composition is kept
+   in preference to restacking. */
+@media (max-width: 599px) {
+  .actions :global(.btn) {
+    height: auto;
+    min-height: var(--control-h-sm);
+    padding-block: 6px;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.25;
+  }
 }
 
 /* Resolution-policy callout (design: .panel on --accent-soft). */
@@ -100,12 +114,6 @@
   gap: 8px;
   align-items: flex-start;
   font-size: 12px;
-}
-
-.btnHint {
-  font-size: 11px;
-  color: inherit;
-  opacity: 0.85;
 }
 
 .failed {

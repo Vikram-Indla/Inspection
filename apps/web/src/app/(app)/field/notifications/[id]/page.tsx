@@ -19,8 +19,10 @@ import styles from "../notifications.module.css";
 // named human sender and a category on every row; MIM's notifications table has
 // no message, sender or category column, so each of those renders only when the
 // stored row actually supports it and is omitted otherwise — never a fabricated
-// value (CLAUDE.md zero-assumption law). The read-receipt write and the generic
-// payload rendering are unchanged.
+// value (CLAUDE.md zero-assumption law). The read-receipt write is unchanged.
+// The design defines a single dl.desc here, so the stored payload keys — which
+// remain governed, acceptance-tested data — render as rows of that same list
+// instead of the separate titled "Payload" panel the design never defines.
 export default async function FieldNotificationDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const sb = await supabaseServer();
@@ -120,7 +122,7 @@ export default async function FieldNotificationDetail({ params }: { params: Prom
         {/* Hero — design: 46px icon tile, 700/16px title, caption date line. */}
         <div className={styles.hero}>
           <span className={`${styles.icn} ${styles.heroIcn}`} style={{ background: icon.bg, color: icon.color }} aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 22, height: 22 }}><path d={icon.path} /></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d={icon.path} /></svg>
           </span>
           <div style={{ flex: 1, minWidth: 0 }}>
             <h1 className={styles.heroTitle}>{heading}</h1>
@@ -130,6 +132,10 @@ export default async function FieldNotificationDetail({ params }: { params: Prom
 
         {message && <div className={`panel ${styles.message}`}>{message}</div>}
 
+        {/* The design defines ONE description list here (Category / Sender /
+            Notification ID). The stored payload keys are governed data that
+            must stay visible, so they join that same list instead of adding a
+            second titled panel the design does not define. */}
         <dl className={styles.desc}>
           {category && (
             <>
@@ -147,28 +153,18 @@ export default async function FieldNotificationDetail({ params }: { params: Prom
           <dd><span className="id-code">{notification.event_key}</span></dd>
           <dt>{tr("field.notification.notifId", "Notification ID", "معرّف الإشعار")}</dt>
           <dd><span className="id-code">{notification.id}</span></dd>
+          {entries.map(entry => (
+            <div key={entry.key} style={{ display: "contents" }}>
+              <dt className={styles.descKey}>{entry.key}</dt>
+              <dd className={styles.descValue}>{entry.value}</dd>
+            </div>
+          ))}
         </dl>
-
-        {/* Payload — no design counterpart. Retained from the accepted AC-0099
-            behaviour: the stored keys are the only complete, true record of
-            what this notification carries. */}
-        <section className={`panel ${styles.payload}`}>
-          <h2 className={styles.payloadTitle}>{tr("field.notification.payload", "Payload", "بيانات الإشعار")}</h2>
-          {entries.length === 0 ? (
-            <p className="t-caption" style={{ margin: 0 }} role="status">
-              {tr("field.notification.payloadEmpty", "No notification payload is available.", "لا تتوفر بيانات إضافية للإشعار.")}
-            </p>
-          ) : (
-            <dl className={styles.desc}>
-              {entries.map(entry => (
-                <div key={entry.key} style={{ display: "contents" }}>
-                  <dt className="id-code" style={{ overflowWrap: "anywhere" }}>{entry.key}</dt>
-                  <dd style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere", fontVariantNumeric: "tabular-nums" }}>{entry.value}</dd>
-                </div>
-              ))}
-            </dl>
-          )}
-        </section>
+        {entries.length === 0 && (
+          <p className="t-caption" style={{ margin: 0 }} role="status">
+            {tr("field.notification.payloadEmpty", "No notification payload is available.", "لا تتوفر بيانات إضافية للإشعار.")}
+          </p>
+        )}
 
         {/* The design's optional primary action. Resolved by the same
             notificationHref() the list and the bell use — no second rule. */}

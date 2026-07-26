@@ -40,9 +40,17 @@
 .cardStatic { cursor: default; }
 .cardStatic:hover { box-shadow: var(--shadow-card); transform: none; }
 
+.cardBody { display: flex; gap: 10px; }
+.cardContent { flex: 1; min-width: 0; }
+.avatar {
+  inline-size: 40px; block-size: 40px; border-radius: var(--radius-full);
+  display: grid; place-items: center; flex: none; align-self: flex-start;
+  background: var(--accent-soft); color: var(--accent-text);
+  font-size: 14px; font-weight: 700;
+}
 .cardHead { display: flex; align-items: flex-start; gap: 8px; }
 .cardName { flex: 1; font-weight: 600; font-size: 14.5px; }
-.cardLic { margin-block-start: 6px; }
+.cardLic { margin-block-start: 4px; }
 .cardFoot { display: flex; gap: 14px; align-items: center; margin-block-start: 10px; }
 
 /* Filter drawer field label (design's .fld). */

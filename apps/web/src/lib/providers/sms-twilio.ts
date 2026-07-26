@@ -59,11 +59,21 @@ export class TwilioSmsAdapter implements DeliveryAdapter {
 
 /** Register the Twilio SMS adapter iff all three credentials are configured
  *  (server-only secrets). Returns whether it was registered. Fail-closed: any
- *  missing credential → not registered, sms channel stays 'not_configured'. */
+ *  missing credential → not registered, sms channel stays 'not_configured'.
+ *
+ *  The sender number is read as TWILIO_FROM_NUMBER first and TWILIO_PHONE_NUMBER
+ *  second. Only the latter was ever provisioned, so this adapter silently never
+ *  registered and the sms channel reported 'not_configured' while working
+ *  credentials sat in the environment — a real delivery leg disabled by a name
+ *  mismatch, not by policy. Both names are accepted rather than renaming the
+ *  provisioned variable, so existing deployments keep working either way.
+ *  Enabling this sends real messages; authorized by the Product Owner
+ *  2026-07-26. Twilio remains the FALLBACK transport per engine_settings.otp
+ *  (provider_primary: unifonic) — registering it does not promote it. */
 export function maybeRegisterTwilioSms(register: (a: DeliveryAdapter) => void): boolean {
   const sid = process.env.TWILIO_ACCOUNT_SID;
   const token = process.env.TWILIO_AUTH_TOKEN;
-  const from = process.env.TWILIO_FROM_NUMBER;
+  const from = process.env.TWILIO_FROM_NUMBER ?? process.env.TWILIO_PHONE_NUMBER;
   if (!sid || !token || !from) return false;
   register(new TwilioSmsAdapter(sid, token, from));
   return true;

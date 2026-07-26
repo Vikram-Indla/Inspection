@@ -8,6 +8,8 @@ import { getVerifiedUser } from "@/lib/verified-user";
 import { safeFieldReturnPath } from "@/lib/field-auth";
 import FieldSessionBoundary from "@/components/field/FieldSessionBoundary";
 import FieldNav, { type FieldNavKey } from "@/components/field/FieldNav";
+import FieldShellDrawer, { type FieldDrawerGroup } from "@/components/field/FieldShellDrawer";
+import { buildShellNavigation, isFieldOnlyPersona } from "@/lib/shell-navigation";
 
 // SAQEEL field (inspector iPad) channel layout. This segment renders its OWN
 // self-contained chrome from the canonical SAQEEL field design system — the
@@ -39,11 +41,41 @@ export default async function FieldLayout({ children }: { children: ReactNode })
     redirect(`/login?reason=expired&next=${encodeURIComponent(pathname)}`);
   }
   const roleRead = await getUserRoles(user.id);
-  const inspector = !roleRead.error && (roleRead.data ?? []).some(row => row.role_key === "inspector");
+  const roleKeys = (roleRead.error ? [] : roleRead.data ?? []).map(row => row.role_key);
+  const inspector = !roleRead.error && roleKeys.includes("inspector");
   if (!inspector) {
     redirect(`/login?reason=unauthorized&next=${encodeURIComponent(pathname)}`);
   }
   const { t, locale } = await useT();
+
+  // CC-SHELL-TABLET-001 option B: the bottom tab bar IS field navigation, so a
+  // field-only Inspector navigates by tabs alone and receives no side panel —
+  // the same decision the console shell already makes at ShellClient.tsx. A
+  // multi-role persona (inspector + planner, ops, admin…) keeps the hamburger,
+  // and until now had none here at all: the field layout bypasses the console
+  // shell, so /field stranded them with no route back to the web portal.
+  //
+  // Administrator visibility (Product Owner, 2026-07-26): an item the persona
+  // is not allowed is OMITTED, never rendered disabled behind "Administrator
+  // access required." A control implying a capability the user does not have is
+  // the UI equivalent of a plausible default. buildShellNavigation already drops
+  // the whole admin group for a field-only persona; this drops the individual
+  // admin-primary rows for everyone else, inside this drawer only.
+  const fieldOnly = isFieldOnlyPersona(roleKeys);
+  const drawerGroups: FieldDrawerGroup[] = fieldOnly ? [] : buildShellNavigation(roleKeys)
+    .map(group => ({
+      id: group.id,
+      label: t(group.labelKey, locale === "ar" ? group.labelAr : group.labelEn),
+      items: group.items
+        .filter(item => item.enabled)
+        .map(item => ({
+          id: item.id,
+          label: t(item.labelKey, locale === "ar" ? item.labelAr : item.labelEn),
+          href: item.href,
+          icon: item.icon,
+        })),
+    }))
+    .filter(group => group.items.length > 0);
   return (
     <>
       {/* Next hoists this <link> to <head>; the DS @imports (tokens, IBM Plex
@@ -61,7 +93,14 @@ export default async function FieldLayout({ children }: { children: ReactNode })
           fontFamily: "var(--font-body)",
         }}
       >
-        <FieldSessionBoundary>{children}</FieldSessionBoundary>
+        <FieldShellDrawer groups={drawerGroups} strings={{
+          open: t("shell.openMenu", locale === "ar" ? "فتح القائمة" : "Open menu"),
+          close: t("shell.closeMenu", locale === "ar" ? "إغلاق القائمة" : "Close menu"),
+          nav: t("shell.primaryNavigation", locale === "ar" ? "التنقل الرئيسي" : "Primary navigation"),
+          brandAr: "صقيل",
+        }}>
+          <FieldSessionBoundary>{children}</FieldSessionBoundary>
+        </FieldShellDrawer>
         <FieldNav active={fieldTabFor(pathname)} labels={{
           home: t("field.tabs.home", locale === "ar" ? "الرئيسية" : "Home"),
           myTasks: t("field.tabs.myTasks", locale === "ar" ? "مهامي" : "My Tasks"),

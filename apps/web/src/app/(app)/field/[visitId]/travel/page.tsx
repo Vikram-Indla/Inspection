@@ -9,8 +9,8 @@ import TravelClient, { type TravelStrings } from "./TravelClient";
 // the establishment on the shared Mapbox GeoMap with the inspector's live
 // browser position, real road-network ETA/distance (via /api/routing/eta) and
 // an honest geofence in/out-of-range status derived from the governed
-// factories.geofence_radius_m (ENG-06 default fallback — same chain Startup
-// uses). This screen is DISPLAY-AND-NAVIGATE only: the governed arrival
+// factories.geofence_radius_m (ENG-06 engine default fallback — the same
+// governed chain Startup uses). This screen is DISPLAY-AND-NAVIGATE only: the governed arrival
 // check-in that unlocks inspection start remains owned by the Startup flow at
 // /field/[visitId] (M04-004). "Continue to check-in" links there; it never
 // mutates visit/inspection state or creates a parallel arrival path.
@@ -42,8 +42,7 @@ export default async function FieldTravel({ params }: { params: Promise<{ visitI
         .eq("id", visitId).single()
     : { data: null };
 
-  // ENG-06 governed geofence default — same chain Startup.tsx uses
-  // (factory override → gis engine default → code-exposed 150 m last resort).
+  // ENG-06 engine default (gis). Absent settings stay absent — never defaulted.
   const { data: engines } = await sb.from("engine_settings").select("engine, settings").in("engine", ["gis"]);
   const gis = (engines?.find(e => e.engine === "gis")?.settings ?? {}) as { geofence_default_radius_m?: number };
 
@@ -68,6 +67,19 @@ export default async function FieldTravel({ params }: { params: Promise<{ visitI
     locatingNote: tr("field.travel.locatingNote", "Waiting for a GPS fix to check your distance to the establishment.", "بانتظار تحديد الموقع للتحقق من مسافتك إلى المنشأة."),
     geoUnavailableNote: tr("field.travel.geoUnavailableNote", "Location access is unavailable — enable GPS to verify arrival range.", "الوصول إلى الموقع غير متاح — فعّل تحديد الموقع للتحقق من نطاق الوصول."),
     geofenceRadius: tr("field.travel.geofenceRadius", "Geofence Radius", "نطاق التسييج"),
+    // Radius provenance — same governance wording the Startup check-in card
+    // uses (field.start.factoryOverride / field.start.engineDefault), so the
+    // inspector reads one consistent statement of WHERE the fence came from.
+    fenceFactoryOverride: tr("field.start.factoryOverride", "(factory override — SB20)", "(تجاوز خاص بالمنشأة — SB20)"),
+    fenceEngineDefault: tr("field.start.engineDefault", "(engine default — ENG-06)", "(الافتراضي من المحرّك — ENG-06)"),
+    fenceNotConfigured: tr("field.travel.fenceNotConfigured", "Not configured", "غير مُهيّأ"),
+    fenceUnconfiguredChip: tr("field.travel.fenceUnconfiguredChip", "Radius not configured", "النطاق غير مُهيّأ"),
+    fenceUnconfiguredNote: tr(
+      "field.travel.fenceUnconfiguredNote",
+      "No geofence radius is governed for this establishment (no factory override — SB20, no engine default — ENG-06), so arrival range cannot be verified on this screen. Continue to the governed check-in (M04-004), which owns the arrival decision.",
+      "لا يوجد نطاق تسييج محكوم لهذه المنشأة (لا تجاوز خاص بالمنشأة — SB20 ولا افتراضي من المحرّك — ENG-06)، لذا لا يمكن التحقق من نطاق الوصول في هذه الشاشة. تابع إلى تسجيل الدخول المحكوم (M04-004) الذي يملك قرار الوصول.",
+    ),
+    aiRouteNote: tr("field.travel.aiRouteNote", "AI route advisory: Not configured. Traffic rerouting is a Phase 2 capability.", "استشارة المسار بالذكاء الاصطناعي: غير مهيأة. إعادة التوجيه حسب الازدحام قدرة مؤجلة إلى المرحلة الثانية."),
     accuracy: tr("field.travel.accuracy", "GPS Accuracy", "دقة الموقع"),
     straightLine: tr("field.travel.straightLine", "Straight-line distance", "المسافة المباشرة"),
     etaUnavailable: tr("field.travel.etaUnavailable", "Routing provider unavailable — the live map and navigation remain available.", "خدمة تحديد المسار غير متاحة — تبقى الخريطة المباشرة والتنقل متاحة."),
@@ -84,14 +96,11 @@ export default async function FieldTravel({ params }: { params: Promise<{ visitI
     fenceLocating: tr("field.travel.fenceLocating", "Locating…", "جارٍ تحديد الموقع…"),
     fenceMapAria: tr("field.travel.fenceMapAria", "Geofence verification map at establishment scale", "خريطة التحقق الجغرافي بمقياس المنشأة"),
     continueCheckin: tr("field.travel.continueCheckin", "Continue to check-in", "المتابعة إلى تسجيل الوصول"),
-    checkinCaption: tr("field.travel.checkinCaption", "Arrival is confirmed on the governed geofence check-in (M04-004). This screen only shows your route — it does not record arrival.", "يتم تأكيد الوصول عبر تسجيل الدخول الجغرافي المحكوم (M04-004). تعرض هذه الشاشة مسارك فقط ولا تسجّل الوصول."),
     connectivityOffline: tr("field.travel.connectivityOffline", "Offline — the live route ETA can't refresh. Your GPS position and geofence range below stay live.", "غير متصل — لا يمكن تحديث الوقت المتوقع للمسار. يبقى موقعك عبر GPS ونطاق التسييج أدناه محدّثين مباشرةً."),
     connectivityWeak: tr("field.travel.connectivityWeak", "Weak connection — the live route ETA may be delayed.", "اتصال ضعيف — قد يتأخر تحديث الوقت المتوقع للمسار."),
     updated: tr("field.travel.updated", "Fix age", "عمر التحديد"),
     updatedAgo: tr("field.travel.updatedAgo", "{n}s ago", "قبل {n} ثانية"),
     updatedNow: tr("field.travel.updatedNow", "just now", "الآن"),
-    openInMaps: tr("field.travel.openInMaps", "Open in Maps", "فتح في الخرائط"),
-    privacyNote: tr("field.travel.privacyNote", "This route view only displays your live location to draw your route and range; the view itself stores nothing. Your journey position and arrival are recorded by the governed check-in as immutable geo events (M04-004).", "يعرض هذا المسار موقعك المباشر فقط لرسم مسارك ونطاقك، ولا يخزّن العرض نفسه أي شيء. تُسجَّل مواضع رحلتك ووصولك عبر تسجيل الدخول المحكوم كأحداث موقع غير قابلة للتغيير (M04-004)."),
   };
 
   const factory = (v?.factories ?? null) as { name: string; name_is_system_generated: boolean; official_lat: number | null; official_lng: number | null; geofence_radius_m: number | null; risk_band: string | null } | null;
@@ -101,7 +110,21 @@ export default async function FieldTravel({ params }: { params: Promise<{ visitI
   const destination = factory && factory.official_lat != null && factory.official_lng != null
     ? { lat: factory.official_lat, lng: factory.official_lng }
     : null;
-  const fence = factory?.geofence_radius_m ?? gis.geofence_default_radius_m ?? 150;
+  // SB20 → ENG-06 governed geofence chain: per-factory override, else the
+  // ENG-06 engine default. Startup.tsx (M04-004) evaluates the SAME two
+  // governed sources and additionally falls back to a 150 m code constant
+  // because it must still gate arrival when nothing is governed. This screen
+  // gates nothing — it only displays — so it stops at the governed chain and
+  // renders `null` honestly ("Not configured") rather than printing that code
+  // constant as if it were policy. Whenever either governed source resolves,
+  // travel and Startup carry the identical number, so the two surfaces never
+  // disagree about a real fence; when neither does, travel shows no radius, no
+  // ring and no in/out verdict instead of a plausible default.
+  const fence = factory?.geofence_radius_m ?? gis.geofence_default_radius_m ?? null;
+  const fenceSource: "factory" | "engine" | null =
+    factory?.geofence_radius_m != null ? "factory"
+      : gis.geofence_default_radius_m != null ? "engine"
+        : null;
 
   return (
     <TravelClient
@@ -111,6 +134,7 @@ export default async function FieldTravel({ params }: { params: Promise<{ visitI
       factoryName={factoryName}
       factoryTone={tone(factory?.risk_band)}
       fenceRadiusM={fence}
+      fenceSource={fenceSource}
       backHref={`/field/${visitId}`}
       langHref={langHref}
       langLabel={langLabel}

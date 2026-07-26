@@ -1,0 +1,83 @@
+{
+  "generated_at": "2026-07-26T03:22:36.512Z",
+  "target_project_ref": "iiozvqntawxfwbgffzqu",
+  "seed_batch_id": "saqeel-demo-v1-20260726",
+  "summary": {
+    "visits": 6,
+    "evidence": 3,
+    "findings": 3,
+    "profiles": 39,
+    "factories": 6,
+    "responses": 15,
+    "auth_users": 39,
+    "violations": 3,
+    "inspections": 3,
+    "submissions": 3,
+    "action_forms": 3,
+    "complete_forms": 3,
+    "virtual_visits": 3,
+    "physical_visits": 3,
+    "review_outcomes": {
+      "reject": 1,
+      "return": 1,
+      "approve": 1
+    },
+    "storage_objects": 3,
+    "multi_role_users": 0,
+    "role_cardinality": {
+      "ops": 3,
+      "auditor": 3,
+      "planner": 3,
+      "reviewer": 3,
+      "gis_admin": 3,
+      "inspector": 3,
+      "form_admin": 3,
+      "leadership": 3,
+      "risk_owner": 3,
+      "factory_rep": 3,
+      "security_admin": 3,
+      "workflow_admin": 3,
+      "compliance_admin": 3
+    },
+    "virtual_sessions": 3,
+    "linked_factory_reps": 3,
+    "audit_by_demo_actors": 193
+  },
+  "rls": {
+    "inspector_own_assignments_visible": 2,
+    "inspector_other_assignments_visible": 0,
+    "factory_rep_own_sessions_visible": 1,
+    "factory_rep_other_sessions_visible": 0,
+    "auditor_factory_mutation_rows": 0,
+    "reviewer_response_write_http": 403
+  },
+  "expected": {
+    "auth_users": 39,
+    "profiles": 39,
+    "per_role": 3,
+    "multi_role_users": 0,
+    "factories": 6,
+    "visits": 6,
+    "physical_visits": 3,
+    "virtual_visits": 3,
+    "inspections": 3,
+    "responses": 15,
+    "complete_forms": 3,
+    "evidence": 3,
+    "findings": 3,
+    "violations": 3,
+    "action_forms": 3,
+    "submissions": 3,
+    "review_outcomes": {
+      "approve": 1,
+      "return": 1,
+      "reject": 1
+    },
+    "virtual_sessions": 3,
+    "linked_factory_reps": 3,
+    "inspector_other_assignments_visible": 0,
+    "factory_rep_other_sessions_visible": 0,
+    "auditor_factory_mutation_rows": 0,
+    "reviewer_response_write_http": 403
+  }
+}
