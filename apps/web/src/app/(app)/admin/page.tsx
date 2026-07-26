@@ -57,9 +57,9 @@ export default async function AdminHome() {
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[] };
   const roles = Array.from(new Set((roleRows ?? []).map(r => r.role_key))).sort();
-  const control = buildShellNavigation(roles).find(g => g.id === "control");
-  const actFamilies = (control?.items ?? [])
-    .filter(i => i.id !== "admin-home")
+  const administration = buildShellNavigation(roles).find(g => g.id === "administration");
+  const actFamilies = (administration?.items ?? [])
+    .filter(i => i.id !== "admin-home" && i.enabled)
     .map(i => t(i.labelKey, locale === "ar" ? i.labelAr : i.labelEn));
   const sep = locale === "ar" ? "، " : ", ";
   const roleLabel = roles.length ? roles.map(r => r.replace(/_/g, " ")).join(sep) : "—";

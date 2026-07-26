@@ -166,7 +166,7 @@ leases:
   - lease_id: "LEASE-SAQEEL-ADMIN-CORE-001"
     card: "admin-core"
     channel: "admin"
-    holder: "kimi"
+    holder: "codex"
     state: "GRANTED"
     allowed_paths:
       - "apps/web/src/app/(app)/admin/** (excluding paths leased to other cards)"
