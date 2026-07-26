@@ -326,7 +326,7 @@ export default function FieldLoginClient({
   );
 
   return (
-    <div className="fl-root" dir={dir} lang={lang}>
+    <main className="fl-root" dir={dir} lang={lang}>
       {/* top utility row */}
       <div className="fl-top">
         <span className={`fl-pill ${online ? "fl-net-online" : "fl-net-offline"}`}>
@@ -348,7 +348,9 @@ export default function FieldLoginClient({
           {/* brand lockup */}
           <ShieldIcon />
           <div className="fl-brand">
-            <span className="fl-brand-latin">{s.brand1}</span>
+            <span className="fl-brand-latin" lang="en">
+              {s.brand1}
+            </span>
             <span className="fl-brand-ar" lang="ar">
               صقيل
             </span>
@@ -469,7 +471,9 @@ export default function FieldLoginClient({
         </div>
       </div>
 
-      {/* footer: offline-first assurance */}
+      {/* footer: offline-first assurance. Taken out of flow (position:absolute
+          in field-login.css) so the credential block stays centred against the
+          full column and dismissing the note cannot shift the form. */}
       <div className="fl-foot">
         {showOfflineNote && <div className="fl-foot-note">
           <svg
@@ -496,11 +500,11 @@ export default function FieldLoginClient({
               Before authentication there is no sync history to report, so the
               chip states connectivity instead of inventing a timestamp. */}
           <span className="t-caption fl-sync">
-            <span className="fl-sync-dot" />
+            <span className={`fl-sync-dot${online ? "" : " fl-sync-dot--offline"}`} />
             {netLabel}
           </span>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

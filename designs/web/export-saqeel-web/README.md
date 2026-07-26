@@ -19,5 +19,5 @@
 ## Notes
 
 - One filename was normalised for this export: `SAQEEL Review & Approval` → `SAQEEL Review and Approval` (the `&` breaks tooling paths).
-- `SAQEEL Login Web.dc.html` is **incomplete** — the atlas port was interrupted (see `handoff/OUTSTANDING.md`, O-30). Atlas source images are in `assets/saudi-atlas/`.
+- `SAQEEL Login v2.dc.html` is the login authority, re-pulled from the live Claude Design project on 2026-07-26 (CC-SHELL-TABLET-001). It supersedes and replaces the earlier `SAQEEL Login.dc.html` and the interrupted `SAQEEL Login Web.dc.html` atlas port (O-30), both deleted. Asset paths were rewritten on vendoring: `../support.js` → `./support.js`, `../saqeel/styles.css` → `saqeel/styles.css`, `saqeel/atlas/*` → `assets/saudi-atlas/*`.
 - Every page carries the WA-SHELL-r5 rail and WA-BRAND-r1 identity.
