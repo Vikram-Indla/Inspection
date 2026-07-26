@@ -18,6 +18,26 @@
   background: var(--surface-primary); box-shadow: var(--shadow-card);
 }
 
+.missionCard { padding: 14px 18px; }
+.missionRail { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-block-end: 12px; }
+.missionText { font-size: 13px; color: var(--text-secondary); }
+.missionRail :global(.exc-chip) { height: 22px; }
+.metricGrid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+  border-block-start: 1px solid var(--border-subtle); padding-block-start: 12px;
+}
+.metricCell { padding-inline: 14px; border-inline-end: 1px solid var(--border-subtle); font-size: 12.5px; font-weight: 600; }
+.metricCell:first-child { padding-inline-start: 0; }
+.metricCell:last-child { padding-inline-end: 0; border-inline-end: 0; }
+.metricCell > :first-child { font-weight: 700; font-size: 22px; }
+.metricCell > :last-child { margin-block-start: 1px; font-weight: 400; }
+@media (max-width: 600px) {
+  .metricGrid { grid-template-columns: repeat(2, 1fr); row-gap: 12px; }
+  .metricCell { border-inline-end: 0; padding-inline: 0; }
+  .missionRail :global(.seg) { width: 100%; }
+  .missionRail :global(.seg-opt) { flex: 1; }
+}
+
 /* Today's Brief */
 .brief { padding: 16px 18px; border-inline-start: 3px solid var(--action-primary); }
 .briefHead { display: flex; align-items: center; gap: 9px; margin-block-end: 10px; }
@@ -49,7 +69,7 @@
 .mapCard { padding: 0; overflow: hidden; }
 /* Fills the map card's height so the wider map column matches the factory
    preview instead of leaving a short 200px block with whitespace below. */
-.mapCanvas { position: relative; flex: 1; min-height: 320px; background: var(--surface-sunken); }
+.mapCanvas { position: relative; flex: 1; min-height: 300px; background: var(--surface-sunken); }
 .mapFoot { display: flex; align-items: center; gap: 10px; padding: 13px 16px; text-decoration: none; color: inherit; }
 .mapTitle { font-weight: 600; font-size: 14px; }
 .mapLink { display: inline-flex; align-items: center; gap: 5px; color: var(--action-primary); font-size: 13px; }
@@ -105,7 +125,7 @@
    design's 12px/15px padding alone yields ~41px, too small for a gloved tap. */
 .qbtnPill {
   display: inline-flex; align-items: center; justify-content: center; gap: 9px;
-  min-block-size: 50px; padding: 12px 15px;
+  padding: 12px 15px;
   border: 1px solid var(--border-subtle); border-radius: var(--radius-full);
   background: var(--surface-primary); font: inherit; font-size: 12.5px; font-weight: 600;
   cursor: pointer; color: var(--text-primary); box-shadow: var(--shadow-card);
@@ -141,6 +161,10 @@
   text-decoration: none; color: inherit;
 }
 .schedRow:hover { background: var(--surface-secondary); }
+@media (max-width: 600px) {
+  .schedRow { grid-template-columns: 56px minmax(0, 1fr) auto; gap: 8px; }
+  .schedRow > :last-child { grid-column: 2 / 4; justify-self: start; }
+}
 
 /* Pending attention */
 .attn { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }

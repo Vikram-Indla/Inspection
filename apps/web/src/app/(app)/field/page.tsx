@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import FieldHeader from "@/components/field/FieldHeader";
 import FieldHeaderSync from "@/components/field/FieldHeaderSync";
 import FieldHome, { type FieldHomeMarker } from "@/components/field/FieldHome";
+import FieldMetricStrip from "@/components/field/FieldMetricStrip";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
@@ -146,6 +147,11 @@ export default async function Field() {
   const actionable = tasks.filter((v) => v.planning_status !== "expired");
   const dayOf = (v: VisitRow) => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Riyadh" }).format(new Date(v.window_start));
   const todayTasks = actionable.filter((v) => dayOf(v) === todayKey);
+  const weekEndMs = nowMs + (7 * 24 * 60 * 60 * 1000);
+  const weekTasks = actionable.filter((v) => {
+    const start = new Date(v.window_start).getTime();
+    return start >= nowMs && start < weekEndMs;
+  });
   const isDone = (v: VisitRow) => ["submitted", "approved", "completed", "closed"].includes(v.operational_state);
 
   // ---- Real, governed counts (no fabrication, no invented thresholds) --------
@@ -159,7 +165,12 @@ export default async function Field() {
   const progressPct = todayTasks.length ? Math.round((completedToday / todayTasks.length) * 100) : 0;
   const draftCount = tasks.filter((v) => v.inspections && !["submitted", "approved", "completed", "closed"].includes(v.inspections.status) && v.inspections.status !== "not_started").length;
   const returnedCount = stat.followUp;
-  const expiredCount = tasks.filter((v) => v.planning_status === "expired").length;
+  const weeklyStat = {
+    inspections: weekTasks.length,
+    highRisk: weekTasks.filter((v) => v.factories?.risk_band === "high").length,
+    followUp: weekTasks.filter((v) => isReturned(v.inspections?.reviews ?? null)).length,
+    remaining: weekTasks.filter((v) => !isDone(v)).length,
+  };
 
   // ---- "Start here" recommendation: highest real risk among actionable, else
   // the soonest window. Reason is derived ONLY from real signals. -------------
@@ -265,10 +276,6 @@ export default async function Field() {
         aria-label={tr("field.home.search", "Search", "بحث")}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
       </Link>
-      <Link href="/field/feedback" prefetch={false} className="btn btn-icon btn-ghost"
-        aria-label={tr("field.qr.title", "Establishment feedback QR", "رمز تقييم المنشأة")}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M14 14h3v3M20 20h1v1M14 20h1v1" /></svg>
-      </Link>
       <Link href="/field/notifications" prefetch={false} className="btn btn-icon btn-ghost"
         style={{ position: "relative" }} aria-label={tr("field.tabs.notifications", "Notifications", "الإشعارات")}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
@@ -285,8 +292,30 @@ export default async function Field() {
         langHref={langHref} langLabel={langLabel} />
 
       <div className={styles.wrap} style={{ flex: 1 }}>
+        <FieldMetricStrip
+          daily={{ inspections: stat.today, followUp: stat.followUp, highRisk: stat.highRisk, remaining: stat.remaining }}
+          weekly={weeklyStat}
+          returned={returnedCount}
+          drafts={draftCount}
+          strings={{
+            mission: tr("field.home.mission", "{n} items require attention before your next visit.", "{n} عناصر تتطلب الانتباه قبل زيارتك التالية."),
+            returned: tr("field.home.railReturned", "returned", "مُعادة"),
+            drafts: tr("field.home.railDrafts", "drafts", "مسودات"),
+            daily: tr("field.home.daily", "Daily", "يومي"),
+            weekly: tr("field.home.weekly", "Weekly", "أسبوعي"),
+            inspections: tr("field.home.stat.inspections", "Inspections", "عمليات التفتيش"),
+            followUp: tr("field.home.stat.followUp", "Follow-up", "المتابعة"),
+            highRisk: tr("field.home.stat.highRisk", "High risk", "خطورة عالية"),
+            remaining: tr("field.home.stat.remaining", "Remaining", "المتبقي"),
+            assigned: tr("field.home.metric.assigned", "Assigned in this period", "مسندة في هذه الفترة"),
+            requiresAttention: tr("field.home.metric.attention", "Requires attention", "تتطلب الانتباه"),
+            stillOpen: tr("field.home.metric.open", "Still open", "لا تزال مفتوحة"),
+            progress: tr("field.home.metric.progress", "Work remaining", "العمل المتبقي"),
+          }}
+        />
+
         {/* 1 — AI DAILY BRIEF */}
-        <section className={styles.card} style={{ padding: "18px 20px" }} aria-labelledby="fd-brief-title">
+        <section className={styles.card} style={{ padding: "16px 20px" }} aria-labelledby="fd-brief-title">
           <div className={styles.briefHead}>
             {sparkle}
             <span id="fd-brief-title" className={styles.briefTitle}>{tr("field.home.brief.title", "AI Daily Brief", "ملخص اليوم الذكي")}</span>
@@ -308,26 +337,6 @@ export default async function Field() {
               {dailyBriefing.error ?? tr("field.home.brief.unavailable", "No advisory is available right now — nothing was generated or changed.", "لا يوجد ملخص استشاري الآن — لم يتم إنشاء أو تغيير أي شيء.")}
             </p>
           )}
-
-          {/* Real, governed stats (Est. Finish Time omitted — no governed source) */}
-          <div className={styles.stats}>
-            <div className={styles.stat}>
-              <span className={styles.statIc} style={{ background: "var(--surface-sunken)", color: "var(--text-secondary)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15 }}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg></span>
-              <div><div className={`id-code ${styles.statNum}`}>{stat.today}</div><div className="t-caption">{tr("field.home.stat.inspections", "Inspections today", "عمليات تفتيش اليوم")}</div></div>
-            </div>
-            <div className={styles.stat}>
-              <span className={styles.statIc} style={{ background: "var(--status-critical-soft)", color: "var(--status-critical-text)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15 }}><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><path d="M12 9v4M12 17h.01" /></svg></span>
-              <div><div className={`id-code ${styles.statNum}`}>{stat.highRisk}</div><div className="t-caption">{tr("field.home.stat.highRisk", "High-risk factories", "منشآت عالية الخطورة")}</div></div>
-            </div>
-            <div className={styles.stat}>
-              <span className={styles.statIc} style={{ background: "var(--status-warning-soft)", color: "var(--status-warning-text)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15 }}><path d="M1 4v6h6" /><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10" /></svg></span>
-              <div><div className={`id-code ${styles.statNum}`}>{stat.followUp}</div><div className="t-caption">{tr("field.home.stat.followUp", "Follow-up (returned)", "متابعة (مُعادة)")}</div></div>
-            </div>
-            <div className={styles.stat}>
-              <span className={styles.statIc} style={{ background: "var(--status-compliant-soft)", color: "var(--status-compliant-text)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15 }}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg></span>
-              <div><div className={`id-code ${styles.statNum}`}>{stat.remaining}</div><div className="t-caption">{tr("field.home.stat.remaining", "Remaining today", "المتبقية اليوم")}</div></div>
-            </div>
-          </div>
 
           {/* AI Recommendation — Start Here (real factory pick, honest reason) */}
           {selected?.factories && (
@@ -482,8 +491,8 @@ export default async function Field() {
                 <span className={styles.attnIc} style={{ background: "var(--status-critical-soft)", color: "var(--status-critical-text)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15 }}><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" /></svg></span>
                 <span className="badge badge-warning" style={{ height: 17 }}>{tr("field.home.priority.expired", "Lapsed", "منتهية")}</span>
               </div>
-              <div><div className={`id-code ${styles.attnNum}`}>{expiredCount}</div><div className="t-caption">{tr("field.home.expired", "Expired windows", "نوافذ منتهية")}</div></div>
-              <Link href="/field/my-tasks" prefetch={false} className={`btn btn-sm ${styles.btnOutline}`} style={{ textAlign: "center" }}>{tr("field.home.view", "View", "عرض")}</Link>
+              <div><div className={`id-code ${styles.attnNum}`}>—</div><div className="t-caption">{tr("field.home.pendingSync", "Pending synchronization", "بانتظار المزامنة")}</div></div>
+              <span className="t-caption">{tr("field.home.pendingSyncManaged", "Managed by secure offline sync", "تديرها المزامنة الآمنة دون اتصال")}</span>
             </div>
           </div>
         </div>

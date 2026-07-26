@@ -79,6 +79,7 @@ export default async function FieldTravel({ params }: { params: Promise<{ visitI
       "No geofence radius is governed for this establishment (no factory override — SB20, no engine default — ENG-06), so arrival range cannot be verified on this screen. Continue to the governed check-in (M04-004), which owns the arrival decision.",
       "لا يوجد نطاق تسييج محكوم لهذه المنشأة (لا تجاوز خاص بالمنشأة — SB20 ولا افتراضي من المحرّك — ENG-06)، لذا لا يمكن التحقق من نطاق الوصول في هذه الشاشة. تابع إلى تسجيل الدخول المحكوم (M04-004) الذي يملك قرار الوصول.",
     ),
+    aiRouteNote: tr("field.travel.aiRouteNote", "AI route advisory: Not configured. Traffic rerouting is a Phase 2 capability.", "استشارة المسار بالذكاء الاصطناعي: غير مهيأة. إعادة التوجيه حسب الازدحام قدرة مؤجلة إلى المرحلة الثانية."),
     accuracy: tr("field.travel.accuracy", "GPS Accuracy", "دقة الموقع"),
     straightLine: tr("field.travel.straightLine", "Straight-line distance", "المسافة المباشرة"),
     etaUnavailable: tr("field.travel.etaUnavailable", "Routing provider unavailable — the live map and navigation remain available.", "خدمة تحديد المسار غير متاحة — تبقى الخريطة المباشرة والتنقل متاحة."),
@@ -95,14 +96,11 @@ export default async function FieldTravel({ params }: { params: Promise<{ visitI
     fenceLocating: tr("field.travel.fenceLocating", "Locating…", "جارٍ تحديد الموقع…"),
     fenceMapAria: tr("field.travel.fenceMapAria", "Geofence verification map at establishment scale", "خريطة التحقق الجغرافي بمقياس المنشأة"),
     continueCheckin: tr("field.travel.continueCheckin", "Continue to check-in", "المتابعة إلى تسجيل الوصول"),
-    checkinCaption: tr("field.travel.checkinCaption", "Arrival is confirmed on the governed geofence check-in (M04-004). This screen only shows your route — it does not record arrival.", "يتم تأكيد الوصول عبر تسجيل الدخول الجغرافي المحكوم (M04-004). تعرض هذه الشاشة مسارك فقط ولا تسجّل الوصول."),
     connectivityOffline: tr("field.travel.connectivityOffline", "Offline — the live route ETA can't refresh. Your GPS position and geofence range below stay live.", "غير متصل — لا يمكن تحديث الوقت المتوقع للمسار. يبقى موقعك عبر GPS ونطاق التسييج أدناه محدّثين مباشرةً."),
     connectivityWeak: tr("field.travel.connectivityWeak", "Weak connection — the live route ETA may be delayed.", "اتصال ضعيف — قد يتأخر تحديث الوقت المتوقع للمسار."),
     updated: tr("field.travel.updated", "Fix age", "عمر التحديد"),
     updatedAgo: tr("field.travel.updatedAgo", "{n}s ago", "قبل {n} ثانية"),
     updatedNow: tr("field.travel.updatedNow", "just now", "الآن"),
-    openInMaps: tr("field.travel.openInMaps", "Open in Maps", "فتح في الخرائط"),
-    privacyNote: tr("field.travel.privacyNote", "This route view only displays your live location to draw your route and range; the view itself stores nothing. Your journey position and arrival are recorded by the governed check-in as immutable geo events (M04-004).", "يعرض هذا المسار موقعك المباشر فقط لرسم مسارك ونطاقك، ولا يخزّن العرض نفسه أي شيء. تُسجَّل مواضع رحلتك ووصولك عبر تسجيل الدخول المحكوم كأحداث موقع غير قابلة للتغيير (M04-004)."),
   };
 
   const factory = (v?.factories ?? null) as { name: string; name_is_system_generated: boolean; official_lat: number | null; official_lng: number | null; geofence_radius_m: number | null; risk_band: string | null } | null;
