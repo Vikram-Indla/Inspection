@@ -9,6 +9,9 @@ packages:
   Supabase:
     url: https://github.com/supabase/supabase-swift
     from: "2.0.0"
+  GRDB:
+    url: https://github.com/groue/GRDB.swift
+    from: "6.29.0"
 targets:
   InspectionApp:
     type: application
@@ -22,6 +25,8 @@ targets:
         product: Components
       - package: Supabase
         product: Supabase
+      - package: GRDB
+        product: GRDB
     configFiles:
       Debug: InspectionApp/Config/Secrets.xcconfig
       Release: InspectionApp/Config/Secrets.xcconfig
