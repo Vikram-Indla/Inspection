@@ -675,6 +675,16 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
         registeredMessage={t("field.start.createdToast", "Visit created and dispatched.")}
         unregisteredMessage={t("field.start.createdToastUnregistered", "Unregistered establishment recorded and visit dispatched.")} />
       <div className={styles.page}>
+        <nav className={styles.lifecycle} aria-label={tr("field.start.lifecycle", "Visit lifecycle", "مراحل الزيارة")}>
+          <a className={styles.lifecycleStep} href="#preparation" aria-current={showPreparation ? "step" : undefined}>
+            <span className={styles.lifecycleIndex}>1</span>
+            <span>{tr("field.start.preparationStage", "Preparation", "التحضير")}</span>
+          </a>
+          <a className={styles.lifecycleStep} href="#startup" aria-current={!showPreparation ? "step" : undefined}>
+            <span className={styles.lifecycleIndex}>2</span>
+            <span>{tr("field.start.journeyStage", "Journey & arrival", "الرحلة والوصول")}</span>
+          </a>
+        </nav>
         <div className={styles.quickActions}>
           {factory360Href && (
             <a className={styles.quickAction} href={factory360Href}>
@@ -769,10 +779,12 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
             <span className="badge badge-warning">{unverifiedManualLabel}</span>
           </div>
         )}
-        <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} overrideReasons={overrideReasons} initialOverride={initialOverride as never} flags={flags} appVersion={packageInfo.version} locale={locale} userId={user.id} preparationGated={preparationGated}
-          journeySchemaAvailable={journeySchemaAvailable}
-          initialCancellation={initialCancellation as never}
-          initialCorrections={initialCorrections as never} />
+        <div id="startup" className="sq-anchor-target">
+          <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} overrideReasons={overrideReasons} initialOverride={initialOverride as never} flags={flags} appVersion={packageInfo.version} locale={locale} userId={user.id} preparationGated={preparationGated}
+            journeySchemaAvailable={journeySchemaAvailable}
+            initialCancellation={initialCancellation as never}
+            initialCorrections={initialCorrections as never} />
+        </div>
       </div>
     </>
   );

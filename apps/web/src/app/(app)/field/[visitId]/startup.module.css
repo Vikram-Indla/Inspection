@@ -21,6 +21,97 @@
    preparation cards instead of console-sized panels. */
 .preparationCard {
   padding: 16px 18px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  background: var(--surface-primary);
+  box-shadow: var(--shadow-card);
+}
+
+.sectionCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  background: var(--surface-primary);
+  box-shadow: var(--shadow-card);
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding-block: 8px;
+  border-block-start: 1px solid var(--border-subtle);
+  font-size: 13px;
+}
+
+.detailRow:first-child { border-block-start: 0; }
+.detailRow > :last-child { text-align: end; }
+
+.lifecycle {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 20;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px 0;
+  background: var(--surface-canvas);
+  scrollbar-width: thin;
+}
+
+.lifecycleStep {
+  flex: 1 0 132px;
+  min-block-size: 44px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 13px;
+  border: 1px solid var(--border-input);
+  border-radius: var(--radius-md);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  text-decoration: none;
+  font: 600 13px/1.35 var(--font-body);
+}
+
+.lifecycleStep[aria-current="step"] {
+  border-color: var(--action-primary);
+  background: var(--accent-soft);
+}
+
+.lifecycleIndex {
+  flex: none;
+  inline-size: 22px;
+  block-size: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: var(--surface-sunken);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.lifecycleStep[aria-current="step"] .lifecycleIndex {
+  background: var(--action-primary);
+  color: var(--text-on-action);
+}
+
+.stickyActions {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 18px;
+  padding-block-end: max(12px, env(safe-area-inset-bottom));
+  border: 1px solid var(--border-subtle);
   border-radius: 14px;
   background: var(--surface-primary);
   box-shadow: var(--shadow-card);
@@ -130,3 +221,21 @@
 }
 
 .readyText { flex: 1; min-inline-size: 0; }
+
+@media (max-width: 640px) {
+  .page { padding-inline: 14px; }
+  .grid2 { grid-template-columns: minmax(0, 1fr); }
+  .quickActions { grid-template-columns: minmax(0, 1fr); }
+  .detailRow { flex-direction: column; gap: 3px; }
+  .detailRow > :last-child { text-align: start; }
+  .stickyActions { border-radius: 12px; }
+}
+
+@media (max-width: 420px) {
+  .page { padding-inline: 12px; }
+  .preparationCard,
+  .sectionCard { padding: 14px; }
+  .lifecycleStep { flex-basis: 124px; padding-inline: 10px; }
+  .stickyActions { padding-inline: 12px; }
+  .stickyActions > * { flex: 1; }
+}
