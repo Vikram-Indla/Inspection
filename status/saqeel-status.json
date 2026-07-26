@@ -1127,23 +1127,39 @@
       "channel": "pwa",
       "group": "pwacore",
       "name": "Visits list & travel",
-      "design": 85,
-      "code": 92,
-      "wiring": 88,
+      "design": 72,
+      "code": 88,
+      "wiring": 85,
       "designPage": "pwa/SAQEEL PWA-Field Visits.dc.html · Journey · Travel",
-      "route": "web/src/app/(app)/field/[visitId]/travel/* · field/map/page.tsx · FieldFullMap.tsx",
+      "route": "web/src/app/(app)/field/visits (+ calendar) · field/[visitId]/travel/* · field/map/page.tsx · FieldFullMap.tsx",
       "pwa": {
         "state": "ok",
-        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
+        "note": "/field/visits BUILT 2026-07-26 (CR-100/101/102) — the list had never existed; prior 85/92/88 described Travel+Map only. List + Day/Week/Month calendar, RLS-scoped to the inspector's assignments. Runtime EN/LTR and AR/RTL verified in-browser; measured pixel diff still NOT run."
       },
       "pending": [
         {
-          "lane": "wiring",
-          "text": "Geo stays real — Mapbox + real KSA basemap and zones. No synthetic coordinates or placeholder pins. Ungoverned ETA/distance/SLA render nothing."
+          "lane": "design",
+          "text": "Measured pixel diff not run. Harness auth was broken by a rotated inspector.test password (restored 2026-07-26); re-run in both locales before this number moves."
         },
         {
           "lane": "design",
-          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
+          "text": "No PWA .dc.html exists for the calendar — behaviour follows the web CalendarBoard, appearance reuses PWA vocabulary. Judgment, not transcription."
+        },
+        {
+          "lane": "wiring",
+          "text": "Seed dates corrupt: 1057/1491 visits >5y out (latest 2381-08-10). Design's default Today tab is legitimately empty. Needs a seed fix, not a code change."
+        },
+        {
+          "lane": "wiring",
+          "text": "visits.priority is high/normal/null — no medium, no low. 'normal' (5 rows) is outside the canonical lookup so it renders no badge and joins no risk chip. Lookup drift to reconcile."
+        },
+        {
+          "lane": "wiring",
+          "text": "enum.new and enum.submitted have no Arabic in ui_strings; AR operational badge falls back to English. Governed content for /admin/localization — must not be invented."
+        },
+        {
+          "lane": "wiring",
+          "text": "Geo stays real — Mapbox + real KSA basemap and zones. Distance renders only with a real device position and real official coordinates, else em dash."
         }
       ],
       "phase": 4,
