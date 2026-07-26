@@ -45,7 +45,8 @@ type Review = {
   decision_reason: string | null;
   decided_at: string | null;
 };
-type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: Section[]; action_forms?: FormDef[]; item_snapshot?: Record<string, unknown>; item_rules?: Record<string, { requirement?: "required" | "optional" | "conditional" }> } }; submission_versions?: SubmissionVersion[]; reviews?: Review[] };
+type AcknowledgementConfig = { required?: boolean; mode?: "signature" | "declaration"; label?: string };
+type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: Section[]; action_forms?: FormDef[]; acknowledgement?: AcknowledgementConfig; item_snapshot?: Record<string, unknown>; item_rules?: Record<string, { requirement?: "required" | "optional" | "conditional" }> } }; submission_versions?: SubmissionVersion[]; reviews?: Review[] };
 type SResp = { item_id: string; response: Answer | null; updated_at: string };
 type SEv = {
   id: string; linked_type: string; linked_id: string; evidence_type: string;
@@ -92,6 +93,10 @@ export type WorkspaceStrings = {
   recoveryAdvancedTitle: string; recoveryAdvancedBody: string;
   recoveryReturnedTitle: string; recoveryReturnedBody: string;
   recoveryReload: string; recoveryBlockSubmit: string;
+  // SCR-IPAD pre-submit final review
+  reviewTitle: string; reviewHint: string; reviewAnswers: string; reviewEvidence: string;
+  reviewViolations: string; reviewActions: string; reviewBlockers: string; reviewBack: string;
+  reviewContinue: string; jumpToSection: string; declarationRequired: string;
   returnedScope: string; returnedNote: string;
   returnedBadge: string; openCorrection: string; correctionOpen: string; resubmitBtn: string;
   compareVersions: string; compareHeading: string; compareBefore: string; compareAfter: string;
@@ -201,6 +206,11 @@ export default function Workspace({ inspection, items, library, serverResponses,
   // overwrites the server, it warns and offers a reload.
   const loadedVersion = useMemo(() => Math.max(0, ...(inspection.submission_versions ?? []).map(s => s.version_number)), [inspection.submission_versions]);
   const [recovery, setRecovery] = useState<RecoveryState>("none");
+  // Pre-submit final review (SCR-IPAD). A plain gate, not a phase machine: the
+  // post-submit path already has server-confirmed receipt, pending-sync, failed
+  // and retry states (SCR-IPAD-660) and is left exactly as it is.
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [declarationAccepted, setDeclarationAccepted] = useState(false);
   const [msg, setMsg] = useState(null as string | null);
   const [retrying, setRetrying] = useState(false);
   const [validation, setValidation] = useState(null as SectionBlockers[] | null);
@@ -288,6 +298,8 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const sections = inspection.package_versions.definition.sections.filter(s => { return !!s.items?.length; });
   const itemRules = inspection.package_versions.definition.item_rules ?? {};
   const formDefs = useMemo(() => inspection.package_versions.definition.action_forms ?? [], [inspection]);
+  const acknowledgement = inspection.package_versions.definition.acknowledgement;
+  const acknowledgementRequired = acknowledgement?.required === true;
   // §15/§20 — effective scope: snapshot MINUS actively deselected PLUS added
   // (added land in the synthetic "Added items" section; no item→section
   // metadata exists outside the frozen section code lists).
@@ -915,6 +927,22 @@ export default function Workspace({ inspection, items, library, serverResponses,
       return;
     }
     setValidation(null);
+    // Final review before acknowledgement: the inspector sees what is about to
+    // become an immutable submitted version — counts, remaining blockers with a
+    // jump to the owning section, and the declaration when the package requires
+    // one. Acknowledgement is only reached from here.
+    setReviewOpen(true);
+  }
+
+  // Leaves review for the acknowledgement the package asks for: a signature
+  // (DEC-009, captured in SignaturePad) or a declaration checkbox already
+  // accepted in the review card, which submits directly with no signature.
+  function continueFromReview() {
+    setReviewOpen(false);
+    if (acknowledgementRequired && acknowledgement?.mode === "declaration") {
+      void finalizeSubmit({ signature_data_url: "", name: "", signed_at: new Date().toISOString() });
+      return;
+    }
     setSigning(true);   // DEC-009: acknowledgement signature captured at submit; enqueue happens in finalizeSubmit
   }
 
@@ -1826,6 +1854,39 @@ export default function Workspace({ inspection, items, library, serverResponses,
         </div>
       )}
       </fieldset>
+      {/* SCR-IPAD final review — the last look before an immutable submitted
+          version exists. Counts what is about to be submitted, lists any
+          remaining blocker with a jump to its section, and carries the
+          declaration when the package asks for one instead of a signature. */}
+      {!submitted && reviewOpen && (
+        <section className={styles.card} aria-labelledby="final-review-title" style={{ padding: "var(--space-4)", display: "grid", gap: "var(--space-3)", scrollMarginBlockStart: "var(--space-8)" }}>
+          <div><h3 id="final-review-title">{strings.reviewTitle}</h3><p className="t-caption">{strings.reviewHint}</p></div>
+          <div className="row" style={{ flexWrap: "wrap", gap: "var(--space-2)" }}>
+            <span className="badge">{strings.reviewAnswers} <span className="id-code">{summary.answered}/{summary.answered + summary.pending}</span></span>
+            <span className="badge">{strings.reviewEvidence} <span className="id-code">{summary.evidence}</span></span>
+            <span className={`badge ${summary.violations ? "badge-critical" : ""}`}>{strings.reviewViolations} <span className="id-code">{summary.violations}</span></span>
+            <span className={`badge ${Object.keys(forms).length ? "badge-info" : ""}`}>{strings.reviewActions} <span className="id-code">{Object.keys(forms).length}</span></span>
+            <span className={`badge ${blockCount ? "badge-critical" : "badge-compliant"}`}>{strings.reviewBlockers} <span className="id-code">{blockCount}</span></span>
+          </div>
+          {liveBlockers.map(group => (
+            <div key={`review-${group.key}`} className="alert alert-warning">
+              <div><strong>{group.title}</strong> · {[...group.unanswered, ...group.evidence, ...group.forms].join(", ")}
+                <div><a className="btn btn-ghost btn-sm" href={`#ax-section-${group.key}`} onClick={() => setReviewOpen(false)}>{strings.jumpToSection}</a></div>
+              </div>
+            </div>
+          ))}
+          {acknowledgementRequired && acknowledgement?.mode === "declaration" && (
+            <label className="row" style={{ gap: "var(--space-2)", alignItems: "flex-start" }}>
+              <input type="checkbox" checked={declarationAccepted} onChange={event => setDeclarationAccepted(event.target.checked)} />
+              <span>{acknowledgement.label ?? strings.declarationRequired}</span>
+            </label>
+          )}
+          <div className="row" style={{ justifyContent: "flex-end", gap: "var(--space-2)", flexWrap: "wrap" }}>
+            <button type="button" className="btn btn-secondary" onClick={() => setReviewOpen(false)}>{strings.reviewBack}</button>
+            <button type="button" className="btn btn-primary" disabled={blockCount > 0 || (acknowledgementRequired && acknowledgement?.mode === "declaration" && !declarationAccepted)} onClick={continueFromReview}>{strings.reviewContinue}</button>
+          </div>
+        </section>
+      )}
       {/* DEC-009 — acknowledgement signature gate; the dataURL rides in the queued submit op */}
       {signing && !submitted && (
         <SignaturePad strings={strings.sig} onCancel={() => setSigning(false)} onConfirm={finalizeSubmit} />
