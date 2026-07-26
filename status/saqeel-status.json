@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r33",
-  "updated": "2026-07-26T11:02:10+03:00",
+  "revision": "SB-r34",
+  "updated": "2026-07-26T11:12:44+03:00",
   "updatedBy": "claude-code",
   "branch": "saqeel/exec",
   "committed": false,
@@ -628,7 +628,7 @@
       "channel": "web",
       "group": "exec",
       "name": "Executive Overview",
-      "design": 70,
+      "design": 88,
       "code": 88,
       "wiring": 95,
       "designPage": "SAQEEL Executive Overview.html",
@@ -751,6 +751,14 @@
             "wiring": 95
           },
           "evidence": "AI Composer ruled KILLED from the canonical shell (see the cleared pending item), which removes the only outstanding wiring blocker on this card. Every metric the surface displays is now wired to live governed data and verified in a browser as ops-01@mim-inspection.test: approved compliance 96% from 27/28 eligible answers, 11 linked violations, approved-of-submitted, non-compliant-in-approved 1/28, and the regional queue populating worst-first from real rows (Eastern 3/4 = 75% ahead of Riyadh 24/24 = 100%). The RLS oversight that made all of this unreadable is fixed and applied live. Gate 12/12. NOT 100: the seven declared hard states — loading, empty, error, degraded, unauthorized, stale/conflict, provider-unavailable — have never been exercised as a set against the wired sources, so degraded and provider-unavailable in particular are unproven paths."
+        },
+        {
+          "at": "2026-07-26T11:12:44+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "design": 88
+          },
+          "evidence": "Section-order parity achieved and measured, not asserted. Captured the .dc.html at 1440/1024/412 from a local static server and the shipped route at the same widths, then compared section order programmatically. BEFORE: design ran assurance, queue, exceptions, geography, sector, governance while the route ran assurance, queue, sector, exceptions, boundaries, map(7th), coverage, summary — geography sat 3 positions late and sector 2 early. Moved the Compliance performance explorer and Governed boundaries out of the pre-map group. AFTER, the route reads: National approved position, Regions requiring examination, Decision mix + Violation evidence, National factory map, Compliance performance explorer, Governed boundaries + coverage + summary — a 1:1 match to the six .dc.html sections. Gate re-run 12/12; design captures stored beside the route captures in INSPECTION_DOCS_ROOT/.../screens/exec. NOT 100: this is section-order and content parity, not a pixel diff — no per-element geometry comparison has been run, and the seven declared hard states are still unverified as a set."
         }
       ]
     },

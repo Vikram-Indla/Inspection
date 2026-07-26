@@ -430,13 +430,7 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
       }}
     >
     <div className={styles.analyticGrid}>
-      <Panel title={copy(locale, "Compliance performance explorer", "مستكشف أداء الامتثال")} meta={copy(locale, "approved inspections only", "التفتيشات المعتمدة فقط")}>
-        <nav className={styles.dimensions} aria-label={copy(locale, "Group compliance by", "تجميع الامتثال حسب")}>
-          {dimensions.map(([id, label]) => <a key={id} href={paramsHref(params, { group: id })} className={styles.dimension} aria-current={group === id}>{label}</a>)}
-        </nav>
-        <Bars rows={grouped.map(row => ({ label: `${row.label} · ${row.compliant}/${row.total}`, value: row.rate ?? 0 }))}
-          empty={copy(locale, "No eligible approved answers in scope.", "لا توجد إجابات معتمدة مؤهلة ضمن النطاق.")} suffix="%" />
-      </Panel>
+      
 
       <Panel title={copy(locale, "Decision mix — Level 2", "مزيج القرار — المستوى الثاني")} meta={copy(locale, "approval is not compliance", "الاعتماد ليس امتثالاً")}>
         <Bars rows={(decisionMix?.breakdown ?? []).map(row => ({
@@ -457,15 +451,32 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
         <a className={`${styles.btn} ${styles.btnSecondary}`} href="/enforcement">{copy(locale, "Open violations", "فتح المخالفات")}</a>
       </Panel>
 
-      <Panel title={copy(locale, "Governed boundaries", "الحدود المعتمدة")} meta="DEC-028">
-        <div className={styles.empty}>
-          <strong>{copy(locale, "Not configured", "غير مهيأ")}</strong>
-          <p>{copy(locale, "Health Score, risk classifications, licence exposure, inspection cycles and repeat-violation rules remain blocked. No substitute value is shown.", "تظل درجة الصحة وتصنيفات المخاطر وتعرّض التراخيص ودورات التفتيش وقواعد تكرار المخالفات محجوبة. لا تُعرض قيمة بديلة.")}</p>
-        </div>
-      </Panel>
+      
     </div>
 
     </RegionalScope>
+
+    {/* Sector comparison follows the geographic evidence, matching the
+        .dc.html section order: assurance, queue, exceptions, geography,
+        sector, governance. */}
+    <div className={styles.analyticGrid}>
+  <Panel title={copy(locale, "Compliance performance explorer", "مستكشف أداء الامتثال")} meta={copy(locale, "approved inspections only", "التفتيشات المعتمدة فقط")}>
+          <nav className={styles.dimensions} aria-label={copy(locale, "Group compliance by", "تجميع الامتثال حسب")}>
+            {dimensions.map(([id, label]) => <a key={id} href={paramsHref(params, { group: id })} className={styles.dimension} aria-current={group === id}>{label}</a>)}
+          </nav>
+          <Bars rows={grouped.map(row => ({ label: `${row.label} · ${row.compliant}/${row.total}`, value: row.rate ?? 0 }))}
+            empty={copy(locale, "No eligible approved answers in scope.", "لا توجد إجابات معتمدة مؤهلة ضمن النطاق.")} suffix="%" />
+        </Panel>
+    </div>
+
+    <div className={styles.analyticGrid}>
+  <Panel title={copy(locale, "Governed boundaries", "الحدود المعتمدة")} meta="DEC-028">
+          <div className={styles.empty}>
+            <strong>{copy(locale, "Not configured", "غير مهيأ")}</strong>
+            <p>{copy(locale, "Health Score, risk classifications, licence exposure, inspection cycles and repeat-violation rules remain blocked. No substitute value is shown.", "تظل درجة الصحة وتصنيفات المخاطر وتعرّض التراخيص ودورات التفتيش وقواعد تكرار المخالفات محجوبة. لا تُعرض قيمة بديلة.")}</p>
+          </div>
+        </Panel>
+    </div>
 
     <Panel title={copy(locale, "Strategic requirement coverage", "تغطية المتطلبات الاستراتيجية")} meta="STR-KPI-001..012">
       <MetricCoverage projection={projection} category="strategic" locale={locale} excluded={representedIds} partialSources={partialSources} />
