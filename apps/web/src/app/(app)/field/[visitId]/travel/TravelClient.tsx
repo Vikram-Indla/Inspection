@@ -33,13 +33,13 @@ export type TravelStrings = {
   geofenceRadius: string; accuracy: string; straightLine: string;
   etaUnavailable: string; noCoords: string; noCoordsBody: string;
   notFound: string; notFoundBody: string; youLabel: string; mapAria: string;
-  continueCheckin: string; checkinCaption: string;
+  continueCheckin: string;
   connectivityOffline: string; connectivityWeak: string;
   updated: string; updatedAgo: string; updatedNow: string;
-  openInMaps: string; privacyNote: string;
   fenceWithin: string; fenceOutside: string; fenceLocating: string; fenceMapAria: string;
   fenceFactoryOverride: string; fenceEngineDefault: string;
   fenceNotConfigured: string; fenceUnconfiguredChip: string; fenceUnconfiguredNote: string;
+  aiRouteNote: string;
 };
 
 type LatLng = { lat: number; lng: number };
@@ -238,10 +238,6 @@ export default function TravelClient({
 
   // Native navigation handoff for the iPad field device (Apple Maps driving
   // directions to the official coordinates only — never a fabricated point).
-  const mapsHref = destination
-    ? `https://maps.apple.com/?daddr=${destination.lat},${destination.lng}&dirflg=d`
-    : null;
-
   // With no governed fence the badge stays informational: the journey state is
   // real ("En Route" — the inspector has not checked in), but no range verdict
   // is implied by its tone.
@@ -392,7 +388,12 @@ export default function TravelClient({
                 {straightM != null && <span>{strings.straightLine}: <span className="id-code">{Math.round(straightM)} {strings.mUnit}</span></span>}
                 {fix && <span data-testid="travel-freshness">{strings.updated}: <span className="id-code">{freshnessLabel}</span></span>}
               </div>
-              <p className={`t-caption ${styles.privacyNote}`}>{strings.privacyNote}</p>
+            </section>
+            <section className={`${styles.card} ${styles.advisory}`}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={styles.advisoryGlyph} aria-hidden="true">
+                <path d="M12 2l1.6 5.2L19 9l-5.4 1.8L12 16l-1.6-5.2L5 9l5.4-1.8L12 2z" />
+              </svg>
+              <span>{strings.aiRouteNote}</span>
             </section>
           </>
         ) : (
@@ -405,21 +406,7 @@ export default function TravelClient({
           (M04-004). No state mutation, no parallel arrival path. */}
       <div className={styles.footer}>
         <div className={styles.footerInner}>
-          {mapsHref && (
-            <a
-              href={mapsHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-ghost btn-block"
-              data-testid="travel-open-maps"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true" style={{ inlineSize: 16, blockSize: 16 }}>
-                <path d="M9 18l-6 3V6l6-3m0 15 6 3m-6-3V3m6 18 6-3V3l-6 3m0 15V6" />
-              </svg>
-              {strings.openInMaps}
-            </a>
-          )}
-          <p className={`t-caption ${styles.checkinCaption}`}>{strings.checkinCaption}</p>
+          <span className={styles.footerSpacer} />
           <Link href={backHref} prefetch={false} className={`btn btn-primary ${styles.footerAction}`}>{strings.continueCheckin}</Link>
         </div>
       </div>
