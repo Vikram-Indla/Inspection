@@ -75,8 +75,10 @@ test("admin-core routes load under the real admin persona without console failur
     const response = await page.goto(route);
     expect(response?.status(), `${route} response`).toBeLessThan(400);
     await expect(page.locator("body")).toBeVisible();
-    expect(await page.locator("h1:visible, h2:visible").count(), `${route} visible page heading`)
-      .toBeGreaterThan(0);
+    await expect(
+      page.locator("h1:visible, h2:visible").first(),
+      `${route} visible page heading`,
+    ).toBeVisible();
     if (await page.locator("main").count() === 0) routesOutsideShell.push(route);
   }
 
