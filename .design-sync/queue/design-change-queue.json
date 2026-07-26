@@ -1,0 +1,53 @@
+[
+  {
+    "queueId": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61:WA-DES-038:1784806070831883",
+    "projectId": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "pageId": "WA-DES-038",
+    "pageName": "SAQEEL Profile",
+    "semanticHash": null,
+    "revisionMarker": "1784806070831883",
+    "detectedAt": "manual-scan-2026-07-24",
+    "state": "RESOLVED_DESIGN_UPDATED_NO_APP_CODE_CHANGE",
+    "deltaPath": "deltas/WA-DES-038/1784806070831883/delta.md",
+    "mappingPath": "mapping/design-to-code-map.csv",
+    "consentPath": "consent/WA-DES-038/1784806070831883/consent-packet.md",
+    "implementation": null,
+    "resultingRevision": "1784896277489148",
+    "retryCount": 0,
+    "lastError": null
+  },
+  {
+    "queueId": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61:WA-DES-036:1784806070831883",
+    "projectId": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "pageId": "WA-DES-036",
+    "pageName": "SAQEEL Planning",
+    "semanticHash": null,
+    "revisionMarker": "1784806070831883",
+    "detectedAt": "orchestrated-task-2026-07-24",
+    "state": "RESOLVED_DESIGN_UPDATED_NO_APP_CODE_CHANGE",
+    "deltaPath": "deltas/WA-DES-036/1784806070831883/delta.md",
+    "mappingPath": "mapping/design-to-code-map.csv",
+    "consentPath": "consent/WA-DES-036/1784806070831883/consent-packet.md",
+    "implementation": null,
+    "retryCount": 0,
+    "lastError": null,
+    "resultingRevision": "1784901048581707"
+  },
+  {
+    "queueId": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61:WA-DES-036:1784901048581707",
+    "projectId": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+    "pageId": "WA-DES-036",
+    "pageName": "SAQEEL Planning",
+    "semanticHash": null,
+    "revisionMarker": "1784901048581707",
+    "detectedAt": "orchestrated-task-2026-07-24-cycle2",
+    "state": "RESOLVED_DESIGN_UPDATED_NO_APP_CODE_CHANGE",
+    "deltaPath": "deltas/WA-DES-036/1784903934723797/semantic-delta.md",
+    "mappingPath": "mapping/design-to-code-map.csv",
+    "consentPath": "deltas/WA-DES-036/1784903934723797/sponsor-comparison-checklist.md",
+    "implementation": null,
+    "resultingRevision": "1784904309230874",
+    "retryCount": 0,
+    "lastError": null
+  }
+]
