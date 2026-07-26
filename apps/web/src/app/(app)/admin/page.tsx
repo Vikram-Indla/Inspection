@@ -37,30 +37,58 @@ export default async function AdminHome() {
   const { t, locale } = await useT();
   const sb = await supabaseServer();
 
-  const [enginesRes, regsRes, itemsRes, pkgsRes, viosRes, auditsRes] = await Promise.all([
-    sb.from("engine_settings").select("engine, version_label, updated_at").order("engine"),
-    sb.from("regulations").select("id", { count: "exact", head: true }),
-    sb.from("inspection_items").select("id", { count: "exact", head: true }),
-    sb.from("package_versions").select("id", { count: "exact", head: true }).eq("status", "published"),
-    sb.from("violation_codes").select("id", { count: "exact", head: true }),
-    sb.from("audit_events").select("id", { count: "exact", head: true }),
-  ]);
-
-  // Per-source failure isolation: count of the six reads that failed (W09).
-  const sources: Res[] = [enginesRes, regsRes, itemsRes, pkgsRes, viosRes, auditsRes];
-  const failed = sources.filter(r => !ok(r)).length;
-  const total = failed === sources.length;
-
-  // Role scope (W02 pattern): server-rendered roles → the families this user can act in.
+  // Resolve the caller's grants before reading any family data. The landing page
+  // is the same least-privilege projection as the shell: an unauthorized family
+  // is neither linked nor queried "for awareness".
   const { data: { user } } = await getVerifiedUser(sb);
   const { data: roleRows } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[] };
   const roles = Array.from(new Set((roleRows ?? []).map(r => r.role_key))).sort();
-  const control = buildShellNavigation(roles).find(g => g.id === "control");
-  const actFamilies = (control?.items ?? [])
-    .filter(i => i.id !== "admin-home")
-    .map(i => t(i.labelKey, locale === "ar" ? i.labelAr : i.labelEn));
+  const authorizedItems = buildShellNavigation(roles).flatMap(group => group.items);
+  const authorizedPaths = new Set(authorizedItems.map(item => item.href.split(/[?#]/, 1)[0]));
+  const mayOpen = (href: string) => authorizedPaths.has(href);
+  const canReadPackages = mayOpen("/admin/packages") || mayOpen("/admin/items");
+  const canReadEngines = mayOpen("/admin/execution") || mayOpen("/admin/workflows");
+
+  const skipped = () => Promise.resolve({ data: null, error: null, count: null });
+  const [enginesRes, regsRes, itemsRes, pkgsRes, viosRes, auditsRes] = await Promise.all([
+    canReadEngines
+      ? sb.from("engine_settings").select("engine, version_label, updated_at").order("engine")
+      : skipped(),
+    mayOpen("/admin/regulations")
+      ? sb.from("regulations").select("id", { count: "exact", head: true })
+      : skipped(),
+    canReadPackages
+      ? sb.from("inspection_items").select("id", { count: "exact", head: true })
+      : skipped(),
+    mayOpen("/admin/packages")
+      ? sb.from("package_versions").select("id", { count: "exact", head: true }).eq("status", "published")
+      : skipped(),
+    mayOpen("/admin/violations")
+      ? sb.from("violation_codes").select("id", { count: "exact", head: true })
+      : skipped(),
+    mayOpen("/admin/audit")
+      ? sb.from("audit_events").select("id", { count: "exact", head: true })
+      : skipped(),
+  ]);
+
+  // Per-source failure isolation counts only reads authorized for this caller.
+  const sources: Res[] = [
+    ...(canReadEngines ? [enginesRes] : []),
+    ...(mayOpen("/admin/regulations") ? [regsRes] : []),
+    ...(canReadPackages ? [itemsRes] : []),
+    ...(mayOpen("/admin/packages") ? [pkgsRes] : []),
+    ...(mayOpen("/admin/violations") ? [viosRes] : []),
+    ...(mayOpen("/admin/audit") ? [auditsRes] : []),
+  ];
+  const failed = sources.filter(r => !ok(r)).length;
+  const total = sources.length > 0 && failed === sources.length;
+
+  // Role scope: the exact authorized administration families rendered below.
+  const actFamilies = authorizedItems
+      .filter(i => i.id !== "admin-home")
+      .map(i => t(i.labelKey, locale === "ar" ? i.labelAr : i.labelEn));
   const sep = locale === "ar" ? "، " : ", ";
   const roleLabel = roles.length ? roles.map(r => r.replace(/_/g, " ")).join(sep) : "—";
   const familiesLabel = actFamilies.length
@@ -186,15 +214,15 @@ export default async function AdminHome() {
             </thead>
             <tbody>
               {/* Compliance Library — regulations */}
-              <tr>
+              {mayOpen("/admin/regulations") ? <tr>
                 <th scope="row">{familyCompliance}</th>
                 <td>{countCell(regsRes, "regulations", t("admin.overview.r2.empty.compliance", "The library is genuinely empty — the read succeeded. Add the first regulation inside the module."))}</td>
                 <td className="t-caption">{t("admin.overview.r2.lifecycle.regulations", "per-regulation status lives in the module; no update timestamp is read here")}</td>
                 <td>{openLink(familyCompliance, "/admin/regulations")}</td>
-              </tr>
+              </tr> : null}
 
               {/* Packages & Surveys — package_versions (published) + inspection_items */}
-              <tr>
+              {canReadPackages ? <tr>
                 <th scope="row">{familyPackages}</th>
                 <td>
                   <div className="stack" style={{ gap: "var(--space-2)" }}>
@@ -207,19 +235,19 @@ export default async function AdminHome() {
                   </div>
                 </td>
                 <td className="t-caption">{t("admin.overview.r2.lifecycle.packages", "draft/published proven · distinct approver enforced · immutable once published")}</td>
-                <td>{openLink(familyPackages, "/admin/packages")}</td>
-              </tr>
+                <td>{mayOpen("/admin/packages") ? openLink(familyPackages, "/admin/packages") : openLink(familyPackages, "/admin/items")}</td>
+              </tr> : null}
 
               {/* Enforcement Library — violation_codes (no lifecycle proven on this route) */}
-              <tr>
+              {mayOpen("/admin/violations") ? <tr>
                 <th scope="row">{familyEnforcement}</th>
                 <td>{countCell(viosRes, "violation codes")}</td>
                 <td className="t-caption" aria-hidden="true">—</td>
                 <td>{openLink(familyEnforcement, "/admin/violations")}</td>
-              </tr>
+              </tr> : null}
 
               {/* Engine settings — domain list + provenance (no dedicated route: data is the table) */}
-              <tr>
+              {canReadEngines ? <tr>
                 <th scope="row">{familyEngines}</th>
                 <td>
                   {!ok(enginesRes) ? chip("unavailable")
@@ -244,32 +272,32 @@ export default async function AdminHome() {
                 </td>
                 <td className="t-caption">{t("admin.overview.r2.lifecycle.engines", "direct audited update — timestamp is provenance only")}</td>
                 <td aria-hidden="true">—</td>
-              </tr>
+              </tr> : null}
 
               {/* Audit trail — audit_events (no lifecycle proven on this route) */}
-              <tr>
+              {mayOpen("/admin/audit") ? <tr>
                 <th scope="row">{familyAudit}</th>
                 <td>{countCell(auditsRes, "events")}</td>
                 <td className="t-caption" aria-hidden="true">—</td>
                 <td>{openLink(familyAudit, "/admin/audit")}</td>
-              </tr>
+              </tr> : null}
             </tbody>
           </table>
         </div>
       </section>
 
-      <nav className="panel stack" aria-labelledby="cd004-links-h" style={{ padding: "var(--space-6)" }}>
+      {linkOnly.some(link => mayOpen(link.href)) ? <nav className="panel stack" aria-labelledby="cd004-links-h" style={{ padding: "var(--space-6)" }}>
         <h3 id="cd004-links-h" style={{ margin: 0 }}>
           {t("admin.overview.r2.linkOnly.heading", "Families this gateway reads no data for today — links only:")}
         </h3>
         <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap" }}>
-          {linkOnly.map(l => (
+          {linkOnly.filter(l => mayOpen(l.href)).map(l => (
             <a key={l.href} className="btn btn-secondary sq-link btn-touch" href={l.href}>
               {t(l.key, l.en)}
             </a>
           ))}
         </div>
-      </nav>
+      </nav> : null}
 
       <section className="panel sq-permission stack" aria-labelledby="cd004-scope-h" style={{ padding: "var(--space-6)" }}>
         <h3 id="cd004-scope-h" style={{ margin: 0 }}>
@@ -277,7 +305,7 @@ export default async function AdminHome() {
         </h3>
         <p className="t-caption" style={{ margin: 0 }}>
           {fill(
-            t("admin.overview.r2.scope.body", "You can act in {families}. Other families are shown for awareness; visibility grants nothing — every action is authorized inside its module."),
+            t("admin.overview.r2.scope.body", "Available families: {families}. Every action is authorized again inside its module."),
             { families: familiesLabel },
           )}
         </p>

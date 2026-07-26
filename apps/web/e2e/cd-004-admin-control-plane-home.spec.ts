@@ -187,6 +187,16 @@ test.describe("CD-004 wiring (DEC-012): per-source modelling, distinct states, b
     }
   });
 
+  test("landing families and reads are projected from the caller's authorized shell grants", () => {
+    expect(page).toContain("const authorizedItems = buildShellNavigation(roles).flatMap(group => group.items);");
+    expect(page).toContain("const authorizedPaths = new Set(");
+    expect(page).toContain('linkOnly.filter(l => mayOpen(l.href))');
+    expect(page).toContain('{mayOpen("/admin/audit") ? <tr>');
+    expect(page).toContain('mayOpen("/admin/audit")');
+    expect(page).not.toContain("Other families are shown for awareness");
+    expect(page).not.toContain("visibility grants nothing");
+  });
+
   test("Arabic seed migration exists and is guarded (never clobbers a reviewed row)", () => {
     const mig = SRC("../../supabase/migrations/20260715090000_cd004_ar_strings.sql");
     expect(mig).toContain("insert into ui_strings");
