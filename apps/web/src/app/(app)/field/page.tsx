@@ -112,16 +112,54 @@ export default async function Field() {
     getOrGenerateBriefing("weekly", { locale: locale === "ar" ? "ar" : "en" }),
   ]);
 
+  // FND-012 partial service. Only the assignment read is lost here; the
+  // profile, notification and briefing reads are independent and may well have
+  // succeeded. Blanking the whole dashboard threw away work that was already
+  // done and stranded the inspector with no route out. What must NOT happen is
+  // rendering the normal dashboard with an empty task list: every count would
+  // read 0, which asserts "you have no visits today" — a statement this page
+  // cannot make when it does not know. So the assignment-derived surfaces are
+  // named as unavailable, and everything with an independent source is served.
   if (assignmentRead.error) {
     console.error("[field home]", assignmentRead.error.message);
+    const degradedBrief = (dailyBriefing.text ?? "")
+      .split("\n").map((l) => l.replace(/^[-•]\s*/, "").trim()).filter(Boolean)[0] ?? "";
     return (
       <>
         <FieldHeader title={tr("field.dashboard.title", "Field dashboard", "لوحة الميدان")}
           langHref={langHref} langLabel={langLabel} />
-        <div style={{ flex: 1, padding: 20 }}>
+        <div style={{ flex: 1, padding: 20, display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
           <div className="alert alert-critical" role="alert">
             {t("field.dashboard.serviceUnavailable", "Field data is temporarily unavailable (ERR-OPS-001). Try again.")}
           </div>
+          {/* Say which surfaces are affected. "Unavailable" is not "none". */}
+          <p className="t-caption">
+            {tr("field.dashboard.degradedScope",
+              "Your assigned visits, today's schedule and route could not be read, so no counts are shown — this is not a count of zero.",
+              "تعذّرت قراءة زياراتك المسندة وجدول اليوم والمسار، لذلك لا تُعرض أي أعداد — وهذا ليس عدداً صفرياً.")}
+          </p>
+          {degradedBrief ? (
+            <section className="panel">
+              <h4>{tr("field.home.brief.daily", "Daily brief", "الموجز اليومي")}</h4>
+              <p>{degradedBrief}</p>
+            </section>
+          ) : null}
+          {/* Independent surfaces still reachable — the inspector is not stranded. */}
+          <nav aria-label={tr("field.dashboard.stillAvailable", "Still available", "ما زال متاحاً")}
+            style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-2)" }}>
+            <Link className="btn btn-secondary btn-touch" href="/field" prefetch={false}>
+              {tr("common.retry", "Try again", "إعادة المحاولة")}
+            </Link>
+            <Link className="btn btn-secondary btn-touch" href="/field/my-tasks" prefetch={false}>
+              {tr("field.tabs.myTasks", "My Tasks", "مهامي")}
+            </Link>
+            <Link className="btn btn-secondary btn-touch" href="/field/establishments" prefetch={false}>
+              {tr("field.tabs.establishments", "Establishments", "المنشآت")}
+            </Link>
+            <Link className="btn btn-secondary btn-touch" href="/field/notifications" prefetch={false}>
+              {tr("field.tabs.notifications", "Notifications", "الإشعارات")}
+            </Link>
+          </nav>
         </div>
       </>
     );
