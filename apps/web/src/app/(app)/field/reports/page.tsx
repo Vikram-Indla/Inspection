@@ -103,28 +103,16 @@ export default async function FieldReportsPage() {
             "الاتصال ضعيف — قد يستغرق تحديث قائمة التقارير المرتبطة بالخادم وقتًا أطول.",
           )}
         />
-        {/* Reports Library draws a two-option segmented control (visit records /
-            prior establishment visits). Only the submitted-history view is built,
-            so this renders as a plain label: a role="tablist" holding one tab that
-            controls no tabpanel announces "tab 1 of 1" and promises a switch that
-            does not exist. */}
-        <div className={styles.segment}>
-          <span>{tr("field.reports.submitted", "Submitted reports", "التقارير المقدمة")}</span>
-        </div>
-        <p className={styles.hint}>
-          {tr(
-            "field.reports.hint",
-            "Immutable reports from inspections assigned to you. Open a report to view its official submitted record.",
-            "تقارير غير قابلة للتغيير لعمليات التفتيش المسندة إليك. افتح التقرير لعرض السجل الرسمي المقدم.",
-          )}
-        </p>
-
         {error ? (
           <>
             <div className="alert alert-critical" role="alert">
               {tr("field.reports.error", "The server report list is temporarily unavailable. Cached submitted reports remain available below.", "قائمة تقارير الخادم غير متاحة مؤقتًا. تظل التقارير المقدمة المحفوظة متاحة أدناه.")}
             </div>
             <ReportsLibrary userId={user.id} initialReports={[]} locale={lang} strings={{
+              visitRecords: tr("field.reports.visitRecords", "Visit records", "محاضر الزيارة"),
+              priorVisits: tr("field.reports.priorVisits", "Prior establishment visits", "زيارات المنشأة السابقة"),
+              recordsHint: tr("field.reports.recordsHint", "Submitted records available to this inspector — open a document to view its immutable version.", "المحاضر المقدمة المتاحة لهذا المفتش — افتح المستند لعرض نسخته غير القابلة للتغيير."),
+              visitsHint: tr("field.reports.visitsHint", "Prior visit reports for the selected establishment.", "تقارير الزيارات السابقة للمنشأة المحددة."),
               version: tr("field.reports.version", "Version", "الإصدار"),
               signed: tr("field.reports.signed", "Signed", "موقّع"),
               submitted: tr("field.reports.submittedBadge", "Submitted", "مقدم"),
@@ -137,6 +125,12 @@ export default async function FieldReportsPage() {
               inspector: tr("field.reports.inspector", "Inspector", "المفتش"),
               answers: tr("field.reports.answers", "Checklist responses", "إجابات قائمة التحقق"),
               notes: tr("field.reports.notes", "Inspector notes", "ملاحظات المفتش"),
+              summary: tr("field.reports.summary", "Summary", "الملخص"),
+              downloadPdf: tr("field.reports.downloadPdf", "Download PDF", "تنزيل PDF"),
+              downloadUnavailable: tr("field.reports.downloadUnavailable", "PDF document not configured", "مستند PDF غير مهيأ"),
+              print: tr("field.reports.print", "Print", "طباعة"),
+              priorUnavailableTitle: tr("field.reports.priorUnavailableTitle", "Not configured", "غير مهيأ"),
+              priorUnavailableBody: tr("field.reports.priorUnavailableBody", "Select an establishment context before prior visits can be shown.", "حدد سياق المنشأة قبل عرض الزيارات السابقة."),
               noValue: "—",
             }} />
           </>
@@ -147,6 +141,10 @@ export default async function FieldReportsPage() {
           </div>
         ) : (
           <ReportsLibrary userId={user.id} initialReports={cachedReports} locale={lang} strings={{
+            visitRecords: tr("field.reports.visitRecords", "Visit records", "محاضر الزيارة"),
+            priorVisits: tr("field.reports.priorVisits", "Prior establishment visits", "زيارات المنشأة السابقة"),
+            recordsHint: tr("field.reports.recordsHint", "Submitted records available to this inspector — open a document to view its immutable version.", "المحاضر المقدمة المتاحة لهذا المفتش — افتح المستند لعرض نسخته غير القابلة للتغيير."),
+            visitsHint: tr("field.reports.visitsHint", "Prior visit reports for the selected establishment.", "تقارير الزيارات السابقة للمنشأة المحددة."),
             version: tr("field.reports.version", "Version", "الإصدار"),
             signed: tr("field.reports.signed", "Signed", "موقّع"),
             submitted: tr("field.reports.submittedBadge", "Submitted", "مقدم"),
@@ -159,6 +157,12 @@ export default async function FieldReportsPage() {
             inspector: tr("field.reports.inspector", "Inspector", "المفتش"),
             answers: tr("field.reports.answers", "Checklist responses", "إجابات قائمة التحقق"),
             notes: tr("field.reports.notes", "Inspector notes", "ملاحظات المفتش"),
+            summary: tr("field.reports.summary", "Summary", "الملخص"),
+            downloadPdf: tr("field.reports.downloadPdf", "Download PDF", "تنزيل PDF"),
+            downloadUnavailable: tr("field.reports.downloadUnavailable", "PDF document not configured", "مستند PDF غير مهيأ"),
+            print: tr("field.reports.print", "Print", "طباعة"),
+            priorUnavailableTitle: tr("field.reports.priorUnavailableTitle", "Not configured", "غير مهيأ"),
+            priorUnavailableBody: tr("field.reports.priorUnavailableBody", "Select an establishment context before prior visits can be shown.", "حدد سياق المنشأة قبل عرض الزيارات السابقة."),
             noValue: "—",
           }} />
         )}

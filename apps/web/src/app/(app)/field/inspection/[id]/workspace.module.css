@@ -405,3 +405,105 @@
 @media (max-width: 600px) {
   .versionDiffRow { grid-template-columns: 1fr; }
 }
+
+/* SCR-IPAD-660 completion lifecycle — composition mirrors the approved
+   completion design while all phase/status facts remain server-derived. */
+.completionPage { max-inline-size: 900px; gap: 14px; padding: 16px 18px 130px; }
+.completionPage > .card { padding: 15px 16px; }
+.lifecycleCard { display: flex; flex-direction: column; gap: 9px; }
+.lifecycleSegments {
+  display: flex;
+  flex-wrap: wrap;
+  overflow: hidden;
+  border: 1px solid var(--border-input);
+  border-radius: var(--radius-md);
+}
+.lifecycleSegment {
+  padding: 7px 11px;
+  color: var(--text-secondary);
+  background: var(--surface-primary);
+  border-inline-end: 1px solid var(--border-input);
+  font-size: 11.5px;
+}
+.lifecycleSegment[aria-current="step"] {
+  color: var(--text-on-action);
+  background: var(--action-primary);
+}
+.completionBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--status-completed-soft);
+  border-color: var(--status-completed);
+  box-shadow: none;
+}
+.completionBanner h2,
+.completionBanner p,
+.completionHeading,
+.feedbackPanel h4,
+.feedbackPanel p { margin: 0; }
+.completionMark {
+  display: grid;
+  inline-size: 24px;
+  block-size: 24px;
+  flex: 0 0 24px;
+  place-items: center;
+  color: var(--status-completed-text);
+  border: 1px solid var(--status-completed);
+  border-radius: var(--radius-full);
+}
+.completionHeading { font-size: 15px; font-weight: 600; }
+.completionMetrics { display: flex; flex-wrap: wrap; gap: 8px; margin-block-start: 12px; }
+.completionMetrics > div {
+  min-inline-size: 110px;
+  flex: 1 1 110px;
+  padding: 10px 12px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+}
+.completionMetrics strong,
+.completionMetrics span { display: block; }
+.completionMetrics strong { font-size: 19px; }
+.completionMetrics span { color: var(--text-muted); font-size: 11px; }
+.completionLinks { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-block-start: 12px; }
+.feedbackPanel {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-block-start: 12px;
+  padding-block-start: 12px;
+  border-block-start: 1px solid var(--border-subtle);
+}
+.feedbackQr {
+  display: grid;
+  inline-size: 150px;
+  block-size: 150px;
+  flex: 0 0 150px;
+  place-items: center;
+  padding: 10px;
+  color: var(--text-secondary);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+.completionFooter {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px max(12px, env(safe-area-inset-bottom));
+  background: var(--surface-primary);
+  border-block-start: 1px solid var(--border-subtle);
+}
+.completionFooter > :first-child { margin-inline-end: auto; }
+@media (max-width: 600px) {
+  .completionPage { padding-inline: 12px; }
+  .feedbackPanel { flex-direction: column; }
+  .feedbackQr { align-self: center; }
+  .completionFooter { flex-wrap: wrap; }
+}
