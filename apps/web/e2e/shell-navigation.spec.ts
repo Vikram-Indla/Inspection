@@ -96,10 +96,15 @@ test.describe("ADMIN-SHELL-PERSONA-001 admin-only channel", () => {
 
   test("admin chrome omits the business global-search and scope cluster", () => {
     const shell = readFileSync(join(process.cwd(), "src/components/ShellClient.tsx"), "utf8");
+    const css = readFileSync(join(process.cwd(), "src/app/astryx.css"), "utf8");
     expect(shell).toContain('{!adminOnly ? <div className="ax-shell-controls">');
+    expect(shell).toContain('adminOnly ? " is-admin-only" : ""');
     expect(shell).toContain("routeScope.date ? (");
     expect(shell).toContain("sq-shell-scope--region");
     expect(shell).toContain(") : null}");
+    expect(css).toContain("@media (min-width: 1025px)");
+    expect(css).toContain(".ax-shell.is-admin-only .ax-shell__groups");
+    expect(css).toContain("overflow: visible");
   });
 });
 

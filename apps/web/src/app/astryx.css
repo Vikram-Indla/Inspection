@@ -474,6 +474,23 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .ax-shell__brand-mark { display: none; inline-size: 26px; block-size: 26px; flex: 0 0 auto; }
 .ax-shell__close { display: none; margin-inline-start: auto; inline-size: var(--ax-control-height); block-size: var(--ax-control-height); border: 1px solid var(--nav-border); border-radius: var(--ax-radius-small); background: var(--nav-bg-hover); color: var(--nav-text-active); cursor: pointer; font-size: 24px; }
 .ax-shell__groups { display: flex; flex: 1; min-block-size: 0; overflow-y: auto; flex-direction: column; gap: var(--ax-space-100); scrollbar-width: thin; }
+/* WA-ADMIN-r1 — the control plane has one document scroll owner. Its
+   role-scoped rail is short enough to participate in the page flow; it must
+   not create the hanging nested scrollbar seen in the retired admin shell. */
+@media (min-width: 1025px) {
+  .ax-shell.is-admin-only .ax-shell__nav {
+    align-self: start;
+    block-size: auto;
+    min-block-size: 100dvh;
+    overflow: visible;
+  }
+  .ax-shell.is-admin-only .ax-shell__groups {
+    flex: none;
+    min-block-size: auto;
+    overflow: visible;
+  }
+  .ax-shell.is-admin-only .ax-shell__admin-pin { margin-block-start: auto; }
+}
 .ax-nav-group { display: flex; flex-direction: column; gap: var(--ax-space-050); }
 .ax-nav-group__trigger { inline-size: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--ax-space-100); padding: var(--ax-space-100) var(--ax-space-150) var(--ax-space-050); border: 0; background: none; color: color-mix(in srgb, var(--nav-text) 65%, transparent); cursor: pointer; font: var(--ax-text-micro); letter-spacing: .01em; text-align: start; border-radius: var(--ax-radius-small); }
 .ax-nav-group__trigger:hover { color: var(--nav-text-active); background: var(--nav-bg-hover); }

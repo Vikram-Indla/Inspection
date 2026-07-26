@@ -400,7 +400,7 @@ export default function ShellClient({
   }
 
   return (
-    <div className={`ax-shell${collapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}${pendingHref ? " is-navigating" : ""}`}
+    <div className={`ax-shell${adminOnly ? " is-admin-only" : ""}${collapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}${pendingHref ? " is-navigating" : ""}`}
       aria-busy={pendingHref ? "true" : undefined} onClickCapture={handleShellNavigation}>
       {pendingHref ? <div className="ax-route-progress" role="status"><span className="ax-sr-only">{strings.loadingDestination}</span></div> : null}
       <a className="ax-shell__skip" href="#main-content">{strings.skipToContent}</a>
