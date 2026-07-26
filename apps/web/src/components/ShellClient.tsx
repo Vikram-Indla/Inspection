@@ -444,7 +444,7 @@ export default function ShellClient({
               aria-controls="saqeel-primary-nav" aria-expanded={drawerOpen} onClick={() => setDrawerOpen(true)}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
             </button>
-            <div className="ax-shell-controls">
+            {!adminOnly ? <div className="ax-shell-controls">
                 <div className="ax-shell-search" ref={searchWrapRef}>
                   <span className="ax-shell-search__icon" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -477,7 +477,7 @@ export default function ShellClient({
                     document.body,
                   )}
                 </div>
-                {!adminOnly ? <>{routeScope.date ? (
+                {routeScope.date ? (
                   <details className="sq-shell-scope sq-shell-scope--date">
                     <summary aria-label={strings.dateScope} title={strings.dateScope}>
                       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
@@ -503,8 +503,8 @@ export default function ShellClient({
                     <option value="">{strings.allRegions}</option>
                     {regions.map(region => <option value={region} key={region}>{region}</option>)}
                   </select>
-                </label></> : null}
-            </div>
+                </label>
+            </div> : null}
             <div className="ax-pagehead__actions">
               <ThemeToggle className="ax-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
               {/* The bell renders for every persona (2026-07-26 ruling: one

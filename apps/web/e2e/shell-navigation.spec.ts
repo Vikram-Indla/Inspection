@@ -93,6 +93,14 @@ test.describe("ADMIN-SHELL-PERSONA-001 admin-only channel", () => {
     }
     expect(layout).not.toContain('"/admin",\n].some');
   });
+
+  test("admin chrome omits the business global-search and scope cluster", () => {
+    const shell = readFileSync(join(process.cwd(), "src/components/ShellClient.tsx"), "utf8");
+    expect(shell).toContain('{!adminOnly ? <div className="ax-shell-controls">');
+    expect(shell).toContain("routeScope.date ? (");
+    expect(shell).toContain("sq-shell-scope--region");
+    expect(shell).toContain(") : null}");
+  });
 });
 
 test.describe("TASK-WEB-CHANNEL-ACCESS-GATE-001 field channel (rbac_matrix.csv RBAC-009/010)", () => {
