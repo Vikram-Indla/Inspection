@@ -213,9 +213,15 @@ final class WorkspaceStore: ObservableObject {
             imageData: imageData,
             capturedAt: now
         )
-        try? store.enqueue(.evidence(op))
+        do {
+            try store.enqueue(.evidence(op))
+        } catch {
+            errorMessage = "Failed to queue photo evidence. Please try again."
+            return
+        }
 
         // Increment the per-item queued count so the UI badge updates.
+        // Only reached when the enqueue succeeded — preserves evidence-chain integrity.
         evidenceCounts[itemId, default: 0] += 1
 
         await triggerSync()

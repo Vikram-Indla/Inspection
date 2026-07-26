@@ -129,7 +129,7 @@ struct EvidenceCaptureButton: View {
             .font(SaqeelTypography.micro.weight(.semibold))
             .foregroundColor(theme.colors.inverseText)
             .padding(.horizontal, SaqeelSpacing.xs)
-            .padding(.vertical, 2)
+            .padding(.vertical, SaqeelSpacing.hairline)
             .background(theme.colors.info)
             .clipShape(Capsule())
     }
@@ -148,7 +148,9 @@ struct EvidenceCaptureButton: View {
                 await store.attachPhoto(itemId: itemId, imageData: jpegData)
             }
         } catch {
-            // Silent failure in the UI — the outbox will retry, or the user can try again.
+            // Surface the failure — nothing was enqueued, so the evidence is lost unless
+            // the user tries again.
+            store.errorMessage = "Couldn't load the selected photo. Please try again."
         }
 
         // Reset picker so the same photo can be chosen again if needed
