@@ -11,10 +11,8 @@
   inset-block-start: 0;
   align-self: start;
   min-block-size: 100dvh;
-  max-block-size: 100dvh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   padding: var(--space-4);
   border-inline-end: 1px solid var(--nav-border);
   background: var(--nav-bg);
@@ -51,9 +49,7 @@
 .navigation {
   min-block-size: 0;
   flex: 1;
-  overflow-y: auto;
   padding-block: var(--space-5);
-  scrollbar-width: thin;
 }
 .overline {
   padding: 0 var(--space-3) var(--space-2);
@@ -179,6 +175,9 @@
     inline-size: min(88vw, 340px);
     translate: -105% 0;
     transition: translate var(--motion-normal);
+    max-block-size: 100dvh;
+    overflow-y: auto;
+    scrollbar-width: thin;
   }
   [dir="rtl"] .rail { translate: 105% 0; }
   .drawerOpen .rail { translate: 0; }
