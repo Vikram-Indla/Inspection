@@ -19,7 +19,7 @@ import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagina
 import { computeResubmissionFlags, type ResubmissionSource } from "./sla";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { redirect } from "next/navigation";
-import { buildShellNavigation, BUSINESS_ROLE_KEYS, FIELD_CHANNEL_ROLE_KEYS } from "@/lib/shell-navigation";
+import { buildShellNavigation, BUSINESS_ROLE_KEYS } from "@/lib/shell-navigation";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import OperationsMapWorkspace, {
   type OperationsMapEntry,
@@ -217,14 +217,12 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     : buildShellNavigation(routeRoleKeys)
       .flatMap(group => group.items)
       .find(item => item.href === "/operations");
-  // DSG-CMD-020 — direct-route authorization: business-visible shell items are
-  // unconditionally enabled for every web-portal persona, including admin-only
-  // ones, so nav visibility cannot be the authorization. The route verifies the
-  // caller independently holds an operational role.
-  const webBusinessRoles = BUSINESS_ROLE_KEYS.filter(
-    role => !(FIELD_CHANNEL_ROLE_KEYS as readonly string[]).includes(role)
-  );
-  const hasOperationalRole = routeRoleKeys.some(role => webBusinessRoles.includes(role));
+  // PKT-RESPONSIVE-DASHBOARD-OPERATIONS-002 — field-shell convergence does not
+  // retire the Inspector's CR-430..CR-448 observation capability. All canonical
+  // business roles may enter the read surface; capability-only Administrator
+  // profiles still require an operational legacy grant and otherwise fail
+  // closed before the first operational read.
+  const hasOperationalRole = routeRoleKeys.some(role => BUSINESS_ROLE_KEYS.includes(role));
   const mayViewOperations = operationsDestination?.enabled === true && hasOperationalRole;
   if (!mayViewOperations) {
     return (
@@ -252,7 +250,10 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   const authorizedScope = profileRow?.region?.trim() ?? "";
   const authorizedRegionId = resolveRegionId(authorizedScope || null);
   const inAuthorizedGeography = (r: string | null, c: string | null) => {
-    if (!authorizedScope) return false;
+    // An unassigned profile inherits only the rows already granted by RLS.
+    // This application-side filter narrows an explicit assignment; it must not
+    // turn an otherwise valid national RLS grant into an empty result set.
+    if (!authorizedScope) return true;
     if (authorizedRegionId) return resolveRegionId(r) === authorizedRegionId;
     const normalized = authorizedScope.toLocaleLowerCase("en");
     return [r, c].some(value => value?.trim().toLocaleLowerCase("en") === normalized);

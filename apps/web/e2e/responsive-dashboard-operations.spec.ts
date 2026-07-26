@@ -1,0 +1,55 @@
+import { expect, test } from "@playwright/test";
+import fs from "node:fs";
+import path from "node:path";
+
+const root = path.resolve(__dirname, "..");
+const read = (file: string) => fs.readFileSync(path.join(root, file), "utf8");
+
+test.describe("PKT-RESPONSIVE-DASHBOARD-OPERATIONS-002", () => {
+  test("Operations preserves Inspector access without widening capability-only Administrator profiles", () => {
+    for (const file of [
+      "src/app/(app)/operations/page.tsx",
+      "src/app/(app)/operations/live/page.tsx",
+    ]) {
+      const source = read(file);
+      expect(source).toContain("BUSINESS_ROLE_KEYS.includes(role)");
+      expect(source).not.toContain("FIELD_CHANNEL_ROLE_KEYS");
+      expect(source.indexOf("if (!mayViewOperations)")).toBeLessThan(source.indexOf("await Promise.all(["));
+    }
+  });
+
+  test("Dashboard and Operations retain bounded responsive layouts for the mandated width continuum", () => {
+    const dashboard = read("src/app/(app)/dashboard/dashboard.module.css");
+    const operations = read("src/app/(app)/operations/operations.module.css");
+    const live = read("src/app/(app)/operations/live/live.module.css");
+
+    expect(dashboard).toContain("@media (max-width: 1080px)");
+    expect(dashboard).toContain("@media (max-width: 640px)");
+    expect(dashboard).toContain("@media (max-width: 360px)");
+    expect(operations).toContain("@media (max-width: 1100px)");
+    expect(operations).toContain("@media (max-width: 430px)");
+    expect(operations).toContain("@media (max-width: 340px)");
+    expect(live).toContain("@media (max-width: 1024px)");
+    expect(live).toContain("@media (max-width: 700px)");
+    expect(live).toContain("@media (max-width: 430px)");
+    expect(`${dashboard}\n${operations}\n${live}`).toContain("minmax(0, 1fr)");
+  });
+
+  test("Arabic, RTL, reduced motion and provider-degraded contracts remain explicit", () => {
+    const dashboard = read("src/app/(app)/dashboard/DashboardView.tsx");
+    const operations = read("src/app/(app)/operations/page.tsx");
+    const live = read("src/app/(app)/operations/live/LiveOps.tsx");
+    const styles = [
+      read("src/app/(app)/dashboard/dashboard.module.css"),
+      read("src/app/(app)/operations/operations.module.css"),
+      read("src/app/(app)/operations/live/live.module.css"),
+    ].join("\n");
+
+    expect(dashboard).toContain("locale === \"ar\"");
+    expect(operations).toContain("locale === \"ar\"");
+    expect(live).toContain("locale: \"en\" | \"ar\"");
+    expect(styles).toContain("[dir=\"rtl\"]");
+    expect(styles).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(live).toContain("providerFailed");
+  });
+});

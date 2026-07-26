@@ -10,6 +10,7 @@ const source = (file: string) => readFileSync(join(process.cwd(), file), "utf8")
 
 const dashboardPage = source("src/app/(app)/dashboard/page.tsx");
 const dashboardView = source("src/app/(app)/dashboard/DashboardView.tsx");
+const regionalScope = source("src/app/(app)/dashboard/RegionalScope.tsx");
 const decisionCanvas = source("src/app/(app)/dashboard/DecisionCanvas.tsx");
 const geoMap = source("src/components/GeoMap.tsx");
 const EVIDENCE_DIR = evidenceDirectory("web-admin-m1-dashboard");
@@ -57,13 +58,16 @@ test.describe("WA-M1-AC-001/002/005 source truth and negative contracts", () => 
     expect(dashboardPage).not.toContain("partialSources={[]}");
     expect(dashboardView).toContain("partialSources.length");
     expect(dashboardView).toContain("Partial · ${partialSources.length} unavailable source");
-    expect(dashboardView).toContain(": copy(locale, `Live · refreshed ${refreshedAt} Riyadh`");
+    expect(dashboardView).toContain(": copy(locale,");
+    expect(dashboardView).toContain("`Page generated ${refreshedAt} Riyadh`");
     expect(dashboardView).toContain('sourceStatus: "partial"');
   });
 
   test("the real shared GeoMap is mounted and its accessible unavailable state remains fail-closed", () => {
     expect(dashboardView).toContain("import DecisionCanvas");
-    expect(dashboardView).toContain("<DecisionCanvas");
+    expect(dashboardView).toContain("<RegionalScope");
+    expect(regionalScope).toContain("import DecisionCanvas");
+    expect(regionalScope).toContain("<DecisionCanvas");
     expect(decisionCanvas).toContain('dynamic(() => import("@/components/GeoMap"), { ssr: false })');
     expect(decisionCanvas).toContain("<GeoMap");
     expect(geoMap).toContain('data-map-provider="mapbox"');
@@ -102,7 +106,9 @@ test.describe("WA-M1-AC-001/002/005 source truth and negative contracts", () => 
       expect(definition?.decisionRef || definition?.note, `${metricId} must explain its stop line`).toBeTruthy();
     }
 
-    expect(dashboardView).toContain("Risk and compliance thresholds: not configured");
+    expect(dashboardView).toContain(
+      "Risk and compliance thresholds, and coverage and repeat rules, are not configured. No substitute is used.",
+    );
     expect(dashboardView).toContain("Classification policy is not configured; pins remain neutral.");
   });
 });
