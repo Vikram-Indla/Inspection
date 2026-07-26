@@ -93,8 +93,8 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 1 canonical contracts", () => {
   test("preservation guard — offline stores keep their accepted identities", () => {
     const offline = read("apps/web/src/lib/offline.ts");
     const f360 = read("apps/web/src/lib/factory360/offline-snapshot.ts");
-    expect(offline).toContain('const DB_PREFIX = "mim-field-v1:"');
-    expect(offline).toContain("`${DB_PREFIX}${verifiedUserId}`");
+    expect(offline).toContain("packageCacheNamespace(userId)");
+    expect(read("apps/web/src/lib/offline-package-integrity.ts")).toContain("`mim-field-v1:${verifiedUserId}`");
     expect(f360).toContain("mim-field-f360-v1");
   });
 

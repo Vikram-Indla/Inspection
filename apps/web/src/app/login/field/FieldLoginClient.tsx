@@ -342,10 +342,8 @@ export default function FieldLoginClient({
         <a className="fl-langbtn" href={localeHref}>
           {s.langBtn}
         </a>
-        {/* The DC pairs the language control with a theme control. The field
-            channel is fixed dark (see ThemeScript), so there is nothing for a
-            theme control to switch and it is deliberately not rendered. The
-            language control remains — locale is still a real user choice. */}
+            {/* The authenticated AppShell owns the global theme control. This
+                focused sign-in surface keeps only its language control. */}
       </div>
 
       <div className="fl-stage">

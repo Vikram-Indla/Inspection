@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import FieldHeader from "@/components/field/FieldHeader";
-import FieldNav from "@/components/field/FieldNav";
 import CompletedHistoryCache from "@/components/field/CompletedHistoryCache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
@@ -100,14 +99,6 @@ export default async function CompletedInspectionsPage() {
           }}
         />
       </main>
-      <div aria-hidden="true" style={{ height: 58, flex: "none" }} />
-      <FieldNav active="home" labels={{
-        home: tr("field.tabs.home", "Home", "الرئيسية"),
-        myTasks: tr("field.tabs.myTasks", "My Tasks", "مهامي"),
-        establishments: tr("field.tabs.establishments", "Establishments", "المنشآت"),
-        notifications: tr("field.tabs.notifications", "Notifications", "الإشعارات"),
-        account: tr("field.tabs.account", "Account", "الحساب"),
-      }} />
     </>
   );
 }

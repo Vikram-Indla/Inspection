@@ -325,7 +325,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   const factoryProducts = (prodRows ?? []) as FactoryProductRow[];
   const factoryMaterials = (matRows ?? []) as FactoryMaterialRow[];
   // Factory-360 snapshot — governed risk leg (Risk Engine output on the factory
-  // row; RLS-scoped). Health Score is intentionally absent (Health ≠ Risk).
+  // row; authorization-scoped). Health Score is intentionally absent (Health ≠ Risk).
   const factoryRiskScore = fRow.risk_score == null ? null : Number(fRow.risk_score);
   const factoryRiskBand = fRow.risk_band == null ? null : String(fRow.risk_band);
   const factoryRiskBandLabel = factoryRiskBand ? t(`enum.${factoryRiskBand}`, factoryRiskBand.replace(/_/g, " ")) : null;

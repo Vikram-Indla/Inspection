@@ -8,18 +8,18 @@ import { kpiDefinition } from "../src/lib/dashboard-kpi/registry";
 // (no browser): they lock the P0 KPI semantics the field page renders and the
 // scope-preservation contract, so a future edit cannot silently regress them.
 
-const fieldPage = readFileSync(join(__dirname, "../src/app/field/page.tsx"), "utf8");
+const fieldPage = readFileSync(join(__dirname, "../src/app/(app)/field/page.tsx"), "utf8");
 const packSheet = readFileSync(join(__dirname, "../src/components/field/PreInspectionPackSheet.tsx"), "utf8");
-const syncChips = readFileSync(join(__dirname, "../src/components/field/FieldSyncChips.tsx"), "utf8");
+const headerSync = readFileSync(join(__dirname, "../src/components/field/FieldHeaderSync.tsx"), "utf8");
 
-test.describe("field dashboard consumes the SHARED KPI engine (no local formulas)", () => {
-  test("page wires the shared inspector projection and the shared compliance calc", () => {
-    expect(fieldPage).toContain("buildInspectorKpiProjection");
-    expect(fieldPage).toContain("countChecklistCompliance");
-    // the four metric-strip cells are the shared inspector metric ids
-    for (const id of ["IPAD-KPI-001", "IPAD-KPI-002", "IPAD-KPI-003", "IPAD-KPI-004", "IPAD-KPI-005", "IPAD-KPI-006"]) {
-      expect(fieldPage).toContain(id);
-    }
+test.describe("field dashboard renders source-backed execution metrics", () => {
+  test("page scopes the metric strip to assigned visits and operational states", () => {
+    expect(fieldPage).toContain('.from("assignments")');
+    expect(fieldPage).toContain('.eq("inspector_id", user.id)');
+    expect(fieldPage).toContain("const scopeStat = (rows: VisitRow[]): FieldScopeStat =>");
+    expect(fieldPage).toContain("const submitted = rows.filter(isDone).length");
+    expect(fieldPage).toContain("completionPct: rows.length ? Math.round((submitted / rows.length) * 100) : 0");
+    expect(fieldPage).toContain("<FieldMetricStrip");
   });
 
   test("no fabricated / hand-rolled compliance percentage in the field presentation", () => {
@@ -32,7 +32,7 @@ test.describe("field dashboard consumes the SHARED KPI engine (no local formulas
   test("terminology regression: 'dossier' never reappears in field presentation", () => {
     expect(fieldPage.toLowerCase()).not.toContain("dossier");
     expect(packSheet.toLowerCase()).not.toContain("dossier");
-    expect(syncChips.toLowerCase()).not.toContain("dossier");
+    expect(headerSync.toLowerCase()).not.toContain("dossier");
   });
 });
 
@@ -67,12 +67,16 @@ test.describe("P0 semantic separation (approval outcomes ≠ checklist complianc
 
 test.describe("offline / Factory-360 scope preservation", () => {
   test("field presentation does not touch the offline outbox or Factory 360 lib logic", () => {
-    // The sync chip only READS queue/conflict state; it must not enqueue/remove/
-    // process the outbox or import the Factory 360 business logic.
-    expect(syncChips).not.toMatch(/\.enqueue\(|\.remove\(|processOutbox|resolveConflict/);
+    // The header sync control may trigger the canonical idempotent replay, but
+    // it never authors queue entries or resolves conflicts on the user's behalf.
+    expect(headerSync).not.toMatch(/\.enqueue\(|\.remove\(|resolveConflict/);
+    expect(headerSync).toContain("processOutbox");
     expect(fieldPage).not.toContain("lib/factory360");
     expect(packSheet).not.toContain("lib/factory360");
-    // The pack sheet routes to the governed startup; it never bypasses it.
-    expect(packSheet).toContain("/field/${data.visitId}");
+    // The pack sheet keeps the user on the governed startup and scrolls to its
+    // server-authoritative readiness panel; it never invents another route.
+    expect(packSheet).toContain('data-testid="pre-execution-panel"');
+    expect(packSheet).toContain("resolveVerifiedPackage");
+    expect(packSheet).toContain("cacheVerifiedPackage");
   });
 });

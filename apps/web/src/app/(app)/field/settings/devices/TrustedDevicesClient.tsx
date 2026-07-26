@@ -42,11 +42,10 @@ type Locale = "en" | "ar";
 // Two parts of the Biometric design are deliberately NOT here:
 //   • Its `.bio-seg` segmented bar (Biometric Lock / Device Enrollment + lang +
 //     theme). That is the standalone page's own chrome. This route already
-//     carries the Trusted Devices header, whose language pill is the same
-//     control; the field channel is fixed dark so the theme button has nothing
-//     to switch; and the "Biometric Lock" tab targets the full-screen unlock,
-//     which lives in login/field/**, not in this segment. Rendering it here
-//     would stack a second chrome bar with one inert tab.
+//     carries the Trusted Devices header and canonical AppShell controls; the
+//     "Biometric Lock" tab targets the full-screen unlock, which lives in
+//     login/field/**, not in this segment. Rendering it here would stack a
+//     second chrome bar with one inert tab.
 //   • The full-screen "Biometric Lock" view itself — same reason.
 //
 // ---------------------------------------------------------------------------

@@ -3,20 +3,15 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-// Companion to ThemeScript. The blocking head script resolves the channel
-// theme once, on document load. Client-side navigation between the web console
-// and the field channel does not re-run it, so a soft transition from /login to
-// /login/field would otherwise keep the console theme.
+// Companion to ThemeScript. The blocking head script resolves the theme once
+// on document load; this reapplies the same rule after client-side navigation.
 //
 // This re-applies the same rule on every pathname change, using the identical
-// precedence as the head script: the dark-locked channels (the field channel
-// and the unified sign-in) are always dark and ignore any persisted preference;
-// every other route honours the persisted choice and otherwise falls back to
-// the sponsor-approved light theme.
+// precedence as the head script: sign-in/reset are dark-locked, while every
+// authenticated application route—including Field—honours the persisted
+// preference and otherwise falls back to the approved light theme.
 
 const isDarkChannel = (pathname: string) =>
-  pathname === "/field" ||
-  pathname.startsWith("/field/") ||
   pathname === "/login" ||
   pathname.startsWith("/login/") ||
   pathname === "/reset" ||
@@ -26,8 +21,8 @@ export default function ThemeChannelSync() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Dark-locked channel (field + sign-in): fixed dark, persisted preference
-    // deliberately ignored.
+    // Authentication surfaces remain fixed dark; application routes use the
+    // persisted user preference below.
     if (isDarkChannel(pathname ?? "")) {
       document.documentElement.setAttribute("data-theme", "dark");
       return;
