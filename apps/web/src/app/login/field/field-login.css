@@ -17,6 +17,7 @@
   /* positioning context for the out-of-flow assurance footer (Login v2) —
      without it the footer would anchor to the viewport and escape the column */
   position: relative;
+  min-inline-size: 0;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -402,6 +403,24 @@
 .fl-foot-note span {
   color: var(--nav-text);
   line-height: 1.55;
+  flex: 1;
+}
+.fl-foot-dismiss {
+  flex: none;
+  margin-block-start: -2px;
+  margin-inline-end: -4px;
+  border: 0;
+  background: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--nav-text);
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+}
+.fl-foot-dismiss:hover {
+  color: var(--nav-text-active);
+  background: color-mix(in srgb, var(--nav-text-active) 10%, transparent);
 }
 .fl-foot-row {
   display: flex;

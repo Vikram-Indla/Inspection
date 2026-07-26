@@ -115,12 +115,37 @@ const OUTCOME_POSITIONS = [
 const ZONE_INTELLIGENCE: Record<AtlasZoneId, {
   x: number; y: number; en: string; ar: string; inspections: string; compliance: string; action: string;
 }> = {
-  north: { x: 42, y: 8, en: "Northern zone", ar: "المنطقة الشمالية", inspections: "264 inspections", compliance: "91% compliant", action: "18 follow-ups" },
-  west: { x: 17, y: 30, en: "Western zone", ar: "المنطقة الغربية", inspections: "247 inspections", compliance: "89% compliant", action: "12 follow-ups" },
-  central: { x: 52, y: 20, en: "Central zone", ar: "المنطقة الوسطى", inspections: "221 inspections", compliance: "92% compliant", action: "9 follow-ups" },
-  east: { x: 78, y: 24, en: "Eastern zone", ar: "المنطقة الشرقية", inspections: "318 inspections", compliance: "90% compliant", action: "21 follow-ups" },
-  south: { x: 56, y: 62, en: "Southern zone", ar: "المنطقة الجنوبية", inspections: "198 inspections", compliance: "89% compliant", action: "14 follow-ups" },
+  north: { x: 42, y: 8, en: "Northern zone", ar: "المنطقة الشمالية", inspections: "264", compliance: "91%", action: "18" },
+  west: { x: 17, y: 30, en: "Western zone", ar: "المنطقة الغربية", inspections: "247", compliance: "89%", action: "12" },
+  central: { x: 52, y: 20, en: "Central zone", ar: "المنطقة الوسطى", inspections: "221", compliance: "92%", action: "9" },
+  east: { x: 78, y: 24, en: "Eastern zone", ar: "المنطقة الشرقية", inspections: "318", compliance: "90%", action: "21" },
+  south: { x: 56, y: 62, en: "Southern zone", ar: "المنطقة الجنوبية", inspections: "198", compliance: "89%", action: "14" },
 };
+
+// The zone readout is localised: the counts carried an English unit even in
+// Arabic before, so an Arabic reader saw "264 inspections" mid-sentence.
+const fmtInspections = (v: string, ar: boolean) => ar ? `${v} عملية تفتيش` : `${v} inspections`;
+const fmtCompliance = (v: string, ar: boolean) => ar ? `${v} ملتزم` : `${v} compliant`;
+const fmtAction = (v: string, ar: boolean) => ar ? `${v} متابعة` : `${v} follow-ups`;
+
+// Geofenced site perimeters at the three inspection destinations. Scene 01
+// establishes the fenced sites, then they clear for dispatch and return on 05.
+const FENCE_POSITIONS = [
+  { x: 73.7, y: 32.5 },
+  { x: 22.0, y: 42.0 },
+  { x: 20.5, y: 68.0 },
+];
+
+// Illustrative trip distances, carried at each route's midpoint while the
+// vehicle is on the road; they clear on arrival. Not routing data.
+const TRIP_DISTANCES = [
+  { x: 61.9, y: 40.6, km: 420 },
+  { x: 37.2, y: 42.5, km: 950 },
+  { x: 32.3, y: 73.8, km: 710 },
+];
+
+const toArabicDigits = (n: number) =>
+  String(n).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[Number(d)]);
 
 function stageZone(stage: AtlasStageId): AtlasZoneId {
   return stage === "plan" || stage === "decide" ? "central" : "east";
@@ -141,27 +166,45 @@ function JourneyOverlay({ stage, locale }: { stage: AtlasStageId; locale: "ar" |
         ))}
       </svg>
 
-      <svg key={stage} className="lg-atlas-motion__route" viewBox="0 0 1000 563" preserveAspectRatio="none">
-        {DISPATCH_ROUTES.map((route, index) => (
+      {/* Not keyed on stage: the layer stays mounted and cross-fades, so the
+          vehicles keep circulating behind the scene instead of restarting. */}
+      <svg className="lg-atlas-motion__route" viewBox="0 0 1000 563" preserveAspectRatio="none">
+        {DISPATCH_ROUTES.map(route => (
           <path key={route.id} className="lg-atlas-motion__route-line" data-route={route.id}
             d={route.path} />
         ))}
-        {stage === "travel" && DISPATCH_ROUTES.map(route => (
+        {DISPATCH_ROUTES.map(route => (
           <g key={`stops-${route.id}`} className="lg-atlas-motion__route-stops">
             <circle cx={route.start[0]} cy={route.start[1]} r="4" />
             <circle cx={route.end[0]} cy={route.end[1]} r="4" />
           </g>
         ))}
-        {stage === "travel" && DISPATCH_ROUTES.map((route, index) => (
-          <image key={`vehicle-${route.id}`} className="lg-atlas-motion__route-vehicle"
-            href="/brand/saudi-atlas/inspection-suv-topdown-v1.png" x="-13.5" y="-27" width="27" height="54" opacity="0" transform="rotate(90)">
-            <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.88;1"
-              dur="6s" begin={`${index * 2.5}s`} fill="remove" />
-            <animateMotion path={route.path} rotate="auto" dur="6s" begin={`${index * 2.5}s`} fill="remove"
-              calcMode="spline" keyTimes="0;1" keySplines="0.32 0.05 0.2 1" />
-          </image>
-        ))}
+        <g className="lg-atlas-motion__suvs">
+          {DISPATCH_ROUTES.map((route, index) => (
+            <image key={`vehicle-${route.id}`} className="lg-atlas-motion__route-vehicle"
+              href="/brand/saudi-atlas/inspection-suv-topdown-v1.png" x="-13.5" y="-27" width="27" height="54" opacity="0" transform="rotate(90)">
+              <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.88;1"
+                dur="6s" begin={`${index * 2.5}s`} repeatCount="indefinite" />
+              <animateMotion path={route.path} rotate="auto" dur="6s" begin={`${index * 2.5}s`} repeatCount="indefinite"
+                calcMode="spline" keyTimes="0;1" keySplines="0.32 0.05 0.2 1" />
+            </image>
+          ))}
+        </g>
       </svg>
+
+      {/* geofenced site perimeters — scenes 01 and 05 */}
+      {FENCE_POSITIONS.map((fence, index) => (
+        <span key={`fence-${index}`} className="lg-atlas-motion__fence"
+          style={{ left: `${fence.x}%`, top: `${fence.y}%` } as CSSProperties} />
+      ))}
+
+      {/* trip distances, carried while a vehicle is on the road */}
+      {TRIP_DISTANCES.map((trip, index) => (
+        <span key={`km-${index}`} className="lg-atlas-motion__km"
+          style={{ left: `${trip.x}%`, top: `${trip.y}%` } as CSSProperties}>
+          {locale === "ar" ? `${toArabicDigits(trip.km)} كم` : `${trip.km} km`}
+        </span>
+      ))}
 
       <div className="lg-atlas-motion__inspectors">
         {INSPECTOR_SCENE_POSITIONS.map((position, index) => (
@@ -176,7 +219,7 @@ function JourneyOverlay({ stage, locale }: { stage: AtlasStageId; locale: "ar" |
         {OUTCOME_POSITIONS.map((outcome, index) => (
           <span key={index} className={`lg-atlas-motion__outcome lg-atlas-motion__outcome--${outcome.result}`}
             style={{ left: `${outcome.x}%`, top: `${outcome.y}%`, "--actor-delay": `${index * .65}s` } as CSSProperties}>
-            <b aria-hidden="true">{outcome.result === "passed" ? "✓" : "×"}</b>
+            <b aria-hidden="true" />
             <span>{copy[outcome.result]}</span>
           </span>
         ))}
@@ -187,22 +230,20 @@ function JourneyOverlay({ stage, locale }: { stage: AtlasStageId; locale: "ar" |
 }
 
 function ZoneLiftOverlay({
-  locale, activeZone, lockedZone, atlasBase, onHover, onLock, onClose,
+  locale, activeZone, atlasBase, onHover,
 }: {
   locale: "ar" | "en";
   activeZone: AtlasZoneId | null;
-  lockedZone: AtlasZoneId | null;
   atlasBase: string;
   onHover: (zone: AtlasZoneId | null) => void;
-  onLock: (zone: AtlasZoneId) => void;
-  onClose: () => void;
 }) {
-  const stat = activeZone ? ZONE_INTELLIGENCE[activeZone] : null;
   const zoneLabel = (zone: AtlasZoneId) => {
     const z = ZONE_INTELLIGENCE[zone];
-    return locale === "ar"
-      ? `${z.ar}: ${z.inspections}، ${z.compliance}، ${z.action}. اضغط لتثبيت عرض التضاريس.`
-      : `${z.en}: ${z.inspections}, ${z.compliance}, ${z.action}. Press to lock this terrain view.`;
+    const ar = locale === "ar";
+    const parts = `${fmtInspections(z.inspections, ar)}${ar ? "، " : ", "}${fmtCompliance(z.compliance, ar)}${ar ? "، " : ", "}${fmtAction(z.action, ar)}`;
+    return ar
+      ? `${z.ar}: ${parts}. اضغط لتثبيت عرض التضاريس.`
+      : `${z.en}: ${parts}. Press to lock this terrain view.`;
   };
   return (
     <div className={`lg-zone-lift${activeZone ? " is-engaged" : ""}`} role="group"
@@ -231,42 +272,36 @@ function ZoneLiftOverlay({
               <g className="lg-zone-lift__terrain" clipPath={`url(#lg-zclip-${zone.id})`} aria-hidden="true">
                 <image href={`${atlasBase}.png`} x="0" y="0" width="1000" height="563" preserveAspectRatio="none" />
               </g>
-              {/* Keyboard + pointer target. Focus lifts the slab (same info as
-                  hover); Enter/Space locks it; Escape restores the resting map. */}
+              {/* Keyboard + pointer target. Focus lifts the slab, exactly as
+                  hover does. There is no locked state: the intelligence lives
+                  in the lifted zone's own label, so there is nothing to pin. */}
               <path className="lg-zone-lift__edge" d={zone.path} data-zone={zone.id}
-                tabIndex={0} role="button" aria-pressed={lockedZone === zone.id}
+                tabIndex={0} role="button"
                 aria-label={zoneLabel(zone.id)}
                 onPointerEnter={() => onHover(zone.id)}
                 onPointerLeave={() => onHover(null)}
                 onFocus={() => onHover(zone.id)}
-                onBlur={() => onHover(null)}
-                onClick={() => onLock(zone.id)}
-                onKeyDown={e => {
-                  if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onLock(zone.id); }
-                  else if (e.key === "Escape") { e.preventDefault(); onClose(); (e.currentTarget as SVGPathElement).blur(); }
-                }} />
+                onBlur={() => onHover(null)} />
             </g>
           );
         })}
       </svg>
-      {stat && <section className="lg-zone-lift__readout" style={{ left: `${stat.x}%`, top: `${stat.y}%` }} dir={locale === "ar" ? "rtl" : "ltr"}>
-        <span className="lg-zone-lift__eyebrow">{locale === "ar" ? "ذكاء التفتيش الإقليمي" : "REGIONAL INSPECTION INTELLIGENCE"}</span>
-        <strong>{stat[locale]}</strong>
-        <div><b>{stat.inspections}</b><span>{stat.compliance}</span><em>{stat.action}</em></div>
-        <small>{locale === "ar" ? "انقر لتثبيت المنطقة" : "Click to lock this terrain view"}</small>
-      </section>}
+      {/* No readout card: a lifted zone's own label becomes its readout and
+          rides up with the slab, so the intelligence sits in the geography. */}
     </div>
   );
 }
 
 // Zone labels rendered in the active locale over a LABEL-FREE base render.
 // EN + AR both live in the DOM so no map text is ever baked into the raster.
-const ZONES: { en: string; ar: string; x: number; y: number }[] = [
-  { en: "NORTHERN ZONE", ar: "المنطقة الشمالية", x: 32, y: 11 },
-  { en: "WESTERN ZONE", ar: "المنطقة الغربية", x: 18, y: 27 },
-  { en: "CENTRAL ZONE", ar: "المنطقة الوسطى", x: 39, y: 45 },
-  { en: "EASTERN ZONE", ar: "المنطقة الشرقية", x: 72, y: 51 },
-  { en: "SOUTHERN ZONE", ar: "المنطقة الجنوبية", x: 51, y: 74 },
+// Sentence case is the stored form: a label reads uppercase at rest and drops
+// to sentence case when its zone is lifted and becomes the regional readout.
+const ZONES: { id: AtlasZoneId; en: string; ar: string; x: number; y: number }[] = [
+  { id: "north", en: "Northern zone", ar: "المنطقة الشمالية", x: 32, y: 11 },
+  { id: "west", en: "Western zone", ar: "المنطقة الغربية", x: 18, y: 27 },
+  { id: "central", en: "Central zone", ar: "المنطقة الوسطى", x: 39, y: 45 },
+  { id: "east", en: "Eastern zone", ar: "المنطقة الشرقية", x: 72, y: 51 },
+  { id: "south", en: "Southern zone", ar: "المنطقة الجنوبية", x: 51, y: 74 },
 ];
 
 const INSPECTOR_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><circle cx="12" cy="6" r="3.2"/><path d="M6 22v-5a6 6 0 0 1 12 0v5Z"/></svg>';
@@ -483,24 +518,16 @@ function PublicSafeImageAtlas({
   onImageError: () => void;
 }) {
   const [hover, setHover] = useState<AtlasNode | null>(null);
-  const [locked, setLocked] = useState<AtlasNode | null>(null);
   const [hoveredZone, setHoveredZone] = useState<AtlasZoneId | null>(null);
-  const [lockedZone, setLockedZone] = useState<AtlasZoneId | null>(null);
   const [ready, setReady] = useState(false);
   const atlasBase = useAtlasBase();
   const refs = useRef<Map<string, HTMLButtonElement>>(new Map());
-  const shown = locked ?? hover;
-  const activeZone = lockedZone ?? hoveredZone;
-  const activeNode = stageNode(activeStage);
-  const shownPosition = shown ? IMAGE_POSITIONS[shown.id] : undefined;
+  const shown = hover;
+  const activeZone = hoveredZone;
 
-  useEffect(() => { onInteractingChange(shown !== null || activeZone !== null); }, [shown, activeZone, onInteractingChange]);
-
-  const closeLocked = useCallback(() => {
-    const id = locked?.id;
-    setLocked(null);
-    if (id) requestAnimationFrame(() => refs.current.get(id)?.focus());
-  }, [locked]);
+  // Only a lifted zone holds the story loop. A named site does not: the design
+  // treats hovering a site as a read, not as taking control of the scene.
+  useEffect(() => { onInteractingChange(activeZone !== null); }, [activeZone, onInteractingChange]);
 
   return (
     <div className={`lg-atlas-image${ready ? " is-ready" : ""}${activeZone ? " is-zone-engaged" : ""}`} data-atlas-mode="public-safe-image"
@@ -511,49 +538,67 @@ function PublicSafeImageAtlas({
             width="1672" height="941" alt="" decoding="async" draggable={false}
             onLoad={() => setReady(true)} onError={onImageError} />
         </picture>
+        <div className="lg-atlas-image__wash lg-atlas-image__wash--color" aria-hidden="true" />
+        <div className="lg-atlas-image__wash lg-atlas-image__wash--shade" aria-hidden="true" />
 
         <JourneyOverlay stage={activeStage} locale={locale} />
 
-        <ZoneLiftOverlay locale={locale} activeZone={activeZone} lockedZone={lockedZone} atlasBase={atlasBase}
-          onHover={zone => { if (!lockedZone) setHoveredZone(zone); }}
-          onLock={zone => { setLockedZone(current => current === zone ? null : zone); setHoveredZone(zone); }}
-          onClose={() => { setLockedZone(null); setHoveredZone(null); }} />
+        <ZoneLiftOverlay locale={locale} activeZone={activeZone} atlasBase={atlasBase}
+          onHover={zone => setHoveredZone(zone)} />
 
-        <div className="lg-atlas-image__hotspots" aria-label={dossierStrings.mapLabel}>
+        {/* The nine industrial sites: silent at rest, named on hover / focus.
+            There is no dossier and no locked site — the industry is carried in
+            the accessible name instead of a panel. */}
+        <div className="lg-atlas-image__hotspots">
           {NODES.map(node => {
             const p = IMAGE_POSITIONS[node.id];
             if (!p) return null;
             const style = { left: `${p.x}%`, top: `${p.y}%` } as CSSProperties;
             return (
               <button key={node.id} ref={el => { if (el) refs.current.set(node.id, el); }}
-                type="button" className={`lg-atlas-image__hotspot lg-atlas-image__hotspot--${node.halo}${activeNode === node.id ? " is-active" : ""}`}
-                style={style} aria-label={`${node.name[locale]}, ${node.industry[locale]}. ${node.sampleState[locale]}`}
-                aria-pressed={locked?.id === node.id}
+                type="button" className={`lg-atlas-image__hotspot lg-atlas-image__hotspot--${node.halo}`}
+                style={style} aria-label={`${node.name[locale]} — ${node.industry[locale]}`}
                 onMouseEnter={() => setHover(node)}
                 onMouseLeave={() => setHover(current => current?.id === node.id ? null : current)}
                 onFocus={() => setHover(node)}
-                onBlur={() => setHover(current => current?.id === node.id ? null : current)}
-                onClick={() => setLocked(node)}
-                onKeyDown={e => {
-                  if (e.key === "Escape") { e.preventDefault(); setLocked(null); e.currentTarget.blur(); }
-                }}>
+                onBlur={() => setHover(current => current?.id === node.id ? null : current)}>
                 <span className="lg-atlas-image__hotspot-core" aria-hidden="true" />
-                <span className={`lg-atlas-image__hotspot-label lg-atlas-image__hotspot-label--${locale} lg-atlas-image__hotspot-label--${node.labelPos ?? "below"}`}>{node.name[locale]}</span>
+                {/* One placement for all nine anchors: only ever one label is
+                    revealed at a time, so per-node placement bought nothing. */}
+                <span className={`lg-atlas-image__hotspot-label lg-atlas-image__hotspot-label--${locale} lg-atlas-image__hotspot-label--below`}>{node.name[locale]}</span>
               </button>
             );
           })}
         </div>
 
-        <div className={`lg-atlas-image__zones lg-atlas-image__zones--${locale}`} aria-hidden="true">
-          {ZONES.map((zone, index) => <span key={zone.en}
-            style={{ left: `${zone.x}%`, top: `${zone.y}%`, "--zone-label-order": index } as CSSProperties}>{zone[locale]}</span>)}
+        {/* Zone names are set into the terrain: they surface on the inspection
+            and zones scenes, and a lifted zone's own label rides up with the
+            slab while its siblings dim back. */}
+        <div className={`lg-atlas-image__zones lg-atlas-image__zones--${locale}`} aria-hidden="true"
+          data-stage={activeStage}>
+          {ZONES.map((zone, index) => {
+            const lifted = activeZone === zone.id;
+            const dimmed = activeZone !== null && !lifted;
+            const ar = locale === "ar";
+            const label = ar ? zone.ar : (lifted ? zone.en : zone.en.toUpperCase());
+            const zi = ZONE_INTELLIGENCE[zone.id];
+            return (
+              <span key={zone.id}
+                className={`${lifted ? "is-lifted" : ""}${dimmed ? " is-dimmed" : ""}`.trim() || undefined}
+                style={{ left: `${zone.x}%`, top: `${zone.y}%`, "--zone-label-order": index } as CSSProperties}>
+                <span className="lg-atlas-image__zone-name">{label}</span>
+                <span className="lg-atlas-image__zone-stats">
+                  <b>{fmtInspections(zi.inspections, ar)}</b>
+                  <span>{fmtCompliance(zi.compliance, ar)}</span>
+                  <span>{fmtAction(zi.action, ar)}</span>
+                </span>
+              </span>
+            );
+          })}
         </div>
 
       </div>
 
-      <SaudiAtlasDossier node={shown} locked={locked !== null} locale={locale}
-        strings={dossierStrings} onClose={closeLocked}
-        placement={shownPosition && shownPosition.x > 55 ? "left" : "right"} />
     </div>
   );
 }
