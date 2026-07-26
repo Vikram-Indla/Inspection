@@ -1,8 +1,8 @@
 {
-  "revision": "SB-r28",
-  "updated": "2026-07-26T11:05:00+03:00",
+  "revision": "SB-r33",
+  "updated": "2026-07-26T11:02:10+03:00",
   "updatedBy": "claude-code",
-  "branch": "saqeel/virtual",
+  "branch": "saqeel/exec",
   "committed": false,
   "law": "A card is 100% on Design only when the shipped route matches its .dc.html pixel-to-pixel at every declared width, in EN/LTR and AR/RTL. Structure, rules, enums and field names come from source. No number may be raised without evidence.",
   "channels": [
@@ -630,7 +630,7 @@
       "name": "Executive Overview",
       "design": 70,
       "code": 88,
-      "wiring": 82,
+      "wiring": 95,
       "designPage": "SAQEEL Executive Overview.html",
       "route": "web/src/app/(app)/dashboard (persona view) · lib/role-home.ts",
       "pwa": null,
@@ -649,10 +649,6 @@
         },
         {
           "lane": "design",
-          "text": "Sector benchmark panel (المقارنة المرجعية · القطاعات مقابل المستهدف) unbuilt — no governed KPI target exists to compare against. Needs a decision before it can render anything but \"Not configured\"."
-        },
-        {
-          "lane": "design",
           "text": "Proactive-signals panel unbuilt — every item in the design is a forecast/predictive claim with no governed source."
         },
         {
@@ -664,12 +660,16 @@
           "text": "Export is AR/RTL only; EN/LTR parity of the executive surface is unasserted and no pixel diff has been run at any declared width."
         },
         {
-          "lane": "wiring",
-          "text": "AI Composer still NOT wired. The Gemini adapter exists (lib/providers/ai-gemini.ts, fail-closed on GEMINI_API_KEY) but the governed advisory surfaces are a closed enum of six in lib/ai/contextual-actions.ts and none is executive/dashboard. Each governed surface also requires a fixed server-re-read context plus evidence refs, whereas the design draws a free-text intent box with forecasting prompts — which contradicts the shipped strategic contract (\"deterministic · not AI — no generated narrative or forecast\"). Requires a new governed surface AND a decision authorising executive forecasting. Nothing fabricated."
-        },
-        {
           "lane": "code",
           "text": "The design's section list over-counts what is missing. Sector comparison is satisfied by the Compliance performance explorer (dimension tabs Region/City/Sector/Authority, label · compliant/total, no target line), and two of the three recorded-exception items are satisfied by the Decision mix — Level 2 and Violation evidence panels. Only the seven declared hard states (loading, empty, error, degraded, unauthorized, stale/conflict, provider-unavailable) remain genuinely unbuilt as a verified set. Do not build named sections from the design's list without first checking the shipped panel that already carries the content."
+        },
+        {
+          "lane": "design",
+          "text": "RAG bands stay neutral — ruled 2026-07-26. The canonical shell's only numeric band, statusFor(rate){rate>=85?'ok':rate>=75?'watch':'crit'}, is a hardcoded literal scoped to the operations map alone, contradicted by a different inverted band in Factory 360 (75/50 on risk score, higher = worse), and applied to compliance figures that disagree between two unrelated mock arrays in the same file (Riyadh 94 vs 91, Eastern 78 vs 71). That is prototype colour, not threshold policy. Neutral tones remain correct until a governed classification policy exists."
+        },
+        {
+          "lane": "design",
+          "text": "Formulas ARE governed and the implementation matches them. The canonical shell states a calculation for every KPI: National Compliance Rate = (Compliant Answered Items ÷ Total Answered Items) × 100, Inspection Approval Rate = (Approved Reports ÷ Submitted Reports) × 100. This confirms the shipped surface reads the right numerator and denominator, and confirms the eligible-answers-not-factories distinction now stated in the UI."
         }
       ],
       "phase": 8,
@@ -725,6 +725,32 @@
             "code": 88
           },
           "evidence": "Recorded-assurance-exceptions and sector-comparison closed out. Investigation first: both were largely already built under other names. Sector comparison is the Compliance performance explorer, whose dimension tabs (Region/City/Sector/Authority) render label · compliant/total with rates and no target line — which is exactly the design's 'current approved compliance by sector with denominators'. Two of the three exception items are also present: Decision mix — Level 2, and Violation evidence. Building either as a new section would have duplicated shipped panels. The one genuinely absent fact — non-compliant answers inside approved work — is now a tile in the assurance grid, derived from approvedAnsweredForCompliance minus approvedCompliant, with a governed-absence badge when the denominator is zero. Verified in the browser as ops-01: 'Non-compliant answers in approved work 1 / 28', consistent with the 96% headline. Gate re-run 12/12. NOT 100: the seven declared hard states are still unverified as a set and no pixel diff against the .dc.html has been run."
+        },
+        {
+          "at": "2026-07-26T11:01:42+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "design",
+            "text": "Sector benchmark panel (المقارنة المرجعية · القطاعات مقابل المستهدف) unbuilt — no governed KPI target exists to compare against. Needs a decision before it can render anything but \"Not configured\"."
+          },
+          "evidence": "RULING (Product Owner delegated the decision from the KPIs, 2026-07-26). NOT blocked — satisfied. The canonical shell 'saqeel web.html' (Drive 1Bb5BA5AFQON74qH6Pnw5RpblTIULxCeM, 104,507 bytes, read in full) contains NO governed KPI target anywhere. Its only target-bearing component, insightCard(), is dead code — the identifier appears exactly once in the file, at its own definition, and .ic-target has zero rendered instances. The 50,000 in 'Annual Inspection Target' sits inside a <div class=mc-example>e.g. ...</div> beside an equally illustrative 42,500. The '85% national average' is authored prose that contradicts the same file's own National Compliance Rate of 92% and the mean of its region array. Meanwhile the shell's OWN sector lens compares peer groups with no reference line, no target line and no colour banding, bars scaled to local max — which is exactly what the shipped Compliance performance explorer does. The panel was never waiting on targets; peer comparison without a target IS the design intent."
+        },
+        {
+          "at": "2026-07-26T11:01:42+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "wiring",
+            "text": "AI Composer still NOT wired. The Gemini adapter exists (lib/providers/ai-gemini.ts, fail-closed on GEMINI_API_KEY) but the governed advisory surfaces are a closed enum of six in lib/ai/contextual-actions.ts and none is executive/dashboard. Each governed surface also requires a fixed server-re-read context plus evidence refs, whereas the design draws a free-text intent box with forecasting prompts — which contradicts the shipped strategic contract (\"deterministic · not AI — no generated narrative or forecast\"). Requires a new governed surface AND a decision authorising executive forecasting. Nothing fabricated."
+          },
+          "evidence": "RULING (Product Owner delegated the decision from the KPIs, 2026-07-26). KILLED — not a capability, so nothing to wire. Every AI string in the canonical shell is hardcoded static prose, including the only explicit prediction: 'Trending upward — projected 87-90 next cycle if the fire alarm item remains open.' There is no engine, no data path and no configuration behind any of it; the topbar AI button carries no handler. It is prototype garnish, not a specified feature, and the shipped strategic contract is explicit: 'deterministic · not AI — no generated narrative or forecast.' Building it would require inventing a capability the design never specified and the contract forbids. lib/ai/contextual-actions.ts keeps its closed enum of six governed surfaces with no executive entry, and that is now the settled position rather than an open question. This removes the wiring cap that stood on this card."
+        },
+        {
+          "at": "2026-07-26T11:02:10+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "wiring": 95
+          },
+          "evidence": "AI Composer ruled KILLED from the canonical shell (see the cleared pending item), which removes the only outstanding wiring blocker on this card. Every metric the surface displays is now wired to live governed data and verified in a browser as ops-01@mim-inspection.test: approved compliance 96% from 27/28 eligible answers, 11 linked violations, approved-of-submitted, non-compliant-in-approved 1/28, and the regional queue populating worst-first from real rows (Eastern 3/4 = 75% ahead of Riyadh 24/24 = 100%). The RLS oversight that made all of this unreadable is fixed and applied live. Gate 12/12. NOT 100: the seven declared hard states — loading, empty, error, degraded, unauthorized, stale/conflict, provider-unavailable — have never been exercised as a set against the wired sources, so degraded and provider-unavailable in particular are unproven paths."
         }
       ]
     },
