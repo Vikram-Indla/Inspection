@@ -27,10 +27,14 @@ final class WorkspaceStore: ObservableObject {
     @Published private(set) var isLoading = false
     @Published var errorMessage: String?
     @Published private(set) var progress: (answered: Int, total: Int) = (0, 0)
+    /// Number of evidence items queued per checklist-item UUID string. Task 9.
+    @Published private(set) var evidenceCounts: [String: Int] = [:]
 
     // MARK: - Private state
 
     private let inspectionId: String
+    /// Captured from `WorkspaceData.head.visitId` on load. Forwarded into EvidenceOp. Task 9.
+    private var visitId: String?
     private let repository: any WorkspaceRepository
     private let store: OfflineStore
     private let engineFactory: EngineFactory
@@ -192,10 +196,38 @@ final class WorkspaceStore: ObservableObject {
         await triggerSync()
     }
 
+    // MARK: - attachPhoto (Task 9)
+
+    /// Builds an `EvidenceOp` from JPEG image data, enqueues it into the offline outbox,
+    /// increments the per-item evidence count, and triggers a sync pass.
+    ///
+    /// - Parameters:
+    ///   - itemId: The checklist item's UUID string (`item.id.uuidString`).
+    ///   - imageData: Raw JPEG bytes.
+    func attachPhoto(itemId: String, imageData: Data) async {
+        let now = isoNow()
+        let op = EvidenceCapture.makeEvidenceOp(
+            inspectionId: inspectionId,
+            visitId: visitId,
+            itemId: itemId,
+            imageData: imageData,
+            capturedAt: now
+        )
+        try? store.enqueue(.evidence(op))
+
+        // Increment the per-item queued count so the UI badge updates.
+        evidenceCounts[itemId, default: 0] += 1
+
+        await triggerSync()
+    }
+
     // MARK: - Private helpers
 
     private func applyWorkspaceData(_ data: WorkspaceData) {
         allItems = data.items
+
+        // Capture visitId for EvidenceOp. Task 9.
+        visitId = data.head.visitId.uuidString
 
         // Record server baselines for conflict detection
         serverBaselines = data.responses.mapValues { $0.baselineUpdatedAt }

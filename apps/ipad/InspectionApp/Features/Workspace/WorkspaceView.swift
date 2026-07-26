@@ -131,7 +131,8 @@ struct WorkspaceView: View {
                     answer: store.answers[item.id.uuidString],
                     onAnswer: { patch in
                         await store.answer(itemId: item.id.uuidString, patch: patch)
-                    }
+                    },
+                    store: store
                 )
             }
         }

@@ -1,6 +1,7 @@
 // ChecklistItemView.swift
 // Checklist item response control for the inspection workspace.
 // Task 8 — Phase 2/3 "Inspection Workspace + Offline"
+// Task 9 — Photo evidence capture wired via EvidenceCaptureButton.
 
 import SwiftUI
 import DesignSystem
@@ -36,7 +37,7 @@ enum ResponseControlKind: Equatable {
 /// - Shows item code (monospaced), title, optional "required" marker.
 /// - Collapsible guidance (guidanceEn).
 /// - Response control: segmented choice / text field / date picker, bound through store.answer().
-/// - Evidence affordance stub: Task 9 wires real capture.
+/// - Evidence capture: Task 9 — `EvidenceCaptureButton` wired into `store.attachPhoto`.
 struct ChecklistItemView: View {
 
     let item: InspectionItemDef
@@ -44,6 +45,10 @@ struct ChecklistItemView: View {
 
     /// Called whenever the user changes the response value.
     let onAnswer: (Answer) async -> Void
+
+    /// WorkspaceStore injected so EvidenceCaptureButton can call attachPhoto
+    /// and read evidenceCounts. Task 9.
+    @ObservedObject var store: WorkspaceStore
 
     @EnvironmentObject private var theme: SaqeelTheme
     @State private var isGuidanceExpanded = false
@@ -114,21 +119,8 @@ struct ChecklistItemView: View {
             // MARK: Response control
             responseControl
 
-            // MARK: Evidence affordance — Task 9
-            // TODO: Task 9 wires real photo/evidence capture here.
-            Button {
-                // Task 9: implement evidence capture
-            } label: {
-                HStack(spacing: SaqeelSpacing.xs) {
-                    Image(systemName: "camera")
-                        .font(.system(size: 14))
-                    Text("Add Evidence")
-                        .font(SaqeelTypography.caption)
-                }
-                .foregroundColor(theme.colors.textSecondary)
-            }
-            .buttonStyle(.plain)
-            .disabled(true) // Task 9: enable when implemented
+            // MARK: Evidence capture — Task 9
+            EvidenceCaptureButton(itemId: item.id.uuidString, store: store)
         }
         .onAppear {
             // Initialise local state from existing answer (once)
