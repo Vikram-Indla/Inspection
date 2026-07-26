@@ -1,6 +1,7 @@
 /* SAQEEL Field Trusted Devices — layout ported from
-   SAQEEL PWA-Field Trusted Devices.dc.html (td-wrap / td-card / td-icn) with the
-   scope callout from SAQEEL PWA-Field Biometric.dc.html.
+   SAQEEL PWA-Field Trusted Devices.dc.html (td-wrap / td-card / td-icn) and the
+   Device Enrollment column of SAQEEL PWA-Field Biometric.dc.html (44px icon
+   tile, switch row, accent-edged scope callout).
    Consumes the SAQEEL DS tokens linked by (app)/field/layout.tsx. Tokens only —
    no hex, no rgb, no bare colors. Logical properties throughout so AR/RTL
    mirrors without a separate rule. */
@@ -21,6 +22,7 @@
 }
 .intro { margin: 0; }
 
+/* td-card */
 .card {
   border: 1px solid var(--border-subtle);
   border-radius: 14px;
@@ -31,6 +33,7 @@
   align-items: flex-start;
   gap: 14px;
 }
+/* td-icn */
 .icn {
   width: 42px;
   height: 42px;
@@ -47,27 +50,70 @@
 .nameText { font-weight: 600; font-size: 14.5px; }
 .meta { margin-block-start: 6px; }
 .id { margin-block-start: 2px; overflow-wrap: anywhere; }
+/* Design badges sit at 18px inside a card row, below the DS default of 20px. */
+.badgeSm { height: 18px; }
+
+/* Empty register — same card shell, no fabricated device inside it. */
+.empty { align-items: center; }
 
 /* Reason lines — every disabled affordance states why, immediately below it. */
 .reason { margin-block-start: 8px; margin-block-end: 0; }
+/* Same line when it is the first thing in the card body. */
+.reasonFirst { margin: 0; }
 .reasonWarn { color: var(--status-warning-text); }
 
-/* Scope callout, ported from the Biometric design's bordered panel. Nested row
-   radius is 12px per the PWA geometry. */
+/* Slot 4 / 10 — a block button plus the reason line that belongs to it. The
+   design has no reason line; this route never renders a disabled control
+   without saying why, so the pair is kept together as one unit inside the
+   wrap's 16px gap. */
+.action { display: flex; flex-direction: column; }
+
+/* Slot 6 — the "Device Enrollment" heading block from Biometric.dc.html:
+   `h1` 20px/700 with a 6px caption under it. Rendered as an h2 because the
+   route's header already owns the page h1. */
+.section { margin-block-start: 4px; }
+.sectionTitle { font-size: 20px; font-weight: 700; margin: 0; line-height: 1.25; }
+.sectionDesc { margin: 6px 0 0; }
+
+/* Slot 7 — the "Trusted Device" summary panel: `.t-label` heading with 10px
+   below it, over a `dl.desc` at the design's auto/1fr, 8px/12px, 13.5px. */
+.summaryLabel { margin-block-end: 10px; }
+.summary { grid-template-columns: auto 1fr; gap: 8px 12px; font-size: 13.5px; }
+.summary dd { display: flex; align-items: center; }
+
+/* Device Enrollment panel — Biometric.dc.html geometry: 16px 18px panel,
+   44px/12px icon tile, 12px row gap, switch on the trailing edge. */
+.bioPanel { padding: 16px 18px; }
+.bioRow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.bioIcn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.bioIcnMuted { background: var(--surface-sunken); color: var(--text-secondary); }
+.bioText { flex: 1; min-width: 0; }
+.bioTitle { font-weight: 600; font-size: 14px; }
+/* Field touch target floor applies to the switch's hit area, not the track. */
+.bioSwitch { flex: none; min-height: 50px; padding-inline: var(--space-1); }
+.bioSwitch input:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Scope callout — Biometric.dc.html renders it as a `.panel` with a 3px
+   inline-start accent edge, so it mirrors correctly in AR/RTL. */
 .callout {
+  padding: 14px 16px;
   display: flex;
   gap: 10px;
   align-items: flex-start;
-  margin-block-start: 12px;
-  padding: 14px 16px;
-  border-radius: 12px;
-  background: var(--surface-sunken);
   border-inline-start: 3px solid var(--action-primary);
 }
 .calloutIcon { width: 17px; height: 17px; flex: none; margin-block-start: 1px; color: var(--action-primary); }
 .calloutText { font-size: 12.5px; color: var(--text-secondary); }
 
-.actions { margin-block-start: 12px; display: flex; }
 /* Field touch target floor. */
 .touch { min-height: 50px; }
 
@@ -85,6 +131,14 @@
 @media (max-width: 600px) {
   .wrap { padding-inline: 14px; }
   .card { padding: 14px 15px; gap: 12px; }
+  .bioPanel { padding: 14px 15px; }
   .callout { padding: 12px 14px; }
-  .actions > .touch { width: 100%; }
+}
+
+/* At 390px the summary's `auto 1fr` term column starves the value column —
+   "Last authentication" alone eats most of the row. Stack it instead. */
+@media (max-width: 430px) {
+  .summary { grid-template-columns: 1fr; gap: 2px 0; }
+  .summary dd { margin-block-end: 6px; }
+  .summary dd:last-child { margin-block-end: 0; }
 }

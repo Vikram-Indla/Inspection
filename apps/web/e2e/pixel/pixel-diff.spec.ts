@@ -40,7 +40,17 @@ const CLEAN_FACTORY_IDS = new Set([
 ]);
 type PixelStorageState = Awaited<ReturnType<BrowserContext["storageState"]>>;
 
-test.setTimeout(30 * 60_000);
+// This harness measures the live dev server, which compiles a route on its
+// first request. The previous 5s navigation budget expired during that compile
+// and was recorded as an unmeasurable route, so most cards were nulled by the
+// harness's own impatience rather than by anything about the shipped page.
+// A longer budget changes nothing that is compared; it only stops the clock
+// from deciding the result.
+const NAVIGATION_BUDGET_MS = 90_000;
+const DISCOVERY_BUDGET_MS = 30_000;
+const SETTLE_MS = 1_500;
+
+test.setTimeout(90 * 60_000);
 
 function slug(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -48,6 +58,7 @@ function slug(value: string): string {
 
 async function signIn(page: Page): Promise<void> {
   const credentials = loadPixelCredentials(WEB_ROOT);
+  page.setDefaultNavigationTimeout(NAVIGATION_BUDGET_MS);
   await page.goto("/login", { waitUntil: "domcontentloaded" });
   await waitForCredentialsForm(page);
   // The card's inputs carry no id attributes, so go through login-helper's
@@ -55,7 +66,13 @@ async function signIn(page: Page): Promise<void> {
   await identifierField(page).fill(credentials.email);
   await passwordField(page).fill(credentials.password);
   await submitCredentials(page);
-  await page.waitForURL(url => url.pathname.startsWith("/field"), { timeout: 40_000 });
+  // /launch keeps background channels open, so the page "load" event can lag
+  // well past the redirect. Waiting for load made a successful sign-in look
+  // like an auth failure and nulled all 24 cards. Commit is the real signal.
+  await page.waitForURL(url => url.pathname.startsWith("/field"), {
+    timeout: NAVIGATION_BUDGET_MS,
+    waitUntil: "commit",
+  });
   await expect(page.locator("body")).not.toContainText("ERR-AUTH");
 }
 
@@ -68,18 +85,57 @@ async function authenticatedState(browser: Browser): Promise<PixelStorageState> 
   return state;
 }
 
+// These lists are data-driven and stream in after hydration. A fixed 500ms
+// settle raced them, so an empty list and a slow list were indistinguishable
+// and both reported "no link". Poll to a deadline instead: a link that exists
+// is found, and a list that is genuinely empty still fails after the deadline.
+async function findLink(
+  page: Page,
+  hrefPattern: string,
+  excludePattern: string | undefined,
+  context: string,
+): Promise<string> {
+  const pattern = new RegExp(hrefPattern);
+  const exclude = excludePattern ? new RegExp(excludePattern) : null;
+  const deadline = Date.now() + DISCOVERY_BUDGET_MS;
+  let seen = 0;
+  for (;;) {
+    const candidates = await page.locator("a[href]").evaluateAll(anchors =>
+      anchors.map(anchor => anchor.getAttribute("href")).filter((href): href is string => Boolean(href)),
+    );
+    seen = candidates.length;
+    const origin = new URL(page.url()).origin;
+    const match = candidates.find(href => {
+      let pathname: string;
+      try {
+        pathname = new URL(href, origin).pathname;
+      } catch {
+        return false;
+      }
+      if (exclude?.test(pathname)) return false;
+      return pattern.test(pathname);
+    });
+    if (match) return new URL(match, page.url()).pathname;
+    if (Date.now() >= deadline) {
+      throw new Error(
+        `No link matching ${hrefPattern} ${context} after ${DISCOVERY_BUDGET_MS}ms (${seen} anchors present)`,
+      );
+    }
+    await page.waitForTimeout(1_000);
+  }
+}
+
 async function resolveTarget(page: Page, target: RouteTarget): Promise<string> {
   if (target.kind === "static") return target.path;
   await page.goto(target.seedPath, { waitUntil: "domcontentloaded" });
-  await page.waitForLoadState("networkidle").catch(() => undefined);
-  const candidates = await page.locator("a[href]").evaluateAll(anchors =>
-    anchors.map(anchor => anchor.getAttribute("href")).filter((href): href is string => Boolean(href)),
-  );
-  const pattern = new RegExp(target.hrefPattern);
-  const origin = new URL(page.url()).origin;
-  const match = candidates.find(href => pattern.test(new URL(href, origin).pathname));
-  if (!match) throw new Error(`No link matching ${target.hrefPattern} from ${target.seedPath}`);
-  return new URL(match, page.url()).pathname;
+  let context = `from ${target.seedPath}`;
+  for (const hop of target.via ?? []) {
+    const hopPath = await findLink(page, hop.hrefPattern, hop.excludePattern, context);
+    await page.goto(hopPath, { waitUntil: "domcontentloaded" });
+    context = `from ${hopPath}`;
+  }
+  const found = await findLink(page, target.hrefPattern, target.excludePattern, context);
+  return target.suffix ? `${found}${target.suffix}` : found;
 }
 
 async function assertCleanFactories(page: Page): Promise<void> {
@@ -106,6 +162,7 @@ async function renderVariant(
   prototypeOrigin: string,
   card: ManifestCard,
   routePath: string,
+  target: RouteTarget,
   designPage: string,
   width: number,
   locale: string,
@@ -113,26 +170,38 @@ async function renderVariant(
   artifactDirectory: string,
 ): Promise<VariantResult> {
   const context = await browser.newContext({
-    storageState,
+    // The sign-in screen only exists for a signed-out visitor; an
+    // authenticated session is bounced straight off it.
+    storageState: target.unauthenticated ? undefined : storageState,
     viewport: { width, height: 1024 },
     reducedMotion: "reduce",
   });
   const page = await context.newPage();
+  page.setDefaultNavigationTimeout(NAVIGATION_BUDGET_MS);
   const browserErrors: string[] = [];
   page.on("pageerror", error => browserErrors.push(error.message));
   try {
     await page.goto(routePath, { waitUntil: "domcontentloaded" });
     await setLocale(context, page, locale);
     await page.reload({ waitUntil: "domcontentloaded" });
-    await page.waitForLoadState("networkidle").catch(() => undefined);
-    await expect(page.locator("html")).toHaveAttribute("lang", locale);
-    await expect(page.locator("html")).toHaveAttribute("dir", direction);
-    if (!new URL(page.url()).pathname.startsWith("/field") &&
-        !new URL(page.url()).pathname.startsWith("/login")) {
-      throw new Error(`Route redirected outside field channel to ${new URL(page.url()).pathname}`);
+    await page.waitForTimeout(SETTLE_MS);
+    await expect(page.locator("html")).toHaveAttribute("lang", locale, { timeout: 10_000 });
+    await expect(page.locator("html")).toHaveAttribute("dir", direction, { timeout: 10_000 });
+    const landedPath = new URL(page.url()).pathname;
+    const declaredRedirect = target.allowRedirectTo
+      ? new RegExp(target.allowRedirectTo).test(landedPath)
+      : false;
+    if (!landedPath.startsWith("/field") && !landedPath.startsWith("/login") && !declaredRedirect) {
+      throw new Error(`Route redirected outside field channel to ${landedPath}`);
     }
     await assertCleanFactories(page);
-    if (browserErrors.length) throw new Error(`Shipped route page errors: ${browserErrors.length}`);
+    // Report the error itself, not just how many there were: a count cannot be
+    // acted on, and the first message names the defect.
+    if (browserErrors.length) {
+      throw new Error(
+        `Shipped route page errors (${browserErrors.length}): ${browserErrors[0].split("\n").join(" ").slice(0, 300)}`,
+      );
+    }
     const shipped = await captureGeometry(page, locale);
     const fileStem = `${card.cardId}-${slug(basename(designPage, ".dc.html"))}-${slug(routePath)}-${width}-${locale}`;
     const shippedPath = join(artifactDirectory, `${fileStem}-shipped.png`);
@@ -146,14 +215,20 @@ async function renderVariant(
     const renderedRoot = page.locator("#dc-root > .sc-host [dir]").first();
     let renderedDirection = await renderedRoot.getAttribute("dir");
     if (renderedDirection !== direction) {
-      const languageControl = page.getByRole("button").filter({
-        hasText: /^(?:AR|EN|العربية|English)$/i,
-      }).first();
+      // The prototypes render a segmented control as <button>EN</button>
+      // <button>AR</button>. Matching either label and taking .first() clicked
+      // EN while asking for Arabic, so every AR variant on an EN-first
+      // prototype failed as "remained ltr" and nulled its whole card. Select
+      // the control for the locale actually being measured.
+      const wanted = locale === "ar"
+        ? /^\s*(?:AR|العربية)\s*$/i
+        : /^\s*(?:EN|English)\s*$/i;
+      const languageControl = page.getByRole("button").filter({ hasText: wanted }).first();
       if (!await languageControl.count()) {
-        throw new Error(`Design prototype has no locale control for ${locale}/${direction}`);
+        throw new Error(`Design prototype has no ${locale} locale control`);
       }
       await languageControl.click();
-      await expect(renderedRoot).toHaveAttribute("dir", direction);
+      await expect(renderedRoot).toHaveAttribute("dir", direction, { timeout: 10_000 });
       renderedDirection = await renderedRoot.getAttribute("dir");
     }
     if (renderedDirection !== direction) {
@@ -321,11 +396,15 @@ test("BS-1 measures PWA structural parity and dry-runs spine updates", async ({ 
       }
       const discoveryContext = await browser.newContext({ storageState });
       const discoveryPage = await discoveryContext.newPage();
+      discoveryPage.setDefaultNavigationTimeout(NAVIGATION_BUDGET_MS);
+      const resolvedTargets: { path: string; target: RouteTarget }[] = [];
       const routePaths: string[] = [];
       const discoveryErrors: string[] = [];
       for (const target of card.routeTargets) {
         try {
-          routePaths.push(await resolveTarget(discoveryPage, target));
+          const path = await resolveTarget(discoveryPage, target);
+          resolvedTargets.push({ path, target });
+          routePaths.push(path);
         } catch (error) {
           discoveryErrors.push(
             `${target.label}: ${error instanceof Error ? error.message : String(error)}`,
@@ -352,7 +431,10 @@ test("BS-1 measures PWA structural parity and dry-runs spine updates", async ({ 
       }
 
       const variants: VariantResult[] = [];
-      for (const routePath of [...new Set(routePaths)]) {
+      const uniqueTargets = resolvedTargets.filter((entry, index) =>
+        resolvedTargets.findIndex(other => other.path === entry.path) === index,
+      );
+      for (const { path: routePath, target } of uniqueTargets) {
         for (const designPage of card.designPages) {
           for (const width of PIXEL_WIDTHS) {
             for (const { locale, direction } of PIXEL_LOCALES) {
@@ -362,6 +444,7 @@ test("BS-1 measures PWA structural parity and dry-runs spine updates", async ({ 
                 prototypeServer.origin,
                 card,
                 routePath,
+                target,
                 designPage,
                 width,
                 locale,

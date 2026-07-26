@@ -239,7 +239,9 @@
 <script type="text/x-dc" data-dc-script>
 
 class Component extends DCLogic {
-  state = { theme: "dark", lang: "en", pin: 1, synced: true, briefRange: "daily" };
+  // Seeded from ?lang= so the prototype opens directly in the requested
+  // direction instead of depending on a language control being clicked.
+  state = { theme: "dark", lang: DC_INITIAL_LOCALE(), pin: 1, synced: true, briefRange: "daily" };
 
   renderVals() {
     const lang = this.state.lang;
@@ -343,6 +345,18 @@ class Component extends DCLogic {
       selectPin: () => this.setState({ pin: 1 }),
       syncNow: () => this.setState({ synced: true }),
     };
+  }
+}
+
+// Hoisted so the class field initialiser above can call it. Returns "ar" only
+// when the URL explicitly asks for Arabic; every other input stays "en".
+function DC_INITIAL_LOCALE() {
+  try {
+    var q = new URLSearchParams(window.location.search);
+    var v = (q.get("lang") || q.get("locale") || "").toLowerCase();
+    return v === "ar" ? "ar" : "en";
+  } catch (e) {
+    return "en";
   }
 }
 

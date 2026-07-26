@@ -1,0 +1,21 @@
+-- ============================================================================
+-- Visit Report · Results (Step 3 of 4) — evidence link type.
+--
+-- DESIGN OF RECORD: designs/pwa/pwa/SAQEEL PWA-Field Visit Results.dc.html,
+-- card 2 (`t.sampleDetails`), which draws a "Sample photo" → "Take photo"
+-- control on every sample row.
+--
+-- The photo itself is NOT a new storage mechanism: it is an ordinary row in the
+-- existing `evidence` table, which already carries the append-only
+-- audit_row_change trigger and the guard_submitted_inspection immutability
+-- guard. Only the discriminator is missing, so this migration adds exactly one
+-- value to the existing `evidence_link` enum and nothing else.
+--
+-- Kept in its own migration file because `alter type ... add value` cannot be
+-- used in the same transaction that adds it; the referencing tables land in
+-- 20260726042050_visit_result_reports.sql.
+--
+-- Additive only. No column, table, policy or default is changed here.
+-- ============================================================================
+
+alter type evidence_link add value if not exists 'visit_result_sample';

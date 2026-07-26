@@ -6,21 +6,38 @@ import { formatDateTime } from "@/lib/dates";
 import {
   assignmentNoticeKind,
   fieldNotificationCacheKey,
-  fieldNotificationHref,
   parseFieldNotificationCache,
+  type AssignmentNoticeKind,
   type FieldNotificationRow,
 } from "@/lib/field-notifications";
 import { isNotificationUnread, notificationReadPatch } from "@/lib/notification-read";
 import { supabaseBrowser } from "@/lib/supabase";
+import { NOTIFICATION_ICONS, notificationIcon } from "./notification-meta";
 import styles from "./notifications.module.css";
 
+// TASK-IPAD-NOTIFICATIONS-ASSIGNMENT-CHANGES-001
+//
+// SAQEEL PWA-Field Notifications.dc.html, isList branch. The design renders
+// three sections and nothing else: the two-chip filter segment, the row list
+// (icon tile · title + New badge · message · date line), and the empty state.
+// This component renders those three, in that order.
+//
+// The design's row is a <button onClick> because its mock has no router. Here
+// the row is a real <a href> stretched over the row: the same whole-row
+// affordance, but middle-click, open-in-new-tab and assistive navigation work.
+//
+// The only control the design does not define is the read acknowledgement,
+// which is governed behaviour (recipient-scoped, first-receipt-only, offline
+// honest) and therefore kept — inside the design's badge slot, not in an extra
+// action band. The design's mock marks read in local state on open; here the
+// detail route records the receipt server-side on open, so both paths remain.
+
 type Strings = {
-  all: string; unread: string; newBadge: string; empty: string; emptyUnread: string;
-  offlineCached: string; offlineEmpty: string; live: string; refreshFailed: string;
+  all: string; unread: string; newBadge: string; empty: string;
+  offlineCached: string; offlineEmpty: string; refreshFailed: string;
   reconnecting: string; markRead: string; acknowledgementOffline: string;
-  acknowledgementFailed: string; open: string;
-  kinds: Record<ReturnType<typeof assignmentNoticeKind>, string>;
-  eventFallback: string;
+  acknowledgementFailed: string;
+  kinds: Record<AssignmentNoticeKind, string>;
 };
 
 type Props = {
@@ -32,20 +49,12 @@ type Props = {
   strings: Strings;
 };
 
-const ICONS = {
-  assign: { path: "M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11", bg: "var(--status-compliant-soft)", color: "var(--status-compliant-text)" },
-  return: { path: "M9 14l-4-4 4-4M5 10h11a4 4 0 0 1 0 8h-1", bg: "var(--status-warning-soft)", color: "var(--status-warning-text)" },
-  sync: { path: "M4 4v5h5M20 20v-5h-5M4.5 9a8 8 0 0 1 14.1-3.5M19.5 15a8 8 0 0 1-14.1 3.5", bg: "var(--surface-sunken)", color: "var(--text-secondary)" },
-  calendar: { path: "M8 2v4M16 2v4M3 9h18M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z", bg: "var(--accent-soft)", color: "var(--accent-text)" },
-  cancel: { path: "M12 9v4M12 16.5h.01M10.3 4.5 2.7 18a1.5 1.5 0 0 0 1.3 2.2h16a1.5 1.5 0 0 0 1.3-2.2L13.7 4.5a1.5 1.5 0 0 0-2.6 0z", bg: "var(--status-critical-soft)", color: "var(--status-critical-text)" },
-} as const;
-
-function iconFor(kind: ReturnType<typeof assignmentNoticeKind>) {
-  if (kind === "assigned" || kind === "reassigned") return ICONS.assign;
-  if (kind === "released") return ICONS.return;
-  if (kind === "cancelled" || kind === "expired") return ICONS.cancel;
-  if (kind === "rescheduled") return ICONS.calendar;
-  return ICONS.sync;
+// One glyph vocabulary for the list and the detail (the design has a single
+// iconMeta()). `released` is the one kind the event key alone cannot express,
+// because it lives in the assignment payload rather than in event_key.
+function iconFor(row: FieldNotificationRow, kind: AssignmentNoticeKind) {
+  if (kind === "released") return NOTIFICATION_ICONS.return;
+  return notificationIcon(row.event_key);
 }
 
 async function loadLive(userId: string) {
@@ -79,7 +88,6 @@ export default function NotificationAttentionCenter(props: Props) {
   const [online, setOnline] = useState(true);
   const [cachedAt, setCachedAt] = useState<string | null>(null);
   const [message, setMessage] = useState("");
-  const [refreshing, setRefreshing] = useState(false);
   const storageKey = fieldNotificationCacheKey(props.userId);
 
   const saveCache = useCallback((nextRows: FieldNotificationRow[], nextNames: Record<string, string>) => {
@@ -96,7 +104,6 @@ export default function NotificationAttentionCenter(props: Props) {
 
   const refresh = useCallback(async () => {
     if (!navigator.onLine) return;
-    setRefreshing(true);
     try {
       const live = await loadLive(props.userId);
       setRows(live.rows);
@@ -105,8 +112,6 @@ export default function NotificationAttentionCenter(props: Props) {
       setMessage("");
     } catch {
       setMessage(props.strings.refreshFailed);
-    } finally {
-      setRefreshing(false);
     }
   }, [props.userId, props.strings.refreshFailed, saveCache]);
 
@@ -171,64 +176,83 @@ export default function NotificationAttentionCenter(props: Props) {
   );
   const unreadCount = rows.filter(isNotificationUnread).length;
 
+  // The design has no permanent connectivity band. The stale-snapshot notice is
+  // contract behaviour (never present cached data as live), so it appears only
+  // when the snapshot really is stale.
+  const offlineNotice = online
+    ? null
+    : cachedAt
+      ? props.strings.offlineCached.replace("{time}", formatDateTime(cachedAt, props.locale))
+      : props.strings.offlineEmpty;
+
   return (
     <>
-      <div className={styles.seg} role="tablist" aria-label={props.strings.eventFallback}>
-        <Link role="tab" aria-selected={props.initialFilter === "all"} aria-pressed={props.initialFilter === "all"}
-          href="/field/notifications" prefetch={false}>{props.strings.all}</Link>
-        <Link role="tab" aria-selected={props.initialFilter === "unread"} aria-pressed={props.initialFilter === "unread"}
-          href="/field/notifications?filter=unread" prefetch={false}>{props.strings.unread} ({unreadCount})</Link>
+      {/* 2 — design .fn-seg: exactly two chips, All and Unread (n). */}
+      <div className={styles.seg}>
+        <Link href="/field/notifications" prefetch={false}
+          aria-current={props.initialFilter === "all" ? "page" : undefined}>
+          {props.strings.all}
+        </Link>
+        <Link href="/field/notifications?filter=unread" prefetch={false}
+          aria-current={props.initialFilter === "unread" ? "page" : undefined}>
+          {props.strings.unread} ({unreadCount})
+        </Link>
       </div>
 
-      <div className={online ? styles.liveState : styles.offlineState} role="status">
-        {online
-          ? (refreshing ? props.strings.reconnecting : props.strings.live)
-          : (cachedAt
-              ? props.strings.offlineCached.replace("{time}", formatDateTime(cachedAt, props.locale))
-              : props.strings.offlineEmpty)}
-      </div>
-      {message && <div className="alert alert-warning" role="alert">{message}</div>}
-
+      {/* 3 — design .fn-wrap */}
       <div className={styles.wrap} style={{ flex: 1 }}>
-        {visibleRows.length === 0 ? (
-          <div className={styles.empty} role="status">
-            {props.initialFilter === "unread" ? props.strings.emptyUnread : props.strings.empty}
+        {offlineNotice && (
+          <div className={styles.notice}>
+            <div className="alert alert-warning" role="status">{offlineNotice}</div>
           </div>
+        )}
+        {message && (
+          <div className={styles.notice}>
+            <div className="alert alert-warning" role="alert">{message}</div>
+          </div>
+        )}
+
+        {visibleRows.length === 0 ? (
+          /* 4 — design empty state. One string, as the design writes it: it
+             already reads "in this view", so it covers both filters. */
+          <div className={styles.empty} role="status">{props.strings.empty}</div>
         ) : visibleRows.map(row => {
           const kind = assignmentNoticeKind(row);
-          const icon = iconFor(kind);
+          const icon = iconFor(row, kind);
           const visitId = typeof row.payload?.visit_id === "string" ? row.payload.visit_id : null;
+          // The design's message line has no column here. The nearest true
+          // value is the visit's factory or the stored reason/decision; when
+          // none exists the line is omitted rather than filled in.
           const detail = visitId && visitNames[visitId]
             ? visitNames[visitId]
             : [row.payload?.reason, row.payload?.decision, row.payload?.factory]
                 .find(value => typeof value === "string" && value) as string | undefined;
           const unread = isNotificationUnread(row);
+          const detailHref = `/field/notifications/${encodeURIComponent(row.id)}`;
           return (
             <article key={row.id} className={`${styles.row} ${unread ? styles.rowUnread : ""}`}>
-              <div className={styles.rowHead}>
-                <div className={styles.rowIdentity}>
-                  <span className={styles.icn} style={{ background: icon.bg, color: icon.color }} aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-                      <path d={icon.path} />
-                    </svg>
-                  </span>
-                  <div>
-                    <strong>{props.strings.kinds[kind] || row.event_key.replace(/_/g, " ")}</strong>
-                    {detail && <div className={`t-caption ${styles.clamp2}`}>{detail}</div>}
+              <div className={styles.rowInner}>
+                <span className={styles.icn} style={{ background: icon.bg, color: icon.color }} aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                    <path d={icon.path} />
+                  </svg>
+                </span>
+                <div className={styles.rowBody}>
+                  <div className={styles.rowTitle}>
+                    <Link className={styles.titleLink} href={detailHref} prefetch={false}>
+                      {props.strings.kinds[kind]}
+                    </Link>
+                    {unread && <span className={`badge badge-warning ${styles.newBadge}`}>{props.strings.newBadge}</span>}
+                    {unread && (
+                      <button className={`btn btn-ghost btn-sm ${styles.markRead}`} type="button"
+                        onClick={() => void acknowledge(row)}>
+                        {props.strings.markRead}
+                      </button>
+                    )}
                   </div>
+                  {detail && <div className={`t-caption ${styles.clamp2}`}>{detail}</div>}
+                  <div className={`t-caption ${styles.dateLine}`}>{formatDateTime(row.created_at, props.locale)}</div>
                 </div>
-                {unread && <span className="badge">{props.strings.newBadge}</span>}
-              </div>
-              <div className="t-caption">{formatDateTime(row.created_at, props.locale)}</div>
-              <div className={styles.actions}>
-                <Link className="btn btn-secondary btn-sm" href={fieldNotificationHref(row)} prefetch={false}>
-                  {props.strings.open}
-                </Link>
-                {unread && (
-                  <button className="btn btn-ghost btn-sm" type="button" onClick={() => void acknowledge(row)}>
-                    {props.strings.markRead}
-                  </button>
-                )}
               </div>
             </article>
           );

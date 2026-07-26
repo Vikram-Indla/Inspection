@@ -1,0 +1,237 @@
+/* Visit Report · Results (Step 3 of 4).
+   Geometry is taken verbatim from designs/pwa/pwa/SAQEEL PWA-Field Visit
+   Results.dc.html — .vr-wrap / .vr-card / .vr-h / .fld / .vr-grid2 / .vr-opt /
+   .vr-ind / .vr-radios and the two inline row styles. Colours are SAQEEL DS
+   tokens only; the design's one bare #fff (the gate checkmark stroke) resolves
+   to --text-on-action here. */
+
+/* .vr-wrap */
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  inline-size: 100%;
+  max-inline-size: 1040px;
+  margin: 0 auto;
+  padding: 20px 18px 120px;
+}
+@media (max-width: 560px) {
+  .wrap { padding: 14px 12px 120px; }
+}
+
+/* .vr-card */
+.card {
+  padding: 18px 19px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  background: var(--surface-primary);
+  box-shadow: var(--shadow-card);
+}
+
+/* .vr-h */
+.cardTitle {
+  margin: 0 0 14px;
+  padding-block-end: 10px;
+  border-block-end: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* The Specialty card stacks its gate and its 2-up grid at gap:14px. */
+.cardStack { display: flex; flex-direction: column; gap: 14px; }
+
+/* gate prompt: 13px / --text-secondary / margin-block-end 8px */
+.gatePrompt {
+  margin: 0 0 8px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+/* .vr-radios */
+.radios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-inline-size: 560px;
+}
+
+/* .vr-opt */
+.opt {
+  display: flex;
+  flex: 1 1 120px;
+  align-items: center;
+  gap: 9px;
+  min-block-size: 50px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border-input);
+  border-radius: var(--radius-md);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  text-align: start;
+}
+.opt[aria-pressed="true"] {
+  border-color: var(--action-primary);
+  background: var(--accent-soft);
+}
+.opt:disabled { cursor: not-allowed; opacity: 0.6; }
+
+/* .vr-ind */
+.ind {
+  display: grid;
+  flex: none;
+  inline-size: 18px;
+  block-size: 18px;
+  place-items: center;
+  border: 2px solid var(--border-strong);
+  border-radius: 50%;
+}
+.opt[aria-pressed="true"] .ind {
+  border-color: var(--action-primary);
+  background: var(--action-primary);
+}
+.ind svg {
+  inline-size: 11px;
+  block-size: 11px;
+  fill: none;
+  stroke: var(--text-on-action);
+  stroke-width: 3;
+}
+
+/* .vr-grid2 */
+.grid2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+@media (max-width: 700px) {
+  .grid2 { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* .fld */
+.fld {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-inline-size: 0;
+}
+.fld > span:first-child {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+/* .req */
+.req { color: var(--status-critical-text); }
+
+/* Repeater rows — the design's inline nested-row style. */
+.repeater {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-block-start: 14px;
+}
+.row {
+  padding: 14px 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  background: var(--surface-sunken);
+}
+.rowHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-block-end: 12px;
+}
+.rowDelete { color: var(--status-critical-text); }
+.rowDelete svg,
+.photoBtn svg {
+  inline-size: 15px;
+  block-size: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+}
+.addBtn svg {
+  inline-size: 16px;
+  block-size: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+/* Photo cell is not a .fld: 13px label at margin-block-end:6px, then an
+   intrinsic-width button. */
+.photoBlock { min-inline-size: 0; }
+.photoLabel {
+  display: block;
+  margin-block-end: 6px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.photoBtn { cursor: pointer; }
+
+/* Sticky action bar. */
+.actionBar {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  padding-block-end: max(12px, env(safe-area-inset-bottom));
+  border-block-start: 1px solid var(--border-subtle);
+  background: var(--surface-primary);
+}
+.grow { flex: 1; }
+
+/* Success state — the design's centred confirmation card. */
+.successOuter {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  padding: 24px;
+}
+.successCard {
+  inline-size: 100%;
+  max-inline-size: 460px;
+  padding: 44px 28px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  background: var(--surface-primary);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+.successMark {
+  display: grid;
+  inline-size: 64px;
+  block-size: 64px;
+  margin: 0 auto 20px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--status-compliant-soft);
+}
+.successMark svg {
+  inline-size: 34px;
+  block-size: 34px;
+  fill: none;
+  stroke: var(--status-compliant-text);
+  stroke-width: 2.2;
+}
+.successTitle {
+  margin: 0 0 10px;
+  font-size: 19px;
+  font-weight: 700;
+}
+.successDesc {
+  max-inline-size: 38ch;
+  margin: 0 auto 18px;
+  font-size: 14px;
+}
+.successRef {
+  margin-block-end: 22px;
+  color: var(--text-muted);
+  font-size: 12px;
+}

@@ -132,6 +132,11 @@ export default function VirtualSessionClient({ session, locale, userId }: { sess
   // submitted rev no longer matches state:timelineLength. Surface it as its own
   // banner — a stale write was REFUSED, so the rendered state is not the truth.
   const stale = !staleDismissed && (beginState.stale || joinState.stale || waitState.stale) === true;
+  const appointment = Date.parse(session.appointment_at);
+  const appointmentLabel = Number.isNaN(appointment)
+    ? null
+    : new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(appointment));
+  const partial = !session.visits?.factories || !session.visits?.package_versions;
 
   return (
     <>
@@ -157,7 +162,16 @@ export default function VirtualSessionClient({ session, locale, userId }: { sess
             </button>
           </div>
         )}
-        {actionState && <div className={styles.alert} role="status">{actionState}</div>}
+        {actionState && <div className={styles.alert} role="status">
+          {beginState.error || joinState.error || waitState.error
+            ? tx("The requested change was not applied. Reload the session before trying again.", "لم يُطبّق التغيير المطلوب. أعد تحميل الجلسة قبل المحاولة مرة أخرى.")
+            : tx("The session was updated.", "تم تحديث الجلسة.")}
+        </div>}
+        {partial && (
+          <div className={styles.alert} role="status">
+            {tx("Some linked visit details are unavailable. Missing values are left blank.", "بعض تفاصيل الزيارة المرتبطة غير متاحة. تُترك القيم الناقصة فارغة.")}
+          </div>
+        )}
         <section className={styles.card}>
           <h2>{tx("Session state path", "مسار حالة الجلسة")}</h2>
           <div className={styles.path}>
@@ -171,9 +185,9 @@ export default function VirtualSessionClient({ session, locale, userId }: { sess
           <h2>{tx("Readiness contract", "عقد الجاهزية")}</h2>
           <p className={styles.hint}>{tx("Stored facts resolve to one governed next action. Missing facts remain missing.", "تُفضي الحقائق المخزنة إلى إجراء تالٍ واحد محكوم. تبقى الحقائق الناقصة ناقصة.")}</p>
           <dl className={styles.facts}>
-            <div><dt>{tx("Appointment", "الموعد")}</dt><dd><bdi>{new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(session.appointment_at))}</bdi></dd></div>
-            <div><dt>{tx("Factory", "المنشأة")}</dt><dd>{session.visits?.factories?.name}</dd></div>
-            <div><dt>{tx("Package", "الحزمة")}</dt><dd>{session.visits?.package_versions ? <><bdi>{session.visits.package_versions.packages?.code}</bdi> · {session.visits.package_versions.version_label}</> : tx("Unavailable", "غير متاحة")}</dd></div>
+            <div><dt>{tx("Appointment", "الموعد")}</dt><dd><bdi>{appointmentLabel}</bdi></dd></div>
+            <div><dt>{tx("Factory", "المنشأة")}</dt><dd>{session.visits?.factories?.name ?? null}</dd></div>
+            <div><dt>{tx("Package", "الحزمة")}</dt><dd>{session.visits?.package_versions ? <>{session.visits.package_versions.packages?.code ? <bdi>{session.visits.package_versions.packages.code}</bdi> : null}{session.visits.package_versions.packages?.code && session.visits.package_versions.version_label ? " · " : null}{session.visits.package_versions.version_label ?? null}</> : null}</dd></div>
             <div><dt>{tx("Participants", "المشاركون")}</dt><dd>{representatives.length ? (allVerified ? tx("Verified", "تم التحقق") : tx("Verification pending", "التحقق قيد الانتظار")) : tx("Missing", "ناقص")}</dd></div>
           </dl>
         </section>
@@ -187,12 +201,12 @@ export default function VirtualSessionClient({ session, locale, userId }: { sess
               <span className={`badge ${p.verified_at ? "badge-compliant" : "badge-warning"}`}>{p.verified_at ? tx("Verified", "تم التحقق") : p.joined_at ? tx("Joined", "انضم") : tx("Not joined", "لم ينضم")}</span>
               {!p.joined_at && p.role === "inspector" && <form action={joinAction}>
                 <input type="hidden" name="session_id" value={session.id} /><input type="hidden" name="participant_id" value={p.id} />
-                <button className="btn btn-secondary" disabled={joinPending}>{tx("Join session", "الانضمام إلى الجلسة")}</button>
+                <button className="btn btn-secondary" disabled={joinPending || !online || closed}>{tx("Join session", "الانضمام إلى الجلسة")}</button>
               </form>}
               {p.role === "factory_rep" && p.joined_at && !p.verified_at && <div className={styles.otp}>
-                <button className="btn btn-secondary" type="button" disabled={otpBusy} onClick={() => requestOtp(p)}>{tx("Send OTP", "إرسال الرمز")}</button>
-                <input value={otpCodes[p.id] ?? ""} onChange={e => setOtpCodes(x => ({ ...x, [p.id]: e.target.value }))} inputMode="numeric" maxLength={6} aria-label={tx("OTP code", "رمز التحقق")} />
-                <button className="btn btn-primary" type="button" disabled={otpBusy || !otpCodes[p.id]} onClick={() => verifyOtp(p)}>{tx("Verify", "تحقق")}</button>
+                <button className="btn btn-secondary" type="button" disabled={otpBusy || !online || closed} onClick={() => requestOtp(p)}>{tx("Send OTP", "إرسال الرمز")}</button>
+                <input value={otpCodes[p.id] ?? ""} disabled={!online || closed} onChange={e => setOtpCodes(x => ({ ...x, [p.id]: e.target.value }))} inputMode="numeric" maxLength={6} aria-label={tx("OTP code", "رمز التحقق")} />
+                <button className="btn btn-primary" type="button" disabled={otpBusy || !otpCodes[p.id] || !online || closed} onClick={() => verifyOtp(p)}>{tx("Verify", "تحقق")}</button>
                 {otpMessage[p.id] && <span role="status">{otpMessage[p.id]}</span>}
               </div>}
             </div>)}

@@ -296,26 +296,31 @@ export default async function FieldEstablishments({ searchParams }: { searchPara
                   : (license?.license_number ?? row.license_number ?? "—");
 
                 const inner = (
-                  <>
-                    <div className={styles.cardHead}>
-                      <span className={styles.cardName}><bdi>{row.name}</bdi></span>
-                      <span className={`badge ${row.is_temporary ? "badge-warning" : "badge-compliant"}`} style={{ height: 19 }}>
-                        {row.is_temporary
-                          ? tr("field.establishments.unlicensed", "Unregistered / temporary", "غير مسجلة / مؤقتة")
-                          : tr("field.establishments.licensed", "Licensed", "مرخصة")}
-                      </span>
-                    </div>
-                    <div className={`t-caption ${styles.cardLic}`}><span className="id-code"><bdi>{licText}</bdi></span></div>
-                    <div className={styles.cardFoot}>
-                      <span className="t-caption"><bdi>{row.city ?? "—"}</bdi></span>
-                      <span className="grow" />
-                      {exc && (
-                        <span className={`exc-chip ${exc}`} style={{ height: 22 }}>
-                          <span className="exc-mark" />{riskLabel(row.risk_band as string)}
+                  <div className={styles.cardBody}>
+                    <span className={styles.avatar} aria-hidden="true">
+                      {Array.from(row.name.trim())[0] ?? "—"}
+                    </span>
+                    <div className={styles.cardContent}>
+                      <div className={styles.cardHead}>
+                        <span className={styles.cardName}><bdi>{row.name}</bdi></span>
+                        <span className={`badge ${row.is_temporary ? "badge-warning" : "badge-compliant"}`} style={{ height: 19 }}>
+                          {row.is_temporary
+                            ? tr("field.establishments.unlicensed", "Unregistered / temporary", "غير مسجلة / مؤقتة")
+                            : tr("field.establishments.licensed", "Licensed", "مرخصة")}
                         </span>
-                      )}
+                      </div>
+                      <div className={`t-caption ${styles.cardLic}`}><span className="id-code"><bdi>{licText}</bdi></span></div>
+                      <div className={styles.cardFoot}>
+                        <span className="t-caption"><bdi>{row.city ?? "—"}</bdi></span>
+                        <span className="grow" />
+                        {exc && (
+                          <span className={`exc-chip ${exc}`} style={{ height: 22 }}>
+                            <span className="exc-mark" />{riskLabel(row.risk_band as string)}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </>
+                  </div>
                 );
 
                 return dossierHref ? (

@@ -34,10 +34,10 @@ export default async function FieldConflictsPage() {
     key: tr("field.conflicts.key", "Key", "المفتاح"),
     localValue: tr("field.conflicts.local", "Your Local Response", "إجابتك المحلية"),
     serverValue: tr("field.conflicts.server", "Current Server Value", "قيمة الخادم الحالية"),
-    keepServer: tr("field.conflicts.keepServer", "Keep server", "إبقاء قيمة الخادم"),
-    keepServerHint: tr("field.conflicts.keepServerHint", "discard my response", "تجاهل إجابتي"),
-    keepMine: tr("field.conflicts.keepMine", "Keep mine", "إبقاء إجابتي"),
-    keepMineHint: tr("field.conflicts.keepMineHint", "re-queue my response", "إعادة إرسال إجابتي"),
+    // Design copy verbatim (SAQEEL PWA-Field Conflict Resolution.dc.html): each
+    // action states its consequence inline, so no second hint line is needed.
+    keepServer: tr("field.conflicts.keepServer", "Keep Server Value (discard my response)", "إبقاء قيمة الخادم (تجاهل إجابتي)"),
+    keepMine: tr("field.conflicts.keepMine", "Resubmit My Local Response", "إعادة إرسال إجابتي المحلية"),
     applicable: tr("field.conflicts.field.applicable", "Applicable", "قابل للتطبيق"),
     compliant: tr("field.conflicts.field.compliant", "Compliant", "مطابق"),
     notes: tr("field.conflicts.field.notes", "Notes", "الملاحظات"),
@@ -45,9 +45,19 @@ export default async function FieldConflictsPage() {
     no: tr("common.no", "No", "لا"),
     none: tr("common.none", "None", "لا يوجد"),
     empty: tr("field.conflicts.empty", "No conflicts", "لا توجد تعارضات"),
-    emptySub: tr("field.conflicts.emptySub", "All changes reconciled — no conflicts.", "تمت تسوية جميع التغييرات — لا توجد تعارضات."),
+    emptySub: tr("field.conflicts.emptySub", "All checklist-item responses are in sync.", "جميع إجابات بنود التفتيش متزامنة."),
     resolving: tr("field.conflicts.resolving", "Resolving…", "جارٍ الحل…"),
     resolveFailed: tr("field.conflicts.resolveFailed", "Could not resolve — try again.", "تعذّر الحل — حاول مرة أخرى."),
+    // Keeping the server value discards the inspector's own answer and is the
+    // one branch with no domain write, so the decision record IS the resolution
+    // (design policy note: the choice "is applied immediately and logged in the
+    // decision record"). That record is a server-side append, so the choice
+    // cannot be completed offline — said plainly rather than retried forever.
+    resolveNeedsConnection: tr(
+      "field.conflicts.resolveNeedsConnection",
+      "Keeping the server value must be recorded in the decision record before your response is discarded. Reconnect and try again.",
+      "يجب تسجيل خيار إبقاء قيمة الخادم ضمن سجل القرار قبل تجاهل إجابتك. أعد الاتصال ثم حاول مرة أخرى.",
+    ),
     policyNote: tr(
       "field.conflicts.policy",
       "Resolution policy: the inspector is asked every time — no side wins automatically. Your choice (keep server value or resubmit your response) is applied immediately and logged in the decision record.",
@@ -55,8 +65,8 @@ export default async function FieldConflictsPage() {
     ),
     groundingNote: tr(
       "field.conflicts.grounding",
-      "Backed by the real offline conflicts store. “Keep mine” re-queues your local response through the existing outbox so it wins on next sync; “Keep server” discards your local copy. Neither mutates server state directly.",
-      "مبني على مخزن التعارضات الفعلي بدون اتصال. «إبقاء إجابتي» يعيد إدراج إجابتك المحلية في قائمة الانتظار الحالية لتفوز عند المزامنة التالية؛ «إبقاء قيمة الخادم» يتجاهل نسختك المحلية. لا يغيّر أيٌّ منهما حالة الخادم مباشرةً.",
+      "Backed by the real offline conflicts store (mim-field-v1) — covers checklist-item response conflicts only.",
+      "مبني على مخزن التعارضات الفعلي بدون اتصال (mim-field-v1) — يغطي تعارضات إجابات بنود التفتيش فقط.",
     ),
   };
 
