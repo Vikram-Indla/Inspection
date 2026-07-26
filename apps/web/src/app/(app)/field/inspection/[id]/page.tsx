@@ -733,6 +733,9 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
       imgAlt: t("field.ws.annot.imgAlt", "Captured photo with annotation layer"),
     },
     sig: {
+      // Inspection mode: the acknowledgement records attendance, so the whole
+      // attendance bundle below is mandatory (enforced by the union).
+      mode: "inspection" as const,
       title: t("field.ws.sig.title", "Factory representative acknowledgement"),
       hint: t("field.ws.sig.hint", "Sign in the box below. The signature image, name and timestamp are stored inside the final submitted version (DEC-009)."),
       attendance: tr("field.ws.sig.attendance", "Representative attendance", "حضور ممثل المنشأة"),

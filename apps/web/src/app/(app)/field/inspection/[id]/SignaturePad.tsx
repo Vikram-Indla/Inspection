@@ -7,18 +7,39 @@ import { useEffect, useRef, useState } from "react";
 import Modal from "@/components/Modal";
 import styles from "./factory-verification.module.css";
 
-// The attendance block is optional. The inspection acknowledgement records
-// whether the representative was present, absent or objected; a feedback
-// rating is only ever signed by a representative who is already there, so that
-// surface supplies no attendance copy and the control is not rendered.
-export type SignaturePadStrings = {
+// Two product modes, declared explicitly rather than inferred from which copy
+// happens to be present.
+//
+// `inspection` records whether the representative was present, absent or
+// objected, so it needs the whole attendance bundle. `capture` is signature-only
+// — a feedback rating is signed by a representative who is already there, so the
+// attendance question would be meaningless.
+//
+// This is a discriminated union, not six independent optional fields, because
+// the optional shape failed OPEN: omitting only `attendance` compiled fine and
+// silently removed the entire attendance/refusal path, and supplying
+// `attendance` while omitting a label compiled fine and rendered incomplete
+// controls. Both are now compile errors. `mode` also stops missing localisation
+// copy from becoming an implicit assertion that the signer was present.
+// (Codex review of 208ba436, 2026-07-26.)
+type SignaturePadBase = {
   title: string; hint: string;
-  attendance?: string; present?: string; absent?: string; objected?: string;
-  reasonLabel?: string; unsupported?: string;
   nameLabel: string; namePlaceholder: string;
   clear: string; cancel: string; confirm: string;
   required: string;
 };
+
+/** All six attendance strings travel together or not at all. */
+export type AttendanceStrings = {
+  attendance: string; present: string; absent: string; objected: string;
+  reasonLabel: string; unsupported: string;
+};
+
+export type SignaturePadStrings =
+  | (SignaturePadBase & { mode: "inspection" } & AttendanceStrings)
+  // `?: never` makes passing attendance copy to a capture-only surface a
+  // compile error too, so the two modes cannot quietly blur back together.
+  | (SignaturePadBase & { mode: "capture" } & Partial<Record<keyof AttendanceStrings, never>>);
 
 export type SignatureAck = { signature_data_url: string; name: string; signed_at: string };
 
@@ -89,9 +110,10 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
     if (!c || !hasInk || !name.trim()) { setErr(strings.required); return; }
     onConfirm({ signature_data_url: c.toDataURL("image/png"), name: name.trim(), signed_at: new Date().toISOString() });
   }
-  // Without attendance copy there is no attendance question, so the signer is
-  // present by definition and the capture path is the only path.
-  const asksAttendance = strings.attendance !== undefined;
+  // Driven by the declared mode, never by whether a string happens to exist.
+  // In capture mode the signer is present by definition — that is the mode's
+  // meaning, not a fallback for absent copy.
+  const asksAttendance = strings.mode === "inspection";
   const present = !asksAttendance || attendance === "present";
 
   return (
@@ -107,7 +129,7 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
       </>}
     >
       <div className={styles.signatureBlock}>
-        {asksAttendance && <fieldset className={styles.attendanceGroup}>
+        {strings.mode === "inspection" && <fieldset className={styles.attendanceGroup}>
           <legend className={styles.fieldLabel}>{strings.attendance}</legend>
           <div className={styles.attendanceOptions}>
             {([
@@ -146,13 +168,16 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
             />
             <button type="button" className="btn btn-secondary" onClick={clear}>{strings.clear}</button>
           </div>
-        </> : <>
+        </> : strings.mode === "inspection" ? <>
+          {/* Only reachable in inspection mode: capture mode has no way to select
+              absent/objected, so `present` is always true there. The explicit
+              check is what lets TypeScript prove the attendance copy exists. */}
           <label className={styles.signatureField}>
             <span className={styles.fieldLabel}>{strings.reasonLabel}<span className="req">*</span></span>
             <textarea className="input" rows={3} value={reason} onChange={e => setReason(e.target.value)} />
           </label>
           <p className="field-error" role="status">{strings.unsupported}</p>
-        </>}
+        </> : null}
         {err && <p className="field-error">{err}</p>}
       </div>
     </Modal>
