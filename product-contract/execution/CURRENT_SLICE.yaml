@@ -66,7 +66,6 @@ leases:
     allowed_paths:
       - "apps/web/src/app/(app)/admin/templates/**"
       - "apps/web/src/app/(app)/admin/workflows/**"
-      - "apps/web/src/app/admin/execution/**"
       - "apps/web/src/lib/workflow/**"
       - "status/saqeel-status.json (card 'admin-builders' only)"
   - lease_id: "LEASE-SAQEEL-PWA-COMPLETION-001"
@@ -95,7 +94,7 @@ leases:
     allowed_paths:
       - "apps/web/src/app/(app)/admin/regulations/**"
       - "apps/web/src/app/(app)/admin/items/**"
-      - "apps/web/src/app/(app)/admin/packages/**"
+      - "apps/web/src/app/(app)/admin/packages/** (excluding page.tsx, transferred to admin-core)"
       - "status/saqeel-status.json (card 'm6-library' only)"
   - lease_id: "LEASE-SAQEEL-PWA-STARTUP-001"
     card: "pwa-startup"
@@ -170,6 +169,10 @@ leases:
     state: "GRANTED"
     allowed_paths:
       - "apps/web/src/app/(app)/admin/** (excluding paths leased to other cards)"
+      - "apps/web/src/app/(app)/admin/packages/page.tsx"
+      - "apps/web/src/app/admin/execution/**"
+      - "apps/web/e2e/admin-core-orchestrator.spec.ts"
+      - "product-contract/evidence/SAQEEL-ADMIN-CORE-001.md"
       - "status/saqeel-status.json (card 'admin-core' only)"
   - lease_id: "LEASE-SAQEEL-ADMIN-PLATFORM-001"
     card: "admin-platform"

@@ -393,7 +393,8 @@ export default async function Packages() {
                           <DraftEditor versionId={version.id} definition={definition}
                             catalog={items.filter(item => item.active).map(item => ({ code: item.code, title: item.title }))}
                             violations={violationChoices} templates={templateChoices}
-                            strings={editorStrings} preview={previewFor(definition)} />
+                            strings={editorStrings}
+                            preview={<div key={`preview-${version.id}`}>{previewFor(definition)}</div>} />
                         ) : !itemBankUnavailable ? previewFor(definition) : null}
 
                         <ImpactPanel data={impact} strings={impactStrings} />
