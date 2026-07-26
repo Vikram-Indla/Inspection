@@ -20,6 +20,85 @@ const LEGACY_RESOLUTION_KEY = "mim-field-v1:legacy-resolution";
 const STORE_NAMES = ["drafts", "packages", "outbox", "conflicts"] as const;
 type StoreName = typeof STORE_NAMES[number];
 
+/**
+ * D7 diagnostic for the immutable readiness snapshot checksum.
+ *
+ * Server authority is:
+ *   encode(digest(v_resolved::text, 'sha256'), 'hex')
+ *
+ * `v_resolved` is PostgreSQL jsonb. PostgREST parses that JSON before this
+ * client sees it, so JSON number lexemes (for example `1.0` versus `1`) are
+ * irretrievably lost. Until the server also supplies the exact
+ * `v_resolved::text` bytes, numeric definitions cannot be safely enforced.
+ * Non-numeric definitions can still be recomputed byte-exactly for agreement
+ * evidence; the result is deliberately diagnostic and never caches data.
+ */
+export type AuthorityPackageChecksumResult =
+  | { state: "match"; computedChecksum: string; enforcementSafe: false }
+  | { state: "mismatch"; computedChecksum: string; enforcementSafe: false }
+  | { state: "unverifiable"; reason: "missing_checksum" | "numeric_lexeme_lost" | "unsupported_value"; enforcementSafe: false };
+
+const utf8Encoder = new TextEncoder();
+
+function compareJsonbKeys(a: string, b: string): number {
+  const left = utf8Encoder.encode(a);
+  const right = utf8Encoder.encode(b);
+  if (left.length !== right.length) return left.length - right.length;
+  for (let index = 0; index < left.length; index += 1) {
+    if (left[index] !== right[index]) return left[index] - right[index];
+  }
+  return 0;
+}
+
+function postgresJsonbText(value: unknown): { text?: string; reason?: "numeric_lexeme_lost" | "unsupported_value" } {
+  if (value === null) return { text: "null" };
+  if (typeof value === "boolean" || typeof value === "string") return { text: JSON.stringify(value) };
+  // JSON.parse has already discarded PostgreSQL jsonb's original numeric
+  // spelling/scale. Guessing here would reject valid field packages.
+  if (typeof value === "number") return { reason: "numeric_lexeme_lost" };
+  if (Array.isArray(value)) {
+    const parts: string[] = [];
+    for (const item of value) {
+      const encoded = postgresJsonbText(item);
+      if (encoded.reason) return encoded;
+      parts.push(encoded.text as string);
+    }
+    return { text: `[${parts.join(", ")}]` };
+  }
+  if (typeof value === "object") {
+    const parts: string[] = [];
+    for (const [key, item] of Object.entries(value as Record<string, unknown>).sort(([a], [b]) => compareJsonbKeys(a, b))) {
+      if (item === undefined) return { reason: "unsupported_value" };
+      const encoded = postgresJsonbText(item);
+      if (encoded.reason) return encoded;
+      parts.push(`${JSON.stringify(key)}: ${encoded.text}`);
+    }
+    return { text: `{${parts.join(", ")}}` };
+  }
+  return { reason: "unsupported_value" };
+}
+
+async function sha256Utf8(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", utf8Encoder.encode(value));
+  return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("");
+}
+
+export async function recomputeAuthorityPackageChecksum(
+  definition: unknown,
+  authorityChecksum: string | null | undefined,
+): Promise<AuthorityPackageChecksumResult> {
+  const expected = authorityChecksum?.trim().toLowerCase();
+  if (!expected) return { state: "unverifiable", reason: "missing_checksum", enforcementSafe: false };
+  const canonical = postgresJsonbText(definition);
+  if (canonical.reason) return { state: "unverifiable", reason: canonical.reason, enforcementSafe: false };
+  const computedChecksum = await sha256Utf8(canonical.text as string);
+  return {
+    state: computedChecksum === expected ? "match" : "mismatch",
+    computedChecksum,
+    enforcementSafe: false,
+  };
+}
+
 export function offlineDatabaseName(userId: string): string {
   return packageCacheNamespace(userId);
 }
@@ -68,6 +147,24 @@ export type CachedRouteEstimate = {
   mode: "production" | "test_stub";
   refreshAfterMs: number;
   stale?: boolean;
+};
+
+// CR-327 / CR-334 / CR-403 — a local report is evidence of a real immutable
+// submission, never a client-created approximation. `submittedAt` and the
+// server-assigned version are recorded only after submit_inspection succeeds,
+// or copied from an RLS-authorized submission_versions read.
+export type CachedSubmittedReport = {
+  schema: "saqeel-submitted-report-v1";
+  inspectionId: string;
+  submissionVersionId: string;
+  versionNumber: number;
+  submittedAt: string | null;
+  snapshot: unknown;
+  acknowledgement: unknown;
+  factoryName: string | null;
+  factoryCode: string | null;
+  inspectorName: string | null;
+  cachedAt: string;
 };
 
 function idb(userId: string): Promise<IDBDatabase> {
@@ -146,6 +243,33 @@ function createUserOfflineStore(userId: string) {
     // value. It never mutates workflow state and is always surfaced as stale.
     cacheRouteEstimate: (visit: string, estimate: CachedRouteEstimate) => tx(verifiedUserId, "packages", "readwrite", s => s.put(estimate, `route:${visit}`)),
     getRouteEstimate: (visit: string) => tx<CachedRouteEstimate | undefined>(verifiedUserId, "packages", "readonly", s => s.get(`route:${visit}`)),
+    cacheSubmittedReport: (report: CachedSubmittedReport) =>
+      tx(verifiedUserId, "packages", "readwrite", s => s.put(report, `report:${report.inspectionId}`)),
+    getSubmittedReport: (inspectionId: string) =>
+      tx<CachedSubmittedReport | undefined>(verifiedUserId, "packages", "readonly", s => s.get(`report:${inspectionId}`)),
+    getSubmittedReports: async () => {
+      const reports: CachedSubmittedReport[] = [];
+      await tx<CachedSubmittedReport[]>(verifiedUserId, "packages", "readonly", s => {
+        const request = s.openCursor();
+        request.onsuccess = () => {
+          const cursor = request.result;
+          if (!cursor) return;
+          if (String(cursor.key).startsWith("report:")) {
+            const value = cursor.value as Partial<CachedSubmittedReport>;
+            if (
+              value.schema === "saqeel-submitted-report-v1"
+              && typeof value.inspectionId === "string"
+              && typeof value.submissionVersionId === "string"
+              && typeof value.versionNumber === "number"
+              && (value.submittedAt === null || typeof value.submittedAt === "string")
+            ) reports.push(value as CachedSubmittedReport);
+          }
+          cursor.continue();
+        };
+        return { get result() { return reports; } } as unknown as IDBRequest<CachedSubmittedReport[]>;
+      });
+      return reports;
+    },
     enqueue: (op: OutboxOp) => tx(verifiedUserId, "outbox", "readwrite", s => s.add(op)),
     peekAll: () => tx<OutboxOp[]>(verifiedUserId, "outbox", "readonly", s => s.getAll() as IDBRequest<OutboxOp[]>),
     keys: () => tx<IDBValidKey[]>(verifiedUserId, "outbox", "readonly", s => s.getAllKeys()),
@@ -405,6 +529,7 @@ export async function processOutbox(verifiedUserId: string, onState: (s: SyncSta
           p_idempotency_key: op.idempotency_key,
           p_acknowledgement: op.acknowledgement,
         }));
+        let submitted: SubmitSynced | null = null;
         if (rpcError) {
           const missing =
             rpcError.code === "42883" || rpcError.code === "PGRST202" ||
@@ -420,9 +545,33 @@ export async function processOutbox(verifiedUserId: string, onState: (s: SyncSta
           }));
           if (error && !String(error.message).includes("duplicate")) throw error;  // 409 duplicate = already submitted (ERR-SUB-002)
           await guard.network(() => sb.from("inspections").update({ status: "submitted" }).eq("id", op.inspection_id));
+          submitted = {
+            submission_version_id: op.idempotency_key,
+            version_number: op.version_number,
+            reused: Boolean(error),
+          };
         } else if (rpcResult) {
           await guard.assertLive();
-          onSubmitSynced?.(op.inspection_id, rpcResult as SubmitSynced);
+          submitted = rpcResult as SubmitSynced;
+          onSubmitSynced?.(op.inspection_id, submitted);
+        }
+        if (submitted) {
+          await guard.assertLive();
+          await local.cacheSubmittedReport({
+            schema: "saqeel-submitted-report-v1",
+            inspectionId: op.inspection_id,
+            submissionVersionId: submitted.submission_version_id,
+            versionNumber: submitted.version_number,
+            // The RPC does not return the server submitted_at timestamp. The
+            // queued_at device value is not substituted as authoritative time.
+            submittedAt: null,
+            snapshot: op.snapshot,
+            acknowledgement: op.acknowledgement,
+            factoryName: null,
+            factoryCode: null,
+            inspectorName: null,
+            cachedAt: new Date().toISOString(),
+          });
         }
       } else if (op.kind === "factory_check") {
         // M04-103/104/105/113 — observed value + Verified/Updated status persisted

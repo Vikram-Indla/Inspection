@@ -168,8 +168,15 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
   // Idempotency key persists in component state so retries reuse it (§12).
   const cancelIdemRef = useRef(null as string | null);
   const maxAcc = gis.gps_accuracy_checkin_max_m ?? 25;
-  // SB20 — per-factory geofence override, else ENG-06 engine default.
-  const fence = visit.factories.geofence_radius_m ?? gis.geofence_default_radius_m ?? 150;
+  // CR-145/150/151 — only governed configuration may establish the arrival
+  // fence. With neither source present there is no radius to evaluate, so the
+  // arrival gate fails closed instead of inventing a value or provenance.
+  const fence = visit.factories.geofence_radius_m ?? gis.geofence_default_radius_m ?? null;
+  const fenceConfigured = fence != null;
+  const fenceDisplay = fenceConfigured ? fence : (locale === "ar" ? "غير مهيأ" : "Not configured");
+  const fenceUnavailable = locale === "ar"
+    ? "نطاق الوصول غير مهيأ. لا يمكن تأكيد الوصول حتى تضبط الإدارة نطاقاً محكوماً؛ يظل مسار التجاوز المحكوم متاحاً عندما يوجد نطاق وتكون القراءة خارجه."
+    : "Arrival radius is not configured. Check-in is blocked until administration provides a governed radius; the governed override path remains available when a configured radius is exceeded.";
   const arrivalRadius = gis.arrival_detection_radius_m ?? 200;      // ENG-06 arrival_detection_radius_m
   const telemetryS = gis.telemetry_interval_s ?? 30;                // ENG-06 telemetry_interval_s
   const offRouteM = gis.route_deviation?.off_route_m ?? 500;        // ENG-06 route_deviation
@@ -483,6 +490,10 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
 
   async function checkIn() {
     if (overrideState !== "none") return;
+    if (!fenceConfigured) {
+      add(fenceUnavailable);
+      return;
+    }
     setBusy(true);
     // A continuous journey fix is the best available device observation. Reuse
     // it briefly instead of requiring a second radio acquisition at the gate;
@@ -957,7 +968,8 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
   // SB20 / ENG-08 — governed dispatch point + geofence ring; observed dot after check-in; live dot while journeying.
   const mapMarkers: GeoMarkerData[] = [
     { id: "dispatch", lat: visit.dispatch_lat, lng: visit.dispatch_lng,
-      label: fmt(visit.dispatch_source === "official" ? strings.officialLabel : strings.plannedLabel, { name: visit.factories.name }), tone: "neutral", radiusM: fence },
+      label: fmt(visit.dispatch_source === "official" ? strings.officialLabel : strings.plannedLabel, { name: visit.factories.name }), tone: "neutral",
+      ...(fenceConfigured ? { radiusM: fence } : {}) },
     ...(live && !checkin ? [{
       id: "live", lat: live.lat, lng: live.lng,
       label: fmt(strings.liveLabel, { acc: live.acc.toFixed(1) }), tone: "medium" as GeoMarkerData["tone"],
@@ -1020,9 +1032,14 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           </div>
           <div className={styles.readyRow}>
             <span className={`${styles.readyMark} ${checkedIn ? styles.readyMarkDone : ""}`} aria-hidden>{checkedIn ? "✓" : "○"}</span>
-            <span className={styles.readyText}>{fmt(strings.geofenceCheck, { acc: maxAcc, fence })}</span>
+            <span className={styles.readyText}>{fmt(strings.geofenceCheck, { acc: maxAcc, fence: fenceDisplay })}</span>
           </div>
         </div>
+        {!fenceConfigured && (
+          <div id="geofence-unconfigured" className="alert alert-warning" role="status" data-testid="geofence-unconfigured">
+            <div>{fenceUnavailable}</div>
+          </div>
+        )}
         {/* F3 · M04-016 — real navigation handoff with this Visit's governed dispatch coordinates */}
         <div className="row" style={{ gap: 8, flexWrap: "wrap", alignItems: "center", marginBlockStart: "var(--space-4)" }}>
           <a className="btn btn-secondary" target="_blank" rel="noopener noreferrer"
@@ -1083,7 +1100,10 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           <GeoMap center={[visit.dispatch_lat, visit.dispatch_lng]} zoom={15} markers={mapMarkers} height="100%" />
         </div>
         <p className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>
-          {fmt(strings.fenceCaption, { fence, source: visit.factories.geofence_radius_m != null ? strings.factoryOverride : strings.engineDefault, acc: maxAcc })}{!checkin && ` ${strings.positionHint}`}
+          {fenceConfigured
+            ? fmt(strings.fenceCaption, { fence, source: visit.factories.geofence_radius_m != null ? strings.factoryOverride : strings.engineDefault, acc: maxAcc })
+            : `${strings.lblFence}: ${fenceDisplay} · ${fenceUnavailable}`}
+          {fenceConfigured && !checkin && ` ${strings.positionHint}`}
         </p>
       </div>
       {/* Phase 4B / plan §13 — original vs corrected location, side by side.
@@ -1138,7 +1158,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         <div className="panel" role="dialog" aria-modal="false" aria-labelledby="gps-override-heading"
           style={{ padding: "var(--space-6)", borderColor: "var(--status-critical)" }}>
           <h4 id="gps-override-heading" style={{ marginBlockEnd: "var(--space-2)" }}>{strings.overrideHeading}</h4>
-          <p className="t-caption">{fmt(strings.overrideBody, { d: pendingOverride.d.toFixed(0), fence, lat: pendingOverride.lat.toFixed(6), lng: pendingOverride.lng.toFixed(6) })}</p>
+          <p className="t-caption">{fmt(strings.overrideBody, { d: pendingOverride.d.toFixed(0), fence: fenceDisplay, lat: pendingOverride.lat.toFixed(6), lng: pendingOverride.lng.toFixed(6) })}</p>
           <label className="field"><span className={styles.fieldLabel}>{strings.overrideReasonCode}</span>
             <select className="select" value={overrideReasonKey} onChange={e => {
               setOverrideReasonKey(e.target.value);
@@ -1208,7 +1228,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
                 <dt>{strings.lblCr}</dt><dd>{visit.factories.cr_number ?? "—"}</dd>
                 <dt>{strings.lblLicense}</dt><dd>{visit.factories.license_number ?? "—"}</dd>
                 <dt>{strings.lblCoords}</dt><dd>{`${visit.factories.official_lat}, ${visit.factories.official_lng}`}</dd>
-                <dt>{strings.lblFence}</dt><dd>{fence} m</dd>
+                <dt>{strings.lblFence}</dt><dd>{fenceConfigured ? `${fence} m` : fenceDisplay}</dd>
               </dl>
             </details>
             <details open>
@@ -1267,7 +1287,8 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       <div className="row">
         <button className="btn btn-secondary" onClick={downloadPackage} disabled={cached || !!preparationGated || !visit.package_versions || cancelApproved}>{strings.step1}</button>
         <button className="btn btn-secondary" onClick={startJourney} disabled={!cached || !!journeyId || busy || !!preparationGated || cancelApproved}>{strings.step2}</button>
-        <button className="btn btn-secondary" onClick={checkIn} disabled={!journeyId || checkedIn || busy || overrideState !== "none" || cancelApproved}>{strings.step3}</button>
+        <button className="btn btn-secondary" onClick={checkIn} disabled={!journeyId || checkedIn || busy || overrideState !== "none" || cancelApproved || !fenceConfigured}
+          aria-describedby={!fenceConfigured ? "geofence-unconfigured" : undefined}>{strings.step3}</button>
         {started && !cancelApproved
           ? <a className="btn btn-primary" href={`/field/inspection/${existing!.id}`}>{strings.resume}</a>
           : <button className="btn btn-primary" onClick={startInspection} disabled={!checkedIn || busy || !repPresent || !locConfirmed || cancelApproved}>{strings.step4}</button>}

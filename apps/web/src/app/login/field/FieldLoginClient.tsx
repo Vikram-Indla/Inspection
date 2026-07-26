@@ -156,7 +156,7 @@ export default function FieldLoginClient({
   // returnTo is optional (the unified /login caller omits it); normalise once so
   // every navigation target below is a concrete, validated path.
   const safeReturnTo = useMemo(() => safeFieldReturnPath(returnTo), [returnTo]);
-  const [lockScreen, setLockScreen] = useState<{ record: BiometricUnlockRecord } | null>(null);
+  const [lockScreen, setLockScreen] = useState<{ record: BiometricUnlockRecord; deviceId: string } | null>(null);
   const [unlocking, setUnlocking] = useState(false);
   const [showPasswordFallback, setShowPasswordFallback] = useState(false);
   const [bootstrapping, setBootstrapping] = useState(true);
@@ -217,12 +217,13 @@ export default function FieldLoginClient({
       // 3. Is this device currently reported trusted by the real backend
       // register? This is the only source of truth for trust — read fresh,
       // never cached, never inferred from the local opt-in record existing.
-      const enrollment = await readFieldDeviceEnrollment(getFieldDeviceIdentifier());
+      const deviceId = getFieldDeviceIdentifier();
+      const enrollment = await readFieldDeviceEnrollment(deviceId);
       if (cancelled) return;
       const trusted = "trustStatus" in enrollment && enrollment.trustStatus === "trusted";
       if (!trusted) return;
 
-      setLockScreen({ record });
+      setLockScreen({ record, deviceId });
     })();
     return () => {
       cancelled = true;
@@ -373,7 +374,7 @@ export default function FieldLoginClient({
             <>
               <div className="fl-pill fl-trusted-pill">
                 <LockIcon />
-                {s.trustedDevice}
+                {s.trustedDevice} · <span className="id-code" dir="ltr">{lockScreen.deviceId}</span>
               </div>
               <button
                 type="button"
@@ -391,16 +392,10 @@ export default function FieldLoginClient({
                 <span className="t-label fl-or-label">{s.orPassword}</span>
                 <span className="fl-or-line" />
               </div>
-              <button
-                type="button"
-                className="btn btn-ghost btn-block"
-                onClick={() => setShowPasswordFallback(true)}
-              >
-                {s.bioFallback}
-              </button>
             </>
-          ) : (
-            <form className="fl-form" onSubmit={submitCredentials}>
+          ) : null}
+
+          <form className="fl-form" onSubmit={submitCredentials}>
               <label className="fl-label">
                 <span className="t-label">{s.idLabel}</span>
                 <input
@@ -464,8 +459,7 @@ export default function FieldLoginClient({
               <button type="submit" className="btn btn-primary btn-lg btn-block fl-submit" disabled={busy || !online}>
                 {busy ? s.signingIn : s.signIn}
               </button>
-            </form>
-          )}
+          </form>
         </div>
       </div>
 
@@ -496,7 +490,13 @@ export default function FieldLoginClient({
               Before authentication there is no sync history to report, so the
               chip states connectivity instead of inventing a timestamp. */}
           <span className="t-caption fl-sync">
-            <span className="fl-sync-dot" />
+            {/* The dot states the same connectivity fact as the label beside
+                it — an offline device must never show a compliant indicator. */}
+            <span
+              className={`fl-sync-dot ${online ? "fl-sync-dot-online" : "fl-sync-dot-offline"}`}
+              data-online={online ? "true" : "false"}
+              aria-hidden="true"
+            />
             {netLabel}
           </span>
         </div>

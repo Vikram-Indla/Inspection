@@ -182,6 +182,10 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
   // the latch never unlocks.
   const submittedInSession = useSubmittedInSession(inspectionId);
   const readOnly = serverReadOnly || submittedInSession;
+  // The design contains additional establishment/contact/workforce/note fields,
+  // but no governed source or persistence contract supplies them. Keep their
+  // existing scaffolds non-rendering until that contract exists.
+  const hasGovernedSupplementalBindings = false;
 
   const local = useMemo(() => localForUser(userId), [userId]);
   const [checks, setChecks] = useState(() => Object.fromEntries(initialChecks.map(c => [c.field_key, c])) as Record<string, CheckState>);
@@ -346,11 +350,13 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
           <span className="badge badge-info">{strings.snapshotAdvisory}</span>
         </h4>
         <div className={styles.statRow}>
-          <div className={styles.stat}>
-            <div className={`id-code ${styles.statVal}`}>{riskScore ?? "—"}</div>
-            <div className="t-caption">{strings.riskScore}</div>
-            <span className={`badge ${bandVariant} ${styles.statBadge}`}>{riskBandLabel ?? strings.riskUnknown}</span>
-          </div>
+          {riskScore != null && (
+            <div className={styles.stat}>
+              <div className={`id-code ${styles.statVal}`}>{riskScore}</div>
+              <div className="t-caption">{strings.riskScore}</div>
+              {riskBandLabel && <span className={`badge ${bandVariant} ${styles.statBadge}`}>{riskBandLabel}</span>}
+            </div>
+          )}
           <div className={styles.stat}>
             <div className={`id-code ${styles.statVal}`}>{draftCount}</div>
             <div className="t-caption">{strings.drafts}</div>
@@ -359,18 +365,6 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
             <div className={`id-code ${styles.statVal}`}>{pendingSyncCount}</div>
             <div className="t-caption">{strings.pendingSync}</div>
           </div>
-        </div>
-        {/* Violation history — PENDING INTEGRATION. No governed factory-scoped
-            violation-history source exists (violations/findings are inspection-
-            scoped with no status/date and RLS-limited to this inspection). Kept
-            as a badged, empty scaffold — never fabricated rows. */}
-        <div className={styles.subHead}>
-          <span className={styles.subLabel}>{strings.violationHistory}</span>
-          <span className="grow" />
-          <span className="badge badge-outline">{strings.pendingIntegration}</span>
-        </div>
-        <div className="empty">
-          <div className="empty-title">{strings.violationHistoryPending}</div>
         </div>
         <div className={styles.subLabel}>{strings.licensesDocs}</div>
         {license ? (
@@ -391,12 +385,17 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
           the design's plain dropdowns: source value (Senaei) vs observed value,
           verify/observed-input/note/evidence and the derived status are intact. */}
       <section className={styles.card}>
-      <div className={styles.headerRow}>
-        <h4>{strings.title}</h4>
+      {/* Design authority — every `.ef-card` section heading in the Establishment
+          File design is a ruled `.ef-h` (15px/600, divider below) with trailing
+          controls pushed out by `.grow`. This card was the only section still on
+          the unruled two-column headerRow. */}
+      <h4 className={styles.cardH}>
+        <span style={{ minInlineSize: 0 }}>{strings.title}</span>
+        <span className="grow" />
         <span className={`badge ${changeCount ? "badge-warning" : "badge-compliant"}`}>
           {changeCount ? fmt(strings.changeCounter, { n: changeCount }) : strings.noChanges}
         </span>
-      </div>
+      </h4>
       <p className="t-caption">{strings.hint}</p>
       {readOnly && <div className="alert alert-immutable"><div>{strings.readOnly}</div></div>}
       {checksLoadError && <div className="alert alert-warning"><div>{fmt(strings.loadError, { error: checksLoadError })}</div></div>}
@@ -494,6 +493,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
           attributes have no governed source/lookup yet, so nothing here is
           persisted; option lists are the design's placeholders, not a governed
           lookup. Kept ADDITIVE to the real source-vs-observed model above. */}
+      {hasGovernedSupplementalBindings && (
       <section className={styles.card}>
         <h4 className={styles.cardH}>
           {strings.estDataTitle}
@@ -558,6 +558,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
           </div>
         </div>
       </section>
+      )}
 
       {/* Incident logging — a distinct capability from a violation (O-13). The
           action links to the REAL incident-reports route with this visit's
@@ -575,6 +576,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
       {/* Contacts — inspection-captured contact scaffolding, PENDING INTEGRATION.
           Editable UI only; it does NOT write back to Senaei/source data
           (FND-007) and is not persisted anywhere yet. */}
+      {hasGovernedSupplementalBindings && (
       <section className={styles.card}>
         <h4 className={styles.cardH}>
           {strings.contactsTitle}
@@ -613,28 +615,24 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
           )}
         </div>
       </section>
+      )}
 
       {/* Inspection items — category chips. Products (M04-098) and Raw materials
           (M04-099) show REAL Senaei-sourced identity data. Workforce/Machines/
           Spare-parts categories and the per-item checkboxes are PENDING
           INTEGRATION scaffolding (design structure, ungoverned option/check
           lists, nothing persisted). */}
+      {(products.length > 0 || materials.length > 0) && (
       <section className={styles.card}>
         <h4 className={styles.cardH}>
           {strings.inspectionItems}
-          <span className="grow" />
-          <span className="badge badge-outline">{strings.pendingIntegration}</span>
         </h4>
-        <p className="t-caption">{strings.pendingCaption}</p>
         <div className={styles.chipRow}>
-          <button type="button" className={styles.chip} aria-pressed={cat === "workforce"} onClick={() => setCat("workforce")}>{strings.workforceTitle}</button>
-          <button type="button" className={styles.chip} aria-pressed={cat === "materials"} onClick={() => setCat("materials")}>{strings.materialsTitle}</button>
-          <button type="button" className={styles.chip} aria-pressed={cat === "products"} onClick={() => setCat("products")}>{strings.productsTitle}</button>
-          <button type="button" className={styles.chip} aria-pressed={cat === "machines"} onClick={() => setCat("machines")}>{strings.machinesTitle}</button>
-          <button type="button" className={styles.chip} aria-pressed={cat === "spare"} onClick={() => setCat("spare")}>{strings.spareTitle}</button>
+          {materials.length > 0 && <button type="button" className={styles.chip} aria-pressed={cat === "materials"} onClick={() => setCat("materials")}>{strings.materialsTitle}</button>}
+          {products.length > 0 && <button type="button" className={styles.chip} aria-pressed={cat === "products"} onClick={() => setCat("products")}>{strings.productsTitle}</button>}
         </div>
 
-        {cat === "workforce" && (
+        {hasGovernedSupplementalBindings && cat === "workforce" && (
           // Workforce roster — PENDING INTEGRATION (whole block). No governed
           // shift/worker-type count source exists, so nothing is pre-filled and
           // nothing persists; the grand total is derived only from what the
@@ -690,7 +688,6 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
                     </div>
                     {p.annual_capacity != null && <span className="badge badge-outline">{p.annual_capacity} {p.unit ?? ""}</span>}
                   </div>
-                  {renderChecks(`products:${i}`)}
                 </div>
               ))}
             </div>
@@ -709,23 +706,19 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
                     </div>
                     <span className="badge badge-outline">{m.source === "imported" ? strings.srcImported : strings.srcLocal}</span>
                   </div>
-                  {renderChecks(`materials:${i}`)}
                 </div>
               ))}
             </div>
           )
         )}
 
-        {(cat === "machines" || cat === "spare") && (
-          <div className="empty">
-            <div className="empty-title">{strings.categoryPending}</div>
-          </div>
-        )}
       </section>
+      )}
 
       {/* Visit notes — PENDING INTEGRATION. There is no governed visit/inspection
           note binding or offline op yet, so this free text is held in memory only
           and is NOT saved (badged so nothing reads as persisted). */}
+      {hasGovernedSupplementalBindings && (
       <section className={styles.card}>
         <h4 className={styles.cardH}>
           {strings.visitNotesTitle}
@@ -738,6 +731,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
           <textarea className={`input ${styles.notesArea}`} rows={3} value={visitNote} placeholder={strings.visitNotePlaceholder} onChange={e => setVisitNote(e.target.value)} disabled={readOnly} />
         </label>
       </section>
+      )}
 
       {annotating && <AnnotateModal file={annotating} strings={strings} onDone={finishAnnotation} onCancel={() => setAnnotating(null)} />}
     </div>

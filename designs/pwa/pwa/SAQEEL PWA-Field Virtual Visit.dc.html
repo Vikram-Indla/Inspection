@@ -24,7 +24,7 @@
 <div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
 
   <header style="display:flex; align-items:center; gap:10px; padding:14px 18px; padding-block-start:max(14px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
-    <a href="SAQEEL%20PWA-Field%20Preparation.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="{{ t.backArrow }}"/></svg></a>
+    <a href="SAQEEL%20PWA-Field%20Preparation.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" data-directional="true"><path d="{{ t.backArrow }}"/></svg></a>
     <div style="flex:1; min-width:0;"><div style="font-weight:600; font-size:15px;">{{ t.title }}</div><div class="t-caption">{{ v.factory }}</div></div>
     <button class="vv-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
   </header>
@@ -96,7 +96,7 @@ class Component extends DCLogic {
         live:"مباشر", provider:"مزوّد: Twilio Video", participant:"الممثل المتصل", identityVerification:"التحقق من الهوية", verified:"تم التحقق",
         endSession:"إنهاء الجلسة", proceedToInspection:"المتابعة إلى نموذج التفتيش",
       },
-      en: { back:"Back", title:"Visit Execution Mode", backArrow:"M9 6l6 6-6 6", langBtnLabel:"AR",
+      en: { back:"Back", title:"Visit Execution Mode", backArrow:"M15 6l-6 6 6 6", langBtnLabel:"AR",
         chooseMode:"Choose execution mode", physical:"Physical visit", physicalNote:"On-site attendance at the establishment",
         virtual:"Virtual visit (video)", virtualNote:"Verified video call via Twilio with identity check",
         virtualDisabledNote:"Unavailable — requires the OTP identity-verification engine enabled for this establishment",
