@@ -1,9 +1,10 @@
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { join, resolve } from "node:path";
 import {
   buildAuthorizedAdminDiscovery,
   buildShellNavigation,
+  isAdminOnlyPersona,
   isShellRouteCurrent,
   shellScopeForRoute,
   isFieldOnlyPersona,

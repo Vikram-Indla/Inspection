@@ -242,6 +242,28 @@ export function isAdminPersona(roleKeys: readonly string[]) {
   return roleKeys.some(role => adminRoles.includes(role));
 }
 
+/**
+ * Authorization-aware hub registry used by admin discovery surfaces.
+ * Unauthorized destinations are removed before the UI receives them.
+ */
+export function buildAuthorizedAdminDiscovery(roleKeys: readonly string[]): AuthorizedAdminHub[] {
+  const roles = new Set(roleKeys);
+  const administration = SHELL_NAVIGATION.find(group => group.id === "administration");
+  if (!administration) return [];
+
+  const authorizedItems = administration.items.flatMap(item =>
+    item.roles.some(role => roles.has(role)) ? [{ ...item, enabled: true }] : [],
+  );
+
+  return ADMIN_HUBS.flatMap(hub => {
+    const items = hub.itemIds.flatMap(id => {
+      const item = authorizedItems.find(candidate => candidate.id === id);
+      return item ? [item] : [];
+    });
+    return items.length ? [{ ...hub, items }] : [];
+  });
+}
+
 // `narrowToFieldChannel` (default true) is the TASK-WEB-CHANNEL-ACCESS-GATE-001
 // gate: in the WEB chrome a field-only Inspector is shown the field channel
 // only. The FIELD channel's own side panel opts out — the Product Owner ruled on
@@ -258,7 +280,8 @@ export function buildShellNavigation(
   // Field-only personas get the field channel only: no web-portal destinations,
   // no admin group (not even a locked one). Web/admin personas are unaffected.
   const fieldOnly = (options?.narrowToFieldChannel ?? true) && isFieldOnlyPersona(roleKeys);
-  return SHELL_NAVIGATION.map(group => ({
+  const adminOnly = isAdminOnlyPersona(roleKeys);
+  const projected = SHELL_NAVIGATION.map(group => ({
     ...group,
     items: group.items.flatMap(item => {
       if (fieldOnly && !(item.channels ?? ["web"]).includes("field")) return [];

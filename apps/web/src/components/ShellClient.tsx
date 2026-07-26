@@ -96,6 +96,7 @@ export default function ShellClient({
   const router = useRouter();
   const current = usePathname() || "/";
   const fieldOnly = isFieldOnlyPersona(roles);
+  const adminOnly = isAdminOnlyPersona(roles);
   const adminWorkspace = current === "/admin" || current.startsWith("/admin/");
   const aiVisible = groups.some(group => group.items.some(item => item.enabled && item.href === "/ai/suggestions"));
   // Same precedence as the design's activeKey(): the more specific field
