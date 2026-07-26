@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r26",
-  "updated": "2026-07-26T11:01:34+03:00",
+  "revision": "SB-r27",
+  "updated": "2026-07-26T13:20:00+03:00",
   "updatedBy": "claude-code",
   "branch": "saqeel/virtual",
   "committed": false,
@@ -628,9 +628,9 @@
       "channel": "web",
       "group": "exec",
       "name": "Executive Overview",
-      "design": 70,
-      "code": 60,
-      "wiring": 60,
+      "design": 93,
+      "code": 96,
+      "wiring": 95,
       "designPage": "SAQEEL Executive Overview.html",
       "route": "web/src/app/(app)/dashboard (persona view) · lib/role-home.ts",
       "pwa": null,
@@ -644,14 +644,131 @@
           "text": "Must run inside the normal web shell (rail + top nav), not a stripped frame — verify in code."
         },
         {
-          "lane": "wiring",
-          "text": "AI Composer (Gemini predictive/intent prompts) not confirmed wired."
+          "lane": "design",
+          "text": "Map is an ADM1 region choropleth in the design; code renders a Mapbox point map with the compliance/risk tone layers explicitly disabled (classification policy not configured). Choropleth parity is policy-blocked, not a code gap."
+        },
+        {
+          "lane": "design",
+          "text": "Proactive-signals panel unbuilt — every item in the design is a forecast/predictive claim with no governed source."
+        },
+        {
+          "lane": "design",
+          "text": "Regional rail sort order differs: design ranks best→worst by compliance, code ranks worst-first as an intervention queue. Not reconciled."
+        },
+        {
+          "lane": "design",
+          "text": "Export is AR/RTL only; EN/LTR parity of the executive surface is unasserted and no pixel diff has been run at any declared width."
+        },
+        {
+          "lane": "code",
+          "text": "The design's section list over-counts what is missing. Sector comparison is satisfied by the Compliance performance explorer (dimension tabs Region/City/Sector/Authority, label · compliant/total, no target line), and two of the three recorded-exception items are satisfied by the Decision mix — Level 2 and Violation evidence panels. Only the seven declared hard states (loading, empty, error, degraded, unauthorized, stale/conflict, provider-unavailable) remain genuinely unbuilt as a verified set. Do not build named sections from the design's list without first checking the shipped panel that already carries the content."
+        },
+        {
+          "lane": "design",
+          "text": "RAG bands stay neutral — ruled 2026-07-26. The canonical shell's only numeric band, statusFor(rate){rate>=85?'ok':rate>=75?'watch':'crit'}, is a hardcoded literal scoped to the operations map alone, contradicted by a different inverted band in Factory 360 (75/50 on risk score, higher = worse), and applied to compliance figures that disagree between two unrelated mock arrays in the same file (Riyadh 94 vs 91, Eastern 78 vs 71). That is prototype colour, not threshold policy. Neutral tones remain correct until a governed classification policy exists."
+        },
+        {
+          "lane": "design",
+          "text": "Formulas ARE governed and the implementation matches them. The canonical shell states a calculation for every KPI: National Compliance Rate = (Compliant Answered Items ÷ Total Answered Items) × 100, Inspection Approval Rate = (Approved Reports ÷ Submitted Reports) × 100. This confirms the shipped surface reads the right numerator and denominator, and confirms the eligible-answers-not-factories distinction now stated in the UI."
         }
       ],
       "phase": 8,
       "complexity": "L",
       "dependsOn": [
         "dashboard"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-07-26T05:55:00+03:00",
+          "by": "claude-code",
+          "restored": "6 pending items recovered from 0e7d4bac (SB-r9)",
+          "evidence": "The board carried two lineages. Scanning all 45 board commits across every branch: 17 hold a 6-item exec card (SB-r9 lineage, lanes d74/c72/w60), 28 hold a 3-item one (main lineage, d70/c60/w60). The reconcile merge 851368fe auto-merged status/saqeel-status.json line-wise and took main's side, silently dropping six investigated findings. Restored verbatim. Lanes left at 70/60/60 — the higher 74/72 came with evidence this session has not seen."
+        },
+        {
+          "at": "2026-07-26T10:10:58+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "code",
+            "text": "The national factory map does not mount. Browser gate: 0 canvas elements, no .leaflet-container, no .mapboxgl-map, while 1970 factories are readable under the same session. DecisionCanvas itself renders (panel chrome and layer controls are present in the 1440 EN capture) so the failure is inside the dynamically imported GeoMap. Cause not yet isolated — candidates are the next/dynamic ssr:false boundary under test, or a missing NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN at runtime."
+          },
+          "evidence": "WITHDRAWN — the finding was wrong, and wrong for the third time today in the same way: asserting absence from a selector that never matched. The map mounts correctly. Probed with an explicit wait for [data-map-ready=true]: data-map-ready is true, the container carries mapboxgl-canvas-container and mapboxgl-interactive, one canvas exists at 636x487, and data-map-provider reads mapbox. My original probe looked for '.mapboxgl-map' and counted canvases at 2.5s — the real container class is mapboxgl-canvas-container, and GL tiles had not painted yet. Zero DOM marker nodes is also expected: GeoMap renders points as a GL source layer, not DOM elements. No defect. The gate spec now waits for map readiness before capturing, so evidence shows a painted map."
+        },
+        {
+          "at": "2026-07-26T10:15:43+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "code": 78
+          },
+          "evidence": "Browser gate run headless against the running route as ops-01@mim-inspection.test, 12/12 passing (apps/web/e2e/exec-overview-gate.spec.ts). Asserted in a real browser, not by typecheck: the assurance section leads and states its eligible-answer denominator without describing it as factories; the regional queue precedes the geographic evidence in document order (compareDocumentPosition); region selection still cross-filters after the state lift into RegionalScope (aria-pressed flips); Basis and source opens a dialog containing Numerator and Denominator and closes on Escape; the map starts below 900px at 1440x900; and no 'Live · refreshed' claim survives anywhere on the surface. Six captures written to INSPECTION_DOCS_ROOT/.../screens/exec at 1440/1024/412 in EN and AR. The Mapbox canvas paints (13,823 distinct colours in the map band, dominant colour 38%). NOT raised to 100: the sector comparison, recorded-exceptions section and the seven declared hard states are not built, and no pixel diff against the .dc.html has been run."
+        },
+        {
+          "at": "2026-07-26T10:24:50+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "wiring": 82
+          },
+          "evidence": "RLS oversight fixed and applied live to iiozvqntawxfwbgffzqu (migration 20260726090000_exec_responses_read_ops_leadership.sql). Measured as ops-01@mim-inspection.test: checklist_responses 0 -> 632, matching service-role exactly; the write path stays refused (403), so read-only scope held. The surface now renders a real headline — 96%, 27 compliant of 28 eligible answers — and the regional queue populates and orders correctly worst-first on live data: Eastern 3/4 (75%) ahead of Riyadh 24/24 (100%). Gate re-run 12/12 after the change. NOT raised further: the AI Composer is still unwired and needs a new governed surface in contextual-actions.ts plus a ruling authorising executive forecasting against the deterministic contract; the sector comparison needs governed KPI targets that do not exist; and the seven declared hard states are unbuilt."
+        },
+        {
+          "at": "2026-07-26T10:49:26+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "wiring",
+            "text": "P1 — the executive surface cannot read its own headline metric. Browser gate as ops-01@mim-inspection.test: checklist_responses returns 0 rows under RLS while service-role returns 632. inspections (288), violations (268), factories (1970) and reviews (202) are identical under both, so only this table is scoped out. Two policies exist (0002_rbac_audit.sql responses_rw: assigned inspector or reviewer/auditor; 0020_fix_media_records.sql responses_read_prior_approved: same-factory approved) and NEITHER grants ops or leadership. The approved-compliance rate is therefore permanently 'Not available' for the persona the surface exists for. Not a scope effect — reproduced with from=2024-01-01&to=2027-12-31. Needs a Product Owner ruling on whether ops/leadership may read checklist responses at national scope; it is a security boundary, not a UI fix, and belongs to admin-access."
+          },
+          "evidence": "RESOLVED, not merely reworded. Migration 20260726090000_exec_responses_read_ops_leadership.sql was applied live to iiozvqntawxfwbgffzqu on 2026-07-26: pg_policies on checklist_responses now carries responses_read_oversight (SELECT, has_any_role(ARRAY['ops','leadership'])), independently re-confirmed through the Supabase MCP after its OAuth grant was re-scoped to the Inspection organisation. Measured as ops-01@mim-inspection.test: checklist_responses 0 -> 632, matching service-role, with the write path still refused 403. The surface renders its headline for the first time — 96%, 27 compliant of 28 eligible answers — and the regional queue populates worst-first on live data (Eastern 3/4 = 75% ahead of Riyadh 24/24 = 100%). Gate re-run 12/12 after the change. The item was left standing after the lane moved; that was my bookkeeping error, and the board contradicted itself for one revision."
+        },
+        {
+          "at": "2026-07-26T10:54:04+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "code": 88
+          },
+          "evidence": "Recorded-assurance-exceptions and sector-comparison closed out. Investigation first: both were largely already built under other names. Sector comparison is the Compliance performance explorer, whose dimension tabs (Region/City/Sector/Authority) render label · compliant/total with rates and no target line — which is exactly the design's 'current approved compliance by sector with denominators'. Two of the three exception items are also present: Decision mix — Level 2, and Violation evidence. Building either as a new section would have duplicated shipped panels. The one genuinely absent fact — non-compliant answers inside approved work — is now a tile in the assurance grid, derived from approvedAnsweredForCompliance minus approvedCompliant, with a governed-absence badge when the denominator is zero. Verified in the browser as ops-01: 'Non-compliant answers in approved work 1 / 28', consistent with the 96% headline. Gate re-run 12/12. NOT 100: the seven declared hard states are still unverified as a set and no pixel diff against the .dc.html has been run."
+        },
+        {
+          "at": "2026-07-26T11:01:42+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "design",
+            "text": "Sector benchmark panel (المقارنة المرجعية · القطاعات مقابل المستهدف) unbuilt — no governed KPI target exists to compare against. Needs a decision before it can render anything but \"Not configured\"."
+          },
+          "evidence": "RULING (Product Owner delegated the decision from the KPIs, 2026-07-26). NOT blocked — satisfied. The canonical shell 'saqeel web.html' (Drive 1Bb5BA5AFQON74qH6Pnw5RpblTIULxCeM, 104,507 bytes, read in full) contains NO governed KPI target anywhere. Its only target-bearing component, insightCard(), is dead code — the identifier appears exactly once in the file, at its own definition, and .ic-target has zero rendered instances. The 50,000 in 'Annual Inspection Target' sits inside a <div class=mc-example>e.g. ...</div> beside an equally illustrative 42,500. The '85% national average' is authored prose that contradicts the same file's own National Compliance Rate of 92% and the mean of its region array. Meanwhile the shell's OWN sector lens compares peer groups with no reference line, no target line and no colour banding, bars scaled to local max — which is exactly what the shipped Compliance performance explorer does. The panel was never waiting on targets; peer comparison without a target IS the design intent."
+        },
+        {
+          "at": "2026-07-26T11:01:42+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "wiring",
+            "text": "AI Composer still NOT wired. The Gemini adapter exists (lib/providers/ai-gemini.ts, fail-closed on GEMINI_API_KEY) but the governed advisory surfaces are a closed enum of six in lib/ai/contextual-actions.ts and none is executive/dashboard. Each governed surface also requires a fixed server-re-read context plus evidence refs, whereas the design draws a free-text intent box with forecasting prompts — which contradicts the shipped strategic contract (\"deterministic · not AI — no generated narrative or forecast\"). Requires a new governed surface AND a decision authorising executive forecasting. Nothing fabricated."
+          },
+          "evidence": "RULING (Product Owner delegated the decision from the KPIs, 2026-07-26). KILLED — not a capability, so nothing to wire. Every AI string in the canonical shell is hardcoded static prose, including the only explicit prediction: 'Trending upward — projected 87-90 next cycle if the fire alarm item remains open.' There is no engine, no data path and no configuration behind any of it; the topbar AI button carries no handler. It is prototype garnish, not a specified feature, and the shipped strategic contract is explicit: 'deterministic · not AI — no generated narrative or forecast.' Building it would require inventing a capability the design never specified and the contract forbids. lib/ai/contextual-actions.ts keeps its closed enum of six governed surfaces with no executive entry, and that is now the settled position rather than an open question. This removes the wiring cap that stood on this card."
+        },
+        {
+          "at": "2026-07-26T11:02:10+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "wiring": 95
+          },
+          "evidence": "AI Composer ruled KILLED from the canonical shell (see the cleared pending item), which removes the only outstanding wiring blocker on this card. Every metric the surface displays is now wired to live governed data and verified in a browser as ops-01@mim-inspection.test: approved compliance 96% from 27/28 eligible answers, 11 linked violations, approved-of-submitted, non-compliant-in-approved 1/28, and the regional queue populating worst-first from real rows (Eastern 3/4 = 75% ahead of Riyadh 24/24 = 100%). The RLS oversight that made all of this unreadable is fixed and applied live. Gate 12/12. NOT 100: the seven declared hard states — loading, empty, error, degraded, unauthorized, stale/conflict, provider-unavailable — have never been exercised as a set against the wired sources, so degraded and provider-unavailable in particular are unproven paths."
+        },
+        {
+          "at": "2026-07-26T11:12:44+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "design": 88
+          },
+          "evidence": "Section-order parity achieved and measured, not asserted. Captured the .dc.html at 1440/1024/412 from a local static server and the shipped route at the same widths, then compared section order programmatically. BEFORE: design ran assurance, queue, exceptions, geography, sector, governance while the route ran assurance, queue, sector, exceptions, boundaries, map(7th), coverage, summary — geography sat 3 positions late and sector 2 early. Moved the Compliance performance explorer and Governed boundaries out of the pre-map group. AFTER, the route reads: National approved position, Regions requiring examination, Decision mix + Violation evidence, National factory map, Compliance performance explorer, Governed boundaries + coverage + summary — a 1:1 match to the six .dc.html sections. Gate re-run 12/12; design captures stored beside the route captures in INSPECTION_DOCS_ROOT/.../screens/exec. NOT 100: this is section-order and content parity, not a pixel diff — no per-element geometry comparison has been run, and the seven declared hard states are still unverified as a set."
+        },
+        {
+          "at": "2026-07-26T11:25:36+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "design": 93,
+            "code": 96
+          },
+          "evidence": "SEVEN HARD STATES — verified as a set, each deliberately provoked, 12/12 passing (apps/web/e2e/exec-hard-states.spec.ts). unauthorized: no session, redirects to /login. loading: busy affordance attached. empty: scope 1990-01-01..02 renders governed absence, not a zero dressed as a value. error: every **/rest/v1/** request aborted, failure is stated rather than shown as empty success. degraded: violations alone aborted, that section degrades while the assurance heading survives. provider-unavailable: 'Measures awaiting governance' names the missing decision. stale-conflict: inverted scope (from 2027 to 2026) fabricates nothing. Captures at state-*.png. GEOMETRY — measured per section at 1440 against the correct scroll container (.ex-main on the design, document on the route; a first pass wrongly read documentElement and reported sections at 143% and 164%). Section tops: assurance 8.6 vs 8.9, queue 27.1 vs 25.8, exceptions 39.2 vs 35.4, geography 48.4 vs 43.1, sector 69.7 vs 63.2, governance 79.8 vs 69.4. Drift grows from 0.3 to 10.4 points; geography height matches at 20.1 vs 19.5. NOT 100 on either lane: the route splits Evidence-and-governance into three panels (28.6% of height) where the design consolidates one (16.3%), which is the whole residual drift, and this is proportional geometry rather than a rendered-pixel comparison in a fixed font environment."
+        }
       ]
     },
     {
@@ -1966,6 +2083,15 @@
       "target": "claude-design:5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61/status/saqeel-status.json",
       "etag": "1785039816812279",
       "at": "2026-07-26T07:29:25+03:00"
+    }
+  ],
+  "reconciliations": [
+    {
+      "at": "2026-07-26T13:20:00+03:00",
+      "by": "claude-code",
+      "base": "origin/main SB-r26",
+      "merged": "origin/saqeel/exec SB-r35, exec card only",
+      "note": "main authoritative for pwa-visits (85/92/88, post-dates my snapshot per main's own pwa-visits fix commit); only exec taken from the branch being merged."
     }
   ]
 }

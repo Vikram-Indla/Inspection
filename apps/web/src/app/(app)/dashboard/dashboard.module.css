@@ -292,3 +292,28 @@
 @media (prefers-reduced-motion: reduce) {
   .fill { transition: none; }
 }
+
+/* Executive Overview — national assurance lead.
+   The strongest available fact holds the first viewport; the map moved below.
+   Tokens only: no hex, no rgb(), no colour utilities. */
+.assurance { display: flex; flex-direction: column; gap: var(--space-3); }
+.assuranceGrid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: var(--space-4); align-items: stretch; }
+.assuranceLead { display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-5) var(--space-5); background: var(--surface-primary);
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-md); }
+.assuranceValue { font-size: 52px; line-height: 1; font-weight: 700; letter-spacing: -0.03em; color: var(--text-primary); }
+.assuranceDen { font-size: 13px; color: var(--text-secondary); }
+.assuranceNote { font: var(--type-micro); color: var(--text-muted); max-inline-size: 46ch; }
+.assuranceFact { display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-4); background: var(--surface-primary);
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-md); }
+.assuranceFactValue { font-size: 34px; line-height: 1; font-weight: 700; color: var(--text-primary); }
+.assuranceOf { font-size: 18px; font-weight: 600; color: var(--text-secondary); }
+.governanceNote { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;
+  padding: var(--space-3) var(--space-4); background: var(--surface-primary);
+  border: 1px solid var(--border-subtle); border-inline-start: 3px solid var(--border-strong);
+  border-radius: var(--radius-md); font: var(--type-micro); color: var(--text-secondary); }
+@media (max-width: 1100px) { .assuranceGrid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 760px)  { .assuranceGrid { grid-template-columns: 1fr; }
+  .assuranceValue { font-size: 42px; } }
+.queueNote { margin: var(--space-2) var(--space-4) var(--space-3); font: var(--type-micro); color: var(--text-muted); }

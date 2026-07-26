@@ -153,7 +153,11 @@ export function buildMethodology(metric: SharedMetric, locale: Locale): Methodol
     : scope.timezone;
   const freshness = isBlocked(metric.sourceStatus)
     ? statusLabel(metric.sourceStatus, locale)
-    : `${statusLabel(metric.sourceStatus, locale)}${metric.refreshedAt ? ` · ${metric.refreshedAt.slice(0, 16).replace("T", " ")}` : ""}`;
+    : `${statusLabel(metric.sourceStatus, locale)}${
+        metric.refreshedAt
+          ? ` · ${t(locale, "page generated", "أُنشئت الصفحة")} ${metric.refreshedAt.slice(0, 16).replace("T", " ")}`
+          : ""
+      }`;
 
   const rows: MethodologyRow[] = [
     { label: t(locale, "Formula", "المعادلة"), value: dash(def?.formula) },

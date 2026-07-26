@@ -186,14 +186,33 @@ python3 .claude/skills/orchestrator/scripts/board.py publish
 
 That prints the revision, the target, and which of the two routes below applies.
 
-### You cannot push the whole board with `write_files`
+### Publishing the board: minify, then delegate
 
-`mcp__claude-design__write_files` takes inline `data` only. Its `local_path`
-parameter exists in the schema but returns *"not yet implemented for server-side
-callers — use inline data for now."* The board is ~71 KB (~55 KB minified), so
-inlining it means hand-emitting 70 000 bytes of JSON through token generation —
-a single wrong byte publishes a corrupted board. **Do not attempt it.** Verified
-2026-07-26.
+`mcp__claude-design__write_files` takes inline `data` only — `local_path`
+returns *"not yet implemented for server-side callers"*. So the payload must be
+emitted as tokens, and **~71 KB pretty-printed exceeds a single response's
+output budget.** Two attempts failed mid-emit (a truncated call is malformed and
+never reaches the server, so nothing is corrupted — but nothing lands either).
+
+**What works, verified 2026-07-26:**
+
+1. **Minify.** `json.dumps(d, separators=(",",":"), ensure_ascii=False)` takes
+   71 KB → 55 KB, a 22% cut that fits. Confirm semantic equality first:
+   `json.loads(mini) == d`. Whitespace was never under governance.
+2. **Delegate the transfer.** Give a subagent one job: read the local file,
+   `cmp` its staged transcription against the source, and send it in a single
+   `write_files` with `if_match`. Tell it not to narrate or echo the payload —
+   the whole output budget goes to the tool call.
+3. **Verify by script after the write**, not by eye: JSON parses, revision
+   matches, card count matches, and the specific card you moved reads correctly.
+
+**Consequence:** the project copy is minified, the repo copy is `indent=2`.
+Future comparisons must be **parsed-object diffs, not byte diffs**.
+
+**Before publishing, always diff card-by-card** against the commit whose board
+matches what is currently on the project. If only your card changed and nothing
+regressed, a wholesale publish IS a surgical single-card update — no hand-merge
+needed. If any other card would move, stop: you hold no evidence for it.
 
 ### Route A — ask Claude Design to pull (default)
 
