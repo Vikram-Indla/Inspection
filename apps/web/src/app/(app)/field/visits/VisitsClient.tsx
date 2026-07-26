@@ -81,11 +81,19 @@ export default function VisitsClient({ visits, locale, now, strings }: { visits:
     {shown.length === 0 ? <div className={styles.state} role="status"><strong>{strings.empty}</strong><p className="t-caption">{strings.emptyBody}</p></div> :
       <div className={styles.cards}>{shown.slice(0, visibleCount).map(v => {
         const p = isVisitPriority(v.priority) ? v.priority : null, action = cta(v), km = distanceKm(position, v.factory);
-        return <article className={styles.card} key={v.id} style={p ? { "--risk-color": riskColor(p) } as React.CSSProperties : undefined}>
+        // The design makes the whole card the tap target, not just the CTA text —
+        // this is a gloved-hands field app. When a state has no route to offer, the
+        // card stays a non-interactive article rather than pretending to be tappable,
+        // and the CTA is always a span so we never nest an anchor inside an anchor.
+        const body = <>
           <div className={styles.row1}><span className="id-code t-caption">{fmtTime(v.windowStart)}</span><span className={styles.factory}><bdi>{v.factory.name || "—"}</bdi></span>{p && <span className={`badge ${p === "high" ? "badge-critical" : p === "medium" ? "badge-warning" : "badge-compliant"}`}>{strings[p]}</span>}</div>
           <div className={`t-caption ${styles.caption}`}><span className="id-code">{v.visitReference ?? "—"}</span> · {label(v.visitType)} · {km == null ? "—" : `${new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(km)} ${strings.km}`}</div>
-          <div className={styles.row3}><span className="badge">{label(v.planningStatus)}</span><span aria-hidden="true">›</span><span className="badge">{label(v.operationalState)}</span><span className="grow"/>{action.href ? <Link className={styles.cta} href={action.href}>{action.label}<span aria-hidden="true">›</span></Link> : <span className={styles.cta}>{action.label}</span>}</div>
-        </article>;
+          <div className={styles.row3}><span className="badge">{label(v.planningStatus)}</span><span aria-hidden="true">›</span><span className="badge">{label(v.operationalState)}</span><span className="grow"/><span className={styles.cta}>{action.label}<span aria-hidden="true">›</span></span></div>
+        </>;
+        const style = p ? { "--risk-color": riskColor(p) } as React.CSSProperties : undefined;
+        return action.href
+          ? <Link className={styles.card} key={v.id} style={style} href={action.href} aria-label={`${v.factory.name} · ${v.visitReference ?? ""} — ${action.label}`}>{body}</Link>
+          : <article className={styles.card} key={v.id} style={style}>{body}</article>;
       })}{shown.length > visibleCount && <button type="button" className="btn btn-secondary btn-touch" onClick={() => setVisibleCount(n => n + 25)}>{strings.loadMore}</button>}</div>}
     <div className={`t-caption ${styles.footnote}`}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>{strings.twoStates}</div>
   </main>;
