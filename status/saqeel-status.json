@@ -1,8 +1,8 @@
 {
-  "revision": "SB-r19",
-  "updated": "2026-07-26T01:40:00+03:00",
-  "updatedBy": "claude-code",
-  "branch": "feature/ipad-field-channel-delivery",
+  "revision": "SB-r22",
+  "updated": "2026-07-26T04:25:14+03:00",
+  "updatedBy": "codex",
+  "branch": "saqeel/admin-core",
   "committed": false,
   "law": "A card is 100% on Design only when the shipped route matches its .dc.html pixel-to-pixel at every declared width, in EN/LTR and AR/RTL. Structure, rules, enums and field names come from source. No number may be raised without evidence.",
   "channels": [
@@ -748,20 +748,41 @@
       "designPage": "SAQEEL Control Panel.dc.html · SAQEEL Admin.dc.html · Admin Extended · Admin Detail",
       "route": "web/src/app/(app)/admin (21 sections) · app/admin/execution · app/admin/dashboard-config",
       "pwa": null,
-      "pending": [
-        {
-          "lane": "design",
-          "text": "Section-by-section diff of the 21 repo admin sections against the design's section list not done."
-        },
-        {
-          "lane": "design",
-          "text": "Card-operations rule not audited: every registry must expose create / add-row / add-endpoint / edit / retire."
-        }
-      ],
+      "pending": [],
       "phase": 2,
       "complexity": "L",
       "dependsOn": [
         "shell-f0"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-07-26T04:24:50+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "design",
+            "text": "Section-by-section diff of the 21 repo admin sections against the design's section list not done."
+          },
+          "evidence": "SAQEEL-ADMIN-CORE-001 section-by-section 24-card audit; DEC-036 corrects board/design route authority"
+        },
+        {
+          "at": "2026-07-26T04:24:50+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "design",
+            "text": "Card-operations rule not audited: every registry must expose create / add-row / add-endpoint / edit / retire."
+          },
+          "evidence": "SAQEEL-ADMIN-CORE-001 operation disposition audit covers all 24 cards and preserves immutable/read-only control planes"
+        },
+        {
+          "at": "2026-07-26T04:25:14+03:00",
+          "by": "codex",
+          "lanes": {
+            "design": 60,
+            "code": 95,
+            "wiring": 85
+          },
+          "evidence": "No lane raise: focused evidence closes both pending audits while preserving the measured-certification boundary"
+        }
       ]
     },
     {
