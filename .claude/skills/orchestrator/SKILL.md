@@ -17,8 +17,9 @@ document remains the authority on anything this skill does not state.
 3. **Done means the functionality works in Google Chrome** against real data
    under a real signed-in account. Typecheck green is not done. A screenshot of
    a static page is not done.
-4. **Web is Claude Code's. Admin is Codex's. PWA belongs to a different
-   developer and is read-only here.** See `references/OWNERSHIP.md`.
+4. **Ownership is declared in `config.json`, not assumed.** Today: web is Claude
+   Code's, admin is Codex's, PWA belongs to a different developer and is
+   read-only here. See `references/OWNERSHIP.md` to change that.
 
 ## Step 0 — Ask for the module
 
@@ -33,8 +34,11 @@ Accept a card id (`operations`), a card name (`M3 Operations Center + Live`), or
 a design page title. Resolve it to exactly one card id before going further. If
 the input matches more than one card, show the matches and ask again.
 
-If the resolved card's channel is `pwa`, **stop**. Report its current board
-state and say PWA is owned by another developer. Do not edit PWA files.
+`brief.py` prints each channel's owner. If the resolved card's channel is owned
+by `other-developer`, **stop**: report its current board state, say who owns it,
+and do not edit its files or move its lanes. Taking that channel is a decision
+for the Product Owner, not for you — see `references/OWNERSHIP.md` §Taking a
+channel.
 
 ## Step 1 — Discovery (never skip, never shorten)
 
@@ -81,12 +85,15 @@ Colour law applies with no exception: design-system tokens only, never a hex,
 
 ## Step 3 — Build the pending work
 
-Owner routing decides who writes the code:
+The channel's owner in `config.json` decides who writes the code:
 
-- **web** → you (Claude Code) write it, in the card's worktree.
-- **admin** → hand the packet to Codex via `mcp__codex__codex`. You stay the
+- **`claude-code`** → you write it, in the card's worktree.
+- **`codex`** → hand the packet to Codex via `mcp__codex__codex`. You stay the
   orchestrator: you write the packet, you review the diff, you run the browser
   proof. `references/OWNERSHIP.md` has the packet template and the path fence.
+- **`other-developer`** → you already stopped at Step 0.
+
+Today that means web → you, admin → Codex, pwa → stop.
 
 Rules that bite:
 
@@ -140,6 +147,7 @@ is still open.
 
 | File | Read it when |
 | --- | --- |
+| `config.json` | You need to know — or change — who owns a channel. |
 | `references/RESOURCES.md` | You need a Drive file id, the design project id, the Supabase project, or the seeded personas. |
-| `references/OWNERSHIP.md` | Routing a card, writing a Codex packet, or fencing paths. |
+| `references/OWNERSHIP.md` | Routing a card, taking a channel, writing a Codex packet, or fencing paths. |
 | `references/PHASES.md` | Running parity, the browser gate, or publishing status. |

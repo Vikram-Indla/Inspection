@@ -23,8 +23,21 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[4]
 SPINE = REPO / "status" / "saqeel-status.json"
+CONFIG = Path(__file__).resolve().parents[1] / "config.json"
 RIYADH = timezone(timedelta(hours=3))
 LANES = ("design", "code", "wiring")
+OUT_OF_SCOPE = "other-developer"
+
+# Channel ownership lives in config.json — one declaration, read by both scripts.
+_owners = json.loads(CONFIG.read_text(encoding="utf-8"))["channelOwners"]
+
+
+def owner(channel: str) -> str:
+    return _owners.get(channel, OUT_OF_SCOPE)
+
+
+def in_scope(channel: str) -> bool:
+    return owner(channel) != OUT_OF_SCOPE
 
 
 def now() -> str:
@@ -80,10 +93,12 @@ def cmd_set(a) -> None:
     spine = load()
     card = find(spine, a.card)
 
-    if card["channel"] == "pwa":
+    if not in_scope(card["channel"]):
         sys.exit(
-            "STOP: pwa cards belong to another developer. This orchestrator does "
-            "not move PWA lanes."
+            f"STOP: the {card['channel']} channel is owned by "
+            f"{owner(card['channel'])}. This orchestrator does not move its lanes.\n"
+            f"To take the channel, set channelOwners.{card['channel']} to "
+            f'"claude-code" in\n{CONFIG}'
         )
 
     moves = {ln: getattr(a, ln) for ln in LANES if getattr(a, ln) is not None}

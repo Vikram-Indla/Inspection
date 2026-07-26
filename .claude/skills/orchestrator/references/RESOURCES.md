@@ -12,7 +12,7 @@ URL: https://claude.ai/design/p/5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61
 | --- | --- |
 | *(root)* | 42 web `.dc.html` pages, `SAQEEL Design System.dc.html`, `SAQEEL Web Shell v5.dc.html`, `support.js` |
 | `admin/` | 21 admin `.dc.html` pages + `support.js` |
-| `pwa/` | 43 PWA pages — **read-only here**, owned by another developer |
+| `pwa/` | 43 PWA pages. Read-only while `config.json` sets `channelOwners.pwa` to `other-developer`. |
 | `status/saqeel-status.json` | **The published board.** `SAQEEL Status Board.dc.html` renders this file and nothing else. Publishing = writing the repo copy here. |
 | `status/*.csv` | Human exports (cards / pending / rollup). The board page does not read them. |
 | `handoff/`, `screenshots/`, `_ds/`, `assets/`, `tools/` | Supporting material |
@@ -41,7 +41,7 @@ Root SAQEEL folder: `1PE2ZqagP4N9BP3Pby2yYz8ynq1xSqx95`
 | `Inspection Web/` folder | `1wmMUVDn-7g4B051YP_qCMOXJs_N92Q43` | Web scope docs + `saqeel web.html` |
 | `saqeel web.html` | `1Bb5BA5AFQON74qH6Pnw5RpblTIULxCeM` | Canonical web shell reference |
 | `inspection_secrets` sheet | `1xWqiPQ-h-jXCDDvOSJUIwiuvzUOFmw3eAhOl65sDkqg` | Service keys. Read when needed; never copy a secret into a repo file, a PR, or a status update. |
-| `Inspection Mobile/` folder | `1fupsqTyt8OaXRwlyCAauEEZVpOywj3F_` | PWA scope — out of orchestrator scope |
+| `Inspection Mobile/` folder | `1fupsqTyt8OaXRwlyCAauEEZVpOywj3F_` | PWA / field scope documents. Read these if you take the PWA channel. |
 
 Web scope documents in `Inspection Web/`: `Execution.docx`, `Planning.docx`,
 `Compliance.docx`, `Factory 360.docx`, `Opearation Center.xlsx` *(sic)*,
@@ -52,8 +52,7 @@ Drive supplies scope, requirements, and seed data.
 
 Drive MCP prefix: `mcp__664b722d-07d2-412b-aa7e-280862ea9707__`. It offers
 `search_files`, `read_file_content`, `download_file_content`, `create_file`,
-`copy_file`, `get_file_metadata` — **there is no in-place update**. See
-`PHASES.md` §Publish for how status snapshots are posted.
+`copy_file`, `get_file_metadata` — **there is no in-place update**.
 
 ## Supabase
 
