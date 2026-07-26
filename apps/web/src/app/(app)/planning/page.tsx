@@ -1,18 +1,9 @@
 import Shell from "@/components/Shell";
+import EmptyState from "@/components/EmptyState";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
-import EmptyState from "@/components/EmptyState";
 import { getPlanningAccess } from "@/lib/planning/access";
-import {
-  queryPlanningVisits, fetchLastUpdates,
-  PLANNING_TABS, DEFAULT_PLANNING_SORT, PLANNING_SORT_KEYS,
-  type PlanningTab, type PlanningListParams, type PlanningVisitRow,
-} from "@/lib/planning/visit-list";
-import CreateVisitSection, { type CreateVisitMethod } from "./CreateVisitSection";
-import DiscardDraftButton from "./DiscardDraftButton";
-import ExportButton from "./ExportButton";
-import RefreshButton from "./RefreshButton";
 import PlanningPreview from "./PlanningPreview";
 import RevampPlanningInsights from "./RevampPlanningInsights";
 import SavedViewsButton from "./SavedViewsButton";
@@ -20,85 +11,30 @@ import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 
 export const dynamic = "force-dynamic";
 
-// CD-020 / SCR-WEB-100 — Planning Visit List (PLN-REQ-005/006/012–018).
-// /planning is the canonical list-first landing: KPI/status tabs, server-side
-// search + typed filters held entirely in the URL (share-safe; they survive
-// detail navigation), the contract columns, Create Visit / Export / Refresh
-// page actions, draft continuation and returned work. Access is the canonical
-// capability model: business_staff (any authenticated user who is neither
-// admin nor inspector) may plan; inspector and admin classes are denied.
-// Legacy routes (/planning/bulk, /single, /immediate, /plans) are untouched.
-
-const PAGE_SIZE = 25;
-
-const STATUS_TONE: Record<string, string> = {
-  draft: "sq-lozenge--info", validated: "sq-lozenge--info", published: "sq-lozenge--info",
-  returned: "sq-lozenge--warning", cancelled: "sq-lozenge--critical", expired: "sq-lozenge--critical",
-};
-
-const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
-const dash = (v: string | null) => (v && v.length > 0 ? v : "—");
-
-const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
-
-type Sp = Record<string, string | string[] | undefined>;
-
-function parseParams(sp: Sp): PlanningListParams {
-  const tabRaw = first(sp.tab);
-  const tab: PlanningTab = (PLANNING_TABS as readonly string[]).includes(tabRaw) ? (tabRaw as PlanningTab) : "all";
-  const sortRaw = first(sp.sort);
-  return {
-    tab,
-    search: first(sp.q).trim(),
-    filters: {
-      method: first(sp.method) || undefined,
-      visitType: first(sp.visitType) || undefined,
-      region: first(sp.region) || undefined,
-      city: first(sp.city) || undefined,
-      inspectorId: first(sp.inspectorId) || undefined,
-      windowFrom: first(sp.windowFrom) || undefined,
-      windowTo: first(sp.windowTo) || undefined,
-      createdFrom: first(sp.createdFrom) || undefined,
-      createdTo: first(sp.createdTo) || undefined,
-      packageVersionId: first(sp.packageVersionId) || undefined,
-      priority: first(sp.priority) || undefined,
-      bulkPlanRef: first(sp.bulkPlanRef) || undefined,
-    },
-    sort: PLANNING_SORT_KEYS.includes(sortRaw) ? sortRaw : DEFAULT_PLANNING_SORT,
-    page: Math.max(1, Number.parseInt(first(sp.page), 10) || 1),
-    pageSize: PAGE_SIZE,
-  };
-}
-
-// Share-safe URL state: every link (tab, pagination) carries the current
-// search/filter/sort state forward; only the intended key changes.
-function hrefWith(sp: Sp, overrides: Record<string, string>): string {
-  const merged: Record<string, string> = {};
-  for (const [k, v] of Object.entries(sp)) {
-    const val = first(v);
-    if (val) merged[k] = val;
-  }
-  for (const [k, v] of Object.entries(overrides)) {
-    if (v) merged[k] = v; else delete merged[k];
-  }
-  const qs = new URLSearchParams(merged).toString();
-  return qs ? `/planning?${qs}` : "/planning";
-}
-
 type DraftRow = {
-  id: string; method: string; status: string; plan_reference: string | null;
-  draft_version: number; created_at: string; created_by: string;
+  id: string;
+  method: string;
+  status: string;
+  plan_reference: string | null;
+  created_at: string;
   profiles: { full_name: string } | null;
 };
 
-const continueHref = (d: DraftRow) =>
-  d.method === "bulk" ? `/planning/bulk/review?plan=${d.id}`
-    : d.method === "single" ? `/planning/single?plan=${d.id}`
-      : `/planning/immediate?plan=${d.id}`;
+const continueHref = (draft: DraftRow) =>
+  draft.method === "bulk"
+    ? `/planning/bulk/review?plan=${draft.id}`
+    : draft.method === "single"
+      ? `/planning/single?plan=${draft.id}`
+      : `/planning/immediate?plan=${draft.id}`;
 
-export default async function PlanningHome({ searchParams }: { searchParams: Promise<Sp> }) {
-  const sp = await searchParams;
-  const targetPreview = process.env.SAQEEL_M2_PREVIEW === "enabled" && first(sp.wa_preview) === "1";
+// PKT-RESPONSIVE-PLANNING-003 · WA-DES-036
+// The approved Planning landing is canonical at /planning. Its role boundary
+// is resolved before any planning data read:
+// - business_staff with planning.view receives all creation methods plus
+//   RLS-scoped drafts and the effective package state;
+// - Inspector receives only the explicitly authorized Immediate method;
+// - administration/anonymous classes fail closed.
+export default async function PlanningHome() {
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
@@ -144,13 +80,70 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       .in("status", ["draft", "validated"]).is("archived_at", null).order("created_at", { ascending: false }).limit(10),
   ]);
 
-  const optionError = lookupsRead.error ?? regionsRead.error ?? citiesRead.error ?? inspectorsRead.error ?? packagesRead.error ?? draftsRead.error;
-  if (!list.ok || optionError) {
-    if (optionError) console.error("[planning.list] option/draft read failed:", optionError.message);
+  const unavailable = () => (
+    <Shell current="/planning" title={title}>
+      <EmptyState
+        glyph="⚠"
+        title={tr("plan.home.unavailable.title", "Planning data unavailable", "بيانات التخطيط غير متاحة")}
+        body={tr(
+          "plan.home.unavailable.body",
+          "The planning workspace could not be loaded (ERR-OPS-001). Nothing was created or changed. Try again.",
+          "تعذر تحميل مساحة التخطيط (ERR-OPS-001). لم يتم إنشاء أو تغيير أي بيانات. أعد المحاولة.",
+        )}
+      />
+    </Shell>
+  );
+  const unauthorized = () => (
+    <Shell current="/planning" title={title}>
+      <EmptyState
+        glyph="⛔"
+        title={tr("plan.home.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+        body={tr(
+          "plan.home.unauthorized.body",
+          "Visit Planning is restricted to authorized planning capabilities.",
+          "تخطيط الزيارات مقيّد بصلاحيات التخطيط المصرح بها.",
+        )}
+      />
+    </Shell>
+  );
+
+  if (access.error) return unavailable();
+
+  const methods = {
+    bulk: {
+      title: t("plan.method.bulk.title", "Plan multiple visits"),
+      desc: t("plan.method.bulk.desc", "AND/OR criteria over the Factory list; many visits under one plan (M01-002)."),
+      href: "/planning/bulk",
+    },
+    single: {
+      title: t("plan.method.single.title", "Plan one visit"),
+      desc: t("plan.method.single.desc", "One registered factory via CR / Industrial License; one plan, one visit (M01-034/042)."),
+      href: "/planning/single",
+    },
+    immediate: {
+      title: t("plan.method.immediate.title", "Create an urgent visit"),
+      desc: t("plan.method.immediate.desc", "Registered or unregistered factory with mandatory location (M01-043/045/046)."),
+      href: "/planning/immediate",
+    },
+  };
+
+  if (access.accessClass === "inspector") {
+    if (!access.can("planning.create.immediate")) return unauthorized();
     return (
-      <Shell current="/planning" title={title}>
-        <EmptyState glyph="⚠" title={tr("plan.home.unavailable.title", "Planning data unavailable", "بيانات التخطيط غير متاحة")}
-          body={tr("plan.home.unavailable.body", "The planning workspace could not be loaded (ERR-OPS-001). Nothing was created or changed. Try again.", "تعذر تحميل مساحة التخطيط (ERR-OPS-001). لم يتم إنشاء أو تغيير أي بيانات. أعد المحاولة.")} />
+      <Shell
+        current="/planning"
+        title={title}
+        context={<span className="ax-caption ax-numeric">CR-001 · CR-043..CR-051 · WA-DES-036</span>}
+      >
+        <PlanningPreview
+          methods={[methods.immediate]}
+          drafts={[]}
+          effectivePackage={undefined}
+          canCreate
+          locale={locale}
+          showVisits={false}
+          showPlans={false}
+        />
       </Shell>
     );
   }
@@ -158,56 +151,33 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
   const visibleRows = list.rows.filter(row => !isTestFixtureEstablishment({ name: row.factoryName }));
   const lastUpdates = await fetchLastUpdates(sb, visibleRows.map(r => r.id));
 
-  const lookups = (lookupsRead.data ?? []) as { kind: string; key: string; label_en: string; label_ar: string | null }[];
-  const lookupLabel = (l: { label_en: string; label_ar: string | null }) => (locale === "ar" ? (l.label_ar ?? l.label_en) : l.label_en);
-  const visitTypeOptions = lookups.filter(l => l.kind === "visit_type");
-  const priorityOptions = lookups.filter(l => l.kind === "priority");
-  const distinct = (rows: Record<string, unknown>[], key: string) =>
-    [...new Set(rows.map(r => r[key]).filter((v): v is string => typeof v === "string" && v.length > 0))].sort();
-  const regionOptions = distinct((regionsRead.data ?? []) as Record<string, unknown>[], "region");
-  const cityOptions = distinct((citiesRead.data ?? []) as Record<string, unknown>[], "city");
-  const inspectors = (inspectorsRead.data ?? []).map(r => ({ user_id: r.user_id as string, full_name: r.full_name as string }));
-  const packageOptions = ((packagesRead.data ?? []) as unknown as { id: string; version_label: string; packages: { title: string } | null }[])
-    .map(p => ({ id: p.id, label: `${p.packages?.title ?? "—"} · ${p.version_label}` }));
-  const drafts = (draftsRead.data ?? []) as unknown as DraftRow[];
+  const today = new Date().toISOString().slice(0, 10);
+  const [packageRead, draftsRead] = await Promise.all([
+    sb.from("package_versions")
+      .select("id, version_label, packages(title)")
+      .in("status", ["published", "locked"])
+      .lte("effective_from", today)
+      .or(`effective_to.is.null,effective_to.gte.${today}`)
+      .order("published_at", { ascending: false, nullsFirst: false })
+      .limit(1),
+    sb.from("visit_plans")
+      .select("id, method, status, plan_reference, created_at, profiles(full_name)")
+      .in("status", ["draft", "validated"])
+      .is("archived_at", null)
+      .order("created_at", { ascending: false })
+      .limit(10),
+  ]);
 
-  const methods: CreateVisitMethod[] = [
-    { glyph: "▦", title: t("plan.method.bulk.title", "Plan multiple visits"), desc: t("plan.method.bulk.desc", "AND/OR criteria over the Factory list; many visits under one plan (M01-002)."), href: "/planning/bulk" },
-    { glyph: "▣", title: t("plan.method.single.title", "Plan one visit"), desc: t("plan.method.single.desc", "One registered factory via CR / Industrial License; one plan, one visit (M01-034/042)."), href: "/planning/single" },
-    { glyph: "⚡", title: t("plan.method.immediate.title", "Create an urgent visit"), desc: t("plan.method.immediate.desc", "Unregistered factory allowed with mandatory location (M01-045/046)."), href: "/planning/immediate" },
-  ];
-
-  const tabLabels: Record<PlanningTab, string> = {
-    all: tr("plan.list.tabAll", "All", "الكل"),
-    draft: t("enum.draft", "Draft"),
-    published: t("enum.published", "Published"),
-    returned: t("enum.returned", "Returned"),
-    cancelled: t("enum.cancelled", "Cancelled"),
-    expired: t("enum.expired", "Expired"),
-  };
-
-  const sortLabels: Record<string, string> = {
-    created_desc: tr("plan.list.sortCreatedDesc", "Created — newest first", "الإنشاء — الأحدث أولاً"),
-    created_asc: tr("plan.list.sortCreatedAsc", "Created — oldest first", "الإنشاء — الأقدم أولاً"),
-    window_asc: tr("plan.list.sortWindowAsc", "Window — earliest first", "النافذة — الأقرب أولاً"),
-    window_desc: tr("plan.list.sortWindowDesc", "Window — latest first", "النافذة — الأبعد أولاً"),
-    reference_asc: tr("plan.list.sortReferenceAsc", "Visit reference", "مرجع الزيارة"),
-    status_asc: tr("plan.list.sortStatusAsc", "Planning status", "حالة التخطيط"),
-  };
-
-  if (targetPreview) {
-    return (
-      <Shell current="/planning" title={title} context={<span className="ax-caption ax-numeric">CR-001..CR-098 · WA-DES-036</span>}>
-        <PlanningPreview methods={methods} drafts={drafts.map(draft => ({
-          id: draft.id, method: t(`enum.${draft.method}`, draft.method), status: t(`enum.${draft.status}`, draft.status),
-          planReference: draft.plan_reference, createdAt: draft.created_at, planner: draft.profiles?.full_name ?? "—", href: continueHref(draft),
-        }))} effectivePackage={packageOptions[0]?.label ?? null} canCreate={access.can("planning.create")} locale={locale} />
-      </Shell>
-    );
+  if (packageRead.error || draftsRead.error) {
+    console.error("[planning.home] canonical landing read failed:", packageRead.error?.message ?? draftsRead.error?.message);
+    return unavailable();
   }
 
-  const totalPages = Math.max(1, Math.ceil(list.total / list.pageSize));
-  const page = Math.min(list.page, totalPages);
+  const effectivePackage = ((packageRead.data ?? []) as unknown as {
+    version_label: string;
+    packages: { title: string } | null;
+  }[])[0];
+  const drafts = (draftsRead.data ?? []) as unknown as DraftRow[];
 
   return (
     <Shell current="/planning" title="">
