@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r27",
-  "updated": "2026-07-26T13:20:00+03:00",
+  "revision": "SB-r28",
+  "updated": "2026-07-26T13:35:00+03:00",
   "updatedBy": "claude-code",
   "branch": "saqeel/virtual",
   "committed": false,
@@ -380,17 +380,45 @@
       "pending": [
         {
           "lane": "design",
-          "text": "BLOCK — WA-DES-027 restored predecessor carries the unapproved Arabic-only صناعي brand plus fabricated MODON / version / timestamp claims."
+          "text": "Design is BEHIND the shipped route, not ahead. DESIGN_ROUTE_MAP requires loading;empty;error;degraded;unauthorized;stale/conflict;provider-unavailable — both .dc.html pages render loading only (Factory 360 adds a governed-absence 'Not Available'). The route already implements empty, empty-region, error banners per section, degraded ('This source section is degraded; other sections remain available'), not-found/unauthorized, and provider-unavailable. Correct the design from the shipped route; do NOT implement from the design or six working states are lost."
         },
         {
           "lane": "design",
-          "text": "No responsive / AR-RTL / theme / hard-state evidence; bounded correction stalled mid-render. Do not implement from the live design."
+          "text": "No page-level AR/RTL in either .dc.html. Factories has zero dir attributes; Factory 360 has dir=\"rtl\" only on two Arabic legal-name values. The application sets dir on <html> in app/layout.tsx:99 and isolates external ids with <bdi>, so the app satisfies the EN/LTR + AR/RTL requirement and the design does not."
+        },
+        {
+          "lane": "design",
+          "text": "web/SAQEEL Factories.dc.html empty-state provenance line reads 'Factory identity records sync from the national source ().' — the source id is missing. The shipped route carries the governed value: 'national source (M07-002)'. Restore it in the design."
+        },
+        {
+          "lane": "code",
+          "text": "code 100 and wiring 85 are unevidenced: no browser proof exists. Static source read only — the browser gate was not run because sign-in requires a password this session will not enter and SAQEEL_TEST_PASSWORD is unset. /factories correctly 307s to /login unauthenticated; nothing past the auth boundary has been observed."
         }
       ],
       "phase": 3,
       "complexity": "L",
       "dependsOn": [
         "admin-data"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-07-26T04:27:49+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "design",
+            "text": "BLOCK — WA-DES-027 restored predecessor carries the unapproved Arabic-only صناعي brand plus fabricated MODON / version / timestamp claims."
+          },
+          "evidence": "Scripted counts on the live Claude Design copies web/SAQEEL Factory 360.dc.html (etag 1785024315959910) and web/SAQEEL Factories.dc.html: 'صناعي' occurs 0 times in either page. The only vN.N matches are SVG path data (M12 2v2.5, M19 3v2.5) in the shared topbar icons, not version strings. MODON appears 5 times in Factory 360 as source attribution (Source system MODON, MODON · v6, source MODON · recorded 2026-07-20) with an explicit caveat that freshness is a source fact and no staleness threshold is inferred. The cited evidence does not exist; superseded by the corrected design pending below."
+        },
+        {
+          "at": "2026-07-26T04:27:50+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "design",
+            "text": "No responsive / AR-RTL / theme / hard-state evidence; bounded correction stalled mid-render. Do not implement from the live design."
+          },
+          "evidence": "Reworded, not resolved. The substance (no AR-RTL, no hard states) is preserved and made specific in the two items that replace it; 'bounded correction stalled mid-render' described a render that is no longer the current page."
+        }
       ]
     },
     {
@@ -2092,6 +2120,13 @@
       "base": "origin/main SB-r26",
       "merged": "origin/saqeel/exec SB-r35, exec card only",
       "note": "main authoritative for pwa-visits (85/92/88, post-dates my snapshot per main's own pwa-visits fix commit); only exec taken from the branch being merged."
+    },
+    {
+      "at": "2026-07-26T13:35:00+03:00",
+      "by": "claude-code",
+      "base": "origin/main",
+      "merged": "origin/saqeel/factories, factories card pending only",
+      "note": "main authoritative on every other card (exec/feedback/pwa-visits/virtual all newer on main); only the factories card's corrected pending list (4 items vs main's stale 2) came from this branch, lanes identical on both sides."
     }
   ]
 }
