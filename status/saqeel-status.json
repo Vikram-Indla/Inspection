@@ -1,8 +1,8 @@
 {
-  "revision": "SB-r19",
-  "updated": "2026-07-26T01:40:00+03:00",
+  "revision": "SB-r20",
+  "updated": "2026-07-26T06:04:08+03:00",
   "updatedBy": "claude-code",
-  "branch": "feature/ipad-field-channel-delivery",
+  "branch": "saqeel/feedback",
   "committed": false,
   "law": "A card is 100% on Design only when the shipped route matches its .dc.html pixel-to-pixel at every declared width, in EN/LTR and AR/RTL. Structure, rules, enums and field names come from source. No number may be raised without evidence.",
   "channels": [
@@ -687,8 +687,8 @@
       "group": "exec",
       "name": "Feedback module",
       "design": 90,
-      "code": 35,
-      "wiring": 10,
+      "code": 65,
+      "wiring": 55,
       "designPage": "SAQEEL Feedback.dc.html",
       "route": "web/src/app/(app)/field/feedback/page.tsx · components/field/FieldQrPlaceholder.tsx",
       "pwa": {
@@ -714,6 +714,17 @@
       "dependsOn": [
         "pwa-completion",
         "reports"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-07-26T06:04:08+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "code": 65,
+            "wiring": 55
+          },
+          "evidence": "Schema live (feedback+feedback_aspect+submit_visit_feedback RPC, iiozvqntawxfwbgffzqu); real rate/[visitId] flow driven end-to-end in Chrome as inspector.test persona on visit cfe216e1 (Al Watania Plastics) — 5-question stepper, SignaturePad (DEC-009 reuse), RPC submit, row verified in DB (feedback id 1bcba16a, 5 aspects, real PNG signature); idempotent re-visit shows already-submitted; RLS negative-path confirmed (blocked on another inspector's visit); PDF hand-off resolves to real /reports/inspection/[id]. QR stays a generic non-scannable placeholder per PO (O-15 self-serve scan still open). Admin analytics view still not built (route-map REQUIRES_PRODUCT_OWNER_APPROVAL, untouched)."
+        }
       ]
     },
     {
