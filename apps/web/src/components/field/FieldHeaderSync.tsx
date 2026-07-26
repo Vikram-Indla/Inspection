@@ -18,7 +18,7 @@ export type FieldHeaderSyncStrings = {
 
 export default function FieldHeaderSync({ strings, userId }: { strings: FieldHeaderSyncStrings; userId: string }) {
   const local = useMemo(() => localForUser(userId), [userId]);
-  const [online, setOnline] = useState(true);
+  const [online, setOnline] = useState<boolean | null>(null);
   const [queued, setQueued] = useState<number | null>(null);
   const [syncing, setSyncing] = useState(false);
   const aliveRef = useRef(true);
@@ -46,7 +46,7 @@ export default function FieldHeaderSync({ strings, userId }: { strings: FieldHea
   }, [refresh, userId]);
 
   const runSync = useCallback(async () => {
-    if (syncing || !online) return;
+    if (syncing || online !== true) return;
     setSyncing(true);
     try {
       await processOutbox(userId, (_state: SyncState) => { /* state surfaced via queue refresh below */ });
@@ -57,25 +57,19 @@ export default function FieldHeaderSync({ strings, userId }: { strings: FieldHea
     }
   }, [online, syncing, userId, refresh]);
 
-  // A non-empty outbox must never be labelled Online: connectivity is
-  // available, but the user's changes are still pending replay.
-  const statusLabel = syncing
-    ? strings.syncing
-    : !online
-      ? strings.offline
-      : queued != null && queued > 0
-        ? `${strings.syncNow} · ${queued}`
-        : queued === 0
-          ? strings.online
-          : null;
+  // Connectivity and replay state are separate facts in the design. A queued
+  // outbox must not replace the real network label; its count belongs to the
+  // sync affordance below. Until navigator has been read on the client, render
+  // no connectivity claim.
+  const statusLabel = online === null ? null : online ? strings.online : strings.offline;
 
   return (
     <>
       {statusLabel && (
         <span
           className="fd-pill"
-          data-online={online && queued === 0 ? "true" : "false"}
-          data-sync-state={syncing ? "syncing" : !online ? "offline" : queued && queued > 0 ? "pending" : "online"}
+          data-online={online ? "true" : "false"}
+          data-sync-state={online ? "online" : "offline"}
           role="status"
           aria-live="polite"
           style={{
@@ -83,9 +77,9 @@ export default function FieldHeaderSync({ strings, userId }: { strings: FieldHea
             minHeight: 32, paddingBlock: 7, paddingInline: 13,
             borderRadius: "var(--radius-full)", fontSize: 12, fontWeight: 600,
             lineHeight: 1.3, whiteSpace: "nowrap",
-            border: `1px solid ${online && queued === 0 ? "var(--status-compliant-text)" : syncing || (queued != null && queued > 0) ? "var(--status-warning-text)" : "var(--border-subtle)"}`,
-            background: online && queued === 0 ? "var(--status-compliant-soft)" : syncing || (queued != null && queued > 0) ? "var(--status-warning-soft)" : "var(--surface-sunken)",
-            color: online && queued === 0 ? "var(--status-compliant-text)" : syncing || (queued != null && queued > 0) ? "var(--status-warning-text)" : "var(--text-secondary)",
+            border: `1px solid ${online ? "var(--status-compliant-text)" : "var(--status-warning-text)"}`,
+            background: online ? "var(--status-compliant-soft)" : "var(--status-warning-soft)",
+            color: online ? "var(--status-compliant-text)" : "var(--status-warning-text)",
           }}
         >
           <span aria-hidden="true" style={{ width: 7, height: 7, borderRadius: "var(--radius-full)", background: "currentColor", flex: "none" }} />
@@ -97,10 +91,10 @@ export default function FieldHeaderSync({ strings, userId }: { strings: FieldHea
         type="button"
         className="btn btn-icon btn-ghost"
         onClick={runSync}
-        disabled={syncing || !online}
+        disabled={syncing || online !== true}
         aria-label={syncing ? strings.syncing : strings.syncNow}
         title={syncing ? strings.syncing : strings.syncNow}
-        style={{ position: "relative", minWidth: 50, minHeight: 50 }}
+        style={{ position: "relative" }}
       >
         <svg className={syncing ? "fd-sync-icon--spinning" : undefined}
           viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"

@@ -7,6 +7,10 @@ import { localForUser, type CachedSubmittedReport } from "@/lib/offline";
 import styles from "./reports.module.css";
 
 type Strings = {
+  visitRecords: string;
+  priorVisits: string;
+  recordsHint: string;
+  visitsHint: string;
   version: string;
   signed: string;
   submitted: string;
@@ -19,6 +23,12 @@ type Strings = {
   inspector: string;
   answers: string;
   notes: string;
+  summary: string;
+  downloadPdf: string;
+  downloadUnavailable: string;
+  print: string;
+  priorUnavailableTitle: string;
+  priorUnavailableBody: string;
   noValue: string;
 };
 
@@ -45,6 +55,7 @@ export default function ReportsLibrary({
   const [online, setOnline] = useState(true);
   const [opened, setOpened] = useState<CachedSubmittedReport | null>(null);
   const [unavailable, setUnavailable] = useState(false);
+  const [tab, setTab] = useState<"records" | "visits">("records");
 
   useEffect(() => {
     const local = localForUser(userId);
@@ -72,8 +83,15 @@ export default function ReportsLibrary({
 
   const snapshot = useMemo(() => {
     if (!opened || typeof opened.snapshot !== "object" || opened.snapshot === null) return null;
-    return opened.snapshot as { answers?: Record<string, unknown>; notes?: Record<string, unknown> };
+    return opened.snapshot as {
+      answers?: Record<string, unknown>;
+      notes?: Record<string, unknown>;
+      document_url?: unknown;
+    };
   }, [opened]);
+  const documentUrl = typeof snapshot?.document_url === "string" && snapshot.document_url.trim()
+    ? snapshot.document_url
+    : null;
 
   async function openOffline(inspectionId: string) {
     const cached = await localForUser(userId).getSubmittedReport(inspectionId);
@@ -88,58 +106,76 @@ export default function ReportsLibrary({
 
   return (
     <>
-      <section className={styles.card} aria-label={strings.submitted}>
-        {reports.map(report => {
-          const acknowledgement = report.acknowledgement as { signed?: boolean; signed_at?: string; signature_data_url?: string } | null;
-          const acknowledged = Boolean(acknowledgement?.signed || acknowledgement?.signed_at || acknowledgement?.signature_data_url);
-          return (
-            <Link
-              key={report.inspectionId}
-              className={styles.row}
-              href={`/field/reports/${report.inspectionId}`}
-              prefetch={false}
-              onClick={event => {
-                if (online) return;
-                event.preventDefault();
-                void openOffline(report.inspectionId);
-              }}
-            >
-              <span className={styles.icon} aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                  <path d="M8 2h6l4 4v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" />
-                  <path d="M14 2v4h4" />
-                </svg>
-              </span>
-              <span className={styles.copy}>
-                {report.factoryName ? <strong>{report.factoryName}</strong> : null}
-                <span>
-                  {report.factoryCode ? <><bdi>{report.factoryCode}</bdi>{" · "}</> : null}
-                  {report.submittedAt ? formatDate(report.submittedAt, locale) : strings.noValue}
-                  {" · "}{strings.version} <bdi>{report.versionNumber}</bdi>
-                </span>
-                {report.inspectorName ? <span>{report.inspectorName}</span> : null}
-              </span>
-              <span className={`badge ${acknowledged ? "badge-completed" : "badge-warning"}`}>
-                {acknowledged ? strings.signed : strings.submitted}
-              </span>
-              <span className={styles.open}>{strings.open}<span aria-hidden="true">›</span></span>
-            </Link>
-          );
-        })}
-      </section>
+      <div className={styles.segment} role="tablist">
+        <button type="button" role="tab" aria-selected={tab === "records"} onClick={() => { setTab("records"); setOpened(null); setUnavailable(false); }}>{strings.visitRecords}</button>
+        <button type="button" role="tab" aria-selected={tab === "visits"} onClick={() => { setTab("visits"); setOpened(null); setUnavailable(false); }}>{strings.priorVisits}</button>
+      </div>
+
+      {tab === "records" ? (
+        <div className={styles.tabPanel} role="tabpanel">
+          <p className={styles.hint}>{strings.recordsHint}</p>
+          <section className={styles.card} aria-label={strings.submitted}>
+            {reports.map(report => {
+              const acknowledgement = report.acknowledgement as { signed?: boolean; signed_at?: string; signature_data_url?: string } | null;
+              const acknowledged = Boolean(acknowledgement?.signed || acknowledgement?.signed_at || acknowledgement?.signature_data_url);
+              return (
+                <Link
+                  key={report.inspectionId}
+                  className={styles.row}
+                  href={`/field/reports/${report.inspectionId}`}
+                  prefetch={false}
+                  onClick={event => {
+                    if (online) return;
+                    event.preventDefault();
+                    void openOffline(report.inspectionId);
+                  }}
+                >
+                  <span className={styles.icon} aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+                      <path d="M8 2h6l4 4v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" />
+                      <path d="M14 2v4h4" />
+                    </svg>
+                  </span>
+                  <span className={styles.copy}>
+                    {report.factoryName ? <strong>{report.factoryName}</strong> : null}
+                    <span>
+                      {report.factoryCode ? <><bdi>{report.factoryCode}</bdi>{" · "}</> : null}
+                      {report.submittedAt ? formatDate(report.submittedAt, locale) : strings.noValue}
+                      {" · "}{strings.version} <bdi>{report.versionNumber}</bdi>
+                    </span>
+                    {report.inspectorName ? <span>{report.inspectorName}</span> : null}
+                  </span>
+                  <span className={`badge ${acknowledged ? "badge-completed" : "badge-warning"}`}>
+                    {acknowledged ? strings.signed : strings.submitted}
+                  </span>
+                  <span className={styles.open}>{strings.open}<span aria-hidden="true">›</span></span>
+                </Link>
+              );
+            })}
+          </section>
+        </div>
+      ) : (
+        <div className={styles.empty} role="tabpanel">
+          <strong>{strings.priorUnavailableTitle}</strong>
+          <span>{strings.priorUnavailableBody}</span>
+        </div>
+      )}
 
       {(opened || unavailable) && (
-        <div className={styles.dialogBackdrop} role="presentation" onMouseDown={() => { setOpened(null); setUnavailable(false); }}>
-          <section className={styles.dialog} role="dialog" aria-modal="true" aria-label={strings.documentTitle} onMouseDown={event => event.stopPropagation()}>
-            <div className={styles.dialogHead}>
-              <strong>{unavailable ? strings.unavailableTitle : strings.documentTitle}</strong>
-              <button type="button" className="btn btn-ghost" onClick={() => { setOpened(null); setUnavailable(false); }}>{strings.close}</button>
+        <section className={styles.detailCard} aria-label={strings.documentTitle}>
+          <div className={styles.detailHead}>
+            <div>
+              <span className={styles.detailLabel}>{strings.documentTitle}</span>
+              {opened?.factoryName ? <h2>{opened.factoryName}</h2> : null}
             </div>
-            {unavailable ? (
-              <p className={styles.unavailable} role="status">{strings.unavailableBody}</p>
-            ) : opened ? (
+            {opened ? <span className="badge badge-completed">{strings.signed}</span> : null}
+            <button type="button" className="btn btn-icon btn-ghost" aria-label={strings.close} onClick={() => { setOpened(null); setUnavailable(false); }}>×</button>
+          </div>
+          {unavailable ? (
+            <div className={styles.unavailable} role="status"><strong>{strings.unavailableTitle}</strong><p>{strings.unavailableBody}</p></div>
+          ) : opened ? (
+            <>
               <div className={styles.document}>
-                {opened.factoryName ? <h2>{opened.factoryName}</h2> : null}
                 <dl>
                   <div><dt>{strings.submittedAt}</dt><dd>{opened.submittedAt ? formatDate(opened.submittedAt, locale) : strings.noValue}</dd></div>
                   <div><dt>{strings.version}</dt><dd><bdi>{opened.versionNumber}</bdi></dd></div>
@@ -160,9 +196,17 @@ export default function ReportsLibrary({
                   </section>
                 ) : null}
               </div>
-            ) : null}
-          </section>
-        </div>
+              <div className={styles.detailActions}>
+                {documentUrl ? (
+                  <a className="btn btn-secondary" href={documentUrl} download>{strings.downloadPdf}</a>
+                ) : (
+                  <button type="button" className="btn btn-secondary" disabled title={strings.downloadUnavailable}>{strings.downloadPdf}</button>
+                )}
+                <button type="button" className="btn btn-secondary" onClick={() => window.print()}>{strings.print}</button>
+              </div>
+            </>
+          ) : null}
+        </section>
       )}
     </>
   );

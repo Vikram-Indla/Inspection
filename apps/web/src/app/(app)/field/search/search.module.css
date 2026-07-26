@@ -4,6 +4,10 @@
    design's one bare color (#fff on the active filter chip) is replaced by the
    DS token var(--text-on-action). */
 
+.header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; padding-block-start: max(14px, env(safe-area-inset-top)); background: var(--surface-primary); border-block-end: 1px solid var(--border-subtle); }
+.headerTitle { flex: 1; font-weight: 700; font-size: 16px; }
+.langButton { padding: 7px 13px; border-radius: 999px; border: 1px solid var(--border-subtle); background: var(--surface-sunken); font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; color: var(--text-secondary); text-decoration: none; }
+
 .searchbar { display: flex; align-items: center; gap: 10px; padding: 12px 18px; background: var(--surface-primary); border-block-end: 1px solid var(--border-subtle); }
 .searchIcon { width: 18px; height: 18px; color: var(--text-secondary); flex: none; }
 .input { flex: 1; border: 1px solid var(--border-subtle); border-radius: 10px; padding: 10px 14px; font: inherit; font-size: 14px; background: var(--surface-sunken); color: var(--text-primary); min-width: 0; }
@@ -30,6 +34,11 @@
 .chevron { width: 15px; height: 15px; color: var(--text-muted); flex: none; }
 
 .state { padding: 60px 20px; text-align: center; color: var(--text-secondary); }
+.recentLabel { padding: 16px 18px 8px; }
+.recentEmpty { padding: 24px 20px; text-align: center; color: var(--text-secondary); }
+.recentIconBox { width: 32px; height: 32px; background: var(--surface-sunken); color: var(--text-secondary); }
+.recentIcon { width: 15px; height: 15px; }
+.recentText { flex: 1; font-size: 13.5px; }
 .notice { margin: 12px 18px; }
 /* .alert is display:flex row; the error state stacks message over recovery. */
 .errorAlert { margin: 12px 18px; flex-direction: column; align-items: flex-start; }

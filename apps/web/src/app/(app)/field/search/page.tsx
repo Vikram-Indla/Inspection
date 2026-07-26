@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import FieldHeader from "@/components/field/FieldHeader";
+import ThemeToggle from "@/components/ThemeToggle";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { performShellSearch, type GlobalSearchResult, type GlobalSearchType, type ShellSearchOutcome } from "@/lib/shell-search";
 import { shellGlobalSearchHref } from "@/lib/shell-navigation";
 import { useT } from "@/lib/i18n";
 import styles from "./search.module.css";
+import SearchRecents from "./SearchRecents";
 
 // SAQEEL Field Global Search.dc.html — dedicated results screen (previously only
 // the header dropdown existed). Same query/ranking as the dropdown: both call
@@ -116,11 +117,18 @@ export default async function FieldSearchPage({ searchParams }: { searchParams: 
 
   return (
     <>
-      <FieldHeader
-        leading={backBtn}
-        title={tr("field.search.title", "Global Search", "البحث الشامل")}
-        langHref={langHref} langLabel={langLabel}
-      />
+      <header className={styles.header}>
+        {backBtn}
+        <div className={styles.headerTitle}>{tr("field.search.title", "Global Search", "البحث الشامل")}</div>
+        <a href={langHref} className={styles.langButton}>{langLabel}</a>
+        <ThemeToggle
+          className="btn btn-icon btn-ghost"
+          labels={{
+            toLight: tr("theme.light", "Light mode", "الوضع الفاتح"),
+            toDark: tr("theme.dark", "Dark mode", "الوضع الداكن"),
+          }}
+        />
+      </header>
 
       {/* Search bar — GET form; submits on Enter (no client JS). */}
       <form className={styles.searchbar} method="GET" action="/field/search" role="search">
@@ -157,15 +165,11 @@ export default async function FieldSearchPage({ searchParams }: { searchParams: 
           </div>
         )}
 
-        {query.length === 0 && (
-          <div className={styles.state} role="status">
-            {tr("field.search.prompt", "Start typing to search factories, CRs, licenses, plants, visits and inspections.", "ابدأ الكتابة للبحث في المصانع والسجلات التجارية والتراخيص والمنشآت والزيارات وعمليات التفتيش.")}
-          </div>
-        )}
-
-        {query.length > 0 && query.length < 2 && (
-          <div className={styles.state} role="status">{tr("field.search.tooShort", "Type at least 2 characters.", "أدخل حرفين على الأقل.")}</div>
-        )}
+        <SearchRecents
+          query={query}
+          recentLabel={tr("field.search.recent", "Recent searches", "عمليات بحث سابقة")}
+          emptyLabel={tr("field.search.recentEmpty", "Not configured", "غير مهيأ")}
+        />
 
         {/* ERROR — search could not run. Deliberately does NOT claim an empty
             scope, and offers the same query again rather than a dead end. */}
@@ -179,7 +183,7 @@ export default async function FieldSearchPage({ searchParams }: { searchParams: 
         )}
 
         {/* EMPTY — the query ran and genuinely matched nothing in scope. */}
-        {emptyOverall && (
+        {(emptyOverall || (!searchUnavailable && query.length > 0 && query.length < 2)) && (
           <div className={styles.state} role="status">{tr("field.search.empty", "No matching results in your scope.", "لا توجد نتائج مطابقة ضمن صلاحياتك.")}</div>
         )}
 

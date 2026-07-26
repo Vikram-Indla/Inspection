@@ -198,7 +198,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const validationRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => { if (validation && validation.length) validationRef.current?.focus(); }, [validation]);
   const [signing, setSigning] = useState(false);
-  const [submitted, setSubmitted] = useState(inspection.status === "submitted");
+  const [submitted, setSubmitted] = useState(["submitted", "approved", "rejected"].includes(inspection.status));
   const [correctionMode, setCorrectionMode] = useState(false);
   const [showVersionComparison, setShowVersionComparison] = useState(false);
   // SCR-IPAD-660. Server-confirmed submission (submission_version_id,
@@ -1014,6 +1014,34 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const latestVersion = Math.max(0, ...(inspection.submission_versions ?? []).map(version => version.version_number));
   if (submitted) {
     const serverSubmitted = inspection.status === "submitted";
+    const latestReview = [...(inspection.reviews ?? [])]
+      .filter(review => !!review.decided_at || review.status === "pending")
+      .sort((a, b) => String(a.decided_at).localeCompare(String(b.decided_at)))
+      .slice(-1)[0];
+    const lifecyclePhase = inspection.status === "approved" || latestReview?.decision === "approve"
+      ? "approved"
+      : inspection.status === "rejected" || latestReview?.decision === "reject"
+        ? "rejected"
+        : latestReview?.status === "pending" ? "pending" : "submitted";
+    const completionText = locale === "ar" ? {
+      lifecycle: "مرحلة دورة الحياة",
+      phases: [["review", "المراجعة"], ["ack", "الإقرار والتوقيع"], ["submitted", "مُرسَل"], ["pending", "قيد المراجعة"], ["returned", "مُعاد"], ["approved", "معتمد"], ["rejected", "مرفوض"]],
+      pending: "معلّق",
+      reportsNote: "تُعرض روابط التقرير المصرح بها فقط بعد أن يوفّرها الخادم.",
+      feedback: "رمز التقييم واستلام التقرير",
+      feedbackBody: "غير مهيأ",
+      feedbackNote: "يلزم رمز عام محدود النطاق ورابط تقرير مُرشَّح بالصلاحيات من الخادم.",
+      saveDraft: "حفظ كمسودة",
+    } : {
+      lifecycle: "Lifecycle phase",
+      phases: [["review", "Review"], ["ack", "Acknowledge & sign"], ["submitted", "Submitted"], ["pending", "Under review"], ["returned", "Returned"], ["approved", "Approved"], ["rejected", "Rejected"]],
+      pending: "Pending",
+      reportsNote: "Authorized report links appear only after the server provides them.",
+      feedback: "Feedback & report QR",
+      feedbackBody: "Not configured",
+      feedbackNote: "A token-scoped public URL and permission-filtered report link are required from the server.",
+      saveDraft: "Save draft",
+    };
     return (
       <main className={`${styles.page} ${styles.completionPage} ${a11y.scope}`}>
         <LiveRegion message={msg} />
@@ -1022,6 +1050,14 @@ export default function Workspace({ inspection, items, library, serverResponses,
           <span className="t-caption id-code">{inspectionNo ?? inspection.id.slice(0, 8)}</span>
         </div>
         {msg && <div className="alert alert-info"><div>{msg}</div></div>}
+        <section className={`${styles.card} ${styles.lifecycleCard}`} aria-label={completionText.lifecycle}>
+          <span className={styles.overline}>{completionText.lifecycle}</span>
+          <div className={styles.lifecycleSegments}>
+            {completionText.phases.map(([phase, label]) => (
+              <span key={phase} className={styles.lifecycleSegment} aria-current={lifecyclePhase === phase ? "step" : undefined}>{label}</span>
+            ))}
+          </div>
+        </section>
         <section className={`${styles.card} ${styles.completionBanner}`} aria-labelledby="completion-title">
           <div className={styles.completionMark} aria-hidden="true">✓</div>
           <div>
@@ -1033,6 +1069,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
           <h3 className={styles.completionHeading}>{strings.completionReview}</h3>
           <div className={styles.completionMetrics}>
             <div><strong>{totals.a}</strong><span>{strings.completionAnswered}</span></div>
+            <div><strong>{Math.max(0, totals.b - totals.a)}</strong><span>{completionText.pending}</span></div>
             <div><strong>{summary.violations}</strong><span>{strings.completionViolations}</span></div>
             <div><strong>{summary.evidence}</strong><span>{strings.completionEvidence}</span></div>
             <div><strong>{serverForms.length}</strong><span>{strings.completionForms}</span></div>
@@ -1041,20 +1078,40 @@ export default function Workspace({ inspection, items, library, serverResponses,
         <section className={styles.card}>
           <h3 className={styles.completionHeading}>{strings.completionReports}</h3>
           <div className={styles.completionLinks}>
-            <span className="badge badge-compliant">
-              {strings.completionVersion} v{latestVersion || 1}
-            </span>
+            {latestVersion > 0 ? <span className="badge badge-compliant">{strings.completionVersion} v{latestVersion}</span> : null}
             {serverSubmitted && (
               <Link className="btn btn-secondary" href={`/field/inspection/${inspection.id}/statement`}>
                 {strings.completionStatement}
               </Link>
             )}
           </div>
+          <p className="t-caption">{completionText.reportsNote}</p>
+          <div className={styles.feedbackPanel}>
+            <div className={styles.feedbackQr} aria-hidden="true">{completionText.feedbackBody}</div>
+            <div>
+              <h4>{completionText.feedback}</h4>
+              <p className="t-caption">{completionText.feedbackNote}</p>
+            </div>
+          </div>
         </section>
+        {historyEvents.length > 0 && (
+          <section className={styles.card}>
+            <h3 className={styles.completionHeading}>{strings.versionHistory}</h3>
+            <div className={styles.versionTimeline}>
+              {historyEvents.map((event, index) => (
+                <div key={`${event.at}-${index}`} className={styles.versionTimelineRow}>
+                  <span className={`${styles.versionTimelineDot} ${styles[event.tone]}`} aria-hidden="true" />
+                  <div><strong>{event.label}</strong><div className="t-caption">{formatEventTime(event.at)}</div></div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
         <div className={styles.completionFooter}>
           <span className={`badge ${serverSubmitted ? "badge-compliant" : "badge-warning"}`}>
             <span className="dot" />{serverSubmitted ? strings.completionSyncPending : strings.sync.pending}
           </span>
+          <button className="btn btn-secondary" disabled>{completionText.saveDraft}</button>
           <Link className="btn btn-primary" href="/field/my-tasks">{strings.completionTasks}</Link>
         </div>
       </main>

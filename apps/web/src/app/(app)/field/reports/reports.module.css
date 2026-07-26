@@ -16,21 +16,39 @@
   border-radius: var(--radius-md);
 }
 
-.segment span {
+.segment button {
   min-height: 42px;
   padding: 9px 16px;
+  border: 0;
+  border-inline-end: 1px solid var(--border-input);
   display: inline-flex;
   align-items: center;
+  background: var(--surface-primary);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.segment button:last-child {
+  border-inline-end: 0;
+}
+
+.segment button[aria-selected="true"] {
   background: var(--action-primary);
   color: var(--text-on-action);
-  font-size: 13px;
-  font-weight: 600;
 }
 
 .hint {
   margin: 0;
   color: var(--text-muted);
   font-size: 12.5px;
+}
+
+.tabPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .card {
@@ -166,43 +184,41 @@
   flex: none;
 }
 
-.dialogBackdrop {
-  position: fixed;
-  z-index: 80;
-  inset: 0;
-  padding: 24px;
-  display: grid;
-  place-items: center;
-  background: color-mix(in srgb, var(--shadow-base) 62%, transparent);
-}
-
-.dialog {
-  width: min(720px, 100%);
-  max-height: min(760px, calc(100dvh - 48px));
-  overflow: auto;
+.detailCard {
+  overflow: hidden;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  border-radius: 12px;
   background: var(--surface-primary);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-card);
 }
 
-.dialogHead {
-  position: sticky;
-  z-index: 1;
-  inset-block-start: 0;
-  min-height: 56px;
-  padding: 10px 16px;
+.detailHead {
+  padding: 16px 18px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 14px;
   border-block-end: 1px solid var(--border-subtle);
-  background: var(--surface-primary);
+}
+
+.detailHead > div {
+  flex: 1;
+}
+
+.detailHead h2 {
+  margin: 2px 0 0;
+  font-size: 18px;
+}
+
+.detailLabel {
+  color: var(--text-muted);
+  font-size: 11.5px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
 }
 
 .document,
 .unavailable {
-  padding: 20px;
+  padding: 14px 18px;
 }
 
 .document h2,
@@ -213,7 +229,7 @@
 
 .document {
   display: grid;
-  gap: 20px;
+  gap: 14px;
 }
 
 .document section {
@@ -246,6 +262,19 @@
   overflow-wrap: anywhere;
 }
 
+.unavailable p {
+  margin-block-end: 0;
+  color: var(--text-muted);
+}
+
+.detailActions {
+  padding: 14px 18px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  border-block-start: 1px solid var(--border-subtle);
+}
+
 /* 600px is the PWA shell breakpoint; this file previously broke at 640px. */
 @media (max-width: 600px) {
   .wrap {
@@ -267,16 +296,6 @@
 
   .open {
     margin-inline-start: auto;
-  }
-
-  .dialogBackdrop {
-    padding: 0;
-    align-items: end;
-  }
-
-  .dialog {
-    max-height: calc(100dvh - 24px);
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   }
 
   .document dl > div {
