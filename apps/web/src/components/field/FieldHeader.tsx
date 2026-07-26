@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { FieldShellBurger } from "@/components/field/FieldShellDrawer";
 
 // Shared SAQEEL field-screen header — markup/geometry ported from the design's
 // per-screen headers (SAQEEL Field My Tasks/Dashboard/… .dc.html): a
@@ -26,6 +27,10 @@ export default function FieldHeader({
         background: "var(--surface-primary)", borderBlockEnd: "1px solid var(--border-subtle)",
       }}
     >
+      {/* Side-panel trigger, ahead of the page's own leading control exactly as
+          the design places it. Renders nothing for a persona with no side-panel
+          destinations — see FieldShellDrawer. */}
+      <FieldShellBurger />
       {leading}
       <div style={{ flex: 1, minWidth: 0, lineHeight: 1.3 }}>
         <div style={{ fontWeight: 700, fontSize: 16 }}>{title}</div>
