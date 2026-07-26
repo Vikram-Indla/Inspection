@@ -435,3 +435,15 @@ synthetic beta licence and expected result for `POST /shared/api/v2/license-info
 | WA-M2-B002-EV-002 | Pinned focused/protected M2 Playwright 19/19; final focused 8/8 | PASS |
 | WA-M2-B002-EV-003 | Visible Codex browser walkthrough of three preview routes | PASS — awaiting Product Owner decision |
 | WA-M2-B002-EV-004 | 478-row Web/Admin validator and Phase 2 isolation | PASS |
+
+## SAQEEL Web/Admin convergence discovery — 2026-07-24
+
+| ID | Evidence | Status |
+|---|---|---|
+| SAQEEL-DSYNC-EV-001 | Isolated worktree, branch, stash and non-interference report | PASS |
+| SAQEEL-DSYNC-EV-002 | 478-row requirement-design-code reconciliation | PASS — 478/478 structurally present; no delivery upgrade |
+| SAQEEL-DSYNC-EV-003 | Web/Admin route inventories | PASS — 39 Web and 32 Admin static/prior-test rows |
+| SAQEEL-DSYNC-EV-004 | Design inventory | PARTIAL — 46 verified exports/45 unique; screenshot shows 98; live IDs blocked by HTTP 401 |
+| SAQEEL-DSYNC-EV-005 | Landing, navigation, wiring, synergy and API gap registers | CAPTURED |
+| SAQEEL-DSYNC-EV-006 | Sponsor proposal, consent, lease and cross-review packet | READY — sponsor decisions pending |
+| SAQEEL-DSYNC-EV-007 | Typecheck, CSV workbook validation and diff check | PASS |
