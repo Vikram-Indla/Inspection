@@ -92,7 +92,8 @@ test("admin-core gateway reports the seeded persona's enabled families truthfull
     links.map(link => (link as HTMLAnchorElement).getAttribute("href")),
   );
 
-  await expect(controlPanel.locator("[data-control-card]")).toHaveCount(24);
+  await expect(controlPanel.locator("[data-control-card]")).toHaveCount(5);
+  await expect(nav.locator("[data-nav-group^='admin-']")).toHaveCount(7);
   for (const forbidden of ["/dashboard", "/operations", "/factories", "/planning", "/field", "/reviews"]) {
     expect(hrefs, `${forbidden} must not be disclosed to an admin-only persona`).not.toContain(forbidden);
   }

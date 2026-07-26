@@ -41,11 +41,16 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
 
     const composed = itemsFor(["compliance_admin", "form_admin", "workflow_admin", "security_admin", "gis_admin", "risk_owner"]);
     expect(composed.filter(item => item.visibility === "admin-primary").every(item => item.enabled)).toBe(true);
-    expect(composed.filter(item => item.visibility === "admin-advanced").map(item => item.id)).toEqual([
+    expect(new Set(composed.filter(item => item.visibility === "admin-advanced").map(item => item.id))).toEqual(new Set([
       "execution", "workflows", "gis", "audit", "platform-operations", "security-access", "devices",
       "admin-home", "inspection-items", "enforcement-recommendations", "bulk-violations", "localization",
       "enforcement-cases",
-    ]);
+    ]));
+    expect(buildShellNavigation(["compliance_admin", "form_admin", "workflow_admin", "security_admin", "gis_admin", "risk_owner"])
+      .filter(group => group.id.startsWith("admin-")).map(group => group.id)).toEqual([
+        "admin-control", "admin-people", "admin-rules", "admin-planning",
+        "admin-risk", "admin-connections", "admin-governance",
+      ]);
     expect(composed.some(item => item.visibility === "business")).toBe(false);
   });
 

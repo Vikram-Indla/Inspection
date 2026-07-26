@@ -145,7 +145,9 @@ export default function ShellClient({
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(groups.map(group => [
       group.id,
-      group.id !== "administration" || groups.length === 1,
+      group.id === "admin-control"
+        || group.items.some(item => isShellRouteCurrent(current, item.href))
+        || (!group.id.startsWith("admin-") && group.id !== "administration"),
     ])),
   );
   const navRef = useRef<HTMLElement>(null);
@@ -372,7 +374,7 @@ export default function ShellClient({
 
   function renderNavGroup(group: ShellClientNavGroup) {
     const groupOpen = openGroups[group.id] ?? true;
-    const isAdministration = group.id === "administration";
+    const isAdministration = group.id.startsWith("admin-");
     return (
       <section className="ax-nav-group" data-nav-group={group.id} key={group.id}>
         <button className={`ax-nav-group__trigger${isAdministration ? " is-administration" : ""}`} type="button" aria-label={group.label} aria-expanded={groupOpen}

@@ -129,8 +129,8 @@ export default async function AdminHome() {
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[] };
   const roles = Array.from(new Set((roleRows ?? []).map(r => r.role_key))).sort();
-  const administration = buildShellNavigation(roles).find(g => g.id === "administration");
-  const actFamilies = (administration?.items ?? [])
+  const administration = buildShellNavigation(roles).filter(g => g.id.startsWith("admin-"));
+  const actFamilies = administration.flatMap(group => group.items)
     .filter(i => i.id !== "admin-home" && i.enabled)
     .map(i => t(i.labelKey, locale === "ar" ? i.labelAr : i.labelEn));
   const sep = locale === "ar" ? "، " : ", ";
@@ -248,54 +248,32 @@ export default async function AdminHome() {
             )}
           </p>
         </div>
-        {CONTROL_GROUPS.map(group => (
+        {CONTROL_GROUPS.map(group => {
+          const authorizedCards = group.cards.filter(card =>
+            !card.roles?.length || card.roles.some(role => roleSet.has(role)),
+          );
+          if (!authorizedCards.length) return null;
+          const first = authorizedCards[0];
+          return (
           <section className="stack admin-control-group" key={group.titleEn}>
-            <div className="admin-control-group__heading">
-              <h4 style={{ margin: 0 }}>{locale === "ar" ? group.titleAr : group.titleEn}</h4>
-              <span className="t-caption" lang={locale === "ar" ? "en" : "ar"} dir={locale === "ar" ? "ltr" : "rtl"}>
-                {locale === "ar" ? group.titleEn : group.titleAr}
-              </span>
-            </div>
             <div className="admin-control-grid">
-              {group.cards.map(card => {
-                const enabled = !card.roles?.length || card.roles.some(role => roleSet.has(role));
-                const title = locale === "ar" ? card.titleAr : card.titleEn;
-                const alternate = locale === "ar" ? card.titleEn : card.titleAr;
-                const description = locale === "ar" ? card.descAr : card.descEn;
-                const content = (
-                  <>
-                    <span className="row" style={{ alignItems: "center", gap: "var(--space-3)" }}>
-                      <span className="badge badge-info" aria-hidden="true">{card.glyph}</span>
-                      <strong>{title}</strong>
-                    </span>
-                    <span className="t-caption" lang={locale === "ar" ? "en" : "ar"} dir={locale === "ar" ? "ltr" : "rtl"}>
-                      {alternate}
-                    </span>
-                    <span className="t-caption">{description}</span>
-                    {!enabled ? (
-                      <span className="sq-lozenge sq-lozenge--warning">
-                        {t("admin.controlPanel.restricted", "Role-restricted")}
-                      </span>
-                    ) : null}
-                  </>
-                );
-                const style = {
-                  textDecoration: "none",
-                  color: "inherit",
-                };
-                return enabled ? (
-                  <a className="panel stack sq-link admin-control-card" data-control-card href={card.href} key={card.href} style={style}>
-                    {content}
-                  </a>
-                ) : (
-                  <div className="panel stack admin-control-card is-restricted" data-control-card aria-disabled="true" key={card.href} style={style}>
-                    {content}
-                  </div>
-                );
-              })}
+              <a className="panel stack sq-link admin-control-card admin-hub-card" data-control-card
+                href={first.href} style={{ textDecoration: "none", color: "inherit" }}>
+                <strong>{locale === "ar" ? group.titleAr : group.titleEn}</strong>
+                <span className="t-caption">
+                  {fill(
+                    t("admin.controlPanel.authorizedTools", "{count} authorized tools"),
+                    { count: authorizedCards.length },
+                  )}
+                </span>
+                <span className="admin-hub-card__links">
+                  {authorizedCards.slice(0, 3).map(card => locale === "ar" ? card.titleAr : card.titleEn).join(locale === "ar" ? "، " : ", ")}
+                </span>
+              </a>
             </div>
           </section>
-        ))}
+          );
+        })}
       </section>
 
       <section className="panel stack" aria-labelledby="cd004-spine-h" style={{ padding: "var(--space-6)" }}>

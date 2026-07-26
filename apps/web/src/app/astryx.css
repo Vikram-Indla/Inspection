@@ -637,7 +637,7 @@ button.ax-shell-scope { cursor: pointer; }
   gap: var(--ax-space-150);
 }
 .admin-control-card {
-  min-block-size: 132px; padding: var(--ax-space-200); gap: var(--ax-space-100);
+  min-block-size: 104px; padding: var(--ax-space-200); gap: var(--ax-space-100);
   border-color: var(--ax-color-border); box-shadow: none;
   transition: border-color var(--ax-motion-fast), background var(--ax-motion-fast), transform var(--ax-motion-fast);
 }
@@ -645,7 +645,7 @@ button.ax-shell-scope { cursor: pointer; }
   border-color: color-mix(in srgb, var(--ax-color-primary) 45%, var(--ax-color-border));
   background: var(--ax-color-primary-tint); transform: translateY(-1px);
 }
-.admin-control-card.is-restricted { opacity: .62; background: var(--ax-color-surface-sunken); }
+.admin-hub-card__links { color: var(--ax-color-text-secondary); font: var(--ax-text-caption); }
 
 /* Drawer breakpoint. Product-Owner decision 2026-07-26: at iPad size — real
    device or responsive window — the console shows the hamburger AND the tab
