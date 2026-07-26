@@ -80,7 +80,9 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { theme: "dark", lang: "en" };
+  // Seeded from ?lang= so the prototype opens directly in the requested
+  // direction instead of depending on a language control being clicked.
+  state = { theme: "dark", lang: DC_INITIAL_LOCALE() };
   renderVals() {
     const lang = this.state.lang;
     const STR = {
@@ -125,6 +127,18 @@ class Component extends DCLogic {
       toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
       lang, dir: lang === "ar" ? "rtl" : "ltr", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
     };
+  }
+}
+
+// Hoisted so the class field initialiser above can call it. Returns "ar" only
+// when the URL explicitly asks for Arabic; every other input stays "en".
+function DC_INITIAL_LOCALE() {
+  try {
+    var q = new URLSearchParams(window.location.search);
+    var v = (q.get("lang") || q.get("locale") || "").toLowerCase();
+    return v === "ar" ? "ar" : "en";
+  } catch (e) {
+    return "en";
   }
 }
 

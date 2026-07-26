@@ -22,7 +22,7 @@
 <div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
 
   <header style="display:flex; align-items:center; gap:10px; padding:14px 18px; padding-block-start:max(14px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
-    <a href="SAQEEL%20PWA-Field%20Settings.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="{{ t.backArrow }}"/></svg></a>
+    <a href="SAQEEL%20PWA-Field%20Settings.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" data-directional="true"><path d="{{ t.backArrow }}"/></svg></a>
     <div style="flex:1; font-weight:700; font-size:16px;">{{ t.title }}</div>
     <span class="badge badge-critical" style="height:19px;">{{ conflictCount }} {{ t.pending }}</span>
     <button class="cr-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
@@ -102,7 +102,7 @@ class Component extends DCLogic {
         allResolved:"لا توجد تعارضات", allResolvedSub:"جميع إجابات بنود التفتيش متزامنة.",
         groundingNote:"مبني على مخزن conflicts الفعلي في IndexedDB (mim-field-v1) — يغطي تعارضات إجابات بنود التفتيش فقط.",
         policyNote:"سياسة الحل: يُسأل المفتش في كل مرة — لا يوجد فوز تلقائي لأي طرف. اختيارك (إبقاء قيمة الخادم أو إعادة إرسال إجابتك) يُنفَّذ فوراً ويُسجَّل ضمن سجل القرار." },
-      en: { back:"Back", title:"Sync Conflict Resolution", backArrow:"M9 6l6 6-6 6", langBtnLabel:"AR", pending:"pending", key:"Key", detected:"Detected",
+      en: { back:"Back", title:"Sync Conflict Resolution", backArrow:"M15 6l-6 6 6 6", langBtnLabel:"AR", pending:"pending", key:"Key", detected:"Detected",
         intro:"This only happens when a locally-saved checklist-item response syncs while someone else updated the same item on the server after your last local copy. Nothing is overwritten without your decision.",
         localValue:"Your Local Response", serverValue:"Current Server Value",
         keepServer:"Keep Server Value (discard my response)", resubmitLocal:"Resubmit My Local Response",

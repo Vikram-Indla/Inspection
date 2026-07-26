@@ -84,7 +84,12 @@ export default async function FieldDraftsPage() {
   return (
     <>
       <FieldHeader leading={back} title={tr("field.drafts.title", "Drafts", "المسودات")}
-        subtitle={tr("field.rail.draft", "{n} draft to resume", "{n} مسودة للاستئناف").replace("{n}", String(serverDrafts.length))}
+        right={
+          <span className="badge badge-warning" style={{ height: 20 }}>
+            <span className="dot" />
+            {serverDrafts.length} {tr("field.drafts.draftsWord", "drafts", "مسودة")}
+          </span>
+        }
         langHref={langHref} langLabel={langLabel} />
       <div className={styles.page}>
         <p className="t-caption" style={{ margin: 0 }}>
@@ -110,6 +115,12 @@ export default async function FieldDraftsPage() {
               itemsQueued: tr("field.drafts.itemsQueued", "items queued", "بند في الطابور"),
               syncPending: tr("field.drafts.syncPending", "Pending sync", "بانتظار المزامنة"),
               syncLocal: tr("field.drafts.syncLocal", "Saved locally", "محفوظة محلياً"),
+              loading: tr("field.drafts.loading", "Loading local drafts…", "جارٍ تحميل المسودات المحلية…"),
+              localUnavailable: tr(
+                "field.drafts.localUnavailable",
+                "Local drafts are temporarily unavailable. Server drafts remain visible.",
+                "المسودات المحلية غير متاحة مؤقتاً. تظل مسودات الخادم ظاهرة.",
+              ),
             }}
           />
         </section>
@@ -134,7 +145,6 @@ export default async function FieldDraftsPage() {
           </span>
         </div>
       </div>
-      <div aria-hidden="true" style={{ height: 58, flex: "none" }} />
     </>
   );
 }

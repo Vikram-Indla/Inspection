@@ -435,13 +435,19 @@
   align-items: center;
   gap: 6px;
 }
+/* The footer chip reports live connectivity, so its dot MUST carry the same
+   state as its label. A fixed compliant-green dot next to "Offline — working
+   locally" told the inspector the opposite of the truth. Same two tokens the
+   network pill above uses (.fl-net-online / .fl-net-offline). */
 .fl-sync-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
+}
+.fl-sync-dot-online {
   background: var(--status-compliant-text);
 }
-.fl-sync-dot--offline {
+.fl-sync-dot-offline {
   background: var(--status-warning-text);
 }
 

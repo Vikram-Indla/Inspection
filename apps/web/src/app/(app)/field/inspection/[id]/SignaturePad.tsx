@@ -9,6 +9,8 @@ import styles from "./factory-verification.module.css";
 
 export type SignaturePadStrings = {
   title: string; hint: string;
+  attendance: string; present: string; absent: string; objected: string;
+  reasonLabel: string; unsupported: string;
   nameLabel: string; namePlaceholder: string;
   clear: string; cancel: string; confirm: string;
   required: string;
@@ -27,6 +29,8 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
   const [hasInk, setHasInk] = useState(false);
   const [name, setName] = useState("");
   const [err, setErr] = useState(null as string | null);
+  const [attendance, setAttendance] = useState<"present" | "absent" | "objected">("present");
+  const [reason, setReason] = useState("");
 
   // Size the backing store to CSS pixels × DPR so strokes stay crisp in the PNG.
   useEffect(() => {
@@ -81,6 +85,7 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
     if (!c || !hasInk || !name.trim()) { setErr(strings.required); return; }
     onConfirm({ signature_data_url: c.toDataURL("image/png"), name: name.trim(), signed_at: new Date().toISOString() });
   }
+  const present = attendance === "present";
 
   return (
     <Modal
@@ -91,24 +96,56 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
       closeLabel={strings.cancel}
       footer={<>
         <button type="button" className="btn btn-secondary" onClick={onCancel}>{strings.cancel}</button>
-        <button type="button" className="btn btn-primary" aria-disabled={!hasInk || !name.trim()} onClick={confirm}>{strings.confirm}</button>
+        <button type="button" className="btn btn-primary" disabled={!present} aria-disabled={!present || !hasInk || !name.trim()} onClick={confirm}>{strings.confirm}</button>
       </>}
     >
       <div className={styles.signatureBlock}>
+        <fieldset className={styles.attendanceGroup}>
+          <legend className={styles.fieldLabel}>{strings.attendance}</legend>
+          <div className={styles.attendanceOptions}>
+            {([
+              ["present", strings.present],
+              ["absent", strings.absent],
+              ["objected", strings.objected],
+            ] as const).map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                className={styles.attendanceOption}
+                aria-pressed={attendance === value}
+                onClick={() => { setAttendance(value); setErr(null); }}
+              >
+                <span className={styles.attendanceIndicator} aria-hidden="true" />
+                {label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
         <p className="t-caption">{strings.hint}</p>
-        <label className={styles.signatureField}>
-          <span className={styles.fieldLabel}>{strings.nameLabel}<span className="req">*</span></span>
-          <input className="input" value={name} placeholder={strings.namePlaceholder} onChange={e => { setName(e.target.value); setErr(null); }} />
-        </label>
-        <div className={styles.signatureCapture}>
-          <canvas
-            ref={canvasRef}
-            className={styles.signatureCanvas}
-            aria-label={strings.title}
-            onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
-          />
-          <button type="button" className="btn btn-secondary" onClick={clear}>{strings.clear}</button>
-        </div>
+        {present ? <>
+          <label className={styles.signatureField}>
+            {/* The design writes the required marker as a literal " *". The global
+                rule is scoped `.field .req`, so a CSS-module label never matches it
+                and a <span className="req"> renders completely unstyled. */}
+            <span className={styles.fieldLabel}>{strings.nameLabel} *</span>
+            <input className="input" aria-required value={name} placeholder={strings.namePlaceholder} onChange={e => { setName(e.target.value); setErr(null); }} />
+          </label>
+          <div className={styles.signatureCapture}>
+            <canvas
+              ref={canvasRef}
+              className={styles.signatureCanvas}
+              aria-label={strings.title}
+              onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
+            />
+            <button type="button" className="btn btn-secondary" onClick={clear}>{strings.clear}</button>
+          </div>
+        </> : <>
+          <label className={styles.signatureField}>
+            <span className={styles.fieldLabel}>{strings.reasonLabel}<span className="req">*</span></span>
+            <textarea className="input" rows={3} value={reason} onChange={e => setReason(e.target.value)} />
+          </label>
+          <p className="field-error" role="status">{strings.unsupported}</p>
+        </>}
         {err && <p className="field-error">{err}</p>}
       </div>
     </Modal>

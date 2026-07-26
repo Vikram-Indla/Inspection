@@ -1,0 +1,54 @@
+schema_version: "1.0"
+change_control_id: "CC-PROFILE-BOOTSTRAP-20260726-001"
+task_id: "TASK-PROFILE-BOOTSTRAP-20260726-001"
+title: "Narrow governed profile bootstrap for Auth-created demo identities"
+raised_at: "2026-07-26"
+raised_by: "Codex"
+state: "APPLIED_TO_ALLOWLISTED_TARGET_AND_VERIFIED"
+
+authority:
+  source: "Product Owner direction in the active demo-seed delivery session"
+  purpose: >
+    Close the proven Auth-to-profile bootstrap gap that blocks S2 of
+    TASK-DEMO-SEED-EXPANSION-20260726-001 without granting a general profile
+    write path or extending the demo seed's data scope.
+  remote_application_direction: >
+    The Product Owner explicitly directed Codex to drive the approved demo
+    seeding work to 100 percent and push the real demo identities and data to
+    Supabase. That direction authorizes this prerequisite migration on only
+    the allow-listed non-production project iiozvqntawxfwbgffzqu after its
+    static contract and transaction-wrapped remote pgTAP test pass.
+
+authorized_files:
+  - "supabase/migrations/20260726230000_governed_profile_bootstrap.sql"
+  - "supabase/tests/0034_governed_profile_bootstrap_contract.sql"
+  - "product-contract/governance/CC-PROFILE-BOOTSTRAP-20260726-001.yaml"
+  - "product-contract/execution/TASK-PROFILE-BOOTSTRAP-20260726-001.yaml"
+
+authorized_behavior:
+  - "Add one authenticated RPC that may be called only by security_admin."
+  - "Require the target to be an existing auth.users identity distinct from the caller."
+  - "Derive profile email from auth.users; callers cannot supply or override it."
+  - "Insert a profile only when absent."
+  - "Treat an exact existing profile as an idempotent no-op."
+  - "Reject an existing profile whose governed fields differ."
+  - "Append one audit_events row only for an actual profile creation."
+  - "Grant authenticated EXECUTE only; retain all existing profiles RLS and table policies."
+
+prohibited:
+  - "No remote migration application outside iiozvqntawxfwbgffzqu."
+  - "No profile update or delete path."
+  - "No self-targeting."
+  - "No direct user_roles write or role grant."
+  - "No Auth user creation."
+  - "No service-role expansion."
+  - "No changes to existing migrations, tests, product code, frozen contracts or seed data."
+
+acceptance:
+  - "Non-security-admin callers are denied."
+  - "Self-targeting and unknown Auth identities are denied."
+  - "Blank names are denied."
+  - "Email is read from auth.users."
+  - "Exact replay succeeds without a second profile or audit event."
+  - "Mismatch replay is denied without mutating the profile."
+  - "The migration exposes no profile update/delete capability."

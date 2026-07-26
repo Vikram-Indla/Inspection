@@ -1,0 +1,31 @@
+schema_version: "1.0"
+change_control_id: "CC-DEMO-ATOMIC-REVIEW-VIRTUAL-20260726-001"
+task_id: "TASK-DEMO-SEED-EXPANSION-20260726-001"
+status: "APPLIED_TO_ALLOWLISTED_TARGET_AND_TRANSACTION_VERIFIED"
+scope:
+  - "Atomic canonical review start and decision RPCs"
+  - "Authenticated factory representative ownership on virtual participants"
+  - "Own-session virtual RLS"
+  - "Atomic virtual scheduling RPC"
+requirements:
+  - "RBAC-011"
+  - "RBAC-014"
+  - "STM-REV-001"
+  - "STM-REV-002"
+  - "STM-REV-003"
+  - "STM-REV-004"
+  - "STM-VIR-001"
+preservation:
+  - "Existing review and virtual application paths remain callable"
+  - "Legacy external virtual participants remain valid with null user_id"
+  - "Published submissions and decided reviews remain immutable"
+  - "No provider, delivery success, policy threshold, or production identity is invented"
+  - "Timeline payloads remain locale-neutral; bilingual names come from governed profiles"
+files:
+  migration: "supabase/migrations/20260726190000_demo_review_virtual_atomic_authority.sql"
+  test: "supabase/tests/0034_demo_review_virtual_atomic_authority.sql"
+remote_application: >
+  Authorized only on non-production project iiozvqntawxfwbgffzqu by the
+  Product Owner's active direction to complete and push the realistic demo
+  dataset. Apply this forward migration only, then run its transaction-wrapped
+  contract before seeding virtual or reviewed scenarios.

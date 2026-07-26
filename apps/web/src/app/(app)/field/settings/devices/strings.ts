@@ -11,6 +11,19 @@ export type TrustedDevicesStrings = {
   lastAuth: string;
   enrolled: string;
 
+  // Device register list — the design's `sc-for` over the inspector's devices.
+  listRefreshing: string;
+  listEmptyTitle: string;
+  listEmptyDetail: string;
+  listUnavailable: string;
+  listSignedOut: string;
+  listOffline: string;
+
+  // Platform labels. These are literal renderings of the `platform` check
+  // constraint on `mvp3_devices` — never a guessed hardware model.
+  platformIpadOs: string;
+  platformWebManaged: string;
+
   // Trust-state badge labels — one per real backend state. No state is ever
   // rendered as a raw database enum.
   stChecking: string;
@@ -44,8 +57,21 @@ export type TrustedDevicesStrings = {
   enroll: string;
   enrolling: string;
   enrollBlocked: string;
+  enrollRegistered: string;
+
+  // Biometric.dc.html — "Device Enrollment" column heading block.
+  bioSectionTitle: string;
+  bioSectionDesc: string;
+
+  // Biometric.dc.html — the "Trusted Device" summary panel (`dl.desc`).
+  bioSummaryLabel: string;
+  bioSummaryDevice: string;
+  bioSummaryDeviceId: string;
+  bioSummaryStatus: string;
+  bioSummaryLastAuth: string;
 
   bioTitle: string;
+  bioSubtitle: string;
   bioOn: string;
   bioOff: string;
   bioEnable: string;

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import FieldHeader from "@/components/field/FieldHeader";
 import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
@@ -25,7 +24,7 @@ export default async function FieldAccountPage() {
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError || !user) redirect("/login"); // ERR-AUTH-001: never proceed with a null session
 
-  const [{ data: profile }, roleRows] = await Promise.all([
+  const [{ data: profile, error: profileError }, roleRows] = await Promise.all([
     sb.from("profiles").select("full_name, email, region, org_scope").eq("user_id", user.id).maybeSingle(),
     getUserRoles(user.id),
   ]);
@@ -47,29 +46,20 @@ export default async function FieldAccountPage() {
     { key: "entity", label: tr("field.account.entity", "Entity", "الجهة"), value: profile?.org_scope ?? "—" },
   ];
 
-  const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
-  const langLabel = locale === "ar" ? "EN" : "AR";
-
-  const chevron = (
-    <span className={styles.chev} aria-hidden="true">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" data-directional><path d="m9 6 6 6-6 6" /></svg>
-    </span>
-  );
-
   return (
     <>
-      <FieldHeader
-        title={tr("field.account.title", "Account", "الحساب")}
-        langHref={langHref} langLabel={langLabel}
-      />
-
       <div className={styles.wrap}>
+        {profileError ? (
+          <div className="sq-banner sq-banner--warning" role="alert">
+            {tr("field.account.profileUnavailable", "Account details are unavailable.", "تفاصيل الحساب غير متاحة.")}
+          </div>
+        ) : null}
         {/* Profile card — avatar + name + role + email + gear→Settings */}
         <section className={`${styles.card} ${styles.profile}`}>
           <span className="avatar avatar-lg" aria-hidden="true"
             style={{ background: "var(--action-primary)", color: "var(--text-on-action)", width: 56, height: 56, fontSize: 20 }}>{initials}</span>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontWeight: 700, fontSize: 17 }}><bdi>{profile?.full_name ?? tr("field.account.nameUnset", "Inspector", "مفتش")}</bdi></div>
+            <div style={{ fontWeight: 700, fontSize: 17 }}><bdi>{profile?.full_name ?? "—"}</bdi></div>
             <div className="t-caption"><bdi dir="ltr">{roleLine}</bdi>{profile?.region ? ` · ${profile.region}` : ""}</div>
             {email && <div className="t-caption id-code" style={{ marginBlockStart: 2 }}><bdi dir="ltr">{email}</bdi></div>}
           </div>
@@ -106,9 +96,10 @@ export default async function FieldAccountPage() {
 
           <div className={styles.fieldRow}>
             <span style={{ flex: 1, fontSize: 14 }}>{tr("field.account.appearance", "Appearance", "المظهر")}</span>
-            <span className="t-caption" style={{ flex: "none" }}>
-              {tr("field.account.appearanceFixed", "Always dark in the field", "داكن دائمًا في الميدان")}
-            </span>
+            <div className="seg" aria-label={tr("field.account.appearance", "Appearance", "المظهر")}>
+              <button className="seg-opt" type="button" aria-pressed="false" disabled>{tr("field.account.light", "Light", "فاتح")}</button>
+              <button className="seg-opt" type="button" aria-pressed="true">{tr("field.account.dark", "Dark", "داكن")}</button>
+            </div>
           </div>
 
           <div className={styles.fieldRow}>
@@ -121,19 +112,8 @@ export default async function FieldAccountPage() {
 
           <div className={styles.fieldRow}>
             <span style={{ flex: 1, fontSize: 14 }}>{tr("field.account.taskNotifs", "Task & appointment notifications", "إشعارات المهام والمواعيد")}</span>
-            <span className="t-caption" style={{ flex: "none" }}>
-              {tr("field.account.managedByDevice", "Managed in device settings", "تُدار من إعدادات الجهاز")}
-            </span>
+            <span className="t-caption" aria-label={tr("field.account.preferenceUnknown", "Not configured", "غير مهيأ")}>—</span>
           </div>
-
-          {/* Not in the design's Account card — the design reaches trusted
-              devices only through Settings. Kept because it is a real route and
-              removing a one-tap path to it on a field device is a usability
-              regression, which outranks the pixel gain. */}
-          <Link href="/field/settings/devices" prefetch={false} className={styles.linkRow}>
-            <span style={{ flex: 1 }}>{tr("field.account.devices", "Biometric & trusted devices", "البصمة والأجهزة الموثوقة")}</span>
-            {chevron}
-          </Link>
         </section>
 
         <a href="/signout" className="btn btn-danger btn-block">
