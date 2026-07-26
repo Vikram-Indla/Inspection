@@ -27,3 +27,22 @@ struct WorkspaceData {
     /// Server responses keyed by item UUID string.
     let responses: [String: ServerResponse]
 }
+
+// MARK: - SectionVM
+
+/// Groups a package section's items for the UI, produced by WorkspaceStore.
+/// ItemVM (Task 8) will further wrap each `InspectionItemDef` for rendering.
+struct SectionVM: Identifiable {
+    /// Matches `Section.key` from the package definition.
+    let id: String
+    /// Display title in English (use Arabic when locale demands — Task 8 concern).
+    let title: String
+    /// Ordered item definitions belonging to this section.
+    let items: [InspectionItemDef]
+    /// Number of items that have a non-nil answer value.
+    let answeredCount: Int
+
+    var key: String { id }
+    var totalCount: Int { items.count }
+    var isComplete: Bool { answeredCount == totalCount && totalCount > 0 }
+}
