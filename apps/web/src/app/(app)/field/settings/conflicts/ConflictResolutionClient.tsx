@@ -153,6 +153,47 @@ export default function ConflictResolutionClient({
     };
   }, [refresh, userId]);
 
+  // Resolve each conflicting item's governed code + title. Offline-first: the
+  // frozen package cached for execution is read first, so this works with no
+  // network exactly like the rest of the field channel. Only ids the frozen
+  // packages did not cover are then topped up from the governed
+  // `inspection_items` catalogue under the inspector's own RLS scope — a read
+  // only, never a write. Anything still unresolved stays unresolved and renders
+  // as the raw id; no title is ever guessed or derived from the id.
+  useEffect(() => {
+    if (!conflicts || conflicts.length === 0) return;
+    let cancelled = false;
+    void (async () => {
+      const resolved = new Map<string, ItemIdentity>();
+      const inspectionIds = new Set(conflicts.map(inspectionIdOf).filter((id): id is string => !!id));
+      for (const inspectionId of inspectionIds) {
+        for (const cacheKey of [inspectionId, `inspection:${inspectionId}`]) {
+          try {
+            for (const [id, identity] of itemIdentitiesFrom(definitionOf(await local.getPackage(cacheKey)))) {
+              if (!resolved.has(id)) resolved.set(id, identity);
+            }
+          } catch {
+            // A cache miss or unreadable entry is not an error here — the
+            // fallback render below is already honest.
+          }
+        }
+      }
+      const missing = [...new Set(conflicts.map(c => c.item_id).filter(id => !!id && !resolved.has(id)))];
+      if (missing.length && typeof navigator !== "undefined" && navigator.onLine) {
+        try {
+          const { data } = await supabaseBrowser().from("inspection_items").select("id, code, title").in("id", missing);
+          for (const row of (data ?? []) as { id: string; code: string | null; title: string | null }[]) {
+            resolved.set(row.id, { code: row.code ?? null, title: row.title ?? null });
+          }
+        } catch {
+          // Offline, out of scope, or a non-UUID id — leave it unresolved.
+        }
+      }
+      if (!cancelled) setItemIdentities(Object.fromEntries(resolved));
+    })();
+    return () => { cancelled = true; };
+  }, [conflicts, local]);
+
   // Honest, readable rendering of a stored response payload. Known checklist
   // response keys get localized labels; everything else is stringified verbatim.
   const fmtScalar = useCallback(
@@ -232,8 +273,7 @@ export default function ConflictResolutionClient({
       setFailed(null);
       setBusy(c.key);
       try {
-        const suffix = `:${c.item_id}`;
-        const inspectionId = c.key.endsWith(suffix) ? c.key.slice(0, c.key.length - suffix.length) : "";
+        const inspectionId = inspectionIdOf(c);
         if (!inspectionId) {
           // Cannot safely reconstruct the target op — do not fabricate one.
           setFailed(c.key);
@@ -317,6 +357,14 @@ export default function ConflictResolutionClient({
         conflicts.map((c) => {
           const { local: localFields, server: serverFields } = toComparedFields(c.local, c.server);
           const rowBusy = busy === c.key;
+          // Design heading: "Checklist item #12 — Fire Safety". Rendered from
+          // the governed item code and title once resolved; while (or if) they
+          // are not, the raw item id is shown rather than a plausible name.
+          const identity = itemIdentities[c.item_id];
+          const itemRef = identity?.code ?? c.item_id;
+          const itemHeading = identity?.title
+            ? `${strings.itemLabel} ${itemRef} — ${identity.title}`
+            : `${strings.itemLabel} · ${c.item_id}`;
           return (
             <div className={styles.card} key={c.key}>
               <div className={styles.head}>
@@ -324,7 +372,7 @@ export default function ConflictResolutionClient({
                   <path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
                   <path d="M12 9v4M12 17h.01" />
                 </svg>
-                <span style={{ fontWeight: 600, fontSize: 14 }}>{strings.itemLabel} · {c.item_id}</span>
+                <span style={{ fontWeight: 600, fontSize: 14 }} data-testid="conflict-item-heading">{itemHeading}</span>
                 <span className="grow" />
                 <span className="t-caption id-code">{strings.detected} {c.detected_at}</span>
               </div>

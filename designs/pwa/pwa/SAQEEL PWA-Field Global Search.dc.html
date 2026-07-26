@@ -29,7 +29,7 @@
 <div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
 
   <header style="display:flex; align-items:center; gap:10px; padding:14px 18px; padding-block-start:max(14px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
-    <a href="SAQEEL%20PWA-Field%20Dashboard.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="{{ t.backArrow }}"/></svg></a>
+    <a href="SAQEEL%20PWA-Field%20Dashboard.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" data-directional="true"><path d="{{ t.backArrow }}"/></svg></a>
     <div style="flex:1; font-weight:700; font-size:16px;">{{ t.title }}</div>
     <button class="gs-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
     <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
@@ -115,7 +115,7 @@ class Component extends DCLogic {
         typeFactory:"مصنع", typeCr:"سجل تجاري", typeLicense:"ترخيص", typeVisit:"زيارة", typeInspection:"تفتيش" },
       en: { back:"Back", theme:"Theme", langBtnLabel:"AR", title:"Global Search", placeholder:"Search by factory, CR, license, visit or inspection",
         all:"All", factory:"Factory", cr:"CR", license:"License", visit:"Visit", inspection:"Inspection",
-        recent:"Recent searches", noResults:"No matching results.", backArrow:"M9 6l6 6-6 6", chevron:"m9 18 6-6-6-6",
+        recent:"Recent searches", noResults:"No matching results.", backArrow:"M15 6l-6 6 6 6", chevron:"m9 18 6-6-6-6",
         typeFactory:"Factory", typeCr:"CR", typeLicense:"License", typeVisit:"Visit", typeInspection:"Inspection" },
     };
     const t = STR[lang];

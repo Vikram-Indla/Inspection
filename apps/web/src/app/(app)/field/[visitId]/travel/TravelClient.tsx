@@ -38,6 +38,8 @@ export type TravelStrings = {
   updated: string; updatedAgo: string; updatedNow: string;
   openInMaps: string; privacyNote: string;
   fenceWithin: string; fenceOutside: string; fenceLocating: string; fenceMapAria: string;
+  fenceFactoryOverride: string; fenceEngineDefault: string;
+  fenceNotConfigured: string; fenceUnconfiguredChip: string; fenceUnconfiguredNote: string;
 };
 
 type LatLng = { lat: number; lng: number };
@@ -63,7 +65,7 @@ const fmt = (s: string, vars: Record<string, string | number>) =>
 const KSA_CENTER: [number, number] = [23.8859, 45.0792];
 
 export default function TravelClient({
-  visitId, exists, destination, factoryName, factoryTone, fenceRadiusM,
+  visitId, exists, destination, factoryName, factoryTone, fenceRadiusM, fenceSource,
   backHref, langHref, langLabel, strings,
 }: {
   visitId: string;
@@ -71,7 +73,14 @@ export default function TravelClient({
   destination: LatLng | null;
   factoryName: string;
   factoryTone: GeoTone;
-  fenceRadiusM: number;
+  /** Governed geofence radius: factory override (SB20) → ENG-06 engine default.
+   *  `null` = neither source is governed. It is NEVER substituted with a code
+   *  constant here: an ungoverned fence renders as "Not configured", draws no
+   *  ring and produces no in/out verdict. */
+  fenceRadiusM: number | null;
+  /** Which governed source supplied fenceRadiusM, so the screen can state the
+   *  provenance the Startup check-in card already states. */
+  fenceSource: "factory" | "engine" | null;
   backHref: string;
   langHref: string;
   langLabel: string;
@@ -174,11 +183,21 @@ export default function TravelClient({
     () => (fix && destination ? distM(fix, destination) : null),
     [fix, destination],
   );
-  const inRange = straightM != null && straightM <= fenceRadiusM;
+  // A range verdict is only possible when a fence radius is genuinely governed.
+  // With no governed radius there is nothing to compare against, so the screen
+  // asserts neither "within" nor "outside" (zero-assumption rule) — the
+  // governed check-in (M04-004) remains the surface that decides arrival.
+  const fenceGoverned = fenceRadiusM != null;
+  const inRange = fenceGoverned && straightM != null && straightM <= fenceRadiusM;
+  const fenceProvenance = fenceSource === "factory"
+    ? strings.fenceFactoryOverride
+    : fenceSource === "engine" ? strings.fenceEngineDefault : null;
 
   const markers: GeoMarkerData[] = useMemo(() => {
     const list: GeoMarkerData[] = [];
-    if (destination) list.push({ id: "establishment", lat: destination.lat, lng: destination.lng, label: factoryName, tone: factoryTone, radiusM: fenceRadiusM });
+    // radiusM omitted when the fence is ungoverned → no ring is drawn rather
+    // than a ring at an invented radius.
+    if (destination) list.push({ id: "establishment", lat: destination.lat, lng: destination.lng, label: factoryName, tone: factoryTone, ...(fenceRadiusM != null ? { radiusM: fenceRadiusM } : {}) });
     if (fix) list.push({ id: "you", lat: fix.lat, lng: fix.lng, label: strings.youLabel, tone: "neutral" });
     return list;
   }, [destination, fix, factoryName, factoryTone, fenceRadiusM, strings.youLabel]);
@@ -223,9 +242,12 @@ export default function TravelClient({
     ? `https://maps.apple.com/?daddr=${destination.lat},${destination.lng}&dirflg=d`
     : null;
 
+  // With no governed fence the badge stays informational: the journey state is
+  // real ("En Route" — the inspector has not checked in), but no range verdict
+  // is implied by its tone.
   const stateBadge = !destination || geoDenied
     ? "badge-warning"
-    : straightM == null ? "badge-info" : inRange ? "badge-compliant" : "badge-warning";
+    : straightM == null || !fenceGoverned ? "badge-info" : inRange ? "badge-compliant" : "badge-warning";
   const stateLabel = straightM == null || !destination ? strings.stateLocating : inRange ? strings.stateArrived : strings.stateEnRoute;
 
   const header = (
@@ -306,18 +328,22 @@ export default function TravelClient({
               {fenceCenter && (
                 <div className={styles.fenceFrame}>
                   <span
-                    className={`${styles.fenceChip} ${straightM == null ? styles.chipWait : inRange ? styles.chipOk : styles.chipOut}`}
+                    className={`${styles.fenceChip} ${straightM == null || !fenceGoverned ? styles.chipWait : inRange ? styles.chipOk : styles.chipOut}`}
+                    data-fence-governed={fenceGoverned ? "true" : "false"}
                   >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.chipGlyph} aria-hidden="true">
-                      {straightM == null
+                      {straightM == null || !fenceGoverned
                         ? <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>
                         : inRange
                           ? <path d="M20 6 9 17l-5-5" />
                           : <><circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" /></>}
                     </svg>
-                    {straightM == null
-                      ? strings.fenceLocating
-                      : fmt(inRange ? strings.fenceWithin : strings.fenceOutside, { d: Math.round(straightM) })}
+                    {/* No governed radius → the chip states that, never a verdict. */}
+                    {!fenceGoverned
+                      ? strings.fenceUnconfiguredChip
+                      : straightM == null
+                        ? strings.fenceLocating
+                        : fmt(inRange ? strings.fenceWithin : strings.fenceOutside, { d: Math.round(straightM) })}
                   </span>
                   <GeoMap
                     center={fenceCenter}
@@ -333,6 +359,13 @@ export default function TravelClient({
               {!destination ? null
                 : geoDenied ? (
                   <div className={`${styles.rangeNote} ${styles.rangeWarn}`}>{strings.geoUnavailableNote}</div>
+                ) : !fenceGoverned ? (
+                  // Neither SB20 factory override nor the ENG-06 engine default
+                  // resolved: state that plainly instead of measuring against a
+                  // number no one governed.
+                  <div className={`${styles.rangeNote} ${styles.rangeInfo}`} data-testid="travel-fence-unconfigured">
+                    {strings.fenceUnconfiguredNote}
+                  </div>
                 ) : straightM == null ? (
                   <div className={`${styles.rangeNote} ${styles.rangeInfo}`}>{strings.locatingNote}</div>
                 ) : inRange ? (
@@ -343,11 +376,18 @@ export default function TravelClient({
                 ) : (
                   <div className={`${styles.rangeNote} ${styles.rangeWarn}`}>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={styles.noteGlyph} aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" /></svg>
-                    {fmt(strings.outOfRangeNote, { r: fenceRadiusM })}
+                    {fmt(strings.outOfRangeNote, { r: fenceRadiusM ?? "" })}
                   </div>
                 )}
               <div className={`t-caption ${styles.metaRow}`}>
-                <span>{strings.geofenceRadius}: <span className="id-code">{fenceRadiusM} {strings.mUnit}</span></span>
+                {/* Radius + its governance provenance, or an explicit
+                    "Not configured" — never a bare plausible number. */}
+                <span data-testid="travel-fence-radius">
+                  {strings.geofenceRadius}:{" "}
+                  {fenceRadiusM != null
+                    ? <><span className="id-code">{fenceRadiusM} {strings.mUnit}</span>{fenceProvenance ? <> {fenceProvenance}</> : null}</>
+                    : <span>{strings.fenceNotConfigured}</span>}
+                </span>
                 <span>{strings.accuracy}: <span className="id-code">{accuracyLabel}</span></span>
                 {straightM != null && <span>{strings.straightLine}: <span className="id-code">{Math.round(straightM)} {strings.mUnit}</span></span>}
                 {fix && <span data-testid="travel-freshness">{strings.updated}: <span className="id-code">{freshnessLabel}</span></span>}

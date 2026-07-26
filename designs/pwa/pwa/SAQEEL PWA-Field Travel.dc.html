@@ -28,7 +28,7 @@
 <div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
 
   <header style="display:flex; align-items:center; gap:10px; padding:14px 18px; padding-block-start:max(14px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
-    <a href="SAQEEL%20PWA-Field%20Dashboard.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="{{ t.backArrow }}"/></svg></a>
+    <a href="SAQEEL%20PWA-Field%20Dashboard.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" data-directional="true"><path d="{{ t.backArrow }}"/></svg></a>
     <div style="flex:1; min-width:0;"><div style="font-weight:600; font-size:15px;">{{ t.title }}</div><div class="t-caption">{{ reco.factory }}</div></div>
     <span class="badge {{ stateBadge }}">{{ stateLabel }}</span>
     <button class="tv-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
@@ -72,6 +72,15 @@
       <div class="t-caption" style="margin-block-start:8px;">{{ t.geofenceRadius }}: <span class="id-code">150m</span> · {{ t.accuracy }}: <span class="id-code">{{ travel.accuracy }}</span></div>
     </div>
 
+    <!-- GOVERNANCE: this slot keeps its geometry, not its original copy. The
+         earlier text asserted a live traffic-rerouting decision ("Route
+         adjusted for moderate traffic near Route 2"). No row in
+         REQUIREMENT_BASELINE.csv mentions traffic or rerouting, and the
+         journey rows CR-134/138/139/141/142/145/146/150/151 all carry
+         ai_actions: None, so nothing governs that decision, its provider or
+         its threshold. Under zero-assumption rendering the slot must state
+         that it is not configured rather than fabricate a route decision.
+         The app renders the same slot with the same governed wording. -->
     <div class="tv-card" style="padding:16px 18px; display:flex; gap:10px; align-items:flex-start;">
       <svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" stroke-width="1.7" style="width:16px;height:16px; flex:none; margin-block-start:2px;"><path d="M12 2l1.6 5.2L19 9l-5.4 1.8L12 16l-1.6-5.2L5 9l5.4-1.8L12 2z"/></svg>
       <span style="font-size:12.5px; color:var(--text-secondary); line-height:1.5;">{{ t.aiRouteNote }}</span>
@@ -79,7 +88,17 @@
   </div>
 
   <div style="position:sticky; bottom:0; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
-    <button class="btn btn-secondary" onClick="{{ simulateArrival }}">{{ t.simulateArrival }}</button>
+    <!-- GOVERNANCE: prototype-only control. It exists so this file can still
+         specify its own arrived state (Arrived badge, matched location pins,
+         enabled Confirm) without a real fix. It MUST NOT be implemented.
+         CR-145 and CR-151 make the arrival action available only inside the
+         configured radius or under an allowed override, and CR-152/153/154
+         make the resulting timestamp and coordinates the official audit
+         record. A control that flips the geofence by hand forges that
+         evaluation and writes a fabricated arrival. Marked
+         data-prototype-only so a parity lane cannot mistake it for a shipped
+         affordance. -->
+    <button class="btn btn-secondary" data-prototype-only="true" onClick="{{ simulateArrival }}">{{ t.simulateArrival }}</button>
     <span class="grow"></span>
     <a href="SAQEEL%20PWA-Field%20Establishment%20File.dc.html" target="_top" class="btn btn-primary" style="{{ confirmDisabledStyle }}">{{ t.confirmArrival }}</a>
   </div>
@@ -99,17 +118,17 @@ class Component extends DCLogic {
         geofenceTitle:"التحقق الجغرافي من الوصول", inRangeNote:"داخل نطاق المنشأة — يمكن تأكيد الوصول.", outOfRangeNote:"لا تزال خارج نطاق المنشأة (150م) — تابع التنقل.",
         geofenceRadius:"نطاق التسييج", accuracy:"دقة الموقع",
         registeredLoc:"الموقع المسجّل", actualLoc:"موقع الزيارة الفعلي", locMatch:"الموقع تطابق الموقع", locMismatch:"عدم تطابق الموقع",
-        aiRouteNote:"تم تعديل المسار بسبب ازدحام معتدل قرب الطريق 2 — الوصول المتوقع لم يتأثر.",
-        simulateArrival:"محاكاة الوصول (تجريبي)", confirmArrival:"تأكيد الوصول والمتابعة",
+        aiRouteNote:"استشارة المسار بالذكاء الاصطناعي: غير مهيأة. إعادة التوجيه حسب الازدحام قدرة مؤجلة إلى المرحلة الثانية.",
+        simulateArrival:"معاينة حالة الوصول (نموذج أولي فقط)", confirmArrival:"تأكيد الوصول والمتابعة",
         stateEnRoute:"في الطريق", stateArrived:"تم الوصول",
       },
-      en: { back:"Back", backArrow:"M9 6l6 6-6 6", title:"Journey to Site", langBtnLabel:"AR",
+      en: { back:"Back", backArrow:"M15 6l-6 6 6 6", title:"Journey to Site", langBtnLabel:"AR",
         liveGps:"Live GPS", eta:"Est. Arrival", distance:"Distance", speed:"Speed",
         geofenceTitle:"Geofenced Arrival Verification", inRangeNote:"Within establishment radius — arrival can be confirmed.", outOfRangeNote:"Still outside the establishment's 150m radius — keep navigating.",
         geofenceRadius:"Geofence Radius", accuracy:"GPS Accuracy",
         registeredLoc:"Registered location", actualLoc:"Actual visit location", locMatch:"Location matches", locMismatch:"Location mismatch",
-        aiRouteNote:"Route adjusted for moderate traffic near Route 2 — estimated arrival unaffected.",
-        simulateArrival:"Simulate Arrival (demo)", confirmArrival:"Confirm Arrival & Continue",
+        aiRouteNote:"AI route advisory: Not configured. Traffic rerouting is a Phase 2 capability.",
+        simulateArrival:"Preview arrived state (prototype only)", confirmArrival:"Confirm Arrival & Continue",
         stateEnRoute:"En Route", stateArrived:"Arrived",
       },
     };
