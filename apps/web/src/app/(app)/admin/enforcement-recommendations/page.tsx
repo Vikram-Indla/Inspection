@@ -6,6 +6,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import DecideForm from "./DecideForm";
+import styles from "./responsive.module.css";
 
 const CLEAN_FACTORY_CODES = [
   "F-1101", "F-1102", "F-1103", "F-1104", "F-1105",
@@ -37,7 +38,8 @@ export default async function EnforcementRecommendations() {
 
   if (!isReader) {
     return (
-      <Shell current="/admin/enforcement-recommendations" title={t("admin.enf.rec.title", "Enforcement recommendations")}>
+      <Shell current="/admin/enforcement-recommendations" title={tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}>
+        <h1 className="ax-sr-only">{tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}</h1>
         <EmptyState icon={<IconBlocked size={28} />} title={tr("admin.enf.rec.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
           body={tr("admin.enf.rec.unauthorized.body", "This queue is available to Inspector, Planner, Ops, Compliance Admin, Auditor, Reviewer and Leadership roles.", "هذه القائمة متاحة لأدوار المفتش والمخطط والعمليات ومسؤول الامتثال والمدقق والمراجع والقيادة.")} />
       </Shell>
@@ -73,17 +75,22 @@ export default async function EnforcementRecommendations() {
   }[];
 
   return (
-    <Shell current="/admin/enforcement-recommendations" title={t("admin.enf.rec.title", "Enforcement recommendations")}
+    <Shell current="/admin/enforcement-recommendations" title={tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}
       context={<span className="badge badge-info">DEC-F</span>}>
-      {roleError && <div className="sq-banner sq-banner--warning" role="alert"><div>{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div></div>}
+      <h1 className="ax-sr-only">{tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}</h1>
+      <div className={styles.pageRoot}>
+      {roleError && <div className="sq-banner sq-banner--warning" role="alert"><div>{tr("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.", "تعذر التحقق من صلاحيات الإعداد. تم تعطيل الكتابة؛ أعد تحميل الصفحة.")}</div></div>}
       <div className="sq-banner sq-banner--warning" role="note"><div><strong>{tr("admin.enf.rec.configTitle", "Enforcement policy: Not configured.", "سياسة الإنفاذ: غير مهيأة.")}</strong>{" "}{tr("admin.enf.rec.configBody", "The sponsor must supply the approved enforcement measure catalogue and authoritative legal-basis wording for each measure, including the published instrument and version. No amount, escalation ladder, citation or Arabic legal wording is asserted until supplied.", "يجب على الراعي تزويد كتالوج تدابير الإنفاذ المعتمد والصياغة الموثوقة للأساس القانوني لكل تدبير، بما في ذلك الأداة المنشورة وإصدارها. لا تُعرض مبالغ أو سلالم تصعيد أو استشهادات أو صياغة قانونية عربية حتى يتم توفيرها.")}</div></div>
       {readOnlyBanner}
       {pendingError && <div className="sq-banner sq-banner--warning" role="alert"><div>{tr("admin.enf.rec.loadError", "The recommendation queue is unavailable in this environment. No count is claimed.", "قائمة التوصيات غير متاحة في هذه البيئة. لا يُدَّعى أي عدد.")}</div></div>}
 
       <section className="panel stack" style={{ padding: "var(--space-6)" }}>
-        <h3>{tr("admin.enf.rec.pending", "Pending recommendations", "التوصيات المعلقة")}</h3>
+        <h2>{tr("admin.enf.rec.pending", "Pending recommendations", "التوصيات المعلقة")}</h2>
         {!rows.length && !pendingError ? (
-          <EmptyState icon={<IconFolder size={28} />} title={tr("admin.enf.rec.empty", "No pending recommendations", "لا توجد توصيات معلقة")} inline />
+          <div className="sq-state sq-state--inline" role="status">
+            <span className="sq-state__glyph" aria-hidden="true"><IconFolder size={28} /></span>
+            <h3>{tr("admin.enf.rec.empty", "No pending recommendations", "لا توجد توصيات معلقة")}</h3>
+          </div>
         ) : rows.map(row => (
           <div key={row.id} className="sq-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
             <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
@@ -94,7 +101,7 @@ export default async function EnforcementRecommendations() {
               <span className="badge badge-warning">{tr("admin.enf.rec.measureLabel", "Recommended measure", "التدبير الموصى به")}: {actionLabel()}</span>
             </div>
             {row.recommendation_notes && <p className="t-caption">{row.recommendation_notes}</p>}
-            <p className="t-caption numeric">{new Date(row.recommended_at).toLocaleString()}</p>
+            <p className="t-caption numeric">{new Date(row.recommended_at).toLocaleString(locale)}</p>
             {isDecider
               ? <DecideForm id={row.id} strings={{
                   approve: tr("admin.enf.rec.approve", "Approve", "الموافقة"),
@@ -111,21 +118,22 @@ export default async function EnforcementRecommendations() {
 
       {isDecider && (
         <section className="panel stack" style={{ padding: "var(--space-6)", marginBlockStart: "var(--space-4)" }}>
-          <h3>{tr("admin.enf.rec.recent", "Recently decided", "تم البت فيها مؤخرًا")}</h3>
+          <h2>{tr("admin.enf.rec.recent", "Recently decided", "تم البت فيها مؤخرًا")}</h2>
           {!(decided ?? []).length ? <p className="t-caption">{tr("admin.enf.rec.noneDecided", "No decisions recorded yet.", "لم تُسجَّل أي قرارات بعد.")}</p> : (
-            <div className="sq-tablewrap"><table className="sq-table"><tbody>
+            <div className="sq-tablewrap" tabIndex={0} aria-label={tr("admin.enf.rec.recent", "Recently decided", "تم البت فيها مؤخرًا")}><table className="sq-table"><tbody>
               {(decided ?? []).map(d => (
                 <tr key={d.id}>
                   <td>{(d.factories as unknown as { name: string } | null)?.name ?? "—"}</td>
                   <td>{actionLabel()}</td>
                   <td><span className={`sq-lozenge ${d.status === "approved" ? "sq-lozenge--success" : "sq-lozenge--critical"}`}>{d.status}</span></td>
-                  <td className="t-caption numeric">{d.decided_at ? new Date(d.decided_at).toLocaleString() : "—"}</td>
+                  <td className="t-caption numeric">{d.decided_at ? new Date(d.decided_at).toLocaleString(locale) : "—"}</td>
                 </tr>
               ))}
             </tbody></table></div>
           )}
         </section>
       )}
+      </div>
     </Shell>
   );
 }

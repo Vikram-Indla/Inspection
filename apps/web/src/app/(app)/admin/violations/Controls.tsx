@@ -1,6 +1,7 @@
 "use client";
 import { useActionState, useEffect, useId, useRef, useState } from "react";
 import { createViolationCode, createPenaltyMapping, deactivateViolationCode, publishPenaltyMapping, publishViolationCode, type VioResult } from "./actions";
+import styles from "./Controls.module.css";
 
 export type ClauseOption = { id: string; label: string };
 
@@ -57,7 +58,7 @@ export function NewViolationForm({ clauses, strings: s }: { clauses: ClauseOptio
     if (state.error) errorRef.current?.focus();
   }, [state.error]);
   return (
-    <form action={formAction} className="panel" aria-label={s.create} style={{ padding: "var(--space-6)", display: "flex", gap: "var(--space-4)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <form action={formAction} className={`panel ${styles.responsiveForm}`} aria-label={s.create} style={{ padding: "var(--space-6)", display: "flex", gap: "var(--space-4)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div className="sq-field"><label className="sq-field__label" htmlFor="new-violation-code">{s.code}</label>
         <input id="new-violation-code" className="sq-input numeric" name="code" placeholder="V-FS-12" required style={{ maxInlineSize: 120 }} /></div>
       <div className="sq-field" style={{ flex: 1, minInlineSize: 220 }}><label className="sq-field__label" htmlFor="new-violation-title">{s.title}</label>
@@ -116,7 +117,7 @@ export function AddMappingForm({ violationId, violationCode, templates, strings:
           {check(Boolean(rangePreset && repeatPreset), s.checkPresets)}
         </ul>
       </div>
-      <div className="row" style={{ gap: "var(--space-3)", alignItems: "flex-end", flexWrap: "wrap" }}>
+      <div className={`row ${styles.responsiveRow}`} style={{ gap: "var(--space-3)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div className="sq-field"><label className="sq-field__label" htmlFor={`${baseId}-penalty-ref`}>{s.penaltyRef}</label>
         <input id={`${baseId}-penalty-ref`} className="sq-input numeric" name="penalty_ref" placeholder="P-042" required style={{ maxInlineSize: 100 }} /></div>
       <div className="sq-field" style={{ flex: 1, minInlineSize: 200 }}><label className="sq-field__label" htmlFor={`${baseId}-legal-basis`}>{s.legalBasis}</label>
@@ -171,7 +172,7 @@ export function DeactivateViolationForm({ violationId, violationCode, strings: s
     if (state.error) errorRef.current?.focus();
   }, [state.error]);
   return (
-    <form action={formAction} className="row" aria-label={`${s.deactivate} ${violationCode}`} style={{ gap: "var(--space-2)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <form action={formAction} className={`row ${styles.responsiveRow}`} aria-label={`${s.deactivate} ${violationCode}`} style={{ gap: "var(--space-2)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <input type="hidden" name="violation_code_id" value={violationId} />
       <div className="sq-field">
         <label className="sq-field__label" htmlFor={fieldId}>{s.activeTo}</label>
