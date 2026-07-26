@@ -20,7 +20,7 @@ export default function StartReview({ inspectionId, submissionVersionId, strings
       className="panel"
       style={{ padding: "var(--space-6)", position: "sticky", insetBlockStart: 16, display: "flex", flexDirection: "column", gap: "var(--space-4)" }}
     >
-      <h4>{strings.title}</h4>
+      <h2>{strings.title}</h2>
       <p className="t-caption">{strings.body}</p>
       <input type="hidden" name="inspection_id" value={inspectionId} />
       <input type="hidden" name="submission_version_id" value={submissionVersionId} />

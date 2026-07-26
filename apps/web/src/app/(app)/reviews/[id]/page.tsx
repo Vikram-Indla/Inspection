@@ -11,6 +11,7 @@ import VersionCompare, { type VersionCompareStrings, type ItemSection } from "./
 import FindingTraceChain, { type FindingTrace, type TraceNode } from "./FindingTraceChain";
 import { fetchFactoryChecks, updatedCount, FACTORY_FIELD_EN } from "@/lib/factory-verification";
 import { IconBlocked, IconPaperclip } from "@/app/icons";
+import responsive from "../responsive.module.css";
 
 export default async function ReviewWorkspace({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;  // inspection id
@@ -267,12 +268,14 @@ const panelStrings: WorkspaceDecisionStrings = {
   return (
     <Shell current="/reviews" title={t("review.ws.title", "Review — {factory}").replace("{factory}", f.name)}
       context={<><span className="sq-version">v{latest?.version_number} · {t("review.ws.latest", "latest")}</span><span className="sq-lozenge sq-lozenge--review sq-lozenge--info">{t(`enum.${ins.status}`, ins.status.replace(/_/g, " "))}</span>{!canDecide && <span className="sq-lozenge sq-lozenge--warning">{t("review.ws.readOnlyRole", "{role} · read-only").replace("{role}", viewerRole ? t(`enum.${viewerRole}`, viewerRole) : "—")}</span>}<a className="sq-btn sq-btn--secondary" href={`/reports/inspection/${ins.id}`}>{t("review.ws.reportLink", "Official report")}</a></>}>
+      <div className={responsive.reviewRoot} data-saqeel-migration="review-approvals" data-saqeel-screen="SCR-WEB-310">
+      <h1 className={responsive.semanticTitle}>{t("review.ws.title", "Review — {factory}").replace("{factory}", f.name)}</h1>
       <div className="sq-banner sq-banner--immutable"><div><strong>{t("review.ws.readOnlyTitle", "Read-only submitted version.")}</strong> {t("review.ws.readOnlyBody", "Content edits are impossible — the database rejects them (proven B3). Corrections happen only via Return with exact scope.")}</div></div>
       <FindingTraceChain traces={traceRows} strings={traceStrings} />
       <div className="cd-review-workspace-grid">
         <div className="sq-stack">
           <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
-            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.checklist", "Checklist — v{n}").replace("{n}", String(latest?.version_number))}</h4>
+            <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.checklist", "Checklist — v{n}").replace("{n}", String(latest?.version_number))}</h2>
             <div className="sq-tablewrap"><table className="sq-table">
               <thead><tr><th scope="col">{t("review.ws.colItem", "Item")}</th><th scope="col">{t("review.ws.colResponse", "Response")}</th></tr></thead>
               <tbody>{Object.entries(latest?.snapshot?.answers ?? {}).map(([k, v]) => (
@@ -281,7 +284,7 @@ const panelStrings: WorkspaceDecisionStrings = {
             </table></div>
           </div>
           <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
-            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.evidenceHeading", "Violations · actions · evidence (read-only)")}</h4>
+            <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.evidenceHeading", "Violations · actions · evidence (read-only)")}</h2>
             {(ins.violations as unknown as { violation_codes: { code: string; title: string; level: string }; mapping_version: string }[]).map((v, i) => (
               <p key={i}><span className="sq-lozenge sq-lozenge--critical">{v.violation_codes.code} · {t(`enum.${v.violation_codes.level}`, v.violation_codes.level)}</span> {v.violation_codes.title} <span className="sq-version">{t("review.ws.mapping", "mapping")} {v.mapping_version}</span></p>
             ))}
@@ -294,14 +297,14 @@ const panelStrings: WorkspaceDecisionStrings = {
           </div>
           {/* M04-190 / M06-017 / M06-034 — factory data verification: Source vs Observed, before/after, updated highlighting */}
           <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
-            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>
+            <h2 style={{ marginBlockEnd: "var(--space-3)" }}>
               {t("review.ws.fvHeading", "Factory data verification (Senaei source vs observed)")}{" "}
               <span className={`sq-lozenge ${fvUpdated ? "sq-lozenge--warning" : "sq-lozenge--success"}`}>
                 {fvUpdated
                   ? t("review.ws.fvChanged", "{n} field(s) updated").replace("{n}", String(fvUpdated))
                   : t("review.ws.fvNoChanges", "no changes vs source")}
               </span>
-            </h4>
+            </h2>
             {fv.error ? (
               <p className="sq-caption">{t("review.ws.fvError", "Verification data is temporarily unavailable. Source-versus-observed comparison cannot be shown yet.")}</p>
             ) : fv.checks.length === 0 ? (
@@ -338,7 +341,7 @@ const panelStrings: WorkspaceDecisionStrings = {
             const ack = latest.acknowledgement as { name?: string; ts?: string; signed_at?: string; signature_data_url?: string };
             return (
               <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
-                <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)")}</h4>
+                <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)")}</h2>
                 <p>
                   <strong>{ack.name ?? "—"}</strong> · <span className="sq-numeric">{(ack.signed_at ?? ack.ts) ? formatDateTime(ack.signed_at ?? ack.ts!, lang) : "—"}</span>
                   {" "}<span className="sq-version">v{latest.version_number}</span>
@@ -372,7 +375,7 @@ const panelStrings: WorkspaceDecisionStrings = {
           )}
           {(trail ?? []).length > 0 && (
             <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
-              <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.timelineHeading", "Timeline — audit trail")}</h4>
+              <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.timelineHeading", "Timeline — audit trail")}</h2>
               {(trail ?? []).map(ev => (
                 <p key={ev.id} className="sq-caption" style={{ marginBlockStart: 4 }}>
                   <span className="sq-numeric">{formatDateTime(ev.occurred_at, lang)}</span>
@@ -397,6 +400,7 @@ const panelStrings: WorkspaceDecisionStrings = {
           : canStart
           ? <StartReview inspectionId={ins.id} submissionVersionId={latest!.id} strings={startStrings} />
           : <div className="sq-surface" style={{ padding: "var(--space-6)" }}><p className="sq-caption">{t("review.ws.noOpenDecision", "No open decision — status {status}.").replace("{status}", t(`enum.${ins.status}`, ins.status.replace(/_/g, " ")))}</p></div>}
+      </div>
       </div>
     </Shell>
   );

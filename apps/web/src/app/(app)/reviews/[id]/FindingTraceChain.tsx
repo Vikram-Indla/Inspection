@@ -43,7 +43,7 @@ export default function FindingTraceChain({ traces, strings }: {
 }) {
   return (
     <section className="panel sq-trace" aria-labelledby="finding-trace-heading">
-      <h4 id="finding-trace-heading">{strings.heading}</h4>
+      <h2 id="finding-trace-heading">{strings.heading}</h2>
       <p className="t-caption">{strings.hint}</p>
       {traces.length === 0 ? (
         <div className="sq-banner" role="status"><div>{strings.empty}</div></div>

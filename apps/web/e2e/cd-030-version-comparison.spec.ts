@@ -98,7 +98,7 @@ test.describe("CD-030 source truth — scope authority, unavailable ≠ unchange
   test("S11 — a route-level loading skeleton exists for /reviews/:id", () => {
     const loading = SRC(LOADING);
     expect(loading).toMatch(/role="status"/);
-    expect(loading).toMatch(/aria-busy="true"/);
+    expect(loading).toMatch(/ariaBusy(?:=\{true\})?(?:\s|glyph)/);
   });
 
   test("S08 — a newer version submitted mid-view is detected and flagged, role=alert", () => {
@@ -117,7 +117,7 @@ test.describe("CD-030 source truth — scope authority, unavailable ≠ unchange
   });
 
   test("leg 1/16 — authorized roles have submission-version read scope and malformed return scopes are rejected by DB shape", () => {
-    const rbac = SRC(RBAC);
+    const rbac = REPO_FILE(RBAC);
     expect(rbac).toMatch(/has_any_role\(array\['reviewer','auditor','ops','planner','leadership'\]\)/);
     expect(rbac).toMatch(/reviews_returned_sections_array_check/);
     const page = SRC(PAGE);

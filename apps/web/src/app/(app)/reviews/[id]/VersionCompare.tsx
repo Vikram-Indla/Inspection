@@ -128,7 +128,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
 
   return (
     <div className="panel cd-version-compare" style={{ padding: "var(--space-6)" }}>
-      <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.heading}</h4>
+      <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.heading}</h2>
 
       {staleAt != null && (
         <div className="sq-banner sq-banner--warning" role="alert" style={{ marginBlockEnd: "var(--space-3)" }}>
