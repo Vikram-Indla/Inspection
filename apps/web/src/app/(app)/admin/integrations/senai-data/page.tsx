@@ -86,7 +86,6 @@ export default async function SenaiDataPage({ searchParams }: { searchParams: Pr
       .limit(30),
   ]);
 
-  const schemaUnavailable = [connectionsRead, runsRead, callsRead, reconciliationRead].some(read => read.error);
   const connections = connectionsRead.data ?? [];
   const runs = runsRead.data ?? [];
   const calls = (callsRead.data ?? []) as SyncCall[];
@@ -116,6 +115,8 @@ export default async function SenaiDataPage({ searchParams }: { searchParams: Pr
     mapping: t("admin.senai.tab.mapping", "Field mapping"),
     reconcile: t("admin.senai.tab.reconcile", "Sync & reconcile"),
   };
+  const enumLabel = (value: string) =>
+    t(`admin.senai.value.${value}`, value.replaceAll("_", " "));
 
   return (
     <Shell
@@ -159,14 +160,6 @@ export default async function SenaiDataPage({ searchParams }: { searchParams: Pr
           </span>
         </div>
 
-        {schemaUnavailable ? (
-          <div className={`panel ${styles.note}`} role="alert">
-            <span className="t-compact">
-              {t("admin.senai.schemaUnavailable", "The Factory 360 integration schema is not readable in this environment. Source, call and reconciliation state below is not inferred — it is simply unavailable.")}
-            </span>
-          </div>
-        ) : null}
-
         {tab === "sources" ? (
           <>
             <div className={styles.actionRow}>
@@ -174,6 +167,16 @@ export default async function SenaiDataPage({ searchParams }: { searchParams: Pr
                 {t("admin.senai.sources.help", "Source data is read-only; this registry records which connections SAQEEL consumes. Configuration is not connectivity.")}
               </span>
             </div>
+            {connectionsRead.error ? (
+              <div className={`panel ${styles.note}`} role="alert">
+                <span className="t-compact">{t("admin.senai.sources.error", "Source connections could not be read. Endpoint contract and recorded calls remain independently available.")}</span>
+              </div>
+            ) : null}
+            {runsRead.error ? (
+              <div className={`panel ${styles.note}`} role="alert">
+                <span className="t-compact">{t("admin.senai.sources.runsError", "Recorded runs could not be read. Available connection configuration is preserved without inferred freshness or counts.")}</span>
+              </div>
+            ) : null}
             <div className="table-wrap">
               <table className="table">
                 <caption className="sr-only">{t("admin.senai.sources.caption", "Registered upstream source connections")}</caption>
@@ -196,25 +199,28 @@ export default async function SenaiDataPage({ searchParams }: { searchParams: Pr
                           <strong><bdi dir="ltr">{row.provider_key}</bdi></strong>
                           <div className="t-caption"><bdi dir="ltr">{row.base_url_origin ?? NOT_CONFIGURED}</bdi></div>
                         </th>
-                        <td><bdi dir="ltr">{row.environment}</bdi></td>
+                        <td>{enumLabel(row.environment)}<div className="t-caption"><bdi dir="ltr">{row.environment}</bdi></div></td>
                         <td><span className="id-code">{row.contract_version ?? NOT_CONFIGURED}</span></td>
-                        <td className="cell-num numeric">{callsByConnection.get(row.id) ?? 0}</td>
-                        <td><span className="id-code">{run ? stamp(run.created_at) : t("admin.senai.sources.noRun", "No run recorded")}</span></td>
+                        <td className="cell-num numeric">{runsRead.error ? t("admin.senai.unavailable", "Unavailable") : callsByConnection.get(row.id) ?? 0}</td>
+                        <td><span className="id-code">{runsRead.error ? t("admin.senai.unavailable", "Unavailable") : run ? <time dateTime={run.created_at}>{stamp(run.created_at)}</time> : t("admin.senai.sources.noRun", "No run recorded")}</span></td>
                         <td>
-                          <span className={statusBadge(row.configuration_status)}>{row.configuration_status.replaceAll("_", " ")}</span>
+                          <span className={statusBadge(row.configuration_status)}>{enumLabel(row.configuration_status)}</span>
+                          <div className="t-caption"><bdi dir="ltr">{row.configuration_status}</bdi></div>
                           {!row.enabled ? <div className="t-caption">{t("admin.senai.sources.disabled", "disabled")}</div> : null}
                         </td>
                       </tr>
                     );
                   })}
-                  {!schemaUnavailable && connections.length === 0 ? (
+                  {!connectionsRead.error && connections.length === 0 ? (
                     <tr><td colSpan={6}>{t("admin.senai.sources.empty", "No source connection is registered. This is a verified empty read, not a failure.")}</td></tr>
                   ) : null}
                 </tbody>
               </table>
             </div>
             <p className="t-caption" style={{ margin: 0 }}>
-              {t("admin.senai.sources.footer", "Record counts and freshness are shown only where a sync run recorded them. Nothing on this screen is estimated.")}
+              {runsRead.error
+                ? t("admin.senai.sources.footerUnavailable", "Run freshness and counts are unavailable because the run source failed. Connection facts above remain readable.")
+                : t("admin.senai.sources.footer", "Record counts and freshness are shown only where a sync run recorded them. Nothing on this screen is estimated.")}
             </p>
           </>
         ) : null}
@@ -227,9 +233,16 @@ export default async function SenaiDataPage({ searchParams }: { searchParams: Pr
               </span>
               <span className="grow" />
               <span className="badge badge-info">
-                {verifiedEndpoints}/{SENAEI_CONTRACT_ENDPOINTS.length} {t("admin.senai.endpoints.verified", "with a recorded live call")}
+                {callsRead.error
+                  ? t("admin.senai.endpoints.verificationUnavailableShort", "Live-call verification unavailable")
+                  : <>{verifiedEndpoints}/{SENAEI_CONTRACT_ENDPOINTS.length} {t("admin.senai.endpoints.verified", "with a recorded live call")}</>}
               </span>
             </div>
+            {callsRead.error ? (
+              <div className={`panel ${styles.note}`} role="alert">
+                <span className="t-compact">{t("admin.senai.endpoints.callsError", "Recorded live calls could not be read. The governed endpoint allow-list remains visible, but live-call verification is unavailable—not unverified.")}</span>
+              </div>
+            ) : null}
             <div className="table-wrap">
               <table className="table">
                 <caption className="sr-only">{t("admin.senai.endpoints.caption", "Governed SENAI endpoint contract and recorded call verification")}</caption>
@@ -265,14 +278,20 @@ export default async function SenaiDataPage({ searchParams }: { searchParams: Pr
                             </div>
                           ) : null}
                         </td>
-                        <td><span className="id-code">{call ? stamp(call.occurred_at) : "—"}</span></td>
+                        <td><span className="id-code">{callsRead.error ? t("admin.senai.unavailable", "Unavailable") : call ? <time dateTime={call.occurred_at}>{stamp(call.occurred_at)}</time> : "—"}</span></td>
                         <td>
-                          {call ? (
+                          {callsRead.error ? (
                             <>
-                              <span className={outcomeBadge(call.outcome)}>{call.outcome.replaceAll("_", " ")}</span>
+                              <span className="badge badge-warning">{t("admin.senai.unavailable", "Unavailable")}</span>
+                              <div className="t-caption">{t("admin.senai.endpoints.verificationUnavailable", "Live-call history could not be read.")}</div>
+                            </>
+                          ) : call ? (
+                            <>
+                              <span className={outcomeBadge(call.outcome)}>{enumLabel(call.outcome)}</span>
                               <div className="t-caption">
+                                <bdi dir="ltr">{call.outcome}</bdi> ·{" "}
                                 {call.http_status !== null ? <>HTTP <bdi dir="ltr" className="numeric">{call.http_status}</bdi></> : t("admin.senai.endpoints.noStatus", "no HTTP status recorded")}
-                                {call.safe_error_code ? <> · <span className="id-code">{call.safe_error_code}</span></> : null}
+                                {call.safe_error_code ? <> · <span className="id-code"><bdi dir="ltr">{call.safe_error_code}</bdi></span></> : null}
                               </div>
                             </>
                           ) : (
@@ -316,26 +335,41 @@ export default async function SenaiDataPage({ searchParams }: { searchParams: Pr
             <div className={styles.kpis}>
               <div className="kpi">
                 <div className="kpi-label">{t("admin.senai.kpi.lastSync", "Last recorded sync")}</div>
-                <div className="kpi-value numeric">{latestRun ? stamp(latestRun.created_at) : "—"}</div>
-                <div className="kpi-delta">{latestRun ? latestRun.status.replaceAll("_", " ") : t("admin.senai.kpi.noRun", "no run recorded")}</div>
+                <div className="kpi-value numeric">{runsRead.error ? t("admin.senai.unavailable", "Unavailable") : latestRun ? stamp(latestRun.created_at) : "—"}</div>
+                <div className="kpi-delta">{runsRead.error ? t("admin.senai.unavailable", "Unavailable") : latestRun ? <>{enumLabel(latestRun.status)} · <bdi dir="ltr">{latestRun.status}</bdi></> : t("admin.senai.kpi.noRun", "no run recorded")}</div>
               </div>
               <div className="kpi">
                 <div className="kpi-label">{t("admin.senai.kpi.accepted", "Rows accepted")}</div>
-                <div className="kpi-value numeric">{reconciledRows}</div>
-                <div className="kpi-delta">{t("admin.senai.kpi.of", "of")} {receivedRows} {t("admin.senai.kpi.received", "received")}</div>
+                <div className="kpi-value numeric">{runsRead.error ? t("admin.senai.unavailable", "Unavailable") : reconciledRows}</div>
+                <div className="kpi-delta">{runsRead.error ? t("admin.senai.kpi.sourceUnavailable", "Run source unavailable") : <>{t("admin.senai.kpi.of", "of")} {receivedRows} {t("admin.senai.kpi.received", "received")}</>}</div>
               </div>
               <div className="kpi">
                 <div className="kpi-label">{t("admin.senai.kpi.rejected", "Rows rejected")}</div>
-                <div className={`kpi-value numeric ${styles.warnValue}`}>{rejectedRows}</div>
-                <div className="kpi-delta">{t("admin.senai.kpi.staged", "staged is not imported")}</div>
+                <div className={`kpi-value numeric ${styles.warnValue}`}>{runsRead.error ? t("admin.senai.unavailable", "Unavailable") : rejectedRows}</div>
+                <div className="kpi-delta">{runsRead.error ? t("admin.senai.kpi.sourceUnavailable", "Run source unavailable") : t("admin.senai.kpi.staged", "staged is not imported")}</div>
               </div>
               <div className="kpi">
                 <div className="kpi-label">{t("admin.senai.kpi.unvalidated", "Sources not validated")}</div>
-                <div className="kpi-value numeric">{partialConnections}</div>
-                <div className="kpi-delta">{t("admin.senai.kpi.ofConnections", "of")} {connections.length}</div>
+                <div className="kpi-value numeric">{connectionsRead.error ? t("admin.senai.unavailable", "Unavailable") : partialConnections}</div>
+                <div className="kpi-delta">{connectionsRead.error ? t("admin.senai.kpi.sourceUnavailable", "Source registry unavailable") : <>{t("admin.senai.kpi.ofConnections", "of")} {connections.length}</>}</div>
               </div>
             </div>
 
+            {runsRead.error ? (
+              <div className={`panel ${styles.note}`} role="alert">
+                <span className="t-compact">{t("admin.senai.recon.runsError", "Sync runs could not be read. Aggregate row counts and freshness are unavailable; reconciliation divergences below remain independent.")}</span>
+              </div>
+            ) : null}
+            {connectionsRead.error ? (
+              <div className={`panel ${styles.note}`} role="alert">
+                <span className="t-compact">{t("admin.senai.recon.connectionsError", "Source connections could not be read. The source-validation count is unavailable; recorded run and divergence facts are preserved.")}</span>
+              </div>
+            ) : null}
+            {reconciliationRead.error ? (
+              <div className={`panel ${styles.note}`} role="alert">
+                <span className="t-compact">{t("admin.senai.recon.error", "Reconciliation divergences could not be read. This is unavailable data, not a verified empty divergence set.")}</span>
+              </div>
+            ) : null}
             <div className="table-wrap">
               <table className="table">
                 <caption className="sr-only">{t("admin.senai.recon.caption", "Recorded reconciliation divergences")}</caption>
@@ -351,14 +385,14 @@ export default async function SenaiDataPage({ searchParams }: { searchParams: Pr
                 <tbody>
                   {conflicts.map(row => (
                     <tr key={row.id}>
-                      <th scope="row">{row.entity_type}</th>
+                      <th scope="row">{enumLabel(row.entity_type)}<div className="t-caption"><bdi dir="ltr">{row.entity_type}</bdi></div></th>
                       <td><span className="id-code"><bdi dir="ltr">{row.external_id ?? "—"}</bdi></span></td>
-                      <td><span className="badge badge-warning">{row.outcome.replaceAll("_", " ")}</span></td>
-                      <td className="t-caption">{(row.safe_reason_codes ?? []).join(", ") || t("admin.senai.recon.noReason", "No reason code recorded")}</td>
-                      <td><span className="id-code">{stamp(row.reconciled_at)}</span></td>
+                      <td><span className="badge badge-warning">{enumLabel(row.outcome)}</span><div className="t-caption"><bdi dir="ltr">{row.outcome}</bdi></div></td>
+                      <td className="t-caption"><bdi dir="ltr">{(row.safe_reason_codes ?? []).join(", ") || t("admin.senai.recon.noReason", "No reason code recorded")}</bdi></td>
+                      <td><span className="id-code"><time dateTime={row.reconciled_at}>{stamp(row.reconciled_at)}</time></span></td>
                     </tr>
                   ))}
-                  {!schemaUnavailable && conflicts.length === 0 ? (
+                  {!reconciliationRead.error && conflicts.length === 0 ? (
                     <tr><td colSpan={5}>{t("admin.senai.recon.empty", "No unresolved divergence is recorded. This is a verified empty read.")}</td></tr>
                   ) : null}
                 </tbody>
