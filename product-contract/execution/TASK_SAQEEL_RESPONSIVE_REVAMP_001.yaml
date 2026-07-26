@@ -2,7 +2,7 @@ schema_version: "1.0"
 task_id: "TASK-SAQEEL-RESPONSIVE-REVAMP-001"
 change_control_id: "CC-SAQEEL-RESPONSIVE-REVAMP-001"
 title: "Unified responsive SAQEEL migration orchestration"
-status: "BASELINE_APPROVED_PACKET_AUTHORING_REQUIRED"
+status: "TRACEABILITY_GATE_PASS_PACKET_AUTHORING_REQUIRED"
 gate: "G10 verification / G11 hardening / controlled migration"
 
 baseline:
@@ -83,3 +83,15 @@ completion_evidence:
   - "EN/AR, LTR/RTL, light/dark and all declared widths"
   - "Accessibility evidence"
   - "Sponsor demonstration and explicit final merge approval"
+
+traceability_gate:
+  status: "PASS_WITH_BLOCKED_IMPLEMENTATION_DEPENDENCIES"
+  evidence: "product-contract/evidence/TASK-SAQEEL-RESPONSIVE-REVAMP-001-TRACEABILITY.md"
+  workbook_sha256: "d05830015aa3415c2853429415a6053cf43ee1b2c2b41a0530131ae46c3f5775"
+  counts:
+    requirements: 478
+    routes: 79
+    current_to_target_rows: 71
+  next_action: >
+    Contract owner authors exact non-overlapping vertical packets from the
+    workbook. No product-code lease is active yet.
