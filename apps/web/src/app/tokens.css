@@ -294,7 +294,9 @@
   --row-h-compact: 34px;
   --touch-target: 44px;
 
-  --sidebar-w: 264px;
+  /* Canonical rail width — designs/web/export-saqeel-web/saqeel/tokens.
+     Was 264px, which no design authority calls for. */
+  --sidebar-w: 248px;
   --sidebar-w-collapsed: 74px;
   --topbar-h: 52px;
   --page-pad: var(--space-6);

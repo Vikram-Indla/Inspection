@@ -463,6 +463,24 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   background: var(--nav-bg); border-inline-end: 1px solid var(--nav-border); color: var(--nav-text);
   padding: var(--ax-space-150); display: flex; flex-direction: column; gap: var(--ax-space-100);
   position: sticky; inset-block-start: 0; min-block-size: 100dvh; min-inline-size: 0; align-self: start;
+
+  /* CANONICAL RAIL METRICS — single source for every .ax-nav-* rule below.
+     Values come from the design authority, designs/web/export-saqeel-web/
+     saqeel/components.css (.nav-item, .nav-item svg, .sidebar-group).
+     They are declared here rather than taken from the generic --ax-* control
+     scale, because re-deriving rail geometry from a second token scale is what
+     let the rail drift away from the design in the first place. Change these
+     only against a change in saqeel/components.css. */
+  --ax-nav-gap:        var(--ax-space-100);            /* canonical .nav-item gap: --space-2 */
+  --ax-nav-pad-inline: var(--ax-space-100);            /* canonical .nav-item padding-inline: --space-2 */
+  --ax-nav-font:       500 13px/1.4 var(--font-body);  /* canonical .nav-item: 13px / 500 */
+  --ax-nav-icon-size:  17px;                           /* canonical .nav-item svg: 17 x 17 */
+  --ax-nav-group-font: 600 10.5px/1.4 var(--font-body);/* canonical .sidebar-group: 10.5px / 600 */
+  /* Canonical .sidebar-group is color-mix(--nav-text 65%), which composites to
+     4.20:1 on the rail ground and fails WCAG AA (4.5:1) at 10.5px. 70% is the
+     smallest deviation that clears it, at 4.65:1. Deliberate, and the only
+     value on the rail that does not match the design authority exactly. */
+  --ax-nav-group-color: color-mix(in srgb, var(--nav-text) 70%, transparent);
 }
 .ax-shell__brand { display:flex; align-items:center; gap: 11px; min-block-size: 74px; padding: 20px 18px; border-block-end: 1px solid var(--nav-border); margin-block-end: var(--ax-space-050); }
 /* WA-BRAND-r1 — canonical authenticated-shell identity, sized from the design
@@ -489,27 +507,41 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .ax-shell__close { display: none; margin-inline-start: auto; inline-size: var(--ax-control-height); block-size: var(--ax-control-height); border: 1px solid var(--nav-border); border-radius: var(--ax-radius-small); background: var(--nav-bg-hover); color: var(--nav-text-active); cursor: pointer; font-size: 24px; }
 .ax-shell__groups { display: flex; flex-direction: column; gap: var(--ax-space-100); }
 .ax-nav-group { display: flex; flex-direction: column; gap: var(--ax-space-050); }
-.ax-nav-group__trigger { inline-size: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--ax-space-100); padding: var(--ax-space-100) var(--ax-space-150) var(--ax-space-050); border: 0; background: none; color: color-mix(in srgb, var(--nav-text) 65%, transparent); cursor: pointer; font: var(--ax-text-micro); letter-spacing: .01em; text-align: start; border-radius: var(--ax-radius-small); }
+.ax-nav-group__trigger { inline-size: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--ax-space-100); padding: var(--ax-space-150) var(--ax-nav-pad-inline) var(--ax-space-050); border: 0; background: none; color: var(--ax-nav-group-color); cursor: pointer; font: var(--ax-nav-group-font); letter-spacing: .08em; text-transform: uppercase; text-align: start; border-radius: var(--ax-radius-small); }
+/* Arabic has no case and letterforms are cursive — canonical .sidebar-group
+   drops the tracking under RTL and so does this. */
+[dir="rtl"] .ax-nav-group__trigger { letter-spacing: 0; }
 .ax-nav-group__trigger:hover { color: var(--nav-text-active); background: var(--nav-bg-hover); }
 .ax-nav-group__chevron { transition: transform var(--ax-motion-fast); }
 .ax-nav-group__trigger[aria-expanded="false"] .ax-nav-group__chevron { transform: rotate(-90deg); }
 [dir="rtl"] .ax-nav-group__trigger[aria-expanded="false"] .ax-nav-group__chevron { transform: rotate(90deg); }
 .ax-nav-item {
-  display: flex; align-items: center; gap: var(--ax-space-150); min-block-size: var(--ax-control-height);
-  padding-block: var(--ax-space-100); padding-inline: var(--ax-space-150);
+  display: flex; align-items: center; gap: var(--ax-nav-gap);
+  /* Canonical .nav-item is a fixed 34px row. This shell also serves the iPad
+     channel, where 34px fails the WCAG 2.5.8 44px target floor, so the row
+     keeps the touch height as a min and drops its own vertical padding —
+     the only geometric deviation from the design authority, and intentional.
+     Do not "restore" 34px without moving the field channel off this shell. */
+  min-block-size: var(--ax-control-height);
+  padding-block: 0; padding-inline: var(--ax-nav-pad-inline);
   border-radius: var(--ax-radius-standard); color: var(--nav-text);
-  font: var(--ax-text-body); text-decoration: none; border: 1px solid transparent; background: none; cursor: pointer; white-space: nowrap;
+  font: var(--ax-nav-font); text-decoration: none; border: 1px solid transparent; background: none; cursor: pointer; white-space: nowrap;
   position: relative;
 }
 .ax-nav-label { min-inline-size: 0; overflow: hidden; text-overflow: ellipsis; }
 .ax-nav-icon { display: grid; place-items: center; inline-size: var(--ax-space-300); block-size: var(--ax-space-300); flex: 0 0 auto; }
+/* ShellNavIcon renders at its own intrinsic size; the canonical rail sizes the
+   glyph, not the component. */
+.ax-nav-icon svg { inline-size: var(--ax-nav-icon-size); block-size: var(--ax-nav-icon-size); }
 .ax-nav-item:hover { background: var(--nav-bg-hover); color: var(--nav-text-active); }
 .ax-nav-item.is-disabled { color: var(--nav-text); cursor: not-allowed; opacity: .5; }
 .ax-nav-item.is-disabled:hover { background: transparent; color: var(--nav-text); }
 .ax-nav-item.is-disabled:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .ax-nav-lock { display: grid; place-items: center; margin-inline-start: auto; flex: 0 0 auto; }
 .ax-nav-subgroup { display: flex; flex-direction: column; gap: var(--ax-space-050); }
-.ax-nav-subgroup__label { display: flex; align-items: center; gap: var(--ax-space-150); min-block-size: var(--ax-control-height); padding-inline: var(--ax-space-150); color: var(--nav-text-active); font: var(--ax-text-body-strong); }
+/* Canonical .s5-sub-label: same 13px rail face at 600, not the app's 14px
+   body-strong. */
+.ax-nav-subgroup__label { display: flex; align-items: center; gap: var(--ax-nav-gap); min-block-size: var(--ax-control-height); padding-inline: var(--ax-nav-pad-inline); color: var(--nav-text-active); font: var(--ax-nav-font); font-weight: 600; }
 .ax-nav-item--child { margin-inline-start: var(--ax-space-300); inline-size: calc(100% - var(--ax-space-300)); }
 .ax-nav-item[aria-current="page"] { background: var(--nav-bg-selected); color: var(--nav-text-active); border-color: transparent; font-weight: 600; box-shadow: none; }
 .ax-nav-item[aria-current="page"]::before { content: ""; position: absolute; inset-block: 6px; inset-inline-start: 0; inline-size: 2.5px; border-radius: 999px; background: var(--nav-indicator); }
