@@ -1,6 +1,6 @@
 "use client";
 // CD-001 V7 Atlas — story panel host. Owns the single source of stage truth
-// (the six lifecycle stages) and the 14s motion loop, and lays out the
+// (the five story scenes) and the 30s motion loop, and lays out the
 // map-bound stage event and lifecycle tablist (roving tabindex). The premium 3D atlas
 // (SaudiIndustrialAtlas) is dynamically imported (ssr:false) exactly like the
 // old map; if Layer 1 cannot initialise (offline, tiles blocked, boundary
@@ -19,6 +19,9 @@ import type { DossierStrings } from "./SaudiAtlasDossier";
 // but downgraded the art, so it is parked; a true 3D asset would come from the
 // design team's render, not primitives.
 const Atlas = dynamic(() => import("./SaudiIndustrialAtlas"), { ssr: false });
+
+// How long a hand-picked scene holds before the loop resumes from it.
+const MANUAL_HOLD_MS = 12000;
 
 export type StoryStrings = {
   title: string;
@@ -43,12 +46,15 @@ export default function StoryPanel({ strings: s, locale, subdued = false, paused
   paused?: boolean;
 }) {
   const [mapFailed, setMapFailed] = useState(false);
-  const [stage, setStage] = useState<AtlasStageId>("plan");
+  // Sign-in opens on the Zones scene — the regional-intelligence view — and the
+  // five-scene loop takes over after the manual hold expires.
+  const [stage, setStage] = useState<AtlasStageId>("decide");
   const activeStage = s.stages.find(item => item.id === stage) ?? s.stages[0];
   const activeIndex = Math.max(0, s.stages.findIndex(item => item.id === stage));
 
   const tlRef = useRef<AtlasTimeline | null>(null);
-  const manualRef = useRef(false);   // user took control via the tablist
+  const manualRef = useRef(true);    // user took control via the tablist
+  const resumeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pausedRef = useRef(false);
   const atlasInteractingRef = useRef(false);
   const [atlasInteracting, setAtlasInteracting] = useState(false);
@@ -56,14 +62,31 @@ export default function StoryPanel({ strings: s, locale, subdued = false, paused
 
   pausedRef.current = paused;
 
+  // A picked scene holds for 12s, then the five-scene loop resumes from it — so
+  // the dispatch vehicles and arriving inspectors always come back round. The
+  // opening Zones scene is itself a hold, so the loop starts on its own.
+  const armResume = useCallback(() => {
+    if (resumeRef.current) clearTimeout(resumeRef.current);
+    resumeRef.current = setTimeout(() => {
+      manualRef.current = false;
+      if (!pausedRef.current && !atlasInteractingRef.current) tlRef.current?.resume();
+    }, MANUAL_HOLD_MS);
+  }, []);
+
   // Motion loop runs only while the live interactive atlas is on screen.
   useEffect(() => {
     if (mapFailed || subdued) return;
     const tl = createAtlasTimeline(i => { if (!manualRef.current) setStage(STORY_SCENE_ORDER[i]); });
     tlRef.current = tl;
     tl.start();
-    return () => { tl.stop(); tlRef.current = null; };
-  }, [mapFailed, subdued]);
+    tl.pause();          // held on the opening Zones scene
+    armResume();
+    return () => {
+      tl.stop();
+      tlRef.current = null;
+      if (resumeRef.current) clearTimeout(resumeRef.current);
+    };
+  }, [mapFailed, subdued, armResume]);
 
   useEffect(() => {
     if (paused) tlRef.current?.pause();
@@ -81,7 +104,8 @@ export default function StoryPanel({ strings: s, locale, subdued = false, paused
     manualRef.current = true;
     tlRef.current?.pause();
     setStage(id);
-  }, []);
+    armResume();
+  }, [armResume]);
 
   const onTabKey = (e: React.KeyboardEvent, idx: number) => {
     const n = s.stages.length;
@@ -117,15 +141,14 @@ export default function StoryPanel({ strings: s, locale, subdued = false, paused
             onInteractingChange={onInteracting} onFail={() => setMapFailed(true)} />
         )}
 
-        {/* The selected tab changes the story on the map, not on the tab. */}
+        {/* dissolves the boundary with the credential column */}
+        <div className="lg-story__seam" aria-hidden="true" />
+
+        {/* No event card: the stage rail is the only chrome over the atlas, and
+            the selected scene reads on the map itself. The scene copy is still
+            announced to assistive tech, without painting a panel over the art. */}
         {!subdued && !mapFailed && (
-          <div key={stage} className="lg-atlas3d__event" role="status" aria-live="polite">
-            <span className="lg-atlas3d__event-stage">
-              <span dir="ltr">{String(activeIndex + 1).padStart(2, "0")}</span>
-              {activeStage.label}
-            </span>
-            <strong>{activeStage.event}</strong>
-          </div>
+          <p className="sr-only" role="status" aria-live="polite">{activeStage.event}</p>
         )}
 
         {/* One lifecycle strip, physically attached to and controlling the atlas. */}
