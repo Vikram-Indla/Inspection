@@ -6,7 +6,7 @@ import Room, { type RoomStrings, type RoomTimelineRow } from "./Room";
 import { type RoomStageStrings } from "./RoomStage";
 import EmptyState from "@/components/EmptyState";
 import { IconShieldCheck } from "@/app/icons";
-import { videoTransportStatus } from "@/lib/providers/video-twilio";
+import { videoTransportStatus, videoRoomJoinable } from "@/lib/providers/video-twilio";
 
 type TimelineEvent = { event: string; at: string; actor?: string | null; detail?: Record<string, unknown> | null };
 
@@ -152,7 +152,13 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
   // WA-DES-044 — the room panel. Local media is a browser capability and works
   // now; the remote leg needs Twilio Video credentials, so its availability is
   // read from the server and never inferred in the browser.
+  // Two DIFFERENT facts, and conflating them would put a false promise on the
+  // page: `configured` means the Twilio credentials exist, `joinable` means a
+  // participant could actually connect. The API key landed 2026-07-26, so
+  // configured is now true while the client SDK connect is still unbuilt — the
+  // panel must keep saying nobody can join, and say WHY in the right words.
   const transport = videoTransportStatus();
+  const joinable = videoRoomJoinable();
   const stage: RoomStageStrings = {
     title: t("virtual.stage.title", "Inspection room"),
     statusReady: t("virtual.stage.statusReady", "ready to connect"),
@@ -160,8 +166,14 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     stateConnected: t("virtual.stage.stateConnected", "Connected"),
     stateLocalOnly: t("virtual.stage.stateLocalOnly", "Your devices only"),
     stateUnavailable: t("virtual.stage.stateUnavailable", "Room not available"),
-    remoteWaiting: t("virtual.stage.remoteWaiting", "Waiting for the factory representative to join."),
-    remoteUnavailable: t("virtual.stage.remoteUnavailable", "The video service is not switched on for this environment, so the representative cannot join yet."),
+    remoteWaiting: t("virtual.stage.remoteWaiting", "No one else is in this room yet."),
+    remoteRepNoRoute: t("virtual.stage.remoteRepNoRoute", "The factory representative cannot join yet — there is no route for them to enter a room, so this room is reachable only from the console."),
+    // Same "cannot join" outcome, two different causes — and telling the
+    // operator the wrong one wastes their time. Before the API key existed the
+    // service was genuinely off; now it is configured and the gap is this build.
+    remoteUnavailable: transport.configured
+      ? t("virtual.stage.remoteUnavailableNoClient", "The video service is configured, but joining a room is not available in this version yet, so the representative cannot join.")
+      : t("virtual.stage.remoteUnavailable", "The video service is not switched on for this environment, so the representative cannot join yet."),
     remoteUnavailableReason: t("virtual.stage.remoteUnavailableReason", "Your camera, microphone and screen sharing still work below, and the rest of the session — identity checks, the appointment, the decision to begin and the audit trail — runs now."),
     selfView: t("virtual.stage.selfView", "Your camera"),
     cameraOff: t("virtual.stage.cameraOff", "Camera off"),
@@ -179,6 +191,12 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     errBusy: t("virtual.stage.errBusy", "The device is already in use by another application. Close it and try again."),
     errUnsupported: t("virtual.stage.errUnsupported", "This browser does not support camera, microphone or screen sharing here."),
     errGeneric: t("virtual.stage.errGeneric", "The device could not be started. Try again or use a different device."),
+    join: t("virtual.stage.join", "Join room"),
+    joining: t("virtual.stage.joining", "Joining…"),
+    stateNotJoined: t("virtual.stage.stateNotJoined", "Not in the room"),
+    joinedWith: t("virtual.stage.joinedWith", "Connected · {n} other in the room"),
+    joinedAlone: t("virtual.stage.joinedAlone", "Connected · waiting for others"),
+    errJoin: t("virtual.stage.errJoin", "The room could not be joined. Check your connection and try again."),
   };
   // S13 — server-authoritative revision the client acts against (state + append-only
   // timeline length). A mismatch on submit means the session moved on concurrently.
@@ -214,7 +232,7 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
         <span className={`sq-lozenge sq-lozenge--virtual ${STATE_TONE[s.state] ?? "sq-lozenge--info"}`}>{t(`enum.${s.state}`, s.state.replace(/_/g, " "))}</span>
       </>}>
       <Room session={s as never} strings={strings} rev={rev} stage={stage}
-        transportConfigured={transport.configured} timeline={timelineRows} />
+        transportConfigured={joinable} timeline={timelineRows} />
     </Shell>
   );
 }
