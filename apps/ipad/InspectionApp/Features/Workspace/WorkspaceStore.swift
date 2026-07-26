@@ -296,20 +296,14 @@ final class WorkspaceStore: ObservableObject {
     }
 
     private func buildSnapshot() -> JSONValue {
-        // Build a answers snapshot keyed by itemId
-        var answersMap: [String: JSONValue] = [:]
-        for (itemId, answer) in answers {
-            var fields: [String: JSONValue] = [:]
-            if let v = answer.value { fields["value"] = .string(v) }
-            if let n = answer.note { fields["note"] = .string(n) }
-            if let d = answer.date { fields["date"] = .string(d) }
-            answersMap[itemId] = .object(fields)
-        }
-        return .object([
-            "inspectionId": .string(inspectionId),
-            "capturedAt": .string(isoNow()),
-            "answers": .object(answersMap)
-        ])
+        // Delegate to the pure static builder (Task 10).
+        // answers are keyed by item.id.uuidString; items resolve them to codes.
+        SnapshotBuilder.buildSnapshot(
+            inspectionId: inspectionId,
+            answers: answers,
+            items: sections.flatMap(\.items),
+            capturedAt: isoNow()
+        )
     }
 
     private func triggerSync() async {

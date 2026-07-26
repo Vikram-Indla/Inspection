@@ -34,14 +34,17 @@ struct WorkspaceView: View {
     /// Task 11 injects the real inspection number here.
     var title: String = "Inspection"
 
-    /// Task 10: wire signature/submit sheet here.
-    /// Call this closure (or present a sheet) instead of building capture here.
+    /// Task 10: optional hook for callers that want to intercept the submit flow.
+    /// When nil, the default behavior is to present the `SignatureSheet`.
     var onSubmitTapped: (() -> Void)?
 
     /// Fixed width shared by the progress bar and submit button in the submit bar.
     private let submitControlWidth: CGFloat = 140
 
     @EnvironmentObject private var theme: SaqeelTheme
+
+    /// Task 10: controls presentation of the SignatureSheet.
+    @State private var showSignature = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -83,6 +86,11 @@ struct WorkspaceView: View {
         }
         .background(theme.colors.canvas)
         .task { await store.load() }
+        // Task 10: present the signature capture sheet
+        .sheet(isPresented: $showSignature) {
+            SignatureSheet(store: store)
+                .environmentObject(theme)
+        }
     }
 
     // MARK: - Sections scroll content
@@ -160,14 +168,18 @@ struct WorkspaceView: View {
 
                 Spacer(minLength: 0)
 
-                // Submit button — Task 10 wires signature sheet
+                // Submit button — Task 10: presents SignatureSheet by default,
+                // or calls onSubmitTapped if the caller overrides the flow.
                 SaqeelButton(
                     "Submit",
                     style: .primary,
                     isEnabled: store.canSubmit
                 ) {
-                    // Task 10: replace this stub with signature capture sheet
-                    onSubmitTapped?()
+                    if let customAction = onSubmitTapped {
+                        customAction()
+                    } else {
+                        showSignature = true
+                    }
                 }
                 .frame(width: submitControlWidth)
             }

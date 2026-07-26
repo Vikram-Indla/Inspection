@@ -27,6 +27,7 @@ targets:
         product: Supabase
       - package: GRDB
         product: GRDB
+      - sdk: PencilKit.framework
     configFiles:
       Debug: InspectionApp/Config/Secrets.xcconfig
       Release: InspectionApp/Config/Secrets.xcconfig
