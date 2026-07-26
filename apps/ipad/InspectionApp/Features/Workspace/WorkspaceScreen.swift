@@ -21,15 +21,20 @@ struct WorkspaceScreen: View {
     /// The inspection UUID string resolved by the caller.
     private let inspectionId: String
 
-    init(inspectionId: String) {
+    /// Human-readable title shown in the workspace header.
+    /// Typically the factory name; falls back to "Inspection".
+    private let title: String
+
+    init(inspectionId: String, title: String = "Inspection") {
         self.inspectionId = inspectionId
+        self.title = title
         _store = StateObject(wrappedValue: WorkspaceStore(inspectionId: inspectionId))
     }
 
     var body: some View {
         // WorkspaceView handles its own header (InspectionHeader + sync badge)
         // and calls store.load() internally via .task { await store.load() }.
-        WorkspaceView(store: store, title: inspectionId)
+        WorkspaceView(store: store, title: title)
     }
 }
 
@@ -70,6 +75,9 @@ struct ResolvingWorkspaceScreen: View {
 
     let visitId: String
 
+    /// Human-readable title forwarded to `WorkspaceScreen` once resolution completes.
+    let title: String
+
     @State private var state: ResolveState = .loading
     @EnvironmentObject private var theme: SaqeelTheme
 
@@ -89,7 +97,7 @@ struct ResolvingWorkspaceScreen: View {
                     .background(theme.colors.canvas)
 
             case .resolved(let inspectionId):
-                WorkspaceScreen(inspectionId: inspectionId)
+                WorkspaceScreen(inspectionId: inspectionId, title: title)
 
             case .notFound:
                 NotStartedScreen()

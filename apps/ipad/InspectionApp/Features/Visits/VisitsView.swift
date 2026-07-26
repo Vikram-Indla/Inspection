@@ -63,7 +63,8 @@ struct VisitsView: View {
     private func workspaceDestination(for item: VisitListItem) -> some View {
         switch WorkspaceRouter.route(for: item) {
         case .open:
-            ResolvingWorkspaceScreen(visitId: item.visit.id.uuidString)
+            let displayTitle = item.factory?.name ?? "Inspection"
+            ResolvingWorkspaceScreen(visitId: item.visit.id.uuidString, title: displayTitle)
         case .notStarted:
             NotStartedScreen()
         }
