@@ -212,7 +212,7 @@ export function DashboardControls({ locale, view, params, from, to, region, quer
         )}
       </span>
       <span className={styles.grow} />
-      <span className={`${styles.badge} ${partialSources.length ? styles.tone_warning : styles.tone_success}`}>
+      <span className={`${styles.badge} ${partialSources.length ? styles.tone_warning : styles.tone_neutral}`}>
         <span className={styles.dot} aria-hidden="true" />
         {partialSources.length
           ? copy(
@@ -220,7 +220,11 @@ export function DashboardControls({ locale, view, params, from, to, region, quer
               `Partial · ${partialSources.length} unavailable source${partialSources.length === 1 ? "" : "s"}`,
               `جزئي · ${partialSources.length} ${partialSources.length === 1 ? "مصدر غير متاح" : "مصادر غير متاحة"}`,
             )
-          : copy(locale, `Live · refreshed ${refreshedAt} Riyadh`, `مباشر · تم التحديث ${refreshedAt} بتوقيت الرياض`)}
+          : copy(
+              locale,
+              `Page generated ${refreshedAt} Riyadh`,
+              `أُنشئت الصفحة ${refreshedAt} بتوقيت الرياض`,
+            )}
       </span>
     </div>
     {partialSources.length > 0 && <div className={styles.partialDetail} role="alert">
