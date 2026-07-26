@@ -26,7 +26,7 @@ type VisitRow = {
   factories: { id: string; name: string; region: string | null; city: string | null;
     official_lat: number | null; official_lng: number | null;
     source: string; is_temporary: boolean; factory_code: string | null } | null;
-  assignments: { profiles: { full_name: string; email: string | null } | null }[] | null;
+  assignments: { profiles: { full_name: string } | null }[] | null;
 };
 type GeoPositionRow = {
   id: string;
@@ -36,6 +36,13 @@ type GeoPositionRow = {
   occurred_at: string;
   integration_mode: string | null;
   kind: string;
+};
+type VisitStateAuditRow = {
+  id: number;
+  object_id: string | null;
+  before_state: Record<string, unknown> | null;
+  after_state: Record<string, unknown> | null;
+  occurred_at: string;
 };
 
 function isVerificationRecord(factory: VisitRow["factories"], notes: string | null): boolean {
@@ -50,28 +57,16 @@ const CLEAN_FACTORY_CODES = new Set([
   "F-3301", "F-3302", "F-3303", "F-3304", "F-3305",
   "F-4401", "F-4402", "F-5501", "F-5502", "F-6601", "F-6602",
 ]);
-const TEST_ACCOUNT_EMAILS = new Set([
-  "planner@mim.gov.sa",
-  "inspector@mim.gov.sa",
-  "reviewer@mim.gov.sa",
-  "admin@mim.gov.sa",
-  "ops@mim.gov.sa",
-]);
 
 function isCleanFactory(factory: VisitRow["factories"] | FactoryRow | null): boolean {
   return Boolean(factory?.factory_code && CLEAN_FACTORY_CODES.has(factory.factory_code));
 }
 
 function sourceInspectorName(
-  profile: { full_name: string; email: string | null } | null | undefined,
-  locale: string,
+  profile: { full_name: string } | null | undefined,
   fallback: string,
 ): string {
-  if (!profile?.email || !TEST_ACCOUNT_EMAILS.has(profile.email.toLowerCase())) return fallback;
-  const name = profile.full_name.trim();
-  if (!name) return fallback;
-  const hasArabic = /[\u0600-\u06ff]/.test(name);
-  return (locale === "ar") === hasArabic ? name : fallback;
+  return profile?.full_name.trim() || fallback;
 }
 
 function validObservedPosition(position: GeoPositionRow, snapshotMs: number): boolean {
@@ -95,6 +90,34 @@ function localizedRegionName(sourceName: string, locale: string): string {
   const region = regionId ? KSA_REGION_NAMES.get(regionId) : null;
   if (!region) return sourceName;
   return locale === "ar" ? region.name_ar : region.name_en;
+}
+
+const AUDIT_ID_CHUNK = 100;
+
+async function loadVisitStateAudit(
+  sb: Awaited<ReturnType<typeof supabaseServer>>,
+  visitIds: string[],
+): Promise<PostgrestPage<VisitStateAuditRow>> {
+  const rows: VisitStateAuditRow[] = [];
+  for (let offset = 0; offset < visitIds.length; offset += AUDIT_ID_CHUNK) {
+    const ids = visitIds.slice(offset, offset + AUDIT_ID_CHUNK);
+    const result = await collectPostgrestPages<VisitStateAuditRow>((from, to) => sb
+      .from("audit_events")
+      .select("id, object_id, before_state, after_state, occurred_at")
+      .eq("object_type", "visits")
+      .eq("action", "UPDATE")
+      .in("object_id", ids)
+      .order("occurred_at", { ascending: false })
+      .order("id", { ascending: false })
+      .range(from, to) as unknown as PromiseLike<PostgrestPage<VisitStateAuditRow>>);
+    if (result.error) return { data: null, error: result.error };
+    rows.push(...(result.data ?? []));
+  }
+  rows.sort((a, b) => {
+    const byTime = Date.parse(b.occurred_at) - Date.parse(a.occurred_at);
+    return byTime || b.id - a.id;
+  });
+  return { data: rows, error: null };
 }
 
 export default async function LiveOperations({ searchParams }: {
@@ -166,7 +189,7 @@ export default async function LiveOperations({ searchParams }: {
       .order("id", { ascending: true })
       .range(from, to) as unknown as PromiseLike<PostgrestPage<FactoryRow>>),
     collectPostgrestPages<VisitRow>((from, to) => sb.from("visits")
-      .select("id, operational_state, planning_status, window_start, window_end, factory_id, notes, factories(id, name, region, city, official_lat, official_lng, source, is_temporary, factory_code), assignments(profiles(full_name, email))")
+      .select("id, operational_state, planning_status, window_start, window_end, factory_id, notes, factories(id, name, region, city, official_lat, official_lng, source, is_temporary, factory_code), assignments(profiles(full_name))")
       .in("operational_state", ["on_the_way", "arrived", "executing"])
       .order("id", { ascending: true })
       .range(from, to) as unknown as PromiseLike<PostgrestPage<VisitRow>>),
@@ -192,21 +215,31 @@ export default async function LiveOperations({ searchParams }: {
     inAuthorizedGeography(visit.factories?.region ?? null, visit.factories?.city ?? null));
   const outOfScopeRecordCount = integrityFilteredVisitRows.length - activeVisitRows.length;
   const activeVisitIds = activeVisitRows.map(visit => visit.id);
-  const geoPositionsRes = activeVisitIds.length > 0
-    ? await collectPostgrestPages<GeoPositionRow>((from, to) => sb.from("geo_events")
-      .select("id, visit_id, observed_lat, observed_lng, occurred_at, integration_mode, kind")
-      .in("visit_id", activeVisitIds)
-      .or("integration_mode.is.null,integration_mode.eq.production")
-      .order("occurred_at", { ascending: false })
-      .order("id", { ascending: true })
-      .range(from, to) as unknown as PromiseLike<PostgrestPage<GeoPositionRow>>)
-    : { data: [] as GeoPositionRow[], error: null };
+  const [geoPositionsRes, stateAuditRes] = activeVisitIds.length > 0
+    ? await Promise.all([
+      collectPostgrestPages<GeoPositionRow>((from, to) => sb.from("geo_events")
+        .select("id, visit_id, observed_lat, observed_lng, occurred_at, integration_mode, kind")
+        .in("visit_id", activeVisitIds)
+        .or("integration_mode.is.null,integration_mode.eq.production")
+        .order("occurred_at", { ascending: false })
+        .order("id", { ascending: true })
+        .range(from, to) as unknown as PromiseLike<PostgrestPage<GeoPositionRow>>),
+      loadVisitStateAudit(sb, activeVisitIds),
+    ])
+    : [
+      { data: [] as GeoPositionRow[], error: null },
+      { data: [] as VisitStateAuditRow[], error: null },
+    ];
   if (geoPositionsRes.error) {
     console.error(`[operations live] geo position read failed: ${geoPositionsRes.error.message}`);
+  }
+  if (stateAuditRes.error) {
+    console.error(`[operations live] state history read failed: ${stateAuditRes.error.message}`);
   }
   const visitReadError = Boolean(visitsRes.error);
   const positionReadError = Boolean(geoPositionsRes.error);
   const factoryReadError = Boolean(factoriesRes.error);
+  const stateHistoryReadError = Boolean(stateAuditRes.error);
   const latestPositionByVisit = new Map<string, GeoPositionRow>();
   const rejectedPositionVisitIds = new Set<string>();
   for (const position of (geoPositionsRes.data ?? []) as GeoPositionRow[]) {
@@ -219,6 +252,26 @@ export default async function LiveOperations({ searchParams }: {
   const latestPositionObservedAt = [...latestPositionByVisit.values()]
     .map(position => position.occurred_at)
     .sort((a, b) => Date.parse(b) - Date.parse(a))[0] ?? null;
+  // M3-RUN-P1-003 / WA-M3-AC-004 — "Since" is the audited transition time,
+  // never the planning window. Missing, invalid or future audit time fails
+  // closed instead of becoming a plausible-looking operational timestamp.
+  const stateEnteredByVisit = new Map<string, {
+    occurredAt: string | null;
+    state: "recorded" | "rejected";
+  }>();
+  const activeStateByVisit = new Map(activeVisitRows.map(visit => [visit.id, visit.operational_state]));
+  for (const event of (stateAuditRes.data ?? []) as VisitStateAuditRow[]) {
+    if (!event.object_id || stateEnteredByVisit.has(event.object_id)) continue;
+    const activeState = activeStateByVisit.get(event.object_id);
+    if (!activeState) continue;
+    const beforeState = event.before_state?.operational_state;
+    const afterState = event.after_state?.operational_state;
+    if (afterState !== activeState || beforeState === afterState) continue;
+    const occurredAt = Date.parse(event.occurred_at);
+    stateEnteredByVisit.set(event.object_id, Number.isFinite(occurredAt) && occurredAt <= observedAt.getTime()
+      ? { occurredAt: event.occurred_at, state: "recorded" }
+      : { occurredAt: null, state: "rejected" });
+  }
   const activeFactoryIds = new Set(activeVisitRows.map(visit => visit.factory_id).filter(Boolean));
   const factories: LiveFactory[] = factoryRows
     .filter(factory => isCleanFactory(factory)
@@ -258,6 +311,7 @@ export default async function LiveOperations({ searchParams }: {
   for (const v of activeVisitRows) {
     const f = v.factories;
     const position = latestPositionByVisit.get(v.id);
+    const stateEntered = stateEnteredByVisit.get(v.id);
     const profile = v.assignments?.[0]?.profiles;
     if (!f || f.official_lat == null || f.official_lng == null) continue;
     inspectors.push({
@@ -265,7 +319,6 @@ export default async function LiveOperations({ searchParams }: {
       visitId: v.id,
       inspector: sourceInspectorName(
         profile,
-        locale,
         t("ops.live.inspectorFallback", local("Inspector name unavailable", "اسم المفتش غير متاح")),
       ),
       factoryId: `f:${f.id}`, factoryName: f.name,
@@ -276,10 +329,13 @@ export default async function LiveOperations({ searchParams }: {
       stateLabel: enumLabel(v.operational_state),
       lat: position ? Number(position.observed_lat) : null,
       lng: position ? Number(position.observed_lng) : null,
-      sinceAt: v.window_start,
-      sinceLabel: v.window_start
-        ? positionTimeFormatter.format(new Date(v.window_start))
-        : t("ops.live.sinceUnknown", local("Not recorded", "غير مسجّل")),
+      sinceAt: stateEntered?.occurredAt ?? null,
+      sinceLabel: stateEntered?.occurredAt
+        ? positionTimeFormatter.format(new Date(stateEntered.occurredAt))
+        : stateEntered?.state === "rejected"
+          ? t("ops.live.sinceInvalid", local("Invalid state-entered time", "وقت دخول الحالة غير صالح"))
+          : t("ops.live.sinceUnknown", local("State-entered time unavailable", "وقت دخول الحالة غير متاح")),
+      sinceState: stateEntered?.state ?? "unavailable",
       positionObservedAt: position?.occurred_at ?? null,
       positionObservedLabel: position
         ? positionTimeFormatter.format(new Date(position.occurred_at))
@@ -290,6 +346,12 @@ export default async function LiveOperations({ searchParams }: {
         : rejectedPositionVisitIds.has(v.id) ? "rejected" : "unavailable",
     });
   }
+  const inspectorNameCollator = new Intl.Collator(locale === "ar" ? "ar" : "en", {
+    sensitivity: "base",
+  });
+  inspectors.sort((a, b) =>
+    inspectorNameCollator.compare(a.inspector, b.inspector)
+    || inspectorNameCollator.compare(a.factoryName, b.factoryName));
 
   const strings: LiveOpsStrings = {
     loading: t("ops.live.loading", local("Bringing the national picture online…", "جارٍ تحميل المشهد التشغيلي الوطني…")),
@@ -298,7 +360,6 @@ export default async function LiveOperations({ searchParams }: {
     completed: t("ops.live.factories", local("Factories monitored", "مصانع قيد المتابعة")),
     totalsLabel: t("ops.live.totalsLabel", local("Live operations totals", "إجماليات العمليات المباشرة")),
     inspector: t("ops.live.inspectorLegend", local("Recorded inspector position marker", "مؤشر موقع مسجّل للمفتش")),
-    projected: t("ops.live.projectedNote", local("Recorded positions — not live GPS", "مواقع مسجّلة — ليست تتبعاً مباشراً عبر GPS")),
     freshnessPolicy: t("ops.live.freshnessPolicy", local(
       "Staleness cadence not yet configured — showing last-observed time only.",
       "لم يُضبط معيار حداثة البيانات بعد — يُعرض وقت آخر رصد فقط.",
@@ -372,6 +433,10 @@ export default async function LiveOperations({ searchParams }: {
       "Factory marker source is unavailable. Inspector observations remain independently bounded.",
       "مصدر مؤشرات المصانع غير متاح. تبقى مشاهدات المفتشين مستقلة ومحدودة.",
     )),
+    stateHistoryUnavailable: t("ops.live.stateHistoryUnavailable", local(
+      "Operational-state history is unavailable. State-entered times are withheld.",
+      "سجل الحالة التشغيلية غير متاح. تم حجب أوقات دخول الحالة.",
+    )),
     sourceNotRecorded: t("ops.live.sourceNotRecorded", local("Not recorded", "غير مسجّل")),
   };
 
@@ -384,14 +449,18 @@ export default async function LiveOperations({ searchParams }: {
         inspectors={inspectors}
         strings={strings}
         snapshotAt={observedAt.toISOString()}
+        snapshotLabel={positionTimeFormatter.format(observedAt)}
         positionObservedAt={latestPositionObservedAt}
+        positionObservedLabel={latestPositionObservedAt
+          ? positionTimeFormatter.format(new Date(latestPositionObservedAt))
+          : null}
         wallboard={wallboard}
         visitReadError={visitReadError}
         positionReadError={positionReadError}
         factoryReadError={factoryReadError}
+        stateHistoryReadError={stateHistoryReadError}
         excludedRecordCount={visitRows.length - integrityFilteredVisitRows.length}
         outOfScopeRecordCount={outOfScopeRecordCount}
-        locale={locale}
       />
     </Shell>
   );
