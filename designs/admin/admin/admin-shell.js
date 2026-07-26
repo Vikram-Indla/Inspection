@@ -55,6 +55,7 @@
       else if (el.classList.contains("ad-cmdk")) target = el.querySelector(".ad-cmdk__label");
       else if (el.classList.contains("ad-hubcard")) target = el.querySelector(".ad-hubcard__name");
       else if (el.classList.contains("ad-subnav__up")) target = el.querySelector("span");
+      else if (el.classList.contains("ad-viewall")) target = el.querySelector("span");
       else if (el.querySelector(".ad-pal__name")) target = el.querySelector(".ad-pal__name");
       if (!target) target = el;
       if (!target.dataset.en) target.dataset.en = target.textContent.trim();
@@ -116,7 +117,10 @@
     } else if (menu) menu.focus({ preventScroll: true });
   }
 
+  /* Admin has no drawer: it is a desktop surface that simply narrows. The scrim
+     and drawer helpers stay only so older markup cannot break. */
   function ensureScrim(root) {
+    return;
     if (root.querySelector(".ad-scrim")) return;
     var s = document.createElement("button");
     s.className = "ad-scrim"; s.type = "button";
@@ -288,9 +292,25 @@
     });
   }
 
-  function tick() { applyState(false); delegate(); }
+  /* ── a targeted destination must be reachable ────────────────────────────
+     The grouped tool list is a <details>. A link to a group inside it (or to
+     the disclosure itself) does nothing while it is closed, so opening the
+     ancestors is part of following the link — never a scroll hijack. */
+  function revealHash() {
+    var h = location.hash;
+    if (!h || h.length < 2) return;
+    var el;
+    try { el = document.querySelector(h); } catch (e) { return; }
+    if (!el) return;
+    if (el.tagName === "DETAILS") el.open = true;
+    var d = el.closest("details");
+    while (d) { d.open = true; d = d.parentElement && d.parentElement.closest("details"); }
+  }
+
+  function tick() { applyState(false); delegate(); revealHash(); }
   // Test/host hook: window.SaqeelAdminShell.reassert() re-runs enforcement.
   window.SaqeelAdminShell = { reassert: function () { applyState(true); }, enforce: enforce };
+  window.addEventListener("hashchange", revealHash);
   if (document.readyState !== "loading") tick();
   else document.addEventListener("DOMContentLoaded", tick);
   // The shell can be replaced by a re-render; watch for it rather than binding once.

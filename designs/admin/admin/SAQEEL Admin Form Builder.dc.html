@@ -41,6 +41,7 @@
     background:color-mix(in srgb, var(--status-warning-text) 14%, transparent); color:var(--status-warning-text);
     font:600 10.5px/1.6 var(--font-mono); }
   .gv-panel { padding:16px 18px; }
+  .fb-sub { margin:14px 0 4px; font:600 13.5px/1.4 var(--font-body); color:var(--text-primary); }
   .gv-panel > h2 { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin:0 0 4px;
     font:600 15.5px/1.35 var(--font-body); color:var(--text-primary); }
   .gv-panel > h2 [lang="ar"] { font-size:14px; color:var(--text-secondary); font-weight:500; }
@@ -93,33 +94,32 @@
   <div class="ad-rail__brand">
     <img class="ad-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL" width="260" height="40">
     <img class="ad-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="28" height="28">
-    <button class="ad-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></button>
+    <button class="ad-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5v14"/><path d="m14 8-4 4 4 4"/></svg></button>
   </div>
   <button class="ad-cmdk" type="button" aria-keyshortcuts="Meta+K Control+K" data-ar="ابحث في الأدوات"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><span class="ad-cmdk__label">Find a tool</span><kbd>⌘K</kbd></button>
   <nav class="ad-rail__body">
-    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-cp" data-hub="cp" data-ar="لوحة التحكم" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/></svg></span><span class="ad-hub__label">Control Panel</span></a>
-    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-people" data-hub="people" data-ar="المستخدمون والصلاحيات" data-roles="security_admin compliance_admin"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M3 20v-1.6A5.4 5.4 0 0 1 8.4 13h1.2A5.4 5.4 0 0 1 15 18.4V20"/><path d="M16 8.2a3 3 0 0 1 0 5.6M18 20v-1.4a4 4 0 0 0-1.6-3.2"/></svg></span><span class="ad-hub__label">People & Access</span></a>
-    <a class="ad-hub is-active" href="SAQEEL%20Control%20Panel.dc.html#hub-rules" data-hub="rules" data-ar="القواعد والمحتوى" data-roles="form_admin compliance_admin workflow_admin security_admin" aria-current="true"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="ad-hub__label">Rules & Content</span></a>
-    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-planning" data-hub="planning" data-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="ad-hub__label">Planning & Execution</span></a>
-    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-risk" data-hub="risk" data-ar="المخاطر والذكاء" data-roles="risk_owner compliance_admin form_admin workflow_admin security_admin gis_admin"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="ad-hub__label">Risk & Intelligence</span></a>
-    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-connections" data-hub="connections" data-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin gis_admin compliance_admin form_admin risk_owner"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v5M15 3v5M7 8h10v4a5 5 0 0 1-10 0z"/><path d="M12 17v4"/></svg></span><span class="ad-hub__label">Connections & Geography</span></a>
+    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html" data-hub="cp" data-ar="لوحة التحكم" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/></svg></span><span class="ad-hub__label">Control Panel</span></a>
+    <a class="ad-hub" href="SAQEEL%20Users%20Roles.dc.html" data-hub="people" data-ar="المستخدمون والصلاحيات" data-roles="security_admin compliance_admin"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M3 20v-1.6A5.4 5.4 0 0 1 8.4 13h1.2A5.4 5.4 0 0 1 15 18.4V20"/><path d="M16 8.2a3 3 0 0 1 0 5.6M18 20v-1.4a4 4 0 0 0-1.6-3.2"/></svg></span><span class="ad-hub__label">People & Access</span></a>
+    <a class="ad-hub is-active" href="SAQEEL%20Admin%20Form%20Builder.dc.html" data-hub="rules" data-ar="القواعد والمحتوى" data-roles="form_admin compliance_admin workflow_admin security_admin" aria-current="true"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="ad-hub__label">Rules & Content</span></a>
+    <a class="ad-hub" href="SAQEEL%20Admin%20Execution.dc.html" data-hub="planning" data-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="ad-hub__label">Planning & Execution</span></a>
+    <a class="ad-hub" href="SAQEEL%20Risk.dc.html" data-hub="risk" data-ar="المخاطر والذكاء" data-roles="risk_owner compliance_admin form_admin workflow_admin security_admin gis_admin"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="ad-hub__label">Risk & Intelligence</span></a>
+    <a class="ad-hub" href="SAQEEL%20Admin%20Integrations.dc.html" data-hub="connections" data-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin gis_admin compliance_admin form_admin risk_owner"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v5M15 3v5M7 8h10v4a5 5 0 0 1-10 0z"/><path d="M12 17v4"/></svg></span><span class="ad-hub__label">Connections & Geography</span></a>
     <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-governance" data-hub="governance" data-ar="الحوكمة والعمليات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner ops"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg></span><span class="ad-hub__label">Governance & Operations</span></a>
   </nav>
   <div class="ad-rail__foot">
-    <a class="ad-viewall" href="SAQEEL%20Control%20Panel.dc.html#all-tools" data-ar="عرض كل الأدوات المصرّح بها">View all authorized tools</a>
+    <a class="ad-viewall" href="SAQEEL%20Control%20Panel.dc.html#all-tools" data-ar="عرض كل الأدوات المصرّح بها"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>View all authorized tools</span></a>
   </div>
 </aside>
 
   <main id="main-content" tabindex="-1" class="ad-main">
     <a class="btn btn-secondary sr-only sr-only-focusable" href="#page-body">Skip to content</a>
     <div class="ad-util">
-  <button class="ad-menu" type="button" aria-label="Open navigation" aria-controls="saqeel-primary-nav" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
   <span class="ad-util__here" data-ar="الإدارة">Administration</span>
   <span class="ad-util__spacer"></span>
   <button class="ad-iconbtn ad-locale" type="button" aria-label="Switch to Arabic" lang="ar">ع</button>
   <button class="ad-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.5 1.5M17.3 17.3l1.5 1.5M18.8 5.2l-1.5 1.5M6.7 17.3l-1.5 1.5"/></svg></button>
   <button class="ad-iconbtn" type="button" aria-label="{{ t.notifLabel }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></button>
-  <details class="ad-account"><summary aria-label="Account"><span class="ad-avatar" aria-hidden="true">—</span><span class="ad-who"><strong>—</strong><small data-ar="غير مُهيّأ">Not configured</small></span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg></summary><div class="ad-pop"><strong data-ar="غير مُهيّأ">Not configured</strong><span class="t-caption" data-ar="الأدوار المصرّح بها: غير مُهيّأ">Authorized roles: Not configured</span><a href="#profile">Profile &amp; settings</a><a class="ad-signout" href="#signout">Sign out</a></div></details>
+  <details class="ad-account"><summary aria-label="Account"><span class="ad-avatar" aria-hidden="true">—</span><span class="ad-who"><strong>—</strong><small data-ar="غير مُهيّأ">Not configured</small></span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg></summary><div class="ad-pop"><strong data-ar="غير مُهيّأ">Not configured</strong><span class="t-caption" data-ar="الأدوار المصرّح بها: غير مُهيّأ">Authorized roles: Not configured</span><button type="button" class="ad-popact" aria-disabled="true" data-ar="الملف الشخصي والإعدادات — غير مُهيّأ">Profile &amp; settings — not configured</button><button type="button" class="ad-popact ad-signout" aria-disabled="true" data-ar="تسجيل الخروج — غير مُهيّأ">Sign out — not configured</button></div></details>
 </div>
     <header class="ad-head">
   <div class="ad-head__id">
@@ -169,7 +169,7 @@
           <span class="ad-state__icon"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4.2-4.2"/></svg></span>
           <h2 class="ad-state__title">{{ t.nfTitle }}</h2>
           <p class="ad-state__body">{{ t.nfBody }}</p>
-          <div class="fb-btns"><a class="btn btn-secondary btn-sm" href="SAQEEL%20Admin%20Form%20Builder.dc.html">{{ t.backLib }}</a><a class="btn btn-secondary btn-sm" href="#audit">{{ t.openAudit }}</a></div>
+          <div class="fb-btns"><a class="btn btn-secondary btn-sm" href="SAQEEL%20Admin%20Form%20Builder.dc.html">{{ t.backLib }}</a><a class="btn btn-secondary btn-sm" href="SAQEEL%20Admin%20Extended.dc.html#audit">{{ t.openAudit }}</a></div>
         </div>
       </sc-if>
 
@@ -228,7 +228,7 @@
             <div class="fb-warn" role="status">
               <span aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
               <span><b>{{ t.roTitle }}</b>{{ t.roBody }}
-                <span class="fb-btns" style="margin-block-start:8px;"><button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ newVerDisabled }}" style="{{ newVerStyle }}">{{ t.newVersion }}</button><button class="btn btn-secondary btn-sm" type="button">{{ t.diff }}</button><a class="btn btn-secondary btn-sm" href="#audit">{{ t.openAudit }}</a></span>
+                <span class="fb-btns" style="margin-block-start:8px;"><button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ newVerDisabled }}" style="{{ newVerStyle }}">{{ t.newVersion }}</button><button class="btn btn-secondary btn-sm" type="button">{{ t.diff }}</button><a class="btn btn-secondary btn-sm" href="SAQEEL%20Admin%20Extended.dc.html#audit">{{ t.openAudit }}</a></span>
               </span>
             </div>
           </sc-if>
@@ -441,7 +441,16 @@
               <div class="fb-check"><span class="fb-check__st">{{ t.notRun }}</span><span><p class="fb-check__b">{{ t.chk5 }}</p><p class="gv-note">{{ t.chk5b }}</p></span></div>
               <div class="fb-check"><span class="fb-check__st">{{ t.notRun }}</span><span><p class="fb-check__b">{{ t.chk6 }}</p><p class="gv-note">{{ t.chk6b }}</p></span></div>
               <div class="fb-btns" style="margin-block-start:12px;"><button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ validateDisabled }}" style="{{ validateStyle }}">{{ t.validate }}</button></div>
+              <h3 class="fb-sub">{{ t.blockerListTitle }}</h3>
+              <p class="gv-note">{{ t.blockerListNote }}</p>
+              <div class="fb-scroll">
+                <table class="fb-tbl">
+                  <thead><tr><th scope="col">{{ t.colCheck }}</th><th scope="col">{{ t.colWhere }}</th><th scope="col">{{ t.colMessage }}</th><th scope="col">{{ t.colGo }}</th></tr></thead>
+                  <tbody><tr tabindex="0"><td class="is-empty" colspan="4">{{ t.notRun }}</td></tr></tbody>
+                </table>
+              </div>
               <p class="gv-note" style="margin-block-start:10px;">{{ t.blockerNote }}</p>
+              <p class="gv-note">{{ t.blockerAddress }}</p>
               <span class="gv-src" style="margin-block-start:10px;"><b>{{ t.reqValidate }}</b><bdi><code>package_versions.validate()</code></bdi></span>
             </section>
 
@@ -514,7 +523,7 @@
             <section class="panel gv-panel">
               <h2>{{ t.diffTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.diffTitle }}</span></h2>
               <p class="gv-note">{{ t.diffNote }}</p>
-              <div class="fb-btns" style="margin-block-start:10px;"><button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ diffDisabled }}" style="{{ diffStyle }}">{{ t.diff }}</button><a class="btn btn-secondary btn-sm" href="#audit">{{ t.openAudit }}</a></div>
+              <div class="fb-btns" style="margin-block-start:10px;"><button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ diffDisabled }}" style="{{ diffStyle }}">{{ t.diff }}</button><a class="btn btn-secondary btn-sm" href="SAQEEL%20Admin%20Extended.dc.html#audit">{{ t.openAudit }}</a></div>
               <span class="gv-src" style="margin-block-start:10px;"><b>{{ t.reqAudit }}</b><bdi><code>audit_events</code></bdi></span>
             </section>
 
@@ -561,16 +570,16 @@
       <li role="option" aria-selected="false"><a href="SAQEEL%20Users%20Roles.dc.html" data-ar="المستخدمون" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Users</span><span class="ad-pal__hub">People & Access</span></a></li>
       <li role="option" aria-selected="false"><a href="SAQEEL%20Users%20Roles.dc.html?view=roles" data-ar="الأدوار" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Roles</span><span class="ad-pal__hub">People & Access</span></a></li>
       <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Role%20Override.dc.html" data-ar="تجاوزات الأدوار" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Role Overrides</span><span class="ad-pal__hub">People & Access</span></a></li>
-      <li role="option" aria-selected="false"><a href="#devices" data-ar="الأجهزة الموثوقة" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Trusted Devices</span><span class="ad-pal__hub">People & Access</span></a></li>
-      <li role="option" aria-selected="false"><a href="#security-access" data-ar="مراجعة الأمن والوصول" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Security & Access Review</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Virtual%20Premium.dc.html" data-ar="الأجهزة الموثوقة" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Trusted Devices</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Users%20Roles.dc.html?view=review" data-ar="مراجعة الأمن والوصول" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Security & Access Review</span><span class="ad-pal__hub">People & Access</span></a></li>
       <li role="option" aria-selected="false"><a href="SAQEEL%20Delegation.dc.html" data-ar="التفويض" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin compliance_admin"><span class="ad-pal__name">Delegation</span><span class="ad-pal__hub">People & Access</span></a></li>
       <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Form%20Builder.dc.html" data-ar="نماذج التفتيش" data-hub-ar="القواعد والمحتوى" data-roles="form_admin compliance_admin"><span class="ad-pal__name">Inspection Forms</span><span class="ad-pal__hub">Rules & Content</span></a></li>
       <li role="option" aria-selected="false"><a href="SAQEEL%20Item%20Execution.dc.html" data-ar="بنود التفتيش" data-hub-ar="القواعد والمحتوى" data-roles="compliance_admin form_admin"><span class="ad-pal__name">Inspection Items</span><span class="ad-pal__hub">Rules & Content</span></a></li>
       <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Lookups.dc.html" data-ar="القوائم المرجعية" data-hub-ar="القواعد والمحتوى" data-roles="compliance_admin workflow_admin security_admin"><span class="ad-pal__name">Reference Lists</span><span class="ad-pal__hub">Rules & Content</span></a></li>
       <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Lookups.dc.html#i18n" data-ar="اللغة والترجمة" data-hub-ar="القواعد والمحتوى" data-roles="compliance_admin security_admin workflow_admin"><span class="ad-pal__name">Language & Translations</span><span class="ad-pal__hub">Rules & Content</span></a></li>
-      <li role="option" aria-selected="false"><a href="#planning-lookups" data-ar="قوائم التخطيط" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Planning Lookups</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
-      <li role="option" aria-selected="false"><a href="#planning-expiry" data-ar="قواعد انتهاء التخطيط" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Planning Expiry Rules</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
-      <li role="option" aria-selected="false"><a href="#planning-status" data-ar="قواعد حالة التخطيط" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Planning Status Rules</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Lookups.dc.html" data-ar="قوائم التخطيط" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Planning Lookups</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Control%20Panel.dc.html#hub-planning" data-ar="قواعد انتهاء التخطيط" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Planning Expiry Rules</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Control%20Panel.dc.html#hub-planning" data-ar="قواعد حالة التخطيط" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Planning Status Rules</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
       <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Execution.dc.html" data-ar="إعدادات التنفيذ" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Execution Settings</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
       <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-ar="إعدادات سير العمل" data-hub-ar="التخطيط والتنفيذ" data-roles="workflow_admin"><span class="ad-pal__name">Workflow Settings</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
       <li role="option" aria-selected="false"><a href="SAQEEL%20Risk.dc.html" data-ar="إعدادات المخاطر" data-hub-ar="المخاطر والذكاء" data-roles="risk_owner"><span class="ad-pal__name">Risk Settings</span><span class="ad-pal__hub">Risk & Intelligence</span></a></li>
@@ -581,9 +590,9 @@
       <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Integrations%20Data.dc.html" data-ar="بيانات التكامل" data-hub-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin"><span class="ad-pal__name">Integration Data</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
       <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Geofence.dc.html" data-ar="إعدادات الخرائط" data-hub-ar="الاتصالات والجغرافيا" data-roles="gis_admin"><span class="ad-pal__name">Map Settings</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
       <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Virtual%20Premium.dc.html" data-ar="مزودو الزيارة الافتراضية" data-hub-ar="الاتصالات والجغرافيا" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Virtual Visit Providers</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
-      <li role="option" aria-selected="false"><a href="#audit" data-ar="سجل النشاط" data-hub-ar="الحوكمة والعمليات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Activity Log</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
-      <li role="option" aria-selected="false"><a href="#notifications" data-ar="إعدادات الإشعارات" data-hub-ar="الحوكمة والعمليات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Notification Settings</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
-      <li role="option" aria-selected="false"><a href="#platform-operations" data-ar="عمليات النظام" data-hub-ar="الحوكمة والعمليات" data-roles="security_admin workflow_admin"><span class="ad-pal__name">System Operations</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Extended.dc.html#audit" data-ar="سجل النشاط" data-hub-ar="الحوكمة والعمليات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Activity Log</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Control%20Panel.dc.html#hub-governance" data-ar="إعدادات الإشعارات" data-hub-ar="الحوكمة والعمليات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Notification Settings</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Extended.dc.html#platform-operations" data-ar="عمليات النظام" data-hub-ar="الحوكمة والعمليات" data-roles="security_admin workflow_admin"><span class="ad-pal__name">System Operations</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
       <li role="option" aria-selected="false"><a href="../web/SAQEEL%20Enforcement.dc.html" data-ar="توصيات الإنفاذ" data-hub-ar="الحوكمة والعمليات" data-roles="ops compliance_admin"><span class="ad-pal__name">Enforcement Recommendations</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
       <li role="option" aria-selected="false"><a href="../web/SAQEEL%20Enforcement.dc.html" data-ar="إصدار عدة مخالفات" data-hub-ar="الحوكمة والعمليات" data-roles="ops compliance_admin"><span class="ad-pal__name">Issue Multiple Violations</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
       <li role="option" aria-selected="false"><a href="../web/SAQEEL%20Cases.dc.html" data-ar="قضايا المخالفات" data-hub-ar="الحوكمة والعمليات" data-roles="compliance_admin"><span class="ad-pal__name">Violation Cases</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
@@ -713,6 +722,10 @@ class Component extends DCLogic {
       chk4: "Template freshness", chk4b: "Linked template revisions still match upstream. Failures name the template.",
       chk5: "Evidence & action-form availability", chk5b: "Overrides resolve, and every mandatory action form is active. Failures name the item.",
       chk6: "Violation & penalty basis", chk6b: "Each violation trigger resolves to an active violation code with a governed penalty mapping.",
+      blockerListTitle: "Blockers and warnings",
+      blockerListNote: "One row per failed check. Every row names the section, item or field it refers to — a blocker is never reported as a package-level message with nothing to open.",
+      colCheck: "Check", colWhere: "Section / item / field", colMessage: "Message", colGo: "Go to",
+      blockerAddress: "Each row carries a keyboard-reachable link to the exact field that failed: focus moves to that control and the field is marked invalid, so a blocker can be resolved without hunting through the outline.",
       blockerNote: "Publish stays blocked while any check fails. Server-side validation is authoritative; this panel reports its result and never asserts a pass on its own.",
       lifeTitle: "Lifecycle & maker-checker",
       ccrLbl: "Compliance Configuration Request status", opLbl: "Operational status in the Compliance Configuration Library",
@@ -828,6 +841,14 @@ class Component extends DCLogic {
       chk4: "حداثة القوالب", chk4b: "مراجعات القوالب المرتبطة مطابقة للمصدر. تُسمّى الإخفاقات بالقالب.",
       chk5: "توفّر الأدلة ونماذج الإجراء", chk5b: "تُحلّ التجاوزات وكل نموذج إجراء إلزامي نشط. تُسمّى الإخفاقات بالبند.",
       chk6: "المخالفة وأساس العقوبة", chk6b: "كل مُحرِّك مخالفة يشير إلى رمز مخالفة نشط مع جدول عقوبات معتمد.",
+      blockerListTitle: "Blockers and warnings",
+      blockerListNote: "One row per failed check. Every row names the section, item or field it refers to — a blocker is never reported as a package-level message with nothing to open.",
+      colCheck: "Check", colWhere: "Section / item / field", colMessage: "Message", colGo: "Go to",
+      blockerAddress: "Each row carries a keyboard-reachable link to the exact field that failed: focus moves to that control and the field is marked invalid, so a blocker can be resolved without hunting through the outline.",
+      blockerListTitle: "الموانع والتنبيهات",
+      blockerListNote: "صف لكل فحص فاشل، ويسمّي كل صف القسم أو البند أو الحقل المقصود — ولا يُبلَّغ المانع كرسالة عامة على مستوى الحزمة بلا شيء يُفتح.",
+      colCheck: "الفحص", colWhere: "القسم / البند / الحقل", colMessage: "الرسالة", colGo: "انتقال",
+      blockerAddress: "يحمل كل صف رابطاً يمكن الوصول إليه بلوحة المفاتيح إلى الحقل الذي أخفق: ينتقل التركيز إليه ويُعلَّم غير صالح، فيُعالج المانع دون تفتيش المخطط.",
       blockerNote: "يبقى النشر محجوباً ما دام أي فحص مُخفِقاً. تحقّق الخادم هو المرجع، وهذه اللوحة تنقل نتيجته ولا تُقرّ نجاحاً من تلقاء نفسها.",
       lifeTitle: "دورة الحياة وفصل المُنشئ والمعتمد",
       ccrLbl: "حالة طلب تهيئة الالتزام", opLbl: "الحالة التشغيلية في مكتبة تهيئة الالتزام",
