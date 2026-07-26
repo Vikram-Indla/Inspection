@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r25",
-  "updated": "2026-07-26T06:19:33+03:00",
+  "revision": "SB-r26",
+  "updated": "2026-07-26T11:01:34+03:00",
   "updatedBy": "claude-code",
   "branch": "saqeel/virtual",
   "committed": false,
@@ -1062,7 +1062,7 @@
       "code": 88,
       "wiring": 88,
       "designPage": "pwa/SAQEEL PWA-Inspector iPad.dc.html",
-      "route": "web/src/app/(app)/field/layout.tsx · components/field/FieldNav.tsx · FieldHeader.tsx · field-home.module.css",
+      "route": "web/src/app/(app)/field/layout.tsx · components/field/FieldNav.tsx · FieldHeader.tsx · FieldShellDrawer.tsx · components/ShellNavIcon.tsx · field-home.module.css",
       "pwa": {
         "state": "ok",
         "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
@@ -1075,6 +1075,14 @@
         {
           "lane": "design",
           "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
+        },
+        {
+          "lane": "wiring",
+          "text": "OPEN — the field side panel (FieldShellDrawer, commit 673b9d5f) renders and responds: burger opens, Escape closes, focus enters the drawer, AR/RTL mirrors, Administration omitted for non-admins. But its destinations mostly refuse the only personas that can see it. /field requires the inspector role, and planning_access_class() returns 'inspector' for ANYONE holding it, so /planning answers 'Authorized role required' for EVERY possible drawer user. /dashboard (ops|leadership only) silently redirects back to /field, which is why a click looks like a dead link. /reviews (reviewer|ops) denies. buildShellNavigation's `enabled` reflects item.roles only, never the destination's own guard, so an enabled row is not a promise the page opens. Measured 2026-07-26 as inspector+planner on localhost:3000. Which destinations an inspector-holding multi-role user may see is a POLICY call — do not invent an allowlist."
+        },
+        {
+          "lane": "design",
+          "text": "OPEN — pwa-shell.js (vendored 4ada50f0) states a viewport-triggered rule (burger AND sticky footer, both, for every role) that contradicts CC-SHELL-TABLET-001 option B (commit 05491a4f, same date 2026-07-26), which decides by persona and gives one or the other. Only the intersection shipped: burger for non-field-only personas, field-only Inspector unchanged. Product Owner must resolve before the field-only Inspector gets a burger."
         }
       ],
       "phase": 4,
