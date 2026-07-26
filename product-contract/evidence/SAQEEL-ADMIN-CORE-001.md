@@ -16,9 +16,9 @@
 
 | Lane | Board claim | Evidenced verdict |
 | --- | ---: | --- |
-| Design | 60 | Not eligible to rise. The Control Panel design contains 24 cards, not the board label's 21. `DESIGN_ROUTE_MAP.csv` assigns that gateway design to `/admin/operations`, but `/admin/operations` is the real resilience/error/feature-flag control plane. `/admin` remains the older Configuration Evidence Spine. This routing conflict requires Product Owner resolution. |
-| Code | 95 | Route inventory exists. All 23 admin destinations exercised by the shared shell return under the seeded Admin persona. The false `/admin` act-scope summary and the shellless `/admin/execution` route were repaired. |
-| Wiring | 85 | The gateway reads real RLS-scoped configuration facts. Registry mutation coverage exists for the governed mutable families below. Oversight surfaces remain read-only by contract. Full `CR-449..CR-478` certification is not claimed while the design-route conflict remains. |
+| Design | 60 | The section and operation audits are complete. DEC-036 resolves the discovered authority conflict: the 24-card Control Panel design governs `/admin`; `/admin/operations` remains the System Operations control plane. Pixel parity is not claimed by this audit, so the design percentage is not raised. |
+| Code | 95 | The 24-card gateway is implemented above the existing Configuration Evidence Spine. All 23 admin destinations exercised by the shared shell return under the seeded Admin persona. The false `/admin` act-scope summary, shellless `/admin/execution`, and shellless `/admin/dashboard-config` route were repaired. |
+| Wiring | 85 | Every gateway card links to its governed runtime destination and representative cross-card routes were exercised. The gateway reads real RLS-scoped configuration facts. Registry mutation coverage exists for the governed mutable families below; oversight surfaces remain read-only by contract. Full `CR-449..CR-478` certification is not inferred from route coverage alone. |
 
 ## Control Panel card and operation audit
 
@@ -62,6 +62,9 @@ mutations.
   - all 23 shared-shell admin destinations return below HTTP 400;
   - all destinations render inside the authenticated shell;
   - no captured console or page errors;
+  - the Control Panel renders exactly 24 governed cards;
+  - representative cards navigate to AI Insights, Dashboard KPIs,
+    Configuration Requests, and Violation Cases;
   - `/admin` reports the enabled families instead of the false
     `You can act in none`;
   - anonymous `/admin` access redirects to login;
@@ -74,16 +77,22 @@ mutations.
 1. `/admin` now resolves the current `administration` navigation group and
    lists only enabled destinations.
 2. `/admin/execution` now mounts inside the authenticated shared shell.
-3. The Package designer preview child has a stable key; the route sweep no
+3. `/admin/dashboard-config` now mounts inside the authenticated shared shell.
+4. The Package designer preview child has a stable key; the route sweep no
    longer emits the React missing-key warning.
-4. The focused test uses accessible current login controls instead of retired
+5. DEC-036 assigns the gateway design to `/admin` and preserves
+   `/admin/operations` as System Operations.
+6. `/admin` now renders the bilingual, role-aware 24-card Control Panel
+   gateway while retaining the evidence spine below it.
+7. The focused test uses accessible current login controls instead of retired
    `#email` / `#pw` selectors and does not depend on a pre-generated inspector
    storage state.
 
-## Open blocker
+## Certification boundary
 
-`WA-M9-AC-003` / `WA-M10-AC-003` cannot be certified until the Product Owner
-resolves whether `SAQEEL Control Panel.dc.html` governs `/admin` (the gateway
-its content describes) or `/admin/operations` (the current route-map row).
-No board lane is raised and no route is overwritten while those authorities
-contradict one another.
+DEC-036 removes the route-authority blocker. This evidence closes the two
+board pending audits and establishes route, shell, responsive, bilingual,
+permission-summary, representative navigation, console, and anonymous-access
+behavior. It does not claim measured pixel parity or complete requirement-level
+certification for `CR-449..CR-478`; those require their named visual and
+acceptance evidence rather than a percentage inferred from this focused suite.

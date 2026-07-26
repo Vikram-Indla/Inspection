@@ -26,6 +26,13 @@ const ADMIN_ROUTES = [
   "/admin/workflows",
 ] as const;
 
+const CROSS_CARD_ROUTES = [
+  "/ai/suggestions",
+  "/admin/dashboard-config",
+  "/admin/compliance-requests",
+  "/enforcement",
+] as const;
+
 const email = process.env.SAQEEL_TEST_COMPLIANCE_ADMIN_EMAIL;
 const password = process.env.SAQEEL_TEST_COMPLIANCE_ADMIN_PASSWORD;
 
@@ -78,7 +85,9 @@ test("admin-core routes load under the real admin persona without console failur
 test("admin-core gateway reports the seeded persona's enabled families truthfully", async ({ page }) => {
   await signIn(page);
   const scope = page.getByRole("region", { name: /Your scope/i });
+  const controlPanel = page.locator('[data-saqeel-design="WA-DES-020"]');
 
+  await expect(controlPanel.locator("[data-control-card]")).toHaveCount(24);
   await expect(scope).toContainText("Users");
   await expect(scope).toContainText("Inspection Forms");
   await expect(scope).toContainText("Workflow Settings");
@@ -86,6 +95,17 @@ test("admin-core gateway reports the seeded persona's enabled families truthfull
   await expect(scope).toContainText("Map Settings");
   await expect(scope).toContainText("Security & Access Review");
   await expect(scope).not.toContainText("You can act in none");
+});
+
+test("the four cross-card Control Panel destinations remain reachable inside the shell", async ({ page }) => {
+  await signIn(page);
+
+  for (const route of CROSS_CARD_ROUTES) {
+    const response = await page.goto(route);
+    expect(response?.status(), `${route} response`).toBeLessThan(400);
+    await expect(page.locator("main")).toBeVisible();
+    await expect(page.locator("h1, h2").first()).toBeVisible();
+  }
 });
 
 for (const { width, height } of [
