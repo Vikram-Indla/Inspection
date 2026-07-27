@@ -167,7 +167,6 @@ as $$
     and exists (
       select 1 from public.profiles p
       where p.user_id=auth.uid()
-        and p.account_status='active'
         and nullif(btrim(p.region),'') is not null
     )
     and exists (
@@ -191,7 +190,6 @@ as $$
     from public.profiles p
     join public.factories f on f.id=p_factory_id
     where p.user_id=auth.uid()
-      and p.account_status='active'
       and nullif(btrim(p.region),'') is not null
       and (p.region='National' or f.region=p.region)
   )
@@ -222,8 +220,118 @@ revoke all on public.planning_process_commands from public, anon, authenticated,
 revoke all on public.planning_process_targets from public, anon, authenticated, service_role;
 revoke all on public.planning_process_row_receipts from public, anon, authenticated, service_role;
 revoke all on public.planning_visit_archives from public, anon, authenticated, service_role;
+-- P1-002/P1-004: the inherited capability policies treated every otherwise
+-- unassigned authenticated identity as business_staff. Remove those permissive
+-- legs and make the two base relations RPC-only for mutation. The canonical
+-- publish/immediate entry points below retain their existing guards while
+-- executing with their owner privileges; all direct client DML is denied.
+drop policy if exists plans_read_capability on public.visit_plans;
+drop policy if exists plans_write_capability on public.visit_plans;
+drop policy if exists plans_update_capability on public.visit_plans;
+drop policy if exists visits_read_capability on public.visits;
+drop policy if exists visits_write_capability on public.visits;
+drop policy if exists visits_update_capability on public.visits;
+drop policy if exists plans_read on public.visit_plans;
+drop policy if exists plans_write on public.visit_plans;
+drop policy if exists plans_update on public.visit_plans;
+drop policy if exists visits_write on public.visits;
+drop policy if exists visits_update on public.visits;
+drop policy if exists inspector_own_visits on public.visits;
+
+create policy plans_read_explicit_scope
+  on public.visit_plans for select to authenticated
+  using (
+    public.planning_closure_has_explicit_capability('planning.view')
+    and (
+      (
+        created_by=(select auth.uid())
+        and not exists (
+          select 1 from public.visits v where v.visit_plan_id=visit_plans.id
+        )
+      )
+      or (
+        exists (
+          select 1 from public.visits v where v.visit_plan_id=visit_plans.id
+        )
+        and not exists (
+          select 1
+          from public.visits v
+          where v.visit_plan_id=visit_plans.id
+            and not public.planning_closure_factory_in_scope(v.factory_id)
+        )
+      )
+    )
+  );
+create policy visits_read_explicit_scope
+  on public.visits for select to authenticated
+  using (
+    (
+      public.planning_closure_has_explicit_capability('planning.view')
+      and public.planning_closure_factory_in_scope(factory_id)
+    )
+    or (
+      public.has_role('inspector')
+      and public.planning_closure_factory_in_scope(factory_id)
+      and exists (
+        select 1 from public.assignments a
+        where a.visit_id=visits.id
+          and a.inspector_id=(select auth.uid())
+      )
+    )
+  );
+
+create policy plans_insert_explicit
+  on public.visit_plans for insert to authenticated
+  with check (
+    created_by=(select auth.uid())
+    and public.planning_closure_has_explicit_capability('planning.create')
+  );
+create policy plans_update_explicit
+  on public.visit_plans for update to authenticated
+  using (
+    public.planning_closure_has_explicit_capability('planning.manage')
+    and (
+      created_by=(select auth.uid())
+      or not exists (
+        select 1 from public.visits v
+        where v.visit_plan_id=visit_plans.id
+          and not public.planning_closure_factory_in_scope(v.factory_id)
+      )
+    )
+  )
+  with check (
+    public.planning_closure_has_explicit_capability('planning.manage')
+  );
+create policy visits_insert_explicit
+  on public.visits for insert to authenticated
+  with check (
+    public.planning_closure_has_explicit_capability('planning.create')
+    and public.planning_closure_factory_in_scope(factory_id)
+  );
+create policy visits_update_explicit
+  on public.visits for update to authenticated
+  using (
+    public.planning_closure_has_explicit_capability('planning.manage')
+    and public.planning_closure_factory_in_scope(factory_id)
+  )
+  with check (
+    public.planning_closure_has_explicit_capability('planning.manage')
+    and public.planning_closure_factory_in_scope(factory_id)
+  );
+
 revoke delete,truncate on public.visits,public.visit_plans
   from public,anon,authenticated,service_role;
+
+-- Compatibility ledger (latest canonical callers at the migration base):
+-- Planning bulk route -> publish_bulk_plan_atomic -> publish_bulk_plan;
+-- single publisher -> publish_single_visit; Field Immediate ->
+-- create_immediate_visit. These remain SECURITY INVOKER and therefore still
+-- require authenticated INSERT/UPDATE table privileges. Direct no-role DML is
+-- nevertheless denied by the explicit policies above. Final privilege
+-- revocation is deliberately blocked until governed RPCs and callers exist for
+-- return, republish, duplicate-to-draft aggregate, repackage and publish-
+-- metadata convergence; notes/type changes may cut over to
+-- edit_published_visits_atomic. No fail-open business_staff policy is retained.
 
 create policy planning_process_commands_actor_read
   on public.planning_process_commands for select to authenticated
@@ -1125,7 +1233,8 @@ grant select on public.factories to planning_expiry_owner;
 grant insert,select,update on public.planning_process_commands to planning_expiry_owner;
 grant insert,select on public.visit_lifecycle_events,public.audit_events,
   public.workflow_outbox to planning_expiry_owner;
-grant usage,select on all sequences in schema public to planning_expiry_owner;
+grant usage,select on sequence public.audit_events_id_seq
+  to planning_expiry_owner;
 grant execute on function public.planning_closure_request_hash(jsonb)
   to planning_expiry_owner;
 grant execute on function public.expire_planning_visits_core(
@@ -1216,6 +1325,26 @@ begin
   ) then
     raise exception using errcode='42501',
       message='PLANNING-CLOSURE-SCHEDULER-GRANT';
+  end if;
+  if has_sequence_privilege(
+       'planning_expiry_owner','public.plan_reference_seq','usage')
+     or not has_sequence_privilege(
+       'planning_expiry_owner','public.audit_events_id_seq','usage') then
+    raise exception using errcode='42501',
+      message='PLANNING-CLOSURE-DIRECT-ACL';
+  end if;
+  if exists (
+    select 1 from pg_catalog.pg_policies
+    where schemaname='public'
+      and tablename in ('visits','visit_plans')
+      and policyname in (
+        'plans_read_capability','plans_write_capability',
+        'plans_update_capability','visits_read_capability',
+        'visits_write_capability','visits_update_capability'
+      )
+  ) then
+    raise exception using errcode='42501',
+      message='PLANNING-CLOSURE-BUSINESS-STAFF-POLICY';
   end if;
   if exists (
     select 1 from pg_catalog.pg_proc p

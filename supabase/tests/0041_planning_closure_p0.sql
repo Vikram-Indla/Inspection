@@ -56,7 +56,17 @@ select pg_temp.assert_true(
   and not has_table_privilege('anon','public.visit_plans','truncate')
   and not has_table_privilege('authenticated','public.visit_plans','truncate')
   and not has_table_privilege('service_role','public.visit_plans','truncate'),
-  'PCP-P02-003','visits and plans must deny TRUNCATE to application roles');
+  'PCP-P02-003','visits and plans must deny destructive direct access');
+select pg_temp.assert_true(
+  not exists (
+    select 1 from pg_policies
+    where schemaname='public' and tablename in ('visits','visit_plans')
+      and policyname in (
+        'plans_read_capability','plans_write_capability',
+        'plans_update_capability','visits_read_capability',
+        'visits_write_capability','visits_update_capability'
+      )
+  ),'PCP-P02-004','default-business-staff policy legs must be absent');
 set local role authenticated;
 do $$
 begin
@@ -119,12 +129,28 @@ select pg_temp.assert_true(
   not has_table_privilege('planning_expiry_scheduler','public.visits','update'),
   'PCP-P04-004','scheduler execution role must have no table DML');
 select pg_temp.assert_true(
+  position('account_status' in pg_get_functiondef(
+    'public.planning_closure_has_explicit_capability(text)'::regprocedure))=0
+  and position('from public.profiles' in lower(pg_get_functiondef(
+    'public.planning_closure_has_explicit_capability(text)'::regprocedure)))>0
+  and position('join public.role_permissions' in lower(pg_get_functiondef(
+    'public.planning_closure_has_explicit_capability(text)'::regprocedure)))>0,
+  'PCP-P04-004A','authorization must use existing profile and explicit grants');
+select pg_temp.assert_true(
   has_table_privilege('planning_expiry_owner','public.factories','select')
   and has_table_privilege('planning_expiry_owner','public.visits','select')
   and has_table_privilege('planning_expiry_owner','public.assignments','select')
   and has_table_privilege('planning_expiry_owner','public.inspections','select')
   and not has_table_privilege('planning_expiry_owner','public.factories','update'),
   'PCP-P04-005','expiry owner needs exact dependency reads and no factory mutation');
+select pg_temp.assert_true(
+  has_sequence_privilege(
+    'planning_expiry_owner','public.audit_events_id_seq','usage')
+  and not has_sequence_privilege(
+    'planning_expiry_owner','public.plan_reference_seq','usage')
+  and not has_sequence_privilege(
+    'planning_expiry_owner','public.visit_reference_seq','usage'),
+  'PCP-P04-006','expiry owner sequence access must use an exact allow-list');
 set local role planning_expiry_scheduler;
 select public.expire_planning_visits_scheduled(100);
 reset role;
@@ -253,8 +279,47 @@ select pg_temp.assert_true(
   'PCP-P11-001','replay mismatch and stale CAS must fail closed');
 
 -- P11A — inherited business_staff default is not trusted by closure RPCs.
+insert into public.visit_plans(id,method,status,created_at)
+values('00000000-0000-4000-8000-0000000000d1','single','published',
+  transaction_timestamp());
+insert into public.visits(
+  id,visit_plan_id,factory_id,visit_type,execution_mode,planning_status,
+  operational_state,window_start,window_end,created_at
+)
+select '00000000-0000-4000-8000-0000000000d2',
+  '00000000-0000-4000-8000-0000000000d1',f.id,'periodic','physical',
+  'published','new',transaction_timestamp()+interval '40 days',
+  transaction_timestamp()+interval '41 days',transaction_timestamp()
+from public.factories f order by f.id limit 1;
+
 select set_config('request.jwt.claim.sub',
   '00000000-0000-4000-8000-0000000000f1',true);
+set local role authenticated;
+select pg_temp.assert_true(
+  (select count(*) from public.visits
+    where id='00000000-0000-4000-8000-0000000000d2')=0
+  and (select count(*) from public.visit_plans
+    where id='00000000-0000-4000-8000-0000000000d1')=0,
+  'PCP-P11A-000','no-role known-ID reads must return zero');
+do $$
+declare
+  v_rows integer;
+begin
+  begin
+    insert into public.visit_plans(method,status)
+    values('single','draft');
+    raise exception 'PCP-NO-ROLE-PLAN-INSERT-WAS-ALLOWED';
+  exception when insufficient_privilege then null;
+  end;
+  update public.visits set notes='forbidden'
+  where id='00000000-0000-4000-8000-0000000000d2';
+  get diagnostics v_rows = row_count;
+  if v_rows<>0 then
+    raise exception 'PCP-NO-ROLE-VISIT-UPDATE-WAS-ALLOWED';
+  end if;
+end
+$$;
+reset role;
 do $$
 begin
   begin
@@ -319,6 +384,57 @@ select pg_temp.assert_true(
   not public.planning_closure_factory_in_scope(
     (select id from public.factories order by id limit 1)),
   'PCP-P11A-003','cross-region factory scope must fail closed');
+set local role authenticated;
+select pg_temp.assert_true(
+  (select count(*) from public.visits
+    where id='00000000-0000-4000-8000-0000000000d2')=0,
+  'PCP-P11A-004','cross-scope planner known-ID read must return zero');
+reset role;
+
+insert into auth.users(id,email,created_at,updated_at)
+values('00000000-0000-4000-8000-0000000000f4',
+  'planning-probe-planner@example.invalid',
+  transaction_timestamp(),transaction_timestamp());
+insert into public.profiles(user_id,full_name,email,region,org_scope)
+select '00000000-0000-4000-8000-0000000000f4',
+  'Planning in-scope planner probe',
+  'planning-probe-planner@example.invalid',
+  coalesce(f.region,'National'),'probe'
+from public.factories f order by f.id limit 1;
+insert into public.user_roles(user_id,role_key)
+values('00000000-0000-4000-8000-0000000000f4','planner');
+select set_config('request.jwt.claim.sub',
+  '00000000-0000-4000-8000-0000000000f4',true);
+set local role authenticated;
+select pg_temp.assert_true(
+  (select count(*) from public.visits
+    where id='00000000-0000-4000-8000-0000000000d2')=1,
+  'PCP-P11A-004A','explicit in-scope planner must retain governed read');
+reset role;
+
+insert into auth.users(id,email,created_at,updated_at)
+values('00000000-0000-4000-8000-0000000000f3',
+  'planning-probe-inspector@example.invalid',
+  transaction_timestamp(),transaction_timestamp());
+insert into public.profiles(user_id,full_name,email,region,org_scope)
+select '00000000-0000-4000-8000-0000000000f3',
+  'Planning assigned inspector probe',
+  'planning-probe-inspector@example.invalid',
+  coalesce(f.region,'National'),'probe'
+from public.factories f order by f.id limit 1;
+insert into public.user_roles(user_id,role_key)
+values('00000000-0000-4000-8000-0000000000f3','inspector');
+insert into public.assignments(visit_id,inspector_id,method,status)
+values('00000000-0000-4000-8000-0000000000d2',
+  '00000000-0000-4000-8000-0000000000f3','manual','assigned');
+select set_config('request.jwt.claim.sub',
+  '00000000-0000-4000-8000-0000000000f3',true);
+set local role authenticated;
+select pg_temp.assert_true(
+  (select count(*) from public.visits
+    where id='00000000-0000-4000-8000-0000000000d2')=1,
+  'PCP-P11A-005','assigned in-scope inspector must retain governed read');
+reset role;
 
 -- P12/P13 — atomic audit/outbox and truthful delivery boundary.
 select pg_temp.assert_true(
