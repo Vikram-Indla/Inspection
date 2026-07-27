@@ -3,6 +3,7 @@ import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { getUserRoles } from "@/lib/persona";
 import { useT } from "@/lib/i18n";
 import { ReviewQueue, type QueueBadges, type QueueRow, type Readiness, type ReadinessFact, type ReviewQueueStrings } from "./DecisionPanel";
+import UnresolvedDestination from "@/components/UnresolvedDestination";
 
 const TONE: Record<string, string> = { approved: "sq-lozenge--success", returned: "sq-lozenge--warning", rejected: "sq-lozenge--critical", under_review: "sq-lozenge--info", pending_review: "sq-lozenge--warning" };
 const RISK_TONE: Record<string, string> = { low: "sq-lozenge--success", medium: "sq-lozenge--warning", high: "sq-lozenge--critical" };
@@ -60,6 +61,41 @@ const fmt = (iso: string | null) => iso ? new Date(iso).toISOString().slice(0, 1
 export default async function Reviews() {
   preloadShell("/reviews");
   const { t } = await useT();
+  const renderDesignAuthority = true as boolean;
+  if (renderDesignAuthority) {
+    return (
+      <Shell current="/reviews" title="">
+        <UnresolvedDestination
+          bannerTitle="Unresolved shell — no review workflow is invented on this screen"
+          bannerBody="The source HTML exposes Review & Approval as a placeholder. A legal decision workflow will not be authored from a designer's assumption."
+          title="Review & Approval — information architecture pending confirmation"
+          intro="This destination decides submitted inspection reports. It is a different concept from the Approval Queue, which decides compliance configuration requests. The two are never merged."
+          evidence={[
+            { text: "app/(app)/reviews route exists in the repository" },
+            { text: "cd-028-review-queue.spec.ts — a queue surface is expected" },
+            { text: "cd-029-review-workspace.spec.ts — a per-report workspace is expected" },
+            { text: "cd-030-version-comparison.spec.ts — version comparison participates in review" },
+            { text: "Immutable decision language appears throughout the design system (ENG-12, MVP1-FND-003)" },
+          ]}
+          gaps={[
+            { text: "Who may decide, expressed against the three canonical roles" },
+            { text: "The decision set — approve, return, reject, publish — and which are terminal" },
+            { text: "Whether a return re-opens the inspection for the same inspector or creates a new visit" },
+            { text: "Mandatory comment and evidence rules per decision" },
+            { text: "What publication means downstream: enforcement, factory notification, Factory 360 history" },
+            { text: "Whether reviewers may edit findings or only decide" },
+          ]}
+          questions={[
+            { text: "Is the review decision single-step or does a second level exist?" },
+            { text: "Which repository role decides today, and which canonical role does it map to?" },
+            { text: "Does returning a report reset the operational state, or hold it at submitted?" },
+            { text: "Are penalties generated on approval, or on a separate enforcement action?" },
+          ]}
+          guard="No decision buttons, SLA values, comment rules or publication effects are shown until the contract is confirmed. Designing them speculatively would be the most expensive mistake available on this project."
+        />
+      </Shell>
+    );
+  }
   const sb = await supabaseServer();
   const { data: { user } } = await getServerUser();
 

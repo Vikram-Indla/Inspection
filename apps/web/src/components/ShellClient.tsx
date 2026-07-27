@@ -21,7 +21,7 @@ export type ShellClientNavGroup = {
   label: string;
   items: {
     id: string; label: string; href: string; icon: ShellIcon; businessTab: string;
-    enabled: boolean; disabledReason?: string; parentId?: string; parentLabel?: string;
+    enabled: boolean; badge?: number; disabledReason?: string; parentId?: string; parentLabel?: string;
   }[];
 };
 
@@ -95,7 +95,9 @@ export default function ShellClient({
   const current = usePathname() || "/";
   const fieldOnly = isFieldOnlyPersona(roles);
   const adminWorkspace = false;
-  const aiVisible = groups.some(group => group.items.some(item => item.enabled && item.href === "/ai/suggestions"));
+  // The canonical Claude Design topbar always exposes the assistant entry.
+  // Provider and route-level availability are enforced by the destination.
+  const aiVisible = true;
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [compactNavigation, setCompactNavigation] = useState(false);
@@ -407,6 +409,7 @@ export default function ShellClient({
           title={`${item.label} — ${item.disabledReason ?? ""}`.trim()} tabIndex={0} data-nav-state="disabled">
           <span className="ax-nav-icon"><Icon name={item.icon} /></span>
           <span className="ax-nav-label">{item.label}</span>
+          {item.badge ? <span className="ax-badge ax-badge--critical ax-nav-badge">{item.badge}</span> : null}
           <span className="ax-nav-lock" aria-hidden="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
           </span>
@@ -421,15 +424,16 @@ export default function ShellClient({
         data-next-spa="true" prefetch={false}>
         <span className="ax-nav-icon"><Icon name={item.icon} /></span>
         <span className="ax-nav-label">{item.label}</span>
+        {item.badge ? <span className="ax-badge ax-badge--critical ax-nav-badge">{item.badge}</span> : null}
       </Link>
     );
   }
 
   function renderNavGroup(group: ShellClientNavGroup) {
     const groupOpen = openGroups[group.id] ?? true;
-    const isAdministration = group.id.startsWith("admin-");
+    const isAdministration = group.id === "administration";
     return (
-      <section className="ax-nav-group" data-nav-group={group.id} key={group.id}>
+      <section className={`ax-nav-group${isAdministration ? " ax-nav-group--pinned" : ""}`} data-nav-group={group.id} key={group.id}>
         <button className={`ax-nav-group__trigger${isAdministration ? " is-administration" : ""}`} type="button" aria-label={group.label} aria-expanded={groupOpen}
           aria-controls={`nav-group-${group.id}`}
           onClick={() => setOpenGroups(value => ({ ...value, [group.id]: !groupOpen }))}>
@@ -438,6 +442,7 @@ export default function ShellClient({
         </button>
         <div id={`nav-group-${group.id}`} hidden={!groupOpen}>
           {group.items.map((item, index) => {
+            if (isAdministration) return renderNavItem(item, true);
             if (!item.parentId) return renderNavItem(item);
             if (group.items.findIndex(candidate => candidate.parentId === item.parentId) !== index) return null;
             const children = group.items.filter(candidate => candidate.parentId === item.parentId);
@@ -517,9 +522,7 @@ export default function ShellClient({
               which is an isolated document: it cannot reach the page webfonts,
               so both scripts fell back to system faces and were forced onto one
               baseline. That is what made the wordmark sit wrong. */}
-          <span className="ax-shell__brand-mark" aria-hidden="true">
-            <img src="/saqeel-favicon.svg" alt="" width={22} height={22} />
-          </span>
+          <span className="ax-shell__brand-mark" aria-hidden="true">ص</span>
           <span className="ax-shell__brand-name">
             <span className="ax-shell__brand-ar" lang="ar">صقيل</span>
             <span className="ax-shell__brand-en" lang="en">SAQEEL</span>
@@ -532,11 +535,19 @@ export default function ShellClient({
           </button>
         </div>
 
-            <div className="ax-shell__groups">
-              {adminWorkspace && compactNavigation && drawerOpen
-                ? renderMobileAdminDiscovery()
-                : groups.map(renderNavGroup)}
-            </div>
+        <div className="ax-shell__groups">
+          {(adminWorkspace && compactNavigation && drawerOpen
+            ? groups.filter(group => group.id !== "administration")
+            : groups.filter(group => group.id !== "administration")
+          ).map(renderNavGroup)}
+        </div>
+        <div className="ax-shell__nav-footer">
+          <button className="ax-nav-item ax-shell__expand-row" type="button" onClick={toggleCollapsed}
+            title={strings.expand} aria-label={strings.expand}>
+            <span aria-hidden="true">›</span>
+          </button>
+          {groups.filter(group => group.id === "administration").map(renderNavGroup)}
+        </div>
       </nav>
 
       <main id="main-content" className="ax-shell__main" tabIndex={-1}>

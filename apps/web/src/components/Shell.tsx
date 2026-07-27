@@ -51,6 +51,7 @@ export async function AppShell({ children }: { children: ReactNode }) {
       href: item.href,
       icon: item.icon,
       businessTab: item.businessTab,
+      badge: item.badge,
       enabled: item.enabled,
       disabledReason: item.disabledReasonKey
         ? t(item.disabledReasonKey, locale === "ar" ? item.disabledReasonAr! : item.disabledReasonEn!)
@@ -68,7 +69,7 @@ export async function AppShell({ children }: { children: ReactNode }) {
     closeMenu: t("shell.closeMenu", locale === "ar" ? "إغلاق قائمة التنقل" : "Close navigation"),
     collapse: t("shell.collapse", locale === "ar" ? "طي القائمة" : "Collapse navigation"),
     expand: t("shell.expand", locale === "ar" ? "توسيع القائمة" : "Expand navigation"),
-    navigationSearch: t("shell.search", locale === "ar" ? "ابحث في المصانع والزيارات والتفتيشات…" : "Search factories, visits, inspections…"),
+    navigationSearch: t("shell.search", locale === "ar" ? "ابحث عن مصنع أو سجل تجاري أو رخصة أو تفتيش…" : "Search factory, CR, license, inspection…"),
     searchResults: t("shell.searchResults", locale === "ar" ? "نتائج البحث العام" : "Global search results"),
     noSearchResults: t("shell.noSearchResults", locale === "ar" ? "لا توجد نتائج مرئية ضمن صلاحياتك" : "No RLS-visible results"),
     searchLoading: t("shell.searchLoading", locale === "ar" ? "جارٍ البحث…" : "Searching…"),
@@ -171,11 +172,13 @@ export default function Shell({ children, title, context, topbar }: {
   return (
     <>
       {topbar ? <div className="sq-pagehead__route-tools">{topbar}</div> : null}
-      <header className="sq-pagehead sq-pagehead--route">
-        <div className="sq-pagehead__row">
-          <div className="sq-pagehead__context"><h2>{title}</h2>{context}</div>
-        </div>
-      </header>
+      {title ? (
+        <header className="sq-pagehead sq-pagehead--route">
+          <div className="sq-pagehead__row">
+            <div className="sq-pagehead__context"><h2>{title}</h2>{context}</div>
+          </div>
+        </header>
+      ) : null}
       <div className="sq-content">{children}</div>
     </>
   );
