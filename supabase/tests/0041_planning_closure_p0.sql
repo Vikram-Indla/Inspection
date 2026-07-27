@@ -109,7 +109,8 @@ select pg_temp.assert_true(
         'reschedule_planning_visits_atomic','archive_planning_draft_atomic',
         'expire_planning_visits_core','expire_planning_visits_scheduled',
         'create_planning_bulk_command','planning_bulk_command_receipt',
-        'transition_planning_visit_atomic','save_planning_draft_atomic')
+        'transition_planning_visit_atomic','save_planning_draft_atomic',
+        'duplicate_terminal_visit_atomic')
       and not ('search_path=""'=any(coalesce(p.proconfig,'{}'::text[])))
   ),'PCP-P04-001','every closure function needs an empty search_path');
 select pg_temp.assert_true(
@@ -581,7 +582,7 @@ select pg_temp.assert_true(
     'archive_planning_draft_atomic','expire_planning_visits_scheduled',
     'create_planning_bulk_command','planning_bulk_command_receipt',
     'process_planning_bulk_target','transition_planning_visit_atomic',
-    'save_planning_draft_atomic'))=9,
+    'save_planning_draft_atomic','duplicate_terminal_visit_atomic'))=10,
   'PCP-P14-001','all public contracts must exist exactly once');
 
 rollback;
