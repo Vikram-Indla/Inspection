@@ -1,0 +1,207 @@
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 17.5rem);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.main {
+  display: flex;
+  min-inline-size: 0;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.breadcrumb ol {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  color: var(--ax-color-text-secondary);
+  font: var(--ax-text-micro);
+  list-style: none;
+}
+
+.breadcrumb li + li::before {
+  content: "/";
+  margin-inline-end: var(--space-2);
+  color: var(--ax-color-text-disabled);
+}
+
+.title {
+  margin: var(--space-1) 0 0;
+  font: var(--ax-text-title);
+  font-weight: 500;
+}
+
+.subtitle {
+  max-inline-size: 72ch;
+  margin: var(--space-1) 0 0;
+  color: var(--ax-color-text-secondary);
+  font: var(--ax-text-caption);
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.metric {
+  display: flex;
+  min-inline-size: 0;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--ax-color-border-strong);
+  border-radius: var(--ax-radius-standard);
+  background: var(--ax-color-surface);
+  box-shadow: var(--ax-shadow-raised);
+}
+
+.metricLabel,
+.metricNote {
+  color: var(--ax-color-text-secondary);
+  font: var(--ax-text-micro);
+}
+
+.metricValue {
+  overflow-wrap: anywhere;
+  font: var(--ax-text-title);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabs {
+  display: flex;
+  gap: var(--space-5);
+  overflow-x: auto;
+  border-block-end: 1px solid var(--ax-color-border);
+  scrollbar-width: thin;
+}
+
+.tab {
+  flex: 0 0 auto;
+  padding: var(--space-2) 0;
+  border-block-end: 2px solid transparent;
+  color: var(--ax-color-text-secondary);
+  font: var(--ax-text-body-strong);
+  text-decoration: none;
+}
+
+.tab:hover {
+  color: var(--ax-color-text);
+}
+
+.tab[aria-current="page"] {
+  border-block-end-color: var(--ax-color-primary);
+  color: var(--ax-color-primary-strong);
+}
+
+.tab:focus-visible {
+  border-radius: var(--ax-radius-small);
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.gate {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--ax-color-border-strong);
+  border-inline-start: 3px solid var(--ax-color-text-secondary);
+  border-radius: var(--ax-radius-standard);
+  background: var(--ax-color-surface-sunken);
+}
+
+.gate p {
+  margin: var(--space-1) 0 0;
+  color: var(--ax-color-text-secondary);
+  font: var(--ax-text-caption);
+}
+
+.rail {
+  position: sticky;
+  inset-block-start: calc(var(--ax-topbar-height) + var(--space-4));
+  display: flex;
+  min-inline-size: 0;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.railCard {
+  padding: var(--space-4);
+  border: 1px solid var(--ax-color-border-strong);
+  border-radius: var(--ax-radius-standard);
+  background: var(--ax-color-surface);
+  box-shadow: var(--ax-shadow-raised);
+}
+
+.railCard:last-child {
+  background: var(--ax-color-surface-field);
+}
+
+.railTitle {
+  margin: 0 0 var(--space-2);
+  color: var(--ax-color-text-secondary);
+  font: var(--ax-text-micro);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.governance {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.governance li {
+  padding: var(--space-2) 0;
+  border-block-end: 1px solid var(--ax-color-border);
+  font: var(--ax-text-caption);
+}
+
+.governance li:last-child {
+  border-block-end: 0;
+}
+
+.note {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font: var(--ax-text-caption);
+}
+
+@media (max-width: 74.9375rem) {
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rail {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 63.9375rem) {
+  .metrics {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10.625rem), 1fr));
+  }
+}
+
+@media (max-width: 51.999rem) {
+  .heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .rail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
