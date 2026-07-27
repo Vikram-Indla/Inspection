@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { calculateApprovedCompliance } from "../src/lib/factory360/compliance";
+import { FACTORY360_AR_FALLBACK } from "../src/lib/factory360/arabic";
 
 const webRoot = path.resolve(__dirname, "..");
 const read = (file: string) => fs.readFileSync(path.join(webRoot, file), "utf8");
@@ -36,6 +37,7 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
     expect(src).toContain('from("plant_addresses")');
     expect(page).toContain('aria-current={row.id === selected?.id ? "page" : undefined}');
     expect(list).toContain('dossier_href: commercialRegistrationId ? `/factories/cr/${commercialRegistrationId}` : `/factories/${row.id}`');
+    expect(list).toContain("Array.isArray(mappedIndustrialLicense)");
     expect(list).toContain('`/factories/${row.id}`');
     expect(legacy).toContain('from("industrial_licenses")');
     expect(legacy).toContain('redirect(`/factories/cr/${normalizedLicense.commercial_registration_id}?license=${normalizedLicense.id}`)');
@@ -89,12 +91,52 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
   test("uses a responsive internal three-column layout and RTL-safe identity semantics", () => {
     const page = read(PAGE);
     const css = read("src/app/(app)/factories/cr/[id]/factory360.module.css");
+    const list = read("src/app/(app)/factories/FactoryList.tsx");
+    const listCss = read("src/app/(app)/factories/factory-list.module.css");
     expect(css).toContain("grid-template-columns: 224px minmax(0, 1fr) 296px");
     expect(css).toContain("@media (max-width: 1179px)");
     expect(css).toContain("@media (max-width: 799px)");
+    expect(css).toContain("border-inline-start-width");
+    expect(list).toContain("styles.cards");
+    expect(listCss).toContain("@media (max-width: 799px)");
+    expect(listCss).toContain("@media (max-width: 389px)");
     expect(page).toContain("<bdi>");
     expect(page).toContain('lang="ar" dir="rtl"');
     expect(page).toContain('data-factory360-layout="cr-license-dossier"');
+    expect(page).not.toContain("<main");
+  });
+
+  test("provides Modern Standard Arabic fallback copy for every registry and CR dossier string", () => {
+    const sources = [
+      read(PAGE),
+      read("src/app/(app)/factories/page.tsx"),
+    ].join("\n");
+    const keys = [...sources.matchAll(/t\("([^"]+)",\s*"[^"]*"\)/g)]
+      .map(match => match[1]);
+    const missing = [...new Set(keys)]
+      .filter(key => !FACTORY360_AR_FALLBACK[key]);
+    expect(missing).toEqual([]);
+
+    const i18n = read("src/lib/i18n.ts");
+    expect(i18n).toContain("...FACTORY360_AR_FALLBACK");
+    expect(i18n.indexOf("...FACTORY360_AR_FALLBACK"))
+      .toBeLessThan(i18n.lastIndexOf("...dict"));
+  });
+
+  test("shows the complete license-selector contract and a business-event-only timeline without invented date windows", () => {
+    const page = read(PAGE);
+    const loader = read(LOADER);
+    const legacy = read("src/app/(app)/factories/[id]/page.tsx");
+    for (const field of ["license_type", "stage", "status", "risk_band"]) expect(page + loader).toContain(field);
+    expect(page).toContain('t("f360.timeline.heading", "Business-event timeline")');
+    expect(page).toContain("Operational visits are intentionally excluded.");
+    expect(page).toContain("reports.flatMap");
+    expect(page).toContain("government.flatMap");
+    expect(page).toContain("penalties.flatMap");
+    expect(page).not.toContain("daysToExpiry");
+    expect(page).not.toContain("Date.now()");
+    expect(legacy).not.toContain("expiringSoon");
+    expect(legacy).not.toContain("90 * 86400000");
   });
 
   test("keeps official media separate from inspection evidence and never invents a freshness SLA", () => {

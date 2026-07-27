@@ -80,6 +80,6 @@ baseline_wiring_audit_2026_07_14:
     - attempted_conflict_business_audit
     - notification_provider_delivery_truth
     - stale_availability_version_token
-rtl_theme_impact: Logical properties; Arabic fresh-session default; bdi-isolated IDs/windows/codes; dark/light via ax tokens; conflict = glyph+text never color alone
+rtl_theme_impact: Logical properties; Arabic fresh-session default; bdi-isolated IDs/windows/codes; dark/light via legacy tokens; conflict = glyph+text never color alone
 rollback: Additive UPDATEs on the existing review route; git revert; no schema changes; RPC untouched
 status: READY_FOR_DESIGN_REVIEW_R2

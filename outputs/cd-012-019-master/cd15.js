@@ -10,8 +10,8 @@
     en: { group: "GIS Configuration", title: "GIS & geofence studio", sub: "Governed geometry: official, geocoded and field-verified truth compared side by side — source, accuracy and approval status travel with every location",
       role: "GIS Admin", crumbs: ["Admin", "GIS Configuration", "Geofence studio"], searchPh: "Search factories by name or FAC id…",
       layers: "Layers", conf: "Location confidence stack", geom: "Geometry", publish: "Approve & publish geometry", validate: "Validate geometry", draft: "Save draft",
-      layerRows: [["Official point (licence)", "var(--ax-color-primary)", "proven"], ["Field-verified point", "var(--ax-color-success)", "proven"], ["Factory boundary polygon", "var(--ax-color-info)", "proven"], ["Geofence (arrival radius)", "var(--ax-color-warning)", "proven"], ["KSA admin boundaries", "var(--ax-color-text-disabled)", "blocked"]],
-      confRows: [["Official point (licence)", "var(--ax-color-primary)", "24.7136, 46.6753 · source: licence record", "proven"], ["Field-verified point", "var(--ax-color-success)", "24.7141, 46.6749 · visit VIS-2026-03118 · GPS ±8m", "proven"], ["Δ official ↔ verified", "var(--ax-color-warning)", "62 m — within DEC-002 tolerance (100 m)", "proven"], ["Boundary polygon", "var(--ax-color-info)", "9 vertices · drawn 2026-05-20 by Sara Al-Otaibi", "proven"], ["Geofence radius", "var(--ax-color-warning)", "150 m arrival threshold — DEC-002", "proven"]],
+      layerRows: [["Official point (licence)", "var(--legacy-color-primary)", "proven"], ["Field-verified point", "var(--legacy-color-success)", "proven"], ["Factory boundary polygon", "var(--legacy-color-info)", "proven"], ["Geofence (arrival radius)", "var(--legacy-color-warning)", "proven"], ["KSA admin boundaries", "var(--legacy-color-text-disabled)", "blocked"]],
+      confRows: [["Official point (licence)", "var(--legacy-color-primary)", "24.7136, 46.6753 · source: licence record", "proven"], ["Field-verified point", "var(--legacy-color-success)", "24.7141, 46.6749 · visit VIS-2026-03118 · GPS ±8m", "proven"], ["Δ official ↔ verified", "var(--legacy-color-warning)", "62 m — within DEC-002 tolerance (100 m)", "proven"], ["Boundary polygon", "var(--legacy-color-info)", "9 vertices · drawn 2026-05-20 by Sara Al-Otaibi", "proven"], ["Geofence radius", "var(--legacy-color-warning)", "150 m arrival threshold — DEC-002", "proven"]],
       thTitle: "Thresholds (DEC-002)", th: [["Arrival radius", "150 m"], ["GPS accuracy floor", "±25 m"], ["Official↔verified tolerance", "100 m"], ["Override roles", "GIS Admin + Technical Admin"]],
       mapLabel: "MAP CANVAS — provider tiles not loaded in design fixture",
       blkTitle: "Provider & source seams", blk: [["Map tile provider", "no provider adapter contract located", "blocked", "HANDOFF_BLOCKED_TILE_PROVIDER"], ["Geocoding service", "no geocoder located", "blocked", "HANDOFF_BLOCKED_GEOCODER"], ["KSA authoritative boundaries", "no boundary source located", "blocked", "HANDOFF_BLOCKED_KSA_BOUNDARY"], ["Field evidence photo sync", "outbox only — delivery unproven", "computed", "HANDOFF_BLOCKED_EVIDENCE_SYNC"]],
@@ -28,8 +28,8 @@
     ar: { group: "إعداد نظم المعلومات الجغرافية", title: "استوديو الخرائط والأسيجة الجغرافية", sub: "هندسة محكومة: الحقيقة الرسمية والمُرمَّزة والمُتحقَّق منها ميدانيًا جنبًا إلى جنب — المصدر والدقة وحالة الاعتماد ترافق كل موقع",
       role: "مشرف نظم جغرافية", crumbs: ["الإدارة", "إعداد نظم المعلومات الجغرافية", "استوديو الأسيجة"], searchPh: "ابحث عن منشأة بالاسم أو رقم FAC…",
       layers: "الطبقات", conf: "حزمة ثقة الموقع", geom: "الهندسة", publish: "اعتماد ونشر الهندسة", validate: "التحقق من الهندسة", draft: "حفظ المسودة",
-      layerRows: [["النقطة الرسمية (الترخيص)", "var(--ax-color-primary)", "proven"], ["النقطة المُتحقَّق منها ميدانيًا", "var(--ax-color-success)", "proven"], ["مضلّع حدود المنشأة", "var(--ax-color-info)", "proven"], ["السياج الجغرافي (نصف قطر الوصول)", "var(--ax-color-warning)", "proven"], ["حدود المملكة الإدارية", "var(--ax-color-text-disabled)", "blocked"]],
-      confRows: [["النقطة الرسمية (الترخيص)", "var(--ax-color-primary)", "24.7136, 46.6753 · المصدر: سجل الترخيص", "proven"], ["النقطة المُتحقَّق منها ميدانيًا", "var(--ax-color-success)", "24.7141, 46.6749 · الزيارة VIS-2026-03118 · GPS ±8م", "proven"], ["الفرق رسمي ↔ مُتحقَّق", "var(--ax-color-warning)", "62 م — ضمن سماحية DEC-002 (100 م)", "proven"], ["مضلّع الحدود", "var(--ax-color-info)", "9 رؤوس · رُسم 2026-05-20 بواسطة سارة العتيبي", "proven"], ["نصف قطر السياج", "var(--ax-color-warning)", "عتبة وصول 150 م — DEC-002", "proven"]],
+      layerRows: [["النقطة الرسمية (الترخيص)", "var(--legacy-color-primary)", "proven"], ["النقطة المُتحقَّق منها ميدانيًا", "var(--legacy-color-success)", "proven"], ["مضلّع حدود المنشأة", "var(--legacy-color-info)", "proven"], ["السياج الجغرافي (نصف قطر الوصول)", "var(--legacy-color-warning)", "proven"], ["حدود المملكة الإدارية", "var(--legacy-color-text-disabled)", "blocked"]],
+      confRows: [["النقطة الرسمية (الترخيص)", "var(--legacy-color-primary)", "24.7136, 46.6753 · المصدر: سجل الترخيص", "proven"], ["النقطة المُتحقَّق منها ميدانيًا", "var(--legacy-color-success)", "24.7141, 46.6749 · الزيارة VIS-2026-03118 · GPS ±8م", "proven"], ["الفرق رسمي ↔ مُتحقَّق", "var(--legacy-color-warning)", "62 م — ضمن سماحية DEC-002 (100 م)", "proven"], ["مضلّع الحدود", "var(--legacy-color-info)", "9 رؤوس · رُسم 2026-05-20 بواسطة سارة العتيبي", "proven"], ["نصف قطر السياج", "var(--legacy-color-warning)", "عتبة وصول 150 م — DEC-002", "proven"]],
       thTitle: "العتبات (DEC-002)", th: [["نصف قطر الوصول", "150 م"], ["حد دقة GPS", "±25 م"], ["سماحية رسمي↔مُتحقَّق", "100 م"], ["أدوار التجاوز", "مشرف نظم جغرافية + مشرف تقني"]],
       mapLabel: "لوحة الخريطة — بلاطات المزوّد غير محمّلة في نموذج التصميم",
       blkTitle: "فواصل المزوّد والمصدر", blk: [["مزوّد بلاطات الخرائط", "لا عقد مُهايئ مزوّد مُثبت", "blocked", "HANDOFF_BLOCKED_TILE_PROVIDER"], ["خدمة الترميز الجغرافي", "لا مُرمِّز مُثبت", "blocked", "HANDOFF_BLOCKED_GEOCODER"], ["حدود المملكة الموثوقة", "لا مصدر حدود مُثبت", "blocked", "HANDOFF_BLOCKED_KSA_BOUNDARY"], ["مزامنة صور الأدلة الميدانية", "صندوق صادر فقط — التسليم غير مُثبت", "computed", "HANDOFF_BLOCKED_EVIDENCE_SYNC"]],
@@ -68,7 +68,7 @@
     return '<div class="m-panel"><div class="m-panel__head"><h4>' + esc(t.conf) + '</h4>' + C.tt("proven", "provenance preserved") + '</div><div class="gx-conf">' +
       t.confRows.map(function (r, i) {
         var mism = opts.mismatch && i === 2;
-        return '<div class="gx-conf__row"' + (mism ? ' style="background:var(--ax-color-critical-tint)"' : '') + '><span class="gx-conf__dot" style="border-color:' + r[1] + '"></span><span><b>' + esc(r[0]) + '</b><br><span class="m-mono cd-sub">' + (mism ? esc("480 m — ") + esc(t.mismatchT) : esc(r[2])) + '</span></span>' + C.tt(mism ? "blocked" : r[3], mism ? "escalate" : "payload") + '</div>';
+        return '<div class="gx-conf__row"' + (mism ? ' style="background:var(--legacy-color-critical-tint)"' : '') + '><span class="gx-conf__dot" style="border-color:' + r[1] + '"></span><span><b>' + esc(r[0]) + '</b><br><span class="m-mono cd-sub">' + (mism ? esc("480 m — ") + esc(t.mismatchT) : esc(r[2])) + '</span></span>' + C.tt(mism ? "blocked" : r[3], mism ? "escalate" : "payload") + '</div>';
       }).join("") + '</div></div>';
   }
 
@@ -79,10 +79,10 @@
 
   function bar(t, opts) {
     opts = opts || {};
-    return '<div class="ax-commandbar"><button class="ax-btn ax-btn--secondary">' + esc(t.draft) + '</button>' +
-      '<button class="ax-btn ax-btn--secondary">' + esc(t.validate) + '</button>' +
-      '<button class="ax-btn"' + (opts.noPub ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.publish) + '</button>' +
-      '<span class="ax-commandbar__spacer"></span><span class="cd-sub m-mono">' + esc(t.fName) + '</span></div>';
+    return '<div class="legacy-commandbar"><button class="legacy-btn legacy-btn--secondary">' + esc(t.draft) + '</button>' +
+      '<button class="legacy-btn legacy-btn--secondary">' + esc(t.validate) + '</button>' +
+      '<button class="legacy-btn"' + (opts.noPub ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.publish) + '</button>' +
+      '<span class="legacy-commandbar__spacer"></span><span class="cd-sub m-mono">' + esc(t.fName) + '</span></div>';
   }
 
   function kpis(t) {

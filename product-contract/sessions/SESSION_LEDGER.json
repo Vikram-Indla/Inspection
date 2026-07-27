@@ -402,7 +402,7 @@
         "Shell.tsx",
         "ShellClient.tsx",
         "shell-navigation.ts",
-        "astryx.css",
+        "retired-predecessor.css",
         "operations/live active route",
         "shell Playwright specs",
         "shell authority/acceptance/evidence/current-state records",
@@ -1066,7 +1066,7 @@
         "${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/immediate-v2"
       ],
       "decisions": [
-        "Use accepted Astryx D3 four-value urgency list",
+        "Use accepted retired predecessor D3 four-value urgency list",
         "Require Notes when urgency is Other",
         "Enforce server-action copy plus database CHECK defense in depth",
         "Use NOT VALID to preserve historical rows without silent coercion",
@@ -1266,7 +1266,7 @@
         "apps/web/src/app/visits/[id]/ActionBar.tsx",
         "apps/web/src/app/visits/[id]/Attachments.tsx",
         "apps/web/src/app/visits/[id]/actions.ts",
-        "apps/web/src/app/astryx.css",
+        "apps/web/src/app/retired-predecessor.css",
         "apps/web/e2e/cd-027-visit-detail.spec.ts (new)",
         "${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md (new)",
         "CURRENT_STATE.md",
@@ -1530,7 +1530,7 @@
         "apps/web/src/app/reviews/[id]/DecisionPanel.tsx",
         "apps/web/src/app/reviews/[id]/FindingTraceChain.tsx",
         "apps/web/src/app/reviews/[id]/page.tsx",
-        "apps/web/src/app/astryx.css",
+        "apps/web/src/app/retired-predecessor.css",
         "apps/web/e2e/cd-029-review-workspace.spec.ts",
         "apps/web/e2e/cd-030-version-comparison.spec.ts",
         "product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md",
@@ -1677,7 +1677,7 @@
         "ENG-12"
       ],
       "files_changed": [
-        "apps/web/src/app/astryx.css",
+        "apps/web/src/app/retired-predecessor.css",
         "apps/web/src/app/factories/[id]/page.tsx",
         "apps/web/src/app/factories/[id]/loading.tsx",
         "apps/web/e2e/cd-031-factory-360.spec.ts",
@@ -2121,7 +2121,7 @@
         "ENG-11"
       ],
       "files_changed": [
-        "apps/web/src/app/astryx.css",
+        "apps/web/src/app/retired-predecessor.css",
         "apps/web/src/app/reviews/[id]/page.tsx",
         "apps/web/e2e/cd-029-review-workspace.spec.ts",
         "apps/web/e2e/cd-030-version-comparison.spec.ts",
@@ -3210,7 +3210,7 @@
         "ENG-12"
       ],
       "files_changed": [
-        "apps/web/src/app/astryx.css",
+        "apps/web/src/app/retired-predecessor.css",
         "apps/web/src/app/reviews/[id]/VersionCompare.tsx",
         "apps/web/playwright.config.ts",
         ".gitignore and tracked generated-artifact cleanup",
@@ -3480,7 +3480,7 @@
         "ENG-12"
       ],
       "files_changed": [
-        "apps/web/src/app/tokens.css and astryx.css",
+        "apps/web/src/app/tokens.css and retired-predecessor.css",
         "apps/web/src/components/ShellClient.tsx and NotificationBell.tsx",
         "apps/web/public/saqeel-prism assets",
         "apps/web/e2e/design-foundation-contract.spec.ts and shell contracts",
@@ -4875,7 +4875,7 @@
       "acceptance_ids": ["WA-SHELL-AC-001", "WA-F0-AC-003..006"],
       "screens": ["GLOBAL_SHELL", "Focused sponsor finding on /operations EN/LTR"],
       "engines": ["Next.js authenticated AppShell", "Approved Web/Admin brand assets", "Responsive and collapsible navigation"],
-      "files_changed": ["ShellClient approved bilingual asset wiring", "root layout matching ax-* stylesheet import", "astryx expanded/collapsed/mobile brand styles", "focused F0 brand contract", "branch-local execution evidence and session controls"],
+      "files_changed": ["ShellClient approved bilingual asset wiring", "root layout matching legacy-* stylesheet import", "retired-predecessor expanded/collapsed/mobile brand styles", "focused F0 brand contract", "branch-local execution evidence and session controls"],
       "tests": ["typecheck PASS", "production build PASS", "focused F0 source and brand contract 4/4 PASS", "focused bilingual brand assertion 1/1 PASS", "runtime compiled-CSS link PASS", "real authenticated Chrome shell and bilingual wordmark PASS (Codex evidence)", "git diff check PASS"],
       "evidence": ["product-contract/evidence/TASK-WEB-ADMIN-SHARED-BRAND-REGRESSION-001.md"],
       "decisions": ["Restore the previously approved locale-independent SAQEEL | صقيل SVG", "Use shield/favicon only when desktop rail is collapsed", "Do not invent a locale-specific brand variant", "Keep M3 and remote systems outside the lease"],

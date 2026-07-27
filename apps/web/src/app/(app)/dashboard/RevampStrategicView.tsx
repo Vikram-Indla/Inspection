@@ -1,0 +1,169 @@
+import type { FactoryRef, ResponseRow } from "./metrics";
+import { complianceBreakdown } from "./metrics";
+import styles from "./revamp-dashboard.module.css";
+
+type Locale = "en" | "ar";
+type DashboardMetrics = ReturnType<typeof import("./metrics").buildDashboardMetrics>;
+
+const copy = (locale: Locale, en: string, ar: string) => locale === "ar" ? ar : en;
+const valueOrUnavailable = (locale: Locale, value: number | null, suffix = "") =>
+  value == null ? copy(locale, "Not available", "غير متاح") : `${value}${suffix}`;
+
+function MetricCard({ question, title, value, definition, example, interpretation, href, action }: {
+  question: string;
+  title: string;
+  value: string;
+  definition: string;
+  example: string;
+  interpretation: string;
+  href: string;
+  action: string;
+}) {
+  return (
+    <article className={styles.metricCard}>
+      <span className={styles.question}>{question}</span>
+      <h3>{title}</h3>
+      <strong className={styles.metricValue}>{value}</strong>
+      <p className={styles.definition}><b>Definition</b> {definition}</p>
+      <p className={styles.example}>{example}</p>
+      <p className={styles.interpretation}>{interpretation}</p>
+      <a className={styles.action} href={href}>{action}<span aria-hidden="true">→</span></a>
+    </article>
+  );
+}
+
+export default function RevampStrategicView({ locale, metrics, factories, group, params }: {
+  locale: Locale;
+  metrics: DashboardMetrics;
+  factories: FactoryRef[];
+  group: "region" | "city" | "sector" | "authority";
+  params: Record<string, string>;
+}) {
+  const strategic = metrics.strategic;
+  const grouped = complianceBreakdown(
+    strategic.approvedScopedResponses as ResponseRow[],
+    group,
+    copy(locale, "Not recorded", "غير مسجل"),
+  );
+  const maxRate = Math.max(1, ...grouped.map(row => row.rate ?? 0));
+  const topViolation = strategic.violationByRegulation[0];
+  const paramsHref = (nextGroup: string) => {
+    const query = new URLSearchParams({ ...params, group: nextGroup });
+    return `/dashboard?${query.toString()}`;
+  };
+
+  return (
+    <div className={styles.view}>
+      <section>
+        <h2 className={styles.overline}>{copy(locale, "National performance", "الأداء الوطني")}</h2>
+        <div className={styles.metricGrid}>
+          <MetricCard
+            question={copy(locale, "Are we achieving the national inspection strategy?", "هل نحقق استراتيجية التفتيش الوطنية؟")}
+            title={copy(locale, "Inspection coverage against annual target", "تغطية التفتيش مقابل المستهدف السنوي")}
+            value={copy(locale, "Not configured", "غير مهيأ")}
+            definition={copy(locale, "(Completed inspections ÷ annual inspection target) × 100", "(التفتيشات المكتملة ÷ المستهدف السنوي) × 100")}
+            example={copy(locale, `${strategic.completedInspections} completed inspections; no governed annual target is configured.`, `${strategic.completedInspections} تفتيشاً مكتملاً؛ لا يوجد مستهدف سنوي معتمد.`)}
+            interpretation={copy(locale, "Coverage remains withheld until Administration publishes the governed inspection-cycle target.", "تبقى التغطية محجوبة حتى تنشر الإدارة مستهدف دورة التفتيش المعتمد.")}
+            href="/planning" action={copy(locale, "Open Planning", "فتح التخطيط")}
+          />
+          <MetricCard
+            question={copy(locale, "How compliant is the industrial sector?", "ما مستوى امتثال القطاع الصناعي؟")}
+            title={copy(locale, "National compliance rate", "معدل الامتثال الوطني")}
+            value={valueOrUnavailable(locale, strategic.complianceRate, "%")}
+            definition={copy(locale, "(Compliant answered items ÷ total eligible answered items) × 100", "(البنود المطابقة ÷ إجمالي البنود المؤهلة المجابة) × 100")}
+            example={copy(locale, `${strategic.approvedCompliant} compliant of ${strategic.approvedAnsweredForCompliance} eligible answers.`, `${strategic.approvedCompliant} إجابة مطابقة من ${strategic.approvedAnsweredForCompliance} إجابة مؤهلة.`)}
+            interpretation={copy(locale, "Calculated only from approved inspection work; pending reports are excluded.", "يُحسب من أعمال التفتيش المعتمدة فقط؛ وتُستبعد التقارير المعلقة.")}
+            href="/analytics" action={copy(locale, "Open Analytics", "فتح التحليلات")}
+          />
+          <MetricCard
+            question={copy(locale, "Are inspection reports approved without excessive rework?", "هل تعتمد تقارير التفتيش دون إعادة عمل مفرطة؟")}
+            title={copy(locale, "Inspection approval rate", "معدل اعتماد التفتيش")}
+            value={valueOrUnavailable(locale, strategic.approvalRate, "%")}
+            definition={copy(locale, "(Approved reports ÷ submitted reports) × 100", "(التقارير المعتمدة ÷ التقارير المقدمة) × 100")}
+            example={copy(locale, `${strategic.approvedScoped} approved of ${strategic.completedInspections} submitted.`, `${strategic.approvedScoped} تقريراً معتمداً من ${strategic.completedInspections} مقدماً.`)}
+            interpretation={copy(locale, "Approval is a review outcome and is not presented as compliance.", "الاعتماد نتيجة مراجعة ولا يُعرض على أنه امتثال.")}
+            href="/reviews" action={copy(locale, "Open Review & Approval", "فتح المراجعة والاعتماد")}
+          />
+        </div>
+      </section>
+
+      <section className={styles.explorer}>
+        <div className={styles.sectionHead}>
+          <div>
+            <h2>{copy(locale, "Compliance performance explorer", "مستكشف أداء الامتثال")}</h2>
+            <p>{copy(locale, "One compliance-rate formula, four lenses. Every row drills to the factories behind it.", "صيغة امتثال واحدة وأربع عدسات. كل صف ينتقل إلى المصانع المرتبطة به.")}</p>
+          </div>
+          <nav className={styles.lenses} aria-label={copy(locale, "Lens", "العدسة")}>
+            {[
+              ["region", "Region", "المنطقة"],
+              ["city", "City", "المدينة"],
+              ["sector", "Sector", "القطاع"],
+              ["authority", "Authority", "الجهة"],
+            ].map(([id, en, ar]) => (
+              <a key={id} href={paramsHref(id)} aria-current={group === id}>{copy(locale, en, ar)}</a>
+            ))}
+          </nav>
+        </div>
+        <div className={styles.bars}>
+          {grouped.length ? grouped.slice(0, 8).map(row => (
+            <a className={styles.barRow} key={row.label} href={`/factories?${group}=${encodeURIComponent(row.label)}`}>
+              <span>{row.label}</span>
+              <span className={styles.track}><span style={{ inlineSize: `${Math.max(3, ((row.rate ?? 0) / maxRate) * 100)}%` }} /></span>
+              <strong>{row.rate == null ? "—" : `${row.rate}%`}</strong>
+            </a>
+          )) : <p className={styles.empty}>{copy(locale, "No eligible approved answers in scope.", "لا توجد إجابات معتمدة مؤهلة ضمن النطاق.")}</p>}
+        </div>
+      </section>
+
+      <section>
+        <h2 className={styles.overline}>{copy(locale, "Strategic intervention", "التدخل الاستراتيجي")}</h2>
+        <div className={styles.metricGrid}>
+          <MetricCard
+            question={copy(locale, "Which regulations generate the most violations?", "ما اللوائح التي تولد أكبر عدد من المخالفات؟")}
+            title={copy(locale, "Top violated regulation", "اللائحة الأكثر مخالفة")}
+            value={topViolation?.label ?? copy(locale, "Not available", "غير متاح")}
+            definition={copy(locale, "Count of violations grouped by regulation", "عدد المخالفات مجمعة حسب اللائحة")}
+            example={topViolation ? copy(locale, `${topViolation.value} linked violations in the current scope.`, `${topViolation.value} مخالفة مرتبطة ضمن النطاق الحالي.`) : copy(locale, "No regulation-linked violations in scope.", "لا توجد مخالفات مرتبطة بلوائح ضمن النطاق.")}
+            interpretation={copy(locale, "Only violations carrying a governed regulation relationship are counted.", "تُحتسب فقط المخالفات ذات العلاقة المعتمدة بلائحة.")}
+            href="/admin/regulations" action={copy(locale, "Open the regulation", "فتح اللائحة")}
+          />
+          <MetricCard
+            question={copy(locale, "Which factories require immediate intervention?", "ما المصانع التي تتطلب تدخلاً فورياً؟")}
+            title={copy(locale, "Critical factories requiring intervention", "المصانع الحرجة التي تتطلب التدخل")}
+            value={String(strategic.criticalFactories.length)}
+            definition={copy(locale, "Factories carrying a recorded high-risk band or active critical violation", "المصانع ذات نطاق مخاطر مرتفع مسجل أو مخالفة حرجة نشطة")}
+            example={copy(locale, `${strategic.criticalFactories.length} factories match the governed recorded conditions.`, `${strategic.criticalFactories.length} مصنعاً يطابق الشروط المسجلة المعتمدة.`)}
+            interpretation={copy(locale, "No substitute threshold is introduced by this screen.", "لا تضيف هذه الشاشة أي عتبة بديلة.")}
+            href="/factories" action={copy(locale, "Open Factory 360", "فتح المصنع 360")}
+          />
+          <MetricCard
+            question={copy(locale, "Which factories still require inspection this year?", "ما المصانع التي لا تزال تتطلب تفتيشاً هذا العام؟")}
+            title={copy(locale, "Factories pending annual inspection", "المصانع بانتظار التفتيش السنوي")}
+            value={copy(locale, "Not configured", "غير مهيأ")}
+            definition={copy(locale, "Active factories with no completed inspection in the governed inspection year", "المصانع النشطة دون تفتيش مكتمل في سنة التفتيش المعتمدة")}
+            example={copy(locale, `${factories.length} factories are visible, but the annual-cycle policy is not configured.`, `${factories.length} مصنعاً ظاهراً، لكن سياسة الدورة السنوية غير مهيأة.`)}
+            interpretation={copy(locale, "The screen withholds a count until the inspection-year policy is published.", "تحجب الشاشة العدد حتى نشر سياسة سنة التفتيش.")}
+            href="/planning" action={copy(locale, "Open Planning", "فتح التخطيط")}
+          />
+        </div>
+      </section>
+
+      <section className={styles.bottomGrid}>
+        <article className={styles.trendCard}>
+          <h2>{copy(locale, "Enforcement action trend", "اتجاه إجراءات الإنفاذ")}</h2>
+          <div className={styles.unavailable}>
+            <strong>{copy(locale, "Trend unavailable", "الاتجاه غير متاح")}</strong>
+            <p>{copy(locale, "The repository does not store a governed official violation issue date. No quarterly series is inferred.", "لا يخزن المستودع تاريخ إصدار رسمي معتمد للمخالفة. ولا تُستنتج سلسلة ربع سنوية.")}</p>
+          </div>
+          <a className={styles.action} href="/admin/violations">{copy(locale, "Open Enforcement Library", "فتح مكتبة الإنفاذ")}<span aria-hidden="true">→</span></a>
+        </article>
+        <article className={styles.aiCard}>
+          <span className={styles.aiLabel}>{copy(locale, "Executive AI brief", "موجز الذكاء الاصطناعي التنفيذي")}</span>
+          <h2>{copy(locale, "Provider output withheld", "تم حجب مخرجات المزود")}</h2>
+          <p>{copy(locale, "No generated claim is shown until a configured provider returns evidence-linked output for this scope.", "لا يُعرض أي ادعاء مولد حتى يعيد مزود مهيأ مخرجات مرتبطة بالأدلة لهذا النطاق.")}</p>
+          <span className={styles.provenance}>{copy(locale, "Authoritative dashboard records remain available.", "تظل سجلات لوحة القيادة المعتمدة متاحة.")}</span>
+        </article>
+      </section>
+    </div>
+  );
+}

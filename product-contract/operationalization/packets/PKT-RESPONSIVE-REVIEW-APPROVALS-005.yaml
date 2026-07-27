@@ -1,0 +1,89 @@
+schema_version: "1.0"
+packet_id: "PKT-RESPONSIVE-REVIEW-APPROVALS-005"
+task_id: "TASK-SAQEEL-RESPONSIVE-REVAMP-001"
+change_control_id: "CC-SAQEEL-RESPONSIVE-REVAMP-001"
+branch: "revamp/review-approvals"
+baseline: "cb9d1f73e3f647328112112357790786e423c424"
+state: "TECHNICAL_PASS_READY_FOR_REVIEW"
+authorized_by: "Vikram Indla / Product Owner"
+authorization_evidence: "Locked migration execution configuration plus explicit instruction that all approvals are granted and execution must continue."
+
+process_ids:
+  - "M5"
+requirements:
+  - "CR-357..CR-409"
+screens:
+  - "SAQEEL Review & Approval"
+routes:
+  - "/reviews"
+  - "/reviews/:id"
+  - "/reviews/:id/started"
+engines:
+  - "Review queue and assignment discovery"
+  - "Maker-checker review authority"
+  - "Approve, return and reject decision guards"
+  - "Compliance consequence preview"
+  - "Exact returned-section scope"
+  - "Immutable submission versions and reviewer comments"
+  - "Version comparison, audit and timeline"
+  - "Responsive shell, i18n, RTL and light/dark themes"
+
+acceptance:
+  - "WA-AC-0357..0409"
+  - "WA-M5-AC-001..006"
+  - "Review routes render in the canonical responsive shell at every mandated viewport."
+  - "Only the preserved Reviewer capability profile may claim or decide; navigation visibility never grants authority."
+  - "Planner, Inspector and non-review Administrator profiles receive a designed unauthorized or read-only state before protected review payloads or decision controls."
+  - "Opening a review remains read-only; claim and final decisions remain explicit audited actions."
+  - "Approve, return and reject confirmations preserve reason, exact scope, compliance consequence and immutable audit/version contracts."
+  - "Queue, workspace and version comparison preserve empty, degraded, stale, not-found and source-unavailable states without fabricated facts."
+  - "English/Arabic, LTR/RTL, light/dark, keyboard and accessibility behavior remain available."
+
+open_decisions:
+  - id: "ROLE-MIGRATION-REVIEWER"
+    disposition: "Reviewer maps to an Administrator capability profile only after RLS proof. Preserve the existing reviewer/ops authorization boundary in this vertical; do not grant generic Administrator decision authority."
+  - id: "REVIEWER-FIXTURE"
+    disposition: "Existing reviewer storage state may be used read-only. Do not bypass authentication or seed shared data if fresh reviewer login remains unavailable."
+
+dependencies:
+  - "PKT-RESPONSIVE-FOUNDATION-SHELL-001 at c78882a7"
+  - "PKT-RESPONSIVE-EXECUTION-FIELD-004 at cb9d1f73"
+  - "Existing development Supabase and excluded persona storage states"
+
+allowed_paths:
+  - "apps/web/src/app/(app)/reviews/**"
+  - "apps/web/e2e/cd-028-review-queue.spec.ts"
+  - "apps/web/e2e/cd-029-review-workspace.spec.ts"
+  - "apps/web/e2e/cd-030-version-comparison.spec.ts"
+  - "apps/web/e2e/responsive-review-approvals.spec.ts"
+  - "product-contract/operationalization/packets/PKT-RESPONSIVE-REVIEW-APPROVALS-005.yaml"
+  - "product-contract/evidence/PKT-RESPONSIVE-REVIEW-APPROVALS-005.md"
+
+prohibited:
+  - "Generic Administrator review-decision authority before admin/RBAC migration proof"
+  - "Compliance/enforcement, Factory 360, administration, Field or PWA product source"
+  - "Supabase migrations, RLS, RPCs, providers, shared data or production DDL"
+  - "Direct review/status mutation outside existing guarded actions"
+  - "Edits to immutable submission versions or reviewer comments"
+  - "Invented SLA, risk, legal, compliance, penalty or decision policy"
+  - "main or integration branch mutation"
+
+evidence:
+  - "Typecheck and production build"
+  - "Review queue, workspace, version, maker-checker and immutable-history protected contracts"
+  - "Authenticated Reviewer positive path where the existing fixture remains valid"
+  - "Planner, Inspector and Administrator negative/read-only paths"
+  - "EN/AR, LTR/RTL, light/dark responsive matrix"
+  - "No horizontal document overflow at every mandated width"
+  - "Accessibility, keyboard, stale/version and protected execution regression"
+
+rollback:
+  - "Revert the packet commit; database, workflow, review, audit and version contracts remain unchanged."
+  - "No destructive data or schema rollback is required."
+
+stop_conditions:
+  - "Any protected review payload read before authorization"
+  - "Any generic Administrator decision authority without the required capability/RLS proof"
+  - "Any weakening of maker-checker, audit, immutable version, exact return scope or decision confirmation"
+  - "Any invented review, compliance, SLA, risk or legal value"
+  - "Any P0/P1 focused or protected regression"

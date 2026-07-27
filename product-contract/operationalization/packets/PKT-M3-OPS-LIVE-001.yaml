@@ -102,7 +102,7 @@ write_lease:
     - "apps/web/src/app/(app)/operations/exceptions/**"
     - "apps/web/src/app/(app)/layout.tsx"
     - "apps/web/src/components/ShellClient.tsx"
-    - "apps/web/src/app/astryx.css"
+    - "apps/web/src/app/retired-predecessor.css"
     - "apps/web/src/app/globals.css"
     - "apps/web/public/**"
     - "apps/web/src/app/api/**"

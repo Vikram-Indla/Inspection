@@ -196,9 +196,9 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
         {unread > 0 && <span className="sq-notification__badge" aria-hidden="true">{unread > 99 ? "99+" : unread}</span>}
       </button>
       {open && popoverPos && typeof document !== "undefined" && createPortal(
-        <div ref={popoverRef} className="ax-popover" role="dialog" aria-label={strings.heading}
-          style={{ position: "fixed", top: popoverPos.top, left: popoverPos.left, right: popoverPos.right, inlineSize: 360, maxInlineSize: "80vw", zIndex: 30, display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between" }}>
+        <div ref={popoverRef} className="sq-popover" role="dialog" aria-label={strings.heading}
+          style={{ position: "fixed", top: popoverPos.top, left: popoverPos.left, right: popoverPos.right, inlineSize: 360, maxInlineSize: "80vw", zIndex: 30, display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+          <div className="sq-row" style={{ justifyContent: "space-between" }}>
             <strong>{strings.heading}</strong>
             {unread > 0 && <button className="sq-btn sq-btn--subtle" onClick={markAllRead}>{strings.markAll}</button>}
           </div>

@@ -119,7 +119,7 @@ Built and runtime-certified the 6 new module UI surfaces against staging:
   `risk_model_transition` RPC; `/cases` (M2-10); `/portal` (M2-08, internal view,
   ext-identity held); `/operations/exceptions` (M2-09 projection); `/committee` (M2-12);
   `/admin/gis/spatial` (M2-06). All flag-gated (OFF → honest NotYetBoundary), consuming
-  real RLS-scoped tables, with loading/empty/RLS-empty/error hard states, Astryx tokens.
+  real RLS-scoped tables, with loading/empty/RLS-empty/error hard states, retired predecessor tokens.
 - **Live journeys `mvp2-modules-live.spec.ts` — 15/15 PASS** (real persona auth vs staging):
   6 routes render live (flag on, RLS-scoped, hard state, no overflow) + **5 governed WRITES**
   persisted under live RLS — M2-04 risk draft (invalid weights refused, valid persisted),

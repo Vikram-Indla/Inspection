@@ -28,6 +28,7 @@ import OperationsMapWorkspace, {
 import OperationsScopeFilter from "./OperationsScopeFilter";
 import { resolveRegionId } from "@/lib/ksa-regions";
 import styles from "./operations.module.css";
+import RevampOperationsCenter from "./RevampOperationsCenter";
 
 // SCR-WEB-500 — Operations Center (SB12, M08). Read legs + write legs
 // (acknowledge/close corrective actions; mark notifications handled) +
@@ -101,7 +102,7 @@ const NOTIF_TONE: Record<string, string> = {
   failed: "sq-lozenge--critical",
 };
 
-// Active operational states → map pin tone (GeoMap resolves tones to ax tokens).
+// Active operational states → map pin tone (GeoMap resolves tones to legacy tokens).
 const ACTIVE_TONE: Record<string, GeoTone> = {
   on_the_way: "medium",
   arrived: "medium",
@@ -865,8 +866,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   ];
 
   return (
-    <Shell current="/operations" title={t("ops.title", "Operations Center")}
-      context={<span className="sq-lozenge sq-lozenge--info">{t("ops.context", "National inspection activity and decisions")}</span>}>
+    <Shell current="/operations" title="">
       {loadErrors.length > 0 && (
         <div className="sq-banner sq-banner--critical" role="alert"><div>
           <strong>{t("ops.err.partial", "Some information could not be loaded.")}</strong> {loadErrors.join(" · ")}.{" "}
@@ -885,390 +885,19 @@ export default async function Operations({ searchParams }: { searchParams: Promi
         </div></div>
       )}
 
-      <div className={styles.page}>
-        <nav className={styles.viewSwitch} aria-label={t("ops.views.label", local("Operations Center views", "عروض مركز العمليات"))}>
-          <a
-            className={`${styles.viewLink} ${view === "map" ? styles.viewLinkActive : ""}`}
-            href={mapViewHref}
-            data-next-spa="true"
-            aria-current={view === "map" ? "page" : undefined}
-          >
-            {t("ops.views.map", local("Operations Map", "خريطة العمليات"))}
-          </a>
-          <a
-            className={`${styles.viewLink} ${view === "performance" ? styles.viewLinkActive : ""}`}
-            href={performanceViewHref}
-            data-next-spa="true"
-            aria-current={view === "performance" ? "page" : undefined}
-          >
-            {t("ops.views.performance", local("National Performance", "الأداء الوطني"))}
-          </a>
-        </nav>
+      <RevampOperationsCenter
+        locale={locale}
+        view={view}
+        mapViewHref={mapViewHref}
+        performanceViewHref={performanceViewHref}
+        mapEntries={mapEntries}
+        mapStrings={mapWorkspaceStrings}
+        counts={counts}
+        monitoredCount={monitored.length}
+        highlights={highlights}
+        regions={regionSummaries}
+      />
 
-        <section aria-labelledby="operations-kpi-heading">
-          <div className={styles.sectionHead}>
-            <div>
-              <h3 id="operations-kpi-heading">{t("ops.kpi.heading", local("Operational position", "الموقف التشغيلي"))}</h3>
-              <p className="sq-caption">
-                {t("ops.kpi.scope", local("Current RLS-authorized region and city scope", "النطاق الحالي للمنطقة والمدينة المصرّح به عبر RLS"))}
-              </p>
-            </div>
-          </div>
-          <div className={styles.kpiGrid} data-testid="operations-kpi-grid">
-            <article className={styles.kpiCard}>
-              <div className={styles.kpiLabel}>{t("ops.kpi.activeVisits", local("Active Visits", "الزيارات النشطة"))}</div>
-              <div className={`${styles.kpiValue} sq-numeric`}>{monitored.length}</div>
-              <p className={styles.kpiNote}>{t("ops.kpi.activeNote", local("Published or actively executing", "منشورة أو قيد التنفيذ الفعلي"))}</p>
-            </article>
-            <article className={styles.kpiCard}>
-              <div className={styles.kpiLabel}>{t("ops.kpi.onTheWay", local("On the Way", "في الطريق"))}</div>
-              <div className={`${styles.kpiValue} sq-numeric`}>{counts.on_the_way}</div>
-              <p className={styles.kpiNote}>{t("ops.kpi.operationalState", local("Canonical operational state", "الحالة التشغيلية المعتمدة"))}</p>
-            </article>
-            <article className={styles.kpiCard}>
-              <div className={styles.kpiLabel}>{t("ops.kpi.executing", local("Executing", "قيد التنفيذ"))}</div>
-              <div className={`${styles.kpiValue} sq-numeric`}>{counts.executing}</div>
-              <p className={styles.kpiNote}>{t("ops.kpi.operationalState", local("Canonical operational state", "الحالة التشغيلية المعتمدة"))}</p>
-            </article>
-            <article className={styles.kpiCard}>
-              <div className={styles.kpiLabel}>{t("ops.kpi.submittedToday", local("Submitted Today", "المقدّم اليوم"))}</div>
-              <div className={styles.kpiValue}>
-                {t("ops.kpi.unavailable", local("Unavailable — decision required", "غير متاح — يتطلب قراراً"))}
-              </div>
-              <p className={styles.kpiNote}>{t("ops.kpi.submittedDecision", local(
-                "Grain, source and Riyadh day boundary require sponsor decision",
-                "يتطلب مستوى التفصيل والمصدر وحدّ يوم الرياض قرار الراعي",
-              ))}</p>
-            </article>
-            <article className={styles.kpiCard}>
-              <div className={styles.kpiLabel}>{t("ops.kpi.activeAlerts", local("Active Alerts", "التنبيهات النشطة"))}</div>
-              <div className={styles.kpiValue}>
-                {t("ops.kpi.unavailable", local("Unavailable — decision required", "غير متاح — يتطلب قراراً"))}
-              </div>
-              <p className={styles.kpiNote}>{t("ops.kpi.alertDecision", local(
-                "Taxonomy and deduplication require sponsor decision",
-                "يتطلب التصنيف وإزالة التكرار قرار الراعي",
-              ))}</p>
-            </article>
-          </div>
-          <p className={styles.decisionContext}>
-            <span>{t("ops.kpi.submittedContext", "Submitted Today: distinct visits vs inspections vs versions remains open.")}</span>
-            <span>
-              {t("ops.kpi.alertContext", "Alert source context:")}{" "}
-              <a className="sq-link" href={performanceAnchor("deadline-alerts")}>{t("ops.kpi.slaBreaches", "SLA breaches")} <span className="sq-numeric">{slaFlags.length}</span></a>{" · "}
-              <a className="sq-link" href={performanceAnchor("corrective-actions")}>{t("ops.kpi.actionsOverdue", "actions overdue")} <span className="sq-numeric">{overdueActions.length}</span></a>{" · "}
-              <a className="sq-link" href={performanceAnchor("notifications")}>{t("ops.kpi.notificationsFailed", "notifications failed")} <span className="sq-numeric">{failedNotifications.length}</span></a>{" · "}
-              <a className="sq-link" href="#geo-override-queue-heading">{t("ops.kpi.overridesPending", "overrides pending")} <span className="sq-numeric">{overrideQueueRows.length}</span></a>
-            </span>
-          </p>
-        </section>
-
-        <section className="sq-surface" style={{ padding: "var(--space-4) var(--space-6)" }} aria-label={t("ops.filter.heading", "Geographic scope")}>
-          <OperationsScopeFilter
-            view={view}
-            region={region}
-            city={city}
-            regions={regions}
-            cities={cities}
-            labels={{
-              region: monitoringStrings.regionLabel,
-              city: monitoringStrings.cityLabel,
-              allRegions: monitoringStrings.allRegions,
-              allCities: monitoringStrings.allCities,
-            }}
-          />
-        </section>
-
-        <OverrideQueue rows={overrideQueueRows} strings={overrideQueueStrings} locale={locale} />
-        <CancellationQueue rows={cancellationQueueRows} strings={cancellationQueueStrings} locale={locale} />
-
-        <section className="sq-surface" style={{ padding: "var(--space-4) var(--space-6)" }}>
-          <OpsExport datasets={exportDatasets} strings={exportStrings} />
-        </section>
-
-        {view === "map" ? (
-          <>
-            <section className="sq-surface" style={{ padding: "var(--space-6)" }} aria-labelledby="operations-map-heading">
-              <div className={styles.sectionHead}>
-                <div>
-                  <h3 id="operations-map-heading">{t("ops.map.heading", "Operations Map")}</h3>
-                  <p className="sq-caption">
-                    {t("ops.map.truth", "Official factory coordinates and canonical visit states · markers and status only")}
-                  </p>
-                </div>
-                <a className="sq-link" href="/operations/live">{t("ops.map.liveLink", "Open Operations Live")}</a>
-              </div>
-              <OperationsMapWorkspace
-                entries={mapEntries}
-                strings={mapWorkspaceStrings}
-              />
-            </section>
-
-            <section className="sq-surface" style={{ padding: "var(--space-6)" }} aria-labelledby="operational-highlights-heading">
-              <div className={styles.sectionHead}>
-                <div>
-                  <h3 id="operational-highlights-heading">{t("ops.highlights.heading", "Operational Highlights")}</h3>
-                  <p className="sq-caption">{t("ops.highlights.deterministic", "Deterministic operational records · no AI recommendation")}</p>
-                </div>
-                <a className="sq-link" href={performanceViewHref}>{t("ops.highlights.performance", "Review National Performance")}</a>
-              </div>
-              {highlights.length === 0 ? (
-                <EmptyState
-                  bare
-                  glyph="✓"
-                  title={t("ops.highlights.empty.title", "No open items in scope")}
-                  body={t("ops.highlights.empty.body", "Deadline, decision, corrective-action and notification records will appear here.")}
-                />
-              ) : (
-                <ul className={styles.highlightList}>
-                  {highlights.slice(0, 8).map(item => (
-                    <li className={styles.highlightItem} key={item.id}>
-                      <div>
-                        <strong>{item.label}</strong>
-                        <div>{item.description}</div>
-                        <span className={styles.highlightMeta}>{item.at ? fmtTs(item.at) : "—"}</span>
-                      </div>
-                      <div className="sq-row" style={{ flexWrap: "wrap", justifyContent: "flex-end" }}>
-                        {item.evidenceUrl && (
-                          <a className="sq-link" href={item.evidenceUrl} target="_blank" rel="noreferrer">
-                            {t("ops.highlights.evidence", "View evidence")}
-                          </a>
-                        )}
-                        <a className="sq-link" href={item.href}>{t("ops.highlights.open", "Open record")}</a>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-
-            <section className="sq-surface" style={{ padding: "var(--space-6)" }} aria-labelledby="operations-monitoring-heading">
-              <h3 id="operations-monitoring-heading">{t("ops.live.heading", "Live visit monitoring (M08-003)")}</h3>
-              <MonitoringTable
-                initialRows={monitorRows}
-                initialAt={nowIso}
-                region={region}
-                city={city}
-                enumLabels={enumLabels}
-                strings={monitoringStrings}
-              />
-            </section>
-          </>
-        ) : (
-          <>
-            <section className="sq-surface" style={{ padding: "var(--space-6)" }} aria-labelledby="regional-performance-heading">
-              <div className={styles.sectionHead}>
-                <div>
-                  <h3 id="regional-performance-heading">{t("ops.performance.regions", "National → region drill")}</h3>
-                  <p className="sq-caption">{t("ops.performance.regionTruth", "Factory and active-visit counts use the same RLS-scoped records as the map.")}</p>
-                </div>
-                {region && <a className="sq-link" href="/operations?view=performance">{t("ops.performance.national", "Return to national scope")}</a>}
-              </div>
-              {regionSummaries.length === 0 ? (
-                <EmptyState bare title={t("ops.performance.emptyRegions", "No regions in scope")} body={t("ops.performance.emptyRegionsBody", "Authorized factories will appear here when region data is available.")} />
-              ) : (
-                <ul className={styles.regionList}>
-                  {regionSummaries.map(item => (
-                    <li className={styles.regionItem} key={item.name}>
-                      <div>
-                        <strong>{item.name}</strong>
-                        <div className="sq-caption">
-                          <span className="sq-numeric">{item.factories}</span> {t("ops.performance.factories", "factories")} ·{" "}
-                          <span className="sq-numeric">{item.active}</span> {t("ops.performance.activeVisits", "active visits")}
-                        </div>
-                      </div>
-                      <a className="sq-link" href={item.href}>{t("ops.performance.openRegion", "Open region")}</a>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <div style={{ marginBlockStart: "var(--space-5)" }}>
-                <div className={styles.sectionHead}>
-                  <div>
-                    <h4>{t("ops.performance.map", "Regional performance map")}</h4>
-                    <p className="sq-caption">
-                      {t("ops.performance.mapTruth", "Neutral factory markers · select from the map or synchronized factory list")}
-                    </p>
-                  </div>
-                </div>
-                <OperationsMapWorkspace
-                  entries={regionalMapEntries}
-                  strings={mapWorkspaceStrings}
-                />
-              </div>
-            </section>
-
-            <div className="sq-grid-2">
-        <div className="sq-stack">
-          {/* Visit monitoring — M08-003 request-time snapshot */}
-          <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
-            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.live.heading", "Live visit monitoring (M08-003)")}</h4>
-            <MonitoringTable initialRows={monitorRows} initialAt={nowIso} region={region} city={city}
-              enumLabels={enumLabels} strings={monitoringStrings} />
-          </div>
-
-          {/* SLA watch — ENG-09 thresholds vs live visit windows */}
-          <div id="deadline-alerts" className="sq-surface" style={{ padding: "var(--space-6)" }}>
-            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.sla.heading", "Deadline alerts")}</h4>
-            {slaFlags.length === 0 ? (
-              <EmptyState bare glyph="✓" title={t("ops.sla.empty.title", "No deadline alerts in scope")}
-                body={t("ops.sla.empty.desc", "Published visits are inside their planned windows; breaches surface here the moment a window lapses.")} />
-            ) : (
-              <div className="sq-tablewrap"><table className="sq-table">
-                <thead><tr><th scope="col">{t("ops.sla.th.visit", "Visit")}</th><th scope="col">{t("ops.sla.th.factory", "Factory")}</th><th scope="col">{t("ops.sla.th.operational", "Visit status")}</th><th scope="col">{t("ops.sla.th.deadline", "Deadline")}</th><th scope="col">{t("ops.sla.th.sla", "Deadline status")}</th><th scope="col">{t("ops.sla.th.escalation", "Escalation")}</th></tr></thead>
-                <tbody>{slaFlags.map(f => (
-                  <tr key={f.visit.id}>
-                    <td><a className="sq-link" href={`/visits/${f.visit.id}`}>{f.visit.id.slice(0, 8)}</a></td>
-                    <td>{f.visit.factories
-                      ? <a className="sq-link" href={`/factories/${f.visit.factories.id}`}>{f.visit.factories.name}</a>
-                      : "—"}</td>
-                    <td><span className="sq-lozenge sq-lozenge--ops">{enumLabel(f.visit.operational_state)}</span></td>
-                    <td><span className="sq-numeric">{fmtTs(f.deadlineMs)}</span></td>
-                    <td><span className={`sq-lozenge ${f.kind === "reminder" ? "sq-lozenge--warning" : "sq-lozenge--critical"}`}>{slaKindLabel(f)}</span></td>
-                    <td>{f.escalation
-                      ? <span className={`sq-lozenge ${f.escalation === "L2" ? "sq-lozenge--critical" : "sq-lozenge--warning"}`}>{f.escalation}</span>
-                      : <span className="sq-caption">—</span>}</td>
-                  </tr>
-                ))}</tbody>
-              </table></div>
-            )}
-            {/* Phase 6 (§22, D-022) — resubmission SLA for returned inspections.
-                Display-only flag, consistent with the review SLA: no escalation
-                writes; absent config surfaces honestly as unavailable. */}
-            <h5 style={{ marginBlock: "var(--space-4) var(--space-3)" }}>{t("ops.sla.resubHeading", "Resubmission deadlines (returned inspections)")}</h5>
-            {!resubSlaAvailable ? (
-              <p className="sq-caption">{t("ops.sla.resubUnavailable", "SLA unavailable — engine_settings.sla.resubmission_business_days is not configured.")}</p>
-            ) : resubFlags.length === 0 ? (
-              <p className="sq-caption">{t("ops.sla.resubEmpty", "No returned inspections awaiting resubmission in scope.")}</p>
-            ) : (
-              <div className="sq-tablewrap"><table className="sq-table">
-                <thead><tr><th scope="col">{t("ops.sla.resub.th.inspection", "Inspection")}</th><th scope="col">{t("ops.sla.th.factory", "Factory")}</th><th scope="col">{t("ops.sla.resub.th.returned", "Returned")}</th><th scope="col">{t("ops.sla.resub.th.due", "Resubmission due")}</th><th scope="col">{t("ops.sla.th.sla", "Deadline status")}</th></tr></thead>
-                <tbody>{resubFlags.map(f => (
-                  <tr key={f.inspection_id}>
-                    <td><a className="sq-link" href={`/reviews/${f.inspection_id}`}>{f.inspection_id.slice(0, 8)}</a></td>
-                    <td>{f.factory_name ?? "—"}</td>
-                    <td><span className="sq-numeric">{fmtTs(Date.parse(f.returned_at))}</span></td>
-                    <td><span className="sq-numeric">{fmtTs(f.deadlineMs)}</span></td>
-                    <td><span className={`sq-lozenge ${f.overdue ? "sq-lozenge--critical" : "sq-lozenge--warning"}`}>
-                      {f.overdue ? t("ops.sla.resubOverdue", "Resubmission overdue") : t("ops.sla.resubDue", "Resubmission pending")}
-                    </span></td>
-                  </tr>
-                ))}</tbody>
-              </table></div>
-            )}
-            <p className="sq-caption" style={{ marginBlockStart: "var(--space-3)" }}>
-              {t("ops.sla.confNote", "Thresholds from engine_settings (ENG-09):")}{" "}
-              {t("ops.sla.confCalendar", "calendar")} <span className="sq-numeric">{slaConf.calendar?.days ?? "—"} {slaConf.calendar?.hours ?? ""}</span> ·{" "}
-              {t("ops.sla.confReview", "review")} <span className="sq-numeric">{slaConf.review_business_days ?? "—"}</span>{t("ops.sla.confBd", "bd")} ·{" "}
-              {t("ops.sla.confResub", "resubmission")} <span className="sq-numeric">{slaConf.resubmission_business_days ?? "—"}</span>{t("ops.sla.confBd", "bd")} ·{" "}
-              {t("ops.sla.confAction", "action due")} <span className="sq-numeric">{slaConf.action_due_calendar_days ?? "—"}</span>{t("ops.sla.confDays", "d")} ·{" "}
-              {t("ops.sla.confReminders", "reminders at")} <span className="sq-numeric">{(slaConf.reminders ?? []).map(r => `${Math.round(r * 100)}%`).join(", ") || "—"}</span>
-            </p>
-          </div>
-
-          {/* Corrective actions queue — SB12 write leg */}
-          <div id="corrective-actions" className="sq-surface" style={{ padding: "var(--space-6)" }}>
-            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.actions.heading", "Corrective actions queue (M09-027 · ENG-11)")}</h4>
-            {actions.length === 0 ? (
-              <EmptyState bare glyph="✓" title={t("ops.actions.empty.title", "No open corrective actions")}
-                body={t("ops.actions.empty.desc", "Action forms raised from violations land here until closed (FLD-ACT-001).")} />
-            ) : (
-              <div className="sq-tablewrap"><table className="sq-table">
-                <thead><tr><th scope="col">{t("ops.actions.th.factory", "Factory")}</th><th scope="col">{t("ops.actions.th.owner", "Owner")}</th><th scope="col">{t("ops.actions.th.due", "Due")}</th><th scope="col">{t("ops.actions.th.blocking", "Blocking")}</th><th scope="col">{t("ops.actions.th.status", "Status")}</th><th scope="col">{t("ops.actions.th.resolve", "Resolve")}</th></tr></thead>
-                <tbody>{actions.map(a => {
-                  const overdue = a.due_at ? new Date(a.due_at).getTime() < now : false;
-                  const factory = a.inspections?.visits?.factories ?? null;
-                  return (
-                    <tr key={a.id}>
-                      <td>{factory
-                        ? <a className="sq-link" href={`/factories/${factory.id}`}>{factory.name}</a>
-                        : "—"}<br />
-                        {a.inspections?.visit_id && <a className="sq-link sq-caption" href={`/visits/${a.inspections.visit_id}`}>{visitWord} {a.inspections.visit_id.slice(0, 8)}</a>}</td>
-                      <td>{localePersonName(a.owner_name) ?? "—"}{a.owner_role && <span className="sq-caption"> · {a.owner_role}</span>}</td>
-                      <td>{a.due_at
-                        ? <span className={overdue ? "sq-lozenge sq-lozenge--critical" : "sq-numeric"}>{formatDate(a.due_at, locale === "ar" ? "ar" : "en")}{overdue ? ` ${t("ops.actions.overdue", "overdue")}` : ""}</span>
-                        : "—"}</td>
-                      <td>{a.is_blocking ? <span className="sq-lozenge sq-lozenge--critical">{t("ops.actions.blocking", "blocking")}</span> : <span className="sq-lozenge">{t("ops.actions.advisory", "advisory")}</span>}</td>
-                      <td><span className={`sq-lozenge ${a.status === "acknowledged" ? "sq-lozenge--info" : "sq-lozenge--warning"}`}>{enumLabel(a.status)}</span></td>
-                      <td><ActionFormControls actionFormId={a.id} status={a.status} strings={actionControlStrings} /></td>
-                    </tr>
-                  );
-                })}</tbody>
-              </table></div>
-            )}
-          </div>
-        </div>
-
-        <div className="sq-stack">
-          {/* High-risk factory board — M08-006 (ENG-04 output) */}
-          <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
-            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.risk.heading", "High-risk factories (M08-006 · ENG-04)")}</h4>
-            {highRisk.length === 0 ? (
-              <EmptyState bare glyph="◎" title={t("ops.risk.empty.title", "No scored factories yet")}
-                body={t("ops.risk.empty.desc", "Factories appear here once the risk engine records a score (FLD-FACT-007/008).")} />
-            ) : (
-              <div className="sq-tablewrap"><table className="sq-table">
-                <thead><tr><th scope="col">{t("ops.risk.th.factory", "Factory")}</th><th scope="col">{t("ops.risk.th.location", "Location")}</th><th scope="col">{t("ops.risk.th.score", "Score")}</th><th scope="col">{t("ops.risk.th.rank", "RLS-visible rank")}</th></tr></thead>
-                <tbody>{highRisk.map((f, index) => (
-                  <tr key={f.id}>
-                    <td><a className="sq-link" href={`/factories/${f.id}`}>{f.name}</a>
-                      {f.activity_class && <><br /><span className="sq-caption">{f.activity_class}</span></>}</td>
-                    <td className="sq-caption">{[f.region, f.city].filter(Boolean).join(" · ") || "—"}</td>
-                    <td><span className="sq-numeric">{f.risk_score}</span></td>
-                    <td><span className="sq-lozenge sq-numeric">{index + 1} / {highRisk.length}</span></td>
-                  </tr>
-                ))}</tbody>
-              </table></div>
-            )}
-          </div>
-
-          {/* Location events — M08-014 immutable */}
-          <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
-            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.geo.heading", "Location events — immutable tracking history (M08-014)")}</h4>
-            {scopedGeo.length === 0 ? (
-              <EmptyState bare icon={<IconPin size={28} />} title={t("ops.geo.empty.title", "No location events yet")}
-                body={t("ops.geo.empty.desc", "Check-ins, arrivals and telemetry are recorded append-only (FLD-GEO-*).")} />
-            ) : (
-              <ul className="sq-timeline">{scopedGeo.slice(0, 10).map(g => (
-                <li key={g.id} className={g.kind === "checkin" ? "is-key" : undefined}>
-                  <div><strong>{enumLabel(g.kind)}</strong> ±{g.accuracy_m}m{" "}
-                    {g.geofence_result && <span className={`sq-lozenge ${g.geofence_result === "inside" ? "sq-lozenge--success" : g.geofence_result === "override" ? "sq-lozenge--warning" : "sq-lozenge--critical"}`}>{enumLabel(g.geofence_result)}</span>}{" "}
-                    <a className="sq-link sq-caption" href={`/visits/${g.visit_id}`}>{visitWord} {g.visit_id.slice(0, 8)}</a><br />
-                    <span className="sq-timeline__meta sq-numeric">{fmtTs(new Date(g.occurred_at).getTime())}</span></div>
-                </li>
-              ))}</ul>
-            )}
-          </div>
-
-          {/* Notifications — ENG-11 */}
-          <div id="notifications" className="sq-surface" style={{ padding: "var(--space-6)" }}>
-            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.notifs.heading", "Notifications (ENG-11 · REF-014)")}</h4>
-            {notifs.length === 0 ? (
-              <EmptyState bare icon={<IconBell size={28} />} title={t("ops.notifs.empty.title", "No notifications")}
-                body={t("ops.notifs.empty.desc", "Event-keyed messages queue here as workflow events fire (REF-014).")} />
-            ) : (
-              <div className="sq-tablewrap"><table className="sq-table">
-                <thead><tr><th scope="col">{t("ops.notifs.th.event", "Event")}</th><th scope="col">{t("ops.notifs.th.channel", "Channel")}</th><th scope="col">{t("ops.notifs.th.state", "State")}</th><th scope="col">{t("ops.notifs.th.at", "At")}</th><th scope="col"></th></tr></thead>
-                <tbody>{notifs.map(n => (
-                  <tr key={n.id}>
-                    <td><span className="sq-lozenge sq-lozenge--info">{n.event_key}</span></td>
-                    <td className="sq-caption">{n.channel}</td>
-                    <td><span className={`sq-lozenge ${NOTIF_TONE[n.delivery_state] ?? ""}`}>{enumLabel(n.delivery_state)}</span></td>
-                    <td><span className="sq-numeric">{fmtTs(new Date(n.created_at).getTime())}</span></td>
-                    <td>{n.delivery_state !== "handled" && <MarkNotificationHandled notificationId={n.id} strings={markHandledStrings} />}</td>
-                  </tr>
-                ))}</tbody>
-              </table></div>
-            )}
-            <p className="sq-caption" style={{ marginBlockStart: "var(--space-3)" }}>
-              {t("ops.notifs.rlsNote", "Notification reads and mark-handled updates are recipient/Operations scoped by separate RLS policies; the database verdict remains authoritative.")}
-            </p>
-          </div>
-        </div>
-      </div>
-          </>
-        )}
-      </div>
     </Shell>
   );
 }

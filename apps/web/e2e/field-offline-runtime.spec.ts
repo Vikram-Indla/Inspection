@@ -10,8 +10,22 @@ test.use({
   trace: "off",
 });
 
-test("MVP1-FND-005 — the field shell automatically registers and is controlled by the service worker", async ({ page }) => {
+async function waitForControlledFieldShell(page: import("@playwright/test").Page) {
   await page.goto("/field");
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready;
+    if (navigator.serviceWorker.controller) return;
+    await new Promise<void>((resolve) => {
+      navigator.serviceWorker.addEventListener("controllerchange", () => resolve(), { once: true });
+    });
+  });
+  // Exercise one controlled online navigation so the exact authenticated
+  // response is present before the network is removed.
+  await page.reload({ waitUntil: "domcontentloaded" });
+}
+
+test("MVP1-FND-005 — the field shell automatically registers and is controlled by the service worker", async ({ page }) => {
+  await waitForControlledFieldShell(page);
   const worker = await page.evaluate(async () => {
     const registrations = await navigator.serviceWorker.getRegistrations();
     return {
@@ -29,7 +43,7 @@ test("MVP1-FND-005 — the field shell automatically registers and is controlled
 });
 
 test("MVP1-FND-005 — a previously loaded field shell reloads with the network cut", async ({ page, context }) => {
-  await page.goto("/field");
+  await waitForControlledFieldShell(page);
   await expect(page.locator("body")).not.toBeEmpty();
 
   await context.setOffline(true);

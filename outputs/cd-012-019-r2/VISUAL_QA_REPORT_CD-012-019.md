@@ -4,7 +4,7 @@ Method: 144-render smoke test (ALL PASS); 48 captured frames reviewed; token-lev
 saqeel-tokens.css (both themes are separately tuned palettes, not inversions).
 
 ## Dark theme
-- Body text on panel surfaces uses --ax-color-text on --ax-color-surface (AA large+normal per token spec).
+- Body text on panel surfaces uses --legacy-color-text on --legacy-color-surface (AA large+normal per token spec).
 - Status lozenges pair glyph+text; RAG tints keep ≥3:1 against surface; focus ring is the 2px token ring.
 - Disabled actions use aria-disabled + reduced opacity ≥ .55 with text ≥ 4.5:1 retained on labels.
 ## Light theme
@@ -23,7 +23,7 @@ saqeel-tokens.css (both themes are separately tuned palettes, not inversions).
 - Skip link first; commandbar → content order; expanded/detail content follows its trigger in DOM;
   non-executable lanes remove buttons from tab order (tabindex=-1 + aria-disabled).
 ## Reduced motion
-- Only motion is skeleton shimmer + sync pulse from Astryx tokens; both disabled under
+- Only motion is skeleton shimmer + sync pulse from retired predecessor tokens; both disabled under
   prefers-reduced-motion (token sheet rule).
 ## Known limitations (declared)
 - Raster contrast measured against token definitions and visual review, not an automated axe run —

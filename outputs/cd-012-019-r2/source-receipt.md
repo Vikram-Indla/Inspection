@@ -18,7 +18,7 @@
 | CD-017 /admin/access | Reads profiles + user roles + role records; READ-ONLY; no change workflow, no enabled matrix editor | STATED_BY_CORRECTION |
 | CD-018 /admin/localization | ui_strings: load, save translation, mark reviewed, add key, sync from code, history, restore-as-draft; real draft/review + RLS | STATED_BY_CORRECTION |
 | CD-019 /admin/audit | Append-only audit_events reader: filters, pagination, RLS scope, before/after JSON; no totals/reveal/export/receipts/hash-chain | STATED_BY_CORRECTION |
-| Shell/tokens | Shell.tsx, ShellClient.tsx, shell-navigation.ts, astryx.css + DEC-011 tokens consumed verbatim (frozen) | STATED_BY_CONTRACT (SHELL-V3) |
+| Shell/tokens | Shell.tsx, ShellClient.tsx, shell-navigation.ts, retired-predecessor.css + DEC-011 tokens consumed verbatim (frozen) | STATED_BY_CONTRACT (SHELL-V3) |
 
 Sources mandated for Codex discovery (must be opened + cited): AGENTS.md; product-contract start/current/gate/decisions; screen catalogue; acceptance matrix; FABLE ledgers (493/478); design authority + UI baseline; admin/workflows/{page,actions,Controls}.tsx; admin/risk/{page,actions}; admin/gis/{page,GisStudio,actions}; admin/access/page.tsx; admin/localization/{page,Manager,actions}; admin/audit/page.tsx; migrations/RLS; decisions DEC-001/002/003/004/007/008/011.
 

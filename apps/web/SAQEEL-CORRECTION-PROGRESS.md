@@ -24,14 +24,14 @@ Trusted Devices, Incident Reports, Map, Factory-360 resolver (**fallback, this p
 Remaining 2 = the inspection EXECUTION flow, still on old Shell:
 - `/field/[visitId]` (Startup + PreExecution)
 - `/field/inspection/[id]` (Workspace + FactoryVerification)
-These drive the immutable-submit state machine and mix ax-*/DS classes in heavy
+These drive the immutable-submit state machine and mix sq-*/DS classes in heavy
 client components. Pixel-to-pixel here means porting the Inspection Form / Visit
 Results / OCR Capture / Reports designs INTO those components — a dedicated,
 state-machine-careful pass (presentation only, zero transition/guard changes),
 deferred per the plan rather than rushed. Not marked done on a wrapper swap.
 
 ## Field Dashboard redesign + execution-flow DS + Arabic AI briefing (2026-07-23)
-- **Execution flow → DS** (4 parallel agents, presentation-only, state machine untouched, all tsc-clean, zero ax-/bare-color): `[visitId]/Startup.tsx`+`page.tsx`, `[visitId]/PreExecution.tsx`, `inspection/[id]/Workspace.tsx`+`page.tsx`, `inspection/[id]/FactoryVerification.tsx`+`SignaturePad.tsx`. NOTE: agents used the converted-screen DS idiom, not a strict per-`.dc.html` pixel match — needs a stricter pixel pass + live inspection-journey verification.
+- **Execution flow → DS** (4 parallel agents, presentation-only, state machine untouched, all tsc-clean, zero sq-/bare-color): `[visitId]/Startup.tsx`+`page.tsx`, `[visitId]/PreExecution.tsx`, `inspection/[id]/Workspace.tsx`+`page.tsx`, `inspection/[id]/FactoryVerification.tsx`+`SignaturePad.tsx`. NOTE: agents used the converted-screen DS idiom, not a strict per-`.dc.html` pixel match — needs a stricter pixel pass + live inspection-journey verification.
 - **Dashboard rebuilt** to SAQEEL Field Dashboard.dc.html: header (date pill, live Online pill, Sync-Now, Feedback, search, notifications), AI Daily Brief (mission + 4 real stats + honest "start here" recommendation), 2-col map + factory preview, Today's Schedule, Pending Attention (Returned/Drafts/Expired — real counts), Operational Insight strip (real, Daily Progress = completed÷today), Quick Actions rail. Ungoverned design values OMITTED per decision (Health Score, Est. Finish Time, SLA window, distance). Bottom nav kept at 5 tabs (Factory 360 stays contextual).
 - **FieldHeaderSync** client island — real offline.ts wiring (navigator.onLine pill + processOutbox Sync-Now + real outbox pending count).
 - **Arabic AI briefing** (user: everything Arabic in Arabic profile): `getOrGenerateBriefing`/`generateContextual` now locale-aware. Language directive injected INTO the Gemini prompt (context-JSON field was ignored). Dual-language cache stored as `{en,ar}` JSON in the existing `briefing_text` (no migration); self-heals a wrong-script cached entry; generates only the requested locale synchronously (other lazily). Verified: brief renders real Arabic in the Arabic profile.

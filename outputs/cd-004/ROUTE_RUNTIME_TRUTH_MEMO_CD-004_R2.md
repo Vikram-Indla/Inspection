@@ -32,4 +32,4 @@ regulations "last updated" date · "ENG-05 · v2026.07.11" as an engine key · w
 See DATA_TRUTH_LEDGER rows marked proposed: per-family last-mutation provenance, package latest-version label, draft-queue count. Each names table/columns/filter/RLS/error contract/test/audit implications; none appears in a frame.
 
 ## Fonts / reproducibility (P2)
-Capture fonts: Google-hosted Space Grotesk, IBM Plex Sans Arabic, JetBrains Mono. Offline fallback documented per image in EVIDENCE_MANIFEST: system-ui sans + monospace; layout tolerances noted.
+Capture fonts: Google-hosted retired input font, IBM Plex Sans Arabic, retired mono font. Offline fallback documented per image in EVIDENCE_MANIFEST: system-ui sans + monospace; layout tolerances noted.

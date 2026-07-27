@@ -3,14 +3,14 @@
 ## Coverage model
 Two layers of coverage exist and must not be conflated:
 
-1. **Cascaded coverage** (token + `astryx.css` component fixes) — applies automatically to *every* page that uses the shared component library, since it's one CSS entry point. This means the dark-primary color fix, label/action typography fix, loading-button fix, and search-icon fix are live on all ~80 routes right now, verified by the production build succeeding and the served CSS containing the new token values (see IMPLEMENTATION-INDEX.md verification section).
+1. **Cascaded coverage** (token + `retired-predecessor.css` component fixes) — applies automatically to *every* page that uses the shared component library, since it's one CSS entry point. This means the dark-primary color fix, label/action typography fix, loading-button fix, and search-icon fix are live on all ~80 routes right now, verified by the production build succeeding and the served CSS containing the new token values (see IMPLEMENTATION-INDEX.md verification section).
 2. **Per-page structural coverage** (date formatting, action hierarchy, density, shell) — only applies to the specific files touched.
 
 ## Per-page structural coverage (this session)
 
 | Route | Cascaded (tokens/CSS) | Date service | Notes |
 |---|---|---|---|
-| All ~80 routes | ✅ | — | Via `tokens.css` + `astryx.css`. |
+| All ~80 routes | ✅ | — | Via `tokens.css` + `retired-predecessor.css`. |
 | `/reports/inspection/[id]` | ✅ | ✅ | Official report `dt()`/`d10()` fixed — highest-priority per spec (§7). |
 | `/dashboard` | ✅ | ✅ | Refresh timestamp, GPS-override and audit-timeline columns. |
 | `/factories/[id]` | ✅ | ✅ | 14 sites; legacy factory dossier. |

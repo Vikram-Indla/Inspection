@@ -46,36 +46,34 @@ test.describe("Web/Admin F0 source and security contract", () => {
     expect(search).not.toMatch(/service[_-]?role/i);
     expect(css).toContain(".btn-touch");
     expect(css).toContain(".btn-field");
-    expect(css).toContain("current .ax-state and SAQEEL component contracts remain");
+    expect(css).toContain("current .sq-state and SAQEEL component contracts remain");
   });
 
   test("sponsor shell correction renders the WA-BRAND-r1 wordmark and favicon lockup", () => {
     const layout = read("src/app/layout.tsx");
     const shell = read("src/components/ShellClient.tsx");
-    const css = read("src/app/astryx.css");
+    const css = read("src/app/saqeel-runtime.css");
     const favicon = read("public/saqeel-favicon.svg");
     const darkWordmark = read("public/saqeel-wordmark-dark-mode.svg");
     const lightWordmark = read("public/saqeel-wordmark-light-mode.svg");
 
     expect(layout).toContain('/saqeel-favicon.svg');
     expect(layout).not.toContain('/saqeel-prism.svg');
-    expect(layout).toContain('import "./astryx.css"');
-    expect(shell).toContain("ax-shell");
-    expect(css).toContain(".ax-shell {");
+    expect(layout).toContain('import "./saqeel-runtime.css"');
+    expect(shell).toContain("sq-shell");
+    expect(css).toContain(".sq-shell {");
     // WA-BRAND-r1 (O-26): the split صقيل / صناعي text lockup is retired. The rail
     // renders the wordmark asset expanded and the favicon mark collapsed.
-    expect(shell).toContain('src="/saqeel-wordmark-dark-mode.svg"');
     expect(shell).toContain('src="/saqeel-favicon.svg"');
-    expect(shell).toContain('alt="SAQEEL | \u0635\u0642\u064a\u0644"');
-    expect(shell).not.toContain('ax-shell__brand-sub');
+    expect(shell).toContain('<span className="sq-shell__brand-ar" lang="ar">\u0635\u0642\u064a\u0644</span>');
+    expect(shell).toContain('<span className="sq-shell__brand-en" lang="en">SAQEEL</span>');
+    expect(shell).not.toContain('sq-shell__brand-sub');
     expect(shell).not.toContain('\u0635\u0646\u0627\u0639\u064a');
     // Sizes are the design authority's, not invented: saqeel/components.css
     // ships a 22px-cap wordmark and a 26px favicon.
-    expect(css).toContain('.ax-shell__brand-lockup { display: block; block-size: 22px; inline-size: auto;');
-    expect(css).toContain('.ax-shell__brand-mark { display: none; inline-size: 26px; block-size: 26px;');
-    expect(css).toContain('.ax-shell.is-collapsed .ax-shell__brand-mark { display: block; }');
-    expect(css).toContain('.ax-shell.is-collapsed .ax-shell__brand-lockup { display: none; }');
-    expect(css).toContain('.ax-shell.is-collapsed .ax-nav-item--child { display: none; }');
+    expect(css).toContain('.sq-shell__brand-mark img { display: block; inline-size: 22px; block-size: 22px; }');
+    expect(css).toContain('.sq-shell.is-collapsed .sq-shell__brand-name { display: none; }');
+    expect(css).toContain('.sq-shell.is-collapsed .sq-nav-item--child { display: none; }');
     expect(favicon).toContain('M12 3.4 5 6.05');
     for (const asset of [darkWordmark, lightWordmark]) {
       expect(asset).toContain('M12 2.5 4 5.5');

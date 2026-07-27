@@ -27,7 +27,7 @@ Evidence:
 ## Material implementation achieved
 
 - Restored the native SAQEEL shell and semantic-token vocabulary without
-  re-importing the retired Astryx stylesheet.
+  re-importing the retired retired predecessor stylesheet.
 - Removed the temporary legacy token bridge.
 - Restored a styled Planning Home/Methods surface using co-located CSS modules.
 - Preserved all three real Planning creation routes.

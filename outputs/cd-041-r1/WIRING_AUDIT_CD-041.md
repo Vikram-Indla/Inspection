@@ -27,7 +27,7 @@
 | Append-only audit | FND-003 | triggers `trg_audit_virtual_sessions` / `_participants` (0018) | both tables audited | ✅ |
 | Video provider | DEC (pending) | `Room` room-box / fallback panels | honestly bounded — never claims a connection; no invented recording/consent/bandwidth | ✅ (correctly deferred) |
 
-Readiness contract (6 links: appointment→time→participants→state→transition→fallback) renders from stored session facts and resolves to exactly one gated next action mirroring the server guard. Colours via ADS/`ax-`/`cd-` tokens — no bare colors.
+Readiness contract (6 links: appointment→time→participants→state→transition→fallback) renders from stored session facts and resolves to exactly one gated next action mirroring the server guard. Colours via ADS/`legacy-`/`cd-` tokens — no bare colors.
 
 ---
 

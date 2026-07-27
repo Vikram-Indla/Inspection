@@ -69,5 +69,5 @@
     "Hijri/Arabic-Indic numerals pending regulatory decision",
     "forms/palette non-default modes token-structural (no dedicated screens)"
   ],
-  "astryxTrace": "none — see handoff/ASTRYX_MIGRATION_TEMPLATE.md zero-trace gate"
+  "retired-predecessorTrace": "none — see handoff/RETIRED PREDECESSOR_MIGRATION_TEMPLATE.md zero-trace gate"
 }

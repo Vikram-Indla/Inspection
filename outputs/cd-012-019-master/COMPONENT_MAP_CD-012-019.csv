@@ -1,8 +1,8 @@
 screen,design_component,state,code_component,css_selector_or_token,disposition,input_contract_note
-ALL,Shared shell,all,Shell.tsx / ShellClient.tsx / shell-navigation.ts,.ax-shell / .ax-pagehead,PRESERVE,frozen SHELL-V3
+ALL,Shared shell,all,Shell.tsx / ShellClient.tsx / shell-navigation.ts,.legacy-shell / .legacy-pagehead,PRESERVE,frozen SHELL-V3
 ALL,Truth-tier tags + legend,all,"TruthTier (CREATE, shared)",.tt-tag / .tt-legend,CREATE,tier: proven|computed|blocked + label
 ALL,Blocked-inputs panel,all,"BlockedSeams (CREATE, shared)",.wf-blocked / .wf-ph,CREATE,"[{label, placeholder, tier, seamId}]"
-ALL,Maker-checker banners/guards,governance,"ApprovalGrammar (CREATE, shared)",.wf-guard / .ax-banner--immutable,CREATE,status + maker + checker
+ALL,Maker-checker banners/guards,governance,"ApprovalGrammar (CREATE, shared)",.wf-guard / .legacy-banner--immutable,CREATE,status + maker + checker
 CD-012,Version lineage signature,populated,LifecycleSignature.tsx,.wf-lin,CREATE,config_versions rows (proven render)
 CD-012,Maker/checker cell,populated,WorkflowLibraryPage,.wf-mc,UPDATE,profiles resolution
 CD-013,State canvas,draft,WorkflowDesigner canvas,.dz-canvas / .dz-node / .dz-edge,UPDATE,draft payload states+transitions

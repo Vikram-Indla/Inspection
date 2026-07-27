@@ -2,7 +2,7 @@
 For every component and screen, verify:
 | Check | How |
 |---|---|
-| No Barlow / Astryx fonts | computed font-family on EN + AR pages = IBM Plex only |
+| No Barlow / retired predecessor fonts | computed font-family on EN + AR pages = IBM Plex only |
 | No raw hex in app code | lint: colours via var(--*) |
 | Semantic tokens resolve in all 4 modes | toggle data-theme × dir |
 | Focus ring visible everywhere | tab through each screen |

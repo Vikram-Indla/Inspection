@@ -101,7 +101,7 @@ those boundaries remain.
 | 15 — map/boundary | BLOCKED_UPSTREAM (truthful) | Coordinates/override facts render; provider and polygon are explicitly unavailable: `page.tsx:237-244`; spec `51-58,137-142`. |
 | 16 — coordinate conflict | BLOCKED_UPSTREAM (truthful) | UI explicitly says conflict handling is unavailable; no resolution/provider code exists: `page.tsx:243`; spec `51-58`. |
 | 17 — section-specific service failure | PASS | Five reads retain independent errors; four dependent controls are fail-closed; raw provider text is neutralized: `page.tsx:37-76,347-463`; `neutral.ts:1-25`; spec `74-88`. |
-| 18 — role/access/RTL/theme/responsive/a11y | PASS for implemented behavior; exact privacy role BLOCKED_UPSTREAM | Neutral RLS ambiguity and field-level masking: `page.tsx:77-88,392-403`; keyboard anchors: `250-252`; 48 px CSS: `astryx.css:909-914`; loading status: `loading.tsx:1-20`; live RTL + light/dark at 1440/1024/412 with zero overflow: spec `125-135,155-176`. |
+| 18 — role/access/RTL/theme/responsive/a11y | PASS for implemented behavior; exact privacy role BLOCKED_UPSTREAM | Neutral RLS ambiguity and field-level masking: `page.tsx:77-88,392-403`; keyboard anchors: `250-252`; 48 px CSS: `retired-predecessor.css:909-914`; loading status: `loading.tsx:1-20`; live RTL + light/dark at 1440/1024/412 with zero overflow: spec `125-135,155-176`. |
 | 4b — risk-version history | BLOCKED_UPSTREAM (truthful) | Only current `risk_version` is read; an explicit unavailable timeline row is rendered: `page.tsx:48,298-303`; spec `42-49`. |
 | 4c — evidence timeline | BLOCKED_UPSTREAM (truthful) | No evidence query exists; explicit unavailable timeline row: `page.tsx:304-308`; spec `42-49`. |
 

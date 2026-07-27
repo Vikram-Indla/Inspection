@@ -3,10 +3,10 @@
 Branch: `feat/saqeel-design-system` (base `d53e09f`, off `setup/Inspection`).
 Never push/merge main. PR-per-step per CLAUDE_CODE_IMPLEMENTATION_PROMPT §3.
 
-| Date | Step | Surfaces | `.ax-*` remaining | Escalations | Decisions logged |
+| Date | Step | Surfaces | `.legacy-*` remaining | Escalations | Decisions logged |
 |---|---|---|---|---|---|
 | 2026-07-20 | §2 Inventory (`88f54e9`) | none (report only) | 1996 tok / 3537 cls | none | — |
-| 2026-07-20 | PR1 Tokens+fonts+contract specs (`7956290`) | platform-wide (token layer) | 1996 tok / 3537 cls (shimmed → SAQEEL) | none | 12px input radius→3px; 16px body→14px SAQEEL scale; Space Grotesk + JetBrains retired; dark primary→emerald #2e9e77 |
+| 2026-07-20 | PR1 Tokens+fonts+contract specs (`7956290`) | platform-wide (token layer) | 1996 tok / 3537 cls (shimmed → SAQEEL) | none | 12px input radius→3px; 16px body→14px SAQEEL scale; retired input font + retired-mono retired; dark primary→emerald #2e9e77 |
 | 2026-07-20 | PR2 Shared primitives (new components) | new `components/saqeel/*` + `saqeel-components.css` | unchanged (consumer swaps later) | none | components split one-file-per-family (Button/ButtonGroup+SplitButton/Field/Input+TextArea/Select/Choice[Checkbox+Switch+RadioGroup]/SegmentedControl/FileUpload/StatusBadge/Tag/Avatar+UserChip/Skeleton+Progress/SeverityIndicator/ExceptionMark+RailCell) |
 
 | 2026-07-20 | PR3 Application shell (new components) | new `navigation/*` (Sidebar/TopBar/PageHeader/Breadcrumb/Tabs/Steps/Pagination) | unchanged | UserMenu deferred to PR4 (needs Menu) | live Shell rewire (buildShellNavigation/RLS scope) deferred to a verifiable step |
@@ -23,24 +23,24 @@ Never push/merge main. PR-per-step per CLAUDE_CODE_IMPLEMENTATION_PROMPT §3.
 
 | 2026-07-20 | PR9 Field/iPad (slice) | field/page.tsx root gets data-density="field" (52px controls, 15px body) | unchanged | factory-360 field root untouched (do_not_touch) | full field taskbar/offline-alert/card-list rebuild + iPad matrices need runtime build |
 
-| 2026-07-20 | PR10 safe-swap #1 (skeletons) | SkeletonBlock (18 loading.tsx) + 3 raw ax-skeleton -> SAQEEL .skeleton | -21 ax-skeleton | none | one clean contract-free swap; EmptyState/Spinner/lozenge swaps deferred (contract/atlas/semantic entanglement — need runtime) |
+| 2026-07-20 | PR10 safe-swap #1 (skeletons) | SkeletonBlock (18 loading.tsx) + 3 raw legacy-skeleton -> SAQEEL .skeleton | -21 legacy-skeleton | none | one clean contract-free swap; EmptyState/Spinner/lozenge swaps deferred (contract/atlas/semantic entanglement — need runtime) |
 
 ## PR2 notes
 - Vendored `design/saqeel/components.css` → `apps/web/src/app/saqeel-components.css`,
-  imported after astryx.css in layout.tsx. Consumes SAQEEL tokens only.
+  imported after retired-predecessor.css in layout.tsx. Consumes SAQEEL tokens only.
 - New TSX primitives under `apps/web/src/components/saqeel/`, prop-exact to the
   package `.d.ts`, emitting the package classNames. Barrel: `components/saqeel/index.ts`.
 - Grouped per family (named exports) rather than strictly one-file-per-component,
   for velocity; every component individually importable. `tsc --noEmit` = 0 errors.
 - Moved 4 inline-styled bits (sr-only, fileupload, fileupload-label, tag-remove)
   to classes appended to saqeel-components.css.
-- Consumer migration (`.ax-btn*` etc → these) is deferred to per-surface PRs; the
+- Consumer migration (`.legacy-btn*` etc → these) is deferred to per-surface PRs; the
   PR1 shim already renders all consumers in SAQEEL, so this is a zero-trace (PR12)
   concern, not a visual one.
 
 ## PR1 notes
 - `apps/web/src/app/tokens.css` fully replaced with SAQEEL semantic tokens + a
-  temporary `--ax-*` compatibility shim (removed at PR12) so all legacy consumers
+  temporary `--legacy-*` compatibility shim (removed at PR12) so all legacy consumers
   render SAQEEL with zero edits. Login Cinematic Atlas tokens retained (exception).
 - Fonts: interim Google load of IBM Plex Sans + IBM Plex Mono (§1c); IBM Plex Sans
   Arabic stays self-hosted via layout.tsx. Self-hosting Plex Sans/Mono → PR12.

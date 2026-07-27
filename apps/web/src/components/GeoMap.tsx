@@ -301,7 +301,7 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
   }
   // Until the basemap paints, the container is an empty dark box — measured at
   // ~5s on a warm local machine, and a field iPad on cellular is far slower.
-  // .sq-map-loading overlays a shimmer through ::after (see astryx.css): it
+  // .sq-map-loading overlays a shimmer through ::after (see saqeel-runtime.css): it
   // needs to sit above the Mapbox canvas, and using a pseudo-element instead
   // of a wrapper keeps callers that position the map by [data-map-provider]
   // working. The class is dropped once the map reports idle.

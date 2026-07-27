@@ -14,6 +14,9 @@ import DiscardDraftButton from "./DiscardDraftButton";
 import ExportButton from "./ExportButton";
 import RefreshButton from "./RefreshButton";
 import PlanningPreview from "./PlanningPreview";
+import RevampPlanningInsights from "./RevampPlanningInsights";
+import SavedViewsButton from "./SavedViewsButton";
+import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 
 export const dynamic = "force-dynamic";
 
@@ -29,8 +32,8 @@ export const dynamic = "force-dynamic";
 const PAGE_SIZE = 25;
 
 const STATUS_TONE: Record<string, string> = {
-  draft: "sq-lozenge--info", validated: "sq-lozenge--info", published: "sq-lozenge--info",
-  returned: "sq-lozenge--warning", cancelled: "sq-lozenge--critical", expired: "sq-lozenge--critical",
+  draft: "badge-draft", validated: "badge-draft", published: "badge-compliant",
+  returned: "badge-warning", cancelled: "badge-critical", expired: "badge-disabled",
 };
 
 const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
@@ -102,7 +105,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
   const { data: { user } } = await getVerifiedUser(sb); // identity verified once; the RPC class check below is the access decision
 
   const access = await getPlanningAccess(sb, ["planning.view", "planning.create", "planning.export"]);
-  const title = t("plan.home.title", "Visit planning");
+  const title = t("plan.home.title", "Planning");
   if (access.error) {
     return (
       <Shell current="/planning" title={title}>
@@ -152,7 +155,8 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
     );
   }
 
-  const lastUpdates = await fetchLastUpdates(sb, list.rows.map(r => r.id));
+  const visibleRows = list.rows.filter(row => !isTestFixtureEstablishment({ name: row.factoryName }));
+  const lastUpdates = await fetchLastUpdates(sb, visibleRows.map(r => r.id));
 
   const lookups = (lookupsRead.data ?? []) as { kind: string; key: string; label_en: string; label_ar: string | null }[];
   const lookupLabel = (l: { label_en: string; label_ar: string | null }) => (locale === "ar" ? (l.label_ar ?? l.label_en) : l.label_en);
@@ -193,7 +197,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
 
   if (targetPreview) {
     return (
-      <Shell current="/planning" title={title} context={<span className="ax-caption ax-numeric">CR-001..CR-098 · WA-DES-036</span>}>
+      <Shell current="/planning" title={title} context={<span className="sq-caption sq-numeric">CR-001..CR-098 · WA-DES-036</span>}>
         <PlanningPreview methods={methods} drafts={drafts.map(draft => ({
           id: draft.id, method: t(`enum.${draft.method}`, draft.method), status: t(`enum.${draft.status}`, draft.status),
           planReference: draft.plan_reference, createdAt: draft.created_at, planner: draft.profiles?.full_name ?? "—", href: continueHref(draft),
@@ -206,16 +210,14 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
   const page = Math.min(list.page, totalPages);
 
   return (
-    <Shell current="/planning" title={title}
-      context={<span className="sq-caption sq-numeric">{tr("plan.list.context", "{total} visits in scope", "{total} زيارة في النطاق").replace("{total}", String(list.total))}</span>}>
+    <Shell current="/planning" title="">
+      <div className="sq-planning-heading">
+        <h1>{title}</h1>
+        <span>{tr("plan.list.subtitle", "Create inspection visits — bulk, single or immediate", "إنشاء زيارات التفتيش — جماعية أو فردية أو فورية")}</span>
+      </div>
       {/* Page actions — Create Visit / Export / Refresh (PLN-REQ-006/017/018) */}
-      <div className="sq-row" style={{ gap: "var(--space-3)", flexWrap: "wrap", alignItems: "center" }}>
-        {access.can("planning.create") && (
-          <CreateVisitSection methods={methods} strings={{
-            createLabel: tr("plan.list.createVisit", "Create Visit", "إنشاء زيارة"),
-            oneMethodNote: t("plan.home.oneMethod", "One planning method per creation session (M01-011 · REF-001)."),
-          }} />
-        )}
+      <div className="sq-planning-commandbar">
+        <RefreshButton label={tr("plan.list.refresh", "Refresh", "تحديث")} busyLabel={tr("plan.list.refreshing", "Refreshing…", "جارٍ التحديث…")} />
         {access.can("planning.export") && (
           <ExportButton params={params} strings={{
             label: tr("plan.list.export", "Export (CSV)", "تصدير (CSV)"),
@@ -225,8 +227,21 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
             cappedNote: tr("plan.list.exportCapped", "Exported the first {n} matching rows — refine the filters for the rest.", "تم تصدير أول {n} صفًا مطابقًا — حسّن عوامل التصفية للباقي."),
           }} />
         )}
-        <RefreshButton label={tr("plan.list.refresh", "Refresh", "تحديث")} busyLabel={tr("plan.list.refreshing", "Refreshing…", "جارٍ التحديث…")} />
+        <SavedViewsButton label={tr("plan.list.savedViews", "Saved views", "العروض المحفوظة")} />
+        <span />
+        {access.can("planning.create") && (
+          <CreateVisitSection methods={methods} strings={{
+            createLabel: tr("plan.list.createVisit", "Create visit", "إنشاء زيارة"),
+            oneMethodNote: t("plan.home.oneMethod", "One planning method per creation session (M01-011 · REF-001)."),
+          }} />
+        )}
       </div>
+
+      <RevampPlanningInsights
+        rows={visibleRows}
+        total={list.total}
+        returned={list.countsAvailable ? list.counts.returned : "—"}
+      />
 
       {/* KPI / status tabs with live counts (PLN-REQ-012) */}
       <div className="sq-kpi-row" role="group" aria-label={tr("plan.list.tabsAria", "Planning status tabs", "تبويبات حالة التخطيط")}>
@@ -334,11 +349,11 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       </form>
 
       {/* Canonical visit list (PLN-REQ-013) */}
-      {list.rows.length === 0 ? (
+      {visibleRows.length === 0 ? (
         <EmptyState glyph="🗓" title={tr("plan.list.empty", "No visits match", "لا توجد زيارات مطابقة")}
           body={tr("plan.list.emptyDesc", "No visits match the current tab, search and filters. Reset to see everything in your scope.", "لا توجد زيارات مطابقة للتبويب والبحث وعوامل التصفية الحالية. أعد التعيين لعرض كل ما في نطاقك.")} />
       ) : (
-        <div className="sq-tablewrap"><table className="sq-table" data-testid="planning-visit-table">
+        <div className="sq-tablewrap planning-table-wrap"><table className="sq-table planning-visit-table" data-testid="planning-visit-table">
           <thead><tr>
             <th scope="col">{tr("plan.list.colVisitRef", "Visit Reference", "مرجع الزيارة")}</th>
             <th scope="col">{tr("plan.list.colPlanningType", "Planning Type", "نوع التخطيط")}</th>
@@ -365,11 +380,12 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
             <th scope="col" className="sq-td-num">{tr("plan.list.colLastUpdate", "Last Update", "آخر تحديث")}</th>
           </tr></thead>
           <tbody>
-            {list.rows.map((row: PlanningVisitRow) => (
+            {visibleRows.map((row: PlanningVisitRow) => (
               <tr key={row.id}>
                 <td className="sq-numeric"><a className="sq-link" href={`/visits/${row.id}`}><strong>{row.visitReference ?? row.id.slice(0, 8)}</strong></a></td>
-                <td><span className="sq-lozenge sq-lozenge--info">{t(`enum.${row.method}`, row.method)}</span></td>
-                <td><span className={`sq-lozenge sq-lozenge--plan ${STATUS_TONE[row.planningStatus] ?? ""}`}>
+                <td><span className="planning-method">{t(`enum.${row.method}`, row.method)}</span></td>
+                <td><span className={`badge planning-status ${STATUS_TONE[row.planningStatus] ?? "badge-pending"}`}>
+                  <span className="dot" aria-hidden="true" />
                   {/* validated is internal — it displays and counts as Draft, never its own label */}
                   {row.planningStatus === "validated" ? t("enum.draft", "draft") : t(`enum.${row.planningStatus}`, row.planningStatus)}
                 </span></td>
@@ -379,14 +395,14 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
                 <td>{row.priority ? t(`enum.${row.priority}`, row.priority) : "—"}</td>
                 <td className="sq-numeric">{dash(row.crNumber)}</td>
                 <td className="sq-numeric">{dash(row.licenseNumber)}</td>
-                <td>{dash(row.factoryName)}</td>
+                <td className="planning-cell-wrap">{dash(row.factoryName)}</td>
                 <td>{dash(row.region)}</td>
                 <td>{dash(row.city)}</td>
-                <td>{dash(row.inspectorName)}</td>
+                <td className="planning-cell-wrap">{dash(row.inspectorName)}</td>
                 <td className="sq-td-num sq-numeric">{fmt(row.windowStart)}</td>
                 <td className="sq-td-num sq-numeric">{fmt(row.windowEnd)}</td>
                 <td className="sq-td-num sq-numeric">{row.executionDate ? fmt(row.executionDate) : "—"}</td>
-                <td>{row.packageTitles.length > 0 ? row.packageTitles.join(", ") : "—"}</td>
+                <td className="planning-cell-wrap">{row.packageTitles.length > 0 ? row.packageTitles.join(", ") : "—"}</td>
                 <td>{dash(row.createdBy)}</td>
                 <td className="sq-td-num sq-numeric">{fmt(row.createdAt)}</td>
                 <td>{dash(row.sourceChannel)}</td>
@@ -404,7 +420,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
         <div className="sq-row" style={{ justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: "var(--space-3)" }}>
           <span className="sq-caption sq-numeric">
             {tr("plan.list.showing", "Showing {shown} of {total} · page {page} of {pages}", "عرض {shown} من {total} · صفحة {page} من {pages}")
-              .replace("{shown}", String(list.rows.length)).replace("{total}", String(list.total))
+              .replace("{shown}", String(visibleRows.length)).replace("{total}", String(list.total))
               .replace("{page}", String(page)).replace("{pages}", String(totalPages))}
           </span>
           <div className="sq-row" style={{ gap: "var(--space-3)" }}>
@@ -418,7 +434,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       {drafts.length > 0 && (
         <section className="sq-surface sq-panel" style={{ padding: "var(--space-6)" }}>
           <h3>{tr("plan.list.draftsHeading", "Draft plans — continue where you left off", "خطط مسودة — تابع من حيث توقفت")}</h3>
-          <div className="sq-tablewrap"><table className="sq-table">
+          <div className="sq-tablewrap"><table className="sq-table planning-draft-table">
             <thead><tr>
               <th scope="col">{tr("plan.list.colPlanRef", "Plan Reference", "مرجع الخطة")}</th>
               <th scope="col">{tr("plan.list.colPlanningType", "Planning Type", "نوع التخطيط")}</th>
@@ -432,8 +448,8 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
               {drafts.map(d => (
                 <tr key={d.id}>
                   <td className="sq-numeric"><strong>{d.plan_reference ?? d.id.slice(0, 8)}</strong></td>
-                  <td><span className="sq-lozenge sq-lozenge--info">{t(`enum.${d.method}`, d.method)}</span></td>
-                  <td>{t("enum.draft", "draft")}</td>
+                  <td><span className="planning-method">{t(`enum.${d.method}`, d.method)}</span></td>
+                  <td><span className="badge badge-draft planning-status"><span className="dot" aria-hidden="true" />{t("enum.draft", "draft")}</span></td>
                   <td>{d.profiles?.full_name ?? "—"}</td>
                   <td className="sq-td-num sq-numeric">{fmt(d.created_at)}</td>
                   <td><a className="sq-link" href={continueHref(d)}>{tr("plan.list.continue", "Continue", "متابعة")}</a></td>

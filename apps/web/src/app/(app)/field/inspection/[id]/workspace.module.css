@@ -29,7 +29,7 @@
   padding-block-end: 130px;
 }
 
-/* Surface card (was ax-surface). Padding stays inline at call sites so the
+/* Surface card (was sq-surface). Padding stays inline at call sites so the
    original density is preserved verbatim. */
 .card {
   background: var(--surface-primary);
@@ -37,7 +37,7 @@
   border-radius: var(--pwa-card-radius);
   box-shadow: var(--shadow-card);
 }
-/* Nested panel (was ax-panel). Nested surfaces keep the tighter 12px radius the
+/* Nested panel (was sq-panel). Nested surfaces keep the tighter 12px radius the
    design uses for rows inside a card (.plrow), not the outer 14px. */
 .panel {
   background: var(--surface-secondary);
@@ -48,7 +48,7 @@
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
 @media (max-width: 600px) { .grid2 { grid-template-columns: 1fr; } }
 
-/* Field label wrapper (was ax-field / ax-field__label). */
+/* Field label wrapper (was sq-field / sq-field__label). */
 .fld { display: flex; flex-direction: column; gap: var(--space-1); min-inline-size: 0; }
 .fld > span {
   font-size: var(--type-label-size); font-weight: var(--type-label-w);
@@ -75,7 +75,7 @@
 
 .title { font-size: var(--type-compact-size); font-weight: 600; margin: 0; }
 
-/* Evidence grid (was ax-evidence-grid / ax-evidence). */
+/* Evidence grid (was sq-evidence-grid / sq-evidence). */
 .evidenceGrid { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .evidence {
   inline-size: 128px;
@@ -112,7 +112,7 @@
 .recoveryText { display: flex; flex-direction: column; gap: 2px; min-inline-size: 0; }
 .recoveryText strong { color: var(--status-critical-text); }
 
-/* Explicit sync conflict (was ax-conflict — STM-SYNC-002, no silent overwrite). */
+/* Explicit sync conflict (was sq-conflict — STM-SYNC-002, no silent overwrite). */
 .conflict {
   border: var(--border-w) solid var(--status-warning);
   background: var(--status-warning-soft);
@@ -130,7 +130,7 @@
 }
 .conflictFoot { display: flex; gap: var(--space-2); justify-content: flex-end; }
 
-/* Grouped validation results (was ax-validation). */
+/* Grouped validation results (was sq-validation). */
 .validation {
   border: var(--border-w) solid var(--status-warning);
   background: var(--status-warning-soft);

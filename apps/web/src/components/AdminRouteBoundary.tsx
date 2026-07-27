@@ -2,8 +2,6 @@ import type { ReactNode } from "react";
 import { getUserRoles } from "@/lib/persona";
 import { redirect } from "next/navigation";
 import Shell from "@/components/Shell";
-import EmptyState from "@/components/EmptyState";
-import { IconShieldCheck } from "@/app/icons";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 
@@ -21,12 +19,17 @@ export default async function AdminRouteBoundary({ allowedRoles, children }: { a
 
   const { t } = await useT();
   return (
-    <Shell current="/admin" title={t("admin.unauthorized.title", "Authorized configuration role required")}>
-      <EmptyState icon={<IconShieldCheck size={28} />} role="alert"
-        title={t("admin.unauthorized.heading", "This control-plane module is outside your role")}
-        body={t("admin.unauthorized.body", "No configuration data has been loaded. Return to your assigned workspace or ask an administrator for the required role.")}>
-        <a className="btn btn-secondary sq-link btn-touch" href="/launch">{t("admin.unauthorized.return", "Return to my workspace")}</a>
-      </EmptyState>
+    <Shell current="/admin" title="">
+      <section className="sq-access-refusal" role="alert">
+        <span aria-hidden="true">🔒</span>
+        <h1>{t("admin.unauthorized.heading", "You do not have access to this destination")}</h1>
+        <p>{t("admin.unauthorized.body", "The destination stays visible so the platform remains legible, and access is refused here, at the boundary.")}</p>
+        <div>
+          <a className="sq-btn" href="/profile">{t("admin.unauthorized.request", "Request access")}</a>
+          <a className="sq-btn sq-btn--secondary" href="/dashboard">{t("admin.unauthorized.return", "Back to default state")}</a>
+        </div>
+        <small>{t("admin.unauthorized.detail", "Administration routes are guarded by the admin role family (security_admin / compliance_admin / risk_owner / form_admin / workflow_admin). A Planner reaches the destination and is refused at the boundary.")}</small>
+      </section>
     </Shell>
   );
 }

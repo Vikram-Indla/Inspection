@@ -1,0 +1,3 @@
+.pageRoot :global(.t-caption) {
+  color: var(--text-secondary);
+}

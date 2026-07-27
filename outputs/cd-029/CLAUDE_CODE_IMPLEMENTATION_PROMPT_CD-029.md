@@ -10,7 +10,7 @@ You are Claude Code. Implement the sponsor-approved slice of CD-029 / SCR-WEB-31
 - If sponsor design approval or the independent Codex wiring audit is not recorded, STOP.
 
 ## 1. Read first
-Approved design CD-029 Level 2 Review Workspace.dc.html and every file in outputs/cd-029-r1/. Re-read runtime truth: reviews/[id]/page.tsx, DecisionPanel.tsx, actions.ts, lib/factory-verification.ts, lib/notify.ts, reviews/page.tsx, Shell.tsx, ShellClient.tsx, shell-navigation.ts, astryx.css, tokens.css, and review/inspection/audit/notification migrations. Record branch/commit/dirty state.
+Approved design CD-029 Level 2 Review Workspace.dc.html and every file in outputs/cd-029-r1/. Re-read runtime truth: reviews/[id]/page.tsx, DecisionPanel.tsx, actions.ts, lib/factory-verification.ts, lib/notify.ts, reviews/page.tsx, Shell.tsx, ShellClient.tsx, shell-navigation.ts, retired-predecessor.css, tokens.css, and review/inspection/audit/notification migrations. Record branch/commit/dirty state.
 
 ## 2. Implement only the approved slice
 - Build the three-zone workspace and the Finding Trace Chain as a keyboard-operable, list-equivalent disclosure that binds question→response→evidence→clause→violation→corrective action→decision comment, each source/version-labelled; unavailable links shown, never fabricated.

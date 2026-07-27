@@ -6,7 +6,7 @@ Every runtime file in `outputs/cd-012-019-r3/` is an exact copy of its
 `outputs/cd-012-019-r2/` counterpart (MD5-verified):
 
 `cd12.js … cd19.js`, `cd12-register.js`, `cdm-common.js`, `cdm-stage.js`,
-`cdm-frame.css`, `support.js`, `saqeel-astryx.css`, `saqeel-tokens.css`,
+`cdm-frame.css`, `support.js`, `saqeel-retired-predecessor.css`, `saqeel-tokens.css`,
 `export.html` — all IDENTICAL. The only difference in the R3 `.dc.html` shell is
 a stale `R2` label in the harness brand line; it loads the same screen modules.
 
@@ -37,7 +37,7 @@ Commit `7f849f6`:
   full prerequisite list moved behind a collapsible "Why / prerequisites"
   disclosure. Applied to every boundary (audit ×2, access ×2, risk, workflows).
 - **#2 dark-theme hierarchy / #3 light contrast — SCOPED OUT.** These require
-  retuning the global Astryx/DEC-011 tokens, which are frozen and shared
+  retuning the global retired predecessor/DEC-011 tokens, which are frozen and shared
   app-wide; changing them here risks other screens. Only the added components
   (`.lz-*`, `.nya`, `.rk-*`) establish local hierarchy with existing tokens.
 - **#4 true-412 narrow — already handled.** `.lz-row` collapses to one column
@@ -81,7 +81,7 @@ DOM markers, captured full-page screenshots.
 | CD-014 | `/admin/risk` | **PASS after fix** — 5 `.rk-driver`, live `.rk-sum`, `.rk-band` strip |
 | CD-012/013 | `/admin/workflows` | PASS — renders, no error |
 | CD-019 | `/admin/audit` | PASS — `.nya` ×2 boundaries render |
-| CD-017 | `/admin/access` | PASS — `.ax-table` + `.nya` ×2 |
+| CD-017 | `/admin/access` | PASS — `.legacy-table` + `.nya` ×2 |
 | CD-015 | `/admin/gis` | PASS — renders |
 
 **Bug found + fixed by this pass:** `/admin/risk` threw a 500 (Server Components
@@ -142,8 +142,8 @@ Local, unpushed. Worktree `Inspection-integrate`, branch `integrate/cd012-019-on
 base = Codex's `a6f0989` ("fix(admin): harden CD-006 through CD-011"). The 7
 frontend feat/fix commits were cherry-picked on top (proper 3-way).
 
-- **Overlap resolved:** `astryx.css` tail = keep-both (my `lz-`/`nya`/`rk-` classes +
-  Codex's `cd-tl`/`ax-trace`, disjoint); the 4 admin `page.tsx` = Codex's error
+- **Overlap resolved:** `retired-predecessor.css` tail = keep-both (my `lz-`/`nya`/`rk-` classes +
+  Codex's `cd-tl`/`legacy-trace`, disjoint); the 4 admin `page.tsx` = Codex's error
   logging/copy vs my guards/boundaries — different lines, trivial. Verified both
   sides coexist; zero stray conflict markers.
 - **Static:** `tsc --noEmit` PASS; `next build` PASS (all 6 admin routes compile).

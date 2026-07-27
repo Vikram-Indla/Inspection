@@ -8,7 +8,7 @@ Use sources in this order. A lower source may clarify presentation but may not c
 4. For Phase 1 Web/Admin represented shell/dashboard surfaces only, `Saqeel Web(3).html` registered as `WA-SHELL-SRC-001` in `product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md`.
 5. Current application source under `apps/web/src` and Supabase migrations as behavioral implementation and regression evidence, not design authority.
 6. `FABLE_UNDERSTANDING_TRACEABILITY.csv` and `FABLE_ACCEPTANCE_UNDERSTANDING.csv` — the existing 493-row requirement-to-screen and executable acceptance mapping.
-7. Existing Astryx prototypes under `design/astryx/` as reusable design history, not current behavioral or visual authority for represented `WA-SHELL-SRC-001` surfaces.
+7. Existing retired predecessor prototypes under `design/retired-predecessor/` as reusable design history, not current behavioral or visual authority for represented `WA-SHELL-SRC-001` surfaces.
 8. Twenty implementation storyboards in `MIM_Inspection_MVP1_Historical_Archives_v3` as visual/journey evidence.
 9. External pattern research as non-authoritative inspiration only.
 

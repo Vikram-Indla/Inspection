@@ -119,7 +119,7 @@
       "code": 100,
       "wiring": 100,
       "designPage": "SAQEEL Web Shell v5.dc.html (WA-SHELL-r5)",
-      "route": "web/src/components/ShellClient.tsx · lib/shell-navigation.ts · app/astryx.css",
+      "route": "web/src/components/ShellClient.tsx · lib/shell-navigation.ts · app/retired-predecessor.css",
       "pwa": {
         "state": "ok",
         "note": "PWA has its own shell; no shared chrome."
@@ -193,7 +193,7 @@
       "code": 0,
       "wiring": 100,
       "designPage": "SAQEEL Brand Identity Proof.dc.html",
-      "route": "web/src/components/ShellClient.tsx (.ax-shell__brand-wordmark + __brand-sub)",
+      "route": "web/src/components/ShellClient.tsx (.legacy-shell__brand-wordmark + __brand-sub)",
       "pwa": {
         "state": "ok",
         "note": "PWA keeps its own sticky-header identity by design."
@@ -2233,7 +2233,7 @@
     },
     {
       "id": "BS-5",
-      "text": "Three competing stylesheets in the repo (astryx.css, saqeel-components.css, v2-components.css + a legacy file). Until one is named authority, 'matches the design' is ambiguous."
+      "text": "Three competing stylesheets in the repo (retired-predecessor.css, saqeel-components.css, v2-components.css + a legacy file). Until one is named authority, 'matches the design' is ambiguous."
     },
     {
       "id": "BS-6",

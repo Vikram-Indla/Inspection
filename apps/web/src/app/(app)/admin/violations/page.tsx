@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { NewViolationForm, AddMappingForm, PublishMappingForm, PublishViolationForm, DeactivateViolationForm, type ClauseOption, type VioStrings } from "./Controls";
+import styles from "./Controls.module.css";
 import { getViolationUsage, type ViolationUsage } from "./actions";
 import EmptyState from "@/components/EmptyState";
 import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
@@ -279,6 +280,8 @@ export default async function Violations({
     <Shell current="/admin/violations" title={title}
       context={<span className="badge badge-info">{penaltyMode ? "SCR-ADM-041 · ENG-08" : "SCR-ADM-040 · ENG-08"}</span>}>
 
+      <h1 className="sq-sr-only">{title}</h1>
+      <div className={styles.pageRoot}>
       {modeTabs}
 
       {/* S07 STALE — a read fact with no invented duration or SLA. */}
@@ -319,7 +322,7 @@ export default async function Violations({
         <>
           {/* Signature — Mapping Validation Lens: exactly the four proven checks. */}
           <section className="panel stack" aria-labelledby="pen-lens-h" style={{ padding: "var(--space-6)", gap: "var(--space-3)" }}>
-            <h3 id="pen-lens-h" style={{ margin: 0 }}>{t("admin.viol.lens.title", "Mapping Validation Lens")}</h3>
+            <h2 id="pen-lens-h" style={{ margin: 0 }}>{t("admin.viol.lens.title", "Mapping Validation Lens")}</h2>
             <p className="t-caption" style={{ margin: 0 }}>{t("admin.viol.lens.intro", "Creating a mapping validates legal basis, lifecycle, type, optional amount, timing, repeat policy, and an optional immutable template reference. No value is inferred or invented.")}</p>
             <ul className="stack" style={{ gap: "var(--space-1)", margin: 0, paddingInlineStart: "var(--space-4)" }}>
               <li className="t-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c1", "The violation is not already mapped (one mapping per violation).")}</li>
@@ -423,7 +426,7 @@ export default async function Violations({
             return (
               <div key={v.id} className="panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
                 <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-3)" }}>
-                  <h3><span className="numeric">{v.code}</span> — {v.title}</h3>
+                  <h2><span className="numeric">{v.code}</span> — {v.title}</h2>
                   <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap" }}>
                     {severityChip(v.level)}
                     {lifecycleChip(lc)}
@@ -480,6 +483,7 @@ export default async function Violations({
           <p className="t-caption">{t("admin.viol.footer", "Violations generate automatically from configured responses; the inspector can never type or override one (M09-003/026). Legal basis belongs to the penalty mapping, not the code row. Config violation_codes is distinct from runtime violations, and its row changes are audit-tracked (trg_audit_violation_codes).")}</p>
         </>
       )}
+      </div>
     </Shell>
   );
 }

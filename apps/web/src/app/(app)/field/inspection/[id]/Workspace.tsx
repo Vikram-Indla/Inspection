@@ -805,7 +805,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const activeSection = displaySections[activeSectionIndex] ?? displaySections[0];
   const goToSection = useCallback((key: string) => {
     setActiveSectionKey(key);
-    requestAnimationFrame(() => document.getElementById(`ax-section-${key}`)?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    requestAnimationFrame(() => document.getElementById(`sq-section-${key}`)?.scrollIntoView({ behavior: "smooth", block: "start" }));
   }, []);
   const nextIncompleteSection = progress.find(section => section.pct < 100 && section.key !== activeSection?.key);
   const totals = progress.reduce((t, p) => ({ a: t.a + p.answered, b: t.b + p.total }), { a: 0, b: 0 });
@@ -1264,7 +1264,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
           <div className={styles.conflictFoot}>
             {sectionKey && (
               <button type="button" className="btn btn-ghost" data-testid="conflict-review"
-                onClick={() => document.getElementById(`ax-section-${sectionKey}`)?.scrollIntoView({ behavior: "smooth", block: "start" })}>
+                onClick={() => document.getElementById(`sq-section-${sectionKey}`)?.scrollIntoView({ behavior: "smooth", block: "start" })}>
                 {strings.conflictReview}
               </button>
             )}
@@ -1464,7 +1464,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
         }
         const sp = progress.find(p => p.key === s.key)!;
         return (
-        <div key={s.key} id={`ax-section-${s.key}`} className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)", scrollMarginBlockStart: "var(--space-8)" }}>
+        <div key={s.key} id={`sq-section-${s.key}`} className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)", scrollMarginBlockStart: "var(--space-8)" }}>
           <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
             <h4>{s.title}</h4>
             <span className="t-caption id-code">{sp.answered}/{sp.total} · {fmt(strings.progress, { pct: sp.pct })}</span>
@@ -1821,7 +1821,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
               const first = firstBlocker(validation);
               return first ? (
                 <button type="button" className="btn btn-secondary btn-sm" data-testid="jump-first-blocker"
-                  onClick={() => focusAndScrollTo(`ax-section-${first.sectionKey}`)}>
+                  onClick={() => focusAndScrollTo(`sq-section-${first.sectionKey}`)}>
                   {strings.valGoToFirst}
                 </button>
               ) : null;
@@ -1830,7 +1830,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
           <ul>
             {validation.map(g => (
               <li key={g.key}>
-                <button type="button" className={styles.valJump} onClick={() => focusAndScrollTo(`ax-section-${g.key}`)}
+                <button type="button" className={styles.valJump} onClick={() => focusAndScrollTo(`sq-section-${g.key}`)}
                   aria-label={fmt(strings.valGoToSection, { title: g.title })}>
                   <strong>{g.title}</strong>
                 </button>
@@ -1871,7 +1871,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
           {liveBlockers.map(group => (
             <div key={`review-${group.key}`} className="alert alert-warning">
               <div><strong>{group.title}</strong> · {[...group.unanswered, ...group.evidence, ...group.forms].join(", ")}
-                <div><a className="btn btn-ghost btn-sm" href={`#ax-section-${group.key}`} onClick={() => setReviewOpen(false)}>{strings.jumpToSection}</a></div>
+                <div><a className="btn btn-ghost btn-sm" href={`#sq-section-${group.key}`} onClick={() => setReviewOpen(false)}>{strings.jumpToSection}</a></div>
               </div>
             </div>
           ))}

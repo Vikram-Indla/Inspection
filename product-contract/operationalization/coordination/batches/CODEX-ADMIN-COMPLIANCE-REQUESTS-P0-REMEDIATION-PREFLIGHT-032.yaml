@@ -476,7 +476,7 @@ ownership_collisions:
   intentionally_avoided_shared_files:
     - apps/web/src/lib/admin-configuration.ts
     - apps/web/src/components/ShellClient.tsx
-    - apps/web/src/app/astryx.css
+    - apps/web/src/app/retired-predecessor.css
     - product-contract frozen requirement and design files
     - existing protected test files
     - Planning application files and RPCs

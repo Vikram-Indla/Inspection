@@ -13,7 +13,7 @@ import EmptyState from "@/components/EmptyState";
 import { IconSearch } from "@/app/icons";
 
 // SCR-ADM-010 (CD-005) + SCR-ADM-011 (CD-006) — client controls consume
-// server-built strings only (SB19). Colour comes exclusively from ax tokens/classes;
+// server-built strings only (SB19). Colour comes exclusively from legacy tokens/classes;
 // no bare colour is written here. Every status cue is glyph + word, never colour alone.
 export type RegStrings = {
   // create / clause / publish forms (proven actions)

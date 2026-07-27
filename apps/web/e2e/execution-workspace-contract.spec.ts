@@ -216,8 +216,8 @@ test.describe("PLAN item 4 report-kind package switch", () => {
     }
 
     expect(guardBlock).toContain("return (");
-    expect(guardBlock).toContain('<Shell current="/field"');
-    expect(guardBlock).toContain("<EmptyState");
+    expect(guardBlock).toContain("header(t(");
+    expect(guardBlock).toContain('className="empty"');
     expect(guardBlock).toContain("Inspection package not configured");
     expect(guardBlock).not.toContain("<FactoryVerification");
     expect(guardBlock).not.toContain("<Workspace");

@@ -61,7 +61,7 @@ The screen tells one coherent story:
 - Product: Saqeel / `صقيل | صناعي`.
 - Magenta-violet prism is the favicon/PWA mark.
 - The earlier green or status-dot favicon must not return.
-- Existing Saqeel tokens, Space Grotesk, IBM Plex Sans Arabic and mono-label grammar remain the family foundation.
+- Existing Saqeel tokens, retired input font, IBM Plex Sans Arabic and mono-label grammar remain the family foundation.
 
 ### 3.4 Arabic and RTL
 

@@ -75,10 +75,10 @@
   }
 
   function bar(t) {
-    return '<div class="ax-commandbar">' + t.filters.map(function (f, i) { return '<button class="ax-filterchip' + (i === 1 ? ' is-active' : '') + '">' + esc(f) + '</button>'; }).join("") +
-      '<span class="ax-commandbar__spacer"></span>' +
+    return '<div class="legacy-commandbar">' + t.filters.map(function (f, i) { return '<button class="legacy-filterchip' + (i === 1 ? ' is-active' : '') + '">' + esc(f) + '</button>'; }).join("") +
+      '<span class="legacy-commandbar__spacer"></span>' +
       '<div class="wf-mode" role="group" aria-label="View"><a href="#" aria-current="page">' + esc(t.viewStream) + '</a><a href="#">' + esc(t.viewTimeline) + '</a><a href="#">' + esc(t.viewDiff) + '</a></div>' +
-      '<button class="ax-btn ax-btn--secondary ax-btn--sm" disabled aria-disabled="true">' + esc(t.exportBtn) + '</button></div>';
+      '<button class="legacy-btn legacy-btn--secondary legacy-btn--sm" disabled aria-disabled="true">' + esc(t.exportBtn) + '</button></div>';
   }
 
   function kpis(t) {

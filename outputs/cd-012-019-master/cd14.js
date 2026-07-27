@@ -15,7 +15,7 @@
       factory: "Sample factory", fName: "Al-Riyadh Polymers Co. — FAC-08841", band: "Band", score: "Score",
       d1: "Violation history (24m)", d2: "Complaint volume", d3: "Production category hazard", d4: "Time since last inspection", d5: "Self-assessment status",
       w: "Weight", input: "Input", contrib: "Contribution",
-      bands: [["Low", "0–39", "var(--ax-color-success)"], ["Medium", "40–69", "var(--ax-color-warning)"], ["High", "70–100", "var(--ax-color-critical)"]],
+      bands: [["Low", "0–39", "var(--legacy-color-success)"], ["Medium", "40–69", "var(--legacy-color-warning)"], ["High", "70–100", "var(--legacy-color-critical)"]],
       traceRows: [["violations_24m = 3", "0.30", "3 → norm 0.60", "18.0"], ["complaints_12m = 1", "0.15", "1 → norm 0.20", "3.0"], ["category = PLASTICS-B", "0.25", "hazard 0.70", "17.5"], ["days_since_insp = 412", "0.20", "412d → norm 0.90", "18.0"], ["self_assess = expired", "0.10", "expired → 1.00", "10.0"]],
       total: "Total score", denom: "Denominator: Σ weights = 1.00 · model v3 · DEC-001 interim values (owner-revisable)",
       missingT: "Missing source input", missingD: "complaints_12m has no value for FAC-02219 — the accepted rule scores the driver at 0 and flags the factory; it does NOT impute. The trace shows the gap explicitly.",
@@ -35,7 +35,7 @@
       factory: "منشأة العيّنة", fName: "شركة الرياض للبوليمرات — FAC-08841", band: "النطاق", score: "الدرجة",
       d1: "سجل المخالفات (٢٤ شهرًا)", d2: "حجم الشكاوى", d3: "خطورة فئة الإنتاج", d4: "الزمن منذ آخر تفتيش", d5: "حالة التقييم الذاتي",
       w: "الوزن", input: "المدخل", contrib: "المساهمة",
-      bands: [["منخفض", "0–39", "var(--ax-color-success)"], ["متوسط", "40–69", "var(--ax-color-warning)"], ["مرتفع", "70–100", "var(--ax-color-critical)"]],
+      bands: [["منخفض", "0–39", "var(--legacy-color-success)"], ["متوسط", "40–69", "var(--legacy-color-warning)"], ["مرتفع", "70–100", "var(--legacy-color-critical)"]],
       traceRows: [["violations_24m = 3", "0.30", "3 ← معياري 0.60", "18.0"], ["complaints_12m = 1", "0.15", "1 ← معياري 0.20", "3.0"], ["category = PLASTICS-B", "0.25", "خطورة 0.70", "17.5"], ["days_since_insp = 412", "0.20", "412 يومًا ← معياري 0.90", "18.0"], ["self_assess = منتهٍ", "0.10", "منتهٍ ← 1.00", "10.0"]],
       total: "الدرجة الكلية", denom: "المقام: مجموع الأوزان = 1.00 · النموذج v3 · قيم DEC-001 مؤقتة (قابلة للمراجعة من المالك)",
       missingT: "مدخل مصدر مفقود", missingD: "complaints_12m بلا قيمة للمنشأة FAC-02219 — القاعدة المعتمدة تُقيّم المحرّك بصفر وتُعلّم المنشأة؛ ولا تُقدّر القيمة. يُظهر الأثر الفجوة صراحةً.",
@@ -78,12 +78,12 @@
     return '<div class="m-panel"><div class="m-panel__head"><h4>' + esc(t.trace) + '</h4>' + C.tt("proven", "formula · line by line") + '</div>' +
       '<div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap"><span class="rk-score m-num">' + score + '</span>' +
       C.loz("warning", t.bands[bandIx][0] + " " + t.bands[bandIx][1]) + '<span class="cd-sub">' + esc(t.fName) + '</span></div>' +
-      '<div style="overflow-x:auto"><table class="ax-table rk-trace"><thead><tr><th>' + esc(t.input) + '</th><th>' + esc(t.w) + '</th><th>norm</th><th class="wf-actcell">' + esc(t.contrib) + '</th></tr></thead><tbody>' +
+      '<div style="overflow-x:auto"><table class="legacy-table rk-trace"><thead><tr><th>' + esc(t.input) + '</th><th>' + esc(t.w) + '</th><th>norm</th><th class="wf-actcell">' + esc(t.contrib) + '</th></tr></thead><tbody>' +
       t.traceRows.map(function (r, i) {
         var missing = opts.missing && i === 1;
-        return '<tr' + (missing ? ' style="background:var(--ax-color-critical-tint)"' : '') + '><td>' + (missing ? '<span class="wf-ph">complaints_12m = ∅</span>' : esc(r[0])) + '</td><td class="m-num">' + r[1] + '</td><td class="m-mono">' + (missing ? "∅ → 0.00" : esc(r[2])) + '</td><td class="m-num wf-actcell">' + (missing ? "0.0" : r[3]) + '</td></tr>';
+        return '<tr' + (missing ? ' style="background:var(--legacy-color-critical-tint)"' : '') + '><td>' + (missing ? '<span class="wf-ph">complaints_12m = ∅</span>' : esc(r[0])) + '</td><td class="m-num">' + r[1] + '</td><td class="m-mono">' + (missing ? "∅ → 0.00" : esc(r[2])) + '</td><td class="m-num wf-actcell">' + (missing ? "0.0" : r[3]) + '</td></tr>';
       }).join("") +
-      '<tr><td colspan="3" style="font:var(--ax-text-body-strong)">' + esc(t.total) + '</td><td class="m-num wf-actcell" style="font:var(--ax-text-body-strong)">' + (opts.missing ? "63.5" : score) + '</td></tr>' +
+      '<tr><td colspan="3" style="font:var(--legacy-text-body-strong)">' + esc(t.total) + '</td><td class="m-num wf-actcell" style="font:var(--legacy-text-body-strong)">' + (opts.missing ? "63.5" : score) + '</td></tr>' +
       '</tbody></table></div><p class="cd-sub">' + esc(t.denom) + '</p></div>';
   }
 
@@ -94,11 +94,11 @@
 
   function bar(t, opts) {
     opts = opts || {};
-    return '<div class="ax-commandbar"><button class="ax-btn ax-btn--secondary">' + esc(t.saveDraft) + '</button>' +
-      '<button class="ax-btn ax-btn--secondary">' + esc(t.validate) + '</button>' +
-      '<button class="ax-btn ax-btn--secondary">' + esc(t.compare) + '</button>' +
-      '<button class="ax-btn"' + (opts.noPub ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.publish) + '</button>' +
-      '<span class="ax-commandbar__spacer"></span>' + C.tt("proven", "maker-checker grammar") + '</div>';
+    return '<div class="legacy-commandbar"><button class="legacy-btn legacy-btn--secondary">' + esc(t.saveDraft) + '</button>' +
+      '<button class="legacy-btn legacy-btn--secondary">' + esc(t.validate) + '</button>' +
+      '<button class="legacy-btn legacy-btn--secondary">' + esc(t.compare) + '</button>' +
+      '<button class="legacy-btn"' + (opts.noPub ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.publish) + '</button>' +
+      '<span class="legacy-commandbar__spacer"></span>' + C.tt("proven", "maker-checker grammar") + '</div>';
   }
 
   function kpis(t) {
@@ -127,7 +127,7 @@
     else if (state === "missing-source") body = C.content(bar(t, { noPub: true }) + C.legend(lang) + C.guard(t.missingT, t.missingD) + grid(t, { missing: true }));
     else if (state === "stale") body = C.content(bar(t, {}) + C.legend(lang) + C.banner("warning", "◷", t.staleT, t.staleD) + grid(t, { stale: true }));
     else if (state === "threshold-edge") body = C.content(bar(t, {}) + C.legend(lang) + C.banner("warning", "‖", t.edgeT, t.edgeD) + grid(t, { edge: true }));
-    else if (state === "test-pass") body = C.content(bar(t, {}) + '<div class="ax-banner"><span>✓</span><div><strong>' + esc(t.passT) + '</strong><div class="cd-sub">' + esc(t.passD) + '</div></div></div>' + C.legend(lang) + grid(t, {}));
+    else if (state === "test-pass") body = C.content(bar(t, {}) + '<div class="legacy-banner"><span>✓</span><div><strong>' + esc(t.passT) + '</strong><div class="cd-sub">' + esc(t.passD) + '</div></div></div>' + C.legend(lang) + grid(t, {}));
     else if (state === "test-fail") body = C.content(bar(t, { noPub: true }) + C.guard(t.failT, t.failD) + C.legend(lang) + grid(t, {}));
     else if (state === "draft") body = C.content(bar(t, {}) + C.banner("warning", "▣", t.draftT, t.draftD) + C.legend(lang) + grid(t, {}));
     else if (state === "published") body = C.content(bar(t, { noPub: true }) + C.banner("immutable", "◆", t.pubT, t.pubD) + C.legend(lang) + kpis(t) + grid(t, {}));

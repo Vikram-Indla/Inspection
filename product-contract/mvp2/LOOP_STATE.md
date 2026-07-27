@@ -15,7 +15,7 @@ Base: `setup/Inspection` @ 1a20a2d. No push/merge/main. Local-source-certify-now
   vendored login/StoryMapInner.tsx to unblock compile. RECONCILIATION_LEDGER R-001.
 - **Pass 2 (commit 1c8c9be):** built `/tasks` governed workspace (CD-043, REQ-0032) —
   page + TaskBoard client + loading, flag-gated FEATURE_TASKS_WORKSPACE, RLS-scoped,
-  hard states, Astryx tokens; typecheck+build clean, static lane 16/16. Browser journey
+  hard states, retired predecessor tokens; typecheck+build clean, static lane 16/16. Browser journey
   DB_VALIDATION_PENDING.
 
 ## Next resume point (first incomplete)

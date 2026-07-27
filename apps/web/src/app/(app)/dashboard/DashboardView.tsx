@@ -39,6 +39,8 @@ import DecisionCanvas, {
 } from "./DecisionCanvas";
 import OpsMap, { type OpsMapStrings, type OpsPin } from "../operations/OpsMap";
 import styles from "./dashboard.module.css";
+import RevampStrategicView from "./RevampStrategicView";
+import RevampOperationalView from "./RevampOperationalView";
 
 type Locale = "en" | "ar";
 type DashboardMetrics = ReturnType<typeof import("./metrics").buildDashboardMetrics>;
@@ -205,30 +207,6 @@ export function DashboardControls({ locale, view, params, from, to, region, quer
         {copy(locale, "Operational View", "المنظور التشغيلي")}
       </button>
     </form>
-    <div className={styles.scopeLine} role="status">
-      <span className={styles.idCode}>
-        {copy(
-          locale,
-          `Scope: ${from} → ${to} · Asia/Riyadh · ${region || "all regions"} · RLS scoped`,
-          `النطاق: ${from} → ${to} · آسيا/الرياض · ${region || "جميع المناطق"} · مقيّد حسب الصلاحيات`,
-        )}
-      </span>
-      <span className={styles.grow} />
-      <span className={`${styles.badge} ${partialSources.length ? styles.tone_warning : styles.tone_neutral}`}>
-        <span className={styles.dot} aria-hidden="true" />
-        {partialSources.length
-          ? copy(
-              locale,
-              `Partial · ${partialSources.length} unavailable source${partialSources.length === 1 ? "" : "s"}`,
-              `جزئي · ${partialSources.length} ${partialSources.length === 1 ? "مصدر غير متاح" : "مصادر غير متاحة"}`,
-            )
-          : copy(
-              locale,
-              `Page generated ${refreshedAt} Riyadh`,
-              `أُنشئت الصفحة ${refreshedAt} بتوقيت الرياض`,
-            )}
-      </span>
-    </div>
     {partialSources.length > 0 && <div className={styles.partialDetail} role="alert">
       <strong>{copy(locale, "Partial dashboard", "لوحة قيادة جزئية")}</strong>
       <span>{partialSources.join(" · ")}</span>
@@ -252,6 +230,8 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
   const strip = stripFor(projection, headlineIds, locale, partialSources);
   const regionRows = complianceBreakdown(strategic.approvedScopedResponses as ResponseRow[], "region", unknown);
   const grouped = complianceBreakdown(strategic.approvedScopedResponses as ResponseRow[], group, unknown);
+
+  return <RevampStrategicView locale={locale} metrics={metrics} factories={factories} group={group} params={params} />;
 
   const markers: CanvasMarker[] = factories
     .filter(factory => factory.official_lat != null && factory.official_lng != null)
@@ -500,6 +480,8 @@ export function OperationalView({ locale, metrics, projection, factoryCoords, pa
   factoryCoords: Map<string, { lat: number; lng: number; radiusM: number | null }>;
   partialSources: string[];
 }) {
+  return <RevampOperationalView locale={locale} metrics={metrics} />;
+
   const operational = metrics.operational;
   const headlineIds = ["OPS-KPI-003", "OPS-KPI-002", "OPS-KPI-004", "OPS-KPI-007"];
   const representedIds = [...headlineIds, "OPS-KPI-001", "OPS-KPI-006", "OPS-KPI-008"];
@@ -508,7 +490,7 @@ export function OperationalView({ locale, metrics, projection, factoryCoords, pa
   const seen = new Set<string>();
   for (const visit of [...operational.overdueRows, ...operational.todayVisits]) {
     const factoryId = visit.factories?.id;
-    const coordinates = factoryId ? factoryCoords.get(factoryId) : null;
+    const coordinates = factoryId ? factoryCoords.get(factoryId!) : null;
     if (!factoryId || !coordinates || seen.has(visit.id)) continue;
     seen.add(visit.id);
     const tone: OpsPin["tone"] = visit.operational_state === "executing"
@@ -519,11 +501,11 @@ export function OperationalView({ locale, metrics, projection, factoryCoords, pa
     pins.push({
       id: `visit:${visit.id}`,
       kind: "visit",
-      lat: coordinates.lat,
-      lng: coordinates.lng,
+      lat: coordinates!.lat,
+      lng: coordinates!.lng,
       label: visit.factories?.name ?? visit.id.slice(0, 8),
       tone,
-      radiusM: coordinates.radiusM ?? undefined,
+      radiusM: coordinates!.radiusM ?? undefined,
       href: `/visits/${visit.id}`,
     });
   }

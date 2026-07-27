@@ -1,6 +1,6 @@
 # FABLE_CHANNEL_READINESS — Separate Understanding per Channel
 
-Status: understanding evidence for PASS_WITH_NAMED_QUESTIONS follow-up. No design created. Mobbin excluded. Historical archives = provenance only; Meta-Astryx = design direction only; open decisions not invented.
+Status: understanding evidence for PASS_WITH_NAMED_QUESTIONS follow-up. No design created. Mobbin excluded. Historical archives = provenance only; Meta-retired predecessor = design direction only; open decisions not invented.
 
 Sources per channel: repo `product-contract/screens/screen_route_catalogue.csv` (screens/states/actions), `domain/*` (RBAC, fields, transitions), `business/master_end_to_end_process.md` (phases); archive channel functional specifications (provenance level 2) for behavior depth; workbook "08 Channel Scope Contract" for boundaries.
 

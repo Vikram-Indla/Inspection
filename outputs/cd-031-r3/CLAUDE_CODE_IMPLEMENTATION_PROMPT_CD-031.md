@@ -10,7 +10,7 @@ You are Claude Code. Implement the sponsor-approved slice of CD-031 / SCR-WEB-40
 - If sponsor design approval or the independent Codex wiring audit is not recorded, STOP.
 
 ## 1. Read first
-Approved design CD-031 Factory 360.dc.html and every file in outputs/cd-031-r3/. Re-read runtime truth: factories/[id]/page.tsx, Controls.tsx, actions.ts, loading.tsx, the factory list route, Shell.tsx, ShellClient.tsx, shell-navigation.ts, astryx.css, tokens.css, and factory/risk/document/audit migrations. Record branch/commit/dirty state.
+Approved design CD-031 Factory 360.dc.html and every file in outputs/cd-031-r3/. Re-read runtime truth: factories/[id]/page.tsx, Controls.tsx, actions.ts, loading.tsx, the factory list route, Shell.tsx, ShellClient.tsx, shell-navigation.ts, retired-predecessor.css, tokens.css, and factory/risk/document/audit migrations. Record branch/commit/dirty state.
 
 ## 2. Implement only the approved slice
 - Build the provenance-led dossier and the Spatial Case Timeline (source-labelled, list-equivalent, keyboard-operable, reduced-motion safe) linking location/inspection/finding/review/risk. Never fabricate a spatial path, boundary or causal link.

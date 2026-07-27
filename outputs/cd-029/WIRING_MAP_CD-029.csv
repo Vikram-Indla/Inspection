@@ -16,4 +16,4 @@ leg_id,ui_trigger_state,client_component,route_action,guard,canonical_transition
 15,Decision write chain,DecisionRail,decide,immutability guard,review decided -> inspection status -> notification,reviews.update+inspections.update+notifications.insert,RLS L2,audit,queued,decision recorded,non-transactional; partial commit; queued-not-delivered,cd-029 spec,actions.ts sequential,HANDOFF_BLOCKED_ATOMIC
 16,Immutable decided / stale / RLS denial,ReviewWorkspacePage,/reviews/:id,trg_guard_review,decided locked,reviews,RLS,audit,none,decided read-only,stale flagged; unauthorized distinct,cd-029 spec,guard + design,PASS
 17,Claim / reassign,ClaimReassign,none,no action,none,none,n/a,none,none,shown unavailable,no path,cd-029 spec,none in actions.ts,HANDOFF_BLOCKED_CLAIM
-18,Arabic/theme/responsive/keyboard/SR,Shell+FindingTraceChain,/reviews/:id,none,none,none,n/a,none,none,parity,disclosure buttons; role=status/alert; reduced-motion,cd-029 spec,astryx.css,PASS
+18,Arabic/theme/responsive/keyboard/SR,Shell+FindingTraceChain,/reviews/:id,none,none,none,n/a,none,none,parity,disclosure buttons; role=status/alert; reduced-motion,cd-029 spec,retired-predecessor.css,PASS

@@ -173,7 +173,7 @@ predecessor_and_nearest_design_evidence:
     - design/saqeel/screens/html/map-command.html
     - design/saqeel/screens/html/map-command-dark.html
     - design/saqeel/screens/html/map-command-ar.html
-    - design/astryx/d2/D2-07_risk-gis.html
+    - design/retired-predecessor/d2/D2-07_risk-gis.html
   rule: >-
     Pattern references may inform component grammar only after identity
     allocation. They do not authorize routes, capabilities, provider claims, or

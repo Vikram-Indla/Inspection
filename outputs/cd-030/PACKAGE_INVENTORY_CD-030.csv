@@ -5,7 +5,7 @@ cd30-stage.js,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no 
 cd30-annot.js,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-030,SCR-WEB-320,no,PRESENT — synchronized R1 (remote design server)
 support.js,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-030,SCR-WEB-320,no,PRESENT — synchronized R1 (remote design server)
 saqeel-tokens.css,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-030,SCR-WEB-320,no,PRESENT — synchronized R1 (remote design server)
-saqeel-astryx.css,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-030,SCR-WEB-320,no,PRESENT — synchronized R1 (remote design server)
+saqeel-retired-predecessor.css,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-030,SCR-WEB-320,no,PRESENT — synchronized R1 (remote design server)
 saqeel-prism.svg,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-030,SCR-WEB-320,no,PRESENT — synchronized R1 (remote design server)
 IMPLEMENTATION_MANIFEST_CD-030.yaml,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-030,SCR-WEB-320,yes,PRESENT — imported local
 COMPONENT_MAP_CD-030.csv,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-030,SCR-WEB-320,yes,PRESENT — imported local

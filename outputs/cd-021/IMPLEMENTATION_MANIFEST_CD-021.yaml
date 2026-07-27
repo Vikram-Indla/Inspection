@@ -54,6 +54,6 @@ file_changes:
     design_node: 1a distribution row; 1d partial-source card
     tests: list/map parity; unavailable state per failed source
 removals: []   # REMOVE requires explicit human approval; none proposed
-rtl_theme_impact: All components logical-properties only; dark/light via existing ax tokens; document-level RTL per shell; bdi-isolated identifiers
+rtl_theme_impact: All components logical-properties only; dark/light via existing legacy tokens; document-level RTL per shell; bdi-isolated identifiers
 rollback: Design-only change set per file; each UPDATE is additive behind the same routes; revert = git revert of the implementation commits; no schema changes proposed
 status: IMPLEMENTED_PENDING_MIGRATION_RUNTIME_CERTIFICATION

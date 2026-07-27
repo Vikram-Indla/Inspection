@@ -46,7 +46,7 @@ audit remains withheld because its authoritative wiring map is absent.
 | G3 Documentation Determinism | PASS | None |
 | G4 Memory / Obsidian / Claude Continuity | PASS | Cloud-verifiable tests all pass; Obsidian desktop screenshot is a non-blocking post-check |
 | G5 Architecture / API / Data / Integration | CONDITIONAL PASS (historical approval) | Decisions accepted (DECISIONS_ACCEPTED_2026-07-11.yaml); live required object state is reconciled, while provider/region and migration-history governance remain open under G11 |
-| G6 UI/UX Design Authority | ACCEPTED (2026-07-11) | Astryx D1-D9 coded design authority accepted by sponsor; Mobbin excluded by sponsor instruction |
+| G6 UI/UX Design Authority | ACCEPTED (2026-07-11) | retired predecessor D1-D9 coded design authority accepted by sponsor; Mobbin excluded by sponsor instruction |
 | G7 Acceptance / Evidence / Test Data | PASS (reconciled 2026-07-16) | AC ledger machine-computed over 493 rows (18 verified_live / 475 implemented / 0 partial / 0 missing); all 19 historical partials closed by TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001; live arrival + negative override evidence retained |
 | G8 Pre-Build Certification | PASS (2026-07-11) | Sponsor authorized; slice evidence B1/B2/B3/B6/B8/B9/B10 captured |
 | G9 Build completion | PASS (2026-07-12) | All scope built: 0 missing / 0 partial rows; ministry theme; i18n EN/AR + RTL (865 keys, whole-app coverage loop at zero); production build compiles |

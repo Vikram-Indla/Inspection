@@ -65,9 +65,9 @@
     return '<div style="display:flex;flex-direction:column;gap:10px">' + t.ruleRows.map(function (r, i) {
       var st = stMap[r[3]];
       var conflict = opts.dup && i === 0;
-      return '<div class="nt-rule' + (opts.expand === i ? ' nt-rule--expanded' : '') + '"' + (conflict ? ' style="border-color:var(--ax-color-critical)"' : '') + '>' +
+      return '<div class="nt-rule' + (opts.expand === i ? ' nt-rule--expanded' : '') + '"' + (conflict ? ' style="border-color:var(--legacy-color-critical)"' : '') + '>' +
         '<span class="nt-evt">' + r[0] + '</span>' +
-        '<span style="display:flex;flex-direction:column;gap:4px;min-inline-size:0"><span style="font:var(--ax-text-body-strong)">' + esc(r[1]) + '</span>' +
+        '<span style="display:flex;flex-direction:column;gap:4px;min-inline-size:0"><span style="font:var(--legacy-text-body-strong)">' + esc(r[1]) + '</span>' +
         '<span style="display:flex;gap:6px;flex-wrap:wrap">' + r[2].map(function (ch) {
           var blockedCh = (ch === "email" || ch === "sms" || ch === "بريد" || ch === "رسائل نصية") && opts.provPend;
           return '<span class="nt-chan' + (blockedCh ? ' nt-chan--blocked' : '') + '">' + esc(ch) + '</span>';
@@ -94,10 +94,10 @@
 
   function bar(t, opts) {
     opts = opts || {};
-    return '<div class="ax-commandbar"><button class="ax-btn ax-btn--secondary">' + esc(t.test) + '</button>' +
-      '<button class="ax-btn"' + (opts.noAct ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.activate) + '</button>' +
-      '<button class="ax-btn ax-btn--subtle ax-btn--sm">' + esc(t.pause) + '</button>' +
-      '<span class="ax-commandbar__spacer"></span><button class="ax-btn ax-btn--secondary">＋ ' + esc(t.newRule) + '</button></div>';
+    return '<div class="legacy-commandbar"><button class="legacy-btn legacy-btn--secondary">' + esc(t.test) + '</button>' +
+      '<button class="legacy-btn"' + (opts.noAct ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.activate) + '</button>' +
+      '<button class="legacy-btn legacy-btn--subtle legacy-btn--sm">' + esc(t.pause) + '</button>' +
+      '<span class="legacy-commandbar__spacer"></span><button class="legacy-btn legacy-btn--secondary">＋ ' + esc(t.newRule) + '</button></div>';
   }
 
   function routeBanner(t) { return C.banner("warning", "⚑", t.routeT, t.routeD); }
@@ -121,12 +121,12 @@
     else if (state === "offline") body = C.content(C.stateOffline(lang, "◔"));
     else if (state === "invalid-recipient") body = C.content(routeBanner(t) + bar(t, { noAct: true }) + C.guard(t.invalidT, t.invalidD) + C.legend(lang) + grid(t, lang, { expand: 3 }));
     else if (state === "provider-pending") body = C.content(routeBanner(t) + bar(t, { noAct: true }) + C.banner("warning", "◌", t.provPendT, t.provPendD) + C.legend(lang) + grid(t, lang, { provPend: true }));
-    else if (state === "test-sent") body = C.content(routeBanner(t) + bar(t, {}) + '<div class="ax-banner"><span>⇥</span><div><strong>' + esc(t.testSentT) + '</strong><div class="cd-sub">' + esc(t.testSentD) + '</div></div></div>' + C.legend(lang) + grid(t, lang, {}));
+    else if (state === "test-sent") body = C.content(routeBanner(t) + bar(t, {}) + '<div class="legacy-banner"><span>⇥</span><div><strong>' + esc(t.testSentT) + '</strong><div class="cd-sub">' + esc(t.testSentD) + '</div></div></div>' + C.legend(lang) + grid(t, lang, {}));
     else if (state === "test-failed") body = C.content(routeBanner(t) + bar(t, { noAct: true }) + C.guard(t.testFailT, t.testFailD) + C.legend(lang) + grid(t, lang, { expand: 2 }));
     else if (state === "breached") body = C.content(routeBanner(t) + bar(t, {}) + C.banner("warning", "⚠", t.breachT, t.breachD) + C.legend(lang) + grid(t, lang, { breach: true, expand: 2 }));
     else if (state === "paused") body = C.content(routeBanner(t) + bar(t, {}) + C.banner("warning", "⏸", t.pausedT, t.pausedD) + C.legend(lang) + grid(t, lang, { expand: 4 }));
     else if (state === "duplicate") body = C.content(routeBanner(t) + bar(t, { noAct: true }) + C.guard(t.duplT, t.duplD) + C.legend(lang) + grid(t, lang, { dup: true }));
-    else if (state === "deactivated") body = C.content(routeBanner(t) + bar(t, {}) + '<div class="ax-banner"><span>◇</span><div><strong>' + esc(t.deactT) + '</strong><div class="cd-sub">' + esc(t.deactD) + '</div></div></div>' + C.legend(lang) + grid(t, lang, {}));
+    else if (state === "deactivated") body = C.content(routeBanner(t) + bar(t, {}) + '<div class="legacy-banner"><span>◇</span><div><strong>' + esc(t.deactT) + '</strong><div class="cd-sub">' + esc(t.deactD) + '</div></div></div>' + C.legend(lang) + grid(t, lang, {}));
     else /* active — primary */ body = C.content(routeBanner(t) + bar(t, {}) +
       C.kpis([{ v: 5, l: t.kRules, tier: "computed", tierLabel: "intent" }, { v: 3, l: t.kActive, tier: "computed", tierLabel: "intent" }, { v: 1, l: t.kDraft, tier: "computed", tierLabel: "intent" }, { v: "1/4", l: t.kProv, tier: "blocked", tierLabel: "providers" }]) +
       C.legend(lang) + grid(t, lang, { expand: 2 }));

@@ -25,7 +25,7 @@ the e2e proves the S13 write is absent (not just the banner).
 | S12 closed/read-only | PASS | `open = state!=="closed"`; immutable banner `{!open}`; every mutating affordance gated on `open` (primary/reschedule/close/join/OTP); DB-enforced by guard_virtual_transition (0018) |
 | S13 stale/concurrent | PASS (with Finding 1 on reschedule) | rev check before write in all three actions; token source consistent; empty-rev fails open safely |
 | S15 offline | PASS | navigator.onLine listeners; begin/reschedule/close disabled offline; banner; "nothing queued / no reconnection" copy; client-only disable is honest (offline browser can't reach server) |
-| S08 loading | PASS | static ax-skeleton over the genuine async session read; no fabricated progress |
+| S08 loading | PASS | static legacy-skeleton over the genuine async session read; no fabricated progress |
 | Blocked seams surfaced-only | PASS | no provider/media/capture control; no live checklist/evidence read; closed-handoff copy invents no capability |
 | e2e soundness | PASS (authored, unrun) | S13 re-reads server state, asserts `after.state !== "closed"`; selectors match live DOM; runtime PENDING test DB |
 | CD-041 regression | PASS | errors-banner rewrite behaviour-preserving; oks unchanged; added `timeline` selects are additive; verified gate untouched |
@@ -51,8 +51,8 @@ runtime-evidenced.
 
 **Finding 3 — COSMETIC — no action.** Auditor flagged a missing 🔒 glyph in the
 immutable banner markup. Not a defect: the glyph is supplied by CSS
-`.ax-banner--immutable::before { content: "🔒" }` (astryx.css:288) and renders at
-runtime. Offline/stale banners share `.ax-banner--warning` disambiguated by text
+`.legacy-banner--immutable::before { content: "🔒" }` (retired-predecessor.css:288) and renders at
+runtime. Offline/stale banners share `.legacy-banner--warning` disambiguated by text
 (acceptable). Join/OTP not disabled offline — outside the S15-named
 begin/reschedule/close scope, not a violation.
 

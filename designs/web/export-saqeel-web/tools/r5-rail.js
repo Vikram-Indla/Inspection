@@ -130,7 +130,7 @@ export function buildRail(activeId, prefix = '') {
 }
 
 
-// ── Topbar (repo parity: ShellClient.tsx .ax-pagehead__topbar + astryx.css) ──
+// ── Topbar (repo parity: ShellClient.tsx .legacy-pagehead__topbar + retired-predecessor.css) ──
 // Fully static: no {{ }} holes, so it renders identically on every design page
 // regardless of that page's logic class. Popovers use <details>/<summary>.
 // Scope controls are route-aware exactly as shellScopeForRoute() decides:

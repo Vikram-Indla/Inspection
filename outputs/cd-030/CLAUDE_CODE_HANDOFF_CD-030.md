@@ -3,7 +3,7 @@ DO NOT EXECUTE UNTIL SPONSOR DESIGN APPROVAL AND INDEPENDENT CODEX WIRING AUDIT
 implementation_authorized: false
 
 ## Package
-Single synchronized package at outputs/cd-030-r1/ : editable source (CD-030 Version Comparison.dc.html), standalone, cd30-stage.js, cd30-annot.js, support.js, saqeel-tokens.css, saqeel-astryx.css, saqeel-prism.svg, manifest, component/wiring/state maps, acceptance checklist, research provenance, this handoff, the implementation prompt, inventory, preflight, and evidence PNGs.
+Single synchronized package at outputs/cd-030-r1/ : editable source (CD-030 Version Comparison.dc.html), standalone, cd30-stage.js, cd30-annot.js, support.js, saqeel-tokens.css, saqeel-retired-predecessor.css, saqeel-prism.svg, manifest, component/wiring/state maps, acceptance checklist, research provenance, this handoff, the implementation prompt, inventory, preflight, and evidence PNGs.
 
 ## Signature (binding)
 Tamper-evident Scope Rail: classify every changed answer against the review's STORED returned scope (reviews.returned_sections) — expected / unexpected (locked-section) / unchanged / comparison-unavailable. Never infer scope from the diff; never label an uncomputed category 'unchanged'. Keyboard-operable, list-equivalent, non-color-only, navigation-only.

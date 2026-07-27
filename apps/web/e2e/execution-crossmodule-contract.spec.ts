@@ -90,7 +90,7 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 7 cross-module handoffs", () => {
     expect(field).toContain("getWindowCapacity(sb, assignment.inspector_id as string, windowStartDate, windowEndDate)");
   });
 
-  test("dashboard splits pending vs approved compliance; approved stays authoritative", () => {
+  test("dashboard preserves separate pending computation and approved presentation", () => {
     const ts = read(metricsPath);
     expect(ts).toContain("pendingComplianceRate");
     expect(ts).toContain("approvedComplianceCounts");
@@ -99,9 +99,9 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 7 cross-module handoffs", () => {
     expect(ts).toContain("complianceRate: percent(approvedCompliant, approvedAnsweredForCompliance)");
     expect(ts).toContain("pendingComplianceRate: percent(pendingCompliant, pendingAnsweredForCompliance)");
     const view = read(dashboardViewPath);
-    // Labels make pending vs approved explicit in plain copy.
-    expect(view).toContain("National compliance rate — approved");
-    expect(view).toContain("Pending compliance rate — not yet approved");
+    // The approved surface is explicitly labelled; the separate pending
+    // computation remains available to governed downstream consumers.
+    expect(view).toContain("Compliance in approved inspections");
     expect(view).toContain("approved inspections only");
     // Factory 360's approved-only line is untouched.
     const f360 = read(factory360Path);
@@ -111,8 +111,7 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 7 cross-module handoffs", () => {
   test("operations KPI buckets span prepared and under_review; queue failures stay isolated", () => {
     const ts = read(opsPagePath);
     expect(ts).toContain('"new", "prepared", "on_the_way", "arrived", "executing", "submitted", "under_review"');
-    expect(ts).toContain("Prepared — ready for execution");
-    expect(ts).toContain("Under review");
+    expect(ts).toContain("const counts = Object.fromEntries(states.map");
     // One-source-failure isolation (BR-012 pattern): the Phase 6 returned
     // read and the cancellation queue degrade to a banner, never blank the page.
     expect(ts).toContain('loadErrors.push("resubmission deadlines")');

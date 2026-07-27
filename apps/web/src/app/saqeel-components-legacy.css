@@ -13,7 +13,7 @@
    rail — measured at scrollY 3000 the rail's top was -3000, i.e. it scrolled
    away entirely and left bare canvas under it — and it clipped any wide content
    with no scrollbar to reach it. Horizontal overflow is now contained on
-   .ax-shell__main instead, which is where a too-wide table or map belongs. */
+   .sq-shell__main instead, which is where a too-wide table or map belongs. */
 html { background: var(--surface-canvas); }
 body {
   margin: 0;
@@ -142,7 +142,11 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   transition: background-color 6000s ease-in-out 0s;
 }
 .sq-input:hover, .sq-select:hover, .sq-textarea:hover { border-color: var(--border-strong); }
-.sq-input:focus-visible, .sq-select:focus-visible, .sq-textarea:focus-visible { outline: none; border-color: var(--action-primary); outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.sq-input:focus-visible, .sq-select:focus-visible, .sq-textarea:focus-visible {
+  outline: none;
+  border-color: var(--focus-ring);
+  box-shadow: inset 0 0 0 1px var(--focus-ring);
+}
 .sq-input[disabled], .sq-select[disabled], .sq-textarea[disabled] { background: var(--surface-secondary); color: var(--text-disabled); cursor: not-allowed; }
 .sq-input[readonly] { background: var(--surface-sunken); border-style: dashed; }
 .sq-field.is-invalid .sq-input, .sq-field.is-invalid .sq-select, .sq-field.is-invalid .sq-textarea { border-color: var(--status-critical); }
@@ -513,7 +517,11 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .sq-shell-search { position: relative; inline-size: min(420px, 38vw); }
 .sq-shell-search__icon { position: absolute; inset-inline-start: var(--space-3); inset-block-start: 50%; transform: translateY(-50%); color: var(--text-secondary); pointer-events: none; }
 .sq-shell-search input { inline-size: 100%; min-block-size: var(--touch-target); padding-inline: 40px var(--space-3); border: 1px solid var(--border-subtle); border-radius: var(--radius-full); background: var(--surface-sunken); color: var(--text-primary); font: var(--type-input); }
-.sq-shell-search input:focus-visible { outline: none; border-color: var(--action-primary); outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.sq-shell-search input:focus-visible {
+  outline: none;
+  border-color: var(--focus-ring);
+  box-shadow: inset 0 0 0 1px var(--focus-ring);
+}
 .sq-shell-search__results { position: absolute; inset-block-start: calc(100% + var(--space-2)); inset-inline: 0; z-index: var(--z-drawer); padding: var(--space-2); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--surface-primary); box-shadow: var(--shadow-lg); }
 .sq-shell-search__results a { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); color: var(--text-primary); text-decoration: none; border-radius: var(--radius-xs); }
 .sq-shell-search__results a > span { display: flex; flex-direction: column; min-inline-size: 0; }
@@ -1431,8 +1439,8 @@ button.sq-shell-scope { cursor: pointer; }
 @media(max-width:900px){.cmp-approval-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.ccr-facts,.ccr-compare,.ccr-form,.cmp-runtime-facts,.cmp-approval-facts{grid-template-columns:1fr}.ccr-span{grid-column:auto}.ccr-register-head .sq-btn,.ccr-actions .sq-btn,.cmp-library-tabs .sq-btn,.cmp-approval-filters .sq-btn{inline-size:100%}.ccr-inline-form{align-items:stretch}.ccr-inline-form .sq-field{inline-size:100%;max-inline-size:none}.cmp-runtime-head,.cmp-runtime-selector{align-items:stretch;flex-direction:column}.cmp-approval-card footer .sq-btn{inline-size:100%}}
 
-/* Astryx elimination — the following selectors had no .sq-* counterpart
-   because they were added after the ax->sq class migration (PR12). */
+/* SAQEEL elimination — the following selectors had no .sq-* counterpart
+   because they were added after the sq->sq class migration (PR12). */
 .sq-nav-subgroup__chevron { margin-inline-start: auto; }
 .sq-shell__admin-pin { flex: 0 0 auto; padding: 12px 10px 16px; border-block-start: 1px solid var(--nav-border); }
 .sq-shell.is-collapsed .sq-shell__admin-pin { padding-inline: 10px; }

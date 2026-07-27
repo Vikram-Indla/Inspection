@@ -234,7 +234,7 @@ async function loginFlow(page, persona) {
   await page.goto(`${BASE_URL}/login`, { waitUntil: "load" });
   await page.locator("#email").fill(persona.email);
   await page.locator("#pw").fill(persona.password);
-  await page.locator("form:has(#email) button.ax-btn--prominent").click();
+  await page.locator("form:has(#email) button.sq-btn--prominent").click();
   await page.waitForURL((u) => !u.pathname.startsWith("/login") && !u.pathname.startsWith("/launch"), { timeout: 45000 });
   await page.waitForLoadState("load");
 }
@@ -270,7 +270,7 @@ async function cmdLogin(browser) {
       await page.locator("#pw").fill(persona.password);
       const mark = { requests: net.done.length, bytes: net.bytes, longtasks: 0 };
       const t0 = Date.now();
-      await page.locator("form:has(#email) button.ax-btn--prominent").click();
+      await page.locator("form:has(#email) button.sq-btn--prominent").click();
       await page.waitForURL((u) => !u.pathname.startsWith("/login") && !u.pathname.startsWith("/launch"), { timeout: 45000 });
       await page.waitForLoadState("load");
       await waitSettled(net);
@@ -300,7 +300,7 @@ async function cmdCold(browser, route, { saveEvidence = false } = {}) {
         await page.goto(`${BASE_URL}/visits`, { waitUntil: "load" });
         await waitSettled(net);
         const href = await page.evaluate(() => {
-          const a = document.querySelector('a[href^="/visits/"][class*="ax-link"], table a[href^="/visits/"]');
+          const a = document.querySelector('a[href^="/visits/"][class*="sq-link"], table a[href^="/visits/"]');
           return a ? a.getAttribute("href") : null;
         });
         if (!href || !/^\/visits\/[0-9a-f-]{36}/.test(href)) throw new Error(`no /visits/[id] link found on list page (got ${href})`);
@@ -396,7 +396,7 @@ async function cmdWarmDetail(browser) {
         await waitSettled(net);
       }
       const href = await page.evaluate(() => {
-        const a = document.querySelector('a[href^="/visits/"][class*="ax-link"], table a[href^="/visits/"]');
+        const a = document.querySelector('a[href^="/visits/"][class*="sq-link"], table a[href^="/visits/"]');
         return a ? a.getAttribute("href") : null;
       });
       if (!href || !/^\/visits\/[0-9a-f-]{36}/.test(href)) throw new Error(`no detail link on /visits (got ${href})`);

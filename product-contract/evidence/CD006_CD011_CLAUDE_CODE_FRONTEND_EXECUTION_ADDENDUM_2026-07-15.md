@@ -105,7 +105,7 @@ Permitted application areas:
 Protected boundaries:
 
 - Do not change `Shell.tsx`, `ShellClient.tsx`, `shell-navigation.ts`, `tokens.css`,
-  global shell behavior, or global `astryx.css` rules.
+  global shell behavior, or global `retired-predecessor.css` rules.
 - Do not modify `supabase/migrations/**`, RLS, grants, triggers, RPCs, storage policy,
   server-action semantics, workflow transitions, or historical snapshot behavior.
 - Preserve neutral failures: unavailable/unknown is never zero, healthy, complete,

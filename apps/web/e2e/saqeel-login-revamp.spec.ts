@@ -29,7 +29,7 @@ test("protected Saqeel prism and Arabic wordmark remain the sole unchanged locku
   await expect(page.locator('.lg-lockup__mark[aria-label="Saqeel"]')).toHaveCount(1);
 
   const css = source("src/app/login/login.css");
-  expect(css).not.toContain("--ax-color-prism-magenta");
+  expect(css).not.toContain("--sq-color-prism-magenta");
 });
 
 test("SLR-AC-002/004/009 protected motion and OTP recovery authentication contracts", () => {
@@ -170,8 +170,8 @@ test("unified atlas hero is a full-height scene with only positioned overlays", 
   expect(css).toContain("#000 48px, #000 calc(100% - 48px)");
   expect(css).toContain(".lg-story__frame::before, .lg-story__frame::after");
   expect(css).not.toContain(".lg-story__summary {");
-  expect(css).not.toContain("--zone-tone: var(--ax-color-critical)");
-  expect(css).not.toContain("--zone-tone: var(--ax-color-success)");
+  expect(css).not.toContain("--zone-tone: var(--sq-color-critical)");
+  expect(css).not.toContain("--zone-tone: var(--sq-color-success)");
 });
 
 test("SLR-AC-010..013 form contract contains only the authorized authentication controls", async ({ page }) => {

@@ -120,7 +120,7 @@ first data row: `SCR-ADM-001` -> `/admin` -> `apps/web/src/app/admin/page.tsx`
   (251 lines), `apps/web/src/lib/shell-navigation.ts` (119 lines).
 - Tokens: `apps/web/src/app/tokens.css` (161 lines) — the file
   `CURRENT_UI_BASELINE.md` designates as the sole location for raw visual
-  values; `apps/web/src/app/astryx.css` (93KB) is the isolated Cinematic Atlas
+  values; `apps/web/src/app/retired-predecessor.css` (93KB) is the isolated Cinematic Atlas
   exception per the 2026-07-18 foundation-reset decision in `DESIGN_DECISIONS.md`.
 
 ## Provider truth register — live vs. placeholder/deferred/simulated

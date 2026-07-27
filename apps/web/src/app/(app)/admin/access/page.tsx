@@ -1,4 +1,4 @@
-import Shell from "@/components/Shell";
+import AdminDestinationFrame from "../_components/AdminDestinationFrame";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
@@ -31,7 +31,8 @@ export default async function Access({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { t } = await useT();
+  const { t, locale } = await useT();
+  const copy = (en: string, ar: string) => locale === "ar" ? ar : en;
   const sb = await supabaseServer();
   const requestedView = (await searchParams).view;
   const view: AccessView = requestedView === "roles" ? "roles" : "users";
@@ -130,19 +131,68 @@ export default async function Access({
     rolePermissionGrants = (grantsRes.data ?? []) as typeof rolePermissionGrants;
   }
 
+  const notConfigured = t("common.notConfigured", copy("Not configured", "غير مُهيّأ"));
+  const scopedUsers = profilesError ? notConfigured : (profiles ?? []).length;
+  const governedRoles = rolesError ? notConfigured : (roles ?? []).length;
+  const directOverrides = canManage && !userAccessSourcesUnavailable
+    ? access.reduce((total, item) => total + item.directGrants.length, 0)
+    : notConfigured;
+
   return (
-    <Shell current="/admin/access" title={view === "users"
-      ? t("admin.access.users.title", "Users & access")
-      : t("admin.access.roles.title", "Roles & capabilities")}
-      context={<span className="sq-lozenge sq-lozenge--info">SCR-ADM-090 · RBAC-001..014 · EXE-ACCESS</span>}>
-      <nav className={styles.views} aria-label={t("admin.access.views.label", "Access administration views")}>
-        <a className="sq-btn" href="/admin/access?view=users" aria-current={view === "users" ? "page" : undefined}>
-          {t("admin.access.views.users", "Users")}
-        </a>
-        <a className="sq-btn" href="/admin/access?view=roles" aria-current={view === "roles" ? "page" : undefined}>
-          {t("admin.access.views.roles", "Roles")}
-        </a>
-      </nav>
+    <AdminDestinationFrame
+      current="/admin/access"
+      title={t("admin.revamp.access.title", copy("Users & Roles", "المستخدمون والأدوار"))}
+      subtitle={t("admin.revamp.access.subtitle", copy("Accounts, role assignment and access review", "الحسابات وتعيين الأدوار ومراجعة الوصول"))}
+      hub={t("admin.revamp.hub.people", copy("People & access", "الأشخاص والوصول"))}
+      routeLabel="/admin/access"
+      designId="frame-19-admin-users-roles"
+      labels={{
+        administration: t("navigation.administration", copy("Administration", "الإدارة")),
+        breadcrumb: t("common.breadcrumb", copy("Breadcrumb", "مسار التنقل")),
+        governance: t("admin.revamp.governance", copy("Governance on this surface", "الحوكمة في هذه الواجهة")),
+        reconstruction: t("admin.revamp.reconstruction", copy("Reconstruction note", "ملاحظة إعادة البناء")),
+      }}
+      metrics={[
+        {
+          label: t("admin.revamp.access.metric.users", copy("Accounts in scope", "الحسابات ضمن النطاق")),
+          value: scopedUsers,
+          note: t("admin.revamp.access.metric.users.note", copy("RLS-visible profiles only", "الملفات المرئية حسب أمن الصفوف فقط")),
+        },
+        {
+          label: t("admin.revamp.access.metric.roles", copy("Governed role keys", "مفاتيح الأدوار المحكومة")),
+          value: governedRoles,
+          note: t("admin.revamp.access.metric.roles.note", copy("Read from the role catalogue", "مقروءة من كتالوج الأدوار")),
+        },
+        {
+          label: t("admin.revamp.access.metric.overrides", copy("Direct overrides", "منح الوصول المباشرة")),
+          value: directOverrides,
+          note: t("admin.revamp.access.metric.overrides.note", copy("Verified grants, or not configured", "منح متحققة أو غير مهيأة")),
+        },
+      ]}
+      tabs={[
+        { label: t("admin.access.views.users", copy("Users", "المستخدمون")), href: "/admin/access?view=users", current: view === "users" },
+        { label: t("admin.access.views.roles", copy("Roles", "الأدوار")), href: "/admin/access?view=roles", current: view === "roles" },
+        { label: t("admin.revamp.access.tabs.review", copy("Access review", "مراجعة الوصول")), href: "/admin/security-access" },
+        { label: t("admin.revamp.access.tabs.devices", copy("Trusted devices", "الأجهزة الموثوقة")), href: "/admin/devices" },
+      ]}
+      gate={{
+        title: t("admin.revamp.access.gate.title", copy("Role changes are guarded and audited", "تغييرات الأدوار محمية ومدققة")),
+        body: t("admin.revamp.access.gate.body", copy(
+          "Every write is re-authorized on the server. Self-elevation and removal of the last security administrator are refused by governed RPCs; backend role keys remain unchanged until an approved mapping migration exists.",
+          "يُعاد التحقق من صلاحية كل كتابة على الخادم. ترفض إجراءات قاعدة البيانات المحكومة رفع المستخدم لصلاحياته أو إزالة آخر مسؤول أمان؛ وتبقى مفاتيح الأدوار الخلفية دون تغيير إلى أن تُعتمد ترحيلة للربط.",
+        )),
+      }}
+      governance={[
+        t("admin.revamp.access.governance.rls", copy("Row Level Security limits the roster before it reaches this page.", "يقيّد أمن الصفوف القائمة قبل وصولها إلى هذه الصفحة.")),
+        t("admin.revamp.access.governance.audit", copy("Role and capability changes use guarded server actions and append audit evidence.", "تستخدم تغييرات الأدوار والصلاحيات إجراءات خادم محمية وتضيف أدلة التدقيق.")),
+        t("admin.revamp.access.governance.refresh", copy("Changes take effect on the target user’s next authorized request.", "تسري التغييرات عند الطلب المصرّح التالي للمستخدم المستهدف.")),
+      ]}
+      reconstructionNote={t("admin.revamp.access.note", copy(
+        "The design’s three presentation roles sit above the existing governed role catalogue. This route does not collapse or rename backend roles without an approved data and RLS migration.",
+        "توجد أدوار العرض الثلاثة في التصميم فوق كتالوج الأدوار المحكوم الحالي. لا تدمج هذه الوجهة أدوار النظام الخلفي ولا تعيد تسميتها دون ترحيلة معتمدة للبيانات وأمن الصفوف.",
+      ))}
+      context={<span className="sq-lozenge sq-lozenge--info">SCR-ADM-090 · RBAC-001..014 · EXE-ACCESS</span>}
+    >
       <div className="sq-banner"><div><strong>{t("admin.access.banner.title", "Access is enforced by Row Level Security, not UI.")}</strong> {t("admin.access.banner.body", "54 policies realize the frozen RBAC matrix; role grants are audited automatically (this page's data itself passed through RLS to render).")}</div></div>
       {(gateError || capGateError) && (
         <div className="sq-banner sq-banner--warning" role="alert"><div>
@@ -269,6 +319,6 @@ export default async function Access({
           {t("admin.access.rolecaps.error.body", "The role catalogue remains visible, but capability changes are unavailable because a governed source could not be read.")}
         </div></div>
       )}
-    </Shell>
+    </AdminDestinationFrame>
   );
 }

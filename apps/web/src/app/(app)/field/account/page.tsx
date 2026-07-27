@@ -4,14 +4,15 @@ import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
+import ThemeToggle from "@/components/ThemeToggle";
 import styles from "./account.module.css";
 
 // SAQEEL Field Account.dc.html (isProfile view) — the design's Account screen:
 // a profile card (avatar-lg + name + role + email + gear→Settings), an
 // "Account" section (Personal ID / Mobile / Entity), a "Settings" section that
 // links out to the appearance/language and trusted-devices screens, a danger
-// Sign-out button and the ministry footer. Account is a bottom-nav destination,
-// so the shared FieldNav is rendered (active="account").
+// Sign-out button and the ministry footer. The canonical AppShell owns global
+// navigation and responsive chrome.
 //
 // Read-only: no self-service identity/role editing (matches the console
 // /profile page's own "governed elsewhere" note). Every value is real,
@@ -84,22 +85,21 @@ export default async function FieldAccountPage() {
           ))}
         </section>
 
-        {/* Settings section. Design rows in design order: Appearance, Language,
-            Task notifications. Language is a REAL persisted control (/locale) so
-            it renders as the design's segmented control. Appearance has nothing
-            to switch — the field channel is pinned dark by ThemeScript — and
-            there is no in-app notification-preference store, so those two state
-            their governing reason instead of offering a control that would
-            silently do nothing (CLAUDE.md: no fabricated capability). */}
+        {/* Settings section. Theme and language use the same persisted controls
+            as the canonical AppShell. Notification preferences still have no
+            backing store and remain an honest governed empty state. */}
         <section className={styles.card} style={{ padding: "6px 0" }}>
           <div className={styles.groupLabel}>{tr("field.account.settings", "Settings", "الإعدادات")}</div>
 
           <div className={styles.fieldRow}>
             <span style={{ flex: 1, fontSize: 14 }}>{tr("field.account.appearance", "Appearance", "المظهر")}</span>
-            <div className="seg" aria-label={tr("field.account.appearance", "Appearance", "المظهر")}>
-              <button className="seg-opt" type="button" aria-pressed="false" disabled>{tr("field.account.light", "Light", "فاتح")}</button>
-              <button className="seg-opt" type="button" aria-pressed="true">{tr("field.account.dark", "Dark", "داكن")}</button>
-            </div>
+            <ThemeToggle
+              className="btn btn-secondary btn-touch"
+              labels={{
+                toLight: tr("theme.light", "Switch to light mode", "التبديل إلى الوضع الفاتح"),
+                toDark: tr("theme.dark", "Switch to dark mode", "التبديل إلى الوضع الداكن"),
+              }}
+            />
           </div>
 
           <div className={styles.fieldRow}>
@@ -124,9 +124,6 @@ export default async function FieldAccountPage() {
           {tr("field.account.footer", "SAQEEL — Ministry of Industry and Mineral Resources © 2026", "صقيل — وزارة الصناعة والثروة المعدنية © 2026")}
         </div>
       </div>
-
-      {/* No spacer here: FieldNav renders its own .field-nav-spacer, sized from
-          the real bar height + safe-area inset. A second one double-counted it. */}
     </>
   );
 }

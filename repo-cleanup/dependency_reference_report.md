@@ -236,9 +236,9 @@ Reference lines found: 224
 - `product-contract/sessions/SESSION_LEDGER.json:2529`
 - `product-contract/sessions/SESSION_LEDGER.json:2620`
 - `product-contract/sessions/SESSION_LEDGER.json:2758`
-- `design/astryx/D1-01_foundation.html:29`
-- `design/astryx/d3/D3_RELEASE_NOTES.md:3`
-- `design/astryx/tokens.css:4`
+- `design/retired-predecessor/D1-01_foundation.html:29`
+- `design/retired-predecessor/d3/D3_RELEASE_NOTES.md:3`
+- `design/retired-predecessor/tokens.css:4`
 - `design/claude-design-mvp1/00_START_HERE.md:12`
 - `design/claude-design-mvp1/CURRENT_UI_BASELINE.md:53`
 - `design/claude-design-mvp1/CURRENT_UI_BASELINE.md:61`

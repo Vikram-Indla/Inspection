@@ -80,9 +80,9 @@ No application code was touched. No other Claude Design page was modified.
 The 7 design corrections above remain valid and applied. Separately,
 independent re-verification found real **code-side** defects unrelated to
 the design corrections: `PlanningPreview.tsx` (the file this delta was
-compared against) is still on deprecated `.ax-*`/astryx classes while its
+compared against) is still on deprecated `.legacy-*`/retired-predecessor classes while its
 sibling `page.tsx` has migrated to native `.sq-*`; `web-admin-m2-batch-002.spec.ts`
-has 2 confirmed-failing assertions against current `astryx.css`. See the
+has 2 confirmed-failing assertions against current `retired-predecessor.css`. See the
 "CORRECTION" section in `deltas/WA-DES-036/1784806070831883/delta.md` for
 full evidence. This does not change the "no application code was touched"
 fact above — it's a finding about pre-existing code state, not a change I

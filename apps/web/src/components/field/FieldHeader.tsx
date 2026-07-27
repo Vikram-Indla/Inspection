@@ -1,14 +1,14 @@
 import type { ReactNode } from "react";
-import { FieldShellBurger } from "@/components/field/FieldShellDrawer";
 
-// Shared SAQEEL field-screen header — markup/geometry ported from the design's
-// per-screen headers (SAQEEL Field My Tasks/Dashboard/… .dc.html): a
+// Shared SAQEEL execution content header — markup/geometry retained from the
+// existing Field screens inside the canonical AppShell: a
 // surface-primary bar with an optional leading control, title + subtitle, and a
 // trailing controls cluster (language toggle, plus any extras).
 // Consumes the SAQEEL DS tokens linked by (app)/field/layout.tsx.
 //
-// No theme control: the field channel is fixed dark (see ThemeScript), so
-// there is nothing for one to switch.
+// Theme and application navigation are owned by the parent AppShell. This
+// route-level header intentionally contains no drawer or bottom-navigation
+// trigger.
 // Per-screen geometry overrides.
 //
 // The shared values below are an approximation: header geometry is NOT uniform
@@ -50,10 +50,6 @@ export default function FieldHeader({
         background: "var(--surface-primary)", borderBlockEnd: "1px solid var(--border-subtle)",
       }}
     >
-      {/* Side-panel trigger, ahead of the page's own leading control exactly as
-          the design places it. Renders nothing for a persona with no side-panel
-          destinations — see FieldShellDrawer. */}
-      <FieldShellBurger />
       {leading}
       <div style={{ flex: 1, minWidth: 0, lineHeight: 1.3 }}>
         <div style={{ fontWeight: titleWeight, fontSize: titleSize }}>{title}</div>
