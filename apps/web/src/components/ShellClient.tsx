@@ -48,6 +48,7 @@ export type ShellClientStrings = {
   aiEntry: string;
   navigation: string;
   account: string;
+  language: string;
   roles: string;
   profileSettings: string;
   fieldSettings: string;
@@ -90,8 +91,6 @@ export default function ShellClient({
   bellStrings: BellStrings;
   locale: "ar" | "en";
   languageHref: string;
-  languageLabel: string;
-  languageLang: string;
   email: string;
   displayName: string;
   roleTitles: string[];
@@ -668,6 +667,23 @@ export default function ShellClient({
               </div>
             )}
             <div className="sq-pagehead__actions">
+              {/* Language is a topbar control, not an account-menu item: it is a display
+                  preference every persona changes, and burying it cost two clicks.
+                  Plain <a>, not next/link — /locale is a cookie route handler that must
+                  round-trip the server, which is why the previous anchor was plain too.
+                  The active side carries no href, so it is inert rather than a link that
+                  re-asserts the current locale.
+                  .seg-opt paints its active state from [aria-pressed] or .is-active, and
+                  aria-pressed is not valid on an anchor — so .is-active carries the
+                  styling and aria-current carries the semantics. */}
+              <div className="seg" role="group" aria-label={strings.language}>
+                <a className={`seg-opt${locale === "en" ? " is-active" : ""}`}
+                   href={locale === "ar" ? languageHref : undefined}
+                   aria-current={locale === "en" ? "true" : undefined} lang="en">EN</a>
+                <a className={`seg-opt${locale === "ar" ? " is-active" : ""}`}
+                   href={locale === "en" ? languageHref : undefined}
+                   aria-current={locale === "ar" ? "true" : undefined} lang="ar">ع</a>
+              </div>
               <ThemeToggle className="sq-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
               {/* The bell renders for every persona (2026-07-26 ruling: one
                   shell for everybody). `fieldOnly` is still passed down because
@@ -696,7 +712,6 @@ export default function ShellClient({
                     {homeRegion ? <span className="sq-caption">{strings.regionScope}: {homeRegion}</span> : null}
                     {/* /locale and /signout are route handlers (cookie/session
                         mutations), so they intentionally stay plain anchors. */}
-                    <a href={languageHref} lang={languageLang}>{languageLabel}</a>
                     {/* The menu itself is universal; only this destination stays
                         persona-aware, because an Inspector's settings live on
                         the field channel. Routing, not chrome. */}
