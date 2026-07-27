@@ -1,24 +1,25 @@
 "use client";
 import { useEffect, useState } from "react";
 
-// Light/dark switch. The effective theme is whatever tokens.css resolved
-// (explicit choice > OS preference > dark); this control reads the live
-// resolution on mount, then writes an explicit choice that persists and is
-// re-applied before paint by ThemeScript.
+// Light/dark switch. Precedence is explicit stored choice > dark, matching
+// ThemeScript and ThemeChannelSync; this control reads the live resolution on
+// mount, then writes an explicit choice that persists and is re-applied before
+// paint by ThemeScript. The pre-hydration fallbacks below are dark so the icon
+// never contradicts the document on the first frame.
 type Mode = "light" | "dark";
 
 function resolved(): Mode {
-  if (typeof document === "undefined") return "light";
+  if (typeof document === "undefined") return "dark";
   const attr = document.documentElement.getAttribute("data-theme");
   if (attr === "light" || attr === "dark") return attr;
-  return "light";
+  return "dark";
 }
 
 export default function ThemeToggle({ className, labels }: {
   className?: string;
   labels?: { toLight: string; toDark: string };
 }) {
-  const [mode, setMode] = useState<Mode>("light");
+  const [mode, setMode] = useState<Mode>("dark");
   useEffect(() => {
     // The blocking head script handles first paint. Re-apply the persisted
     // value after hydration as well: client navigation/hydration must never
