@@ -58,14 +58,14 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
             label leading, state badge trailing — not a bullet list. */}
         <div className="stack">
           {UNCONFIGURED_ANALYTICS.map(item => (
-            <div className="panel row" style={{ padding: "var(--space-3) var(--space-4)", justifyContent: "space-between" }} key={item.title}>
+            <div className="panel panel-row" key={item.title}>
               <strong>{item.title}</strong><span className="badge badge-pending">{item.state}</span>
             </div>
           ))}
-          <div className="panel row" style={{ padding: "var(--space-3) var(--space-4)", justifyContent: "space-between" }}>
+          <div className="panel panel-row">
             <strong>AI assistance</strong><span className="badge badge-pending">Not configured. No live AI request is made.</span>
           </div>
-          <div className="panel row" style={{ padding: "var(--space-3) var(--space-4)", justifyContent: "space-between" }}>
+          <div className="panel panel-row">
             <strong>Export</strong><span className="badge badge-pending">Unavailable pending a canonical audit and correlation contract.</span>
           </div>
         </div>

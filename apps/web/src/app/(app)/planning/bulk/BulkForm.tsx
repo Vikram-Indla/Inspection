@@ -234,7 +234,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
       </div>
 
       {/* persistent selection bar — cross-page count + draft + hand-off to the P02 review step */}
-      <div className="panel row" style={{ position: "sticky", insetBlockEnd: 0, padding: "var(--space-4) var(--space-6)", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-4)", alignItems: "center" }}>
+      <div className="panel panel-row sticky">
         <div className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
           <strong className="sq-numeric" aria-live="polite">{strings.selectionBar.replace("{n}", String(selected.size))}</strong>
           {selected.size === 0 && <span className="sq-lozenge sq-lozenge--warning">⚠ {strings.readyNothing}</span>}

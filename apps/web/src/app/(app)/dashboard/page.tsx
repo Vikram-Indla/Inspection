@@ -9,6 +9,7 @@ import {
   riyadhTodayScope,
   type FactoryRef,
   type AuditRow,
+  type ChecklistItemRow,
   type DashboardSla,
   type GeoRow,
   type InspectionRow,
@@ -100,6 +101,41 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const prevScopeFromMs = scope.fromMs - (scope.toMs - scope.fromMs + 1);
   const boundIso = new Date(Math.min(prevScopeFromMs, today.fromMs)).toISOString();
   const empty = <T,>() => Promise.resolve({ rows: [] as T[], failed: false });
+  // K-perf: factories is fetched once as its own query below (factoriesResult)
+  // and hydrated back onto every row here — embedding the full factories(...)
+  // object at every nesting level re-ran the factories table's RLS+join on
+  // 5 separate requests for data already fetched once. Selecting the bare
+  // factory_id (a plain column, no join) and hydrating post-fetch is
+  // output-identical, just cheaper.
+  const loadVisits = (from: number, to: number) => {
+    let request = sb.from("visits").select(`
+      id, planning_status, operational_state, window_start, window_end, priority, cancellation_reason, created_at, factory_id,
+      assignments(inspector_id, profiles(full_name))
+    `);
+    // Operational Visit pipeline is an as-of live count and therefore must not
+    // inherit the selected reporting window. Strategic entity search remains
+    // bounded to avoid turning every dashboard load into a history export.
+    if (strategic) request = request.or(`window_start.gte.${boundIso},created_at.gte.${boundIso}`);
+    return request.range(from, to) as unknown as PromiseLike<RowPage<VisitRow>>;
+  };
+  const loadInspections = (from: number, to: number) => {
+    let request = sb.from("inspections").select(`
+      id, visit_id, status, started_at, submitted_at,
+      visits(window_start, factory_id)
+    `);
+    // Pending approvals is an as-of queue: an older submitted inspection stays
+    // eligible until Level 2 records a decision.
+    if (strategic) request = request.or(`submitted_at.gte.${boundIso},started_at.gte.${boundIso},status.eq.not_started,status.eq.in_progress`);
+    return request.range(from, to) as unknown as PromiseLike<RowPage<InspectionRow>>;
+  };
+  const loadReviews = (from: number, to: number) => {
+    let request = sb.from("reviews").select(`
+      id, inspection_id, status, decision, decided_at,
+      inspections!inner(submitted_at, visits(window_start, factory_id))
+    `);
+    if (strategic) request = request.gte("inspections.submitted_at", boundIso);
+    return request.range(from, to) as unknown as PromiseLike<RowPage<ReviewRow>>;
+  };
 
   // The sidebar is only a usability filter. Enforce the dashboard persona at
   // the route boundary as well so a copied URL cannot grant dashboard access.
@@ -112,37 +148,32 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     .from("user_roles")
     .select("role_key")
     .eq("user_id", user.id);
-  const dashboardRoleKeys = ["planner", "inspector", "ops", "leadership"] as const;
+  const dashboardRoleKeys = ["planner", "inspector", "ops", "leadership", "reviewer", "compliance_admin", "form_admin", "workflow_admin", "security_admin", "gis_admin", "risk_owner"] as const;
   const mayViewDashboard = !roleError && (dashboardRoles ?? []).some(row => dashboardRoleKeys.includes(row.role_key as typeof dashboardRoleKeys[number]));
   if (!mayViewDashboard) redirect("/launch");
 
   const dataPromise = Promise.all([
-    (!strategic || searching) ? collect<VisitRow>((from, to) => sb.from("visits").select(`
-      id, planning_status, operational_state, window_start, window_end, priority, cancellation_reason, created_at,
-      factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary, official_lat, official_lng, geofence_radius_m),
-      assignments(inspector_id, profiles(full_name))
-    `).or(`window_start.gte.${boundIso},created_at.gte.${boundIso}`).range(from, to) as unknown as PromiseLike<RowPage<VisitRow>>) : empty<VisitRow>(),
-    collect<InspectionRow>((from, to) => sb.from("inspections").select(`
-      id, visit_id, status, started_at, submitted_at,
-      visits(window_start, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))
-    `).or(`submitted_at.gte.${boundIso},started_at.gte.${boundIso},status.eq.not_started,status.eq.in_progress`).range(from, to) as unknown as PromiseLike<RowPage<InspectionRow>>),
-    collect<ReviewRow>((from, to) => sb.from("reviews").select(`
-      id, inspection_id, status, decision, decided_at,
-      inspections!inner(submitted_at, visits(window_start, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary)))
-    `).gte("inspections.submitted_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<ReviewRow>>),
+    collect<VisitRow>(loadVisits),
+    collect<InspectionRow>(loadInspections),
+    collect<ReviewRow>(loadReviews),
     strategic ? collect<ResponseRow>((from, to) => sb.from("checklist_responses").select(`
       inspection_id, is_complete, response,
-      inspections!inner(submitted_at, visits(factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))),
+      inspections!inner(submitted_at, visits(factory_id)),
       inspection_items(regulation_clauses(regulations(title, issuing_authority)))
     `).gte("inspections.submitted_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<ResponseRow>>) : empty<ResponseRow>(),
+    strategic ? collect<ChecklistItemRow>((from, to) => sb.from("inspection_items").select(`
+      id, active,
+      regulation_clauses!inner(regulations!inner(issuing_authority, status))
+    `).eq("active", true).eq("regulation_clauses.regulations.status", "published")
+      .range(from, to) as unknown as PromiseLike<RowPage<ChecklistItemRow>>) : empty<ChecklistItemRow>(),
     strategic ? collect<ViolationRow>((from, to) => sb.from("violations").select(`
       id, inspection_id,
-      inspections!inner(submitted_at, visits(factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))),
+      inspections!inner(submitted_at, visits(factory_id)),
       violation_codes(title, level, regulation_clauses(regulations(title, issuing_authority)))
     `).gte("inspections.submitted_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<ViolationRow>>) : empty<ViolationRow>(),
     !strategic ? collect<GeoRow>((from, to) => sb.from("geo_events").select(`
       id, visit_id, kind, geofence_result, override_reason, occurred_at, observed_lat, observed_lng,
-      visits(planner_lat, planner_lng, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))
+      visits(planner_lat, planner_lng, factory_id)
     `).gte("occurred_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<GeoRow>>) : empty<GeoRow>(),
     collect<FactoryRef>((from, to) => sb.from("factories").select("id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary, official_lat, official_lng, geofence_radius_m").range(from, to) as unknown as PromiseLike<RowPage<FactoryRef>>),
     !strategic ? sb.from("engine_settings").select("settings").eq("engine", "sla").maybeSingle() : Promise.resolve({ data: null, error: null }),
@@ -155,11 +186,23 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       inspectionsResult,
       reviewsResult,
       responsesResult,
+      checklistItemsResult,
       violationsResult,
       geoResult,
       factoriesResult,
       slaResult,
     ] = await dataPromise;
+
+  // Rehydrate the factories(...) shape metrics.ts/DashboardView.tsx expect,
+  // from the bare factory_id each query now selects (see loadVisits comment).
+  const factoriesById = new Map(factoriesResult.rows.map(f => [f.id, f] as const));
+  const withFactory = (factoryId: string | null | undefined) => (factoryId && factoriesById.get(factoryId)) || null;
+  for (const row of visitsResult.rows as unknown as (VisitRow & { factory_id?: string })[]) row.factories = withFactory(row.factory_id);
+  for (const row of inspectionsResult.rows as unknown as (InspectionRow & { visits?: { factory_id?: string } & InspectionRow["visits"] })[]) if (row.visits) row.visits.factories = withFactory(row.visits.factory_id);
+  for (const row of reviewsResult.rows as unknown as (ReviewRow & { inspections?: { visits?: { factory_id?: string } & NonNullable<ReviewRow["inspections"]>["visits"] } & ReviewRow["inspections"] })[]) if (row.inspections?.visits) row.inspections.visits.factories = withFactory(row.inspections.visits.factory_id);
+  for (const row of responsesResult.rows as unknown as (ResponseRow & { inspections?: { visits?: { factory_id?: string } & NonNullable<ResponseRow["inspections"]>["visits"] } & ResponseRow["inspections"] })[]) if (row.inspections?.visits) row.inspections.visits.factories = withFactory(row.inspections.visits.factory_id);
+  for (const row of violationsResult.rows as unknown as (ViolationRow & { inspections?: { visits?: { factory_id?: string } & NonNullable<ViolationRow["inspections"]>["visits"] } & ViolationRow["inspections"] })[]) if (row.inspections?.visits) row.inspections.visits.factories = withFactory(row.inspections.visits.factory_id);
+  for (const row of geoResult.rows as unknown as (GeoRow & { visits?: { factory_id?: string } & GeoRow["visits"] })[]) if (row.visits) row.visits.factories = withFactory(row.visits.factory_id);
 
   const auditObjectIds = [
     ...visitsResult.rows.map(row => row.id),
@@ -182,6 +225,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     inspectionsResult.failed && text("inspections", "التفتيشات"),
     reviewsResult.failed && text("reviews", "المراجعات"),
     responsesResult.failed && text("checklist answers", "إجابات قوائم التحقق"),
+    checklistItemsResult.failed && text("checklist items", "بنود قائمة التحقق"),
     violationsResult.failed && text("violations", "المخالفات"),
     geoResult.failed && text("location events", "أحداث الموقع"),
     factoriesResult.failed && text("factories", "المصانع"),
@@ -194,6 +238,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     inspections: inspectionsResult.rows,
     reviews: reviewsResult.rows,
     responses: responsesResult.rows,
+    checklistItems: checklistItemsResult.rows,
     violations: violationsResult.rows,
     geo: geoResult.rows,
     audit: auditResult.rows,
@@ -260,6 +305,19 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   }
 
   return <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+      {/* The DEC-032 submission-verification caveat is NOT dropped — it moved to
+          where it applies. It is a statement about what the counts mean, so it
+          now renders as a "Verification" lineage row on every metric's basis
+          drawer (buildMethodology, dashboard-format.ts), one action from the
+          number it qualifies.
+          As a permanent page-level role="alert" it was unconditional and
+          hardcoded, so it had no lifecycle and would have kept asserting itself
+          after DEC-032 closed; it was written in database vocabulary
+          (submission_versions, RLS, backend probes) that this audience cannot
+          act on; and it rendered in the same critical styling as the real,
+          conditional partial-dashboard alert below, which camouflaged it.
+          Every other DEC-032 surface attaches the caveat to the action it
+          blocks. The dashboard blocks no action, so it attaches to the data. */}
       {failedSources.length > 0 && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{text("Partial dashboard", "لوحة قيادة جزئية")}</strong> — {text("these sources are temporarily unavailable:", "هذه المصادر غير متاحة مؤقتاً:")} {failedSources.join(" · ")}. {text("Other panels remain usable; refresh to retry.", "تظل اللوحات الأخرى قابلة للاستخدام؛ حدّث الصفحة لإعادة المحاولة.")}</div></div>}
       <DashboardControls locale={locale} view={view} params={currentParams} from={scope.fromDate} to={scope.toDate}
         region={region} query={query} refreshedAt={refreshedAt} partialSources={partialSources} />

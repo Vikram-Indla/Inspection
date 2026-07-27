@@ -9,16 +9,16 @@
 // server round trip).
 export const ROLE_HOME: [string, string][] = [
   ["inspector", "/field"],
-  ["reviewer", "/reviews"],
-  ["planner", "/planning"],
+  ["reviewer", "/dashboard"],
+  ["planner", "/dashboard"],
   ["ops", "/dashboard"],
   ["leadership", "/dashboard"],
-  ["compliance_admin", "/admin"],
-  ["form_admin", "/admin"],
-  ["workflow_admin", "/admin"],
-  ["security_admin", "/admin"],
-  ["gis_admin", "/admin"],
-  ["risk_owner", "/admin"],
+  ["compliance_admin", "/dashboard"],
+  ["form_admin", "/dashboard"],
+  ["workflow_admin", "/dashboard"],
+  ["security_admin", "/dashboard"],
+  ["gis_admin", "/dashboard"],
+  ["risk_owner", "/dashboard"],
 ];
 
 export function homeForRoles(roleKeys: Iterable<string>): string | null {
