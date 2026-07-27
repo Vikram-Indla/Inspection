@@ -198,8 +198,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     newWindowStart: t("visit.actions.newWindowStart", "New window start (M02-008)"),
     newWindowEnd: t("visit.actions.newWindowEnd", "New window end"),
     rescheduleBtn: t("visit.actions.rescheduleBtn", "Reschedule"),
-    cancelReason: t("visit.actions.cancelReason", "Cancellation reason *"),
-    cancelComments: t("visit.actions.cancelComments", "Cancellation comments"),
+    cancelComments: t("visit.actions.cancelComments", "Cancellation note"),
     cancelBtn: t("visit.actions.cancelBtn", "Cancel visit"),
     visitTypeLabel: t("visit.actions.visitTypeLabel", "Visit type (pre-start — M02-006)"),
     visitTypeBtn: t("visit.actions.visitTypeBtn", "Update type"),
@@ -219,6 +218,25 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     repackageBtn: t("visit.actions.repackageBtn", "Repackage"),
     duplicateBtn: t("visit.actions.duplicateBtn", "Duplicate visit"),
     duplicateWhy: t("visit.actions.duplicateWhy", "Duplicate produces a new Draft with planning fields only (PLN-REQ-011)."),
+    optionalNote: t("visit.actions.optionalPlanningNote", "Optional Planning note"),
+    currentWindow: t("visit.actions.currentWindow", "Current window"),
+    receiptHeading: t("visit.receipt.heading", "Durable Planning mutation receipt"),
+    receiptOperation: t("visit.receipt.operation", "Operation"),
+    receiptTime: t("visit.receipt.time", "Server transaction time"),
+    receiptCorrelation: t("visit.receipt.correlation", "Correlation"),
+    receiptPersistence: t("visit.receipt.persistence", "Persistence"),
+    receiptAudit: t("visit.receipt.audit", "Audit"),
+    receiptNotification: t("visit.receipt.notification", "Notification"),
+    receiptCommitted: t("visit.receipt.committed", "Committed"),
+    receiptWritten: t("visit.receipt.written", "Written"),
+    receiptQueued: t("visit.receipt.queued", "Intent queued"),
+    receiptDeliveryUnknown: t("visit.receipt.deliveryUnknown", "Delivery not confirmed"),
+    receiptUnknown: t("visit.receipt.unknown", "Unknown / unavailable"),
+    receiptPriorWindow: t("visit.receipt.priorWindow", "Previous window"),
+    receiptRequestedWindow: t("visit.receipt.requestedWindow", "Committed window"),
+    receiptCutoff: t("visit.receipt.cutoff", "Server-evaluated cutoff"),
+    expiryReadOnly: t("visit.expiry.readOnly", "Expired · read only"),
+    expiryNext: t("visit.expiry.next", "Final state. Plan a new visit; this visit cannot be reopened, rescheduled or published."),
   };
   // CD-027 — Dual-State Ribbon: five never-collapsed domains, each with the
   // latest VERIFIED event + its source + the allowed-action boundary + a history
@@ -498,7 +516,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
           opStateLabel={t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}
           visitType={v.visit_type} windowStart={v.window_start} windowEnd={v.window_end} inspectors={inspectors}
           canManage={canManage} canReassign={canReassign} isFinal={isFinal}
-          returnReasons={returnReasons} cancelReasons={cancelReasons} packageOptions={packageOptions}
+          returnReasons={returnReasons} packageOptions={packageOptions}
           strings={actionStrings} />
       </aside>
       </div>

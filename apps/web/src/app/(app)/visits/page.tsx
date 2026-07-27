@@ -3,7 +3,6 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import VisitsBoard, { type VisitRow, type VisitsBoardStrings } from "./VisitsBoard";
-import { getReasonOptions } from "@/lib/planning/lifecycle";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import WidgetBoundary from "@/components/WidgetBoundary";
 import EmptyState from "@/components/EmptyState";
@@ -93,8 +92,6 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
   const modeOptions = distinct(rows.map(r => r.executionMode)).map(v => ({ value: v, label: t(`enum.${v}`, v) }));
   const regionOptions = distinct(rows.map(r => r.region).filter(Boolean)).map(v => ({ value: v, label: v }));
   const cityOptions = distinct(rows.map(r => r.city).filter(Boolean)).map(v => ({ value: v, label: v }));
-  // M8 / PLN-CON-011 — governed cancellation reasons for the bulk-cancel form.
-  const { options: cancelReasons } = await getReasonOptions(sb, "cancellation_reason");
   const total = count ?? rows.length;
   const nextLimit = rows.length < total && limit < PAGE_MAX ? Math.min(limit + PAGE_STEP, PAGE_MAX) : null;
   const strings: VisitsBoardStrings = {
@@ -140,9 +137,9 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     bulkReassignTo: t("visit.list.bulkReassignTo", "Reassign to (M02-032)"),
     bulkReassignBtn: t("visit.list.bulkReassignBtn", "Reassign selected"),
     selectOption: t("visit.list.selectOption", "— select"),
-    bulkCancelReason: t("visit.list.bulkCancelReason", "Cancellation reason *"),
-    bulkCancelComments: t("visit.list.bulkCancelComments", "Cancellation comments"),
-    bulkCancelPlaceholder: t("visit.list.bulkCancelPlaceholder", "mandatory when the reason is Other"),
+    bulkCancelReason: t("visit.list.bulkCancelReason", "Cancellation note"),
+    bulkCancelComments: t("visit.list.bulkCancelComments", "Cancellation note"),
+    bulkCancelPlaceholder: t("visit.list.bulkCancelPlaceholder", "Optional Planning note"),
     bulkCancelBtn: t("visit.list.bulkCancelBtn", "Cancel selected"),
     bulkEditType: t("visit.list.bulkEditType", "New visit type"),
     bulkEditNotes: t("visit.list.bulkEditNotes", "New notes"),
@@ -189,6 +186,12 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     ledgerSummaryNoNotif: t("visit.ledger.summaryNoNotif", "{n} changed — notification not queued"),
     ledgerRetrySafe: t("visit.ledger.retrySafe", "Blocked items were not changed and are safe to retry."),
     progressBusy: t("visit.ledger.progressBusy", "Applying to {n} visits…"),
+    frozenSelection: t("visit.ledger.frozenSelection", "Target membership frozen for this command"),
+    receiptCommand: t("visit.receipt.command", "Command"),
+    receiptStatus: t("visit.receipt.status", "Status"),
+    receiptProgress: t("visit.receipt.progress", "Processed"),
+    receiptInventory: t("visit.receipt.inventory", "Frozen inventory"),
+    receiptUnknown: t("visit.receipt.unknown", "Unknown / unavailable"),
     verbReschedule: t("visit.ledger.verbReschedule", "Reschedule result"),
     verbReassign: t("visit.ledger.verbReassign", "Reassign result"),
     verbCancel: t("visit.ledger.verbCancel", "Cancel result"),
@@ -203,7 +206,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     outcomeBlockedNoAssign: t("visit.outcome.blockedNoAssign", "Blocked before change — no assignment to update, or outside your scope. Nothing changed."),
     outcomeError: t("visit.outcome.error", "Not changed — something went wrong. This item is safe to retry."),
     errSelectOne: t("visit.err.selectOne", "Select at least one visit."),
-    errReasonRequired: t("visit.err.reasonRequired", "A governed cancellation reason is required (comments are mandatory for Other) — final."),
+    errReasonRequired: t("visit.err.reasonRequired", "The mutation request identity is missing or invalid. Nothing changed."),
     errReasonsUnavailable: t("visit.err.reasonsUnavailable", "Cancellation reasons are temporarily unavailable (ERR-OPS-001) — nothing was changed."),
     errSession: t("visit.err.session", "Session expired — sign in again."),
     errWindowRequired: t("visit.err.windowRequired", "A new window start and end are both required."),
@@ -250,7 +253,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
         </EmptyState>
       ) : (
         <VisitsBoard rows={rows} inspectors={inspectors} typeOptions={typeOptions} modeOptions={modeOptions}
-          regionOptions={regionOptions} cityOptions={cityOptions} cancelReasons={cancelReasons}
+          regionOptions={regionOptions} cityOptions={cityOptions}
           total={total} limit={limit} nextLimit={nextLimit} strings={strings} locale={locale}
           targetMode={targetPreview} routeBase={routeBase} />
       )}

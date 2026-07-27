@@ -201,7 +201,9 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
         <PlanningPreview methods={methods} drafts={drafts.map(draft => ({
           id: draft.id, method: t(`enum.${draft.method}`, draft.method), status: t(`enum.${draft.status}`, draft.status),
           planReference: draft.plan_reference, createdAt: draft.created_at, planner: draft.profiles?.full_name ?? "—", href: continueHref(draft),
-        }))} effectivePackage={packageOptions[0]?.label ?? null} canCreate={access.can("planning.create")} locale={locale} />
+        }))} effectivePackage={packageOptions[0]?.label ?? null} canCreate={access.can("planning.create")} locale={locale}
+          planningDraftLabel={t("plan.draft.planningLabel", "Draft · planning")}
+          planningDraftHelp={t("plan.draft.planningHelp", "Visit intent is unpublished and not executable.")} />
       </Shell>
     );
   }

@@ -1,6 +1,5 @@
 "use client";
 import EmptyState from "@/components/EmptyState";
-import type { ReasonOption } from "@/lib/planning/lifecycle";
 // W2/P2 — Visit Management board (SCR-WEB-200/210).
 // M02-003/021: search by Visit ID / Factory / CR / Industrial License / Inspector
 //              — client filter over the loaded server page (RLS-scoped rows).
@@ -136,6 +135,12 @@ export type VisitsBoardStrings = {
   ledgerSummaryNoNotif: string;   // "{n}"
   ledgerRetrySafe: string;
   progressBusy: string;           // "{n}"
+  frozenSelection: string;
+  receiptCommand: string;
+  receiptStatus: string;
+  receiptProgress: string;
+  receiptInventory: string;
+  receiptUnknown: string;
   verbReschedule: string; verbReassign: string; verbCancel: string; verbEdit: string;
   outcomeApplied: string;
   outcomeNoNotif: string;
@@ -177,15 +182,13 @@ type AllowedKey = "editable" | "locked" | "final" | "expired";
 const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
 const EMPTY: ActionResult = {};
 
-export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions, regionOptions, cityOptions, cancelReasons, total, limit, nextLimit, strings, locale, targetMode = false, routeBase = "/visits" }: {
+export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions, regionOptions, cityOptions, total, limit, nextLimit, strings, locale, targetMode = false, routeBase = "/visits" }: {
   rows: VisitRow[];
   inspectors: Inspector[];
   typeOptions: { value: string; label: string }[];
   modeOptions: { value: string; label: string }[];
   regionOptions: { value: string; label: string }[];
   cityOptions: { value: string; label: string }[];
-  /** M8 — governed cancellation reason options (planning_lookups). */
-  cancelReasons: ReasonOption[];
   total: number;
   limit: number;
   nextLimit: number | null;
@@ -540,16 +543,9 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
             <form action={canAct} onSubmit={() => setLastVerb("cancel")} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               {hidden}
               {identityFields("cancel")}
-              {/* M8 / PLN-CON-011 — governed cancellation reason (active lookup
-                  keys only); comments mandatory when the reason is Other
-                  (server-enforced). */}
-              <div className="field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="bulk-cancel-reason">{strings.bulkCancelReason}</label>
-                <select id="bulk-cancel-reason" className="select" name="reason_key" required>
-                  <option value="">{strings.selectOption}</option>
-                  {cancelReasons.map(o => <option key={o.key} value={o.key}>{o.label_en}</option>)}
-                </select></div>
               <div className="field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="bulk-cancel-comments">{strings.bulkCancelComments}</label>
-                <input id="bulk-cancel-comments" className="input" name="comments" placeholder={strings.bulkCancelPlaceholder} /></div>
+                <input id="bulk-cancel-comments" className="input" name="note" placeholder={strings.bulkCancelPlaceholder} />
+                <span className="field-help">{strings.bulkCancelPlaceholder}</span></div>
               <button className="btn btn-danger btn-touch" disabled={busy || !requestIdentity}>{strings.bulkCancelBtn}</button>
             </form>
             <form action={edtAct} onSubmit={() => setLastVerb("edit")} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
@@ -580,7 +576,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
       {/* CD-026 — busy progress: role=status, no optimistic success (S25/S39) */}
       {pending && (
         <div className="sq-banner" role="status" aria-live="polite">
-          <div>{strings.progressBusy.replace("{n}", String(selected.size))}</div>
+          <div>{strings.progressBusy.replace("{n}", String(selected.size))} · {strings.frozenSelection}</div>
         </div>
       )}
 
@@ -604,6 +600,18 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
             {nBlocked > 0 && <span className="badge badge-warning">{strings.ledgerSummaryBlocked.replace("{n}", String(nBlocked))}</span>}
             {nNoNotif > 0 && <span className="badge badge-warning">{strings.ledgerSummaryNoNotif.replace("{n}", String(nNoNotif))}</span>}
           </div>
+          {result?.receipt && (
+            <div className="sq-tablewrap">
+              <table className="sq-table">
+                <tbody>
+                  <tr><th scope="row">{strings.receiptCommand}</th><td><span className="id-code">{result.receipt.commandId}</span></td></tr>
+                  <tr><th scope="row">{strings.receiptStatus}</th><td>{result.receipt.status}</td></tr>
+                  <tr><th scope="row">{strings.receiptProgress}</th><td className="sq-numeric">{result.receipt.appliedCount + result.receipt.blockedCount + result.receipt.failedCount} / {result.receipt.targetCount}</td></tr>
+                  <tr><th scope="row">{strings.receiptInventory}</th><td><span className="id-code">{result.receipt.inventoryHash || strings.receiptUnknown}</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          )}
           <div className="sq-tablewrap"><table className="sq-table">
             <thead><tr>
               <th scope="col">{strings.ledgerColVisit}</th>

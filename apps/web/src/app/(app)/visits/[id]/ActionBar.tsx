@@ -14,6 +14,7 @@ import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { returnVisit, republishVisit, cancelVisit, rescheduleVisit, reassignVisit, updateVisitType, duplicateVisit, repackageVisit, type ActionResult } from "./actions";
 import type { ReasonOption } from "@/lib/planning/lifecycle";
+import type { PlanningMutationReceipt } from "@/lib/planning/closure-receipts";
 
 type I = { user_id: string; full_name: string };
 export type PackageOption = { id: string; label: string };
@@ -23,7 +24,7 @@ export type ActionBarStrings = {
   heading: string; returnReason: string; returnComments: string; returnBtn: string;
   republishBtn: string; reassignTo: string; reassignBtn: string;
   newWindowStart: string; newWindowEnd: string; rescheduleBtn: string;
-  cancelReason: string; cancelComments: string; cancelBtn: string;
+  cancelComments: string; cancelBtn: string;
   visitTypeLabel: string; visitTypeBtn: string;
   typePeriodic: string; typeFollowUp: string; typeComplaint: string;
   executionStarted: string; finalState: string;
@@ -32,12 +33,50 @@ export type ActionBarStrings = {
   // M8
   commentsHint: string; repackageLabel: string; repackageBtn: string;
   duplicateBtn: string; duplicateWhy: string;
+  optionalNote: string; currentWindow: string;
+  receiptHeading: string; receiptOperation: string; receiptTime: string;
+  receiptCorrelation: string; receiptPersistence: string; receiptAudit: string;
+  receiptNotification: string; receiptCommitted: string; receiptWritten: string;
+  receiptQueued: string; receiptDeliveryUnknown: string; receiptUnknown: string;
+  receiptPriorWindow: string; receiptRequestedWindow: string;
+  receiptCutoff: string;
+  expiryReadOnly: string; expiryNext: string;
 };
 
-export default function ActionBar({ visitId, status, opState, opStateLabel, visitType, windowStart, windowEnd, inspectors, canManage, canReassign, isFinal, returnReasons, cancelReasons, packageOptions, strings }: {
+function MutationReceipt({ receipt, strings }: { receipt: PlanningMutationReceipt; strings: ActionBarStrings }) {
+  const row = receipt.rows[0];
+  const value = (candidate: string | number | null | undefined) =>
+    candidate == null || candidate === "" ? strings.receiptUnknown : String(candidate);
+  return (
+    <section className="sq-state" aria-label={strings.receiptHeading}>
+      <strong>{strings.receiptHeading}</strong>
+      <div className="sq-tablewrap">
+        <table className="sq-table">
+          <tbody>
+            <tr><th scope="row">{strings.receiptOperation}</th><td>{receipt.operation}</td></tr>
+            <tr><th scope="row">{strings.receiptTime}</th><td className="sq-numeric">{value(row?.serverTransactionTime)}</td></tr>
+            <tr><th scope="row">{strings.receiptCorrelation}</th><td><span className="id-code">{value(receipt.correlationId)}</span></td></tr>
+            <tr><th scope="row">{strings.receiptPersistence}</th><td>{strings.receiptCommitted}</td></tr>
+            <tr><th scope="row">{strings.receiptAudit}</th><td>{row?.auditEventId == null ? strings.receiptUnknown : strings.receiptWritten}</td></tr>
+            <tr><th scope="row">{strings.receiptNotification}</th><td>{row?.outboxIntentId ? `${strings.receiptQueued} · ${strings.receiptDeliveryUnknown}` : strings.receiptUnknown}</td></tr>
+            <tr><th scope="row">{strings.receiptCutoff}</th><td className="sq-numeric">{value(row?.cutoffAt)}</td></tr>
+            {receipt.operation === "reschedule" && (
+              <>
+                <tr><th scope="row">{strings.receiptPriorWindow}</th><td className="sq-numeric">{value(row?.priorWindowStart)} → {value(row?.priorWindowEnd)}</td></tr>
+                <tr><th scope="row">{strings.receiptRequestedWindow}</th><td className="sq-numeric">{value(row?.requestedWindowStart)} → {value(row?.requestedWindowEnd)}</td></tr>
+              </>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+export default function ActionBar({ visitId, status, opState, opStateLabel, visitType, windowStart, windowEnd, inspectors, canManage, canReassign, isFinal, returnReasons, packageOptions, strings }: {
   visitId: string; status: string; opState: string; opStateLabel: string; visitType: string; windowStart: string; windowEnd: string; inspectors: I[];
   canManage: boolean; canReassign: boolean; isFinal: boolean;
-  returnReasons: ReasonOption[]; cancelReasons: ReasonOption[]; packageOptions: PackageOption[];
+  returnReasons: ReasonOption[]; packageOptions: PackageOption[];
   strings: ActionBarStrings;
 }) {
   const router = useRouter();
@@ -118,6 +157,7 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
             <>
               <form action={rscAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
                 <input type="hidden" name="visit_id" value={visitId} />
+                <span className="t-caption">{strings.currentWindow}: <span className="sq-numeric">{toLocal(windowStart)} → {toLocal(windowEnd)}</span></span>
                 <div className="field" style={{ maxInlineSize: 220 }}><label className="sq-field__label" htmlFor="visit-reschedule-start">{strings.newWindowStart}</label>
                   <input className="input numeric" type="datetime-local" name="window_start" id="visit-reschedule-start" defaultValue={toLocal(windowStart)} /></div>
                 <div className="field" style={{ maxInlineSize: 220 }}><label className="sq-field__label" htmlFor="visit-reschedule-end">{strings.newWindowEnd}</label>
@@ -126,13 +166,9 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
               </form>
               <form action={canAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
                 <input type="hidden" name="visit_id" value={visitId} />
-                <div className="field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="visit-cancel-reason">{strings.cancelReason}</label>
-                  <select className="select" name="reason_key" id="visit-cancel-reason" required>
-                    <option value="">—</option>
-                    {cancelReasons.map(o => <option key={o.key} value={o.key}>{o.label_en}</option>)}
-                  </select></div>
                 <div className="field" style={{ maxInlineSize: 260 }}><label className="sq-field__label" htmlFor="visit-cancel-comments">{strings.cancelComments}</label>
-                  <input className="input" name="comments" id="visit-cancel-comments" placeholder={strings.commentsHint} /></div>
+                  <input className="input" name="note" id="visit-cancel-comments" placeholder={strings.optionalNote} />
+                  <span className="field-help">{strings.optionalNote}</span></div>
                 <button className="btn btn-danger btn-touch" disabled={busy}>{strings.cancelBtn}</button>
               </form>
             </>
@@ -180,11 +216,13 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
       {isFinal && (
         <div className="sq-actionzone">
           <p className="sq-actionzone__label t-caption">{strings.zoneUnavailable}</p>
-          <span className="badge">{strings.finalState}</span>{" "}
-          <span className="t-caption">{strings.duplicateWhy}</span>
+          <span className={`badge ${status === "expired" ? "badge-disabled" : ""}`}>{status === "expired" ? strings.expiryReadOnly : strings.finalState}</span>{" "}
+          <span className="t-caption">{status === "expired" ? strings.expiryNext : strings.duplicateWhy}</span>
         </div>
       )}
 
+      {can.receipt && <MutationReceipt receipt={can.receipt} strings={strings} />}
+      {rsc.receipt && <MutationReceipt receipt={rsc.receipt} strings={strings} />}
       {/* role=status success / single role=alert failure (DSG-A11Y-001) */}
       <div aria-live="polite">{ok && <div className="sq-banner sq-banner--success" role="status"><div>{ok}</div></div>}</div>
       {msg && <div className="sq-banner sq-banner--critical" role="alert"><div>{msg}</div></div>}

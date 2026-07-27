@@ -177,6 +177,8 @@ export async function cancelVisit(_: ActionResult, fd: FormData): Promise<Action
           ? "Your account does not have the Planning cancellation capability. Nothing was changed."
           : errorCode === "scope_denied"
             ? "This factory is outside your authorized Planning scope. Nothing was changed."
+            : errorCode === "conflict"
+              ? "This visit changed while cancellation was being prepared. Nothing was changed; refresh before retrying."
         : "Cancellation was not committed. Refresh the visit before retrying.",
       errorCode,
     };
@@ -231,6 +233,8 @@ export async function rescheduleVisit(_: ActionResult, fd: FormData): Promise<Ac
           ? "Your account does not have the Planning reschedule capability. Nothing was changed."
           : errorCode === "scope_denied"
             ? "This factory is outside your authorized Planning scope. Nothing was changed."
+            : errorCode === "conflict"
+              ? "The visit version or requested window now conflicts with authoritative Planning state. Nothing was changed."
         : "Rescheduling was not committed. Refresh the visit before retrying.",
       errorCode,
     };
