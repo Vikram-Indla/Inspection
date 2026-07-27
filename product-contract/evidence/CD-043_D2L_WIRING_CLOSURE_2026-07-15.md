@@ -19,7 +19,7 @@ append-only timeline. **No new server contract was invented.**
 
 | State | Closure | Files |
 |-------|---------|-------|
-| **S12** closed / read-only | Explicit `ax-banner--immutable` (🔒) — reason preserved; closing ≠ submission; hand-off to engine → P08 | `Room.tsx`, `page.tsx` (strings) |
+| **S12** closed / read-only | Explicit `legacy-banner--immutable` (🔒) — reason preserved; closing ≠ submission; hand-off to engine → P08 | `Room.tsx`, `page.tsx` (strings) |
 | **S15** offline | Client `navigator.onLine` banner; begin/reschedule/close disabled; "nothing queued, no reconnection promised" | `Room.tsx`, `page.tsx` |
 | **S13** stale / concurrent | Optimistic-concurrency rev token `state:timelineLength` submitted with each mutation; server refuses on mismatch (`STALE`) **before any write**; reload affordance | `actions.ts` (beginRemote, closeSession, rescheduleSession), `Room.tsx`, `page.tsx` |
 | **S08** loading | Route-level `loading.tsx` skeleton over the genuine async session read | `loading.tsx` (new) |
@@ -53,7 +53,7 @@ close outcome. R1 failure modes were not reintroduced.
 - `tsc -p apps/web/tsconfig.json --noEmit` → **No errors found**.
 - `next lint` (full app) → **0 errors / 0 warnings**.
 - Color-law grep on all four changed files → clean (ADS tokens only; reused
-  `ax-banner`, `ax-banner--immutable`, `ax-skeleton`, `ax-btn`).
+  `legacy-banner`, `legacy-banner--immutable`, `legacy-skeleton`, `legacy-btn`).
 - **E2E authored:** `apps/web/e2e/cd-043-virtual-boundary-states.spec.ts` — driven
   coverage for S12 (closed read-only, no mutating control), S13 (rev-mismatch
   refuses close before any write + reload prompt; asserts session not closed),

@@ -11,7 +11,7 @@ The authenticated Web/Admin shell is implemented by:
 - `apps/web/src/components/Shell.tsx` — authenticated server component, `getUser`, RLS-scoped role lookup, localization and safe identity props.
 - `apps/web/src/lib/shell-navigation.ts` — deterministic role-to-route mapping.
 - `apps/web/src/components/ShellClient.tsx` — grouped disclosures, desktop collapse, mobile drawer/focus behavior, navigation search, theme, language, notifications, account and sign-out.
-- `apps/web/src/app/astryx.css` — accepted Saqeel token-based shell styling, responsive behavior and RTL.
+- `apps/web/src/app/retired-predecessor.css` — accepted Saqeel token-based shell styling, responsive behavior and RTL.
 
 The field/iPad and external virtual-participant channels retain their own constrained navigation semantics. They must not become reduced desktop portals.
 

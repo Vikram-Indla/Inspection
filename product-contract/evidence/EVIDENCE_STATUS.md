@@ -310,7 +310,7 @@ Owner: CD004-EV-003 and CD004-EV-005 are closed. CD004-EV-004 remains blocked be
 
 | ID | Item | File | Status |
 |---|---|---|---|
-| CD031-EV-001 | Two-column provenance-led dossier restructure (astryx.css + page.tsx + loading.tsx) | `../../apps/web/src/app/astryx.css`; `../../apps/web/src/app/factories/[id]/page.tsx`; `../../apps/web/src/app/factories/[id]/loading.tsx` | Captured — typecheck clean, production build clean (0 errors) |
+| CD031-EV-001 | Two-column provenance-led dossier restructure (retired-predecessor.css + page.tsx + loading.tsx) | `../../apps/web/src/app/retired-predecessor.css`; `../../apps/web/src/app/factories/[id]/page.tsx`; `../../apps/web/src/app/factories/[id]/loading.tsx` | Captured — typecheck clean, production build clean (0 errors) |
 | CD031-EV-002 | New focused e2e suite — source-truth HANDOFF_BLOCKED discipline + live planner persona + Arabic/RTL | `../../apps/web/e2e/cd-031-factory-360.spec.ts` | Captured — **15/15 PASS** |
 | CD031-EV-003 | Sponsor override of task-slice scope and design-package DO-NOT-EXECUTE gate | `../governance/decision_register.csv` (DEC-014) | Captured — resolved in-chat 2026-07-15 (Vikram Indla) |
 | CD031-EV-004 | Independent Codex wiring audit against WIRING_MAP_CD-031.csv (18 legs + 4b/4c) | `CODEX_AUDIT_CD-031_2026-07-15.md` | **BLOCKED_UPSTREAM** — authoritative map absent; raw-error finding remediated and reverified, supplemental leg review recorded, DEC-012 certification withheld |

@@ -18,7 +18,7 @@ SCR-PUB-010 v3 (static SVG brand hero) -> v4 (Login.dc.html Turn 4):
   no third-party GeoJSON host at runtime), boundary mask, single-hue activity
   zones, factory chips, animated route, emerald geofence + inspector.
   On any init failure the static SaqeelHero SVG takes the frame (offline-safe).
-- All colours via ax tokens (GLOBAL COLOR LAW); no raw values outside tokens.css.
+- All colours via legacy tokens (GLOBAL COLOR LAW); no raw values outside tokens.css.
 - Sample data only — no live operational intelligence on the public surface
   (DEC-011 / SAQEEL-07 preserved). No persona selector (role routing stays
   server-side via /launch).
@@ -29,7 +29,7 @@ Unchanged (verified)
 - Anti-enumeration password reset -> neutral confirmation
 - FND-003 auth audit (password_reset_requested hashed client-side)
 - /reset shares login.css primitives (lg-topbar/lg-card/lg-waiting) — rendered OK
-- e2e selectors #email / form:has(#email) button.ax-btn--prominent
+- e2e selectors #email / form:has(#email) button.legacy-btn--prominent
 
 Evidence
 --------

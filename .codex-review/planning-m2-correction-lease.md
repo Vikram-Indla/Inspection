@@ -6,8 +6,8 @@
 
 The corrected Claude Design revision `1784901048581707` is accepted as the
 design-side baseline for `WA-DES-036`. Application acceptance is blocked because
-canonical HEAD `3323a8ef` combines the PR12 root layout (Astryx retired and not
-loaded) with PR54 sources that again use unloaded `.ax-*`, `var(--ax-*)`, and
+canonical HEAD `3323a8ef` combines the PR12 root layout (retired predecessor retired and not
+loaded) with PR54 sources that again use unloaded `.legacy-*`, `var(--legacy-*)`, and
 undefined `.wa-*` selectors.
 
 ## Ownership
@@ -28,9 +28,9 @@ Outcome:
 - Reconcile the PR12 native-SAQEEL shell/component source against the pre-PR54
   parent `8adfd3e9`.
 - Preserve later functional changes.
-- Restore the protected zero-trace contract: no loaded `.ax-*` selectors or
-  `--ax-*` aliases.
-- Do not import `astryx.css`, add compatibility shims, change product behavior,
+- Restore the protected zero-trace contract: no loaded `.legacy-*` selectors or
+  `--legacy-*` aliases.
+- Do not import `retired-predecessor.css`, add compatibility shims, change product behavior,
   or modify backend/API/data contracts.
 
 ## Lease B — bounded Planning M2 correction
@@ -50,7 +50,7 @@ Files:
 
 Required outcomes:
 
-- Replace bounded Astryx usages with loaded SAQEEL components and semantic
+- Replace bounded retired predecessor usages with loaded SAQEEL components and semantic
   tokens.
 - Use co-located CSS modules for Planning-card and Visit-detail preview layout;
   do not restore global `wa-*` rules.

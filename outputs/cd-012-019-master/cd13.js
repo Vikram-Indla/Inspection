@@ -59,7 +59,7 @@
       return '<div class="dz-node' + (mods || "") + '" style="inset-inline-start:' + x + 'px;inset-block-start:' + y + 'px"><b>' + esc(label) + '</b><small>' + key + '</small></div>';
     }
     var edges =
-      '<svg class="dz-edges" width="100%" height="100%"><defs><marker id="dzArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="var(--ax-color-border-strong)"/></marker></defs>' +
+      '<svg class="dz-edges" width="100%" height="100%"><defs><marker id="dzArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="var(--legacy-color-border-strong)"/></marker></defs>' +
       '<path class="dz-edge' + (opts.replay ? " dz-edge--replay" : "") + '" d="M150 60 C 200 60 210 60 250 60"/>' +
       '<path class="dz-edge' + (opts.replay ? " dz-edge--replay" : "") + '" d="M380 60 C 430 60 440 60 480 60"/>' +
       '<path class="dz-edge" d="M600 60 C 650 60 660 60 700 60"/>' +
@@ -75,7 +75,7 @@
       node(922, 36, N.closed, "terminal", " dz-node--terminal") +
       node(180, 190, N.returned, "loop") +
       (opts.unreach ? node(650, 190, N.sup, "no inbound", " dz-node--invalid") : '') +
-      (opts.unreach ? '<span class="dz-badge" style="inset-inline-start:650px;inset-block-start:250px;color:var(--ax-color-critical-strong)">' + esc(t.unreach) + '</span>' : '') +
+      (opts.unreach ? '<span class="dz-badge" style="inset-inline-start:650px;inset-block-start:250px;color:var(--legacy-color-critical-strong)">' + esc(t.unreach) + '</span>' : '') +
       '<span class="dz-badge" style="inset-inline-start:14px;inset-block-end:12px;inset-block-start:auto">7 ' + esc(t.states) + ' · 8 ' + esc(t.transitions) + ' · ' + C.tt("proven", "config_versions draft") + '</span>' +
       '</div>';
   }
@@ -103,11 +103,11 @@
 
   function actionsBar(t, opts) {
     opts = opts || {};
-    return '<div class="ax-commandbar">' +
-      '<button class="ax-btn ax-btn--secondary"' + (opts.noSave ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.saveDraft) + '</button>' +
-      '<button class="ax-btn ax-btn--secondary"' + (opts.noSubmit ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.submit) + '</button>' +
-      '<button class="ax-btn"' + (opts.noApprove ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.approve) + '</button>' +
-      '<span class="ax-commandbar__spacer"></span>' + C.tt("proven", "actions: propose/save/approvePublish") + '</div>';
+    return '<div class="legacy-commandbar">' +
+      '<button class="legacy-btn legacy-btn--secondary"' + (opts.noSave ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.saveDraft) + '</button>' +
+      '<button class="legacy-btn legacy-btn--secondary"' + (opts.noSubmit ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.submit) + '</button>' +
+      '<button class="legacy-btn"' + (opts.noApprove ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.approve) + '</button>' +
+      '<span class="legacy-commandbar__spacer"></span>' + C.tt("proven", "actions: propose/save/approvePublish") + '</div>';
   }
 
   function frame(lang, t, main) {
@@ -128,14 +128,14 @@
       C.guard(t.invalidEdge, t.invalidEdgeD) +
       '<div class="m-split"><div>' + canvas(t, { invalidEdge: true }) + '</div><div style="display:flex;flex-direction:column;gap:16px">' + inspector(t, lang) + simulator(t, null) + '</div></div>');
     else if (state === "unreachable") body = C.content(actionsBar(t, { noSubmit: true, noApprove: true }) + C.legend(lang) +
-      '<div class="ax-banner ax-banner--warning"><span>◇</span><div><strong>' + esc(t.unreach) + '</strong><div class="cd-sub">' + esc(t.unreachD) + ' · ' + esc(t.unreachTag) + '</div></div></div>' +
+      '<div class="legacy-banner legacy-banner--warning"><span>◇</span><div><strong>' + esc(t.unreach) + '</strong><div class="cd-sub">' + esc(t.unreachD) + ' · ' + esc(t.unreachTag) + '</div></div></div>' +
       '<div class="m-split"><div>' + canvas(t, { unreach: true }) + '</div><div style="display:flex;flex-direction:column;gap:16px">' + inspector(t, lang) + simulator(t, null) + '</div></div>');
     else if (state === "sim-fail") body = C.content(actionsBar(t, { noApprove: true }) + C.legend(lang) +
       '<div class="m-split"><div>' + canvas(t, { replay: true, selected: true }) + '</div><div style="display:flex;flex-direction:column;gap:16px">' + simulator(t, t.simSteps, true) + inspector(t, lang) + '</div></div>');
     else if (state === "sim-pass") body = C.content(actionsBar(t, {}) + C.legend(lang) +
       '<div class="m-split"><div>' + canvas(t, { replay: true }) + '</div><div style="display:flex;flex-direction:column;gap:16px">' + simulator(t, t.simPassSteps) + inspector(t, lang) + '</div></div>');
     else if (state === "validation") body = C.content(actionsBar(t, { noSubmit: true, noApprove: true }) +
-      '<div class="ax-validation"><strong style="font:var(--ax-text-body-strong)">' + esc(t.valT) + '</strong><div class="cd-sub" style="margin-block:4px">' + esc(t.valD) + '</div><ul>' + t.valItems.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join("") + '</ul></div>' +
+      '<div class="legacy-validation"><strong style="font:var(--legacy-text-body-strong)">' + esc(t.valT) + '</strong><div class="cd-sub" style="margin-block:4px">' + esc(t.valD) + '</div><ul>' + t.valItems.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join("") + '</ul></div>' +
       C.legend(lang) + '<div class="m-split"><div>' + canvas(t, {}) + '</div>' + inspector(t, lang) + '</div>');
     else if (state === "submitted") body = C.content(C.banner("immutable", "▣", t.submittedT, t.submittedD) + C.legend(lang) +
       actionsBar(t, { noSave: true, noSubmit: true }) + '<div class="m-split"><div>' + canvas(t, {}) + '</div>' + inspector(t, lang) + '</div>');

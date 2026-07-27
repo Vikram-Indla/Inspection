@@ -5,11 +5,11 @@ Use the master constitution. Perform read-only discovery before designing.
 ## Inspect
 
 - `apps/web/src/app`, `apps/web/src/components`, and `apps/web/src/lib`.
-- `apps/web/src/app/tokens.css`, `astryx.css`, `Shell.tsx`, theme and localization components.
+- `apps/web/src/app/tokens.css`, `retired-predecessor.css`, `Shell.tsx`, theme and localization components.
 - Supabase migrations that define the journey's states and data.
 - `product-contract/screens/screen_route_catalogue.csv` and `authority/CODE_ROUTE_RECONCILIATION.csv`.
 - Current acceptance ledger, storyboard status, E2E tests, and known gaps.
-- Existing Astryx prototypes only after inspecting current production source.
+- Existing retired predecessor prototypes only after inspecting current production source.
 
 ## Runtime precondition
 

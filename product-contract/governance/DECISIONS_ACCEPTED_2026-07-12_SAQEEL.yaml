@@ -29,7 +29,7 @@ scope:
     decision: >
       Type scale bumped app-wide: body 14→16px, field 16→17px, caption
       12.5→14px, heading steps re-derived; control heights +4px. Fonts:
-      Space Grotesk (EN), IBM Plex Sans Arabic (AR), JetBrains Mono (labels).
+      retired input font (EN), IBM Plex Sans Arabic (AR), retired mono font (labels).
   - id: "SAQEEL-06"
     decision: >
       REVISED (v3, design critique 2026-07-12 pm): login persona selector

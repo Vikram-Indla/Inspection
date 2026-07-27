@@ -3,7 +3,7 @@ DO NOT EXECUTE UNTIL SPONSOR DESIGN APPROVAL AND INDEPENDENT CODEX WIRING AUDIT
 implementation_authorized: false
 
 ## Package
-Single synchronized package at outputs/cd-029-r1/ : editable source (CD-029 Level 2 Review Workspace.dc.html), standalone, cd29-stage.js, cd29-annot.js, saqeel-tokens.css, saqeel-astryx.css, saqeel-prism.svg, manifest, component/wiring/state maps, acceptance checklist, research provenance, this handoff, the implementation prompt, inventory, and evidence PNGs.
+Single synchronized package at outputs/cd-029-r1/ : editable source (CD-029 Level 2 Review Workspace.dc.html), standalone, cd29-stage.js, cd29-annot.js, saqeel-tokens.css, saqeel-retired-predecessor.css, saqeel-prism.svg, manifest, component/wiring/state maps, acceptance checklist, research provenance, this handoff, the implementation prompt, inventory, and evidence PNGs.
 
 ## Signature (binding)
 Finding Trace Chain: question → response → evidence → clause → violation → corrective action → decision comment. Keyboard-operable disclosure list, source/version-labelled, list-equivalent, never a decorative graph; unavailable links shown, never fabricated.

@@ -79,7 +79,7 @@ protected_paths:
     - /Users/vikramindla/Developer/Inspection/CLAUDE.md
     - /Users/vikramindla/Developer/Inspection/apps/web/src/components/Shell.tsx
     - /Users/vikramindla/Developer/Inspection/apps/web/src/components/ShellClient.tsx
-    - /Users/vikramindla/Developer/Inspection/apps/web/src/app/astryx.css
+    - /Users/vikramindla/Developer/Inspection/apps/web/src/app/retired-predecessor.css
     - /Users/vikramindla/Developer/Inspection/apps/web/src/lib/i18n.ts
     - /Users/vikramindla/Developer/Inspection/apps/web/src/app/(app)/admin/mvp3-actions.ts
     - /Users/vikramindla/Developer/Inspection/supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql
@@ -190,7 +190,7 @@ change_area_partition:
       - apps/web/src/app/(app)/admin/devices/loading.tsx
       - new route-local Devices components, styles and action file under that directory
     protected_from_lane:
-      - Shell.tsx, ShellClient.tsx, astryx.css, i18n.ts and mvp3-actions.ts
+      - Shell.tsx, ShellClient.tsx, retired-predecessor.css, i18n.ts and mvp3-actions.ts
       - database, provider adapter, Field/offline, seed, QA and evidence
     dependencies: [DEV-CHG-SVC-02, DEV-CHG-DB-02, DEV-CHG-DES-01]
     collision_rule: Same lane as SVC-02; no other lane edits /admin/devices.

@@ -16,7 +16,7 @@
   hard-coded Arabic-only shell mark.
 - Corrected Compliance labels and destinations.
 - Reduced Administration to the six governed hubs in the required order.
-- Removed stale `ax-*` shell class consumers and bound the live shell to the
+- Removed stale `legacy-*` shell class consumers and bound the live shell to the
   native SAQEEL component layer already imported by the application.
 - Preserved role-aware navigation, Field isolation, RLS-scoped search,
   notifications, theme, locale/RTL, account, and sign-out behavior.
@@ -42,7 +42,7 @@ Arabic RTL with light/dark theme.
 The six aggregate failures are not introduced by this lease:
 
 - Three Field-only `inspector-shell-uplift` checks encounter pre-existing
-  merged Field/Astryx markup. `/field/**`, PWA, iPad, and offline execution are
+  merged Field/retired predecessor markup. `/field/**`, PWA, iPad, and offline execution are
   explicitly outside the F0 lease and were not modified.
 - Three reference-renderer checks require
   `SAQEEL_F0_REFERENCE_RENDERER=enabled`. The sponsor-facing production runtime

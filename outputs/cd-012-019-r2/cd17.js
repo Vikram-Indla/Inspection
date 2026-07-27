@@ -56,13 +56,13 @@
         '<td class="cd-sub">' + u[2].map(function (r) { return esc(t.scopes[r] || "—"); }).join(" · ") + '</td></tr>';
     }).join("");
     return '<div class="m-panel"><div class="m-panel__head"><h4>' + esc(t.matrixT) + '</h4><span class="roro">👁 ' + esc(t.ro) + '</span></div>' +
-      '<div class="ax-tablewrap" style="border:0"><table class="ax-table"><thead><tr><th>' + esc(t.colUser) + '</th><th>' + esc(t.colRoles) + '</th><th>' + esc(t.colScope) + '</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<div class="legacy-tablewrap" style="border:0"><table class="legacy-table"><thead><tr><th>' + esc(t.colUser) + '</th><th>' + esc(t.colRoles) + '</th><th>' + esc(t.colScope) + '</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
       '<p class="cd-sub">' + esc(t.multiNote) + '</p></div>';
   }
 
   function explainer(t, lang) {
     return '<div class="m-panel"><div class="m-panel__head"><h4>' + esc(t.explT) + '</h4><span class="nya__lbl">' + esc(t.explLbl) + '</span></div>' +
-      '<p style="font:var(--ax-text-body-strong)">' + esc(t.explQ) + '</p>' +
+      '<p style="font:var(--legacy-text-body-strong)">' + esc(t.explQ) + '</p>' +
       t.explRows.map(function (r) { return '<div class="rp-why"><span>' + (r[2] === "proven" ? "●" : r[2] === "computed" ? "◇" : "⛔") + '</span><span><b>' + esc(r[0]) + '</b> — ' + esc(r[1]) + '</span></div>'; }).join("") +
       '<span class="nya__seam">' + esc(t.explSeam) + '</span></div>';
   }

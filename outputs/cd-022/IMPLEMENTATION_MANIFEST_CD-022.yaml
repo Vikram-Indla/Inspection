@@ -49,6 +49,6 @@ file_changes:
     design_node: 2a center panel; 2d right column
     tests: text-alternative parity with map; degraded-record flags; bdi isolation of identifiers
 removals: []   # REMOVE requires explicit human approval; none proposed
-rtl_theme_impact: Logical properties only; Arabic-primary entity names with LTR secondary line; bdi-isolated CR/license/coords/dates; dark/light via ax tokens
+rtl_theme_impact: Logical properties only; Arabic-primary entity names with LTR secondary line; bdi-isolated CR/license/coords/dates; dark/light via legacy tokens
 rollback: Additive UPDATEs behind the same route; git revert of implementation commits; no schema changes proposed
 status: IMPLEMENTED_PENDING_MIGRATION_RUNTIME_CERTIFICATION

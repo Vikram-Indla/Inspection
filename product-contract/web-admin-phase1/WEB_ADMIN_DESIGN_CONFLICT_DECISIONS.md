@@ -4,7 +4,7 @@
 
 | Conflict | Resolution | Effect |
 |---|---|---|
-| Current Astryx/shared-shell styling versus the newly approved HTML | `Saqeel Web(3).html` is the represented Phase 1 Web/Admin shell/dashboard visual and interaction authority. | Current shell is migration/regression evidence, not visual authority. No current code is deleted before certified cutover. |
+| Current retired predecessor/shared-shell styling versus the newly approved HTML | `Saqeel Web(3).html` is the represented Phase 1 Web/Admin shell/dashboard visual and interaction authority. | Current shell is migration/regression evidence, not visual authority. No current code is deleted before certified cutover. |
 | Existing SAQEEL module designs versus shell structure | The HTML controls shell, dashboard, Operations Center primary views, and Factory 360 represented structure; module designs control deeper content and required states. | Module screens fit within the fixed shell hierarchy and may not rename/reorder its options. |
 | HTML fixture values versus customer/business rules | Customer requirements and governed formulas/data win. | Preserve card/formula/example presentation, but use real values or an honest unavailable state; never copy fixtures to production paths. |
 | HTML compliance formula wording versus accepted runtime | The canonical governed compliance formula remains authoritative pending DEC-028. | Record the visible delta; do not silently change business semantics to match the fixture. |

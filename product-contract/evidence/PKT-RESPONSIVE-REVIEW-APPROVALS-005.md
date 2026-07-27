@@ -62,7 +62,7 @@ git diff --check
 ## Test-contract reconciliation
 
 - The non-reviewer queue test now uses the available Inspector storage state instead of the expired Planner fixture. The assertion remains the stricter designed unauthorized state and continues to prove that unauthorized is distinct from an empty queue.
-- The inherited Arabic workspace test now recognizes the approved MSA comparison heading, uses the persisted `saqeel-theme` application contract instead of media emulation, and excludes the canonical off-canvas `.ax-shell__nav` from visible-overflow measurement.
+- The inherited Arabic workspace test now recognizes the approved MSA comparison heading, uses the persisted `saqeel-theme` application contract instead of media emulation, and excludes the canonical off-canvas `.legacy-shell__nav` from visible-overflow measurement.
 - The loading source guard now recognizes the typed `ariaBusy` JSX property that renders `aria-busy="true"`.
 - The version-comparison migration source guard now uses its existing repository-root resolver instead of treating a root migration as an `apps/web` file.
 

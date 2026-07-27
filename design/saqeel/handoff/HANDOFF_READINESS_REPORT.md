@@ -2,12 +2,12 @@
 Date: 20 Jul 2026
 
 ## Complete
-- Token package: semantic CSS custom properties + tokens.json + 12 concern-split JSONs; light+dark, LTR+RTL, 3 density profiles (comfortable/compact/field); charts, map, evidence, status (10 roles) tokens. Zero Astryx naming.
+- Token package: semantic CSS custom properties + tokens.json + 12 concern-split JSONs; light+dark, LTR+RTL, 3 density profiles (comfortable/compact/field); charts, map, evidence, status (10 roles) tokens. Zero retired predecessor naming.
 - Component library (56 canonical components, 9 families) with .d.ts API contracts, usage prompts, state matrix, usage/misuse guides — including offline set (SyncIndicator, DiffView/conflict, immutable Alert) and the five SAQEEL signatures (GeoWorkspace, StatusSpine, EvidenceStack, ExceptionRail, Field-to-Command Continuity).
 - Flagship Inspection Data Grid, form system, map system, application shell — specified and demonstrated.
 - 18 representative screens (HTML, canonical) + 13 high-res PNG exports covering EN/AR × light/dark, map, register, detail, form, review, evidence, corrective, tablet field with offline/sync states; four-mode comparison page.
 - Foundations, patterns, iPad suite (11 docs), QA matrices (visual/responsive/accessibility), decision log, parity matrix, Claude Code handoff + implementation sequence.
-- Astryx migration map populated from the REAL repository (Vikram-Indla/Inspection@setup/Inspection) with owner-resolved decisions; zero-trace removal gate defined.
+- retired predecessor migration map populated from the REAL repository (Vikram-Indla/Inspection@setup/Inspection) with owner-resolved decisions; zero-trace removal gate defined.
 
 ## Incomplete
 - Approved brand logo + clear-space rules (placeholder wordmark in use).

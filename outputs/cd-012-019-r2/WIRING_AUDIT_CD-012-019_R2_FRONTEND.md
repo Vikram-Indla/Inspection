@@ -37,4 +37,4 @@ wiring audit (DEC-012) is still required before acceptance.
 ## Shared additions
 
 - `apps/web/src/components/NotYetBoundary.tsx` — reusable honest-boundary component (CD-013/014/016/017/019).
-- `apps/web/src/app/astryx.css` — `.lz-*` (CD-018), `.nya` (boundary), `.rk-*` (CD-014); design-system tokens only.
+- `apps/web/src/app/retired-predecessor.css` — `.lz-*` (CD-018), `.nya` (boundary), `.rk-*` (CD-014); design-system tokens only.

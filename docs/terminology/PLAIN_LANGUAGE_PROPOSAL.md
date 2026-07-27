@@ -60,7 +60,7 @@ The iPad surface is served by responsive routes under `apps/web/src/app/field/..
 - **F0-021 / F0-022** `apps/web/src/app/reviews/page.tsx:236-237` — `review.list.colOpen` = "Workspace" (table header) and `review.list.open` = "Open workspace" (row-action link) → "Open review" for both. This is the highest-priority workspace fix — it is a literal row action, structurally identical to the FactoryList "dossier" row action.
 - **F0-023** same banner as F0-020, body text also contains "workspace" mid-sentence — same key, same fix.
 - **F0-024** `apps/web/src/app/reviews/[id]/page.tsx:61` — `review.ws.unauthBody` = "This workspace requires the Level 2 Reviewer role…" → "This review requires…". This string also leaks the internal term "RLS" (see §13).
-- **F0-040** `apps/web/src/app/reviews/page.tsx:268` — a context badge literally renders "SCR-WEB-300 · /reviews · RLS-scoped" to the reviewer. Companion at `apps/web/src/app/visits/page.tsx:202,214` ("SCR-WEB-200/210 · RLS-scoped"). This looks like a deliberate traceability-badge convention (screen ID + scope note shown as an `ax-lozenge`), not accidental leakage — **flagged for a product decision on whether it's in scope for this remediation wave** before anyone edits it.
+- **F0-040** `apps/web/src/app/reviews/page.tsx:268` — a context badge literally renders "SCR-WEB-300 · /reviews · RLS-scoped" to the reviewer. Companion at `apps/web/src/app/visits/page.tsx:202,214` ("SCR-WEB-200/210 · RLS-scoped"). This looks like a deliberate traceability-badge convention (screen ID + scope note shown as an `legacy-lozenge`), not accidental leakage — **flagged for a product decision on whether it's in scope for this remediation wave** before anyone edits it.
 - **Out-of-scope "workspace" usages** (different concept — task/launch context, not the review scan-first queue; needs its own product decision, not swept into this glossary item): `apps/web/src/app/tasks/page.tsx` ("Task workspace"), `apps/web/src/app/launch/loading.tsx:17`, `apps/web/src/app/launch/no-workspace/page.tsx:27` (route name `/launch/no-workspace` + heading), `apps/web/src/components/AdminRouteBoundary.tsx:25-26`, `apps/web/src/app/virtual/[id]/page.tsx:59`.
 
 ## 6. Operations Center
@@ -96,7 +96,7 @@ No genuinely user-visible dossier/registry/portfolio/lineage hits found in `apps
 
 ## 11. Exports and reports
 
-- **F0-043** `design/astryx/d3/D3-07_factory-360.html:27` — mockup button "Export dossier (permission-gated)" → "Export profile (permission-gated)". This is a design-mockup precursor to a not-yet-built export feature; classified as export/report copy so a future implementer starts from the corrected wording.
+- **F0-043** `design/retired-predecessor/d3/D3-07_factory-360.html:27` — mockup button "Export dossier (permission-gated)" → "Export profile (permission-gated)". This is a design-mockup precursor to a not-yet-built export feature; classified as export/report copy so a future implementer starts from the corrected wording.
 - The immutable cluster (§7) also touches `apps/web/src/app/reports/inspection/[id]/page.tsx` (5 hits including `report.hist.immutable`) — deferred to the immutable wave.
 
 ## 12. Shared shell and navigation

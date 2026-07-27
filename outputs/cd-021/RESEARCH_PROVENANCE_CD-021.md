@@ -21,4 +21,4 @@ Link: https://www.w3.org/International/quicktips/ and https://www.w3.org/Interna
 Observed principle: set base direction once at the document root (dir="rtl"); rely on logical order plus explicit isolation (bdi/dir) for mixed-direction runs such as codes and numbers; do not control direction with CSS alone.
 Adopted: document-level dir/lang, logical properties everywhere, bdi-isolated CR numbers/codes/timestamps/deltas, markup-based direction in the handoff contract.
 Rejected: per-element visual re-ordering and CSS-only direction hacks.
-Fit for Saqeel: matches the existing astryx.css logical-property architecture and the shell contract's Arabic-first rule.
+Fit for Saqeel: matches the existing retired-predecessor.css logical-property architecture and the shell contract's Arabic-first rule.

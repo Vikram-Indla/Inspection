@@ -67,7 +67,7 @@
 
   function simulator(t, allow) {
     return '<div class="m-panel"><div class="m-panel__head"><h4>' + esc(t.sim) + '</h4>' + C.tt("computed", t.simTag) + '</div>' +
-      '<p class="cd-sub" style="font:var(--ax-text-body)"><b>' + esc(t.simUser) + '</b><br>' + esc(t.simQ) + '</p>' +
+      '<p class="cd-sub" style="font:var(--legacy-text-body)"><b>' + esc(t.simUser) + '</b><br>' + esc(t.simQ) + '</p>' +
       '<div class="rp-sim__verdict rp-sim__verdict--' + (allow ? "allow" : "deny") + '">' + (allow ? "✓ " + esc(t.simAllow) : "⛔ " + esc(t.simVerdict)) + '</div>' +
       t.simWhy.map(function (w) { return '<div class="rp-why"><span>' + (w[2] === "proven" ? "●" : "◇") + '</span><span><b>' + esc(w[0]) + '</b> — ' + esc(w[1]) + ' ' + C.tt(w[2], w[2] === "proven" ? "matrix" : "needs citation") + '</span></div>'; }).join("") +
       '<p class="cd-sub">' + esc(t.simRlsNote) + '</p></div>';
@@ -75,11 +75,11 @@
 
   function bar(t, opts) {
     opts = opts || {};
-    return '<div class="ax-commandbar"><button class="ax-btn ax-btn--secondary">' + esc(t.compare) + '</button>' +
-      '<button class="ax-btn ax-btn--secondary">' + esc(t.draftSave) + '</button>' +
-      '<button class="ax-btn ax-btn--secondary"' + (opts.noSubmit ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.submit) + '</button>' +
-      '<button class="ax-btn"' + (opts.noApprove ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.approve) + '</button>' +
-      '<span class="ax-commandbar__spacer"></span>' + C.tt("proven", "maker-checker") + '</div>';
+    return '<div class="legacy-commandbar"><button class="legacy-btn legacy-btn--secondary">' + esc(t.compare) + '</button>' +
+      '<button class="legacy-btn legacy-btn--secondary">' + esc(t.draftSave) + '</button>' +
+      '<button class="legacy-btn legacy-btn--secondary"' + (opts.noSubmit ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.submit) + '</button>' +
+      '<button class="legacy-btn"' + (opts.noApprove ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.approve) + '</button>' +
+      '<span class="legacy-commandbar__spacer"></span>' + C.tt("proven", "maker-checker") + '</div>';
   }
 
   function grid(t, opts, allow) {

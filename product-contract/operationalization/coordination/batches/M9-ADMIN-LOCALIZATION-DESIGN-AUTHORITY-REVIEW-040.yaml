@@ -117,7 +117,7 @@ authority_sources:
     - apps/web/src/components/Shell.tsx
     - apps/web/src/components/ShellClient.tsx
     - apps/web/src/components/SaqeelBrandMark.tsx
-    - apps/web/src/app/astryx.css
+    - apps/web/src/app/retired-predecessor.css
     - supabase/migrations/0013_ui_strings_localization.sql
     - supabase/migrations/0014_ui_strings_history_sync.sql
   source_inspection_limit: >-

@@ -1,8 +1,8 @@
 # F0 Shared Shell — Sponsor Consent Packet
 
-Date: 2026-07-24  
-Design revision: `WA-SHELL-r4`  
-Authority: `WA-SHELL-SRC-001`  
+Date: 2026-07-24
+Design revision: `WA-SHELL-r4`
+Authority: `WA-SHELL-SRC-001`
 Authority SHA-256:
 `b870e06820feb5784687dcb62289aa24a0070635cbc7b606157ec2128bab9bc2`
 
@@ -53,7 +53,7 @@ Verified outcomes:
 - The runtime rail renders generated Arabic-only text.
 - Some shell tests assert current implementation behavior rather than the
   authority.
-- Current shared-shell styling includes legacy/unloaded Astryx selectors and
+- Current shared-shell styling includes legacy/unloaded retired predecessor selectors and
   cannot be certified from the existing focused pass.
 
 The real shell's working search, notifications, theme, account, RLS/RBAC,

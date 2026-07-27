@@ -13,8 +13,8 @@
   html, body { height: 100%; margin: 0; }
   .skel { background: linear-gradient(90deg, var(--surface-sunken) 25%, var(--surface-secondary) 37%, var(--surface-sunken) 63%); background-size: 400% 100%; border-radius: var(--radius-sm); animation: skel 1.4s ease infinite; }
   @keyframes skel { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
-  .ax-state { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 48px 24px; }
-  .ax-state__glyph { display: grid; place-items: center; width: 46px; height: 46px; }
+  .legacy-state { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 48px 24px; }
+  .legacy-state__glyph { display: grid; place-items: center; width: 46px; height: 46px; }
 </style>
 </helmet>
 <div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="height:100vh; display:grid; grid-template-columns:248px 1fr; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
@@ -59,8 +59,8 @@
       <!-- EMPTY -->
       <sc-if value="{{ sEmpty }}" hint-placeholder-val="{{ true }}">
         <div class="panel">
-          <div class="ax-state" role="status">
-            <span class="ax-state__glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-disabled)" stroke-width="1.5" style="width:34px; height:34px;"><path d="M3 7h6l2 3h10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>
+          <div class="legacy-state" role="status">
+            <span class="legacy-state__glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-disabled)" stroke-width="1.5" style="width:34px; height:34px;"><path d="M3 7h6l2 3h10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>
             <h4 style="margin:0; font-size:16px;">{{ emptyTitle }}</h4>
             <p class="t-caption" style="max-width:52ch; margin:0;">{{ emptyBody }}</p>
           </div>
@@ -93,8 +93,8 @@
       <!-- RLS-DENIED -->
       <sc-if value="{{ sRls }}" hint-placeholder-val="{{ false }}">
         <div class="panel">
-          <div class="ax-state" role="status">
-            <span class="ax-state__glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-disabled)" stroke-width="1.5" style="width:32px; height:32px;"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
+          <div class="legacy-state" role="status">
+            <span class="legacy-state__glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-disabled)" stroke-width="1.5" style="width:32px; height:32px;"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
             <h4 style="margin:0; font-size:16px;">{{ rlsTitle }}</h4>
             <p class="t-caption" style="max-width:54ch; margin:0;">{{ rlsBody }}</p>
           </div>

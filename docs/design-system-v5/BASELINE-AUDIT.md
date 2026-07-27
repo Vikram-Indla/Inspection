@@ -3,16 +3,16 @@
 Findings from reading the production CSS import graph and grepping the app before making any change.
 
 ## CSS architecture
-- `apps/web/src/app/tokens.css` (161 lines, V1 pre-change) — single source of raw values, already disciplined (no raw hex anywhere else in the codebase's CSS — `astryx.css` consumes `var(--ax-*)` exclusively). This is a materially better starting point than the master prompt's "1,000+ line legacy stylesheet with no token discipline" assumption.
-- `apps/web/src/app/astryx.css` (1,314 lines) — one monolithic component library, organized into clearly-marked sections (CORE: BUTTONS/INPUTS/STATUS/OVERLAYS/FEEDBACK, ENTERPRISE: APP STRUCTURE/DATA TABLE/PROCESS/DOMAIN, UTILITIES) plus ~450 lines of screen-specific selectors appended by slice (`cd-*`, `lv-*`, `ar-*`, `ccr-*`, `cmp-*`, `lz-*`, `rk-*`, `nya-*`). A literal 14-file layer split (per the master prompt's Wave 1 §5.2) was evaluated and **deliberately not done** — the interdependency and screen-specific tail make that a high-risk, low-value mechanical split versus fixing the actual substance defects (typography, color, loading state, search icon). Recorded here as a considered scope decision, not an oversight.
+- `apps/web/src/app/tokens.css` (161 lines, V1 pre-change) — single source of raw values, already disciplined (no raw hex anywhere else in the codebase's CSS — `retired-predecessor.css` consumes `var(--legacy-*)` exclusively). This is a materially better starting point than the master prompt's "1,000+ line legacy stylesheet with no token discipline" assumption.
+- `apps/web/src/app/retired-predecessor.css` (1,314 lines) — one monolithic component library, organized into clearly-marked sections (CORE: BUTTONS/INPUTS/STATUS/OVERLAYS/FEEDBACK, ENTERPRISE: APP STRUCTURE/DATA TABLE/PROCESS/DOMAIN, UTILITIES) plus ~450 lines of screen-specific selectors appended by slice (`cd-*`, `lv-*`, `ar-*`, `ccr-*`, `cmp-*`, `lz-*`, `rk-*`, `nya-*`). A literal 14-file layer split (per the master prompt's Wave 1 §5.2) was evaluated and **deliberately not done** — the interdependency and screen-specific tail make that a high-risk, low-value mechanical split versus fixing the actual substance defects (typography, color, loading state, search icon). Recorded here as a considered scope decision, not an oversight.
 
 ## V1 defects confirmed present (pre-fix)
 - Dark-theme primary was blue (`#78AEDA`), doubling as both brand and information color — confirmed exactly the bug the ChatGPT review chain flagged.
-- `--ax-radius-input: 12px` (generic capsule fields).
-- Field labels and button/tab/segmented/pagination text all used `--ax-text-body-strong` (600 16px) — no distinct 14/20 label/action scale existed, so labels read as headings and buttons looked oversized.
-- `.ax-btn.is-loading` set `color: transparent`, hiding the label entirely during a pending action (the "anonymous blue rectangle" bug).
-- `.ax-search::before` rendered a generated Unicode `⌕` character, not an SVG icon.
-- No shared `Modal`/`Tabs` React component existed — 4 files hand-rolled `.ax-modal` markup with no focus trap/restore; `role="tab"` usages had no roving-tabindex/keyboard behavior.
+- `--legacy-radius-input: 12px` (generic capsule fields).
+- Field labels and button/tab/segmented/pagination text all used `--legacy-text-body-strong` (600 16px) — no distinct 14/20 label/action scale existed, so labels read as headings and buttons looked oversized.
+- `.legacy-btn.is-loading` set `color: transparent`, hiding the label entirely during a pending action (the "anonymous blue rectangle" bug).
+- `.legacy-search::before` rendered a generated Unicode `⌕` character, not an SVG icon.
+- No shared `Modal`/`Tabs` React component existed — 4 files hand-rolled `.legacy-modal` markup with no focus trap/restore; `role="tab"` usages had no roving-tabindex/keyboard behavior.
 - 50 files used `toISOString().slice(...)` for date formatting; several `dt()` helpers called `Intl.DateTimeFormat("ar-SA", {dateStyle:"medium"})` with no explicit `calendar`, which silently defaults to **Hijri** (islamic-umalqura) — a real, previously-unnoticed correctness bug, not a cosmetic one.
 - No automated guardrail existed to prevent any of the above from being reintroduced.
 

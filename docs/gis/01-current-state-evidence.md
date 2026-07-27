@@ -24,7 +24,7 @@
 - **i18n:** platform-level SB19 system exists — `ui_strings` table (0013), `useT()` server runtime, cookie locale, `html dir=rtl`, `scripts/seed_arabic.py` draft seeder, `/admin/localization` review UI.
 
 ### Working capabilities (runtime-proven)
-1. KSA-wide map, risk-band tone pins (ax tokens only — high/medium/low/neutral), dashed geofence rings (override ?? 150 m default).
+1. KSA-wide map, risk-band tone pins (legacy tokens only — high/medium/low/neutral), dashed geofence rings (override ?? 150 m default).
 2. Pin click → fly-to (zoom 12) + side panel: name, code lozenge, risk band+score, region/city, official coordinates (GIS-Admin-owned, FND-007 messaging).
 3. Radius governance: numeric input with live ring preview; **click-map-to-set-fence-edge** (radius = geodesic distance pin→click); save via server action; RLS errors surfaced.
 4. Engine defaults read-only table + risk legend; governed settings table with contract IDs.

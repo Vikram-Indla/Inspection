@@ -21,9 +21,9 @@
 | CD-018 ADM-LOCALIZATION | /admin/localization | `ui_strings` versioned store; DEC-004/011; `admin/localization/{Manager,actions,page}` | STATED_BY_CONTRACT + `HANDOFF_BLOCKED_CONTEXT_CAPTURE`, `_AR_REVIEW_ROLE`, `_MT_PROVIDER` |
 | CD-019 ADM-AUDIT | /admin/audit | `audit_events` append-only; `admin/audit/page.tsx` | STATED_BY_CONTRACT + `HANDOFF_BLOCKED_RETENTION_POLICY`, `_PRIVACY_MASKING`, `_TAMPER_EVIDENCE`, `_TZ_CONTRACT`, `_DELIVERY_RECEIPTS` |
 
-Shared shell (`Shell.tsx`, `ShellClient.tsx`, `shell-navigation.ts`, `astryx.css`) is the frozen
+Shared shell (`Shell.tsx`, `ShellClient.tsx`, `shell-navigation.ts`, `retired-predecessor.css`) is the frozen
 sponsor-approved authority, inherited unchanged (SHELL-V3). DEC-011 tokens consumed verbatim from
-`saqeel-tokens.css` / `saqeel-astryx.css`.
+`saqeel-tokens.css` / `saqeel-retired-predecessor.css`.
 
 ## Fable ledgers
 `FABLE_ACCEPTANCE_UNDERSTANDING.csv` (493 rows) and `FABLE_UNDERSTANDING_TRACEABILITY.csv`

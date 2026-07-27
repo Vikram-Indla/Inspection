@@ -54,9 +54,9 @@
   };
 
   function boundary(t, lang) {
-    return '<div class="ax-surface" style="padding:var(--ax-space-400);display:flex;flex-direction:column;gap:var(--ax-space-200);border-inline-start:3px solid var(--ax-color-warning)">' +
-      '<div class="ax-row" style="gap:12px;flex-wrap:wrap"><span style="font-size:26px" aria-hidden="true">◔</span><h2 style="font:var(--ax-text-heading)">' + esc(t.mainT) + '</h2><span class="nya__lbl">' + (lang === "ar" ? "غير متاح بعد" : "Not available yet") + '</span></div>' +
-      '<p style="font:var(--ax-text-body);line-height:1.6;max-inline-size:88ch;color:var(--ax-color-text-secondary)">' + esc(t.mainD) + '</p>' +
+    return '<div class="legacy-surface" style="padding:var(--legacy-space-400);display:flex;flex-direction:column;gap:var(--legacy-space-200);border-inline-start:3px solid var(--legacy-color-warning)">' +
+      '<div class="legacy-row" style="gap:12px;flex-wrap:wrap"><span style="font-size:26px" aria-hidden="true">◔</span><h2 style="font:var(--legacy-text-heading)">' + esc(t.mainT) + '</h2><span class="nya__lbl">' + (lang === "ar" ? "غير متاح بعد" : "Not available yet") + '</span></div>' +
+      '<p style="font:var(--legacy-text-body);line-height:1.6;max-inline-size:88ch;color:var(--legacy-color-text-secondary)">' + esc(t.mainD) + '</p>' +
       '<span class="nya__seam">' + esc(t.seam) + '</span></div>';
   }
 
@@ -70,7 +70,7 @@
     return '<div class="qlane"><div class="qlane__head"><h3>' + esc(t.conceptT) + '</h3><span class="nya__lbl">' + esc(t.conceptLbl) + '</span></div>' +
       '<div style="display:flex;flex-direction:column;gap:10px">' + t.rules.map(function (r) {
         return '<div class="nt-rule" style="opacity:.75"><span class="nt-evt">' + r[0] + '</span>' +
-          '<span style="display:flex;flex-direction:column;gap:4px"><span style="font:var(--ax-text-body-strong)">' + esc(r[1]) + '</span>' +
+          '<span style="display:flex;flex-direction:column;gap:4px"><span style="font:var(--legacy-text-body-strong)">' + esc(r[1]) + '</span>' +
           '<span style="display:flex;gap:6px;flex-wrap:wrap">' + r[2].map(function (ch) { return '<span class="nt-chan">' + esc(ch) + '</span>'; }).join("") + '</span></span>' +
           '<span class="roro">' + esc(t.unavailable) + '</span></div>';
       }).join("") + '</div>' +
@@ -78,7 +78,7 @@
       '<div class="nt-tl"><div class="nt-tl__axis"></div>' + t.tlEvents.map(function (e, i) {
         return '<div class="nt-tl__tick" style="inset-inline-start:' + pos[i] + '%"></div><div class="nt-tl__ev" style="inset-inline-start:' + pos[i] + '%;inset-block-start:2px"><span>' + esc(e[0]) + '</span><span class="nt-tl__dot' + (i === 2 ? ' nt-tl__dot--off' : '') + '"></span><span>' + esc(e[1]) + '</span></div>';
       }).join("") + '</div></div>' +
-      '<div class="ax-row" style="gap:8px"><button class="ax-btn" tabindex="-1" aria-disabled="true">' + (lang === "ar" ? "إرسال اختبار" : "Send test") + '</button><button class="ax-btn ax-btn--secondary" tabindex="-1" aria-disabled="true">' + (lang === "ar" ? "تفعيل" : "Activate") + '</button><button class="ax-btn ax-btn--subtle" tabindex="-1" aria-disabled="true">' + (lang === "ar" ? "إيقاف مؤقت" : "Pause") + '</button></div>' +
+      '<div class="legacy-row" style="gap:8px"><button class="legacy-btn" tabindex="-1" aria-disabled="true">' + (lang === "ar" ? "إرسال اختبار" : "Send test") + '</button><button class="legacy-btn legacy-btn--secondary" tabindex="-1" aria-disabled="true">' + (lang === "ar" ? "تفعيل" : "Activate") + '</button><button class="legacy-btn legacy-btn--subtle" tabindex="-1" aria-disabled="true">' + (lang === "ar" ? "إيقاف مؤقت" : "Pause") + '</button></div>' +
       C.fixtureNote(lang) + '</div>';
   }
 

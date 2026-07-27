@@ -113,7 +113,7 @@ Running status log for the Planning module build. Newest entry last.
    provenance/badge/location-event creation test; new tests for not-found gating, visit-type
    lock with honest reason, required name/region/city, Other-requires-comment, ops boundary
    (page opens, manual locked, creation RPC-gated), admin denied. Stale locator
-   `.ax-sr-only` → `.sr-only` fixed (class renamed in `fe4cf0e2`, pre-existing).
+   `.legacy-sr-only` → `.sr-only` fixed (class renamed in `fe4cf0e2`, pre-existing).
    **23 passed, 1 pre-existing failure** (see blockers). Typecheck clean for M5 files.
 
 ### Gaps / deviations (M5)

@@ -7,7 +7,7 @@
 // SaudiIndustrialAtlas, which receives the live map instance through onReady.
 // The credential form renders and works before/during/after this map loads;
 // the atlas frame has fixed dimensions so there is no layout shift. Colours
-// resolve from ax base tokens (GLOBAL COLOR LAW) which are literal hex in
+// resolve from legacy base tokens (GLOBAL COLOR LAW) which are literal hex in
 // tokens.css and therefore safe to hand to Leaflet's SVG renderer.
 import { useEffect, useRef } from "react";
 import L from "leaflet";

@@ -46,7 +46,7 @@
 
   <div style="display:flex; align-items:center; gap:8px; padding:9px 14px; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); flex-wrap:wrap; flex:none;">
     <span class="badge badge-info">WA-SHELL-r5</span>
-    <span class="id-code" style="font-size:11px; color:var(--text-muted);">reconciled to repo · ShellClient.tsx + shell-navigation.ts + astryx.css</span>
+    <span class="id-code" style="font-size:11px; color:var(--text-muted);">reconciled to repo · ShellClient.tsx + shell-navigation.ts + retired-predecessor.css</span>
     <span class="grow"></span>
     <div class="seg" role="group" aria-label="Navigation state">
       <button class="seg-opt" aria-pressed="{{ n_expanded }}" onClick="{{ set_expanded }}">Expanded</button>
@@ -251,7 +251,7 @@
           <div class="panel-header" style="padding:0 0 12px;"><span class="panel-title">Reconciliation — repo is the authority on shell structure</span></div>
           <dl style="display:grid; grid-template-columns:230px 1fr; gap:9px 18px; margin:0; font-size:12.5px;">
             <dt style="color:var(--text-muted);">Nav groups</dt><dd style="margin:0;">Collapsible with chevron + <span class="id-code">aria-expanded</span> — Overview, Operations, Compliance, Administration</dd>
-            <dt style="color:var(--text-muted);">Collapse control</dt><dd style="margin:0;">Icon-only, in the brand row beside the wordmark (repo <span class="id-code">.ax-shell__collapse</span> inside <span class="id-code">.ax-shell__brand</span>); label lives in <span class="id-code">aria-label</span> only, hidden on narrow</dd>
+            <dt style="color:var(--text-muted);">Collapse control</dt><dd style="margin:0;">Icon-only, in the brand row beside the wordmark (repo <span class="id-code">.legacy-shell__collapse</span> inside <span class="id-code">.legacy-shell__brand</span>); label lives in <span class="id-code">aria-label</span> only, hidden on narrow</dd>
             <dt style="color:var(--text-muted);">Insights group</dt><dd style="margin:0;"><strong>Removed — not agreed.</strong> Repo still ships <span class="id-code">insights → AI Insights</span> at <span class="id-code">/ai/suggestions</span>; that group must come out of <span class="id-code">shell-navigation.ts</span> (defect O-28). The top-nav AI entry is unaffected.</dd>
             <dt style="color:var(--text-muted);">Administration</dt><dd style="margin:0;">Pinned below the scroll region, gear icon, <strong>collapsed by default</strong></dd>
             <dt style="color:var(--text-muted);">Sub-groups</dt><dd style="margin:0;">Inspection → Execution / Review &amp; Approval · Advanced Administration → 11 items</dd>

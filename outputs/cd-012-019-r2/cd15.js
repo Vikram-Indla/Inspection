@@ -47,8 +47,8 @@
     opts = opts || {};
     return '<div class="m-panel"><div class="m-panel__head"><h4>' + esc(t.coordsT) + '</h4>' + C.tt("proven", "factory record") + '</div>' +
       '<div class="gx-conf">' +
-      '<div class="gx-conf__row"><span class="gx-conf__dot" style="border-color:var(--ax-color-primary)"></span><span><b>' + esc(t.official) + '</b><br><span class="m-mono cd-sub" dir="ltr">' + (opts.missing ? '—' : '24.7136, 46.6753') + '</span> · <span class="cd-sub">' + esc(t.officialSrc) + '</span></span>' + (opts.missing ? C.tt("blocked", lang === "ar" ? "مفقود" : "missing") : C.tt("proven", "licence")) + '</div>' +
-      '<div class="gx-conf__row"><span class="gx-conf__dot" style="border-color:var(--ax-color-success)"></span><span><b>' + esc(t.fieldObs) + '</b><br><span class="m-mono cd-sub" dir="ltr">24.7141, 46.6749</span> · <span class="cd-sub">' + esc(t.fieldSrc) + '</span></span>' + C.tt("proven", "visit") + '</div>' +
+      '<div class="gx-conf__row"><span class="gx-conf__dot" style="border-color:var(--legacy-color-primary)"></span><span><b>' + esc(t.official) + '</b><br><span class="m-mono cd-sub" dir="ltr">' + (opts.missing ? '—' : '24.7136, 46.6753') + '</span> · <span class="cd-sub">' + esc(t.officialSrc) + '</span></span>' + (opts.missing ? C.tt("blocked", lang === "ar" ? "مفقود" : "missing") : C.tt("proven", "licence")) + '</div>' +
+      '<div class="gx-conf__row"><span class="gx-conf__dot" style="border-color:var(--legacy-color-success)"></span><span><b>' + esc(t.fieldObs) + '</b><br><span class="m-mono cd-sub" dir="ltr">24.7141, 46.6749</span> · <span class="cd-sub">' + esc(t.fieldSrc) + '</span></span>' + C.tt("proven", "visit") + '</div>' +
       '</div><p class="cd-sub">' + esc(t.fieldNote) + '</p></div>';
   }
 
@@ -56,15 +56,15 @@
     opts = opts || {};
     var val = opts.invalid ? "620" : opts.saved ? "175" : "150";
     return '<div class="m-panel"><div class="m-panel__head"><h4>' + esc(t.radiusT) + '</h4>' + C.tt("proven", "engine settings + updateGeofenceRadius") + '</div>' +
-      '<div class="rad"><input type="number" value="' + val + '" min="25" max="500" aria-label="' + esc(t.radiusT) + '"' + (opts.invalid ? ' aria-invalid="true" style="border-color:var(--ax-color-critical)"' : '') + '><span class="rad__unit">m</span>' +
-      '<button class="ax-btn"' + (opts.noSave ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.saveRadius) + '</button></div>' +
+      '<div class="rad"><input type="number" value="' + val + '" min="25" max="500" aria-label="' + esc(t.radiusT) + '"' + (opts.invalid ? ' aria-invalid="true" style="border-color:var(--legacy-color-critical)"' : '') + '><span class="rad__unit">m</span>' +
+      '<button class="legacy-btn"' + (opts.noSave ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.saveRadius) + '</button></div>' +
       '<dl class="m-kv">' + t.set.map(function (r) { return '<dt>' + esc(r[0]) + '</dt><dd class="m-num">' + esc(r[1]) + '</dd>'; }).join("") + '</dl></div>';
   }
 
   function mapPanel(t, lang, opts) {
     opts = opts || {};
     return '<div style="display:flex;flex-direction:column;gap:12px"><div class="gx-map" style="min-block-size:280px">' +
-      (opts.missing ? '' : '<span class="gx-pt gx-pt--official" style="inset-inline-start:48%;inset-block-start:44%"></span><span class="gx-pt gx-pt--verified" style="inset-inline-start:50%;inset-block-start:47%"></span><span class="gx-poly" style="inset-inline-start:36%;inset-block-start:26%;inline-size:30%;block-size:42%;border-radius:50%;border-style:solid;border-color:var(--ax-color-warning);background:color-mix(in srgb,var(--ax-color-warning) 6%,transparent)"></span>') +
+      (opts.missing ? '' : '<span class="gx-pt gx-pt--official" style="inset-inline-start:48%;inset-block-start:44%"></span><span class="gx-pt gx-pt--verified" style="inset-inline-start:50%;inset-block-start:47%"></span><span class="gx-poly" style="inset-inline-start:36%;inset-block-start:26%;inline-size:30%;block-size:42%;border-radius:50%;border-style:solid;border-color:var(--legacy-color-warning);background:color-mix(in srgb,var(--legacy-color-warning) 6%,transparent)"></span>') +
       '<span class="gx-map__label">' + esc(opts.provDown ? t.provDownT : t.mapLabel) + '</span></div>' +
       C.notYet(lang, lang === "ar" ? "خرائط حية وترميز جغرافي" : "Live maps & geocoding", t.mapNya, t.mapSeam) + '</div>';
   }
@@ -75,7 +75,7 @@
   }
 
   function bar(t) {
-    return '<div class="ax-commandbar"><span class="cd-sub m-mono" dir="ltr">' + t.radiusAct + '</span><span class="ax-commandbar__spacer"></span><span class="cd-sub m-mono">' + esc(t.fName) + '</span></div>';
+    return '<div class="legacy-commandbar"><span class="cd-sub m-mono" dir="ltr">' + t.radiusAct + '</span><span class="legacy-commandbar__spacer"></span><span class="cd-sub m-mono">' + esc(t.fName) + '</span></div>';
   }
 
   function grid(t, lang, opts) {
@@ -92,7 +92,7 @@
     else if (state === "invalid-radius") body = C.content(bar(t) + C.guard(t.invalidT, t.invalidD) + C.legend(lang) + grid(t, lang, { invalid: true }));
     else if (state === "missing-coordinate") body = C.content(bar(t) + C.banner("warning", "◌", t.missingT, t.missingD) + C.legend(lang) + grid(t, lang, { missing: true, noSave: true }));
     else if (state === "rls-denied") body = C.content(bar(t) + C.guard(t.rlsT, t.rlsD) + C.legend(lang) + grid(t, lang, { noSave: true }));
-    else if (state === "saved") body = C.content(bar(t) + '<div class="ax-banner"><span>✓</span><div><strong>' + esc(t.savedT) + '</strong><div class="cd-sub">' + esc(t.savedD) + '</div></div></div>' + C.legend(lang) + grid(t, lang, { saved: true }));
+    else if (state === "saved") body = C.content(bar(t) + '<div class="legacy-banner"><span>✓</span><div><strong>' + esc(t.savedT) + '</strong><div class="cd-sub">' + esc(t.savedD) + '</div></div></div>' + C.legend(lang) + grid(t, lang, { saved: true }));
     else if (state === "provider-unavailable") body = C.content(bar(t) + C.banner("warning", "▨", t.provDownT, t.provDownD) + C.legend(lang) + grid(t, lang, { provDown: true }));
     else /* valid — primary */ body = C.content(bar(t) + C.legend(lang) + grid(t, lang, {}));
     return frame(lang, t, body);

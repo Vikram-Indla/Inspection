@@ -102,7 +102,7 @@ const NOTIF_TONE: Record<string, string> = {
   failed: "sq-lozenge--critical",
 };
 
-// Active operational states → map pin tone (GeoMap resolves tones to ax tokens).
+// Active operational states → map pin tone (GeoMap resolves tones to legacy tokens).
 const ACTIVE_TONE: Record<string, GeoTone> = {
   on_the_way: "medium",
   arrived: "medium",

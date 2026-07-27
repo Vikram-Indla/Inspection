@@ -8,7 +8,7 @@
 | D5 | 20 Jul 2026 | Dark mode composed (layered charcoal, edge elevation), not inverted | premium operational dark |
 | D6 | 20 Jul 2026 | Five signature patterns as canonical components (GeoWorkspace, StatusSpine, EvidenceStack, ExceptionRail, Continuity) | originality through product-specific patterns |
 | D7 | 20 Jul 2026 | Brand confirmed SAQEEL (صقيل); "SAKIL" retired | repo sponsor approval + owner confirmation |
-| D8 | 20 Jul 2026 | New spec supersedes ALL Astryx decisions: 14px operational scale over 16px minimum; SAQEEL control metrics + field profile over 44-52 blanket; IBM Plex inputs/3px over frozen Space Grotesk/12px; Plex Mono over JetBrains; emerald dark primary over steel-blue | owner directive "no trace of Astryx"; superseded sponsor decisions to be logged in product decision register |
+| D8 | 20 Jul 2026 | New spec supersedes ALL retired predecessor decisions: 14px operational scale over 16px minimum; SAQEEL control metrics + field profile over 44-52 blanket; IBM Plex inputs/3px over frozen retired input font/12px; Plex Mono over retired-mono; emerald dark primary over steel-blue | owner directive "no trace of retired predecessor"; superseded sponsor decisions to be logged in product decision register |
 | D9 | 20 Jul 2026 | Three density profiles: comfortable / compact / field (iPad 40-44-52) | desktop density + guaranteed touch targets |
 | D10 | 20 Jul 2026 | Login Cinematic Atlas out of scope (approved standalone exception) | per repo authority note |
 | D11 | 20 Jul 2026 | Gregorian + Latin digits default; Hijri/Arabic-Indic open pending regulatory confirmation | cross-referencing operational data |

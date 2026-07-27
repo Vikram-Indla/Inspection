@@ -1,5 +1,5 @@
 screen,design_component,code_target,selector,disposition,input_contract
-ALL,Frozen shell,Shell.tsx/ShellClient.tsx,.ax-shell,PRESERVE,—
+ALL,Frozen shell,Shell.tsx/ShellClient.tsx,.legacy-shell,PRESERVE,—
 ALL,Truth-tier legend/tags,TruthTier (CREATE shared),.tt-legend/.tt-tag,CREATE,tier+label
 ALL,Not-available-yet boundary,NotYetBoundary (CREATE shared),.nya,CREATE,title+consequence+one seam id
 ALL,Fixture note,FixtureNote (CREATE shared),.fixnote,CREATE,lang
@@ -15,7 +15,7 @@ CD-015,Coordinates provenance panel,GisStudio.tsx,.gx-conf,UPDATE,official + fie
 CD-015,Radius editor,GisStudio.tsx,.rad,UPDATE,radius + range + updateGeofenceRadius
 CD-015,Map preview placeholder,GisStudio.tsx,.gx-map,UPDATE,no provider; facts-independent
 CD-016,Blocked boundary,(new surface — no route),.nya + boundary block,CREATE-BLOCKED,route contract first
-CD-017,Holdings table,access/page.tsx,.ax-table,UPDATE,profiles + roles (read-only)
+CD-017,Holdings table,access/page.tsx,.legacy-table,UPDATE,profiles + roles (read-only)
 CD-017,Explainer proposal,AccessExplainer,.rp-why,CREATE-BLOCKED,holdings + RLS citations pending
 CD-018,String row,localization/Manager.tsx,.lz-row,UPDATE,ui_strings row
 CD-018,History + restore-as-draft,localization/Manager.tsx,.wf-prov,UPDATE,ui_strings revisions

@@ -19,9 +19,9 @@ different reasons is listed once, per wave it was actually edited).
 - `apps/web/src/app/factories/[id]/loading.tsx`
 - `apps/web/src/app/field/factory-360/[id]/page.tsx`
 - `apps/web/src/app/admin/integrations/factory-data/page.tsx`
-- `design/astryx/d3/D3-03_single-planning-wizard.html`
-- `design/astryx/d3/D3-07_factory-360.html`
-- `design/astryx/d6/D6-01_operations-center.html`
+- `design/retired-predecessor/d3/D3-03_single-planning-wizard.html`
+- `design/retired-predecessor/d3/D3-07_factory-360.html`
+- `design/retired-predecessor/d6/D6-01_operations-center.html`
 
 ## Wave 2 — `60c7b04` (core journeys)
 - Planning: `planning/page.tsx`, `planning/plans/page.tsx`,

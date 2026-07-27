@@ -18,7 +18,7 @@ Change control: `CC-WEB-ADMIN-PHASE1-001`
 - `apps/web/src/components/ShellClient.tsx`
 - `apps/web/src/lib/shell-navigation.ts`
 - `apps/web/src/lib/i18n.ts`
-- `apps/web/src/app/astryx.css`
+- `apps/web/src/app/retired-predecessor.css`
 
 ## Implementation contract
 

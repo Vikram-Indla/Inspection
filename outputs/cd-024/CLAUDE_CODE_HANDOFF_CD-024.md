@@ -29,7 +29,7 @@ Assignment becomes an evidence-led decision without pretending an optimization e
 9. Every source read must return structured success-or-failure and fail closed - a failed duplicate/overlap read must never render as no conflict (current code ignores errors - HANDOFF_BLOCKED leg).
 
 ## Locked baselines
-Frozen shell; RLS/RBAC; canonical transitions; append-only audit; atomic RPC contract; sessionStorage selection hand-off; empty-selection return; neutral catalogued copy; ax tokens only; read-only drill-down untouched; no Dashboard controls in Planning.
+Frozen shell; RLS/RBAC; canonical transitions; append-only audit; atomic RPC contract; sessionStorage selection hand-off; empty-selection return; neutral catalogued copy; legacy tokens only; read-only drill-down untouched; no Dashboard controls in Planning.
 
 ## A11y/RTL contract
 Arabic fresh-session default, document RTL, same hard state proven (4f); plain semantic table - native controls in the normal tab order, ledger updates on row focusin or explicit "Review evidence" (no roving/grid claim); ledger classes as SR-navigable headings; linked error summary + focus transfer (GOV.UK pattern); polite status for loading/scope/submit progress, assertive alerts for conflicts/failures; >=48px targets, 16px inputs; glyph+text conflicts; narrow order context->configuration->blockers->evidence->readiness->action; reduced motion preserves context.

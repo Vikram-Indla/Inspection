@@ -10,7 +10,7 @@
   - `supabase/migrations/20260715090000_cd004_ar_strings.sql` (create) — Arabic `ui_strings`
     seed for `admin.overview.r2.*` (guarded, draft status). English lives inline in `page.tsx`.
 - Forbidden list respected: Shell.tsx, ShellClient.tsx, shell-navigation.ts, NotificationBell.tsx,
-  tokens.css, design/astryx/d2/** — all untouched; no new route; no approve/publish/edit affordance.
+  tokens.css, design/retired-predecessor/d2/** — all untouched; no new route; no approve/publish/edit affordance.
 
 ## Reconciliations against live truth (recorded, not silent)
 1. **Landmarks (spec §1).** The design spec asks for a skip link → `<main id="overview">`. The

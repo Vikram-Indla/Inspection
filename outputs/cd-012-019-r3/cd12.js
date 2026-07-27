@@ -31,7 +31,7 @@
     ver: "إصدار", effFrom: "فعّال منذ", noDraft: "لا مسودة قيد الاعتماد",
     legendTitle: "مستويات الحقيقة", legProven: "مُثبت (من البيانات)", legComputed: "محسوب (يلزمه مصدر)", legBlocked: "محجوب (لا يُعرض كحقيقة)",
     detailProv: "سِجل الحَوكمة (config_versions)", detailHealth: "مدخلات السلامة — محجوبة", detailClose: "إغلاق",
-    blkTests: "سلامة الاختبارات", blkTestsPh: "لا يوجد مخزن نتائج اختبارات مُثبت", 
+    blkTests: "سلامة الاختبارات", blkTestsPh: "لا يوجد مخزن نتائج اختبارات مُثبت",
     blkCases: "الحالات الجارية المرتبطة", blkCasesPh: "لا يوجد عدّ حالات جارية مُثبت",
     blkGraph: "قابلية الوصول / الدورات في الرسم", blkGraphPh: "يلزمه خوارزمية/مصدر محدّد قبل العرض",
     blkStale: "كشف التغيّر المتزامن", blkStalePh: "لا توجد آلية كشف قِدَم مُثبتة",
@@ -141,7 +141,7 @@
   function loz(status,t){
     var m={ published:["success",t.stPublished,"◆"], draft:["warning",t.stReview,"▣"], superseded:["",t.stSuper,"▲"] };
     var s=m[status]||m.draft;
-    return '<span class="ax-lozenge ax-lozenge--sync'+(s[0]?" ax-lozenge--"+s[0]:"")+'">'+s[1]+'</span>';
+    return '<span class="legacy-lozenge legacy-lozenge--sync'+(s[0]?" legacy-lozenge--"+s[0]:"")+'">'+s[1]+'</span>';
   }
 
   function mcCell(r,t,lang){
@@ -149,54 +149,54 @@
     var out='<div class="wf-mc">';
     if(pub) out+='<div class="wf-mc__row"><span class="wf-mc__role">'+t.approvedBy+'</span><span class="wf-mc__name">'+nm(pub.checker,lang)+'</span></div>';
     if(d) out+='<div class="wf-mc__row"><span class="wf-mc__role">'+t.proposed+' v'+d.v+'</span><span class="wf-mc__name">'+nm(d.maker,lang)+(d.maker===CURRENT_USER?' <span class="cd-you">'+t.you+'</span>':'')+'</span></div>';
-    else out+='<div class="wf-mc__row wf-mc__name" style="color:var(--ax-color-text-secondary);font-weight:400">'+t.noDraft+'</div>';
+    else out+='<div class="wf-mc__row wf-mc__name" style="color:var(--legacy-color-text-secondary);font-weight:400">'+t.noDraft+'</div>';
     return out+'</div>';
   }
 
   function actions(r,t){
     var d=draftOf(r);
-    var out='<div class="wf-rowact"><button class="ax-btn ax-btn--secondary ax-btn--sm">'+t.open+'</button>';
+    var out='<div class="wf-rowact"><button class="legacy-btn legacy-btn--secondary legacy-btn--sm">'+t.open+'</button>';
     if(d){
       var ownDraft=d.maker===CURRENT_USER;
-      out+='<button class="ax-btn ax-btn--sm"'+(ownDraft?' aria-disabled="true" disabled':'')+'>'+t.approve+'</button>';
+      out+='<button class="legacy-btn legacy-btn--sm"'+(ownDraft?' aria-disabled="true" disabled':'')+'>'+t.approve+'</button>';
     } else {
-      out+='<button class="ax-btn ax-btn--subtle ax-btn--sm">'+t.propose+'</button>';
+      out+='<button class="legacy-btn legacy-btn--subtle legacy-btn--sm">'+t.propose+'</button>';
     }
     return out+'</div>';
   }
 
   function nav(t,lang){
-    function item(icon,label,cur){ return '<a class="ax-nav-item" href="#"'+(cur?' aria-current="page"':'')+'><span class="ax-nav-icon" aria-hidden="true">'+icon+'</span><span class="ax-nav-label">'+label+'</span></a>'; }
-    return '<nav class="ax-shell__nav" aria-label="Primary">'+
-      '<div class="ax-shell__brand"><span class="ax-shell__brand-mark" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 32 32"><defs><linearGradient id="pm2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D946EF"/><stop offset="1" stop-color="#7C6CFF"/></linearGradient></defs><path d="M16 3 L28 24 L4 24 Z" fill="url(#pm2)"/><path d="M16 3 L16 24 L4 24 Z" fill="#0B0B14" opacity=".22"/></svg></span>'+
-        '<span class="ax-shell__brand-lockup"><span class="ax-shell__brand-wordmark">صقيل</span></span>'+
-        '<button class="ax-shell__close" aria-label="Close">×</button></div>'+
-      '<div class="ax-shell__groups">'+
-        '<div class="ax-nav-group"><button class="ax-nav-group__trigger" aria-expanded="true">'+(lang==="ar"?"العمليات":"Operations")+'<span class="ax-nav-group__chevron">▾</span></button>'+
+    function item(icon,label,cur){ return '<a class="legacy-nav-item" href="#"'+(cur?' aria-current="page"':'')+'><span class="legacy-nav-icon" aria-hidden="true">'+icon+'</span><span class="legacy-nav-label">'+label+'</span></a>'; }
+    return '<nav class="legacy-shell__nav" aria-label="Primary">'+
+      '<div class="legacy-shell__brand"><span class="legacy-shell__brand-mark" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 32 32"><defs><linearGradient id="pm2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D946EF"/><stop offset="1" stop-color="#7C6CFF"/></linearGradient></defs><path d="M16 3 L28 24 L4 24 Z" fill="url(#pm2)"/><path d="M16 3 L16 24 L4 24 Z" fill="#0B0B14" opacity=".22"/></svg></span>'+
+        '<span class="legacy-shell__brand-lockup"><span class="legacy-shell__brand-wordmark">صقيل</span></span>'+
+        '<button class="legacy-shell__close" aria-label="Close">×</button></div>'+
+      '<div class="legacy-shell__groups">'+
+        '<div class="legacy-nav-group"><button class="legacy-nav-group__trigger" aria-expanded="true">'+(lang==="ar"?"العمليات":"Operations")+'<span class="legacy-nav-group__chevron">▾</span></button>'+
           item("◱",(lang==="ar"?"مركز العمليات":"Operations centre"))+item("▤",(lang==="ar"?"الزيارات":"Visits"))+'</div>'+
-        '<div class="ax-nav-group"><button class="ax-nav-group__trigger" aria-expanded="true">'+t.group+'<span class="ax-nav-group__chevron">▾</span></button>'+
+        '<div class="legacy-nav-group"><button class="legacy-nav-group__trigger" aria-expanded="true">'+t.group+'<span class="legacy-nav-group__chevron">▾</span></button>'+
           item("⚙",t.crumb3,true)+item("▦",(lang==="ar"?"القواعد":"Rules"))+item("◈",(lang==="ar"?"الحزم":"Packages"))+'</div>'+
       '</div>'+
-      '<button class="ax-shell__collapse"><span>«</span><span class="ax-nav-label">'+(lang==="ar"?"طيّ":"Collapse")+'</span></button>'+
+      '<button class="legacy-shell__collapse"><span>«</span><span class="legacy-nav-label">'+(lang==="ar"?"طيّ":"Collapse")+'</span></button>'+
     '</nav>';
   }
 
   function pagehead(t,lang){
-    return '<header class="ax-pagehead">'+
-      '<div class="ax-pagehead__topbar">'+
-        '<button class="ax-shell__menu ax-topbar-icon" aria-label="Menu">☰</button>'+
-        '<div class="ax-shell-search"><span class="ax-shell-search__icon">⌕</span><input placeholder="'+t.searchPh+'" aria-label="'+t.searchPh+'"></div>'+
-        '<div class="ax-pagehead__actions">'+
-          '<span class="ax-sync ax-sync--synced">'+(lang==="ar"?"متزامن":"Synced")+'</span>'+
-          '<button class="ax-topbar-icon" aria-label="Notifications">◔</button>'+
-          '<div class="ax-shell-account"><button class="ax-shell-account__trigger"><span class="ax-shell-account__avatar">NA</span>'+
-            '<span class="ax-shell-account__identity"><strong>'+t.account+'</strong><small>'+t.role+'</small></span></button></div>'+
+    return '<header class="legacy-pagehead">'+
+      '<div class="legacy-pagehead__topbar">'+
+        '<button class="legacy-shell__menu legacy-topbar-icon" aria-label="Menu">☰</button>'+
+        '<div class="legacy-shell-search"><span class="legacy-shell-search__icon">⌕</span><input placeholder="'+t.searchPh+'" aria-label="'+t.searchPh+'"></div>'+
+        '<div class="legacy-pagehead__actions">'+
+          '<span class="legacy-sync legacy-sync--synced">'+(lang==="ar"?"متزامن":"Synced")+'</span>'+
+          '<button class="legacy-topbar-icon" aria-label="Notifications">◔</button>'+
+          '<div class="legacy-shell-account"><button class="legacy-shell-account__trigger"><span class="legacy-shell-account__avatar">NA</span>'+
+            '<span class="legacy-shell-account__identity"><strong>'+t.account+'</strong><small>'+t.role+'</small></span></button></div>'+
         '</div>'+
       '</div>'+
-      '<div class="ax-pagehead__row">'+
+      '<div class="legacy-pagehead__row">'+
         '<div class="cd-ctx">'+
-          '<ol class="ax-breadcrumb"><li>'+t.crumb1+'</li><li>'+t.crumb2+'</li><li>'+t.crumb3+'</li></ol>'+
-          '<div class="ax-pagehead__context"><h1 class="cd-ctx__id" style="font:var(--ax-text-title)">'+t.title+'</h1></div>'+
+          '<ol class="legacy-breadcrumb"><li>'+t.crumb1+'</li><li>'+t.crumb2+'</li><li>'+t.crumb3+'</li></ol>'+
+          '<div class="legacy-pagehead__context"><h1 class="cd-ctx__id" style="font:var(--legacy-text-title)">'+t.title+'</h1></div>'+
           '<p class="cd-opnote">'+t.sub+'</p>'+
         '</div>'+
         '<div class="wf-mode" role="group" aria-label="Mode"><a href="#" aria-current="page">'+t.modeLib+'</a><a href="#">'+t.modeDesigner+'</a></div>'+
@@ -212,22 +212,22 @@
   }
 
   function commandbar(t){
-    return '<div class="ax-commandbar">'+
-      '<button class="ax-filterchip is-active">'+t.fStatus+': '+t.stPublished+'</button>'+
-      '<button class="ax-filterchip">'+t.fDraft+'</button>'+
-      '<button class="ax-filterchip">'+t.fMine+'</button>'+
-      '<button class="ax-btn ax-btn--subtle ax-btn--sm">'+t.fClear+'</button>'+
-      '<span class="ax-commandbar__spacer"></span>'+
-      '<button class="ax-btn">＋ '+t.newWf+'</button>'+
+    return '<div class="legacy-commandbar">'+
+      '<button class="legacy-filterchip is-active">'+t.fStatus+': '+t.stPublished+'</button>'+
+      '<button class="legacy-filterchip">'+t.fDraft+'</button>'+
+      '<button class="legacy-filterchip">'+t.fMine+'</button>'+
+      '<button class="legacy-btn legacy-btn--subtle legacy-btn--sm">'+t.fClear+'</button>'+
+      '<span class="legacy-commandbar__spacer"></span>'+
+      '<button class="legacy-btn">＋ '+t.newWf+'</button>'+
     '</div>';
   }
 
   function kpis(t){
     return '<div class="wf-kpis">'+
-      '<div class="ax-surface wf-kpi"><span class="wf-kpi__v ax-numeric">6</span><span class="wf-kpi__l">'+t.kDefs+'</span><span class="wf-kpi__s"><span class="tt-tag tt-tag--proven">payload</span></span></div>'+
-      '<div class="ax-surface wf-kpi"><span class="wf-kpi__v ax-numeric">6</span><span class="wf-kpi__l">'+t.kPublished+'</span><span class="wf-kpi__s"><span class="tt-tag tt-tag--proven">payload</span></span></div>'+
-      '<div class="ax-surface wf-kpi"><span class="wf-kpi__v ax-numeric">3</span><span class="wf-kpi__l">'+t.kDrafts+'</span><span class="wf-kpi__s"><span class="tt-tag tt-tag--proven">payload</span></span></div>'+
-      '<div class="ax-surface wf-kpi"><span class="wf-kpi__v ax-numeric">6</span><span class="wf-kpi__l">'+t.kSuper+'</span><span class="wf-kpi__s"><span class="tt-tag tt-tag--proven">payload</span></span></div>'+
+      '<div class="legacy-surface wf-kpi"><span class="wf-kpi__v legacy-numeric">6</span><span class="wf-kpi__l">'+t.kDefs+'</span><span class="wf-kpi__s"><span class="tt-tag tt-tag--proven">payload</span></span></div>'+
+      '<div class="legacy-surface wf-kpi"><span class="wf-kpi__v legacy-numeric">6</span><span class="wf-kpi__l">'+t.kPublished+'</span><span class="wf-kpi__s"><span class="tt-tag tt-tag--proven">payload</span></span></div>'+
+      '<div class="legacy-surface wf-kpi"><span class="wf-kpi__v legacy-numeric">3</span><span class="wf-kpi__l">'+t.kDrafts+'</span><span class="wf-kpi__s"><span class="tt-tag tt-tag--proven">payload</span></span></div>'+
+      '<div class="legacy-surface wf-kpi"><span class="wf-kpi__v legacy-numeric">6</span><span class="wf-kpi__l">'+t.kSuper+'</span><span class="wf-kpi__s"><span class="tt-tag tt-tag--proven">payload</span></span></div>'+
     '</div>';
   }
 
@@ -248,7 +248,7 @@
       var who = v.status==="draft"
         ? t.proposed+' '+nm(v.maker,lang)+(v.maker===CURRENT_USER?' ('+t.you+')':'')+' · '+t.pending
         : t.proposed+' '+nm(v.maker,lang)+' · '+t.approvedBy+' '+nm(v.checker,lang);
-      out+='<li class="'+cls.trim()+'"><div class="wf-prov__t"><span class="ax-version">v'+v.v+'</span>'+loz(v.status,t)+'<span class="wf-prov__m">'+v.date+'</span></div><span class="wf-prov__m">'+who+'</span></li>';
+      out+='<li class="'+cls.trim()+'"><div class="wf-prov__t"><span class="legacy-version">v'+v.v+'</span>'+loz(v.status,t)+'<span class="wf-prov__m">'+v.date+'</span></div><span class="wf-prov__m">'+who+'</span></li>';
     });
     return out+'</ul>';
   }
@@ -257,7 +257,7 @@
     opts=opts||{};
     var d=draftOf(r), pub=publishedOf(r);
     var guard = (opts.sep && d)?'<div class="wf-guard"><span class="wf-guard__g">⛔</span><span class="wf-guard__t"><b>'+t.sepTitle+'</b>'+t.sepD+'</span></div>':'';
-    var imm = opts.imm?'<div class="ax-banner ax-banner--immutable"><div><strong>'+t.immTitle+'</strong><div class="cd-sub">'+t.immD+'</div></div></div>':'';
+    var imm = opts.imm?'<div class="legacy-banner legacy-banner--immutable"><div><strong>'+t.immTitle+'</strong><div class="cd-sub">'+t.immD+'</div></div></div>':'';
     return '<tr class="wf-detail"><td colspan="6"><div class="wf-detailpad"><div class="wf-detail__grid">'+
       '<div class="wf-card">'+
         '<div class="wf-card__head"><h4>'+t.detailProv+'</h4><span class="tt-tag tt-tag--proven">config_versions</span></div>'+
@@ -270,7 +270,7 @@
 
   function table(t,lang,expandId,expandOpts){
     var rs=rows();
-    var head='<div class="ax-tablewrap"><table class="ax-table" role="grid"><thead><tr>'+
+    var head='<div class="legacy-tablewrap"><table class="legacy-table" role="grid"><thead><tr>'+
       '<th>'+t.colObj+'</th><th>'+t.colLin+'</th><th>'+t.colEff+'</th><th>'+t.colMC+'</th><th>'+t.colStatus+'</th><th class="wf-actcell">'+t.colAct+'</th></tr></thead><tbody>';
     var body=rs.map(function(r){
       var d=draftOf(r), pub=publishedOf(r);
@@ -290,25 +290,25 @@
     return head+body+'</tbody></table></div>';
   }
 
-  function content(inner){ return '<div class="ax-content">'+inner+'</div>'; }
+  function content(inner){ return '<div class="legacy-content">'+inner+'</div>'; }
 
   function main(state,t,lang){
     if(state==="loading"){
-      var sk=function(w){return '<div class="ax-skeleton" style="block-size:16px;inline-size:'+w+'"></div>';};
-      return content(commandbar(t)+'<div class="wf-kpis">'+[1,2,3,4].map(function(){return '<div class="ax-surface wf-kpi">'+sk("55%")+'<div style="height:8px"></div>'+sk("80%")+'</div>';}).join("")+'</div>'+
-        '<div class="ax-tablewrap" aria-busy="true"><div style="padding:20px;display:flex;flex-direction:column;gap:16px">'+[1,2,3,4,5].map(function(){return '<div style="display:flex;gap:24px;align-items:center">'+sk("22%")+sk("14%")+sk("14%")+sk("18%")+sk("10%")+'</div>';}).join("")+'</div></div>'+
+      var sk=function(w){return '<div class="legacy-skeleton" style="block-size:16px;inline-size:'+w+'"></div>';};
+      return content(commandbar(t)+'<div class="wf-kpis">'+[1,2,3,4].map(function(){return '<div class="legacy-surface wf-kpi">'+sk("55%")+'<div style="height:8px"></div>'+sk("80%")+'</div>';}).join("")+'</div>'+
+        '<div class="legacy-tablewrap" aria-busy="true"><div style="padding:20px;display:flex;flex-direction:column;gap:16px">'+[1,2,3,4,5].map(function(){return '<div style="display:flex;gap:24px;align-items:center">'+sk("22%")+sk("14%")+sk("14%")+sk("18%")+sk("10%")+'</div>';}).join("")+'</div></div>'+
         '<p class="cd-sub" role="status">'+t.loadingLbl+'</p>');
     }
-    if(state==="empty") return content(commandbar(t)+'<div class="ax-surface ax-state"><div class="ax-state__glyph">⚙</div><h4>'+t.empty+'</h4><p>'+t.emptySub+'</p><button class="ax-btn">＋ '+t.newWf+'</button></div>');
-    if(state==="unauthorized") return content('<div class="ax-surface ax-permission ax-state"><div class="ax-state__glyph">🔒</div><h4>'+t.unauthT+'</h4><p style="max-inline-size:54ch">'+t.unauthD+'</p></div>');
-    if(state==="offline") return content('<div class="ax-banner ax-banner--warning"><span>⛔</span><div><strong>'+t.offlineT+'</strong><div class="cd-sub">'+t.offlineD+'</div></div></div>'+legend(t)+'<div class="ax-surface ax-state"><div class="ax-state__glyph" style="opacity:.5">⚙</div><p class="cd-sub">'+t.offlineD+'</p></div>');
-    if(state==="stale") return content('<div class="ax-banner ax-banner--warning"><span>⟳</span><div><strong>'+t.staleT+'</strong><div class="cd-sub">'+t.staleD+'</div></div><button class="ax-btn ax-btn--secondary ax-btn--sm" style="margin-inline-start:auto">'+t.reload+'</button></div>'+legend(t)+kpis(t)+table(t,lang,null));
-    if(state==="validation") return content('<div class="ax-validation"><strong style="font:var(--ax-text-body-strong)">'+t.valTitle+'</strong><div class="cd-sub" style="margin-block:4px">'+t.valD+'</div><ul>'+t.valItems.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ul></div>'+legend(t)+kpis(t)+table(t,lang,"EVIDENCE_QUARANTINE_ESCALATION"));
+    if(state==="empty") return content(commandbar(t)+'<div class="legacy-surface legacy-state"><div class="legacy-state__glyph">⚙</div><h4>'+t.empty+'</h4><p>'+t.emptySub+'</p><button class="legacy-btn">＋ '+t.newWf+'</button></div>');
+    if(state==="unauthorized") return content('<div class="legacy-surface legacy-permission legacy-state"><div class="legacy-state__glyph">🔒</div><h4>'+t.unauthT+'</h4><p style="max-inline-size:54ch">'+t.unauthD+'</p></div>');
+    if(state==="offline") return content('<div class="legacy-banner legacy-banner--warning"><span>⛔</span><div><strong>'+t.offlineT+'</strong><div class="cd-sub">'+t.offlineD+'</div></div></div>'+legend(t)+'<div class="legacy-surface legacy-state"><div class="legacy-state__glyph" style="opacity:.5">⚙</div><p class="cd-sub">'+t.offlineD+'</p></div>');
+    if(state==="stale") return content('<div class="legacy-banner legacy-banner--warning"><span>⟳</span><div><strong>'+t.staleT+'</strong><div class="cd-sub">'+t.staleD+'</div></div><button class="legacy-btn legacy-btn--secondary legacy-btn--sm" style="margin-inline-start:auto">'+t.reload+'</button></div>'+legend(t)+kpis(t)+table(t,lang,null));
+    if(state==="validation") return content('<div class="legacy-validation"><strong style="font:var(--legacy-text-body-strong)">'+t.valTitle+'</strong><div class="cd-sub" style="margin-block:4px">'+t.valD+'</div><ul>'+t.valItems.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ul></div>'+legend(t)+kpis(t)+table(t,lang,"EVIDENCE_QUARANTINE_ESCALATION"));
     if(state==="draft") return content(commandbar(t)+legend(t)+kpis(t)+table(t,lang,"LICENSE_RENEWAL"));
     if(state==="outlier") return content(legend(t)+kpis(t)+table(t,lang,"EVIDENCE_QUARANTINE_ESCALATION",{sep:true}));
     if(state==="submitted") return content(legend(t)+kpis(t)+table(t,lang,"LICENSE_RENEWAL",{imm:true}));
-    if(state==="superseded") return content('<div class="ax-commandbar"><button class="ax-filterchip is-active">'+t.fStatus+': '+t.stSuper+'</button><span class="ax-commandbar__spacer"></span></div>'+legend(t)+table(t,lang,"VIOLATION_REMEDIATION"));
-    if(state==="in-use") return content('<div class="ax-banner"><span>ℹ</span><div class="cd-sub">'+t.inuseBanner+'</div></div>'+legend(t)+kpis(t)+table(t,lang,"INSPECTION_VISIT_LIFECYCLE"));
+    if(state==="superseded") return content('<div class="legacy-commandbar"><button class="legacy-filterchip is-active">'+t.fStatus+': '+t.stSuper+'</button><span class="legacy-commandbar__spacer"></span></div>'+legend(t)+table(t,lang,"VIOLATION_REMEDIATION"));
+    if(state==="in-use") return content('<div class="legacy-banner"><span>ℹ</span><div class="cd-sub">'+t.inuseBanner+'</div></div>'+legend(t)+kpis(t)+table(t,lang,"INSPECTION_VISIT_LIFECYCLE"));
 
     if(state==="hyp-b"){
       var rs=rows();
@@ -319,17 +319,17 @@
       }
       var colD=rs.filter(function(r){return draftOf(r);}), colP=rs.filter(function(r){return !draftOf(r)&&publishedOf(r);});
       var colS=rs.filter(function(r){return r.versions.some(function(v){return v.status==="superseded";});});
-      function col(title,items,tone){ return '<div style="display:flex;flex-direction:column;gap:12px;min-inline-size:0"><div class="cd-sectionhead"><h4>'+title+' <span class="ax-badge">'+items.length+'</span></h4></div>'+items.map(card).join("")+'</div>'; }
-      return content('<div class="ax-banner"><span>◇</span><div class="cd-sub"><b>HYP-B — '+(lang==="ar"?"لوحة طابور الاعتماد (بديل غير مُختار)":"Approval-queue board (alternative, not selected)")+'</b></div></div>'+legend(t)+
+      function col(title,items,tone){ return '<div style="display:flex;flex-direction:column;gap:12px;min-inline-size:0"><div class="cd-sectionhead"><h4>'+title+' <span class="legacy-badge">'+items.length+'</span></h4></div>'+items.map(card).join("")+'</div>'; }
+      return content('<div class="legacy-banner"><span>◇</span><div class="cd-sub"><b>HYP-B — '+(lang==="ar"?"لوحة طابور الاعتماد (بديل غير مُختار)":"Approval-queue board (alternative, not selected)")+'</b></div></div>'+legend(t)+
         '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px">'+
         col(t.stReview,colD)+col(t.stPublished,colP)+col(t.stSuper,colS)+'</div>');
     }
     if(state==="hyp-c"){
       var rs2=rows(); var focus=rs2[1];
-      var idx=rs2.map(function(r){var on=r.key===focus.key; return '<a href="#" class="ax-nav-item"'+(on?' aria-current="page"':'')+' style="min-block-size:40px"><span class="ax-nav-label">'+esc(r.name[lang])+'</span></a>';}).join("");
-      return content('<div class="ax-banner"><span>◇</span><div class="cd-sub"><b>HYP-C — '+(lang==="ar"?"خط زمني للإصدارات لكل سير عمل (بديل غير مُختار)":"Per-workflow version timeline (alternative, not selected)")+'</b></div></div>'+legend(t)+
+      var idx=rs2.map(function(r){var on=r.key===focus.key; return '<a href="#" class="legacy-nav-item"'+(on?' aria-current="page"':'')+' style="min-block-size:40px"><span class="legacy-nav-label">'+esc(r.name[lang])+'</span></a>';}).join("");
+      return content('<div class="legacy-banner"><span>◇</span><div class="cd-sub"><b>HYP-C — '+(lang==="ar"?"خط زمني للإصدارات لكل سير عمل (بديل غير مُختار)":"Per-workflow version timeline (alternative, not selected)")+'</b></div></div>'+legend(t)+
         '<div style="display:grid;grid-template-columns:300px minmax(0,1fr);gap:24px">'+
-        '<div class="ax-surface" style="padding:12px;display:flex;flex-direction:column;gap:4px">'+idx+'</div>'+
+        '<div class="legacy-surface" style="padding:12px;display:flex;flex-direction:column;gap:4px">'+idx+'</div>'+
         '<div class="wf-card"><div class="wf-card__head"><h4>'+esc(focus.name[lang])+' · '+focus.key+'</h4><span class="tt-tag tt-tag--proven">config_versions</span></div>'+
         '<div class="wf-lin" style="align-self:flex-start">'+lineage(focus.versions,true)+'</div>'+provList(focus,t,lang)+blockedPanel(t)+'</div></div>');
     }
@@ -340,10 +340,10 @@
   function render(state,lang){
     lang=lang==="ar"?"ar":"en";
     var t=lang==="ar"?AR:EN;
-    return '<div class="ax-shell" dir="'+t.dir+'" lang="'+lang+'">'+
-      '<a class="ax-shell__skip" href="#wf-main">'+(lang==="ar"?"تخطٍّ إلى المحتوى":"Skip to content")+'</a>'+
+    return '<div class="legacy-shell" dir="'+t.dir+'" lang="'+lang+'">'+
+      '<a class="legacy-shell__skip" href="#wf-main">'+(lang==="ar"?"تخطٍّ إلى المحتوى":"Skip to content")+'</a>'+
       nav(t,lang)+
-      '<div class="ax-shell__main"><a id="wf-main"></a>'+pagehead(t,lang)+main(state,t,lang)+'</div>'+
+      '<div class="legacy-shell__main"><a id="wf-main"></a>'+pagehead(t,lang)+main(state,t,lang)+'</div>'+
     '</div>';
   }
 
