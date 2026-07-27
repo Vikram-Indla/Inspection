@@ -59,7 +59,7 @@ test.describe("Inspector shell foundation and sponsor-corrected shared business 
     expect(tabs).toContain("<Icon d={GLYPHS.next} />");
     expect(css).toContain("inset-inline: 0");
     expect(css).toContain("var(--focus-ring)");
-    expect(tokens).toContain("--radius-sm: 3px"); // input radius, direct token (--ax-* shim removed PR12)
+    expect(tokens).toContain("--radius-sm: 6px"); // supplied Revamp radius, direct semantic token
     expect(tokens).toContain("--type-input: 400 14px/1.5 var(--font-body)"); // input font, direct token
     expect(login).toContain("lg-atlas");
   });

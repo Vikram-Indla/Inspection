@@ -287,8 +287,8 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         {pkg && <span className="sq-version">{pkg.packages.code} · {pkg.version_label}</span>}
         {isUnverifiedManual && <span className="sq-lozenge sq-lozenge--warning">{tr("visit.detail.unverifiedManual", "Unverified manual entry — pending reconciliation", "إدخال يدوي غير موثّق — بانتظار المطابقة")}</span>}
       </>}>
-      {targetPreview && <><h1 className="ax-sr-only">{t("visit.detail.title", "Visit {id} — {factory}").replace("{id}", v.id.slice(0, 8)).replace("{factory}", f.name)}</h1>
-        <p data-saqeel-design="WA-DES-045"><a className="ax-btn ax-btn--subtle" href={routeBase}>{t("visit.detail.backToVisits", "Visits")}</a></p></>}
+      {targetPreview && <><h1 className="sq-sr-only">{t("visit.detail.title", "Visit {id} — {factory}").replace("{id}", v.id.slice(0, 8)).replace("{factory}", f.name)}</h1>
+        <p data-saqeel-design="WA-DES-045"><a className="sq-btn sq-btn--subtle" href={routeBase}>{t("visit.detail.backToVisits", "Visits")}</a></p></>}
       <CreatedToast created={created}
         registeredMessage={t("visit.detail.createdToast", "Visit created and dispatched.")}
         unregisteredMessage={t("visit.detail.createdToastUnregistered", "Unregistered establishment recorded and visit dispatched.")} />

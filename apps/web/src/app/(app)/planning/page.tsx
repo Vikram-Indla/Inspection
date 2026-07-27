@@ -197,7 +197,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
 
   if (targetPreview) {
     return (
-      <Shell current="/planning" title={title} context={<span className="ax-caption ax-numeric">CR-001..CR-098 · WA-DES-036</span>}>
+      <Shell current="/planning" title={title} context={<span className="sq-caption sq-numeric">CR-001..CR-098 · WA-DES-036</span>}>
         <PlanningPreview methods={methods} drafts={drafts.map(draft => ({
           id: draft.id, method: t(`enum.${draft.method}`, draft.method), status: t(`enum.${draft.status}`, draft.status),
           planReference: draft.plan_reference, createdAt: draft.created_at, planner: draft.profiles?.full_name ?? "—", href: continueHref(draft),

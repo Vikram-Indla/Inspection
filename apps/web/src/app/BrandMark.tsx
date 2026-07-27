@@ -1,6 +1,6 @@
 // Shared brand mark — twisted-ribbon (Möbius) loop, replaces the "IP"
 // initials badge across public and authed shells. Token-only gradient
-// (GLOBAL COLOR LAW): stops reference var(--ax-*), no hex.
+// (GLOBAL COLOR LAW): stops reference var(--sq-*), no hex.
 export default function BrandMark({ size = 28, className }: { size?: number; className?: string }) {
   const gid = "bm-grad";
   return (

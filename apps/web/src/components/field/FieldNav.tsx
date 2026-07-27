@@ -28,7 +28,7 @@ export default function FieldNav({ active, labels, consoleChannel = false }: {
   labels: FieldNavLabels;
   // On the field channel this bar is always present, exactly as the DC ships it.
   // On the console it is an iPad-and-below affordance, so it is gated by the
-  // media rules in astryx.css rather than rendered conditionally — the markup
+  // media rules in saqeel-runtime.css rather than rendered conditionally — the markup
   // stays identical across both channels.
   consoleChannel?: boolean;
 }) {

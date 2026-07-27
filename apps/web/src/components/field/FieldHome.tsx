@@ -18,7 +18,7 @@ import type { GeoMarkerData } from "@/components/GeoMap";
 // Mapbox is browser-only — dynamic import with ssr:false (GeoMap canon).
 const GeoMap = dynamic(() => import("@/components/GeoMap"), {
   ssr: false,
-  loading: () => <div className="ax-skeleton" style={{ blockSize: "100%", minBlockSize: 200 }} />,
+  loading: () => <div className="sq-skeleton" style={{ blockSize: "100%", minBlockSize: 200 }} />,
 });
 
 export type FieldHomeMarker = GeoMarkerData;

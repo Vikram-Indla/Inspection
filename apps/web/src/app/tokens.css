@@ -3,22 +3,20 @@
    Owner-approved 2026-07-20. Supersedes the legacy token sheet.
    Source of authority: design/saqeel/tokens/. This file is the compiled,
    repo-wired sheet: SAQEEL semantic tokens + typography + layout + the login
-   Cinematic Atlas exception. The legacy --ax-* compatibility shim has been removed;
+   Cinematic Atlas exception. The legacy --sq-* compatibility shim has been removed;
    all consumers now reference SAQEEL semantic tokens directly.
 
    RULE: raw color/size values may appear ONLY in this file. All product
    components consume SEMANTIC tokens (--surface-*, --text-*, --action-*,
-   --status-*, --space-*, --radius-*). The --ax-* shim at the bottom is
-   TEMPORARY and is removed in PR12 (zero-trace gate); do NOT add new --ax-*.
+   --status-*, --space-*, --radius-*). The --sq-* shim at the bottom is
+   TEMPORARY and is removed in PR12 (zero-trace gate); do NOT add new --sq-*.
 
    Mechanisms preserved: dark via :root[data-theme="dark"] (ThemeScript),
    RTL/Arabic via [dir="rtl"] / :lang(ar), flash-free boot.
    ========================================================================== */
 
-/* Fonts — IBM Plex Sans (EN) + IBM Plex Mono (identifiers). Interim Google
-   load (§1c); IBM Plex Sans Arabic stays self-hosted via layout.tsx
-   (--font-plex-arabic). Self-hosting of Plex Sans/Mono lands with PR12. */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+/* Fonts are self-hosted by layout.tsx. English and Arabic share one metric-
+   compatible family; identifiers use the restrained system monospace stack. */
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SAQEEL SEMANTIC TOKENS — LIGHT (default)
@@ -27,10 +25,10 @@
   color-scheme: light;
 
   /* Surfaces */
-  --surface-canvas:    #f4f3f0;
+  --surface-canvas:    #f5f7f8;
   --surface-primary:   #ffffff;
-  --surface-secondary: #faf9f7;
-  --surface-sunken:    #edece8;
+  --surface-secondary: #f0f3f5;
+  --surface-sunken:    #e9eef1;
   --surface-raised:    #ffffff;
   --surface-overlay:   rgba(21, 23, 26, 0.44);
 
@@ -44,27 +42,27 @@
   --nav-indicator:   #35b285;
 
   /* Text */
-  --text-primary:   #1a1d1f;
-  --text-secondary: #4c5258;
-  --text-muted:     #71787e;
-  --text-disabled:  #a4aab0;
+  --text-primary:   #1b242c;
+  --text-secondary: #49545e;
+  --text-muted:     #66727c;
+  --text-disabled:  #8f9aa3;
   --text-inverse:   #f5f6f7;
   --text-on-action: #ffffff;
-  --text-link:      #0e5b43;
+  --text-link:      #175cd3;
 
   /* Borders & focus */
-  --border-subtle: #e6e3dd;
-  --border-strong: #c8c4bc;
-  --border-input:  #b4b0a8;
-  --focus-ring:    #12674c;
+  --border-subtle: #d6dde2;
+  --border-strong: #9aa6af;
+  --border-input:  #7a8894;
+  --focus-ring:    #176b52;
 
   /* Primary action — restrained emerald */
-  --action-primary:         #115c44;
-  --action-primary-hover:   #0d4c38;
-  --action-primary-pressed: #0a3e2d;
-  --accent-soft:            #e3efe9;
-  --accent-soft-hover:      #d4e7dd;
-  --accent-text:            #0b4a36;
+  --action-primary:         #176b52;
+  --action-primary-hover:   #125541;
+  --action-primary-pressed: #0f4938;
+  --accent-soft:            #dfeee9;
+  --accent-soft-hover:      #beddd2;
+  --accent-text:            #104f3d;
 
   /* Destructive */
   --action-danger:         #b3261e;
@@ -150,11 +148,11 @@
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --surface-canvas:    #17191d;
-  --surface-primary:   #1e2126;
-  --surface-secondary: #23262c;
-  --surface-sunken:    #131518;
-  --surface-raised:    #282c33;
+  --surface-canvas:    #101317;
+  --surface-primary:   #191d22;
+  --surface-secondary: #252b31;
+  --surface-sunken:    #12161a;
+  --surface-raised:    #20262d;
   --surface-overlay:   rgba(8, 9, 11, 0.62);
 
   --nav-bg:          #131519;
@@ -165,25 +163,25 @@
   --nav-text-active: #f2f4f5;
   --nav-indicator:   #3fbd8d;
 
-  --text-primary:   #e8eaec;
-  --text-secondary: #b1b6bc;
-  --text-muted:     #82888f;
-  --text-disabled:  #565c63;
+  --text-primary:   #f1f4f6;
+  --text-secondary: #abb4bd;
+  --text-muted:     #8e99a3;
+  --text-disabled:  #626d77;
   --text-inverse:   #1a1d1f;
   --text-on-action: #08120e;
-  --text-link:      #57c49a;
+  --text-link:      #78aeda;
 
-  --border-subtle: #2c3036;
-  --border-strong: #43484f;
-  --border-input:  #4c525a;
-  --focus-ring:    #3fae83;
+  --border-subtle: #353c44;
+  --border-strong: #56616b;
+  --border-input:  #6b7680;
+  --focus-ring:    #64c2a1;
 
-  --action-primary:         #2e9e77;
-  --action-primary-hover:   #38b086;
-  --action-primary-pressed: #47c095;
-  --accent-soft:            #1c352c;
-  --accent-soft-hover:      #234135;
-  --accent-text:            #7fd4b2;
+  --action-primary:         #64c2a1;
+  --action-primary-hover:   #7fd0b3;
+  --action-primary-pressed: #94dbc1;
+  --accent-soft:            #203a32;
+  --accent-soft-hover:      #29483d;
+  --accent-text:            #9dddc5;
 
   --action-danger:         #d5554c;
   --action-danger-hover:   #de6c64;
@@ -221,9 +219,9 @@
    TYPOGRAPHY
    ═══════════════════════════════════════════════════════════════════════════ */
 :root {
-  --font-body:    "IBM Plex Sans", var(--font-plex-arabic, "IBM Plex Sans Arabic"), -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --font-body:    var(--font-plex-arabic, "IBM Plex Sans Arabic"), -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   --font-heading: var(--font-body);
-  --font-mono:    "IBM Plex Mono", ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
+  --font-mono:    ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
 
   --type-display-size: 28px;      --type-display-lh: 1.25; --type-display-w: 600;
   --type-page-title-size: 22px;   --type-page-title-lh: 1.3;  --type-page-title-w: 600;
@@ -243,7 +241,7 @@
 
 /* Arabic-first metrics */
 [dir="rtl"], [lang="ar"], :lang(ar) {
-  --font-body: var(--font-plex-arabic, "IBM Plex Sans Arabic"), "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+  --font-body: var(--font-plex-arabic, "IBM Plex Sans Arabic"), -apple-system, "Segoe UI", sans-serif;
   --type-body-lh: 1.65; --type-body-lg-lh: 1.7; --type-compact-lh: 1.6;
   --type-table-lh: 1.55; --type-display-lh: 1.4; --type-page-title-lh: 1.45;
   --type-section-lh: 1.5;
@@ -274,10 +272,10 @@
   --space-4: 16px; --space-5: 20px; --space-6: 24px; --space-8: 32px;
   --space-10: 40px; --space-12: 48px;
 
-  --radius-xs: 2px;
-  --radius-sm: 3px;
-  --radius-md: 4px;
-  --radius-lg: 6px;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
   --radius-full: 999px;
 
   --border-w: 1px;
@@ -333,264 +331,3 @@
 /* Product voice: English → IBM Plex Sans; Arabic → IBM Plex Sans Arabic */
 body { font-family: var(--font-body); }
 :lang(ar) { font-family: var(--font-body); }
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   ASTRYX (--ax-*) COMPATIBILITY SHIM — TEMPORARY. Maps every legacy --ax-*
-   token consumed in product code to its SAQEEL semantic equivalent so all
-   ~1996 existing consumers render SAQEEL immediately with zero edits.
-   Tracked for deletion in PR12 (zero-trace gate). DO NOT ADD NEW --ax-*.
-   ═══════════════════════════════════════════════════════════════════════════ */
-:root {
-  /* Color */
-  --ax-color-primary:        var(--action-primary);
-  --ax-color-primary-hover:  var(--action-primary-hover);
-  --ax-color-primary-strong: var(--action-primary-pressed);
-  --ax-color-primary-tint:   var(--accent-soft);
-  --ax-color-primary-weak:   var(--accent-soft-hover);
-  --ax-color-selected-tint:  var(--accent-soft);
-  --ax-color-canvas:         var(--surface-canvas);
-  --ax-color-surface:        var(--surface-primary);
-  --ax-color-surface-raised: var(--surface-raised);
-  --ax-color-surface-sunken: var(--surface-sunken);
-  --ax-color-overlay:        var(--surface-overlay);
-  --ax-color-text:           var(--text-primary);
-  --ax-color-text-primary:   var(--text-primary);
-  --ax-color-text-secondary: var(--text-secondary);
-  --ax-color-text-subtle:    var(--text-muted);
-  --ax-text-subtle:          var(--text-muted);
-  --ax-color-text-disabled:  var(--text-disabled);
-  --ax-color-inverse-text:   var(--text-inverse);
-  --ax-color-on-critical:    var(--text-on-action);
-  --ax-fg-critical:          var(--text-on-action);
-  --ax-color-border:         var(--border-subtle);
-  --ax-color-border-strong:  var(--border-strong);
-  --ax-color-focus:          var(--focus-ring);
-  --ax-color-success:        var(--status-compliant);
-  --ax-color-success-tint:   var(--status-compliant-soft);
-  --ax-color-success-strong: var(--status-compliant-text);
-  --ax-color-warning:        var(--status-warning);
-  --ax-color-warning-tint:   var(--status-warning-soft);
-  --ax-color-warning-strong: var(--status-warning-text);
-  --ax-color-critical:       var(--status-critical);
-  --ax-color-critical-tint:  var(--status-critical-soft);
-  --ax-color-critical-strong:var(--status-critical-text);
-  --ax-color-info:           var(--status-info);
-  --ax-color-info-tint:      var(--status-info-soft);
-  --ax-color-neutral-tint:   var(--surface-secondary);
-  --ax-color-neutral-weak:   var(--border-subtle);
-  --ax-color-shadow-base:    #1a1d1f;
-  --ax-color-print-text:     var(--print-text);
-  --ax-color-print-surface:  var(--print-surface);
-  --ax-color-print-border:   var(--print-border);
-
-  /* Fonts */
-  --ax-font-sans:   var(--font-body);
-  --ax-font-arabic: var(--font-body);
-  --ax-font-mono:   var(--font-mono);
-  --ax-font-input:  var(--font-body);
-  --numeric-features: "tnum" 1, "lnum" 1;
-
-  /* Type shorthands (weight size/lh family) → SAQEEL roles */
-  --ax-text-display:      600 28px/1.25 var(--font-body);
-  --ax-text-title:        600 22px/1.3 var(--font-body);
-  --ax-text-heading:      600 17px/1.35 var(--font-body);
-  --ax-text-heading-xs:   600 14px/1.4 var(--font-body);
-  --ax-text-subheading:   600 15px/1.55 var(--font-body);
-  --ax-text-body:         400 14px/1.5 var(--font-body);
-  --ax-text-body-strong:  600 14px/1.5 var(--font-body);
-  --ax-text-field:        400 15px/1.55 var(--font-body);
-  --ax-text-caption:      400 12px/1.4 var(--font-body);
-  --ax-text-micro:        500 11.5px/1.4 var(--font-body);
-  --ax-text-input:        400 14px/1.5 var(--font-body);
-  --ax-text-input-field:  400 15px/1.55 var(--font-body);
-  --ax-font-size-150:     12px;
-  --ax-font-size-300:     22px;
-
-  /* Spacing */
-  --ax-space-050: var(--space-1);
-  --ax-space-100: var(--space-2);
-  --ax-space-150: var(--space-3);
-  --ax-space-200: var(--space-4);
-  --ax-space-250: var(--space-5);
-  --ax-space-300: var(--space-6);
-  --ax-space-400: var(--space-8);
-  --ax-space-600: var(--space-12);
-
-  /* Radius */
-  --ax-radius-small:    var(--radius-xs);
-  --ax-radius-standard: var(--radius-sm);
-  --ax-radius-large:    var(--radius-md);
-  --ax-radius-full:     var(--radius-full);
-  --ax-radius-input:    var(--radius-sm);
-  --ax-radius-200:      var(--radius-sm);
-  --ax-radius-300:      var(--radius-md);
-
-  /* Elevation */
-  --ax-shadow-raised:  var(--shadow-xs);
-  --ax-shadow-card:    var(--shadow-sm);
-  --ax-shadow-overlay: var(--shadow-lg);
-
-  /* Control metrics (field surfaces raise --control-h-lg to 52 via density) */
-  --ax-control-height:           var(--touch-target); /* restores original 44px floor (was 40 via control-h-lg) */
-  --ax-control-height-prominent: 48px;                 /* restores original 48px; no SAQEEL token matches exactly */
-  --ax-control-height-field:     52px;  /* legacy field controls expected an unconditional 52px touch target */
-  --ax-focus-ring: 0 0 0 2px var(--surface-canvas), 0 0 0 4px var(--focus-ring);
-
-  /* Motion */
-  --ax-motion-fast:     var(--motion-fast) var(--ease-standard);
-  --ax-motion-standard: var(--motion-base) var(--ease-standard);
-
-  /* Layout */
-  --ax-grid-desktop-max:  1440px;
-  --ax-shell-nav-width:   var(--sidebar-w);
-  --ax-shell-panel-width: 360px;
-
-  /* Z */
-  --ax-z-sticky:  var(--z-sticky);
-  --ax-z-drawer:  var(--z-drawer);
-  --ax-z-modal:   var(--z-modal);
-  --ax-z-toast:   var(--z-toast);
-  --ax-z-tooltip: var(--z-tooltip);
-}
-:root[data-theme="dark"] { --ax-color-shadow-base: #000000; }
-
-/* SAQEEL REVAMP RUNTIME AUTHORITY
-   Exact palette, type scale and geometry shipped with Saqeel Revamp.dc.html.
-   This terminal layer intentionally wins over the pre-existing semantic sheet
-   while the application is migrated route-by-route. Both namespaces resolve
-   to the same supplied values so existing backend-wired components and the new
-   ax-* compositions cannot render as two different products. */
-:root, :root[data-theme="light"] {
-  --ax-color-primary: #176B52;
-  --ax-color-primary-hover: #125541;
-  --ax-color-canvas: #F5F7F8;
-  --ax-color-surface: #FFFFFF;
-  --ax-color-text: #1B242C;
-  --ax-color-text-secondary: #49545E;
-  --ax-color-border: #D6DDE2;
-  --ax-color-border-control: #7A8894;
-  --ax-color-link: #175CD3;
-  --ax-color-success: #18794E;
-  --ax-color-warning: #8A5A00;
-  --ax-color-critical: #B42318;
-  --ax-color-info: #175CD3;
-  --ax-color-shadow-base: #18212A;
-  --ax-color-inverse-text: #FFFFFF;
-  color-scheme: light;
-}
-
-:root[data-theme="dark"] {
-  --ax-color-primary: #64C2A1;
-  --ax-color-primary-hover: #7FD0B3;
-  --ax-color-canvas: #101317;
-  --ax-color-surface: #191D22;
-  --ax-color-text: #F1F4F6;
-  --ax-color-text-secondary: #ABB4BD;
-  --ax-color-border: #353C44;
-  --ax-color-border-control: #6B7680;
-  --ax-color-link: #78AEDA;
-  --ax-color-success: #55B885;
-  --ax-color-warning: #D4A84F;
-  --ax-color-critical: #E17770;
-  --ax-color-info: #78AEDA;
-  --ax-color-shadow-base: #000000;
-  --ax-color-inverse-text: #101317;
-  color-scheme: dark;
-}
-
-:root {
-  --ax-color-primary-tint: color-mix(in srgb, var(--ax-color-primary) 14%, var(--ax-color-surface));
-  --ax-color-primary-weak: color-mix(in srgb, var(--ax-color-primary) 28%, var(--ax-color-surface));
-  --ax-color-primary-strong: color-mix(in srgb, var(--ax-color-primary) 72%, var(--ax-color-text));
-  --ax-color-success-tint: color-mix(in srgb, var(--ax-color-success) 14%, var(--ax-color-surface));
-  --ax-color-success-strong: color-mix(in srgb, var(--ax-color-success) 78%, var(--ax-color-text));
-  --ax-color-warning-tint: color-mix(in srgb, var(--ax-color-warning) 16%, var(--ax-color-surface));
-  --ax-color-warning-strong: color-mix(in srgb, var(--ax-color-warning) 78%, var(--ax-color-text));
-  --ax-color-critical-tint: color-mix(in srgb, var(--ax-color-critical) 14%, var(--ax-color-surface));
-  --ax-color-critical-strong: color-mix(in srgb, var(--ax-color-critical) 80%, var(--ax-color-text));
-  --ax-color-info-tint: color-mix(in srgb, var(--ax-color-info) 14%, var(--ax-color-surface));
-  --ax-color-neutral-tint: color-mix(in srgb, var(--ax-color-text-secondary) 10%, var(--ax-color-surface));
-  --ax-color-neutral-weak: color-mix(in srgb, var(--ax-color-text-secondary) 20%, var(--ax-color-surface));
-  --ax-color-border-strong: color-mix(in srgb, var(--ax-color-text-secondary) 45%, var(--ax-color-border));
-  --ax-color-text-disabled: color-mix(in srgb, var(--ax-color-text-secondary) 55%, var(--ax-color-surface));
-  --ax-color-surface-sunken: color-mix(in srgb, var(--ax-color-canvas) 60%, var(--ax-color-surface));
-  --ax-color-surface-raised: color-mix(in srgb, var(--ax-color-text) 5%, var(--ax-color-surface));
-  --ax-color-surface-field: color-mix(in srgb, var(--ax-color-text-secondary) 6%, var(--ax-color-surface));
-  --ax-color-overlay: color-mix(in srgb, var(--ax-color-shadow-base) 60%, transparent);
-
-  --ax-font-sans: var(--font-plex-arabic, "IBM Plex Sans Arabic"), -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-  --ax-font-arabic: var(--font-plex-arabic, "IBM Plex Sans Arabic"), "Geeza Pro", "Segoe UI", Tahoma, sans-serif;
-  --ax-font-mono: var(--font-jbmono, "JetBrains Mono"), ui-monospace, "SF Mono", Menlo, monospace;
-  --ax-font-input: var(--font-grotesk, "Space Grotesk"), var(--font-plex-arabic, "IBM Plex Sans Arabic"), sans-serif;
-  --ax-text-display: 500 32px/40px var(--ax-font-sans);
-  --ax-text-title: 500 24px/32px var(--ax-font-sans);
-  --ax-text-heading: 500 19px/28px var(--ax-font-sans);
-  --ax-text-subheading: 500 16px/24px var(--ax-font-sans);
-  --ax-text-body: 400 16px/24px var(--ax-font-sans);
-  --ax-text-body-strong: 600 16px/24px var(--ax-font-sans);
-  --ax-text-field: 400 17px/26px var(--ax-font-sans);
-  --ax-text-caption: 400 14px/20px var(--ax-font-sans);
-  --ax-text-micro: 500 12px/16px var(--ax-font-sans);
-  --ax-text-metric: 500 28px/32px var(--ax-font-sans);
-  --ax-text-label: 500 14px/20px var(--ax-font-sans);
-  --ax-text-action: 500 14px/20px var(--ax-font-sans);
-  --ax-text-input: 400 16px/24px var(--ax-font-input);
-  --ax-text-input-field: 400 17px/26px var(--ax-font-input);
-  --ax-numeric-features: "tnum" 1, "lnum" 1;
-
-  --ax-space-050: 4px;
-  --ax-space-100: 8px;
-  --ax-space-150: 12px;
-  --ax-space-200: 16px;
-  --ax-space-250: 20px;
-  --ax-space-300: 24px;
-  --ax-space-400: 32px;
-  --ax-space-600: 48px;
-  --ax-radius-small: 4px;
-  --ax-radius-standard: 6px;
-  --ax-radius-large: 8px;
-  --ax-radius-full: 999px;
-  --ax-radius-input: 6px;
-  --ax-shadow-raised: none;
-  --ax-shadow-overlay: 0 12px 28px color-mix(in srgb, var(--ax-color-shadow-base) 22%, transparent);
-  --ax-control-height-compact: 36px;
-  --ax-control-height-admin: 40px;
-  --ax-control-height: 44px;
-  --ax-control-height-prominent: 48px;
-  --ax-control-height-field: 52px;
-  --ax-focus-ring: 0 0 0 2px var(--ax-color-canvas), 0 0 0 4px var(--ax-color-primary);
-  --ax-offset-sticky-top: 72px;
-  --ax-offset-sticky-bottom: 96px;
-  --ax-motion-fast: 120ms cubic-bezier(.2,0,0,1);
-  --ax-motion-standard: 200ms cubic-bezier(.2,0,0,1);
-  --ax-grid-desktop-max: 1440px;
-  --ax-grid-gutter: 24px;
-  --ax-shell-nav-width: 248px;
-  --ax-shell-panel-width: 360px;
-
-  --surface-canvas: var(--ax-color-canvas);
-  --surface-primary: var(--ax-color-surface);
-  --surface-secondary: var(--ax-color-neutral-tint);
-  --surface-sunken: var(--ax-color-surface-sunken);
-  --surface-raised: var(--ax-color-surface-raised);
-  --surface-overlay: var(--ax-color-overlay);
-  --text-primary: var(--ax-color-text);
-  --text-secondary: var(--ax-color-text-secondary);
-  --text-muted: var(--ax-color-text-secondary);
-  --text-disabled: var(--ax-color-text-disabled);
-  --text-inverse: var(--ax-color-inverse-text);
-  --text-on-action: var(--ax-color-inverse-text);
-  --text-link: var(--ax-color-link);
-  --border-subtle: var(--ax-color-border);
-  --border-strong: var(--ax-color-border-strong);
-  --border-input: var(--ax-color-border-control);
-  --focus-ring: var(--ax-color-primary);
-  --action-primary: var(--ax-color-primary);
-  --action-primary-hover: var(--ax-color-primary-hover);
-  --action-primary-pressed: var(--ax-color-primary-strong);
-  --accent-soft: var(--ax-color-primary-tint);
-  --accent-soft-hover: var(--ax-color-primary-weak);
-  --accent-text: var(--ax-color-primary-strong);
-  --font-body: var(--ax-font-sans);
-  --font-mono: var(--ax-font-mono);
-}

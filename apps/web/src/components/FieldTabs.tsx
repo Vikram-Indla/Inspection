@@ -48,24 +48,24 @@ export default function FieldTabs({ active, labels }: {
   labels: FieldTabsLabels;
 }) {
   return (
-    <nav aria-label={labels.home} className="ax-field-taskbar">
-      <Link href="/field" className="ax-field-taskbar__item" prefetch={false}
+    <nav aria-label={labels.home} className="sq-field-taskbar">
+      <Link href="/field" className="sq-field-taskbar__item" prefetch={false}
         aria-current={active === "home" ? "page" : undefined}>
         <HomeIcon />{labels.home}
       </Link>
-      <Link href="/field/my-tasks" className="ax-field-taskbar__item" prefetch={false}
+      <Link href="/field/my-tasks" className="sq-field-taskbar__item" prefetch={false}
         aria-current={active === "myTasks" ? "page" : undefined}>
         <TasksIcon />{labels.myTasks}
       </Link>
-      <Link href="/field/establishments" className="ax-field-taskbar__item" prefetch={false}
+      <Link href="/field/establishments" className="sq-field-taskbar__item" prefetch={false}
         aria-current={active === "establishments" ? "page" : undefined}>
         <EstablishmentsIcon />{labels.establishments}
       </Link>
-      <Link href="/field/notifications" className="ax-field-taskbar__item" prefetch={false}
+      <Link href="/field/notifications" className="sq-field-taskbar__item" prefetch={false}
         aria-current={active === "notifications" ? "page" : undefined}>
         <NotificationsIcon />{labels.notifications}
       </Link>
-      <Link href="/field/account" className="ax-field-taskbar__item" prefetch={false}
+      <Link href="/field/account" className="sq-field-taskbar__item" prefetch={false}
         aria-current={active === "account" ? "page" : undefined}>
         <AccountIcon />{labels.account}
       </Link>

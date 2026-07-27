@@ -35,7 +35,7 @@ export default async function BulkViolations() {
   if (!isAuthorized) {
     return (
       <Shell current="/admin/bulk-violations" title={tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}>
-        <h1 className="ax-sr-only">{tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}</h1>
+        <h1 className="sq-sr-only">{tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}</h1>
         <EmptyState icon={<IconBlocked size={28} />} title={tr("admin.bulkvio.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
           body={tr("admin.bulkvio.unauthorized.body", "Bulk violation issuance (DEC-L) is available to Operations and Compliance Admin roles only.", "إصدار المخالفات الجماعي (DEC-L) متاح لدوري العمليات ومسؤول الامتثال فقط.")} />
       </Shell>
@@ -77,7 +77,7 @@ export default async function BulkViolations() {
   return (
     <Shell current="/admin/bulk-violations" title={tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}
       context={<span className="badge badge-info">DEC-L</span>}>
-      <h1 className="ax-sr-only">{tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}</h1>
+      <h1 className="sq-sr-only">{tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}</h1>
       {roleError && <div className="sq-banner sq-banner--warning" role="alert"><div>{tr("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.", "تعذر التحقق من صلاحيات الإعداد. تم تعطيل الكتابة؛ أعد تحميل الصفحة.")}</div></div>}
       <div className="sq-banner sq-banner--warning">
         <div><strong>{tr("admin.bulkvio.warnTitle", "This issues real, permanent violations.", "هذا يُصدر مخالفات حقيقية ودائمة.")}</strong>{" "}

@@ -34,36 +34,36 @@ export default function PlanningPreview({ methods, drafts, effectivePackage, can
   };
 
   return (
-    <div data-saqeel-design="WA-DES-036" className="ax-stack" style={{ gap: "var(--ax-space-250)" }}>
-      <h1 className="ax-sr-only">{ar ? "تخطيط الزيارات" : "Visit planning"}</h1>
+    <div data-saqeel-design="WA-DES-036" className="sq-stack" style={{ gap: "var(--space-5)" }}>
+      <h1 className="sq-sr-only">{ar ? "تخطيط الزيارات" : "Visit planning"}</h1>
       {effectivePackage !== undefined && (
-        <div className={`ax-banner ${effectivePackage ? "ax-banner--success" : "ax-banner--warning"}`} role="status"><div>
+        <div className={`sq-banner ${effectivePackage ? "sq-banner--success" : "sq-banner--warning"}`} role="status"><div>
           <strong>{effectivePackage ? copy.packageReady : copy.packageMissing}</strong>
-          {effectivePackage ? <> — <span className="ax-numeric">{effectivePackage}</span> · {drafts.length} {copy.drafts}</> : null}
+          {effectivePackage ? <> — <span className="sq-numeric">{effectivePackage}</span> · {drafts.length} {copy.drafts}</> : null}
         </div></div>
       )}
-      <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
+      <div className="sq-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
         <h2 style={{ margin: 0 }}>{copy.methods}</h2>
-        {showVisits !== false && <Link className="ax-btn ax-btn--subtle" href="/planning/visits" prefetch={false}>{copy.visits}</Link>}
+        {showVisits !== false && <Link className="sq-btn sq-btn--subtle" href="/planning/visits" prefetch={false}>{copy.visits}</Link>}
       </div>
       <div className={`wa-planning-methods ${styles.methods}`}>
         {methods.map(method => (
           <Link key={method.href} href={canCreate ? method.href : "#"} aria-disabled={!canCreate}
-            className={`ax-surface wa-planning-method ${styles.method}`} style={{ textDecoration: "none", color: "inherit" }}>
+            className={`sq-surface wa-planning-method ${styles.method}`} style={{ textDecoration: "none", color: "inherit" }}>
             <span className={`wa-planning-method__icon ${styles.icon}`}><PlanningMethodIcon href={method.href} /></span>
-            <span className={`wa-planning-method__copy ${styles.copy}`}><strong>{method.title}</strong><span className="ax-caption">{method.desc}</span></span>
+            <span className={`wa-planning-method__copy ${styles.copy}`}><strong>{method.title}</strong><span className="sq-caption">{method.desc}</span></span>
           </Link>
         ))}
       </div>
-      {showPlans !== false && <section className="ax-surface" aria-labelledby="wa-m2-plans-heading" style={{ overflow: "hidden" }}>
-        <div className="ax-panel-header"><h2 id="wa-m2-plans-heading" style={{ margin: 0, fontSize: "var(--ax-font-size-300)" }}>{copy.plans}</h2>
-          <span className="ax-lozenge ax-lozenge--warning">{drafts.length} {copy.drafts}</span></div>
-        {drafts.length === 0 ? <p className="ax-caption" style={{ padding: "var(--ax-space-300)" }}>{copy.noDrafts}</p> : (
-          <div className="ax-tablewrap"><table className="ax-table"><thead><tr><th>Plan</th><th>{copy.method}</th><th>{copy.status}</th><th>{copy.created}</th><th>{copy.planner}</th><th /></tr></thead>
-            <tbody>{drafts.map(draft => <tr key={draft.id}><td className="ax-numeric"><strong>{draft.planReference ?? draft.id.slice(0, 8)}</strong></td>
-              <td>{draft.method}</td><td><span className="ax-lozenge ax-lozenge--info">{draft.status}</span></td>
-              <td className="ax-numeric">{new Date(draft.createdAt).toISOString().slice(0, 16).replace("T", " ")}</td><td>{draft.planner}</td>
-              <td><Link className="ax-link" href={draft.href}>{copy.continue}</Link></td></tr>)}</tbody>
+      {showPlans !== false && <section className="sq-surface" aria-labelledby="wa-m2-plans-heading" style={{ overflow: "hidden" }}>
+        <div className="sq-panel-header"><h2 id="wa-m2-plans-heading" style={{ margin: 0, fontSize: "var(--type-page-title-size)" }}>{copy.plans}</h2>
+          <span className="sq-lozenge sq-lozenge--warning">{drafts.length} {copy.drafts}</span></div>
+        {drafts.length === 0 ? <p className="sq-caption" style={{ padding: "var(--space-6)" }}>{copy.noDrafts}</p> : (
+          <div className="sq-tablewrap"><table className="sq-table"><thead><tr><th>Plan</th><th>{copy.method}</th><th>{copy.status}</th><th>{copy.created}</th><th>{copy.planner}</th><th /></tr></thead>
+            <tbody>{drafts.map(draft => <tr key={draft.id}><td className="sq-numeric"><strong>{draft.planReference ?? draft.id.slice(0, 8)}</strong></td>
+              <td>{draft.method}</td><td><span className="sq-lozenge sq-lozenge--info">{draft.status}</span></td>
+              <td className="sq-numeric">{new Date(draft.createdAt).toISOString().slice(0, 16).replace("T", " ")}</td><td>{draft.planner}</td>
+              <td><Link className="sq-link" href={draft.href}>{copy.continue}</Link></td></tr>)}</tbody>
           </table></div>
         )}
       </section>}

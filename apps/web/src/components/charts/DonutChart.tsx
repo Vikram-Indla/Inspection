@@ -1,4 +1,4 @@
-// Hand-rolled SVG donut chart — zero deps; colors only via var(--ax-*) tokens
+// Hand-rolled SVG donut chart — zero deps; colors only via var(--sq-*) tokens
 // (GLOBAL COLOR LAW). Server-component safe. SVG wrapped dir="ltr" (charts
 // never mirror); the legend uses logical properties so it flows with RTL.
 

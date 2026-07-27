@@ -253,7 +253,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
           total={total} limit={limit} nextLimit={nextLimit} strings={strings} locale={locale}
           targetMode={targetPreview} routeBase={routeBase} />
       )}
-      {targetPreview && <div className="ax-banner" role="note"><div>{t("visit.preview.dualState", "Planning status and operational state remain independent. Every bulk item reports its own applied, blocked, or notification outcome.")}</div></div>}
+      {targetPreview && <div className="sq-banner" role="note"><div>{t("visit.preview.dualState", "Planning status and operational state remain independent. Every bulk item reports its own applied, blocked, or notification outcome.")}</div></div>}
     </Shell>
   );
 }
