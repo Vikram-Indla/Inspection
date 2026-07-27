@@ -464,7 +464,8 @@ export default async function Operations({ searchParams }: {
   };
   let cancellationQueueRows: CancellationQueueRow[] = [];
   let cancellationHistoryRows: Array<{
-    id: string; visit_id: string; factory_name: string | null; reason_label: string;
+    id: string; visit_id: string; factory_name: string | null; inspector_name: string | null;
+    region: string | null; reason_label: string;
     status: string; requested_at: string; decided_at: string | null; decision_reason: string | null;
   }> = [];
   let outOfScopeCancellationCount = 0;
@@ -515,6 +516,8 @@ export default async function Operations({ searchParams }: {
         id: row.id,
         visit_id: row.visit_id,
         factory_name: row.visits?.factories?.name ?? null,
+        inspector_name: localePersonName(row.visits?.assignments?.[0]?.profiles?.full_name),
+        region: row.visits?.factories?.region ?? null,
         reason_label: reasonLabels.get(row.reason_key) ?? row.reason_key,
         status: row.status,
         requested_at: row.requested_at,
@@ -976,13 +979,28 @@ export default async function Operations({ searchParams }: {
     },
   ];
   const mayManageOperations = routeRoleKeys.includes("ops");
-  const workloadByInspector = new Map<string, { inspector: string; assigned: number; active: number }>();
-  for (const visit of monitored) {
+  // CR-440: workload is a roll-up over every assigned visit in the currently
+  // authorized geography, not only the active monitoring subset. "Completed"
+  // maps to the terminal field-work state `submitted`; overdue comes from the
+  // same governed SLA calculation rendered above.
+  const overdueVisitIds = new Set(
+    slaFlags
+      .filter(flag => flag.kind === "overdue_start" || flag.kind === "overdue_submit")
+      .map(flag => flag.visit.id),
+  );
+  const workloadByInspector = new Map<string, {
+    inspector: string; assigned: number; active: number; completed: number; overdue: number;
+  }>();
+  for (const visit of visits) {
+    if (!visit.assignments?.[0]?.profiles) continue;
     const inspector = localePersonName(visit.assignments?.[0]?.profiles?.full_name)
       ?? local("Inspector name unavailable", "اسم المفتش غير متاح");
-    const row = workloadByInspector.get(inspector) ?? { inspector, assigned: 0, active: 0 };
+    const row = workloadByInspector.get(inspector)
+      ?? { inspector, assigned: 0, active: 0, completed: 0, overdue: 0 };
     row.assigned += 1;
     if (["on_the_way", "arrived", "executing"].includes(visit.operational_state)) row.active += 1;
+    if (visit.operational_state === "submitted") row.completed += 1;
+    if (overdueVisitIds.has(visit.id)) row.overdue += 1;
     workloadByInspector.set(inspector, row);
   }
   const workloadRows = [...workloadByInspector.values()]
@@ -1131,16 +1149,22 @@ export default async function Operations({ searchParams }: {
         <section className="sq-surface" aria-labelledby="operations-workload-heading">
           <div className={styles.detailHeading}><div>
             <h2 id="operations-workload-heading">{t("ops.workload.heading", "Inspector workload")}</h2>
-            <p>{t("ops.workload.body", "Assigned and active visits in the current authorized geography.")}</p>
+            <p>{t("ops.workload.body", "Assigned, active, submitted and overdue visits in the current authorized geography.")}</p>
           </div></div>
           {workloadRows.length === 0 ? (
             <EmptyState glyph="—" title={t("ops.workload.empty", "No inspector workload in this scope")} inline bare />
           ) : (
             <div className="sq-tablewrap"><table className="sq-table">
-              <thead><tr><th scope="col">{monitoringStrings.thInspector}</th><th scope="col">{t("ops.workload.assigned", "Assigned")}</th><th scope="col">{t("ops.workload.active", "Active")}</th></tr></thead>
+              <thead><tr>
+                <th scope="col">{monitoringStrings.thInspector}</th>
+                <th scope="col">{t("ops.workload.assigned", "Assigned")}</th>
+                <th scope="col">{t("ops.workload.active", "Active")}</th>
+                <th scope="col">{t("ops.workload.completed", "Submitted")}</th>
+                <th scope="col">{t("ops.workload.overdue", "Overdue")}</th>
+              </tr></thead>
               <tbody>{workloadRows.map(row => <tr key={row.inspector}>
                 <th scope="row"><bdi dir="auto">{row.inspector}</bdi></th>
-                <td>{row.assigned}</td><td>{row.active}</td>
+                <td>{row.assigned}</td><td>{row.active}</td><td>{row.completed}</td><td>{row.overdue}</td>
               </tr>)}</tbody>
             </table></div>
           )}
@@ -1224,10 +1248,21 @@ export default async function Operations({ searchParams }: {
             <EmptyState glyph="—" title={t("ops.cancellations.empty", "No cancellation history in this scope")} inline bare />
           ) : (
             <div className="sq-tablewrap"><table className="sq-table">
-              <thead><tr><th scope="col">{monitoringStrings.thVisit}</th><th scope="col">{monitoringStrings.thFactory}</th><th scope="col">{t("ops.cancellations.reason", "Reason")}</th><th scope="col">{t("ops.cancellations.status", "Status")}</th><th scope="col">{t("ops.cancellations.requested", "Requested")}</th><th scope="col">{t("ops.cancellations.decided", "Decided")}</th></tr></thead>
+              <thead><tr>
+                <th scope="col">{monitoringStrings.thVisit}</th>
+                <th scope="col">{monitoringStrings.thFactory}</th>
+                <th scope="col">{monitoringStrings.thInspector}</th>
+                <th scope="col">{monitoringStrings.regionLabel}</th>
+                <th scope="col">{t("ops.cancellations.reason", "Reason")}</th>
+                <th scope="col">{t("ops.cancellations.status", "Status")}</th>
+                <th scope="col">{t("ops.cancellations.requested", "Requested")}</th>
+                <th scope="col">{t("ops.cancellations.decided", "Decided")}</th>
+              </tr></thead>
               <tbody>{cancellationHistoryRows.map(row => <tr key={row.id}>
                 <td><a className="sq-link" href={`/visits/${row.visit_id}`}>{row.visit_id.slice(0, 8)}</a></td>
                 <td>{row.factory_name ?? "—"}</td>
+                <td><bdi dir="auto">{row.inspector_name ?? "—"}</bdi></td>
+                <td>{row.region ?? "—"}</td>
                 <td>{row.reason_label}{row.decision_reason ? ` · ${row.decision_reason}` : ""}</td>
                 <td>{enumLabel(row.status)}</td>
                 <td><time dateTime={row.requested_at}>{formatDateTime(row.requested_at, locale === "ar" ? "ar" : "en")}</time></td>

@@ -14,13 +14,13 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
   const { locale, t } = await useT();
   const title = t("analytics.title", locale === "ar" ? "التحليلات" : "Analytics");
   const parsed = parseAnalyticsQuery(await searchParams);
-  if (!parsed.ok) return <StateSurface kind="error" title="Invalid analytics query" body={parsed.issues.join(" ")} />;
+  if (!parsed.ok) return <StateSurface kind="error" locale={locale} title={t("analytics.query.invalid", "Invalid analytics query")} body={parsed.issues.join(" ")} />;
   const result = await loadAnalytics(await supabaseServer(), parsed.value);
-  if (result.kind === "unauthorized") return <StateSurface kind="unauthorized" />;
+  if (result.kind === "unauthorized") return <StateSurface kind="unauthorized" locale={locale} />;
   if (result.kind === "error") {
     const correlationId = crypto.randomUUID();
     console.error(`[analytics:${correlationId}]`, result.message);
-    return <StateSurface kind="error" body={`${result.message} Reference ${correlationId}.`} />;
+    return <StateSurface kind="error" locale={locale} body={`${result.message} Reference ${correlationId}.`} />;
   }
   return (
     <main className="sq-content" aria-labelledby="analytics-title">
@@ -34,10 +34,11 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
             disabled control, never as a working action. */}
         <button type="button" className="btn btn-secondary btn-sm" disabled>Export · unavailable</button>
       </header>
-      {result.kind === "degraded" ? <StateSurface kind="degraded" body={`Affected source: ${result.affectedSource}. Available governed results remain visible.`} /> : null}
-      {result.stale ? <StateSurface kind="stale" title="Stale analytics result" body={`Last successful refresh: ${result.refreshedAt}.`} /> : null}
-      {result.rows.length === 0 ? <StateSurface kind="rls-denied" /> : <section aria-labelledby="configured-metrics">
+      {result.kind === "degraded" ? <StateSurface kind="degraded" locale={locale} body={`Affected source: ${result.affectedSource}. Available governed results remain visible.`} /> : null}
+      {result.stale ? <StateSurface kind="stale" locale={locale} title="Stale analytics result" body={`Last successful refresh: ${result.refreshedAt}.`} /> : null}
+      {result.rows.length === 0 ? <StateSurface kind="empty" locale={locale} /> : <section aria-labelledby="configured-metrics">
         <h2 id="configured-metrics">Configured metrics</h2>
+        <p className="desc">Source refresh: <time dateTime={result.refreshedAt}>{result.refreshedAt}</time>. Every metric exposes its governed lineage key.</p>
         <div className="kpi-grid">{ANALYTICS_METRICS.map(metric => {
           const row = result.rows.find(candidate => candidate.metric_key === metric.key);
           // A metric that is not resolvable to a governed number renders as a
@@ -52,6 +53,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
           // Fixed vertical order per card so the grid aligns row-to-row:
           // id-code, label, value-or-state, definition, drill link.
           return <article className="panel kpi" key={metric.key}>
+            <code className="id-code">{metric.trace}</code>
             <h3 className="kpi-label">{metric.title}</h3>
             <p className="kpi-value">{governed ? display : <span className="badge badge-pending">{display}</span>}</p>
             <p className="desc">{metric.definition}</p>

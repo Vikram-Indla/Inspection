@@ -4,6 +4,8 @@ import { getUserRoles } from "@/lib/persona";
 import { useT } from "@/lib/i18n";
 import { ReviewQueue, type QueueBadges, type QueueRow, type Readiness, type ReadinessFact, type ReviewQueueStrings } from "./ReviewQueue";
 import styles from "./responsive.module.css";
+import { IconBlocked } from "@/app/icons";
+import { formatDateTime } from "@/lib/dates";
 
 const TONE: Record<string, string> = { approved: "sq-lozenge--success", returned: "sq-lozenge--warning", rejected: "sq-lozenge--critical", under_review: "sq-lozenge--info", pending_review: "sq-lozenge--warning" };
 const RISK_TONE: Record<string, string> = { low: "sq-lozenge--success", medium: "sq-lozenge--warning", high: "sq-lozenge--critical" };
@@ -69,13 +71,12 @@ type Joined = {
   } | null;
 };
 
-const fmt = (iso: string | null) => iso ? new Date(iso).toISOString().slice(0, 16).replace("T", " ") : "—";
-
 export const dynamic = "force-dynamic";
 
 export default async function Reviews() {
   preloadShell("/reviews");
-  const { t } = await useT();
+  const { t, locale } = await useT();
+  const fmt = (iso: string | null) => iso ? formatDateTime(iso, locale) : "—";
   const sb = await supabaseServer();
   const { data: { user } } = await getServerUser();
   const { data: roleRows } = user ? await getUserRoles(user.id) : { data: null };
@@ -91,7 +92,7 @@ export default async function Reviews() {
         <main className={styles.reviewRoot}>
           <section className="sq-surface cd-panelpad cd-result" role="alert">
             <div className="cd-result__row">
-              <div className="cd-result__icon cd-result__icon--critical" aria-hidden="true">⛔</div>
+              <div className="cd-result__icon cd-result__icon--critical" aria-hidden="true"><IconBlocked size={24} /></div>
               <div className="cd-stack">
                 <h2>{t("review.list.unauthTitle", "You don’t have access to the review queue")}</h2>
                 <p>{t("review.list.unauthBody", "This queue requires an authorized review, planning, operations or assigned-inspector role with matching scope. Navigation visibility is not authorization.")}</p>
