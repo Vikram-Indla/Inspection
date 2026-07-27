@@ -71,13 +71,13 @@ export default function RoleCapabilityPanel({ roles, permissions, grants, labels
       : "";
 
   return (
-    <section className="sq-surface" style={{ padding: "var(--space-8)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }} aria-labelledby="role-cap-h">
+    <section className="panel" style={{ padding: "var(--space-8)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }} aria-labelledby="role-cap-h">
       <h3 id="role-cap-h" style={{ margin: 0 }}>{labels.panelTitle}</h3>
-      <p className="sq-caption" style={{ margin: 0 }}>{labels.panelIntro}</p>
+      <p className="t-caption" style={{ margin: 0 }}>{labels.panelIntro}</p>
 
-      <div className="sq-field" style={{ maxInlineSize: 420 }}>
+      <div className="field" style={{ maxInlineSize: 420 }}>
         <label className="sq-field__label" htmlFor="role-cap-role-select">{labels.selectRole}</label>
-        <select className="sq-input" id="role-cap-role-select" value={roleKey}
+        <select className="input" id="role-cap-role-select" value={roleKey}
           onChange={e => { setRoleKey(e.target.value); setConfirming(null); setFeedback({}); }}>
           <option value="">—</option>
           {roles.map(r => <option key={r.roleKey} value={r.roleKey}>{r.roleKey}{r.isAdmin ? " (admin)" : ""}</option>)}
@@ -88,13 +88,13 @@ export default function RoleCapabilityPanel({ roles, permissions, grants, labels
         <>
           <h4 style={{ margin: 0 }}>{labels.grantedTitle}</h4>
           {held.size === 0 ? (
-            <p className="sq-caption" style={{ margin: 0 }}>{labels.noGrants}</p>
+            <p className="t-caption" style={{ margin: 0 }}>{labels.noGrants}</p>
           ) : (
             <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-3)", alignItems: "center" }}>
               {grants.filter(g => g.roleKey === roleKey).map(g => (
                 <span key={g.permissionKey} className={`sq-lozenge ${g.permissionKey === "admin.access.manage" ? "sq-lozenge--warning" : "sq-lozenge--info"}`}>
                   {g.permissionKey}
-                  <button type="button" className="sq-btn" style={{ marginInlineStart: 6, padding: "0 var(--space-2)" }}
+                  <button type="button" className="btn btn-primary" style={{ marginInlineStart: 6, padding: "0 var(--space-2)" }}
                     disabled={pending}
                     onClick={() => setConfirming({ kind: "revoke", permissionKey: g.permissionKey })}>{labels.revoke}</button>
                 </span>
@@ -102,7 +102,7 @@ export default function RoleCapabilityPanel({ roles, permissions, grants, labels
             </div>
           )}
           <div style={{ display: "flex", gap: "var(--space-3)", alignItems: "center" }}>
-            <select className="sq-input" id="role-cap-grant-select" style={{ maxInlineSize: 420 }} disabled={pending}>
+            <select className="input" id="role-cap-grant-select" style={{ maxInlineSize: 420 }} disabled={pending}>
               {grantable.map(p => <option key={p.permissionKey} value={p.permissionKey}>{p.permissionKey} — {p.title}</option>)}
             </select>
             <button type="button" className="sq-btn sq-btn--prominent" disabled={pending || grantable.length === 0}
@@ -111,7 +111,7 @@ export default function RoleCapabilityPanel({ roles, permissions, grants, labels
                 if (select?.value) requestGrant(select.value);
               }}>{labels.grantCapability}</button>
           </div>
-          <p className="sq-caption" style={{ margin: 0 }}>{labels.auditNote}</p>
+          <p className="t-caption" style={{ margin: 0 }}>{labels.auditNote}</p>
         </>
       )}
 
@@ -122,7 +122,7 @@ export default function RoleCapabilityPanel({ roles, permissions, grants, labels
             <button type="button" className="sq-btn sq-btn--prominent" disabled={pending} onClick={confirmPending}>
               {pending ? labels.working : labels.confirm}
             </button>
-            <button type="button" className="sq-btn" disabled={pending} onClick={() => setConfirming(null)}>{labels.cancel}</button>
+            <button type="button" className="btn btn-primary" disabled={pending} onClick={() => setConfirming(null)}>{labels.cancel}</button>
           </div>
         </div>
       )}
