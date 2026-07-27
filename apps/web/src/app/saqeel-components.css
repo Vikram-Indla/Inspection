@@ -471,7 +471,10 @@ td.rail-td > i { display: block; width: 4px; height: 100%; }
 
 /* Web/Admin Phase 1 F0 — source-backed states and guarded reference renderer.
    Additive only: current .sq-state and SAQEEL component contracts remain. */
-.saqeel-state { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-6); color: var(--text-secondary); }
+/* A state is a card, not loose text on the canvas: it carries the same chrome
+   as .panel so a banner sits level with the panels around it. The kind
+   modifiers below restate border-inline-start and so keep their status accent. */
+.saqeel-state { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-6); color: var(--text-secondary); background: var(--surface-primary); border: var(--border-w) solid var(--border-subtle); border-radius: var(--radius-md); box-shadow: var(--shadow-card); }
 .saqeel-state__glyph { display: grid; place-items: center; width: 36px; height: 36px; flex: none; color: var(--text-disabled); }
 .saqeel-state__glyph svg { width: 32px; height: 32px; }
 .saqeel-state__content { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); min-inline-size: 0; }
