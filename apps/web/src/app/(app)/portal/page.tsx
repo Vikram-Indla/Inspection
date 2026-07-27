@@ -46,13 +46,13 @@ export default async function PortalPage() {
           body={t("portal.empty.body", "Requests and self-assessments appear here once submitted. Empty may also mean none are in your scope (RLS).")} />
       )}
       {(reqs ?? []).map((r) => (
-        <div key={r.id} className="sq-surface" style={{ padding: "var(--space-6)" }}>
-          <div className="sq-row" style={{ justifyContent: "space-between" }}><h3>{r.request_type} <span className="sq-caption">{r.subject ?? ""}</span></h3><span className="sq-lozenge sq-lozenge--info">{r.status}</span></div>
+        <div key={r.id} className="panel" style={{ padding: "var(--space-6)" }}>
+          <div className="row" style={{ justifyContent: "space-between" }}><h3>{r.request_type} <span className="t-caption">{r.subject ?? ""}</span></h3><span className="sq-lozenge sq-lozenge--info">{r.status}</span></div>
         </div>
       ))}
       {(sas ?? []).map((a) => (
-        <div key={a.id} className="sq-surface" style={{ padding: "var(--space-6)" }}>
-          <div className="sq-row" style={{ justifyContent: "space-between" }}><h3>{t("portal.sa", "Self-assessment")}</h3>
+        <div key={a.id} className="panel" style={{ padding: "var(--space-6)" }}>
+          <div className="row" style={{ justifyContent: "space-between" }}><h3>{t("portal.sa", "Self-assessment")}</h3>
             <span className={`sq-lozenge ${a.risk_signal_emitted ? "sq-lozenge--success" : "sq-lozenge--warning"}`}>{a.status}</span></div>
         </div>
       ))}
