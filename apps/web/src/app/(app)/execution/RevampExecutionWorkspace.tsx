@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo, useState, type DragEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type DragEvent } from "react";
 import type { GeoMarkerData } from "@/components/GeoMap";
 import type { Locale } from "@/lib/i18n";
 
@@ -80,7 +80,35 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
   const [filters, setFilters] = useState<Partial<Record<FilterKey, string>>>({});
   const [reschedule, setReschedule] = useState<{ row: ExecutionRow; date: string } | null>(null);
   const [selected, setSelected] = useState<ExecutionRow | null>(null);
+  const detailCloseRef = useRef<HTMLButtonElement>(null);
+  const rescheduleCloseRef = useRef<HTMLButtonElement>(null);
   const weekStart = useMemo(() => startOfWeek(new Date()), []);
+  useEffect(() => {
+    if (!selected) return;
+    const origin = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    detailCloseRef.current?.focus();
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSelected(null);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("keydown", closeOnEscape);
+      origin?.focus();
+    };
+  }, [selected]);
+  useEffect(() => {
+    if (!reschedule) return;
+    const origin = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    rescheduleCloseRef.current?.focus();
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setReschedule(null);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("keydown", closeOnEscape);
+      origin?.focus();
+    };
+  }, [reschedule]);
   const calendarDays = useMemo(() => Array.from({ length: calendarMode === "week" ? 7 : 35 }, (_, index) => {
     const date = new Date(weekStart);
     date.setDate(weekStart.getDate() + index);
@@ -259,7 +287,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
       )}
       {selected ? (
         <div className="sq-execution__drawer" role="dialog" aria-modal="true" aria-labelledby="execution-detail-title">
-          <button type="button" aria-label={copy(locale, "Close visit details", "إغلاق تفاصيل الزيارة")} onClick={() => setSelected(null)}>×</button>
+          <button ref={detailCloseRef} type="button" aria-label={copy(locale, "Close visit details", "إغلاق تفاصيل الزيارة")} onClick={() => setSelected(null)}>×</button>
           <p className="sq-overline">{copy(locale, "Execution visit", "زيارة التنفيذ")}</p>
           <h2 id="execution-detail-title">{selected.factory}</h2>
           <p>{selected.visitReference} · <span>{titleCase(locale, selected.operationalState)}</span></p>
@@ -294,7 +322,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
       ) : null}
       {reschedule ? (
         <div className="sq-execution__drawer" role="dialog" aria-modal="true" aria-labelledby="reschedule-title">
-          <button type="button" aria-label={copy(locale, "Close configuration drawer", "إغلاق لوحة الإعداد")} onClick={() => setReschedule(null)}>×</button>
+          <button ref={rescheduleCloseRef} type="button" aria-label={copy(locale, "Close configuration drawer", "إغلاق لوحة الإعداد")} onClick={() => setReschedule(null)}>×</button>
           <p className="sq-overline">{copy(locale, "Planning window guard", "حماية نافذة التخطيط")}</p>
           <h2 id="reschedule-title">{copy(locale, "Configure", "إعداد")} {reschedule.row.visitReference}</h2>
           <p><strong>{reschedule.row.factory}</strong> {copy(locale, `was dropped on ${formatDate(locale, reschedule.date)}. No date has been changed.`, `تم إسقاطها على ${formatDate(locale, reschedule.date)}. لم يتم تغيير أي تاريخ.`)}</p>
