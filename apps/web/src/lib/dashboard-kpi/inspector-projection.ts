@@ -46,11 +46,18 @@ export type InspectorProjectionInput = {
   nowMs: number;
   policyVersionId: string | null;
   refreshedAt: string | null;
+  /**
+   * Governed target per metric key from the published dashboard configuration.
+   * A key with no entry stays `configured: false`; no target is defaulted.
+   */
+  targets?: Record<string, number>;
   /** live when online, cached/offline when the device is serving stored data. */
   sourceStatus?: "live" | "cached" | "offline" | "stale" | "partial";
 };
 
 function baseMetric(def: KpiDefinition, scope: MetricScope, input: InspectorProjectionInput): SharedMetric {
+  const target = input.targets?.[def.metricKey];
+  const configuredTarget = typeof target === "number";
   return {
     metricId: def.metricId,
     category: def.category,
@@ -63,7 +70,11 @@ function baseMetric(def: KpiDefinition, scope: MetricScope, input: InspectorProj
     scope,
     exclusions: def.metricKey === "checklist_compliance" ? ["na", "unknown", "incomplete"] : [],
     comparison: null,
-    target: { value: null, policyVersionId: input.policyVersionId, configured: false },
+    target: {
+      value: configuredTarget ? target : null,
+      policyVersionId: input.policyVersionId,
+      configured: configuredTarget,
+    },
     dimensions: [],
     breakdown: null,
     drill: { route: def.drillRoute, filters: {} },

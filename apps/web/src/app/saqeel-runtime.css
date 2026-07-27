@@ -894,7 +894,11 @@ button.sq-shell-scope { cursor: pointer; }
 [dir="rtl"] .sq-breadcrumb li:not(:last-child)::after { content: "‹"; }
 .sq-breadcrumb { margin: 0; padding: 0; }
 
-.sq-content { padding: 19px 20px 40px; display: flex; flex-direction: column; gap: 20px; max-inline-size: var(--grid-desktop-max); inline-size: 100%; }
+/* The content pane is fluid, matching the design shell's `248px 1fr` grid.
+   It previously carried a 1440px cap the design never had, which left the
+   page body short of the right edge while the sticky pagehead above it ran
+   full bleed — the two disagreed on where the page ended. */
+.sq-content { padding: 19px 20px 40px; display: flex; flex-direction: column; gap: 20px; inline-size: 100%; }
 .sq-shell em, .sq-content em { font-style: normal; }
 .sq-shell__backdrop { display: none; }
 

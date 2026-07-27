@@ -263,6 +263,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const projection = buildDashboardKpiProjection(metrics, {
     scope: metricScope,
     policyVersionId: policy.policyVersionId,
+    targets: policy.targets,
     refreshedAt: new Date(nowMs).toISOString(),
     generatedAtMs: nowMs,
     failedSources: [...failedSources, ...policy.failedSources],

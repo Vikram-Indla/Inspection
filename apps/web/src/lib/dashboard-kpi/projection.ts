@@ -27,6 +27,12 @@ export type ProjectionContext = {
   refreshedAt: string | null;
   generatedAtMs: number;
   failedSources: string[];
+  /**
+   * Governed target per metric key from the published dashboard configuration.
+   * A key with no entry stays `configured: false` — the projection never
+   * substitutes a default for a target the business has not published.
+   */
+  targets?: Record<string, number>;
 };
 
 /** Map a non-live implementation status to an honest source status. */
@@ -46,6 +52,8 @@ function statusFor(def: KpiDefinition): MetricSourceStatus {
 /** Build a SharedMetric shell from the registry definition. */
 function base(def: KpiDefinition, ctx: ProjectionContext): SharedMetric {
   const live = def.implementation === "implemented";
+  const target = ctx.targets?.[def.metricKey];
+  const configuredTarget = typeof target === "number";
   return {
     metricId: def.metricId,
     category: def.category,
@@ -58,7 +66,11 @@ function base(def: KpiDefinition, ctx: ProjectionContext): SharedMetric {
     scope: ctx.scope,
     exclusions: def.metricKey.includes("compliance") ? [...COMPLIANCE_EXCLUSIONS] : [],
     comparison: null,
-    target: { value: null, policyVersionId: ctx.policyVersionId, configured: false },
+    target: {
+      value: configuredTarget ? target : null,
+      policyVersionId: ctx.policyVersionId,
+      configured: configuredTarget,
+    },
     dimensions: [],
     breakdown: null,
     drill: { route: def.drillRoute, filters: {} },
