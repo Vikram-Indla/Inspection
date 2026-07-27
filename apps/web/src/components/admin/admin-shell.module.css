@@ -9,12 +9,12 @@
 
 .routeProgress {
   position: fixed;
-  z-index: var(--ax-z-toast);
+  z-index: var(--z-toast);
   inset-block-start: 0;
   inset-inline: 0;
   block-size: 3px;
   overflow: hidden;
-  background: var(--ax-color-primary-tint);
+  background: var(--accent-soft);
   pointer-events: none;
 }
 .routeProgress::after {
@@ -22,7 +22,7 @@
   display: block;
   inline-size: 34%;
   block-size: 100%;
-  background: var(--ax-color-primary);
+  background: var(--action-primary);
   animation: admin-route-progress 900ms ease-in-out infinite;
 }
 @keyframes admin-route-progress {
