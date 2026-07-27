@@ -113,6 +113,12 @@ export async function AppShell({ children }: { children: ReactNode }) {
     unreadBadge: t("bell.unread", locale === "ar" ? "غير مقروء" : "unread"),
     loadError: t("bell.loadError", locale === "ar" ? "تعذر تحميل الإشعارات:" : "Couldn’t load notifications:"),
     view: t("bell.view", locale === "ar" ? "فتح" : "Open"),
+    viewAll: t("bell.viewAll", locale === "ar" ? "عرض كل الإشعارات" : "View all notifications"),
+    today: t("bell.today", locale === "ar" ? "اليوم" : "Today"),
+    yesterday: t("bell.yesterday", locale === "ar" ? "أمس" : "Yesterday"),
+    hoursAgo: t("bell.hoursAgo", locale === "ar" ? "قبل {n} ساعة" : "{n} hour{s} ago"),
+    minutesAgo: t("bell.minutesAgo", locale === "ar" ? "قبل {n} دقيقة" : "{n} minute{s} ago"),
+    justNow: t("bell.justNow", locale === "ar" ? "الآن" : "Just now"),
     events: {
       assignment: t("bell.ev.assignment", locale === "ar" ? "تم إسناد زيارة جديدة" : "New visit assigned"),
       visit_cancelled: t("bell.ev.visitCancelled", locale === "ar" ? "تم إلغاء الزيارة" : "Visit cancelled"),
