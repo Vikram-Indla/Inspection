@@ -9,7 +9,7 @@ import { usePathname } from "next/navigation";
 // This re-applies the same rule on every pathname change, using the identical
 // precedence as the head script: sign-in/reset are dark-locked, while every
 // authenticated application route—including Field—honours the persisted
-// preference and otherwise falls back to the approved light theme.
+// preference and otherwise falls back to the product default, dark.
 
 const isDarkChannel = (pathname: string) =>
   pathname === "/login" ||
@@ -22,7 +22,7 @@ export default function ThemeChannelSync() {
 
   useEffect(() => {
     // Authentication surfaces remain fixed dark; application routes use the
-    // persisted user preference below.
+    // persisted user preference below, defaulting to dark when unset.
     if (isDarkChannel(pathname ?? "")) {
       document.documentElement.setAttribute("data-theme", "dark");
       return;
@@ -36,7 +36,7 @@ export default function ThemeChannelSync() {
     }
     document.documentElement.setAttribute(
       "data-theme",
-      persisted === "light" || persisted === "dark" ? persisted : "light",
+      persisted === "light" || persisted === "dark" ? persisted : "dark",
     );
   }, [pathname]);
 
