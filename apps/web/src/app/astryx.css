@@ -1900,6 +1900,7 @@ button.ax-shell-scope { cursor: pointer; }
 .rv-enforcement__toolbar { display: flex; align-items: center; gap: var(--space-3); margin-block-end: var(--space-4); }
 .rv-enforcement__toolbar label { width: 300px; }
 .rv-enforcement__toolbar button,
+.rv-enforcement__toolbar select,
 .rv-enforcement__toolbar > a {
   height: 42px;
   border: 1px dashed var(--ax-border-strong);
@@ -1911,6 +1912,7 @@ button.ax-shell-scope { cursor: pointer; }
   align-items: center;
   text-decoration: none;
 }
+.rv-enforcement__toolbar select { appearance: auto; }
 .rv-enforcement__toolbar > a { margin-inline-start: auto; border-style: solid; border-radius: var(--ax-radius-sm); }
 .rv-enforcement__list { display: grid; gap: var(--space-3); }
 .rv-enforcement__list article {
