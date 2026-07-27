@@ -37,7 +37,7 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
     expect(src).toContain('from("plant_addresses")');
     expect(page).toContain('aria-current={row.id === selected?.id ? "page" : undefined}');
     expect(list).toContain('dossier_href: commercialRegistrationId ? `/factories/cr/${commercialRegistrationId}` : `/factories/${row.id}`');
-    expect(list).toContain("Array.isArray(mappedIndustrialLicense)");
+    expect(list).toContain("industrial_licenses?.[0]?.commercial_registration_id");
     expect(list).toContain('`/factories/${row.id}`');
     expect(legacy).toContain('from("industrial_licenses")');
     expect(legacy).toContain('redirect(`/factories/cr/${normalizedLicense.commercial_registration_id}?license=${normalizedLicense.id}`)');
@@ -51,7 +51,8 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
       expect(src).toContain(`from("${table}")`);
     }
     expect(page).not.toMatch(/\.insert\(|\.update\(|\.upsert\(|\.delete\(/);
-    expect(page).not.toMatch(/<form|contentEditable|AddDocumentForm|AddProductForm/);
+    expect(page).not.toMatch(/contentEditable|AddDocumentForm|AddProductForm|<form[^>]+method="post"|<form[^>]+action=\{/);
+    expect(page).toContain('<form method="get" className="sq-row">');
     expect(page).toContain("This source section is degraded; other sections remain available.");
   });
 
@@ -149,10 +150,9 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
     const legacy = read("src/app/(app)/factories/[id]/page.tsx");
     for (const field of ["license_type", "stage", "status", "risk_band"]) expect(page + loader).toContain(field);
     expect(page).toContain('t("f360.timeline.heading", "Business-event timeline")');
-    expect(page).toContain("Operational visits are intentionally excluded.");
-    expect(page).toContain("reports.flatMap");
-    expect(page).toContain("government.flatMap");
-    expect(page).toContain("penalties.flatMap");
+    expect(page).toContain('sb.rpc("factory_timeline"');
+    expect(page).toContain('sb.from("visits")');
+    expect(page).toContain("filteredVisits");
     expect(page).not.toContain("daysToExpiry");
     expect(page).not.toContain("Date.now()");
     expect(legacy).not.toContain("expiringSoon");
