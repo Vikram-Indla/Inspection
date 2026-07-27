@@ -114,10 +114,19 @@ test("RTL-I18N-P1-001 canonical rewrite targets carry authoritative Arabic fallb
     'copy("Return package", "إعادة الحزمة")',
     'copy("Reject package", "رفض الحزمة")',
     'copy("Open review", "فتح المراجعة")',
+    'copy("Configuration requests awaiting decision", "طلبات تهيئة بانتظار القرار")',
+    'copy("Object review incomplete, so no package decision is possible", "مراجعة العناصر غير مكتملة، فيتعذّر اتخاذ قرار على الحزمة")',
+    'copy("Pending review", "بانتظار المراجعة")',
+    'copy("Approved", "معتمد")',
+    'copy("Modify regulation", "تعديل لائحة")',
+    'copy("Regulation", "اللائحة")',
+    "`${done} من ${total} تم البتّ فيه`",
+    'copy("Object review incomplete", "مراجعة العناصر غير مكتملة")',
   ]) {
     expect(CANONICAL_APPROVAL_QUEUE).toContain(pair);
   }
   expect(CANONICAL_APPROVAL_QUEUE).not.toContain("<h1>Approval Queue</h1>");
+  expect(CANONICAL_APPROVAL_QUEUE).not.toContain('copy("Partially approved",');
   expect(ANALYTICS_PAGE).toContain('<h1 id="analytics-title">{title}</h1>');
   expect(OPERATIONS_PAGE).toContain(
     'local("SLA and resubmission monitoring", "تنبيهات المواعيد النهائية")',
