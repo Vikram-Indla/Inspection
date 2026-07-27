@@ -127,40 +127,6 @@
   background: var(--surface-sunken);
 }
 
-.mapFrame :global(.mapboxgl-popup-content) {
-  min-inline-size: 220px;
-  padding: var(--space-3);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xs);
-  background: var(--surface-primary);
-  box-shadow: var(--shadow-overlay);
-  color: var(--text-primary);
-  font: var(--type-caption-font);
-  line-height: 1.5;
-  white-space: pre-line;
-}
-
-.mapFrame :global(.mapboxgl-popup-close-button) {
-  color: var(--text-secondary);
-  font-size: 1.125rem;
-}
-
-.mapFrame :global(.mapboxgl-popup-anchor-top .mapboxgl-popup-tip) {
-  border-bottom-color: var(--surface-primary);
-}
-
-.mapFrame :global(.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip) {
-  border-top-color: var(--surface-primary);
-}
-
-.mapFrame :global(.mapboxgl-popup-anchor-left .mapboxgl-popup-tip) {
-  border-right-color: var(--surface-primary);
-}
-
-.mapFrame :global(.mapboxgl-popup-anchor-right .mapboxgl-popup-tip) {
-  border-left-color: var(--surface-primary);
-}
-
 .mapFrame > [role="status"],
 .mapFrame > [role="alert"] {
   min-block-size: 540px;
