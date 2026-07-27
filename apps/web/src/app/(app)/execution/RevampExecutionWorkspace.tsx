@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type DragEvent } from "react";
 import type { GeoMarkerData } from "@/components/GeoMap";
 
 const GeoMap = dynamic(() => import("@/components/GeoMap"), { ssr: false });
@@ -30,6 +30,8 @@ export type ExecutionRow = {
 };
 
 type View = "mine" | "all" | "map";
+type CalendarMode = "week" | "month";
+type FilterKey = "inspector" | "region" | "risk" | "visitMode" | "operationalState" | "priority";
 
 const startOfWeek = (date: Date) => {
   const result = new Date(date);
@@ -48,17 +50,27 @@ export default function RevampExecutionWorkspace({ rows, currentUserId }: {
 }) {
   const [view, setView] = useState<View>("mine");
   const [query, setQuery] = useState("");
+  const [calendarMode, setCalendarMode] = useState<CalendarMode>("week");
+  const [filters, setFilters] = useState<Partial<Record<FilterKey, string>>>({});
+  const [reschedule, setReschedule] = useState<{ row: ExecutionRow; date: string } | null>(null);
   const weekStart = useMemo(() => startOfWeek(new Date()), []);
-  const weekDays = useMemo(() => Array.from({ length: 7 }, (_, index) => {
+  const calendarDays = useMemo(() => Array.from({ length: calendarMode === "week" ? 7 : 35 }, (_, index) => {
     const date = new Date(weekStart);
     date.setDate(weekStart.getDate() + index);
     return date;
-  }), [weekStart]);
+  }), [calendarMode, weekStart]);
   const mine = rows.filter(row => row.inspectorId === currentUserId);
   const sourceRows = view === "mine" ? mine : rows;
   const visibleRows = sourceRows.filter(row => {
     const needle = query.trim().toLowerCase();
-    return !needle || [row.factory, row.crNumber, row.visitReference].some(value => value?.toLowerCase().includes(needle));
+    const matchesQuery = !needle || [row.factory, row.crNumber, row.visitReference].some(value => value?.toLowerCase().includes(needle));
+    return matchesQuery
+      && (!filters.inspector || row.inspector === filters.inspector)
+      && (!filters.region || row.region === filters.region)
+      && (!filters.risk || row.risk === filters.risk)
+      && (!filters.visitMode || row.visitMode === filters.visitMode)
+      && (!filters.operationalState || row.operationalState === filters.operationalState)
+      && (!filters.priority || row.priority === filters.priority);
   });
   const markers: GeoMarkerData[] = visibleRows
     .filter(row => row.lat != null && row.lng != null)
@@ -70,23 +82,50 @@ export default function RevampExecutionWorkspace({ rows, currentUserId }: {
       tone: row.risk === "high" ? "high" : row.risk === "medium" ? "medium" : row.risk === "low" ? "low" : "neutral",
     }));
   const calendarRows = view === "mine" ? mine : rows;
-  const weekEnd = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 6);
+  const calendarEnd = calendarDays[calendarDays.length - 1]!;
+  const filterOptions: Record<FilterKey, string[]> = {
+    inspector: Array.from(new Set(rows.map(row => row.inspector).filter((value): value is string => !!value))).sort(),
+    region: Array.from(new Set(rows.map(row => row.region).filter((value): value is string => !!value))).sort(),
+    risk: Array.from(new Set(rows.map(row => row.risk).filter((value): value is string => !!value))).sort(),
+    visitMode: Array.from(new Set(rows.map(row => row.visitMode).filter((value): value is string => !!value))).sort(),
+    operationalState: Array.from(new Set(rows.map(row => row.operationalState).filter(Boolean))).sort(),
+    priority: Array.from(new Set(rows.map(row => row.priority).filter((value): value is string => !!value))).sort(),
+  };
+  const cycleFilter = (key: FilterKey) => {
+    const options = filterOptions[key];
+    if (!options.length) return;
+    const current = filters[key];
+    const index = current ? options.indexOf(current) : -1;
+    const next = index >= options.length - 1 ? undefined : options[index + 1];
+    setFilters(previous => ({ ...previous, [key]: next }));
+  };
+  const onDropDay = (event: DragEvent<HTMLElement>, date: string) => {
+    event.preventDefault();
+    const id = event.dataTransfer.getData("text/visit-id");
+    const row = rows.find(candidate => candidate.id === id);
+    if (row) setReschedule({ row, date });
+  };
+  const filterButton = (label: string, key: FilterKey) => (
+    <button type="button" aria-pressed={!!filters[key]} onClick={() => cycleFilter(key)}>
+      {filters[key] ? `${label}: ${titleCase(filters[key]!)}` : label}
+    </button>
+  );
 
   return (
     <div className="sq-execution">
       <section className="sq-execution__week">
         <div>
-          <strong>Week of {formatDate(weekStart.toISOString()).replace(/^\d{2} /, "")} – {formatDate(weekEnd.toISOString())}</strong>
-          <span><button type="button" aria-pressed="true">Week</button><button type="button">Month</button></span>
+          <strong>{calendarMode === "week" ? "Week" : "Five-week view"} of {formatDate(weekStart.toISOString()).replace(/^\d{2} /, "")} – {formatDate(calendarEnd.toISOString())}</strong>
+          <span><button type="button" aria-pressed={calendarMode === "week"} onClick={() => setCalendarMode("week")}>Week</button><button type="button" aria-pressed={calendarMode === "month"} onClick={() => setCalendarMode("month")}>Month</button></span>
         </div>
         <div className="sq-execution__days">
-          {weekDays.map(day => {
+          {calendarDays.map(day => {
             const key = day.toISOString().slice(0, 10);
             const dayRows = calendarRows.filter(row => row.windowStart.slice(0, 10) === key);
             return (
-              <article key={key}>
+              <article key={key} onDragOver={event => event.preventDefault()} onDrop={event => onDropDay(event, key)}>
                 <header><span>{formatShort(day)}</span><span>{dayRows.length ? `${dayRows.length} visit${dayRows.length === 1 ? "" : "s"}` : ""}</span></header>
-                {dayRows.slice(0, 4).map(row => <a href={`/visits/${row.id}`} key={row.id} data-risk={row.risk ?? ""}>{row.factory}</a>)}
+                {dayRows.slice(0, 4).map(row => <a href={`/visits/${row.id}`} key={row.id} data-risk={row.risk ?? ""} draggable onDragStart={event => event.dataTransfer.setData("text/visit-id", row.id)}>{row.factory}</a>)}
               </article>
             );
           })}
@@ -105,7 +144,13 @@ export default function RevampExecutionWorkspace({ rows, currentUserId }: {
 
       <div className="sq-execution__filters">
         <input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Search factory, CR, licence…" />
-        {["Inspector", "Region", "Risk", "Visit mode", "Operational state", "More filters"].map(label => <button type="button" key={label}>{label}</button>)}
+        {filterButton("Inspector", "inspector")}
+        {filterButton("Region", "region")}
+        {filterButton("Risk", "risk")}
+        {filterButton("Visit mode", "visitMode")}
+        {filterButton("Operational state", "operationalState")}
+        {filterButton("Priority", "priority")}
+        {Object.keys(filters).some(key => filters[key as FilterKey]) ? <button type="button" onClick={() => setFilters({})}>Clear filters</button> : null}
       </div>
 
       {view === "map" ? (
@@ -144,6 +189,17 @@ export default function RevampExecutionWorkspace({ rows, currentUserId }: {
           {!visibleRows.length && <p>No inspections match this view and filter.</p>}
         </section>
       )}
+      {reschedule ? (
+        <div className="sq-execution__drawer" role="dialog" aria-modal="true" aria-labelledby="reschedule-title">
+          <button type="button" aria-label="Close configuration drawer" onClick={() => setReschedule(null)}>×</button>
+          <p className="sq-overline">Planning window guard</p>
+          <h2 id="reschedule-title">Configure {reschedule.row.visitReference}</h2>
+          <p><strong>{reschedule.row.factory}</strong> was dropped on {formatDate(reschedule.date)}. No date has been changed.</p>
+          <div className="sq-banner"><strong>Current governed window:</strong> {formatDate(reschedule.row.windowStart)} – {formatDate(reschedule.row.windowEnd)}. The planning workflow validates conflicts and records the change.</div>
+          <a className="sq-btn" href={`/planning/visits/${reschedule.row.id}?proposedDate=${encodeURIComponent(reschedule.date)}`}>Continue in Planning</a>
+          <button className="sq-btn sq-btn--secondary" type="button" onClick={() => setReschedule(null)}>Cancel</button>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -1929,6 +1929,33 @@ button.ax-shell-scope { cursor: pointer; }
 .rv-enforcement__list dd { margin: 0; text-align: end; }
 .rv-enforcement__list article > a { position: absolute; inset: 0; overflow: hidden; text-indent: -999px; }
 
+.sq-execution__drawer {
+  position: fixed;
+  z-index: 80;
+  inset-block: var(--ax-topbar-h) 0;
+  inset-inline-end: 0;
+  width: min(440px, 92vw);
+  padding: var(--space-7);
+  border-inline-start: 1px solid var(--ax-border-strong);
+  background: var(--ax-surface);
+  box-shadow: -18px 0 48px rgb(16 19 23 / 18%);
+}
+.sq-execution__drawer > button[aria-label] {
+  position: absolute;
+  inset-block-start: var(--space-4);
+  inset-inline-end: var(--space-4);
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--ax-border);
+  border-radius: var(--ax-radius-sm);
+  background: transparent;
+  color: var(--ax-text);
+  font-size: 22px;
+}
+.sq-execution__drawer h2 { margin-block: var(--space-2) var(--space-4); }
+.sq-execution__drawer .sq-banner { margin-block: var(--space-5); }
+.sq-execution__drawer > .sq-btn { margin-inline-end: var(--space-2); }
+
 @media (max-width: 960px) {
   .rv-library { grid-template-columns: 1fr; }
   .rv-library__rail { border-inline-end: 0; border-block-end: 1px solid var(--ax-border); }

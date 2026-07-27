@@ -4,6 +4,7 @@ import { getVerifiedUser } from "@/lib/verified-user";
 import { getUserRoles } from "@/lib/persona";
 import { isAdminOnlyPersona } from "@/lib/shell-navigation";
 import { supabaseServer } from "@/lib/supabase-server";
+import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import RevampExecutionWorkspace, { type ExecutionRow } from "./RevampExecutionWorkspace";
 
 export const dynamic = "force-dynamic";
@@ -21,6 +22,7 @@ type ExecutionQueryRow = {
   factories: {
     id: string;
     name: string;
+    factory_code: string | null;
     cr_number: string | null;
     region: string | null;
     city: string | null;
@@ -43,7 +45,7 @@ export default async function ExecutionPage() {
   const [{ data: roleRows }, { data: executionRows, error: executionError }] = await Promise.all([
     getUserRoles(user.id),
     sb.from("visits")
-      .select("id, visit_reference, planning_status, operational_state, visit_type, execution_mode, window_start, window_end, priority, factories(id, name, cr_number, region, city, risk_band, official_lat, official_lng), assignments(inspector_id, profiles(full_name)), inspections(started_at)")
+      .select("id, visit_reference, planning_status, operational_state, visit_type, execution_mode, window_start, window_end, priority, factories(id, name, factory_code, cr_number, region, city, risk_band, official_lat, official_lng), assignments(inspector_id, profiles(full_name)), inspections(started_at)")
       .order("window_start", { ascending: true })
       .limit(1000),
   ]);
@@ -76,7 +78,9 @@ export default async function ExecutionPage() {
     );
   }
 
-  const rows: ExecutionRow[] = ((executionRows ?? []) as unknown as ExecutionQueryRow[]).map(row => ({
+  const rows: ExecutionRow[] = ((executionRows ?? []) as unknown as ExecutionQueryRow[])
+    .filter(row => !isTestFixtureEstablishment(row.factories))
+    .map(row => ({
     id: row.id,
     visitReference: row.visit_reference ?? row.id.slice(0, 8),
     factoryId: row.factories?.id ?? null,
@@ -97,7 +101,7 @@ export default async function ExecutionPage() {
     planningStatus: row.planning_status,
     lat: row.factories?.official_lat ?? null,
     lng: row.factories?.official_lng ?? null,
-  }));
+    }));
 
   return (
     <Shell current="/execution" title="">
