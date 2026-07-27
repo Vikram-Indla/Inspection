@@ -401,19 +401,19 @@ export default function ShellClient({
   }
 
   function renderNavItem(item: ShellClientNavGroup["items"][number], child = false) {
-    const className = `ax-nav-item${child ? " ax-nav-item--child" : ""}${item.enabled ? "" : " is-disabled"}`;
+    const className = `sq-nav-item${child ? " sq-nav-item--child" : ""}${item.enabled ? "" : " is-disabled"}`;
     if (!item.enabled) {
       const accessibleLabel = `${item.label}. ${item.disabledReason ?? ""}`.trim();
       return (
         <span key={item.id} className={className} role="link" aria-disabled="true" aria-label={accessibleLabel}
           title={`${item.label} — ${item.disabledReason ?? ""}`.trim()} tabIndex={0} data-nav-state="disabled">
-          <span className="ax-nav-icon"><Icon name={item.icon} /></span>
-          <span className="ax-nav-label">{item.label}</span>
-          {item.badge ? <span className="ax-badge ax-badge--critical ax-nav-badge">{item.badge}</span> : null}
-          <span className="ax-nav-lock" aria-hidden="true">
+          <span className="sq-nav-icon"><Icon name={item.icon} /></span>
+          <span className="sq-nav-label">{item.label}</span>
+          {item.badge ? <span className="sq-badge sq-badge--critical sq-nav-badge">{item.badge}</span> : null}
+          <span className="sq-nav-lock" aria-hidden="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
           </span>
-          <span className="ax-sr-only">{item.disabledReason}</span>
+          <span className="sq-sr-only">{item.disabledReason}</span>
         </span>
       );
     }
@@ -422,9 +422,9 @@ export default function ShellClient({
         aria-current={isShellRouteCurrent(current, item.href) ? "page" : undefined}
         href={item.href} title={item.label} onClick={closeAfterNavigate} data-nav-state="enabled"
         data-next-spa="true" prefetch={false}>
-        <span className="ax-nav-icon"><Icon name={item.icon} /></span>
-        <span className="ax-nav-label">{item.label}</span>
-        {item.badge ? <span className="ax-badge ax-badge--critical ax-nav-badge">{item.badge}</span> : null}
+        <span className="sq-nav-icon"><Icon name={item.icon} /></span>
+        <span className="sq-nav-label">{item.label}</span>
+        {item.badge ? <span className="sq-badge sq-badge--critical sq-nav-badge">{item.badge}</span> : null}
       </Link>
     );
   }
@@ -433,12 +433,12 @@ export default function ShellClient({
     const groupOpen = openGroups[group.id] ?? true;
     const isAdministration = group.id === "administration";
     return (
-      <section className={`ax-nav-group${isAdministration ? " ax-nav-group--pinned" : ""}`} data-nav-group={group.id} key={group.id}>
-        <button className={`ax-nav-group__trigger${isAdministration ? " is-administration" : ""}`} type="button" aria-label={group.label} aria-expanded={groupOpen}
+      <section className={`sq-nav-group${isAdministration ? " sq-nav-group--pinned" : ""}`} data-nav-group={group.id} key={group.id}>
+        <button className={`sq-nav-group__trigger${isAdministration ? " is-administration" : ""}`} type="button" aria-label={group.label} aria-expanded={groupOpen}
           aria-controls={`nav-group-${group.id}`}
           onClick={() => setOpenGroups(value => ({ ...value, [group.id]: !groupOpen }))}>
-          {isAdministration ? <span className="ax-nav-icon"><Icon name="admin" /></span> : null}
-          <span className="ax-nav-label">{group.label}</span><svg className="ax-nav-group__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
+          {isAdministration ? <span className="sq-nav-icon"><Icon name="admin" /></span> : null}
+          <span className="sq-nav-label">{group.label}</span><svg className="sq-nav-group__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
         </button>
         <div id={`nav-group-${group.id}`} hidden={!groupOpen}>
           {group.items.map((item, index) => {
@@ -447,11 +447,11 @@ export default function ShellClient({
             if (group.items.findIndex(candidate => candidate.parentId === item.parentId) !== index) return null;
             const children = group.items.filter(candidate => candidate.parentId === item.parentId);
             return (
-              <div className="ax-nav-subgroup" role="group" aria-labelledby={`nav-parent-${group.id}-${item.parentId}`} key={item.parentId}>
-                <div className="ax-nav-subgroup__label" id={`nav-parent-${group.id}-${item.parentId}`}>
-                  <span className="ax-nav-icon"><Icon name={item.icon} /></span>
-                  <span className="ax-nav-label">{item.parentLabel}</span>
-                  <svg className="ax-nav-subgroup__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+              <div className="sq-nav-subgroup" role="group" aria-labelledby={`nav-parent-${group.id}-${item.parentId}`} key={item.parentId}>
+                <div className="sq-nav-subgroup__label" id={`nav-parent-${group.id}-${item.parentId}`}>
+                  <span className="sq-nav-icon"><Icon name={item.icon} /></span>
+                  <span className="sq-nav-label">{item.parentLabel}</span>
+                  <svg className="sq-nav-subgroup__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
                 </div>
                 {children.map(child => renderNavItem(child, true))}
               </div>
@@ -467,14 +467,14 @@ export default function ShellClient({
     const activeHub = adminGroups.find(group => group.id === activeMobileAdminHub);
     if (activeHub) {
       return (
-        <section className="ax-nav-group" data-mobile-admin-hub={activeHub.id}>
-          <button className="ax-nav-group__trigger is-administration" type="button"
+        <section className="sq-nav-group" data-mobile-admin-hub={activeHub.id}>
+          <button className="sq-nav-group__trigger is-administration" type="button"
             aria-label={locale === "ar" ? "العودة إلى مجموعات الإدارة" : "Back to admin hubs"}
             onClick={() => setActiveMobileAdminHub(null)}>
             <span aria-hidden="true">{locale === "ar" ? "→" : "←"}</span>
-            <span className="ax-nav-label">{locale === "ar" ? "رجوع" : "Back"}</span>
+            <span className="sq-nav-label">{locale === "ar" ? "رجوع" : "Back"}</span>
           </button>
-          <h2 className="ax-nav-subgroup__label">{activeHub.label}</h2>
+          <h2 className="sq-nav-subgroup__label">{activeHub.label}</h2>
           {activeHub.items.map(item => renderNavItem(item))}
         </section>
       );
@@ -482,11 +482,11 @@ export default function ShellClient({
     return (
       <div aria-label={locale === "ar" ? "مجموعات الإدارة" : "Admin hubs"}>
         {adminGroups.map(group => (
-          <button className="ax-nav-group__trigger is-administration" type="button"
+          <button className="sq-nav-group__trigger is-administration" type="button"
             key={group.id} aria-label={group.label}
             onClick={() => setActiveMobileAdminHub(group.id)}>
-            <span className="ax-nav-icon"><Icon name="admin" /></span>
-            <span className="ax-nav-label">{group.label}</span>
+            <span className="sq-nav-icon"><Icon name="admin" /></span>
+            <span className="sq-nav-label">{group.label}</span>
             <span aria-hidden="true">{locale === "ar" ? "←" : "→"}</span>
           </button>
         ))}
@@ -495,10 +495,10 @@ export default function ShellClient({
   }
 
   return (
-    <div className={`ax-shell${collapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}${pendingHref ? " is-navigating" : ""}`}
+    <div className={`sq-shell${collapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}${pendingHref ? " is-navigating" : ""}`}
       aria-busy={pendingHref ? "true" : undefined} onClickCapture={handleShellNavigation}>
-      {pendingHref ? <div className="ax-route-progress" role="status"><span className="ax-sr-only">{strings.loadingDestination}</span></div> : null}
-      <a className="ax-shell__skip" href="#main-content">{strings.skipToContent}</a>
+      {pendingHref ? <div className="sq-route-progress" role="status"><span className="sq-sr-only">{strings.loadingDestination}</span></div> : null}
+      <a className="sq-shell__skip" href="#main-content">{strings.skipToContent}</a>
       {/* Product-Owner decision (2026-07-26): the console shell is NOT
           persona-based. Every persona gets the same chrome — sidebar, drawer,
           hamburger, bell and account menu — at every width. What differs is the
@@ -506,9 +506,9 @@ export default function ShellClient({
           channel (shell-navigation.ts), so a field persona's drawer holds only
           field-channel destinations. Same shell, role-appropriate items.
           Do not re-introduce a `fieldOnly` guard on this markup. */}
-      <button className="ax-shell__backdrop" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)} />
-      <nav ref={navRef} id="saqeel-primary-nav" className="ax-shell__nav" aria-label={strings.primary}>
-        <div className="ax-shell__brand">
+      <button className="sq-shell__backdrop" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)} />
+      <nav ref={navRef} id="saqeel-primary-nav" className="sq-shell__nav" aria-label={strings.primary}>
+        <div className="sq-shell__brand">
           {/* WA-BRAND-r1 — canonical authenticated-shell identity. The design
               (SAQEEL Brand Identity Proof.dc.html) ships both marks in the
               markup and lets the shared rules decide which one shows:
@@ -522,27 +522,29 @@ export default function ShellClient({
               which is an isolated document: it cannot reach the page webfonts,
               so both scripts fell back to system faces and were forced onto one
               baseline. That is what made the wordmark sit wrong. */}
-          <span className="ax-shell__brand-mark" aria-hidden="true">ص</span>
-          <span className="ax-shell__brand-name">
-            <span className="ax-shell__brand-ar" lang="ar">صقيل</span>
-            <span className="ax-shell__brand-en" lang="en">SAQEEL</span>
+          <span className="sq-shell__brand-mark" aria-hidden="true">
+            <img src="/saqeel-favicon.svg" alt="" width={22} height={22} />
           </span>
-          <button className="ax-shell__close" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)}>
+          <span className="sq-shell__brand-name">
+            <span className="sq-shell__brand-ar" lang="ar">صقيل</span>
+            <span className="sq-shell__brand-en" lang="en">SAQEEL</span>
+          </span>
+          <button className="sq-shell__close" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
           </button>
-          <button className="ax-shell__collapse" type="button" onClick={toggleCollapsed} aria-label={collapsed ? strings.expand : strings.collapse} aria-expanded={!collapsed}>
+          <button className="sq-shell__collapse" type="button" onClick={toggleCollapsed} aria-label={collapsed ? strings.expand : strings.collapse} aria-expanded={!collapsed}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
           </button>
         </div>
 
-        <div className="ax-shell__groups">
+        <div className="sq-shell__groups">
           {(adminWorkspace && compactNavigation && drawerOpen
             ? groups.filter(group => group.id !== "administration")
             : groups.filter(group => group.id !== "administration")
           ).map(renderNavGroup)}
         </div>
-        <div className="ax-shell__nav-footer">
-          <button className="ax-nav-item ax-shell__expand-row" type="button" onClick={toggleCollapsed}
+        <div className="sq-shell__nav-footer">
+          <button className="sq-nav-item sq-shell__expand-row" type="button" onClick={toggleCollapsed}
             title={strings.expand} aria-label={strings.expand}>
             <span aria-hidden="true">›</span>
           </button>
@@ -550,16 +552,16 @@ export default function ShellClient({
         </div>
       </nav>
 
-      <main id="main-content" className="ax-shell__main" tabIndex={-1}>
-        <header className="ax-pagehead">
-          <div className="ax-pagehead__topbar">
-            <button ref={menuRef} className="ax-topbar-icon ax-shell__menu" type="button" aria-label={strings.openMenu}
+      <main id="main-content" className="sq-shell__main" tabIndex={-1}>
+        <header className="sq-pagehead">
+          <div className="sq-pagehead__topbar">
+            <button ref={menuRef} className="sq-topbar-icon sq-shell__menu" type="button" aria-label={strings.openMenu}
               aria-controls="saqeel-primary-nav" aria-expanded={drawerOpen} onClick={() => setDrawerOpen(true)}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
             </button>
-            {!adminWorkspace ? <div className="ax-shell-controls">
-                <div className="ax-shell-search" ref={searchWrapRef}>
-                  <span className="ax-shell-search__icon" aria-hidden="true">
+            {!adminWorkspace ? <div className="sq-shell-controls">
+                <div className="sq-shell-search" ref={searchWrapRef}>
+                  <span className="sq-shell-search__icon" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
                       <circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" />
                     </svg>
@@ -569,7 +571,7 @@ export default function ShellClient({
                     onFocus={() => setSearchOpen(true)} onChange={event => { setQuery(event.target.value); setSearchOpen(true); }}
                     onKeyDown={event => { if (event.key === "Escape") { setSearchOpen(false); setQuery(""); } }} />
                   {searchResultsOpen && searchRect && typeof document !== "undefined" && createPortal(
-                    <div id="shell-global-search-results" className="ax-shell-search__results ax-shell-search__results--portal" role="listbox"
+                    <div id="shell-global-search-results" className="sq-shell-search__results sq-shell-search__results--portal" role="listbox"
                       aria-label={strings.searchResults}
                       style={{ top: searchRect.top, left: searchRect.left, width: searchRect.width }}>
                       {navigationResults.map(item => (
@@ -618,7 +620,7 @@ export default function ShellClient({
                   </select>
                 </label>
             </div> : (
-              <div className="ax-pagehead__workspace-label">
+              <div className="sq-pagehead__workspace-label">
                 <span>{strings.primary}</span>
                 <button ref={adminPaletteTriggerRef} type="button"
                   aria-label={`${adminPaletteCopy.open} (Ctrl/⌘ K)`}
@@ -631,27 +633,27 @@ export default function ShellClient({
                 </button>
               </div>
             )}
-            <div className="ax-pagehead__actions">
-              <ThemeToggle className="ax-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
+            <div className="sq-pagehead__actions">
+              <ThemeToggle className="sq-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
               {/* The bell renders for every persona (2026-07-26 ruling: one
                   shell for everybody). `fieldOnly` is still passed down because
                   it rewrites each notification's href onto the field channel —
                   that is routing, not chrome. */}
               <NotificationBell strings={bellStrings} locale={locale} fieldOnly={fieldOnly} />
               {aiVisible ? (
-                <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true" prefetch={false}>
+                <Link className="sq-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true" prefetch={false}>
                   <Icon name="ai" />
                 </Link>
               ) : null}
-              <div ref={accountRef} className="ax-shell-account">
-                <button className="ax-shell-account__trigger" type="button" aria-label={strings.account} aria-expanded={accountOpen}
+              <div ref={accountRef} className="sq-shell-account">
+                <button className="sq-shell-account__trigger" type="button" aria-label={strings.account} aria-expanded={accountOpen}
                   onClick={() => setAccountOpen(value => !value)}>
                   <span className="sq-shell-account__avatar" aria-hidden="true">{initials(email)}</span>
                   <span className="sq-shell-account__identity"><strong>{email.split("@")[0]}</strong><small>{roles.join(" · ")}</small></span>
                   <svg className="sq-shell-account__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
                 </button>
                 {accountOpen && accountMenuPos && typeof document !== "undefined" && createPortal(
-                  <div ref={accountMenuRef} className="ax-shell-account__menu ax-shell-account__menu--portal" role="dialog" aria-label={strings.account}
+                  <div ref={accountMenuRef} className="sq-shell-account__menu sq-shell-account__menu--portal" role="dialog" aria-label={strings.account}
                     style={{ top: accountMenuPos.top, left: accountMenuPos.left, right: accountMenuPos.right }}>
                     <strong>{email}</strong>
                     <span className="sq-caption">{strings.roles}: {roles.join(", ")}</span>
@@ -688,8 +690,8 @@ export default function ShellClient({
             style={{
               inlineSize: "min(42rem, 100%)", maxBlockSize: "min(42rem, 78vh)",
               display: "flex", flexDirection: "column", overflow: "hidden",
-              border: "1px solid var(--sq-border, #39434d)", borderRadius: "1rem",
-              background: "var(--sq-surface, #171c22)", color: "var(--sq-text, #f4f6f8)",
+              border: "1px solid var(--border-subtle, #39434d)", borderRadius: "1rem",
+              background: "var(--surface-primary, #171c22)", color: "var(--text-primary, #f4f6f8)",
               boxShadow: "0 24px 80px rgba(0,0,0,.45)",
             }}>
             <div style={{ display: "flex", alignItems: "center", gap: ".75rem", padding: "1rem 1rem .75rem" }}>
@@ -702,11 +704,11 @@ export default function ShellClient({
               onChange={event => setAdminPaletteQuery(event.target.value)}
               style={{
                 margin: "0 1rem .75rem", padding: ".8rem 1rem", borderRadius: ".65rem",
-                border: "1px solid var(--sq-border, #39434d)",
-                background: "var(--sq-surface-raised, #20262d)", color: "inherit",
+                border: "1px solid var(--border-subtle, #39434d)",
+                background: "var(--surface-raised, #20262d)", color: "inherit",
               }} />
             <p id="admin-palette-count" role="status" aria-live="polite"
-              style={{ margin: "0 1rem .5rem", color: "var(--sq-text-muted, #aab2bd)", fontSize: ".875rem" }}>
+              style={{ margin: "0 1rem .5rem", color: "var(--text-muted, #aab2bd)", fontSize: ".875rem" }}>
               {adminPaletteCopy.results(adminPaletteResults.length)}
             </p>
             <div id="admin-palette-results" role="listbox" aria-label={adminPaletteCopy.title}
@@ -721,12 +723,12 @@ export default function ShellClient({
                   <span aria-hidden="true"><Icon name={item.icon} /></span>
                   <span style={{ display: "grid" }}>
                     <strong>{item.label}</strong>
-                    <small style={{ color: "var(--sq-text-muted, #aab2bd)" }}>{item.hubLabel}</small>
+                    <small style={{ color: "var(--text-muted, #aab2bd)" }}>{item.hubLabel}</small>
                   </span>
                 </Link>
               ))}
               {!adminPaletteResults.length ? (
-                <p style={{ padding: "1rem", textAlign: "center", color: "var(--sq-text-muted, #aab2bd)" }}>
+                <p style={{ padding: "1rem", textAlign: "center", color: "var(--text-muted, #aab2bd)" }}>
                   {adminPaletteCopy.empty}
                 </p>
               ) : null}

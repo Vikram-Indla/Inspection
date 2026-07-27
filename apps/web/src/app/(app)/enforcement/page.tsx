@@ -165,7 +165,7 @@ export default async function EnforcementPage({
       title={tr("mvp3.enforcement.title", "Enforcement Library", "مكتبة الإنفاذ")}
       context={<span className="badge badge-info">M3-09 · CD-059 · {tr("mvp3.enforcement.badge", "source-linked records", "سجلات مرتبطة بالمصدر")}</span>}
     >
-      <h1 className="ax-sr-only">{tr("mvp3.enforcement.title", "Enforcement Library", "مكتبة الإنفاذ")}</h1>
+      <h1 className="sq-sr-only">{tr("mvp3.enforcement.title", "Enforcement Library", "مكتبة الإنفاذ")}</h1>
 
       <div className="sq-banner">
         <div>

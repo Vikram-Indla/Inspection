@@ -21,7 +21,7 @@
 }
 
 .reviewRoot :global(.sq-tablewrap),
-.reviewRoot :global(.ax-tablewrap) {
+.reviewRoot :global(.sq-tablewrap) {
   inline-size: 100%;
   max-inline-size: 100%;
   min-inline-size: 0;
@@ -51,12 +51,12 @@
 }
 
 .reviewRoot :global(h2) {
-  font: var(--ax-text-subheading);
+  font: var(--type-subheading);
 }
 
 .reviewRoot :global(.cd-sectionhead h2) {
   margin: 0;
-  font: var(--ax-text-heading);
+  font: var(--type-heading-lg);
 }
 
 @media (max-width: 899px) {

@@ -1,4 +1,4 @@
-// Hand-rolled SVG bar chart — zero deps; colors only via var(--ax-*) tokens
+// Hand-rolled SVG bar chart — zero deps; colors only via var(--sq-*) tokens
 // (GLOBAL COLOR LAW). Server-component safe (no hooks, no browser APIs).
 // RTL: the SVG itself never mirrors — callers get a dir="ltr" wrapper here;
 // surrounding labels/legends in pages use logical properties.

@@ -151,7 +151,7 @@ textarea.input { height: auto; min-height: 72px; padding-block: var(--space-2); 
 .id-code { font-family: var(--font-mono); font-size: var(--type-mono-size); color: var(--text-secondary); direction: ltr; unicode-bidi: embed; font-variant-numeric: tabular-nums; }
 
 /* ══ Cards & panels ═══════════════════════════════════════════ */
-.panel { position: relative; background: var(--surface-primary); border: var(--border-w) solid var(--border-subtle); border-radius: 14px; box-shadow: var(--shadow-card); }
+.panel { position: relative; background: var(--surface-primary); border: var(--border-w) solid var(--border-subtle); border-radius: var(--radius-md); box-shadow: var(--shadow-card); }
 .panel-header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-block-end: var(--border-w) solid var(--border-subtle); }
 .panel-title { font-size: var(--type-heading-size); font-weight: 600; letter-spacing: -0.006em; }
 .panel-body { padding: var(--space-4); }
@@ -440,7 +440,7 @@ td.rail-td > i { display: block; width: 4px; height: 100%; }
   line-height: 1; margin-inline-start: var(--space-1); }
 
 /* Web/Admin Phase 1 F0 — source-backed states and guarded reference renderer.
-   Additive only: current .ax-state and SAQEEL component contracts remain. */
+   Additive only: current .sq-state and SAQEEL component contracts remain. */
 .saqeel-state { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-6); color: var(--text-secondary); }
 .saqeel-state__glyph { display: grid; place-items: center; width: 36px; height: 36px; flex: none; color: var(--text-disabled); }
 .saqeel-state__glyph svg { width: 32px; height: 32px; }

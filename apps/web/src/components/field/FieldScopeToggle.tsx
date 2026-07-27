@@ -10,7 +10,7 @@ export type FieldScopeToggleStrings = { daily: string; weekly: string; aria: str
 export default function FieldScopeToggle({ strings }: { strings: FieldScopeToggleStrings }) {
   const { scope, setScope } = useFieldScope();
   return (
-    <div className="ax-segmented ax-segmented--field" role="group" aria-label={strings.aria}>
+    <div className="sq-segmented sq-segmented--field" role="group" aria-label={strings.aria}>
       <button type="button" aria-pressed={scope === "daily"} onClick={() => setScope("daily")}>{strings.daily}</button>
       <button type="button" aria-pressed={scope === "weekly"} onClick={() => setScope("weekly")}>{strings.weekly}</button>
     </div>

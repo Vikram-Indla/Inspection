@@ -30,8 +30,8 @@ test.describe("WA-P1-M2-BATCH-002 source, cutover and security", () => {
     expect(detailCss).toContain(".actions");
     expect(detailCss).toContain("position: sticky");
     expect(detailCss).toContain("@media (max-width: 1024px)");
-    expect(source("src/app/astryx.css")).toContain(".ax-btn:focus-visible { outline: 2px solid var(--focus-ring)");
-    expect(source("src/app/astryx.css")).toContain("text-decoration: none");
+    expect(source("src/app/saqeel-runtime.css")).toContain(".sq-btn:focus-visible { outline: 2px solid var(--focus-ring)");
+    expect(source("src/app/saqeel-runtime.css")).toContain("text-decoration: none");
   });
 
   test("no Field or iPad ownership entered this batch", () => {
@@ -41,7 +41,7 @@ test.describe("WA-P1-M2-BATCH-002 source, cutover and security", () => {
 
   test("runtime navigation colors match the supplied SAQEEL semantic tokens", () => {
     const tokens = source("src/app/tokens.css");
-    const shell = source("src/app/astryx.css");
+    const shell = source("src/app/saqeel-runtime.css");
 
     for (const token of [
       "--nav-bg:          #1f2328",
@@ -60,9 +60,9 @@ test.describe("WA-P1-M2-BATCH-002 source, cutover and security", () => {
 
     expect(tokens).not.toMatch(/#101828|#0b1120|#26314a|#8a93ab/);
     expect(shell).not.toMatch(/#4b5670|#6b7794/);
-    expect(shell).toContain(".ax-shell-search input:focus-visible { outline: 2px solid var(--focus-ring)");
-    expect(shell).toContain(".ax-shell-search:focus-within input");
-    expect(shell).toContain("border-color: var(--ax-color-border)");
+    expect(shell).toContain(".sq-shell-search input:focus-visible { outline: 2px solid var(--focus-ring)");
+    expect(shell).toContain(".sq-shell-search:focus-within input");
+    expect(shell).toContain("border-color: var(--sq-color-border)");
   });
 });
 

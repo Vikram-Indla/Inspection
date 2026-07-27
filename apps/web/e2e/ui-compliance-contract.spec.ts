@@ -26,9 +26,9 @@ test.describe("UI compliance release guard", () => {
     const tokens = read("src/app/tokens.css");
     const css = read("src/app/saqeel-components.css");
     const login = read("src/app/login/login.css");
-    expect(tokens).toContain("--radius-sm: 3px;"); // SAQEEL: inputs 3px (frozen 12px retired, --ax-* shim removed PR12)
+    expect(tokens).toContain("--radius-sm: 6px;"); // supplied Revamp semantic control radius
     expect(tokens).toContain("--type-input: 400 14px/1.5 var(--font-body)"); // SAQEEL body input
-    expect(css).not.toContain("--ax-color-prism-magenta");
+    expect(css).not.toContain("--sq-color-prism-magenta");
     expect(login).toContain("lg-atlas");
   });
 
@@ -44,7 +44,7 @@ test.describe("UI compliance release guard", () => {
     expect(visits).toContain('id="visit-filter-from"');
     expect(visits).toContain('htmlFor="visit-filter-to"');
     expect(visits).toContain('id="visit-filter-to"');
-    expect(visits).toContain('sq-link t-caption sq-inline-target'); // SAQEEL: t-caption + sq-* replace ax-caption/ax-*
+    expect(visits).toContain('sq-link t-caption sq-inline-target'); // SAQEEL: t-caption + sq-* replace sq-caption/sq-*
     expect(factories).toContain('htmlFor="factory-region-filter"');
     expect(factories).toContain('id="factory-region-filter"');
   });

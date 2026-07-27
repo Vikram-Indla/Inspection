@@ -39,7 +39,7 @@ export default async function EnforcementRecommendations() {
   if (!isReader) {
     return (
       <Shell current="/admin/enforcement-recommendations" title={tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}>
-        <h1 className="ax-sr-only">{tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}</h1>
+        <h1 className="sq-sr-only">{tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}</h1>
         <EmptyState icon={<IconBlocked size={28} />} title={tr("admin.enf.rec.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
           body={tr("admin.enf.rec.unauthorized.body", "This queue is available to Inspector, Planner, Ops, Compliance Admin, Auditor, Reviewer and Leadership roles.", "هذه القائمة متاحة لأدوار المفتش والمخطط والعمليات ومسؤول الامتثال والمدقق والمراجع والقيادة.")} />
       </Shell>
@@ -77,7 +77,7 @@ export default async function EnforcementRecommendations() {
   return (
     <Shell current="/admin/enforcement-recommendations" title={tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}
       context={<span className="badge badge-info">DEC-F</span>}>
-      <h1 className="ax-sr-only">{tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}</h1>
+      <h1 className="sq-sr-only">{tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}</h1>
       <div className={styles.pageRoot}>
       {roleError && <div className="sq-banner sq-banner--warning" role="alert"><div>{tr("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.", "تعذر التحقق من صلاحيات الإعداد. تم تعطيل الكتابة؛ أعد تحميل الصفحة.")}</div></div>}
       <div className="sq-banner sq-banner--warning" role="note"><div><strong>{tr("admin.enf.rec.configTitle", "Enforcement policy: Not configured.", "سياسة الإنفاذ: غير مهيأة.")}</strong>{" "}{tr("admin.enf.rec.configBody", "The sponsor must supply the approved enforcement measure catalogue and authoritative legal-basis wording for each measure, including the published instrument and version. No amount, escalation ladder, citation or Arabic legal wording is asserted until supplied.", "يجب على الراعي تزويد كتالوج تدابير الإنفاذ المعتمد والصياغة الموثوقة للأساس القانوني لكل تدبير، بما في ذلك الأداة المنشورة وإصدارها. لا تُعرض مبالغ أو سلالم تصعيد أو استشهادات أو صياغة قانونية عربية حتى يتم توفيرها.")}</div></div>

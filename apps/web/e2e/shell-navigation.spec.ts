@@ -87,9 +87,9 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
   test("pinned Administration chrome keeps keyboard and mobile accessibility contracts", () => {
     const source = readFileSync(resolve(__dirname, "../src/components/ShellClient.tsx"), "utf8");
     expect(source).toContain('event.key !== "Escape"');
-    expect(source).toContain('className="ax-shell__nav-footer"');
+    expect(source).toContain('className="sq-shell__nav-footer"');
     expect(source).toContain('group.id === "administration"');
-    expect(source).toContain("ax-shell__expand-row");
+    expect(source).toContain("sq-shell__expand-row");
   });
 
   test("dashboard and live operations have distinct active states", () => {
@@ -124,7 +124,7 @@ test.describe("ADMIN-SHELL-PERSONA-001 admin-only channel", () => {
 
   test("admin routes retain the common global-search and scope cluster", () => {
     const shell = readFileSync(join(process.cwd(), "src/components/ShellClient.tsx"), "utf8");
-    expect(shell).toContain('<div className="ax-shell-controls">');
+    expect(shell).toContain('<div className="sq-shell-controls">');
     expect(shell).toContain("routeScope.date ? (");
     expect(shell).toContain("sq-shell-scope--region");
     expect(shell).toContain(") : null}");
@@ -174,17 +174,17 @@ test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
     await expect(nav.locator('[data-nav-state="disabled"]')).toHaveCount(0);
 
     await page.getByRole("button", { name: "Collapse navigation" }).click();
-    await expect(page.locator(".ax-shell")).toHaveClass(/is-collapsed/);
+    await expect(page.locator(".sq-shell")).toHaveClass(/is-collapsed/);
     await expect(nav.getByRole("link", { name: "Planning", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Expand navigation" }).click();
-    await expect(page.locator(".ax-shell")).not.toHaveClass(/is-collapsed/);
+    await expect(page.locator(".sq-shell")).not.toHaveClass(/is-collapsed/);
   });
 
   test("government shell keeps notification and account controls responsive", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/locale?set=en");
     await page.goto("/planning");
-    const account = page.locator(".ax-shell-account__trigger");
+    const account = page.locator(".sq-shell-account__trigger");
     const identity = page.locator(".sq-shell-account__identity");
     await expect(account).toBeVisible();
     await expect(identity).toBeVisible();
@@ -204,10 +204,10 @@ test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
     await page.goto("/planning");
     const menu = page.getByRole("button", { name: "Open navigation" });
     await menu.click();
-    await expect(page.locator(".ax-shell")).toHaveClass(/is-drawer-open/);
-    await expect(page.locator(".ax-shell__close")).toBeFocused();
+    await expect(page.locator(".sq-shell")).toHaveClass(/is-drawer-open/);
+    await expect(page.locator(".sq-shell__close")).toBeFocused();
     await page.keyboard.press("Escape");
-    await expect(page.locator(".ax-shell")).not.toHaveClass(/is-drawer-open/);
+    await expect(page.locator(".sq-shell")).not.toHaveClass(/is-drawer-open/);
     await expect(menu).toBeFocused();
   });
 
@@ -216,8 +216,8 @@ test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
     await page.goto("/planning");
     await expect(page.locator("html")).toHaveAttribute("lang", "ar");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-    await expect(page.locator("nav.ax-shell__nav")).toHaveAttribute("aria-label", /[\u0600-\u06FF]/);
-    const theme = page.locator(".ax-pagehead__actions > button.ax-topbar-icon");
+    await expect(page.locator("nav.sq-shell__nav")).toHaveAttribute("aria-label", /[\u0600-\u06FF]/);
+    const theme = page.locator(".sq-pagehead__actions > button.sq-topbar-icon");
     const firstOfferedMode = await theme.getAttribute("aria-label");
     await theme.click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", firstOfferedMode?.includes("الفاتح") ? "light" : "dark");

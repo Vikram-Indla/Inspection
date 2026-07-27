@@ -280,7 +280,7 @@ export default async function Violations({
     <Shell current="/admin/violations" title={title}
       context={<span className="badge badge-info">{penaltyMode ? "SCR-ADM-041 · ENG-08" : "SCR-ADM-040 · ENG-08"}</span>}>
 
-      <h1 className="ax-sr-only">{title}</h1>
+      <h1 className="sq-sr-only">{title}</h1>
       <div className={styles.pageRoot}>
       {modeTabs}
 

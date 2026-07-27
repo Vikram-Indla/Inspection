@@ -1,52 +1,52 @@
 .view { display: flex; flex-direction: column; gap: 24px; }
-.overline { margin: 0 0 12px; font-size: 12px; line-height: 16px; letter-spacing: .08em; font-weight: 600; text-transform: uppercase; color: var(--ax-color-text-secondary); }
+.overline { margin: 0 0 12px; font-size: 12px; line-height: 16px; letter-spacing: .08em; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); }
 .metricGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.metricCard, .explorer, .trendCard, .aiCard { border: 1px solid var(--ax-color-border-strong); border-radius: var(--ax-radius-standard); background: var(--ax-color-surface); box-shadow: 0 1px 2px color-mix(in srgb, var(--ax-color-shadow-base) 8%, transparent), 0 8px 18px -12px color-mix(in srgb, var(--ax-color-shadow-base) 22%, transparent); }
+.metricCard, .explorer, .trendCard, .aiCard { border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface-primary); box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow-base) 8%, transparent), 0 8px 18px -12px color-mix(in srgb, var(--shadow-base) 22%, transparent); }
 .metricCard { padding: 18px; display: flex; flex-direction: column; gap: 10px; min-inline-size: 0; }
-.question { min-block-size: 32px; font-size: 12px; line-height: 16px; color: var(--ax-color-text-secondary); }
+.question { min-block-size: 32px; font-size: 12px; line-height: 16px; color: var(--text-secondary); }
 .metricCard h3 { margin: 0; font-size: 16px; line-height: 24px; font-weight: 600; }
-.metricValue { font-size: 32px; line-height: 40px; font-weight: 500; color: var(--ax-color-primary-strong); overflow-wrap: anywhere; }
-.definition, .example, .interpretation { margin: 0; font-size: 13px; line-height: 19px; color: var(--ax-color-text-secondary); }
-.definition { padding-block-start: 10px; border-block-start: 1px solid var(--ax-color-border); }
-.action { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-block-start: auto; padding-block-start: 10px; color: var(--ax-color-primary-strong); font-size: 14px; line-height: 20px; font-weight: 600; text-decoration: none; }
+.metricValue { font-size: 32px; line-height: 40px; font-weight: 500; color: var(--action-primary-pressed); overflow-wrap: anywhere; }
+.definition, .example, .interpretation { margin: 0; font-size: 13px; line-height: 19px; color: var(--text-secondary); }
+.definition { padding-block-start: 10px; border-block-start: 1px solid var(--border-subtle); }
+.action { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-block-start: auto; padding-block-start: 10px; color: var(--action-primary-pressed); font-size: 14px; line-height: 20px; font-weight: 600; text-decoration: none; }
 .explorer { padding: 18px; display: flex; flex-direction: column; gap: 18px; }
 .sectionHead { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .sectionHead h2, .trendCard h2, .aiCard h2 { margin: 0; font-size: 17px; line-height: 24px; font-weight: 600; }
-.sectionHead p, .aiCard p, .unavailable p { margin: 4px 0 0; font-size: 13px; line-height: 19px; color: var(--ax-color-text-secondary); }
-.lenses { display: inline-flex; padding: 2px; border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-small); background: var(--ax-color-surface-field); }
-.lenses a { padding: 6px 11px; border-radius: 4px; color: var(--ax-color-text-secondary); font-size: 13px; line-height: 18px; text-decoration: none; }
-.lenses a[aria-current="true"] { background: var(--ax-color-surface); color: var(--ax-color-text); box-shadow: 0 1px 2px color-mix(in srgb, var(--ax-color-shadow-base) 12%, transparent); }
+.sectionHead p, .aiCard p, .unavailable p { margin: 4px 0 0; font-size: 13px; line-height: 19px; color: var(--text-secondary); }
+.lenses { display: inline-flex; padding: 2px; border: 1px solid var(--border-subtle); border-radius: var(--radius-xs); background: var(--surface-secondary); }
+.lenses a { padding: 6px 11px; border-radius: 4px; color: var(--text-secondary); font-size: 13px; line-height: 18px; text-decoration: none; }
+.lenses a[aria-current="true"] { background: var(--surface-primary); color: var(--text-primary); box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow-base) 12%, transparent); }
 .bars { display: flex; flex-direction: column; gap: 10px; }
-.barRow { display: grid; grid-template-columns: minmax(120px, 1fr) minmax(180px, 4fr) auto; gap: 12px; align-items: center; color: var(--ax-color-text); text-decoration: none; font-size: 13px; line-height: 18px; }
-.track { block-size: 9px; border-radius: 999px; background: var(--ax-color-neutral-tint); overflow: hidden; }
-.track span { display: block; block-size: 100%; border-radius: inherit; background: var(--ax-color-primary); }
-.empty { margin: 0; padding: 24px; text-align: center; color: var(--ax-color-text-secondary); }
+.barRow { display: grid; grid-template-columns: minmax(120px, 1fr) minmax(180px, 4fr) auto; gap: 12px; align-items: center; color: var(--text-primary); text-decoration: none; font-size: 13px; line-height: 18px; }
+.track { block-size: 9px; border-radius: 999px; background: var(--surface-secondary); overflow: hidden; }
+.track span { display: block; block-size: 100%; border-radius: inherit; background: var(--action-primary); }
+.empty { margin: 0; padding: 24px; text-align: center; color: var(--text-secondary); }
 .bottomGrid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
 .trendCard, .aiCard { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
-.unavailable { padding: 18px; border-radius: var(--ax-radius-small); background: var(--ax-color-surface-field); }
-.aiCard { border-inline-start: 3px solid var(--ax-color-primary); background: var(--ax-color-primary-tint); }
-.aiLabel { font-size: 12px; line-height: 16px; text-transform: uppercase; letter-spacing: .08em; color: var(--ax-color-primary-strong); font-weight: 700; }
-.provenance { font-size: 12px; line-height: 16px; color: var(--ax-color-text-secondary); }
-.aiPriority { padding: 14px 16px; border: 1px solid var(--ax-color-border); border-inline-start: 3px solid var(--ax-color-primary); border-radius: var(--ax-radius-standard); background: var(--ax-color-primary-tint); }
+.unavailable { padding: 18px; border-radius: var(--radius-xs); background: var(--surface-secondary); }
+.aiCard { border-inline-start: 3px solid var(--action-primary); background: var(--accent-soft); }
+.aiLabel { font-size: 12px; line-height: 16px; text-transform: uppercase; letter-spacing: .08em; color: var(--action-primary-pressed); font-weight: 700; }
+.provenance { font-size: 12px; line-height: 16px; color: var(--text-secondary); }
+.aiPriority { padding: 14px 16px; border: 1px solid var(--border-subtle); border-inline-start: 3px solid var(--action-primary); border-radius: var(--radius-sm); background: var(--accent-soft); }
 .aiPriority strong { font-size: 16px; line-height: 24px; }
 .aiPriority p { margin: 4px 0 0; font-size: 14px; line-height: 20px; }
-.aiPriority span { display: block; margin-block-start: 4px; font-size: 12px; line-height: 16px; color: var(--ax-color-text-secondary); }
+.aiPriority span { display: block; margin-block-start: 4px; font-size: 12px; line-height: 16px; color: var(--text-secondary); }
 .operationalGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-.operationalCard, .capacityCard { border: 1px solid var(--ax-color-border-strong); border-radius: var(--ax-radius-standard); background: var(--ax-color-surface); box-shadow: 0 1px 2px color-mix(in srgb, var(--ax-color-shadow-base) 8%, transparent), 0 8px 18px -12px color-mix(in srgb, var(--ax-color-shadow-base) 22%, transparent); }
+.operationalCard, .capacityCard { border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface-primary); box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow-base) 8%, transparent), 0 8px 18px -12px color-mix(in srgb, var(--shadow-base) 22%, transparent); }
 .operationalCard { padding: 16px; display: flex; flex-direction: column; align-items: flex-start; gap: 7px; }
 .operationalCard h3 { margin: 0; font-size: 16px; line-height: 24px; font-weight: 600; }
 .operationalValue { font-size: 32px; line-height: 40px; font-weight: 500; font-variant-numeric: tabular-nums; }
-.operationalDefinition { align-self: stretch; margin: 0; padding: 8px 10px; border-radius: 4px; background: var(--ax-color-surface-field); color: var(--ax-color-text-secondary); font-size: 13px; line-height: 20px; }
-.operationalDefinition b { color: var(--ax-color-text); }
-.secondaryAction { display: inline-flex; align-items: center; justify-content: center; min-block-size: 34px; margin-block-start: 8px; padding: 6px 12px; border: 1px solid var(--ax-color-border-strong); border-radius: var(--ax-radius-small); background: var(--ax-color-surface); color: var(--ax-color-text); font-size: 13px; line-height: 20px; font-weight: 600; text-decoration: none; }
+.operationalDefinition { align-self: stretch; margin: 0; padding: 8px 10px; border-radius: 4px; background: var(--surface-secondary); color: var(--text-secondary); font-size: 13px; line-height: 20px; }
+.operationalDefinition b { color: var(--text-primary); }
+.secondaryAction { display: inline-flex; align-items: center; justify-content: center; min-block-size: 34px; margin-block-start: 8px; padding: 6px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-xs); background: var(--surface-primary); color: var(--text-primary); font-size: 13px; line-height: 20px; font-weight: 600; text-decoration: none; }
 .capacityCard { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
 .capacityHead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
 .capacityHead h2 { margin: 0; font-size: 19px; line-height: 28px; font-weight: 500; }
-.capacityHead span { color: var(--ax-color-text-secondary); font-size: 12px; line-height: 16px; }
+.capacityHead span { color: var(--text-secondary); font-size: 12px; line-height: 16px; }
 .capacityRows { display: flex; flex-direction: column; gap: 10px; }
 .capacityRow { display: grid; grid-template-columns: 150px minmax(100px, 1fr) 90px; align-items: center; gap: 12px; font-size: 14px; line-height: 20px; }
-.capacityTrack { display: block; block-size: 10px; overflow: hidden; border: 1px solid var(--ax-color-border); border-radius: 999px; background: var(--ax-color-neutral-tint); }
-.capacityTrack span { display: block; block-size: 100%; border-radius: inherit; background: var(--ax-color-primary); }
+.capacityTrack { display: block; block-size: 10px; overflow: hidden; border: 1px solid var(--border-subtle); border-radius: 999px; background: var(--surface-secondary); }
+.capacityTrack span { display: block; block-size: 100%; border-radius: inherit; background: var(--action-primary); }
 .capacityRow strong { text-align: end; font-variant-numeric: tabular-nums; }
 @media (max-width: 1100px) {
   .metricGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

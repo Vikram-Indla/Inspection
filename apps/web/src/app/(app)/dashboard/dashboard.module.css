@@ -1,6 +1,6 @@
 /* ============================================================================
    SAQEEL Web Dashboard — presentation (approved-design composition).
-   Consumes tokens.css (--ax-*) only. No raw color/size values (GLOBAL COLOR
+   Consumes tokens.css (--sq-*) only. No raw color/size values (GLOBAL COLOR
    LAW). Logical properties throughout → native RTL. Theme-agnostic: light/dark
    resolve through the token palette. Reduced-motion honored.
    ========================================================================== */

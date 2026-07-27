@@ -41,7 +41,7 @@ await panel.screenshot({ path: `${OUT}/13-briefing-auto-daily.png` });
 console.log("saved zoomed daily briefing card");
 
 console.log("--- toggle to weekly ---");
-const weeklyBtn = page.locator('.ax-segmented button', { hasText: /weekly/i }).first();
+const weeklyBtn = page.locator('.sq-segmented button', { hasText: /weekly/i }).first();
 await weeklyBtn.click();
 await page.waitForTimeout(800);
 const weeklyText = await panel.innerText();
@@ -54,7 +54,7 @@ const kpiStrip = page.locator('div').filter({ hasText: "This week's visits" }).f
 await shot("15-kpi-weekly-fullpage.png");
 
 console.log("--- toggle back to daily ---");
-const dailyBtn = page.locator('.ax-segmented button', { hasText: /daily/i }).first();
+const dailyBtn = page.locator('.sq-segmented button', { hasText: /daily/i }).first();
 await dailyBtn.click();
 await page.waitForTimeout(800);
 const backToDaily = await panel.innerText();

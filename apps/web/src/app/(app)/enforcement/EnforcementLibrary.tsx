@@ -117,7 +117,7 @@ export default function EnforcementLibrary({
     <div className={styles.pageRoot}>
       <section className={styles.toolbar} aria-label={strings.search}>
         <label className={styles.searchField}>
-          <span className="ax-sr-only">{strings.search}</span>
+          <span className="sq-sr-only">{strings.search}</span>
           <span aria-hidden="true">⌕</span>
           <input
             type="search"
@@ -128,14 +128,14 @@ export default function EnforcementLibrary({
           />
         </label>
         <label className="sq-field">
-          <span className="ax-sr-only">{strings.status}</span>
+          <span className="sq-sr-only">{strings.status}</span>
           <select className="sq-select" value={status} onChange={(event) => setStatus(event.target.value)}>
             <option value="">{strings.allStatuses}</option>
             {statuses.map((value) => <option key={value} value={value}>{humanize(value)}</option>)}
           </select>
         </label>
         <label className="sq-field">
-          <span className="ax-sr-only">{strings.region}</span>
+          <span className="sq-sr-only">{strings.region}</span>
           <select className="sq-select" value={region} onChange={(event) => setRegion(event.target.value)}>
             <option value="">{strings.allRegions}</option>
             {regions.map((value) => <option key={value} value={value}>{value}</option>)}

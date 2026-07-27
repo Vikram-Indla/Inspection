@@ -1,7 +1,7 @@
 /* TASK-EXECUTION-MODULE-001 · SCR-IPAD-610/620 startup + readiness/journey
    screen — route-scoped layout for the SAQEEL design-system conversion.
-   Presentation only: replaces the former Astryx .ax-* layout helpers
-   (.ax-stack/.ax-row/.ax-grid-2/.ax-detail-grid/.ax-numeric/.ax-field__label)
+   Presentation only: replaces the former SAQEEL .sq-* layout helpers
+   (.sq-stack/.sq-row/.sq-grid-2/.sq-detail-grid/.sq-numeric/.sq-field__label)
    with DS-token-only equivalents (var(--space-*), var(--font-body), --text-*).
    Component surfaces/badges/alerts/buttons/inputs use the ported SAQEEL DS
    classes linked by (app)/field/layout.tsx. No bare colors. */
@@ -137,19 +137,19 @@
   box-shadow: var(--shadow-card);
 }
 
-/* Two-up responsive grid (former .ax-grid-2). */
+/* Two-up responsive grid (former .sq-grid-2). */
 .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-6); }
 
 /* Key/value definition grid for the factory / visit context cards
-   (the former .ax-detail-grid, which had no ruleset — now a real DS grid). */
+   (the former .sq-detail-grid, which had no ruleset — now a real DS grid). */
 .detailGrid { display: grid; grid-template-columns: auto 1fr; gap: var(--space-2) var(--space-4); margin: 0; }
 .detailGrid dt { color: var(--text-muted); }
 .detailGrid dd { margin: 0; text-align: end; }
 
-/* Field label (former .ax-field__label). */
+/* Field label (former .sq-field__label). */
 .fieldLabel { font: 600 14px/1.5 var(--font-body); color: var(--text-primary); }
 
-/* Tabular numerals (former .ax-numeric). */
+/* Tabular numerals (former .sq-numeric). */
 .num { font-variant-numeric: tabular-nums lining-nums; }
 
 /* ── Header quick-action row ──────────────────────────────────────────────

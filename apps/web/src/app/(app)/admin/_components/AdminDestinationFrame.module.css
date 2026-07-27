@@ -25,28 +25,28 @@
   gap: var(--space-2);
   margin: 0;
   padding: 0;
-  color: var(--ax-color-text-secondary);
-  font: var(--ax-text-micro);
+  color: var(--text-secondary);
+  font: var(--type-micro);
   list-style: none;
 }
 
 .breadcrumb li + li::before {
   content: "/";
   margin-inline-end: var(--space-2);
-  color: var(--ax-color-text-disabled);
+  color: var(--text-disabled);
 }
 
 .title {
   margin: var(--space-1) 0 0;
-  font: var(--ax-text-title);
+  font: var(--type-title);
   font-weight: 500;
 }
 
 .subtitle {
   max-inline-size: 72ch;
   margin: var(--space-1) 0 0;
-  color: var(--ax-color-text-secondary);
-  font: var(--ax-text-caption);
+  color: var(--text-secondary);
+  font: var(--type-caption-font);
 }
 
 .metrics {
@@ -61,21 +61,21 @@
   flex-direction: column;
   gap: var(--space-1);
   padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--ax-color-border-strong);
-  border-radius: var(--ax-radius-standard);
-  background: var(--ax-color-surface);
-  box-shadow: var(--ax-shadow-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-primary);
+  box-shadow: var(--shadow-xs);
 }
 
 .metricLabel,
 .metricNote {
-  color: var(--ax-color-text-secondary);
-  font: var(--ax-text-micro);
+  color: var(--text-secondary);
+  font: var(--type-micro);
 }
 
 .metricValue {
   overflow-wrap: anywhere;
-  font: var(--ax-text-title);
+  font: var(--type-title);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
@@ -84,7 +84,7 @@
   display: flex;
   gap: var(--space-5);
   overflow-x: auto;
-  border-block-end: 1px solid var(--ax-color-border);
+  border-block-end: 1px solid var(--border-subtle);
   scrollbar-width: thin;
 }
 
@@ -92,43 +92,43 @@
   flex: 0 0 auto;
   padding: var(--space-2) 0;
   border-block-end: 2px solid transparent;
-  color: var(--ax-color-text-secondary);
-  font: var(--ax-text-body-strong);
+  color: var(--text-secondary);
+  font: var(--type-body-strong);
   text-decoration: none;
 }
 
 .tab:hover {
-  color: var(--ax-color-text);
+  color: var(--text-primary);
 }
 
 .tab[aria-current="page"] {
-  border-block-end-color: var(--ax-color-primary);
-  color: var(--ax-color-primary-strong);
+  border-block-end-color: var(--action-primary);
+  color: var(--action-primary-pressed);
 }
 
 .tab:focus-visible {
-  border-radius: var(--ax-radius-small);
+  border-radius: var(--radius-xs);
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
 .gate {
   padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--ax-color-border-strong);
-  border-inline-start: 3px solid var(--ax-color-text-secondary);
-  border-radius: var(--ax-radius-standard);
-  background: var(--ax-color-surface-sunken);
+  border: 1px solid var(--border-strong);
+  border-inline-start: 3px solid var(--text-secondary);
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
 }
 
 .gate p {
   margin: var(--space-1) 0 0;
-  color: var(--ax-color-text-secondary);
-  font: var(--ax-text-caption);
+  color: var(--text-secondary);
+  font: var(--type-caption-font);
 }
 
 .rail {
   position: sticky;
-  inset-block-start: calc(var(--ax-topbar-height) + var(--space-4));
+  inset-block-start: calc(var(--topbar-h) + var(--space-4));
   display: flex;
   min-inline-size: 0;
   flex-direction: column;
@@ -137,20 +137,20 @@
 
 .railCard {
   padding: var(--space-4);
-  border: 1px solid var(--ax-color-border-strong);
-  border-radius: var(--ax-radius-standard);
-  background: var(--ax-color-surface);
-  box-shadow: var(--ax-shadow-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-primary);
+  box-shadow: var(--shadow-xs);
 }
 
 .railCard:last-child {
-  background: var(--ax-color-surface-field);
+  background: var(--surface-secondary);
 }
 
 .railTitle {
   margin: 0 0 var(--space-2);
-  color: var(--ax-color-text-secondary);
-  font: var(--ax-text-micro);
+  color: var(--text-secondary);
+  font: var(--type-micro);
   letter-spacing: .1em;
   text-transform: uppercase;
 }
@@ -163,8 +163,8 @@
 
 .governance li {
   padding: var(--space-2) 0;
-  border-block-end: 1px solid var(--ax-color-border);
-  font: var(--ax-text-caption);
+  border-block-end: 1px solid var(--border-subtle);
+  font: var(--type-caption-font);
 }
 
 .governance li:last-child {
@@ -174,7 +174,7 @@
 .note {
   margin: 0;
   overflow-wrap: anywhere;
-  font: var(--ax-text-caption);
+  font: var(--type-caption-font);
 }
 
 @media (max-width: 74.9375rem) {

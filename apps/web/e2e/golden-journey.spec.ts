@@ -181,7 +181,7 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   // (FAB / Open directions); per-assignment cards are plain surfaces, and
   // leftover far-future assignments from prior runs can hold the next slot.
   // Navigate directly — assignment visibility is covered by RBAC-009 reads.
-  // (Live cert Phase 8: the a.ax-surface card selector was stale.)
+  // (Live cert Phase 8: the a.sq-surface card selector was stale.)
 
   // Startup: four steps, enabled strictly in order (SB05)
   await page.goto(`/field/${visitId}`);
