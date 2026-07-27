@@ -11,7 +11,13 @@
 // trigger, overlapping the insights panel below.
 import { type ReactNode, useState } from "react";
 
-export type CreateVisitMethod = { glyph: string; title: string; desc: string; href: string };
+export type CreateVisitMethod = {
+  glyph: string;
+  title: string;
+  desc: string;
+  href: string;
+  blockedReason?: string;
+};
 
 export type CreateVisitSectionStrings = {
   createLabel: string;
@@ -39,7 +45,13 @@ export default function CreateVisitSection({ methods, strings, canCreate, childr
       {canCreate && open && (
         <section id="plan-create-methods" className="sq-stack" aria-label={strings.createLabel}>
           <div className="sq-typecards">
-            {methods.map(m => (
+            {methods.map(m => m.blockedReason ? (
+              <div key={m.href} className="sq-typecard" aria-disabled="true">
+                <span className="sq-typecard__title">{m.title}</span>
+                <span className="sq-typecard__meta">{m.desc}</span>
+                <span className="badge badge-warning">{m.blockedReason}</span>
+              </div>
+            ) : (
               <a key={m.href} href={m.href} className="sq-typecard">
                 <span className="sq-typecard__title">{m.title}</span>
                 <span className="sq-typecard__meta">{m.desc}</span>

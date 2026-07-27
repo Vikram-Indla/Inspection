@@ -174,7 +174,16 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
   const methods: CreateVisitMethod[] = [
     { glyph: "▦", title: t("plan.method.bulk.title", "Plan multiple visits"), desc: t("plan.method.bulk.desc", "AND/OR criteria over the Factory list; many visits under one plan (M01-002)."), href: "/planning/bulk" },
     { glyph: "▣", title: t("plan.method.single.title", "Plan one visit"), desc: t("plan.method.single.desc", "One registered factory via CR / Industrial License; one plan, one visit (M01-034/042)."), href: "/planning/single" },
-    { glyph: "⚡", title: t("plan.method.immediate.title", "Create an urgent visit"), desc: t("plan.method.immediate.desc", "Unregistered factory allowed with mandatory location (M01-045/046)."), href: "/planning/immediate" },
+    {
+      glyph: "⚡",
+      title: t("plan.method.immediate.title", "Create an urgent visit"),
+      desc: t(
+        "plan.method.immediate.pending",
+        "Immediate and unregistered-factory creation remain unavailable until their role and factory-source decisions are approved.",
+      ),
+      href: "/planning/immediate",
+      blockedReason: t("plan.method.decisionPending", "Decision pending"),
+    },
   ];
 
   const tabLabels: Record<PlanningTab, string> = {
@@ -201,7 +210,12 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
         <PlanningPreview methods={methods} drafts={drafts.map(draft => ({
           id: draft.id, method: t(`enum.${draft.method}`, draft.method), status: t(`enum.${draft.status}`, draft.status),
           planReference: draft.plan_reference, createdAt: draft.created_at, planner: draft.profiles?.full_name ?? "—", href: continueHref(draft),
-        }))} effectivePackage={packageOptions[0]?.label ?? null} canCreate={access.can("planning.create")} locale={locale} />
+        }))} effectivePackage={packageOptions[0]?.label ?? null} canCreate={access.can("planning.create")} locale={locale}
+          planningDraftLabel={t("plan.draft.planningLabel", "Draft · planning")}
+          planningDraftHelp={t(
+            "plan.draft.planningHelp",
+            "Visit intent is unpublished and not executable.",
+          )} />
       </Shell>
     );
   }

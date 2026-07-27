@@ -1,7 +1,7 @@
 import Link from "next/link";
 import styles from "./PlanningPreview.module.css";
 
-type Method = { glyph?: string; title: string; desc: string; href: string };
+type Method = { glyph?: string; title: string; desc: string; href: string; blockedReason?: string };
 type Draft = { id: string; method: string; status: string; planReference: string | null; createdAt: string; planner: string; href: string };
 
 function PlanningMethodIcon({ href }: { href: string }) {
@@ -11,12 +11,14 @@ function PlanningMethodIcon({ href }: { href: string }) {
   return <svg {...common}><path d="M13 2 5.5 13h6L11 22l7.5-12h-6z"/><path d="M4 5h3M3 9h3"/></svg>;
 }
 
-export default function PlanningPreview({ methods, drafts, effectivePackage, canCreate, locale, showVisits = true, showPlans = true }: {
+export default function PlanningPreview({ methods, drafts, effectivePackage, canCreate, locale, planningDraftLabel, planningDraftHelp, showVisits = true, showPlans = true }: {
   methods: Method[];
   drafts: Draft[];
   effectivePackage: string | null | undefined;
   canCreate: boolean;
   locale: "en" | "ar";
+  planningDraftLabel: string;
+  planningDraftHelp: string;
   showVisits?: boolean;
   showPlans?: boolean;
 }) {
@@ -47,9 +49,15 @@ export default function PlanningPreview({ methods, drafts, effectivePackage, can
         {showVisits !== false && <Link className="sq-btn sq-btn--subtle" href="/planning/visits" prefetch={false}>{copy.visits}</Link>}
       </div>
       <div className={`wa-planning-methods ${styles.methods}`}>
-        {methods.map(method => (
+        {methods.map(method => method.blockedReason ? (
+          <div key={method.href} aria-disabled="true"
+            className={`sq-surface wa-planning-method ${styles.method}`}>
+            <span className={`wa-planning-method__icon ${styles.icon}`}><PlanningMethodIcon href={method.href} /></span>
+            <span className={`wa-planning-method__copy ${styles.copy}`}><strong>{method.title}</strong><span className="sq-caption">{method.desc}</span><span className="badge badge-warning">{method.blockedReason}</span></span>
+          </div>
+        ) : (
           <Link key={method.href} href={canCreate ? method.href : "#"} aria-disabled={!canCreate}
-            className={`sq-surface wa-planning-method ${styles.method}`} style={{ textDecoration: "none", color: "inherit" }}>
+            className={`sq-surface wa-planning-method ${styles.method}`}>
             <span className={`wa-planning-method__icon ${styles.icon}`}><PlanningMethodIcon href={method.href} /></span>
             <span className={`wa-planning-method__copy ${styles.copy}`}><strong>{method.title}</strong><span className="sq-caption">{method.desc}</span></span>
           </Link>
@@ -61,7 +69,7 @@ export default function PlanningPreview({ methods, drafts, effectivePackage, can
         {drafts.length === 0 ? <p className="sq-caption" style={{ padding: "var(--space-6)" }}>{copy.noDrafts}</p> : (
           <div className="sq-tablewrap"><table className="sq-table"><thead><tr><th>Plan</th><th>{copy.method}</th><th>{copy.status}</th><th>{copy.created}</th><th>{copy.planner}</th><th /></tr></thead>
             <tbody>{drafts.map(draft => <tr key={draft.id}><td className="sq-numeric"><strong>{draft.planReference ?? draft.id.slice(0, 8)}</strong></td>
-              <td>{draft.method}</td><td><span className="sq-lozenge sq-lozenge--info">{draft.status}</span></td>
+              <td>{draft.method}</td><td><span className="badge badge-draft">{planningDraftLabel}</span><span className="sq-caption">{planningDraftHelp}</span></td>
               <td className="sq-numeric">{new Date(draft.createdAt).toISOString().slice(0, 16).replace("T", " ")}</td><td>{draft.planner}</td>
               <td><Link className="sq-link" href={draft.href}>{copy.continue}</Link></td></tr>)}</tbody>
           </table></div>

@@ -248,7 +248,17 @@ const NEUTRAL_PUBLISH_ERROR =
 const NEUTRAL_READ_ERROR =
   "Planning data could not be verified (ERR-OPS-001). Nothing was published. Please try again.";
 
+const bulkReceiptContractIsExecutable = (): boolean => false;
+
 export async function publishBulkPlan(_: BulkResult, formData: FormData): Promise<BulkResult> {
+  // PLN-S11: the corrected compiler requires frozen targets plus aggregate
+  // and per-row durable receipts. That executable contract is not effective,
+  // so the legacy publish path is retained only as dormant implementation.
+  if (!bulkReceiptContractIsExecutable()) {
+    return {
+      error: "Bulk publishing is unavailable until the frozen-target receipt contract is active. The selection is preserved and nothing was published.",
+    };
+  }
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError) {

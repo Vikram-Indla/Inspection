@@ -16,8 +16,17 @@ import { getVerifiedUser } from "@/lib/verified-user";
 import { recordLifecycleEvent } from "@/lib/planning/lifecycle";
 
 export type DiscardResult = { error?: string; ok?: string };
+const archiveReceiptContractIsExecutable = (): boolean => false;
 
 export async function discardDraftPlan(_: DiscardResult, fd: FormData): Promise<DiscardResult> {
+  // PLN-S08 / PG-01: archival is irreversible and must atomically preserve
+  // provenance, audit and its durable receipt. R1 marks that RPC
+  // PROPOSED_NOT_EFFECTIVE, so the former direct-table fallback is dormant.
+  if (!archiveReceiptContractIsExecutable()) {
+    return {
+      error: "Draft archival is unavailable until the governed archive receipt contract is active. Nothing was changed.",
+    };
+  }
   const sb = await supabaseServer();
   const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
