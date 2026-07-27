@@ -16,7 +16,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
   if (result.kind === "unauthorized") return <StateSurface kind="unauthorized" />;
   if (result.kind === "error") return <StateSurface kind="error" body={result.message} />;
   return (
-    <main className="sq-stack" aria-labelledby="analytics-title">
+    <main className="sq-content" aria-labelledby="analytics-title">
       <header className="page-header"><div>
         <h1 id="analytics-title">Analytics</h1>
         <p className="desc">Governed aggregates for {parsed.value.periodFrom} through {parsed.value.periodTo}. Values reflect only records visible to your role and scope.</p>
