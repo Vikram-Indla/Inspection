@@ -14,7 +14,11 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
   if (!parsed.ok) return <StateSurface kind="error" title="Invalid analytics query" body={parsed.issues.join(" ")} />;
   const result = await loadAnalytics(await supabaseServer(), parsed.value);
   if (result.kind === "unauthorized") return <StateSurface kind="unauthorized" />;
-  if (result.kind === "error") return <StateSurface kind="error" body={result.message} />;
+  if (result.kind === "error") {
+    const correlationId = crypto.randomUUID();
+    console.error(`[analytics:${correlationId}]`, result.message);
+    return <StateSurface kind="error" body={`${result.message} Reference ${correlationId}.`} />;
+  }
   return (
     <main className="sq-content" aria-labelledby="analytics-title">
       <header className="page-header"><div>

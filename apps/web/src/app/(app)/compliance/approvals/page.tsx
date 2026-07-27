@@ -42,6 +42,9 @@ export default async function ApprovalQueue({
     sb.from("compliance_request_components")
       .select("request_id,revision_number,entity_kind,component_status"),
   ]);
+  const queueError = error ?? componentRead.error;
+  const correlationId = queueError ? crypto.randomUUID() : null;
+  if (queueError) console.error(`[compliance-approval-queue:${correlationId}]`, queueError.message, queueError.code);
   const allRows = (data ?? []) as RequestRow[];
   const rows = allRows.filter(row => row.owner_id !== user?.id);
   const components = (componentRead.data ?? []) as ComponentRow[];
@@ -58,7 +61,7 @@ export default async function ApprovalQueue({
   return (
     <Shell current={current} title="">
       <div className="rv-approval">
-        {error || componentRead.error ? <div className="sq-banner sq-banner--critical" role="alert"><strong>Approval Queue unavailable.</strong> No workload claim is made.</div> : null}
+        {error || componentRead.error ? <div className="sq-banner sq-banner--critical" role="alert"><strong>Approval Queue unavailable.</strong> No workload claim is made. Reference {correlationId}.</div> : null}
         <header className="rv-approval__heading">
           <div><p className="sq-overline">Compliance configuration</p><h1>Approval Queue</h1><p>Object-level maker-checker decisions and governed publication readiness.</p></div>
           <span className="sq-lozenge sq-lozenge--warning">{rows.length} pending</span>
