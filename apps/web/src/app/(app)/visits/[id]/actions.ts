@@ -339,6 +339,11 @@ export async function updateVisitType(_: ActionResult, fd: FormData): Promise<Ac
 // M02-009 / ENG-05 + M8 — Reassign inspector: updates assignments.inspector_id,
 // notifies new inspector, records the lifecycle event with the prior holder.
 export async function reassignVisit(_: ActionResult, fd: FormData): Promise<ActionResult> {
+  // PLN-R06: Supervisor → capability/RLS authority is unresolved. Fail closed
+  // even if an older client posts this server action directly.
+  void fd;
+  return { error: "Reassignment is not configured until the governed Supervisor capability mapping is approved (PLN-R06)." };
+  /*
   const sb = await supabaseServer();
   const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
@@ -370,6 +375,7 @@ export async function reassignVisit(_: ActionResult, fd: FormData): Promise<Acti
   if (nErr) return { error: "Reassigned, but the new-inspector notification could not be queued (M02-009 / ENG-05)" };
   const prevNote = prevInspector && prevInspector !== inspector ? "; previous inspector unassignment queued" : "";
   return { ok: `Reassigned — new inspector notification queued (not confirmed delivered)${prevNote} (M02-009 / ENG-05)` };
+  */
 }
 
 // M8 / PLN-REQ-011 — Duplicate a FINAL visit (cancelled / expired) into a safe
