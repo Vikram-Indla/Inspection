@@ -15,6 +15,7 @@ import ExportButton from "./ExportButton";
 import RefreshButton from "./RefreshButton";
 import PlanningPreview from "./PlanningPreview";
 import RevampPlanningInsights from "./RevampPlanningInsights";
+import SavedViewsButton from "./SavedViewsButton";
 
 export const dynamic = "force-dynamic";
 
@@ -224,7 +225,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
             cappedNote: tr("plan.list.exportCapped", "Exported the first {n} matching rows — refine the filters for the rest.", "تم تصدير أول {n} صفًا مطابقًا — حسّن عوامل التصفية للباقي."),
           }} />
         )}
-        <button className="sq-btn sq-btn--secondary" type="button">{tr("plan.list.savedViews", "Saved views", "العروض المحفوظة")}</button>
+        <SavedViewsButton label={tr("plan.list.savedViews", "Saved views", "العروض المحفوظة")} />
         <span />
         {access.can("planning.create") && (
           <CreateVisitSection methods={methods} strings={{
