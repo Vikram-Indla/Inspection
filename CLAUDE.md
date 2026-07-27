@@ -1,74 +1,56 @@
-# MIM Inspection Platform - Project Authority
+# Saqeel design implementation rules — non-negotiable
 
-## Mission
-Build the MVP1 Inspection Platform exactly from the versioned product contract. Do not rediscover, reinterpret, weaken, or expand scope without documented change control.
+The approved design is `design/final-cut/saqeel-revamp.html`. Open it in a browser and inspect it.
+Do not work from screenshots or from prose descriptions of it.
 
-## Source of truth
-Read these files in order at every session start:
-1. `product-contract/00_START_HERE.md`
-2. `product-contract/CURRENT_STATE.md`
-3. `product-contract/GATE_STATUS.md`
-4. `product-contract/execution/CURRENT_SLICE.yaml`
-5. `product-contract/execution/TASK_ROUTER.yaml`
-6. `product-contract/governance/OPEN_DECISIONS.yaml`
-7. The task-specific files listed in the current slice.
+The design is styled entirely with classes and tokens that ALREADY EXIST in
+`apps/web/src/app/`. Nothing was invented. Your job is markup and wiring, **not styling**.
 
-## Hard rules
-- Broad implementation is blocked until G8 is PASS.
-- The 478 source requirements remain mandatory MVP1.
-- A Phase 2 AI note defers only that AI sub-capability, never its parent requirement.
-- Never invent policy values, providers, thresholds, SLAs, legal rules, risk weights, geofence values, retention, or Arabic scope.
-- Never mark a page or component complete without runtime behavior, data, audit, negative paths, tests, and evidence.
-- Never mutate workflow status directly; use canonical transitions and guards.
-- Never edit an immutable submitted version.
-- Never silently overwrite offline/server conflicts.
-- Never replace an unavailable integration with a permanent mock and claim completion.
-- Never remove or weaken an accepted requirement, field, rule, permission, state, audit event, offline behavior, or usability outcome.
-- Do not push, merge, or modify `main` without explicit human approval.
-- Do not edit frozen product-contract artifacts without an approved change-control task.
-- `main` is the single canonical branch — GitHub's configured default branch (`origin/HEAD` points at it) and the branch every pull request targets. Product Owner ruling, 2026-07-26.
-- There is no second trunk. `setup/Inspection` and `saqeel/operations` were both treated as the trunk at different points on 2026-07-25/26; both are retired. `setup/Inspection` has been deleted (its history was fully contained in `main`), and `saqeel/operations` must not be used as an integration target.
-- Work happens on a short-lived branch per card, and lands via a pull request into `main`. Do not push, merge, or modify `main` without explicit human approval.
-- Branch names are not authority. Two different boards both called `SB-r9`, and two different heads both called `main`, caused real reconciliation work on 2026-07-26. Verify with `git merge-base --is-ancestor` and `git cherry` (patch-id), never with a name, a date or a revision string.
-- Before deleting any branch or worktree, prove the work is not lost: `git cherry origin/main <branch>` must show no `+` lines. A `+` means that content exists nowhere else and deleting it destroys it. Never force-push `main`.
-- Why this is written down: on 2026-07-26 history split five times in one evening because sessions merged in parallel against different trunks while `origin/HEAD` pointed somewhere else again. One named trunk plus the default branch agreeing with it is what prevents it.
+1. **NO NEW CSS.** Do not write a new class, a new CSS file, a styled-component, a Tailwind
+   utility, or a `style={{ }}` prop. Every element must render with a class that already exists
+   in `apps/web/src/app/saqeel-components.css`.
 
-## Work protocol
-Before work:
-- State the task ID, process IDs, requirement IDs, acceptance IDs, screens, engines, dependencies, open decisions, and do-not-touch areas.
-- Confirm the current Git branch and working tree.
-- Stop if the current task conflicts with the product contract.
+2. **NO NEW TOKENS.** Use `var(--surface-*)`, `var(--text-*)`, `var(--action-*)`,
+   `var(--status-*)`, `var(--space-*)`, `var(--radius-*)`, `var(--shadow-*)`. Never a raw hex,
+   `rgb()`, px font size, or px radius. If a value looks bespoke, it is a token you have not
+   found yet.
 
-During work:
-- Implement the smallest coherent vertical slice.
-- Keep IDs in code, tests, evidence, and session records.
-- Record every approved assumption in the decision register.
+3. **IF A CLASS IS MISSING, STOP.** Do not style the page locally to work around it. Report the
+   gap. A missing class is a design-system change request, not a page-level fix.
 
-Before completion:
-- Run required tests and negative paths.
-- Capture the evidence named in the current slice.
-- Update `CURRENT_STATE.md`, `SESSION_LEDGER.json`, `WORK_QUEUE.yaml`, and acceptance/evidence records.
-- Do not declare completion while any required P0/P1 criterion is failed or unevidenced.
+4. **COPY THE MARKUP STRUCTURE.** Element order, nesting depth, and class names in the design are
+   the contract. If the design has `div.panel > div (header) > span + span`, produce the same.
 
-## Memory policy
-- Git-backed files are authoritative.
-- Obsidian is a human interface over the same repository, not a separate copy.
-- Claude auto memory is advisory only and may never override the product contract.
-- `CLAUDE.local.md` is personal and must not contain shared scope decisions.
+5. **NO ASTRYX.** No `ax-` class, `ax-` token, or `astryx.css` import. Zero references.
 
-## Documentation storage
-- Human-readable master documents and binary evidence are stored under `INSPECTION_DOCS_ROOT`; Vikram's approved local root is `/Users/vikramindla/Desktop/Inspection Documentation`.
-- Read `docs/README.md` and `docs/DOCUMENTATION_STORAGE_POLICY.md` before adding documentation or evidence.
-- Do not recommit external BRDs, workbooks, PDFs, storyboards, screenshots, videos, archives, or packaged handoff exports.
-- Keep the live product contract, Claude continuity controls, machine-readable acceptance/wiring maps, and code-ready design authority in Git.
+6. **STATUS IS TEXT PLUS SHAPE, NEVER COLOUR ALONE.** Every status renders as a `.badge` with a
+   text label. Never replace one with a coloured dot.
 
-## Design policy
-- Figma golden screens and tokens become authoritative only after G6 approval.
-- Mobbin is for pattern research and provenance, never direct copying.
-- The iPad is a field application, not a reduced web portal.
-- Admin engines are control planes, not simple CRUD screens.
-- For MVP1 UX work, begin at `design/claude-design-mvp1/00_START_HERE.md` and follow its authority, journey prompts, special-component contracts, and design acceptance matrices.
-- Claude Design produces code-ready design outputs only; application edits begin only after the relevant design acceptance rows receive human signoff.
+7. **RTL VIA LOGICAL PROPERTIES ONLY.** `padding-inline`, `margin-inline-start`,
+   `inset-inline-start`, `border-inline-end`. Never `left`/`right`. Never a `[dir="rtl"]`
+   override that flips a value.
 
-## Gate position
-G0-G9 PASS (G1 conditional; G8 sponsor-authorized 2026-07-11; G9 build completion 2026-07-12). G10 verification is in progress with the Playwright headless suite as the exit criterion. G11 hardening and G12 release are open. Broad implementation is authorized. `product-contract/GATE_STATUS.md` is the authoritative gate record.
+8. **ARABIC LIVES IN i18n RESOURCES.** The design carries ~725 approved Arabic strings; they move
+   into the repo's i18n layer, not into components. Never translate inside a component.
+
+9. **ROUTES ARE FIXED.** `/dashboard` `/operations` `/factory-360` `/planning` `/execution`
+   `/reviews` `/compliance` `/compliance/approvals` `/enforcement-library` `/analytics`
+   `/admin/*`. Do not rename, add, or nest. Tabs and filters are query state, never subroutes.
+
+10. **NEVER INVENT A GOVERNED VALUE.** No risk weight, penalty amount, SLA, threshold, or approval
+    rule. Absent data renders as a state: *Not configured* / *Unavailable* / *Insufficient
+    evidence*.
+
+## Before writing code for any screen
+
+1. Open `design/final-cut/saqeel-revamp.html` and navigate to that screen.
+2. For each region, list the elements and the CLASS each one uses.
+3. Show that list and STOP for confirmation.
+
+Only then implement, using those classes only.
+
+## Reference
+
+- `docs/design/HANDOFF.md` — route contracts, states, RBAC, per-screen detail
+- `docs/design/FINAL-CUT-REVIEW.md` — every visual decision and its reasoning
+- `docs/design/IMPLEMENTATION-RULES.md` — verification commands and implementation order
