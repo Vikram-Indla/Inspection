@@ -519,21 +519,17 @@ export default function ShellClient({
               (SAQEEL Brand Identity Proof.dc.html) ships both marks in the
               markup and lets the shared rules decide which one shows:
               wordmark expanded, favicon collapsed, wordmark restored in the
-              mobile drawer. Do not re-add the retired صقيل صناعي lockup. */}
-          {/* The lockup is DOM text, not an <img> wordmark. saqeel web.html
-              specifies a 34px mark beside a two-line name — Arabic leading,
-              Latin as a spaced eyebrow — and that hierarchy only exists if the
-              two scripts are separate elements. The previous
-              saqeel-wordmark-dark-mode.svg carried live <text> inside an <img>,
-              which is an isolated document: it cannot reach the page webfonts,
-              so both scripts fell back to system faces and were forced onto one
-              baseline. That is what made the wordmark sit wrong. */}
+              mobile drawer. Do not re-add the retired split-text lockup. */}
+          <span className="ax-shell__brand-wordmark">
+            <img
+              src="/saqeel-wordmark-dark-mode.svg"
+              alt="SAQEEL | صقيل"
+              width={260}
+              height={40}
+            />
+          </span>
           <span className="ax-shell__brand-mark" aria-hidden="true">
             <img src="/saqeel-favicon.svg" alt="" width={22} height={22} />
-          </span>
-          <span className="ax-shell__brand-name">
-            <span className="ax-shell__brand-ar" lang="ar">صقيل</span>
-            <span className="ax-shell__brand-en" lang="en">SAQEEL</span>
           </span>
           <button className="ax-shell__close" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>

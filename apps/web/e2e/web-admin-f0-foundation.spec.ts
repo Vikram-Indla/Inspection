@@ -69,13 +69,15 @@ test.describe("Web/Admin F0 source and security contract", () => {
     expect(shell).toContain('alt="SAQEEL | \u0635\u0642\u064a\u0644"');
     expect(shell).not.toContain('ax-shell__brand-sub');
     expect(shell).not.toContain('\u0635\u0646\u0627\u0639\u064a');
-    // Sizes are the design authority's, not invented: saqeel/components.css
-    // ships a 22px-cap wordmark and a 26px favicon.
-    expect(css).toContain('.ax-shell__brand-lockup { display: block; block-size: 22px; inline-size: auto;');
-    expect(css).toContain('.ax-shell__brand-mark { display: none; inline-size: 26px; block-size: 26px;');
-    expect(css).toContain('.ax-shell.is-collapsed .ax-shell__brand-mark { display: block; }');
-    expect(css).toContain('.ax-shell.is-collapsed .ax-shell__brand-lockup { display: none; }');
+    expect(css).toContain(".ax-shell__brand-wordmark {");
+    expect(css).toContain("block-size: var(--ax-shell-chrome-height, 74px)");
+    expect(css).toContain("min-block-size: var(--ax-shell-chrome-height)");
+    expect(css).toContain(".ax-shell.is-collapsed .ax-shell__brand-mark { display: grid; }");
+    expect(css).toContain(".ax-shell.is-collapsed .ax-shell__brand-wordmark { display: none; }");
+    expect(css).toContain(".ax-shell.is-collapsed .ax-shell__brand-wordmark { display: block; }");
     expect(css).toContain('.ax-shell.is-collapsed .ax-nav-item--child { display: none; }');
+    expect(css).toContain("background: var(--nav-bg)");
+    expect(css).toContain("color: var(--nav-text)");
     expect(favicon).toContain('M12 3.4 5 6.05');
     for (const asset of [darkWordmark, lightWordmark]) {
       expect(asset).toContain('M12 2.5 4 5.5');

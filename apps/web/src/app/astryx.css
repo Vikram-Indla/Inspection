@@ -466,7 +466,7 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 /* SAQEEL graphite navigation — deep graphite in BOTH themes (PR 1b hotfix). */
 .ax-shell__nav {
   background: var(--nav-bg); border-inline-end: 1px solid var(--nav-border); color: var(--nav-text);
-  padding: var(--ax-space-150); display: flex; flex-direction: column; gap: var(--ax-space-100);
+  padding: 0; display: flex; flex-direction: column; gap: var(--ax-space-100);
   /* Exactly one viewport tall, never taller: min-block-size let the rail grow
      to its content (956px against an 894px viewport), so the last items sat
      below the fold with no way to reach them. It is now viewport-height with
@@ -493,30 +493,45 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
      value on the rail that does not match the design authority exactly. */
   --ax-nav-group-color: color-mix(in srgb, var(--nav-text) 70%, transparent);
 }
-.ax-shell__brand { display:flex; align-items:center; gap: 11px; min-block-size: 74px; padding: 20px 18px; border-block-end: 1px solid var(--nav-border); margin-block-end: var(--ax-space-050); }
-/* WA-BRAND-r1 — canonical authenticated-shell identity, sized from the design
-   authority (SAQEEL Brand Identity Proof.dc.html + saqeel/components.css): a
-   22px-cap bilingual wordmark on the expanded rail and a 26px shield/check
-   favicon on the collapsed rail. The rail is deep graphite in BOTH themes, so
-   the dark-mode wordmark is correct regardless of the app theme. */
-/* Geometry from saqeel web.html (.brand / .mark / .name-ar / .name-en): a 34px
-   mark beside a two-line name, Arabic leading at 16px and Latin beneath it as a
-   10.5px spaced eyebrow. The mark keeps the DEC-035 shield — that identity is
-   sponsor-approved — inside the spec's 34px rounded container, so the layout
-   authority and the brand-asset decision are both honoured.
-   Colours are tokens, not the spec's raw hex: the eyebrow uses --nav-text,
-   which clears AA on the rail ground where the spec's own #6B7794 does not. */
+.ax-shell__brand {
+  display: flex; align-items: center; gap: var(--ax-space-100);
+  flex: 0 0 var(--ax-shell-chrome-height, 74px);
+  block-size: var(--ax-shell-chrome-height, 74px);
+  padding-inline: var(--ax-space-200) var(--ax-space-100);
+  border-block-end: 1px solid var(--nav-border);
+  margin-block-end: var(--ax-space-050);
+}
+/* WA-BRAND-r1 — canonical authenticated-shell identity. The approved bilingual
+   asset is scaled to a 32px block and clipped only across its unused trailing
+   viewBox space, preserving the complete visible lockup without letting the
+   asset's 260px canvas crowd the collapse control. The collapsed rail uses the
+   approved shield/check favicon. The rail is deep graphite in BOTH themes, so
+   this dark-surface wordmark remains correct in light and dark app modes. */
+.ax-shell__brand-wordmark {
+  display: block;
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  max-inline-size: 152px;
+  block-size: 32px;
+  overflow: hidden;
+}
+.ax-shell__brand-wordmark img {
+  display: block;
+  inline-size: 208px;
+  block-size: 32px;
+  max-inline-size: none;
+}
 .ax-shell__brand-mark {
-  display: grid; place-items: center; flex: 0 0 auto;
+  display: none; place-items: center; flex: 0 0 auto;
   inline-size: 34px; block-size: 34px; border-radius: 9px;
   background: color-mix(in srgb, var(--nav-indicator) 16%, transparent);
 }
 .ax-shell__brand-mark img { display: block; inline-size: 22px; block-size: 22px; }
-.ax-shell__brand-name { display: flex; flex-direction: column; gap: 2px; min-inline-size: 0; }
-.ax-shell__brand-ar { font-family: var(--font-plex-arabic, "IBM Plex Sans Arabic"), var(--font-body); font-weight: 700; font-size: 16px; line-height: 1.1; color: var(--nav-text-active); }
-.ax-shell__brand-en { font-weight: 600; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--nav-text); line-height: 1.2; }
 .ax-shell__close { display: none; margin-inline-start: auto; inline-size: var(--ax-control-height); block-size: var(--ax-control-height); border: 1px solid var(--nav-border); border-radius: var(--ax-radius-small); background: var(--nav-bg-hover); color: var(--nav-text-active); cursor: pointer; font-size: 24px; }
-.ax-shell__groups { display: flex; flex-direction: column; gap: var(--ax-space-100); }
+.ax-shell__groups {
+  display: flex; flex-direction: column; gap: var(--ax-space-100);
+  padding: 0 var(--ax-space-150) var(--ax-space-150);
+}
 .ax-nav-group { display: flex; flex-direction: column; gap: var(--ax-space-050); }
 .ax-nav-group__trigger { inline-size: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--ax-space-100); padding: var(--ax-space-150) var(--ax-nav-pad-inline) var(--ax-space-050); border: 0; background: none; color: var(--ax-nav-group-color); cursor: pointer; font: var(--ax-nav-group-font); letter-spacing: .08em; text-transform: uppercase; text-align: start; border-radius: var(--ax-radius-small); }
 /* Arabic has no case and letterforms are cursive — canonical .sidebar-group
@@ -561,7 +576,8 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .ax-shell__collapse { display: flex; align-items: center; gap: var(--ax-space-100); min-block-size: var(--ax-control-height); padding: var(--ax-space-100) var(--ax-space-150); border: 0; border-radius: var(--ax-radius-standard); background: transparent; color: var(--nav-text); cursor: pointer; font: var(--ax-text-caption); white-space: nowrap; }
 .ax-shell__collapse:hover { color: var(--nav-text-active); background: var(--nav-bg-hover); }
 [dir="rtl"] .ax-shell__collapse > span:first-child { transform: scaleX(-1); }
-.ax-shell.is-collapsed .ax-shell__nav { padding-inline: var(--ax-space-050); }
+.ax-shell.is-collapsed .ax-shell__nav { padding-inline: 0; }
+.ax-shell.is-collapsed .ax-shell__groups { padding-inline: var(--ax-space-050); }
 .ax-shell.is-collapsed .ax-shell__brand {
   display: grid;
   grid-template-columns: 34px;
@@ -569,7 +585,8 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   gap: var(--ax-space-050);
   padding-inline: 0;
 }
-.ax-shell.is-collapsed .ax-shell__brand-name { display: none; }
+.ax-shell.is-collapsed .ax-shell__brand-wordmark { display: none; }
+.ax-shell.is-collapsed .ax-shell__brand-mark { display: grid; }
 .ax-shell.is-collapsed .ax-nav-label { display: none; }
 .ax-shell.is-collapsed .ax-nav-group__trigger { display: none; }
 .ax-shell.is-collapsed .ax-nav-item { justify-content: center; padding-inline: 0; }
@@ -600,6 +617,14 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   background: var(--ax-color-surface); border-block-end: 1px solid var(--ax-color-border);
   padding: var(--ax-space-100) var(--ax-space-300) var(--ax-space-150); display: flex; flex-direction: column; gap: var(--ax-space-100);
   position: sticky; inset-block-start: 0; z-index: var(--ax-z-sticky);
+}
+@media (min-width: 1025px) and (pointer: fine) {
+  .ax-shell { --ax-shell-chrome-height: 74px; }
+  .ax-pagehead {
+    min-block-size: var(--ax-shell-chrome-height);
+    justify-content: center;
+    padding-block: var(--ax-space-100);
+  }
 }
 .ax-pagehead__topbar { display: flex; align-items: center; gap: var(--ax-space-150); min-block-size: var(--ax-control-height-field); position: relative; z-index: 1; }
 .ax-pagehead__actions { margin-inline-start: auto; display: flex; align-items: center; gap: var(--ax-space-100); }
@@ -771,7 +796,8 @@ button.ax-shell-scope { cursor: pointer; }
     justify-content: flex-start; gap: var(--ax-space-100);
     padding: var(--ax-space-050) var(--ax-space-100) var(--ax-space-200);
   }
-  .ax-shell.is-collapsed .ax-shell__brand-name { display: flex; }
+  .ax-shell.is-collapsed .ax-shell__brand-wordmark { display: block; }
+  .ax-shell.is-collapsed .ax-shell__brand-mark { display: none; }
   .ax-shell.is-collapsed .ax-nav-label { display: initial; }
   .ax-shell.is-collapsed .ax-nav-group__trigger { display: flex; justify-content: space-between; padding: var(--ax-space-100) var(--ax-space-150) var(--ax-space-050); }
   .ax-shell.is-collapsed .ax-nav-item { justify-content: flex-start; padding-inline: var(--ax-space-150); }
@@ -791,12 +817,10 @@ button.ax-shell-scope { cursor: pointer; }
   }
   .ax-shell__close:hover { background: var(--nav-bg-hover); border-color: var(--nav-border); color: var(--nav-text-active); }
   .ax-shell__close svg { inline-size: 20px; block-size: 20px; }
-  /* The drawer header is brand + close on one row. The lockup is text now, so
-     it needs no intrinsic sizing — it just must not crowd the close control. */
+  /* The drawer header is brand + close on one row. */
   .ax-shell.is-drawer-open .ax-shell__brand { gap: var(--ax-space-100); }
-  .ax-shell.is-drawer-open .ax-shell__brand-name {
+  .ax-shell.is-drawer-open .ax-shell__brand-wordmark {
     max-inline-size: calc(100% - var(--ax-control-height) - var(--ax-space-150));
-    overflow: hidden;
   }
   .ax-shell__collapse { display: none; }
   .ax-shell__groups { flex: 1; min-block-size: 0; overflow-y: auto; scrollbar-width: thin; }
