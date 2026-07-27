@@ -1,0 +1,61 @@
+schema_version: "1.0"
+packet_id: "PLANNING-CLOSURE-P0-AUTHORITY-001"
+change_id: "CC-PLANNING-CLOSURE-P0-001"
+status: "AWAITING_PO_COUNCIL_REVIEW"
+executable: false
+base_sha: "8865c35001761fd9fc9b027284881fe597b25ebd"
+lease:
+  id: "LEASE-PLANNING-CLOSURE-BA-001"
+  holder: "Business Analyst - SAQEEL"
+  branch: "codex/planning-closure-authority"
+  worktree: "/private/tmp/saqeel-planning-authority"
+  issued_utc: "2026-07-27T17:54:17Z"
+  expires_utc: "2026-07-27T19:24:17Z"
+scope:
+  journeys: ["PLN-J01", "PLN-J02", "PLN-J03", "PLN-J04", "PLN-J05", "PLN-J06", "PLN-J07", "PLN-J08", "PLN-J09", "PLN-J10", "PLN-J11", "PLN-J12", "PLN-J13", "PLN-J14", "PLN-J15", "PLN-J16", "PLN-J17", "PLN-J18", "PLN-J19", "PLN-J20"]
+  rules: ["PLN-R01", "PLN-R02", "PLN-R03", "PLN-R04", "PLN-R05", "PLN-R06", "PLN-R07", "PLN-R08", "PLN-R09", "PLN-R10"]
+  blocked: ["PLN-R05", "PLN-R06"]
+  proposed_migration: "supabase/migrations/20260728010000_planning_closure_p0.sql"
+  proposed_probe: "UNRESOLVED: requested 0040 collides with existing 0040_analytics_read_models_non_pgtap.sql"
+deliverables:
+  trace: "product-contract/operationalization/PLANNING_CLOSURE_P0_TRACE.csv"
+  screen_process_acceptance: "product-contract/operationalization/PLANNING_CLOSURE_SCREEN_PROCESS_ACCEPTANCE.csv"
+  development_dependencies: "product-contract/operationalization/PLANNING_CLOSURE_DEVELOPMENT_DEPENDENCIES.csv"
+  production_checklist: "product-contract/operationalization/PLANNING_CLOSURE_PRODUCTION_CHECKLIST.csv"
+  evidence: "product-contract/evidence/PLANNING-CLOSURE-P0-001.md"
+entry_evidence:
+  repository: "/private/tmp/saqeel-planning-authority"
+  origin: "https://github.com/Vikram-Indla/Inspection.git"
+  branch: "codex/planning-closure-authority"
+  head: "8865c35001761fd9fc9b027284881fe597b25ebd"
+  targets_absent: true
+  overlap_result: "PASS"
+implementation_fences:
+  backend:
+    allowed_after_authorization: "One additive transactional migration, exact name subject to collision audit; no legacy retirement."
+    forbidden: "R05/R06 executable flows, generic service_role scheduler, existing migration edits, nontransactional statements."
+  web:
+    allowed_after_authorization: "Exact Planning route/UI consumers only after Backend receipts and Design acceptance are frozen."
+    forbidden: "Policy inference, external live claims, Planning/Inspection draft conflation."
+  design:
+    required: "Screen states for allowed, denied, boundary, stale, partial batch, archived draft, exact expiry, unavailable external source."
+    forbidden: "Invented provider, role, threshold, reason, state or SLA."
+  testing:
+    required: "Positive, negative, boundary, replay, concurrency, forced rollback, RLS/EXECUTE, offline/delayed and degraded evidence mapped to stable IDs."
+  external_senaei:
+    state: "ENV_GATED_OR_SEEDED_ONLY"
+    release_claim: "No live integration claim until connection, contract, provenance and failure evidence pass."
+decision_gates:
+  - id: "GATE-PLN-R05"
+    owner: "Council"
+    default: "BLOCKED"
+  - id: "GATE-PLN-R06"
+    owner: "Council"
+    default: "BLOCKED"
+  - id: "GATE-PLN-EFFECTIVITY"
+    owner: "Product Owner + Council"
+    default: "NOT_EFFECTIVE"
+  - id: "GATE-PLN-IMPLEMENTATION-WRITE"
+    owner: "Vikram Indla"
+    default: "WRITE_NOT_AUTHORIZED"
+completion_rule: "PO and Council approve the sidecars, resolve or explicitly retain blockers, complete provenance, and separately authorize exact implementation leases. This packet grants no product completion credit."

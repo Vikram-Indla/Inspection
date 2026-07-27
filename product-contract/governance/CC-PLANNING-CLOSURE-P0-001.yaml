@@ -1,0 +1,189 @@
+schema_version: "1.0"
+change_id: "CC-PLANNING-CLOSURE-P0-001"
+packet_id: "PKT-PLANNING-CLOSURE-P0-001"
+corrections:
+  - "CORR-PLANNING-R01-R03-002"
+  - "CORR-PLANNING-MIGRATION-FENCE-001"
+status: "PROPOSED_SUPERSESSION"
+effectivity: "NOT_EFFECTIVE"
+write_authority: "GOVERNANCE_SIDECARS_ONLY"
+lease_id: "LEASE-PLANNING-CLOSURE-BA-001"
+base_sha: "8865c35001761fd9fc9b027284881fe597b25ebd"
+approver: "Vikram Indla / Product Owner direction"
+reviewers:
+  - "Product Owner - SAQEEL"
+  - "Council - SAQEEL"
+source_provenance:
+  - title: "Planning.docx"
+    drive_file_id: "1giOLe4-waBis3zCUQvqSWIGC4b2Skep4"
+    modified_time_utc: "2026-07-20T10:21:11Z"
+    provider_version: "NOT_EXPOSED"
+    size_bytes: 56691
+    sha256: "PENDING_CONTROLLED_DOWNLOAD"
+  - title: "Inspection Project.xlsx"
+    drive_file_id: "1Ei163mjV4_I9-pchlglwoWAAVdx5n9ge"
+    modified_time_utc: "2026-07-19T23:30:17Z"
+    provider_version: "NOT_EXPOSED"
+    size_bytes: 98945
+    sha256: "PENDING_CONTROLLED_DOWNLOAD"
+authority_rules:
+  PLN-R01:
+    state: "PROPOSED_SUPERSESSION"
+    journeys: ["PLN-J08", "PLN-J18"]
+    trace:
+      - {cr: "CR-066", requirement: "MVP1-M02-014", acceptance: "AC-0066"}
+      - {cr: "CR-097", requirement: "MVP1-M02-045", acceptance: "AC-0097"}
+    no_direct_row: "The 478-row baseline has no direct child-archive lifecycle row; these rows anchor immutable audit/history only."
+    old_interpretation: "Archive parent, then best-effort convert linked draft children to Cancelled."
+    source_code: "apps/web/src/app/(app)/planning/draft-actions.ts:47-75"
+    proposed_interpretation: "Atomically archive the never-published parent and all linked never-published draft children with additive provenance; retain truthful draft/pre-publication identity and exclude through archival metadata."
+    constraints:
+      - "No hard delete."
+      - "No child becomes Cancelled, Expired, Published or Returned because of parent archival."
+      - "Fail closed on partial child archival, unauthorized child, published/final child, concurrent publish/archive, or audit/outbox failure."
+      - "Idempotent replay returns the original receipt."
+      - "Restore or reopen is not authorized."
+    schema_gap: "SCHEMA_GAP-R01-CHILD-ARCHIVE"
+  PLN-R02:
+    state: "PROPOSED_AUTHORITY"
+    journeys: ["PLN-J15"]
+    trace:
+      - {cr: "CR-033", requirement: "MVP1-M01-033", acceptance: "AC-0033"}
+      - {cr: "CR-062", requirement: "MVP1-M02-010", acceptance: "AC-0062"}
+      - {cr: "CR-063", requirement: "MVP1-M02-011", acceptance: "AC-0063"}
+      - {cr: "CR-080", requirement: "MVP1-M02-028", acceptance: "AC-0080"}
+      - {cr: "CR-086", requirement: "MVP1-M02-034", acceptance: "AC-0086"}
+    rule: "Planning cancellation note is optional; no reason is required. M04 field cancellation remains unchanged."
+  PLN-R03:
+    state: "PROPOSED_SUPERSESSION"
+    journeys: ["PLN-J13", "PLN-J14", "PLN-J15"]
+    trace:
+      - {cr: "CR-033", requirement: "MVP1-M01-033", acceptance: "AC-0033"}
+      - {cr: "CR-060", requirement: "MVP1-M02-008", acceptance: "AC-0060"}
+      - {cr: "CR-062", requirement: "MVP1-M02-010", acceptance: "AC-0062"}
+      - {cr: "CR-063", requirement: "MVP1-M02-011", acceptance: "AC-0063"}
+      - {cr: "CR-066", requirement: "MVP1-M02-014", acceptance: "AC-0066"}
+      - {cr: "CR-080", requirement: "MVP1-M02-028", acceptance: "AC-0080"}
+      - {cr: "CR-086", requirement: "MVP1-M02-034", acceptance: "AC-0086"}
+      - {cr: "CR-097", requirement: "MVP1-M02-045", acceptance: "AC-0097"}
+    old_interpretation: "720-hour rule applied only to cancellation."
+    proposed_interpretation: "Inclusive 720-hour rule applies to planner cancellation and window-changing planner rescheduling; never reassignment."
+    excluded:
+      - "Initial scheduling or publishing."
+      - "Corrections that do not change the governed visit window."
+      - "Reassignment."
+    evaluation: "window_start_instant - authoritative_server_transaction_time >= 720 hours, using the current stored window_start locked/CAS inside the mutation transaction."
+    boundaries:
+      pass: "720:00:00.000"
+      fail: "719:59:59.999"
+    replay: "Offline/delayed work is evaluated when processed. Identical key+payload replay returns the original receipt; changed payload, current window, version, or crossed cutoff fails closed."
+    receipt_fields:
+      - "visit_id"
+      - "pre_state"
+      - "pre_version"
+      - "post_state"
+      - "post_version"
+      - "server_transaction_time"
+      - "prior_window_start"
+      - "requested_new_window"
+      - "computed_delta"
+      - "cutoff_result"
+      - "idempotency_key"
+      - "correlation_id"
+      - "audit_event_id"
+      - "outbox_intent_id"
+    display_timezone: "Asia/Riyadh"
+  PLN-R04:
+    state: "PROPOSED_AUTHORITY"
+    journeys: ["PLN-J05", "PLN-J11"]
+    trace:
+      - {cr: "CR-002", requirement: "MVP1-M01-002", acceptance: "AC-0002"}
+      - {cr: "CR-012", requirement: "MVP1-M01-012", acceptance: "AC-0012"}
+      - {cr: "CR-013", requirement: "MVP1-M01-013", acceptance: "AC-0013"}
+      - {cr: "CR-015", requirement: "MVP1-M01-015", acceptance: "AC-0015"}
+      - {cr: "CR-023", requirement: "MVP1-M01-023", acceptance: "AC-0023"}
+      - {cr: "CR-025", requirement: "MVP1-M01-025", acceptance: "AC-0025"}
+      - {cr: "CR-030", requirement: "MVP1-M01-030", acceptance: "AC-0030"}
+      - {cr: "CR-031", requirement: "MVP1-M01-031", acceptance: "AC-0031"}
+    rule: "No business bulk maximum; freeze the target ID/version set before processing, use bounded safe chunks, per-target atomicity, aggregate and per-row receipts, explicit partial/failure status, and no silent truncation."
+  PLN-R05:
+    state: "BLOCKED_DECISION"
+    journeys: ["PLN-J03", "PLN-J04", "PLN-J20"]
+    trace:
+      - {cr: "CR-044", requirement: "MVP1-M01-044", acceptance: "AC-0044"}
+      - {cr: "CR-045", requirement: "MVP1-M01-045", acceptance: "AC-0045"}
+      - {cr: "CR-046", requirement: "MVP1-M01-046", acceptance: "AC-0046"}
+    rule: "Unregistered factory lifecycle is pending Council authority; no executable grant or implementation-ready placeholder."
+    external_source: "Senaei; seeded or environment-gated states only until a verified live contract is approved."
+  PLN-R06:
+    state: "BLOCKED_DECISION"
+    journeys: ["PLN-J09", "PLN-J16"]
+    trace:
+      - {cr: "CR-007", requirement: "MVP1-M01-007", acceptance: "AC-0007"}
+      - {cr: "CR-008", requirement: "MVP1-M01-008", acceptance: "AC-0008"}
+      - {cr: "CR-019", requirement: "MVP1-M01-019", acceptance: "AC-0019"}
+      - {cr: "CR-028", requirement: "MVP1-M01-028", acceptance: "AC-0028"}
+      - {cr: "CR-029", requirement: "MVP1-M01-029", acceptance: "AC-0029"}
+      - {cr: "CR-078", requirement: "MVP1-M02-026", acceptance: "AC-0078"}
+      - {cr: "CR-084", requirement: "MVP1-M02-032", acceptance: "AC-0084"}
+    rule: "Supervisor capability/mapping is pending Council; reassignment does not inherit PLN-R03."
+  PLN-R07:
+    state: "PROPOSED_AUTHORITY"
+    journeys: ["PLN-J17"]
+    trace:
+      - {cr: "CR-068", requirement: "MVP1-M02-016", acceptance: "AC-0068"}
+      - {cr: "CR-066", requirement: "MVP1-M02-014", acceptance: "AC-0066"}
+      - {cr: "CR-093", requirement: "MVP1-M02-041", acceptance: "AC-0093"}
+      - {cr: "CR-097", requirement: "MVP1-M02-045", acceptance: "AC-0097"}
+    rule: "Only an eligible not-started published visit/assignment expires at p_as_of >= exact window_end. Default unlisted combinations false."
+    scheduler: "Dedicated least-privilege database scheduler path and tightly scoped SECURITY DEFINER function owned by a dedicated no-login role; generic application/client service_role invocation is not approved."
+  PLN-R08:
+    state: "PROPOSED_AUTHORITY"
+    journeys: ["PLN-J07", "PLN-J12", "PLN-J19"]
+    trace:
+      - {cr: "CR-453", requirement: "MVP1-M09-005", acceptance: "AC-0453"}
+      - {cr: "CR-458", requirement: "MVP1-M09-010", acceptance: "AC-0458"}
+      - {cr: "CR-259", requirement: "MVP1-M04-146", acceptance: "AC-0259"}
+      - {cr: "CR-278", requirement: "MVP1-M04-165", acceptance: "AC-0278"}
+      - {cr: "FND-014", requirement: "FND-014", acceptance: "NO_DIRECT_AC"}
+    rule: "Evidence is optional only when the locked, effective evidence rule permits it; the locked rule has precedence over UI defaults or client claims."
+  PLN-R09:
+    state: "PROPOSED_AUTHORITY"
+    journeys: ["PLN-J08", "PLN-J19"]
+    trace:
+      - {cr: "CR-182", requirement: "MVP1-M04-069", acceptance: "AC-0182"}
+      - {cr: "CR-201", requirement: "MVP1-M04-088", acceptance: "AC-0201"}
+      - {cr: "CR-238", requirement: "MVP1-M04-125", acceptance: "AC-0238"}
+      - {cr: "CR-263", requirement: "MVP1-M04-150", acceptance: "AC-0263"}
+      - {cr: "CR-294", requirement: "MVP1-M04-181", acceptance: "AC-0294"}
+      - {cr: "CR-316", requirement: "MVP1-M04-203", acceptance: "AC-0316"}
+    no_direct_row: "No direct baseline row defines the Planning draft aggregate identity."
+    rule: "Planning plan draft and Inspection workspace draft are distinct aggregates with distinct IDs, lifecycle states, storage and audit event types."
+  PLN-R10:
+    state: "PROPOSED_AUTHORITY"
+    journeys: ["PLN-J11", "PLN-J13", "PLN-J14", "PLN-J15", "PLN-J17", "PLN-J18", "PLN-J19"]
+    trace:
+      - {cr: "CR-066", requirement: "MVP1-M02-014", acceptance: "AC-0066"}
+      - {cr: "CR-093", requirement: "MVP1-M02-041", acceptance: "AC-0093"}
+      - {cr: "CR-097", requirement: "MVP1-M02-045", acceptance: "AC-0097"}
+      - {cr: "CR-132", requirement: "MVP1-M04-019", acceptance: "AC-0132"}
+      - {cr: "CR-335", requirement: "MVP1-M04-222", acceptance: "AC-0335"}
+      - {cr: "FND-003", requirement: "FND-003", acceptance: "NO_DIRECT_AC"}
+    rule: "Business mutation, immutable lifecycle/audit event and durable notification-outbox intent commit atomically. Asynchronous provider delivery receipt/failure/retry is distinct."
+migration_fence:
+  state: "PROPOSED_PATHS_ONLY"
+  migration: "supabase/migrations/20260728010000_planning_closure_p0.sql"
+  probe: "UNRESOLVED_PENDING_BACKEND_COLLISION_AUDIT"
+  requested_probe: "supabase/tests/0040_planning_closure_p0.sql"
+  collision: "supabase/tests/0040_analytics_read_models_non_pgtap.sql exists at base."
+  executable_scope: ["PLN-R01", "PLN-R03", "PLN-R04", "PLN-R07", "PLN-R08", "PLN-R09", "PLN-R10"]
+  excluded_scope: ["PLN-R05", "PLN-R06", "legacy RPC retirement", "provider delivery receipt if successor is explicitly gated"]
+release_gates:
+  - "Council blueprint alignment and explicit effectivity record with change ID, approver, SHA and time."
+  - "Drive checksum completion or explicit accepted checksum exception."
+  - "Migration/probe collision and overlap audit."
+  - "Local representative PostgreSQL single-transaction success and rollback proof."
+  - "Deterministic fail-fast probe with no skipped section."
+  - "Scheduler threat model and privilege matrix."
+  - "Independent QA and sponsor acceptance; zero open P0/P1."
+  - "No claim beyond seeded/environment-gated truth for external integrations."

@@ -1,0 +1,36 @@
+check_id,phase,criterion,owner,evidence_required,pass_rule,fail_default,status
+PLN-PC-001,Governance,Change record effective,Product Owner and Council,"Change ID approver effective SHA/time","All fields recorded after approval","NOT_EFFECTIVE",PENDING
+PLN-PC-002,Governance,R05 remains blocked,Council,"Explicit R05 decision or blocked record","No executable grant/flow while unresolved","BLOCK_RELEASE_SCOPE",BLOCKED
+PLN-PC-003,Governance,R06 remains blocked,Council,"Explicit R06 capability ruling or blocked record","No executable grant/flow while unresolved","BLOCK_RELEASE_SCOPE",BLOCKED
+PLN-PC-004,Provenance,Planning.docx provenance complete,BA,"Drive ID version/modified/retrieval/checksum","SHA-256 verified or accepted exception","FAIL",PENDING
+PLN-PC-005,Provenance,Inspection Project.xlsx provenance complete,BA,"Drive ID version/modified/retrieval/checksum","SHA-256 verified or accepted exception","FAIL",PENDING
+PLN-PC-006,Source,Exact base and no frozen rewrite,Release manager,"git diff/name-status and base SHA","Only authorized additive files/migrations under exact leases","FAIL",PENDING
+PLN-PC-007,Migration,Noncolliding exact paths,Backend,"origin/main worktree and migration-history audit","No timestamp/name collision; existing 0040 collision resolved","FAIL",BLOCKED
+PLN-PC-008,Migration,Single transaction applies and rolls back,Backend,"Target-version PostgreSQL transcript","Representative pre-state apply succeeds; rollback leaves no residue","FAIL",PENDING
+PLN-PC-009,Migration,No nontransactional statement,Backend,"Statement inventory and rollback proof","Every statement transaction-safe; otherwise minimum split reapproved","FAIL",PENDING
+PLN-PC-010,Migration,Additive only,Backend,"Schema/function/grant diff","No applied migration rewrite; no legacy retirement","FAIL",PENDING
+PLN-PC-011,Security,RLS and EXECUTE least privilege,Security/Backend,"Grant matrix and persona probes","PUBLIC anon authenticated ordinary app and generic client service_role cannot invoke scheduler","FAIL",PENDING
+PLN-PC-012,Security,Dedicated scheduler boundary,Security/Backend,"Threat model job owner function owner search_path","Expiry-only role; no general mutation authority","FAIL",PENDING
+PLN-PC-013,R01,Parent and draft-child archival truth,Testing,"Atomic archive probe and history query","All linked never-published children archived with provenance and retain draft identity","FAIL",PENDING
+PLN-PC-014,R01,Archive failure safety,Testing,"Unauthorized final-child concurrent-publish forced-failure probes","All fail closed; no partial archival; no Cancelled conversion","FAIL",PENDING
+PLN-PC-015,R03,720h scope,Testing,"Cancellation reschedule reassignment tests","Cancellation and window-changing reschedule only; reassignment excluded","FAIL",PENDING
+PLN-PC-016,R03,Exact cutoff boundaries,Testing,"720:00:00.000 and 719:59:59.999 assertions","Inclusive boundary exact","FAIL",PENDING
+PLN-PC-017,R03,Server-time concurrency replay,Testing,"Locked current window stale/replay/delayed probes","Server transaction time authoritative; changed/stale/crossed fails closed","FAIL",PENDING
+PLN-PC-018,R03,Receipt completeness,Testing,"Machine-readable receipt assertions","All mandated fields populated and internally consistent","FAIL",PENDING
+PLN-PC-019,R04,Frozen target snapshot,Testing,"Snapshot IDs versions hash/count","Targets immutable for batch run","FAIL",PENDING
+PLN-PC-020,R04,Chunk and receipt integrity,Testing,"Large batch mixed-result assertions","No business max; bounded chunks; aggregate equals per-row results; no truncation","FAIL",PENDING
+PLN-PC-021,R07,Expiry eligibility truth table,Testing,"Before/equal/after and all state/mode combinations","Only listed eligible not-started rows expire; default unlisted false","FAIL",PENDING
+PLN-PC-022,R07,Immediate/unregistered handling,Testing,"Registered physical immediate and pending unregistered probes","Permitted registered immediate included; pending unregistered false","FAIL",PENDING
+PLN-PC-023,R07,Late job and idempotency,Testing,"p_as_of/retry receipts and history","Late eligible job expires once; retry stable","FAIL",PENDING
+PLN-PC-024,R08,Locked evidence precedence,Testing,"Rule version mismatch and required/optional evidence probes","Locked effective rule wins; client default cannot weaken","FAIL",PENDING
+PLN-PC-025,R09,Draft aggregate separation,Testing,"ID state table audit-type assertions","Planning and Inspection drafts remain distinct","FAIL",PENDING
+PLN-PC-026,R10,Atomic mutation audit outbox intent,Testing,"Forced failure at each write boundary","No partial business/audit/outbox commit","FAIL",PENDING
+PLN-PC-027,R10,Delivery truth,Testing,"Outbox intent and provider successor manifest","May claim queued intent only until delivery receipt/failure/retry passes","FAIL",PENDING
+PLN-PC-028,External,Senaei truthfulness,Integration owner,"Environment configuration provenance timeout/error and seed labels","No live claim from seed/mock; not-configured/unavailable explicit","FAIL",PENDING
+PLN-PC-029,Probe,Fail-fast coverage manifest,Testing,"Every criterion ID mapped to executable assertion","No skipped/missing section; deterministic cleanup","FAIL",PENDING
+PLN-PC-030,UI,Screen/process map complete,Designer/Web/Testing,"PLN-J01..J20 persona route viewport locale theme evidence","All applicable positive/negative/boundary/offline/degraded states current","FAIL",PENDING
+PLN-PC-031,Accessibility,Keyboard focus semantics RTL responsive,Testing,"Automated and manual evidence","No P0/P1; approved design parity","FAIL",PENDING
+PLN-PC-032,Release,Independent current-SHA verification,Independent verifier,"Evidence index with commit persona route expected/observed console/network","Every applicable criterion independently passes","FAIL",PENDING
+PLN-PC-033,Release,P1 evidence completeness,Testing,"Screenshot for visually reproducible P1; strongest artifact for nonvisual P1","Tracker ID route/persona/commit/repro/impact and console/network present","FAIL",PENDING
+PLN-PC-034,Release,No open P0/P1,Product Owner,"Issue ledger and waiver/change control","Zero unresolved P0/P1; no silent waiver","BLOCK_RELEASE",PENDING
+PLN-PC-035,Release,Explicit production authorization,Vikram Indla,"Signed deployment/release record","Exact commit/environment/time/scope approved","NO_DEPLOY",PENDING
