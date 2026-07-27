@@ -59,6 +59,18 @@ const ADMIN_TITLE_RESOURCE_MIGRATION = readFileSync(path.join(
   repoRoot,
   "supabase/migrations/20260727130000_admin_revamp_title_ar_strings.sql",
 ), "utf8");
+const CANONICAL_APPROVAL_QUEUE = readFileSync(path.join(
+  webRoot,
+  "src/app/(app)/compliance/approvals/page.tsx",
+), "utf8");
+const ANALYTICS_PAGE = readFileSync(path.join(
+  webRoot,
+  "src/app/(app)/analytics/page.tsx",
+), "utf8");
+const OPERATIONS_PAGE = readFileSync(path.join(
+  webRoot,
+  "src/app/(app)/operations/page.tsx",
+), "utf8");
 
 test.use({ storageState: { cookies: [], origins: [] } });
 
@@ -92,6 +104,24 @@ test("RTL-I18N-P1-001 seeds every authoritative confirmed title match", () => {
     expect(ADMIN_TITLE_RESOURCE_MIGRATION).toContain(english);
     expect(ADMIN_TITLE_RESOURCE_MIGRATION).toContain(arabic);
   }
+});
+
+test("RTL-I18N-P1-001 canonical rewrite targets carry authoritative Arabic fallbacks", () => {
+  for (const pair of [
+    'copy("Approval Queue", "قائمة الاعتماد")',
+    'copy("Decision", "القرار")',
+    'copy("Approve configuration request", "اعتماد طلب التهيئة")',
+    'copy("Return package", "إعادة الحزمة")',
+    'copy("Reject package", "رفض الحزمة")',
+    'copy("Open review", "فتح المراجعة")',
+  ]) {
+    expect(CANONICAL_APPROVAL_QUEUE).toContain(pair);
+  }
+  expect(CANONICAL_APPROVAL_QUEUE).not.toContain("<h1>Approval Queue</h1>");
+  expect(ANALYTICS_PAGE).toContain('<h1 id="analytics-title">{title}</h1>');
+  expect(OPERATIONS_PAGE).toContain(
+    'local("SLA and resubmission monitoring", "تنبيهات المواعيد النهائية")',
+  );
 });
 
 async function signIn(page: Page, personaKey: PersonaKey) {
