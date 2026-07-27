@@ -50,6 +50,36 @@ select pg_temp.assert_true(
   and not has_table_privilege('service_role','public.planning_process_commands','insert'),
   'PCP-P02-002','closure command writes must be RPC-only');
 select pg_temp.assert_true(
+  not has_table_privilege('anon','public.visits','truncate')
+  and not has_table_privilege('authenticated','public.visits','truncate')
+  and not has_table_privilege('service_role','public.visits','truncate')
+  and not has_table_privilege('anon','public.visit_plans','truncate')
+  and not has_table_privilege('authenticated','public.visit_plans','truncate')
+  and not has_table_privilege('service_role','public.visit_plans','truncate'),
+  'PCP-P02-003','visits and plans must deny TRUNCATE to application roles');
+set local role authenticated;
+do $$
+begin
+  begin
+    execute 'truncate public.visits';
+    raise exception 'PCP-TRUNCATE-AUTHENTICATED-WAS-ALLOWED';
+  exception when insufficient_privilege then null;
+  end;
+end
+$$;
+reset role;
+set local role service_role;
+do $$
+begin
+  begin
+    execute 'truncate public.visit_plans';
+    raise exception 'PCP-TRUNCATE-SERVICE-ROLE-WAS-ALLOWED';
+  exception when insufficient_privilege then null;
+  end;
+end
+$$;
+reset role;
+select pg_temp.assert_true(
   (select count(*) from pg_trigger
    where tgrelid in (
      'public.planning_process_commands'::regclass,
@@ -88,6 +118,27 @@ select pg_temp.assert_true(
 select pg_temp.assert_true(
   not has_table_privilege('planning_expiry_scheduler','public.visits','update'),
   'PCP-P04-004','scheduler execution role must have no table DML');
+select pg_temp.assert_true(
+  has_table_privilege('planning_expiry_owner','public.factories','select')
+  and has_table_privilege('planning_expiry_owner','public.visits','select')
+  and has_table_privilege('planning_expiry_owner','public.assignments','select')
+  and has_table_privilege('planning_expiry_owner','public.inspections','select')
+  and not has_table_privilege('planning_expiry_owner','public.factories','update'),
+  'PCP-P04-005','expiry owner needs exact dependency reads and no factory mutation');
+set local role planning_expiry_scheduler;
+select public.expire_planning_visits_scheduled(100);
+reset role;
+set local role authenticated;
+do $$
+begin
+  begin
+    perform public.expire_planning_visits_scheduled(100);
+    raise exception 'PCP-EXPIRY-AUTHENTICATED-WAS-ALLOWED';
+  exception when insufficient_privilege then null;
+  end;
+end
+$$;
+reset role;
 
 -- P05/P06 — exact R03 boundary and scope.
 select pg_temp.assert_true(
@@ -164,7 +215,7 @@ select pg_temp.assert_true(
     'public.expire_planning_visits_core(timestamptz,integer,text,uuid)'::regprocedure))>0,
   'PCP-P08-004','exactly-one governed assignment must be enforced');
 select pg_temp.assert_true(
-  position('FOR UPDATE SKIP LOCKED' in upper(pg_get_functiondef(
+  position('FOR UPDATE OF V SKIP LOCKED' in upper(pg_get_functiondef(
     'public.expire_planning_visits_core(timestamptz,integer,text,uuid)'::regprocedure)))>0,
   'PCP-P09-001','start-v-expire race needs row locking');
 select pg_temp.assert_true(
@@ -200,6 +251,74 @@ select pg_temp.assert_true(
   and position('PLANNING-CLOSURE-STALE' in pg_get_functiondef(
     'public.mutate_planning_window_atomic(uuid[],text,timestamptz,timestamptz,jsonb,text,text,uuid)'::regprocedure))>0,
   'PCP-P11-001','replay mismatch and stale CAS must fail closed');
+
+-- P11A — inherited business_staff default is not trusted by closure RPCs.
+select set_config('request.jwt.claim.sub',
+  '00000000-0000-4000-8000-0000000000f1',true);
+do $$
+begin
+  begin
+    perform public.cancel_planning_visits_atomic(
+      array['00000000-0000-4000-8000-0000000000a1'::uuid],
+      jsonb_build_object('00000000-0000-4000-8000-0000000000a1','1'),
+      null,'probe-no-role-cancel',gen_random_uuid());
+    raise exception 'PCP-NO-ROLE-CANCEL-WAS-ALLOWED';
+  exception when insufficient_privilege then
+    if sqlerrm<>'PLANNING-CLOSURE-DENIED' then raise; end if;
+  end;
+  begin
+    perform public.reschedule_planning_visits_atomic(
+      array['00000000-0000-4000-8000-0000000000a1'::uuid],
+      transaction_timestamp()+interval '40 days',
+      transaction_timestamp()+interval '41 days',
+      jsonb_build_object('00000000-0000-4000-8000-0000000000a1','1'),
+      null,'probe-no-role-reschedule',gen_random_uuid());
+    raise exception 'PCP-NO-ROLE-RESCHEDULE-WAS-ALLOWED';
+  exception when insufficient_privilege then
+    if sqlerrm<>'PLANNING-CLOSURE-DENIED' then raise; end if;
+  end;
+  begin
+    perform public.reassign_published_visits_atomic(
+      array['00000000-0000-4000-8000-0000000000a1'::uuid],
+      '00000000-0000-4000-8000-0000000000a2'::uuid,
+      'probe','probe-no-role-reassign',gen_random_uuid());
+    raise exception 'PCP-NO-ROLE-REASSIGN-WAS-ALLOWED';
+  exception when insufficient_privilege then
+    if sqlerrm<>'PLANNING-REASSIGN-DENIED' then raise; end if;
+  end;
+  begin
+    perform public.archive_planning_draft_atomic(
+      '00000000-0000-4000-8000-0000000000a3'::uuid,1,null,
+      'probe-no-role-archive',gen_random_uuid());
+    raise exception 'PCP-NO-ROLE-ARCHIVE-WAS-ALLOWED';
+  exception when insufficient_privilege then
+    if sqlerrm<>'PLANNING-ARCHIVE-DENIED' then raise; end if;
+  end;
+end
+$$;
+select pg_temp.assert_true(
+  public.planning_bulk_command_receipt(
+    '00000000-0000-4000-8000-0000000000a4'::uuid) is null,
+  'PCP-P11A-001','no-role view must fail closed before command lookup');
+
+insert into auth.users(id,email,created_at,updated_at)
+values('00000000-0000-4000-8000-0000000000f2',
+  'planning-probe-scope@example.invalid',transaction_timestamp(),transaction_timestamp());
+insert into public.profiles(user_id,full_name,email,region,org_scope)
+values('00000000-0000-4000-8000-0000000000f2',
+  'Planning scope probe','planning-probe-scope@example.invalid',
+  'ZZ-OUT-OF-SCOPE','zz-out-of-scope');
+insert into public.user_roles(user_id,role_key)
+values('00000000-0000-4000-8000-0000000000f2','planner');
+select set_config('request.jwt.claim.sub',
+  '00000000-0000-4000-8000-0000000000f2',true);
+select pg_temp.assert_true(
+  public.planning_closure_has_explicit_capability('planning.manage'),
+  'PCP-P11A-002','explicit planner role must resolve capability');
+select pg_temp.assert_true(
+  not public.planning_closure_factory_in_scope(
+    (select id from public.factories order by id limit 1)),
+  'PCP-P11A-003','cross-region factory scope must fail closed');
 
 -- P12/P13 — atomic audit/outbox and truthful delivery boundary.
 select pg_temp.assert_true(

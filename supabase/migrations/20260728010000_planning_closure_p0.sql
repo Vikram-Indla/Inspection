@@ -155,6 +155,57 @@ create index planning_process_row_receipts_visit_idx
 create index planning_visit_archives_plan_idx
   on public.planning_visit_archives(parent_plan_id, archived_at desc);
 
+create function public.planning_closure_has_explicit_capability(
+  p_capability text
+) returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select auth.uid() is not null
+    and exists (
+      select 1 from public.profiles p
+      where p.user_id=auth.uid()
+        and p.account_status='active'
+        and nullif(btrim(p.region),'') is not null
+    )
+    and exists (
+      select 1
+      from public.user_roles ur
+      join public.role_permissions rp on rp.role_key=ur.role_key
+      where ur.user_id=auth.uid()
+        and rp.permission_key=p_capability
+    )
+$$;
+
+create function public.planning_closure_factory_in_scope(p_factory_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (
+    select 1
+    from public.profiles p
+    join public.factories f on f.id=p_factory_id
+    where p.user_id=auth.uid()
+      and p.account_status='active'
+      and nullif(btrim(p.region),'') is not null
+      and (p.region='National' or f.region=p.region)
+  )
+$$;
+
+revoke all on function public.planning_closure_has_explicit_capability(text)
+  from public,anon,authenticated,service_role;
+revoke all on function public.planning_closure_factory_in_scope(uuid)
+  from public,anon,authenticated,service_role;
+grant execute on function public.planning_closure_has_explicit_capability(text)
+  to authenticated;
+grant execute on function public.planning_closure_factory_in_scope(uuid)
+  to authenticated;
+
 -- ---------------------------------------------------------------------------
 -- S2. RLS and direct-access closure. Mutations are RPC-only.
 -- ---------------------------------------------------------------------------
@@ -171,6 +222,8 @@ revoke all on public.planning_process_commands from public, anon, authenticated,
 revoke all on public.planning_process_targets from public, anon, authenticated, service_role;
 revoke all on public.planning_process_row_receipts from public, anon, authenticated, service_role;
 revoke all on public.planning_visit_archives from public, anon, authenticated, service_role;
+revoke delete,truncate on public.visits,public.visit_plans
+  from public,anon,authenticated,service_role;
 
 create policy planning_process_commands_actor_read
   on public.planning_process_commands for select to authenticated
@@ -190,8 +243,10 @@ create policy planning_process_row_receipts_actor_read
 create policy planning_visit_archives_authorized_read
   on public.planning_visit_archives for select to authenticated
   using (
-    archived_by = (select auth.uid())
-    or public.has_planning_capability('planning.manage')
+    public.planning_closure_has_explicit_capability('planning.manage')
+    and public.planning_closure_factory_in_scope(
+      (select v.factory_id from public.visits v where v.id=visit_id)
+    )
   );
 
 create policy planning_process_commands_expiry_owner
@@ -210,6 +265,8 @@ create policy assignments_expiry_owner_select
   on public.assignments for select to planning_expiry_owner using (true);
 create policy inspections_expiry_owner_select
   on public.inspections for select to planning_expiry_owner using (true);
+create policy factories_expiry_owner_select
+  on public.factories for select to planning_expiry_owner using (true);
 create policy visit_lifecycle_events_expiry_owner_insert
   on public.visit_lifecycle_events for insert to planning_expiry_owner
   with check (actor is null);
@@ -251,8 +308,8 @@ begin
     raise exception using errcode = '55000',
       message = 'PLANNING-CLOSURE-COMMAND-IMMUTABLE';
   end if;
-  if tg_table_name = 'planning_process_targets'
-     and (
+  if tg_table_name = 'planning_process_targets' then
+    if (
        new.command_id <> old.command_id
        or new.ordinal <> old.ordinal
        or new.visit_id is distinct from old.visit_id
@@ -260,9 +317,10 @@ begin
        or new.expected_version is distinct from old.expected_version
        or new.expected_fingerprint <> old.expected_fingerprint
        or new.request_fragment <> old.request_fragment
-     ) then
-    raise exception using errcode = '55000',
-      message = 'PLANNING-CLOSURE-TARGET-IMMUTABLE';
+    ) then
+      raise exception using errcode = '55000',
+        message = 'PLANNING-CLOSURE-TARGET-IMMUTABLE';
+    end if;
   end if;
   return new;
 end
@@ -303,7 +361,8 @@ immutable
 set search_path = ''
 as $$
   select public.planning_closure_request_hash(jsonb_build_object(
-    'id',p_visit.id,'version',p_visit.planning_version,
+    'id',p_visit.id,'factory_id',p_visit.factory_id,
+    'version',p_visit.planning_version,
     'planning_status',p_visit.planning_status,
     'operational_state',p_visit.operational_state,
     'window_start',p_visit.window_start,'window_end',p_visit.window_end,
@@ -318,6 +377,8 @@ revoke all on function public.planning_closure_visit_fingerprint(public.visits)
 
 -- ---------------------------------------------------------------------------
 -- S5a. Planner cancellation and true window-changing reschedule.
+-- CORR-PLANNING-R01-R03-002: p_note is optional Planning-only free text.
+-- It does not require a lookup key and never rewrites cancellation_reason.
 -- ---------------------------------------------------------------------------
 create function public.mutate_planning_window_atomic(
   p_visit_ids uuid[],
@@ -355,8 +416,10 @@ begin
     raise exception using errcode = '22023',
       message = 'PLANNING-CLOSURE-REQUEST';
   end if;
-  if (p_operation='cancel' and not public.has_planning_capability('planning.cancel'))
-     or (p_operation='reschedule' and not public.has_planning_capability('planning.reschedule')) then
+  if (p_operation='cancel'
+      and not public.planning_closure_has_explicit_capability('planning.cancel'))
+     or (p_operation='reschedule'
+      and not public.planning_closure_has_explicit_capability('planning.reschedule')) then
     raise exception using errcode = '42501',
       message = 'PLANNING-CLOSURE-DENIED';
   end if;
@@ -409,6 +472,10 @@ begin
   for v_visit in select * from public.visits where id=any(v_ids) order by id
   loop
     v_ordinal := v_ordinal+1;
+    if not public.planning_closure_factory_in_scope(v_visit.factory_id) then
+      raise exception using errcode = '42501',
+        message = 'PLANNING-CLOSURE-SCOPE-DENIED';
+    end if;
     if v_visit.planning_status <> 'published'
        or v_visit.operational_state not in ('new','prepared')
        or exists (select 1 from public.planning_visit_archives a where a.visit_id=v_visit.id)
@@ -528,6 +595,41 @@ as $$
     p_note,p_idempotency_key,p_correlation_id)
 $$;
 
+-- Harden the still-supported legacy reassignment signature without retiring
+-- it or applying the R03 720-hour rule. Explicit governed capability is checked
+-- before target lookup; target factory scope is checked before delegation.
+create or replace function public.reassign_published_visits_atomic(
+  p_visit_ids uuid[], p_inspector_id uuid, p_reason text,
+  p_idempotency_key text, p_correlation_id uuid default gen_random_uuid()
+) returns jsonb
+language plpgsql
+security definer
+set search_path=''
+as $$
+begin
+  if not public.planning_closure_has_explicit_capability('planning.reassign') then
+    raise exception using errcode='42501',
+      message='PLANNING-REASSIGN-DENIED';
+  end if;
+  if exists (
+    select 1 from public.visits v
+    where v.id=any(coalesce(p_visit_ids,'{}'::uuid[]))
+      and not public.planning_closure_factory_in_scope(v.factory_id)
+  ) then
+    raise exception using errcode='42501',
+      message='PLANNING-CLOSURE-SCOPE-DENIED';
+  end if;
+  return public.mutate_published_visits_atomic(
+    p_visit_ids,'reassign',jsonb_build_object('inspector_id',p_inspector_id),
+    p_reason,p_idempotency_key,p_correlation_id
+  );
+end
+$$;
+revoke all on function public.reassign_published_visits_atomic(
+  uuid[],uuid,text,text,uuid) from public,anon,service_role;
+grant execute on function public.reassign_published_visits_atomic(
+  uuid[],uuid,text,text,uuid) to authenticated;
+
 -- ---------------------------------------------------------------------------
 -- S5b. Atomic truthful archival of a never-published draft aggregate.
 -- ---------------------------------------------------------------------------
@@ -555,7 +657,7 @@ begin
      or nullif(btrim(p_idempotency_key),'') is null or p_correlation_id is null then
     raise exception using errcode='22023',message='PLANNING-ARCHIVE-REQUEST';
   end if;
-  if not public.has_planning_capability('planning.manage') then
+  if not public.planning_closure_has_explicit_capability('planning.manage') then
     raise exception using errcode='42501',message='PLANNING-ARCHIVE-DENIED';
   end if;
   v_request:=jsonb_build_object('plan_id',p_plan_id,'expected_plan_version',
@@ -579,6 +681,13 @@ begin
     raise exception using errcode='23514',message='PLANNING-ARCHIVE-STATE';
   end if;
   perform 1 from public.visits where visit_plan_id=p_plan_id order by id for update;
+  if exists(
+    select 1 from public.visits v where v.visit_plan_id=p_plan_id
+      and not public.planning_closure_factory_in_scope(v.factory_id)
+  ) then
+    raise exception using errcode='42501',
+      message='PLANNING-CLOSURE-SCOPE-DENIED';
+  end if;
   if exists(select 1 from public.visits v where v.visit_plan_id=p_plan_id
     and (v.planning_status not in ('draft','validated')
       or exists(select 1 from public.planning_visit_archives a where a.visit_id=v.id))) then
@@ -717,7 +826,7 @@ begin
       and (select count(*) from public.assignments a where a.visit_id=v.id)=1
     order by v.window_end,v.id
     limit p_batch_limit
-    for update skip locked
+    for update of v skip locked
   loop
     select * into strict v_assignment from public.assignments
       where visit_id=v_visit.id for update;
@@ -802,7 +911,8 @@ declare
   v_visit public.visits%rowtype;
   v_n integer:=0;
 begin
-  if v_actor is null or not public.has_planning_capability('planning.manage')
+  if v_actor is null
+     or not public.planning_closure_has_explicit_capability('planning.manage')
      or p_operation not in ('cancel','reschedule')
      or jsonb_typeof(coalesce(p_payload,'{}'::jsonb))<>'object'
      or jsonb_typeof(coalesce(p_expected_versions,'{}'::jsonb))<>'object' then
@@ -834,6 +944,10 @@ begin
     'pending',cardinality(v_ids)) returning id into v_command;
   for v_visit in select * from public.visits where id=any(v_ids) order by id loop
     v_n:=v_n+1;
+    if not public.planning_closure_factory_in_scope(v_visit.factory_id) then
+      raise exception using errcode='42501',
+        message='PLANNING-CLOSURE-SCOPE-DENIED';
+    end if;
     if (p_expected_versions->>v_visit.id::text)::bigint is distinct from v_visit.planning_version then
       raise exception using errcode='40001',message='PLANNING-CLOSURE-STALE';
     end if;
@@ -865,7 +979,8 @@ as $$
       coalesce(jsonb_agg(t.visit_id order by t.ordinal),'[]'::jsonb)))
   from public.planning_process_commands c
   join public.planning_process_targets t on t.command_id=c.id
-  where c.id=p_command_id and c.actor=auth.uid() and c.operation='bulk'
+  where public.planning_closure_has_explicit_capability('planning.view')
+    and c.id=p_command_id and c.actor=auth.uid() and c.operation='bulk'
   group by c.id
 $$;
 
@@ -885,7 +1000,8 @@ declare
   v_versions jsonb;
   v_status text;
 begin
-  if v_actor is null then
+  if v_actor is null
+     or not public.planning_closure_has_explicit_capability('planning.manage') then
     raise exception using errcode='42501',message='PLANNING-BULK-DENIED';
   end if;
   select * into v_command from public.planning_process_commands
@@ -903,6 +1019,10 @@ begin
       'ordinal',p_target_ordinal,'status',v_target.status,'idempotent',true);
   end if;
   select * into v_visit from public.visits where id=v_target.visit_id for update;
+  if not found or not public.planning_closure_factory_in_scope(v_visit.factory_id) then
+    raise exception using errcode='42501',
+      message='PLANNING-CLOSURE-SCOPE-DENIED';
+  end if;
   if not found or public.planning_closure_visit_fingerprint(v_visit)
       <> v_target.expected_fingerprint then
     update public.planning_process_targets set status='blocked'
@@ -1001,6 +1121,7 @@ grant usage on schema extensions to planning_expiry_owner;
 grant select,update on public.visits to planning_expiry_owner;
 grant select on public.assignments,public.inspections,public.planning_visit_archives
   to planning_expiry_owner;
+grant select on public.factories to planning_expiry_owner;
 grant insert,select,update on public.planning_process_commands to planning_expiry_owner;
 grant insert,select on public.visit_lifecycle_events,public.audit_events,
   public.workflow_outbox to planning_expiry_owner;
@@ -1078,8 +1199,10 @@ begin
   foreach v_sig in array array[
     'public.cancel_planning_visits_atomic(uuid[],jsonb,text,text,uuid)'::regprocedure,
     'public.reschedule_planning_visits_atomic(uuid[],timestamptz,timestamptz,jsonb,text,text,uuid)'::regprocedure,
+    'public.reassign_published_visits_atomic(uuid[],uuid,text,text,uuid)'::regprocedure,
     'public.archive_planning_draft_atomic(uuid,integer,text,text,uuid)'::regprocedure,
-    'public.expire_planning_visits_scheduled(integer)'::regprocedure
+    'public.expire_planning_visits_scheduled(integer)'::regprocedure,
+    'public.process_planning_bulk_target(uuid,integer)'::regprocedure
   ] loop
     if has_function_privilege('service_role',v_sig,'execute') then
       raise exception using errcode='42501',
@@ -1100,10 +1223,13 @@ begin
     where n.nspname='public'
       and p.proname in (
         'mutate_planning_window_atomic','cancel_planning_visits_atomic',
-        'reschedule_planning_visits_atomic','archive_planning_draft_atomic',
+        'reschedule_planning_visits_atomic','reassign_published_visits_atomic',
+        'archive_planning_draft_atomic',
         'expire_planning_visits_core','expire_planning_visits_scheduled',
         'create_planning_bulk_command','planning_bulk_command_receipt',
-        'process_planning_bulk_target'
+        'process_planning_bulk_target',
+        'planning_closure_has_explicit_capability',
+        'planning_closure_factory_in_scope'
       )
       and not ('search_path=""'=any(coalesce(p.proconfig,'{}'::text[])))
   ) then
