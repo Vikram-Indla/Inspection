@@ -522,17 +522,42 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .sq-shell__close { display: none; margin-inline-start: auto; inline-size: var(--touch-target); block-size: var(--touch-target); border: 1px solid var(--border-input); border-radius: var(--radius-xs); background: var(--surface-primary); color: var(--text-primary); cursor: pointer; font-size: 24px; }
 .sq-shell__groups { display: flex; flex: 1; min-block-size: 0; flex-direction: column; gap: 10px; overflow-x: hidden; overflow-y: auto; scrollbar-width: thin; }
 .sq-shell__nav-footer { border-block-start: 1px solid var(--border-subtle); padding-block-start: 10px; display: flex; flex-direction: column; gap: 2px; flex: 0 0 auto; }
-.sq-shell__expand-row { display: none; }
 .sq-nav-group { display: flex; flex-direction: column; gap: var(--space-1); }
 .sq-nav-group__trigger { inline-size: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding: 10px 12px 4px; border: 0; background: none; color: var(--nav-text); cursor: pointer; font: 700 11px/14px var(--font-body); letter-spacing: .14em; text-transform: uppercase; text-align: start; border-radius: var(--radius-xs); }
-.sq-nav-group--pinned .sq-nav-group__trigger { min-block-size: 34px; padding: 0 8px; color: var(--nav-text-active); font: 500 13px/18px var(--font-body); letter-spacing: 0; text-transform: none; }
+.sq-nav-group--pinned .sq-nav-group__trigger {
+  position: relative;
+  min-block-size: 34px;
+  padding-block: 0;
+  padding-inline: 8px 10px;
+  border-inline-start: 3px solid transparent;
+  color: var(--nav-text-active);
+  font: 500 13.5px/18px var(--font-body);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.sq-nav-group--pinned .sq-nav-group__trigger.is-active {
+  border-inline-start-color: var(--action-primary);
+  background: var(--nav-bg-selected);
+  color: var(--action-primary-hover);
+  font-weight: 600;
+}
 /* Arabic has no case and letterforms are cursive — canonical .sidebar-group
    drops the tracking under RTL and so does this. */
 [dir="rtl"] .sq-nav-group__trigger { letter-spacing: 0; }
 .sq-nav-group__trigger:hover { color: var(--nav-text-active); background: var(--nav-bg-hover); }
-.sq-nav-group__chevron { transition: transform var(--transition-fast); }
-.sq-nav-group__trigger[aria-expanded="false"] .sq-nav-group__chevron { transform: rotate(-90deg); }
-[dir="rtl"] .sq-nav-group__trigger[aria-expanded="false"] .sq-nav-group__chevron { transform: rotate(90deg); }
+.sq-nav-group__chevron {
+  display: inline-block;
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+  color: var(--nav-text);
+  font-size: 16px;
+  line-height: 1;
+  transform: rotate(90deg);
+  transition: transform 120ms cubic-bezier(.2, 0, 0, 1);
+}
+.sq-nav-group__trigger[aria-expanded="false"] .sq-nav-group__chevron { transform: rotate(0deg); }
+[dir="rtl"] .sq-nav-group__chevron { transform: rotate(-90deg); }
+[dir="rtl"] .sq-nav-group__trigger[aria-expanded="false"] .sq-nav-group__chevron { transform: rotate(180deg); }
 .sq-nav-item {
   display: flex; align-items: center; gap: var(--sq-nav-gap);
   /* Canonical .nav-item is a fixed 34px row. This shell also serves the iPad
@@ -561,6 +586,8 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
    body-strong. */
 .sq-nav-subgroup__label { display: flex; align-items: center; gap: var(--sq-nav-gap); min-block-size: var(--touch-target); padding-inline: var(--sq-nav-pad-inline); color: var(--nav-text-active); font: var(--sq-nav-font); font-weight: 600; }
 .sq-nav-item--child { margin-inline-start: 24px; inline-size: calc(100% - 24px); min-block-size: 32px; font-size: 13px; line-height: 18px; }
+.sq-nav-group--pinned .sq-nav-item--child .sq-nav-label { flex: 1; }
+.sq-nav-group--pinned .sq-nav-item--child[aria-current="page"]::before { display: none; }
 .sq-nav-badge { flex: 0 0 auto; margin-inline-start: auto; }
 .sq-nav-item[aria-current="page"] { background: var(--nav-bg-selected); color: var(--nav-text-active); border-color: transparent; font-weight: 600; box-shadow: none; }
 .sq-nav-item[aria-current="page"]::before { content: ""; position: absolute; inset-block: 6px; inset-inline-start: 0; inline-size: 3px; border-radius: 999px; background: var(--action-primary); }
@@ -568,20 +595,31 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .sq-nav-item:focus-visible, .sq-nav-group__trigger:focus-visible, .sq-shell__collapse:focus-visible, .sq-shell__close:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .sq-shell__collapse { display: flex; align-items: center; gap: var(--space-2); min-block-size: 32px; inline-size: 32px; justify-content: center; padding: 0; border: 1px solid var(--border-input); border-radius: 6px; background: var(--surface-primary); color: var(--text-secondary); cursor: pointer; font: var(--type-caption-font); white-space: nowrap; margin-inline-start: auto; }
 .sq-shell__collapse:hover { color: var(--text-primary); background: var(--surface-secondary); }
-[dir="rtl"] .sq-shell__collapse > span:first-child { transform: scaleX(-1); }
+.sq-shell__collapse svg { transition: transform var(--transition-fast); }
+[dir="rtl"] .sq-shell__collapse svg { transform: scaleX(-1); }
 .sq-shell.is-collapsed .sq-shell__nav { padding-inline: var(--space-1); }
 .sq-shell.is-collapsed .sq-shell__brand {
   display: grid;
-  grid-template-columns: 34px;
+  grid-template-columns: 36px;
   justify-content: center;
-  gap: var(--space-1);
-  padding-inline: 0;
+  gap: 6px;
+  padding: 4px 0 10px;
 }
 .sq-shell.is-collapsed .sq-shell__brand-name { display: none; }
-.sq-shell.is-collapsed .sq-shell__brand .sq-shell__collapse { display: none; }
+.sq-shell.is-collapsed .sq-shell__brand .sq-shell__collapse {
+  display: flex;
+  inline-size: 32px;
+  block-size: 32px;
+  min-block-size: 32px;
+  justify-self: center;
+  margin-inline-start: 0;
+}
+.sq-shell.is-collapsed .sq-shell__collapse svg { transform: rotate(180deg); }
+[dir="rtl"] .sq-shell.is-collapsed .sq-shell__collapse svg { transform: none; }
 .sq-shell.is-collapsed .sq-nav-label { display: none; }
 .sq-shell.is-collapsed .sq-nav-group__trigger { display: none; }
 .sq-shell.is-collapsed .sq-nav-group--pinned .sq-nav-group__trigger { display: flex; justify-content: center; padding-inline: 0; }
+.sq-shell.is-collapsed .sq-nav-group--pinned .sq-nav-group__chevron { display: none; }
 .sq-shell.is-collapsed .sq-nav-item { justify-content: center; padding-inline: 0; }
 .sq-shell.is-collapsed .sq-nav-subgroup__label {
   display: flex;
@@ -593,14 +631,6 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .sq-shell.is-collapsed .sq-nav-item--child { display: none; }
 .sq-shell.is-collapsed .sq-nav-lock { display: none; }
 .sq-shell.is-collapsed .sq-nav-badge { display: none; }
-.sq-shell.is-collapsed .sq-shell__expand-row { display: flex; inline-size: 100%; min-block-size: 32px; justify-content: center; background: var(--nav-bg-hover); }
-/* The favicon keeps its design-authority 26px; only the collapse control is
-   sized to the 28px rail control box. */
-.sq-shell.is-collapsed .sq-shell__collapse {
-  inline-size: 28px;
-  block-size: 28px;
-}
-.sq-shell.is-collapsed .sq-shell__collapse { min-block-size: 28px; justify-content: center; padding: 0; }
 .sq-shell.is-collapsed .sq-nav-item[aria-current="page"] { box-shadow: none; }
 [dir="rtl"] .sq-shell.is-collapsed .sq-nav-item[aria-current="page"] { box-shadow: none; }
 /* The content pane owns horizontal overflow, so a too-wide table, map or KPI
@@ -970,6 +1000,7 @@ button.sq-shell-scope { cursor: pointer; }
   .sq-shell.is-collapsed .sq-nav-item--child { display: flex; }
   .sq-shell.is-collapsed .sq-nav-lock { display: grid; }
   .sq-shell.is-collapsed .sq-nav-item--child { margin-inline-start: var(--space-6); inline-size: calc(100% - var(--space-6)); }
+  .sq-nav-group--pinned .sq-nav-item--child { min-block-size: var(--touch-target); }
   .sq-shell.is-collapsed .sq-nav-lock { display: grid; }
   .sq-shell__close {
     display: grid; place-items: center; flex: 0 0 auto;
