@@ -10,6 +10,7 @@ const source = (file: string) => readFileSync(join(process.cwd(), file), "utf8")
 
 const dashboardPage = source("src/app/(app)/dashboard/page.tsx");
 const dashboardView = source("src/app/(app)/dashboard/DashboardView.tsx");
+const roleHome = source("src/lib/role-home.ts");
 const regionalScope = source("src/app/(app)/dashboard/RegionalScope.tsx");
 const decisionCanvas = source("src/app/(app)/dashboard/DecisionCanvas.tsx");
 const geoMap = source("src/components/GeoMap.tsx");
@@ -51,6 +52,11 @@ test.describe("WA-M1-AC-001/002/005 source truth and negative contracts", () => 
     expect(dashboardPage).toContain("if (!mayViewDashboard) redirect(\"/launch\")");
     expect(dashboardPage).toContain("const sb = await supabaseServer()");
     expect(dashboardPage).not.toMatch(/service_role|SUPABASE_SERVICE_ROLE|bypassRls/i);
+    expect(roleHome).toContain('["ops", "/dashboard"]');
+    expect(roleHome).toContain('["leadership", "/dashboard"]');
+    expect(roleHome).toContain('["planner", "/planning"]');
+    expect(roleHome).toContain('["reviewer", "/reviews"]');
+    expect(roleHome).not.toMatch(/\["(?:planner|reviewer|inspector|compliance_admin|form_admin|workflow_admin|security_admin|gis_admin|risk_owner)", "\/dashboard"\]/);
   });
 
   test("partial source state is propagated and cannot coexist with the overall Live state", () => {

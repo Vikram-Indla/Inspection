@@ -139,16 +139,17 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
 
   // The sidebar is only a usability filter. Enforce the dashboard persona at
   // the route boundary as well so a copied URL cannot grant dashboard access.
-  // CC-SAQEEL-RESPONSIVE-REVAMP-001: the canonical Planner and Inspector
-  // presentation roles can open Dashboard. Legacy ops/leadership grants map
-  // to Planner-read during the evidence-backed role migration.
+  // WA-M1-AC-002 / TRN-DASH-P1-001 — Dashboard is the governed
+  // Operations/Leadership surface. Other authenticated personas resolve to
+  // their own role home through /launch; the guard stays before dataPromise so
+  // a copied URL cannot trigger Dashboard reads for a denied persona.
   const { data: { user } } = await getVerifiedUser(sb);
   if (!user) redirect("/login");
   const { data: dashboardRoles, error: roleError } = await sb
     .from("user_roles")
     .select("role_key")
     .eq("user_id", user.id);
-  const dashboardRoleKeys = ["planner", "inspector", "ops", "leadership", "reviewer", "compliance_admin", "form_admin", "workflow_admin", "security_admin", "gis_admin", "risk_owner"] as const;
+  const dashboardRoleKeys = ["ops", "leadership"] as const;
   const mayViewDashboard = !roleError && (dashboardRoles ?? []).some(row => dashboardRoleKeys.includes(row.role_key as typeof dashboardRoleKeys[number]));
   if (!mayViewDashboard) redirect("/launch");
 
