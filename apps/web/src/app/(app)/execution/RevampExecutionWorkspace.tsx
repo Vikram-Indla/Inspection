@@ -171,18 +171,18 @@ export default function RevampExecutionWorkspace({ rows, currentUserId }: {
             </tr></thead>
             <tbody>{visibleRows.map(row => (
               <tr key={row.id}>
-                <th scope="row">{row.visitReference}</th>
-                <td>{row.factory}</td>
-                <td>{formatDate(row.windowStart)} – {formatDate(row.windowEnd)}</td>
-                <td>{formatDate(row.executionDate)}</td>
-                <td>{titleCase(row.visitType)}</td>
-                <td>{titleCase(row.visitMode)}</td>
-                <td><span data-tone={row.risk ?? ""}>{titleCase(row.risk)}</span></td>
-                {view === "all" && <><td>{row.inspector ?? "Unassigned"}</td><td>{[row.region, row.city].filter(Boolean).join(" / ") || "—"}</td></>}
-                <td><span>{titleCase(row.operationalState)}</span></td>
-                {view === "mine" && <><td>{titleCase(row.planningStatus)}</td><td>Inspection report</td></>}
-                {view === "all" && <td>{row.lat != null ? "Position recorded" : "No position"}</td>}
-                <td><a href={`/field/${row.id}`}>{row.operationalState === "new" ? "Prepare" : "Open"}</a></td>
+                <th scope="row" data-label="Visit ref">{row.visitReference}</th>
+                <td data-label="Factory">{row.factory}</td>
+                <td data-label="Planning window">{formatDate(row.windowStart)} – {formatDate(row.windowEnd)}</td>
+                <td data-label="Execution date">{formatDate(row.executionDate)}</td>
+                <td data-label="Visit type">{titleCase(row.visitType)}</td>
+                <td data-label="Visit mode">{titleCase(row.visitMode)}</td>
+                <td data-label="Risk"><span data-tone={row.risk ?? ""}>{titleCase(row.risk)}</span></td>
+                {view === "all" && <><td data-label="Inspector">{row.inspector ?? "Unassigned"}</td><td data-label="Region / city">{[row.region, row.city].filter(Boolean).join(" / ") || "—"}</td></>}
+                <td data-label="Operational state"><span>{titleCase(row.operationalState)}</span></td>
+                {view === "mine" && <><td data-label="Preparation">{titleCase(row.planningStatus)}</td><td data-label="Report type">Inspection report</td></>}
+                {view === "all" && <td data-label="Tracking">{row.lat != null ? "Position recorded" : "No position"}</td>}
+                <td data-label="Action"><a href={`/field/${row.id}`}>{row.operationalState === "new" ? "Prepare" : "Open"}</a></td>
               </tr>
             ))}</tbody>
           </table>

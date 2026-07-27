@@ -759,6 +759,40 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   .sq-execution__days { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .sq-execution__filters input { inline-size: 100%; }
 }
+@media (max-width: 1023px) {
+  .sq-execution__tablewrap { overflow: visible; border: 0; box-shadow: none; background: transparent; }
+  .sq-execution__tablewrap table,
+  .sq-execution__tablewrap tbody { display: block; min-inline-size: 0; }
+  .sq-execution__tablewrap thead { display: none; }
+  .sq-execution__tablewrap tbody { display: grid; gap: var(--ax-space-150); }
+  .sq-execution__tablewrap tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border: 1px solid var(--ax-color-border-strong);
+    border-radius: var(--ax-radius-standard);
+    background: var(--ax-color-surface);
+    overflow: hidden;
+  }
+  .sq-execution__tablewrap th,
+  .sq-execution__tablewrap td {
+    display: grid;
+    grid-template-columns: minmax(100px, .7fr) minmax(0, 1fr);
+    gap: var(--ax-space-100);
+    align-items: start;
+    border-block-end: 1px solid var(--ax-color-border);
+  }
+  .sq-execution__tablewrap th::before,
+  .sq-execution__tablewrap td::before {
+    content: attr(data-label);
+    color: var(--ax-color-text-secondary);
+    font: var(--ax-text-micro);
+    font-weight: 600;
+  }
+}
+@media (max-width: 560px) {
+  .sq-execution__days,
+  .sq-execution__tablewrap tr { grid-template-columns: minmax(0, 1fr); }
+}
 .ax-shell-search input:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .ax-shell-search__results { position: absolute; inset-block-start: calc(100% + var(--ax-space-100)); inset-inline: 0; z-index: var(--ax-z-drawer); padding: var(--ax-space-100); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-standard); background: var(--ax-color-surface); box-shadow: var(--ax-shadow-overlay); }
 /* Portaled to document.body (see ShellClient.tsx) so it paints outside the
@@ -1989,7 +2023,7 @@ button.ax-shell-scope { cursor: pointer; }
   .rv-library__rail { border-inline-end: 0; border-block-end: 1px solid var(--ax-border); }
   .rv-library__split,
   .rv-library__facts { grid-template-columns: 1fr; }
-  .rv-approval__steps { overflow-x: auto; }
+  .rv-approval__steps { flex-wrap: wrap; }
   .rv-enforcement__toolbar { flex-wrap: wrap; }
   .rv-enforcement__list dl { grid-template-columns: 1fr 1fr; }
 }
