@@ -146,29 +146,20 @@ export async function republishVisit(_: ActionResult, fd: FormData): Promise<Act
   return { ok: "Republished — same Visit ID retained; inspector notification queued (not confirmed delivered) (M02-009)" };
 }
 
-// M02-006 + M8 — Cancel visit: published/new OR returned/new (canonical §15),
-// governed reason key + conditional comments, final. The governed key is stored
-// in cancellation_reason (legacy rows may hold free text — the detail page
-// falls back to rendering it verbatim); actor/date and the prior inspector and
-// window ride on the lifecycle event.
+// PLN-R03 — Planning cancellation accepts an optional free-text note. It does
+// not read or write the governed field/inspection cancellation-reason contract.
 export async function cancelVisit(_: ActionResult, fd: FormData): Promise<ActionResult> {
   const sb = await supabaseServer();
   const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
   const id = String(fd.get("visit_id"));
-  const reasonKey = String(fd.get("reason_key") ?? "").trim();
-  const comments = String(fd.get("comments") ?? "").trim();
-  const { options, error: optErr } = await getReasonOptions(sb, "cancellation_reason");
-  if (optErr) return { error: "Cancellation reasons are temporarily unavailable (ERR-OPS-001) — nothing was changed." };
-  const bad = validateReason(options, reasonKey, comments, "cancellation");
-  if (bad) return { error: bad };
+  const note = String(fd.get("note") ?? fd.get("comments") ?? "").trim() || null;
   const versionRead = await readPlanningVersions(sb, [id]);
   if (!versionRead.versions) {
     return { error: "The current Planning version could not be verified. Nothing was changed.", errorCode: versionRead.error ?? "service_error" };
   }
   const expectedVersion = versionRead.versions[id];
   const correlationId = crypto.randomUUID();
-  const note = comments ? `${reasonKey} — ${comments}` : reasonKey;
   const { data, error } = await sb.rpc("cancel_planning_visits_atomic", {
     p_visit_ids: [id],
     p_expected_versions: versionRead.versions,
@@ -182,6 +173,10 @@ export async function cancelVisit(_: ActionResult, fd: FormData): Promise<Action
     return {
       error: errorCode === "cutoff_blocked"
         ? "Cancellation is outside the authoritative 720-hour window. Nothing was changed."
+        : errorCode === "capability_denied"
+          ? "Your account does not have the Planning cancellation capability. Nothing was changed."
+          : errorCode === "scope_denied"
+            ? "This factory is outside your authorized Planning scope. Nothing was changed."
         : "Cancellation was not committed. Refresh the visit before retrying.",
       errorCode,
     };
@@ -232,6 +227,10 @@ export async function rescheduleVisit(_: ActionResult, fd: FormData): Promise<Ac
     return {
       error: errorCode === "cutoff_blocked"
         ? "Rescheduling is outside the authoritative 720-hour window. Nothing was changed."
+        : errorCode === "capability_denied"
+          ? "Your account does not have the Planning reschedule capability. Nothing was changed."
+          : errorCode === "scope_denied"
+            ? "This factory is outside your authorized Planning scope. Nothing was changed."
         : "Rescheduling was not committed. Refresh the visit before retrying.",
       errorCode,
     };

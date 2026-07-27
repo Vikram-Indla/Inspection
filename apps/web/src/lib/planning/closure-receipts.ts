@@ -4,7 +4,9 @@ export type PlanningClosureError =
   | "cutoff_blocked"
   | "conflict"
   | "state_blocked"
-  | "unauthorized"
+  | "capability_denied"
+  | "scope_denied"
+  | "expiry_read_only"
   | "unavailable"
   | "invalid_request"
   | "receipt_invalid"
@@ -68,6 +70,22 @@ export type PlanningBulkCommandStart = {
   idempotent: boolean;
 };
 
+export type PlanningBulkTargetResult = {
+  commandId: string;
+  ordinal: number | null;
+  status: "applied" | "blocked" | "failed" | null;
+  idempotent: boolean;
+};
+
+export type PlanningExpiryReceipt = {
+  commandId: string;
+  operation: "expire";
+  expiredCount: number;
+  serverTransactionTime: string;
+  correlationId: string;
+  idempotent: boolean;
+};
+
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const record = (value: unknown): Record<string, unknown> | null =>
   value != null && typeof value === "object" && !Array.isArray(value)
@@ -84,7 +102,11 @@ export function classifyPlanningClosureError(error: { message?: string; code?: s
   if (/PLANNING-CLOSURE-720H/.test(message)) return "cutoff_blocked";
   if (/PLANNING-CLOSURE-(STALE|IDEMPOTENCY-CONFLICT)/.test(message)) return "conflict";
   if (/PLANNING-(CLOSURE-STATE|ARCHIVE-(STATE|CHILD-STATE))/.test(message)) return "state_blocked";
-  if (/PLANNING-(CLOSURE|ARCHIVE|BULK)-DENIED/.test(message) || error?.code === "42501") return "unauthorized";
+  if (/PLANNING-CLOSURE-SCOPE-DENIED/.test(message)) return "scope_denied";
+  if (/PLANNING-EXPIRY-SCHEDULER-ONLY/.test(message)) return "expiry_read_only";
+  if (/PLANNING-(CLOSURE|ARCHIVE|BULK|REASSIGN)-DENIED/.test(message) || error?.code === "42501") {
+    return "capability_denied";
+  }
   if (/PLANNING-(CLOSURE|BULK)-(TARGET|COMMAND)-NOT-FOUND/.test(message)) return "unavailable";
   if (/PLANNING-(CLOSURE|ARCHIVE|BULK|RESCHEDULE)-/.test(message) || error?.code === "22023") return "invalid_request";
   return "service_error";
@@ -179,6 +201,43 @@ export function parsePlanningBulkCommandStart(value: unknown): PlanningBulkComma
   if (!commandId || !UUID.test(commandId)) return null;
   if (!idempotent && (targetCount == null || !inventoryHash)) return null;
   return { commandId, targetCount, inventoryHash, idempotent };
+}
+
+export function parsePlanningBulkTargetResult(value: unknown): PlanningBulkTargetResult | null {
+  const root = record(value);
+  if (!root) return null;
+  const commandId = text(root.command_id);
+  const ordinal = integer(root.ordinal) ?? integer(root.processed_ordinal);
+  const status = text(root.status);
+  if (!commandId || !UUID.test(commandId)) return null;
+  if (status != null && status !== "applied" && status !== "blocked" && status !== "failed"
+      && status !== "running" && status !== "partial_failed" && status !== "completed") return null;
+  return {
+    commandId,
+    ordinal,
+    status: status === "applied" || status === "blocked" || status === "failed" ? status : null,
+    idempotent: root.idempotent === true,
+  };
+}
+
+export function parsePlanningExpiryReceipt(value: unknown): PlanningExpiryReceipt | null {
+  const root = record(value);
+  if (!root) return null;
+  const commandId = text(root.command_id);
+  const expiredCount = integer(root.expired_count);
+  const serverTransactionTime = text(root.server_transaction_time);
+  const correlationId = text(root.correlation_id);
+  if (!commandId || !UUID.test(commandId) || root.operation !== "expire"
+      || expiredCount == null || !serverTransactionTime
+      || !correlationId || !UUID.test(correlationId)) return null;
+  return {
+    commandId,
+    operation: "expire",
+    expiredCount,
+    serverTransactionTime,
+    correlationId,
+    idempotent: root.idempotent === true,
+  };
 }
 
 export async function readPlanningVersions(

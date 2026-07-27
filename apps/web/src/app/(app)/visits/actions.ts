@@ -21,11 +21,11 @@
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
-import { getReasonOptions, validateReason } from "@/lib/planning/lifecycle";
 import {
   classifyPlanningClosureError,
   parsePlanningBulkCommandStart,
   parsePlanningBulkReceipt,
+  parsePlanningBulkTargetResult,
   readPlanningVersions,
   type PlanningBulkReceipt,
   type PlanningClosureError,
@@ -211,14 +211,30 @@ async function runFrozenBulkCommand(
       console.error(`[visits.bulk.${operation}] target ${ordinal} unresolved:`, error.message, error.code);
       items.push({
         id: frozenIds[ordinal - 1],
-        outcome: ["cutoff_blocked", "conflict", "state_blocked", "unauthorized"].includes(errorCode)
+        outcome: ["cutoff_blocked", "conflict", "state_blocked", "capability_denied", "scope_denied"].includes(errorCode)
           ? "blocked_not_publishable"
           : "error",
       });
       continue;
     }
+    const targetResult = parsePlanningBulkTargetResult(data);
     const current = parsePlanningBulkReceipt(data);
-    if (!current || current.commandId !== start.commandId) {
+    if ((!current && !targetResult) || (current?.commandId ?? targetResult?.commandId) !== start.commandId) {
+      items.push({ id: frozenIds[ordinal - 1], outcome: "error" });
+      continue;
+    }
+    if (targetResult?.status) {
+      items.push({
+        id: frozenIds[ordinal - 1],
+        outcome: targetResult.status === "applied"
+          ? "applied"
+          : targetResult.status === "blocked"
+            ? "blocked_not_publishable"
+            : "error",
+      });
+      continue;
+    }
+    if (!current) {
       items.push({ id: frozenIds[ordinal - 1], outcome: "error" });
       continue;
     }
@@ -244,32 +260,29 @@ async function runFrozenBulkCommand(
   };
 }
 
-// M02-011/034 + M8 — bulk cancel: one mandatory GOVERNED reason key (active
-// planning_lookups cancellation_reason; 'other' requires comments — validated
-// once up front, PLN-CON-011); only rows still published/new cancel (same
-// guard as cancelVisit); inspectors notified; every cancelled row appends a
-// lifecycle 'cancel' event with its prior inspector/window snapshot. The
-// per-item ledger never turns a lifecycle-stream write failure into a false
-// "applied": a committed cancel whose event could not be written is reported
-// as applied_no_notification (committed-with-a-gap), never as a clean apply.
+// PLN-R03/R04 — Planning bulk cancellation accepts a nullable free-text note.
+// Field/inspection cancellation reasons are a separate governed contract.
 export async function bulkCancelVisits(_: ActionResult, fd: FormData): Promise<ActionResult> {
   const sb = await supabaseServer();
   const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { verb: "cancel", formErrorCode: "session" };
   const ids = selectedIds(fd);
-  const reasonKey = String(fd.get("reason_key") ?? "").trim();
-  const comments = String(fd.get("comments") ?? "").trim();
+  const note = bounded(fd, fd.has("note") ? "note" : "comments") || null;
   if (ids.length === 0) return { verb: "cancel", formErrorCode: "select_one" };
-  const { options, error: optErr } = await getReasonOptions(sb, "cancellation_reason");
-  if (optErr) return { verb: "cancel", formErrorCode: "reasons_unavailable" };
-  if (validateReason(options, reasonKey, comments, "cancellation")) return { verb: "cancel", formErrorCode: "reason_required" };
   const ctx = requestIdentity(fd);
-  if (!ctx.valid) return { verb: "cancel", formErrorCode: "reason_required" };
+  if (!ctx.valid) {
+    return {
+      verb: "cancel",
+      requested: ids.length,
+      errorCode: "invalid_request",
+      items: ids.map(id => ({ id, outcome: "error" })),
+    };
+  }
   const result = await runFrozenBulkCommand(
     sb,
     "cancel",
     ids,
-    { note: comments ? `${reasonKey} — ${comments}` : reasonKey },
+    { note },
     ctx.idempotencyKey,
     ctx.correlationId,
   );

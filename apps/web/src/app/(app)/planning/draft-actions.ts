@@ -54,7 +54,14 @@ export async function discardDraftPlan(_: DiscardResult, fd: FormData): Promise<
   if (error) {
     console.error("[R01 archive_planning_draft_atomic] failed:", error.message, error.code);
     const errorCode = classifyPlanningClosureError(error);
-    return { error: "Draft archival was not committed. Refresh the draft and try again.", errorCode };
+    return {
+      error: errorCode === "capability_denied"
+        ? "Your account does not have the Planning archive capability. Nothing was changed."
+        : errorCode === "scope_denied"
+          ? "A factory in this draft is outside your authorized Planning scope. Nothing was changed."
+          : "Draft archival was not committed. Refresh the draft and try again.",
+      errorCode,
+    };
   }
   const receipt = parsePlanningArchiveReceipt(data);
   if (!receipt || receipt.planId !== planId || receipt.correlationId !== correlationId) {
@@ -63,7 +70,7 @@ export async function discardDraftPlan(_: DiscardResult, fd: FormData): Promise<
   }
   revalidatePath("/planning"); revalidatePath("/planning/bulk/review"); revalidatePath("/visits");
   return {
-    ok: `Draft ${plan.plan_reference ?? ""} archived — Draft identity preserved; ${receipt.outboxIntentIds.length} outbox intent(s) queued, not delivered. (PLN-R01 · PLN-R08 · PLN-R10)`.trim(),
+    ok: `Draft ${plan.plan_reference ?? ""} archived — archive provenance recorded, Draft identity preserved; ${receipt.outboxIntentIds.length} outbox intent(s) queued, not delivered. (PLN-R01 · PLN-R08 · PLN-R10)`.trim(),
     receipt,
   };
 }
