@@ -32,13 +32,13 @@
   --surface-raised:    #ffffff;
   --surface-overlay:   rgba(21, 23, 26, 0.44);
 
-  /* Navigation (deep graphite in both themes) */
-  --nav-bg:          #1f2328;
-  --nav-bg-hover:    #2a2f35;
-  --nav-bg-selected: #17352b;
-  --nav-border:      #32373d;
-  --nav-text:        #b9bec4;
-  --nav-text-active: #f5f6f7;
+  /* Navigation — the supplied light shell is a white control rail. */
+  --nav-bg:          #ffffff;
+  --nav-bg-hover:    #f0f3f5;
+  --nav-bg-selected: #dfeee9;
+  --nav-border:      #d6dde2;
+  --nav-text:        #49545e;
+  --nav-text-active: #104f3d;
   --nav-indicator:   #35b285;
 
   /* Text */
@@ -292,16 +292,10 @@
   --row-h-compact: 34px;
   --touch-target: 44px;
 
-  /* 264px is a Product Owner ruling, not an accident. During the live review of
-     TASK-WEB-ADMIN-PHASE1-M2-BATCH-001 the shared left rail was called a
-     blocking mismatch, and the scoped F0 follow-up set this width from the
-     supplied `saqeel web.html` authority (sha256 b870e068...bab9bc2, held
-     outside Git). The vendored designs/web/export-saqeel-web/saqeel tokens say
-     248px; where the two disagree, saqeel web.html wins — the Product Owner
-     ruled it authoritative on 2026-07-26. Do not "correct" this to 248px.
-     See DEC-043. */
-  --sidebar-w: 264px;
-  --sidebar-w-collapsed: 74px;
+  /* Current supplied Saqeel Revamp authority: frames 44–45 explicitly define
+     the compact and expanded rail geometries. */
+  --sidebar-w: 248px;
+  --sidebar-w-collapsed: 68px;
   --topbar-h: 52px;
   --page-pad: var(--space-6);
 

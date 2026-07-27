@@ -1,12 +1,13 @@
 import "./tokens.css";
+// Compatibility rules load first. The supplied SAQEEL runtime loads last and
+// therefore remains authoritative for the shell, theme and responsive layout.
+import "./saqeel-components-legacy.css";
+import "./saqeel-components.css";
 import "./saqeel-runtime.css";
 import PwaRegister from "@/components/PwaRegister";
 import ThemeScript from "@/components/ThemeScript";
 import DeviceScript from "@/components/DeviceScript";
 import ThemeChannelSync from "@/components/ThemeChannelSync";
-import "./saqeel-components-legacy.css";
-// SAQEEL Inspection Design System v1.0 component layers.
-import "./saqeel-components.css";
 import localFont from "next/font/local";
 import { getLocale } from "@/lib/i18n";
 import { registerAdapter } from "@/lib/notify";

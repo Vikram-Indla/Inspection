@@ -463,9 +463,8 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
    collapsing away. Do not re-add a persona variant of this rule. */
 .sq-shell__skip { position: fixed; inset-block-start: var(--space-2); inset-inline-start: var(--space-2); z-index: var(--z-toast); transform: translateY(-160%); background: var(--action-primary); color: var(--text-inverse); padding: var(--space-2) var(--space-3); border-radius: var(--radius-xs); font: var(--type-body-strong); text-decoration: none; }
 .sq-shell__skip:focus { transform: translateY(0); outline: 2px solid var(--focus-ring); outline-offset: 2px; }
-/* SAQEEL graphite navigation — deep graphite in BOTH themes (PR 1b hotfix). */
 .sq-shell__nav {
-  background: var(--surface-secondary); border-inline-end: 1px solid var(--border-strong); color: var(--text-primary);
+  background: var(--nav-bg); border-inline-end: 1px solid var(--nav-border); color: var(--nav-text);
   padding: 16px 12px; display: flex; flex-direction: column; gap: 8px;
   /* Exactly one viewport tall, never taller: min-block-size let the rail grow
      to its content (956px against an 894px viewport), so the last items sat
@@ -491,7 +490,7 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
      4.20:1 on the rail ground and fails WCAG AA (4.5:1) at 10.5px. 70% is the
      smallest deviation that clears it, at 4.65:1. Deliberate, and the only
      value on the rail that does not match the design authority exactly. */
-  --sq-nav-group-color: color-mix(in srgb, var(--nav-text) 70%, transparent);
+  --sq-nav-group-color: var(--nav-text);
 }
 .sq-shell__brand { display:flex; align-items:center; gap: 12px; min-block-size: 56px; padding: 4px 8px 14px; border-block-end: 1px solid var(--border-subtle); margin-block-end: 0; }
 /* WA-BRAND-r1 — canonical authenticated-shell identity, sized from the design
@@ -504,8 +503,8 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
    10.5px spaced eyebrow. The mark keeps the DEC-035 shield — that identity is
    sponsor-approved — inside the spec's 34px rounded container, so the layout
    authority and the brand-asset decision are both honoured.
-   Colours are tokens, not the spec's raw hex: the eyebrow uses --nav-text,
-   which clears AA on the rail ground where the spec's own #6B7794 does not. */
+   Colours are semantic navigation tokens so the light rail and dark rail each
+   match their supplied theme state. */
 .sq-shell__brand-mark {
   display: grid; place-items: center; flex: 0 0 auto;
   inline-size: 36px; block-size: 36px; border-radius: 8px;
@@ -521,12 +520,12 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .sq-shell__nav-footer { border-block-start: 1px solid var(--border-subtle); padding-block-start: 10px; display: flex; flex-direction: column; gap: 2px; flex: 0 0 auto; }
 .sq-shell__expand-row { display: none; }
 .sq-nav-group { display: flex; flex-direction: column; gap: var(--space-1); }
-.sq-nav-group__trigger { inline-size: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding: 10px 12px 4px; border: 0; background: none; color: var(--text-secondary); cursor: pointer; font: 700 11px/14px var(--font-body); letter-spacing: .14em; text-transform: uppercase; text-align: start; border-radius: var(--radius-xs); }
-.sq-nav-group--pinned .sq-nav-group__trigger { min-block-size: 34px; padding: 0 8px; color: var(--text-primary); font: 500 13px/18px var(--font-body); letter-spacing: 0; text-transform: none; }
+.sq-nav-group__trigger { inline-size: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding: 10px 12px 4px; border: 0; background: none; color: var(--nav-text); cursor: pointer; font: 700 11px/14px var(--font-body); letter-spacing: .14em; text-transform: uppercase; text-align: start; border-radius: var(--radius-xs); }
+.sq-nav-group--pinned .sq-nav-group__trigger { min-block-size: 34px; padding: 0 8px; color: var(--nav-text-active); font: 500 13px/18px var(--font-body); letter-spacing: 0; text-transform: none; }
 /* Arabic has no case and letterforms are cursive — canonical .sidebar-group
    drops the tracking under RTL and so does this. */
 [dir="rtl"] .sq-nav-group__trigger { letter-spacing: 0; }
-.sq-nav-group__trigger:hover { color: var(--text-primary); background: var(--surface-secondary); }
+.sq-nav-group__trigger:hover { color: var(--nav-text-active); background: var(--nav-bg-hover); }
 .sq-nav-group__chevron { transition: transform var(--transition-fast); }
 .sq-nav-group__trigger[aria-expanded="false"] .sq-nav-group__chevron { transform: rotate(-90deg); }
 [dir="rtl"] .sq-nav-group__trigger[aria-expanded="false"] .sq-nav-group__chevron { transform: rotate(90deg); }
@@ -539,7 +538,7 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
      Do not "restore" 34px without moving the field channel off this shell. */
   min-block-size: var(--touch-target);
   padding-block: 0; padding-inline: var(--sq-nav-pad-inline);
-  border-radius: var(--radius-sm); color: var(--text-secondary);
+  border-radius: var(--radius-sm); color: var(--nav-text);
   font: var(--sq-nav-font); text-decoration: none; border: 1px solid transparent; background: none; cursor: pointer; white-space: nowrap;
   position: relative;
 }
@@ -548,7 +547,7 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 /* ShellNavIcon renders at its own intrinsic size; the canonical rail sizes the
    glyph, not the component. */
 .sq-nav-icon svg { inline-size: var(--sq-nav-icon-size); block-size: var(--sq-nav-icon-size); }
-.sq-nav-item:hover { background: var(--surface-secondary); color: var(--text-primary); }
+.sq-nav-item:hover { background: var(--nav-bg-hover); color: var(--nav-text-active); }
 .sq-nav-item.is-disabled { color: var(--text-secondary); cursor: not-allowed; opacity: .5; }
 .sq-nav-item.is-disabled:hover { background: transparent; color: var(--text-secondary); }
 .sq-nav-item.is-disabled:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
@@ -556,10 +555,10 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .sq-nav-subgroup { display: flex; flex-direction: column; gap: var(--space-1); }
 /* Canonical .s5-sub-label: same 13px rail face at 600, not the app's 14px
    body-strong. */
-.sq-nav-subgroup__label { display: flex; align-items: center; gap: var(--sq-nav-gap); min-block-size: var(--touch-target); padding-inline: var(--sq-nav-pad-inline); color: var(--text-primary); font: var(--sq-nav-font); font-weight: 600; }
+.sq-nav-subgroup__label { display: flex; align-items: center; gap: var(--sq-nav-gap); min-block-size: var(--touch-target); padding-inline: var(--sq-nav-pad-inline); color: var(--nav-text-active); font: var(--sq-nav-font); font-weight: 600; }
 .sq-nav-item--child { margin-inline-start: 24px; inline-size: calc(100% - 24px); min-block-size: 32px; font-size: 13px; line-height: 18px; }
 .sq-nav-badge { flex: 0 0 auto; margin-inline-start: auto; }
-.sq-nav-item[aria-current="page"] { background: var(--accent-soft); color: var(--action-primary-pressed); border-color: transparent; font-weight: 600; box-shadow: none; }
+.sq-nav-item[aria-current="page"] { background: var(--nav-bg-selected); color: var(--nav-text-active); border-color: transparent; font-weight: 600; box-shadow: none; }
 .sq-nav-item[aria-current="page"]::before { content: ""; position: absolute; inset-block: 6px; inset-inline-start: 0; inline-size: 3px; border-radius: 999px; background: var(--action-primary); }
 [dir="rtl"] .sq-nav-item[aria-current="page"] { box-shadow: none; }
 .sq-nav-item:focus-visible, .sq-nav-group__trigger:focus-visible, .sq-shell__collapse:focus-visible, .sq-shell__close:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
@@ -590,7 +589,7 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .sq-shell.is-collapsed .sq-nav-item--child { display: none; }
 .sq-shell.is-collapsed .sq-nav-lock { display: none; }
 .sq-shell.is-collapsed .sq-nav-badge { display: none; }
-.sq-shell.is-collapsed .sq-shell__expand-row { display: flex; inline-size: 100%; min-block-size: 32px; justify-content: center; background: var(--surface-secondary); }
+.sq-shell.is-collapsed .sq-shell__expand-row { display: flex; inline-size: 100%; min-block-size: 32px; justify-content: center; background: var(--nav-bg-hover); }
 /* The favicon keeps its design-authority 26px; only the collapse control is
    sized to the 28px rail control box. */
 .sq-shell.is-collapsed .sq-shell__collapse {
