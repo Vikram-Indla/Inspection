@@ -62,6 +62,7 @@ export default function ActionBar({ visitId, planningVersion, status, opState, o
     republish: { idempotencyKey: `visit.republish.${crypto.randomUUID()}`, correlationId: crypto.randomUUID() },
     metadata: { idempotencyKey: `visit.metadata.type.${crypto.randomUUID()}`, correlationId: crypto.randomUUID() },
     repackage: { idempotencyKey: `visit.repackage.${crypto.randomUUID()}`, correlationId: crypto.randomUUID() },
+    duplicate: { idempotencyKey: `visit.duplicate.${crypto.randomUUID()}`, correlationId: crypto.randomUUID() },
   }));
   const msg = ret.error ?? rep.error ?? can.error ?? rsc.error ?? rea.error ?? vt.error ?? dup.error ?? pkg.error;
   const ok = ret.ok ?? rep.ok ?? can.ok ?? rsc.ok ?? rea.ok ?? vt.ok ?? dup.ok ?? pkg.ok;
@@ -179,6 +180,9 @@ export default function ActionBar({ visitId, planningVersion, status, opState, o
           {isFinal && (
             <form action={dupAct}>
               <input type="hidden" name="visit_id" value={visitId} />
+              <input type="hidden" name="expected_version" value={planningVersion} />
+              <input type="hidden" name="idempotency_key" value={transitionIdentity.duplicate.idempotencyKey} />
+              <input type="hidden" name="correlation_id" value={transitionIdentity.duplicate.correlationId} />
               <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.duplicateBtn}</button>
             </form>
           )}

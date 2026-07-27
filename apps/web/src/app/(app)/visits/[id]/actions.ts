@@ -388,72 +388,48 @@ export async function reassignVisit(_: ActionResult, fd: FormData): Promise<Acti
 // not cloned).
 export async function duplicateVisit(_: ActionResult, fd: FormData): Promise<ActionResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await getVerifiedUser(sb);
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
+  if (authError) return { error: "Planning data could not be verified (ERR-OPS-001). Nothing was changed." };
   if (!user) return { error: "Session expired — sign in again." };
   const id = String(fd.get("visit_id"));
-  const { data: src, error } = await sb.from("visits")
-    .select("id, factory_id, visit_type, execution_mode, priority, window_start, window_end, notes, package_version_id, planning_status, visit_plans(method)")
-    .eq("id", id).maybeSingle();
-  if (error) return { error: mapError(error, "load") };
-  if (!src) return { error: "Visit not found or outside your scope (RLS)" };
-  if (!["cancelled", "expired"].includes(src.planning_status))
-    return { error: `Duplicate produces a new Draft from a final visit (cancelled / expired) — this visit is ${src.planning_status}; active visits are edited in place (PLN-REQ-011)` };
-  const { data: pkgLinks } = await sb.from("visit_packages").select("package_version_id").eq("visit_id", id);
-  const packageIds = [...new Set([src.package_version_id, ...(pkgLinks ?? []).map(p => p.package_version_id as string)].filter(Boolean))] as string[];
-  const method = (src.visit_plans as unknown as { method: string } | null)?.method ?? "single";
-  const notes = typeof src.notes === "string" && !src.notes.startsWith("RETURNED: ") ? src.notes : (src.notes ?? "");
-  const draftPayload = method === "bulk"
-    ? {
-        selection: [src.factory_id],
-        config: {
-          picks: {}, package_version_ids: packageIds,
-          window_start: src.window_start, window_end: src.window_end,
-          notes, priority: src.priority ?? "",
-        },
-        acknowledged: false,
-        duplicated_from: src.id,
-      }
-    : {
-        target: { factory_id: src.factory_id },
-        config: {
-          visit_type: src.visit_type, package_version_ids: packageIds,
-          execution_mode: src.execution_mode,
-          window_start: src.window_start, window_end: src.window_end,
-          notes, priority: src.priority ?? "",
-        },
-        duplicated_from: src.id,
-      };
-  const { data: plan, error: pErr } = await sb.from("visit_plans")
-    .insert({ method, status: "draft", created_by: user.id, draft_payload: draftPayload, draft_version: 1, source_channel: "web" })
-    .select("id").single();
-  if (pErr) {
-    console.error("[M8 duplicateVisit] plan insert failed:", pErr.message);
-    return { error: mapError(pErr, "update") };
+  const expectedVersion = Number(fd.get("expected_version"));
+  const idempotencyKey = String(fd.get("idempotency_key") ?? "").trim();
+  const correlationId = String(fd.get("correlation_id") ?? "").trim();
+  if (!UUID.test(id) || !Number.isInteger(expectedVersion) || expectedVersion < 1
+      || !/^[A-Za-z0-9._:-]{8,200}$/.test(idempotencyKey) || !UUID.test(correlationId)) {
+    return { error: "The duplicate request is incomplete. Refresh before trying again." };
   }
-  const { data: draftVisit, error: vErr } = await sb.from("visits")
-    .insert({
-      visit_plan_id: plan.id, factory_id: src.factory_id,
-      visit_type: src.visit_type, execution_mode: src.execution_mode,
-      planning_status: "draft",
-      window_start: src.window_start, window_end: src.window_end,
-      package_version_id: packageIds[0] ?? null,
-      priority: src.priority ?? null, notes: notes || null, source_channel: "web",
-    })
-    .select("id").single();
-  if (vErr) {
-    console.error("[M8 duplicateVisit] draft visit insert failed:", vErr.message);
-    // Compensate: archive the just-created plan so no orphaned, unresumable
-    // draft plan is left behind (best-effort, mirrors the ORPHAN pattern).
-    await sb.from("visit_plans").update({ archived_at: new Date().toISOString() }).eq("id", plan.id);
-    return { error: mapError(vErr, "update") };
-  }
-  const evErr = await recordLifecycleEvent(sb, {
-    visitId: src.id, eventType: "duplicate", actor: user.id,
-    previous: { planning_status: src.planning_status, duplicated_to_plan: plan.id, duplicated_to_visit: draftVisit.id },
+  const { data, error } = await sb.rpc("duplicate_terminal_visit_atomic", {
+    p_visit_id: id,
+    p_expected_version: expectedVersion,
+    p_idempotency_key: idempotencyKey,
+    p_correlation_id: correlationId,
   });
+  if (error) {
+    console.error("[planning.duplicateVisit] governed mutation failed:", error.code, error.message);
+    if (error.code === "42501") return { error: "You do not have permission or scope to duplicate this visit." };
+    if (error.code === "40001") return { error: "This visit changed or is not in a final duplicable state. Refresh before retrying." };
+    if (error.code === "23505") return { error: "This retry does not match the original duplicate request." };
+    return { error: "The visit could not be duplicated (ERR-OPS-001). Nothing was changed." };
+  }
+  const receipt = data as {
+    operation?: string; source_visit_id?: string; plan_id?: string; visit_id?: string;
+    method?: string; correlation_id?: string; audit_event_id?: number;
+    outbox_intent_id?: string;
+  } | null;
+  if (receipt?.operation !== "duplicate_draft" || receipt.source_visit_id !== id
+      || !UUID.test(receipt.plan_id ?? "") || !UUID.test(receipt.visit_id ?? "")
+      || !["single", "bulk"].includes(receipt.method ?? "")
+      || receipt.correlation_id !== correlationId || !receipt.audit_event_id
+      || !receipt.outbox_intent_id) {
+    return { error: "The duplicate result could not be verified. Refresh before retrying." };
+  }
   revalidatePath(`/visits/${id}`); revalidatePath("/planning");
-  if (evErr) return { error: "Draft created, but the duplicate record on the source visit could not be written — the gap is logged (PLN-REQ-011)" };
-  return { ok: "Duplicated into a new Draft — planning fields only; execution state, evidence and review decisions were not copied (PLN-REQ-011)", planId: plan.id, method };
+  return {
+    ok: "Duplicated atomically into a new Draft — execution evidence and review decisions were not copied (PLN-REQ-011).",
+    planId: receipt.plan_id,
+    method: receipt.method,
+  };
 }
 
 // M8 — Repackage a RETURNED visit (canonical §15: returned visits may be
