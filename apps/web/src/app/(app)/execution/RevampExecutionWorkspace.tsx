@@ -33,7 +33,7 @@ export type ExecutionRow = {
 
 type View = "mine" | "all" | "map";
 type CalendarMode = "week" | "month";
-type FilterKey = "inspector" | "region" | "risk" | "visitMode" | "operationalState" | "priority";
+type FilterKey = "inspector" | "region" | "risk" | "visitMode" | "operationalState";
 
 const startOfWeek = (date: Date) => {
   const result = new Date(date);
@@ -88,8 +88,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
       && (!filters.region || row.region === filters.region)
       && (!filters.risk || row.risk === filters.risk)
       && (!filters.visitMode || row.visitMode === filters.visitMode)
-      && (!filters.operationalState || row.operationalState === filters.operationalState)
-      && (!filters.priority || row.priority === filters.priority);
+      && (!filters.operationalState || row.operationalState === filters.operationalState);
   });
   const markers: GeoMarkerData[] = visibleRows
     .filter(row => row.lat != null && row.lng != null)
@@ -100,17 +99,16 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
       label: row.factory,
       tone: row.risk === "high" ? "high" : row.risk === "medium" ? "medium" : row.risk === "low" ? "low" : "neutral",
     }));
-  const calendarRows = view === "mine" ? mine : rows;
+  const calendarRows = visibleRows;
   const calendarEnd = calendarDays[calendarDays.length - 1]!;
   const hasActiveFilters = !!query.trim() || Object.values(filters).some(Boolean);
-  const missingCoordinateCount = sourceRows.filter(row => row.lat == null || row.lng == null).length;
+  const missingCoordinateCount = visibleRows.filter(row => row.lat == null || row.lng == null).length;
   const filterOptions: Record<FilterKey, string[]> = {
-    inspector: Array.from(new Set(rows.map(row => row.inspector).filter((value): value is string => !!value))).sort(),
-    region: Array.from(new Set(rows.map(row => row.region).filter((value): value is string => !!value))).sort(),
-    risk: Array.from(new Set(rows.map(row => row.risk).filter((value): value is string => !!value))).sort(),
-    visitMode: Array.from(new Set(rows.map(row => row.visitMode).filter((value): value is string => !!value))).sort(),
-    operationalState: Array.from(new Set(rows.map(row => row.operationalState).filter(Boolean))).sort(),
-    priority: Array.from(new Set(rows.map(row => row.priority).filter((value): value is string => !!value))).sort(),
+    inspector: Array.from(new Set(sourceRows.map(row => row.inspector).filter((value): value is string => !!value))).sort(),
+    region: Array.from(new Set(sourceRows.map(row => row.region).filter((value): value is string => !!value))).sort(),
+    risk: Array.from(new Set(sourceRows.map(row => row.risk).filter((value): value is string => !!value))).sort(),
+    visitMode: Array.from(new Set(sourceRows.map(row => row.visitMode).filter((value): value is string => !!value))).sort(),
+    operationalState: Array.from(new Set(sourceRows.map(row => row.operationalState).filter(Boolean))).sort(),
   };
   const cycleFilter = (key: FilterKey) => {
     const options = filterOptions[key];
@@ -184,14 +182,13 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
       </div>
 
       <div className="sq-execution__filters">
-        <input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder={copy(locale, "Search factory, CR, licence…", "ابحث باسم المصنع أو السجل أو الترخيص…")} />
+        <input type="search" aria-label={copy(locale, "Search execution visits", "البحث في زيارات التنفيذ")} value={query} onChange={event => setQuery(event.target.value)} placeholder={copy(locale, "Search factory, CR, or visit reference…", "ابحث باسم المصنع أو السجل أو مرجع الزيارة…")} />
         {filterButton(copy(locale, "Inspector", "المفتش"), "inspector")}
         {filterButton(copy(locale, "Region", "المنطقة"), "region")}
         {filterButton(copy(locale, "Risk", "المخاطر"), "risk")}
         {filterButton(copy(locale, "Visit mode", "نمط الزيارة"), "visitMode")}
         {filterButton(copy(locale, "Operational state", "الحالة التشغيلية"), "operationalState")}
-        {filterButton(copy(locale, "Priority", "الأولوية"), "priority")}
-        {Object.keys(filters).some(key => filters[key as FilterKey]) ? <button type="button" onClick={() => setFilters({})}>{copy(locale, "Clear filters", "مسح عوامل التصفية")}</button> : null}
+        {hasActiveFilters ? <button type="button" onClick={() => { setFilters({}); setQuery(""); }}>{copy(locale, "Clear filters", "مسح عوامل التصفية")}</button> : null}
       </div>
       {missingCoordinateCount ? (
         <div className="sq-banner" role="status">
@@ -273,7 +270,8 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
           <h2 id="reschedule-title">{copy(locale, "Configure", "إعداد")} {reschedule.row.visitReference}</h2>
           <p><strong>{reschedule.row.factory}</strong> {copy(locale, `was dropped on ${formatDate(locale, reschedule.date)}. No date has been changed.`, `تم إسقاطها على ${formatDate(locale, reschedule.date)}. لم يتم تغيير أي تاريخ.`)}</p>
           <div className="sq-banner"><strong>{copy(locale, "Current governed window:", "النافذة المعتمدة الحالية:")}</strong> {formatDate(locale, reschedule.row.windowStart)} – {formatDate(locale, reschedule.row.windowEnd)}. {copy(locale, "The planning workflow validates conflicts and records the change.", "يتحقق مسار التخطيط من التعارضات ويسجل التغيير.")}</div>
-          <a className="sq-btn" href={`/planning/visits/${reschedule.row.id}?proposedDate=${encodeURIComponent(reschedule.date)}`}>{copy(locale, "Continue in Planning", "المتابعة في التخطيط")}</a>
+          <p>{copy(locale, "The proposed day is not transferred because Planning has no governed handoff contract for it.", "لا يتم نقل اليوم المقترح لأن التخطيط لا يملك عقد تسليم معتمداً له.")}</p>
+          <a className="sq-btn" href={`/planning/visits/${reschedule.row.id}`}>{copy(locale, "Continue in Planning", "المتابعة في التخطيط")}</a>
           <button className="sq-btn sq-btn--secondary" type="button" onClick={() => setReschedule(null)}>{copy(locale, "Cancel", "إلغاء")}</button>
         </div>
       ) : null}
