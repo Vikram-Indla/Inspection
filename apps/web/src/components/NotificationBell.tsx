@@ -255,17 +255,17 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
                 <>
                   {unreadRow && (
                     <span aria-hidden="true"
-                      style={{ inlineSize: 7, blockSize: 7, borderRadius: "50%", background: "var(--action-primary)", flex: "none", marginBlockStart: 8 }} />
+                      style={{ inlineSize: 6, blockSize: 6, borderRadius: "50%", background: "var(--action-primary)", flex: "none", marginBlockStart: 8 }} />
                   )}
                   <div style={{ minInlineSize: 0, display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
-                    <strong className="t-heading" style={{ color: unreadRow ? undefined : "var(--text-muted)" }}>
+                    <strong className="t-heading"
+                      style={{ fontWeight: unreadRow ? 600 : 500, color: unreadRow ? undefined : "var(--text-muted)" }}>
                       {strings.events[r.event_key] ?? r.event_key.replace(/_/g, " ")}
                       {unreadRow && <span className="sq-sr-only"> — {strings.unreadBadge}</span>}
                     </strong>
                     {context && (
-                      <div className="t-body">
-                        <span className="t-label">{context.label}</span>{" "}
-                        {context.value.slice(0, 80)}
+                      <div className="t-caption">
+                        {context.label}{" "}{context.value.slice(0, 80)}
                       </div>
                     )}
                     <div className="t-caption">
