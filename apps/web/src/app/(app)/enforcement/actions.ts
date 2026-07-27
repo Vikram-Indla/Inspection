@@ -65,7 +65,7 @@ export async function recordEnforcementDecision(
     || typeof receipt.replayed !== "boolean"
   ) return { error: "write_failed" };
 
-  revalidatePath("/enforcement");
+  revalidatePath("/enforcement-library");
   revalidatePath("/admin/enforcement-recommendations");
   return { ok: true };
 }
