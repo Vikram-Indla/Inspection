@@ -1,5 +1,6 @@
 "use server";
 import { supabaseServer } from "@/lib/supabase-server";
+import { createHash, randomUUID } from "node:crypto";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { isPlausibleDate } from "@/lib/plausible-date";
 import { getWindowCapacity } from "@/lib/execution";
@@ -249,7 +250,6 @@ const NEUTRAL_READ_ERROR =
   "Planning data could not be verified (ERR-OPS-001). Nothing was published. Please try again.";
 
 const bulkReceiptContractIsExecutable = (): boolean => false;
-const bulkDraftReceiptContractIsExecutable = (): boolean => false;
 
 export async function publishBulkPlan(_: BulkResult, formData: FormData): Promise<BulkResult> {
   // PLN-S11: the corrected compiler requires frozen targets plus aggregate
@@ -778,9 +778,6 @@ const sanitizeBulkChannel = (raw: string) =>
   /^[a-z0-9][a-z0-9._-]{0,39}$/i.test(raw) ? raw : "planning.bulk";
 
 export async function saveBulkDraft(input: BulkDraftInput): Promise<BulkDraftResult> {
-  // PLN-S08: frozen selection, version, audit and the returned receipt must be
-  // one governed draft boundary. Direct visit_plans fallback stays dormant.
-  if (!bulkDraftReceiptContractIsExecutable()) return { error: "contract_unavailable" };
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError) {
@@ -828,10 +825,12 @@ export async function saveBulkDraft(input: BulkDraftInput): Promise<BulkDraftRes
   };
   const sourceChannel = sanitizeBulkChannel("planning.bulk");
 
-  if (input.planId && UUID_RE.test(input.planId)) {
+  let expectedVersion: number | null = null;
+  const planId = input.planId && UUID_RE.test(input.planId) ? input.planId : null;
+  if (planId) {
     const { data: current, error: currentError } = await sb.from("visit_plans")
       .select("id, draft_version")
-      .eq("id", input.planId).eq("created_by", user.id)
+      .eq("id", planId).eq("created_by", user.id)
       .eq("method", "bulk").eq("status", "draft").is("archived_at", null)
       .maybeSingle();
     if (currentError) {
@@ -839,33 +838,31 @@ export async function saveBulkDraft(input: BulkDraftInput): Promise<BulkDraftRes
       return { error: "read" };
     }
     if (!current) return { error: "unavailable" };
-    const { data, error } = await sb.from("visit_plans")
-      .update({ draft_payload: draftPayload, draft_version: (current.draft_version ?? 0) + 1, source_channel: sourceChannel, criteria: { method: "bulk", tree: treeWire } })
-      .eq("id", current.id).eq("draft_version", current.draft_version ?? 0)
-      .select("id, plan_reference, draft_version").single();
-    if (error) {
-      console.error("[PLN saveBulkDraft] draft update failed:", error.message);
-      return { error: "write" };
-    }
-    return { planId: data.id, planReference: data.plan_reference, version: data.draft_version };
+    expectedVersion = current.draft_version ?? 0;
   }
-
-  const { data, error } = await sb.from("visit_plans")
-    .insert({
-      method: "bulk",
-      status: "draft",
-      created_by: user.id,
-      draft_payload: draftPayload,
-      draft_version: 1,
-      source_channel: sourceChannel,
-      criteria: { method: "bulk", tree: treeWire },
-    })
-    .select("id, plan_reference, draft_version").single();
+  const criteria = { method: "bulk", tree: treeWire, source_channel: sourceChannel };
+  const requestKey = createHash("sha256").update(JSON.stringify({
+    planId, expectedVersion, draftPayload, criteria,
+  })).digest("hex").slice(0, 40);
+  const { data, error } = await sb.rpc("save_planning_draft_atomic", {
+    p_plan_id: planId,
+    p_method: "bulk",
+    p_draft_payload: draftPayload,
+    p_criteria: criteria,
+    p_expected_version: expectedVersion,
+    p_idempotency_key: `draft.bulk.${requestKey}`,
+    p_correlation_id: randomUUID(),
+  });
   if (error) {
-    console.error("[PLN saveBulkDraft] draft insert failed:", error.message);
+    console.error("[PLN saveBulkDraft] governed draft save failed:", error.code, error.message);
+    if (error.code === "42501") return { error: "denied" };
+    if (error.code === "40001") return { error: "conflict" };
     return { error: "write" };
   }
-  return { planId: data.id, planReference: data.plan_reference, version: data.draft_version };
+  const receipt = data as { plan_id?: string; plan_reference?: string; draft_version?: number; audit_event_id?: number; outbox_intent_id?: string } | null;
+  if (!UUID_RE.test(receipt?.plan_id ?? "") || !receipt?.draft_version
+      || !receipt.audit_event_id || !receipt.outbox_intent_id) return { error: "receipt" };
+  return { planId: receipt.plan_id, planReference: receipt.plan_reference, version: receipt.draft_version };
 }
 
 // Load an own bulk draft for the review-resume route (?plan=<id>). Returns the

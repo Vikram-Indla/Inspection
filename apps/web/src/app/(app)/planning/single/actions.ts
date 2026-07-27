@@ -5,6 +5,7 @@ import { getVerifiedUser } from "@/lib/verified-user";
 import { getPlanningAccess } from "@/lib/planning/access";
 import { findDuplicateActiveVisits } from "./duplicate";
 import { isPlausibleDate, PLAUSIBLE_DATE_ERROR } from "@/lib/plausible-date";
+import { createHash, randomUUID } from "node:crypto";
 
 export type StepStatus = "pending" | "done" | "failed";
 export type PublishSteps = { plan: StepStatus; visit: StepStatus; assignment: StepStatus; status: StepStatus; notification: StepStatus };
@@ -26,7 +27,6 @@ const NEUTRAL_WRITE_ERROR =
 const NEUTRAL_READ_ERROR =
   "Planning data could not be verified (ERR-OPS-001). Your entries are preserved — try again.";
 const publishReceiptContractIsExecutable = (): boolean => false;
-const draftReceiptContractIsExecutable = (): boolean => false;
 
 export async function publishSingleVisit(_: PublishResult, formData: FormData): Promise<PublishResult> {
   // PLN-S11: R1 marks the durable publish receipt contract
@@ -357,10 +357,6 @@ export type SingleDraftInput = {
 export type DraftSaveResult = { error?: string; planId?: string; planReference?: string; version?: number };
 
 export async function saveSingleDraft(input: SingleDraftInput): Promise<DraftSaveResult> {
-  // PLN-S08: draft persistence is part of the same aggregate/version/audit
-  // boundary. Until that durable receipt contract is effective, preserve the
-  // client state and do not fall back to direct visit_plans INSERT/UPDATE.
-  if (!draftReceiptContractIsExecutable()) return { error: "contract_unavailable" };
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError) {
@@ -411,13 +407,12 @@ export async function saveSingleDraft(input: SingleDraftInput): Promise<DraftSav
     handoff: { source_channel: sourceChannel },
   };
 
-  if (input.planId && UUID.test(input.planId)) {
-    // Upsert path: only an own, active, still-draft single plan may be
-    // overwritten; the version check makes concurrent saves fail closed
-    // instead of last-write-wins.
+  let expectedVersion: number | null = null;
+  const planId = input.planId && UUID.test(input.planId) ? input.planId : null;
+  if (planId) {
     const { data: current, error: currentError } = await sb.from("visit_plans")
       .select("id, draft_version")
-      .eq("id", input.planId).eq("created_by", user.id)
+      .eq("id", planId).eq("created_by", user.id)
       .eq("method", "single").eq("status", "draft").is("archived_at", null)
       .maybeSingle();
     if (currentError) {
@@ -425,31 +420,29 @@ export async function saveSingleDraft(input: SingleDraftInput): Promise<DraftSav
       return { error: "read" };
     }
     if (!current) return { error: "unavailable" };
-    const { data, error } = await sb.from("visit_plans")
-      .update({ draft_payload: draftPayload, draft_version: (current.draft_version ?? 0) + 1, source_channel: sourceChannel })
-      .eq("id", current.id).eq("draft_version", current.draft_version ?? 0)
-      .select("id, plan_reference, draft_version").single();
-    if (error) {
-      console.error("[PLN saveSingleDraft] draft update failed:", error.message);
-      return { error: "write" };
-    }
-    return { planId: data.id, planReference: data.plan_reference, version: data.draft_version };
+    expectedVersion = current.draft_version ?? 0;
   }
-
-  const { data, error } = await sb.from("visit_plans")
-    .insert({
-      method: "single",
-      status: "draft",
-      created_by: user.id,
-      draft_payload: draftPayload,
-      draft_version: 1,
-      source_channel: sourceChannel,
-      criteria: { target: criteriaTarget },
-    })
-    .select("id, plan_reference, draft_version").single();
+  const criteria = { target: criteriaTarget, source_channel: sourceChannel };
+  const requestKey = createHash("sha256").update(JSON.stringify({
+    planId, expectedVersion, draftPayload, criteria,
+  })).digest("hex").slice(0, 40);
+  const { data, error } = await sb.rpc("save_planning_draft_atomic", {
+    p_plan_id: planId,
+    p_method: "single",
+    p_draft_payload: draftPayload,
+    p_criteria: criteria,
+    p_expected_version: expectedVersion,
+    p_idempotency_key: `draft.single.${requestKey}`,
+    p_correlation_id: randomUUID(),
+  });
   if (error) {
-    console.error("[PLN saveSingleDraft] draft insert failed:", error.message);
+    console.error("[PLN saveSingleDraft] governed draft save failed:", error.code, error.message);
+    if (error.code === "42501") return { error: "denied" };
+    if (error.code === "40001") return { error: "conflict" };
     return { error: "write" };
   }
-  return { planId: data.id, planReference: data.plan_reference, version: data.draft_version };
+  const receipt = data as { plan_id?: string; plan_reference?: string; draft_version?: number; audit_event_id?: number; outbox_intent_id?: string } | null;
+  if (!UUID.test(receipt?.plan_id ?? "") || !receipt?.draft_version
+      || !receipt.audit_event_id || !receipt.outbox_intent_id) return { error: "receipt" };
+  return { planId: receipt.plan_id, planReference: receipt.plan_reference, version: receipt.draft_version };
 }
