@@ -107,10 +107,6 @@ export default function ShellClient({
   useEffect(() => {
     setHydratedPathname(current);
   }, [current]);
-  // Role titles ("Planner", "Level 2 Reviewer") rather than raw role_keys. An
-  // account with no granted role shows nothing here — it is not relabelled.
-  const roleLabel = (roleTitles.length ? roleTitles : roles).join(" · ");
-  const accountHoverLabel = [displayName || email, roleLabel, homeRegion].filter(Boolean).join(" — ");
   const fieldOnly = isFieldOnlyPersona(roles);
   const adminWorkspace = false;
   // The canonical Claude Design topbar always exposes the assistant entry.
@@ -703,11 +699,11 @@ export default function ShellClient({
                 </Link>
               ) : null}
               <div ref={accountRef} className="sq-shell-account">
-                <button className="sq-shell-account__trigger" type="button" aria-label={strings.account} aria-expanded={accountOpen}
-                  title={accountHoverLabel}
+                <button className="sq-shell-account__trigger" type="button" aria-label={email} aria-expanded={accountOpen}
+                  title={email}
                   onClick={() => setAccountOpen(value => !value)}>
-                  <span className="sq-shell-account__avatar" aria-hidden="true">{initials(displayName || email)}</span>
-                  <span className="sq-shell-account__identity"><strong>{displayName || email.split("@")[0]}</strong><small>{roleLabel}</small></span>
+                  <span className="sq-shell-account__avatar" aria-hidden="true">{initials(email)}</span>
+                  <span className="sq-shell-account__identity"><strong>{email}</strong><small aria-hidden="true" /></span>
                   <svg className="sq-shell-account__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
                 </button>
                 {accountOpen && accountMenuPos && typeof document !== "undefined" && createPortal(

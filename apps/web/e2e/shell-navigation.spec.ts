@@ -130,6 +130,16 @@ test.describe("ADMIN-SHELL-PERSONA-001 admin-only channel", () => {
     expect(shell).toContain(") : null}");
     expect(shell).toContain("(max-width: 1024px), (pointer: coarse)");
   });
+
+  test("account trigger presents only the signed-in work email", () => {
+    const shell = readFileSync(join(process.cwd(), "src/components/ShellClient.tsx"), "utf8");
+    expect(shell).toContain('aria-label={email}');
+    expect(shell).toContain('title={email}');
+    expect(shell).toContain('{initials(email)}');
+    expect(shell).toContain('<strong>{email}</strong><small aria-hidden="true" />');
+    expect(shell).not.toContain('const accountHoverLabel');
+    expect(shell).not.toContain('<small>{roleLabel}</small>');
+  });
 });
 
 test.describe("TASK-WEB-CHANNEL-ACCESS-GATE-001 field channel (rbac_matrix.csv RBAC-009/010)", () => {
