@@ -49,7 +49,7 @@ const RULES = [
   {
     // Narrow to true pictographic emoji (camera/shield/map/eye/etc). Deliberately
     // excludes the U+2600-27BF dingbat range (✓ ✕ ● ▲ ◆ ⟳ →) — those are the
-    // FND-011 glyph+label status system saqeel-components-legacy.css itself defines, not V1 bugs.
+    // FND-011 glyph+label status system saqeel-runtime.css itself defines, not V1 bugs.
     id: "emoji-as-icon",
     pattern: /[\u{1F300}-\u{1FAFF}⛔]/u,
     exts: new Set([".tsx"]),

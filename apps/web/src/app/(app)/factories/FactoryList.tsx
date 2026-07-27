@@ -2,6 +2,7 @@
 import { useMemo, useState } from "react";
 import EmptyState from "@/components/EmptyState";
 import { IconFactory } from "@/app/icons";
+import styles from "./factory-list.module.css";
 
 export type FactoryRow = {
   id: string; factory_code: string; name: string; cr_number: string;
@@ -37,6 +38,10 @@ export type FactoryListStrings = {
   thCity: string;
   thRisk: string;
   dossier: string;
+  portfolioLabel: string;
+  licensedCountLabel: string;
+  unlicensedCountLabel: string;
+  regionsCountLabel: string;
   bandLabels: Record<string, string>;
 };
 
@@ -57,9 +62,30 @@ export default function FactoryList({ factories, strings }: { factories: Factory
       (!city || f.city === city) &&
       (license === "" || (license === "unlicensed" ? f.is_temporary : !f.is_temporary))),
     [factories, region, city, license]);
+  const licensedCount = factories.filter(factory => !factory.is_temporary).length;
+  const riskText = (factory: FactoryRow) => {
+    if (!factory.risk_band) return "—";
+    const band = strings.bandLabels[factory.risk_band] ?? factory.risk_band;
+    return factory.risk_score == null ? band : `${band} · ${factory.risk_score}`;
+  };
+  const riskTone = (factory: FactoryRow) => factory.risk_band === "high"
+    ? "sq-lozenge--critical"
+    : factory.risk_band === "medium"
+      ? "sq-lozenge--warning"
+      : factory.risk_band === "low"
+        ? "sq-lozenge--success"
+        : "";
   return (
     <>
-      <div className="row" style={{ gap: "var(--space-3)", alignItems: "flex-end", flexWrap: "wrap", marginBlockEnd: "var(--space-4)" }}>
+      <section className={styles.summary} aria-label={strings.portfolioLabel}>
+        <dl>
+          <div><dt>{strings.factoriesWord}</dt><dd className="sq-numeric">{factories.length}</dd></div>
+          <div><dt>{strings.licensedCountLabel}</dt><dd className="sq-numeric">{licensedCount}</dd></div>
+          <div><dt>{strings.unlicensedCountLabel}</dt><dd className="sq-numeric">{factories.length - licensedCount}</dd></div>
+          <div><dt>{strings.regionsCountLabel}</dt><dd className="sq-numeric">{regions.length}</dd></div>
+        </dl>
+      </section>
+      <div className={styles.filters}>
         {/* FNS-103/104 — licensed/unlicensed segmentation over the real is_temporary flag */}
         <div className="sq-segmented" role="group" aria-label={strings.licenseGroupAria}>
           {([["", strings.licenseAll], ["licensed", strings.licensed], ["unlicensed", strings.unlicensed]] as [LicenseKey, string][]).map(([k, label]) => (
@@ -67,13 +93,13 @@ export default function FactoryList({ factories, strings }: { factories: Factory
           ))}
         </div>
         <div className="sq-field"><label className="sq-field__label" htmlFor="factory-region-filter">{strings.regionLabel}</label>
-          <select id="factory-region-filter" className="sq-select" value={region} onChange={e => setRegion(e.target.value)} style={{ maxInlineSize: 220 }}>
+          <select id="factory-region-filter" className="sq-select" value={region} onChange={e => setRegion(e.target.value)}>
             <option value="">{strings.allRegions}</option>
             {regions.map(r => <option key={r} value={r}>{r}</option>)}
           </select></div>
         {/* FNS-107 — city filter (city data already loaded) */}
         <div className="sq-field"><label className="sq-field__label" htmlFor="factory-city-filter">{strings.cityLabel}</label>
-          <select id="factory-city-filter" className="sq-select" value={city} onChange={e => setCity(e.target.value)} style={{ maxInlineSize: 220 }}>
+          <select id="factory-city-filter" className="sq-select" value={city} onChange={e => setCity(e.target.value)}>
             <option value="">{strings.allCities}</option>
             {cities.map(c => <option key={c} value={c}>{c}</option>)}
           </select></div>
@@ -82,19 +108,27 @@ export default function FactoryList({ factories, strings }: { factories: Factory
       {rows.length === 0 ? (
         <EmptyState icon={<IconFactory size={28} />} title={strings.emptyRegionTitle} body={strings.emptyRegionDesc} />
       ) : (
-        <div className="sq-tablewrap"><table className="sq-table">
-          <thead><tr><th scope="col">{strings.thFactory}</th><th scope="col">{strings.thCr}</th><th scope="col">{strings.thRegion}</th><th scope="col">{strings.thCity}</th><th scope="col" className="sq-td-num">{strings.thRisk}</th><th scope="col"></th></tr></thead>
-          <tbody>{rows.map(f => (
-            <tr key={f.id}>
-              <td><strong>{f.name}</strong> <span className="t-caption">{f.factory_code}</span></td>
-              <td className="numeric">{f.cr_number}</td>
-              <td><span className="badge badge-info">{f.region ?? "—"}</span></td>
-              <td>{f.city}</td>
-              <td className="sq-td-num"><span className={`sq-lozenge ${f.risk_band === "high" ? "sq-lozenge--critical" : f.risk_band === "medium" ? "sq-lozenge--warning" : "sq-lozenge--success"}`}>{(f.risk_band && strings.bandLabels[f.risk_band]) ?? f.risk_band} · {f.risk_score}</span></td>
-              <td><a className="sq-link" href={f.dossier_href ?? `/factories/${f.id}`}>{strings.dossier}</a></td>
-            </tr>
-          ))}</tbody>
-        </table></div>
+        <div className={styles.cards}>{rows.map(f => (
+          <article className={styles.card} key={f.id}>
+            <div className={styles.cardHead}>
+              <div><h2>{f.name}</h2><p className="sq-caption"><bdi>{f.factory_code}</bdi></p></div>
+              <span className={`sq-lozenge ${f.is_temporary ? "sq-lozenge--warning" : "sq-lozenge--success"}`}>{f.is_temporary ? strings.unlicensed : strings.licensed}</span>
+            </div>
+            <dl>
+              <div><dt>{strings.thCr}</dt><dd className="sq-numeric"><bdi>{f.cr_number}</bdi></dd></div>
+              <div><dt>{strings.thRegion}</dt><dd>{f.region ?? "—"}</dd></div>
+              <div><dt>{strings.thCity}</dt><dd>{f.city ?? "—"}</dd></div>
+              <div><dt>{strings.thRisk}</dt><dd><span className={`sq-lozenge ${riskTone(f)}`}>{riskText(f)}</span></dd></div>
+            </dl>
+            <a
+              className="sq-btn sq-btn--secondary"
+              href={f.dossier_href ?? `/factories/${f.id}`}
+              aria-label={`${strings.dossier}: ${f.name}`}
+            >
+              {strings.dossier}
+            </a>
+          </article>
+        ))}</div>
       )}
     </>
   );

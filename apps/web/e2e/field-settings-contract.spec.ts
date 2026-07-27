@@ -9,6 +9,8 @@ const migration = src(migrationPath);
 const originalControlPlane = src("../../supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql");
 const actions = src("src/app/(app)/field/settings/actions.ts");
 const client = src("src/app/(app)/field/settings/FieldSettingsClient.tsx");
+const devicesPage = src("src/app/(app)/field/settings/devices/page.tsx");
+const devicesClient = src("src/app/(app)/field/settings/devices/TrustedDevicesClient.tsx");
 
 test.describe("PLAN v7 item 3 Field Settings + Trusted Devices contract", () => {
   test("adds only the exact additive pending-device insert policy", () => {
@@ -68,15 +70,16 @@ test.describe("PLAN v7 item 3 Field Settings + Trusted Devices contract", () => 
   });
 
   test("pending is never presented as trusted and collisions are explicit", () => {
-    expect(client).toContain('result.trustStatus === "pending"');
-    expect(client).toContain('"Pending approval"');
-    expect(client).toContain('"Pending approval — this device is not trusted yet."');
-    expect(client).toContain('result.trustStatus === "trusted"');
-    expect(client).toContain('"The backend device register currently grants trusted status."');
-    expect(client).toContain('result.kind === "identifier_collision"');
-    expect(client).toContain('"Identifier already registered"');
-    expect(client).toContain('"Already registered. Pending approval — this device is not trusted yet. Nothing was overwritten."');
-    expect(client).toContain('data-enrollment-state={enrollment?.kind ?? "checking"}');
+    expect(devicesClient).toContain('case "pending"');
+    expect(devicesPage).toContain('"Pending approval"');
+    expect(devicesPage).toContain('"Pending approval — this device is not trusted yet."');
+    expect(devicesClient).toContain('case "trusted"');
+    expect(devicesPage).toContain('"The backend device register currently grants trusted status."');
+    expect(devicesClient).toContain('case "identifier_collision"');
+    expect(devicesPage).toContain('"Identifier already registered"');
+    expect(devicesPage).toContain('"Already registered. Pending approval — this device is not trusted yet. Nothing was overwritten."');
+    expect(devicesClient).toContain("data-trust-status={d.trustStatus}");
+    expect(devicesClient).toContain('const trusted = currentStatus === "trusted"');
     expect(actions).toContain('kind: "identifier_collision"');
     expect(actions).toContain('present("already_registered", existing.row)');
   });
@@ -86,13 +89,15 @@ test.describe("PLAN v7 item 3 Field Settings + Trusted Devices contract", () => 
     expect(client).toContain('href="/locale?set=en"');
     expect(client).toContain('href="/locale?set=ar"');
     expect(client).toContain("localForUser");
-    expect(client).toContain("FieldSettingsClient({ locale, userId }");
+    expect(client).toContain("export default function FieldSettingsClient({");
+    expect(client).toContain("appVersion,");
     expect(client).toContain("local.peekAll()");
     expect(client).toContain("local.conflicts()");
     expect(client).not.toContain("local.remove(");
     expect(client).not.toContain("local.resolveConflict(");
     expect(client).not.toMatch(/indexedDB\.deleteDatabase|localStorage\.clear|\.clear\(\)/);
-    expect(client).toContain("This screen cannot clear drafts, packages, queued work, or conflicts.");
+    expect(client).toContain('"Clear cache"');
+    expect(client).toContain("note={notConfigured}");
   });
 
   test("the existing Ops/Security policy and control-plane enrollment source remain intact", () => {

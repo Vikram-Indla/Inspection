@@ -1,6 +1,6 @@
 /* ============================================================================
    SAQEEL Web Dashboard — presentation (approved-design composition).
-   Consumes tokens.css (--ax-*) only. No raw color/size values (GLOBAL COLOR
+   Consumes tokens.css (--sq-*) only. No raw color/size values (GLOBAL COLOR
    LAW). Logical properties throughout → native RTL. Theme-agnostic: light/dark
    resolve through the token palette. Reduced-motion honored.
    ========================================================================== */
@@ -26,12 +26,10 @@
 
 /* ---- command header ------------------------------------------------------- */
 .command {
-  position: sticky; inset-block-start: 0; z-index: var(--z-sticky);
-  background: var(--surface-primary);
-  border-block-end: 1px solid var(--border-subtle);
-  margin-block-end: var(--space-2);
+  display: flex;
+  align-items: flex-start;
 }
-.command .seg { margin: var(--space-2) var(--space-4) 0; }
+.command .seg { margin: 0; }
 .commandRow {
   display: flex; align-items: center; gap: var(--space-2);
   padding: var(--space-3) var(--space-4); flex-wrap: wrap;
@@ -197,8 +195,8 @@
 
 /* ---- segmented control ---------------------------------------------------- */
 .seg { display: inline-flex; padding: 2px; background: var(--surface-sunken); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); }
-.segOpt { display: inline-flex; align-items: center; padding: var(--space-1) var(--space-3); border: 0; background: transparent; color: var(--text-secondary); font: var(--type-caption-font); cursor: pointer; border-radius: var(--radius-xs); text-decoration: none; }
-.segOpt[aria-pressed="true"], .segOpt[aria-selected="true"] { background: var(--surface-primary); color: var(--text-primary); box-shadow: var(--shadow-xs); }
+.segOpt { display: inline-flex; align-items: center; padding: 7px 19px; border: 0; background: transparent; color: var(--text-secondary); font: var(--type-caption-font); cursor: pointer; border-radius: var(--radius-xs); text-decoration: none; }
+.segOpt[aria-pressed="true"], .segOpt[aria-selected="true"] { background: var(--action-primary); color: var(--text-on-action); box-shadow: none; }
 .segOpt[aria-disabled="true"] { color: var(--text-disabled); cursor: not-allowed; }
 .segOpt:focus-visible { outline: none; box-shadow: var(--focus-ring-shadow); }
 
@@ -272,7 +270,7 @@
 @media (max-width: 640px) {
   .metricStrip { grid-template-columns: 1fr; }
   .metricTile + .metricTile { border-inline-start: 0; padding-inline-start: 0; border-block-start: 1px solid var(--border-subtle); padding-block-start: var(--space-3); }
-  .command .seg { margin-inline: var(--space-2); }
+  .command .seg { margin-inline: 0; }
   .scopeLine, .partialDetail { padding-inline: var(--space-2); }
   .pipeline { display: grid; grid-template-columns: repeat(2, 1fr); }
   .summaryList li, .nudgeList li { align-items: flex-start; flex-wrap: wrap; }

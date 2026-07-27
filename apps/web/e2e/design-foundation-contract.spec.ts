@@ -42,38 +42,37 @@ test.describe("SAQEEL Inspection Design System v1.0 contract", () => {
 
   test("DSF-AC-007..013 typography is productive and bilingual (IBM Plex)", () => {
     const tokens = read("src/app/tokens.css");
-    expect(tokens).toContain('--font-body:    "IBM Plex Sans"');       // English resolves to IBM Plex Sans
+    expect(tokens).toContain('--font-body:    var(--font-plex-arabic'); // one self-hosted bilingual metric system
     expect(tokens).toContain('"IBM Plex Sans Arabic"');                 // Arabic-first stack present
     expect(tokens).toContain("--type-display-size: 28px;");            // SAQEEL scale supersedes 32px
     expect(tokens).toContain("--type-body-size: 14px;");              // 14px body supersedes 16px minimum
     expect(tokens).toContain("--type-table-size: 13px;");             // 13px tables
-    expect(tokens).not.toContain("Space Grotesk");                     // frozen input font retired
-    expect(tokens).not.toContain("JetBrains");                         // JetBrains Mono retired
+    expect(tokens).not.toMatch(/Space Grotesk|JetBrains|Barlow/);      // retired runtime fonts stay absent
   });
 
   test("DSF-AC-014..018 SAQEEL control geometry (frozen 12px input contract retired)", () => {
     const tokens = read("src/app/tokens.css");
     const css = read("src/app/saqeel-components.css");
-    expect(tokens).toContain("--radius-sm: 3px;");                     // inputs/buttons 3px (was 12px)
-    expect(tokens).not.toMatch(/--ax-[a-z-]+\s*:/);                     // --ax-* shim fully removed (PR12 zero-trace gate); tokens.css's own header comment still documents the retirement, so match only real declarations, not that prose
+    expect(tokens).toContain("--radius-sm: 6px;");                     // supplied Revamp control geometry
+    expect(tokens).not.toMatch(/--sq-[a-z-]+\s*:/);                     // --sq-* shim fully removed (PR12 zero-trace gate); tokens.css's own header comment still documents the retirement, so match only real declarations, not that prose
     expect(tokens).toContain("--control-h-lg: 40px;");                 // comfortable control height
     expect(tokens).toContain("--type-body-size: 15px;");              // field-density body 15px (data-density=field)
-    expect(css).toContain("border-radius: var(--radius-sm)");          // input rule consumes the (now-3px) token directly, no --ax-* alias
+    expect(css).toContain("border-radius: var(--radius-sm)");          // input rule consumes the (now-3px) token directly, no --sq-* alias
     expect(css).toContain("resize: vertical");
   });
 
   test("DSF-AC-019..023 authenticated foundation rejects cinematic styling", () => {
-    const skeleton = read("src/app/saqeel-components-legacy.css");
+    const skeleton = read("src/app/saqeel-runtime.css");
     const mapPanel = read("src/app/saqeel-components.css");
     const dashboard = read("src/app/(app)/dashboard/dashboard.module.css");
     // Scan authenticated PAGE/module CSS only. The SAQEEL design-system layers
-    // (tokens.css, saqeel-components.css, saqeel-components-legacy.css,
+    // (tokens.css, saqeel-components.css, saqeel-runtime.css,
     // v2-components.css) and the login Atlas are excluded — they are
     // DS/exception layers, not pages, and legitimately carry SAQEEL DS
     // internals (uppercase micro-labels, white-on-status marker knobs, the
     // skeleton shimmer gradient, the texture-chrome repeating gradient).
     // Page CSS must still stay institutional.
-    const dsLayerFiles = ["tokens.css", "login.css", "saqeel-components.css", "saqeel-components-legacy.css", "v2-components.css"];
+    const dsLayerFiles = ["tokens.css", "login.css", "saqeel-runtime.css", "saqeel-components.css", "v2-components.css"];
     const authenticated = cssFiles(path.join(root, "src/app"))
       .filter(file => !dsLayerFiles.some(name => file.endsWith(name)))
       .map(file => fs.readFileSync(file, "utf8")).join("\n");
@@ -81,7 +80,7 @@ test.describe("SAQEEL Inspection Design System v1.0 contract", () => {
     expect(authenticated).not.toMatch(/text-transform:\s*uppercase/);
     expect(authenticated).not.toMatch(/#[0-9A-Fa-f]{3,8}\b/);
     expect(dashboard).not.toContain("linear-gradient");
-    expect(authenticated).not.toContain("--ax-color-prism-magenta");
+    expect(authenticated).not.toContain("--sq-color-prism-magenta");
     expect(mapPanel).not.toContain("backdrop-filter: blur(12px)"); // current value is blur(4px) on .map-panel — 12px never reintroduced
     // No page/module carries a gradient of its own — the only two gradients in
     // the whole authenticated tree are DS-internal (skeleton shimmer, texture chrome).
@@ -93,7 +92,7 @@ test.describe("SAQEEL Inspection Design System v1.0 contract", () => {
     const prism = read("public/saqeel-prism.svg");
     const bell = read("src/components/NotificationBell.tsx");
     const shell = read("src/components/ShellClient.tsx");
-    const css = read("src/app/saqeel-components-legacy.css");
+    const css = read("src/app/saqeel-runtime.css");
     expect(prism).not.toContain("<rect");
     expect(bell).not.toContain("🔔");
     expect(bell).toContain("sq-notification__trigger");

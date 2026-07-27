@@ -57,6 +57,7 @@ export default function AccessManager({
   capabilities,
   access,
   currentUserId,
+  initialSelectedUserId = "",
   labels,
 }: {
   users: AccessUser[];
@@ -64,9 +65,10 @@ export default function AccessManager({
   capabilities: CapabilityInfo[];
   access: UserAccess[];
   currentUserId: string;
+  initialSelectedUserId?: string;
   labels: AccessManagerLabels;
 }) {
-  const [selectedUserId, setSelectedUserId] = useState<string>("");
+  const [selectedUserId, setSelectedUserId] = useState<string>(initialSelectedUserId);
   const [confirming, setConfirming] = useState<PendingChange | null>(null);
   const [feedback, setFeedback] = useState<AccessActionResult>({});
   const [pending, startTransition] = useTransition();

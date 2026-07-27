@@ -1,0 +1,105 @@
+schema_version: "1.0"
+packet_id: "PKT-RESPONSIVE-EXECUTION-FIELD-004"
+task_id: "TASK-SAQEEL-RESPONSIVE-REVAMP-001"
+change_control_id: "CC-SAQEEL-RESPONSIVE-REVAMP-001"
+branch: "revamp/execution-field-migration"
+baseline: "4e270d773f83e05aa0350ac34d5d277c74bf2c4f"
+state: "TECHNICAL_PASS_READY_FOR_REVIEW"
+verified_at: "2026-07-26T22:25:59+03:00"
+authorized_by: "Vikram Indla / Product Owner"
+authorization_evidence: "Locked migration execution configuration plus explicit instruction that all approvals are granted and execution must continue."
+
+process_ids:
+  - "M4"
+  - "M5"
+  - "M11"
+  - "SCR-IPAD-600..690"
+requirements:
+  - "CR-099..CR-356"
+screens:
+  - "Existing source-backed Field execution compositions (preservation boundary; workbook records no replacement design authority)"
+  - "SAQEEL Virtual"
+design_sources:
+  - "Saqeel Revamp.dc.html shared shell"
+  - "Existing Field component source retained for business-capability parity"
+  - "SAQEEL Virtual.dc.html"
+routes:
+  - "/field/**"
+  - "/virtual/**"
+engines:
+  - "Inspector assignment and execution authorization"
+  - "Journey, GPS, arrival and operational-state guards"
+  - "Shared physical and virtual execution engine"
+  - "Offline drafts, outbox replay, idempotency and conflict detection"
+  - "Package checksum/version integrity"
+  - "Evidence capture, annotation, sync and audit"
+  - "Immutable submission/version protection"
+  - "Responsive shell, i18n, RTL and light/dark themes"
+
+acceptance:
+  - "WA-AC-0099..0356"
+  - "WA-M11-AC-001..006"
+  - "Every active /field route renders inside the same canonical AppShell used by Planner and Administrator."
+  - "No active Field drawer or Field-only bottom navigation duplicates the canonical shell."
+  - "Inspector keeps source-authorized execution access; Planner and Administrator cannot read Field execution payloads."
+  - "Existing execution business logic, offline drafts/outbox, replay, conflicts, checksum/version integrity, evidence, audit and immutable submitted states remain unchanged."
+  - "Physical and virtual execution routes reflow without document overflow at 320, 375, 390, 768, 1024, 1280, 1440 and 1920 CSS pixels."
+  - "English/Arabic, LTR/RTL, light/dark, keyboard and accessibility behavior remain available in the unified shell."
+  - "No real submission is created while DEC-032 remains open."
+
+open_decisions:
+  - id: "DEC-032"
+    disposition: "P0 stop line. Do not create or claim a new real inspection submission; preserve the existing guarded failure path."
+  - id: "DEP-DESIGN-IMMUTABLE-REVISION"
+    disposition: "No replacement physical-execution composition is invented. This packet converges active chrome and proves responsive preservation against the existing source-backed Field implementation."
+  - id: "DEP-WEB-PUSH-DISPOSITION"
+    disposition: "Out of scope. Push and install-delivery retirement remain reserved for revamp/pwa-decoupling."
+
+dependencies:
+  - "PKT-RESPONSIVE-FOUNDATION-SHELL-001 at c78882a7"
+  - "PKT-RESPONSIVE-PLANNING-003 at 4e270d77"
+  - "Existing development Supabase and excluded Inspector persona storage state"
+
+allowed_paths:
+  - "apps/web/src/app/(app)/field/**"
+  - "apps/web/src/app/(app)/virtual/**"
+  - "apps/web/src/components/field/**"
+  - "apps/web/src/components/ThemeScript.tsx"
+  - "apps/web/src/components/ThemeChannelSync.tsx"
+  - "apps/web/src/lib/execution/**"
+  - "apps/web/src/lib/offline.ts"
+  - "apps/web/src/lib/offline-package-integrity.ts"
+  - "apps/web/e2e/responsive-execution-field.spec.ts"
+  - "apps/web/e2e/execution-*.spec.ts"
+  - "apps/web/e2e/field-*.spec.ts"
+  - "apps/web/e2e/offline-drill.spec.ts"
+  - "product-contract/operationalization/packets/PKT-RESPONSIVE-EXECUTION-FIELD-004.yaml"
+  - "product-contract/evidence/PKT-RESPONSIVE-EXECUTION-FIELD-004.md"
+
+prohibited:
+  - "Service-worker registration, manifest, install prompt or Web Push retirement reserved for revamp/pwa-decoupling"
+  - "Review/approval, compliance/enforcement, Factory 360 console or administration product source"
+  - "Supabase migrations, RLS, RPCs, shared data or production DDL"
+  - "New submission evidence while DEC-032 is open"
+  - "Invented geofence, GPS accuracy, SLA, risk, penalty, legal, provider or conflict policy"
+  - "main or integration branch mutation"
+
+evidence:
+  - "Typecheck and production build"
+  - "Focused source, route-authorization and protected execution contracts"
+  - "Authenticated Inspector positive paths plus Planner and Administrator negative paths"
+  - "Offline/outbox/replay/conflict and package-integrity protected regression"
+  - "EN/AR, LTR/RTL, light/dark responsive matrix"
+  - "No horizontal document overflow at every mandated width"
+  - "Accessibility and protected execution regression"
+
+rollback:
+  - "Revert the packet commit; all database, workflow, offline and PWA delivery contracts remain unchanged."
+  - "No destructive data or schema rollback is required."
+
+stop_conditions:
+  - "Any Field execution payload read before Inspector authorization"
+  - "Any weakening of RLS, workflow guards, audit, immutable versions, offline conflicts, replay idempotency or package integrity"
+  - "Any invented physical-execution design authority or policy value"
+  - "Any active duplicate Field shell after convergence"
+  - "Any P0/P1 focused or protected regression"

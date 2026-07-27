@@ -24,19 +24,20 @@ export default async function FieldLayout({ children }: { children: ReactNode })
   const { locale } = await useT();
   return (
     <>
-      {/* Field components keep their touch-density and offline/session behavior,
-          but navigation is now owned once by the parent AppShell. */}
+      {/* Execution components retain touch density and offline/session
+          behavior. Navigation, theme and application chrome are owned once by
+          the parent AppShell for every canonical role and viewport. */}
       <link rel="stylesheet" href="/saqeel-ds/saqeel/styles.css" />
       <div
         dir={locale === "ar" ? "rtl" : "ltr"}
         lang={locale}
-        // Field is a touch-first iPad channel: opt into the pre-authored "field"
-        // density profile (tokens.css) so small and icon controls resolve to the
-        // 40/44px touch floor instead of the 28/32px desktop metrics. The profile
-        // was authored for exactly this root but had never been wired onto it.
+        data-saqeel-migration="unified-execution"
+        // Execution remains touch-capable at every responsive width. This
+        // density profile changes control sizing, not application architecture.
         data-density="field"
         style={{
-          minHeight: "100dvh",
+          minHeight: "100%",
+          minInlineSize: 0,
           display: "flex",
           flexDirection: "column",
           background: "var(--surface-canvas)",

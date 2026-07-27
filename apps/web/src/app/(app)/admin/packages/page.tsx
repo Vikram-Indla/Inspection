@@ -1,4 +1,4 @@
-import Shell from "@/components/Shell";
+import AdminDestinationFrame from "../_components/AdminDestinationFrame";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
@@ -11,6 +11,8 @@ import { getPinnedActiveImpact } from "./actions";
 import styles from "./packages.module.css";
 import TemplateRegistry, { type TemplateRow, type TemplateStrings } from "./TemplateRegistry";
 import { IconLock } from "@/app/icons";
+import { AdminRecordTableRow } from "../_components/AdminRecordDrawer";
+import { createAdminRecordDrawerLabels } from "../_components/adminRecordDrawerCopy";
 
 export const dynamic = "force-dynamic";
 
@@ -69,6 +71,7 @@ function currentPublished(pkg: PkgRow): VersionRow | null {
 
 export default async function Packages() {
   const { t, locale } = await useT();
+  const copy = (en: string, ar: string) => locale === "ar" ? ar : en;
   const sb = await supabaseServer();
   const [packageRead, itemRead, templateRead, violationRead, authRead] = await Promise.all([
     sb.from("packages").select("id, code, title, scope, package_versions(id, version_label, status, published_at, effective_from, effective_to, supersedes_id, definition)").order("code"),
@@ -281,14 +284,73 @@ export default async function Packages() {
     />
     );
   };
+  const notConfigured = t("common.notConfigured", copy("Not configured", "غير مُهيّأ"));
+  const publishedPackages = pkgs.filter(pkg => currentPublished(pkg)).length;
+  const draftPackages = pkgs.filter(pkg => (pkg.package_versions ?? []).some(version => version.status === "draft")).length;
+  const drawerLabels = createAdminRecordDrawerLabels(t, locale);
+  const surveyGovernance = [
+    t("admin.revamp.survey.governance.validate", copy("Publish revalidates sections, items, response mappings, evidence and action-form dependencies.", "يعيد النشر التحقق من الأقسام والبنود وربط الإجابات والأدلة واعتماديات نماذج الإجراءات.")),
+    t("admin.revamp.survey.governance.maker", copy("Maker-checker approval is enforced by the existing publish actions and database guards.", "يُفرض فصل المُعدّ عن المعتمد عبر إجراءات النشر وضوابط قاعدة البيانات الحالية.")),
+    t("admin.revamp.survey.governance.runtime", copy("Execution consumes only the locked package version selected for the visit.", "يستخدم التنفيذ فقط إصدار الحزمة المقفل المختار للزيارة.")),
+  ];
+  const packageEditUnavailable = t(
+    "admin.recordDrawer.package.editUnavailable",
+    copy(
+      "Your RLS-visible role does not expose the governed package authoring actions.",
+      "لا يتيح دورك المرئي وفق أمن الصفوف إجراءات تأليف الحزم المحكومة.",
+    ),
+  );
 
   return (
-    <Shell current="/admin/packages" title={t("admin.pkg.title", "Package library & designer")}
+    <AdminDestinationFrame
+      current="/admin/packages"
+      title={t("admin.revamp.survey.title", copy("Survey Configuration", "تهيئة النماذج"))}
+      subtitle={t("admin.revamp.survey.subtitle", copy("Inspection forms, sections and response rules", "نماذج التفتيش والأقسام وقواعد الإجابة"))}
+      hub={t("admin.revamp.hub.rules", copy("Rules & content", "القواعد والمحتوى"))}
+      routeLabel="/admin/packages"
+      designId="frame-22-admin-survey-configuration"
+      drawerLabels={drawerLabels}
+      labels={{
+        administration: t("navigation.administration", copy("Administration", "الإدارة")),
+        breadcrumb: t("common.breadcrumb", copy("Breadcrumb", "مسار التنقل")),
+        governance: t("admin.revamp.governance", copy("Governance on this surface", "الحوكمة في هذه الواجهة")),
+        reconstruction: t("admin.revamp.reconstruction", copy("Reconstruction note", "ملاحظة إعادة البناء")),
+      }}
+      metrics={[
+        {
+          label: t("admin.revamp.survey.metric.published", copy("Published packages", "الحزم المنشورة")),
+          value: packageUnavailable ? notConfigured : publishedPackages,
+          note: t("admin.revamp.survey.metric.published.note", copy("Currently effective versions only", "الإصدارات النافذة حالياً فقط")),
+        },
+        {
+          label: t("admin.revamp.survey.metric.items", copy("Inspection items", "بنود التفتيش")),
+          value: itemBankUnavailable ? notConfigured : items.length,
+          note: t("admin.revamp.survey.metric.items.note", copy("RLS-visible governed catalogue", "كتالوج محكوم ومرئي حسب أمن الصفوف")),
+        },
+        {
+          label: t("admin.revamp.survey.metric.drafts", copy("Draft packages", "مسودات الحزم")),
+          value: packageUnavailable ? notConfigured : draftPackages,
+          note: t("admin.revamp.survey.metric.drafts.note", copy("Not selectable by live visits", "غير قابلة للاختيار للزيارات الفعلية")),
+        },
+      ]}
+      tabs={[
+        { label: t("admin.revamp.survey.tabs.packages", copy("Packages", "الحزم")), href: "/admin/packages", current: true },
+        { label: t("admin.revamp.survey.tabs.items", copy("Sections & items", "الأقسام والبنود")), href: "/admin/items" },
+        { label: t("admin.revamp.survey.tabs.forms", copy("Action forms", "نماذج الإجراءات")), href: "/admin/templates" },
+        { label: t("admin.revamp.survey.tabs.versions", copy("Versions", "الإصدارات")), href: "/admin/packages#package-register" },
+      ]}
+      gate={{
+        title: t("admin.revamp.survey.gate.title", copy("Published packages are immutable", "الحزم المنشورة غير قابلة للتغيير")),
+        body: t("admin.revamp.survey.gate.body", copy("A package selected by a published visit cannot be structurally edited. Changes create additive drafts; existing and historical inspections remain pinned to their original package version.", "لا يمكن تعديل بنية حزمة اختارتها زيارة منشورة. تُنشئ التغييرات مسودات إضافية، وتبقى عمليات التفتيش الحالية والتاريخية مرتبطة بإصدار الحزمة الأصلي.")),
+      }}
+      governance={surveyGovernance}
+      reconstructionNote={t("admin.revamp.survey.note", copy("The design’s sample package names, counts and rule contents are not copied. This workspace renders the real package, item, template, impact and immutable-version sources already used by execution.", "لا تُنسخ أسماء حزم التصميم النموذجية أو أعدادها أو محتوى قواعدها. تعرض مساحة العمل هذه مصادر الحزم والبنود والقوالب والأثر والإصدارات غير القابلة للتغيير التي يستخدمها التنفيذ فعلياً."))}
       context={<span className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
         <span className="badge badge-info">SCR-ADM-030/031 · ENG-02</span>
         <span className="t-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></span>
-      </span>}>
-      <div className={styles.pageStack}>
+      </span>}
+    >
+      <div className={styles.pageStack} id="package-register">
         {!packageUnavailable && canWrite && <TemplateRegistry templates={templates} strings={templateStrings} />}
         <section className={`panel ${styles.hero}`} aria-labelledby="pkg-overview">
           <div className={styles.heroRow}>
@@ -360,12 +422,50 @@ export default async function Packages() {
                       <tbody>{versions.map(version => {
                         const derivedSuperseded = (version.status === "published" || version.status === "locked") && !!latestPublished && latestPublished.id !== version.id;
                         const itemCount = (version.definition.sections ?? []).reduce((sum, section) => sum + (section.items?.length ?? 0), 0);
-                        return <tr key={version.id}>
+                        const sectionCount = version.definition.sections?.length ?? 0;
+                        const actionFormCount = version.definition.action_forms?.length ?? 0;
+                        const stateLabel = t(`enum.${version.status}`, version.status.replace(/_/g, " "));
+                        return <AdminRecordTableRow
+                          key={version.id}
+                          record={{
+                            title: `${pkg.code} · ${version.version_label}`,
+                            subtitle: t("admin.revamp.hub.rules", copy("Rules & content", "القواعد والمحتوى")),
+                            record: [
+                              { label: t("admin.recordDrawer.package", copy("Package", "الحزمة")), value: pkg.title },
+                              { label: t("admin.recordDrawer.code", copy("Code", "الرمز")), value: pkg.code },
+                              { label: t("admin.pkg.col.version", "Version"), value: version.version_label },
+                              { label: t("admin.pkg.col.state", "State"), value: stateLabel },
+                              {
+                                label: t("admin.pkg.col.definition", "Definition"),
+                                value: `${sectionCount} ${t("admin.pkg.sections", "section(s)")} · ${itemCount} ${t("admin.pkg.items", "item(s)")}`,
+                              },
+                              {
+                                label: t("admin.recordDrawer.actionForms", copy("Action forms", "نماذج الإجراءات")),
+                                value: String(actionFormCount),
+                              },
+                              {
+                                label: t("admin.recordDrawer.effective", copy("Effective period", "فترة النفاذ")),
+                                value: `${version.effective_from ?? "—"} — ${version.effective_to ?? "—"}`,
+                              },
+                            ],
+                            governance: surveyGovernance,
+                            audit: version.published_at
+                              ? [{ label: t("admin.pkg.col.published", "Published"), value: version.published_at }]
+                              : [],
+                            editHref: canWrite
+                              ? version.status === "draft"
+                                ? `#package-version-${version.id}`
+                                : `#package-new-draft-${pkg.id}`
+                              : undefined,
+                            editUnavailableReason: packageEditUnavailable,
+                            auditHref: `/admin/audit?case=${encodeURIComponent(version.id)}`,
+                          }}
+                        >
                           <td data-label={t("admin.pkg.col.version", "Version")}><bdi dir="ltr" className="sq-version">{version.version_label}</bdi></td>
-                          <td data-label={t("admin.pkg.col.state", "State")}><span className={`sq-lozenge ${version.status === "draft" ? "sq-lozenge--warning" : "sq-lozenge--success"}`}><span aria-hidden="true">{version.status === "draft" ? "✎ " : "✓ "}</span>{t(`enum.${version.status}`, version.status.replace(/_/g, " "))}</span>{derivedSuperseded && <span className="t-caption"> · {t("admin.pkg.derivedSuperseded", "older than current publish (derived)")}</span>}</td>
+                          <td data-label={t("admin.pkg.col.state", "State")}><span className={`sq-lozenge ${version.status === "draft" ? "sq-lozenge--warning" : "sq-lozenge--success"}`}><span aria-hidden="true">{version.status === "draft" ? "✎ " : "✓ "}</span>{stateLabel}</span>{derivedSuperseded && <span className="t-caption"> · {t("admin.pkg.derivedSuperseded", "older than current publish (derived)")}</span>}</td>
                           <td data-label={t("admin.pkg.col.published", "Published")}><bdi dir="ltr">{version.published_at ? version.published_at.slice(0, 10) : "—"}</bdi></td>
-                          <td data-label={t("admin.pkg.col.definition", "Definition")}>{version.definition.sections?.length ?? 0} {t("admin.pkg.sections", "section(s)")} · {itemCount} {t("admin.pkg.items", "item(s)")}</td>
-                        </tr>;
+                          <td data-label={t("admin.pkg.col.definition", "Definition")}>{sectionCount} {t("admin.pkg.sections", "section(s)")} · {itemCount} {t("admin.pkg.items", "item(s)")}</td>
+                        </AdminRecordTableRow>;
                       })}</tbody>
                     </table>
                   </div>
@@ -376,7 +476,7 @@ export default async function Packages() {
                   const definition = version.definition ?? {};
                   const impact = impactMap.get(version.id) ?? { pinned: null, referencing: [], diff: null };
                   return (
-                    <details key={version.id} className={`panel ${styles.versionCard}`} open={version.status === "draft" || index === 0}>
+                    <details id={`package-version-${version.id}`} key={version.id} className={`panel ${styles.versionCard}`} open={version.status === "draft" || index === 0}>
                       <summary>
                         <span className={styles.versionHeading}>
                           <strong><bdi dir="ltr">{version.version_label}</bdi></strong>
@@ -410,7 +510,7 @@ export default async function Packages() {
                   );
                 })}</div>
 
-                {canWrite && <section className="panel" style={{ padding: "var(--space-4)" }}><NewDraftForm packageId={pkg.id} strings={publishStrings} /></section>}
+                {canWrite && <section id={`package-new-draft-${pkg.id}`} className="panel" style={{ padding: "var(--space-4)" }}><NewDraftForm packageId={pkg.id} strings={publishStrings} /></section>}
               </div>
             </details>
           );
@@ -422,6 +522,6 @@ export default async function Packages() {
           <p className="t-caption" role="status">{t("admin.pkg.stale", "Data may have changed since this source read; no freshness threshold is defined.")} <a className="sq-link" href="/admin/packages">{t("admin.pkg.refresh", "Refresh to reconcile")}</a>.</p>
         </section>}
       </div>
-    </Shell>
+    </AdminDestinationFrame>
   );
 }

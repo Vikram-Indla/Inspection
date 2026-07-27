@@ -11,6 +11,7 @@ import {
 import EmptyState from "@/components/EmptyState";
 import { IconGlobe } from "@/app/icons";
 import styles from "./localization.module.css";
+import { AdminRecordArticle } from "../_components/AdminRecordDrawer";
 
 export type UiString = {
   key: string;
@@ -96,6 +97,9 @@ export type Labels = {
   sourcePanel: string;
   sourceSync: string;
   sourceRestore: string;
+  updatedAt: string;
+  notConfigured: string;
+  drawerSubtitle: string;
 };
 
 type Filter = "all" | "draft" | "reviewed" | "missing-ar" | "orphaned";
@@ -236,7 +240,17 @@ function SyncButton({ labels, locale }: { labels: Labels; locale: "en" | "ar" })
   );
 }
 
-function Row({ row, labels, locale }: { row: UiString; labels: Labels; locale: "en" | "ar" }) {
+function Row({
+  row,
+  labels,
+  locale,
+  drawerGovernance,
+}: {
+  row: UiString;
+  labels: Labels;
+  locale: "en" | "ar";
+  drawerGovernance: readonly string[];
+}) {
   const router = useRouter();
   const [saveState, saveAction, savePending] = useActionState<L10nResult, FormData>(saveTranslation, {});
   const [revState, revAction, revPending] = useActionState<L10nResult, FormData>(markReviewed, {});
@@ -256,9 +270,37 @@ function Row({ row, labels, locale }: { row: UiString; labels: Labels; locale: "
   const errTokens = new Set(missing);
   const arLonger = ar.trim() !== "" && row.en.trim() !== "" && ar.length > row.en.length * 1.3;
   const canReview = !row.orphaned && row.status !== "reviewed" && ar.trim() !== "" && !phErr;
+  const status = row.orphaned
+    ? labels.statusOrphaned
+    : missingAr(row)
+      ? labels.statusMissing
+      : row.status === "reviewed"
+        ? labels.statusReviewed
+        : labels.statusDraft;
+  const recordId = `localization-record-${row.key.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
 
   return (
-    <article className={`${styles.stringRow}${row.orphaned ? ` ${styles.orphaned}` : ""}`}>
+    <AdminRecordArticle
+      id={recordId}
+      className={`${styles.stringRow}${row.orphaned ? ` ${styles.orphaned}` : ""}`}
+      record={{
+        title: row.key,
+        subtitle: labels.drawerSubtitle,
+        record: [
+          { label: labels.colEn, value: row.en },
+          { label: labels.colAr, value: row.ar?.trim() || labels.notConfigured },
+          { label: labels.colStatus, value: status },
+          { label: labels.colContext, value: row.context?.trim() || labels.notConfigured },
+          {
+            label: labels.updatedAt,
+            value: new Date(row.updated_at).toLocaleString(locale === "ar" ? "ar-SA" : "en-GB"),
+          },
+        ],
+        governance: drawerGovernance,
+        editHref: `#${recordId}`,
+        auditHref: `/admin/audit?q=${encodeURIComponent(row.key)}`,
+      }}
+    >
       {/* Source (English) — the code owns this string; drift returns AR to draft server-side. */}
       <div className={styles.sourceCell} dir="ltr">
         <span className="lz-key">{row.key}</span>
@@ -300,7 +342,7 @@ function Row({ row, labels, locale }: { row: UiString; labels: Labels; locale: "
         <HistoryPanel row={row} labels={labels} locale={locale} />
         {revState.error && <span className="lz-risk lz-risk--critical" role="alert">{revState.error}</span>}
       </div>
-    </article>
+    </AdminRecordArticle>
   );
 }
 
@@ -344,10 +386,11 @@ function exportCsv(rows: UiString[]) {
   URL.revokeObjectURL(url);
 }
 
-export default function Manager({ rows, labels, locale }: {
+export default function Manager({ rows, labels, locale, drawerGovernance }: {
   rows: UiString[];
   labels: Labels;
   locale: "en" | "ar";
+  drawerGovernance: readonly string[];
 }) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
@@ -462,7 +505,15 @@ export default function Manager({ rows, labels, locale }: {
                 <span>{labels.stateHeading}</span>
               </div>
               <div className={styles.list}>
-                {visibleRows.map(row => <Row key={row.key} row={row} labels={labels} locale={locale} />)}
+                {visibleRows.map(row => (
+                  <Row
+                    key={row.key}
+                    row={row}
+                    labels={labels}
+                    locale={locale}
+                    drawerGovernance={drawerGovernance}
+                  />
+                ))}
               </div>
               <nav className={`panel ${styles.pagination}`} aria-label={labels.page}>
                 <button type="button" className="btn btn-secondary btn-touch" disabled={currentPage === 1}

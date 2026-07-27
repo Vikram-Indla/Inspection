@@ -397,7 +397,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
               <div className="t-caption">{strings.spineWindow}: <span className="numeric">{fmt(activeVisit.windowStart)}</span></div>
               <div className="t-caption">{strings.spineInspector}: {activeVisit.inspectorName || "—"}</div>
             </div>
-            <a className="btn btn-ghost btn-touch" href={`${routeBase}/${activeVisit.id}${targetMode ? "?wa_preview=1" : ""}`}
+            <a className="btn btn-ghost btn-touch" href={`${routeBase}/${activeVisit.id}`}
               aria-label={strings.openDetailAria.replace("{id}", activeVisit.id.slice(0, 8))}>{strings.spineOpenDetail}</a>
           </div>
         )}
@@ -574,7 +574,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                       : strings.ledgerShortBlocked}
                   </span></td>
                   <td className="t-caption">{outcomeText[item.outcome]}</td>
-                  <td><a className="sq-link t-caption" href={`${routeBase}/${item.id}${targetMode ? "?wa_preview=1" : ""}`}>{strings.ledgerOpen}</a></td>
+                  <td><a className="sq-link t-caption" href={`${routeBase}/${item.id}`}>{strings.ledgerOpen}</a></td>
                 </tr>
               ))}
             </tbody>
@@ -609,7 +609,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                       aria-label={strings.previewAria.replace("{id}", v.id.slice(0, 8))}>
                       <strong>{v.id.slice(0, 8)}</strong>
                     </button>
-                    {" "}<a className="sq-link t-caption sq-inline-target" href={`${routeBase}/${v.id}${targetMode ? "?wa_preview=1" : ""}`}
+                    {" "}<a className="sq-link t-caption sq-inline-target" href={`${routeBase}/${v.id}`}
                       aria-label={strings.openDetailAria.replace("{id}", v.id.slice(0, 8))}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M8 5h11v11"/><path d="m19 5-14 14"/></svg>
                     </a>
@@ -639,7 +639,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
         <span className="t-caption numeric">
           {strings.showing.replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}
         </span>
-        {nextLimit !== null && <a className="btn btn-ghost btn-touch" href={`${routeBase}?limit=${nextLimit}${targetMode ? "&wa_preview=1" : ""}`}>{strings.loadMore}</a>}
+        {nextLimit !== null && <a className="btn btn-ghost btn-touch" href={`${routeBase}?limit=${nextLimit}`}>{strings.loadMore}</a>}
       </div>
     </div>
   );

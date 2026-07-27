@@ -1,4 +1,4 @@
-// Hand-rolled SVG line chart — zero deps; colors only via var(--ax-*) tokens
+// Hand-rolled SVG line chart — zero deps; colors only via var(--sq-*) tokens
 // (GLOBAL COLOR LAW). Server-component safe. SVG wrapped dir="ltr" (charts
 // never mirror); labels around it use logical properties.
 

@@ -102,7 +102,7 @@ test.describe("CD-028 queue — reviewer (leg 1, 3, 4, 10, 14)", () => {
 });
 
 test.describe("CD-028 queue — unauthorized (leg 11)", () => {
-  test.use({ storageState: storageStatePath("planner") });
+  test.use({ storageState: storageStatePath("inspector") });
 
   test("leg 11 — a non-reviewer sees a distinct unauthorized block, not 'queue clear'", async ({ page }) => {
     await page.goto("/locale?set=en");

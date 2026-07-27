@@ -103,16 +103,16 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
 
   // The sidebar is only a usability filter. Enforce the dashboard persona at
   // the route boundary as well so a copied URL cannot grant dashboard access.
-  // Sponsor-approved M1 role contract: Operations and Leadership only. Shell
-  // visibility remains presentation; this server boundary plus RLS is
-  // authoritative for copied URLs.
+  // CC-SAQEEL-RESPONSIVE-REVAMP-001: the canonical Planner and Inspector
+  // presentation roles can open Dashboard. Legacy ops/leadership grants map
+  // to Planner-read during the evidence-backed role migration.
   const { data: { user } } = await getVerifiedUser(sb);
   if (!user) redirect("/login");
   const { data: dashboardRoles, error: roleError } = await sb
     .from("user_roles")
     .select("role_key")
     .eq("user_id", user.id);
-  const dashboardRoleKeys = ["ops", "leadership"] as const;
+  const dashboardRoleKeys = ["planner", "inspector", "ops", "leadership"] as const;
   const mayViewDashboard = !roleError && (dashboardRoles ?? []).some(row => dashboardRoleKeys.includes(row.role_key as typeof dashboardRoleKeys[number]));
   if (!mayViewDashboard) redirect("/launch");
 
@@ -259,7 +259,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     </section>;
   }
 
-  return <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+  return <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
       {failedSources.length > 0 && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{text("Partial dashboard", "لوحة قيادة جزئية")}</strong> — {text("these sources are temporarily unavailable:", "هذه المصادر غير متاحة مؤقتاً:")} {failedSources.join(" · ")}. {text("Other panels remain usable; refresh to retry.", "تظل اللوحات الأخرى قابلة للاستخدام؛ حدّث الصفحة لإعادة المحاولة.")}</div></div>}
       <DashboardControls locale={locale} view={view} params={currentParams} from={scope.fromDate} to={scope.toDate}
         region={region} query={query} refreshedAt={refreshedAt} partialSources={partialSources} />
@@ -270,8 +270,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     </div>;
   }
 
-  return <Shell current="/dashboard" title={text("Dashboard", "لوحة القيادة")}
-    context={<span className="id-code badge badge-info">SCR-WEB-500 · DASH-001..016</span>}>
+  return <Shell current="/dashboard" title="">
     <Suspense fallback={<div className="panel" aria-busy="true" role="status">{text("Loading dashboard data…", "جارٍ تحميل بيانات لوحة القيادة…")}</div>}>
       <DashboardDataSections />
     </Suspense>

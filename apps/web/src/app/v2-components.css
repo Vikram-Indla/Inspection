@@ -1,7 +1,7 @@
 /* SAQEEL V2 — canonical component layer (Wave 4/5, from design/saqeel-v5-final/tokens/v2-components.css).
-   Loaded after saqeel-components-legacy.css. Consumes tokens only. Three structural surface
+   Loaded after saqeel-runtime.css. Consumes tokens only. Three structural surface
    levels: 1 canvas · 2 .sq-field-tonal (borderless) · 3 .sq-surface (bounded,
-   semantic reason required). .sq-link now lives in saqeel-components-legacy.css directly
+   semantic reason required). .sq-link now lives in saqeel-runtime.css directly
    (fixed at source instead of duplicated/overridden here). */
 
 /* Density modes — set on a page/region root; never mix on one surface.

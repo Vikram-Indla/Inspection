@@ -35,9 +35,11 @@ const KSA_CENTER: [number, number] = [23.8859, 45.0792];
 export default function OperationsMapWorkspace({
   entries,
   strings: s,
+  mapOnly = false,
 }: {
   entries: OperationsMapEntry[];
   strings: OperationsMapWorkspaceStrings;
+  mapOnly?: boolean;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(entries[0]?.id ?? null);
   const [previewId, setPreviewId] = useState<string | null>(null);
@@ -61,7 +63,7 @@ export default function OperationsMapWorkspace({
   }
 
   return (
-    <div className={styles.workspace}>
+    <div className={`${styles.workspace} ${mapOnly ? styles.workspaceMapOnly : ""}`}>
       <section className={styles.mapFrame} aria-label={s.mapLabel}>
         <Suspense fallback={
           <EmptyState bare role="status" ariaBusy title={s.loadingTitle} body={s.loadingBody} />
@@ -77,7 +79,7 @@ export default function OperationsMapWorkspace({
         </Suspense>
       </section>
 
-      <section className={styles.mapList} aria-labelledby="operations-map-list-heading">
+      {!mapOnly && <section className={styles.mapList} aria-labelledby="operations-map-list-heading">
         <div className={styles.mapListHeader}>
           <div>
             <h4 id="operations-map-list-heading">{s.listHeading}</h4>
@@ -124,7 +126,7 @@ export default function OperationsMapWorkspace({
             </div>
           </div>
         )}
-      </section>
+      </section>}
       <OperationsPreview entry={preview} strings={s.previewStrings} onClose={() => setPreviewId(null)} />
     </div>
   );

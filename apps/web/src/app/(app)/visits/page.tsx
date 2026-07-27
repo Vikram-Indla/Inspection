@@ -22,10 +22,14 @@ type Joined = {
   inspections: { status: string } | null; // TO-ONE embed — object or null
 };
 
-export default async function Visits({ searchParams }: { searchParams: Promise<{ limit?: string; wa_preview?: string; wa_route_base?: string }> }) {
+export default async function Visits({ searchParams }: { searchParams: Promise<{ limit?: string; wa_route_base?: string }> }) {
   const sp = await searchParams;
-  const targetPreview = process.env.SAQEEL_M2_PREVIEW === "enabled" && sp.wa_preview === "1";
-  const planningOwnedPreview = targetPreview && sp.wa_route_base === "planning";
+  // PKT-RESPONSIVE-PLANNING-003 — the accepted WA-DES-045 composition is
+  // canonical on the Planning-owned route. /visits remains a compatibility
+  // route with its existing behavior; no query or environment preview switch
+  // changes authorization or application structure.
+  const targetPreview = sp.wa_route_base === "planning";
+  const planningOwnedPreview = targetPreview;
   const routeBase = planningOwnedPreview ? "/planning/visits" : "/visits";
   const shellCurrent = planningOwnedPreview ? "/planning" : "/visits";
   const limit = Math.min(Math.max(Number.parseInt(sp.limit ?? "", 10) || PAGE_STEP, PAGE_STEP), PAGE_MAX);
@@ -216,7 +220,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
           authoritative list below is the working equivalent — never faked. */}
       <div className="sq-row" style={{ justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: "var(--space-3)" }}>
         <div className="sq-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
-          <Link className="sq-btn sq-btn--secondary" aria-current="page" href={targetPreview ? `${routeBase}?wa_preview=1` : routeBase} prefetch={false}>{t("visit.views.list", "List")}</Link>
+          <Link className="sq-btn sq-btn--secondary" aria-current="page" href={routeBase} prefetch={false}>{t("visit.views.list", "List")}</Link>
           <Link className="sq-btn sq-btn--subtle" href="/visits/calendar" prefetch={false}>{t("visit.views.calendar", "Calendar")}</Link>
           <Link className="sq-btn sq-btn--subtle" href="/visits/workload" prefetch={false}>{t("visit.views.workload", "Workload")}</Link>
           <Link className="sq-btn sq-btn--subtle" href="/visits/map" prefetch={false}>{t("visit.views.map", "Map")}</Link>
@@ -249,7 +253,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
           total={total} limit={limit} nextLimit={nextLimit} strings={strings} locale={locale}
           targetMode={targetPreview} routeBase={routeBase} />
       )}
-      {targetPreview && <div className="ax-banner" role="note"><div>{t("visit.preview.dualState", "Planning status and operational state remain independent. Every bulk item reports its own applied, blocked, or notification outcome.")}</div></div>}
+      {targetPreview && <div className="sq-banner" role="note"><div>{t("visit.preview.dualState", "Planning status and operational state remain independent. Every bulk item reports its own applied, blocked, or notification outcome.")}</div></div>}
     </Shell>
   );
 }

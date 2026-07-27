@@ -1,7 +1,7 @@
 /* CD-025 / SCR-WEB-150 / P03 — Plan Review & Publish workspace.
    Screen-specific styles for the staged review body. Consumes design tokens
-   only (var(--ax-*)); no raw colour or size values live here — those belong in
-   tokens.css (MVP1-FND-010). saqeel-components-legacy.css is not forked: these cd-* classes
+   only (var(--sq-*)); no raw colour or size values live here — those belong in
+   tokens.css (MVP1-FND-010). saqeel-runtime.css is not forked: these cd-* classes
    extend the review screen alone and never redefine an sq-* primitive.
    RTL-safe throughout (logical properties only). */
 

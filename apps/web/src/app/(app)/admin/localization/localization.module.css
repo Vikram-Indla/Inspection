@@ -1,7 +1,7 @@
 .registry {
   display: flex;
   flex-direction: column;
-  gap: var(--ax-space-300);
+  gap: var(--space-6);
   min-inline-size: 0;
 }
 
@@ -9,26 +9,26 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: var(--ax-space-300);
-  padding-block: var(--ax-space-150);
+  gap: var(--space-6);
+  padding-block: var(--space-3);
 }
 
 .registryHeader h1 {
   margin: 0;
-  font: var(--ax-text-title);
-  color: var(--ax-color-text);
+  font: var(--type-title);
+  color: var(--text-primary);
 }
 
 .registryHeader p {
   max-inline-size: 68ch;
-  margin: var(--ax-space-050) 0 0;
-  color: var(--ax-color-text-secondary);
-  font: var(--ax-text-body);
+  margin: var(--space-1) 0 0;
+  color: var(--text-secondary);
+  font: var(--type-body-font);
 }
 
 .eyebrow {
-  color: var(--ax-color-primary) !important;
-  font: var(--ax-text-micro) !important;
+  color: var(--action-primary) !important;
+  font: var(--type-micro) !important;
   font-weight: 700 !important;
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -39,7 +39,7 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--ax-space-100);
+  gap: var(--space-2);
 }
 
 .headerActions {
@@ -50,93 +50,93 @@
   display: grid;
   grid-template-columns: minmax(190px, 230px) minmax(0, 1fr);
   align-items: start;
-  gap: var(--ax-space-200);
+  gap: var(--space-4);
 }
 
 .statusPanel {
   position: sticky;
-  inset-block-start: var(--ax-space-200);
-  padding: var(--ax-space-200);
+  inset-block-start: var(--space-4);
+  padding: var(--space-4);
 }
 
 .statusPanel h2 {
-  margin: 0 0 var(--ax-space-150);
-  font: var(--ax-text-subheading);
-  color: var(--ax-color-text);
+  margin: 0 0 var(--space-3);
+  font: var(--type-subheading);
+  color: var(--text-primary);
 }
 
 .statusNav {
   display: flex;
   flex-direction: column;
-  gap: var(--ax-space-050);
+  gap: var(--space-1);
 }
 
 .statusNav button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--ax-space-150);
-  min-block-size: var(--ax-control-height);
+  gap: var(--space-3);
+  min-block-size: var(--touch-target);
   inline-size: 100%;
-  padding: var(--ax-space-100) var(--ax-space-150);
+  padding: var(--space-2) var(--space-3);
   border: 1px solid transparent;
-  border-radius: var(--ax-radius-input);
+  border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--ax-color-text-secondary);
-  font: var(--ax-text-body);
+  color: var(--text-secondary);
+  font: var(--type-body-font);
   text-align: start;
   cursor: pointer;
 }
 
 .statusNav button:hover {
-  background: var(--ax-color-surface-sunken);
-  color: var(--ax-color-text);
+  background: var(--surface-sunken);
+  color: var(--text-primary);
 }
 
 .statusNav button:focus-visible,
 .linkButton:focus-visible {
-  outline: 3px solid var(--ax-color-focus);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
 .statusNav .activeFilter {
-  border-color: var(--ax-color-primary);
-  background: var(--ax-color-primary-tint);
-  color: var(--ax-color-primary-strong);
+  border-color: var(--action-primary);
+  background: var(--accent-soft);
+  color: var(--action-primary-pressed);
   font-weight: 700;
 }
 
 .governance {
-  margin-block-start: var(--ax-space-250);
-  padding-block-start: var(--ax-space-200);
-  border-block-start: 1px solid var(--ax-color-border);
+  margin-block-start: var(--space-5);
+  padding-block-start: var(--space-4);
+  border-block-start: 1px solid var(--border-subtle);
 }
 
 .governance strong {
-  color: var(--ax-color-text);
-  font: var(--ax-text-caption);
+  color: var(--text-primary);
+  font: var(--type-caption-font);
   font-weight: 700;
 }
 
 .governance p {
-  margin: var(--ax-space-050) 0 0;
-  color: var(--ax-color-text-secondary);
-  font: var(--ax-text-caption);
+  margin: var(--space-1) 0 0;
+  color: var(--text-secondary);
+  font: var(--type-caption-font);
 }
 
 .content,
 .emptyStack {
   display: flex;
   flex-direction: column;
-  gap: var(--ax-space-150);
+  gap: var(--space-3);
   min-inline-size: 0;
 }
 
 .toolbar {
   display: flex;
   align-items: center;
-  gap: var(--ax-space-150);
-  padding: var(--ax-space-150);
+  gap: var(--space-3);
+  padding: var(--space-3);
 }
 
 .toolbar input {
@@ -145,7 +145,7 @@
 }
 
 .toolbar > span {
-  color: var(--ax-color-text);
+  color: var(--text-primary);
   white-space: nowrap;
 }
 
@@ -153,17 +153,17 @@
    micro group labels sit just below WCAG AA in the dependency branch; this
    route-scoped correction keeps the complete M9 page accessible without
    changing the shared shell owned by another delivery lane. */
-:global(html):has(.registry) :global(.ax-nav-group__trigger) {
+:global(html):has(.registry) :global(.sq-nav-group__trigger) {
   color: var(--nav-text-active);
 }
 
 .columnHeadings {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(320px, 1fr) minmax(150px, .5fr);
-  gap: var(--ax-space-200);
-  padding-inline: var(--ax-space-200);
-  color: var(--ax-color-text-secondary);
-  font: var(--ax-text-micro);
+  gap: var(--space-4);
+  padding-inline: var(--space-4);
+  color: var(--text-secondary);
+  font: var(--type-micro);
   font-weight: 700;
   letter-spacing: .04em;
   text-transform: uppercase;
@@ -172,23 +172,23 @@
 .list {
   display: flex;
   flex-direction: column;
-  gap: var(--ax-space-100);
+  gap: var(--space-2);
 }
 
 .stringRow {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(320px, 1fr) minmax(150px, .5fr);
-  gap: var(--ax-space-200);
-  padding: var(--ax-space-200);
-  border: 1px solid var(--ax-color-border);
-  border-radius: var(--ax-radius-standard);
-  background: var(--ax-color-surface);
-  box-shadow: var(--ax-shadow-raised);
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-primary);
+  box-shadow: var(--shadow-xs);
 }
 
 .orphaned {
   opacity: .78;
-  background: var(--ax-color-surface-sunken);
+  background: var(--surface-sunken);
 }
 
 .sourceCell,
@@ -197,7 +197,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--ax-space-100);
+  gap: var(--space-2);
   min-inline-size: 0;
 }
 
@@ -208,7 +208,7 @@
 .translationForm {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--ax-space-100);
+  gap: var(--space-2);
   inline-size: 100%;
 }
 
@@ -219,8 +219,8 @@
 
 .actionCell {
   align-items: flex-start;
-  padding-inline-start: var(--ax-space-150);
-  border-inline-start: 1px solid var(--ax-color-border);
+  padding-inline-start: var(--space-3);
+  border-inline-start: 1px solid var(--border-subtle);
 }
 
 .history {
@@ -230,37 +230,37 @@
 .historyList {
   display: flex;
   flex-direction: column;
-  gap: var(--ax-space-100);
-  margin-block-start: var(--ax-space-100);
+  gap: var(--space-2);
+  margin-block-start: var(--space-2);
 }
 
 .historyItem {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: var(--ax-space-100);
-  padding-block-start: var(--ax-space-100);
-  border-block-start: 1px dashed var(--ax-color-border);
+  gap: var(--space-2);
+  padding-block-start: var(--space-2);
+  border-block-start: 1px dashed var(--border-subtle);
 }
 
 .linkButton {
   padding: 0;
   border: 0;
   background: none;
-  font: var(--ax-text-caption);
+  font: var(--type-caption-font);
   cursor: pointer;
 }
 
 .criticalText {
-  color: var(--ax-color-critical-strong);
+  color: var(--status-critical-text);
 }
 
 .addForm {
   display: grid;
   grid-template-columns: minmax(180px, .8fr) minmax(220px, 1fr) minmax(220px, 1fr) minmax(180px, .8fr) auto;
   align-items: end;
-  gap: var(--ax-space-150);
-  padding: var(--ax-space-250);
+  gap: var(--space-3);
+  padding: var(--space-5);
 }
 
 .addHeading {
@@ -268,17 +268,17 @@
   align-items: center;
   justify-content: space-between;
   grid-column: 1 / -1;
-  color: var(--ax-color-text);
+  color: var(--text-primary);
 }
 
 .pagination {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--ax-space-200);
-  padding: var(--ax-space-100) var(--ax-space-150);
-  color: var(--ax-color-text-secondary);
-  font: var(--ax-text-caption);
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-3);
+  color: var(--text-secondary);
+  font: var(--type-caption-font);
 }
 
 @media (max-width: 1180px) {
@@ -308,7 +308,7 @@
   .statusNav {
     overflow-x: auto;
     flex-direction: row;
-    padding-block-end: var(--ax-space-050);
+    padding-block-end: var(--space-1);
   }
 
   .statusNav button {
@@ -317,7 +317,7 @@
   }
 
   .governance {
-    margin-block-start: var(--ax-space-150);
+    margin-block-start: var(--space-3);
   }
 
   .columnHeadings {
@@ -329,16 +329,16 @@
   }
 
   .actionCell {
-    padding-block-start: var(--ax-space-150);
+    padding-block-start: var(--space-3);
     padding-inline-start: 0;
-    border-block-start: 1px solid var(--ax-color-border);
+    border-block-start: 1px solid var(--border-subtle);
     border-inline-start: 0;
   }
 }
 
 @media (max-width: 620px) {
   .registry {
-    gap: var(--ax-space-200);
+    gap: var(--space-4);
   }
 
   .headerActions,
@@ -367,7 +367,7 @@
   }
 
   .stringRow {
-    padding: var(--ax-space-150);
+    padding: var(--space-3);
   }
 
   .translationForm,
@@ -386,7 +386,7 @@
 
   .pagination {
     justify-content: space-between;
-    gap: var(--ax-space-100);
+    gap: var(--space-2);
   }
 }
 

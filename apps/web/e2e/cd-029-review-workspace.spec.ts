@@ -117,8 +117,10 @@ test.describe("CD-029 reviewer workspace — read-only runtime", () => {
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     await expect(page.getByRole("heading", { name: /سلسلة تتبع|Finding trace chain/i })).toBeVisible();
     for (const theme of ["light", "dark"] as const) {
-      await page.emulateMedia({ colorScheme: theme });
-      await expect(page.getByRole("heading", { name: /Tamper-evident Scope Rail/i })).toBeVisible();
+      await page.evaluate(value => localStorage.setItem("saqeel-theme", value), theme);
+      await page.reload();
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+      await expect(page.getByRole("heading", { name: /شريط النطاق الكاشف للتلاعب|Tamper-evident Scope Rail/i })).toBeVisible();
       // The closed RTL drawer is intentionally translated off-canvas; measure only
       // visible workspace content so the assertion tracks user-visible reflow.
       const overflowDetails = await page.evaluate(() => {

@@ -28,7 +28,7 @@ test.describe("Inspector shell foundation and sponsor-corrected shared business 
 
   test("UIU-ISP-AC-007..011 field task bar is labelled, restrained and touch sized", () => {
     const tabs = read("src/components/FieldTabs.tsx");
-    const css = read("src/app/saqeel-components-legacy.css");
+    const css = read("src/app/saqeel-runtime.css");
     expect(tabs).toContain('className="sq-field-taskbar__primary"');
     expect(tabs).toContain("{labels.fab}");
     expect(tabs).not.toContain("Raised center FAB");
@@ -52,14 +52,14 @@ test.describe("Inspector shell foundation and sponsor-corrected shared business 
 
   test("UIU-ISP-AC-014..020 preserves theme, RTL, status, input and Atlas boundaries", () => {
     const tabs = read("src/components/FieldTabs.tsx");
-    const css = read("src/app/saqeel-components-legacy.css");
+    const css = read("src/app/saqeel-runtime.css");
     const tokens = read("src/app/tokens.css");
     const login = read("src/app/login/login.css");
     expect(tabs).toContain('aria-current={active === "dashboard" ? "page" : undefined}');
     expect(tabs).toContain("<Icon d={GLYPHS.next} />");
     expect(css).toContain("inset-inline: 0");
     expect(css).toContain("var(--focus-ring)");
-    expect(tokens).toContain("--radius-sm: 3px"); // input radius, direct token (--ax-* shim removed PR12)
+    expect(tokens).toContain("--radius-sm: 6px"); // supplied Revamp radius, direct semantic token
     expect(tokens).toContain("--type-input: 400 14px/1.5 var(--font-body)"); // input font, direct token
     expect(login).toContain("lg-atlas");
   });

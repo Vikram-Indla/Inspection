@@ -3,6 +3,7 @@
 // owns filtering and inline editing. The page itself renders through useT()
 // (keys l10n.*) — the module that manages language works in both languages.
 import Shell from "@/components/Shell";
+import AdminDestinationFrame from "../_components/AdminDestinationFrame";
 import EmptyState from "@/components/EmptyState";
 import { IconShieldCheck } from "@/app/icons";
 import { getUserRoles } from "@/lib/persona";
@@ -12,6 +13,7 @@ import { useT } from "@/lib/i18n";
 import { redirect } from "next/navigation";
 import Manager, { type Labels, type UiString } from "./Manager";
 import LocaleSwitch from "./LocaleSwitch";
+import { createAdminRecordDrawerLabels } from "../_components/adminRecordDrawerCopy";
 
 export const dynamic = "force-dynamic";
 const UI_STRINGS_PAGE_SIZE = 1000;
@@ -172,31 +174,76 @@ export default async function Localization() {
     sourcePanel: t("l10n.history.source.panel", copy("admin panel", "لوحة الإدارة")),
     sourceSync: t("l10n.history.source.sync", copy("source sync", "مزامنة المصدر")),
     sourceRestore: t("l10n.history.source.restore", copy("restore", "استعادة")),
+    updatedAt: t("admin.recordDrawer.updatedAt", copy("Registry updated", "تحديث السجل")),
+    notConfigured: t("common.notConfigured", copy("Not configured", "غير مُهيّأ")),
+    drawerSubtitle: t("admin.revamp.hub.rules", copy("Rules & content", "القواعد والمحتوى")),
   };
 
+  const notConfigured = t("common.notConfigured", copy("Not configured", "غير مُهيّأ"));
+  const drawerLabels = createAdminRecordDrawerLabels(t, locale);
+  const lookupGovernance = [
+    t("admin.revamp.lookup.governance.pair", copy("Every localized key preserves its English source and Arabic revision history.", "يحافظ كل مفتاح مترجم على مصدره الإنجليزي وسجل مراجعاته العربية.")),
+    t("admin.revamp.lookup.governance.retire", copy("Orphaned keys remain restorable and are never silently deleted.", "تبقى المفاتيح غير المستخدمة قابلة للاستعادة ولا تُحذف بصمت.")),
+    t("admin.revamp.lookup.governance.audit", copy("Updates run through the existing revisioned server actions.", "تمر التحديثات عبر إجراءات الخادم الحالية ذات الإصدارات.")),
+  ];
   return (
-    <Shell current="/admin/localization" title={t("l10n.title", copy("Language & translations", "اللغة والترجمات"))}
+    <AdminDestinationFrame
+      current="/admin/localization"
+      title={t("admin.revamp.lookup.title", copy("Lookup Management", "إدارة القوائم المرجعية"))}
+      subtitle={t("admin.revamp.lookup.subtitle", copy("Shared reference data used across the platform", "البيانات المرجعية المشتركة المستخدمة في المنصة"))}
+      hub={t("admin.revamp.hub.rules", copy("Rules & content", "القواعد والمحتوى"))}
+      routeLabel="/admin/localization"
+      designId="frame-20-admin-lookup-management"
+      drawerLabels={drawerLabels}
+      labels={{
+        administration: t("navigation.administration", copy("Administration", "الإدارة")),
+        breadcrumb: t("common.breadcrumb", copy("Breadcrumb", "مسار التنقل")),
+        governance: t("admin.revamp.governance", copy("Governance on this surface", "الحوكمة في هذه الواجهة")),
+        reconstruction: t("admin.revamp.reconstruction", copy("Reconstruction note", "ملاحظة إعادة البناء")),
+      }}
+      metrics={[
+        {
+          label: t("l10n.kpi.total", copy("Reference strings", "النصوص المرجعية")),
+          value: loadFailed ? notConfigured : total,
+          note: t("admin.revamp.lookup.metric.total.note", copy("RLS-visible, key-ordered registry", "سجل مرئي حسب صلاحيات الصفوف ومرتب بالمفتاح")),
+        },
+        {
+          label: t("l10n.kpi.translated", copy("Translated (AR)", "مترجمة إلى العربية")),
+          value: loadFailed ? notConfigured : translated,
+          note: t("admin.revamp.lookup.metric.translation.note", copy(`${coverage}% coverage from the current read`, `تغطية ${coverage}% من القراءة الحالية`)),
+        },
+        {
+          label: t("l10n.kpi.reviewed", copy("Reviewed", "تمت المراجعة")),
+          value: loadFailed ? notConfigured : reviewed,
+          note: t("admin.revamp.lookup.metric.reviewed.note", copy("Revision status, not an inferred approval", "حالة الإصدار وليست اعتماداً مستنتجاً")),
+        },
+      ]}
+      tabs={[
+        { label: t("admin.revamp.lookup.tabs.lists", copy("Reference lists", "القوائم المرجعية")), href: "/admin/localization" },
+        { label: t("l10n.title", copy("Language & translations", "اللغة والترجمات")), href: "/admin/localization", current: true },
+        { label: t("admin.revamp.lookup.tabs.planning", copy("Planning lookups", "قوائم التخطيط")), href: "/admin/planning/lookups" },
+      ]}
+      governance={lookupGovernance}
+      reconstructionNote={t("admin.revamp.lookup.note", copy("The canonical Lookup destination resolves to the existing localization and governed planning-lookup sources. No reference-list count or language completeness claim is fabricated.", "تتجه وجهة القوائم المرجعية إلى مصادر الترجمة وقوائم التخطيط المحكومة الحالية. لا يتم اختلاق عدد للقوائم أو ادعاء اكتمال اللغة."))}
       context={
         <span className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
           <span className="badge badge-info">SCR-ADM-100 · SB19</span>
           <LocaleSwitch locale={locale} />
         </span>
-      }>
+      }
+    >
       {loadFailed ? (
         <div className="sq-banner sq-banner--critical" role="alert">
           {t("l10n.error.load", "Could not load the localization dictionary. Nothing was changed. Try again.")}
         </div>
       ) : (
-        <>
-          <div className="sq-kpi-row">
-            <div className="sq-kpi"><span className="sq-kpi__value numeric">{total}</span>{t("l10n.kpi.total", "Total keys")}</div>
-            <div className="sq-kpi"><span className="sq-kpi__value numeric">{translated}</span>{t("l10n.kpi.translated", "Translated (AR)")}</div>
-            <div className="sq-kpi"><span className="sq-kpi__value numeric">{reviewed}</span>{t("l10n.kpi.reviewed", "Reviewed")}</div>
-            <div className="sq-kpi"><span className="sq-kpi__value numeric">{coverage}%</span>{t("l10n.kpi.coverage", "Coverage")}</div>
-          </div>
-          <Manager rows={rows} labels={labels} locale={locale} />
-        </>
+        <Manager
+          rows={rows}
+          labels={labels}
+          locale={locale}
+          drawerGovernance={lookupGovernance}
+        />
       )}
-    </Shell>
+    </AdminDestinationFrame>
   );
 }

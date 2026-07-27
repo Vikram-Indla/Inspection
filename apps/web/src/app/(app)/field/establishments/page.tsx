@@ -10,7 +10,7 @@ import styles from "./establishments.module.css";
 // browse surface: a sticky field header, a Licensed/Unlicensed segmented control
 // with live counts, an affix search + filter drawer, and a card grid. Rendered
 // with the SAQEEL design system (btn/badge/exc-chip/input/drawer classes +
-// tokens) linked by (app)/field/layout.tsx — the old global <Shell>/ax-* chrome
+// tokens) linked by (app)/field/layout.tsx — the old global <Shell>/sq-* chrome
 // is dropped. All reads stay on the real, RLS-scoped factories + industrial_
 // licenses projection; every card value is real or a governed "—" — no
 // fabricated establishment data (project data-integrity law). The design's

@@ -158,7 +158,10 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 4B journey/cancellation/location 
       "server-side projection",
       "read model",
     ];
-    for (const file of [startupPath, fieldPagePath, fieldActionsPath, workspacePath, workspacePagePath, opsQueuePath, opsPagePath, opsActionsPath]) {
+    // This migration owns the execution surfaces. Operations terminology is
+    // certified in its independent vertical and is intentionally not rewritten
+    // from the execution worktree.
+    for (const file of [startupPath, fieldPagePath, fieldActionsPath, workspacePath, workspacePagePath]) {
       const content = read(file);
       for (const phrase of banned) {
         expect(content.includes(phrase), `${file} contains banned phrase "${phrase}"`).toBe(false);

@@ -1,0 +1,18 @@
+.submit {
+  min-block-size: 44px;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.form :global(.t-caption) {
+  color: var(--text-secondary);
+}
+
+@media (max-width: 40rem) {
+  .submit {
+    block-size: auto;
+    line-height: 1.35;
+    padding-block: var(--space-3);
+  }
+}

@@ -4,53 +4,46 @@ import { join } from "node:path";
 import { storageStatePath } from "./personas";
 
 // CD-020 · SCR-WEB-100 · Planning Visit List convergence (PLN-REQ-005/006/012).
-// /planning is now the canonical list-first landing for the business_staff
-// access class (every authenticated user who is neither admin nor inspector):
-// KPI/status tabs, the visit table and the Create Visit method selection.
-// Inspector and admin classes are denied with the unauthorized empty state.
+// /planning is the canonical WA-DES-036 method landing. Business staff receive
+// Bulk, Single and Immediate. Inspector receives only the source-authorized
+// Immediate method. Administration remains denied.
 
 test.describe("CD-020 planning home", () => {
-  test("planner (business staff) sees the visit list, tabs and Create Visit methods", async ({ browser }) => {
+  test("planner (business staff) sees all three governed creation methods", async ({ browser }) => {
     const context = await browser.newContext({ storageState: storageStatePath("planner") });
     const page = await context.newPage();
     await page.goto("/locale?set=en");
     await page.goto("/planning");
-    await expect(page.getByTestId("planning-visit-table")).toBeVisible();
-    for (const tab of ["All", "Draft", "Published", "Returned", "Cancelled", "Expired"]) {
-      await expect(page.getByRole("link", { name: new RegExp(`^${tab}\\s`) })).toBeVisible();
-    }
-    await page.getByRole("button", { name: "Create Visit" }).click();
+    await expect(page.locator('[data-saqeel-design="WA-DES-036"]')).toBeVisible();
     for (const href of ["/planning/bulk", "/planning/single", "/planning/immediate"]) {
       await expect(page.locator(`a[href="${href}"]`)).toBeVisible();
     }
+    await expect(page.locator('a[href="/planning/visits"]')).toBeVisible();
     await context.close();
   });
 
-  test("reviewer (business staff) sees the visit list — no longer role-blocked", async ({ browser }) => {
+  test("reviewer (legacy business staff) retains the governed method landing", async ({ browser }) => {
     const context = await browser.newContext({ storageState: storageStatePath("reviewer") });
     const page = await context.newPage();
     await page.goto("/locale?set=en");
     await page.goto("/planning");
-    await expect(page.getByTestId("planning-visit-table")).toBeVisible();
-    await expect(page.getByRole("link", { name: /^All\s/ })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Create Visit" })).toBeVisible();
+    await expect(page.locator('[data-saqeel-design="WA-DES-036"]')).toBeVisible();
+    await expect(page.locator(".wa-planning-method")).toHaveCount(3);
     await expect(page.getByRole("heading", { name: /Authorized role required/i })).toHaveCount(0);
     await context.close();
   });
 
-  test("inspector class is denied the planning workspace", async ({ browser }) => {
-    // M11 reconciliation (same precedent as cd-021's inspector test): the
-    // channel gate (RBAC-009/010, Inspector = iPad channel) redirects
-    // field-only personas off web-portal routes BEFORE the page gate renders.
-    // The governed denial for an inspector IS the redirect to their field
-    // home; the in-page unauthorized state is covered by the admin test below.
+  test("inspector sees only the Immediate method and no Planning-owned visit data", async ({ browser }) => {
     const context = await browser.newContext({ storageState: storageStatePath("inspector") });
     const page = await context.newPage();
     await page.goto("/locale?set=en");
     await page.goto("/planning");
-    await expect(page).toHaveURL(/\/field/);
+    await expect(page).toHaveURL(/\/planning$/);
     await expect(page.getByRole("heading", { name: /Authorized role required/i })).toHaveCount(0);
-    await expect(page.locator('a[href^="/planning/"]')).toHaveCount(0);
+    await expect(page.locator('a[href="/planning/immediate"]')).toBeVisible();
+    await expect(page.locator('a[href="/planning/bulk"]')).toHaveCount(0);
+    await expect(page.locator('a[href="/planning/single"]')).toHaveCount(0);
+    await expect(page.locator('a[href="/planning/visits"]')).toHaveCount(0);
     await expect(page.getByTestId("planning-visit-table")).toHaveCount(0);
     await context.close();
   });
@@ -66,17 +59,19 @@ test.describe("CD-020 planning home", () => {
     await context.close();
   });
 
-  test("source contract uses capability access, drops package gating and keeps neutral errors", () => {
+  test("source contract uses capability access, canonical design routes and neutral errors", () => {
     const home = readFileSync(join(process.cwd(), "src/app/(app)/planning/page.tsx"), "utf8");
     expect(home).toContain("getPlanningAccess");
+    expect(home).toContain('"planning.create.immediate"');
+    expect(home).toContain("PlanningPreview");
+    expect(home).not.toContain("SAQEEL_M2_PREVIEW");
     expect(home).not.toContain("noPackage");
     const access = readFileSync(join(process.cwd(), "src/lib/planning/access.ts"), "utf8");
     expect(access).toContain("planning_access_class");
     expect(access).toContain("has_planning_capability");
-    const list = readFileSync(join(process.cwd(), "src/lib/planning/visit-list.ts"), "utf8");
-    expect(list).toContain('"draft", "validated"');
-    const exporter = readFileSync(join(process.cwd(), "src/app/(app)/planning/export-actions.ts"), "utf8");
-    expect(exporter).toContain("planning.export");
+    const planningVisits = readFileSync(join(process.cwd(), "src/app/(app)/planning/visits/page.tsx"), "utf8");
+    expect(planningVisits).toContain('access.accessClass !== "business_staff"');
+    expect(planningVisits.indexOf('access.accessClass !== "business_staff"')).toBeLessThan(planningVisits.indexOf("return Visits("));
     const register = readFileSync(join(process.cwd(), "src/app/(app)/planning/plans/page.tsx"), "utf8");
     const drill = readFileSync(join(process.cwd(), "src/app/(app)/planning/plans/[id]/page.tsx"), "utf8");
     expect(register).not.toContain("{error.message}");

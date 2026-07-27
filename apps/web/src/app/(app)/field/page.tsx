@@ -28,8 +28,9 @@ import styles from "./field-home.module.css";
 //   4. Today's Schedule.   5. Pending Attention.   6. Operational insight.
 //   7. Quick actions.
 //
-// Renders its own SAQEEL chrome (FieldHeader + FieldNav); the global AppShell
-// is bypassed for /field.
+// Renders the source-backed execution composition inside the canonical
+// AppShell. FieldHeader is route content; global navigation, theme, account and
+// notification controls remain owned by the shared shell.
 //
 // NOT DEAD WOOD: every number is real and RLS-scoped, or the element renders the
 // governed empty state. Per the project no-fabrication + Health≠Risk laws the
@@ -353,9 +354,8 @@ export default async function Field() {
 
   // ---- Header cluster --------------------------------------------------------
   // The design's header is: avatar, greeting + "date · city", date pill, online
-  // pill, search, notifications, sync, language, theme. FieldHeader is shared
-  // channel chrome and outside this lease; the theme control it deliberately
-  // does not expose (the field channel is fixed dark) is reported, not forked.
+  // pill, search, notifications, sync and language. The canonical AppShell owns
+  // the application-wide theme control, so FieldHeader does not duplicate it.
   const avatar = (
     <span className="avatar avatar-lg" aria-hidden="true"
       style={{ background: "var(--action-primary)", color: "var(--text-on-action)" }}>
@@ -659,10 +659,9 @@ export default async function Field() {
                   {tr("field.home.qa.continue", "Continue active inspection", "متابعة التفتيش النشط")} — <bdi>{activeVisit.factories?.name ?? "—"}</bdi>
                 </Link>
               )}
-              {/* CR-100/101/102 — the assigned-visits surface (list · calendar · map).
-                  FieldNav has no slot for it and is shared shell under CC-SHELL-TABLET-001,
-                  so this rail is the entry point. Placed last so the design's own
-                  three pills keep the design's order. */}
+              {/* CR-100/101/102 — the assigned-visits surface (list · calendar ·
+                  map). This contextual rail keeps the execution entry point
+                  beside the other task actions. */}
               <Link href="/field/visits" prefetch={false} className={styles.qbtnPill}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 16, height: 16 }}><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M8 2v4M16 2v4M3 10h18" /></svg>
                 {tr("field.home.qa.myVisits", "My visits", "زياراتي")}
@@ -671,11 +670,6 @@ export default async function Field() {
           </div>
         </div>
       </FieldScopeProvider>
-
-      {/* No local nav spacer: FieldNav is position:fixed and renders its own
-          .field-nav-spacer (56px / 60px ≥834px, + safe-area). The design's
-          static 58px div here is now a duplicate that stacked a second gap
-          under the content. */}
     </>
   );
 }

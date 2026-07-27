@@ -55,7 +55,7 @@ test.describe("admin risk studio safe-now contract", () => {
   });
 
   test("uses logical responsive styling for RTL/LTR and theme token parity", () => {
-    const css = read("src/app/saqeel-components-legacy.css");
+    const css = read("src/app/saqeel-runtime.css");
 
     expect(css).toContain(".rk-section-nav");
     expect(css).toContain('[dir="rtl"] .rk-section-nav__item.is-active');

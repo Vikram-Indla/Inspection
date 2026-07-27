@@ -23,7 +23,7 @@ export default function DecisionPanel({ reviewId, sections, strings }: { reviewI
   }, [state.error]);
   return (
     <form action={formAction} className="panel" style={{ padding: "var(--space-6)", position: "sticky", insetBlockStart: 16, display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-      <h4>{strings.heading}</h4>
+      <h2>{strings.heading}</h2>
       <input type="hidden" name="review_id" value={reviewId} />
       <div className="row">
         {["approve", "return", "reject"].map(d => (
