@@ -28,6 +28,7 @@ import OperationsMapWorkspace, {
 import OperationsScopeFilter from "./OperationsScopeFilter";
 import { resolveRegionId } from "@/lib/ksa-regions";
 import styles from "./operations.module.css";
+import RevampOperationsCenter from "./RevampOperationsCenter";
 
 // SCR-WEB-500 — Operations Center (SB12, M08). Read legs + write legs
 // (acknowledge/close corrective actions; mark notifications handled) +
@@ -865,8 +866,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   ];
 
   return (
-    <Shell current="/operations" title={t("ops.title", "Operations Center")}
-      context={<span className="sq-lozenge sq-lozenge--info">{t("ops.context", "National inspection activity and decisions")}</span>}>
+    <Shell current="/operations" title="">
       {loadErrors.length > 0 && (
         <div className="sq-banner sq-banner--critical" role="alert"><div>
           <strong>{t("ops.err.partial", "Some information could not be loaded.")}</strong> {loadErrors.join(" · ")}.{" "}
@@ -885,7 +885,20 @@ export default async function Operations({ searchParams }: { searchParams: Promi
         </div></div>
       )}
 
-      <div className={styles.page}>
+      <RevampOperationsCenter
+        locale={locale}
+        view={view}
+        mapViewHref={mapViewHref}
+        performanceViewHref={performanceViewHref}
+        mapEntries={mapEntries}
+        mapStrings={mapWorkspaceStrings}
+        counts={counts}
+        monitoredCount={monitored.length}
+        highlights={highlights}
+        regions={regionSummaries}
+      />
+
+      <div className={styles.page} hidden>
         <nav className={styles.viewSwitch} aria-label={t("ops.views.label", local("Operations Center views", "عروض مركز العمليات"))}>
           <a
             className={`${styles.viewLink} ${view === "map" ? styles.viewLinkActive : ""}`}

@@ -14,6 +14,7 @@ import DiscardDraftButton from "./DiscardDraftButton";
 import ExportButton from "./ExportButton";
 import RefreshButton from "./RefreshButton";
 import PlanningPreview from "./PlanningPreview";
+import RevampPlanningInsights from "./RevampPlanningInsights";
 
 export const dynamic = "force-dynamic";
 
@@ -102,7 +103,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
   const { data: { user } } = await getVerifiedUser(sb); // identity verified once; the RPC class check below is the access decision
 
   const access = await getPlanningAccess(sb, ["planning.view", "planning.create", "planning.export"]);
-  const title = t("plan.home.title", "Visit planning");
+  const title = t("plan.home.title", "Planning");
   if (access.error) {
     return (
       <Shell current="/planning" title={title}>
@@ -206,16 +207,14 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
   const page = Math.min(list.page, totalPages);
 
   return (
-    <Shell current="/planning" title={title}
-      context={<span className="sq-caption sq-numeric">{tr("plan.list.context", "{total} visits in scope", "{total} زيارة في النطاق").replace("{total}", String(list.total))}</span>}>
+    <Shell current="/planning" title="">
+      <div className="sq-planning-heading">
+        <h1>{title}</h1>
+        <span>{tr("plan.list.subtitle", "Create inspection visits — bulk, single or immediate", "إنشاء زيارات التفتيش — جماعية أو فردية أو فورية")}</span>
+      </div>
       {/* Page actions — Create Visit / Export / Refresh (PLN-REQ-006/017/018) */}
-      <div className="sq-row" style={{ gap: "var(--space-3)", flexWrap: "wrap", alignItems: "center" }}>
-        {access.can("planning.create") && (
-          <CreateVisitSection methods={methods} strings={{
-            createLabel: tr("plan.list.createVisit", "Create Visit", "إنشاء زيارة"),
-            oneMethodNote: t("plan.home.oneMethod", "One planning method per creation session (M01-011 · REF-001)."),
-          }} />
-        )}
+      <div className="sq-planning-commandbar">
+        <RefreshButton label={tr("plan.list.refresh", "Refresh", "تحديث")} busyLabel={tr("plan.list.refreshing", "Refreshing…", "جارٍ التحديث…")} />
         {access.can("planning.export") && (
           <ExportButton params={params} strings={{
             label: tr("plan.list.export", "Export (CSV)", "تصدير (CSV)"),
@@ -225,8 +224,21 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
             cappedNote: tr("plan.list.exportCapped", "Exported the first {n} matching rows — refine the filters for the rest.", "تم تصدير أول {n} صفًا مطابقًا — حسّن عوامل التصفية للباقي."),
           }} />
         )}
-        <RefreshButton label={tr("plan.list.refresh", "Refresh", "تحديث")} busyLabel={tr("plan.list.refreshing", "Refreshing…", "جارٍ التحديث…")} />
+        <button className="sq-btn sq-btn--secondary" type="button">{tr("plan.list.savedViews", "Saved views", "العروض المحفوظة")}</button>
+        <span />
+        {access.can("planning.create") && (
+          <CreateVisitSection methods={methods} strings={{
+            createLabel: tr("plan.list.createVisit", "Create visit", "إنشاء زيارة"),
+            oneMethodNote: t("plan.home.oneMethod", "One planning method per creation session (M01-011 · REF-001)."),
+          }} />
+        )}
       </div>
+
+      <RevampPlanningInsights
+        rows={list.rows}
+        total={list.total}
+        returned={list.countsAvailable ? list.counts.returned : "—"}
+      />
 
       {/* KPI / status tabs with live counts (PLN-REQ-012) */}
       <div className="sq-kpi-row" role="group" aria-label={tr("plan.list.tabsAria", "Planning status tabs", "تبويبات حالة التخطيط")}>
