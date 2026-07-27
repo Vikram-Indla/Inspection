@@ -12,7 +12,7 @@
   block-size: 100%;
   padding: 0;
   border: 0;
-  background: var(--ax-color-overlay, rgb(15 23 42 / 56%));
+  background: var(--surface-overlay);
   cursor: default;
 }
 
@@ -26,10 +26,10 @@
   max-inline-size: 100%;
   flex-direction: column;
   overflow: hidden;
-  border-inline-start: 1px solid var(--ax-color-border);
-  background: var(--ax-color-surface);
-  color: var(--ax-color-text);
-  box-shadow: var(--ax-shadow-overlay);
+  border-inline-start: 1px solid var(--border-subtle);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-lg);
 }
 
 .header {
@@ -37,7 +37,7 @@
   align-items: flex-start;
   gap: var(--space-3);
   padding: 1.125rem 1.25rem;
-  border-block-end: 1px solid var(--ax-color-border);
+  border-block-end: 1px solid var(--border-subtle);
 }
 
 .heading {
@@ -48,7 +48,7 @@
 .heading h2 {
   margin: 0;
   overflow-wrap: anywhere;
-  font: var(--ax-text-heading);
+  font: var(--type-heading-lg);
   font-size: 1.1875rem;
   font-weight: 500;
   line-height: 1.75rem;
@@ -57,8 +57,8 @@
 .heading p {
   margin: 0;
   overflow-wrap: anywhere;
-  color: var(--ax-color-text-secondary);
-  font: var(--ax-text-caption);
+  color: var(--text-secondary);
+  font: var(--type-caption-font);
 }
 
 .closeButton {
@@ -67,22 +67,22 @@
   min-block-size: 2.75rem;
   place-items: center;
   padding: 0;
-  border: 1px solid var(--ax-color-border-strong);
-  border-radius: var(--ax-radius-small);
-  background: var(--ax-color-surface);
-  color: var(--ax-color-text);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-primary);
+  color: var(--text-primary);
   font-size: 1.25rem;
   cursor: pointer;
 }
 
 .closeButton:hover {
-  background: var(--ax-color-surface-hover, var(--ax-color-surface-sunken));
+  background: var(--surface-secondary);
 }
 
 .closeButton:focus-visible,
 .recordRow:focus-visible,
 .recordArticle:focus-visible {
-  outline: 3px solid var(--focus-ring, var(--ax-color-primary));
+  outline: 3px solid var(--focus-ring);
   outline-offset: -3px;
 }
 
@@ -99,8 +99,8 @@
 
 .group h3 {
   margin: 0 0 .375rem;
-  color: var(--ax-color-text-secondary);
-  font: var(--ax-text-micro);
+  color: var(--text-secondary);
+  font: var(--type-micro);
   letter-spacing: .12em;
   text-transform: uppercase;
 }
@@ -114,12 +114,12 @@
   justify-content: space-between;
   gap: 1rem;
   padding: .4375rem 0;
-  border-block-end: 1px solid var(--ax-color-border);
-  font: var(--ax-text-caption);
+  border-block-end: 1px solid var(--border-subtle);
+  font: var(--type-caption-font);
 }
 
 .group dt {
-  color: var(--ax-color-text-secondary);
+  color: var(--text-secondary);
 }
 
 .group dd {
@@ -132,11 +132,11 @@
 .disclosure {
   margin: 0;
   padding: var(--space-3);
-  border: 1px solid var(--ax-color-border);
-  border-radius: var(--ax-radius-small);
-  background: var(--ax-color-surface-field);
-  color: var(--ax-color-text-secondary);
-  font: var(--ax-text-caption);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-secondary);
+  color: var(--text-secondary);
+  font: var(--type-caption-font);
 }
 
 .actions {
@@ -144,8 +144,8 @@
   flex-wrap: wrap;
   gap: var(--space-2);
   padding: 1rem 1.25rem;
-  border-block-start: 1px solid var(--ax-color-border);
-  background: var(--ax-color-surface);
+  border-block-start: 1px solid var(--border-subtle);
+  background: var(--surface-primary);
 }
 
 .actions :global(.sq-btn) {
@@ -159,7 +159,7 @@
 
 .recordRow:hover,
 .recordArticle:hover {
-  background: var(--ax-color-primary-tint, var(--ax-color-surface-hover));
+  background: var(--accent-soft);
 }
 
 @media (max-width: 30rem) {

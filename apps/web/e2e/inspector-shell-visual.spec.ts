@@ -12,7 +12,7 @@ const tokens = fs.readFileSync(path.join(root, "src/app/tokens.css"), "utf8");
 // the two SAQEEL DS component layers (PR12 zero-trace: --sq-* removed).
 const css = [
   fs.readFileSync(path.join(root, "src/app/saqeel-components.css"), "utf8"),
-  fs.readFileSync(path.join(root, "src/app/saqeel-components-legacy.css"), "utf8"),
+  fs.readFileSync(path.join(root, "src/app/saqeel-runtime.css"), "utf8"),
 ].join("\n");
 const prismData = `data:image/svg+xml;base64,${fs.readFileSync(path.join(root, "public/saqeel-prism.svg")).toString("base64")}`;
 const evidenceRoot = "/Users/vikramindla/.codex/visualizations/2026/07/18/019f7494-823c-7091-bf3a-101272b4848c/inspector-shell-uplift";

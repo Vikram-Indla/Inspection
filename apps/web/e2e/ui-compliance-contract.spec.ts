@@ -33,7 +33,7 @@ test.describe("UI compliance release guard", () => {
   });
 
   test("UIC regression — links, targets and visit filters retain accessible affordances", () => {
-    const css = read("src/app/saqeel-components-legacy.css");
+    const css = read("src/app/saqeel-runtime.css");
     const visits = read("src/app/(app)/visits/VisitsBoard.tsx");
     const factories = read("src/app/(app)/factories/FactoryList.tsx");
     expect(css).toContain("a.sq-link:not(.sq-btn)");

@@ -24,6 +24,18 @@ test.describe("shell-f0 SAQEEL design-system migration", () => {
     expect(hits).toEqual([]);
   });
 
+  test("one SAQEEL runtime owns the shell and migrated component surfaces", () => {
+    const layout = read("src/app/layout.tsx");
+    const runtime = read("src/app/saqeel-runtime.css");
+    expect(layout).toContain('import "./saqeel-runtime.css"');
+    expect(layout).not.toContain("saqeel-components-legacy");
+    expect(fs.existsSync(path.join(root, "src/app/saqeel-components-legacy.css"))).toBe(false);
+    expect(runtime).toContain(".sq-shell__nav");
+    expect(runtime).toContain(".cd-stage");
+    expect(runtime).toContain(".rk-model-layout");
+    expect(runtime).toContain(".sq-route-progress");
+  });
+
   test("typography and visual values resolve through canonical SAQEEL tokens", () => {
     const tokens = read("src/app/tokens.css");
     expect(tokens).toContain("--type-page-title-size: 22px");

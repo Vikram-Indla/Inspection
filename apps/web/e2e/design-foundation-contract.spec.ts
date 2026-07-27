@@ -62,17 +62,17 @@ test.describe("SAQEEL Inspection Design System v1.0 contract", () => {
   });
 
   test("DSF-AC-019..023 authenticated foundation rejects cinematic styling", () => {
-    const skeleton = read("src/app/saqeel-components-legacy.css");
+    const skeleton = read("src/app/saqeel-runtime.css");
     const mapPanel = read("src/app/saqeel-components.css");
     const dashboard = read("src/app/(app)/dashboard/dashboard.module.css");
     // Scan authenticated PAGE/module CSS only. The SAQEEL design-system layers
-    // (tokens.css, saqeel-components.css, saqeel-components-legacy.css,
+    // (tokens.css, saqeel-components.css, saqeel-runtime.css,
     // v2-components.css) and the login Atlas are excluded — they are
     // DS/exception layers, not pages, and legitimately carry SAQEEL DS
     // internals (uppercase micro-labels, white-on-status marker knobs, the
     // skeleton shimmer gradient, the texture-chrome repeating gradient).
     // Page CSS must still stay institutional.
-    const dsLayerFiles = ["tokens.css", "login.css", "saqeel-runtime.css", "saqeel-components.css", "saqeel-components-legacy.css", "v2-components.css"];
+    const dsLayerFiles = ["tokens.css", "login.css", "saqeel-runtime.css", "saqeel-components.css", "v2-components.css"];
     const authenticated = cssFiles(path.join(root, "src/app"))
       .filter(file => !dsLayerFiles.some(name => file.endsWith(name)))
       .map(file => fs.readFileSync(file, "utf8")).join("\n");
@@ -92,7 +92,7 @@ test.describe("SAQEEL Inspection Design System v1.0 contract", () => {
     const prism = read("public/saqeel-prism.svg");
     const bell = read("src/components/NotificationBell.tsx");
     const shell = read("src/components/ShellClient.tsx");
-    const css = read("src/app/saqeel-components-legacy.css");
+    const css = read("src/app/saqeel-runtime.css");
     expect(prism).not.toContain("<rect");
     expect(bell).not.toContain("🔔");
     expect(bell).toContain("sq-notification__trigger");

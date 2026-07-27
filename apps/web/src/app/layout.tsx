@@ -1,7 +1,4 @@
 import "./tokens.css";
-// Compatibility rules load first. The supplied SAQEEL runtime loads last and
-// therefore remains authoritative for the shell, theme and responsive layout.
-import "./saqeel-components-legacy.css";
 import "./saqeel-components.css";
 import "./saqeel-runtime.css";
 import PwaRegister from "@/components/PwaRegister";

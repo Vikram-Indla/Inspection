@@ -21,7 +21,8 @@ test.describe("Platform-wide government design-system contract", () => {
   test("PDS-AC-001..005 root layout governs typography, surfaces, theme and direction", () => {
     const layout = read("src/app/layout.tsx");
     expect(layout).toContain('import "./tokens.css"');
-    expect(layout).toContain('import "./saqeel-components-legacy.css"');
+    expect(layout).toContain('import "./saqeel-runtime.css"');
+    expect(layout).not.toContain("legacy");
     expect(layout).toContain('import "./saqeel-components.css"');
     expect(layout).toContain('localFont({');
     expect(layout).toContain("ibm-plex-sans-arabic");
@@ -79,9 +80,9 @@ test.describe("Platform-wide government design-system contract", () => {
 
   test("PDS-AC-022..025 authenticated CSS remains institutional and token-driven", () => {
     // Page/module CSS only — the SAQEEL DS component sheets (tokens.css peers:
-    // saqeel-components.css, saqeel-components-legacy.css, v2-components.css)
+    // saqeel-components.css, saqeel-runtime.css, v2-components.css)
     // are design-system layers, not pages, and are excluded like login.css.
-    const dsLayerFiles = ["tokens.css", "login.css", "saqeel-runtime.css", "saqeel-components.css", "saqeel-components-legacy.css", "v2-components.css"];
+    const dsLayerFiles = ["tokens.css", "login.css", "saqeel-runtime.css", "saqeel-components.css", "v2-components.css"];
     const authenticated = files(appRoot, ".css")
       .filter(file => !dsLayerFiles.some(name => file.endsWith(name)))
       .map(file => fs.readFileSync(file, "utf8")).join("\n");
