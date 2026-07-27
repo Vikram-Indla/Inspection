@@ -22,6 +22,14 @@ import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { getReasonOptions, validateReason } from "@/lib/planning/lifecycle";
+import {
+  classifyPlanningClosureError,
+  parsePlanningBulkCommandStart,
+  parsePlanningBulkReceipt,
+  readPlanningVersions,
+  type PlanningBulkReceipt,
+  type PlanningClosureError,
+} from "@/lib/planning/closure-receipts";
 
 export type BulkVerb = "reschedule" | "reassign" | "cancel" | "edit";
 
@@ -57,8 +65,10 @@ export type FormErrorCode =
 export type ActionResult = {
   verb?: BulkVerb;
   formErrorCode?: FormErrorCode;
+  errorCode?: PlanningClosureError;
   requested?: number;
   items?: ItemResult[];
+  receipt?: PlanningBulkReceipt;
 };
 
 function selectedIds(fd: FormData): string[] {
@@ -124,6 +134,116 @@ function isCompleteAtomicReceipt(receipt: unknown, verb: BulkVerb, ids: string[]
   return expected.every((id, index) => id === returned[index]);
 }
 
+async function runFrozenBulkCommand(
+  sb: Awaited<ReturnType<typeof supabaseServer>>,
+  operation: "cancel" | "reschedule",
+  ids: string[],
+  payload: Record<string, unknown>,
+  idempotencyKey: string,
+  correlationId: string,
+): Promise<ActionResult> {
+  const frozenIds = [...ids].sort();
+  const versionRead = await readPlanningVersions(sb, frozenIds);
+  if (!versionRead.versions) {
+    return {
+      verb: operation,
+      requested: frozenIds.length,
+      errorCode: versionRead.error ?? "service_error",
+      items: frozenIds.map(id => ({ id, outcome: "error" })),
+    };
+  }
+  const { data: startData, error: startError } = await sb.rpc("create_planning_bulk_command", {
+    p_operation: operation,
+    p_visit_ids: frozenIds,
+    p_expected_versions: versionRead.versions,
+    p_payload: payload,
+    p_idempotency_key: idempotencyKey,
+    p_correlation_id: correlationId,
+  });
+  if (startError) {
+    console.error(`[visits.bulk.${operation}] create command failed:`, startError.message, startError.code);
+    return {
+      verb: operation,
+      requested: frozenIds.length,
+      errorCode: classifyPlanningClosureError(startError),
+      items: frozenIds.map(id => ({ id, outcome: "error" })),
+    };
+  }
+  const start = parsePlanningBulkCommandStart(startData);
+  if (!start) {
+    console.error(`[visits.bulk.${operation}] invalid command-start receipt`);
+    return {
+      verb: operation,
+      requested: frozenIds.length,
+      errorCode: "receipt_invalid",
+      items: frozenIds.map(id => ({ id, outcome: "error" })),
+    };
+  }
+
+  let targetCount = start.targetCount;
+  if (targetCount == null) {
+    const { data: existingData, error: existingError } = await sb.rpc(
+      "planning_bulk_command_receipt",
+      { p_command_id: start.commandId },
+    );
+    const existing = existingError ? null : parsePlanningBulkReceipt(existingData);
+    targetCount = existing?.targetCount ?? null;
+  }
+  if (targetCount !== frozenIds.length) {
+    console.error(`[visits.bulk.${operation}] frozen command inventory mismatch`);
+    return {
+      verb: operation,
+      requested: frozenIds.length,
+      errorCode: "receipt_invalid",
+      items: frozenIds.map(id => ({ id, outcome: "error" })),
+    };
+  }
+
+  const items: ItemResult[] = [];
+  let prior: PlanningBulkReceipt | null = null;
+  for (let ordinal = 1; ordinal <= targetCount; ordinal += 1) {
+    const { data, error } = await sb.rpc("process_planning_bulk_target", {
+      p_command_id: start.commandId,
+      p_target_ordinal: ordinal,
+    });
+    if (error) {
+      const errorCode = classifyPlanningClosureError(error);
+      console.error(`[visits.bulk.${operation}] target ${ordinal} unresolved:`, error.message, error.code);
+      items.push({
+        id: frozenIds[ordinal - 1],
+        outcome: ["cutoff_blocked", "conflict", "state_blocked", "unauthorized"].includes(errorCode)
+          ? "blocked_not_publishable"
+          : "error",
+      });
+      continue;
+    }
+    const current = parsePlanningBulkReceipt(data);
+    if (!current || current.commandId !== start.commandId) {
+      items.push({ id: frozenIds[ordinal - 1], outcome: "error" });
+      continue;
+    }
+    const appliedDelta = current.appliedCount - (prior?.appliedCount ?? 0);
+    const blockedDelta = current.blockedCount - (prior?.blockedCount ?? 0);
+    items.push({
+      id: frozenIds[ordinal - 1],
+      outcome: appliedDelta > 0 ? "applied" : blockedDelta > 0 ? "blocked_not_publishable" : "error",
+    });
+    prior = current;
+  }
+  const { data: finalData, error: finalError } = await sb.rpc("planning_bulk_command_receipt", {
+    p_command_id: start.commandId,
+  });
+  const receipt = finalError ? null : parsePlanningBulkReceipt(finalData);
+  if (finalError) console.error(`[visits.bulk.${operation}] receipt read failed:`, finalError.message, finalError.code);
+  return {
+    verb: operation,
+    requested: frozenIds.length,
+    items,
+    receipt: receipt ?? undefined,
+    errorCode: receipt ? undefined : "receipt_invalid",
+  };
+}
+
 // M02-011/034 + M8 — bulk cancel: one mandatory GOVERNED reason key (active
 // planning_lookups cancellation_reason; 'other' requires comments — validated
 // once up front, PLN-CON-011); only rows still published/new cancel (same
@@ -145,18 +265,17 @@ export async function bulkCancelVisits(_: ActionResult, fd: FormData): Promise<A
   if (validateReason(options, reasonKey, comments, "cancellation")) return { verb: "cancel", formErrorCode: "reason_required" };
   const ctx = requestIdentity(fd);
   if (!ctx.valid) return { verb: "cancel", formErrorCode: "reason_required" };
-  const { data, error } = await sb.rpc("cancel_published_visits_atomic", {
-    p_visit_ids: ids,
-    // The database validates this value against the active governed lookup.
-    // Comments are validated above but the current RPC has no comments field;
-    // the backend contract must be extended before they can be persisted.
-    p_reason: reasonKey,
-    p_idempotency_key: ctx.idempotencyKey,
-    p_correlation_id: ctx.correlationId,
-  });
+  const result = await runFrozenBulkCommand(
+    sb,
+    "cancel",
+    ids,
+    { note: comments ? `${reasonKey} — ${comments}` : reasonKey },
+    ctx.idempotencyKey,
+    ctx.correlationId,
+  );
   revalidatePath("/visits");
   revalidatePath("/planning/visits");
-  return atomicLedger("cancel", ids, error, data, ctx.correlationId);
+  return result;
 }
 
 // M02-007/031/033 — bulk reschedule window: shared new window applied to every
@@ -177,17 +296,17 @@ export async function bulkRescheduleVisits(_: ActionResult, fd: FormData): Promi
   if (end.getTime() <= start.getTime()) return { verb: "reschedule", formErrorCode: "window_order" };
   const ctx = mutationContext(fd);
   if (!ctx.valid) return { verb: "reschedule", formErrorCode: "reason_required" };
-  const { data, error } = await sb.rpc("reschedule_published_visits_atomic", {
-    p_visit_ids: ids,
-    p_window_start: start.toISOString(),
-    p_window_end: end.toISOString(),
-    p_reason: ctx.reason,
-    p_idempotency_key: ctx.idempotencyKey,
-    p_correlation_id: ctx.correlationId,
-  });
+  const result = await runFrozenBulkCommand(
+    sb,
+    "reschedule",
+    ids,
+    { window_start: start.toISOString(), window_end: end.toISOString(), note: ctx.reason },
+    ctx.idempotencyKey,
+    ctx.correlationId,
+  );
   revalidatePath("/visits");
   revalidatePath("/planning/visits");
-  return atomicLedger("reschedule", ids, error, data, ctx.correlationId);
+  return result;
 }
 
 // Bulk Edit Visits (Excel row: Visit Type / Location / Notes) — the existing

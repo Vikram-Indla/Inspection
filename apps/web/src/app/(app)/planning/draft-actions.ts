@@ -4,18 +4,25 @@
 // This is semantically NOT the cancellation of a published visit — the UI
 // copy keeps "Discard draft" and "Cancel visit" strictly separate.
 //
-// Child visits: a draft plan produced by duplicateVisit carries one linked
-// DRAFT visit. Canonical §15 allows cancellation for Draft, so each draft
-// child is cancelled (never touched otherwise) and receives the
-// 'discard_draft' lifecycle event naming the plan; the archived plan row
-// plus the append-only audit trigger remain the plan-level record. Draft
-// child rows cannot be hard-deleted — visits RLS grants no delete.
+// R01/R08 — the atomic archive RPC preserves every linked child's Draft
+// identity and writes additive archive provenance, audit and durable outbox
+// intent in the same transaction. No child is relabelled Cancelled.
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
-import { recordLifecycleEvent } from "@/lib/planning/lifecycle";
+import {
+  classifyPlanningClosureError,
+  parsePlanningArchiveReceipt,
+  type PlanningArchiveReceipt,
+  type PlanningClosureError,
+} from "@/lib/planning/closure-receipts";
 
-export type DiscardResult = { error?: string; ok?: string };
+export type DiscardResult = {
+  error?: string;
+  errorCode?: PlanningClosureError;
+  ok?: string;
+  receipt?: PlanningArchiveReceipt;
+};
 
 export async function discardDraftPlan(_: DiscardResult, fd: FormData): Promise<DiscardResult> {
   const sb = await supabaseServer();
@@ -24,7 +31,7 @@ export async function discardDraftPlan(_: DiscardResult, fd: FormData): Promise<
   const planId = String(fd.get("plan_id") ?? "").trim();
   if (!/^[0-9a-f-]{36}$/i.test(planId)) return { error: "Missing plan id (PLN-CON-018)" };
   const { data: plan, error: readErr } = await sb.from("visit_plans")
-    .select("id, created_by, status, archived_at, plan_reference")
+    .select("id, created_by, status, archived_at, plan_reference, draft_version")
     .eq("id", planId).maybeSingle();
   if (readErr) {
     console.error("[M8 discardDraftPlan] plan read failed:", readErr.message);
@@ -35,43 +42,28 @@ export async function discardDraftPlan(_: DiscardResult, fd: FormData): Promise<
     return { error: "Draft not found, already discarded, or owned by someone else (PLN-CON-018)" };
   if (!["draft", "validated"].includes(plan.status))
     return { error: "Only a never-published draft can be discarded — a published plan is cancelled per visit instead (PLN-CON-018)" };
-  const { data: children, error: chErr } = await sb.from("visits")
-    .select("id, planning_status, window_start, window_end").eq("visit_plan_id", planId);
-  if (chErr) {
-    console.error("[M8 discardDraftPlan] child read failed:", chErr.message);
-    return { error: "Planning data is temporarily unavailable (ERR-OPS-001) — nothing was changed." };
+  const correlationId = crypto.randomUUID();
+  const note = String(fd.get("note") ?? "").trim() || null;
+  const { data, error } = await sb.rpc("archive_planning_draft_atomic", {
+    p_plan_id: planId,
+    p_expected_plan_version: plan.draft_version,
+    p_note: note,
+    p_idempotency_key: `archive:${planId}:${plan.draft_version}`,
+    p_correlation_id: correlationId,
+  });
+  if (error) {
+    console.error("[R01 archive_planning_draft_atomic] failed:", error.message, error.code);
+    const errorCode = classifyPlanningClosureError(error);
+    return { error: "Draft archival was not committed. Refresh the draft and try again.", errorCode };
   }
-  // Fail closed: a published child means the plan is not a pure draft.
-  if ((children ?? []).some(v => v.planning_status !== "draft"))
-    return { error: "This plan already has published visits — discard is blocked; manage the visits individually (PLN-CON-018)" };
-  const now = new Date().toISOString();
-  const { data: updated, error: upErr } = await sb.from("visit_plans")
-    .update({ archived_at: now })
-    .eq("id", planId).eq("created_by", user.id).in("status", ["draft", "validated"]).is("archived_at", null)
-    .select("id");
-  if (upErr) {
-    console.error("[M8 discardDraftPlan] archive failed:", upErr.message);
-    return { error: "Planning data is temporarily unavailable (ERR-OPS-001) — nothing was changed." };
-  }
-  if (!updated?.length) return { error: "No row updated — the draft changed concurrently or RLS denied the update (PLN-CON-018)" };
-  // Cancel each draft child (canonical §15: Draft cancellation is allowed) and
-  // record the discard provenance on it. Best-effort per child: the plan is
-  // already archived, so a gap is logged and surfaced, never rolled back.
-  let eventGap = false;
-  for (const child of children ?? []) {
-    const { data: asg } = await sb.from("assignments").select("inspector_id").eq("visit_id", child.id).maybeSingle();
-    const { error: cErr } = await sb.from("visits")
-      .update({ planning_status: "cancelled" })
-      .eq("id", child.id).eq("planning_status", "draft");
-    if (cErr) { console.error("[M8 discardDraftPlan] draft child cancel failed:", cErr.message); eventGap = true; continue; }
-    const evErr = await recordLifecycleEvent(sb, {
-      visitId: child.id, eventType: "discard_draft", actor: user.id,
-      comments: `Draft plan ${plan.plan_reference ?? plan.id.slice(0, 8)} discarded`,
-      previous: { planning_status: "draft", inspector_id: asg?.inspector_id ?? null, window_start: child.window_start, window_end: child.window_end, plan_id: planId },
-    });
-    if (evErr) eventGap = true;
+  const receipt = parsePlanningArchiveReceipt(data);
+  if (!receipt || receipt.planId !== planId || receipt.correlationId !== correlationId) {
+    console.error("[R01 archive_planning_draft_atomic] invalid receipt");
+    return { error: "The archive result could not be reconciled. Refresh before retrying.", errorCode: "receipt_invalid" };
   }
   revalidatePath("/planning"); revalidatePath("/planning/bulk/review"); revalidatePath("/visits");
-  if (eventGap) return { error: "Draft discarded, but recording it on the linked draft visit failed — the gap is logged (PLN-CON-018)" };
-  return { ok: `Draft ${plan.plan_reference ?? ""} discarded — archived, never published; this is not the cancellation of a published visit (PLN-CON-018)`.trim() };
+  return {
+    ok: `Draft ${plan.plan_reference ?? ""} archived — Draft identity preserved; ${receipt.outboxIntentIds.length} outbox intent(s) queued, not delivered. (PLN-R01 · PLN-R08 · PLN-R10)`.trim(),
+    receipt,
+  };
 }
