@@ -110,6 +110,7 @@ const URGENCY_REASONS = new Set([
   "Other",
 ]);
 const MOBILE_RE = /^(?:\+?966|0)?5\d{8}$/;
+const immediateContractIsExecutable = (): boolean => false;
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 const nullable = (value: string) => value || null;
 const coordinate = (value: string) => value === "" ? null : Number(value);
@@ -122,6 +123,17 @@ const instant = (value: string) => {
 export async function createImmediateVisit(_: ImmResult, formData: FormData): Promise<ImmResult> {
   const locale = text(formData, "locale") === "ar" ? "ar" : "en";
   const copy = COPY[locale];
+  // PLN-S03/PLN-S04 (R05): the corrected compiler marks Immediate mode and
+  // unregistered-factory creation BLOCKED_DECISION. Fail closed before any
+  // identity, provider or mutation work. The existing implementation below
+  // remains dormant until the decision and exact executable RPC are approved.
+  if (!immediateContractIsExecutable()) {
+    return {
+      error: copy.invalid_actor_mode,
+      errorCode: "decision_pending",
+      blockingField: "identity",
+    };
+  }
   const requestId = text(formData, "request_id");
   const actorMode = text(formData, "actor_mode");
   if (!UUID.test(requestId) || !["planner", "inspector"].includes(actorMode)) {

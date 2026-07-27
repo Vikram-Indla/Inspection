@@ -13,65 +13,62 @@
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
-import { recordLifecycleEvent } from "@/lib/planning/lifecycle";
 
-export type DiscardResult = { error?: string; ok?: string };
+export type DiscardResult = {
+  error?: string;
+  ok?: string;
+  receipt?: {
+    commandId: string;
+    correlationId: string;
+    childCount: number;
+    idempotent: boolean;
+  };
+};
 
 export async function discardDraftPlan(_: DiscardResult, fd: FormData): Promise<DiscardResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await getVerifiedUser(sb);
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
+  if (authError) return { error: "Planning data is temporarily unavailable (ERR-OPS-001) — nothing was changed." };
   if (!user) return { error: "Session expired — sign in again." };
   const planId = String(fd.get("plan_id") ?? "").trim();
-  if (!/^[0-9a-f-]{36}$/i.test(planId)) return { error: "Missing plan id (PLN-CON-018)" };
-  const { data: plan, error: readErr } = await sb.from("visit_plans")
-    .select("id, created_by, status, archived_at, plan_reference")
-    .eq("id", planId).maybeSingle();
-  if (readErr) {
-    console.error("[M8 discardDraftPlan] plan read failed:", readErr.message);
+  const expectedVersion = Number(fd.get("expected_version"));
+  const idempotencyKey = String(fd.get("idempotency_key") ?? "").trim();
+  const correlationId = String(fd.get("correlation_id") ?? "").trim();
+  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  if (!uuid.test(planId) || !Number.isInteger(expectedVersion) || expectedVersion < 1
+      || !idempotencyKey || !uuid.test(correlationId)) {
+    return { error: "The draft archive request is incomplete (PLANNING-ARCHIVE-REQUEST). Nothing was changed." };
+  }
+  const { data, error } = await sb.rpc("archive_planning_draft_atomic", {
+    p_plan_id: planId,
+    p_expected_plan_version: expectedVersion,
+    p_note: null,
+    p_idempotency_key: idempotencyKey,
+    p_correlation_id: correlationId,
+  });
+  if (error) {
+    console.error("[PLN-S08 discardDraftPlan] governed archive failed:", error.code, error.message);
+    if (error.code === "42501") return { error: "You do not have permission or scope to archive this draft. Nothing was changed." };
+    if (error.code === "23514") return { error: "This draft changed, was already archived, or is no longer eligible. Refresh before trying again." };
+    if (error.code === "23505") return { error: "This retry does not match the original archive request. Nothing was changed." };
     return { error: "Planning data is temporarily unavailable (ERR-OPS-001) — nothing was changed." };
   }
-  // Own drafts only — the same ownership boundary resume already enforces.
-  if (!plan || plan.created_by !== user.id || plan.archived_at)
-    return { error: "Draft not found, already discarded, or owned by someone else (PLN-CON-018)" };
-  if (!["draft", "validated"].includes(plan.status))
-    return { error: "Only a never-published draft can be discarded — a published plan is cancelled per visit instead (PLN-CON-018)" };
-  const { data: children, error: chErr } = await sb.from("visits")
-    .select("id, planning_status, window_start, window_end").eq("visit_plan_id", planId);
-  if (chErr) {
-    console.error("[M8 discardDraftPlan] child read failed:", chErr.message);
-    return { error: "Planning data is temporarily unavailable (ERR-OPS-001) — nothing was changed." };
-  }
-  // Fail closed: a published child means the plan is not a pure draft.
-  if ((children ?? []).some(v => v.planning_status !== "draft"))
-    return { error: "This plan already has published visits — discard is blocked; manage the visits individually (PLN-CON-018)" };
-  const now = new Date().toISOString();
-  const { data: updated, error: upErr } = await sb.from("visit_plans")
-    .update({ archived_at: now })
-    .eq("id", planId).eq("created_by", user.id).in("status", ["draft", "validated"]).is("archived_at", null)
-    .select("id");
-  if (upErr) {
-    console.error("[M8 discardDraftPlan] archive failed:", upErr.message);
-    return { error: "Planning data is temporarily unavailable (ERR-OPS-001) — nothing was changed." };
-  }
-  if (!updated?.length) return { error: "No row updated — the draft changed concurrently or RLS denied the update (PLN-CON-018)" };
-  // Cancel each draft child (canonical §15: Draft cancellation is allowed) and
-  // record the discard provenance on it. Best-effort per child: the plan is
-  // already archived, so a gap is logged and surfaced, never rolled back.
-  let eventGap = false;
-  for (const child of children ?? []) {
-    const { data: asg } = await sb.from("assignments").select("inspector_id").eq("visit_id", child.id).maybeSingle();
-    const { error: cErr } = await sb.from("visits")
-      .update({ planning_status: "cancelled" })
-      .eq("id", child.id).eq("planning_status", "draft");
-    if (cErr) { console.error("[M8 discardDraftPlan] draft child cancel failed:", cErr.message); eventGap = true; continue; }
-    const evErr = await recordLifecycleEvent(sb, {
-      visitId: child.id, eventType: "discard_draft", actor: user.id,
-      comments: `Draft plan ${plan.plan_reference ?? plan.id.slice(0, 8)} discarded`,
-      previous: { planning_status: "draft", inspector_id: asg?.inspector_id ?? null, window_start: child.window_start, window_end: child.window_end, plan_id: planId },
-    });
-    if (evErr) eventGap = true;
+  const receipt = data as {
+    command_id?: string; correlation_id?: string; child_count?: number; idempotent?: boolean;
+    planning_status_preserved?: boolean;
+  } | null;
+  if (!receipt?.command_id || !receipt.correlation_id || receipt.planning_status_preserved !== true) {
+    console.error("[PLN-S08 discardDraftPlan] incomplete archive receipt");
+    return { error: "The archive result could not be verified. Refresh before retrying." };
   }
   revalidatePath("/planning"); revalidatePath("/planning/bulk/review"); revalidatePath("/visits");
-  if (eventGap) return { error: "Draft discarded, but recording it on the linked draft visit failed — the gap is logged (PLN-CON-018)" };
-  return { ok: `Draft ${plan.plan_reference ?? ""} discarded — archived, never published; this is not the cancellation of a published visit (PLN-CON-018)`.trim() };
+  return {
+    ok: "Draft archived — its Planning status and provenance were preserved. This cannot be restored.",
+    receipt: {
+      commandId: receipt.command_id,
+      correlationId: receipt.correlation_id,
+      childCount: receipt.child_count ?? 0,
+      idempotent: receipt.idempotent === true,
+    },
+  };
 }

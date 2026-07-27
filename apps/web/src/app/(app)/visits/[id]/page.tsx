@@ -30,7 +30,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     .eq("user_roles.role_key", "inspector").order("full_name");
   const inspectors = (inspRows ?? []).map(r => ({ user_id: r.user_id as string, full_name: r.full_name as string }));
   const { data: v, error: vErr } = await sb.from("visits")
-    .select(`id, visit_type, execution_mode, planning_status, operational_state, window_start, window_end, cancellation_reason, notes,
+    .select(`id, visit_type, execution_mode, planning_status, planning_version, operational_state, window_start, window_end, cancellation_reason, notes,
       immediate_creator_role, source_channel, internal_reference, priority, visit_reference, expired_by_rule_id, package_version_id,
       planner_lat, planner_lng, original_lat, original_lng, visit_location_source, created_at,
       visit_plans(id, method, status, published_at, created_at, plan_reference, profiles(full_name)),
@@ -226,7 +226,9 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
   const preStart = !insp || insp.status === "not_started";
   const canManage = v.planning_status === "published" && v.operational_state === "new";
-  const canReassign = ["published", "returned"].includes(v.planning_status) && preStart;
+  // PLN-R06 remains BLOCKED_DECISION: no existing role is silently treated as
+  // the business "Supervisor". Keep the frame visible but non-interactive.
+  const canReassign = false;
   const isFinal = ["cancelled", "expired"].includes(v.planning_status);
   const latestAudit = (auditRows ?? [])[0];
   const geoEvents = journeys.flatMap(j => j.geo_events).sort((a, b) => b.occurred_at.localeCompare(a.occurred_at));
@@ -236,9 +238,9 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   const latestReview = reviews[reviews.length - 1];
   const noEvt = t("visit.ribbon.noEvent", "no verified event yet");
   const planningBoundary = canManage
-    ? t("visit.ribbon.b.manage", "Return · reassign · reschedule · change type · cancel")
-    : v.planning_status === "returned" ? t("visit.ribbon.b.returned", "Republish · reassign")
-    : v.planning_status === "published" ? t("visit.ribbon.b.locked", "Return · reassign only — execution started, schedule/type/cancel locked")
+    ? t("visit.ribbon.b.manage", "Return · reschedule · change type · cancel")
+    : v.planning_status === "returned" ? t("visit.ribbon.b.returned", "Republish · correct · cancel")
+    : v.planning_status === "published" ? t("visit.ribbon.b.locked", "Return only — execution started; reassignment authority is not configured")
     : t("visit.ribbon.b.none", "None — final state, view only");
   const ribbonTracks: RibbonTrack[] = [
     { id: "planning", domainLabel: t("visit.ribbon.planning", "Planning"),
@@ -375,7 +377,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         </div></div>
       )}
       {/* FIX WAVE F4 — M02-043 notes add/edit */}
-      <NotesEditor visitId={v.id} initialNotes={typeof v.notes === "string" ? v.notes : ""} strings={notesStrings} />
+      <NotesEditor visitId={v.id} planningVersion={v.planning_version} initialNotes={typeof v.notes === "string" ? v.notes : ""} strings={notesStrings} />
       {/* FIX WAVE F4 — M02-042 attachments */}
       {attErr ? (
         <div className="sq-banner sq-banner--critical" role="alert"><div>{mapError(attErr, "load")}</div></div>
@@ -494,7 +496,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       </div>
       </div>
       <aside className={targetPreview ? `wa-visit-detail-actions ${detailStyles.actions}` : undefined} style={targetPreview ? undefined : { display: "contents" }}>
-        <ActionBar visitId={v.id} status={v.planning_status} opState={v.operational_state}
+        <ActionBar visitId={v.id} planningVersion={v.planning_version} status={v.planning_status} opState={v.operational_state}
           opStateLabel={t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}
           visitType={v.visit_type} windowStart={v.window_start} windowEnd={v.window_end} inspectors={inspectors}
           canManage={canManage} canReassign={canReassign} isFinal={isFinal}

@@ -108,6 +108,10 @@ export default function Wizard({
   virtualEligible: boolean;
   locale: Locale;
 }) {
+  // PLN-S08/PLN-S11 — R1 marks draft and publish receipts
+  // PROPOSED_NOT_EFFECTIVE. Keep every entered value editable, but do not
+  // present either transition as executable.
+  const transitionsExecutable = false;
   const [state, formAction, pending] = useActionState<PublishResult, FormData>(publishSingleVisit, {});
   const router = useRouter();
   const [queryInput, setQueryInput] = useState(query);
@@ -549,11 +553,18 @@ export default function Wizard({
         <p className="t-caption" role="status">{strings.draftSavedPrefix} — <bdi>{draftState.planReference}</bdi> · v{draftState.version}</p>
       )}
 
+      {!transitionsExecutable && (
+        <div className="sq-banner sq-banner--warning" role="status">
+          <div><strong>{strings.blockedTitle}</strong></div>
+        </div>
+      )}
       <div className="row" style={{ justifyContent: "flex-end", gap: "var(--space-2)" }}>
-        <button type="button" className="btn btn-secondary btn-touch" disabled={savingDraft || !target} onClick={onSaveDraft}>
+        <button type="button" className="btn btn-secondary btn-touch"
+          disabled={!transitionsExecutable || savingDraft || !target} onClick={onSaveDraft}>
           {savingDraft ? strings.savingDraft : strings.saveDraft}
         </button>
-        <button className="btn btn-primary btn-lg btn-touch" disabled={pending || !configUnlocked}>
+        <button className="btn btn-primary btn-lg btn-touch"
+          disabled={!transitionsExecutable || pending || !configUnlocked}>
           {pending ? strings.publishing : state.resumeId ? strings.retry : strings.publish}
         </button>
       </div>

@@ -52,6 +52,9 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
   factories: F[]; strings: BulkFormStrings; focusedField?: string | null; focusedValue?: string | null; locale: Locale;
   criteriaTree: string;
 }) {
+  // PLN-S05/PLN-S08 — targeting remains usable in browser state, but the
+  // corrected compiler does not yet authorize durable draft persistence.
+  const draftPersistenceExecutable = false;
   const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [q, setQ] = useState("");
@@ -117,6 +120,10 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
   };
   const onSaveDraftClick = () => { void saveDraft(); };
   const onReviewClick = async () => {
+    if (!draftPersistenceExecutable) {
+      router.push("/planning/bulk/review");
+      return;
+    }
     const saved = await saveDraft();
     if (saved) router.push(`/planning/bulk/review?plan=${saved.planId}`);
   };
@@ -240,6 +247,9 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
           {selected.size === 0 && <span className="sq-lozenge sq-lozenge--warning">⚠ {strings.readyNothing}</span>}
           {selected.size > 0 && <button type="button" className="sq-btn sq-btn--subtle" onClick={clearSelection}>{strings.clearSelection}</button>}
           {draftRef && !saveFailed && <span className="t-caption" role="status">{strings.draftSaved.replace("{ref}", draftRef)}</span>}
+          {!draftPersistenceExecutable && (
+            <span className="t-caption sq-lozenge sq-lozenge--warning" role="status">{strings.draftSaveFailed}</span>
+          )}
         </div>
         <div className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
           {saveFailed && (
@@ -249,7 +259,8 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
             </>
           )}
           {selected.size > 0 && (
-            <button type="button" className="sq-btn sq-btn--secondary" disabled={saving} onClick={onSaveDraftClick}>
+            <button type="button" className="sq-btn sq-btn--secondary"
+              disabled={!draftPersistenceExecutable || saving} onClick={onSaveDraftClick}>
               {saving ? strings.savingDraft : strings.saveDraft}
             </button>
           )}
