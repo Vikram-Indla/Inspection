@@ -146,6 +146,11 @@ export async function AppShell({ children }: { children: ReactNode }) {
       email: t("bell.ch.email", locale === "ar" ? "بريد إلكتروني" : "email"),
     },
     notConfigured: t("bell.notConfigured", locale === "ar" ? "المزود قيد الانتظار" : "provider pending"),
+    contextLabels: {
+      factory: t("bell.ctx.factory", locale === "ar" ? "المنشأة" : "Factory"),
+      reason: t("bell.ctx.reason", locale === "ar" ? "السبب" : "Reason"),
+      decision: t("bell.ctx.decision", locale === "ar" ? "القرار" : "Decision"),
+    },
   };
 
   const languageHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
