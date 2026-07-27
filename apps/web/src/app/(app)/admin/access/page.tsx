@@ -6,6 +6,11 @@ import { logProviderError } from "@/lib/neutral-error";
 import AccessManager, { type UserAccess } from "./AccessManager";
 import RoleCapabilityPanel from "./RoleCapabilityPanel";
 import styles from "./access.module.css";
+import {
+  AdminRecordArticle,
+  AdminRecordTableRow,
+} from "../_components/AdminRecordDrawer";
+import { createAdminRecordDrawerLabels } from "../_components/adminRecordDrawerCopy";
 
 // TASK-EXECUTION-MODULE-001 · Phase 2B — governed role/capability grants.
 // The roster below stays read-only and exactly as before. For security_admin
@@ -34,7 +39,8 @@ export default async function Access({
   const { t, locale } = await useT();
   const copy = (en: string, ar: string) => locale === "ar" ? ar : en;
   const sb = await supabaseServer();
-  const requestedView = (await searchParams).view;
+  const params = await searchParams;
+  const requestedView = params.view;
   const view: AccessView = requestedView === "roles" ? "roles" : "users";
   const [{ data: profiles, error: profilesError }, { data: roles, error: rolesError }, { data: { user } }] = await Promise.all([
     sb.from("profiles").select("user_id, full_name, email, region, user_roles!user_roles_user_id_fkey(role_key)").order("full_name"),
@@ -137,6 +143,23 @@ export default async function Access({
   const directOverrides = canManage && !userAccessSourcesUnavailable
     ? access.reduce((total, item) => total + item.directGrants.length, 0)
     : notConfigured;
+  const targetUserId = typeof params.target === "string"
+    && (profiles ?? []).some(profile => profile.user_id === params.target)
+    ? params.target
+    : "";
+  const drawerLabels = createAdminRecordDrawerLabels(t, locale);
+  const accessGovernance = [
+    t("admin.revamp.access.governance.rls", copy("Row Level Security limits the roster before it reaches this page.", "يقيّد أمن الصفوف القائمة قبل وصولها إلى هذه الصفحة.")),
+    t("admin.revamp.access.governance.audit", copy("Role and capability changes use guarded server actions and append audit evidence.", "تستخدم تغييرات الأدوار والصلاحيات إجراءات خادم محمية وتضيف أدلة التدقيق.")),
+    t("admin.revamp.access.governance.refresh", copy("Changes take effect on the target user’s next authorized request.", "تسري التغييرات عند الطلب المصرّح التالي للمستخدم المستهدف.")),
+  ];
+  const accessEditUnavailable = t(
+    "admin.recordDrawer.access.editUnavailable",
+    copy(
+      "Your session does not have the governed access-management permission.",
+      "لا تملك جلستك صلاحية إدارة الوصول المحكومة.",
+    ),
+  );
 
   return (
     <AdminDestinationFrame
@@ -146,6 +169,7 @@ export default async function Access({
       hub={t("admin.revamp.hub.people", copy("People & access", "الأشخاص والوصول"))}
       routeLabel="/admin/access"
       designId="frame-19-admin-users-roles"
+      drawerLabels={drawerLabels}
       labels={{
         administration: t("navigation.administration", copy("Administration", "الإدارة")),
         breadcrumb: t("common.breadcrumb", copy("Breadcrumb", "مسار التنقل")),
@@ -182,11 +206,7 @@ export default async function Access({
           "يُعاد التحقق من صلاحية كل كتابة على الخادم. ترفض إجراءات قاعدة البيانات المحكومة رفع المستخدم لصلاحياته أو إزالة آخر مسؤول أمان؛ وتبقى مفاتيح الأدوار الخلفية دون تغيير إلى أن تُعتمد ترحيلة للربط.",
         )),
       }}
-      governance={[
-        t("admin.revamp.access.governance.rls", copy("Row Level Security limits the roster before it reaches this page.", "يقيّد أمن الصفوف القائمة قبل وصولها إلى هذه الصفحة.")),
-        t("admin.revamp.access.governance.audit", copy("Role and capability changes use guarded server actions and append audit evidence.", "تستخدم تغييرات الأدوار والصلاحيات إجراءات خادم محمية وتضيف أدلة التدقيق.")),
-        t("admin.revamp.access.governance.refresh", copy("Changes take effect on the target user’s next authorized request.", "تسري التغييرات عند الطلب المصرّح التالي للمستخدم المستهدف.")),
-      ]}
+      governance={accessGovernance}
       reconstructionNote={t("admin.revamp.access.note", copy(
         "The design’s three presentation roles sit above the existing governed role catalogue. This route does not collapse or rename backend roles without an approved data and RLS migration.",
         "توجد أدوار العرض الثلاثة في التصميم فوق كتالوج الأدوار المحكوم الحالي. لا تدمج هذه الوجهة أدوار النظام الخلفي ولا تعيد تسميتها دون ترحيلة معتمدة للبيانات وأمن الصفوف.",
@@ -209,15 +229,39 @@ export default async function Access({
             <div className="sq-tablewrap"><table className="sq-table">
               <thead><tr><th scope="col">{t("admin.access.table.user", "User")}</th><th scope="col">{t("admin.access.table.email", "Email")}</th><th scope="col">{t("admin.access.table.region", "Region")}</th><th scope="col">{t("admin.access.table.roles", "Roles")}</th></tr></thead>
               <tbody>
-                {(profiles ?? []).map(p => (
-                  <tr key={p.user_id}>
-                    <td><strong>{p.full_name}</strong></td>
-                    <td className="sq-caption">{p.email}</td>
-                    <td>{p.region}</td>
-                    <td>{rolesError ? t("common.unavailable", "Unavailable") : (p.user_roles as { role_key: string }[]).map(r =>
-                      <span key={r.role_key} className={`sq-lozenge ${(roles ?? []).find(x => x.role_key === r.role_key)?.is_admin ? "sq-lozenge--warning" : "sq-lozenge--info"}`} style={{ marginInlineEnd: 6 }}>{r.role_key}</span>)}</td>
-                  </tr>
-                ))}
+                {(profiles ?? []).map(p => {
+                  const roleKeys = ((p.user_roles ?? []) as { role_key: string }[]).map(role => role.role_key);
+                  const roleValue = rolesError
+                    ? t("common.unavailable", "Unavailable")
+                    : roleKeys.join(", ") || notConfigured;
+                  return (
+                    <AdminRecordTableRow
+                      key={p.user_id}
+                      record={{
+                        title: p.full_name,
+                        subtitle: t("admin.revamp.hub.people", copy("People & access", "الأشخاص والوصول")),
+                        record: [
+                          { label: t("admin.access.table.email", "Email"), value: p.email ?? notConfigured },
+                          { label: t("admin.access.table.region", "Region"), value: p.region ?? notConfigured },
+                          { label: t("admin.access.table.roles", "Roles"), value: roleValue },
+                          { label: t("admin.recordDrawer.identifier", copy("Record identifier", "معرّف السجل")), value: p.user_id },
+                        ],
+                        governance: accessGovernance,
+                        auditHref: `/admin/audit?case=${encodeURIComponent(p.user_id)}`,
+                        editHref: canManage
+                          ? `/admin/access?view=users&target=${encodeURIComponent(p.user_id)}#access-manager-h`
+                          : undefined,
+                        editUnavailableReason: accessEditUnavailable,
+                      }}
+                    >
+                      <td><strong>{p.full_name}</strong></td>
+                      <td className="sq-caption">{p.email}</td>
+                      <td>{p.region}</td>
+                      <td>{rolesError ? t("common.unavailable", "Unavailable") : roleKeys.map(roleKey =>
+                        <span key={roleKey} className={`sq-lozenge ${(roles ?? []).find(x => x.role_key === roleKey)?.is_admin ? "sq-lozenge--warning" : "sq-lozenge--info"}`} style={{ marginInlineEnd: 6 }}>{roleKey}</span>)}</td>
+                    </AdminRecordTableRow>
+                  );
+                })}
               </tbody>
             </table></div>
           )}
@@ -236,6 +280,7 @@ export default async function Access({
           capabilities={capabilityCatalogue.map(c => ({ capabilityKey: c.capability_key, description: c.description }))}
           access={access}
           currentUserId={user.id}
+          initialSelectedUserId={targetUserId}
           labels={{
             panelTitle: t("admin.access.manage.title", "Access management"),
             panelIntro: t("admin.access.manage.intro", "Grant or revoke roles and direct capability overrides. Every change runs through the governed RPCs: the self-escalation guard blocks changes to your own access, the last remaining security administrator cannot be revoked, and every change is recorded in the activity log."),
@@ -281,11 +326,32 @@ export default async function Access({
           </div>
           <div className={styles.roleCards}>
             {((roles ?? []) as RoleRow[]).map(role => (
-              <article className="sq-surface" key={role.role_key}>
+              <AdminRecordArticle
+                className="sq-surface"
+                key={role.role_key}
+                record={{
+                  title: role.title || role.role_key,
+                  subtitle: t("admin.access.roles.catalogue.title", "Role catalogue"),
+                  record: [
+                    { label: t("admin.recordDrawer.roleKey", copy("Role key", "مفتاح الدور")), value: role.role_key },
+                    { label: t("common.title", copy("Title", "العنوان")), value: role.title || notConfigured },
+                    {
+                      label: t("admin.recordDrawer.roleType", copy("Access class", "فئة الوصول")),
+                      value: role.is_admin
+                        ? t("admin.access.roles.admin", "Administrator role")
+                        : t("admin.recordDrawer.roleStandard", copy("Standard governed role", "دور محكوم قياسي")),
+                    },
+                  ],
+                  governance: accessGovernance,
+                  auditHref: `/admin/audit?q=${encodeURIComponent(role.role_key)}`,
+                  editHref: canManageRoleCaps ? "/admin/access?view=roles#role-cap-h" : undefined,
+                  editUnavailableReason: accessEditUnavailable,
+                }}
+              >
                 <strong>{role.title || role.role_key}</strong>
                 <bdi className="sq-caption" dir="ltr">{role.role_key}</bdi>
                 {role.is_admin && <span className="sq-lozenge sq-lozenge--warning">{t("admin.access.roles.admin", "Administrator role")}</span>}
-              </article>
+              </AdminRecordArticle>
             ))}
           </div>
         </section>

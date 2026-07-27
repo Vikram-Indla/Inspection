@@ -13,6 +13,7 @@ import { useT } from "@/lib/i18n";
 import { redirect } from "next/navigation";
 import Manager, { type Labels, type UiString } from "./Manager";
 import LocaleSwitch from "./LocaleSwitch";
+import { createAdminRecordDrawerLabels } from "../_components/adminRecordDrawerCopy";
 
 export const dynamic = "force-dynamic";
 const UI_STRINGS_PAGE_SIZE = 1000;
@@ -173,9 +174,18 @@ export default async function Localization() {
     sourcePanel: t("l10n.history.source.panel", copy("admin panel", "لوحة الإدارة")),
     sourceSync: t("l10n.history.source.sync", copy("source sync", "مزامنة المصدر")),
     sourceRestore: t("l10n.history.source.restore", copy("restore", "استعادة")),
+    updatedAt: t("admin.recordDrawer.updatedAt", copy("Registry updated", "تحديث السجل")),
+    notConfigured: t("common.notConfigured", copy("Not configured", "غير مُهيّأ")),
+    drawerSubtitle: t("admin.revamp.hub.rules", copy("Rules & content", "القواعد والمحتوى")),
   };
 
   const notConfigured = t("common.notConfigured", copy("Not configured", "غير مُهيّأ"));
+  const drawerLabels = createAdminRecordDrawerLabels(t, locale);
+  const lookupGovernance = [
+    t("admin.revamp.lookup.governance.pair", copy("Every localized key preserves its English source and Arabic revision history.", "يحافظ كل مفتاح مترجم على مصدره الإنجليزي وسجل مراجعاته العربية.")),
+    t("admin.revamp.lookup.governance.retire", copy("Orphaned keys remain restorable and are never silently deleted.", "تبقى المفاتيح غير المستخدمة قابلة للاستعادة ولا تُحذف بصمت.")),
+    t("admin.revamp.lookup.governance.audit", copy("Updates run through the existing revisioned server actions.", "تمر التحديثات عبر إجراءات الخادم الحالية ذات الإصدارات.")),
+  ];
   return (
     <AdminDestinationFrame
       current="/admin/localization"
@@ -184,6 +194,7 @@ export default async function Localization() {
       hub={t("admin.revamp.hub.rules", copy("Rules & content", "القواعد والمحتوى"))}
       routeLabel="/admin/localization"
       designId="frame-20-admin-lookup-management"
+      drawerLabels={drawerLabels}
       labels={{
         administration: t("navigation.administration", copy("Administration", "الإدارة")),
         breadcrumb: t("common.breadcrumb", copy("Breadcrumb", "مسار التنقل")),
@@ -212,11 +223,7 @@ export default async function Localization() {
         { label: t("l10n.title", copy("Language & translations", "اللغة والترجمات")), href: "/admin/localization", current: true },
         { label: t("admin.revamp.lookup.tabs.planning", copy("Planning lookups", "قوائم التخطيط")), href: "/admin/planning/lookups" },
       ]}
-      governance={[
-        t("admin.revamp.lookup.governance.pair", copy("Every localized key preserves its English source and Arabic revision history.", "يحافظ كل مفتاح مترجم على مصدره الإنجليزي وسجل مراجعاته العربية.")),
-        t("admin.revamp.lookup.governance.retire", copy("Orphaned keys remain restorable and are never silently deleted.", "تبقى المفاتيح غير المستخدمة قابلة للاستعادة ولا تُحذف بصمت.")),
-        t("admin.revamp.lookup.governance.audit", copy("Updates run through the existing revisioned server actions.", "تمر التحديثات عبر إجراءات الخادم الحالية ذات الإصدارات.")),
-      ]}
+      governance={lookupGovernance}
       reconstructionNote={t("admin.revamp.lookup.note", copy("The canonical Lookup destination resolves to the existing localization and governed planning-lookup sources. No reference-list count or language completeness claim is fabricated.", "تتجه وجهة القوائم المرجعية إلى مصادر الترجمة وقوائم التخطيط المحكومة الحالية. لا يتم اختلاق عدد للقوائم أو ادعاء اكتمال اللغة."))}
       context={
         <span className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
@@ -230,7 +237,12 @@ export default async function Localization() {
           {t("l10n.error.load", "Could not load the localization dictionary. Nothing was changed. Try again.")}
         </div>
       ) : (
-        <Manager rows={rows} labels={labels} locale={locale} />
+        <Manager
+          rows={rows}
+          labels={labels}
+          locale={locale}
+          drawerGovernance={lookupGovernance}
+        />
       )}
     </AdminDestinationFrame>
   );
