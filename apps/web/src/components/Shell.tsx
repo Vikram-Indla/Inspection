@@ -85,6 +85,7 @@ export async function AppShell({ children }: { children: ReactNode }) {
     aiEntry: t("shell.aiEntry", locale === "ar" ? "رؤى الذكاء الاصطناعي" : "AI Insights"),
     navigation: t("shell.navigation", locale === "ar" ? "وجهة" : "Navigation"),
     account: t("shell.account", locale === "ar" ? "الحساب" : "Account"),
+    language: t("shell.language", locale === "ar" ? "اللغة" : "Language"),
     roles: t("shell.roles", locale === "ar" ? "الأدوار" : "Roles"),
     profileSettings: t("shell.profileSettings", locale === "ar" ? "إعدادات الملف الشخصي" : "Profile settings"),
     fieldSettings: t("field.settings.title", locale === "ar" ? "إعدادات الميدان" : "Field settings"),
@@ -161,8 +162,6 @@ export async function AppShell({ children }: { children: ReactNode }) {
       bellStrings={bellStrings}
       locale={locale}
       languageHref={languageHref}
-      languageLabel={locale === "ar" ? "English" : "العربية"}
-      languageLang={locale === "ar" ? "en" : "ar"}
       email={user.email ?? user.id}
       roles={roles}
       regions={regions}
