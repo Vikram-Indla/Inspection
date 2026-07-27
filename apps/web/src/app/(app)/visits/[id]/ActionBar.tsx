@@ -6,11 +6,11 @@
 // Every form binding + server action is PRESERVED; only the presentation and the
 // disabled-with-why explanations are added. Guards are mirrored server-side and
 // are the authority — these props derive from the same conditions.
-// M8 / PLN-CON-011 — return/cancel reasons are governed planning_lookups keys
-// (never free text); 'other' requires comments (server-enforced, hinted here).
+// M8 / PLN-CON-011 — return reasons remain governed planning_lookups keys.
+// Planning cancellation follows PLN-R02: one optional free-text note only.
 // M8 — returned visits expose re-window / repackage / cancel alongside
 // republish/reassign (canonical §15); final visits expose Duplicate → new Draft.
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { returnVisit, republishVisit, cancelVisit, rescheduleVisit, reassignVisit, updateVisitType, duplicateVisit, repackageVisit, type ActionResult } from "./actions";
 import type { ReasonOption } from "@/lib/planning/lifecycle";
@@ -34,8 +34,8 @@ export type ActionBarStrings = {
   duplicateBtn: string; duplicateWhy: string;
 };
 
-export default function ActionBar({ visitId, status, opState, opStateLabel, visitType, windowStart, windowEnd, inspectors, canManage, canReassign, isFinal, returnReasons, cancelReasons, packageOptions, strings }: {
-  visitId: string; status: string; opState: string; opStateLabel: string; visitType: string; windowStart: string; windowEnd: string; inspectors: I[];
+export default function ActionBar({ visitId, planningVersion, status, opState, opStateLabel, visitType, windowStart, windowEnd, inspectors, canManage, canReassign, isFinal, returnReasons, cancelReasons, packageOptions, strings }: {
+  visitId: string; planningVersion: number; status: string; opState: string; opStateLabel: string; visitType: string; windowStart: string; windowEnd: string; inspectors: I[];
   canManage: boolean; canReassign: boolean; isFinal: boolean;
   returnReasons: ReasonOption[]; cancelReasons: ReasonOption[]; packageOptions: PackageOption[];
   strings: ActionBarStrings;
@@ -49,6 +49,14 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
   const [vt, vtAct, p6] = useActionState<ActionResult, FormData>(updateVisitType, {});
   const [dup, dupAct, p7] = useActionState<ActionResult, FormData>(duplicateVisit, {});
   const [pkg, pkgAct, p8] = useActionState<ActionResult, FormData>(repackageVisit, {});
+  const [rescheduleIdentity] = useState(() => ({
+    idempotencyKey: `visit.reschedule.${crypto.randomUUID()}`,
+    correlationId: crypto.randomUUID(),
+  }));
+  const [cancelIdentity] = useState(() => ({
+    idempotencyKey: `visit.cancel.${crypto.randomUUID()}`,
+    correlationId: crypto.randomUUID(),
+  }));
   const msg = ret.error ?? rep.error ?? can.error ?? rsc.error ?? rea.error ?? vt.error ?? dup.error ?? pkg.error;
   const ok = ret.ok ?? rep.ok ?? can.ok ?? rsc.ok ?? rea.ok ?? vt.ok ?? dup.ok ?? pkg.ok;
   const busy = p1 || p2 || p3 || p4 || p5 || p6 || p7 || p8;
@@ -118,6 +126,9 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
             <>
               <form action={rscAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
                 <input type="hidden" name="visit_id" value={visitId} />
+                <input type="hidden" name="expected_version" value={planningVersion} />
+                <input type="hidden" name="idempotency_key" value={rescheduleIdentity.idempotencyKey} />
+                <input type="hidden" name="correlation_id" value={rescheduleIdentity.correlationId} />
                 <div className="field" style={{ maxInlineSize: 220 }}><label className="sq-field__label" htmlFor="visit-reschedule-start">{strings.newWindowStart}</label>
                   <input className="input numeric" type="datetime-local" name="window_start" id="visit-reschedule-start" defaultValue={toLocal(windowStart)} /></div>
                 <div className="field" style={{ maxInlineSize: 220 }}><label className="sq-field__label" htmlFor="visit-reschedule-end">{strings.newWindowEnd}</label>
@@ -126,13 +137,11 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
               </form>
               <form action={canAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
                 <input type="hidden" name="visit_id" value={visitId} />
-                <div className="field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="visit-cancel-reason">{strings.cancelReason}</label>
-                  <select className="select" name="reason_key" id="visit-cancel-reason" required>
-                    <option value="">—</option>
-                    {cancelReasons.map(o => <option key={o.key} value={o.key}>{o.label_en}</option>)}
-                  </select></div>
+                <input type="hidden" name="expected_version" value={planningVersion} />
+                <input type="hidden" name="idempotency_key" value={cancelIdentity.idempotencyKey} />
+                <input type="hidden" name="correlation_id" value={cancelIdentity.correlationId} />
                 <div className="field" style={{ maxInlineSize: 260 }}><label className="sq-field__label" htmlFor="visit-cancel-comments">{strings.cancelComments}</label>
-                  <input className="input" name="comments" id="visit-cancel-comments" placeholder={strings.commentsHint} /></div>
+                  <input className="input" name="note" id="visit-cancel-comments" placeholder={strings.commentsHint} /></div>
                 <button className="btn btn-danger btn-touch" disabled={busy}>{strings.cancelBtn}</button>
               </form>
             </>

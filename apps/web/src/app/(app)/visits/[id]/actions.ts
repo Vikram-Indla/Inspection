@@ -20,6 +20,7 @@ import { mapError } from "./neutral";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type ActionResult = { error?: string; ok?: string; planId?: string; method?: string };
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 // M02-041 — notify the visit's assigned inspector (single insert path; ENG-11).
 // Best-effort: the primary state change already committed, so a failed
@@ -132,77 +133,105 @@ export async function republishVisit(_: ActionResult, fd: FormData): Promise<Act
   return { ok: "Republished — same Visit ID retained; inspector notification queued (not confirmed delivered) (M02-009)" };
 }
 
-// M02-006 + M8 — Cancel visit: published/new OR returned/new (canonical §15),
-// governed reason key + conditional comments, final. The governed key is stored
-// in cancellation_reason (legacy rows may hold free text — the detail page
-// falls back to rendering it verbatim); actor/date and the prior inspector and
-// window ride on the lifecycle event.
+// M02-006 + PLN-R02/R03 — Planning cancellation accepts one optional note,
+// never requires a governed reason lookup, and commits state + lifecycle +
+// audit + outbox intent atomically through the Planning closure RPC.
 export async function cancelVisit(_: ActionResult, fd: FormData): Promise<ActionResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await getVerifiedUser(sb);
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
+  if (authError) return { error: "Planning data could not be verified (ERR-OPS-001). Nothing was changed." };
   if (!user) return { error: "Session expired — sign in again." };
   const id = String(fd.get("visit_id"));
-  const reasonKey = String(fd.get("reason_key") ?? "").trim();
-  const comments = String(fd.get("comments") ?? "").trim();
-  const { options, error: optErr } = await getReasonOptions(sb, "cancellation_reason");
-  if (optErr) return { error: "Cancellation reasons are temporarily unavailable (ERR-OPS-001) — nothing was changed." };
-  const bad = validateReason(options, reasonKey, comments, "cancellation");
-  if (bad) return { error: bad };
-  const guard = await guardPublishedOrReturnedNew(id);
-  if (guard) return { error: `Cancellation blocked: ${guard} (M02-006)` };
-  const previous = await previousSnapshot(sb, id);
-  const { data: updated, error } = await sb.from("visits")
-    .update({ planning_status: "cancelled", cancellation_reason: reasonKey })
-    .eq("id", id).in("planning_status", ["published", "returned"]).eq("operational_state", "new")
-    .select("id");
-  if (error) return { error: mapError(error, "update") };
-  if (!updated?.length) return { error: "No row updated — state changed concurrently or RLS denied the update (visits_update requires planner/ops)" };
-  const evErr = await recordLifecycleEvent(sb, {
-    visitId: id, eventType: "cancel", reasonKey, comments, actor: user.id, previous,
-  });
-  const { data: asg } = await sb.from("assignments").select("inspector_id").eq("visit_id", id).maybeSingle();
-  let nErr: { message: string } | null = null;
-  if (asg?.inspector_id) {
-    const { error: nInsErr } = await sb.from("notifications").insert({ event_key: "visit_cancelled", recipient: asg.inspector_id, payload: { visit_id: id, reason: reasonKey }, channel: "push" });
-    nErr = nInsErr;
+  const expectedVersion = Number(fd.get("expected_version"));
+  const idempotencyKey = String(fd.get("idempotency_key") ?? "").trim();
+  const correlationId = String(fd.get("correlation_id") ?? "").trim();
+  const note = String(fd.get("note") ?? "").trim() || null;
+  if (!UUID.test(id) || !Number.isInteger(expectedVersion) || expectedVersion < 1
+      || !/^[A-Za-z0-9._:-]{8,200}$/.test(idempotencyKey) || !UUID.test(correlationId)) {
+    return { error: "The cancellation request is incomplete. Nothing was changed." };
   }
-  revalidatePath(`/visits/${id}`); revalidatePath("/visits");
-  if (evErr) return { error: "Visit cancelled, but the lifecycle record could not be written — the gap is logged (PLN-CON-011)" };
-  if (nErr) return { error: "Visit cancelled, but the inspector notification could not be queued." };
-  return { ok: "Cancelled — final state; lifecycle recorded; inspector notification queued (not confirmed delivered); audited (M02-006 · PLN-CON-011)" };
+  const { data, error } = await sb.rpc("cancel_planning_visits_atomic", {
+    p_visit_ids: [id],
+    p_expected_versions: { [id]: expectedVersion },
+    p_note: note,
+    p_idempotency_key: idempotencyKey,
+    p_correlation_id: correlationId,
+  });
+  if (error) {
+    console.error("[planning.cancelVisit] governed mutation failed:", error.code, error.message);
+    if (error.code === "42501") return { error: "You do not have permission or scope to cancel this visit. Nothing was changed." };
+    if (error.code === "40001") return { error: "This visit changed after the page loaded. Refresh before trying again." };
+    if (error.code === "23514") return { error: "Cancellation is blocked by the current state or governed cutoff. Nothing was changed." };
+    if (error.code === "23505") return { error: "This retry does not match the original cancellation request. Nothing was changed." };
+    return { error: "The visit could not be cancelled (ERR-OPS-001). Nothing was changed." };
+  }
+  const receipt = data as {
+    operation?: string; updated_count?: number; visit_ids?: string[];
+    correlation_id?: string; rows?: { post_version?: number; audit_event_id?: number; outbox_intent_id?: string }[];
+  } | null;
+  if (receipt?.operation !== "cancel" || receipt.updated_count !== 1
+      || receipt.correlation_id !== correlationId || receipt.visit_ids?.[0] !== id
+      || !receipt.rows?.[0]?.post_version || !receipt.rows[0].audit_event_id
+      || !receipt.rows[0].outbox_intent_id) {
+    console.error("[planning.cancelVisit] incomplete governed receipt");
+    return { error: "The cancellation result could not be verified. Refresh before retrying." };
+  }
+  revalidatePath(`/visits/${id}`); revalidatePath(`/planning/visits/${id}`);
+  revalidatePath("/visits"); revalidatePath("/planning/visits");
+  return { ok: "Visit cancelled atomically — audit and notification intent recorded (M02-006 · M02-041)." };
 }
 
 // M02-008 + M8 — Reschedule window: published/new OR returned/new (a returned
 // visit may be re-windowed, canonical §15), end after start (server-side).
 export async function rescheduleVisit(_: ActionResult, fd: FormData): Promise<ActionResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await getVerifiedUser(sb);
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
+  if (authError) return { error: "Planning data could not be verified (ERR-OPS-001). Nothing was changed." };
   if (!user) return { error: "Session expired — sign in again." };
   const id = String(fd.get("visit_id"));
+  const expectedVersion = Number(fd.get("expected_version"));
+  const idempotencyKey = String(fd.get("idempotency_key") ?? "").trim();
+  const correlationId = String(fd.get("correlation_id") ?? "").trim();
   const ws = String(fd.get("window_start") ?? "").trim(); const we = String(fd.get("window_end") ?? "").trim();
   if (!ws || !we) return { error: "Both new window start and end are required (M02-008)" };
   const start = new Date(ws); const end = new Date(we);
   if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return { error: "Invalid date/time values (M02-008)" };
   if (end.getTime() <= start.getTime()) return { error: "Window end must be after window start (M02-008)" };
-  const guard = await guardPublishedOrReturnedNew(id);
-  if (guard) return { error: `Reschedule blocked: ${guard} (M02-008)` };
-  const previous = await previousSnapshot(sb, id);
-  const { data: updated, error } = await sb.from("visits")
-    .update({ window_start: start.toISOString(), window_end: end.toISOString() })
-    .eq("id", id).in("planning_status", ["published", "returned"]).eq("operational_state", "new")
-    .select("id");
-  if (error) return { error: mapError(error, "update") };
-  if (!updated?.length) return { error: "No row updated — state changed concurrently or RLS denied the update (visits_update requires planner/ops)" };
-  const evErr = await recordLifecycleEvent(sb, {
-    visitId: id, eventType: "reschedule", actor: user.id,
-    comments: `${start.toISOString()} → ${end.toISOString()}`, previous,
+  if (!UUID.test(id) || !Number.isInteger(expectedVersion) || expectedVersion < 1
+      || !/^[A-Za-z0-9._:-]{8,200}$/.test(idempotencyKey) || !UUID.test(correlationId)) {
+    return { error: "The reschedule request is incomplete. Nothing was changed." };
+  }
+  const { data, error } = await sb.rpc("reschedule_planning_visits_atomic", {
+    p_visit_ids: [id],
+    p_window_start: start.toISOString(),
+    p_window_end: end.toISOString(),
+    p_expected_versions: { [id]: expectedVersion },
+    p_note: null,
+    p_idempotency_key: idempotencyKey,
+    p_correlation_id: correlationId,
   });
-  // M02-041 — the assigned inspector is notified of the new window.
-  const nErr = await notifyAssignedInspector(sb, id, "visit_rescheduled", { window_start: start.toISOString(), window_end: end.toISOString() });
-  revalidatePath(`/visits/${id}`); revalidatePath("/visits");
-  if (evErr) return { error: "Window rescheduled, but the lifecycle record could not be written — the gap is logged (PLN-CON-011)" };
-  if (nErr) return { error: "Window rescheduled, but the inspector notification could not be queued (M02-008 · M02-041)" };
-  return { ok: "Window rescheduled — lifecycle recorded; inspector notification queued for the new window (not confirmed delivered) (M02-008 · M02-041)" };
+  if (error) {
+    console.error("[planning.rescheduleVisit] governed mutation failed:", error.code, error.message);
+    if (error.code === "42501") return { error: "You do not have permission or scope to reschedule this visit. Nothing was changed." };
+    if (error.code === "40001") return { error: "This visit changed after the page loaded. Refresh before trying again." };
+    if (error.code === "23514") return { error: "Rescheduling is blocked by the current state or governed cutoff. Nothing was changed." };
+    if (error.code === "23505") return { error: "This retry does not match the original reschedule request. Nothing was changed." };
+    return { error: "The visit could not be rescheduled (ERR-OPS-001). Nothing was changed." };
+  }
+  const receipt = data as {
+    operation?: string; updated_count?: number; visit_ids?: string[];
+    correlation_id?: string; rows?: { post_version?: number; audit_event_id?: number; outbox_intent_id?: string }[];
+  } | null;
+  if (receipt?.operation !== "reschedule" || receipt.updated_count !== 1
+      || receipt.correlation_id !== correlationId || receipt.visit_ids?.[0] !== id
+      || !receipt.rows?.[0]?.post_version || !receipt.rows[0].audit_event_id
+      || !receipt.rows[0].outbox_intent_id) {
+    console.error("[planning.rescheduleVisit] incomplete governed receipt");
+    return { error: "The reschedule result could not be verified. Refresh before retrying." };
+  }
+  revalidatePath(`/visits/${id}`); revalidatePath(`/planning/visits/${id}`);
+  revalidatePath("/visits"); revalidatePath("/planning/visits");
+  return { ok: "Window rescheduled atomically — audit and notification intent recorded (M02-008 · M02-041)." };
 }
 
 // FIX WAVE F4 · M02-042 — visit attachments: upload to private bucket 'attachments'

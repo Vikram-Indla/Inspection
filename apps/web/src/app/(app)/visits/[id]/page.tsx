@@ -30,7 +30,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     .eq("user_roles.role_key", "inspector").order("full_name");
   const inspectors = (inspRows ?? []).map(r => ({ user_id: r.user_id as string, full_name: r.full_name as string }));
   const { data: v, error: vErr } = await sb.from("visits")
-    .select(`id, visit_type, execution_mode, planning_status, operational_state, window_start, window_end, cancellation_reason, notes,
+    .select(`id, visit_type, execution_mode, planning_status, planning_version, operational_state, window_start, window_end, cancellation_reason, notes,
       immediate_creator_role, source_channel, internal_reference, priority, visit_reference, expired_by_rule_id, package_version_id,
       planner_lat, planner_lng, original_lat, original_lng, visit_location_source, created_at,
       visit_plans(id, method, status, published_at, created_at, plan_reference, profiles(full_name)),
@@ -494,7 +494,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       </div>
       </div>
       <aside className={targetPreview ? `wa-visit-detail-actions ${detailStyles.actions}` : undefined} style={targetPreview ? undefined : { display: "contents" }}>
-        <ActionBar visitId={v.id} status={v.planning_status} opState={v.operational_state}
+        <ActionBar visitId={v.id} planningVersion={v.planning_version} status={v.planning_status} opState={v.operational_state}
           opStateLabel={t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}
           visitType={v.visit_type} windowStart={v.window_start} windowEnd={v.window_end} inspectors={inspectors}
           canManage={canManage} canReassign={canReassign} isFinal={isFinal}
