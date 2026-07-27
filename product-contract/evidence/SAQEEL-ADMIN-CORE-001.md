@@ -63,6 +63,34 @@ built before the worktree received its gitignored environment links. Rebuilding
 with the governed environment loaded resolved authentication; that superseded
 attempt is not completion evidence.
 
+## Governed record-drawer follow-up
+
+The five owned record-bearing destinations now share the source-design drawer
+contract from `Saqeel Revamp.dc.html` lines 2047–2064:
+
+- activating a real record row/card opens an accessible modal drawer;
+- Record, Governance and Audit groups contain only RLS-visible row facts and
+  existing governed rules;
+- Edit through request links to an existing guarded edit/request boundary when
+  one exists and otherwise remains visibly unavailable with the truthful reason;
+- View activity log links to the existing read-only `/admin/audit` route using
+  the real record identifier, without inventing an actor, event or timestamp;
+- Close, backdrop activation and Escape dismiss the drawer, focus is trapped
+  while open, and focus returns to the activating record;
+- logical CSS properties, inherited tokens and a `min(420px, 92vw)` width cover
+  LTR/RTL, light/dark and narrow layouts.
+
+Focused Playwright assertions cover Enter/Space activation, all three groups,
+the governed links, Escape, focus return, Arabic RTL, dark theme and narrow
+overflow across `/admin/access`, `/admin/localization`, `/admin/risk`,
+`/admin/packages` and `/admin/integrations`. The one bounded execution attempt
+on port 3041 stopped at the harness precondition because
+`SAQEEL_TEST_COMPLIANCE_ADMIN_EMAIL` was absent; no product assertion executed
+and no credential or bypass was fabricated. A direct Chrome navigation against
+this worktree on `127.0.0.1:3040` verified that protected `/admin/access`
+redirects to the real `/login` boundary. There was no already-authenticated
+browser session available for a protected-row demonstration.
+
 ## Pre-existing Control Panel checkpoint evidence
 
 This Revamp evidence is additive. The checkpoint inherited from `b91b8905`

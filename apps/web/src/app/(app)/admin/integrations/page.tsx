@@ -2,6 +2,8 @@ import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import AdminDestinationFrame from "../_components/AdminDestinationFrame";
+import { AdminRecordTableRow } from "../_components/AdminRecordDrawer";
+import { createAdminRecordDrawerLabels } from "../_components/adminRecordDrawerCopy";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +29,19 @@ export default async function IntegrationsPage() {
     t(`mvp3.integrations.kind.${value}`, rawLabel(value));
   const notConfigured = t("common.notConfigured", copy("Not configured", "غير مُهيّأ"));
   const configuredEndpoints = endpoints.filter(row => row.status === "configured").length;
+  const drawerLabels = createAdminRecordDrawerLabels(t, locale);
+  const integrationGovernance = [
+    t("admin.revamp.integration.governance.truth", copy("Configuration, connectivity and delivery are distinct truth states.", "التهيئة والاتصال والتسليم حالات حقيقة منفصلة.")),
+    t("admin.revamp.integration.governance.secrets", copy("Secrets are never rendered; only governed contract and runtime state is shown.", "لا تُعرض الأسرار؛ ويُعرض فقط العقد المحكوم وحالة التشغيل.")),
+    t("admin.revamp.integration.governance.degrade", copy("Unavailable providers fail closed and dependent features disclose the boundary.", "تفشل الجهات المزودة غير المتاحة بأمان وتوضح الميزات المعتمدة عليها هذا الحد.")),
+  ];
+  const endpointEditUnavailable = t(
+    "admin.recordDrawer.integration.editUnavailable",
+    copy(
+      "The endpoint registry has no governed edit workflow on this route. Connection-specific data actions remain on their authorized destinations.",
+      "لا يوفّر سجل نقاط التكامل مسار تعديل محكوماً في هذه الوجهة. تبقى إجراءات البيانات الخاصة بكل اتصال في وجهاتها المصرّح بها.",
+    ),
+  );
 
   return (
     <AdminDestinationFrame
@@ -36,6 +51,7 @@ export default async function IntegrationsPage() {
       hub={t("admin.revamp.hub.connections", copy("Connections & geography", "التكاملات والجغرافيا"))}
       routeLabel="/admin/integrations"
       designId="frame-24-admin-integration-management"
+      drawerLabels={drawerLabels}
       labels={{
         administration: t("navigation.administration", copy("Administration", "الإدارة")),
         breadcrumb: t("common.breadcrumb", copy("Breadcrumb", "مسار التنقل")),
@@ -65,11 +81,7 @@ export default async function IntegrationsPage() {
         { label: t("mvp3.integrations.factoryData", copy("Factory data", "بيانات المصانع")), href: "/admin/integrations/factory-data" },
         { label: t("admin.revamp.integration.tabs.history", copy("Sync history", "سجل المزامنة")), href: "/admin/integrations#integration-events" },
       ]}
-      governance={[
-        t("admin.revamp.integration.governance.truth", copy("Configuration, connectivity and delivery are distinct truth states.", "التهيئة والاتصال والتسليم حالات حقيقة منفصلة.")),
-        t("admin.revamp.integration.governance.secrets", copy("Secrets are never rendered; only governed contract and runtime state is shown.", "لا تُعرض الأسرار؛ ويُعرض فقط العقد المحكوم وحالة التشغيل.")),
-        t("admin.revamp.integration.governance.degrade", copy("Unavailable providers fail closed and dependent features disclose the boundary.", "تفشل الجهات المزودة غير المتاحة بأمان وتوضح الميزات المعتمدة عليها هذا الحد.")),
-      ]}
+      governance={integrationGovernance}
       reconstructionNote={t("admin.revamp.integration.note", copy("Prototype provider names, sync times and health labels are not copied. The register, event stream and export jobs below are RLS-scoped backend reads; missing tables or rows remain unavailable or verified-empty states.", "لا تُنسخ أسماء الجهات المزودة أو أوقات المزامنة أو تسميات الصحة النموذجية. سجل التكامل وتدفق الأحداث ومهام التصدير أدناه قراءات خلفية محكومة بأمن الصفوف؛ وتبقى الجداول أو الصفوف المفقودة حالات غير متاحة أو فارغة تم التحقق منها."))}
       context={<span className="badge badge-info">M3-00 · CD-050</span>}
     >
@@ -82,7 +94,38 @@ export default async function IntegrationsPage() {
         <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}><div><h3 id="integration-registry">{t("mvp3.integrations.registry", "Governed endpoint registry")}</h3><p className="t-caption">{t("mvp3.integrations.registryHelp", "Contract version, runtime state and dependency truth—not secret material.")}</p></div><span className="badge">{(endpoints ?? []).length} endpoints</span></div>
         {endpointsRead.error ? <div className="sq-banner sq-banner--warning" role="alert">{t("mvp3.integrations.registryError", "The endpoint registry could not be read. Event and export data below may still be available.")}</div> : null}
         <div className="sq-tablewrap"><table className="sq-table"><thead><tr><th scope="col">{t("common.name", "Name")}</th><th scope="col">{t("common.type", "Type")}</th><th scope="col">{t("common.version", "Contract")}</th><th scope="col">{t("common.status", "Truth status")}</th></tr></thead><tbody>
-          {endpoints.map(row => <tr key={row.id}><th scope="row">{row.display_name}<div className="t-caption"><bdi dir="ltr">{row.endpoint_key}</bdi></div></th><td>{kindLabel(row.endpoint_kind)}<div className="t-caption"><bdi dir="ltr">{row.endpoint_kind}</bdi></div></td><td><span className="sq-version"><bdi dir="ltr">{row.contract_version}</bdi></span></td><td><span className={`sq-lozenge ${row.status === "configured" ? "sq-lozenge--success" : "sq-lozenge--warning"}`}>{statusLabel(row.status)}</span><div className="t-caption"><bdi dir="ltr">{row.status}</bdi> · {t("mvp3.integrations.updated", "recorded")} <time dateTime={row.updated_at}>{new Date(row.updated_at).toLocaleString()}</time></div></td></tr>)}
+          {endpoints.map(row => {
+            const endpointKind = kindLabel(row.endpoint_kind);
+            const endpointStatus = statusLabel(row.status);
+            const recordedAt = new Date(row.updated_at).toLocaleString(locale === "ar" ? "ar-SA" : "en-GB");
+            return (
+              <AdminRecordTableRow
+                key={row.id}
+                record={{
+                  title: row.display_name,
+                  subtitle: t("admin.revamp.hub.connections", copy("Connections & geography", "التكاملات والجغرافيا")),
+                  record: [
+                    { label: t("admin.recordDrawer.endpointKey", copy("Endpoint key", "مفتاح نقطة التكامل")), value: row.endpoint_key },
+                    { label: t("common.type", "Type"), value: endpointKind },
+                    { label: t("common.version", "Contract"), value: row.contract_version },
+                    { label: t("common.status", "Truth status"), value: endpointStatus },
+                  ],
+                  governance: integrationGovernance,
+                  audit: [{
+                    label: t("mvp3.integrations.updated", copy("Registry recorded", "تسجيل السجل")),
+                    value: recordedAt,
+                  }],
+                  editUnavailableReason: endpointEditUnavailable,
+                  auditHref: `/admin/audit?q=${encodeURIComponent(row.endpoint_key)}`,
+                }}
+              >
+                <th scope="row">{row.display_name}<div className="t-caption"><bdi dir="ltr">{row.endpoint_key}</bdi></div></th>
+                <td>{endpointKind}<div className="t-caption"><bdi dir="ltr">{row.endpoint_kind}</bdi></div></td>
+                <td><span className="sq-version"><bdi dir="ltr">{row.contract_version}</bdi></span></td>
+                <td><span className={`sq-lozenge ${row.status === "configured" ? "sq-lozenge--success" : "sq-lozenge--warning"}`}>{endpointStatus}</span><div className="t-caption"><bdi dir="ltr">{row.status}</bdi> · {t("mvp3.integrations.updated", "recorded")} <time dateTime={row.updated_at}>{recordedAt}</time></div></td>
+              </AdminRecordTableRow>
+            );
+          })}
           {!endpointsRead.error && endpoints.length === 0 ? <tr><td colSpan={4}>{t("mvp3.integrations.empty", "No endpoints are registered. This is a verified empty read.")}</td></tr> : null}
         </tbody></table></div>
       </section>

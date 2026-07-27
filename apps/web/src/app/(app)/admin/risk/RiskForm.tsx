@@ -10,6 +10,7 @@
 import { useMemo, useState, useActionState } from "react";
 import { saveRiskSettings } from "./actions";
 import { validateBands, validateWeights, type RiskBands } from "@/lib/risk/model";
+import { AdminRecordArticle } from "../_components/AdminRecordDrawer";
 
 // Factor names are resolved to strings on the server — a function prop cannot
 // cross the server→client boundary (Next throws at render).
@@ -34,6 +35,11 @@ export type RiskLabels = {
   bandHigh: string;
   invalidBands: string;
   confirmLive: string;
+  factorKey: string;
+  weight: string;
+  modelVersion: string;
+  notConfigured: string;
+  drawerSubtitle: string;
 };
 
 export default function RiskForm({
@@ -41,12 +47,16 @@ export default function RiskForm({
   lowMax: initialLow,
   medMax: initialMed,
   updatedAt,
+  modelVersion,
+  drawerGovernance,
   labels,
 }: {
   factors: Factor[];
   lowMax: number;
   medMax: number;
   updatedAt: string | null;
+  modelVersion: string;
+  drawerGovernance: readonly string[];
   labels: RiskLabels;
 }) {
   const [weights, setWeights] = useState<Record<string, number>>(
@@ -84,8 +94,31 @@ export default function RiskForm({
       {initialFactors.map(f => {
         const w = weights[f.key] ?? 0;
         const pct = Math.round((Number.isFinite(w) ? w : 0) / maxWeight * 100);
+        const factorId = `risk-factor-${f.key.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
         return (
-          <div key={f.key} className="rk-driver">
+          <AdminRecordArticle
+            key={f.key}
+            id={factorId}
+            className="rk-driver"
+            record={{
+              title: f.name,
+              subtitle: labels.drawerSubtitle,
+              record: [
+                { label: labels.factorKey, value: f.key },
+                {
+                  label: labels.weight,
+                  value: Number.isFinite(w) ? `${(w * 100).toFixed(2).replace(/\.?0+$/, "")}%` : labels.notConfigured,
+                },
+                { label: labels.modelVersion, value: modelVersion },
+              ],
+              governance: drawerGovernance,
+              audit: updatedAt
+                ? [{ label: labels.lastUpdated, value: new Date(updatedAt).toLocaleString() }]
+                : [],
+              editHref: `#${factorId}`,
+              auditHref: `/admin/audit?q=${encodeURIComponent(f.key)}`,
+            }}
+          >
             <div className="rk-driver__name"><b>{f.name}</b></div>
             <input
               className="sq-input numeric rk-w" id={f.key} name={f.key} type="number" step="0.05" min="0" max="1"
@@ -94,7 +127,7 @@ export default function RiskForm({
               style={{ maxInlineSize: 110 }} aria-label={f.name}
             />
             <div className="rk-bar" aria-hidden="true"><span style={{ inlineSize: `${pct}%` }} /></div>
-          </div>
+          </AdminRecordArticle>
         );
       })}
 

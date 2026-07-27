@@ -43,6 +43,14 @@ const PINNED_DESTINATIONS = [
   { label: "Integration Management", href: "/admin/integrations" },
 ] as const;
 
+const RECORD_SURFACES = [
+  { route: "/admin/access", selector: "table tbody tr[aria-haspopup=dialog]" },
+  { route: "/admin/localization", selector: "article[aria-haspopup=dialog]" },
+  { route: "/admin/risk", selector: "article[aria-haspopup=dialog]" },
+  { route: "/admin/packages", selector: "table tbody tr[aria-haspopup=dialog]" },
+  { route: "/admin/integrations", selector: "table tbody tr[aria-haspopup=dialog]" },
+] as const;
+
 test.use({ storageState: { cookies: [], origins: [] } });
 
 async function signIn(page: Page, personaKey: PersonaKey) {
@@ -114,6 +122,65 @@ test("the pinned Administration group exposes exactly the six source destination
     await expect(link).toBeVisible();
     await expect(link).toHaveAttribute("href", destination.href);
   }
+});
+
+test("real Administration rows open the governed record drawer with keyboard and restore focus", async ({ page }) => {
+  await signIn(page, "admin");
+
+  for (const surface of RECORD_SURFACES) {
+    await page.goto(surface.route);
+    const trigger = page.locator(surface.selector).first();
+    await expect(trigger, `${surface.route} record trigger`).toBeVisible();
+
+    await trigger.focus();
+    await page.keyboard.press("Enter");
+    const drawer = page.locator("[data-admin-record-drawer]");
+    await expect(drawer).toBeVisible();
+    await expect(drawer.getByRole("heading", { level: 3, name: "Record", exact: true })).toBeVisible();
+    await expect(drawer.getByRole("heading", { level: 3, name: "Governance", exact: true })).toBeVisible();
+    await expect(drawer.getByRole("heading", { level: 3, name: "Audit", exact: true })).toBeVisible();
+    await expect(drawer.getByText("Edit through request", { exact: true })).toBeVisible();
+    await expect(drawer.getByRole("link", { name: "View activity log", exact: true })).toHaveAttribute("href", /\/admin\/audit\?/);
+    await expect(
+      drawer.locator("header").getByRole("button", { name: "Close", exact: true }),
+    ).toBeFocused();
+
+    await page.keyboard.press("Escape");
+    await expect(drawer).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+  }
+});
+
+test("the governed record drawer respects Arabic RTL, dark theme and narrow reflow", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signIn(page, "admin");
+  await page.evaluate(() => {
+    localStorage.setItem("saqeel-theme", "dark");
+    document.documentElement.setAttribute("data-theme", "dark");
+  });
+  await page.goto("/locale?set=ar");
+  await page.goto("/admin/access");
+
+  const trigger = page.locator("table tbody tr[aria-haspopup=dialog]").first();
+  await trigger.focus();
+  await page.keyboard.press("Space");
+
+  const drawer = page.locator("[data-admin-record-drawer]");
+  await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(drawer).toBeVisible();
+  await expect(drawer.getByRole("heading", { level: 3, name: "السجل", exact: true })).toBeVisible();
+  await expect(drawer.getByRole("heading", { level: 3, name: "الحوكمة", exact: true })).toBeVisible();
+  await expect(drawer.getByRole("heading", { level: 3, name: "التدقيق", exact: true })).toBeVisible();
+  const box = await drawer.boundingBox();
+  expect(box?.width ?? 999).toBeLessThanOrEqual(390);
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(1);
+
+  await page.keyboard.press("Escape");
+  await expect(trigger).toBeFocused();
 });
 
 for (const { width, height } of [

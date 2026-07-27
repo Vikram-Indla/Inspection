@@ -2,6 +2,10 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import Shell from "@/components/Shell";
 import styles from "./AdminDestinationFrame.module.css";
+import {
+  AdminRecordDrawerProvider,
+  type AdminRecordDrawerLabels,
+} from "./AdminRecordDrawer";
 
 export type AdminMetric = {
   label: string;
@@ -42,6 +46,7 @@ export default function AdminDestinationFrame({
   children,
   context,
   designId,
+  drawerLabels,
 }: {
   current: string;
   title: string;
@@ -57,24 +62,26 @@ export default function AdminDestinationFrame({
   children: ReactNode;
   context?: ReactNode;
   designId: string;
+  drawerLabels: AdminRecordDrawerLabels;
 }) {
   return (
     <Shell current={current} title="" context={context}>
-      <div className={styles.workspace} data-saqeel-admin-destination={designId}>
-        <div className={styles.main}>
-          <header className={styles.heading}>
-            <div>
-              <nav className={styles.breadcrumb} aria-label={labels.breadcrumb}>
-                <ol>
-                  <li>{labels.administration}</li>
-                  <li>{hub}</li>
-                </ol>
-              </nav>
-              <h1 className={styles.title}>{title}</h1>
-              <p className={styles.subtitle}>{subtitle}</p>
-            </div>
-            <span className="sq-version"><bdi dir="ltr">{routeLabel}</bdi></span>
-          </header>
+      <AdminRecordDrawerProvider labels={drawerLabels}>
+        <div className={styles.workspace} data-saqeel-admin-destination={designId}>
+          <div className={styles.main}>
+            <header className={styles.heading}>
+              <div>
+                <nav className={styles.breadcrumb} aria-label={labels.breadcrumb}>
+                  <ol>
+                    <li>{labels.administration}</li>
+                    <li>{hub}</li>
+                  </ol>
+                </nav>
+                <h1 className={styles.title}>{title}</h1>
+                <p className={styles.subtitle}>{subtitle}</p>
+              </div>
+              <span className="sq-version"><bdi dir="ltr">{routeLabel}</bdi></span>
+            </header>
 
           <section className={styles.metrics} aria-label={`${title} governance figures`}>
             {metrics.map(metric => (
@@ -106,22 +113,23 @@ export default function AdminDestinationFrame({
             </section>
           ) : null}
 
-          {children}
-        </div>
+            {children}
+          </div>
 
-        <aside className={styles.rail} aria-label={`${title} — ${labels.governance}`}>
-          <section className={styles.railCard}>
-            <h2 className={styles.railTitle}>{labels.governance}</h2>
-            <ul className={styles.governance}>
-              {governance.map(item => <li key={item}>{item}</li>)}
-            </ul>
-          </section>
-          <section className={styles.railCard}>
-            <h2 className={styles.railTitle}>{labels.reconstruction}</h2>
-            <p className={styles.note}>{reconstructionNote}</p>
-          </section>
-        </aside>
-      </div>
+          <aside className={styles.rail} aria-label={`${title} — ${labels.governance}`}>
+            <section className={styles.railCard}>
+              <h2 className={styles.railTitle}>{labels.governance}</h2>
+              <ul className={styles.governance}>
+                {governance.map(item => <li key={item}>{item}</li>)}
+              </ul>
+            </section>
+            <section className={styles.railCard}>
+              <h2 className={styles.railTitle}>{labels.reconstruction}</h2>
+              <p className={styles.note}>{reconstructionNote}</p>
+            </section>
+          </aside>
+        </div>
+      </AdminRecordDrawerProvider>
     </Shell>
   );
 }
