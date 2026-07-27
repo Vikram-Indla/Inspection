@@ -88,6 +88,7 @@ export type VisitsBoardStrings = {
   bulkHeading: string;
   bulkWindowStart: string;
   bulkWindowEnd: string;
+  bulkChangeReason: string;
   bulkRescheduleBtn: string;
   bulkReassignTo: string;
   bulkReassignBtn: string;
@@ -206,7 +207,9 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [activeId, setActiveId] = useState<string | null>(null); // continuity spine
   const [lastVerb, setLastVerb] = useState<BulkVerb | null>(null);
+  const [requestIdentity, setRequestIdentity] = useState<Record<BulkVerb, { idempotencyKey: string; correlationId: string }> | null>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
+  const rotatedResultRef = useRef<ActionResult | null>(null);
 
   const [can, canAct, p1] = useActionState<ActionResult, FormData>(bulkCancelVisits, EMPTY);
   const [rsc, rscAct, p2] = useActionState<ActionResult, FormData>(bulkRescheduleVisits, EMPTY);
@@ -214,10 +217,39 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
   const [edt, edtAct, p4] = useActionState<ActionResult, FormData>(bulkEditVisits, EMPTY);
   const busy = p1 || p2 || p3 || p4;
 
+  useEffect(() => {
+    const make = (verb: BulkVerb) => ({
+      idempotencyKey: `visits.${verb}.${crypto.randomUUID()}`,
+      correlationId: crypto.randomUUID(),
+    });
+    setRequestIdentity({
+      cancel: make("cancel"),
+      reschedule: make("reschedule"),
+      reassign: make("reassign"),
+      edit: make("edit"),
+    });
+  }, []);
+
   // Only the last-submitted verb's result is rendered (one form submits at a
   // time). This avoids showing stale ledgers from an earlier verb.
   const resultByVerb: Record<BulkVerb, ActionResult> = { cancel: can, reschedule: rsc, reassign: rea, edit: edt };
   const pendingByVerb: Record<BulkVerb, boolean> = { cancel: p1, reschedule: p2, reassign: p3, edit: p4 };
+  const activeResult = lastVerb ? resultByVerb[lastVerb] : null;
+
+  // Preserve an identity across transport retries, then rotate only after the
+  // database confirms the complete atomic selection committed.
+  useEffect(() => {
+    if (!lastVerb || !activeResult?.items?.length || rotatedResultRef.current === activeResult) return;
+    if (!activeResult.items.every(item => item.outcome === "applied")) return;
+    rotatedResultRef.current = activeResult;
+    setRequestIdentity(current => current && ({
+      ...current,
+      [lastVerb]: {
+        idempotencyKey: `visits.${lastVerb}.${crypto.randomUUID()}`,
+        correlationId: crypto.randomUUID(),
+      },
+    }));
+  }, [activeResult, lastVerb]);
   const result = lastVerb ? resultByVerb[lastVerb] : null;
   const pending = lastVerb ? pendingByVerb[lastVerb] : false;
   const hasLedger = !!result?.items && result.items.length > 0;
@@ -301,6 +333,12 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
   const hasFilter = q || status || type || mode || region || city || from || to;
   const clearFilters = () => { setQ(""); setStatus(""); setType(""); setMode(""); setRegion(""); setCity(""); setFrom(""); setTo(""); };
   const hidden = [...selected].map(id => <input key={id} type="hidden" name="visit_ids" value={id} />);
+  const identityFields = (verb: BulkVerb) => requestIdentity && (
+    <>
+      <input type="hidden" name="idempotency_key" value={requestIdentity[verb].idempotencyKey} />
+      <input type="hidden" name="correlation_id" value={requestIdentity[verb].correlationId} />
+    </>
+  );
 
   const rowById = useMemo(() => new Map(rows.map(v => [v.id, v])), [rows]);
   const activeVisit = activeId ? rowById.get(activeId) ?? null : null;
@@ -418,37 +456,37 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
 
       {/* M02-003/004 — search + filters + sort */}
       <div className="panel" style={{ padding: "var(--space-4)", display: "flex", flexWrap: "wrap", gap: "var(--space-3)", alignItems: "flex-end" }}>
-        <input className="sq-input" style={{ inlineSize: 260 }} value={q} onChange={e => setQ(e.target.value)}
+        <input className="input" style={{ inlineSize: 260 }} value={q} onChange={e => setQ(e.target.value)}
           placeholder={strings.searchPlaceholder} aria-label={strings.searchAria} />
-        <select className="sq-select" value={status} onChange={e => setStatus(e.target.value)} aria-label={strings.allStatuses}>
+        <select className="select" value={status} onChange={e => setStatus(e.target.value)} aria-label={strings.allStatuses}>
           <option value="">{strings.allStatuses}</option>
           {["draft", "published", "returned", "cancelled", "expired"].map(s => <option key={s} value={s}>{strings.statusLabels[s] ?? s}</option>)}
         </select>
-        <select className="sq-select" value={type} onChange={e => setType(e.target.value)} aria-label={strings.allTypes}>
+        <select className="select" value={type} onChange={e => setType(e.target.value)} aria-label={strings.allTypes}>
           <option value="">{strings.allTypes}</option>
           {typeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
-        <select className="sq-select" value={mode} onChange={e => setMode(e.target.value)} aria-label={strings.allModes}>
+        <select className="select" value={mode} onChange={e => setMode(e.target.value)} aria-label={strings.allModes}>
           <option value="">{strings.allModes}</option>
           {modeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
-        <select className="sq-select" value={region} onChange={e => setRegion(e.target.value)} aria-label={strings.allRegions}>
+        <select className="select" value={region} onChange={e => setRegion(e.target.value)} aria-label={strings.allRegions}>
           <option value="">{strings.allRegions}</option>
           {regionOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
-        <select className="sq-select" value={city} onChange={e => setCity(e.target.value)} aria-label={strings.allCities}>
+        <select className="select" value={city} onChange={e => setCity(e.target.value)} aria-label={strings.allCities}>
           <option value="">{strings.allCities}</option>
           {cityOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
-        <div className="sq-field" style={{ maxInlineSize: 170 }}>
+        <div className="field" style={{ maxInlineSize: 170 }}>
           <label className="sq-field__label" htmlFor="visit-filter-from">{strings.fromDate}</label>
-          <input id="visit-filter-from" className="sq-input numeric" type="date" value={from} onChange={e => setFrom(e.target.value)} />
+          <input id="visit-filter-from" className="input numeric" type="date" value={from} onChange={e => setFrom(e.target.value)} />
         </div>
-        <div className="sq-field" style={{ maxInlineSize: 170 }}>
+        <div className="field" style={{ maxInlineSize: 170 }}>
           <label className="sq-field__label" htmlFor="visit-filter-to">{strings.toDate}</label>
-          <input id="visit-filter-to" className="sq-input numeric" type="date" value={to} onChange={e => setTo(e.target.value)} />
+          <input id="visit-filter-to" className="input numeric" type="date" value={to} onChange={e => setTo(e.target.value)} />
         </div>
-        <select className="sq-select" value={sort} onChange={e => setSort(e.target.value as SortKey)} aria-label={strings.sortAria}>
+        <select className="select" value={sort} onChange={e => setSort(e.target.value as SortKey)} aria-label={strings.sortAria}>
           <option value="window_asc">{strings.sortWindowAsc}</option>
           <option value="window_desc">{strings.sortWindowDesc}</option>
           <option value="factory">{strings.sortFactory}</option>
@@ -480,49 +518,59 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
           <div className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--space-4)" }}>
             <form action={rscAct} onSubmit={() => setLastVerb("reschedule")} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               {hidden}
-              <div className="sq-field" style={{ maxInlineSize: 210 }}><label className="sq-field__label" htmlFor="bulk-window-start">{strings.bulkWindowStart}</label>
-                <input id="bulk-window-start" className="sq-input numeric" type="datetime-local" name="window_start" /></div>
-              <div className="sq-field" style={{ maxInlineSize: 210 }}><label className="sq-field__label" htmlFor="bulk-window-end">{strings.bulkWindowEnd}</label>
-                <input id="bulk-window-end" className="sq-input numeric" type="datetime-local" name="window_end" /></div>
-              <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.bulkRescheduleBtn}</button>
+              {identityFields("reschedule")}
+              <div className="field" style={{ maxInlineSize: 210 }}><label className="sq-field__label" htmlFor="bulk-window-start">{strings.bulkWindowStart}</label>
+                <input id="bulk-window-start" className="input numeric" type="datetime-local" name="window_start" /></div>
+              <div className="field" style={{ maxInlineSize: 210 }}><label className="sq-field__label" htmlFor="bulk-window-end">{strings.bulkWindowEnd}</label>
+                <input id="bulk-window-end" className="input numeric" type="datetime-local" name="window_end" /></div>
+              <div className="field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="bulk-reschedule-reason">{strings.bulkChangeReason}</label>
+                <input id="bulk-reschedule-reason" className="input" name="mutation_reason" required /></div>
+              <button className="btn btn-secondary btn-touch" disabled={busy || !requestIdentity}>{strings.bulkRescheduleBtn}</button>
             </form>
             <form action={reaAct} onSubmit={() => setLastVerb("reassign")} className="row" style={{ alignItems: "flex-end" }}>
               {hidden}
-              <div className="sq-field" style={{ maxInlineSize: 220 }}><label className="sq-field__label" htmlFor="bulk-inspector">{strings.bulkReassignTo}</label>
-                <select id="bulk-inspector" className="sq-select" name="inspector_id"><option value="">{strings.selectOption}</option>
+              {identityFields("reassign")}
+              <div className="field" style={{ maxInlineSize: 220 }}><label className="sq-field__label" htmlFor="bulk-inspector">{strings.bulkReassignTo}</label>
+                <select id="bulk-inspector" className="select" name="inspector_id"><option value="">{strings.selectOption}</option>
                   {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
-              <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.bulkReassignBtn}</button>
+              <div className="field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="bulk-reassign-reason">{strings.bulkChangeReason}</label>
+                <input id="bulk-reassign-reason" className="input" name="mutation_reason" required /></div>
+              <button className="btn btn-secondary btn-touch" disabled={busy || !requestIdentity}>{strings.bulkReassignBtn}</button>
             </form>
             <form action={canAct} onSubmit={() => setLastVerb("cancel")} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               {hidden}
+              {identityFields("cancel")}
               {/* M8 / PLN-CON-011 — governed cancellation reason (active lookup
                   keys only); comments mandatory when the reason is Other
                   (server-enforced). */}
-              <div className="sq-field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="bulk-cancel-reason">{strings.bulkCancelReason}</label>
-                <select id="bulk-cancel-reason" className="sq-select" name="reason_key" required>
+              <div className="field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="bulk-cancel-reason">{strings.bulkCancelReason}</label>
+                <select id="bulk-cancel-reason" className="select" name="reason_key" required>
                   <option value="">{strings.selectOption}</option>
                   {cancelReasons.map(o => <option key={o.key} value={o.key}>{o.label_en}</option>)}
                 </select></div>
-              <div className="sq-field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="bulk-cancel-comments">{strings.bulkCancelComments}</label>
-                <input id="bulk-cancel-comments" className="sq-input" name="comments" placeholder={strings.bulkCancelPlaceholder} /></div>
-              <button className="btn btn-danger btn-touch" disabled={busy}>{strings.bulkCancelBtn}</button>
+              <div className="field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="bulk-cancel-comments">{strings.bulkCancelComments}</label>
+                <input id="bulk-cancel-comments" className="input" name="comments" placeholder={strings.bulkCancelPlaceholder} /></div>
+              <button className="btn btn-danger btn-touch" disabled={busy || !requestIdentity}>{strings.bulkCancelBtn}</button>
             </form>
             <form action={edtAct} onSubmit={() => setLastVerb("edit")} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               {hidden}
-              <div className="sq-field" style={{ maxInlineSize: 180 }}><label className="sq-field__label" htmlFor="bulk-visit-type">{strings.bulkEditType}</label>
-                <select id="bulk-visit-type" className="sq-select" name="visit_type"><option value="">{strings.selectOption}</option>
+              {identityFields("edit")}
+              <div className="field" style={{ maxInlineSize: 180 }}><label className="sq-field__label" htmlFor="bulk-visit-type">{strings.bulkEditType}</label>
+                <select id="bulk-visit-type" className="select" name="visit_type"><option value="">{strings.selectOption}</option>
                   <option value="periodic">{strings.typePeriodic}</option>
                   <option value="follow_up">{strings.typeFollowUp}</option>
                   <option value="complaint">{strings.typeComplaint}</option></select></div>
-              <div className="sq-field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="bulk-edit-notes">{strings.bulkEditNotes}</label>
-                <input id="bulk-edit-notes" className="sq-input" name="notes" placeholder={strings.bulkEditNotesPlaceholder} /></div>
+              <div className="field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="bulk-edit-notes">{strings.bulkEditNotes}</label>
+                <input id="bulk-edit-notes" className="input" name="notes" placeholder={strings.bulkEditNotesPlaceholder} /></div>
               <label className="sq-choice" style={{ display: "flex" }}>
                 <input type="checkbox" name="set_notes" value="1" />
                 <span>{strings.bulkEditSetNotes}</span>
               </label>
+              <div className="field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="bulk-edit-reason">{strings.bulkChangeReason}</label>
+                <input id="bulk-edit-reason" className="input" name="mutation_reason" required /></div>
               {/* HANDOFF_BLOCKED_GUARD — cross-Plan bulk edit has no server enforcement,
                   so it is disabled (not faked as safe) when the selection spans Plans. */}
-              <button className="btn btn-secondary btn-touch" disabled={busy || !elig.samePlan}
+              <button className="btn btn-secondary btn-touch" disabled={busy || !elig.samePlan || !requestIdentity}
                 title={!elig.samePlan ? strings.eligSamePlanBlocked : undefined}>{strings.bulkEditBtn}</button>
             </form>
           </div>

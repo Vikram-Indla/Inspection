@@ -135,6 +135,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     bulkHeading: t("visit.list.bulkHeading", "Bulk actions — per-row guards apply (M02-007/011)"),
     bulkWindowStart: t("visit.list.bulkWindowStart", "New window start (M02-033)"),
     bulkWindowEnd: t("visit.list.bulkWindowEnd", "New window end"),
+    bulkChangeReason: t("visit.list.bulkChangeReason", "Reason for change *"),
     bulkRescheduleBtn: t("visit.list.bulkRescheduleBtn", "Reschedule selected"),
     bulkReassignTo: t("visit.list.bulkReassignTo", "Reassign to (M02-032)"),
     bulkReassignBtn: t("visit.list.bulkReassignBtn", "Reassign selected"),
@@ -218,8 +219,8 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
           CD-026 — the Map lens is HANDOFF_BLOCKED_MAP: no route, provider or
           coordinate wiring exists, so it is shown UNAVAILABLE (disabled) and the
           authoritative list below is the working equivalent — never faked. */}
-      <div className="sq-row" style={{ justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: "var(--space-3)" }}>
-        <div className="sq-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
+      <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: "var(--space-3)" }}>
+        <div className="row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
           <Link className="sq-btn sq-btn--secondary" aria-current="page" href={routeBase} prefetch={false}>{t("visit.views.list", "List")}</Link>
           <Link className="sq-btn sq-btn--subtle" href="/visits/calendar" prefetch={false}>{t("visit.views.calendar", "Calendar")}</Link>
           <Link className="sq-btn sq-btn--subtle" href="/visits/workload" prefetch={false}>{t("visit.views.workload", "Workload")}</Link>
@@ -235,7 +236,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
               still resolve a locale override that carries one. */}
           {t("visit.list.planningLink", "Planning — drafts and plans").replace(/[←→]\s*$/u, "").trim()}
         </Link>
-        <span className={targetPreview ? "sq-numeric" : "sq-caption sq-numeric"}>{t("visit.list.scope", "RLS-scoped — showing {shown} of {total}").replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}</span>
+        <span className={targetPreview ? "sq-numeric" : "t-caption sq-numeric"}>{t("visit.list.scope", "RLS-scoped — showing {shown} of {total}").replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}</span>
       </div>
       {/* M10 / canonical §19 — the AI widget fails isolated; it can never
           blank the visit board. */}
@@ -245,7 +246,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
       {rows.length === 0 ? (
         <EmptyState icon={<IconCalendar size={28} />} title={t("visit.list.empty", "No visits in your scope")}
           body={t("visit.list.emptyDesc", "Only visits inside your organizational scope are shown (M02-001 · RLS-enforced, not filtered client-side).")}>
-          <Link className="sq-btn" href="/planning" prefetch={false}>{t("visit.list.createPlan", "Create a plan")}</Link>
+          <Link className="btn btn-primary" href="/planning" prefetch={false}>{t("visit.list.createPlan", "Create a plan")}</Link>
         </EmptyState>
       ) : (
         <VisitsBoard rows={rows} inspectors={inspectors} typeOptions={typeOptions} modeOptions={modeOptions}

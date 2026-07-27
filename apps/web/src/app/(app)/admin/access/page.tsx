@@ -255,7 +255,7 @@ export default async function Access({
                       }}
                     >
                       <td><strong>{p.full_name}</strong></td>
-                      <td className="sq-caption">{p.email}</td>
+                      <td className="t-caption">{p.email}</td>
                       <td>{p.region}</td>
                       <td>{rolesError ? t("common.unavailable", "Unavailable") : roleKeys.map(roleKey =>
                         <span key={roleKey} className={`sq-lozenge ${(roles ?? []).find(x => x.role_key === roleKey)?.is_admin ? "sq-lozenge--warning" : "sq-lozenge--info"}`} style={{ marginInlineEnd: 6 }}>{roleKey}</span>)}</td>
@@ -265,7 +265,7 @@ export default async function Access({
               </tbody>
             </table></div>
           )}
-          <p className="sq-caption" style={{ marginBlockStart: "var(--space-3)" }}>
+          <p className="t-caption" style={{ marginBlockStart: "var(--space-3)" }}>
             {canManage
               ? t("admin.access.rlsNote.manage", "This roster is filtered to your access: users outside your visibility are absent, not hidden rows. Access changes use only governed server actions.")
               : t("admin.access.rlsNote", "This roster is filtered to your access: users outside your visibility are absent, not hidden rows. This screen is read-only.")}
@@ -322,12 +322,12 @@ export default async function Access({
         <section className={styles.roleCatalogue} aria-labelledby="role-catalogue-title">
           <div>
             <h2 id="role-catalogue-title">{t("admin.access.roles.catalogue.title", "Role catalogue")}</h2>
-            <p className="sq-caption">{t("admin.access.roles.catalogue.body", "Only roles visible to your session through Row Level Security are listed.")}</p>
+            <p className="t-caption">{t("admin.access.roles.catalogue.body", "Only roles visible to your session through Row Level Security are listed.")}</p>
           </div>
           <div className={styles.roleCards}>
             {((roles ?? []) as RoleRow[]).map(role => (
               <AdminRecordArticle
-                className="sq-surface"
+                className="panel"
                 key={role.role_key}
                 record={{
                   title: role.title || role.role_key,
@@ -349,7 +349,7 @@ export default async function Access({
                 }}
               >
                 <strong>{role.title || role.role_key}</strong>
-                <bdi className="sq-caption" dir="ltr">{role.role_key}</bdi>
+                <bdi className="t-caption" dir="ltr">{role.role_key}</bdi>
                 {role.is_admin && <span className="sq-lozenge sq-lozenge--warning">{t("admin.access.roles.admin", "Administrator role")}</span>}
               </AdminRecordArticle>
             ))}

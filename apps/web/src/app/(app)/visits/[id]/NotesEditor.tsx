@@ -25,7 +25,7 @@ export default function NotesEditor({ visitId, initialNotes, strings }: {
       <h4 style={{ margin: 0 }}>{strings.heading}</h4>
       <form action={act} style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
         <input type="hidden" name="visit_id" value={visitId} />
-        <div className="sq-field">
+        <div className="field">
           <label className="sq-field__label" htmlFor="visit-notes">{strings.label}</label>
           <textarea className="sq-textarea" name="notes" id="visit-notes" rows={3} defaultValue={initialNotes} placeholder={strings.placeholder} />
         </div>

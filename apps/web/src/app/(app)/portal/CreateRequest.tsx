@@ -8,8 +8,8 @@ export function CreateRequest({ factoryId, strings: s }: { factoryId: string | n
   return (
     <form action={action} className="panel" style={{ padding: "var(--space-6)", display: "flex", gap: "var(--space-3)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <input type="hidden" name="factory_id" value={factoryId} />
-      <div className="sq-field"><label className="sq-field__label" htmlFor="portal-request-type">{s.type}</label><input className="sq-input" name="request_type" id="portal-request-type" defaultValue="correction" required /></div>
-      <div className="sq-field"><label className="sq-field__label" htmlFor="portal-request-subject">{s.subject}</label><input className="sq-input" name="subject" id="portal-request-subject" /></div>
+      <div className="field"><label className="sq-field__label" htmlFor="portal-request-type">{s.type}</label><input className="input" name="request_type" id="portal-request-type" defaultValue="correction" required /></div>
+      <div className="field"><label className="sq-field__label" htmlFor="portal-request-subject">{s.subject}</label><input className="input" name="subject" id="portal-request-subject" /></div>
       <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.creating : s.create}</button>
       {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="badge badge-compliant">{s.created}</span>}

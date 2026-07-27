@@ -12,7 +12,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase";
 import { getVerifiedUser } from "@/lib/verified-user";
-import { formatDateTime } from "@/lib/dates";
+import { formatDate, riyadhDayDiff } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import { isNotificationUnread, notificationHref, notificationReadPatch } from "@/lib/notification-read";
 
@@ -25,6 +25,12 @@ export type BellStrings = {
   unreadBadge: string;      // sr-only tag on unread rows
   loadError: string;
   view: string;             // deep-link into the subject view (M10 / PLN-REQ-009)
+  viewAll: string;          // footer row — link to the full notifications list
+  today: string;
+  yesterday: string;
+  hoursAgo: string;         // "{n} hour{s} ago" template
+  minutesAgo: string;       // "{n} minute{s} ago" template
+  justNow: string;
   events: Record<string, string>;          // event_key → label
   channels: Record<string, string>;        // channel → label
   notConfigured: string;    // delivery adapter pending (honest state)
@@ -36,7 +42,28 @@ type Row = {
 };
 
 const POLL_MS = 30_000;
+const MAX_ROWS = 8;
 const isUnread = (r: Row) => isNotificationUnread(r);
+
+// "2 hours ago" / "Yesterday" / the date beyond that — never a raw timestamp.
+function relativeLabel(createdAt: string, strings: BellStrings, locale: Locale, now: Date): string {
+  const diffMin = Math.floor((now.getTime() - new Date(createdAt).getTime()) / 60_000);
+  if (diffMin < 1) return strings.justNow;
+  if (diffMin < 60) return strings.minutesAgo.replace("{n}", String(diffMin)).replace("{s}", diffMin === 1 ? "" : "s");
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return strings.hoursAgo.replace("{n}", String(diffHr)).replace("{s}", diffHr === 1 ? "" : "s");
+  const dayDiff = riyadhDayDiff(createdAt, now);
+  if (dayDiff === 1) return strings.yesterday;
+  return formatDate(createdAt, locale === "ar" ? "ar" : "en");
+}
+
+// Day-group heading: Today / Yesterday / the date.
+function dayHeading(createdAt: string, strings: BellStrings, locale: Locale, now: Date): string {
+  const dayDiff = riyadhDayDiff(createdAt, now);
+  if (dayDiff === 0) return strings.today;
+  if (dayDiff === 1) return strings.yesterday;
+  return formatDate(createdAt, locale === "ar" ? "ar" : "en");
+}
 
 // K-008 — session-scoped result cache. The shell remounts on every client
 // navigation (K-001), which used to re-fire the list query + exact count on
@@ -181,11 +208,12 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
 
   if (!authed) return null;
   const unread = Math.max(unreadTotal, rows.filter(isUnread).length);
+  // Only a resolved factory/visit name or a semantic string is shown — never
+  // a raw fixture ID (inspection_id/session_id are UUIDs, not context).
   const detail = (p: Record<string, unknown> | null) => {
     const visitId = typeof p?.visit_id === "string" ? p.visit_id : null;
     if (visitId && visitNames[visitId]) return visitNames[visitId];
-    const cand = [p?.reason, p?.decision, p?.factory, p?.inspection_id, p?.session_id]
-      .find(x => typeof x === "string" && x);
+    const cand = [p?.factory, p?.reason, p?.decision].find(x => typeof x === "string" && x);
     return (cand as string | undefined) ?? "";
   };
   return (
@@ -196,39 +224,71 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
         {unread > 0 && <span className="sq-notification__badge" aria-hidden="true">{unread > 99 ? "99+" : unread}</span>}
       </button>
       {open && popoverPos && typeof document !== "undefined" && createPortal(
-        <div ref={popoverRef} className="sq-popover" role="dialog" aria-label={strings.heading}
+        <div ref={popoverRef} className="menu" role="dialog" aria-label={strings.heading}
           style={{ position: "fixed", top: popoverPos.top, left: popoverPos.left, right: popoverPos.right, inlineSize: 360, maxInlineSize: "80vw", zIndex: 30, display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
-          <div className="sq-row" style={{ justifyContent: "space-between" }}>
-            <strong>{strings.heading}</strong>
-            {unread > 0 && <button className="sq-btn sq-btn--subtle" onClick={markAllRead}>{strings.markAll}</button>}
+          <div className="row" style={{ justifyContent: "space-between" }}>
+            <span className="row" style={{ gap: "var(--space-2)" }}>
+              <strong>{strings.heading}</strong>
+              {unread > 0 && <span className="badge">{unread > 99 ? "99+" : unread}</span>}
+            </span>
+            {unread > 0 && <button className="btn btn-ghost btn-sm" onClick={markAllRead}>{strings.markAll}</button>}
           </div>
-          {err && <p className="sq-caption" role="alert">{err}</p>}
-          {rows.length === 0 && <p className="sq-caption">{strings.empty}</p>}
-          <div style={{ maxBlockSize: 320, overflowY: "auto", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
-            {rows.map(r => {
+          {err && <p className="t-caption" role="alert">{err}</p>}
+          {rows.length === 0 && <p className="t-caption">{strings.empty}</p>}
+          {(() => {
+            const now = new Date();
+            const shown = rows.slice(0, MAX_ROWS);
+            let lastHeading: string | null = null;
+            return shown.map(r => {
+              const heading = dayHeading(r.created_at, strings, locale, now);
+              const showHeading = heading !== lastHeading;
+              lastHeading = heading;
               const href = notificationHref(r.event_key, r.payload, fieldOnly);
-              return (
-              <div key={r.id} className="sq-surface" style={{ padding: "var(--space-3)" }}>
-                <strong style={{ fontWeight: isUnread(r) ? 700 : 500 }}>
-                  {strings.events[r.event_key] ?? r.event_key.replace(/_/g, " ")}
-                  {isUnread(r) && <span className="sq-sr-only"> — {strings.unreadBadge}</span>}
-                </strong>
-                {detail(r.payload) && <p className="sq-caption sq-numeric" style={{ margin: 0 }}>{detail(r.payload).slice(0, 80)}</p>}
-                <p className="sq-caption sq-numeric" style={{ margin: 0 }}>
-                  {formatDateTime(r.created_at, locale === "ar" ? "ar" : "en")}
-                  {" · "}{strings.channels[r.channel] ?? r.channel}
-                  {r.delivery_state === "not_configured" && <> · <span className="sq-lozenge sq-lozenge--warning">{strings.notConfigured}</span></>}
-                </p>
-                {href && (
-                  <Link className="sq-caption" href={href} prefetch={false}
-                    onClick={() => { if (isUnread(r)) void markRead(r); }}>
-                    {strings.view} →
-                  </Link>
-                )}
-              </div>
+              const unreadRow = isUnread(r);
+              const contextLine = detail(r.payload).slice(0, 80);
+              const row = (
+                <>
+                  {unreadRow && (
+                    <span aria-hidden="true"
+                      style={{ inlineSize: 6, blockSize: 6, borderRadius: "50%", background: "var(--action-primary)", flex: "none", marginBlockStart: 6 }} />
+                  )}
+                  <div style={{ minInlineSize: 0 }}>
+                    <strong style={{ fontWeight: unreadRow ? 600 : 500, color: unreadRow ? undefined : "var(--text-muted)" }}>
+                      {strings.events[r.event_key] ?? r.event_key.replace(/_/g, " ")}
+                      {unreadRow && <span className="sq-sr-only"> — {strings.unreadBadge}</span>}
+                    </strong>
+                    {contextLine && <div className="t-caption">{contextLine}</div>}
+                    <div className="t-caption">
+                      {relativeLabel(r.created_at, strings, locale, now)}
+                      {r.channel !== "inapp" && <>{" · "}{strings.channels[r.channel] ?? r.channel}</>}
+                      {r.delivery_state === "not_configured" && <> · <span className="badge badge-warning">{strings.notConfigured}</span></>}
+                    </div>
+                  </div>
+                </>
               );
-            })}
-          </div>
+              return (
+                <div key={r.id}>
+                  {showHeading && <div className="menu-label">{heading}</div>}
+                  {href ? (
+                    <Link className="menu-item" href={href} prefetch={false}
+                      onClick={() => { if (unreadRow) void markRead(r); }}>
+                      {row}
+                    </Link>
+                  ) : (
+                    <div className="menu-item">{row}</div>
+                  )}
+                </div>
+              );
+            });
+          })()}
+          {fieldOnly && (
+            <>
+              <hr className="menu-sep" />
+              <Link className="menu-item" href="/field/notifications" prefetch={false}>
+                {strings.viewAll}
+              </Link>
+            </>
+          )}
         </div>,
         document.body,
       )}

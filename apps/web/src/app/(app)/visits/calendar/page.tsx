@@ -57,7 +57,7 @@ export default async function VisitsCalendar() {
   return (
     <Shell current="/visits" title={t("visit.cal.title", "Visit calendar")}
       context={<span className="sq-lozenge sq-lozenge--info">{t("visit.cal.context", "Filtered to your access")}</span>}>
-      <div className="sq-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
+      <div className="row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
         <a className="sq-btn sq-btn--subtle" href="/visits">{t("visit.views.list", "List")}</a>
         <a className="sq-btn sq-btn--secondary" aria-current="page" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
         <a className="sq-btn sq-btn--subtle" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>

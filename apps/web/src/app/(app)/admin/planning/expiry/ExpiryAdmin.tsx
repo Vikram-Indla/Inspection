@@ -68,53 +68,53 @@ function RuleForm({ row, ruleType, labels, onDone }: {
     });
   };
   return (
-    <form onSubmit={submit} className="sq-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+    <form onSubmit={submit} className="panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
       <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap", alignItems: "flex-end" }}>
-        <div className="sq-field" style={{ maxInlineSize: 150 }}>
+        <div className="field" style={{ maxInlineSize: 150 }}>
           <label className="sq-field__label" htmlFor={row ? `ex-off-${row.id}` : `ex-off-new-${ruleType}`}>{labels.offsetLabel}</label>
-          <input className="sq-input numeric" id={row ? `ex-off-${row.id}` : `ex-off-new-${ruleType}`}
+          <input className="input numeric" id={row ? `ex-off-${row.id}` : `ex-off-new-${ruleType}`}
             name="offset_minutes" type="number" min={0} max={525600} step={1} required
             defaultValue={row?.offset_minutes ?? 0} />
         </div>
-        <div className="sq-field">
+        <div className="field">
           <label className="sq-field__label" htmlFor={row ? `ex-vt-${row.id}` : `ex-vt-new-${ruleType}`}>{labels.scopeVisitType}</label>
-          <select className="sq-select" id={row ? `ex-vt-${row.id}` : `ex-vt-new-${ruleType}`} name="scope_visit_type" defaultValue={scope.visit_type ?? "any"}>
+          <select className="select" id={row ? `ex-vt-${row.id}` : `ex-vt-new-${ruleType}`} name="scope_visit_type" defaultValue={scope.visit_type ?? "any"}>
             <option value="any">{labels.any}</option>
             {VISIT_TYPES.map(v => <option key={v} value={v}>{labels.scopeOptions.visit_type[v] ?? v}</option>)}
           </select>
         </div>
-        <div className="sq-field">
+        <div className="field">
           <label className="sq-field__label" htmlFor={row ? `ex-em-${row.id}` : `ex-em-new-${ruleType}`}>{labels.scopeExecutionMode}</label>
-          <select className="sq-select" id={row ? `ex-em-${row.id}` : `ex-em-new-${ruleType}`} name="scope_execution_mode" defaultValue={scope.execution_mode ?? "any"}>
+          <select className="select" id={row ? `ex-em-${row.id}` : `ex-em-new-${ruleType}`} name="scope_execution_mode" defaultValue={scope.execution_mode ?? "any"}>
             <option value="any">{labels.any}</option>
             {EXECUTION_MODES.map(v => <option key={v} value={v}>{labels.scopeOptions.execution_mode[v] ?? v}</option>)}
           </select>
         </div>
-        <div className="sq-field">
+        <div className="field">
           <label className="sq-field__label" htmlFor={row ? `ex-pr-${row.id}` : `ex-pr-new-${ruleType}`}>{labels.scopePriority}</label>
-          <select className="sq-select" id={row ? `ex-pr-${row.id}` : `ex-pr-new-${ruleType}`} name="scope_priority" defaultValue={scope.priority ?? "any"}>
+          <select className="select" id={row ? `ex-pr-${row.id}` : `ex-pr-new-${ruleType}`} name="scope_priority" defaultValue={scope.priority ?? "any"}>
             <option value="any">{labels.any}</option>
             {PRIORITIES.map(v => <option key={v} value={v}>{labels.scopeOptions.priority[v] ?? v}</option>)}
           </select>
         </div>
       </div>
-      <div className="sq-field">
+      <div className="field">
         <label className="sq-field__label" htmlFor={row ? `ex-rs-${row.id}` : `ex-rs-new-${ruleType}`}>{labels.reasonLabel}</label>
-        <input className="sq-input" id={row ? `ex-rs-${row.id}` : `ex-rs-new-${ruleType}`} name="reason" required maxLength={500} defaultValue={row?.reason ?? ""} />
+        <input className="input" id={row ? `ex-rs-${row.id}` : `ex-rs-new-${ruleType}`} name="reason" required maxLength={500} defaultValue={row?.reason ?? ""} />
       </div>
       <div className="row" style={{ gap: "var(--space-4)", flexWrap: "wrap" }}>
-        <label className="sq-caption" style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
+        <label className="t-caption" style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
           <input type="checkbox" name="notify_plan_creator" value="1" defaultChecked={row?.notify_plan_creator ?? true} /> {labels.notifyPlanCreator}
         </label>
-        <label className="sq-caption" style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
+        <label className="t-caption" style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
           <input type="checkbox" name="notify_inspector" value="1" defaultChecked={row?.notify_inspector ?? false} /> {labels.notifyInspector}
         </label>
       </div>
       <div className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
         <button className="sq-btn sq-btn--prominent" disabled={pending}>{pending ? labels.working : row ? labels.save : labels.createVersion}</button>
-        <button type="button" className="sq-btn" onClick={onDone}>{labels.closeEdit}</button>
+        <button type="button" className="btn btn-primary" onClick={onDone}>{labels.closeEdit}</button>
         {feedback.ok && !pending && <span className="sq-lozenge sq-lozenge--success" role="status">{feedback.ok}</span>}
-        {feedback.error && <span role="alert" className="sq-caption" style={{ color: "var(--status-critical-text)" }}>{feedback.error}</span>}
+        {feedback.error && <span role="alert" className="t-caption" style={{ color: "var(--status-critical-text)" }}>{feedback.error}</span>}
       </div>
     </form>
   );
@@ -148,7 +148,7 @@ export default function ExpiryAdmin({ rows, canConfigure, labels }: {
           .filter(r => r.rule_type === ruleType)
           .sort((a, b) => b.version - a.version);
         return (
-          <section key={ruleType} className="sq-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+          <section key={ruleType} className="panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
             <div className="row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--space-3)" }}>
               <h2 style={{ margin: 0 }}>{labels.ruleTypes[ruleType] ?? ruleType}</h2>
               {canConfigure && (
@@ -164,7 +164,7 @@ export default function ExpiryAdmin({ rows, canConfigure, labels }: {
             )}
 
             {versions.length === 0 ? (
-              <p className="sq-caption" style={{ margin: 0 }}>{labels.noVersions}</p>
+              <p className="t-caption" style={{ margin: 0 }}>{labels.noVersions}</p>
             ) : (
               <div className="sq-tablewrap"><table className="sq-table">
                 <thead><tr>
@@ -188,9 +188,9 @@ export default function ExpiryAdmin({ rows, canConfigure, labels }: {
                         <td><span className={`sq-lozenge ${row.enabled ? "sq-lozenge--success" : "sq-lozenge--critical"}`}>{row.enabled ? labels.enabled : labels.disabled}</span></td>
                         <td className="sq-numeric">{row.offset_minutes} {labels.minutes}</td>
                         <td>{row.reason}</td>
-                        <td className="sq-caption">{notify.length ? notify.join(" · ") : "—"}</td>
-                        <td className="sq-caption">{scopeSummary(row.scope, labels)}</td>
-                        <td className="sq-caption">{labels.effectiveFrom} {formatInstant(row.effective_from)}{row.effective_to ? "" : ` · ${labels.ongoing}`}</td>
+                        <td className="t-caption">{notify.length ? notify.join(" · ") : "—"}</td>
+                        <td className="t-caption">{scopeSummary(row.scope, labels)}</td>
+                        <td className="t-caption">{labels.effectiveFrom} {formatInstant(row.effective_from)}{row.effective_to ? "" : ` · ${labels.ongoing}`}</td>
                         {canConfigure && (
                           <td>
                             <div className="row" style={{ gap: "var(--space-2)" }}>
@@ -216,7 +216,7 @@ export default function ExpiryAdmin({ rows, canConfigure, labels }: {
         );
       })}
 
-      <p className="sq-caption" style={{ margin: 0 }}>{labels.schedulerNote}</p>
+      <p className="t-caption" style={{ margin: 0 }}>{labels.schedulerNote}</p>
     </div>
   );
 }

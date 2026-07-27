@@ -295,13 +295,13 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       {/* CD-027 — signature interaction: Dual-State Ribbon (one per screen) */}
       <DualStateRibbon tracks={ribbonTracks} strings={ribbonStrings} />
       <div className="sq-grid-2">
-        <div id="config" className="sq-surface" style={{ padding: "var(--space-6)" }}>
+        <div id="config" className="panel" style={{ padding: "var(--space-6)" }}>
           <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.configuration", "Configuration")}</h4>
           <p>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)} · {t("visit.detail.window", "window")} <span className="sq-numeric">{new Date(v.window_start).toISOString().slice(0, 16).replace("T", " ")} → {new Date(v.window_end).toISOString().slice(5, 16).replace("T", " ")}</span></p>
           <p style={{ marginBlockStart: 8 }}>{t("visit.detail.assignment", "Assignment:")} <strong>{asg?.profiles?.full_name ?? "—"}</strong> ({asg ? t(`enum.${asg.method}`, asg.method) : "—"}) · <a className="sq-link" href={`/factories/${f.id}`}>{t("visit.detail.factory360", "Factory 360")}</a></p>
 
           {(v.immediate_creator_role || v.source_channel) && (
-            <p className="sq-caption" style={{ marginBlockStart: 8 }}>
+            <p className="t-caption" style={{ marginBlockStart: 8 }}>
               {t("visit.detail.immediateProvenance", "Immediate creation:")}{" "}
               {v.immediate_creator_role === "inspector"
                 ? tr("visit.detail.creatorInspector", "Inspector — self-created", "المفتش — إنشاء ذاتي")
@@ -311,27 +311,27 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
             </p>
           )}
         </div>
-        <div id="inspection" className="sq-surface" style={{ padding: "var(--space-6)" }}>
+        <div id="inspection" className="panel" style={{ padding: "var(--space-6)" }}>
           <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.inspectionVersions", "Inspection & versions")}</h4>
           {insp ? (
-            <div className="sq-stack" style={{ gap: 8 }}>
+            <div className="stack" style={{ gap: 8 }}>
               <span className="sq-lozenge sq-lozenge--review sq-lozenge--info">{t(`enum.${insp.status}`, insp.status.replace(/_/g, " "))}</span>
               {insp.submission_versions.sort((a, b) => a.version_number - b.version_number).map(s => (
                 <p key={s.version_number} className="sq-numeric"><span className="sq-version">v{s.version_number}</span> {new Date(s.submitted_at).toISOString().slice(0, 16).replace("T", " ")} · {t("visit.detail.immutable", "final")}</p>
               ))}
               {insp.reviews.map((r, i) => (
-                <p key={i} className="sq-caption">{t("visit.detail.reviewPrefix", "review:")} {r.decision ? t(`enum.${r.decision}`, r.decision) : t(`enum.${r.status}`, r.status.replace(/_/g, " "))}{r.returned_sections ? ` · ${t("visit.detail.returnedSections", "returned")} ${r.returned_sections.join(",")}` : ""}</p>
+                <p key={i} className="t-caption">{t("visit.detail.reviewPrefix", "review:")} {r.decision ? t(`enum.${r.decision}`, r.decision) : t(`enum.${r.status}`, r.status.replace(/_/g, " "))}{r.returned_sections ? ` · ${t("visit.detail.returnedSections", "returned")} ${r.returned_sections.join(",")}` : ""}</p>
               ))}
               {/* M04-215 — official report (browser print-to-PDF is the production PDF path) */}
               <p><a className="sq-link" href={`/reports/inspection/${insp.id}`}>{t("visit.detail.reportLink", "Official inspection report")}</a></p>
             </div>
-          ) : <p className="sq-caption">{t("visit.detail.notStarted", "Not started.")}</p>}
+          ) : <p className="t-caption">{t("visit.detail.notStarted", "Not started.")}</p>}
         </div>
       </div>
       <div className={targetPreview ? `wa-visit-detail-workspace ${detailStyles.workspace}` : undefined} style={targetPreview ? undefined : { display: "contents" }}>
       <div className={targetPreview ? `wa-visit-detail-main ${detailStyles.main}` : undefined} style={targetPreview ? undefined : { display: "contents" }}>
       {/* M02-005 — linked plan info: how this visit was planned, by whom, published when */}
-      <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
+      <div className="panel" style={{ padding: "var(--space-6)" }}>
         <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.planHeading", "Linked plan (M02-005)")}</h4>
         {plan ? (
           <p>
@@ -345,7 +345,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
             {" "}· <a className="sq-link" href={`/planning/plans/${plan.id}`}>{t("visit.detail.openPlan", "Open plan")}</a>
           </p>
         ) : (
-          <p className="sq-caption">{t("visit.detail.noPlan", "Immediate visit — created without a plan (M01-050).")}</p>
+          <p className="t-caption">{t("visit.detail.noPlan", "Immediate visit — created without a plan (M01-050).")}</p>
         )}
       </div>
       {/* M02-008/029 + M8 — return info from the lifecycle stream; the legacy
@@ -357,7 +357,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
           style={focus === "return" ? { outline: "2px solid var(--action-primary)", outlineOffset: 2 } : undefined}><div>
           {t("visit.detail.returnReason", "Returned — reason: {reason} (PLN-CON-011)").replace("{reason}", returnReason)}
           {latestReturnEvent?.comments ? <> · <bdi>{latestReturnEvent.comments}</bdi></> : null}
-          {latestReturnEvent ? <span className="sq-caption"> · {new Date(latestReturnEvent.created_at).toISOString().slice(0, 16).replace("T", " ")}</span> : null}
+          {latestReturnEvent ? <span className="t-caption"> · {new Date(latestReturnEvent.created_at).toISOString().slice(0, 16).replace("T", " ")}</span> : null}
         </div></div>
       )}
       {focus === "return" && returnReason ? <FocusScroll targetId="return-block" /> : null}
@@ -385,10 +385,10 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       {/* M8 / PLN-CON-003 — report packages: every visit_packages link with its
           immutable snapshot; the primary (visits.package_version_id) is marked.
           Zero links = preparation chooses the checklist later (honest, allowed). */}
-      <div id="packages" className="sq-surface" style={{ padding: "var(--space-6)" }}>
+      <div id="packages" className="panel" style={{ padding: "var(--space-6)" }}>
         <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.packagesHeading", "Report packages")}</h4>
         {pkgLinks.length === 0 ? (
-          <p className="sq-caption">{t("visit.detail.noPackages", "No checklist selected — the inspector chooses an eligible checklist during preparation (PLN-CON-003).")}</p>
+          <p className="t-caption">{t("visit.detail.noPackages", "No checklist selected — the inspector chooses an eligible checklist during preparation (PLN-CON-003).")}</p>
         ) : (
           <ul className="sq-timeline">
             {pkgLinks.map(l => (
@@ -412,10 +412,10 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       {/* M8 / PLN-CON-011 — lifecycle history: the append-only event stream
           (return/cancel/republish/expire/duplicate/reschedule/reassign/
           discard_draft), reasons resolved through the governed lookups. */}
-      <div id="lifecycle" className="sq-surface" style={{ padding: "var(--space-6)" }}>
+      <div id="lifecycle" className="panel" style={{ padding: "var(--space-6)" }}>
         <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.lifecycleHeading", "Lifecycle history — append-only (PLN-CON-011)")}</h4>
         {lifecycleEvents.length === 0 ? (
-          <p className="sq-caption">{t("visit.detail.noLifecycle", "No lifecycle events recorded yet.")}</p>
+          <p className="t-caption">{t("visit.detail.noLifecycle", "No lifecycle events recorded yet.")}</p>
         ) : (
           <ul className="sq-timeline">
             {lifecycleEvents.map(e => {
@@ -441,7 +441,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       </div>
       {/* M8 — location provenance: current planned pin, first pin, and the
           additive visit_location_events stream (canonical §12). */}
-      <div id="location" className="sq-surface" style={{ padding: "var(--space-6)" }}>
+      <div id="location" className="panel" style={{ padding: "var(--space-6)" }}>
         <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.locationHeading", "Location & provenance")}</h4>
         <p className="sq-numeric">
           {t("visit.detail.locationPlanned", "Planned pin:")}{" "}
@@ -468,7 +468,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
           </ul>
         )}
       </div>
-      <div id="journey" className="sq-surface" style={{ padding: "var(--space-6)" }}>
+      <div id="journey" className="panel" style={{ padding: "var(--space-6)" }}>
         <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.journeyHeading", "Journey & location events — cannot be edited (EV-005)")}</h4>
         <ul className="sq-timeline">
           {journeys.flatMap(j => j.geo_events.map(g => (
@@ -477,10 +477,10 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
                 <span className="sq-timeline__meta sq-numeric">{new Date(g.occurred_at).toISOString().slice(0, 19).replace("T", " ")} · gis {g.gis_version}</span></div>
             </li>
           )))}
-          {journeys.length === 0 && <p className="sq-caption">{t("visit.detail.noJourney", "No journey yet.")}</p>}
+          {journeys.length === 0 && <p className="t-caption">{t("visit.detail.noJourney", "No journey yet.")}</p>}
         </ul>
       </div>
-      <div id="audit" className="sq-surface" style={{ padding: "var(--space-6)" }}>
+      <div id="audit" className="panel" style={{ padding: "var(--space-6)" }}>
         <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.auditHeading", "Planning history — cannot be edited, only added to (ENG-12, latest 30)")}</h4>
         <ul className="sq-timeline">
           {(auditRows ?? []).map(a => (
@@ -489,7 +489,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
                 <span className="sq-timeline__meta sq-numeric">{new Date(a.occurred_at).toISOString().slice(0, 19).replace("T", " ")}</span></div>
             </li>
           ))}
-          {(auditRows ?? []).length === 0 && <p className="sq-caption">{t("visit.detail.noAudit", "No audited changes yet, or you don't have audit-read access.")}</p>}
+          {(auditRows ?? []).length === 0 && <p className="t-caption">{t("visit.detail.noAudit", "No audited changes yet, or you don't have audit-read access.")}</p>}
         </ul>
       </div>
       </div>
