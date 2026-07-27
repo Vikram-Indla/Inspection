@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { readFileSync } from "node:fs";
 import { PERSONAS, type PersonaKey } from "./personas";
 
 const OWNED_DESTINATIONS = [
@@ -51,7 +52,34 @@ const RECORD_SURFACES = [
   { route: "/admin/integrations", selector: "table tbody tr[aria-haspopup=dialog]" },
 ] as const;
 
+const ADMIN_TITLE_RESOURCE_MIGRATION = readFileSync(
+  new URL(
+    "../../../supabase/migrations/20260727130000_admin_revamp_title_ar_strings.sql",
+    import.meta.url,
+  ),
+  "utf8",
+);
+
 test.use({ storageState: { cookies: [], origins: [] } });
+
+test("RTL-I18N-P1-001 seeds exact final-cut Administration title resources", () => {
+  const resourceKeys = [
+    "admin.revamp.access.title",
+    "admin.revamp.lookup.title",
+    "admin.revamp.risk.title",
+    "admin.revamp.survey.title",
+    "admin.revamp.integration.title",
+  ] as const;
+
+  for (const [index, destination] of OWNED_DESTINATIONS.entries()) {
+    expect(ADMIN_TITLE_RESOURCE_MIGRATION).toContain(resourceKeys[index]);
+    expect(ADMIN_TITLE_RESOURCE_MIGRATION).toContain(destination.headingEn);
+    expect(ADMIN_TITLE_RESOURCE_MIGRATION).toContain(destination.headingAr);
+  }
+  expect(ADMIN_TITLE_RESOURCE_MIGRATION).toContain(
+    "where public.ui_strings.status = 'draft'",
+  );
+});
 
 async function signIn(page: Page, personaKey: PersonaKey) {
   const persona = PERSONAS[personaKey];
