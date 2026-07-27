@@ -208,28 +208,23 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
             {rows.map(r => {
               const href = notificationHref(r.event_key, r.payload, fieldOnly);
               return (
-              <div key={r.id} className="sq-surface" style={{ padding: "var(--space-3)", borderInlineStart: isUnread(r) ? "3px solid var(--action-primary)" : "3px solid transparent" }}>
-                <div className="sq-row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
-                  <div>
-                    <strong style={{ fontWeight: isUnread(r) ? 700 : 500 }}>
-                      {strings.events[r.event_key] ?? r.event_key.replace(/_/g, " ")}
-                      {isUnread(r) && <span className="sq-sr-only"> — {strings.unreadBadge}</span>}
-                    </strong>
-                    {detail(r.payload) && <p className="sq-caption sq-numeric" style={{ margin: 0 }}>{detail(r.payload).slice(0, 80)}</p>}
-                    <p className="sq-caption sq-numeric" style={{ margin: 0 }}>
-                      {formatDateTime(r.created_at, locale === "ar" ? "ar" : "en")}
-                      {" · "}{strings.channels[r.channel] ?? r.channel}
-                      {r.delivery_state === "not_configured" && <> · <span className="sq-lozenge sq-lozenge--warning">{strings.notConfigured}</span></>}
-                    </p>
-                    {href && (
-                      <Link className="sq-link" href={href} prefetch={false}
-                        onClick={() => { if (isUnread(r)) void markRead(r); }}>
-                        {strings.view} →
-                      </Link>
-                    )}
-                  </div>
-                  {isUnread(r) && <button className="sq-btn sq-btn--subtle" onClick={() => markRead(r)}>{strings.markRead}</button>}
-                </div>
+              <div key={r.id} className="sq-surface" style={{ padding: "var(--space-3)" }}>
+                <strong style={{ fontWeight: isUnread(r) ? 700 : 500 }}>
+                  {strings.events[r.event_key] ?? r.event_key.replace(/_/g, " ")}
+                  {isUnread(r) && <span className="sq-sr-only"> — {strings.unreadBadge}</span>}
+                </strong>
+                {detail(r.payload) && <p className="sq-caption sq-numeric" style={{ margin: 0 }}>{detail(r.payload).slice(0, 80)}</p>}
+                <p className="sq-caption sq-numeric" style={{ margin: 0 }}>
+                  {formatDateTime(r.created_at, locale === "ar" ? "ar" : "en")}
+                  {" · "}{strings.channels[r.channel] ?? r.channel}
+                  {r.delivery_state === "not_configured" && <> · <span className="sq-lozenge sq-lozenge--warning">{strings.notConfigured}</span></>}
+                </p>
+                {href && (
+                  <Link className="sq-caption" href={href} prefetch={false}
+                    onClick={() => { if (isUnread(r)) void markRead(r); }}>
+                    {strings.view} →
+                  </Link>
+                )}
               </div>
               );
             })}

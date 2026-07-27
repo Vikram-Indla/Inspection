@@ -4,10 +4,19 @@ export default function RevampPlanningInsights({
   rows,
   total,
   returned,
+  strings,
 }: {
   rows: PlanningVisitRow[];
   total: number;
   returned: number | string;
+  strings: {
+    insights: string; withheld: string; highPriority: string; returned: string;
+    expiring: string; matching: string; unavailable: string; factsAvailable: string;
+    recommendations: string; priority: string; windowEnds: string; regionUnavailable: string;
+    plan: string; review: string; noCandidates: string; quickActions: string;
+    returnedVisits: string; highPriorityVisits: string; nearestExpiry: string;
+    bulkPlanning: string; singleVisit: string; immediateVisit: string;
+  };
 }) {
   const now = Date.now();
   const expiring = rows.filter(row => {
@@ -19,37 +28,43 @@ export default function RevampPlanningInsights({
   return (
     <section className="sq-planning-insights">
       <div>
-        <strong>AI insights</strong>
-        <p>Provider output is withheld; current governed planning records show:</p>
+        <strong>{strings.insights}</strong>
+        <p>{strings.withheld}</p>
         <ul>
-          <li>{highRisk.length} high-priority visits in the loaded planning page.</li>
-          <li>{returned} returned visits require planner attention.</li>
-          <li>{expiring.length} loaded visits reach their recorded window end within 72 hours.</li>
-          <li>{total} visits match the current RLS-scoped filters.</li>
+          <li>{strings.highPriority.replace("{n}", String(highRisk.length))}</li>
+          <li>{strings.returned.replace("{n}", String(returned))}</li>
+          <li>{strings.expiring.replace("{n}", String(expiring.length))}</li>
+          <li>{strings.matching.replace("{n}", String(total))}</li>
         </ul>
         <div className="sq-planning-insights__meta">
-          <span>AI provider unavailable</span>
-          <small>Live record facts remain available</small>
+          <span>{strings.unavailable}</span>
+          <small>{strings.factsAvailable}</small>
         </div>
       </div>
       <div>
-        <strong>AI recommendations</strong>
+        <strong>{strings.recommendations}</strong>
+        {/* CLASS-CONTRACT.md § Planning — recommendation cards are div.panel,
+            each carrying btn-secondary "Plan" + btn-ghost "Review". Confidence
+            and generation-time provenance are NOT rendered: no governed value
+            for them exists, and __meta already states that honestly. */}
         {recommendations.length ? recommendations.map(row => (
-          <article key={row.id}>
-            <div><strong>{row.factoryName ?? row.visitReference ?? row.id.slice(0, 8)}</strong><span>Governed priority · {row.priority}</span></div>
-            <p>{row.region ?? "Region unavailable"} · window ends {new Date(row.windowEnd).toLocaleDateString("en-GB")}</p>
-            <div><a href="/planning/single">Plan</a><a href={`/visits/${row.id}`}>Review</a></div>
+          <article className="panel" key={row.id}>
+            <div><strong>{row.factoryName ?? row.visitReference ?? row.id.slice(0, 8)}</strong><span>{strings.priority} · {row.priority}</span></div>
+            <p>{row.region ?? strings.regionUnavailable} · {strings.windowEnds} {new Date(row.windowEnd).toLocaleDateString("en-GB")}</p>
+            <div><a className="btn btn-secondary" href="/planning/single">{strings.plan}</a><a className="btn btn-ghost" href={`/visits/${row.id}`}>{strings.review}</a></div>
           </article>
-        )) : <p className="sq-planning-insights__empty">No high-priority recommendation candidate is visible in this page.</p>}
+        )) : <p className="desc">{strings.noCandidates}</p>}
       </div>
       <div>
-        <strong>Quick actions</strong>
-        <a href="/planning?tab=returned"><span>Returned visits</span><b>{returned}</b></a>
-        <a href="/planning?priority=high"><span>High-priority visits</span><b>{highRisk.length}</b></a>
-        <a href="/planning?sort=window_asc"><span>Nearest window expiry</span><b>{expiring.length}</b></a>
-        <a href="/planning/bulk"><span>Bulk planning</span><b>→</b></a>
-        <a href="/planning/single"><span>Single visit</span><b>→</b></a>
-        <a href="/planning/immediate"><span>Immediate visit</span><b>→</b></a>
+        <strong>{strings.quickActions}</strong>
+        {/* CLASS-CONTRACT.md § Planning — six bucket controls, each a
+            btn-secondary carrying a span.badge count. */}
+        <a className="btn btn-secondary" href="/planning?tab=returned"><span>{strings.returnedVisits}</span><span className="badge">{returned}</span></a>
+        <a className="btn btn-secondary" href="/planning?priority=high"><span>{strings.highPriorityVisits}</span><span className="badge">{highRisk.length}</span></a>
+        <a className="btn btn-secondary" href="/planning?sort=window_asc"><span>{strings.nearestExpiry}</span><span className="badge">{expiring.length}</span></a>
+        <a className="btn btn-secondary" href="/planning/bulk"><span>{strings.bulkPlanning}</span><span className="badge">→</span></a>
+        <a className="btn btn-secondary" href="/planning/single"><span>{strings.singleVisit}</span><span className="badge">→</span></a>
+        <a className="btn btn-secondary" href="/planning/immediate"><span>{strings.immediateVisit}</span><span className="badge">→</span></a>
       </div>
     </section>
   );
