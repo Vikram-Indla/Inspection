@@ -115,7 +115,7 @@ The shared shell now:
 
 - treats compact/mobile navigation as expanded even when a collapsed desktop
   preference is persisted;
-- exposes the standalone expand control only in the true 68px desktop rail;
+- keeps one persistent brand-header width control in both desktop rail states;
 - renders the source shield-plus Administration glyph and one rotating `›`;
 - renders all six Administration children as indented label-only rows;
 - places the logical active stripe on the pinned parent while the active child
@@ -135,6 +135,33 @@ Verification: `npm run typecheck` PASS; production `npm run build` PASS with
 1/1 PASS. The complete shared-shell source file remains 18/20 because two
 pre-existing role-catalogue expectations fail outside this presentation
 change; the focused Administration navigation contracts pass.
+
+### Persistent collapse/expand recovery decision
+
+The Product Owner then demonstrated that the source design's split-control
+pattern can strand a user after collapse: collapse lives in the brand header
+while recovery is detached into the Administration footer. Read-only review
+`/root/rail_expand_design_review` produced 28 recommendations and approved a
+deliberate usability correction to that source pattern.
+
+The retained top-ten decision removes only the footer recovery row and keeps
+the existing brand-header button mounted through both desktop states. At 248px
+it remains a 32px inline-end collapse control. At 68px it is centered beneath
+the 36px brand mark with a 6px gap and reverses direction to communicate
+expansion. Direction is logical in EN/LTR and AR/RTL; localized
+Collapse/Expand text is reused for both `aria-label` and `title`; the control
+now declares `aria-controls="saqeel-primary-nav"`; and the existing
+`saqeel-shell-collapsed` preference remains unchanged. Keeping one DOM button
+also preserves keyboard focus across the state transition.
+
+At the compact/coarse-pointer breakpoint the width control remains hidden and
+the existing 44px Close button is the sole drawer control. Authenticated Chrome
+at the available 756px viewport measured compact state true, collapse display
+`none`, and Close display `grid`. The fixed Chrome surface could not be resized
+above the desktop breakpoint, so desktop recovery is evidenced by the focused
+one-control/68px/RTL source contract rather than claimed as a browser exercise.
+All six Administration destinations, permissions, refusal boundaries and
+active-route behavior remain unchanged.
 
 ## Pre-existing Control Panel checkpoint evidence
 

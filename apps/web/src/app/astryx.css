@@ -519,7 +519,6 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .ax-shell__close { display: none; margin-inline-start: auto; inline-size: var(--ax-control-height); block-size: var(--ax-control-height); border: 1px solid var(--ax-color-border-control); border-radius: var(--ax-radius-small); background: var(--ax-color-surface); color: var(--ax-color-text); cursor: pointer; font-size: 24px; }
 .ax-shell__groups { display: flex; flex: 1; min-block-size: 0; flex-direction: column; gap: 10px; overflow-x: hidden; overflow-y: auto; scrollbar-width: thin; }
 .ax-shell__nav-footer { border-block-start: 1px solid var(--ax-color-border); padding-block-start: 10px; display: flex; flex-direction: column; gap: 2px; flex: 0 0 auto; }
-.ax-shell__nav-footer .ax-shell__expand-row { display: none; }
 .ax-nav-group { display: flex; flex-direction: column; gap: var(--ax-space-050); }
 .ax-nav-group__trigger { inline-size: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--ax-space-100); padding: 10px 12px 4px; border: 0; background: none; color: var(--ax-color-text-secondary); cursor: pointer; font: 700 11px/14px var(--font-body); letter-spacing: .14em; text-transform: uppercase; text-align: start; border-radius: var(--ax-radius-small); }
 .ax-nav-group--pinned .ax-nav-group__trigger {
@@ -593,17 +592,27 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .ax-nav-item:focus-visible, .ax-nav-group__trigger:focus-visible, .ax-shell__collapse:focus-visible, .ax-shell__close:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .ax-shell__collapse { display: flex; align-items: center; gap: var(--ax-space-100); min-block-size: 32px; inline-size: 32px; justify-content: center; padding: 0; border: 1px solid var(--ax-color-border-control); border-radius: 6px; background: var(--ax-color-surface); color: var(--ax-color-text-secondary); cursor: pointer; font: var(--ax-text-caption); white-space: nowrap; margin-inline-start: auto; }
 .ax-shell__collapse:hover { color: var(--ax-color-text); background: var(--ax-color-neutral-tint); }
-[dir="rtl"] .ax-shell__collapse > span:first-child { transform: scaleX(-1); }
+.ax-shell__collapse svg { transition: transform var(--ax-motion-fast); }
+[dir="rtl"] .ax-shell__collapse svg { transform: scaleX(-1); }
 .ax-shell.is-collapsed .ax-shell__nav { padding-inline: var(--ax-space-050); }
 .ax-shell.is-collapsed .ax-shell__brand {
   display: grid;
-  grid-template-columns: 34px;
+  grid-template-columns: 36px;
   justify-content: center;
-  gap: var(--ax-space-050);
-  padding-inline: 0;
+  gap: 6px;
+  padding: 4px 0 10px;
 }
 .ax-shell.is-collapsed .ax-shell__brand-name { display: none; }
-.ax-shell.is-collapsed .ax-shell__brand .ax-shell__collapse { display: none; }
+.ax-shell.is-collapsed .ax-shell__brand .ax-shell__collapse {
+  display: flex;
+  inline-size: 32px;
+  block-size: 32px;
+  min-block-size: 32px;
+  justify-self: center;
+  margin-inline-start: 0;
+}
+.ax-shell.is-collapsed .ax-shell__collapse svg { transform: rotate(180deg); }
+[dir="rtl"] .ax-shell.is-collapsed .ax-shell__collapse svg { transform: none; }
 .ax-shell.is-collapsed .ax-nav-label { display: none; }
 .ax-shell.is-collapsed .ax-nav-group__trigger { display: none; }
 .ax-shell.is-collapsed .ax-nav-group--pinned .ax-nav-group__trigger { display: flex; justify-content: center; padding-inline: 0; }
@@ -619,14 +628,6 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .ax-shell.is-collapsed .ax-nav-item--child { display: none; }
 .ax-shell.is-collapsed .ax-nav-lock { display: none; }
 .ax-shell.is-collapsed .ax-nav-badge { display: none; }
-.ax-shell.is-collapsed .ax-shell__expand-row { display: flex; inline-size: 100%; min-block-size: 32px; justify-content: center; background: var(--ax-color-neutral-tint); }
-/* The favicon keeps its design-authority 26px; only the collapse control is
-   sized to the 28px rail control box. */
-.ax-shell.is-collapsed .ax-shell__collapse {
-  inline-size: 28px;
-  block-size: 28px;
-}
-.ax-shell.is-collapsed .ax-shell__collapse { min-block-size: 28px; justify-content: center; padding: 0; }
 .ax-shell.is-collapsed .ax-nav-item[aria-current="page"] { box-shadow: none; }
 [dir="rtl"] .ax-shell.is-collapsed .ax-nav-item[aria-current="page"] { box-shadow: none; }
 /* The content pane owns horizontal overflow, so a too-wide table, map or KPI
@@ -930,7 +931,8 @@ button.ax-shell-scope { cursor: pointer; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ax-nav-group__chevron { transition: none; }
+  .ax-nav-group__chevron,
+  .ax-shell__collapse svg { transition: none; }
 }
 
 /* Command / filter bar */

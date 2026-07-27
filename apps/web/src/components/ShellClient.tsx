@@ -551,7 +551,10 @@ export default function ShellClient({
           <button className="ax-shell__close" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
           </button>
-          <button className="ax-shell__collapse" type="button" onClick={toggleCollapsed} aria-label={effectiveCollapsed ? strings.expand : strings.collapse} aria-expanded={!effectiveCollapsed}>
+          <button className="ax-shell__collapse" type="button" onClick={toggleCollapsed}
+            aria-label={effectiveCollapsed ? strings.expand : strings.collapse}
+            title={effectiveCollapsed ? strings.expand : strings.collapse}
+            aria-controls="saqeel-primary-nav" aria-expanded={!effectiveCollapsed}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
           </button>
         </div>
@@ -563,10 +566,6 @@ export default function ShellClient({
           ).map(renderNavGroup)}
         </div>
         <div className="ax-shell__nav-footer">
-          <button className="ax-nav-item ax-shell__expand-row" type="button" onClick={toggleCollapsed}
-            title={strings.expand} aria-label={strings.expand}>
-            <span aria-hidden="true">›</span>
-          </button>
           {groups.filter(group => group.id === "administration").map(renderNavGroup)}
         </div>
       </nav>
