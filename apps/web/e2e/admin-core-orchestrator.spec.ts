@@ -81,6 +81,19 @@ test("RTL-I18N-P1-001 seeds exact final-cut Administration title resources", () 
   );
 });
 
+test("RTL-I18N-P1-001 seeds every authoritative confirmed title match", () => {
+  for (const [key, english, arabic] of [
+    ["admin.complianceApprovalQueue.title", "Approval Queue", "قائمة الاعتماد"],
+    ["admin.viol.title", "Violation Catalogue", "فهرس المخالفات"],
+    ["admin.viol.penalty.title", "Penalty Mapping", "ربط العقوبات"],
+    ["analytics.title", "Analytics", "التحليلات"],
+  ] as const) {
+    expect(ADMIN_TITLE_RESOURCE_MIGRATION).toContain(key);
+    expect(ADMIN_TITLE_RESOURCE_MIGRATION).toContain(english);
+    expect(ADMIN_TITLE_RESOURCE_MIGRATION).toContain(arabic);
+  }
+});
+
 async function signIn(page: Page, personaKey: PersonaKey) {
   const persona = PERSONAS[personaKey];
   await page.goto("/locale?set=en");

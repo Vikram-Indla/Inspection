@@ -57,7 +57,7 @@ export default async function ComplianceApprovalQueue({
   const sp = await searchParams;
   const ar = await getLocale() === "ar";
   const copy = ar ? {
-    title: "قائمة اعتماد إعدادات الامتثال", makerChecker: "فصل المُنشئ عن المُراجع",
+    title: "قائمة الاعتماد", makerChecker: "فصل المُنشئ عن المُراجع",
     distinct: "منفصلة عن مراجعة تقارير التفتيش واعتمادها",
     boundaryTitle: "قرارات إعدادات الامتثال فقط.",
     boundaryBody: "تراجع هذه القائمة مكوّنات طلبات إعداد الامتثال وجاهزيتها للنشر. ولا تتضمن تقارير التفتيش أو مراجعات المستوى الثاني.",
@@ -77,7 +77,7 @@ export default async function ComplianceApprovalQueue({
     immutableRevision: "يفتح مساحة الإصدار الحالي غير القابل للتعديل، وتبقى القرارات محكومة بدوال قاعدة البيانات.",
     open: "فتح مساحة عمل المراجعة",
   } : {
-    title: "Compliance Approval Queue", makerChecker: "CCR maker-checker",
+    title: "Approval Queue", makerChecker: "CCR maker-checker",
     distinct: "Distinct from Inspection Review & Approval",
     boundaryTitle: "Compliance configuration decisions only.",
     boundaryBody: "This queue reviews CCR components and publication readiness. It does not contain inspection reports or Level 2 inspection reviews.",
