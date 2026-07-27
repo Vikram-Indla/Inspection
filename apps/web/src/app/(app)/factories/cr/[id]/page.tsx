@@ -6,6 +6,7 @@ import { calculateApprovedCompliance } from "@/lib/factory360/compliance";
 import { loadFactory360Dossier, resolveFactory360Permissions, latestSubmission } from "@/lib/factory360/dossier";
 import Factory360ExportButton from "./Factory360ExportButton";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
+import { geminiProviderState } from "@/lib/providers/ai-gemini";
 import styles from "./factory360.module.css";
 
 const text = (value: string | number | null | undefined) => value == null || value === "" ? "—" : String(value);
@@ -40,6 +41,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
   const { t, locale } = await useT();
   const sb = await supabaseServer();
   const permissions = await resolveFactory360Permissions(sb);
+  const aiProviderState = geminiProviderState();
 
   if (!permissions["view_factory_360"]) return (
     <Shell current="/factories" title={t("f360.title", "Factory 360")}>
@@ -79,6 +81,12 @@ export default async function Factory360ByCr({ params, searchParams }: {
   const roleLozenge = (role: string) => role === "authoritative" ? "sq-lozenge--success" : role === "contract_unverified" ? "sq-lozenge--warning" : role === "conflicting" ? "sq-lozenge--critical" : role === "permission_restricted" || role === "unavailable" ? "" : "sq-lozenge--info";
   const discrepancyCounts = canonical.discrepancies.reduce<Record<string, number>>((acc, d) => { acc[d.state] = (acc[d.state] ?? 0) + 1; return acc; }, {});
   const showLineName = (row: { name_en: string | null; name_ar: string | null }) => locale === "ar" ? row.name_ar ?? row.name_en ?? "—" : row.name_en ?? row.name_ar ?? "—";
+  const addressArabic = address
+    ? [address.address_line_1, address.street_name_ar, address.city_ar, address.region_ar].filter(Boolean).join(" · ")
+    : "";
+  const addressEnglish = address
+    ? [address.street_name_en, address.city_en, address.region_en].filter(Boolean).join(" · ")
+    : "";
   const snapshotValue = (key: string) => {
     const value = latestApprovedFactorySnapshot?.snapshot?.[key];
     return value == null || value === "" || typeof value === "object" ? "—" : String(value);
@@ -182,7 +190,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
               <div><dt>{t("f360.id.licenseStatus", "Status / stage")}</dt><dd>{label(selected.status)} · {label(selected.stage)}</dd></div>
               <div><dt>{t("f360.id.licenseDates", "Issued / expires")}</dt><dd className="sq-numeric">{dt(selected.issue_date)} → {dt(selected.expiry_date)}</dd></div>
               <div><dt>{t("f360.id.licenseHolder", "License holder")}</dt><dd>{text(selected.holder_name)}</dd></div>
-              <div><dt>{t("f360.location", "Address")}</dt><dd>{address ? [address.address_line_1, locale === "ar" ? address.street_name_ar : address.street_name_en, locale === "ar" ? address.city_ar : address.city_en, locale === "ar" ? address.region_ar : address.region_en].filter(Boolean).join(" · ") || "—" : "—"}</dd></div>
+              <div><dt>{t("f360.location", "Address")}</dt><dd>{addressArabic || addressEnglish ? <>{addressArabic ? <span lang="ar" dir="rtl"><bdi>{addressArabic}</bdi></span> : null}{addressArabic && addressEnglish ? <br /> : null}{addressEnglish ? <span lang="en" dir="ltr"><bdi>{addressEnglish}</bdi></span> : null}</> : "—"}</dd></div>
               <div><dt>{t("f360.coordinates", "Coordinates")}</dt><dd className="sq-numeric"><bdi>{address ? `${text(address.latitude)}, ${text(address.longitude)}` : "—"}</bdi></dd></div>
               <div><dt>{t("f360.exportsProducts", "Exports products?")}</dt><dd>{exportsProducts == null ? t("f360.exportsProducts.unknown", "Unknown") : exportsProducts ? t("common.yes", "Yes") : t("common.no", "No")}</dd></div>
             </dl> : <p className="sq-caption">{t("f360.license.unavailable", "Select a mapped industrial license to load plant facts.")}</p>}
@@ -190,14 +198,14 @@ export default async function Factory360ByCr({ params, searchParams }: {
             <p className="sq-caption">{t("f360.visits.boundary", bilingual("Operational context only. Inspection answers, evidence, findings, reviewer comments and personal contact data are excluded.", "سياق تشغيلي فقط. تُستبعد إجابات التفتيش والأدلة والنتائج وتعليقات المراجع وبيانات الاتصال الشخصية."))}</p>
             {!visitsResult.error && visits.length ? <form method="get" className="sq-row">
               {selected?.id ? <input type="hidden" name="license" value={selected.id} /> : null}
-              <label>{t("f360.visits.filterStatus", bilingual("Planning status", "حالة التخطيط"))}
-                <select name="visitStatus" defaultValue={visitStatus ?? ""}>
+              <label className="sq-field"><span className="sq-field__label">{t("f360.visits.filterStatus", bilingual("Planning status", "حالة التخطيط"))}</span>
+                <select className="sq-select" name="visitStatus" defaultValue={visitStatus ?? ""}>
                   <option value="">{t("common.all", bilingual("All", "الكل"))}</option>
                   {visitStatuses.map(value => <option key={value} value={value}>{label(value)}</option>)}
                 </select>
               </label>
-              <label>{t("f360.visits.filterType", bilingual("Visit type", "نوع الزيارة"))}
-                <select name="visitType" defaultValue={visitType ?? ""}>
+              <label className="sq-field"><span className="sq-field__label">{t("f360.visits.filterType", bilingual("Visit type", "نوع الزيارة"))}</span>
+                <select className="sq-select" name="visitType" defaultValue={visitType ?? ""}>
                   <option value="">{t("common.all", bilingual("All", "الكل"))}</option>
                   {visitTypes.map(value => <option key={value} value={value}>{label(value)}</option>)}
                 </select>
@@ -359,6 +367,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
                 unavailableLabel={t("f360.risk.ai.unavailable", "AI explanation unavailable")}
                 evidenceLabel={t("f360.risk.ai.evidence", "Source references")}
                 advisoryLabel={t("f360.risk.ai.advisory", "Human decision required")}
+                providerState={aiProviderState}
               /> : null}
             </>}
           </section>

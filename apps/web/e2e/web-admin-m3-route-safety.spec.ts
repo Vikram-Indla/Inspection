@@ -75,6 +75,53 @@ test.describe("DSG-CMD-020 Operations direct-route authorization", () => {
 test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 repeated GET", () => {
   test.use({ storageState: storageStatePath("ops") });
 
+  test("shared Mapbox popup remains readable in light and dark themes", async ({ page }) => {
+    const response = await page.goto("/operations");
+    expect(response?.status()).toBe(200);
+
+    const samples = await page.evaluate(() => {
+      const popup = document.createElement("div");
+      popup.className = "mapboxgl-popup mapboxgl-popup-anchor-bottom";
+      popup.innerHTML = [
+        '<div class="mapboxgl-popup-content">Saudi Dairy &amp; Foodstuff (SADAFCO)</div>',
+        '<button class="mapboxgl-popup-close-button" type="button">×</button>',
+        '<div class="mapboxgl-popup-tip"></div>',
+      ].join("");
+      document.body.append(popup);
+
+      const read = (theme: "light" | "dark") => {
+        document.documentElement.dataset.theme = theme;
+        const root = getComputedStyle(document.documentElement);
+        const content = getComputedStyle(popup.querySelector(".mapboxgl-popup-content")!);
+        const close = getComputedStyle(popup.querySelector(".mapboxgl-popup-close-button")!);
+        const tip = getComputedStyle(popup.querySelector(".mapboxgl-popup-tip")!);
+        return {
+          theme,
+          background: content.backgroundColor,
+          color: content.color,
+          closeColor: close.color,
+          tipColor: tip.borderTopColor,
+          surfaceToken: root.getPropertyValue("--surface-primary").trim(),
+          textToken: root.getPropertyValue("--text-primary").trim(),
+        };
+      };
+
+      const result = [read("light"), read("dark")];
+      popup.remove();
+      return result;
+    });
+
+    for (const sample of samples) {
+      expect(sample.background).not.toBe(sample.color);
+      expect(sample.closeColor).not.toBe("rgba(0, 0, 0, 0)");
+      expect(sample.tipColor).toBe(sample.background);
+      expect(sample.surfaceToken).not.toBe("");
+      expect(sample.textToken).not.toBe("");
+    }
+    expect(samples[0].background).not.toBe(samples[1].background);
+    expect(samples[0].color).not.toBe(samples[1].color);
+  });
+
   test("two Operations renders remain successful without a write-triggering request", async ({ page }) => {
     const applicationRequests: { method: string; url: string }[] = [];
     page.on("request", request => {

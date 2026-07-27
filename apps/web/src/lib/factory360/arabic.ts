@@ -211,4 +211,5 @@ export const FACTORY360_AR_FALLBACK: Record<string, string> = {
   "f360.actions.planSingle": "تخطيط زيارة مفردة",
   "f360.actions.exportPdf": "طباعة / حفظ ملف PDF المصرح به",
   "f360.actions.restricted": "لا يُسمح لدورك بإنشاء تفتيش أو تصدير الملف.",
+  "f360.actions.submissionBlocked": "يبقى إرسال التفتيش غير متاح ما دام القرار DEC-032 غير محسوم.",
 };

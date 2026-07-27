@@ -418,6 +418,39 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   .sq-map-loading::after { animation: none; }
 }
 
+/* Shared Mapbox popup chrome. Mapbox owns this DOM, so its existing classes are
+   the stable contract across Operations, Operations Live and every GeoMap
+   consumer. Keep the surface and text on SAQEEL semantic tokens so both themes
+   retain readable contrast. */
+.mapboxgl-popup-content {
+  min-inline-size: 220px;
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  background: var(--surface-primary);
+  box-shadow: var(--shadow-overlay);
+  color: var(--text-primary);
+  font: var(--type-caption-font);
+  line-height: 1.5;
+  white-space: pre-line;
+}
+.mapboxgl-popup-close-button {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+}
+.mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
+  border-bottom-color: var(--surface-primary);
+}
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+  border-top-color: var(--surface-primary);
+}
+.mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+  border-right-color: var(--surface-primary);
+}
+.mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+  border-left-color: var(--surface-primary);
+}
+
 .sq-state {
   display: flex; flex-direction: column; align-items: center; text-align: center;
   gap: var(--space-2); padding: var(--space-12) var(--space-6);
@@ -891,7 +924,8 @@ button.sq-shell-scope { cursor: pointer; }
 .sq-shell-account__menu a { color: var(--action-primary-hover); text-decoration: none; padding-block: var(--space-1); }
 .sq-shell-account__menu a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .sq-pagehead__row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
-.sq-pagehead__context { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.sq-pagehead__context { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; min-inline-size: 0; max-inline-size: 100%; }
+.sq-pagehead__context > h2 { min-inline-size: 0; overflow-wrap: anywhere; word-break: break-word; }
 .sq-breadcrumb { display: flex; align-items: center; gap: var(--space-2); font: var(--type-caption-font); color: var(--text-secondary); }
 .sq-breadcrumb li { list-style: none; display: flex; align-items: center; gap: var(--space-2); }
 .sq-breadcrumb li:not(:last-child)::after { content: "›"; }
@@ -1070,8 +1104,6 @@ button.sq-shell-scope { cursor: pointer; }
   .sq-shell-scope select { max-inline-size: 112px; }
   .sq-pagehead__actions { margin-inline-start: auto; }
   .sq-pagehead__row { padding-block-start: var(--space-1); }
-  .sq-pagehead__context { min-inline-size: 0; max-inline-size: 100%; }
-  .sq-pagehead__context > h2 { min-inline-size: 0; overflow-wrap: anywhere; word-break: break-word; }
   .admin-control-panel { gap: var(--space-6); }
   .admin-control-panel__intro { align-items: flex-start; flex-direction: column; }
   .admin-control-panel__intro .btn { inline-size: 100%; }

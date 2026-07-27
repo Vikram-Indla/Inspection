@@ -112,7 +112,7 @@ export async function generateContextualInsight(_: ContextualResult, formData: F
     const count = (key: "planning_status" | "operational_state") => rows.reduce<Record<string, number>>((a, row) => { const v = row[key] || "unknown"; a[v] = (a[v] ?? 0) + 1; return a; }, {});
     serverContext = JSON.stringify({ visits: rows.length, planning_status_counts: count("planning_status"), operational_state_counts: count("operational_state"), rule: "Summarize recorded visit facts only. Do not reschedule, reassign, predict completion, change state or publish." });
   }
-  const generated = await provider.generateContextual(surface, serverContext);
+  const generated = await provider.generateContextual(surface, serverContext, locale);
   if (!generated.ok || !generated.text) return { error: `AI provider did not return a usable advisory (${generated.reason ?? "unknown"}).` };
   const { data, error } = await sb.from("ai_suggestions").insert({
     surface,

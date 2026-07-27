@@ -90,28 +90,28 @@ export default async function ComplianceLibrary({
     </dl>,
     inspectionItems.length === 0 ? <p className="desc" key="items">No records.</p> : (
       <div className="stack" key="items">{inspectionItems.map(item => (
-        <div className="row" key={item.id} style={{ justifyContent: "space-between" }}>
+        <div className="panel-row" key={item.id}>
           <span><span className="id-code">{item.code}</span> · {item.title}</span><span className="desc">{item.clauseRef}</span>
         </div>
       ))}</div>
     ),
     violationCodes.length === 0 ? <p className="desc" key="violations">No records.</p> : (
       <div className="stack" key="violations">{violationCodes.map(v => (
-        <div className="row" key={v.id} style={{ justifyContent: "space-between" }}>
+        <div className="panel-row" key={v.id}>
           <span><span className="id-code">{v.code}</span> · {v.title}</span><span className={`badge ${v.level === "L1" ? "badge-critical" : v.level === "L2" ? "badge-major" : "badge-warning"}`}>{v.level}</span>
         </div>
       ))}</div>
     ),
     penalties.length === 0 ? <p className="desc" key="penalties">No records.</p> : (
       <div className="stack" key="penalties">{penalties.map(p => (
-        <div className="row" key={p.id} style={{ justifyContent: "space-between" }}>
+        <div className="panel-row" key={p.id}>
           <span>{p.penalty_ref}</span><span className="badge">{p.mapping_version}</span>
         </div>
       ))}</div>
     ),
     !selected ? <p className="desc" key="versions">No records.</p> : (
       <div className="stack" key="versions">
-        <div className="row" style={{ justifyContent: "space-between" }}>
+        <div className="panel-row">
           <span><span className="id-code">{selected.version_label}</span> · current</span><span className="badge">{selected.effective_from?.slice(0, 10) ?? "Not recorded"}</span>
         </div>
         <p className="desc">Only the current version is on record — no version-history contract is available.</p>
@@ -126,49 +126,63 @@ export default async function ComplianceLibrary({
 
   return (
     <Shell current={routeBase} title="">
-      <div className="rv-library">
-        <aside className="rv-library__rail" aria-label="Compliance library navigation">
-          <form className="rv-library__search">
-            <span aria-hidden="true">⌕</span>
-            <input name="q" defaultValue={typeof sp.q === "string" ? sp.q : ""} placeholder="Search library…" aria-label="Search library" />
-          </form>
+      <div className="stack">
+        <section className="panel" aria-label="Compliance library navigation">
+          <div className="panel-header">
+            <strong className="panel-title">Compliance Library</strong>
+            <span className="badge">{rows.length} regulations</span>
+          </div>
+          <div className="panel-body stack">
+            <form className="input-affix">
+              <input className="input" name="q" defaultValue={typeof sp.q === "string" ? sp.q : ""} placeholder="Search library…" aria-label="Search library" />
+            </form>
           {/* CLASS-CONTRACT.md § Compliance Library — authority counts render
               as span.badge. */}
-          <a className={!authority ? "is-active" : ""} href={routeBase}>
-            <span>All regulations</span><span className="badge">{rows.length}</span>
-          </a>
-          {authorities.map(name => (
-            <a key={name} className={authority === name ? "is-active" : ""} href={`${routeBase}?authority=${encodeURIComponent(name)}`}>
-              <span>{name}</span><span className="badge">{rows.filter(row => (row.issuing_authority ?? "Other") === name).length}</span>
-            </a>
-          ))}
-          <p className="rv-library__eyebrow">Recently opened</p>
-          {rows.slice(0, 2).map(row => <a className="rv-library__recent" key={row.id} href={`${routeBase}?libraryId=${row.id}`}>{row.title}</a>)}
-        </aside>
+            <div className="row">
+              <a className={`btn btn-sm ${!authority ? "btn-primary" : "btn-secondary"}`} href={routeBase}>
+                All regulations <span className="badge">{rows.length}</span>
+              </a>
+              {authorities.map(name => (
+                <a key={name} className={`btn btn-sm ${authority === name ? "btn-primary" : "btn-secondary"}`} href={`${routeBase}?authority=${encodeURIComponent(name)}`}>
+                  <bdi dir="auto">{name}</bdi> <span className="badge">{rows.filter(row => (row.issuing_authority ?? "Other") === name).length}</span>
+                </a>
+              ))}
+            </div>
+            <div className="row">
+              <span className="sq-overline">Recently opened</span>
+              {rows.slice(0, 2).map(row => (
+                <a className="btn btn-ghost btn-sm" key={row.id} href={`${routeBase}?libraryId=${row.id}`}>
+                  <bdi dir="auto">{row.title}</bdi>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
 
-        <main className="rv-library__workspace">
+        <main className="stack">
           {error ? (
             <div className="sq-banner sq-banner--critical" role="alert"><strong>Compliance Library unavailable.</strong> The read failed; no empty result is claimed. Reference {correlationId}.</div>
           ) : !selected ? (
             <section className="sq-state"><h2>{hasFilters && rows.length > 0 ? "No regulations match the filters" : "No regulations in scope"}</h2><p>{hasFilters && rows.length > 0 ? "The regulation register is not empty. Clear or change the current filters." : "The RLS-scoped read succeeded and returned no regulations."}</p></section>
           ) : (
             <>
-              <header className="rv-library__header">
-                <div>
+              <header className="panel">
+                <div className="panel-row">
+                  <div className="grow">
                   <p className="sq-overline">{selected.code} · {selected.issuing_authority ?? "Authority not recorded"}</p>
-                  <h1>{selected.title}</h1>
+                    <h1><bdi dir="auto">{selected.title}</bdi></h1>
                   <p>Version {selected.version_label} · {selected.status}</p>
                 </div>
-                <a className="sq-btn sq-btn--secondary" href={`/admin/regulations?id=${selected.id}`}>Open governed dossier</a>
+                  <a className="btn btn-secondary" href={`/admin/regulations?id=${selected.id}`}>Open governed dossier</a>
+                </div>
               </header>
-              <section className="rv-library__facts">
-                <div><span>Clauses</span><strong>{selected.regulation_clauses?.length ?? 0}</strong></div>
-                <div><span>Inspection items</span><strong>{itemCount}</strong></div>
-                <div><span>Effective from</span><strong>{selected.effective_from?.slice(0, 10) ?? "Not recorded"}</strong></div>
+              <section className="kpi-grid" aria-label="Regulation facts">
+                <article className="panel kpi"><span className="kpi-label">Clauses</span><strong className="kpi-value">{selected.regulation_clauses?.length ?? 0}</strong></article>
+                <article className="panel kpi"><span className="kpi-label">Inspection items</span><strong className="kpi-value">{itemCount}</strong></article>
+                <article className="panel kpi"><span className="kpi-label">Effective from</span><strong>{selected.effective_from?.slice(0, 10) ?? "Not recorded"}</strong></article>
               </section>
-              <div className="rv-library__split">
-                <section className="rv-library__list">
-                  <h2>Regulations</h2>
+              <section className="panel">
+                <div className="panel-header"><h2 className="panel-title">Regulations</h2></div>
                   {/* CLASS-CONTRACT.md § Compliance Library — catalogue toolbar:
                       search, Status and Inspection-type filter-chips, Create.
                       "Inspection type" has no governed field on `regulations`
@@ -184,26 +198,42 @@ export default async function ComplianceLibrary({
                     </select>
                     <button type="button" className="filter-chip" disabled title="No governed inspection-type field exists on this data yet">Inspection type</button>
                     <button type="submit" className="btn btn-secondary btn-sm">Apply</button>
-                    <a className="btn btn-primary btn-sm" href="/admin/compliance-requests/new" style={{ marginInlineStart: "auto" }}>Create</a>
+                    <span className="sq-toolbar__spacer" />
+                    <a className="btn btn-primary btn-sm" href="/admin/compliance-requests/new">Create</a>
                   </form>
+                  <div className="panel-body stack">
                   {filtered.map(row => (
                     // CLASS-CONTRACT.md § Compliance Library — regulation rows
                     // carry id-code (the regulation code) + a status badge. The
                     // contract names badge-plan, which is NOT defined in either
                     // stylesheet, so the defined base .badge is used instead.
                     // Reported as a design-system gap, not worked around here.
-                    <a className={row.id === selected.id ? "is-selected" : ""} key={row.id} href={`${routeBase}?libraryId=${row.id}${authority ? `&authority=${encodeURIComponent(authority)}` : ""}`}>
-                      <div><strong>{row.title}</strong><span><span className="id-code">{row.code}</span> · <span className="badge">{row.version_label}</span></span></div><span aria-hidden="true">›</span>
+                      <a className="panel" key={row.id} href={`${routeBase}?libraryId=${row.id}${authority ? `&authority=${encodeURIComponent(authority)}` : ""}`} aria-current={row.id === selected.id ? "true" : undefined}>
+                        <span className="panel-row">
+                          <span className="grow"><strong><bdi dir="auto">{row.title}</bdi></strong><br /><span className="id-code">{row.code}</span></span>
+                          <span className="row"><span className="badge">{row.status}</span><span className="badge">{row.version_label}</span><span aria-hidden="true">›</span></span>
+                        </span>
                     </a>
                   ))}
+                  </div>
                 </section>
-                <section className="rv-library__detail">
-                  <p className="rv-library__eyebrow">Source-controlled compliance</p>
-                  <h2>Regulation workspace</h2>
+              <section className="panel">
+                <div className="panel-header">
+                  <div>
+                    <p className="sq-overline">Source-controlled compliance</p>
+                    <h2 className="panel-title">Regulation workspace</h2>
+                  </div>
+                  <div className="row">
+                    <a className="btn btn-secondary btn-sm" href={`/admin/regulations?id=${selected.id}`}>View request</a>
+                    <a className="btn btn-secondary btn-sm" href={`/admin/regulations?id=${selected.id}`}>Modify through request</a>
+                  </div>
+                </div>
+                <div className="panel-body stack">
+                  <div className="alert alert-immutable"><strong>Approved content — read only.</strong> Create and modify actions open a governed configuration request.</div>
                   <LibraryTabs tabs={libraryTabs} panels={libraryPanels} />
-                  <div className="sq-banner"><strong>Read-only presentation.</strong> Authoring and maker-checker publication remain in the governed dossier and its database guards.</div>
+                  <div className="alert alert-immutable"><strong>Read-only presentation.</strong> Authoring and maker-checker publication remain in the governed dossier and its database guards.</div>
+                </div>
                 </section>
-              </div>
             </>
           )}
         </main>
