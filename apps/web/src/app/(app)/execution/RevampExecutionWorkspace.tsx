@@ -71,6 +71,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
   const [calendarMode, setCalendarMode] = useState<CalendarMode>("week");
   const [filters, setFilters] = useState<Partial<Record<FilterKey, string>>>({});
   const [reschedule, setReschedule] = useState<{ row: ExecutionRow; date: string } | null>(null);
+  const [selected, setSelected] = useState<ExecutionRow | null>(null);
   const weekStart = useMemo(() => startOfWeek(new Date()), []);
   const calendarDays = useMemo(() => Array.from({ length: calendarMode === "week" ? 7 : 35 }, (_, index) => {
     const date = new Date(weekStart);
@@ -101,6 +102,8 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
     }));
   const calendarRows = view === "mine" ? mine : rows;
   const calendarEnd = calendarDays[calendarDays.length - 1]!;
+  const hasActiveFilters = !!query.trim() || Object.values(filters).some(Boolean);
+  const missingCoordinateCount = sourceRows.filter(row => row.lat == null || row.lng == null).length;
   const filterOptions: Record<FilterKey, string[]> = {
     inspector: Array.from(new Set(rows.map(row => row.inspector).filter((value): value is string => !!value))).sort(),
     region: Array.from(new Set(rows.map(row => row.region).filter((value): value is string => !!value))).sort(),
@@ -137,6 +140,12 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
           <strong>{copy(locale, "Submission service unavailable.", "خدمة التقديم غير متاحة.")}</strong> {copy(locale, "Inspection preparation and execution records remain available, but real submission is blocked by DEC-032. No successful submission is claimed from this destination.", "تظل سجلات التحضير والتنفيذ متاحة، لكن التقديم الفعلي محظور بموجب DEC-032. لا تدّعي هذه الوجهة نجاح أي تقديم.")}
         </div>
       </div>
+      <div className="sq-banner" role="status">
+        <div>
+          <strong>{copy(locale, "Live tracking is not available in this Web view.", "التتبع المباشر غير متاح في عرض الويب هذا.")}</strong>{" "}
+          {copy(locale, "DEC-002 remains the authority boundary for telemetry frequency, accuracy, and geofence policy. The map uses recorded official factory coordinates only.", "يظل القرار DEC-002 هو الحد المرجعي لتواتر القياس ودقته وسياسة النطاق الجغرافي. تستخدم الخريطة إحداثيات المصنع الرسمية المسجلة فقط.")}
+        </div>
+      </div>
       {totalVisibleRows > rows.length ? (
         <div className="sq-banner" role="status">
           <div>
@@ -157,7 +166,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
             return (
               <article key={key} onDragOver={event => event.preventDefault()} onDrop={event => onDropDay(event, key)}>
                 <header><span>{formatShort(locale, day)}</span><span>{dayRows.length ? copy(locale, `${dayRows.length} visit${dayRows.length === 1 ? "" : "s"}`, `${dayRows.length} زيارة`) : ""}</span></header>
-                {dayRows.slice(0, 4).map(row => <a href={row.inspectorId === currentUserId ? `/field/${row.id}` : `/visits/${row.id}`} key={row.id} data-risk={row.risk ?? ""} draggable onDragStart={event => event.dataTransfer.setData("text/visit-id", row.id)}>{row.factory}</a>)}
+                {dayRows.slice(0, 4).map(row => <a href={row.inspectorId === currentUserId ? `/field/${row.id}` : `/visits/${row.id}`} onClick={event => { event.preventDefault(); setSelected(row); }} key={row.id} data-risk={row.risk ?? ""} draggable onDragStart={event => event.dataTransfer.setData("text/visit-id", row.id)}>{row.factory}</a>)}
               </article>
             );
           })}
@@ -184,6 +193,14 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
         {filterButton(copy(locale, "Priority", "الأولوية"), "priority")}
         {Object.keys(filters).some(key => filters[key as FilterKey]) ? <button type="button" onClick={() => setFilters({})}>{copy(locale, "Clear filters", "مسح عوامل التصفية")}</button> : null}
       </div>
+      {missingCoordinateCount ? (
+        <div className="sq-banner" role="status">
+          <div>
+            <strong>{copy(locale, "Location coverage is partial.", "تغطية بيانات الموقع جزئية.")}</strong>{" "}
+            {copy(locale, `${missingCoordinateCount.toLocaleString("en-GB")} visit${missingCoordinateCount === 1 ? "" : "s"} in this scope do not have governed official coordinates and are omitted from the map.`, `لا تحتوي ${missingCoordinateCount.toLocaleString("ar-SA")} زيارة في هذا النطاق على إحداثيات رسمية معتمدة، ولذلك لا تظهر على الخريطة.`)}
+          </div>
+        </div>
+      ) : null}
 
       {view === "map" ? (
         <section className="sq-execution__map">
@@ -214,13 +231,41 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
                 <td data-label={copy(locale, "Operational state", "الحالة التشغيلية")}><span>{titleCase(locale, row.operationalState)}</span></td>
                 {view === "mine" && <><td data-label={copy(locale, "Preparation", "التحضير")}>{titleCase(locale, row.planningStatus)}</td><td data-label={copy(locale, "Report type", "نوع التقرير")}>{row.reportType ?? copy(locale, "Not configured", "غير مهيأ")}</td></>}
                 {view === "all" && <td data-label={copy(locale, "Location data", "بيانات الموقع")}>{row.lat != null ? copy(locale, "Official factory coordinates recorded", "إحداثيات المصنع الرسمية مسجلة") : copy(locale, "No official coordinates", "لا توجد إحداثيات رسمية")}</td>}
-                <td data-label={copy(locale, "Action", "الإجراء")}><a href={row.inspectorId === currentUserId ? `/field/${row.id}` : `/visits/${row.id}`}>{row.inspectorId === currentUserId ? (row.operationalState === "new" ? copy(locale, "Prepare", "تحضير") : copy(locale, "Open", "فتح")) : copy(locale, "View", "عرض")}</a></td>
+                <td data-label={copy(locale, "Action", "الإجراء")}><a href={row.inspectorId === currentUserId ? `/field/${row.id}` : `/visits/${row.id}`} onClick={event => { event.preventDefault(); setSelected(row); }}>{copy(locale, "View", "عرض")}</a></td>
               </tr>
             ))}</tbody>
           </table>
-          {!visibleRows.length && <p>{copy(locale, "No RLS-visible inspections match this view and filter.", "لا توجد تفتيشات ظاهرة وفق سياسات أمان الصفوف تطابق هذا العرض وعوامل التصفية.")}</p>}
+          {!visibleRows.length && <p>{hasActiveFilters
+            ? copy(locale, "No RLS-visible inspections match the current search and filters. Clear the filters to restore this view.", "لا توجد تفتيشات ظاهرة وفق سياسات أمان الصفوف تطابق البحث وعوامل التصفية الحالية. امسح عوامل التصفية لاستعادة العرض.")
+            : copy(locale, "No inspections are available in this RLS-scoped view.", "لا توجد تفتيشات متاحة في هذا العرض المقيّد بسياسات أمان الصفوف.")}</p>}
         </section>
       )}
+      {selected ? (
+        <div className="sq-execution__drawer" role="dialog" aria-modal="true" aria-labelledby="execution-detail-title">
+          <button type="button" aria-label={copy(locale, "Close visit details", "إغلاق تفاصيل الزيارة")} onClick={() => setSelected(null)}>×</button>
+          <p className="sq-overline">{copy(locale, "Execution visit", "زيارة التنفيذ")}</p>
+          <h2 id="execution-detail-title">{selected.factory}</h2>
+          <p>{selected.visitReference} · <span>{titleCase(locale, selected.operationalState)}</span></p>
+          <dl>
+            <div><dt>{copy(locale, "Planning window", "نافذة التخطيط")}</dt><dd>{formatDate(locale, selected.windowStart)} – {formatDate(locale, selected.windowEnd)}</dd></div>
+            <div><dt>{copy(locale, "Execution date", "تاريخ التنفيذ")}</dt><dd>{formatDate(locale, selected.executionDate)}</dd></div>
+            <div><dt>{copy(locale, "Visit type / mode", "نوع الزيارة / نمطها")}</dt><dd>{titleCase(locale, selected.visitType)} · {titleCase(locale, selected.visitMode)}</dd></div>
+            <div><dt>{copy(locale, "Assigned inspector", "المفتش المسند")}</dt><dd>{selected.inspector ?? copy(locale, "Unassigned", "غير مسند")}</dd></div>
+            <div><dt>{copy(locale, "Region / city", "المنطقة / المدينة")}</dt><dd>{[selected.region, selected.city].filter(Boolean).join(" / ") || "—"}</dd></div>
+            <div><dt>{copy(locale, "Risk / priority", "المخاطر / الأولوية")}</dt><dd>{titleCase(locale, selected.risk)} · {titleCase(locale, selected.priority)}</dd></div>
+            <div><dt>{copy(locale, "Preparation", "التحضير")}</dt><dd>{titleCase(locale, selected.planningStatus)}</dd></div>
+            <div><dt>{copy(locale, "Report type", "نوع التقرير")}</dt><dd>{selected.reportType ?? copy(locale, "Not configured", "غير مهيأ")}</dd></div>
+            <div><dt>{copy(locale, "Location data", "بيانات الموقع")}</dt><dd>{selected.lat != null && selected.lng != null ? copy(locale, "Official factory coordinates recorded", "إحداثيات المصنع الرسمية مسجلة") : copy(locale, "No governed official coordinates", "لا توجد إحداثيات رسمية معتمدة")}</dd></div>
+            <div><dt>{copy(locale, "Offline and queued actions", "العمل دون اتصال والإجراءات المعلّقة")}</dt><dd>{copy(locale, "Unavailable in this Web read model; open the assigned Field workspace.", "غير متاح في نموذج القراءة على الويب؛ افتح مساحة العمل الميدانية المسندة.")}</dd></div>
+          </dl>
+          {selected.inspectorId === currentUserId ? (
+            <a className="sq-btn" href={`/field/${selected.id}`}>{selected.operationalState === "new" ? copy(locale, "Prepare in Field workspace", "التحضير في مساحة العمل الميدانية") : copy(locale, "Open Field workspace", "فتح مساحة العمل الميدانية")}</a>
+          ) : (
+            <a className="sq-btn" href={`/visits/${selected.id}`}>{copy(locale, "Open read-only visit", "فتح الزيارة للقراءة فقط")}</a>
+          )}
+          <button className="sq-btn sq-btn--secondary" type="button" onClick={() => setSelected(null)}>{copy(locale, "Close", "إغلاق")}</button>
+        </div>
+      ) : null}
       {reschedule ? (
         <div className="sq-execution__drawer" role="dialog" aria-modal="true" aria-labelledby="reschedule-title">
           <button type="button" aria-label={copy(locale, "Close configuration drawer", "إغلاق لوحة الإعداد")} onClick={() => setReschedule(null)}>×</button>

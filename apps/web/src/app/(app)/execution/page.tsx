@@ -62,6 +62,16 @@ export default async function ExecutionPage() {
   const roleKeys = (roleRows ?? []).map(row => row.role_key);
   const canReadExecution = roleKeys.some(role => EXECUTION_READ_ROLES.has(role));
 
+  if (executionError || roleError) {
+    return (
+      <Shell current="/execution" title="">
+        <div className="sq-banner sq-banner--critical" role="alert">
+          <div><strong>{copy("Execution data is temporarily unavailable.", "بيانات التنفيذ غير متاحة مؤقتاً.")}</strong> {copy("Nothing was changed; retry this destination.", "لم يتم تغيير أي شيء؛ أعد محاولة فتح هذه الوجهة.")}</div>
+        </div>
+      </Shell>
+    );
+  }
+
   if (isAdminOnlyPersona(roleKeys) || !canReadExecution) {
     return (
       <Shell current="/execution" title="">
@@ -75,16 +85,6 @@ export default async function ExecutionPage() {
           </div>
           <small>{copy("Execution is refused for an Administrator-only persona. Backend RLS remains authoritative.", "يُرفض التنفيذ لحساب يقتصر على دور المسؤول. وتظل سياسات أمان الصفوف في قاعدة البيانات هي المرجع.")}</small>
         </section>
-      </Shell>
-    );
-  }
-
-  if (executionError || roleError) {
-    return (
-      <Shell current="/execution" title="">
-        <div className="sq-banner sq-banner--critical" role="alert">
-          <div><strong>{copy("Execution data is temporarily unavailable.", "بيانات التنفيذ غير متاحة مؤقتاً.")}</strong> {copy("Nothing was changed; retry this destination.", "لم يتم تغيير أي شيء؛ أعد محاولة فتح هذه الوجهة.")}</div>
-        </div>
       </Shell>
     );
   }
