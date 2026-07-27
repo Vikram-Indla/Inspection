@@ -203,9 +203,11 @@ export async function loadBulkSelection(ids: string[], window?: { start: string;
 
   // CD-024 — selection-time overlap evidence. When the caller supplies the
   // shared inspection window we run the SAME overlap query publish uses over the
-  // whole eligible pool, so each candidate row can show its inspector's known
-  // active-assignment overlaps (exact visit + window) BEFORE submit — the
-  // asymmetry vs. auto (never overlap-checked) is surfaced by the UI, not hidden.
+  // whole eligible pool, so each manually chosen candidate can show its known
+  // active-assignment overlaps (exact visit + window) BEFORE submit. Automatic
+  // assignments are selected and overlap-checked inside publish_bulk_plan's
+  // transaction; this preview therefore proves sufficient conflict-free
+  // coverage without pretending to know the final automatic assignee.
   const startMs = window ? Date.parse(window.start) : Number.NaN;
   const endMs = window ? Date.parse(window.end) : Number.NaN;
   const windowOk = !!window && !!window.start && !!window.end && Number.isFinite(startMs) && Number.isFinite(endMs) && endMs > startMs;

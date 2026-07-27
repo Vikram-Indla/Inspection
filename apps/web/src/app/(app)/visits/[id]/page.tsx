@@ -11,6 +11,8 @@ import CreatedToast from "@/components/CreatedToast";
 import EmptyState from "@/components/EmptyState";
 import FocusScroll from "./FocusScroll";
 import detailStyles from "./VisitDetail.module.css";
+import { getVerifiedUser } from "@/lib/verified-user";
+import { hasPlanningSupervisorRole } from "@/lib/planning/scenario-guards";
 
 const PLAN_TONE: Record<string, string> = { published: "sq-lozenge--info", returned: "sq-lozenge--warning", cancelled: "sq-lozenge--critical", expired: "sq-lozenge--critical" };
 
@@ -24,6 +26,11 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
+  const { data: { user } } = await getVerifiedUser(sb);
+  const { data: currentRoles } = user
+    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
+    : { data: [] as { role_key: string }[] };
+  const isPlanningSupervisor = hasPlanningSupervisorRole((currentRoles ?? []).map(role => role.role_key));
   // ENG-05 — inspector pool; user_roles embed on profiles is ambiguous, disambiguate via !user_roles_user_id_fkey
   const { data: inspRows } = await sb.from("profiles")
     .select("user_id, full_name, user_roles!user_roles_user_id_fkey!inner(role_key)")
@@ -226,7 +233,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
   const preStart = !insp || insp.status === "not_started";
   const canManage = v.planning_status === "published" && v.operational_state === "new";
-  const canReassign = ["published", "returned"].includes(v.planning_status) && preStart;
+  const canReassign = isPlanningSupervisor && ["published", "returned"].includes(v.planning_status) && preStart;
   const isFinal = ["cancelled", "expired"].includes(v.planning_status);
   const latestAudit = (auditRows ?? [])[0];
   const geoEvents = journeys.flatMap(j => j.geo_events).sort((a, b) => b.occurred_at.localeCompare(a.occurred_at));

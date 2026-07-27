@@ -18,6 +18,7 @@ import { insertNotification } from "@/lib/notify";
 import { getReasonOptions, recordLifecycleEvent, validateReason } from "@/lib/planning/lifecycle";
 import { mapError } from "./neutral";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { hasPlanningSupervisorRole } from "@/lib/planning/scenario-guards";
 
 export type ActionResult = { error?: string; ok?: string; planId?: string; method?: string };
 
@@ -306,6 +307,11 @@ export async function reassignVisit(_: ActionResult, fd: FormData): Promise<Acti
   const sb = await supabaseServer();
   const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
+  const { data: roles, error: rolesError } = await sb.from("user_roles")
+    .select("role_key").eq("user_id", user.id);
+  if (rolesError || !hasPlanningSupervisorRole((roles ?? []).map(role => role.role_key))) {
+    return { error: "Reassignment requires the Supervisor responsibility boundary (M02-009)." };
+  }
   const id = String(fd.get("visit_id")); const inspector = String(fd.get("inspector_id") ?? "");
   if (!inspector) return { error: "Select an inspector (M02-009)" };
   const locked = await guardPreStart(id);

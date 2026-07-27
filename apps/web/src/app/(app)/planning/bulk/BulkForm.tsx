@@ -5,6 +5,7 @@ import { formatDate } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import { IconBlocked } from "@/app/icons";
 import { saveBulkDraft } from "./actions";
+import { requiresMixedAcknowledgement } from "@/lib/planning/scenario-guards";
 
 // CD-021 (SCR-WEB-110) — evidence table + persistent selection (frames 1a/1d).
 // This screen is TARGETING only: which factories, with the provenance to trust
@@ -32,6 +33,7 @@ export type BulkFormStrings = {
   provSynced: string; provNoSync: string;
   dqComplete: string; dqNoLocation: string; dqUnknownRisk: string;
   selectionBar: string; readyNothing: string; reviewContinue: string;
+  mixedAckTitle: string; mixedAckBody: string; mixedAckLabel: string;
   invalidTitle: string; invalidBody: string; invalidKeep: string; invalidClear: string;
   summaryTitle: string; summarySelected: string; summaryByBand: string; summaryByRegion: string; summaryEmpty: string;
   riskBands: Record<string, string>;
@@ -65,6 +67,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
   const [draftRef, setDraftRef] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveFailed, setSaveFailed] = useState(false);
+  const [mixedAcknowledged, setMixedAcknowledged] = useState(false);
   const idSet = useMemo(() => new Set(factories.map(f => f.id)), [factories]);
 
   useEffect(() => {
@@ -88,13 +91,13 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
   const clampedPage = Math.min(page, pageCount - 1);
   const pageRows = filtered.slice(clampedPage * PAGE_SIZE, clampedPage * PAGE_SIZE + PAGE_SIZE);
 
-  const toggle = (id: string, on: boolean) => setSelected(s => { const n = new Set(s); if (on) { if (n.size >= SELECTION_CAP) return n; n.add(id); } else n.delete(id); return n; });
-  const selectVisible = () => setSelected(s => { const n = new Set(s); for (const f of pageRows) { if (n.size >= SELECTION_CAP) break; if (!dupOf(f)) n.add(f.id); } return n; });
+  const toggle = (id: string, on: boolean) => { setMixedAcknowledged(false); setSelected(s => { const n = new Set(s); if (on) { if (n.size >= SELECTION_CAP) return n; n.add(id); } else n.delete(id); return n; }); };
+  const selectVisible = () => { setMixedAcknowledged(false); setSelected(s => { const n = new Set(s); for (const f of pageRows) { if (n.size >= SELECTION_CAP) break; if (!dupOf(f)) n.add(f.id); } return n; }); };
   const confirmSelectAllResults = () => {
     setSelected(s => { const n = new Set(s); for (const f of filtered) { if (n.size >= SELECTION_CAP) break; if (!dupOf(f)) n.add(f.id); } return n; });
     setConfirmingSelectAll(false); setConfirmInput("");
   };
-  const clearSelection = () => setSelected(new Set());
+  const clearSelection = () => { setMixedAcknowledged(false); setSelected(new Set()); };
 
   // M6 — persist the working state as a bulk draft (visit_plans, method 'bulk',
   // status 'draft'). The review hand-off saves first and lands on
@@ -125,6 +128,9 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
   const countBy = (keyOf: (f: F) => string) => { const o: Record<string, number> = {}; for (const f of sel) { const k = keyOf(f); o[k] = (o[k] ?? 0) + 1; } return o; };
   const byBand = countBy(f => f.risk_band ?? "—");
   const byRegion = countBy(f => f.region ?? "—");
+  const excludedOnPage = pageRows.filter(dupOf).length;
+  const needsMixedAcknowledgement = requiresMixedAcknowledgement(selected.size, excludedOnPage);
+  const canContinue = selected.size > 0 && (!needsMixedAcknowledgement || mixedAcknowledged);
 
   const provenance = (f: F) => f.source_synced_at ? strings.provSynced.replace("{d}", formatDate(f.source_synced_at, locale === "ar" ? "ar" : "en")) : strings.provNoSync;
   const dataQuality = (f: F) => {
@@ -234,6 +240,20 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
       </div>
 
       {/* persistent selection bar — cross-page count + draft + hand-off to the P02 review step */}
+      {needsMixedAcknowledgement && (
+        <div className="sq-banner sq-banner--warning" role="status">
+          <div>
+            <strong>{strings.mixedAckTitle}</strong>
+            <p>{strings.mixedAckBody
+              .replace("{eligible}", String(pageRows.length - excludedOnPage))
+              .replace("{excluded}", String(excludedOnPage))}</p>
+            <label className="sq-choice">
+              <input type="checkbox" checked={mixedAcknowledged} onChange={e => setMixedAcknowledged(e.target.checked)} />
+              <span>{strings.mixedAckLabel.replace("{excluded}", String(excludedOnPage))}</span>
+            </label>
+          </div>
+        </div>
+      )}
       <div className="panel panel-row sticky">
         <div className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
           <strong className="sq-numeric" aria-live="polite">{strings.selectionBar.replace("{n}", String(selected.size))}</strong>
@@ -253,7 +273,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
               {saving ? strings.savingDraft : strings.saveDraft}
             </button>
           )}
-          {selected.size > 0
+          {canContinue
             ? <button type="button" className="sq-btn sq-btn--prominent" disabled={saving} onClick={() => { void onReviewClick(); }}>{strings.reviewContinue}</button>
             : <button type="button" className="sq-btn sq-btn--prominent" disabled>{strings.reviewContinue}</button>}
         </div>
