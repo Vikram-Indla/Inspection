@@ -874,7 +874,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
         </div></div>
       )}
       {outOfScopeRecordCount > 0 && (
-        <div className="sq-banner sq-banner--warning" role="status"><div>
+        <div className="ax-sr-only" role="status"><div>
           {t(
             "ops.outOfScopeGeography",
             local(
