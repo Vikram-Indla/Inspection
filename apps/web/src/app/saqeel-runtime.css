@@ -518,10 +518,10 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
    different greens. The mark sits directly on the rail. */
 .sq-shell__brand-mark {
   display: grid; place-items: center; flex: 0 0 auto;
-  inline-size: 28px; block-size: 28px;
+  inline-size: 30px; block-size: 30px;
   color: var(--action-primary);
 }
-.sq-shell__brand-mark svg { display: block; inline-size: 28px; block-size: 28px; }
+.sq-shell__brand-mark svg { display: block; inline-size: 30px; block-size: 30px; }
 .sq-shell__brand-name { display: flex; flex-direction: column; min-inline-size: 0; }
 .sq-shell__brand-ar { font-family: var(--font-body); font-weight: 600; font-size: 18px; line-height: 22px; letter-spacing: 0; color: var(--text-primary); }
 .sq-shell__brand-en { font-weight: 600; font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--action-primary); line-height: 12px; }
@@ -606,7 +606,7 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .sq-shell.is-collapsed .sq-shell__nav { padding-inline: var(--space-1); }
 .sq-shell.is-collapsed .sq-shell__brand {
   display: grid;
-  grid-template-columns: 28px;
+  grid-template-columns: 30px;
   justify-content: center;
   gap: 6px;
   padding: 4px 0 10px;
