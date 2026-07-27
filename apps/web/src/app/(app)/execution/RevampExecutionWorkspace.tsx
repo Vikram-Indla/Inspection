@@ -209,7 +209,19 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
 
       {view === "map" ? (
         <section className="sq-execution__map">
-          {markers.length ? <GeoMap center={[23.8859, 45.0792]} zoom={5} markers={markers} height="100%" ariaLabel={copy(locale, "Official factory location map", "خريطة مواقع المصانع الرسمية")} />
+          {markers.length ? <GeoMap
+            center={[23.8859, 45.0792]}
+            zoom={5}
+            markers={markers}
+            selectedId={selected?.id}
+            onMarkerClick={id => {
+              const row = visibleRows.find(candidate => candidate.id === id);
+              if (row) setSelected(row);
+            }}
+            fitMarkers
+            height="100%"
+            ariaLabel={copy(locale, "Official factory location map; select a marker to open governed visit details", "خريطة مواقع المصانع الرسمية؛ اختر علامة لفتح تفاصيل الزيارة المعتمدة")}
+          />
             : <div><strong>{copy(locale, "No governed coordinates in this view", "لا توجد إحداثيات معتمدة في هذا العرض")}</strong><p>{copy(locale, "The table views remain fully usable.", "تظل عروض الجدول متاحة بالكامل.")}</p></div>}
         </section>
       ) : (
