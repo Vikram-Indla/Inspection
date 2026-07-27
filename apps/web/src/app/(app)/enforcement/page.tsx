@@ -58,8 +58,14 @@ type RuntimeViolation = {
   } | null;
 };
 
-export default async function EnforcementPage() {
+export default async function EnforcementPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const [{ t, locale }, sb] = await Promise.all([useT(), supabaseServer()]);
+  const requestedViolation = (await searchParams).violation;
+  const initialSelectedId = typeof requestedViolation === "string" ? requestedViolation : null;
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
 
   const { data, error } = await sb
@@ -111,6 +117,11 @@ export default async function EnforcementPage() {
     audit: tr("mvp3.enforcement.audit", "Audit", "التدقيق"),
     mappingVersion: tr("mvp3.enforcement.mappingVersion", "Immutable mapping version", "إصدار الربط غير القابل للتعديل"),
     openFactory: tr("mvp3.enforcement.openFactory", "Open Factory 360", "فتح ملف المنشأة 360"),
+    requestedUnavailable: tr(
+      "mvp3.enforcement.requestedUnavailable",
+      "The requested enforcement record is not visible in your authorized clean-factory scope.",
+      "سجل الإنفاذ المطلوب غير ظاهر ضمن نطاق المصانع النظيفة المصرح لك به.",
+    ),
   };
 
   const rows = ((data ?? []) as unknown as RuntimeViolation[]).flatMap((violation): EnforcementLibraryRow[] => {
@@ -179,7 +190,12 @@ export default async function EnforcementPage() {
           <div>{tr("mvp3.enforcement.unavailable", "The enforcement record contract is unavailable in this environment. No record count is claimed.", "عقد سجلات الإنفاذ غير متاح في هذه البيئة. لا يُدّعى أي عدد للسجلات.")}</div>
         </div>
       ) : (
-        <EnforcementLibrary rows={rows} strings={strings} locale={locale} />
+        <EnforcementLibrary
+          rows={rows}
+          strings={strings}
+          locale={locale}
+          initialSelectedId={initialSelectedId}
+        />
       )}
     </Shell>
   );

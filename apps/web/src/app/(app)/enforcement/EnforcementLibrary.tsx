@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./responsive.module.css";
 
 export type EnforcementLibraryRow = {
@@ -55,6 +55,7 @@ export type EnforcementLibraryStrings = {
   audit: string;
   mappingVersion: string;
   openFactory: string;
+  requestedUnavailable: string;
 };
 
 const humanize = (value: string) => value.replaceAll("_", " ");
@@ -63,15 +64,23 @@ export default function EnforcementLibrary({
   rows,
   strings,
   locale,
+  initialSelectedId,
 }: {
   rows: EnforcementLibraryRow[];
   strings: EnforcementLibraryStrings;
   locale: string;
+  initialSelectedId: string | null;
 }) {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("");
   const [region, setRegion] = useState("");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(() =>
+    initialSelectedId && rows.some((row) => row.id === initialSelectedId)
+      ? initialSelectedId
+      : null,
+  );
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const triggerRefs = useRef(new Map<string, HTMLButtonElement>());
 
   const statuses = useMemo(() => [...new Set(rows.map((row) => row.status))].sort(), [rows]);
   const regions = useMemo(() => [...new Set(rows.map((row) => row.region).filter((value): value is string => Boolean(value)))].sort(), [rows]);
@@ -85,6 +94,20 @@ export default function EnforcementLibrary({
     });
   }, [locale, query, region, rows, status]);
   const selected = rows.find((row) => row.id === selectedId) ?? null;
+  const requestedUnavailable = Boolean(initialSelectedId) && !rows.some((row) => row.id === initialSelectedId);
+
+  useEffect(() => {
+    if (!selected) return;
+    closeButtonRef.current?.focus();
+  }, [selected]);
+
+  const closeDrawer = () => {
+    const closingId = selected?.id ?? null;
+    setSelectedId(null);
+    requestAnimationFrame(() => {
+      if (closingId) triggerRefs.current.get(closingId)?.focus();
+    });
+  };
 
   const formatDate = (value: string | null) => value
     ? new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-GB", { dateStyle: "medium" }).format(new Date(value))
@@ -124,11 +147,20 @@ export default function EnforcementLibrary({
       </section>
 
       <section className={styles.records} aria-live="polite">
+        {requestedUnavailable ? (
+          <div className="sq-banner sq-banner--warning" role="status">
+            <div>{strings.requestedUnavailable}</div>
+          </div>
+        ) : null}
         {filtered.map((row) => (
           <button
             key={row.id}
             type="button"
             className={styles.record}
+            ref={(node) => {
+              if (node) triggerRefs.current.set(row.id, node);
+              else triggerRefs.current.delete(row.id);
+            }}
             onClick={() => setSelectedId(row.id)}
             aria-haspopup="dialog"
           >
@@ -144,19 +176,32 @@ export default function EnforcementLibrary({
             <span><small>{strings.actionForm}</small>{row.actionForm ?? strings.noActionForm}</span>
           </button>
         ))}
-        {!filtered.length ? <div className="panel sq-state" role="status"><h2>{strings.empty}</h2></div> : null}
+        {!filtered.length && !requestedUnavailable
+          ? <div className="panel sq-state" role="status"><h2>{strings.empty}</h2></div>
+          : null}
       </section>
 
       {selected ? (
         <>
-          <button className={styles.backdrop} type="button" aria-label={strings.close} onClick={() => setSelectedId(null)} />
-          <aside className={styles.drawer} role="dialog" aria-modal="true" aria-labelledby="enforcement-record-title">
+          <button className={styles.backdrop} type="button" aria-label={strings.close} onClick={closeDrawer} />
+          <aside
+            className={styles.drawer}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="enforcement-record-title"
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                event.preventDefault();
+                closeDrawer();
+              }
+            }}
+          >
             <header className={styles.drawerHeader}>
               <div>
                 <h2 id="enforcement-record-title">{selected.title}</h2>
                 <p>{selected.code} · <bdi dir="ltr">{selected.inspectionId}</bdi> · {selected.factoryName}</p>
               </div>
-              <button className="btn btn-ghost btn-touch" type="button" onClick={() => setSelectedId(null)} aria-label={strings.close}>✕</button>
+              <button ref={closeButtonRef} className="btn btn-ghost btn-touch" type="button" onClick={closeDrawer} aria-label={strings.close}>✕</button>
             </header>
 
             <section>
