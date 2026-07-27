@@ -5,7 +5,7 @@ PLN-PC-003,Governance,R06 remains blocked,Council,"Explicit R06 capability rulin
 PLN-PC-004,Provenance,Planning.docx provenance complete,BA,"Drive ID version/modified/retrieval/checksum","SHA-256 verified or accepted exception","FAIL",PENDING
 PLN-PC-005,Provenance,Inspection Project.xlsx provenance complete,BA,"Drive ID version/modified/retrieval/checksum","SHA-256 verified or accepted exception","FAIL",PENDING
 PLN-PC-006,Source,Exact base and no frozen rewrite,Release manager,"git diff/name-status and base SHA","Only authorized additive files/migrations under exact leases","FAIL",PENDING
-PLN-PC-007,Migration,Noncolliding exact paths,Backend,"origin/main worktree and migration-history audit","No timestamp/name collision; existing 0040 collision resolved","FAIL",BLOCKED
+PLN-PC-007,Migration,Noncolliding exact paths,Backend,"execution-time current-main worktree and migration-history audit","PO-selected proposed 0041 probe remains noncolliding; duplicate 0040 remains rejected","FAIL",PENDING
 PLN-PC-008,Migration,Single transaction applies and rolls back,Backend,"Target-version PostgreSQL transcript","Representative pre-state apply succeeds; rollback leaves no residue","FAIL",PENDING
 PLN-PC-009,Migration,No nontransactional statement,Backend,"Statement inventory and rollback proof","Every statement transaction-safe; otherwise minimum split reapproved","FAIL",PENDING
 PLN-PC-010,Migration,Additive only,Backend,"Schema/function/grant diff","No applied migration rewrite; no legacy retirement","FAIL",PENDING

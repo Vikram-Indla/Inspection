@@ -16,7 +16,8 @@ scope:
   rules: ["PLN-R01", "PLN-R02", "PLN-R03", "PLN-R04", "PLN-R05", "PLN-R06", "PLN-R07", "PLN-R08", "PLN-R09", "PLN-R10"]
   blocked: ["PLN-R05", "PLN-R06"]
   proposed_migration: "supabase/migrations/20260728010000_planning_closure_p0.sql"
-  proposed_probe: "UNRESOLVED: requested 0040 collides with existing 0040_analytics_read_models_non_pgtap.sql"
+  proposed_probe: "supabase/tests/0041_planning_closure_p0.sql"
+  probe_condition: "Proposed path only; final current-main collision audit is mandatory at execution. Duplicate 0040 is rejected."
 deliverables:
   trace: "product-contract/operationalization/PLANNING_CLOSURE_P0_TRACE.csv"
   screen_process_acceptance: "product-contract/operationalization/PLANNING_CLOSURE_SCREEN_PROCESS_ACCEPTANCE.csv"

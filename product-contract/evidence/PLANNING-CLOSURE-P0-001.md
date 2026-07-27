@@ -33,7 +33,7 @@ The packet maps `PLN-J01..PLN-J20` and `PLN-R01..PLN-R10` to explicit requiremen
 
 The proposed migration remains `supabase/migrations/20260728010000_planning_closure_p0.sql`.
 
-The requested probe path `supabase/tests/0040_planning_closure_p0.sql` is not available at the base because `supabase/tests/0040_analytics_read_models_non_pgtap.sql` already exists. The Planning probe identifier is therefore `UNRESOLVED_PENDING_BACKEND_COLLISION_AUDIT`. No migration or test file was created.
+The PO-selected proposed probe path is `supabase/tests/0041_planning_closure_p0.sql`. It remains a proposed path until the mandatory current-main collision audit at execution. Duplicate `supabase/tests/0040_planning_closure_p0.sql` remains rejected because `supabase/tests/0040_analytics_read_models_non_pgtap.sql` already exists at the base. No migration or test file was created.
 
 ## Drive provenance
 
@@ -65,7 +65,7 @@ These sidecars do not make the proposed supersessions effective and do not autho
 1. Council ruling for `PLN-R05` unregistered factory lifecycle and source authority.
 2. Council ruling for `PLN-R06` Supervisor capability/RBAC/RLS mapping.
 3. Controlled-download SHA-256 for both Drive sources.
-4. Exact noncolliding Planning SQL probe path.
+4. Execution-time current-main collision confirmation for the proposed `supabase/tests/0041_planning_closure_p0.sql` path.
 5. Current migration-history/object-state reconciliation and local transaction/rollback proof.
 6. Scheduler platform capability, threat model and exact grant matrix.
 7. Provider delivery receipt/failure/retry successor packet and release impact.

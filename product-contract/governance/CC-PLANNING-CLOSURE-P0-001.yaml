@@ -173,9 +173,10 @@ authority_rules:
 migration_fence:
   state: "PROPOSED_PATHS_ONLY"
   migration: "supabase/migrations/20260728010000_planning_closure_p0.sql"
-  probe: "UNRESOLVED_PENDING_BACKEND_COLLISION_AUDIT"
-  requested_probe: "supabase/tests/0040_planning_closure_p0.sql"
-  collision: "supabase/tests/0040_analytics_read_models_non_pgtap.sql exists at base."
+  probe: "supabase/tests/0041_planning_closure_p0.sql"
+  probe_status: "PROPOSED_PATH_ONLY_PENDING_EXECUTION_CURRENT_MAIN_COLLISION_AUDIT"
+  rejected_probe: "supabase/tests/0040_planning_closure_p0.sql"
+  collision_record: "supabase/tests/0040_analytics_read_models_non_pgtap.sql exists at base; duplicate 0040 is rejected."
   executable_scope: ["PLN-R01", "PLN-R03", "PLN-R04", "PLN-R07", "PLN-R08", "PLN-R09", "PLN-R10"]
   excluded_scope: ["PLN-R05", "PLN-R06", "legacy RPC retirement", "provider delivery receipt if successor is explicitly gated"]
 release_gates:
