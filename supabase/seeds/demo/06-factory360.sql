@@ -787,6 +787,23 @@ on conflict (batch_id, row_number) do nothing;
 
 
 -- ---------------------------------------------------------------------
+-- Section 17b — backfill pre-existing licence documents that carry no
+-- storage_path. Four rows predate this seed and blocked both the download
+-- link and the receipt (storage_path is NOT NULL on the receipts table).
+-- ---------------------------------------------------------------------
+update factory_documents d set
+  storage_path = 'factory-360/'||f.factory_code||'/'||d.doc_type||'-1.pdf',
+  industrial_license_id = coalesce(d.industrial_license_id, il.id),
+  business_category = coalesce(d.business_category, 'industrial_license'),
+  source_system = coalesce(d.source_system, 'senaei'),
+  source_status = coalesce(d.source_status, f.license_status),
+  external_document_id = coalesce(d.external_document_id, 'DOC-'||il.plant_number||'-001'),
+  provenance = d.provenance || jsonb_build_object('demo_synthetic', true, 'backfilled_storage_path', true)
+from factories f join industrial_licenses il on il.factory_id = f.id
+where d.factory_id = f.id and f.factory_code like 'F-%' and d.storage_path is null;
+
+
+-- ---------------------------------------------------------------------
 -- Section 18 — factory_document_download_receipts
 -- Two receipts per factory (licence + CR) proving governed access.
 -- Rows without a storage_path are skipped: the column is NOT NULL here.

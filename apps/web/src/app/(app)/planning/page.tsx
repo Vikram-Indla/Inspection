@@ -216,7 +216,10 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
         <span>{tr("plan.list.subtitle", "Create inspection visits — bulk, single or immediate", "إنشاء زيارات التفتيش — جماعية أو فردية أو فورية")}</span>
       </div>
       {/* Page actions — Create Visit / Export / Refresh (PLN-REQ-006/017/018) */}
-      <div className="sq-planning-commandbar">
+      <CreateVisitSection methods={methods} canCreate={access.can("planning.create")} strings={{
+        createLabel: tr("plan.list.createVisit", "Create visit", "إنشاء زيارة"),
+        oneMethodNote: t("plan.home.oneMethod", "One planning method per creation session (M01-011 · REF-001)."),
+      }}>
         <RefreshButton label={tr("plan.list.refresh", "Refresh", "تحديث")} busyLabel={tr("plan.list.refreshing", "Refreshing…", "جارٍ التحديث…")} />
         {access.can("planning.export") && (
           <ExportButton params={params} strings={{
@@ -229,13 +232,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
         )}
         <SavedViewsButton label={tr("plan.list.savedViews", "Saved views", "العروض المحفوظة")} />
         <span />
-        {access.can("planning.create") && (
-          <CreateVisitSection methods={methods} strings={{
-            createLabel: tr("plan.list.createVisit", "Create visit", "إنشاء زيارة"),
-            oneMethodNote: t("plan.home.oneMethod", "One planning method per creation session (M01-011 · REF-001)."),
-          }} />
-        )}
-      </div>
+      </CreateVisitSection>
 
       <RevampPlanningInsights
         rows={visibleRows}

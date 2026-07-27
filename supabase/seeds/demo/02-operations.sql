@@ -787,3 +787,136 @@ on conflict (id) do nothing;
 -- =====================================================================
 -- END OF SYNTHETIC DEMO SEED — supabase/seeds/demo/02-operations.sql
 -- =====================================================================
+
+-- =====================================================================
+-- 11. ADAPTIVE TOP-UP (safe to re-run at any time)
+--     The anchor lists above are fixed. These three statements instead
+--     self-select from whatever is currently active, so the live map and
+--     the Operations override queue stay populated after other seeds (or
+--     the governed expiry routine) change visit state. All ids remain
+--     deterministic, so re-running is still a no-op.
+-- =====================================================================
+
+-- 11a. Positions for every currently-active visit that has none.
+with need as (
+  select v.id as visit_id, f.official_lat::numeric lat, f.official_lng::numeric lng,
+    v.operational_state::text os,
+    row_number() over (order by f.region, v.id) as seq
+  from visits v join factories f on f.id = v.factory_id
+  where f.factory_code like 'F-%'
+    and v.operational_state::text in ('on_the_way','arrived','executing')
+    and v.window_start <= now()
+    and f.official_lat is not null
+    and not exists (
+      select 1 from public.geo_events g
+      where g.visit_id = v.id and g.occurred_at <= now() and g.observed_lat is not null
+        and (g.integration_mode is null or g.integration_mode = 'production'))
+),
+tmpl as (select * from (values ('telemetry', -34, 1), ('checkin', -7, 3), ('arrival', -2, 4)) t(kind, off_min, ord))
+insert into public.geo_events (
+  id, journey_id, visit_id, kind, observed_lat, observed_lng, accuracy_m, geofence_result,
+  gis_version, device_id, occurred_at, altitude_m, speed_mps, heading_deg,
+  device_occurred_at, device_os_version, application_version, integration_mode, source)
+select
+  md5('saqeel-demo-ops:geo:' || t.kind || ':' || n.visit_id::text)::uuid,
+  null, n.visit_id, t.kind,
+  round(n.lat + case t.ord
+    when 1 then -0.0192 + (n.seq % 6) * 0.0032
+    when 3 then case when n.os = 'on_the_way' then -0.0061 + (n.seq % 5) * 0.0019 else ((n.seq % 7) - 3) * 0.00031 end
+    else ((n.seq % 5) - 2) * 0.00026 end, 7),
+  round(n.lng + case t.ord
+    when 1 then -0.0227 + (n.seq % 5) * 0.0044
+    when 3 then case when n.os = 'on_the_way' then -0.0053 + (n.seq % 7) * 0.0013 else ((n.seq % 5) - 2) * 0.00028 end
+    else ((n.seq % 7) - 3) * 0.00023 end, 7),
+  case t.ord when 1 then 15 + (n.seq % 8) * 2 when 3 then 8 + (n.seq % 6) else 6 + (n.seq % 4) end,
+  case t.kind when 'telemetry' then null else 'inside'::geofence_result end,
+  'GIS-2026.07', 'IPAD-MIM-' || lpad((900 + n.seq)::text, 4, '0'),
+  now() - ((n.seq % 22) * interval '4 minutes') + (t.off_min * interval '1 minute'),
+  round(552 + (n.seq % 12) * 6.5, 1),
+  case t.kind when 'telemetry' then round(10.5 + (n.seq % 8) * 1.6, 1) else 0 end,
+  ((n.seq * 41) % 360),
+  now() - ((n.seq % 22) * interval '4 minutes') + (t.off_min * interval '1 minute') - interval '3 seconds',
+  'iPadOS 18.4', '2.6.0', 'production',
+  case t.kind when 'arrival' then 'confirm_arrival' when 'checkin' then 'field_checkin' else 'field_tracking' end
+from need n cross join tmpl t
+where not (t.kind = 'arrival' and n.os = 'on_the_way')
+on conflict (id) do nothing;
+
+-- 11b. A demo journey for every currently-active visit that lacks one.
+--      status 'arrived' avoids the uq_journey_active_per_visit partial index.
+with need as (
+  select v.id as visit_id, f.region,
+    row_number() over (order by f.region, v.id) as seq
+  from visits v join factories f on f.id = v.factory_id
+  where f.factory_code like 'F-%'
+    and v.operational_state::text in ('on_the_way','arrived','executing')
+    and v.window_start <= now()
+    and not exists (select 1 from public.journey_sessions j
+                    where j.id = md5('saqeel-demo-ops:journey:' || v.id::text)::uuid)
+)
+insert into public.journey_sessions (
+  id, visit_id, inspector_id, started_at, eta_minutes, remaining_distance_m, status,
+  device_started_at, device_info, route_provider, device_id, device_os_version,
+  application_version, routing_provider, route_estimate_mode, route_estimated_at)
+select
+  md5('saqeel-demo-ops:journey:' || n.visit_id::text)::uuid, n.visit_id,
+  coalesce((select a2.inspector_id from assignments a2 where a2.visit_id = n.visit_id order by a2.inspector_id limit 1),
+           (select p.user_id from profiles p where p.email = case n.region
+              when 'Riyadh' then 'inspector@mim.gov.sa' when 'Makkah' then 'inspector2@mim.gov.sa'
+              when 'Eastern' then 'inspector3@mim.gov.sa' when 'Madinah' then 'inspector4@mim.gov.sa'
+              when 'Qassim' then 'inspector5@mim.gov.sa' else 'inspector1@mim.gov.sa' end)),
+  now() - interval '70 minutes', 0, 0, 'arrived',
+  now() - interval '70 minutes',
+  jsonb_build_object('device_id','IPAD-MIM-'||lpad((900 + n.seq)::text,4,'0'),'os_version','iPadOS 18.4','app_version','2.6.0'),
+  'internal_route_estimator', 'IPAD-MIM-'||lpad((900 + n.seq)::text,4,'0'), 'iPadOS 18.4', '2.6.0',
+  'internal_route_estimator', 'production', now() - interval '65 minutes'
+from need n
+on conflict (id) do nothing;
+
+-- 11c. Refill the pending override queue (max 12 new rows per run).
+with cand as (
+  select v.id as visit_id, f.region, ge.observed_lat, ge.observed_lng, ge.accuracy_m, ge.occurred_at,
+    row_number() over (order by f.region, v.id) as seq
+  from visits v
+  join factories f on f.id = v.factory_id
+  join public.geo_events ge on ge.id = md5('saqeel-demo-ops:geo:checkin:' || v.id::text)::uuid
+  join public.journey_sessions j on j.id = md5('saqeel-demo-ops:journey:' || v.id::text)::uuid
+  where f.factory_code like 'F-%'
+    and v.operational_state::text in ('on_the_way','arrived','executing')
+    and v.window_start <= now()
+    and not exists (select 1 from public.geo_override_requests r where r.checkin_event_id = ge.id)
+    and not exists (select 1 from public.geo_override_requests r where r.journey_id = j.id)
+  limit 12
+)
+insert into public.geo_override_requests (
+  id, visit_id, journey_id, checkin_event_id, requested_by, requested_at, expires_at, status,
+  reason_key, reason_label, explanation, safety_security_exception,
+  observed_lat, observed_lng, accuracy_m, distance_m, device_occurred_at)
+select
+  md5('saqeel-demo-ops:override-req:' || c.visit_id::text)::uuid,
+  c.visit_id,
+  md5('saqeel-demo-ops:journey:' || c.visit_id::text)::uuid,
+  md5('saqeel-demo-ops:geo:checkin:' || c.visit_id::text)::uuid,
+  coalesce((select a2.inspector_id from assignments a2 where a2.visit_id = c.visit_id order by a2.inspector_id limit 1),
+           (select p.user_id from profiles p where p.email = case c.region
+              when 'Riyadh' then 'inspector@mim.gov.sa' when 'Makkah' then 'inspector2@mim.gov.sa'
+              when 'Eastern' then 'inspector3@mim.gov.sa' when 'Madinah' then 'inspector4@mim.gov.sa'
+              when 'Qassim' then 'inspector5@mim.gov.sa' else 'inspector1@mim.gov.sa' end)),
+  now() - ((3 + (c.seq % 24)) * interval '1 minute'),
+  now() + interval '30 days',
+  'pending',
+  (array['safety_security','access_point_discrepancy','access_obstruction'])[1 + (c.seq % 3)],
+  case (array['safety_security','access_point_discrepancy','access_obstruction'])[1 + (c.seq % 3)]
+    when 'safety_security' then 'ظروف السلامة أو الأمن تجعل التقاط الصورة غير آمن'
+    when 'access_point_discrepancy' then 'نقطة الوصول المتحققة تختلف عن الموقع المعتمد'
+    else 'نقطة الوصول الرسمية محجوبة فعلياً' end,
+  case (array['safety_security','access_point_discrepancy','access_obstruction'])[1 + (c.seq % 3)]
+    when 'safety_security' then 'تعليمات أمن المنشأة تمنع التصوير داخل النطاق الجغرافي؛ تم تسجيل الموقع من نقطة التجمع الآمنة المعتمدة عند البوابة الخارجية.'
+    when 'access_point_discrepancy' then 'البوابة الرسمية المسجلة في السجل الجغرافي مغلقة بشكل دائم، والدخول الفعلي يتم من بوابة الشحن الشمالية.'
+    else 'أعمال حفر وصيانة في الطريق المؤدي إلى البوابة الرئيسية تمنع الوقوف داخل النطاق الجغرافي المعتمد للمنشأة.' end,
+  ((array['safety_security','access_point_discrepancy','access_obstruction'])[1 + (c.seq % 3)] = 'safety_security'),
+  c.observed_lat, c.observed_lng, c.accuracy_m,
+  310 + (c.seq % 9) * 70,
+  c.occurred_at - interval '4 seconds'
+from cand c
+on conflict (id) do nothing;

@@ -240,6 +240,10 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .sq-typecard {
   display: block; cursor: pointer; border: 1.5px solid var(--border-subtle); border-radius: var(--radius-md);
   background: var(--surface-primary); padding: var(--space-4) var(--space-6);
+  /* The card is also the navigational variant (an <a> wrapping the whole
+     tile), so it must never look like an underlined link. Same reasoning as
+     .sq-btn above. Colour still comes from __title / __meta. */
+  text-decoration: none;
 }
 .sq-typecard.is-selected, .sq-typecard:has(input:checked) { border-color: var(--action-primary); background: var(--accent-soft); }
 .sq-typecard:has(input:focus-visible) { outline: 2px solid var(--focus-ring); outline-offset: 2px; }

@@ -35,8 +35,12 @@ begin
     order by f.region, f.factory_code, v.id
     limit 84
   loop
-    base := timestamptz '2026-07-27 03:00:00+00'
-            + make_interval(hours => (r.rn % 9)::int, mins => ((r.rn * 7) % 60)::int);
+    -- 00:15..05:45 UTC = 03:15..08:45 Riyadh. Every in-flight visit must have
+    -- already opened by the time anyone looks, because /operations/live filters
+    -- on `window_start <= now()` — a visit scheduled for later today is simply
+    -- absent from the map, which reads as missing data rather than as pending
+    -- work. The nine-hour window keeps them open for the rest of the day.
+    base := timestamptz '2026-07-27 00:15:00+00' + make_interval(mins => ((r.rn * 23) % 330)::int);
     st := case
       when (r.rn % 12) < 3  then 'on_the_way'
       when (r.rn % 12) < 6  then 'arrived'
