@@ -535,7 +535,8 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
                 distinct from cancelling a published visit. */}
             {" "}
             <DiscardDraftButton planId={initialDraft.planId} label={s.discardDraft}
-              discardAria={`${s.discardDraft} — ${initialDraft.planReference}`} />
+              discardAria={`${s.discardDraft} — ${initialDraft.planReference}`}
+              unavailableLabel={s.draftUnavailable} />
           </p>
         )}
         {draftUnavailable && (

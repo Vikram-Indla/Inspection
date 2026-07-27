@@ -249,6 +249,7 @@ const NEUTRAL_READ_ERROR =
   "Planning data could not be verified (ERR-OPS-001). Nothing was published. Please try again.";
 
 const bulkReceiptContractIsExecutable = (): boolean => false;
+const bulkDraftReceiptContractIsExecutable = (): boolean => false;
 
 export async function publishBulkPlan(_: BulkResult, formData: FormData): Promise<BulkResult> {
   // PLN-S11: the corrected compiler requires frozen targets plus aggregate
@@ -777,6 +778,9 @@ const sanitizeBulkChannel = (raw: string) =>
   /^[a-z0-9][a-z0-9._-]{0,39}$/i.test(raw) ? raw : "planning.bulk";
 
 export async function saveBulkDraft(input: BulkDraftInput): Promise<BulkDraftResult> {
+  // PLN-S08: frozen selection, version, audit and the returned receipt must be
+  // one governed draft boundary. Direct visit_plans fallback stays dormant.
+  if (!bulkDraftReceiptContractIsExecutable()) return { error: "contract_unavailable" };
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError) {

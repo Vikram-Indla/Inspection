@@ -495,7 +495,8 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
                     {user && d.created_by === user.id ? (
                       <DiscardDraftButton planId={d.id}
                         label={tr("plan.list.discard", "Discard", "تجاهل")}
-                        discardAria={tr("plan.list.discardAria", "Discard draft {ref}", "تجاهل المسودة {ref}").replace("{ref}", d.plan_reference ?? d.id.slice(0, 8))} />
+                        discardAria={tr("plan.list.discardAria", "Discard draft {ref}", "تجاهل المسودة {ref}").replace("{ref}", d.plan_reference ?? d.id.slice(0, 8))}
+                        unavailableLabel={t("plan.archive.contractUnavailable", "Unavailable — governed archive contract pending")} />
                     ) : "—"}
                   </td>
                 </tr>

@@ -26,6 +26,7 @@ const NEUTRAL_WRITE_ERROR =
 const NEUTRAL_READ_ERROR =
   "Planning data could not be verified (ERR-OPS-001). Your entries are preserved — try again.";
 const publishReceiptContractIsExecutable = (): boolean => false;
+const draftReceiptContractIsExecutable = (): boolean => false;
 
 export async function publishSingleVisit(_: PublishResult, formData: FormData): Promise<PublishResult> {
   // PLN-S11: R1 marks the durable publish receipt contract
@@ -356,6 +357,10 @@ export type SingleDraftInput = {
 export type DraftSaveResult = { error?: string; planId?: string; planReference?: string; version?: number };
 
 export async function saveSingleDraft(input: SingleDraftInput): Promise<DraftSaveResult> {
+  // PLN-S08: draft persistence is part of the same aggregate/version/audit
+  // boundary. Until that durable receipt contract is effective, preserve the
+  // client state and do not fall back to direct visit_plans INSERT/UPDATE.
+  if (!draftReceiptContractIsExecutable()) return { error: "contract_unavailable" };
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError) {
