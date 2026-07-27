@@ -31,6 +31,7 @@ export default function RevampOperationsCenter({
   mapViewHref,
   performanceViewHref,
   mapEntries,
+  regionalMapEntries,
   mapStrings,
   counts,
   monitoredCount,
@@ -42,6 +43,7 @@ export default function RevampOperationsCenter({
   mapViewHref: string;
   performanceViewHref: string;
   mapEntries: OperationsMapEntry[];
+  regionalMapEntries: OperationsMapEntry[];
   mapStrings: OperationsMapWorkspaceStrings;
   counts: Record<string, number>;
   monitoredCount: number;
@@ -49,6 +51,7 @@ export default function RevampOperationsCenter({
   regions: RegionSummary[];
 }) {
   const [showList, setShowList] = useState(false);
+  const activeMapEntries = view === "performance" ? regionalMapEntries : mapEntries;
   const onTheWayInspectors = new Set(
     mapEntries
       .filter(entry => entry.state === "on_the_way" || entry.state.toLowerCase().includes("way"))
@@ -76,16 +79,13 @@ export default function RevampOperationsCenter({
         </nav>
         <div className={styles.revampFreshness}>
           <span><i aria-hidden="true" />{copy(locale, "Live governed positions", "مواقع معتمدة مباشرة")}</span>
-          {view === "map" && (
-            <button className={styles.revampSecondary} type="button" onClick={() => setShowList(value => !value)}>
-              {showList ? copy(locale, "Show map", "إظهار الخريطة") : copy(locale, "Show list equivalent", "إظهار القائمة المكافئة")}
-            </button>
-          )}
+          <button className={styles.revampSecondary} type="button" onClick={() => setShowList(value => !value)}>
+            {showList ? copy(locale, "Show map", "إظهار الخريطة") : copy(locale, "Show list equivalent", "إظهار القائمة المكافئة")}
+          </button>
         </div>
       </div>
 
-      {view === "map" ? (
-        showList ? (
+      {showList ? (
           <section className={styles.revampTableWrap}>
             <table className={styles.revampTable}>
               <caption>{copy(locale, "Accessible equivalent of the live map. Same records, same actions, no map dependency.", "المكافئ القابل للوصول للخريطة المباشرة. السجلات والإجراءات نفسها دون الاعتماد على الخريطة.")}</caption>
@@ -99,27 +99,28 @@ export default function RevampOperationsCenter({
                 <th>{copy(locale, "Last update", "آخر تحديث")}</th>
                 <th>{copy(locale, "Actions", "الإجراءات")}</th>
               </tr></thead>
-              <tbody>{mapEntries.map(entry => (
+              <tbody>{activeMapEntries.map(entry => (
                 <tr key={entry.id}>
-                  <th scope="row">{entry.inspectorName ?? "—"}</th>
-                  <td><span className={styles.revampLozenge}>{entry.state}</span></td>
-                  <td>{entry.visitId?.slice(0, 8) ?? "—"}</td>
-                  <td>{entry.factoryName}</td>
-                  <td>{[entry.region, entry.city].filter(Boolean).join(" / ") || "—"}</td>
-                  <td>{entry.riskScore ?? "—"}</td>
-                  <td>{entry.lastGeoAt ?? "—"}</td>
-                  <td><a className={styles.revampSecondary} href={entry.href}>{copy(locale, "Open record", "فتح السجل")}</a></td>
+                  <th scope="row" data-label={copy(locale, "Inspector", "المفتش")}>{entry.inspectorName ?? "—"}</th>
+                  <td data-label={copy(locale, "Operational state", "الحالة التشغيلية")}><span className={styles.revampLozenge}>{entry.state}</span></td>
+                  <td data-label={copy(locale, "Visit", "الزيارة")}>{entry.visitId?.slice(0, 8) ?? "—"}</td>
+                  <td data-label={copy(locale, "Factory", "المصنع")}>{entry.factoryName}</td>
+                  <td data-label={copy(locale, "Region / city", "المنطقة / المدينة")}>{[entry.region, entry.city].filter(Boolean).join(" / ") || "—"}</td>
+                  <td data-label={copy(locale, "Risk", "المخاطر")}>{entry.riskScore ?? "—"}</td>
+                  <td data-label={copy(locale, "Last update", "آخر تحديث")}>{entry.lastGeoAt ?? "—"}</td>
+                  <td data-label={copy(locale, "Actions", "الإجراءات")}><a className={styles.revampSecondary} href={entry.href}>{copy(locale, "Open record", "فتح السجل")}</a></td>
                 </tr>
               ))}</tbody>
             </table>
           </section>
-        ) : (
+      ) : (
           <section className={styles.revampMap}>
             <div className={styles.revampMapCrumb}>{copy(locale, "Saudi Arabia", "المملكة العربية السعودية")}</div>
-            <OperationsMapWorkspace entries={mapEntries} strings={mapStrings} mapOnly />
+            <OperationsMapWorkspace entries={activeMapEntries} strings={mapStrings} mapOnly />
           </section>
-        )
-      ) : (
+      )}
+
+      {view === "performance" ? (
         <section className={styles.revampRegions}>
           <div className={styles.revampSectionHead}>
             <h2>{copy(locale, "National performance by region", "الأداء الوطني حسب المنطقة")}</h2>
@@ -136,7 +137,7 @@ export default function RevampOperationsCenter({
             ))}
           </div>
         </section>
-      )}
+      ) : null}
 
       <section>
         <h2 className={styles.revampOverline}>{copy(locale, "Operational summary", "الملخص التشغيلي")}</h2>

@@ -891,6 +891,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
         mapViewHref={mapViewHref}
         performanceViewHref={performanceViewHref}
         mapEntries={mapEntries}
+        regionalMapEntries={regionalMapEntries}
         mapStrings={mapWorkspaceStrings}
         counts={counts}
         monitoredCount={monitored.length}
