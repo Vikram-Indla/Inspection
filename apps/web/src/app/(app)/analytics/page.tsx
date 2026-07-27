@@ -45,7 +45,6 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
           // Fixed vertical order per card so the grid aligns row-to-row:
           // id-code, label, value-or-state, definition, drill link.
           return <article className="panel kpi" key={metric.key}>
-            <span className="id-code">{metric.trace}</span>
             <h3 className="kpi-label">{metric.title}</h3>
             <p className="kpi-value">{governed ? display : <span className="badge badge-pending">{display}</span>}</p>
             <p className="desc">{metric.definition}</p>

@@ -1867,7 +1867,8 @@ button.sq-shell-scope { cursor: pointer; }
 }
 .rv-library__rail > a.is-active {
   border-color: var(--action-primary);
-  background: var(--accent-text);
+  background: var(--accent-soft);
+  color: var(--accent-text);
 }
 .rv-library__rail > a b { font-size: 12px; }
 .rv-library__rail > a.rv-library__recent {
@@ -1925,7 +1926,7 @@ button.sq-shell-scope { cursor: pointer; }
   color: var(--text-primary);
   text-decoration: none;
 }
-.rv-library__list > a.is-selected { background: var(--accent-text); box-shadow: inset 3px 0 var(--action-primary); }
+.rv-library__list > a.is-selected { background: var(--accent-soft); box-shadow: inset 3px 0 var(--action-primary); }
 .rv-library__list > a span { display: block; color: var(--text-muted); font-size: 12px; margin-block-start: 3px; }
 
 .rv-approval,
@@ -1942,7 +1943,7 @@ button.sq-shell-scope { cursor: pointer; }
   border-radius: var(--radius-md);
   background: var(--surface-primary);
 }
-.rv-approval__card.is-selected { border-color: var(--action-primary); background: var(--accent-text); }
+.rv-approval__card.is-selected { border-color: var(--action-primary); background: var(--accent-soft); }
 .rv-approval__card h2 { margin: 3px 0; font-size: 18px; }
 .rv-approval__card p { margin: 0 0 var(--space-2); color: var(--text-muted); }
 .rv-approval__card > a { position: absolute; inset: 0; overflow: hidden; text-indent: -999px; }
@@ -1964,7 +1965,7 @@ button.sq-shell-scope { cursor: pointer; }
   background: var(--surface-primary);
 }
 .rv-approval__steps > span:not(:last-child)::after { content: "→"; position: absolute; inset-inline-end: -20px; top: 18px; color: var(--text-muted); }
-.rv-approval__steps > span.is-current { border-color: var(--action-primary); background: var(--accent-text); }
+.rv-approval__steps > span.is-current { border-color: var(--action-primary); background: var(--accent-soft); color: var(--accent-text); }
 .rv-approval__steps strong,
 .rv-approval__steps small { display: block; white-space: nowrap; }
 .rv-approval__steps small { color: var(--text-muted); }
