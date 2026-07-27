@@ -32,8 +32,8 @@ export const dynamic = "force-dynamic";
 const PAGE_SIZE = 25;
 
 const STATUS_TONE: Record<string, string> = {
-  draft: "sq-lozenge--info", validated: "sq-lozenge--info", published: "sq-lozenge--info",
-  returned: "sq-lozenge--warning", cancelled: "sq-lozenge--critical", expired: "sq-lozenge--critical",
+  draft: "badge-draft", validated: "badge-draft", published: "badge-compliant",
+  returned: "badge-warning", cancelled: "badge-critical", expired: "badge-disabled",
 };
 
 const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
@@ -353,7 +353,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
         <EmptyState glyph="🗓" title={tr("plan.list.empty", "No visits match", "لا توجد زيارات مطابقة")}
           body={tr("plan.list.emptyDesc", "No visits match the current tab, search and filters. Reset to see everything in your scope.", "لا توجد زيارات مطابقة للتبويب والبحث وعوامل التصفية الحالية. أعد التعيين لعرض كل ما في نطاقك.")} />
       ) : (
-        <div className="sq-tablewrap"><table className="sq-table" data-testid="planning-visit-table">
+        <div className="sq-tablewrap planning-table-wrap"><table className="sq-table planning-visit-table" data-testid="planning-visit-table">
           <thead><tr>
             <th scope="col">{tr("plan.list.colVisitRef", "Visit Reference", "مرجع الزيارة")}</th>
             <th scope="col">{tr("plan.list.colPlanningType", "Planning Type", "نوع التخطيط")}</th>
@@ -383,8 +383,9 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
             {visibleRows.map((row: PlanningVisitRow) => (
               <tr key={row.id}>
                 <td className="sq-numeric"><a className="sq-link" href={`/visits/${row.id}`}><strong>{row.visitReference ?? row.id.slice(0, 8)}</strong></a></td>
-                <td><span className="sq-lozenge sq-lozenge--info">{t(`enum.${row.method}`, row.method)}</span></td>
-                <td><span className={`sq-lozenge sq-lozenge--plan ${STATUS_TONE[row.planningStatus] ?? ""}`}>
+                <td><span className="planning-method">{t(`enum.${row.method}`, row.method)}</span></td>
+                <td><span className={`badge planning-status ${STATUS_TONE[row.planningStatus] ?? "badge-pending"}`}>
+                  <span className="dot" aria-hidden="true" />
                   {/* validated is internal — it displays and counts as Draft, never its own label */}
                   {row.planningStatus === "validated" ? t("enum.draft", "draft") : t(`enum.${row.planningStatus}`, row.planningStatus)}
                 </span></td>
@@ -394,14 +395,14 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
                 <td>{row.priority ? t(`enum.${row.priority}`, row.priority) : "—"}</td>
                 <td className="sq-numeric">{dash(row.crNumber)}</td>
                 <td className="sq-numeric">{dash(row.licenseNumber)}</td>
-                <td>{dash(row.factoryName)}</td>
+                <td className="planning-cell-wrap">{dash(row.factoryName)}</td>
                 <td>{dash(row.region)}</td>
                 <td>{dash(row.city)}</td>
-                <td>{dash(row.inspectorName)}</td>
+                <td className="planning-cell-wrap">{dash(row.inspectorName)}</td>
                 <td className="sq-td-num sq-numeric">{fmt(row.windowStart)}</td>
                 <td className="sq-td-num sq-numeric">{fmt(row.windowEnd)}</td>
                 <td className="sq-td-num sq-numeric">{row.executionDate ? fmt(row.executionDate) : "—"}</td>
-                <td>{row.packageTitles.length > 0 ? row.packageTitles.join(", ") : "—"}</td>
+                <td className="planning-cell-wrap">{row.packageTitles.length > 0 ? row.packageTitles.join(", ") : "—"}</td>
                 <td>{dash(row.createdBy)}</td>
                 <td className="sq-td-num sq-numeric">{fmt(row.createdAt)}</td>
                 <td>{dash(row.sourceChannel)}</td>
@@ -433,7 +434,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       {drafts.length > 0 && (
         <section className="sq-surface sq-panel" style={{ padding: "var(--space-6)" }}>
           <h3>{tr("plan.list.draftsHeading", "Draft plans — continue where you left off", "خطط مسودة — تابع من حيث توقفت")}</h3>
-          <div className="sq-tablewrap"><table className="sq-table">
+          <div className="sq-tablewrap"><table className="sq-table planning-draft-table">
             <thead><tr>
               <th scope="col">{tr("plan.list.colPlanRef", "Plan Reference", "مرجع الخطة")}</th>
               <th scope="col">{tr("plan.list.colPlanningType", "Planning Type", "نوع التخطيط")}</th>
@@ -447,8 +448,8 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
               {drafts.map(d => (
                 <tr key={d.id}>
                   <td className="sq-numeric"><strong>{d.plan_reference ?? d.id.slice(0, 8)}</strong></td>
-                  <td><span className="sq-lozenge sq-lozenge--info">{t(`enum.${d.method}`, d.method)}</span></td>
-                  <td>{t("enum.draft", "draft")}</td>
+                  <td><span className="planning-method">{t(`enum.${d.method}`, d.method)}</span></td>
+                  <td><span className="badge badge-draft planning-status"><span className="dot" aria-hidden="true" />{t("enum.draft", "draft")}</span></td>
                   <td>{d.profiles?.full_name ?? "—"}</td>
                   <td className="sq-td-num sq-numeric">{fmt(d.created_at)}</td>
                   <td><a className="sq-link" href={continueHref(d)}>{tr("plan.list.continue", "Continue", "متابعة")}</a></td>
