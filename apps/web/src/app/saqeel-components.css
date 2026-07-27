@@ -150,6 +150,33 @@ textarea.input { height: auto; min-height: 72px; padding-block: var(--space-2); 
 .tag { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding-inline: var(--space-2); border: var(--border-w) solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--surface-secondary); font-size: var(--type-label-size); color: var(--text-secondary); }
 .id-code { font-family: var(--font-mono); font-size: var(--type-mono-size); color: var(--text-secondary); direction: ltr; unicode-bidi: embed; font-variant-numeric: tabular-nums; }
 
+/* The planning register has 23 contract-required columns. Keep values readable
+   at intrinsic width and scroll the bounded region instead of crushing text. */
+.planning-table-wrap { scrollbar-gutter: stable; }
+.planning-visit-table { inline-size: max-content; min-inline-size: 100%; }
+.planning-visit-table th,
+.planning-visit-table td,
+.planning-draft-table th,
+.planning-draft-table td { white-space: nowrap; }
+.planning-visit-table .planning-cell-wrap {
+  min-inline-size: 180px;
+  max-inline-size: 240px;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+.planning-method {
+  color: var(--text-secondary);
+  font-size: var(--type-label-size);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.planning-status {
+  min-inline-size: max-content;
+  block-size: 22px;
+  padding-inline: 9px;
+  border-radius: var(--radius-full);
+}
+
 /* ══ Cards & panels ═══════════════════════════════════════════ */
 .panel { position: relative; background: var(--surface-primary); border: var(--border-w) solid var(--border-subtle); border-radius: var(--radius-md); box-shadow: var(--shadow-card); }
 .panel-header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-block-end: var(--border-w) solid var(--border-subtle); }

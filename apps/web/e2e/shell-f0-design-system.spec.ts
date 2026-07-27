@@ -75,4 +75,15 @@ test.describe("shell-f0 SAQEEL design-system migration", () => {
       expect(focusRule).not.toContain("outline-offset");
     }
   });
+
+  test("planning register preserves readable cells and uses current status badges", () => {
+    const planning = read("src/app/(app)/planning/page.tsx");
+    const components = read("src/app/saqeel-components.css");
+    expect(planning).toContain("sq-table planning-visit-table");
+    expect(planning).toContain("badge planning-status");
+    expect(planning).toContain('className="planning-method"');
+    expect(components).toMatch(/\.planning-visit-table\s*\{[^}]*inline-size:\s*max-content;[^}]*min-inline-size:\s*100%;/s);
+    expect(components).toMatch(/\.planning-visit-table th,[^}]+\{[^}]*white-space:\s*nowrap;/s);
+    expect(components).toMatch(/\.planning-status\s*\{[^}]*border-radius:\s*var\(--radius-full\);/s);
+  });
 });
