@@ -211,6 +211,17 @@ export function DashboardControls({ locale, view, params, from, to, region, quer
       <strong>{copy(locale, "Partial dashboard", "لوحة قيادة جزئية")}</strong>
       <span>{partialSources.join(" · ")}</span>
     </div>}
+    {/* refreshedAt was computed with a deliberate Riyadh formatter, passed in,
+        typed — and never rendered. "As of" is the provenance this reader
+        actually needs, and it is the honest frame for every number below.
+        Riyadh is named because the whole dashboard is scoped to that calendar
+        day, so an unlabelled clock time would be ambiguous. */}
+    <span className={styles.grow} />
+    <p className={styles.scopeLine}>
+      <span className={styles.tlMeta}>
+        {copy(locale, "As of", "حتى")} {refreshedAt} · {copy(locale, "Riyadh", "الرياض")}
+      </span>
+    </p>
   </header>;
 }
 
