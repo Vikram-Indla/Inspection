@@ -34,6 +34,7 @@ export type BellStrings = {
   events: Record<string, string>;          // event_key → label
   channels: Record<string, string>;        // channel → label
   notConfigured: string;    // delivery adapter pending (honest state)
+  contextLabels: { factory: string; reason: string; decision: string };
 };
 
 type Row = {
@@ -209,12 +210,16 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
   if (!authed) return null;
   const unread = Math.max(unreadTotal, rows.filter(isUnread).length);
   // Only a resolved factory/visit name or a semantic string is shown — never
-  // a raw fixture ID (inspection_id/session_id are UUIDs, not context).
-  const detail = (p: Record<string, unknown> | null) => {
+  // a raw fixture ID (inspection_id/session_id are UUIDs, not context). Every
+  // value is paired with which field it is (factory/reason/decision) so it
+  // reads as labelled business data, not an orphaned string.
+  const detail = (p: Record<string, unknown> | null): { label: string; value: string } | null => {
     const visitId = typeof p?.visit_id === "string" ? p.visit_id : null;
-    if (visitId && visitNames[visitId]) return visitNames[visitId];
-    const cand = [p?.factory, p?.reason, p?.decision].find(x => typeof x === "string" && x);
-    return (cand as string | undefined) ?? "";
+    if (visitId && visitNames[visitId]) return { label: strings.contextLabels.factory, value: visitNames[visitId] };
+    if (typeof p?.factory === "string" && p.factory) return { label: strings.contextLabels.factory, value: p.factory };
+    if (typeof p?.reason === "string" && p.reason) return { label: strings.contextLabels.reason, value: p.reason };
+    if (typeof p?.decision === "string" && p.decision) return { label: strings.contextLabels.decision, value: p.decision };
+    return null;
   };
   return (
     <div ref={wrapRef} className="sq-notification">
@@ -239,25 +244,30 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
             const now = new Date();
             const shown = rows.slice(0, MAX_ROWS);
             let lastHeading: string | null = null;
-            return shown.map(r => {
+            return shown.map((r, i) => {
               const heading = dayHeading(r.created_at, strings, locale, now);
               const showHeading = heading !== lastHeading;
               lastHeading = heading;
               const href = notificationHref(r.event_key, r.payload, fieldOnly);
               const unreadRow = isUnread(r);
-              const contextLine = detail(r.payload).slice(0, 80);
+              const context = detail(r.payload);
               const row = (
                 <>
                   {unreadRow && (
                     <span aria-hidden="true"
-                      style={{ inlineSize: 6, blockSize: 6, borderRadius: "50%", background: "var(--action-primary)", flex: "none", marginBlockStart: 6 }} />
+                      style={{ inlineSize: 7, blockSize: 7, borderRadius: "50%", background: "var(--action-primary)", flex: "none", marginBlockStart: 8 }} />
                   )}
-                  <div style={{ minInlineSize: 0 }}>
-                    <strong style={{ fontWeight: unreadRow ? 600 : 500, color: unreadRow ? undefined : "var(--text-muted)" }}>
+                  <div style={{ minInlineSize: 0, display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
+                    <strong className="t-heading" style={{ color: unreadRow ? undefined : "var(--text-muted)" }}>
                       {strings.events[r.event_key] ?? r.event_key.replace(/_/g, " ")}
                       {unreadRow && <span className="sq-sr-only"> — {strings.unreadBadge}</span>}
                     </strong>
-                    {contextLine && <div className="t-caption">{contextLine}</div>}
+                    {context && (
+                      <div className="t-body">
+                        <span className="t-label">{context.label}</span>{" "}
+                        {context.value.slice(0, 80)}
+                      </div>
+                    )}
                     <div className="t-caption">
                       {relativeLabel(r.created_at, strings, locale, now)}
                       {r.channel !== "inapp" && <>{" · "}{strings.channels[r.channel] ?? r.channel}</>}
@@ -269,13 +279,15 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
               return (
                 <div key={r.id}>
                   {showHeading && <div className="menu-label">{heading}</div>}
+                  {!showHeading && i > 0 && <hr className="menu-sep" />}
                   {href ? (
                     <Link className="menu-item" href={href} prefetch={false}
+                      style={{ alignItems: "flex-start", paddingBlock: "var(--space-2)" }}
                       onClick={() => { if (unreadRow) void markRead(r); }}>
                       {row}
                     </Link>
                   ) : (
-                    <div className="menu-item">{row}</div>
+                    <div className="menu-item" style={{ alignItems: "flex-start", paddingBlock: "var(--space-2)" }}>{row}</div>
                   )}
                 </div>
               );

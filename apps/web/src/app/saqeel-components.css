@@ -370,7 +370,7 @@ textarea.input { height: auto; min-height: 72px; padding-block: var(--space-2); 
 
 /* ══ Menus & popovers ═════════════════════════════════════════ */
 .menu { min-width: 180px; background: var(--surface-raised); border: var(--border-w) solid var(--border-subtle); border-radius: var(--radius-md); box-shadow: var(--shadow-md); padding: var(--space-1); z-index: var(--z-popover); }
-.menu-item { display: flex; align-items: center; gap: var(--space-2); width: 100%; padding: 6px var(--space-2); border: 0; background: none; border-radius: var(--radius-xs); font: inherit; font-size: var(--type-compact-size); color: var(--text-primary); cursor: pointer; text-align: start; }
+.menu-item { display: flex; align-items: center; gap: var(--space-2); width: 100%; padding: 6px var(--space-2); border: 0; background: none; border-radius: var(--radius-xs); font: inherit; font-size: var(--type-compact-size); color: var(--text-primary); cursor: pointer; text-align: start; text-decoration: none; }
 .menu-item:hover { background: var(--surface-sunken); }
 .menu-item[aria-checked="true"], .menu-item.is-selected { background: var(--accent-soft); color: var(--accent-text); }
 .menu-item:disabled { color: var(--text-disabled); cursor: not-allowed; }
