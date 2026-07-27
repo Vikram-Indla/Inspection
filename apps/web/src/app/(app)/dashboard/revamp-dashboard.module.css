@@ -3,12 +3,14 @@
 .metricGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .metricCard, .explorer, .trendCard, .aiCard { border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface-primary); box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow-base) 8%, transparent), 0 8px 18px -12px color-mix(in srgb, var(--shadow-base) 22%, transparent); }
 .metricCard { padding: 18px; display: flex; flex-direction: column; gap: 10px; min-inline-size: 0; }
-.question { min-block-size: 32px; font-size: 12px; line-height: 16px; color: var(--text-secondary); }
+.question { font-size: 12px; line-height: 16px; color: var(--text-secondary); }
 .metricCard h3 { margin: 0; font-size: 16px; line-height: 24px; font-weight: 600; }
 .metricValue { font-size: 32px; line-height: 40px; font-weight: 500; color: var(--action-primary-pressed); overflow-wrap: anywhere; }
 .definition, .example, .interpretation { margin: 0; font-size: 13px; line-height: 19px; color: var(--text-secondary); }
-.definition { padding-block-start: 10px; border-block-start: 1px solid var(--border-subtle); }
-.action { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-block-start: auto; padding-block-start: 10px; color: var(--action-primary-pressed); font-size: 14px; line-height: 20px; font-weight: 600; text-decoration: none; }
+.definition { padding: 8px 10px; border-radius: 4px; background: var(--surface-secondary); color: var(--text-primary); }
+.action { display: inline-flex; align-self: flex-start; align-items: center; justify-content: center; min-block-size: 34px; margin-block-start: auto; padding: 6px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-xs); background: var(--surface-primary); color: var(--text-primary); font-size: 13px; line-height: 20px; font-weight: 600; text-decoration: none; }
+.action:hover { border-color: var(--action-primary); color: var(--action-primary-pressed); }
+.action:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .explorer { padding: 18px; display: flex; flex-direction: column; gap: 18px; }
 .sectionHead { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .sectionHead h2, .trendCard h2, .aiCard h2 { margin: 0; font-size: 17px; line-height: 24px; font-weight: 600; }

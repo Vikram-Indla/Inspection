@@ -850,7 +850,7 @@ button.sq-shell-scope { cursor: pointer; }
 [dir="rtl"] .sq-breadcrumb li:not(:last-child)::after { content: "‹"; }
 .sq-breadcrumb { margin: 0; padding: 0; }
 
-.sq-content { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-6); max-inline-size: var(--grid-desktop-max); inline-size: 100%; }
+.sq-content { padding: 19px 20px 40px; display: flex; flex-direction: column; gap: 20px; max-inline-size: var(--grid-desktop-max); inline-size: 100%; }
 .sq-shell em, .sq-content em { font-style: normal; }
 .sq-shell__backdrop { display: none; }
 
@@ -985,7 +985,7 @@ button.sq-shell-scope { cursor: pointer; }
   .sq-pagehead { padding-inline: var(--space-4); }
   .sq-shell-controls { flex-wrap: wrap; }
   .sq-shell-account__identity { display: none; }
-  .sq-content { padding: var(--space-4); }
+  .sq-content { padding: 19px 20px 40px; }
   .admin-hub-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .admin-personal-grid { grid-template-columns: minmax(0, 1fr); }
   .admin-all-tools .admin-tool-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }

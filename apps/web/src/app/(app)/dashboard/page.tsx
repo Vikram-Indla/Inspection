@@ -259,7 +259,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     </section>;
   }
 
-  return <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+  return <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
       {failedSources.length > 0 && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{text("Partial dashboard", "لوحة قيادة جزئية")}</strong> — {text("these sources are temporarily unavailable:", "هذه المصادر غير متاحة مؤقتاً:")} {failedSources.join(" · ")}. {text("Other panels remain usable; refresh to retry.", "تظل اللوحات الأخرى قابلة للاستخدام؛ حدّث الصفحة لإعادة المحاولة.")}</div></div>}
       <DashboardControls locale={locale} view={view} params={currentParams} from={scope.fromDate} to={scope.toDate}
         region={region} query={query} refreshedAt={refreshedAt} partialSources={partialSources} />

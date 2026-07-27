@@ -27,7 +27,7 @@ function MetricCard({ question, title, value, definition, example, interpretatio
       <p className={styles.definition}><b>Definition</b> {definition}</p>
       <p className={styles.example}>{example}</p>
       <p className={styles.interpretation}>{interpretation}</p>
-      <a className={styles.action} href={href}>{action}<span aria-hidden="true">→</span></a>
+      <a className={styles.action} href={href}>{action}</a>
     </article>
   );
 }
