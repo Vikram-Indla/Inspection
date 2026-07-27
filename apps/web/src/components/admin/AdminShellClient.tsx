@@ -139,7 +139,7 @@ export default function AdminShellClient({
       aria-busy={pendingHref ? "true" : undefined} onClickCapture={handleNavigationCapture}>
       {pendingHref ? (
         <div className={styles.routeProgress} role="status">
-          <span className="ax-sr-only">{locale === "ar" ? "جارٍ تحميل الوجهة…" : "Loading destination…"}</span>
+          <span className="sq-sr-only">{locale === "ar" ? "جارٍ تحميل الوجهة…" : "Loading destination…"}</span>
         </div>
       ) : null}
       <a className={styles.skip} href="#main-content">{labels.navigation}</a>
