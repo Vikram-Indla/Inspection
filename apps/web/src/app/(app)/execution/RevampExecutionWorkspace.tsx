@@ -4,6 +4,8 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent, type RefObject } from "react";
 import type { GeoMarkerData } from "@/components/GeoMap";
 import type { Locale } from "@/lib/i18n";
+import { loadExecutionVisitDetail } from "./actions";
+import type { ExecutionVisitDetailRead } from "./read-model";
 
 const GeoMap = dynamic(() => import("@/components/GeoMap"), { ssr: false });
 
@@ -119,15 +121,27 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
   const [filters, setFilters] = useState<Partial<Record<FilterKey, string>>>({});
   const [reschedule, setReschedule] = useState<{ row: ExecutionRow; date: string } | null>(null);
   const [selected, setSelected] = useState<ExecutionRow | null>(null);
+  const [selectedDetail, setSelectedDetail] = useState<ExecutionVisitDetailRead | null>(null);
   const detailDialogRef = useRef<HTMLDivElement>(null);
   const rescheduleDialogRef = useRef<HTMLDivElement>(null);
   const detailCloseRef = useRef<HTMLButtonElement>(null);
   const rescheduleCloseRef = useRef<HTMLButtonElement>(null);
+  const selectedRequestRef = useRef(0);
   const weekStart = useMemo(() => startOfWeek(new Date()), []);
   const closeSelected = useCallback(() => setSelected(null), []);
   const closeReschedule = useCallback(() => setReschedule(null), []);
   useDialogFocus(!!selected, detailDialogRef, detailCloseRef, closeSelected);
   useDialogFocus(!!reschedule, rescheduleDialogRef, rescheduleCloseRef, closeReschedule);
+  const openSelected = (row: ExecutionRow) => {
+    const request = ++selectedRequestRef.current;
+    setSelected(row);
+    setSelectedDetail(null);
+    void loadExecutionVisitDetail(row.id).then(detail => {
+      if (selectedRequestRef.current !== request) return;
+      setSelected(current => current?.id === row.id && detail.status === "ok" ? detail.visit : current);
+      setSelectedDetail(detail);
+    });
+  };
   const calendarDays = useMemo(() => Array.from({ length: calendarMode === "week" ? 7 : 35 }, (_, index) => {
     const date = new Date(weekStart);
     date.setDate(weekStart.getDate() + index);
@@ -219,7 +233,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
             return (
               <article key={key} onDragOver={event => event.preventDefault()} onDrop={event => onDropDay(event, key)}>
                 <header><span>{formatShort(locale, day)}</span><span>{dayRows.length ? copy(locale, `${dayRows.length} visit${dayRows.length === 1 ? "" : "s"}`, `${dayRows.length} زيارة`) : ""}</span></header>
-                {dayRows.slice(0, 4).map(row => <a href={row.inspectorId === currentUserId ? `/field/${row.id}` : `/visits/${row.id}`} onClick={event => { event.preventDefault(); setSelected(row); }} key={row.id} data-risk={row.risk ?? ""} draggable onDragStart={event => event.dataTransfer.setData("text/visit-id", row.id)}>{row.factory}</a>)}
+                {dayRows.slice(0, 4).map(row => <a href={row.inspectorId === currentUserId ? `/field/${row.id}` : `/visits/${row.id}`} onClick={event => { event.preventDefault(); openSelected(row); }} key={row.id} data-risk={row.risk ?? ""} draggable onDragStart={event => event.dataTransfer.setData("text/visit-id", row.id)}>{row.factory}</a>)}
               </article>
             );
           })}
@@ -263,7 +277,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
             selectedId={selected?.id}
             onMarkerClick={id => {
               const row = visibleRows.find(candidate => candidate.id === id);
-              if (row) setSelected(row);
+              if (row) openSelected(row);
             }}
             fitMarkers
             height="100%"
@@ -295,7 +309,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
                 <td data-label={copy(locale, "Operational state", "الحالة التشغيلية")}><span>{titleCase(locale, row.operationalState)}</span></td>
                 {view === "mine" && <><td data-label={copy(locale, "Preparation", "التحضير")}>{titleCase(locale, row.planningStatus)}</td><td data-label={copy(locale, "Report type", "نوع التقرير")}>{row.reportType ?? copy(locale, "Not configured", "غير مهيأ")}</td></>}
                 {view === "all" && <td data-label={copy(locale, "Location data", "بيانات الموقع")}>{row.lat != null ? copy(locale, "Official factory coordinates recorded", "إحداثيات المصنع الرسمية مسجلة") : copy(locale, "No official coordinates", "لا توجد إحداثيات رسمية")}</td>}
-                <td data-label={copy(locale, "Action", "الإجراء")}><a href={row.inspectorId === currentUserId ? `/field/${row.id}` : `/visits/${row.id}`} onClick={event => { event.preventDefault(); setSelected(row); }}>{copy(locale, "View", "عرض")}</a></td>
+                <td data-label={copy(locale, "Action", "الإجراء")}><a href={row.inspectorId === currentUserId ? `/field/${row.id}` : `/visits/${row.id}`} onClick={event => { event.preventDefault(); openSelected(row); }}>{copy(locale, "View", "عرض")}</a></td>
               </tr>
             ))}</tbody>
           </table>
@@ -310,6 +324,13 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
           <p className="sq-overline">{copy(locale, "Execution visit", "زيارة التنفيذ")}</p>
           <h2 id="execution-detail-title">{selected.factory}</h2>
           <p>{selected.visitReference} · <span>{titleCase(locale, selected.operationalState)}</span></p>
+          {selectedDetail === null ? (
+            <div className="sq-banner" role="status">{copy(locale, "Refreshing governed visit details…", "جارٍ تحديث تفاصيل الزيارة المعتمدة…")}</div>
+          ) : selectedDetail.status === "not_found_or_denied" ? (
+            <div className="sq-banner sq-banner--critical" role="alert">{copy(locale, "The current detail is no longer available in your scope.", "لم تعد التفاصيل الحالية متاحة ضمن نطاق صلاحياتك.")}</div>
+          ) : selectedDetail.status === "invalid" ? (
+            <div className="sq-banner sq-banner--critical" role="alert">{copy(locale, "The governed detail response could not be verified. The list snapshot remains read-only.", "تعذّر التحقق من استجابة التفاصيل المعتمدة. تظل لقطة القائمة للقراءة فقط.")}</div>
+          ) : null}
           <div className="sq-banner" role="status">
             <strong>{copy(locale, "Governed planning window:", "نافذة التخطيط المعتمدة:")}</strong>{" "}
             {formatDate(locale, selected.windowStart)} – {formatDate(locale, selected.windowEnd)}.{" "}
@@ -325,6 +346,11 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
             <div><dt>{copy(locale, "Risk / priority", "المخاطر / الأولوية")}</dt><dd>{titleCase(locale, selected.risk)} · {titleCase(locale, selected.priority)}</dd></div>
             <div><dt>{copy(locale, "Preparation", "التحضير")}</dt><dd>{titleCase(locale, selected.planningStatus)}</dd></div>
             <div><dt>{copy(locale, "Report package", "حزمة التقرير")}</dt><dd>{[selected.packageCode, selected.reportType, selected.packageVersion].filter(Boolean).join(" · ") || copy(locale, "Not configured", "غير مهيأ")}</dd></div>
+            {selectedDetail?.status === "ok" ? <>
+              <div><dt>{copy(locale, "Planning version", "إصدار التخطيط")}</dt><dd>{selectedDetail.visit.planningVersion ?? copy(locale, "Unavailable", "غير متاح")}</dd></div>
+              <div><dt>{copy(locale, "Package state", "حالة الحزمة")}</dt><dd>{titleCase(locale, selectedDetail.visit.packageStatus)}</dd></div>
+              <div><dt>{copy(locale, "Planning note", "ملاحظة التخطيط")}</dt><dd>{selectedDetail.visit.notes ?? copy(locale, "No note recorded", "لا توجد ملاحظة مسجلة")}</dd></div>
+            </> : null}
             <div><dt>{copy(locale, "Location data", "بيانات الموقع")}</dt><dd>{selected.lat != null && selected.lng != null ? copy(locale, "Official factory coordinates recorded", "إحداثيات المصنع الرسمية مسجلة") : copy(locale, "No governed official coordinates", "لا توجد إحداثيات رسمية معتمدة")}</dd></div>
             <div><dt>{copy(locale, "Journey / tracking record", "سجل الرحلة / التتبع")}</dt><dd>{selected.journeyStatus
               ? `${titleCase(locale, selected.journeyStatus)} · ${formatDateTime(locale, selected.journeyStartedAt)}${selected.journeyEndedAt ? ` – ${formatDateTime(locale, selected.journeyEndedAt)}` : ""}`

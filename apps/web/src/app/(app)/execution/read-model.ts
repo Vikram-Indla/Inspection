@@ -11,6 +11,17 @@ export type ExecutionWorkspaceRead = {
   omittedRows: number;
 };
 
+export type ExecutionVisitDetail = ExecutionRow & {
+  notes: string | null;
+  planningVersion: number | null;
+  packageStatus: string | null;
+};
+
+export type ExecutionVisitDetailRead =
+  | { status: "ok"; visit: ExecutionVisitDetail }
+  | { status: "not_found_or_denied" }
+  | { status: "invalid" };
+
 const record = (value: unknown): JsonRecord | null =>
   value !== null && typeof value === "object" && !Array.isArray(value)
     ? value as JsonRecord
@@ -105,5 +116,30 @@ export const parseExecutionWorkspaceRead = (
     visibleCount,
     bounded,
     omittedRows,
+  };
+};
+
+export const parseExecutionVisitDetailRead = (
+  value: unknown,
+  locale: Locale,
+): ExecutionVisitDetailRead => {
+  const payload = record(value);
+  if (payload?.status === "not_found_or_denied") return { status: "not_found_or_denied" };
+  if (payload?.status !== "ok") return { status: "invalid" };
+  const visitPayload = record(payload.visit);
+  const visit = parseRow(visitPayload, locale);
+  if (!visit || !visitPayload) return { status: "invalid" };
+  const packageVersion = record(visitPayload.package);
+  const planningVersion = visitPayload.planning_version;
+  return {
+    status: "ok",
+    visit: {
+      ...visit,
+      notes: nullableText(visitPayload.notes),
+      planningVersion: typeof planningVersion === "number" && Number.isInteger(planningVersion)
+        ? planningVersion
+        : null,
+      packageStatus: nullableText(packageVersion?.status),
+    },
   };
 };
