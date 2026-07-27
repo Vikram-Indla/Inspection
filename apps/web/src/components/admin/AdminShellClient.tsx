@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
 import ShellNavIcon from "@/components/ShellNavIcon";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -69,6 +69,7 @@ export default function AdminShellClient({
   const [compact, setCompact] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
   const paletteInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -92,6 +93,16 @@ export default function AdminShellClient({
     if (paletteOpen) requestAnimationFrame(() => paletteInput.current?.focus());
   }, [paletteOpen]);
 
+  useEffect(() => {
+    setPendingHref(null);
+  }, [current]);
+
+  useEffect(() => {
+    if (!pendingHref) return;
+    const timer = window.setTimeout(() => setPendingHref(null), 10_000);
+    return () => window.clearTimeout(timer);
+  }, [pendingHref]);
+
   const visibleItems = useMemo(() => items.filter(item => item.enabled), [items]);
   const hubs = useMemo(() => Object.entries(HUB_ITEMS).map(([id, ids]) => ({
     id,
@@ -110,8 +121,27 @@ export default function AdminShellClient({
     try { localStorage.setItem("saqeel-admin-rail-compact", value ? "1" : "0"); } catch {}
   }
 
+  function handleNavigationCapture(event: ReactMouseEvent<HTMLDivElement>) {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const anchor = (event.target as Element).closest<HTMLAnchorElement>("a[href]");
+    if (!anchor || anchor.target || anchor.download) return;
+    const url = new URL(anchor.href, window.location.href);
+    if (
+      url.origin !== window.location.origin
+      || url.pathname === "/signout"
+      || (url.pathname === window.location.pathname && url.search === window.location.search && url.hash === window.location.hash)
+    ) return;
+    setPendingHref(`${url.pathname}${url.search}${url.hash}`);
+  }
+
   return (
-    <div className={`${styles.shell}${compact ? ` ${styles.compact}` : ""}`} lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
+    <div className={`${styles.shell}${compact ? ` ${styles.compact}` : ""}`} lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}
+      aria-busy={pendingHref ? "true" : undefined} onClickCapture={handleNavigationCapture}>
+      {pendingHref ? (
+        <div className={styles.routeProgress} role="status">
+          <span className="ax-sr-only">{locale === "ar" ? "جارٍ تحميل الوجهة…" : "Loading destination…"}</span>
+        </div>
+      ) : null}
       <a className={styles.skip} href="#main-content">{labels.navigation}</a>
       <aside className={styles.rail} aria-label={labels.navigation}>
         <div className={styles.brand}>
@@ -128,7 +158,7 @@ export default function AdminShellClient({
           {hubs.map(hub => {
             const active = activeHub?.id === hub.id;
             return (
-              <Link key={hub.id} href={hub.items[0].href} className={`${styles.hub}${active ? ` ${styles.active}` : ""}`} aria-label={locale === "ar" ? hub.ar : hub.en} aria-current={active ? "true" : undefined} prefetch={false}>
+              <Link key={hub.id} href={hub.items[0].href} className={`${styles.hub}${active ? ` ${styles.active}` : ""}`} aria-label={locale === "ar" ? hub.ar : hub.en} aria-current={active ? "true" : undefined}>
                 <span className={styles.hubIcon} aria-hidden="true"><ShellNavIcon name={hub.icon} /></span>
                 <span className={styles.hubLabel}>{locale === "ar" ? hub.ar : hub.en}</span>
               </Link>
@@ -169,7 +199,7 @@ export default function AdminShellClient({
             <div className={styles.subnavList}>
               {activeHub.items.map(item => {
                 const active = isShellRouteCurrent(current, item.href);
-                return <Link key={item.id} href={item.href} className={`${styles.subnavItem}${active ? ` ${styles.subnavActive}` : ""}`} aria-current={active ? "page" : undefined} prefetch={false}>{item.label}</Link>;
+                return <Link key={item.id} href={item.href} className={`${styles.subnavItem}${active ? ` ${styles.subnavActive}` : ""}`} aria-current={active ? "page" : undefined}>{item.label}</Link>;
               })}
             </div>
           </nav>
