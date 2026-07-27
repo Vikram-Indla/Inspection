@@ -83,9 +83,9 @@ export default function Attachments({ visitId, rows, strings }: {
       )}
       <form action={upAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--space-3)" }}>
         <input type="hidden" name="visit_id" value={visitId} />
-        <div className="sq-field" style={{ maxInlineSize: 340 }}>
+        <div className="field" style={{ maxInlineSize: 340 }}>
           <label className="sq-field__label" htmlFor="visit-attachment-file">{strings.fileLabel}</label>
-          <input className="sq-input" type="file" name="file" id="visit-attachment-file" required />
+          <input className="input" type="file" name="file" id="visit-attachment-file" required />
         </div>
         <button className="btn btn-secondary btn-touch" disabled={upPending}>{upPending ? strings.uploading : strings.uploadBtn}</button>
       </form>

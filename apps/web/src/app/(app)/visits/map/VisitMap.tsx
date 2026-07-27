@@ -52,8 +52,8 @@ export default function VisitMap({ visits, strings: s = DEFAULT_STRINGS, locale 
   return (
     <div className="stack" style={{ gap: "var(--space-4)" }}>
       <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-        <label className="sq-field" style={{ minInlineSize: 260 }}><span className="sq-field__label">{s.region}</span>
-          <select className="sq-select" value={region} onChange={e => { setRegion(e.target.value); setSelectedId(null); }}>
+        <label className="field" style={{ minInlineSize: 260 }}><span className="sq-field__label">{s.region}</span>
+          <select className="select" value={region} onChange={e => { setRegion(e.target.value); setSelectedId(null); }}>
             <option value="">{s.allRegions}</option>
             {regions.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
