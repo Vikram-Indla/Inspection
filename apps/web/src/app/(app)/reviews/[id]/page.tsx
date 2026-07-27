@@ -6,6 +6,7 @@ import { useT } from "@/lib/i18n";
 import { formatDate, formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
 import DecisionPanel, { type WorkspaceDecisionStrings } from "./DecisionPanel";
+import RecordTabs, { type RecordTabDef } from "./RecordTabs";
 import StartReview, { type StartReviewStrings } from "./StartReview";
 import VersionCompare, { type VersionCompareStrings, type ItemSection } from "./VersionCompare";
 import FindingTraceChain, { type FindingTrace, type TraceNode } from "./FindingTraceChain";
@@ -13,10 +14,20 @@ import { fetchFactoryChecks, updatedCount, FACTORY_FIELD_EN } from "@/lib/factor
 import { IconBlocked, IconPaperclip } from "@/app/icons";
 import responsive from "../responsive.module.css";
 
-export default async function ReviewWorkspace({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;  // inspection id
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+export default async function ReviewWorkspace({ params, searchParams }: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ decision?: string; correlation?: string; comment?: string; handoff?: string }>;
+}) {
+  const [{ id }, receipt] = await Promise.all([params, searchParams]);  // inspection id
+  const receiptDecision = ["approve", "return", "reject"].includes(receipt.decision ?? "") ? receipt.decision : null;
+  const receiptCorrelation = receipt.correlation && UUID.test(receipt.correlation) ? receipt.correlation : null;
+  const receiptComment = receipt.comment && UUID.test(receipt.comment) ? receipt.comment : null;
+  const receiptHandoff = receipt.handoff && UUID.test(receipt.handoff) ? receipt.handoff : null;
   const { t, locale } = await useT();
   const lang = locale === "ar" ? "ar" : "en";
+  const tx = (key: string, en: string, ar: string) => t(key, lang === "ar" ? ar : en);
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError) {
@@ -67,7 +78,7 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
     );
   }
   const { data: ins, error: insErr } = await sb.from("inspections")
-    .select(`id, status, visits(factories(name, factory_code)), package_versions(version_label, definition),
+    .select(`id, status, visits(factories(id, name, factory_code)), package_versions(version_label, definition),
       submission_versions(id, version_number, snapshot, acknowledgement, submitted_at),
       checklist_responses(id, item_id, response),
       findings(id, item_id, severity, description),
@@ -88,20 +99,22 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
       </Shell>
     );
   }
-  const subs = (ins.submission_versions as unknown as { id: string; version_number: number; snapshot: { answers?: Record<string, string> }; acknowledgement: unknown; submitted_at: string }[]).sort((a, b) => b.version_number - a.version_number);
+  type SnapshotItem = { id?: string; sha256?: string; [key: string]: unknown };
+  type ReviewSnapshot = {
+    answers?: Record<string, string>;
+    evidence?: { manifest?: SnapshotItem[] };
+    action_forms?: SnapshotItem[];
+  };
+  const subs = (ins.submission_versions as unknown as { id: string; version_number: number; snapshot: ReviewSnapshot; acknowledgement: unknown; submitted_at: string }[]).sort((a, b) => b.version_number - a.version_number);
   const latest = subs[0];
   const reviews = ins.reviews as unknown as { id: string; status: string; decision: string | null; decision_reason: string | null; returned_sections: string[] | null; decided_at: string | null; submission_version_id: string }[];
   const timelineIds = [ins.id, ...subs.map(s => s.id), ...reviews.map(r => r.id)];
   // These reads are independent once the inspection aggregate is known. Run
   // them together so the route remains responsive under live-provider latency.
-  const [{ data: itemRows }, fv, { data: trail }] = await Promise.all([
+  const [{ data: itemRows }, fv, { data: trail, error: timelineError }] = await Promise.all([
     sb.from("inspection_items").select("id, code, title, regulation_clauses(clause_ref, legal_source)"),
     fetchFactoryChecks(sb, ins.id),
-    sb.from("audit_events")
-      .select("id, action, object_type, occurred_at, actor")
-      .in("object_id", timelineIds)
-      .order("occurred_at", { ascending: false })
-      .limit(25),
+    sb.rpc("review_timeline", { p_inspection_id: ins.id }),
   ]);
   // CD-028 leg 5 — opening is read-only. The review is NOT created and the
   // inspection is NOT transitioned as a side-effect of this render; that now
@@ -109,7 +122,7 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
   const open = reviews.find(r => { return r.submission_version_id === latest?.id && !r.decided_at; });
   const canStart = !open && !!latest && ins.status === "submitted";
   const sections = (ins.package_versions as unknown as { definition: { sections: { key: string; title: string; items?: string[] }[] } }).definition.sections.filter(s => { return !!s.items?.length; });
-  const f = (ins.visits as unknown as { factories: { name: string; factory_code: string } }).factories;
+  const f = (ins.visits as unknown as { factories: { id: string; name: string; factory_code: string } }).factories;
   // CD-030 / SCR-WEB-320 (M06-023/046/053) — version-compare data. itemSection maps each answer key
   // (item code, e.g. "FS-101") to its owning section (M06-040..048). returnedScope
   // is the STORED scope of the last decided return (reviews.returned_sections holds
@@ -189,7 +202,12 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
         : unavailable("Review decision record", "Decision comment pending"),
     };
   });
-  const compareVersions = subs.map(s => { return { n: s.version_number, answers: (s.snapshot?.answers ?? {}) as Record<string, string> }; });
+  const compareVersions = subs.map(s => ({
+    n: s.version_number,
+    answers: (s.snapshot?.answers ?? {}) as Record<string, string>,
+    evidence: Array.isArray(s.snapshot?.evidence?.manifest) ? s.snapshot.evidence.manifest : null,
+    actionForms: Array.isArray(s.snapshot?.action_forms) ? s.snapshot.action_forms : null,
+  }));
   const enumLabels: Record<string, string> = {};
   Array.from(new Set(compareVersions.flatMap(v => { return Object.values(v.answers); }))).forEach(v => { enumLabels[v] = t(`enum.${v}`, String(v).replace(/_/g, " ")); });
   const compareStrings: VersionCompareStrings = {
@@ -217,6 +235,13 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
     unavailPackage: t("review.cmp.unavailPackage", "Package-semantic comparison — answer meaning across package versions is not reconciled."),
     unavailMetadata: t("review.cmp.unavailMetadata", "Metadata / section-order comparison — not diffed."),
     unavailNote: t("review.cmp.unavailNote", "These are honestly unavailable (HANDOFF_BLOCKED_MEDIADIFF/_PKGSEMANTIC/_METADIFF), not equal."),
+    collectionHeading: tx("review.cmp.collectionHeading", "Immutable collection comparison", "مقارنة المجموعات غير القابلة للتعديل"),
+    evidenceCollection: tx("review.cmp.evidenceCollection", "Evidence manifest (ID + SHA metadata)", "بيان الأدلة (المعرّف وبصمة SHA)"),
+    actionCollection: tx("review.cmp.actionCollection", "Action forms", "نماذج الإجراءات"),
+    added: tx("review.cmp.added", "added", "مضاف"),
+    removed: tx("review.cmp.removed", "removed", "محذوف"),
+    changed: tx("review.cmp.changed", "changed", "متغير"),
+    collectionUnavailable: tx("review.cmp.collectionUnavailable", "Unavailable in one or both immutable snapshots — not treated as unchanged.", "غير متاح في إحدى اللقطتين غير القابلتين للتعديل أو كلتيهما — ولا يُعامل كأنه لم يتغير."),
     staleTitle: t("review.cmp.staleTitle", "A newer version was submitted."),
     staleBody: t("review.cmp.staleBody", "Version v{n} arrived while you had this open — refresh before relying on this comparison."),
     staleRefresh: t("review.cmp.staleRefresh", "Refresh"),
@@ -238,6 +263,8 @@ const panelStrings: WorkspaceDecisionStrings = {
     returnScopeHint: t("review.ws.returnScopeHint", "Only selected sections unlock; the rest stays locked."),
     reason: t("review.ws.reason", "Reason"),
     reasonPlaceholder: t("review.ws.reasonPlaceholder", "mandatory for return/reject — recorded immutably"),
+    comment: tx("review.ws.comment", "Reviewer comment (immutable once recorded)", "تعليق المراجع (غير قابل للتعديل بعد التسجيل)"),
+    commentPlaceholder: tx("review.ws.commentPlaceholder", "Optional comment stored as a distinct immutable record", "تعليق اختياري يُحفظ كسجل مستقل غير قابل للتعديل"),
     approveWarnTitle: t("review.ws.approveWarnTitle", "Irreversible:"),
     approveWarnBody: t("review.ws.approveWarnBody", "locks the version, triggers compliance chain."),
     rejectWarnTitle: t("review.ws.rejectWarnTitle", "Final:"),
@@ -245,6 +272,20 @@ const panelStrings: WorkspaceDecisionStrings = {
     confirm: t("review.ws.confirm", "Confirm {decision}"),
     recording: t("review.ws.recording", "Recording…"),
     audited: t("review.ws.audited", "Audited: reviewer, reason, sections, prior/new status, version, timestamp."),
+    reviewConfirmation: tx("review.ws.reviewConfirmation", "Review decision before recording", "مراجعة القرار قبل تسجيله"),
+    continueToConfirmation: tx("review.ws.continueToConfirmation", "Review confirmation", "مراجعة التأكيد"),
+    back: tx("review.ws.back", "Back", "رجوع"),
+    summary: tx("review.ws.summary", "Inspection summary", "ملخص التفتيش"),
+    version: tx("review.ws.version", "Version", "الإصدار"),
+    violations: tx("review.ws.violations", "Violations", "المخالفات"),
+    criticalViolations: tx("review.ws.criticalViolations", "Critical violations", "المخالفات الحرجة"),
+    actionForms: tx("review.ws.actionForms", "Action forms", "نماذج الإجراءات"),
+    evidence: tx("review.ws.evidence", "Evidence records", "سجلات الأدلة"),
+    factoryUpdates: tx("review.ws.factoryUpdates", "Factory updates", "تحديثات بيانات المصنع"),
+    compliancePreview: tx("review.ws.compliancePreview", "Compliance consequence preview:", "معاينة آثار الامتثال:"),
+    approveCompliance: tx("review.ws.approveCompliance", "Approval permanently locks this version and hands the approved inspection to the configured compliance chain. Penalty and document values are not invented here.", "تعتمد الموافقة هذا الإصدار نهائياً وتحيل التفتيش المعتمد إلى مسار الامتثال المهيأ. لا تُفترض هنا أي قيم للغرامات أو المستندات."),
+    returnImpact: tx("review.ws.returnImpact", "Return preserves this submitted version and unlocks only the selected sections for the assigned inspector.", "يحفظ الإرجاع هذا الإصدار المقدم ويفتح فقط الأقسام المحددة للمفتش المعيّن."),
+    rejectImpact: tx("review.ws.rejectImpact", "Reject is final, keeps the inspection read-only, and does not start Compliance Management. A new inspection requires a new visit.", "الرفض نهائي، ويُبقي التفتيش للقراءة فقط، ولا يبدأ إدارة الامتثال. يتطلب التفتيش الجديد إنشاء زيارة جديدة."),
   };
   const startStrings: StartReviewStrings = {
     title: t("review.ws.startTitle", "Start Level 2 review"),
@@ -265,16 +306,42 @@ const panelStrings: WorkspaceDecisionStrings = {
     decision: t("review.ws.trace.decision", "Decision comment"),
     unavailable: t("review.ws.trace.unavailable", "Unavailable"),
   };
+  // CLASS-CONTRACT.md § Review & Approval — div.tabs > button.tab(.is-active) >
+  // span.tab-count, 7 total. Tabs are the record's existing content regions;
+  // no new content is introduced here, only the switcher.
+  const decidedCount = reviews.filter(r => !!r.decided_at).length;
+  const recordTabs: RecordTabDef[] = [
+    { key: "checklist", label: t("review.ws.checklist", "Checklist — v{n}").replace("{n}", String(latest?.version_number)), count: answerEntries.length },
+    { key: "evidence", label: t("review.ws.evidenceHeading", "Violations · actions · evidence (read-only)"), count: violations.length },
+    { key: "factory", label: t("review.ws.fvHeading", "Factory data verification (Senaei source vs observed)"), count: fv.checks.length },
+    { key: "ack", label: t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)"), count: latest?.acknowledgement != null ? 1 : 0 },
+    { key: "compare", label: t("review.cmp.heading", "Version comparison — Tamper-evident Scope Rail"), count: compareVersions.length },
+    { key: "timeline", label: tx("review.ws.timelineHeading", "Canonical review timeline", "الخط الزمني المعتمد للمراجعة"), count: (trail ?? []).length },
+    { key: "prior", label: t("review.ws.priorDecision", "Prior decision:"), count: decidedCount },
+  ];
   return (
     <Shell current="/reviews" title={t("review.ws.title", "Review — {factory}").replace("{factory}", f.name)}
-      context={<><span className="sq-version">v{latest?.version_number} · {t("review.ws.latest", "latest")}</span><span className="sq-lozenge sq-lozenge--review sq-lozenge--info">{t(`enum.${ins.status}`, ins.status.replace(/_/g, " "))}</span>{!canDecide && <span className="sq-lozenge sq-lozenge--warning">{t("review.ws.readOnlyRole", "{role} · read-only").replace("{role}", viewerRole ? t(`enum.${viewerRole}`, viewerRole) : "—")}</span>}<a className="sq-btn sq-btn--secondary" href={`/reports/inspection/${ins.id}`}>{t("review.ws.reportLink", "Official report")}</a></>}>
+      context={<><span className="sq-version">v{latest?.version_number} · {t("review.ws.latest", "latest")}</span><span className="sq-lozenge sq-lozenge--review sq-lozenge--info">{t(`enum.${ins.status}`, ins.status.replace(/_/g, " "))}</span>{!canDecide && <span className="sq-lozenge sq-lozenge--warning">{t("review.ws.readOnlyRole", "{role} · read-only").replace("{role}", viewerRole ? t(`enum.${viewerRole}`, viewerRole) : "—")}</span>}<a className="btn btn-secondary btn-sm" href={`/factories/${f.id}`}>{t("review.ws.openFactory360", "Open Factory 360")}</a><a className="btn btn-secondary btn-sm" href={`/reports/inspection/${ins.id}`}>{t("review.ws.reportLink", "Inspection report PDF")}</a></>}>
       <div className={responsive.reviewRoot} data-saqeel-migration="review-approvals" data-saqeel-screen="SCR-WEB-310">
       <h1 className={responsive.semanticTitle}>{t("review.ws.title", "Review — {factory}").replace("{factory}", f.name)}</h1>
+      {receiptCorrelation && receiptDecision && (
+        <div className="sq-banner sq-banner--success" role="status">
+          <div>
+            <strong>{tx("review.ws.decisionRecorded", "Decision recorded atomically.", "تم تسجيل القرار كوحدة ذرية واحدة.")}</strong>{" "}
+            {t(`enum.${receiptDecision}`, receiptDecision)}
+            {" · "}{tx("review.ws.correlation", "correlation", "معرّف الارتباط")} <bdi className="sq-numeric">{receiptCorrelation}</bdi>
+            {receiptComment && <>{" · "}{tx("review.ws.commentRecord", "comment", "التعليق")} <bdi className="sq-numeric">{receiptComment}</bdi></>}
+            {receiptHandoff && <>{" · "}{tx("review.ws.handoffRecord", "Compliance handoff", "إحالة الامتثال")} <bdi className="sq-numeric">{receiptHandoff}</bdi></>}
+            {!receiptHandoff && receiptDecision === "approve" && <>{" · "}{tx("review.ws.handoffUnavailable", "Compliance handoff ID unavailable — do not claim handoff completion.", "معرّف إحالة الامتثال غير متاح — لا يمكن اعتبار الإحالة مكتملة.")}</>}
+          </div>
+        </div>
+      )}
       <div className="sq-banner sq-banner--immutable"><div><strong>{t("review.ws.readOnlyTitle", "Read-only submitted version.")}</strong> {t("review.ws.readOnlyBody", "Content edits are impossible — the database rejects them (proven B3). Corrections happen only via Return with exact scope.")}</div></div>
       <FindingTraceChain traces={traceRows} strings={traceStrings} />
       <div className="cd-review-workspace-grid">
         <div className="sq-stack">
-          <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
+        <RecordTabs tabs={recordTabs} panels={[
+          <div className="sq-surface" style={{ padding: "var(--space-6)" }} key="checklist">
             <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.checklist", "Checklist — v{n}").replace("{n}", String(latest?.version_number))}</h2>
             <div className="sq-tablewrap"><table className="sq-table">
               <thead><tr><th scope="col">{t("review.ws.colItem", "Item")}</th><th scope="col">{t("review.ws.colResponse", "Response")}</th></tr></thead>
@@ -282,8 +349,8 @@ const panelStrings: WorkspaceDecisionStrings = {
                 <tr key={k}><td><strong>{k}</strong></td><td><span className={`sq-lozenge ${v === "non_compliant" ? "sq-lozenge--critical" : "sq-lozenge--success"}`}>{t(`enum.${v}`, String(v).replace(/_/g, " "))}</span></td></tr>
               ))}</tbody>
             </table></div>
-          </div>
-          <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
+          </div>,
+          <div className="sq-surface" style={{ padding: "var(--space-6)" }} key="evidence">
             <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.evidenceHeading", "Violations · actions · evidence (read-only)")}</h2>
             {(ins.violations as unknown as { violation_codes: { code: string; title: string; level: string }; mapping_version: string }[]).map((v, i) => (
               <p key={i}><span className="sq-lozenge sq-lozenge--critical">{v.violation_codes.code} · {t(`enum.${v.violation_codes.level}`, v.violation_codes.level)}</span> {v.violation_codes.title} <span className="sq-version">{t("review.ws.mapping", "mapping")} {v.mapping_version}</span></p>
@@ -291,12 +358,28 @@ const panelStrings: WorkspaceDecisionStrings = {
             {(ins.action_forms as unknown as { owner_name: string; due_at: string; status: string; required_correction: string }[]).map((a, i) => (
               <p key={i} className="sq-caption" style={{ marginBlockStart: 8 }}>{t("review.ws.actionPrefix", "action:")} {a.required_correction} — {a.owner_name}, {t("review.ws.due", "due")} {formatDate(a.due_at, lang)} · {t(`enum.${a.status}`, a.status.replace(/_/g, " "))}</p>
             ))}
-            {(ins.evidence as unknown as { storage_path: string; content_sha256: string | null }[]).map((e, i) => (
-              <p key={i} className="sq-caption sq-numeric" style={{ marginBlockStart: 8 }}><IconPaperclip size={16} /> {e.storage_path} · sha256 {e.content_sha256?.slice(0, 12)}…</p>
-            ))}
-          </div>
-          {/* M04-190 / M06-017 / M06-034 — factory data verification: Source vs Observed, before/after, updated highlighting */}
-          <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
+            {evidenceRows.length === 0 ? (
+              <div className="sq-banner" role="status"><div>{tx("review.ws.evidenceEmpty", "No evidence records are attached to this submitted inspection.", "لا توجد سجلات أدلة مرفقة بهذا التفتيش المقدم.")}</div></div>
+            ) : (
+              <div className="sq-tablewrap"><table className="sq-table">
+                <thead><tr>
+                  <th scope="col">{tx("review.ws.evidenceSource", "Source", "المصدر")}</th>
+                  <th scope="col">{tx("review.ws.evidenceType", "Type", "النوع")}</th>
+                  <th scope="col">{tx("review.ws.evidenceReference", "Immutable reference", "المرجع غير القابل للتعديل")}</th>
+                </tr></thead>
+                <tbody>{evidenceRows.map((e, index) => (
+                  <tr key={`${e.storage_path}:${index}`}>
+                    <td>{t(`enum.evidence.linked.${e.linked_type}`, e.linked_type.replace(/_/g, " "))} · <bdi className="sq-numeric">{e.linked_id}</bdi></td>
+                    <td>{t(`enum.evidence.${e.evidence_type}`, e.evidence_type.replace(/_/g, " "))}</td>
+                    <td className="sq-numeric"><IconPaperclip size={16} /> <bdi>{e.storage_path}</bdi><br />sha256 {e.content_sha256 ?? tx("review.ws.hashUnavailable", "unavailable", "غير متاحة")}</td>
+                  </tr>
+                ))}</tbody>
+              </table></div>
+            )}
+            <p className="sq-caption">{tx("review.ws.mediaPreviewUnavailable", "Media bytes cannot be previewed because no authorized signed-URL contract is available on this route. Metadata remains read-only; the UI does not expose or guess a public URL.", "لا يمكن معاينة محتوى الوسائط لعدم توفر عقد معتمد لرابط موقّع في هذا المسار. تبقى البيانات الوصفية للقراءة فقط، ولا تعرض الواجهة رابطاً عاماً أو تفترضه.")}</p>
+          </div>,
+          /* M04-190 / M06-017 / M06-034 — factory data verification: Source vs Observed, before/after, updated highlighting */
+          <div className="sq-surface" style={{ padding: "var(--space-6)" }} key="factory">
             <h2 style={{ marginBlockEnd: "var(--space-3)" }}>
               {t("review.ws.fvHeading", "Factory data verification (Senaei source vs observed)")}{" "}
               <span className={`sq-lozenge ${fvUpdated ? "sq-lozenge--warning" : "sq-lozenge--success"}`}>
@@ -335,26 +418,34 @@ const panelStrings: WorkspaceDecisionStrings = {
               </table></div>
             )}
             <p className="sq-caption" style={{ marginBlockStart: "var(--space-3)" }}>{t("review.ws.fvNote", "Observations never modify the Senaei source record; checks are audit-logged with before/after values.")}</p>
-          </div>
-          {/* M04-197 / M06-021 — acknowledgement signature made visible to the reviewer */}
-          {latest?.acknowledgement != null && (() => {
-            const ack = latest.acknowledgement as { name?: string; ts?: string; signed_at?: string; signature_data_url?: string };
-            return (
-              <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
+          </div>,
+          /* M04-197 / M06-021 — acknowledgement signature made visible to the reviewer */
+          <div className="sq-surface" style={{ padding: "var(--space-6)" }} key="ack">
+            {latest?.acknowledgement != null ? (() => {
+              const ack = latest.acknowledgement as { name?: string; ts?: string; signed_at?: string; signature_data_url?: string };
+              return (
+                <>
+                  <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)")}</h2>
+                  <p>
+                    <strong>{ack.name ?? "—"}</strong> · <span className="sq-numeric">{(ack.signed_at ?? ack.ts) ? formatDateTime(ack.signed_at ?? ack.ts!, lang) : "—"}</span>
+                    {" "}<span className="sq-version">v{latest.version_number}</span>
+                  </p>
+                  {ack.signature_data_url
+                    // eslint-disable-next-line @next/next/no-img-element
+                    ? <img src={ack.signature_data_url} alt={t("review.ws.sigAlt", "Representative signature")} style={{ maxInlineSize: 280, maxBlockSize: 120, background: "var(--surface-sunken)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)" }} />
+                    : <p className="sq-caption">{t("review.ws.sigNone", "No drawn signature stored with this version (acknowledged by name only).")}</p>}
+                </>
+              );
+            })() : (
+              <>
                 <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)")}</h2>
-                <p>
-                  <strong>{ack.name ?? "—"}</strong> · <span className="sq-numeric">{(ack.signed_at ?? ack.ts) ? formatDateTime(ack.signed_at ?? ack.ts!, lang) : "—"}</span>
-                  {" "}<span className="sq-version">v{latest.version_number}</span>
-                </p>
-                {ack.signature_data_url
-                  // eslint-disable-next-line @next/next/no-img-element
-                  ? <img src={ack.signature_data_url} alt={t("review.ws.sigAlt", "Representative signature")} style={{ maxInlineSize: 280, maxBlockSize: 120, background: "var(--surface-sunken)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)" }} />
-                  : <p className="sq-caption">{t("review.ws.sigNone", "No drawn signature stored with this version (acknowledged by name only).")}</p>}
-              </div>
-            );
-          })()}
-          {latest ? (
+                <p className="sq-caption">{t("review.ws.sigNone", "No drawn signature stored with this version (acknowledged by name only).")}</p>
+              </>
+            )}
+          </div>,
+          latest ? (
             <VersionCompare
+              key="compare"
               versions={compareVersions}
               itemSection={itemSection}
               returnedScope={returnedScope}
@@ -367,28 +458,42 @@ const panelStrings: WorkspaceDecisionStrings = {
             // submitted inspection always has at least one version on record).
             // State it explicitly; never render nothing where a comparison
             // surface belongs.
-            <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
+            <div className="sq-surface" style={{ padding: "var(--space-6)" }} key="compare">
               <div className="sq-banner sq-banner--warning" role="status">
                 <div><strong>{t("review.cmp.sourceUnavailable", "Comparison source unavailable.")}</strong> {t("review.cmp.sourceUnavailableBody", "Submitted-version data could not be loaded for this record, so no comparison can be shown — this is unavailable, not an empty result.")}</div>
               </div>
             </div>
-          )}
-          {(trail ?? []).length > 0 && (
-            <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
-              <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.timelineHeading", "Timeline — audit trail")}</h2>
-              {(trail ?? []).map(ev => (
-                <p key={ev.id} className="sq-caption" style={{ marginBlockStart: 4 }}>
-                  <span className="sq-numeric">{formatDateTime(ev.occurred_at, lang)}</span>
-                  {" · "}<strong>{t(`enum.audit.${ev.object_type}`, ev.object_type.replace(/_/g, " "))}</strong>
-                  {" · "}{t(`enum.audit.${ev.action}`, ev.action.replace(/_/g, " ").toLowerCase())}
-                </p>
+          ),
+          <div className="sq-surface" style={{ padding: "var(--space-6)" }} key="timeline">
+            <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{tx("review.ws.timelineHeading", "Canonical review timeline", "الخط الزمني المعتمد للمراجعة")}</h2>
+            {timelineError ? (
+              <div className="sq-banner sq-banner--warning" role="alert"><div><strong>{tx("review.ws.timelineUnavailable", "Canonical timeline unavailable.", "الخط الزمني المعتمد غير متاح.")}</strong> {tx("review.ws.timelineUnavailableBody", "The review timeline contract is not available in this environment; no fallback chronology is invented.", "عقد الخط الزمني للمراجعة غير متاح في هذه البيئة؛ لن يتم إنشاء تسلسل زمني بديل غير موثّق.")}</div></div>
+            ) : (trail ?? []).length > 0 ? (
+              <>
+                {(trail as { event_key: string; occurred_at: string; object_type: string; object_id: string; actor_id: string | null; payload: Record<string, unknown> }[]).map(ev => (
+                  <p key={`${ev.event_key}:${ev.object_id}`} className="sq-caption" style={{ marginBlockStart: 4 }}>
+                    <span className="sq-numeric">{formatDateTime(ev.occurred_at, lang)}</span>
+                    {" · "}<strong>{t(`enum.audit.${ev.object_type}`, ev.object_type.replace(/_/g, " "))}</strong>
+                    {" · "}{t(`enum.audit.${ev.event_key}`, ev.event_key.replace(/_/g, " ").toLowerCase())}
+                    {typeof ev.payload.comment === "string" && <>{" · "}{ev.payload.comment}</>}
+                    {typeof ev.payload.handoff_id === "string" && <>{" · "}{tx("review.ws.handoffRecord", "Compliance handoff", "إحالة الامتثال")} <bdi className="sq-numeric">{ev.payload.handoff_id}</bdi></>}
+                  </p>
+                ))}
+                <p className="sq-caption" style={{ marginBlockStart: "var(--space-3)" }}>{tx("review.ws.timelineNote", "Canonical submission, resubmission, review, comment and Compliance handoff events from review_timeline().", "أحداث التقديم وإعادة التقديم والمراجعة والتعليقات وإحالة الامتثال المعتمدة من review_timeline().")}</p>
+              </>
+            ) : (
+              <p className="sq-caption">{t("review.ws.trace.unavailable", "Unavailable")}</p>
+            )}
+          </div>,
+          <div className="sq-surface" style={{ padding: "var(--space-6)" }} key="prior">
+            <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.priorDecision", "Prior decision:")}</h2>
+            {decidedCount === 0
+              ? <p className="sq-caption">{t("review.ws.trace.unavailable", "Unavailable")}</p>
+              : reviews.filter(r => !!r.decided_at).map(r => (
+                <div key={r.id} className="sq-banner sq-banner--warning"><div><strong>{t("review.ws.priorDecision", "Prior decision:")}</strong> {r.decision ? t(`enum.${r.decision}`, r.decision) : "—"} · {r.decision_reason} {r.returned_sections && `· ${t("review.ws.sections", "sections")} ${r.returned_sections.join(", ")}`} <span className="sq-caption">({t("review.ws.immutable", "immutable")})</span></div></div>
               ))}
-              <p className="sq-caption" style={{ marginBlockStart: "var(--space-3)" }}>{t("review.ws.timelineNote", "Append-only rows from audit_events; the database rejects edits and deletes.")}</p>
-            </div>
-          )}
-          {reviews.filter(r => { return !!r.decided_at; }).map(r => (
-            <div key={r.id} className="sq-banner sq-banner--warning"><div><strong>{t("review.ws.priorDecision", "Prior decision:")}</strong> {r.decision ? t(`enum.${r.decision}`, r.decision) : "—"} · {r.decision_reason} {r.returned_sections && `· ${t("review.ws.sections", "sections")} ${r.returned_sections.join(", ")}`} <span className="sq-caption">({t("review.ws.immutable", "immutable")})</span></div></div>
-          ))}
+          </div>,
+        ]} />
         </div>
         {!canDecide
           // HANDOFF read-only path — auditor/planner/leadership can read the
@@ -396,7 +501,16 @@ const panelStrings: WorkspaceDecisionStrings = {
           // controls, regardless of open/canStart state.
           ? <div className="sq-surface" style={{ padding: "var(--space-6)" }}><p className="sq-caption">{t("review.ws.readOnlyNote", "Read-only for this role — decision controls are limited to Level 2 Reviewer / Operations.")}</p></div>
           : open && ins.status === "under_review"
-          ? <DecisionPanel reviewId={open.id} sections={sections.map(s => ({ key: s.key, title: s.title }))} strings={panelStrings} />
+          ? <DecisionPanel reviewId={open.id} sections={sections.map(s => ({ key: s.key, title: s.title }))}
+              summary={{
+                version: latest?.version_number ?? 0,
+                violationCount: violations.length,
+                criticalViolationCount: violations.filter(v => v.violation_codes?.level === "L1").length,
+                actionFormCount: actionForms.length,
+                evidenceCount: evidenceRows.length,
+                factoryUpdateCount: fvUpdated,
+              }}
+              strings={panelStrings} />
           : canStart
           ? <StartReview inspectionId={ins.id} submissionVersionId={latest!.id} strings={startStrings} />
           : <div className="sq-surface" style={{ padding: "var(--space-6)" }}><p className="sq-caption">{t("review.ws.noOpenDecision", "No open decision — status {status}.").replace("{status}", t(`enum.${ins.status}`, ins.status.replace(/_/g, " ")))}</p></div>}

@@ -56,7 +56,7 @@ export default function PlanningPreview({ methods, drafts, effectivePackage, can
         ))}
       </div>
       {showPlans !== false && <section className="sq-surface" aria-labelledby="wa-m2-plans-heading" style={{ overflow: "hidden" }}>
-        <div className="sq-panel-header"><h2 id="wa-m2-plans-heading" style={{ margin: 0, fontSize: "var(--type-page-title-size)" }}>{copy.plans}</h2>
+        <div className="panel-header"><h2 id="wa-m2-plans-heading" style={{ margin: 0, fontSize: "var(--type-page-title-size)" }}>{copy.plans}</h2>
           <span className="sq-lozenge sq-lozenge--warning">{drafts.length} {copy.drafts}</span></div>
         {drafts.length === 0 ? <p className="sq-caption" style={{ padding: "var(--space-6)" }}>{copy.noDrafts}</p> : (
           <div className="sq-tablewrap"><table className="sq-table"><thead><tr><th>Plan</th><th>{copy.method}</th><th>{copy.status}</th><th>{copy.created}</th><th>{copy.planner}</th><th /></tr></thead>
