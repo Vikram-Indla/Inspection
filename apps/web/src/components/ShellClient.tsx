@@ -100,6 +100,13 @@ export default function ShellClient({
 }) {
   const router = useRouter();
   const current = usePathname() || "/";
+  // Next can expose the browser pathname before the client hydrates while the
+  // server-side client-component pass has no matching pathname. Keep
+  // aria-current absent on both initial renders, then apply it after hydration.
+  const [hydratedPathname, setHydratedPathname] = useState<string | null>(null);
+  useEffect(() => {
+    setHydratedPathname(current);
+  }, [current]);
   // Role titles ("Planner", "Level 2 Reviewer") rather than raw role_keys. An
   // account with no granted role shows nothing here — it is not relabelled.
   const roleLabel = (roleTitles.length ? roleTitles : roles).join(" · ");
@@ -444,7 +451,7 @@ export default function ShellClient({
     }
     return (
       <Link key={item.id} className={className} aria-label={effectiveCollapsed ? item.label : undefined}
-        aria-current={isShellRouteCurrent(current, item.href) ? "page" : undefined}
+        aria-current={hydratedPathname && isShellRouteCurrent(hydratedPathname, item.href) ? "page" : undefined}
         href={item.href} title={item.label} onClick={closeAfterNavigate} data-nav-state="enabled"
         data-next-spa="true">
         {showIcon ? <span className="sq-nav-icon"><Icon name={item.icon} /></span> : null}
