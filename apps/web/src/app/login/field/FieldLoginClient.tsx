@@ -6,6 +6,7 @@ import { getFieldDeviceIdentifier } from "@/lib/field-device";
 import { readFieldDeviceEnrollment } from "@/app/(app)/field/settings/actions";
 import { readBiometricUnlock, unlockWithBiometric, type BiometricUnlockRecord } from "@/lib/field-biometric-unlock";
 import { authorizeInspectorLogin, bootstrapFieldSession, safeFieldReturnPath } from "@/lib/field-auth";
+import { establishAuthenticatedThemeDefault } from "@/lib/theme-preference";
 import "./field-login.css";
 
 // SAQEEL Field Login — implementation of the Claude Design component
@@ -296,6 +297,10 @@ export default function FieldLoginClient({
         setMessage(s.authInvalid);
         return;
       }
+      // Authentication surfaces are dark-locked. Carry that product default
+      // into the authenticated shell when this browser has no explicit theme
+      // preference; never overwrite a user's saved light or dark choice.
+      establishAuthenticatedThemeDefault(window.localStorage);
       // Where sign-in lands depends on whether a field page asked for the user
       // back. With an explicit returnTo the user was bounced out of /field, so
       // the inspector grant is the thing to check and the intended page is the
