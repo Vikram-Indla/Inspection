@@ -48,7 +48,11 @@ export function metricTitle(metric: SharedMetric, locale: Locale): string {
 
 /** Is the metric blocked (cannot show a live/real value)? */
 export function isBlocked(status: MetricSourceStatus): boolean {
-  return status === "unavailable" || status === "not_configured" || status === "decision_required";
+  return status === "unavailable"
+    || status === "not_configured"
+    || status === "decision_required"
+    || status === "stale"
+    || status === "offline";
 }
 
 /** Honest, localized status label for a non-live source status. */
@@ -122,7 +126,27 @@ export function metricDisplay(metric: SharedMetric, locale: Locale): MetricDispl
   } else if (metric.numerator != null && metric.denominator != null) {
     sub = t(locale, `${metric.numerator} of ${metric.denominator}`, `${metric.numerator} من ${metric.denominator}`);
   }
-  return { metricId: metric.metricId, title, kind: "value", text: formatValue(metric, locale), tone: "neutral", sub };
+  if (metric.sourceStatus === "partial") {
+    sub = t(
+      locale,
+      sub ? `Partial source data · ${sub}` : "Partial source data",
+      sub ? `بيانات مصدر جزئية · ${sub}` : "بيانات مصدر جزئية",
+    );
+  } else if (metric.sourceStatus === "cached") {
+    sub = t(
+      locale,
+      sub ? `Cached data · ${sub}` : "Cached data",
+      sub ? `بيانات مخزنة مؤقتاً · ${sub}` : "بيانات مخزنة مؤقتاً",
+    );
+  }
+  return {
+    metricId: metric.metricId,
+    title,
+    kind: "value",
+    text: formatValue(metric, locale),
+    tone: statusTone(metric.sourceStatus),
+    sub,
+  };
 }
 
 export type MethodologyRow = { label: string; value: string };
@@ -168,6 +192,20 @@ export function buildMethodology(metric: SharedMetric, locale: Locale): Methodol
     { label: t(locale, "Formula version", "إصدار المعادلة"), value: dash(metric.formulaVersion) },
     { label: t(locale, "Policy version", "إصدار السياسة"), value: metric.policyVersionId ?? t(locale, "No effective policy", "لا توجد سياسة فعّالة") },
     { label: t(locale, "Source freshness", "حداثة المصدر"), value: freshness },
+    // DEC-032. This is a statement about what every count MEANS, so it belongs
+    // on the number's lineage rather than as a page-level alert: the dashboard
+    // reports stored records the reader is permitted to see, which is not the
+    // same claim as a verified end-to-end submission. Stated in reading terms,
+    // with the decision ID kept because a basis drawer is an audit surface and
+    // the reference is what makes the caveat checkable.
+    {
+      label: t(locale, "Verification", "التحقق"),
+      value: t(
+        locale,
+        "Counts describe stored records visible under your access scope. Independent end-to-end submission proof is pending (DEC-032).",
+        "تصف الأعداد السجلات المخزنة الظاهرة ضمن نطاق صلاحيتك. لا يزال إثبات التقديم المستقل من البداية إلى النهاية معلقاً (DEC-032).",
+      ),
+    },
   ];
 
   return {

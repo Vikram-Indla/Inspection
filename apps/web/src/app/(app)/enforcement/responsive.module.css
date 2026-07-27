@@ -93,7 +93,7 @@
   inset: 0;
   z-index: 80;
   border: 0;
-  background: rgb(0 0 0 / 42%);
+  background: var(--surface-overlay);
 }
 
 .drawer {

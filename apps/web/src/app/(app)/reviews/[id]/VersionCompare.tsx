@@ -20,7 +20,13 @@ const STALE_POLL_MS = 45_000;
 // runtime and are shown explicitly unavailable, never "unchanged"
 // (HANDOFF_BLOCKED_MEDIADIFF / _PKGSEMANTIC / _METADIFF).
 
-export type CompareVersion = { n: number; answers: Record<string, string> };
+export type SnapshotCollectionItem = { id?: string; sha256?: string; [key: string]: unknown };
+export type CompareVersion = {
+  n: number;
+  answers: Record<string, string>;
+  evidence: SnapshotCollectionItem[] | null;
+  actionForms: SnapshotCollectionItem[] | null;
+};
 export type ItemSection = Record<string, { key: string; title: string }>;
 
 export type VersionCompareStrings = {
@@ -38,6 +44,8 @@ export type VersionCompareStrings = {
   unavailableHeading: string;
   unavailEvidence: string; unavailPackage: string; unavailMetadata: string;
   unavailNote: string;
+  collectionHeading: string; evidenceCollection: string; actionCollection: string;
+  added: string; removed: string; changed: string; collectionUnavailable: string;
   enumLabels: Record<string, string>;   // stored answer value -> translated label
   // S08-stale (STATE_MATRIX_CD-030.csv) — optional so this can ship ahead of a
   // page.tsx string-table wire-up; EN-only fallback text is used when absent.
@@ -125,6 +133,37 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
   }
 
   const categories: Category[] = ["unexpected", "expected", "unavailable", "unchanged"];
+  const collectionDiff = (a: SnapshotCollectionItem[] | null | undefined, b: SnapshotCollectionItem[] | null | undefined) => {
+    if (!a || !b) return null;
+    if ([...a, ...b].some(item => typeof item.id !== "string" || !item.id)) return null;
+    const canonical = (value: unknown): string => {
+      if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
+      if (value && typeof value === "object") {
+        const record = value as Record<string, unknown>;
+        return `{${Object.keys(record).sort().map(key => `${JSON.stringify(key)}:${canonical(record[key])}`).join(",")}}`;
+      }
+      return JSON.stringify(value);
+    };
+    const left = new Map(a.map(item => [String(item.id), item]));
+    const right = new Map(b.map(item => [String(item.id), item]));
+    const added = [...right.keys()].filter(id => !left.has(id)).sort();
+    const removed = [...left.keys()].filter(id => !right.has(id)).sort();
+    const changed = [...right.keys()].filter(id => left.has(id)
+      && canonical(left.get(id)) !== canonical(right.get(id))).sort();
+    return {
+      empty: left.size === 0 && right.size === 0,
+      added,
+      removed,
+      changed,
+      items: [
+        ...added.map(id => ({ id, kind: "added" as const })),
+        ...removed.map(id => ({ id, kind: "removed" as const })),
+        ...changed.map(id => ({ id, kind: "changed" as const })),
+      ],
+    };
+  };
+  const evidenceDiff = collectionDiff(from?.evidence, to?.evidence);
+  const actionDiff = collectionDiff(from?.actionForms, to?.actionForms);
 
   return (
     <div className="panel cd-version-compare" style={{ padding: "var(--space-6)" }}>
@@ -252,11 +291,35 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
       )}
 
       {/* Explicitly unavailable comparison categories — never rendered as "unchanged". */}
+      {([
+        [strings.evidenceCollection, evidenceDiff],
+        [strings.actionCollection, actionDiff],
+      ] as const).map(([label, diff]) => !diff || diff.empty ? null : (
+        <div key={label} className="panel">
+          <div>
+            <span>{label}</span>
+            <span className="badge">
+              {diff.added.length} {strings.added} · {diff.removed.length} {strings.removed} · {diff.changed.length} {strings.changed}
+            </span>
+          </div>
+          <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            {diff.items.map(item => (
+              <li key={`${item.kind}:${item.id}`}>
+                <span className={`badge ${item.kind === "added" ? "badge-success" : item.kind === "removed" ? "badge-critical" : "badge-warning"}`}>
+                  {item.kind === "added" ? strings.added : item.kind === "removed" ? strings.removed : strings.changed}
+                </span>
+                <span>{item.id}</span>
+                {item.kind === "changed" && <span style={{ color: "var(--text-muted)" }}>current → proposed</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
       <div className="panel" style={{ padding: "var(--space-3)", marginBlockStart: "var(--space-4)" }}>
         <p className="sq-overline" style={{ marginBlockEnd: 8 }}>{strings.unavailableHeading}</p>
-        <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailEvidence}</p>
+        {!evidenceDiff && <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailEvidence}</p>}
         <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailPackage}</p>
-        <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailMetadata}</p>
+        {!actionDiff && <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailMetadata}</p>}
         <p className="t-caption" style={{ marginBlockStart: 8 }}>{strings.unavailNote}</p>
       </div>
     </div>

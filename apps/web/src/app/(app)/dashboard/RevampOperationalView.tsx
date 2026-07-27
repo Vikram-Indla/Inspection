@@ -1,3 +1,5 @@
+import type { MetricDisplay, MethodologyEntry } from "./dashboard-format";
+import MetricStrip, { type MetricStripStrings } from "./MetricStrip";
 import styles from "./revamp-dashboard.module.css";
 
 type Locale = "en" | "ar";
@@ -5,7 +7,8 @@ type DashboardMetrics = ReturnType<typeof import("./metrics").buildDashboardMetr
 
 const copy = (locale: Locale, en: string, ar: string) => locale === "ar" ? ar : en;
 
-function OperationalCard({ question, title, value, definition, href, action }: {
+function OperationalCard({ locale, question, title, value, definition, href, action }: {
+  locale: Locale;
   question: string;
   title: string;
   value: string;
@@ -18,15 +21,17 @@ function OperationalCard({ question, title, value, definition, href, action }: {
       <span className={styles.question}>{question}</span>
       <h3>{title}</h3>
       <strong className={styles.operationalValue}>{value}</strong>
-      <p className={styles.operationalDefinition}><b>Definition</b> {definition}</p>
+      <p className={styles.operationalDefinition}><b>{copy(locale, "Definition", "التعريف")}</b> {definition}</p>
       <a className={styles.secondaryAction} href={href}>{action}</a>
     </article>
   );
 }
 
-export default function RevampOperationalView({ locale, metrics }: {
+export default function RevampOperationalView({ locale, metrics, requirementStrip, requirementStripStrings }: {
   locale: Locale;
   metrics: DashboardMetrics;
+  requirementStrip: { metrics: MetricDisplay[]; methodology: Record<string, MethodologyEntry> };
+  requirementStripStrings: MetricStripStrings;
 }) {
   const operational = metrics.operational;
   const blocks = [
@@ -78,7 +83,7 @@ export default function RevampOperationalView({ locale, metrics }: {
         {
           question: copy(locale, "Which inspection reports require review?", "ما تقارير التفتيش التي تتطلب المراجعة؟"),
           title: copy(locale, "Inspection reports awaiting approval", "تقارير التفتيش بانتظار الاعتماد"),
-          value: String(operational.awaitingRows.length),
+          value: String(operational.pendingApprovalsCount),
           definition: copy(locale, "Count of submitted reports awaiting a review decision", "عدد التقارير المقدمة بانتظار قرار المراجعة"),
           href: "/reviews",
           action: copy(locale, "Open Review & Approval", "فتح المراجعة والاعتماد"),
@@ -112,20 +117,24 @@ export default function RevampOperationalView({ locale, metrics }: {
   return (
     <div className={styles.view} id="dashboard-operational" role="tabpanel" aria-labelledby="dashboard-tab-operational">
       <section className={styles.aiPriority}>
-        <strong>{copy(locale, "Operational AI priorities", "أولويات الذكاء الاصطناعي التشغيلية")}</strong>
+        <strong>{copy(locale, "Deterministic operational priorities", "أولويات تشغيلية حتمية")}</strong>
         <p>{copy(
           locale,
           `${operational.highPriorityRows.length} high-priority visits are pending execution; ${operational.overdueRows.length} published visits are past their recorded window.`,
           `${operational.highPriorityRows.length} زيارة عالية الأولوية بانتظار التنفيذ؛ و${operational.overdueRows.length} زيارة منشورة تجاوزت نافذتها المسجلة.`,
         )}</p>
-        <span>{copy(locale, "Live governed records · no generated recommendation", "سجلات معتمدة مباشرة · دون توصية مولدة")}</span>
+        <span>{copy(
+          locale,
+          "Live governed records · AI provider output withheld · no generated recommendation",
+          "سجلات معتمدة مباشرة · مخرجات مزود الذكاء الاصطناعي محجوبة · دون توصية مولدة",
+        )}</span>
       </section>
 
       {blocks.map(block => (
         <section key={block.label}>
           <h2 className={styles.overline}>{block.label}</h2>
           <div className={styles.operationalGrid}>
-            {block.metrics.map(metric => <OperationalCard key={metric.title} {...metric} />)}
+            {block.metrics.map(metric => <OperationalCard key={metric.title} locale={locale} {...metric} />)}
           </div>
         </section>
       ))}
@@ -145,6 +154,16 @@ export default function RevampOperationalView({ locale, metrics }: {
           )) : <p className={styles.empty}>{copy(locale, "No inspector assignments are visible in this scope.", "لا توجد إسنادات مفتشين ظاهرة ضمن هذا النطاق.")}</p>}
         </div>
         <a className={styles.secondaryAction} href="/execution">{copy(locale, "Open Execution, grouped by inspector", "فتح التنفيذ مجمعاً حسب المفتش")}</a>
+      </section>
+
+      <section className={styles.requirementCoverage} aria-labelledby="operational-requirement-coverage">
+        <div className={styles.sectionHead}>
+          <div>
+            <h2 id="operational-requirement-coverage">{copy(locale, "Operational requirement coverage", "تغطية المتطلبات التشغيلية")}</h2>
+            <p>{copy(locale, "All dashboard.xlsx operational measures are shown with their governed live or blocked state and auditable methodology.", "تُعرض جميع المقاييس التشغيلية في dashboard.xlsx بحالتها المباشرة أو المحجوبة المعتمدة ومنهجيتها القابلة للتدقيق.")}</p>
+          </div>
+        </div>
+        <MetricStrip metrics={requirementStrip.metrics} methodology={requirementStrip.methodology} strings={requirementStripStrings} />
       </section>
     </div>
   );

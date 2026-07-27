@@ -2,9 +2,9 @@
 // W2/P2 — Visit Management bulk legs over selected child visits:
 //   bulkRescheduleVisits (M02-007/031/033), bulkReassignVisits (M02-032),
 //   bulkCancelVisits (M02-011/034), bulkEditVisits (M02-007).
-// One server action per verb iterating the SAME per-visit guards the single
-// actions use (guardPublishedNew / pre-start lock); every row's outcome is
-// reported individually — partial success is expected, never silent.
+// One server action per verb delegates the complete selection to a guarded
+// atomic RPC. Every row is applied together or every row is blocked together;
+// partial success is prohibited.
 //
 // CD-026 / SCR-WEB-200 Track 1 correction:
 //   - Return a STRUCTURED per-item ledger (id + outcome enum), never a single
@@ -21,7 +21,7 @@
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
-import { getReasonOptions, recordLifecycleEvent, validateReason } from "@/lib/planning/lifecycle";
+import { getReasonOptions, validateReason } from "@/lib/planning/lifecycle";
 
 export type BulkVerb = "reschedule" | "reassign" | "cancel" | "edit";
 
@@ -62,13 +62,66 @@ export type ActionResult = {
 };
 
 function selectedIds(fd: FormData): string[] {
-  return [...new Set(fd.getAll("visit_ids").map(v => String(v)).filter(Boolean))];
+  return [...new Set(fd.getAll("visit_ids").map(v => String(v)).filter(v => UUID.test(v)))];
 }
 
-// Provider errors never reach the UI. Log the raw message server-side (for
-// operators) and return only the neutral code (M02 error-neutralisation).
-function logProvider(verb: BulkVerb, id: string, message: string) {
-  console.error(`[visits.bulk.${verb}] ${id}: ${message}`);
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const bounded = (fd: FormData, key: string, max = 1000) =>
+  String(fd.get(key) ?? "").trim().slice(0, max);
+
+function requestIdentity(fd: FormData) {
+  const idempotencyKey = bounded(fd, "idempotency_key", 200);
+  const correlationId = bounded(fd, "correlation_id", 36);
+  return {
+    idempotencyKey,
+    correlationId: UUID.test(correlationId) ? correlationId : "",
+    valid: /^[A-Za-z0-9._:-]{8,200}$/.test(idempotencyKey) && UUID.test(correlationId),
+  };
+}
+
+function mutationContext(fd: FormData) {
+  const identity = requestIdentity(fd);
+  const reason = bounded(fd, "mutation_reason");
+  return { ...identity, reason, valid: identity.valid && !!reason };
+}
+
+function atomicLedger(
+  verb: BulkVerb,
+  ids: string[],
+  error: { message?: string; code?: string } | null,
+  receipt: unknown,
+  correlationId: string,
+): ActionResult {
+  if (!error && isCompleteAtomicReceipt(receipt, verb, ids, correlationId)) {
+    return { verb, requested: ids.length, items: ids.map(id => ({ id, outcome: "applied" })) };
+  }
+  if (!error) {
+    console.error(`[visits.bulk.${verb}] atomic mutation returned an invalid receipt`);
+    return {
+      verb,
+      requested: ids.length,
+      items: ids.map(id => ({ id, outcome: "error" })),
+    };
+  }
+  console.error(`[visits.bulk.${verb}] atomic mutation failed: ${error.message ?? "unknown"} (${error.code ?? "unknown"})`);
+  const blocked = /PLANNING-MUTATION-(SAME-PLAN|STATE|TARGET-NOT-FOUND|DENIED)|PLANNING-(RESCHEDULE-CONFLICT|REASSIGN-(INSPECTOR|AMBIGUOUS|CONFLICT)|CANCEL-REASON|EDIT-VISIT-TYPE)/.test(error.message ?? "");
+  return {
+    verb,
+    requested: ids.length,
+    items: ids.map(id => ({ id, outcome: blocked ? "blocked_not_publishable" : "error" })),
+  };
+}
+
+function isCompleteAtomicReceipt(receipt: unknown, verb: BulkVerb, ids: string[], correlationId: string): boolean {
+  if (!receipt || typeof receipt !== "object" || Array.isArray(receipt)) return false;
+  const value = receipt as Record<string, unknown>;
+  if (value.operation !== verb || value.updated_count !== ids.length || value.correlation_id !== correlationId) {
+    return false;
+  }
+  if (!Array.isArray(value.visit_ids) || value.visit_ids.length !== ids.length) return false;
+  const expected = [...ids].sort();
+  const returned = value.visit_ids.map(String).sort();
+  return expected.every((id, index) => id === returned[index]);
 }
 
 // M02-011/034 + M8 — bulk cancel: one mandatory GOVERNED reason key (active
@@ -90,32 +143,20 @@ export async function bulkCancelVisits(_: ActionResult, fd: FormData): Promise<A
   const { options, error: optErr } = await getReasonOptions(sb, "cancellation_reason");
   if (optErr) return { verb: "cancel", formErrorCode: "reasons_unavailable" };
   if (validateReason(options, reasonKey, comments, "cancellation")) return { verb: "cancel", formErrorCode: "reason_required" };
-  const items: ItemResult[] = [];
-  for (const id of ids) {
-    const { data: v0 } = await sb.from("visits").select("window_start, window_end").eq("id", id).maybeSingle();
-    const { data: asg0 } = await sb.from("assignments").select("inspector_id").eq("visit_id", id).maybeSingle();
-    const { data: updated, error } = await sb.from("visits")
-      .update({ planning_status: "cancelled", cancellation_reason: reasonKey })
-      .eq("id", id).eq("planning_status", "published").eq("operational_state", "new")
-      .select("id");
-    if (error) { logProvider("cancel", id, error.message); items.push({ id, outcome: "error" }); continue; }
-    if (!updated?.length) { items.push({ id, outcome: "blocked_not_publishable" }); continue; }
-    const evErr = await recordLifecycleEvent(sb, {
-      visitId: id, eventType: "cancel", reasonKey, comments, actor: user.id,
-      previous: { planning_status: "published", inspector_id: asg0?.inspector_id ?? null, window_start: v0?.window_start ?? null, window_end: v0?.window_end ?? null },
-    });
-    if (evErr) { items.push({ id, outcome: "applied_no_notification" }); continue; }
-    if (asg0?.inspector_id) {
-      const { error: nErr } = await sb.from("notifications").insert({
-        event_key: "visit_cancelled", recipient: asg0.inspector_id,
-        payload: { visit_id: id, reason: reasonKey, bulk: true }, channel: "push",
-      });
-      if (nErr) { logProvider("cancel", id, `notify: ${nErr.message}`); items.push({ id, outcome: "applied_no_notification" }); continue; }
-    }
-    items.push({ id, outcome: "applied" });
-  }
+  const ctx = requestIdentity(fd);
+  if (!ctx.valid) return { verb: "cancel", formErrorCode: "reason_required" };
+  const { data, error } = await sb.rpc("cancel_published_visits_atomic", {
+    p_visit_ids: ids,
+    // The database validates this value against the active governed lookup.
+    // Comments are validated above but the current RPC has no comments field;
+    // the backend contract must be extended before they can be persisted.
+    p_reason: reasonKey,
+    p_idempotency_key: ctx.idempotencyKey,
+    p_correlation_id: ctx.correlationId,
+  });
   revalidatePath("/visits");
-  return { verb: "cancel", requested: ids.length, items };
+  revalidatePath("/planning/visits");
+  return atomicLedger("cancel", ids, error, data, ctx.correlationId);
 }
 
 // M02-007/031/033 — bulk reschedule window: shared new window applied to every
@@ -124,6 +165,8 @@ export async function bulkCancelVisits(_: ActionResult, fd: FormData): Promise<A
 // separate authorized backend leg and is intentionally NOT synthesised here.
 export async function bulkRescheduleVisits(_: ActionResult, fd: FormData): Promise<ActionResult> {
   const sb = await supabaseServer();
+  const { data: { user } } = await getVerifiedUser(sb);
+  if (!user) return { verb: "reschedule", formErrorCode: "session" };
   const ids = selectedIds(fd);
   const ws = String(fd.get("window_start") ?? "").trim();
   const we = String(fd.get("window_end") ?? "").trim();
@@ -132,26 +175,19 @@ export async function bulkRescheduleVisits(_: ActionResult, fd: FormData): Promi
   const start = new Date(ws); const end = new Date(we);
   if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return { verb: "reschedule", formErrorCode: "window_invalid" };
   if (end.getTime() <= start.getTime()) return { verb: "reschedule", formErrorCode: "window_order" };
-  const items: ItemResult[] = [];
-  for (const id of ids) {
-    const { data: updated, error } = await sb.from("visits")
-      .update({ window_start: start.toISOString(), window_end: end.toISOString() })
-      .eq("id", id).eq("planning_status", "published").eq("operational_state", "new")
-      .select("id");
-    if (error) { logProvider("reschedule", id, error.message); items.push({ id, outcome: "error" }); continue; }
-    if (!updated?.length) { items.push({ id, outcome: "blocked_not_publishable" }); continue; }
-    const { data: asg } = await sb.from("assignments").select("inspector_id").eq("visit_id", id).maybeSingle();
-    if (asg?.inspector_id) {
-      const { error: nErr } = await sb.from("notifications").insert({
-        event_key: "reschedule", recipient: asg.inspector_id,
-        payload: { visit_id: id, window_start: start.toISOString(), window_end: end.toISOString(), bulk: true }, channel: "push",
-      });
-      if (nErr) { logProvider("reschedule", id, `notify: ${nErr.message}`); items.push({ id, outcome: "applied_no_notification" }); continue; }
-    }
-    items.push({ id, outcome: "applied" });
-  }
+  const ctx = mutationContext(fd);
+  if (!ctx.valid) return { verb: "reschedule", formErrorCode: "reason_required" };
+  const { data, error } = await sb.rpc("reschedule_published_visits_atomic", {
+    p_visit_ids: ids,
+    p_window_start: start.toISOString(),
+    p_window_end: end.toISOString(),
+    p_reason: ctx.reason,
+    p_idempotency_key: ctx.idempotencyKey,
+    p_correlation_id: ctx.correlationId,
+  });
   revalidatePath("/visits");
-  return { verb: "reschedule", requested: ids.length, items };
+  revalidatePath("/planning/visits");
+  return atomicLedger("reschedule", ids, error, data, ctx.correlationId);
 }
 
 // Bulk Edit Visits (Excel row: Visit Type / Location / Notes) — the existing
@@ -165,53 +201,50 @@ export async function bulkRescheduleVisits(_: ActionResult, fd: FormData): Promi
 // its own per-item published/new guard.
 export async function bulkEditVisits(_: ActionResult, fd: FormData): Promise<ActionResult> {
   const sb = await supabaseServer();
+  const { data: { user } } = await getVerifiedUser(sb);
+  if (!user) return { verb: "edit", formErrorCode: "session" };
   const ids = selectedIds(fd);
   const visitType = String(fd.get("visit_type") ?? "").trim();
   const notesRaw = String(fd.get("notes") ?? "");
   const setNotes = fd.get("set_notes") === "1"; // explicit opt-in so "leave notes alone" is the default
   if (ids.length === 0) return { verb: "edit", formErrorCode: "select_one" };
   if (!visitType && !setNotes) return { verb: "edit", formErrorCode: "type_or_notes_required" };
-  const patch: Record<string, string | null> = {};
-  if (visitType) patch.visit_type = visitType;
-  if (setNotes) patch.notes = notesRaw.trim() === "" ? null : notesRaw.trim();
-  const items: ItemResult[] = [];
-  for (const id of ids) {
-    const { data: updated, error } = await sb.from("visits").update(patch)
-      .eq("id", id).eq("planning_status", "published").eq("operational_state", "new")
-      .select("id");
-    if (error) { logProvider("edit", id, error.message); items.push({ id, outcome: "error" }); continue; }
-    if (!updated?.length) { items.push({ id, outcome: "blocked_not_publishable" }); continue; }
-    items.push({ id, outcome: "applied" });
-  }
+  const ctx = mutationContext(fd);
+  if (!ctx.valid) return { verb: "edit", formErrorCode: "reason_required" };
+  const { data, error } = await sb.rpc("edit_published_visits_atomic", {
+    p_visit_ids: ids,
+    p_visit_type: visitType || null,
+    p_notes: setNotes ? (notesRaw.trim() || null) : null,
+    p_change_notes: setNotes,
+    p_reason: ctx.reason,
+    p_idempotency_key: ctx.idempotencyKey,
+    p_correlation_id: ctx.correlationId,
+  });
   revalidatePath("/visits");
-  return { verb: "edit", requested: ids.length, items };
+  revalidatePath("/planning/visits");
+  return atomicLedger("edit", ids, error, data, ctx.correlationId);
 }
 
 // M02-032 — bulk reassign inspector: per-row pre-start lock (same as
 // reassignVisit), assignment update, new inspector notified per visit.
 export async function bulkReassignVisits(_: ActionResult, fd: FormData): Promise<ActionResult> {
   const sb = await supabaseServer();
+  const { data: { user } } = await getVerifiedUser(sb);
+  if (!user) return { verb: "reassign", formErrorCode: "session" };
   const ids = selectedIds(fd);
   const inspector = String(fd.get("inspector_id") ?? "");
   if (ids.length === 0) return { verb: "reassign", formErrorCode: "select_one" };
   if (!inspector) return { verb: "reassign", formErrorCode: "inspector_required" };
-  const items: ItemResult[] = [];
-  for (const id of ids) {
-    // Planning changes lock once the linked inspection has started (M02-006 guard)
-    const { data: ins } = await sb.from("inspections").select("status").eq("visit_id", id).maybeSingle();
-    if (ins && ins.status !== "not_started") { items.push({ id, outcome: "blocked_started" }); continue; }
-    const { data: updated, error } = await sb.from("assignments")
-      .update({ inspector_id: inspector, method: "manual", status: "assigned" })
-      .eq("visit_id", id).select("id");
-    if (error) { logProvider("reassign", id, error.message); items.push({ id, outcome: "error" }); continue; }
-    if (!updated?.length) { items.push({ id, outcome: "blocked_no_assignment" }); continue; }
-    const { error: nErr } = await sb.from("notifications").insert({
-      event_key: "assignment", recipient: inspector,
-      payload: { visit_id: id, reassigned: true, bulk: true }, channel: "push",
-    });
-    if (nErr) { logProvider("reassign", id, `notify: ${nErr.message}`); items.push({ id, outcome: "applied_no_notification" }); continue; }
-    items.push({ id, outcome: "applied" });
-  }
+  const ctx = mutationContext(fd);
+  if (!ctx.valid) return { verb: "reassign", formErrorCode: "reason_required" };
+  const { data, error } = await sb.rpc("reassign_published_visits_atomic", {
+    p_visit_ids: ids,
+    p_inspector_id: inspector,
+    p_reason: ctx.reason,
+    p_idempotency_key: ctx.idempotencyKey,
+    p_correlation_id: ctx.correlationId,
+  });
   revalidatePath("/visits");
-  return { verb: "reassign", requested: ids.length, items };
+  revalidatePath("/planning/visits");
+  return atomicLedger("reassign", ids, error, data, ctx.correlationId);
 }

@@ -78,7 +78,13 @@ export default function RevampOperationsCenter({
           </a>
         </nav>
         <div className={styles.revampFreshness}>
-          <span><i aria-hidden="true" />{copy(locale, "Live governed positions", "مواقع معتمدة مباشرة")}</span>
+          {/* CR-431 · WA-M3-AC-001 — preserve the accepted command-bar
+              composition while making its live-status affordance complete the
+              real Operations Center → Operations Live route flow. */}
+          <a href="/operations/live">
+            <i aria-hidden="true" />
+            {copy(locale, "Live governed positions", "مواقع معتمدة مباشرة")}
+          </a>
           <button className={styles.revampSecondary} type="button" onClick={() => setShowList(value => !value)}>
             {showList ? copy(locale, "Show map", "إظهار الخريطة") : copy(locale, "Show list equivalent", "إظهار القائمة المكافئة")}
           </button>

@@ -56,6 +56,14 @@ export type ResponseRow = {
   } | null;
 };
 
+export type ChecklistItemRow = {
+  id: string;
+  active: boolean;
+  regulation_clauses: {
+    regulations: { issuing_authority: string | null; status: string } | null;
+  } | null;
+};
+
 export type ViolationRow = {
   id: string;
   inspection_id: string;
@@ -191,6 +199,7 @@ export function buildDashboardMetrics(input: {
   inspections: InspectionRow[];
   reviews: ReviewRow[];
   responses: ResponseRow[];
+  checklistItems?: ChecklistItemRow[];
   violations: ViolationRow[];
   geo: GeoRow[];
   audit: AuditRow[];
@@ -209,6 +218,15 @@ export function buildDashboardMetrics(input: {
   const violations = input.violations.filter(v => factoryInRegion(v.inspections?.visits?.factories, region));
   const geo = input.geo.filter(g => factoryInRegion(g.visits?.factories, region));
   const factories = input.factories.filter(f => factoryInRegion(f, region));
+
+  const checklistItemsByAuthority = new Map<string, number>();
+  for (const item of input.checklistItems ?? []) {
+    if (!item.active || item.regulation_clauses?.regulations?.status !== "published") continue;
+    const authority = item.regulation_clauses.regulations.issuing_authority?.trim() || "Not recorded";
+    checklistItemsByAuthority.set(authority, (checklistItemsByAuthority.get(authority) ?? 0) + 1);
+  }
+  const activePublishedChecklistItems = [...checklistItemsByAuthority.values()]
+    .reduce((sum, count) => sum + count, 0);
 
   const scopedInspections = inspections.filter(i => isInScope(i.submitted_at, scope));
   const scopedInspectionIds = new Set(scopedInspections.map(i => i.id));
@@ -254,17 +272,32 @@ export function buildDashboardMetrics(input: {
   const todayCompleted = todayVisits.filter(v => v.operational_state === "submitted").length;
 
   const scopedVisits = visits.filter(v => isInScope(v.window_start, scope));
+  const pipeline = new Map<string, number>();
+  const pipelineStatuses = new Set(["draft", "published", "returned", "cancelled"]);
+  for (const visit of visits) {
+    const status = (visit.planning_status ?? "").toLowerCase();
+    if (!pipelineStatuses.has(status)) continue;
+    pipeline.set(status, (pipeline.get(status) ?? 0) + 1);
+  }
   const planned = scopedVisits.filter(v => v.planning_status === "published").length;
   const completed = scopedVisits.filter(v => v.operational_state === "submitted").length;
   const cancelledRows = scopedVisits.filter(v => v.planning_status === "cancelled");
   const cancelled = cancelledRows.length;
   const eligibleForSla = scopedVisits.filter(v => v.planning_status === "published" && v.operational_state !== "submitted");
   const overdueRows = eligibleForSla.filter(v => Date.parse(v.window_end) < nowMs);
-  const activeField = inspections.filter(i => i.status === "in_progress" && isInScope(i.visits?.window_start ?? i.started_at, scope)).length;
+  const activeField = visits.filter(v =>
+    ["on_the_way", "arrived", "executing", "executing_inspection"].includes((v.operational_state ?? "").toLowerCase()),
+  ).length;
   const scopedLatestReviews = [...latest.values()].filter(r => isInScope(r.inspections?.submitted_at, scope));
   const awaitingRows = scopedLatestReviews.filter(r => r.status === "pending_review" || r.status === "under_review");
   const returnedRows = scopedLatestReviews.filter(r => r.status === "returned" || r.decision === "return");
   const rejectedRows = scopedLatestReviews.filter(r => r.status === "rejected" || r.decision === "reject");
+  const approvedDecisionRows = scopedLatestReviews.filter(r => r.status === "approved" || r.decision === "approve");
+  const decidedScoped = approvedDecisionRows.length + returnedRows.length + rejectedRows.length;
+  const pendingApprovalsCount = inspections.filter(inspection => inspection.submitted_at).filter(inspection => {
+    const review = latest.get(inspection.id);
+    return !review || review.status === "pending_review" || review.status === "under_review" || !review.decision;
+  }).length;
   const working = configuredWorkingDays(input.sla.calendar?.days);
   const reviewDays = input.sla.review_business_days;
   const reviewSlaConfigured = !!working && typeof reviewDays === "number";
@@ -311,6 +344,29 @@ export function buildDashboardMetrics(input: {
     cancellationReasons.set(reason, (cancellationReasons.get(reason) ?? 0) + 1);
   }
 
+  const factoriesByRiskBand = new Map<string, Set<string>>();
+  for (const factory of factories) {
+    const band = factory.risk_band?.trim().toLowerCase();
+    if (!band) continue;
+    const ids = factoriesByRiskBand.get(band) ?? new Set<string>();
+    ids.add(factory.id);
+    factoriesByRiskBand.set(band, ids);
+  }
+  const visitsByRiskBand = new Map<string, number>();
+  for (const visit of scopedVisits) {
+    const band = visit.factories?.risk_band?.trim().toLowerCase();
+    if (!band) continue;
+    visitsByRiskBand.set(band, (visitsByRiskBand.get(band) ?? 0) + 1);
+  }
+  const riskAttention = [...factoriesByRiskBand.entries()]
+    .map(([label, ids]) => ({
+      label,
+      visits: visitsByRiskBand.get(label) ?? 0,
+      factories: ids.size,
+      ratio: ids.size > 0 ? Math.round(((visitsByRiskBand.get(label) ?? 0) / ids.size) * 100) / 100 : null,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+
   const violationByRegulation = new Map<string, number>();
   for (const violation of scopedViolations) {
     const regulation = violation.violation_codes?.regulation_clauses?.regulations?.title ?? "Unlinked regulation";
@@ -351,25 +407,38 @@ export function buildDashboardMetrics(input: {
       pendingAnsweredForCompliance,
       approvedScoped,
       approvalRate: percent(approvedScoped, completedInspections),
+      decidedScoped,
+      decisionApprovalRate: percent(approvedDecisionRows.length, decidedScoped),
+      decisionReturnRate: percent(returnedRows.length, decidedScoped),
+      decisionRejectRate: percent(rejectedRows.length, decidedScoped),
       scopedResponses,
       approvedScopedResponses,
       scopedViolations,
       previousViolations,
       violationDelta: scopedViolations.length - previousViolations,
       violationByRegulation: [...violationByRegulation.entries()].map(([label, value]) => ({ label, value })).sort((a, b) => b.value - a.value),
+      activePublishedChecklistItems,
+      checklistItemsByAuthority: [...checklistItemsByAuthority.entries()]
+        .map(([label, value]) => ({ label, value }))
+        .sort((a, b) => b.value - a.value || a.label.localeCompare(b.label)),
+      riskAttention,
       criticalFactories: factories.filter(f => criticalFactoryIds.has(f.id)).sort((a, b) => (b.risk_score ?? -1) - (a.risk_score ?? -1)),
     },
     operational: {
       todayVisits,
       todayCompleted,
       todayCompletionRate: percent(todayCompleted, todayVisits.length),
+      pipeline: [...pipeline.entries()].map(([label, value]) => ({ label, value })).sort((a, b) => a.label.localeCompare(b.label)),
+      pipelineTotal: [...pipeline.values()].reduce((sum, value) => sum + value, 0),
       planned,
+      cancellationDenominator: scopedVisits.length,
       completed,
       cancelled,
       cancelledRows,
       overdueRows,
       activeField,
       awaitingRows,
+      pendingApprovalsCount,
       overdueReviewRows,
       reviewSlaConfigured,
       returnedRows,

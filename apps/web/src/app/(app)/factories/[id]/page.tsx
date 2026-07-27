@@ -3,16 +3,12 @@ import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
-import {
-  AddDocumentForm, AddMaterialForm, AddProductForm, AddRepresentativeForm, ToggleRepActive,
-  type AddDocumentStrings, type AddMaterialStrings, type AddProductStrings,
-  type AddRepresentativeStrings, type ToggleRepStrings,
-} from "./Controls";
 import { logFactoryError, mapFactoryError } from "./neutral";
 import FactorySpatialMap, { type FactoryLocationEvent } from "./FactorySpatialMap";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import EmptyState from "@/components/EmptyState";
 import { redirect } from "next/navigation";
+import { resolveFactory360Permissions } from "@/lib/factory360/dossier";
 
 const DOC_TYPE_LABEL: Record<string, string> = {
   license: "Industrial license", cr: "Commercial registration",
@@ -35,6 +31,15 @@ export default async function Factory360({ params, searchParams }: { params: Pro
   const [{ id }, { compat }] = await Promise.all([params, searchParams]);
   const { t, locale } = await useT();
   const sb = await supabaseServer();
+  const permissions = await resolveFactory360Permissions(sb);
+  if (!permissions["view_factory_360"]) {
+    return (
+      <Shell current="/factories" title={t("f360.title", "Factory 360")}>
+        <EmptyState glyph="⛔" title={t("f360.permission.title", "Factory 360 access required")}
+          body={t("f360.permission.body", "You do not have access to this factory profile.")} />
+      </Shell>
+    );
+  }
   // Keep every existing factory link valid while preferring the governed
   // CR-centred dossier whenever this legacy factory identity has a normalized
   // Industrial License mapping.
@@ -169,69 +174,6 @@ export default async function Factory360({ params, searchParams }: { params: Pro
     { id: "workforce", label: t("f360.tab.workforce", "Workforce & Indicators") },
   ];
 
-  const docStrings: AddDocumentStrings = {
-    typeLabel: t("f360.docs.form.type", "Type"),
-    typeOptions: {
-      license: docTypeLabel("license"),
-      cr: docTypeLabel("cr"),
-      safety_cert: docTypeLabel("safety_cert"),
-      layout: docTypeLabel("layout"),
-      other: docTypeLabel("other"),
-    },
-    titleLabel: t("f360.docs.form.title", "Title"),
-    titlePlaceholder: t("f360.docs.form.titlePh", "Document title"),
-    refLabel: t("f360.docs.form.ref", "Reference №"),
-    refPlaceholder: "IL-9101",
-    validFrom: t("f360.docs.form.validFrom", "Valid from"),
-    validTo: t("f360.docs.form.validTo", "Valid to"),
-    adding: t("f360.form.adding", "Adding…"),
-    add: t("f360.docs.form.add", "Add document"),
-    added: t("f360.form.added", "added"),
-  };
-  const repStrings: AddRepresentativeStrings = {
-    fullNameLabel: t("f360.reps.form.fullName", "Full name"),
-    fullNamePlaceholder: t("f360.reps.form.fullNamePh", "Ahmed Al-Saleh"),
-    roleLabel: t("f360.reps.form.role", "Role"),
-    rolePlaceholder: t("f360.reps.form.rolePh", "HSE Manager"),
-    phoneLabel: t("f360.reps.form.phone", "Phone"),
-    phonePlaceholder: "+966-5x-xxxxxxx",
-    emailLabel: t("f360.reps.form.email", "Email"),
-    primaryContact: t("f360.reps.form.primaryContact", "primary contact"),
-    adding: t("f360.form.adding", "Adding…"),
-    add: t("f360.reps.form.add", "Add representative"),
-    added: t("f360.form.added", "added"),
-  };
-  const toggleStrings: ToggleRepStrings = {
-    saving: t("f360.form.saving", "Saving…"),
-    deactivate: t("f360.reps.deactivate", "Deactivate"),
-    reactivate: t("f360.reps.reactivate", "Reactivate"),
-  };
-  const productStrings: AddProductStrings = {
-    nameLabel: t("f360.prod.form.name", "Product"),
-    namePlaceholder: t("f360.prod.form.namePh", "Polyethylene film rolls"),
-    hsLabel: t("f360.hsCode", "HS code"),
-    unitLabel: t("f360.prod.form.unit", "Unit"),
-    unitPlaceholder: t("f360.prod.form.unitPh", "tonne"),
-    capacityLabel: t("f360.prod.form.capacity", "Annual capacity"),
-    primaryProduct: t("f360.prod.form.primary", "primary product"),
-    adding: t("f360.form.adding", "Adding…"),
-    add: t("f360.prod.form.add", "Add product"),
-    added: t("f360.form.added", "added"),
-  };
-  const materialStrings: AddMaterialStrings = {
-    nameLabel: t("f360.mat.form.name", "Material"),
-    namePlaceholder: t("f360.mat.form.namePh", "Polyethylene resin"),
-    sourceLabel: t("f360.mat.form.source", "Source"),
-    sourceOptions: {
-      local: t("f360.mat.local", "local"),
-      imported: t("f360.mat.imported", "imported"),
-    },
-    hsLabel: t("f360.hsCode", "HS code"),
-    adding: t("f360.form.adding", "Adding…"),
-    add: t("f360.mat.form.add", "Add material"),
-    added: t("f360.form.added", "added"),
-  };
-
   return (
     <Shell current="/factories" title={`${f.name} — ${identity(f.factory_code)}`}
       context={<>
@@ -245,8 +187,9 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           yet (incident/challenge concepts don't exist — see reconciliation J-12/J-19);
           only wiring the one real, existing action rather than fabricating dead links. */}
       <div className="sq-row" style={{ justifyContent: "flex-end", marginBlockEnd: "var(--space-4)", gap: "var(--space-2)" }}>
-        <a className="sq-btn sq-btn--secondary" href={`/planning/single?factory=${f.id}&cr=${encodeURIComponent(f.cr_number ?? "")}&license=${encodeURIComponent(f.license_number ?? "")}&source=factory360`}>{t("f360.actions.planSingle", "Plan single visit")}</a>
-        <a className="sq-btn sq-btn--secondary" href={`/planning/immediate?factory=${f.id}`}>{t("f360.actions.startPlan", "Start inspection plan")}</a>
+        {permissions["create_inspection"] && <a className="sq-btn sq-btn--secondary" href={`/planning/single?factory=${f.id}&cr=${encodeURIComponent(f.cr_number ?? "")}&license=${encodeURIComponent(f.license_number ?? "")}&source=factory360`}>{t("f360.actions.planSingle", "Plan single visit")}</a>}
+        {permissions["create_inspection"] && <a className="sq-btn sq-btn--secondary" href={`/planning/immediate?factory=${f.id}`}>{t("f360.actions.startPlan", "Start inspection plan")}</a>}
+        {permissions["create_inspection"] && <span className="sq-caption" role="status">{t("f360.actions.submissionBlocked", "Inspection submission remains unavailable while DEC-032 is unresolved.")}</span>}
       </div>
 
       <div className="cd-w3">
@@ -471,7 +414,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             {!dErr && docsEmpty && (
               <div className="sq-state sq-state--inline"><span className="sq-state__glyph">📄</span>
                 <h4>{t("f360.docs.empty.title", "No documents recorded")}</h4>
-                <p className="sq-caption">{t("f360.docs.empty.desc", "Register license, CR, safety certificates and layouts below.")}</p></div>
+                <p className="sq-caption">{t("f360.docs.empty.desc", "No source-backed document metadata is available.")}</p></div>
             )}
             {!dErr && !docsEmpty && (
               <>
@@ -497,7 +440,6 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                 </div>
               </>
             )}
-            <AddDocumentForm factoryId={f.id} strings={docStrings} />
           </section>}
 
           {/* Representatives — contact fields masked for leadership only (HANDOFF_BLOCKED_ROLE) */}
@@ -507,14 +449,14 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             {!rErr && repsEmpty && (
               <div className="sq-state sq-state--inline"><span className="sq-state__glyph">👤</span>
                 <h4>{t("f360.reps.empty.title", "No representatives on record")}</h4>
-                <p className="sq-caption">{t("f360.reps.empty.desc", "Add the factory’s contact roster below.")}</p></div>
+                <p className="sq-caption">{t("f360.reps.empty.desc", "No source-backed factory contacts are available.")}</p></div>
             )}
             {!rErr && maskContacts && !repsEmpty && (
               <div className="cd-masked" role="status"><span aria-hidden="true">🔒</span>{t("f360.reps.masked", "Contact details are role-restricted for this persona (HANDOFF_BLOCKED_ROLE).")}</div>
             )}
             {!rErr && !repsEmpty && (
               <div className="sq-tablewrap"><table className="sq-table">
-                <thead><tr><th scope="col">{t("f360.reps.th.name", "Name")}</th><th scope="col">{t("f360.reps.th.role", "Role")}</th>{!maskContacts && <><th scope="col">{t("f360.reps.th.phone", "Phone")}</th><th scope="col">{t("f360.reps.th.email", "Email")}</th></>}<th scope="col">{t("f360.reps.th.flags", "Flags")}</th><th scope="col"></th></tr></thead>
+                <thead><tr><th scope="col">{t("f360.reps.th.name", "Name")}</th><th scope="col">{t("f360.reps.th.role", "Role")}</th>{!maskContacts && <><th scope="col">{t("f360.reps.th.phone", "Phone")}</th><th scope="col">{t("f360.reps.th.email", "Email")}</th></>}<th scope="col">{t("f360.reps.th.flags", "Flags")}</th></tr></thead>
                 <tbody>{(reps ?? []).map(r => (
                   <tr key={r.id}>
                     <td><strong>{r.full_name}</strong></td>
@@ -524,22 +466,20 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                       {r.is_primary && <span className="sq-lozenge sq-lozenge--info" style={{ marginInlineEnd: 4 }}>{t("f360.reps.primary", "primary")}</span>}
                       <span className={`sq-lozenge ${r.active ? "sq-lozenge--success" : "sq-lozenge--warning"}`}>{r.active ? t("f360.reps.active", "active") : t("f360.reps.inactive", "inactive")}</span>
                     </td>
-                    <td><ToggleRepActive repId={r.id} factoryId={f.id} active={r.active} strings={toggleStrings} /></td>
                   </tr>
                 ))}</tbody>
               </table></div>
             )}
-            <AddRepresentativeForm factoryId={f.id} strings={repStrings} />
           </section>}
 
-          {/* Products & HS codes (maintainable, W3 / M07-006) */}
+          {/* Products & HS codes — read-only from the authoritative source (W3 / M07-006). */}
           <section id="products" className="sq-surface" style={{ padding: "var(--space-6)" }}>
             <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("f360.prod.heading", "Products & HS codes (M07-006)")}</h4>
             {pErr && <div className="sq-banner sq-banner--critical"><div><strong>{t("f360.prod.err", "Couldn’t load products.")}</strong> {mapFactoryError(pErr, "load")} — {retry}.</div></div>}
             {!pErr && productsEmpty && (
               <div className="sq-state sq-state--inline"><span className="sq-state__glyph">📦</span>
                 <h4>{t("f360.prod.empty.title", "No products recorded")}</h4>
-                <p className="sq-caption">{t("f360.prod.empty.desc", "Register the factory’s product list with HS codes below.")}</p></div>
+                <p className="sq-caption">{t("f360.prod.empty.desc", "No source-backed products are available.")}</p></div>
             )}
             {!pErr && !productsEmpty && (
               <div className="sq-tablewrap"><table className="sq-table">
@@ -555,17 +495,16 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                 ))}</tbody>
               </table></div>
             )}
-            <AddProductForm factoryId={f.id} strings={productStrings} />
           </section>
 
-          {/* Raw materials (maintainable, W3 / M07-007) */}
+          {/* Raw materials — read-only from the authoritative source (W3 / M07-007). */}
           <section id="materials" className="sq-surface" style={{ padding: "var(--space-6)" }}>
             <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("f360.mat.heading", "Raw materials (M07-007)")}</h4>
             {mErr && <div className="sq-banner sq-banner--critical"><div><strong>{t("f360.mat.err", "Couldn’t load materials.")}</strong> {mapFactoryError(mErr, "load")} — {retry}.</div></div>}
             {!mErr && materialsEmpty && (
               <div className="sq-state sq-state--inline"><span className="sq-state__glyph">🧱</span>
                 <h4>{t("f360.mat.empty.title", "No raw materials recorded")}</h4>
-                <p className="sq-caption">{t("f360.mat.empty.desc", "Register the factory’s raw-material inputs below.")}</p></div>
+                <p className="sq-caption">{t("f360.mat.empty.desc", "No source-backed raw materials are available.")}</p></div>
             )}
             {!mErr && !materialsEmpty && (
               <div className="sq-tablewrap"><table className="sq-table">
@@ -579,7 +518,6 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                 ))}</tbody>
               </table></div>
             )}
-            <AddMaterialForm factoryId={f.id} strings={materialStrings} />
           </section>
 
           {/* Workforce & industrial indicators — source-owned, display-only (W3 / M07-008/009) */}

@@ -1,16 +1,12 @@
 "use client";
 import { useActionState, useMemo, useState } from "react";
-import {
-  addClause,
-  addRegulationAttachment,
-  createRegulation,
-  deactivateRegulation,
-  publishRegulation,
-  updateRegulationDraft,
-  type RegResult,
-} from "./actions";
 import EmptyState from "@/components/EmptyState";
 import { IconSearch } from "@/app/icons";
+import {
+  activateRegulation,
+  deactivateRegulation,
+  type RegulationLifecycleResult,
+} from "./actions";
 
 // SCR-ADM-010 (CD-005) + SCR-ADM-011 (CD-006) — client controls consume
 // server-built strings only (SB19). Colour comes exclusively from legacy tokens/classes;
@@ -81,112 +77,61 @@ export type RegStrings = {
 const fill = (tmpl: string, vars: Record<string, string | number>) =>
   Object.entries(vars).reduce((acc, [k, v]) => acc.split(`{${k}}`).join(String(v)), tmpl);
 
-// ---------------------------------------------------------------------------
-// Proven action W06/create — create draft regulation (regulations insert, audited)
-export function NewRegulationForm({ strings: s }: { strings: RegStrings }) {
-  const [state, formAction, pending] = useActionState<RegResult, FormData>(createRegulation, {});
-  return (
-    <form action={formAction} className="panel" style={{ padding: "var(--space-6)", display: "flex", gap: "var(--space-4)", alignItems: "flex-end", flexWrap: "wrap" }}>
-      <div className="sq-field"><label className="sq-field__label" htmlFor="reg-code">{s.code}</label>
-        <input id="reg-code" className="sq-input numeric" name="code" placeholder="SBC-501" required /></div>
-      <div className="sq-field" style={{ flex: 1, minInlineSize: 220 }}><label className="sq-field__label" htmlFor="reg-title">{s.title}</label>
-        <input id="reg-title" className="sq-input" name="title" placeholder={s.titlePlaceholder} required /></div>
-      <div className="sq-field" style={{ flex: 1, minInlineSize: 220 }}><label className="sq-field__label" htmlFor="reg-auth">{s.issuingAuthority}</label>
-        <input id="reg-auth" className="sq-input" name="issuing_authority" /></div>
-      <div className="sq-field"><label className="sq-field__label" htmlFor="reg-effective">{s.effectiveFrom}</label>
-        <input id="reg-effective" className="sq-input numeric" type="date" name="effective_from" required /></div>
-      <div className="sq-field"><label className="sq-field__label" htmlFor="reg-version">{s.versionLabel}</label>
-        <input id="reg-version" className="sq-input numeric" name="version_label" defaultValue="v1" required /></div>
-      <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? s.creating : s.create}</button>
-      {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
-      {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓</span> {s.created}</span>}
-    </form>
-  );
-}
-
-// Proven action W02/add-clause — clause insert (accepts legal_source). Audit-tracked
-// at the DB (trg_audit_regulation_clauses → audit_events).
-export function AddClauseForm({ regulationId, strings: s }: { regulationId: string; strings: RegStrings }) {
-  const [state, formAction, pending] = useActionState<RegResult, FormData>(addClause, {});
-  return (
-    <form action={formAction} className="stack" style={{ gap: "var(--space-2)", marginBlockStart: "var(--space-4)" }}>
-      <div className="row" style={{ gap: "var(--space-3)", alignItems: "flex-end", flexWrap: "wrap" }}>
-        <input type="hidden" name="regulation_id" value={regulationId} />
-        <div className="sq-field"><label className="sq-field__label" htmlFor={`cl-ref-${regulationId}`}>{s.clauseRef}</label>
-          <input id={`cl-ref-${regulationId}`} className="sq-input numeric" name="clause_ref" placeholder="4.2" required style={{ maxInlineSize: 100 }} /></div>
-        <div className="sq-field" style={{ flex: 1, minInlineSize: 200 }}><label className="sq-field__label" htmlFor={`cl-title-${regulationId}`}>{s.title}</label>
-          <input id={`cl-title-${regulationId}`} className="sq-input" name="title" required /></div>
-        <div className="sq-field" style={{ flex: 1, minInlineSize: 180 }}><label className="sq-field__label" htmlFor={`cl-src-${regulationId}`}>{s.legalSource}</label>
-          <input id={`cl-src-${regulationId}`} className="sq-input" name="legal_source" placeholder={s.legalSourcePlaceholder} /></div>
-        <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.adding : s.addClause}</button>
-        {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
-        {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓</span> {s.added}</span>}
-      </div>
-      <p className="t-caption" style={{ margin: 0 }}><span aria-hidden="true">ⓘ</span> {s.clauseNotAudited}</p>
-    </form>
-  );
-}
-
-// Governed publish validates clause mappings in the server action, records the checker,
-// and relies on the DB for maker-checker and post-publication immutability.
-export function PublishRegulation({ regulationId, strings: s }: { regulationId: string; strings: RegStrings }) {
-  const [state, formAction, pending] = useActionState<RegResult, FormData>(publishRegulation, {});
-  return (
-    <form action={formAction} className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
-      <input type="hidden" name="regulation_id" value={regulationId} />
-      <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? s.publishing : s.publish}</button>
-      {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
-    </form>
-  );
-}
-
-export function EditRegulationDraft({ regulation, strings: s }: {
-  regulation: { id: string; title: string; issuingAuthority: string | null; effectiveFrom: string | null };
-  strings: RegStrings;
+export function RegulationLifecycleControl({
+  entityId,
+  operationalStatus,
+  labels,
+}: {
+  entityId: string;
+  operationalStatus: string;
+  labels: {
+    activationReason: string;
+    deactivationReason: string;
+    applying: string;
+    activate: string;
+    deactivate: string;
+    alreadyMatched: string;
+    changedTo: string;
+    cascaded: string;
+    childrenNotReactivated: string;
+    missingReference: string;
+    reasonRequired: string;
+    denied: string;
+    notFound: string;
+    providerError: string;
+  };
 }) {
-  const [state, formAction, pending] = useActionState<RegResult, FormData>(updateRegulationDraft, {});
-  return (
-    <form action={formAction} className="stack" style={{ gap: "var(--space-3)" }} aria-label={s.saveDraft}>
-      <input type="hidden" name="regulation_id" value={regulation.id} />
-      <div className="row" style={{ gap: "var(--space-3)", alignItems: "flex-end", flexWrap: "wrap" }}>
-        <div className="sq-field" style={{ flex: 1, minInlineSize: 220 }}><label className="sq-field__label" htmlFor={`reg-edit-title-${regulation.id}`}>{s.title}</label>
-          <input id={`reg-edit-title-${regulation.id}`} className="sq-input" name="title" defaultValue={regulation.title} required /></div>
-        <div className="sq-field" style={{ flex: 1, minInlineSize: 220 }}><label className="sq-field__label" htmlFor={`reg-edit-auth-${regulation.id}`}>{s.issuingAuthority}</label>
-          <input id={`reg-edit-auth-${regulation.id}`} className="sq-input" name="issuing_authority" defaultValue={regulation.issuingAuthority ?? ""} /></div>
-        <div className="sq-field"><label className="sq-field__label" htmlFor={`reg-edit-effective-${regulation.id}`}>{s.effectiveFrom}</label>
-          <input id={`reg-edit-effective-${regulation.id}`} className="sq-input numeric" type="date" name="effective_from" defaultValue={regulation.effectiveFrom?.slice(0, 10) ?? ""} /></div>
-        <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.savingDraft : s.saveDraft}</button>
-      </div>
-      {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert"><span aria-hidden="true">✕ </span>{state.error}</span>}
-      {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓ </span>{s.draftSaved}</span>}
-    </form>
-  );
-}
-
-export function AddRegulationAttachment({ regulationId, strings: s }: { regulationId: string; strings: RegStrings }) {
-  const [state, formAction, pending] = useActionState<RegResult, FormData>(addRegulationAttachment, {});
-  return (
-    <form action={formAction} className="stack" style={{ gap: "var(--space-3)" }} aria-label={s.addAttachment}>
-      <input type="hidden" name="regulation_id" value={regulationId} />
-      <div className="row" style={{ gap: "var(--space-3)", alignItems: "flex-end", flexWrap: "wrap" }}>
-        <div className="sq-field" style={{ flex: 1, minInlineSize: 260 }}><label className="sq-field__label" htmlFor={`att-file-${regulationId}`}>{s.attachmentName}</label><input id={`att-file-${regulationId}`} className="sq-input" type="file" name="file" required /></div>
-        <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.addingAttachment : s.addAttachment}</button>
-      </div>
-      {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert"><span aria-hidden="true">✕ </span>{state.error}</span>}
-      {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓ </span>{s.attachmentAdded}</span>}
-    </form>
-  );
-}
-
-export function DeactivateRegulation({ regulationId, strings: s }: { regulationId: string; strings: RegStrings }) {
-  const [state, formAction, pending] = useActionState<RegResult, FormData>(deactivateRegulation, {});
+  const activating = operationalStatus === "deactivated";
+  const action = activating ? activateRegulation : deactivateRegulation;
+  const [state, formAction, pending] = useActionState<RegulationLifecycleResult, FormData>(action, {});
+  const cascaded = state.cascaded;
+  const errorMessage = state.errorCode === "missing_reference" ? labels.missingReference
+    : state.errorCode === "reason_required" ? labels.reasonRequired
+      : state.errorCode === "denied" ? labels.denied
+        : state.errorCode === "not_found" ? labels.notFound
+          : state.errorCode === "provider" ? labels.providerError
+            : state.error;
   return (
     <form action={formAction} className="stack" style={{ gap: "var(--space-2)", alignItems: "flex-start" }}>
-      <input type="hidden" name="regulation_id" value={regulationId} />
-      <label className="sq-field"><span className="sq-field__label">{s.deactivationReason}</span><textarea className="sq-input" name="deactivation_reason" required /></label>
-      <button className="btn btn-ghost btn-touch" disabled={pending}>{pending ? s.deactivating : s.deactivate}</button>
-      {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert"><span aria-hidden="true">✕ </span>{state.error}</span>}
-      {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓ </span>{s.deactivated}</span>}
+      <input type="hidden" name="entity_id" value={entityId} />
+      <label className="sq-field">
+        <span className="sq-field__label">{activating ? labels.activationReason : labels.deactivationReason}</span>
+        <textarea className="sq-input" name="reason" required />
+      </label>
+      <button className={activating ? "btn btn-primary btn-touch" : "btn btn-ghost btn-touch"} disabled={pending}>
+        {pending ? labels.applying : activating ? labels.activate : labels.deactivate}
+      </button>
+      {errorMessage ? <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{errorMessage}</span> : null}
+      {state.ok ? (
+        <span className="badge badge-compliant" role="status">
+          <span aria-hidden="true">✓ </span>
+          {state.idempotent ? labels.alreadyMatched : fill(labels.changedTo, { status: state.operationalStatus ?? "" })}
+          {cascaded && !activating
+            ? ` ${fill(labels.cascaded, { items: cascaded.inspection_items, violations: cascaded.violations, penalties: cascaded.penalties })}`
+            : ""}
+          {activating ? ` ${labels.childrenNotReactivated}` : ""}
+        </span>
+      ) : null}
     </form>
   );
 }
@@ -206,11 +151,12 @@ export type RegRowLite = {
 };
 
 function StatusChip({ status, s }: { status: string; s: RegStrings }) {
-  const published = status === "published";
+  const active = status === "active";
+  const scheduled = status === "scheduled";
   const deactivated = status === "deactivated";
   return (
-    <span className={`sq-lozenge ${published ? "sq-lozenge--success" : deactivated ? "sq-lozenge--critical" : "sq-lozenge--warning"}`}>
-      <span aria-hidden="true">{published ? "●" : deactivated ? "✕" : "◌"}</span> {published ? s.statusPublished : deactivated ? s.statusDeactivated : s.statusDraft}
+    <span className={`sq-lozenge ${active ? "sq-lozenge--success" : deactivated ? "sq-lozenge--critical" : "sq-lozenge--warning"}`}>
+      <span aria-hidden="true">{active ? "●" : deactivated ? "✕" : "◷"}</span> {active ? s.statusPublished : deactivated ? s.statusDeactivated : scheduled ? s.statusDraft : status}
     </span>
   );
 }
@@ -239,7 +185,7 @@ function ImpactRail({ r, s }: { r: RegRowLite; s: RegStrings }) {
           ) : (
             <span className="t-caption"><span aria-hidden="true">✓</span> <span className="numeric"><bdi dir="ltr">{r.clauseCount}</bdi></span></span>
           )}
-          {r.status === "draft" && noClauses ? (
+          {r.status !== "deactivated" && noClauses ? (
             <span className="t-caption" style={{ color: "var(--status-warning-text)" }}><span aria-hidden="true">⚠</span> {s.invalidNoClauses}</span>
           ) : null}
         </div>
@@ -268,12 +214,12 @@ function ImpactRail({ r, s }: { r: RegRowLite; s: RegStrings }) {
 // Search + lifecycle filtering never touch the backend — no new read leg is invented.
 export function RegulationRegister({ rows, strings: s }: { rows: RegRowLite[]; strings: RegStrings }) {
   const [q, setQ] = useState("");
-  const [life, setLife] = useState<"all" | "published" | "draft" | "deactivated">("all");
+  const [life, setLife] = useState<"all" | "active" | "scheduled" | "deactivated">("all");
 
   const counts = useMemo(() => ({
     all: rows.length,
-    published: rows.filter(r => r.status === "published").length,
-    draft: rows.filter(r => r.status === "draft").length,
+    active: rows.filter(r => r.status === "active").length,
+    scheduled: rows.filter(r => r.status === "scheduled").length,
     deactivated: rows.filter(r => r.status === "deactivated").length,
   }), [rows]);
 
@@ -286,7 +232,7 @@ export function RegulationRegister({ rows, strings: s }: { rows: RegRowLite[]; s
     });
   }, [rows, q, life]);
 
-  const chip = (key: "all" | "published" | "draft" | "deactivated", label: string, n: number) => (
+  const chip = (key: "all" | "active" | "scheduled" | "deactivated", label: string, n: number) => (
     <button
       type="button"
       className={`sq-filterchip ${life === key ? "is-active" : ""}`}
@@ -312,8 +258,8 @@ export function RegulationRegister({ rows, strings: s }: { rows: RegRowLite[]; s
         </div>
         <div className="row" role="group" aria-label={s.filterLegend} style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
           {chip("all", s.filterAll, counts.all)}
-          {chip("published", s.filterPublished, counts.published)}
-          {chip("draft", s.filterDraft, counts.draft)}
+          {chip("active", s.filterPublished, counts.active)}
+          {chip("scheduled", s.filterDraft, counts.scheduled)}
           {chip("deactivated", s.filterDeactivated, counts.deactivated)}
         </div>
       </div>

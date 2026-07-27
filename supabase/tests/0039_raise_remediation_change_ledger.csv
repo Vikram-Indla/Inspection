@@ -1,0 +1,10 @@
+change_id,function_or_probe,corrected_branches,sqlstate,message_contract,coverage
+RAISE-001,private.ccr_validate_snapshot,9,23514,"CCR_SNAPSHOT_OBJECT_REQUIRED through CCR_SECTIONS_ARRAY_REQUIRED","0039 definition token inventory plus 33-branch 23514 count"
+RAISE-002,public.add_compliance_request_component,3,"42501;23514","CCR_NOT_AUTHORIZED; CCR_NOT_EDITABLE; CCR_MODIFY_TARGET_REQUIRED","0039 definition token inventory plus 4-branch 42501 and 33-branch 23514 counts"
+RAISE-003,private.ccr_validate_publication_trigger,3,23514,"CCR_PUBLICATION_COMPONENT_INVALID; CCR_TEMPLATE_VERSION_NOT_PUBLISHED; CCR_DEPENDENCY_VERSION_MISSING:*","0039 definition token inventory plus 33-branch 23514 count"
+RAISE-004,public.decide_enforcement_recommendation,10,"42501;23514;23505","authorization; required input; maker-checker; CAS; idempotency messages unchanged","0039 static inventory plus existing maker-checker/CAS/replay/mismatch/audit behavior"
+RAISE-005,public.issue_bulk_violation,11,"42501;23514;23505","authorization; acknowledgement; target/package/governance; idempotency messages unchanged","0039 static inventory plus RBAC/ack/package/rollback/success/replay/mismatch behavior"
+RAISE-006,private.guard_submission_action_forms_and_config,7,23514,"submission/config/action-form messages unchanged","0039 static inventory plus missing/incomplete/complete submission behavior"
+RAISE-007,private.ccr_validate_snapshot CASE else,1,23514,CCR_COMPONENT_KIND_INVALID,"CASE now yields NULL then raises in a statement-level IF; token and branch-count assertions"
+RAISE-008,pg_temp.reject_second_bulk_target probe,1,23514,PROBE_SECOND_TARGET_FAILURE,"0039 deterministic second-target failure and all-or-nothing rollback behavior"
+RAISE-009,all seven deployed functions,40,"33x23514;4x42501;3x23505",all prior stable messages preserved,"0039 rejects condition-name RAISE text and verifies exact compiled branch counts"

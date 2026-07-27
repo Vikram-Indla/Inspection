@@ -31,6 +31,32 @@ export async function invalidateUserRoles(userId: string) {
   revalidateTag(roleTag(userId));
 }
 
+// Shell identity. The account chip used to render the email local-part, which
+// reads as a machine handle rather than the signed-in officer. The governed
+// display name already exists on `profiles.full_name`; a missing row falls back
+// to the email local-part rather than inventing a name.
+export const getUserProfile = cache(async (userId: string) => {
+  const sb = await supabaseServer();
+  return unstable_cache(
+    async () => sb.from("profiles").select("full_name, region, org_scope").eq("user_id", userId).maybeSingle(),
+    ["user-profile", userId],
+    { revalidate: ROLE_CACHE_SECONDS, tags: [roleTag(userId)] },
+  )();
+});
+
+// `roles.title` is the human label for a role_key ("Level 2 Reviewer" for
+// `reviewer`). Titles are configuration, not per-user data, so they cache on
+// their own tag and are shared across every signed-in render.
+const ROLE_TITLE_TAG = "role-titles";
+export const getRoleTitles = cache(async () => {
+  const sb = await supabaseServer();
+  return unstable_cache(
+    async () => sb.from("roles").select("role_key, title"),
+    ["role-titles"],
+    { revalidate: 300, tags: [ROLE_TITLE_TAG] },
+  )();
+});
+
 // Shell region dropdown values. factories_read grants every authenticated
 // user the same visibility (0002: auth.uid() is not null), so the deduped
 // result is identical for all callers in the render. A failed/empty read

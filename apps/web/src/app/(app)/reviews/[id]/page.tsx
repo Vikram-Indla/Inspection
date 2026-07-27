@@ -57,22 +57,23 @@ export default async function ReviewWorkspace({ params, searchParams }: {
   }
   // RLS (0002_rbac_audit.sql: inspections_read/subs_read/reviews_read) and the
   // CD-030 design scope itself ("P11 · Reviewer/Auditor") grant auditor,
-  // planner and leadership read access to this record — the page-level gate
+  // planner, leadership and the assigned inspector read access to this record
+  // — the page-level gate
   // must not be narrower than that or it silently weakens an accepted
   // permission (CLAUDE.md). canDecide stays reviewer/ops-only: it gates
   // StartReview/DecisionPanel, which is the real guard against the read
   // roles ever submitting a decision (reviews_insert's RLS is not itself a
   // tight boundary here).
-  const authorized = !!user && (roleRows ?? []).some(r => ["reviewer", "ops", "auditor", "planner", "leadership"].includes(r.role_key));
+  const authorized = !!user && (roleRows ?? []).some(r => ["reviewer", "ops", "auditor", "planner", "leadership", "inspector"].includes(r.role_key));
   const canDecide = !!user && (roleRows ?? []).some(r => r.role_key === "reviewer" || r.role_key === "ops");
-  const viewerRole = (roleRows ?? []).find(r => ["reviewer", "ops", "auditor", "planner", "leadership"].includes(r.role_key))?.role_key ?? null;
+  const viewerRole = (roleRows ?? []).find(r => ["reviewer", "ops", "auditor", "planner", "leadership", "inspector"].includes(r.role_key))?.role_key ?? null;
   if (!authorized) {
     return (
       <Shell current="/reviews" title={t("review.ws.unauthTitle", "You don’t have access to this review")}>
         <section className="sq-surface cd-panelpad cd-result" role="alert">
           <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--critical" aria-hidden="true"><IconBlocked size={24} /></div>
             <div className="cd-stack"><h3 tabIndex={-1}>{t("review.ws.unauthTitle", "You don’t have access to this review")}</h3>
-              <p>{t("review.ws.unauthBody", "This workspace requires the Level 2 Reviewer role and matching scope. Navigation visibility is not authorization.")}</p></div></div>
+              <p>{t("review.ws.unauthBody", "This workspace requires an authorized review, planning, operations, audit, leadership or assigned-inspector role with matching scope. Navigation visibility is not authorization.")}</p></div></div>
         </section>
       </Shell>
     );

@@ -1,0 +1,26 @@
+assertion_id,original_lines,contract,replacement_mechanism,fixture_or_catalog_scope,rollback_guarantee
+NP39-001,6-8,typed decision and bulk RPCs exist,DO block raises when either regprocedure is absent,pg_proc catalog,outer transaction rollback
+NP39-002,9-12,unsafe execute grants are absent,DO block raises when anon or legacy overload may execute,role/function ACL catalog,outer transaction rollback
+NP39-003,13-20,direct table mutation is denied,DO block raises on authenticated UPDATE/INSERT/DELETE grants,table ACL catalog,outer transaction rollback
+NP39-004,21-23,decision RPC contains lock maker-checker idempotency and audit guards,DO block inspects function definition and raises on any missing guard,pg_get_functiondef,outer transaction rollback
+NP39-005,24-31,bulk RPC is atomic deterministic safely qualified and requires explicit locked package,DO block inspects function definition and raises on missing or forbidden tokens,pg_get_functiondef,outer transaction rollback
+NP39-006,32-34,CCR validator exists and is private,DO block raises when absent or authenticated may execute,pg_proc and ACL catalog,outer transaction rollback
+NP39-007,35-39,CCR vocabulary includes action forms and keeps CR-471/472 unconfigured,DO block raises on missing action-form kind or forbidden scoring kinds,pg_constraint catalog,outer transaction rollback
+NP39-008,40-45,submission guard enforces canonical mandatory fields and runtime config locking,DO block inspects trigger definition and raises on missing guards,pg_get_functiondef,outer transaction rollback
+NP39-009,101-113,inspector cannot bulk issue,expected SQLSTATE and exact message are caught; mismatch rethrows,deterministic inspector fixture,outer transaction rollback
+NP39-010,115-126,bulk acknowledgement is mandatory,expected SQLSTATE and exact message are caught; mismatch rethrows,deterministic operations fixture,outer transaction rollback
+NP39-011,127-137,bulk package version must be published active and locked,expected SQLSTATE and exact message are caught; mismatch rethrows,deterministic draft package fixture,outer transaction rollback
+NP39-012,140-151,enforcement maker-checker blocks proposer,expected SQLSTATE and exact message are caught; mismatch rethrows,deterministic recommendation fixture,outer transaction rollback
+NP39-013,152-160,enforcement CAS rejects decided recommendation,expected SQLSTATE and exact message are caught; mismatch rethrows,deterministic approved recommendation fixture,outer transaction rollback
+NP39-014,161-171,enforcement exact replay is idempotent,DO block raises unless first and replay receipts have false/true replay flags,deterministic request and correlation IDs,outer transaction rollback
+NP39-015,172-180,enforcement replay payload mismatch is rejected,expected SQLSTATE and exact message are caught; mismatch rethrows,deterministic reused request ID,outer transaction rollback
+NP39-016,181-187,enforcement decision emits audit,DO block raises unless exact object/action audit exists,deterministic recommendation ID,outer transaction rollback
+NP39-017,192-226,second bulk target failure propagates,temporary trigger forces exact second-target failure and mismatch rethrows,deterministic two-factory fixture,temporary function and trigger rolled back
+NP39-018,205-234,failed bulk issuance leaves no partial graph or audit,DO block compares before/after batch visit inspection violation and audit counts,deterministic request ID,outer transaction rollback
+NP39-019,241-258,successful bulk issuance is all-target and truthful,DO block raises unless status replay and item counts are exact,deterministic two-factory fixture,outer transaction rollback
+NP39-020,259-270,bulk exact replay returns same batch,DO block raises unless replay flag and batch ID match,deterministic request and correlation IDs,outer transaction rollback
+NP39-021,271-283,bulk replay payload mismatch is rejected,expected SQLSTATE and exact message are caught; mismatch rethrows,deterministic reused request ID,outer transaction rollback
+NP39-022,312-325,mandatory action form absence blocks submission,expected SQLSTATE and exact message are caught; mismatch rethrows,deterministic locked snapshot fixture,outer transaction rollback
+NP39-023,326-343,incomplete canonical action form blocks submission,expected SQLSTATE and exact indexed message are caught; mismatch rethrows,deterministic incomplete action form fixture,outer transaction rollback
+NP39-024,344-354,complete canonical action form permits immutable submission,INSERT must complete or the probe aborts,deterministic completed action form and snapshot,outer transaction rollback
+NP39-025,357,all fixtures and helper objects are discarded,explicit final rollback is mandatory,entire probe transaction,rollback statement

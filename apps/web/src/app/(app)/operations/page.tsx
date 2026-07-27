@@ -83,6 +83,30 @@ type OverrideRow = {
     name: string; region: string | null; city: string | null; factory_code: string | null;
   } | null; assignments: { profiles: { full_name: string } | null }[] | null } | null;
 };
+type OperationsTimelineRow = {
+  event_key: string;
+  occurred_at: string;
+  object_type: string;
+  object_id: string;
+  payload: Record<string, unknown>;
+};
+type OperationsKpiDefinition = {
+  metric_key: string;
+  formula: string | null;
+  source_lineage: unknown;
+  definition_version: number | null;
+  source_status: string;
+};
+type OperationsKpiContract = {
+  authorized?: boolean;
+  configured?: boolean;
+  decision?: string;
+  period?: unknown;
+  timezone?: unknown;
+  policy_version?: number | null;
+  blocked_by?: string;
+  definitions?: OperationsKpiDefinition[];
+};
 
 const CLEAN_FACTORY_CODES = new Set([
   "F-1101", "F-1102", "F-1103", "F-1104", "F-1105",
@@ -186,12 +210,15 @@ function computeSlaFlags(visits: VisitRow[], sla: SlaConf, nowMs: number): SlaFl
   return flags.sort((a, b) => rank(a) - rank(b) || a.deadlineMs - b.deadlineMs);
 }
 
-export default async function Operations({ searchParams }: { searchParams: Promise<{ region?: string; city?: string; view?: string }> }) {
+export default async function Operations({ searchParams }: {
+  searchParams: Promise<{ region?: string; city?: string; view?: string; timelineVisit?: string }>;
+}) {
   preloadShell("/operations");
   const sp = await searchParams;
   const region = typeof sp.region === "string" ? sp.region : "";
   const city = typeof sp.city === "string" ? sp.city : "";
   const view = sp.view === "performance" ? "performance" : "map";
+  const requestedTimelineVisit = typeof sp.timelineVisit === "string" ? sp.timelineVisit : "";
   const { t, locale } = await useT();
   const local = (english: string, arabic: string) => locale === "ar" ? arabic : english;
   const localePersonName = (name: string | null | undefined) => {
@@ -265,7 +292,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   // decide_geo_override remains the database-authoritative race guard.
   const now = Date.now();
   const nowIso = new Date(now).toISOString();
-  const [visitsRes, geoRes, actionsRes, notifsRes, factoriesRes, engineRes, riskRes, overrideRes, overrideEvidenceRes] = await Promise.all([
+  const [visitsRes, actionsRes, notifsRes, factoriesRes, engineRes, riskRes, overrideRes, overrideEvidenceRes] = await Promise.all([
     // KPI counts by operational_state span ALL visits — operational state is its own
     // domain (FND-002); filtering by planning_status here previously zeroed the cards.
     collectPostgrestPages<VisitRow>((from, to) => sb.from("visits")
@@ -273,14 +300,6 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       .order("window_start", { ascending: true })
       .order("id", { ascending: true })
       .range(from, to) as unknown as PromiseLike<PostgrestPage<VisitRow>>),
-    // M08-014 location history must not silently disappear once the table
-    // exceeds an arbitrary recent-row limit. Page the immutable ledger using a
-    // stable order, then scope it to the monitored visits below.
-    collectPostgrestPages<GeoRow>((from, to) => sb.from("geo_events")
-      .select("id, visit_id, kind, geofence_result, accuracy_m, occurred_at, observed_lat, observed_lng, integration_mode")
-      .order("occurred_at", { ascending: false })
-      .order("id", { ascending: true })
-      .range(from, to) as unknown as PromiseLike<PostgrestPage<GeoRow>>),
     // Corrective actions queue (M09-027 blocking flag; DEC-003 due default 14d)
     collectPostgrestPages<ActionRow>((from, to) => sb.from("action_forms")
       .select("id, form_type, owner_name, owner_role, due_at, status, is_blocking, required_correction, inspections(visit_id, visits(factories(id, name, factory_code, region, city)))")
@@ -321,9 +340,48 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       .eq("linked_type", "geo_override").eq("evidence_type", "photo"),
   ]);
 
+  const isVerificationFactory = (factory: FactoryEmbed | FactoryRow | null) =>
+    factory?.source === "verification_fixture" || isTestFixtureEstablishment(factory);
+  const integrityFilteredVisits = ((visitsRes.data ?? []) as unknown as VisitRow[])
+    .filter(visit => isCleanFactory(visit.factories) && !isVerificationFactory(visit.factories));
+  // CR-439/CR-447: narrow every widget to the caller's authorized geography.
+  const visits = integrityFilteredVisits
+    .filter(visit => inAuthorizedGeography(visit.factories?.region ?? null, visit.factories?.city ?? null));
+  const outOfScopeVisitCount = integrityFilteredVisits.length - visits.length;
+
+  // M08-014 / CR-443: request the immutable ledger only for visits that can
+  // appear in the caller's current monitoring scope. Chunking keeps the
+  // PostgREST `in` filter bounded while stable paging avoids history loss.
+  const geoVisitIds = visits
+    .filter(visit =>
+      (visit.planning_status === "published"
+        || ["on_the_way", "arrived", "executing"].includes(visit.operational_state))
+      && (!region || visit.factories?.region === region)
+      && (!city || visit.factories?.city === city))
+    .map(visit => visit.id);
+  const geoIdChunks = Array.from(
+    { length: Math.ceil(geoVisitIds.length / 100) },
+    (_, index) => geoVisitIds.slice(index * 100, (index + 1) * 100),
+  );
+  const geoChunkResults = await Promise.all(geoIdChunks.map(visitIds =>
+    collectPostgrestPages<GeoRow>((from, to) => sb.from("geo_events")
+      .select("id, visit_id, kind, geofence_result, accuracy_m, occurred_at, observed_lat, observed_lng, integration_mode")
+      .in("visit_id", visitIds)
+      .or("integration_mode.is.null,integration_mode.eq.production")
+      .lte("occurred_at", nowIso)
+      .order("occurred_at", { ascending: false })
+      .order("id", { ascending: true })
+      .range(from, to) as unknown as PromiseLike<PostgrestPage<GeoRow>>),
+  ));
+  const geoError = geoChunkResults.find(result => result.error)?.error ?? null;
+  const geo = geoChunkResults
+    .flatMap(result => (result.data ?? []) as unknown as GeoRow[])
+    .sort((a, b) => Date.parse(b.occurred_at) - Date.parse(a.occurred_at)
+      || a.id.localeCompare(b.id));
+
   const loadErrors = [
     visitsRes.error && "visit monitoring",
-    geoRes.error && "geofence events",
+    geoError && "geofence events",
     actionsRes.error && "corrective actions",
     notifsRes.error && "notifications",
     factoriesRes.error && "factory list",
@@ -333,7 +391,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     overrideEvidenceRes.error && "override evidence",
   ].filter(Boolean) as string[];
   if (visitsRes.error) console.error(`[operations] visits read failed: ${visitsRes.error.message}`);
-  if (geoRes.error) console.error(`[operations] geo_events read failed: ${geoRes.error.message}`);
+  if (geoError) console.error(`[operations] geo_events read failed: ${geoError.message}`);
   if (actionsRes.error) console.error(`[operations] action_forms read failed: ${actionsRes.error.message}`);
   if (notifsRes.error) console.error(`[operations] notifications read failed: ${notifsRes.error.message}`);
   if (factoriesRes.error) console.error(`[operations] factories read failed: ${factoriesRes.error.message}`);
@@ -342,15 +400,6 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   if (overrideRes.error) console.error(`[operations] override queue read failed: ${overrideRes.error.message}`);
   if (overrideEvidenceRes.error) console.error(`[operations] override evidence read failed: ${overrideEvidenceRes.error.message}`);
 
-  const isVerificationFactory = (factory: FactoryEmbed | FactoryRow | null) =>
-    factory?.source === "verification_fixture" || isTestFixtureEstablishment(factory);
-  const integrityFilteredVisits = ((visitsRes.data ?? []) as unknown as VisitRow[])
-    .filter(visit => isCleanFactory(visit.factories) && !isVerificationFactory(visit.factories));
-  // CR-439/CR-447: narrow every widget to the caller's authorized geography.
-  const visits = integrityFilteredVisits
-    .filter(visit => inAuthorizedGeography(visit.factories?.region ?? null, visit.factories?.city ?? null));
-  const outOfScopeVisitCount = integrityFilteredVisits.length - visits.length;
-  const geo = (geoRes.data ?? []) as unknown as GeoRow[];
   const actions = ((actionsRes.data ?? []) as unknown as ActionRow[]).filter(action => {
     const factory = action.inspections?.visits?.factories;
     return isCleanFactory(factory) && inAuthorizedGeography(factory?.region ?? null, factory?.city ?? null);
@@ -407,18 +456,23 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   // probe fails and the queue simply renders empty — the page never breaks.
   type CancellationReqRow = {
     id: string; visit_id: string; phase: string; reason_key: string; comment: string | null;
-    evidence_id: string | null; requested_at: string;
+    evidence_id: string | null; requested_at: string; status: string;
+    decided_at: string | null; decision_reason: string | null;
     visits: { factories: {
       name: string; region: string | null; city: string | null; factory_code: string | null;
     } | null; assignments: { profiles: { full_name: string } | null }[] | null } | null;
   };
   let cancellationQueueRows: CancellationQueueRow[] = [];
+  let cancellationHistoryRows: Array<{
+    id: string; visit_id: string; factory_name: string | null; reason_label: string;
+    status: string; requested_at: string; decided_at: string | null; decision_reason: string | null;
+  }> = [];
   let outOfScopeCancellationCount = 0;
   {
     const { data: cancelRows, error: cancelError } = await sb.from("cancellation_requests")
-      .select("id, visit_id, phase, reason_key, comment, evidence_id, requested_at, visits(factories(name, region, city, factory_code), assignments(profiles(full_name)))")
-      .eq("status", "pending")
-      .order("requested_at", { ascending: true });
+      .select("id, visit_id, phase, reason_key, comment, evidence_id, requested_at, status, decided_at, decision_reason, visits(factories(name, region, city, factory_code), assignments(profiles(full_name)))")
+      .order("requested_at", { ascending: false })
+      .limit(200);
     if (cancelError) {
       // Expected pre-migration (table absent) — degrade silently to an empty queue.
       if (!cancelError.message.includes("cancellation_requests")) {
@@ -436,7 +490,8 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       outOfScopeCancellationCount = integrityFilteredRows.length - rows.length;
       const reasonLabels = new Map<string, string>();
       for (const r of fieldCfgReasons) reasonLabels.set(r.key, r.label);
-      const evidenceIds = rows.map(r => r.evidence_id).filter((v): v is string => !!v);
+      const pendingRows = rows.filter(row => row.status === "pending");
+      const evidenceIds = pendingRows.map(r => r.evidence_id).filter((v): v is string => !!v);
       const cancelEvidenceUrls = new Map<string, string>();
       if (evidenceIds.length > 0) {
         const { data: cancelEvidence } = await sb.from("evidence")
@@ -448,13 +503,23 @@ export default async function Operations({ searchParams }: { searchParams: Promi
             if (signed?.signedUrl) cancelEvidenceUrls.set(evidence.id, signed.signedUrl);
           }));
       }
-      cancellationQueueRows = rows.map(row => ({
+      cancellationQueueRows = pendingRows.map(row => ({
         id: row.id, visit_id: row.visit_id, phase: row.phase,
         reason_label: reasonLabels.get(row.reason_key) ?? row.reason_key,
         comment: row.comment, requested_at: row.requested_at,
         factory_name: row.visits?.factories?.name ?? null,
         inspector_name: localePersonName(row.visits?.assignments?.[0]?.profiles?.full_name),
         evidence_url: row.evidence_id ? cancelEvidenceUrls.get(row.evidence_id) ?? null : null,
+      }));
+      cancellationHistoryRows = rows.map(row => ({
+        id: row.id,
+        visit_id: row.visit_id,
+        factory_name: row.visits?.factories?.name ?? null,
+        reason_label: reasonLabels.get(row.reason_key) ?? row.reason_key,
+        status: row.status,
+        requested_at: row.requested_at,
+        decided_at: row.decided_at,
+        decision_reason: row.decision_reason,
       }));
     }
   }
@@ -520,6 +585,10 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     && (g.integration_mode == null || g.integration_mode === "production")
     && Number.isFinite(Date.parse(g.occurred_at))
     && Date.parse(g.occurred_at) <= now);
+  const latestGeoByVisit = new Map<string, GeoRow>();
+  for (const event of scopedGeo) {
+    if (!latestGeoByVisit.has(event.visit_id)) latestGeoByVisit.set(event.visit_id, event);
+  }
 
   // Latest geofence result per visit (geo list already newest-first) — M08-014
   const latestGeofence = new Map<string, string>();
@@ -596,6 +665,28 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   }));
   const enumLabels = Object.fromEntries(
     [...states, "inside", "outside", "override"].map(v => [v, enumLabel(v)]));
+  const kpiMetricLabel = (metric: string) => ({
+    visits_planned: local("Visits planned", "الزيارات المخططة"),
+    visits_completed: local("Visits completed", "الزيارات المكتملة"),
+    visits_cancelled: local("Visits cancelled", "الزيارات الملغاة"),
+    visits_overdue: local("Visits overdue", "الزيارات المتأخرة"),
+    active_inspectors: local("Active inspectors", "المفتشون النشطون"),
+    average_duration: local("Average duration", "متوسط المدة"),
+    sla_breach_rate: local("SLA breach rate", "معدل تجاوز اتفاقية مستوى الخدمة"),
+  } as Record<string, string>)[metric] ?? metric.replace(/_/g, " ");
+  const timelineVisitId = monitored.some(visit => visit.id === requestedTimelineVisit)
+    ? requestedTimelineVisit
+    : null;
+  const [timelineRpc, kpiContractRpc] = await Promise.all([
+    timelineVisitId
+      ? sb.rpc("operations_visit_timeline", { p_visit_id: timelineVisitId })
+      : Promise.resolve({ data: [] as OperationsTimelineRow[], error: null }),
+    sb.rpc("operations_kpi_contract"),
+  ]);
+  if (timelineRpc.error) console.error(`[operations] timeline read failed: ${timelineRpc.error.message}`);
+  if (kpiContractRpc.error) console.error(`[operations] KPI contract read failed: ${kpiContractRpc.error.message}`);
+  const operationsTimeline = (timelineRpc.data ?? []) as unknown as OperationsTimelineRow[];
+  const operationsKpiContract = (kpiContractRpc.data ?? null) as OperationsKpiContract | null;
 
   const visitWord = t("ops.visit", "visit");
   const actionControlStrings: ActionFormControlsStrings = {
@@ -700,13 +791,19 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     .filter(factory => factory.risk_score != null)
     .sort((a, b) => Number(b.risk_score) - Number(a.risk_score));
   const riskRankByFactory = new Map(rankedFactories.map((factory, index) => [factory.id, index + 1]));
-  const activeCountForFactory = (factoryId: string) => monitored.filter(visit =>
-    (visit.factories?.id ?? visit.factory_id) === factoryId).length;
-  const actionCountForFactory = (factoryId: string) => actions.filter(action =>
-    action.inspections?.visits?.factories?.id === factoryId).length;
+  const activeCountByFactory = new Map<string, number>();
+  for (const visit of monitored) {
+    const factoryId = visit.factories?.id ?? visit.factory_id;
+    if (factoryId) activeCountByFactory.set(factoryId, (activeCountByFactory.get(factoryId) ?? 0) + 1);
+  }
+  const actionCountByFactory = new Map<string, number>();
+  for (const action of actions) {
+    const factoryId = action.inspections?.visits?.factories?.id;
+    if (factoryId) actionCountByFactory.set(factoryId, (actionCountByFactory.get(factoryId) ?? 0) + 1);
+  }
   const previewFields = (factory: FactoryRow | undefined, visit: VisitRow | undefined) => {
     const sourceInspectorName = visit?.assignments?.[0]?.profiles?.full_name ?? null;
-    const latestGeoEvent = visit ? scopedGeo.find(event => event.visit_id === visit.id) : null;
+    const latestGeoEvent = visit ? latestGeoByVisit.get(visit.id) ?? null : null;
     return {
       factoryId: factory?.id ?? visit?.factories?.id ?? visit?.factory_id ?? null,
       factoryName: factory?.name ?? visit?.factories?.name ?? "—",
@@ -721,8 +818,8 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       riskScore: factory?.risk_score ?? null,
       riskRank: factory ? riskRankByFactory.get(factory.id) ?? null : null,
       riskRankTotal: rankedFactories.length,
-      activeVisitCount: factory ? activeCountForFactory(factory.id) : 0,
-      openActionCount: factory ? actionCountForFactory(factory.id) : 0,
+      activeVisitCount: factory ? activeCountByFactory.get(factory.id) ?? 0 : 0,
+      openActionCount: factory ? actionCountByFactory.get(factory.id) ?? 0 : 0,
     };
   };
   const mapEntries: OperationsMapEntry[] = pins.map(pin => {
@@ -814,14 +911,26 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     };
   });
   const exportStrings: OpsExportStrings = {
-    heading: t("ops.export.heading", "Export CSV (M08-017):"),
-    scopeNote: t("ops.export.scopeNote", "reflects the current region/city scope · UTF-8 BOM for Arabic"),
+    heading: t("ops.export.heading", "Export CSV:"),
+    scopeNote: t("ops.export.scopeNote", "The receipt and CSV use this exact region/city scope and row count."),
+    authorizing: t("ops.export.authorizing", "Authorizing and recording export…"),
+    authorized: t("ops.export.authorized", "Export authorized. Receipt:"),
+    unavailable: t("ops.export.unavailable", "Export authorization is unavailable. No file was generated."),
+  };
+  const exportFilters = {
+    // The RPC requires `region` to equal an Operations actor's assigned region.
+    // Preserve the independently selected view filter as well so the receipt
+    // and audit event describe the exact row-producing intersection.
+    region: routeRoleKeys.includes("leadership") ? region : authorizedScope,
+    view_region: region,
+    city,
   };
   const exportDatasets: ExportDataset[] = [
     {
-      key: "monitoring",
+      key: "visits",
       label: t("ops.export.monitoring", "Live monitoring"),
       filename: "ops_monitoring.csv",
+      filters: exportFilters,
       headers: [
         t("ops.live.th.visit", "Visit"), t("ops.live.th.factory", "Factory"),
         t("ops.live.th.operational", "Visit status"), t("ops.live.th.geofence", "Geofence"),
@@ -833,37 +942,57 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       ]),
     },
     {
-      key: "sla",
-      label: t("ops.export.sla", "Deadline alerts"),
-      filename: "ops_sla_watch.csv",
+      key: "alerts",
+      label: t("ops.export.alerts", "Operational alerts"),
+      filename: "ops_alerts.csv",
+      filters: exportFilters,
       headers: [
-        t("ops.sla.th.visit", "Visit"), t("ops.sla.th.factory", "Factory"),
-        t("ops.sla.th.operational", "Visit status"), t("ops.sla.th.deadline", "Deadline"),
-        t("ops.sla.th.sla", "Deadline status"), t("ops.sla.th.escalation", "Escalation"),
+        t("ops.export.alertType", "Alert type"),
+        t("ops.export.alertSummary", "Summary"),
+        t("ops.export.alertTime", "Recorded at"),
+        t("ops.export.alertDestination", "Destination"),
       ],
-      rows: slaFlags.map(f => [
-        f.visit.id.slice(0, 8), f.visit.factories?.name ?? "—",
-        enumLabel(f.visit.operational_state), fmtTs(f.deadlineMs),
-        slaKindLabel(f), f.escalation ?? "—",
-      ]),
+      rows: highlights.map(item => [item.label, item.description, fmtTs(item.at), item.href]),
     },
     {
-      key: "risk",
-      label: t("ops.export.risk", "High-risk factories"),
-      filename: "ops_high_risk.csv",
+      key: "kpis",
+      label: t("ops.export.kpis", "KPI contract"),
+      filename: "ops_kpi_contract.csv",
+      filters: exportFilters,
       headers: [
-        t("ops.risk.th.factory", "Factory"), t("ops.export.activity", "Activity"),
-        t("ops.risk.th.location", "Location"), t("ops.risk.th.score", "Score"),
-        t("ops.risk.th.band", "Band"),
+        t("ops.kpi.metric", "Metric"),
+        t("ops.kpi.status", "Source status"),
+        t("ops.kpi.formula", "Published formula"),
+        t("ops.kpi.policyVersion", "Policy version"),
       ],
-      rows: highRisk.map(f => [
-        f.name, f.activity_class ?? "—",
-        [f.region, f.city].filter(Boolean).join(" · ") || "—",
-        f.risk_score != null ? String(f.risk_score) : "—",
-        f.risk_band ? enumLabel(f.risk_band) : "—",
+      rows: (operationsKpiContract?.definitions ?? []).map(definition => [
+        kpiMetricLabel(definition.metric_key),
+        definition.source_status,
+        definition.formula ?? local("Not configured", "غير مهيأ"),
+        operationsKpiContract?.policy_version != null
+          ? String(operationsKpiContract.policy_version)
+          : local("Not configured", "غير مهيأ"),
       ]),
     },
   ];
+  const mayManageOperations = routeRoleKeys.includes("ops");
+  const workloadByInspector = new Map<string, { inspector: string; assigned: number; active: number }>();
+  for (const visit of monitored) {
+    const inspector = localePersonName(visit.assignments?.[0]?.profiles?.full_name)
+      ?? local("Inspector name unavailable", "اسم المفتش غير متاح");
+    const row = workloadByInspector.get(inspector) ?? { inspector, assigned: 0, active: 0 };
+    row.assigned += 1;
+    if (["on_the_way", "arrived", "executing"].includes(visit.operational_state)) row.active += 1;
+    workloadByInspector.set(inspector, row);
+  }
+  const workloadRows = [...workloadByInspector.values()]
+    .sort((a, b) => b.active - a.active || b.assigned - a.assigned || a.inspector.localeCompare(b.inspector));
+  const geoHistoryRows = scopedGeo.slice(0, 100);
+  const contractValue = (value: unknown) => {
+    if (value == null) return local("Not configured", "غير مهيأ");
+    if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") return String(value);
+    return JSON.stringify(value);
+  };
 
   return (
     <Shell current="/operations" title="">
@@ -899,6 +1028,306 @@ export default async function Operations({ searchParams }: { searchParams: Promi
         regions={regionSummaries}
       />
 
+      <div className={styles.operationalDetails}>
+        <section className="sq-surface" aria-labelledby="operations-monitoring-heading">
+          <div className={styles.detailHeading}>
+            <div>
+              <h2 id="operations-monitoring-heading">{t("ops.monitoring.heading", "Visit and inspector monitoring")}</h2>
+              <p>{t("ops.monitoring.body", "Current RLS-scoped operational states, assignments and latest recorded geofence results.")}</p>
+            </div>
+            <OperationsScopeFilter
+              view={view}
+              region={region}
+              city={city}
+              regions={regions}
+              cities={cities}
+              labels={{
+                region: monitoringStrings.regionLabel,
+                city: monitoringStrings.cityLabel,
+                allRegions: monitoringStrings.allRegions,
+                allCities: monitoringStrings.allCities,
+              }}
+            />
+          </div>
+          <MonitoringTable
+            initialRows={monitorRows}
+            initialAt={nowIso}
+            region={region}
+            city={city}
+            enumLabels={enumLabels}
+            strings={monitoringStrings}
+          />
+        </section>
+
+        <section className="sq-surface" aria-labelledby="operations-sla-heading">
+          <div className={styles.detailHeading}>
+            <div>
+              <h2 id="operations-sla-heading">{t("ops.sla.heading", "SLA and resubmission monitoring")}</h2>
+              <p>{t("ops.sla.body", "Deadlines use server timestamps and governed SLA configuration. Missing configuration remains unavailable.")}</p>
+            </div>
+          </div>
+          {slaFlags.length === 0 && resubFlags.length === 0 ? (
+            <EmptyState glyph="✓" title={t("ops.sla.empty", "No governed deadline alerts in this scope")} inline bare />
+          ) : (
+            <div className="sq-tablewrap"><table className="sq-table">
+              <thead><tr>
+                <th scope="col">{t("ops.sla.th.visit", "Visit")}</th>
+                <th scope="col">{t("ops.sla.th.factory", "Factory")}</th>
+                <th scope="col">{t("ops.sla.th.deadline", "Deadline")}</th>
+                <th scope="col">{t("ops.sla.th.sla", "Deadline status")}</th>
+                <th scope="col">{t("ops.sla.th.escalation", "Escalation")}</th>
+              </tr></thead>
+              <tbody>
+                {slaFlags.map(flag => <tr key={`visit:${flag.visit.id}`}>
+                  <td><a className="sq-link" href={`/visits/${flag.visit.id}`}>{flag.visit.id.slice(0, 8)}</a></td>
+                  <td>{flag.visit.factories?.name ?? "—"}</td>
+                  <td>{fmtTs(flag.deadlineMs)}</td>
+                  <td>{slaKindLabel(flag)}</td>
+                  <td>{flag.escalation ?? "—"}</td>
+                </tr>)}
+                {resubFlags.map(flag => <tr key={`resubmission:${flag.inspection_id}`}>
+                  <td><a className="sq-link" href={`/visits/${flag.visit_id}`}>{flag.visit_id.slice(0, 8)}</a></td>
+                  <td>{flag.factory_name ?? "—"}</td>
+                  <td>{fmtTs(flag.deadlineMs)}</td>
+                  <td>{flag.overdue ? t("ops.sla.resubmissionOverdue", "Resubmission overdue") : t("ops.sla.resubmissionPending", "Resubmission pending")}</td>
+                  <td>{resubSlaAvailable ? "—" : local("Not configured", "غير مهيأ")}</td>
+                </tr>)}
+              </tbody>
+            </table></div>
+          )}
+        </section>
+
+        <section className="sq-surface" aria-labelledby="operations-kpi-contract-heading">
+          <div className={styles.detailHeading}><div>
+            <h2 id="operations-kpi-contract-heading">{t("ops.kpi.contractHeading", "Governed Operations KPI contract")}</h2>
+            <p>{operationsKpiContract?.configured
+              ? t("ops.kpi.configured", "Published DEC-028 policy metadata and metric definitions are active.")
+              : t("ops.kpi.notConfigured", "DEC-028 policy or published metric definitions are not configured; undefined formulas remain unavailable.")}</p>
+          </div></div>
+          {kpiContractRpc.error ? (
+            <EmptyState glyph="!" title={t("ops.kpi.unavailable", "KPI contract service unavailable")} body={t("ops.err.retry", "Retry")} inline bare />
+          ) : operationsKpiContract?.authorized === false ? (
+            <EmptyState glyph="⛨" title={t("ops.kpi.unauthorized", "KPI contract access is not authorized for this role")} inline bare />
+          ) : (
+            <>
+              <dl className={styles.contractFacts}>
+                <div><dt>{t("ops.kpi.period", "Calculation period")}</dt><dd>{contractValue(operationsKpiContract?.period)}</dd></div>
+                <div><dt>{t("ops.kpi.timezone", "Timezone")}</dt><dd>{contractValue(operationsKpiContract?.timezone)}</dd></div>
+                <div><dt>{t("ops.kpi.policyVersion", "Policy version")}</dt><dd>{contractValue(operationsKpiContract?.policy_version)}</dd></div>
+                <div><dt>{t("ops.kpi.decision", "Decision authority")}</dt><dd>{operationsKpiContract?.decision ?? "DEC-028"}</dd></div>
+              </dl>
+              <div className="sq-tablewrap"><table className="sq-table">
+                <thead><tr><th scope="col">{t("ops.kpi.metric", "Metric")}</th><th scope="col">{t("ops.kpi.status", "Source status")}</th><th scope="col">{t("ops.kpi.formula", "Published formula")}</th></tr></thead>
+                <tbody>{(operationsKpiContract?.definitions ?? []).map(definition => <tr key={definition.metric_key}>
+                  <th scope="row">{kpiMetricLabel(definition.metric_key)}</th>
+                  <td>{enumLabel(definition.source_status)}</td>
+                  <td>{definition.formula ?? local("Not configured", "غير مهيأ")}</td>
+                </tr>)}</tbody>
+              </table></div>
+            </>
+          )}
+        </section>
+
+        <section className="sq-surface" aria-labelledby="operations-workload-heading">
+          <div className={styles.detailHeading}><div>
+            <h2 id="operations-workload-heading">{t("ops.workload.heading", "Inspector workload")}</h2>
+            <p>{t("ops.workload.body", "Assigned and active visits in the current authorized geography.")}</p>
+          </div></div>
+          {workloadRows.length === 0 ? (
+            <EmptyState glyph="—" title={t("ops.workload.empty", "No inspector workload in this scope")} inline bare />
+          ) : (
+            <div className="sq-tablewrap"><table className="sq-table">
+              <thead><tr><th scope="col">{monitoringStrings.thInspector}</th><th scope="col">{t("ops.workload.assigned", "Assigned")}</th><th scope="col">{t("ops.workload.active", "Active")}</th></tr></thead>
+              <tbody>{workloadRows.map(row => <tr key={row.inspector}>
+                <th scope="row"><bdi dir="auto">{row.inspector}</bdi></th>
+                <td>{row.assigned}</td><td>{row.active}</td>
+              </tr>)}</tbody>
+            </table></div>
+          )}
+        </section>
+
+        <section className="sq-surface" aria-labelledby="operations-risk-heading">
+          <div className={styles.detailHeading}><div>
+            <h2 id="operations-risk-heading">{t("ops.risk.heading", "Risk monitoring")}</h2>
+            <p>{t("ops.risk.body", "Read-only Risk Engine outputs in the current authorized scope.")}</p>
+          </div></div>
+          {highRisk.length === 0 ? (
+            <EmptyState glyph="—" title={t("ops.risk.empty", "No configured risk scores in this scope")} inline bare />
+          ) : (
+            <div className="sq-tablewrap"><table className="sq-table">
+              <thead><tr><th scope="col">{t("ops.risk.th.factory", "Factory")}</th><th scope="col">{t("ops.risk.th.location", "Location")}</th><th scope="col">{t("ops.risk.th.score", "Score")}</th><th scope="col">{t("ops.risk.th.band", "Band")}</th></tr></thead>
+              <tbody>{highRisk.map(factory => <tr key={factory.id}>
+                <th scope="row"><a className="sq-link" href={`/factories/${factory.id}`}>{factory.name}</a></th>
+                <td>{[factory.region, factory.city].filter(Boolean).join(" · ") || "—"}</td>
+                <td>{factory.risk_score ?? local("Not configured", "غير مهيأ")}</td>
+                <td>{factory.risk_band ? enumLabel(factory.risk_band) : local("Not configured", "غير مهيأ")}</td>
+              </tr>)}</tbody>
+            </table></div>
+          )}
+        </section>
+
+        <section className="sq-surface" aria-labelledby="operations-alerts-heading">
+          <div className={styles.detailHeading}><div>
+            <h2 id="operations-alerts-heading">{t("ops.alerts.heading", "Operational alerts and corrective actions")}</h2>
+            <p>{t("ops.alerts.body", "Current RLS-scoped action forms and notification delivery states. Changes remain guarded by database policy.")}</p>
+          </div></div>
+          {actions.length === 0 && notifs.length === 0 ? (
+            <EmptyState glyph="✓" title={t("ops.alerts.empty", "No operational alerts in this scope")} inline bare />
+          ) : (
+            <div className={styles.alertColumns}>
+              <div>
+                <h3>{t("ops.actions.heading", "Corrective actions")}</h3>
+                {actions.length === 0 ? <p className="sq-caption">{t("ops.actions.empty", "No open corrective actions.")}</p> : (
+                  <div className="sq-stack">
+                    {actions.map(action => <article className={styles.alertCard} key={action.id}>
+                      <div>
+                        <strong>{action.inspections?.visits?.factories?.name ?? action.form_type}</strong>
+                        <p>{action.required_correction ?? enumLabel(action.status)}</p>
+                        <small>{action.due_at ? formatDateTime(action.due_at, locale === "ar" ? "ar" : "en") : local("No governed due date", "لا يوجد تاريخ استحقاق معتمد")}</small>
+                      </div>
+                      {mayManageOperations ? (
+                        <ActionFormControls actionFormId={action.id} status={action.status} strings={actionControlStrings} />
+                      ) : <span className="sq-lozenge sq-lozenge--neutral">{t("ops.readOnly", "Read only")}</span>}
+                    </article>)}
+                  </div>
+                )}
+              </div>
+              <div>
+                <h3>{t("ops.notifs.heading", "Notification delivery")}</h3>
+                {notifs.length === 0 ? <p className="sq-caption">{t("ops.notifs.empty", "No notification events.")}</p> : (
+                  <div className="sq-stack">
+                    {notifs.map(notification => <article className={styles.alertCard} key={notification.id}>
+                      <div>
+                        <strong>{enumLabel(notification.event_key)}</strong>
+                        <p>{notification.channel} · <time dateTime={notification.created_at}>{formatDateTime(notification.created_at, locale === "ar" ? "ar" : "en")}</time></p>
+                      </div>
+                      <div className="sq-row">
+                        <span className={`sq-lozenge ${NOTIF_TONE[notification.delivery_state] ?? "sq-lozenge--neutral"}`}>{enumLabel(notification.delivery_state)}</span>
+                        {mayManageOperations && notification.delivery_state !== "handled"
+                          ? <MarkNotificationHandled notificationId={notification.id} strings={markHandledStrings} />
+                          : null}
+                      </div>
+                    </article>)}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </section>
+
+        <section className="sq-surface" aria-labelledby="operations-cancellations-heading">
+          <div className={styles.detailHeading}><div>
+            <h2 id="operations-cancellations-heading">{t("ops.cancellations.heading", "Cancellation monitoring")}</h2>
+            <p>{t("ops.cancellations.body", "Recent RLS-scoped cancellation requests, reasons and immutable decision outcomes.")}</p>
+          </div></div>
+          {cancellationHistoryRows.length === 0 ? (
+            <EmptyState glyph="—" title={t("ops.cancellations.empty", "No cancellation history in this scope")} inline bare />
+          ) : (
+            <div className="sq-tablewrap"><table className="sq-table">
+              <thead><tr><th scope="col">{monitoringStrings.thVisit}</th><th scope="col">{monitoringStrings.thFactory}</th><th scope="col">{t("ops.cancellations.reason", "Reason")}</th><th scope="col">{t("ops.cancellations.status", "Status")}</th><th scope="col">{t("ops.cancellations.requested", "Requested")}</th><th scope="col">{t("ops.cancellations.decided", "Decided")}</th></tr></thead>
+              <tbody>{cancellationHistoryRows.map(row => <tr key={row.id}>
+                <td><a className="sq-link" href={`/visits/${row.visit_id}`}>{row.visit_id.slice(0, 8)}</a></td>
+                <td>{row.factory_name ?? "—"}</td>
+                <td>{row.reason_label}{row.decision_reason ? ` · ${row.decision_reason}` : ""}</td>
+                <td>{enumLabel(row.status)}</td>
+                <td><time dateTime={row.requested_at}>{formatDateTime(row.requested_at, locale === "ar" ? "ar" : "en")}</time></td>
+                <td>{row.decided_at ? <time dateTime={row.decided_at}>{formatDateTime(row.decided_at, locale === "ar" ? "ar" : "en")}</time> : "—"}</td>
+              </tr>)}</tbody>
+            </table></div>
+          )}
+        </section>
+
+        {mayManageOperations ? (
+          <>
+            <OverrideQueue rows={overrideQueueRows} strings={overrideQueueStrings} locale={locale} />
+            <CancellationQueue rows={cancellationQueueRows} strings={cancellationQueueStrings} locale={locale} />
+          </>
+        ) : (
+          <section className="sq-surface" aria-labelledby="operations-decisions-heading">
+            <EmptyState
+              glyph="⛨"
+              title={t("ops.decisions.readOnly", "Operational decisions are read-only for your role")}
+              body={t("ops.decisions.readOnlyBody", "Only an authorized Operations supervisor can decide location exceptions or active-session cancellations.")}
+              inline
+              bare
+            />
+          </section>
+        )}
+
+        <section className="sq-surface" aria-labelledby="operations-timeline-heading">
+          <div className={styles.detailHeading}><div>
+            <h2 id="operations-timeline-heading">{t("ops.timeline.heading", "Operational timeline")}</h2>
+            <p>{t("ops.timeline.body", "Canonical chronology from planning through lifecycle, inspection, review and Compliance handoff.")}</p>
+          </div></div>
+          <form className={styles.timelineVisitPicker} method="get" action="/operations">
+            {view === "performance" ? <input type="hidden" name="view" value="performance" /> : null}
+            {region ? <input type="hidden" name="region" value={region} /> : null}
+            {city ? <input type="hidden" name="city" value={city} /> : null}
+            <label className="sq-field" htmlFor="operations-timeline-visit">
+              <span className="sq-field__label">{t("ops.timeline.choose", "Choose a visit timeline")}</span>
+              <select className="sq-select" id="operations-timeline-visit" name="timelineVisit" defaultValue={timelineVisitId ?? ""}>
+                <option value="">{t("ops.timeline.selectPlaceholder", "Select visit")}</option>
+                {monitored.map(visit => (
+                  <option value={visit.id} key={visit.id}>
+                    {visit.factories?.name ?? visit.id.slice(0, 8)} · {visit.id.slice(0, 8)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button className="sq-btn sq-btn--secondary" type="submit">{t("ops.timeline.load", "Load timeline")}</button>
+          </form>
+          {!timelineVisitId ? (
+            <EmptyState glyph="↗" title={t("ops.timeline.select", "Select a visit to load its governed timeline")} inline bare />
+          ) : timelineRpc.error ? (
+            <EmptyState glyph="!" title={t("ops.timeline.unavailable", "Operational timeline unavailable")} body={t("ops.err.retry", "Retry")} inline bare />
+          ) : operationsTimeline.length === 0 ? (
+            <EmptyState glyph="—" title={t("ops.timeline.empty", "No authorized timeline events for this visit")} inline bare />
+          ) : (
+            <ol className={styles.timelineList}>
+              {operationsTimeline.map(event => <li key={`${event.object_type}:${event.object_id}:${event.event_key}`}>
+                <time dateTime={event.occurred_at}>{formatDateTime(event.occurred_at, locale === "ar" ? "ar" : "en")}</time>
+                <div><strong>{enumLabel(event.event_key)}</strong><span>{event.object_type}</span></div>
+                <code>{JSON.stringify(event.payload)}</code>
+              </li>)}
+            </ol>
+          )}
+        </section>
+
+        <section className="sq-surface" aria-labelledby="operations-history-heading">
+          <div className={styles.detailHeading}><div>
+            <h2 id="operations-history-heading">{t("ops.history.heading", "Immutable location and operational history")}</h2>
+            <p>{t("ops.history.body", "Latest 100 events from the append-only, RLS-scoped geo-event ledger. The source rows are never edited here.")}</p>
+          </div></div>
+          {geoHistoryRows.length === 0 ? (
+            <EmptyState glyph="—" title={t("ops.history.empty", "No recorded location history in this scope")} inline bare />
+          ) : (
+            <div className="sq-tablewrap"><table className="sq-table">
+              <thead><tr><th scope="col">{t("ops.history.time", "Recorded at")}</th><th scope="col">{monitoringStrings.thVisit}</th><th scope="col">{t("ops.history.event", "Event")}</th><th scope="col">{monitoringStrings.thGeofence}</th><th scope="col">{t("ops.history.position", "Recorded position")}</th></tr></thead>
+              <tbody>{geoHistoryRows.map(event => <tr key={event.id}>
+                <td><time dateTime={event.occurred_at}>{formatDateTime(event.occurred_at, locale === "ar" ? "ar" : "en")}</time></td>
+                <td><a className="sq-link" href={`/visits/${event.visit_id}`}>{event.visit_id.slice(0, 8)}</a></td>
+                <td>{enumLabel(event.kind)}</td>
+                <td>{event.geofence_result ? enumLabel(event.geofence_result) : "—"}</td>
+                <td>{Number.isFinite(Number(event.observed_lat)) && Number.isFinite(Number(event.observed_lng))
+                  ? `${Number(event.observed_lat).toFixed(6)}, ${Number(event.observed_lng).toFixed(6)}`
+                  : "—"}</td>
+              </tr>)}</tbody>
+            </table></div>
+          )}
+        </section>
+
+        <section className="sq-surface" aria-labelledby="operations-export-heading">
+          <div className={styles.detailHeading}><div>
+            <h2 id="operations-export-heading">{t("ops.export.heading", "Export operational data")}</h2>
+            <p>{t("ops.export.auditRequired", "Every file requires a matching role- and region-scoped database receipt plus an atomic audit event before download.")}</p>
+          </div></div>
+          {routeRoleKeys.some(role => ["ops", "leadership"].includes(role)) ? (
+            <OpsExport datasets={exportDatasets} strings={exportStrings} />
+          ) : (
+            <EmptyState glyph="⛨" title={t("ops.export.unauthorized", "Export is not authorized for this role")} inline bare />
+          )}
+        </section>
+      </div>
     </Shell>
   );
 }

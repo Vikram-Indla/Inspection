@@ -13,6 +13,40 @@ import { evaluatePause, evaluateResume, isSlaTransitionAllowed, type SlaStatus }
 
 export type SlaResult = { error?: string; ok?: boolean; blocked?: string };
 
+function slaMutationError(error: { message?: string } | null, action: "activate" | "pause" | "resume"): SlaResult {
+  const message = error?.message ?? "";
+  if (message.includes("SLA-TIMER-REASON")) return { error: `A reason is required to ${action} this SLA timer.` };
+  if (message.includes("SLA-TIMER-NOT-FOUND")) return { error: "SLA timer not found." };
+  if (message.includes("SLA-TIMER-STATE")) return { error: "The SLA timer changed or that action is no longer permitted. Reload and try again." };
+  if (message.includes("SLA-TIMER-DENIED")) return { error: "SLA timer change blocked — an authorized administration role is required." };
+  if (action === "activate" && (
+    message.includes("SLA activation blocked")
+    || message.includes("DEC-003")
+  )) {
+    return { blocked: "SLA activation blocked by governance guard (DEC-003): calendar not authorized/complete." };
+  }
+  return { error: NEUTRAL_WRITE_ERROR };
+}
+
+async function mutateSlaTimer(
+  sb: Awaited<ReturnType<typeof supabaseServer>>,
+  timerId: string,
+  action: "activate" | "pause" | "resume",
+  reason: string,
+): Promise<SlaResult> {
+  const { error } = await sb.rpc("mutate_sla_timer", {
+    p_timer: timerId,
+    p_action: action,
+    p_reason: reason,
+    p_correlation_id: crypto.randomUUID(),
+  });
+  if (error) {
+    logProviderError(`atomic SLA timer ${action}`, error);
+    return slaMutationError(error, action);
+  }
+  return { ok: true };
+}
+
 async function loadTimer(timerId: string) {
   const sb = await supabaseServer();
   const { data: { user } } = await getVerifiedUser(sb);
@@ -31,53 +65,32 @@ export async function requestSlaActivation(_: SlaResult, formData: FormData): Pr
   const ctx = await loadTimer(String(formData.get("timer_id") ?? ""));
   if ("error" in ctx) return { error: ctx.error };
   const { sb, timer } = ctx;
+  const reason = String(formData.get("reason") ?? "").trim();
   if (timer.due_at == null || timer.calendar_id == null) {
     return { blocked: "SLA activation is on hold: no authorized working calendar (DEC-003). The timer stays pending; pause/resume remain available." };
   }
-  const { error, count } = await sb.from("sla_timers").update({ status: "running" }, { count: "exact" })
-    .eq("id", timer.id).eq("status", "pending_activation");
-  if (error) {
-    // The activation guard raises when the calendar is not authorized/complete.
-    return { blocked: "SLA activation blocked by governance guard (DEC-003): calendar not authorized/complete." };
-  }
-  if (!count) return { error: "Timer is not pending activation." };
-  return { ok: true };
+  if (!reason) return { error: "An activation reason is required." };
+  return mutateSlaTimer(sb, timer.id, "activate", reason);
 }
 
 export async function pauseSlaTimer(_: SlaResult, formData: FormData): Promise<SlaResult> {
   const ctx = await loadTimer(String(formData.get("timer_id") ?? ""));
   if ("error" in ctx) return { error: ctx.error };
-  const { sb, user, timer } = ctx;
+  const { sb, timer } = ctx;
   const reason = String(formData.get("reason") ?? "").trim();
   const decision = evaluatePause(timer.status as SlaStatus, reason);
   if (!decision.ok) return { error: decision.why };
-  const { error, count } = await sb.from("sla_timers")
-    .update({ status: "paused", paused_at: new Date().toISOString() }, { count: "exact" })
-    .eq("id", timer.id).eq("status", "running");
-  if (error) { logProviderError("sla pause", error); return { error: NEUTRAL_WRITE_ERROR }; }
-  if (!count) return { error: "Pause blocked — timer not running or insufficient role." };
-  await sb.from("audit_events").insert({
-    actor: user.id, object_type: "sla_timer", object_id: timer.id, action: "sla_paused",
-    before_state: { status: "running" }, after_state: { status: "paused", reason },
-  });
-  return { ok: true };
+  return mutateSlaTimer(sb, timer.id, "pause", reason);
 }
 
 export async function resumeSlaTimer(_: SlaResult, formData: FormData): Promise<SlaResult> {
   const ctx = await loadTimer(String(formData.get("timer_id") ?? ""));
   if ("error" in ctx) return { error: ctx.error };
-  const { sb, user, timer } = ctx;
+  const { sb, timer } = ctx;
+  const reason = String(formData.get("reason") ?? "").trim();
   const decision = evaluateResume(timer.status as SlaStatus);
   if (!decision.ok) return { error: decision.why };
   if (!isSlaTransitionAllowed("paused", "running")) return { error: "Resume not permitted." };
-  const { error, count } = await sb.from("sla_timers")
-    .update({ status: "running", paused_at: null }, { count: "exact" })
-    .eq("id", timer.id).eq("status", "paused");
-  if (error) { logProviderError("sla resume", error); return { error: NEUTRAL_WRITE_ERROR }; }
-  if (!count) return { error: "Resume blocked — timer not paused or insufficient role." };
-  await sb.from("audit_events").insert({
-    actor: user.id, object_type: "sla_timer", object_id: timer.id, action: "sla_resumed",
-    before_state: { status: "paused" }, after_state: { status: "running" },
-  });
-  return { ok: true };
+  if (!reason) return { error: "A resume reason is required." };
+  return mutateSlaTimer(sb, timer.id, "resume", reason);
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import styles from "./responsive.module.css";
 
 export type EnforcementLibraryRow = {
@@ -20,6 +20,7 @@ export type EnforcementLibraryRow = {
   inspectorName: string | null;
   recordedAt: string | null;
   actionForm: string | null;
+  actionFormComplete: boolean | null;
   evidenceCount: number;
   custodyComplete: boolean;
   mappingVersion: string;
@@ -40,6 +41,8 @@ export type EnforcementLibraryStrings = {
   actionForm: string;
   notConfigured: string;
   noActionForm: string;
+  actionFormComplete: string;
+  actionFormIncomplete: string;
   empty: string;
   close: string;
   factorySummary: string;
@@ -56,6 +59,7 @@ export type EnforcementLibraryStrings = {
   mappingVersion: string;
   openFactory: string;
   requestedUnavailable: string;
+  statusLabels: Record<string, string>;
 };
 
 const humanize = (value: string) => value.replaceAll("_", " ");
@@ -107,6 +111,30 @@ export default function EnforcementLibrary({
     requestAnimationFrame(() => {
       if (closingId) triggerRefs.current.get(closingId)?.focus();
     });
+  };
+
+  const handleDrawerKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeDrawer();
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const focusable = Array.from(
+      event.currentTarget.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    );
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   };
 
   const formatDate = (value: string | null) => value
@@ -168,12 +196,14 @@ export default function EnforcementLibrary({
               <strong>{row.title}</strong>
               <span>{row.factoryName} · <bdi dir="ltr">{row.inspectionId.slice(0, 8)}</bdi></span>
             </span>
-            <span className="sq-lozenge sq-lozenge--info"><span aria-hidden="true">◆</span> {humanize(row.status)}</span>
+            <span className="sq-lozenge sq-lozenge--info"><span aria-hidden="true">◆</span> {strings.statusLabels[row.status] ?? humanize(row.status)}</span>
             <span><small>{strings.licence}</small><bdi dir="ltr">{row.licenceNumber ?? "—"}</bdi></span>
             <span><small>{strings.penalty}</small>{strings.notConfigured}</span>
             <span><small>{strings.inspector}</small>{row.inspectorName ?? "—"}</span>
             <span><small>{strings.issueDate}</small><bdi dir="ltr">{formatDate(row.recordedAt)}</bdi></span>
-            <span><small>{strings.actionForm}</small>{row.actionForm ?? strings.noActionForm}</span>
+            <span><small>{strings.actionForm}</small>{row.actionForm ?? strings.noActionForm}
+              {row.actionFormComplete !== null ? ` · ${row.actionFormComplete ? strings.actionFormComplete : strings.actionFormIncomplete}` : ""}
+            </span>
           </button>
         ))}
         {!filtered.length && !requestedUnavailable
@@ -189,12 +219,7 @@ export default function EnforcementLibrary({
             role="dialog"
             aria-modal="true"
             aria-labelledby="enforcement-record-title"
-            onKeyDown={(event) => {
-              if (event.key === "Escape") {
-                event.preventDefault();
-                closeDrawer();
-              }
-            }}
+            onKeyDown={handleDrawerKeyDown}
           >
             <header className={styles.drawerHeader}>
               <div>
@@ -226,9 +251,11 @@ export default function EnforcementLibrary({
               <h3>{strings.violation}</h3>
               <dl className={styles.definitionGrid}>
                 <div><dt>{strings.violation}</dt><dd>{selected.title} · <bdi dir="ltr">{selected.code}</bdi></dd></div>
-                <div><dt>{strings.status}</dt><dd>{humanize(selected.status)}</dd></div>
+                <div><dt>{strings.status}</dt><dd>{strings.statusLabels[selected.status] ?? humanize(selected.status)}</dd></div>
                 <div><dt>{strings.penalty}</dt><dd>{strings.notConfigured}</dd></div>
-                <div><dt>{strings.actionForm}</dt><dd>{selected.actionForm ?? strings.noActionForm}</dd></div>
+                <div><dt>{strings.actionForm}</dt><dd>{selected.actionForm ?? strings.noActionForm}
+                  {selected.actionFormComplete !== null ? ` · ${selected.actionFormComplete ? strings.actionFormComplete : strings.actionFormIncomplete}` : ""}
+                </dd></div>
               </dl>
             </section>
 

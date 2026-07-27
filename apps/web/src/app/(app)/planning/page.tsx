@@ -125,10 +125,10 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
 
   const params = parseParams(sp);
 
-  // M02-016 parity with /visits — persist published→expired before reading so
-  // the Expired tab and counts are fresh; a failed refresh never blocks the list.
-  const { error: expiryError } = await sb.rpc("expire_lapsed_visits");
-  if (expiryError) console.error("[planning.list] expiry refresh failed:", expiryError.message);
+  // CR-098 / WA-M2-AC-005 — expiry is scheduler-owned. A GET of the Planning
+  // list must remain read-only; mutating lifecycle state during page rendering
+  // bypasses the canonical transition/audit boundary and can race other users.
+  // The list renders the persisted planning status from the scheduled sweep.
 
   const regionFilter = params.filters.region;
   const [list, lookupsRead, regionsRead, citiesRead, inspectorsRead, packagesRead, draftsRead] = await Promise.all([
@@ -241,6 +241,30 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
         rows={visibleRows}
         total={list.total}
         returned={list.countsAvailable ? list.counts.returned : "—"}
+        strings={{
+          insights: tr("plan.insights.title", "AI insights", "رؤى الذكاء الاصطناعي"),
+          withheld: tr("plan.insights.withheld", "Provider output is withheld; current governed planning records show:", "تم حجب مخرجات المزوّد؛ وتُظهر سجلات التخطيط المحكومة الحالية:"),
+          highPriority: tr("plan.insights.highPriority", "{n} high-priority visits in the loaded planning page.", "{n} زيارة عالية الأولوية في صفحة التخطيط المحملة."),
+          returned: tr("plan.insights.returned", "{n} returned visits require planner attention.", "{n} زيارة معادة تتطلب انتباه المخطط."),
+          expiring: tr("plan.insights.expiring", "{n} loaded visits reach their recorded window end within 72 hours.", "{n} زيارة محملة تنتهي نافذتها المسجلة خلال 72 ساعة."),
+          matching: tr("plan.insights.matching", "{n} visits match the current RLS-scoped filters.", "{n} زيارة تطابق عوامل التصفية الحالية المقيّدة بسياسات الوصول."),
+          unavailable: tr("plan.insights.unavailable", "AI provider unavailable", "مزوّد الذكاء الاصطناعي غير متاح"),
+          factsAvailable: tr("plan.insights.factsAvailable", "Live record facts remain available", "تبقى حقائق السجلات المباشرة متاحة"),
+          recommendations: tr("plan.insights.recommendations", "AI recommendations", "توصيات الذكاء الاصطناعي"),
+          priority: tr("plan.insights.priority", "Governed priority", "الأولوية المحكومة"),
+          windowEnds: tr("plan.insights.windowEnds", "window ends", "تنتهي النافذة"),
+          regionUnavailable: tr("plan.insights.regionUnavailable", "Region unavailable", "المنطقة غير متاحة"),
+          plan: tr("plan.insights.plan", "Plan", "تخطيط"),
+          review: tr("plan.insights.review", "Review", "مراجعة"),
+          noCandidates: tr("plan.insights.noCandidates", "No high-priority recommendation candidate is visible in this page.", "لا يظهر في هذه الصفحة أي مرشح لتوصية عالية الأولوية."),
+          quickActions: tr("plan.insights.quickActions", "Quick actions", "إجراءات سريعة"),
+          returnedVisits: tr("plan.insights.returnedVisits", "Returned visits", "الزيارات المعادة"),
+          highPriorityVisits: tr("plan.insights.highPriorityVisits", "High-priority visits", "الزيارات عالية الأولوية"),
+          nearestExpiry: tr("plan.insights.nearestExpiry", "Nearest window expiry", "أقرب انتهاء للنافذة"),
+          bulkPlanning: tr("plan.insights.bulkPlanning", "Bulk planning", "التخطيط المجمع"),
+          singleVisit: tr("plan.insights.singleVisit", "Single visit", "زيارة واحدة"),
+          immediateVisit: tr("plan.insights.immediateVisit", "Immediate visit", "زيارة فورية"),
+        }}
       />
 
       {/* KPI / status tabs with live counts (PLN-REQ-012) */}

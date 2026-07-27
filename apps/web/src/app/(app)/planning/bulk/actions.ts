@@ -18,6 +18,13 @@ export type DroppedRow = { id: string; name: string; reasons: EligibilityReason[
 // and names every dropped row in the result ledger (never silently included,
 // never silently dropped). `created` is the committed subset size.
 export type BulkResult = { error?: string; ok?: boolean; planId?: string; dropped?: DroppedRow[]; created?: number };
+export type BulkMutationResult = {
+  error?: string;
+  ok?: boolean;
+  updatedCount?: number;
+  visitIds?: string[];
+  correlationId?: string;
+};
 
 // CD-025 readiness preview. Structured, locale-neutral blocker KINDS (the review
 // workspace maps each kind to governed bilingual copy) plus recalculated counts.
@@ -263,10 +270,9 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   let factoryIds = [...new Set(formData.getAll("factory_id").map(String))]
     .filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id))
     .slice(0, 500);
-  // M7 / PLN-CON-003 — zero-or-more packages; the first checked version stays
-  // the primary (visits.package_version_id via the RPC), every selection is
-  // linked with a snapshot after the atomic publish. Zero selections is an
-  // honest preparation-time choice, not a blocker.
+  // M7 / PLN-CON-003 — zero-or-more packages. Every selection is passed to the
+  // atomic publisher, which links its immutable snapshot in the same
+  // transaction as the plan, visits, assignments and notifications.
   const package_version_ids = [...new Set(formData.getAll("package_version_id").map(String))]
     .filter(id => UUID_RE.test(id)).slice(0, 20);
   const window_start = String(formData.get("window_start") ?? "");
@@ -275,8 +281,7 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   const notesRaw = String(formData.get("notes") ?? "").trim();
   const notes = notesRaw === "" ? null : notesRaw;
   // M7 — governed priority (planning_lookups kind 'priority'); empty = unset.
-  // publish_bulk_plan has no priority parameter, so it is recorded on the
-  // plan's visits post-commit (best-effort, same pattern as source_channel).
+  // The governed value is passed to the atomic publisher; no post-commit write.
   const priorityRaw = String(formData.get("priority") ?? "").trim();
   // Manual per-visit inspector picks (M01-029): inspector_<factoryId> = user_id | "" (auto)
   const picks = new Map<string, string>();
@@ -389,28 +394,27 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   }
   if (blockers.length) return { error: blockers.join(" · ") };
 
-  // CD-021: atomic publish. publish_bulk_plan (migration 0026) performs every
-  // write — plan, visits, assignments, draft->published transition,
-  // notifications — inside one SECURITY INVOKER transaction. On any error the
-  // whole operation rolls back: no plan, no visits, no half-published state
-  // (P03 "partial publish prohibited"). RLS is still enforced because the
-  // function runs as the calling planner.
+  // CD-021 / CR-002..010 / CR-020 / CR-031: publish_bulk_plan_atomic performs
+  // every write — plan, visits, assignments, transitions, notifications,
+  // package snapshots, priority and audit — in one SECURITY INVOKER
+  // transaction. Any failure rolls the whole operation back.
   // M7 — the RPC commits EXACTLY the accepted eligible subset (kept).
   const manual: Record<string, string> = {};
   for (const [fid, insp] of picks) manual[fid] = insp;
-  const { data: planId, error } = await sb.rpc("publish_bulk_plan", {
+  const { data: planId, error } = await sb.rpc("publish_bulk_plan_atomic", {
     p_factory_ids: kept,
-    p_package_version_id: package_version_ids[0] ?? null,
+    p_package_version_ids: package_version_ids,
     p_window_start: window_start,
     p_window_end: window_end,
     p_visit_type: visit_type,
+    p_priority: priority,
     p_notes: notes,
     p_manual: manual,
     p_auto_pool: inspectors,
   });
   if (error) {
     // Log the real cause server-side; return catalogued neutral copy only.
-    console.error("[CD-021] publish_bulk_plan failed:", error.message, error.code);
+    console.error("[CD-021] publish_bulk_plan_atomic failed:", error.message, error.code);
     // M7 — the in-transaction guards (RPC checks + the 0031 assignments
     // trigger, SQLSTATE 23505) rejected a conflict that appeared between the
     // preview and the commit. Name the conflicting rows honestly. The attempt
@@ -451,52 +455,97 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
     }
     return { error: NEUTRAL_PUBLISH_ERROR };
   }
-  // M7 / PLN-CON-003 — link EVERY selected package to EVERY created visit with
-  // an immutable snapshot (the primary already sits on each visit's
-  // package_version_id via the RPC). Zero selections → zero rows; preparation
-  // chooses packages later. Best-effort + logged: the plan is already
-  // atomically published, so a snapshot gap never turns success into failure.
-  if (packageRows.length && typeof planId === "string") {
-    const { data: planVisits, error: visitsReadError } = await sb.from("visits")
-      .select("id").eq("visit_plan_id", planId);
-    if (visitsReadError) {
-      console.error("[CD-021 publishBulkPlan] plan visits read for package links failed:", visitsReadError.message);
-    } else {
-      const capturedAt = new Date().toISOString();
-      const rows = (planVisits ?? []).flatMap(v => packageRows.map(pv => ({
-        visit_id: v.id as string,
-        package_version_id: pv.id,
-        added_by: user.id,
-        snapshot: {
-          package_version_id: pv.id,
-          code: pv.packages?.code ?? null,
-          title: pv.packages?.title ?? null,
-          version_label: pv.version_label,
-          status: pv.status,
-          captured_at: capturedAt,
-        },
-      })));
-      if (rows.length) {
-        const { error: pkgLinkError } = await sb.from("visit_packages").insert(rows);
-        if (pkgLinkError) {
-          console.error("[CD-021 publishBulkPlan] visit_packages snapshot write failed:", pkgLinkError.message);
-        }
-      }
-    }
-  }
-  // M7 — governed priority lands on the plan's visits post-commit (the RPC
-  // has no priority parameter; same best-effort pattern as source_channel).
-  if (priority && typeof planId === "string") {
-    const { error: prioError } = await sb.from("visits").update({ priority }).eq("visit_plan_id", planId);
-    if (prioError) {
-      console.error("[CD-021 publishBulkPlan] priority write failed:", prioError.message);
-    }
-  }
   // CD-025: the guarded publisher returns the new plan ID. Capture it so the
   // success state can offer the optional read-only plan link (S26). The plan ID
   // is only surfaced when actually returned; otherwise the link is omitted.
   // M7 — dropped rows + committed-subset size ride the result for the ledger.
   return { ok: true, planId: typeof planId === "string" ? planId : undefined, dropped, created: kept.length };
+}
+
+// CR-032/033/059/063/083..086 — the sole Planning action boundary for
+// post-publication bulk configuration. The database RPC locks every target,
+// requires Published + not-started state, applies the whole change atomically,
+// writes one correlated audit event and persists an idempotent receipt.
+export async function bulkUpdatePublishedVisits(
+  _: BulkMutationResult,
+  formData: FormData,
+): Promise<BulkMutationResult> {
+  const visitIds = [...new Set(formData.getAll("visit_id").map(String))]
+    .filter(id => UUID_RE.test(id))
+    .slice(0, 500);
+  const submittedCount = formData.getAll("visit_id").length;
+  const priorityRaw = String(formData.get("priority") ?? "").trim();
+  const packageRaw = String(formData.get("package_version_id") ?? "").trim();
+  const setPackage = String(formData.get("set_package") ?? "") === "true";
+  const reason = String(formData.get("reason") ?? "").trim();
+  const idempotencyKey = String(formData.get("idempotency_key") ?? "").trim();
+  const correlationRaw = String(formData.get("correlation_id") ?? "").trim();
+
+  if (!visitIds.length || visitIds.length !== submittedCount) {
+    return { error: "Select one or more valid visits. Duplicate or invalid targets are not allowed." };
+  }
+  if (!reason || reason.length > 1000) {
+    return { error: "A governed bulk-change reason is required." };
+  }
+  if (!/^[A-Za-z0-9._:-]{8,200}$/.test(idempotencyKey)) {
+    return { error: "The bulk-change idempotency key is missing or invalid." };
+  }
+  if (priorityRaw === "" && !setPackage) {
+    return { error: "Choose at least one bulk change." };
+  }
+  if (packageRaw && !UUID_RE.test(packageRaw)) {
+    return { error: "The selected inspection checklist is invalid." };
+  }
+  if (correlationRaw && !UUID_RE.test(correlationRaw)) {
+    return { error: "The bulk-change correlation reference is invalid." };
+  }
+
+  const sb = await supabaseServer();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
+  if (authError) {
+    console.error("[planning.bulk-update] auth read failed:", authError.message);
+    return { error: NEUTRAL_READ_ERROR };
+  }
+  if (!user) return { error: "Session expired." };
+
+  const access = await getPlanningAccess(sb, ["planning.publish"]);
+  if (access.error) return { error: NEUTRAL_READ_ERROR };
+  if (!access.can("planning.publish")) {
+    return { error: "This account cannot update published visits." };
+  }
+
+  const correlationId = correlationRaw || crypto.randomUUID();
+  const { data, error } = await sb.rpc("bulk_update_published_visits", {
+    p_visit_ids: visitIds,
+    p_priority: priorityRaw || null,
+    p_package_version_id: packageRaw || null,
+    p_set_package: setPackage,
+    p_reason: reason,
+    p_idempotency_key: idempotencyKey,
+    p_correlation_id: correlationId,
+  });
+  if (error) {
+    console.error("[planning.bulk-update] atomic mutation failed:", error.message, error.code);
+    if (/PLANNING-BULK-INELIGIBLE/.test(error.message ?? "")) {
+      return { error: "One or more visits changed, started, or left Published status. Nothing was updated." };
+    }
+    if (/PLANNING-BULK-IDEMPOTENCY-CONFLICT/.test(error.message ?? "")) {
+      return { error: "This idempotency key was already used for a different bulk change. Nothing was updated." };
+    }
+    return { error: "The bulk change could not be completed. Nothing was updated. Review the visits and try again." };
+  }
+
+  const result = (data ?? {}) as {
+    updated_count?: number;
+    visit_ids?: string[];
+    correlation_id?: string;
+  };
+  return {
+    ok: true,
+    updatedCount: result.updated_count ?? visitIds.length,
+    visitIds: result.visit_ids ?? visitIds,
+    correlationId: result.correlation_id ?? correlationId,
+  };
 }
 
 // CD-025 — ReadinessRail + consequence-ledger preview. Recomputes duplicates,

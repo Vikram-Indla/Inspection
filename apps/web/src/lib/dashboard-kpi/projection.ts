@@ -121,13 +121,13 @@ export function buildDashboardKpiProjection(
       case "STR-KPI-004": // Level-2 decision mix (separate from compliance)
         out.push(
           withValue(metric, {
-            value: s.approvedScoped,
+            value: s.decisionApprovalRate,
             numerator: s.approvedScoped,
-            denominator: s.completedInspections,
+            denominator: s.decidedScoped,
             breakdown: [
-              { labelRef: "approve", value: s.approvedScoped },
-              { labelRef: "return", value: o.returnedRows.length },
-              { labelRef: "reject", value: o.rejectedRows.length },
+              { labelRef: "approve", value: s.decisionApprovalRate ?? 0 },
+              { labelRef: "return", value: s.decisionReturnRate ?? 0 },
+              { labelRef: "reject", value: s.decisionRejectRate ?? 0 },
             ],
           }),
         );
@@ -135,22 +135,39 @@ export function buildDashboardKpiProjection(
       case "STR-KPI-006": // Cancellation rate
         out.push(
           withValue(metric, {
-            value: o.planned > 0 ? Math.round((o.cancelled / (o.planned + o.cancelled)) * 100) : null,
+            value: o.cancellationDenominator > 0 ? Math.round((o.cancelled / o.cancellationDenominator) * 100) : null,
             numerator: o.cancelled,
-            denominator: o.planned + o.cancelled,
+            denominator: o.cancellationDenominator,
             breakdown: metrics.operational.cancellationReasons.map((r) => ({ labelRef: r.label, value: r.value })),
+          }),
+        );
+        break;
+      case "STR-KPI-009": // Checklist items grouped by issuing authority
+        out.push(
+          withValue(metric, {
+            value: s.activePublishedChecklistItems,
+            numerator: s.activePublishedChecklistItems,
+            breakdown: s.checklistItemsByAuthority.map(row => ({ labelRef: row.label, value: row.value })),
+            dimensions: [{ key: "issuing_authority", labelRef: "issuing_authority" }],
+            evidenceRefs: [`inspection_items:${s.activePublishedChecklistItems}`],
+          }),
+        );
+        break;
+      case "STR-KPI-010": // Visits per factory, compared across stored risk bands
+        out.push(
+          withValue(metric, {
+            value: null,
+            breakdown: s.riskAttention.map(row => ({ labelRef: row.label, value: row.ratio ?? 0 })),
+            dimensions: [{ key: "risk_band", labelRef: "risk_band" }],
+            evidenceRefs: s.riskAttention.map(row => `risk_band:${row.label}:visits=${row.visits}:factories=${row.factories}`),
           }),
         );
         break;
       case "OPS-KPI-001": // Visit pipeline
         out.push(
           withValue(metric, {
-            value: o.planned,
-            breakdown: [
-              { labelRef: "planned", value: o.planned },
-              { labelRef: "completed", value: o.completed },
-              { labelRef: "cancelled", value: o.cancelled },
-            ],
+            value: o.pipelineTotal,
+            breakdown: o.pipeline.map(row => ({ labelRef: row.label, value: row.value })),
           }),
         );
         break;
@@ -158,7 +175,7 @@ export function buildDashboardKpiProjection(
         out.push(withValue(metric, { value: o.activeField }));
         break;
       case "OPS-KPI-004": // Pending approvals
-        out.push(withValue(metric, { value: o.awaitingRows.length }));
+        out.push(withValue(metric, { value: o.pendingApprovalsCount }));
         break;
       case "OPS-KPI-006": // Today's schedule load by inspector
         out.push(
