@@ -108,7 +108,8 @@ select pg_temp.assert_true(
         'mutate_planning_window_atomic','cancel_planning_visits_atomic',
         'reschedule_planning_visits_atomic','archive_planning_draft_atomic',
         'expire_planning_visits_core','expire_planning_visits_scheduled',
-        'create_planning_bulk_command','planning_bulk_command_receipt')
+        'create_planning_bulk_command','planning_bulk_command_receipt',
+        'transition_planning_visit_atomic','save_planning_draft_atomic')
       and not ('search_path=""'=any(coalesce(p.proconfig,'{}'::text[])))
   ),'PCP-P04-001','every closure function needs an empty search_path');
 select pg_temp.assert_true(
@@ -181,6 +182,19 @@ select pg_temp.assert_true(
     'public.mutate_planning_window_atomic(uuid[],text,timestamptz,timestamptz,jsonb,text,text,uuid)'::regprocedure))>0,
   'PCP-P05-003','cancel/reschedule engine must compute 720h server-side');
 select pg_temp.assert_true(
+  position(
+    'planning_status not in (''published'',''returned'')'
+    in lower(pg_get_functiondef(
+      'public.mutate_planning_window_atomic(uuid[],text,timestamptz,timestamptz,jsonb,text,text,uuid)'::regprocedure))
+  )>0
+  and position(
+    'operational_state <> ''new'''
+    in lower(pg_get_functiondef(
+      'public.mutate_planning_window_atomic(uuid[],text,timestamptz,timestamptz,jsonb,text,text,uuid)'::regprocedure))
+  )>0,
+  'PCP-P05-004',
+  'cancel/reschedule must cover published or returned visits before execution');
+select pg_temp.assert_true(
   position('transaction_timestamp()' in pg_get_functiondef(
     'public.mutate_planning_window_atomic(uuid[],text,timestamptz,timestamptz,jsonb,text,text,uuid)'::regprocedure))>0,
   'PCP-P06-001','cutoff authority must be server transaction time');
@@ -214,6 +228,28 @@ select pg_temp.assert_true(
 select pg_temp.assert_true(
   to_regprocedure('public.restore_planning_draft_atomic(uuid)') is null,
   'PCP-P07-003','restore is not authorized');
+select pg_temp.assert_true(
+  to_regprocedure(
+    'public.save_planning_draft_atomic(uuid,text,jsonb,jsonb,integer,text,uuid)'
+  ) is not null
+  and has_function_privilege(
+    'authenticated',
+    'public.save_planning_draft_atomic(uuid,text,jsonb,jsonb,integer,text,uuid)',
+    'execute'
+  )
+  and not has_function_privilege(
+    'service_role',
+    'public.save_planning_draft_atomic(uuid,text,jsonb,jsonb,integer,text,uuid)',
+    'execute'
+  ),'PCP-P07-004','draft save must be authenticated RPC-only');
+select pg_temp.assert_true(
+  position('p_expected_version is not null' in pg_get_functiondef(
+    'public.save_planning_draft_atomic(uuid,text,jsonb,jsonb,integer,text,uuid)'::regprocedure))>0
+  and position('for update' in lower(pg_get_functiondef(
+    'public.save_planning_draft_atomic(uuid,text,jsonb,jsonb,integer,text,uuid)'::regprocedure)))>0
+  and position('PLANNING-DRAFT-STALE' in pg_get_functiondef(
+    'public.save_planning_draft_atomic(uuid,text,jsonb,jsonb,integer,text,uuid)'::regprocedure))>0,
+  'PCP-P07-005','create needs null version and updates need locked CAS');
 
 -- P08/P09 — ADD-R07-001 eligibility and scheduler evidence.
 select pg_temp.assert_true(
@@ -359,6 +395,14 @@ begin
   exception when insufficient_privilege then
     if sqlerrm<>'PLANNING-ARCHIVE-DENIED' then raise; end if;
   end;
+  begin
+    perform public.save_planning_draft_atomic(
+      null,'single','{}'::jsonb,'{}'::jsonb,null,
+      'probe-no-role-draft',gen_random_uuid());
+    raise exception 'PCP-NO-ROLE-DRAFT-SAVE-WAS-ALLOWED';
+  exception when insufficient_privilege then
+    if sqlerrm<>'PLANNING-DRAFT-DENIED' then raise; end if;
+  end;
 end
 $$;
 select pg_temp.assert_true(
@@ -436,6 +480,63 @@ select pg_temp.assert_true(
   'PCP-P11A-005','assigned in-scope inspector must retain governed read');
 reset role;
 
+-- Governed draft create/update/replay and changed-payload conflict.
+select set_config('request.jwt.claim.sub',
+  '00000000-0000-4000-8000-0000000000f4',true);
+set local role authenticated;
+do $$
+declare
+  v_created jsonb;
+  v_replay jsonb;
+  v_updated jsonb;
+begin
+  v_created:=public.save_planning_draft_atomic(
+    null,'single','{"target":{"factory_id":"probe"}}'::jsonb,
+    '{"target":{"source":"probe"}}'::jsonb,null,
+    'probe-draft-create','00000000-0000-4000-8000-0000000000c1'::uuid);
+  if (v_created->>'draft_version')::integer<>1
+     or (v_created->>'idempotent')::boolean
+     or v_created->>'command_id' is null
+     or v_created->>'audit_event_id' is null
+     or v_created->>'outbox_intent_id' is null then
+    raise exception 'PCP-P07-006: create receipt incomplete: %',v_created;
+  end if;
+  v_replay:=public.save_planning_draft_atomic(
+    null,'single','{"target":{"factory_id":"probe"}}'::jsonb,
+    '{"target":{"source":"probe"}}'::jsonb,null,
+    'probe-draft-create','00000000-0000-4000-8000-0000000000c1'::uuid);
+  if not (v_replay->>'idempotent')::boolean
+     or v_replay->>'plan_id'<>v_created->>'plan_id' then
+    raise exception 'PCP-P07-007: identical replay mismatch: %',v_replay;
+  end if;
+  begin
+    perform public.save_planning_draft_atomic(
+      null,'single','{"changed":true}'::jsonb,'{}'::jsonb,null,
+      'probe-draft-create','00000000-0000-4000-8000-0000000000c1'::uuid);
+    raise exception 'PCP-P07-008-CHANGED-REPLAY-WAS-ALLOWED';
+  exception when unique_violation then
+    if sqlerrm<>'PLANNING-CLOSURE-IDEMPOTENCY-CONFLICT' then raise; end if;
+  end;
+  v_updated:=public.save_planning_draft_atomic(
+    (v_created->>'plan_id')::uuid,'single','{"changed":true}'::jsonb,
+    '{"target":{"source":"probe"}}'::jsonb,1,
+    'probe-draft-update','00000000-0000-4000-8000-0000000000c2'::uuid);
+  if (v_updated->>'draft_version')::integer<>2 then
+    raise exception 'PCP-P07-009: update CAS receipt mismatch: %',v_updated;
+  end if;
+  begin
+    perform public.save_planning_draft_atomic(
+      (v_created->>'plan_id')::uuid,'single','{"stale":true}'::jsonb,
+      '{}'::jsonb,1,'probe-draft-stale',
+      '00000000-0000-4000-8000-0000000000c3'::uuid);
+    raise exception 'PCP-P07-010-STALE-WAS-ALLOWED';
+  exception when serialization_failure then
+    if sqlerrm<>'PLANNING-DRAFT-STALE' then raise; end if;
+  end;
+end
+$$;
+reset role;
+
 -- P12/P13 — atomic audit/outbox and truthful delivery boundary.
 select pg_temp.assert_true(
   position('insert into public.audit_events' in lower(pg_get_functiondef(
@@ -479,7 +580,8 @@ select pg_temp.assert_true(
     'cancel_planning_visits_atomic','reschedule_planning_visits_atomic',
     'archive_planning_draft_atomic','expire_planning_visits_scheduled',
     'create_planning_bulk_command','planning_bulk_command_receipt',
-    'process_planning_bulk_target'))=7,
+    'process_planning_bulk_target','transition_planning_visit_atomic',
+    'save_planning_draft_atomic'))=9,
   'PCP-P14-001','all public contracts must exist exactly once');
 
 rollback;

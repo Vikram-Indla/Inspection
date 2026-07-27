@@ -63,7 +63,11 @@ create table public.planning_process_commands (
   actor uuid references public.profiles(user_id),
   scheduler_principal text,
   operation text not null check (
-    operation in ('cancel','reschedule','archive_draft','expire','bulk')
+    operation in (
+      'cancel','reschedule','archive_draft','expire','bulk',
+      'return','republish','repackage','metadata',
+      'duplicate_draft','draft_save'
+    )
   ),
   idempotency_key text not null,
   correlation_id uuid not null,
@@ -584,8 +588,8 @@ begin
       raise exception using errcode = '42501',
         message = 'PLANNING-CLOSURE-SCOPE-DENIED';
     end if;
-    if v_visit.planning_status <> 'published'
-       or v_visit.operational_state not in ('new','prepared')
+    if v_visit.planning_status not in ('published','returned')
+       or v_visit.operational_state <> 'new'
        or exists (select 1 from public.planning_visit_archives a where a.visit_id=v_visit.id)
        or exists (select 1 from public.inspections i where i.visit_id=v_visit.id and (i.status <> 'not_started' or i.started_at is not null)) then
       raise exception using errcode = '23514', message = 'PLANNING-CLOSURE-STATE';
@@ -1211,6 +1215,311 @@ end
 $$;
 
 -- ---------------------------------------------------------------------------
+-- S5e. Governed compatibility surface for the remaining Planning web writers.
+-- One target, one CAS, one immutable command receipt, audit and outbox intent.
+-- Existing execution/Field transition engines are not reimplemented here.
+-- ---------------------------------------------------------------------------
+create function public.transition_planning_visit_atomic(
+  p_visit_id uuid,
+  p_operation text,
+  p_payload jsonb,
+  p_expected_version bigint,
+  p_idempotency_key text,
+  p_correlation_id uuid
+) returns jsonb
+language plpgsql security definer set search_path=''
+as $$
+declare
+  v_actor uuid:=auth.uid();
+  v_visit public.visits%rowtype;
+  v_request jsonb;
+  v_hash text;
+  v_existing public.planning_process_commands%rowtype;
+  v_command uuid;
+  v_audit bigint;
+  v_outbox uuid;
+  v_now timestamptz:=transaction_timestamp();
+  v_package public.package_versions%rowtype;
+  v_result jsonb;
+begin
+  if v_actor is null or p_visit_id is null
+     or p_operation not in (
+       'return','republish','repackage','metadata'
+     )
+     or jsonb_typeof(coalesce(p_payload,'{}'::jsonb)) <> 'object'
+     or p_expected_version is null
+     or nullif(btrim(p_idempotency_key),'') is null
+     or p_correlation_id is null then
+    raise exception using errcode='22023',
+      message='PLANNING-TRANSITION-REQUEST';
+  end if;
+  if not public.planning_closure_has_explicit_capability('planning.manage') then
+    raise exception using errcode='42501',
+      message='PLANNING-TRANSITION-DENIED';
+  end if;
+
+  v_request:=jsonb_build_object(
+    'visit_id',p_visit_id,'operation',p_operation,'payload',coalesce(p_payload,'{}'),
+    'expected_version',p_expected_version
+  );
+  v_hash:=public.planning_closure_request_hash(v_request);
+  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(
+    'planning-transition:'||v_actor::text||':'||p_operation||':'||p_idempotency_key,0
+  ));
+  select * into v_existing from public.planning_process_commands
+  where actor=v_actor and operation=p_operation and idempotency_key=p_idempotency_key;
+  if found then
+    if v_existing.request_hash<>v_hash then
+      raise exception using errcode='23505',
+        message='PLANNING-CLOSURE-IDEMPOTENCY-CONFLICT';
+    end if;
+    return v_existing.result||jsonb_build_object('idempotent',true);
+  end if;
+
+  select * into v_visit from public.visits where id=p_visit_id for update;
+  if not found then
+    raise exception using errcode='P0002',
+      message='PLANNING-TRANSITION-NOT-FOUND';
+  end if;
+  if not public.planning_closure_factory_in_scope(v_visit.factory_id) then
+    raise exception using errcode='42501',
+      message='PLANNING-CLOSURE-SCOPE-DENIED';
+  end if;
+  if v_visit.planning_version<>p_expected_version then
+    raise exception using errcode='40001',
+      message='PLANNING-CLOSURE-STALE';
+  end if;
+  if exists(select 1 from public.planning_visit_archives a where a.visit_id=p_visit_id)
+     or exists(
+       select 1 from public.inspections i
+       where i.visit_id=p_visit_id
+         and (i.status<>'not_started' or i.started_at is not null)
+     ) then
+    raise exception using errcode='23514',
+      message='PLANNING-TRANSITION-LOCKED';
+  end if;
+
+  if p_operation='return' then
+    if v_visit.planning_status<>'published'
+       or v_visit.operational_state not in ('new','prepared')
+       or nullif(btrim(p_payload->>'reason_key'),'') is null
+       or not exists(
+         select 1 from public.planning_lookups l
+         where l.kind='return_reason'
+           and l.key=p_payload->>'reason_key' and l.is_active
+       ) then
+      raise exception using errcode='23514',
+        message='PLANNING-RETURN-STATE-OR-REASON';
+    end if;
+    update public.visits set planning_status='returned',
+      planning_version=planning_version+1 where id=p_visit_id;
+    insert into public.visit_lifecycle_events(
+      visit_id,event_type,reason_key,comments,actor,previous
+    ) values (
+      p_visit_id,'return',p_payload->>'reason_key',
+      nullif(btrim(p_payload->>'comments'),''),v_actor,
+      jsonb_build_object('planning_status',v_visit.planning_status,
+        'operational_state',v_visit.operational_state,
+        'planning_version',v_visit.planning_version)
+    );
+  elsif p_operation='republish' then
+    if v_visit.planning_status<>'returned'
+       or v_visit.operational_state not in ('new','prepared') then
+      raise exception using errcode='23514',
+        message='PLANNING-REPUBLISH-STATE';
+    end if;
+    update public.visits set planning_status='published',
+      planning_version=planning_version+1 where id=p_visit_id;
+    insert into public.visit_lifecycle_events(
+      visit_id,event_type,actor,previous
+    ) values (
+      p_visit_id,'republish',v_actor,
+      jsonb_build_object('planning_status',v_visit.planning_status,
+        'operational_state',v_visit.operational_state,
+        'planning_version',v_visit.planning_version)
+    );
+  elsif p_operation='repackage' then
+    if v_visit.planning_status<>'returned' or v_visit.operational_state<>'new'
+       or nullif(p_payload->>'package_version_id','') is null then
+      raise exception using errcode='23514',
+        message='PLANNING-REPACKAGE-STATE';
+    end if;
+    select * into v_package from public.package_versions pv
+    where pv.id=(p_payload->>'package_version_id')::uuid
+      and pv.status in ('published','locked')
+      and pv.effective_from<=v_now::date
+      and (pv.effective_to is null or pv.effective_to>=v_now::date)
+    for share;
+    if not found then
+      raise exception using errcode='23514',
+        message='PLANNING-REPACKAGE-PACKAGE';
+    end if;
+    update public.visits set package_version_id=v_package.id,
+      planning_version=planning_version+1 where id=p_visit_id;
+    insert into public.visit_packages(
+      visit_id,package_version_id,snapshot,added_by
+    ) values (
+      p_visit_id,v_package.id,
+      jsonb_build_object('package_version_id',v_package.id,
+        'version_label',v_package.version_label,'status',v_package.status,
+        'captured_at',v_now),v_actor
+    ) on conflict(visit_id,package_version_id) do nothing;
+  elsif p_operation='metadata' then
+    if v_visit.planning_status not in ('published','returned')
+       or v_visit.operational_state<>'new' then
+      raise exception using errcode='23514',
+        message='PLANNING-METADATA-STATE';
+    end if;
+    update public.visits set
+      notes=case when p_payload ? 'notes' then nullif(btrim(p_payload->>'notes'),'')
+                 else notes end,
+      visit_type=case when p_payload ? 'visit_type'
+                      then p_payload->>'visit_type' else visit_type end,
+      planning_version=planning_version+1
+    where id=p_visit_id;
+  end if;
+
+  insert into public.planning_process_commands(
+    actor,operation,idempotency_key,correlation_id,request,request_hash,
+    status,target_count,applied_count,completed_at
+  ) values (
+    v_actor,p_operation,p_idempotency_key,p_correlation_id,v_request,v_hash,
+    'completed',1,1,v_now
+  ) returning id into v_command;
+  insert into public.audit_events(
+    actor,object_type,object_id,action,before_state,after_state,requirement_refs
+  ) values (
+    v_actor,'visits',p_visit_id,'PLANNING_VISIT_'||upper(p_operation),
+    to_jsonb(v_visit),
+    (select to_jsonb(v) from public.visits v where v.id=p_visit_id)
+      || jsonb_build_object('correlation_id',p_correlation_id,
+           'idempotency_key',p_idempotency_key),
+    array['CORR-PLANNING-R01-R03-002']
+  ) returning id into v_audit;
+  insert into public.workflow_outbox(
+    idempotency_key,aggregate_type,aggregate_id,aggregate_version,
+    side_effect_kind,payload,status,created_by
+  ) values (
+    'planning:'||p_operation||':'||p_visit_id||':'||(v_visit.planning_version+1),
+    'visit',p_visit_id,(v_visit.planning_version+1)::integer,'notify',
+    jsonb_build_object('operation',p_operation,'visit_id',p_visit_id,
+      'correlation_id',p_correlation_id),'pending',v_actor
+  ) returning id into v_outbox;
+  v_result:=jsonb_build_object(
+    'command_id',v_command,'operation',p_operation,'visit_id',p_visit_id,
+    'pre_version',v_visit.planning_version,
+    'post_version',v_visit.planning_version+1,
+    'server_transaction_time',v_now,'correlation_id',p_correlation_id,
+    'audit_event_id',v_audit,'outbox_intent_id',v_outbox,'idempotent',false
+  );
+  update public.planning_process_commands set result=v_result where id=v_command;
+  return v_result;
+end
+$$;
+
+create function public.save_planning_draft_atomic(
+  p_plan_id uuid,
+  p_method text,
+  p_draft_payload jsonb,
+  p_criteria jsonb,
+  p_expected_version integer,
+  p_idempotency_key text,
+  p_correlation_id uuid
+) returns jsonb
+language plpgsql security definer set search_path=''
+as $$
+declare
+  v_actor uuid:=auth.uid();
+  v_plan public.visit_plans%rowtype;
+  v_request jsonb;
+  v_hash text;
+  v_existing public.planning_process_commands%rowtype;
+  v_command uuid;
+  v_audit bigint;
+  v_outbox uuid;
+  v_now timestamptz:=transaction_timestamp();
+  v_result jsonb;
+begin
+  if v_actor is null or p_method not in ('single','bulk')
+     or jsonb_typeof(coalesce(p_draft_payload,'{}'))<>'object'
+     or jsonb_typeof(coalesce(p_criteria,'{}'))<>'object'
+     or nullif(btrim(p_idempotency_key),'') is null
+     or p_correlation_id is null
+     or not public.planning_closure_has_explicit_capability(
+       case p_method when 'single' then 'planning.create.single'
+                     else 'planning.create.bulk' end
+     ) then
+    raise exception using errcode='42501',message='PLANNING-DRAFT-DENIED';
+  end if;
+  v_request:=jsonb_build_object('plan_id',p_plan_id,'method',p_method,
+    'draft_payload',p_draft_payload,'criteria',p_criteria,
+    'expected_version',p_expected_version);
+  v_hash:=public.planning_closure_request_hash(v_request);
+  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(
+    'planning-draft:'||v_actor::text||':'||p_idempotency_key,0));
+  select * into v_existing from public.planning_process_commands
+  where actor=v_actor and operation='draft_save'
+    and idempotency_key=p_idempotency_key;
+  if found then
+    if v_existing.request_hash<>v_hash then
+      raise exception using errcode='23505',
+        message='PLANNING-CLOSURE-IDEMPOTENCY-CONFLICT';
+    end if;
+    return v_existing.result||jsonb_build_object('idempotent',true);
+  end if;
+
+  if p_plan_id is null then
+    if p_expected_version is not null then
+      raise exception using errcode='22023',message='PLANNING-DRAFT-VERSION';
+    end if;
+    insert into public.visit_plans(
+      method,status,created_by,draft_payload,draft_version,source_channel,criteria
+    ) values (
+      p_method,'draft',v_actor,p_draft_payload,1,
+      'planning.'||p_method,p_criteria
+    ) returning * into v_plan;
+  else
+    select * into v_plan from public.visit_plans where id=p_plan_id for update;
+    if not found or v_plan.created_by<>v_actor or v_plan.method<>p_method
+       or v_plan.status<>'draft' or v_plan.archived_at is not null
+       or v_plan.draft_version is distinct from p_expected_version then
+      raise exception using errcode='40001',message='PLANNING-DRAFT-STALE';
+    end if;
+    update public.visit_plans set draft_payload=p_draft_payload,
+      criteria=p_criteria,draft_version=draft_version+1,
+      source_channel='planning.'||p_method
+    where id=p_plan_id returning * into v_plan;
+  end if;
+
+  insert into public.planning_process_commands(
+    actor,operation,idempotency_key,correlation_id,request,request_hash,
+    status,target_count,applied_count,completed_at
+  ) values(v_actor,'draft_save',p_idempotency_key,p_correlation_id,v_request,
+    v_hash,'completed',1,1,v_now) returning id into v_command;
+  insert into public.audit_events(
+    actor,object_type,object_id,action,before_state,after_state,requirement_refs
+  ) values(v_actor,'visit_plans',v_plan.id,'PLANNING_DRAFT_SAVE',null,
+    to_jsonb(v_plan)||jsonb_build_object('correlation_id',p_correlation_id),
+    array['CORR-PLANNING-R01-R03-002']) returning id into v_audit;
+  insert into public.workflow_outbox(
+    idempotency_key,aggregate_type,aggregate_id,aggregate_version,
+    side_effect_kind,payload,status,created_by
+  ) values('planning:draft-save:'||v_plan.id||':'||v_plan.draft_version,
+    'plan',v_plan.id,v_plan.draft_version,'notify',
+    jsonb_build_object('operation','draft_save','plan_id',v_plan.id,
+      'correlation_id',p_correlation_id),'pending',v_actor)
+  returning id into v_outbox;
+  v_result:=jsonb_build_object('command_id',v_command,'plan_id',v_plan.id,
+    'plan_reference',v_plan.plan_reference,'method',v_plan.method,
+    'draft_version',v_plan.draft_version,'server_transaction_time',v_now,
+    'correlation_id',p_correlation_id,'audit_event_id',v_audit,
+    'outbox_intent_id',v_outbox,'idempotent',false);
+  update public.planning_process_commands set result=v_result where id=v_command;
+  return v_result;
+end
+$$;
+
+-- ---------------------------------------------------------------------------
 -- S6. Dedicated scheduler roles and least-privilege function grants.
 -- ---------------------------------------------------------------------------
 do $$
@@ -1265,6 +1574,12 @@ revoke all on function public.planning_bulk_command_receipt(uuid)
   from public,anon,authenticated,service_role;
 revoke all on function public.process_planning_bulk_target(uuid,integer)
   from public,anon,authenticated,service_role;
+revoke all on function public.transition_planning_visit_atomic(
+  uuid,text,jsonb,bigint,text,uuid)
+  from public,anon,authenticated,service_role;
+revoke all on function public.save_planning_draft_atomic(
+  uuid,text,jsonb,jsonb,integer,text,uuid)
+  from public,anon,authenticated,service_role;
 revoke all on function public.expire_planning_visits_core(
   timestamptz,integer,text,uuid) from public,anon,authenticated,service_role;
 revoke all on function public.expire_planning_visits_scheduled(integer)
@@ -1281,6 +1596,10 @@ grant execute on function public.create_planning_bulk_command(
 grant execute on function public.planning_bulk_command_receipt(uuid) to authenticated;
 grant execute on function public.process_planning_bulk_target(uuid,integer)
   to authenticated;
+grant execute on function public.transition_planning_visit_atomic(
+  uuid,text,jsonb,bigint,text,uuid) to authenticated;
+grant execute on function public.save_planning_draft_atomic(
+  uuid,text,jsonb,jsonb,integer,text,uuid) to authenticated;
 set role planning_expiry_owner;
 revoke all on function public.expire_planning_visits_core(
   timestamptz,integer,text,uuid) from public,anon,authenticated,service_role;
@@ -1312,6 +1631,8 @@ begin
     'public.archive_planning_draft_atomic(uuid,integer,text,text,uuid)'::regprocedure,
     'public.expire_planning_visits_scheduled(integer)'::regprocedure,
     'public.process_planning_bulk_target(uuid,integer)'::regprocedure
+    ,'public.transition_planning_visit_atomic(uuid,text,jsonb,bigint,text,uuid)'::regprocedure
+    ,'public.save_planning_draft_atomic(uuid,text,jsonb,jsonb,integer,text,uuid)'::regprocedure
   ] loop
     if has_function_privilege('service_role',v_sig,'execute') then
       raise exception using errcode='42501',
@@ -1357,6 +1678,7 @@ begin
         'expire_planning_visits_core','expire_planning_visits_scheduled',
         'create_planning_bulk_command','planning_bulk_command_receipt',
         'process_planning_bulk_target',
+        'transition_planning_visit_atomic','save_planning_draft_atomic',
         'planning_closure_has_explicit_capability',
         'planning_closure_factory_in_scope'
       )
