@@ -22,8 +22,9 @@ export default async function ComplianceLibrary({
   const sb = await supabaseServer();
   const sp = await searchParams;
   const query = typeof sp.q === "string" ? sp.q.trim().toLowerCase() : "";
+  const routeBase = sp.__shellRoute === "/admin/regulations" ? "/admin/regulations" : "/compliance";
   const authority = typeof sp.authority === "string" ? sp.authority : "";
-  const selectedId = typeof sp.id === "string" ? sp.id : "";
+  const selectedId = typeof sp.libraryId === "string" ? sp.libraryId : "";
   const { data, error } = await sb.from("regulations")
     .select("id,code,title,issuing_authority,status,version_label,effective_from,regulation_clauses(id,inspection_items(id))")
     .order("title");
@@ -41,23 +42,23 @@ export default async function ComplianceLibrary({
   ) ?? 0;
 
   return (
-    <Shell current="/compliance" title="">
+    <Shell current={routeBase} title="">
       <div className="rv-library">
         <aside className="rv-library__rail" aria-label="Compliance library navigation">
           <form className="rv-library__search">
             <span aria-hidden="true">⌕</span>
             <input name="q" defaultValue={typeof sp.q === "string" ? sp.q : ""} placeholder="Search library…" aria-label="Search library" />
           </form>
-          <a className={!authority ? "is-active" : ""} href="/compliance">
+          <a className={!authority ? "is-active" : ""} href={routeBase}>
             <span>All regulations</span><b>{rows.length}</b>
           </a>
           {authorities.map(name => (
-            <a key={name} className={authority === name ? "is-active" : ""} href={`/compliance?authority=${encodeURIComponent(name)}`}>
+            <a key={name} className={authority === name ? "is-active" : ""} href={`${routeBase}?authority=${encodeURIComponent(name)}`}>
               <span>{name}</span><b>{rows.filter(row => (row.issuing_authority ?? "Other") === name).length}</b>
             </a>
           ))}
           <p className="rv-library__eyebrow">Recently opened</p>
-          {rows.slice(0, 2).map(row => <a className="rv-library__recent" key={row.id} href={`/compliance?id=${row.id}`}>{row.title}</a>)}
+          {rows.slice(0, 2).map(row => <a className="rv-library__recent" key={row.id} href={`${routeBase}?libraryId=${row.id}`}>{row.title}</a>)}
         </aside>
 
         <main className="rv-library__workspace">
@@ -84,7 +85,7 @@ export default async function ComplianceLibrary({
                 <section className="rv-library__list">
                   <h2>Regulations</h2>
                   {filtered.map(row => (
-                    <a className={row.id === selected.id ? "is-selected" : ""} key={row.id} href={`/compliance?id=${row.id}${authority ? `&authority=${encodeURIComponent(authority)}` : ""}`}>
+                    <a className={row.id === selected.id ? "is-selected" : ""} key={row.id} href={`${routeBase}?libraryId=${row.id}${authority ? `&authority=${encodeURIComponent(authority)}` : ""}`}>
                       <div><strong>{row.title}</strong><span>{row.code} · {row.version_label}</span></div><span aria-hidden="true">›</span>
                     </a>
                   ))}

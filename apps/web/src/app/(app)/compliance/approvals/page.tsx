@@ -15,8 +15,14 @@ type RequestRow = {
 };
 type ComponentRow = { request_id: string; revision_number: number; entity_kind: string; component_status: string };
 
-export default async function ApprovalQueue() {
+export default async function ApprovalQueue({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const sb = await supabaseServer();
+  const sp = await searchParams;
+  const current = sp.__shellRoute === "/admin/compliance-approvals" ? "/admin/compliance-approvals" : "/compliance/approvals";
   const { data: { user } } = await getServerUser();
   const [{ data, error }, componentRead] = await Promise.all([
     sb.from("compliance_configuration_requests")
@@ -31,7 +37,7 @@ export default async function ApprovalQueue() {
   const components = (componentRead.data ?? []) as ComponentRow[];
 
   return (
-    <Shell current="/compliance/approvals" title="">
+    <Shell current={current} title="">
       <div className="rv-approval">
         {error || componentRead.error ? <div className="sq-banner sq-banner--critical" role="alert"><strong>Approval Queue unavailable.</strong> No workload claim is made.</div> : null}
         <header className="rv-approval__heading">

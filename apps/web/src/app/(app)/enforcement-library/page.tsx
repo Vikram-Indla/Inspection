@@ -16,8 +16,14 @@ type ViolationRow = {
 };
 type PenaltyRow = { violation_id: string; status: string; mapping_snapshot: { penalty_type?: string; amount?: number } | null };
 
-export default async function EnforcementLibrary() {
+export default async function EnforcementLibrary({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const sb = await supabaseServer();
+  const sp = await searchParams;
+  const current = sp.__shellRoute === "/admin/violations" ? "/admin/violations" : "/enforcement-library";
   const [violationRead, penaltyRead] = await Promise.all([
     sb.from("violations")
       .select("id,invalidated_at,inspections(submitted_at,visits(factories(name,factory_code,license_number))),violation_codes(title,code,corrective_action),action_forms(id,form_type,status,due_at)")
@@ -30,7 +36,7 @@ export default async function EnforcementLibrary() {
   const penalties = (penaltyRead.data ?? []) as unknown as PenaltyRow[];
 
   return (
-    <Shell current="/enforcement-library" title="">
+    <Shell current={current} title="">
       <div className="rv-enforcement">
         <header className="rv-enforcement__toolbar">
           <label><span aria-hidden="true">⌕</span><input placeholder="Search factory, licence…" aria-label="Search enforcement library" /></label>

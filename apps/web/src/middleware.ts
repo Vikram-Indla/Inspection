@@ -18,7 +18,22 @@ import { createServerClient } from "@supabase/ssr";
 export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-pathname", request.nextUrl.pathname);
-  let response = NextResponse.next({ request: { headers: requestHeaders } });
+  const designRoute =
+    request.nextUrl.pathname === "/admin/regulations" && !request.nextUrl.searchParams.has("id")
+      ? "/compliance"
+      : request.nextUrl.pathname === "/admin/compliance-approvals"
+        ? "/compliance/approvals"
+        : request.nextUrl.pathname === "/admin/violations" && !request.nextUrl.searchParams.has("mode")
+          ? "/enforcement-library"
+          : null;
+  const buildResponse = () => {
+    if (!designRoute) return NextResponse.next({ request: { headers: requestHeaders } });
+    const rewritten = request.nextUrl.clone();
+    rewritten.pathname = designRoute;
+    rewritten.searchParams.set("__shellRoute", request.nextUrl.pathname);
+    return NextResponse.rewrite(rewritten, { request: { headers: requestHeaders } });
+  };
+  let response = buildResponse();
 
   // Keep the browser and Server Components on the same Supabase session.
   // Without this refresh boundary, a client sign-in can render the first
@@ -34,7 +49,7 @@ export async function middleware(request: NextRequest) {
         },
         setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          response = NextResponse.next({ request: { headers: requestHeaders } });
+          response = buildResponse();
           cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
         },
       },
