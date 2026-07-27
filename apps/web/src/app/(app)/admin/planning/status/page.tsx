@@ -90,14 +90,14 @@ export default async function PlanningStatus() {
             : t("admin.planning.status.fallback.none", "No published workflow configuration was found. The table below is a static copy of the canonical lifecycle (visit-lifecycle-v4) and may be out of date.")}
         </div></div>
       ) : (
-        <p className="sq-caption">
+        <p className="t-caption">
           {t("admin.planning.status.source", "Source: config_versions · engine=workflow · status=published")}
           {data?.version_label ? ` · ${data.version_label}` : ""}
           {data?.effective_from ? ` · ${t("admin.planning.status.effectiveFrom", "effective from")} ${new Date(data.effective_from).toLocaleDateString()}` : ""}
         </p>
       )}
 
-      <section className="sq-surface" style={{ padding: "var(--space-6)" }}>
+      <section className="panel" style={{ padding: "var(--space-6)" }}>
         <h2 style={{ marginBlockStart: 0 }}>{t("admin.planning.status.states", "States")}</h2>
         <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
           {states.map(state => (
@@ -106,7 +106,7 @@ export default async function PlanningStatus() {
         </div>
       </section>
 
-      <section className="sq-surface" style={{ padding: "var(--space-6)" }}>
+      <section className="panel" style={{ padding: "var(--space-6)" }}>
         <h2 style={{ marginBlockStart: 0 }}>{t("admin.planning.status.transitions", "Transitions")}</h2>
         <div className="sq-tablewrap"><table className="sq-table">
           <thead><tr>
@@ -125,16 +125,16 @@ export default async function PlanningStatus() {
                 <td><span className="sq-lozenge">{tr.from ?? "—"}</span></td>
                 <td><span className="sq-lozenge sq-lozenge--info">{tr.to ?? "—"}</span></td>
                 <td>{tr.actor ?? "—"}</td>
-                <td className="sq-caption">{tr.guard ?? "—"}</td>
+                <td className="t-caption">{tr.guard ?? "—"}</td>
                 <td>{tr.terminal ? t("common.yes", "yes") : t("common.no", "no")}</td>
-                <td className="sq-caption">{tr.side_effects?.length ? tr.side_effects.join(" · ") : "—"}</td>
+                <td className="t-caption">{tr.side_effects?.length ? tr.side_effects.join(" · ") : "—"}</td>
               </tr>
             ))}
           </tbody>
         </table></div>
       </section>
 
-      <section className="sq-surface" style={{ padding: "var(--space-6)" }}>
+      <section className="panel" style={{ padding: "var(--space-6)" }}>
         <h2 style={{ marginBlockStart: 0 }}>{t("admin.planning.status.capabilities", "Planning capabilities")}</h2>
         <div className="sq-tablewrap"><table className="sq-table">
           <thead><tr>
@@ -150,7 +150,7 @@ export default async function PlanningStatus() {
             ))}
           </tbody>
         </table></div>
-        <p className="sq-caption" style={{ marginBlockEnd: 0 }}>
+        <p className="t-caption" style={{ marginBlockEnd: 0 }}>
           {t("admin.planning.status.capabilitiesNote", "Capability grants per role are managed under Roles & permissions (admin.access.manage).")}
         </p>
       </section>
