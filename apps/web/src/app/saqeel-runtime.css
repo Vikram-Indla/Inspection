@@ -924,7 +924,8 @@ button.sq-shell-scope { cursor: pointer; }
 .sq-shell-account__menu a { color: var(--action-primary-hover); text-decoration: none; padding-block: var(--space-1); }
 .sq-shell-account__menu a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .sq-pagehead__row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
-.sq-pagehead__context { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.sq-pagehead__context { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; min-inline-size: 0; max-inline-size: 100%; }
+.sq-pagehead__context > h2 { min-inline-size: 0; overflow-wrap: anywhere; word-break: break-word; }
 .sq-breadcrumb { display: flex; align-items: center; gap: var(--space-2); font: var(--type-caption-font); color: var(--text-secondary); }
 .sq-breadcrumb li { list-style: none; display: flex; align-items: center; gap: var(--space-2); }
 .sq-breadcrumb li:not(:last-child)::after { content: "›"; }
@@ -1103,8 +1104,6 @@ button.sq-shell-scope { cursor: pointer; }
   .sq-shell-scope select { max-inline-size: 112px; }
   .sq-pagehead__actions { margin-inline-start: auto; }
   .sq-pagehead__row { padding-block-start: var(--space-1); }
-  .sq-pagehead__context { min-inline-size: 0; max-inline-size: 100%; }
-  .sq-pagehead__context > h2 { min-inline-size: 0; overflow-wrap: anywhere; word-break: break-word; }
   .admin-control-panel { gap: var(--space-6); }
   .admin-control-panel__intro { align-items: flex-start; flex-direction: column; }
   .admin-control-panel__intro .btn { inline-size: 100%; }
