@@ -21,6 +21,49 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type ActionResult = { error?: string; ok?: string; planId?: string; method?: string };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+type TransitionOperation = "return" | "republish" | "repackage" | "metadata";
+
+async function callPlanningTransition(
+  sb: SupabaseClient,
+  fd: FormData,
+  operation: TransitionOperation,
+  payload: Record<string, unknown>,
+): Promise<string | null> {
+  const visitId = String(fd.get("visit_id") ?? "");
+  const expectedVersion = Number(fd.get("expected_version"));
+  const idempotencyKey = String(fd.get("idempotency_key") ?? "").trim();
+  const correlationId = String(fd.get("correlation_id") ?? "").trim();
+  if (!UUID.test(visitId) || !Number.isInteger(expectedVersion) || expectedVersion < 1
+      || !/^[A-Za-z0-9._:-]{8,200}$/.test(idempotencyKey) || !UUID.test(correlationId)) {
+    return "The Planning request is incomplete. Refresh before trying again.";
+  }
+  const { data, error } = await sb.rpc("transition_planning_visit_atomic", {
+    p_visit_id: visitId,
+    p_operation: operation,
+    p_payload: payload,
+    p_expected_version: expectedVersion,
+    p_idempotency_key: idempotencyKey,
+    p_correlation_id: correlationId,
+  });
+  if (error) {
+    console.error(`[planning.${operation}] governed mutation failed:`, error.code, error.message);
+    if (error.code === "42501") return "You do not have permission or scope for this Planning action. Nothing was changed.";
+    if (error.code === "40001") return "This visit changed after the page loaded. Refresh before trying again.";
+    if (error.code === "23514") return "This Planning action is blocked by the current state or governed configuration.";
+    if (error.code === "23505") return "This retry does not match the original Planning request. Nothing was changed.";
+    return "The Planning action could not be completed (ERR-OPS-001). Nothing was changed.";
+  }
+  const receipt = data as {
+    operation?: string; visit_id?: string; post_version?: number;
+    correlation_id?: string; audit_event_id?: number; outbox_intent_id?: string;
+  } | null;
+  if (receipt?.operation !== operation || receipt.visit_id !== visitId
+      || receipt.correlation_id !== correlationId || !receipt.post_version
+      || !receipt.audit_event_id || !receipt.outbox_intent_id) {
+    return "The Planning result could not be verified. Refresh before retrying.";
+  }
+  return null;
+}
 
 // M02-041 — notify the visit's assigned inspector (single insert path; ENG-11).
 // Best-effort: the primary state change already committed, so a failed
@@ -92,26 +135,13 @@ export async function returnVisit(_: ActionResult, fd: FormData): Promise<Action
   if (optErr) return { error: "Return reasons are temporarily unavailable (ERR-OPS-001) — nothing was changed." };
   const bad = validateReason(options, reasonKey, comments, "return");
   if (bad) return { error: bad };
-  const previous = await previousSnapshot(sb, id);
-  // The status transition ONLY — planner notes are never overwritten (M8 fix:
-  // the legacy `RETURNED: {reason}` prefix destroyed them). The detail page
-  // reads the reason from the lifecycle event, with the legacy prefix as a
-  // display fallback for historical rows only.
-  const { data: updated, error } = await sb.from("visits")
-    .update({ planning_status: "returned" })
-    .eq("id", id).eq("planning_status", "published")
-    .select("id");
-  if (error) return { error: mapError(error, "update") };
-  if (!updated?.length) return { error: "No row updated — state changed concurrently or RLS denied the update (visits_update requires planner/ops)" };
-  const evErr = await recordLifecycleEvent(sb, {
-    visitId: id, eventType: "return", reasonKey, comments, actor: user.id, previous,
+  const transitionError = await callPlanningTransition(sb, fd, "return", {
+    reason_key: reasonKey,
+    comments: comments || null,
   });
-  // M02-041 — the assigned inspector is told their visit was returned to planning.
-  const nErr = await notifyAssignedInspector(sb, id, "visit_returned", { reason: reasonKey });
+  if (transitionError) return { error: transitionError };
   revalidatePath(`/visits/${id}`); revalidatePath("/visits");
-  if (evErr) return { error: "Returned, but the lifecycle record could not be written — the event stream is append-only and this gap is logged (PLN-CON-011)" };
-  if (nErr) return { error: "Returned — allowed fields reopened, but the inspector notification could not be queued (M02-041)" };
-  return { ok: "Returned with governed reason — lifecycle recorded; inspector notification queued (not confirmed delivered) (PLN-CON-011 · M02-041)" };
+  return { ok: "Returned atomically — lifecycle, audit and notification intent recorded (PLN-CON-011 · M02-041)." };
 }
 
 export async function republishVisit(_: ActionResult, fd: FormData): Promise<ActionResult> {
@@ -119,18 +149,10 @@ export async function republishVisit(_: ActionResult, fd: FormData): Promise<Act
   const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
   const id = String(fd.get("visit_id"));
-  const previous = await previousSnapshot(sb, id);
-  const { data: updated, error } = await sb.from("visits").update({ planning_status: "published" }).eq("id", id).eq("planning_status", "returned").select("id");
-  if (error) return { error: mapError(error, "update") };
-  if (!updated?.length) return { error: "No row updated — state changed concurrently or RLS denied the update" };
-  const evErr = await recordLifecycleEvent(sb, { visitId: id, eventType: "republish", actor: user.id, previous });
-  // M02-009/030 — the assigned inspector is notified on republish. Surface a
-  // failed queue write explicitly; never claim the notification was queued.
-  const nErr = await notifyAssignedInspector(sb, id, "visit_republished", {});
+  const transitionError = await callPlanningTransition(sb, fd, "republish", {});
+  if (transitionError) return { error: transitionError };
   revalidatePath(`/visits/${id}`); revalidatePath("/visits");
-  if (evErr) return { error: "Republished, but the lifecycle record could not be written — the gap is logged (PLN-CON-011)" };
-  if (nErr) return { error: "Republished — same Visit ID retained, but the inspector notification could not be queued (M02-009)" };
-  return { ok: "Republished — same Visit ID retained; inspector notification queued (not confirmed delivered) (M02-009)" };
+  return { ok: "Republished atomically — same Visit ID retained; audit and notification intent recorded (M02-009)." };
 }
 
 // M02-006 + PLN-R02/R03 — Planning cancellation accepts one optional note,

@@ -57,6 +57,10 @@ export default function ActionBar({ visitId, planningVersion, status, opState, o
     idempotencyKey: `visit.cancel.${crypto.randomUUID()}`,
     correlationId: crypto.randomUUID(),
   }));
+  const [transitionIdentity] = useState(() => ({
+    return: { idempotencyKey: `visit.return.${crypto.randomUUID()}`, correlationId: crypto.randomUUID() },
+    republish: { idempotencyKey: `visit.republish.${crypto.randomUUID()}`, correlationId: crypto.randomUUID() },
+  }));
   const msg = ret.error ?? rep.error ?? can.error ?? rsc.error ?? rea.error ?? vt.error ?? dup.error ?? pkg.error;
   const ok = ret.ok ?? rep.ok ?? can.ok ?? rsc.ok ?? rea.ok ?? vt.ok ?? dup.ok ?? pkg.ok;
   const busy = p1 || p2 || p3 || p4 || p5 || p6 || p7 || p8;
@@ -88,6 +92,9 @@ export default function ActionBar({ visitId, planningVersion, status, opState, o
           {status === "published" && (
             <form action={retAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               <input type="hidden" name="visit_id" value={visitId} />
+              <input type="hidden" name="expected_version" value={planningVersion} />
+              <input type="hidden" name="idempotency_key" value={transitionIdentity.return.idempotencyKey} />
+              <input type="hidden" name="correlation_id" value={transitionIdentity.return.correlationId} />
               <div className="field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="visit-return-reason">{strings.returnReason}</label>
                 <select className="select" name="reason_key" id="visit-return-reason" required>
                   <option value="">—</option>
@@ -100,6 +107,9 @@ export default function ActionBar({ visitId, planningVersion, status, opState, o
           )}
           {status === "returned" && (
             <form action={repAct}><input type="hidden" name="visit_id" value={visitId} />
+              <input type="hidden" name="expected_version" value={planningVersion} />
+              <input type="hidden" name="idempotency_key" value={transitionIdentity.republish.idempotencyKey} />
+              <input type="hidden" name="correlation_id" value={transitionIdentity.republish.correlationId} />
               <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.republishBtn}</button></form>
           )}
           {canReassign && (
