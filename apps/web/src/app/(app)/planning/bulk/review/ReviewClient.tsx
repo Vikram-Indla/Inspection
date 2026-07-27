@@ -111,6 +111,9 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
   draftUnavailable?: boolean;
   locale: "en" | "ar";
 }) {
+  // PLN-S08/PLN-S11 — the corrected compiler keeps draft persistence and
+  // publish blocked until frozen-target durable receipts are effective.
+  const transitionsExecutable = false;
   const [state, formAction, pending] = useActionState<BulkResult, FormData>(publishBulkPlan, {});
   const [data, setData] = useState<ReviewData | null>(null);
   const [allIds, setAllIds] = useState<string[]>([]);
@@ -798,6 +801,11 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
           </div>
         )}
         <p className="t-caption">{s.willRecheck}</p>
+        {!transitionsExecutable && (
+          <div className="sq-banner sq-banner--warning" role="status">
+            <div>{s.draftUnavailable}</div>
+          </div>
+        )}
         <div className="cd-actionbar__row">
           <div className="cd-grow">
             {committable
@@ -806,11 +814,13 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
             {draftSavedMsg && <div className="t-caption" role="status">{draftSavedMsg}</div>}
             {draftSaveError && <div className="cd-disabledreason" role="alert">{s.draftSaveFailed}</div>}
           </div>
-          <button type="button" className="sq-btn sq-btn--secondary" disabled={savingDraft || workingIds.length === 0}
+          <button type="button" className="sq-btn sq-btn--secondary"
+            disabled={!transitionsExecutable || savingDraft || workingIds.length === 0}
             onClick={() => { void onSaveDraft(); }}>
             {savingDraft ? s.savingDraft : s.saveDraft}
           </button>
-          <button className="sq-btn sq-btn--prominent cd-publishbtn" disabled={!committable}
+          <button className="sq-btn sq-btn--prominent cd-publishbtn"
+            disabled={!transitionsExecutable || !committable}
             aria-describedby={committable ? undefined : reasonId}>
             {committable ? interp(s.publishReady, { n: baseReady ? retained : eligibleIds.length }) : validating ? s.checking : interp(s.publishBlocked, { n: needsAck && !acknowledged ? ineligibleIds.length : blockers.length })}
           </button>
