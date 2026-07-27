@@ -168,6 +168,20 @@ export function buildMethodology(metric: SharedMetric, locale: Locale): Methodol
     { label: t(locale, "Formula version", "إصدار المعادلة"), value: dash(metric.formulaVersion) },
     { label: t(locale, "Policy version", "إصدار السياسة"), value: metric.policyVersionId ?? t(locale, "No effective policy", "لا توجد سياسة فعّالة") },
     { label: t(locale, "Source freshness", "حداثة المصدر"), value: freshness },
+    // DEC-032. This is a statement about what every count MEANS, so it belongs
+    // on the number's lineage rather than as a page-level alert: the dashboard
+    // reports stored records the reader is permitted to see, which is not the
+    // same claim as a verified end-to-end submission. Stated in reading terms,
+    // with the decision ID kept because a basis drawer is an audit surface and
+    // the reference is what makes the caveat checkable.
+    {
+      label: t(locale, "Verification", "\u0627\u0644\u062a\u062d\u0642\u0642"),
+      value: t(
+        locale,
+        "Counts describe stored records visible under your access scope. Independent end-to-end submission proof is pending (DEC-032).",
+        "\u062a\u0635\u0641 \u0627\u0644\u0623\u0639\u062f\u0627\u062f \u0627\u0644\u0633\u062c\u0644\u0627\u062a \u0627\u0644\u0645\u062e\u0632\u0646\u0629 \u0627\u0644\u0638\u0627\u0647\u0631\u0629 \u0636\u0645\u0646 \u0646\u0637\u0627\u0642 \u0635\u0644\u0627\u062d\u064a\u062a\u0643. \u0644\u0627 \u064a\u0632\u0627\u0644 \u0625\u062b\u0628\u0627\u062a \u0627\u0644\u062a\u0642\u062f\u064a\u0645 \u0627\u0644\u0645\u0633\u062a\u0642\u0644 \u0645\u0646 \u0627\u0644\u0628\u062f\u0627\u064a\u0629 \u0625\u0644\u0649 \u0627\u0644\u0646\u0647\u0627\u064a\u0629 \u0645\u0639\u0644\u0642\u0627\u064b (DEC-032).",
+      ),
+    },
   ];
 
   return {
