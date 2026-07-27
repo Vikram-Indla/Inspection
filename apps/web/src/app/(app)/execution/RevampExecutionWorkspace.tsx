@@ -17,18 +17,25 @@ export type ExecutionRow = {
   windowEnd: string;
   executionDate: string | null;
   reportType: string | null;
+  packageCode: string | null;
+  packageVersion: string | null;
   visitType: string | null;
   visitMode: string | null;
   risk: string | null;
   priority: string | null;
   inspectorId: string | null;
   inspector: string | null;
+  assignmentMethod: string | null;
+  assignmentStatus: string | null;
   region: string | null;
   city: string | null;
   operationalState: string;
   planningStatus: string;
   lat: number | null;
   lng: number | null;
+  journeyStatus: string | null;
+  journeyStartedAt: string | null;
+  journeyEndedAt: string | null;
 };
 
 type View = "mine" | "all" | "map";
@@ -45,6 +52,7 @@ const startOfWeek = (date: Date) => {
 const copy = (locale: Locale, en: string, ar: string) => locale === "ar" ? ar : en;
 const formatShort = (locale: Locale, date: Date) => new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-GB", { weekday: "short", day: "numeric" }).format(date);
 const formatDate = (locale: Locale, value: string | null) => value ? new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-GB", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value)) : "—";
+const formatDateTime = (locale: Locale, value: string | null) => value ? new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-GB", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value)) : "—";
 const titleCase = (locale: Locale, value: string | null) => {
   if (!value) return "—";
   const ar: Record<string, string> = {
@@ -243,22 +251,31 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
           <p className="sq-overline">{copy(locale, "Execution visit", "زيارة التنفيذ")}</p>
           <h2 id="execution-detail-title">{selected.factory}</h2>
           <p>{selected.visitReference} · <span>{titleCase(locale, selected.operationalState)}</span></p>
+          <div className="sq-banner" role="status">
+            <strong>{copy(locale, "Governed planning window:", "نافذة التخطيط المعتمدة:")}</strong>{" "}
+            {formatDate(locale, selected.windowStart)} – {formatDate(locale, selected.windowEnd)}.{" "}
+            {copy(locale, "Date or assignment changes continue through the state-guarded visit workflow.", "تستمر تغييرات التاريخ أو الإسناد عبر مسار الزيارة المحمي بالحالة.")}
+          </div>
           <dl>
             <div><dt>{copy(locale, "Planning window", "نافذة التخطيط")}</dt><dd>{formatDate(locale, selected.windowStart)} – {formatDate(locale, selected.windowEnd)}</dd></div>
             <div><dt>{copy(locale, "Execution date", "تاريخ التنفيذ")}</dt><dd>{formatDate(locale, selected.executionDate)}</dd></div>
             <div><dt>{copy(locale, "Visit type / mode", "نوع الزيارة / نمطها")}</dt><dd>{titleCase(locale, selected.visitType)} · {titleCase(locale, selected.visitMode)}</dd></div>
             <div><dt>{copy(locale, "Assigned inspector", "المفتش المسند")}</dt><dd>{selected.inspector ?? copy(locale, "Unassigned", "غير مسند")}</dd></div>
+            <div><dt>{copy(locale, "Assignment state / method", "حالة الإسناد / طريقته")}</dt><dd>{titleCase(locale, selected.assignmentStatus)} · {titleCase(locale, selected.assignmentMethod)}</dd></div>
             <div><dt>{copy(locale, "Region / city", "المنطقة / المدينة")}</dt><dd>{[selected.region, selected.city].filter(Boolean).join(" / ") || "—"}</dd></div>
             <div><dt>{copy(locale, "Risk / priority", "المخاطر / الأولوية")}</dt><dd>{titleCase(locale, selected.risk)} · {titleCase(locale, selected.priority)}</dd></div>
             <div><dt>{copy(locale, "Preparation", "التحضير")}</dt><dd>{titleCase(locale, selected.planningStatus)}</dd></div>
-            <div><dt>{copy(locale, "Report type", "نوع التقرير")}</dt><dd>{selected.reportType ?? copy(locale, "Not configured", "غير مهيأ")}</dd></div>
+            <div><dt>{copy(locale, "Report package", "حزمة التقرير")}</dt><dd>{[selected.packageCode, selected.reportType, selected.packageVersion].filter(Boolean).join(" · ") || copy(locale, "Not configured", "غير مهيأ")}</dd></div>
             <div><dt>{copy(locale, "Location data", "بيانات الموقع")}</dt><dd>{selected.lat != null && selected.lng != null ? copy(locale, "Official factory coordinates recorded", "إحداثيات المصنع الرسمية مسجلة") : copy(locale, "No governed official coordinates", "لا توجد إحداثيات رسمية معتمدة")}</dd></div>
+            <div><dt>{copy(locale, "Journey / tracking record", "سجل الرحلة / التتبع")}</dt><dd>{selected.journeyStatus
+              ? `${titleCase(locale, selected.journeyStatus)} · ${formatDateTime(locale, selected.journeyStartedAt)}${selected.journeyEndedAt ? ` – ${formatDateTime(locale, selected.journeyEndedAt)}` : ""}`
+              : copy(locale, "No journey session recorded. Live tracking remains unavailable in this Web view.", "لا توجد جلسة رحلة مسجلة. يظل التتبع المباشر غير متاح في عرض الويب هذا.")}</dd></div>
             <div><dt>{copy(locale, "Offline and queued actions", "العمل دون اتصال والإجراءات المعلّقة")}</dt><dd>{copy(locale, "Unavailable in this Web read model; open the assigned Field workspace.", "غير متاح في نموذج القراءة على الويب؛ افتح مساحة العمل الميدانية المسندة.")}</dd></div>
           </dl>
           {selected.inspectorId === currentUserId ? (
             <a className="sq-btn" href={`/field/${selected.id}`}>{selected.operationalState === "new" ? copy(locale, "Prepare in Field workspace", "التحضير في مساحة العمل الميدانية") : copy(locale, "Open Field workspace", "فتح مساحة العمل الميدانية")}</a>
           ) : (
-            <a className="sq-btn" href={`/visits/${selected.id}`}>{copy(locale, "Open read-only visit", "فتح الزيارة للقراءة فقط")}</a>
+            <a className="sq-btn" href={`/visits/${selected.id}`}>{copy(locale, "Open governed visit details", "فتح تفاصيل الزيارة المعتمدة")}</a>
           )}
           <button className="sq-btn sq-btn--secondary" type="button" onClick={() => setSelected(null)}>{copy(locale, "Close", "إغلاق")}</button>
         </div>

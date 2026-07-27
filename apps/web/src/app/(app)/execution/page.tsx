@@ -36,12 +36,19 @@ type ExecutionQueryRow = {
   } | null;
   assignments: Array<{
     inspector_id: string;
+    method: string;
     status: string;
     profiles: { full_name: string } | null;
   }> | null;
   package_versions: {
-    packages: { title: string } | null;
+    version_label: string;
+    packages: { code: string; title: string } | null;
   } | null;
+  journey_sessions: Array<{
+    status: string;
+    started_at: string;
+    ended_at: string | null;
+  }> | null;
 };
 
 export default async function ExecutionPage() {
@@ -54,7 +61,7 @@ export default async function ExecutionPage() {
   const [{ data: roleRows, error: roleError }, { data: executionRows, error: executionError, count: executionCount }] = await Promise.all([
     getUserRoles(user.id),
     sb.from("visits")
-      .select("id, visit_reference, planning_status, operational_state, visit_type, execution_mode, execution_date, window_start, window_end, priority, factories(id, name, factory_code, cr_number, region, city, risk_band, official_lat, official_lng), assignments(inspector_id, status, profiles(full_name)), package_versions(packages(title))", { count: "exact" })
+      .select("id, visit_reference, planning_status, operational_state, visit_type, execution_mode, execution_date, window_start, window_end, priority, factories(id, name, factory_code, cr_number, region, city, risk_band, official_lat, official_lng), assignments(inspector_id, method, status, profiles(full_name)), package_versions(version_label, packages(code, title)), journey_sessions(status, started_at, ended_at)", { count: "exact" })
       .order("execution_date", { ascending: true, nullsFirst: false })
       .order("window_start", { ascending: true })
       .limit(1000),
@@ -93,6 +100,8 @@ export default async function ExecutionPage() {
     .filter(row => !isTestFixtureEstablishment(row.factories))
     .map(row => {
     const activeAssignment = row.assignments?.find(assignment => assignment.status !== "returned") ?? null;
+    const latestJourney = [...(row.journey_sessions ?? [])]
+      .sort((a, b) => b.started_at.localeCompare(a.started_at))[0] ?? null;
     return ({
     id: row.id,
     visitReference: row.visit_reference ?? row.id.slice(0, 8),
@@ -103,18 +112,25 @@ export default async function ExecutionPage() {
     windowEnd: row.window_end,
     executionDate: row.execution_date,
     reportType: row.package_versions?.packages?.title ?? null,
+    packageCode: row.package_versions?.packages?.code ?? null,
+    packageVersion: row.package_versions?.version_label ?? null,
     visitType: row.visit_type,
     visitMode: row.execution_mode,
     risk: row.factories?.risk_band ?? null,
     priority: row.priority,
     inspectorId: activeAssignment?.inspector_id ?? null,
     inspector: activeAssignment?.profiles?.full_name ?? null,
+    assignmentMethod: activeAssignment?.method ?? null,
+    assignmentStatus: activeAssignment?.status ?? null,
     region: row.factories?.region ?? null,
     city: row.factories?.city ?? null,
     operationalState: row.operational_state,
     planningStatus: row.planning_status,
     lat: row.factories?.official_lat ?? null,
     lng: row.factories?.official_lng ?? null,
+    journeyStatus: latestJourney?.status ?? null,
+    journeyStartedAt: latestJourney?.started_at ?? null,
+    journeyEndedAt: latestJourney?.ended_at ?? null,
     });
     });
 
