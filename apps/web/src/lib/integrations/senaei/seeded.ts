@@ -5,6 +5,21 @@ import type { DomainResult, RequestOptions, SenaeiClient } from "./types";
 
 export const SEEDED_SENAEI_LABEL = "Seeded fixture — not live Senaei data";
 export const SEEDED_SENAEI_FRESHNESS_LABEL = "Fixture timestamp — provider freshness not proven";
+export const SEEDED_SENAEI_REGISTERED_PROJECTION_LABEL =
+  "Registered canonical demo projection — seeded, not live Senaei";
+
+/**
+ * Approved synthetic factory codes whose canonical CR → licence → plant
+ * projections are asserted by seed_planning_senaei_seeded_20260727.sql.
+ * These are local fixture selectors, never Senaei identifiers.
+ */
+export const SEEDED_SENAEI_REGISTERED_FACTORY_CODES = [
+  "F-3305",
+  "F-4402",
+  "F-5502",
+  "F-6601",
+  "F-6602",
+] as const;
 
 export const SEEDED_SENAEI_MODES = ["off", "fixture"] as const;
 export type SeededSenaeiMode = (typeof SEEDED_SENAEI_MODES)[number];
