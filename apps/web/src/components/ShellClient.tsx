@@ -83,7 +83,7 @@ function defaultDateRange() {
 
 export default function ShellClient({
   children, groups, strings, bellStrings,
-  locale, languageHref, languageLabel, languageLang, email, displayName, roleTitles, homeRegion, roles, regions,
+  locale, languageHref, email, displayName, roleTitles, homeRegion, roles, regions,
 }: {
   children: ReactNode;
   groups: ShellClientNavGroup[];
