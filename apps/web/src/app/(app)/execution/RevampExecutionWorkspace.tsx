@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useRef, useState, type DragEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent, type RefObject } from "react";
 import type { GeoMarkerData } from "@/components/GeoMap";
 import type { Locale } from "@/lib/i18n";
 
@@ -68,6 +68,44 @@ const titleCase = (locale: Locale, value: string | null) => {
   return value.replaceAll("_", " ").replace(/\b\w/g, char => char.toUpperCase());
 };
 
+const useDialogFocus = (
+  open: boolean,
+  dialogRef: RefObject<HTMLDivElement | null>,
+  initialFocusRef: RefObject<HTMLButtonElement | null>,
+  close: () => void,
+) => {
+  useEffect(() => {
+    if (!open) return;
+    const origin = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    initialFocusRef.current?.focus();
+    const governKeyboard = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        close();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const focusable = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ) ?? []);
+      if (!focusable.length) return;
+      const first = focusable[0]!;
+      const last = focusable[focusable.length - 1]!;
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", governKeyboard);
+    return () => {
+      document.removeEventListener("keydown", governKeyboard);
+      origin?.focus();
+    };
+  }, [close, dialogRef, initialFocusRef, open]);
+};
+
 export default function RevampExecutionWorkspace({ rows, currentUserId, locale, totalVisibleRows }: {
   rows: ExecutionRow[];
   currentUserId: string;
@@ -80,35 +118,15 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
   const [filters, setFilters] = useState<Partial<Record<FilterKey, string>>>({});
   const [reschedule, setReschedule] = useState<{ row: ExecutionRow; date: string } | null>(null);
   const [selected, setSelected] = useState<ExecutionRow | null>(null);
+  const detailDialogRef = useRef<HTMLDivElement>(null);
+  const rescheduleDialogRef = useRef<HTMLDivElement>(null);
   const detailCloseRef = useRef<HTMLButtonElement>(null);
   const rescheduleCloseRef = useRef<HTMLButtonElement>(null);
   const weekStart = useMemo(() => startOfWeek(new Date()), []);
-  useEffect(() => {
-    if (!selected) return;
-    const origin = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    detailCloseRef.current?.focus();
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSelected(null);
-    };
-    document.addEventListener("keydown", closeOnEscape);
-    return () => {
-      document.removeEventListener("keydown", closeOnEscape);
-      origin?.focus();
-    };
-  }, [selected]);
-  useEffect(() => {
-    if (!reschedule) return;
-    const origin = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    rescheduleCloseRef.current?.focus();
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setReschedule(null);
-    };
-    document.addEventListener("keydown", closeOnEscape);
-    return () => {
-      document.removeEventListener("keydown", closeOnEscape);
-      origin?.focus();
-    };
-  }, [reschedule]);
+  const closeSelected = useCallback(() => setSelected(null), []);
+  const closeReschedule = useCallback(() => setReschedule(null), []);
+  useDialogFocus(!!selected, detailDialogRef, detailCloseRef, closeSelected);
+  useDialogFocus(!!reschedule, rescheduleDialogRef, rescheduleCloseRef, closeReschedule);
   const calendarDays = useMemo(() => Array.from({ length: calendarMode === "week" ? 7 : 35 }, (_, index) => {
     const date = new Date(weekStart);
     date.setDate(weekStart.getDate() + index);
@@ -286,7 +304,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
         </section>
       )}
       {selected ? (
-        <div className="sq-execution__drawer" role="dialog" aria-modal="true" aria-labelledby="execution-detail-title">
+        <div ref={detailDialogRef} className="sq-execution__drawer" role="dialog" aria-modal="true" aria-labelledby="execution-detail-title">
           <button ref={detailCloseRef} type="button" aria-label={copy(locale, "Close visit details", "إغلاق تفاصيل الزيارة")} onClick={() => setSelected(null)}>×</button>
           <p className="sq-overline">{copy(locale, "Execution visit", "زيارة التنفيذ")}</p>
           <h2 id="execution-detail-title">{selected.factory}</h2>
@@ -321,7 +339,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
         </div>
       ) : null}
       {reschedule ? (
-        <div className="sq-execution__drawer" role="dialog" aria-modal="true" aria-labelledby="reschedule-title">
+        <div ref={rescheduleDialogRef} className="sq-execution__drawer" role="dialog" aria-modal="true" aria-labelledby="reschedule-title">
           <button ref={rescheduleCloseRef} type="button" aria-label={copy(locale, "Close configuration drawer", "إغلاق لوحة الإعداد")} onClick={() => setReschedule(null)}>×</button>
           <p className="sq-overline">{copy(locale, "Planning window guard", "حماية نافذة التخطيط")}</p>
           <h2 id="reschedule-title">{copy(locale, "Configure", "إعداد")} {reschedule.row.visitReference}</h2>
