@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import type { LiveFactory, LiveRegion, LiveInspector } from "./types";
 import EmptyState from "@/components/EmptyState";
 import styles from "./live.module.css";
+import Link from "next/link";
 
 export type LiveOpsStrings = {
   loading: string;
@@ -141,7 +142,7 @@ export default function LiveOps({
           {positionReadError ? <p className={styles.partialSource} role="alert">{s.partialSource}</p> : null}
           {factoryReadError ? <p className={styles.partialSource} role="status">{s.factorySourceUnavailable}</p> : null}
         </div>
-        {wallboard ? <a className="sq-btn sq-btn--secondary" href="/operations/live">{s.wallboardExit}</a> : null}
+        {wallboard ? <Link className="sq-btn sq-btn--secondary" href="/operations/live">{s.wallboardExit}</Link> : null}
       </header>
 
       <div className={styles.counters} aria-label={s.totalsLabel}>
@@ -227,7 +228,7 @@ export default function LiveOps({
               <p className={`${styles.provenance} ${provenanceClass(selectedInspector)}`}>
                 {provenanceLabel(selectedInspector)}
               </p>
-              <a className="sq-btn sq-btn--secondary" href={`/visits/${selectedInspector.visitId}`}>{s.openVisit}</a>
+              <Link className="sq-btn sq-btn--secondary" href={`/visits/${selectedInspector.visitId}`}>{s.openVisit}</Link>
             </section>
           ) : null}
           {inspectors.length ? (

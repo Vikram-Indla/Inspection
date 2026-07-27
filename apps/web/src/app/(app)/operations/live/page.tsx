@@ -11,6 +11,8 @@ import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { resolveRegionId, type KsaRegionCollection } from "@/lib/ksa-regions";
 import ksaRegionsJson from "../../../../../public/geo/sau-regions.geo.json";
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { IconBlocked } from "@/app/icons";
 
 // SCR-WEB-500 / WA-DES-034-C3 — read-only national operations observation.
 // This view never claims GPS telemetry, route navigation, ETA or risk policy.
@@ -128,11 +130,11 @@ export default async function LiveOperations({ searchParams }: {
     return (
       <Shell current="/operations/live" title={t("ops.live.title", "Live Operations — Saudi Arabia")}>
         <EmptyState
-          glyph="⛨"
+          icon={<IconBlocked size={24} />}
           title={t("ops.unauthorized.title", "Operations access required")}
           body={t("ops.unauthorized.body", "No operational data has been loaded because this destination is not enabled in your assigned navigation.")}
         >
-          <a className="sq-btn sq-btn--secondary" href="/launch">{t("ops.unauthorized.return", "Return to my workspace")}</a>
+          <Link className="sq-btn sq-btn--secondary" href="/launch">{t("ops.unauthorized.return", "Return to my workspace")}</Link>
         </EmptyState>
       </Shell>
     );
