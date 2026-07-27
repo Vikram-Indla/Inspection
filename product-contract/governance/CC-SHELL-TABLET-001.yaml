@@ -73,7 +73,7 @@ decisions:
       Notifications was a tab there. Q1 option B removed the console tab bar, so
       that reasoning no longer holds: the bell is a console persona's only route
       to notifications and must remain at every size. The rule and its
-      .ax-topbar-hide-tablet class were reverted. The remaining field-persona
+      .legacy-topbar-hide-tablet class were reverted. The remaining field-persona
       exception was then removed by Q2 — the bell now renders for everyone.
   shell_chrome:
     rule: "The console shell is NOT persona-based. Every persona gets identical chrome at every width."
@@ -113,7 +113,7 @@ open_question_for_sponsor:
       Consequence handled: a console persona now has no tab bar at any width, so
       the topbar notification bell must stay at every size — it is their only
       route to notifications. The tablet-hide rule added for the bell is
-      removed, and the .ax-topbar-hide-tablet class with it.
+      removed, and the .legacy-topbar-hide-tablet class with it.
     - "Field routes keep the bar from field/layout.tsx, which covers all 21 screens."
   verified:
     console_at_1024: "hamburger grid · tab bar absent · bell present"
@@ -142,7 +142,7 @@ second_question_for_sponsor:
     Stranded, with browser-back the only exit. Universal chrome removes that.
   implementation:
     - "Removed every !fieldOnly guard from the sidebar, backdrop, drawer, hamburger, bell and account menu in ShellClient.tsx."
-    - "Removed the is-field-nav-hidden class and its now-dead grid rule in astryx.css."
+    - "Removed the is-field-nav-hidden class and its now-dead grid rule in retired-predecessor.css."
     - "Q1 option B (tab bar shown only to a field persona) is deliberately UNCHANGED."
     - "buildShellNavigation()'s role/channel filter is deliberately UNCHANGED."
   verified:
@@ -167,7 +167,7 @@ second_question_for_sponsor:
 
 propagation:
   files_changed:
-    - "apps/web/src/app/astryx.css"
+    - "apps/web/src/app/retired-predecessor.css"
     - "apps/web/src/components/Shell.tsx"
     - "apps/web/src/components/ShellClient.tsx"
     - "apps/web/src/components/field/FieldNav.tsx"

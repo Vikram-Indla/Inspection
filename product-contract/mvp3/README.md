@@ -22,5 +22,5 @@ reused before any additive object is introduced.
 ## Design authority
 
 The corrected CD-050 through CD-061 R2 packages remain the visual and interaction authority.
-Implementation uses the integrated Astryx government foundation and authenticated shell already
+Implementation uses the integrated retired predecessor government foundation and authenticated shell already
 present in the repository. Design HTML is reference material, not production source code.

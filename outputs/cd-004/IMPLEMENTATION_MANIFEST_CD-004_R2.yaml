@@ -21,7 +21,7 @@ file_changes:
       gis, access — existing routes only); role-scope band from server-rendered roles;
       audit row. Remove SCR-ADM-* IDs from user copy.
     contract_ids: [SCR-ADM-001, MVP1-M09-001..030 gateway, RBAC-001..006, DSG-001]
-    dependencies: [shell (FREEZE), astryx grammar (PRESERVE), i18n keys (LOCALIZATION_INVENTORY)]
+    dependencies: [shell (FREEZE), retired-predecessor grammar (PRESERVE), i18n keys (LOCALIZATION_INVENTORY)]
     localization_keys: see LOCALIZATION_INVENTORY_CD-004_R2.csv (all admin.overview.r2.* keys)
     tests: >-
       per-source failure renders unavailable-not-zero; verified zero renders first-use
@@ -70,6 +70,6 @@ forbidden_do_not_touch:
   - apps/web/src/lib/shell-navigation.ts
   - apps/web/src/components/NotificationBell.tsx
   - apps/web/src/app/tokens.css
-  - design/astryx/d2/** (DESIGN_HISTORY_ONLY; never production CSS)
+  - design/retired-predecessor/d2/** (DESIGN_HISTORY_ONLY; never production CSS)
   - any new shell destination or placeholder route
   - any approve/publish/edit affordance on /admin

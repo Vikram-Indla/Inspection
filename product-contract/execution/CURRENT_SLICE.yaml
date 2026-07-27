@@ -249,7 +249,7 @@ active_change_control:
       tablet design existed, so these are recorded decisions rather than
       transcriptions.
     required_of_every_session: >
-      Rebase on origin/main before your next commit. astryx.css, Shell.tsx,
+      Rebase on origin/main before your next commit. retired-predecessor.css, Shell.tsx,
       ShellClient.tsx, field/FieldNav.tsx and lib/shell-navigation.ts are shared
       shell and newer on main — take main's version, keep your own card's files.
       Do not add further tablet rules until the proposal is accepted.

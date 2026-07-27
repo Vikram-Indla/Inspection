@@ -55,4 +55,4 @@ Published-config immutability · maker-checker (constraint + approver-required t
 7. **Security hygiene:** rotate the `sbp_` PAT + `sb_secret_` key (both appeared in chat) and the 5 demo user passwords before any external exposure. `main` branch untouched — merge is a human decision.
 
 ## Where everything lives
-`apps/web` (Next.js app) · `supabase/migrations/0001–0009` (all applied live) · `design/astryx/` (visual authority, D1–D9) · `product-contract/evidence/B*-EV-*.txt` (all machine-generated against production) · `BUILD_PLAN.md` (slice ledger) · governance updated throughout.
+`apps/web` (Next.js app) · `supabase/migrations/0001–0009` (all applied live) · `design/retired-predecessor/` (visual authority, D1–D9) · `product-contract/evidence/B*-EV-*.txt` (all machine-generated against production) · `BUILD_PLAN.md` (slice ledger) · governance updated throughout.

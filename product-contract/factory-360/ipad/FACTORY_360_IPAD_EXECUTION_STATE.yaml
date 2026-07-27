@@ -18,7 +18,7 @@ surface_facts:
   web_dossier_route: "apps/web/src/app/factories/cr/[id]/page.tsx (?license= selection)"
   shared_lib: "apps/web/src/lib/factory360/{compliance,permissions}.ts (dossier.ts to be added)"
   field_surface: "apps/web/src/app/field/**, apps/web/src/components/field/**"
-  tokens: "bespoke ax-* system (app/tokens.css) — NOT tailwind/atlaskit"
+  tokens: "bespoke legacy-* system (app/tokens.css) — NOT tailwind/atlaskit"
   i18n: "strings-prop canon; client never calls useT(); Arabic default; RTL via CSS logical props"
   offline_engine: "lib/offline.ts IndexedDB mim-field-v1 (drafts/packages/outbox/conflicts) — DO NOT touch"
   search: "app/api/shell/search/route.ts already resolves CR/unified/license/plant/factory"

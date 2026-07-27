@@ -15,4 +15,4 @@ leg_id,ui_trigger_state,client_component,route_action,guard,canonical_transition
 14,Empty diff,AnswerDiffTable,/reviews/:id,none,none,identical snapshots,RLS,none,none,computed empty,not a failure,cd-030 spec,changedRows.length===0 role=status branch + source contract,PASS
 15,Degraded source,UnavailablePanel,/reviews/:id,none,none,version/answer source,RLS,none,none,affected rows unavailable,not silently empty,cd-030 spec,design,HANDOFF_BLOCKED_LINKED
 16,Stale/unauth/auditor,ReviewComparePage,/reviews/:id,RLS,none,submission_versions,RLS Reviewer/Auditor/Ops/Planner/Leadership,none,none,stale flagged; non-deciding roles read-only,role gate plus read-only badge/note; degraded fetch remains distinct,cd-030 spec,page.tsx + scope-RBAC migration,PASS
-17,Arabic/theme/responsive/keyboard/SR,Shell+TamperScopeRail,/reviews/:id,none,none,none,n/a,none,none,parity,disclosure buttons; role=status/alert; reduced-motion,cd-030 spec,astryx.css,PASS
+17,Arabic/theme/responsive/keyboard/SR,Shell+TamperScopeRail,/reviews/:id,none,none,none,n/a,none,none,parity,disclosure buttons; role=status/alert; reduced-motion,cd-030 spec,retired-predecessor.css,PASS

@@ -18,7 +18,7 @@
       lastSaved: "Last saved", verLabel: "Version label", savedBy: "Saved by", storage: "Storage",
       d: [["Violation history (24m)", "0.30"], ["Complaint volume (12m)", "0.15"], ["Production category hazard", "0.25"], ["Time since last inspection", "0.20"], ["Self-assessment status", "0.10"]],
       w: "Weight", input: "Input", contrib: "Contribution", total: "Total score",
-      bands: [["Low", "0–39", "var(--ax-color-success)"], ["Medium", "40–69", "var(--ax-color-warning)"], ["High", "70–100", "var(--ax-color-critical)"]],
+      bands: [["Low", "0–39", "var(--legacy-color-success)"], ["Medium", "40–69", "var(--legacy-color-warning)"], ["High", "70–100", "var(--legacy-color-critical)"]],
       traceRows: [["violations_24m = 3", "0.30", "norm 0.60", "18.0"], ["complaints_12m = 1", "0.15", "norm 0.20", "3.0"], ["category = PLASTICS-B", "0.25", "hazard 0.70", "17.5"], ["days_since_insp = 412", "0.20", "norm 0.90", "18.0"], ["self_assess = expired", "0.10", "1.00", "10.0"]],
       denom: "Σ weights = 1.00 · arithmetic shown in full; inputs come from the factory record used for scoring",
       fName: "Al-Riyadh Polymers Co. — FAC-08841",
@@ -38,7 +38,7 @@
       lastSaved: "آخر حفظ", verLabel: "وسم الإصدار", savedBy: "حفظه", storage: "التخزين",
       d: [["سجل المخالفات (٢٤ شهرًا)", "0.30"], ["حجم الشكاوى (١٢ شهرًا)", "0.15"], ["خطورة فئة الإنتاج", "0.25"], ["الزمن منذ آخر تفتيش", "0.20"], ["حالة التقييم الذاتي", "0.10"]],
       w: "الوزن", input: "المدخل", contrib: "المساهمة", total: "الدرجة الكلية",
-      bands: [["منخفض", "0–39", "var(--ax-color-success)"], ["متوسط", "40–69", "var(--ax-color-warning)"], ["مرتفع", "70–100", "var(--ax-color-critical)"]],
+      bands: [["منخفض", "0–39", "var(--legacy-color-success)"], ["متوسط", "40–69", "var(--legacy-color-warning)"], ["مرتفع", "70–100", "var(--legacy-color-critical)"]],
       traceRows: [["violations_24m = 3", "0.30", "معياري 0.60", "18.0"], ["complaints_12m = 1", "0.15", "معياري 0.20", "3.0"], ["category = PLASTICS-B", "0.25", "خطورة 0.70", "17.5"], ["days_since_insp = 412", "0.20", "معياري 0.90", "18.0"], ["self_assess = منتهٍ", "0.10", "1.00", "10.0"]],
       denom: "مجموع الأوزان = 1.00 · الحساب معروض كاملًا؛ والمدخلات من سجل المنشأة المستخدم في التقييم",
       fName: "شركة الرياض للبوليمرات — FAC-08841",
@@ -59,7 +59,7 @@
     return '<div class="m-panel"><div class="m-panel__head"><h4>' + esc(t.drivers) + '</h4>' + C.tt("proven", "engine_settings") + '</div>' +
       t.d.map(function (r, i) {
         var w = (opts.sumFail && i === 1) ? "0.05" : r[1];
-        return '<div class="rk-driver"><div class="rk-driver__name"><b>' + esc(r[0]) + '</b></div><span class="rk-w m-num"' + (opts.sumFail && i === 1 ? ' style="color:var(--ax-color-critical-strong)"' : '') + '>' + w + '</span><div class="rk-bar"><span style="inline-size:' + widths[i] + '%"></span></div></div>';
+        return '<div class="rk-driver"><div class="rk-driver__name"><b>' + esc(r[0]) + '</b></div><span class="rk-w m-num"' + (opts.sumFail && i === 1 ? ' style="color:var(--legacy-color-critical-strong)"' : '') + '>' + w + '</span><div class="rk-bar"><span style="inline-size:' + widths[i] + '%"></span></div></div>';
       }).join("") +
       '<p class="cd-sub">' + esc(t.saveNote) + '</p></div>';
   }
@@ -84,19 +84,19 @@
     var score = opts.missing ? "63.5" : opts.edge ? "69.4" : "66.5";
     return '<div class="m-panel"><div class="m-panel__head"><h4>' + esc(t.trace) + '</h4>' + C.tt("computed", "COMPUTED_FROM_ENGINE_SETTINGS + factory record") + '</div>' +
       '<div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap"><span class="rk-score m-num">' + score + '</span>' + C.loz("warning", t.bands[1][0] + " " + t.bands[1][1]) + '<span class="cd-sub">' + esc(t.fName) + '</span></div>' +
-      '<div style="overflow-x:auto"><table class="ax-table rk-trace"><thead><tr><th>' + esc(t.input) + '</th><th>' + esc(t.w) + '</th><th>norm</th><th class="wf-actcell">' + esc(t.contrib) + '</th></tr></thead><tbody>' +
+      '<div style="overflow-x:auto"><table class="legacy-table rk-trace"><thead><tr><th>' + esc(t.input) + '</th><th>' + esc(t.w) + '</th><th>norm</th><th class="wf-actcell">' + esc(t.contrib) + '</th></tr></thead><tbody>' +
       t.traceRows.map(function (r, i) {
         var missing = opts.missing && i === 1;
-        return '<tr' + (missing ? ' style="background:var(--ax-color-critical-tint)"' : '') + '><td class="m-mono" dir="ltr">' + (missing ? 'complaints_12m = —' : esc(r[0])) + '</td><td class="m-num">' + r[1] + '</td><td class="m-mono">' + (missing ? '— → 0.00' : esc(r[2])) + '</td><td class="m-num wf-actcell">' + (missing ? "0.0" : r[3]) + '</td></tr>';
+        return '<tr' + (missing ? ' style="background:var(--legacy-color-critical-tint)"' : '') + '><td class="m-mono" dir="ltr">' + (missing ? 'complaints_12m = —' : esc(r[0])) + '</td><td class="m-num">' + r[1] + '</td><td class="m-mono">' + (missing ? '— → 0.00' : esc(r[2])) + '</td><td class="m-num wf-actcell">' + (missing ? "0.0" : r[3]) + '</td></tr>';
       }).join("") +
-      '<tr><td colspan="3" style="font:var(--ax-text-body-strong)">' + esc(t.total) + '</td><td class="m-num wf-actcell" style="font:var(--ax-text-body-strong)">' + score + '</td></tr></tbody></table></div>' +
+      '<tr><td colspan="3" style="font:var(--legacy-text-body-strong)">' + esc(t.total) + '</td><td class="m-num wf-actcell" style="font:var(--legacy-text-body-strong)">' + score + '</td></tr></tbody></table></div>' +
       '<p class="cd-sub">' + esc(t.denom) + '</p>' + C.fixtureNote(t === L.ar ? "ar" : "en") + '</div>';
   }
 
   function bar(t, opts) {
     opts = opts || {};
-    return '<div class="ax-commandbar"><button class="ax-btn"' + (opts.noSave ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.save) + '</button>' +
-      '<span class="ax-commandbar__spacer"></span><span class="cd-sub m-mono" dir="ltr">engine_settings · direct save</span></div>';
+    return '<div class="legacy-commandbar"><button class="legacy-btn"' + (opts.noSave ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.save) + '</button>' +
+      '<span class="legacy-commandbar__spacer"></span><span class="cd-sub m-mono" dir="ltr">engine_settings · direct save</span></div>';
   }
 
   function frame(lang, t, main) {
@@ -120,7 +120,7 @@
     else if (state === "sum-fail") body = C.content(bar(t, { noSave: true }) + C.guard(t.sumFailT, t.sumFailD) + C.legend(lang) + grid(t, lang, { sumFail: true }));
     else if (state === "missing-input") body = C.content(bar(t, {}) + C.banner("warning", "◧", t.missingT, t.missingD) + C.legend(lang) + grid(t, lang, { missing: true }));
     else if (state === "threshold-edge") body = C.content(bar(t, {}) + C.banner("warning", "‖", t.edgeT, t.edgeD) + C.legend(lang) + grid(t, lang, { edge: true }));
-    else if (state === "saved") body = C.content(bar(t, {}) + '<div class="ax-banner"><span>✓</span><div><strong>' + esc(t.savedT) + '</strong><div class="cd-sub">' + esc(t.savedD) + '</div></div></div>' + C.legend(lang) + grid(t, lang, {}));
+    else if (state === "saved") body = C.content(bar(t, {}) + '<div class="legacy-banner"><span>✓</span><div><strong>' + esc(t.savedT) + '</strong><div class="cd-sub">' + esc(t.savedD) + '</div></div></div>' + C.legend(lang) + grid(t, lang, {}));
     else if (state === "rls-denied") body = C.content(bar(t, { noSave: true }) + C.guard(t.rlsT, t.rlsD) + C.legend(lang) + grid(t, lang, {}));
     else /* complete — primary */ body = C.content(bar(t, {}) + C.legend(lang) + grid(t, lang, {}));
     return frame(lang, t, body);

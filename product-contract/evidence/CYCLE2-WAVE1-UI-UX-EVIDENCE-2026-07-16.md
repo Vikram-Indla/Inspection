@@ -8,8 +8,8 @@ belongs in INSPECTION_DOCS_ROOT per `.gitignore`, not tracked in this repo):
 
 Investigated with a full grep of `apps/web/src/**/*.css` for hardcoded colors
 (none found outside `tokens.css`, which is the approved single source) and for
-every consumer of `--ax-color-text-disabled`. Four of five consumers are
-correctly on genuinely-disabled controls (`astryx.css:60,126,143,266` —
+every consumer of `--legacy-color-text-disabled`. Four of five consumers are
+correctly on genuinely-disabled controls (`retired-predecessor.css:60,126,143,266` —
 `[disabled]`/`.is-disabled`/`[aria-disabled="true"]`, exempt from AA contrast
 by WCAG). Two were misapplied to always-visible, non-disabled text:
 
@@ -17,7 +17,7 @@ by WCAG). Two were misapplied to always-visible, non-disabled text:
 - `apps/web/src/app/login/login.css:166` — `.leaflet-control-attribution` (map attribution)
 
 Both mixed to ~2.3:1 contrast against the dark canvas (fails WCAG AA 4.5:1).
-Fixed: switched both to `--ax-color-text-secondary` (the token every `.ax-caption`
+Fixed: switched both to `--legacy-color-text-secondary` (the token every `.legacy-caption`
 in the app already uses, ~7:1+ against canvas/surface in dark mode).
 
 ## DEF-UI-004 — login atlas dark treatment
@@ -28,7 +28,7 @@ against the audit's own captured evidence
 `.../MVP1_TO_MVP2_READINESS_AUDIT_20260716_2227/EVIDENCE/LIVE_AUDIT_EXECUTION_20260717_0045/SCREENSHOTS/`).
 **Does not reproduce.** The atlas image is fully legible in both themes; no
 dark-mode filter/overlay exists on the image and none is missing — the atlas
-palette (`--ax-color-atlas-*`) is deliberately fixed across both shell themes
+palette (`--legacy-color-atlas-*`) is deliberately fixed across both shell themes
 (art-directed night scene, `tokens.css:76-80`), and the audit's own dark
 screenshot shows the same clean render captured here
 (`login-dark-1920x1080.png`, `login-light-1920x1080.png`). No code change
@@ -38,7 +38,7 @@ without a verified defect).
 
 ## DEF-UX-002 — nav/top bar/profile/bell responsiveness
 
-Real gap found: `.ax-shell-account__identity` (name/role text) only hid at
+Real gap found: `.legacy-shell-account__identity` (name/role text) only hid at
 `max-width:899px` (the drawer-nav breakpoint), while the search bar
 (`min(420px,38vw)`) stayed wide up to that same point — leaving a ~900–1099px
 tablet-landscape band (e.g. 1024px iPad landscape) where the full sidebar is

@@ -26,7 +26,7 @@ allDifferent = true (verified by SHA-256, not by "distinct bytes" assertion). Th
 ## 3. Archive listing (sole root `outputs/cd-031-r3/`, 42 files)
 ```
 Source (9): CD-031 Factory 360.dc.html, CD-031 Factory 360.standalone.html, cd31-stage.js,
-  cd31-annot.js, cd31.css, support.js, saqeel-tokens.css, saqeel-astryx.css, saqeel-prism.svg
+  cd31-annot.js, cd31.css, support.js, saqeel-tokens.css, saqeel-retired-predecessor.css, saqeel-prism.svg
 Docs (10): ACCEPTANCE_CHECKLIST_CD-031.md, COMPONENT_MAP_CD-031.csv, IMPLEMENTATION_MANIFEST_CD-031.yaml,
   PACKAGE_INVENTORY_CD-031.csv, PACKAGE_PREFLIGHT_CD-031.md, RESEARCH_PROVENANCE_CD-031.md,
   STATE_MATRIX_CD-031.csv, WIRING_MAP_CD-031.csv, CLAUDE_CODE_HANDOFF_CD-031.md,
@@ -39,7 +39,7 @@ Evidence PNGs (23): S01-POPULATED ×5 (dark_en_1440, dark_ar_1440, dark_en_1024,
 No CD-025..030 file, no root duplicate, no `screens/` or `uploads/` artifact. All governed files identify CD-031, SCR-WEB-400 and R3. The 23 populated PNGs are re-captured from the R3 build so every section-nav pill reflects the 48px target size.
 
 ## 4. Local-reference resolution
-`CD-031 Factory 360.dc.html` references resolve inside the archive: `support.js` ✓, `saqeel-tokens.css` ✓, `saqeel-astryx.css` ✓, `saqeel-prism.svg` ✓, `cd31.css` ✓, `./cd31-stage.js` ✓, `./cd31-annot.js` ✓; Google Fonts via CDN. Standalone is fully self-contained.
+`CD-031 Factory 360.dc.html` references resolve inside the archive: `support.js` ✓, `saqeel-tokens.css` ✓, `saqeel-retired-predecessor.css` ✓, `saqeel-prism.svg` ✓, `cd31.css` ✓, `./cd31-stage.js` ✓, `./cd31-annot.js` ✓; Google Fonts via CDN. Standalone is fully self-contained.
 
 ## 5. Preserved (unchanged from R2)
 Single-root archive; all R2 timeline truth blocks (Spatial Case Timeline, source-labelling, unavailable rows); all 15 states + counterfactual + 3 hypotheses; all routes/roles and blocked classifications (HANDOFF_BLOCKED_MAP / BOUNDARY / COORDINATE_CONFLICT / RISK_DRIVERS / RISK_HISTORY / EVIDENCE_TIMELINE / DOCUMENT_VIEWER); frozen shared shell.

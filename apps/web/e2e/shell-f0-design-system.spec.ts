@@ -1,25 +1,34 @@
 import { expect, test } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 
 const root = path.resolve(__dirname, "..");
 const read = (file: string) => fs.readFileSync(path.join(root, file), "utf8");
 
-function sourceFiles(dir: string): string[] {
-  return fs.readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
-    const target = path.join(dir, entry.name);
-    if (entry.isDirectory()) return sourceFiles(target);
-    return /\.(css|tsx?|jsx?)$/.test(entry.name) ? [target] : [];
-  });
-}
-
 test.describe("shell-f0 SAQEEL design-system migration", () => {
-  test("runtime source has no retired namespace or font family", () => {
-    const hits = sourceFiles(path.join(root, "src")).flatMap(file => {
-      const source = fs.readFileSync(file, "utf8");
-      return /astryx|(?<!m)ax-|Space Grotesk|JetBrains|Barlow/i.test(source)
-        ? [path.relative(root, file)]
-        : [];
+  test("repository has no retired design-system identity, namespace, or fonts", () => {
+    const repositoryRoot = path.resolve(root, "../..");
+    const retiredIdentity = ["as", "tryx"].join("");
+    const retiredClassPrefix = ["a", "x-"].join("");
+    const retiredTokenPrefix = ["--a", "x-"].join("");
+    const retiredInputFont = ["space", "grotesk"].join("[ +_-]");
+    const retiredMonoFont = ["jet", "brains"].join("[ +_-]?");
+    const forbidden = new RegExp(
+      `${retiredIdentity}|${retiredTokenPrefix}|(?<![a-z])${retiredClassPrefix}|${retiredInputFont}|${retiredMonoFont}`,
+      "i",
+    );
+    const files = execFileSync("git", ["ls-files"], { cwd: repositoryRoot, encoding: "utf8" })
+      .trim()
+      .split("\n")
+      .filter(Boolean);
+    const hits = files.flatMap(file => {
+      const target = path.join(repositoryRoot, file);
+      if (!fs.existsSync(target)) return [];
+      if (!fs.lstatSync(target).isFile()) return [];
+      const source = fs.readFileSync(target);
+      if (source.includes(0)) return [];
+      return forbidden.test(source.toString("utf8")) ? [file] : [];
     });
     expect(hits).toEqual([]);
   });

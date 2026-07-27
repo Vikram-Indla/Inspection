@@ -153,7 +153,7 @@ test.describe("CD-005/006 wiring (DEC-012): governed lifecycle, distinct states 
     expect(existsSync(join(process.cwd(), "src/app/(app)/admin/regulations/[id]/page.tsx"))).toBe(true);
   });
 
-  test("no bare colours — only ax design tokens (GLOBAL COLOR LAW)", () => {
+  test("no bare colours — only legacy design tokens (GLOBAL COLOR LAW)", () => {
     const bare = /#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(/;
     expect(page).not.toMatch(bare);
     expect(controls).not.toMatch(bare);

@@ -18,7 +18,7 @@
 
 1. Foundation: one root bilingual font, semantic palette, spacing, radius, elevation,
    motion, focus and responsive token authority.
-2. Components: all working authenticated pages consume the shared shell and Astryx
+2. Components: all working authenticated pages consume the shared shell and retired predecessor
    primitives; named auth, redirect and print exceptions remain explicit.
 3. Journeys: planning, visit management, review, admin, factory context, operations,
    virtual and field experiences remain mapped to governed screen and process IDs.

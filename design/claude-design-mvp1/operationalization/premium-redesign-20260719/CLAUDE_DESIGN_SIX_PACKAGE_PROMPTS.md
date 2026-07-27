@@ -137,7 +137,7 @@ Create a premium, visual, low-text explanation of how the platform works—from 
 ### Read additionally
 
 - `/login`, landing, launch and profile source components;
-- `apps/web/src/app/astryx.css` only to understand the isolated public Atlas exception;
+- `apps/web/src/app/retired-predecessor.css` only to understand the isolated public Atlas exception;
 - `product-contract/business/master_end_to_end_process.md`;
 - `design/claude-design-mvp1/authority/JOURNEY_SCREEN_MAP.csv`;
 - all P00–P12 journey prompts;

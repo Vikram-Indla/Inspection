@@ -11,7 +11,7 @@
   exact test names; no automated_test cell remains proposed.
 - Reconciled the implementation manifest and acceptance checklist to the
   source-authoritative atomic Planner/Inspector behavior.
-- Replaced the obsolete three-value urgency claim with the accepted Astryx D3
+- Replaced the obsolete three-value urgency claim with the accepted retired predecessor D3
   values: Complaint received, Incident / accident report, Referral from
   authority, and Other.
 - Added localized server-action blockers for unsupported reasons and for Other

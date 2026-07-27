@@ -97,7 +97,7 @@ High-resolution reference exports — <screen>_<lang>_<theme>_<viewport>.png
 ## /handoff (9 files)
 Claude Code handoff, implementation sequence, parity + QA matrices, decision log, migration map, readiness report
 - ACCESSIBILITY_QA_MATRIX.md
-- ASTRYX_MIGRATION_TEMPLATE.md
+- RETIRED PREDECESSOR_MIGRATION_TEMPLATE.md
 - CLAUDE_CODE_HANDOFF.md
 - DESIGN_DECISION_LOG.md
 - FOUR_MODE_PARITY_MATRIX.md

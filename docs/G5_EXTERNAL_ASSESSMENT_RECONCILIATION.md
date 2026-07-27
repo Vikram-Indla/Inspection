@@ -98,7 +98,7 @@ async function submit() {
 }
 ```
 
-`setSubmitted(true)` fires **synchronously**, immediately after the operation is enqueued locally and **before** `processOutbox` confirms server acknowledgement. Once `submitted` is true, the UI renders the `strings.submittedTitle` / `strings.submittedBody` immutable banner (line ~90: `{submitted && <div className="ax-banner ax-banner--immutable">...}`) and hides the editable form — **regardless of whether the server has actually accepted the submission**, and regardless of `navigator.onLine`. The `strings.queuedOffline` message is shown alongside this immutable banner rather than instead of it, so the user sees "submitted, locked" language even when offline. **Confirmed as stated.**
+`setSubmitted(true)` fires **synchronously**, immediately after the operation is enqueued locally and **before** `processOutbox` confirms server acknowledgement. Once `submitted` is true, the UI renders the `strings.submittedTitle` / `strings.submittedBody` immutable banner (line ~90: `{submitted && <div className="legacy-banner legacy-banner--immutable">...}`) and hides the editable form — **regardless of whether the server has actually accepted the submission**, and regardless of `navigator.onLine`. The `strings.queuedOffline` message is shown alongside this immutable banner rather than instead of it, so the user sees "submitted, locked" language even when offline. **Confirmed as stated.**
 
 `inspection.status === "submitted"` also seeds initial `submitted` state directly from the last-known local/server status without a distinct "queued/pending sync" status value existing in the state model at all (`STM-IPAD-SUB` in `state_transitions.csv` should be checked for a `queued` state — not present in the read window).
 
@@ -221,7 +221,7 @@ Per CLAUDE.md/G5 exit condition, none of the following may be converted to a pas
 - **Business/investor storyboard pack page 04** (#4) — a zip (`${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/MIM_Inspection_MVP1_Historical_Archives_v3/MVP1_Business_User_Storyboard_Pack_Current.zip`) exists but was not extracted/inspected in this pass.
 - **Accessibility (WCAG 2.2 AA) audit** (#19) — no automated or manual audit run in this session; asserted by neither document with evidence, only intent.
 - **Runtime violation/action-form instance generation** (#11) — config-side tables (`violation_codes`, `penalty_mappings`) and inserts exist (`admin/violations/actions.ts`), but whether a non-compliant inspection response actually triggers a runtime `violations`/`action_forms` row insert (as opposed to only a UI message, per the external claim) was not confirmed by tracing the review-decision path fully in this pass.
-- **`FINAL_CERTIFICATION.md` vs `design/astryx/d9/D9_FINAL_AUDIT.md` consistency** (#1) — both files exist (confirmed present) but their content was not diffed line-by-line in this pass; the inconsistency claim is plausible given the same "coverage ≠ acceptance" pattern seen in `STORYBOARD_STATUS.md`'s own 🔵-vs-🟢 distinction, but not independently re-verified here.
+- **`FINAL_CERTIFICATION.md` vs `design/retired-predecessor/d9/D9_FINAL_AUDIT.md` consistency** (#1) — both files exist (confirmed present) but their content was not diffed line-by-line in this pass; the inconsistency claim is plausible given the same "coverage ≠ acceptance" pattern seen in `STORYBOARD_STATUS.md`'s own 🔵-vs-🟢 distinction, but not independently re-verified here.
 - **Region of the live Supabase project** (#15) — G5 doc itself records "region unknown."
 
 ---

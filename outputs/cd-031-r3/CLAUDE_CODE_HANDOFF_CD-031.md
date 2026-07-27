@@ -3,7 +3,7 @@ DO NOT EXECUTE UNTIL SPONSOR DESIGN APPROVAL AND INDEPENDENT CODEX WIRING AUDIT
 implementation_authorized: false
 
 ## Package
-Single synchronized package at outputs/cd-031-r1/ : editable source (CD-031 Factory 360.dc.html), standalone, cd31-stage.js, cd31-annot.js, support.js, saqeel-tokens.css, saqeel-astryx.css, saqeel-prism.svg, manifest, component/wiring/state maps, acceptance checklist, research provenance, this handoff, the implementation prompt, inventory, preflight, and evidence PNGs.
+Single synchronized package at outputs/cd-031-r1/ : editable source (CD-031 Factory 360.dc.html), standalone, cd31-stage.js, cd31-annot.js, support.js, saqeel-tokens.css, saqeel-retired-predecessor.css, saqeel-prism.svg, manifest, component/wiring/state maps, acceptance checklist, research provenance, this handoff, the implementation prompt, inventory, preflight, and evidence PNGs.
 
 ## Signature (binding)
 Spatial Case Timeline: a source-labelled, list-equivalent, keyboard-operable narrative linking registered location context, inspection events, evidence/document availability, findings/actions, review decisions and risk-version observations. Never draw a fabricated spatial path, boundary, risk event or causal link; unavailable spatial/risk-driver elements are shown unavailable.

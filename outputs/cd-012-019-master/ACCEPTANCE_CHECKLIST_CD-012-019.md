@@ -22,7 +22,7 @@ Verdict per screen: READY_FOR_DESIGN_REVIEW. Grade not self-awarded.
 - [x] Full-document RTL with realistic Arabic; mixed-direction IDs/dates/codes kept LTR inline; dark+light without semantic change; 1440/1024/412 behavior in harness; captures in final/.
 
 ## Accessibility
-- [x] Skip links, aria-current, aria-disabled on governance-blocked actions, aria-busy loading, no colour-alone status (glyph+text lozenges + tags), 44px command controls / ≥32px row actions, 16px body, reduced-motion inherits from Astryx tokens.
+- [x] Skip links, aria-current, aria-disabled on governance-blocked actions, aria-busy loading, no colour-alone status (glyph+text lozenges + tags), 44px command controls / ≥32px row actions, 16px body, reduced-motion inherits from retired predecessor tokens.
 
 ## Evidence & packaging
 - [x] 24 native uncropped frames with in-frame DESIGN FIXTURE watermark; SHA-256 + dimensions in CAPTURE_MANIFEST.

@@ -66,15 +66,15 @@
           '<span class="au-ev__body"><span class="au-ev__t"><b>' + e[1] + '</b>' + C.loz(e[4] === "config" ? "info" : "none", e[4]) + (opts.partial && i === 4 ? ' ' + C.loz("warning", t.partialT) : '') + '</span>' +
           '<span>' + esc(e[3]) + '</span><span class="cd-sub">' + esc(e[2]) + '</span></span></div>';
       }).join("") + '</div>' +
-      '<div class="ax-row" style="justify-content:space-between;flex-wrap:wrap;gap:10px"><span class="cd-sub">' + esc(t.pageLbl) + '</span>' +
-      '<span style="display:flex;gap:6px"><button class="ax-btn ax-btn--subtle ax-btn--sm" disabled aria-disabled="true">' + esc(t.prev) + '</button><button class="ax-btn ax-btn--secondary ax-btn--sm">' + esc(t.next) + '</button></span></div>' +
+      '<div class="legacy-row" style="justify-content:space-between;flex-wrap:wrap;gap:10px"><span class="cd-sub">' + esc(t.pageLbl) + '</span>' +
+      '<span style="display:flex;gap:6px"><button class="legacy-btn legacy-btn--subtle legacy-btn--sm" disabled aria-disabled="true">' + esc(t.prev) + '</button><button class="legacy-btn legacy-btn--secondary legacy-btn--sm">' + esc(t.next) + '</button></span></div>' +
       '<p class="cd-sub">' + esc(t.countNote) + ' ' + esc(t.rlsNote) + '</p></div>';
   }
 
   function diff(t, partial) {
     return '<div class="m-panel"><div class="m-panel__head"><h4>' + esc(t.diffT) + '</h4>' + C.tt("proven", "stored images") + '</div>' +
       '<div class="au-diff"><div class="au-diff__before"><b>' + esc(t.diffBefore) + '</b><br><br>' +
-      (partial ? '<span style="color:var(--ax-color-text-secondary)">— ' + esc(t.partialD) + '</span>' : '"radius_m": <del>150</del>') + '</div>' +
+      (partial ? '<span style="color:var(--legacy-color-text-secondary)">— ' + esc(t.partialD) + '</span>' : '"radius_m": <del>150</del>') + '</div>' +
       '<div class="au-diff__after"><b>' + esc(t.diffAfter) + '</b><br><br>"radius_m": <ins>175</ins>,<br>"updated_by": "sara",<br>"updated_at": "2026-07-10T08:44:02Z"</div></div>' +
       '<p class="cd-sub">' + esc(t.diffNote) + '</p></div>';
   }
@@ -84,7 +84,7 @@
   }
 
   function bar(t) {
-    return '<div class="ax-commandbar">' + t.filters.map(function (f, i) { return '<button class="ax-filterchip' + (i === 0 ? ' is-active' : '') + '">' + esc(f) + '</button>'; }).join("") + '<span class="ax-commandbar__spacer"></span></div>';
+    return '<div class="legacy-commandbar">' + t.filters.map(function (f, i) { return '<button class="legacy-filterchip' + (i === 0 ? ' is-active' : '') + '">' + esc(f) + '</button>'; }).join("") + '<span class="legacy-commandbar__spacer"></span></div>';
   }
 
   function frame(lang, t, main) {

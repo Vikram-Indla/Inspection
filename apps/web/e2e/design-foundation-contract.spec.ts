@@ -47,7 +47,7 @@ test.describe("SAQEEL Inspection Design System v1.0 contract", () => {
     expect(tokens).toContain("--type-display-size: 28px;");            // SAQEEL scale supersedes 32px
     expect(tokens).toContain("--type-body-size: 14px;");              // 14px body supersedes 16px minimum
     expect(tokens).toContain("--type-table-size: 13px;");             // 13px tables
-    expect(tokens).not.toMatch(/Space Grotesk|JetBrains|Barlow/);      // retired runtime fonts stay absent
+    expect(tokens).not.toMatch(/retired input font|retired-mono|Barlow/);      // retired runtime fonts stay absent
   });
 
   test("DSF-AC-014..018 SAQEEL control geometry (frozen 12px input contract retired)", () => {

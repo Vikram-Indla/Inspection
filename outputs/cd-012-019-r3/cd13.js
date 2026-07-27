@@ -57,7 +57,7 @@
     var err = opts.parseError;
     var code =
 '{\n  <span class="k">"key"</span>: <span class="s">"INSPECTION_VISIT_LIFECYCLE"</span>,\n  <span class="k">"version"</span>: <span class="n">8</span>,\n  <span class="k">"states"</span>: [\n    { <span class="k">"id"</span>: <span class="s">"draft"</span>, <span class="k">"initial"</span>: <span class="n">true</span> },\n    { <span class="k">"id"</span>: <span class="s">"submitted"</span> },\n    { <span class="k">"id"</span>: <span class="s">"under_review"</span> },\n    { <span class="k">"id"</span>: <span class="s">"approved"</span> },\n    { <span class="k">"id"</span>: <span class="s">"returned"</span> },\n    { <span class="k">"id"</span>: <span class="s">"closed"</span>, <span class="k">"terminal"</span>: <span class="n">true</span> }\n  ],\n  <span class="k">"transitions"</span>: [\n    { <span class="k">"id"</span>: <span class="s">"submit"</span>, <span class="k">"from"</span>: <span class="s">"draft"</span>, <span class="k">"to"</span>: <span class="s">"submitted"</span>, <span class="k">"actor"</span>: <span class="s">"inspector"</span> }' + (err ? '<span class="err">,</span>' : ',') + '\n    { <span class="k">"id"</span>: <span class="s">"review"</span>, <span class="k">"from"</span>: <span class="s">"submitted"</span>, <span class="k">"to"</span>: <span class="s">"under_review"</span>, <span class="k">"actor"</span>: <span class="s">"reviewer_l1"</span> },\n    { <span class="k">"id"</span>: <span class="s">"approve"</span>, <span class="k">"from"</span>: <span class="s">"under_review"</span>, <span class="k">"to"</span>: ' + (opts.badRef ? '<span class="err"><span class="s">"supervisor_review"</span></span>' : '<span class="s">"approved"</span>') + ', <span class="k">"actor"</span>: <span class="s">"reviewer_l2"</span> },\n    { <span class="k">"id"</span>: <span class="s">"return"</span>, <span class="k">"from"</span>: <span class="s">"under_review"</span>, <span class="k">"to"</span>: <span class="s">"returned"</span> },\n    { <span class="k">"id"</span>: <span class="s">"close"</span>, <span class="k">"from"</span>: <span class="s">"approved"</span>, <span class="k">"to"</span>: <span class="s">"closed"</span> }\n  ]\n}';
-    return '<div class="jed"><div class="jed__bar"><b style="font:var(--ax-text-body-strong)">' + esc(t.edTitle) + '</b><span class="cd-sub">' + esc(t.edMeta) + '</span><span style="margin-inline-start:auto">' + C.tt("proven", "config_versions v8 payload") + '</span></div>' +
+    return '<div class="jed"><div class="jed__bar"><b style="font:var(--legacy-text-body-strong)">' + esc(t.edTitle) + '</b><span class="cd-sub">' + esc(t.edMeta) + '</span><span style="margin-inline-start:auto">' + C.tt("proven", "config_versions v8 payload") + '</span></div>' +
       '<pre class="jed__code" ' + (opts.readonly ? 'aria-readonly="true" style="opacity:.75"' : 'contenteditable="false"') + '>' + code + '</pre></div>';
   }
 
@@ -72,18 +72,18 @@
     return '<div class="qlane"><div class="qlane__head"><h3>' + esc(t.qTitle) + '</h3><span class="nya__lbl">' + esc(t.qLbl) + '</span></div>' +
       '<p class="cd-sub" style="max-inline-size:80ch">' + esc(t.qIntro) + '</p>' +
       '<div class="m-split">' + t.qItems.map(function (q) {
-        return '<div class="nya" style="border-inline-start-color:var(--ax-color-border-strong)"><div class="nya__head"><b>' + esc(q[0]) + '</b></div><p class="nya__body">' + esc(q[1]) + ' ' + esc(q[2]) + '</p><span class="nya__seam">' + esc(q[3]) + '</span></div>';
+        return '<div class="nya" style="border-inline-start-color:var(--legacy-color-border-strong)"><div class="nya__head"><b>' + esc(q[0]) + '</b></div><p class="nya__body">' + esc(q[1]) + ' ' + esc(q[2]) + '</p><span class="nya__seam">' + esc(q[3]) + '</span></div>';
       }).join("") + '</div>' +
-      '<div class="ax-row" style="gap:8px"><button class="ax-btn ax-btn--secondary" tabindex="-1" aria-disabled="true">' + (lang === "ar" ? "فتح اللوحة" : "Open canvas") + '</button><button class="ax-btn ax-btn--secondary" tabindex="-1" aria-disabled="true">' + (lang === "ar" ? "إعادة تشغيل سيناريو" : "Run replay") + '</button></div></div>';
+      '<div class="legacy-row" style="gap:8px"><button class="legacy-btn legacy-btn--secondary" tabindex="-1" aria-disabled="true">' + (lang === "ar" ? "فتح اللوحة" : "Open canvas") + '</button><button class="legacy-btn legacy-btn--secondary" tabindex="-1" aria-disabled="true">' + (lang === "ar" ? "إعادة تشغيل سيناريو" : "Run replay") + '</button></div></div>';
   }
 
   function bar(t, opts) {
     opts = opts || {};
-    return '<div class="ax-commandbar">' +
-      '<button class="ax-btn"' + (opts.noSave ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.save) + '</button>' +
-      '<button class="ax-btn ax-btn--secondary"' + (opts.noApprove ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.approve) + '</button>' +
-      '<button class="ax-btn ax-btn--subtle">' + esc(t.propose) + '</button>' +
-      '<span class="ax-commandbar__spacer"></span><span class="cd-sub m-mono" dir="ltr">' + t.saveAct + ' · ' + t.approveAct + '</span></div>';
+    return '<div class="legacy-commandbar">' +
+      '<button class="legacy-btn"' + (opts.noSave ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.save) + '</button>' +
+      '<button class="legacy-btn legacy-btn--secondary"' + (opts.noApprove ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.approve) + '</button>' +
+      '<button class="legacy-btn legacy-btn--subtle">' + esc(t.propose) + '</button>' +
+      '<span class="legacy-commandbar__spacer"></span><span class="cd-sub m-mono" dir="ltr">' + t.saveAct + ' · ' + t.approveAct + '</span></div>';
   }
 
   function frame(lang, t, main) {
@@ -105,9 +105,9 @@
     else if (state === "unauthorized") body = C.content(C.stateUnauth(lang));
     else if (state === "offline") body = C.content(C.stateOffline(lang, "✎"));
     else if (state === "validation") body = C.content(bar(t, { noApprove: true }) +
-      '<div class="ax-validation"><strong style="font:var(--ax-text-body-strong)">' + esc(t.valT) + '</strong><div class="cd-sub" style="margin-block:4px">' + esc(t.valD) + '</div><ul>' + t.valItems.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join("") + '</ul></div>' +
+      '<div class="legacy-validation"><strong style="font:var(--legacy-text-body-strong)">' + esc(t.valT) + '</strong><div class="cd-sub" style="margin-block:4px">' + esc(t.valD) + '</div><ul>' + t.valItems.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join("") + '</ul></div>' +
       C.legend(lang) + grid(t, lang, { parseError: true, badRef: true }));
-    else if (state === "saved") body = C.content(bar(t, { noApprove: true }) + '<div class="ax-banner"><span>✓</span><div><strong>' + esc(t.savedT) + '</strong><div class="cd-sub">' + esc(t.savedD) + '</div></div></div>' + C.legend(lang) + grid(t, lang, {}));
+    else if (state === "saved") body = C.content(bar(t, { noApprove: true }) + '<div class="legacy-banner"><span>✓</span><div><strong>' + esc(t.savedT) + '</strong><div class="cd-sub">' + esc(t.savedD) + '</div></div></div>' + C.legend(lang) + grid(t, lang, {}));
     else if (state === "own-draft") body = C.content(bar(t, { noApprove: true }) + C.guard(t.sepT, t.sepD) + C.legend(lang) + grid(t, lang, {}));
     else if (state === "submitted") body = C.content(bar(t, { noSave: true }) + C.banner("immutable", "▣", t.submittedT, t.submittedD) + C.legend(lang) + grid(t, lang, { readonly: true }));
     else if (state === "published-locked") body = C.content(bar(t, { noSave: true, noApprove: true }) + C.banner("immutable", "◆", t.immT, t.immD) + C.legend(lang) + grid(t, lang, { readonly: true }));

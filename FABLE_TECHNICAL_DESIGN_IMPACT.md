@@ -1,6 +1,6 @@
 # FABLE_TECHNICAL_DESIGN_IMPACT — What the Understanding Forces on Future Design
 
-Status: analysis only. **No Astryx artifact or product screen created.** Mobbin excluded. Historical archives = provenance only. Meta-Astryx = design direction only, unapproved until G6. Open decisions DEC-001..010 not invented — every impact below is stated conditionally where a decision gates it.
+Status: analysis only. **No retired predecessor artifact or product screen created.** Mobbin excluded. Historical archives = provenance only. Meta-retired predecessor = design direction only, unapproved until G6. Open decisions DEC-001..010 not invented — every impact below is stated conditionally where a decision gates it.
 
 ---
 
@@ -8,7 +8,7 @@ Status: analysis only. **No Astryx artifact or product screen created.** Mobbin 
 
 These follow directly from frozen contracts (repo `product-contract/*`) and bind any future design:
 
-1. **Twelve mandatory screen states are a component-system requirement, not per-screen polish.** Every screen must express loading / empty / populated / validation failure / unauthorized / read-only-immutable / stale / degraded / offline / syncing / conflict / success where relevant (screen catalogue `states` column; Astryx "Non-negotiable states"). → Design system must ship state variants at the component level (tables, panels, forms, maps) or 38 screens × 12 states becomes unmanageable.
+1. **Twelve mandatory screen states are a component-system requirement, not per-screen polish.** Every screen must express loading / empty / populated / validation failure / unauthorized / read-only-immutable / stale / degraded / offline / syncing / conflict / success where relevant (screen catalogue `states` column; retired predecessor "Non-negotiable states"). → Design system must ship state variants at the component level (tables, panels, forms, maps) or 38 screens × 12 states becomes unmanageable.
 2. **Status is never free-styled.** Five separate state domains (planning, operational, review, virtual, sync — BRD §9; FND-002) must be visually distinguishable and never merged in one status chip. → A status/lozenge taxonomy keyed to state domain is a foundation component.
 3. **Immutability must be visible.** Submitted versions, published configs, reviewer comments, audit trails are read-only by contract (CLAUDE.md hard rules) → immutable/read-only banner + version badge are first-class components, appearing on SCR-WEB-310/320, SCR-IPAD-670, all published-config admin views.
 4. **Offline/sync state is persistent chrome on iPad.** Inspector must always see offline / pending / syncing / synced / conflict / failed (iPad spec §4) → app-shell-level indicator + conflict-resolver surface, not a toast.
@@ -19,7 +19,7 @@ These follow directly from frozen contracts (repo `product-contract/*`) and bind
 9. **Bulk actions report per-row outcomes** (P03 failure control; SCR-WEB-200 partial-bulk-failure state) → bulk bar + result report pattern.
 10. **Blockers before submit.** Validation summary with deep links is required on SCR-IPAD-660 (ERR-SUB-001) and pre-publish on SCR-WEB-150.
 11. **Every dangerous action shows impact + reason + confirmation + audit context** (Admin spec §7; UIUX acceptance checklist).
-12. **Tabular numerals + high contrast for field/ops data** (Astryx typography; FND-011 no color-only cues, no zoom-required reading).
+12. **Tabular numerals + high contrast for field/ops data** (retired predecessor typography; FND-011 no color-only cues, no zoom-required reading).
 
 ## 2. Engine-first build order (design must mirror it)
 
@@ -45,7 +45,7 @@ Shared layer precedes feature screens (G5 doc §13): ENG-03 workflow, ENG-12 aud
 - **DEC-001 risk:** risk band/score components bind to configurable band set + version reference; no invented thresholds; explainability drawer required (ENG-04 "drivers, version, explanation").
 - **DEC-002 GIS:** accuracy/radius displays show configured threshold + pass/fail, values from config; check-in UI includes governed override path (permission, reason, evidence).
 - **DEC-003 SLA:** SLA chips/timers derive from configured calendar; design shows due/at-risk/overdue/breached semantics without inventing durations.
-- **DEC-004 Arabic/RTL:** build layouts with logical properties (start/end), mirrored directional iconography, bilingual-capable typography (Inter + IBM Plex Sans Arabic per Astryx direction) — but ship no bilingual scope commitment until decided.
+- **DEC-004 Arabic/RTL:** build layouts with logical properties (start/end), mirrored directional iconography, bilingual-capable typography (Inter + IBM Plex Sans Arabic per retired predecessor direction) — but ship no bilingual scope commitment until decided.
 - **DEC-006 evidence:** upload components read allowed types/sizes from policy config; rejection messaging pattern fixed (ERR-EVD-002) while limits stay configurable.
 - **DEC-007/008 providers:** OTP and map components sit behind provider abstractions; simulation states are visibly non-final ("simulation not release-complete", decision register).
 - **DEC-009 signature:** submission flow includes acknowledgement/refusal block only; no PKI/e-signature UI implied (PKI = MVP2-011).
@@ -59,14 +59,14 @@ Shared layer precedes feature screens (G5 doc §13): ENG-03 workflow, ENG-12 aud
 - **No API contract exists.** API/event design is future G5+ work; nothing in this document invents endpoints.
 - **Testing contract:** tests reference requirement + acceptance IDs; include success, negative, permission, error, offline, integration, state, regression paths; screenshot alone is not functional evidence (`.claude/rules/tests.md`).
 
-## 6. Design exclusions confirmed (Astryx pack "Design exclusions" + build contract §8)
+## 6. Design exclusions confirmed (retired predecessor pack "Design exclusions" + build contract §8)
 
-No default Material look; no Atlassian-dense treatment; no generic shadcn without Astryx tokens; no gradients/glassmorphism/decorative dashboards; no giant cards where tables are needed; no desktop-compressed iPad; no one-off components; no mock interactions without defined states; no fake counts/KPIs/maps/telemetry for acceptance; no hard-coded workflow/risk/checklist logic that Admin must govern.
+No default Material look; no Atlassian-dense treatment; no generic shadcn without retired predecessor tokens; no gradients/glassmorphism/decorative dashboards; no giant cards where tables are needed; no desktop-compressed iPad; no one-off components; no mock interactions without defined states; no fake counts/KPIs/maps/telemetry for acceptance; no hard-coded workflow/risk/checklist logic that Admin must govern.
 
 ## 7. Sequence from here (per approvals, no work started)
 
 1. Human resolves/dispositions FABLE_OPEN_QUESTIONS.yaml items (esp. DEC-004 before G6 freeze; CONF-001/002 corrections).
-2. G6 Approval 1: Astryx foundation (tokens, grids, RTL rules, core+enterprise components).
+2. G6 Approval 1: retired predecessor foundation (tokens, grids, RTL rules, core+enterprise components).
 3. G6 Approval 2: six golden screens (Admin Package/Form Designer; Single Visit Planning; Inspector Assigned/Startup; Inspection Workspace w/ offline+evidence+validation; Level 2 Review w/ return scope + comparison; Operations Center w/ map/alerts/timeline/Factory-360 drilldown).
 4. G6 Approval 3: wired end-to-end physical-journey prototype incl. mandatory failure paths (blocker, assignment conflict, outside-geofence, offline capture/sync, upload retry, duplicate-submit protection, selective return, version comparison, unauthorized, degraded).
 5. Only after Approval 3 does Fable output become visual implementation authority; broad build stays blocked until G8 PASS.

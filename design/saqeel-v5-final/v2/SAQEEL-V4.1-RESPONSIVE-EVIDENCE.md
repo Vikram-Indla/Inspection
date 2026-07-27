@@ -1,4 +1,0 @@
-# V4.1 responsive evidence
-Live proof: patterns/evidence/responsive.html — visit-planning at 1440/1024/768/390 and iPad checklist at 1194 (landscape) / 834 (portrait) / 507 (narrow Split View), rendered as iframes of the real pages (no mockups).
-Canonical breakpoints (styles/components-navigation.css): 1099 compact chrome · 959/899 drawer shell · 640/560 stacked ledgers/taskbar. 390 frame = 400%-zoom equivalence for reflow; tables use .ax-tablewrap accessible overflow.
-Implementation acceptance still requires: real browser zoom to 400%, keyboard traversal under sticky chrome, Split View on device.

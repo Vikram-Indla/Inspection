@@ -72,9 +72,9 @@
       (drift ? '<span class="lz-risk">⟳ ' + esc(t.stDrift) + ' · 2026-07-08</span>' : '') + '</div>' +
       '<div class="lz-cell" dir="rtl"><span class="lz-key">AR</span><span class="lz-ar">' + arHtml + '</span>' +
       (r.risk === "long" ? '<span class="lz-risk">↔ ' + esc(t.riskLong) + '</span>' : '') +
-      (phErr ? '<span class="lz-risk" style="color:var(--ax-color-critical-strong)">✕ ' + esc(t.phErrNote) + '</span>' : '') + '</div>' +
+      (phErr ? '<span class="lz-risk" style="color:var(--legacy-color-critical-strong)">✕ ' + esc(t.phErrNote) + '</span>' : '') + '</div>' +
       '<div class="lz-cell" style="justify-content:center;gap:8px">' + stLoz(t, drift ? "drift" : phErr ? "needs" : r.st) +
-      '<button class="ax-btn ax-btn--subtle ax-btn--sm">' + esc(t.context) + '</button></div>' +
+      '<button class="legacy-btn legacy-btn--subtle legacy-btn--sm">' + esc(t.context) + '</button></div>' +
       '</div>';
   }
 
@@ -86,17 +86,17 @@
     return '<div class="m-panel"><div class="m-panel__head"><h4>' + esc(t.history) + ' — visits.submit.action</h4>' + C.tt("proven", "ui_strings versions") + '</div>' +
       '<ul class="wf-prov">' + t.histRows.map(function (h, i) {
         var cls = i === 0 ? " is-draft" : i === 3 ? " is-super" : "";
-        return '<li class="' + cls.trim() + '"><div class="wf-prov__t"><span class="ax-version">' + h[0] + '</span><span class="wf-prov__m">' + h[1] + '</span><span class="cd-sub">' + esc(h[2]) + '</span></div><span class="wf-prov__m">' + esc(h[3]) + '</span></li>';
+        return '<li class="' + cls.trim() + '"><div class="wf-prov__t"><span class="legacy-version">' + h[0] + '</span><span class="wf-prov__m">' + h[1] + '</span><span class="cd-sub">' + esc(h[2]) + '</span></div><span class="wf-prov__m">' + esc(h[3]) + '</span></li>';
       }).join("") + '</ul>' +
-      '<button class="ax-btn ax-btn--secondary ax-btn--sm" style="align-self:flex-start">' + esc(t.restore) + ' v3</button></div>';
+      '<button class="legacy-btn legacy-btn--secondary legacy-btn--sm" style="align-self:flex-start">' + esc(t.restore) + ' v3</button></div>';
   }
 
   function bar(t, opts) {
     opts = opts || {};
-    return '<div class="ax-commandbar">' + t.filters.map(function (f, i) { return '<button class="ax-filterchip' + (i === 0 ? ' is-active' : '') + '">' + esc(f) + '</button>'; }).join("") +
-      '<span class="ax-commandbar__spacer"></span>' +
-      '<button class="ax-btn ax-btn--secondary ax-btn--sm">' + esc(t.exportCsv) + '</button>' +
-      '<button class="ax-btn"' + (opts.noApprove ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.approve) + '</button></div>';
+    return '<div class="legacy-commandbar">' + t.filters.map(function (f, i) { return '<button class="legacy-filterchip' + (i === 0 ? ' is-active' : '') + '">' + esc(f) + '</button>'; }).join("") +
+      '<span class="legacy-commandbar__spacer"></span>' +
+      '<button class="legacy-btn legacy-btn--secondary legacy-btn--sm">' + esc(t.exportCsv) + '</button>' +
+      '<button class="legacy-btn"' + (opts.noApprove ? ' disabled aria-disabled="true"' : '') + '>' + esc(t.approve) + '</button></div>';
   }
 
   function kpis(t) {
@@ -123,7 +123,7 @@
     else if (state === "source-drift") body = C.content(bar(t, { noApprove: true }) + C.banner("warning", "⟳", t.stDrift, t.driftNote) + C.legend(lang) + grid(t, { driftKey: "visits.submit.action" }));
     else if (state === "placeholder-error") body = C.content(bar(t, { noApprove: true }) + C.guard(t.stNeeds, t.phErrNote) + C.legend(lang) + grid(t, { phErrKey: "visits.evidence.hint" }));
     else if (state === "missing") body = C.content(bar(t, { noApprove: true }) + C.legend(lang) + grid(t, {}));
-    else if (state === "restored") body = C.content(bar(t, {}) + '<div class="ax-banner"><span>↩</span><div><strong>' + esc(t.restoredT) + '</strong><div class="cd-sub">' + esc(t.restoredD) + '</div></div></div>' + C.legend(lang) + grid(t, {}));
+    else if (state === "restored") body = C.content(bar(t, {}) + '<div class="legacy-banner"><span>↩</span><div><strong>' + esc(t.restoredT) + '</strong><div class="cd-sub">' + esc(t.restoredD) + '</div></div></div>' + C.legend(lang) + grid(t, {}));
     else if (state === "approved") body = C.content(bar(t, {}) + C.legend(lang) + kpis(t) + grid(t, {}));
     else if (state === "needs-review") body = C.content(bar(t, {}) + C.legend(lang) + grid(t, {}));
     else /* review — primary */ body = C.content(bar(t, {}) + C.legend(lang) + kpis(t) + grid(t, {}));

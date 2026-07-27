@@ -5,7 +5,7 @@ date: "2026-07-11"
 rules:
   - "Mobbin is excluded from all design work (current human instruction; supersedes frozen Mobbin references pending change control)."
   - "Historical archives (MIM_Inspection_MVP1_Historical_Archives_v3) are provenance/completeness only."
-  - "Meta-Astryx pack is design direction only; nothing is design authority until G6 approval."
+  - "Meta-retired predecessor pack is design direction only; nothing is design authority until G6 approval."
   - "Open decisions block only their affected acceptance/certification scope (governance/OPEN_DECISIONS.yaml)."
 
 open_decisions:  # authoritative register: product-contract/governance/decision_register.csv (DEC) mirrored by OPEN_DECISIONS_G2.yaml (OD)
@@ -36,7 +36,7 @@ open_decisions:  # authoritative register: product-contract/governance/decision_
     severity: P0
     required_by: "G6 design freeze"
     safe_interim: "Do not assume; design prepares logical/RTL layout without committing scope"
-    blocks: ["G6 freeze", "typography/token decisions", "Astryx Arabic variants"]
+    blocks: ["G6 freeze", "typography/token decisions", "retired predecessor Arabic variants"]
   - id: DEC-005 / OD-07
     topic: "Exact external factory-facing MVP1 boundary"
     owner: Product Owner
@@ -99,16 +99,16 @@ environment_and_access:
 
 authority_conflicts:  # resolution proposal stated; human confirmation required for the two marked CHANGE-CONTROL
   - id: CONF-001
-    conflict: "Meta-Astryx pack points to /Users/vikramindla/Documents/GitHub/Inspection/Requirements — folder does not exist."
+    conflict: "Meta-retired predecessor pack points to /Users/vikramindla/Documents/GitHub/Inspection/Requirements — folder does not exist."
     resolution: "RESOLVED by human (2026-07-11): 'Requirements' was renamed to MIM_Inspection_MVP1_Historical_Archives_v3/ — that archive set IS the requirements folder. product-contract/ remains the frozen operating authority distilled from it."
     status: RESOLVED_BY_HUMAN
   - id: CONF-002
-    conflict: "Mobbin mandated by CLAUDE.md design policy, GATE_STATUS.md G6 title, archive UIUX authority PDF and Astryx execution prompt §2 — but current human instruction excludes Mobbin."
+    conflict: "Mobbin mandated by CLAUDE.md design policy, GATE_STATUS.md G6 title, archive UIUX authority PDF and retired predecessor execution prompt §2 — but current human instruction excludes Mobbin."
     resolution_proposed: "Latest human instruction wins operationally; frozen wording should be amended via CHANGE-CONTROL before G6 so the contract and practice match."
     status: NEEDS_CHANGE_CONTROL
   - id: CONF-003
-    conflict: "Two design languages: archive UIUX authority (deep navy restrained enterprise) vs Meta-Astryx (Meta-inspired, Astryx Cobalt)."
-    resolution_proposed: "Meta-Astryx pack (2026-07-11) supersedes the archive UIUX doc as design direction per its own decision statement; neither is authority until G6 Approval 1."
+    conflict: "Two design languages: archive UIUX authority (deep navy restrained enterprise) vs Meta-retired predecessor (Meta-inspired, retired predecessor Cobalt)."
+    resolution_proposed: "Meta-retired predecessor pack (2026-07-11) supersedes the archive UIUX doc as design direction per its own decision statement; neither is authority until G6 Approval 1."
     status: RESOLVED_AS_DIRECTION_ONLY
   - id: CONF-004
     conflict: "Three gate models share 'G' numbering: repo project gates G0–G12 (current), archive Fable build-loop gates G0–G10, BRD delivery Gates 1–9."
@@ -123,7 +123,7 @@ authority_conflicts:  # resolution proposal stated; human confirmation required 
     resolution_proposed: "Substance consistent; RBAC-014 matrix is the operative permission authority; REF-015 the configured role list; personas.yaml the experience-level personas. Single canonical role list to be confirmed at G6/G8."
     status: NEEDS_HUMAN_CONFIRMATION
   - id: CONF-007
-    conflict: "Astryx pack pre-commits Arabic typography/RTL while DEC-004 (Arabic scope) is open."
+    conflict: "retired predecessor pack pre-commits Arabic typography/RTL while DEC-004 (Arabic scope) is open."
     resolution_proposed: "Treat as prepare-for-RTL direction only; no bilingual scope commitment until DEC-004."
     status: RESOLVED_AS_DIRECTION_ONLY
   - id: CONF-008

@@ -1,3 +1,0 @@
-# V4.1 offline preview check
-OFFLINE-SAFE (no network needed): styles.css closure (fonts woff2 local, all CSS local) · all 21 patterns/ pages incl. AR + evidence · guidelines/ specimen cards · thumbnail · explorations references.
-NETWORK-DEPENDENT: components/*/**.card.html and ui_kits/web/* load React 18.3.1 + Babel from unpkg (pinned, SRI-hashed) — these are interactive authoring previews; the static pattern pages carry the same visual truth offline. Decision recorded: bundling a JS runtime into the package was declined this pass to avoid shipping an unauditable vendored runtime; if a fully offline interactive preview is required, vendor react.production.min.js locally at implementation and switch the card <script src> paths (one-line change per card).

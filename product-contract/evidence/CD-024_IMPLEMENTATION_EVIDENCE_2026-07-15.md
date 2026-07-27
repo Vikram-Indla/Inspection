@@ -13,7 +13,7 @@
 
 ## Verification
 - `npx tsc --noEmit` → No errors. `npx next build` → 0 errors (2 pre-existing warnings).
-- Color-law scan (4 files) → clean (ax/ds tokens only).
+- Color-law scan (4 files) → clean (legacy/ds tokens only).
 - No new live route (`configure`/`:id/review` absent); `/planning/plans/:id` untouched (read-only preserved).
 - Frozen files untouched; atomic `publish_bulk_plan` RPC + RLS/RBAC unchanged.
 

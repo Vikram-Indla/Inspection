@@ -1,7 +1,7 @@
 # Planning Module Ownership & Remediation Plan
 
-Status: **Ownership accepted — Slice 1 implemented, Slice 2 queued**  
-Owner: Codex  
+Status: **Ownership accepted — Slice 1 implemented, Slice 2 queued**
+Owner: Codex
 Scope: Visit Planning web module and its planning administration control plane
 
 ## Authority and inputs
@@ -19,18 +19,18 @@ Scope: Visit Planning web module and its planning administration control plane
 
 | Planning surface | Routes/files | Canonical SAQEEL coverage | Ownership status |
 |---|---|---|---|
-| Planning landing/list | `/planning`, `planning/page.tsx` | `ax-*` controls, status lozenges, data grid, governed dates, shared empty states | Slice 1 aligned; UX audit queued |
-| Single planning | `/planning/single`, `Wizard.tsx`, `IdentityDossier.tsx` | `ax-*` controls, Field/Input/Select patterns, identity dossier, provenance | Slice 1 aligned; nomenclature audit queued |
-| Bulk targeting | `/planning/bulk`, `CriteriaBuilder.tsx`, `BulkForm.tsx` | `ax-*` controls, criteria builder, alert/ledger/table patterns | Slice 1 aligned; advanced interaction audit queued |
-| Bulk review/publish | `/planning/bulk/review` | `ax-*` actions, readiness/ledger patterns, package selection | Functional wiring retained; UX audit queued |
-| Immediate planning | `/planning/immediate`, `ImmediateForm.tsx` | `ax-*` controls, segmented identity, location/provenance states | Slice 1 aligned; touch/RTL audit queued |
+| Planning landing/list | `/planning`, `planning/page.tsx` | `legacy-*` controls, status lozenges, data grid, governed dates, shared empty states | Slice 1 aligned; UX audit queued |
+| Single planning | `/planning/single`, `Wizard.tsx`, `IdentityDossier.tsx` | `legacy-*` controls, Field/Input/Select patterns, identity dossier, provenance | Slice 1 aligned; nomenclature audit queued |
+| Bulk targeting | `/planning/bulk`, `CriteriaBuilder.tsx`, `BulkForm.tsx` | `legacy-*` controls, criteria builder, alert/ledger/table patterns | Slice 1 aligned; advanced interaction audit queued |
+| Bulk review/publish | `/planning/bulk/review` | `legacy-*` actions, readiness/ledger patterns, package selection | Functional wiring retained; UX audit queued |
+| Immediate planning | `/planning/immediate`, `ImmediateForm.tsx` | `legacy-*` controls, segmented identity, location/provenance states | Slice 1 aligned; touch/RTL audit queued |
 | Plan register/drill | `/planning/plans`, `/planning/plans/[id]` | shared empty states, table/detail patterns | Slice 1 icon alignment; detail audit queued |
 | Planning admin | `/admin/planning/lookups`, `/expiry`, `/status` | governed forms, read-only/error states, audit/control-plane patterns | CSS aligned; authorization/runtime audit queued |
 
 ## Implemented in Slice 1
 
 - Replaced Planning's remaining legacy `.btn*` controls in the bulk criteria
-  builder and single wizard with the canonical `ax-btn` variants.
+  builder and single wizard with the canonical `legacy-btn` variants.
 - Replaced Planning raw glyph/emoji empty states with the shared SVG icon API.
 - Replaced user-facing Planning UTC string slicing with `formatDate` /
   `formatDateTime` using the governed Asia/Riyadh Gregorian service.

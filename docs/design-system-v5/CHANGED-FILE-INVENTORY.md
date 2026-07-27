@@ -10,8 +10,8 @@
 - `apps/web/src/components/Tabs.tsx` — accessible WAI-ARIA tabs primitive (Wave 2).
 
 ## Modified — tokens/CSS (Wave 1)
-- `apps/web/src/app/tokens.css` — full swap to the V5.1 token set (dark primary green not blue, `--ax-color-border-control`, `--ax-color-link`, `--ax-text-label`/`--ax-text-action`/`--ax-text-metric`, `--ax-radius-input` 12px→6px, density ladder, sticky offsets, tonal field surface).
-- `apps/web/src/app/astryx.css` — field label / button / segmented / tabs / pagination / ribbon typography moved off 16px body-strong onto the new 14/20 label/action tokens; loading buttons keep their label visible instead of `color:transparent`; `.ax-search` renders one canonical SVG-masked glyph instead of a generated `⌕` character; new opt-in `.ax-density-admin`/`.ax-density-compact` wrapper classes.
+- `apps/web/src/app/tokens.css` — full swap to the V5.1 token set (dark primary green not blue, `--legacy-color-border-control`, `--legacy-color-link`, `--legacy-text-label`/`--legacy-text-action`/`--legacy-text-metric`, `--legacy-radius-input` 12px→6px, density ladder, sticky offsets, tonal field surface).
+- `apps/web/src/app/retired-predecessor.css` — field label / button / segmented / tabs / pagination / ribbon typography moved off 16px body-strong onto the new 14/20 label/action tokens; loading buttons keep their label visible instead of `color:transparent`; `.legacy-search` renders one canonical SVG-masked glyph instead of a generated `⌕` character; new opt-in `.legacy-density-admin`/`.legacy-density-compact` wrapper classes.
 - `apps/web/src/app/icons.tsx` — added `IconClose` (used by `Modal.tsx`).
 - `apps/web/package.json` — added `check:design-system-v5` and `verify:dates` scripts.
 
@@ -26,6 +26,6 @@
 
 ## Explicitly NOT changed (and why)
 - Any `*/actions.ts` server action file flagged by the guardrail — these write ISO date strings to Postgres date columns; that's the correct format for a DB write, not a display bug. Each needs individual triage before touching (tracked, not fixed blind).
-- `SignaturePad.tsx`, `Workspace.tsx`, `FactoryVerification.tsx`, `ImageAnnotator.tsx` raw `.ax-modal` markup — not migrated to the new `Modal.tsx` primitive yet. `SignaturePad.tsx` in particular is a governed signature-capture flow; deferred rather than risked under time pressure.
+- `SignaturePad.tsx`, `Workspace.tsx`, `FactoryVerification.tsx`, `ImageAnnotator.tsx` raw `.legacy-modal` markup — not migrated to the new `Modal.tsx` primitive yet. `SignaturePad.tsx` in particular is a governed signature-capture flow; deferred rather than risked under time pressure.
 - `EmptyState.tsx`'s `glyph` prop and its ~86 emoji call sites — a deliberate per-context illustration slot, not touched. Migrating it to named SVG icons is real, valuable, but sizable work (needs an icon per distinct glyph plus 86 call-site updates); tracked as a follow-up rather than rushed.
 - Wave 4 (shell/navigation), and the remainder of Waves 5–8 (iPad, admin, report/print structural rebuild) — not started this session.

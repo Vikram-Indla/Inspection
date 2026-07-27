@@ -1,6 +1,6 @@
 # SAQEEL Inspection Design System
 
-An original design system for a Saudi national inspection and regulatory platform, built to replace the existing **Astryx** implementation. It serves three audiences at once: field inspectors (dense, fast, touch-capable), supervisors (review and approval), and executive/government stakeholders (credible, quiet, premium).
+An original design system for a Saudi national inspection and regulatory platform, built to replace the existing **retired predecessor** implementation. It serves three audiences at once: field inspectors (dense, fast, touch-capable), supervisors (review and approval), and executive/government stakeholders (credible, quiet, premium).
 
 **References, not identities:** Industry supplied the structural discipline (grid rhythm, compact controls, data-table architecture); Nocturne informed dark-mode surface layering, elevation and selection contrast only. Neither system's visual identity (Barlow / steel blueprint marks; purple / glow) survives here.
 
@@ -70,7 +70,7 @@ Text tokens ≥ 4.5:1 on their surfaces; `--focus-ring` visible on every interac
 - `guidelines/` — foundation specimen cards (Design System tab).
 - `components/` — reusable JSX primitives: `actions/`, `inputs/`, `navigation/`, `feedback/`, `data/`, `grid/` (Inspection Data Grid), `inspection/`, `map/`, `signature/` (SAQEEL signatures: GeoWorkspace, StatusSpine, EvidenceStack, ExceptionRail).
 - `ui_kits/inspection/` — representative high-fidelity screens (light, dark, RTL, tablet).
-- `handoff/` — 21-artifact Claude Code package: DESIGN_PRINCIPLES, DESIGN_SYSTEM_OVERVIEW, TOKENS_REFERENCE + tokens.json + tokens.css, TYPOGRAPHY_SPEC, COMPONENT_CATALOG, COMPONENT_API_CONTRACT, RTL / DARK_MODE / RESPONSIVE / ACCESSIBILITY / MAP_SYSTEM / DATA_GRID / FORM_SYSTEM specs, INSPECTION_PATTERNS (signatures), VISUAL_QA_MATRIX, FOUR_MODE_PARITY_MATRIX, CLAUDE_CODE_HANDOFF, ASTRYX_MIGRATION_TEMPLATE (deliberately empty of assumptions), KNOWN_LIMITATIONS.
+- `handoff/` — 21-artifact Claude Code package: DESIGN_PRINCIPLES, DESIGN_SYSTEM_OVERVIEW, TOKENS_REFERENCE + tokens.json + tokens.css, TYPOGRAPHY_SPEC, COMPONENT_CATALOG, COMPONENT_API_CONTRACT, RTL / DARK_MODE / RESPONSIVE / ACCESSIBILITY / MAP_SYSTEM / DATA_GRID / FORM_SYSTEM specs, INSPECTION_PATTERNS (signatures), VISUAL_QA_MATRIX, FOUR_MODE_PARITY_MATRIX, CLAUDE_CODE_HANDOFF, RETIRED PREDECESSOR_MIGRATION_TEMPLATE (deliberately empty of assumptions), KNOWN_LIMITATIONS.
 - `SKILL.md` — agent-skill entry point.
 
 ## Signature patterns (original to SAQEEL)
@@ -79,4 +79,4 @@ Geospatial Command Workspace · Inspection Status Spine · Evidence Stack · Ope
 
 ## Intentional additions
 
-No source codebase was attached; the component inventory follows the commissioning brief (dated Jul 2026) rather than a discovered library. The Astryx migration matrix in `handoff/astryx-migration.md` is keyed by pattern name and must be reconciled against the real Astryx exports at implementation time.
+No source codebase was attached; the component inventory follows the commissioning brief (dated Jul 2026) rather than a discovered library. The retired predecessor migration matrix in `handoff/retired-predecessor-migration.md` is keyed by pattern name and must be reconciled against the real retired predecessor exports at implementation time.

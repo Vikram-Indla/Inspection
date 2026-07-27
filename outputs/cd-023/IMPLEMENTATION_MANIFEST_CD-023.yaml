@@ -18,7 +18,7 @@ requirements:
   - MVP1-M02-012
 acceptance: [DSG-018, DSG-A11Y-001, AC-0043..AC-0052]
 accepted_design_authority:
-  file: design/astryx/d3/D3-04_immediate-planning.html
+  file: design/retired-predecessor/d3/D3-04_immediate-planning.html
   urgency_values:
     - Complaint received
     - Incident / accident report

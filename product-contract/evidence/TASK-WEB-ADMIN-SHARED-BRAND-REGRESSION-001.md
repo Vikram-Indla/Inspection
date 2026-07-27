@@ -30,10 +30,10 @@ does not invent an English-only or Arabic-only alternative.
 
 - `ShellClient.tsx` renders the approved expanded wordmark image and the
   collapsed decorative favicon.
-- `astryx.css` hides the favicon in expanded desktop navigation, shows it in
+- `retired-predecessor.css` hides the favicon in expanded desktop navigation, shows it in
   collapsed desktop navigation, hides the wordmark while collapsed, and
   restores the expanded wordmark in the mobile drawer.
-- `app/layout.tsx` imports `astryx.css`, matching the `ax-*` namespace still
+- `app/layout.tsx` imports `retired-predecessor.css`, matching the `legacy-*` namespace still
   emitted by the promoted authenticated `ShellClient`. The previous retirement
   comment was false for the actual runtime and caused an entirely unstyled
   Web/Admin shell.
@@ -51,7 +51,7 @@ PWA, iPad, backend, API, database, provider or remote system changed.
 - Focused F0 source and security contract: **4/4 PASS**.
 - Focused bilingual brand assertion: **1/1 PASS**.
 - Runtime CSS link: **PASS** — rendered HTML links the compiled stylesheet and
-  that stylesheet contains `.ax-shell` plus `.ax-shell__brand-wordmark`.
+  that stylesheet contains `.legacy-shell` plus `.legacy-shell__brand-wordmark`.
 - Real Chrome runtime: **PASS (Codex evidence)** — the authenticated
   `127.0.0.1:3014/planning` route rendered the complete graphite shell and
   accessible `SAQEEL | صقيل` wordmark together after a production rebuild and

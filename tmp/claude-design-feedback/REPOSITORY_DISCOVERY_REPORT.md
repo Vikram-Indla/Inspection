@@ -27,9 +27,9 @@ Date: 2026-07-12 · Phase: read-only design discovery (no screen designs produce
 
 ## 4. Design-system structure
 
-- **`src/app/tokens.css`** — single source of raw values (`--ax-*`): Theme v2 dark (canvas #0A0A14, surface #14141F, primary violet #7C6CFF, success #2DE08E, warning #E8B84B, critical #F0625D, info #5AA7FA) + first-class light palette + `prefers-color-scheme` fallback; derived tints via `color-mix` only; semantic type scale (display 34 → body 16 → field 17 → micro 12 mono); 4px spacing rhythm; radii 8/12/16; control heights 44/48/52 (field ≥52); focus ring, motion, z-ladder, shell widths (nav 248px, panel 360px).
-- **`src/app/astryx.css`** — the component layer (~590 lines, all `ax-*`, logical properties throughout): buttons (5 variants incl. `--field`), fields/inputs/search, choice/switch/segmented/tabs, lozenge/badge/version chip, menu/popover/banner (incl. `--immutable`)/toast/modal/drawer, skeleton/empty-state/freshness, shell + pagehead + breadcrumb, commandbar/filterchip, KPI row, table (+sort, +bulkbar), stepper, timeline, permission/validation/conflict (side-by-side diff), map chrome (pins, geofence, provider attribution), visit card, evidence grid + `ax-sync` (synced/offline/pending/syncing/conflict/failed — text+glyph, not color-only), rule builder, workflow flow-canvas, layout utilities.
-- Fonts loaded via `next/font`: Space Grotesk (EN), IBM Plex Sans Arabic (AR), JetBrains Mono (data labels) — exposed as `--font-*` variables consumed by tokens.
+- **`src/app/tokens.css`** — single source of raw values (`--legacy-*`): Theme v2 dark (canvas #0A0A14, surface #14141F, primary violet #7C6CFF, success #2DE08E, warning #E8B84B, critical #F0625D, info #5AA7FA) + first-class light palette + `prefers-color-scheme` fallback; derived tints via `color-mix` only; semantic type scale (display 34 → body 16 → field 17 → micro 12 mono); 4px spacing rhythm; radii 8/12/16; control heights 44/48/52 (field ≥52); focus ring, motion, z-ladder, shell widths (nav 248px, panel 360px).
+- **`src/app/retired-predecessor.css`** — the component layer (~590 lines, all `legacy-*`, logical properties throughout): buttons (5 variants incl. `--field`), fields/inputs/search, choice/switch/segmented/tabs, lozenge/badge/version chip, menu/popover/banner (incl. `--immutable`)/toast/modal/drawer, skeleton/empty-state/freshness, shell + pagehead + breadcrumb, commandbar/filterchip, KPI row, table (+sort, +bulkbar), stepper, timeline, permission/validation/conflict (side-by-side diff), map chrome (pins, geofence, provider attribution), visit card, evidence grid + `legacy-sync` (synced/offline/pending/syncing/conflict/failed — text+glyph, not color-only), rule builder, workflow flow-canvas, layout utilities.
+- Fonts loaded via `next/font`: retired input font (EN), IBM Plex Sans Arabic (AR), retired mono font (data labels) — exposed as `--font-*` variables consumed by tokens.
 
 ## 5. Navigation and role model
 
@@ -40,24 +40,24 @@ Date: 2026-07-12 · Phase: read-only design discovery (no screen designs produce
 ## 6. Themes, tokens, fonts, RTL
 
 - Dark default / light first-class; resolution: explicit `[data-theme]` → OS preference → dark; `ThemeScript` gives no-flash init; `ThemeToggle` persists preference.
-- RTL: `layout.tsx` sets `lang`/`dir` from locale cookie (`/locale?set=ar|en`); astryx.css uses logical properties exclusively, so RTL is structural, not patched; `:lang(ar)` switches font family.
+- RTL: `layout.tsx` sets `lang`/`dir` from locale cookie (`/locale?set=ar|en`); retired-predecessor.css uses logical properties exclusively, so RTL is structural, not patched; `:lang(ar)` switches font family.
 - i18n: server `useT()` with key+fallback, 1516 keys EN/AR, trigger-versioned `ui_strings` in DB, `/admin/localization` Lokalise-style studio, coverage loop scripts. Arabic content is authored but **draft status pending human review**.
 
 ## 7. Web and iPad shells
 
-- **Web shell** — `components/Shell.tsx`: 248px side nav (Arabic wordmark صقيل | صناعي), pagehead (title + context + NotificationBell), `ax-content` column capped at 1440px. Server component; used by all desktop surfaces.
-- **iPad/field shell** — deliberately separate: `/field` routes do NOT use Shell. `components/FieldTabs.tsx` renders a fixed 64px bottom tab bar (dashboard / visits / virtual / sign-out) with a raised center FAB → next actionable visit startup (legacy Senaei DNA); inline stroke glyphs, tokens only, field-height touch targets. Also `components/field/`, field charts, and field-specific control metrics (`--ax-control-height-field: 52px`, `--ax-text-field: 17px`).
+- **Web shell** — `components/Shell.tsx`: 248px side nav (Arabic wordmark صقيل | صناعي), pagehead (title + context + NotificationBell), `legacy-content` column capped at 1440px. Server component; used by all desktop surfaces.
+- **iPad/field shell** — deliberately separate: `/field` routes do NOT use Shell. `components/FieldTabs.tsx` renders a fixed 64px bottom tab bar (dashboard / visits / virtual / sign-out) with a raised center FAB → next actionable visit startup (legacy Senaei DNA); inline stroke glyphs, tokens only, field-height touch targets. Also `components/field/`, field charts, and field-specific control metrics (`--legacy-control-height-field: 52px`, `--legacy-text-field: 17px`).
 - The catalogue's `/ipad/*` routes are **route aliases** onto `/field/*` (reconciliation matrix) — logical screens live as modes inside consolidated routes.
 
 ## 8. Components to PRESERVE (behavior + identity)
 
 - `tokens.css` palette/type/spacing law and the "raw values only in tokens" rule (MVP1-FND-010).
 - Shell nav semantics, role routing (`/launch`), middleware auth, `/signout`, `/locale`.
-- `offline.ts` outbox engine and `ax-sync` state language (queued/syncing/synced/failed/conflicted).
+- `offline.ts` outbox engine and `legacy-sync` state language (queued/syncing/synced/failed/conflicted).
 - `GeoMap.tsx` (reusable Leaflet geofence map), `sau.geo.json`, theme-aware CARTO tiles, `SaqeelHero` offline fallback.
 - `Startup.tsx` geolocation/journey logic; `Workspace.tsx` autosave/section/blocker engine; `ImageAnnotator.tsx` compression+annotation; `SignaturePad`, `FactoryVerification`.
 - `Room.tsx` OTP/state/audit orchestration (video adapter pending — keep truthful).
-- Reviews immutable decision controls, `ax-banner--immutable`, `ax-conflict` resolution pattern, `ax-version` chips.
+- Reviews immutable decision controls, `legacy-banner--immutable`, `legacy-conflict` resolution pattern, `legacy-version` chips.
 - Login v4 "inspection story" (accepted 2026-07-12, G10-verified 19/19) — do not redesign.
 - FieldTabs bottom bar + FAB pattern; NotificationBell with per-channel "provider pending" truthfulness.
 
@@ -65,7 +65,7 @@ Date: 2026-07-12 · Phase: read-only design discovery (no screen designs produce
 
 - **Shell/pagehead consistency**: page header, breadcrumbs, commandbar/filter placement, and action placement vary per route; no role-aware nav trimming.
 - **Consolidated-route legibility** (UX-BS-005/012): explicit in-route modes for regulation detail (ADM-011), package designer (ADM-031), penalty mapping (ADM-041), workflow designer (ADM-051), plan configure/review (WEB-140/150), review compare (WEB-320), evidence/findings/submit/returned modes (IPAD-640–670), virtual appointment/verify/session (VIR-700–720).
-- **State coverage**: empty/loading/unauthorized/partial-service/offline/stale/conflict/retry states exist unevenly (`ax-state`, `ax-widget__fallback`, `ax-freshness` are present but not systematically applied — UX-BS-013).
+- **State coverage**: empty/loading/unauthorized/partial-service/offline/stale/conflict/retry states exist unevenly (`legacy-state`, `legacy-widget__fallback`, `legacy-freshness` are present but not systematically applied — UX-BS-013).
 - **Truthfulness surfaces**: persistent "Projected route" labeling on `/operations/live` (UX-BS-003), centroid-circle disclosure on GIS zones (UX-BS-007), map tile unavailable/attribution states (UX-BS-006).
 - **Evidence chain-of-custody** presentation (UX-BS-010); review density and returned-scope comprehension (UX-BS-012).
 - **Accessibility/RTL audit breadth** (UX-BS-008) and light-theme contrast passes.
@@ -74,7 +74,7 @@ Date: 2026-07-12 · Phase: read-only design discovery (no screen designs produce
 ## 10. Consolidation / replacement candidates
 
 - Duplicate `DecisionPanel.tsx` at `reviews/` and `reviews/[id]/` — verify divergence, consolidate.
-- Two map presentation systems: stylized SVG map chrome (`ax-map__scene` m-* classes) vs real Leaflet maps — unify the visual chrome contract.
+- Two map presentation systems: stylized SVG map chrome (`legacy-map__scene` m-* classes) vs real Leaflet maps — unify the visual chrome contract.
 - Glyph-in-CSS-content status indicators → proper icon elements (screen-reader + RTL safety).
 - `SCR-ADM-080` Notifications/SLA rules: **requires_design_reconciliation** — catalogue route has no dedicated implementation (folded into `/admin`); design must define the surface without inventing a provider.
 - `DemoAccess.tsx` on login (UX-BS-009): needs demo-gated vs production-removed variants.

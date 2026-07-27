@@ -1,7 +1,7 @@
 # MIM Inspection Platform — Build Plan (real delivery)
 
 Authorized 2026-07-11 (HUMAN_APPROVALS.yaml: G5 PASS · G6 accepted · build authorized).
-Stack per DEC-010: Next.js/React/TS (`apps/web`) · offline-first PWA for iPad · Supabase (Postgres/Auth/Storage/Realtime, RLS = RBAC matrix). Design authority: `design/astryx/*` — every screen implements its frame 1:1. Acceptance contract non-negotiable: each slice certifies against its AC rows + EV proofs before "done".
+Stack per DEC-010: Next.js/React/TS (`apps/web`) · offline-first PWA for iPad · Supabase (Postgres/Auth/Storage/Realtime, RLS = RBAC matrix). Design authority: `design/retired-predecessor/*` — every screen implements its frame 1:1. Acceptance contract non-negotiable: each slice certifies against its AC rows + EV proofs before "done".
 
 ## Phases to completion (9 build slices after today's B1 start)
 

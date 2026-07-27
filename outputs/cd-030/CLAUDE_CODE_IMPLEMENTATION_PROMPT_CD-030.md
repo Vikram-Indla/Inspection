@@ -10,7 +10,7 @@ You are Claude Code. Implement the sponsor-approved slice of CD-030 / SCR-WEB-32
 - If sponsor design approval or the independent Codex wiring audit is not recorded, STOP.
 
 ## 1. Read first
-Approved design CD-030 Version Comparison.dc.html and every file in outputs/cd-030-r1/. Re-read runtime truth: reviews/[id]/page.tsx (version selection + stored-answer diff), DecisionPanel/actions, reviews.returned_sections, review/audit migrations, submission_versions, Shell.tsx, ShellClient.tsx, shell-navigation.ts, astryx.css, tokens.css. Record branch/commit/dirty state.
+Approved design CD-030 Version Comparison.dc.html and every file in outputs/cd-030-r1/. Re-read runtime truth: reviews/[id]/page.tsx (version selection + stored-answer diff), DecisionPanel/actions, reviews.returned_sections, review/audit migrations, submission_versions, Shell.tsx, ShellClient.tsx, shell-navigation.ts, retired-predecessor.css, tokens.css. Record branch/commit/dirty state.
 
 ## 2. Implement only the approved slice
 - Build the route-neutral compare mode and the Tamper-evident Scope Rail: classify each changed answer against reviews.returned_sections (stored) into expected / unexpected (locked-section) / unchanged / unavailable. Never infer scope from the diff; never label an uncomputed category 'unchanged'.

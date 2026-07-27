@@ -57,7 +57,7 @@ Fix this integration break as the first P0. Do not hide it with type suppression
 - Invalid authentication denies safely without mutation.
 - Password reset remains anti-enumeration safe and retains audit behavior.
 - Arabic/English, RTL/LTR, dark/light, theme toggle, focus visibility, and responsive behavior remain supported.
-- All visual values use existing Saqeel/Astryx tokens. Do not introduce a second design system or raw colors in route/component CSS.
+- All visual values use existing Saqeel/retired predecessor tokens. Do not introduce a second design system or raw colors in route/component CSS.
 - The public page never implies live inspectors, live telemetry, actual factory status, actual risk, actual violations, actual SLA, or actual workload.
 
 ## Build the atlas as five layers

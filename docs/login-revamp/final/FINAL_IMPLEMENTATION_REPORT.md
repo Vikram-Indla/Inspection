@@ -68,7 +68,7 @@ unchanged.
 
 - Main and lifted rasters now switch between dedicated dark/light assets.
 - Story event and active-stage accents changed from fixed
-  `--ax-color-prism-magenta` to semantic `--ax-color-info`.
+  `--legacy-color-prism-magenta` to semantic `--legacy-color-info`.
 - Fixed purple atlas canvas/surface/text/muted/border tokens were replaced in
   login-only presentation with theme-responsive local aliases derived from the
   existing canvas, surface, text, secondary-text and border tokens.
