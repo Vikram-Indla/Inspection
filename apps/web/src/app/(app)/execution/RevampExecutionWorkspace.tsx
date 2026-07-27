@@ -319,7 +319,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
         </section>
       )}
       {selected ? (
-        <div ref={detailDialogRef} className="sq-execution__drawer" role="dialog" aria-modal="true" aria-labelledby="execution-detail-title">
+        <div ref={detailDialogRef} className="sq-execution__drawer" role="dialog" aria-modal="true" aria-labelledby="execution-detail-title" aria-busy={selectedDetail === null}>
           <button ref={detailCloseRef} type="button" aria-label={copy(locale, "Close visit details", "إغلاق تفاصيل الزيارة")} onClick={() => setSelected(null)}>×</button>
           <p className="sq-overline">{copy(locale, "Execution visit", "زيارة التنفيذ")}</p>
           <h2 id="execution-detail-title">{selected.factory}</h2>
@@ -357,11 +357,11 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
               : copy(locale, "No journey session recorded. Live tracking remains unavailable in this Web view.", "لا توجد جلسة رحلة مسجلة. يظل التتبع المباشر غير متاح في عرض الويب هذا.")}</dd></div>
             <div><dt>{copy(locale, "Offline and queued actions", "العمل دون اتصال والإجراءات المعلّقة")}</dt><dd>{copy(locale, "Unavailable in this Web read model; open the assigned Field workspace.", "غير متاح في نموذج القراءة على الويب؛ افتح مساحة العمل الميدانية المسندة.")}</dd></div>
           </dl>
-          {selected.inspectorId === currentUserId ? (
-            <a className="sq-btn" href={`/field/${selected.id}`}>{selected.operationalState === "new" ? copy(locale, "Prepare in Field workspace", "التحضير في مساحة العمل الميدانية") : copy(locale, "Open Field workspace", "فتح مساحة العمل الميدانية")}</a>
-          ) : (
-            <a className="sq-btn" href={`/visits/${selected.id}`}>{copy(locale, "Open governed visit details", "فتح تفاصيل الزيارة المعتمدة")}</a>
-          )}
+          {selectedDetail?.status === "ok" ? selected.inspectorId === currentUserId ? (
+              <a className="sq-btn" href={`/field/${selected.id}`}>{selected.operationalState === "new" ? copy(locale, "Prepare in Field workspace", "التحضير في مساحة العمل الميدانية") : copy(locale, "Open Field workspace", "فتح مساحة العمل الميدانية")}</a>
+            ) : (
+              <a className="sq-btn" href={`/visits/${selected.id}`}>{copy(locale, "Open governed visit details", "فتح تفاصيل الزيارة المعتمدة")}</a>
+            ) : null}
           <button className="sq-btn sq-btn--secondary" type="button" onClick={() => setSelected(null)}>{copy(locale, "Close", "إغلاق")}</button>
         </div>
       ) : null}
