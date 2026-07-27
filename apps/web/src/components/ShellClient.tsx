@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
+import SaqeelBrandMark from "@/components/SaqeelBrandMark";
 import ShellNavIcon from "@/components/ShellNavIcon";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
@@ -540,8 +541,13 @@ export default function ShellClient({
               which is an isolated document: it cannot reach the page webfonts,
               so both scripts fell back to system faces and were forced onto one
               baseline. That is what made the wordmark sit wrong. */}
+          {/* Inline, not <img src="/saqeel-favicon.svg">. That asset bakes its own
+              opaque plate and two literal hexes for browser-tab contrast, so on
+              the rail it stacked a second plate inside the brand container and
+              its green could not match --action-primary. The canonical mark
+              inherits currentColor and tracks the theme. */}
           <span className="sq-shell__brand-mark" aria-hidden="true">
-            <img src="/saqeel-favicon.svg" alt="" width={22} height={22} />
+            <SaqeelBrandMark />
           </span>
           <span className="sq-shell__brand-name">
             <span className="sq-shell__brand-ar" lang="ar">صقيل</span>
