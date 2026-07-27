@@ -1,14 +1,16 @@
 import Shell, { preloadShell } from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
-import FactoryList, { type FactoryRow, type FactoryListStrings } from "./FactoryList";
 import EmptyState from "@/components/EmptyState";
 import RevampFactory360Portfolio, { type RevampFactoryRow } from "./RevampFactory360Portfolio";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { resolveFactory360Permissions } from "@/lib/factory360/dossier";
 
 // SCR-WEB-400 / M07-001 — factory registry (Factory 360 entry point).
-export default async function Factories() {
+export default async function Factories({ searchParams }: {
+  searchParams: Promise<{ cr?: string }>;
+}) {
+  const { cr: requestedCr } = await searchParams;
   preloadShell("/factories");
   const { t, locale } = await useT();
   const sb = await supabaseServer();
@@ -36,38 +38,6 @@ export default async function Factories() {
       dossier_href: commercialRegistrationId ? `/factories/cr/${commercialRegistrationId}` : `/factories/${row.id}`,
     };
   });
-  const listStrings: FactoryListStrings = {
-    regionLabel: t("f360.list.region", "Region"),
-    allRegions: t("f360.list.allRegions", "All regions"),
-    // FNS-107 — city filter. "City" term: register HT-025 (المدينة). allCities generic (draft).
-    cityLabel: t("f360.list.city", "City"),
-    allCities: t("f360.list.allCities", "All cities"),
-    // FNS-103/104 — licensed/unlicensed. "Unlicensed": register EM-002 (غير مرخصة);
-    // "Licensed": register EM-103 term (مرخصة). Group aria + "All" have no register row (draft).
-    licenseGroupAria: t("f360.list.license.groupAria", "Filter by license status"),
-    licenseAll: t("f360.list.license.all", "All"),
-    licensed: t("f360.list.license.licensed", "Licensed"),
-    unlicensed: t("f360.list.license.unlicensed", "Unlicensed"),
-    of: t("f360.list.of", "of"),
-    factoriesWord: t("f360.list.factoriesWord", "factories"),
-    emptyRegionTitle: t("f360.list.emptyRegion.title", "No factories in this region"),
-    emptyRegionDesc: t("f360.list.emptyRegion.desc", "Clear the filter to see the full Factory list."),
-    thFactory: t("f360.list.th.factory", "Factory"),
-    thCr: t("f360.list.th.cr", "CR"),
-    thRegion: t("f360.list.th.region", "Region"),
-    thCity: t("f360.list.th.city", "City"),
-    thRisk: t("f360.list.th.risk", "Risk"),
-    dossier: t("f360.list.dossier", "View factory"),
-    portfolioLabel: t("f360.list.portfolio", "Factory portfolio"),
-    licensedCountLabel: t("f360.list.licensedCount", "Licensed factories"),
-    unlicensedCountLabel: t("f360.list.unlicensedCount", "Unlicensed establishments"),
-    regionsCountLabel: t("f360.list.regionsCount", "Regions represented"),
-    bandLabels: {
-      high: t("enum.high", "high"),
-      medium: t("enum.medium", "medium"),
-      low: t("enum.low", "low"),
-    },
-  };
   const isEmpty = factoryRows.length === 0;
   const portfolioRows: RevampFactoryRow[] = factoryRows.map(row => ({
     id: row.id,
@@ -83,7 +53,13 @@ export default async function Factories() {
     dossier_href: row.dossier_href,
     license: row.industrial_licenses?.[0] ?? null,
   }));
-  const selectedCr = portfolioRows[0]?.cr_number ?? "";
+  const crNumbers = [...new Set(portfolioRows.map(row => row.cr_number).filter(Boolean))];
+  // CR-410/411/412 · WA-M4-AC-001 — the portfolio is CR-centred. Query state
+  // selects one authorized CR without adding a route or accepting an arbitrary
+  // identifier. An invalid/stale query falls back to the first RLS-visible CR.
+  const selectedCr = requestedCr && crNumbers.includes(requestedCr)
+    ? requestedCr
+    : crNumbers[0] ?? "";
   const selectedPortfolio = portfolioRows.filter(row => row.cr_number === selectedCr);
   return (
     <Shell current="/factories" title="">
@@ -92,12 +68,25 @@ export default async function Factories() {
         <EmptyState glyph="🏭" title={t("f360.empty.title", "No factories in the list")}
           body={t("f360.empty.desc", "Factory identity records sync from the national source (M07-002).")} />
       )}
-      {!error && !isEmpty && <RevampFactory360Portfolio
-        factories={selectedPortfolio}
-        crNumber={selectedCr || "—"}
-        canCreateInspection={permissions["create_inspection"]}
-        locale={locale}
-      />}
+      {!error && !isEmpty && <>
+        <form method="get" className="sq-surface sq-row" aria-label={t("f360.list.portfolio", "Factory portfolio")}>
+          <div className="sq-field">
+            <label className="sq-field__label" htmlFor="factory-cr-filter">{t("f360.list.th.cr", "CR")}</label>
+            <select id="factory-cr-filter" className="sq-select" name="cr" defaultValue={selectedCr}>
+              {crNumbers.map(crNumber => <option key={crNumber} value={crNumber}>{crNumber}</option>)}
+            </select>
+          </div>
+          <button className="sq-btn sq-btn--secondary" type="submit">{t("f360.list.dossier", "View factory")}</button>
+          <span className="sq-caption"><span className="sq-numeric">{crNumbers.length}</span> {t("f360.list.of", "of")} {t("f360.list.factoriesWord", "factories")}</span>
+        </form>
+        <RevampFactory360Portfolio
+          key={selectedCr}
+          factories={selectedPortfolio}
+          crNumber={selectedCr || "—"}
+          canCreateInspection={permissions["create_inspection"]}
+          locale={locale}
+        />
+      </>}
     </Shell>
   );
 }
