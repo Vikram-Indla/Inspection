@@ -1,15 +1,42 @@
 import { expect, test } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
+import { isInvalidRefreshToken } from "../src/lib/auth/refresh-token-error";
 
 const middlewarePath = path.join(process.cwd(), "src", "middleware.ts");
 
 test.describe("PLN-AUTH-RECOVERY-P1-007 — stale session recovery contract", () => {
+  test("classifies the Supabase stale-refresh error variants", () => {
+    expect(isInvalidRefreshToken({
+      code: "refresh_token_not_found",
+      message: "Invalid Refresh Token: Refresh Token Not Found",
+    })).toBe(true);
+    expect(isInvalidRefreshToken({
+      code: "validation_failed",
+      message: "Refresh token is not valid",
+    })).toBe(true);
+    expect(isInvalidRefreshToken({
+      code: "validation_failed",
+      message: "Invalid refresh token",
+    })).toBe(true);
+  });
+
+  test("does not classify unrelated validation or authentication failures", () => {
+    expect(isInvalidRefreshToken({
+      code: "validation_failed",
+      message: "Password is not valid",
+    })).toBe(false);
+    expect(isInvalidRefreshToken({
+      code: "unexpected_failure",
+      message: "Access token is not valid",
+    })).toBe(false);
+    expect(isInvalidRefreshToken(null)).toBe(false);
+  });
+
   test("clears stale Supabase auth cookies and redirects protected pages to login", () => {
     const source = fs.readFileSync(middlewarePath, "utf8");
 
-    expect(source).toContain('code === "refresh_token_not_found"');
-    expect(source).toMatch(/invalid refresh token\|refresh token not found/i);
+    expect(source).toContain("isInvalidRefreshToken(claimsError)");
     expect(source).toContain('name.startsWith("sb-") && name.includes("-auth-token")');
     expect(source).toContain('response.cookies.set(name, "", { path: "/", maxAge: 0 })');
     expect(source).toContain('loginUrl.pathname = "/login"');

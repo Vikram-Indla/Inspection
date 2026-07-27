@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { isInvalidRefreshToken } from "@/lib/auth/refresh-token-error";
 
 const PROTECTED_PAGE_PREFIXES = [
   "/dashboard",
@@ -18,15 +19,6 @@ const PROTECTED_PAGE_PREFIXES = [
   "/profile",
   "/reports",
 ];
-
-function isInvalidRefreshToken(error: unknown): boolean {
-  if (!error || typeof error !== "object") return false;
-  const candidate = error as { code?: unknown; message?: unknown };
-  const code = typeof candidate.code === "string" ? candidate.code : "";
-  const message = typeof candidate.message === "string" ? candidate.message : "";
-  return code === "refresh_token_not_found"
-    || /invalid refresh token|refresh token not found/i.test(message);
-}
 
 function clearSupabaseAuthCookies(request: NextRequest, response: NextResponse): void {
   request.cookies.getAll()
