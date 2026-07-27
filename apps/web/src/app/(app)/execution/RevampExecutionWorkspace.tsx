@@ -12,6 +12,7 @@ export type ExecutionRow = {
   visitReference: string;
   factoryId: string | null;
   factory: string;
+  factoryCode: string | null;
   crNumber: string | null;
   windowStart: string;
   windowEnd: string;
