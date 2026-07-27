@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
+import path from "node:path";
 import { PERSONAS, type PersonaKey } from "./personas";
 
 const OWNED_DESTINATIONS = [
@@ -52,13 +53,12 @@ const RECORD_SURFACES = [
   { route: "/admin/integrations", selector: "table tbody tr[aria-haspopup=dialog]" },
 ] as const;
 
-const ADMIN_TITLE_RESOURCE_MIGRATION = readFileSync(
-  new URL(
-    "../../../supabase/migrations/20260727130000_admin_revamp_title_ar_strings.sql",
-    import.meta.url,
-  ),
-  "utf8",
-);
+const webRoot = path.resolve(__dirname, "..");
+const repoRoot = path.resolve(webRoot, "../..");
+const ADMIN_TITLE_RESOURCE_MIGRATION = readFileSync(path.join(
+  repoRoot,
+  "supabase/migrations/20260727130000_admin_revamp_title_ar_strings.sql",
+), "utf8");
 
 test.use({ storageState: { cookies: [], origins: [] } });
 
