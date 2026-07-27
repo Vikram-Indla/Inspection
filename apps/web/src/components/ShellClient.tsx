@@ -114,6 +114,10 @@ export default function ShellClient({
   const [dateTo, setDateTo] = useState(initialDates.to);
   const [regionScope, setRegionScope] = useState("");
   const [pendingHref, setPendingHref] = useState<string | null>(null);
+  // The source design treats a compact/mobile drawer as fully expanded even
+  // when the persisted desktop preference is collapsed. Keeping the raw
+  // preference on the root leaked the desktop-only expand row into the drawer.
+  const effectiveCollapsed = collapsed && !compactNavigation;
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(groups.map(group => [
       group.id,
@@ -409,14 +413,18 @@ export default function ShellClient({
     setQuery("");
   }
 
-  function renderNavItem(item: ShellClientNavGroup["items"][number], child = false) {
+  function renderNavItem(
+    item: ShellClientNavGroup["items"][number],
+    child = false,
+    showIcon = true,
+  ) {
     const className = `ax-nav-item${child ? " ax-nav-item--child" : ""}${item.enabled ? "" : " is-disabled"}`;
     if (!item.enabled) {
       const accessibleLabel = `${item.label}. ${item.disabledReason ?? ""}`.trim();
       return (
         <span key={item.id} className={className} role="link" aria-disabled="true" aria-label={accessibleLabel}
           title={`${item.label} — ${item.disabledReason ?? ""}`.trim()} tabIndex={0} data-nav-state="disabled">
-          <span className="ax-nav-icon"><Icon name={item.icon} /></span>
+          {showIcon ? <span className="ax-nav-icon"><Icon name={item.icon} /></span> : null}
           <span className="ax-nav-label">{item.label}</span>
           {item.badge ? <span className="ax-badge ax-badge--critical ax-nav-badge">{item.badge}</span> : null}
           <span className="ax-nav-lock" aria-hidden="true">
@@ -427,11 +435,11 @@ export default function ShellClient({
       );
     }
     return (
-      <Link key={item.id} className={className} aria-label={collapsed ? item.label : undefined}
+      <Link key={item.id} className={className} aria-label={effectiveCollapsed ? item.label : undefined}
         aria-current={isShellRouteCurrent(current, item.href) ? "page" : undefined}
         href={item.href} title={item.label} onClick={closeAfterNavigate} data-nav-state="enabled"
         data-next-spa="true" prefetch={false}>
-        <span className="ax-nav-icon"><Icon name={item.icon} /></span>
+        {showIcon ? <span className="ax-nav-icon"><Icon name={item.icon} /></span> : null}
         <span className="ax-nav-label">{item.label}</span>
         {item.badge ? <span className="ax-badge ax-badge--critical ax-nav-badge">{item.badge}</span> : null}
       </Link>
@@ -441,17 +449,21 @@ export default function ShellClient({
   function renderNavGroup(group: ShellClientNavGroup) {
     const groupOpen = openGroups[group.id] ?? true;
     const isAdministration = group.id === "administration";
+    const groupActive = isAdministration
+      && group.items.some(item => isShellRouteCurrent(current, item.href));
     return (
       <section className={`ax-nav-group${isAdministration ? " ax-nav-group--pinned" : ""}`} data-nav-group={group.id} key={group.id}>
-        <button className={`ax-nav-group__trigger${isAdministration ? " is-administration" : ""}`} type="button" aria-label={group.label} aria-expanded={groupOpen}
+        <button className={`ax-nav-group__trigger${isAdministration ? " is-administration" : ""}${groupActive ? " is-active" : ""}`} type="button" aria-label={group.label} aria-expanded={groupOpen}
           aria-controls={`nav-group-${group.id}`}
+          data-current={groupActive ? "true" : undefined}
           onClick={() => setOpenGroups(value => ({ ...value, [group.id]: !groupOpen }))}>
           {isAdministration ? <span className="ax-nav-icon"><Icon name="admin" /></span> : null}
-          <span className="ax-nav-label">{group.label}</span><svg className="ax-nav-group__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
+          <span className="ax-nav-label">{group.label}</span>
+          <span className="ax-nav-group__chevron" aria-hidden="true">›</span>
         </button>
         <div id={`nav-group-${group.id}`} hidden={!groupOpen}>
           {group.items.map((item, index) => {
-            if (isAdministration) return renderNavItem(item, true);
+            if (isAdministration) return renderNavItem(item, true, false);
             if (!item.parentId) return renderNavItem(item);
             if (group.items.findIndex(candidate => candidate.parentId === item.parentId) !== index) return null;
             const children = group.items.filter(candidate => candidate.parentId === item.parentId);
@@ -504,7 +516,7 @@ export default function ShellClient({
   }
 
   return (
-    <div className={`ax-shell${collapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}${pendingHref ? " is-navigating" : ""}`}
+    <div className={`ax-shell${effectiveCollapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}${pendingHref ? " is-navigating" : ""}`}
       aria-busy={pendingHref ? "true" : undefined} onClickCapture={handleShellNavigation}>
       {pendingHref ? <div className="ax-route-progress" role="status"><span className="ax-sr-only">{strings.loadingDestination}</span></div> : null}
       <a className="ax-shell__skip" href="#main-content">{strings.skipToContent}</a>
@@ -539,7 +551,7 @@ export default function ShellClient({
           <button className="ax-shell__close" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
           </button>
-          <button className="ax-shell__collapse" type="button" onClick={toggleCollapsed} aria-label={collapsed ? strings.expand : strings.collapse} aria-expanded={!collapsed}>
+          <button className="ax-shell__collapse" type="button" onClick={toggleCollapsed} aria-label={effectiveCollapsed ? strings.expand : strings.collapse} aria-expanded={!effectiveCollapsed}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
           </button>
         </div>

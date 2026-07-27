@@ -91,6 +91,51 @@ this worktree on `127.0.0.1:3040` verified that protected `/admin/access`
 redirects to the real `/login` boundary. There was no already-authenticated
 browser session available for a protected-row demonstration.
 
+## Pinned Administration navigation parity correction
+
+The Product Owner rejected the duplicate-chevron and icon-heavy pinned
+Administration presentation. The app was compared directly with:
+
+- `Saqeel Revamp.dc.html` lines 108–130 and 2398–2452;
+- rendered source frames `18-administration-expanded-nav.png`,
+  `44-rail-collapsed-68px.png` and `45-rail-expanded-248px.png`;
+- the source design-system `admin` glyph in `_ds_bundle.js` lines 863–866.
+
+Read-only design-quality review `/root/admin_nav_design_review` produced 22
+scored recommendations. The retained no-functionality-loss top ten were:
+compact expand-row suppression (25/25), effective collapse state (24/25),
+label-only Admin children (25/25), recovered label width (25/25), the source
+single chevron (25/25), exact RTL rotations (25/25), collapsed-parent chevron
+suppression (25/25), active-descendant parent styling (24/25), moving the
+active stripe from child to parent (24/25), and source parent-row geometry
+(24/25). The source design was correct, so no Claude Design revision was
+requested; the implementation was corrected to match it.
+
+The shared shell now:
+
+- treats compact/mobile navigation as expanded even when a collapsed desktop
+  preference is persisted;
+- exposes the standalone expand control only in the true 68px desktop rail;
+- renders the source shield-plus Administration glyph and one rotating `›`;
+- renders all six Administration children as indented label-only rows;
+- places the logical active stripe on the pinned parent while the active child
+  keeps the source tint/weight without a second stripe;
+- preserves every destination, href, guard, refusal boundary, button/ARIA
+  semantics, focus behavior, EN/AR RTL behavior and token-only theming.
+
+Authenticated Chrome evidence on `127.0.0.1:3040/admin/integrations` measured:
+compact drawer `expand-row` display `none`; one visible Administration
+chevron; zero child icons on all six links; no label overflow
+(`scrollWidth === clientWidth` for every link); active parent logical border;
+and active-child pseudo-indicator display `none`. The real integration registry
+and its RLS-visible records remained present throughout the visual check.
+
+Verification: `npm run typecheck` PASS; production `npm run build` PASS with
+59/59 static pages; focused non-credential pinned-Administration contract
+1/1 PASS. The complete shared-shell source file remains 18/20 because two
+pre-existing role-catalogue expectations fail outside this presentation
+change; the focused Administration navigation contracts pass.
+
 ## Pre-existing Control Panel checkpoint evidence
 
 This Revamp evidence is additive. The checkpoint inherited from `b91b8905`

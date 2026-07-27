@@ -519,17 +519,43 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .ax-shell__close { display: none; margin-inline-start: auto; inline-size: var(--ax-control-height); block-size: var(--ax-control-height); border: 1px solid var(--ax-color-border-control); border-radius: var(--ax-radius-small); background: var(--ax-color-surface); color: var(--ax-color-text); cursor: pointer; font-size: 24px; }
 .ax-shell__groups { display: flex; flex: 1; min-block-size: 0; flex-direction: column; gap: 10px; overflow-x: hidden; overflow-y: auto; scrollbar-width: thin; }
 .ax-shell__nav-footer { border-block-start: 1px solid var(--ax-color-border); padding-block-start: 10px; display: flex; flex-direction: column; gap: 2px; flex: 0 0 auto; }
-.ax-shell__expand-row { display: none; }
+.ax-shell__nav-footer .ax-shell__expand-row { display: none; }
 .ax-nav-group { display: flex; flex-direction: column; gap: var(--ax-space-050); }
 .ax-nav-group__trigger { inline-size: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--ax-space-100); padding: 10px 12px 4px; border: 0; background: none; color: var(--ax-color-text-secondary); cursor: pointer; font: 700 11px/14px var(--font-body); letter-spacing: .14em; text-transform: uppercase; text-align: start; border-radius: var(--ax-radius-small); }
-.ax-nav-group--pinned .ax-nav-group__trigger { min-block-size: 34px; padding: 0 8px; color: var(--ax-color-text); font: 500 13px/18px var(--font-body); letter-spacing: 0; text-transform: none; }
+.ax-nav-group--pinned .ax-nav-group__trigger {
+  position: relative;
+  min-block-size: 34px;
+  padding-block: 0;
+  padding-inline: 8px 10px;
+  border-inline-start: 3px solid transparent;
+  color: var(--ax-color-text);
+  font: 500 13.5px/18px var(--font-body);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.ax-nav-group--pinned .ax-nav-group__trigger.is-active {
+  border-inline-start-color: var(--ax-color-primary);
+  background: var(--ax-color-primary-tint);
+  color: var(--ax-color-primary-strong);
+  font-weight: 600;
+}
 /* Arabic has no case and letterforms are cursive — canonical .sidebar-group
    drops the tracking under RTL and so does this. */
 [dir="rtl"] .ax-nav-group__trigger { letter-spacing: 0; }
 .ax-nav-group__trigger:hover { color: var(--ax-color-text); background: var(--ax-color-neutral-tint); }
-.ax-nav-group__chevron { transition: transform var(--ax-motion-fast); }
-.ax-nav-group__trigger[aria-expanded="false"] .ax-nav-group__chevron { transform: rotate(-90deg); }
-[dir="rtl"] .ax-nav-group__trigger[aria-expanded="false"] .ax-nav-group__chevron { transform: rotate(90deg); }
+.ax-nav-group__chevron {
+  display: inline-block;
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+  color: var(--ax-color-text-secondary);
+  font-size: 16px;
+  line-height: 1;
+  transform: rotate(90deg);
+  transition: transform 120ms cubic-bezier(.2, 0, 0, 1);
+}
+.ax-nav-group__trigger[aria-expanded="false"] .ax-nav-group__chevron { transform: rotate(0deg); }
+[dir="rtl"] .ax-nav-group__chevron { transform: rotate(-90deg); }
+[dir="rtl"] .ax-nav-group__trigger[aria-expanded="false"] .ax-nav-group__chevron { transform: rotate(180deg); }
 .ax-nav-item {
   display: flex; align-items: center; gap: var(--ax-nav-gap);
   /* Canonical .nav-item is a fixed 34px row. This shell also serves the iPad
@@ -558,6 +584,8 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
    body-strong. */
 .ax-nav-subgroup__label { display: flex; align-items: center; gap: var(--ax-nav-gap); min-block-size: var(--ax-control-height); padding-inline: var(--ax-nav-pad-inline); color: var(--ax-color-text); font: var(--ax-nav-font); font-weight: 600; }
 .ax-nav-item--child { margin-inline-start: 24px; inline-size: calc(100% - 24px); min-block-size: 32px; font-size: 13px; line-height: 18px; }
+.ax-nav-group--pinned .ax-nav-item--child .ax-nav-label { flex: 1; }
+.ax-nav-group--pinned .ax-nav-item--child[aria-current="page"]::before { display: none; }
 .ax-nav-badge { flex: 0 0 auto; margin-inline-start: auto; }
 .ax-nav-item[aria-current="page"] { background: var(--ax-color-primary-tint); color: var(--ax-color-primary-strong); border-color: transparent; font-weight: 600; box-shadow: none; }
 .ax-nav-item[aria-current="page"]::before { content: ""; position: absolute; inset-block: 6px; inset-inline-start: 0; inline-size: 3px; border-radius: 999px; background: var(--ax-color-primary); }
@@ -579,6 +607,7 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .ax-shell.is-collapsed .ax-nav-label { display: none; }
 .ax-shell.is-collapsed .ax-nav-group__trigger { display: none; }
 .ax-shell.is-collapsed .ax-nav-group--pinned .ax-nav-group__trigger { display: flex; justify-content: center; padding-inline: 0; }
+.ax-shell.is-collapsed .ax-nav-group--pinned .ax-nav-group__chevron { display: none; }
 .ax-shell.is-collapsed .ax-nav-item { justify-content: center; padding-inline: 0; }
 .ax-shell.is-collapsed .ax-nav-subgroup__label {
   display: flex;
@@ -834,6 +863,7 @@ button.ax-shell-scope { cursor: pointer; }
   .ax-shell.is-collapsed .ax-nav-item--child { display: flex; }
   .ax-shell.is-collapsed .ax-nav-lock { display: grid; }
   .ax-shell.is-collapsed .ax-nav-item--child { margin-inline-start: var(--ax-space-300); inline-size: calc(100% - var(--ax-space-300)); }
+  .ax-nav-group--pinned .ax-nav-item--child { min-block-size: var(--ax-control-height); }
   .ax-shell.is-collapsed .ax-nav-lock { display: grid; }
   .ax-shell__close {
     display: grid; place-items: center; flex: 0 0 auto;
@@ -897,6 +927,10 @@ button.ax-shell-scope { cursor: pointer; }
   .admin-hub-grid { grid-template-columns: minmax(0, 1fr); }
   .admin-hub-summary summary { min-block-size: 72px; }
   .admin-all-tools .admin-tool-list { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ax-nav-group__chevron { transition: none; }
 }
 
 /* Command / filter bar */

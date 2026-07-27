@@ -86,10 +86,19 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
 
   test("pinned Administration chrome keeps keyboard and mobile accessibility contracts", () => {
     const source = readFileSync(resolve(__dirname, "../src/components/ShellClient.tsx"), "utf8");
+    const styles = readFileSync(resolve(__dirname, "../src/app/astryx.css"), "utf8");
+    const icons = readFileSync(resolve(__dirname, "../src/components/ShellNavIcon.tsx"), "utf8");
     expect(source).toContain('event.key !== "Escape"');
     expect(source).toContain('className="ax-shell__nav-footer"');
     expect(source).toContain('group.id === "administration"');
     expect(source).toContain("ax-shell__expand-row");
+    expect(source).toContain("const effectiveCollapsed = collapsed && !compactNavigation");
+    expect(source).toContain("renderNavItem(item, true, false)");
+    expect(source).toContain('<span className="ax-nav-group__chevron" aria-hidden="true">›</span>');
+    expect(styles).toContain(".ax-shell__nav-footer .ax-shell__expand-row { display: none; }");
+    expect(styles).toContain(".ax-shell.is-collapsed .ax-nav-group--pinned .ax-nav-group__chevron { display: none; }");
+    expect(styles).toContain('.ax-nav-group--pinned .ax-nav-item--child[aria-current="page"]::before { display: none; }');
+    expect(icons).toContain('admin: <><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/>');
   });
 
   test("dashboard and live operations have distinct active states", () => {
