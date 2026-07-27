@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
+import { getPlanningAccess } from "@/lib/planning/access";
 
 // FIX WAVE F4 — M02-035: plan register. Every visit plan (bulk/single) with
 // method, status, creator, published_at and child-visit count; drill-down per
@@ -20,8 +21,28 @@ type PlanRow = {
 
 export default async function PlanRegister() {
   const { t, locale } = await useT();
+  const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const fmt = (iso: string) => formatDateTime(iso, locale === "ar" ? "ar" : "en");
   const sb = await supabaseServer();
+  const access = await getPlanningAccess(sb, ["planning.view"]);
+  if (access.error) {
+    return (
+      <Shell current="/planning" title={t("plan.register.title", "Visit plans")}>
+        <EmptyState glyph="⚠"
+          title={tr("plan.register.unavailable.title", "Plan register unavailable", "سجل الخطط غير متاح")}
+          body={tr("plan.register.unavailable.body", "Planning access could not be verified (ERR-OPS-001). Nothing was changed. Try again.", "تعذر التحقق من صلاحية التخطيط (ERR-OPS-001). لم يتم تغيير أي بيانات. أعد المحاولة.")} />
+      </Shell>
+    );
+  }
+  if (access.accessClass !== "business_staff" || !access.can("planning.view")) {
+    return (
+      <Shell current="/planning" title={t("plan.register.title", "Visit plans")}>
+        <EmptyState glyph="⛔"
+          title={tr("plan.home.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+          body={tr("plan.register.unauthorized.body", "Viewing visit plans requires an authorized planning capability.", "يتطلب عرض خطط الزيارات صلاحية تخطيط مصرحاً بها.")} />
+      </Shell>
+    );
+  }
   const { data, error } = await sb.from("visit_plans")
     .select("id, method, status, created_at, published_at, profiles(full_name), visits(count)")
     .order("created_at", { ascending: false })

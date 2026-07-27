@@ -6,19 +6,23 @@ import styles from "./BulkViolationForm.module.css";
 export type BulkViolationStrings = {
   searchFactoryLabel: string; searchFactoryPlaceholder: string; selectedCount: string;
   violationLabel: string; violationPlaceholder: string;
+  packageLabel: string; packagePlaceholder: string;
   notesLabel: string; notesPlaceholder: string;
   previewTitle: string; previewBody: string;
   acknowledgeLabel: string; submit: string; submitting: string;
   resultsTitle: string; resultSuccess: string; resultFailed: string;
   partialWarning: string; allSucceeded: string;
+  blockedReason: string;
+  errors: Record<NonNullable<BulkResult["error"]>, string>;
 };
 
 type Factory = { id: string; name: string; factory_code: string | null; cr_number: string | null; region: string | null; city: string | null };
 type ViolationOption = { code: string; title: string; level: string; penalty_ref: string | null };
+type PackageOption = { id: string; label: string };
 
 const fmt = (s: string, vars: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (m, k) => String(vars[k] ?? m));
 
-export default function BulkViolationForm({ factories, violations, strings }: { factories: Factory[]; violations: ViolationOption[]; strings: BulkViolationStrings }) {
+export default function BulkViolationForm({ factories, violations, packages, strings }: { factories: Factory[]; violations: ViolationOption[]; packages: PackageOption[]; strings: BulkViolationStrings }) {
   const [state, formAction, pending] = useActionState<BulkResult, FormData>(issueBulkViolation, {});
   const [requestId, setRequestId] = useState("");
   useEffect(() => { setRequestId(crypto.randomUUID()); }, []);
@@ -26,6 +30,7 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [violationCode, setViolationCode] = useState("");
+  const [packageVersionId, setPackageVersionId] = useState("");
   const [notes, setNotes] = useState("");
   const [acknowledged, setAcknowledged] = useState(false);
 
@@ -43,7 +48,7 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
   }
 
   const chosenViolation = violations.find(v => v.code === violationCode) ?? null;
-  const canSubmit = selected.size > 0 && !!chosenViolation && acknowledged && !pending;
+  const canSubmit = false;
 
   const results = state.results ?? [];
   const successCount = results.filter(r => r.status === "success").length;
@@ -57,6 +62,13 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
         <label className="sq-field" style={{ maxInlineSize: "none" }}>
           <span className="sq-field__label">{strings.searchFactoryLabel}</span>
           <input className="sq-input" value={query} onChange={e => setQuery(e.target.value)} placeholder={strings.searchFactoryPlaceholder} />
+        </label>
+        <label className="sq-field" style={{ maxInlineSize: "none" }}>
+          <span className="sq-field__label">{strings.packageLabel}</span>
+          <select className="sq-select" name="package_version_id" value={packageVersionId} onChange={e => setPackageVersionId(e.target.value)}>
+            <option value="">{strings.packagePlaceholder}</option>
+            {packages.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
+          </select>
         </label>
         <p className="t-caption numeric">{fmt(strings.selectedCount, { n: selected.size })}</p>
         <div className="stack" style={{ gap: "var(--space-1)", maxBlockSize: 320, overflow: "auto" }}>
@@ -94,7 +106,10 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
         </section>
       )}
 
-      {state.error && <div className="sq-banner sq-banner--critical" role="alert"><div>{state.error}</div></div>}
+      {state.error && <div className="sq-banner sq-banner--critical" role="alert"><div>{strings.errors[state.error]}</div></div>}
+      <div className="sq-banner sq-banner--warning" role="status">
+        <div>{strings.blockedReason}</div>
+      </div>
 
       {results.length > 0 && (
         <section className="panel stack" style={{ padding: "var(--space-6)" }}>
@@ -114,7 +129,7 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
         </section>
       )}
 
-      <button type="submit" className={`btn btn-primary btn-field ${styles.submit}`} aria-disabled={!canSubmit} disabled={!canSubmit}>
+      <button type="submit" className={`btn btn-primary btn-field ${styles.submit}`} aria-disabled={!canSubmit} disabled={!canSubmit} title={strings.blockedReason}>
         {pending ? strings.submitting : strings.submit}
       </button>
     </form>

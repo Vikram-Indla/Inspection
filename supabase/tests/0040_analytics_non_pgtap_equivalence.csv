@@ -1,0 +1,34 @@
+replacement_id,original_0038_lines,original_assertion,replacement_0040_label,equivalence
+NP38-001,4-6,has_function aggregate RPC exists,01 aggregate RPC exists,to_regprocedure existence
+NP38-002,7-9,anon function_privs_are empty,02 anonymous has no execute,negative has_function_privilege
+NP38-003,10-12,authenticated EXECUTE,03 authenticated may invoke,positive has_function_privilege
+NP38-004,13-15,function language plpgsql,04 function is plpgsql,pg_proc plus pg_language
+NP38-005,16-18,function returns record,05 returns bounded records,pg_proc prorettype
+NP38-006,20-21,not SECURITY DEFINER,06 not SECURITY DEFINER,pg_proc prosecdef
+NP38-007,22-23,STABLE volatility,07 stable,pg_proc provolatile
+NP38-008,24-25,pinned search_path,08 pinned search_path,pg_proc proconfig
+NP38-009,27-28,invalid period token,09 rejects inverted period,pg_get_functiondef token
+NP38-010,29-30,invalid method token,10 rejects method,pg_get_functiondef token
+NP38-011,31-32,invalid group token,11 rejects group,pg_get_functiondef token
+NP38-012,33-34,invalid status token,12 rejects status,pg_get_functiondef token
+NP38-013,35-38,no service_role path,13 no service-role path,pg_get_functiondef negative match
+NP38-014,39-40,region denial token,14 region isolation,pg_get_functiondef token
+NP38-015,41-42,inspector excluded,15 inspector excluded,pg_get_functiondef negative match
+NP38-016,92-93,region throws 42501,16 region denial,explicit dynamic SQL exception assertion
+NP38-017,94,planless immediate value 1,17 planless immediate,IS NOT DISTINCT FROM scalar
+NP38-018,95,decision grouping count 1,18 one decision row,scalar count equality
+NP38-019,96,decision metric key,19 decision output,scalar equality
+NP38-020,97,compliance metric key,20 compliance output,scalar equality
+NP38-021,98-100,formula 1/2/50.0,21 formula exact,row IS NOT DISTINCT FROM
+NP38-022,101-103,zero denominator tuple,22 zero denominator,row IS NOT DISTINCT FROM
+NP38-023,104,review status not applicable visit metric,23 domain isolation,scalar equality
+NP38-024,105-107,visit returned tuple,24 visit returned domain,row IS NOT DISTINCT FROM
+NP38-025,108,latest returned count 1,25 latest precedes filter,JSON scalar equality
+NP38-026,109,visit status not applicable review metric,26 domain isolation,scalar equality
+NP38-027,110,deterministic order,27 deterministic order,array equality
+NP38-028,112-114,leadership assignment unavailable,28 leadership unavailable,row IS NOT DISTINCT FROM
+NP38-029,115-116,legacy returned throws,29 returned fails closed,explicit dynamic SQL exception assertion
+NP38-030,117-118,legacy under_review throws,30 under_review fails closed,explicit dynamic SQL exception assertion
+NP38-031,120-122,planner review unavailable,31 planner unavailable,row IS NOT DISTINCT FROM
+NP39-001,1-44,0039 non-pgTAP catalog/security assertions,0039 unchanged,already DO/RAISE transactional
+NP39-002,46-359,0039 behavioral fixtures and assertions,0039 unchanged,already explicit exception assertions with final rollback

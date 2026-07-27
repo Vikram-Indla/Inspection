@@ -26,9 +26,11 @@ export type RevampFactoryRow = {
 
 const titleCase = (value: string | null) => value ? value.replaceAll("_", " ").replace(/\b\w/g, letter => letter.toUpperCase()) : "—";
 
-export default function RevampFactory360Portfolio({ factories, crNumber }: {
+export default function RevampFactory360Portfolio({ factories, crNumber, canCreateInspection, locale }: {
   factories: RevampFactoryRow[];
   crNumber: string;
+  canCreateInspection: boolean;
+  locale: "en" | "ar";
 }) {
   const [selectedId, setSelectedId] = useState(factories[0]?.id ?? "");
   const selected = factories.find(factory => factory.id === selectedId) ?? factories[0];
@@ -48,7 +50,7 @@ export default function RevampFactory360Portfolio({ factories, crNumber }: {
     <div className="sq-f360">
       <aside className="sq-f360__portfolio">
         <section className="sq-f360__summary">
-          <span>Portfolio · CR {crNumber}</span>
+          <span>Portfolio · CR <bdi>{crNumber}</bdi></span>
           <div>{summary.map(([value, label, tone]) => (
             <div key={label} data-tone={tone}><strong>{value}</strong><small>{label}</small></div>
           ))}</div>
@@ -58,8 +60,8 @@ export default function RevampFactory360Portfolio({ factories, crNumber }: {
             aria-pressed={factory.id === selected.id} onClick={() => setSelectedId(factory.id)}>
             <strong>{factory.name}</strong>
             <dl>
-              <div><dt>Licence</dt><dd>{factory.license?.license_number ?? "—"}</dd></div>
-              <div><dt>Plant</dt><dd>{factory.license?.plant_number ?? "—"}</dd></div>
+              <div><dt>Licence</dt><dd><bdi>{factory.license?.license_number ?? "—"}</bdi></dd></div>
+              <div><dt>Plant</dt><dd><bdi>{factory.license?.plant_number ?? "—"}</bdi></dd></div>
               <div><dt>Type</dt><dd>{titleCase(factory.license?.license_type ?? factory.activity_class)}</dd></div>
               <div><dt>Stage</dt><dd>{titleCase(factory.license?.stage ?? factory.license?.status ?? null)}</dd></div>
               <div><dt>Compliance</dt><dd>—</dd></div>
@@ -74,20 +76,21 @@ export default function RevampFactory360Portfolio({ factories, crNumber }: {
         <section className="sq-f360__hero">
           <div>
             <h1>{selected.name}</h1>
-            <p>{selected.factory_code} · CR {selected.cr_number} · {[selected.region, selected.city].filter(Boolean).join(" / ") || "Location unavailable"}</p>
+            <p><bdi>{selected.factory_code}</bdi> · CR <bdi>{selected.cr_number}</bdi> · {[selected.region, selected.city].filter(Boolean).join(" / ") || "Location unavailable"}</p>
             <span>Opened from Factory 360</span>
             <span>Reason · portfolio selection</span>
           </div>
           <nav>
-            <a href={`/planning/single?cr=${encodeURIComponent(selected.cr_number)}`}>Create inspection</a>
+            {canCreateInspection && <a href={`/planning/single?cr=${encodeURIComponent(selected.cr_number)}`}>Create inspection</a>}
             <a href={`/operations?region=${encodeURIComponent(selected.region ?? "")}`}>View on map</a>
             <a href={selected.dossier_href}>Open full dossier</a>
           </nav>
+          {canCreateInspection && <p role="status">Inspection submission remains unavailable while DEC-032 is unresolved.</p>}
           <dl>
-            <div><dt>Industrial licence</dt><dd>{selected.license?.license_number ?? "—"}</dd></div>
-            <div><dt>Plant number</dt><dd>{selected.license?.plant_number ?? "—"}</dd></div>
+            <div><dt>Industrial licence</dt><dd><bdi>{selected.license?.license_number ?? "—"}</bdi></dd></div>
+            <div><dt>Plant number</dt><dd><bdi>{selected.license?.plant_number ?? "—"}</bdi></dd></div>
             <div><dt>Activity</dt><dd>{selected.activity_class ?? "—"}</dd></div>
-            <div><dt>Source record</dt><dd>{selected.source_synced_at ? new Date(selected.source_synced_at).toLocaleDateString("en-GB") : "—"}</dd></div>
+            <div><dt>Source record</dt><dd>{selected.source_synced_at ? new Date(selected.source_synced_at).toLocaleDateString(locale === "ar" ? "ar-SA" : "en-SA") : "—"}</dd></div>
           </dl>
         </section>
 
@@ -108,8 +111,8 @@ export default function RevampFactory360Portfolio({ factories, crNumber }: {
         <section className="sq-f360__snapshot">
           <h2>Factory snapshot</h2>
           <dl>
-            <div><dt>Factory code</dt><dd>{selected.factory_code}</dd></div>
-            <div><dt>Commercial registration</dt><dd>{selected.cr_number}</dd></div>
+            <div><dt>Factory code</dt><dd><bdi>{selected.factory_code}</bdi></dd></div>
+            <div><dt>Commercial registration</dt><dd><bdi>{selected.cr_number}</bdi></dd></div>
             <div><dt>Region</dt><dd>{selected.region ?? "—"}</dd></div>
             <div><dt>City</dt><dd>{selected.city ?? "—"}</dd></div>
             <div><dt>Activity</dt><dd>{selected.activity_class ?? "—"}</dd></div>
@@ -135,14 +138,14 @@ export default function RevampFactory360Portfolio({ factories, crNumber }: {
         <section>
           <span>Selected context</span>
           <strong>{selected.name}</strong>
-          <p>CR {selected.cr_number}</p>
-          <p>Licence {selected.license?.license_number ?? "—"}</p>
-          <p>Plant {selected.license?.plant_number ?? "—"}</p>
+          <p>CR <bdi>{selected.cr_number}</bdi></p>
+          <p>Licence <bdi>{selected.license?.license_number ?? "—"}</bdi></p>
+          <p>Plant <bdi>{selected.license?.plant_number ?? "—"}</bdi></p>
         </section>
         <section>
           <span>Source status & freshness</span>
           <strong>{selected.source_synced_at ? "Source record available" : "Freshness unavailable"}</strong>
-          <p>{selected.source_synced_at ? new Date(selected.source_synced_at).toLocaleString("en-GB") : "No recorded synchronization timestamp."}</p>
+          <p>{selected.source_synced_at ? new Date(selected.source_synced_at).toLocaleString(locale === "ar" ? "ar-SA" : "en-SA") : "No recorded synchronization timestamp."}</p>
         </section>
         <section className="sq-f360__ai">
           <span>Contextual AI</span>

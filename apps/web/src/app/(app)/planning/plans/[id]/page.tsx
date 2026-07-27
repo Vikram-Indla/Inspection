@@ -4,14 +4,16 @@ import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
 import { IconCalendar } from "@/app/icons";
+import { getPlanningAccess } from "@/lib/planning/access";
 
 // FIX WAVE F4 — M02-017: plan drill-down listing every child visit with its
 // assignment; M02-036: per-plan progress calculation (completed / published /
 // returned / cancelled / expired counts + segmented % bar). Counts are computed
-// from persisted states — expire_lapsed_visits() runs first so 'expired' is a
-// database fact, not a client guess (M02-016 parity).
+// from persisted states; the scheduled expiry sweep owns published→expired, so
+// this read route never mutates lifecycle state (M02-016 / CR-098).
 
 const PLAN_TONE: Record<string, string> = { published: "sq-lozenge--info", returned: "sq-lozenge--warning", cancelled: "sq-lozenge--critical", expired: "sq-lozenge--critical" };
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 type ChildVisit = {
   id: string; visit_type: string; execution_mode: string; planning_status: string;
@@ -25,8 +27,37 @@ type ChildVisit = {
 export default async function PlanDrilldown({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { t, locale } = await useT();
+  const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const fmt = (iso: string) => formatDateTime(iso, locale === "ar" ? "ar" : "en");
   const sb = await supabaseServer();
+  const access = await getPlanningAccess(sb, ["planning.view"]);
+  if (access.error) {
+    return (
+      <Shell current="/planning" title={t("plan.drill.errorTitle", "Plan — error")}>
+        <EmptyState glyph="⚠"
+          title={tr("plan.drill.unavailable.title", "Plan unavailable", "الخطة غير متاحة")}
+          body={tr("plan.drill.unavailable.body", "Planning access could not be verified (ERR-OPS-001). Nothing was changed. Try again.", "تعذر التحقق من صلاحية التخطيط (ERR-OPS-001). لم يتم تغيير أي بيانات. أعد المحاولة.")} />
+      </Shell>
+    );
+  }
+  if (access.accessClass !== "business_staff" || !access.can("planning.view")) {
+    return (
+      <Shell current="/planning" title={t("plan.drill.notFoundTitle", "Plan details")}>
+        <EmptyState glyph="⛔"
+          title={tr("plan.home.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+          body={tr("plan.drill.unauthorized.body", "Viewing plan details requires an authorized planning capability.", "يتطلب عرض تفاصيل الخطة صلاحية تخطيط مصرحاً بها.")} />
+      </Shell>
+    );
+  }
+  if (!UUID.test(id)) {
+    return (
+      <Shell current="/planning" title={t("plan.drill.notFoundTitle", "Plan not found")}>
+        <EmptyState glyph="∅"
+          title={t("plan.drill.notFound", "Not in your scope or does not exist")}
+          body={tr("plan.drill.invalidId", "The plan reference is invalid. Return to the plan register and choose an available plan.", "مرجع الخطة غير صالح. ارجع إلى سجل الخطط واختر خطة متاحة.")} />
+      </Shell>
+    );
+  }
   // M02-016 expiry is owned by pg_cron sweep expire_lapsed_visits_scheduled
   // (0025, every 15 min, unscoped); boards render display-level 'expired' for
   // lapsed windows in between ticks. No per-page-load mutating RPC (K-009).

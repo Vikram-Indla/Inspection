@@ -80,7 +80,10 @@ export default async function Reviews() {
   const { data: { user } } = await getServerUser();
   const { data: roleRows } = user ? await getUserRoles(user.id) : { data: null };
   const roles = new Set((roleRows ?? []).map(row => row.role_key));
-  const authorized = roles.has("reviewer") || roles.has("ops");
+  // Queue visibility is broader than decision authority. Planner users can
+  // monitor coordinated work, while inspectors remain limited by RLS to their
+  // own assigned inspections. Canonical review actions stay reviewer/ops-only.
+  const authorized = ["reviewer", "ops", "planner", "inspector"].some(role => roles.has(role));
 
   if (!authorized) {
     return (
@@ -91,7 +94,7 @@ export default async function Reviews() {
               <div className="cd-result__icon cd-result__icon--critical" aria-hidden="true">⛔</div>
               <div className="cd-stack">
                 <h2>{t("review.list.unauthTitle", "You don’t have access to the review queue")}</h2>
-                <p>{t("review.list.unauthBody", "This queue requires the Level 2 Reviewer role and matching scope. Navigation visibility is not authorization.")}</p>
+                <p>{t("review.list.unauthBody", "This queue requires an authorized review, planning, operations or assigned-inspector role with matching scope. Navigation visibility is not authorization.")}</p>
               </div>
             </div>
           </section>

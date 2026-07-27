@@ -242,7 +242,14 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
   const regionRows = complianceBreakdown(strategic.approvedScopedResponses as ResponseRow[], "region", unknown);
   const grouped = complianceBreakdown(strategic.approvedScopedResponses as ResponseRow[], group, unknown);
 
-  return <RevampStrategicView locale={locale} metrics={metrics} factories={factories} group={group} params={params} />;
+  const requirementStrip = stripFor(
+    projection,
+    Array.from({ length: 12 }, (_, index) => `STR-KPI-${String(index + 1).padStart(3, "0")}`),
+    locale,
+    partialSources,
+  );
+  return <RevampStrategicView locale={locale} metrics={metrics} factories={factories} group={group} params={params}
+    requirementStrip={requirementStrip} requirementStripStrings={stripStrings(locale)} />;
 
   const markers: CanvasMarker[] = factories
     .filter(factory => factory.official_lat != null && factory.official_lng != null)
@@ -491,7 +498,14 @@ export function OperationalView({ locale, metrics, projection, factoryCoords, pa
   factoryCoords: Map<string, { lat: number; lng: number; radiusM: number | null }>;
   partialSources: string[];
 }) {
-  return <RevampOperationalView locale={locale} metrics={metrics} />;
+  const requirementStrip = stripFor(
+    projection,
+    Array.from({ length: 9 }, (_, index) => `OPS-KPI-${String(index + 1).padStart(3, "0")}`),
+    locale,
+    partialSources,
+  );
+  return <RevampOperationalView locale={locale} metrics={metrics}
+    requirementStrip={requirementStrip} requirementStripStrings={stripStrings(locale)} />;
 
   const operational = metrics.operational;
   const headlineIds = ["OPS-KPI-003", "OPS-KPI-002", "OPS-KPI-004", "OPS-KPI-007"];

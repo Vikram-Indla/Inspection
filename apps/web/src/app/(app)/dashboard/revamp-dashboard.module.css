@@ -1,7 +1,7 @@
 .view { display: flex; flex-direction: column; gap: 24px; }
 .overline { margin: 0 0 12px; font-size: 12px; line-height: 16px; letter-spacing: .08em; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); }
 .metricGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.metricCard, .explorer, .trendCard, .aiCard { border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface-primary); box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow-base) 8%, transparent), 0 8px 18px -12px color-mix(in srgb, var(--shadow-base) 22%, transparent); }
+.metricCard, .explorer, .trendCard, .aiCard, .requirementCoverage { border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface-primary); box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow-base) 8%, transparent), 0 8px 18px -12px color-mix(in srgb, var(--shadow-base) 22%, transparent); }
 .metricCard { padding: 18px; display: flex; flex-direction: column; gap: 10px; min-inline-size: 0; }
 .question { font-size: 12px; line-height: 16px; color: var(--text-secondary); }
 .metricCard h3 { margin: 0; font-size: 16px; line-height: 24px; font-weight: 600; }
@@ -29,6 +29,7 @@
 .aiCard { border-inline-start: 3px solid var(--action-primary); background: var(--accent-soft); }
 .aiLabel { font-size: 12px; line-height: 16px; text-transform: uppercase; letter-spacing: .08em; color: var(--action-primary-pressed); font-weight: 700; }
 .provenance { font-size: 12px; line-height: 16px; color: var(--text-secondary); }
+.requirementCoverage { padding: 18px; display: flex; flex-direction: column; gap: 18px; }
 .aiPriority { padding: 14px 16px; border: 1px solid var(--border-subtle); border-inline-start: 3px solid var(--action-primary); border-radius: var(--radius-sm); background: var(--accent-soft); }
 .aiPriority strong { font-size: 16px; line-height: 24px; }
 .aiPriority p { margin: 4px 0 0; font-size: 14px; line-height: 20px; }

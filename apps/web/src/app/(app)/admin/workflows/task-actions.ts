@@ -16,6 +16,46 @@ import {
 export type TaskResult = { error?: string; ok?: boolean };
 const MODES = ["off", "on"] as const;
 
+function taskMutationError(error: { message?: string } | null): string {
+  const message = error?.message ?? "";
+  if (message.includes("WORKFLOW-TASK-REASON")) return "A reason is required. Nothing was changed.";
+  if (message.includes("WORKFLOW-TASK-ASSIGNEE")) return "A new assignee is required.";
+  if (message.includes("WORKFLOW-TASK-TRANSITION")) return "The task changed or that transition is no longer permitted. Reload and try again.";
+  if (message.includes("WORKFLOW-TASK-TERMINAL")) return "A completed or cancelled task cannot be reactivated.";
+  if (message.includes("WORKFLOW-TASK-NOT-FOUND")) return "Task not found or out of scope.";
+  if (message.includes("WORKFLOW-TASK-DENIED") || message.includes("WORKFLOW-TASK-SCOPE")) {
+    return "Task change blocked — a scoped manager role is required.";
+  }
+  return NEUTRAL_WRITE_ERROR;
+}
+
+async function mutateTask(
+  sb: Awaited<ReturnType<typeof supabaseServer>>,
+  params: {
+    taskId: string;
+    status?: TaskStatus | null;
+    assignee?: string | null;
+    setAssignee?: boolean;
+    active?: boolean | null;
+    reason: string;
+  },
+): Promise<TaskResult> {
+  const { error } = await sb.rpc("mutate_workflow_task", {
+    p_task: params.taskId,
+    p_status: params.status ?? null,
+    p_assignee: params.assignee ?? null,
+    p_set_assignee: params.setAssignee ?? false,
+    p_active: params.active ?? null,
+    p_reason: params.reason,
+    p_correlation_id: crypto.randomUUID(),
+  });
+  if (error) {
+    logProviderError("atomic workflow task mutation", error);
+    return { error: taskMutationError(error) };
+  }
+  return { ok: true };
+}
+
 async function loadActorAndTask(taskId: string) {
   const sb = await supabaseServer();
   const { data: { user } } = await getVerifiedUser(sb);
@@ -47,16 +87,14 @@ export async function reassignTask(_: TaskResult, formData: FormData): Promise<T
   const decision = evaluateReassign({ toAssignee, reason, currentStatus: task.status as TaskStatus });
   if (!decision.ok) return { error: decision.why };
 
-  const { error, count } = await sb.from("workflow_task_assignments")
-    .update({ assignee: toAssignee, reason, status: "assigned" }, { count: "exact" })
-    .eq("id", task.id).eq("active", true);
-  if (error) { logProviderError("task reassign", error); return { error: NEUTRAL_WRITE_ERROR }; }
-  if (!count) return { error: "Reassignment blocked — RLS requires a scoped manager role." };
-  await sb.from("audit_events").insert({
-    actor: actor.id, object_type: "workflow_task", object_id: task.id, action: "task_reassigned",
-    before_state: { assignee: task.assignee, status: task.status }, after_state: { assignee: toAssignee, status: "assigned", reason },
+  return mutateTask(sb, {
+    taskId: task.id,
+    // Reassignment does not regress an in-progress/suspended task to assigned.
+    status: null,
+    assignee: toAssignee,
+    setAssignee: true,
+    reason,
   });
-  return { ok: true };
 }
 
 export async function setTaskStatus(_: TaskResult, formData: FormData): Promise<TaskResult> {
@@ -71,16 +109,9 @@ export async function setTaskStatus(_: TaskResult, formData: FormData): Promise<
   if (!canManageTask(actor, manager, task)) return { error: "You are not authorized to change this task (scope/role)." };
   if (!isTaskStatusTransitionAllowed(task.status as TaskStatus, to))
     return { error: `Illegal task transition ${task.status} → ${to}.` };
+  if (!reason) return { error: "A status-change reason is required." };
 
-  const { error, count } = await sb.from("workflow_task_assignments")
-    .update({ status: to, reason: reason || null }, { count: "exact" }).eq("id", task.id);
-  if (error) { logProviderError("task status", error); return { error: NEUTRAL_WRITE_ERROR }; }
-  if (!count) return { error: "Status change blocked — RLS requires a scoped manager role." };
-  await sb.from("audit_events").insert({
-    actor: actor.id, object_type: "workflow_task", object_id: task.id, action: "task_status_changed",
-    before_state: { status: task.status }, after_state: { status: to, reason },
-  });
-  return { ok: true };
+  return mutateTask(sb, { taskId: task.id, status: to, reason });
 }
 
 export async function setTaskActive(_: TaskResult, formData: FormData): Promise<TaskResult> {
@@ -96,13 +127,5 @@ export async function setTaskActive(_: TaskResult, formData: FormData): Promise<
   const decision = evaluateActivation(active, task.status as TaskStatus, reason);
   if (!decision.ok) return { error: decision.why };
 
-  const { error, count } = await sb.from("workflow_task_assignments")
-    .update({ active, reason }, { count: "exact" }).eq("id", task.id);
-  if (error) { logProviderError("task activation", error); return { error: NEUTRAL_WRITE_ERROR }; }
-  if (!count) return { error: "Activation change blocked — RLS requires a scoped manager role." };
-  await sb.from("audit_events").insert({
-    actor: actor.id, object_type: "workflow_task", object_id: task.id, action: active ? "task_activated" : "task_deactivated",
-    before_state: { active: task.active }, after_state: { active, reason },
-  });
-  return { ok: true };
+  return mutateTask(sb, { taskId: task.id, active, reason });
 }

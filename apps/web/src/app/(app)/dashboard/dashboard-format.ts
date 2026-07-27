@@ -48,7 +48,11 @@ export function metricTitle(metric: SharedMetric, locale: Locale): string {
 
 /** Is the metric blocked (cannot show a live/real value)? */
 export function isBlocked(status: MetricSourceStatus): boolean {
-  return status === "unavailable" || status === "not_configured" || status === "decision_required";
+  return status === "unavailable"
+    || status === "not_configured"
+    || status === "decision_required"
+    || status === "stale"
+    || status === "offline";
 }
 
 /** Honest, localized status label for a non-live source status. */
@@ -122,7 +126,27 @@ export function metricDisplay(metric: SharedMetric, locale: Locale): MetricDispl
   } else if (metric.numerator != null && metric.denominator != null) {
     sub = t(locale, `${metric.numerator} of ${metric.denominator}`, `${metric.numerator} من ${metric.denominator}`);
   }
-  return { metricId: metric.metricId, title, kind: "value", text: formatValue(metric, locale), tone: "neutral", sub };
+  if (metric.sourceStatus === "partial") {
+    sub = t(
+      locale,
+      sub ? `Partial source data · ${sub}` : "Partial source data",
+      sub ? `بيانات مصدر جزئية · ${sub}` : "بيانات مصدر جزئية",
+    );
+  } else if (metric.sourceStatus === "cached") {
+    sub = t(
+      locale,
+      sub ? `Cached data · ${sub}` : "Cached data",
+      sub ? `بيانات مخزنة مؤقتاً · ${sub}` : "بيانات مخزنة مؤقتاً",
+    );
+  }
+  return {
+    metricId: metric.metricId,
+    title,
+    kind: "value",
+    text: formatValue(metric, locale),
+    tone: statusTone(metric.sourceStatus),
+    sub,
+  };
 }
 
 export type MethodologyRow = { label: string; value: string };
@@ -175,11 +199,11 @@ export function buildMethodology(metric: SharedMetric, locale: Locale): Methodol
     // with the decision ID kept because a basis drawer is an audit surface and
     // the reference is what makes the caveat checkable.
     {
-      label: t(locale, "Verification", "\u0627\u0644\u062a\u062d\u0642\u0642"),
+      label: t(locale, "Verification", "التحقق"),
       value: t(
         locale,
         "Counts describe stored records visible under your access scope. Independent end-to-end submission proof is pending (DEC-032).",
-        "\u062a\u0635\u0641 \u0627\u0644\u0623\u0639\u062f\u0627\u062f \u0627\u0644\u0633\u062c\u0644\u0627\u062a \u0627\u0644\u0645\u062e\u0632\u0646\u0629 \u0627\u0644\u0638\u0627\u0647\u0631\u0629 \u0636\u0645\u0646 \u0646\u0637\u0627\u0642 \u0635\u0644\u0627\u062d\u064a\u062a\u0643. \u0644\u0627 \u064a\u0632\u0627\u0644 \u0625\u062b\u0628\u0627\u062a \u0627\u0644\u062a\u0642\u062f\u064a\u0645 \u0627\u0644\u0645\u0633\u062a\u0642\u0644 \u0645\u0646 \u0627\u0644\u0628\u062f\u0627\u064a\u0629 \u0625\u0644\u0649 \u0627\u0644\u0646\u0647\u0627\u064a\u0629 \u0645\u0639\u0644\u0642\u0627\u064b (DEC-032).",
+        "تصف الأعداد السجلات المخزنة الظاهرة ضمن نطاق صلاحيتك. لا يزال إثبات التقديم المستقل من البداية إلى النهاية معلقاً (DEC-032).",
       ),
     },
   ];

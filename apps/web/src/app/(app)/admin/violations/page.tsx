@@ -91,7 +91,7 @@ export default async function Violations({
 }) {
   const sp = await searchParams;
   const penaltyMode = sp.mode === "penalty";
-  const { t } = await useT();
+  const { t, locale } = await useT();
   const sb = await supabaseServer();
 
   const [{ data: codesRaw, error }, { data: clauses, error: clauseError }, templateRead, itemTraceRead] = await Promise.all([
@@ -114,6 +114,11 @@ export default async function Violations({
     : { data: [] as { role_key: string }[], error: null };
   const roles = (roleRows ?? []).map(r => r.role_key);
   const canWrite = roles.some(r => WRITER_ROLES.has(r));
+  // Compliance.docx requires all create/modify operations to pass through a
+  // Compliance Configuration Request. The generic CCR engine exists, but the
+  // typed violation/penalty validator and atomic activation cascade do not.
+  // Keep the legacy catalogue read-only until that backend contract lands.
+  const canConfigure = false;
 
   const codes = (codesRaw ?? []) as unknown as CodeRow[];
   const templateChoices = (templateRead.data ?? []).map(template => ({ id: template.id, label: `${template.template_key} · ${template.version_label} — ${template.title_en}` }));
@@ -201,6 +206,14 @@ export default async function Violations({
     publishCode: t("admin.viol.publish", "Approve & publish code"),
     publishingCode: t("admin.viol.publishing", "Publishing…"),
     codePublished: t("admin.viol.published", "Violation code published"),
+    errors: {
+      ccr_required: locale === "ar"
+        ? "يجب إكمال إعداد المخالفة والعقوبة من خلال طلب إعداد امتثال محكوم. تظل الكتابة المباشرة معطلة حتى نشر التحقق المخصص والانتقالات المحمية."
+        : t(
+            "admin.viol.error.ccrRequired",
+            "Violation and penalty configuration must use a governed Compliance Configuration Request. Direct writes remain disabled until typed validation and guarded transitions are deployed.",
+          ),
+    },
   };
 
   // Severity = glyph + word + colour (never colour alone). The "word" is the
@@ -316,6 +329,15 @@ export default async function Violations({
           </p>
         </div>
       )}
+      {canWrite && !roleError ? (
+        <div className="sq-banner sq-banner--warning" role="note">
+          <div>
+            <strong>{t("admin.viol.ccrRequired.title", "Configuration Request required.")}</strong>{" "}
+            {t("admin.viol.ccrRequired.body", "Violation and penalty creation, modification, publication, activation and deactivation are read-only here until the typed CCR validation and atomic dependency cascade are deployed. Use the Compliance Configuration Request workspace; this catalogue will not bypass it.")}{" "}
+            <a className="sq-link" href="/admin/compliance-requests">{t("admin.viol.ccrRequired.link", "Open Compliance Configuration Requests")}</a>
+          </div>
+        </div>
+      ) : null}
 
       {penaltyMode ? (
         /* ============ CD-011 · Penalty mapping mode ============ */
@@ -383,15 +405,15 @@ export default async function Violations({
                         {pm.status} · {pm.effective_from ?? "—"}{pm.effective_to ? ` → ${pm.effective_to}` : ""}
                       </span>
                       <span className="t-caption">{strings.penaltyType}: {pm.penalty_type}{pm.amount !== null ? <> · {strings.amount}: <bdi dir="ltr" className="numeric">{pm.amount}</bdi></> : null}{pm.grace_period_days !== null ? <> · {strings.gracePeriod}: {pm.grace_period_days}</> : null}{pm.due_period_days !== null ? <> · {strings.duePeriod}: {pm.due_period_days}</> : null}</span>
-                      {draft && canWrite ? <PublishMappingForm mappingId={draft.id} violationCode={v.code} strings={strings} /> : null}
+                      {draft && canConfigure ? <PublishMappingForm mappingId={draft.id} violationCode={v.code} strings={strings} /> : null}
                       {auditSummary(evidence?.mappingAudit, t("admin.viol.audit.mapping", "Mapping audit events"))}
                     </div>
-                  ) : canWrite ? (
+                  ) : canConfigure ? (
                     <AddMappingForm violationId={v.id} violationCode={v.code} templates={templateChoices} strings={strings} />
                   ) : (
                     <span className="t-caption">{t("admin.viol.penalty.readonly", "Unmapped — a compliance/form admin can add the mapping.")}</span>
                   )}
-                  {canWrite && !draft && pm ? <AddMappingForm violationId={v.id} violationCode={v.code} templates={templateChoices} strings={strings} /> : null}
+                  {canConfigure && !draft && pm ? <AddMappingForm violationId={v.id} violationCode={v.code} templates={templateChoices} strings={strings} /> : null}
                 </div>
               </div>
             );
@@ -402,12 +424,12 @@ export default async function Violations({
       ) : (
         /* ============ CD-010 · Violation catalogue mode ============ */
         <>
-          {canWrite && clauseError ? (
+          {canConfigure && clauseError ? (
             <div className="sq-banner sq-banner--warning" role="alert"><div>
               <strong>{t("admin.viol.clausesUnavailable.title", "Regulation clauses are unavailable")}</strong>{" "}
               {t("admin.viol.clausesUnavailable.body", "Violation creation is disabled because its required legal-anchor source could not be read. Retry before authoring.")}
             </div></div>
-          ) : canWrite && clauseOptions.length > 0 ? <NewViolationForm clauses={clauseOptions} strings={strings} /> : canWrite ? (
+          ) : canConfigure && clauseOptions.length > 0 ? <NewViolationForm clauses={clauseOptions} strings={strings} /> : canConfigure ? (
             <div className="sq-banner" role="status"><div>{t("admin.viol.clausesEmpty", "No regulation clauses exist. Create and publish the legal source before creating a violation code.")}</div></div>
           ) : null}
 
@@ -472,10 +494,10 @@ export default async function Violations({
                   )}
                   {auditSummary(evidence?.codeAudit, t("admin.viol.audit.code", "Violation audit events"))}
                 </div>
-                {canWrite && !v.active_to && (
+                {canConfigure && !v.active_to && (
                   <DeactivateViolationForm violationId={v.id} violationCode={v.code} strings={strings} />
                 )}
-                {canWrite && v.status === "draft" && <PublishViolationForm violationId={v.id} violationCode={v.code} strings={strings} />}
+                {canConfigure && v.status === "draft" && <PublishViolationForm violationId={v.id} violationCode={v.code} strings={strings} />}
               </div>
             );
           })}

@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useMemo, useState, type DragEvent } from "react";
 import type { GeoMarkerData } from "@/components/GeoMap";
+import type { Locale } from "@/lib/i18n";
 
 const GeoMap = dynamic(() => import("@/components/GeoMap"), { ssr: false });
 
@@ -15,6 +16,7 @@ export type ExecutionRow = {
   windowStart: string;
   windowEnd: string;
   executionDate: string | null;
+  reportType: string | null;
   visitType: string | null;
   visitMode: string | null;
   risk: string | null;
@@ -40,13 +42,29 @@ const startOfWeek = (date: Date) => {
   result.setHours(0, 0, 0, 0);
   return result;
 };
-const formatShort = (date: Date) => new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric" }).format(date);
-const formatDate = (value: string | null) => value ? new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value)) : "—";
-const titleCase = (value: string | null) => value ? value.replaceAll("_", " ").replace(/\b\w/g, char => char.toUpperCase()) : "—";
+const copy = (locale: Locale, en: string, ar: string) => locale === "ar" ? ar : en;
+const formatShort = (locale: Locale, date: Date) => new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-GB", { weekday: "short", day: "numeric" }).format(date);
+const formatDate = (locale: Locale, value: string | null) => value ? new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-GB", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value)) : "—";
+const titleCase = (locale: Locale, value: string | null) => {
+  if (!value) return "—";
+  const ar: Record<string, string> = {
+    assigned: "مُسند", preparing: "قيد التحضير", ready: "جاهز للتنفيذ",
+    new: "جديد", prepared: "جاهز للتنفيذ", on_the_way: "في الطريق",
+    arrived: "وصل", executing: "جارٍ التفتيش", submitted: "مُقدّم",
+    under_review: "قيد المراجعة", published: "منشور", returned: "مُعاد",
+    cancelled: "ملغى", expired: "منتهي", physical: "ميداني",
+    virtual: "افتراضي", self_assessment: "تقييم ذاتي",
+    high: "مرتفع", medium: "متوسط", low: "منخفض",
+  };
+  if (locale === "ar") return ar[value] ?? value.replaceAll("_", " ");
+  return value.replaceAll("_", " ").replace(/\b\w/g, char => char.toUpperCase());
+};
 
-export default function RevampExecutionWorkspace({ rows, currentUserId }: {
+export default function RevampExecutionWorkspace({ rows, currentUserId, locale, totalVisibleRows }: {
   rows: ExecutionRow[];
   currentUserId: string;
+  locale: Locale;
+  totalVisibleRows: number;
 }) {
   const [view, setView] = useState<View>("mine");
   const [query, setQuery] = useState("");
@@ -107,97 +125,111 @@ export default function RevampExecutionWorkspace({ rows, currentUserId }: {
   };
   const filterButton = (label: string, key: FilterKey) => (
     <button type="button" aria-pressed={!!filters[key]} onClick={() => cycleFilter(key)}>
-      {filters[key] ? `${label}: ${titleCase(filters[key]!)}` : label}
+      {filters[key] ? `${label}: ${titleCase(locale, filters[key]!)}` : label}
     </button>
   );
 
   return (
     <div className="sq-execution">
+      <h1 className="sq-sr-only">{copy(locale, "Inspection Execution", "تنفيذ التفتيش")}</h1>
+      <div className="sq-banner sq-banner--critical" role="status">
+        <div>
+          <strong>{copy(locale, "Submission service unavailable.", "خدمة التقديم غير متاحة.")}</strong> {copy(locale, "Inspection preparation and execution records remain available, but real submission is blocked by DEC-032. No successful submission is claimed from this destination.", "تظل سجلات التحضير والتنفيذ متاحة، لكن التقديم الفعلي محظور بموجب DEC-032. لا تدّعي هذه الوجهة نجاح أي تقديم.")}
+        </div>
+      </div>
+      {totalVisibleRows > rows.length ? (
+        <div className="sq-banner" role="status">
+          <div>
+            <strong>{copy(locale, "Bounded result set.", "مجموعة نتائج محدودة.")}</strong>{" "}
+            {copy(locale, `Showing ${rows.length.toLocaleString("en-GB")} non-fixture rows from a 1,000-row bounded fetch; ${totalVisibleRows.toLocaleString("en-GB")} visits are RLS-visible. Fixtures and records beyond the bound are not claimed visible here.`, `يُعرض ${rows.length.toLocaleString("ar-SA")} صفاً غير تجريبي من قراءة محدودة بألف صف؛ توجد ${totalVisibleRows.toLocaleString("ar-SA")} زيارة ظاهرة وفق سياسات أمان الصفوف. لا يُدّعى عرض السجلات التجريبية أو السجلات التي تتجاوز الحد هنا.`)}
+          </div>
+        </div>
+      ) : null}
       <section className="sq-execution__week">
         <div>
-          <strong>{calendarMode === "week" ? "Week" : "Five-week view"} of {formatDate(weekStart.toISOString()).replace(/^\d{2} /, "")} – {formatDate(calendarEnd.toISOString())}</strong>
-          <span><button type="button" aria-pressed={calendarMode === "week"} onClick={() => setCalendarMode("week")}>Week</button><button type="button" aria-pressed={calendarMode === "month"} onClick={() => setCalendarMode("month")}>Month</button></span>
+          <strong>{calendarMode === "week" ? copy(locale, "Week", "أسبوع") : copy(locale, "Five-week view", "عرض خمسة أسابيع")} {formatDate(locale, weekStart.toISOString()).replace(/^\d{2} /, "")} – {formatDate(locale, calendarEnd.toISOString())}</strong>
+          <span><button type="button" aria-pressed={calendarMode === "week"} onClick={() => setCalendarMode("week")}>{copy(locale, "Week", "أسبوع")}</button><button type="button" aria-pressed={calendarMode === "month"} onClick={() => setCalendarMode("month")}>{copy(locale, "Month", "شهر")}</button></span>
         </div>
         <div className="sq-execution__days">
           {calendarDays.map(day => {
             const key = day.toISOString().slice(0, 10);
-            const dayRows = calendarRows.filter(row => row.windowStart.slice(0, 10) === key);
+            const dayRows = calendarRows.filter(row => (row.executionDate ?? row.windowStart).slice(0, 10) === key);
             return (
               <article key={key} onDragOver={event => event.preventDefault()} onDrop={event => onDropDay(event, key)}>
-                <header><span>{formatShort(day)}</span><span>{dayRows.length ? `${dayRows.length} visit${dayRows.length === 1 ? "" : "s"}` : ""}</span></header>
-                {dayRows.slice(0, 4).map(row => <a href={`/visits/${row.id}`} key={row.id} data-risk={row.risk ?? ""} draggable onDragStart={event => event.dataTransfer.setData("text/visit-id", row.id)}>{row.factory}</a>)}
+                <header><span>{formatShort(locale, day)}</span><span>{dayRows.length ? copy(locale, `${dayRows.length} visit${dayRows.length === 1 ? "" : "s"}`, `${dayRows.length} زيارة`) : ""}</span></header>
+                {dayRows.slice(0, 4).map(row => <a href={row.inspectorId === currentUserId ? `/field/${row.id}` : `/visits/${row.id}`} key={row.id} data-risk={row.risk ?? ""} draggable onDragStart={event => event.dataTransfer.setData("text/visit-id", row.id)}>{row.factory}</a>)}
               </article>
             );
           })}
         </div>
-        <p>Dragging a visit onto a day opens the configuration drawer with the planning window enforced — it never silently reschedules.</p>
+        <p>{copy(locale, "Dragging a visit onto a day opens the configuration drawer with the planning window enforced — it never silently reschedules.", "يؤدي سحب الزيارة إلى يوم إلى فتح لوحة الإعداد مع فرض نافذة التخطيط، ولا تُعاد الجدولة بصمت.")}</p>
       </section>
 
       <div className="sq-execution__viewbar">
-        <nav aria-label="Execution view">
-          <button type="button" aria-pressed={view === "mine"} onClick={() => setView("mine")}>My inspections</button>
-          <button type="button" aria-pressed={view === "all"} onClick={() => setView("all")}>All inspections</button>
-          <button type="button" aria-pressed={view === "map"} onClick={() => setView("map")}>Live map</button>
+        <nav aria-label={copy(locale, "Execution view", "عرض التنفيذ")}>
+          <button type="button" aria-pressed={view === "mine"} onClick={() => setView("mine")}>{copy(locale, "My inspections", "تفتيشاتي")}</button>
+          <button type="button" aria-pressed={view === "all"} onClick={() => setView("all")}>{copy(locale, "All inspections", "كل التفتيشات")}</button>
+          <button type="button" aria-pressed={view === "map"} onClick={() => setView("map")}>{copy(locale, "Location context", "سياق الموقع")}</button>
         </nav>
-        <span><i />Tracking uses governed recorded positions</span>
+        <span><i />{copy(locale, "Map markers use recorded official factory coordinates—not live inspector tracking.", "تستخدم علامات الخريطة إحداثيات المصنع الرسمية المسجلة، وليست تتبعاً حياً للمفتش.")}</span>
       </div>
 
       <div className="sq-execution__filters">
-        <input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Search factory, CR, licence…" />
-        {filterButton("Inspector", "inspector")}
-        {filterButton("Region", "region")}
-        {filterButton("Risk", "risk")}
-        {filterButton("Visit mode", "visitMode")}
-        {filterButton("Operational state", "operationalState")}
-        {filterButton("Priority", "priority")}
-        {Object.keys(filters).some(key => filters[key as FilterKey]) ? <button type="button" onClick={() => setFilters({})}>Clear filters</button> : null}
+        <input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder={copy(locale, "Search factory, CR, licence…", "ابحث باسم المصنع أو السجل أو الترخيص…")} />
+        {filterButton(copy(locale, "Inspector", "المفتش"), "inspector")}
+        {filterButton(copy(locale, "Region", "المنطقة"), "region")}
+        {filterButton(copy(locale, "Risk", "المخاطر"), "risk")}
+        {filterButton(copy(locale, "Visit mode", "نمط الزيارة"), "visitMode")}
+        {filterButton(copy(locale, "Operational state", "الحالة التشغيلية"), "operationalState")}
+        {filterButton(copy(locale, "Priority", "الأولوية"), "priority")}
+        {Object.keys(filters).some(key => filters[key as FilterKey]) ? <button type="button" onClick={() => setFilters({})}>{copy(locale, "Clear filters", "مسح عوامل التصفية")}</button> : null}
       </div>
 
       {view === "map" ? (
         <section className="sq-execution__map">
-          {markers.length ? <GeoMap center={[23.8859, 45.0792]} zoom={5} markers={markers} height="100%" />
-            : <div><strong>No governed coordinates in this view</strong><p>The table views remain fully usable.</p></div>}
+          {markers.length ? <GeoMap center={[23.8859, 45.0792]} zoom={5} markers={markers} height="100%" ariaLabel={copy(locale, "Official factory location map", "خريطة مواقع المصانع الرسمية")} />
+            : <div><strong>{copy(locale, "No governed coordinates in this view", "لا توجد إحداثيات معتمدة في هذا العرض")}</strong><p>{copy(locale, "The table views remain fully usable.", "تظل عروض الجدول متاحة بالكامل.")}</p></div>}
         </section>
       ) : (
         <section className="sq-execution__tablewrap">
           <table>
             <thead><tr>
-              <th>Visit ref</th><th>Factory</th><th>Planning window</th><th>Execution date</th><th>Visit type</th><th>Visit mode</th><th>Risk</th>
-              {view === "all" && <><th>Inspector</th><th>Region / city</th></>}
-              <th>Operational state</th>
-              {view === "mine" && <><th>Preparation</th><th>Report type</th></>}
-              {view === "all" && <th>Tracking</th>}
-              <th>Action</th>
+              <th>{copy(locale, "Visit ref", "مرجع الزيارة")}</th><th>{copy(locale, "Factory", "المصنع")}</th><th>{copy(locale, "Planning window", "نافذة التخطيط")}</th><th>{copy(locale, "Execution date", "تاريخ التنفيذ")}</th><th>{copy(locale, "Visit type", "نوع الزيارة")}</th><th>{copy(locale, "Visit mode", "نمط الزيارة")}</th><th>{copy(locale, "Risk", "المخاطر")}</th>
+              {view === "all" && <><th>{copy(locale, "Inspector", "المفتش")}</th><th>{copy(locale, "Region / city", "المنطقة / المدينة")}</th></>}
+              <th>{copy(locale, "Operational state", "الحالة التشغيلية")}</th>
+              {view === "mine" && <><th>{copy(locale, "Preparation", "التحضير")}</th><th>{copy(locale, "Report type", "نوع التقرير")}</th></>}
+              {view === "all" && <th>{copy(locale, "Location data", "بيانات الموقع")}</th>}
+              <th>{copy(locale, "Action", "الإجراء")}</th>
             </tr></thead>
             <tbody>{visibleRows.map(row => (
               <tr key={row.id}>
-                <th scope="row" data-label="Visit ref">{row.visitReference}</th>
-                <td data-label="Factory">{row.factory}</td>
-                <td data-label="Planning window">{formatDate(row.windowStart)} – {formatDate(row.windowEnd)}</td>
-                <td data-label="Execution date">{formatDate(row.executionDate)}</td>
-                <td data-label="Visit type">{titleCase(row.visitType)}</td>
-                <td data-label="Visit mode">{titleCase(row.visitMode)}</td>
-                <td data-label="Risk"><span data-tone={row.risk ?? ""}>{titleCase(row.risk)}</span></td>
-                {view === "all" && <><td data-label="Inspector">{row.inspector ?? "Unassigned"}</td><td data-label="Region / city">{[row.region, row.city].filter(Boolean).join(" / ") || "—"}</td></>}
-                <td data-label="Operational state"><span>{titleCase(row.operationalState)}</span></td>
-                {view === "mine" && <><td data-label="Preparation">{titleCase(row.planningStatus)}</td><td data-label="Report type">Inspection report</td></>}
-                {view === "all" && <td data-label="Tracking">{row.lat != null ? "Position recorded" : "No position"}</td>}
-                <td data-label="Action"><a href={`/field/${row.id}`}>{row.operationalState === "new" ? "Prepare" : "Open"}</a></td>
+                <th scope="row" data-label={copy(locale, "Visit ref", "مرجع الزيارة")}>{row.visitReference}</th>
+                <td data-label={copy(locale, "Factory", "المصنع")}>{row.factory}</td>
+                <td data-label={copy(locale, "Planning window", "نافذة التخطيط")}>{formatDate(locale, row.windowStart)} – {formatDate(locale, row.windowEnd)}</td>
+                <td data-label={copy(locale, "Execution date", "تاريخ التنفيذ")}>{formatDate(locale, row.executionDate)}</td>
+                <td data-label={copy(locale, "Visit type", "نوع الزيارة")}>{titleCase(locale, row.visitType)}</td>
+                <td data-label={copy(locale, "Visit mode", "نمط الزيارة")}>{titleCase(locale, row.visitMode)}</td>
+                <td data-label={copy(locale, "Risk", "المخاطر")}><span data-tone={row.risk ?? ""}>{titleCase(locale, row.risk)}</span></td>
+                {view === "all" && <><td data-label={copy(locale, "Inspector", "المفتش")}>{row.inspector ?? copy(locale, "Unassigned", "غير مسند")}</td><td data-label={copy(locale, "Region / city", "المنطقة / المدينة")}>{[row.region, row.city].filter(Boolean).join(" / ") || "—"}</td></>}
+                <td data-label={copy(locale, "Operational state", "الحالة التشغيلية")}><span>{titleCase(locale, row.operationalState)}</span></td>
+                {view === "mine" && <><td data-label={copy(locale, "Preparation", "التحضير")}>{titleCase(locale, row.planningStatus)}</td><td data-label={copy(locale, "Report type", "نوع التقرير")}>{row.reportType ?? copy(locale, "Not configured", "غير مهيأ")}</td></>}
+                {view === "all" && <td data-label={copy(locale, "Location data", "بيانات الموقع")}>{row.lat != null ? copy(locale, "Official factory coordinates recorded", "إحداثيات المصنع الرسمية مسجلة") : copy(locale, "No official coordinates", "لا توجد إحداثيات رسمية")}</td>}
+                <td data-label={copy(locale, "Action", "الإجراء")}><a href={row.inspectorId === currentUserId ? `/field/${row.id}` : `/visits/${row.id}`}>{row.inspectorId === currentUserId ? (row.operationalState === "new" ? copy(locale, "Prepare", "تحضير") : copy(locale, "Open", "فتح")) : copy(locale, "View", "عرض")}</a></td>
               </tr>
             ))}</tbody>
           </table>
-          {!visibleRows.length && <p>No inspections match this view and filter.</p>}
+          {!visibleRows.length && <p>{copy(locale, "No RLS-visible inspections match this view and filter.", "لا توجد تفتيشات ظاهرة وفق سياسات أمان الصفوف تطابق هذا العرض وعوامل التصفية.")}</p>}
         </section>
       )}
       {reschedule ? (
         <div className="sq-execution__drawer" role="dialog" aria-modal="true" aria-labelledby="reschedule-title">
-          <button type="button" aria-label="Close configuration drawer" onClick={() => setReschedule(null)}>×</button>
-          <p className="sq-overline">Planning window guard</p>
-          <h2 id="reschedule-title">Configure {reschedule.row.visitReference}</h2>
-          <p><strong>{reschedule.row.factory}</strong> was dropped on {formatDate(reschedule.date)}. No date has been changed.</p>
-          <div className="sq-banner"><strong>Current governed window:</strong> {formatDate(reschedule.row.windowStart)} – {formatDate(reschedule.row.windowEnd)}. The planning workflow validates conflicts and records the change.</div>
-          <a className="sq-btn" href={`/planning/visits/${reschedule.row.id}?proposedDate=${encodeURIComponent(reschedule.date)}`}>Continue in Planning</a>
-          <button className="sq-btn sq-btn--secondary" type="button" onClick={() => setReschedule(null)}>Cancel</button>
+          <button type="button" aria-label={copy(locale, "Close configuration drawer", "إغلاق لوحة الإعداد")} onClick={() => setReschedule(null)}>×</button>
+          <p className="sq-overline">{copy(locale, "Planning window guard", "حماية نافذة التخطيط")}</p>
+          <h2 id="reschedule-title">{copy(locale, "Configure", "إعداد")} {reschedule.row.visitReference}</h2>
+          <p><strong>{reschedule.row.factory}</strong> {copy(locale, `was dropped on ${formatDate(locale, reschedule.date)}. No date has been changed.`, `تم إسقاطها على ${formatDate(locale, reschedule.date)}. لم يتم تغيير أي تاريخ.`)}</p>
+          <div className="sq-banner"><strong>{copy(locale, "Current governed window:", "النافذة المعتمدة الحالية:")}</strong> {formatDate(locale, reschedule.row.windowStart)} – {formatDate(locale, reschedule.row.windowEnd)}. {copy(locale, "The planning workflow validates conflicts and records the change.", "يتحقق مسار التخطيط من التعارضات ويسجل التغيير.")}</div>
+          <a className="sq-btn" href={`/planning/visits/${reschedule.row.id}?proposedDate=${encodeURIComponent(reschedule.date)}`}>{copy(locale, "Continue in Planning", "المتابعة في التخطيط")}</a>
+          <button className="sq-btn sq-btn--secondary" type="button" onClick={() => setReschedule(null)}>{copy(locale, "Cancel", "إلغاء")}</button>
         </div>
       ) : null}
     </div>

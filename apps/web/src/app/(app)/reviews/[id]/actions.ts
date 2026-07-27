@@ -3,11 +3,11 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
-import { insertNotification } from "@/lib/notify";
 
 export type DecisionResult = { error?: string };
 
 const REVIEW_READ_ERROR = "Review data could not be verified. Nothing was changed — try again.";
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 // CD-028 leg 5/10 — HANDOFF_BLOCKED_QUEUE_OPEN_MUTATION resolved: opening
 // /reviews/:id is now a pure read. The review-create + under_review transition
@@ -19,7 +19,7 @@ export async function startReview(_: DecisionResult, fd: FormData): Promise<Deci
   const sb = await supabaseServer();
   const inspection_id = String(fd.get("inspection_id") ?? "");
   const submission_version_id = String(fd.get("submission_version_id") ?? "");
-  if (!inspection_id || !submission_version_id)
+  if (!UUID.test(inspection_id) || !UUID.test(submission_version_id))
     return { error: "The submission to review could not be identified." };
 
   // Only start against a genuinely submitted inspection whose latest version has
@@ -64,30 +64,30 @@ export async function startReview(_: DecisionResult, fd: FormData): Promise<Deci
     redirect(`/reviews/${inspection_id}/started?review=${existing.id}`);
   }
 
-  // RBAC-011 — reviewer/ops only. RLS reviews_insert is the real boundary; a
-  // denied insert surfaces as no row, never a silent invented start.
-  const { data: created, error } = await sb.from("reviews").insert({
-    inspection_id, submission_version_id, reviewer_id: user.id, status: "under_review",
-  }).select("id").single();
-  if (error || !created) {
-    console.error("[review start]", error);
-    // reviews_one_open_per_version (partial unique index) is the real guard
-    // against two reviewers claiming the same submission at once — the
-    // pre-check above only avoids the common sequential case.
-    if (error?.code === "23505")
+  // One canonical transaction claims the review, transitions the inspection
+  // and appends the audit event. The RPC owns the row locks, latest-version
+  // check, maker-checker role guard and race rollback; the reads above exist
+  // only to give a precise, non-mutating stale-state explanation.
+  const { data: created, error } = await sb.rpc("start_review", {
+    p_inspection: inspection_id,
+    p_submission_version: submission_version_id,
+  });
+  if (error || typeof created !== "string" || !UUID.test(created)) {
+    console.error("[review start rpc]", error?.message, error?.code);
+    const detail = `${error?.message ?? ""} ${error?.details ?? ""}`;
+    if (detail.includes("REVIEW-START-CLAIMED") || error?.code === "23505")
       return { error: "Another reviewer already started this review — refresh to see the current state." };
-    return { error: "The review could not be started — you may not have the Level 2 Reviewer role for this scope." };
-  }
-  // Canonical transition follows the explicit start (never mutated on navigation).
-  const { data: transitioned, error: transErr } = await sb.from("inspections")
-    .update({ status: "under_review" }).eq("id", inspection_id).eq("status", "submitted").select("id").maybeSingle();
-  if (transErr || !transitioned) {
-    console.error("[review start transition]", transErr ?? "no row transitioned");
-    return { error: "The review was started, but the inspection state could not be transitioned. Contact support." };
+    if (detail.includes("REVIEW-START-VERSION"))
+      return { error: "Only the latest submitted version can be started for review." };
+    if (detail.includes("REVIEW-START-STATE") || detail.includes("REVIEW-START-RACE"))
+      return { error: "This inspection is no longer awaiting a Level 2 review. Refresh to see its current state." };
+    if (detail.includes("REVIEW-START-DENIED") || error?.code === "42501")
+      return { error: "The review could not be started — you may not have the Level 2 Reviewer role for this scope." };
+    return { error: "The review could not be started. Nothing was changed — try again." };
   }
   revalidatePath(`/reviews/${inspection_id}`);
   revalidatePath("/reviews");
-  redirect(`/reviews/${inspection_id}/started?review=${created.id}`);
+  redirect(`/reviews/${inspection_id}/started?review=${created}`);
 }
 
 export async function decide(_: DecisionResult, fd: FormData): Promise<DecisionResult> {
@@ -97,8 +97,13 @@ export async function decide(_: DecisionResult, fd: FormData): Promise<DecisionR
   const review_id = String(fd.get("review_id"));
   const decision = String(fd.get("decision"));
   const reason = String(fd.get("reason") ?? "").trim();
+  const comment = String(fd.get("comment") ?? "").trim();
+  const suppliedCorrelation = String(fd.get("correlation_id") ?? "");
+  const correlationId = UUID.test(suppliedCorrelation) ? suppliedCorrelation : crypto.randomUUID();
   const sections = fd.getAll("returned_section").map(String);
   const validDecisions = ["approve", "return", "reject"] as const;
+  if (!UUID.test(review_id))
+    return { error: "The review to decide could not be identified." };
   if (!(validDecisions as readonly string[]).includes(decision))
     return { error: "Choose a valid review decision (approve, return or reject)." };
 
@@ -124,53 +129,54 @@ export async function decide(_: DecisionResult, fd: FormData): Promise<DecisionR
     return { error: "Decision reason is mandatory for Return/Reject (FLD-REV-003 · ERR-REV-001)" };
   if (decision === "return" && sections.length === 0)
     return { error: "Return requires exact sections identified (STM-REV-003 · ERR-REV-001)" };
-  const status = decision === "approve" ? "approved" : decision === "return" ? "returned" : "rejected";
-  // DEF-WF-006 — defense in depth: the DB constraint trigger
-  // (guard_approved_requires_submission) is the authoritative guard, but fail
-  // closed here too so an approval attempt against a tampered/missing version
-  // never reaches the write.
-  if (decision === "approve") {
-    const { data: version, error: versionError } = await sb.from("submission_versions")
-      .select("id").eq("inspection_id", current.inspection_id).limit(1).maybeSingle();
-    if (versionError) {
-      console.error("[review decision version check]", versionError.message, versionError.code);
-      return { error: REVIEW_READ_ERROR };
-    }
-    if (!version) return { error: "Cannot approve — no final submitted version exists for this inspection (DEF-WF-006)." };
+  // One database transaction owns immutable decision persistence, inspection
+  // transition, notification and audit. Any failure rolls all four back.
+  const { data: result, error } = await sb.rpc("decide_review_with_handoff", {
+    p_review: review_id,
+    p_decision: decision,
+    p_reason: reason || null,
+    p_comment: comment || null,
+    p_returned_sections: decision === "return" ? sections : null,
+    p_correlation_id: correlationId,
+  });
+  if (error) {
+    console.error("[review decision rpc]", error.message, error.code);
+    const detail = `${error.message ?? ""} ${error.details ?? ""}`;
+    if (detail.includes("REVIEW-DECIDE-OWNER") || detail.includes("REVIEW-COMMENT-OWNER")
+        || detail.includes("REVIEW-DECIDE-DENIED") || error.code === "42501")
+      return { error: "Only the assigned Level 2 Reviewer can decide this review." };
+    if (detail.includes("REVIEW-DECIDE-SECTIONS"))
+      return { error: "Return requires valid sections from the submitted package." };
+    if (detail.includes("REVIEW-DECIDE-REASON"))
+      return { error: "Decision reason is mandatory for Return/Reject (FLD-REV-003 · ERR-REV-001)" };
+    if (detail.includes("REVIEW-DECIDE-SUBMISSION"))
+      return { error: "Cannot approve — the final submitted version could not be verified (DEF-WF-006)." };
+    if (detail.includes("REVIEW-COMPLIANCE-HANDOFF-EXISTS"))
+      return { error: "This approved inspection already has a Compliance handoff. Refresh before taking another action." };
+    if (detail.includes("REVIEW-DECIDE-STATE") || detail.includes("REVIEW-DECIDE-INSPECTION-STATE") || detail.includes("REVIEW-DECIDE-RACE"))
+      return { error: "This review is no longer open. Refresh before deciding." };
+    return { error: "The decision could not be recorded. Nothing was changed — try again or contact support." };
   }
-  const { data: rev, error } = await sb.from("reviews").update({
-    status, decision, decision_reason: reason || null,
-    returned_sections: decision === "return" ? sections : null,
-    decided_at: new Date().toISOString(),
-  }).eq("id", review_id).eq("status", "under_review").is("decided_at", null).select("inspection_id").maybeSingle();
-  if (error || !rev) { console.error("[review detail decision write]", error ?? "no open review row"); return { error: "The decision could not be recorded. Decided reviews are immutable — try again or contact support." }; }
-  const { data: transitioned, error: insErr } = await sb.from("inspections")
-    .update({ status }).eq("id", rev.inspection_id).eq("status", "under_review").select("id").maybeSingle();
-  if (insErr || !transitioned) {
-    console.error("[review inspection transition]", insErr ?? "no row transitioned");
-    return { error: "The decision was recorded, but the inspection state could not be transitioned. Contact support." };
-  }
-  // M06-004/006/008 — the inspector is notified on every decision (ENG-11).
-  const { data: ins, error: insReadError } = await sb.from("inspections").select("visit_id").eq("id", rev.inspection_id).maybeSingle();
-  if (insReadError) {
-    console.error("[review decision inspection read]", insReadError.message, insReadError.code);
-    return { error: "Decision recorded, but the inspector notification could not be verified." };
-  }
-  const { data: asg, error: asgReadError } = ins
-    ? await sb.from("assignments").select("inspector_id").eq("visit_id", ins.visit_id).maybeSingle()
-    : { data: null, error: null };
-  if (asgReadError) {
-    console.error("[review decision assignment read]", asgReadError.message, asgReadError.code);
-    return { error: "Decision recorded, but the inspector notification could not be queued." };
-  }
-  if (asg?.inspector_id) {
-    const n = await insertNotification(sb, {
-      event_key: "review_decision",
-      recipient: asg.inspector_id,
-      payload: { inspection_id: rev.inspection_id, decision, reason: reason || null, returned_sections: decision === "return" ? sections : null },
-    });
-    if (n.error) return { error: "Decision recorded, but the inspector notification could not be queued." };
+  const completed = result as {
+    inspection_id?: string;
+    decision?: string;
+    comment_id?: string | null;
+    handoff_id?: string | null;
+    correlation_id?: string;
+  } | null;
+  if (!completed?.inspection_id || !UUID.test(completed.inspection_id)
+      || completed.decision !== decision
+      || completed.correlation_id !== correlationId) {
+    console.error("[review decision rpc result]", "invalid or mismatched result", completed);
+    return { error: "The decision response could not be verified. Refresh the review before taking another action." };
   }
   revalidatePath("/reviews");
-  redirect("/reviews");
+  revalidatePath(`/reviews/${completed.inspection_id}`);
+  const receipt = new URLSearchParams({
+    decision: completed.decision ?? decision,
+    correlation: correlationId,
+  });
+  if (completed.comment_id && UUID.test(completed.comment_id)) receipt.set("comment", completed.comment_id);
+  if (completed.handoff_id && UUID.test(completed.handoff_id)) receipt.set("handoff", completed.handoff_id);
+  redirect(`/reviews/${completed.inspection_id}?${receipt.toString()}`);
 }

@@ -48,6 +48,7 @@ export type VioStrings = {
   needsAttention: string;
   deactivationReason: string; penaltyType: string; amount: string; duePeriod: string; template: string; none: string;
   publishCode: string; publishingCode: string; codePublished: string;
+  errors: Record<NonNullable<VioResult["error"]>, string>;
 };
 
 // SCR-ADM-040 · ENG-08 — create a violation code anchored to a clause.
@@ -81,7 +82,7 @@ export function NewViolationForm({ clauses, strings: s }: { clauses: ClauseOptio
       <div className="sq-field"><label className="sq-field__label" htmlFor="new-violation-applicability">{s.applicability}</label><input id="new-violation-applicability" className="sq-input" name="applicability" /></div>
       <div className="sq-field"><label className="sq-field__label" htmlFor="new-violation-version">{s.configurationVersion}</label><input id="new-violation-version" className="sq-input" name="configuration_version" type="number" min="1" step="1" defaultValue="1" required /></div>
       <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? s.creating : s.create}</button>
-      {state.error && <span ref={errorRef} tabIndex={-1} className="sq-validation" role="alert">{state.error}</span>}
+      {state.error && <span ref={errorRef} tabIndex={-1} className="sq-validation" role="alert">{s.errors[state.error]}</span>}
       {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓</span> {s.created}</span>}
     </form>
   );
@@ -142,7 +143,7 @@ export function AddMappingForm({ violationId, violationCode, templates, strings:
       <div className="sq-field"><label className="sq-field__label" htmlFor={`${baseId}-due`}>{s.duePeriod}</label><input id={`${baseId}-due`} className="sq-input" name="due_period_days" type="number" min="0" step="1" /></div>
       <div className="sq-field"><label className="sq-field__label" htmlFor={`${baseId}-template`}>{s.template}</label><select id={`${baseId}-template`} className="sq-select" name="template_version_id" defaultValue=""><option value="">{s.none}</option>{templates.map(template => <option key={template.id} value={template.id}>{template.label}</option>)}</select></div>
       <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.mapping : `${s.mapTo} ${violationCode}`}</button>
-      {state.error && <span ref={errorRef} tabIndex={-1} className="sq-validation" role="alert">{state.error}</span>}
+      {state.error && <span ref={errorRef} tabIndex={-1} className="sq-validation" role="alert">{s.errors[state.error]}</span>}
       {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓</span> {s.mapped}</span>}
       </div>
     </form>
@@ -151,7 +152,7 @@ export function AddMappingForm({ violationId, violationCode, templates, strings:
 
 export function PublishViolationForm({ violationId, violationCode, strings: s }: { violationId: string; violationCode: string; strings: VioStrings }) {
   const [state, formAction, pending] = useActionState<VioResult, FormData>(publishViolationCode, {});
-  return <form action={formAction} className="row"><input type="hidden" name="violation_code_id" value={violationId}/><button className="btn btn-primary btn-lg btn-touch" disabled={pending} aria-label={`${s.publishCode} ${violationCode}`}>{pending ? s.publishingCode : s.publishCode}</button>{state.error && <span className="sq-validation" role="alert">{state.error}</span>}{state.ok && <span className="badge badge-compliant" role="status">✓ {s.codePublished}</span>}</form>;
+  return <form action={formAction} className="row"><input type="hidden" name="violation_code_id" value={violationId}/><button className="btn btn-primary btn-lg btn-touch" disabled={pending} aria-label={`${s.publishCode} ${violationCode}`}>{pending ? s.publishingCode : s.publishCode}</button>{state.error && <span className="sq-validation" role="alert">{s.errors[state.error]}</span>}{state.ok && <span className="badge badge-compliant" role="status">✓ {s.codePublished}</span>}</form>;
 }
 
 export function PublishMappingForm({ mappingId, violationCode, strings: s }: { mappingId: string; violationCode: string; strings: VioStrings }) {
@@ -159,7 +160,7 @@ export function PublishMappingForm({ mappingId, violationCode, strings: s }: { m
   return <form action={formAction} className="row" style={{ gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
     <input type="hidden" name="mapping_id" value={mappingId} />
     <button className="btn btn-primary btn-lg btn-touch" aria-label={`${s.approveMapping} ${violationCode}`} disabled={pending}>{pending ? s.publishingMapping : s.approveMapping}</button>
-    {state.error ? <span className="sq-validation" role="alert">{state.error}</span> : null}
+    {state.error ? <span className="sq-validation" role="alert">{s.errors[state.error]}</span> : null}
     {state.ok ? <span className="badge badge-compliant" role="status">✓ {s.mappingPublished}</span> : null}
   </form>;
 }
@@ -182,7 +183,7 @@ export function DeactivateViolationForm({ violationId, violationCode, strings: s
       <button className="btn btn-ghost btn-touch" aria-label={`${s.deactivate} ${violationCode}`} disabled={pending}>
         <span aria-hidden="true">⏻</span> {pending ? s.deactivating : s.deactivate}
       </button>
-      {state.error && <span ref={errorRef} tabIndex={-1} className="sq-validation" role="alert">{state.error}</span>}
+      {state.error && <span ref={errorRef} tabIndex={-1} className="sq-validation" role="alert">{s.errors[state.error]}</span>}
       {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓</span> {s.deactivated}</span>}
     </form>
   );

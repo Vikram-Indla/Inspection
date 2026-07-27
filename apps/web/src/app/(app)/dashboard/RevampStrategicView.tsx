@@ -1,5 +1,7 @@
 import type { FactoryRef, ResponseRow } from "./metrics";
 import { complianceBreakdown } from "./metrics";
+import type { MetricDisplay, MethodologyEntry } from "./dashboard-format";
+import MetricStrip, { type MetricStripStrings } from "./MetricStrip";
 import styles from "./revamp-dashboard.module.css";
 
 type Locale = "en" | "ar";
@@ -9,7 +11,8 @@ const copy = (locale: Locale, en: string, ar: string) => locale === "ar" ? ar : 
 const valueOrUnavailable = (locale: Locale, value: number | null, suffix = "") =>
   value == null ? copy(locale, "Not available", "غير متاح") : `${value}${suffix}`;
 
-function MetricCard({ question, title, value, definition, example, interpretation, href, action }: {
+function MetricCard({ locale, question, title, value, definition, example, interpretation, href, action }: {
+  locale: Locale;
   question: string;
   title: string;
   value: string;
@@ -24,7 +27,7 @@ function MetricCard({ question, title, value, definition, example, interpretatio
       <span className={styles.question}>{question}</span>
       <h3>{title}</h3>
       <strong className={styles.metricValue}>{value}</strong>
-      <p className={styles.definition}><b>Definition</b> {definition}</p>
+      <p className={styles.definition}><b>{copy(locale, "Definition", "التعريف")}</b> {definition}</p>
       <p className={styles.example}>{example}</p>
       <p className={styles.interpretation}>{interpretation}</p>
       <a className={styles.action} href={href}>{action}</a>
@@ -32,12 +35,14 @@ function MetricCard({ question, title, value, definition, example, interpretatio
   );
 }
 
-export default function RevampStrategicView({ locale, metrics, factories, group, params }: {
+export default function RevampStrategicView({ locale, metrics, factories, group, params, requirementStrip, requirementStripStrings }: {
   locale: Locale;
   metrics: DashboardMetrics;
   factories: FactoryRef[];
   group: "region" | "city" | "sector" | "authority";
   params: Record<string, string>;
+  requirementStrip: { metrics: MetricDisplay[]; methodology: Record<string, MethodologyEntry> };
+  requirementStripStrings: MetricStripStrings;
 }) {
   const strategic = metrics.strategic;
   const grouped = complianceBreakdown(
@@ -58,6 +63,7 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
         <h2 className={styles.overline}>{copy(locale, "National performance", "الأداء الوطني")}</h2>
         <div className={styles.metricGrid}>
           <MetricCard
+            locale={locale}
             question={copy(locale, "Are we achieving the national inspection strategy?", "هل نحقق استراتيجية التفتيش الوطنية؟")}
             title={copy(locale, "Inspection coverage against annual target", "تغطية التفتيش مقابل المستهدف السنوي")}
             value={copy(locale, "Not configured", "غير مهيأ")}
@@ -67,6 +73,7 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             href="/planning" action={copy(locale, "Open Planning", "فتح التخطيط")}
           />
           <MetricCard
+            locale={locale}
             question={copy(locale, "How compliant is the industrial sector?", "ما مستوى امتثال القطاع الصناعي؟")}
             title={copy(locale, "National compliance rate", "معدل الامتثال الوطني")}
             value={valueOrUnavailable(locale, strategic.complianceRate, "%")}
@@ -76,11 +83,12 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             href="/analytics" action={copy(locale, "Open Analytics", "فتح التحليلات")}
           />
           <MetricCard
+            locale={locale}
             question={copy(locale, "Are inspection reports approved without excessive rework?", "هل تعتمد تقارير التفتيش دون إعادة عمل مفرطة؟")}
             title={copy(locale, "Inspection approval rate", "معدل اعتماد التفتيش")}
-            value={valueOrUnavailable(locale, strategic.approvalRate, "%")}
-            definition={copy(locale, "(Approved reports ÷ submitted reports) × 100", "(التقارير المعتمدة ÷ التقارير المقدمة) × 100")}
-            example={copy(locale, `${strategic.approvedScoped} approved of ${strategic.completedInspections} submitted.`, `${strategic.approvedScoped} تقريراً معتمداً من ${strategic.completedInspections} مقدماً.`)}
+            value={valueOrUnavailable(locale, strategic.decisionApprovalRate, "%")}
+            definition={copy(locale, "Approved Level-2 decisions ÷ all decided Level-2 outcomes", "قرارات المستوى الثاني المعتمدة ÷ جميع نتائج المستوى الثاني المحسومة")}
+            example={copy(locale, `${strategic.approvedScoped} approved of ${strategic.decidedScoped} decided outcomes.`, `${strategic.approvedScoped} نتيجة معتمدة من ${strategic.decidedScoped} نتيجة محسومة.`)}
             interpretation={copy(locale, "Approval is a review outcome and is not presented as compliance.", "الاعتماد نتيجة مراجعة ولا يُعرض على أنه امتثال.")}
             href="/reviews" action={copy(locale, "Open Review & Approval", "فتح المراجعة والاعتماد")}
           />
@@ -119,6 +127,7 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
         <h2 className={styles.overline}>{copy(locale, "Strategic intervention", "التدخل الاستراتيجي")}</h2>
         <div className={styles.metricGrid}>
           <MetricCard
+            locale={locale}
             question={copy(locale, "Which regulations generate the most violations?", "ما اللوائح التي تولد أكبر عدد من المخالفات؟")}
             title={copy(locale, "Top violated regulation", "اللائحة الأكثر مخالفة")}
             value={topViolation?.label ?? copy(locale, "Not available", "غير متاح")}
@@ -128,6 +137,7 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             href="/admin/regulations" action={copy(locale, "Open the regulation", "فتح اللائحة")}
           />
           <MetricCard
+            locale={locale}
             question={copy(locale, "Which factories require immediate intervention?", "ما المصانع التي تتطلب تدخلاً فورياً؟")}
             title={copy(locale, "Critical factories requiring intervention", "المصانع الحرجة التي تتطلب التدخل")}
             value={String(strategic.criticalFactories.length)}
@@ -137,6 +147,7 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             href="/factories" action={copy(locale, "Open Factory 360", "فتح المصنع 360")}
           />
           <MetricCard
+            locale={locale}
             question={copy(locale, "Which factories still require inspection this year?", "ما المصانع التي لا تزال تتطلب تفتيشاً هذا العام؟")}
             title={copy(locale, "Factories pending annual inspection", "المصانع بانتظار التفتيش السنوي")}
             value={copy(locale, "Not configured", "غير مهيأ")}
@@ -163,6 +174,16 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
           <p>{copy(locale, "No generated claim is shown until a configured provider returns evidence-linked output for this scope.", "لا يُعرض أي ادعاء مولد حتى يعيد مزود مهيأ مخرجات مرتبطة بالأدلة لهذا النطاق.")}</p>
           <span className={styles.provenance}>{copy(locale, "Authoritative dashboard records remain available.", "تظل سجلات لوحة القيادة المعتمدة متاحة.")}</span>
         </article>
+      </section>
+
+      <section className={styles.requirementCoverage} aria-labelledby="strategic-requirement-coverage">
+        <div className={styles.sectionHead}>
+          <div>
+            <h2 id="strategic-requirement-coverage">{copy(locale, "Strategic requirement coverage", "تغطية المتطلبات الاستراتيجية")}</h2>
+            <p>{copy(locale, "All dashboard.xlsx strategic measures are shown with their governed live or blocked state and auditable methodology.", "تُعرض جميع المقاييس الاستراتيجية في dashboard.xlsx بحالتها المباشرة أو المحجوبة المعتمدة ومنهجيتها القابلة للتدقيق.")}</p>
+          </div>
+        </div>
+        <MetricStrip metrics={requirementStrip.metrics} methodology={requirementStrip.methodology} strings={requirementStripStrings} />
       </section>
     </div>
   );

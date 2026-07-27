@@ -2,13 +2,18 @@ import { NextResponse } from "next/server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { supabaseServer } from "@/lib/supabase-server";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
+import { getLocale } from "@/lib/i18n";
 
 const csv = (value: unknown) => `"${String(value ?? "").replaceAll('"', '""')}"`;
 
 export async function GET(request: Request) {
   const sb = await supabaseServer();
-  const { data: { user }, error: authError } = await getVerifiedUser(sb);
+  const [{ data: { user }, error: authError }, locale] = await Promise.all([
+    getVerifiedUser(sb),
+    getLocale(),
+  ]);
   if (authError || !user) return NextResponse.json({ error: "auth_required" }, { status: 401 });
+  const copy = (en: string, ar: string) => locale === "ar" ? ar : en;
 
   const url = new URL(request.url);
   const q = (url.searchParams.get("q") ?? "").trim().toLowerCase();
@@ -41,12 +46,23 @@ export async function GET(request: Request) {
       && (!cutoff || !!row.inspections?.submitted_at && new Date(row.inspections.submitted_at).getTime() >= cutoff);
   });
   const lines = [
-    ["Violation ID", "Violation", "Code", "Factory", "Licence", "Region", "Issue date", "Status", "Action form", "Action due"].map(csv).join(","),
+    [
+      copy("Violation ID", "معرّف المخالفة"),
+      copy("Violation", "المخالفة"),
+      copy("Code", "الرمز"),
+      copy("Factory", "المصنع"),
+      copy("Licence", "الترخيص"),
+      copy("Region", "المنطقة"),
+      copy("Issue date", "تاريخ الإصدار"),
+      copy("Status", "الحالة"),
+      copy("Action form", "نموذج الإجراء"),
+      copy("Action due", "استحقاق الإجراء"),
+    ].map(csv).join(","),
     ...rows.map(row => {
       const factory = row.inspections?.visits?.factories;
       const action = row.action_forms?.[0];
       const closed = !!row.invalidated_at || action?.status === "closed";
-      return [row.id, row.violation_codes?.title, row.violation_codes?.code, factory?.name, factory?.license_number, factory?.region, row.inspections?.submitted_at, closed ? "Closed" : "Open", action?.form_type, action?.due_at].map(csv).join(",");
+      return [row.id, row.violation_codes?.title, row.violation_codes?.code, factory?.name, factory?.license_number, factory?.region, row.inspections?.submitted_at, closed ? copy("Closed", "مغلق") : copy("Open", "مفتوح"), action?.form_type, action?.due_at].map(csv).join(",");
     }),
   ];
   return new NextResponse(lines.join("\n"), {

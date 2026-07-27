@@ -84,7 +84,12 @@ export default function LiveOps({
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [providerFailed, setProviderFailed] = useState(false);
+  const [providerAttempt, setProviderAttempt] = useState(0);
   const markProviderFailed = useCallback(() => setProviderFailed(true), []);
+  const retryProvider = useCallback(() => {
+    setProviderFailed(false);
+    setProviderAttempt(attempt => attempt + 1);
+  }, []);
   const enRoute = inspectors.filter(inspector => inspector.state === "on_the_way").length;
   const arrived = inspectors.filter(inspector => inspector.state === "arrived").length;
   const selectedInspector = inspectors.find(inspector => inspector.id === selectedId) ?? null;
@@ -152,11 +157,14 @@ export default function LiveOps({
               <button className="sq-btn sq-btn--secondary" type="button" onClick={() => window.location.reload()}>{s.retry}</button>
             </EmptyState>
           ) : providerFailed ? (
-            <EmptyState glyph="⌖" title={s.providerFailed} bare role="status" />
+            <EmptyState glyph="⌖" title={s.providerFailed} bare role="status">
+              <button className="sq-btn sq-btn--secondary" type="button" onClick={retryProvider}>{s.retry}</button>
+            </EmptyState>
           ) : (
             <>
               <Suspense fallback={<EmptyState glyph="…" title={s.loading} bare role="status" ariaBusy />}>
                 <Map
+                  key={providerAttempt}
                   factories={factories}
                   regions={regions}
                   inspectors={inspectors}

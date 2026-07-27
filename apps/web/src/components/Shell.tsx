@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { type ReactNode } from "react";
-import { getShellRegions, getUserRoles } from "@/lib/persona";
+import { getRoleTitles, getShellRegions, getUserProfile, getUserRoles } from "@/lib/persona";
 import { useT } from "@/lib/i18n";
 import { getServerUser } from "@/lib/supabase-server";
 import { buildShellNavigation } from "@/lib/shell-navigation";
@@ -12,16 +12,24 @@ const loadShellData = async () => {
     useT(),
     getServerUser(),
   ]);
-  if (!user) return { t, locale, user, roles: [] as string[], regions: [] as string[] };
-  const [{ data: roleRows }, regionRead] = await Promise.all([
+  if (!user) {
+    return { t, locale, user, roles: [] as string[], roleTitles: [] as string[], regions: [] as string[], profile: null };
+  }
+  const [{ data: roleRows }, regionRead, profileRead, titleRead] = await Promise.all([
     getUserRoles(user.id),
     getShellRegions(),
+    getUserProfile(user.id),
+    getRoleTitles(),
   ]);
   const roles = Array.from(new Set((roleRows ?? []).map(row => row.role_key))).sort();
+  const titleByKey = new Map((titleRead.data ?? []).map(row => [row.role_key, row.title]));
+  // A role_key with no configured title falls back to the key itself; it is
+  // never dropped, because a silently shorter list would understate access.
+  const roleTitles = roles.map(role => titleByKey.get(role) ?? role);
   const regions = regionRead.error
     ? []
     : Array.from(new Set((regionRead.data ?? []).map(row => row.region).filter((value): value is string => !!value))).sort();
-  return { t, locale, user, roles, regions };
+  return { t, locale, user, roles, roleTitles, regions, profile: profileRead.data ?? null };
 };
 
 /**
@@ -34,7 +42,7 @@ export function preloadShell(current: string) {
 }
 
 export async function AppShell({ children }: { children: ReactNode }) {
-  const { t, locale, user, roles, regions } = await loadShellData();
+  const { t, locale, user, roles, roleTitles, regions, profile } = await loadShellData();
   if (!user) {
     // SCR-PWA-001: a deep link into the field channel while signed out lands
     // on the field-specific biometric sign-in (SAQEEL Field Login.dc.html),
@@ -163,6 +171,9 @@ export async function AppShell({ children }: { children: ReactNode }) {
       locale={locale}
       languageHref={languageHref}
       email={user.email ?? user.id}
+      displayName={profile?.full_name?.trim() || (user.email ?? user.id).split("@")[0]}
+      roleTitles={roleTitles}
+      homeRegion={profile?.region?.trim() || null}
       roles={roles}
       regions={regions}
     >

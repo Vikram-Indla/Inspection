@@ -5,12 +5,22 @@ import FactoryList, { type FactoryRow, type FactoryListStrings } from "./Factory
 import EmptyState from "@/components/EmptyState";
 import RevampFactory360Portfolio, { type RevampFactoryRow } from "./RevampFactory360Portfolio";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
+import { resolveFactory360Permissions } from "@/lib/factory360/dossier";
 
 // SCR-WEB-400 / M07-001 — factory registry (Factory 360 entry point).
 export default async function Factories() {
   preloadShell("/factories");
-  const { t } = await useT();
+  const { t, locale } = await useT();
   const sb = await supabaseServer();
+  const permissions = await resolveFactory360Permissions(sb);
+  if (!permissions["view_factory_360"]) {
+    return (
+      <Shell current="/factories" title={t("f360.title", "Factory 360")}>
+        <EmptyState glyph="⛔" title={t("f360.permission.title", "Factory 360 access required")}
+          body={t("f360.permission.body", "You do not have access to factory profiles.")} />
+      </Shell>
+    );
+  }
   const { data: fs, error } = await sb.from("factories")
     .select("id, factory_code, name, cr_number, region, city, activity_class, risk_band, risk_score, source_synced_at, is_temporary, industrial_licenses(id, commercial_registration_id, license_number, plant_number, license_type, status, stage)")
     .order("risk_score", { ascending: false });
@@ -82,7 +92,12 @@ export default async function Factories() {
         <EmptyState glyph="🏭" title={t("f360.empty.title", "No factories in the list")}
           body={t("f360.empty.desc", "Factory identity records sync from the national source (M07-002).")} />
       )}
-      {!error && !isEmpty && <RevampFactory360Portfolio factories={selectedPortfolio} crNumber={selectedCr || "—"} />}
+      {!error && !isEmpty && <RevampFactory360Portfolio
+        factories={selectedPortfolio}
+        crNumber={selectedCr || "—"}
+        canCreateInspection={permissions["create_inspection"]}
+        locale={locale}
+      />}
     </Shell>
   );
 }

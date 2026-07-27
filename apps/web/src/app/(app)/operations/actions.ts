@@ -4,7 +4,59 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { decideActiveCancellation as decideActiveCancellationRpc } from "@/lib/execution";
 
-export type OpsResult = { error?: string; ok?: boolean };
+export type OpsResult = {
+  error?: string;
+  ok?: boolean;
+  receiptId?: string;
+  correlationId?: string;
+};
+
+// CR-446 · WA-AC-0446 — authorization, scope validation, receipt persistence
+// and audit append are one database transaction. The client must not generate
+// the CSV until this action returns the matching receipt.
+export async function authorizeOperationsExport(_: OpsResult, formData: FormData): Promise<OpsResult> {
+  const sb = await supabaseServer();
+  const { data: { user } } = await getVerifiedUser(sb);
+  if (!user) return { error: "Session expired — sign in again." };
+
+  const dataset = String(formData.get("dataset") ?? "");
+  const rowCount = Number(String(formData.get("row_count") ?? ""));
+  const correlationId = String(formData.get("correlation_id") ?? "");
+  const rawFilters = String(formData.get("filters") ?? "");
+  if (!["visits", "alerts", "kpis"].includes(dataset)
+      || !Number.isInteger(rowCount) || rowCount < 0
+      || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(correlationId)) {
+    return { error: "The export request is invalid. No file was generated." };
+  }
+  let filters: Record<string, unknown>;
+  try {
+    filters = JSON.parse(rawFilters) as Record<string, unknown>;
+    if (!filters || Array.isArray(filters) || typeof filters !== "object") throw new Error("invalid");
+  } catch {
+    return { error: "The export filters are invalid. No file was generated." };
+  }
+
+  const { data, error } = await sb.rpc("authorize_operations_export", {
+    p_dataset: dataset,
+    p_filters: filters,
+    p_row_count: rowCount,
+    p_correlation_id: correlationId,
+  });
+  if (error) {
+    console.error("[operations authorize export]", error);
+    return { error: "Export authorization is unavailable or outside your permitted scope. No file was generated." };
+  }
+  const receipt = data as {
+    receipt_id?: string; dataset?: string; row_count?: number; correlation_id?: string;
+  } | null;
+  if (!receipt?.receipt_id
+      || receipt.dataset !== dataset
+      || Number(receipt.row_count) !== rowCount
+      || receipt.correlation_id !== correlationId) {
+    return { error: "The export receipt did not match this dataset. No file was generated." };
+  }
+  return { ok: true, receiptId: receipt.receipt_id, correlationId };
+}
 
 // SB12 · M08 — Operations Center write leg: acknowledge / close a corrective action.
 // RLS policy `actions_rw` (0002_rbac_audit.sql) governs: USING admits ops/reviewer/auditor

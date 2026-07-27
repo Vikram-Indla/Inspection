@@ -30,9 +30,12 @@ export default async function ComplianceLibrary({
   const authority = typeof sp.authority === "string" ? sp.authority : "";
   const selectedId = typeof sp.libraryId === "string" ? sp.libraryId : "";
   const status = typeof sp.status === "string" ? sp.status : "";
+  const hasFilters = !!query || !!authority || !!status;
   const { data, error } = await sb.from("regulations")
     .select("id,code,title,issuing_authority,status,version_label,effective_from,regulation_clauses(id,clause_ref,inspection_items(id,code,title))")
     .order("title");
+  const correlationId = error ? crypto.randomUUID() : null;
+  if (error) console.error(`[compliance-library:${correlationId}]`, error.message, error.code);
   const rows = (data ?? []) as unknown as RegulationRow[];
   const authorities = Array.from(new Set(rows.map(row => row.issuing_authority ?? "Other"))).sort();
   const statuses = Array.from(new Set(rows.map(row => row.status))).sort();
@@ -145,9 +148,9 @@ export default async function ComplianceLibrary({
 
         <main className="rv-library__workspace">
           {error ? (
-            <div className="sq-banner sq-banner--critical" role="alert"><strong>Compliance Library unavailable.</strong> The read failed; no empty result is claimed.</div>
+            <div className="sq-banner sq-banner--critical" role="alert"><strong>Compliance Library unavailable.</strong> The read failed; no empty result is claimed. Reference {correlationId}.</div>
           ) : !selected ? (
-            <section className="sq-state"><h2>No regulations in scope</h2><p>The RLS-scoped read succeeded and returned no regulations.</p></section>
+            <section className="sq-state"><h2>{hasFilters && rows.length > 0 ? "No regulations match the filters" : "No regulations in scope"}</h2><p>{hasFilters && rows.length > 0 ? "The regulation register is not empty. Clear or change the current filters." : "The RLS-scoped read succeeded and returned no regulations."}</p></section>
           ) : (
             <>
               <header className="rv-library__header">

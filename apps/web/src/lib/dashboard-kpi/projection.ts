@@ -27,6 +27,12 @@ export type ProjectionContext = {
   refreshedAt: string | null;
   generatedAtMs: number;
   failedSources: string[];
+  /**
+   * Governed target per metric key from the published dashboard configuration.
+   * A key with no entry stays `configured: false` — the projection never
+   * substitutes a default for a target the business has not published.
+   */
+  targets?: Record<string, number>;
 };
 
 /** Map a non-live implementation status to an honest source status. */
@@ -46,6 +52,8 @@ function statusFor(def: KpiDefinition): MetricSourceStatus {
 /** Build a SharedMetric shell from the registry definition. */
 function base(def: KpiDefinition, ctx: ProjectionContext): SharedMetric {
   const live = def.implementation === "implemented";
+  const target = ctx.targets?.[def.metricKey];
+  const configuredTarget = typeof target === "number";
   return {
     metricId: def.metricId,
     category: def.category,
@@ -58,7 +66,11 @@ function base(def: KpiDefinition, ctx: ProjectionContext): SharedMetric {
     scope: ctx.scope,
     exclusions: def.metricKey.includes("compliance") ? [...COMPLIANCE_EXCLUSIONS] : [],
     comparison: null,
-    target: { value: null, policyVersionId: ctx.policyVersionId, configured: false },
+    target: {
+      value: configuredTarget ? target : null,
+      policyVersionId: ctx.policyVersionId,
+      configured: configuredTarget,
+    },
     dimensions: [],
     breakdown: null,
     drill: { route: def.drillRoute, filters: {} },
@@ -121,13 +133,13 @@ export function buildDashboardKpiProjection(
       case "STR-KPI-004": // Level-2 decision mix (separate from compliance)
         out.push(
           withValue(metric, {
-            value: s.approvedScoped,
+            value: s.decisionApprovalRate,
             numerator: s.approvedScoped,
-            denominator: s.completedInspections,
+            denominator: s.decidedScoped,
             breakdown: [
-              { labelRef: "approve", value: s.approvedScoped },
-              { labelRef: "return", value: o.returnedRows.length },
-              { labelRef: "reject", value: o.rejectedRows.length },
+              { labelRef: "approve", value: s.decisionApprovalRate ?? 0 },
+              { labelRef: "return", value: s.decisionReturnRate ?? 0 },
+              { labelRef: "reject", value: s.decisionRejectRate ?? 0 },
             ],
           }),
         );
@@ -135,22 +147,39 @@ export function buildDashboardKpiProjection(
       case "STR-KPI-006": // Cancellation rate
         out.push(
           withValue(metric, {
-            value: o.planned > 0 ? Math.round((o.cancelled / (o.planned + o.cancelled)) * 100) : null,
+            value: o.cancellationDenominator > 0 ? Math.round((o.cancelled / o.cancellationDenominator) * 100) : null,
             numerator: o.cancelled,
-            denominator: o.planned + o.cancelled,
+            denominator: o.cancellationDenominator,
             breakdown: metrics.operational.cancellationReasons.map((r) => ({ labelRef: r.label, value: r.value })),
+          }),
+        );
+        break;
+      case "STR-KPI-009": // Checklist items grouped by issuing authority
+        out.push(
+          withValue(metric, {
+            value: s.activePublishedChecklistItems,
+            numerator: s.activePublishedChecklistItems,
+            breakdown: s.checklistItemsByAuthority.map(row => ({ labelRef: row.label, value: row.value })),
+            dimensions: [{ key: "issuing_authority", labelRef: "issuing_authority" }],
+            evidenceRefs: [`inspection_items:${s.activePublishedChecklistItems}`],
+          }),
+        );
+        break;
+      case "STR-KPI-010": // Visits per factory, compared across stored risk bands
+        out.push(
+          withValue(metric, {
+            value: null,
+            breakdown: s.riskAttention.map(row => ({ labelRef: row.label, value: row.ratio ?? 0 })),
+            dimensions: [{ key: "risk_band", labelRef: "risk_band" }],
+            evidenceRefs: s.riskAttention.map(row => `risk_band:${row.label}:visits=${row.visits}:factories=${row.factories}`),
           }),
         );
         break;
       case "OPS-KPI-001": // Visit pipeline
         out.push(
           withValue(metric, {
-            value: o.planned,
-            breakdown: [
-              { labelRef: "planned", value: o.planned },
-              { labelRef: "completed", value: o.completed },
-              { labelRef: "cancelled", value: o.cancelled },
-            ],
+            value: o.pipelineTotal,
+            breakdown: o.pipeline.map(row => ({ labelRef: row.label, value: row.value })),
           }),
         );
         break;
@@ -158,7 +187,7 @@ export function buildDashboardKpiProjection(
         out.push(withValue(metric, { value: o.activeField }));
         break;
       case "OPS-KPI-004": // Pending approvals
-        out.push(withValue(metric, { value: o.awaitingRows.length }));
+        out.push(withValue(metric, { value: o.pendingApprovalsCount }));
         break;
       case "OPS-KPI-006": // Today's schedule load by inspector
         out.push(

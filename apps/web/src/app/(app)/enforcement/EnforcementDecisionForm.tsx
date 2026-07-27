@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { recordEnforcementDecision, type EnforcementDecisionResult } from "./actions";
 
 type Strings = {
@@ -26,10 +26,13 @@ export default function EnforcementDecisionForm({
     {},
   );
   const [decision, setDecision] = useState<"approved" | "rejected">("approved");
+  const [idempotencyKey, setIdempotencyKey] = useState("");
+  useEffect(() => setIdempotencyKey(crypto.randomUUID()), []);
 
   return (
     <form action={action} className="stack" style={{ gap: "var(--space-3)" }}>
       <input type="hidden" name="recommendation_id" value={recommendationId} />
+      <input type="hidden" name="idempotency_key" value={idempotencyKey} />
       <div className="row" style={{ gap: "var(--space-4)", flexWrap: "wrap" }}>
         <label className="sq-choice">
           <input

@@ -3,7 +3,13 @@
 // method cards as a section of the /planning landing — exact routes from the
 // pre-convergence chooser (/planning/bulk, /planning/single, /planning/immediate)
 // with no package-mandatory gating (packages are optional, PLN-CON-003).
-import { useState } from "react";
+//
+// This component owns the whole command bar, not just its own button. The
+// revealed method cards are a sibling of the bar, never a child of it:
+// .sq-planning-commandbar is a wrapping flex row, so a panel rendered inside
+// it becomes a flex item and collapses into a narrow column beside the
+// trigger, overlapping the insights panel below.
+import { type ReactNode, useState } from "react";
 
 export type CreateVisitMethod = { glyph: string; title: string; desc: string; href: string };
 
@@ -12,22 +18,31 @@ export type CreateVisitSectionStrings = {
   oneMethodNote: string;
 };
 
-export default function CreateVisitSection({ methods, strings }: { methods: CreateVisitMethod[]; strings: CreateVisitSectionStrings }) {
+export default function CreateVisitSection({ methods, strings, canCreate, children }: {
+  methods: CreateVisitMethod[];
+  strings: CreateVisitSectionStrings;
+  canCreate: boolean;
+  children: ReactNode;
+}) {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <button type="button" className="sq-btn" aria-expanded={open} onClick={() => setOpen(v => !v)}>
-        {strings.createLabel}
-      </button>
-      {open && (
-        <section aria-label={strings.createLabel}>
-          <div className="web-methods" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: "var(--space-6)" }}>
+      <div className="sq-planning-commandbar">
+        {children}
+        {canCreate && (
+          <button type="button" className="sq-btn" aria-expanded={open} aria-controls="plan-create-methods"
+            onClick={() => setOpen(v => !v)}>
+            {strings.createLabel}
+          </button>
+        )}
+      </div>
+      {canCreate && open && (
+        <section id="plan-create-methods" className="sq-stack" aria-label={strings.createLabel}>
+          <div className="sq-typecards">
             {methods.map(m => (
-              <a key={m.href} href={m.href} className="sq-surface sq-panel"
-                style={{ padding: "var(--space-8)", display: "flex", flexDirection: "column", gap: "var(--space-3)", textDecoration: "none", color: "inherit" }}>
-                <span style={{ fontSize: 22 }}>{m.glyph}</span>
-                <h3>{m.title}</h3>
-                <p className="sq-caption">{m.desc}</p>
+              <a key={m.href} href={m.href} className="sq-typecard">
+                <span className="sq-typecard__title">{m.title}</span>
+                <span className="sq-typecard__meta">{m.desc}</span>
               </a>
             ))}
           </div>

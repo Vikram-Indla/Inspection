@@ -4,12 +4,7 @@ import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import EmptyState from "@/components/EmptyState";
 import {
-  NewRegulationForm,
-  PublishRegulation,
-  AddClauseForm,
-  AddRegulationAttachment,
-  DeactivateRegulation,
-  EditRegulationDraft,
+  RegulationLifecycleControl,
   RegulationRegister,
   type RegStrings,
   type RegRowLite,
@@ -42,6 +37,7 @@ type RawClause = {
 };
 type RawReg = {
   id: string;
+  target_legacy_id: string | null;
   code: string;
   title: string;
   issuing_authority: string | null;
@@ -56,8 +52,30 @@ type RawReg = {
   created_by: string | null;
   approved_by: string | null;
   published_at: string | null;
+  clauses_status: "verified" | "verified_unknown";
+  attachments_status: "verified" | "verified_unknown";
   regulation_attachments: { id: string; file_name: string; storage_path: string; media_type: string | null; sha256: string | null; created_at: string }[] | null;
   regulation_clauses: RawClause[] | null;
+};
+type LibraryRow = {
+  entity_id: string;
+  target_legacy_id: string | null;
+  code: string | null;
+  title: string | null;
+  issuing_authority: string | null;
+  version_label: string | null;
+  created_at: string | null;
+  created_by: string | null;
+  approved_by: string | null;
+  operational_status: string;
+  release_date: string | null;
+  deactivated_at: string | null;
+  deactivation_reason: string | null;
+  published_at: string | null;
+  clauses: RawClause[] | null;
+  clauses_status: "verified" | "verified_unknown";
+  attachments: RawReg["regulation_attachments"];
+  attachments_status: "verified" | "verified_unknown";
 };
 
 // unknown ≠ zero: null counts mean the embedded read could not be resolved.
@@ -82,6 +100,7 @@ export default async function Regulations({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { t, locale } = await useT();
+  const copy = (en: string, ar: string) => locale === "ar" ? ar : en;
   const sb = await supabaseServer();
 
   const sp = await searchParams;
@@ -97,12 +116,33 @@ export default async function Regulations({
   const isReviewer = roles.has("reviewer");
 
   const { data: regsData, error: regsError } = await sb
-    .from("regulations")
+    .from("compliance_regulation_library")
     .select(
-      "id, code, title, issuing_authority, status, created_at, effective_from, effective_to, deactivated_at, version_label, supersedes_id, deactivation_reason, created_by, approved_by, published_at, regulation_attachments(id, file_name, storage_path, media_type, sha256, created_at), regulation_clauses(id, clause_ref, title, applicability, legal_source, inspection_items(id, code))",
+      "entity_id,target_legacy_id,code,title,issuing_authority,version_label,created_at,created_by,approved_by,operational_status,release_date,deactivated_at,deactivation_reason,published_at,clauses,clauses_status,attachments,attachments_status",
     )
     .order("code");
-  const rows = (regsData ?? []) as unknown as RawReg[];
+  const rows = ((regsData ?? []) as unknown as LibraryRow[]).map((row): RawReg => ({
+    id: row.entity_id,
+    target_legacy_id: row.target_legacy_id,
+    code: row.code ?? "Not configured",
+    title: row.title ?? "Not configured",
+    issuing_authority: row.issuing_authority,
+    status: row.operational_status,
+    created_at: row.created_at,
+    effective_from: row.release_date,
+    effective_to: null,
+    deactivated_at: row.deactivated_at,
+    version_label: row.version_label ?? String(row.entity_id).slice(0, 8),
+    supersedes_id: null,
+    deactivation_reason: row.deactivation_reason,
+    created_by: row.created_by,
+    approved_by: row.approved_by,
+    published_at: row.published_at,
+    regulation_attachments: row.attachments,
+    regulation_clauses: row.clauses,
+    clauses_status: row.clauses_status,
+    attachments_status: row.attachments_status,
+  }));
 
   const strings: RegStrings = {
     code: t("admin.reg.form.code", "Code"),
@@ -144,8 +184,8 @@ export default async function Regulations({
     filterDraft: t("admin.reg.r1.filter.draft", "Draft {n}"),
     filterDeactivated: t("admin.reg.r1.filter.deactivated", "Deactivated {n}"),
     filterLegend: t("admin.reg.r1.filter.legend", "Filter by lifecycle"),
-    statusPublished: t("admin.reg.r1.status.published", "Published"),
-    statusDraft: t("admin.reg.r1.status.draft", "Draft"),
+    statusPublished: t("admin.reg.r1.status.active", copy("Active", "فعال")),
+    statusDraft: t("admin.reg.r1.status.scheduled", copy("Scheduled", "مجدول")),
     statusDeactivated: t("admin.reg.r1.status.deactivated", "Deactivated"),
     openDossier: t("admin.reg.r1.openDossier", "Open dossier"),
     filteredEmptyTitle: t("admin.reg.r1.filteredEmpty.title", "No regulations match"),
@@ -238,7 +278,7 @@ export default async function Regulations({
       if (data?.signedUrl) attachmentUrls[attachment.id] = data.signedUrl;
     }));
     const { data: auditData, error: auditError } = reg && isWriter
-      ? await sb.rpc("admin_configuration_audit", { p_object_type: "regulations", p_object_id: reg.id })
+      ? await sb.rpc("compliance_regulation_audit", { p_entity_id: reg.id })
       : { data: null, error: null };
     const auditEvents = Array.isArray(auditData) ? auditData as Array<{
       id: number; actor: string | null; action: string; occurred_at: string;
@@ -273,9 +313,9 @@ export default async function Regulations({
                     <> · {strings.versionLabel} <bdi dir="ltr" className="numeric">{reg.version_label}</bdi></>
                   </p>
                 </div>
-                <span className={`sq-lozenge ${reg.status === "published" ? "sq-lozenge--success" : reg.status === "deactivated" ? "sq-lozenge--critical" : "sq-lozenge--warning"}`}>
-                  <span aria-hidden="true">{reg.status === "published" ? "●" : reg.status === "deactivated" ? "✕" : "◌"}</span>{" "}
-                  {reg.status === "published" ? strings.statusPublished : reg.status === "deactivated" ? t("admin.reg.status.deactivated", "Deactivated") : strings.statusDraft}
+                <span className={`sq-lozenge ${reg.status === "active" ? "sq-lozenge--success" : reg.status === "deactivated" ? "sq-lozenge--critical" : "sq-lozenge--warning"}`}>
+                  <span aria-hidden="true">{reg.status === "active" ? "●" : reg.status === "deactivated" ? "✕" : "◷"}</span>{" "}
+                  {reg.status === "active" ? strings.statusPublished : reg.status === "deactivated" ? t("admin.reg.status.deactivated", "Deactivated") : strings.statusDraft}
                 </span>
               </div>
               <p className="t-caption" style={{ margin: 0 }}>
@@ -285,7 +325,9 @@ export default async function Regulations({
 
             <section className="panel stack" style={{ padding: "var(--space-6)", gap: "var(--space-3)" }} aria-labelledby="reg-attachments-h">
               <h3 id="reg-attachments-h" style={{ margin: 0 }}>{t("admin.reg.attachments.heading", "Source attachments")}</h3>
-              {attachments.length === 0 ? (
+              {reg.attachments_status === "verified_unknown" ? (
+                <p className="t-caption" role="status">{t("admin.reg.attachments.unknown", "Attachment footprint is unknown for this canonical version; no zero claim is made.")}</p>
+              ) : attachments.length === 0 ? (
                 <p className="t-caption" role="status">{t("admin.reg.attachments.empty", "No attachment metadata recorded — verified zero.")}</p>
               ) : (
                 <ul className="stack" style={{ margin: 0, paddingInlineStart: "var(--space-6)" }}>
@@ -295,7 +337,6 @@ export default async function Regulations({
                   </li>)}
                 </ul>
               )}
-              {isWriter && reg.status === "draft" ? <AddRegulationAttachment regulationId={reg.id} strings={strings} /> : null}
               <p className="t-caption" style={{ margin: 0 }}>{t("admin.reg.attachments.truth", "Files are uploaded to governed private storage, checksummed, and retrieved through short-lived signed links.")}</p>
             </section>
 
@@ -355,39 +396,55 @@ export default async function Regulations({
               </p>
             </section>
 
-            {/* Writer actions — proven legs only */}
+            {/* Configuration content is changed only through a governed request. */}
             {isWriter ? (
               <section className="panel stack" style={{ padding: "var(--space-6)", gap: "var(--space-4)" }} aria-labelledby="reg-actions-h">
-                <h3 id="reg-actions-h" style={{ margin: 0 }}>{t("admin.reg.r1.detail.actions.heading", "Author & publish")}</h3>
-
-                {reg.status === "draft" ? <>
-                  <EditRegulationDraft regulation={{ id: reg.id, title: reg.title, issuingAuthority: reg.issuing_authority, effectiveFrom: reg.effective_from }} strings={strings} />
-                  <AddClauseForm regulationId={reg.id} strings={strings} />
-                </> : null}
-
-                {/* S04: the action performs the same mapped-clause validation shown here. */}
-                {reg.status === "draft" ? (
-                  <div className="stack" style={{ gap: "var(--space-2)" }}>
-                    <div className="row" style={{ gap: "var(--space-4)", alignItems: "center", flexWrap: "wrap" }}>
-                      <PublishRegulation regulationId={reg.id} strings={strings} />
-                      <span className="t-caption">{t("admin.reg.r1.detail.publish.direct", "Publish validates that at least one clause exists and every clause maps to an inspection item. Maker-checker rejects self-approval, and a successful transition is audited.")}</span>
-                    </div>
-                    <div className={`sq-banner ${unmappedClauses > 0 || clauses.length === 0 ? "sq-banner--warning" : ""}`} role={unmappedClauses > 0 || clauses.length === 0 ? "alert" : "status"}>
-                      <strong><span aria-hidden="true">{unmappedClauses > 0 || clauses.length === 0 ? "⚠" : "✓"}</span> {t("admin.reg.r1.detail.validation.title", "Publish readiness")}</strong>{" "}
-                      {clauses.length === 0
-                        ? t("admin.reg.r1.detail.validation.noClauses", "Blocked: add at least one clause.")
-                        : unmappedClauses > 0
-                          ? fill(t("admin.reg.r1.detail.validation.unmapped", "Blocked: {n} clause(s) have no mapped inspection item."), { n: unmappedClauses })
-                          : t("admin.reg.r1.detail.validation.ready", "Ready: every clause has at least one mapped inspection item.")}
-                    </div>
+                <h3 id="reg-actions-h" style={{ margin: 0 }}>{t("admin.reg.r1.detail.actions.heading", "Governed configuration")}</h3>
+                <div className="sq-banner sq-banner--immutable" role="note">
+                  <strong><span aria-hidden="true">🔒</span> {t("admin.reg.requestOnly.title", copy("Request-controlled content", "محتوى خاضع لطلب تغيير"))}</strong>{" "}
+                  {t("admin.reg.requestOnly.body", copy("Create and modify operations, including clauses, attachments, release dates, and successor versions, must be completed through a Compliance Configuration Request. The currently approved version remains available until that request is approved and published.", "يجب تنفيذ عمليات الإنشاء والتعديل، بما فيها البنود والمرفقات وتواريخ الإصدار والإصدارات اللاحقة، من خلال طلب تهيئة الامتثال. ويظل الإصدار المعتمد حالياً متاحاً حتى اعتماد الطلب ونشره."))}
+                </div>
+                <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap" }}>
+                  <a className="btn btn-primary btn-lg btn-touch" href="/admin/compliance-requests/new">
+                    {t("admin.reg.requestOnly.create", copy("Create configuration request", "إنشاء طلب تهيئة"))}
+                  </a>
+                  <a className="btn btn-secondary sq-link btn-touch" href="/admin/compliance-requests">
+                    {t("admin.reg.requestOnly.view", copy("View configuration requests", "عرض طلبات التهيئة"))}
+                  </a>
+                </div>
+                {reg.status !== "deactivated" ? (
+                  <div className={`sq-banner ${unmappedClauses > 0 || clauses.length === 0 ? "sq-banner--warning" : ""}`} role={unmappedClauses > 0 || clauses.length === 0 ? "alert" : "status"}>
+                    <strong><span aria-hidden="true">{unmappedClauses > 0 || clauses.length === 0 ? "⚠" : "✓"}</span> {t("admin.reg.r1.detail.validation.title", "Publication dependency status")}</strong>{" "}
+                    {clauses.length === 0
+                      ? t("admin.reg.r1.detail.validation.noClauses", "Blocked: at least one clause is required.")
+                      : unmappedClauses > 0
+                        ? fill(t("admin.reg.r1.detail.validation.unmapped", "Blocked: {n} clause(s) have no mapped inspection item."), { n: unmappedClauses })
+                        : t("admin.reg.r1.detail.validation.ready", "Every clause has at least one mapped inspection item. Approval and publication still occur through the request workflow.")}
                   </div>
-                ) : reg.status === "published" ? (
-                  <div className="sq-banner sq-banner--immutable" role="note">
-                    <strong><span aria-hidden="true">🔒</span> {t("admin.reg.r1.detail.published.title", "Published — immutable at the database")}</strong>{" "}
-                    {t("admin.reg.r1.detail.published.body", "Published regulation content is immutable at the database boundary. Create a draft with the same code and a new version label to publish a governed successor; the prior version is then deactivated and linked automatically.")}
-                    <DeactivateRegulation regulationId={reg.id} strings={strings} />
-                  </div>
-                ) : <div className="sq-banner sq-banner--immutable" role="note"><strong><span aria-hidden="true">🔒</span> {t("admin.reg.deactivated.readonly", "Deactivated — read-only")}</strong></div>}
+                ) : null}
+                <p className="t-caption" style={{ margin: 0 }}>
+                  {t("admin.reg.operationalTransition.truth", copy("Lifecycle changes are atomic and audited. Deactivation cascades future-use unavailability to dependent items, violations, and penalties while preserving historical versions. Reactivation never reactivates children.", "تغييرات دورة الحياة ذرّية ومدققة. يؤدي إلغاء التفعيل إلى منع الاستخدام المستقبلي للبنود والمخالفات والجزاءات التابعة مع الحفاظ على الإصدارات التاريخية. ولا يعيد التفعيل تفعيل العناصر التابعة."))}
+                </p>
+                <RegulationLifecycleControl
+                  entityId={reg.id}
+                  operationalStatus={reg.status}
+                  labels={{
+                    activationReason: t("admin.reg.lifecycle.activationReason", copy("Activation reason", "سبب التفعيل")),
+                    deactivationReason: t("admin.reg.lifecycle.deactivationReason", copy("Deactivation reason", "سبب إلغاء التفعيل")),
+                    applying: t("admin.reg.lifecycle.applying", copy("Applying…", "جارٍ التطبيق…")),
+                    activate: t("admin.reg.lifecycle.activate", copy("Activate regulation", "تفعيل اللائحة")),
+                    deactivate: t("admin.reg.lifecycle.deactivate", copy("Deactivate regulation", "إلغاء تفعيل اللائحة")),
+                    alreadyMatched: t("admin.reg.lifecycle.alreadyMatched", copy("State already matched.", "الحالة مطابقة بالفعل.")),
+                    changedTo: t("admin.reg.lifecycle.changedTo", copy("Lifecycle changed to {status}.", "تم تغيير دورة الحياة إلى {status}.")),
+                    cascaded: t("admin.reg.lifecycle.cascaded", copy("Cascaded: {items} items, {violations} violations, {penalties} penalties.", "تم تطبيق التغيير على: {items} بنود، {violations} مخالفات، {penalties} جزاءات.")),
+                    childrenNotReactivated: t("admin.reg.lifecycle.childrenNotReactivated", copy("Child configurations were not reactivated.", "لم تتم إعادة تفعيل التهيئات التابعة.")),
+                    missingReference: t("admin.reg.lifecycle.missingReference", copy("Missing regulation reference.", "مرجع اللائحة مفقود.")),
+                    reasonRequired: t("admin.reg.lifecycle.reasonRequired", copy("A lifecycle reason is required.", "سبب تغيير دورة الحياة مطلوب.")),
+                    denied: t("admin.reg.lifecycle.denied", copy("You are not authorized to change regulation lifecycle state.", "ليست لديك صلاحية تغيير حالة دورة حياة اللائحة.")),
+                    notFound: t("admin.reg.lifecycle.notFound", copy("The regulation no longer exists or is outside your scope.", "اللائحة غير موجودة أو خارج نطاق صلاحيتك.")),
+                    providerError: t("admin.reg.lifecycle.providerError", copy("The lifecycle change could not be completed. Retry safely.", "تعذر إكمال تغيير دورة الحياة. أعد المحاولة بأمان.")),
+                  }}
+                />
               </section>
             ) : null}
 
@@ -439,15 +496,20 @@ export default async function Regulations({
       {readOnlyBanner}
       {libraryTabs}
 
-      {isWriter ? <div className="sq-banner sq-banner--warning" role="note"><strong>Legacy compatibility authoring.</strong>{" "}Direct regulation controls remain temporarily available for continuity. New or modified governed configuration should begin in a Compliance Configuration Request; this library remains the published source of truth.</div> : null}
-
-      {isWriter ? <NewRegulationForm strings={strings} /> : null}
+      {isWriter ? (
+        <div className="sq-banner" role="note">
+          <strong>{t("admin.reg.requestOnly.title", copy("Request-controlled content", "محتوى خاضع لطلب تغيير"))}</strong>{" "}
+          {t("admin.reg.library.requestOnly", copy("This library is the read and discovery surface. Create and modify operations begin in a Compliance Configuration Request; approved historical versions remain unchanged.", "هذه المكتبة مخصصة للعرض والاستكشاف. تبدأ عمليات الإنشاء والتعديل من طلب تهيئة الامتثال، وتظل الإصدارات التاريخية المعتمدة دون تغيير."))}
+          {" "}
+          <a className="sq-link" href="/admin/compliance-requests/new">{t("admin.reg.requestOnly.create", copy("Create configuration request", "إنشاء طلب تهيئة"))}</a>
+        </div>
+      ) : null}
 
       {regsError ? null : rows.length === 0 ? (
         // S03 EMPTY — verified zero (read succeeded, genuinely no regulations)
         <EmptyState role="status" glyph="📜" title={t("admin.reg.r1.empty.title", "No regulations configured")}
           body={isWriter
-            ? t("admin.reg.r1.empty.body.writer", "The read succeeded — the library is genuinely empty. Create the first regulation above (MVP1-M09-001: regulations are the parents of inspection items).")
+            ? t("admin.reg.r1.empty.body.writer", "The read succeeded — the library is genuinely empty. Create the first governed configuration through a Compliance Configuration Request.")
             : t("admin.reg.r1.empty.body", "The read succeeded — the library is genuinely empty (MVP1-M09-001: regulations are the parents of inspection items).")} />
       ) : (
         <RegulationRegister rows={lite} strings={strings} />

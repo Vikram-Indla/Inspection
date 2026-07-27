@@ -41,7 +41,10 @@ export class ResendEmailAdapter implements DeliveryAdapter {
 /** Register the Resend email adapter iff RESEND_API_KEY is configured (server-only
  *  secret). Returns whether it was registered. Fail-closed: no key → not registered. */
 export function maybeRegisterResendEmail(register: (a: DeliveryAdapter) => void): boolean {
-  const key = process.env.RESEND_API_KEY;
+  // The project-scoped key is named RESEND_API_KEY_INSPECTION in the deployed
+  // environments; accept either so a correctly-provisioned environment does not
+  // silently fall through to "email not configured".
+  const key = process.env.RESEND_API_KEY_INSPECTION || process.env.RESEND_API_KEY;
   if (!key) return false;
   const from = process.env.RESEND_FROM ?? "onboarding@resend.dev";
   register(new ResendEmailAdapter(key, from));

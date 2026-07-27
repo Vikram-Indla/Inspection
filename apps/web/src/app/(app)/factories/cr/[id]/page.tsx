@@ -9,6 +9,24 @@ import ContextualAiPanel from "@/components/ContextualAiPanel";
 import styles from "./factory360.module.css";
 
 const text = (value: string | number | null | undefined) => value == null || value === "" ? "—" : String(value);
+type FactoryTimelineRow = {
+  event_key: string;
+  occurred_at: string;
+  object_type: string;
+  object_id: string;
+  source: string;
+  payload: Record<string, unknown> | null;
+};
+type VisitSummaryRow = {
+  id: string;
+  window_start: string;
+  visit_type: string;
+  planning_status: string;
+  operational_state: string;
+  planner_lat: number | null;
+  planner_lng: number | null;
+  visit_location_source: string | null;
+};
 
 // TASK-FACTORY-360-COMPLETE-010 · SCR-WEB-400 · MVP1-M07-001..020
 // CR-centred, selected-license read model. The projection is loaded through the
@@ -16,9 +34,9 @@ const text = (value: string | number | null | undefined) => value == null || val
 // renders identical business data, calculations and permissions BY CONSTRUCTION.
 export default async function Factory360ByCr({ params, searchParams }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ license?: string }>;
+  searchParams: Promise<{ license?: string; visitStatus?: string; visitType?: string }>;
 }) {
-  const [{ id }, { license: requestedLicense }] = await Promise.all([params, searchParams]);
+  const [{ id }, { license: requestedLicense, visitStatus, visitType }] = await Promise.all([params, searchParams]);
   const { t, locale } = await useT();
   const sb = await supabaseServer();
   const permissions = await resolveFactory360Permissions(sb);
@@ -50,6 +68,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
 
   const dt = (value: string | null | undefined) => value ? new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", { dateStyle: "medium" }).format(new Date(value)) : "—";
   const label = (value: string | null | undefined) => value ? t(`enum.${value}`, value.replaceAll("_", " ")) : "—";
+  const bilingual = (english: string, arabic: string) => locale === "ar" ? arabic : english;
   const sourceStatus = (error: unknown, value: unknown, queried = true) => {
     if (error) return t("f360.source.degraded", "degraded");
     if (!queried) return t("f360.source.notAvailable", "Not Available");
@@ -73,46 +92,36 @@ export default async function Factory360ByCr({ params, searchParams }: {
     [t("f360.compare.city", "City"), factory?.city, snapshotValue("city")],
     [t("f360.compare.source", "Source system"), selected?.source_system ?? factory?.source, snapshotValue("source_system")],
   ] as const : [];
-  // BR-011 / WA-M4-AC-005 — a business-event timeline only. Operational
-  // visits are intentionally absent; every row below is a persisted CR,
-  // license, report, government, penalty or Risk Engine event.
-  const timelineEvents = [
-    cr.issue_date ? { key: "cr-issued", at: cr.issue_date, title: t("f360.timeline.crIssued", "Commercial registration issued"), detail: cr.cr_number } : null,
-    cr.expiry_date ? { key: "cr-expiry", at: cr.expiry_date, title: t("f360.timeline.crExpiry", "Commercial registration expiry"), detail: cr.cr_number } : null,
-    selected?.issue_date ? { key: "license-issued", at: selected.issue_date, title: t("f360.timeline.licenseIssued", "Selected industrial license issued"), detail: selected.license_number } : null,
-    selected?.expiry_date ? { key: "license-expiry", at: selected.expiry_date, title: t("f360.timeline.licenseExpiry", "Selected industrial license expiry"), detail: selected.license_number } : null,
-    ...reports.flatMap(report => {
-      const latest = latestSubmission(report);
-      const at = latest?.submitted_at ?? report.submitted_at;
-      return at ? [{
-        key: `report-${report.id}`,
-        at,
-        title: t("f360.timeline.reportSubmitted", "Inspection report submitted"),
-        detail: `${text(report.inspection_no ?? report.id.slice(0, 8))} · ${label(report.status)}${latest ? ` · v${latest.version_number}` : ""}`,
-        href: `/reports/inspection/${report.id}`,
-      }] : [];
-    }),
-    ...government.flatMap(row => row.recorded_at ? [{
-      key: `government-${row.id}`,
-      at: row.recorded_at,
-      title: t("f360.timeline.governmentRecorded", "Government record received"),
-      detail: `${text(row.title ?? row.record_type)} · ${label(row.status)}`,
-    }] : []),
-    ...penalties.flatMap(row => row.issued_at ? [{
-      key: `penalty-${row.id}`,
-      at: row.issued_at,
-      title: t("f360.timeline.penaltyIssued", "Penalty notice issued"),
-      detail: `${row.notice_number} · ${label(row.status)}`,
-      href: row.inspection_id ? `/reports/inspection/${row.inspection_id}` : undefined,
-    }] : []),
-    ...(permissions["view_risk_details"] ? riskHistory.flatMap(row => row.calculated_at ? [{
-      key: `risk-${row.id}`,
-      at: row.calculated_at,
-      title: t("f360.timeline.riskCalculated", "Risk Engine calculation completed"),
-      detail: `${row.score} · ${label(row.band)} · ${row.model_version}`,
-    }] : []) : []),
-  ].filter((event): event is { key: string; at: string; title: string; detail: string; href?: string } => event !== null)
-    .sort((a, b) => b.at.localeCompare(a.at));
+  // CR-426 / WA-M4-AC-005 — use the capability-bound database projection so
+  // source sync, visits, immutable submissions, approvals, penalties and saved
+  // risk events share one governed chronology. Failure degrades this section
+  // without suppressing the rest of Factory 360.
+  const [timelineResult, visitsResult] = factoryId
+    ? await Promise.all([
+      sb.rpc("factory_timeline" as never, { p_factory_id: factoryId } as never),
+      sb.from("visits")
+        .select("id, window_start, visit_type, planning_status, operational_state, planner_lat, planner_lng, visit_location_source")
+        .eq("factory_id", factoryId)
+        .order("window_start", { ascending: false })
+        .limit(100),
+    ])
+    : [{ data: [], error: null }, { data: [], error: null }];
+  const visits = (visitsResult.data ?? []) as VisitSummaryRow[];
+  const visitStatuses = [...new Set(visits.map(row => row.planning_status))].sort();
+  const visitTypes = [...new Set(visits.map(row => row.visit_type))].sort();
+  const filteredVisits = visits.filter(row =>
+    (!visitStatus || row.planning_status === visitStatus)
+    && (!visitType || row.visit_type === visitType));
+  const timelineEvents = ((timelineResult.data ?? []) as FactoryTimelineRow[]).map(event => {
+    const payload = event.payload ?? {};
+    const title = t(`f360.timeline.${event.event_key}`, event.event_key.replaceAll("_", " "));
+    const detail = Object.entries(payload)
+      .filter(([, value]) => value != null && typeof value !== "object")
+      .map(([key, value]) => `${label(key)}: ${text(value as string | number)}`)
+      .join(" · ") || `${label(event.object_type)} · ${label(event.source)}`;
+    const href = event.object_type === "inspections" ? `/reports/inspection/${event.object_id}` : undefined;
+    return { key: `${event.event_key}-${event.object_id}`, at: event.occurred_at, title, detail, href };
+  });
 
   return (
     <Shell current="/factories" title={locale === "ar" ? cr.legal_name_ar ?? cr.legal_name ?? cr.legal_name_en ?? cr.cr_number : cr.legal_name_en ?? cr.legal_name ?? cr.legal_name_ar ?? cr.cr_number}
@@ -177,6 +186,42 @@ export default async function Factory360ByCr({ params, searchParams }: {
               <div><dt>{t("f360.coordinates", "Coordinates")}</dt><dd className="sq-numeric"><bdi>{address ? `${text(address.latitude)}, ${text(address.longitude)}` : "—"}</bdi></dd></div>
               <div><dt>{t("f360.exportsProducts", "Exports products?")}</dt><dd>{exportsProducts == null ? t("f360.exportsProducts.unknown", "Unknown") : exportsProducts ? t("common.yes", "Yes") : t("common.no", "No")}</dd></div>
             </dl> : <p className="sq-caption">{t("f360.license.unavailable", "Select a mapped industrial license to load plant facts.")}</p>}
+            <h3>{t("f360.visits.heading", bilingual("Visit summary", "ملخص الزيارات"))}</h3>
+            <p className="sq-caption">{t("f360.visits.boundary", bilingual("Operational context only. Inspection answers, evidence, findings, reviewer comments and personal contact data are excluded.", "سياق تشغيلي فقط. تُستبعد إجابات التفتيش والأدلة والنتائج وتعليقات المراجع وبيانات الاتصال الشخصية."))}</p>
+            {!visitsResult.error && visits.length ? <form method="get" className="sq-row">
+              {selected?.id ? <input type="hidden" name="license" value={selected.id} /> : null}
+              <label>{t("f360.visits.filterStatus", bilingual("Planning status", "حالة التخطيط"))}
+                <select name="visitStatus" defaultValue={visitStatus ?? ""}>
+                  <option value="">{t("common.all", bilingual("All", "الكل"))}</option>
+                  {visitStatuses.map(value => <option key={value} value={value}>{label(value)}</option>)}
+                </select>
+              </label>
+              <label>{t("f360.visits.filterType", bilingual("Visit type", "نوع الزيارة"))}
+                <select name="visitType" defaultValue={visitType ?? ""}>
+                  <option value="">{t("common.all", bilingual("All", "الكل"))}</option>
+                  {visitTypes.map(value => <option key={value} value={value}>{label(value)}</option>)}
+                </select>
+              </label>
+              <button className="sq-btn sq-btn--secondary" type="submit">{t("common.filter", bilingual("Filter", "تصفية"))}</button>
+            </form> : null}
+            {visitsResult.error
+              ? <p className="sq-caption">{t("f360.section.degraded", "This source section is degraded; other sections remain available.")}</p>
+              : filteredVisits.length
+                ? <div className="sq-tablewrap"><table className="sq-table">
+                  <thead><tr><th scope="col">{t("f360.visits.reference", bilingual("Visit reference", "مرجع الزيارة"))}</th><th scope="col">{t("common.date", bilingual("Date", "التاريخ"))}</th><th scope="col">{t("common.type", bilingual("Type", "النوع"))}</th><th scope="col">{t("f360.visits.planningStatus", bilingual("Planning status", "حالة التخطيط"))}</th><th scope="col">{t("f360.visits.operationalStatus", bilingual("Operational status", "الحالة التشغيلية"))}</th><th scope="col">{t("f360.location.source", bilingual("Location source", "مصدر الموقع"))}</th><th scope="col">{t("f360.coordinates", bilingual("Coordinates", "الإحداثيات"))}</th></tr></thead>
+                  <tbody>{filteredVisits.map(row => <tr key={row.id}>
+                    <td className="sq-numeric"><bdi>{row.id.slice(0, 8)}</bdi></td>
+                    <td className="sq-numeric">{dt(row.window_start)}</td>
+                    <td>{label(row.visit_type)}</td>
+                    <td>{label(row.planning_status)}</td>
+                    <td>{label(row.operational_state)}</td>
+                    <td>{label(row.visit_location_source)}</td>
+                    <td className="sq-numeric"><bdi>{row.planner_lat == null || row.planner_lng == null ? "—" : `${row.planner_lat}, ${row.planner_lng}`}</bdi></td>
+                  </tr>)}</tbody>
+                </table></div>
+                : <p className="sq-caption">{visits.length
+                  ? t("f360.visits.filteredEmpty", bilingual("No visits match the selected filters.", "لا توجد زيارات تطابق عوامل التصفية المحددة."))
+                  : t("f360.visits.empty", bilingual("No source-backed visits are available.", "لا تتوفر زيارات مدعومة بالمصدر."))}</p>}
           </section>
 
           <section className={`sq-surface ${styles.panel}`} aria-labelledby="f360-observed-heading">
@@ -203,7 +248,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
             {reports.length ? <div className="sq-tablewrap"><table className="sq-table"><thead><tr><th scope="col">{t("f360.report.number", "Inspection")}</th><th scope="col">{t("common.date", "Date")}</th><th scope="col">{t("common.status", "Status")}</th><th scope="col">{t("f360.report.version", "Latest immutable version")}</th><th scope="col">{t("f360.report.compliance", "Approved compliance")}</th><th scope="col" /></tr></thead><tbody>{reports.map(report => {
               const latest = latestSubmission(report); const compliance = report.status === "approved" && latest ? calculateApprovedCompliance(latest.snapshot, report.package_versions?.definition) : null;
               return <tr key={report.id}><td><bdi>{text(report.inspection_no ?? report.id.slice(0, 8))}</bdi></td><td className="sq-numeric">{dt(report.submitted_at ?? report.started_at)}</td><td><span className="sq-lozenge sq-lozenge--info">{label(report.status)}</span></td><td>{latest ? `v${latest.version_number}` : t("f360.report.notSubmitted", "not submitted")}</td><td className="sq-numeric">{compliance?.rate == null ? "—" : `${compliance.rate}%`}</td><td><a className="sq-link" href={`/reports/inspection/${report.id}`}>{t("f360.report.open", "Open report")}</a></td></tr>;
-            })}</tbody></table></div> : <p className="sq-caption">{t("f360.reports.empty", "No inspection reports are available for the selected plant.")}</p>}
+            })}</tbody></table></div> : <p className="sq-caption">{reportsResult.error ? t("f360.section.degraded", "This source section is degraded; other sections remain available.") : t("f360.reports.empty", "No inspection reports are available for the selected plant.")}</p>}
           </section>
 
           <section className={`sq-surface ${styles.panel}`} aria-labelledby="f360-violations-heading">
@@ -238,7 +283,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
           <section className={`sq-surface ${styles.panel}`} aria-labelledby="f360-docs-heading">
             <div className={styles.sectionHead}><h2 id="f360-docs-heading">{t("f360.documents.heading", "Documents & factory media")}</h2>{permissions["view_factory_documents"] ? sourceBadge(docsResult.error || mediaResult.error, [...docs, ...media], !!factoryId) : <span className="sq-lozenge">{t("f360.restricted", "restricted")}</span>}</div>
             {!permissions["view_factory_documents"] ? <p className="sq-caption">{t("f360.documents.restricted", "Document metadata requires Factory Documents permission.")}</p> : <>
-              {docs.length ? <div className="sq-tablewrap"><table className="sq-table"><thead><tr><th scope="col">{t("common.category", "Category")}</th><th scope="col">{t("common.title", "Title")}</th><th scope="col">{t("common.reference", "Reference")}</th><th scope="col">{t("f360.validity", "Validity")}</th><th scope="col">{t("f360.source", "Source")}</th><th scope="col" /></tr></thead><tbody>{docs.map(doc => <tr key={doc.id}><td>{label(doc.business_category ?? doc.doc_type)}</td><td>{doc.title}</td><td className="sq-numeric"><bdi>{text(doc.reference_no)}</bdi></td><td className="sq-numeric">{dt(doc.valid_from)} → {dt(doc.valid_to)}</td><td>{text(doc.source_system)} · {text(doc.source_status)}</td><td>{permissions["download_factory_documents"] && downloadUrls[doc.id] ? <a className="sq-link" href={downloadUrls[doc.id]} download>{t("common.download", "Download")}</a> : <span className="sq-caption">{permissions["download_factory_documents"] ? t("f360.download.unavailable", "file unavailable") : t("f360.download.restricted", "download restricted")}</span>}</td></tr>)}</tbody></table></div> : <p className="sq-caption">{t("f360.documents.empty", "No source-backed document metadata is available.")}</p>}
+              {docs.length ? <div className="sq-tablewrap"><table className="sq-table"><thead><tr><th scope="col">{t("common.category", "Category")}</th><th scope="col">{t("common.title", "Title")}</th><th scope="col">{t("common.reference", "Reference")}</th><th scope="col">{t("f360.validity", "Validity")}</th><th scope="col">{t("f360.source", "Source")}</th><th scope="col" /></tr></thead><tbody>{docs.map(doc => <tr key={doc.id}><td>{label(doc.business_category ?? doc.doc_type)}</td><td>{doc.title}</td><td className="sq-numeric"><bdi>{text(doc.reference_no)}</bdi></td><td className="sq-numeric">{dt(doc.valid_from)} → {dt(doc.valid_to)}</td><td>{text(doc.source_system)} · {text(doc.source_status)}</td><td>{permissions["download_factory_documents"] && downloadUrls[doc.id] ? <a className="sq-link" href={downloadUrls[doc.id]} download>{t("common.download", "Download")}</a> : <span className="sq-caption">{permissions["download_factory_documents"] ? t("f360.download.unavailable", "file unavailable") : t("f360.download.restricted", "download restricted")}</span>}</td></tr>)}</tbody></table></div> : <p className="sq-caption">{docsResult.error ? t("f360.section.degraded", "This source section is degraded; other sections remain available.") : t("f360.documents.empty", "No source-backed document metadata is available.")}</p>}
               {officialMedia.some(asset => mediaUrls[asset.id]) && <><h3>{t("f360.media.official", "Official factory gallery")}</h3><div className={styles.mediaGrid}>{officialMedia.filter(asset => mediaUrls[asset.id]).map(asset => <figure key={asset.id}><img src={mediaUrls[asset.id]} alt={asset.title ?? t("f360.media.alt", "Official factory image")} /><figcaption className="sq-caption">{asset.title ?? label(asset.category)} · {asset.source_system}</figcaption></figure>)}</div></>}
               <p className="sq-caption">{t("f360.media.boundary", "Only official factory/profile media appears here. Inspection evidence remains linked to its inspection report and is never merged into this gallery.")}</p>
 
@@ -252,10 +297,10 @@ export default async function Factory360ByCr({ params, searchParams }: {
           <section className={`sq-surface ${styles.panel}`} aria-labelledby="f360-timeline-heading">
             <div className={styles.sectionHead}>
               <h2 id="f360-timeline-heading">{t("f360.timeline.heading", "Business-event timeline")}</h2>
-              <span className="sq-lozenge sq-lozenge--info">{t("f360.timeline.boundary", "CR + selected license")}</span>
+              {sourceBadge(timelineResult.error, timelineEvents, !!factoryId)}
             </div>
-            <p className="sq-caption">{t("f360.timeline.rule", "Source-backed business events only. Operational visits are intentionally excluded.")}</p>
-            {timelineEvents.length ? <ol className={styles.timeline}>{timelineEvents.map(event => (
+            <p className="sq-caption">{t("f360.timeline.rule", "Source-backed sync, visit, submission, approval, penalty and risk events.")}</p>
+            {timelineResult.error ? <p className="sq-caption">{t("f360.section.degraded", "This source section is degraded; other sections remain available.")}</p> : timelineEvents.length ? <ol className={styles.timeline}>{timelineEvents.map(event => (
               <li key={event.key}>
                 <time className="sq-numeric" dateTime={event.at}>{dt(event.at)}</time>
                 <span className={styles.timelineDot} aria-hidden="true" />
@@ -326,9 +371,10 @@ export default async function Factory360ByCr({ params, searchParams }: {
             <div className={styles.actions}>
               {factoryId && <a className="sq-btn sq-btn--secondary" href={`/factories/${factoryId}?compat=legacy#location`}>{t("f360.actions.openMap", "Open map")}</a>}
               {permissions["create_inspection"] && factoryId && <a className="sq-btn sq-btn--primary" href={`/planning/immediate?factory=${factoryId}&cr=${cr.id}&license=${selected?.id ?? ""}&returnTo=${encodeURIComponent(`/factories/cr/${cr.id}?license=${selected?.id ?? ""}`)}`}>{t("f360.actions.createInspection", "Create inspection")}</a>}
-              {factoryId && <a className="sq-btn sq-btn--secondary" href={`/planning/single?cr=${encodeURIComponent(cr.cr_number)}&license=${encodeURIComponent(selected?.license_number ?? "")}&plant=${encodeURIComponent(selected?.plant_number ?? "")}&factory=${factoryId}&source=factory360`}>{t("f360.actions.planSingle", "Plan single visit")}</a>}
+              {permissions["create_inspection"] && factoryId && <a className="sq-btn sq-btn--secondary" href={`/planning/single?cr=${encodeURIComponent(cr.cr_number)}&license=${encodeURIComponent(selected?.license_number ?? "")}&plant=${encodeURIComponent(selected?.plant_number ?? "")}&factory=${factoryId}&source=factory360`}>{t("f360.actions.planSingle", "Plan single visit")}</a>}
               {permissions["export_factory"] && <Factory360ExportButton label={t("f360.actions.exportPdf", "Print / Save permitted PDF")} />}
               {!permissions["create_inspection"] && !permissions["export_factory"] && <p className="sq-caption">{t("f360.actions.restricted", "No create-inspection or export action is permitted for your role.")}</p>}
+              {permissions["create_inspection"] && <p className="sq-caption" role="status">{t("f360.actions.submissionBlocked", "Inspection submission remains unavailable while DEC-032 is unresolved.")}</p>}
             </div>
           </section>
         </aside>

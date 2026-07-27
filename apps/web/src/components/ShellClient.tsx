@@ -62,9 +62,13 @@ export type ShellClientStrings = {
 
 const Icon = ShellNavIcon;
 
-function initials(email: string) {
-  const local = email.split("@")[0] || "S";
-  return local.split(/[._-]+/).slice(0, 2).map(part => part[0]?.toUpperCase()).join("") || "S";
+// Initials come from the governed display name when one exists ("عبدالله محمد
+// القحطاني" -> "عم"), and only fall back to the email local-part when the
+// profile carries no name.
+function initials(label: string) {
+  const local = label.includes("@") ? label.split("@")[0] : label;
+  const parts = (local || "S").split(/[\s._-]+/).filter(Boolean);
+  return parts.slice(0, 2).map(part => part[0]?.toUpperCase()).join("") || "S";
 }
 
 type GlobalSearchResult = { id: string; type: ShellGlobalSearchResultType; label: string; detail: string; href: string };
@@ -79,7 +83,7 @@ function defaultDateRange() {
 
 export default function ShellClient({
   children, groups, strings, bellStrings,
-  locale, languageHref, email, roles, regions,
+  locale, languageHref, email, displayName, roleTitles, homeRegion, roles, regions,
 }: {
   children: ReactNode;
   groups: ShellClientNavGroup[];
@@ -88,11 +92,18 @@ export default function ShellClient({
   locale: "ar" | "en";
   languageHref: string;
   email: string;
+  displayName: string;
+  roleTitles: string[];
+  homeRegion: string | null;
   roles: string[];
   regions: string[];
 }) {
   const router = useRouter();
   const current = usePathname() || "/";
+  // Role titles ("Planner", "Level 2 Reviewer") rather than raw role_keys. An
+  // account with no granted role shows nothing here — it is not relabelled.
+  const roleLabel = (roleTitles.length ? roleTitles : roles).join(" · ");
+  const accountHoverLabel = [displayName || email, roleLabel, homeRegion].filter(Boolean).join(" — ");
   const fieldOnly = isFieldOnlyPersona(roles);
   const adminWorkspace = false;
   // The canonical Claude Design topbar always exposes the assistant entry.
@@ -686,16 +697,19 @@ export default function ShellClient({
               ) : null}
               <div ref={accountRef} className="sq-shell-account">
                 <button className="sq-shell-account__trigger" type="button" aria-label={strings.account} aria-expanded={accountOpen}
+                  title={accountHoverLabel}
                   onClick={() => setAccountOpen(value => !value)}>
-                  <span className="sq-shell-account__avatar" aria-hidden="true">{initials(email)}</span>
-                  <span className="sq-shell-account__identity"><strong>{email.split("@")[0]}</strong><small>{roles.join(" · ")}</small></span>
+                  <span className="sq-shell-account__avatar" aria-hidden="true">{initials(displayName || email)}</span>
+                  <span className="sq-shell-account__identity"><strong>{displayName || email.split("@")[0]}</strong><small>{roleLabel}</small></span>
                   <svg className="sq-shell-account__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
                 </button>
                 {accountOpen && accountMenuPos && typeof document !== "undefined" && createPortal(
                   <div ref={accountMenuRef} className="sq-shell-account__menu sq-shell-account__menu--portal" role="dialog" aria-label={strings.account}
                     style={{ top: accountMenuPos.top, left: accountMenuPos.left, right: accountMenuPos.right }}>
-                    <strong>{email}</strong>
-                    <span className="sq-caption">{strings.roles}: {roles.join(", ")}</span>
+                    <strong>{displayName || email.split("@")[0]}</strong>
+                    <span className="sq-caption">{email}</span>
+                    <span className="sq-caption">{strings.roles}: {roleTitles.length ? roleTitles.join(", ") : roles.join(", ")}</span>
+                    {homeRegion ? <span className="sq-caption">{strings.regionScope}: {homeRegion}</span> : null}
                     {/* /locale and /signout are route handlers (cookie/session
                         mutations), so they intentionally stay plain anchors. */}
                     {/* The menu itself is universal; only this destination stays

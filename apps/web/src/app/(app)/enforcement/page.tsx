@@ -48,6 +48,10 @@ type RuntimeViolation = {
       form_type: string;
       status: string;
       owner_name: string | null;
+      owner_role: string | null;
+      due_at: string | null;
+      required_correction: string | null;
+      is_blocking: boolean;
     }[];
     evidence: {
       id: string;
@@ -80,7 +84,7 @@ export default async function EnforcementPage({
           factories!inner(id,name,factory_code,license_number,region,city),
           assignments(status,profiles(full_name))
         ),
-        action_forms(id,violation_id,form_type,status,owner_name),
+        action_forms(id,violation_id,form_type,status,owner_name,owner_role,due_at,required_correction,is_blocking),
         evidence(id,linked_type,linked_id,content_sha256)
       )
     `)
@@ -102,6 +106,8 @@ export default async function EnforcementPage({
     actionForm: tr("mvp3.enforcement.actionForm", "Action form", "نموذج الإجراء"),
     notConfigured: tr("mvp3.enforcement.notConfigured", "Not configured", "غير مهيأ"),
     noActionForm: tr("mvp3.enforcement.noActionForm", "No linked action form", "لا يوجد نموذج إجراء مرتبط"),
+    actionFormComplete: tr("mvp3.enforcement.actionFormComplete", "Canonical required fields complete", "الحقول الأساسية المطلوبة مكتملة"),
+    actionFormIncomplete: tr("mvp3.enforcement.actionFormIncomplete", "Blocking form incomplete", "النموذج الإلزامي غير مكتمل"),
     empty: tr("mvp3.enforcement.empty", "No RLS-visible enforcement records match these filters.", "لا توجد سجلات إنفاذ ظاهرة وفق صلاحيات الصفوف تطابق عوامل التصفية."),
     close: tr("common.close", "Close", "إغلاق"),
     factorySummary: tr("mvp3.enforcement.factorySummary", "Factory summary", "ملخص المنشأة"),
@@ -122,6 +128,17 @@ export default async function EnforcementPage({
       "The requested enforcement record is not visible in your authorized clean-factory scope.",
       "سجل الإنفاذ المطلوب غير ظاهر ضمن نطاق المصانع النظيفة المصرح لك به.",
     ),
+    statusLabels: {
+      draft: tr("mvp3.enforcement.status.draft", "Draft", "مسودة"),
+      in_progress: tr("mvp3.enforcement.status.inProgress", "In progress", "قيد التنفيذ"),
+      submitted: tr("mvp3.enforcement.status.submitted", "Submitted", "مُرسل"),
+      under_review: tr("mvp3.enforcement.status.underReview", "Under review", "قيد المراجعة"),
+      approved: tr("mvp3.enforcement.status.approved", "Approved", "معتمد"),
+      rejected: tr("mvp3.enforcement.status.rejected", "Rejected", "مرفوض"),
+      returned: tr("mvp3.enforcement.status.returned", "Returned", "مُعاد"),
+      invalidated: tr("mvp3.enforcement.status.invalidated", "Invalidated", "مُبطل"),
+      completed: tr("mvp3.enforcement.status.completed", "Completed", "مكتمل"),
+    },
   };
 
   const rows = ((data ?? []) as unknown as RuntimeViolation[]).flatMap((violation): EnforcementLibraryRow[] => {
@@ -132,6 +149,14 @@ export default async function EnforcementPage({
     if (!inspection || !visit || !factory || !code) return [];
 
     const actionForm = (inspection.action_forms ?? []).find((form) => form.violation_id === violation.id) ?? null;
+    const actionFormComplete = actionForm
+      ? !actionForm.is_blocking || Boolean(
+          actionForm.owner_name?.trim()
+          && actionForm.owner_role?.trim()
+          && actionForm.due_at
+          && actionForm.required_correction?.trim()
+        )
+      : null;
     const evidence = (inspection.evidence ?? []).filter((item) => item.linked_id === violation.id);
     const assignment = (visit.assignments ?? []).find((item) => item.status !== "returned") ?? visit.assignments?.[0] ?? null;
     const recordedAt = inspection.submitted_at ?? inspection.started_at;
@@ -153,6 +178,7 @@ export default async function EnforcementPage({
       inspectorName: assignment?.profiles?.full_name ?? null,
       recordedAt,
       actionForm: actionForm ? `${actionForm.form_type.replaceAll("_", " ")} · ${actionForm.status.replaceAll("_", " ")}` : null,
+      actionFormComplete,
       evidenceCount: evidence.length,
       custodyComplete: evidence.length > 0 && evidence.every((item) => Boolean(item.content_sha256)),
       mappingVersion: violation.mapping_version,

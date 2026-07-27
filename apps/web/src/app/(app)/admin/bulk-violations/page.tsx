@@ -15,11 +15,9 @@ const CLEAN_FACTORY_CODES = [
 
 export const dynamic = "force-dynamic";
 
-// DEC-L (option 1) — bulk violation issuance reframed as bulk administrative
-// inspection creation; every issued violation is a real violations row via a
-// real inspections row (issue_bulk_violation RPC, 20260719030000). No
-// product-contract screen_id exists for this route yet — housekeeping
-// follow-up, not a blocker.
+// DEC-L (option 1) is visible as a read-only impact preview. DEC-032 blocks the
+// underlying real inspection submission until its database digest migration is
+// approved and deployed.
 export default async function BulkViolations() {
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
@@ -32,6 +30,19 @@ export default async function BulkViolations() {
   const roles = (roleRows ?? []).map(r => r.role_key);
   const isAuthorized = roles.includes("ops") || roles.includes("compliance_admin");
 
+  if (roleError) {
+    return (
+      <Shell current="/admin/bulk-violations" title={tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}>
+        <h1 className="sq-sr-only">{tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}</h1>
+        <EmptyState
+          icon={<IconBlocked size={28} />}
+          title={tr("admin.permissionsUnavailable.title", "Permissions unavailable", "الصلاحيات غير متاحة")}
+          body={tr("admin.permissionsUnavailable.body", "Your permissions could not be verified. No establishment or violation data is shown; retry the page.", "تعذر التحقق من صلاحياتك. لم يتم عرض بيانات المنشآت أو المخالفات؛ أعد تحميل الصفحة.")}
+        />
+      </Shell>
+    );
+  }
+
   if (!isAuthorized) {
     return (
       <Shell current="/admin/bulk-violations" title={tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}>
@@ -42,12 +53,25 @@ export default async function BulkViolations() {
     );
   }
 
-  const [{ data: factories, error: factoriesError }, { data: violationRows, error: violationsError }] = await Promise.all([
+  const [
+    { data: factories, error: factoriesError },
+    { data: violationRows, error: violationsError },
+    { data: packageRows, error: packagesError },
+  ] = await Promise.all([
     sb.from("factories").select("id, name, factory_code, cr_number, region, city").in("factory_code", [...CLEAN_FACTORY_CODES]).order("name").limit(24),
-    sb.from("violation_codes").select("id, code, title, level, penalty_mappings(mapping_version, penalty_ref, legal_basis, status)").order("code"),
+    sb.from("violation_codes").select("id, code, title, level, status, active_from, active_to, penalty_mappings(mapping_version, penalty_ref, legal_basis, status)").in("status", ["published", "locked"]).order("code"),
+    sb.from("package_versions")
+      .select("id, version_label, status, published_at, deactivation_reason, definition, packages(code, title)")
+      .eq("status", "locked")
+      .not("published_at", "is", null)
+      .is("deactivation_reason", null)
+      .order("published_at", { ascending: false })
+      .limit(20),
   ]);
 
+  const today = new Date().toISOString().slice(0, 10);
   const violations = (violationRows ?? [])
+    .filter(v => (!v.active_from || v.active_from <= today) && (!v.active_to || v.active_to >= today))
     .map(v => ({
       code: v.code, title: v.title, level: v.level,
       penalty_ref: (v.penalty_mappings ?? []).find((m: { status: string }) => ["published", "locked"].includes(m.status))?.penalty_ref ?? null,
@@ -60,34 +84,64 @@ export default async function BulkViolations() {
     selectedCount: tr("admin.bulkvio.selectedCount", "{n} selected", "{n} محددة"),
     violationLabel: tr("admin.bulkvio.violationLabel", "Violation", "المخالفة"),
     violationPlaceholder: tr("admin.bulkvio.violationPlaceholder", "— select a violation", "— حدد مخالفة"),
+    packageLabel: tr("admin.bulkvio.packageLabel", "Locked, published and active package version", "إصدار حزمة مقفل ومنشور ونشط"),
+    packagePlaceholder: tr("admin.bulkvio.packagePlaceholder", "— select an eligible package version", "— حدد إصدار حزمة مؤهلًا"),
     notesLabel: tr("admin.bulkvio.notesLabel", "Notes (optional)", "ملاحظات (اختياري)"),
     notesPlaceholder: tr("admin.bulkvio.notesPlaceholder", "Recorded with the audit event", "يُسجَّل مع حدث التدقيق"),
     previewTitle: tr("admin.bulkvio.previewTitle", "Impact summary", "ملخص الأثر"),
-    previewBody: tr("admin.bulkvio.previewBody", "{n} establishment(s) will each receive one {level} violation ({code} · {penalty}). This creates a real, permanent violation record for each — it cannot be undone.", "ستتلقى {n} منشأة/منشآت مخالفة واحدة من نوع {level} ({code} · {penalty}) لكل منها. يُنشئ هذا سجل مخالفة حقيقيًا ودائمًا لكل منشأة — ولا يمكن التراجع عنه."),
-    acknowledgeLabel: tr("admin.bulkvio.acknowledge", "I have reviewed the establishment list and violation, and confirm this action is authorized.", "لقد راجعت قائمة المنشآت والمخالفة، وأؤكد أن هذا الإجراء مصرح به."),
-    submit: tr("admin.bulkvio.submit", "Issue violation to selected establishments", "إصدار المخالفة للمنشآت المحددة"),
+    previewBody: tr("admin.bulkvio.previewBody", "Read-only preview: {n} establishment(s) are selected for one {level} violation ({code} · {penalty}). No inspection or violation can be created while DEC-032 remains open.", "معاينة للقراءة فقط: تم تحديد {n} منشأة/منشآت لمخالفة واحدة من نوع {level} ({code} · {penalty}). لا يمكن إنشاء تفتيش أو مخالفة ما دام القرار DEC-032 مفتوحًا."),
+    acknowledgeLabel: tr("admin.bulkvio.acknowledge", "I have reviewed this blocked impact preview.", "لقد راجعت معاينة الأثر المحظورة هذه."),
+    submit: tr("admin.bulkvio.submit", "Issuance unavailable — DEC-032", "الإصدار غير متاح — DEC-032"),
     submitting: tr("admin.bulkvio.submitting", "Issuing…", "جارٍ الإصدار…"),
     resultsTitle: tr("admin.bulkvio.resultsTitle", "Result", "النتيجة"),
     resultSuccess: tr("admin.bulkvio.resultSuccess", "issued", "تم الإصدار"),
     resultFailed: tr("admin.bulkvio.resultFailed", "failed", "فشل"),
     partialWarning: tr("admin.bulkvio.partialWarning", "Not all targets succeeded — review the failed rows below before assuming this batch is complete.", "لم تنجح جميع الأهداف — راجع الصفوف الفاشلة أدناه قبل افتراض اكتمال هذه الدفعة."),
     allSucceeded: tr("admin.bulkvio.allSucceeded", "All {n} violations issued successfully.", "تم إصدار جميع المخالفات البالغ عددها {n} بنجاح."),
+    blockedReason: tr(
+      "admin.bulkvio.dec032",
+      "Submission unavailable — DEC-032 blocks all real inspection submissions until the required database digest migration is approved and deployed. No violation will be issued from this page.",
+      "الإرسال غير متاح — يمنع القرار DEC-032 جميع عمليات إرسال التفتيش الفعلية حتى اعتماد ونشر ترحيل بصمة قاعدة البيانات المطلوب. لن تُصدر أي مخالفة من هذه الصفحة.",
+    ),
+    errors: {
+      dec032_blocked: tr(
+        "admin.bulkvio.error.dec032",
+        "No change was made. DEC-032 blocks this submission until the required database migration is approved and deployed.",
+        "لم يتم إجراء أي تغيير. يمنع القرار DEC-032 هذا الإرسال حتى اعتماد ترحيل قاعدة البيانات المطلوب ونشره.",
+      ),
+      auth_required: tr("admin.bulkvio.error.auth", "Your session is unavailable. Sign in again.", "جلستك غير متاحة. سجّل الدخول مرة أخرى."),
+      invalid_request: tr("admin.bulkvio.error.invalid", "Select establishments, a violation and a governed package version.", "حدد المنشآت والمخالفة وإصدار حزمة محكومًا."),
+      acknowledgement_required: tr("admin.bulkvio.error.ack", "Review and acknowledge the impact summary.", "راجع ملخص الأثر وأقر به."),
+      idempotency_conflict: tr("admin.bulkvio.error.conflict", "This request identifier was already used with different inputs. Start a new request.", "استُخدم معرف الطلب هذا سابقًا بمدخلات مختلفة. ابدأ طلبًا جديدًا."),
+      not_authorized: tr("admin.bulkvio.error.denied", "Your role cannot issue bulk violations.", "لا يسمح دورك بإصدار مخالفات جماعية."),
+      governed_violation_required: tr("admin.bulkvio.error.violation", "The selected violation is not an active governed violation.", "المخالفة المحددة ليست مخالفة محكومة ونشطة."),
+      penalty_mapping_required: tr("admin.bulkvio.error.penalty", "The selected violation has no active approved penalty mapping.", "لا يوجد ربط عقوبة نشط ومعتمد للمخالفة المحددة."),
+      package_version_invalid: tr("admin.bulkvio.error.package", "The selected package version is not locked, published and active.", "إصدار الحزمة المحدد ليس مقفلًا ومنشورًا ونشطًا."),
+      write_failed: tr("admin.bulkvio.error.write", "Issuance failed. No successful result is claimed.", "فشل الإصدار. لا يُدّعى تحقيق نتيجة ناجحة."),
+    },
   };
 
   return (
     <Shell current="/admin/bulk-violations" title={tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}
       context={<span className="badge badge-info">DEC-L</span>}>
       <h1 className="sq-sr-only">{tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}</h1>
-      {roleError && <div className="sq-banner sq-banner--warning" role="alert"><div>{tr("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.", "تعذر التحقق من صلاحيات الإعداد. تم تعطيل الكتابة؛ أعد تحميل الصفحة.")}</div></div>}
       <div className="sq-banner sq-banner--warning">
-        <div><strong>{tr("admin.bulkvio.warnTitle", "This issues real, permanent violations.", "هذا يُصدر مخالفات حقيقية ودائمة.")}</strong>{" "}
-          {tr("admin.bulkvio.warnBody", "Each selected establishment receives a real inspection record and a real violation, exactly as if found during a field visit. This cannot be undone.", "تتلقى كل منشأة محددة سجل تفتيش حقيقيًا ومخالفة حقيقية، تمامًا كما لو تم اكتشافها أثناء زيارة ميدانية. لا يمكن التراجع عن هذا.")}</div>
+        <div><strong>{tr("admin.bulkvio.warnTitle", "Real issuance is blocked by DEC-032.", "الإصدار الفعلي محظور بموجب DEC-032.")}</strong>{" "}
+          {tr("admin.bulkvio.warnBody", "You may review the eligible establishments and mapped violations, but this route cannot create an inspection or violation while the submission digest defect remains open.", "يمكنك مراجعة المنشآت المؤهلة والمخالفات المرتبطة، لكن لا يمكن لهذا المسار إنشاء تفتيش أو مخالفة ما دام خلل بصمة الإرسال مفتوحًا.")}</div>
       </div>
       {factoriesError && <div className="sq-banner sq-banner--warning" role="alert"><div>{tr("admin.bulkvio.factoriesError", "The establishment registry is unavailable in this environment.", "سجل المنشآت غير متاح في هذه البيئة.")}</div></div>}
       {violationsError && <div className="sq-banner sq-banner--warning" role="alert"><div>{tr("admin.bulkvio.violationsError", "The violation catalogue is unavailable in this environment.", "كتالوج المخالفات غير متاح في هذه البيئة.")}</div></div>}
+      {packagesError && <div className="sq-banner sq-banner--warning" role="alert"><div>{tr("admin.bulkvio.packagesError", "Published package versions are unavailable in this environment.", "إصدارات الحزم المنشورة غير متاحة في هذه البيئة.")}</div></div>}
       <BulkViolationForm
         factories={(factories ?? []).map(f => ({ id: f.id, name: f.name, factory_code: f.factory_code, cr_number: f.cr_number, region: f.region, city: f.city }))}
         violations={violations}
+        packages={(packageRows ?? []).filter(row =>
+          Array.isArray((row.definition as { sections?: unknown } | null)?.sections)
+          && ((row.definition as { sections: unknown[] }).sections.length > 0)
+        ).map(row => {
+          const pkg = row.packages as unknown as { code: string; title: string } | null;
+          return { id: row.id, label: `${pkg?.code ?? "?"} · ${row.version_label} — ${pkg?.title ?? ""}` };
+        })}
         strings={strings}
       />
     </Shell>

@@ -1,60 +1,72 @@
 "use server";
-// DEC-F decide action. Same compare-and-set shape as
-// apps/web/src/app/reviews/[id]/actions.ts's decide step: RLS gates who can
-// write, this WHERE clause gates *what* gets overwritten (only a still-pending,
-// undecided row) — no separate RPC needed, matching that existing pattern.
+
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
-import { logProviderError } from "@/lib/neutral-error";
 
-export type DecideResult = { error?: string };
+export type DecideResult = {
+  error?:
+    | "auth_required"
+    | "invalid_request"
+    | "reason_required"
+    | "already_decided"
+    | "maker_checker"
+    | "write_failed"
+    | "backend_guard_required";
+  ok?: boolean;
+};
 
-export async function decideEnforcementRecommendation(_: DecideResult, formData: FormData): Promise<DecideResult> {
+// The current database UPDATE policy permits deciders to alter recommendation
+// facts as well as decision fields. Fail closed until a guarded atomic database
+// transition owns validation, maker/checker, compare-and-set and audit.
+export async function decideEnforcementRecommendation(
+  _: DecideResult,
+  formData: FormData,
+): Promise<DecideResult> {
+  if (process.env.ENFORCEMENT_P0_RPCS_DEPLOYED !== "true") {
+    return { error: "backend_guard_required" };
+  }
+  const recommendationId = String(formData.get("id") ?? "");
+  const requestedDecision = String(formData.get("decision") ?? "");
+  const reason = String(formData.get("decision_reason") ?? "").trim();
+  const idempotencyKey = String(formData.get("idempotency_key") ?? "");
+  const decision = requestedDecision === "approved" ? "approve"
+    : requestedDecision === "rejected" ? "reject"
+    : null;
+  if (!recommendationId || !idempotencyKey || !decision) return { error: "invalid_request" };
+  if (!reason) return { error: "reason_required" };
+
   const sb = await supabaseServer();
   const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "auth_required" };
-
-  const id = String(formData.get("id") ?? "");
-  const decision = String(formData.get("decision") ?? "");
-  const reason = String(formData.get("decision_reason") ?? "").trim();
-  if (!id || !["approved", "rejected"].includes(decision)) return { error: "invalid_request" };
-  if (!reason) return { error: "reason_required" };
-
-  const { data: recommendation, error: readError } = await sb
-    .from("enforcement_recommendations")
-    .select("id,recommended_by,status,decided_at")
-    .eq("id", id)
-    .maybeSingle();
-  if (readError) {
-    logProviderError("admin enforcement decision read", readError);
-    return { error: "write_failed" };
-  }
-  if (!recommendation || recommendation.status !== "pending" || recommendation.decided_at) {
-    return { error: "already_decided" };
-  }
-  if (recommendation.recommended_by === user.id) return { error: "maker_checker" };
-
-  const { data, error } = await sb.from("enforcement_recommendations").update({
-    status: decision,
-    decided_by: user.id,
-    decided_at: new Date().toISOString(),
-    decision_reason: reason,
-  })
-    .eq("id", id)
-    .eq("status", "pending")
-    .eq("recommended_by", recommendation.recommended_by)
-    .is("decided_at", null)
-    .select("id")
-    .maybeSingle();
-
+  const { data, error } = await sb.rpc("decide_enforcement_recommendation", {
+    p_recommendation: recommendationId,
+    p_decision: decision,
+    p_reason: reason,
+    p_idempotency_key: idempotencyKey,
+    p_correlation_id: null,
+  });
   if (error) {
-    logProviderError("admin enforcement decision write", error);
+    const message = String(error.message ?? "");
+    if (message.includes("ENF_MAKER_CHECKER")) return { error: "maker_checker" };
+    if (message.includes("ENF_DECISION_CONFLICT") || message.includes("ENF_DECISION_IDEMPOTENCY_CONFLICT")) {
+      return { error: "already_decided" };
+    }
+    if (message.includes("ENF_DECISION_NOT_AUTHORIZED")) return { error: "auth_required" };
+    if (message.includes("ENF_DECISION_REASON_REQUIRED")) return { error: "reason_required" };
     return { error: "write_failed" };
   }
-  if (!data) return { error: "already_decided" };   // race: someone else decided first — never silently overwritten
+  const receipt = data as Record<string, unknown> | null;
+  if (
+    !receipt
+    || receipt.recommendation_id !== recommendationId
+    || !["approved", "rejected"].includes(String(receipt.status))
+    || receipt.idempotency_key !== idempotencyKey
+    || typeof receipt.correlation_id !== "string"
+    || typeof receipt.replayed !== "boolean"
+  ) return { error: "write_failed" };
 
   revalidatePath("/enforcement");
   revalidatePath("/admin/enforcement-recommendations");
-  return {};
+  return { ok: true };
 }
