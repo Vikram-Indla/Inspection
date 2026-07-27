@@ -1062,7 +1062,7 @@ export default async function Operations({ searchParams }: {
         <section className="sq-surface" aria-labelledby="operations-sla-heading">
           <div className={styles.detailHeading}>
             <div>
-              <h2 id="operations-sla-heading">{t("ops.sla.heading", "SLA and resubmission monitoring")}</h2>
+              <h2 id="operations-sla-heading">{t("ops.sla.heading", local("SLA and resubmission monitoring", "تنبيهات المواعيد النهائية"))}</h2>
               <p>{t("ops.sla.body", "Deadlines use server timestamps and governed SLA configuration. Missing configuration remains unavailable.")}</p>
             </div>
           </div>

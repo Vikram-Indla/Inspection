@@ -5,11 +5,14 @@ import { loadAnalytics } from "@/lib/analytics/loader";
 import { parseAnalyticsQuery } from "@/lib/analytics/query-state";
 import { ANALYTICS_METRICS, UNCONFIGURED_ANALYTICS } from "@/lib/analytics/metric-registry";
 import { analyticsDrillHref } from "@/lib/analytics/drills";
+import { useT } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 type Search = Record<string, string | string[] | undefined>;
 
 export default async function AnalyticsPage({ searchParams }: { searchParams: Promise<Search> }) {
+  const { locale, t } = await useT();
+  const title = t("analytics.title", locale === "ar" ? "التحليلات" : "Analytics");
   const parsed = parseAnalyticsQuery(await searchParams);
   if (!parsed.ok) return <StateSurface kind="error" title="Invalid analytics query" body={parsed.issues.join(" ")} />;
   const result = await loadAnalytics(await supabaseServer(), parsed.value);
@@ -22,7 +25,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
   return (
     <main className="sq-content" aria-labelledby="analytics-title">
       <header className="page-header"><div>
-        <h1 id="analytics-title">Analytics</h1>
+        <h1 id="analytics-title">{title}</h1>
         <p className="desc">Governed aggregates for {parsed.value.periodFrom} through {parsed.value.periodTo}. Values reflect only records visible to your role and scope.</p>
         {parsed.value.compareFrom && parsed.value.compareTo ? <p className="desc">Comparison period {parsed.value.compareFrom} through {parsed.value.compareTo}: Decision required before numeric comparison is enabled.</p> : null}
       </div>

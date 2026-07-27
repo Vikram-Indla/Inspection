@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import ActionForm from "@/app/(app)/admin/compliance-requests/ActionForm";
 import { publishComplianceRequest, returnComplianceRequest, rejectComplianceRequest } from "@/app/(app)/admin/compliance-requests/actions";
+import { getLocale } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +32,16 @@ export default async function ApprovalQueue({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const sb = await supabaseServer();
-  const sp = await searchParams;
+  const [sp, locale] = await Promise.all([searchParams, getLocale()]);
+  const copy = (en: string, ar: string) => locale === "ar" ? ar : en;
+  const statusLabel = (status: string) => {
+    if (status === "pending_review") return copy("Pending review", "بانتظار المراجعة");
+    if (status === "approved") return copy("Approved", "معتمد");
+    return status.replaceAll("_", " ");
+  };
+  const decisionProgress = (done: number, total: number) => locale === "ar"
+    ? `${done} من ${total} تم البتّ فيه`
+    : `${done} of ${total} decided`;
   const current = sp.__shellRoute === "/admin/compliance-approvals" ? "/admin/compliance-approvals" : "/compliance/approvals";
   const { data: { user } } = await getServerUser();
   const [{ data, error }, componentRead] = await Promise.all([
@@ -63,8 +73,8 @@ export default async function ApprovalQueue({
       <div className="rv-approval">
         {error || componentRead.error ? <div className="sq-banner sq-banner--critical" role="alert"><strong>Approval Queue unavailable.</strong> No workload claim is made. Reference {correlationId}.</div> : null}
         <header className="rv-approval__heading">
-          <div><p className="sq-overline">Compliance configuration</p><h1>Approval Queue</h1><p>Object-level maker-checker decisions and governed publication readiness.</p></div>
-          <span className="sq-lozenge sq-lozenge--warning">{rows.length} pending</span>
+          <div><p className="sq-overline">{copy("Configuration requests awaiting decision", "طلبات تهيئة بانتظار القرار")}</p><h1>{copy("Approval Queue", "قائمة الاعتماد")}</h1><p>{copy("Object review incomplete, so no package decision is possible", "مراجعة العناصر غير مكتملة، فيتعذّر اتخاذ قرار على الحزمة")}</p></div>
+          <span className="sq-lozenge sq-lozenge--warning">{rows.length} {copy("Pending review", "بانتظار المراجعة")}</span>
         </header>
         {/* CLASS-CONTRACT.md § Approval Queue — three-column workspace: request
             list · object review · decision rail. sq-grid-2's auto-fit columns
@@ -80,16 +90,18 @@ export default async function ApprovalQueue({
             return (
               <article className={`rv-approval__card ${index === 0 ? "is-selected" : ""}`} key={row.id}>
                 <div>
-                  <p className="sq-overline">{row.request_type === "create" ? "Create" : "Modify"} regulation</p>
+                  <p className="sq-overline">{row.request_type === "create"
+                    ? `${copy("Create", "إنشاء")} ${copy("Regulation", "اللائحة")}`
+                    : copy("Modify regulation", "تعديل لائحة")}</p>
                   <h2>{row.title}</h2>
-                  <p>{row.request_number} · Version {row.current_revision}</p>
+                  <p>{row.request_number} · {copy("Version", "الإصدار")} {row.current_revision}</p>
                   <div className="rv-approval__chips">
                     {kinds.map(kind => <span key={kind}>◇ {current.filter(item => item.entity_kind === kind).length} {kind.replace("_", " ")}</span>)}
                   </div>
                   <small>{row.submitted_at ? new Date(row.submitted_at).toLocaleString("en-SA") : "Submission time not recorded"}</small>
                 </div>
-                <span className="sq-lozenge sq-lozenge--warning">• {row.status.replaceAll("_", " ")}</span>
-                <a aria-label={`Review ${row.title}`} href={`/admin/compliance-requests/${row.id}?from=approval-queue`}>Open review</a>
+                <span className="sq-lozenge sq-lozenge--warning">• {statusLabel(row.status)}</span>
+                <a aria-label={`${copy("Open review", "فتح المراجعة")} ${row.title}`} href={`/admin/compliance-requests/${row.id}?from=approval-queue`}>{copy("Open review", "فتح المراجعة")}</a>
               </article>
             );
           })}
@@ -101,8 +113,8 @@ export default async function ApprovalQueue({
           ) : null}
         </div>
 
-        <section className="panel" aria-label="Object review">
-          <div className="panel-header"><span className="panel-title">Object review</span>{currentRequest ? <span className="badge">{currentRequest.request_number}</span> : null}</div>
+        <section className="panel" aria-label={copy("Object review incomplete", "مراجعة العناصر غير مكتملة")}>
+          <div className="panel-header"><span className="panel-title">{copy("Object review incomplete", "مراجعة العناصر غير مكتملة")}</span>{currentRequest ? <span className="badge">{currentRequest.request_number}</span> : null}</div>
           <div className="panel-body">
             {!currentRequest ? (
               <p className="desc">No request selected — the list is empty.</p>
@@ -117,7 +129,7 @@ export default async function ApprovalQueue({
                   return (
                     <div className="row" key={component.id} style={{ justifyContent: "space-between" }}>
                       <span><span className="id-code">{component.entity_kind}</span> · {String(snapshotTitle)}</span>
-                      <span className={`badge ${component.component_status === "approved" ? "badge-completed" : component.component_status === "rejected" ? "badge-critical" : "badge-pending"}`}>{component.component_status.replaceAll("_", " ")}</span>
+                      <span className={`badge ${component.component_status === "approved" ? "badge-completed" : component.component_status === "rejected" ? "badge-critical" : "badge-pending"}`}>{statusLabel(component.component_status)}</span>
                     </div>
                   );
                 })}
@@ -127,7 +139,7 @@ export default async function ApprovalQueue({
         </section>
 
         <section className="panel" aria-label="Decision">
-          <div className="panel-header"><span className="panel-title">Decision</span></div>
+          <div className="panel-header"><span className="panel-title">{copy("Decision", "القرار")}</span></div>
           <div className="panel-body">
             {!currentRequest ? (
               <p className="desc">No records.</p>
@@ -135,17 +147,17 @@ export default async function ApprovalQueue({
               <div className="stack">
                 <ActionForm action={publishComplianceRequest} className="stack">
                   <input type="hidden" name="request_id" value={currentRequest.id} />
-                  <button className="btn" type="submit">Approve configuration request</button>
+                  <button className="btn" type="submit">{copy("Approve configuration request", "اعتماد طلب التهيئة")}</button>
                 </ActionForm>
                 <ActionForm action={returnComplianceRequest} className="stack">
                   <input type="hidden" name="request_id" value={currentRequest.id} />
                   <textarea className="input" name="comments" required placeholder="Return reason (required)" rows={3} />
-                  <button className="btn btn-secondary" type="submit">Return package</button>
+                  <button className="btn btn-secondary" type="submit">{copy("Return package", "إعادة الحزمة")}</button>
                 </ActionForm>
                 <ActionForm action={rejectComplianceRequest} className="stack">
                   <input type="hidden" name="request_id" value={currentRequest.id} />
                   <textarea className="input" name="comments" required placeholder="Rejection reason (required)" rows={3} />
-                  <button className="btn btn-danger" type="submit">Reject package</button>
+                  <button className="btn btn-danger" type="submit">{copy("Reject package", "رفض الحزمة")}</button>
                 </ActionForm>
               </div>
             )}
@@ -154,12 +166,12 @@ export default async function ApprovalQueue({
         </div>
         <nav className="rv-approval__steps" aria-label="Review object sequence">
           {[
-            ["Overview", "Read"],
-            ["Regulation", `${components.filter(item => item.entity_kind === "regulation" && ["approved", "rejected"].includes(item.component_status)).length} decided`],
-            ["Inspection items", `${components.filter(item => item.entity_kind === "inspection_item" && ["approved", "rejected"].includes(item.component_status)).length} decided`],
-            ["Violations", `${components.filter(item => item.entity_kind === "violation" && ["approved", "rejected"].includes(item.component_status)).length} decided`],
-            ["Penalties", `${components.filter(item => item.entity_kind === "penalty" && ["approved", "rejected"].includes(item.component_status)).length} decided`],
-            ["Summary", "Blocked"],
+            [copy("Overview", "نظرة عامة"), copy("Read", "مقروء")],
+            [copy("Regulation", "اللائحة"), decisionProgress(currentComponentRows.filter(item => item.entity_kind === "regulation" && ["approved", "rejected"].includes(item.component_status)).length, currentComponentRows.filter(item => item.entity_kind === "regulation").length)],
+            [copy("Inspection items", "بنود التفتيش"), decisionProgress(currentComponentRows.filter(item => item.entity_kind === "inspection_item" && ["approved", "rejected"].includes(item.component_status)).length, currentComponentRows.filter(item => item.entity_kind === "inspection_item").length)],
+            [copy("Violations", "المخالفات"), decisionProgress(currentComponentRows.filter(item => item.entity_kind === "violation" && ["approved", "rejected"].includes(item.component_status)).length, currentComponentRows.filter(item => item.entity_kind === "violation").length)],
+            [copy("Penalties", "العقوبات"), decisionProgress(currentComponentRows.filter(item => item.entity_kind === "penalty" && ["approved", "rejected"].includes(item.component_status)).length, currentComponentRows.filter(item => item.entity_kind === "penalty").length)],
+            [copy("Summary", "الملخص"), copy("Blocked", "محجوب")],
           ].map(([label, meta], index) => <span className={index === 0 ? "is-current" : ""} key={label}><strong>{label}</strong><small>{meta}</small></span>)}
         </nav>
       </div>
