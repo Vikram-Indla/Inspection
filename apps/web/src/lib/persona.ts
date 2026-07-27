@@ -16,6 +16,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 // Access screen is read-only, so there is no role mutation path to wire today.
 const ROLE_CACHE_SECONDS = 30;
 const roleTag = (userId: string) => `user-roles:${userId}`;
+const SHELL_REGION_TAG = "shell-regions";
 
 export const getUserRoles = cache(async (userId: string) => {
   const sb = await supabaseServer();
@@ -43,13 +44,25 @@ export const getShellRegions = cache(async () => {
   // first page — e.g. the high-UUID "Verification Fixtures" seed. Page through
   // all non-null region rows (region column only) and dedupe so the scope
   // dropdown is complete regardless of table size.
-  const pageSize = 1000;
-  const seen = new Set<string>();
-  for (let from = 0; ; from += pageSize) {
-    const { data, error } = await sb.from("factories").select("region").not("region", "is", null).range(from, from + pageSize - 1);
-    if (error) return { data: null, error };
-    for (const row of data ?? []) if (row.region) seen.add(row.region);
-    if (!data || data.length < pageSize) break;
-  }
-  return { data: [...seen].map(region => ({ region })), error: null };
+  return unstable_cache(
+    async () => {
+      const pageSize = 1000;
+      const seen = new Set<string>();
+      for (let from = 0; ; from += pageSize) {
+        const { data, error } = await sb.from("factories").select("region").not("region", "is", null).range(from, from + pageSize - 1);
+        if (error) return { data: null, error };
+        for (const row of data ?? []) if (row.region) seen.add(row.region);
+        if (!data || data.length < pageSize) break;
+      }
+      return { data: [...seen].map(region => ({ region })), error: null };
+    },
+    ["shell-regions"],
+    // Reuse the already-governed shell/persona cache window above rather than
+    // introducing a second staleness threshold for shared navigation data.
+    { revalidate: ROLE_CACHE_SECONDS, tags: [SHELL_REGION_TAG] },
+  )();
 });
+
+export async function invalidateShellRegions() {
+  revalidateTag(SHELL_REGION_TAG);
+}

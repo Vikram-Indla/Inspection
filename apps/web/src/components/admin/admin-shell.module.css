@@ -7,6 +7,32 @@
   color: var(--text-primary);
 }
 
+.routeProgress {
+  position: fixed;
+  z-index: var(--ax-z-toast);
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: 3px;
+  overflow: hidden;
+  background: var(--ax-color-primary-tint);
+  pointer-events: none;
+}
+.routeProgress::after {
+  content: "";
+  display: block;
+  inline-size: 34%;
+  block-size: 100%;
+  background: var(--ax-color-primary);
+  animation: admin-route-progress 900ms ease-in-out infinite;
+}
+@keyframes admin-route-progress {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(310%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .routeProgress::after { inline-size: 100%; animation: none; }
+}
+
 .rail {
   position: sticky;
   inset-block-start: 0;

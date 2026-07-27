@@ -435,7 +435,7 @@ export default function ShellClient({
       <Link key={item.id} className={className} aria-label={effectiveCollapsed ? item.label : undefined}
         aria-current={isShellRouteCurrent(current, item.href) ? "page" : undefined}
         href={item.href} title={item.label} onClick={closeAfterNavigate} data-nav-state="enabled"
-        data-next-spa="true" prefetch={false}>
+        data-next-spa="true">
         {showIcon ? <span className="sq-nav-icon"><Icon name={item.icon} /></span> : null}
         <span className="sq-nav-label">{item.label}</span>
         {item.badge ? <span className="sq-badge sq-badge--critical sq-nav-badge">{item.badge}</span> : null}
