@@ -1,4 +1,4 @@
-import Shell from "@/components/Shell";
+import AdminDestinationFrame from "../_components/AdminDestinationFrame";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
@@ -69,6 +69,7 @@ function currentPublished(pkg: PkgRow): VersionRow | null {
 
 export default async function Packages() {
   const { t, locale } = await useT();
+  const copy = (en: string, ar: string) => locale === "ar" ? ar : en;
   const sb = await supabaseServer();
   const [packageRead, itemRead, templateRead, violationRead, authRead] = await Promise.all([
     sb.from("packages").select("id, code, title, scope, package_versions(id, version_label, status, published_at, effective_from, effective_to, supersedes_id, definition)").order("code"),
@@ -281,14 +282,63 @@ export default async function Packages() {
     />
     );
   };
+  const notConfigured = t("common.notConfigured", copy("Not configured", "غير مُهيّأ"));
+  const publishedPackages = pkgs.filter(pkg => currentPublished(pkg)).length;
+  const draftPackages = pkgs.filter(pkg => (pkg.package_versions ?? []).some(version => version.status === "draft")).length;
 
   return (
-    <Shell current="/admin/packages" title={t("admin.pkg.title", "Package library & designer")}
+    <AdminDestinationFrame
+      current="/admin/packages"
+      title={t("admin.revamp.survey.title", copy("Survey Configuration", "تهيئة النماذج"))}
+      subtitle={t("admin.revamp.survey.subtitle", copy("Inspection forms, sections and response rules", "نماذج التفتيش والأقسام وقواعد الإجابة"))}
+      hub={t("admin.revamp.hub.rules", copy("Rules & content", "القواعد والمحتوى"))}
+      routeLabel="/admin/packages"
+      designId="frame-22-admin-survey-configuration"
+      labels={{
+        administration: t("navigation.administration", copy("Administration", "الإدارة")),
+        breadcrumb: t("common.breadcrumb", copy("Breadcrumb", "مسار التنقل")),
+        governance: t("admin.revamp.governance", copy("Governance on this surface", "الحوكمة في هذه الواجهة")),
+        reconstruction: t("admin.revamp.reconstruction", copy("Reconstruction note", "ملاحظة إعادة البناء")),
+      }}
+      metrics={[
+        {
+          label: t("admin.revamp.survey.metric.published", copy("Published packages", "الحزم المنشورة")),
+          value: packageUnavailable ? notConfigured : publishedPackages,
+          note: t("admin.revamp.survey.metric.published.note", copy("Currently effective versions only", "الإصدارات النافذة حالياً فقط")),
+        },
+        {
+          label: t("admin.revamp.survey.metric.items", copy("Inspection items", "بنود التفتيش")),
+          value: itemBankUnavailable ? notConfigured : items.length,
+          note: t("admin.revamp.survey.metric.items.note", copy("RLS-visible governed catalogue", "كتالوج محكوم ومرئي حسب أمن الصفوف")),
+        },
+        {
+          label: t("admin.revamp.survey.metric.drafts", copy("Draft packages", "مسودات الحزم")),
+          value: packageUnavailable ? notConfigured : draftPackages,
+          note: t("admin.revamp.survey.metric.drafts.note", copy("Not selectable by live visits", "غير قابلة للاختيار للزيارات الفعلية")),
+        },
+      ]}
+      tabs={[
+        { label: t("admin.revamp.survey.tabs.packages", copy("Packages", "الحزم")), href: "/admin/packages", current: true },
+        { label: t("admin.revamp.survey.tabs.items", copy("Sections & items", "الأقسام والبنود")), href: "/admin/items" },
+        { label: t("admin.revamp.survey.tabs.forms", copy("Action forms", "نماذج الإجراءات")), href: "/admin/templates" },
+        { label: t("admin.revamp.survey.tabs.versions", copy("Versions", "الإصدارات")), href: "/admin/packages#package-register" },
+      ]}
+      gate={{
+        title: t("admin.revamp.survey.gate.title", copy("Published packages are immutable", "الحزم المنشورة غير قابلة للتغيير")),
+        body: t("admin.revamp.survey.gate.body", copy("A package selected by a published visit cannot be structurally edited. Changes create additive drafts; existing and historical inspections remain pinned to their original package version.", "لا يمكن تعديل بنية حزمة اختارتها زيارة منشورة. تُنشئ التغييرات مسودات إضافية، وتبقى عمليات التفتيش الحالية والتاريخية مرتبطة بإصدار الحزمة الأصلي.")),
+      }}
+      governance={[
+        t("admin.revamp.survey.governance.validate", copy("Publish revalidates sections, items, response mappings, evidence and action-form dependencies.", "يعيد النشر التحقق من الأقسام والبنود وربط الإجابات والأدلة واعتماديات نماذج الإجراءات.")),
+        t("admin.revamp.survey.governance.maker", copy("Maker-checker approval is enforced by the existing publish actions and database guards.", "يُفرض فصل المُعدّ عن المعتمد عبر إجراءات النشر وضوابط قاعدة البيانات الحالية.")),
+        t("admin.revamp.survey.governance.runtime", copy("Execution consumes only the locked package version selected for the visit.", "يستخدم التنفيذ فقط إصدار الحزمة المقفل المختار للزيارة.")),
+      ]}
+      reconstructionNote={t("admin.revamp.survey.note", copy("The design’s sample package names, counts and rule contents are not copied. This workspace renders the real package, item, template, impact and immutable-version sources already used by execution.", "لا تُنسخ أسماء حزم التصميم النموذجية أو أعدادها أو محتوى قواعدها. تعرض مساحة العمل هذه مصادر الحزم والبنود والقوالب والأثر والإصدارات غير القابلة للتغيير التي يستخدمها التنفيذ فعلياً."))}
       context={<span className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
         <span className="badge badge-info">SCR-ADM-030/031 · ENG-02</span>
         <span className="t-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></span>
-      </span>}>
-      <div className={styles.pageStack}>
+      </span>}
+    >
+      <div className={styles.pageStack} id="package-register">
         {!packageUnavailable && canWrite && <TemplateRegistry templates={templates} strings={templateStrings} />}
         <section className={`panel ${styles.hero}`} aria-labelledby="pkg-overview">
           <div className={styles.heroRow}>
@@ -422,6 +472,6 @@ export default async function Packages() {
           <p className="t-caption" role="status">{t("admin.pkg.stale", "Data may have changed since this source read; no freshness threshold is defined.")} <a className="sq-link" href="/admin/packages">{t("admin.pkg.refresh", "Refresh to reconcile")}</a>.</p>
         </section>}
       </div>
-    </Shell>
+    </AdminDestinationFrame>
   );
 }

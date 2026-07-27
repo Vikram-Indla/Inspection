@@ -1,110 +1,118 @@
 import { expect, test, type Page } from "@playwright/test";
+import { PERSONAS, type PersonaKey } from "./personas";
 
-const ADMIN_ROUTES = [
-  "/admin",
-  "/admin/access",
-  "/admin/audit",
-  "/admin/bulk-violations",
-  "/admin/compliance-approvals",
-  "/admin/devices",
-  "/admin/enforcement-recommendations",
-  "/admin/execution",
-  "/admin/gis",
-  "/admin/integrations",
-  "/admin/items",
-  "/admin/localization",
-  "/admin/notifications",
-  "/admin/operations",
-  "/admin/packages",
-  "/admin/planning/expiry",
-  "/admin/planning/lookups",
-  "/admin/planning/status",
-  "/admin/regulations",
-  "/admin/risk",
-  "/admin/security-access",
-  "/admin/violations",
-  "/admin/workflows",
+const OWNED_DESTINATIONS = [
+  {
+    route: "/admin/access",
+    designId: "frame-19-admin-users-roles",
+    headingEn: "Users & Roles",
+    headingAr: "المستخدمون والأدوار",
+  },
+  {
+    route: "/admin/localization",
+    designId: "frame-20-admin-lookup-management",
+    headingEn: "Lookup Management",
+    headingAr: "إدارة القوائم المرجعية",
+  },
+  {
+    route: "/admin/risk",
+    designId: "frame-21-admin-risk-configuration",
+    headingEn: "Risk Configuration",
+    headingAr: "تهيئة المخاطر",
+  },
+  {
+    route: "/admin/packages",
+    designId: "frame-22-admin-survey-configuration",
+    headingEn: "Survey Configuration",
+    headingAr: "تهيئة النماذج",
+  },
+  {
+    route: "/admin/integrations",
+    designId: "frame-24-admin-integration-management",
+    headingEn: "Integration Management",
+    headingAr: "إدارة التكاملات",
+  },
 ] as const;
 
-const CROSS_CARD_ROUTES = [
-  "/ai/suggestions",
-  "/admin/dashboard-config",
-  "/admin/compliance-requests",
-  "/enforcement",
+const PINNED_DESTINATIONS = [
+  { label: "Users & Roles", href: "/admin/access" },
+  { label: "Lookup Management", href: "/admin/localization" },
+  { label: "Risk Configuration", href: "/admin/risk" },
+  { label: "Survey Configuration", href: "/admin/packages" },
+  { label: "Notification Configuration", href: "/admin/notifications" },
+  { label: "Integration Management", href: "/admin/integrations" },
 ] as const;
-
-const email = process.env.SAQEEL_TEST_COMPLIANCE_ADMIN_EMAIL;
-const password = process.env.SAQEEL_TEST_COMPLIANCE_ADMIN_PASSWORD;
 
 test.use({ storageState: { cookies: [], origins: [] } });
 
-async function signIn(page: Page) {
-  if (!email || !password) {
-    throw new Error(
-      "Set SAQEEL_TEST_COMPLIANCE_ADMIN_EMAIL and " +
-      "SAQEEL_TEST_COMPLIANCE_ADMIN_PASSWORD for the seeded admin persona.",
-    );
-  }
-
+async function signIn(page: Page, personaKey: PersonaKey) {
+  const persona = PERSONAS[personaKey];
   await page.goto("/locale?set=en");
   await page.goto("/login");
   await page.getByRole("textbox", {
     name: "National ID / Staff number",
     exact: true,
-  }).fill(email);
+  }).fill(persona.email);
   await page.getByRole("textbox", {
     name: "Password Show password",
     exact: true,
-  }).fill(password);
+  }).fill(persona.password);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
-  await page.waitForURL(url => url.pathname === "/admin", { timeout: 20_000 });
+  await page.waitForURL(url => url.pathname === persona.home, { timeout: 20_000 });
 }
 
-test("admin-core routes load under the real admin persona without console failures", async ({ page }) => {
+test("the five admin-core destinations use their exact Revamp frames with real admin data", async ({ page }) => {
   const consoleErrors: string[] = [];
-  const routesOutsideShell: string[] = [];
   page.on("console", message => {
     if (message.type() === "error") consoleErrors.push(message.text());
   });
   page.on("pageerror", error => consoleErrors.push(error.message));
 
-  await signIn(page);
+  await signIn(page, "admin");
 
-  for (const route of ADMIN_ROUTES) {
-    const response = await page.goto(route);
-    expect(response?.status(), `${route} response`).toBeLessThan(400);
-    await expect(page.locator("body")).toBeVisible();
-    await expect(page.locator("h1, h2").first()).toBeVisible();
-    if (await page.locator("main").count() === 0) routesOutsideShell.push(route);
+  for (const destination of OWNED_DESTINATIONS) {
+    const response = await page.goto(destination.route);
+    expect(response?.status(), `${destination.route} response`).toBeLessThan(400);
+    const frame = page.locator(
+      `[data-saqeel-admin-destination="${destination.designId}"]`,
+    );
+    await expect(frame).toBeVisible();
+    await expect(frame.getByRole("heading", {
+      level: 1,
+      name: destination.headingEn,
+      exact: true,
+    })).toBeVisible();
+    await expect(
+      frame.locator("table:visible, [role=alert]:visible, form:visible, section.panel:visible").first(),
+    ).toBeVisible();
   }
 
-  expect(routesOutsideShell, "admin routes outside the authenticated shell").toEqual([]);
   expect(consoleErrors).toEqual([]);
 });
 
-test("admin-core gateway reports the seeded persona's enabled families truthfully", async ({ page }) => {
-  await signIn(page);
-  const scope = page.getByRole("region", { name: /Your scope/i });
-  const controlPanel = page.locator('[data-saqeel-design="WA-DES-020"]');
+test("the pinned Administration group exposes exactly the six source destinations", async ({ page }) => {
+  await signIn(page, "admin");
+  await page.goto("/admin/access");
 
-  await expect(controlPanel.locator("[data-control-card]")).toHaveCount(24);
-  await expect(scope).toContainText("Users");
-  await expect(scope).toContainText("Inspection Forms");
-  await expect(scope).toContainText("Workflow Settings");
-  await expect(scope).toContainText("Risk Settings");
-  await expect(scope).toContainText("Map Settings");
-  await expect(scope).toContainText("Security & Access Review");
-  await expect(scope).not.toContainText("You can act in none");
-});
+  const administration = page.locator('[data-nav-group="administration"]');
+  await expect(administration).toBeVisible();
+  const trigger = administration.getByRole("button", {
+    name: "Administration",
+    exact: true,
+  });
+  if ((await trigger.getAttribute("aria-expanded")) !== "true") {
+    await trigger.click();
+  }
 
-test("the four cross-card Control Panel destinations remain reachable inside the shell", async ({ page }) => {
-  await signIn(page);
-
-  for (const route of CROSS_CARD_ROUTES) {
-    const response = await page.goto(route);
-    expect(response?.status(), `${route} response`).toBeLessThan(400);
-    await expect(page.locator("main")).toBeVisible();
-    await expect(page.locator("h1, h2").first()).toBeVisible();
+  const links = administration.getByRole("link");
+  await expect(links).toHaveCount(PINNED_DESTINATIONS.length);
+  for (const destination of PINNED_DESTINATIONS) {
+    const link = administration.getByRole("link", {
+      name: destination.label,
+      exact: true,
+    });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", destination.href);
   }
 });
 
@@ -115,29 +123,57 @@ for (const { width, height } of [
   { width: 390, height: 844 },
   { width: 320, height: 800 },
 ] as const) {
-  test(`admin gateway and operations reflow at ${width}x${height} in EN/LTR and AR/RTL`, async ({ page }) => {
+  test(`admin Revamp frame reflows at ${width}x${height} in EN/LTR and AR/RTL`, async ({ page }) => {
     await page.setViewportSize({ width, height });
-    await signIn(page);
+    await signIn(page, "admin");
 
     for (const locale of ["en", "ar"] as const) {
       await page.goto(`/locale?set=${locale}`);
-      for (const route of ["/admin", "/admin/operations"] as const) {
-        await page.goto(route);
-        await expect(page.locator("html")).toHaveAttribute("dir", locale === "ar" ? "rtl" : "ltr");
-        await expect(page.locator("main")).toBeVisible();
-        const overflow = await page.evaluate(
-          () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-        );
-        expect(overflow, `${route} ${locale} at ${width}`).toBeLessThanOrEqual(1);
-      }
+      await page.goto("/admin/access");
+      await expect(page.locator("html")).toHaveAttribute(
+        "dir",
+        locale === "ar" ? "rtl" : "ltr",
+      );
+      await expect(page.getByRole("heading", {
+        level: 1,
+        name: locale === "ar"
+          ? OWNED_DESTINATIONS[0].headingAr
+          : OWNED_DESTINATIONS[0].headingEn,
+        exact: true,
+      })).toBeVisible();
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow, `${locale} at ${width}`).toBeLessThanOrEqual(1);
     }
   });
 }
 
-test("anonymous users cannot read the admin gateway", async ({ page }) => {
+test("a Planner sees the pinned destination but is refused at the admin boundary", async ({ page }) => {
+  await signIn(page, "planner");
+  const response = await page.goto("/admin/access");
+  expect(response?.status()).toBeLessThan(400);
+  const refusal = page.locator("section.sq-access-refusal");
+  await expect(refusal.getByRole("heading", {
+    level: 1,
+    name: "You do not have access to this destination",
+    exact: true,
+  })).toBeVisible();
+  await expect(refusal).toContainText(
+    "A Planner reaches the destination and is refused at the boundary.",
+  );
+  await expect(
+    page.locator('[data-saqeel-admin-destination="frame-19-admin-users-roles"]'),
+  ).toHaveCount(0);
+});
+
+test("anonymous users cannot read an Administration destination", async ({ page }) => {
   await page.goto("/locale?set=en");
-  const response = await page.goto("/admin");
+  const response = await page.goto("/admin/access");
   expect(response?.status()).toBeLessThan(400);
   await expect(page).toHaveURL(/\/login$/);
-  await expect(page.getByRole("button", { name: "Sign in", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", {
+    name: "Sign in",
+    exact: true,
+  })).toBeVisible();
 });
