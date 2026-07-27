@@ -137,7 +137,11 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   transition: background-color 6000s ease-in-out 0s;
 }
 .sq-input:hover, .sq-select:hover, .sq-textarea:hover { border-color: var(--border-strong); }
-.sq-input:focus-visible, .sq-select:focus-visible, .sq-textarea:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.sq-input:focus-visible, .sq-select:focus-visible, .sq-textarea:focus-visible {
+  outline: none;
+  border-color: var(--focus-ring);
+  box-shadow: inset 0 0 0 1px var(--focus-ring);
+}
 .sq-input[disabled], .sq-select[disabled], .sq-textarea[disabled] { background: var(--surface-secondary); color: var(--text-disabled); cursor: not-allowed; }
 .sq-input[readonly] { background: var(--surface-sunken); border-style: dashed; }
 .sq-field.is-invalid .sq-input, .sq-field.is-invalid .sq-select, .sq-field.is-invalid .sq-textarea { border-color: var(--status-critical); }
@@ -792,7 +796,11 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   .sq-execution__days,
   .sq-execution__tablewrap tr { grid-template-columns: minmax(0, 1fr); }
 }
-.sq-shell-search input:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.sq-shell-search input:focus-visible {
+  outline: none;
+  border-color: var(--focus-ring);
+  box-shadow: inset 0 0 0 1px var(--focus-ring);
+}
 .sq-shell-search__results { position: absolute; inset-block-start: calc(100% + var(--space-2)); inset-inline: 0; z-index: var(--z-drawer); padding: var(--space-2); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--surface-primary); box-shadow: var(--shadow-lg); }
 /* Portaled to document.body (see ShellClient.tsx) so it paints outside the
    sticky pagehead's subtree — top/left/width come from inline style, computed

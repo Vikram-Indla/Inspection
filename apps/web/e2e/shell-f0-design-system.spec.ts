@@ -64,4 +64,15 @@ test.describe("shell-f0 SAQEEL design-system migration", () => {
     expect(violations).toContain('className="panel"');
     expect(violations).toContain('className="panel stack"');
   });
+
+  test("text controls render one focus boundary, never a detached second border", () => {
+    for (const file of ["src/app/saqeel-runtime.css"]) {
+      const css = read(file);
+      const focusRule = css.match(/\.sq-input:focus-visible,\s*\.sq-select:focus-visible,\s*\.sq-textarea:focus-visible\s*\{([^}]*)\}/s)?.[1] ?? "";
+      expect(focusRule).toContain("outline: none");
+      expect(focusRule).toContain("border-color: var(--focus-ring)");
+      expect(focusRule).toContain("box-shadow: inset 0 0 0 1px var(--focus-ring)");
+      expect(focusRule).not.toContain("outline-offset");
+    }
+  });
 });
