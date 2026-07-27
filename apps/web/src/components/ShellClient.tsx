@@ -158,6 +158,15 @@ export default function ShellClient({
     setPendingHref(null);
   }, [current]);
 
+  // A rejected RSC request or a development compile failure leaves the pathname
+  // unchanged. Release the busy state in that negative path so the persistent
+  // shell never appears frozen indefinitely.
+  useEffect(() => {
+    if (!pendingHref) return;
+    const timer = window.setTimeout(() => setPendingHref(null), 10_000);
+    return () => window.clearTimeout(timer);
+  }, [pendingHref]);
+
   useEffect(() => {
     const normalized = query.trim();
     if (normalized.length < 2) {
