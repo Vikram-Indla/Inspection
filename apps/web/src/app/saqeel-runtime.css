@@ -469,12 +469,15 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .sq-shell__skip:focus { transform: translateY(0); outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .sq-shell__nav {
   background: var(--nav-bg); border-inline-end: 1px solid var(--nav-border); color: var(--nav-text);
-  padding: 16px 12px; display: flex; flex-direction: column; gap: 8px;
+  padding: 16px 12px; gap: 8px;
   /* Exactly one viewport tall, never taller: min-block-size let the rail grow
      to its content (956px against an 894px viewport), so the last items sat
      below the fold with no way to reach them. It is now viewport-height with
      its own scroll, and sticky keeps it pinned against a page that can be
-     20,000px long. */
+     20,000px long. Grid rather than flex: the pinned Administration footer
+     (last row below) needs its own reserved track so the scrolling middle row
+     can never grow into it and clip it off the bottom of short viewports. */
+  display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
   position: sticky; inset-block-start: 0; block-size: 100dvh; overflow: hidden;
   min-inline-size: 0; align-self: start;
 
@@ -618,7 +621,7 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 [dir="rtl"] .sq-shell.is-collapsed .sq-shell__collapse svg { transform: none; }
 .sq-shell.is-collapsed .sq-nav-label { display: none; }
 .sq-shell.is-collapsed .sq-nav-group__trigger { display: none; }
-.sq-shell.is-collapsed .sq-nav-group--pinned .sq-nav-group__trigger { display: flex; justify-content: center; padding-inline: 0; }
+.sq-shell.is-collapsed .sq-nav-group--pinned .sq-nav-group__trigger { display: flex; justify-content: center; padding-inline: 0; border-inline-start-width: 0; }
 .sq-shell.is-collapsed .sq-nav-group--pinned .sq-nav-group__chevron { display: none; }
 .sq-shell.is-collapsed .sq-nav-item { justify-content: center; padding-inline: 0; }
 .sq-shell.is-collapsed .sq-nav-subgroup__label {
