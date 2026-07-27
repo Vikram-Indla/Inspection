@@ -16,6 +16,7 @@ import RefreshButton from "./RefreshButton";
 import PlanningPreview from "./PlanningPreview";
 import RevampPlanningInsights from "./RevampPlanningInsights";
 import SavedViewsButton from "./SavedViewsButton";
+import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 
 export const dynamic = "force-dynamic";
 
@@ -154,7 +155,8 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
     );
   }
 
-  const lastUpdates = await fetchLastUpdates(sb, list.rows.map(r => r.id));
+  const visibleRows = list.rows.filter(row => !isTestFixtureEstablishment({ name: row.factoryName }));
+  const lastUpdates = await fetchLastUpdates(sb, visibleRows.map(r => r.id));
 
   const lookups = (lookupsRead.data ?? []) as { kind: string; key: string; label_en: string; label_ar: string | null }[];
   const lookupLabel = (l: { label_en: string; label_ar: string | null }) => (locale === "ar" ? (l.label_ar ?? l.label_en) : l.label_en);
@@ -236,7 +238,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       </div>
 
       <RevampPlanningInsights
-        rows={list.rows}
+        rows={visibleRows}
         total={list.total}
         returned={list.countsAvailable ? list.counts.returned : "—"}
       />
@@ -347,7 +349,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       </form>
 
       {/* Canonical visit list (PLN-REQ-013) */}
-      {list.rows.length === 0 ? (
+      {visibleRows.length === 0 ? (
         <EmptyState glyph="🗓" title={tr("plan.list.empty", "No visits match", "لا توجد زيارات مطابقة")}
           body={tr("plan.list.emptyDesc", "No visits match the current tab, search and filters. Reset to see everything in your scope.", "لا توجد زيارات مطابقة للتبويب والبحث وعوامل التصفية الحالية. أعد التعيين لعرض كل ما في نطاقك.")} />
       ) : (
@@ -378,7 +380,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
             <th scope="col" className="sq-td-num">{tr("plan.list.colLastUpdate", "Last Update", "آخر تحديث")}</th>
           </tr></thead>
           <tbody>
-            {list.rows.map((row: PlanningVisitRow) => (
+            {visibleRows.map((row: PlanningVisitRow) => (
               <tr key={row.id}>
                 <td className="sq-numeric"><a className="sq-link" href={`/visits/${row.id}`}><strong>{row.visitReference ?? row.id.slice(0, 8)}</strong></a></td>
                 <td><span className="sq-lozenge sq-lozenge--info">{t(`enum.${row.method}`, row.method)}</span></td>
@@ -417,7 +419,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
         <div className="sq-row" style={{ justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: "var(--space-3)" }}>
           <span className="sq-caption sq-numeric">
             {tr("plan.list.showing", "Showing {shown} of {total} · page {page} of {pages}", "عرض {shown} من {total} · صفحة {page} من {pages}")
-              .replace("{shown}", String(list.rows.length)).replace("{total}", String(list.total))
+              .replace("{shown}", String(visibleRows.length)).replace("{total}", String(list.total))
               .replace("{page}", String(page)).replace("{pages}", String(totalPages))}
           </span>
           <div className="sq-row" style={{ gap: "var(--space-3)" }}>
