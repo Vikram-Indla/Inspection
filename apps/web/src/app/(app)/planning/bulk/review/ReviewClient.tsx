@@ -537,9 +537,8 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
             {/* M8 / PLN-CON-018 — discard the resumed draft (never-published);
                 distinct from cancelling a published visit. */}
             {" "}
-            <DiscardDraftButton planId={initialDraft.planId} label={s.discardDraft}
-              discardAria={`${s.discardDraft} — ${initialDraft.planReference}`}
-              unavailableLabel={s.draftUnavailable} />
+            <DiscardDraftButton planId={initialDraft.planId} expectedVersion={initialDraft.version} label={s.discardDraft}
+              discardAria={`${s.discardDraft} — ${initialDraft.planReference}`} />
           </p>
         )}
         {draftUnavailable && (

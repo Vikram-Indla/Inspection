@@ -493,10 +493,9 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
                         (same ownership boundary as resume); the copy stays
                         distinct from cancelling a published visit. */}
                     {user && d.created_by === user.id ? (
-                      <DiscardDraftButton planId={d.id}
+                      <DiscardDraftButton planId={d.id} expectedVersion={d.draft_version}
                         label={tr("plan.list.discard", "Discard", "تجاهل")}
-                        discardAria={tr("plan.list.discardAria", "Discard draft {ref}", "تجاهل المسودة {ref}").replace("{ref}", d.plan_reference ?? d.id.slice(0, 8))}
-                        unavailableLabel={t("plan.archive.contractUnavailable", "Unavailable — governed archive contract pending")} />
+                        discardAria={tr("plan.list.discardAria", "Discard draft {ref}", "تجاهل المسودة {ref}").replace("{ref}", d.plan_reference ?? d.id.slice(0, 8))} />
                     ) : "—"}
                   </td>
                 </tr>
