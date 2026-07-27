@@ -60,6 +60,8 @@ export default function ActionBar({ visitId, planningVersion, status, opState, o
   const [transitionIdentity] = useState(() => ({
     return: { idempotencyKey: `visit.return.${crypto.randomUUID()}`, correlationId: crypto.randomUUID() },
     republish: { idempotencyKey: `visit.republish.${crypto.randomUUID()}`, correlationId: crypto.randomUUID() },
+    metadata: { idempotencyKey: `visit.metadata.type.${crypto.randomUUID()}`, correlationId: crypto.randomUUID() },
+    repackage: { idempotencyKey: `visit.repackage.${crypto.randomUUID()}`, correlationId: crypto.randomUUID() },
   }));
   const msg = ret.error ?? rep.error ?? can.error ?? rsc.error ?? rea.error ?? vt.error ?? dup.error ?? pkg.error;
   const ok = ret.ok ?? rep.ok ?? can.ok ?? rsc.ok ?? rea.ok ?? vt.ok ?? dup.ok ?? pkg.ok;
@@ -123,6 +125,9 @@ export default function ActionBar({ visitId, planningVersion, status, opState, o
           {canManage && (
             <form action={vtAct} className="row" style={{ alignItems: "flex-end" }}>
               <input type="hidden" name="visit_id" value={visitId} />
+              <input type="hidden" name="expected_version" value={planningVersion} />
+              <input type="hidden" name="idempotency_key" value={transitionIdentity.metadata.idempotencyKey} />
+              <input type="hidden" name="correlation_id" value={transitionIdentity.metadata.correlationId} />
               <div className="field" style={{ maxInlineSize: 200 }}><label className="sq-field__label" htmlFor="visit-type-select">{strings.visitTypeLabel}</label>
                 <select className="select" name="visit_type" id="visit-type-select" defaultValue={visitType}>
                   <option value="periodic">{strings.typePeriodic}</option>
@@ -159,6 +164,9 @@ export default function ActionBar({ visitId, planningVersion, status, opState, o
           {canManageReturned && packageOptions.length > 0 && (
             <form action={pkgAct} className="row" style={{ alignItems: "flex-end" }}>
               <input type="hidden" name="visit_id" value={visitId} />
+              <input type="hidden" name="expected_version" value={planningVersion} />
+              <input type="hidden" name="idempotency_key" value={transitionIdentity.repackage.idempotencyKey} />
+              <input type="hidden" name="correlation_id" value={transitionIdentity.repackage.correlationId} />
               <div className="field" style={{ maxInlineSize: 260 }}><label className="sq-field__label" htmlFor="visit-repackage">{strings.repackageLabel}</label>
                 <select className="select" name="package_version_id" id="visit-repackage" required>
                   <option value="">—</option>

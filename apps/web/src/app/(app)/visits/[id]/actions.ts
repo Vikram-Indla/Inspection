@@ -307,22 +307,16 @@ export async function removeVisitAttachment(_: ActionResult, fd: FormData): Prom
   return { ok: "Attachment removed — soft delete, file and audit trail retained (M02-042)" };
 }
 
-// M02-043 — add/edit visit notes: plain guarded update on visits.notes;
-// RLS visits_update (planner/ops) is the authority. Empty input clears notes.
-// M8 — return flows NO LONGER write here; notes belong to the planner alone.
+// M02-043 — note changes use the same atomic metadata contract as visit type.
 export async function updateVisitNotes(_: ActionResult, fd: FormData): Promise<ActionResult> {
   const sb = await supabaseServer();
   const id = String(fd.get("visit_id") ?? "");
   const notes = String(fd.get("notes") ?? "").trim();
   if (!id) return { error: "Missing visit id (M02-043)" };
-  const { data: updated, error } = await sb.from("visits")
-    .update({ notes: notes || null })
-    .eq("id", id)
-    .select("id");
-  if (error) return { error: mapError(error, "update") };
-  if (!updated?.length) return { error: "No row updated — RLS denied (visits_update requires planner/ops)" };
+  const transitionError = await callPlanningTransition(sb, fd, "metadata", { notes: notes || null });
+  if (transitionError) return { error: transitionError };
   revalidatePath(`/visits/${id}`); revalidatePath("/visits");
-  return { ok: "Notes saved (M02-043, audited)" };
+  return { ok: "Notes saved atomically with audit and notification intent (M02-043)." };
 }
 
 // M02-006 — edit visit type: only before execution starts and only while the
@@ -336,19 +330,10 @@ export async function updateVisitType(_: ActionResult, fd: FormData): Promise<Ac
   const visit_type = String(fd.get("visit_type") ?? "");
   if (!(VISIT_TYPES as readonly string[]).includes(visit_type))
     return { error: "Choose a valid visit type (M02-006)" };
-  // pre-start lock first (execution owns the visit once started), then state guard.
-  const locked = await guardPreStart(id);
-  if (locked) return { error: `Visit-type change blocked: ${locked}` };
-  const guard = await guardPublishedNew(id);
-  if (guard) return { error: `Visit-type change blocked: ${guard} (M02-006)` };
-  const { data: updated, error } = await sb.from("visits")
-    .update({ visit_type })
-    .eq("id", id).eq("planning_status", "published").eq("operational_state", "new")
-    .select("id");
-  if (error) return { error: mapError(error, "update") };
-  if (!updated?.length) return { error: "No row updated — state changed concurrently or RLS denied the update (visits_update requires planner/ops)" };
+  const transitionError = await callPlanningTransition(sb, fd, "metadata", { visit_type });
+  if (transitionError) return { error: transitionError };
   revalidatePath(`/visits/${id}`); revalidatePath("/visits");
-  return { ok: "Visit type updated — pre-start only, audited (M02-006)" };
+  return { ok: "Visit type updated atomically — pre-start only, audited (M02-006)." };
 }
 
 // M02-009 / ENG-05 + M8 — Reassign inspector: updates assignments.inspector_id,
@@ -484,36 +469,8 @@ export async function repackageVisit(_: ActionResult, fd: FormData): Promise<Act
   const id = String(fd.get("visit_id"));
   const pkgId = String(fd.get("package_version_id") ?? "").trim();
   if (!pkgId) return { error: "Choose an inspection checklist (PLN-CON-003)" };
-  const locked = await guardPreStart(id);
-  if (locked) return { error: `Repackage blocked: ${locked}` };
-  const today = new Date().toISOString().slice(0, 10);
-  const { data: pv, error: pvErr } = await sb.from("package_versions")
-    .select("id, version_label, status, packages(code, title)")
-    .eq("id", pkgId).in("status", ["published", "locked"])
-    .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`)
-    .maybeSingle();
-  if (pvErr) return { error: mapError(pvErr, "load") };
-  if (!pv) return { error: "Choose an active inspection checklist (PLN-CON-003)" };
-  const { data: updated, error } = await sb.from("visits")
-    .update({ package_version_id: pkgId })
-    .eq("id", id).eq("planning_status", "returned").eq("operational_state", "new")
-    .select("id");
-  if (error) return { error: mapError(error, "update") };
-  if (!updated?.length) return { error: "No row updated — repackage is available only for returned / new visits, or RLS denied the update" };
-  const { data: existing } = await sb.from("visit_packages").select("id").eq("visit_id", id).eq("package_version_id", pkgId).maybeSingle();
-  if (!existing) {
-    const meta = pv.packages as unknown as { code: string; title: string } | null;
-    const { error: lErr } = await sb.from("visit_packages").insert({
-      visit_id: id, package_version_id: pkgId,
-      snapshot: { package_version_id: pv.id, code: meta?.code ?? null, title: meta?.title ?? null, version_label: pv.version_label, status: pv.status, captured_at: new Date().toISOString() },
-      added_by: user.id,
-    });
-    if (lErr) {
-      console.error("[M8 repackageVisit] link insert failed:", lErr.message);
-      revalidatePath(`/visits/${id}`);
-      return { error: "Primary checklist swapped, but the package link could not be recorded — the gap is logged (PLN-CON-003)" };
-    }
-  }
+  const transitionError = await callPlanningTransition(sb, fd, "repackage", { package_version_id: pkgId });
+  if (transitionError) return { error: transitionError };
   revalidatePath(`/visits/${id}`);
-  return { ok: "Primary checklist swapped — link history preserved (append-only); previous links remain as history (PLN-CON-003)" };
+  return { ok: "Primary checklist swapped atomically — link history preserved; audit and notification intent recorded (PLN-CON-003)." };
 }

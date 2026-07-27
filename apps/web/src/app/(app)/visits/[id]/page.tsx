@@ -375,7 +375,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         </div></div>
       )}
       {/* FIX WAVE F4 — M02-043 notes add/edit */}
-      <NotesEditor visitId={v.id} initialNotes={typeof v.notes === "string" ? v.notes : ""} strings={notesStrings} />
+      <NotesEditor visitId={v.id} planningVersion={v.planning_version} initialNotes={typeof v.notes === "string" ? v.notes : ""} strings={notesStrings} />
       {/* FIX WAVE F4 — M02-042 attachments */}
       {attErr ? (
         <div className="sq-banner sq-banner--critical" role="alert"><div>{mapError(attErr, "load")}</div></div>
