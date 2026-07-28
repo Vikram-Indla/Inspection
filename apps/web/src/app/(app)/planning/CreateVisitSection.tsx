@@ -33,32 +33,32 @@ export default function CreateVisitSection({ methods, strings, canCreate, childr
   const [open, setOpen] = useState(false);
   return (
     <>
-      <div className="sq-planning-commandbar">
+      <div className="grid-toolbar">
         {children}
         {canCreate && (
-          <button type="button" className="sq-btn" aria-expanded={open} aria-controls="plan-create-methods"
+          <button type="button" className="btn btn-primary" aria-expanded={open} aria-controls="plan-create-methods"
             onClick={() => setOpen(v => !v)}>
             {strings.createLabel}
           </button>
         )}
       </div>
       {canCreate && open && (
-        <section id="plan-create-methods" className="sq-stack" aria-label={strings.createLabel}>
-          <div className="sq-typecards">
+        <section id="plan-create-methods" className="panel" aria-label={strings.createLabel}>
+          <div className="panel-body">
             {methods.map(m => m.blockedReason ? (
-              <div key={m.href} className="sq-typecard" aria-disabled="true">
-                <span className="sq-typecard__title">{m.title}</span>
-                <span className="sq-typecard__meta">{m.desc}</span>
+              <div key={m.href} className="panel" aria-disabled="true">
+                <span className="panel-title">{m.title}</span>
+                <span>{m.desc}</span>
                 <span className="badge badge-warning">{m.blockedReason}</span>
               </div>
             ) : (
-              <a key={m.href} href={m.href} className="sq-typecard">
-                <span className="sq-typecard__title">{m.title}</span>
-                <span className="sq-typecard__meta">{m.desc}</span>
+              <a key={m.href} href={m.href} className="panel">
+                <span className="panel-title">{m.title}</span>
+                <span>{m.desc}</span>
               </a>
             ))}
           </div>
-          <p className="sq-caption">{strings.oneMethodNote}</p>
+          <div className="alert alert-info">{strings.oneMethodNote}</div>
         </section>
       )}
     </>
