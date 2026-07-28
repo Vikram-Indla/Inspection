@@ -355,6 +355,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
           <section className={`sq-surface ${styles.panel} ${styles.riskPanel}`}>
             <h2>{t("f360.risk.heading", "Saved risk")}</h2>
             {!permissions["view_risk_details"] ? <p className="sq-caption">{t("f360.risk.restricted", "Risk detail requires Factory Risk permission.")}</p> : <>
+              <p className="sq-caption">{t("f360.risk.source", "SAQEEL-calculated advisory. It does not change the master record.")}</p>
               <div className={styles.riskSummary}>
                 <strong className="sq-numeric">{text(factory?.risk_score)}</strong>
                 <span>{label(factory?.risk_band)}</span>
@@ -391,11 +392,9 @@ export default async function Factory360ByCr({ params, searchParams }: {
             <h2>{t("common.actions", "Actions")}</h2>
             <div className={styles.actions}>
               {factoryId && <a className="sq-btn sq-btn--secondary" href={`/factories/${factoryId}?compat=legacy#location`}>{t("f360.actions.openMap", "Open map")}</a>}
-              {permissions["create_inspection"] && factoryId && <a className="sq-btn sq-btn--primary" href={`/planning/immediate?factory=${factoryId}&cr=${cr.id}&license=${selected?.id ?? ""}&returnTo=${encodeURIComponent(`/factories/cr/${cr.id}?license=${selected?.id ?? ""}`)}`}>{t("f360.actions.createInspection", "Create inspection")}</a>}
               {permissions["create_inspection"] && factoryId && <a className="sq-btn sq-btn--secondary" href={`/planning/single?cr=${encodeURIComponent(cr.cr_number)}&license=${encodeURIComponent(selected?.license_number ?? "")}&plant=${encodeURIComponent(selected?.plant_number ?? "")}&factory=${factoryId}&source=factory360`}>{t("f360.actions.planSingle", "Plan single visit")}</a>}
               {permissions["export_factory"] && <Factory360ExportButton label={t("f360.actions.exportPdf", "Print / Save permitted PDF")} />}
               {!permissions["create_inspection"] && !permissions["export_factory"] && <p className="sq-caption">{t("f360.actions.restricted", "No create-inspection or export action is permitted for your role.")}</p>}
-              {permissions["create_inspection"] && <p className="sq-caption" role="status">{t("f360.actions.submissionBlocked", "Inspection submission remains unavailable while is unresolved.")}</p>}
             </div>
           </section>
         </aside>
