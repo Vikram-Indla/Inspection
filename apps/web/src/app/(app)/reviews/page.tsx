@@ -89,7 +89,7 @@ export default async function Reviews() {
   if (!authorized) {
     return (
       <Shell current="/reviews" title={t("review.list.title", "Inspection review queue")}>
-        <main className={styles.reviewRoot}>
+        <main className={styles.reviewRoot} data-screen-id="REV-S01">
           <section className="sq-surface cd-panelpad cd-result" role="alert">
             <div className="cd-result__row">
               <div className="cd-result__icon cd-result__icon--critical" aria-hidden="true"><IconBlocked size={24} /></div>
@@ -286,7 +286,7 @@ export default async function Reviews() {
   return (
     <Shell current="/reviews" title={t("review.list.title", "Inspection review queue")}
       context={<span className="sq-lozenge sq-lozenge--info">{t("review.list.context", "Read-only queue")}</span>}>
-      <main className={styles.reviewRoot}>
+      <main className={styles.reviewRoot} data-screen-id="REV-S01">
         <div className="sq-banner" role="note"><div><strong>{t("review.list.scanTitle", "Review overview")}</strong> — {t("review.list.scanBody", "Opening is read-only. Starting and deciding are explicit audited actions in the workspace.")}</div></div>
         {reviewDays == null && <div className="sq-banner sq-banner--warning" role="note"><div><strong>{t("review.list.missingSlaTitle", "SLA configuration missing")}</strong> — {t("review.list.missingSlaBody", "No review deadline is derived. Rows remain unavailable rather than being reported on time.")}</div></div>}
         {degraded && <div className="sq-banner sq-banner--warning" role="alert"><div><strong>{t("review.list.degradedTitle", "Some linked information is unavailable")}</strong> — {t("review.list.degradedBody", "The queue loaded, but one or more RLS-scoped linked sources could not be read. Those facts remain unavailable.")}</div></div>}

@@ -332,7 +332,12 @@ const panelStrings: WorkspaceDecisionStrings = {
   return (
     <Shell current="/reviews" title={t("review.ws.title", "Review — {factory}").replace("{factory}", f.name)}
       context={<><span className="sq-version">v{latest?.version_number} · {t("review.ws.latest", "latest")}</span><span className="sq-lozenge sq-lozenge--review sq-lozenge--info">{t(`enum.${ins.status}`, ins.status.replace(/_/g, " "))}</span>{!canDecide && <span className="sq-lozenge sq-lozenge--warning">{t("review.ws.readOnlyRole", "{role} · read-only").replace("{role}", viewerRole ? t(`enum.${viewerRole}`, viewerRole) : "—")}</span>}<a className="btn btn-secondary btn-sm" href={`/factories/${f.id}`}>{t("review.ws.openFactory360", "Open Factory 360")}</a><a className="btn btn-secondary btn-sm" href={`/reports/inspection/${ins.id}`}>{t("review.ws.reportLink", "Inspection report PDF")}</a></>}>
-      <div className={responsive.reviewRoot} data-saqeel-migration="review-approvals" data-saqeel-screen="SCR-WEB-310" data-screen-id="EXE-S19">
+      <div
+        className={responsive.reviewRoot}
+        data-saqeel-migration="review-approvals"
+        data-saqeel-screen="SCR-WEB-310"
+        data-screen-id={open && ins.status === "under_review" ? "REV-S03" : "REV-S02"}
+      >
       <h1 className={responsive.semanticTitle}>{t("review.ws.title", "Review — {factory}").replace("{factory}", f.name)}</h1>
       {receiptCorrelation && receiptDecision && (
         <div className="sq-banner sq-banner--success" role="status">
@@ -351,8 +356,8 @@ const panelStrings: WorkspaceDecisionStrings = {
       <div className="cd-review-workspace-grid">
         <div className="sq-stack">
         <RecordTabs tabs={recordTabs} panels={[
-          <div className="sq-surface" style={{ padding: "var(--space-6)" }} key="checklist">
-            <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.checklist", "Checklist — v{n}").replace("{n}", String(latest?.version_number))}</h2>
+          <div className="sq-surface cd-panelpad" key="checklist">
+            <h2>{t("review.ws.checklist", "Checklist — v{n}").replace("{n}", String(latest?.version_number))}</h2>
             <div className="sq-tablewrap"><table className="sq-table">
               <thead><tr><th scope="col">{t("review.ws.colItem", "Item")}</th><th scope="col">{t("review.ws.colResponse", "Response")}</th></tr></thead>
               <tbody>{Object.entries(latest?.snapshot?.answers ?? {}).map(([k, v]) => (
@@ -360,13 +365,13 @@ const panelStrings: WorkspaceDecisionStrings = {
               ))}</tbody>
             </table></div>
           </div>,
-          <div className="sq-surface" style={{ padding: "var(--space-6)" }} key="evidence">
-            <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.evidenceHeading", "Violations · actions · evidence (read-only)")}</h2>
+          <div className="sq-surface cd-panelpad" key="evidence">
+            <h2>{t("review.ws.evidenceHeading", "Violations · actions · evidence (read-only)")}</h2>
             {(ins.violations as unknown as { violation_codes: { code: string; title: string; level: string }; mapping_version: string }[]).map((v, i) => (
               <p key={i}><span className="sq-lozenge sq-lozenge--critical">{v.violation_codes.code} · {t(`enum.${v.violation_codes.level}`, v.violation_codes.level)}</span> {v.violation_codes.title} <span className="sq-version">{t("review.ws.mapping", "mapping")} {v.mapping_version}</span></p>
             ))}
             {(ins.action_forms as unknown as { owner_name: string; due_at: string; status: string; required_correction: string }[]).map((a, i) => (
-              <p key={i} className="sq-caption" style={{ marginBlockStart: 8 }}>{t("review.ws.actionPrefix", "action:")} {a.required_correction} — {a.owner_name}, {t("review.ws.due", "due")} {formatDate(a.due_at, lang)} · {t(`enum.${a.status}`, a.status.replace(/_/g, " "))}</p>
+              <p key={i} className="sq-caption">{t("review.ws.actionPrefix", "action:")} {a.required_correction} — {a.owner_name}, {t("review.ws.due", "due")} {formatDate(a.due_at, lang)} · {t(`enum.${a.status}`, a.status.replace(/_/g, " "))}</p>
             ))}
             {evidenceRows.length === 0 ? (
               <div className="sq-banner" role="status"><div>{tx("review.ws.evidenceEmpty", "No evidence records are attached to this submitted inspection.", "لا توجد سجلات أدلة مرفقة بهذا التفتيش المقدم.")}</div></div>
@@ -389,8 +394,8 @@ const panelStrings: WorkspaceDecisionStrings = {
             <p className="sq-caption">{tx("review.ws.mediaPreviewUnavailable", "Media bytes cannot be previewed because no authorized signed-URL contract is available on this route. Metadata remains read-only; the UI does not expose or guess a public URL.", "لا يمكن معاينة محتوى الوسائط لعدم توفر عقد معتمد لرابط موقّع في هذا المسار. تبقى البيانات الوصفية للقراءة فقط، ولا تعرض الواجهة رابطاً عاماً أو تفترضه.")}</p>
           </div>,
           /* M04-190 / M06-017 / M06-034 — factory data verification: Source vs Observed, before/after, updated highlighting */
-          <div className="sq-surface" style={{ padding: "var(--space-6)" }} key="factory">
-            <h2 style={{ marginBlockEnd: "var(--space-3)" }}>
+          <div className="sq-surface cd-panelpad" key="factory">
+            <h2>
               {t("review.ws.fvHeading", "Factory data verification (Senaei source vs observed)")}{" "}
               <span className={`sq-lozenge ${fvUpdated ? "sq-lozenge--warning" : "sq-lozenge--success"}`}>
                 {fvUpdated
@@ -412,8 +417,8 @@ const panelStrings: WorkspaceDecisionStrings = {
                   <th scope="col">{t("review.ws.fvColEvidence", "Evidence")}</th>
                 </tr></thead>
                 <tbody>{fv.checks.map(c => (
-                  <tr key={c.id} style={c.status === "updated" ? { background: "var(--surface-sunken)" } : undefined}>
-                    <td style={c.status === "updated" ? { borderInlineStart: "4px solid var(--status-warning)" } : undefined}>
+                  <tr key={c.id} className={c.status === "updated" ? "cd-row--flag" : undefined}>
+                    <td>
                       <strong>{t(`field.fv.f.${c.field_key}`, FACTORY_FIELD_EN[c.field_key] ?? c.field_key.replace(/_/g, " "))}</strong>
                     </td>
                     <td>{c.source_value ?? "—"}</td>
@@ -427,28 +432,28 @@ const panelStrings: WorkspaceDecisionStrings = {
                 ))}</tbody>
               </table></div>
             )}
-            <p className="sq-caption" style={{ marginBlockStart: "var(--space-3)" }}>{t("review.ws.fvNote", "Observations never modify the Senaei source record; checks are audit-logged with before/after values.")}</p>
+            <p className="sq-caption">{t("review.ws.fvNote", "Observations never modify the Senaei source record; checks are audit-logged with before/after values.")}</p>
           </div>,
           /* M04-197 / M06-021 — acknowledgement signature made visible to the reviewer */
-          <div className="sq-surface" style={{ padding: "var(--space-6)" }} key="ack">
+          <div className="sq-surface cd-panelpad" key="ack">
             {latest?.acknowledgement != null ? (() => {
               const ack = latest.acknowledgement as { name?: string; ts?: string; signed_at?: string; signature_data_url?: string };
               return (
                 <>
-                  <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)")}</h2>
+                  <h2>{t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)")}</h2>
                   <p>
                     <strong>{ack.name ?? "—"}</strong> · <span className="sq-numeric">{(ack.signed_at ?? ack.ts) ? formatDateTime(ack.signed_at ?? ack.ts!, lang) : "—"}</span>
                     {" "}<span className="sq-version">v{latest.version_number}</span>
                   </p>
                   {ack.signature_data_url
                     // eslint-disable-next-line @next/next/no-img-element
-                    ? <img src={ack.signature_data_url} alt={t("review.ws.sigAlt", "Representative signature")} style={{ maxInlineSize: 280, maxBlockSize: 120, background: "var(--surface-sunken)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)" }} />
+                    ? <img className="panel" src={ack.signature_data_url} alt={t("review.ws.sigAlt", "Representative signature")} />
                     : <p className="sq-caption">{t("review.ws.sigNone", "No drawn signature stored with this version (acknowledged by name only).")}</p>}
                 </>
               );
             })() : (
               <>
-                <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)")}</h2>
+                <h2>{t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)")}</h2>
                 <p className="sq-caption">{t("review.ws.sigNone", "No drawn signature stored with this version (acknowledged by name only).")}</p>
               </>
             )}
@@ -468,20 +473,20 @@ const panelStrings: WorkspaceDecisionStrings = {
             // submitted inspection always has at least one version on record).
             // State it explicitly; never render nothing where a comparison
             // surface belongs.
-            <div className="sq-surface" style={{ padding: "var(--space-6)" }} key="compare">
+            <div className="sq-surface cd-panelpad" key="compare">
               <div className="sq-banner sq-banner--warning" role="status">
                 <div><strong>{t("review.cmp.sourceUnavailable", "Comparison source unavailable.")}</strong> {t("review.cmp.sourceUnavailableBody", "Submitted-version data could not be loaded for this record, so no comparison can be shown — this is unavailable, not an empty result.")}</div>
               </div>
             </div>
           ),
-          <div className="sq-surface" style={{ padding: "var(--space-6)" }} key="timeline">
-            <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{tx("review.ws.timelineHeading", "Canonical review timeline", "الخط الزمني المعتمد للمراجعة")}</h2>
+          <div className="sq-surface cd-panelpad" key="timeline">
+            <h2>{tx("review.ws.timelineHeading", "Canonical review timeline", "الخط الزمني المعتمد للمراجعة")}</h2>
             {timelineError ? (
               <div className="sq-banner sq-banner--warning" role="alert"><div><strong>{tx("review.ws.timelineUnavailable", "Canonical timeline unavailable.", "الخط الزمني المعتمد غير متاح.")}</strong> {tx("review.ws.timelineUnavailableBody", "The review timeline contract is not available in this environment; no fallback chronology is invented.", "عقد الخط الزمني للمراجعة غير متاح في هذه البيئة؛ لن يتم إنشاء تسلسل زمني بديل غير موثّق.")}</div></div>
             ) : (trail ?? []).length > 0 ? (
               <>
                 {(trail as { event_key: string; occurred_at: string; object_type: string; object_id: string; actor_id: string | null; payload: Record<string, unknown> }[]).map(ev => (
-                  <p key={`${ev.event_key}:${ev.object_id}`} className="sq-caption" style={{ marginBlockStart: 4 }}>
+                  <p key={`${ev.event_key}:${ev.object_id}`} className="sq-caption">
                     <span className="sq-numeric">{formatDateTime(ev.occurred_at, lang)}</span>
                     {" · "}<strong>{t(`enum.audit.${ev.object_type}`, ev.object_type.replace(/_/g, " "))}</strong>
                     {" · "}{t(`enum.audit.${ev.event_key}`, ev.event_key.replace(/_/g, " ").toLowerCase())}
@@ -489,14 +494,14 @@ const panelStrings: WorkspaceDecisionStrings = {
                     {typeof ev.payload.handoff_id === "string" && <>{" · "}{tx("review.ws.handoffRecord", "Compliance handoff", "إحالة الامتثال")} <bdi className="sq-numeric">{ev.payload.handoff_id}</bdi></>}
                   </p>
                 ))}
-                <p className="sq-caption" style={{ marginBlockStart: "var(--space-3)" }}>{tx("review.ws.timelineNote", "Canonical submission, resubmission, review, comment and Compliance handoff events from review_timeline().", "أحداث التقديم وإعادة التقديم والمراجعة والتعليقات وإحالة الامتثال المعتمدة من review_timeline().")}</p>
+                <p className="sq-caption">{tx("review.ws.timelineNote", "Canonical submission, resubmission, review, comment and Compliance handoff events from review_timeline().", "أحداث التقديم وإعادة التقديم والمراجعة والتعليقات وإحالة الامتثال المعتمدة من review_timeline().")}</p>
               </>
             ) : (
               <p className="sq-caption">{t("review.ws.trace.unavailable", "Unavailable")}</p>
             )}
           </div>,
-          <div className="sq-surface" style={{ padding: "var(--space-6)" }} key="prior">
-            <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.priorDecision", "Prior decision:")}</h2>
+          <div className="sq-surface cd-panelpad" key="prior">
+            <h2>{t("review.ws.priorDecision", "Prior decision:")}</h2>
             {decidedCount === 0
               ? <p className="sq-caption">{t("review.ws.trace.unavailable", "Unavailable")}</p>
               : reviews.filter(r => !!r.decided_at).map(r => (
@@ -509,7 +514,7 @@ const panelStrings: WorkspaceDecisionStrings = {
           // HANDOFF read-only path — auditor/planner/leadership can read the
           // whole workspace above but never see Start review / the decision
           // controls, regardless of open/canStart state.
-          ? <div className="sq-surface" style={{ padding: "var(--space-6)" }}><p className="sq-caption">{t("review.ws.readOnlyNote", "Read-only for this role — decision controls are limited to Level 2 Reviewer / Operations.")}</p></div>
+          ? <div className="sq-surface cd-panelpad"><p className="sq-caption">{t("review.ws.readOnlyNote", "Read-only for this role — decision controls are limited to Level 2 Reviewer / Operations.")}</p></div>
           : open && ins.status === "under_review"
           ? <section className="panel stack" aria-labelledby="review-decision-gate-title" data-state="blocked-dec032">
               <div className="alert alert-warning" role="status">
@@ -530,7 +535,7 @@ const panelStrings: WorkspaceDecisionStrings = {
             </section>
           : canStart
           ? <StartReview inspectionId={ins.id} submissionVersionId={latest!.id} strings={startStrings} />
-          : <div className="sq-surface" style={{ padding: "var(--space-6)" }}><p className="sq-caption">{t("review.ws.noOpenDecision", "No open decision — status {status}.").replace("{status}", t(`enum.${ins.status}`, ins.status.replace(/_/g, " ")))}</p></div>}
+          : <div className="sq-surface cd-panelpad"><p className="sq-caption">{t("review.ws.noOpenDecision", "No open decision — status {status}.").replace("{status}", t(`enum.${ins.status}`, ins.status.replace(/_/g, " ")))}</p></div>}
       </div>
       </div>
     </Shell>

@@ -137,7 +137,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
       <h1 className="sr-only">{t("f360.title", "Factory 360")} — {locale === "ar" ? cr.legal_name_ar ?? cr.legal_name ?? cr.legal_name_en ?? cr.cr_number : cr.legal_name_en ?? cr.legal_name ?? cr.legal_name_ar ?? cr.cr_number}</h1>
       {licenseError ? <div className="sq-banner sq-banner--warning" role="status"><div>{t("f360.licenses.degraded", "Industrial-license data is temporarily degraded; CR identity remains available.")}</div></div> : null}
       <div className={styles.workspace} data-factory360-layout="cr-license-dossier">
-        <aside className={styles.left} aria-label={t("f360.licenses.heading", "Industrial licenses and plants")}>
+        <aside className={styles.left} data-screen-id="F360-S02" aria-label={t("f360.licenses.heading", "Industrial licenses and plants")}>
           <section className={`sq-surface ${styles.panel}`}>
             <h2>{t("f360.licenses.heading", "Licenses & plants")}</h2>
             <p className="sq-caption"><bdi>{cr.cr_number}</bdi> · {licenses.length} {t("f360.licenses.count", "licenses")}</p>
@@ -157,7 +157,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
           </section>
         </aside>
 
-        <div className={styles.main}>
+        <div className={styles.main} data-screen-id="F360-S03">
           <section className={`sq-surface ${styles.panel}`} aria-labelledby="f360-cr-heading">
             <div className={styles.sectionHead}><h2 id="f360-cr-heading">{t("f360.cr.heading", "Commercial registration & legal identity")}</h2>{sourceBadge(crError, cr)}</div>
             <dl className={styles.facts}>

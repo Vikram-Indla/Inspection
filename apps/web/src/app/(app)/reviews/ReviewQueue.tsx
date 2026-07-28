@@ -223,7 +223,8 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
           <span>{strings.overdueOnly}</span>
         </label>
         {hasFilter && <button type="button" className="btn btn-ghost btn-touch" onClick={clear}>{strings.clearFilters}</button>}
-        <span className="t-caption numeric" style={{ marginInlineStart: "auto" }}>
+        <span className="grow" aria-hidden="true" />
+        <span className="t-caption numeric">
           {strings.showing.replace("{shown}", String(filtered.length)).replace("{total}", String(rows.length))}
         </span>
       </div>
