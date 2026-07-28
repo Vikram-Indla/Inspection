@@ -1,0 +1,20 @@
+[project]
+name = "saqeel-ocr-pilot"
+version = "0.1.0"
+description = "Local-only Marker conversion pilot for Saqeel evidence derivatives"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+marker = ["marker-pdf==2.0.0"]
+test = ["pytest>=8.0"]
+
+[project.scripts]
+saqeel-ocr-pilot = "saqeel_ocr_pilot.cli:main"
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
