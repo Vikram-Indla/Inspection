@@ -17,6 +17,7 @@ import { requestVisitReschedule } from "../actions";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import EmptyState from "@/components/EmptyState";
 import styles from "./startup.module.css";
+import travelStyles from "./travel/travel.module.css";
 
 // SB19 — strings built server-side with t() and passed as props.
 export type StartupStrings = {
@@ -989,7 +990,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
   const activeCancellationPhase = !!journeySchemaAvailable && ["on_the_way", "arrived"].includes(visit.operational_state);
   const latestCorrection = corrections[0] ?? null;
   return (
-    <div className="stack" style={{ gap: 14, maxInlineSize: 760, inlineSize: "100%", marginInline: "auto" }}>
+    <div className={styles.page}>
       {/* Phase 4B — overdue-inside-window warning (start proceeds; delay is recorded) */}
       {overdueWarning && (
         <div className="alert alert-warning" role="status"><div>{strings.journeyOverdueWarning}</div></div>
@@ -1001,8 +1002,8 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       {activeCancel?.status === "rejected" && (
         <div className="alert alert-warning" role="status"><div>{fmt(strings.cancelRejectedCopy, { reason: activeCancel.decision_reason ?? "—" })}</div></div>
       )}
-      <div className="panel" style={{ padding: "16px 18px", borderRadius: 14, boxShadow: "var(--shadow-card)" }} data-testid="field-device-readiness">
-        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.readiness}</h4>
+      <div className={styles.sectionCard} data-testid="field-device-readiness">
+        <h4>{strings.readiness}</h4>
         <div className={styles.readyList}>
           <div className={styles.readyRow}>
             <span className={`${styles.readyMark} ${styles.readyMarkDone}`} aria-hidden>✓</span>
@@ -1041,25 +1042,21 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           </div>
         )}
         {/* F3 · M04-016 — real navigation handoff with this Visit's governed dispatch coordinates */}
-        <div className="row" style={{ gap: 8, flexWrap: "wrap", alignItems: "center", marginBlockStart: "var(--space-4)" }}>
+        <div className="row">
           <a className="btn btn-secondary" target="_blank" rel="noopener noreferrer"
             href={`geo:${visit.dispatch_lat},${visit.dispatch_lng}?q=${visit.dispatch_lat},${visit.dispatch_lng}`}>
             {strings.mapsGeo}
           </a>
         </div>
-        <p className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>{strings.mapsCaption}</p>
+        <p className="t-caption">{strings.mapsCaption}</p>
         {/* F3 · M04-026 — journey progress % (travelled vs initial distance from first fix) */}
         {journeyId && progress != null && (
-          <div className="stack" style={{ gap: 4, marginBlockStart: "var(--space-4)" }}>
-            <div className="row" style={{ justifyContent: "space-between" }}>
+          <div className="stack">
+            <div className="panel-header">
               <span className="t-caption">{strings.progressLabel}</span>
               <span className={`t-caption ${styles.num}`}>{progress.toFixed(0)}%</span>
             </div>
-            <div role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}
-              aria-label={strings.progressLabel}
-              style={{ blockSize: 8, borderRadius: "var(--radius-full)", background: "var(--border-subtle)", overflow: "hidden" }}>
-              <div style={{ blockSize: "100%", inlineSize: `${progress}%`, background: "var(--action-primary)", borderRadius: "inherit" }} />
-            </div>
+            <progress className="progress" value={progress} max={100} aria-label={strings.progressLabel} />
             <span className={`t-caption ${styles.num}`}>
               {fmt(strings.progressCaption, { remaining: (remainingD ?? 0).toFixed(0), initial: (initialD ?? 0).toFixed(0) })}
             </span>
@@ -1079,10 +1076,10 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         advisoryLabel={strings.aiAdvisory}
       />
       {/* SB20 / ENG-08 — compact geofence map card; official and visit-selected coordinates remain distinct (FND-007/M01-046). */}
-      <div className="panel" style={{ padding: "16px 18px", borderRadius: 14, boxShadow: "var(--shadow-card)" }}>
-        <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", marginBlockEnd: "var(--space-3)" }}>
+      <div className={styles.sectionCard}>
+        <div className="panel-header">
           <h4>{fmt(strings.geofenceHeading, { name: visit.factories.name })} <span className="badge badge-info">SB20 · ENG-08</span></h4>
-          <span className="row" style={{ gap: 8, alignItems: "center" }}>
+          <span className="row">
             {/* M04-037 — live distance-to-fence readout while journey active */}
             {live && !checkedIn && (
               <span className={`badge ${arrivalDetected ? "badge-compliant" : "badge-info"}`}>
@@ -1096,10 +1093,10 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
             )}
           </span>
         </div>
-        <div style={{ blockSize: 240, borderRadius: "var(--radius-sm)", overflow: "hidden", border: "1px solid var(--border-subtle)" }} dir="ltr">
+        <div className={travelStyles.mapFrame} dir="ltr">
           <GeoMap center={[visit.dispatch_lat, visit.dispatch_lng]} zoom={15} markers={mapMarkers} height="100%" />
         </div>
-        <p className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>
+        <p className="t-caption">
           {fenceConfigured
             ? fmt(strings.fenceCaption, { fence, source: visit.factories.geofence_radius_m != null ? strings.factoryOverride : strings.engineDefault, acc: maxAcc })
             : `${strings.lblFence}: ${fenceDisplay} · ${fenceUnavailable}`}
@@ -1110,15 +1107,15 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           The correction never overwrites the planned/registered coordinates;
           both stay visible with source and capture context. */}
       {journeySchemaAvailable && latestCorrection && (
-        <div className="panel" style={{ padding: "var(--space-6)" }} data-testid="location-correction-display">
-          <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.correctionHeading}</h4>
+        <div className={styles.sectionCard} data-testid="location-correction-display">
+          <h4>{strings.correctionHeading}</h4>
           <div className={styles.grid2}>
-            <div className="panel" style={{ padding: "var(--space-4)", border: "1px solid var(--border-subtle)" }}>
+            <div className="panel panel-body">
               <span className="t-caption">{strings.correctionOriginalLabel}</span>
               <div className={styles.num}>{visit.dispatch_lat.toFixed(6)}, {visit.dispatch_lng.toFixed(6)}</div>
               <span className="t-caption">{visit.dispatch_source === "official" ? strings.officialLabel.replace("{name}", visit.factories.name) : strings.plannedLabel.replace("{name}", visit.factories.name)}</span>
             </div>
-            <div className="panel" style={{ padding: "var(--space-4)", border: "1px solid var(--border-subtle)" }}>
+            <div className="panel panel-body">
               <span className="t-caption">{strings.correctionCorrectedLabel}</span>
               <div className={styles.num}>{Number(latestCorrection.corrected_lat).toFixed(6)}, {Number(latestCorrection.corrected_lng).toFixed(6)}{latestCorrection.accuracy_m != null ? ` · ±${Number(latestCorrection.accuracy_m).toFixed(1)}m` : ""}</div>
               <span className="t-caption">{latestCorrection.reason}</span><br />
@@ -1135,18 +1132,18 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
             <button className="btn btn-ghost" onClick={() => setShowCorrection(true)} disabled={busy}>{strings.correctionAffordance}</button>
           </div>
         ) : (
-          <div className="panel" role="dialog" aria-modal="false" aria-labelledby="location-correction-heading"
-            style={{ padding: "var(--space-6)" }} data-testid="location-correction-panel">
-            <h4 id="location-correction-heading" style={{ marginBlockEnd: "var(--space-2)" }}>{strings.correctionHeading}</h4>
-            <p className="t-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{strings.correctionCaption}</p>
-            <div className="stack" style={{ gap: "var(--space-3)" }}>
+          <div className={styles.sectionCard} role="dialog" aria-modal="false" aria-labelledby="location-correction-heading"
+            data-testid="location-correction-panel">
+            <h4 id="location-correction-heading">{strings.correctionHeading}</h4>
+            <p className="t-caption">{strings.correctionCaption}</p>
+            <div className="stack">
               <label className="field"><span className={styles.fieldLabel}>{strings.correctionReason}</span>
                 <textarea className="input" rows={2} value={correctionReason} onChange={e => setCorrectionReason(e.target.value)} placeholder={strings.correctionReasonPlaceholder} />
               </label>
               <label className="field"><span className={styles.fieldLabel}>{strings.correctionEvidence}</span>
                 <input className="input" type="file" accept="image/*" onChange={e => setCorrectionFile(e.target.files?.[0] ?? null)} />
               </label>
-              <div className="row" style={{ justifyContent: "flex-end", gap: 8 }}>
+              <div className="row">
                 <button className="btn btn-ghost" onClick={() => { setShowCorrection(false); setCorrectionReason(""); setCorrectionFile(null); }}>{strings.correctionCancel}</button>
                 <button className="btn btn-secondary" onClick={submitCorrection} disabled={busy || !correctionReason.trim()}>{strings.correctionSubmit}</button>
               </div>
@@ -1155,9 +1152,8 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         )
       )}
       {pendingOverride && !checkedIn && (
-        <div className="panel" role="dialog" aria-modal="false" aria-labelledby="gps-override-heading"
-          style={{ padding: "var(--space-6)", borderColor: "var(--status-critical)" }}>
-          <h4 id="gps-override-heading" style={{ marginBlockEnd: "var(--space-2)" }}>{strings.overrideHeading}</h4>
+        <div className="alert alert-critical stack" role="dialog" aria-modal="false" aria-labelledby="gps-override-heading">
+          <h4 id="gps-override-heading">{strings.overrideHeading}</h4>
           <p className="t-caption">{fmt(strings.overrideBody, { d: pendingOverride.d.toFixed(0), fence: fenceDisplay, lat: pendingOverride.lat.toFixed(6), lng: pendingOverride.lng.toFixed(6) })}</p>
           <label className="field"><span className={styles.fieldLabel}>{strings.overrideReasonCode}</span>
             <select className="select" value={overrideReasonKey} onChange={e => {
@@ -1179,7 +1175,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
               onChange={e => setOverrideSafetyException(e.target.checked)} />
             <span>{strings.overrideSafetyException}</span>
           </label>
-          <div className="row" style={{ justifyContent: "flex-end", gap: 8 }}>
+          <div className="row">
             {journeySchemaAvailable && (
               <button className="btn btn-ghost" onClick={() => { setPendingOverride(null); setShowCorrection(true); }}>{strings.correctionAffordance}</button>
             )}
@@ -1203,25 +1199,25 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       )}
       {/* M04-050..054 — arrival confirmation, context cards and journey summary. */}
       {checkedIn && (
-        <section className="panel" style={{ padding: "var(--space-6)" }} aria-label={strings.cardsVisitTitle}>
-          <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
+        <section className={styles.sectionCard} aria-label={strings.cardsVisitTitle}>
+          <div className="panel-header">
             <div>
-              <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.cardsVisitTitle}</h4>
+              <h4>{strings.cardsVisitTitle}</h4>
               <p className="t-caption">{arrivalAt ? new Date(arrivalAt).toISOString().replace("T", " ").slice(0, 19) : "—"} · {strings.insideFence}</p>
             </div>
             <span className="badge badge-compliant">{strings.arrivalDetected}</span>
           </div>
-          <div className="row" style={{ gap: "var(--space-4)", flexWrap: "wrap", marginBlock: "var(--space-4)" }}>
+          <div className="row">
             <span className="badge badge-outline">{strings.progressLabel}: {progress == null ? "—" : `${progress.toFixed(0)}%`}</span>
             <span className="badge badge-outline">{strings.lblCoords}: {checkin ? `${checkin.lat.toFixed(5)}, ${checkin.lng.toFixed(5)}` : "—"}</span>
             <span className="badge badge-outline">GPS ±{checkin?.acc.toFixed(1) ?? "—"}m</span>
             <span className="badge badge-outline">{strings.lblWindow}: {journeyDurationM == null ? "—" : `${journeyDurationM} min`}</span>
             <span className="badge badge-outline">{Math.round(distanceTravelledM)} m travelled</span>
           </div>
-          <div className="stack" style={{ gap: "var(--space-3)" }}>
+          <div className="stack">
             <details open>
-              <summary style={{ cursor: "pointer", font: "600 14px/1.5 var(--font-body)" }}>{strings.cardsFactoryTitle}</summary>
-              <dl className={styles.detailGrid} style={{ marginBlockStart: "var(--space-3)" }}>
+              <summary className="panel-title">{strings.cardsFactoryTitle}</summary>
+              <dl className={styles.detailGrid}>
                 <dt>{strings.lblCode}</dt><dd>{visit.factories.factory_code ?? "—"}</dd>
                 <dt>{strings.lblCity}</dt><dd>{visit.factories.city ?? "—"}</dd>
                 <dt>{strings.lblRegion}</dt><dd>{visit.factories.region ?? "—"}</dd>
@@ -1232,8 +1228,8 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
               </dl>
             </details>
             <details open>
-              <summary style={{ cursor: "pointer", font: "600 14px/1.5 var(--font-body)" }}>{strings.cardsVisitTitle}</summary>
-              <dl className={styles.detailGrid} style={{ marginBlockStart: "var(--space-3)" }}>
+              <summary className="panel-title">{strings.cardsVisitTitle}</summary>
+              <dl className={styles.detailGrid}>
                 <dt>{strings.lblType}</dt><dd>{visit.visit_type}</dd>
                 <dt>{strings.lblMode}</dt><dd>{visit.execution_mode}</dd>
                 <dt>{strings.lblWindow}</dt><dd>{formatDateTime(visit.window_start, dLang)} → {formatTime(visit.window_end, dLang)}</dd>
@@ -1245,11 +1241,11 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
             </details>
           </div>
           {arrivalEventId && (
-            <div className="panel" style={{ padding: "var(--space-4)", marginBlockStart: "var(--space-4)" }}>
-              <h5 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.arrivalEvidenceHeading}</h5>
+            <div className="panel panel-body">
+              <h5>{strings.arrivalEvidenceHeading}</h5>
               <p className="t-caption">{strings.arrivalEvidenceCaption}</p>
               {arrivalEvidenceSaved ? <span className="badge badge-compliant">{strings.arrivalSaved}</span> : (
-                <div className="stack" style={{ gap: "var(--space-2)" }}>
+                <div className="stack">
                   <label className="field"><span className={styles.fieldLabel}>{strings.arrivalPhoto}</span>
                     <input className="input" type="file" accept="image/*" onChange={e => setArrivalFile(e.target.files?.[0] ?? null)} />
                   </label>
@@ -1265,9 +1261,9 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       )}
       {/* M03-010 — mandatory pre-start confirmations, persisted to journey_sessions.prestart */}
       {checkedIn && !started && (
-        <div className="panel" style={{ padding: "var(--space-6)" }}>
-          <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.prestartHeading}</h4>
-          <div className="stack" style={{ gap: 8 }}>
+        <div className={styles.sectionCard}>
+          <h4>{strings.prestartHeading}</h4>
+          <div className="stack">
             <label className="check">
               <input type="checkbox" checked={repPresent} onChange={e => setRepPresent(e.target.checked)} />
               <span>{strings.prestartRep}</span>
@@ -1295,10 +1291,10 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       </div>
       {/* ENG-06 / FLD-GEO-005 — manual exception record while the journey is active */}
       {journeyId && (
-        <div className="panel" style={{ padding: "var(--space-6)" }}>
-          <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.exceptionHeading}</h4>
-          <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-            <input className="input" style={{ flex: 1, minInlineSize: 220 }} value={exceptionNote}
+        <div className={styles.sectionCard}>
+          <h4>{strings.exceptionHeading}</h4>
+          <div className="row">
+            <input className="input grow" value={exceptionNote}
               onChange={e => setExceptionNote(e.target.value)} placeholder={strings.exceptionPlaceholder} />
             <button className="btn btn-secondary" onClick={reportException} disabled={busy || !exceptionNote.trim() || (!live && !checkin)}>{strings.exceptionSend}</button>
           </div>
@@ -1309,13 +1305,13 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           request_visit_cancellation flag flow; once on_the_way/arrived (and the
           journey schema probe passed) the request goes to Operations via
           request_active_cancellation and stays pending until decided. */}
-      <div className="panel" style={{ padding: "var(--space-6)" }}>
-        <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.cancelHeading}</h4>
-        <p className="t-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{strings.cancelCaption}</p>
+      <div className={styles.sectionCard}>
+        <h4>{strings.cancelHeading}</h4>
+        <p className="t-caption">{strings.cancelCaption}</p>
         {cancelApproved ? (
           <span className="badge badge-critical">{strings.cancelApprovedCopy}</span>
         ) : activeCancellationPhase && activeCancel?.status === "pending" ? (
-          <div className="stack" style={{ gap: "var(--space-2)" }}>
+          <div className="stack">
             <span className="badge badge-warning">{strings.cancelPendingActive}</span>
             <span className={`t-caption ${styles.num}`}>
               {(reasons.find(r => r.key === activeCancel.reason_key)?.label ?? activeCancel.reason_key)} · {formatDateTime(activeCancel.requested_at, dLang)}
@@ -1324,9 +1320,9 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         ) : cancelRequested ? (
           <span className="badge badge-warning">{strings.cancelRequestedChip}</span>
         ) : reasons.length === 0 ? (
-          <p className="t-caption" style={{ color: "var(--status-critical)" }}>{strings.cancelReasonsMissing}</p>
+          <div className="alert alert-critical" role="alert">{strings.cancelReasonsMissing}</div>
         ) : (
-          <div className="stack" style={{ gap: "var(--space-3)" }}>
+          <div className="stack">
             <label className="field"><span className={styles.fieldLabel}>{strings.cancelSelectReason}</span>
               <select className="select" value={cancelReason} onChange={e => setCancelReason(e.target.value)}>
                 <option value="">\u2014</option>
@@ -1337,7 +1333,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
             <label className="field"><span className={styles.fieldLabel}>{strings.cancelEvidenceLabel}</span>
               <input className="input" type="file" accept="image/*" onChange={e => setCancelFile(e.target.files?.[0] ?? null)} />
             </label>
-            <div className="row" style={{ justifyContent: "flex-end" }}>
+            <div className="row">
               <button className="btn btn-danger"
                 onClick={activeCancellationPhase ? submitActiveCancellation : submitCancellation}
                 disabled={busy || !cancelReason || (activeCancellationPhase && cancelReason === "other" && !cancelComment.trim())}>{strings.cancelSubmit}</button>
@@ -1346,14 +1342,14 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         )}
       </div>
       {/* F3 M03-006 inspector return for blocked visits (request + notify planner). */}
-      <div className="panel" style={{ padding: "var(--space-6)" }}>
-        <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.returnHeading}</h4>
-        <p className="t-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{strings.returnCaption}</p>
+      <div className={styles.sectionCard}>
+        <h4>{strings.returnHeading}</h4>
+        <p className="t-caption">{strings.returnCaption}</p>
         {returnRequested ? (
           <span className="badge badge-warning">{strings.returnRequestedChip}</span>
         ) : (
-          <div className="row" style={{ gap: 8, alignItems: "flex-start", flexWrap: "wrap" }}>
-            <textarea className="input" style={{ flex: 1, minInlineSize: 220 }} rows={2} value={returnReason}
+          <div className="row">
+            <textarea className="input grow" rows={2} value={returnReason}
               onChange={e => setReturnReason(e.target.value)} placeholder={strings.returnPlaceholder} />
             <button className="btn btn-secondary" onClick={submitReturn} disabled={busy || !returnReason.trim()}>{strings.returnSubmit}</button>
           </div>
@@ -1361,13 +1357,13 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       </div>
       {/* M03-005 propose-window reschedule REQUEST — planners decide, the visit
           is never mutated here (mirrors the return request above). */}
-      <div className="panel" style={{ padding: "var(--space-6)" }}>
-        <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.rescheduleHeading}</h4>
-        <p className="t-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{strings.rescheduleCaption}</p>
+      <div className={styles.sectionCard}>
+        <h4>{strings.rescheduleHeading}</h4>
+        <p className="t-caption">{strings.rescheduleCaption}</p>
         {rescheduleRequested ? (
           <span className="badge badge-warning">{strings.rescheduleRequestedChip}</span>
         ) : (
-          <div className="row" style={{ gap: 8, alignItems: "flex-end", flexWrap: "wrap" }}>
+          <div className="row">
             <label className="field"><span className={styles.fieldLabel}>{strings.rescheduleStartLabel}</span>
               <input className="input" type="datetime-local" value={rescheduleStart}
                 onChange={e => setRescheduleStart(e.target.value)} />
@@ -1380,7 +1376,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           </div>
         )}
       </div>
-      {log.length > 0 && <div className="panel" style={{ padding: "var(--space-6)" }}>
+      {log.length > 0 && <div className="panel panel-body">
         <ul className="timeline">{log.map((m, i) => <li key={i}><div>{m}</div></li>)}</ul>
       </div>}
     </div>

@@ -60,36 +60,36 @@ export default function AuthorityBar({ chips, strings }: { chips: Chip[]; string
   const firstBlocking = chips.find(c => c.state === "blocking");
 
   return (
-    <div className="sq-authoritybar">
-      <div className="sq-authoritybar__row" role="group" aria-label={strings.groupLabel}>
+    <section className="panel" aria-label={strings.groupLabel}>
+      <div className="panel-body stack">
+      <div className="filter-bar" role="group" aria-label={strings.groupLabel}>
         {chips.map((chip, i) => (
           <button
             key={chip.id}
             type="button"
             ref={el => { btnRefs.current[i] = el; }}
-            className={`sq-authoritybar__chip is-${chip.state}`}
+            className={`filter-chip ${chip.state === "satisfied" ? "is-set" : ""}`}
             tabIndex={i === activeIdx ? 0 : -1}
             aria-label={`${chip.label} — ${chip.state === "satisfied" ? strings.satisfied : chip.state === "blocking" ? strings.blocking : strings.truth} — ${chip.detail}`}
             onFocus={() => setActiveIdx(i)}
             onClick={() => activate(chip)}
             onKeyDown={e => onKeyDown(e, i)}
           >
-            <span className="sq-authoritybar__glyph" aria-hidden="true">{GLYPH[chip.state]}</span>
-            <span className="sq-authoritybar__text">
-              <bdi>{chip.label}</bdi>
-              <span className="sq-authoritybar__detail">{chip.detail}</span>
-            </span>
+            <span aria-hidden="true">{GLYPH[chip.state]}</span>
+            <bdi>{chip.label}</bdi>
+            <span className="t-caption">{chip.detail}</span>
           </button>
         ))}
       </div>
       {/* Narrow-viewport companion (420px 9-dot strip): the currently-blocking
           chip's full text stays visible without requiring a tap on each dot. */}
       {firstBlocking && (
-        <div className="sq-authoritybar__expanded sq-banner sq-banner--critical" role="status">
+        <div className="alert alert-critical" role="status">
           <div><strong>{firstBlocking.label}</strong> — {firstBlocking.detail}</div>
         </div>
       )}
       <div className="sr-only" role="alert" aria-live="assertive">{announce}</div>
-    </div>
+      </div>
+    </section>
   );
 }

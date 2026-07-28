@@ -5,7 +5,7 @@ import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import { formatDate, formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
-import DecisionPanel, { type WorkspaceDecisionStrings } from "./DecisionPanel";
+import type { WorkspaceDecisionStrings } from "./DecisionPanel";
 import RecordTabs, { type RecordTabDef } from "./RecordTabs";
 import StartReview, { type StartReviewStrings } from "./StartReview";
 import VersionCompare, { type VersionCompareStrings, type ItemSection } from "./VersionCompare";
@@ -294,6 +294,15 @@ const panelStrings: WorkspaceDecisionStrings = {
     start: t("review.ws.startAction", "Start review"),
     starting: t("review.ws.starting", "Starting…"),
   };
+  const decisionGate = {
+    title: tx("review.ws.dec032.title", "Decision controls are temporarily unavailable", "أدوات القرار غير متاحة مؤقتاً"),
+    body: tx(
+      "review.ws.dec032.body",
+      "DEC-032 is unresolved. Review evidence and returned scope remain visible, but Approve, Return and Reject stay disabled so this frame cannot create a false successful transition.",
+      "القرار DEC-032 غير محسوم. تبقى الأدلة ونطاق الإرجاع ظاهرين، لكن تظل إجراءات الاعتماد والإرجاع والرفض معطلة حتى لا ينشئ هذا الإطار انتقالاً ناجحاً غير صحيح.",
+    ),
+    status: tx("review.ws.dec032.status", "Blocked — DEC-032", "محظور — DEC-032"),
+  };
   const traceStrings = {
     heading: t("review.ws.trace.heading", "Finding trace chain"),
     hint: t("review.ws.trace.hint", "Question → response → evidence → clause → violation → corrective action → decision comment. Each link is labelled by its source and version; unavailable links are never inferred."),
@@ -323,7 +332,7 @@ const panelStrings: WorkspaceDecisionStrings = {
   return (
     <Shell current="/reviews" title={t("review.ws.title", "Review — {factory}").replace("{factory}", f.name)}
       context={<><span className="sq-version">v{latest?.version_number} · {t("review.ws.latest", "latest")}</span><span className="sq-lozenge sq-lozenge--review sq-lozenge--info">{t(`enum.${ins.status}`, ins.status.replace(/_/g, " "))}</span>{!canDecide && <span className="sq-lozenge sq-lozenge--warning">{t("review.ws.readOnlyRole", "{role} · read-only").replace("{role}", viewerRole ? t(`enum.${viewerRole}`, viewerRole) : "—")}</span>}<a className="btn btn-secondary btn-sm" href={`/factories/${f.id}`}>{t("review.ws.openFactory360", "Open Factory 360")}</a><a className="btn btn-secondary btn-sm" href={`/reports/inspection/${ins.id}`}>{t("review.ws.reportLink", "Inspection report PDF")}</a></>}>
-      <div className={responsive.reviewRoot} data-saqeel-migration="review-approvals" data-saqeel-screen="SCR-WEB-310">
+      <div className={responsive.reviewRoot} data-saqeel-migration="review-approvals" data-saqeel-screen="SCR-WEB-310" data-screen-id="EXE-S19">
       <h1 className={responsive.semanticTitle}>{t("review.ws.title", "Review — {factory}").replace("{factory}", f.name)}</h1>
       {receiptCorrelation && receiptDecision && (
         <div className="sq-banner sq-banner--success" role="status">
@@ -502,16 +511,23 @@ const panelStrings: WorkspaceDecisionStrings = {
           // controls, regardless of open/canStart state.
           ? <div className="sq-surface" style={{ padding: "var(--space-6)" }}><p className="sq-caption">{t("review.ws.readOnlyNote", "Read-only for this role — decision controls are limited to Level 2 Reviewer / Operations.")}</p></div>
           : open && ins.status === "under_review"
-          ? <DecisionPanel reviewId={open.id} sections={sections.map(s => ({ key: s.key, title: s.title }))}
-              summary={{
-                version: latest?.version_number ?? 0,
-                violationCount: violations.length,
-                criticalViolationCount: violations.filter(v => v.violation_codes?.level === "L1").length,
-                actionFormCount: actionForms.length,
-                evidenceCount: evidenceRows.length,
-                factoryUpdateCount: fvUpdated,
-              }}
-              strings={panelStrings} />
+          ? <section className="panel stack" aria-labelledby="review-decision-gate-title" data-state="blocked-dec032">
+              <div className="alert alert-warning" role="status">
+                <div>
+                  <strong id="review-decision-gate-title">{decisionGate.title}</strong>{" "}
+                  {decisionGate.body}
+                </div>
+              </div>
+              <div className="row" aria-label={panelStrings.heading}>
+                {(["approve", "return", "reject"] as const).map(decision => (
+                  <button key={decision} type="button" className="btn btn-secondary btn-lg" disabled>
+                    {panelStrings.decisions[decision]}
+                  </button>
+                ))}
+              </div>
+              <span className="badge badge-warning">{decisionGate.status}</span>
+              <p className="t-caption">{panelStrings.audited}</p>
+            </section>
           : canStart
           ? <StartReview inspectionId={ins.id} submissionVersionId={latest!.id} strings={startStrings} />
           : <div className="sq-surface" style={{ padding: "var(--space-6)" }}><p className="sq-caption">{t("review.ws.noOpenDecision", "No open decision — status {status}.").replace("{status}", t(`enum.${ins.status}`, ins.status.replace(/_/g, " ")))}</p></div>}

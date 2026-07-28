@@ -162,16 +162,16 @@ export default function PreExecution(props: {
   }
 
   return (
-    <div className="stack" style={{ gap: 14 }} data-testid="pre-execution-panel">
+    <div className="stack" data-testid="pre-execution-panel">
       <div className={styles.sectionCard}>
-      <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", marginBlockEnd: "var(--space-3)" }}>
+      <div className="panel-header">
         <h4>{s.heading}</h4>
         {ready && <span className="badge badge-compliant" data-testid="pre-execution-ready"><span className="dot" />{s.readyTitle}</span>}
       </div>
 
       {/* 1 · read-only Planning + factory context */}
       <div>
-        <h5 style={{ marginBlockEnd: 4 }}>{s.contextHeading}</h5>
+        <h5>{s.contextHeading}</h5>
         <div className={styles.detailRow}>
           <span className="t-caption">{s.lblFactory}</span>
           <strong>{props.context.factoryName}{props.context.factoryCode ? ` (${props.context.factoryCode})` : ""}</strong>
@@ -187,7 +187,7 @@ export default function PreExecution(props: {
 
       {ready ? (
         <div className={styles.sectionCard}>
-          <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
+          <div className="row">
             <span className="tag">{s.dateHeading}: <span className="id-code">{date ?? "—"}</span></span>
             <span className="tag">{s.modeHeading}: {modeWord(mode)}</span>
             {activePackage && <span className="tag">{packageLine(activePackage)}</span>}
@@ -197,7 +197,7 @@ export default function PreExecution(props: {
               {fmt(s.readySnapshot, { n: snapshot.preparation_version, checksum: snapshot.checksum.slice(0, 12) })}
             </p>
           )}
-          <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+          <div className="row">
             <button className="btn btn-secondary" onClick={onReopen} disabled={busy} data-testid="prep-reopen">
               {busy ? s.working : s.reopen}
             </button>
@@ -206,14 +206,14 @@ export default function PreExecution(props: {
           {error && <div className="alert alert-critical" role="alert"><div>{error}</div></div>}
         </div>
       ) : (
-        <div className="stack" style={{ gap: 14 }}>
+        <div className="stack">
           {/* 2 · Execution Date — window-constrained, per-day availability */}
           <section aria-label={s.dateHeading} className={styles.sectionCard}>
-            <h5 style={{ marginBlockEnd: 4 }}>{s.dateHeading}</h5>
-            <p className="t-caption" style={{ marginBlockEnd: "var(--space-2)" }}>{s.dateCaption}</p>
+            <h5>{s.dateHeading}</h5>
+            <p className="t-caption">{s.dateCaption}</p>
             {props.capacityNote === "unavailable" && <p className="t-caption">{s.availabilityUnknown}</p>}
             {props.capacityNote === "truncated" && <p className="t-caption">{s.truncatedNote}</p>}
-            <div className="row" style={{ gap: 8, flexWrap: "wrap" }} role="group" aria-label={s.dateHeading}>
+            <div className="row" role="group" aria-label={s.dateHeading}>
               {props.days.map(d => {
                 const full = d.remaining != null && d.remaining <= 0;
                 const disabled = d.past || full;
@@ -238,13 +238,13 @@ export default function PreExecution(props: {
 
           {/* 3 · Visit Mode — planning-set mode + governed alternatives */}
           <section aria-label={s.modeHeading} className={styles.sectionCard}>
-            <h5 style={{ marginBlockEnd: 4 }}>{s.modeHeading}</h5>
-            <div className="stack" style={{ gap: 8 }}>
+            <h5>{s.modeHeading}</h5>
+            <div className="stack">
               {(["physical", "virtual"] as const).map(m => {
                 const rule = props.modeRules[m];
                 const selected = mode === m;
                 return (
-                  <div key={m} className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                  <div key={m} className="row">
                     <button
                       type="button"
                       aria-pressed={selected}
@@ -265,22 +265,22 @@ export default function PreExecution(props: {
 
           {/* 4 · Package — read-only when Planning selected one, governed selector otherwise */}
           <section aria-label={s.packageHeading} className={styles.sectionCard}>
-            <h5 style={{ marginBlockEnd: 4 }}>{s.packageHeading}</h5>
+            <h5>{s.packageHeading}</h5>
             {props.plannedPackage ? (
-              <div className="stack" style={{ gap: 4 }}>
-                <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <div className="stack">
+                <div className="row">
                   <span>{packageLine(props.plannedPackage)}</span>
                   <span className="badge badge-info">{s.packageByPlanning}</span>
                   <span className="t-caption id-code">{fmt(s.sectionsCount, { n: props.plannedPackage.sections.length })}</span>
                 </div>
               </div>
             ) : (
-              <div className="stack" style={{ gap: 8 }}>
+              <div className="stack">
                 <p className="t-caption">{s.packageChoose}</p>
                 {props.packageOptions.map(p => {
                   const selected = packageId === p.id;
                   return (
-                    <div key={p.id} className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                    <div key={p.id} className="row">
                       <button
                         type="button"
                         aria-pressed={selected}
@@ -302,11 +302,11 @@ export default function PreExecution(props: {
           {/* 5 · Form / Action Form configuration (pre-Ready only; D-007 fail closed) */}
           {activePackage && (
             <section aria-label={s.formsHeading} className={styles.sectionCard}>
-              <h5 style={{ marginBlockEnd: 4 }}>{s.formsHeading}</h5>
-              <div className="stack" style={{ gap: 8 }}>
+              <h5>{s.formsHeading}</h5>
+              <div className="stack">
                 {activePackage.hasOptionalityMetadata ? (
                   activePackage.sections.map(sec => (
-                    <div key={sec.key} className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                    <div key={sec.key} className="row">
                       <span>{sec.title}</span>
                       {sec.removable ? (
                         <label className="check">
@@ -329,7 +329,7 @@ export default function PreExecution(props: {
                   <p className="t-caption">{s.noRemovableCopy}</p>
                 )}
                 {props.actionFormTemplates.length > 0 ? (
-                  <div className="stack" style={{ gap: 6 }}>
+                  <div className="stack">
                     <span className="t-caption">{s.addedFormsLabel}</span>
                     {props.actionFormTemplates
                       .filter(tpl => !activePackage.actionFormTemplateIds.includes(tpl.id))

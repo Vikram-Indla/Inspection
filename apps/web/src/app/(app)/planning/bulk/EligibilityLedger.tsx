@@ -39,32 +39,31 @@ export default function EligibilityLedger({
     : strings.freshnessNever;
 
   return (
-    <section className="panel" aria-label={strings.heading}
-      style={{ padding: "var(--space-6)", display: "flex", flexWrap: "wrap", gap: "var(--space-8)", alignItems: "flex-end" }}>
-      <div>
-        <span className="t-caption">{strings.denominator}</span>
-        <div className="numeric" aria-live="polite"><strong style={{ font: "var(--type-title)" }}>{denominator}</strong></div>
+    <section className="metric-strip" aria-label={strings.heading}>
+      <div className="sq-kpi">
+        <span className="kpi-label">{strings.denominator}</span>
+        <strong className="kpi-value numeric" aria-live="polite">{denominator}</strong>
       </div>
-      <div>
-        <span className="t-caption">{strings.eligible}</span>
+      <div className="sq-kpi">
+        <span className="kpi-label">{strings.eligible}</span>
         <div className="numeric" aria-live="polite">
           <span className="badge badge-compliant">✓ {eligible}</span>
         </div>
       </div>
-      <div>
-        <span className="t-caption">{strings.excluded}</span>
+      <div className="sq-kpi">
+        <span className="kpi-label">{strings.excluded}</span>
         <div className="numeric" aria-live="polite">
           <span className="badge badge-info">− {excluded}</span>
         </div>
       </div>
       {focusedCount != null && (
-        <div role="status" aria-live="polite">
-          <span className="t-caption">{focusedLabel}</span>
+        <div className="sq-kpi" role="status" aria-live="polite">
+          <span className="kpi-label">{focusedLabel}</span>
           <div className="numeric"><span className="badge badge-info">{strings.focusContribution.replace("{n}", String(focusedCount))}</span></div>
         </div>
       )}
-      <div style={{ marginInlineStart: "auto" }}>
-        <span className="t-caption">{strings.freshness}</span>
+      <div className="sq-kpi">
+        <span className="kpi-label">{strings.freshness}</span>
         <div className="sq-freshness numeric">
           <bdi>{freshnessLabel}</bdi>
           {missingSync > 0 && (

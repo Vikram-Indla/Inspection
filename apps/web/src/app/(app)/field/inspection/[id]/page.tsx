@@ -58,7 +58,6 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
         {header(t("field.ws.notFound", "Not found"))}
         <div className={styles.page}>
           <div className="empty">
-            <div style={{ fontSize: 32 }} aria-hidden="true">∅</div>
             <div className="empty-title">{t("field.ws.notFound", "Not found")}</div>
           </div>
         </div>
@@ -73,7 +72,6 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
         {header(t("field.ws.notConfiguredTitle", "Not configured"))}
         <div className={styles.page}>
           <div className="empty">
-            <div style={{ fontSize: 32 }} aria-hidden="true">∅</div>
             <div className="empty-title">{t("field.ws.notConfigured", "Inspection package not configured")}</div>
             <p className="t-caption">{t("field.ws.notConfiguredDesc", "This report type is not configured for field execution.")}</p>
           </div>
@@ -806,13 +804,13 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
 
       {/* O-13/IPAD-FIGMA-DELTA §2B — distinct from a violation; surfaced in
           this visit's own outputs, not folded into the checklist. */}
-      <section className={styles.card} aria-labelledby="field-ws-incidents-heading" style={{ padding: "var(--space-4)" }}>
-        <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--space-2)" }}>
-          <h2 id="field-ws-incidents-heading" style={{ margin: 0 }}>{t("field.ws.incidents.heading", "Incident reports for this visit")}</h2>
+      <section className={`${styles.card} panel-body`} aria-labelledby="field-ws-incidents-heading">
+        <div className="panel-header">
+          <h2 id="field-ws-incidents-heading" className="panel-title">{t("field.ws.incidents.heading", "Incident reports for this visit")}</h2>
           <a className="btn btn-secondary btn-lg" href={incidentLogHref}>{t("field.ws.incidents.log", "Log incident")}</a>
         </div>
         {(visitIncidents ?? []).length ? (
-          <ul style={{ marginBlockStart: "var(--space-2)" }}>
+          <ul className="timeline">
             {(visitIncidents ?? []).map(row => (
               <li key={row.id}>
                 <bdi>{row.incident_type || t("field.ws.incidents.untitled", "Incident")}</bdi>
@@ -820,7 +818,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
               </li>
             ))}
           </ul>
-        ) : <p className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>{t("field.ws.incidents.empty", "No incidents logged for this visit.")}</p>}
+        ) : <p className="t-caption">{t("field.ws.incidents.empty", "No incidents logged for this visit.")}</p>}
       </section>
 
       <Workspace

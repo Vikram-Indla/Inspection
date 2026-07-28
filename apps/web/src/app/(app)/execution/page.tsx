@@ -30,13 +30,13 @@ export default async function ExecutionPage() {
   if (!roleError && (isAdminOnlyPersona(roleKeys) || !canReadExecution)) {
     return (
       <Shell current="/execution" title="">
-        <section className="sq-access-refusal" role="alert">
+        <section className="panel panel-body" role="alert">
           <span aria-hidden="true">🔒</span>
           <h1>{copy("You do not have access to this destination", "ليس لديك صلاحية الوصول إلى هذه الوجهة")}</h1>
           <p>{copy("The destination stays visible so the platform remains legible, and access is refused here, at the boundary.", "تظل الوجهة ظاهرة لسهولة فهم المنصة، ويُرفض الوصول هنا عند حد الصلاحية.")}</p>
           <div>
-            <a className="sq-btn" href="/profile">{copy("Request access", "طلب الوصول")}</a>
-            <a className="sq-btn sq-btn--secondary" href="/dashboard">{copy("Back to default state", "العودة إلى الصفحة الافتراضية")}</a>
+            <a className="btn btn-primary" href="/profile">{copy("Request access", "طلب الوصول")}</a>
+            <a className="btn btn-secondary" href="/dashboard">{copy("Back to default state", "العودة إلى الصفحة الافتراضية")}</a>
           </div>
           <small>{copy("Execution is refused for an Administrator-only persona. Backend RLS remains authoritative.", "يُرفض التنفيذ لحساب يقتصر على دور المسؤول. وتظل سياسات أمان الصفوف في قاعدة البيانات هي المرجع.")}</small>
         </section>
@@ -47,7 +47,7 @@ export default async function ExecutionPage() {
   if (executionError || roleError) {
     return (
       <Shell current="/execution" title="">
-        <div className="sq-banner sq-banner--critical" role="alert">
+        <div className="alert alert-critical" role="alert">
           <div><strong>{copy("Execution data is temporarily unavailable.", "بيانات التنفيذ غير متاحة مؤقتاً.")}</strong> {copy("Nothing was changed; retry this destination.", "لم يتم تغيير أي شيء؛ أعد محاولة فتح هذه الوجهة.")}</div>
         </div>
       </Shell>
@@ -58,7 +58,7 @@ export default async function ExecutionPage() {
   if (read.status === "invalid") {
     return (
       <Shell current="/execution" title="">
-        <div className="sq-banner sq-banner--critical" role="alert">
+        <div className="alert alert-critical" role="alert">
           <div><strong>{copy("Execution data is temporarily unavailable.", "بيانات التنفيذ غير متاحة مؤقتاً.")}</strong> {copy("The governed response could not be verified. Nothing was changed.", "تعذّر التحقق من الاستجابة المعتمدة. لم يتم تغيير أي شيء.")}</div>
         </div>
       </Shell>
@@ -72,7 +72,7 @@ export default async function ExecutionPage() {
   return (
     <Shell current="/execution" title="">
       {read.status === "degraded" ? (
-        <div className="sq-banner" role="status">
+        <div className="alert alert-info" role="status">
           <div><strong>{copy("Some execution records are unavailable.", "بعض سجلات التنفيذ غير متاحة.")}</strong> {copy(`${read.omittedRows} malformed record${read.omittedRows === 1 ? "" : "s"} were withheld rather than shown as verified data.`, `تم حجب ${read.omittedRows} من السجلات غير الصالحة بدلاً من عرضها كبيانات موثقة.`)}</div>
         </div>
       ) : null}

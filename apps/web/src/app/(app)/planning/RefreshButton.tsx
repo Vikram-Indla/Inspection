@@ -8,7 +8,7 @@ export default function RefreshButton({ label, busyLabel }: { label: string; bus
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   return (
-    <button type="button" className="sq-btn sq-btn--secondary" disabled={pending}
+    <button type="button" className="btn btn-secondary" disabled={pending}
       onClick={() => startTransition(() => router.refresh())}>
       {pending ? busyLabel : label}
     </button>

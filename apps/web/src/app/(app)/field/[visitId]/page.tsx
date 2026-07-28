@@ -704,8 +704,8 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
             reason visible — never hidden. */}
         {showPreparation && (
           <div className={`panel ${styles.preparationCard}`}>
-            <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{packStrings.title}</h4>
-            <p className="t-caption" style={{ marginBlockEnd: "var(--space-3)" }}>
+            <h4>{packStrings.title}</h4>
+            <p className="t-caption">
               {tr("field.pack.hostCaption",
                 "Review the governed pre-inspection briefing before you prepare and check in.",
                 "راجع ملخّص ما قبل التفتيش المحكوم قبل التحضير وتسجيل الوصول.")}
@@ -745,7 +745,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
           </div>
         )}
         {factoryUnverifiedManual && (
-          <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+          <div className="row">
             <span className="badge badge-warning">{unverifiedManualLabel}</span>
           </div>
         )}

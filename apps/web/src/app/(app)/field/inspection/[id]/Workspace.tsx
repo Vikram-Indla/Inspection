@@ -1117,7 +1117,11 @@ export default function Workspace({ inspection, items, library, serverResponses,
       saveDraft: "Save draft",
     };
     return (
-      <main className={`${styles.page} ${styles.completionPage} ${a11y.scope}`}>
+      <main
+        className={`${styles.page} ${styles.completionPage} ${a11y.scope}`}
+        data-screen-id="EXE-S17"
+        data-workspace-state={serverSubmitted ? "submitted-read-only" : "pending-sync"}
+      >
         <LiveRegion message={msg} />
         <div className={styles.toolbar}>
           <span className={`badge ${tone}`}><span className="dot" />{strings.sync[sync]}{detail ? ` · ${detail}` : ""}</span>
@@ -1192,7 +1196,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
     );
   }
   return (
-    <div className={`${styles.page} ${a11y.scope}`}>
+    <div className={`${styles.page} ${a11y.scope}`} data-screen-id="EXE-S10">
       {/* A11y — polite screen-reader mirror of the transient status message. */}
       <LiveRegion message={msg} />
       <div className={styles.toolbar}>
@@ -1209,6 +1213,16 @@ export default function Workspace({ inspection, items, library, serverResponses,
       </div>
       <FieldConnectivityBanner offline={strings.connectivityOffline} weak={strings.connectivityWeak} />
       {msg && <div className="alert alert-info"><div>{msg}</div></div>}
+
+      <nav className={`${styles.card} ${styles.lifecycleCard}`} aria-label={strings.progress}>
+        <span className={styles.overline}>{strings.progress}</span>
+        <div className={styles.lifecycleSegments}>
+          <span className={styles.lifecycleSegment}>{strings.panelFactory}</span>
+          <span className={styles.lifecycleSegment} aria-current="step">{strings.sectionNavTitle}</span>
+          <span className={styles.lifecycleSegment}>{strings.reviewTitle}</span>
+          <span className={styles.lifecycleSegment}>{strings.submitBtn}</span>
+        </div>
+      </nav>
 
       {/* M04-054 / M04-068 — collapsible Factory/Visit context panel with expandable cards,
           reachable from every wizard step (sticky-header sibling at the top of the workspace) */}
@@ -1251,6 +1265,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
           <button type="button" className="btn btn-primary btn-sm" onClick={() => router.refresh()} data-testid="recovery-reload">{strings.recoveryReload}</button>
         </div>
       )}
+      <section data-screen-id="EXE-S20" aria-label={strings.conflictReview}>
       {conflicts.map(c => {
         const code = items.find(i => i.id === c.item_id)?.code ?? "";
         const sectionKey = code ? sectionKeyForItem(displaySections, code) : null;
@@ -1274,8 +1289,9 @@ export default function Workspace({ inspection, items, library, serverResponses,
         </div>
         );
       })}
+      </section>
       {inspection.status === "returned" && lastReturn && (
-        <div className="alert alert-warning">
+        <div className="alert alert-warning" data-screen-id="EXE-S18">
           <div className="stack" style={{ gap: "var(--space-2)" }}>
             <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
               <span className="badge badge-warning">{strings.returnedBadge}</span>
@@ -1373,9 +1389,11 @@ export default function Workspace({ inspection, items, library, serverResponses,
       )}
       {/* Phase 4B / D-016 — approved cancellation: terminal, read-only lock;
           pending: non-blocking banner, the inspector keeps working (§12). */}
-      {cancelApproved && <div className="alert alert-immutable" role="status"><div><strong>{strings.cancelApprovedTitle}</strong> {strings.cancelApprovedBody}</div></div>}
-      {cancelPending && <div className="alert alert-warning" role="status"><div>{strings.cancelPending}</div></div>}
-      {cancelState?.status === "rejected" && <div className="alert alert-warning" role="status"><div>{fmt(strings.cancelRejected, { reason: cancelState.decision_reason ?? "—" })}</div></div>}
+      <section data-screen-id="EXE-S14" aria-label={strings.cancelHeading}>
+        {cancelApproved && <div className="alert alert-immutable" role="status"><div><strong>{strings.cancelApprovedTitle}</strong> {strings.cancelApprovedBody}</div></div>}
+        {cancelPending && <div className="alert alert-warning" role="status"><div>{strings.cancelPending}</div></div>}
+        {cancelState?.status === "rejected" && <div className="alert alert-warning" role="status"><div>{fmt(strings.cancelRejected, { reason: cancelState.decision_reason ?? "—" })}</div></div>}
+      </section>
 
       {/* Live summary — answered / pending / compliant / non-compliant / violations / evidence (M04-149) */}
       {!submitted && (
@@ -1466,7 +1484,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
         return (
         <div key={s.key} id={`sq-section-${s.key}`} className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)", scrollMarginBlockStart: "var(--space-8)" }}>
           <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
-            <h4>{s.title}</h4>
+            <h4 data-screen-id="EXE-S11">{s.title}</h4>
             <span className="t-caption id-code">{sp.answered}/{sp.total} · {fmt(strings.progress, { pct: sp.pct })}</span>
           </div>
           {/* Per-section progress (M04-081) */}
@@ -1690,7 +1708,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
           manually. Included ≠ completed: new rows stay open. */}
       {!submitted && (
         <div className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
-          <h4>{strings.afAddTitle}</h4>
+          <h4 data-screen-id="EXE-S13">{strings.afAddTitle}</h4>
           <p className="t-caption">{strings.afAddHint}</p>
           <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap", alignItems: "center" }}>
             <label className={styles.fld}>
@@ -1814,7 +1832,14 @@ export default function Workspace({ inspection, items, library, serverResponses,
 
       {/* Grouped validation results by section (M04-200/201-lite) */}
       {!submitted && validation && validation.length > 0 && (
-        <div className={styles.validation} role="alert" tabIndex={-1} ref={validationRef} data-testid="submit-blockers">
+        <div
+          className={styles.validation}
+          role="alert"
+          tabIndex={-1}
+          ref={validationRef}
+          data-testid="submit-blockers"
+          data-screen-id="EXE-S15"
+        >
           <div className="row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--space-2)", flexWrap: "wrap" }}>
             <strong>{strings.valTitle}</strong>
             {(() => {
@@ -1844,7 +1869,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
       )}
 
       {!submitted && (
-        <div className={styles.actionbar}>
+        <div className={styles.actionbar} data-screen-id="EXE-S16">
           {/* Readiness evaluation (M04-204): submit stays clickable so refusal + grouped blockers surface on tap */}
           <span className="t-caption">{blockCount ? fmt(strings.notReady, { n: blockCount }) : strings.ready}</span>
           <button className="btn btn-primary btn-lg" aria-disabled={blockCount > 0 || (inspection.status === "returned" && !correctionMode)}
@@ -1920,7 +1945,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
           maxWidth="420px"
           footer={<>
             <button type="button" className="btn btn-secondary" onClick={() => setExiting(false)}>{strings.exitCancel}</button>
-            <button type="button" className="btn btn-primary" onClick={() => router.push("/field")}>{strings.exitConfirm}</button>
+            <button type="button" className="btn btn-primary" onClick={() => router.push("/field/my-tasks")}>{strings.exitConfirm}</button>
           </>}
         >
           <p>{sync === "synced" ? strings.exitSavedSynced : strings.exitSavedLocal}</p>
