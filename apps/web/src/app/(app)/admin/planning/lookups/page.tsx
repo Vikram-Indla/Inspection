@@ -66,12 +66,12 @@ export default async function PlanningLookups() {
 
   return (
     <Shell current="/admin/planning/lookups" title={t("admin.planning.lookups.title", "Planning lookups")}
-      context={<span className="sq-lozenge sq-lozenge--info">PLN-CON-012 · planning.configure_lookups</span>}>
-      <div className="sq-banner"><div>
+      context={<span className="badge badge-info">PLN-CON-012 · planning.configure_lookups</span>}>
+      <div className="alert"><div>
         <strong>{t("admin.planning.lookups.banner.title", "Governed reference data for planning.")}</strong>{" "}
         {t("admin.planning.lookups.banner.body", "These values feed every planning select (visit types, reasons, priorities). RLS is the write authority and every change is recorded in the audit trail with the actor and before/after state.")}
       </div></div>
-      {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("admin.planning.lookups.error", "Couldn’t load lookups. Nothing was changed. Try again.")}</strong></div></div>}
+      {error && <div className="alert alert-critical" role="alert"><div><strong>{t("admin.planning.lookups.error", "Couldn’t load lookups. Nothing was changed. Try again.")}</strong></div></div>}
       <LookupsAdmin rows={rows} kinds={[...LOOKUP_KINDS]} canConfigure={canConfigure} labels={labels} />
     </Shell>
   );
