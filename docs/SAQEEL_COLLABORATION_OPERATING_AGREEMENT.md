@@ -52,6 +52,11 @@ Drive sources and the repository product contract.
 
 ## Conversation and visibility
 
+- Apply a **ten-second rule**. If a factual answer, repository trace or
+  technical investigation cannot be established within ten seconds, delegate
+  the investigation, state exactly what is being checked, and keep the live
+  review moving. Return with evidence; do not make the user wait in silence or
+  pretend that an unverified answer is known.
 - Keep the user informed during work. Do not leave long silent gaps; give brief
   factual updates at each meaningful transition.
 - Keep Chrome on the active context: the live SAQEEL screen when validating,
