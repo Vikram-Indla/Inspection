@@ -140,7 +140,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       : sb.from("factories").select("city").not("city", "is", null).limit(1000),
     sb.from("profiles").select("user_id, full_name, user_roles!user_roles_user_id_fkey!inner(role_key)").eq("user_roles.role_key", "inspector").order("full_name"),
     sb.from("package_versions").select("id, version_label, packages(title)").order("published_at", { ascending: false, nullsFirst: false }).limit(500),
-    sb.from("visit_plans").select("id, method, status, plan_reference, draft_version, created_at, created_by, profiles(full_name)")
+    sb.from("visit_plans").select("id, method, status, plan_reference, draft_version, created_at, created_by, profiles!visit_plans_created_by_fkey(full_name)")
       .in("status", ["draft", "validated"]).is("archived_at", null).order("created_at", { ascending: false }).limit(10),
   ]);
 
