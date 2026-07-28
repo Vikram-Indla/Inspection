@@ -6,6 +6,7 @@ import { getFieldDeviceIdentifier } from "@/lib/field-device";
 import { readFieldDeviceEnrollment } from "@/app/(app)/field/settings/actions";
 import { readBiometricUnlock, unlockWithBiometric, type BiometricUnlockRecord } from "@/lib/field-biometric-unlock";
 import { authorizeInspectorLogin, bootstrapFieldSession, safeFieldReturnPath } from "@/lib/field-auth";
+import { establishAuthenticatedThemeDefault } from "@/lib/theme-preference";
 import "./field-login.css";
 
 // SAQEEL Field Login — implementation of the Claude Design component
@@ -78,7 +79,6 @@ export type FieldLoginStrings = {
   sessionExpired: string;
   offlineKnown: string;
   offlineLoginBlocked: string;
-  unauthorizedInspector: string;
   signedOut: string;
   continueOffline: string;
 };
@@ -198,7 +198,7 @@ export default function FieldLoginClient({
         setMessage(s.sessionExpired);
       } else if (bootstrap.status === "unauthorized") {
         await sb.auth.signOut();
-        setMessage(s.unauthorizedInspector);
+        setMessage(null);
       } else if (reason === "signedout") {
         setMessage(s.signedOut);
       }
@@ -228,7 +228,7 @@ export default function FieldLoginClient({
     return () => {
       cancelled = true;
     };
-  }, [reason, returnTo, s.offlineKnown, s.sessionExpired, s.signedOut, s.unauthorizedInspector]);
+  }, [reason, returnTo, s.offlineKnown, s.sessionExpired, s.signedOut]);
 
   const unlockWithFaceId = useCallback(async () => {
     if (!lockScreen) return;
@@ -253,10 +253,10 @@ export default function FieldLoginClient({
     const bootstrap = await bootstrapFieldSession(supabaseBrowser(), navigator.onLine);
     if (bootstrap.status === "ready" || bootstrap.status === "offline_known") window.location.assign(safeReturnTo);
     else {
-      setMessage(bootstrap.status === "unauthorized" ? s.unauthorizedInspector : s.sessionExpired);
+      setMessage(bootstrap.status === "unauthorized" ? null : s.sessionExpired);
       setShowPasswordFallback(true);
     }
-  }, [lockScreen, returnTo, s.bioUnavailable, s.sessionExpired, s.unauthorizedInspector]);
+  }, [lockScreen, returnTo, s.bioUnavailable, s.sessionExpired]);
 
   const submitCredentials = useCallback(
     async (e: React.FormEvent) => {
@@ -296,6 +296,10 @@ export default function FieldLoginClient({
         setMessage(s.authInvalid);
         return;
       }
+      // Authentication surfaces are dark-locked. Carry that product default
+      // into the authenticated shell when this browser has no explicit theme
+      // preference; never overwrite a user's saved light or dark choice.
+      establishAuthenticatedThemeDefault(window.localStorage);
       // Where sign-in lands depends on whether a field page asked for the user
       // back. With an explicit returnTo the user was bounced out of /field, so
       // the inspector grant is the thing to check and the intended page is the
@@ -307,7 +311,7 @@ export default function FieldLoginClient({
       if (returnTo) {
         if (!(await authorizeInspectorLogin(supabaseBrowser(), data.session, keepSignedIn))) {
           await supabaseBrowser().auth.signOut();
-          setMessage(s.unauthorizedInspector);
+          setMessage(null);
           return;
         }
         window.location.assign(safeReturnTo);
@@ -318,7 +322,7 @@ export default function FieldLoginClient({
       // check never made. Supabase already persists the session itself.
       window.location.assign("/launch");
     },
-    [identifier, keepSignedIn, password, returnTo, s.directoryBlocked, s.authInvalid, s.authNetwork, s.offlineLoginBlocked, s.unauthorizedInspector],
+    [identifier, keepSignedIn, password, returnTo, s.directoryBlocked, s.authInvalid, s.authNetwork, s.offlineLoginBlocked],
   );
 
   const netLabel = online ? s.netOnline : s.netOffline;

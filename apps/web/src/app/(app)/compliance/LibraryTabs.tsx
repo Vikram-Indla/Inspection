@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 
-export type LibraryTabDef = { key: string; label: string; count: number };
+export type LibraryTabDef = { key: string; label: string; count: number | null };
 
 // CLASS-CONTRACT.md § Compliance Library — div.tabs > button.tab(.is-active) >
 // span.tab-count, 6 tabs. Empty tabs are a valid "No records" state, not a
@@ -16,7 +16,7 @@ export default function LibraryTabs({ tabs, panels }: { tabs: LibraryTabDef[]; p
           <button key={tab.key} type="button" role="tab" aria-selected={index === active}
             className={`tab${index === active ? " is-active" : ""}`}
             onClick={() => setActive(index)}>
-            {tab.label} <span className="tab-count">{tab.count}</span>
+            {tab.label} <span className="tab-count">{tab.count ?? "Unavailable"}</span>
           </button>
         ))}
       </div>

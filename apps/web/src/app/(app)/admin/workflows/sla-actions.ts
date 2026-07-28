@@ -23,7 +23,7 @@ function slaMutationError(error: { message?: string } | null, action: "activate"
     message.includes("SLA activation blocked")
     || message.includes("DEC-003")
   )) {
-    return { blocked: "SLA activation blocked by governance guard (DEC-003): calendar not authorized/complete." };
+    return { blocked: "SLA activation blocked by governance guard: calendar not authorized/complete." };
   }
   return { error: NEUTRAL_WRITE_ERROR };
 }
@@ -67,7 +67,7 @@ export async function requestSlaActivation(_: SlaResult, formData: FormData): Pr
   const { sb, timer } = ctx;
   const reason = String(formData.get("reason") ?? "").trim();
   if (timer.due_at == null || timer.calendar_id == null) {
-    return { blocked: "SLA activation is on hold: no authorized working calendar (DEC-003). The timer stays pending; pause/resume remain available." };
+    return { blocked: "SLA activation is on hold: no authorized working calendar. The timer stays pending; pause/resume remain available." };
   }
   if (!reason) return { error: "An activation reason is required." };
   return mutateSlaTimer(sb, timer.id, "activate", reason);

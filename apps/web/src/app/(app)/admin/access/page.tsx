@@ -211,11 +211,11 @@ export default async function Access({
         "The design’s three presentation roles sit above the existing governed role catalogue. This route does not collapse or rename backend roles without an approved data and RLS migration.",
         "توجد أدوار العرض الثلاثة في التصميم فوق كتالوج الأدوار المحكوم الحالي. لا تدمج هذه الوجهة أدوار النظام الخلفي ولا تعيد تسميتها دون ترحيلة معتمدة للبيانات وأمن الصفوف.",
       ))}
-      context={<span className="sq-lozenge sq-lozenge--info">SCR-ADM-090 · RBAC-001..014 · EXE-ACCESS</span>}
+      context={<span className="badge badge-info">SCR-ADM-090 · RBAC-001..014 · EXE-ACCESS</span>}
     >
-      <div className="sq-banner"><div><strong>{t("admin.access.banner.title", "Access is enforced by Row Level Security, not UI.")}</strong> {t("admin.access.banner.body", "54 policies realize the frozen RBAC matrix; role grants are audited automatically (this page's data itself passed through RLS to render).")}</div></div>
+      <div className="alert"><div><strong>{t("admin.access.banner.title", "Access is enforced by Row Level Security, not UI.")}</strong> {t("admin.access.banner.body", "54 policies realize the frozen RBAC matrix; role grants are audited automatically (this page's data itself passed through RLS to render).")}</div></div>
       {(gateError || capGateError) && (
-        <div className="sq-banner sq-banner--warning" role="alert"><div>
+        <div className="alert alert-warning" role="alert"><div>
           <strong>{t("admin.access.permissions.error.title", "Permissions unavailable.")}</strong>{" "}
           {t("admin.access.permissions.error.body", "Your access-management permissions could not be verified. All write controls are unavailable; retry the page.")}
         </div></div>
@@ -223,10 +223,10 @@ export default async function Access({
 
       {view === "users" && (
         <>
-          {profilesError && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("admin.access.error.title", "Couldn’t load the authorized user roster. Nothing was changed. Try again.")}</strong></div></div>}
-          {rolesError && !profilesError && <div className="sq-banner sq-banner--warning" role="alert"><div><strong>{t("admin.access.roles.error.title", "Role details are unavailable.")}</strong> {t("admin.access.roles.error.body", "The authorized user roster remains visible, but role labels and all access changes are unavailable.")}</div></div>}
+          {profilesError && <div className="alert alert-critical" role="alert"><div><strong>{t("admin.access.error.title", "Couldn’t load the authorized user roster. Nothing was changed. Try again.")}</strong></div></div>}
+          {rolesError && !profilesError && <div className="alert alert-warning" role="alert"><div><strong>{t("admin.access.roles.error.title", "Role details are unavailable.")}</strong> {t("admin.access.roles.error.body", "The authorized user roster remains visible, but role labels and all access changes are unavailable.")}</div></div>}
           {!profilesError && (
-            <div className="sq-tablewrap"><table className="sq-table">
+            <div className="table-wrap"><table className="table">
               <thead><tr><th scope="col">{t("admin.access.table.user", "User")}</th><th scope="col">{t("admin.access.table.email", "Email")}</th><th scope="col">{t("admin.access.table.region", "Region")}</th><th scope="col">{t("admin.access.table.roles", "Roles")}</th></tr></thead>
               <tbody>
                 {(profiles ?? []).map(p => {
@@ -258,7 +258,7 @@ export default async function Access({
                       <td className="t-caption">{p.email}</td>
                       <td>{p.region}</td>
                       <td>{rolesError ? t("common.unavailable", "Unavailable") : roleKeys.map(roleKey =>
-                        <span key={roleKey} className={`sq-lozenge ${(roles ?? []).find(x => x.role_key === roleKey)?.is_admin ? "sq-lozenge--warning" : "sq-lozenge--info"}`} style={{ marginInlineEnd: 6 }}>{roleKey}</span>)}</td>
+                        <span key={roleKey} className={`badge ${(roles ?? []).find(x => x.role_key === roleKey)?.is_admin ? "badge-warning" : "badge-info"}`} style={{ marginInlineEnd: 6 }}>{roleKey}</span>)}</td>
                     </AdminRecordTableRow>
                   );
                 })}
@@ -309,14 +309,14 @@ export default async function Access({
       )}
 
       {view === "users" && canManage && user && userAccessSourcesUnavailable && (
-        <div className="sq-banner sq-banner--warning" role="alert"><div>
+        <div className="alert alert-warning" role="alert"><div>
           <strong>{t("admin.access.manage.error.title", "Access details are partially unavailable.")}</strong>{" "}
           {t("admin.access.manage.error.body", "The user roster remains visible, but access changes are unavailable because one or more governed sources could not be read.")}
         </div></div>
       )}
 
       {view === "roles" && rolesError && (
-        <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("admin.access.roles.catalogue.error", "Couldn’t load the authorized role catalogue. No controls are available.")}</strong></div></div>
+        <div className="alert alert-critical" role="alert"><div><strong>{t("admin.access.roles.catalogue.error", "Couldn’t load the authorized role catalogue. No controls are available.")}</strong></div></div>
       )}
       {view === "roles" && !rolesError && (
         <section className={styles.roleCatalogue} aria-labelledby="role-catalogue-title">
@@ -350,7 +350,7 @@ export default async function Access({
               >
                 <strong>{role.title || role.role_key}</strong>
                 <bdi className="t-caption" dir="ltr">{role.role_key}</bdi>
-                {role.is_admin && <span className="sq-lozenge sq-lozenge--warning">{t("admin.access.roles.admin", "Administrator role")}</span>}
+                {role.is_admin && <span className="badge badge-warning">{t("admin.access.roles.admin", "Administrator role")}</span>}
               </AdminRecordArticle>
             ))}
           </div>
@@ -380,7 +380,7 @@ export default async function Access({
         />
       )}
       {view === "roles" && canManageRoleCaps && user && roleCapabilitySourcesUnavailable && (
-        <div className="sq-banner sq-banner--warning" role="alert"><div>
+        <div className="alert alert-warning" role="alert"><div>
           <strong>{t("admin.access.rolecaps.error.title", "Role capability details are unavailable.")}</strong>{" "}
           {t("admin.access.rolecaps.error.body", "The role catalogue remains visible, but capability changes are unavailable because a governed source could not be read.")}
         </div></div>

@@ -1,4 +1,4 @@
-import Shell from "@/components/Shell";
+import Shell from "@/app/(app)/admin/_components/AdminShell";
 import { getUserRoles } from "@/lib/persona";
 import EmptyState from "@/components/EmptyState";
 import { IconBlocked, IconEye, IconFolder } from "@/app/icons";
@@ -45,7 +45,7 @@ export default async function EnforcementRecommendations() {
   if (roleError) {
     return (
       <Shell current="/admin/enforcement-recommendations" title={tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}>
-        <h1 className="sq-sr-only">{tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}</h1>
+        <h1 className="sr-only">{tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}</h1>
         <EmptyState
           icon={<IconBlocked size={28} />}
           title={tr("admin.permissionsUnavailable.title", "Permissions unavailable", "الصلاحيات غير متاحة")}
@@ -58,7 +58,7 @@ export default async function EnforcementRecommendations() {
   if (!isReader) {
     return (
       <Shell current="/admin/enforcement-recommendations" title={tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}>
-        <h1 className="sq-sr-only">{tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}</h1>
+        <h1 className="sr-only">{tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}</h1>
         <EmptyState icon={<IconBlocked size={28} />} title={tr("admin.enf.rec.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
           body={tr("admin.enf.rec.unauthorized.body", "This queue is available to Inspector, Planner, Ops, Compliance Admin, Auditor, Reviewer and Leadership roles.", "هذه القائمة متاحة لأدوار المفتش والمخطط والعمليات ومسؤول الامتثال والمدقق والمراجع والقيادة.")} />
       </Shell>
@@ -84,7 +84,7 @@ export default async function EnforcementRecommendations() {
       };
 
   const readOnlyBanner = !isDecider ? (
-    <div className="sq-banner" role="note">
+    <div className="alert" role="note">
       <strong><IconEye size={16} /> {tr("admin.enf.rec.readonly.title", "Read-only for your role", "للعرض فقط بحسب دورك")}</strong>{" "}
       {tr("admin.enf.rec.readonly.body", "You can view the recommendation queue; deciding requires an Operations or Compliance Admin role, enforced by row-level security.", "يمكنك عرض قائمة التوصيات؛ يتطلب اتخاذ القرار دور العمليات أو مسؤول الامتثال، ويُفرض ذلك عبر أمان مستوى الصف.")}
     </div>
@@ -99,24 +99,24 @@ export default async function EnforcementRecommendations() {
   return (
     <Shell current="/admin/enforcement-recommendations" title={tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}
       context={<span className="badge badge-info">DEC-F</span>}>
-      <h1 className="sq-sr-only">{tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}</h1>
+      <h1 className="sr-only">{tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}</h1>
       <div className={styles.pageRoot}>
-      <div className="sq-banner sq-banner--warning" role="note"><div><strong>{tr("admin.enf.rec.configTitle", "Enforcement policy: Not configured.", "سياسة الإنفاذ: غير مهيأة.")}</strong>{" "}{tr("admin.enf.rec.configBody", "The sponsor must supply the approved enforcement measure catalogue and authoritative legal-basis wording for each measure, including the published instrument and version. No amount, escalation ladder, citation or Arabic legal wording is asserted until supplied.", "يجب على الراعي تزويد كتالوج تدابير الإنفاذ المعتمد والصياغة الموثوقة للأساس القانوني لكل تدبير، بما في ذلك الأداة المنشورة وإصدارها. لا تُعرض مبالغ أو سلالم تصعيد أو استشهادات أو صياغة قانونية عربية حتى يتم توفيرها.")}</div></div>
-      <div className="sq-banner" role="note"><div><strong>{tr("admin.enf.rec.scopeTitle", "Decision scope", "نطاق القرار")}</strong>{" "}
+      <div className="alert alert-warning" role="note"><div><strong>{tr("admin.enf.rec.configTitle", "Enforcement policy: Not configured.", "سياسة الإنفاذ: غير مهيأة.")}</strong>{" "}{tr("admin.enf.rec.configBody", "The sponsor must supply the approved enforcement measure catalogue and authoritative legal-basis wording for each measure, including the published instrument and version. No amount, escalation ladder, citation or Arabic legal wording is asserted until supplied.", "يجب على الراعي تزويد كتالوج تدابير الإنفاذ المعتمد والصياغة الموثوقة للأساس القانوني لكل تدبير، بما في ذلك الأداة المنشورة وإصدارها. لا تُعرض مبالغ أو سلالم تصعيد أو استشهادات أو صياغة قانونية عربية حتى يتم توفيرها.")}</div></div>
+      <div className="alert" role="note"><div><strong>{tr("admin.enf.rec.scopeTitle", "Decision scope", "نطاق القرار")}</strong>{" "}
         {tr("admin.enf.rec.scopeBody", "Decisions are temporarily read-only until the database exposes an atomic guarded decision transition. A future approval will record the recommendation decision only; it will not apply a penalty, close an establishment, issue a legal notice, or bypass governed enforcement configuration.", "القرارات للقراءة فقط مؤقتًا حتى توفر قاعدة البيانات انتقال قرار ذريًا ومحميًا. ستسجل الموافقة المستقبلية القرار بشأن التوصية فقط؛ ولن تطبق عقوبة أو تغلق منشأة أو تصدر إشعارًا قانونيًا أو تتجاوز إعدادات الإنفاذ المحكومة.")}</div></div>
       {readOnlyBanner}
-      {pendingError && <div className="sq-banner sq-banner--warning" role="alert"><div>{tr("admin.enf.rec.loadError", "The recommendation queue is unavailable in this environment. No count is claimed.", "قائمة التوصيات غير متاحة في هذه البيئة. لا يُدَّعى أي عدد.")}</div></div>}
+      {pendingError && <div className="alert alert-warning" role="alert"><div>{tr("admin.enf.rec.loadError", "The recommendation queue is unavailable in this environment. No count is claimed.", "قائمة التوصيات غير متاحة في هذه البيئة. لا يُدَّعى أي عدد.")}</div></div>}
 
       <section className="panel stack" style={{ padding: "var(--space-6)" }}>
         <h2>{tr("admin.enf.rec.pending", "Pending recommendations", "التوصيات المعلقة")}</h2>
         {!rows.length && !pendingError ? (
-          <div className="sq-state sq-state--inline" role="status">
-            <span className="sq-state__glyph" aria-hidden="true"><IconFolder size={28} /></span>
+          <div className="saqeel-state sq-state--inline" role="status">
+            <span className="saqeel-state__glyph" aria-hidden="true"><IconFolder size={28} /></span>
             <h3>{tr("admin.enf.rec.empty", "No pending recommendations", "لا توجد توصيات معلقة")}</h3>
           </div>
         ) : rows.map(row => (
-          <div key={row.id} className="sq-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-            <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
+          <div key={row.id} className="panel stack" style={{ padding: "var(--space-6)" }}>
+            <div className="row" style={{ justifyContent: "space-between" }}>
               <div>
                 <strong>{row.factories?.name ?? row.factory_id}</strong>
                 <div className="t-caption">{row.factories?.city ?? "—"}{row.factories?.region ? `, ${row.factories.region}` : ""} · {row.factories?.factory_code ?? tr("admin.enf.rec.unregistered", "unregistered/temporary", "غير مسجّلة/مؤقتة")}</div>
@@ -155,16 +155,16 @@ export default async function EnforcementRecommendations() {
         <section className="panel stack" style={{ padding: "var(--space-6)", marginBlockStart: "var(--space-4)" }}>
           <h2>{tr("admin.enf.rec.recent", "Recently decided", "تم البت فيها مؤخرًا")}</h2>
           {decidedError ? (
-            <div className="sq-banner sq-banner--warning" role="alert"><div>
+            <div className="alert alert-warning" role="alert"><div>
               {tr("admin.enf.rec.decidedLoadError", "Recent decisions are unavailable. No history count is claimed.", "القرارات الأخيرة غير متاحة. لا يُدّعى أي عدد للسجل.")}
             </div></div>
           ) : !(decided ?? []).length ? <p className="t-caption">{tr("admin.enf.rec.noneDecided", "No decisions recorded yet.", "لم تُسجَّل أي قرارات بعد.")}</p> : (
-            <div className="sq-tablewrap" tabIndex={0} aria-label={tr("admin.enf.rec.recent", "Recently decided", "تم البت فيها مؤخرًا")}><table className="sq-table"><tbody>
+            <div className="table-wrap" tabIndex={0} aria-label={tr("admin.enf.rec.recent", "Recently decided", "تم البت فيها مؤخرًا")}><table className="table"><tbody>
               {(decided ?? []).map(d => (
                 <tr key={d.id}>
                   <td>{(d.factories as unknown as { name: string } | null)?.name ?? "—"}</td>
                   <td>{actionLabel(d.recommended_action)}</td>
-                  <td><span className={`sq-lozenge ${d.status === "approved" ? "sq-lozenge--success" : "sq-lozenge--critical"}`}>{d.status === "approved"
+                  <td><span className={`badge ${d.status === "approved" ? "badge-compliant" : "badge-critical"}`}>{d.status === "approved"
                     ? tr("admin.enf.rec.status.approved", "Approved", "معتمد")
                     : tr("admin.enf.rec.status.rejected", "Rejected", "مرفوض")}</span></td>
                   <td className="t-caption numeric">{d.decided_at ? new Date(d.decided_at).toLocaleString(locale) : "—"}</td>

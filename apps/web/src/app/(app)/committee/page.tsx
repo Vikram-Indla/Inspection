@@ -14,7 +14,7 @@ export default async function CommitteePage() {
   const { t } = await useT();
   if (resolveFeatureFlag(process.env.FEATURE_DECISION_DOSSIER, MODES, "off") !== "on") {
     return (
-      <Shell current="/committee" title={t("cmte.title", "Committee & signatures")} context={<span className="badge badge-warning">CD-049 · REQ-0128</span>}>
+      <Shell current="/committee" title={t("cmte.title", "Committee & signatures")} context={<span className="badge badge-warning">REQ-0128</span>}>
         <NotYetBoundary title={t("cmte.title", "Committee & signatures")} consequence={t("cmte.off", "The committee decision dossier is not enabled here. PKI/EBDA verification is held.")}
           seam="FEATURE_DECISION_DOSSIER=off + PKI/EBDA held" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
       </Shell>
@@ -28,7 +28,7 @@ export default async function CommitteePage() {
   const error = e1 || e2;
   if (error) console.error("[committee] load", error);
   return (
-    <Shell current="/committee" title={t("cmte.title", "Committee & signatures")} context={<span className="badge badge-info">CD-049 · REQ-0128..0136</span>}>
+    <Shell current="/committee" title={t("cmte.title", "Committee & signatures")} context={<span className="badge badge-info">REQ-0128..0136</span>}>
       <div className="sq-banner"><div><strong>{t("cmte.banner.title", "Signature & verification.")}</strong> {t("cmte.banner.body", "Signature and refusal are distinct facts; queued is not delivered. Verification is never “verified” without a provider — PKI/EBDA is held. Acknowledgement is not a signature.")}</div></div>
       <RecordSignature strings={{
         record: t("cmte.record", "Record signature act"), recording: t("cmte.recording", "Recording…"),

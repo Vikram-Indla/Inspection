@@ -1,4 +1,4 @@
-import Shell from "@/components/Shell";
+import Shell from "@/app/(app)/admin/_components/AdminShell";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import EmptyState from "@/components/EmptyState";
@@ -196,7 +196,7 @@ export default async function Items({
       current="/admin/items"
       title={t("admin.items.r2.title", "Inspection Item Catalogue")}
       context={
-        <span className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
+        <span className="row" style={{ gap: "var(--space-3)" }}>
           <span className="badge badge-info">SCR-ADM-020 · ENG-01</span>
           <span role="status" className="t-caption">
             {fill(t("admin.items.r2.readAt", "catalogue read {time} — a source fact, not a freshness verdict"), { time: readAt })}
@@ -211,7 +211,7 @@ export default async function Items({
     >
       {/* S02 total-read failure (degraded/error) — never a zero/complete verdict. */}
       {error && (
-        <div className="sq-banner sq-banner--critical" role="alert">
+        <div className="alert alert-critical" role="alert">
           <div>
             <strong>{t("admin.items.r2.error.title", "Couldn’t load the item catalogue.")}</strong>{" "}
             {t("admin.items.r2.error.body", NEUTRAL_LOAD_ERROR)}{" "}
@@ -227,7 +227,7 @@ export default async function Items({
         </div>
       )}
 
-      {roleError ? <div className="sq-banner sq-banner--warning" role="alert"><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div> : !isWriter && <div className="sq-banner" role="note"><strong><span aria-hidden="true">👁 </span>{t("admin.items.r2.readonly.title", "Read-only catalogue")}</strong>{" "}{t("admin.items.r2.readonly.body", "Your role can inspect item semantics, usage and runtime previews. Creating or changing active state requires Compliance or Form Admin and is enforced by the server guard and RLS.")}</div>}
+      {roleError ? <div className="alert alert-warning" role="alert"><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div> : !isWriter && <div className="alert" role="note"><strong><span aria-hidden="true">👁 </span>{t("admin.items.r2.readonly.title", "Read-only catalogue")}</strong>{" "}{t("admin.items.r2.readonly.body", "Your role can inspect item semantics, usage and runtime previews. Creating or changing active state requires Compliance or Form Admin and is enforced by the server guard and RLS.")}</div>}
 
       <nav className="cmp-library-tabs" aria-label="Compliance Library">
         <a className="btn btn-secondary sq-link btn-touch" href="/admin/regulations">Regulations</a>
@@ -235,7 +235,7 @@ export default async function Items({
         {isWriter ? <a className="btn btn-secondary sq-link btn-touch" href="/admin/compliance-requests/new">Create governed request</a> : null}
       </nav>
 
-      {isWriter ? <div className="sq-banner sq-banner--warning" role="note"><strong>Legacy compatibility authoring.</strong>{" "}Direct item controls remain temporarily available for continuity. New or modified governed configuration should begin in a Compliance Configuration Request; this catalogue remains the published source of truth.</div> : null}
+      {isWriter ? <div className="alert alert-warning" role="note"><strong>Legacy compatibility authoring.</strong>{" "}Direct item controls remain temporarily available for continuity. New or modified governed configuration should begin in a Compliance Configuration Request; this catalogue remains the published source of truth.</div> : null}
 
       {/* Permission + governance truth (S05/S06 + audit fact). Visibility is not
           authorization; the write path is RLS-guarded and every row change is audited. */}
@@ -270,14 +270,14 @@ export default async function Items({
       {!error && rows.length > 0 && (
         <section className="stack" aria-labelledby="cd007-catalogue-h">
           <h3 id="cd007-catalogue-h" style={{ margin: 0 }}>{t("admin.items.r2.catalogue.heading", "Catalogue")}</h3>
-          <div className="sq-tablewrap"><table className="sq-table">
+          <div className="table-wrap"><table className="table">
             <caption className="sr-only">{t("admin.items.r2.catalogue.heading", "Catalogue")}</caption>
             <thead><tr>
               <th scope="col">{t("admin.items.r2.col.code", "Code")}</th>
               <th scope="col">{t("admin.items.r2.col.title", "Title")}</th>
               <th scope="col">{t("admin.items.r2.col.clause", "Clause")}</th>
               <th scope="col">{t("admin.items.r2.col.semantics", "Runtime semantics")}</th>
-              <th scope="col" className="sq-td-num">{t("admin.items.r2.col.weight", "Weight")}</th>
+              <th scope="col" className="cell-num">{t("admin.items.r2.col.weight", "Weight")}</th>
               <th scope="col">{t("admin.items.r2.col.usage", "Published use")}</th>
               <th scope="col">{t("admin.items.r2.col.status", "Status")}</th>
               <th scope="col">{t("admin.items.r2.col.actions", "Actions")}</th>
@@ -305,7 +305,7 @@ export default async function Items({
                       {rm.conditional?.visible_when && ` · ${rm.conditional.visible_when}`}
                       {rm.scoring_enabled === false && ` · ${t("admin.items.r2.sem.scoringOff", "scoring off")}`}
                     </td>
-                    <td className="sq-td-num numeric">{i.score_weight ?? "—"}</td>
+                    <td className="cell-num numeric">{i.score_weight ?? "—"}</td>
                     <td>
                       {(() => {
                         const usage = usageById.get(i.id);
@@ -315,13 +315,13 @@ export default async function Items({
                       })()}
                     </td>
                     <td>
-                      <span className={`sq-lozenge ${i.active ? "sq-lozenge--success" : "sq-lozenge--critical"}`}>
+                      <span className={`badge ${i.active ? "badge-compliant" : "badge-critical"}`}>
                         <span aria-hidden="true">{i.active ? "●" : "✕"} </span>
                         {i.active ? t("admin.items.r2.status.active", "active") : t("admin.items.r2.status.deactivated", "deactivated")}
                       </span>
                     </td>
                     <td>
-                      <div className="row" style={{ gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
+                      <div className="row">
                         <a className="btn btn-secondary sq-link btn-touch" href={`/admin/items/${encodeURIComponent(i.id)}/runtime-preview`}>Inspector Runtime Preview</a>
                         {isWriter ? <a className="btn btn-secondary sq-link btn-touch" href={`/admin/compliance-requests/new?request_type=modify&title=${encodeURIComponent(`Modify inspection item ${i.code}`)}&description=${encodeURIComponent(`Governed change request for inspection item ${i.code} — ${i.title}.`)}`}>Request change</a> : null}
                         {isWriter ? <ToggleActive itemId={i.id} active={i.active} strings={strings} /> : <span className="t-caption">{t("admin.items.r2.readonly.action", "Read only")}</span>}
@@ -342,8 +342,8 @@ export default async function Items({
           <h3 id="cd007-audit-h" style={{ margin: 0 }}>{t("admin.items.r2.audit.heading", "Scoped item audit")}</h3>
           <p className="t-caption" style={{ margin: 0 }}>{t("admin.items.r2.audit.body", "Open Audit on one item to inspect its object-scoped configuration history; broad audit-table access is not granted.")}</p>
           {!auditItemId ? <p className="t-caption" role="status">{t("admin.items.r2.audit.select", "No item selected.")}</p>
-            : !auditItem ? <div className="sq-banner sq-banner--warning" role="alert">{t("admin.items.r2.audit.notFound", "The selected item is no longer in the readable catalogue.")}</div>
-            : auditResult.error ? <div className="sq-banner sq-banner--warning" role="alert">{t("admin.items.r2.audit.unavailable", "Audit unavailable — reload to retry; history is not reported as empty.")}</div>
+            : !auditItem ? <div className="alert alert-warning" role="alert">{t("admin.items.r2.audit.notFound", "The selected item is no longer in the readable catalogue.")}</div>
+            : auditResult.error ? <div className="alert alert-warning" role="alert">{t("admin.items.r2.audit.unavailable", "Audit unavailable — reload to retry; history is not reported as empty.")}</div>
             : <div className="stack" style={{ gap: "var(--space-2)" }}><h4 style={{ margin: 0 }}><bdi dir="ltr" className="numeric">{auditItem.code}</bdi> — {auditItem.title}</h4>
               {auditEvents.length === 0 ? <p className="t-caption" role="status">{t("admin.items.r2.audit.empty", "No scoped audit events returned — verified zero.")}</p>
                 : <ol>{auditEvents.map(e => <li key={e.id}><strong>{e.action}</strong> · <bdi dir="ltr" className="numeric">{e.occurred_at}</bdi>{e.actor ? <> · <bdi dir="ltr">{e.actor}</bdi></> : null}</li>)}</ol>}

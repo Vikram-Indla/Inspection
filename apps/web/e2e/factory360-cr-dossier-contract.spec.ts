@@ -37,7 +37,7 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
     expect(src).toContain('from("plant_addresses")');
     expect(page).toContain('aria-current={row.id === selected?.id ? "page" : undefined}');
     expect(list).toContain('dossier_href: commercialRegistrationId ? `/factories/cr/${commercialRegistrationId}` : `/factories/${row.id}`');
-    expect(list).toContain("Array.isArray(mappedIndustrialLicense)");
+    expect(list).toContain("industrial_licenses?.[0]?.commercial_registration_id");
     expect(list).toContain('`/factories/${row.id}`');
     expect(legacy).toContain('from("industrial_licenses")');
     expect(legacy).toContain('redirect(`/factories/cr/${normalizedLicense.commercial_registration_id}?license=${normalizedLicense.id}`)');
@@ -51,7 +51,8 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
       expect(src).toContain(`from("${table}")`);
     }
     expect(page).not.toMatch(/\.insert\(|\.update\(|\.upsert\(|\.delete\(/);
-    expect(page).not.toMatch(/<form|contentEditable|AddDocumentForm|AddProductForm/);
+    expect(page).not.toMatch(/contentEditable|AddDocumentForm|AddProductForm|<form[^>]+method="post"|<form[^>]+action=\{/);
+    expect(page).toContain('<form method="get" className="sq-row">');
     expect(page).toContain("This source section is degraded; other sections remain available.");
   });
 
@@ -94,16 +95,36 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
     const list = read("src/app/(app)/factories/FactoryList.tsx");
     const listCss = read("src/app/(app)/factories/factory-list.module.css");
     expect(css).toContain("grid-template-columns: 224px minmax(0, 1fr) 296px");
-    expect(css).toContain("@media (max-width: 1179px)");
-    expect(css).toContain("@media (max-width: 799px)");
+    expect(css).toContain("@media (max-width: 1439px)");
+    expect(css).toContain("@media (max-width: 959px)");
+    expect(css).toContain(".panel { min-inline-size: 0;");
     expect(css).toContain("border-inline-start-width");
     expect(list).toContain("styles.cards");
     expect(listCss).toContain("@media (max-width: 799px)");
     expect(listCss).toContain("@media (max-width: 389px)");
     expect(page).toContain("<bdi>");
     expect(page).toContain('lang="ar" dir="rtl"');
+    expect(page).toContain('lang="en" dir="ltr"');
+    expect(page).toContain('className="sq-field"');
+    expect(page).toContain('className="sq-select"');
     expect(page).toContain('data-factory360-layout="cr-license-dossier"');
     expect(page).not.toContain("<main");
+  });
+
+  test("keeps the saved-risk advisory responsive and exposes truthful provider states", () => {
+    const page = read(PAGE);
+    const panel = read("src/components/ContextualAiPanel.tsx");
+    const action = read("src/lib/ai/contextual-actions.ts");
+    expect(page).toContain("geminiProviderState()");
+    expect(page).toContain("providerState={aiProviderState}");
+    expect(panel).toContain('className="panel-header row"');
+    expect(panel).toContain('className="panel-body stack"');
+    expect(panel).toContain("btn btn-primary btn-touch btn-block");
+    expect(panel).toContain('className="alert alert-warning"');
+    expect(panel).toContain('className="alert alert-critical"');
+    expect(panel).toContain('aria-live="polite"');
+    expect(panel).not.toContain("style={{");
+    expect(action).toContain("generateContextual(surface, serverContext, locale)");
   });
 
   test("provides Modern Standard Arabic fallback copy for every registry and CR dossier string", () => {
@@ -129,10 +150,9 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
     const legacy = read("src/app/(app)/factories/[id]/page.tsx");
     for (const field of ["license_type", "stage", "status", "risk_band"]) expect(page + loader).toContain(field);
     expect(page).toContain('t("f360.timeline.heading", "Business-event timeline")');
-    expect(page).toContain("Operational visits are intentionally excluded.");
-    expect(page).toContain("reports.flatMap");
-    expect(page).toContain("government.flatMap");
-    expect(page).toContain("penalties.flatMap");
+    expect(page).toContain('sb.rpc("factory_timeline"');
+    expect(page).toContain('sb.from("visits")');
+    expect(page).toContain("filteredVisits");
     expect(page).not.toContain("daysToExpiry");
     expect(page).not.toContain("Date.now()");
     expect(legacy).not.toContain("expiringSoon");

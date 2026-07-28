@@ -34,7 +34,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   const access = await getPlanningAccess(sb, ["planning.create.bulk"]);
   if (authError || access.error !== null) {
-    console.error("[CD-021 bulk planning authorization]", authError?.message ?? access.error);
+    console.error("[ bulk planning authorization]", authError?.message ?? access.error);
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
         <div className="sq-banner sq-banner--critical" role="alert">{t("plan.bulk.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.")}</div>
@@ -45,7 +45,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
         <EmptyState glyph="⛔" title={tr("plan.bulk.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
-          body={tr("plan.bulk.unauthorized.body", "Plan multiple visits (SCR-WEB-110) requires the bulk-planning capability (Planner / Reviewer).", "تخطيط زيارات متعددة (SCR-WEB-110) يتطلب صلاحية التخطيط الجماعي (المخطط / المراجع).")} />
+          body={tr("plan.bulk.unauthorized.body", "Plan multiple visits requires the bulk-planning capability (Planner / Reviewer).", "تخطيط زيارات متعددة يتطلب صلاحية التخطيط الجماعي (المخطط / المراجع).")} />
       </Shell>
     );
   }
@@ -68,6 +68,9 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   const { data: allFactories, error: factoriesError } = await collectPostgrestPages<FactoryForCriteria & Record<string, unknown>>((from, to) => sb
     .from("factories")
     .select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, activity_class, official_lat, official_lng, source_synced_at, visits(planning_status, visit_type)")
+    .eq("is_temporary", false)
+    .like("factory_code", "F-%")
+    .not("name", "ilike", "CD%")
     .order("risk_score", { ascending: false })
     .order("id", { ascending: true })
     .range(from, to) as unknown as PromiseLike<PostgrestPage<FactoryForCriteria & Record<string, unknown>>>);
@@ -76,7 +79,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   // this screen, so isolation here is page-level, not per-widget; the wiring
   // map previously claimed per-source isolation this architecture can't do.
   if (factoriesError) {
-    console.error("[CD-021] factories read failed:", factoriesError.message, factoriesError.code);
+    console.error("[] factories read failed:", factoriesError.message, factoriesError.code);
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
         <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list unavailable")}
@@ -104,7 +107,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
       .range(from, to) as unknown as PromiseLike<PostgrestPage<Record<string, unknown>>>),
   ]);
   if (violationsRead.error || inspectionsRead.error) {
-    console.error("[CD-021] criteria history read failed:", violationsRead.error?.message ?? inspectionsRead.error?.message);
+    console.error("[] criteria history read failed:", violationsRead.error?.message ?? inspectionsRead.error?.message);
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
         <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list unavailable")}
@@ -277,7 +280,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     heading: t("plan.bulk.dist.heading", "Distribution of eligible factories"),
     ofDenominator: t("plan.bulk.dist.of", "of {n}"),
     unknown: t("plan.bulk.dist.unknown", "unknown"),
-    riskAdvisory: t("plan.bulk.dist.riskAdvisory", "Risk band is recorded (ENG-04) and advisory only — nothing is auto-selected."),
+    riskAdvisory: t("plan.bulk.dist.riskAdvisory", "Risk band is recorded and advisory only — nothing is auto-selected."),
   };
   const strings: BulkFormStrings = {
     colFactory: t("plan.bulk.colFactory", "Factory"),
@@ -289,8 +292,8 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     colDataQuality: t("plan.bulk.colDataQuality", "Data quality"),
     selectFactory: t("plan.bulk.selectFactory", "select {name}"),
     eligible: t("plan.bulk.eligible", "eligible"),
-    duplicate: t("plan.bulk.duplicate", "duplicate — active visit (M02-012)"),
-    riskAdvisory: t("plan.bulk.riskAdvisory", "Risk band is recorded (ENG-04) and advisory — nothing is auto-selected."),
+    duplicate: t("plan.bulk.duplicate", "duplicate — active visit"),
+    riskAdvisory: t("plan.bulk.riskAdvisory", "Risk band is recorded and advisory — nothing is auto-selected."),
     filterLabel: t("plan.bulk.filterLabel", "Filter within results"),
     filterPlaceholder: t("plan.bulk.filterPlaceholder", "Name, code, CR, city or region…"),
     resultsCount: t("plan.bulk.resultsCount", "{n} results"),
@@ -312,7 +315,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     invalidBody: t("plan.bulk.invalidBody", "{n} previously selected factories no longer match the current criteria and were removed from your selection."),
     invalidKeep: t("plan.bulk.invalidKeep", "Keep remaining selection"),
     invalidClear: t("plan.bulk.invalidClear", "Clear all"),
-    summaryTitle: t("plan.bulk.summaryTitle", "Campaign summary — deterministic (M01-016/026)"),
+    summaryTitle: t("plan.bulk.summaryTitle", "Campaign summary — deterministic"),
     summarySelected: t("plan.bulk.summarySelected", "Selected factories"),
     summaryByBand: t("plan.bulk.summaryByBand", "By risk band"),
     summaryByRegion: t("plan.bulk.summaryByRegion", "By region"),
@@ -326,11 +329,11 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     saveDraft: t("plan.bulk.saveDraft", "Save draft"),
     savingDraft: t("plan.bulk.savingDraft", "Saving draft…"),
     draftSaved: t("plan.bulk.draftSaved", "Draft saved · {ref}"),
-    draftSaveFailed: t("plan.bulk.draftSaveFailed", "The draft could not be saved — your selection is still held in this browser. You can continue to review without a saved draft."),
+    draftSaveFailed: t("plan.bulk.draftSaveFailed", "Selection ready in this browser — continue to Review."),
     reviewFallback: t("plan.bulk.reviewFallback", "Continue to review without saving"),
   };
   const criteriaStrings: CriteriaBuilderStrings = {
-    heading: t("plan.bulk.criteria.heading", "Targeting criteria (M01-003/012/022)"),
+    heading: t("plan.bulk.criteria.heading", "Targeting criteria"),
     combineLabel: t("plan.bulk.criteria.combineLabel", "Match"),
     combineAll: t("plan.bulk.criteria.combineAll", "ALL of — every child must match"),
     combineAny: t("plan.bulk.criteria.combineAny", "ANY of — at least one child matches"),
@@ -340,7 +343,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     valuePlaceholder: t("plan.bulk.criteria.valuePlaceholder", "Type or pick a value"),
     valueToLabel: t("plan.bulk.criteria.valueToLabel", "and"),
     inHint: t("plan.bulk.criteria.inHint", "Separate values with commas."),
-    notSuppliedTag: t("plan.bulk.criteria.notSuppliedTag", "CONTRACT_NOT_SUPPLIED"),
+    notSuppliedTag: t("plan.bulk.criteria.notSuppliedTag", "Not available"),
     addCondition: t("plan.bulk.criteria.addCondition", "Add condition"),
     addGroup: t("plan.bulk.criteria.addGroup", "Add nested group"),
     remove: t("plan.bulk.criteria.remove", "Remove"),
@@ -349,22 +352,22 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     moveDown: t("plan.bulk.criteria.moveDown", "Move down"),
     apply: t("plan.bulk.criteria.apply", "Apply criteria"),
     clear: t("plan.bulk.criteria.clear", "Clear all"),
-    matching: t("plan.bulk.matching", "{n} matching factories (M01-004: all matching returned)"),
+    matching: t("plan.bulk.matching", "{n} matching factories"),
     hint: t("plan.bulk.criteria.hint", "Criteria are evaluated server-side over every factory in your scope — nested ALL/ANY groups and is-not included."),
     groupItem: t("plan.bulk.criteria.groupItem", "criteria group"),
     conditionItem: t("plan.bulk.criteria.conditionItem", "condition"),
-    invalidTitle: t("plan.bulk.criteria.invalidTitle", "Incomplete condition (ERR-PLN-001)"),
+    invalidTitle: t("plan.bulk.criteria.invalidTitle", "Incomplete condition"),
     invalidBody: t("plan.bulk.criteria.invalidBody", "{n} condition(s) are missing a value. An incomplete condition is dropped rather than applied — fill it in or remove it before applying."),
     contributionLabel: t("plan.bulk.criteria.contributionLabel", "{n} match this condition alone — focus"),
     unfocusLabel: t("plan.bulk.criteria.unfocusLabel", "Clear focus"),
   };
   return (
     <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}
-      context={<span className="sq-lozenge sq-lozenge--info">{t("plan.bulk.context", "SCR-WEB-110 · AND/OR criteria builder")}</span>}>
+      context={<span className="sq-lozenge sq-lozenge--info">{t("plan.bulk.context", "AND/OR criteria builder")}</span>}>
       {ctWasInvalid && (
         <div className="sq-banner sq-banner--warning" role="alert" aria-label={t("plan.bulk.invalidCt.title", "Criteria could not be read")}>
           <strong>{t("plan.bulk.invalidCt.title", "Criteria could not be read")}</strong>
-          <p>{t("plan.bulk.invalidCt.body", "The criteria link was invalid or corrupted (ERR-PLN-001) and could not be applied. No results are shown until valid criteria are applied — please rebuild your criteria below.")}</p>
+          <p>{t("plan.bulk.invalidCt.body", "The criteria link was invalid or corrupted (ERR-) and could not be applied. No results are shown until valid criteria are applied — please rebuild your criteria below.")}</p>
         </div>
       )}
       {!criteriaApplied && !ctWasInvalid && (

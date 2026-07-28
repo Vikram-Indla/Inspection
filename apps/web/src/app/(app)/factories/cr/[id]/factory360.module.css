@@ -22,7 +22,7 @@
   min-inline-size: 0;
 }
 
-.panel { padding: var(--space-5); }
+.panel { min-inline-size: 0; padding: var(--space-5); }
 .panel h2, .panel h3, .panel h4 { margin-block-start: 0; }
 
 .licenseList {
@@ -158,12 +158,12 @@
   background: var(--border-subtle);
 }
 
-@media (max-width: 1179px) {
+@media (max-width: 1439px) {
   .workspace { grid-template-columns: 224px minmax(0, 1fr); }
   .right { grid-column: 1 / -1; position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-@media (max-width: 799px) {
+@media (max-width: 959px) {
   .workspace { grid-template-columns: minmax(0, 1fr); }
   .left, .right { position: static; display: flex; }
   .licenseList { flex-direction: row; overflow-x: auto; padding-block-end: 4px; }

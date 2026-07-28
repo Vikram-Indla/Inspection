@@ -126,7 +126,7 @@ export async function decide(_: DecisionResult, fd: FormData): Promise<DecisionR
   if (invalidSections.length > 0)
     return { error: "Return scope contains a section that is not in the submitted package." };
   if (["return", "reject"].includes(decision) && !reason)
-    return { error: "Decision reason is mandatory for Return/Reject (FLD-REV-003 · ERR-REV-001)" };
+    return { error: "Decision reason is mandatory for Return/Reject ( · ERR-REV-001)" };
   if (decision === "return" && sections.length === 0)
     return { error: "Return requires exact sections identified (STM-REV-003 · ERR-REV-001)" };
   // One database transaction owns immutable decision persistence, inspection
@@ -148,7 +148,7 @@ export async function decide(_: DecisionResult, fd: FormData): Promise<DecisionR
     if (detail.includes("REVIEW-DECIDE-SECTIONS"))
       return { error: "Return requires valid sections from the submitted package." };
     if (detail.includes("REVIEW-DECIDE-REASON"))
-      return { error: "Decision reason is mandatory for Return/Reject (FLD-REV-003 · ERR-REV-001)" };
+      return { error: "Decision reason is mandatory for Return/Reject ( · ERR-REV-001)" };
     if (detail.includes("REVIEW-DECIDE-SUBMISSION"))
       return { error: "Cannot approve — the final submitted version could not be verified (DEF-WF-006)." };
     if (detail.includes("REVIEW-COMPLIANCE-HANDOFF-EXISTS"))

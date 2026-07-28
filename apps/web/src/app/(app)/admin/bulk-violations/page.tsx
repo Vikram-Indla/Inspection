@@ -1,4 +1,4 @@
-import Shell from "@/components/Shell";
+import Shell from "@/app/(app)/admin/_components/AdminShell";
 import EmptyState from "@/components/EmptyState";
 import { IconBlocked } from "@/app/icons";
 import { supabaseServer } from "@/lib/supabase-server";
@@ -33,7 +33,7 @@ export default async function BulkViolations() {
   if (roleError) {
     return (
       <Shell current="/admin/bulk-violations" title={tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}>
-        <h1 className="sq-sr-only">{tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}</h1>
+        <h1 className="sr-only">{tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}</h1>
         <EmptyState
           icon={<IconBlocked size={28} />}
           title={tr("admin.permissionsUnavailable.title", "Permissions unavailable", "الصلاحيات غير متاحة")}
@@ -46,7 +46,7 @@ export default async function BulkViolations() {
   if (!isAuthorized) {
     return (
       <Shell current="/admin/bulk-violations" title={tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}>
-        <h1 className="sq-sr-only">{tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}</h1>
+        <h1 className="sr-only">{tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}</h1>
         <EmptyState icon={<IconBlocked size={28} />} title={tr("admin.bulkvio.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
           body={tr("admin.bulkvio.unauthorized.body", "Bulk violation issuance (DEC-L) is available to Operations and Compliance Admin roles only.", "إصدار المخالفات الجماعي (DEC-L) متاح لدوري العمليات ومسؤول الامتثال فقط.")} />
       </Shell>
@@ -124,14 +124,14 @@ export default async function BulkViolations() {
   return (
     <Shell current="/admin/bulk-violations" title={tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}
       context={<span className="badge badge-info">DEC-L</span>}>
-      <h1 className="sq-sr-only">{tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}</h1>
-      <div className="sq-banner sq-banner--warning">
+      <h1 className="sr-only">{tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}</h1>
+      <div className="alert alert-warning">
         <div><strong>{tr("admin.bulkvio.warnTitle", "Real issuance is blocked by DEC-032.", "الإصدار الفعلي محظور بموجب DEC-032.")}</strong>{" "}
           {tr("admin.bulkvio.warnBody", "You may review the eligible establishments and mapped violations, but this route cannot create an inspection or violation while the submission digest defect remains open.", "يمكنك مراجعة المنشآت المؤهلة والمخالفات المرتبطة، لكن لا يمكن لهذا المسار إنشاء تفتيش أو مخالفة ما دام خلل بصمة الإرسال مفتوحًا.")}</div>
       </div>
-      {factoriesError && <div className="sq-banner sq-banner--warning" role="alert"><div>{tr("admin.bulkvio.factoriesError", "The establishment registry is unavailable in this environment.", "سجل المنشآت غير متاح في هذه البيئة.")}</div></div>}
-      {violationsError && <div className="sq-banner sq-banner--warning" role="alert"><div>{tr("admin.bulkvio.violationsError", "The violation catalogue is unavailable in this environment.", "كتالوج المخالفات غير متاح في هذه البيئة.")}</div></div>}
-      {packagesError && <div className="sq-banner sq-banner--warning" role="alert"><div>{tr("admin.bulkvio.packagesError", "Published package versions are unavailable in this environment.", "إصدارات الحزم المنشورة غير متاحة في هذه البيئة.")}</div></div>}
+      {factoriesError && <div className="alert alert-warning" role="alert"><div>{tr("admin.bulkvio.factoriesError", "The establishment registry is unavailable in this environment.", "سجل المنشآت غير متاح في هذه البيئة.")}</div></div>}
+      {violationsError && <div className="alert alert-warning" role="alert"><div>{tr("admin.bulkvio.violationsError", "The violation catalogue is unavailable in this environment.", "كتالوج المخالفات غير متاح في هذه البيئة.")}</div></div>}
+      {packagesError && <div className="alert alert-warning" role="alert"><div>{tr("admin.bulkvio.packagesError", "Published package versions are unavailable in this environment.", "إصدارات الحزم المنشورة غير متاحة في هذه البيئة.")}</div></div>}
       <BulkViolationForm
         factories={(factories ?? []).map(f => ({ id: f.id, name: f.name, factory_code: f.factory_code, cr_number: f.cr_number, region: f.region, city: f.city }))}
         violations={violations}

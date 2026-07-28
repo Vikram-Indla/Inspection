@@ -16,6 +16,7 @@ const liveShellSource = read("src/app/(app)/operations/live/LiveOps.tsx");
 const liveMapSource = read("src/app/(app)/operations/live/LiveMapInner.tsx");
 const liveLoadingSource = read("src/app/(app)/operations/live/loading.tsx");
 const liveCssSource = read("src/app/(app)/operations/live/live.module.css");
+const runtimeCssSource = read("src/app/saqeel-runtime.css");
 
 test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 composition contract", () => {
   test("renders exactly five governed KPI cards with two explicit decision blocks", () => {
@@ -194,7 +195,12 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
     expect(liveShellSource).toContain('data-testid="live-inspector-details"');
     expect(liveShellSource).toContain("selectedInspector.visitId");
     expect(liveMapSource).toContain("feature.properties?.inspector");
-    expect(liveCssSource).toContain(":global(.mapboxgl-popup-content)");
+    expect(runtimeCssSource).toContain(".mapboxgl-popup-content");
+    expect(runtimeCssSource).toContain("background: var(--surface-primary)");
+    expect(runtimeCssSource).toContain("color: var(--text-primary)");
+    expect(runtimeCssSource).toContain(".mapboxgl-popup-close-button");
+    expect(runtimeCssSource).toContain(".mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip");
+    expect(liveCssSource).not.toContain(":global(.mapboxgl-popup-content)");
     expect(liveShellSource).toContain("onProviderFailure={markProviderFailed}");
     expect(liveShellSource).toContain("noScopeRows || hasNoPositions");
     expect(liveShellSource).toContain("noScopeRows ? s.noScope : s.noPositions");

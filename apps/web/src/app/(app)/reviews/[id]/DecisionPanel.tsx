@@ -46,7 +46,7 @@ export default function DecisionPanel({ reviewId, sections, summary, strings }: 
     if (state.error) errorRef.current?.focus();
   }, [state.error]);
   return (
-    <form action={formAction} className="panel" style={{ padding: "var(--space-6)", position: "sticky", insetBlockStart: 16, display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+    <form action={formAction} className="panel cd-panelpad sq-stack">
       <h2>{strings.heading}</h2>
       <input type="hidden" name="review_id" value={reviewId} />
       <input type="hidden" name="correlation_id" value={correlationId} />
@@ -57,28 +57,28 @@ export default function DecisionPanel({ reviewId, sections, summary, strings }: 
         ))}
       </div>
       {decision === "return" && !confirming && (
-        <div className="panel" style={{ padding: "var(--space-4)" }}>
-          <p className="sq-overline" style={{ marginBlockEnd: 8 }}>{strings.returnScopeTitle}</p>
+        <div className="panel panel-body stack">
+          <p className="sq-overline">{strings.returnScopeTitle}</p>
           {sections.map(s => (
-            <label key={s.key} className="sq-choice" style={{ display: "flex" }}><input type="checkbox" name="returned_section" value={s.key}
+            <label key={s.key} className="sq-choice"><input type="checkbox" name="returned_section" value={s.key}
               checked={returnedSections.includes(s.key)}
               onChange={event => setReturnedSections(current => event.target.checked ? [...current, s.key] : current.filter(key => key !== s.key))} /> {s.title}</label>
           ))}
           <p className="t-caption">{strings.returnScopeHint}</p>
         </div>
       )}
-      {!confirming && <div className="sq-field" style={{ maxInlineSize: "none" }}>
+      {!confirming && <div className="sq-field">
         <label className="sq-field__label" htmlFor={reasonId}>{strings.reason} {decision !== "approve" && <span className="sq-req">*</span>}</label>
         <textarea id={reasonId} className="sq-textarea" name="reason" value={reason} onChange={event => setReason(event.target.value)}
           placeholder={strings.reasonPlaceholder} aria-required={decision !== "approve"} />
       </div>}
-      {!confirming && <div className="sq-field" style={{ maxInlineSize: "none" }}>
+      {!confirming && <div className="sq-field">
         <label className="sq-field__label" htmlFor={`${reasonId}-comment`}>{strings.comment}</label>
         <textarea id={`${reasonId}-comment`} className="sq-textarea" name="comment" value={comment}
           onChange={event => setComment(event.target.value)} placeholder={strings.commentPlaceholder} />
       </div>}
       {confirming && (
-        <section className="panel" style={{ padding: "var(--space-4)" }} aria-labelledby={`${reasonId}-confirmation`}>
+        <section className="panel panel-body stack" aria-labelledby={`${reasonId}-confirmation`}>
           <h3 id={`${reasonId}-confirmation`}>{strings.reviewConfirmation}</h3>
           <dl className="sq-trace__nodes">
             <div className="sq-trace__node"><dt>{strings.version}</dt><dd>v{summary.version}</dd></div>

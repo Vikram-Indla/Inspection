@@ -129,7 +129,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
           </div></div>
         ) : !latest && (
           <div className="sq-banner sq-banner--warning no-print"><div>
-            <strong>{t("report.notSubmitted.title", "No immutable submission yet.")}</strong> {t("report.notSubmitted.body", "The official report is generated from the submitted version snapshot; identity and configuration below are live records (M04-215).")}
+            <strong>{t("report.notSubmitted.title", "No immutable submission yet.")}</strong> {t("report.notSubmitted.body", "The official report is generated from the submitted version snapshot; identity and configuration below are live records.")}
           </div></div>
         )}
 
@@ -329,7 +329,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
 
         <footer className="rp-foot">
           <span>{t("report.foot.generated", "Generated from live records")} · <span className="sq-numeric">{dt(new Date().toISOString())}</span></span>
-          <span>M04-215 · M06-018 · DEC-009 · ENG-12</span>
+          <span>{t("report.foot.immutable", "Immutable official inspection report")}</span>
         </footer>
       </div>
     </div>

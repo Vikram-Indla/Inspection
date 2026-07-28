@@ -64,7 +64,7 @@ export async function requestVisitReschedule(
   visitId: string, proposedStartIso: string, proposedEndIso: string,
 ): Promise<FieldActionResult> {
   if (!visitId || !proposedStartIso || !proposedEndIso) {
-    return { error: "Missing visit or proposed window (M03-005)." };
+    return { error: "Missing visit or proposed window." };
   }
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);

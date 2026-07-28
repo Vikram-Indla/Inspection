@@ -1,4 +1,4 @@
-import Shell from "@/components/Shell";
+import Shell from "@/app/(app)/admin/_components/AdminShell";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
@@ -59,11 +59,11 @@ export default async function Templates() {
       current="/admin/templates"
       title={t("admin.templates.title", "Template registry")}
       context={
-        <span className="badge badge-info">M09-006/008/009 · ENG-04</span>
+        <span className="badge badge-info">{t("admin.templates.context", "Template configuration")}</span>
       }
     >
       {error && (
-        <div className="sq-banner sq-banner--critical" role="alert">
+        <div className="alert alert-critical" role="alert">
           <div>
             <strong>{t("admin.templates.error.title", "Couldn’t load the template registry.")}</strong>{" "}
             {t("admin.templates.error.body", NEUTRAL_LOAD_ERROR)}{" "}
@@ -82,15 +82,15 @@ export default async function Templates() {
       )}
 
       {!error && !canWrite && (
-        <div className="sq-banner" role="note">
+        <div className="alert" role="note">
           <strong>{t("admin.templates.readonly.title", "Read-only template access")}</strong>{" "}
           {t("admin.templates.readonly.body", "Creating or changing templates requires compliance_admin or form_admin." )}
         </div>
       )}
 
       {!error && (templates ?? []).length === 0 && (
-        <div className="panel sq-state">
-          <span className="sq-state__glyph" aria-hidden="true">▦</span>
+        <div className="panel saqeel-state">
+          <span className="saqeel-state__glyph" aria-hidden="true">▦</span>
           <h3>{t("admin.templates.empty.title", "No templates configured")}</h3>
           <p className="t-caption">
             {t("admin.templates.empty.body", "Templates are versioned bilingual schema objects referenced by packages and action forms.")}

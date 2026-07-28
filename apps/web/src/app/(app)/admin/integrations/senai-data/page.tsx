@@ -13,7 +13,7 @@
 //  * No policy value, threshold, SLA, record count or freshness figure is
 //    invented. Anything without a governed source renders "Not configured".
 import Link from "next/link";
-import Shell from "@/components/Shell";
+import Shell from "@/app/(app)/admin/_components/AdminShell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import {
@@ -123,7 +123,7 @@ export default async function SenaiDataPage({ searchParams }: { searchParams: Pr
       current="/admin/integrations"
       title={t("admin.senai.title", "SENAI data management")}
       context={
-        <span className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
+        <span className="row" style={{ gap: "var(--space-3)" }}>
           <span className="t-caption">
             {t("admin.senai.subtitle", "Upstream source registry, endpoint contract, mapping, sync & reconciliation — read-only source of truth")}
           </span>
@@ -153,8 +153,8 @@ export default async function SenaiDataPage({ searchParams }: { searchParams: Pr
             {t("admin.senai.fnd007", "SENAI is the source of truth for factory identity, licences and industrial data. SAQEEL reads and reconciles — it never writes back.")}{" "}
             <strong>
               {writeBackEndpoints === 0
-                ? t("admin.senai.fnd007.derived", "FND-007 holds: the governed endpoint contract contains no establishment master-data write-back.")
-                : t("admin.senai.fnd007.breach", "FND-007 breach: the governed endpoint contract now contains a master-data write endpoint. Stop and escalate.")}
+                ? t("admin.senai.fnd007.derived", "holds: the governed endpoint contract contains no establishment master-data write-back.")
+                : t("admin.senai.fnd007.breach", "breach: the governed endpoint contract now contains a master-data write endpoint. Stop and escalate.")}
             </strong>{" "}
             {t("admin.senai.fnd007.snapshot", "Observed-on-inspection snapshots are captured separately and never overwrite the source.")}
           </span>
@@ -402,7 +402,7 @@ export default async function SenaiDataPage({ searchParams }: { searchParams: Pr
             <p className="t-caption" style={{ margin: 0 }}>
               {t("admin.senai.recon.footer", "Resolution is a governed reconciliation action, not an edit on this screen. SAQEEL never silently overwrites a divergence in either direction, and never writes the resolution back to SENAI.")}
             </p>
-            <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap" }}>
+            <div className="row" style={{ gap: "var(--space-3)" }}>
               <Link className="btn btn-secondary btn-touch" href="/admin/integrations/factory-data">
                 {t("admin.senai.recon.openHistory", "Open sync, staging and reconciliation history")}
               </Link>

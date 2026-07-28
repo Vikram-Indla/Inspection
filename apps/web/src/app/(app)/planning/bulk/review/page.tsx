@@ -30,9 +30,9 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
   // validate and save drafts, but publish_bulk_plan enforces has_role).
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
-  const access = await getPlanningAccess(sb, ["planning.create.bulk"]);
+  const access = await getPlanningAccess(sb, ["planning.create.bulk", "planning.publish"]);
   if (authError || access.error !== null) {
-    console.error("[CD-025 bulk review authorization]", authError?.message ?? access.error);
+    console.error("[ bulk review authorization]", authError?.message ?? access.error);
     return (
       <Shell current="/planning" title={t("plan.review.title", "Plan review & publish")}>
         <div className="sq-banner sq-banner--critical" role="alert">{t("plan.bulk.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.")}</div>
@@ -102,7 +102,7 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
     window: t("plan.bulk.window", "Window"),
     scope: t("plan.review.scope", "Scope"),
 
-    configTitle: t("plan.review.configTitle", "Visit configuration (applied to every visit — M01-006/026)"),
+    configTitle: t("plan.review.configTitle", "Visit configuration (applied to every visit — )"),
     windowStart: t("plan.bulk.windowStart", "Window start"),
     windowEnd: t("plan.bulk.windowEnd", "Window end"),
     notes: t("plan.bulk.notes", "Notes (optional, applied to every visit in this plan)"),
@@ -128,7 +128,7 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
     autoLabel: t("plan.review.autoLabel", "Automatic — chosen at publish"),
     autoNote: t("plan.review.autoNote", "First eligible Inspector available in the window, decided by the server at publish. Not promised beforehand."),
     excludedLozenge: t("plan.review.excluded", "Duplicate — excluded"),
-    chooseInspector: t("plan.bulk.colInspector", "Inspector (M01-029)"),
+    chooseInspector: t("plan.bulk.colInspector", "Inspector"),
     assignH: t("plan.review.assignH", "Assignment evidence"),
     manualNamed: t("plan.review.manualNamed", "Manual — named now"),
     autoChosen: t("plan.review.autoChosen", "Automatic — chosen at publish"),
@@ -154,9 +154,9 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
     rMethod: t("plan.review.rMethod", "{manual} manual · {auto} automatic assignees"),
     rMethodD: t("plan.review.rMethodD", "Manual Inspectors are named now; automatic Inspectors are chosen server-side at publish."),
     recAudit: t("plan.review.recAudit", "Audit mutations recorded"),
-    recAuditD: t("plan.review.recAuditD", "Plan, visit and assignment inserts are captured by the append-only table triggers with actor and timestamp (FND-003)."),
+    recAuditD: t("plan.review.recAuditD", "Plan, visit and assignment inserts are captured by the append-only table triggers with actor and timestamp."),
     recNotif: t("plan.review.recNotif", "{n} assignment notification records queued"),
-    recNotifD: t("plan.review.recNotifD", "Queued for sending only — created inside the transaction. Delivery, receipt and acceptance are not proven here (FND-004)."),
+    recNotifD: t("plan.review.recNotifD", "Queued for sending only — created inside the transaction. Delivery, receipt and acceptance are not proven here."),
     notStart: t("plan.review.notStart", "No inspection starts"),
     notStartD: t("plan.review.notStartD", "Publishing schedules visits; it does not begin any inspection."),
     notDeliver: t("plan.review.notDeliver", "No message is delivered or accepted"),
@@ -210,7 +210,7 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
     eligMissingLoc: t("plan.review.elig.missingLoc", "Missing location"),
     eligConflicts: t("plan.review.elig.conflicts", "Active conflicts"),
     eligManualOverride: t("plan.review.elig.manualOverride", "Manual override required"),
-    reasonDup: t("plan.review.elig.reasonDup", "duplicate — active visit (M02-012)"),
+    reasonDup: t("plan.review.elig.reasonDup", "duplicate — active visit"),
     reasonScope: t("plan.review.elig.reasonScope", "out of scope"),
     reasonLocation: t("plan.review.elig.reasonLocation", "missing official location"),
     reasonInspector: t("plan.review.elig.reasonInspector", "inspector conflict"),
@@ -231,7 +231,7 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
     ecInPool: t("plan.review.ec.inPool", "in pool"),
     ecOverlaps: t("plan.review.ec.overlaps", "{n} overlaps in window"),
     ecSkills: t("plan.review.ec.skills", "skills/capacity: not evaluated"),
-    ecAuto: t("plan.review.ec.auto", "automatic — overlap not re-checked for auto (known gap)"),
+    ecAuto: t("plan.review.ec.auto", "automatic — final Inspector selected with an atomic overlap re-check at publish"),
     ecBlockedN: t("plan.review.ec.blockedN", "booked on {n} overlapping visit(s)"),
     ecFail: t("plan.review.ec.fail", "overlap check unavailable — blocked, not “no conflict”"),
     ecSetWindow: t("plan.review.ec.setWindow", "set an inspection window to check overlap"),
@@ -246,7 +246,7 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
       vOverlap0: t("plan.review.ev.vOverlap0", "No overlapping active visit in the window (overlap query ran)"),
       vPkg: t("plan.review.ev.vPkg", "Inspection checklist is currently active or locked"),
       neList: t("plan.review.ev.neList", "Skills · work hours · capacity · territory · proximity · travel time — no Saqeel source, not evaluated"),
-      neAuto: t("plan.review.ev.neAuto", "Automatic pick — the server’s Inspector is chosen at publish and its window overlap is NOT checked for auto (known gap)"),
+      neAuto: t("plan.review.ev.neAuto", "Automatic pick — the server chooses a conflict-free Inspector and re-checks the visit window atomically at publish."),
       neWindow: t("plan.review.ev.neWindow", "Overlap not evaluated — set a valid inspection window first"),
       bOverlap: t("plan.review.ev.bOverlap", "Already booked on {n} overlapping visit(s) — e.g. {label}, {window}"),
       bNotPool: t("plan.review.ev.bNotPool", "Not in the eligible Inspector pool"),
@@ -261,7 +261,7 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
       overlap: { title: t("plan.review.bl.ov.t", "Inspector is already booked in this window"), detail: t("plan.review.bl.ov.d", "{targets}") },
       coverage: { title: t("plan.review.bl.cov.t", "{n} visits have no eligible Inspector available in the window"), detail: t("plan.review.bl.cov.d", "Widen the window or assign an Inspector manually.") },
       capacity: { title: t("plan.review.bl.cap.t", "No day in the window has remaining daily capacity for the assigned Inspector"), detail: t("plan.review.bl.cap.d", "{targets}") },
-      nopackage: { title: t("plan.review.bl.nopkg.t", "No inspection checklist selected"), detail: t("plan.review.bl.nopkg.d", "Allowed (PLN-CON-003): the inspector chooses an eligible checklist during preparation. Publishing proceeds without one.") },
+      nopackage: { title: t("plan.review.bl.nopkg.t", "No inspection checklist selected"), detail: t("plan.review.bl.nopkg.d", "Allowed: the inspector chooses an eligible checklist during preparation. Publishing proceeds without one.") },
       packageInvalid: { title: t("plan.review.bl.pkginv.t", "Selected inspection checklist is no longer active at the authoritative check"), detail: t("plan.review.bl.pkginv.d", "Revalidate and choose a currently active version before publishing.") },
       nopool: { title: t("plan.review.bl.nopool.t", "No Inspector exists in the Inspector role pool"), detail: t("plan.review.bl.nopool.d", "Automatic assignment cannot be derived — a legitimate empty pool, not a source failure.") },
       configMissing: { title: t("plan.review.bl.cfg.t", "Mandatory configuration is missing"), detail: t("plan.review.bl.cfg.d", "Set the visit type, a valid window (end after start) and an inspection checklist.") },
@@ -275,8 +275,14 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
 
   return (
     <Shell current="/planning" title={t("plan.review.title", "Plan review & publish")}
-      context={<span className="badge badge-info">{t("plan.review.context", "SCR-WEB-150 · review · publish")}</span>}>
-      <ReviewClient strings={strings} initialDraft={initialDraft} draftUnavailable={draftUnavailable} locale={locale} />
+      context={<span className="badge badge-info">{t("plan.review.context", "review · publish")}</span>}>
+      <ReviewClient
+        strings={strings}
+        initialDraft={initialDraft}
+        draftUnavailable={draftUnavailable}
+        transitionsExecutable={access.can("planning.publish")}
+        locale={locale}
+      />
     </Shell>
   );
 }

@@ -1,4 +1,4 @@
-import Shell from "@/components/Shell";
+import Shell from "@/app/(app)/admin/_components/AdminShell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import GisStudio, { type GisFactory, type GisSettings, type GisStrings } from "./GisStudio";
@@ -72,12 +72,12 @@ export default async function GisStudioPage() {
 
   return (
     <Shell current="/admin/gis" title={t("gis.title", "GIS Studio — geofencing")}
-      context={<><span className="badge badge-info">SCR-ADM-070 · ENG-06 · SB20</span><span className="sq-version">{engRes.data?.version_label}</span></>}>
+      context={<><span className="badge badge-info">SCR-ADM-070 · ENG-06 · SB20</span><span className="id-code">{engRes.data?.version_label}</span></>}>
       <div className="stack" style={{ gap: "var(--space-6)" }}>
-        <div className="sq-banner"><div><strong>{t("gis.banner.title", "GIS Studio.")}</strong> {t("gis.banner.body", "These governed values stamp every geo event (config version recorded with each check-in — EV-005). Official coordinates remain GIS-Admin-owned; field observation never overwrites them (FND-007). Per-factory geofence radii (SB20) are edited on the map below.")}</div></div>
+        <div className="alert"><div><strong>{t("gis.banner.title", "GIS Studio.")}</strong> {t("gis.banner.body", "These governed values stamp every geo event (config version recorded with each check-in — EV-005). Official coordinates remain GIS-Admin-owned; field observation never overwrites them (FND-007). Per-factory geofence radii (SB20) are edited on the map below.")}</div></div>
 
         {err && (
-          <div className="sq-banner sq-banner--critical" role="alert">
+          <div className="alert alert-critical" role="alert">
             <div><strong>{t("gis.error.title", "GIS data unavailable.")}</strong> {t("gis.error.body", NEUTRAL_LOAD_ERROR)}</div>
           </div>
         )}
@@ -92,7 +92,7 @@ export default async function GisStudioPage() {
         )}
 
         {!err && (
-          <div className="sq-tablewrap"><table className="sq-table">
+          <div className="table-wrap"><table className="table">
             <thead><tr><th scope="col">{t("gis.settings.setting", "Setting")}</th><th scope="col">{t("gis.settings.value", "Value")}</th><th scope="col">{t("gis.settings.contract", "Contract")}</th></tr></thead>
             <tbody>{settingsRows.map(([k, v, c]) => <tr key={k}><td><strong>{k}</strong></td><td className="numeric" dir="ltr">{v}</td><td className="t-caption">{c}</td></tr>)}</tbody>
           </table></div>

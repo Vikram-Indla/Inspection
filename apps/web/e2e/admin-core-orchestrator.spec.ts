@@ -1,4 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { PERSONAS, type PersonaKey } from "./personas";
 
 const OWNED_DESTINATIONS = [
@@ -51,7 +53,85 @@ const RECORD_SURFACES = [
   { route: "/admin/integrations", selector: "table tbody tr[aria-haspopup=dialog]" },
 ] as const;
 
+const webRoot = path.resolve(__dirname, "..");
+const repoRoot = path.resolve(webRoot, "../..");
+const ADMIN_TITLE_RESOURCE_MIGRATION = readFileSync(path.join(
+  repoRoot,
+  "supabase/migrations/20260727130000_admin_revamp_title_ar_strings.sql",
+), "utf8");
+const CANONICAL_APPROVAL_QUEUE = readFileSync(path.join(
+  webRoot,
+  "src/app/(app)/compliance/approvals/page.tsx",
+), "utf8");
+const ANALYTICS_PAGE = readFileSync(path.join(
+  webRoot,
+  "src/app/(app)/analytics/page.tsx",
+), "utf8");
+const OPERATIONS_PAGE = readFileSync(path.join(
+  webRoot,
+  "src/app/(app)/operations/page.tsx",
+), "utf8");
+
 test.use({ storageState: { cookies: [], origins: [] } });
+
+test("RTL-I18N-P1-001 seeds exact final-cut Administration title resources", () => {
+  const resourceKeys = [
+    "admin.revamp.access.title",
+    "admin.revamp.lookup.title",
+    "admin.revamp.risk.title",
+    "admin.revamp.survey.title",
+    "admin.revamp.integration.title",
+  ] as const;
+
+  for (const [index, destination] of OWNED_DESTINATIONS.entries()) {
+    expect(ADMIN_TITLE_RESOURCE_MIGRATION).toContain(resourceKeys[index]);
+    expect(ADMIN_TITLE_RESOURCE_MIGRATION).toContain(destination.headingEn);
+    expect(ADMIN_TITLE_RESOURCE_MIGRATION).toContain(destination.headingAr);
+  }
+  expect(ADMIN_TITLE_RESOURCE_MIGRATION).toContain(
+    "where public.ui_strings.status = 'draft'",
+  );
+});
+
+test("RTL-I18N-P1-001 seeds every authoritative confirmed title match", () => {
+  for (const [key, english, arabic] of [
+    ["admin.complianceApprovalQueue.title", "Approval Queue", "قائمة الاعتماد"],
+    ["admin.viol.title", "Violation Catalogue", "فهرس المخالفات"],
+    ["admin.viol.penalty.title", "Penalty Mapping", "ربط العقوبات"],
+    ["analytics.title", "Analytics", "التحليلات"],
+  ] as const) {
+    expect(ADMIN_TITLE_RESOURCE_MIGRATION).toContain(key);
+    expect(ADMIN_TITLE_RESOURCE_MIGRATION).toContain(english);
+    expect(ADMIN_TITLE_RESOURCE_MIGRATION).toContain(arabic);
+  }
+});
+
+test("RTL-I18N-P1-001 canonical rewrite targets carry authoritative Arabic fallbacks", () => {
+  for (const pair of [
+    'copy("Approval Queue", "قائمة الاعتماد")',
+    'copy("Decision", "القرار")',
+    'copy("Approve configuration request", "اعتماد طلب التهيئة")',
+    'copy("Return package", "إعادة الحزمة")',
+    'copy("Reject package", "رفض الحزمة")',
+    'copy("Open review", "فتح المراجعة")',
+    'copy("Configuration requests awaiting decision", "طلبات تهيئة بانتظار القرار")',
+    'copy("Object review incomplete, so no package decision is possible", "مراجعة العناصر غير مكتملة، فيتعذّر اتخاذ قرار على الحزمة")',
+    'copy("Pending review", "بانتظار المراجعة")',
+    'copy("Approved", "معتمد")',
+    'copy("Modify regulation", "تعديل لائحة")',
+    'copy("Regulation", "اللائحة")',
+    "`${done} من ${total} تم البتّ فيه`",
+    'copy("Object review incomplete", "مراجعة العناصر غير مكتملة")',
+  ]) {
+    expect(CANONICAL_APPROVAL_QUEUE).toContain(pair);
+  }
+  expect(CANONICAL_APPROVAL_QUEUE).not.toContain("<h1>Approval Queue</h1>");
+  expect(CANONICAL_APPROVAL_QUEUE).not.toContain('copy("Partially approved",');
+  expect(ANALYTICS_PAGE).toContain('<h1 id="analytics-title">{title}</h1>');
+  expect(OPERATIONS_PAGE).toContain(
+    'local("SLA and resubmission monitoring", "تنبيهات المواعيد النهائية")',
+  );
+});
 
 async function signIn(page: Page, personaKey: PersonaKey) {
   const persona = PERSONAS[personaKey];

@@ -2,7 +2,7 @@
 // Server page loads the full ui_strings dictionary + KPIs; the client Manager
 // owns filtering and inline editing. The page itself renders through useT()
 // (keys l10n.*) — the module that manages language works in both languages.
-import Shell from "@/components/Shell";
+import Shell from "@/app/(app)/admin/_components/AdminShell";
 import AdminDestinationFrame from "../_components/AdminDestinationFrame";
 import EmptyState from "@/components/EmptyState";
 import { IconShieldCheck } from "@/app/icons";
@@ -226,14 +226,14 @@ export default async function Localization() {
       governance={lookupGovernance}
       reconstructionNote={t("admin.revamp.lookup.note", copy("The canonical Lookup destination resolves to the existing localization and governed planning-lookup sources. No reference-list count or language completeness claim is fabricated.", "تتجه وجهة القوائم المرجعية إلى مصادر الترجمة وقوائم التخطيط المحكومة الحالية. لا يتم اختلاق عدد للقوائم أو ادعاء اكتمال اللغة."))}
       context={
-        <span className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
+        <span className="row" style={{ gap: "var(--space-3)" }}>
           <span className="badge badge-info">SCR-ADM-100 · SB19</span>
           <LocaleSwitch locale={locale} />
         </span>
       }
     >
       {loadFailed ? (
-        <div className="sq-banner sq-banner--critical" role="alert">
+        <div className="alert alert-critical" role="alert">
           {t("l10n.error.load", "Could not load the localization dictionary. Nothing was changed. Try again.")}
         </div>
       ) : (

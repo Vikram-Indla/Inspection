@@ -4,6 +4,8 @@ import { getUserRoles } from "@/lib/persona";
 import { useT } from "@/lib/i18n";
 import { ReviewQueue, type QueueBadges, type QueueRow, type Readiness, type ReadinessFact, type ReviewQueueStrings } from "./ReviewQueue";
 import styles from "./responsive.module.css";
+import { IconBlocked } from "@/app/icons";
+import { formatDateTime } from "@/lib/dates";
 
 const TONE: Record<string, string> = { approved: "sq-lozenge--success", returned: "sq-lozenge--warning", rejected: "sq-lozenge--critical", under_review: "sq-lozenge--info", pending_review: "sq-lozenge--warning" };
 const RISK_TONE: Record<string, string> = { low: "sq-lozenge--success", medium: "sq-lozenge--warning", high: "sq-lozenge--critical" };
@@ -69,13 +71,12 @@ type Joined = {
   } | null;
 };
 
-const fmt = (iso: string | null) => iso ? new Date(iso).toISOString().slice(0, 16).replace("T", " ") : "—";
-
 export const dynamic = "force-dynamic";
 
 export default async function Reviews() {
   preloadShell("/reviews");
-  const { t } = await useT();
+  const { t, locale } = await useT();
+  const fmt = (iso: string | null) => iso ? formatDateTime(iso, locale) : "—";
   const sb = await supabaseServer();
   const { data: { user } } = await getServerUser();
   const { data: roleRows } = user ? await getUserRoles(user.id) : { data: null };
@@ -88,10 +89,10 @@ export default async function Reviews() {
   if (!authorized) {
     return (
       <Shell current="/reviews" title={t("review.list.title", "Inspection review queue")}>
-        <main className={styles.reviewRoot}>
+        <main className={styles.reviewRoot} data-screen-id="REV-S01">
           <section className="sq-surface cd-panelpad cd-result" role="alert">
             <div className="cd-result__row">
-              <div className="cd-result__icon cd-result__icon--critical" aria-hidden="true">⛔</div>
+              <div className="cd-result__icon cd-result__icon--critical" aria-hidden="true"><IconBlocked size={24} /></div>
               <div className="cd-stack">
                 <h2>{t("review.list.unauthTitle", "You don’t have access to the review queue")}</h2>
                 <p>{t("review.list.unauthBody", "This queue requires an authorized review, planning, operations or assigned-inspector role with matching scope. Navigation visibility is not authorization.")}</p>
@@ -285,7 +286,7 @@ export default async function Reviews() {
   return (
     <Shell current="/reviews" title={t("review.list.title", "Inspection review queue")}
       context={<span className="sq-lozenge sq-lozenge--info">{t("review.list.context", "Read-only queue")}</span>}>
-      <main className={styles.reviewRoot}>
+      <main className={styles.reviewRoot} data-screen-id="REV-S01">
         <div className="sq-banner" role="note"><div><strong>{t("review.list.scanTitle", "Review overview")}</strong> — {t("review.list.scanBody", "Opening is read-only. Starting and deciding are explicit audited actions in the workspace.")}</div></div>
         {reviewDays == null && <div className="sq-banner sq-banner--warning" role="note"><div><strong>{t("review.list.missingSlaTitle", "SLA configuration missing")}</strong> — {t("review.list.missingSlaBody", "No review deadline is derived. Rows remain unavailable rather than being reported on time.")}</div></div>}
         {degraded && <div className="sq-banner sq-banner--warning" role="alert"><div><strong>{t("review.list.degradedTitle", "Some linked information is unavailable")}</strong> — {t("review.list.degradedBody", "The queue loaded, but one or more RLS-scoped linked sources could not be read. Those facts remain unavailable.")}</div></div>}
@@ -300,7 +301,7 @@ export default async function Reviews() {
             </div>
           </section>
         ) : <ReviewQueue rows={queueRows} statusOptions={statusOptions} riskOptions={riskOptions} strings={strings} />}
-        <div className="sq-banner sq-banner--warning" role="note"><div><strong>{t("review.list.submissionBlockTitle", "Submission integrity blocker")}</strong> — {t("review.list.submissionBlockBody", "DEC-032 blocks claims that new real inspection submissions are available end to end. Existing RLS-visible review records remain readable; this queue does not bypass that platform blocker.")}</div></div>
+        <div className="sq-banner sq-banner--warning" role="note"><div><strong>{t("review.list.submissionBlockTitle", "Submission integrity blocker")}</strong> — {t("review.list.submissionBlockBody", "blocks claims that new real inspection submissions are available end to end. Existing RLS-visible review records remain readable; this queue does not bypass that platform blocker.")}</div></div>
         <div className="sq-banner sq-banner--immutable"><div><strong>{t("review.list.immutableTitle", "Decisions are immutable")}</strong> {t("review.list.immutableBody", "— decided reviews cannot be edited. Every resubmission creates a new preserved version.")}</div></div>
       </main>
     </Shell>

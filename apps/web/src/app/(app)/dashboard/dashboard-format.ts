@@ -71,8 +71,10 @@ export function statusLabel(status: MetricSourceStatus, locale: Locale): string 
 
 export function statusTone(status: MetricSourceStatus): DisplayTone {
   switch (status) {
-    case "unavailable":
-    case "decision_required": return "critical";
+    // Absent data is not a breach. Critical is reserved for real severity so it
+    // stays legible when it appears.
+    case "unavailable": return "neutral";
+    case "decision_required":
     case "not_configured":
     case "stale":
     case "partial": return "warning";
@@ -81,9 +83,9 @@ export function statusTone(status: MetricSourceStatus): DisplayTone {
   }
 }
 
-/** Format a live numeric value by unit. Returns "—" when value is null. */
-export function formatValue(metric: SharedMetric, locale: Locale): string {
-  if (metric.value == null) return "—";
+/** Format a live numeric value by unit. Returns null when there is no value. */
+export function formatValue(metric: SharedMetric, locale: Locale): string | null {
+  if (metric.value == null) return null;
   switch (metric.unit) {
     case "percent": return locale === "ar" ? `٪${metric.value}` : `${metric.value}%`;
     case "ratio": return metric.value.toFixed(2);
@@ -139,11 +141,24 @@ export function metricDisplay(metric: SharedMetric, locale: Locale): MetricDispl
       sub ? `بيانات مخزنة مؤقتاً · ${sub}` : "بيانات مخزنة مؤقتاً",
     );
   }
+  // A live source that carries no value is still an absence. It renders in the
+  // governed absence vocabulary ("Unavailable"), never as a bare dash.
+  const text = formatValue(metric, locale);
+  if (text == null) {
+    return {
+      metricId: metric.metricId,
+      title,
+      kind: "status",
+      text: statusLabel("unavailable", locale),
+      tone: "neutral",
+      sub,
+    };
+  }
   return {
     metricId: metric.metricId,
     title,
     kind: "value",
-    text: formatValue(metric, locale),
+    text,
     tone: statusTone(metric.sourceStatus),
     sub,
   };
@@ -169,8 +184,8 @@ export type MethodologyEntry = {
  */
 export function buildMethodology(metric: SharedMetric, locale: Locale): MethodologyEntry {
   const def = kpiDefinition(metric.metricId);
-  const dash = (v: string | number | null | undefined) =>
-    v === null || v === undefined || v === "" ? "—" : String(v);
+  const orAbsent = (v: string | number | null | undefined) =>
+    v === null || v === undefined || v === "" ? statusLabel("unavailable", locale) : String(v);
   const scope = metric.scope;
   const scopeText = scope.fromDate && scope.toDate
     ? `${scope.fromDate} → ${scope.toDate} · ${scope.timezone}${scope.region ? ` · ${scope.region}` : ""}`
@@ -184,12 +199,12 @@ export function buildMethodology(metric: SharedMetric, locale: Locale): Methodol
       }`;
 
   const rows: MethodologyRow[] = [
-    { label: t(locale, "Formula", "المعادلة"), value: dash(def?.formula) },
-    { label: t(locale, "Numerator", "البسط"), value: metric.numerator != null ? String(metric.numerator) : "—" },
-    { label: t(locale, "Denominator", "المقام"), value: metric.denominator != null ? String(metric.denominator) : dash(def?.denominatorRule) },
+    { label: t(locale, "Formula", "المعادلة"), value: orAbsent(def?.formula) },
+    { label: t(locale, "Numerator", "البسط"), value: metric.numerator != null ? String(metric.numerator) : orAbsent(null) },
+    { label: t(locale, "Denominator", "المقام"), value: metric.denominator != null ? String(metric.denominator) : orAbsent(def?.denominatorRule) },
     { label: t(locale, "Exclusions", "الاستثناءات"), value: metric.exclusions.length ? metric.exclusions.join(", ") : t(locale, "None", "لا يوجد") },
     { label: t(locale, "Time basis", "الأساس الزمني"), value: scopeText },
-    { label: t(locale, "Formula version", "إصدار المعادلة"), value: dash(metric.formulaVersion) },
+    { label: t(locale, "Formula version", "إصدار المعادلة"), value: orAbsent(metric.formulaVersion) },
     { label: t(locale, "Policy version", "إصدار السياسة"), value: metric.policyVersionId ?? t(locale, "No effective policy", "لا توجد سياسة فعّالة") },
     { label: t(locale, "Source freshness", "حداثة المصدر"), value: freshness },
     // DEC-032. This is a statement about what every count MEANS, so it belongs
@@ -202,8 +217,8 @@ export function buildMethodology(metric: SharedMetric, locale: Locale): Methodol
       label: t(locale, "Verification", "التحقق"),
       value: t(
         locale,
-        "Counts describe stored records visible under your access scope. Independent end-to-end submission proof is pending (DEC-032).",
-        "تصف الأعداد السجلات المخزنة الظاهرة ضمن نطاق صلاحيتك. لا يزال إثبات التقديم المستقل من البداية إلى النهاية معلقاً (DEC-032).",
+        "Counts describe stored records visible under your access scope. Independent end-to-end submission proof is pending.",
+        "تصف الأعداد السجلات المخزنة الظاهرة ضمن نطاق صلاحيتك. لا يزال إثبات التقديم المستقل من البداية إلى النهاية معلقاً.",
       ),
     },
   ];

@@ -25,7 +25,7 @@ import {
   StrategicView,
 } from "./DashboardView";
 import { buildDashboardKpiProjection } from "@/lib/dashboard-kpi/projection";
-import { resolveDashboardPolicyVersion } from "@/lib/dashboard-kpi/loader";
+import { resolveDashboardPolicyVersion, resolveDashboardPolicyGates } from "@/lib/dashboard-kpi/loader";
 import type { MetricScope } from "@/lib/dashboard-kpi/contract";
 import { Suspense } from "react";
 
@@ -139,16 +139,17 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
 
   // The sidebar is only a usability filter. Enforce the dashboard persona at
   // the route boundary as well so a copied URL cannot grant dashboard access.
-  // CC-SAQEEL-RESPONSIVE-REVAMP-001: the canonical Planner and Inspector
-  // presentation roles can open Dashboard. Legacy ops/leadership grants map
-  // to Planner-read during the evidence-backed role migration.
+  // WA-M1-AC-002 / TRN-DASH-P1-001 — Dashboard is the governed
+  // Operations/Leadership surface. Other authenticated personas resolve to
+  // their own role home through /launch; the guard stays before dataPromise so
+  // a copied URL cannot trigger Dashboard reads for a denied persona.
   const { data: { user } } = await getVerifiedUser(sb);
   if (!user) redirect("/login");
   const { data: dashboardRoles, error: roleError } = await sb
     .from("user_roles")
     .select("role_key")
     .eq("user_id", user.id);
-  const dashboardRoleKeys = ["planner", "inspector", "ops", "leadership", "reviewer", "compliance_admin", "form_admin", "workflow_admin", "security_admin", "gis_admin", "risk_owner"] as const;
+  const dashboardRoleKeys = ["ops", "leadership"] as const;
   const mayViewDashboard = !roleError && (dashboardRoles ?? []).some(row => dashboardRoleKeys.includes(row.role_key as typeof dashboardRoleKeys[number]));
   if (!mayViewDashboard) redirect("/launch");
 
@@ -179,6 +180,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     !strategic ? sb.from("engine_settings").select("settings").eq("engine", "sla").maybeSingle() : Promise.resolve({ data: null, error: null }),
   ]);
   const policyPromise = resolveDashboardPolicyVersion(sb);
+  const gatesPromise = resolveDashboardPolicyGates(sb);
 
   async function DashboardDataSections() {
     const [
@@ -233,6 +235,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     slaResult.error && text("SLA configuration", "تهيئة اتفاقية مستوى الخدمة"),
   ].filter(Boolean) as string[];
 
+  const gates = await gatesPromise;
   const metrics = buildDashboardMetrics({
     visits: visitsResult.rows,
     inspections: inspectionsResult.rows,
@@ -244,6 +247,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     audit: auditResult.rows,
     factories: factoriesResult.rows,
     sla: (slaResult.data?.settings ?? {}) as DashboardSla,
+    slaWarnAtFraction: gates.slaWarnAtFraction,
     scope,
     today,
     region,
@@ -264,9 +268,10 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     scope: metricScope,
     policyVersionId: policy.policyVersionId,
     targets: policy.targets,
+    cyclePolicyConfigured: gates.cyclePolicyConfigured,
     refreshedAt: new Date(nowMs).toISOString(),
     generatedAtMs: nowMs,
-    failedSources: [...failedSources, ...policy.failedSources],
+    failedSources: [...failedSources, ...policy.failedSources, ...gates.failedSources],
   });
 
   const factoryCoords = new Map<string, { lat: number; lng: number; radiusM: number | null }>();
@@ -295,17 +300,17 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   }).format(new Date(nowMs));
   const partialSources = Array.from(new Set([...failedSources, ...policy.failedSources]));
   if (unsupportedView) {
-    return <section className="panel" role="status" style={{ padding: "var(--space-6)", display: "grid", gap: "var(--space-3)" }}>
+    return <section className="panel stack" role="status">
       <h2 className="panel-title">{text("Dashboard view not configured", "منظور لوحة القيادة غير مهيأ")}</h2>
-      <p className="t-body">{text(`The “${unsupportedView}” perspective is not an approved M1 view. Choose an available perspective.`, `المنظور «${unsupportedView}» ليس منظوراً معتمداً في M1. اختر منظوراً متاحاً.`)}</p>
-      <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
-        <a className="sq-btn sq-btn--primary" href="/dashboard?view=strategic">{text("Open Strategic View", "فتح المنظور الاستراتيجي")}</a>
-        <a className="sq-btn sq-btn--secondary" href="/dashboard?view=operational">{text("Open Operational View", "فتح المنظور التشغيلي")}</a>
+      <p className="desc">{text(`The “${unsupportedView}” perspective is not an approved M1 view. Choose an available perspective.`, `المنظور «${unsupportedView}» ليس منظوراً معتمداً في M1. اختر منظوراً متاحاً.`)}</p>
+      <div className="row">
+        <a className="btn btn-primary" href="/dashboard?view=strategic">{text("Open Strategic View", "فتح المنظور الاستراتيجي")}</a>
+        <a className="btn btn-secondary" href="/dashboard?view=operational">{text("Open Operational View", "فتح المنظور التشغيلي")}</a>
       </div>
     </section>;
   }
 
-  return <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+  return <div className="stack">
       {/* The DEC-032 submission-verification caveat is NOT dropped — it moved to
           where it applies. It is a statement about what the counts mean, so it
           now renders as a "Verification" lineage row on every metric's basis

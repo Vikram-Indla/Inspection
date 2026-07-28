@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Shell from "@/components/Shell";
+import Shell from "@/app/(app)/admin/_components/AdminShell";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import { supabaseServer } from "@/lib/supabase-server";
@@ -125,7 +125,7 @@ export default async function AdminHome() {
       )}</span>}
     >
       {roleRead.error ? (
-        <div className="sq-banner sq-banner--warning" role="alert">
+        <div className="alert alert-warning" role="alert">
           <div>
             <strong>{text("Authorization could not be verified.", "تعذّر التحقق من الصلاحيات.")}</strong>{" "}
             {text("No approval or audit workload is shown.", "لن يتم عرض أعمال الاعتماد أو التدقيق.")}
@@ -134,8 +134,8 @@ export default async function AdminHome() {
       ) : null}
 
       {noAuthorizedPanels ? (
-        <div className="sq-state panel" role="status">
-          <span className="sq-state__glyph" aria-hidden="true">✓</span>
+        <div className="saqeel-state panel" role="status">
+          <span className="saqeel-state__glyph" aria-hidden="true">✓</span>
           <h3>{text("No administration work panels are assigned to this role", "لا توجد لوحات عمل إدارية مخصصة لهذا الدور")}</h3>
           <p className="t-caption">{text("Use the authorized destinations in the navigation rail.", "استخدم الوجهات المصرّح بها في شريط التنقل.")}</p>
         </div>
@@ -157,7 +157,7 @@ export default async function AdminHome() {
               </Link>
             </header>
             {requestRead.error || componentRead.error ? (
-              <div className="sq-banner sq-banner--warning" role="alert">
+              <div className="alert alert-warning" role="alert">
                 <div>
                   <strong>{text("Approval workload is partially unavailable.", "أعمال الاعتماد غير متاحة جزئياً.")}</strong>{" "}
                   {requestRead.error
@@ -167,14 +167,14 @@ export default async function AdminHome() {
               </div>
             ) : null}
             {!requestRead.error && requests.length === 0 ? (
-              <div className="sq-state" role="status" aria-live="polite">
-                <span className="sq-state__glyph" aria-hidden="true">✓</span>
+              <div className="saqeel-state" role="status" aria-live="polite">
+                <span className="saqeel-state__glyph" aria-hidden="true">✓</span>
                 <h4>{text("No requests are waiting on your approval", "لا توجد طلبات بانتظار اعتمادك")}</h4>
               </div>
             ) : null}
             {!requestRead.error && requests.length > 0 ? (
-              <div className="sq-tablewrap">
-                <table className={`sq-table ${styles.workTable}`}>
+              <div className="table-wrap">
+                <table className={`table ${styles.workTable}`}>
                   <thead><tr>
                     <th scope="col">{text("Request", "الطلب")}</th>
                     <th scope="col">{text("Area", "المجال")}</th>
@@ -212,20 +212,20 @@ export default async function AdminHome() {
               </Link>
             </header>
             {auditRead.error ? (
-              <div className="sq-banner sq-banner--warning" role="alert">
+              <div className="alert alert-warning" role="alert">
                 <div>
                   <strong>{text("Recent changes are unavailable.", "أحدث التغييرات غير متاحة.")}</strong>{" "}
                   {text("The append-only audit source could not be read; no empty-state claim is made.", "تعذّرت قراءة مصدر التدقيق غير القابل للتعديل؛ لن يتم الادعاء بعدم وجود تغييرات.")}
                 </div>
               </div>
             ) : auditRows.length === 0 ? (
-              <div className="sq-state" role="status" aria-live="polite">
-                <span className="sq-state__glyph" aria-hidden="true">✓</span>
+              <div className="saqeel-state" role="status" aria-live="polite">
+                <span className="saqeel-state__glyph" aria-hidden="true">✓</span>
                 <h4>{text("No changes returned for this scope", "لم تُعَد أي تغييرات لهذا النطاق")}</h4>
               </div>
             ) : (
-              <div className="sq-tablewrap">
-                <table className={`sq-table ${styles.workTable}`}>
+              <div className="table-wrap">
+                <table className={`table ${styles.workTable}`}>
                   <thead><tr>
                     <th scope="col">{text("Change", "التغيير")}</th>
                     <th scope="col">{text("Area", "المجال")}</th>

@@ -99,12 +99,12 @@ export default async function RiskStudio() {
       }}
       governance={riskGovernance}
       reconstructionNote={t("admin.revamp.risk.note", copy("Prototype weights, bands and recalculation times are intentionally absent. This surface reads the live engine settings, while per-factory score explanation remains on the factory record where its scoring inputs exist.", "تم حذف أوزان النموذج ونطاقاته وأوقات إعادة الحساب عمداً. تقرأ هذه الواجهة إعدادات المحرك الفعلية، بينما يبقى تفسير درجة كل مصنع في سجل المصنع حيث توجد مدخلات الحساب."))}
-      context={<><span className="badge badge-info">SCR-ADM-060 · ENG-04</span><span className="sq-version">{data?.version_label ?? notConfigured}</span></>}
+      context={<><span className="badge badge-info">SCR-ADM-060 · ENG-04</span><span className="id-code">{data?.version_label ?? notConfigured}</span></>}
     >
-      <div className="sq-banner"><div><strong>{t("admin.risk.banner.title", "This is the Risk Studio (MVP1 foundation scope).")}</strong> {t("admin.risk.banner.before", "Weights and bands are live configuration in")} <code>engine_settings</code> {t("admin.risk.banner.after", "— scores must be reproducible from stored inputs + this version (EV-004). Writes require the risk_owner role; RLS rejects everyone else. Every save lands in the immutable audit trail.")}</div></div>
+      <div className="alert"><div><strong>{t("admin.risk.banner.title", "This is the Risk Studio (MVP1 foundation scope).")}</strong> {t("admin.risk.banner.before", "Weights and bands are live configuration in")} <code>engine_settings</code> {t("admin.risk.banner.after", "— scores must be reproducible from stored inputs + this version (EV-004). Writes require the risk_owner role; RLS rejects everyone else. Every save lands in the immutable audit trail.")}</div></div>
 
       {error && (
-        <div className="sq-banner sq-banner--critical" role="alert"><div>
+        <div className="alert alert-critical" role="alert"><div>
           <strong>{t("admin.risk.error.title", "Couldn’t load risk configuration.")}</strong>{" "}
           {t("admin.risk.error.body", "The existing configuration was not verified. Nothing changed; retry or check your risk-owner access.")}
         </div></div>

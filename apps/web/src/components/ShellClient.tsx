@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
 import SaqeelBrandMark from "@/components/SaqeelBrandMark";
 import ShellNavIcon from "@/components/ShellNavIcon";
@@ -19,10 +19,11 @@ import {
 
 export type ShellClientNavGroup = {
   id: string;
-  label: string;
+  label: string; labelEn: string; labelAr: string;
   items: {
-    id: string; label: string; href: string; icon: ShellIcon; businessTab: string;
-    enabled: boolean; badge?: number; disabledReason?: string; parentId?: string; parentLabel?: string;
+    id: string; label: string; labelEn: string; labelAr: string; href: string; icon: ShellIcon; businessTab: string;
+    enabled: boolean; badge?: number; disabledReason?: string; parentId?: string;
+    parentLabel?: string; parentLabelEn?: string; parentLabelAr?: string;
   }[];
 };
 
@@ -83,14 +84,13 @@ function defaultDateRange() {
 
 export default function ShellClient({
   children, groups, strings, bellStrings,
-  locale, languageHref, email, displayName, roleTitles, homeRegion, roles, regions,
+  locale: serverLocale, email, displayName, roleTitles, homeRegion, roles, regions,
 }: {
   children: ReactNode;
   groups: ShellClientNavGroup[];
   strings: ShellClientStrings;
   bellStrings: BellStrings;
   locale: "ar" | "en";
-  languageHref: string;
   email: string;
   displayName: string;
   roleTitles: string[];
@@ -99,11 +99,16 @@ export default function ShellClient({
   regions: string[];
 }) {
   const router = useRouter();
+  const [languagePending, startLanguageTransition] = useTransition();
+  const [locale, setLocale] = useState(serverLocale);
   const current = usePathname() || "/";
-  // Role titles ("Planner", "Level 2 Reviewer") rather than raw role_keys. An
-  // account with no granted role shows nothing here — it is not relabelled.
-  const roleLabel = (roleTitles.length ? roleTitles : roles).join(" · ");
-  const accountHoverLabel = [displayName || email, roleLabel, homeRegion].filter(Boolean).join(" — ");
+  // Next can expose the browser pathname before the client hydrates while the
+  // server-side client-component pass has no matching pathname. Keep
+  // aria-current absent on both initial renders, then apply it after hydration.
+  const [hydratedPathname, setHydratedPathname] = useState<string | null>(null);
+  useEffect(() => {
+    setHydratedPathname(current);
+  }, [current]);
   const fieldOnly = isFieldOnlyPersona(roles);
   const adminWorkspace = false;
   // The canonical Claude Design topbar always exposes the assistant entry.
@@ -144,6 +149,37 @@ export default function ShellClient({
   const adminPaletteInputRef = useRef<HTMLInputElement>(null);
   const adminPaletteRestoreRef = useRef<HTMLElement | null>(null);
   const [searchRect, setSearchRect] = useState<{ top: number; left: number; width: number } | null>(null);
+  const groupLabel = (group: ShellClientNavGroup) => locale === "ar" ? group.labelAr : group.labelEn;
+  const itemLabel = (item: ShellClientNavGroup["items"][number]) => locale === "ar" ? item.labelAr : item.labelEn;
+  const itemParentLabel = (item: ShellClientNavGroup["items"][number]) =>
+    locale === "ar" ? item.parentLabelAr ?? item.parentLabel : item.parentLabelEn ?? item.parentLabel;
+
+  useEffect(() => {
+    setLocale(serverLocale);
+  }, [serverLocale]);
+
+  const switchLanguage = (nextLocale: "en" | "ar") => {
+    if (nextLocale === locale || languagePending) return;
+    const previousLocale = locale;
+    setLocale(nextLocale);
+    document.documentElement.lang = nextLocale;
+    document.documentElement.dir = nextLocale === "ar" ? "rtl" : "ltr";
+    startLanguageTransition(async () => {
+      try {
+        const response = await fetch("/locale", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ locale: nextLocale }),
+        });
+        if (!response.ok) throw new Error("locale update failed");
+        router.refresh();
+      } catch {
+        setLocale(previousLocale);
+        document.documentElement.lang = previousLocale;
+        document.documentElement.dir = previousLocale === "ar" ? "rtl" : "ltr";
+      }
+    });
+  };
 
   useEffect(() => {
     try { setCollapsed(localStorage.getItem("saqeel-shell-collapsed") === "1"); } catch { /* private mode */ }
@@ -333,7 +369,7 @@ export default function ShellClient({
   const navigationResults = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase(locale);
     if (!normalized) return [];
-    return groups.flatMap(group => group.items).filter(item => item.enabled && item.label.toLocaleLowerCase(locale).includes(normalized));
+    return groups.flatMap(group => group.items).filter(item => item.enabled && itemLabel(item).toLocaleLowerCase(locale).includes(normalized));
   }, [groups, locale, query]);
 
   const adminPaletteCopy = locale === "ar"
@@ -357,10 +393,10 @@ export default function ShellClient({
     const normalized = adminPaletteQuery.trim().toLocaleLowerCase(locale);
     return groups
       .filter(group => group.id.startsWith("admin-"))
-      .flatMap(group => group.items.map(item => ({ ...item, hubLabel: group.label })))
+      .flatMap(group => group.items.map(item => ({ ...item, hubLabel: groupLabel(group) })))
       .filter(item =>
         !normalized
-        || item.label.toLocaleLowerCase(locale).includes(normalized)
+        || itemLabel(item).toLocaleLowerCase(locale).includes(normalized)
         || item.hubLabel.toLocaleLowerCase(locale).includes(normalized)
       );
   }, [adminPaletteQuery, groups, locale]);
@@ -426,14 +462,15 @@ export default function ShellClient({
     child = false,
     showIcon = true,
   ) {
+    const label = itemLabel(item);
     const className = `sq-nav-item${child ? " sq-nav-item--child" : ""}${item.enabled ? "" : " is-disabled"}`;
     if (!item.enabled) {
-      const accessibleLabel = `${item.label}. ${item.disabledReason ?? ""}`.trim();
+      const accessibleLabel = `${label}. ${item.disabledReason ?? ""}`.trim();
       return (
         <span key={item.id} className={className} role="link" aria-disabled="true" aria-label={accessibleLabel}
-          title={`${item.label} — ${item.disabledReason ?? ""}`.trim()} tabIndex={0} data-nav-state="disabled">
+          title={`${label} — ${item.disabledReason ?? ""}`.trim()} tabIndex={0} data-nav-state="disabled">
           {showIcon ? <span className="sq-nav-icon"><Icon name={item.icon} /></span> : null}
-          <span className="sq-nav-label">{item.label}</span>
+          <span className="sq-nav-label">{label}</span>
           {item.badge ? <span className="sq-badge sq-badge--critical sq-nav-badge">{item.badge}</span> : null}
           <span className="sq-nav-lock" aria-hidden="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
@@ -443,30 +480,31 @@ export default function ShellClient({
       );
     }
     return (
-      <Link key={item.id} className={className} aria-label={effectiveCollapsed ? item.label : undefined}
-        aria-current={isShellRouteCurrent(current, item.href) ? "page" : undefined}
-        href={item.href} title={item.label} onClick={closeAfterNavigate} data-nav-state="enabled"
+      <Link key={item.id} className={className} aria-label={effectiveCollapsed ? label : undefined}
+        aria-current={hydratedPathname && isShellRouteCurrent(hydratedPathname, item.href) ? "page" : undefined}
+        href={item.href} title={label} onClick={closeAfterNavigate} data-nav-state="enabled"
         data-next-spa="true">
         {showIcon ? <span className="sq-nav-icon"><Icon name={item.icon} /></span> : null}
-        <span className="sq-nav-label">{item.label}</span>
+        <span className="sq-nav-label">{label}</span>
         {item.badge ? <span className="sq-badge sq-badge--critical sq-nav-badge">{item.badge}</span> : null}
       </Link>
     );
   }
 
   function renderNavGroup(group: ShellClientNavGroup) {
+    const label = groupLabel(group);
     const groupOpen = openGroups[group.id] ?? true;
     const isAdministration = group.id === "administration";
     const groupActive = isAdministration
       && group.items.some(item => isShellRouteCurrent(current, item.href));
     return (
       <section className={`sq-nav-group${isAdministration ? " sq-nav-group--pinned" : ""}`} data-nav-group={group.id} key={group.id}>
-        <button className={`sq-nav-group__trigger${isAdministration ? " is-administration" : ""}${groupActive ? " is-active" : ""}`} type="button" aria-label={group.label} aria-expanded={groupOpen}
+        <button className={`sq-nav-group__trigger${isAdministration ? " is-administration" : ""}${groupActive ? " is-active" : ""}`} type="button" aria-label={label} aria-expanded={groupOpen}
           aria-controls={`nav-group-${group.id}`}
           data-current={groupActive ? "true" : undefined}
           onClick={() => setOpenGroups(value => ({ ...value, [group.id]: !groupOpen }))}>
           {isAdministration ? <span className="sq-nav-icon"><Icon name="admin" /></span> : null}
-          <span className="sq-nav-label">{group.label}</span>
+          <span className="sq-nav-label">{label}</span>
           <span className="sq-nav-group__chevron" aria-hidden="true">›</span>
         </button>
         <div id={`nav-group-${group.id}`} hidden={!groupOpen}>
@@ -479,7 +517,7 @@ export default function ShellClient({
               <div className="sq-nav-subgroup" role="group" aria-labelledby={`nav-parent-${group.id}-${item.parentId}`} key={item.parentId}>
                 <div className="sq-nav-subgroup__label" id={`nav-parent-${group.id}-${item.parentId}`}>
                   <span className="sq-nav-icon"><Icon name={item.icon} /></span>
-                  <span className="sq-nav-label">{item.parentLabel}</span>
+                  <span className="sq-nav-label">{itemParentLabel(item)}</span>
                   <svg className="sq-nav-subgroup__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
                 </div>
                 {children.map(child => renderNavItem(child, true))}
@@ -503,7 +541,7 @@ export default function ShellClient({
             <span aria-hidden="true">{locale === "ar" ? "→" : "←"}</span>
             <span className="sq-nav-label">{locale === "ar" ? "رجوع" : "Back"}</span>
           </button>
-          <h2 className="sq-nav-subgroup__label">{activeHub.label}</h2>
+          <h2 className="sq-nav-subgroup__label">{groupLabel(activeHub)}</h2>
           {activeHub.items.map(item => renderNavItem(item))}
         </section>
       );
@@ -512,10 +550,10 @@ export default function ShellClient({
       <div aria-label={locale === "ar" ? "مجموعات الإدارة" : "Admin hubs"}>
         {adminGroups.map(group => (
           <button className="sq-nav-group__trigger is-administration" type="button"
-            key={group.id} aria-label={group.label}
+            key={group.id} aria-label={groupLabel(group)}
             onClick={() => setActiveMobileAdminHub(group.id)}>
             <span className="sq-nav-icon"><Icon name="admin" /></span>
-            <span className="sq-nav-label">{group.label}</span>
+            <span className="sq-nav-label">{groupLabel(group)}</span>
             <span aria-hidden="true">{locale === "ar" ? "←" : "→"}</span>
           </button>
         ))}
@@ -525,7 +563,8 @@ export default function ShellClient({
 
   return (
     <div className={`sq-shell${effectiveCollapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}${pendingHref ? " is-navigating" : ""}`}
-      aria-busy={pendingHref ? "true" : undefined} onClickCapture={handleShellNavigation}>
+      dir={locale === "ar" ? "rtl" : "ltr"} lang={locale}
+      aria-busy={pendingHref || languagePending ? "true" : undefined} onClickCapture={handleShellNavigation}>
       {pendingHref ? <div className="sq-route-progress" role="status"><span className="sq-sr-only">{strings.loadingDestination}</span></div> : null}
       <a className="sq-shell__skip" href="#main-content">{strings.skipToContent}</a>
       {/* Product-Owner decision (2026-07-26): the console shell is NOT
@@ -609,7 +648,7 @@ export default function ShellClient({
                       style={{ top: searchRect.top, left: searchRect.left, width: searchRect.width }}>
                       {navigationResults.map(item => (
                         <Link role="option" key={`nav-${item.id}`} href={item.href} onClick={closeAfterNavigate} data-next-spa="true" prefetch={false}>
-                          <Icon name={item.icon} /><span><strong>{item.label}</strong><small>{strings.navigation}</small></span>
+                          <Icon name={item.icon} /><span><strong>{itemLabel(item)}</strong><small>{strings.navigation}</small></span>
                         </Link>
                       ))}
                       {globalResults.map(item => (
@@ -667,22 +706,13 @@ export default function ShellClient({
               </div>
             )}
             <div className="sq-pagehead__actions">
-              {/* Language is a topbar control, not an account-menu item: it is a display
-                  preference every persona changes, and burying it cost two clicks.
-                  Plain <a>, not next/link — /locale is a cookie route handler that must
-                  round-trip the server, which is why the previous anchor was plain too.
-                  The active side carries no href, so it is inert rather than a link that
-                  re-asserts the current locale.
-                  .seg-opt paints its active state from [aria-pressed] or .is-active, and
-                  aria-pressed is not valid on an anchor — so .is-active carries the
-                  styling and aria-current carries the semantics. */}
+              {/* Locale is persisted without a document navigation. The shell mirrors
+                  immediately, then the server refresh supplies translated page copy. */}
               <div className="seg" role="group" aria-label={strings.language}>
-                <a className={`seg-opt${locale === "en" ? " is-active" : ""}`}
-                   href={locale === "ar" ? languageHref : undefined}
-                   aria-current={locale === "en" ? "true" : undefined} lang="en">EN</a>
-                <a className={`seg-opt${locale === "ar" ? " is-active" : ""}`}
-                   href={locale === "en" ? languageHref : undefined}
-                   aria-current={locale === "ar" ? "true" : undefined} lang="ar">ع</a>
+                <button type="button" className="seg-opt" onClick={() => switchLanguage("en")}
+                  aria-pressed={locale === "en"} disabled={languagePending} lang="en">EN</button>
+                <button type="button" className="seg-opt" onClick={() => switchLanguage("ar")}
+                  aria-pressed={locale === "ar"} disabled={languagePending} lang="ar">ع</button>
               </div>
               <ThemeToggle className="sq-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
               {/* The bell renders for every persona (2026-07-26 ruling: one
@@ -696,11 +726,11 @@ export default function ShellClient({
                 </Link>
               ) : null}
               <div ref={accountRef} className="sq-shell-account">
-                <button className="sq-shell-account__trigger" type="button" aria-label={strings.account} aria-expanded={accountOpen}
-                  title={accountHoverLabel}
+                <button className="sq-shell-account__trigger" type="button" aria-label={email} aria-expanded={accountOpen}
+                  title={email}
                   onClick={() => setAccountOpen(value => !value)}>
-                  <span className="sq-shell-account__avatar" aria-hidden="true">{initials(displayName || email)}</span>
-                  <span className="sq-shell-account__identity"><strong>{displayName || email.split("@")[0]}</strong><small>{roleLabel}</small></span>
+                  <span className="sq-shell-account__avatar" aria-hidden="true">{initials(email)}</span>
+                  <span className="sq-shell-account__identity"><strong>{email}</strong><small aria-hidden="true" /></span>
                   <svg className="sq-shell-account__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
                 </button>
                 {accountOpen && accountMenuPos && typeof document !== "undefined" && createPortal(
@@ -774,7 +804,7 @@ export default function ShellClient({
                   }}>
                   <span aria-hidden="true"><Icon name={item.icon} /></span>
                   <span style={{ display: "grid" }}>
-                    <strong>{item.label}</strong>
+                    <strong>{itemLabel(item)}</strong>
                     <small style={{ color: "var(--text-muted, #aab2bd)" }}>{item.hubLabel}</small>
                   </span>
                 </Link>

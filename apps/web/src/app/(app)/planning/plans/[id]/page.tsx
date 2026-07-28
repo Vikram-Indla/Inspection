@@ -16,7 +16,7 @@ const PLAN_TONE: Record<string, string> = { published: "sq-lozenge--info", retur
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 type ChildVisit = {
-  id: string; visit_type: string; execution_mode: string; planning_status: string;
+  id: string; visit_reference: string | null; visit_type: string; execution_mode: string; planning_status: string;
   operational_state: string; window_start: string; window_end: string;
   factories: { id: string; name: string } | null;
   assignments: { profiles: { full_name: string } | null }[] | null;
@@ -63,10 +63,10 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
   // lapsed windows in between ticks. No per-page-load mutating RPC (K-009).
   const [{ data: plan, error: pErr }, { data: kids, error: kErr }] = await Promise.all([
     sb.from("visit_plans")
-      .select("id, method, status, criteria, created_at, published_at, profiles(full_name)")
+      .select("id, plan_reference, method, status, criteria, created_at, published_at, profiles!visit_plans_created_by_fkey(full_name)")
       .eq("id", id).maybeSingle(),
     sb.from("visits")
-      .select(`id, visit_type, execution_mode, planning_status, operational_state, window_start, window_end,
+      .select(`id, visit_reference, visit_type, execution_mode, planning_status, operational_state, window_start, window_end,
         factories(id, name), assignments(profiles(full_name)), inspections(status)`)
       .eq("visit_plan_id", id).order("window_start", { ascending: true }),
   ]);
@@ -107,7 +107,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
   ];
 
   return (
-    <Shell current="/planning" title={t("plan.drill.title", "Plan {id}").replace("{id}", plan.id.slice(0, 8))}
+    <Shell current="/planning" title={t("plan.drill.title", "Plan {id}").replace("{id}", plan.plan_reference ?? tr("plan.referenceUnavailable", "Reference unavailable", "المرجع غير متاح"))}
       context={<>
         <span className="sq-lozenge sq-lozenge--info">{t(`enum.${plan.method}`, plan.method)}</span>
         <span className={`sq-lozenge sq-lozenge--plan ${PLAN_TONE[plan.status] ?? ""}`}>{t(`enum.${plan.status}`, plan.status)}</span>
@@ -123,7 +123,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
       {/* M02-036 — progress calculation + % bar over persisted child states */}
       <div className="sq-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
         <div className="sq-row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
-          <h4 style={{ margin: 0 }}>{t("plan.drill.progressHeading", "Plan progress (M02-036)")}</h4>
+          <h4 style={{ margin: 0 }}>{t("plan.drill.progressHeading", "Plan progress")}</h4>
           <span className="sq-numeric"><strong>{pct(completed)}%</strong> {t("plan.drill.progressOf", "of {n} child visits completed").replace("{n}", String(total))}</span>
         </div>
         {total > 0 && (
@@ -147,7 +147,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
       {/* M02-017 — child visits with assignments */}
       {visits.length === 0 ? (
         <EmptyState icon={<IconCalendar size={28} />} title={t("plan.drill.noChildren", "No child visits under this plan")}
-          body={t("plan.drill.noChildrenDesc", "Visits are attached at plan creation; immediate visits never carry a plan (M01-050).")} />
+          body={t("plan.drill.noChildrenDesc", "Visits are attached at plan creation; immediate visits never carry a plan.")} />
       ) : (
         <div className="sq-tablewrap"><table className="sq-table">
           <thead><tr>
@@ -162,7 +162,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
           <tbody>
             {visits.map(v => (
               <tr key={v.id}>
-                <td className="sq-numeric"><a className="sq-link" href={`/visits/${v.id}`}><strong>{v.id.slice(0, 8)}</strong></a></td>
+                <td className="sq-numeric"><a className="sq-link" href={`/visits/${v.id}`}><strong>{v.visit_reference ?? tr("plan.referenceUnavailable", "Reference unavailable", "المرجع غير متاح")}</strong></a></td>
                 <td>{v.factories ? <a className="sq-link" href={`/factories/${v.factories.id}`}>{v.factories.name}</a> : "—"}</td>
                 <td>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)}</td>
                 <td><span className={`sq-lozenge sq-lozenge--plan ${PLAN_TONE[v.planning_status] ?? ""}`}>{t(`enum.${v.planning_status}`, v.planning_status)}</span>

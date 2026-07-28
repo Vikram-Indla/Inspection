@@ -2,6 +2,10 @@ import { expect, test } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { safeFieldReturnPath } from "../src/lib/field-auth";
+import {
+  establishAuthenticatedThemeDefault,
+  SAQEEL_THEME_STORAGE_KEY,
+} from "../src/lib/theme-preference";
 
 const root = path.resolve(__dirname, "..");
 const read = (relative: string) => fs.readFileSync(path.join(root, relative), "utf8");
@@ -23,6 +27,26 @@ test.describe("TASK-IPAD-AUTH-SESSION-RECOVERY-001", () => {
     expect(login).toContain("safeFieldReturnPath(returnTo)");
     expect(login).toContain("window.location.assign(safeReturnTo)");
     expect(login).toContain('window.location.assign("/launch")');
+  });
+
+  test("successful authentication defaults to dark without overwriting an explicit choice", () => {
+    const values = new Map<string, string>();
+    const storage = {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => values.set(key, value),
+    };
+
+    expect(establishAuthenticatedThemeDefault(storage)).toBe("dark");
+    expect(values.get(SAQEEL_THEME_STORAGE_KEY)).toBe("dark");
+
+    values.set(SAQEEL_THEME_STORAGE_KEY, "light");
+    expect(establishAuthenticatedThemeDefault(storage)).toBe("light");
+    expect(values.get(SAQEEL_THEME_STORAGE_KEY)).toBe("light");
+
+    const login = read("src/app/login/field/FieldLoginClient.tsx");
+    expect(login).toContain("establishAuthenticatedThemeDefault(window.localStorage)");
+    expect(login.indexOf("establishAuthenticatedThemeDefault(window.localStorage)"))
+      .toBeLessThan(login.indexOf('window.location.assign("/launch")'));
   });
 
   test("bootstrap refreshes expiry and allows offline only for a known valid Inspector", () => {

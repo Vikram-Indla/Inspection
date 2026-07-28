@@ -9,7 +9,7 @@ export const FACTORY360_AR_FALLBACK: Record<string, string> = {
   "enum.low": "منخفض",
   "f360.title": "المصنع 360",
   "f360.empty.title": "لا توجد مصانع في السجل",
-  "f360.empty.desc": "تتزامن سجلات هوية المصانع من المصدر الوطني (M07-002).",
+  "f360.empty.desc": "تتزامن سجلات هوية المصانع من المصدر الوطني.",
   "f360.err.load": "تعذّر تحميل المصانع.",
   "f360.err.neutral": "قائمة المصانع غير متاحة مؤقتاً. لم يتم تغيير أي شيء.",
   "f360.err.retry": "أعد المحاولة",
@@ -211,4 +211,5 @@ export const FACTORY360_AR_FALLBACK: Record<string, string> = {
   "f360.actions.planSingle": "تخطيط زيارة مفردة",
   "f360.actions.exportPdf": "طباعة / حفظ ملف PDF المصرح به",
   "f360.actions.restricted": "لا يُسمح لدورك بإنشاء تفتيش أو تصدير الملف.",
+  "f360.actions.submissionBlocked": "يبقى إرسال التفتيش غير متاح ما دام القرار غير محسوم.",
 };

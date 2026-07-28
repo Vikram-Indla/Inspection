@@ -186,13 +186,13 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           عرض مرفقات المحاضر / عرض تقرير التحديات) have no built feature to link to
           yet (incident/challenge concepts don't exist — see reconciliation J-12/J-19);
           only wiring the one real, existing action rather than fabricating dead links. */}
-      <div className="sq-row" style={{ justifyContent: "flex-end", marginBlockEnd: "var(--space-4)", gap: "var(--space-2)" }}>
+      <div className="sq-row">
         {permissions["create_inspection"] && <a className="sq-btn sq-btn--secondary" href={`/planning/single?factory=${f.id}&cr=${encodeURIComponent(f.cr_number ?? "")}&license=${encodeURIComponent(f.license_number ?? "")}&source=factory360`}>{t("f360.actions.planSingle", "Plan single visit")}</a>}
         {permissions["create_inspection"] && <a className="sq-btn sq-btn--secondary" href={`/planning/immediate?factory=${f.id}`}>{t("f360.actions.startPlan", "Start inspection plan")}</a>}
         {permissions["create_inspection"] && <span className="sq-caption" role="status">{t("f360.actions.submissionBlocked", "Inspection submission remains unavailable while DEC-032 is unresolved.")}</span>}
       </div>
 
-      <div className="cd-w3">
+      <div className="cd-w3" data-screen-id="F360-S03">
         {/* Provenance-led aside — persistent identity, freshness, risk summary, location facts */}
         <aside className="cd-side3">
           <div className="sq-surface cd-idcard">
@@ -249,7 +249,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             {SECTIONS.map(s => <a key={s.id} className="cd-secitem" href={`#${s.id}`}>{s.label}</a>)}
           </nav>
 
-          <section id="location" className="sq-surface" style={{ padding: "var(--space-6)" }}>
+          <section id="location" className="sq-surface cd-panelpad">
             <h4>{t("f360.geo.historyHeading", "Official, planned and observed locations (M07-005)")}</h4>
             <p className="sq-caption">{t("f360.geo.historyCaption", "Official coordinates remain source-owned. Arrival, check-in and override coordinates are locked inspection observations and never overwrite the Factory list.")}</p>
             {locationEvents.length ? <div className="sq-tablewrap"><table className="sq-table">
@@ -264,7 +264,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             </table></div> : <p className="sq-caption">{t("f360.geo.noObserved", "No observed locations are visible in your authorized scope.")}</p>}
           </section>
 
-          <section id="risk" className="sq-surface" style={{ padding: "var(--space-6)" }}>
+          <section id="risk" className="sq-surface cd-panelpad">
             <h4>{t("f360.risk.historyHeading", "Factory health score and risk history (M07-014/015)")}</h4>
             <p className="sq-caption">{t("f360.risk.historyCaption", "Each row freezes the DEC-001 model version, normalized driver values, weights and contributions used at recalculation time.")}</p>
             <ContextualAiPanel
@@ -295,16 +295,16 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                 </tr>;
               })}</tbody>
             </table></div> : <p className="sq-caption">{t("f360.risk.noHistory", "No risk calculation history is available.")}</p>}
-            <h5 style={{ marginBlockStart: "var(--space-4)" }}>{t("f360.risk.relatedViolations", "Related violations")}</h5>
+            <h5>{t("f360.risk.relatedViolations", "Related violations")}</h5>
             {canSeeSensitiveHistory && sortedVisits.some(v => (v.inspections?.violations.length ?? 0) > 0)
-              ? <div className="sq-row" style={{ gap: 8, flexWrap: "wrap" }}>{sortedVisits.flatMap(v => v.inspections?.violations ?? []).map((x, i) => <span key={`${x.violation_codes.code}-${i}`} className="sq-lozenge sq-lozenge--critical">{x.violation_codes.code} · {x.violation_codes.title}</span>)}</div>
+              ? <div className="sq-row">{sortedVisits.flatMap(v => v.inspections?.violations ?? []).map((x, i) => <span key={`${x.violation_codes.code}-${i}`} className="sq-lozenge sq-lozenge--critical">{x.violation_codes.code} · {x.violation_codes.title}</span>)}</div>
               : <p className="sq-caption">{canSeeSensitiveHistory ? t("f360.risk.noRelatedViolations", "No related violations are recorded.") : t("f360.risk.violationsRestricted", "Violation detail is restricted for this role.")}</p>}
           </section>
 
           {/* Spatial Case Timeline — signature interaction. Built only from
               already-fetched route facts; risk-version history and the
               evidence timeline are explicit unavailable rows, never inferred. */}
-          <section id="timeline" className="sq-surface" style={{ padding: "var(--space-6)" }} aria-labelledby="cd-tl-h">
+          <section id="timeline" className="sq-surface cd-panelpad" aria-labelledby="cd-tl-h">
             <h4 id="cd-tl-h">{t("f360.tl.heading", "Spatial Case Timeline")}</h4>
             <p className="sq-caption">{t("f360.tl.desc", "Source-labelled facts linking location context, inspections, findings, actions, reviews and the current risk version. Connective, not causal.")}</p>
             {sortedVisits.length === 0 ? (
@@ -325,17 +325,17 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                         {ins && (
                           <>
                             <p className="cd-tl__src">{t("f360.hist.th.inspection", "Inspection")} {enumLabel(ins.status)}
-                              {ins.submission_versions.map(s => <span key={s.version_number} className="sq-version" style={{ marginInlineStart: 4 }}>v{s.version_number}</span>)}
+                              {ins.submission_versions.map(s => <span key={s.version_number} className="sq-version">v{s.version_number}</span>)}
                               {ins.submission_versions.length > 0 && <> · <a className="sq-link" href={`/reports/inspection/${ins.id}`}>{t("f360.hist.report", "report")}</a></>}
                             </p>
                             {canSeeSensitiveHistory && ins.violations.length > 0 && (
-                              <p className="cd-tl__src">{t("f360.tl.violations", "findings")} {ins.violations.map(x => <span key={x.violation_codes.code} className="sq-lozenge sq-lozenge--critical" style={{ marginInlineEnd: 4 }}>{x.violation_codes.code}</span>)}</p>
+                              <p className="cd-tl__src">{t("f360.tl.violations", "findings")} {ins.violations.map(x => <span key={x.violation_codes.code} className="sq-lozenge sq-lozenge--critical">{x.violation_codes.code}</span>)}</p>
                             )}
                             {canSeeSensitiveHistory && ins.action_forms.length > 0 && (
                               <p className="cd-tl__src">{t("f360.hist.th.actions", "Actions")} {ins.action_forms.map(a => `${enumLabel(a.status)} · ${a.owner_name} · ${t("f360.hist.due", "due")} ${a.due_at ? new Date(a.due_at).toISOString().slice(0, 10) : "—"}`).join("; ")}</p>
                             )}
                             {canSeeSensitiveHistory && ins.reviews.filter(r => r.decision).length > 0 && (
-                              <p className="cd-tl__src">{t("f360.hist.th.review", "Review")} {ins.reviews.filter(r => r.decision).map((r, i) => <span key={i} className={`sq-lozenge ${r.decision === "approve" ? "sq-lozenge--success" : "sq-lozenge--warning"}`} style={{ marginInlineEnd: 4 }}>{r.decision ? enumLabel(r.decision) : null}</span>)}</p>
+                              <p className="cd-tl__src">{t("f360.hist.th.review", "Review")} {ins.reviews.filter(r => r.decision).map((r, i) => <span key={i} className={`sq-lozenge ${r.decision === "approve" ? "sq-lozenge--success" : "sq-lozenge--warning"}`}>{r.decision ? enumLabel(r.decision) : null}</span>)}</p>
                             )}
                           </>
                         )}
@@ -345,7 +345,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                 })}
               </ol>
             )}
-            <ol className="cd-timeline" style={{ marginBlockStart: sortedVisits.length === 0 ? 0 : "var(--space-2)" }}>
+            <ol className="cd-timeline">
               {f.source_synced_at && <li className="cd-tl" key="source-sync">
                 <span className="cd-tl__when sq-numeric">{new Date(f.source_synced_at).toISOString().slice(0, 10)}</span>
                 <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-location">↻</span></span>
@@ -373,8 +373,8 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           </section>
 
           {/* Inspection history — tabular record, distinct from the narrative timeline above. */}
-          <section id="history" className="sq-surface" style={{ padding: "var(--space-6)" }}>
-            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("f360.hist.heading", "Inspection history — official records only (M07-011/012)")}</h4>
+          <section id="history" className="sq-surface cd-panelpad">
+            <h4>{t("f360.hist.heading", "Inspection history — official records only (M07-011/012)")}</h4>
             {sortedVisits.length === 0 ? (
               <div className="sq-state sq-state--inline"><span className="sq-state__glyph">🗓</span>
                 <h4>{t("f360.hist.empty.title", "No visits recorded for this factory")}</h4>
@@ -393,12 +393,12 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                         <td><span className="sq-lozenge sq-lozenge--ops">{enumLabel(v.operational_state)}</span></td>
                         <td>{ins ? <span className="sq-lozenge sq-lozenge--info">{enumLabel(ins.status)}</span> : <span className="sq-caption">—</span>}</td>
                         <td>
-                          {ins?.submission_versions.map(s => <span key={s.version_number} className="sq-version" style={{ marginInlineEnd: 4 }}>v{s.version_number}</span>)}
+                          {ins?.submission_versions.map(s => <span key={s.version_number} className="sq-version">v{s.version_number}</span>)}
                           {ins && ins.submission_versions.length > 0 && <a className="sq-link" href={`/reports/inspection/${ins.id}`}>{t("f360.hist.report", "report")}</a>}
                         </td>
-                        <td>{canSeeSensitiveHistory ? ins?.violations.map(x => <span key={x.violation_codes.code} className="sq-lozenge sq-lozenge--critical" style={{ marginInlineEnd: 4 }}>{x.violation_codes.code}</span>) : <span className="sq-caption">restricted</span>}</td>
+                        <td>{canSeeSensitiveHistory ? ins?.violations.map(x => <span key={x.violation_codes.code} className="sq-lozenge sq-lozenge--critical">{x.violation_codes.code}</span>) : <span className="sq-caption">restricted</span>}</td>
                         <td className="sq-caption">{canSeeSensitiveHistory ? ins?.action_forms.map(a => `${enumLabel(a.status)} · ${a.owner_name} · ${t("f360.hist.due", "due")} ${a.due_at ? new Date(a.due_at).toISOString().slice(0, 10) : "—"}`).join("; ") : "restricted"}</td>
-                        <td>{canSeeSensitiveHistory ? ins?.reviews.filter(r => r.decision).map((r, i) => <span key={i} className={`sq-lozenge ${r.decision === "approve" ? "sq-lozenge--success" : "sq-lozenge--warning"}`} style={{ marginInlineEnd: 4 }}>{r.decision ? enumLabel(r.decision) : null}</span>) : <span className="sq-caption">restricted</span>}</td>
+                        <td>{canSeeSensitiveHistory ? ins?.reviews.filter(r => r.decision).map((r, i) => <span key={i} className={`sq-lozenge ${r.decision === "approve" ? "sq-lozenge--success" : "sq-lozenge--warning"}`}>{r.decision ? enumLabel(r.decision) : null}</span>) : <span className="sq-caption">restricted</span>}</td>
                       </tr>
                     );
                   })}
@@ -408,8 +408,8 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           </section>
 
           {/* Documents — metadata registry; per-section failure isolation (SB11) */}
-          {canSeeDocuments && <section id="documents" className="sq-surface" style={{ padding: "var(--space-6)" }}>
-            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("f360.docs.heading", "Documents — metadata registry (SB11)")}</h4>
+          {canSeeDocuments && <section id="documents" className="sq-surface cd-panelpad">
+            <h4>{t("f360.docs.heading", "Documents — metadata registry (SB11)")}</h4>
             {dErr && <div className="sq-banner sq-banner--critical"><div><strong>{t("f360.docs.err", "Couldn’t load documents.")}</strong> {mapFactoryError(dErr, "load")} — {retry}.</div></div>}
             {!dErr && docsEmpty && (
               <div className="sq-state sq-state--inline"><span className="sq-state__glyph">📄</span>
@@ -443,8 +443,8 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           </section>}
 
           {/* Representatives — contact fields masked for leadership only (HANDOFF_BLOCKED_ROLE) */}
-          {canSeeContacts && <section id="representatives" className="sq-surface" style={{ padding: "var(--space-6)" }}>
-            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("f360.reps.heading", "Representatives (SB11)")}</h4>
+          {canSeeContacts && <section id="representatives" className="sq-surface cd-panelpad">
+            <h4>{t("f360.reps.heading", "Representatives (SB11)")}</h4>
             {rErr && <div className="sq-banner sq-banner--critical"><div><strong>{t("f360.reps.err", "Couldn’t load representatives.")}</strong> {mapFactoryError(rErr, "load")} — {retry}.</div></div>}
             {!rErr && repsEmpty && (
               <div className="sq-state sq-state--inline"><span className="sq-state__glyph">👤</span>
@@ -463,7 +463,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                     <td>{r.role_title ?? "—"}</td>
                     {!maskContacts && <><td className="sq-numeric">{r.phone ?? "—"}</td><td>{r.email ?? "—"}</td></>}
                     <td>
-                      {r.is_primary && <span className="sq-lozenge sq-lozenge--info" style={{ marginInlineEnd: 4 }}>{t("f360.reps.primary", "primary")}</span>}
+                      {r.is_primary && <span className="sq-lozenge sq-lozenge--info">{t("f360.reps.primary", "primary")}</span>}
                       <span className={`sq-lozenge ${r.active ? "sq-lozenge--success" : "sq-lozenge--warning"}`}>{r.active ? t("f360.reps.active", "active") : t("f360.reps.inactive", "inactive")}</span>
                     </td>
                   </tr>
@@ -473,8 +473,8 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           </section>}
 
           {/* Products & HS codes — read-only from the authoritative source (W3 / M07-006). */}
-          <section id="products" className="sq-surface" style={{ padding: "var(--space-6)" }}>
-            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("f360.prod.heading", "Products & HS codes (M07-006)")}</h4>
+          <section id="products" className="sq-surface cd-panelpad">
+            <h4>{t("f360.prod.heading", "Products & HS codes (M07-006)")}</h4>
             {pErr && <div className="sq-banner sq-banner--critical"><div><strong>{t("f360.prod.err", "Couldn’t load products.")}</strong> {mapFactoryError(pErr, "load")} — {retry}.</div></div>}
             {!pErr && productsEmpty && (
               <div className="sq-state sq-state--inline"><span className="sq-state__glyph">📦</span>
@@ -498,8 +498,8 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           </section>
 
           {/* Raw materials — read-only from the authoritative source (W3 / M07-007). */}
-          <section id="materials" className="sq-surface" style={{ padding: "var(--space-6)" }}>
-            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("f360.mat.heading", "Raw materials (M07-007)")}</h4>
+          <section id="materials" className="sq-surface cd-panelpad">
+            <h4>{t("f360.mat.heading", "Raw materials (M07-007)")}</h4>
             {mErr && <div className="sq-banner sq-banner--critical"><div><strong>{t("f360.mat.err", "Couldn’t load materials.")}</strong> {mapFactoryError(mErr, "load")} — {retry}.</div></div>}
             {!mErr && materialsEmpty && (
               <div className="sq-state sq-state--inline"><span className="sq-state__glyph">🧱</span>
@@ -521,8 +521,8 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           </section>
 
           {/* Workforce & industrial indicators — source-owned, display-only (W3 / M07-008/009) */}
-          <section id="workforce" className="sq-surface" style={{ padding: "var(--space-6)" }}>
-            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("f360.wf.heading", "Workforce & indicators — read-only from source (M07-008/009)")}</h4>
+          <section id="workforce" className="sq-surface cd-panelpad">
+            <h4>{t("f360.wf.heading", "Workforce & indicators — read-only from source (M07-008/009)")}</h4>
             {f.employees_total == null && f.capital_invested == null && f.production_capacity_note == null ? (
               <div className="sq-state sq-state--inline"><span className="sq-state__glyph">🏭</span>
                 <h4>{t("f360.wf.empty.title", "No workforce or indicator data synced")}</h4>
@@ -545,13 +545,13 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                   </div>
                 </div>
                 {f.production_capacity_note && (
-                  <p style={{ marginBlockStart: "var(--space-4)" }}>
+                  <p>
                     <strong>{t("f360.wf.capacityNote", "Production capacity")}</strong> — {f.production_capacity_note}
                   </p>
                 )}
               </>
             )}
-            <p className="sq-caption" style={{ marginBlockStart: "var(--space-4)" }}>
+            <p className="sq-caption">
               {t("f360.wf.sourceOwned", "Source-owned figures (Factory list sync), like identity — displayed only, never edited here.")} {t("f360.meta.synced", "synced")} {f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}
             </p>
           </section>

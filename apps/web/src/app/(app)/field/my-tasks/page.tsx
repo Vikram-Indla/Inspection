@@ -132,8 +132,8 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
       <>
         <FieldHeader title={tr("field.myTasks.title", "My Tasks", "مهامي")}
           langHref={langHref} langLabel={langLabel} />
-        <div style={{ flex: 1, padding: 20 }}>
-          <div role="alert" style={{ padding: 16, borderRadius: "var(--radius-md)", background: "var(--status-critical-soft)", color: "var(--status-critical-text)", borderInlineStart: "3px solid var(--status-critical)" }}>
+        <div className="panel-body">
+          <div role="alert" className="alert alert-critical">
             {t("field.dashboard.serviceUnavailable", "Field data is temporarily unavailable (ERR-OPS-001). Try again.")}
           </div>
         </div>
@@ -434,14 +434,14 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
         {/* RIGHT — selected task establishment detail */}
         <div className={styles.detail}>
           {!selected ? (
-            <div style={{ padding: 20 }}>
-              <div style={{ fontWeight: 600, marginBlockEnd: 6 }}>{tr("field.myTasks.selectPrompt", "Select a task", "اختر مهمة")}</div>
+            <div className={styles.empty}>
+              <div className="panel-title">{tr("field.myTasks.selectPrompt", "Select a task", "اختر مهمة")}</div>
               <p className="t-caption">{tr("field.myTasks.selectBody", "Pick a task from the list to see the establishment dossier.", "اختر مهمة من القائمة لعرض ملف المنشأة.")}</p>
             </div>
           ) : (
             <>
               <div className={styles.hero} aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" style={{ width: 40, height: 40 }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" className="avatar-lg">
                   <path d="M3 21V10l7 4v-4l7 4V6l4-2v17" /><path d="M3 21h18" />
                 </svg>
               </div>
@@ -449,14 +449,14 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
               {!dossier ? (
                 <div className={styles.sec}>
                   <div className={styles.secHead}>
-                    <h3 style={{ margin: 0 }}><bdi>{crTitle}</bdi></h3>
+                    <h3><bdi>{crTitle}</bdi></h3>
                   </div>
                   <p className="t-caption">{tr(
                     "field.myTasks.noDossier",
                     "The full establishment dossier is unavailable until a commercial-registration/licence mapping exists for this factory, or Factory 360 access is granted.",
                     "ملف المنشأة الكامل غير متاح حتى يتوفر ربط بالسجل التجاري/الترخيص لهذا المصنع أو تُمنح صلاحية المصنع 360.",
                   )}</p>
-                  <dl className={styles.row2} style={{ marginBlockStart: 16 }}>
+                  <dl className={styles.row2}>
                     <div className={styles.kv}><dt className="k">{tr("field.myTasks.window", "Visit window", "نافذة الزيارة")}</dt><dd className="v id-code">{dt(selected.window_start)}</dd></div>
                     <div className={styles.kv}><dt className="k">{tr("field.myTasks.factoryCode", "Factory code", "رمز المصنع")}</dt><dd className="v"><bdi>{text(selected.factories?.factory_code)}</bdi></dd></div>
                   </dl>
@@ -466,7 +466,7 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
                   {/* 1 — Establishment Data */}
                   <div className={styles.sec}>
                     <div className={styles.secHead}>
-                      <h3 style={{ margin: 0 }}>{tr("field.myTasks.estData", "Establishment Data", "بيانات المنشأة")}</h3>
+                      <h3>{tr("field.myTasks.estData", "Establishment Data", "بيانات المنشأة")}</h3>
                       <span className="badge badge-info">{tr("field.myTasks.licensedEst", "Licensed establishment", "منشأة مرخصة")}</span>
                       <span className="grow" />
                       {timelineHref ? (
@@ -519,7 +519,7 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
                         </dd>
                       </div>
                     </dl>
-                    <p className="t-caption" style={{ marginBlockStart: 10 }}>
+                    <p className="t-caption">
                       {tr("field.myTasks.healthRiskNote", "Health score and risk score are separate, governed concepts.", "درجة الصحة ودرجة الخطورة مفهومان منفصلان محكومان.")}
                     </p>
                   </div>
@@ -540,7 +540,7 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
                   {/* 4 — Visit Location */}
                   <div className={styles.sec}>
                     <h3>{tr("field.myTasks.visitLocation", "Visit Location", "موقع الزيارة")}</h3>
-                    <div className={styles.kv} style={{ marginBlockEnd: 12 }}>
+                    <div className={styles.kv}>
                       <span className="k">{tr("field.myTasks.address", "Address", "العنوان")}</span>
                       <span className="v"><bdi>{addressText}</bdi></span>
                     </div>
@@ -557,8 +557,7 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
                         </>
                       ) : (
                         <>
-                          <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(var(--border-subtle) 1px, transparent 1px)", backgroundSize: "22px 22px", opacity: 0.6 }} />
-                          <span className="t-caption" style={{ position: "relative" }}>{tr("field.myTasks.locUnavailable", "Official location unavailable", "الموقع الرسمي غير متاح")}</span>
+                          <span className="t-caption">{tr("field.myTasks.locUnavailable", "Official location unavailable", "الموقع الرسمي غير متاح")}</span>
                         </>
                       )}
                     </div>
@@ -580,7 +579,7 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
                       <div className={styles.regstack}>
                         <div className={styles.regcard}>
                           <span className="badge badge-pending"><span className="dot" />{tr("field.myTasks.noSourceTag", "No governed source", "لا يوجد مصدر محكوم")}</span>
-                          <p className="t-caption" style={{ marginBlockStart: 8 }}>
+                          <p className="t-caption">
                             {tr("field.myTasks.noSource", "No governed source connected yet for", "لا يوجد مصدر محكوم متصل بعد لـ")} <bdi>{regChipLabel[activeReg]}</bdi>
                           </p>
                         </div>
@@ -607,10 +606,10 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
 
               {/* 6 — Sticky action bar */}
               <div className={styles.actionbar} role="group" aria-label={t("common.actions", "Actions")}>
-                <a className="btn btn-secondary" style={{ flex: 1 }} href={remoteHref}>
+                <a className="btn btn-secondary btn-block" href={remoteHref}>
                   {tr("field.myTasks.startRemote", "Start remote visit", "بدء زيارة عن بُعد")}
                 </a>
-                <a className="btn btn-primary" style={{ flex: 1 }} href={startHref}>
+                <a className="btn btn-primary btn-block" href={startHref}>
                   {tr("field.myTasks.startVisit", "Start visit execution", "بدء تنفيذ الزيارة")}
                 </a>
               </div>

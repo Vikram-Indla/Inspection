@@ -9,7 +9,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { MetricDisplay, MethodologyEntry } from "./dashboard-format";
-import styles from "./dashboard.module.css";
 
 export type MetricStripStrings = {
   methodology: string;
@@ -67,25 +66,22 @@ export default function MetricStrip({
   }, [entry]);
 
   return (
-    <div className={styles.metricStrip} role="group" aria-label={s.methodology}>
+    <div className="kpi-grid" role="group" aria-label={s.methodology}>
       {metrics.map((m) => {
         const hasMethod = !!methodology[m.metricId];
         return (
-          <div className={styles.metricTile} key={m.metricId}>
-            <div className={styles.kpiLabel}>{m.title}</div>
+          <article className="panel kpi" key={m.metricId}>
+            <div className="kpi-label">{m.title}</div>
             {m.kind === "status" ? (
-              <div className={`${styles.statusChip} ${styles[`tone_${m.tone}`]}`}>
-                <span className={styles.dot} aria-hidden="true" />
-                {m.text}
-              </div>
+              <div className="badge badge-pending">{m.text}</div>
             ) : (
-              <div className={`${styles.kpiValue} ${styles[`tone_${m.tone}`]}`}>{m.text}</div>
+              <div className="kpi-value">{m.text}</div>
             )}
-            {m.sub && <div className={styles.kpiDelta}>{m.sub}</div>}
+            {m.sub && <div className="kpi-delta">{m.sub}</div>}
             {hasMethod && (
               <button
                 type="button"
-                className={styles.methodBtn}
+                className="btn btn-ghost btn-sm"
                 aria-haspopup="dialog"
                 onClick={(event) => {
                   openerRef.current = event.currentTarget;
@@ -95,37 +91,35 @@ export default function MetricStrip({
                 {m.kind === "status" ? s.why : s.methodology}
               </button>
             )}
-          </div>
+          </article>
         );
       })}
 
       {entry && (
         <>
-          <div className={styles.scrim} onClick={() => setOpenId(null)} aria-hidden="true" />
           <div
             ref={drawerRef}
-            className={styles.drawer}
+            className="drawer"
             role="dialog"
             aria-modal="true"
             aria-labelledby="method-title"
           >
-            <div className={styles.drawerHead}>
+            <div className="drawer-header">
               <div>
-                <div id="method-title" className={styles.drawerTitle}>{entry.title}</div>
-                <div className={styles.idCode}>{entry.formulaId}</div>
+                <h2 id="method-title">{entry.title}</h2>
+                <div className="id-code">{entry.formulaId}</div>
               </div>
-              <button ref={closeRef} type="button" className={styles.methodClose} onClick={() => setOpenId(null)} aria-label={s.close}>✕</button>
+              <button ref={closeRef} type="button" className="btn btn-secondary btn-icon" onClick={() => setOpenId(null)} aria-label={s.close}>✕</button>
             </div>
-            <div className={styles.drawerBody}>
+            <div className="drawer-body stack">
               {entry.blockedNote && (
-                <div className={`${styles.statusChip} ${styles.tone_warning} ${styles.drawerBlocked}`} role="note">
-                  <span className={styles.dot} aria-hidden="true" />
-                  <span>{s.blockedTitle}: {entry.blockedNote}</span>
+                <div className="alert alert-warning" role="note">
+                  <div><strong>{s.blockedTitle}</strong>: {entry.blockedNote}</div>
                 </div>
               )}
-              <dl className={styles.methodList}>
+              <dl className="panel">
                 {entry.rows.map((row) => (
-                  <div className={styles.methodRow} key={row.label}>
+                  <div className="panel-row" key={row.label}>
                     <dt>{row.label}</dt>
                     <dd>{row.value}</dd>
                   </div>
@@ -133,8 +127,8 @@ export default function MetricStrip({
               </dl>
             </div>
             {entry.drillRoute && (
-              <div className={styles.drawerFoot}>
-                <a className={`${styles.btn} ${styles.btnSecondary}`} href={entry.drillRoute}>{entry.drillLabel || s.drillFallback}</a>
+              <div className="grid-footer">
+                <a className="btn btn-secondary" href={entry.drillRoute}>{entry.drillLabel || s.drillFallback}</a>
               </div>
             )}
           </div>

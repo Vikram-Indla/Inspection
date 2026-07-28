@@ -5,7 +5,7 @@ import { useT } from "@/lib/i18n";
 export default async function ViolationsLoading() {
   const { t } = await useT();
   return (
-    <Shell current="/admin" title={t("admin.viol.r2.title", "Violation Catalogue")} context={<span className="badge badge-info">SCR-ADM-040/041 · ENG-08</span>}>
+    <Shell current="/admin" title={t("admin.viol.r2.title", "Violation Catalogue")} context={<span className="badge badge-info">{t("admin.viol.context", "Violations and penalties")}</span>}>
       <section className="stack" aria-busy="true" aria-live="polite" aria-label={t("admin.viol.loading.aria", "Loading violation configuration")}>
         <span className="t-caption">{t("admin.viol.loading", "Loading violation catalogue and penalty mappings…")}</span>
         {[0, 1, 2].map(index => (

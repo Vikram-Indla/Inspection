@@ -36,33 +36,33 @@ export default function IdentityDossier({
     : hasPlannerPin ? [pLat, pLng] : [24.7136, 46.6753];
 
   return (
-    <div className="sq-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }} role="region" aria-label={factory.name}>
+    <div className="panel panel-body" role="region" aria-label={factory.name}>
       <div>
-        <strong style={{ fontSize: "var(--type-label-size)" }}>{factory.name}</strong>
+        <strong className="panel-title">{factory.name}</strong>
         {factory.grade === "exact"
-          ? <span className="sq-lozenge sq-lozenge--success" style={{ marginInlineStart: 8 }}>{strings.exactBadge}</span>
-          : <span className="sq-lozenge sq-lozenge--warning" style={{ marginInlineStart: 8 }}>{strings.similarBadge}</span>}
-        {factory.degraded && <span className="sq-lozenge sq-lozenge--critical" style={{ marginInlineStart: 8 }}>{strings.degradedBadge}</span>}
-        <p className="sq-caption">{factory.grade === "exact" ? strings.exactRule : strings.similarRule}</p>
+          ? <span className="badge badge-compliant">{strings.exactBadge}</span>
+          : <span className="badge badge-warning">{strings.similarBadge}</span>}
+        {factory.degraded && <span className="badge badge-critical">{strings.degradedBadge}</span>}
+        <p className="tl-meta">{factory.grade === "exact" ? strings.exactRule : strings.similarRule}</p>
       </div>
 
       {/* Identifier grid — bdi-isolated so LTR codes read correctly inside Arabic labels */}
-      <dl className="sq-grid-2" style={{ rowGap: "var(--space-2)" }}>
-        <div><dt className="sq-caption">{strings.crPrefix}</dt><dd><bdi>{factory.cr_number ?? "—"}</bdi></dd></div>
-        <div><dt className="sq-caption">{strings.licenseLabel}</dt><dd><bdi>{factory.license_number ?? strings.licenseNone}</bdi></dd></div>
-        <div><dt className="sq-caption">{strings.factory360}</dt><dd><bdi>{factory.factory_code ?? "—"}</bdi></dd></div>
-        <div><dt className="sq-caption">{factory.region ?? "—"}{factory.city ? `, ${factory.city}` : ""}</dt></div>
+      <dl>
+        <div><dt className="tl-meta">{strings.crPrefix}</dt><dd><bdi>{factory.cr_number ?? "—"}</bdi></dd></div>
+        <div><dt className="tl-meta">{strings.licenseLabel}</dt><dd><bdi>{factory.license_number ?? strings.licenseNone}</bdi></dd></div>
+        <div><dt className="tl-meta">{strings.factory360}</dt><dd><bdi>{factory.factory_code ?? "—"}</bdi></dd></div>
+        <div><dt className="tl-meta">{factory.region ?? "—"}{factory.city ? `, ${factory.city}` : ""}</dt></div>
       </dl>
 
       {/* Provenance — real FND-013 freshness; no invented staleness threshold */}
-      <p className="sq-caption">{strings.freshnessLabel}: <bdi>{factory.source_synced_at ? formatDate(factory.source_synced_at, locale) : strings.freshnessNever}</bdi></p>
+      <p className="tl-meta">{strings.freshnessLabel}: <bdi>{factory.source_synced_at ? formatDate(factory.source_synced_at, locale) : strings.freshnessNever}</bdi></p>
 
       {factory.duplicate && (
-        <div className="sq-banner sq-banner--warning" role="status">
+        <div className="alert alert-warning" role="status">
           <div>
             {strings.duplicateWarning}
             {factory.duplicateVisitId && (
-              <> — <bdi>{factory.duplicateVisitId.slice(0, 8)}</bdi>
+              <>
                 {factory.duplicateVisitStatus && <> · {strings.duplicateStatusLabel}: <bdi>{factory.duplicateVisitStatus}</bdi></>}{" "}
                 <a href={`/visits/${factory.duplicateVisitId}`} target="_blank" rel="noopener noreferrer">{strings.duplicateOpenVisit}</a>
               </>
@@ -72,25 +72,25 @@ export default function IdentityDossier({
       )}
 
       <div>
-        <div className="sq-segmented" role="group" aria-label={strings.mapToggle}>
-          <button type="button" aria-pressed={view === "map"} onClick={() => setView("map")}>{strings.mapToggle.split(" / ")[0]}</button>
-          <button type="button" aria-pressed={view === "text"} onClick={() => setView("text")}>{strings.mapToggle.split(" / ")[1]}</button>
+        <div className="seg" role="group" aria-label={strings.mapToggle}>
+          <button className="seg-opt" type="button" aria-pressed={view === "map"} onClick={() => setView("map")}>{strings.mapToggle.split(" / ")[0]}</button>
+          <button className="seg-opt" type="button" aria-pressed={view === "text"} onClick={() => setView("text")}>{strings.mapToggle.split(" / ")[1]}</button>
         </div>
         {view === "map" ? (
-          <div style={{ blockSize: 220, marginBlockStart: "var(--space-3)" }}>
+          <div className="map-panel">
             <GeoMap center={center} zoom={hasOfficial || hasPlannerPin ? 14 : 6} markers={markers} height="100%" />
           </div>
         ) : (
-          <ul className="sq-caption" style={{ marginBlockStart: "var(--space-3)" }} aria-label={strings.textEquivalent}>
+          <ul className="timeline" aria-label={strings.textEquivalent}>
             <li>{strings.officialPin}: {hasOfficial ? <bdi>{factory.official_lat}, {factory.official_lng}</bdi> : strings.noOfficialPin}</li>
             {hasPlannerPin && <li>{strings.plannerPin}: <bdi>{plannerLat}, {plannerLng}</bdi></li>}
           </ul>
         )}
       </div>
 
-      <p className="sq-caption">{strings.riskContext}: {factory.risk_band ?? strings.riskUnknown}{factory.risk_score != null ? ` (${factory.risk_score})` : ""}</p>
+      <p className="tl-meta">{strings.riskContext}: {factory.risk_band ?? strings.riskUnknown}{factory.risk_score != null ? ` (${factory.risk_score})` : ""}</p>
 
-      <a href={`/factories/${factory.id}`} target="_blank" rel="noopener noreferrer" className="sq-btn sq-btn--secondary">{strings.factory360}</a>
+      <a href={`/factories/${factory.id}`} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">{strings.factory360}</a>
     </div>
   );
 }

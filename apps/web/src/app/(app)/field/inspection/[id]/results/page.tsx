@@ -132,6 +132,8 @@ export default async function VisitResultsPage({ params }: { params: Promise<{ i
     immutableError: tr("field.results.immutable", "This report is locked because the inspection has been submitted. Corrections require a reviewer return.", "هذا التقرير مقفل لأنه تم إرسال التفتيش. يتطلب التصحيح إرجاعاً من المراجع."),
     blockedError: tr("field.results.blocked", "The submission was not accepted:", "لم يتم قبول الإرسال:"),
     signedOutError: tr("field.results.signedOut", "Your session has ended. Sign in again to continue.", "انتهت جلستك. سجّل الدخول مرة أخرى للمتابعة."),
+    connectivityOffline: tr("field.connectivity.offline", "Offline — changes remain on this device until connection returns.", "غير متصل — ستبقى التغييرات على هذا الجهاز حتى عودة الاتصال."),
+    connectivityWeak: tr("field.connectivity.weak", "Weak connection — saving may take longer.", "الاتصال ضعيف — قد يستغرق الحفظ وقتاً أطول."),
   };
 
   const reference = visit?.visit_reference ?? inspection.inspection_no ?? inspectionId.slice(0, 8);

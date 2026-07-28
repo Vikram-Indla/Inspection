@@ -150,7 +150,7 @@ function RecordDrawer({
       />
       <aside
         ref={dialogRef}
-        className={styles.drawer}
+        className="drawer"
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -158,14 +158,14 @@ function RecordDrawer({
         tabIndex={-1}
         data-admin-record-drawer
       >
-        <header className={styles.header}>
+        <header className="drawer-header">
           <div className={styles.heading}>
             <h2 id={titleId}>{record.title}</h2>
             <p id={subtitleId}>{record.subtitle}</p>
           </div>
           <button
             ref={closeRef}
-            className={styles.closeButton}
+            className="btn btn-secondary btn-icon btn-touch"
             type="button"
             onClick={onClose}
             aria-label={labels.close}
@@ -174,7 +174,7 @@ function RecordDrawer({
           </button>
         </header>
 
-        <div className={styles.body}>
+        <div className="drawer-body stack">
           <DrawerGroup title={labels.record} fields={record.record} />
           <DrawerGroup
             title={labels.governance}
@@ -190,14 +190,14 @@ function RecordDrawer({
           />
         </div>
 
-        <footer className={styles.actions}>
+        <footer className="panel-row">
           {record.editHref ? (
-            <Link className="sq-btn sq-btn--prominent" href={record.editHref} onClick={onClose}>
+            <Link className="btn btn-primary btn-touch" href={record.editHref} onClick={onClose}>
               {labels.editThroughRequest}
             </Link>
           ) : (
             <button
-              className="sq-btn sq-btn--prominent"
+              className="btn btn-primary btn-touch"
               type="button"
               disabled
               aria-disabled="true"
@@ -206,10 +206,10 @@ function RecordDrawer({
               {labels.editThroughRequest}
             </button>
           )}
-          <Link className="sq-btn" href={record.auditHref} onClick={onClose}>
+          <Link className="btn btn-secondary btn-touch" href={record.auditHref} onClick={onClose}>
             {labels.viewActivityLog}
           </Link>
-          <button className="sq-btn" type="button" onClick={onClose}>
+          <button className="btn btn-secondary btn-touch" type="button" onClick={onClose}>
             {labels.close}
           </button>
         </footer>

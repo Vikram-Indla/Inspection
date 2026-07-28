@@ -42,8 +42,6 @@ export type BulkFormStrings = {
 
 const PAGE_SIZE = 25;
 const SEL_KEY = "cd021-bulk-selection";
-// M6 — hard cap on any bulk selection (matches the server-side 500-row guard).
-const SELECTION_CAP = 500;
 // M6 — 'validated' is an internal ACTIVE plan state: it blocks duplicates
 // exactly like draft/published/returned.
 const dupOf = (f: F) => f.visits.some(v => ["draft", "validated", "published", "returned"].includes(v.planning_status) && v.visit_type === "periodic");
@@ -52,6 +50,9 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
   factories: F[]; strings: BulkFormStrings; focusedField?: string | null; focusedValue?: string | null; locale: Locale;
   criteriaTree: string;
 }) {
+  // PLN-S05/PLN-S08 — targeting remains usable in browser state, but the
+  // corrected compiler does not yet authorize durable draft persistence.
+  const draftPersistenceExecutable = false;
   const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [q, setQ] = useState("");
@@ -88,10 +89,10 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
   const clampedPage = Math.min(page, pageCount - 1);
   const pageRows = filtered.slice(clampedPage * PAGE_SIZE, clampedPage * PAGE_SIZE + PAGE_SIZE);
 
-  const toggle = (id: string, on: boolean) => setSelected(s => { const n = new Set(s); if (on) { if (n.size >= SELECTION_CAP) return n; n.add(id); } else n.delete(id); return n; });
-  const selectVisible = () => setSelected(s => { const n = new Set(s); for (const f of pageRows) { if (n.size >= SELECTION_CAP) break; if (!dupOf(f)) n.add(f.id); } return n; });
+  const toggle = (id: string, on: boolean) => setSelected(s => { const n = new Set(s); if (on) n.add(id); else n.delete(id); return n; });
+  const selectVisible = () => setSelected(s => { const n = new Set(s); for (const f of pageRows) if (!dupOf(f)) n.add(f.id); return n; });
   const confirmSelectAllResults = () => {
-    setSelected(s => { const n = new Set(s); for (const f of filtered) { if (n.size >= SELECTION_CAP) break; if (!dupOf(f)) n.add(f.id); } return n; });
+    setSelected(s => { const n = new Set(s); for (const f of filtered) if (!dupOf(f)) n.add(f.id); return n; });
     setConfirmingSelectAll(false); setConfirmInput("");
   };
   const clearSelection = () => setSelected(new Set());
@@ -117,6 +118,10 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
   };
   const onSaveDraftClick = () => { void saveDraft(); };
   const onReviewClick = async () => {
+    if (!draftPersistenceExecutable) {
+      router.push("/planning/bulk/review");
+      return;
+    }
     const saved = await saveDraft();
     if (saved) router.push(`/planning/bulk/review?plan=${saved.planId}`);
   };
@@ -135,27 +140,27 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
   };
 
   return (
-    <div className="stack" style={{ gap: "var(--space-6)" }}>
+    <div className="stack">
       {invalidDropped > 0 && (
         <div className="sq-banner sq-banner--warning" role="alertdialog" aria-label={strings.invalidTitle}>
           <div>
             <strong>{strings.invalidTitle}</strong>
             <p>{strings.invalidBody.replace("{n}", String(invalidDropped))}</p>
-            <div className="row" style={{ gap: "var(--space-3)" }}>
-              <button type="button" className="sq-btn sq-btn--secondary" onClick={() => setInvalidDropped(0)}>{strings.invalidKeep}</button>
-              <button type="button" className="sq-btn sq-btn--subtle" onClick={() => { clearSelection(); setInvalidDropped(0); }}>{strings.invalidClear}</button>
+            <div className="row">
+              <button type="button" className="btn btn-secondary" onClick={() => setInvalidDropped(0)}>{strings.invalidKeep}</button>
+              <button type="button" className="btn btn-ghost" onClick={() => { clearSelection(); setInvalidDropped(0); }}>{strings.invalidClear}</button>
             </div>
           </div>
         </div>
       )}
 
-      <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap", alignItems: "flex-end" }}>
-        <div className="field" style={{ maxInlineSize: 280, flex: 1 }}>
+      <div className="grid-toolbar">
+        <div className="field grow">
           <label className="sq-field__label" htmlFor="bulk-filter">{strings.filterLabel}</label>
           <input id="bulk-filter" className="input" value={q} onChange={e => { setQ(e.target.value); setPage(0); }} placeholder={strings.filterPlaceholder} />
         </div>
-        <button type="button" className="sq-btn sq-btn--secondary" onClick={selectVisible}>{strings.selectVisible}</button>
-        <button type="button" className="sq-btn sq-btn--secondary" onClick={() => setConfirmingSelectAll(true)}>{strings.selectAllResults}</button>
+        <button type="button" className="btn btn-secondary" onClick={selectVisible}>{strings.selectVisible}</button>
+        <button type="button" className="btn btn-secondary" onClick={() => setConfirmingSelectAll(true)}>{strings.selectAllResults}</button>
         <span className="t-caption sq-numeric" role="status" aria-live="polite">{strings.resultsCount.replace("{n}", String(filtered.length))}</span>
       </div>
 
@@ -164,15 +169,15 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
           <div>
             <strong>{strings.selectAllConfirmTitle}</strong>
             <p>{strings.selectAllConfirmBody.replaceAll("{n}", String(filtered.length))}</p>
-            <div className="row" style={{ gap: "var(--space-3)", alignItems: "flex-end" }}>
-              <div className="field" style={{ maxInlineSize: 140 }}>
+            <div className="row">
+              <div className="field">
                 <label className="sq-field__label" htmlFor="select-all-confirm-input">{strings.selectAllConfirmInputLabel}</label>
                 <input id="select-all-confirm-input" className="input sq-numeric" value={confirmInput} onChange={e => setConfirmInput(e.target.value)} inputMode="numeric" />
               </div>
-              <button type="button" className="sq-btn sq-btn--prominent" disabled={confirmInput.trim() !== String(filtered.length)} onClick={confirmSelectAllResults}>
+              <button type="button" className="btn btn-primary" disabled={confirmInput.trim() !== String(filtered.length)} onClick={confirmSelectAllResults}>
                 {strings.selectAllConfirmButton.replace("{n}", String(filtered.length))}
               </button>
-              <button type="button" className="sq-btn sq-btn--subtle" onClick={() => { setConfirmingSelectAll(false); setConfirmInput(""); }}>{strings.selectAllConfirmCancel}</button>
+              <button type="button" className="btn btn-ghost" onClick={() => { setConfirmingSelectAll(false); setConfirmInput(""); }}>{strings.selectAllConfirmCancel}</button>
             </div>
           </div>
         </div>
@@ -180,7 +185,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
 
       <div className="sq-tablewrap"><table className="sq-table">
         <thead><tr>
-          <th scope="col" style={{ inlineSize: 36 }}></th>
+          <th scope="col"><span className="sq-sr-only">{strings.selectFactory.replace("{name}", "")}</span></th>
           <th scope="col">{strings.colFactory}</th><th scope="col">{strings.colCr}</th><th scope="col">{strings.colCity}</th>
           <th scope="col" className="sq-td-num">{strings.colRisk}</th><th scope="col">{strings.colEligibility}</th>
           <th scope="col">{strings.colProvenance}</th><th scope="col">{strings.colDataQuality}</th>
@@ -192,8 +197,8 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
             const isFocused = focusedField != null && focusedValue != null
               && String((f as unknown as Record<string, unknown>)[focusedField] ?? "").toLowerCase() === focusedValue.toLowerCase();
             return (
-              <tr key={f.id} style={isFocused ? { outline: "2px solid var(--action-primary)", outlineOffset: -2 } : undefined}>
-                <td><input type="checkbox" disabled={dup} checked={selected.has(f.id)} onChange={e => toggle(f.id, e.target.checked)} aria-label={strings.selectFactory.replace("{name}", f.name)} /></td>
+              <tr key={f.id} aria-selected={selected.has(f.id) || isFocused}>
+                <td><label className={dup ? "sq-choice is-disabled" : "sq-choice"}><input type="checkbox" disabled={dup} checked={selected.has(f.id)} onChange={e => toggle(f.id, e.target.checked)} aria-label={strings.selectFactory.replace("{name}", f.name)} /></label></td>
                 <td><a href={`/factories/${f.id}`} target="_blank" rel="noreferrer"><strong>{f.name}</strong></a> <span className="t-caption sq-numeric"><bdi>{f.factory_code}</bdi></span></td>
                 <td className="sq-numeric"><bdi>{f.cr_number}</bdi></td>
                 <td>{f.city ?? "—"}</td>
@@ -208,54 +213,60 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
       </table></div>
       <p className="t-caption">{strings.riskAdvisory}</p>
 
-      <div className="row" style={{ gap: "var(--space-3)", alignItems: "center", justifyContent: "center" }}>
-        <button type="button" className="sq-btn sq-btn--subtle" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={clampedPage === 0}>{strings.pagePrev}</button>
+      <div className="grid-footer">
+        <button type="button" className="btn btn-ghost" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={clampedPage === 0}>{strings.pagePrev}</button>
         <span className="t-caption sq-numeric" role="status" aria-live="polite">
           {strings.pageStatus.replace("{a}", String(filtered.length === 0 ? 0 : clampedPage * PAGE_SIZE + 1)).replace("{b}", String(Math.min(filtered.length, (clampedPage + 1) * PAGE_SIZE))).replace("{n}", String(filtered.length))}
         </span>
-        <button type="button" className="sq-btn sq-btn--subtle" onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={clampedPage >= pageCount - 1}>{strings.pageNext}</button>
+        <button type="button" className="btn btn-ghost" onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={clampedPage >= pageCount - 1}>{strings.pageNext}</button>
       </div>
 
-      <div className="panel" style={{ padding: "var(--space-6)" }}>
-        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.summaryTitle}</h4>
+      <section className="panel">
+        <header className="panel-header"><h3 className="panel-title">{strings.summaryTitle}</h3></header>
+        <div className="panel-body">
         {sel.length === 0 ? <p className="t-caption">{strings.summaryEmpty}</p> : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: "var(--space-4)" }}>
-            <div><span className="t-caption">{strings.summarySelected}</span><div className="sq-numeric"><strong>{sel.length}</strong></div></div>
-            <div><span className="t-caption">{strings.summaryByBand}</span>
-              <div className="row" style={{ flexWrap: "wrap", gap: "var(--space-2)" }}>
+          <div className="sq-kpi-row">
+            <div className="sq-kpi"><span className="t-caption">{strings.summarySelected}</span><strong className="sq-kpi__value">{sel.length}</strong></div>
+            <div className="sq-kpi"><span className="t-caption">{strings.summaryByBand}</span>
+              <div className="row">
                 {Object.entries(byBand).map(([b, n]) => <span key={b} className={`sq-lozenge ${b === "high" ? "sq-lozenge--critical" : b === "medium" ? "sq-lozenge--warning" : "sq-lozenge--success"}`}>{strings.riskBands[b] ?? b} · {n}</span>)}
               </div></div>
-            <div><span className="t-caption">{strings.summaryByRegion}</span>
-              <div className="row" style={{ flexWrap: "wrap", gap: "var(--space-2)" }}>
+            <div className="sq-kpi"><span className="t-caption">{strings.summaryByRegion}</span>
+              <div className="row">
                 {Object.entries(byRegion).map(([r, n]) => <span key={r} className="sq-lozenge sq-lozenge--info"><bdi>{r}</bdi> · {n}</span>)}
               </div></div>
           </div>
         )}
-      </div>
+        </div>
+      </section>
 
       {/* persistent selection bar — cross-page count + draft + hand-off to the P02 review step */}
       <div className="panel panel-row sticky">
-        <div className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
+        <div className="row">
           <strong className="sq-numeric" aria-live="polite">{strings.selectionBar.replace("{n}", String(selected.size))}</strong>
           {selected.size === 0 && <span className="sq-lozenge sq-lozenge--warning">⚠ {strings.readyNothing}</span>}
-          {selected.size > 0 && <button type="button" className="sq-btn sq-btn--subtle" onClick={clearSelection}>{strings.clearSelection}</button>}
+          {selected.size > 0 && <button type="button" className="btn btn-ghost" onClick={clearSelection}>{strings.clearSelection}</button>}
           {draftRef && !saveFailed && <span className="t-caption" role="status">{strings.draftSaved.replace("{ref}", draftRef)}</span>}
+          {!draftPersistenceExecutable && (
+            <span className="t-caption sq-lozenge sq-lozenge--info" role="status">{strings.draftSaveFailed}</span>
+          )}
         </div>
-        <div className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
+        <div className="row">
           {saveFailed && (
             <>
               <span className="t-caption sq-lozenge sq-lozenge--critical" role="alert">{strings.draftSaveFailed}</span>
-              <a className="sq-btn sq-btn--secondary" href="/planning/bulk/review">{strings.reviewFallback}</a>
+              <a className="btn btn-secondary" href="/planning/bulk/review">{strings.reviewFallback}</a>
             </>
           )}
           {selected.size > 0 && (
-            <button type="button" className="sq-btn sq-btn--secondary" disabled={saving} onClick={onSaveDraftClick}>
+            <button type="button" className="btn btn-secondary"
+              disabled={!draftPersistenceExecutable || saving} onClick={onSaveDraftClick}>
               {saving ? strings.savingDraft : strings.saveDraft}
             </button>
           )}
           {selected.size > 0
-            ? <button type="button" className="sq-btn sq-btn--prominent" disabled={saving} onClick={() => { void onReviewClick(); }}>{strings.reviewContinue}</button>
-            : <button type="button" className="sq-btn sq-btn--prominent" disabled>{strings.reviewContinue}</button>}
+            ? <button type="button" className="btn btn-primary" disabled={saving} onClick={() => { void onReviewClick(); }}>{strings.reviewContinue}</button>
+            : <button type="button" className="btn btn-primary" disabled>{strings.reviewContinue}</button>}
         </div>
       </div>
     </div>

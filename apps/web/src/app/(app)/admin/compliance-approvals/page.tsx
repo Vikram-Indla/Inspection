@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Shell from "@/components/Shell";
+import Shell from "@/app/(app)/admin/_components/AdminShell";
 import { getLocale } from "@/lib/i18n";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 
@@ -57,11 +57,11 @@ export default async function ComplianceApprovalQueue({
   const sp = await searchParams;
   const ar = await getLocale() === "ar";
   const copy = ar ? {
-    title: "قائمة اعتماد إعدادات الامتثال", makerChecker: "فصل المُنشئ عن المُراجع",
+    title: "قائمة الاعتماد", makerChecker: "فصل المُنشئ عن المُراجع",
     distinct: "منفصلة عن مراجعة تقارير التفتيش واعتمادها",
     boundaryTitle: "قرارات إعدادات الامتثال فقط.",
     boundaryBody: "تراجع هذه القائمة مكوّنات طلبات إعداد الامتثال وجاهزيتها للنشر. ولا تتضمن تقارير التفتيش أو مراجعات المستوى الثاني.",
-    scoringHold: "قواعد أوزان البنود واستبعاد الدرجات (CR-471/472) غير مهيأة، ولا تقبلها دورة الطلبات الحالية.",
+    scoringHold: "قواعد أوزان البنود واستبعاد الدرجات غير مهيأة، ولا تقبلها دورة الطلبات الحالية.",
     workload: "عبء المراجعة", workloadHelp: "تُرتب الطلبات المتاحة وفق سياسات RLS حسب وقت التقديم. يُعرض العمر كحقيقة دون استنتاج مستوى خدمة أو أولوية غير معتمدة.",
     register: "سجل الطلبات", filterAria: "حالة قائمة الاعتماد",
     ownExcluded: "من طلباتك مستبعدة.", ownRule: "لا يجوز لمنشئ الطلب اتخاذ القرار بشأن طلبه أو نشره. وتفرض دالة قاعدة البيانات القاعدة نفسها.",
@@ -77,11 +77,11 @@ export default async function ComplianceApprovalQueue({
     immutableRevision: "يفتح مساحة الإصدار الحالي غير القابل للتعديل، وتبقى القرارات محكومة بدوال قاعدة البيانات.",
     open: "فتح مساحة عمل المراجعة",
   } : {
-    title: "Compliance Approval Queue", makerChecker: "CCR maker-checker",
+    title: "Approval Queue", makerChecker: "CCR maker-checker",
     distinct: "Distinct from Inspection Review & Approval",
     boundaryTitle: "Compliance configuration decisions only.",
     boundaryBody: "This queue reviews CCR components and publication readiness. It does not contain inspection reports or Level 2 inspection reviews.",
-    scoringHold: "Item-weight and score-exclusion rules (CR-471/472) are Not configured and are not accepted by the current request workflow.",
+    scoringHold: "Item-weight and score-exclusion rules are Not configured and are not accepted by the current request workflow.",
     workload: "Review workload", workloadHelp: "RLS-scoped requests are ordered by submitted time. Age is shown as a fact; no unapproved SLA or priority is inferred.",
     register: "Request register", filterAria: "Approval queue status",
     ownExcluded: "own requests excluded.", ownRule: "Makers cannot decide or publish their own requests. The database RPC enforces the same rule.",
@@ -137,15 +137,15 @@ export default async function ComplianceApprovalQueue({
 
   return (
     <Shell current="/admin/compliance-approvals" title={copy.title} context={<><span className="badge badge-info">{copy.makerChecker}</span><span className="t-caption">{copy.distinct}</span></>}>
-      <div className="sq-banner" role="note"><strong>{copy.boundaryTitle}</strong> {copy.boundaryBody}</div>
-      <div className="sq-banner sq-banner--warning" role="note">{copy.scoringHold}</div>
+      <div className="alert" role="note"><strong>{copy.boundaryTitle}</strong> {copy.boundaryBody}</div>
+      <div className="alert alert-warning" role="note">{copy.scoringHold}</div>
       <div className="ccr-register-head"><div><h3>{copy.workload}</h3><p className="t-caption">{copy.workloadHelp}</p></div><Link className="btn btn-secondary btn-touch" href="/admin/compliance-requests">{copy.register}</Link></div>
       <nav className="cmp-approval-filters" aria-label={copy.filterAria}>
         {Object.entries(FILTERS).map(([key, entry]) => <Link key={key} className={`btn btn-touch ${filterKey === key ? "btn-primary btn-lg" : "btn-secondary"}`} aria-current={filterKey === key ? "page" : undefined} href={`/admin/compliance-approvals?view=${key}`}>{ar ? ({ pending: "قيد المراجعة", partial: "مقبول جزئياً", publish: "جاهز للنشر" } as Record<string, string>)[key] : entry.label}</Link>)}
       </nav>
-      {ownRows.length ? <div className="sq-banner sq-banner--warning" role="status"><strong>{ownRows.length} {copy.ownExcluded}</strong> {copy.ownRule}</div> : null}
-      {enrichmentDegraded ? <div className="sq-banner sq-banner--warning" role="alert"><strong>{copy.degradedTitle}</strong> {copy.degradedBody} <a className="sq-link" href={`/admin/compliance-approvals?view=${filterKey}`}>{copy.retryDetails}</a></div> : null}
-      {queueReadFailed ? <div className="panel"><div className="sq-state" role="alert"><span className="sq-state__glyph" aria-hidden="true">⚠</span><h4>{copy.unavailableTitle}</h4><p className="t-caption">{copy.unavailableBody}</p><a className="sq-link" href={`/admin/compliance-approvals?view=${filterKey}`}>{copy.retryQueue}</a></div></div> : rows.length === 0 ? <div className="panel"><div className="sq-state" role="status"><span className="sq-state__glyph" aria-hidden="true">✓</span><h4>{copy.noPrefix} {filterLabel.toLocaleLowerCase(ar ? "ar" : "en")} {copy.noSuffix}</h4><p className="t-caption">{copy.emptyBody}</p></div></div> : <div className="cmp-approval-list">{rows.map(row => {
+      {ownRows.length ? <div className="alert alert-warning" role="status"><strong>{ownRows.length} {copy.ownExcluded}</strong> {copy.ownRule}</div> : null}
+      {enrichmentDegraded ? <div className="alert alert-warning" role="alert"><strong>{copy.degradedTitle}</strong> {copy.degradedBody} <a className="sq-link" href={`/admin/compliance-approvals?view=${filterKey}`}>{copy.retryDetails}</a></div> : null}
+      {queueReadFailed ? <div className="panel"><div className="saqeel-state" role="alert"><span className="saqeel-state__glyph" aria-hidden="true">⚠</span><h4>{copy.unavailableTitle}</h4><p className="t-caption">{copy.unavailableBody}</p><a className="sq-link" href={`/admin/compliance-approvals?view=${filterKey}`}>{copy.retryQueue}</a></div></div> : rows.length === 0 ? <div className="panel"><div className="saqeel-state" role="status"><span className="saqeel-state__glyph" aria-hidden="true">✓</span><h4>{copy.noPrefix} {filterLabel.toLocaleLowerCase(ar ? "ar" : "en")} {copy.noSuffix}</h4><p className="t-caption">{copy.emptyBody}</p></div></div> : <div className="cmp-approval-list">{rows.map(row => {
         const key = revisionKey(row.id, row.current_revision);
         const current = componentsByRevision.get(key) ?? [];
         const counts = current.reduce<Record<string, number>>((acc, component) => ({ ...acc, [component.component_status]: (acc[component.component_status] ?? 0) + 1 }), {});
@@ -153,7 +153,7 @@ export default async function ComplianceApprovalQueue({
         const progress = Object.entries(counts).map(([status, count]) => `${statusLabel(status, ar)} ${count}`).join(" · ");
         const coverage = Array.from(new Set(current.map(component => entityLabel(component.entity_kind, ar)))).join(" · ");
         const auditCount = Array.isArray(row.audit_references) ? row.audit_references.length : null;
-        return <article className="panel cmp-approval-card" key={row.id}><header><div><p className="sq-overline"><bdi>{row.request_number}</bdi> · {row.request_type === "create" ? copy.create : copy.modify} · {copy.revision} {row.current_revision}</p><h3>{row.title}</h3></div><span className={`sq-lozenge ccr-status ccr-status--${row.status}`}>{statusLabel(row.status, ar)}</span></header><dl className="cmp-approval-facts"><div><dt>{copy.submitted}</dt><dd className="numeric">{timestamp(row.submitted_at, copy.unavailable)}</dd></div><div><dt>{copy.components}</dt><dd>{componentsAvailable ? current.length : copy.unavailable}</dd></div><div><dt>{copy.progress}</dt><dd>{componentsAvailable ? progress || copy.noComponents : copy.unavailable}</dd></div><div><dt>{copy.dependencies}</dt><dd>{dependenciesAvailable ? dependencyCount : copy.unavailable}</dd></div><div><dt>{copy.coverage}</dt><dd>{componentsAvailable ? coverage || copy.noComponents : copy.unavailable}</dd></div><div><dt>{copy.auditReceipts}</dt><dd>{auditCount ?? copy.unavailable}{row.publication_audit_reference ? <> · {copy.publicationReceipt} <bdi>{row.publication_audit_reference}</bdi></> : null}</dd></div></dl><footer><span className="t-caption">{copy.correlation} <bdi>{row.correlation_id}</bdi> · {copy.immutableRevision}</span><Link className="btn btn-primary btn-lg btn-touch" href={`/admin/compliance-requests/${row.id}?from=approval-queue`}>{copy.open}</Link></footer></article>;
+        return <article className="panel cmp-approval-card" key={row.id}><header><div><p className="sq-overline"><bdi>{row.request_number}</bdi> · {row.request_type === "create" ? copy.create : copy.modify} · {copy.revision} {row.current_revision}</p><h3>{row.title}</h3></div><span className={`badge ccr-status ccr-status--${row.status}`}>{statusLabel(row.status, ar)}</span></header><dl className="cmp-approval-facts"><div><dt>{copy.submitted}</dt><dd className="numeric">{timestamp(row.submitted_at, copy.unavailable)}</dd></div><div><dt>{copy.components}</dt><dd>{componentsAvailable ? current.length : copy.unavailable}</dd></div><div><dt>{copy.progress}</dt><dd>{componentsAvailable ? progress || copy.noComponents : copy.unavailable}</dd></div><div><dt>{copy.dependencies}</dt><dd>{dependenciesAvailable ? dependencyCount : copy.unavailable}</dd></div><div><dt>{copy.coverage}</dt><dd>{componentsAvailable ? coverage || copy.noComponents : copy.unavailable}</dd></div><div><dt>{copy.auditReceipts}</dt><dd>{auditCount ?? copy.unavailable}{row.publication_audit_reference ? <> · {copy.publicationReceipt} <bdi>{row.publication_audit_reference}</bdi></> : null}</dd></div></dl><footer><span className="t-caption">{copy.correlation} <bdi>{row.correlation_id}</bdi> · {copy.immutableRevision}</span><Link className="btn btn-primary btn-lg btn-touch" href={`/admin/compliance-requests/${row.id}?from=approval-queue`}>{copy.open}</Link></footer></article>;
       })}</div>}
     </Shell>
   );

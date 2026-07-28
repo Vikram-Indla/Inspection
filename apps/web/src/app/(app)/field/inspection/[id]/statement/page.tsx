@@ -59,7 +59,7 @@ export default async function VisitStatement({ params }: { params: Promise<{ id:
         langHref={locale === "ar" ? "/locale?set=en" : "/locale?set=ar"}
         langLabel={locale === "ar" ? "EN" : "AR"}
       />
-      <main className={`${styles.page} ${styles.statementPage}`}>
+      <main className={`${styles.page} ${styles.statementPage}`} data-screen-id="EXE-S17">
         <div className="alert alert-immutable" role="status">
           <div>
             <strong>{tr("field.statement.final", "Final version — not editable.", "النسخة النهائية غير قابلة للتعديل.")}</strong>{" "}

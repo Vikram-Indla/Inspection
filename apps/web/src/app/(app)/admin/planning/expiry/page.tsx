@@ -1,4 +1,4 @@
-import Shell from "@/components/Shell";
+import Shell from "@/app/(app)/admin/_components/AdminShell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
@@ -96,12 +96,12 @@ export default async function PlanningExpiry() {
 
   return (
     <Shell current="/admin/planning/expiry" title={t("admin.planning.expiry.title", "Planning expiry rules")}
-      context={<span className="sq-lozenge sq-lozenge--info">PLN-CON-013 · planning.configure_expiry</span>}>
-      <div className="sq-banner"><div>
+      context={<span className="badge badge-info">PLN-CON-013 · planning.configure_expiry</span>}>
+      <div className="alert"><div>
         <strong>{t("admin.planning.expiry.banner.title", "One enabled version per rule type.")}</strong>{" "}
         {t("admin.planning.expiry.banner.body", "Enabling a version retires every other version of that rule type. New versions are created disabled so nothing changes silently; every change is recorded in the audit trail.")}
       </div></div>
-      {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("admin.planning.expiry.error", "Couldn’t load expiry rules. Nothing was changed. Try again.")}</strong></div></div>}
+      {error && <div className="alert alert-critical" role="alert"><div><strong>{t("admin.planning.expiry.error", "Couldn’t load expiry rules. Nothing was changed. Try again.")}</strong></div></div>}
       <ExpiryAdmin rows={rows} canConfigure={canConfigure} labels={labels} />
     </Shell>
   );

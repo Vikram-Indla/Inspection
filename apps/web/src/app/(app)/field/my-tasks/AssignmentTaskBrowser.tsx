@@ -169,7 +169,7 @@ export default function AssignmentTaskBrowser({
               className={`${styles.item} ${selectedId === task.id ? styles.itemActive : ""}`}>
               <Link href={`/field/my-tasks?task=${task.id}`} prefetch={false} className={styles.itemMain}
                 aria-current={selectedId === task.id ? "true" : undefined}>
-                <span className={styles.kv} style={{ flex: 1 }}>
+                <span className={`${styles.kv} grow`}>
                   <span className={`id-code ${styles.itemId}`}>#{task.id.slice(0, 8)}</span>
                   <span className={styles.itemName}><bdi>{task.factory.name}</bdi></span>
                   <span className="k">{windowStartLabels[task.id] ?? "—"}</span>

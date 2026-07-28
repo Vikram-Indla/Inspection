@@ -46,7 +46,7 @@ export default async function VisitsCalendar() {
     viewDay: t("visit.cal.viewDay", "Day"),
     viewWeek: t("visit.cal.viewWeek", "Week"),
     viewMonth: t("visit.cal.viewMonth", "Month"),
-    viewSwitchAria: t("visit.cal.viewSwitchAria", "Calendar view (M02-038)"),
+    viewSwitchAria: t("visit.cal.viewSwitchAria", "Calendar view"),
     prev: t("visit.cal.prev", "Previous"),
     next: t("visit.cal.next", "Next"),
     today: t("visit.cal.today", "Today"),

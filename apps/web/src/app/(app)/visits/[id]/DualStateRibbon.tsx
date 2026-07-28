@@ -13,7 +13,7 @@ export type RibbonTrack = {
   id: "planning" | "operational" | "assignment" | "inspection" | "review";
   domainLabel: string;      // "Planning", "Operational", …
   stateLabel: string;       // translated current state
-  tone: string;             // sq-lozenge tone class ("" | sq-lozenge--warning | …)
+  tone: string;             // existing Saqeel badge tone class
   eventLabel: string;       // latest verified event + time, or "no verified event"
   sourceLabel: string;      // who/what proved it (audit / field app / assignment / …)
   boundaryLabel: string;    // what this domain permits from Visit Detail
@@ -33,6 +33,7 @@ export type RibbonStrings = {
 const GLYPH: Record<RibbonTrack["id"], string> = {
   planning: "▣", operational: "●", assignment: "⬡", inspection: "◇", review: "◆",
 };
+const badgeTone = (tone: string) => tone || "badge-pending";
 
 export default function DualStateRibbon({ tracks, strings }: { tracks: RibbonTrack[]; strings: RibbonStrings }) {
   const [active, setActive] = useState(0);
@@ -54,9 +55,12 @@ export default function DualStateRibbon({ tracks, strings }: { tracks: RibbonTra
 
   const cur = tracks[active];
   return (
-    <section className="panel sq-ribbon" aria-label={strings.heading} style={{ padding: "var(--space-6)" }}>
-      <h4 style={{ margin: 0, marginBlockEnd: "var(--space-4)" }}>{strings.heading}</h4>
-      <div className="sq-ribbon__tracks" role="tablist" aria-label={strings.tablistLabel} aria-orientation="horizontal">
+    <section className="panel" aria-labelledby="visit-lifecycle-heading">
+      <div className="panel-header">
+        <h2 className="panel-title" id="visit-lifecycle-heading">{strings.heading}</h2>
+      </div>
+      <div className="panel-body stack">
+      <div className="tabs" role="tablist" aria-label={strings.tablistLabel} aria-orientation="horizontal">
         {tracks.map((tr, i) => (
           <button
             key={tr.id}
@@ -66,24 +70,27 @@ export default function DualStateRibbon({ tracks, strings }: { tracks: RibbonTra
             aria-selected={i === active}
             aria-controls="ribbon-panel"
             tabIndex={i === active ? 0 : -1}
-            className={`sq-ribbon__track ${i === active ? "is-active" : ""}`}
+            className={`tab ${i === active ? "is-active" : ""}`}
             onClick={() => setActive(i)}
             onKeyDown={e => onKeyDown(e, i)}
           >
-            <span className="sq-ribbon__glyph" aria-hidden="true">{GLYPH[tr.id]}</span>
-            <span className="sq-ribbon__domain">{tr.domainLabel}</span>
-            <span className={`sq-lozenge ${tr.tone}`}>{tr.stateLabel}</span>
+            <span aria-hidden="true">{GLYPH[tr.id]}</span>
+            <span>{tr.domainLabel}</span>
+            <span className={`badge ${badgeTone(tr.tone)}`}>{tr.stateLabel}</span>
           </button>
         ))}
       </div>
-      <div id="ribbon-panel" role="tabpanel" aria-labelledby={`ribbon-tab-${cur.id}`} tabIndex={0} className="sq-ribbon__panel">
-        <dl className="sq-ribbon__facts">
-          <div><dt>{strings.stateWord}</dt><dd><span className={`sq-lozenge ${cur.tone}`}>{cur.stateLabel}</span></dd></div>
-          <div><dt>{strings.latestWord}</dt><dd>{cur.eventLabel}</dd></div>
-          <div><dt>{strings.sourceWord}</dt><dd>{cur.sourceLabel}</dd></div>
-          <div><dt>{strings.boundaryWord}</dt><dd>{cur.boundaryLabel}</dd></div>
+      <div id="ribbon-panel" role="tabpanel" aria-labelledby={`ribbon-tab-${cur.id}`} tabIndex={0} className="panel">
+        <div className="panel-body">
+        <dl className="desc">
+          <dt>{strings.stateWord}</dt><dd><span className={`badge ${badgeTone(cur.tone)}`}>{cur.stateLabel}</span></dd>
+          <dt>{strings.latestWord}</dt><dd>{cur.eventLabel}</dd>
+          <dt>{strings.sourceWord}</dt><dd>{cur.sourceLabel}</dd>
+          <dt>{strings.boundaryWord}</dt><dd>{cur.boundaryLabel}</dd>
         </dl>
-        <a className="sq-link" href={cur.anchorHref}>{cur.anchorLabel}</a>
+        <a className="btn btn-ghost" href={cur.anchorHref}>{cur.anchorLabel}</a>
+        </div>
+      </div>
       </div>
     </section>
   );

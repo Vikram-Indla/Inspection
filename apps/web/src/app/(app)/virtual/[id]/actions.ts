@@ -40,7 +40,7 @@ export async function rescheduleSession(_: RoomActionResult, fd: FormData): Prom
   const appointment_at = String(fd.get("appointment_at") ?? "");
   const clientRev = String(fd.get("rev") ?? "");
   if (!appointment_at || Number.isNaN(Date.parse(appointment_at)))
-    return { error: "A valid appointment date/time is required (M05-002)." };
+    return { error: "A valid appointment date/time is required." };
   if (!isPlausibleDate(appointment_at)) return { error: PLAUSIBLE_DATE_ERROR };
   const { data: s, error: sErr } = await sb.from("virtual_sessions")
     .select("id, state, timeline, visit_id, visits(factories(name), assignments(inspector_id))").eq("id", session_id).single();
@@ -232,7 +232,7 @@ export async function closeSession(_: RoomActionResult, fd: FormData): Promise<R
   const reason = String(fd.get("reason") ?? "").trim();
   const comments = String(fd.get("comments") ?? "").trim();
   const clientRev = String(fd.get("rev") ?? "");
-  if (!reason) return { error: "A close/cancel reason is mandatory (M05-006)." };
+  if (!reason) return { error: "A close/cancel reason is mandatory." };
   const { data: s, error: sErr } = await sb.from("virtual_sessions")
     .select("id, state, timeline, visits(factories(name), assignments(inspector_id))").eq("id", session_id).single();
   if (sErr) { console.error("[virtual close session read]", sErr); return { error: SYSTEM_ERROR }; }
@@ -257,5 +257,5 @@ export async function closeSession(_: RoomActionResult, fd: FormData): Promise<R
   }
   revalidatePath(`/virtual/${session_id}`);
   revalidatePath("/virtual");
-  return { ok: "Session closed — reason recorded on the timeline (M05-005/006, audited)" };
+  return { ok: "Session closed — reason recorded on the timeline (, audited)" };
 }

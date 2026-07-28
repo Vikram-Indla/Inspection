@@ -58,7 +58,6 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
         {header(t("field.ws.notFound", "Not found"))}
         <div className={styles.page}>
           <div className="empty">
-            <div style={{ fontSize: 32 }} aria-hidden="true">∅</div>
             <div className="empty-title">{t("field.ws.notFound", "Not found")}</div>
           </div>
         </div>
@@ -73,7 +72,6 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
         {header(t("field.ws.notConfiguredTitle", "Not configured"))}
         <div className={styles.page}>
           <div className="empty">
-            <div style={{ fontSize: 32 }} aria-hidden="true">∅</div>
             <div className="empty-title">{t("field.ws.notConfigured", "Inspection package not configured")}</div>
             <p className="t-caption">{t("field.ws.notConfiguredDesc", "This report type is not configured for field execution.")}</p>
           </div>
@@ -339,7 +337,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     .map(e => ({ linked_id: e.linked_id }));
   const fvStrings: FactoryVerificationStrings = {
     title: t("field.fv.title", "Factory information verification"),
-    hint: t("field.fv.hint", "Confirm each Senaei-sourced attribute or record what you observed on site. Observations are stored separately — the source record is never overwritten (M04-112)."),
+    hint: t("field.fv.hint", "Confirm each Senaei-sourced attribute or record what you observed on site. Observations are stored separately — the source record is never overwritten."),
     sourceTag: t("field.fv.sourceTag", "Senaei source"),
     colField: t("field.fv.colField", "Attribute"),
     colSource: t("field.fv.colSource", "Source value"),
@@ -563,13 +561,13 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     completionPendingSync: t("field.ws.completionPendingSync", "Not submitted yet — this is queued on the device and will submit exactly once when the connection returns. No version exists until the server assigns one."),
     completionFailedTitle: t("field.ws.completionFailedTitle", "Submission did not complete."),
     completionFailedBody: t("field.ws.completionFailedBody", "The server rejected this submission, so no submitted version was created. Your answers are safe on this device. Retry, or contact your supervisor if it keeps failing."),
-    lockedSection: t("field.ws.lockedSection", "Not in return scope — locked read-only (M06-043); DB also rejects edits."),
+    lockedSection: t("field.ws.lockedSection", "Not in return scope — locked read-only; DB also rejects edits."),
     mandatoryPhoto: t("field.ws.mandatoryPhoto", "📷 Mandatory photo"),
     submitBtn: t("field.ws.submitBtn", "Review & submit — final version"),
-    autoViolation: t("field.ws.autoViolation", "{code} → auto-violation {violation}{actionForm}{photo} (config-driven, non-overridable M09-026)"),
+    autoViolation: t("field.ws.autoViolation", "{code} → auto-violation {violation}{actionForm}{photo} (config-driven, non-overridable )"),
     plusActionForm: t("field.ws.plusActionForm", " + blocking action form"),
     plusPhoto: t("field.ws.plusPhoto", " + mandatory photo"),
-    evidenceQueued: t("field.ws.evidenceQueued", "Evidence queued for {code} · sha256 {sha}… — linked, custody-stamped (ENG-07)"),
+    evidenceQueued: t("field.ws.evidenceQueued", "Evidence queued for {code} · sha256 {sha}… — linked, custody-stamped"),
     blockers: t("field.ws.blockers", "Blockers: {items} unanswered (ERR-SUB-001 — state stays in progress)"),
     submitting: t("field.ws.submitting", "Submitting final version v{v} (idempotency-protected)…"),
     queuedOffline: t("field.ws.queuedOffline", "Queued — will submit exactly once on reconnect (never claims submitted while unsynced)"),
@@ -610,7 +608,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     sumViolations: t("field.ws.sum.violations", "Violations"),
     sumEvidence: t("field.ws.sum.evidence", "Evidence"),
     ctxTitle: t("field.ws.ctx.title", "Site conditions"),
-    ctxHint: t("field.ws.ctx.hint", "These flags drive conditional checklist visibility (M04-119); they persist with the inspection."),
+    ctxHint: t("field.ws.ctx.hint", "These flags drive conditional checklist visibility; they persist with the inspection."),
     ctxYes: t("field.ws.ctx.yes", "Yes"),
     ctxNo: t("field.ws.ctx.no", "No"),
     ctxLabels,
@@ -659,7 +657,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
       empty: tr("field.ws.evReview.empty", "No evidence captured yet.", "لم يتم التقاط أي أدلة بعد."),
       previewAlt: tr("field.ws.evReview.previewAlt", "Captured evidence preview", "معاينة الدليل الملتقط"),
     },
-    afBlocking: t("field.ws.af.blocking", "Blocking — submission refused until this form is complete (M09-027)"),
+    afBlocking: t("field.ws.af.blocking", "Blocking — submission refused until this form is complete"),
     afComplete: t("field.ws.af.complete", "Complete"),
     afIncomplete: t("field.ws.af.incomplete", "Incomplete"),
     afSaved: t("field.ws.af.saved", "Action form saved for {code}"),
@@ -722,25 +720,25 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     panelWindow: t("field.ws.panel.window", "Visit window"),
     panelTypeMode: t("field.ws.panel.typeMode", "Type · mode"),
     panelPkg: t("field.ws.panel.pkg", "Checklist version used for the inspection (locked)"),
-    prevSource: t("field.ws.prev.source", "Comparing against the factory's latest approved inspection {ref} · {date} (M04-136/137)"),
+    prevSource: t("field.ws.prev.source", "Comparing against the factory's latest approved inspection {ref} · {date}"),
     prevLine: t("field.ws.prev.line", "Previous inspection: {value} · {n} evidence"),
     prevNoAnswer: t("field.ws.prev.noAnswer", "not answered"),
     evSyncedAlt: t("field.ws.ev.syncedAlt", "Synced evidence"),
     evArchived: t("field.ws.ev.archived", "Archived — replaced"),
     evReplace: t("field.ws.ev.replace", "Replace"),
     evDelete: t("field.ws.ev.delete", "Delete"),
-    evDeletedMsg: t("field.ws.ev.deleted", "Evidence removed from the checklist — soft-deleted with reason, audit event recorded (M04-164)"),
+    evDeletedMsg: t("field.ws.ev.deleted", "Evidence removed from the checklist — soft-deleted with reason, audit event recorded"),
     saveFailed: t("field.ws.saveFailed", "This change could not be synchronized. It remains queued where possible — try again."),
-    evDeleteQueuedOffline: t("field.ws.ev.deleteQueued", "Delete queued — will apply with reason on reconnect (M04-164)"),
-    evArchiveQueued: t("field.ws.ev.archiveQueued", "Replacement queued for {code} — previous file will be archived, never destroyed (M04-163)"),
-    evDeleteTitle: t("field.ws.ev.deleteTitle", "Delete evidence (M04-164)"),
+    evDeleteQueuedOffline: t("field.ws.ev.deleteQueued", "Delete queued — will apply with reason on reconnect"),
+    evArchiveQueued: t("field.ws.ev.archiveQueued", "Replacement queued for {code} — previous file will be archived, never destroyed"),
+    evDeleteTitle: t("field.ws.ev.deleteTitle", "Delete evidence"),
     evDeleteReason: t("field.ws.ev.deleteReason", "Deletion reason"),
     evDeleteReasonPh: t("field.ws.ev.deleteReasonPh", "Why is this evidence being removed? — mandatory, audited"),
     evDeleteConfirm: t("field.ws.ev.deleteConfirm", "Delete with reason"),
     evDeleteCancel: t("field.ws.ev.deleteCancel", "Cancel"),
-    evDeleteNeedsReason: t("field.ws.ev.deleteNeedsReason", "A deletion reason is mandatory (M04-164)"),
+    evDeleteNeedsReason: t("field.ws.ev.deleteNeedsReason", "A deletion reason is mandatory"),
     annot: {
-      title: t("field.ws.annot.title", "Annotate photo (M04-109)"),
+      title: t("field.ws.annot.title", "Annotate photo"),
       hint: t("field.ws.annot.hint", "Draw on the photo — pen strokes or rectangle highlights. Confirm flattens the annotation into the evidence image before it is queued (offline-safe)."),
       pen: t("field.ws.annot.pen", "✏️ Pen"),
       rect: t("field.ws.annot.rect", "▭ Highlight"),
@@ -755,7 +753,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
       // attendance bundle below is mandatory (enforced by the union).
       mode: "inspection" as const,
       title: t("field.ws.sig.title", "Factory representative acknowledgement"),
-      hint: t("field.ws.sig.hint", "Sign in the box below. The signature image, name and timestamp are stored inside the final submitted version (DEC-009)."),
+      hint: t("field.ws.sig.hint", "Sign in the box below. The signature image, name and timestamp are stored inside the final submitted version."),
       attendance: tr("field.ws.sig.attendance", "Representative attendance", "حضور ممثل المنشأة"),
       present: tr("field.ws.sig.present", "Present & signs", "حاضر ووقّع"),
       absent: tr("field.ws.sig.absent", "Did not attend", "لم يحضر"),
@@ -767,7 +765,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
       clear: t("field.ws.sig.clear", "Clear"),
       cancel: t("field.ws.sig.cancel", "Cancel"),
       confirm: t("field.ws.sig.confirm", "Confirm & submit"),
-      required: t("field.ws.sig.required", "Both a drawn signature and the representative name are required (DEC-009)."),
+      required: t("field.ws.sig.required", "Both a drawn signature and the representative name are required."),
     },
   };
   const pvv = ins.package_versions as unknown as { packages: { code: string }; version_label: string };
@@ -806,13 +804,13 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
 
       {/* O-13/IPAD-FIGMA-DELTA §2B — distinct from a violation; surfaced in
           this visit's own outputs, not folded into the checklist. */}
-      <section className={styles.card} aria-labelledby="field-ws-incidents-heading" style={{ padding: "var(--space-4)" }}>
-        <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--space-2)" }}>
-          <h2 id="field-ws-incidents-heading" style={{ margin: 0 }}>{t("field.ws.incidents.heading", "Incident reports for this visit")}</h2>
+      <section className={`${styles.card} panel-body`} aria-labelledby="field-ws-incidents-heading">
+        <div className="panel-header">
+          <h2 id="field-ws-incidents-heading" className="panel-title">{t("field.ws.incidents.heading", "Incident reports for this visit")}</h2>
           <a className="btn btn-secondary btn-lg" href={incidentLogHref}>{t("field.ws.incidents.log", "Log incident")}</a>
         </div>
         {(visitIncidents ?? []).length ? (
-          <ul style={{ marginBlockStart: "var(--space-2)" }}>
+          <ul className="timeline">
             {(visitIncidents ?? []).map(row => (
               <li key={row.id}>
                 <bdi>{row.incident_type || t("field.ws.incidents.untitled", "Incident")}</bdi>
@@ -820,7 +818,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
               </li>
             ))}
           </ul>
-        ) : <p className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>{t("field.ws.incidents.empty", "No incidents logged for this visit.")}</p>}
+        ) : <p className="t-caption">{t("field.ws.incidents.empty", "No incidents logged for this visit.")}</p>}
       </section>
 
       <Workspace
