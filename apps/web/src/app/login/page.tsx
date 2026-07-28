@@ -44,7 +44,7 @@ export default async function Login({ searchParams }: {
   const fieldStrings: FieldLoginStrings = ar
     ? {
         brand1: "SAQEEL",
-        tagline: "تطبيق المفتّش الميداني · وزارة الصناعة والثروة المعدنية",
+        tagline: "منصة التفتيش الصناعي · وزارة الصناعة والثروة المعدنية",
         langBtn: "EN",
         netOnline: "متصل",
         netOffline: "دون اتصال — يعمل محلياً",
@@ -74,13 +74,13 @@ export default async function Login({ searchParams }: {
         sessionExpired: "انتهت جلستك أو تعذّر تجديدها. سجّل الدخول للمتابعة من المكان نفسه.",
         offlineKnown: "أنت دون اتصال. لا يمكن فتح الجلسة إلا إذا كانت جلسة المفتش المعروفة ما زالت صالحة على هذا الجهاز.",
         offlineLoginBlocked: "يتطلب تسجيل دخول جديد اتصالاً بالشبكة. أعد الاتصال ثم حاول مرة أخرى.",
-        unauthorizedInspector: "هذا الحساب غير مخوّل لتطبيق المفتش. لم يتم فتح أي بيانات ميدانية.",
+        unauthorizedInspector: "هذا الحساب غير مخوّل لتنفيذ التفتيش الميداني. لم يتم فتح أي بيانات ميدانية.",
         signedOut: "تم تسجيل الخروج ومسح هوية الجلسة المحلية لهذا المستخدم.",
         continueOffline: "متابعة العمل دون اتصال",
       }
     : {
         brand1: "SAQEEL",
-        tagline: "Field Inspector App · Ministry of Industry & Mineral Resources",
+        tagline: "Industrial Inspection Platform · Ministry of Industry & Mineral Resources",
         langBtn: "AR",
         netOnline: "Online",
         netOffline: "Offline — working locally",
@@ -113,7 +113,7 @@ export default async function Login({ searchParams }: {
         sessionExpired: "Your session expired or could not be renewed. Sign in to continue from the same place.",
         offlineKnown: "You are offline. Access is limited to a still-valid, previously verified Inspector session on this device.",
         offlineLoginBlocked: "A new sign-in requires a network connection. Reconnect, then try again.",
-        unauthorizedInspector: "This account is not authorized for the Inspector app. No field data was opened.",
+        unauthorizedInspector: "This account is not authorized for field inspection execution. No field data was opened.",
         signedOut: "Signed out. This user's local session identity was cleared.",
         continueOffline: "Continue offline",
       };
