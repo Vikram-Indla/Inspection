@@ -79,7 +79,7 @@ export default function EvidenceReview({
   const canRetry = counts.pending > 0;
 
   return (
-    <section className={styles.panel} aria-label={strings.title} data-testid="evidence-review">
+    <section className={styles.panel} aria-label={strings.title} data-testid="evidence-review" data-screen-id="EXE-S12">
       <header className={styles.head}>
         <div className={styles.headText}>
           <h3 className={styles.title}>{strings.title}</h3>
