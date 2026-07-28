@@ -13,7 +13,7 @@
 //  * No policy value, threshold, SLA, record count or freshness figure is
 //    invented. Anything without a governed source renders "Not configured".
 import Link from "next/link";
-import Shell from "@/components/Shell";
+import Shell from "@/app/(app)/admin/_components/AdminShell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import {

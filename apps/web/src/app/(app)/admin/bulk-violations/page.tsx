@@ -1,4 +1,4 @@
-import Shell from "@/components/Shell";
+import Shell from "@/app/(app)/admin/_components/AdminShell";
 import EmptyState from "@/components/EmptyState";
 import { IconBlocked } from "@/app/icons";
 import { supabaseServer } from "@/lib/supabase-server";

@@ -1,4 +1,4 @@
-import Shell from "@/components/Shell";
+import Shell from "@/app/(app)/admin/_components/AdminShell";
 import { getUserRoles } from "@/lib/persona";
 import EmptyState from "@/components/EmptyState";
 import { IconBlocked, IconEye, IconFolder } from "@/app/icons";
