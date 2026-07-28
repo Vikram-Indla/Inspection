@@ -48,7 +48,7 @@ export default function RevampOperationalView({ locale, metrics, requirementStri
         {
           question: copy(locale, "How much work has been completed today?", "ما مقدار العمل المكتمل اليوم؟"),
           title: copy(locale, "Today's visit completion rate", "معدل إكمال زيارات اليوم"),
-          value: operational.todayCompletionRate == null ? "—" : `${operational.todayCompletionRate}%`,
+          value: operational.todayCompletionRate == null ? copy(locale, "Unavailable", "غير متاح") : `${operational.todayCompletionRate}%`,
           definition: copy(locale, "(Completed visits today ÷ planned visits today) × 100", "(زيارات اليوم المكتملة ÷ زيارات اليوم المخططة) × 100"),
           href: "/execution",
           action: copy(locale, "Open Execution", "فتح التنفيذ"),

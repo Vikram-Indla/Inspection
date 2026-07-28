@@ -7,14 +7,17 @@ type Locale = "en" | "ar";
 type DashboardMetrics = ReturnType<typeof import("./metrics").buildDashboardMetrics>;
 
 const copy = (locale: Locale, en: string, ar: string) => locale === "ar" ? ar : en;
-const valueOrUnavailable = (locale: Locale, value: number | null, suffix = "") =>
-  value == null ? copy(locale, "Not available", "غير متاح") : `${value}${suffix}`;
+const percentOrNull = (value: number | null, suffix = "%") => value == null ? null : `${value}${suffix}`;
 
-function MetricCard({ locale, question, title, value, definition, example, interpretation, href, action }: {
+function MetricCard({ locale, question, title, value, valueKind = "number", emptyText, definition, example, interpretation, href, action }: {
   locale: Locale;
   question: string;
   title: string;
-  value: string;
+  /** null renders the governed absence state, de-ranked below the value ramp. */
+  value: string | null;
+  /** "text" keeps prose values (a regulation name) out of the numeric ramp. */
+  valueKind?: "number" | "text";
+  emptyText?: string;
   definition: string;
   example: string;
   interpretation: string;
@@ -25,7 +28,9 @@ function MetricCard({ locale, question, title, value, definition, example, inter
     <article className="panel kpi">
       <span className="tl-meta">{question}</span>
       <h3>{title}</h3>
-      <strong className="kpi-value">{value}</strong>
+      {value == null
+        ? <span className="badge badge-pending">{emptyText ?? copy(locale, "Unavailable", "غير متاح")}</span>
+        : <strong className={valueKind === "text" ? "id-code" : "kpi-value"}>{value}</strong>}
       <p className="desc"><b>{copy(locale, "Definition", "التعريف")}</b> {definition}</p>
       <p className="tl-meta">{example}</p>
       <p>{interpretation}</p>
@@ -64,7 +69,8 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             locale={locale}
             question={copy(locale, "Are we achieving the national inspection strategy?", "هل نحقق استراتيجية التفتيش الوطنية؟")}
             title={copy(locale, "Inspection coverage against annual target", "تغطية التفتيش مقابل المستهدف السنوي")}
-            value={copy(locale, "Not configured", "غير مهيأ")}
+            value={null}
+            emptyText={copy(locale, "Not configured", "غير مهيأ")}
             definition={copy(locale, "(Completed inspections ÷ annual inspection target) × 100", "(التفتيشات المكتملة ÷ المستهدف السنوي) × 100")}
             example={copy(locale, `${strategic.completedInspections} completed inspections; no governed annual target is configured.`, `${strategic.completedInspections} تفتيشاً مكتملاً؛ لا يوجد مستهدف سنوي معتمد.`)}
             interpretation={copy(locale, "Coverage remains withheld until Administration publishes the governed inspection-cycle target.", "تبقى التغطية محجوبة حتى تنشر الإدارة مستهدف دورة التفتيش المعتمد.")}
@@ -74,7 +80,7 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             locale={locale}
             question={copy(locale, "How compliant is the industrial sector?", "ما مستوى امتثال القطاع الصناعي؟")}
             title={copy(locale, "National compliance rate", "معدل الامتثال الوطني")}
-            value={valueOrUnavailable(locale, strategic.complianceRate, "%")}
+            value={percentOrNull(strategic.complianceRate)}
             definition={copy(locale, "(Compliant answered items ÷ total eligible answered items) × 100", "(البنود المطابقة ÷ إجمالي البنود المؤهلة المجابة) × 100")}
             example={copy(locale, `${strategic.approvedCompliant} compliant of ${strategic.approvedAnsweredForCompliance} eligible answers.`, `${strategic.approvedCompliant} إجابة مطابقة من ${strategic.approvedAnsweredForCompliance} إجابة مؤهلة.`)}
             interpretation={copy(locale, "Calculated only from approved inspection work; pending reports are excluded.", "يُحسب من أعمال التفتيش المعتمدة فقط؛ وتُستبعد التقارير المعلقة.")}
@@ -84,7 +90,7 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             locale={locale}
             question={copy(locale, "Are inspection reports approved without excessive rework?", "هل تعتمد تقارير التفتيش دون إعادة عمل مفرطة؟")}
             title={copy(locale, "Inspection approval rate", "معدل اعتماد التفتيش")}
-            value={valueOrUnavailable(locale, strategic.decisionApprovalRate, "%")}
+            value={percentOrNull(strategic.decisionApprovalRate)}
             definition={copy(locale, "Approved Level-2 decisions ÷ all decided Level-2 outcomes", "قرارات المستوى الثاني المعتمدة ÷ جميع نتائج المستوى الثاني المحسومة")}
             example={copy(locale, `${strategic.approvedScoped} approved of ${strategic.decidedScoped} decided outcomes.`, `${strategic.approvedScoped} نتيجة معتمدة من ${strategic.decidedScoped} نتيجة محسومة.`)}
             interpretation={copy(locale, "Approval is a review outcome and is not presented as compliance.", "الاعتماد نتيجة مراجعة ولا يُعرض على أنه امتثال.")}
@@ -133,7 +139,8 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             locale={locale}
             question={copy(locale, "Which regulations generate the most violations?", "ما اللوائح التي تولد أكبر عدد من المخالفات؟")}
             title={copy(locale, "Top violated regulation", "اللائحة الأكثر مخالفة")}
-            value={topViolation?.label ?? copy(locale, "Not available", "غير متاح")}
+            value={topViolation?.label ?? null}
+            valueKind="text"
             definition={copy(locale, "Count of violations grouped by regulation", "عدد المخالفات مجمعة حسب اللائحة")}
             example={topViolation ? copy(locale, `${topViolation.value} linked violations in the current scope.`, `${topViolation.value} مخالفة مرتبطة ضمن النطاق الحالي.`) : copy(locale, "No regulation-linked violations in scope.", "لا توجد مخالفات مرتبطة بلوائح ضمن النطاق.")}
             interpretation={copy(locale, "Only violations carrying a governed regulation relationship are counted.", "تُحتسب فقط المخالفات ذات العلاقة المعتمدة بلائحة.")}
@@ -153,7 +160,8 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             locale={locale}
             question={copy(locale, "Which factories still require inspection this year?", "ما المصانع التي لا تزال تتطلب تفتيشاً هذا العام؟")}
             title={copy(locale, "Factories pending annual inspection", "المصانع بانتظار التفتيش السنوي")}
-            value={copy(locale, "Not configured", "غير مهيأ")}
+            value={null}
+            emptyText={copy(locale, "Not configured", "غير مهيأ")}
             definition={copy(locale, "Active factories with no completed inspection in the governed inspection year", "المصانع النشطة دون تفتيش مكتمل في سنة التفتيش المعتمدة")}
             example={copy(locale, `${factories.length} factories are visible, but the annual-cycle policy is not configured.`, `${factories.length} مصنعاً ظاهراً، لكن سياسة الدورة السنوية غير مهيأة.`)}
             interpretation={copy(locale, "The screen withholds a count until the inspection-year policy is published.", "تحجب الشاشة العدد حتى نشر سياسة سنة التفتيش.")}
