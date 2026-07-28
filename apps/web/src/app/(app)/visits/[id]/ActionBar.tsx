@@ -32,10 +32,12 @@ export type ActionBarStrings = {
   // M8
   commentsHint: string; repackageLabel: string; repackageBtn: string;
   duplicateBtn: string; duplicateWhy: string;
+  cutoffTitle: string; cutoffBody: string;
 };
 
-export default function ActionBar({ visitId, planningVersion, status, opState, opStateLabel, visitType, windowStart, windowEnd, inspectors, canManage, canReassign, isFinal, returnReasons, cancelReasons, packageOptions, strings }: {
+export default function ActionBar({ visitId, planningVersion, status, opState, opStateLabel, visitType, windowStart, windowEnd, cutoffDisplay, inspectors, canManage, canReassign, isFinal, returnReasons, cancelReasons, packageOptions, strings }: {
   visitId: string; planningVersion: number; status: string; opState: string; opStateLabel: string; visitType: string; windowStart: string; windowEnd: string; inspectors: I[];
+  cutoffDisplay: string;
   canManage: boolean; canReassign: boolean; isFinal: boolean;
   returnReasons: ReasonOption[]; cancelReasons: ReasonOption[]; packageOptions: PackageOption[];
   strings: ActionBarStrings;
@@ -85,25 +87,36 @@ export default function ActionBar({ visitId, planningVersion, status, opState, o
   const hasAvailable = status === "published" || status === "returned" || isFinal;
 
   return (
-    <div className="panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
-      <h4 style={{ margin: 0 }}>{strings.heading}</h4>
+    <section className="panel" aria-labelledby="visit-management-actions">
+      <div className="panel-header">
+        <h2 className="panel-title" id="visit-management-actions">{strings.heading}</h2>
+      </div>
+      <div className="panel-body stack">
+        {(canManage || canManageReturned) && (
+          <div className="alert alert-info">
+            <div>
+              <div className="alert-title">{strings.cutoffTitle}</div>
+              <p className="t-caption">{strings.cutoffBody.replace("{cutoff}", cutoffDisplay)}</p>
+            </div>
+          </div>
+        )}
 
       {/* ── ZONE: AVAILABLE NOW ────────────────────────────────── */}
-      <div className="sq-actionzone">
-        <p className="sq-actionzone__label t-caption">{strings.zoneAvailable}</p>
-        <div className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--space-4)" }}>
+      <section className="stack" aria-labelledby="visit-actions-available">
+        <h3 className="panel-title" id="visit-actions-available">{strings.zoneAvailable}</h3>
+        <div className="stack">
           {status === "published" && (
-            <form action={retAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
+            <form action={retAct} className="grid-toolbar">
               <input type="hidden" name="visit_id" value={visitId} />
               <input type="hidden" name="expected_version" value={planningVersion} />
               <input type="hidden" name="idempotency_key" value={transitionIdentity.return.idempotencyKey} />
               <input type="hidden" name="correlation_id" value={transitionIdentity.return.correlationId} />
-              <div className="field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="visit-return-reason">{strings.returnReason}</label>
+              <div className="field"><label htmlFor="visit-return-reason">{strings.returnReason}</label>
                 <select className="select" name="reason_key" id="visit-return-reason" required>
                   <option value="">—</option>
                   {returnReasons.map(o => <option key={o.key} value={o.key}>{o.label_en}</option>)}
                 </select></div>
-              <div className="field" style={{ maxInlineSize: 260 }}><label className="sq-field__label" htmlFor="visit-return-comments">{strings.returnComments}</label>
+              <div className="field"><label htmlFor="visit-return-comments">{strings.returnComments}</label>
                 <input className="input" name="comments" id="visit-return-comments" placeholder={strings.commentsHint} /></div>
               <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.returnBtn}</button>
             </form>
@@ -116,20 +129,20 @@ export default function ActionBar({ visitId, planningVersion, status, opState, o
               <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.republishBtn}</button></form>
           )}
           {canReassign && (
-            <form action={reaAct} className="row" style={{ alignItems: "flex-end" }}>
+            <form action={reaAct} className="grid-toolbar">
               <input type="hidden" name="visit_id" value={visitId} />
-              <div className="field" style={{ maxInlineSize: 220 }}><label className="sq-field__label" htmlFor="visit-reassign-inspector">{strings.reassignTo}</label>
+              <div className="field"><label htmlFor="visit-reassign-inspector">{strings.reassignTo}</label>
                 <select className="select" name="inspector_id" id="visit-reassign-inspector"><option value="">—</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
               <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.reassignBtn}</button>
             </form>
           )}
           {canManage && (
-            <form action={vtAct} className="row" style={{ alignItems: "flex-end" }}>
+            <form action={vtAct} className="grid-toolbar">
               <input type="hidden" name="visit_id" value={visitId} />
               <input type="hidden" name="expected_version" value={planningVersion} />
               <input type="hidden" name="idempotency_key" value={transitionIdentity.metadata.idempotencyKey} />
               <input type="hidden" name="correlation_id" value={transitionIdentity.metadata.correlationId} />
-              <div className="field" style={{ maxInlineSize: 200 }}><label className="sq-field__label" htmlFor="visit-type-select">{strings.visitTypeLabel}</label>
+              <div className="field"><label htmlFor="visit-type-select">{strings.visitTypeLabel}</label>
                 <select className="select" name="visit_type" id="visit-type-select" defaultValue={visitType}>
                   <option value="periodic">{strings.typePeriodic}</option>
                   <option value="follow_up">{strings.typeFollowUp}</option>
@@ -140,35 +153,35 @@ export default function ActionBar({ visitId, planningVersion, status, opState, o
           )}
           {(canManage || canManageReturned) && (
             <>
-              <form action={rscAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
+              <form action={rscAct} className="grid-toolbar">
                 <input type="hidden" name="visit_id" value={visitId} />
                 <input type="hidden" name="expected_version" value={planningVersion} />
                 <input type="hidden" name="idempotency_key" value={rescheduleIdentity.idempotencyKey} />
                 <input type="hidden" name="correlation_id" value={rescheduleIdentity.correlationId} />
-                <div className="field" style={{ maxInlineSize: 220 }}><label className="sq-field__label" htmlFor="visit-reschedule-start">{strings.newWindowStart}</label>
+                <div className="field"><label htmlFor="visit-reschedule-start">{strings.newWindowStart}</label>
                   <input className="input numeric" type="datetime-local" name="window_start" id="visit-reschedule-start" defaultValue={toLocal(windowStart)} /></div>
-                <div className="field" style={{ maxInlineSize: 220 }}><label className="sq-field__label" htmlFor="visit-reschedule-end">{strings.newWindowEnd}</label>
+                <div className="field"><label htmlFor="visit-reschedule-end">{strings.newWindowEnd}</label>
                   <input className="input numeric" type="datetime-local" name="window_end" id="visit-reschedule-end" defaultValue={toLocal(windowEnd)} /></div>
                 <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.rescheduleBtn}</button>
               </form>
-              <form action={canAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
+              <form action={canAct} className="grid-toolbar">
                 <input type="hidden" name="visit_id" value={visitId} />
                 <input type="hidden" name="expected_version" value={planningVersion} />
                 <input type="hidden" name="idempotency_key" value={cancelIdentity.idempotencyKey} />
                 <input type="hidden" name="correlation_id" value={cancelIdentity.correlationId} />
-                <div className="field" style={{ maxInlineSize: 260 }}><label className="sq-field__label" htmlFor="visit-cancel-comments">{strings.cancelComments}</label>
+                <div className="field"><label htmlFor="visit-cancel-comments">{strings.cancelComments}</label>
                   <input className="input" name="note" id="visit-cancel-comments" placeholder={strings.commentsHint} /></div>
                 <button className="btn btn-danger btn-touch" disabled={busy}>{strings.cancelBtn}</button>
               </form>
             </>
           )}
           {canManageReturned && packageOptions.length > 0 && (
-            <form action={pkgAct} className="row" style={{ alignItems: "flex-end" }}>
+            <form action={pkgAct} className="grid-toolbar">
               <input type="hidden" name="visit_id" value={visitId} />
               <input type="hidden" name="expected_version" value={planningVersion} />
               <input type="hidden" name="idempotency_key" value={transitionIdentity.repackage.idempotencyKey} />
               <input type="hidden" name="correlation_id" value={transitionIdentity.repackage.correlationId} />
-              <div className="field" style={{ maxInlineSize: 260 }}><label className="sq-field__label" htmlFor="visit-repackage">{strings.repackageLabel}</label>
+              <div className="field"><label htmlFor="visit-repackage">{strings.repackageLabel}</label>
                 <select className="select" name="package_version_id" id="visit-repackage" required>
                   <option value="">—</option>
                   {packageOptions.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
@@ -188,13 +201,14 @@ export default function ActionBar({ visitId, planningVersion, status, opState, o
           )}
           {!hasAvailable && <p className="t-caption">{strings.noneAvailable}</p>}
         </div>
-      </div>
+      </section>
 
       {/* ── ZONE: DISABLED, WITH WHY ───────────────────────────── */}
       {(scheduleBlocked || reassignBlocked) && (
-        <div className="sq-actionzone">
-          <p className="sq-actionzone__label t-caption">{strings.zoneBlocked}</p>
-          <ul className="stack" style={{ gap: "var(--space-2)", margin: 0, paddingInlineStart: 0, listStyle: "none" }}>
+        <section className="alert alert-warning" aria-labelledby="visit-actions-blocked">
+          <div className="stack">
+          <h3 className="alert-title" id="visit-actions-blocked">{strings.zoneBlocked}</h3>
+          <ul className="stack">
             {scheduleBlocked && (
               <li><span className="badge badge-warning">{strings.cancelBtn} · {strings.rescheduleBtn} · {strings.visitTypeBtn}</span>{" "}
                 <span className="t-caption">{strings.scheduleLockedWhy.replace("{state}", opStateLabel)}</span></li>
@@ -204,21 +218,25 @@ export default function ActionBar({ visitId, planningVersion, status, opState, o
                 <span className="t-caption">{strings.reassignLockedWhy.replace("{state}", opStateLabel)}</span></li>
             )}
           </ul>
-        </div>
+          </div>
+        </section>
       )}
 
       {/* ── ZONE: UNAVAILABLE (final lifecycle state) ──────────── */}
       {isFinal && (
-        <div className="sq-actionzone">
-          <p className="sq-actionzone__label t-caption">{strings.zoneUnavailable}</p>
+        <section className="alert alert-immutable">
+          <div>
+          <h3 className="alert-title">{strings.zoneUnavailable}</h3>
           <span className="badge">{strings.finalState}</span>{" "}
           <span className="t-caption">{strings.duplicateWhy}</span>
-        </div>
+          </div>
+        </section>
       )}
 
       {/* role=status success / single role=alert failure (DSG-A11Y-001) */}
-      <div aria-live="polite">{ok && <div className="sq-banner sq-banner--success" role="status"><div>{ok}</div></div>}</div>
-      {msg && <div className="sq-banner sq-banner--critical" role="alert"><div>{msg}</div></div>}
-    </div>
+      <div aria-live="polite">{ok && <div className="alert alert-success" role="status"><div>{ok}</div></div>}</div>
+      {msg && <div className="alert alert-critical" role="alert"><div>{msg}</div></div>}
+      </div>
+    </section>
   );
 }

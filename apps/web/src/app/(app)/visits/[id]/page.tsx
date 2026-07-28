@@ -10,9 +10,9 @@ import { mapError } from "./neutral";
 import CreatedToast from "@/components/CreatedToast";
 import EmptyState from "@/components/EmptyState";
 import FocusScroll from "./FocusScroll";
-import detailStyles from "./VisitDetail.module.css";
 
-const PLAN_TONE: Record<string, string> = { published: "sq-lozenge--info", returned: "sq-lozenge--warning", cancelled: "sq-lozenge--critical", expired: "sq-lozenge--critical" };
+const PLAN_TONE: Record<string, string> = { published: "badge-info", returned: "badge-warning", cancelled: "badge-critical", expired: "badge-critical" };
+const PLAN_BADGE: Record<string, string> = { published: "badge-info", returned: "badge-warning", cancelled: "badge-critical", expired: "badge-critical", draft: "badge-draft" };
 
 export default async function VisitDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string; focus?: string; wa_route_base?: string }> }) {
   const { created, focus, wa_route_base } = await searchParams;
@@ -79,7 +79,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     snapshot: { code?: string | null; title?: string | null; version_label?: string | null; status?: string | null } | null;
   }[];
   if (vErr) {
-    return <Shell current={shellCurrent} title={t("visit.detail.errorTitle", "Visit — error")}><div className="sq-banner sq-banner--critical" role="alert"><div>{mapError(vErr, "load")}</div></div></Shell>;
+    return <Shell current={shellCurrent} title={t("visit.detail.errorTitle", "Visit — error")}><div className="alert alert-critical" role="alert">{mapError(vErr, "load")}</div></Shell>;
   }
   if (!v) {
     return <Shell current={shellCurrent} title={t("visit.detail.notFoundTitle", "Visit not found")}>
@@ -219,6 +219,11 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     repackageBtn: t("visit.actions.repackageBtn", "Repackage"),
     duplicateBtn: t("visit.actions.duplicateBtn", "Duplicate visit"),
     duplicateWhy: t("visit.actions.duplicateWhy", "Duplicate produces a new Draft with planning fields only (PLN-REQ-011)."),
+    cutoffTitle: t("visit.actions.cutoffTitle", "Cancellation and rescheduling cutoff"),
+    cutoffBody: t(
+      "visit.actions.cutoffBody",
+      "The server re-checks the current visit window at transaction time. Cancellation or a window-changing reschedule is allowed through {cutoff} (Asia/Riyadh); reassignment does not use this 720-hour gate.",
+    ),
   };
   // CD-027 — Dual-State Ribbon: five never-collapsed domains, each with the
   // latest VERIFIED event + its source + the allowed-action boundary + a history
@@ -255,19 +260,19 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       boundaryLabel: t("visit.ribbon.b.opRead", "Read-only here — owned by the field app (set_operational_state)"),
       anchorHref: "#journey", anchorLabel: t("visit.ribbon.a.journey", "Open journey & location") },
     { id: "assignment", domainLabel: t("visit.ribbon.assignment", "Assignment"),
-      stateLabel: asg ? t(`enum.${asg.status}`, asg.status) : t("visit.ribbon.unassigned", "unassigned"), tone: asg ? "sq-lozenge--info" : "",
+      stateLabel: asg ? t(`enum.${asg.status}`, asg.status) : t("visit.ribbon.unassigned", "unassigned"), tone: asg ? "badge-info" : "",
       eventLabel: asg ? `${t(`enum.${asg.method}`, asg.method)} · ${asg.profiles?.full_name ?? "—"}` : t("visit.ribbon.noInspector", "no inspector assigned"),
       sourceLabel: t("visit.ribbon.src.assign", "assignment record (ENG-05)"),
       boundaryLabel: canReassign ? t("visit.ribbon.b.reassign", "Reassign inspector (pre-start only)") : t("visit.ribbon.b.reassignLocked", "Read-only — reassignment locked"),
       anchorHref: "#config", anchorLabel: t("visit.ribbon.a.config", "Open assignment") },
     { id: "inspection", domainLabel: t("visit.ribbon.inspection", "Inspection"),
-      stateLabel: insp ? t(`enum.${insp.status}`, insp.status.replace(/_/g, " ")) : t("enum.not_started", "not started"), tone: insp ? "sq-lozenge--info" : "",
+      stateLabel: insp ? t(`enum.${insp.status}`, insp.status.replace(/_/g, " ")) : t("enum.not_started", "not started"), tone: insp ? "badge-info" : "",
       eventLabel: latestSub ? `v${latestSub.version_number} · ${fmt(latestSub.submitted_at)} · ${t("visit.detail.immutable", "final")}` : t("visit.ribbon.noSub", "not submitted"),
       sourceLabel: t("visit.ribbon.src.insp", "inspection engine — submissions are final"),
       boundaryLabel: t("visit.ribbon.b.read", "Read-only here"), anchorHref: "#inspection", anchorLabel: t("visit.ribbon.a.insp", "Open inspection & versions") },
     { id: "review", domainLabel: t("visit.ribbon.review", "Review"),
       stateLabel: latestReview ? t(`enum.${latestReview.decision ?? latestReview.status}`, (latestReview.decision ?? latestReview.status).replace(/_/g, " ")) : t("visit.ribbon.noReview", "no review"),
-      tone: latestReview?.decision === "approved" ? "sq-lozenge--success" : latestReview?.decision === "rejected" ? "sq-lozenge--critical" : latestReview ? "sq-lozenge--warning" : "",
+      tone: latestReview?.decision === "approved" ? "badge-compliant" : latestReview?.decision === "rejected" ? "badge-critical" : latestReview ? "badge-warning" : "",
       eventLabel: latestReview?.returned_sections?.length ? `${t("visit.detail.returnedSections", "returned")} ${latestReview.returned_sections.join(", ")}` : (latestReview ? t(`enum.${latestReview.status}`, latestReview.status.replace(/_/g, " ")) : t("visit.ribbon.noReviewEvt", "review not started")),
       sourceLabel: t("visit.ribbon.src.review", "review engine"),
       boundaryLabel: t("visit.ribbon.b.read", "Read-only here"), anchorHref: "#inspection", anchorLabel: t("visit.ribbon.a.review", "Open review outcome") },
@@ -280,30 +285,39 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     sourceWord: t("visit.ribbon.sourceWord", "Source of truth"),
     boundaryWord: t("visit.ribbon.boundaryWord", "Allowed from here"),
   };
+  const cutoffInstant = new Date(new Date(v.window_start).getTime() - 720 * 60 * 60 * 1000);
+  const cutoffDisplay = new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Asia/Riyadh",
+  }).format(cutoffInstant);
   return (
     <Shell current={shellCurrent} title={t("visit.detail.title", "Visit {id} — {factory}").replace("{id}", v.id.slice(0, 8)).replace("{factory}", f.name)}
       context={<>
         {/* M02-002 — full lifecycle: planning status + operational state */}
-        <span className={`sq-lozenge sq-lozenge--plan ${PLAN_TONE[v.planning_status] ?? ""}`}>{t(`enum.${v.planning_status}`, v.planning_status)}</span>
-        <span className="sq-lozenge sq-lozenge--ops">{t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}</span>
-        {pkg && <span className="sq-version">{pkg.packages.code} · {pkg.version_label}</span>}
-        {isUnverifiedManual && <span className="sq-lozenge sq-lozenge--warning">{tr("visit.detail.unverifiedManual", "Unverified manual entry — pending reconciliation", "إدخال يدوي غير موثّق — بانتظار المطابقة")}</span>}
+        <span className={`badge ${PLAN_BADGE[v.planning_status] ?? "badge-pending"}`}>{t(`enum.${v.planning_status}`, v.planning_status)}</span>
+        <span className="badge badge-info">{t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}</span>
+        {pkg && <span className="badge badge-outline">{pkg.packages.code} · {pkg.version_label}</span>}
+        {isUnverifiedManual && <span className="badge badge-warning">{tr("visit.detail.unverifiedManual", "Unverified manual entry — pending reconciliation", "إدخال يدوي غير موثّق — بانتظار المطابقة")}</span>}
       </>}>
-      {targetPreview && <><h1 className="sq-sr-only">{t("visit.detail.title", "Visit {id} — {factory}").replace("{id}", v.id.slice(0, 8)).replace("{factory}", f.name)}</h1>
-        <p data-saqeel-design="WA-DES-045"><a className="sq-btn sq-btn--subtle" href={routeBase}>{t("visit.detail.backToVisits", "Visits")}</a></p></>}
+      {targetPreview && <div className="page-header" data-saqeel-design="WA-DES-045">
+        <div className="stack"><h1>{t("visit.detail.title", "Visit {id} — {factory}").replace("{id}", v.id.slice(0, 8)).replace("{factory}", f.name)}</h1>
+          <span className="id-code">{v.visit_reference ?? v.id}</span></div>
+        <a className="btn btn-ghost" href={routeBase}>{t("visit.detail.backToVisits", "Visits")}</a>
+      </div>}
       <CreatedToast created={created}
         registeredMessage={t("visit.detail.createdToast", "Visit created and dispatched.")}
         unregisteredMessage={t("visit.detail.createdToastUnregistered", "Unregistered establishment recorded and visit dispatched.")} />
       {/* CD-027 — signature interaction: Dual-State Ribbon (one per screen) */}
       <DualStateRibbon tracks={ribbonTracks} strings={ribbonStrings} />
-      <div className="sq-grid-2">
-        <div id="config" className="panel" style={{ padding: "var(--space-6)" }}>
-          <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.configuration", "Configuration")}</h4>
-          <p>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)} · {t("visit.detail.window", "window")} <span className="sq-numeric">{new Date(v.window_start).toISOString().slice(0, 16).replace("T", " ")} → {new Date(v.window_end).toISOString().slice(5, 16).replace("T", " ")}</span></p>
-          <p style={{ marginBlockStart: 8 }}>{t("visit.detail.assignment", "Assignment:")} <strong>{asg?.profiles?.full_name ?? "—"}</strong> ({asg ? t(`enum.${asg.method}`, asg.method) : "—"}) · <a className="sq-link" href={`/factories/${f.id}`}>{t("visit.detail.factory360", "Factory 360")}</a></p>
+      <div className="metric-strip">
+        <section id="config">
+          <h2 className="panel-title">{t("visit.detail.configuration", "Configuration")}</h2>
+          <p>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)} · {t("visit.detail.window", "window")} <span className="id-code">{new Date(v.window_start).toISOString().slice(0, 16).replace("T", " ")} → {new Date(v.window_end).toISOString().slice(5, 16).replace("T", " ")}</span></p>
+          <p>{t("visit.detail.assignment", "Assignment:")} <strong>{asg?.profiles?.full_name ?? "—"}</strong> ({asg ? t(`enum.${asg.method}`, asg.method) : "—"}) · <a className="btn btn-ghost btn-sm" href={`/factories/${f.id}`}>{t("visit.detail.factory360", "Factory 360")}</a></p>
 
           {(v.immediate_creator_role || v.source_channel) && (
-            <p className="t-caption" style={{ marginBlockStart: 8 }}>
+            <p className="t-caption">
               {t("visit.detail.immediateProvenance", "Immediate creation:")}{" "}
               {v.immediate_creator_role === "inspector"
                 ? tr("visit.detail.creatorInspector", "Inspector — self-created", "المفتش — إنشاء ذاتي")
@@ -312,96 +326,98 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
               {v.source_channel ? <> · <bdi>{v.source_channel}</bdi></> : null}
             </p>
           )}
-        </div>
-        <div id="inspection" className="panel" style={{ padding: "var(--space-6)" }}>
-          <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.inspectionVersions", "Inspection & versions")}</h4>
+        </section>
+        <section id="inspection">
+          <h2 className="panel-title">{t("visit.detail.inspectionVersions", "Inspection & versions")}</h2>
           {insp ? (
-            <div className="stack" style={{ gap: 8 }}>
-              <span className="sq-lozenge sq-lozenge--review sq-lozenge--info">{t(`enum.${insp.status}`, insp.status.replace(/_/g, " "))}</span>
+            <div className="stack">
+              <span className="badge badge-info">{t(`enum.${insp.status}`, insp.status.replace(/_/g, " "))}</span>
               {insp.submission_versions.sort((a, b) => a.version_number - b.version_number).map(s => (
-                <p key={s.version_number} className="sq-numeric"><span className="sq-version">v{s.version_number}</span> {new Date(s.submitted_at).toISOString().slice(0, 16).replace("T", " ")} · {t("visit.detail.immutable", "final")}</p>
+                <p key={s.version_number} className="id-code"><span className="badge badge-outline">v{s.version_number}</span> {new Date(s.submitted_at).toISOString().slice(0, 16).replace("T", " ")} · {t("visit.detail.immutable", "final")}</p>
               ))}
               {insp.reviews.map((r, i) => (
                 <p key={i} className="t-caption">{t("visit.detail.reviewPrefix", "review:")} {r.decision ? t(`enum.${r.decision}`, r.decision) : t(`enum.${r.status}`, r.status.replace(/_/g, " "))}{r.returned_sections ? ` · ${t("visit.detail.returnedSections", "returned")} ${r.returned_sections.join(",")}` : ""}</p>
               ))}
               {/* M04-215 — official report (browser print-to-PDF is the production PDF path) */}
-              <p><a className="sq-link" href={`/reports/inspection/${insp.id}`}>{t("visit.detail.reportLink", "Official inspection report")}</a></p>
+              <p><a className="btn btn-ghost" href={`/reports/inspection/${insp.id}`}>{t("visit.detail.reportLink", "Official inspection report")}</a></p>
             </div>
           ) : <p className="t-caption">{t("visit.detail.notStarted", "Not started.")}</p>}
-        </div>
+        </section>
       </div>
-      <div className={targetPreview ? `wa-visit-detail-workspace ${detailStyles.workspace}` : undefined} style={targetPreview ? undefined : { display: "contents" }}>
-      <div className={targetPreview ? `wa-visit-detail-main ${detailStyles.main}` : undefined} style={targetPreview ? undefined : { display: "contents" }}>
+      <div className="stack">
       {/* M02-005 — linked plan info: how this visit was planned, by whom, published when */}
-      <div className="panel" style={{ padding: "var(--space-6)" }}>
-        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.planHeading", "Linked plan (M02-005)")}</h4>
+      <section className="panel">
+        <div className="panel-header"><h2 className="panel-title">{t("visit.detail.planHeading", "Linked plan (M02-005)")}</h2></div>
+        <div className="panel-body">
         {plan ? (
           <p>
-            <span className="sq-lozenge sq-lozenge--info">{t(`enum.${plan.method}`, plan.method)}</span>{" "}
-            <span className="sq-numeric"><strong>{plan.plan_reference ?? plan.id.slice(0, 8)}</strong></span> · {t("visit.detail.planCreatedBy", "created by")} <strong>{plan.profiles?.full_name ?? "—"}</strong>{" "}
-            <span className="sq-numeric">{new Date(plan.created_at).toISOString().slice(0, 16).replace("T", " ")}</span>
-            {plan.published_at && <> · {t("visit.detail.planPublishedAt", "published")} <span className="sq-numeric">{new Date(plan.published_at).toISOString().slice(0, 16).replace("T", " ")}</span></>}
-            {" "}· <span className={`sq-lozenge sq-lozenge--plan ${PLAN_TONE[plan.status] ?? ""}`}>{t(`enum.${plan.status}`, plan.status)}</span>
+            <span className="badge badge-info">{t(`enum.${plan.method}`, plan.method)}</span>{" "}
+            <span className="id-code"><strong>{plan.plan_reference ?? plan.id.slice(0, 8)}</strong></span> · {t("visit.detail.planCreatedBy", "created by")} <strong>{plan.profiles?.full_name ?? "—"}</strong>{" "}
+            <span className="id-code">{new Date(plan.created_at).toISOString().slice(0, 16).replace("T", " ")}</span>
+            {plan.published_at && <> · {t("visit.detail.planPublishedAt", "published")} <span className="id-code">{new Date(plan.published_at).toISOString().slice(0, 16).replace("T", " ")}</span></>}
+            {" "}· <span className={`badge ${PLAN_BADGE[plan.status] ?? "badge-pending"}`}>{t(`enum.${plan.status}`, plan.status)}</span>
             {/* M8 — bulk context: this visit is one of N under the plan */}
             {" "}· {t("visit.detail.siblings", "{n} visits under this plan").replace("{n}", String(siblingCount))}
-            {" "}· <a className="sq-link" href={`/planning/plans/${plan.id}`}>{t("visit.detail.openPlan", "Open plan")}</a>
+            {" "}· <a className="btn btn-ghost btn-sm" href={`/planning/plans/${plan.id}`}>{t("visit.detail.openPlan", "Open plan")}</a>
           </p>
         ) : (
           <p className="t-caption">{t("visit.detail.noPlan", "Immediate visit — created without a plan (M01-050).")}</p>
         )}
-      </div>
+        </div>
+      </section>
       {/* M02-008/029 + M8 — return info from the lifecycle stream; the legacy
           notes-prefix parse only fires for historical rows without an event.
           M10 / PLN-REQ-009 — notification deep-links (?focus=return) anchor
           and highlight this block. */}
       {returnReason && (
-        <div id="return-block" className="sq-banner sq-banner--warning"
-          style={focus === "return" ? { outline: "2px solid var(--action-primary)", outlineOffset: 2 } : undefined}><div>
+        <div id="return-block" className="alert alert-warning" tabIndex={focus === "return" ? -1 : undefined}>
           {t("visit.detail.returnReason", "Returned — reason: {reason} (PLN-CON-011)").replace("{reason}", returnReason)}
           {latestReturnEvent?.comments ? <> · <bdi>{latestReturnEvent.comments}</bdi></> : null}
           {latestReturnEvent ? <span className="t-caption"> · {new Date(latestReturnEvent.created_at).toISOString().slice(0, 16).replace("T", " ")}</span> : null}
-        </div></div>
+        </div>
       )}
       {focus === "return" && returnReason ? <FocusScroll targetId="return-block" /> : null}
       {v.planning_status === "cancelled" && cancelReasonDisplay && (
-        <div className="sq-banner sq-banner--critical"><div>
+        <div className="alert alert-critical">
           {t("visit.detail.cancelledReason", "Cancelled — reason: {reason} (M02-006, final)").replace("{reason}", cancelReasonDisplay)}
           {latestCancelEvent?.comments ? <> · <bdi>{latestCancelEvent.comments}</bdi></> : null}
-        </div></div>
+        </div>
       )}
       {/* M8 — expiry provenance: rule reason + event comments, final/read-only */}
       {v.planning_status === "expired" && (
-        <div className="sq-banner sq-banner--critical"><div>
+        <div className="alert alert-immutable">
           {t("visit.detail.expiredReason", "Expired — {reason} (final; duplicate produces a new Draft)")
             .replace("{reason}", expiryRuleReason ?? t("visit.detail.expiredUnknown", "lapsed by the scheduled expiry sweep"))}
-        </div></div>
+        </div>
       )}
       {/* FIX WAVE F4 — M02-043 notes add/edit */}
       <NotesEditor visitId={v.id} planningVersion={v.planning_version} initialNotes={typeof v.notes === "string" ? v.notes : ""} strings={notesStrings} />
       {/* FIX WAVE F4 — M02-042 attachments */}
       {attErr ? (
-        <div className="sq-banner sq-banner--critical" role="alert"><div>{mapError(attErr, "load")}</div></div>
+        <div className="alert alert-critical" role="alert">{mapError(attErr, "load")}</div>
       ) : (
         <Attachments visitId={v.id} rows={attRows} strings={attachmentsStrings} />
       )}
       {/* M8 / PLN-CON-003 — report packages: every visit_packages link with its
           immutable snapshot; the primary (visits.package_version_id) is marked.
           Zero links = preparation chooses the checklist later (honest, allowed). */}
-      <div id="packages" className="panel" style={{ padding: "var(--space-6)" }}>
-        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.packagesHeading", "Report packages")}</h4>
+      <section id="packages" className="panel">
+        <div className="panel-header"><h2 className="panel-title">{t("visit.detail.packagesHeading", "Report packages")}</h2></div>
+        <div className="panel-body">
         {pkgLinks.length === 0 ? (
           <p className="t-caption">{t("visit.detail.noPackages", "No checklist selected — the inspector chooses an eligible checklist during preparation (PLN-CON-003).")}</p>
         ) : (
-          <ul className="sq-timeline">
+          <ul className="timeline">
             {pkgLinks.map(l => (
-              <li key={l.id} className={l.package_version_id === v.package_version_id ? "is-key" : undefined}>
+              <li key={l.id}>
+                <span className={l.package_version_id === v.package_version_id ? "tl-dot is-accent" : "tl-dot"} />
                 <div>
                   <strong>{l.snapshot?.code ?? l.package_version_id.slice(0, 8)}</strong>
                   {l.snapshot?.title ? <> · {l.snapshot.title}</> : null}
-                  {l.snapshot?.version_label ? <> · <span className="sq-version">{l.snapshot.version_label}</span></> : null}
-                  {l.package_version_id === v.package_version_id && <span className="sq-lozenge sq-lozenge--info">{t("visit.detail.primaryPackage", "primary")}</span>}
+                  {l.snapshot?.version_label ? <> · <span className="badge badge-outline">{l.snapshot.version_label}</span></> : null}
+                  {l.package_version_id === v.package_version_id && <span className="badge badge-info">{t("visit.detail.primaryPackage", "primary")}</span>}
                   <br />
-                  <span className="sq-timeline__meta sq-numeric">
+                  <span className="tl-meta id-code">
                     {t("visit.detail.packageLinkedAt", "linked")} {new Date(l.added_at).toISOString().slice(0, 16).replace("T", " ")}
                     {l.snapshot?.status ? <> · {t("visit.detail.packageSnapshot", "snapshot at link time:")} {l.snapshot.status}</> : null}
                   </span>
@@ -410,28 +426,31 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
             ))}
           </ul>
         )}
-      </div>
+        </div>
+      </section>
       {/* M8 / PLN-CON-011 — lifecycle history: the append-only event stream
           (return/cancel/republish/expire/duplicate/reschedule/reassign/
           discard_draft), reasons resolved through the governed lookups. */}
-      <div id="lifecycle" className="panel" style={{ padding: "var(--space-6)" }}>
-        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.lifecycleHeading", "Lifecycle history — append-only (PLN-CON-011)")}</h4>
+      <section id="lifecycle" className="panel">
+        <div className="panel-header"><h2 className="panel-title">{t("visit.detail.lifecycleHeading", "Lifecycle history — append-only (PLN-CON-011)")}</h2></div>
+        <div className="panel-body">
         {lifecycleEvents.length === 0 ? (
           <p className="t-caption">{t("visit.detail.noLifecycle", "No lifecycle events recorded yet.")}</p>
         ) : (
-          <ul className="sq-timeline">
+          <ul className="timeline">
             {lifecycleEvents.map(e => {
               const label = e.event_type === "return" ? reasonLabel(returnReasons, e.reason_key)
                 : e.event_type === "cancel" ? reasonLabel(cancelReasons, e.reason_key)
                 : e.reason_key;
               return (
-                <li key={e.id} className={["return", "cancel", "expire"].includes(e.event_type) ? "is-key" : undefined}>
+                <li key={e.id}>
+                  <span className={["return", "cancel", "expire"].includes(e.event_type) ? "tl-dot is-accent" : "tl-dot"} />
                   <div>
                     <strong>{t(`enum.lifecycle.${e.event_type}`, e.event_type.replace(/_/g, " "))}</strong>
                     {label ? <> · {label}</> : null}
                     {e.comments ? <> · <bdi>{e.comments}</bdi></> : null}
                     <br />
-                    <span className="sq-timeline__meta sq-numeric">
+                    <span className="tl-meta id-code">
                       {new Date(e.created_at).toISOString().slice(0, 19).replace("T", " ")} · {e.actor ? t("visit.detail.auditActor", "by {who}").replace("{who}", e.actor.slice(0, 8)) : t("visit.detail.auditSystem", "system")}
                     </span>
                   </div>
@@ -440,12 +459,14 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
             })}
           </ul>
         )}
-      </div>
+        </div>
+      </section>
       {/* M8 — location provenance: current planned pin, first pin, and the
           additive visit_location_events stream (canonical §12). */}
-      <div id="location" className="panel" style={{ padding: "var(--space-6)" }}>
-        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.locationHeading", "Location & provenance")}</h4>
-        <p className="sq-numeric">
+      <section id="location" className="panel">
+        <div className="panel-header"><h2 className="panel-title">{t("visit.detail.locationHeading", "Location & provenance")}</h2></div>
+        <div className="panel-body">
+        <p className="id-code">
           {t("visit.detail.locationPlanned", "Planned pin:")}{" "}
           {v.planner_lat != null && v.planner_lng != null ? `${v.planner_lat}, ${v.planner_lng}` : t("visit.detail.locationFactory", "factory location")}
           {v.visit_location_source ? <> · {t(`enum.locationSource.${v.visit_location_source}`, v.visit_location_source)}</> : null}
@@ -454,14 +475,15 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
           )}
         </p>
         {locationEvents.length > 0 && (
-          <ul className="sq-timeline">
+          <ul className="timeline">
             {locationEvents.map(e => (
               <li key={e.id}>
+                <span className="tl-dot" />
                 <div>
-                  <strong>{t(`enum.locationSource.${e.source}`, e.source)}</strong> · <span className="sq-numeric">{e.lat}, {e.lng}</span>
+                  <strong>{t(`enum.locationSource.${e.source}`, e.source)}</strong> · <span className="id-code">{e.lat}, {e.lng}</span>
                   {e.note ? <> · <bdi>{e.note}</bdi></> : null}
                   <br />
-                  <span className="sq-timeline__meta sq-numeric">
+                  <span className="tl-meta id-code">
                     {new Date(e.created_at).toISOString().slice(0, 19).replace("T", " ")} · {e.actor ? t("visit.detail.auditActor", "by {who}").replace("{who}", e.actor.slice(0, 8)) : t("visit.detail.auditSystem", "system")}
                   </span>
                 </div>
@@ -469,39 +491,45 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
             ))}
           </ul>
         )}
-      </div>
-      <div id="journey" className="panel" style={{ padding: "var(--space-6)" }}>
-        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.journeyHeading", "Journey & location events — cannot be edited (EV-005)")}</h4>
-        <ul className="sq-timeline">
+        </div>
+      </section>
+      <section id="journey" className="panel">
+        <div className="panel-header"><h2 className="panel-title">{t("visit.detail.journeyHeading", "Journey & location events — cannot be edited (EV-005)")}</h2></div>
+        <div className="panel-body">
+        <ul className="timeline">
           {journeys.flatMap(j => j.geo_events.map(g => (
-            <li key={g.occurred_at} className={g.kind === "checkin" ? "is-key" : undefined}>
-              <div><strong>{t(`enum.${g.kind}`, g.kind)}</strong> · ±{g.accuracy_m} m {g.geofence_result && <span className="sq-lozenge sq-lozenge--success">{t(`enum.${g.geofence_result}`, g.geofence_result)}</span>}<br />
-                <span className="sq-timeline__meta sq-numeric">{new Date(g.occurred_at).toISOString().slice(0, 19).replace("T", " ")} · gis {g.gis_version}</span></div>
+            <li key={g.occurred_at}>
+              <span className={g.kind === "checkin" ? "tl-dot is-accent" : "tl-dot"} />
+              <div><strong>{t(`enum.${g.kind}`, g.kind)}</strong> · ±{g.accuracy_m} m {g.geofence_result && <span className="badge badge-compliant">{t(`enum.${g.geofence_result}`, g.geofence_result)}</span>}<br />
+                <span className="tl-meta id-code">{new Date(g.occurred_at).toISOString().slice(0, 19).replace("T", " ")} · gis {g.gis_version}</span></div>
             </li>
           )))}
           {journeys.length === 0 && <p className="t-caption">{t("visit.detail.noJourney", "No journey yet.")}</p>}
         </ul>
-      </div>
-      <div id="audit" className="panel" style={{ padding: "var(--space-6)" }}>
-        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.auditHeading", "Planning history — cannot be edited, only added to (ENG-12, latest 30)")}</h4>
-        <ul className="sq-timeline">
+        </div>
+      </section>
+      <section id="audit" className="panel">
+        <div className="panel-header"><h2 className="panel-title">{t("visit.detail.auditHeading", "Planning history — cannot be edited, only added to (ENG-12, latest 30)")}</h2></div>
+        <div className="panel-body">
+        <ul className="timeline">
           {(auditRows ?? []).map(a => (
             <li key={a.id}>
+              <span className="tl-dot" />
               <div><strong>{t(`enum.audit.${a.action}`, a.action)}</strong> · {a.actor ? t("visit.detail.auditActor", "by {who}").replace("{who}", a.actor.slice(0, 8)) : t("visit.detail.auditSystem", "system")}<br />
-                <span className="sq-timeline__meta sq-numeric">{new Date(a.occurred_at).toISOString().slice(0, 19).replace("T", " ")}</span></div>
+                <span className="tl-meta id-code">{new Date(a.occurred_at).toISOString().slice(0, 19).replace("T", " ")}</span></div>
             </li>
           ))}
           {(auditRows ?? []).length === 0 && <p className="t-caption">{t("visit.detail.noAudit", "No audited changes yet, or you don't have audit-read access.")}</p>}
         </ul>
-      </div>
-      </div>
-      <aside className={targetPreview ? `wa-visit-detail-actions ${detailStyles.actions}` : undefined} style={targetPreview ? undefined : { display: "contents" }}>
+        </div>
+      </section>
+      <aside className="stack">
         <ActionBar visitId={v.id} planningVersion={v.planning_version} status={v.planning_status} opState={v.operational_state}
           opStateLabel={t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}
           visitType={v.visit_type} windowStart={v.window_start} windowEnd={v.window_end} inspectors={inspectors}
           canManage={canManage} canReassign={canReassign} isFinal={isFinal}
           returnReasons={returnReasons} cancelReasons={cancelReasons} packageOptions={packageOptions}
-          strings={actionStrings} />
+          cutoffDisplay={cutoffDisplay} strings={actionStrings} />
       </aside>
       </div>
     </Shell>
