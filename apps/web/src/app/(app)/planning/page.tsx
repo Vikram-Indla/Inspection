@@ -316,8 +316,8 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
           what visit, who owns it, and when it is scheduled.  Audit and
           specialist filters remain available, without making the list feel
           like a configuration screen. */}
-      <form method="get" action="/planning" className="sq-surface sq-panel"
-        style={{ padding: "var(--space-6)", display: "flex", flexWrap: "wrap", gap: "var(--space-4)", alignItems: "flex-end" }}>
+      <form method="get" action="/planning" className="sq-surface sq-panel sq-commandbar"
+        style={{ padding: "var(--space-4)", alignItems: "flex-end" }}>
         {params.tab !== "all" && <input type="hidden" name="tab" value={params.tab} />}
         <label className="sq-field" style={{ flex: "1 1 260px" }}>
           <span className="sq-field__label">{tr("plan.list.searchLabel", "Search", "بحث")}</span>
@@ -331,9 +331,9 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
             {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.label}</option>)}
           </select>
         </label>
-        <fieldset className="sq-field" style={{ minInlineSize: "min(100%, 310px)", margin: 0, padding: 0, border: 0 }}>
+        <fieldset className="sq-field" style={{ minInlineSize: 0, margin: 0, padding: 0, border: 0 }}>
           <legend className="sq-field__label">{tr("plan.list.filterVisitDate", "Visit date", "تاريخ الزيارة")}</legend>
-          <div className="sq-row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
+          <div className="sq-row" style={{ gap: "var(--space-1)", flexWrap: "nowrap" }}>
             <label className="sr-only" htmlFor="planning-window-from">{tr("plan.list.filterWindowFrom", "Window from", "النافذة من")}</label>
             <input id="planning-window-from" className="sq-input sq-numeric" type="date" name="windowFrom" defaultValue={params.filters.windowFrom ?? ""} aria-label={tr("plan.list.filterWindowFrom", "Window from", "النافذة من")} />
             <span aria-hidden="true">—</span>
