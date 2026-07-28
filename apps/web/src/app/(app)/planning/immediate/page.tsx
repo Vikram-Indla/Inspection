@@ -111,6 +111,8 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
 
   const strings: ImmediateStrings = {
     identity: t("plan.imm.identity", "Identity — registered or minimum manual"),
+    r05BlockedTitle: tr("plan.imm.r05BlockedTitle", "Unregistered establishments are not available yet", "المنشآت غير المسجلة غير متاحة حالياً"),
+    r05BlockedBody: tr("plan.imm.r05BlockedBody", "Use a registered factory. The unregistered-establishment lifecycle remains unavailable until its governed approval is complete.", "استخدم مصنعاً مسجلاً. تظل دورة المنشأة غير المسجلة غير متاحة حتى اكتمال اعتمادها المحكوم."),
     identityToggleRegistered: t("plan.imm.identityToggleRegistered", "Registered factory"),
     identityToggleUnregistered: t("plan.imm.identityToggleUnregistered", "Unregistered / temporary"),
     manualLockedPermission: tr("plan.imm.manualLockedPermission", "Manual entry requires the manual-factory permission.", "الإدخال اليدوي يتطلب صلاحية المصنع اليدوي."),
