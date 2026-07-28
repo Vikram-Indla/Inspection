@@ -72,3 +72,53 @@ export async function resolveDashboardPolicyVersion(
     return { policyVersionId: null, targets: {}, failedSources: ["dashboard_config_heads"] };
   }
 }
+
+export type ResolvedPolicyGates = {
+  /** True when a governed inspection-cycle policy (ADM-DASH-005) is published. */
+  cyclePolicyConfigured: boolean;
+  /**
+   * SLA urgency "warn at" fraction (ADM-DASH-007) from the published
+   * `sla_urgency_policy` payload; null when unpublished or malformed. Feeds
+   * OPS-KPI-002 "expiring soon" — never hard-coded.
+   */
+  slaWarnAtFraction: number | null;
+  failedSources: string[];
+};
+
+/**
+ * Resolve the policy gates that flip STR-KPI-007/008 and OPS-KPI-002 from
+ * "Not configured" to live. Reads only published heads/versions the caller may
+ * see (RLS authoritative); any read failure degrades to "not configured" rather
+ * than fabricating a governed value.
+ */
+export async function resolveDashboardPolicyGates(sb: SupabaseClient): Promise<ResolvedPolicyGates> {
+  const none: ResolvedPolicyGates = { cyclePolicyConfigured: false, slaWarnAtFraction: null, failedSources: [] };
+  try {
+    const { data, error } = await sb
+      .from("dashboard_config_heads")
+      .select("config_key, current_version_id")
+      .in("config_key", ["inspection_cycle_policy", "sla_urgency_policy"]);
+    if (error) return { ...none, failedSources: ["dashboard_config_heads"] };
+    const heads = new Map(
+      ((data ?? []) as { config_key: string; current_version_id: string | null }[])
+        .map((r) => [r.config_key, r.current_version_id] as const),
+    );
+    const cyclePolicyConfigured = !!heads.get("inspection_cycle_policy");
+    const slaVersionId = heads.get("sla_urgency_policy") ?? null;
+
+    let slaWarnAtFraction: number | null = null;
+    if (slaVersionId) {
+      const version = await sb
+        .from("dashboard_config_versions")
+        .select("payload")
+        .eq("id", slaVersionId)
+        .maybeSingle();
+      if (version.error) return { cyclePolicyConfigured, slaWarnAtFraction: null, failedSources: ["dashboard_config_versions"] };
+      const raw = (version.data?.payload as { warn_at_fraction?: unknown } | null)?.warn_at_fraction;
+      if (typeof raw === "number" && Number.isFinite(raw) && raw > 0 && raw <= 1) slaWarnAtFraction = raw;
+    }
+    return { cyclePolicyConfigured, slaWarnAtFraction, failedSources: [] };
+  } catch {
+    return { ...none, failedSources: ["dashboard_config_heads"] };
+  }
+}

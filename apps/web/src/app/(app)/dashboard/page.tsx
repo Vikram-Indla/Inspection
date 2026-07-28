@@ -25,7 +25,7 @@ import {
   StrategicView,
 } from "./DashboardView";
 import { buildDashboardKpiProjection } from "@/lib/dashboard-kpi/projection";
-import { resolveDashboardPolicyVersion } from "@/lib/dashboard-kpi/loader";
+import { resolveDashboardPolicyVersion, resolveDashboardPolicyGates } from "@/lib/dashboard-kpi/loader";
 import type { MetricScope } from "@/lib/dashboard-kpi/contract";
 import { Suspense } from "react";
 
@@ -180,6 +180,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     !strategic ? sb.from("engine_settings").select("settings").eq("engine", "sla").maybeSingle() : Promise.resolve({ data: null, error: null }),
   ]);
   const policyPromise = resolveDashboardPolicyVersion(sb);
+  const gatesPromise = resolveDashboardPolicyGates(sb);
 
   async function DashboardDataSections() {
     const [
@@ -234,6 +235,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     slaResult.error && text("SLA configuration", "تهيئة اتفاقية مستوى الخدمة"),
   ].filter(Boolean) as string[];
 
+  const gates = await gatesPromise;
   const metrics = buildDashboardMetrics({
     visits: visitsResult.rows,
     inspections: inspectionsResult.rows,
@@ -245,6 +247,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     audit: auditResult.rows,
     factories: factoriesResult.rows,
     sla: (slaResult.data?.settings ?? {}) as DashboardSla,
+    slaWarnAtFraction: gates.slaWarnAtFraction,
     scope,
     today,
     region,
@@ -265,9 +268,10 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     scope: metricScope,
     policyVersionId: policy.policyVersionId,
     targets: policy.targets,
+    cyclePolicyConfigured: gates.cyclePolicyConfigured,
     refreshedAt: new Date(nowMs).toISOString(),
     generatedAtMs: nowMs,
-    failedSources: [...failedSources, ...policy.failedSources],
+    failedSources: [...failedSources, ...policy.failedSources, ...gates.failedSources],
   });
 
   const factoryCoords = new Map<string, { lat: number; lng: number; radiusM: number | null }>();

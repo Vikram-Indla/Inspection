@@ -24,6 +24,13 @@ export type ProjectionContext = {
   scope: MetricScope;
   /** Published dashboard policy version applied, or null when none. */
   policyVersionId: string | null;
+  /**
+   * True when the governed inspection-cycle policy (ADM-DASH-005) is published.
+   * Gates STR-KPI-007 (coverage) and STR-KPI-008 (uninspected) from
+   * "Not configured" to live — the computed values already exist, but must not
+   * be shown until the cycle policy that defines "due" is governed.
+   */
+  cyclePolicyConfigured?: boolean;
   refreshedAt: string | null;
   generatedAtMs: number;
   failedSources: string[];
@@ -113,6 +120,36 @@ export function buildDashboardKpiProjection(
   for (const def of KPI_DEFINITIONS) {
     if (def.category === "inspector") continue; // inspector metrics come from inspector-projection.ts
     const metric = base(def, ctx);
+
+    // Policy-gated metrics — registry marks them not_configured, but they go
+    // live once their governing Admin policy is published (resolved by the
+    // loader). When the policy is absent they fall through to the honest
+    // not_configured `metric` shell built above.
+    const live = (patch: Partial<SharedMetric>): SharedMetric =>
+      withValue(metric, {
+        sourceStatus: "live",
+        refreshedAt: ctx.refreshedAt,
+        freshnessRef: "as_of_server_time",
+        unavailableReason: null,
+        ...patch,
+      });
+    if (def.metricId === "STR-KPI-007") { // Inspection coverage
+      out.push(ctx.cyclePolicyConfigured
+        ? live({ value: s.inspectionCoverageRate, numerator: s.coveredFactories, denominator: s.dueFactories })
+        : metric);
+      continue;
+    }
+    if (def.metricId === "STR-KPI-008") { // Uninspected factories = due - covered
+      const uninspected = Math.max(0, s.dueFactories - s.coveredFactories);
+      out.push(ctx.cyclePolicyConfigured
+        ? live({ value: uninspected, numerator: uninspected, denominator: s.dueFactories })
+        : metric);
+      continue;
+    }
+    if (def.metricId === "OPS-KPI-002") { // Expiring soon (SLA warn fraction)
+      out.push(o.expiringSoon == null ? metric : live({ value: o.expiringSoon }));
+      continue;
+    }
 
     if (def.implementation !== "implemented") {
       out.push(metric);

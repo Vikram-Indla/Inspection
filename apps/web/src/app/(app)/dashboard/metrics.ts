@@ -205,6 +205,14 @@ export function buildDashboardMetrics(input: {
   audit: AuditRow[];
   factories: FactoryRef[];
   sla: DashboardSla;
+  /**
+   * OPS-KPI-002 "expiring soon" lead-time, expressed as the fraction of a
+   * visit's execution window that must have elapsed before it counts as
+   * expiring (governed SLA/urgency policy, ADM-DASH-007). Null/undefined when
+   * no such policy is published — the metric then stays "Not configured"
+   * rather than hard-coding a threshold.
+   */
+  slaWarnAtFraction?: number | null;
   scope: DateScope;
   today: DateScope;
   region: string;
@@ -231,6 +239,20 @@ export function buildDashboardMetrics(input: {
   const scopedInspections = inspections.filter(i => isInScope(i.submitted_at, scope));
   const scopedInspectionIds = new Set(scopedInspections.map(i => i.id));
   const completedInspections = scopedInspections.length;
+
+  // STR-KPI-007 inspection coverage — distinct factories with a qualifying
+  // completed inspection ÷ distinct factories due under the published
+  // inspection-cycle policy. Every factory is due at least once per cycle, so
+  // the governed denominator is the distinct factory population in scope.
+  const dueFactoryIds = new Set(
+    input.factories.filter(f => factoryInRegion(f, region)).map(f => f.id),
+  );
+  const coveredFactoryIds = new Set(
+    scopedInspections
+      .map(i => i.visits?.factories?.id)
+      .filter((id): id is string => !!id && dueFactoryIds.has(id)),
+  );
+  const inspectionCoverageRate = percent(coveredFactoryIds.size, dueFactoryIds.size);
 
   const scopedResponses = responses.filter(r => scopedInspectionIds.has(r.inspection_id) && r.is_complete);
   // Canonical shared checklist-compliance calculation (same definition the iPad
@@ -285,6 +307,17 @@ export function buildDashboardMetrics(input: {
   const cancelled = cancelledRows.length;
   const eligibleForSla = scopedVisits.filter(v => v.planning_status === "published" && v.operational_state !== "submitted");
   const overdueRows = eligibleForSla.filter(v => Date.parse(v.window_end) < nowMs);
+  // OPS-KPI-002 expiring soon — visits not yet overdue whose execution window
+  // has passed the governed warn fraction (ADM-DASH-007). Null when the SLA
+  // urgency policy is not published, so presentation can render "Not configured".
+  const warnFraction = input.slaWarnAtFraction;
+  const expiringSoonRows = warnFraction == null ? null : eligibleForSla.filter(v => {
+    const start = Date.parse(v.window_start);
+    const end = Date.parse(v.window_end);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end < start) return false;
+    if (end < nowMs) return false; // already overdue — counted separately, never "soon"
+    return nowMs >= start + warnFraction * (end - start);
+  });
   const activeField = visits.filter(v =>
     ["on_the_way", "arrived", "executing", "executing_inspection"].includes((v.operational_state ?? "").toLowerCase()),
   ).length;
@@ -392,6 +425,9 @@ export function buildDashboardMetrics(input: {
   return {
     strategic: {
       completedInspections,
+      inspectionCoverageRate,
+      coveredFactories: coveredFactoryIds.size,
+      dueFactories: dueFactoryIds.size,
       compliant,
       nonCompliant,
       answeredForCompliance,
@@ -436,6 +472,8 @@ export function buildDashboardMetrics(input: {
       cancelled,
       cancelledRows,
       overdueRows,
+      expiringSoonRows,
+      expiringSoon: expiringSoonRows ? expiringSoonRows.length : null,
       activeField,
       awaitingRows,
       pendingApprovalsCount,
