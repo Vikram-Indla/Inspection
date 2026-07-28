@@ -30,7 +30,7 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
   // validate and save drafts, but publish_bulk_plan enforces has_role).
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
-  const access = await getPlanningAccess(sb, ["planning.create.bulk"]);
+  const access = await getPlanningAccess(sb, ["planning.create.bulk", "planning.publish"]);
   if (authError || access.error !== null) {
     console.error("[ bulk review authorization]", authError?.message ?? access.error);
     return (
@@ -276,7 +276,13 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
   return (
     <Shell current="/planning" title={t("plan.review.title", "Plan review & publish")}
       context={<span className="badge badge-info">{t("plan.review.context", "review · publish")}</span>}>
-      <ReviewClient strings={strings} initialDraft={initialDraft} draftUnavailable={draftUnavailable} locale={locale} />
+      <ReviewClient
+        strings={strings}
+        initialDraft={initialDraft}
+        draftUnavailable={draftUnavailable}
+        transitionsExecutable={access.can("planning.publish")}
+        locale={locale}
+      />
     </Shell>
   );
 }

@@ -105,15 +105,13 @@ const BLK_META: Record<BlockerKind, { cls: string; glyph: string; fix: "remove" 
   srcDuplicate:  { cls: "unavailable", glyph: "◆", fix: "review" },
 };
 
-export default function ReviewClient({ strings: s, initialDraft, draftUnavailable, locale }: {
+export default function ReviewClient({ strings: s, initialDraft, draftUnavailable, transitionsExecutable, locale }: {
   strings: ReviewStrings;
   initialDraft?: BulkDraft | null;
   draftUnavailable?: boolean;
+  transitionsExecutable: boolean;
   locale: "en" | "ar";
 }) {
-  // PLN-S08/PLN-S11 — the corrected compiler keeps draft persistence and
-  // publish blocked until frozen-target durable receipts are effective.
-  const transitionsExecutable = false;
   const [state, formAction, pending] = useActionState<BulkResult, FormData>(publishBulkPlan, {});
   const [data, setData] = useState<ReviewData | null>(null);
   const [allIds, setAllIds] = useState<string[]>([]);

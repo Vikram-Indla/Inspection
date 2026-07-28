@@ -26,17 +26,7 @@ const NEUTRAL_WRITE_ERROR =
   "Publishing could not complete a step. Your entries are preserved — review the step status below and retry; retry will not create a second visit.";
 const NEUTRAL_READ_ERROR =
   "Planning data could not be verified (ERR-OPS-001). Your entries are preserved — try again.";
-const publishReceiptContractIsExecutable = (): boolean => false;
-
 export async function publishSingleVisit(_: PublishResult, formData: FormData): Promise<PublishResult> {
-  // PLN-S11: R1 marks the durable publish receipt contract
-  // PROPOSED_NOT_EFFECTIVE. Do not execute the legacy RPC followed by direct
-  // metadata/package fallbacks; preserve the form and terminate explicitly.
-  if (!publishReceiptContractIsExecutable()) {
-    return {
-      error: "Publishing is unavailable until the governed atomic receipt contract is active. Your entries are preserved and nothing was published.",
-    };
-  }
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError) {

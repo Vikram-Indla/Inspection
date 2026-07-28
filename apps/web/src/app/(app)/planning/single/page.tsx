@@ -107,7 +107,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     console.error("[ single-planning authorization]", userError.message);
     return unavailable;
   }
-  const access = await getPlanningAccess(sb, ["planning.create.single"]);
+  const access = await getPlanningAccess(sb, ["planning.create.single", "planning.publish"]);
   if (access.error) {
     console.error("[ single-planning access resolution]", access.error);
     return unavailable;
@@ -420,6 +420,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
         inspectors={inspectors}
         strings={strings}
         virtualEligible={virtualEligible}
+        transitionsExecutable={access.can("planning.publish")}
         locale={locale === "ar" ? "ar" : "en"}
       />
     </Shell>

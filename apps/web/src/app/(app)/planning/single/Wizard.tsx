@@ -90,7 +90,8 @@ export type WizardStrings = {
 
 export default function Wizard({
   query, portfolios, results, registryUnavailable, initialSelection, draft, draftConfig,
-  sourceChannel, handoff, prefillMiss, packages, inspectors, strings, virtualEligible, locale,
+  sourceChannel, handoff, prefillMiss, packages, inspectors, strings, virtualEligible,
+  transitionsExecutable, locale,
 }: {
   query: string;
   portfolios: ResolvedPortfolio[];
@@ -106,12 +107,9 @@ export default function Wizard({
   inspectors: Insp[];
   strings: WizardStrings;
   virtualEligible: boolean;
+  transitionsExecutable: boolean;
   locale: Locale;
 }) {
-  // PLN-S08/PLN-S11 — R1 marks draft and publish receipts
-  // PROPOSED_NOT_EFFECTIVE. Keep every entered value editable, but do not
-  // present either transition as executable.
-  const transitionsExecutable = false;
   const [state, formAction, pending] = useActionState<PublishResult, FormData>(publishSingleVisit, {});
   const router = useRouter();
   const [queryInput, setQueryInput] = useState(query);
