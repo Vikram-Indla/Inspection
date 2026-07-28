@@ -142,19 +142,21 @@ Note this branch is largely redundant: main has moved past it, and the work is
 reproducible from `TASK-PLANNING-FILTERBAR-20260728-001.md`. It exists as a
 safety net, not as a source of truth.
 
-### stash@{1} — no branch, recommend dropping
+### stash@{1} — DROPPED 2026-07-28
 
-One file: `.project-memory/audit/tool_events.jsonl`. It differs from main only
-by appended log lines. Despite the stash message ("orchestrator preserve
-revamp audit before shared recovery") there is no audit document here — just
-the append-only jsonl. A branch would carry nothing reviewable.
+Commit `346988d5`. One file: `.project-memory/audit/tool_events.jsonl`,
+differing from main only by appended log lines. Despite the stash message
+("orchestrator preserve revamp audit before shared recovery") it contained no
+audit document — just the append-only jsonl. Nothing reviewable, so no branch
+was made and the stash was dropped on the owner's instruction.
 
-Disposition: **drop it.** Not dropped yet, because dropping is irreversible
-and that is the owner's call.
+The commit object may remain reachable via reflog until garbage collection:
 
 ```bash
-git stash drop "stash@{1}"
+git show 346988d5
 ```
+
+Do not rely on that. Treat this stash as gone.
 
 ### stash@{4} — branched for two session records only
 
@@ -171,8 +173,12 @@ took. Those two records may therefore describe work documented nowhere else.
 
 ## Summary
 
-Five triage branches now exist on origin. **All six stashes remain intact** —
-every branch is additive, so nothing has been destroyed.
+Five triage branches now exist on origin. **Every stash that held reviewable
+content is preserved as a branch**, and the five surviving stashes are still in
+place on top of that — the branches are additive.
+
+One stash was destroyed: `346988d5`, which held a single audit log and nothing
+reviewable. Everything else exists in two places.
 
 | Branch | Commit | Files | Behind main |
 |---|---|---|---|
