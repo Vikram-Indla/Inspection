@@ -46,7 +46,10 @@ leases:
     card: "operations"
     channel: "web"
     holder: "codex"
-    state: "GRANTED"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
     allowed_paths:
       - "apps/web/src/app/(app)/operations/**"
       - "status/saqeel-status.json (card 'operations' only)"
@@ -54,7 +57,10 @@ leases:
     card: "pwa-workspace"
     channel: "pwa"
     holder: "codex"
-    state: "GRANTED"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
     allowed_paths:
       - "apps/web/src/app/(app)/field/inspection/[id]/**"
       - "status/saqeel-status.json (card 'pwa-workspace' only)"
@@ -62,7 +68,10 @@ leases:
     card: "admin-builders"
     channel: "admin"
     holder: "kimi"
-    state: "GRANTED"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
     allowed_paths:
       - "apps/web/src/app/(app)/admin/templates/**"
       - "apps/web/src/app/(app)/admin/workflows/**"
@@ -72,7 +81,10 @@ leases:
     card: "pwa-completion"
     channel: "pwa"
     holder: "codex"
-    state: "GRANTED"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
     note: "Highest-leverage card on the board: it gates feedback, pwa-reports, reports, m6-enforcement and reviews."
     allowed_paths:
       - "apps/web/src/app/(app)/field/inspection/[id]/** (completion and statement surfaces only)"
@@ -81,7 +93,10 @@ leases:
     card: "admin-kpi"
     channel: "admin"
     holder: "kimi"
-    state: "GRANTED"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
     allowed_paths:
       - "apps/web/src/app/admin/dashboard-config/** (excluding layout.tsx, transferred to admin-core)"
       - "apps/web/src/lib/dashboard-kpi/**"
@@ -90,7 +105,10 @@ leases:
     card: "m6-library"
     channel: "web"
     holder: "kimi"
-    state: "GRANTED"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
     allowed_paths:
       - "apps/web/src/app/(app)/admin/regulations/**"
       - "apps/web/src/app/(app)/admin/items/**"
@@ -100,7 +118,10 @@ leases:
     card: "pwa-startup"
     channel: "pwa"
     holder: "codex"
-    state: "GRANTED"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
     allowed_paths:
       - "apps/web/src/app/(app)/field/[visitId]/**"
       - "apps/web/src/components/field/PreInspectionPackSheet.tsx"
@@ -170,7 +191,10 @@ leases:
     card: "m6-enforcement"
     channel: "web"
     holder: "codex"
-    state: "GRANTED"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
     note: "Unblocked by pwa-completion. /enforcement has page.tsx only and records no decision."
     allowed_paths:
       - "apps/web/src/app/(app)/enforcement/**"
@@ -190,7 +214,10 @@ leases:
     card: "admin-core"
     channel: "admin"
     holder: "codex"
-    state: "GRANTED"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
     allowed_paths:
       - "apps/web/src/app/(app)/admin/** (excluding paths leased to other cards)"
       - "apps/web/src/app/(app)/admin/packages/page.tsx"
@@ -205,7 +232,10 @@ leases:
     card: "admin-platform"
     channel: "admin"
     holder: "kimi"
-    state: "GRANTED"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
     allowed_paths:
       - "apps/web/src/app/(app)/admin/operations/**"
       - "apps/web/src/app/(app)/admin/audit/**"
@@ -217,7 +247,10 @@ leases:
     card: "planning"
     channel: "web"
     holder: "codex"
-    state: "GRANTED"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
     granted_at: "2026-07-28"
     change_control_id: "SAQEEL-WORKFORCE-REINSTATEMENT-20260725"
     scope: >
@@ -286,7 +319,35 @@ active_change_control:
       shell and newer on main — take main's version, keep your own card's files.
       Do not add further tablet rules until the proposal is accepted.
 
+permanent_lease_prohibition:
+  ruled_by: "Product Owner (Vikram)"
+  ruled_at: "2026-07-28"
+  state: "IN_FORCE_INDEFINITELY"
+  rule: >
+    No lease may be granted to codex or to kimi, on any card, on any channel,
+    for any path, ever again. This is not a pause and not a queue freeze. It
+    has no expiry and no renewal condition.
+  scope: >
+    Applies to every card on the 55-card board and to any future card. Applies
+    to CURRENT_SLICE.yaml and to every derived slice, packet or handoff. A
+    packet that names codex or kimi as holder is invalid on its face and must
+    be refused rather than negotiated.
+  supersedes: >
+    The sponsor_direction recorded above, which reinstated codex and kimi into
+    the workforce on 2026-07-25 over SAQEEL_OPERATING_SYSTEM.md V5. That
+    reinstatement is withdrawn. V5's original removal of codex and kimi now
+    stands, by the owner's later ruling rather than by V5's own authority.
+  effect_on_existing: >
+    All 11 leases held by codex or kimi were set to REVOKED_PERMANENT on
+    2026-07-28. The records are retained rather than deleted so the grant and
+    revocation history stays auditable. No work under those leases is
+    authorised from the revocation date, including work already in progress.
+  note: >
+    Revocation does not retract work already merged to main under a prior
+    lease. It withdraws the authority to continue.
+
 standing_boundaries:
+  - "No lease is ever granted to codex or kimi. See permanent_lease_prohibition. A packet naming either as holder is invalid and must be refused."
   - "DEC-032 / submission_versions digest() trigger remains P0 and blocks all new real inspection submissions. It needs a DB migration, not application code, and is out of scope for every board card."
   - "Never invent policy values, thresholds, SLAs, providers, risk weights, geofence values, retention or Arabic scope."
   - "Only the 24 clean factories F-1101..F-6602 and the 5 test accounts may be surfaced."
