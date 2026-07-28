@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { homeForRoles } from "../src/lib/role-home";
 
 // CD-003 / AUTH-03 / CD003-SEC-001 — role resolution + no-workspace
 // fallback. Behavioral proof that the ROLE_HOME edit (six explicit
@@ -24,6 +25,24 @@ test("AUTH-03: identity and role read failures route to the neutral error bounda
   expect(source).toContain("if (authError)");
   expect(source).toContain("if (rolesError)");
   expect(source).toContain('throw new Error("launch_roles_unavailable")');
+});
+
+test("PLN-AUTH-ENTRY-001: a normal Planner sign-in is role-routed to Planning", () => {
+  const login = readFileSync(join(process.cwd(), "src/app/login/field/FieldLoginClient.tsx"), "utf8");
+  const launch = readFileSync(join(process.cwd(), "src/app/launch/page.tsx"), "utf8");
+  const planning = readFileSync(join(process.cwd(), "src/app/(app)/planning/page.tsx"), "utf8");
+
+  // The common sign-in path must not assume the Field channel. A Field return
+  // remains separately validated by the session-recovery contract.
+  expect(login).toContain('window.location.assign("/launch")');
+  expect(launch).toContain("getUserRoles(user.id)");
+  expect(launch).toContain("homeForRoles((roles ?? []).map(r => r.role_key))");
+  expect(homeForRoles(["planner"])).toBe("/planning");
+
+  // The landing itself uses the Planning capability boundary, rather than a
+  // browser-only menu check, so a matched Planner proceeds to the workspace.
+  expect(planning).toContain('getPlanningAccess(sb, ["planning.view", "planning.create", "planning.export"])');
+  expect(planning).toContain('access.accessClass !== "business_staff"');
 });
 
 test("CD003-SEC-001 regression: admin-family persona still lands on /admin via the six explicit role_key entries", async ({ page }) => {
