@@ -34,6 +34,7 @@ export type ManualReasonOption = { key: string; label: string };
 
 export type ImmediateStrings = {
   identity: string; identityToggleRegistered: string; identityToggleUnregistered: string;
+  r05BlockedTitle: string; r05BlockedBody: string;
   manualLockedPermission: string; manualLockedType: string; manualLockedLookups: string; notFoundConfirm: string;
   searchLabel: string; searchPlaceholder: string; searchNoMatch: string; existingFactory: string; selectOption: string;
   previewCr: string; previewLicense: string; previewRegion: string; previewFreshness: string; previewFreshnessNever: string;
@@ -134,7 +135,11 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
   // factories, and the governed reason list loaded. The not-found confirmation
   // (fourth control) sits inside the manual panel itself.
   const selectedType = visitTypes.find(v => v.key === visitType);
-  const manualAvailable = manualAllowed && manualReasons.length > 0 && selectedType?.manualEntryAllowed === true;
+  // PLN-R05 — Immediate/unregistered creation is deliberately non-executable
+  // until the governed establishment lifecycle is approved. The server action
+  // carries the same unconditional stop before any provider or mutation work.
+  const immediateExecutable = false;
+  const manualAvailable = immediateExecutable && manualAllowed && manualReasons.length > 0 && selectedType?.manualEntryAllowed === true;
   useEffect(() => {
     if (mode === "unregistered" && !manualAvailable) setMode("registered");
   }, [manualAvailable, mode]);
@@ -229,188 +234,114 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
   const mapCenter: [number, number] = locationOk ? [latNum, lngNum] : (factory?.official_lat != null ? [factory.official_lat, factory.official_lng as number] : [23.8859, 45.0792]);
 
   return (
-    <form action={formAction} className="sq-stack" style={{ gap: "var(--space-6)" }}>
+    <form action={formAction} className="stack">
       <input type="hidden" name="request_id" value={requestId} />
       <input type="hidden" name="actor_mode" value={actorMode} />
       <input type="hidden" name="locale" value={locale} />
       <input type="hidden" name="location_source" value={locationSource ?? ""} />
       <AuthorityBar chips={chips} strings={{ groupLabel: strings.chipGroupLabel, satisfied: strings.chipSatisfied, blocking: strings.chipBlocking, truth: strings.chipTruth, allSatisfied: strings.chipAllSatisfied, blockedAnnouncement: strings.chipBlockedAnnouncement }} />
 
-      <div className="sq-grid-2">
-        <div className="sq-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-          <h4>{strings.identity}</h4>
-          <div className="sq-segmented" role="group" aria-label={strings.identity}>
-            <button type="button" aria-pressed={mode === "registered"} onClick={() => setMode("registered")}>{strings.identityToggleRegistered}</button>
-            <button type="button" aria-pressed={mode === "unregistered"} disabled={!manualAvailable} onClick={() => setMode("unregistered")}>{strings.identityToggleUnregistered}</button>
+      <div className="alert alert-warning" role="status">
+        <div><div className="alert-title">{strings.r05BlockedTitle}</div><p>{strings.r05BlockedBody}</p></div>
+      </div>
+
+      <div className="saqeel-reference__fields">
+        <section className="panel" aria-labelledby="immediate-identity-heading">
+          <div className="panel-header"><h2 className="panel-title" id="immediate-identity-heading">{strings.identity}</h2></div>
+          <div className="panel-body stack">
+          <div className="btn-group" role="group" aria-label={strings.identity}>
+            <button className="btn btn-primary" type="button" aria-pressed={mode === "registered"} onClick={() => setMode("registered")}>{strings.identityToggleRegistered}</button>
+            <button className="btn btn-secondary" type="button" aria-pressed={false} aria-disabled="true" disabled onClick={() => setMode("unregistered")}>{strings.identityToggleUnregistered}</button>
           </div>
-          {manualLockReason && <p className="sq-caption" role="note">{manualLockReason}</p>}
+          <p className="t-caption" role="note">{strings.r05BlockedBody}</p>
+          {manualLockReason && <p className="t-caption" role="note">{manualLockReason}</p>}
 
           {mode === "registered" ? (
             <>
-              <div className="sq-field" style={{ maxInlineSize: "none" }}>
-                <label className="sq-field__label" htmlFor="imm-search">{strings.searchLabel}</label>
-                <span className="sq-search"><input id="imm-search" key={`s-${resetKey}`} className="sq-input" placeholder={strings.searchPlaceholder} value={query} onChange={e => setQuery(e.target.value)} /></span>
+              <div className="field">
+                <label htmlFor="imm-search">{strings.searchLabel}</label>
+                <input id="imm-search" key={`s-${resetKey}`} className="input" placeholder={strings.searchPlaceholder} value={query} onChange={e => setQuery(e.target.value)} />
               </div>
               {ql.length >= 2 && shown.length === 0 && (
-                <div className="sq-banner sq-banner--warning"><div>{strings.searchNoMatch}</div></div>
+                <div className="alert alert-warning">{strings.searchNoMatch}</div>
               )}
-              <div className="sq-field" style={{ maxInlineSize: "none" }}>
-                <label className="sq-field__label" htmlFor="imm-existing">{strings.existingFactory}</label>
-                <select id="imm-existing" key={`e-${resetKey}`} className="sq-select" name="existing_factory_id"
+              <div className="field">
+                <label htmlFor="imm-existing">{strings.existingFactory}</label>
+                <select id="imm-existing" key={`e-${resetKey}`} className="select" name="existing_factory_id"
                   value={factory?.id ?? ""} onChange={e => { setFactory(shown.find(f => f.id === e.target.value) ?? null); setLocationSource(null); }}>
                   <option value="">{strings.selectOption}</option>
                   {shown.map(f => <option key={f.id} value={f.id}>{f.name} · {f.cr_number}{f.license_number ? ` · ${f.license_number}` : ""}</option>)}
                 </select>
               </div>
               {factory && (
-                <div className="sq-surface" style={{ padding: "var(--space-4)", background: "var(--surface-sunken)" }}>
-                  <strong><bdi>{factory.name}</bdi></strong>
-                  <div className="sq-caption">{strings.previewCr} <bdi>{factory.cr_number}</bdi>
+                <div className="alert alert-info">
+                  <div><strong><bdi>{factory.name}</bdi></strong>
+                  <div className="t-caption">{strings.previewCr} <bdi>{factory.cr_number}</bdi>
                     {factory.license_number && <> · {strings.previewLicense} <bdi>{factory.license_number}</bdi></>}
                     {" · "}{strings.previewRegion} <bdi>{factory.region ?? "—"}{factory.city ? `, ${factory.city}` : ""}</bdi></div>
-                  <div className="sq-caption">{strings.previewFreshness}: {factory.source_synced_at ? <bdi>{formatDate(factory.source_synced_at, locale)}</bdi> : strings.previewFreshnessNever}
-                    {" · "}{strings.previewRisk}: {factory.risk_band ?? strings.previewRiskUnknown}{factory.risk_score != null ? ` (${factory.risk_score})` : ""}</div>
+                  <div className="t-caption">{strings.previewFreshness}: {factory.source_synced_at ? <bdi>{formatDate(factory.source_synced_at, locale)}</bdi> : strings.previewFreshnessNever}
+                    {" · "}{strings.previewRisk}: {factory.risk_band ?? strings.previewRiskUnknown}{factory.risk_score != null ? ` (${factory.risk_score})` : ""}</div></div>
                 </div>
               )}
             </>
           ) : (
-            <>
-              {/* PLN-REQ-028 — manual entries are never presented as master data. */}
-              <p><span className="sq-lozenge sq-lozenge--warning">{strings.unverifiedBadge}</span></p>
-              {/* PLN-REQ-025 leg 3 — explicit not-found confirmation gates every
-                  manual field (and the server re-checks it before the RPC). */}
-              <label className="sq-check">
-                <input type="checkbox" id="imm-not-found" name="not_found_confirmed" value="yes"
-                  checked={notFoundConfirmed} onChange={e => setNotFoundConfirmed(e.target.checked)} />
-                <span>{strings.notFoundConfirm}</span>
-              </label>
-              <fieldset disabled={!notFoundConfirmed} style={{ border: 0, padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "var(--space-4)", minInlineSize: 0 }}>
-                <div className="sq-field" style={{ maxInlineSize: "none" }}><label className="sq-field__label" htmlFor="imm-manual-name">{strings.manualName}</label>
-                  <input id="imm-manual-name" key={`mn-${resetKey}`} className="sq-input" name="manual_name" value={manualName} onChange={e => setManualName(e.target.value)} placeholder={strings.manualPlaceholder} /></div>
-                <div className="sq-row">
-                  <div className="sq-field"><label className="sq-field__label" htmlFor="imm-manual-region">{strings.manualRegion}</label>
-                    <input id="imm-manual-region" key={`mrg-${resetKey}`} className="sq-input" name="manual_region" list="imm-region-options" value={manualRegion} onChange={e => { setManualRegion(e.target.value); setManualCity(""); }} /></div>
-                  <div className="sq-field"><label className="sq-field__label" htmlFor="imm-manual-city">{strings.manualCity}</label>
-                    <input id="imm-manual-city" key={`mci-${resetKey}`} className="sq-input" name="manual_city" list="imm-city-options" value={manualCity} onChange={e => setManualCity(e.target.value)} placeholder={strings.manualCityPlaceholder} /></div>
-                </div>
-                <datalist id="imm-region-options">{regionOptions.map(r => <option key={r} value={r} />)}</datalist>
-                <datalist id="imm-city-options">{manualCityOptions.map(c => <option key={c} value={c} />)}</datalist>
-                <div className="sq-row">
-                  <div className="sq-field"><label className="sq-field__label" htmlFor="imm-manual-cr">{strings.manualCr}</label>
-                    <input id="imm-manual-cr" key={`mcr-${resetKey}`} className="sq-input sq-numeric" name="manual_cr" value={manualCr} onChange={e => setManualCr(e.target.value)} /></div>
-                  <div className="sq-field"><label className="sq-field__label" htmlFor="imm-manual-license">{strings.manualLicense}</label>
-                    <input id="imm-manual-license" key={`mli-${resetKey}`} className="sq-input sq-numeric" name="manual_license" value={manualLicense} onChange={e => setManualLicense(e.target.value)} /></div>
-                </div>
-                <div className="sq-field" style={{ maxInlineSize: "none" }}><label className="sq-field__label" htmlFor="imm-manual-activity">{strings.manualActivity}</label>
-                  <input id="imm-manual-activity" key={`mac-${resetKey}`} className="sq-input" name="manual_activity" value={manualActivity} onChange={e => setManualActivity(e.target.value)} placeholder={strings.manualActivityPlaceholder} /></div>
-                {/* PLN-REQ-027 — governed reason lookup (not free text); Other
-                    requires a comment, matching the lookup label. */}
-                <div className="sq-field" style={{ maxInlineSize: "none" }}><label className="sq-field__label" htmlFor="imm-manual-reason">{strings.manualReasonLabel}</label>
-                  <select id="imm-manual-reason" key={`mrs-${resetKey}`} className="sq-select" value={manualReasonKey} onChange={e => setManualReasonKey(e.target.value)}>
-                    <option value="">{strings.selectOption}</option>
-                    {manualReasons.map(r => <option key={r.key} value={r.key}>{r.label}</option>)}
-                  </select></div>
-                {manualReasonKey === "other" && (
-                  <div className="sq-field" style={{ maxInlineSize: "none" }}><label className="sq-field__label" htmlFor="imm-manual-reason-comment">{strings.manualReasonComment}</label>
-                    <input id="imm-manual-reason-comment" key={`mrc-${resetKey}`} className="sq-input" value={manualReasonComment} onChange={e => setManualReasonComment(e.target.value)} placeholder={strings.manualReasonCommentPlaceholder} /></div>
-                )}
-                {/* Conditional contact mobile — required only when factory
-                    notification is enabled (PLN-REQ-026). */}
-                <label className="sq-check">
-                  <input type="checkbox" id="imm-notify-factory" checked={notifyFactory} onChange={e => setNotifyFactory(e.target.checked)} />
-                  <span>{strings.notifyFactory}</span>
-                </label>
-                {notifyFactory && (
-                  <div className="sq-field" style={{ maxInlineSize: "none" }}><label className="sq-field__label" htmlFor="imm-factory-mobile">{strings.factoryMobile}</label>
-                    <input id="imm-factory-mobile" key={`fmb-${resetKey}`} className="sq-input sq-numeric" value={factoryMobile} onChange={e => setFactoryMobile(e.target.value)} placeholder={strings.factoryMobilePlaceholder} dir="ltr" /></div>
-                )}
-                {selectedType?.attachmentRequired && (
-                  <div className="sq-banner sq-banner--info"><div>{strings.attachmentRequiredNote}</div></div>
-                )}
-                <p className="sq-caption">{strings.temporaryNote}</p>
-
-                {/* DEC-F — recommendation only. This inspector never executes the
-                    decision: enforcement_recommendations RLS grants inspector
-                    insert-only; ops/compliance_admin hold the sole update policy. */}
-                <div className="sq-field" style={{ maxInlineSize: "none" }}>
-                  <label className="sq-field__label" htmlFor="imm-enforcement">{strings.enforcementLabel}</label>
-                  <p className="sq-caption" style={{ marginBlockEnd: "var(--space-2)" }}>{strings.enforcementHint}</p>
-                  <div id="imm-enforcement" className="sq-segmented" role="group" aria-label={strings.enforcementLabel} style={{ flexWrap: "wrap", maxInlineSize: "100%" }}>
-                    {[["", strings.enforcementNone], ["fine", strings.enforcementFine], ["committee", strings.enforcementCommittee], ["warning", strings.enforcementWarning], ["closure", strings.enforcementClosure]].map(([v, label]) => (
-                      <button key={v} type="button" aria-pressed={enforcementAction === v} onClick={() => setEnforcementAction(v)}>{label}</button>
-                    ))}
-                  </div>
-                </div>
-                <input type="hidden" name="enforcement_action" value={enforcementAction} key={`ea-${resetKey}`} />
-                {enforcementAction !== "" && (
-                  <label className="sq-field" style={{ maxInlineSize: "none" }}>
-                    <span className="sq-field__label">{strings.enforcementNotes}</span>
-                    <textarea className="sq-textarea" name="enforcement_notes" rows={2} value={enforcementNotes}
-                      onChange={e => setEnforcementNotes(e.target.value)} placeholder={strings.enforcementNotesPlaceholder} />
-                  </label>
-                )}
-              </fieldset>
-              {/* Manual-entry metadata rides outside the disabled fieldset so it
-                  still submits once the confirmation is checked. */}
-              <input type="hidden" name="manual_reason_key" value={manualReasonKey} />
-              <input type="hidden" name="manual_reason_comment" value={manualReasonComment} />
-              <input type="hidden" name="notify_factory" value={notifyFactory ? "yes" : ""} />
-              <input type="hidden" name="factory_mobile" value={notifyFactory ? normalizeMobile(factoryMobile) : ""} />
-            </>
+            <div className="alert alert-immutable">
+              <div><div className="alert-title">{strings.unverifiedBadge}</div><p>{strings.r05BlockedBody}</p></div>
+            </div>
           )}
 
-          <div className="sq-field" style={{ maxInlineSize: "none" }} id="imm-reason" tabIndex={-1}>
-            <label className="sq-field__label" htmlFor="imm-reason">{strings.urgencyReason}</label>
-            <div className="sq-segmented" role="group" aria-label={strings.urgencyReason} style={{ flexWrap: "wrap", maxInlineSize: "100%" }}>
+          <div className="field" id="imm-reason" tabIndex={-1}>
+            <label htmlFor="imm-reason">{strings.urgencyReason}</label>
+            <div className="btn-group" role="group" aria-label={strings.urgencyReason}>
               {[["Complaint received", strings.reasonComplaint], ["Incident / accident report", strings.reasonIncident], ["Referral from authority", strings.reasonReferral], ["Other", strings.reasonOther]].map(([v, label]) => (
-                <button key={v} type="button" aria-pressed={reason === v} onClick={() => setReason(v)}>{label}</button>
+                <button className={`btn ${reason === v ? "btn-primary" : "btn-secondary"}`} key={v} type="button" aria-pressed={reason === v} onClick={() => setReason(v)}>{label}</button>
               ))}
             </div>
-            {reason === "Other" && <p id="imm-reason-other-hint" className="sq-caption">{strings.reasonOtherHint}</p>}
+            {reason === "Other" && <p id="imm-reason-other-hint" className="t-caption">{strings.reasonOtherHint}</p>}
           </div>
           <input type="hidden" name="urgency_reason" value={reason} key={`ur-${resetKey}`} />
 
-          <div className="sq-field" style={{ maxInlineSize: "none" }}><label className="sq-field__label" htmlFor="imm-visit-type">{strings.visitType}</label>
-            <select id="imm-visit-type" key={`vt-${resetKey}`} className="sq-select" name="visit_type" value={visitType} onChange={e => setVisitType(e.target.value)}>
+          <div className="field"><label htmlFor="imm-visit-type">{strings.visitType}</label>
+            <select id="imm-visit-type" key={`vt-${resetKey}`} className="select" name="visit_type" value={visitType} onChange={e => setVisitType(e.target.value)}>
               {visitTypes.map(v => <option key={v.key} value={v.key}>{v.label}</option>)}
             </select></div>
-        </div>
+          </div>
+        </section>
 
-        <div className="sq-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-          <h4>{strings.locationDispatch}</h4>
+        <section className="panel" aria-labelledby="immediate-location-heading">
+          <div className="panel-header"><h2 className="panel-title" id="immediate-location-heading">{strings.locationDispatch}</h2></div>
+          <div className="panel-body stack">
           {mode === "registered" && factory?.official_lat != null && factory?.official_lng != null && (
-            <button type="button" className="sq-btn sq-btn--secondary" onClick={useOfficialLocation}>{strings.useOfficialLocation}</button>
+            <button type="button" className="btn btn-secondary" onClick={useOfficialLocation}>{strings.useOfficialLocation}</button>
           )}
-          <div style={{ blockSize: 240, marginBlockEnd: "var(--space-2)" }}>
-            <GeoMap center={mapCenter} zoom={locationOk ? 14 : 6} markers={mapMarkers} height="100%" />
+          <GeoMap center={mapCenter} zoom={locationOk ? 14 : 6} markers={mapMarkers} height={240} />
+          <div className="row">
+            <div className="field"><label htmlFor="imm-lat">{strings.latitude}</label>
+              <input id="imm-lat" key={`lat-${resetKey}`} className="input numeric" name="lat" value={lat} onChange={e => onLatChange(e.target.value)} /></div>
+            <div className="field"><label htmlFor="imm-lng">{strings.longitude}</label>
+              <input id="imm-lng" key={`lng-${resetKey}`} className="input numeric" name="lng" value={lng} onChange={e => onLngChange(e.target.value)} /></div>
           </div>
-          <div className="sq-row">
-            <div className="sq-field"><label className="sq-field__label" htmlFor="imm-lat">{strings.latitude}</label>
-              <input id="imm-lat" key={`lat-${resetKey}`} className="sq-input sq-numeric" name="lat" value={lat} onChange={e => onLatChange(e.target.value)} /></div>
-            <div className="sq-field"><label className="sq-field__label" htmlFor="imm-lng">{strings.longitude}</label>
-              <input id="imm-lng" key={`lng-${resetKey}`} className="sq-input sq-numeric" name="lng" value={lng} onChange={e => onLngChange(e.target.value)} /></div>
-          </div>
-          <p className="sq-caption" dir="ltr">
+          <p className="t-caption" dir="ltr">
             {!locationOk ? strings.locationSourceNone
               : locationSource === "official" ? strings.locationSourceOfficial
                 : strings.locationSourceManual.replace("{who}", actorName || "—").replace("{when}", locationAt ? new Date(locationAt).toLocaleString() : "")}
           </p>
 
           {actorMode === "planner" ? <>
-            <div className="sq-row">
-              <div className="sq-field"><label className="sq-field__label" htmlFor="imm-window-start">{strings.windowStart}</label>
-                <input id="imm-window-start" key={`ws-${resetKey}`} className="sq-input sq-numeric" name="window_start" type="datetime-local" value={windowStart} onChange={e => setWindowStart(e.target.value)} /></div>
-              <div className="sq-field"><label className="sq-field__label" htmlFor="imm-window-end">{strings.windowEnd}</label>
-                <input id="imm-window-end" key={`we-${resetKey}`} className="sq-input sq-numeric" name="window_end" type="datetime-local" value={windowEnd} onChange={e => setWindowEnd(e.target.value)} /></div>
+            <div className="row">
+              <div className="field"><label htmlFor="imm-window-start">{strings.windowStart}</label>
+                <input id="imm-window-start" key={`ws-${resetKey}`} className="input numeric" name="window_start" type="datetime-local" value={windowStart} onChange={e => setWindowStart(e.target.value)} /></div>
+              <div className="field"><label htmlFor="imm-window-end">{strings.windowEnd}</label>
+                <input id="imm-window-end" key={`we-${resetKey}`} className="input numeric" name="window_end" type="datetime-local" value={windowEnd} onChange={e => setWindowEnd(e.target.value)} /></div>
             </div>
-            <span className="sq-caption">{strings.windowHint}</span>
-          </> : <div className="sq-banner sq-banner--info"><div>{strings.inspectorStartNow}</div></div>}
+            <span className="t-caption">{strings.windowHint}</span>
+          </> : <div className="alert alert-info">{strings.inspectorStartNow}</div>}
 
-          <div className="sq-field" style={{ maxInlineSize: "none" }}><label className="sq-field__label" htmlFor="imm-priority">{strings.priority}</label>
-            <input id="imm-priority" key={`pr-${resetKey}`} className="sq-input" name="priority" value={priority} onChange={e => setPriority(e.target.value)} placeholder={strings.priorityPlaceholder} /></div>
+          <div className="field"><label htmlFor="imm-priority">{strings.priority}</label>
+            <input id="imm-priority" key={`pr-${resetKey}`} className="input" name="priority" value={priority} onChange={e => setPriority(e.target.value)} placeholder={strings.priorityPlaceholder} /></div>
 
-          <div className="sq-field" style={{ maxInlineSize: "none" }}>
-            <label className="sq-field__label" id="imm-package-label">{strings.packageLabel}</label>
+          <div className="field">
+            <label id="imm-package-label">{strings.packageLabel}</label>
             <PackageTypeSelector
               key={`pk-${resetKey}`}
               id="imm-package"
@@ -422,35 +353,38 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
             />
           </div>
 
-          {actorMode === "planner" && <div className="sq-field" style={{ maxInlineSize: "none" }}><label className="sq-field__label" htmlFor="imm-inspector">{strings.inspector}</label>
-            <select id="imm-inspector" key={`in-${resetKey}`} className="sq-select" name="inspector_id" value={inspectorId} onChange={e => setInspectorId(e.target.value)}>
+          {actorMode === "planner" && <div className="field"><label htmlFor="imm-inspector">{strings.inspector}</label>
+            <select id="imm-inspector" key={`in-${resetKey}`} className="select" name="inspector_id" value={inspectorId} onChange={e => setInspectorId(e.target.value)}>
               <option value="auto">{strings.autoAssign}</option>
               {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}
             </select></div>}
 
-          <div className="sq-field" style={{ maxInlineSize: "none" }}><label className="sq-field__label" htmlFor="imm-notes">{strings.notes}</label>
-            <textarea id="imm-notes" key={`no-${resetKey}`} className="sq-input" name="notes" rows={2} value={notes} onChange={e => setNotes(e.target.value)} placeholder={strings.notesPlaceholder} /></div>
-        </div>
+          <div className="field"><label htmlFor="imm-notes">{strings.notes}</label>
+            <textarea id="imm-notes" key={`no-${resetKey}`} className="input" name="notes" rows={2} value={notes} onChange={e => setNotes(e.target.value)} placeholder={strings.notesPlaceholder} /></div>
+          </div>
+        </section>
       </div>
 
-      <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
-        <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.consequenceTitle}</h4>
-        <ul style={{ margin: 0, paddingInlineStart: "1.2em", display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
-          <li className="sq-caption">{strings.consequenceVisit}</li>
-          <li className="sq-caption">{strings.consequenceAssign}</li>
-          <li className="sq-caption">{strings.consequenceNotify}</li>
-          <li className="sq-caption">{strings.consequenceAudit}</li>
+      <section className="panel">
+        <div className="panel-header"><h2 className="panel-title">{strings.consequenceTitle}</h2></div>
+        <div className="panel-body stack">
+        <ul className="stack">
+          <li className="t-caption">{strings.consequenceVisit}</li>
+          <li className="t-caption">{strings.consequenceAssign}</li>
+          <li className="t-caption">{strings.consequenceNotify}</li>
+          <li className="t-caption">{strings.consequenceAudit}</li>
         </ul>
-        {actorMode === "planner" && <label className="sq-check" style={{ marginBlockStart: "var(--space-4)" }}>
+        {actorMode === "planner" && <label className="check">
           <input type="checkbox" name="review_confirmed" value="yes" checked={reviewed} onChange={e => setReviewed(e.target.checked)} />
           <span>{strings.reviewConfirm}</span>
         </label>}
-      </div>
+        </div>
+      </section>
 
-      {state.error && <div className="sq-validation" role="alert"><strong>{strings.blockedTitle}</strong><div>{state.error}</div></div>}
+      {state.error && <div className="alert alert-critical" role="alert"><div><strong>{strings.blockedTitle}</strong><div>{state.error}</div></div></div>}
 
-      <div className="sq-row" style={{ justifyContent: "flex-end" }}>
-        <button className="sq-btn sq-btn--prominent" disabled={pending || !requestId || (actorMode === "planner" && !reviewed)}>
+      <div className="panel-row">
+        <button className="btn btn-primary" disabled={!immediateExecutable || pending || !requestId || (actorMode === "planner" && !reviewed)}>
           {pending ? strings.creating : actorMode === "inspector" ? strings.createAndStart : strings.create}
         </button>
       </div>
