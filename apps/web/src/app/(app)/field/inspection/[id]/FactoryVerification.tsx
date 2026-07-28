@@ -336,7 +336,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
   );
 
   return (
-    <div className={styles.wrap}>
+    <div className={styles.wrap} data-screen-id="EXE-S09">
       {/* Factory-360 snapshot — governed risk leg + real offline counters + the
           synced industrial-license document (M04-096). Health Score is omitted:
           it has no governed source and Health ≠ Risk. */}
