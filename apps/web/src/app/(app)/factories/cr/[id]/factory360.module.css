@@ -116,14 +116,61 @@
 }
 .compactFacts dt { color: var(--text-secondary); font: var(--type-caption-font); }
 .compactFacts dd { margin: 0; overflow-wrap: anywhere; text-align: end; }
-.riskPanel { border-inline-start: 3px solid var(--border-subtle); }
-.riskSummary { display: flex; align-items: baseline; gap: var(--space-2); margin-block: var(--space-2) var(--space-3); }
+.riskPanel {
+  border-inline-start: 3px solid var(--action-primary);
+  overflow: clip;
+}
+.riskHeading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.riskHeading h2 { margin-block-end: var(--space-3); }
+.riskScope {
+  color: var(--text-secondary);
+  font: var(--type-caption-font);
+  white-space: nowrap;
+}
+.riskOverview {
+  display: grid;
+  gap: var(--space-2);
+  padding-block-end: var(--space-3);
+  border-block-end: 1px solid var(--border-subtle);
+}
+.riskSummary { display: flex; align-items: baseline; gap: var(--space-2); }
 .riskSummary strong { font-size: 1.625rem; line-height: 1; }
 .riskSummary span { color: var(--text-secondary); font-weight: 600; overflow-wrap: anywhere; }
+.riskProvenance { margin: 0; }
 .riskAdvisory { margin-block-start: var(--space-3); }
-.riskAdvisory summary { cursor: pointer; color: var(--action-primary); font-weight: 600; }
+.riskAdvisory summary {
+  cursor: pointer;
+  color: var(--action-primary);
+  font-weight: 600;
+  line-height: 1.35;
+}
+.riskAdvisory summary:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+  border-radius: var(--radius-xs);
+}
 .riskAdvisory[open] summary { margin-block-end: var(--space-3); }
-.riskAdvisory :global(.panel) { margin: 0; box-shadow: none; }
+/* ContextualAiPanel is intentionally a full panel elsewhere. In this compact
+   right rail it is disclosure content, not a second floating card. */
+.riskAdvisory :global(.panel) {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.riskAdvisory :global(.panel-header) {
+  align-items: flex-start;
+  padding: 0 0 var(--space-3);
+}
+.riskAdvisory :global(.panel-body) { padding: 0; }
+.riskAdvisory :global(.panel-header h3) { margin: 0; font: var(--type-body-strong); }
+.riskAdvisory :global(.panel-header .t-caption) { margin-block: var(--space-1) 0; }
 .sectionHead { display: flex; justify-content: space-between; gap: var(--space-3); align-items: flex-start; flex-wrap: wrap; }
 .status { display: inline-flex; gap: 6px; align-items: center; font: var(--type-caption-font); }
 .actions { display: flex; flex-direction: column; gap: var(--space-2); }
@@ -176,12 +223,16 @@
 
 .loadingWorkspace {
   display: grid;
-  grid-template-columns: 224px minmax(0, 1fr) 296px;
-  gap: var(--space-4);
-  align-items: start;
+  gap: var(--space-3);
+  max-inline-size: 42rem;
 }
-.loadingPanel { min-block-size: 160px; }
-.loadingPanel:nth-child(2) { min-block-size: 420px; }
+.loadingPanel {
+  display: grid;
+  gap: var(--space-3);
+  min-block-size: 10rem;
+  padding: var(--space-5);
+}
+.loadingPanel :global(.sq-skeleton) { min-block-size: 1rem; }
 
 .timeline li:not(:last-child) .timelineDot::after {
   content: "";
@@ -196,13 +247,10 @@
 @media (max-width: 1439px) {
   .workspace { grid-template-columns: 224px minmax(0, 1fr); }
   .right { grid-column: 1 / -1; position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .loadingWorkspace { grid-template-columns: 224px minmax(0, 1fr); }
-  .loadingPanel:last-child { grid-column: 1 / -1; }
 }
 
 @media (max-width: 959px) {
   .workspace { grid-template-columns: minmax(0, 1fr); }
-  .loadingWorkspace { grid-template-columns: minmax(0, 1fr); }
   .left, .right { position: static; display: flex; }
   .licenseList { flex-direction: row; overflow-x: auto; padding-block-end: 4px; }
   .licenseList li { min-inline-size: min(260px, calc(100vw - 64px)); }

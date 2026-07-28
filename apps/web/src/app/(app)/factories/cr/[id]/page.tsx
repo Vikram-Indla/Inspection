@@ -353,12 +353,17 @@ export default async function Factory360ByCr({ params, searchParams }: {
             <p className="sq-caption">{t("f360.source.noSla", "Freshness is shown as a recorded source fact; no unapproved staleness threshold is inferred.")}</p>
           </section>
           <section className={`sq-surface ${styles.panel} ${styles.riskPanel}`}>
-            <h2>{t("f360.risk.heading", "Saved risk")}</h2>
+            <div className={styles.riskHeading}>
+              <h2>{t("f360.risk.heading", "Saved risk")}</h2>
+              <span className={styles.riskScope}>{t("f360.risk.advisory", "Advisory")}</span>
+            </div>
             {!permissions["view_risk_details"] ? <p className="sq-caption">{t("f360.risk.restricted", "Risk detail requires Factory Risk permission.")}</p> : <>
-              <p className="sq-caption">{t("f360.risk.source", "SAQEEL-calculated advisory. It does not change the master record.")}</p>
-              <div className={styles.riskSummary}>
-                <strong className="sq-numeric">{text(factory?.risk_score)}</strong>
-                <span>{label(factory?.risk_band)}</span>
+              <div className={styles.riskOverview}>
+                <div className={styles.riskSummary}>
+                  <strong className="sq-numeric">{text(factory?.risk_score)}</strong>
+                  <span>{label(factory?.risk_band)}</span>
+                </div>
+                <p className={`sq-caption ${styles.riskProvenance}`}>{t("f360.risk.source", "SAQEEL-calculated advisory. It does not change the master record.")}</p>
               </div>
               <dl className={styles.compactFacts}>
                 <div><dt>{t("f360.risk.version", "Model")}</dt><dd><bdi>{text(factory?.risk_version)}</bdi></dd></div>
