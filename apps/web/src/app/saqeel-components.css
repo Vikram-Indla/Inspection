@@ -65,7 +65,7 @@
 
 /* ══ Fields & inputs ══════════════════════════════════════════ */
 .field { display: flex; flex-direction: column; gap: var(--space-1); min-inline-size: 0; }
-.field > label {
+.field > label, .field > span:first-child {
   font-size: var(--type-label-size); font-weight: var(--type-label-w);
   color: var(--text-secondary); line-height: var(--type-label-lh);
 }
