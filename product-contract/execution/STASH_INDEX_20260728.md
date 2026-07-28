@@ -17,6 +17,55 @@ and `stash@{5}` carries 36. These are the three worth triaging first.
 `stash@{4}` is the only one whose base commit is **not** an ancestor of
 `origin/main`, so it descends from a lineage main never took.
 
+## TRIAGED — stash@{2} and stash@{3} now exist as branches
+
+Both were rescued into real branches and pushed. They are no longer at risk
+from `git gc`. **The stashes were not dropped** — the branches are additive,
+so each payload now exists in two places.
+
+| Stash | Branch | Commit | Payload |
+|---|---|---|---|
+| `stash@{2}` | `triage/stash-2-menu-e2e-completion` | `ad2696c6` | 81 files — 59 tracked + 22 new untracked |
+| `stash@{3}` | `triage/stash-3-shell-f0-typography` | `7a83683c` | 77 files — 76 tracked + 1 new untracked |
+
+Each branch is a single commit sitting on the stash's **own base**, not on
+current main. No rebase, no conflict resolution, no verification — neither
+was typechecked or built. They reproduce exactly what was in the tree at
+stash time. `triage/stash-2` is 187 commits behind main; `triage/stash-3` is
+307 behind.
+
+The untracked payloads were the real find, and they are the reason a plain
+`git stash branch` would not have been enough to reason about:
+
+- **stash-2** contributed `apps/web/src/lib/analytics/*` (contract, drills,
+  loader, metric-registry, query-state), route `error.tsx` / `loading.tsx`
+  boundaries for admin and analytics, and `reviews/ReviewQueue.tsx`.
+- **stash-3** contributed `apps/web/src/app/saqeel-runtime.css`.
+
+### What the comparison against main shows
+
+All 23 of those new files **already exist on main today** — so the work was
+not lost wholesale. But the content diverged:
+
+| | Byte-identical to main | Differs from main |
+|---|---|---|
+| stash-2's 22 new files | 10 | **12** |
+| stash-3's `saqeel-runtime.css` | — | **differs** |
+
+So 13 files hold a version that main never took. That divergence is the
+thing to triage — it is either superseded work that main improved on, or
+work that was dropped on the floor. Diffing a single file:
+
+```bash
+git diff origin/main triage/stash-2-menu-e2e-completion -- apps/web/src/lib/analytics/loader.ts
+```
+
+Once triage concludes, delete the branch if superseded, or cherry-pick the
+parts worth keeping onto a fresh branch off current main. Do not merge
+either branch into main as-is — both are hundreds of commits stale.
+
+`stash@{5}` (36 files) and `stash@{0}`, `{1}`, `{4}` remain untriaged.
+
 ## Recovering one
 
 Never `pop` these into a dirty tree — main has moved a long way past several
