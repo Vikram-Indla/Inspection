@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import Shell from "@/components/Shell";
-import styles from "./AdminDestinationFrame.module.css";
 import {
   AdminRecordDrawerProvider,
   type AdminRecordDrawerLabels,
@@ -67,36 +66,36 @@ export default function AdminDestinationFrame({
   return (
     <Shell current={current} title="" context={context}>
       <AdminRecordDrawerProvider labels={drawerLabels}>
-        <div className={styles.workspace} data-saqeel-admin-destination={designId}>
-          <div className={styles.main}>
-            <header className={styles.heading}>
+        <div className="stack" data-saqeel-admin-destination={designId}>
+          <header className="page-header">
+            <div className="stack">
+              <nav className="breadcrumb" aria-label={labels.breadcrumb}>
+                <span>{labels.administration}</span>
+                <span className="sep" aria-hidden="true">/</span>
+                <span>{hub}</span>
+              </nav>
               <div>
-                <nav className={styles.breadcrumb} aria-label={labels.breadcrumb}>
-                  <ol>
-                    <li>{labels.administration}</li>
-                    <li>{hub}</li>
-                  </ol>
-                </nav>
-                <h1 className={styles.title}>{title}</h1>
-                <p className={styles.subtitle}>{subtitle}</p>
+                <h1>{title}</h1>
+                <p>{subtitle}</p>
               </div>
-              <span className="sq-version"><bdi dir="ltr">{routeLabel}</bdi></span>
-            </header>
+            </div>
+            <span className="id-code"><bdi dir="ltr">{routeLabel}</bdi></span>
+          </header>
 
-          <section className={styles.metrics} aria-label={`${title} governance figures`}>
+          <section className="metric-strip" aria-label={`${title} governance figures`}>
             {metrics.map(metric => (
-              <article className={styles.metric} key={metric.label}>
-                <span className={styles.metricLabel}>{metric.label}</span>
-                <strong className={styles.metricValue}>{metric.value}</strong>
-                <span className={styles.metricNote}>{metric.note}</span>
+              <article key={metric.label}>
+                <span className="kpi-label">{metric.label}</span>
+                <strong className="kpi-value">{metric.value}</strong>
+                <span className="kpi-delta">{metric.note}</span>
               </article>
             ))}
           </section>
 
-          <nav className={styles.tabs} aria-label={`${title} sections`}>
+          <nav className="tabs" aria-label={`${title} sections`}>
             {tabs.map(tab => (
               <Link
-                className={styles.tab}
+                className={`tab${tab.current ? " is-active" : ""}`}
                 href={tab.href}
                 aria-current={tab.current ? "page" : undefined}
                 key={`${tab.href}-${tab.label}`}
@@ -107,25 +106,30 @@ export default function AdminDestinationFrame({
           </nav>
 
           {gate ? (
-            <section className={styles.gate} aria-label={gate.title}>
-              <strong>{gate.title}</strong>
-              <p>{gate.body}</p>
+            <section className="alert alert-immutable" aria-label={gate.title}>
+              <div>
+                <strong className="alert-title">{gate.title}</strong>
+                <p>{gate.body}</p>
+              </div>
             </section>
           ) : null}
 
-            {children}
-          </div>
+          {children}
 
-          <aside className={styles.rail} aria-label={`${title} — ${labels.governance}`}>
-            <section className={styles.railCard}>
-              <h2 className={styles.railTitle}>{labels.governance}</h2>
-              <ul className={styles.governance}>
-                {governance.map(item => <li key={item}>{item}</li>)}
-              </ul>
+          <aside className="row" aria-label={`${title} — ${labels.governance}`}>
+            <section className="panel grow">
+              <header className="panel-header">
+                <h2 className="panel-title">{labels.governance}</h2>
+              </header>
+              <div className="panel-body stack">
+                {governance.map(item => <p key={item}>{item}</p>)}
+              </div>
             </section>
-            <section className={styles.railCard}>
-              <h2 className={styles.railTitle}>{labels.reconstruction}</h2>
-              <p className={styles.note}>{reconstructionNote}</p>
+            <section className="panel grow">
+              <header className="panel-header">
+                <h2 className="panel-title">{labels.reconstruction}</h2>
+              </header>
+              <p className="panel-body">{reconstructionNote}</p>
             </section>
           </aside>
         </div>

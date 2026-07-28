@@ -1,4 +1,4 @@
-import Shell from "@/components/Shell";
+import Shell from "@/app/(app)/admin/_components/AdminShell";
 import Mvp3ActionForm from "@/components/Mvp3ActionForm";
 import { publishFeatureFlag, requestErrorRetry } from "../mvp3-actions";
 import { supabaseServer } from "@/lib/supabase-server";

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Shell from "@/components/Shell";
+import Shell from "@/app/(app)/admin/_components/AdminShell";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import ActionForm from "../ActionForm";
 import {

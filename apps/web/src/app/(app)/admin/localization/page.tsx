@@ -2,7 +2,7 @@
 // Server page loads the full ui_strings dictionary + KPIs; the client Manager
 // owns filtering and inline editing. The page itself renders through useT()
 // (keys l10n.*) — the module that manages language works in both languages.
-import Shell from "@/components/Shell";
+import Shell from "@/app/(app)/admin/_components/AdminShell";
 import AdminDestinationFrame from "../_components/AdminDestinationFrame";
 import EmptyState from "@/components/EmptyState";
 import { IconShieldCheck } from "@/app/icons";

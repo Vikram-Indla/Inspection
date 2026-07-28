@@ -1,4 +1,4 @@
-import Shell from "@/components/Shell";
+import Shell from "@/app/(app)/admin/_components/AdminShell";
 import { getUserRoles } from "@/lib/persona";
 import { supabaseServer, getServerUser } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";

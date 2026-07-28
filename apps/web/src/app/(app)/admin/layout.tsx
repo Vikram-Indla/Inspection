@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import AdminRouteBoundary from "@/components/AdminRouteBoundary";
+import AdminScreenRegistry from "./_components/AdminScreenRegistry";
 
 // CC-SAQEEL-RESPONSIVE-REVAMP-001: legacy capability profiles map to the
 // canonical Administrator presentation role. Planner and Inspector deliberately
@@ -22,7 +23,7 @@ const ADMINISTRATOR_CAPABILITY_ROLES = [
 export default function AdministrationLayout({ children }: { children: ReactNode }) {
   return (
     <AdminRouteBoundary allowedRoles={ADMINISTRATOR_CAPABILITY_ROLES}>
-      {children}
+      <AdminScreenRegistry>{children}</AdminScreenRegistry>
     </AdminRouteBoundary>
   );
 }
