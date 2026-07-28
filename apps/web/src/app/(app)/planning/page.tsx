@@ -296,121 +296,115 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
         }}
       />
 
-      {/* KPI / status tabs with live counts (PLN-REQ-012) */}
-      <div className="sq-kpi-row" role="group" aria-label={tr("plan.list.tabsAria", "Planning status tabs", "تبويبات حالة التخطيط")}>
-        {PLANNING_TABS.map(tab => (
-          <a key={tab} href={hrefWith(sp, { tab: tab === "all" ? "" : tab, page: "" })}
-            className="sq-surface sq-kpi" aria-current={params.tab === tab ? "page" : undefined}
-            style={{ textDecoration: "none", color: "inherit", outline: params.tab === tab ? "2px solid var(--focus-ring, currentColor)" : undefined }}>
-            <span className="sq-overline">{tabLabels[tab]}</span>
-            {/* An unavailable count renders as an em dash, never as 0: the
-                tab counts and the list fail independently, and a fabricated
-                zero would read as "no visits in this state". */}
-            <span className="sq-kpi__value sq-numeric">{list.countsAvailable ? list.counts[tab] : "—"}</span>
-          </a>
-        ))}
-      </div>
+      {/* Filter bar — one horizontal control row. Status is a compact trigger
+          with live counts; date and specialist controls live in native popovers
+          so they never consume the list's prime vertical space. */}
+      <form id="planning-filter-form" method="get" action="/planning" className="sq-surface sq-panel sq-commandbar"
+        style={{ padding: "var(--space-3)", flexWrap: "nowrap", overflowX: "auto" }}>
+        <label className="sr-only" htmlFor="planning-search">{tr("plan.list.searchLabel", "Search", "بحث")}</label>
+        <input id="planning-search" className="sq-input" type="search" name="q" defaultValue={params.search}
+          style={{ flex: "1 1 280px", minInlineSize: "14rem" }}
+          placeholder={tr("plan.list.searchPlaceholder", "Search visits, CR, licence, factory or inspector…", "ابحث في الزيارات أو السجل التجاري أو الرخصة أو المصنع أو المفتش…")} />
+        <button type="button" className="sq-btn sq-btn--subtle" style={{ flex: "0 0 auto", whiteSpace: "nowrap" }} popoverTarget="planning-date-filter">
+          {params.filters.windowFrom || params.filters.windowTo
+            ? `${params.filters.windowFrom || "…"} — ${params.filters.windowTo || "…"}`
+            : tr("plan.list.filterVisitDate", "Visit date", "تاريخ الزيارة")}
+        </button>
+        <label className="sr-only" htmlFor="planning-status-filter">{tr("plan.list.tabsAria", "Planning status", "حالة التخطيط")}</label>
+        <select id="planning-status-filter" className="sq-select" name="tab" defaultValue={params.tab} style={{ flex: "0 0 auto", inlineSize: "10rem" }}>
+          {PLANNING_TABS.map(tab => (
+            <option key={tab} value={tab === "all" ? "" : tab}>
+              {`${tabLabels[tab]} · ${list.countsAvailable ? list.counts[tab] : "—"}`}
+            </option>
+          ))}
+        </select>
+        <label className="sr-only" htmlFor="planning-inspector-filter">{tr("plan.list.filterInspector", "Inspector", "المفتش")}</label>
+        <select id="planning-inspector-filter" className="sq-select" name="inspectorId" defaultValue={params.filters.inspectorId ?? ""} style={{ flex: "0 0 auto", inlineSize: "11rem" }}>
+          <option value="">{tr("plan.list.filterInspector", "Inspector", "المفتش")}</option>
+          {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.label}</option>)}
+        </select>
+        <button type="button" className="sq-btn sq-btn--subtle" style={{ flex: "0 0 auto" }} popoverTarget="planning-more-filters">{tr("plan.list.moreFilters", "Filters", "عوامل التصفية")}</button>
+        <button type="submit" className="sq-btn sq-btn--secondary" style={{ flex: "0 0 auto" }}>{tr("plan.list.apply", "Apply", "تطبيق")}</button>
+      </form>
 
-      {/* Filter bar — GET form keeps all state in the URL (PLN-REQ-014/015/016).
-          The primary row deliberately reflects the planner's first questions:
-          what visit, who owns it, and when it is scheduled.  Audit and
-          specialist filters remain available, without making the list feel
-          like a configuration screen. */}
-      <form method="get" action="/planning" className="sq-surface sq-panel sq-commandbar"
-        style={{ padding: "var(--space-4)", alignItems: "flex-end" }}>
-        {params.tab !== "all" && <input type="hidden" name="tab" value={params.tab} />}
-        <label className="sq-field" style={{ flex: "1 1 260px" }}>
-          <span className="sq-field__label">{tr("plan.list.searchLabel", "Search", "بحث")}</span>
-          <input className="sq-input" type="search" name="q" defaultValue={params.search}
-            placeholder={tr("plan.list.searchPlaceholder", "Visit reference, plan reference, CR, licence, factory or inspector…", "مرجع الزيارة، مرجع الخطة، السجل التجاري، الرخصة، المصنع أو المفتش…")} />
-        </label>
-        <label className="sq-field">
-          <span className="sq-field__label">{tr("plan.list.filterInspector", "Inspector", "المفتش")}</span>
-          <select className="sq-select" name="inspectorId" defaultValue={params.filters.inspectorId ?? ""}>
-            <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
-            {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.label}</option>)}
-          </select>
-        </label>
-        <fieldset className="sq-field" style={{ minInlineSize: 0, margin: 0, padding: 0, border: 0 }}>
+      <div id="planning-date-filter" popover="auto" className="sq-surface sq-panel" style={{ padding: "var(--space-4)" }}>
+        <fieldset className="sq-field" style={{ margin: 0, padding: 0, border: 0 }}>
           <legend className="sq-field__label">{tr("plan.list.filterVisitDate", "Visit date", "تاريخ الزيارة")}</legend>
-          <div className="sq-row" style={{ gap: "var(--space-1)", flexWrap: "nowrap" }}>
+          <div className="sq-row" style={{ gap: "var(--space-2)", flexWrap: "nowrap" }}>
             <label className="sr-only" htmlFor="planning-window-from">{tr("plan.list.filterWindowFrom", "Window from", "النافذة من")}</label>
-            <input id="planning-window-from" className="sq-input sq-numeric" type="date" name="windowFrom" defaultValue={params.filters.windowFrom ?? ""} aria-label={tr("plan.list.filterWindowFrom", "Window from", "النافذة من")} />
+            <input id="planning-window-from" form="planning-filter-form" className="sq-input sq-numeric" type="date" name="windowFrom" defaultValue={params.filters.windowFrom ?? ""} aria-label={tr("plan.list.filterWindowFrom", "Window from", "النافذة من")} />
             <span aria-hidden="true">—</span>
             <label className="sr-only" htmlFor="planning-window-to">{tr("plan.list.filterWindowTo", "Window to", "النافذة إلى")}</label>
-            <input id="planning-window-to" className="sq-input sq-numeric" type="date" name="windowTo" defaultValue={params.filters.windowTo ?? ""} aria-label={tr("plan.list.filterWindowTo", "Window to", "النافذة إلى")} />
+            <input id="planning-window-to" form="planning-filter-form" className="sq-input sq-numeric" type="date" name="windowTo" defaultValue={params.filters.windowTo ?? ""} aria-label={tr("plan.list.filterWindowTo", "Window to", "النافذة إلى")} />
           </div>
         </fieldset>
-        <div className="sq-row" style={{ gap: "var(--space-3)" }}>
-          <button type="submit" className="sq-btn sq-btn--secondary">{tr("plan.list.apply", "Apply", "تطبيق")}</button>
-          <a className="sq-btn sq-btn--subtle" href="/planning">{tr("plan.list.reset", "Reset", "إعادة تعيين")}</a>
-        </div>
-        <details style={{ flex: "1 1 100%" }} open={Boolean(params.filters.method || params.filters.visitType || params.filters.priority || params.filters.region || params.filters.city || params.filters.packageVersionId || params.filters.createdFrom || params.filters.createdTo || params.filters.bulkPlanRef || params.sort !== "window_start_asc")}>
-          <summary className="sq-btn sq-btn--subtle" style={{ display: "inline-flex", cursor: "pointer" }}>{tr("plan.list.moreFilters", "More filters", "مزيد من عوامل التصفية")}</summary>
-          <div style={{ marginBlockStart: "var(--space-4)", display: "flex", flexWrap: "wrap", gap: "var(--space-4)", alignItems: "flex-end" }}>
+      </div>
+
+      <div id="planning-more-filters" popover="auto" className="sq-surface sq-panel" style={{ padding: "var(--space-4)" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-4)", alignItems: "flex-end" }}>
+            <a className="sq-btn sq-btn--subtle" href="/planning">{tr("plan.list.reset", "Reset filters", "إعادة تعيين عوامل التصفية")}</a>
             <label className="sq-field">
               <span className="sq-field__label">{tr("plan.list.filterMethod", "Planning type", "نوع التخطيط")}</span>
-              <select className="sq-select" name="method" defaultValue={params.filters.method ?? ""}>
+              <select form="planning-filter-form" className="sq-select" name="method" defaultValue={params.filters.method ?? ""}>
                 <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
                 {["bulk", "single", "immediate"].map(m => <option key={m} value={m}>{t(`enum.${m}`, m)}</option>)}
               </select>
             </label>
             <label className="sq-field">
               <span className="sq-field__label">{tr("plan.list.filterVisitType", "Visit type", "نوع الزيارة")}</span>
-              <select className="sq-select" name="visitType" defaultValue={params.filters.visitType ?? ""}>
+              <select form="planning-filter-form" className="sq-select" name="visitType" defaultValue={params.filters.visitType ?? ""}>
                 <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
                 {visitTypeOptions.map(o => <option key={o.key} value={o.key}>{lookupLabel(o)}</option>)}
               </select>
             </label>
             <label className="sq-field">
               <span className="sq-field__label">{tr("plan.list.filterPriority", "Priority", "الأولوية")}</span>
-              <select className="sq-select" name="priority" defaultValue={params.filters.priority ?? ""}>
+              <select form="planning-filter-form" className="sq-select" name="priority" defaultValue={params.filters.priority ?? ""}>
                 <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
                 {priorityOptions.map(o => <option key={o.key} value={o.key}>{lookupLabel(o)}</option>)}
               </select>
             </label>
             <label className="sq-field">
               <span className="sq-field__label">{tr("plan.list.filterRegion", "Region", "المنطقة")}</span>
-              <select className="sq-select" name="region" defaultValue={params.filters.region ?? ""}>
+              <select form="planning-filter-form" className="sq-select" name="region" defaultValue={params.filters.region ?? ""}>
                 <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
                 {regionOptions.map(r => <option key={r} value={r}>{r}</option>)}
               </select>
             </label>
             <label className="sq-field">
               <span className="sq-field__label">{tr("plan.list.filterCity", "City", "المدينة")}</span>
-              <select className="sq-select" name="city" defaultValue={params.filters.city ?? ""}>
+              <select form="planning-filter-form" className="sq-select" name="city" defaultValue={params.filters.city ?? ""}>
                 <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
                 {cityOptions.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </label>
             <label className="sq-field">
               <span className="sq-field__label">{tr("plan.list.filterPackage", "Report package", "حزمة التقارير")}</span>
-              <select className="sq-select" name="packageVersionId" defaultValue={params.filters.packageVersionId ?? ""}>
+              <select form="planning-filter-form" className="sq-select" name="packageVersionId" defaultValue={params.filters.packageVersionId ?? ""}>
                 <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
                 {packageOptions.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
               </select>
             </label>
             <label className="sq-field">
               <span className="sq-field__label">{tr("plan.list.filterCreatedFrom", "Created from", "أُنشئت من")}</span>
-              <input className="sq-input sq-numeric" type="date" name="createdFrom" defaultValue={params.filters.createdFrom ?? ""} />
+              <input form="planning-filter-form" className="sq-input sq-numeric" type="date" name="createdFrom" defaultValue={params.filters.createdFrom ?? ""} />
             </label>
             <label className="sq-field">
               <span className="sq-field__label">{tr("plan.list.filterCreatedTo", "Created to", "أُنشئت إلى")}</span>
-              <input className="sq-input sq-numeric" type="date" name="createdTo" defaultValue={params.filters.createdTo ?? ""} />
+              <input form="planning-filter-form" className="sq-input sq-numeric" type="date" name="createdTo" defaultValue={params.filters.createdTo ?? ""} />
             </label>
             <label className="sq-field">
               <span className="sq-field__label">{tr("plan.list.filterBulkPlanRef", "Bulk plan reference", "مرجع الخطة الجماعية")}</span>
-              <input className="sq-input" type="text" name="bulkPlanRef" defaultValue={params.filters.bulkPlanRef ?? ""} placeholder="BP-…" />
+              <input form="planning-filter-form" className="sq-input" type="text" name="bulkPlanRef" defaultValue={params.filters.bulkPlanRef ?? ""} placeholder="BP-…" />
             </label>
             <label className="sq-field">
               <span className="sq-field__label">{tr("plan.list.sortLabel", "Sort", "الترتيب")}</span>
-              <select className="sq-select" name="sort" defaultValue={params.sort}>
+              <select form="planning-filter-form" className="sq-select" name="sort" defaultValue={params.sort}>
                 {PLANNING_SORT_KEYS.map(k => <option key={k} value={k}>{sortLabels[k]}</option>)}
               </select>
             </label>
           </div>
-        </details>
-      </form>
+      </div>
 
       {/* Canonical visit list (PLN-REQ-013) */}
       {visibleRows.length === 0 ? (
