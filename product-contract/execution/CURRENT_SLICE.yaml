@@ -3,10 +3,21 @@ task_id: "SAQEEL-BOARD-DELIVERY-001"
 change_control_id: "SAQEEL-WORKFORCE-REINSTATEMENT-20260725"
 gate: "G10 verification / G11 hardening"
 title: "SAQEEL 55-card board delivery — multi-actor card leases"
-status: "ACTIVE_IMPLEMENTATION_LEASES_GRANTED"
+status: "ALL_LEASES_REVOKED_NO_ACTIVE_HOLDER"
 enforce_stop_gate: true
-broad_implementation_allowed: true
-application_implementation_allowed: true
+broad_implementation_allowed: false
+application_implementation_allowed: false
+
+lease_state_summary:
+  as_at: "2026-07-28"
+  granted: 0
+  revoked_permanent: 11
+  revoked: 5
+  meaning: >
+    No agent holds a lease on any card. broad_implementation_allowed and
+    application_implementation_allowed are false because no holder exists to
+    exercise them, not because the gate failed. Any implementation work needs a
+    fresh lease granted by the Product Owner first.
 
 authority:
   sponsor_direction: >
@@ -130,7 +141,10 @@ leases:
     card: "m6-requests"
     channel: "web"
     holder: "claude-build"
-    state: "GRANTED"
+    state: "REVOKED"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: all outstanding leases revoked. Unlike the codex and kimi prohibition this is a revocation, not a permanent bar — a new claude lease may be granted by explicit owner instruction."
     allowed_paths:
       - "apps/web/src/app/(app)/admin/compliance-requests/**"
       - "apps/web/src/app/(app)/admin/compliance-approvals/**"
@@ -139,7 +153,10 @@ leases:
     card: "m6-committee"
     channel: "web"
     holder: "claude-build"
-    state: "GRANTED"
+    state: "REVOKED"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: all outstanding leases revoked. Unlike the codex and kimi prohibition this is a revocation, not a permanent bar — a new claude lease may be granted by explicit owner instruction."
     allowed_paths:
       - "apps/web/src/app/(app)/committee/**"
       - "apps/web/src/lib/committee/**"
@@ -148,7 +165,10 @@ leases:
     card: "virtual"
     channel: "web"
     holder: "claude-code"
-    state: "GRANTED"
+    state: "REVOKED"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: all outstanding leases revoked. Unlike the codex and kimi prohibition this is a revocation, not a permanent bar — a new claude lease may be granted by explicit owner instruction."
     note: >
       Unblocks pwa-virtual, which is a hard cross-channel BREAK: the console can
       schedule a virtual visit the inspector has no route to join. NOTE that the
@@ -181,7 +201,10 @@ leases:
     card: "feedback"
     channel: "web"
     holder: "claude-build"
-    state: "GRANTED"
+    state: "REVOKED"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: all outstanding leases revoked. Unlike the codex and kimi prohibition this is a revocation, not a permanent bar — a new claude lease may be granted by explicit owner instruction."
     note: "Top web card (XL). Unblocked by pwa-completion landing. QR issuance and scan route have no schema — surface, never fabricate."
     allowed_paths:
       - "apps/web/src/app/(app)/field/feedback/**"
@@ -206,7 +229,10 @@ leases:
     card: "reports"
     channel: "web"
     holder: "claude-build"
-    state: "GRANTED"
+    state: "REVOKED"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: all outstanding leases revoked. Unlike the codex and kimi prohibition this is a revocation, not a permanent bar — a new claude lease may be granted by explicit owner instruction."
     allowed_paths:
       - "apps/web/src/app/reports/**"
       - "status/saqeel-status.json (card 'reports' only)"
@@ -345,6 +371,25 @@ permanent_lease_prohibition:
   note: >
     Revocation does not retract work already merged to main under a prior
     lease. It withdraws the authority to continue.
+
+claude_lease_revocation:
+  ruled_by: "Product Owner (Vikram)"
+  ruled_at: "2026-07-28"
+  state: "REVOKED_PENDING_OWNER_INSTRUCTION"
+  rule: >
+    The five leases held by claude-build and claude-code are revoked:
+    m6-requests, m6-committee, virtual, feedback, reports. No claude agent
+    holds a lease on any card.
+  distinct_from_the_codex_kimi_prohibition: >
+    This is a revocation, not a permanent bar. The codex and kimi prohibition
+    above has no expiry and no renewal condition; this one does not carry that
+    language. A new claude lease may be granted, but only by explicit Product
+    Owner instruction — not by a session assuming continuity from a prior
+    grant, and not by an orchestrator re-issuing a packet.
+  effect: >
+    Combined with the permanent prohibition, zero leases are outstanding. Every
+    card on the 55-card board is unassigned. No agent is authorised to
+    implement against any card until the owner grants a new lease.
 
 standing_boundaries:
   - "No lease is ever granted to codex or kimi. See permanent_lease_prohibition. A packet naming either as holder is invalid and must be refused."
