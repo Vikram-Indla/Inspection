@@ -79,7 +79,6 @@ export type FieldLoginStrings = {
   sessionExpired: string;
   offlineKnown: string;
   offlineLoginBlocked: string;
-  unauthorizedInspector: string;
   signedOut: string;
   continueOffline: string;
 };
@@ -199,7 +198,7 @@ export default function FieldLoginClient({
         setMessage(s.sessionExpired);
       } else if (bootstrap.status === "unauthorized") {
         await sb.auth.signOut();
-        setMessage(s.unauthorizedInspector);
+        setMessage(null);
       } else if (reason === "signedout") {
         setMessage(s.signedOut);
       }
@@ -229,7 +228,7 @@ export default function FieldLoginClient({
     return () => {
       cancelled = true;
     };
-  }, [reason, returnTo, s.offlineKnown, s.sessionExpired, s.signedOut, s.unauthorizedInspector]);
+  }, [reason, returnTo, s.offlineKnown, s.sessionExpired, s.signedOut]);
 
   const unlockWithFaceId = useCallback(async () => {
     if (!lockScreen) return;
@@ -254,10 +253,10 @@ export default function FieldLoginClient({
     const bootstrap = await bootstrapFieldSession(supabaseBrowser(), navigator.onLine);
     if (bootstrap.status === "ready" || bootstrap.status === "offline_known") window.location.assign(safeReturnTo);
     else {
-      setMessage(bootstrap.status === "unauthorized" ? s.unauthorizedInspector : s.sessionExpired);
+      setMessage(bootstrap.status === "unauthorized" ? null : s.sessionExpired);
       setShowPasswordFallback(true);
     }
-  }, [lockScreen, returnTo, s.bioUnavailable, s.sessionExpired, s.unauthorizedInspector]);
+  }, [lockScreen, returnTo, s.bioUnavailable, s.sessionExpired]);
 
   const submitCredentials = useCallback(
     async (e: React.FormEvent) => {
@@ -312,7 +311,7 @@ export default function FieldLoginClient({
       if (returnTo) {
         if (!(await authorizeInspectorLogin(supabaseBrowser(), data.session, keepSignedIn))) {
           await supabaseBrowser().auth.signOut();
-          setMessage(s.unauthorizedInspector);
+          setMessage(null);
           return;
         }
         window.location.assign(safeReturnTo);
@@ -323,7 +322,7 @@ export default function FieldLoginClient({
       // check never made. Supabase already persists the session itself.
       window.location.assign("/launch");
     },
-    [identifier, keepSignedIn, password, returnTo, s.directoryBlocked, s.authInvalid, s.authNetwork, s.offlineLoginBlocked, s.unauthorizedInspector],
+    [identifier, keepSignedIn, password, returnTo, s.directoryBlocked, s.authInvalid, s.authNetwork, s.offlineLoginBlocked],
   );
 
   const netLabel = online ? s.netOnline : s.netOffline;
