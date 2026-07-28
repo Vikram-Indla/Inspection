@@ -256,7 +256,7 @@ function applyFilters(query: any, tab: PlanningTab, filters: PlanningListFilters
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 type Joined = {
-  id: string; visit_reference: string | null; visit_type: string; execution_mode: string;
+  id: string; factory_id: string; visit_reference: string | null; visit_type: string; execution_mode: string;
   planning_status: string; operational_state: string; priority: string | null;
   window_start: string; window_end: string; created_at: string;
   source_channel: string | null; internal_reference: string | null; cancellation_reason: string | null;
@@ -322,6 +322,82 @@ function compareRows(sort: (typeof SORTS)[string]) {
 
 const emptyCounts = (): PlanningListCounts => ({ all: 0, draft: 0, published: 0, returned: 0, cancelled: 0, expired: 0 });
 
+/**
+ * Fixture ids are an operationally unbounded set in the shared non-production
+ * database. Sending them all in one `not.in()` expression made an otherwise
+ * valid Planning read exceed the gateway URL limit and fail with HTTP 414.
+ *
+ * Keep the database predicates to real governed filters, then remove fixtures
+ * from rows in process. The row reader walks the underlying ordered result
+ * until it has enough real rows for the requested page. Counts use the same
+ * filter contract and subtract fixture rows locally, so the list, tab badges,
+ * and total remain consistent without sending a giant URL.
+ */
+async function readVisibleRows(
+  sb: SupabaseClient,
+  params: PlanningListParams,
+  sort: (typeof SORTS)[string],
+  matchedIds: string[] | null,
+  fixtureFactoryIds: Set<string>,
+): Promise<{ ok: true; rows: PlanningVisitRow[] } | { ok: false }> {
+  const fetchRows = async (ids: string[] | null, from: number, to: number) => {
+    let query = applyFilters(sb.from("visits").select(rowSelect(params.filters)), params.tab, params.filters);
+    if (ids) query = query.in("id", ids);
+    return query.order(sort.column, { ascending: sort.ascending }).order("id", { ascending: true }).range(from, to);
+  };
+  const real = (data: unknown[]) => (data as Joined[]).filter(row => !fixtureFactoryIds.has(row.factory_id));
+
+  if (matchedIds) {
+    const reads = await Promise.all(chunk(matchedIds, ID_CHUNK).map(ids => fetchRows(ids, 0, ID_CHUNK - 1)));
+    const failure = reads.find(read => read.error);
+    if (failure?.error) {
+      console.error("[planning.visit-list] row query failed:", failure.error.message);
+      return { ok: false };
+    }
+    const rows = reads.flatMap(read => real((read.data ?? []) as unknown[])).map(toRow);
+    rows.sort(compareRows(sort));
+    return { ok: true, rows: rows.slice((params.page - 1) * params.pageSize, params.page * params.pageSize) };
+  }
+
+  const required = params.page * params.pageSize;
+  const visible: Joined[] = [];
+  const sourcePageSize = Math.max(100, params.pageSize);
+  for (let from = 0; ; from += sourcePageSize) {
+    const read = await fetchRows(null, from, from + sourcePageSize - 1);
+    if (read.error) {
+      console.error("[planning.visit-list] row query failed:", read.error.message);
+      return { ok: false };
+    }
+    const sourceRows = (read.data ?? []) as unknown as Joined[];
+    visible.push(...real(sourceRows));
+    if (sourceRows.length < sourcePageSize || visible.length >= required) break;
+  }
+  return { ok: true, rows: visible.slice((params.page - 1) * params.pageSize, params.page * params.pageSize).map(toRow) };
+}
+
+async function countFixtureRows(
+  sb: SupabaseClient,
+  tab: PlanningTab,
+  filters: PlanningListFilters,
+  idChunks: (string[] | null)[],
+  fixtureFactoryIds: Set<string>,
+): Promise<number | null> {
+  let count = 0;
+  for (const ids of idChunks) {
+    const read = await collectPostgrestPages<{ factory_id: string }>((from, to) => {
+      let query = applyFilters(sb.from("visits").select("factory_id"), tab, filters);
+      if (ids) query = query.in("id", ids);
+      return query.range(from, to);
+    });
+    if (read.error) {
+      console.error("[planning.visit-list] fixture count failed:", read.error.message);
+      return null;
+    }
+    count += (read.data ?? []).filter(row => fixtureFactoryIds.has(row.factory_id)).length;
+  }
+  return count;
+}
+
 export async function queryPlanningVisits(sb: SupabaseClient, params: PlanningListParams): Promise<PlanningListResult> {
   const sort = SORTS[params.sort] ?? SORTS[DEFAULT_PLANNING_SORT];
   const page = Math.max(1, Math.floor(params.page) || 1);
@@ -344,59 +420,42 @@ export async function queryPlanningVisits(sb: SupabaseClient, params: PlanningLi
   // Step 2: filtered queries — a single call without search, or disjoint
   // id-chunk calls merged in memory when a search resolved an id set.
   const idChunks = matchedIds ? chunk(matchedIds, ID_CHUNK) : [null];
-  const scoped = (q: ReturnType<typeof applyFilters>, ids: string[] | null) => {
-    let scopedQuery = ids ? q.in("id", ids) : q;
-    // IDs are chunked nowhere here because the fixture registry is deliberately
-    // narrow and its UUID term remains far below the observed gateway URL cap.
-    // If it ever grows beyond that operational envelope, the fixture marker
-    // belongs in a database column/RPC rather than a UI-side heuristic.
-    if (fixtures.ids.length) scopedQuery = scopedQuery.not("factory_id", "in", `(${fixtures.ids.join(",")})`);
-    return scopedQuery;
-  };
+  const fixtureFactoryIds = new Set(fixtures.ids);
 
-  const [rowResults, countResults] = await Promise.all([
-    Promise.all(idChunks.map(ids =>
-      scoped(applyFilters(sb.from("visits").select(rowSelect(params.filters)), params.tab, params.filters), ids)
-        .order(sort.column, { ascending: sort.ascending })
-        .order("id", { ascending: true })
-        .range(...(matchedIds ? [0, ID_CHUNK - 1] : [(page - 1) * pageSize, page * pageSize - 1]) as [number, number]),
-    )),
+  const [rowRead, countResults, fixtureCounts] = await Promise.all([
+    readVisibleRows(sb, { ...params, page, pageSize }, sort, matchedIds, fixtureFactoryIds),
     Promise.all(idChunks.flatMap(ids =>
       PLANNING_TABS.map(tab =>
-        scoped(applyFilters(sb.from("visits").select(countSelect(params.filters), { count: "exact", head: true }), tab, params.filters), ids),
+        (ids
+          ? applyFilters(sb.from("visits").select(countSelect(params.filters), { count: "exact", head: true }), tab, params.filters).in("id", ids)
+          : applyFilters(sb.from("visits").select(countSelect(params.filters), { count: "exact", head: true }), tab, params.filters)),
       ),
     )),
+    Promise.all(PLANNING_TABS.map(tab => countFixtureRows(sb, tab, params.filters, idChunks, fixtureFactoryIds))),
   ]);
 
-  const failedRow = rowResults.find(r => r.error);
   const failedCount = countResults.find(c => c.error);
   // The list and the tab counts fail independently. Six exact counts fan out
   // beside the row query, so under load the counts are what hit the statement
   // timeout first — and treating that as a total failure blanked a page whose
   // rows had already come back. Only a row failure is fatal now; a count
   // failure degrades to "counts unavailable" and the list still renders.
-  if (failedRow?.error) {
-    console.error("[planning.visit-list] row query failed:", failedRow.error.message);
-    return { ok: false };
-  }
-  const countsAvailable = !failedCount?.error;
+  if (!rowRead.ok) return { ok: false };
+  const countsAvailable = !failedCount?.error && fixtureCounts.every((count): count is number => count !== null);
   if (!countsAvailable) {
     console.error("[planning.visit-list] tab counts unavailable:", failedCount?.error?.message);
   }
 
   const counts = emptyCounts();
   PLANNING_TABS.forEach((tab, i) => {
-    counts[tab] = idChunks.reduce((sum, _c, ci) => sum + (countResults[ci * PLANNING_TABS.length + i].count ?? 0), 0);
+    const rawCount = idChunks.reduce((sum, _c, ci) => sum + (countResults[ci * PLANNING_TABS.length + i].count ?? 0), 0);
+    counts[tab] = Math.max(0, rawCount - (fixtureCounts[i] ?? 0));
   });
 
-  let rows = rowResults.flatMap(r => (r.data ?? []) as unknown as Joined[]).map(toRow);
-  if (matchedIds) {
-    rows.sort(compareRows(sort));
-    rows = rows.slice((page - 1) * pageSize, page * pageSize);
-  }
+  const rows = rowRead.rows;
   // With counts unavailable there is no honest total for the active tab, so the
   // row query's own count is used and, failing that, the rows actually returned.
-  const total = matchedIds && countsAvailable ? counts[params.tab] : (rowResults[0].count ?? rows.length);
+  const total = countsAvailable ? counts[params.tab] : rows.length;
   return { ok: true, rows, counts, countsAvailable, total, page, pageSize };
 }
 
