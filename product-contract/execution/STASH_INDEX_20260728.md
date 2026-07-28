@@ -64,7 +64,61 @@ Once triage concludes, delete the branch if superseded, or cherry-pick the
 parts worth keeping onto a fresh branch off current main. Do not merge
 either branch into main as-is — both are hundreds of commits stale.
 
-`stash@{5}` (36 files) and `stash@{0}`, `{1}`, `{4}` remain untriaged.
+## TRIAGED — stash@{5}
+
+| Stash | Branch | Commit | Payload |
+|---|---|---|---|
+| `stash@{5}` | `triage/stash-5-shell-rail-profile-switch` | `586a1fdd` | 45 files — 36 tracked + 9 new untracked |
+
+Same construction as the two above: one commit on the stash's own base
+(`b4be3118`), no rebase, no verification. 503 commits behind main — the
+stalest of the three.
+
+**This one is not a coherent change.** Its own stash message says it was a
+"pre-existing dirty tree from other sessions", swept up before a
+`saqeel/operations` merge. The 36 tracked files span admin workflows and
+templates, field my-tasks / reports / virtual, GeoMap, samples and seizure
+components, three offline e2e specs, orchestrator skill scripts,
+`CC-SHELL-TABLET-001`, and audit jsonl noise. Treat it as an archive to mine,
+not a change to land.
+
+### What the comparison against main shows
+
+| | Count |
+|---|---|
+| Tracked files identical to main | 1 |
+| Tracked files differing from main | 24 |
+| Tracked files **main has since deleted** | 4 |
+| Untracked PNGs absent from main | 9 |
+
+The four files main deleted are the most informative signal:
+
+```
+apps/web/src/app/astryx.css
+apps/web/src/components/field/SamplesSection.tsx
+apps/web/src/components/field/SeizureSection.tsx
+apps/web/src/components/field/samplesSeizureStrings.ts
+```
+
+`astryx.css` is banned outright by CLAUDE.md rule 5 (no `ax-` class, no `ax-`
+token, no `astryx.css` import, zero references), and main removed it. Do not
+resurrect it. The three field components were also removed deliberately —
+confirm the reason before reviving any of them.
+
+### The 9 untracked files are evidence screenshots
+
+~1.05 MB of PNGs under `.saqeel/evidence/` and `apps/.saqeel/evidence/`. They
+exist nowhere on main. Per the repo's documentation-storage rule, evidence
+attachments and screenshots belong under `INSPECTION_DOCS_ROOT`, not in Git —
+"do not recommit external binary documentation". They are carried on the
+branch only so the recovery is complete. **They should not survive triage into
+anything that lands.** Move them to the docs root if they still have value.
+
+---
+
+`stash@{0}`, `{1}` and `{4}` remain untriaged. `{0}` is this session's own
+work and is reproducible from the planning packet; `{1}` is a single file;
+`{4}` is 7 files on a base that is not an ancestor of main.
 
 ## Recovering one
 
