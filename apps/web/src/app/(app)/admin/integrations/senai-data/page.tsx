@@ -123,7 +123,7 @@ export default async function SenaiDataPage({ searchParams }: { searchParams: Pr
       current="/admin/integrations"
       title={t("admin.senai.title", "SENAI data management")}
       context={
-        <span className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
+        <span className="row" style={{ gap: "var(--space-3)" }}>
           <span className="t-caption">
             {t("admin.senai.subtitle", "Upstream source registry, endpoint contract, mapping, sync & reconciliation — read-only source of truth")}
           </span>
@@ -402,7 +402,7 @@ export default async function SenaiDataPage({ searchParams }: { searchParams: Pr
             <p className="t-caption" style={{ margin: 0 }}>
               {t("admin.senai.recon.footer", "Resolution is a governed reconciliation action, not an edit on this screen. SAQEEL never silently overwrites a divergence in either direction, and never writes the resolution back to SENAI.")}
             </p>
-            <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap" }}>
+            <div className="row" style={{ gap: "var(--space-3)" }}>
               <Link className="btn btn-secondary btn-touch" href="/admin/integrations/factory-data">
                 {t("admin.senai.recon.openHistory", "Open sync, staging and reconciliation history")}
               </Link>

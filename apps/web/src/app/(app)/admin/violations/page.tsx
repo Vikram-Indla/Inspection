@@ -221,9 +221,9 @@ export default async function Violations({
   function severityChip(level: string) {
     const glyph = level === "L1" ? "⛔" : level === "L2" ? "▲" : "◆";
     const cls =
-      level === "L1" ? "sq-lozenge sq-lozenge--critical"
-      : level === "L2" ? "sq-lozenge sq-lozenge--warning"
-      : "sq-lozenge sq-lozenge--info";
+      level === "L1" ? "badge badge-critical"
+      : level === "L2" ? "badge badge-warning"
+      : "badge badge-info";
     return (
       <span className={cls}>
         <span aria-hidden="true">{glyph}</span>{" "}
@@ -236,9 +236,9 @@ export default async function Violations({
   function lifecycleChip(kind: Lifecycle) {
     const glyph = kind === "active" ? "✓" : kind === "future" ? "◷" : "⏻";
     const cls =
-      kind === "active" ? "sq-lozenge sq-lozenge--success"
-      : kind === "future" ? "sq-lozenge sq-lozenge--info"
-      : "sq-lozenge sq-lozenge--warning";
+      kind === "active" ? "badge badge-compliant"
+      : kind === "future" ? "badge badge-info"
+      : "badge badge-warning";
     const label =
       kind === "active" ? t("admin.viol.lc.active", "active")
       : kind === "future" ? t("admin.viol.lc.future", "not yet active")
@@ -293,7 +293,7 @@ export default async function Violations({
     <Shell current="/admin/violations" title={title}
       context={<span className="badge badge-info">{penaltyMode ? "SCR-ADM-041 · ENG-08" : "SCR-ADM-040 · ENG-08"}</span>}>
 
-      <h1 className="sq-sr-only">{title}</h1>
+      <h1 className="sr-only">{title}</h1>
       <div className={styles.pageRoot}>
       {modeTabs}
 
@@ -307,7 +307,7 @@ export default async function Violations({
       {/* S08 DEGRADED / S09 RECOVERY — a failed read is unavailable, never zero;
           recovery offers a return without implying success before the re-read. */}
       {(error || clauseError) && (
-        <div className="sq-banner sq-banner--critical" role="alert">
+        <div className="alert alert-critical" role="alert">
           <div>
             <strong>{t("admin.viol.error.title", "Couldn’t load the violation catalogue.")}</strong>{" "}
             {t("admin.viol.error.body", NEUTRAL_LOAD_ERROR)}{" "}
@@ -320,7 +320,7 @@ export default async function Violations({
 
       {/* S05/S06 — allowed reviewer sees a read-only surface; create is hidden. */}
       {roleError && !error ? (
-        <div className="sq-banner sq-banner--warning" role="alert"><div><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div></div>
+        <div className="alert alert-warning" role="alert"><div><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div></div>
       ) : !canWrite && !error && (
         <div className="panel sq-permission" style={{ padding: "var(--space-6)" }}>
           <p className="t-caption" style={{ margin: 0 }}>
@@ -330,7 +330,7 @@ export default async function Violations({
         </div>
       )}
       {canWrite && !roleError ? (
-        <div className="sq-banner sq-banner--warning" role="note">
+        <div className="alert alert-warning" role="note">
           <div>
             <strong>{t("admin.viol.ccrRequired.title", "Configuration Request required.")}</strong>{" "}
             {t("admin.viol.ccrRequired.body", "Violation and penalty creation, modification, publication, activation and deactivation are read-only here until the typed CCR validation and atomic dependency cascade are deployed. Use the Compliance Configuration Request workspace; this catalogue will not bypass it.")}{" "}
@@ -374,7 +374,7 @@ export default async function Violations({
                 <div className="stack" style={{ gap: "var(--space-2)", minInlineSize: 200, flex: "1 1 200px" }}>
                   <span className="sq-overline">{t("admin.viol.penalty.col.violation", "Violation")}</span>
                   <strong><span className="numeric">{v.code}</span> — {v.title}</strong>
-                  <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
+                  <div className="row">
                     {severityChip(v.level)}
                     {lifecycleChip(lc)}
                   </div>
@@ -401,7 +401,7 @@ export default async function Violations({
                         {t("admin.viol.map.repeatRule", "Repeat-rule preset")}: <span className="numeric">{pm.repeat_rule?.repeat_12mo ?? t("admin.viol.map.repeatNone", "None")}</span>
                       </span>
                       <span className="t-caption">
-                        <span className="sq-version">{pm.mapping_version}</span>{" "}
+                        <span className="id-code">{pm.mapping_version}</span>{" "}
                         {pm.status} · {pm.effective_from ?? "—"}{pm.effective_to ? ` → ${pm.effective_to}` : ""}
                       </span>
                       <span className="t-caption">{strings.penaltyType}: {pm.penalty_type}{pm.amount !== null ? <> · {strings.amount}: <bdi dir="ltr" className="numeric">{pm.amount}</bdi></> : null}{pm.grace_period_days !== null ? <> · {strings.gracePeriod}: {pm.grace_period_days}</> : null}{pm.due_period_days !== null ? <> · {strings.duePeriod}: {pm.due_period_days}</> : null}</span>
@@ -425,12 +425,12 @@ export default async function Violations({
         /* ============ CD-010 · Violation catalogue mode ============ */
         <>
           {canConfigure && clauseError ? (
-            <div className="sq-banner sq-banner--warning" role="alert"><div>
+            <div className="alert alert-warning" role="alert"><div>
               <strong>{t("admin.viol.clausesUnavailable.title", "Regulation clauses are unavailable")}</strong>{" "}
               {t("admin.viol.clausesUnavailable.body", "Violation creation is disabled because its required legal-anchor source could not be read. Retry before authoring.")}
             </div></div>
           ) : canConfigure && clauseOptions.length > 0 ? <NewViolationForm clauses={clauseOptions} strings={strings} /> : canConfigure ? (
-            <div className="sq-banner" role="status"><div>{t("admin.viol.clausesEmpty", "No regulation clauses exist. Create and publish the legal source before creating a violation code.")}</div></div>
+            <div className="alert" role="status"><div>{t("admin.viol.clausesEmpty", "No regulation clauses exist. Create and publish the legal source before creating a violation code.")}</div></div>
           ) : null}
 
           {/* S03 EMPTY — a genuine empty read, not a fabricated zero. */}
@@ -447,9 +447,9 @@ export default async function Violations({
             const evidence = evidenceById.get(v.id);
             return (
               <div key={v.id} className="panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-                <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-3)" }}>
+                <div className="row" style={{ justifyContent: "space-between", gap: "var(--space-3)" }}>
                   <h2><span className="numeric">{v.code}</span> — {v.title}</h2>
-                  <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap" }}>
+                  <div className="row" style={{ gap: "var(--space-3)" }}>
                     {severityChip(v.level)}
                     {lifecycleChip(lc)}
                     {pm
@@ -462,7 +462,7 @@ export default async function Violations({
                   <span className="sq-overline">{t("admin.viol.trace", "Legal trace")}:</span>{" "}
                   {rc ? <bdi dir="ltr">{rc.regulations?.code ?? "?"} §{rc.clause_ref}</bdi> : t("admin.viol.noAnchor", "No clause anchor")}
                 </p>
-                <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
+                <div className="row">
                   <span className="badge badge-info">v{v.configuration_version}</span>
                   {v.category && <span className="badge badge-info">{v.category}</span>}
                   {v.applicability && <span className="t-caption">{v.applicability}</span>}
@@ -481,7 +481,7 @@ export default async function Violations({
                   {" "}{t("admin.viol.asOf", "as of today")}{" "}
                   <bdi dir="ltr" className="numeric">{today}</bdi>.
                 </p>
-                <div className="row" style={{ gap: "var(--space-4)", flexWrap: "wrap" }} aria-label={t("admin.viol.usage.heading", "Usage and audit") }>
+                <div className="row" style={{ gap: "var(--space-4)" }} aria-label={t("admin.viol.usage.heading", "Usage and audit") }>
                   {evidence?.usage ? (
                     <span className="t-caption" data-usage-state="available">
                       <span aria-hidden="true">↗</span> {t("admin.viol.usage.items", "Item references")}: <strong>{evidence.usage.item_count}</strong>{" · "}

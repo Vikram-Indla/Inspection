@@ -76,15 +76,15 @@ export default async function PlanningStatus() {
 
   return (
     <Shell current="/admin/planning/status" title={t("admin.planning.status.title", "Planning status rules")}
-      context={<span className="sq-lozenge sq-lozenge--info">PLN-CON-014 · read-only</span>}>
-      <div className="sq-banner"><div>
+      context={<span className="badge badge-info">PLN-CON-014 · read-only</span>}>
+      <div className="alert"><div>
         <strong>{t("admin.planning.status.banner.title", "These rules are governed by workflow configuration.")}</strong>{" "}
         {t("admin.planning.status.banner.body", "Status transitions are defined by the published workflow configuration and enforced by the database. This screen is read-only; changes go through the governed publish flow.")}{" "}
         <Link href="/admin/workflows">{t("admin.planning.status.banner.link", "Open workflow configuration")}</Link>
       </div></div>
 
       {isFallback ? (
-        <div className="sq-banner sq-banner--warning" role="status"><div>
+        <div className="alert alert-warning" role="status"><div>
           {error
             ? t("admin.planning.status.fallback.error", "The published workflow configuration could not be read. The table below is a static copy of the canonical lifecycle (visit-lifecycle-v4) and may be out of date.")
             : t("admin.planning.status.fallback.none", "No published workflow configuration was found. The table below is a static copy of the canonical lifecycle (visit-lifecycle-v4) and may be out of date.")}
@@ -99,16 +99,16 @@ export default async function PlanningStatus() {
 
       <section className="panel" style={{ padding: "var(--space-6)" }}>
         <h2 style={{ marginBlockStart: 0 }}>{t("admin.planning.status.states", "States")}</h2>
-        <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
+        <div className="row">
           {states.map(state => (
-            <span key={state} className="sq-lozenge sq-lozenge--info">{state}</span>
+            <span key={state} className="badge badge-info">{state}</span>
           ))}
         </div>
       </section>
 
       <section className="panel" style={{ padding: "var(--space-6)" }}>
         <h2 style={{ marginBlockStart: 0 }}>{t("admin.planning.status.transitions", "Transitions")}</h2>
-        <div className="sq-tablewrap"><table className="sq-table">
+        <div className="table-wrap"><table className="table">
           <thead><tr>
             <th scope="col">{t("admin.planning.status.col.id", "Rule")}</th>
             <th scope="col">{t("admin.planning.status.col.from", "From")}</th>
@@ -122,8 +122,8 @@ export default async function PlanningStatus() {
             {transitions.map((tr, index) => (
               <tr key={tr.id ?? index}>
                 <td><strong>{tr.id ?? "—"}</strong></td>
-                <td><span className="sq-lozenge">{tr.from ?? "—"}</span></td>
-                <td><span className="sq-lozenge sq-lozenge--info">{tr.to ?? "—"}</span></td>
+                <td><span className="badge">{tr.from ?? "—"}</span></td>
+                <td><span className="badge badge-info">{tr.to ?? "—"}</span></td>
                 <td>{tr.actor ?? "—"}</td>
                 <td className="t-caption">{tr.guard ?? "—"}</td>
                 <td>{tr.terminal ? t("common.yes", "yes") : t("common.no", "no")}</td>
@@ -136,7 +136,7 @@ export default async function PlanningStatus() {
 
       <section className="panel" style={{ padding: "var(--space-6)" }}>
         <h2 style={{ marginBlockStart: 0 }}>{t("admin.planning.status.capabilities", "Planning capabilities")}</h2>
-        <div className="sq-tablewrap"><table className="sq-table">
+        <div className="table-wrap"><table className="table">
           <thead><tr>
             <th scope="col">{t("admin.planning.status.col.capability", "Capability")}</th>
             <th scope="col">{t("admin.planning.status.col.effect", "Effect")}</th>

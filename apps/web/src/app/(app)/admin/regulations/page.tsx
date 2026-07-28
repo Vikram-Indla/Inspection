@@ -219,7 +219,7 @@ export default async function Regulations({
 
   const title = t("admin.reg.r1.title", "Compliance Library — regulation register");
   const context = (
-    <span className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
+    <span className="row" style={{ gap: "var(--space-3)" }}>
       <span className="badge badge-info">SCR-ADM-010/011</span>
       <a className="sq-link" href="/admin/compliance-requests">
         {t("admin.reg.requests", "Configuration Requests")}
@@ -240,9 +240,9 @@ export default async function Regulations({
 
   // ---- S05/S06 read-only disclosure inside the module route guard ----
   const readOnlyBanner = roleError ? (
-    <div className="sq-banner sq-banner--warning" role="alert"><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div>
+    <div className="alert alert-warning" role="alert"><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div>
   ) : !isWriter ? (
-    <div className="sq-banner" role="note">
+    <div className="alert" role="note">
       <strong><span aria-hidden="true">👁</span> {isReviewer
         ? t("admin.reg.r1.readonly.reviewer.title", "Reviewer — read-only")
         : t("admin.reg.r1.readonly.title", "Read-only for your role")}</strong>{" "}
@@ -252,7 +252,7 @@ export default async function Regulations({
 
   // ---- S08 degraded / S09 recovery (register read failed — isolate; never zero) ----
   const degradedBanner = regsError ? (
-    <div className="sq-banner sq-banner--warning" role="alert">
+    <div className="alert alert-warning" role="alert">
       <strong><span aria-hidden="true">⚠</span> {t("admin.reg.r1.degraded.title", "The regulation register couldn't be read.")}</strong>{" "}
       {t("admin.reg.r1.degraded.body", "Nothing is shown as zero — the count is unknown, not empty. Your session and navigation still work.")}
       {" "}
@@ -301,7 +301,7 @@ export default async function Regulations({
           <>
             {/* Dossier header */}
             <section className="panel stack" style={{ padding: "var(--space-6)", gap: "var(--space-3)" }} aria-labelledby="reg-dossier-h">
-              <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: "var(--space-3)", flexWrap: "wrap" }}>
+              <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: "var(--space-3)" }}>
                 <div className="stack" style={{ gap: "var(--space-1)" }}>
                   <h2 id="reg-dossier-h" style={{ margin: 0 }}>
                     <span className="numeric"><bdi dir="ltr">{reg.code}</bdi></span> — {reg.title}
@@ -313,7 +313,7 @@ export default async function Regulations({
                     <> · {strings.versionLabel} <bdi dir="ltr" className="numeric">{reg.version_label}</bdi></>
                   </p>
                 </div>
-                <span className={`sq-lozenge ${reg.status === "active" ? "sq-lozenge--success" : reg.status === "deactivated" ? "sq-lozenge--critical" : "sq-lozenge--warning"}`}>
+                <span className={`badge ${reg.status === "active" ? "badge-compliant" : reg.status === "deactivated" ? "badge-critical" : "badge-warning"}`}>
                   <span aria-hidden="true">{reg.status === "active" ? "●" : reg.status === "deactivated" ? "✕" : "◷"}</span>{" "}
                   {reg.status === "active" ? strings.statusPublished : reg.status === "deactivated" ? t("admin.reg.status.deactivated", "Deactivated") : strings.statusDraft}
                 </span>
@@ -345,14 +345,14 @@ export default async function Regulations({
               <h3 id="reg-clauses-h" style={{ margin: 0 }}>{t("admin.reg.r1.detail.clauses.heading", "Clauses & mapped inspection items")}</h3>
               {clauses.length === 0 ? (
                 // S03 EMPTY — no clauses: invite, never "complete/mapped"
-                <div className="sq-state sq-state--inline" role="status">
-                  <span className="sq-state__glyph" aria-hidden="true">📄</span>
+                <div className="saqeel-state sq-state--inline" role="status">
+                  <span className="saqeel-state__glyph" aria-hidden="true">📄</span>
                   <h4>{t("admin.reg.r1.detail.clauses.empty.title", "No clauses yet")}</h4>
                   <p className="t-caption">{t("admin.reg.r1.detail.clauses.empty.body", "This regulation has no clauses. Add the first clause below — the read succeeded, it is genuinely empty.")}</p>
                 </div>
               ) : (
-                <div className="sq-tablewrap">
-                  <table className="sq-table">
+                <div className="table-wrap">
+                  <table className="table">
                     <thead>
                       <tr>
                         <th scope="col">{t("admin.reg.r1.detail.col.clause", "Clause")}</th>
@@ -400,11 +400,11 @@ export default async function Regulations({
             {isWriter ? (
               <section className="panel stack" style={{ padding: "var(--space-6)", gap: "var(--space-4)" }} aria-labelledby="reg-actions-h">
                 <h3 id="reg-actions-h" style={{ margin: 0 }}>{t("admin.reg.r1.detail.actions.heading", "Governed configuration")}</h3>
-                <div className="sq-banner sq-banner--immutable" role="note">
+                <div className="alert alert-immutable" role="note">
                   <strong><span aria-hidden="true">🔒</span> {t("admin.reg.requestOnly.title", copy("Request-controlled content", "محتوى خاضع لطلب تغيير"))}</strong>{" "}
                   {t("admin.reg.requestOnly.body", copy("Create and modify operations, including clauses, attachments, release dates, and successor versions, must be completed through a Compliance Configuration Request. The currently approved version remains available until that request is approved and published.", "يجب تنفيذ عمليات الإنشاء والتعديل، بما فيها البنود والمرفقات وتواريخ الإصدار والإصدارات اللاحقة، من خلال طلب تهيئة الامتثال. ويظل الإصدار المعتمد حالياً متاحاً حتى اعتماد الطلب ونشره."))}
                 </div>
-                <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap" }}>
+                <div className="row" style={{ gap: "var(--space-3)" }}>
                   <a className="btn btn-primary btn-lg btn-touch" href="/admin/compliance-requests/new">
                     {t("admin.reg.requestOnly.create", copy("Create configuration request", "إنشاء طلب تهيئة"))}
                   </a>
@@ -413,7 +413,7 @@ export default async function Regulations({
                   </a>
                 </div>
                 {reg.status !== "deactivated" ? (
-                  <div className={`sq-banner ${unmappedClauses > 0 || clauses.length === 0 ? "sq-banner--warning" : ""}`} role={unmappedClauses > 0 || clauses.length === 0 ? "alert" : "status"}>
+                  <div className={`alert ${unmappedClauses > 0 || clauses.length === 0 ? "alert-warning" : ""}`} role={unmappedClauses > 0 || clauses.length === 0 ? "alert" : "status"}>
                     <strong><span aria-hidden="true">{unmappedClauses > 0 || clauses.length === 0 ? "⚠" : "✓"}</span> {t("admin.reg.r1.detail.validation.title", "Publication dependency status")}</strong>{" "}
                     {clauses.length === 0
                       ? t("admin.reg.r1.detail.validation.noClauses", "Blocked: at least one clause is required.")
@@ -451,7 +451,7 @@ export default async function Regulations({
             <section className="panel stack" style={{ padding: "var(--space-6)", gap: "var(--space-3)" }} aria-labelledby="reg-audit-h">
               <h3 id="reg-audit-h" style={{ margin: 0 }}>{t("admin.reg.audit.heading", "Configuration audit timeline")}</h3>
               {!isWriter ? <p className="t-caption">{t("admin.reg.audit.readonly", "The scoped author timeline is available to configuration writers; this read-only persona is not granted that RPC.")}</p>
-                : auditError ? <div className="sq-banner sq-banner--warning" role="alert">{t("admin.reg.audit.error", "The audit timeline is unavailable. Reload to retry; no empty-history claim is made.")}</div>
+                : auditError ? <div className="alert alert-warning" role="alert">{t("admin.reg.audit.error", "The audit timeline is unavailable. Reload to retry; no empty-history claim is made.")}</div>
                 : auditEvents.length === 0 ? <p className="t-caption" role="status">{t("admin.reg.audit.empty", "No scoped audit events returned — verified zero.")}</p>
                 : <ol className="stack" style={{ margin: 0, paddingInlineStart: "var(--space-6)" }}>{auditEvents.map(e => <li key={e.id}><strong>{e.action}</strong> · <bdi dir="ltr" className="numeric">{e.occurred_at}</bdi>{e.actor ? <> · <bdi dir="ltr">{e.actor}</bdi></> : null}</li>)}</ol>}
             </section>
@@ -497,7 +497,7 @@ export default async function Regulations({
       {libraryTabs}
 
       {isWriter ? (
-        <div className="sq-banner" role="note">
+        <div className="alert" role="note">
           <strong>{t("admin.reg.requestOnly.title", copy("Request-controlled content", "محتوى خاضع لطلب تغيير"))}</strong>{" "}
           {t("admin.reg.library.requestOnly", copy("This library is the read and discovery surface. Create and modify operations begin in a Compliance Configuration Request; approved historical versions remain unchanged.", "هذه المكتبة مخصصة للعرض والاستكشاف. تبدأ عمليات الإنشاء والتعديل من طلب تهيئة الامتثال، وتظل الإصدارات التاريخية المعتمدة دون تغيير."))}
           {" "}
