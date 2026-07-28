@@ -211,7 +211,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
 
   return (
     <Shell current="/planning" title="">
-      <div className="sq-planning-heading">
+      <div className="sq-topbar-row">
         <h1>{title}</h1>
         <span>{tr("plan.list.subtitle", "Create inspection visits — bulk, single or immediate", "إنشاء زيارات التفتيش — جماعية أو فردية أو فورية")}</span>
       </div>
@@ -265,107 +265,105 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       />
 
       {/* KPI / status tabs with live counts (PLN-REQ-012) */}
-      <div className="sq-kpi-row" role="group" aria-label={tr("plan.list.tabsAria", "Planning status tabs", "تبويبات حالة التخطيط")}>
+      <div className="kpi-grid" role="group" aria-label={tr("plan.list.tabsAria", "Planning status tabs", "تبويبات حالة التخطيط")}>
         {PLANNING_TABS.map(tab => (
           <a key={tab} href={hrefWith(sp, { tab: tab === "all" ? "" : tab, page: "" })}
-            className="sq-surface sq-kpi" aria-current={params.tab === tab ? "page" : undefined}
-            style={{ textDecoration: "none", color: "inherit", outline: params.tab === tab ? "2px solid var(--focus-ring, currentColor)" : undefined }}>
-            <span className="sq-overline">{tabLabels[tab]}</span>
+            className="panel kpi" aria-current={params.tab === tab ? "page" : undefined}>
+            <span>{tabLabels[tab]}</span>
             {/* An unavailable count renders as an em dash, never as 0: the
                 tab counts and the list fail independently, and a fabricated
                 zero would read as "no visits in this state". */}
-            <span className="sq-kpi__value sq-numeric">{list.countsAvailable ? list.counts[tab] : "—"}</span>
+            <span>{list.countsAvailable ? list.counts[tab] : "—"}</span>
           </a>
         ))}
       </div>
 
       {/* Filter bar — GET form keeps all state in the URL (PLN-REQ-014/015/016) */}
-      <form method="get" action="/planning" className="sq-surface sq-panel"
-        style={{ padding: "var(--space-6)", display: "flex", flexWrap: "wrap", gap: "var(--space-4)", alignItems: "flex-end" }}>
+      <form method="get" action="/planning" className="grid-toolbar">
         {params.tab !== "all" && <input type="hidden" name="tab" value={params.tab} />}
-        <label className="sq-field" style={{ flex: "1 1 260px" }}>
-          <span className="sq-field__label">{tr("plan.list.searchLabel", "Search", "بحث")}</span>
-          <input className="sq-input" type="search" name="q" defaultValue={params.search}
+        <label className="field">
+          <span>{tr("plan.list.searchLabel", "Search", "بحث")}</span>
+          <input className="input" type="search" name="q" defaultValue={params.search}
             placeholder={tr("plan.list.searchPlaceholder", "Visit reference, plan reference, CR, licence, factory or inspector…", "مرجع الزيارة، مرجع الخطة، السجل التجاري، الرخصة، المصنع أو المفتش…")} />
         </label>
-        <label className="sq-field">
-          <span className="sq-field__label">{tr("plan.list.filterMethod", "Planning type", "نوع التخطيط")}</span>
-          <select className="sq-select" name="method" defaultValue={params.filters.method ?? ""}>
+        <label className="field">
+          <span>{tr("plan.list.filterMethod", "Planning type", "نوع التخطيط")}</span>
+          <select className="select" name="method" defaultValue={params.filters.method ?? ""}>
             <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
             {["bulk", "single", "immediate"].map(m => <option key={m} value={m}>{t(`enum.${m}`, m)}</option>)}
           </select>
         </label>
-        <label className="sq-field">
-          <span className="sq-field__label">{tr("plan.list.filterVisitType", "Visit type", "نوع الزيارة")}</span>
-          <select className="sq-select" name="visitType" defaultValue={params.filters.visitType ?? ""}>
+        <label className="field">
+          <span>{tr("plan.list.filterVisitType", "Visit type", "نوع الزيارة")}</span>
+          <select className="select" name="visitType" defaultValue={params.filters.visitType ?? ""}>
             <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
             {visitTypeOptions.map(o => <option key={o.key} value={o.key}>{lookupLabel(o)}</option>)}
           </select>
         </label>
-        <label className="sq-field">
-          <span className="sq-field__label">{tr("plan.list.filterPriority", "Priority", "الأولوية")}</span>
-          <select className="sq-select" name="priority" defaultValue={params.filters.priority ?? ""}>
+        <label className="field">
+          <span>{tr("plan.list.filterPriority", "Priority", "الأولوية")}</span>
+          <select className="select" name="priority" defaultValue={params.filters.priority ?? ""}>
             <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
             {priorityOptions.map(o => <option key={o.key} value={o.key}>{lookupLabel(o)}</option>)}
           </select>
         </label>
-        <label className="sq-field">
-          <span className="sq-field__label">{tr("plan.list.filterRegion", "Region", "المنطقة")}</span>
-          <select className="sq-select" name="region" defaultValue={params.filters.region ?? ""}>
+        <label className="field">
+          <span>{tr("plan.list.filterRegion", "Region", "المنطقة")}</span>
+          <select className="select" name="region" defaultValue={params.filters.region ?? ""}>
             <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
             {regionOptions.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
         </label>
-        <label className="sq-field">
-          <span className="sq-field__label">{tr("plan.list.filterCity", "City", "المدينة")}</span>
-          <select className="sq-select" name="city" defaultValue={params.filters.city ?? ""}>
+        <label className="field">
+          <span>{tr("plan.list.filterCity", "City", "المدينة")}</span>
+          <select className="select" name="city" defaultValue={params.filters.city ?? ""}>
             <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
             {cityOptions.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </label>
-        <label className="sq-field">
-          <span className="sq-field__label">{tr("plan.list.filterInspector", "Inspector", "المفتش")}</span>
-          <select className="sq-select" name="inspectorId" defaultValue={params.filters.inspectorId ?? ""}>
+        <label className="field">
+          <span>{tr("plan.list.filterInspector", "Inspector", "المفتش")}</span>
+          <select className="select" name="inspectorId" defaultValue={params.filters.inspectorId ?? ""}>
             <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
             {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}
           </select>
         </label>
-        <label className="sq-field">
-          <span className="sq-field__label">{tr("plan.list.filterPackage", "Report package", "حزمة التقارير")}</span>
-          <select className="sq-select" name="packageVersionId" defaultValue={params.filters.packageVersionId ?? ""}>
+        <label className="field">
+          <span>{tr("plan.list.filterPackage", "Report package", "حزمة التقارير")}</span>
+          <select className="select" name="packageVersionId" defaultValue={params.filters.packageVersionId ?? ""}>
             <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
             {packageOptions.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
           </select>
         </label>
-        <label className="sq-field">
-          <span className="sq-field__label">{tr("plan.list.filterWindowFrom", "Window from", "النافذة من")}</span>
-          <input className="sq-input sq-numeric" type="date" name="windowFrom" defaultValue={params.filters.windowFrom ?? ""} />
+        <label className="field">
+          <span>{tr("plan.list.filterWindowFrom", "Window from", "النافذة من")}</span>
+          <input className="input" type="date" name="windowFrom" defaultValue={params.filters.windowFrom ?? ""} />
         </label>
-        <label className="sq-field">
-          <span className="sq-field__label">{tr("plan.list.filterWindowTo", "Window to", "النافذة إلى")}</span>
-          <input className="sq-input sq-numeric" type="date" name="windowTo" defaultValue={params.filters.windowTo ?? ""} />
+        <label className="field">
+          <span>{tr("plan.list.filterWindowTo", "Window to", "النافذة إلى")}</span>
+          <input className="input" type="date" name="windowTo" defaultValue={params.filters.windowTo ?? ""} />
         </label>
-        <label className="sq-field">
-          <span className="sq-field__label">{tr("plan.list.filterCreatedFrom", "Created from", "أُنشئت من")}</span>
-          <input className="sq-input sq-numeric" type="date" name="createdFrom" defaultValue={params.filters.createdFrom ?? ""} />
+        <label className="field">
+          <span>{tr("plan.list.filterCreatedFrom", "Created from", "أُنشئت من")}</span>
+          <input className="input" type="date" name="createdFrom" defaultValue={params.filters.createdFrom ?? ""} />
         </label>
-        <label className="sq-field">
-          <span className="sq-field__label">{tr("plan.list.filterCreatedTo", "Created to", "أُنشئت إلى")}</span>
-          <input className="sq-input sq-numeric" type="date" name="createdTo" defaultValue={params.filters.createdTo ?? ""} />
+        <label className="field">
+          <span>{tr("plan.list.filterCreatedTo", "Created to", "أُنشئت إلى")}</span>
+          <input className="input" type="date" name="createdTo" defaultValue={params.filters.createdTo ?? ""} />
         </label>
-        <label className="sq-field">
-          <span className="sq-field__label">{tr("plan.list.filterBulkPlanRef", "Bulk plan reference", "مرجع الخطة الجماعية")}</span>
-          <input className="sq-input" type="text" name="bulkPlanRef" defaultValue={params.filters.bulkPlanRef ?? ""} placeholder="BP-…" />
+        <label className="field">
+          <span>{tr("plan.list.filterBulkPlanRef", "Bulk plan reference", "مرجع الخطة الجماعية")}</span>
+          <input className="input" type="text" name="bulkPlanRef" defaultValue={params.filters.bulkPlanRef ?? ""} placeholder="BP-…" />
         </label>
-        <label className="sq-field">
-          <span className="sq-field__label">{tr("plan.list.sortLabel", "Sort", "الترتيب")}</span>
-          <select className="sq-select" name="sort" defaultValue={params.sort}>
+        <label className="field">
+          <span>{tr("plan.list.sortLabel", "Sort", "الترتيب")}</span>
+          <select className="select" name="sort" defaultValue={params.sort}>
             {PLANNING_SORT_KEYS.map(k => <option key={k} value={k}>{sortLabels[k]}</option>)}
           </select>
         </label>
-        <div className="sq-row" style={{ gap: "var(--space-3)" }}>
-          <button type="submit" className="sq-btn sq-btn--secondary">{tr("plan.list.apply", "Apply", "تطبيق")}</button>
-          <a className="sq-btn sq-btn--subtle" href="/planning">{tr("plan.list.reset", "Reset", "إعادة تعيين")}</a>
+        <div>
+          <button type="submit" className="btn btn-primary">{tr("plan.list.apply", "Apply", "تطبيق")}</button>
+          <a className="btn btn-secondary" href="/planning">{tr("plan.list.reset", "Reset", "إعادة تعيين")}</a>
         </div>
       </form>
 
@@ -374,7 +372,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
         <EmptyState glyph="🗓" title={tr("plan.list.empty", "No visits match", "لا توجد زيارات مطابقة")}
           body={tr("plan.list.emptyDesc", "No visits match the current tab, search and filters. Reset to see everything in your scope.", "لا توجد زيارات مطابقة للتبويب والبحث وعوامل التصفية الحالية. أعد التعيين لعرض كل ما في نطاقك.")} />
       ) : (
-        <div className="sq-tablewrap planning-table-wrap"><table className="sq-table planning-visit-table" data-testid="planning-visit-table">
+        <div className="table-wrap"><table className="table" data-testid="planning-visit-table">
           <thead><tr>
             <th scope="col">{tr("plan.list.colVisitRef", "Visit Reference", "مرجع الزيارة")}</th>
             <th scope="col">{tr("plan.list.colPlanningType", "Planning Type", "نوع التخطيط")}</th>
@@ -403,7 +401,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
           <tbody>
             {visibleRows.map((row: PlanningVisitRow) => (
               <tr key={row.id}>
-                <td className="sq-numeric"><a className="sq-link" href={`/visits/${row.id}`}><strong>{row.visitReference ?? row.id.slice(0, 8)}</strong></a></td>
+                <td className="cell-num"><a className="btn btn-ghost btn-sm" href={`/visits/${row.id}`}><strong>{row.visitReference ?? row.id.slice(0, 8)}</strong></a></td>
                 <td><span className="planning-method">{t(`enum.${row.method}`, row.method)}</span></td>
                 <td><span className={`badge planning-status ${STATUS_TONE[row.planningStatus] ?? "badge-pending"}`}>
                   <span className="dot" aria-hidden="true" />
@@ -414,22 +412,22 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
                 <td>{t(`enum.${row.visitType}`, row.visitType)}</td>
                 <td>{t(`enum.${row.executionMode}`, row.executionMode)}</td>
                 <td>{row.priority ? t(`enum.${row.priority}`, row.priority) : "—"}</td>
-                <td className="sq-numeric">{dash(row.crNumber)}</td>
-                <td className="sq-numeric">{dash(row.licenseNumber)}</td>
+                <td className="cell-num">{dash(row.crNumber)}</td>
+                <td className="cell-num">{dash(row.licenseNumber)}</td>
                 <td className="planning-cell-wrap">{dash(row.factoryName)}</td>
                 <td>{dash(row.region)}</td>
                 <td>{dash(row.city)}</td>
                 <td className="planning-cell-wrap">{dash(row.inspectorName)}</td>
-                <td className="sq-td-num sq-numeric">{fmt(row.windowStart)}</td>
-                <td className="sq-td-num sq-numeric">{fmt(row.windowEnd)}</td>
-                <td className="sq-td-num sq-numeric">{row.executionDate ? fmt(row.executionDate) : "—"}</td>
+                <td className="cell-num">{fmt(row.windowStart)}</td>
+                <td className="cell-num">{fmt(row.windowEnd)}</td>
+                <td className="cell-num">{row.executionDate ? fmt(row.executionDate) : "—"}</td>
                 <td className="planning-cell-wrap">{row.packageTitles.length > 0 ? row.packageTitles.join(", ") : "—"}</td>
                 <td>{dash(row.createdBy)}</td>
-                <td className="sq-td-num sq-numeric">{fmt(row.createdAt)}</td>
+                <td className="cell-num">{fmt(row.createdAt)}</td>
                 <td>{dash(row.sourceChannel)}</td>
                 <td>{dash(row.returnReason ?? (row.planningStatus === "returned" ? t("enum.returned", "returned") : null))}</td>
-                <td className="sq-numeric">{row.method === "bulk" ? dash(row.planReference) : "—"}</td>
-                <td className="sq-td-num sq-numeric">{lastUpdates[row.id] ? fmt(lastUpdates[row.id]) : "—"}</td>
+                <td className="cell-num">{row.method === "bulk" ? dash(row.planReference) : "—"}</td>
+                <td className="cell-num">{lastUpdates[row.id] ? fmt(lastUpdates[row.id]) : "—"}</td>
               </tr>
             ))}
           </tbody>
@@ -438,24 +436,24 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
 
       {/* Pagination — state carried in the URL like every other control */}
       {list.total > 0 && (
-        <div className="sq-row" style={{ justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: "var(--space-3)" }}>
-          <span className="sq-caption sq-numeric">
+        <div className="grid-toolbar">
+          <span>
             {tr("plan.list.showing", "Showing {shown} of {total} · page {page} of {pages}", "عرض {shown} من {total} · صفحة {page} من {pages}")
               .replace("{shown}", String(visibleRows.length)).replace("{total}", String(list.total))
               .replace("{page}", String(page)).replace("{pages}", String(totalPages))}
           </span>
-          <div className="sq-row" style={{ gap: "var(--space-3)" }}>
-            {page > 1 && <a className="sq-btn sq-btn--subtle" href={hrefWith(sp, { page: String(page - 1) })}>{tr("plan.list.prev", "← Previous", "→ السابق")}</a>}
-            {page < totalPages && <a className="sq-btn sq-btn--subtle" href={hrefWith(sp, { page: String(page + 1) })}>{tr("plan.list.next", "Next →", "التالي ←")}</a>}
+          <div>
+            {page > 1 && <a className="btn btn-secondary" href={hrefWith(sp, { page: String(page - 1) })}>{tr("plan.list.prev", "← Previous", "→ السابق")}</a>}
+            {page < totalPages && <a className="btn btn-secondary" href={hrefWith(sp, { page: String(page + 1) })}>{tr("plan.list.next", "Next →", "التالي ←")}</a>}
           </div>
         </div>
       )}
 
       {/* Draft continuation (PLN-REQ-010 entry point; resume consumption is a later phase) */}
       {drafts.length > 0 && (
-        <section className="sq-surface sq-panel" style={{ padding: "var(--space-6)" }}>
-          <h3>{tr("plan.list.draftsHeading", "Draft plans — continue where you left off", "خطط مسودة — تابع من حيث توقفت")}</h3>
-          <div className="sq-tablewrap"><table className="sq-table planning-draft-table">
+        <section className="panel">
+          <div className="panel-header"><h3 className="panel-title">{tr("plan.list.draftsHeading", "Draft plans — continue where you left off", "خطط مسودة — تابع من حيث توقفت")}</h3></div>
+          <div className="table-wrap"><table className="table">
             <thead><tr>
               <th scope="col">{tr("plan.list.colPlanRef", "Plan Reference", "مرجع الخطة")}</th>
               <th scope="col">{tr("plan.list.colPlanningType", "Planning Type", "نوع التخطيط")}</th>
@@ -468,12 +466,12 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
             <tbody>
               {drafts.map(d => (
                 <tr key={d.id}>
-                  <td className="sq-numeric"><strong>{d.plan_reference ?? d.id.slice(0, 8)}</strong></td>
+                  <td className="cell-num"><strong>{d.plan_reference ?? d.id.slice(0, 8)}</strong></td>
                   <td><span className="planning-method">{t(`enum.${d.method}`, d.method)}</span></td>
                   <td><span className="badge badge-draft planning-status"><span className="dot" aria-hidden="true" />{t("enum.draft", "draft")}</span></td>
                   <td>{d.profiles?.full_name ?? "—"}</td>
-                  <td className="sq-td-num sq-numeric">{fmt(d.created_at)}</td>
-                  <td><a className="sq-link" href={continueHref(d)}>{tr("plan.list.continue", "Continue", "متابعة")}</a></td>
+                  <td className="cell-num">{fmt(d.created_at)}</td>
+                  <td><a className="btn btn-ghost btn-sm" href={continueHref(d)}>{tr("plan.list.continue", "Continue", "متابعة")}</a></td>
                   <td>
                     {/* M8 / PLN-CON-018 — discard is offered on OWN drafts only
                         (same ownership boundary as resume); the copy stays
@@ -492,10 +490,10 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       )}
 
       {/* FIX WAVE F4 — M02-035 plan register entry point (preserved) */}
-      <p><a className="sq-link" href="/planning/plans">{t("plan.home.registerLink", "Visit plans — status, child visits and progress of every plan (M02-035)")}</a></p>
+      <p><a className="btn btn-ghost" href="/planning/plans">{t("plan.home.registerLink", "Visit plans — status, child visits and progress of every plan (M02-035)")}</a></p>
       {/* M8 — /visits is the accepted management alias surface; the two are
           cross-linked in both directions (canonical §5/§6 reconciliation). */}
-      <p><a className="sq-link" href="/visits">{tr("plan.home.visitsLink", "Visit management — bulk actions and lenses over the same visits (/visits)", "إدارة الزيارات — إجراءات جماعية وعدسات على نفس الزيارات")}</a></p>
+      <p><a className="btn btn-ghost" href="/visits">{tr("plan.home.visitsLink", "Visit management — bulk actions and lenses over the same visits (/visits)", "إدارة الزيارات — إجراءات جماعية وعدسات على نفس الزيارات")}</a></p>
     </Shell>
   );
 }

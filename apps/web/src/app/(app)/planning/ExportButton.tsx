@@ -36,11 +36,11 @@ export default function ExportButton({ params, strings }: { params: PlanningList
     });
   };
   return (
-    <span className="sq-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
-      <button type="button" className="sq-btn sq-btn--secondary" disabled={pending} onClick={run}>
+    <span>
+      <button type="button" className="btn btn-secondary" disabled={pending} onClick={run}>
         {pending ? strings.busyLabel : strings.label}
       </button>
-      {message && <span className="sq-caption" role="status">{message}</span>}
+      {message && <span className="alert alert-info" role="status">{message}</span>}
     </span>
   );
 }

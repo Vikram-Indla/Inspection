@@ -34,17 +34,17 @@ export default function PlanningPreview({ methods, drafts, effectivePackage, can
   };
 
   return (
-    <div data-saqeel-design="WA-DES-036" className="sq-stack" style={{ gap: "var(--space-5)" }}>
-      <h1 className="sq-sr-only">{ar ? "تخطيط الزيارات" : "Visit planning"}</h1>
+    <div data-saqeel-design="WA-DES-036">
+      <div className="sq-topbar-row"><h1>{ar ? "تخطيط الزيارات" : "Visit planning"}</h1></div>
       {effectivePackage !== undefined && (
-        <div className={`sq-banner ${effectivePackage ? "sq-banner--success" : "sq-banner--warning"}`} role="status"><div>
+        <div className={`alert ${effectivePackage ? "alert-success" : "alert-warning"}`} role="status"><div>
           <strong>{effectivePackage ? copy.packageReady : copy.packageMissing}</strong>
-          {effectivePackage ? <> — <span className="sq-numeric">{effectivePackage}</span> · {drafts.length} {copy.drafts}</> : null}
+          {effectivePackage ? <> — <span className="id-code">{effectivePackage}</span> · {drafts.length} {copy.drafts}</> : null}
         </div></div>
       )}
-      <div className="sq-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
-        <h2 style={{ margin: 0 }}>{copy.methods}</h2>
-        {showVisits !== false && <Link className="sq-btn sq-btn--subtle" href="/planning/visits" prefetch={false}>{copy.visits}</Link>}
+      <div className="grid-toolbar">
+        <h2>{copy.methods}</h2>
+        {showVisits !== false && <Link className="btn btn-secondary" href="/planning/visits" prefetch={false}>{copy.visits}</Link>}
       </div>
       <div className={`wa-planning-methods ${styles.methods}`}>
         {methods.map(method => (

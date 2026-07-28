@@ -27,10 +27,10 @@ export default function CreateVisitSection({ methods, strings, canCreate, childr
   const [open, setOpen] = useState(false);
   return (
     <>
-      <div className="sq-planning-commandbar">
+      <div className="grid-toolbar">
         {children}
         {canCreate && (
-          <button type="button" className="sq-btn" aria-expanded={open} aria-controls="plan-create-methods"
+          <button type="button" className="btn btn-primary" aria-expanded={open} aria-controls="plan-create-methods"
             onClick={() => setOpen(v => !v)}>
             {strings.createLabel}
           </button>
@@ -46,7 +46,7 @@ export default function CreateVisitSection({ methods, strings, canCreate, childr
               </a>
             ))}
           </div>
-          <p className="sq-caption">{strings.oneMethodNote}</p>
+          <div className="alert alert-info">{strings.oneMethodNote}</div>
         </section>
       )}
     </>

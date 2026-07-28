@@ -33,14 +33,16 @@ export default function SavedViewsButton({ label }: { label: string }) {
   };
 
   return (
-    <div className="sq-saved-views">
-      <button className="sq-btn sq-btn--secondary" type="button" aria-expanded={open} onClick={() => setOpen(value => !value)}>{label}</button>
+    <div>
+      <button className="btn btn-secondary" type="button" aria-expanded={open} onClick={() => setOpen(value => !value)}>{label}</button>
       {open ? (
-        <section className="sq-saved-views__menu" aria-label={label}>
-          <header><strong>{label}</strong><button type="button" onClick={save}>Save current view</button></header>
+        <section className="panel" aria-label={label}>
+          <header className="panel-header"><strong className="panel-title">{label}</strong><button className="btn btn-secondary btn-sm" type="button" onClick={save}>Save current view</button></header>
+          <div className="panel-body">
           {views.length ? views.map(view => (
-            <div key={view.id}><a href={view.href}>{view.name}</a><button type="button" aria-label={`Delete ${view.name}`} onClick={() => remove(view.id)}>×</button></div>
+            <div key={view.id}><a className="btn btn-ghost" href={view.href}>{view.name}</a><button className="btn btn-ghost btn-icon btn-sm" type="button" aria-label={`Delete ${view.name}`} onClick={() => remove(view.id)}>×</button></div>
           )) : <p>No saved views on this device.</p>}
+          </div>
         </section>
       ) : null}
     </div>
