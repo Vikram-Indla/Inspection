@@ -52,6 +52,14 @@ Drive sources and the repository product contract.
 
 ## Conversation and visibility
 
+- Start every review with the **four-context desk** available and confirmed:
+  1. the authoritative Google Drive requirements folder/document;
+  2. the running SAQEEL application;
+  3. the Planning Intelligence Tracker; and
+  4. the whiteboard.
+  Do not begin substantive product analysis from memory alone. Use Drive to
+  ground business requirements, the app to observe behaviour, the tracker to
+  preserve decisions and the board to explain the current path.
 - Maintain a **persistent visual review desk** whenever the user is walking a
   journey: the live SAQEEL application and a whiteboard must be visible
   side-by-side. The board is the shared explanation surface, showing the
@@ -66,6 +74,11 @@ Drive sources and the repository product contract.
   pretend that an unverified answer is known.
 - Keep the user informed during work. Do not leave long silent gaps; give brief
   factual updates at each meaningful transition.
+- Drive the review forward. When a natural pause occurs, offer the next
+  concrete screen, decision or evidence check rather than passively waiting.
+  While delegated work runs, keep the user oriented to the active screen and
+  return in under ten seconds with either a result, a factual progress update,
+  or the next meaningful review prompt.
 - Keep Chrome on the active context: the live SAQEEL screen when validating,
   the tracker when planning, the PR when publishing, and the design-review
   workspace when gathering critique. Do not claim a background action is
@@ -113,5 +126,9 @@ Before ending a review day, provide a short replay of:
 3. requirements aligned, partial, mismatched or blocked;
 4. external dependencies and exact next proof;
 5. the next screen/journey to review.
+
+Also replay every contentious decision as: the alternatives considered, the
+business/repository evidence, the decision made, its platform impact and what
+would reopen it.
 
 Update this agreement only when the user explicitly changes the working model.
