@@ -5,6 +5,7 @@ import { publishSingleVisit, saveSingleDraft, type PublishResult } from "./actio
 import IdentityDossier from "./IdentityDossier";
 import type { ResolvedLicence, ResolvedPortfolio } from "@/lib/planning/factory-resolver";
 import type { Locale } from "@/lib/i18n";
+import styles from "./single-planning.module.css";
 
 // CD-022 / PLN-REQ-020..024 — a search result graded by RULE, never scored.
 // EXACT = governed identifier equality only. SIMILAR_NAME = the name matched,
@@ -243,6 +244,8 @@ export default function Wizard({
     licenseNumber === target.factoryLicenseNumber
   );
   const configUnlocked = target != null && licenseOk && locationConfirmed;
+  const scheduleReady = windowStart !== "" && windowEnd !== "" && windowEnd > windowStart;
+  const publishReady = configUnlocked && scheduleReady && inspectorId !== "";
 
   async function onSaveDraft() {
     if (!target || savingDraft) return;
@@ -293,7 +296,7 @@ export default function Wizard({
   const licenceFreshness = (l: ResolvedLicence) => l.sourceSyncedAt ? new Date(l.sourceSyncedAt).toISOString().slice(0, 10) : strings.freshnessNever;
 
   return (
-    <form action={formAction} className="sq-stack">
+    <form action={formAction} className={`sq-stack ${styles.form}`}>
       {/* Targeting fields — built from the resolved target, never from radio DOM state */}
       <input type="hidden" name="target_factory_id" value={target?.factoryId ?? ""} />
       <input type="hidden" name="target_license_number" value={target ? (target.factoryLicenseNumber ?? target.canonicalLicenseNumber ?? "") : ""} />
@@ -315,9 +318,9 @@ export default function Wizard({
         </div>
       )}
 
-      <div className="panel panel-body">
+      <div className={`panel panel-body ${styles.stepPanel}`}>
         <h4 className="panel-title">{strings.findFactory}</h4>
-        <span className="input-affix"><input className="input" placeholder={strings.searchPlaceholder} value={queryInput} onChange={e => setQueryInput(e.target.value)} /></span>
+        <span className={`input-affix ${styles.searchField}`}><input className="input" placeholder={strings.searchPlaceholder} value={queryInput} onChange={e => setQueryInput(e.target.value)} /></span>
         {searching && registryUnavailable && (
           <div className="alert alert-critical" role="alert">
             <div>{strings.registryUnavailable}</div>
@@ -331,12 +334,12 @@ export default function Wizard({
         {/* Legacy fallback comparison rail — graded result cards (source:'legacy'),
             nothing pre-selected; opening a dossier is an explicit click. */}
         {results.length > 0 && (
-          <ul role="listbox" aria-label={strings.findFactory}>
+          <ul className={styles.resultList} role="listbox" aria-label={strings.findFactory}>
             {results.map(f => (
-              <li key={f.id}>
+              <li className={styles.resultItem} key={f.id}>
                 {/* Selecting a candidate IS the explicit act that opens its dossier —
                     a single radio per result, nothing pre-checked by default (M01-035). */}
-                <label className="radio">
+                <label className={`radio ${styles.choiceRow}`}>
                   <input type="radio" name="factory_id" value={f.id} checked={factoryId === f.id}
                     onChange={() => { setFactoryId(f.id); setLicenceId(null); setLicenseNumber(""); setLocationConfirmed(false); setPlannerLat(""); setPlannerLng(""); }} />
                   <span className={`badge ${f.grade === "exact" ? "badge-compliant" : "badge-warning"}`}>
@@ -346,7 +349,7 @@ export default function Wizard({
                   <span><strong>{f.name}</strong> · <bdi>{f.cr_number ?? "—"}</bdi>{f.license_number ? <> · <bdi>{f.license_number}</bdi></> : null}</span>
                 </label>
                 {factoryId === f.id && (
-                  <div className="panel-body">
+                  <div className={styles.dossier}>
                     <IdentityDossier factory={f} plannerLat={plannerLat} plannerLng={plannerLng} strings={strings} locale={locale} />
                   </div>
                 )}
@@ -361,7 +364,7 @@ export default function Wizard({
           licences can never be targeted as a whole (explicit eligibility
           state), and a CR with none is not plannable at all (M01-036). */}
       {portfolios.length > 0 && (
-        <div className="panel panel-body">
+        <div className={`panel panel-body ${styles.stepPanel}`}>
           <h4 className="panel-title">{strings.portfolioStep}</h4>
           {handoff && (
             <div className="alert alert-info" role="status">
@@ -369,7 +372,7 @@ export default function Wizard({
             </div>
           )}
           {portfolios.map(p => (
-            <section key={p.id} className="panel panel-body">
+            <section key={p.id} className={`panel panel-body ${styles.nestedPanel}`}>
               <header className="panel-header">
                 <strong>{strings.crIdentity}</strong>{" "}
                 <bdi className="numeric">{p.crNumber}</bdi>
@@ -384,10 +387,10 @@ export default function Wizard({
               ) : (
                 <>
                   <p className="tl-meta">{strings.selectLicenceHint}</p>
-                  <ul role="listbox" aria-label={strings.portfolioStep}>
+                  <ul className={styles.resultList} role="listbox" aria-label={strings.portfolioStep}>
                     {p.licences.map(l => (
-                      <li key={l.id}>
-                        <label className="radio">
+                      <li className={styles.resultItem} key={l.id}>
+                        <label className={`radio ${styles.choiceRow}`}>
                           <input type="radio" name="licence_id" value={l.id} disabled={!l.factory}
                             checked={licenceId === l.id}
                             onChange={() => { setLicenceId(l.id); setFactoryId(null); setLicenseNumber(""); setLocationConfirmed(false); setPlannerLat(""); setPlannerLng(""); }} />
@@ -416,7 +419,7 @@ export default function Wizard({
       {/* Selected canonical plant profile — registered fields + provenance,
           read-only; nothing here mutates the registry. */}
       {target?.kind === "canonical" && selectedLicenceEntry && (
-        <div className="panel panel-body" role="region" aria-label={strings.selectedProfile}>
+        <div className={`panel panel-body ${styles.stepPanel} ${styles.profilePanel}`} role="region" aria-label={strings.selectedProfile}>
           <h4 className="panel-title">{strings.selectedProfile}</h4>
           <p><strong>{target.name}</strong></p>
           <dl>
@@ -437,12 +440,12 @@ export default function Wizard({
       {/* Legacy license step — unchanged: explicit radio when the legacy
           factory carries a license_number, otherwise the CR-only note. */}
       {target?.kind === "legacy" && legacyFactory && (
-        <div className="panel panel-body">
+        <div className={`panel panel-body ${styles.stepPanel}`}>
           <h4 className="panel-title">{strings.licenseStep}</h4>
           {legacyFactory.license_number ? (
             <>
               <p className="tl-meta">{strings.licenseSelect}</p>
-              <label className="radio">
+              <label className={`radio ${styles.choiceRow}`}>
                 <input key={resetKey} type="radio" name="license_number" value={legacyFactory.license_number} required
                   checked={licenseNumber === legacyFactory.license_number} onChange={() => setLicenseNumber(legacyFactory.license_number as string)} />
                 <span><strong className="numeric">{legacyFactory.license_number}</strong> · {strings.licenseLabel} · {legacyFactory.name}</span>
@@ -454,18 +457,18 @@ export default function Wizard({
         </div>
       )}
       {target && (
-        <div className="panel panel-body">
+        <div className={`panel panel-body ${styles.stepPanel}`}>
           <h4 className="panel-title">{strings.locationStep}</h4>
           {!hasOfficial && (
             <div className="alert alert-warning"><div>{strings.noOfficialPin}</div></div>
           )}
-          <div className="grid-toolbar">
+          <div className={styles.locationGrid}>
             <div className="field"><label htmlFor="wizard-planner-lat">{strings.plannerLat}</label>
               <input key={resetKey} className="input" name="planner_lat" id="wizard-planner-lat" value={plannerLat} onChange={e => setPlannerLat(e.target.value)} /></div>
             <div className="field"><label htmlFor="wizard-planner-lng">{strings.plannerLng}</label>
               <input key={resetKey} className="input" name="planner_lng" id="wizard-planner-lng" value={plannerLng} onChange={e => setPlannerLng(e.target.value)} /></div>
           </div>
-          <label className="check">
+          <label className={`check ${styles.confirmRow}`}>
             <input key={resetKey} type="checkbox" name="location_confirmed" value="1" required
               checked={locationConfirmed} onChange={e => setLocationConfirmed(e.target.checked)} />
             <span>{strings.locationConfirmed}</span>
@@ -473,18 +476,18 @@ export default function Wizard({
         </div>
       )}
       {target && configUnlocked && (
-        <div className="panel panel-body">
+        <div className={`panel panel-body ${styles.stepPanel}`}>
           <h4 className="panel-title">{strings.configStep}</h4>
-          <div className="grid-toolbar">
-            <div className="field"><label htmlFor="wizard-visit-type">{strings.visitType}</label>
+          <div className={styles.configGrid}>
+            <div className={`field ${styles.visitTypeField}`}><label htmlFor="wizard-visit-type">{strings.visitType}</label>
               <select key={resetKey} className="select" name="visit_type" id="wizard-visit-type" value={visitType} onChange={e => setVisitType(e.target.value)}>
                 <option value="periodic">{strings.typePeriodic}</option><option value="follow_up">{strings.typeFollowUp}</option><option value="complaint">{strings.typeComplaint}</option>
               </select></div>
-            <fieldset className="field">
+            <fieldset className={`field ${styles.packageField}`}>
               <legend>{strings.packageLabel}</legend>
-              <div>
+              <div className={styles.packageGrid}>
                 {packages.map(p => (
-                  <label key={`${resetKey}-${p.id}`} className="check">
+                  <label key={`${resetKey}-${p.id}`} className={`check ${styles.packageChoice}`}>
                     <input type="checkbox" name="package_version_id" value={p.id}
                       checked={packageIds.includes(p.id)}
                       onChange={e => setPackageIds(ids => e.target.checked ? [...ids, p.id] : ids.filter(x => x !== p.id))} />
@@ -498,29 +501,29 @@ export default function Wizard({
                 </p>
               )}
             </fieldset>
-            <div className="field"><label htmlFor="wizard-mode">{strings.mode}</label>
+            <div className={`field ${styles.modeField}`}><label htmlFor="wizard-mode">{strings.mode}</label>
               <select key={resetKey} className="select" name="execution_mode" id="wizard-mode" value={executionMode} onChange={e => setExecutionMode(e.target.value as "physical" | "virtual")}>
                 <option value="physical" disabled={!physicalEligible}>{strings.modePhysical}{!physicalEligible ? ` — ${strings.modeIneligible}` : ""}</option>
                 <option value="virtual" disabled={!virtualEligible}>{strings.modeVirtual}{!virtualEligible ? ` — ${strings.modeIneligible}` : ""}</option>
               </select></div>
-            <div className="field"><label htmlFor="wizard-window-start">{strings.windowStart}</label>
+            <div className={`field ${styles.startField}`}><label htmlFor="wizard-window-start">{strings.windowStart}</label>
               <input key={resetKey} className="input" name="window_start" id="wizard-window-start" type="datetime-local" required value={windowStart} onChange={e => setWindowStart(e.target.value)} /></div>
-            <div className="field"><label htmlFor="wizard-window-end">{strings.windowEnd}</label>
+            <div className={`field ${styles.endField}`}><label htmlFor="wizard-window-end">{strings.windowEnd}</label>
               <input key={resetKey} className="input" name="window_end" id="wizard-window-end" type="datetime-local" required value={windowEnd} onChange={e => setWindowEnd(e.target.value)} /></div>
             {/* M01-040 — auto-assign option (availability-checked) beside the manual pick */}
-            <div className="field"><label htmlFor="wizard-inspector">{strings.inspector}</label>
+            <div className={`field ${styles.inspectorField}`}><label htmlFor="wizard-inspector">{strings.inspector}</label>
               <select key={resetKey} className="select" name="inspector_id" id="wizard-inspector" value={inspectorId} onChange={e => setInspectorId(e.target.value)}><option value="">{strings.selectOption}</option><option value="auto">{strings.autoAssign}</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
           </div>
-          <div className="field"><label htmlFor="wizard-notes">{strings.notes}</label>
+          <div className={`field ${styles.notesField}`}><label htmlFor="wizard-notes">{strings.notes}</label>
             <textarea key={resetKey} className="input" name="notes" id="wizard-notes" rows={2} placeholder={strings.notesPlaceholder}
               value={notes} onChange={e => setNotes(e.target.value)} /></div>
         </div>
       )}
 
       {target && (
-        <div className="panel panel-body">
+        <div className={`panel panel-body ${styles.stepPanel}`}>
           <h4 className="panel-title">{strings.readinessTitle}</h4>
-          <div className="grid-toolbar">
+          <div className={styles.readinessGrid}>
             <span className="badge badge-compliant">✓ {strings.readyIdentity}</span>
             <span className={`badge ${licenseOk ? "badge-compliant" : "badge-critical"}`}>{licenseOk ? "✓" : "✕"} {strings.readyLicense}</span>
             <span className={`badge ${locationConfirmed ? "badge-compliant" : "badge-critical"}`}>{locationConfirmed ? "✓" : "✕"} {strings.readyLocation}</span>
@@ -556,13 +559,13 @@ export default function Wizard({
           <div><strong>{strings.blockedTitle}</strong></div>
         </div>
       )}
-      <div className="grid-toolbar">
+      <div className={styles.actionBar}>
         <button type="button" className="btn btn-secondary btn-touch"
           disabled={!transitionsExecutable || savingDraft || !target} onClick={onSaveDraft}>
           {savingDraft ? strings.savingDraft : strings.saveDraft}
         </button>
         <button className="btn btn-primary btn-lg btn-touch"
-          disabled={!transitionsExecutable || pending || !configUnlocked}>
+          disabled={!transitionsExecutable || pending || !publishReady}>
           {pending ? strings.publishing : state.resumeId ? strings.retry : strings.publish}
         </button>
       </div>

@@ -33,7 +33,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     .select(`id, visit_type, execution_mode, planning_status, planning_version, operational_state, window_start, window_end, cancellation_reason, notes,
       immediate_creator_role, source_channel, internal_reference, priority, visit_reference, expired_by_rule_id, package_version_id,
       planner_lat, planner_lng, original_lat, original_lng, visit_location_source, created_at,
-      visit_plans(id, method, status, published_at, created_at, plan_reference, profiles(full_name)),
+      visit_plans(id, method, status, published_at, created_at, plan_reference, profiles!visit_plans_created_by_fkey(full_name)),
       factories(id, factory_code, name, cr_number, official_lat, official_lng, risk_band, is_temporary, source),
       package_versions(version_label, packages(code)),
       assignments(method, status, profiles(full_name)),
