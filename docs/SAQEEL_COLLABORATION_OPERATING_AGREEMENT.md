@@ -26,14 +26,26 @@ Drive sources and the repository product contract.
 3. Record the user observation, repository evidence, data/source ownership,
    affected roles, technical impact, severity, complexity, blocker and owner in
    the Planning Intelligence Tracker.
-4. Use a screenshot-based external design critique for meaningful UI/IA work.
-   Treat its output as advisory; challenge generic suggestions against the
-   business requirements, accessibility, data truth and platform constraints.
-5. Add Sakeel's independent design, architecture and data assessment.
-6. For material changes, state the impact and a definitive recommended fix in
+4. Use the **Claude design-critique protocol** for every reviewed screen and
+   for every meaningful visual, information-architecture or interaction gap:
+   capture a credential-free screenshot first; open a fresh, traceable Claude
+   chat named `Codex — <current SAQEEL review>`; invoke Claude's actual
+   Design Critique skill through its picker; attach the screenshot and demand
+   at least 20 concrete, severity-ranked findings. Record that Claude review
+   as a tracker action, including its link/reference and disposition.
+5. Treat Claude as an advisory reviewer, never the design authority. Sakeel
+   must actively challenge each material suggestion: what user decision does
+   it improve, what business requirement/repository evidence supports it, what
+   accessibility or data-truth risk does it create, and is it better than the
+   current experience for a real inspection-planning user? Reject generic,
+   cosmetic or unsupported recommendations.
+6. Add Sakeel's independent design, architecture and data assessment alongside
+   Claude's findings; the two views must remain distinguishable in the
+   tracker.
+7. For material changes, state the impact and a definitive recommended fix in
    business language before implementation. If a business choice genuinely
    changes the contract, ask one concise clarification rather than guessing.
-7. Implement approved repo-controlled work, run relevant tests and live checks,
+8. Implement approved repo-controlled work, run relevant tests and live checks,
    record the commit/PR/evidence, then mark the tracker Fixed, Decided,
    Deferred, or Blocked. Never call an item closed merely because it was
    discussed.
