@@ -293,7 +293,7 @@ export default function Wizard({
   const licenceFreshness = (l: ResolvedLicence) => l.sourceSyncedAt ? new Date(l.sourceSyncedAt).toISOString().slice(0, 10) : strings.freshnessNever;
 
   return (
-    <form action={formAction}>
+    <form action={formAction} className="sq-stack">
       {/* Targeting fields — built from the resolved target, never from radio DOM state */}
       <input type="hidden" name="target_factory_id" value={target?.factoryId ?? ""} />
       <input type="hidden" name="target_license_number" value={target ? (target.factoryLicenseNumber ?? target.canonicalLicenseNumber ?? "") : ""} />
