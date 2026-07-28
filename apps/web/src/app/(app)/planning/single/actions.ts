@@ -43,8 +43,8 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   // M7 / PLN-CON-003 — Report Package is OPTIONAL during planning, zero-or-more.
   // The Wizard posts one `package_version_id` field per checked package; the
   // first selection remains the primary (visits.package_version_id, backward
-  // compat) and EVERY selection is linked with an immutable snapshot after the
-  // atomic publish. Zero selections is honest: the inspector chooses an
+  // compat) and EVERY selection is linked with an immutable snapshot inside
+  // the atomic publish. Zero selections is honest: the inspector chooses an
   // eligible package during preparation.
   const package_version_ids = [...new Set(formData.getAll("package_version_id").map(String))]
     .filter(id => UUID.test(id)).slice(0, 20);
@@ -186,9 +186,20 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   // mutable guard inside one transaction, derives auto-assignment server-side,
   // executes STM-PLAN-001 then STM-PLAN-002, and rolls back plan, visit,
   // assignment, audit and notification together on any failure.
-  const { data: visitId, error: publishError } = await sb.rpc("publish_single_visit", {
+  // The full target provenance and every selected package version are inputs
+  // to the database transaction. There are deliberately no post-publish
+  // metadata or visit_packages writes in this action.
+  const targetingLicense = canonical_license_number || license_number || null;
+  const canonicalTarget = {
+    factory_id,
+    cr_number: cr_number || null,
+    license_number: targetingLicense,
+    plant_number: plant_number || null,
+    source: target_source,
+  };
+  const { data: visitId, error: publishError } = await sb.rpc("publish_single_visit_atomic", {
     p_factory_id: factory_id,
-    p_package_version_id: package_version_ids[0] ?? null,
+    p_package_version_ids: package_version_ids,
     p_inspector_id: autoAssign ? null : inspector_id,
     p_visit_type: visit_type,
     p_execution_mode: mode,
@@ -199,6 +210,8 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     p_planner_lat: planner_lat != null && Number.isFinite(planner_lat) ? planner_lat : null,
     p_planner_lng: planner_lng != null && Number.isFinite(planner_lng) ? planner_lng : null,
     p_notes: notes,
+    p_target: canonicalTarget,
+    p_source_channel: source_channel,
     p_resume_plan_id: resumeId || null,
   });
   if (publishError || !visitId) {
@@ -232,72 +245,6 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
       };
     }
     return { error: NEUTRAL_WRITE_ERROR, steps };
-  }
-
-  // Canonical targeting metadata (PLN-REQ-023) — publish_single_visit
-  // (migration 20260714091727) has no CR/plant parameter and deliberately
-  // stays unchanged, so the CR/licence/plant targeting is recorded
-  // post-publish: the plan carries the full target in `criteria`, the visit
-  // carries source_channel + a compact internal_reference. A failure here
-  // never blocks the redirect — the visit itself is already atomically
-  // published; the gap is logged server-side.
-  const targetingLicense = canonical_license_number || license_number || null;
-  const internal_reference = [cr_number, targetingLicense, plant_number].filter(Boolean).join("/") || null;
-  const { data: visitRow, error: visitReadError } = await sb.from("visits")
-    .select("visit_plan_id").eq("id", visitId).single();
-  if (visitReadError) {
-    console.error("[ publishSingleVisit] visit plan lookup failed:", visitReadError.message);
-  }
-  const { error: visitMetaError } = await sb.from("visits")
-    .update({ source_channel, internal_reference }).eq("id", visitId);
-  if (visitMetaError) {
-    console.error("[ publishSingleVisit] visit targeting metadata write failed:", visitMetaError.message);
-  }
-  if (visitRow?.visit_plan_id) {
-    const { error: planMetaError } = await sb.from("visit_plans")
-      .update({
-        source_channel,
-        criteria: {
-          target: {
-            factory_id,
-            cr_number: cr_number || null,
-            license_number: targetingLicense,
-            plant_number: plant_number || null,
-            source: target_source,
-          },
-        },
-      })
-      .eq("id", visitRow.visit_plan_id);
-    if (planMetaError) {
-      console.error("[ publishSingleVisit] plan targeting metadata write failed:", planMetaError.message);
-    }
-  }
-
-  // M7 / PLN-CON-003 — link EVERY selected package with an immutable snapshot
-  // (the primary already sits on visits.package_version_id via the RPC). Zero
-  // selections → zero rows; preparation chooses the package later. Best-effort
-  // + logged: the visit is already atomically published, so a snapshot gap
-  // never blocks the redirect.
-  if (packageRows.length) {
-    const capturedAt = new Date().toISOString();
-    const { error: pkgLinkError } = await sb.from("visit_packages").insert(
-      packageRows.map(pv => ({
-        visit_id: visitId,
-        package_version_id: pv.id,
-        added_by: user.id,
-        snapshot: {
-          package_version_id: pv.id,
-          code: pv.packages?.code ?? null,
-          title: pv.packages?.title ?? null,
-          version_label: pv.version_label,
-          status: pv.status,
-          captured_at: capturedAt,
-        },
-      })),
-    );
-    if (pkgLinkError) {
-      console.error("[ publishSingleVisit] visit_packages snapshot write failed:", pkgLinkError.message);
-    }
   }
 
   redirect(`/visits/${visitId}`);

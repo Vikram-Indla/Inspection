@@ -419,18 +419,24 @@ test("CD-022 publish and duplicate reads fail closed behind the shared atomic bo
   const action = readFileSync(join(process.cwd(), "src/app/(app)/planning/single/actions.ts"), "utf8");
   const duplicate = readFileSync(join(process.cwd(), "src/app/(app)/planning/single/duplicate.ts"), "utf8");
   const resolver = readFileSync(join(process.cwd(), "src/lib/planning/factory-resolver.ts"), "utf8");
-  const migration = readFileSync(join(process.cwd(), "../..", "supabase/migrations/20260714091727_planning_publish_guards.sql"), "utf8");
-  expect(action).toContain('sb.rpc("publish_single_visit"');
+  const legacyMigration = readFileSync(join(process.cwd(), "../..", "supabase/migrations/20260714091727_planning_publish_guards.sql"), "utf8");
+  const atomicMigration = readFileSync(join(process.cwd(), "../..", "supabase/migrations/20260728013000_planning_single_publish_atomic_contract.sql"), "utf8");
+  expect(action).toContain('sb.rpc("publish_single_visit_atomic"');
   // saveSingleDraft deliberately inserts/updates a draft visit_plan
-  // (status 'draft'); the PUBLISH path itself still never writes visit rows
-  // outside the atomic RPC, and the RPC signature keeps no plant parameter
-  // (targeting metadata is recorded post-publish instead).
+  // (status 'draft'); the PUBLISH path itself never writes visit rows, target
+  // provenance or package snapshots outside the atomic RPC.
   expect(action).not.toContain('.from("visits").insert');
+  expect(action).not.toContain('.from("visits")\n    .update');
+  expect(action).not.toContain('.from("visit_packages").insert');
+  expect(action).toContain("p_target: canonicalTarget");
+  expect(action).toContain("p_package_version_ids: package_version_ids");
   expect(action).toContain('status: "draft"');
   expect(action).toContain("saveSingleDraft");
   expect(resolver).toContain("resolveHandoffTarget");
   expect(duplicate).toContain("unavailable: true");
-  expect(migration).toContain("single publish duplicate active visit");
-  expect(migration).toContain("set status = 'validated'");
-  expect(migration).toContain("insert into notifications");
+  expect(legacyMigration).toContain("single publish duplicate active visit");
+  expect(legacyMigration).toContain("set status = 'validated'");
+  expect(legacyMigration).toContain("insert into notifications");
+  expect(atomicMigration).toContain("PLANNING-SINGLE-PUBLISH-CANONICAL-TARGET");
+  expect(atomicMigration).toContain("insert into public.visit_packages");
 });
