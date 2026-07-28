@@ -1484,7 +1484,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
         return (
         <div key={s.key} id={`sq-section-${s.key}`} className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)", scrollMarginBlockStart: "var(--space-8)" }}>
           <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
-            <h4>{s.title}</h4>
+            <h4 data-screen-id="EXE-S11">{s.title}</h4>
             <span className="t-caption id-code">{sp.answered}/{sp.total} · {fmt(strings.progress, { pct: sp.pct })}</span>
           </div>
           {/* Per-section progress (M04-081) */}
