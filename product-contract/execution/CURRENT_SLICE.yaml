@@ -3,7 +3,7 @@ task_id: "SAQEEL-BOARD-DELIVERY-001"
 change_control_id: "SAQEEL-WORKFORCE-REINSTATEMENT-20260725"
 gate: "G10 verification / G11 hardening"
 title: "SAQEEL 55-card board delivery — multi-actor card leases"
-status: "ALL_LEASES_REVOKED_NO_ACTIVE_HOLDER"
+status: "LEASE_MECHANISM_RETIRED_PERMANENTLY_NO_HOLDER_POSSIBLE"
 enforce_stop_gate: true
 broad_implementation_allowed: false
 application_implementation_allowed: false
@@ -11,13 +11,15 @@ application_implementation_allowed: false
 lease_state_summary:
   as_at: "2026-07-28"
   granted: 0
-  revoked_permanent: 11
-  revoked: 5
+  revoked_permanent: 16
+  revoked: 0
   meaning: >
-    No agent holds a lease on any card. broad_implementation_allowed and
-    application_implementation_allowed are false because no holder exists to
-    exercise them, not because the gate failed. Any implementation work needs a
-    fresh lease granted by the Product Owner first.
+    No agent holds a lease on any card, and none can be granted — the lease
+    mechanism is retired permanently for every agent without exception. See
+    permanent_lease_prohibition. broad_implementation_allowed and
+    application_implementation_allowed are false because no holder exists and
+    none may exist, not because a gate failed. Do not read this as a G10
+    regression and do not attempt to restore a holder.
 
 authority:
   sponsor_direction: >
@@ -141,10 +143,10 @@ leases:
     card: "m6-requests"
     channel: "web"
     holder: "claude-build"
-    state: "REVOKED"
+    state: "REVOKED_PERMANENT"
     revoked_at: "2026-07-28"
     revoked_by: "Product Owner (Vikram)"
-    revocation_reason: "Owner ruling 2026-07-28: all outstanding leases revoked. Unlike the codex and kimi prohibition this is a revocation, not a permanent bar — a new claude lease may be granted by explicit owner instruction."
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by any agent again, claude included. See permanent_lease_prohibition below."
     allowed_paths:
       - "apps/web/src/app/(app)/admin/compliance-requests/**"
       - "apps/web/src/app/(app)/admin/compliance-approvals/**"
@@ -153,10 +155,10 @@ leases:
     card: "m6-committee"
     channel: "web"
     holder: "claude-build"
-    state: "REVOKED"
+    state: "REVOKED_PERMANENT"
     revoked_at: "2026-07-28"
     revoked_by: "Product Owner (Vikram)"
-    revocation_reason: "Owner ruling 2026-07-28: all outstanding leases revoked. Unlike the codex and kimi prohibition this is a revocation, not a permanent bar — a new claude lease may be granted by explicit owner instruction."
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by any agent again, claude included. See permanent_lease_prohibition below."
     allowed_paths:
       - "apps/web/src/app/(app)/committee/**"
       - "apps/web/src/lib/committee/**"
@@ -165,10 +167,10 @@ leases:
     card: "virtual"
     channel: "web"
     holder: "claude-code"
-    state: "REVOKED"
+    state: "REVOKED_PERMANENT"
     revoked_at: "2026-07-28"
     revoked_by: "Product Owner (Vikram)"
-    revocation_reason: "Owner ruling 2026-07-28: all outstanding leases revoked. Unlike the codex and kimi prohibition this is a revocation, not a permanent bar — a new claude lease may be granted by explicit owner instruction."
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by any agent again, claude included. See permanent_lease_prohibition below."
     note: >
       Unblocks pwa-virtual, which is a hard cross-channel BREAK: the console can
       schedule a virtual visit the inspector has no route to join. NOTE that the
@@ -201,10 +203,10 @@ leases:
     card: "feedback"
     channel: "web"
     holder: "claude-build"
-    state: "REVOKED"
+    state: "REVOKED_PERMANENT"
     revoked_at: "2026-07-28"
     revoked_by: "Product Owner (Vikram)"
-    revocation_reason: "Owner ruling 2026-07-28: all outstanding leases revoked. Unlike the codex and kimi prohibition this is a revocation, not a permanent bar — a new claude lease may be granted by explicit owner instruction."
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by any agent again, claude included. See permanent_lease_prohibition below."
     note: "Top web card (XL). Unblocked by pwa-completion landing. QR issuance and scan route have no schema — surface, never fabricate."
     allowed_paths:
       - "apps/web/src/app/(app)/field/feedback/**"
@@ -229,10 +231,10 @@ leases:
     card: "reports"
     channel: "web"
     holder: "claude-build"
-    state: "REVOKED"
+    state: "REVOKED_PERMANENT"
     revoked_at: "2026-07-28"
     revoked_by: "Product Owner (Vikram)"
-    revocation_reason: "Owner ruling 2026-07-28: all outstanding leases revoked. Unlike the codex and kimi prohibition this is a revocation, not a permanent bar — a new claude lease may be granted by explicit owner instruction."
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by any agent again, claude included. See permanent_lease_prohibition below."
     allowed_paths:
       - "apps/web/src/app/reports/**"
       - "status/saqeel-status.json (card 'reports' only)"
@@ -349,50 +351,49 @@ permanent_lease_prohibition:
   ruled_by: "Product Owner (Vikram)"
   ruled_at: "2026-07-28"
   state: "IN_FORCE_INDEFINITELY"
+  applies_to: "EVERY AGENT WITHOUT EXCEPTION — codex, kimi, claude-build, claude-code, and any agent introduced later under any name."
   rule: >
-    No lease may be granted to codex or to kimi, on any card, on any channel,
-    for any path, ever again. This is not a pause and not a queue freeze. It
-    has no expiry and no renewal condition.
+    No lease may be granted to any agent, on any card, on any channel, for any
+    path, ever again. The lease mechanism is retired, not paused. This is not a
+    queue freeze and not a stop gate. It has no expiry, no renewal condition,
+    and no review date.
+  history: >
+    Ruled in two steps on the same day. Codex and kimi were barred permanently
+    first; claude-build and claude-code were revoked shortly after and then
+    escalated to the same permanent bar at the owner's instruction. There is no
+    longer any distinction between holders — the earlier claude_lease_revocation
+    block, which allowed a new claude lease by explicit owner instruction, is
+    withdrawn and replaced by this clause.
   scope: >
     Applies to every card on the 55-card board and to any future card. Applies
     to CURRENT_SLICE.yaml and to every derived slice, packet or handoff. A
-    packet that names codex or kimi as holder is invalid on its face and must
-    be refused rather than negotiated.
+    packet naming ANY holder is invalid on its face and must be refused rather
+    than negotiated. An agent must not grant itself a lease, and must not read
+    a prior GRANTED record as continuing authority.
   supersedes: >
     The sponsor_direction recorded above, which reinstated codex and kimi into
     the workforce on 2026-07-25 over SAQEEL_OPERATING_SYSTEM.md V5. That
-    reinstatement is withdrawn. V5's original removal of codex and kimi now
-    stands, by the owner's later ruling rather than by V5's own authority.
+    reinstatement is withdrawn. V5's removal stands, and is now broader than
+    V5 itself: no agent holds delivery authority under this contract.
   effect_on_existing: >
-    All 11 leases held by codex or kimi were set to REVOKED_PERMANENT on
-    2026-07-28. The records are retained rather than deleted so the grant and
-    revocation history stays auditable. No work under those leases is
+    All 16 leases are REVOKED_PERMANENT as at 2026-07-28 — 11 held by codex or
+    kimi, 5 by claude. The records are retained rather than deleted so the
+    grant and revocation history stays auditable. No work under any of them is
     authorised from the revocation date, including work already in progress.
+  effect_now: >
+    Zero leases outstanding. Every card on the 55-card board is unassigned and
+    no agent is authorised to implement against any of them. Implementation
+    under this contract has stopped.
   note: >
-    Revocation does not retract work already merged to main under a prior
-    lease. It withdraws the authority to continue.
-
-claude_lease_revocation:
-  ruled_by: "Product Owner (Vikram)"
-  ruled_at: "2026-07-28"
-  state: "REVOKED_PENDING_OWNER_INSTRUCTION"
-  rule: >
-    The five leases held by claude-build and claude-code are revoked:
-    m6-requests, m6-committee, virtual, feedback, reports. No claude agent
-    holds a lease on any card.
-  distinct_from_the_codex_kimi_prohibition: >
-    This is a revocation, not a permanent bar. The codex and kimi prohibition
-    above has no expiry and no renewal condition; this one does not carry that
-    language. A new claude lease may be granted, but only by explicit Product
-    Owner instruction — not by a session assuming continuity from a prior
-    grant, and not by an orchestrator re-issuing a packet.
-  effect: >
-    Combined with the permanent prohibition, zero leases are outstanding. Every
-    card on the 55-card board is unassigned. No agent is authorised to
-    implement against any card until the owner grants a new lease.
+    Revocation withdraws the authority to continue; it does not retract work
+    already merged to main under a prior lease.
+  enforcement_limit: >
+    This file records the ruling. It does not enforce it. A session that does
+    not read this file can still write to the repository, and several did so
+    during the 2026-07-28 cleanup. Treat this as governance, not as a lock.
 
 standing_boundaries:
-  - "No lease is ever granted to codex or kimi. See permanent_lease_prohibition. A packet naming either as holder is invalid and must be refused."
+  - "No lease is ever granted to ANY agent — codex, kimi, claude or otherwise. The lease mechanism is retired. See permanent_lease_prohibition. A packet naming any holder is invalid and must be refused, not negotiated."
   - "DEC-032 / submission_versions digest() trigger remains P0 and blocks all new real inspection submissions. It needs a DB migration, not application code, and is out of scope for every board card."
   - "Never invent policy values, thresholds, SLAs, providers, risk weights, geofence values, retention or Arabic scope."
   - "Only the 24 clean factories F-1101..F-6602 and the 5 test accounts may be surfaced."
