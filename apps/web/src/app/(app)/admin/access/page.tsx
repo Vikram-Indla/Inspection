@@ -50,13 +50,14 @@ export default async function Access({
   if (profilesError) logProviderError("admin access profiles read", profilesError);
   if (rolesError) logProviderError("admin access roles read", rolesError);
 
-  // The management panel is security_admin-only. The has_role RPC is the same
-  // definer helper RLS policies use; the guarded RPCs re-check on every write.
-  const { data: isSecurityAdmin, error: gateError } = user
-    ? await sb.rpc("has_role", { r: "security_admin" })
+  // Canonical Admin manages access. security_admin remains a compatibility
+  // authority until legacy RLS/access-grant migration is complete; guarded
+  // RPCs independently re-check every write.
+  const { data: isCanonicalAdmin, error: gateError } = user
+    ? await sb.rpc("has_internal_role", { p_role: "admin" })
     : { data: false, error: null };
-  if (gateError) logProviderError("admin access security_admin gate", gateError);
-  const canManage = isSecurityAdmin === true;
+  if (gateError) logProviderError("admin access canonical-admin gate", gateError);
+  const canManage = isCanonicalAdmin === true;
 
   // M9 / PLN-REQ-004 — the role-capability editor gates on the PLANNING
   // capability admin.access.manage (explicit-grant-only, seeded to
