@@ -116,9 +116,89 @@ anything that lands.** Move them to the docs root if they still have value.
 
 ---
 
-`stash@{0}`, `{1}` and `{4}` remain untriaged. `{0}` is this session's own
-work and is reproducible from the planning packet; `{1}` is a single file;
-`{4}` is 7 files on a base that is not an ancestor of main.
+## TRIAGED — stash@{0}, stash@{1}, stash@{4}
+
+| Stash | Branch | Commit | Payload |
+|---|---|---|---|
+| `stash@{0}` | `triage/stash-0-planning-f9-f10` | `a1bc9128` | 13 tracked files (untracked payload deliberately excluded) |
+| `stash@{1}` | **none — no value** | — | 1 file, audit log only |
+| `stash@{4}` | `triage/stash-4-session-audit-offmain` | `bc99f453` | 7 files |
+
+### stash@{0} — branched with tracked files only
+
+The 13 tracked files are the planning defect-packet work in progress
+(`PlanningPreview.tsx` with the `style` prop removed and `draft.status`
+replaced by a governed "Not configured" label, `PlanningPreview.module.css`,
+`planning/page.tsx`, `saqeel-components.css`), five dashboard revamp files,
+and audit jsonl noise.
+
+This is the one stash where the untracked payload was **excluded on purpose**.
+It carried 190 untracked entries totalling **12.3 MB** — 187 of them the
+`outputs/019fa2c6-*` audit pack, which still sits untracked in the working
+tree, plus a `node_modules` entry and two scratch files. None of that belongs
+in Git, so unlike stashes 2, 3 and 5 this branch is tracked-only.
+
+Note this branch is largely redundant: main has moved past it, and the work is
+reproducible from `TASK-PLANNING-FILTERBAR-20260728-001.md`. It exists as a
+safety net, not as a source of truth.
+
+### stash@{1} — no branch, recommend dropping
+
+One file: `.project-memory/audit/tool_events.jsonl`. It differs from main only
+by appended log lines. Despite the stash message ("orchestrator preserve
+revamp audit before shared recovery") there is no audit document here — just
+the append-only jsonl. A branch would carry nothing reviewable.
+
+Disposition: **drop it.** Not dropped yet, because dropping is irreversible
+and that is the owner's call.
+
+```bash
+git stash drop "stash@{1}"
+```
+
+### stash@{4} — branched for two session records only
+
+Its own message is "session-audit-noise" and five of its seven files are
+exactly that: append-only audit jsonl under `.project-memory/audit/`.
+
+The two that justified a branch are session records that differ from main's
+versions — `product-contract/sessions/COMPACTION_CHECKPOINT.md` and
+`LAST_SESSION.md`. This is also the **only** stash whose base (`5ed41408`) is
+not an ancestor of `origin/main`, so it descends from a lineage main never
+took. Those two records may therefore describe work documented nowhere else.
+
+---
+
+## Summary
+
+Five triage branches now exist on origin. **All six stashes remain intact** —
+every branch is additive, so nothing has been destroyed.
+
+| Branch | Commit | Files | Behind main |
+|---|---|---|---|
+| `triage/stash-2-menu-e2e-completion` | `ad2696c6` | 81 | 187 |
+| `triage/stash-3-shell-f0-typography` | `7a83683c` | 77 | 307 |
+| `triage/stash-5-shell-rail-profile-switch` | `586a1fdd` | 45 | 503 |
+| `triage/stash-0-planning-f9-f10` | `a1bc9128` | 13 | — |
+| `triage/stash-4-session-audit-offmain` | `bc99f453` | 7 | off-main lineage |
+
+None of these is rebased onto current main and none is verified — no
+typecheck, no build was run on any of them. **Do not merge any of them as-is.**
+Diff individual files against main, cherry-pick what survives onto a fresh
+branch off current main, then delete the triage branch.
+
+Ranked by likely value:
+
+1. **`triage/stash-2`** — 12 of its 22 new source files differ from main's
+   version, including the whole `lib/analytics` module.
+2. **`triage/stash-3`** — `saqeel-runtime.css` differs from main.
+3. **`triage/stash-5`** — an archive to mine, not a change to land; watch for
+   the four files main deleted, and do not resurrect `astryx.css`.
+4. **`triage/stash-4`** — two session records from an off-main lineage.
+5. **`triage/stash-0`** — safety net only, reproducible from the packet.
+
+Once a triage branch has been mined or dismissed, delete both it and its
+stash. Until then, leave both in place.
 
 ## Recovering one
 
