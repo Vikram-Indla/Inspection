@@ -4,6 +4,7 @@
 // route guards, service authorization, RLS and audit remain authoritative.
 
 export const ADMIN_ROLE_KEYS = [
+  "admin",
   "compliance_admin",
   "form_admin",
   "workflow_admin",
@@ -13,6 +14,7 @@ export const ADMIN_ROLE_KEYS = [
 ] as const;
 
 export const BUSINESS_ROLE_KEYS = [
+  "supervisor",
   "planner",
   "inspector",
   "reviewer",
@@ -129,7 +131,6 @@ export type BuiltShellNavGroup = Omit<ShellNavGroupDefinition, "items"> & {
 const allPresentationRoles = [
   ...BUSINESS_ROLE_KEYS,
   ...ADMIN_ROLE_KEYS,
-  "admin",
   "auditor",
 ] as readonly string[];
 
@@ -156,7 +157,7 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     items: [
       { id: "planning", labelKey: "nav.planning", labelEn: "Planning", labelAr: "التخطيط", href: "/planning", icon: "calendar", roles: allPresentationRoles, businessTab: "Planning", visibility: "business" },
       { id: "inspection-execution", labelKey: "shell.nav.execution", labelEn: "Execution", labelAr: "التنفيذ", href: "/execution", icon: "inspect", roles: allPresentationRoles, businessTab: "Inspection / Execution", visibility: "business", parentId: "inspection", parentLabelKey: "shell.nav.inspection", parentLabelEn: "Inspection", parentLabelAr: "التفتيش" },
-      { id: "inspection-review", labelKey: "nav.reviews", labelEn: "Review & Approval", labelAr: "المراجعة والاعتماد", href: "/reviews", icon: "review", roles: allPresentationRoles, businessTab: "Inspection / Review & Approval", visibility: "business", badge: 9, parentId: "inspection", parentLabelKey: "shell.nav.inspection", parentLabelEn: "Inspection", parentLabelAr: "التفتيش" },
+      { id: "inspection-review", labelKey: "nav.reviews", labelEn: "Review & Approval", labelAr: "المراجعة والاعتماد", href: "/reviews", icon: "review", roles: allPresentationRoles, businessTab: "Inspection / Review & Approval", visibility: "business", parentId: "inspection", parentLabelKey: "shell.nav.inspection", parentLabelEn: "Inspection", parentLabelAr: "التفتيش" },
     ],
   },
   {
@@ -166,7 +167,7 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     labelAr: "الامتثال",
     items: [
       { id: "compliance-library", labelKey: "shell.nav.complianceLibrary", labelEn: "Compliance Library", labelAr: "مكتبة الامتثال", href: "/admin/regulations", icon: "library", roles: allPresentationRoles, businessTab: "Compliance Library", visibility: "business" },
-      { id: "approval-queue", labelKey: "shell.nav.approvalQueue", labelEn: "Approval Queue", labelAr: "قائمة الاعتماد", href: "/admin/compliance-approvals", icon: "review", roles: allPresentationRoles, businessTab: "Approval Queue", visibility: "business", badge: 3 },
+      { id: "approval-queue", labelKey: "shell.nav.approvalQueue", labelEn: "Approval Queue", labelAr: "قائمة الاعتماد", href: "/admin/compliance-approvals", icon: "review", roles: allPresentationRoles, businessTab: "Approval Queue", visibility: "business" },
       { id: "enforcement-library", labelKey: "shell.nav.enforcementLibrary", labelEn: "Enforcement Library", labelAr: "مكتبة الإنفاذ", href: "/admin/violations", icon: "enforcement", roles: allPresentationRoles, businessTab: "Enforcement Library", visibility: "business" },
     ],
   },

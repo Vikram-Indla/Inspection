@@ -38,8 +38,10 @@ export const EXECUTION_CAPABILITIES = [
 
 export type ExecutionCapability = (typeof EXECUTION_CAPABILITIES)[number];
 
-/** Role keys seeded in 0001_foundation.sql. */
+/** Canonical roles plus transitional legacy aliases. */
 export type RoleKey =
+  | "admin"
+  | "supervisor"
   | "compliance_admin"
   | "form_admin"
   | "workflow_admin"
@@ -100,6 +102,11 @@ const ADMIN_ROLE_KEYS: readonly RoleKey[] = [
 
 /** Mirrors the `role_capabilities` seed in the Phase 1 migration exactly. */
 const DEFAULT_ROLE_CAPABILITIES: Readonly<Record<RoleKey, readonly ExecutionCapability[]>> = {
+  // Admin and supervisor intentionally receive the union of their deprecated
+  // predecessors during Phase 1. Further separation can later be restored
+  // with capability grants without adding another top-level role.
+  admin: ADMIN_CAPS,
+  supervisor: [...REVIEWER_CAPS, ...OPS_CAPS],
   inspector: INSPECTOR_CAPS,
   reviewer: REVIEWER_CAPS,
   ops: OPS_CAPS,

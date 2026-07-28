@@ -126,6 +126,9 @@ hand those steps back; do not skip the gate they serve.
 - Obsidian is a human interface over the same repository, not a separate copy.
 - Codex auto memory is advisory only and may never override the product contract.
 - `Codex.local.md` is personal and must not contain shared scope decisions.
+- Read `docs/SAQEEL_COLLABORATION_OPERATING_AGREEMENT.md` before a user-led
+  product review. It records the agreed working cadence and communication
+  protocol; it never overrides the product contract or governed decisions.
 
 ## Documentation storage
 - Human-readable master documents and binary evidence are stored under `INSPECTION_DOCS_ROOT`; Vikram's approved local root is `/Users/vikramindla/Desktop/Inspection Documentation`.

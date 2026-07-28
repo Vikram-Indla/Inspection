@@ -342,33 +342,51 @@ export default async function Factory360ByCr({ params, searchParams }: {
             <p><strong>{t("f360.id.license", "License")}</strong><br /><bdi className="sq-numeric">{text(selected?.license_number)}</bdi></p>
             <p><strong>{t("f360.plant", "Plant")}</strong><br /><bdi className="sq-numeric">{text(selected?.plant_number)}</bdi></p>
           </section>
-          <section className={`sq-surface ${styles.panel}`}>
+          <section className={`sq-surface ${styles.panel} ${styles.sourcePanel}`}>
             <h2>{t("f360.source.heading", "Source status & freshness")}</h2>
             <p>{sourceBadge(licenseError, selected, !!selected)}</p>
-            <p className="sq-caption">{t("f360.source.system", "Source system")} <strong>{text(selected?.source_system ?? cr.source_system)}</strong></p>
-            <p className="sq-caption">{t("f360.source.timestamp", "Recorded sync timestamp")} <bdi>{dt(selected?.source_synced_at ?? cr.source_synced_at)}</bdi></p>
-            <p className="sq-caption">{t("f360.source.noSla", "Freshness is shown as a source fact; no unapproved staleness threshold is inferred.")}</p>
+            <dl className={styles.compactFacts}>
+              <div><dt>{t("f360.source.record", "Record used here")}</dt><dd>{t("f360.source.localCopy", "SAQEEL canonical copy")}</dd></div>
+              <div><dt>{t("f360.source.system", "Source system")}</dt><dd><bdi>{text(selected?.source_system ?? cr.source_system)}</bdi></dd></div>
+              <div><dt>{t("f360.source.timestamp", "Recorded sync timestamp")}</dt><dd className="sq-numeric">{dt(selected?.source_synced_at ?? cr.source_synced_at)}</dd></div>
+            </dl>
+            <p className="sq-caption">{t("f360.source.noSla", "Freshness is shown as a recorded source fact; no unapproved staleness threshold is inferred.")}</p>
           </section>
-          <section className={`sq-surface ${styles.panel}`}>
-            <h2>{t("f360.risk.heading", "Saved risk")}</h2>
+          <section className={`sq-surface ${styles.panel} ${styles.riskPanel}`}>
+            <div className={styles.riskHeading}>
+              <h2>{t("f360.risk.heading", "Saved risk")}</h2>
+              <span className={styles.riskScope}>{t("f360.risk.advisory", "Advisory")}</span>
+            </div>
             {!permissions["view_risk_details"] ? <p className="sq-caption">{t("f360.risk.restricted", "Risk detail requires Factory Risk permission.")}</p> : <>
-              <p><strong className="sq-numeric" style={{ fontSize: "2rem" }}>{text(factory?.risk_score)}</strong> · {label(factory?.risk_band)}</p>
-              <p className="sq-caption">{t("f360.risk.version", "Model")} {text(factory?.risk_version)} · {dt(factory?.risk_calculated_at)}</p>
+              <div className={styles.riskOverview}>
+                <div className={styles.riskSummary}>
+                  <strong className="sq-numeric">{text(factory?.risk_score)}</strong>
+                  <span>{label(factory?.risk_band)}</span>
+                </div>
+                <p className={`sq-caption ${styles.riskProvenance}`}>{t("f360.risk.source", "SAQEEL-calculated advisory. It does not change the master record.")}</p>
+              </div>
+              <dl className={styles.compactFacts}>
+                <div><dt>{t("f360.risk.version", "Model")}</dt><dd><bdi>{text(factory?.risk_version)}</bdi></dd></div>
+                <div><dt>{t("f360.risk.calculated", "Calculated")}</dt><dd className="sq-numeric">{dt(factory?.risk_calculated_at)}</dd></div>
+              </dl>
               {riskResult.error ? <p className="sq-caption">{t("f360.section.degraded", "This source section is degraded; other sections remain available.")}</p> : <p className="sq-caption">{riskHistory.length} {t("f360.risk.snapshots", "saved snapshots")}</p>}
-              {factoryId ? <ContextualAiPanel
-                surface="factory_risk_explanation"
-                title={t("f360.risk.ai.title", "Explain saved risk")}
-                description={t("f360.risk.ai.description", "Advisory only. The explanation is restricted to saved Risk Engine facts and cannot recalculate or change risk.")}
-                context={JSON.stringify({ factory_id: factoryId })}
-                evidenceRefs={["MVP1-M07-014", "MVP1-M07-015", "F360-AC-004", factory?.risk_version ?? "risk_version_unavailable"]}
-                targetRef={factoryId}
-                locale={locale === "ar" ? "ar" : "en"}
-                generateLabel={t("f360.risk.ai.generate", "Explain recorded factors")}
-                unavailableLabel={t("f360.risk.ai.unavailable", "AI explanation unavailable")}
-                evidenceLabel={t("f360.risk.ai.evidence", "Source references")}
-                advisoryLabel={t("f360.risk.ai.advisory", "Human decision required")}
-                providerState={aiProviderState}
-              /> : null}
+              {factoryId ? <details className={styles.riskAdvisory}>
+                <summary>{t("f360.risk.ai.disclosure", "Explain this saved risk (advisory)")}</summary>
+                <ContextualAiPanel
+                  surface="factory_risk_explanation"
+                  title={t("f360.risk.ai.title", "Explain saved risk")}
+                  description={t("f360.risk.ai.description", "Advisory only. The explanation is restricted to saved Risk Engine facts and cannot recalculate or change risk.")}
+                  context={JSON.stringify({ factory_id: factoryId })}
+                  evidenceRefs={["MVP1-M07-014", "MVP1-M07-015", "F360-AC-004", factory?.risk_version ?? "risk_version_unavailable"]}
+                  targetRef={factoryId}
+                  locale={locale === "ar" ? "ar" : "en"}
+                  generateLabel={t("f360.risk.ai.generate", "Explain recorded factors")}
+                  unavailableLabel={t("f360.risk.ai.unavailable", "AI explanation unavailable")}
+                  evidenceLabel={t("f360.risk.ai.evidence", "Source references")}
+                  advisoryLabel={t("f360.risk.ai.advisory", "Human decision required")}
+                  providerState={aiProviderState}
+                />
+              </details> : null}
             </>}
           </section>
           <section className={`sq-surface ${styles.panel}`}>
@@ -379,11 +397,9 @@ export default async function Factory360ByCr({ params, searchParams }: {
             <h2>{t("common.actions", "Actions")}</h2>
             <div className={styles.actions}>
               {factoryId && <a className="sq-btn sq-btn--secondary" href={`/factories/${factoryId}?compat=legacy#location`}>{t("f360.actions.openMap", "Open map")}</a>}
-              {permissions["create_inspection"] && factoryId && <a className="sq-btn sq-btn--primary" href={`/planning/immediate?factory=${factoryId}&cr=${cr.id}&license=${selected?.id ?? ""}&returnTo=${encodeURIComponent(`/factories/cr/${cr.id}?license=${selected?.id ?? ""}`)}`}>{t("f360.actions.createInspection", "Create inspection")}</a>}
               {permissions["create_inspection"] && factoryId && <a className="sq-btn sq-btn--secondary" href={`/planning/single?cr=${encodeURIComponent(cr.cr_number)}&license=${encodeURIComponent(selected?.license_number ?? "")}&plant=${encodeURIComponent(selected?.plant_number ?? "")}&factory=${factoryId}&source=factory360`}>{t("f360.actions.planSingle", "Plan single visit")}</a>}
               {permissions["export_factory"] && <Factory360ExportButton label={t("f360.actions.exportPdf", "Print / Save permitted PDF")} />}
               {!permissions["create_inspection"] && !permissions["export_factory"] && <p className="sq-caption">{t("f360.actions.restricted", "No create-inspection or export action is permitted for your role.")}</p>}
-              {permissions["create_inspection"] && <p className="sq-caption" role="status">{t("f360.actions.submissionBlocked", "Inspection submission remains unavailable while is unresolved.")}</p>}
             </div>
           </section>
         </aside>

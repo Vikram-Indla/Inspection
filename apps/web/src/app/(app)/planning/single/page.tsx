@@ -196,7 +196,12 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
         // need no separate confirmation — the licence IS the selection).
         licenseNumber: target?.license_number ?? undefined,
       };
-      if (target?.factory_id && UUID.test(target.factory_id)) {
+      // A saved draft carries the immutable legacy publish identity alongside
+      // its canonical CR/licence/plant context. Canonical registry reads are
+      // useful enrichment, but must not strand a draft when that read is
+      // temporarily unavailable: recover through the saved factory_id before
+      // asking the planner to search again.
+      if (target) {
         let resolved = false;
         if (target.source === "canonical" && (target.canonical_license_number || target.license_number || target.plant_number)) {
           const hit = await resolveHandoffTarget(sb, {
@@ -206,19 +211,23 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
           });
           if (!hit.ok) {
             console.error("[ single-planning draft target resolve failed]");
-            prefillMiss = true;
+            registryUnavailable = true;
           } else if (hit.portfolio) {
             portfolios = [hit.portfolio];
             if (hit.licence) initialSelection.licenceId = hit.licence.id;
             resolved = true;
           }
         }
-        if (!resolved && !prefillMiss) {
+        if (!resolved && target.factory_id && UUID.test(target.factory_id)) {
           const legacy = await readLegacyFactory(sb, target.factory_id);
           if (legacy.unavailable) registryUnavailable = true;
           else if (legacy.row) { graded = [legacy.row]; initialSelection.factoryId = legacy.row.id; }
           else prefillMiss = true;
         }
+        // Older drafts may have canonical identifiers but no persisted legacy
+        // factory id. They remain recoverable through the canonical resolver;
+        // only show a miss once neither authoritative identity can resolve.
+        if (!resolved && !initialSelection.factoryId && !registryUnavailable) prefillMiss = true;
       }
     }
   }
