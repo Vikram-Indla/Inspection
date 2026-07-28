@@ -1,17 +1,18 @@
-// Role-based home routing — each persona lands on their own channel,
-// not on a screen scoped to someone else's job (RBAC-001..014). The admin
-// family has no single "admin" role_key — RBAC-001..006 each grant one of
-// six granular role_keys, all landing on the same /admin console. Matched
-// first: an operational role always wins over a concurrent admin grant.
+// Role-based home routing for the four canonical roles. Legacy entries remain
+// only while historical sessions finish their compatibility transition.
+// Matched first: an operational role always wins over a concurrent admin grant.
 // Shared by /launch (server fallback) and the login client (K-005: the
 // post-submit navigation resolves the home directly and skips the /launch
 // server round trip).
 export const ROLE_HOME: [string, string][] = [
+  ["supervisor", "/dashboard"],
+  ["inspector", "/field"],
+  ["planner", "/planning"],
+  ["admin", "/admin"],
+  // Legacy compatibility aliases (non-assignable after migration).
   ["ops", "/dashboard"],
   ["leadership", "/dashboard"],
-  ["inspector", "/field"],
   ["reviewer", "/reviews"],
-  ["planner", "/planning"],
   ["compliance_admin", "/admin"],
   ["form_admin", "/admin"],
   ["workflow_admin", "/admin"],

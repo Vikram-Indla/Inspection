@@ -1,14 +1,7 @@
 "use client";
-// Create Visit page action (PLN-REQ-006). Reveals the three preserved planning
-// method cards as a section of the /planning landing — exact routes from the
-// pre-convergence chooser (/planning/bulk, /planning/single, /planning/immediate)
-// with no package-mandatory gating (packages are optional, PLN-CON-003).
-//
-// This component owns the whole command bar, not just its own button. The
-// revealed method cards are a sibling of the bar, never a child of it:
-// .sq-planning-commandbar is a wrapping flex row, so a panel rendered inside
-// it becomes a flex item and collapses into a narrow column beside the
-// trigger, overlapping the insights panel below.
+// Create Visit is a deliberate chooser, not a dense list of implementation
+// routes. All methods remain available for the governed role; blocked methods
+// are explanatory status rather than fake disabled links.
 import { type ReactNode, useState } from "react";
 
 export type CreateVisitMethod = {
@@ -43,22 +36,25 @@ export default function CreateVisitSection({ methods, strings, canCreate, childr
         )}
       </div>
       {canCreate && open && (
-        <section id="plan-create-methods" className="panel" aria-label={strings.createLabel}>
-          <div className="panel-body">
+        <section id="plan-create-methods" className="panel planning-create-methods" aria-label={strings.createLabel}>
+          <div className="planning-create-methods__intro">
+            <h2>{strings.createLabel}</h2>
+            <p>{strings.oneMethodNote}</p>
+          </div>
+          <div className="planning-create-methods__grid">
             {methods.map(m => m.blockedReason ? (
-              <div key={m.href} className="panel" aria-disabled="true">
-                <span className="panel-title">{m.title}</span>
-                <span>{m.desc}</span>
+              <div key={m.href} className="planning-create-method planning-create-method--blocked" aria-disabled="true">
+                <span className="planning-create-method__glyph" aria-hidden="true">{m.glyph}</span>
+                <div><span className="panel-title">{m.title}</span><span>{m.desc}</span></div>
                 <span className="badge badge-warning">{m.blockedReason}</span>
               </div>
             ) : (
-              <a key={m.href} href={m.href} className="panel">
-                <span className="panel-title">{m.title}</span>
-                <span>{m.desc}</span>
+              <a key={m.href} href={m.href} className="planning-create-method">
+                <span className="planning-create-method__glyph" aria-hidden="true">{m.glyph}</span>
+                <span><span className="panel-title">{m.title}</span><span>{m.desc}</span></span>
               </a>
             ))}
           </div>
-          <div className="alert alert-info">{strings.oneMethodNote}</div>
         </section>
       )}
     </>

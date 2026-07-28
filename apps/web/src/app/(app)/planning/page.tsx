@@ -12,10 +12,8 @@ import {
 import CreateVisitSection, { type CreateVisitMethod } from "./CreateVisitSection";
 import DiscardDraftButton from "./DiscardDraftButton";
 import ExportButton from "./ExportButton";
-import RefreshButton from "./RefreshButton";
 import PlanningPreview from "./PlanningPreview";
 import RevampPlanningInsights from "./RevampPlanningInsights";
-import SavedViewsButton from "./SavedViewsButton";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { getPlanningAiRecommendations } from "@/lib/planning/ai-recommendations";
 
@@ -233,12 +231,11 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
         <h1>{title}</h1>
         <span>{tr("plan.list.subtitle", "Create inspection visits — bulk, single or immediate", "إنشاء زيارات التفتيش — جماعية أو فردية أو فورية")}</span>
       </div>
-      {/* Page actions — Create Visit / Export / Refresh (PLN-REQ-006/017/018) */}
+      {/* Page actions are intentional: creation and scoped export only. */}
       <CreateVisitSection methods={methods} canCreate={access.can("planning.create")} strings={{
         createLabel: tr("plan.list.createVisit", "Create visit", "إنشاء زيارة"),
         oneMethodNote: t("plan.home.oneMethod", "Choose one planning method for this creation session."),
       }}>
-        <RefreshButton label={tr("plan.list.refresh", "Refresh", "تحديث")} busyLabel={tr("plan.list.refreshing", "Refreshing…", "جارٍ التحديث…")} />
         {access.can("planning.export") && (
           <ExportButton params={params} strings={{
             label: tr("plan.list.export", "Export (CSV)", "تصدير (CSV)"),
@@ -248,19 +245,6 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
             cappedNote: tr("plan.list.exportCapped", "Exported the first {n} matching rows — refine the filters for the rest.", "تم تصدير أول {n} صفًا مطابقًا — حسّن عوامل التصفية للباقي."),
           }} />
         )}
-        <SavedViewsButton
-          label={tr("plan.list.savedViews", "Saved views", "العروض المحفوظة")}
-          strings={{
-            saveCurrent: tr("plan.saved.saveCurrent", "Save current view", "حفظ العرض الحالي"),
-            nameTitle: tr("plan.saved.nameTitle", "Save planning view", "حفظ عرض التخطيط"),
-            nameLabel: tr("plan.saved.nameLabel", "View name", "اسم العرض"),
-            cancel: tr("common.cancel", "Cancel", "إلغاء"),
-            save: tr("common.save", "Save", "حفظ"),
-            close: tr("common.close", "Close", "إغلاق"),
-            empty: tr("plan.saved.empty", "No saved views on this device.", "لا توجد عروض محفوظة على هذا الجهاز."),
-            deleteLabel: tr("plan.saved.delete", "Delete {name}", "حذف {name}"),
-          }}
-        />
         <span />
       </CreateVisitSection>
 
