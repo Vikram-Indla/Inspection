@@ -390,7 +390,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
           controls pushed out by `.grow`. This card was the only section still on
           the unruled two-column headerRow. */}
       <h4 className={styles.cardH}>
-        <span style={{ minInlineSize: 0 }}>{strings.title}</span>
+        <span className="grow">{strings.title}</span>
         <span className="grow" />
         <span className={`badge ${changeCount ? "badge-warning" : "badge-compliant"}`}>
           {changeCount ? fmt(strings.changeCounter, { n: changeCount }) : strings.noChanges}
@@ -570,7 +570,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
           <span className="grow" />
           <a className="btn btn-secondary btn-sm" href={incidentHref}>{strings.incidentLog}</a>
         </h4>
-        <p className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>{strings.incidentDesc}</p>
+        <p className="t-caption">{strings.incidentDesc}</p>
       </section>
 
       {/* Contacts — inspection-captured contact scaffolding, PENDING INTEGRATION.
@@ -600,11 +600,11 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
                 <label className={styles.fld}><span>{strings.cName}</span><input className="input" value={c.name} onChange={e => setContactList(list => list.map((x, j) => j === i ? { ...x, name: e.target.value } : x))} disabled={readOnly} /></label>
                 <label className={styles.fld}><span>{strings.cTitle}</span><input className="input" value={c.title} onChange={e => setContactList(list => list.map((x, j) => j === i ? { ...x, title: e.target.value } : x))} disabled={readOnly} /></label>
               </div>
-              <div className={styles.fldRow} style={{ marginBlockStart: "var(--space-2)" }}>
+              <div className={styles.fldRow}>
                 <label className={styles.fld}><span>{strings.cId}</span><input className="input id-code" value={c.id} onChange={e => setContactList(list => list.map((x, j) => j === i ? { ...x, id: e.target.value } : x))} disabled={readOnly} /></label>
                 <label className={styles.fld}><span>{strings.cMobile}</span><input className="input id-code" value={c.mobile} onChange={e => setContactList(list => list.map((x, j) => j === i ? { ...x, mobile: e.target.value } : x))} disabled={readOnly} /></label>
               </div>
-              <label className={styles.fld} style={{ marginBlockStart: "var(--space-2)" }}><span>{strings.cEmail}</span><input className="input" dir="ltr" value={c.email} onChange={e => setContactList(list => list.map((x, j) => j === i ? { ...x, email: e.target.value } : x))} disabled={readOnly} /></label>
+              <label className={styles.fld}><span>{strings.cEmail}</span><input className="input" dir="ltr" value={c.email} onChange={e => setContactList(list => list.map((x, j) => j === i ? { ...x, email: e.target.value } : x))} disabled={readOnly} /></label>
             </div>
           ))}
           {!readOnly && (
@@ -653,9 +653,9 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
                   )}
                 </div>
                 <div className={styles.shiftGrid}>
-                  <label className={styles.fld}><span>{strings.shift1}</span><input className="input id-code" value={r.s1} inputMode="numeric" onChange={e => setRoster(list => list.map((x, j) => j === i ? { ...x, s1: e.target.value } : x))} disabled={readOnly} style={{ textAlign: "center" }} /></label>
-                  <label className={styles.fld}><span>{strings.shift2}</span><input className="input id-code" value={r.s2} inputMode="numeric" onChange={e => setRoster(list => list.map((x, j) => j === i ? { ...x, s2: e.target.value } : x))} disabled={readOnly} style={{ textAlign: "center" }} /></label>
-                  <label className={styles.fld}><span>{strings.shift3}</span><input className="input id-code" value={r.s3} inputMode="numeric" onChange={e => setRoster(list => list.map((x, j) => j === i ? { ...x, s3: e.target.value } : x))} disabled={readOnly} style={{ textAlign: "center" }} /></label>
+                  <label className={styles.fld}><span>{strings.shift1}</span><input className="input id-code" value={r.s1} inputMode="numeric" onChange={e => setRoster(list => list.map((x, j) => j === i ? { ...x, s1: e.target.value } : x))} disabled={readOnly} /></label>
+                  <label className={styles.fld}><span>{strings.shift2}</span><input className="input id-code" value={r.s2} inputMode="numeric" onChange={e => setRoster(list => list.map((x, j) => j === i ? { ...x, s2: e.target.value } : x))} disabled={readOnly} /></label>
+                  <label className={styles.fld}><span>{strings.shift3}</span><input className="input id-code" value={r.s3} inputMode="numeric" onChange={e => setRoster(list => list.map((x, j) => j === i ? { ...x, s3: e.target.value } : x))} disabled={readOnly} /></label>
                 </div>
                 <div className={styles.shiftTotal}>{strings.totalLabel}: <strong>{rowTotal(r)}</strong> {strings.workerUnit}</div>
               </div>
