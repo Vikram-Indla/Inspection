@@ -15,11 +15,7 @@ export default function StartReview({ inspectionId, submissionVersionId, strings
 }) {
   const [state, formAction, pending] = useActionState<DecisionResult, FormData>(startReview, {});
   return (
-    <form
-      action={formAction}
-      className="panel"
-      style={{ padding: "var(--space-6)", position: "sticky", insetBlockStart: 16, display: "flex", flexDirection: "column", gap: "var(--space-4)" }}
-    >
+    <form action={formAction} className="panel cd-panelpad sq-stack">
       <h2>{strings.title}</h2>
       <p className="t-caption">{strings.body}</p>
       <input type="hidden" name="inspection_id" value={inspectionId} />

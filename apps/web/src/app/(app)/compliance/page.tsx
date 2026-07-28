@@ -161,7 +161,7 @@ export default async function ComplianceLibrary({
 
   return (
     <Shell current={routeBase} title="">
-      <div className="stack">
+      <div className="sq-content stack" data-screen-id="CMP-S01">
         <section className="panel" aria-label="Compliance library navigation">
           <div className="panel-header">
             <strong className="panel-title">Compliance Library</strong>

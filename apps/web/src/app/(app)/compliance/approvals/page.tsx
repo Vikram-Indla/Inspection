@@ -189,7 +189,7 @@ export default async function ApprovalQueue({
 
   return (
     <Shell current={current} title={t("approval.queue.title", "Approval Queue")}>
-      <main className="sq-content" data-saqeel-screen="APQ-S01">
+      <main className="sq-content" data-saqeel-screen="APQ-S01" data-screen-id="APQ-S01">
         <div className="row">
           <span className="badge badge-info">{t("approval.queue.configuration", "Compliance configuration")}</span>
           <span className="badge badge-warning">{t("approval.queue.makerChecker", "Maker-checker enforced")}</span>

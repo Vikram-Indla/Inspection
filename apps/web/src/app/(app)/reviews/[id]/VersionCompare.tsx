@@ -166,11 +166,11 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
   const actionDiff = collectionDiff(from?.actionForms, to?.actionForms);
 
   return (
-    <div className="panel cd-version-compare" style={{ padding: "var(--space-6)" }}>
-      <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.heading}</h2>
+    <div className="panel cd-version-compare cd-panelpad sq-stack">
+      <h2>{strings.heading}</h2>
 
       {staleAt != null && (
-        <div className="sq-banner sq-banner--warning" role="alert" style={{ marginBlockEnd: "var(--space-3)" }}>
+        <div className="sq-banner sq-banner--warning" role="alert">
           <div>
             <strong>{strings.staleTitle ?? "A newer version was submitted."}</strong>{" "}
             {(strings.staleBody ?? "Version v{n} arrived while you had this open — refresh before relying on this comparison.").replace("{n}", String(staleAt))}
@@ -183,14 +183,14 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
       )}
 
       {/* Version selectors — explicit from/to. Default latest vs prior. */}
-      <div className="row" style={{ gap: "var(--space-4)", flexWrap: "wrap", marginBlockEnd: "var(--space-4)" }}>
-        <div className="sq-field" style={{ maxInlineSize: 220 }}>
+      <div className="row">
+        <div className="sq-field">
           <label className="sq-field__label" htmlFor="cmp-from">{strings.from}</label>
           <select id="cmp-from" className="sq-select" value={fromN ?? ""} onChange={e => setFromN(e.target.value === "" ? undefined : Number(e.target.value))}>
             {numbers.map(n => <option key={n} value={n}>v{n}</option>)}
           </select>
         </div>
-        <div className="sq-field" style={{ maxInlineSize: 220 }}>
+        <div className="sq-field">
           <label className="sq-field__label" htmlFor="cmp-to">{strings.to}</label>
           <select id="cmp-to" className="sq-select" value={toN} onChange={e => setToN(Number(e.target.value))}>
             {numbers.map(n => <option key={n} value={n}>v{n}</option>)}
@@ -199,7 +199,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
       </div>
 
       {/* Returned-scope authority — always stated; never inferred from the diff. */}
-      <p className="t-caption" style={{ marginBlockEnd: "var(--space-3)" }}>
+      <p className="t-caption">
         {scopeKnown
           ? strings.scopeSource.replace("{label}", scopeLabel ?? "—")
           : strings.noScope}
@@ -207,7 +207,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
 
       {/* Navigation-only is a property of the whole surface — stated even in the
           no-prior state where there is no rail to scroll. */}
-      <p className="t-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{strings.navHint}</p>
+      <p className="t-caption">{strings.navHint}</p>
 
       {fromN === undefined ? (
         <div className="sq-banner" role="status"><div>{strings.noPrior}</div></div>
@@ -225,29 +225,28 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
           ) : null}
 
           {/* Tamper-evident Scope Rail — keyboard disclosure list, non-color glyphs. */}
-          <div className="stack" style={{ gap: "var(--space-2)", marginBlock: "var(--space-4)" }} aria-label={strings.heading}>
+          <div className="stack" aria-label={strings.heading}>
             {categories.map(cat => {
               const items = rows.filter(r => r.category === cat && (cat === "unchanged" ? true : r.changed));
               if (cat !== "unchanged" && items.length === 0 && counts[cat] === 0 && !(cat === "unavailable" && !scopeKnown)) return null;
               const label = cat === "expected" ? strings.catExpected : cat === "unexpected" ? strings.catUnexpected : cat === "unchanged" ? strings.catUnchanged : strings.catUnavailable;
               const panelId = `cmp-cat-${cat}`;
               return (
-                <div key={cat} className="panel" style={{ padding: "var(--space-3)" }}>
+                <div key={cat} className="panel panel-body">
                   <button type="button" className="btn btn-ghost btn-touch" aria-expanded={open[cat]} aria-controls={panelId}
-                    onClick={() => setOpen(o => ({ ...o, [cat]: !o[cat] }))}
-                    style={{ inlineSize: "100%", justifyContent: "flex-start", gap: "var(--space-3)" }}>
+                    onClick={() => setOpen(o => ({ ...o, [cat]: !o[cat] }))}>
                     <span className={LOZ[cat]} aria-hidden="true">{GLYPH[cat]}</span>
                     <span>{label}</span>
-                    <span className="numeric" style={{ marginInlineStart: "auto" }}>{cat === "unchanged" ? counts.unchanged : items.length}</span>
+                    <span className="grow" aria-hidden="true" />
+                    <span className="numeric">{cat === "unchanged" ? counts.unchanged : items.length}</span>
                   </button>
                   {open[cat] && (
-                    <ul id={panelId} style={{ listStyle: "none", margin: 0, padding: "var(--space-2) 0 0", display: "flex", flexDirection: "column", gap: 2 }}>
+                    <ul id={panelId} className="stack">
                       {items.length === 0
                         ? <li className="t-caption">{cat === "unavailable" && !scopeKnown ? strings.noScope : "—"}</li>
                         : items.map(r => (
                           <li key={r.key}>
-                            <button type="button" className="btn btn-ghost btn-touch" onClick={() => goToRow(r.key)}
-                              style={{ inlineSize: "100%", justifyContent: "flex-start", gap: "var(--space-3)" }}>
+                            <button type="button" className="btn btn-ghost btn-touch" onClick={() => goToRow(r.key)}>
                               <span className="numeric">{r.key}</span>
                               {r.section && <span className="t-caption">{r.section.title}</span>}
                             </button>
@@ -275,7 +274,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
               <tbody>{rows.map(r => (
                 <tr key={r.key} id={`cmp-${r.key}`} data-changed={r.changed ? "true" : "false"} tabIndex={-1}
                   ref={el => { rowRefs.current[r.key] = el; }}
-                  style={r.category === "unexpected" ? { borderInlineStart: "4px solid var(--status-critical)" } : undefined}>
+                  className={r.category === "unexpected" ? "cd-row--flag" : undefined}>
                   <td><strong className="numeric">{r.key}</strong></td>
                   <td>{r.section ? r.section.title : <span className="badge badge-warning" aria-hidden="false">{GLYPH.unavailable} {strings.catUnavailable}</span>}</td>
                   <td>{r.prev != null ? (strings.enumLabels[r.prev] ?? r.prev) : "—"}</td>
@@ -302,25 +301,25 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
               {diff.added.length} {strings.added} · {diff.removed.length} {strings.removed} · {diff.changed.length} {strings.changed}
             </span>
           </div>
-          <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+          <ul className="stack">
             {diff.items.map(item => (
               <li key={`${item.kind}:${item.id}`}>
                 <span className={`badge ${item.kind === "added" ? "badge-success" : item.kind === "removed" ? "badge-critical" : "badge-warning"}`}>
                   {item.kind === "added" ? strings.added : item.kind === "removed" ? strings.removed : strings.changed}
                 </span>
                 <span>{item.id}</span>
-                {item.kind === "changed" && <span style={{ color: "var(--text-muted)" }}>current → proposed</span>}
+                {item.kind === "changed" && <span className="t-caption">current → proposed</span>}
               </li>
             ))}
           </ul>
         </div>
       ))}
-      <div className="panel" style={{ padding: "var(--space-3)", marginBlockStart: "var(--space-4)" }}>
-        <p className="sq-overline" style={{ marginBlockEnd: 8 }}>{strings.unavailableHeading}</p>
+      <div className="panel panel-body">
+        <p className="sq-overline">{strings.unavailableHeading}</p>
         {!evidenceDiff && <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailEvidence}</p>}
         <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailPackage}</p>
         {!actionDiff && <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailMetadata}</p>}
-        <p className="t-caption" style={{ marginBlockStart: 8 }}>{strings.unavailNote}</p>
+        <p className="t-caption">{strings.unavailNote}</p>
       </div>
     </div>
   );

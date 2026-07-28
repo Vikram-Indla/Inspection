@@ -86,8 +86,8 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
         };
 
   return (
-    <div className="sq-f360">
-      <aside className="sq-f360__portfolio">
+    <div className="sq-f360" data-saqeel-module="factory-360">
+      <aside className="sq-f360__portfolio" data-screen-id="F360-S01">
         <section className="sq-f360__summary">
           <span>Portfolio · <bdi>{portfolioLabel}</bdi></span>
           <div>{summary.map(([value, label, tone]) => (
@@ -124,8 +124,8 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
         ))}
       </aside>
 
-      <main className="sq-f360__main">
-        <section className="sq-f360__hero">
+      <main className="sq-f360__main" data-screen-id="F360-S03">
+        <section className="sq-f360__hero" data-screen-id="F360-S02">
           <div>
             <h1>{selected.name}</h1>
             <p><bdi>{selected.factory_code || "—"}</bdi> · CR <bdi>{selected.cr_number || "—"}</bdi> · {[selected.region, selected.city].filter(Boolean).join(" / ") || "Location unavailable"}</p>
