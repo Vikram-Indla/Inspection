@@ -22,6 +22,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import FieldConnectivityBanner from "@/components/field/FieldConnectivityBanner";
 import styles from "./results.module.css";
 import { saveResults, saveAndContinue, type ResultsDraft, type SampleRow, type SeizedRow } from "./actions";
 
@@ -40,6 +41,7 @@ export type ResultsStrings = {
   unsaved: string; notConfigured: string; selectPlaceholder: string;
   successTitle: string; successDesc: string; finalImmutable: string; backToTasks: string;
   immutableError: string; blockedError: string; signedOutError: string;
+  connectivityOffline: string; connectivityWeak: string;
 };
 
 function CheckIcon() {
@@ -168,7 +170,7 @@ export default function ResultsClient({
   // reached a submitted state — never as an optimistic post-click flash.
   if (locked) {
     return (
-      <main className={styles.successOuter}>
+      <main className={styles.successOuter} data-screen-id="EXE-S17">
         <div className={styles.successCard}>
           <div className={styles.successMark}>
             <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="m8 12 3 3 5-6" /></svg>
@@ -186,7 +188,8 @@ export default function ResultsClient({
 
   return (
     <>
-      <main className={styles.wrap}>
+      <FieldConnectivityBanner offline={s.connectivityOffline} weak={s.connectivityWeak} />
+      <main className={styles.wrap} data-screen-id="EXE-S15">
         {error && <div className="alert alert-danger" role="alert">{error}</div>}
 
         {/* 1 · Specialty Details */}
