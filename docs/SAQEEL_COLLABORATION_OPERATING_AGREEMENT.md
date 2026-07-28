@@ -32,6 +32,12 @@ Drive sources and the repository product contract.
   consequences immediately, in business language, without becoming needlessly
   adversarial. The shared objective is the integrity of SAQEEL, not winning an
   individual discussion.
+- Treat review as a discussion, not an instruction queue. Recommend the
+  clearest operating model, push back when a requested level of detail would
+  hide the decision or create unmanageable noise, and ask for clarity only
+  where the difference changes the business contract. For health tracking,
+  prefer **domain → capability → critical function/journey** over one broad
+  module row or one row per technical function.
 
 ## Evidence and decision loop
 
@@ -47,13 +53,13 @@ Drive sources and the repository product contract.
    Design Critique skill through its picker; attach the screenshot and demand
    at least 20 concrete, severity-ranked findings. Record that Claude review
    as a tracker action, including its link/reference and disposition.
-5. Treat Claude as an advisory reviewer, never the design authority. Sakeel
+5. Treat Claude as an advisory reviewer, never the design authority. Saqeel
    must actively challenge each material suggestion: what user decision does
    it improve, what business requirement/repository evidence supports it, what
    accessibility or data-truth risk does it create, and is it better than the
    current experience for a real inspection-planning user? Reject generic,
    cosmetic or unsupported recommendations.
-6. Add Sakeel's independent design, architecture and data assessment alongside
+6. Add Saqeel's independent design, architecture and data assessment alongside
    Claude's findings; the two views must remain distinguishable in the
    tracker.
 7. For material changes, state the impact and a definitive recommended fix in
@@ -108,7 +114,7 @@ Drive sources and the repository product contract.
 The shared Planning Intelligence Tracker contains:
 
 - **Observations** — screen and platform issues, source evidence, owner,
-  severity, complexity, blocker, Sakeel next action and commit.
+  severity, complexity, blocker, Saqeel next action and commit.
 - **Action Register** — every user instruction, delegated investigation,
   decision, outcome and status from the review day.
 - **Requirements Alignment** — the authoritative Planning business rule,
