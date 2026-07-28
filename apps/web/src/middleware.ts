@@ -1,5 +1,36 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { isInvalidRefreshToken } from "@/lib/auth/refresh-token-error";
+
+const PROTECTED_PAGE_PREFIXES = [
+  "/dashboard",
+  "/operations",
+  "/factory-360",
+  "/planning",
+  "/execution",
+  "/reviews",
+  "/compliance",
+  "/enforcement-library",
+  "/analytics",
+  "/admin",
+  "/field",
+  "/visits",
+  "/launch",
+  "/profile",
+  "/reports",
+];
+
+function clearSupabaseAuthCookies(request: NextRequest, response: NextResponse): void {
+  request.cookies.getAll()
+    .filter(({ name }) => name.startsWith("sb-") && name.includes("-auth-token"))
+    .forEach(({ name }) => response.cookies.set(name, "", { path: "/", maxAge: 0 }));
+}
+
+function isProtectedPage(pathname: string): boolean {
+  return PROTECTED_PAGE_PREFIXES.some(prefix =>
+    pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
 
 // TASK-WEB-CHANNEL-ACCESS-GATE-001 / M6-CD-023 reconciliation.
 // The original middleware.ts sat at the package root, but this app uses src/ —
@@ -54,7 +85,27 @@ export async function middleware(request: NextRequest) {
         },
       },
     });
-    await supabase.auth.getClaims();
+    let claimsError: unknown = null;
+    try {
+      const { error } = await supabase.auth.getClaims();
+      claimsError = error;
+    } catch (error) {
+      claimsError = error;
+    }
+
+    if (isInvalidRefreshToken(claimsError)) {
+      if (request.method === "GET" && isProtectedPage(request.nextUrl.pathname)) {
+        const loginUrl = request.nextUrl.clone();
+        loginUrl.pathname = "/login";
+        loginUrl.search = "";
+        loginUrl.searchParams.set("next", `${request.nextUrl.pathname}${request.nextUrl.search}`);
+        loginUrl.searchParams.set("reason", "expired");
+        response = NextResponse.redirect(loginUrl);
+      } else {
+        response = buildResponse();
+      }
+      clearSupabaseAuthCookies(request, response);
+    }
   }
 
   return response;
