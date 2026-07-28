@@ -6,7 +6,7 @@ import {
 import { KPI_DEFINITIONS, kpiDefinition } from "../src/lib/dashboard-kpi/registry";
 import { buildInspectorKpiProjection } from "../src/lib/dashboard-kpi/inspector-projection";
 import { buildDashboardKpiProjection } from "../src/lib/dashboard-kpi/projection";
-import { buildDashboardMetrics } from "../src/app/(app)/dashboard/metrics";
+import { buildDashboardMetrics, type FactoryRef, type VisitRow } from "../src/app/(app)/dashboard/metrics";
 import type { MetricScope } from "../src/lib/dashboard-kpi/contract";
 
 // Pure unit/contract tests for the shared KPI foundation. No browser — imports
@@ -174,5 +174,92 @@ test.describe("dashboard projection honesty", () => {
     });
     const nonInspector = KPI_DEFINITIONS.filter((d) => d.category !== "inspector").length;
     expect(projection.metrics.length).toBe(nonInspector);
+  });
+});
+
+test.describe("policy-gated metrics go live when the governing policy is published", () => {
+  const factory = (id: string): FactoryRef => ({
+    id, name: id, factory_code: id, region: "Riyadh", city: null,
+    activity_class: null, risk_score: null, risk_band: null, is_temporary: false,
+  });
+  const cycleScope = { fromMs: Date.parse("2026-07-01T00:00:00Z"), toMs: Date.parse("2026-07-31T23:59:59Z") };
+  const coverageMetrics = () => buildDashboardMetrics({
+    visits: [], reviews: [], responses: [], violations: [], geo: [], audit: [],
+    inspections: [{
+      id: "i1", visit_id: "v1", status: "submitted", started_at: null,
+      submitted_at: "2026-07-15T09:00:00Z",
+      visits: { window_start: "2026-07-15T06:00:00Z", factories: factory("f1") },
+    }],
+    factories: [factory("f1"), factory("f2")],
+    sla: {}, scope: cycleScope, today: cycleScope, region: "", nowMs: Date.parse("2026-07-20T00:00:00Z"),
+  });
+
+  test("inspection coverage (STR-KPI-007) goes live once the cycle policy is published", () => {
+    const projection = buildDashboardKpiProjection(coverageMetrics(), {
+      scope, policyVersionId: "cycle-v1", cyclePolicyConfigured: true,
+      refreshedAt: "2026-07-20T00:00:00Z", generatedAtMs: 1, failedSources: [],
+    });
+    const coverage = projection.metrics.find((m) => m.metricId === "STR-KPI-007")!;
+    expect(coverage.sourceStatus).toBe("live");
+    expect(coverage.value).toBe(50); // 1 of 2 due factories covered
+    expect(coverage.numerator).toBe(1);
+    expect(coverage.denominator).toBe(2);
+  });
+
+  test("uninspected factories (STR-KPI-008) go live as due minus covered", () => {
+    const projection = buildDashboardKpiProjection(coverageMetrics(), {
+      scope, policyVersionId: "cycle-v1", cyclePolicyConfigured: true,
+      refreshedAt: "2026-07-20T00:00:00Z", generatedAtMs: 1, failedSources: [],
+    });
+    const uninspected = projection.metrics.find((m) => m.metricId === "STR-KPI-008")!;
+    expect(uninspected.sourceStatus).toBe("live");
+    expect(uninspected.value).toBe(1); // 2 due - 1 covered
+  });
+
+  test("coverage stays not_configured when the cycle policy is absent, even with data", () => {
+    const projection = buildDashboardKpiProjection(coverageMetrics(), {
+      scope, policyVersionId: null, refreshedAt: null, generatedAtMs: 1, failedSources: [],
+    });
+    const coverage = projection.metrics.find((m) => m.metricId === "STR-KPI-007")!;
+    expect(coverage.sourceStatus).toBe("not_configured");
+    expect(coverage.value).toBeNull();
+  });
+
+  test("expiring soon (OPS-KPI-002) counts visits past the SLA warn fraction once configured", () => {
+    const now = Date.parse("2026-07-20T12:00:00Z");
+    const visit = (id: string, ws: string, we: string): VisitRow => ({
+      id, planning_status: "published", operational_state: "executing",
+      window_start: ws, window_end: we, priority: null, cancellation_reason: null,
+      created_at: ws, factories: null, assignments: null,
+    });
+    const metrics = buildDashboardMetrics({
+      visits: [
+        visit("soon", "2026-07-20T10:00:00Z", "2026-07-20T12:30:00Z"),   // past 0.8 of window, not overdue
+        visit("early", "2026-07-20T10:00:00Z", "2026-07-20T18:00:00Z"),  // only ~28% of window elapsed
+        visit("overdue", "2026-07-20T06:00:00Z", "2026-07-20T11:00:00Z"), // window ended -> overdue, not "soon"
+      ],
+      inspections: [], reviews: [], responses: [], violations: [], geo: [], audit: [], factories: [],
+      sla: {}, slaWarnAtFraction: 0.8,
+      scope: { fromMs: 0, toMs: now + 1 }, today: { fromMs: 0, toMs: now + 1 }, region: "", nowMs: now,
+    });
+    const projection = buildDashboardKpiProjection(metrics, {
+      scope, policyVersionId: "sla-v1", refreshedAt: "2026-07-20T12:00:00Z", generatedAtMs: 1, failedSources: [],
+    });
+    const expiring = projection.metrics.find((m) => m.metricId === "OPS-KPI-002")!;
+    expect(expiring.sourceStatus).toBe("live");
+    expect(expiring.value).toBe(1);
+  });
+
+  test("expiring soon stays not_configured when the SLA fraction is absent", () => {
+    const metrics = buildDashboardMetrics({
+      visits: [], inspections: [], reviews: [], responses: [], violations: [], geo: [], audit: [],
+      factories: [], sla: {}, scope: { fromMs: 0, toMs: 1 }, today: { fromMs: 0, toMs: 1 }, region: "", nowMs: 1,
+    });
+    const projection = buildDashboardKpiProjection(metrics, {
+      scope, policyVersionId: null, refreshedAt: null, generatedAtMs: 1, failedSources: [],
+    });
+    const expiring = projection.metrics.find((m) => m.metricId === "OPS-KPI-002")!;
+    expect(expiring.sourceStatus).toBe("not_configured");
+    expect(expiring.value).toBeNull();
   });
 });

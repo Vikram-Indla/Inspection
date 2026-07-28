@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { useT } from "@/lib/i18n";
 import { supabaseServer } from "@/lib/supabase-server";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { redirect } from "next/navigation";
 import {
@@ -25,7 +26,7 @@ import {
   StrategicView,
 } from "./DashboardView";
 import { buildDashboardKpiProjection } from "@/lib/dashboard-kpi/projection";
-import { resolveDashboardPolicyVersion } from "@/lib/dashboard-kpi/loader";
+import { resolveDashboardPolicyVersion, resolveDashboardPolicyGates } from "@/lib/dashboard-kpi/loader";
 import type { MetricScope } from "@/lib/dashboard-kpi/contract";
 import { Suspense } from "react";
 
@@ -97,6 +98,14 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   // perspective, and bound every historical source to the current/previous
   // comparison window. The search surface explicitly opts entity rows back in.
   const strategic = view === "strategic";
+  // National-performance figures are an organisation-wide aggregate, not a
+  // per-user surface. On the strategic view, read the KPI source families
+  // through the elevated client so a limited role (e.g. inspector) sees the
+  // same national numbers a leadership user does — without being granted the
+  // leadership role. Falls back to the per-user RLS client when no service key
+  // is configured, preserving the original governed behaviour. Auth, role
+  // gating and the operational view stay on the per-user client `sb`.
+  const sbData = (strategic && supabaseAdmin()) || sb;
   const searching = query.trim().length > 0;
   const prevScopeFromMs = scope.fromMs - (scope.toMs - scope.fromMs + 1);
   const boundIso = new Date(Math.min(prevScopeFromMs, today.fromMs)).toISOString();
@@ -108,7 +117,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   // factory_id (a plain column, no join) and hydrating post-fetch is
   // output-identical, just cheaper.
   const loadVisits = (from: number, to: number) => {
-    let request = sb.from("visits").select(`
+    let request = sbData.from("visits").select(`
       id, planning_status, operational_state, window_start, window_end, priority, cancellation_reason, created_at, factory_id,
       assignments(inspector_id, profiles(full_name))
     `);
@@ -119,7 +128,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     return request.range(from, to) as unknown as PromiseLike<RowPage<VisitRow>>;
   };
   const loadInspections = (from: number, to: number) => {
-    let request = sb.from("inspections").select(`
+    let request = sbData.from("inspections").select(`
       id, visit_id, status, started_at, submitted_at,
       visits(window_start, factory_id)
     `);
@@ -129,7 +138,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     return request.range(from, to) as unknown as PromiseLike<RowPage<InspectionRow>>;
   };
   const loadReviews = (from: number, to: number) => {
-    let request = sb.from("reviews").select(`
+    let request = sbData.from("reviews").select(`
       id, inspection_id, status, decision, decided_at,
       inspections!inner(submitted_at, visits(window_start, factory_id))
     `);
@@ -156,17 +165,17 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     collect<VisitRow>(loadVisits),
     collect<InspectionRow>(loadInspections),
     collect<ReviewRow>(loadReviews),
-    strategic ? collect<ResponseRow>((from, to) => sb.from("checklist_responses").select(`
+    strategic ? collect<ResponseRow>((from, to) => sbData.from("checklist_responses").select(`
       inspection_id, is_complete, response,
       inspections!inner(submitted_at, visits(factory_id)),
       inspection_items(regulation_clauses(regulations(title, issuing_authority)))
     `).gte("inspections.submitted_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<ResponseRow>>) : empty<ResponseRow>(),
-    strategic ? collect<ChecklistItemRow>((from, to) => sb.from("inspection_items").select(`
+    strategic ? collect<ChecklistItemRow>((from, to) => sbData.from("inspection_items").select(`
       id, active,
       regulation_clauses!inner(regulations!inner(issuing_authority, status))
     `).eq("active", true).eq("regulation_clauses.regulations.status", "published")
       .range(from, to) as unknown as PromiseLike<RowPage<ChecklistItemRow>>) : empty<ChecklistItemRow>(),
-    strategic ? collect<ViolationRow>((from, to) => sb.from("violations").select(`
+    strategic ? collect<ViolationRow>((from, to) => sbData.from("violations").select(`
       id, inspection_id,
       inspections!inner(submitted_at, visits(factory_id)),
       violation_codes(title, level, regulation_clauses(regulations(title, issuing_authority)))
@@ -175,10 +184,11 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       id, visit_id, kind, geofence_result, override_reason, occurred_at, observed_lat, observed_lng,
       visits(planner_lat, planner_lng, factory_id)
     `).gte("occurred_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<GeoRow>>) : empty<GeoRow>(),
-    collect<FactoryRef>((from, to) => sb.from("factories").select("id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary, official_lat, official_lng, geofence_radius_m").range(from, to) as unknown as PromiseLike<RowPage<FactoryRef>>),
+    collect<FactoryRef>((from, to) => sbData.from("factories").select("id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary, official_lat, official_lng, geofence_radius_m").range(from, to) as unknown as PromiseLike<RowPage<FactoryRef>>),
     !strategic ? sb.from("engine_settings").select("settings").eq("engine", "sla").maybeSingle() : Promise.resolve({ data: null, error: null }),
   ]);
   const policyPromise = resolveDashboardPolicyVersion(sb);
+  const gatesPromise = resolveDashboardPolicyGates(sb);
 
   async function DashboardDataSections() {
     const [
@@ -233,6 +243,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     slaResult.error && text("SLA configuration", "تهيئة اتفاقية مستوى الخدمة"),
   ].filter(Boolean) as string[];
 
+  const gates = await gatesPromise;
   const metrics = buildDashboardMetrics({
     visits: visitsResult.rows,
     inspections: inspectionsResult.rows,
@@ -244,6 +255,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     audit: auditResult.rows,
     factories: factoriesResult.rows,
     sla: (slaResult.data?.settings ?? {}) as DashboardSla,
+    slaWarnAtFraction: gates.slaWarnAtFraction,
     scope,
     today,
     region,
@@ -264,9 +276,10 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     scope: metricScope,
     policyVersionId: policy.policyVersionId,
     targets: policy.targets,
+    cyclePolicyConfigured: gates.cyclePolicyConfigured,
     refreshedAt: new Date(nowMs).toISOString(),
     generatedAtMs: nowMs,
-    failedSources: [...failedSources, ...policy.failedSources],
+    failedSources: [...failedSources, ...policy.failedSources, ...gates.failedSources],
   });
 
   const factoryCoords = new Map<string, { lat: number; lng: number; radiusM: number | null }>();

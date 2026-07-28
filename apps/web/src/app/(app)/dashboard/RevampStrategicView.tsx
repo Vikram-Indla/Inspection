@@ -35,7 +35,7 @@ function MetricCard({ locale, question, title, value, definition, example, inter
   );
 }
 
-export default function RevampStrategicView({ locale, metrics, factories, group, params, requirementStrip, requirementStripStrings }: {
+export default function RevampStrategicView({ locale, metrics, group, params, requirementStrip, requirementStripStrings }: {
   locale: Locale;
   metrics: DashboardMetrics;
   factories: FactoryRef[];
@@ -66,10 +66,10 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             locale={locale}
             question={copy(locale, "Are we achieving the national inspection strategy?", "هل نحقق استراتيجية التفتيش الوطنية؟")}
             title={copy(locale, "Inspection coverage against annual target", "تغطية التفتيش مقابل المستهدف السنوي")}
-            value={copy(locale, "Not configured", "غير مهيأ")}
-            definition={copy(locale, "(Completed inspections ÷ annual inspection target) × 100", "(التفتيشات المكتملة ÷ المستهدف السنوي) × 100")}
-            example={copy(locale, `${strategic.completedInspections} completed inspections; no governed annual target is configured.`, `${strategic.completedInspections} تفتيشاً مكتملاً؛ لا يوجد مستهدف سنوي معتمد.`)}
-            interpretation={copy(locale, "Coverage remains withheld until Administration publishes the governed inspection-cycle target.", "تبقى التغطية محجوبة حتى تنشر الإدارة مستهدف دورة التفتيش المعتمد.")}
+            value={valueOrUnavailable(locale, strategic.inspectionCoverageRate, "%")}
+            definition={copy(locale, "(Factories with a completed inspection ÷ factories due under the inspection-cycle policy) × 100", "(المصانع ذات التفتيش المكتمل ÷ المصانع المستحقة بموجب سياسة دورة التفتيش) × 100")}
+            example={copy(locale, `${strategic.coveredFactories} of ${strategic.dueFactories} due factories have a completed inspection.`, `${strategic.coveredFactories} من ${strategic.dueFactories} مصنعاً مستحقاً لديه تفتيش مكتمل.`)}
+            interpretation={copy(locale, "Coverage of factories due under the published inspection-cycle policy.", "تغطية المصانع المستحقة بموجب سياسة دورة التفتيش المنشورة.")}
             href="/planning" action={copy(locale, "Open Planning", "فتح التخطيط")}
           />
           <MetricCard
@@ -150,10 +150,10 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             locale={locale}
             question={copy(locale, "Which factories still require inspection this year?", "ما المصانع التي لا تزال تتطلب تفتيشاً هذا العام؟")}
             title={copy(locale, "Factories pending annual inspection", "المصانع بانتظار التفتيش السنوي")}
-            value={copy(locale, "Not configured", "غير مهيأ")}
+            value={`${strategic.dueFactories - strategic.coveredFactories}`}
             definition={copy(locale, "Active factories with no completed inspection in the governed inspection year", "المصانع النشطة دون تفتيش مكتمل في سنة التفتيش المعتمدة")}
-            example={copy(locale, `${factories.length} factories are visible, but the annual-cycle policy is not configured.`, `${factories.length} مصنعاً ظاهراً، لكن سياسة الدورة السنوية غير مهيأة.`)}
-            interpretation={copy(locale, "The screen withholds a count until the inspection-year policy is published.", "تحجب الشاشة العدد حتى نشر سياسة سنة التفتيش.")}
+            example={copy(locale, `${strategic.dueFactories - strategic.coveredFactories} of ${strategic.dueFactories} due factories have no completed inspection yet.`, `${strategic.dueFactories - strategic.coveredFactories} من ${strategic.dueFactories} مصنعاً مستحقاً بلا تفتيش مكتمل بعد.`)}
+            interpretation={copy(locale, "Factories due under the published inspection-cycle policy that still lack a completed inspection.", "المصانع المستحقة بموجب سياسة دورة التفتيش المنشورة والتي لا تزال دون تفتيش مكتمل.")}
             href="/planning" action={copy(locale, "Open Planning", "فتح التخطيط")}
           />
         </div>
