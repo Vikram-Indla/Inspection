@@ -52,6 +52,13 @@ Drive sources and the repository product contract.
 
 ## Conversation and visibility
 
+- Maintain a **persistent visual review desk** whenever the user is walking a
+  journey: the live SAQEEL application and a whiteboard must be visible
+  side-by-side. The board is the shared explanation surface, showing the
+  current route, user decision, data sources/ownership, validation gates,
+  external dependencies, and open questions. Keep the Planning Intelligence
+  Tracker as the immediately switchable third context. Before saying a board
+  or app state is visible, verify that it is actually on the user's screen.
 - Apply a **ten-second rule**. If a factual answer, repository trace or
   technical investigation cannot be established within ten seconds, delegate
   the investigation, state exactly what is being checked, and keep the live
