@@ -29,6 +29,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { collectPostgrestPages } from "@/lib/supabase-pagination";
+import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 
 export const PLANNING_TABS = ["all", "draft", "published", "returned", "cancelled", "expired"] as const;
 export type PlanningTab = (typeof PLANNING_TABS)[number];
@@ -110,6 +111,36 @@ export const PLANNING_SORT_KEYS = Object.keys(SORTS);
 const UUID_RE = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 const SEARCH_ID_CAP = 500;      // per-dimension prequery bound (id-only reads, paged after)
 const ID_CHUNK = 100;           // in-() chunk that keeps request URLs well under the gateway limit
+
+/**
+ * The shared non-production database also serves Playwright fixtures. Those
+ * establishments must be excluded before the list query counts or paginates,
+ * not only after rows reach the page. Post-filtering made the visible row count
+ * disagree with the status tabs and "Showing … of …" total.
+ *
+ * Fixture recognition is deliberately centralized in field/fixtures so the
+ * Planning list uses the same narrow names/codes as other customer-facing
+ * workspaces. A failed factory read fails closed: showing a fixture as a real
+ * visit, or reporting a count that includes one, is not an honest fallback.
+ */
+async function collectFixtureFactoryIds(sb: SupabaseClient): Promise<{ ok: true; ids: string[] } | { ok: false }> {
+  const read = await collectPostgrestPages<{ id: string; name: string | null; factory_code: string | null }>((from, to) =>
+    sb.from("factories").select("id, name, factory_code").order("id", { ascending: true }).range(from, to));
+  if (read.error) {
+    console.error("[planning.visit-list] fixture factory read failed:", read.error.message);
+    return { ok: false };
+  }
+  return {
+    ok: true,
+    ids: (read.data ?? [])
+      .filter(factory => isTestFixtureEstablishment(factory))
+      // Factory ids are UUIDs in the canonical schema. Keeping this guard makes
+      // the generated PostgREST in() term safe even if corrupt legacy data is
+      // visible through RLS.
+      .map(factory => factory.id)
+      .filter(id => UUID_RE.test(id)),
+  };
+}
 
 // Escape ilike wildcards (same pattern as planning/single/page.tsx); also strip
 // characters that would break PostgREST or()/in-() group syntax.
@@ -296,6 +327,9 @@ export async function queryPlanningVisits(sb: SupabaseClient, params: PlanningLi
   const page = Math.max(1, Math.floor(params.page) || 1);
   const pageSize = Math.min(Math.max(1, Math.floor(params.pageSize) || 25), 5000);
 
+  const fixtures = await collectFixtureFactoryIds(sb);
+  if (!fixtures.ok) return { ok: false };
+
   // Step 1 (only when searching): complete matching id set across all dimensions.
   let matchedIds: string[] | null = null;
   if (params.search.trim()) {
@@ -310,7 +344,15 @@ export async function queryPlanningVisits(sb: SupabaseClient, params: PlanningLi
   // Step 2: filtered queries — a single call without search, or disjoint
   // id-chunk calls merged in memory when a search resolved an id set.
   const idChunks = matchedIds ? chunk(matchedIds, ID_CHUNK) : [null];
-  const scoped = (q: ReturnType<typeof applyFilters>, ids: string[] | null) => (ids ? q.in("id", ids) : q);
+  const scoped = (q: ReturnType<typeof applyFilters>, ids: string[] | null) => {
+    let scopedQuery = ids ? q.in("id", ids) : q;
+    // IDs are chunked nowhere here because the fixture registry is deliberately
+    // narrow and its UUID term remains far below the observed gateway URL cap.
+    // If it ever grows beyond that operational envelope, the fixture marker
+    // belongs in a database column/RPC rather than a UI-side heuristic.
+    if (fixtures.ids.length) scopedQuery = scopedQuery.not("factory_id", "in", `(${fixtures.ids.join(",")})`);
+    return scopedQuery;
+  };
 
   const [rowResults, countResults] = await Promise.all([
     Promise.all(idChunks.map(ids =>
