@@ -9,7 +9,6 @@ import OperationsPreview, {
   type OperationsPreviewEntry,
   type OperationsPreviewStrings,
 } from "./OperationsPreview";
-import styles from "./operations.module.css";
 
 export type OperationsMapEntry = OpsPin & OperationsPreviewEntry;
 
@@ -63,8 +62,8 @@ export default function OperationsMapWorkspace({
   }
 
   return (
-    <div className={`${styles.workspace} ${mapOnly ? styles.workspaceMapOnly : ""}`}>
-      <section className={styles.mapFrame} aria-label={s.mapLabel}>
+    <div className={mapOnly ? "stack" : "sq-grid-2"}>
+      <section className="map-panel" aria-label={s.mapLabel}>
         <Suspense fallback={
           <EmptyState bare role="status" ariaBusy title={s.loadingTitle} body={s.loadingBody} />
         }>
@@ -79,19 +78,19 @@ export default function OperationsMapWorkspace({
         </Suspense>
       </section>
 
-      {!mapOnly && <section className={styles.mapList} aria-labelledby="operations-map-list-heading">
-        <div className={styles.mapListHeader}>
+      {!mapOnly && <section className="panel stack" aria-labelledby="operations-map-list-heading">
+        <div className="panel-row">
           <div>
             <h4 id="operations-map-list-heading">{s.listHeading}</h4>
-            <p className="sq-caption">{s.listDescription}</p>
+            <p className="tl-meta">{s.listDescription}</p>
           </div>
-          <span className="sq-lozenge sq-numeric">{entries.length}</span>
+          <span className="badge badge-info">{entries.length}</span>
         </div>
-        <ul className={styles.mapListItems}>
+        <ul className="stack">
           {entries.map(entry => (
             <li key={entry.id}>
               <button
-                className={styles.mapListButton}
+                className="panel panel-row"
                 type="button"
                 aria-pressed={selectedId === entry.id}
                 data-entry-kind={entry.kind}
@@ -103,24 +102,24 @@ export default function OperationsMapWorkspace({
               >
                 <span>
                   <strong>{entry.label}</strong><br />
-                  <span className="sq-caption">
+                  <span className="tl-meta">
                     {[entry.region, entry.city].filter(Boolean).join(" · ") || "—"}
                   </span>
                 </span>
-                <span className="sq-lozenge">{entry.state}</span>
+                <span className="badge badge-info">{entry.state}</span>
               </button>
             </li>
           ))}
         </ul>
         {selected && (
-          <div className={styles.selectionCard} role="status" aria-live="polite">
-            <p className="sq-caption">{s.selected}</p>
+          <div className="panel stack" role="status" aria-live="polite">
+            <p className="tl-meta">{s.selected}</p>
             <p><strong>{selected.label}</strong></p>
-            <div className="sq-row" style={{ flexWrap: "wrap" }}>
-              <button className="sq-btn sq-btn--secondary" type="button" onClick={() => setPreviewId(selected.id)}>
+            <div className="row">
+              <button className="btn btn-secondary" type="button" onClick={() => setPreviewId(selected.id)}>
                 {s.preview}
               </button>
-              <a className="sq-link" href={selected.href}>
+              <a className="btn btn-ghost" href={selected.href}>
                 {s.open} {selected.kind === "visit" ? s.visit : s.factory}
               </a>
             </div>

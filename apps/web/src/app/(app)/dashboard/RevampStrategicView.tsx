@@ -2,7 +2,6 @@ import type { FactoryRef, ResponseRow } from "./metrics";
 import { complianceBreakdown } from "./metrics";
 import type { MetricDisplay, MethodologyEntry } from "./dashboard-format";
 import MetricStrip, { type MetricStripStrings } from "./MetricStrip";
-import styles from "./revamp-dashboard.module.css";
 
 type Locale = "en" | "ar";
 type DashboardMetrics = ReturnType<typeof import("./metrics").buildDashboardMetrics>;
@@ -23,14 +22,14 @@ function MetricCard({ locale, question, title, value, definition, example, inter
   action: string;
 }) {
   return (
-    <article className={styles.metricCard}>
-      <span className={styles.question}>{question}</span>
+    <article className="panel kpi">
+      <span className="tl-meta">{question}</span>
       <h3>{title}</h3>
-      <strong className={styles.metricValue}>{value}</strong>
-      <p className={styles.definition}><b>{copy(locale, "Definition", "التعريف")}</b> {definition}</p>
-      <p className={styles.example}>{example}</p>
-      <p className={styles.interpretation}>{interpretation}</p>
-      <a className={styles.action} href={href}>{action}</a>
+      <strong className="kpi-value">{value}</strong>
+      <p className="desc"><b>{copy(locale, "Definition", "التعريف")}</b> {definition}</p>
+      <p className="tl-meta">{example}</p>
+      <p>{interpretation}</p>
+      <a className="btn btn-secondary" href={href}>{action}</a>
     </article>
   );
 }
@@ -50,7 +49,6 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
     group,
     copy(locale, "Not recorded", "غير مسجل"),
   );
-  const maxRate = Math.max(1, ...grouped.map(row => row.rate ?? 0));
   const topViolation = strategic.violationByRegulation[0];
   const paramsHref = (nextGroup: string) => {
     const query = new URLSearchParams({ ...params, group: nextGroup });
@@ -58,10 +56,10 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
   };
 
   return (
-    <div className={styles.view}>
+    <div className="stack">
       <section>
-        <h2 className={styles.overline}>{copy(locale, "National performance", "الأداء الوطني")}</h2>
-        <div className={styles.metricGrid}>
+        <h2 className="tl-meta">{copy(locale, "National performance", "الأداء الوطني")}</h2>
+        <div className="kpi-grid">
           <MetricCard
             locale={locale}
             question={copy(locale, "Are we achieving the national inspection strategy?", "هل نحقق استراتيجية التفتيش الوطنية؟")}
@@ -95,37 +93,42 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
         </div>
       </section>
 
-      <section className={styles.explorer}>
-        <div className={styles.sectionHead}>
+      <section className="panel stack">
+        <div className="panel-row">
           <div>
             <h2>{copy(locale, "Compliance performance explorer", "مستكشف أداء الامتثال")}</h2>
             <p>{copy(locale, "One compliance-rate formula, four lenses. Every row drills to the factories behind it.", "صيغة امتثال واحدة وأربع عدسات. كل صف ينتقل إلى المصانع المرتبطة به.")}</p>
           </div>
-          <nav className={styles.lenses} aria-label={copy(locale, "Lens", "العدسة")}>
+          <nav className="seg" aria-label={copy(locale, "Lens", "العدسة")}>
             {[
               ["region", "Region", "المنطقة"],
               ["city", "City", "المدينة"],
               ["sector", "Sector", "القطاع"],
               ["authority", "Authority", "الجهة"],
             ].map(([id, en, ar]) => (
-              <a key={id} href={paramsHref(id)} aria-current={group === id}>{copy(locale, en, ar)}</a>
+              <a className="seg-opt" key={id} href={paramsHref(id)} aria-current={group === id} aria-pressed={group === id}>{copy(locale, en, ar)}</a>
             ))}
           </nav>
         </div>
-        <div className={styles.bars}>
-          {grouped.length ? grouped.slice(0, 8).map(row => (
-            <a className={styles.barRow} key={row.label} href={`/factories?${group}=${encodeURIComponent(row.label)}`}>
-              <span>{row.label}</span>
-              <span className={styles.track}><span style={{ inlineSize: `${Math.max(3, ((row.rate ?? 0) / maxRate) * 100)}%` }} /></span>
-              <strong>{row.rate == null ? "—" : `${row.rate}%`}</strong>
-            </a>
-          )) : <p className={styles.empty}>{copy(locale, "No eligible approved answers in scope.", "لا توجد إجابات معتمدة مؤهلة ضمن النطاق.")}</p>}
+        <div className="table-wrap">
+          <table className="table">
+            <thead><tr><th>{copy(locale, "Lens value", "قيمة العدسة")}</th><th>{copy(locale, "Compliance", "الامتثال")}</th><th>{copy(locale, "Records", "السجلات")}</th></tr></thead>
+            <tbody>
+            {grouped.length ? grouped.slice(0, 8).map(row => (
+              <tr key={row.label}>
+                <th scope="row">{row.label}</th>
+                <td className="cell-num">{row.rate == null ? "—" : `${row.rate}%`}</td>
+                <td><a className="btn btn-ghost btn-sm" href={`/factories?${group}=${encodeURIComponent(row.label)}`}>{copy(locale, "Open factories", "فتح المصانع")}</a></td>
+              </tr>
+            )) : <tr><td colSpan={3}>{copy(locale, "No eligible approved answers in scope.", "لا توجد إجابات معتمدة مؤهلة ضمن النطاق.")}</td></tr>}
+            </tbody>
+          </table>
         </div>
       </section>
 
       <section>
-        <h2 className={styles.overline}>{copy(locale, "Strategic intervention", "التدخل الاستراتيجي")}</h2>
-        <div className={styles.metricGrid}>
+        <h2 className="tl-meta">{copy(locale, "Strategic intervention", "التدخل الاستراتيجي")}</h2>
+        <div className="kpi-grid">
           <MetricCard
             locale={locale}
             question={copy(locale, "Which regulations generate the most violations?", "ما اللوائح التي تولد أكبر عدد من المخالفات؟")}
@@ -159,25 +162,28 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
         </div>
       </section>
 
-      <section className={styles.bottomGrid}>
-        <article className={styles.trendCard}>
+      <section className="sq-grid-2">
+        <article className="panel stack">
           <h2>{copy(locale, "Enforcement action trend", "اتجاه إجراءات الإنفاذ")}</h2>
-          <div className={styles.unavailable}>
+          <div className="alert alert-warning">
+            <div>
             <strong>{copy(locale, "Trend unavailable", "الاتجاه غير متاح")}</strong>
             <p>{copy(locale, "The repository does not store a governed official violation issue date. No quarterly series is inferred.", "لا يخزن المستودع تاريخ إصدار رسمي معتمد للمخالفة. ولا تُستنتج سلسلة ربع سنوية.")}</p>
+            </div>
           </div>
-          <a className={styles.action} href="/admin/violations">{copy(locale, "Open Enforcement Library", "فتح مكتبة الإنفاذ")}<span aria-hidden="true">→</span></a>
+          <a className="btn btn-secondary" href="/enforcement-library">{copy(locale, "Open Enforcement Library", "فتح مكتبة الإنفاذ")}</a>
         </article>
-        <article className={styles.aiCard}>
-          <span className={styles.aiLabel}>{copy(locale, "Executive AI brief", "موجز الذكاء الاصطناعي التنفيذي")}</span>
+        <article className="panel stack">
+          <span className="tl-meta">{copy(locale, "Executive AI brief", "موجز الذكاء الاصطناعي التنفيذي")}</span>
           <h2>{copy(locale, "Provider output withheld", "تم حجب مخرجات المزود")}</h2>
           <p>{copy(locale, "No generated claim is shown until a configured provider returns evidence-linked output for this scope.", "لا يُعرض أي ادعاء مولد حتى يعيد مزود مهيأ مخرجات مرتبطة بالأدلة لهذا النطاق.")}</p>
-          <span className={styles.provenance}>{copy(locale, "Authoritative dashboard records remain available.", "تظل سجلات لوحة القيادة المعتمدة متاحة.")}</span>
+          <span className="badge badge-pending">{copy(locale, "Not configured", "غير مهيأ")}</span>
+          <span className="tl-meta">{copy(locale, "Authoritative dashboard records remain available.", "تظل سجلات لوحة القيادة المعتمدة متاحة.")}</span>
         </article>
       </section>
 
-      <section className={styles.requirementCoverage} aria-labelledby="strategic-requirement-coverage">
-        <div className={styles.sectionHead}>
+      <section className="panel stack" aria-labelledby="strategic-requirement-coverage">
+        <div className="panel-row">
           <div>
             <h2 id="strategic-requirement-coverage">{copy(locale, "Strategic requirement coverage", "تغطية المتطلبات الاستراتيجية")}</h2>
             <p>{copy(locale, "All dashboard.xlsx strategic measures are shown with their governed live or blocked state and auditable methodology.", "تُعرض جميع المقاييس الاستراتيجية في dashboard.xlsx بحالتها المباشرة أو المحجوبة المعتمدة ومنهجيتها القابلة للتدقيق.")}</p>

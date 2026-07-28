@@ -1,6 +1,5 @@
 import type { MetricDisplay, MethodologyEntry } from "./dashboard-format";
 import MetricStrip, { type MetricStripStrings } from "./MetricStrip";
-import styles from "./revamp-dashboard.module.css";
 
 type Locale = "en" | "ar";
 type DashboardMetrics = ReturnType<typeof import("./metrics").buildDashboardMetrics>;
@@ -17,12 +16,12 @@ function OperationalCard({ locale, question, title, value, definition, href, act
   action: string;
 }) {
   return (
-    <article className={styles.operationalCard}>
-      <span className={styles.question}>{question}</span>
+    <article className="panel kpi">
+      <span className="tl-meta">{question}</span>
       <h3>{title}</h3>
-      <strong className={styles.operationalValue}>{value}</strong>
-      <p className={styles.operationalDefinition}><b>{copy(locale, "Definition", "التعريف")}</b> {definition}</p>
-      <a className={styles.secondaryAction} href={href}>{action}</a>
+      <strong className="kpi-value">{value}</strong>
+      <p className="desc"><b>{copy(locale, "Definition", "التعريف")}</b> {definition}</p>
+      <a className="btn btn-secondary" href={href}>{action}</a>
     </article>
   );
 }
@@ -112,18 +111,16 @@ export default function RevampOperationalView({ locale, metrics, requirementStri
       ],
     },
   ];
-  const maxActive = Math.max(1, ...operational.workload.map(row => row.active));
-
   return (
-    <div className={styles.view} id="dashboard-operational" role="tabpanel" aria-labelledby="dashboard-tab-operational">
-      <section className={styles.aiPriority}>
+    <div className="stack" id="dashboard-operational" role="tabpanel" aria-labelledby="dashboard-tab-operational">
+      <section className="panel">
         <strong>{copy(locale, "Deterministic operational priorities", "أولويات تشغيلية حتمية")}</strong>
         <p>{copy(
           locale,
           `${operational.highPriorityRows.length} high-priority visits are pending execution; ${operational.overdueRows.length} published visits are past their recorded window.`,
           `${operational.highPriorityRows.length} زيارة عالية الأولوية بانتظار التنفيذ؛ و${operational.overdueRows.length} زيارة منشورة تجاوزت نافذتها المسجلة.`,
         )}</p>
-        <span>{copy(
+        <span className="tl-meta">{copy(
           locale,
           "Live governed records · AI provider output withheld · no generated recommendation",
           "سجلات معتمدة مباشرة · مخرجات مزود الذكاء الاصطناعي محجوبة · دون توصية مولدة",
@@ -132,32 +129,37 @@ export default function RevampOperationalView({ locale, metrics, requirementStri
 
       {blocks.map(block => (
         <section key={block.label}>
-          <h2 className={styles.overline}>{block.label}</h2>
-          <div className={styles.operationalGrid}>
+          <h2 className="tl-meta">{block.label}</h2>
+          <div className="kpi-grid">
             {block.metrics.map(metric => <OperationalCard key={metric.title} locale={locale} {...metric} />)}
           </div>
         </section>
       ))}
 
-      <section className={styles.capacityCard}>
-        <div className={styles.capacityHead}>
+      <section className="panel stack">
+        <div className="panel-row">
           <h2>{copy(locale, "Inspector capacity", "طاقة المفتشين")}</h2>
-          <span>{copy(locale, "Planned + in progress; declared daily capacity is not configured", "المخطط + قيد التنفيذ؛ الطاقة اليومية المعلنة غير مهيأة")}</span>
+          <span className="tl-meta">{copy(locale, "Planned + in progress; declared daily capacity is not configured", "المخطط + قيد التنفيذ؛ الطاقة اليومية المعلنة غير مهيأة")}</span>
         </div>
-        <div className={styles.capacityRows}>
+        <div className="table-wrap">
+          <table className="table">
+            <thead><tr><th>{copy(locale, "Inspector", "المفتش")}</th><th>{copy(locale, "Active workload", "عبء العمل النشط")}</th><th>{copy(locale, "Daily capacity", "الطاقة اليومية")}</th></tr></thead>
+            <tbody>
           {operational.workload.length ? operational.workload.slice(0, 8).map(row => (
-            <div className={styles.capacityRow} key={row.id}>
-              <span>{row.name}</span>
-              <span className={styles.capacityTrack}><span style={{ inlineSize: `${Math.max(3, row.active / maxActive * 100)}%` }} /></span>
-              <strong>{row.active}</strong>
-            </div>
-          )) : <p className={styles.empty}>{copy(locale, "No inspector assignments are visible in this scope.", "لا توجد إسنادات مفتشين ظاهرة ضمن هذا النطاق.")}</p>}
+            <tr key={row.id}>
+              <th scope="row">{row.name}</th>
+              <td className="cell-num">{row.active}</td>
+              <td><span className="badge badge-pending">{copy(locale, "Not configured", "غير مهيأ")}</span></td>
+            </tr>
+          )) : <tr><td colSpan={3}>{copy(locale, "No inspector assignments are visible in this scope.", "لا توجد إسنادات مفتشين ظاهرة ضمن هذا النطاق.")}</td></tr>}
+            </tbody>
+          </table>
         </div>
-        <a className={styles.secondaryAction} href="/execution">{copy(locale, "Open Execution, grouped by inspector", "فتح التنفيذ مجمعاً حسب المفتش")}</a>
+        <a className="btn btn-secondary" href="/execution">{copy(locale, "Open Execution, grouped by inspector", "فتح التنفيذ مجمعاً حسب المفتش")}</a>
       </section>
 
-      <section className={styles.requirementCoverage} aria-labelledby="operational-requirement-coverage">
-        <div className={styles.sectionHead}>
+      <section className="panel stack" aria-labelledby="operational-requirement-coverage">
+        <div className="panel-row">
           <div>
             <h2 id="operational-requirement-coverage">{copy(locale, "Operational requirement coverage", "تغطية المتطلبات التشغيلية")}</h2>
             <p>{copy(locale, "All dashboard.xlsx operational measures are shown with their governed live or blocked state and auditable methodology.", "تُعرض جميع المقاييس التشغيلية في dashboard.xlsx بحالتها المباشرة أو المحجوبة المعتمدة ومنهجيتها القابلة للتدقيق.")}</p>

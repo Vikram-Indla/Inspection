@@ -131,9 +131,7 @@ function Bars({ rows, empty, suffix = "" }: {
   return <div className={styles.bars}>
     {rows.slice(0, 8).map(row => <div className={styles.barRow} key={row.label}>
       <span className={styles.barLabel} title={row.label}>{row.label}</span>
-      <span className={styles.track} aria-hidden="true">
-        <span className={styles.fill} style={{ inlineSize: `${Math.max(3, (row.value / max) * 100)}%` }} />
-      </span>
+      <progress className={styles.track} value={row.value} max={max}>{row.value}</progress>
       <strong className={styles.barValue}>{row.value}{suffix}</strong>
     </div>)}
   </div>;
@@ -189,25 +187,27 @@ export function DashboardControls({ locale, view, params, from, to, region, quer
   refreshedAt: string;
   partialSources: string[];
 }) {
-  return <header className={styles.command}>
-    <form action="/dashboard" method="get" className={styles.seg} role="tablist" aria-label={copy(locale, "Dashboard perspective", "منظور لوحة القيادة")}>
+  return <header className="grid-toolbar">
+    <form action="/dashboard" method="get" className="seg" role="tablist" aria-label={copy(locale, "Dashboard perspective", "منظور لوحة القيادة")}>
       <input type="hidden" name="group" value={params.group ?? "region"} />
       {query ? <input type="hidden" name="q" value={query} /> : null}
       <input type="hidden" name="from" value={from} />
       <input type="hidden" name="to" value={to} />
       {region ? <input type="hidden" name="region" value={region} /> : null}
-      <button className={styles.segOpt} type="submit" name="view" value="strategic"
+      <button className="seg-opt" type="submit" name="view" value="strategic"
+        aria-pressed={view === "strategic"}
         role="tab" aria-selected={view === "strategic"}
         id="dashboard-tab-strategic" aria-controls="dashboard-strategic">
         {copy(locale, "Strategic View", "المنظور الاستراتيجي")}
       </button>
-      <button className={styles.segOpt} type="submit" name="view" value="operational"
+      <button className="seg-opt" type="submit" name="view" value="operational"
+        aria-pressed={view === "operational"}
         role="tab" aria-selected={view === "operational"}
         id="dashboard-tab-operational" aria-controls="dashboard-operational">
         {copy(locale, "Operational View", "المنظور التشغيلي")}
       </button>
     </form>
-    {partialSources.length > 0 && <div className={styles.partialDetail} role="alert">
+    {partialSources.length > 0 && <div className="alert alert-critical" role="alert">
       <strong>{copy(locale, "Partial dashboard", "لوحة قيادة جزئية")}</strong>
       <span>{partialSources.join(" · ")}</span>
     </div>}
@@ -216,9 +216,9 @@ export function DashboardControls({ locale, view, params, from, to, region, quer
         actually needs, and it is the honest frame for every number below.
         Riyadh is named because the whole dashboard is scoped to that calendar
         day, so an unlabelled clock time would be ambiguous. */}
-    <span className={styles.grow} />
-    <p className={styles.scopeLine}>
-      <span className={styles.tlMeta}>
+    <span className="grow" />
+    <p className="desc">
+      <span className="tl-meta">
         {copy(locale, "As of", "حتى")} {refreshedAt} · {copy(locale, "Riyadh", "الرياض")}
       </span>
     </p>
@@ -379,7 +379,7 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
               </span>
             </>
           ) : (
-            <span className="badge badge-neutral">{copy(locale, "Not available", "غير متاح")}</span>
+            <span className="badge badge-pending">{copy(locale, "Not available", "غير متاح")}</span>
           )}
         </div>
         <div className={styles.assuranceFact}>
@@ -393,7 +393,7 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
       {/* Governed absence consolidated into one register — repeated warning
           pills made disciplined absence read as a broken product. */}
       <div className={styles.governanceNote}>
-        <span className="badge badge-neutral">
+        <span className="badge badge-pending">
           {copy(locale, "Measures awaiting governance", "قياسات بانتظار الحوكمة")}
         </span>
         <span>
@@ -616,7 +616,7 @@ export function OperationalView({ locale, metrics, projection, factoryCoords, pa
         {operational.workload.length
           ? <div className={styles.bars}>{operational.workload.slice(0, 8).map(row => <div className={styles.barRow} key={row.id}>
             <span className={styles.barLabel} dir="auto" title={row.name}>{row.name}</span>
-            <span className={styles.track} aria-hidden="true"><span className={styles.fill} style={{ inlineSize: `${(row.active / workloadMax) * 100}%` }} /></span>
+            <progress className={styles.track} value={row.active} max={workloadMax}>{row.active}</progress>
             <strong className={styles.barValue}>{row.active}</strong>
           </div>)}</div>
           : <div className={styles.empty} role="status">{copy(locale, "No assignments are visible in this scope.", "لا توجد إسنادات ظاهرة ضمن هذا النطاق.")}</div>}

@@ -4,7 +4,6 @@ import { Suspense, useCallback, useState } from "react";
 import dynamic from "next/dynamic";
 import type { LiveFactory, LiveRegion, LiveInspector } from "./types";
 import EmptyState from "@/components/EmptyState";
-import styles from "./live.module.css";
 import Link from "next/link";
 
 export type LiveOpsStrings = {
@@ -110,19 +109,19 @@ export default function LiveOps({
     ? s.recordedState
     : inspector.positionState === "rejected" ? s.rejectedState : s.unavailableState;
   const provenanceClass = (inspector: LiveInspector) => inspector.positionState === "recorded"
-    ? styles.provenanceRecorded
-    : inspector.positionState === "rejected" ? styles.provenanceRejected : styles.provenanceUnavailable;
+    ? "badge-compliant"
+    : inspector.positionState === "rejected" ? "badge-critical" : "badge-pending";
 
   return (
-    <div className={`${styles.page} ${wallboard ? styles.wallboard : ""}`} data-testid="operations-live">
-      <header className={styles.header}>
+    <div className="stack" data-testid="operations-live" data-wallboard={wallboard ? "true" : "false"}>
+      <header className="page-header">
         <div>
-          <div className={styles.provenanceLegend} aria-label={s.dataIntegrity}>
-            <span className={`${styles.provenance} ${styles.provenanceRecorded}`}>{s.recordedState}</span>
-            <span className={`${styles.provenance} ${styles.provenanceUnavailable}`}>{s.unavailableState}</span>
-            <span className={`${styles.provenance} ${styles.provenanceRejected}`}>{s.rejectedState}</span>
+          <div className="row" aria-label={s.dataIntegrity}>
+            <span className="badge badge-compliant">{s.recordedState}</span>
+            <span className="badge badge-pending">{s.unavailableState}</span>
+            <span className="badge badge-critical">{s.rejectedState}</span>
           </div>
-          <p className={styles.freshness}>
+          <p className="tl-meta">
             <span>{s.snapshotGenerated}: <time data-testid="live-snapshot-at" dateTime={snapshotAt}>{formattedSnapshotAt}</time></span>
             <span>{formattedPositionObservedAt
               ? <>{s.lastObserved}: <time dateTime={positionObservedAt!}>{formattedPositionObservedAt}</time></>
@@ -130,36 +129,36 @@ export default function LiveOps({
             <span>{s.freshnessPolicy}</span>
           </p>
           {excludedRecordCount > 0 ? (
-            <p className={styles.dataIntegrity} role="status">
+            <p className="alert alert-warning" role="status">
               {s.dataIntegrity} <strong>{excludedRecordCount}</strong>
             </p>
           ) : null}
           {outOfScopeRecordCount > 0 ? (
-            <p className={styles.dataIntegrity} role="status">
+            <p className="alert alert-warning" role="status">
               {s.outOfScopeGeography} <strong>{outOfScopeRecordCount}</strong>
             </p>
           ) : null}
-          {positionReadError ? <p className={styles.partialSource} role="alert">{s.partialSource}</p> : null}
-          {factoryReadError ? <p className={styles.partialSource} role="status">{s.factorySourceUnavailable}</p> : null}
+          {positionReadError ? <p className="alert alert-critical" role="alert">{s.partialSource}</p> : null}
+          {factoryReadError ? <p className="alert alert-warning" role="status">{s.factorySourceUnavailable}</p> : null}
         </div>
-        {wallboard ? <Link className="sq-btn sq-btn--secondary" href="/operations/live">{s.wallboardExit}</Link> : null}
+        {wallboard ? <Link className="btn btn-secondary" href="/operations/live">{s.wallboardExit}</Link> : null}
       </header>
 
-      <div className={styles.counters} aria-label={s.totalsLabel}>
-        <article className={styles.counter}><strong>{inspectors.length}</strong><span>{s.active}</span></article>
-        <article className={styles.counter}><strong>{enRoute}</strong><span>{s.enRoute}</span></article>
-        <article className={styles.counter}><strong>{arrived}</strong><span>{s.arrived}</span></article>
+      <div className="kpi-grid" aria-label={s.totalsLabel}>
+        <article className="panel kpi"><strong className="sq-kpi__value">{inspectors.length}</strong><span>{s.active}</span></article>
+        <article className="panel kpi"><strong className="sq-kpi__value">{enRoute}</strong><span>{s.enRoute}</span></article>
+        <article className="panel kpi"><strong className="sq-kpi__value">{arrived}</strong><span>{s.arrived}</span></article>
       </div>
 
-      <div className={styles.workspace}>
-        <section className={styles.mapFrame} aria-label={s.mapAriaLabel}>
+      <div className="sq-grid-2">
+        <section className="map-panel" aria-label={s.mapAriaLabel}>
           {visitReadError ? (
             <EmptyState glyph="!" title={s.loadError} bare role="alert">
-              <button className="sq-btn sq-btn--secondary" type="button" onClick={() => window.location.reload()}>{s.retry}</button>
+              <button className="btn btn-secondary" type="button" onClick={() => window.location.reload()}>{s.retry}</button>
             </EmptyState>
           ) : providerFailed ? (
             <EmptyState glyph="⌖" title={s.providerFailed} bare role="status">
-              <button className="sq-btn sq-btn--secondary" type="button" onClick={retryProvider}>{s.retry}</button>
+              <button className="btn btn-secondary" type="button" onClick={retryProvider}>{s.retry}</button>
             </EmptyState>
           ) : (
             <>
@@ -180,71 +179,71 @@ export default function LiveOps({
                 />
               </Suspense>
               {noScopeRows || hasNoPositions ? (
-                <p className={styles.mapNotice} role="status">{noScopeRows ? s.noScope : s.noPositions}</p>
+                <p className="alert alert-warning" role="status">{noScopeRows ? s.noScope : s.noPositions}</p>
               ) : null}
             </>
           )}
         </section>
 
-        <aside className={styles.list} aria-labelledby="live-inspector-list-title">
-          <div className={styles.listHeader}>
+        <aside className="panel stack" aria-labelledby="live-inspector-list-title">
+          <div className="panel-row">
             <h2 id="live-inspector-list-title">{s.activeList}</h2>
-            <span className="sq-lozenge sq-lozenge--neutral">{inspectors.length}</span>
+            <span className="badge badge-info">{inspectors.length}</span>
           </div>
           {selectedInspector ? (
             <section
-              className={styles.selectionCard}
+              className="panel stack"
               aria-live="polite"
               aria-labelledby="selected-inspector-title"
               data-testid="live-inspector-details"
             >
-              <div className={styles.selectionHeader}>
+              <div className="panel-row">
                 <h3 id="selected-inspector-title">{s.selectedInspector}</h3>
-                <button type="button" onClick={() => setSelectedId(null)} aria-label={s.closeDetails}>×</button>
+                <button className="btn btn-secondary btn-icon" type="button" onClick={() => setSelectedId(null)} aria-label={s.closeDetails}>×</button>
               </div>
-              <dl className={styles.selectionDetails}>
-                <div><dt>{s.inspectorName}</dt><dd><bdi dir="auto">{selectedInspector.inspector}</bdi></dd></div>
-                <div><dt>{s.factoryName}</dt><dd>{selectedInspector.factoryName}</dd></div>
-                <div><dt>{s.regionName}</dt><dd>{selectedInspector.region}</dd></div>
-                <div><dt>{s.operationalState}</dt><dd>{selectedInspector.stateLabel}</dd></div>
-                <div>
+              <dl className="stack">
+                <div className="panel-row"><dt>{s.inspectorName}</dt><dd><bdi dir="auto">{selectedInspector.inspector}</bdi></dd></div>
+                <div className="panel-row"><dt>{s.factoryName}</dt><dd>{selectedInspector.factoryName}</dd></div>
+                <div className="panel-row"><dt>{s.regionName}</dt><dd>{selectedInspector.region}</dd></div>
+                <div className="panel-row"><dt>{s.operationalState}</dt><dd>{selectedInspector.stateLabel}</dd></div>
+                <div className="panel-row">
                   <dt>{s.since}</dt>
                   <dd>{selectedInspector.sinceAt
                     ? <time dateTime={selectedInspector.sinceAt}>{selectedInspector.sinceLabel}</time>
                     : selectedInspector.sinceLabel}</dd>
                 </div>
-                <div><dt>{s.visitReference}</dt><dd>{selectedInspector.visitId}</dd></div>
-                <div>
+                <div className="panel-row"><dt>{s.visitReference}</dt><dd>{selectedInspector.visitId}</dd></div>
+                <div className="panel-row">
                   <dt>{s.positionSourceField}</dt>
                   <dd>{selectedInspector.positionSourceLabel ?? s.sourceNotRecorded}</dd>
                 </div>
-                <div>
+                <div className="panel-row">
                   <dt>{s.positionObservedField}</dt>
                   <dd>{selectedInspector.positionObservedAt
                     ? <time dateTime={selectedInspector.positionObservedAt}>{selectedInspector.positionObservedLabel}</time>
                     : selectedInspector.positionObservedLabel}</dd>
                 </div>
               </dl>
-              <p className={`${styles.provenance} ${provenanceClass(selectedInspector)}`}>
+              <p className={`badge ${provenanceClass(selectedInspector)}`}>
                 {provenanceLabel(selectedInspector)}
               </p>
-              <Link className="sq-btn sq-btn--secondary" href={`/visits/${selectedInspector.visitId}`}>{s.openVisit}</Link>
+              <Link className="btn btn-secondary" href={`/visits/${selectedInspector.visitId}`}>{s.openVisit}</Link>
             </section>
           ) : null}
           {inspectors.length ? (
-            <ul className={styles.listItems}>
+            <ul className="stack">
               {inspectors.map(inspector => (
                 <li key={inspector.id}>
                   <button
                     type="button"
-                    className={styles.listButton}
+                    className="panel panel-row"
                     aria-pressed={selectedId === inspector.id}
                     onClick={() => setSelectedId(inspector.id)}
                   >
                     <span>
                       <strong>{inspector.factoryName}</strong>
                       <small>{inspector.region} · <bdi dir="auto">{inspector.inspector}</bdi></small>
-                      <span className={`${styles.provenance} ${provenanceClass(inspector)}`}>
+                      <span className={`badge ${provenanceClass(inspector)}`}>
                         {provenanceLabel(inspector)}
                       </span>
                       <small>
@@ -256,7 +255,7 @@ export default function LiveOps({
                       </small>
                     </span>
                     <span>
-                      <span className="sq-lozenge sq-lozenge--info">{inspector.stateLabel}</span>
+                      <span className="badge badge-info">{inspector.stateLabel}</span>
                       <small>
                         {s.since}: {inspector.sinceAt
                           ? <time data-live-since dateTime={inspector.sinceAt}>{inspector.sinceLabel}</time>
@@ -268,14 +267,13 @@ export default function LiveOps({
               ))}
             </ul>
           ) : (
-            <p className={styles.emptyList}>{noScopeRows ? s.noScope : s.noPositions}</p>
+            <section className="saqeel-state"><div className="saqeel-state__content"><h2>{s.activeList}</h2><p>{noScopeRows ? s.noScope : s.noPositions}</p></div></section>
           )}
         </aside>
       </div>
 
-      <footer className={styles.legend} role="note">
-        <span className={styles.marker} aria-hidden="true">●</span>
-        <span>{s.inspector}</span>
+      <footer className="panel-row" role="note">
+        <span className="badge badge-info">{s.inspector}</span>
         <strong>{s.freshnessPolicy}</strong>
       </footer>
     </div>

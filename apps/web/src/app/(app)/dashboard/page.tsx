@@ -295,17 +295,17 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   }).format(new Date(nowMs));
   const partialSources = Array.from(new Set([...failedSources, ...policy.failedSources]));
   if (unsupportedView) {
-    return <section className="panel" role="status" style={{ padding: "var(--space-6)", display: "grid", gap: "var(--space-3)" }}>
+    return <section className="panel stack" role="status">
       <h2 className="panel-title">{text("Dashboard view not configured", "منظور لوحة القيادة غير مهيأ")}</h2>
-      <p className="t-body">{text(`The “${unsupportedView}” perspective is not an approved M1 view. Choose an available perspective.`, `المنظور «${unsupportedView}» ليس منظوراً معتمداً في M1. اختر منظوراً متاحاً.`)}</p>
-      <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
-        <a className="sq-btn sq-btn--primary" href="/dashboard?view=strategic">{text("Open Strategic View", "فتح المنظور الاستراتيجي")}</a>
-        <a className="sq-btn sq-btn--secondary" href="/dashboard?view=operational">{text("Open Operational View", "فتح المنظور التشغيلي")}</a>
+      <p className="desc">{text(`The “${unsupportedView}” perspective is not an approved M1 view. Choose an available perspective.`, `المنظور «${unsupportedView}» ليس منظوراً معتمداً في M1. اختر منظوراً متاحاً.`)}</p>
+      <div className="row">
+        <a className="btn btn-primary" href="/dashboard?view=strategic">{text("Open Strategic View", "فتح المنظور الاستراتيجي")}</a>
+        <a className="btn btn-secondary" href="/dashboard?view=operational">{text("Open Operational View", "فتح المنظور التشغيلي")}</a>
       </div>
     </section>;
   }
 
-  return <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+  return <div className="stack">
       {/* The DEC-032 submission-verification caveat is NOT dropped — it moved to
           where it applies. It is a statement about what the counts mean, so it
           now renders as a "Verification" lineage row on every metric's basis
