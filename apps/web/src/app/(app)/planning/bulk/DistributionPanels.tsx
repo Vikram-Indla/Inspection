@@ -19,27 +19,21 @@ export type DistributionStrings = {
 function Panel({ dist, strings, focusedValue }: { dist: Distribution; strings: DistributionStrings; focusedValue?: string }) {
   const max = Math.max(1, ...dist.buckets.map(b => b.count));
   return (
-    <section className="panel" aria-label={dist.heading}
-      style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-      <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
-        <h4 style={{ margin: 0 }}>{dist.heading}</h4>
+    <section className="panel" aria-label={dist.heading}>
+      <header className="panel-header">
+        <h3 className="panel-title">{dist.heading}</h3>
         <span className="t-caption numeric">{strings.ofDenominator.replace("{n}", String(dist.total))}</span>
-      </div>
-      <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+      </header>
+      <ul className="panel-body stack">
         {dist.buckets.map(b => {
-          const pct = Math.round((b.count / max) * 100);
           const isFocused = focusedValue != null && b.label.toLowerCase() === focusedValue.toLowerCase();
           return (
-            <li key={b.label} className="row"
-              style={{ gap: "var(--space-3)", alignItems: "center", outline: isFocused ? "2px solid var(--action-primary)" : undefined, borderRadius: "var(--radius-xs)" }}>
-              <span style={{ minInlineSize: 120, flexShrink: 0 }}>
+            <li key={b.label} className="row" aria-current={isFocused ? "true" : undefined}>
+              <span className="grow">
                 {b.unknown ? <span className="badge badge-warning">? {strings.unknown}</span> : <bdi>{b.label}</bdi>}
               </span>
-              <span aria-hidden="true" style={{
-                blockSize: 8, inlineSize: `${pct}%`, minInlineSize: 2,
-                background: "var(--action-primary)", borderRadius: "var(--radius-xs)",
-              }} />
-              <span className="numeric t-caption" style={{ marginInlineStart: "auto" }}>{b.count}</span>
+              <progress max={max} value={b.count} aria-label={`${b.label}: ${b.count}`} />
+              <span className="numeric t-caption">{b.count}</span>
             </li>
           );
         })}
@@ -55,12 +49,11 @@ export default function DistributionPanels({ distributions, strings, focusedFiel
   focusedValue?: string | null;
 }) {
   return (
-    <section aria-label={strings.heading}
-      style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: "var(--space-4)" }}>
+    <section className="sq-grid-2" aria-label={strings.heading}>
       {distributions.map(d => (
-        <div key={d.key}>
+        <div key={d.key} className="stack">
           <Panel dist={d} strings={strings} focusedValue={d.key === focusedField ? (focusedValue ?? undefined) : undefined} />
-          {d.key === "risk_band" && <p className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>{strings.riskAdvisory}</p>}
+          {d.key === "risk_band" && <p className="t-caption">{strings.riskAdvisory}</p>}
         </div>
       ))}
     </section>

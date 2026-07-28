@@ -64,7 +64,7 @@ function LRow({ mark, text }: { mark: Mark; text: string }) {
   return (
     <div className="cd-lrow">
       <span className={`cd-lrow__mark ${mark}`} aria-hidden="true">{glyph}</span>
-      <div className="cd-lrow__body"><div className="cd-lrow__d" style={{ color: "var(--text-primary)" }}>{text}</div></div>
+      <div className="cd-lrow__body"><div className="cd-lrow__v">{text}</div></div>
     </div>
   );
 }
@@ -74,7 +74,7 @@ export default function EvidenceLedger({ focus, strings: s }: { focus: LedgerFoc
     return (
       <div className="cd-lgroup" role="group" aria-label={s.noneTitle}>
         <div className="cd-lgroup__head">{s.noneTitle}</div>
-        <p className="t-caption" style={{ margin: 0 }}>{s.noneBody}</p>
+        <p className="t-caption">{s.noneBody}</p>
       </div>
     );
   }

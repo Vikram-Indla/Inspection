@@ -138,12 +138,12 @@ export default function CriteriaBuilder({
       const inputType = def.type === "date" ? "date" : "number";
       return (
         <>
-          <div className="field" style={{ maxInlineSize: 150 }}>
+          <div className="field">
             <label className="sq-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
             <input className="input" id={`crit-value-${key}`} type={inputType} value={a} aria-invalid={isEmpty || undefined}
               onChange={e => patchValue(join(e.target.value, b))} />
           </div>
-          <div className="field" style={{ maxInlineSize: 150 }}>
+          <div className="field">
             <label className="sq-field__label" htmlFor={`crit-value2-${key}`}>{strings.valueToLabel}</label>
             <input className="input" id={`crit-value2-${key}`} type={inputType} value={b} aria-invalid={isEmpty || undefined}
               onChange={e => patchValue(join(a, e.target.value))} />
@@ -153,7 +153,7 @@ export default function CriteriaBuilder({
     }
     if (def.type === "number") {
       return (
-        <div className="field" style={{ maxInlineSize: 150 }}>
+        <div className="field">
           <label className="sq-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
           <input className="input" id={`crit-value-${key}`} type="number" value={c.value} aria-invalid={isEmpty || undefined}
             onChange={e => patchValue(e.target.value)} placeholder={strings.valuePlaceholder} />
@@ -162,7 +162,7 @@ export default function CriteriaBuilder({
     }
     if (def.type === "date") {
       return (
-        <div className="field" style={{ maxInlineSize: 170 }}>
+        <div className="field">
           <label className="sq-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
           <input className="input" id={`crit-value-${key}`} type="date" value={c.value} aria-invalid={isEmpty || undefined}
             onChange={e => patchValue(e.target.value)} />
@@ -171,7 +171,7 @@ export default function CriteriaBuilder({
     }
     // text / enum — free input with governed suggestions; "one of" is a comma list.
     return (
-      <div className="field" style={{ maxInlineSize: 210 }}>
+      <div className="field grow">
         <label className="sq-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
         <input className="input" id={`crit-value-${key}`} list={`vals-${key}`} value={c.value} aria-invalid={isEmpty || undefined}
           onChange={e => patchValue(e.target.value)} placeholder={strings.valuePlaceholder} />
@@ -189,9 +189,8 @@ export default function CriteriaBuilder({
     const isFocused = focusedPath === key;
     const def = fieldOf(c.field);
     return (
-    <li role="treeitem" aria-label={strings.conditionItem} className="row"
-      style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--space-3)" }}>
-      <div className="field" style={{ maxInlineSize: 200 }}>
+    <li role="treeitem" aria-label={strings.conditionItem} className="grid-toolbar">
+      <div className="field">
         <label className="sq-field__label" htmlFor={`crit-field-${key}`}>{strings.fieldLabel}</label>
         <select className="select" id={`crit-field-${key}`} value={c.field}
           onChange={e => {
@@ -204,7 +203,7 @@ export default function CriteriaBuilder({
           ))}
         </select>
       </div>
-      <div className="field" style={{ maxInlineSize: 150 }}>
+      <div className="field">
         <label className="sq-field__label" htmlFor={`crit-op-${key}`}>{strings.opLabel}</label>
         <select className="select" id={`crit-op-${key}`} value={c.op}
           onChange={e => patchCond(parentPath, idx, { op: e.target.value as Op, value: "" })}>
@@ -213,10 +212,9 @@ export default function CriteriaBuilder({
       </div>
       {valueInput(c, parentPath, idx, key)}
       {contribution != null && (
-        <button type="button" className="btn btn-ghost numeric btn-touch" aria-pressed={isFocused}
+        <button type="button" className={isFocused ? "btn btn-tertiary numeric btn-touch" : "btn btn-ghost numeric btn-touch"} aria-pressed={isFocused}
           onClick={() => onFocus?.(isFocused ? null : key)}
-          aria-label={(isFocused ? strings.unfocusLabel : strings.contributionLabel.replace("{n}", String(contribution)))}
-          style={isFocused ? { borderColor: "var(--action-primary)", fontWeight: 600 } : undefined}>
+          aria-label={(isFocused ? strings.unfocusLabel : strings.contributionLabel.replace("{n}", String(contribution)))}>
           {contribution}
         </button>
       )}
@@ -228,10 +226,9 @@ export default function CriteriaBuilder({
   };
 
   const renderGroup = (g: GroupNode, path: number[]): React.ReactNode => (
-    <li role="treeitem" aria-label={strings.groupItem}
-      style={{ listStyle: "none", borderInlineStart: "2px solid var(--border-subtle)", paddingInlineStart: "var(--space-4)" }}>
-      <div className="row" style={{ alignItems: "flex-end", gap: "var(--space-3)", flexWrap: "wrap" }}>
-        <div className="field" style={{ maxInlineSize: 220 }}>
+    <li role="treeitem" aria-label={strings.groupItem} className="panel">
+      <div className="panel-header">
+        <div className="field grow">
           <label className="sq-field__label" htmlFor={`crit-combine-${path.length ? pathKey(path) : "root"}`}>{strings.combineLabel}</label>
           <select className="select" id={`crit-combine-${path.length ? pathKey(path) : "root"}`} value={g.combine} onChange={e => setCombine(path, e.target.value as "all" | "any")}>
             <option value="all">{strings.combineAll}</option>
@@ -242,14 +239,14 @@ export default function CriteriaBuilder({
           <button type="button" className="btn btn-ghost btn-touch" onClick={() => removeAt(path.slice(0, -1), path[path.length - 1])}>{strings.removeGroup}</button>
         )}
       </div>
-      <ul role="group" style={{ listStyle: "none", margin: "var(--space-3) 0 0", padding: 0, display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+      <ul role="group" className="panel-body stack">
         {g.children.map((child, i) =>
           child.kind === "cond"
             ? <span key={i}>{renderCond(child, path, i, g.children.length)}</span>
             : <span key={i}>{renderGroup(child, [...path, i])}</span>
         )}
       </ul>
-      <div className="row" style={{ gap: "var(--space-3)", marginBlockStart: "var(--space-3)" }}>
+      <div className="panel-row">
         <button type="button" className="btn btn-secondary btn-touch" onClick={() => addCond(path)}>{strings.addCondition}</button>
         <button type="button" className="btn btn-ghost btn-touch" onClick={() => addGroup(path)}>{strings.addGroup}</button>
       </div>
@@ -258,15 +255,14 @@ export default function CriteriaBuilder({
 
   return (
     <form method="get" action="/planning/bulk" className="panel"
-      onSubmit={e => { if (invalid.length > 0) { e.preventDefault(); setShowInvalid(true); } }}
-      style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-      <h4 style={{ margin: 0 }}>{strings.heading}</h4>
+      onSubmit={e => { if (invalid.length > 0) { e.preventDefault(); setShowInvalid(true); } }}>
+      <header className="panel-header"><h3 className="panel-title">{strings.heading}</h3></header>
       <input type="hidden" name="ct" value={ct} />
-      <ul role="tree" aria-label={strings.heading} style={{ listStyle: "none", margin: 0, padding: 0 }}>
+      <ul role="tree" aria-label={strings.heading} className="panel-body stack">
         {renderGroup(tree, [])}
       </ul>
       {notSuppliedFields.length > 0 && (
-        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
+        <ul className="panel-body stack">
           {notSuppliedFields.map(f => (
             <li key={f.key} className="t-caption">
               <span className="sq-lozenge sq-lozenge--warning">{f.label} · {strings.notSuppliedTag}</span> — {f.reason}
@@ -280,7 +276,7 @@ export default function CriteriaBuilder({
           <p>{strings.invalidBody.replace("{n}", String(invalid.length))}</p>
         </div>
       )}
-      <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap", alignItems: "center" }}>
+      <div className="panel-row">
         <button className="btn btn-primary btn-lg btn-touch">{strings.apply}</button>
         <a className="btn btn-ghost btn-touch" href="/planning/bulk">{strings.clear}</a>
         <span className="t-caption numeric" role="status" aria-live="polite">{strings.matching.replace("{n}", String(matchCount))}</span>
