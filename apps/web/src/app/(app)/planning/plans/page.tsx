@@ -44,7 +44,7 @@ export default async function PlanRegister() {
     );
   }
   const { data, error } = await sb.from("visit_plans")
-    .select("id, method, status, created_at, published_at, profiles(full_name), visits(count)")
+    .select("id, method, status, created_at, published_at, profiles!visit_plans_created_by_fkey(full_name), visits(count)")
     .order("created_at", { ascending: false })
     .limit(500);
   if (error) {

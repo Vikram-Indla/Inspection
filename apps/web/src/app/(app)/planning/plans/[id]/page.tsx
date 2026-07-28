@@ -63,7 +63,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
   // lapsed windows in between ticks. No per-page-load mutating RPC (K-009).
   const [{ data: plan, error: pErr }, { data: kids, error: kErr }] = await Promise.all([
     sb.from("visit_plans")
-      .select("id, method, status, criteria, created_at, published_at, profiles(full_name)")
+      .select("id, method, status, criteria, created_at, published_at, profiles!visit_plans_created_by_fkey(full_name)")
       .eq("id", id).maybeSingle(),
     sb.from("visits")
       .select(`id, visit_type, execution_mode, planning_status, operational_state, window_start, window_end,
