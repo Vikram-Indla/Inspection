@@ -202,7 +202,10 @@ function countSelect(f: PlanningListFilters): string {
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function applyFilters(query: any, tab: PlanningTab, filters: PlanningListFilters) {
-  let q = query;
+  // A visit without its governed human-readable reference is not a usable
+  // planning record. Keep legacy/incomplete rows out of customer-facing lists
+  // rather than exposing a database UUID or a meaningless fallback label.
+  let q = query.not("visit_reference", "is", null).neq("visit_reference", "");
   if (tab === "draft") q = q.in("planning_status", ["draft", "validated"]); // validated folds into Draft — never a user tab
   else if (tab !== "all") q = q.eq("planning_status", tab);
   if (filters.method) q = q.eq("visit_plans.method", filters.method);

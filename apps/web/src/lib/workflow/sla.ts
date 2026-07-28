@@ -25,8 +25,8 @@ export type SlaActivation = { activatable: boolean; reason: string };
 /** DEC-003 activation gate. Blocks unless the calendar is authorized AND fully
  *  specified AND a duration is supplied. Never assumes a default calendar. */
 export function canActivateSla(calendar: SlaCalendar | null | undefined, durationMinutes: number | null | undefined): SlaActivation {
-  if (!calendar) return { activatable: false, reason: "No SLA calendar (DEC-003 unresolved) — activation blocked, timer stays pending." };
-  if (!calendar.activationAuthorized) return { activatable: false, reason: "Calendar activation is not authorized (DEC-003 decision not recorded)." };
+  if (!calendar) return { activatable: false, reason: "No SLA calendar ( unresolved) — activation blocked, timer stays pending." };
+  if (!calendar.activationAuthorized) return { activatable: false, reason: "Calendar activation is not authorized ( decision not recorded)." };
   if (!calendar.workingDays?.length || calendar.workingStartMinutes == null || calendar.workingEndMinutes == null) {
     return { activatable: false, reason: "Calendar is not fully specified (working days/hours) — governed inputs missing." };
   }

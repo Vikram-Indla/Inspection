@@ -52,10 +52,17 @@ export async function AppShell({ children }: { children: ReactNode }) {
   }
   const groups = buildShellNavigation(roles).map(group => ({
     id: group.id,
-    label: t(group.labelKey, locale === "ar" ? group.labelAr : group.labelEn),
+    labelEn: group.labelEn,
+    labelAr: group.labelAr,
+    // The shell catalogue already carries reviewed bilingual labels. Do not
+    // allow a stale/incorrect runtime catalogue row to turn the Arabic rail
+    // back into English.
+    label: locale === "ar" ? group.labelAr : t(group.labelKey, group.labelEn),
     items: group.items.map(item => ({
       id: item.id,
-      label: t(item.labelKey, locale === "ar" ? item.labelAr : item.labelEn),
+      labelEn: item.labelEn,
+      labelAr: item.labelAr,
+      label: locale === "ar" ? item.labelAr : t(item.labelKey, item.labelEn),
       href: item.href,
       icon: item.icon,
       businessTab: item.businessTab,
@@ -65,8 +72,12 @@ export async function AppShell({ children }: { children: ReactNode }) {
         ? t(item.disabledReasonKey, locale === "ar" ? item.disabledReasonAr! : item.disabledReasonEn!)
         : undefined,
       parentId: item.parentId,
+      parentLabelEn: item.parentLabelEn,
+      parentLabelAr: item.parentLabelAr,
       parentLabel: item.parentLabelKey
-        ? t(item.parentLabelKey, locale === "ar" ? item.parentLabelAr! : item.parentLabelEn!)
+        ? locale === "ar"
+          ? item.parentLabelAr!
+          : t(item.parentLabelKey, item.parentLabelEn!)
         : undefined,
     })),
   }));
@@ -162,14 +173,12 @@ export async function AppShell({ children }: { children: ReactNode }) {
     },
   };
 
-  const languageHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   return (
     <ShellClient
       groups={groups}
       strings={shellStrings}
       bellStrings={bellStrings}
       locale={locale}
-      languageHref={languageHref}
       email={user.email ?? user.id}
       displayName={profile?.full_name?.trim() || (user.email ?? user.id).split("@")[0]}
       roleTitles={roleTitles}

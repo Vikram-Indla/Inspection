@@ -85,7 +85,7 @@ export default async function Factories({ searchParams }: {
       {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("f360.err.load", "Couldn’t load factories.")}</strong> {t("f360.err.neutral", "The Factory list is temporarily unavailable. Nothing was changed.")} — {t("f360.err.retry", "retry")}.</div></div>}
       {!error && isEmpty && (
         <EmptyState glyph="🏭" title={t("f360.empty.title", "No factories in the list")}
-          body={t("f360.empty.desc", "Factory identity records sync from the national source (M07-002).")} />
+          body={t("f360.empty.desc", "Factory identity records sync from the national source.")} />
       )}
       {!error && !isEmpty && <>
         <form method="get" className="sq-surface sq-row" aria-label={t("f360.list.portfolio", "Factory portfolio")}>

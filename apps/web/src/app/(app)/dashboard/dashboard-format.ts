@@ -202,8 +202,8 @@ export function buildMethodology(metric: SharedMetric, locale: Locale): Methodol
       label: t(locale, "Verification", "التحقق"),
       value: t(
         locale,
-        "Counts describe stored records visible under your access scope. Independent end-to-end submission proof is pending (DEC-032).",
-        "تصف الأعداد السجلات المخزنة الظاهرة ضمن نطاق صلاحيتك. لا يزال إثبات التقديم المستقل من البداية إلى النهاية معلقاً (DEC-032).",
+        "Counts describe stored records visible under your access scope. Independent end-to-end submission proof is pending.",
+        "تصف الأعداد السجلات المخزنة الظاهرة ضمن نطاق صلاحيتك. لا يزال إثبات التقديم المستقل من البداية إلى النهاية معلقاً.",
       ),
     },
   ];

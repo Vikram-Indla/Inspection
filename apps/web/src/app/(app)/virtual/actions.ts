@@ -23,7 +23,7 @@ export async function scheduleSession(_: VirtualActionResult, fd: FormData): Pro
   const rep_name = String(fd.get("rep_name") ?? "").trim();
   if (!visit_id) return { error: "Missing visit id." };
   if (!appointment_at || Number.isNaN(Date.parse(appointment_at)))
-    return { error: "A valid appointment date/time is required (M05-002)." };
+    return { error: "A valid appointment date/time is required." };
   if (!isPlausibleDate(appointment_at)) return { error: PLAUSIBLE_DATE_ERROR };
   if (!rep_name) return { error: "Factory representative name is required (STM-VIR-002 — identity binds to the OTP)." };
 
@@ -31,7 +31,7 @@ export async function scheduleSession(_: VirtualActionResult, fd: FormData): Pro
     .select("id, execution_mode, planning_status, factories(name), virtual_sessions(id), assignments(inspector_id, profiles(full_name))")
     .eq("id", visit_id).single();
   if (vErr) { console.error("[virtual schedule visit read]", vErr); return { error: SYSTEM_ERROR }; }
-  if (visit.execution_mode !== "virtual") return { error: "Visit is not a virtual visit (M05-002 validation)." };
+  if (visit.execution_mode !== "virtual") return { error: "Visit is not a virtual visit ( validation)." };
   if (visit.planning_status !== "published") return { error: `Visit is ${visit.planning_status} — only published visits can be scheduled (M05-002).` };
   // visits -> virtual_sessions is a TO-ONE embed (unique visit_id): object|null.
   const existing = visit.virtual_sessions as unknown;

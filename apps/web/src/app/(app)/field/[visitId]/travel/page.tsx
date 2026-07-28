@@ -70,14 +70,14 @@ export default async function FieldTravel({ params }: { params: Promise<{ visitI
     // Radius provenance — same governance wording the Startup check-in card
     // uses (field.start.factoryOverride / field.start.engineDefault), so the
     // inspector reads one consistent statement of WHERE the fence came from.
-    fenceFactoryOverride: tr("field.start.factoryOverride", "(factory override — SB20)", "(تجاوز خاص بالمنشأة — SB20)"),
-    fenceEngineDefault: tr("field.start.engineDefault", "(engine default — ENG-06)", "(الافتراضي من المحرّك — ENG-06)"),
+    fenceFactoryOverride: tr("field.start.factoryOverride", "(factory override — )", "(تجاوز خاص بالمنشأة — )"),
+    fenceEngineDefault: tr("field.start.engineDefault", "(engine default — )", "(الافتراضي من المحرّك — )"),
     fenceNotConfigured: tr("field.travel.fenceNotConfigured", "Not configured", "غير مُهيّأ"),
     fenceUnconfiguredChip: tr("field.travel.fenceUnconfiguredChip", "Radius not configured", "النطاق غير مُهيّأ"),
     fenceUnconfiguredNote: tr(
       "field.travel.fenceUnconfiguredNote",
-      "No geofence radius is governed for this establishment (no factory override — SB20, no engine default — ENG-06), so arrival range cannot be verified on this screen. Continue to the governed check-in (M04-004), which owns the arrival decision.",
-      "لا يوجد نطاق تسييج محكوم لهذه المنشأة (لا تجاوز خاص بالمنشأة — SB20 ولا افتراضي من المحرّك — ENG-06)، لذا لا يمكن التحقق من نطاق الوصول في هذه الشاشة. تابع إلى تسجيل الدخول المحكوم (M04-004) الذي يملك قرار الوصول.",
+      "No geofence radius is governed for this establishment (no factory override —, no engine default — ), so arrival range cannot be verified on this screen. Continue to the governed check-in, which owns the arrival decision.",
+      "لا يوجد نطاق تسييج محكوم لهذه المنشأة (لا تجاوز خاص بالمنشأة — ولا افتراضي من المحرّك — )، لذا لا يمكن التحقق من نطاق الوصول في هذه الشاشة. تابع إلى تسجيل الدخول المحكوم الذي يملك قرار الوصول.",
     ),
     aiRouteNote: tr("field.travel.aiRouteNote", "AI route advisory: Not configured. Traffic rerouting is a Phase 2 capability.", "استشارة المسار بالذكاء الاصطناعي: غير مهيأة. إعادة التوجيه حسب الازدحام قدرة مؤجلة إلى المرحلة الثانية."),
     accuracy: tr("field.travel.accuracy", "GPS Accuracy", "دقة الموقع"),
@@ -86,7 +86,7 @@ export default async function FieldTravel({ params }: { params: Promise<{ visitI
     noCoords: tr("field.travel.noCoords", "No official location on file", "لا يوجد موقع رسمي مسجل"),
     noCoordsBody: tr("field.travel.noCoordsBody", "This establishment has no official coordinates, so a route and geofence cannot be shown. Continue to check-in for the governed arrival flow.", "لا تملك هذه المنشأة إحداثيات رسمية، لذا لا يمكن عرض المسار أو نطاق التسييج. تابع إلى تسجيل الدخول لإجراء الوصول المحكوم."),
     notFound: tr("field.travel.notFound", "Visit not found", "الزيارة غير موجودة"),
-    notFoundBody: tr("field.start.notFoundDesc", "This visit does not exist or is outside your organizational scope (M02-001).", "هذه الزيارة غير موجودة أو خارج نطاق مؤسستك (M02-001)."),
+    notFoundBody: tr("field.start.notFoundDesc", "This visit does not exist or is outside your organizational scope.", "هذه الزيارة غير موجودة أو خارج نطاق مؤسستك."),
     youLabel: tr("field.travel.youLabel", "You", "أنت"),
     mapAria: tr("field.travel.mapAria", "Live route map to the establishment", "خريطة المسار المباشر إلى المنشأة"),
     // Fence-map verdict chip — wording follows the canonical Journey design

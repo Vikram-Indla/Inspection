@@ -544,7 +544,7 @@ export default async function Field() {
             {scheduleTasks.length === 0 ? (
               <div style={{ padding: "18px 16px" }}>
                 <div style={{ fontWeight: 600, marginBlockEnd: 4 }}>{tr("field.home.schedule.empty", "No visits scheduled today", "لا توجد زيارات مجدولة اليوم")}</div>
-                <p className="t-caption">{tr("field.home.register.emptyBody", "Only your own assignments appear here (RBAC-009). New assignments arrive with a notification.", "تظهر هنا مهامك المسندة فقط (RBAC-009). تصل المهام الجديدة مع إشعار.")}</p>
+                <p className="t-caption">{tr("field.home.register.emptyBody", "Only your own assignments appear here. New assignments arrive with a notification.", "تظهر هنا مهامك المسندة فقط. تصل المهام الجديدة مع إشعار.")}</p>
               </div>
             ) : (
               <div>

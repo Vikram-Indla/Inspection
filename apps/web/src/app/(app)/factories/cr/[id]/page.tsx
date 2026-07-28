@@ -133,7 +133,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
 
   return (
     <Shell current="/factories" title={locale === "ar" ? cr.legal_name_ar ?? cr.legal_name ?? cr.legal_name_en ?? cr.cr_number : cr.legal_name_en ?? cr.legal_name ?? cr.legal_name_ar ?? cr.cr_number}
-      context={<><span className="sq-lozenge sq-lozenge--info">SCR-WEB-400 · Factory 360</span><span className="sq-freshness">{t("f360.meta.source", "source")} {text(selected?.source_system ?? cr.source_system)} · {t("f360.meta.synced", "recorded")} {dt(selected?.source_synced_at ?? cr.source_synced_at)}</span></>}>
+      context={<><span className="sq-lozenge sq-lozenge--info">Factory 360</span><span className="sq-freshness">{t("f360.meta.source", "source")} {text(selected?.source_system ?? cr.source_system)} · {t("f360.meta.synced", "recorded")} {dt(selected?.source_synced_at ?? cr.source_synced_at)}</span></>}>
       <h1 className="sr-only">{t("f360.title", "Factory 360")} — {locale === "ar" ? cr.legal_name_ar ?? cr.legal_name ?? cr.legal_name_en ?? cr.cr_number : cr.legal_name_en ?? cr.legal_name ?? cr.legal_name_ar ?? cr.cr_number}</h1>
       {licenseError ? <div className="sq-banner sq-banner--warning" role="status"><div>{t("f360.licenses.degraded", "Industrial-license data is temporarily degraded; CR identity remains available.")}</div></div> : null}
       <div className={styles.workspace} data-factory360-layout="cr-license-dossier">
@@ -383,7 +383,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
               {permissions["create_inspection"] && factoryId && <a className="sq-btn sq-btn--secondary" href={`/planning/single?cr=${encodeURIComponent(cr.cr_number)}&license=${encodeURIComponent(selected?.license_number ?? "")}&plant=${encodeURIComponent(selected?.plant_number ?? "")}&factory=${factoryId}&source=factory360`}>{t("f360.actions.planSingle", "Plan single visit")}</a>}
               {permissions["export_factory"] && <Factory360ExportButton label={t("f360.actions.exportPdf", "Print / Save permitted PDF")} />}
               {!permissions["create_inspection"] && !permissions["export_factory"] && <p className="sq-caption">{t("f360.actions.restricted", "No create-inspection or export action is permitted for your role.")}</p>}
-              {permissions["create_inspection"] && <p className="sq-caption" role="status">{t("f360.actions.submissionBlocked", "Inspection submission remains unavailable while DEC-032 is unresolved.")}</p>}
+              {permissions["create_inspection"] && <p className="sq-caption" role="status">{t("f360.actions.submissionBlocked", "Inspection submission remains unavailable while is unresolved.")}</p>}
             </div>
           </section>
         </aside>

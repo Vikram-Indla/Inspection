@@ -59,7 +59,7 @@ export default async function Templates() {
       current="/admin/templates"
       title={t("admin.templates.title", "Template registry")}
       context={
-        <span className="badge badge-info">M09-006/008/009 · ENG-04</span>
+        <span className="badge badge-info">{t("admin.templates.context", "Template configuration")}</span>
       }
     >
       {error && (

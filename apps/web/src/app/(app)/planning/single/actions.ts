@@ -40,7 +40,7 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError) {
-    console.error("[CD-022 publishSingleVisit] auth read failed:", authError.message);
+    console.error("[ publishSingleVisit] auth read failed:", authError.message);
     return { error: NEUTRAL_READ_ERROR };
   }
   if (!user) return { error: "Session expired — sign in again." };
@@ -88,46 +88,46 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   const blockers: string[] = [];
   const access = await getPlanningAccess(sb, ["planning.publish"]);
   if (access.error) {
-    console.error("[CD-022 publishSingleVisit] access resolution failed");
+    console.error("[ publishSingleVisit] access resolution failed");
     return { error: NEUTRAL_READ_ERROR };
   }
-  if (!access.can("planning.publish")) blockers.push("Publishing requires the planning.publish capability (RBAC-007)");
-  if (!["periodic", "follow_up", "complaint"].includes(visit_type)) blockers.push("Visit type is not supported (FLD-PLAN-003)");
-  if (!["physical", "virtual"].includes(mode)) blockers.push("Execution mode is not supported (M03-011)");
-  if (!factory_id) blockers.push("Factory not selected (M01-035)");
+  if (!access.can("planning.publish")) blockers.push("Publishing requires the planning.publish capability");
+  if (!["periodic", "follow_up", "complaint"].includes(visit_type)) blockers.push("Visit type is not supported");
+  if (!["physical", "virtual"].includes(mode)) blockers.push("Execution mode is not supported");
+  if (!factory_id) blockers.push("Factory not selected");
   if (factory_id) {
     // License + location gates validated against the factory record (M01-036 / M01-038)
     const { data: fac, error: factoryError } = await sb.from("factories")
       .select("license_number, official_lat, official_lng").eq("id", factory_id).single();
     if (factoryError || !fac) {
-      console.error("[CD-022 publishSingleVisit] factory verification failed:", factoryError?.message);
+      console.error("[ publishSingleVisit] factory verification failed:", factoryError?.message);
       return { error: NEUTRAL_READ_ERROR };
     }
     if (fac?.license_number && license_number !== fac.license_number)
-      blockers.push("Industrial License must be selected and confirmed before publish (M01-036)");
+      blockers.push("Industrial License must be selected and confirmed before publishing");
     const hasPlannerPin = planner_lat != null && planner_lng != null && Number.isFinite(planner_lat) && Number.isFinite(planner_lng);
     if ((planner_lat != null || planner_lng != null) && !hasPlannerPin)
-      blockers.push("Planner pin needs both a valid latitude and longitude (M01-038)");
+      blockers.push("The visit pin needs a valid latitude and longitude");
     const hasOfficial = fac?.official_lat != null && fac?.official_lng != null;
     if (fac && !hasOfficial && !hasPlannerPin)
-      blockers.push("No official location on record — pin the visit location manually (M01-038)");
+      blockers.push("No official location is recorded — pin the visit location manually");
     // Execution-mode eligibility (M03-011): physical needs GIS-verifiable
     // coordinates, virtual needs the OTP engine configured. Startup.tsx
     // already computes and displays this read-only after publish — this is
     // the only place mode is actually chosen, so it's the only place that
     // can enforce "an ineligible mode cannot be selected" for real.
     if (mode === "physical" && !hasOfficial && !hasPlannerPin)
-      blockers.push("Physical execution needs a GIS-verifiable location — no official pin and none provided (M03-011)");
+      blockers.push("Physical execution needs a verifiable location — no official pin or planner pin is available");
     if (mode === "virtual") {
       const { data: otpEngine, error: otpError } = await sb.from("engine_settings").select("engine").eq("engine", "otp").maybeSingle();
       if (otpError) {
-        console.error("[CD-022 publishSingleVisit] OTP engine verification failed:", otpError.message);
+        console.error("[ publishSingleVisit] OTP engine verification failed:", otpError.message);
         return { error: NEUTRAL_READ_ERROR };
       }
-      if (!otpEngine) blockers.push("Virtual execution requires the OTP engine to be configured (M03-011)");
+      if (!otpEngine) blockers.push("Virtual execution is unavailable because identity verification is not configured");
     }
   }
-  if (!location_confirmed) blockers.push("Location must be confirmed on the map before publish (M01-038)");
+  if (!location_confirmed) blockers.push("Confirm the location on the map before publishing");
   // M7 — zero packages is allowed (preparation-time choice); a selection is
   // validated: every chosen version must still be active.
   let packageRows: { id: string; version_label: string; status: string; packages: { code: string; title: string } | null }[] = [];
@@ -138,7 +138,7 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
       .in("status", ["published", "locked"])
       .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`);
     if (packageError) {
-      console.error("[CD-022 publishSingleVisit] package verification failed:", packageError.message);
+      console.error("[ publishSingleVisit] package verification failed:", packageError.message);
       return { error: NEUTRAL_READ_ERROR };
     }
     packageRows = (pvs ?? []) as unknown as typeof packageRows;
@@ -146,11 +146,11 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   }
   // M01-040 — either a manual inspector or the auto-assign option ("auto") is required.
   const autoAssign = inspector_id === "auto";
-  if (!inspector_id) blockers.push("Assign an inspector or choose auto-assign before publish (M01-040)");
+  if (!inspector_id) blockers.push("Assign an inspector or choose auto-assign before publishing");
   const startMs = Date.parse(window_start);
   const endMs = Date.parse(window_end);
   if (!window_start || !window_end || !Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs)
-    blockers.push("Visit window end must be after start (FLD-PLAN-005)");
+    blockers.push("Visit window end must be after start");
   else if (!isPlausibleDate(window_start) || !isPlausibleDate(window_end))
     blockers.push(PLAUSIBLE_DATE_ERROR);
   // Duplicate active visit (M02-012) — same shared check the dossier surfaces
@@ -158,7 +158,7 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   if (factory_id) {
     const dups = await findDuplicateActiveVisits(sb, factory_id, visit_type);
     if (dups.unavailable) return { error: NEUTRAL_READ_ERROR };
-    if (dups.visits.length > 0) blockers.push(`Duplicate active visit exists for this factory/type (M02-012): ${dups.visits[0].id.slice(0, 8)}`);
+    if (dups.visits.length > 0) blockers.push("An active visit already exists for this factory and visit type");
   }
   if (blockers.length) return { error: blockers.join(" · ") };
 
@@ -167,11 +167,11 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   // validate the manual pick's availability (no double-booking).
   const { data: inspRows, error: inspectorPoolError } = await sb.from("user_roles").select("user_id").eq("role_key", "inspector");
   if (inspectorPoolError) {
-    console.error("[CD-022 publishSingleVisit] inspector pool read failed:", inspectorPoolError.message);
+    console.error("[ publishSingleVisit] inspector pool read failed:", inspectorPoolError.message);
     return { error: NEUTRAL_READ_ERROR };
   }
   const pool = (inspRows ?? []).map(r => r.user_id as string);
-  if (pool.length === 0) return { error: "No eligible inspector in the pool (M01-040 / P02)" };
+  if (pool.length === 0) return { error: "No eligible inspector is available" };
   const { data: overlaps, error: overlapError } = await sb.from("assignments")
     .select("inspector_id, visits!inner(planning_status, window_start, window_end)")
     .in("inspector_id", autoAssign ? pool : [inspector_id])
@@ -179,16 +179,16 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     .lt("visits.window_start", window_end)
     .gt("visits.window_end", window_start);
   if (overlapError) {
-    console.error("[CD-022 publishSingleVisit] assignment overlap read failed:", overlapError.message);
+    console.error("[ publishSingleVisit] assignment overlap read failed:", overlapError.message);
     return { error: NEUTRAL_READ_ERROR };
   }
   const booked = new Set((overlaps ?? []).map(o => o.inspector_id as string));
   if (autoAssign) {
     const available = pool.find(pid => !booked.has(pid));
-    if (!available) return { error: "No inspector is available in this window — all are double-booked (M01-040)" };
+    if (!available) return { error: "No inspector is available in this window — all eligible inspectors are already booked" };
   } else {
-    if (!pool.includes(inspector_id)) return { error: "Selected inspector is not in the eligible pool (M01-040)" };
-    if (booked.has(inspector_id)) return { error: "Selected inspector is already booked in this window — pick another or choose auto-assign (M01-040)" };
+    if (!pool.includes(inspector_id)) return { error: "The selected inspector is not eligible for this visit" };
+    if (booked.has(inspector_id)) return { error: "The selected inspector is already booked in this window — pick another or choose auto-assign" };
   }
 
   const steps: PublishSteps = { plan: "pending", visit: "pending", assignment: "pending", status: "pending", notification: "pending" };
@@ -212,7 +212,7 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     p_resume_plan_id: resumeId || null,
   });
   if (publishError || !visitId) {
-    console.error("[CD-022 publishSingleVisit] atomic publish failed:", publishError?.message, publishError?.code);
+    console.error("[ publishSingleVisit] atomic publish failed:", publishError?.message, publishError?.code);
     steps.plan = "failed";
     // M7 — the in-transaction guards (RPC checks + the 0031 assignments
     // trigger, SQLSTATE 23505) rejected a conflict that appeared between the
@@ -222,12 +222,12 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
       const dupsNow = await findDuplicateActiveVisits(sb, factory_id, visit_type);
       if (dupsNow.visits.length > 0) {
         return {
-          error: `A conflicting active visit now exists for this factory/type (M02-012): ${dupsNow.visits[0].id.slice(0, 8)} — nothing was published.`,
+          error: "A conflicting active visit now exists for this factory and visit type — nothing was published.",
           steps,
         };
       }
       return {
-        error: "The assigned Inspector was just booked on an overlapping visit in this window (M01-029) — nothing was published. Pick another Inspector or window.",
+        error: "The assigned inspector was just booked on an overlapping visit in this window — nothing was published. Pick another inspector or window.",
         steps,
       };
     }
@@ -256,12 +256,12 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   const { data: visitRow, error: visitReadError } = await sb.from("visits")
     .select("visit_plan_id").eq("id", visitId).single();
   if (visitReadError) {
-    console.error("[CD-022 publishSingleVisit] visit plan lookup failed:", visitReadError.message);
+    console.error("[ publishSingleVisit] visit plan lookup failed:", visitReadError.message);
   }
   const { error: visitMetaError } = await sb.from("visits")
     .update({ source_channel, internal_reference }).eq("id", visitId);
   if (visitMetaError) {
-    console.error("[CD-022 publishSingleVisit] visit targeting metadata write failed:", visitMetaError.message);
+    console.error("[ publishSingleVisit] visit targeting metadata write failed:", visitMetaError.message);
   }
   if (visitRow?.visit_plan_id) {
     const { error: planMetaError } = await sb.from("visit_plans")
@@ -279,7 +279,7 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
       })
       .eq("id", visitRow.visit_plan_id);
     if (planMetaError) {
-      console.error("[CD-022 publishSingleVisit] plan targeting metadata write failed:", planMetaError.message);
+      console.error("[ publishSingleVisit] plan targeting metadata write failed:", planMetaError.message);
     }
   }
 
@@ -306,7 +306,7 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
       })),
     );
     if (pkgLinkError) {
-      console.error("[CD-022 publishSingleVisit] visit_packages snapshot write failed:", pkgLinkError.message);
+      console.error("[ publishSingleVisit] visit_packages snapshot write failed:", pkgLinkError.message);
     }
   }
 

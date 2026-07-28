@@ -90,7 +90,7 @@ export default async function CompletedInspectionDetail({ params }: { params: Pr
           {violations.length ? <ul>{violations.map((item, index) => <li key={`${item.code ?? "finding"}-${index}`}><strong>{item.code ?? tr("field.completed.finding", "Finding", "نتيجة")}</strong>{item.title ? ` — ${item.title}` : ""}{item.level ? ` · ${item.level}` : ""}</li>)}</ul> : <p className="t-caption">{tr("field.completed.noFindings", "No findings recorded in this submitted snapshot.", "لا توجد نتائج مسجلة في لقطة التسليم هذه.")}</p>}
           {evidence.length ? <ul>{evidence.map((item, index) => <li key={`${item.id ?? "evidence"}-${index}`}><bdi>{item.name ?? item.type ?? tr("field.completed.evidenceItem", "Evidence item", "عنصر دليل")}</bdi>{item.captured_at ? ` · ${dt(item.captured_at)}` : ""}{item.sha256 ? <div className="t-caption id-code">SHA-256 {item.sha256}</div> : null}</li>)}</ul> : <p className="t-caption">{tr("field.completed.noEvidenceManifest", "No evidence manifest entries are present in this submitted snapshot.", "لا توجد عناصر بيان أدلة في لقطة التسليم هذه.")}</p>}
         </section>
-        <p className="t-caption">{tr("field.completed.lineage", "MVP1-M04-214/215/221/222 · FLD-SUB-001 · immutable submission snapshot", "MVP1-M04-214/215/221/222 · FLD-SUB-001 · لقطة تسليم غير قابلة للتعديل")}</p>
+        <p className="t-caption">{tr("field.completed.lineage", "immutable submission snapshot", "لقطة تسليم غير قابلة للتعديل")}</p>
       </main>
     </>
   );

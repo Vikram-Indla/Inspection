@@ -37,7 +37,7 @@ async function gate(sb: SupabaseClient): Promise<{ userId: string | null; error:
     return { userId: null, error: NEUTRAL_WRITE_ERROR };
   }
   if (allowed !== true) {
-    return { userId: null, error: "You do not have permission to change role capabilities — admin.access.manage is required (PLN-CON-013)." };
+    return { userId: null, error: "You do not have permission to change role capabilities — admin.access.manage is required." };
   }
   return { userId: user.id, error: null };
 }
@@ -67,7 +67,7 @@ export async function grantRoleCapability(fd: FormData): Promise<RoleCapabilityR
   // Self-escalation block (PLN-CON-013): never through a role the actor holds.
   if (await actorHoldsRole(sb, actorId, roleKey)) {
     if (permissionKey === "admin.access.manage") {
-      return { error: "Self-escalation guard: admin.access.manage cannot be granted to a role you hold — another security administrator must make that change (PLN-CON-013)." };
+      return { error: "Self-escalation guard: admin.access.manage cannot be granted to a role you hold — another security administrator must make that change." };
     }
     const { data: already } = await sb.rpc("has_planning_capability", { p_capability: permissionKey });
     if (already !== true) {
@@ -103,7 +103,7 @@ export async function revokeRoleCapability(fd: FormData): Promise<RoleCapability
   // Sole-admin / self protection: the actor never edits their own
   // admin.access.manage away through a role they hold.
   if (permissionKey === "admin.access.manage" && await actorHoldsRole(sb, actorId, roleKey)) {
-    return { error: "Self-escalation guard: you cannot revoke admin.access.manage from a role you hold — another security administrator must make that change (PLN-CON-013)." };
+    return { error: "Self-escalation guard: you cannot revoke admin.access.manage from a role you hold — another security administrator must make that change." };
   }
 
   const { data: removed, error } = await sb.from("role_permissions")

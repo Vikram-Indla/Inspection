@@ -14,7 +14,7 @@ export default async function ExceptionsPage() {
   const { t } = await useT();
   if (resolveFeatureFlag(process.env.FEATURE_EXCEPTION_BOARD, MODES, "off") !== "on") {
     return (
-      <Shell current="/operations" title={t("exc.title", "Exception board")} context={<span className="badge badge-warning">CD-047 · REQ-0120</span>}>
+      <Shell current="/operations" title={t("exc.title", "Exception board")} context={<span className="badge badge-warning">REQ-0120</span>}>
         <NotYetBoundary title={t("exc.title", "Exception board")} consequence={t("exc.off", "The operations exception board is not enabled here.")}
           seam="FEATURE_EXCEPTION_BOARD=off" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
       </Shell>
@@ -32,7 +32,7 @@ export default async function ExceptionsPage() {
   const groups = groupExceptions(sources);
   const invariantOk = groupCountEqualsSource(sources); // must be true — no synthetic rows
   return (
-    <Shell current="/operations" title={t("exc.title", "Exception board")} context={<span className="badge badge-info">CD-047 · REQ-0120,0124</span>}>
+    <Shell current="/operations" title={t("exc.title", "Exception board")} context={<span className="badge badge-info">REQ-0120,0124</span>}>
       <div className="sq-banner"><div><strong>{t("exc.banner.title", "Command posture.")}</strong> {t("exc.banner.body", "Exceptions are a projection over real objects — decisions stay on the owning object. Counts trace 1:1 to sources (no synthetic rows).")} {invariantOk ? "✓" : "⚠"}</div></div>
       {sources.length === 0 && (
         <EmptyState glyph="✅" title={t("exc.empty.title", "No open exceptions in scope")}

@@ -99,7 +99,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
   const nextLimit = rows.length < total && limit < PAGE_MAX ? Math.min(limit + PAGE_STEP, PAGE_MAX) : null;
   const strings: VisitsBoardStrings = {
     searchPlaceholder: t("visit.list.searchPlaceholder", "Visit ID, Plan/Campaign ID, factory, CR, license or inspector…"),
-    searchAria: t("visit.list.searchAria", "Search visits — including Plan ID and Campaign (M02-021)"),
+    searchAria: t("visit.list.searchAria", "Search visits — including Plan ID and Campaign"),
     campaignLabel: t("visit.list.campaignLabel", "Campaign"),
     planLabel: t("visit.list.planLabel", "Plan"),
     allStatuses: t("visit.list.allStatuses", "All statuses"),
@@ -121,7 +121,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
       cancelled: t("enum.cancelled", "cancelled"),
       expired: t("enum.expired", "expired"),
     },
-    kpiFilterHint: t("visit.list.kpiFilterHint", "Status counts — select one to filter the list (M02-002)"),
+    kpiFilterHint: t("visit.list.kpiFilterHint", "Status counts — select one to filter the list"),
     colVisit: t("visit.list.colVisit", "Visit"),
     colFactory: t("visit.list.colFactory", "Factory"),
     colTypeMode: t("visit.list.colTypeMode", "Type · mode"),
@@ -132,12 +132,12 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     selectAllAria: t("visit.list.selectAllAria", "Select all visible visits"),
     selectRowAria: t("visit.list.selectRowAria", "Select visit {id}"),
     selectedCount: t("visit.list.selectedCount", "{n} selected"),
-    bulkHeading: t("visit.list.bulkHeading", "Bulk actions — per-row guards apply (M02-007/011)"),
-    bulkWindowStart: t("visit.list.bulkWindowStart", "New window start (M02-033)"),
+    bulkHeading: t("visit.list.bulkHeading", "Bulk actions — per-row guards apply"),
+    bulkWindowStart: t("visit.list.bulkWindowStart", "New window start"),
     bulkWindowEnd: t("visit.list.bulkWindowEnd", "New window end"),
     bulkChangeReason: t("visit.list.bulkChangeReason", "Reason for change *"),
     bulkRescheduleBtn: t("visit.list.bulkRescheduleBtn", "Reschedule selected"),
-    bulkReassignTo: t("visit.list.bulkReassignTo", "Reassign to (M02-032)"),
+    bulkReassignTo: t("visit.list.bulkReassignTo", "Reassign to"),
     bulkReassignBtn: t("visit.list.bulkReassignBtn", "Reassign selected"),
     selectOption: t("visit.list.selectOption", "— select"),
     bulkCancelReason: t("visit.list.bulkCancelReason", "Cancellation reason *"),
@@ -245,7 +245,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
       </WidgetBoundary>}
       {rows.length === 0 ? (
         <EmptyState icon={<IconCalendar size={28} />} title={t("visit.list.empty", "No visits in your scope")}
-          body={t("visit.list.emptyDesc", "Only visits inside your organizational scope are shown (M02-001 · RLS-enforced, not filtered client-side).")}>
+          body={t("visit.list.emptyDesc", "Only visits inside your organizational scope are shown ( · RLS-enforced, not filtered client-side).")}>
           <Link className="btn btn-primary" href="/planning" prefetch={false}>{t("visit.list.createPlan", "Create a plan")}</Link>
         </EmptyState>
       ) : (

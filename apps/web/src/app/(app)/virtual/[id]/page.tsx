@@ -26,7 +26,7 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
   if (!s) {
     return <Shell current="/virtual" title={t("virtual.room.notFoundTitle", "Session not found")}>
       <EmptyState icon={<IconShieldCheck size={28} />} title={t("virtual.room.notFound", "Wrong appointment or out of scope")}
-        body={t("virtual.room.notFoundDesc", "Access denied safely; attempt audited (SCR-VIR-700 failure state).")} />
+        body={t("virtual.room.notFoundDesc", "Access denied safely; attempt audited ( failure state).")} />
     </Shell>;
   }
   const strings: RoomStrings = {
@@ -45,7 +45,7 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     codeLabel: t("virtual.room.codeLabel", "Code"),
     verify: t("virtual.room.verify", "Verify"),
     otpSent: t("virtual.room.otpSent", "sent · DEV provider shows code (release: Unifonic) · {n} resends left"),
-    otpCooldown: t("virtual.room.otpCooldown", "cooldown — retry in {s}s (DEC-007)"),
+    otpCooldown: t("virtual.room.otpCooldown", "cooldown — retry in {s}s"),
     otpVerified: t("virtual.room.otpVerified", "verified ✓ — bound to session (STM-VIR-002)"),
     otpWrong: t("virtual.room.otpWrong", "wrong — {n} attempts left, then lock (no bypass)"),
     otpLocked: t("virtual.room.otpLocked", "locked — attempts exhausted; resend or escalate (audited exception)"),
@@ -53,14 +53,14 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     otpExhausted: t("virtual.room.otpExhausted", "resends exhausted — supervisor-approved manual verification only (audited)"),
     otpNoCode: t("virtual.room.otpNoCode", "no active code — send one first"),
     otpError: t("virtual.room.otpError", "Identity verification is temporarily unavailable. Try again or escalate."),
-    otpCounters: t("virtual.room.otpCounters", "attempts {a}/{b} · resends {c}/{d} (DEC-007 policy, server-enforced)"),
+    otpCounters: t("virtual.room.otpCounters", "attempts {a}/{b} · resends {c}/{d} ( policy, server-enforced)"),
     beginReady: t("virtual.room.beginReady", "Begin remote inspection → same workspace & submission flow"),
     beginGated: t("virtual.room.beginGated", "Verification gates execution (no bypass)"),
     openWaiting: t("virtual.room.openWaiting", "Open waiting room"),
     rescheduleTitle: t("virtual.room.rescheduleTitle", "Reschedule"),
     rescheduleLabel: t("virtual.room.rescheduleLabel", "New appointment (participants re-notified)"),
     rescheduleSubmit: t("virtual.room.rescheduleSubmit", "Reschedule appointment"),
-    closeTitle: t("virtual.room.closeTitle", "Close / cancel session (M05-005)"),
+    closeTitle: t("virtual.room.closeTitle", "Close / cancel session"),
     closeReason: t("virtual.room.closeReason", "Reason"),
     closeComments: t("virtual.room.closeComments", "Comments"),
     closeSubmit: t("virtual.room.closeSubmit", "Close session"),
@@ -145,7 +145,7 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     staleTitle: t("virtual.room.staleTitle", "This session changed"),
     staleBody: t("virtual.room.staleBody", "A concurrent change was detected, so nothing was submitted. Reload to see the latest state before acting again."),
     reload: t("virtual.room.reload", "Reload"),
-    timelineHeading: t("virtual.room.timelineHeading", "Session timeline (M05-003 · audited)"),
+    timelineHeading: t("virtual.room.timelineHeading", "Session timeline ( · audited)"),
     timelineEmpty: t("virtual.room.timelineEmpty", "No events yet — the timeline records scheduling, joins, verification, start and close."),
     identityHeading: t("virtual.room.identityHeading", "Identity verification — OTP (no bypass)"),
   };

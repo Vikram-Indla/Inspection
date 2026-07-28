@@ -76,7 +76,7 @@ export async function saveDraftDefinition(_: PkgResult, formData: FormData): Pro
     .update({ definition }, { count: "exact" })
     .eq("id", version_id).eq("status", "draft");
   if (error) { logProviderError("admin package definition", error); return { error: NEUTRAL_WRITE_ERROR }; }
-  if (!count) return { error: "Only draft versions are editable (M09-030 — published is immutable)." };
+  if (!count) return { error: "Only draft versions are editable (published is immutable)." };
   revalidatePath("/admin/packages");
   return { ok: true };
 }
@@ -144,7 +144,7 @@ async function validateDefinition(
   const formKeys = new Set<string>();
   const templateRefs = new Set<string>(Array.isArray(definition.template_refs) ? definition.template_refs.filter((id): id is string => typeof id === "string" && id.length > 0) : []);
   for (const f of actionForms) {
-    if (!f || typeof f.key !== "string" || f.key.length === 0) { blockers.push("Action form without a key in definition.action_forms (M09-029)"); continue; }
+    if (!f || typeof f.key !== "string" || f.key.length === 0) { blockers.push("Action form without a key in definition.action_forms"); continue; }
     if (typeof f.title !== "string" || f.title.length === 0) blockers.push(`Action form "${f.key}" has no title (M09-029)`);
     if (f.template_version_id) templateRefs.add(f.template_version_id);
     formKeys.add(f.key);
@@ -347,7 +347,7 @@ export async function approveAndPublish(_: PkgResult, formData: FormData): Promi
     .select("status, definition").eq("id", version_id).maybeSingle();
   if (verErr) { logProviderError("admin package version read", verErr); return { error: NEUTRAL_LOAD_ERROR }; }
   if (!ver) return { error: "Version not found or outside your scope (RLS)." };
-  if (ver.status !== "draft") return { error: "Only draft versions can be published (M09-030)." };
+  if (ver.status !== "draft") return { error: "Only draft versions can be published." };
 
   const blockers = await validateDefinition(sb, (ver.definition ?? {}) as PkgDefinition);
   if (blockers.length > 0) {

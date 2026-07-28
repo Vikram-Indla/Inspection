@@ -141,7 +141,7 @@ export async function returnVisit(_: ActionResult, fd: FormData): Promise<Action
   });
   if (transitionError) return { error: transitionError };
   revalidatePath(`/visits/${id}`); revalidatePath("/visits");
-  return { ok: "Returned atomically — lifecycle, audit and notification intent recorded (PLN-CON-011 · M02-041)." };
+  return { ok: "Returned atomically — lifecycle, audit and notification intent recorded." };
 }
 
 export async function republishVisit(_: ActionResult, fd: FormData): Promise<ActionResult> {
@@ -152,7 +152,7 @@ export async function republishVisit(_: ActionResult, fd: FormData): Promise<Act
   const transitionError = await callPlanningTransition(sb, fd, "republish", {});
   if (transitionError) return { error: transitionError };
   revalidatePath(`/visits/${id}`); revalidatePath("/visits");
-  return { ok: "Republished atomically — same Visit ID retained; audit and notification intent recorded (M02-009)." };
+  return { ok: "Republished atomically — same Visit ID retained; audit and notification intent recorded." };
 }
 
 // M02-006 + PLN-R02/R03 — Planning cancellation accepts one optional note,
@@ -200,7 +200,7 @@ export async function cancelVisit(_: ActionResult, fd: FormData): Promise<Action
   }
   revalidatePath(`/visits/${id}`); revalidatePath(`/planning/visits/${id}`);
   revalidatePath("/visits"); revalidatePath("/planning/visits");
-  return { ok: "Visit cancelled atomically — audit and notification intent recorded (M02-006 · M02-041)." };
+  return { ok: "Visit cancelled atomically — audit and notification intent recorded." };
 }
 
 // M02-008 + M8 — Reschedule window: published/new OR returned/new (a returned
@@ -215,10 +215,10 @@ export async function rescheduleVisit(_: ActionResult, fd: FormData): Promise<Ac
   const idempotencyKey = String(fd.get("idempotency_key") ?? "").trim();
   const correlationId = String(fd.get("correlation_id") ?? "").trim();
   const ws = String(fd.get("window_start") ?? "").trim(); const we = String(fd.get("window_end") ?? "").trim();
-  if (!ws || !we) return { error: "Both new window start and end are required (M02-008)" };
+  if (!ws || !we) return { error: "Both new window start and end are required" };
   const start = new Date(ws); const end = new Date(we);
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return { error: "Invalid date/time values (M02-008)" };
-  if (end.getTime() <= start.getTime()) return { error: "Window end must be after window start (M02-008)" };
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return { error: "Invalid date/time values" };
+  if (end.getTime() <= start.getTime()) return { error: "Window end must be after window start" };
   if (!UUID.test(id) || !Number.isInteger(expectedVersion) || expectedVersion < 1
       || !/^[A-Za-z0-9._:-]{8,200}$/.test(idempotencyKey) || !UUID.test(correlationId)) {
     return { error: "The reschedule request is incomplete. Nothing was changed." };
@@ -253,7 +253,7 @@ export async function rescheduleVisit(_: ActionResult, fd: FormData): Promise<Ac
   }
   revalidatePath(`/visits/${id}`); revalidatePath(`/planning/visits/${id}`);
   revalidatePath("/visits"); revalidatePath("/planning/visits");
-  return { ok: "Window rescheduled atomically — audit and notification intent recorded (M02-008 · M02-041)." };
+  return { ok: "Window rescheduled atomically — audit and notification intent recorded." };
 }
 
 // FIX WAVE F4 · M02-042 — visit attachments: upload to private bucket 'attachments'
@@ -265,8 +265,8 @@ export async function uploadVisitAttachment(_: ActionResult, fd: FormData): Prom
   if (!user) return { error: "Session expired — sign in again." };
   const visitId = String(fd.get("visit_id") ?? "");
   const file = fd.get("file");
-  if (!visitId) return { error: "Missing visit id (M02-042)" };
-  if (!(file instanceof File) || file.size === 0) return { error: "Choose a file first (M02-042)" };
+  if (!visitId) return { error: "Missing visit id" };
+  if (!(file instanceof File) || file.size === 0) return { error: "Choose a file first" };
   const mime = file.type || "application/octet-stream";
   const safeName = file.name.replace(/[^\w.\- ]+/g, "_").slice(-120);
   const path = `${visitId}/${Date.now()}-${safeName}`;
@@ -296,7 +296,7 @@ export async function removeVisitAttachment(_: ActionResult, fd: FormData): Prom
   if (!user) return { error: "Session expired — sign in again." };
   const attachmentId = String(fd.get("attachment_id") ?? "");
   const visitId = String(fd.get("visit_id") ?? "");
-  if (!attachmentId) return { error: "Missing attachment id (M02-042)" };
+  if (!attachmentId) return { error: "Missing attachment id" };
   const { data: updated, error } = await sb.from("visit_attachments")
     .update({ removed_at: new Date().toISOString(), removed_by: user.id })
     .eq("id", attachmentId).is("removed_at", null)
@@ -304,7 +304,7 @@ export async function removeVisitAttachment(_: ActionResult, fd: FormData): Prom
   if (error) return { error: mapError(error, "update") };
   if (!updated?.length) return { error: "No row updated — already removed, or RLS denied (va_update requires planner/ops)" };
   revalidatePath(`/visits/${visitId}`);
-  return { ok: "Attachment removed — soft delete, file and audit trail retained (M02-042)" };
+  return { ok: "Attachment removed — soft delete, file and audit trail retained" };
 }
 
 // M02-043 — note changes use the same atomic metadata contract as visit type.
@@ -312,11 +312,11 @@ export async function updateVisitNotes(_: ActionResult, fd: FormData): Promise<A
   const sb = await supabaseServer();
   const id = String(fd.get("visit_id") ?? "");
   const notes = String(fd.get("notes") ?? "").trim();
-  if (!id) return { error: "Missing visit id (M02-043)" };
+  if (!id) return { error: "Missing visit id" };
   const transitionError = await callPlanningTransition(sb, fd, "metadata", { notes: notes || null });
   if (transitionError) return { error: transitionError };
   revalidatePath(`/visits/${id}`); revalidatePath("/visits");
-  return { ok: "Notes saved atomically with audit and notification intent (M02-043)." };
+  return { ok: "Notes saved atomically with audit and notification intent." };
 }
 
 // M02-006 — edit visit type: only before execution starts and only while the
@@ -329,11 +329,11 @@ export async function updateVisitType(_: ActionResult, fd: FormData): Promise<Ac
   const id = String(fd.get("visit_id"));
   const visit_type = String(fd.get("visit_type") ?? "");
   if (!(VISIT_TYPES as readonly string[]).includes(visit_type))
-    return { error: "Choose a valid visit type (M02-006)" };
+    return { error: "Choose a valid visit type" };
   const transitionError = await callPlanningTransition(sb, fd, "metadata", { visit_type });
   if (transitionError) return { error: transitionError };
   revalidatePath(`/visits/${id}`); revalidatePath("/visits");
-  return { ok: "Visit type updated atomically — pre-start only, audited (M02-006)." };
+  return { ok: "Visit type updated atomically — pre-start only, audited." };
 }
 
 // M02-009 / ENG-05 + M8 — Reassign inspector: updates assignments.inspector_id,
@@ -342,7 +342,7 @@ export async function reassignVisit(_: ActionResult, fd: FormData): Promise<Acti
   // PLN-R06: Supervisor → capability/RLS authority is unresolved. Fail closed
   // even if an older client posts this server action directly.
   void fd;
-  return { error: "Reassignment is not configured until the governed Supervisor capability mapping is approved (PLN-R06)." };
+  return { error: "Reassignment is not configured until the governed Supervisor capability mapping is approved." };
   /*
   const sb = await supabaseServer();
   const { data: { user } } = await getVerifiedUser(sb);
@@ -432,7 +432,7 @@ export async function duplicateVisit(_: ActionResult, fd: FormData): Promise<Act
   }
   revalidatePath(`/visits/${id}`); revalidatePath("/planning");
   return {
-    ok: "Duplicated atomically into a new Draft — execution evidence and review decisions were not copied (PLN-REQ-011).",
+    ok: "Duplicated atomically into a new Draft — execution evidence and review decisions were not copied.",
     planId: receipt.plan_id,
     method: receipt.method,
   };
@@ -450,9 +450,9 @@ export async function repackageVisit(_: ActionResult, fd: FormData): Promise<Act
   if (!user) return { error: "Session expired — sign in again." };
   const id = String(fd.get("visit_id"));
   const pkgId = String(fd.get("package_version_id") ?? "").trim();
-  if (!pkgId) return { error: "Choose an inspection checklist (PLN-CON-003)" };
+  if (!pkgId) return { error: "Choose an inspection checklist" };
   const transitionError = await callPlanningTransition(sb, fd, "repackage", { package_version_id: pkgId });
   if (transitionError) return { error: transitionError };
   revalidatePath(`/visits/${id}`);
-  return { ok: "Primary checklist swapped atomically — link history preserved; audit and notification intent recorded (PLN-CON-003)." };
+  return { ok: "Primary checklist swapped atomically — link history preserved; audit and notification intent recorded." };
 }

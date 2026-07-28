@@ -59,7 +59,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
           langHref={langHref} langLabel={langLabel} />
         <div className={styles.page}>
           <EmptyState glyph="∅" title={t("field.start.notFound", "Visit not found")}
-            body={t("field.start.notFoundDesc", "This visit does not exist or is outside your organizational scope (M02-001).")} />
+            body={t("field.start.notFoundDesc", "This visit does not exist or is outside your organizational scope.")} />
         </div>
       </>
     );
@@ -152,7 +152,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
           langHref={langHref} langLabel={langLabel} />
         <div className={styles.page}>
           <EmptyState glyph="∅" title={t("field.start.notFound", "Visit not found")}
-            body={t("field.start.notFoundDesc", "This visit does not exist or is outside your organizational scope (M02-001).")} />
+            body={t("field.start.notFoundDesc", "This visit does not exist or is outside your organizational scope.")} />
         </div>
       </>
     );
@@ -329,7 +329,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
   const preparationGated = showPreparation && !visitReady;
   const strings: StartupStrings = {
     mapLoading: t("field.start.mapLoading", "Loading geofence map"),
-    readiness: t("field.start.readiness", "Readiness (SCR-IPAD-610)"),
+    readiness: t("field.start.readiness", "Readiness"),
     window: t("field.start.window", "Window"),
     packageLine: t("field.start.package", "Package"),
     packageCached: t("field.start.packageCached", "— cached, version-locked"),
@@ -339,20 +339,20 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     insideFence: t("field.start.insideFence", "inside fence · {d} m"),
     outsideFence: t("field.start.outsideFence", "outside fence · {d} m"),
     fenceCaption: t("field.start.fenceCaption", "Fence {fence} m {source} · accuracy gate ≤{acc} m (ERR-GEO-001)"),
-    factoryOverride: t("field.start.factoryOverride", "(factory override — SB20)"),
-    engineDefault: t("field.start.engineDefault", "(engine default — ENG-06)"),
+    factoryOverride: t("field.start.factoryOverride", "(factory override — )"),
+    engineDefault: t("field.start.engineDefault", "(engine default — )"),
     positionHint: t("field.start.positionHint", "· your position appears after step 3 check-in"),
     step1: t("field.start.step1", "1 · Download package"),
     step2: t("field.start.step2", "2 · Start journey"),
     step3: t("field.start.step3", "3 · Geofence check-in"),
     step4: t("field.start.step4", "4 · Start inspection"),
     resume: t("field.start.resume", "Resume inspection"),
-    officialLabel: t("field.start.officialLabel", "{name} — official location (FND-007)"),
-    plannedLabel: t("field.start.plannedLabel", "{name} — visit location confirmed at planning (M01-046; not official master data)"),
+    officialLabel: t("field.start.officialLabel", "{name} — official location"),
+    plannedLabel: t("field.start.plannedLabel", "{name} — visit location confirmed at planning (; not official master data)"),
     youLabel: t("field.start.youLabel", "You — ±{acc}m · {state} fence ({d}m)"),
     insideWord: t("enum.inside", "inside"),
     outsideWord: t("enum.outside", "outside"),
-    logCached: t("field.start.logCached", "Package {version} cached & version-locked (M04-005/007)"),
+    logCached: t("field.start.logCached", "Package {version} cached & version-locked"),
     logJourneyBlocked: locale === "ar"
       ? "تعذر بدء الرحلة. تحقق من التكليف والاتصال ثم أعد المحاولة."
       : t("field.start.logJourneyBlockedSafe", "The journey could not be started. Check the assignment and connection, then try again."),
@@ -371,35 +371,35 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
       ? "تعذر بدء التفتيش. تحقق من الجاهزية ثم أعد المحاولة."
       : t("field.start.logInspectionCreateFailed", "The inspection could not be started. Check readiness and try again."),
     // E3 — telemetry / arrival auto-detect / deviation / exception / pre-start / STM-OPS
-    telemetryRow: t("field.start.telemetryRow", "Telemetry every {s}s while journeying — {n} points (ENG-06 · M04-021)"),
+    telemetryRow: t("field.start.telemetryRow", "Telemetry every {s}s while journeying — {n} points"),
     liveDistance: t("field.start.liveDistance", "live · {d} m out · arrival radius {radius} m"),
-    arrivalDetected: t("field.start.arrivalDetected", "arrival auto-detected (M04-037)"),
+    arrivalDetected: t("field.start.arrivalDetected", "arrival auto-detected"),
     liveLabel: t("field.start.liveLabel", "Live position ±{acc}m"),
-    prestartHeading: t("field.start.prestartHeading", "Pre-start confirmations (M03-010)"),
+    prestartHeading: t("field.start.prestartHeading", "Pre-start confirmations"),
     prestartRep: t("field.start.prestartRep", "Factory representative is present"),
     prestartLoc: t("field.start.prestartLoc", "Location confirmed — this is the correct factory"),
-    logPrestartBlocked: t("field.start.logPrestartBlocked", "Start blocked: confirm representative present and location first (M03-010)"),
-    logPrestartSaved: t("field.start.logPrestartSaved", "Pre-start confirmations persisted to journey session (M03-010)"),
-    exceptionHeading: t("field.start.exceptionHeading", "Report exception (ENG-06 · FLD-GEO-005)"),
+    logPrestartBlocked: t("field.start.logPrestartBlocked", "Start blocked: confirm representative present and location first"),
+    logPrestartSaved: t("field.start.logPrestartSaved", "Pre-start confirmations persisted to journey session"),
+    exceptionHeading: t("field.start.exceptionHeading", "Report exception"),
     exceptionPlaceholder: t("field.start.exceptionPlaceholder", "Describe the exception — mandatory"),
     exceptionSend: t("field.start.exceptionSend", "Record exception"),
-    logExceptionSent: t("field.start.logExceptionSent", "Exception recorded at ±{acc}m — immutable geo event (FLD-GEO-005)"),
+    logExceptionSent: t("field.start.logExceptionSent", "Exception recorded at ±{acc}m — immutable geo event"),
     logExceptionFailed: locale === "ar"
       ? "تعذر حفظ الاستثناء. تحقق من الاتصال ثم أعد المحاولة."
       : t("field.start.logExceptionFailedSafe", "The exception could not be saved. Check the connection, then try again."),
-    logDeviation: t("field.start.logDeviation", "Route deviation recorded — {d} m beyond closest approach, sustained {s}s (ENG-06 route_deviation)"),
+    logDeviation: t("field.start.logDeviation", "Route deviation recorded — {d} m beyond closest approach, sustained {s}s ( route_deviation)"),
     logOpState: t("field.start.logOpState", "Operational state → {state} (STM-OPS)"),
     logOpBlocked: locale === "ar"
       ? "تعذر تحديث حالة الزيارة. تحقق من الجاهزية والاتصال ثم أعد المحاولة."
       : t("field.start.logOpBlockedSafe", "The visit state could not be updated. Check readiness and the connection, then try again."),
-    logGpsFallback: t("field.start.logGpsFallback", "GPS unavailable — check-in remains blocked. Restore location access and retry (M04-049)."),
+    logGpsFallback: t("field.start.logGpsFallback", "GPS unavailable — check-in remains blocked. Restore location access and retry."),
     // F3 — navigation launch (M04-016)
     mapsGeo: t("field.start.mapsGeo", "Open in device navigation"),
     mapsCaption: dispatchSource === "official"
-      ? t("field.start.mapsCaption", "Launches the device navigation app with the official factory coordinates (M04-016 · FND-007)")
-      : t("field.start.mapsCaptionImmediate", "Launches navigation with the location confirmed on this Immediate Visit; official factory master coordinates remain unchanged (M01-046 · FND-007)"),
+      ? t("field.start.mapsCaption", "Launches the device navigation app with the official factory coordinates")
+      : t("field.start.mapsCaptionImmediate", "Launches navigation with the location confirmed on this Immediate Visit; official factory master coordinates remain unchanged"),
     // F3 — journey progress % (M04-026)
-    progressLabel: t("field.start.progressLabel", "Journey progress (M04-026)"),
+    progressLabel: t("field.start.progressLabel", "Journey progress"),
     progressCaption: t("field.start.progressCaption", "{remaining} m remaining of {initial} m from first GPS fix — straight-line basis"),
     // F3 — expandable Factory / Visit confirmation cards (M04-054)
     cardsFactoryTitle: t("field.start.cardsFactoryTitle", "Factory card"),
@@ -419,31 +419,31 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     lblPlanningStatus: t("field.start.lblPlanningStatus", "Planning status"),
     lblPlannerNotes: t("field.start.lblPlannerNotes", "Notes"),
     // F3 — field cancellation request (M04-056/057/058)
-    cancelHeading: t("field.start.cancelHeading", "Cancel visit (M04-056)"),
-    cancelCaption: t("field.start.cancelCaption", "Cancellation is a request: planner/ops decide the actual cancel (RBAC — visits stay planner-owned). Reason list is governed configuration (M04-057)."),
+    cancelHeading: t("field.start.cancelHeading", "Cancel visit"),
+    cancelCaption: t("field.start.cancelCaption", "Cancellation is a request: planner/ops decide the actual cancel (visits stay planner-owned). Reason list is governed configuration."),
     cancelSelectReason: t("field.start.cancelSelectReason", "Select cancellation reason — mandatory"),
     cancelCommentPlaceholder: t("field.start.cancelCommentPlaceholder", "Comments (mandatory for reason “Other”)"),
-    cancelEvidenceLabel: t("field.start.cancelEvidenceLabel", "Photo evidence (optional, M04-058)"),
+    cancelEvidenceLabel: t("field.start.cancelEvidenceLabel", "Photo evidence (optional, )"),
     cancelSubmit: t("field.start.cancelSubmit", "Request cancellation"),
     cancelRequestedChip: t("field.start.cancelRequestedChip", "cancellation requested — awaiting planner/ops"),
     cancelReasonsMissing: t("field.start.cancelReasonsMissing", "Cancellation reasons unavailable — engine_settings.field not seeded yet (0020 pending)."),
-    logCancelEvidenceQueued: t("field.start.logCancelEvidenceQueued", "Cancellation evidence {name} queued (sha256 {sha}…) — syncs to the visit record (M04-058)"),
-    logCancelSent: t("field.start.logCancelSent", "Cancellation requested — planner/ops notified; execution stopped (M04-056)"),
+    logCancelEvidenceQueued: t("field.start.logCancelEvidenceQueued", "Cancellation evidence {name} queued (sha256 {sha}…) — syncs to the visit record"),
+    logCancelSent: t("field.start.logCancelSent", "Cancellation requested — planner/ops notified; execution stopped"),
     logCancelFailed: locale === "ar"
       ? "تعذر إرسال طلب الإلغاء. تحقق من الاتصال ثم أعد المحاولة."
       : t("field.start.logCancelFailedSafe", "The cancellation request could not be sent. Check the connection, then try again."),
     // F3 — inspector return (M03-006)
-    returnHeading: t("field.start.returnHeading", "Return visit (M03-006)"),
+    returnHeading: t("field.start.returnHeading", "Return visit"),
     returnCaption: t("field.start.returnCaption", "Blocked from proceeding (outside fence, no access, GPS)? Return the visit with a reason — the assignment moves to returned and the planner is notified."),
     returnPlaceholder: t("field.start.returnPlaceholder", "Return reason — mandatory"),
     returnSubmit: t("field.start.returnSubmit", "Return visit"),
     returnRequestedChip: t("field.start.returnRequestedChip", "return requested — planner notified"),
-    logReturnSent: t("field.start.logReturnSent", "Visit returned — assignment set to returned, planner notified (M03-006)"),
+    logReturnSent: t("field.start.logReturnSent", "Visit returned — assignment set to returned, planner notified"),
     logReturnFailed: locale === "ar"
       ? "تعذر إرسال طلب الإرجاع. تحقق من الاتصال ثم أعد المحاولة."
       : t("field.start.logReturnFailedSafe", "The return request could not be sent. Check the connection, then try again."),
     // M03-005 — propose-window reschedule REQUEST (planners decide)
-    rescheduleHeading: locale === "ar" ? "طلب إعادة جدولة (M03-005)" : t("field.start.rescheduleHeading", "Request reschedule (M03-005)"),
+    rescheduleHeading: locale === "ar" ? "طلب إعادة جدولة" : t("field.start.rescheduleHeading", "Request reschedule"),
     rescheduleCaption: locale === "ar"
       ? "اقترح نافذة زيارة جديدة. هذا طلب فقط — يقرّره المخطّطون؛ لا تتغيّر زيارتك حتى الموافقة."
       : t("field.start.rescheduleCaption", "Propose a new visit window. This is a request only — planners decide; your visit is unchanged until they approve."),
@@ -453,13 +453,13 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     rescheduleRequestedChip: locale === "ar" ? "تم إرسال الطلب إلى المخطّطين" : t("field.start.rescheduleRequestedChip", "Request sent to planners"),
     rescheduleInvalid: locale === "ar" ? "يجب أن تكون البداية المقترحة قبل النهاية." : t("field.start.rescheduleInvalid", "Proposed start must be before the proposed end."),
     logRescheduleSent: locale === "ar"
-      ? "تم إرسال طلب إعادة الجدولة — أُشعِر المخطّطون؛ يقرّرون النافذة (M03-005)."
-      : t("field.start.logRescheduleSent", "Reschedule request sent — planners notified; they decide the window (M03-005)."),
+      ? "تم إرسال طلب إعادة الجدولة — أُشعِر المخطّطون؛ يقرّرون النافذة."
+      : t("field.start.logRescheduleSent", "Reschedule request sent — planners notified; they decide the window."),
     logRescheduleFailed: locale === "ar"
       ? "تعذر إرسال طلب إعادة الجدولة. زيارتك دون تغيير — أعد المحاولة."
       : t("field.start.logRescheduleFailedSafe", "The reschedule request could not be sent. Your visit is unchanged — try again."),
-    deviceInfo: t("field.start.deviceInfo", "Device information (M04-012)"),
-    etaLabel: t("field.start.etaLabel", "Road-network ETA (M04-017/024)"),
+    deviceInfo: t("field.start.deviceInfo", "Device information"),
+    etaLabel: t("field.start.etaLabel", "Road-network ETA"),
     etaAvailable: t("field.start.etaAvailable", "{minutes} min · {distance} m · updated {at}"),
     etaUnavailable: t("field.start.etaUnavailable", "routing provider unavailable — navigation remains available"),
     etaStale: t("field.start.etaStale", "Offline — showing the last known route estimate as stale; it is not refreshed."),
@@ -479,7 +479,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     logOverrideOfflineQueued: t("field.start.logOverrideOfflineQueued", "Override request queued offline with captured GPS/evidence — it cannot self-approve or unlock check-in."),
     logOverrideEvidenceRequired: t("field.start.logOverrideEvidenceRequired", "A photo is mandatory unless the selected safety/security condition makes capture unsafe."),
     logOverrideFailed: t("field.start.logOverrideFailed", "The override could not be saved. Nothing was changed."),
-    arrivalEvidenceHeading: t("field.start.arrivalEvidenceHeading", "Arrival evidence (M04-045)"),
+    arrivalEvidenceHeading: t("field.start.arrivalEvidenceHeading", "Arrival evidence"),
     arrivalEvidenceCaption: t("field.start.arrivalEvidenceCaption", "Add a photo or comment. Evidence is linked to this exact arrival event and remains queued safely while offline."),
     arrivalPhoto: t("field.start.arrivalPhoto", "Arrival photo"),
     arrivalComment: t("field.start.arrivalComment", "Arrival comment"),

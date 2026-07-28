@@ -13,7 +13,7 @@ export default async function Loading() {
     <Shell current="/virtual" title={t("virtual.room.loadingTitle", "Virtual session")}>
       <div className="panel" role="status" aria-busy="true">
         <EmptyState bare glyph="…" title={t("virtual.room.loading", "Loading session")}
-          body={t("virtual.room.loadingDesc", "Reading the session state, frozen package, participants and timeline (SCR-VIR-720).")} />
+          body={t("virtual.room.loadingDesc", "Reading the session state, frozen package, participants and timeline.")} />
         <div className="cd-vir" aria-hidden="true" style={{ marginBlockStart: "var(--space-6)" }}>
           <SkeletonBlock blockSize={56} style={{ marginBlockEnd: "var(--space-4)" }} />
           <SkeletonBlock blockSize={180} style={{ marginBlockEnd: "var(--space-4)" }} />

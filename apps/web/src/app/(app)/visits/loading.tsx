@@ -7,7 +7,7 @@ export default async function Loading() {
   return (
     <Shell current="/visits" title={t("visit.list.title", "Visit management")}>
       <EmptyState glyph="…" title={t("visit.list.loading", "Loading visits")}
-        body={t("visit.list.loadingDesc", "Fetching visits in your organizational scope (M02-001).")} />
+        body={t("visit.list.loadingDesc", "Fetching visits in your organizational scope.")} />
     </Shell>
   );
 }

@@ -153,8 +153,8 @@ export default async function SenaiDataPage({ searchParams }: { searchParams: Pr
             {t("admin.senai.fnd007", "SENAI is the source of truth for factory identity, licences and industrial data. SAQEEL reads and reconciles — it never writes back.")}{" "}
             <strong>
               {writeBackEndpoints === 0
-                ? t("admin.senai.fnd007.derived", "FND-007 holds: the governed endpoint contract contains no establishment master-data write-back.")
-                : t("admin.senai.fnd007.breach", "FND-007 breach: the governed endpoint contract now contains a master-data write endpoint. Stop and escalate.")}
+                ? t("admin.senai.fnd007.derived", "holds: the governed endpoint contract contains no establishment master-data write-back.")
+                : t("admin.senai.fnd007.breach", "breach: the governed endpoint contract now contains a master-data write endpoint. Stop and escalate.")}
             </strong>{" "}
             {t("admin.senai.fnd007.snapshot", "Observed-on-inspection snapshots are captured separately and never overwrite the source.")}
           </span>

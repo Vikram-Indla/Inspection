@@ -28,7 +28,7 @@ export function ReferenceRenderer() {
       <header className="saqeel-reference__header">
         <div>
           <h1>{locale === "ar" ? "مرجع نظام صقيل" : "SAQEEL foundation reference"}</h1>
-          <p className="t-caption">WA-DES-022 · WA-DES-041 · WA-F0-AC-001..006</p>
+          <p className="t-caption">{locale === "ar" ? "مرجع واجهة صقيل" : "SAQEEL interface reference"}</p>
         </div>
         <div className="row" aria-label="Reference controls">
           <div className="seg" aria-label="Theme">

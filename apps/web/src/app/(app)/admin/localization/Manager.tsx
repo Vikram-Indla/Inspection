@@ -362,7 +362,7 @@ function AddKeyForm({ labels, locale, onClose }: { labels: Labels; locale: "en" 
       <div className="sq-field"><label className="sq-field__label" htmlFor="l10n-add-ar">{labels.addArField}</label>
         <input className="sq-input" name="ar" id="l10n-add-ar" dir="rtl" lang="ar" /></div>
       <div className="sq-field"><label className="sq-field__label" htmlFor="l10n-add-context">{labels.addContextField}</label>
-        <input className="sq-input" name="context" id="l10n-add-context" placeholder="SCR-ADM-100" /></div>
+        <input className="sq-input" name="context" id="l10n-add-context" placeholder={labels.addContextField} /></div>
       <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? labels.adding : labels.addBtn}</button>
       {state.error && <span className={`t-caption ${styles.criticalText}`} role="alert">{state.error}</span>}
       {state.ok && !pending && <span className="badge badge-compliant">{labels.added}</span>}

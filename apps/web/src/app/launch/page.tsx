@@ -14,13 +14,13 @@ export default async function Launch() {
   // never misrepresented as an unauthenticated or no-workspace outcome.
   if (authError?.name === "AuthSessionMissingError" || !user) redirect("/login");
   if (authError) {
-    console.error("[CD-003 launch auth]", authError.message);
+    console.error("[ launch auth]", authError.message);
     throw new Error("launch_auth_unavailable");
   }
 
   const { data: roles, error: rolesError } = await getUserRoles(user.id);
   if (rolesError) {
-    console.error("[CD-003 launch roles]", rolesError.message);
+    console.error("[ launch roles]", rolesError.message);
     throw new Error("launch_roles_unavailable");
   }
   const home = homeForRoles((roles ?? []).map(r => r.role_key));

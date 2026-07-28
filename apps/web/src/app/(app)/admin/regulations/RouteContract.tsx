@@ -42,7 +42,7 @@ export async function RouteProvenance({
   const { t } = await useT();
   return (
     <span className="row" style={{ gap: "10px", alignItems: "center", flexWrap: "wrap", inlineSize: "100%" }}>
-      <span className="badge">{t("admin.m6.shellBadge", "WA-BRAND-r1 shell")}</span>
+      <span className="badge">{t("admin.m6.shellBadge", "r1 shell")}</span>
       <span className="badge badge-info">{acceptanceId}</span>
       <span className={styles.prov}>
         {t("admin.m6.routeLabel", "route")} <bdi dir="ltr">{routePath}</bdi> · <bdi dir="ltr">{screenId}</bdi>

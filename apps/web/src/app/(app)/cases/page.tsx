@@ -14,7 +14,7 @@ export default async function CasesPage() {
   const { t } = await useT();
   if (resolveFeatureFlag(process.env.FEATURE_CASE_SPINE, MODES, "off") !== "on") {
     return (
-      <Shell current="/cases" title={t("cases.title", "Cases")} context={<span className="badge badge-warning">CD-046 · REQ-0114</span>}>
+      <Shell current="/cases" title={t("cases.title", "Cases")} context={<span className="badge badge-warning">REQ-0114</span>}>
         <NotYetBoundary title={t("cases.title", "Cases")} consequence={t("cases.off", "The correction/reinspection/appeal case spine is not enabled here.")}
           seam="FEATURE_CASE_SPINE=off" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
       </Shell>
@@ -28,7 +28,7 @@ export default async function CasesPage() {
   if (error) console.error("[cases] load", error);
   const factoryId = fac?.id ?? null;
   return (
-    <Shell current="/cases" title={t("cases.title", "Cases")} context={<span className="badge badge-info">CD-046 · REQ-0114..0119</span>}>
+    <Shell current="/cases" title={t("cases.title", "Cases")} context={<span className="badge badge-info">REQ-0114..0119</span>}>
       <div className="sq-banner"><div><strong>{t("cases.banner.title", "Correction / reinspection / appeal.")}</strong> {t("cases.banner.body", "One open case per origin object is enforced by the database. You see only cases in your scope (RLS).")}</div></div>
       <OpenCase factoryId={factoryId} strings={{
         type: t("cases.type", "Case type"), open: t("cases.open", "Open case"), opening: t("cases.opening", "Opening…"),

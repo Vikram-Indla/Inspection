@@ -21,7 +21,7 @@ export async function findDuplicateActiveVisits(
   if (visitType) q = q.eq("visit_type", visitType);
   const { data, error } = await q.limit(5);
   if (error) {
-    console.error("[CD-022 duplicate-active-visit read]", error.message, error.code);
+    console.error("[ duplicate-active-visit read]", error.message, error.code);
     return { visits: [], unavailable: true };
   }
   return { visits: (data ?? []) as DuplicateVisit[], unavailable: false };

@@ -39,7 +39,7 @@ export default function ContextualAiPanel({ surface, title, description, context
         <span className="badge badge-info">{advisoryLabel}</span>
       </div>
       <div className="panel-body stack">
-        <p className="t-caption">{evidenceLabel}: {evidenceRefs.join(" · ")}</p>
+        <p className="t-caption">{evidenceLabel}</p>
         <form action={offline || providerUnavailable ? undefined : action} className="stack">
           <input type="hidden" name="surface" value={surface} />
           <input type="hidden" name="context" value={context} />
@@ -67,7 +67,7 @@ export default function ContextualAiPanel({ surface, title, description, context
           </div>
         </form>
         {state.ok && state.text
-          ? <div className="sq-banner sq-banner--immutable" role="status"><strong>{advisoryLabel}</strong><div>{state.text}</div><div className="t-caption">{evidenceLabel}: {evidenceRefs.join(" · ")}</div>{state.insightId && reviewLabel && <a className="sq-link" href={`/ai/suggestions#ai-suggestion-${state.insightId}`}>{reviewLabel}</a>}</div>
+          ? <div className="sq-banner sq-banner--immutable" role="status"><strong>{advisoryLabel}</strong><div>{state.text}</div><div className="t-caption">{evidenceLabel}</div>{state.insightId && reviewLabel && <a className="sq-link" href={`/ai/suggestions#ai-suggestion-${state.insightId}`}>{reviewLabel}</a>}</div>
           : null}
       </div>
     </section>
