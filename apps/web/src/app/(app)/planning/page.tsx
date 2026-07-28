@@ -168,7 +168,23 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
     [...new Set(rows.map(r => r[key]).filter((v): v is string => typeof v === "string" && v.length > 0))].sort();
   const regionOptions = distinct((regionsRead.data ?? []) as Record<string, unknown>[], "region");
   const cityOptions = distinct((citiesRead.data ?? []) as Record<string, unknown>[], "city");
-  const inspectors = (inspectorsRead.data ?? []).map(r => ({ user_id: r.user_id as string, full_name: r.full_name as string }));
+  // A role join can surface the same person more than once. Keep one choice per
+  // user and disambiguate genuinely matching names instead of making an
+  // assignment decision depend on an invisible ID.
+  const inspectorById = new Map<string, string>();
+  for (const row of inspectorsRead.data ?? []) {
+    const userId = row.user_id as string;
+    if (!inspectorById.has(userId)) inspectorById.set(userId, row.full_name as string);
+  }
+  const inspectorNameCount = new Map<string, number>();
+  for (const name of inspectorById.values()) inspectorNameCount.set(name, (inspectorNameCount.get(name) ?? 0) + 1);
+  const inspectors = [...inspectorById.entries()]
+    .map(([user_id, full_name]) => ({
+      user_id,
+      full_name,
+      label: (inspectorNameCount.get(full_name) ?? 0) > 1 ? `${full_name} · ${user_id.slice(0, 8)}` : full_name,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
   const packageOptions = ((packagesRead.data ?? []) as unknown as { id: string; version_label: string; packages: { title: string } | null }[])
     .map(p => ({ id: p.id, label: `${p.packages?.title ?? "—"} · ${p.version_label}` }));
   const drafts = (draftsRead.data ?? []) as unknown as DraftRow[];
@@ -312,7 +328,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
           <span className="sq-field__label">{tr("plan.list.filterInspector", "Inspector", "المفتش")}</span>
           <select className="sq-select" name="inspectorId" defaultValue={params.filters.inspectorId ?? ""}>
             <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
-            {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}
+            {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.label}</option>)}
           </select>
         </label>
         <fieldset className="sq-field" style={{ minInlineSize: "min(100%, 310px)", margin: 0, padding: 0, border: 0 }}>
