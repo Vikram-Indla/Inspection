@@ -5,7 +5,6 @@ import OperationsMapWorkspace, {
   type OperationsMapEntry,
   type OperationsMapWorkspaceStrings,
 } from "./OperationsMapWorkspace";
-import styles from "./operations.module.css";
 
 type Locale = "en" | "ar";
 type Highlight = {
@@ -67,33 +66,32 @@ export default function RevampOperationsCenter({
   ];
 
   return (
-    <div className={styles.revampPage}>
-      <div className={styles.revampCommand}>
-        <nav className={styles.viewSwitch} aria-label={copy(locale, "Operations perspective", "منظور العمليات")}>
-          <a className={`${styles.viewLink} ${view === "map" ? styles.viewLinkActive : ""}`} href={mapViewHref} aria-current={view === "map" ? "page" : undefined}>
+    <div className="stack">
+      <div className="grid-toolbar">
+        <nav className="seg" aria-label={copy(locale, "Operations perspective", "منظور العمليات")}>
+          <a className="seg-opt" href={mapViewHref} aria-current={view === "map" ? "page" : undefined} aria-pressed={view === "map"}>
             {copy(locale, "Operations map", "خريطة العمليات")}
           </a>
-          <a className={`${styles.viewLink} ${view === "performance" ? styles.viewLinkActive : ""}`} href={performanceViewHref} aria-current={view === "performance" ? "page" : undefined}>
+          <a className="seg-opt" href={performanceViewHref} aria-current={view === "performance" ? "page" : undefined} aria-pressed={view === "performance"}>
             {copy(locale, "National performance", "الأداء الوطني")}
           </a>
         </nav>
-        <div className={styles.revampFreshness}>
+        <div className="row">
           {/* CR-431 · WA-M3-AC-001 — preserve the accepted command-bar
               composition while making its live-status affordance complete the
               real Operations Center → Operations Live route flow. */}
-          <a href="/operations/live">
-            <i aria-hidden="true" />
+          <a className="tl-meta" href="/operations/live">
             {copy(locale, "Live governed positions", "مواقع معتمدة مباشرة")}
           </a>
-          <button className={styles.revampSecondary} type="button" onClick={() => setShowList(value => !value)}>
+          <button className="btn btn-secondary" type="button" onClick={() => setShowList(value => !value)}>
             {showList ? copy(locale, "Show map", "إظهار الخريطة") : copy(locale, "Show list equivalent", "إظهار القائمة المكافئة")}
           </button>
         </div>
       </div>
 
       {showList ? (
-          <section className={styles.revampTableWrap}>
-            <table className={styles.revampTable}>
+          <section className="table-wrap">
+            <table className="table">
               <caption>{copy(locale, "Accessible equivalent of the live map. Same records, same actions, no map dependency.", "المكافئ القابل للوصول للخريطة المباشرة. السجلات والإجراءات نفسها دون الاعتماد على الخريطة.")}</caption>
               <thead><tr>
                 <th>{copy(locale, "Inspector", "المفتش")}</th>
@@ -108,37 +106,36 @@ export default function RevampOperationsCenter({
               <tbody>{activeMapEntries.map(entry => (
                 <tr key={entry.id}>
                   <th scope="row" data-label={copy(locale, "Inspector", "المفتش")}>{entry.inspectorName ?? "—"}</th>
-                  <td data-label={copy(locale, "Operational state", "الحالة التشغيلية")}><span className={styles.revampLozenge}>{entry.state}</span></td>
+                  <td data-label={copy(locale, "Operational state", "الحالة التشغيلية")}><span className="badge badge-info">{entry.state}</span></td>
                   <td data-label={copy(locale, "Visit", "الزيارة")}>{entry.visitId?.slice(0, 8) ?? "—"}</td>
                   <td data-label={copy(locale, "Factory", "المصنع")}>{entry.factoryName}</td>
                   <td data-label={copy(locale, "Region / city", "المنطقة / المدينة")}>{[entry.region, entry.city].filter(Boolean).join(" / ") || "—"}</td>
-                  <td data-label={copy(locale, "Risk", "المخاطر")}>{entry.riskScore ?? "—"}</td>
+                  <td data-label={copy(locale, "Risk", "المخاطر")}><span className="badge badge-pending">{entry.riskScore ?? copy(locale, "Not configured", "غير مهيأ")}</span></td>
                   <td data-label={copy(locale, "Last update", "آخر تحديث")}>{entry.lastGeoAt ?? "—"}</td>
-                  <td data-label={copy(locale, "Actions", "الإجراءات")}><a className={styles.revampSecondary} href={entry.href}>{copy(locale, "Open record", "فتح السجل")}</a></td>
+                  <td data-label={copy(locale, "Actions", "الإجراءات")}><a className="btn btn-secondary" href={entry.href}>{copy(locale, "Open record", "فتح السجل")}</a></td>
                 </tr>
               ))}</tbody>
             </table>
           </section>
       ) : (
-          <section className={styles.revampMap}>
-            <div className={styles.revampMapCrumb}>{copy(locale, "Saudi Arabia", "المملكة العربية السعودية")}</div>
+          <section className="map-panel">
+            <nav className="breadcrumb" aria-label={copy(locale, "Map drill", "التنقل في الخريطة")}><ul className="breadcrumb"><li>{copy(locale, "Saudi Arabia", "المملكة العربية السعودية")}</li></ul></nav>
             <OperationsMapWorkspace entries={activeMapEntries} strings={mapStrings} mapOnly />
           </section>
       )}
 
       {view === "performance" ? (
-        <section className={styles.revampRegions}>
-          <div className={styles.revampSectionHead}>
+        <section className="stack">
+          <div className="panel-row">
             <h2>{copy(locale, "National performance by region", "الأداء الوطني حسب المنطقة")}</h2>
             <p>{copy(locale, "Selecting a region drills to its factories and active visits.", "يؤدي تحديد المنطقة إلى مصانعها وزياراتها النشطة.")}</p>
           </div>
-          <div className={styles.revampRegionGrid}>
+          <div className="kpi-grid">
             {regions.map(region => (
-              <a className={styles.revampRegionCard} href={region.href} key={region.name}>
+              <a className="panel kpi" href={region.href} key={region.name}>
                 <span><strong>{region.name}</strong><b>—</b></span>
-                <em>{copy(locale, "Compliance unavailable", "الامتثال غير متاح")}</em>
-                <i><span style={{ inlineSize: `${Math.min(100, Math.max(3, region.active))}%` }} /></i>
-                <small>{region.factories} {copy(locale, "factories", "مصانع")} · {region.active} {copy(locale, "active visits", "زيارات نشطة")}</small>
+                <span className="badge badge-pending">{copy(locale, "Compliance unavailable", "الامتثال غير متاح")}</span>
+                <span className="tl-meta">{region.factories} {copy(locale, "factories", "مصانع")} · {region.active} {copy(locale, "active visits", "زيارات نشطة")}</span>
               </a>
             ))}
           </div>
@@ -146,33 +143,33 @@ export default function RevampOperationsCenter({
       ) : null}
 
       <section>
-        <h2 className={styles.revampOverline}>{copy(locale, "Operational summary", "الملخص التشغيلي")}</h2>
-        <div className={styles.revampKpiRow}>
+        <h2 className="tl-meta">{copy(locale, "Operational summary", "الملخص التشغيلي")}</h2>
+        <div className="kpi-grid">
           {summary.map(([label, value, href, action]) => (
-            <article className={styles.revampKpi} key={label}>
+            <article className="panel kpi" key={label}>
               <span>{label}</span>
-              <strong>{value}</strong>
-              <a href={href}>{action}</a>
+              <strong className="sq-kpi__value">{value}</strong>
+              <a className="btn btn-ghost" href={href}>{action}</a>
             </article>
           ))}
         </div>
       </section>
 
-      <section className={styles.revampExceptions}>
-        <div className={styles.revampSectionHead}>
+      <section className="panel stack">
+        <div className="panel-row">
           <h2>{copy(locale, "Live operational exceptions", "الاستثناءات التشغيلية المباشرة")}</h2>
-          <span>{copy(locale, "Current RLS-scoped records", "السجلات الحالية المقيّدة بالصلاحيات")}</span>
+          <span className="tl-meta">{copy(locale, "Current RLS-scoped records", "السجلات الحالية المقيّدة بالصلاحيات")}</span>
         </div>
         {highlights.length ? highlights.slice(0, 8).map(item => (
-          <article key={item.id}>
-            <em>{copy(locale, "Open", "مفتوح")}</em>
-            <div>
+          <article className="panel-row" key={item.id}>
+            <span className="badge badge-warning">{copy(locale, "Open", "مفتوح")}</span>
+            <div className="grow">
               <strong>{item.label}</strong>
               <p>{item.description}</p>
             </div>
-            <a className={styles.revampSecondary} href={item.href}>{copy(locale, "Open record", "فتح السجل")}</a>
+            <a className="btn btn-secondary" href={item.href}>{copy(locale, "Open record", "فتح السجل")}</a>
           </article>
-        )) : <p className={styles.revampEmpty}>{copy(locale, "No open operational exceptions in this scope.", "لا توجد استثناءات تشغيلية مفتوحة ضمن هذا النطاق.")}</p>}
+        )) : <section className="saqeel-state"><div className="saqeel-state__content"><h2>{copy(locale, "No open operational exceptions", "لا توجد استثناءات تشغيلية مفتوحة")}</h2><p>{copy(locale, "No open operational exceptions in this scope.", "لا توجد استثناءات تشغيلية مفتوحة ضمن هذا النطاق.")}</p></div></section>}
       </section>
     </div>
   );

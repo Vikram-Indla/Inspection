@@ -1,18 +1,16 @@
-import styles from "./live.module.css";
-
 export default function Loading() {
   return (
-    <div className={styles.page} role="status" aria-busy="true" aria-label="Loading live operations">
-      <div className={styles.header}>
-        <strong className={styles.disclosure}>Recorded positions — not live GPS</strong>
-        <span className={styles.skeletonLine} />
+    <div className="stack" role="status" aria-busy="true" aria-label="Loading live operations">
+      <div className="page-header">
+        <strong>Recorded positions — not live GPS</strong>
+        <span className="skeleton" />
       </div>
-      <div className={styles.counters}>
-        {Array.from({ length: 3 }, (_, index) => <span className={styles.skeletonCounter} key={index} />)}
+      <div className="kpi-grid">
+        {Array.from({ length: 3 }, (_, index) => <span className="panel kpi skeleton" key={index} />)}
       </div>
-      <div className={styles.workspace}>
-        <span className={styles.skeletonMap} />
-        <span className={styles.skeletonList} />
+      <div className="sq-grid-2">
+        <span className="map-panel skeleton" />
+        <span className="panel skeleton" />
       </div>
     </div>
   );

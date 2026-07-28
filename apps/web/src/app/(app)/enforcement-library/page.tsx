@@ -237,6 +237,7 @@ export default async function EnforcementLibrary({
           {regions.map(value => <option key={value} value={value}>{value}</option>)}
         </select>
         <button className="btn btn-primary" type="submit">{copy("Apply", "تطبيق")}</button>
+        <span className="grow" aria-hidden="true"></span>
         <a
           className="btn btn-secondary"
           href={`/enforcement-library/export?${query}`}
