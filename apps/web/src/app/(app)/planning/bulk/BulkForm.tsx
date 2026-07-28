@@ -248,7 +248,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
           {selected.size > 0 && <button type="button" className="sq-btn sq-btn--subtle" onClick={clearSelection}>{strings.clearSelection}</button>}
           {draftRef && !saveFailed && <span className="t-caption" role="status">{strings.draftSaved.replace("{ref}", draftRef)}</span>}
           {!draftPersistenceExecutable && (
-            <span className="t-caption sq-lozenge sq-lozenge--warning" role="status">{strings.draftSaveFailed}</span>
+            <span className="t-caption sq-lozenge sq-lozenge--info" role="status">{strings.draftSaveFailed}</span>
           )}
         </div>
         <div className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>

@@ -198,7 +198,7 @@ export default async function ApprovalQueue({
 
         <div className="alert alert-warning" role="note">
           <div>
-            <strong>{t("approval.queue.scoringHold", "CR-471/472 remain Not configured.")}</strong>
+            <strong>{t("approval.queue.scoringHold", "remain Not configured.")}</strong>
             <p>{t("approval.queue.scoringHoldBody", "Item scoring and score-exclusion objects are rejected by the governed request contract.")}</p>
           </div>
         </div>

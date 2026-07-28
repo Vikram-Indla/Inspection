@@ -17,6 +17,7 @@ import PlanningPreview from "./PlanningPreview";
 import RevampPlanningInsights from "./RevampPlanningInsights";
 import SavedViewsButton from "./SavedViewsButton";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
+import { getPlanningAiRecommendations } from "@/lib/planning/ai-recommendations";
 
 export const dynamic = "force-dynamic";
 
@@ -118,7 +119,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
     return (
       <Shell current="/planning" title={title}>
         <EmptyState glyph="⛔" title={tr("plan.home.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
-          body={tr("plan.home.unauthorized.body", "Visit Planning (SCR-WEB-100) is available to internal business staff. Inspector and administration accounts use their own workspaces.", "تخطيط الزيارات (SCR-WEB-100) متاح لموظفي الأعمال الداخليين. تستخدم حسابات المفتشين والإدارة مساحات عملها الخاصة.")} />
+          body={tr("plan.home.unauthorized.body", "Visit Planning is available to authorized planning staff.", "تخطيط الزيارات متاح لموظفي التخطيط المصرح لهم.")} />
       </Shell>
     );
   }
@@ -140,7 +141,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       : sb.from("factories").select("city").not("city", "is", null).limit(1000),
     sb.from("profiles").select("user_id, full_name, user_roles!user_roles_user_id_fkey!inner(role_key)").eq("user_roles.role_key", "inspector").order("full_name"),
     sb.from("package_versions").select("id, version_label, packages(title)").order("published_at", { ascending: false, nullsFirst: false }).limit(500),
-    sb.from("visit_plans").select("id, method, status, plan_reference, draft_version, created_at, created_by, profiles(full_name)")
+    sb.from("visit_plans").select("id, method, status, plan_reference, draft_version, created_at, created_by, profiles!visit_plans_created_by_fkey(full_name)")
       .in("status", ["draft", "validated"]).is("archived_at", null).order("created_at", { ascending: false }).limit(10),
   ]);
 
@@ -156,7 +157,10 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
   }
 
   const visibleRows = list.rows.filter(row => !isTestFixtureEstablishment({ name: row.factoryName }));
-  const lastUpdates = await fetchLastUpdates(sb, visibleRows.map(r => r.id));
+  const [lastUpdates, planningAi] = await Promise.all([
+    fetchLastUpdates(sb, visibleRows.map(r => r.id)),
+    getPlanningAiRecommendations(visibleRows, locale),
+  ]);
 
   const lookups = (lookupsRead.data ?? []) as { kind: string; key: string; label_en: string; label_ar: string | null }[];
   const lookupLabel = (l: { label_en: string; label_ar: string | null }) => (locale === "ar" ? (l.label_ar ?? l.label_en) : l.label_en);
@@ -172,8 +176,8 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
   const drafts = (draftsRead.data ?? []) as unknown as DraftRow[];
 
   const methods: CreateVisitMethod[] = [
-    { glyph: "▦", title: t("plan.method.bulk.title", "Plan multiple visits"), desc: t("plan.method.bulk.desc", "AND/OR criteria over the Factory list; many visits under one plan (M01-002)."), href: "/planning/bulk" },
-    { glyph: "▣", title: t("plan.method.single.title", "Plan one visit"), desc: t("plan.method.single.desc", "One registered factory via CR / Industrial License; one plan, one visit (M01-034/042)."), href: "/planning/single" },
+    { glyph: "▦", title: t("plan.method.bulk.title", "Plan multiple visits"), desc: t("plan.method.bulk.desc", "Use AND/OR criteria over the factory list to create many visits under one plan."), href: "/planning/bulk" },
+    { glyph: "▣", title: t("plan.method.single.title", "Plan one visit"), desc: t("plan.method.single.desc", "Choose one registered factory by CR or Industrial License and create one visit."), href: "/planning/single" },
     {
       glyph: "⚡",
       title: t("plan.method.immediate.title", "Create an urgent visit"),
@@ -206,7 +210,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
 
   if (targetPreview) {
     return (
-      <Shell current="/planning" title={title} context={<span className="sq-caption sq-numeric">CR-001..CR-098 · WA-DES-036</span>}>
+      <Shell current="/planning" title={title}>
         <PlanningPreview methods={methods} drafts={drafts.map(draft => ({
           id: draft.id, method: t(`enum.${draft.method}`, draft.method), status: t(`enum.${draft.status}`, draft.status),
           planReference: draft.plan_reference, createdAt: draft.created_at, planner: draft.profiles?.full_name ?? "—", href: continueHref(draft),
@@ -232,7 +236,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       {/* Page actions — Create Visit / Export / Refresh (PLN-REQ-006/017/018) */}
       <CreateVisitSection methods={methods} canCreate={access.can("planning.create")} strings={{
         createLabel: tr("plan.list.createVisit", "Create visit", "إنشاء زيارة"),
-        oneMethodNote: t("plan.home.oneMethod", "One planning method per creation session (M01-011 · REF-001)."),
+        oneMethodNote: t("plan.home.oneMethod", "Choose one planning method for this creation session."),
       }}>
         <RefreshButton label={tr("plan.list.refresh", "Refresh", "تحديث")} busyLabel={tr("plan.list.refreshing", "Refreshing…", "جارٍ التحديث…")} />
         {access.can("planning.export") && (
@@ -244,14 +248,26 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
             cappedNote: tr("plan.list.exportCapped", "Exported the first {n} matching rows — refine the filters for the rest.", "تم تصدير أول {n} صفًا مطابقًا — حسّن عوامل التصفية للباقي."),
           }} />
         )}
-        <SavedViewsButton label={tr("plan.list.savedViews", "Saved views", "العروض المحفوظة")} />
+        <SavedViewsButton
+          label={tr("plan.list.savedViews", "Saved views", "العروض المحفوظة")}
+          strings={{
+            saveCurrent: tr("plan.saved.saveCurrent", "Save current view", "حفظ العرض الحالي"),
+            nameTitle: tr("plan.saved.nameTitle", "Save planning view", "حفظ عرض التخطيط"),
+            nameLabel: tr("plan.saved.nameLabel", "View name", "اسم العرض"),
+            cancel: tr("common.cancel", "Cancel", "إلغاء"),
+            save: tr("common.save", "Save", "حفظ"),
+            close: tr("common.close", "Close", "إغلاق"),
+            empty: tr("plan.saved.empty", "No saved views on this device.", "لا توجد عروض محفوظة على هذا الجهاز."),
+            deleteLabel: tr("plan.saved.delete", "Delete {name}", "حذف {name}"),
+          }}
+        />
         <span />
       </CreateVisitSection>
 
       <RevampPlanningInsights
         rows={visibleRows}
-        total={list.total}
         returned={list.countsAvailable ? list.counts.returned : "—"}
+        ai={planningAi}
         strings={{
           insights: tr("plan.insights.title", "AI insights", "رؤى الذكاء الاصطناعي"),
           withheld: tr("plan.insights.withheld", "Provider output is withheld; current governed planning records show:", "تم حجب مخرجات المزوّد؛ وتُظهر سجلات التخطيط المحكومة الحالية:"),
@@ -261,6 +277,8 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
           matching: tr("plan.insights.matching", "{n} visits match the current RLS-scoped filters.", "{n} زيارة تطابق عوامل التصفية الحالية المقيّدة بسياسات الوصول."),
           unavailable: tr("plan.insights.unavailable", "AI provider unavailable", "مزوّد الذكاء الاصطناعي غير متاح"),
           factsAvailable: tr("plan.insights.factsAvailable", "Live record facts remain available", "تبقى حقائق السجلات المباشرة متاحة"),
+          connected: tr("plan.insights.connected", "Gemini connected", "Gemini متصل"),
+          advisory: tr("plan.insights.advisory", "Advisory only — confirm all governed planning rules before acting.", "للاسترشاد فقط — تحقق من جميع قواعد التخطيط المحكومة قبل اتخاذ أي إجراء."),
           recommendations: tr("plan.insights.recommendations", "AI recommendations", "توصيات الذكاء الاصطناعي"),
           priority: tr("plan.insights.priority", "Governed priority", "الأولوية المحكومة"),
           windowEnds: tr("plan.insights.windowEnds", "window ends", "تنتهي النافذة"),
@@ -417,7 +435,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
           <tbody>
             {visibleRows.map((row: PlanningVisitRow) => (
               <tr key={row.id}>
-                <td className="sq-numeric"><a className="sq-link" href={`/visits/${row.id}`}><strong>{row.visitReference ?? row.id.slice(0, 8)}</strong></a></td>
+                <td className="sq-numeric"><a className="sq-link" href={`/visits/${row.id}`}><strong>{row.visitReference ?? tr("plan.referenceUnavailable", "Reference unavailable", "المرجع غير متاح")}</strong></a></td>
                 <td><span className="planning-method">{t(`enum.${row.method}`, row.method)}</span></td>
                 <td><span className={`badge planning-status ${STATUS_TONE[row.planningStatus] ?? "badge-pending"}`}>
                   <span className="dot" aria-hidden="true" />
@@ -482,7 +500,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
             <tbody>
               {drafts.map(d => (
                 <tr key={d.id}>
-                  <td className="sq-numeric"><strong>{d.plan_reference ?? d.id.slice(0, 8)}</strong></td>
+                  <td className="sq-numeric"><strong>{d.plan_reference ?? tr("plan.referenceUnavailable", "Reference unavailable", "المرجع غير متاح")}</strong></td>
                   <td><span className="planning-method">{t(`enum.${d.method}`, d.method)}</span></td>
                   <td><span className="badge badge-draft planning-status"><span className="dot" aria-hidden="true" />{t("enum.draft", "draft")}</span></td>
                   <td>{d.profiles?.full_name ?? "—"}</td>
@@ -495,7 +513,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
                     {user && d.created_by === user.id ? (
                       <DiscardDraftButton planId={d.id} expectedVersion={d.draft_version}
                         label={tr("plan.list.discard", "Discard", "تجاهل")}
-                        discardAria={tr("plan.list.discardAria", "Discard draft {ref}", "تجاهل المسودة {ref}").replace("{ref}", d.plan_reference ?? d.id.slice(0, 8))} />
+                        discardAria={tr("plan.list.discardAria", "Discard draft {ref}", "تجاهل المسودة {ref}").replace("{ref}", d.plan_reference ?? tr("plan.referenceUnavailable", "Reference unavailable", "المرجع غير متاح"))} />
                     ) : "—"}
                   </td>
                 </tr>
@@ -506,7 +524,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       )}
 
       {/* FIX WAVE F4 — M02-035 plan register entry point (preserved) */}
-      <p><a className="sq-link" href="/planning/plans">{t("plan.home.registerLink", "Visit plans — status, child visits and progress of every plan (M02-035)")}</a></p>
+      <p><a className="sq-link" href="/planning/plans">{t("plan.home.registerLink", "Visit plans — status, child visits and progress")}</a></p>
       {/* M8 — /visits is the accepted management alias surface; the two are
           cross-linked in both directions (canonical §5/§6 reconciliation). */}
       <p><a className="sq-link" href="/visits">{tr("plan.home.visitsLink", "Visit management — bulk actions and lenses over the same visits (/visits)", "إدارة الزيارات — إجراءات جماعية وعدسات على نفس الزيارات")}</a></p>

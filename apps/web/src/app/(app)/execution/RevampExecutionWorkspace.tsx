@@ -204,13 +204,13 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
       <h1 className="sq-sr-only">{copy(locale, "Inspection Execution", "تنفيذ التفتيش")}</h1>
       <div className="sq-banner sq-banner--critical" role="status">
         <div>
-          <strong>{copy(locale, "Submission service unavailable.", "خدمة التقديم غير متاحة.")}</strong> {copy(locale, "Inspection preparation and execution records remain available, but real submission is blocked by DEC-032. No successful submission is claimed from this destination.", "تظل سجلات التحضير والتنفيذ متاحة، لكن التقديم الفعلي محظور بموجب DEC-032. لا تدّعي هذه الوجهة نجاح أي تقديم.")}
+          <strong>{copy(locale, "Submission service unavailable.", "خدمة التقديم غير متاحة.")}</strong> {copy(locale, "Inspection preparation and execution records remain available, but real submission is blocked by. No successful submission is claimed from this destination.", "تظل سجلات التحضير والتنفيذ متاحة، لكن التقديم الفعلي محظور بموجب. لا تدّعي هذه الوجهة نجاح أي تقديم.")}
         </div>
       </div>
       <div className="sq-banner" role="status">
         <div>
           <strong>{copy(locale, "Live tracking is not available in this Web view.", "التتبع المباشر غير متاح في عرض الويب هذا.")}</strong>{" "}
-          {copy(locale, "DEC-002 remains the authority boundary for telemetry frequency, accuracy, and geofence policy. The map uses recorded official factory coordinates only.", "يظل القرار DEC-002 هو الحد المرجعي لتواتر القياس ودقته وسياسة النطاق الجغرافي. تستخدم الخريطة إحداثيات المصنع الرسمية المسجلة فقط.")}
+          {copy(locale, "remains the authority boundary for telemetry frequency, accuracy, and geofence policy. The map uses recorded official factory coordinates only.", "يظل القرار هو الحد المرجعي لتواتر القياس ودقته وسياسة النطاق الجغرافي. تستخدم الخريطة إحداثيات المصنع الرسمية المسجلة فقط.")}
         </div>
       </div>
       {totalVisibleRows > rows.length ? (

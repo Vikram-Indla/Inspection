@@ -144,7 +144,7 @@ export async function requestVisitCancellation(_: ActionResult, fd: FormData): P
   const visitId = String(fd.get("visit_id") ?? "");
   const reasonKey = String(fd.get("reason_key") ?? "");
   const comment = String(fd.get("comment") ?? "").trim();
-  if (!visitId || !reasonKey) return { error: "Cancellation reason is mandatory (M04-057)" };
+  if (!visitId || !reasonKey) return { error: "Cancellation reason is mandatory" };
   const sb = await supabaseServer();
   const { error } = await sb.rpc("request_visit_cancellation", {
     p_visit: visitId, p_reason_key: reasonKey, p_comment: comment || null,
@@ -164,7 +164,7 @@ export async function requestVisitCancellation(_: ActionResult, fd: FormData): P
 export async function requestVisitReturn(_: ActionResult, fd: FormData): Promise<ActionResult> {
   const visitId = String(fd.get("visit_id") ?? "");
   const reason = String(fd.get("reason") ?? "").trim();
-  if (!visitId || !reason) return { error: "Return reason is mandatory (M03-006)" };
+  if (!visitId || !reason) return { error: "Return reason is mandatory" };
   const sb = await supabaseServer();
   const { error } = await sb.rpc("request_visit_return", { p_visit: visitId, p_reason: reason });
   if (error) {

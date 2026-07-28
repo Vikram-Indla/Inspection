@@ -130,7 +130,7 @@ async function readOverlappingAssignments(
     .lt("visits.window_start", window_end)
     .gt("visits.window_end", window_start);
   if (error) {
-    console.error("[CD-024 overlap read]", error.message);
+    console.error("[ overlap read]", error.message);
     return { ok: false };
   }
   return { ok: true, rows: (data ?? []) as unknown as OverlapRow[] };
@@ -143,7 +143,7 @@ export async function loadBulkSelection(ids: string[], window?: { start: string;
   // denial fails closed as "unavailable" (never a false empty catalog).
   const access = await getPlanningAccess(sb, ["planning.create.bulk"]);
   if (access.error || !access.can("planning.create.bulk")) {
-    console.error("[CD-021 loadBulkSelection] access denied or resolution failed");
+    console.error("[ loadBulkSelection] access denied or resolution failed");
     return {
       factories: [], packages: [], inspectors: [], unavailable: true,
       sources: { factories: "failed", packages: "failed", inspectors: "failed", overlap: "not-evaluated", lookups: "failed" },
@@ -163,7 +163,7 @@ export async function loadBulkSelection(ids: string[], window?: { start: string;
       .in("kind", ["visit_type", "visit_mode", "priority"]).eq("is_active", true).order("sort_order"),
   ]);
   if (factoryRead.error || packageRead.error || inspectorRead.error) {
-    console.error("[CD-021 loadBulkSelection]", factoryRead.error?.message ?? packageRead.error?.message ?? inspectorRead.error?.message);
+    console.error("[ loadBulkSelection]", factoryRead.error?.message ?? packageRead.error?.message ?? inspectorRead.error?.message);
     // CD-024 R1-2 — fail closed with per-source truth. A failed read is NEVER
     // rendered as an empty catalog; the UI shows the specific source as
     // unavailable and blocks readiness with the caller's input preserved.
@@ -211,7 +211,7 @@ export async function loadBulkSelection(ids: string[], window?: { start: string;
   const endMs = window ? Date.parse(window.end) : Number.NaN;
   const windowOk = !!window && !!window.start && !!window.end && Number.isFinite(startMs) && Number.isFinite(endMs) && endMs > startMs;
   const sources: ReviewSources = { factories: "ok", packages: "ok", inspectors: "ok", overlap: "not-evaluated", lookups: lookupRead.error ? "failed" : "ok" };
-  if (lookupRead.error) console.error("[CD-021 loadBulkSelection] lookups read failed:", lookupRead.error.message);
+  if (lookupRead.error) console.error("[ loadBulkSelection] lookups read failed:", lookupRead.error.message);
   const lookupRows = (lookupRead.data ?? []) as { kind: string; key: string; label_en: string; label_ar: string | null }[];
   const byKind = (kind: string): LookupOption[] => lookupRows.filter(r => r.kind === kind).map(r => ({ key: r.key, label_en: r.label_en, label_ar: r.label_ar }));
   const lookups = { visitTypes: byKind("visit_type"), visitModes: byKind("visit_mode"), priorities: byKind("priority") };
@@ -263,7 +263,7 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError) {
-    console.error("[CD-021 publishBulkPlan] auth read failed:", authError.message);
+    console.error("[ publishBulkPlan] auth read failed:", authError.message);
     return { error: NEUTRAL_READ_ERROR };
   }
   if (!user) return { error: "Session expired." };
@@ -274,10 +274,10 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   // persona (business staff, publish capability, no planner role) publishes.
   const access = await getPlanningAccess(sb, ["planning.publish"]);
   if (access.error) {
-    console.error("[CD-021 publishBulkPlan] access resolution failed");
+    console.error("[ publishBulkPlan] access resolution failed");
     return { error: NEUTRAL_READ_ERROR };
   }
-  if (!access.can("planning.publish")) return { error: "Publishing requires the planning.publish capability (RBAC-007)." };
+  if (!access.can("planning.publish")) return { error: "Publishing requires the planning.publish capability." };
   let factoryIds = [...new Set(formData.getAll("factory_id").map(String))]
     .filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id))
     .slice(0, 500);
@@ -302,11 +302,11 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   }
 
   const blockers: string[] = [];
-  if (factoryIds.length === 0) blockers.push("No factories selected — only selected targets proceed (M01-005)");
-  if (visit_type !== "periodic") blockers.push("Visit type is not supported by this planning method (FLD-PLAN-003)");
+  if (factoryIds.length === 0) blockers.push("No factories selected — only selected targets proceed");
+  if (visit_type !== "periodic") blockers.push("Visit type is not supported by this planning method");
   const startMs = Date.parse(window_start);
   const endMs = Date.parse(window_end);
-  if (!window_start || !window_end || !Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) blockers.push("Invalid window (FLD-PLAN-005)");
+  if (!window_start || !window_end || !Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) blockers.push("Invalid window");
   else if (!isPlausibleDate(window_start) || !isPlausibleDate(window_end)) blockers.push("Window date is outside the plausible range (DEF-DATA-005)");
   // M7 — zero packages allowed; every SELECTED version must still be active
   // (rows kept for the post-publish snapshot links).
@@ -318,7 +318,7 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
       .in("status", ["published", "locked"])
       .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`);
     if (packageError) {
-      console.error("[CD-021 publishBulkPlan] package verification failed:", packageError.message);
+      console.error("[ publishBulkPlan] package verification failed:", packageError.message);
       return { error: NEUTRAL_READ_ERROR };
     }
     packageRows = (pvs ?? []) as unknown as typeof packageRows;
@@ -330,10 +330,10 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
     const { data: pr, error: prErr } = await sb.from("planning_lookups")
       .select("key").eq("kind", "priority").eq("is_active", true).eq("key", priorityRaw).maybeSingle();
     if (prErr) {
-      console.error("[CD-021 publishBulkPlan] priority lookup read failed:", prErr.message);
+      console.error("[ publishBulkPlan] priority lookup read failed:", prErr.message);
       return { error: NEUTRAL_READ_ERROR };
     }
-    if (!pr) blockers.push("Priority is not a governed value (PLN-CON-003)");
+    if (!pr) blockers.push("Priority is not a governed value");
     else priority = priorityRaw;
   }
 
@@ -345,7 +345,7 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   const { data: facRows, error: facErr } = await sb.from("factories")
     .select("id, factory_code, name, official_lat, official_lng").in("id", factoryIds);
   if (facErr) {
-    console.error("[CD-021 publishBulkPlan] factory partition read failed:", facErr.message);
+    console.error("[ publishBulkPlan] factory partition read failed:", facErr.message);
     return { error: NEUTRAL_READ_ERROR };
   }
   const facById = new Map((facRows ?? []).map(f => [f.id as string, f]));
@@ -355,7 +355,7 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   const { data: dups, error: duplicateError } = await sb.from("visits").select("factory_id")
     .in("factory_id", factoryIds).eq("visit_type", visit_type).in("planning_status", ["draft", "validated", "published", "returned"]);
   if (duplicateError) {
-    console.error("[CD-021 publishBulkPlan] duplicate read failed:", duplicateError.message);
+    console.error("[ publishBulkPlan] duplicate read failed:", duplicateError.message);
     return { error: NEUTRAL_READ_ERROR };
   }
   const dupSet = new Set((dups ?? []).map(d => d.factory_id as string));
@@ -363,7 +363,7 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   // inspectors pool (ENG-05 automatic; capacity checks deepen in B7)
   const { data: inspRows, error: inspectorError } = await sb.from("user_roles").select("user_id").eq("role_key", "inspector");
   if (inspectorError) {
-    console.error("[CD-021 publishBulkPlan] inspector pool read failed:", inspectorError.message);
+    console.error("[ publishBulkPlan] inspector pool read failed:", inspectorError.message);
     return { error: NEUTRAL_READ_ERROR };
   }
   const inspectors = (inspRows ?? []).map(r => r.user_id as string);
@@ -425,7 +425,7 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   });
   if (error) {
     // Log the real cause server-side; return catalogued neutral copy only.
-    console.error("[CD-021] publish_bulk_plan_atomic failed:", error.message, error.code);
+    console.error("[] publish_bulk_plan_atomic failed:", error.message, error.code);
     // M7 — the in-transaction guards (RPC checks + the 0031 assignments
     // trigger, SQLSTATE 23505) rejected a conflict that appeared between the
     // preview and the commit. Name the conflicting rows honestly. The attempt
@@ -581,7 +581,7 @@ export async function validateBulkPlan(input: {
   // false ready — fail-closed with the server-side log carrying the reason.
   const access = await getPlanningAccess(sb, ["planning.create.bulk"]);
   if (access.error || !access.can("planning.create.bulk")) {
-    console.error("[CD-025 validate] access denied or resolution failed");
+    console.error("[ validate] access denied or resolution failed");
     throw new Error("planning.create.bulk capability required");
   }
   const blockers: Blocker[] = [];
@@ -617,20 +617,20 @@ export async function validateBulkPlan(input: {
     const { data: pvs, error } = await sb.from("package_versions")
       .select("id").in("id", packageIds).in("status", ["published", "locked"])
       .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`);
-    if (error) { console.error("[CD-025 validate] package:", error.message); blockers.push({ kind: "srcPackage" }); }
+    if (error) { console.error("[ validate] package:", error.message); blockers.push({ kind: "srcPackage" }); }
     else if ((pvs ?? []).length !== packageIds.length) blockers.push({ kind: "packageInvalid" });
   }
 
   // factory existence + display names for blocker targets (+ official location
   // for the M6 missing-location eligibility reason)
   const { data: facRows, error: facErr } = await sb.from("factories").select("id, factory_code, name, official_lat, official_lng").in("id", ids);
-  if (facErr) { console.error("[CD-025 validate] factories:", facErr.message); blockers.push({ kind: "srcFactory" }); return done({}); }
+  if (facErr) { console.error("[ validate] factories:", facErr.message); blockers.push({ kind: "srcFactory" }); return done({}); }
   const label = (fid: string) => { const f = (facRows ?? []).find(x => x.id === fid); return f ? `${f.name} (${f.factory_code})` : fid.slice(0, 8); };
 
   // duplicates (active periodic visit already exists)
   const { data: dups, error: dupErr } = await sb.from("visits").select("factory_id")
     .in("factory_id", ids).eq("visit_type", visit_type).in("planning_status", ["draft", "validated", "published", "returned"]);
-  if (dupErr) { console.error("[CD-025 validate] duplicates:", dupErr.message); blockers.push({ kind: "srcDuplicate" }); }
+  if (dupErr) { console.error("[ validate] duplicates:", dupErr.message); blockers.push({ kind: "srcDuplicate" }); }
   const dupSet = new Set((dups ?? []).map(d => d.factory_id));
   if (dupSet.size) blockers.push({ kind: "duplicate", targets: [...dupSet].map(label) });
 
@@ -639,7 +639,7 @@ export async function validateBulkPlan(input: {
 
   // inspector pool
   const { data: inspRows, error: inspErr } = await sb.from("user_roles").select("user_id").eq("role_key", "inspector");
-  if (inspErr) { console.error("[CD-025 validate] inspectors:", inspErr.message); blockers.push({ kind: "srcInspector" }); }
+  if (inspErr) { console.error("[ validate] inspectors:", inspErr.message); blockers.push({ kind: "srcInspector" }); }
   const pool = new Set((inspRows ?? []).map(r => r.user_id));
   if (!inspErr && pool.size === 0) blockers.push({ kind: "nopool" });
 
@@ -670,7 +670,7 @@ export async function validateBulkPlan(input: {
       .in("visits.planning_status", ["draft", "validated", "published", "returned"])
       .lt("visits.window_start", input.window_end)
       .gt("visits.window_end", input.window_start);
-    if (confErr) { console.error("[CD-025 validate] overlap:", confErr.message); blockers.push({ kind: "srcInspector" }); }
+    if (confErr) { console.error("[ validate] overlap:", confErr.message); blockers.push({ kind: "srcInspector" }); }
     else {
       for (const c of conflicts ?? []) busyInspectors.add(c.inspector_id);
       for (const [fid, insp] of manualPicks) if (busyInspectors.has(insp)) overlapTargets.add(label(fid));
@@ -704,7 +704,7 @@ export async function validateBulkPlan(input: {
       .in("visits.planning_status", ["draft", "validated", "published", "returned"])
       .lt("visits.window_start", input.window_end)
       .gt("visits.window_end", input.window_start);
-    if (busyErr) { console.error("[CD-025 validate] coverage:", busyErr.message); blockers.push({ kind: "srcInspector" }); }
+    if (busyErr) { console.error("[ validate] coverage:", busyErr.message); blockers.push({ kind: "srcInspector" }); }
     else {
       const busy = new Set((busyRows ?? []).map(b => b.inspector_id));
       const manualTaken = new Set(manualPicks.map(([, insp]) => insp));

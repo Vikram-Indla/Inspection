@@ -54,7 +54,7 @@ async function readLegacyFactory(sb: SupabaseClient, id: string): Promise<{ row:
     .select("id, factory_code, name, cr_number, license_number, region, city, risk_band, risk_score, official_lat, official_lng, geofence_radius_m, source_synced_at")
     .eq("id", id).maybeSingle();
   if (error) {
-    console.error("[CD-022 single-planning prefill factory read]", error.message);
+    console.error("[ single-planning prefill factory read]", error.message);
     return { row: null, unavailable: true };
   }
   if (!f) return { row: null, unavailable: false };
@@ -104,19 +104,19 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   // fails closed to the same denial (never a permissive fallback).
   const { data: { user }, error: userError } = await getVerifiedUser(sb);
   if (userError) {
-    console.error("[CD-022 single-planning authorization]", userError.message);
+    console.error("[ single-planning authorization]", userError.message);
     return unavailable;
   }
   const access = await getPlanningAccess(sb, ["planning.create.single"]);
   if (access.error) {
-    console.error("[CD-022 single-planning access resolution]", access.error);
+    console.error("[ single-planning access resolution]", access.error);
     return unavailable;
   }
   if (!access.can("planning.create.single")) {
     return (
       <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
         <EmptyState glyph="⛔" title={tr("plan.single.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
-          body={tr("plan.single.unauthorized.body", "Plan one visit (SCR-WEB-120) requires the planning.create.single capability — available to business planning staff, not to inspector or admin roles.", "تخطيط زيارة واحدة (SCR-WEB-120) يتطلب صلاحية planning.create.single — متاحة لموظفي التخطيط فقط، وليس لأدوار المفتش أو المسؤول.")} />
+          body={tr("plan.single.unauthorized.body", "Plan one visit is available to authorized planning staff.", "تخطيط زيارة واحدة متاح لموظفي التخطيط المصرح لهم.")} />
       </Shell>
     );
   }
@@ -129,7 +129,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     sb.from("engine_settings").select("engine").eq("engine", "otp").maybeSingle(),
   ]);
   if (packageRead.error || inspectorRead.error || otpRead.error) {
-    console.error("[CD-022 single-planning configuration]", packageRead.error?.message ?? inspectorRead.error?.message ?? otpRead.error?.message);
+    console.error("[ single-planning configuration]", packageRead.error?.message ?? inspectorRead.error?.message ?? otpRead.error?.message);
     return unavailable;
   }
   const pkgs = packageRead.data;
@@ -161,7 +161,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
       .in("status", ["draft", "validated"]).is("archived_at", null)
       .maybeSingle();
     if (planError) {
-      console.error("[CD-022 single-planning draft read]", planError.message);
+      console.error("[ single-planning draft read]", planError.message);
       return unavailable;
     }
     if (!planRow) {
@@ -205,7 +205,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
             plant: target.plant_number ?? undefined,
           });
           if (!hit.ok) {
-            console.error("[CD-022 single-planning draft target resolve failed]");
+            console.error("[ single-planning draft target resolve failed]");
             prefillMiss = true;
           } else if (hit.portfolio) {
             portfolios = [hit.portfolio];
@@ -240,7 +240,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
       plant: plantParam || undefined,
     });
     if (!hit.ok) {
-      console.error("[CD-022 single-planning handoff resolve failed]");
+      console.error("[ single-planning handoff resolve failed]");
       registryUnavailable = true;
     } else if (hit.portfolio) {
       portfolios = [hit.portfolio];
@@ -285,7 +285,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
         .limit(50);
       if (searchError) {
         // eslint-disable-next-line no-console
-        console.error("[CD-022 single-planning search]", searchError.message);
+        console.error("[ single-planning search]", searchError.message);
         registryUnavailable = true;
       }
       const dupChecks = await Promise.all((candidates ?? []).map(f => findDuplicateActiveVisits(sb, f.id)));
@@ -312,9 +312,9 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   }
 
   const strings: WizardStrings = {
-    findFactory: t("plan.single.findFactory", "1 · Find factory — CR, Industrial License, plant or name (M01-035)"),
+    findFactory: t("plan.single.findFactory", "1 · Find factory — CR, Industrial License, plant or name"),
     searchPlaceholder: t("plan.single.searchPlaceholder", "CR number, Industrial License, plant number, factory code or name"),
-    noMatch: t("plan.single.noMatch", "No factory matches — check the number, or create an Immediate Visit (M01-045)."),
+    noMatch: t("plan.single.noMatch", "No factory matches — check the number and try again."),
     registryUnavailable: t("plan.single.registryUnavailable", "The Factory list is temporarily unavailable — try your search again."),
     crPrefix: t("plan.single.crPrefix", "CR"),
     exactBadge: t("plan.single.exactBadge", "EXACT"),
@@ -323,14 +323,14 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     similarRule: t("plan.single.similarRule", "Name matches — identifiers differ from your search"),
     degradedBadge: t("plan.single.degradedBadge", "DEGRADED RECORD"),
     degradedRule: t("plan.single.degradedRule", "Missing Industrial License or official coordinates"),
-    duplicateWarning: t("plan.single.duplicateWarning", "An active visit already exists for this factory (M02-012) — shown as a warning here, blocked at publish"),
+    duplicateWarning: t("plan.single.duplicateWarning", "An active visit already exists for this factory — publishing will be blocked"),
     duplicateOpenVisit: t("plan.single.duplicateOpenVisit", "Open existing visit"),
     duplicateStatusLabel: t("plan.single.duplicateStatusLabel", "status"),
-    portfolioStep: t("plan.single.portfolioStep", "2 · Select the Industrial License / plant (M01-036)"),
+    portfolioStep: t("plan.single.portfolioStep", "2 · Select the Industrial License / plant"),
     crIdentity: t("plan.single.crIdentity", "Commercial Registration"),
     selectLicenceHint: t("plan.single.selectLicenceHint", "Every Industrial License and plant registered under this CR is listed — pick the one this visit targets."),
     licenceRequired: t("plan.single.licenceRequired", "Select one license / plant to continue — a single visit targets one plant, never the whole CR (CR-level planning is not eligible here)."),
-    noLicences: t("plan.single.noLicences", "No Industrial License on record for this CR — a single visit cannot be planned against it (M01-036)."),
+    noLicences: t("plan.single.noLicences", "No Industrial License is recorded for this CR, so a single visit cannot be planned."),
     noFactoryLink: t("plan.single.noFactoryLink", "no linked factory record"),
     plantLabel: t("plan.single.plantLabel", "Plant"),
     selectedProfile: t("plan.single.selectedProfile", "Selected plant — registered profile (read-only)"),
@@ -342,21 +342,21 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     savingDraft: t("plan.single.savingDraft", "Saving…"),
     draftSavedPrefix: t("plan.single.draftSavedPrefix", "Draft saved"),
     draftError: t("plan.single.draftError", "The draft could not be saved — your entries are preserved, try again."),
-    licenseStep: t("plan.single.licenseStep", "2 · Industrial License (M01-036)"),
+    licenseStep: t("plan.single.licenseStep", "2 · Industrial License"),
     licenseSelect: t("plan.single.licenseSelect", "Select the Industrial License this visit is planned against"),
     licenseLabel: t("plan.single.licenseLabel", "Industrial license"),
-    licenseNone: t("plan.single.licenseNone", "No Industrial License on record for this factory — the visit proceeds against the CR (M01-036)."),
-    locationStep: t("plan.single.locationStep", "3 · Confirm location (M01-038)"),
+    licenseNone: t("plan.single.licenseNone", "No Industrial License is recorded for this factory — the visit will use the CR."),
+    locationStep: t("plan.single.locationStep", "3 · Confirm location"),
     officialPin: t("plan.single.officialPin", "Official factory pin"),
     noOfficialPin: t("plan.single.noOfficialPin", "No official location on record — pin the visit location manually below."),
     plannerLat: t("plan.single.plannerLat", "Planner pin latitude (optional override)"),
     plannerLng: t("plan.single.plannerLng", "Planner pin longitude (optional override)"),
     plannerPin: t("plan.single.plannerPin", "Planner pin (this visit only — official pin is GIS Admin owned)"),
-    locationConfirmed: t("plan.single.locationConfirmed", "Location confirmed — publish is blocked until confirmed (M01-038)"),
+    locationConfirmed: t("plan.single.locationConfirmed", "Location confirmed"),
     mapLoading: t("plan.single.mapLoading", "Loading location map"),
     mapToggle: t("plan.single.mapToggle", "Map / Text"),
     textEquivalent: t("plan.single.textEquivalent", "Text equivalent of the location map"),
-    riskContext: t("plan.single.riskContext", "Risk context (ENG-04 v1 · advisory — never drives selection)"),
+    riskContext: t("plan.single.riskContext", "Risk context ( v1 · advisory — never drives selection)"),
     riskUnknown: t("plan.single.riskUnknown", "not recorded"),
     freshnessLabel: t("plan.single.freshnessLabel", "Factory list sync"),
     freshnessNever: t("plan.single.freshnessNever", "no sync record"),
@@ -371,12 +371,12 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     mode: t("plan.single.mode", "Mode"),
     modePhysical: t("enum.physical", "Physical"),
     modeVirtual: t("enum.virtual", "Virtual"),
-    modeIneligible: t("plan.single.modeIneligible", "not eligible (M03-011)"),
+    modeIneligible: t("plan.single.modeIneligible", "Not eligible"),
     windowStart: t("plan.single.windowStart", "Window start"),
     windowEnd: t("plan.single.windowEnd", "Window end"),
-    inspector: t("plan.single.inspector", "Inspector (M01-040)"),
+    inspector: t("plan.single.inspector", "Inspector"),
     selectOption: t("plan.single.select", "— select"),
-    autoAssign: t("plan.single.autoAssign", "Auto-assign — first available inspector (M01-040)"),
+    autoAssign: t("plan.single.autoAssign", "Auto-assign — first available inspector"),
     notes: t("plan.single.notes", "Notes (optional)"),
     notesPlaceholder: t("plan.single.notesPlaceholder", "Anything the inspector or reviewer should know before this visit…"),
     readinessTitle: t("plan.single.readinessTitle", "Readiness"),
@@ -384,8 +384,8 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     readyLicense: t("plan.single.readyLicense", "License confirmed"),
     readyLocation: t("plan.single.readyLocation", "Location confirmed"),
     readyInspector: t("plan.single.readyInspector", "Inspector ready"),
-    blockedTitle: t("plan.single.blocked", "Publishing blocked — work preserved (M01-041)"),
-    publish: t("plan.single.publish", "Publish visit (one plan · one visit — M01-042)"),
+    blockedTitle: t("plan.single.blocked", "Publishing blocked — your work is preserved"),
+    publish: t("plan.single.publish", "Publish visit"),
     publishing: t("plan.single.publishing", "Publishing…"),
     retry: t("plan.single.retry", "Retry — resumes safely, will not duplicate"),
     stepPlan: t("plan.single.stepPlan", "Plan created"),
@@ -404,7 +404,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   };
   return (
     <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}
-      context={<span className="sq-lozenge sq-lozenge--info">{t("plan.single.context", "SCR-WEB-120 · identity confidence lens")}</span>}>
+      context={<span className="sq-lozenge sq-lozenge--info">{t("plan.single.context", "Single visit planning")}</span>}>
       <Wizard
         query={q}
         portfolios={portfolios}

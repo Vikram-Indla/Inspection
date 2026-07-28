@@ -89,9 +89,9 @@ export default async function BulkViolations() {
     notesLabel: tr("admin.bulkvio.notesLabel", "Notes (optional)", "ملاحظات (اختياري)"),
     notesPlaceholder: tr("admin.bulkvio.notesPlaceholder", "Recorded with the audit event", "يُسجَّل مع حدث التدقيق"),
     previewTitle: tr("admin.bulkvio.previewTitle", "Impact summary", "ملخص الأثر"),
-    previewBody: tr("admin.bulkvio.previewBody", "Read-only preview: {n} establishment(s) are selected for one {level} violation ({code} · {penalty}). No inspection or violation can be created while DEC-032 remains open.", "معاينة للقراءة فقط: تم تحديد {n} منشأة/منشآت لمخالفة واحدة من نوع {level} ({code} · {penalty}). لا يمكن إنشاء تفتيش أو مخالفة ما دام القرار DEC-032 مفتوحًا."),
+    previewBody: tr("admin.bulkvio.previewBody", "Read-only preview: {n} establishment(s) are selected for one {level} violation ({code} · {penalty}). No inspection or violation can be created while remains open.", "معاينة للقراءة فقط: تم تحديد {n} منشأة/منشآت لمخالفة واحدة من نوع {level} ({code} · {penalty}). لا يمكن إنشاء تفتيش أو مخالفة ما دام القرار مفتوحًا."),
     acknowledgeLabel: tr("admin.bulkvio.acknowledge", "I have reviewed this blocked impact preview.", "لقد راجعت معاينة الأثر المحظورة هذه."),
-    submit: tr("admin.bulkvio.submit", "Issuance unavailable — DEC-032", "الإصدار غير متاح — DEC-032"),
+    submit: tr("admin.bulkvio.submit", "Issuance unavailable", "الإصدار غير متاح"),
     submitting: tr("admin.bulkvio.submitting", "Issuing…", "جارٍ الإصدار…"),
     resultsTitle: tr("admin.bulkvio.resultsTitle", "Result", "النتيجة"),
     resultSuccess: tr("admin.bulkvio.resultSuccess", "issued", "تم الإصدار"),
@@ -100,14 +100,14 @@ export default async function BulkViolations() {
     allSucceeded: tr("admin.bulkvio.allSucceeded", "All {n} violations issued successfully.", "تم إصدار جميع المخالفات البالغ عددها {n} بنجاح."),
     blockedReason: tr(
       "admin.bulkvio.dec032",
-      "Submission unavailable — DEC-032 blocks all real inspection submissions until the required database digest migration is approved and deployed. No violation will be issued from this page.",
-      "الإرسال غير متاح — يمنع القرار DEC-032 جميع عمليات إرسال التفتيش الفعلية حتى اعتماد ونشر ترحيل بصمة قاعدة البيانات المطلوب. لن تُصدر أي مخالفة من هذه الصفحة.",
+      "Submission unavailable — blocks all real inspection submissions until the required database digest migration is approved and deployed. No violation will be issued from this page.",
+      "الإرسال غير متاح — يمنع القرار جميع عمليات إرسال التفتيش الفعلية حتى اعتماد ونشر ترحيل بصمة قاعدة البيانات المطلوب. لن تُصدر أي مخالفة من هذه الصفحة.",
     ),
     errors: {
       dec032_blocked: tr(
         "admin.bulkvio.error.dec032",
-        "No change was made. DEC-032 blocks this submission until the required database migration is approved and deployed.",
-        "لم يتم إجراء أي تغيير. يمنع القرار DEC-032 هذا الإرسال حتى اعتماد ترحيل قاعدة البيانات المطلوب ونشره.",
+        "No change was made. blocks this submission until the required database migration is approved and deployed.",
+        "لم يتم إجراء أي تغيير. يمنع القرار هذا الإرسال حتى اعتماد ترحيل قاعدة البيانات المطلوب ونشره.",
       ),
       auth_required: tr("admin.bulkvio.error.auth", "Your session is unavailable. Sign in again.", "جلستك غير متاحة. سجّل الدخول مرة أخرى."),
       invalid_request: tr("admin.bulkvio.error.invalid", "Select establishments, a violation and a governed package version.", "حدد المنشآت والمخالفة وإصدار حزمة محكومًا."),
@@ -126,7 +126,7 @@ export default async function BulkViolations() {
       context={<span className="badge badge-info">DEC-L</span>}>
       <h1 className="sq-sr-only">{tr("admin.bulkvio.title", "Bulk violation issuance", "إصدار عدة مخالفات")}</h1>
       <div className="sq-banner sq-banner--warning">
-        <div><strong>{tr("admin.bulkvio.warnTitle", "Real issuance is blocked by DEC-032.", "الإصدار الفعلي محظور بموجب DEC-032.")}</strong>{" "}
+        <div><strong>{tr("admin.bulkvio.warnTitle", "Real issuance is blocked by.", "الإصدار الفعلي محظور بموجب.")}</strong>{" "}
           {tr("admin.bulkvio.warnBody", "You may review the eligible establishments and mapped violations, but this route cannot create an inspection or violation while the submission digest defect remains open.", "يمكنك مراجعة المنشآت المؤهلة والمخالفات المرتبطة، لكن لا يمكن لهذا المسار إنشاء تفتيش أو مخالفة ما دام خلل بصمة الإرسال مفتوحًا.")}</div>
       </div>
       {factoriesError && <div className="sq-banner sq-banner--warning" role="alert"><div>{tr("admin.bulkvio.factoriesError", "The establishment registry is unavailable in this environment.", "سجل المنشآت غير متاح في هذه البيئة.")}</div></div>}

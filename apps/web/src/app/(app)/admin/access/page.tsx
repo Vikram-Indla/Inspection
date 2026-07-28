@@ -211,9 +211,9 @@ export default async function Access({
         "The design’s three presentation roles sit above the existing governed role catalogue. This route does not collapse or rename backend roles without an approved data and RLS migration.",
         "توجد أدوار العرض الثلاثة في التصميم فوق كتالوج الأدوار المحكوم الحالي. لا تدمج هذه الوجهة أدوار النظام الخلفي ولا تعيد تسميتها دون ترحيلة معتمدة للبيانات وأمن الصفوف.",
       ))}
-      context={<span className="sq-lozenge sq-lozenge--info">SCR-ADM-090 · RBAC-001..014 · EXE-ACCESS</span>}
+      context={<span className="sq-lozenge sq-lozenge--info">EXE-ACCESS</span>}
     >
-      <div className="sq-banner"><div><strong>{t("admin.access.banner.title", "Access is enforced by Row Level Security, not UI.")}</strong> {t("admin.access.banner.body", "54 policies realize the frozen RBAC matrix; role grants are audited automatically (this page's data itself passed through RLS to render).")}</div></div>
+      <div className="sq-banner"><div><strong>{t("admin.access.banner.title", "Access is enforced by Row Level Security, not UI.")}</strong> {t("admin.access.banner.body", "54 policies realize the frozen matrix; role grants are audited automatically (this page's data itself passed through RLS to render).")}</div></div>
       {(gateError || capGateError) && (
         <div className="sq-banner sq-banner--warning" role="alert"><div>
           <strong>{t("admin.access.permissions.error.title", "Permissions unavailable.")}</strong>{" "}

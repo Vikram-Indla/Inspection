@@ -301,7 +301,7 @@ export default async function Reviews() {
             </div>
           </section>
         ) : <ReviewQueue rows={queueRows} statusOptions={statusOptions} riskOptions={riskOptions} strings={strings} />}
-        <div className="sq-banner sq-banner--warning" role="note"><div><strong>{t("review.list.submissionBlockTitle", "Submission integrity blocker")}</strong> — {t("review.list.submissionBlockBody", "DEC-032 blocks claims that new real inspection submissions are available end to end. Existing RLS-visible review records remain readable; this queue does not bypass that platform blocker.")}</div></div>
+        <div className="sq-banner sq-banner--warning" role="note"><div><strong>{t("review.list.submissionBlockTitle", "Submission integrity blocker")}</strong> — {t("review.list.submissionBlockBody", "blocks claims that new real inspection submissions are available end to end. Existing RLS-visible review records remain readable; this queue does not bypass that platform blocker.")}</div></div>
         <div className="sq-banner sq-banner--immutable"><div><strong>{t("review.list.immutableTitle", "Decisions are immutable")}</strong> {t("review.list.immutableBody", "— decided reviews cannot be edited. Every resubmission creates a new preserved version.")}</div></div>
       </main>
     </Shell>

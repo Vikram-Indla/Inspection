@@ -220,7 +220,7 @@ export default async function Regulations({
   const title = t("admin.reg.r1.title", "Compliance Library — regulation register");
   const context = (
     <span className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
-      <span className="badge badge-info">SCR-ADM-010/011</span>
+      <span className="badge badge-info">{t("admin.reg.context", "Regulation configuration")}</span>
       <a className="sq-link" href="/admin/compliance-requests">
         {t("admin.reg.requests", "Configuration Requests")}
       </a>
@@ -510,7 +510,7 @@ export default async function Regulations({
         <EmptyState role="status" glyph="📜" title={t("admin.reg.r1.empty.title", "No regulations configured")}
           body={isWriter
             ? t("admin.reg.r1.empty.body.writer", "The read succeeded — the library is genuinely empty. Create the first governed configuration through a Compliance Configuration Request.")
-            : t("admin.reg.r1.empty.body", "The read succeeded — the library is genuinely empty (MVP1-M09-001: regulations are the parents of inspection items).")} />
+            : t("admin.reg.r1.empty.body", "The read succeeded — the library is genuinely empty (: regulations are the parents of inspection items).")} />
       ) : (
         <RegulationRegister rows={lite} strings={strings} />
       )}

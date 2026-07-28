@@ -13,7 +13,7 @@ import { getPlanningAccess } from "@/lib/planning/access";
 const PLAN_TONE: Record<string, string> = { published: "sq-lozenge--info", returned: "sq-lozenge--warning", cancelled: "sq-lozenge--critical", expired: "sq-lozenge--critical" };
 
 type PlanRow = {
-  id: string; method: string; status: string; created_at: string; published_at: string | null;
+  id: string; plan_reference: string | null; method: string; status: string; created_at: string; published_at: string | null;
   profiles: { full_name: string } | null;
   visits: { count: number }[];
 };
@@ -44,7 +44,7 @@ export default async function PlanRegister() {
     );
   }
   const { data, error } = await sb.from("visit_plans")
-    .select("id, method, status, created_at, published_at, profiles(full_name), visits(count)")
+    .select("id, plan_reference, method, status, created_at, published_at, profiles!visit_plans_created_by_fkey(full_name), visits(count)")
     .order("created_at", { ascending: false })
     .limit(500);
   if (error) {
@@ -60,7 +60,7 @@ export default async function PlanRegister() {
   for (const p of plans) counts[p.status] = (counts[p.status] ?? 0) + 1;
   return (
     <Shell current="/planning" title={t("plan.register.title", "Visit plans")}
-      context={<span className="sq-lozenge sq-lozenge--info">{t("plan.register.context", "M02-035 · every plan with child-visit progress")}</span>}>
+      context={<span className="sq-lozenge sq-lozenge--info">{t("plan.register.context", "every plan with child-visit progress")}</span>}>
       <div className="sq-mstrip">
         {["draft", "published", "returned", "cancelled"].map(s => (
           <div key={s}>
@@ -71,7 +71,7 @@ export default async function PlanRegister() {
       </div>
       {plans.length === 0 ? (
         <EmptyState glyph="▦" title={t("plan.register.empty", "No plans yet")}
-          body={t("plan.register.emptyDesc", "Bulk and single plans appear here the moment they are created (M01-002/034).")}>
+          body={t("plan.register.emptyDesc", "Bulk and single plans appear here the moment they are created.")}>
           <a className="sq-btn" href="/planning">{t("plan.register.createPlan", "Create a plan")}</a>
         </EmptyState>
       ) : (
@@ -88,7 +88,7 @@ export default async function PlanRegister() {
           <tbody>
             {plans.map(p => (
               <tr key={p.id}>
-                <td className="sq-numeric"><a className="sq-link" href={`/planning/plans/${p.id}`}><strong>{p.id.slice(0, 8)}</strong></a></td>
+                <td className="sq-numeric"><a className="sq-link" href={`/planning/plans/${p.id}`}><strong>{p.plan_reference ?? tr("plan.referenceUnavailable", "Reference unavailable", "المرجع غير متاح")}</strong></a></td>
                 <td><span className="sq-lozenge sq-lozenge--info">{t(`enum.${p.method}`, p.method)}</span></td>
                 <td><span className={`sq-lozenge sq-lozenge--plan ${PLAN_TONE[p.status] ?? ""}`}>{t(`enum.${p.status}`, p.status)}</span></td>
                 <td>{p.profiles?.full_name ?? "—"}</td>
@@ -100,7 +100,7 @@ export default async function PlanRegister() {
           </tbody>
         </table></div>
       )}
-      <p className="sq-caption">{t("plan.register.drillHint", "Open a plan to see its child visits and per-plan progress (M02-017/036).")}</p>
+      <p className="sq-caption">{t("plan.register.drillHint", "Open a plan to see its child visits and per-plan progress.")}</p>
     </Shell>
   );
 }

@@ -169,6 +169,18 @@ export default function CriteriaBuilder({
         </div>
       );
     }
+    if (def.type === "enum" && c.op !== "in") {
+      return (
+        <div className="field" style={{ maxInlineSize: 280 }}>
+          <label className="sq-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
+          <select className="select" id={`crit-value-${key}`} value={c.value} aria-invalid={isEmpty || undefined}
+            onChange={e => patchValue(e.target.value)}>
+            <option value="">{strings.valuePlaceholder}</option>
+            {optionsFor(c.field).map(v => <option key={v} value={v}>{v}</option>)}
+          </select>
+        </div>
+      );
+    }
     // text / enum — free input with governed suggestions; "one of" is a comma list.
     return (
       <div className="field" style={{ maxInlineSize: 210 }}>
@@ -189,8 +201,7 @@ export default function CriteriaBuilder({
     const isFocused = focusedPath === key;
     const def = fieldOf(c.field);
     return (
-    <li role="treeitem" aria-label={strings.conditionItem} className="row"
-      style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--space-3)" }}>
+    <li role="treeitem" aria-label={strings.conditionItem} className="sq-rule">
       <div className="field" style={{ maxInlineSize: 200 }}>
         <label className="sq-field__label" htmlFor={`crit-field-${key}`}>{strings.fieldLabel}</label>
         <select className="select" id={`crit-field-${key}`} value={c.field}

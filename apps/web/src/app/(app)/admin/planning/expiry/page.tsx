@@ -96,7 +96,7 @@ export default async function PlanningExpiry() {
 
   return (
     <Shell current="/admin/planning/expiry" title={t("admin.planning.expiry.title", "Planning expiry rules")}
-      context={<span className="sq-lozenge sq-lozenge--info">PLN-CON-013 · planning.configure_expiry</span>}>
+      context={<span className="sq-lozenge sq-lozenge--info">planning.configure_expiry</span>}>
       <div className="sq-banner"><div>
         <strong>{t("admin.planning.expiry.banner.title", "One enabled version per rule type.")}</strong>{" "}
         {t("admin.planning.expiry.banner.body", "Enabling a version retires every other version of that rule type. New versions are created disabled so nothing changes silently; every change is recorded in the audit trail.")}

@@ -66,7 +66,7 @@ export default async function PlanningLookups() {
 
   return (
     <Shell current="/admin/planning/lookups" title={t("admin.planning.lookups.title", "Planning lookups")}
-      context={<span className="sq-lozenge sq-lozenge--info">PLN-CON-012 · planning.configure_lookups</span>}>
+      context={<span className="sq-lozenge sq-lozenge--info">planning.configure_lookups</span>}>
       <div className="sq-banner"><div>
         <strong>{t("admin.planning.lookups.banner.title", "Governed reference data for planning.")}</strong>{" "}
         {t("admin.planning.lookups.banner.body", "These values feed every planning select (visit types, reasons, priorities). RLS is the write authority and every change is recorded in the audit trail with the actor and before/after state.")}

@@ -32,7 +32,7 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
     return (
       <Shell current="/planning" title={t("plan.imm.title", "Create an urgent visit")}>
         <EmptyState glyph="⛔" title={tr("plan.imm.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
-          body={tr("plan.imm.unauthorized.body", "Create an urgent visit (SCR-WEB-130) requires the immediate-visit capability (Planner / Inspector).", "إنشاء زيارة عاجلة (SCR-WEB-130) يتطلب صلاحية الزيارة الفورية (المخطط / المفتش).")} />
+          body={tr("plan.imm.unauthorized.body", "Create an urgent visit requires the immediate-visit capability (Planner / Inspector).", "إنشاء زيارة عاجلة يتطلب صلاحية الزيارة الفورية (المخطط / المفتش).")} />
       </Shell>
     );
   }
@@ -52,7 +52,7 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
   const today = new Date().toISOString().slice(0, 10);
   const FACTORY_COLUMNS = "id, name, factory_code, cr_number, license_number, region, city, risk_band, risk_score, official_lat, official_lng, source_synced_at";
   const [{ data: factories }, { data: pkgs }, { data: inspRows }, { data: myProfile }, { data: lookupRows, error: lookupError }] = await Promise.all([
-    sb.from("factories").select(FACTORY_COLUMNS).eq("is_temporary", false).order("name"),
+    sb.from("factories").select(FACTORY_COLUMNS).eq("is_temporary", false).like("factory_code", "F-%").not("name", "ilike", "CD%").order("name"),
     sb.from("package_versions").select("id, version_label, packages(code, title)").in("status", ["published", "locked"])
       .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`),
     sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
@@ -90,7 +90,7 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
   // Fail closed on reference-data failure: manual entry becomes unavailable
   // (no reason list, no per-type eligibility) while the registered path keeps
   // working with the three known visit types. Logged, never silent.
-  if (lookupError) console.error("[CD-023 planning_lookups]", lookupError.message);
+  if (lookupError) console.error("[ planning_lookups]", lookupError.message);
   const lookups = (lookupRows ?? []) as LookupRow[];
   const lookupLabel = (r: LookupRow) => locale === "ar" && r.label_ar ? r.label_ar : r.label_en;
   const visitTypes: VisitTypeOption[] = !lookupError && lookups.some(r => r.kind === "visit_type")
@@ -110,16 +110,16 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
     .map(r => ({ key: r.key, label: lookupLabel(r) }));
 
   const strings: ImmediateStrings = {
-    identity: t("plan.imm.identity", "Identity — registered or minimum manual (M01-044/045)"),
+    identity: t("plan.imm.identity", "Identity — registered or minimum manual"),
     identityToggleRegistered: t("plan.imm.identityToggleRegistered", "Registered factory"),
     identityToggleUnregistered: t("plan.imm.identityToggleUnregistered", "Unregistered / temporary"),
     manualLockedPermission: tr("plan.imm.manualLockedPermission", "Manual entry requires the manual-factory permission.", "الإدخال اليدوي يتطلب صلاحية المصنع اليدوي."),
     manualLockedType: tr("plan.imm.manualLockedType", "The selected visit type does not allow unregistered factories.", "نوع الزيارة المحدد لا يسمح بالمصانع غير المسجلة."),
     manualLockedLookups: tr("plan.imm.manualLockedLookups", "Manual entry is unavailable — reference data could not be loaded.", "الإدخال اليدوي غير متاح — تعذر تحميل البيانات المرجعية."),
-    notFoundConfirm: tr("plan.imm.notFoundConfirm", "I confirm this factory was not found in the registered factory list (M01-045)", "أؤكد أن هذا المصنع غير موجود في قائمة المصانع المسجلة (M01-045)"),
-    searchLabel: t("plan.imm.searchLabel", "Search registered factories — CR or Industrial License (M01-044)"),
+    notFoundConfirm: tr("plan.imm.notFoundConfirm", "I confirm this factory was not found in the registered factory list", "أؤكد أن هذا المصنع غير موجود في قائمة المصانع المسجلة"),
+    searchLabel: t("plan.imm.searchLabel", "Search registered factories — CR or Industrial License"),
     searchPlaceholder: t("plan.imm.searchPlaceholder", "CR number, Industrial License or name"),
-    searchNoMatch: t("plan.imm.searchNoMatch", "No registered factory matches — switch to Unregistered / temporary below (M01-045)."),
+    searchNoMatch: t("plan.imm.searchNoMatch", "No registered factory matches — switch to Unregistered / temporary below."),
     existingFactory: t("plan.imm.existingFactory", "Registered factory"),
     selectOption: t("plan.imm.select", "— select"),
     previewCr: t("plan.imm.previewCr", "CR"),
@@ -153,7 +153,7 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
     reasonReferral: tr("plan.imm.reasonReferral", "Referral from authority", "إحالة من جهة رسمية"),
     reasonOther: tr("plan.imm.reasonOther", "Other", "أخرى"),
     reasonOtherHint: tr("plan.imm.reasonOtherHint", "Justify “Other” in Notes before dispatch.", "برّر سبب «أخرى» في الملاحظات قبل الإرسال."),
-    locationDispatch: t("plan.imm.locationDispatch", "Location (mandatory — M01-046)"),
+    locationDispatch: t("plan.imm.locationDispatch", "Location (mandatory — )"),
     useOfficialLocation: t("plan.imm.useOfficialLocation", "Use registered official location"),
     latitude: t("plan.imm.latitude", "Latitude *"),
     longitude: t("plan.imm.longitude", "Longitude *"),
@@ -162,30 +162,30 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
     locationSourceNone: t("plan.imm.locationSourceNone", "No location entered yet"),
     mapLoading: t("plan.imm.mapLoading", "Loading location map"),
     packageLabel: t("plan.imm.package", "Inspection checklist *"),
-    inspector: t("plan.imm.inspector", "Inspector — auto-assign or pick (M01-048)"),
-    autoAssign: t("plan.imm.autoAssign", "Auto-assign — first available inspector (M01-048)"),
-    visitType: t("plan.imm.visitType", "Visit type (M01-047)"),
+    inspector: t("plan.imm.inspector", "Inspector — auto-assign or pick"),
+    autoAssign: t("plan.imm.autoAssign", "Auto-assign — first available inspector"),
+    visitType: t("plan.imm.visitType", "Visit type"),
     windowStart: t("plan.imm.windowStart", "Window start"),
     windowEnd: t("plan.imm.windowEnd", "Window end"),
-    windowHint: tr("plan.imm.windowHintExplicit", "Required for Planner-created Immediate Visits; end must be after start (M01-047)", "مطلوبة للزيارة الفورية التي ينشئها المخطط؛ يجب أن تكون النهاية بعد البداية (M01-047)"),
+    windowHint: tr("plan.imm.windowHintExplicit", "Required for Planner-created Immediate Visits; end must be after start", "مطلوبة للزيارة الفورية التي ينشئها المخطط؛ يجب أن تكون النهاية بعد البداية"),
     priority: t("plan.imm.priority", "Priority (ungoverned — no approved value list)"),
     priorityPlaceholder: t("plan.imm.priorityPlaceholder", "As set by your dispatch process — optional, free text"),
-    notes: t("plan.imm.notes", "Notes (M01-047)"),
+    notes: t("plan.imm.notes", "Notes"),
     notesPlaceholder: t("plan.imm.notesPlaceholder", "Context for the inspector — appended to the urgency reason"),
     consequenceTitle: t("plan.imm.consequenceTitle", "This will:"),
-    consequenceVisit: t("plan.imm.consequenceVisit", "Create a published Visit directly — no Visit Plan (M01-050)"),
+    consequenceVisit: t("plan.imm.consequenceVisit", "Create a published Visit directly — no Visit Plan"),
     consequenceAssign: actorMode === "planner"
       ? t("plan.imm.consequenceAssign", "Assign an eligible inspector and record automatic candidates in the audit trail")
-      : tr("plan.imm.consequenceSelfAssign", "Assign this visit to you and open the standard start flow (M01-048/051)", "إسناد هذه الزيارة إليك وفتح مسار البدء القياسي (M01-048/051)"),
+      : tr("plan.imm.consequenceSelfAssign", "Assign this visit to you and open the standard start flow", "إسناد هذه الزيارة إليك وفتح مسار البدء القياسي"),
     consequenceNotify: actorMode === "planner"
-      ? t("plan.imm.consequenceNotify", "Queue an assignment notification with truthful provider status (M01-052/ENG-11)")
-      : tr("plan.imm.consequenceNoNotify", "No assignment notification is created for a self-created Inspector visit (M01-052)", "لا يُنشأ إشعار تكليف للزيارة التي ينشئها المفتش لنفسه (M01-052)"),
+      ? t("plan.imm.consequenceNotify", "Queue an assignment notification with truthful provider status")
+      : tr("plan.imm.consequenceNoNotify", "No assignment notification is created for a self-created Inspector visit", "لا يُنشأ إشعار تكليف للزيارة التي ينشئها المفتش لنفسه"),
     consequenceAudit: t("plan.imm.consequenceAudit", "Record every step in the append-only audit log"),
-    reviewConfirm: tr("plan.imm.reviewConfirm", "I reviewed the mandatory information and duplicate-active-visit rule (M01-049)", "راجعت المعلومات الإلزامية وقاعدة عدم تكرار الزيارة النشطة (M01-049)"),
-    inspectorStartNow: tr("plan.imm.inspectorStartNow", "Inspector-created: assigned to you, no planning window, then start through the standard inspection lifecycle (M01-047/048/051)", "إنشاء المفتش: تُسند إليك بلا نافذة تخطيط، ثم تبدأ عبر دورة التفتيش القياسية (M01-047/048/051)"),
+    reviewConfirm: tr("plan.imm.reviewConfirm", "I reviewed the mandatory information and duplicate-active-visit rule", "راجعت المعلومات الإلزامية وقاعدة عدم تكرار الزيارة النشطة"),
+    inspectorStartNow: tr("plan.imm.inspectorStartNow", "Inspector-created: assigned to you, no planning window, then start through the standard inspection lifecycle", "إنشاء المفتش: تُسند إليك بلا نافذة تخطيط، ثم تبدأ عبر دورة التفتيش القياسية"),
     blockedTitle: t("plan.imm.blocked", "Cannot create — minimum controls (P01)"),
-    create: t("plan.imm.create", "Create & dispatch (Visit ID directly, no plan — M01-050)"),
-    createAndStart: tr("plan.imm.createAndStart", "Create & start inspection (M01-050/051)", "إنشاء وبدء التفتيش (M01-050/051)"),
+    create: t("plan.imm.create", "Create & dispatch (Visit ID directly, no plan — )"),
+    createAndStart: tr("plan.imm.createAndStart", "Create & start inspection", "إنشاء وبدء التفتيش"),
     creating: t("plan.imm.creating", "Dispatching…"),
     chipGroupLabel: tr("plan.imm.chipGroupLabel", "Immediate dispatch protections", "ضوابط الإرسال الفوري"),
     chipSatisfied: tr("plan.imm.chipSatisfied", "satisfied", "مستوفى"),
@@ -234,7 +234,7 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
   };
   return (
     <Shell current="/planning" title={t("plan.imm.title", "Create an urgent visit")}
-      context={<><span className="sq-lozenge sq-lozenge--warning">{t("plan.imm.context", "SCR-WEB-130 · bypasses Visit Plans (M01-050)")}</span>{sourceCrId && sourceLicenseId ? <span className="sq-lozenge sq-lozenge--info">Factory 360 · CR <bdi>{sourceCrId}</bdi> · License <bdi>{sourceLicenseId}</bdi></span> : null}</>}>
+      context={<><span className="sq-lozenge sq-lozenge--warning">{t("plan.imm.context", "bypasses Visit Plans")}</span>{sourceCrId && sourceLicenseId ? <span className="sq-lozenge sq-lozenge--info">Factory 360 · CR <bdi>{sourceCrId}</bdi> · License <bdi>{sourceLicenseId}</bdi></span> : null}</>}>
       {safeReturnTo ? <p><Link className="sq-link" href={safeReturnTo}>← {t("f360.actions.return", "Return to selected Factory 360 license")}</Link></p> : null}
       <ImmediateForm
         factories={factoryList as never}

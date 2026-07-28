@@ -76,7 +76,7 @@ export default async function PlanningStatus() {
 
   return (
     <Shell current="/admin/planning/status" title={t("admin.planning.status.title", "Planning status rules")}
-      context={<span className="sq-lozenge sq-lozenge--info">PLN-CON-014 · read-only</span>}>
+      context={<span className="sq-lozenge sq-lozenge--info">read-only</span>}>
       <div className="sq-banner"><div>
         <strong>{t("admin.planning.status.banner.title", "These rules are governed by workflow configuration.")}</strong>{" "}
         {t("admin.planning.status.banner.body", "Status transitions are defined by the published workflow configuration and enforced by the database. This screen is read-only; changes go through the governed publish flow.")}{" "}

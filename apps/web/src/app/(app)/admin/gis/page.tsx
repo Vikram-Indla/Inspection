@@ -34,7 +34,7 @@ export default async function GisStudioPage() {
 
   const strings: GisStrings = {
     loadingTitle: t("gis.loading.title", "Loading map"),
-    loadingBody: t("gis.loading.body", "Preparing the KSA geofencing view (ENG-06)."),
+    loadingBody: t("gis.loading.body", "Preparing the KSA geofencing view."),
     searchLabel: t("gis.search.label", "Search factories"),
     searchPlaceholder: t("gis.search.placeholder", "Search by name, code, city or region…"),
     filterRegionAll: t("gis.filter.regionAll", "All regions"),
@@ -43,15 +43,15 @@ export default async function GisStudioPage() {
     noResults: t("gis.count.noResults", "No factories match the current filters."),
     noCoords: t("gis.count.noCoords", "without coordinates (table only)"),
     selectTitle: t("gis.select.title", "Select a factory pin"),
-    selectBody: t("gis.select.body", "Click any pin to review its official coordinates and govern its geofence radius (SB20)."),
-    coordsLabel: t("gis.coords.label", "Official coordinates (GIS-Admin-owned, FND-007)"),
+    selectBody: t("gis.select.body", "Click any pin to review its official coordinates and govern its geofence radius."),
+    coordsLabel: t("gis.coords.label", "Official coordinates (GIS-Admin-owned, )"),
     coordsCaption: t("gis.coords.caption", "Field observation never overwrites the official pin."),
-    radiusLabel: t("gis.radius.label", "Geofence radius (m) — SB20"),
+    radiusLabel: t("gis.radius.label", "Geofence radius (m)"),
     radiusHint: t("gis.radius.hint", "Tip: with this factory selected, click the map to set the fence edge at that point. Blank override falls back to the engine default"),
     save: t("gis.radius.save", "Save radius"),
     saving: t("gis.radius.saving", "Saving…"),
     saved: t("gis.radius.saved", "saved"),
-    defaultsTitle: t("gis.defaults.title", "Engine defaults (ENG-06 · read-only)"),
+    defaultsTitle: t("gis.defaults.title", "Engine defaults ( · read-only)"),
     defaultsCheckin: t("gis.defaults.checkin", "Check-in accuracy"),
     defaultsArrival: t("gis.defaults.arrival", "Arrival detection"),
     defaultsFence: t("gis.defaults.fence", "Default geofence"),
@@ -72,9 +72,9 @@ export default async function GisStudioPage() {
 
   return (
     <Shell current="/admin/gis" title={t("gis.title", "GIS Studio — geofencing")}
-      context={<><span className="badge badge-info">SCR-ADM-070 · ENG-06 · SB20</span><span className="sq-version">{engRes.data?.version_label}</span></>}>
+      context={<><span className="badge badge-info">{t("gis.context", "Geofence configuration")}</span><span className="sq-version">{engRes.data?.version_label}</span></>}>
       <div className="stack" style={{ gap: "var(--space-6)" }}>
-        <div className="sq-banner"><div><strong>{t("gis.banner.title", "GIS Studio.")}</strong> {t("gis.banner.body", "These governed values stamp every geo event (config version recorded with each check-in — EV-005). Official coordinates remain GIS-Admin-owned; field observation never overwrites them (FND-007). Per-factory geofence radii (SB20) are edited on the map below.")}</div></div>
+        <div className="sq-banner"><div><strong>{t("gis.banner.title", "GIS Studio.")}</strong> {t("gis.banner.body", "These governed values stamp every geo event (config version recorded with each check-in — EV-005). Official coordinates remain GIS-Admin-owned; field observation never overwrites them. Per-factory geofence radii are edited on the map below.")}</div></div>
 
         {err && (
           <div className="sq-banner sq-banner--critical" role="alert">
@@ -84,7 +84,7 @@ export default async function GisStudioPage() {
 
         {!err && factories.length === 0 && (
           <EmptyState glyph="◎" title={t("gis.empty.title", "No factories registered")}
-            body={t("gis.empty.body", "The factory registry is empty — geofences appear here once factories are synced (FND-007).")} />
+            body={t("gis.empty.body", "The factory registry is empty — geofences appear here once factories are synced.")} />
         )}
 
         {!err && factories.length > 0 && (

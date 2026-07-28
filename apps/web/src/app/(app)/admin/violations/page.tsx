@@ -291,7 +291,7 @@ export default async function Violations({
 
   return (
     <Shell current="/admin/violations" title={title}
-      context={<span className="badge badge-info">{penaltyMode ? "SCR-ADM-041 · ENG-08" : "SCR-ADM-040 · ENG-08"}</span>}>
+      context={<span className="badge badge-info">{penaltyMode ? "Penalty mappings" : "Violation catalogue"}</span>}>
 
       <h1 className="sq-sr-only">{title}</h1>
       <div className={styles.pageRoot}>
@@ -419,7 +419,7 @@ export default async function Violations({
             );
           })}
 
-          <p className="t-caption">{t("admin.viol.penalty.footer", "One violation = one penalty (M09-004) — the database rejects a second mapping. Presets are governed tokens, never monetary or legal values. The contract route /admin/penalties is not a live URL; this is its logical mode.")}</p>
+          <p className="t-caption">{t("admin.viol.penalty.footer", "One violation = one penalty — the database rejects a second mapping. Presets are governed tokens, never monetary or legal values. The contract route /admin/penalties is not a live URL; this is its logical mode.")}</p>
         </>
       ) : (
         /* ============ CD-010 · Violation catalogue mode ============ */
@@ -436,7 +436,7 @@ export default async function Violations({
           {/* S03 EMPTY — a genuine empty read, not a fabricated zero. */}
           {!error && codes.length === 0 && (
             <EmptyState glyph="⚖️" title={t("admin.viol.empty.title", "No violation codes configured")}
-              body={t("admin.viol.empty.body", "Violations generate automatically from configured responses (M09-003). Add the first catalogue code above.")} />
+              body={t("admin.viol.empty.body", "Violations generate automatically from configured responses. Add the first catalogue code above.")} />
           )}
 
           {/* S01 POPULATED — legal-taxonomy rows with clause-link trace only. */}
@@ -502,7 +502,7 @@ export default async function Violations({
             );
           })}
 
-          <p className="t-caption">{t("admin.viol.footer", "Violations generate automatically from configured responses; the inspector can never type or override one (M09-003/026). Legal basis belongs to the penalty mapping, not the code row. Config violation_codes is distinct from runtime violations, and its row changes are audit-tracked (trg_audit_violation_codes).")}</p>
+          <p className="t-caption">{t("admin.viol.footer", "Violations generate automatically from configured responses; the inspector can never type or override one. Legal basis belongs to the penalty mapping, not the code row. Config violation_codes is distinct from runtime violations, and its row changes are audit-tracked (trg_audit_violation_codes).")}</p>
         </>
       )}
       </div>

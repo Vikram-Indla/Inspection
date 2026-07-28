@@ -10,7 +10,7 @@ export default async function Loading() {
     <Shell
       current="/admin/items"
       title={t("admin.items.r2.title", "Inspection Item Catalogue")}
-      context={<span className="badge badge-info">SCR-ADM-020 · ENG-01</span>}
+      context={<span className="badge badge-info">{t("admin.items.context", "Inspection item configuration")}</span>}
     >
       <div className="sr-only" role="status">{t("admin.items.r2.loading", "Loading the item catalogue…")}</div>
       <section className="panel stack" aria-hidden="true" style={{ padding: "var(--space-6)", gap: "var(--space-4)" }}>

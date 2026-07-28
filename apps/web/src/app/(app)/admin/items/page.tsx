@@ -98,21 +98,21 @@ export default async function Items({
     code: t("admin.items.r2.form.code", "Code"),
     title: t("admin.items.r2.form.title", "Title"),
     titlePlaceholder: t("admin.items.r2.form.titlePlaceholder", "Inspection item title"),
-    clause: t("admin.items.r2.form.clause", "Clause (M09-002)"),
+    clause: t("admin.items.r2.form.clause", "Clause"),
     selectClause: t("admin.items.r2.form.selectClause", "Select clause…"),
     clauseUnavailable: t("admin.items.r2.form.clauseUnavailable", "Clause list unavailable — try again"),
     weight: t("admin.items.r2.form.weight", "Weight"),
-    responseModel: t("admin.items.r2.form.responseModel", "Response model (M09-019)"),
+    responseModel: t("admin.items.r2.form.responseModel", "Response model"),
     responseTriState: `${responseLabels.compliant} / ${responseLabels.non_compliant} / ${responseLabels.na}`,
     responseBinary: `${responseLabels.compliant} / ${responseLabels.non_compliant}`,
     responseValueDate: responseLabels.value_date,
-    evidenceRule: t("admin.items.r2.form.evidenceRule", "Evidence rule (M09-005)"),
+    evidenceRule: t("admin.items.r2.form.evidenceRule", "Evidence rule"),
     evidenceNone: t("admin.items.r2.form.evidenceNone", "No base evidence rule"),
     evidencePhotoNc: t("admin.items.r2.form.evidencePhotoNc", "Photo mandatory on non-compliant"),
     evidenceVideoNc: t("admin.items.r2.form.evidenceVideoNc", "Video mandatory on non-compliant"),
     evidenceDocumentNc: t("admin.items.r2.form.evidenceDocumentNc", "Document mandatory on non-compliant"),
     evidenceCommentNc: t("admin.items.r2.form.evidenceCommentNc", "Comment mandatory on non-compliant"),
-    evidenceSource: t("admin.items.r2.form.evidenceSource", "Configured policy — governed preset, not free text (M09-005/025)."),
+    evidenceSource: t("admin.items.r2.form.evidenceSource", "Configured policy — governed preset, not free text."),
     requirementMode: t("admin.items.r2.form.requirementMode", "Requirement mode"),
     requirementRequired: t("admin.items.r2.form.requirementRequired", "Required"),
     requirementOptional: t("admin.items.r2.form.requirementOptional", "Optional"),
@@ -197,7 +197,7 @@ export default async function Items({
       title={t("admin.items.r2.title", "Inspection Item Catalogue")}
       context={
         <span className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
-          <span className="badge badge-info">SCR-ADM-020 · ENG-01</span>
+          <span className="badge badge-info">{t("admin.items.context", "Inspection item configuration")}</span>
           <span role="status" className="t-caption">
             {fill(t("admin.items.r2.readAt", "catalogue read {time} — a source fact, not a freshness verdict"), { time: readAt })}
           </span>
@@ -264,7 +264,7 @@ export default async function Items({
           confused with unavailable, which is the error banner above). */}
       {!error && rows.length === 0 && (
         <EmptyState glyph="🧾" title={t("admin.items.r2.empty.title", "No inspection items configured")}
-          body={t("admin.items.r2.empty.body", "Items belong to regulation clauses and are reused across packages (M09-002). Add the first item above.")} />
+          body={t("admin.items.r2.empty.body", "Items belong to regulation clauses and are reused across packages. Add the first item above.")} />
       )}
 
       {!error && rows.length > 0 && (
@@ -352,7 +352,7 @@ export default async function Items({
       )}
 
       <p className="t-caption">
-        {t("admin.items.r2.footer", "Items belong to regulations and are reused across packages (M09-002/007); deactivation preserves history (M09-014). Writes require compliance_admin/form_admin — RLS is the authority. inspection_items row changes are audit-tracked (trg_audit_inspection_items).")}
+        {t("admin.items.r2.footer", "Items belong to regulations and are reused across packages; deactivation preserves history. Writes require compliance_admin/form_admin — RLS is the authority. inspection_items row changes are audit-tracked (trg_audit_inspection_items).")}
       </p>
     </Shell>
   );

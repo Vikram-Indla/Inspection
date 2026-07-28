@@ -84,7 +84,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   if (!v) {
     return <Shell current={shellCurrent} title={t("visit.detail.notFoundTitle", "Visit not found")}>
       <EmptyState glyph="∅" title={t("visit.detail.notFound", "Not in your scope or does not exist")}
-        body={t("visit.detail.notFoundDesc", "IDs never change or get reused (FLD-VIS-001).")} />
+        body={t("visit.detail.notFoundDesc", "IDs never change or get reused.")} />
     </Shell>;
   }
   const f = v.factories as unknown as { id: string; factory_code: string; name: string; cr_number: string; risk_band: string; is_temporary: boolean; source: string | null };
@@ -164,7 +164,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     };
   }));
   const attachmentsStrings: AttachmentsStrings = {
-    heading: t("visit.att.heading", "Attachments (M02-042)"),
+    heading: t("visit.att.heading", "Attachments"),
     empty: t("visit.att.empty", "No attachments yet — planners and operations can attach supporting files."),
     colFile: t("visit.att.colFile", "File"),
     colType: t("visit.att.colType", "Type"),
@@ -180,7 +180,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     urlFailed: t("visit.att.urlFailed", "download link unavailable"),
   };
   const notesStrings: NotesStrings = {
-    heading: t("visit.notes.heading", "Notes (M02-043)"),
+    heading: t("visit.notes.heading", "Notes"),
     label: t("visit.notes.label", "Visit notes"),
     placeholder: t("visit.notes.placeholder", "Context for the inspector or operations — saved to the visit, audited"),
     saveBtn: t("visit.notes.saveBtn", "Save notes"),
@@ -193,32 +193,32 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     returnComments: t("visit.actions.returnComments", "Return comments"),
     returnBtn: t("visit.actions.returnBtn", "Return"),
     republishBtn: t("visit.actions.republishBtn", "Republish (same ID)"),
-    reassignTo: t("visit.actions.reassignTo", "Reassign to (M02-009)"),
+    reassignTo: t("visit.actions.reassignTo", "Reassign to"),
     reassignBtn: t("visit.actions.reassignBtn", "Reassign"),
-    newWindowStart: t("visit.actions.newWindowStart", "New window start (M02-008)"),
+    newWindowStart: t("visit.actions.newWindowStart", "New window start"),
     newWindowEnd: t("visit.actions.newWindowEnd", "New window end"),
     rescheduleBtn: t("visit.actions.rescheduleBtn", "Reschedule"),
     cancelReason: t("visit.actions.cancelReason", "Cancellation reason *"),
     cancelComments: t("visit.actions.cancelComments", "Cancellation comments"),
     cancelBtn: t("visit.actions.cancelBtn", "Cancel visit"),
-    visitTypeLabel: t("visit.actions.visitTypeLabel", "Visit type (pre-start — M02-006)"),
+    visitTypeLabel: t("visit.actions.visitTypeLabel", "Visit type (pre-start — )"),
     visitTypeBtn: t("visit.actions.visitTypeBtn", "Update type"),
     typePeriodic: t("enum.periodic", "Periodic compliance"),
     typeFollowUp: t("enum.follow_up", "Follow-up"),
     typeComplaint: t("enum.complaint", "Complaint"),
-    executionStarted: t("visit.actions.executionStarted", "execution started ({state}) — cancel / reschedule locked (M02-006)"),
-    finalState: t("visit.actions.finalState", "final state — view only (M02-015/016)"),
+    executionStarted: t("visit.actions.executionStarted", "execution started ({state}) — cancel / reschedule locked"),
+    finalState: t("visit.actions.finalState", "final state — view only"),
     zoneAvailable: t("visit.actions.zoneAvailable", "Available now"),
     zoneBlocked: t("visit.actions.zoneBlocked", "Not available yet — why"),
     zoneUnavailable: t("visit.actions.zoneUnavailable", "Unavailable in this state"),
-    reassignLockedWhy: t("visit.actions.reassignLockedWhy", "reassign locked — inspection already started ({state}) (M02-006)"),
-    scheduleLockedWhy: t("visit.actions.scheduleLockedWhy", "locked — execution started ({state}); only published/new visits can be rescheduled, retyped or cancelled (M02-006/008)"),
+    reassignLockedWhy: t("visit.actions.reassignLockedWhy", "reassign locked — inspection already started ({state})"),
+    scheduleLockedWhy: t("visit.actions.scheduleLockedWhy", "locked — execution started ({state}); only published/new visits can be rescheduled, retyped or cancelled"),
     noneAvailable: t("visit.actions.noneAvailable", "No management actions available in this state."),
     commentsHint: t("visit.actions.commentsHint", "mandatory when the reason is Other"),
-    repackageLabel: t("visit.actions.repackageLabel", "New primary checklist (returned — PLN-CON-003)"),
+    repackageLabel: t("visit.actions.repackageLabel", "New primary checklist (returned — )"),
     repackageBtn: t("visit.actions.repackageBtn", "Repackage"),
     duplicateBtn: t("visit.actions.duplicateBtn", "Duplicate visit"),
-    duplicateWhy: t("visit.actions.duplicateWhy", "Duplicate produces a new Draft with planning fields only (PLN-REQ-011)."),
+    duplicateWhy: t("visit.actions.duplicateWhy", "Duplicate produces a new Draft with planning fields only."),
   };
   // CD-027 — Dual-State Ribbon: five never-collapsed domains, each with the
   // latest VERIFIED event + its source + the allowed-action boundary + a history
@@ -246,7 +246,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     { id: "planning", domainLabel: t("visit.ribbon.planning", "Planning"),
       stateLabel: t(`enum.${v.planning_status}`, v.planning_status), tone: PLAN_TONE[v.planning_status] ?? "",
       eventLabel: latestAudit ? `${t(`enum.audit.${latestAudit.action}`, latestAudit.action)} · ${fmt(latestAudit.occurred_at)}` : noEvt,
-      sourceLabel: t("visit.ribbon.src.audit", "append-only audit trail (ENG-12)"),
+      sourceLabel: t("visit.ribbon.src.audit", "append-only audit trail"),
       boundaryLabel: planningBoundary, anchorHref: "#audit", anchorLabel: t("visit.ribbon.a.audit", "Open planning history") },
     { id: "operational", domainLabel: t("visit.ribbon.operational", "Visit status"),
       stateLabel: t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " ")), tone: "",
@@ -257,7 +257,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     { id: "assignment", domainLabel: t("visit.ribbon.assignment", "Assignment"),
       stateLabel: asg ? t(`enum.${asg.status}`, asg.status) : t("visit.ribbon.unassigned", "unassigned"), tone: asg ? "sq-lozenge--info" : "",
       eventLabel: asg ? `${t(`enum.${asg.method}`, asg.method)} · ${asg.profiles?.full_name ?? "—"}` : t("visit.ribbon.noInspector", "no inspector assigned"),
-      sourceLabel: t("visit.ribbon.src.assign", "assignment record (ENG-05)"),
+      sourceLabel: t("visit.ribbon.src.assign", "assignment record"),
       boundaryLabel: canReassign ? t("visit.ribbon.b.reassign", "Reassign inspector (pre-start only)") : t("visit.ribbon.b.reassignLocked", "Read-only — reassignment locked"),
       anchorHref: "#config", anchorLabel: t("visit.ribbon.a.config", "Open assignment") },
     { id: "inspection", domainLabel: t("visit.ribbon.inspection", "Inspection"),
@@ -273,7 +273,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       boundaryLabel: t("visit.ribbon.b.read", "Read-only here"), anchorHref: "#inspection", anchorLabel: t("visit.ribbon.a.review", "Open review outcome") },
   ];
   const ribbonStrings: RibbonStrings = {
-    heading: t("visit.ribbon.heading", "Lifecycle — five state domains (MVP1-FND-002)"),
+    heading: t("visit.ribbon.heading", "Lifecycle — five state domains (MVP1-)"),
     tablistLabel: t("visit.ribbon.tablist", "Visit state domains"),
     stateWord: t("visit.ribbon.stateWord", "State"),
     latestWord: t("visit.ribbon.latestWord", "Latest verified event"),
@@ -334,7 +334,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       <div className={targetPreview ? `wa-visit-detail-main ${detailStyles.main}` : undefined} style={targetPreview ? undefined : { display: "contents" }}>
       {/* M02-005 — linked plan info: how this visit was planned, by whom, published when */}
       <div className="panel" style={{ padding: "var(--space-6)" }}>
-        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.planHeading", "Linked plan (M02-005)")}</h4>
+        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.planHeading", "Linked plan")}</h4>
         {plan ? (
           <p>
             <span className="sq-lozenge sq-lozenge--info">{t(`enum.${plan.method}`, plan.method)}</span>{" "}
@@ -347,7 +347,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
             {" "}· <a className="sq-link" href={`/planning/plans/${plan.id}`}>{t("visit.detail.openPlan", "Open plan")}</a>
           </p>
         ) : (
-          <p className="t-caption">{t("visit.detail.noPlan", "Immediate visit — created without a plan (M01-050).")}</p>
+          <p className="t-caption">{t("visit.detail.noPlan", "Immediate visit — created without a plan.")}</p>
         )}
       </div>
       {/* M02-008/029 + M8 — return info from the lifecycle stream; the legacy
@@ -357,7 +357,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       {returnReason && (
         <div id="return-block" className="sq-banner sq-banner--warning"
           style={focus === "return" ? { outline: "2px solid var(--action-primary)", outlineOffset: 2 } : undefined}><div>
-          {t("visit.detail.returnReason", "Returned — reason: {reason} (PLN-CON-011)").replace("{reason}", returnReason)}
+          {t("visit.detail.returnReason", "Returned — reason: {reason}").replace("{reason}", returnReason)}
           {latestReturnEvent?.comments ? <> · <bdi>{latestReturnEvent.comments}</bdi></> : null}
           {latestReturnEvent ? <span className="t-caption"> · {new Date(latestReturnEvent.created_at).toISOString().slice(0, 16).replace("T", " ")}</span> : null}
         </div></div>
@@ -365,7 +365,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       {focus === "return" && returnReason ? <FocusScroll targetId="return-block" /> : null}
       {v.planning_status === "cancelled" && cancelReasonDisplay && (
         <div className="sq-banner sq-banner--critical"><div>
-          {t("visit.detail.cancelledReason", "Cancelled — reason: {reason} (M02-006, final)").replace("{reason}", cancelReasonDisplay)}
+          {t("visit.detail.cancelledReason", "Cancelled — reason: {reason} (, final)").replace("{reason}", cancelReasonDisplay)}
           {latestCancelEvent?.comments ? <> · <bdi>{latestCancelEvent.comments}</bdi></> : null}
         </div></div>
       )}
@@ -390,7 +390,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       <div id="packages" className="panel" style={{ padding: "var(--space-6)" }}>
         <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.packagesHeading", "Report packages")}</h4>
         {pkgLinks.length === 0 ? (
-          <p className="t-caption">{t("visit.detail.noPackages", "No checklist selected — the inspector chooses an eligible checklist during preparation (PLN-CON-003).")}</p>
+          <p className="t-caption">{t("visit.detail.noPackages", "No checklist selected — the inspector chooses an eligible checklist during preparation.")}</p>
         ) : (
           <ul className="sq-timeline">
             {pkgLinks.map(l => (
@@ -415,7 +415,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
           (return/cancel/republish/expire/duplicate/reschedule/reassign/
           discard_draft), reasons resolved through the governed lookups. */}
       <div id="lifecycle" className="panel" style={{ padding: "var(--space-6)" }}>
-        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.lifecycleHeading", "Lifecycle history — append-only (PLN-CON-011)")}</h4>
+        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.lifecycleHeading", "Lifecycle history — append-only")}</h4>
         {lifecycleEvents.length === 0 ? (
           <p className="t-caption">{t("visit.detail.noLifecycle", "No lifecycle events recorded yet.")}</p>
         ) : (
@@ -483,7 +483,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         </ul>
       </div>
       <div id="audit" className="panel" style={{ padding: "var(--space-6)" }}>
-        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.auditHeading", "Planning history — cannot be edited, only added to (ENG-12, latest 30)")}</h4>
+        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.auditHeading", "Planning history — cannot be edited, only added to (, latest 30)")}</h4>
         <ul className="sq-timeline">
           {(auditRows ?? []).map(a => (
             <li key={a.id}>

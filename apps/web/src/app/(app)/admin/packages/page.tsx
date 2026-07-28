@@ -183,7 +183,7 @@ export default async function Packages() {
     publishing: t("admin.pkg.publish.publishing", "Publishing…"),
     approvePublish: t("admin.pkg.publish.approve", "Approve & publish"),
     published: t("admin.pkg.publish.published", "Version published. It is now immutable."),
-    publishHint: t("admin.pkg.publish.hint", "Publish rechecks item, evidence, condition, violation, penalty and action-form dependencies. The approver must differ from the creator (RBAC-002)."),
+    publishHint: t("admin.pkg.publish.hint", "Publish rechecks item, evidence, condition, violation, penalty and action-form dependencies. The approver must differ from the creator."),
     effectiveTo: t("admin.pkg.deactivate.effectiveTo", "Effective to"), deactivationReason: t("admin.pkg.deactivate.reason", "Deactivation reason"), deactivate: t("admin.pkg.deactivate.action", "Deactivate version"), deactivating: t("admin.pkg.deactivate.working", "Deactivating…"), deactivated: t("admin.pkg.deactivate.done", "Package version deactivated"),
   };
   const editorStrings: DraftEditorStrings = {
@@ -346,7 +346,7 @@ export default async function Packages() {
       governance={surveyGovernance}
       reconstructionNote={t("admin.revamp.survey.note", copy("The design’s sample package names, counts and rule contents are not copied. This workspace renders the real package, item, template, impact and immutable-version sources already used by execution.", "لا تُنسخ أسماء حزم التصميم النموذجية أو أعدادها أو محتوى قواعدها. تعرض مساحة العمل هذه مصادر الحزم والبنود والقوالب والأثر والإصدارات غير القابلة للتغيير التي يستخدمها التنفيذ فعلياً."))}
       context={<span className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
-        <span className="badge badge-info">SCR-ADM-030/031 · ENG-02</span>
+        <span className="badge badge-info">{t("admin.pkg.context", "Package configuration")}</span>
         <span className="t-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></span>
       </span>}
     >

@@ -47,7 +47,7 @@ export async function discardDraftPlan(_: DiscardResult, fd: FormData): Promise<
     p_correlation_id: correlationId,
   });
   if (error) {
-    console.error("[PLN-S08 discardDraftPlan] governed archive failed:", error.code, error.message);
+    console.error("[ discardDraftPlan] governed archive failed:", error.code, error.message);
     if (error.code === "42501") return { error: "You do not have permission or scope to archive this draft. Nothing was changed." };
     if (error.code === "23514") return { error: "This draft changed, was already archived, or is no longer eligible. Refresh before trying again." };
     if (error.code === "23505") return { error: "This retry does not match the original archive request. Nothing was changed." };
@@ -58,7 +58,7 @@ export async function discardDraftPlan(_: DiscardResult, fd: FormData): Promise<
     planning_status_preserved?: boolean;
   } | null;
   if (!receipt?.command_id || !receipt.correlation_id || receipt.planning_status_preserved !== true) {
-    console.error("[PLN-S08 discardDraftPlan] incomplete archive receipt");
+    console.error("[ discardDraftPlan] incomplete archive receipt");
     return { error: "The archive result could not be verified. Refresh before retrying." };
   }
   revalidatePath("/planning"); revalidatePath("/planning/bulk/review"); revalidatePath("/visits");

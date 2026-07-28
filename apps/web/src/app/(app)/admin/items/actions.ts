@@ -61,9 +61,9 @@ export async function createItem(_: ItemResult, formData: FormData): Promise<Ite
   const scoringEnabled = String(formData.get("scoring_enabled") ?? "true") !== "false";
 
   if (!code || !title) return { error: "Code and title are required." };
-  if (!clause_id) return { error: "A regulation clause is required (M09-002)." };
-  if (!(responseKey in RESPONSE_PRESETS)) return { error: "Pick a response model preset (M09-019)." };
-  if (!(evidenceKey in EVIDENCE_PRESETS)) return { error: "Pick an evidence rule preset (M09-005)." };
+  if (!clause_id) return { error: "A regulation clause is required." };
+  if (!(responseKey in RESPONSE_PRESETS)) return { error: "Pick a response model preset." };
+  if (!(evidenceKey in EVIDENCE_PRESETS)) return { error: "Pick an evidence rule preset." };
   const score_weight = weightRaw === "" ? null : Number(weightRaw);
   if (score_weight !== null && (!Number.isFinite(score_weight) || score_weight < 0)) {
     return { error: "Score weight must be a non-negative number." };

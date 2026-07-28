@@ -124,7 +124,7 @@ export default async function ExecutionControlPlane() {
       current="/admin/execution"
       title={t("admin.execution.title", "Execution Settings")}
       context={<>
-        <span className="sq-lozenge sq-lozenge--info">EXE-ADMIN · TASK-EXECUTION-MODULE-001</span>
+        <span className="sq-lozenge sq-lozenge--info">EXE-ADMIN</span>
         {execution?.version_label && <span className="sq-version">{execution.version_label}</span>}
       </>}
     >

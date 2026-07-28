@@ -57,7 +57,7 @@ export default function AuditReplayWorkspace(props: Props) {
   return <div className="ar-workspace" dir={props.locale === "ar" ? "rtl" : "ltr"}>
     <a className="sq-shell__skip" href="#audit-chronology">{L.skip}</a>
     <section className="ar-casehead panel">
-      <div><span className="t-caption">MVP2-CD-031-M2-05</span><h2>{L.title}</h2><p className="t-caption">{props.caseRef || L.portfolio} · {props.events.length} · {completenessAvailable ? `${completeness.found}/${completeness.expected}` : L.ledger}</p></div>
+      <div><span className="t-caption">MVP2--M2-05</span><h2>{L.title}</h2><p className="t-caption">{props.caseRef || L.portfolio} · {props.events.length} · {completenessAvailable ? `${completeness.found}/${completeness.expected}` : L.ledger}</p></div>
       <div className="ar-status"><span className="badge badge-compliant">{auditTerms.appendOnly}</span><span className="badge badge-info">{props.roles.join(" · ")}</span></div>
     </section>
     <div className="sq-banner sq-banner--warning" role="note"><div><strong>{L.policyHeldTag}</strong>{" · "}{L.policy}</div></div>

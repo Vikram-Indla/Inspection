@@ -712,7 +712,7 @@ export default async function Operations({ searchParams }: {
     thGeofence: t("ops.live.th.geofence", "Geofence"),
     thInspector: t("ops.live.th.inspector", "Inspector"),
     emptyTitle: t("ops.live.empty.title", "No published visits to monitor"),
-    emptyDesc: t("ops.live.empty.desc", "Visits appear here once planning publishes them (FLD-VIS-005)."),
+    emptyDesc: t("ops.live.empty.desc", "Visits appear here once planning publishes them."),
     refreshedAt: t("ops.live.refreshedAt", "Refreshed"),
     refreshing: t("ops.live.refreshing", "Refreshing…"),
     autoNote: t("ops.live.scopeNote", "RLS-scoped monitoring records"),
@@ -724,7 +724,7 @@ export default async function Operations({ searchParams }: {
     listHeading: t("ops.map.list.heading", "Map records"),
     listDescription: t("ops.map.list.description", "The list and map use the same RLS-scoped records."),
     emptyTitle: t("ops.map.empty.title", "No mappable factories in scope"),
-    emptyBody: t("ops.map.empty.desc", "Factories gain map positions when GIS Admin records official coordinates (FLD-FACT-005/006)."),
+    emptyBody: t("ops.map.empty.desc", "Factories gain map positions when GIS Admin records official coordinates (/006)."),
     open: t("ops.map.open", "Open"),
     selected: t("ops.map.selected", "Selected on map and list"),
     factory: t("ops.map.factory", "Factory 360"),
@@ -1119,8 +1119,8 @@ export default async function Operations({ searchParams }: {
           <div className={styles.detailHeading}><div>
             <h2 id="operations-kpi-contract-heading">{t("ops.kpi.contractHeading", "Governed Operations KPI contract")}</h2>
             <p>{operationsKpiContract?.configured
-              ? t("ops.kpi.configured", "Published DEC-028 policy metadata and metric definitions are active.")
-              : t("ops.kpi.notConfigured", "DEC-028 policy or published metric definitions are not configured; undefined formulas remain unavailable.")}</p>
+              ? t("ops.kpi.configured", "Published policy metadata and metric definitions are active.")
+              : t("ops.kpi.notConfigured", "policy or published metric definitions are not configured; undefined formulas remain unavailable.")}</p>
           </div></div>
           {kpiContractRpc.error ? (
             <EmptyState glyph="!" title={t("ops.kpi.unavailable", "KPI contract service unavailable")} body={t("ops.err.retry", "Retry")} inline bare />

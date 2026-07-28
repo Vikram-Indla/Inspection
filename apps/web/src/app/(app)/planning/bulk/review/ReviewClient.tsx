@@ -475,7 +475,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
       overlapEvaluated: overlapSource === "ok" && windowSet,
       overlapFailed: overlapSource === "failed",
       overlapCount: ov?.count ?? 0,
-      overlapSamples: (ov?.samples ?? []).map(sm => ({ label: sm.visit_id.slice(0, 8), window: `${fmtWin(sm.window_start)}→${fmtWin(sm.window_end)}` })),
+      overlapSamples: (ov?.samples ?? []).map(sm => ({ label: s.ecBlockedN.replace("{n}", "1"), window: `${fmtWin(sm.window_start)}→${fmtWin(sm.window_end)}` })),
     };
   })();
 
@@ -490,7 +490,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
     const ov = overlapFor(pick);
     if (ov && ov.count > 0) {
       const sm = ov.samples[0];
-      return <span className="t-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✕ {interp(s.ecBlockedN, { n: ov.count })}{sm ? <> · <bdi>{sm.visit_id.slice(0, 8)}</bdi> {fmtWin(sm.window_start)}→{fmtWin(sm.window_end)}</> : null}</span>;
+      return <span className="t-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✕ {interp(s.ecBlockedN, { n: ov.count })}{sm ? <> · {fmtWin(sm.window_start)}→{fmtWin(sm.window_end)}</> : null}</span>;
     }
     return <span className="t-caption" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✓ {s.ecInPool} · ✓ {interp(s.ecOverlaps, { n: 0 })} · {s.ecSkills}</span>;
   };

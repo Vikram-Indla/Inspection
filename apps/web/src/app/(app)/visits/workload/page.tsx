@@ -83,7 +83,7 @@ export default async function Workload() {
 
   return (
     <Shell current="/visits" title={t("visit.load.title", "Inspector workload")}
-      context={<span className="badge badge-info">{t("visit.load.context", "M02-018/037 · assignments × published windows")}</span>}>
+      context={<span className="badge badge-info">{t("visit.load.context", "assignments × published windows")}</span>}>
       <div className="row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
         <a className="btn btn-ghost btn-touch" href="/visits">{t("visit.views.list", "List")}</a>
         <a className="btn btn-ghost btn-touch" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
@@ -91,10 +91,10 @@ export default async function Workload() {
       </div>
       {inspectors.length === 0 ? (
         <EmptyState glyph="◫" title={t("visit.load.empty", "No active assigned load")}
-          body={t("visit.load.emptyDesc", "Published, not-yet-submitted visits with an assignment appear here grouped by inspector and week (M02-018).")} />
+          body={t("visit.load.emptyDesc", "Published, not-yet-submitted visits with an assignment appear here grouped by inspector and week.")} />
       ) : (
         <div className="panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-          <h4 style={{ margin: 0 }}>{t("visit.load.heading", "Active visits per inspector per week (M02-018)")}</h4>
+          <h4 style={{ margin: 0 }}>{t("visit.load.heading", "Active visits per inspector per week")}</h4>
           <div className="sq-tablewrap"><table className="sq-table">
             <thead><tr>
               <th scope="col">{t("visit.load.colInspector", "Inspector")}</th>
@@ -103,7 +103,7 @@ export default async function Workload() {
               ))}
               <th scope="col" className="sq-td-num">{t("visit.load.colLater", "Later")}</th>
               <th scope="col" className="sq-td-num">{t("visit.load.colTotal", "Active total")}</th>
-              <th scope="col" style={{ inlineSize: 180 }}>{t("visit.load.colUtilization", "Relative utilization (M02-037)")}</th>
+              <th scope="col" style={{ inlineSize: 180 }}>{t("visit.load.colUtilization", "Relative utilization")}</th>
             </tr></thead>
             <tbody>
               {inspectors.map(a => (
@@ -134,7 +134,7 @@ export default async function Workload() {
           <p className="t-caption">
             {t("visit.load.dailyCap", "Daily visit limit: {n} (configured).").replace("{n}", String(dailyCap))}
             {" "}
-            {t("visit.load.relativeNote", "Utilization is relative to the busiest inspector — weekly counts are compared, not capped. Weeks start Sunday (ENG-09 calendar).")}
+            {t("visit.load.relativeNote", "Utilization is relative to the busiest inspector — weekly counts are compared, not capped. Weeks start Sunday ( calendar).")}
           </p>
         </div>
       )}

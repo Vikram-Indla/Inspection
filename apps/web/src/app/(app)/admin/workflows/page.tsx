@@ -77,7 +77,7 @@ export default async function Workflows() {
 
   return (
     <Shell current="/admin/workflows" title={t("admin.wf.title", "Workflow builder")}
-      context={<span className="badge badge-info">SCR-ADM-050/051 · ENG-03</span>}>
+      context={<span className="badge badge-info">{t("admin.wf.context", "Workflow configuration")}</span>}>
       {/* Design header block — breadcrumb + purpose line. The governed actions
           (validate / publish) live on each version card: validation is the live
           VAL ledger in the rail, publishing needs a distinct checker. */}
@@ -91,7 +91,7 @@ export default async function Workflows() {
       </p>
 
       <div className="sq-banner"><div>
-        <strong>{t("admin.wf.banner.title", "Governed change only.")}</strong> {t("admin.wf.banner.before", "Runtime evaluates transitions against the published version — no status bypass (RBAC-003). Changes flow draft → distinct-approver publish (RBAC-002 maker-checker, enforced by a DB constraint on")} <code>config_versions</code>{t("admin.wf.banner.mid", "); published versions are immutable. Risk/SLA values live in")} <code>engine_settings</code> {t("admin.wf.banner.after", "and are not editable here.")}
+        <strong>{t("admin.wf.banner.title", "Governed change only.")}</strong> {t("admin.wf.banner.before", "Runtime evaluates transitions against the published version — no status bypass. Changes flow draft → distinct-approver publish ( maker-checker, enforced by a DB constraint on")} <code>config_versions</code>{t("admin.wf.banner.mid", "); published versions are immutable. Risk/SLA values live in")} <code>engine_settings</code> {t("admin.wf.banner.after", "and are not editable here.")}
       </div></div>
       {error && (
         <div className="sq-banner sq-banner--critical"><div>
@@ -100,7 +100,7 @@ export default async function Workflows() {
       )}
       {!error && (wfs ?? []).length === 0 && (
         <EmptyState glyph="🔀" title={t("admin.wf.empty.title", "No workflow configuration published")}
-          body={t("admin.wf.empty.body", "Workflow state machines are versioned config (ENG-03).")} />
+          body={t("admin.wf.empty.body", "Workflow state machines are versioned config.")} />
       )}
       {(wfs ?? []).map(w => {
         const p = w.payload as { object?: string };
@@ -169,7 +169,7 @@ export default async function Workflows() {
           <p className="t-caption" style={{ margin: 0 }}>{t("admin.wf.sla.loadError", "Couldn’t load the SLA calendars. Nothing was changed.")}</p>
         ) : (calendars ?? []).length === 0 ? (
           <p className="t-caption" style={{ margin: 0 }}>
-            {t("admin.wf.sla.none", "No SLA calendar is configured. Deadlines, working days and escalation are governed inputs (DEC-003) — until one is authorised, timers stay pending and no deadline is shown.")}
+            {t("admin.wf.sla.none", "No SLA calendar is configured. Deadlines, working days and escalation are governed inputs — until one is authorised, timers stay pending and no deadline is shown.")}
           </p>
         ) : (
           <div className="table-wrap">
@@ -192,7 +192,7 @@ export default async function Workflows() {
                       <span className={`badge ${c.activation_authorized ? "badge-compliant" : "badge-warning"}`}>
                         {c.activation_authorized
                           ? t("admin.wf.sla.authorized", "Authorised")
-                          : t("admin.wf.sla.pending", "Not authorised (DEC-003)")}
+                          : t("admin.wf.sla.pending", "Not authorised")}
                       </span>
                     </td>
                   </tr>

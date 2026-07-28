@@ -13,7 +13,7 @@ function Feedback({ state, saved }: { state: TemplateResult; saved: string }) {
 export default function TemplateRegistry({ templates, strings: s }: { templates: TemplateRow[]; strings: TemplateStrings }) {
   const [createState, createAction, creating] = useActionState<TemplateResult, FormData>(createTemplateVersion, {});
   return <details className="panel stack" style={{ padding: "var(--space-6)" }}>
-    <summary><strong>{s.heading}</strong> · M09-006/008/009</summary>
+    <summary><strong>{s.heading}</strong></summary>
     <p className="t-caption">{s.intro}</p>
     <form action={createAction} className="sq-grid-2">
       <label className="sq-field"><span className="sq-field__label">{s.key}</span><input className="sq-input numeric" name="template_key" required /></label>

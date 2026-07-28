@@ -290,7 +290,7 @@ const panelStrings: WorkspaceDecisionStrings = {
   };
   const startStrings: StartReviewStrings = {
     title: t("review.ws.startTitle", "Start Level 2 review"),
-    body: t("review.ws.startBody", "Opening this record does not change anything (CD-028). Starting the review claims it for you and moves the inspection to under review — an explicit, audited action."),
+    body: t("review.ws.startBody", "Opening this record does not change anything. Starting the review claims it for you and moves the inspection to under review — an explicit, audited action."),
     start: t("review.ws.startAction", "Start review"),
     starting: t("review.ws.starting", "Starting…"),
   };
@@ -315,7 +315,7 @@ const panelStrings: WorkspaceDecisionStrings = {
     { key: "checklist", label: t("review.ws.checklist", "Checklist — v{n}").replace("{n}", String(latest?.version_number)), count: answerEntries.length },
     { key: "evidence", label: t("review.ws.evidenceHeading", "Violations · actions · evidence (read-only)"), count: violations.length },
     { key: "factory", label: t("review.ws.fvHeading", "Factory data verification (Senaei source vs observed)"), count: fv.checks.length },
-    { key: "ack", label: t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)"), count: latest?.acknowledgement != null ? 1 : 0 },
+    { key: "ack", label: t("review.ws.sigHeading", "Acknowledgement signature"), count: latest?.acknowledgement != null ? 1 : 0 },
     { key: "compare", label: t("review.cmp.heading", "Version comparison — Tamper-evident Scope Rail"), count: compareVersions.length },
     { key: "timeline", label: tx("review.ws.timelineHeading", "Canonical review timeline", "الخط الزمني المعتمد للمراجعة"), count: (trail ?? []).length },
     { key: "prior", label: t("review.ws.priorDecision", "Prior decision:"), count: decidedCount },
@@ -426,7 +426,7 @@ const panelStrings: WorkspaceDecisionStrings = {
               const ack = latest.acknowledgement as { name?: string; ts?: string; signed_at?: string; signature_data_url?: string };
               return (
                 <>
-                  <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)")}</h2>
+                  <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.sigHeading", "Acknowledgement signature")}</h2>
                   <p>
                     <strong>{ack.name ?? "—"}</strong> · <span className="sq-numeric">{(ack.signed_at ?? ack.ts) ? formatDateTime(ack.signed_at ?? ack.ts!, lang) : "—"}</span>
                     {" "}<span className="sq-version">v{latest.version_number}</span>
@@ -439,7 +439,7 @@ const panelStrings: WorkspaceDecisionStrings = {
               );
             })() : (
               <>
-                <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)")}</h2>
+                <h2 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.sigHeading", "Acknowledgement signature")}</h2>
                 <p className="sq-caption">{t("review.ws.sigNone", "No drawn signature stored with this version (acknowledged by name only).")}</p>
               </>
             )}

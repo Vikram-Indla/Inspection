@@ -468,7 +468,7 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
     </div>
 
     <div className={styles.analyticGrid}>
-  <Panel title={copy(locale, "Governed boundaries", "الحدود المعتمدة")} meta="DEC-028">
+  <Panel title={copy(locale, "Governed boundaries", "الحدود المعتمدة")} meta={copy(locale, "Not configured", "غير مهيأ")}>
           <div className={styles.empty}>
             <strong>{copy(locale, "Not configured", "غير مهيأ")}</strong>
             <p>{copy(locale, "Health Score, risk classifications, licence exposure, inspection cycles and repeat-violation rules remain blocked. No substitute value is shown.", "تظل درجة الصحة وتصنيفات المخاطر وتعرّض التراخيص ودورات التفتيش وقواعد تكرار المخالفات محجوبة. لا تُعرض قيمة بديلة.")}</p>

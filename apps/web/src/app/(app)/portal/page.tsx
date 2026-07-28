@@ -17,7 +17,7 @@ export default async function PortalPage() {
   const { t } = await useT();
   if (resolveFeatureFlag(process.env.FEATURE_EXTERNAL_PORTAL, MODES, "off") !== "on") {
     return (
-      <Shell current="/portal" title={t("portal.title", "External portal")} context={<span className="sq-lozenge sq-lozenge--warning">CD-044 · REQ-0109</span>}>
+      <Shell current="/portal" title={t("portal.title", "External portal")} context={<span className="sq-lozenge sq-lozenge--warning">REQ-0109</span>}>
         <NotYetBoundary title={t("portal.title", "External portal")} consequence={t("portal.off", "The external factory portal is not enabled here. External-representative identity policy is also held.")}
           seam="FEATURE_EXTERNAL_PORTAL=off + external identity policy held" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
       </Shell>
@@ -33,7 +33,7 @@ export default async function PortalPage() {
   if (error) console.error("[portal] load", error);
   const factoryId = fac?.id ?? null;
   return (
-    <Shell current="/portal" title={t("portal.title", "External portal")} context={<span className="sq-lozenge sq-lozenge--info">CD-044 · REQ-0109..0113</span>}>
+    <Shell current="/portal" title={t("portal.title", "External portal")} context={<span className="sq-lozenge sq-lozenge--info">REQ-0109..0113</span>}>
       <div className="sq-banner"><div><strong>{t("portal.banner.title", "Internal compliance view.")}</strong> {t("portal.banner.body", "External requests and self-assessments. Only accepted self-assessments emit a risk signal. External-representative identity/MFA is held; this surface is internal and limited to your permitted access.")}</div></div>
       <CreateRequest factoryId={factoryId} strings={{
         type: t("portal.type", "Request type"), subject: t("portal.subject", "Subject"),

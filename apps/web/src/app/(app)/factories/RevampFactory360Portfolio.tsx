@@ -85,7 +85,7 @@ export default function RevampFactory360Portfolio({ factories, crNumber, canCrea
             <a href={`/operations?region=${encodeURIComponent(selected.region ?? "")}`}>View on map</a>
             <a href={selected.dossier_href}>Open full dossier</a>
           </nav>
-          {canCreateInspection && <p role="status">Inspection submission remains unavailable while DEC-032 is unresolved.</p>}
+          {canCreateInspection && <p role="status">Inspection submission remains unavailable while is unresolved.</p>}
           <dl>
             <div><dt>Industrial licence</dt><dd><bdi>{selected.license?.license_number ?? "—"}</bdi></dd></div>
             <div><dt>Plant number</dt><dd><bdi>{selected.license?.plant_number ?? "—"}</bdi></dd></div>
