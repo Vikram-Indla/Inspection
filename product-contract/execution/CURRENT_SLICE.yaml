@@ -213,6 +213,38 @@ leases:
       - "apps/web/src/lib/audit.ts"
       - "apps/web/src/lib/audit-replay.ts"
       - "status/saqeel-status.json (card 'admin-platform' only)"
+  - lease_id: "LEASE-SAQEEL-PLANNING-001"
+    card: "planning"
+    channel: "web"
+    holder: "codex"
+    state: "GRANTED"
+    granted_at: "2026-07-28"
+    change_control_id: "SAQEEL-WORKFORCE-REINSTATEMENT-20260725"
+    scope: >
+      Filter-bar and planning-landing defect remediation only (findings F1 and
+      F5..F11 of the planning defect packet). This lease does not open the
+      curated-preset targeting question: the design-vs-code authority conflict
+      recorded in the card's own pending[] entries stays with the Product Owner
+      and no code may move on it under this lease.
+    allowed_paths:
+      - "apps/web/src/app/(app)/planning/**"
+      - "apps/web/src/app/saqeel-components.css (line 68 `.field > label` selector widening ONLY — finding F1)"
+      - "status/saqeel-status.json (card 'planning' only)"
+    shared_surface_conditions: >
+      saqeel-components.css is repo-wide. 87 elements carry className="field"
+      across apps/web/src, so the F1 selector change must be regression-checked
+      against all of them and the count reported. The chevron hex (F2, line 97),
+      the [dir="rtl"] flip (F3, lines 98/101) and .grid-toolbar (F4, line 241)
+      are REPORT-ONLY under this lease — each needs either new CSS, which
+      CLAUDE.md rule 1 forbids, or a shared-class change wider than one card.
+      They return as a design-system change request, not as commits.
+    forbidden:
+      - "Renaming or adding planning routes. Tabs and filters stay query state."
+      - "Changing the GET-form URL/query-param contract on /planning."
+      - "Touching .wa-planning-* class names — inert hooks, but three e2e specs select on them."
+      - "Adding a blockedReason field to the planning Method contract — governed-contract decision."
+      - "apps/web/src/app/saqeel-runtime.css, tokens.css, v2-components.css — not in scope."
+    verification: "tsc --noEmit and next build. Playwright is not the gate."
 
 completed_this_cycle:
   - card: "brand"
