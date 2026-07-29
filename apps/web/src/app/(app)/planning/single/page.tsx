@@ -43,7 +43,7 @@ type LegacyFactoryRow = {
   id: string; factory_code: string | null; name: string; cr_number: string | null; license_number: string | null;
   region: string | null; city: string | null; risk_band: string | null; risk_score: number | null;
   official_lat: number | null; official_lng: number | null; geofence_radius_m: number | null;
-  source_synced_at: string | null;
+  source: string | null; source_synced_at: string | null;
 };
 
 // One legacy factory by id (handoff prefill / draft-target hydration) with the
@@ -51,7 +51,7 @@ type LegacyFactoryRow = {
 // "unavailable", never a fabricated miss.
 async function readLegacyFactory(sb: SupabaseClient, id: string): Promise<{ row: GradedFactory | null; unavailable: boolean }> {
   const { data: f, error } = await sb.from("factories")
-    .select("id, factory_code, name, cr_number, license_number, region, city, risk_band, risk_score, official_lat, official_lng, geofence_radius_m, source_synced_at")
+    .select("id, factory_code, name, cr_number, license_number, region, city, risk_band, risk_score, official_lat, official_lng, geofence_radius_m, source, source_synced_at")
     .eq("id", id).maybeSingle();
   if (error) {
     console.error("[ single-planning prefill factory read]", error.message);
@@ -67,7 +67,7 @@ async function readLegacyFactory(sb: SupabaseClient, id: string): Promise<{ row:
       id: row.id, factory_code: row.factory_code, name: row.name, cr_number: row.cr_number, license_number: row.license_number,
       region: row.region, city: row.city, risk_band: row.risk_band, risk_score: row.risk_score,
       official_lat: row.official_lat, official_lng: row.official_lng, geofence_radius_m: row.geofence_radius_m,
-      source_synced_at: row.source_synced_at,
+      source_synced_at: row.source_synced_at, master_source: row.source,
       source: "legacy",
       grade: "exact",
       degraded: !row.license_number || row.official_lat == null || row.official_lng == null,
@@ -189,8 +189,6 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
         windowEnd: str(cfg.window_end),
         inspectorId: str(cfg.inspector_id),
         notes: str(cfg.notes),
-        plannerLat: str(cfg.planner_lat),
-        plannerLng: str(cfg.planner_lng),
         // Legacy targets re-confirm their licence through the same radio the
         // fresh flow uses; the saved value pre-checks it (canonical targets
         // need no separate confirmation — the licence IS the selection).
@@ -285,7 +283,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
       // to the precise EXACT/SIMILAR-NAME rule in JS afterward.
       const esc = q.replace(/[%_]/g, c => `\\${c}`);
       const { data: candidates, error: searchError } = await sb.from("factories")
-        .select("id, factory_code, name, cr_number, license_number, region, city, risk_band, risk_score, official_lat, official_lng, geofence_radius_m, source_synced_at")
+        .select("id, factory_code, name, cr_number, license_number, region, city, risk_band, risk_score, official_lat, official_lng, geofence_radius_m, source, source_synced_at")
         .or(`cr_number.eq.${q},factory_code.ilike.%${esc}%,license_number.ilike.%${esc}%,name.ilike.%${esc}%`)
         // Keep the bounded search deterministic and make a newly-created
         // registry record discoverable when live test/manual data contains
@@ -308,7 +306,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
           id: f.id, factory_code: f.factory_code, name: f.name, cr_number: f.cr_number, license_number: f.license_number,
           region: f.region, city: f.city, risk_band: f.risk_band, risk_score: f.risk_score,
           official_lat: f.official_lat, official_lng: f.official_lng, geofence_radius_m: f.geofence_radius_m,
-          source_synced_at: f.source_synced_at,
+          source_synced_at: f.source_synced_at, master_source: f.source,
           source: "legacy" as const,
           grade,
           degraded: !f.license_number || f.official_lat == null || f.official_lng == null,
@@ -356,11 +354,11 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     licenseLabel: t("plan.single.licenseLabel", "Industrial license"),
     licenseNone: t("plan.single.licenseNone", "No Industrial License is recorded for this factory — the visit will use the CR."),
     locationStep: t("plan.single.locationStep", "3 · Confirm location"),
+    officialAddress: t("plan.single.officialAddress", "Official address"),
     officialPin: t("plan.single.officialPin", "Official factory pin"),
-    noOfficialPin: t("plan.single.noOfficialPin", "No official location on record — pin the visit location manually below."),
-    plannerLat: t("plan.single.plannerLat", "Planner pin latitude (optional override)"),
-    plannerLng: t("plan.single.plannerLng", "Planner pin longitude (optional override)"),
-    plannerPin: t("plan.single.plannerPin", "Planner pin (this visit only — official pin is GIS Admin owned)"),
+    noOfficialPin: t("plan.single.noOfficialPin", "No official location is available from the external master source."),
+    locationAuthority: t("plan.single.locationAuthority", "Senaei / external master source"),
+    locationReadOnly: t("plan.single.locationReadOnly", "Read-only — location master data cannot be changed in Planning"),
     locationConfirmed: t("plan.single.locationConfirmed", "Location confirmed"),
     mapLoading: t("plan.single.mapLoading", "Loading location map"),
     mapToggle: t("plan.single.mapToggle", "Map / Text"),
