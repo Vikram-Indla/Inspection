@@ -168,6 +168,8 @@ declare
   v_policy public.planning_attachment_policies%rowtype;
   v_count integer;
   v_item jsonb;
+  v_size_text text;
+  v_size_bytes bigint;
 begin
   select * into v_policy from public.planning_attachment_policies p
    where p.visit_type=p_visit_type and p.enabled
@@ -190,10 +192,23 @@ begin
   end if;
   for v_item in select value from jsonb_array_elements(coalesce(p_attachments,'[]'::jsonb))
   loop
+    v_size_text:=nullif(v_item->>'size_bytes','');
+    if v_size_text is null or v_size_text!~'^[0-9]+$' then
+      return jsonb_build_object('configured',true,'allowed',false,
+        'policy_id',v_policy.id,'version',v_policy.version,
+        'reason','PLANNING-ATTACHMENT-SIZE');
+    end if;
+    begin
+      v_size_bytes:=v_size_text::bigint;
+    exception when numeric_value_out_of_range then
+      return jsonb_build_object('configured',true,'allowed',false,
+        'policy_id',v_policy.id,'version',v_policy.version,
+        'reason','PLANNING-ATTACHMENT-SIZE');
+    end;
     if nullif(v_item->>'mime','') is null or (v_policy.allowed_mime_types<>'{}'
        and not (v_item->>'mime'=any(v_policy.allowed_mime_types)))
        or (v_policy.max_file_bytes is not null
-         and coalesce((v_item->>'size_bytes')::bigint,-1)>v_policy.max_file_bytes) then
+         and v_size_bytes>v_policy.max_file_bytes) then
       return jsonb_build_object('configured',true,'allowed',false,
         'policy_id',v_policy.id,'version',v_policy.version,
         'reason','PLANNING-ATTACHMENT-TYPE-OR-SIZE');
@@ -260,6 +275,7 @@ begin
       select 1 from public.user_roles ur
       where ur.user_id=p.user_id and ur.role_key='inspector'
     )
+      and coalesce(to_jsonb(p)->>'account_status','active')='active'
   ) ranked;
   return v_result;
 end
@@ -273,6 +289,7 @@ create or replace function public.apply_planning_assignment_recommendation()
 returns trigger language plpgsql security definer set search_path='' as $$
 declare
   v_visit public.visits%rowtype;
+  v_plan_method text;
   v_ranked jsonb;
   v_chosen jsonb;
 begin
@@ -281,6 +298,13 @@ begin
   if not found then
     raise exception using errcode='P0002',message='PLANNING-RECOMMENDATION-VISIT';
   end if;
+  -- Bulk and Immediate retain their own governed assignment contracts.
+  -- This packet changes only Single Planning automatic recommendations.
+  if v_visit.visit_plan_id is null then return new; end if;
+  select vp.method into v_plan_method
+    from public.visit_plans vp
+   where vp.id=v_visit.visit_plan_id;
+  if v_plan_method is distinct from 'single' then return new; end if;
   v_ranked:=public.recommend_planning_inspectors(
     v_visit.factory_id,v_visit.window_start,v_visit.window_end
   );

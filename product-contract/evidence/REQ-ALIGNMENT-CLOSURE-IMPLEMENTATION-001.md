@@ -58,6 +58,24 @@ runtime evidence remains mandatory.
 - Full Playwright setup: environment-blocked by absent persona credentials.
   The focused source-only project was rerun without setup dependencies.
 
+## Acceptance-return repairs
+
+The Action Register owner returned three defects and they were repaired
+forward-only in this packet:
+
+1. Automatic recommendation now applies only to Single Planning assignments.
+   Bulk and Immediate assignment inserts retain their existing governed
+   contracts.
+2. Inspector recommendations exclude profiles whose governed account status is
+   not active, without changing any profile, role or account.
+3. Attachment validation fails closed for missing, negative, nonnumeric and
+   out-of-range `size_bytes`; the configured maximum is evaluated only after a
+   valid non-negative integer is established.
+
+Focused source verification was rerun after these repairs: **5 passed / 0
+failed**. `git diff --check` also passed. Executable SQL and authenticated
+non-production proofs remain required before any requirement is closed.
+
 ## Concurrent-path disclosure
 
 During verification, unrelated wording edits appeared in

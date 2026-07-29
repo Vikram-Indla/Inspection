@@ -55,6 +55,9 @@ test.describe("REQ-ALIGNMENT-CLOSURE-IMPLEMENTATION-001 source contract", () => 
     expect(migration).toContain("planning.override_assignment");
     expect(migration).toContain("assignment_override_reason");
     expect(migration).toContain("PLANNING_ASSIGNMENT_OVERRIDE");
+    expect(migration).toContain("to_jsonb(p)->>'account_status','active'");
+    expect(migration).toContain("if v_visit.visit_plan_id is null then return new");
+    expect(migration).toContain("if v_plan_method is distinct from 'single' then return new");
   });
 
   test("REQ-018 uses configured attachment policy without invented defaults", () => {
@@ -62,6 +65,10 @@ test.describe("REQ-ALIGNMENT-CLOSURE-IMPLEMENTATION-001 source contract", () => 
     expect(migration).toContain("PLANNING-ATTACHMENT-POLICY-NOT-CONFIGURED");
     expect(migration).toContain("allowed_mime_types");
     expect(migration).toContain("max_file_bytes");
+    expect(migration).toContain("v_size_text is null or v_size_text!~'^[0-9]+$'");
+    expect(migration).toContain("exception when numeric_value_out_of_range");
+    expect(migration).toContain("v_size_bytes>v_policy.max_file_bytes");
+    expect(migration).not.toContain("coalesce((v_item->>'size_bytes')::bigint,-1)");
     expect(migration).not.toMatch(/image\/jpeg.*image\/png/);
   });
 
