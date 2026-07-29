@@ -36,7 +36,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
       <Shell current="/planning" title={t("plan.drill.errorTitle", "Plan — error")}>
         <EmptyState glyph="⚠"
           title={tr("plan.drill.unavailable.title", "Plan unavailable", "الخطة غير متاحة")}
-          body={tr("plan.drill.unavailable.body", "Planning access could not be verified (ERR-OPS-001). Nothing was changed. Try again.", "تعذر التحقق من صلاحية التخطيط (ERR-OPS-001). لم يتم تغيير أي بيانات. أعد المحاولة.")} />
+          body={tr("plan.drill.unavailable.body", "The Planning read contract could not be verified. Nothing was changed. Retry after access configuration is restored.", "تعذر التحقق من عقد قراءة التخطيط. لم يتم تغيير أي بيانات. أعد المحاولة بعد استعادة إعدادات الوصول.")} />
       </Shell>
     );
   }
@@ -73,7 +73,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
   if (pErr || kErr) {
     console.error("[planning plan drill read]", pErr ?? kErr);
     return <Shell current="/planning" title={t("plan.drill.errorTitle", "Plan — error")}>
-      <div className="sq-banner sq-banner--critical"><div>{t("plan.drill.loadErrorSafe", "Could not load the plan. Nothing was changed. Try again (ERR-OPS-001).")}</div></div>
+      <div className="sq-banner sq-banner--critical"><div>{t("plan.drill.loadErrorSafe", "Could not load the plan through the authorized read path. Nothing was changed. Retry after access configuration is restored.")}</div></div>
     </Shell>;
   }
   if (!plan) {

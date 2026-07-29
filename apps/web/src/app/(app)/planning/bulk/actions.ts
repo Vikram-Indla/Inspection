@@ -249,7 +249,7 @@ const NEUTRAL_PUBLISH_ERROR =
   "Publishing failed — the plan was not created and no visits were scheduled. " +
   "Nothing was published. Review the flagged items and try again.";
 const NEUTRAL_READ_ERROR =
-  "Planning data could not be verified (ERR-OPS-001). Nothing was published. Please try again.";
+  "Planning data could not be verified through the authorized read path. Nothing was published. Retry after access configuration is restored.";
 
 export async function publishBulkPlan(_: BulkResult, formData: FormData): Promise<BulkResult> {
   const sb = await supabaseServer();

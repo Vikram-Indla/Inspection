@@ -26,7 +26,7 @@ const sanitizeSourceChannel = (raw: string) =>
 const NEUTRAL_WRITE_ERROR =
   "Publishing could not complete a step. Your entries are preserved — review the step status below and retry; retry will not create a second visit.";
 const NEUTRAL_READ_ERROR =
-  "Planning data could not be verified (ERR-OPS-001). Your entries are preserved — try again.";
+  "Planning data could not be verified through the authorized read path. Your entries are preserved — retry after access configuration is restored.";
 export async function publishSingleVisit(_: PublishResult, formData: FormData): Promise<PublishResult> {
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);

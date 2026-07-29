@@ -28,7 +28,7 @@ export type DiscardResult = {
 export async function discardDraftPlan(_: DiscardResult, fd: FormData): Promise<DiscardResult> {
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
-  if (authError) return { error: "Planning data is temporarily unavailable (ERR-OPS-001) — nothing was changed." };
+  if (authError) return { error: "The authorized Planning read path is unavailable — nothing was changed. Re-authenticate and retry." };
   if (!user) return { error: "Session expired — sign in again." };
   const planId = String(fd.get("plan_id") ?? "").trim();
   const expectedVersion = Number(fd.get("expected_version"));
@@ -51,7 +51,7 @@ export async function discardDraftPlan(_: DiscardResult, fd: FormData): Promise<
     if (error.code === "42501") return { error: "You do not have permission or scope to archive this draft. Nothing was changed." };
     if (error.code === "23514") return { error: "This draft changed, was already archived, or is no longer eligible. Refresh before trying again." };
     if (error.code === "23505") return { error: "This retry does not match the original archive request. Nothing was changed." };
-    return { error: "Planning data is temporarily unavailable (ERR-OPS-001) — nothing was changed." };
+    return { error: "The authorized Planning read path is unavailable — nothing was changed. Retry after access configuration is restored." };
   }
   const receipt = data as {
     command_id?: string; correlation_id?: string; child_count?: number; idempotent?: boolean;

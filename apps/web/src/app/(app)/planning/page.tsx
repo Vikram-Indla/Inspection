@@ -109,7 +109,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
     return (
       <Shell current="/planning" title={title}>
         <EmptyState glyph="⚠" title={tr("plan.home.unavailable.title", "Planning data unavailable", "بيانات التخطيط غير متاحة")}
-          body={tr("plan.home.unavailable.body", "The planning workspace could not be loaded (ERR-OPS-001). Nothing was created or changed. Try again.", "تعذر تحميل مساحة التخطيط (ERR-OPS-001). لم يتم إنشاء أو تغيير أي بيانات. أعد المحاولة.")} />
+          body={tr("plan.home.unavailable.body", "The planning workspace read contract could not be verified. Nothing was created or changed. Retry after access configuration is restored.", "تعذر التحقق من عقد قراءة مساحة التخطيط. لم يتم إنشاء أو تغيير أي بيانات. أعد المحاولة بعد استعادة إعدادات الوصول.")} />
       </Shell>
     );
   }
@@ -149,7 +149,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
     return (
       <Shell current="/planning" title={title}>
         <EmptyState glyph="⚠" title={tr("plan.home.unavailable.title", "Planning data unavailable", "بيانات التخطيط غير متاحة")}
-          body={tr("plan.home.unavailable.body", "The planning workspace could not be loaded (ERR-OPS-001). Nothing was created or changed. Try again.", "تعذر تحميل مساحة التخطيط (ERR-OPS-001). لم يتم إنشاء أو تغيير أي بيانات. أعد المحاولة.")} />
+          body={tr("plan.home.unavailable.body", "The planning workspace read contract could not be verified. Nothing was created or changed. Retry after access configuration is restored.", "تعذر التحقق من عقد قراءة مساحة التخطيط. لم يتم إنشاء أو تغيير أي بيانات. أعد المحاولة بعد استعادة إعدادات الوصول.")} />
       </Shell>
     );
   }

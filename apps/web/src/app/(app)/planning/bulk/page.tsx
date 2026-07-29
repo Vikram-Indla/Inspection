@@ -37,7 +37,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     console.error("[ bulk planning authorization]", authError?.message ?? access.error);
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
-        <div className="sq-banner sq-banner--critical" role="alert">{t("plan.bulk.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.")}</div>
+        <div className="sq-banner sq-banner--critical" role="alert">{t("plan.bulk.unavailable", "The authorized Planning read path is unavailable. Nothing was changed. Retry after access configuration is restored.")}</div>
       </Shell>
     );
   }
@@ -74,7 +74,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     .order("risk_score", { ascending: false })
     .order("id", { ascending: true })
     .range(from, to) as unknown as PromiseLike<PostgrestPage<FactoryForCriteria & Record<string, unknown>>>);
-  // ERR-OPS-001 — a failed read must never masquerade as a legitimate empty
+  // A failed authorized read must never masquerade as a legitimate empty
   // catalog (0 in scope, 0 eligible). One shared query backs every panel on
   // this screen, so isolation here is page-level, not per-widget; the wiring
   // map previously claimed per-source isolation this architecture can't do.
@@ -83,7 +83,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
         <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list unavailable")}
-          body={t("plan.bulk.serviceUnavailable.body", "The Factory list could not be read (ERR-OPS-001). Nothing was filtered or published. Please retry.")} />
+          body={t("plan.bulk.serviceUnavailable.body", "The Factory list could not be read through the authorized Planning path. Nothing was filtered or published. Retry after access configuration is restored.")} />
       </Shell>
     );
   }
@@ -111,7 +111,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
         <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list unavailable")}
-          body={t("plan.bulk.serviceUnavailable.body", "The Factory list could not be read (ERR-OPS-001). Nothing was filtered or published. Please retry.")} />
+          body={t("plan.bulk.serviceUnavailable.body", "The Factory list could not be read through the authorized Planning path. Nothing was filtered or published. Retry after access configuration is restored.")} />
       </Shell>
     );
   }

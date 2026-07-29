@@ -35,7 +35,7 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
     console.error("[ bulk review authorization]", authError?.message ?? access.error);
     return (
       <Shell current="/planning" title={t("plan.review.title", "Plan review & publish")}>
-        <div className="sq-banner sq-banner--critical" role="alert">{t("plan.bulk.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.")}</div>
+        <div className="sq-banner sq-banner--critical" role="alert">{t("plan.bulk.unavailable", "The authorized Planning read path is unavailable. Nothing was changed. Retry after access configuration is restored.")}</div>
       </Shell>
     );
   }
@@ -70,7 +70,7 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
     loadingNote: t("plan.review.loadingNote", "Validating factories, inspection checklist, Inspectors and duplicates…"),
     stagedBanner: t("plan.review.staged", "Staged review. No plan record exists yet — nothing is saved until you publish."),
     stagedSub: t("plan.review.stagedSub", "Selected factories carried from targeting · verifying sources"),
-    unavailable: t("plan.review.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Return to targeting and try again."),
+    unavailable: t("plan.review.unavailable", "The authorized Planning read path is unavailable. Return to targeting and retry after access configuration is restored."),
     emptyTitle: t("plan.review.emptyTitle", "No factories selected"),
     emptyBody: t("plan.review.emptyBody", "Select target factories on the targeting screen, then continue to review."),
     backToTargeting: t("plan.review.back", "Back to targeting"),

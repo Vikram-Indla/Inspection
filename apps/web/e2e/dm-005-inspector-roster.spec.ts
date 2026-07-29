@@ -10,9 +10,14 @@ test("DM-005 exposes existing inspectors to Planner without changing the selecto
   const migration = source(
     "../../supabase/migrations/20260729170000_planner_inspector_roster_read.sql",
   );
+  const readContract = source(
+    "../../supabase/migrations/20260729180000_planning_read_contract.sql",
+  );
 
-  expect(page).toContain('sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector")');
-  expect(page).toContain("const inspectors = (inspRoles ?? []).map");
+  expect(page).toContain("const inspectors = contract.data.inspectors");
+  expect(readContract).toContain("from public.user_roles ur");
+  expect(readContract).toContain("join public.profiles pr on pr.user_id = ur.user_id");
+  expect(readContract).toContain("where ur.role_key = 'inspector'");
   expect(wizard).toContain('className="select" name="inspector_id" id="wizard-inspector"');
   expect(wizard).toContain("inspectors.map(i => <option");
 
