@@ -226,7 +226,27 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
       return { error: NEUTRAL_READ_ERROR };
     }
   }
-  const { data: visitId, error: publishError } = await sb.rpc("publish_single_visit_atomic", {
+  const publishRequest = {
+    factory_id,
+    package_version_ids,
+    inspector_id: autoAssign ? null : inspector_id,
+    visit_type,
+    execution_mode: mode,
+    window_start,
+    window_end,
+    license_number: license_number || null,
+    location_confirmed,
+    planner_lat: planner_lat != null && Number.isFinite(planner_lat) ? planner_lat : null,
+    planner_lng: planner_lng != null && Number.isFinite(planner_lng) ? planner_lng : null,
+    notes,
+    target: canonicalTarget,
+    source_channel,
+    resume_plan_id: resumeId || null,
+  };
+  const publishKey = createHash("sha256")
+    .update(JSON.stringify({ actor: user.id, ...publishRequest }))
+    .digest("hex");
+  const { data: publishReceipt, error: publishError } = await sb.rpc("publish_single_visit_atomic_v2", {
     p_factory_id: factory_id,
     p_package_version_ids: package_version_ids,
     p_inspector_id: autoAssign ? null : inspector_id,
@@ -242,7 +262,12 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     p_target: canonicalTarget,
     p_source_channel: source_channel,
     p_resume_plan_id: resumeId || null,
+    p_idempotency_key: `publish.single.${publishKey}`,
+    p_correlation_id: randomUUID(),
   });
+  const visitId = publishReceipt && typeof publishReceipt === "object"
+    ? String((publishReceipt as { visit_id?: string }).visit_id ?? "")
+    : "";
   if (publishError || !visitId) {
     console.error("[ publishSingleVisit] atomic publish failed:", publishError?.message, publishError?.code);
     steps.plan = "failed";
