@@ -96,7 +96,13 @@ select pg_temp.assert_true(
      'public.planning_process_targets'::regclass,
      'public.planning_process_row_receipts'::regclass,
      'public.planning_visit_archives'::regclass)
-   and not tgisinternal)=4,
+   and not tgisinternal
+   and tgname in (
+     'planning_process_commands_immutable',
+     'planning_process_targets_immutable',
+     'planning_process_row_receipts_immutable',
+     'planning_visit_archives_immutable'
+   ))=4,
   'PCP-P03-001','every evidence relation requires an immutable guard');
 
 -- P04 — privileged-code boundary.
@@ -348,12 +354,15 @@ begin
     raise exception 'PCP-NO-ROLE-PLAN-INSERT-WAS-ALLOWED';
   exception when insufficient_privilege then null;
   end;
-  update public.visits set notes='forbidden'
-  where id='00000000-0000-4000-8000-0000000000d2';
-  get diagnostics v_rows = row_count;
-  if v_rows<>0 then
-    raise exception 'PCP-NO-ROLE-VISIT-UPDATE-WAS-ALLOWED';
-  end if;
+  begin
+    update public.visits set notes='forbidden'
+    where id='00000000-0000-4000-8000-0000000000d2';
+    get diagnostics v_rows = row_count;
+    if v_rows<>0 then
+      raise exception 'PCP-NO-ROLE-VISIT-UPDATE-WAS-ALLOWED';
+    end if;
+  exception when insufficient_privilege then null;
+  end;
 end
 $$;
 reset role;
