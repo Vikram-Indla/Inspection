@@ -28,9 +28,9 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
 
   // RBAC-007 / M6 — capability-gated entry (planning.create.bulk), resolved via
   // the canonical planning access model (same pattern as /planning/immediate).
-  // Planner AND Reviewer hold the capability; Inspector/Admin do not. Fail
+  // Planner and Supervisor hold the capability; Inspector/Admin do not. Fail
   // closed: a resolution error is a denial, never a permissive default. RLS
-  // remains the data boundary and publish_bulk_plan re-checks its own role.
+  // remains the data boundary and the governed submission RPC re-checks role.
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   const access = await getPlanningAccess(sb, ["planning.create.bulk"]);
   if (authError || access.error !== null) {
@@ -45,7 +45,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
         <EmptyState glyph="⛔" title={tr("plan.bulk.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
-          body={tr("plan.bulk.unauthorized.body", "Plan multiple visits requires the bulk-planning capability (Planner / Reviewer).", "تخطيط زيارات متعددة يتطلب صلاحية التخطيط الجماعي (المخطط / المراجع).")} />
+          body={tr("plan.bulk.unauthorized.body", "Plan multiple visits requires the bulk-planning capability (Planner or Supervisor).", "تخطيط زيارات متعددة يتطلب صلاحية التخطيط الجماعي (المخطط أو المشرف).")} />
       </Shell>
     );
   }
@@ -69,7 +69,9 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     .from("factories")
     .select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, activity_class, official_lat, official_lng, source_synced_at, visits(planning_status, visit_type)")
     .eq("is_temporary", false)
-    .like("factory_code", "F-%")
+    // Include the one explicitly labelled Saqeel test target in the exact
+    // same criteria journey as sourced factory records.
+    .or("factory_code.like.F-%,source.eq.saqeel_test_data")
     .not("name", "ilike", "CD%")
     .order("risk_score", { ascending: false })
     .order("id", { ascending: true })

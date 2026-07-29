@@ -245,7 +245,9 @@ export default function Wizard({
   );
   const configUnlocked = target != null && licenseOk && locationConfirmed;
   const scheduleReady = windowStart !== "" && windowEnd !== "" && windowEnd > windowStart;
-  const publishReady = configUnlocked && scheduleReady && inspectorId !== "";
+  // A Planner may suggest an Inspector but cannot release a visit. A named
+  // Inspector is required only when the Supervisor approves the request.
+  const publishReady = configUnlocked && scheduleReady;
 
   async function onSaveDraft() {
     if (!target || savingDraft) return;
@@ -510,9 +512,10 @@ export default function Wizard({
               <input key={resetKey} className="input" name="window_start" id="wizard-window-start" type="datetime-local" required value={windowStart} onChange={e => setWindowStart(e.target.value)} /></div>
             <div className={`field ${styles.endField}`}><label htmlFor="wizard-window-end">{strings.windowEnd}</label>
               <input key={resetKey} className="input" name="window_end" id="wizard-window-end" type="datetime-local" required value={windowEnd} onChange={e => setWindowEnd(e.target.value)} /></div>
-            {/* M01-040 — auto-assign option (availability-checked) beside the manual pick */}
+            {/* The Planner may suggest an Inspector. “No preference” leaves the
+                governed final assignment to the approving Supervisor. */}
             <div className={`field ${styles.inspectorField}`}><label htmlFor="wizard-inspector">{strings.inspector}</label>
-              <select key={resetKey} className="select" name="inspector_id" id="wizard-inspector" value={inspectorId} onChange={e => setInspectorId(e.target.value)}><option value="">{strings.selectOption}</option><option value="auto">{strings.autoAssign}</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
+              <select key={resetKey} className="select" name="inspector_id" id="wizard-inspector" value={inspectorId} onChange={e => setInspectorId(e.target.value)}><option value="">{strings.autoAssign}</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
           </div>
           <div className={`field ${styles.notesField}`}><label htmlFor="wizard-notes">{strings.notes}</label>
             <textarea key={resetKey} className="input" name="notes" id="wizard-notes" rows={2} placeholder={strings.notesPlaceholder}
@@ -527,7 +530,7 @@ export default function Wizard({
             <span className="badge badge-compliant">✓ {strings.readyIdentity}</span>
             <span className={`badge ${licenseOk ? "badge-compliant" : "badge-critical"}`}>{licenseOk ? "✓" : "✕"} {strings.readyLicense}</span>
             <span className={`badge ${locationConfirmed ? "badge-compliant" : "badge-critical"}`}>{locationConfirmed ? "✓" : "✕"} {strings.readyLocation}</span>
-            <span className={`badge ${inspectorId ? "badge-compliant" : "badge-critical"}`}>{inspectorId ? "✓" : "✕"} {strings.readyInspector}</span>
+            <span className={`badge ${inspectorId ? "badge-compliant" : "badge-draft"}`}>{inspectorId ? "✓" : "○"} {strings.readyInspector}</span>
           </div>
         </div>
       )}

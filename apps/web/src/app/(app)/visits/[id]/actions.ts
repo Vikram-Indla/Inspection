@@ -340,10 +340,43 @@ export async function updateVisitType(_: ActionResult, fd: FormData): Promise<Ac
 // M02-009 / ENG-05 + M8 — Reassign inspector: updates assignments.inspector_id,
 // notifies new inspector, records the lifecycle event with the prior holder.
 export async function reassignVisit(_: ActionResult, fd: FormData): Promise<ActionResult> {
-  // PLN-R06: Supervisor → capability/RLS authority is unresolved. Fail closed
-  // even if an older client posts this server action directly.
-  void fd;
-  return { error: "Reassignment is not configured until the governed Supervisor capability mapping is approved." };
+  // This is intentionally delegated to the governed atomic RPC. It validates
+  // the Supervisor capability, scope, Inspector role, pre-start state,
+  // collision, audit record, notification and idempotency in one transaction.
+  const sb = await supabaseServer();
+  const { data: { user } } = await getVerifiedUser(sb);
+  if (!user) return { error: "Session expired — sign in again." };
+  const visitId = String(fd.get("visit_id") ?? "").trim();
+  const inspectorId = String(fd.get("inspector_id") ?? "").trim();
+  const reason = String(fd.get("reassign_reason") ?? "").trim();
+  const idempotencyKey = String(fd.get("idempotency_key") ?? "").trim();
+  const correlationId = String(fd.get("correlation_id") ?? "").trim();
+  if (!UUID.test(visitId) || !UUID.test(inspectorId) || !reason
+      || !/^[A-Za-z0-9._:-]{8,200}$/.test(idempotencyKey) || !UUID.test(correlationId)) {
+    return { error: "Select an Inspector and enter a reassignment reason before trying again." };
+  }
+  const { data, error } = await sb.rpc("reassign_published_visits_atomic", {
+    p_visit_ids: [visitId],
+    p_inspector_id: inspectorId,
+    p_reason: reason,
+    p_idempotency_key: idempotencyKey,
+    p_correlation_id: correlationId,
+  });
+  if (error) {
+    console.error("[planning.reassign] governed mutation failed:", error.code, error.message);
+    if (error.code === "42501") return { error: "You do not have permission or scope to reassign this visit. Nothing was changed." };
+    if (error.code === "23505") return { error: "The selected Inspector already has an overlapping visit. Nothing was changed." };
+    if (error.code === "23514") return { error: "This visit can no longer be reassigned in its current state. Nothing was changed." };
+    return { error: "The reassignment could not be completed (ERR-OPS-001). Nothing was changed." };
+  }
+  const receipt = data as { operation?: string; updated_count?: number; correlation_id?: string } | null;
+  if (receipt?.operation !== "reassign" || receipt.updated_count !== 1 || receipt.correlation_id !== correlationId) {
+    return { error: "The reassignment result could not be verified. Refresh before retrying." };
+  }
+  revalidatePath(`/visits/${visitId}`);
+  revalidatePath("/visits");
+  revalidatePath("/planning/visits");
+  return { ok: "Inspector reassigned. The visit history and notifications were recorded." };
   /*
   const sb = await supabaseServer();
   const { data: { user } } = await getVerifiedUser(sb);

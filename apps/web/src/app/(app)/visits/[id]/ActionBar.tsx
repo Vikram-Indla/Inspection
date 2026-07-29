@@ -21,7 +21,7 @@ export type PackageOption = { id: string; label: string };
 // SB19 — strings built server-side with t() and passed as props.
 export type ActionBarStrings = {
   heading: string; returnReason: string; returnComments: string; returnBtn: string;
-  republishBtn: string; reassignTo: string; reassignBtn: string;
+  republishBtn: string; reassignTo: string; reassignReason: string; reassignBtn: string;
   newWindowStart: string; newWindowEnd: string; rescheduleBtn: string;
   cancelReason: string; cancelComments: string; cancelBtn: string;
   visitTypeLabel: string; visitTypeBtn: string;
@@ -65,6 +65,7 @@ export default function ActionBar({ visitId, planningVersion, status, opState, o
     metadata: { idempotencyKey: `visit.metadata.type.${crypto.randomUUID()}`, correlationId: crypto.randomUUID() },
     repackage: { idempotencyKey: `visit.repackage.${crypto.randomUUID()}`, correlationId: crypto.randomUUID() },
     duplicate: { idempotencyKey: `visit.duplicate.${crypto.randomUUID()}`, correlationId: crypto.randomUUID() },
+    reassign: { idempotencyKey: `visit.reassign.${crypto.randomUUID()}`, correlationId: crypto.randomUUID() },
   }));
   const msg = ret.error ?? rep.error ?? can.error ?? rsc.error ?? rea.error ?? vt.error ?? dup.error ?? pkg.error;
   const ok = ret.ok ?? rep.ok ?? can.ok ?? rsc.ok ?? rea.ok ?? vt.ok ?? dup.ok ?? pkg.ok;
@@ -131,8 +132,12 @@ export default function ActionBar({ visitId, planningVersion, status, opState, o
           {canReassign && (
             <form action={reaAct} className="grid-toolbar">
               <input type="hidden" name="visit_id" value={visitId} />
+              <input type="hidden" name="idempotency_key" value={transitionIdentity.reassign.idempotencyKey} />
+              <input type="hidden" name="correlation_id" value={transitionIdentity.reassign.correlationId} />
               <div className="field"><label htmlFor="visit-reassign-inspector">{strings.reassignTo}</label>
-                <select className="select" name="inspector_id" id="visit-reassign-inspector"><option value="">—</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
+                <select className="select" name="inspector_id" id="visit-reassign-inspector" required><option value="">—</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
+              <div className="field"><label htmlFor="visit-reassign-reason">{strings.reassignReason}</label>
+                <input className="input" name="reassign_reason" id="visit-reassign-reason" required /></div>
               <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.reassignBtn}</button>
             </form>
           )}

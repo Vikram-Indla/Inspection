@@ -20,14 +20,23 @@ def fake_runner(_command: str, _source: Path, output_dir: Path, output_format: s
     return artifact
 
 
-def test_extract_creates_all_derivatives_and_provenance(tmp_path: Path) -> None:
+def test_extract_creates_all_derivatives_and_provenance_from_one_marker_run(tmp_path: Path) -> None:
     source = write_source(tmp_path / "inspection.pdf")
     destination = tmp_path / "derivatives"
-    job = extract(source, destination, runner=fake_runner)
+    calls: list[str] = []
+
+    def one_run(command: str, source: Path, output_dir: Path, output_format: str) -> Path:
+        calls.append(output_format)
+        return fake_runner(command, source, output_dir, output_format)
+
+    job = extract(source, destination, runner=one_run)
     assert job.status == "completed"
+    assert calls == ["markdown"]
     assert (destination / "document.md").read_text(encoding="utf-8") == "# extracted\n"
-    assert json.loads((destination / "document.json").read_text(encoding="utf-8"))["format"] == "json"
-    assert json.loads((destination / "chunks.json").read_text(encoding="utf-8"))["format"] == "chunks"
+    document = json.loads((destination / "document.json").read_text(encoding="utf-8"))
+    assert document["markdown"] == "# extracted\n"
+    assert document["source_sha256"]
+    assert json.loads((destination / "chunks.json").read_text(encoding="utf-8")) == [{"index": 0, "text": "# extracted"}]
     provenance = json.loads((destination / "job.json").read_text(encoding="utf-8"))
     assert provenance["source_filename"] == "inspection.pdf"
     assert len(provenance["source_sha256"]) == 64

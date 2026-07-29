@@ -139,6 +139,14 @@ export default async function Factory360({ params, searchParams }: { params: Pro
   // blank identity values are indistinguishable from a missing direction-isolated
   // identifier in Arabic/RTL and are not an honest dossier state.
   const identity = (value: string | number | null | undefined) => value == null || value === "" ? "—" : String(value);
+  // Raw provider codes are not meaningful provenance to a planner. Make the
+  // controlled test source explicit anywhere this legacy dossier is opened
+  // directly, not only through the Factory 360 portfolio.
+  const sourceLabel = f.source === "saqeel_test_data"
+    ? t("f360.provenance.test", "Test data · not production")
+    : f.source === "senaei"
+      ? t("f360.provenance.registered", "Registered · Senaei source")
+      : f.source || t("f360.provenance.unavailable", "Source provenance unavailable");
   const docsEmpty = (docs ?? []).length === 0;
   const repsEmpty = (reps ?? []).length === 0;
   const productsEmpty = (products ?? []).length === 0;
@@ -179,7 +187,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
       context={<>
         <span className="sq-lozenge sq-lozenge--info">SB11</span>
         <span className={`sq-lozenge ${bandTone}`}>{f.risk_band ? enumLabel(f.risk_band) : "—"} · {f.risk_score}</span>
-        <span className="sq-freshness">{t("f360.meta.source", "source")} {f.source} · {t("f360.meta.synced", "synced")} {f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</span>
+        <span className="sq-freshness">{t("f360.meta.source", "source")} {sourceLabel} · {t("f360.meta.synced", "synced")} {f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</span>
       </>}>
 
       {/* الاجراءات quick action (Figma J-21) — the other three (إنشاء رصد حادث /
@@ -189,7 +197,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
       <div className="sq-row">
         {permissions["create_inspection"] && <a className="sq-btn sq-btn--secondary" href={`/planning/single?factory=${f.id}&cr=${encodeURIComponent(f.cr_number ?? "")}&license=${encodeURIComponent(f.license_number ?? "")}&source=factory360`}>{t("f360.actions.planSingle", "Plan single visit")}</a>}
         {permissions["create_inspection"] && <a className="sq-btn sq-btn--secondary" href={`/planning/immediate?factory=${f.id}`}>{t("f360.actions.startPlan", "Start inspection plan")}</a>}
-        {permissions["create_inspection"] && <span className="sq-caption" role="status">{t("f360.actions.submissionBlocked", "Inspection submission remains unavailable while DEC-032 is unresolved.")}</span>}
+        {permissions["create_inspection"] && <span className="sq-caption" role="status">{t("f360.actions.supervisionRequired", "Every plan is submitted to a Supervisor, who confirms the final Inspector before release.")}</span>}
       </div>
 
       <div className="cd-w3" data-screen-id="F360-S03">
@@ -210,7 +218,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
 
           <div className="sq-surface cd-fresh">
             <span className="cd-fresh__g" aria-hidden="true">⏱</span>
-            <span>{t("f360.meta.source", "source")} <strong>{f.source}</strong> · {t("f360.meta.synced", "synced")} <bdi className="cd-idv">{f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</bdi></span>
+            <span>{t("f360.meta.source", "source")} <strong>{sourceLabel}</strong> · {t("f360.meta.synced", "synced")} <bdi className="cd-idv">{f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</bdi></span>
           </div>
 
           <div className="sq-surface cd-riskcard">
@@ -349,7 +357,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
               {f.source_synced_at && <li className="cd-tl" key="source-sync">
                 <span className="cd-tl__when sq-numeric">{new Date(f.source_synced_at).toISOString().slice(0, 10)}</span>
                 <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-location">↻</span></span>
-                <div className="cd-tl__card"><span className="cd-tl__kind">{t("f360.tl.sourceSync", "Factory list synced")}</span><span>{f.source}</span></div>
+                <div className="cd-tl__card"><span className="cd-tl__kind">{t("f360.tl.sourceSync", "Factory list synced")}</span><span>{sourceLabel}</span></div>
               </li>}
               {(riskHistory ?? []).map(s => <li className="cd-tl" key={`risk-${s.id}`}>
                 <span className="cd-tl__when sq-numeric">{new Date(s.calculated_at).toISOString().slice(0, 10)}</span>

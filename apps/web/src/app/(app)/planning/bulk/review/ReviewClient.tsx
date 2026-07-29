@@ -10,7 +10,7 @@
 // The one signature pattern is the Publish Consequence Ledger: four groups
 // (created / referenced / recorded-or-queued / will-not-happen) bound to the
 // current retained scope, recalculated live. validateBulkPlan is a server-side
-// PREVIEW; publish_bulk_plan (migration 20260714091727) re-runs every guard in
+// PREVIEW; the supervision submission RPC re-runs every guard in
 // one transaction and is the authority. No optimistic "Published" is ever shown;
 // a rolled-back publish is never presented as success (P03 all-or-nothing).
 import { useActionState, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
@@ -357,7 +357,13 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
     // M7 — the published count is the committed eligible subset from the
     // authoritative result; the preview ledger is only the fallback.
     const created = state.created ?? val?.ledger?.toCreate ?? val?.retained ?? 0;
-    const cells: [string, string][] = [[s.sPlan, "1"], [s.sVisits, String(created)], [s.sAssign, String(created)], [s.sNotif, String(created)]];
+    const proposedCount = Object.values(picks).filter(Boolean).length;
+    const cells: [string, string][] = [
+      [s.sPlan, "1"],
+      [s.sVisits, String(created)],
+      [s.sAssign, String(proposedCount)],
+      [s.sNotif, "Queued"],
+    ];
     return (
       <section className="panel sq-panel cd-panelpad cd-result" id="cd-main">
         <div className="row" style={{ gap: "var(--space-4)", alignItems: "flex-start" }}>
@@ -549,7 +555,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
           <div><dt>{s.visits}</dt><dd className="cd-count">{retained}</dd></div>
           <div><dt>{s.assignments}</dt><dd>{manual} {s.manual} · {auto} {s.auto}</dd></div>
           <div><dt>{s.visitType}</dt><dd>
-            {/* M7 — options flow from planning_lookups; publish_bulk_plan still
+            {/* M7 — options flow from planning_lookups; the submission RPC still
                 commits periodic-only, so other governed types are listed
                 honestly as not-yet-available instead of failing at publish. */}
             <select className="select" aria-label={s.visitType} value="periodic" onChange={() => {}}>
@@ -786,7 +792,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
           <textarea id="cd-notes" className="sq-textarea" rows={2} placeholder={s.notesPlaceholder} value={notes} onChange={e => setNotes(e.target.value)} />
         </div>
         {/* M6 — eligibility acknowledgement: with ineligible rows present the
-            publish stays disabled until the reviewer explicitly proceeds with
+            publication stays disabled until the Supervisor explicitly proceeds with
             the eligible subset only; the choice persists into the draft. */}
         {needsAck && !validating && (
           <div className="sq-banner sq-banner--warning" role="alert">

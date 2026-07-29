@@ -1,6 +1,6 @@
 "use server";
 
-import { getOcrProvider, ocrProviderState } from "@/lib/providers/ocr-gemini";
+import { getOcrProvider, ocrProviderState } from "@/lib/providers/ocr-marker";
 
 export type FieldOcrActionResult =
   | { status: "configured" }
@@ -22,7 +22,11 @@ export async function extractFieldEvidenceText(imageBase64: string, mimeType: st
   const provider = getOcrProvider();
   if (!provider) return { status: "unavailable", reason: "missing_api_key" };
 
-  const result = await provider.extractText(imageBase64, mimeType);
+  const result = await provider.extractDocument({
+    contentBase64: imageBase64,
+    mimeType,
+    filename: "field-evidence",
+  });
   if (!result.ok) return { status: "failed", reason: result.reason ?? "unknown" };
   if (!result.text) return { status: "no_text_found" };
   return { status: "extracted", text: result.text };

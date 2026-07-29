@@ -30,9 +30,16 @@ coverage/
 # Python cache (added at G4 install)
 __pycache__/
 *.pyc
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
 # build artifacts
 apps/web/.next/
+apps/web/.next-*/
 apps/web/.next-stale-backup/
 *.tsbuildinfo
 node_modules/
@@ -40,6 +47,7 @@ node_modules/
 
 # Supabase CLI linked-project state (may contain connection credentials)
 supabase/.temp/
+apps/web/supabase/.temp/
 
 # e2e artifacts (G10 Playwright suite)
 apps/web/test-results/

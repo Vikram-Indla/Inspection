@@ -4,6 +4,10 @@ import { fileURLToPath } from "node:url";
 /** @type {import('next').NextConfig} */
 export default {
   reactStrictMode: true,
+  // Allows an isolated verification build to run beside a developer's active
+  // dev server without either process corrupting the other's build cache.
+  // Production keeps the standard `.next` directory unless explicitly set.
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   // Pin the file-tracing root to this app. A lockfile in the user's home dir
   // otherwise makes Next infer the wrong workspace root (multiple lockfiles);
   // this resolves it without touching anything outside the repo.

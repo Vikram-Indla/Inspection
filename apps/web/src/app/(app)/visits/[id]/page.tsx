@@ -10,6 +10,7 @@ import { mapError } from "./neutral";
 import CreatedToast from "@/components/CreatedToast";
 import EmptyState from "@/components/EmptyState";
 import FocusScroll from "./FocusScroll";
+import { getPlanningAccess } from "@/lib/planning/access";
 
 const PLAN_TONE: Record<string, string> = { published: "badge-info", returned: "badge-warning", cancelled: "badge-critical", expired: "badge-critical" };
 const PLAN_BADGE: Record<string, string> = { published: "badge-info", returned: "badge-warning", cancelled: "badge-critical", expired: "badge-critical", draft: "badge-draft" };
@@ -24,6 +25,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
+  const planningAccess = await getPlanningAccess(sb, ["planning.reassign"]);
   // ENG-05 — inspector pool; user_roles embed on profiles is ambiguous, disambiguate via !user_roles_user_id_fkey
   const { data: inspRows } = await sb.from("profiles")
     .select("user_id, full_name, user_roles!user_roles_user_id_fkey!inner(role_key)")
@@ -194,6 +196,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     returnBtn: t("visit.actions.returnBtn", "Return"),
     republishBtn: t("visit.actions.republishBtn", "Republish (same ID)"),
     reassignTo: t("visit.actions.reassignTo", "Reassign to (M02-009)"),
+    reassignReason: t("visit.actions.reassignReason", "Reassignment reason *"),
     reassignBtn: t("visit.actions.reassignBtn", "Reassign"),
     newWindowStart: t("visit.actions.newWindowStart", "New window start (M02-008)"),
     newWindowEnd: t("visit.actions.newWindowEnd", "New window end"),
@@ -231,9 +234,12 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
   const preStart = !insp || insp.status === "not_started";
   const canManage = v.planning_status === "published" && v.operational_state === "new";
-  // PLN-R06 remains BLOCKED_DECISION: no existing role is silently treated as
-  // the business "Supervisor". Keep the frame visible but non-interactive.
-  const canReassign = false;
+  // Supervisor-only and pre-start. The server repeats this via the atomic
+  // capability, state and overlap checks before it writes anything.
+  const canReassign = preStart
+    && ["published", "returned"].includes(v.planning_status)
+    && !planningAccess.error
+    && planningAccess.can("planning.reassign");
   const isFinal = ["cancelled", "expired"].includes(v.planning_status);
   const latestAudit = (auditRows ?? [])[0];
   const geoEvents = journeys.flatMap(j => j.geo_events).sort((a, b) => b.occurred_at.localeCompare(a.occurred_at));

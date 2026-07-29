@@ -9,6 +9,7 @@ job, but must never synchronously run conversion inside a web request.
 from __future__ import annotations
 
 import hashlib
+import importlib.metadata
 import json
 import mimetypes
 import shutil
@@ -70,6 +71,16 @@ def validate_input(path: Path) -> tuple[str, str]:
 
 
 def marker_version(marker_command: str) -> str:
+    """Resolve installed package metadata without spawning a second converter.
+
+    `marker_single --version` starts Marker imports and is not a cheap version
+    query on the local ARM runtime.  Recording package metadata keeps custody
+    information while reserving the only model invocation for extraction.
+    """
+    try:
+        return importlib.metadata.version("marker-pdf")
+    except importlib.metadata.PackageNotFoundError:
+        pass
     try:
         result = subprocess.run(
             [marker_command, "--version"], check=False, capture_output=True, text=True, timeout=15
@@ -111,6 +122,34 @@ def run_marker(marker_command: str, source: Path, output_dir: Path, output_forma
     return discover_artifact(output_dir, output_format)
 
 
+def retrieval_chunks(markdown: str, *, max_characters: int = 1200) -> list[dict[str, object]]:
+    """Create deterministic retrieval chunks from Marker Markdown.
+
+    Marker conversion is the expensive model operation.  JSON and chunks are
+    Saqeel derivatives of its Markdown, so re-running the same document three
+    times is both slower and risks three different model outputs for one job.
+    """
+
+    blocks = [block.strip() for block in markdown.split("\n\n") if block.strip()]
+    chunks: list[dict[str, object]] = []
+    current = ""
+    for block in blocks:
+        if current and len(current) + len(block) + 2 > max_characters:
+            chunks.append({"index": len(chunks), "text": current})
+            current = ""
+        if len(block) <= max_characters:
+            current = f"{current}\n\n{block}".strip() if current else block
+            continue
+        if current:
+            chunks.append({"index": len(chunks), "text": current})
+            current = ""
+        for start in range(0, len(block), max_characters):
+            chunks.append({"index": len(chunks), "text": block[start : start + max_characters]})
+    if current:
+        chunks.append({"index": len(chunks), "text": current})
+    return chunks
+
+
 def extract(
     source: Path,
     destination: Path,
@@ -143,18 +182,29 @@ def extract(
     try:
         with tempfile.TemporaryDirectory(prefix="saqeel-marker-") as working:
             work = Path(working)
-            created: dict[OutputFormat, Path] = {}
-            for output_format in FORMATS:
-                output = work / output_format
-                output.mkdir()
-                created[output_format] = runner(marker_command, source, output, output_format)
-            targets = {
-                "markdown": destination / "document.md",
-                "json": destination / "document.json",
-                "chunks": destination / "chunks.json",
-            }
-            for output_format, target in targets.items():
-                shutil.copyfile(created[output_format], target)
+            output = work / "markdown"
+            output.mkdir()
+            markdown_source = runner(marker_command, source, output, "markdown")
+            markdown = markdown_source.read_text(encoding="utf-8")
+            (destination / "document.md").write_text(markdown, encoding="utf-8")
+            (destination / "document.json").write_text(
+                json.dumps(
+                    {
+                        "markdown": markdown,
+                        "processor": provenance.processor,
+                        "processor_version": provenance.processor_version,
+                        "source_sha256": provenance.source_sha256,
+                    },
+                    indent=2,
+                    sort_keys=True,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (destination / "chunks.json").write_text(
+                json.dumps(retrieval_chunks(markdown), indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
         completed = JobProvenance(**{**asdict(provenance), "status": "completed", "completed_at": utc_now()})
         (destination / "job.json").write_text(json.dumps(asdict(completed), indent=2, sort_keys=True) + "\n", encoding="utf-8")
         return completed

@@ -1,6 +1,7 @@
-// Legacy aliases remain so existing sessions stay safe until their canonical
-// supervisor grant has been observed everywhere.
-const SUPERVISOR_ROLES = new Set(["supervisor", "ops", "leadership"]);
+// The approved role model has one supervision authority. Do not accept legacy
+// aliases here: accepting `ops` or `leadership` would silently grant publish,
+// return, and reassignment rights outside the four canonical roles.
+const SUPERVISOR_ROLES = new Set(["supervisor"]);
 
 export function requiresMixedAcknowledgement(selectedCount: number, excludedCount: number): boolean {
   return selectedCount > 0 && excludedCount > 0;

@@ -110,8 +110,8 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
   const [lng, setLng] = useState("");
   const [locationSource, setLocationSource] = useState<"official" | "manual" | null>(null);
   const [locationAt, setLocationAt] = useState("");
-  const [packageId, setPackageId] = useState(packages[0]?.id ?? "");
-  const [inspectorId, setInspectorId] = useState("auto");
+  const [packageId, setPackageId] = useState("");
+  const [inspectorId, setInspectorId] = useState("");
   const [visitType, setVisitType] = useState(visitTypes.find(v => v.manualEntryAllowed)?.key ?? visitTypes[0]?.key ?? "complaint");
   const [windowStart, setWindowStart] = useState("");
   const [windowEnd, setWindowEnd] = useState("");
@@ -135,11 +135,11 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
   // factories, and the governed reason list loaded. The not-found confirmation
   // (fourth control) sits inside the manual panel itself.
   const selectedType = visitTypes.find(v => v.key === visitType);
-  // PLN-R05 — Immediate/unregistered creation is deliberately non-executable
-  // until the governed establishment lifecycle is approved. The server action
-  // carries the same unconditional stop before any provider or mutation work.
-  const immediateExecutable = false;
-  const manualAvailable = immediateExecutable && manualAllowed && manualReasons.length > 0 && selectedType?.manualEntryAllowed === true;
+  // An urgent request is executable only against a registered target. Manual
+  // establishment creation stays deliberately unavailable; urgency does not
+  // weaken target identity or supervision.
+  const immediateExecutable = true;
+  const manualAvailable = false;
   useEffect(() => {
     if (mode === "unregistered" && !manualAvailable) setMode("registered");
   }, [manualAvailable, mode]);
@@ -164,10 +164,10 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
   const identityOk = mode === "registered" ? factory != null
     : notFoundConfirmed && manualName.trim() !== "" && manualRegion.trim() !== "" && manualCity.trim() !== "" && manualReasonOk && mobileOk;
   const reasonOk = reason !== "" && (reason !== "Other" || notes.trim() !== "");
-  const packageOk = packageId !== "";
+  const packageOk = true; // optional while planning; required before execution
   const windowOk = actorMode === "inspector"
     || (!!windowStart && !!windowEnd && new Date(windowEnd).getTime() > new Date(windowStart).getTime());
-  const inspectorOk = actorMode === "inspector" || hasInspectorPool;
+  const inspectorOk = true; // Supervisor confirms one named Inspector on approval
 
   // Dependent city list (PLN-REQ-026): cities observed under the chosen region,
   // falling back to the full list when the region is free-typed.
@@ -210,13 +210,13 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
     },
     {
       id: "package", label: strings.chipPackageLabel, controlId: "imm-package",
-      state: (bf === "package" || !packageOk) ? "blocking" : "satisfied",
-      detail: (bf === "package" || !packageOk) ? strings.chipPackageBlocked : (packages.find(p => p.id === packageId)?.version_label ?? ""),
+      state: "truth",
+      detail: packageId ? (packages.find(p => p.id === packageId)?.version_label ?? "") : "Optional — selected during preparation if needed",
     },
     {
       id: "inspector", label: strings.chipInspectorLabel, controlId: actorMode === "planner" ? "imm-inspector" : undefined,
-      state: (bf === "inspector" || !inspectorOk) ? "blocking" : "satisfied",
-      detail: (bf === "inspector" || !inspectorOk) ? strings.chipInspectorBlocked : (actorMode === "inspector" ? strings.chipInspectorManual : inspectorId === "auto" ? strings.chipInspectorAuto : strings.chipInspectorManual),
+      state: "truth",
+      detail: inspectorId ? strings.chipInspectorManual : "No preference — Supervisor confirms assignment",
     },
     {
       id: "window", label: strings.chipWindowLabel, controlId: actorMode === "planner" ? "imm-window-start" : undefined,
@@ -342,6 +342,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
 
           <div className="field">
             <label id="imm-package-label">{strings.packageLabel}</label>
+            <p className="t-caption">Optional during planning. The Supervisor and Inspector can confirm the package before execution.</p>
             <PackageTypeSelector
               key={`pk-${resetKey}`}
               id="imm-package"
@@ -351,11 +352,12 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
               onChange={setPackageId}
               options={packages.map(p => ({ id: p.id, code: `${p.packages.code} · ${p.version_label}`, title: p.packages.title }))}
             />
+            {packageId && <button type="button" className="btn btn-ghost btn-sm" onClick={() => setPackageId("")}>No package selected</button>}
           </div>
 
           {actorMode === "planner" && <div className="field"><label htmlFor="imm-inspector">{strings.inspector}</label>
             <select id="imm-inspector" key={`in-${resetKey}`} className="select" name="inspector_id" value={inspectorId} onChange={e => setInspectorId(e.target.value)}>
-              <option value="auto">{strings.autoAssign}</option>
+              <option value="">No preference — Supervisor assigns</option>
               {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}
             </select></div>}
 
@@ -384,7 +386,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
       {state.error && <div className="alert alert-critical" role="alert"><div><strong>{strings.blockedTitle}</strong><div>{state.error}</div></div></div>}
 
       <div className="panel-row">
-        <button className="btn btn-primary" disabled={!immediateExecutable || pending || !requestId || (actorMode === "planner" && !reviewed)}>
+        <button className="btn btn-primary" disabled={!immediateExecutable || pending || !requestId || !identityOk || !reasonOk || !locationOk || !windowOk || !reviewed}>
           {pending ? strings.creating : actorMode === "inspector" ? strings.createAndStart : strings.create}
         </button>
       </div>

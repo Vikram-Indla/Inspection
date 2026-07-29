@@ -31,7 +31,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { collectPostgrestPages } from "@/lib/supabase-pagination";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 
-export const PLANNING_TABS = ["all", "draft", "published", "returned", "cancelled", "expired"] as const;
+export const PLANNING_TABS = ["all", "draft", "pending_supervision", "published", "returned", "cancelled", "expired"] as const;
 export type PlanningTab = (typeof PLANNING_TABS)[number];
 
 export type PlanningListFilters = {
@@ -320,7 +320,7 @@ function compareRows(sort: (typeof SORTS)[string]) {
   };
 }
 
-const emptyCounts = (): PlanningListCounts => ({ all: 0, draft: 0, published: 0, returned: 0, cancelled: 0, expired: 0 });
+const emptyCounts = (): PlanningListCounts => ({ all: 0, draft: 0, pending_supervision: 0, published: 0, returned: 0, cancelled: 0, expired: 0 });
 
 /**
  * Fixture ids are an operationally unbounded set in the shared non-production

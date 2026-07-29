@@ -79,7 +79,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
   if (!plan) {
     return <Shell current="/planning" title={t("plan.drill.notFoundTitle", "Plan not found")}>
       <EmptyState glyph="∅" title={t("plan.drill.notFound", "Not in your scope or does not exist")}
-        body={t("plan.drill.notFoundDesc", "Plan visibility is RLS-enforced (plans_read — planner/ops/reviewer/auditor/leadership).")} />
+        body={t("plan.drill.notFoundDesc", "Plan visibility is RLS-enforced for authorised planning staff.")} />
     </Shell>;
   }
   const creator = (plan.profiles as unknown as { full_name: string } | null)?.full_name ?? "—";

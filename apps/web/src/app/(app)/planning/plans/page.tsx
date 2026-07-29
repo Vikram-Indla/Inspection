@@ -8,7 +8,7 @@ import { getPlanningAccess } from "@/lib/planning/access";
 // FIX WAVE F4 — M02-035: plan register. Every visit plan (bulk/single) with
 // method, status, creator, published_at and child-visit count; drill-down per
 // plan lives at /planning/plans/[id] (M02-017/036). RLS plans_read governs
-// visibility (planner/ops/reviewer/auditor/leadership).
+// visibility for authorised Planner and Supervisor roles.
 
 const PLAN_TONE: Record<string, string> = { published: "sq-lozenge--info", returned: "sq-lozenge--warning", cancelled: "sq-lozenge--critical", expired: "sq-lozenge--critical" };
 

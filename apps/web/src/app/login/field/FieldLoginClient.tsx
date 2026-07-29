@@ -156,6 +156,25 @@ export default function FieldLoginClient({
   // returnTo is optional (the unified /login caller omits it); normalise once so
   // every navigation target below is a concrete, validated path.
   const safeReturnTo = useMemo(() => safeFieldReturnPath(returnTo), [returnTo]);
+  // The unified login serves every governed workspace, not only Field. Keep the
+  // stricter field-only sanitizer for the inspector channel, but preserve a
+  // valid internal route such as /planning for the normal role-routed path.
+  // Otherwise a Planner who signs in from Planning is silently rewritten to
+  // /field and then rejected as an unauthorized inspector.
+  const safeAppReturnTo = useMemo(() => {
+    if (!returnTo) return "/launch";
+    try {
+      const decoded = decodeURIComponent(returnTo);
+      const url = new URL(decoded, "https://saqeel.invalid");
+      if (url.origin !== "https://saqeel.invalid" || !url.pathname.startsWith("/") || url.pathname.startsWith("//")) {
+        return "/launch";
+      }
+      if (url.pathname === "/login" || url.pathname.startsWith("/login/")) return "/launch";
+      return `${url.pathname}${url.search}${url.hash}`;
+    } catch {
+      return "/launch";
+    }
+  }, [returnTo]);
   const [lockScreen, setLockScreen] = useState<{ record: BiometricUnlockRecord; deviceId: string } | null>(null);
   const [unlocking, setUnlocking] = useState(false);
   const [showPasswordFallback, setShowPasswordFallback] = useState(false);
@@ -188,7 +207,7 @@ export default function FieldLoginClient({
         // Same rule as the credential path: an explicit returnTo means a field
         // page asked for this user back; without one, let /launch route by the
         // live role grants rather than assuming the field channel.
-        window.location.replace(returnTo ? safeReturnTo : "/launch");
+        window.location.replace(returnTo ? safeAppReturnTo : "/launch");
         return;
       }
       if (bootstrap.status === "offline_known") {
@@ -228,7 +247,7 @@ export default function FieldLoginClient({
     return () => {
       cancelled = true;
     };
-  }, [reason, returnTo, s.offlineKnown, s.sessionExpired, s.signedOut]);
+  }, [reason, returnTo, safeAppReturnTo, s.offlineKnown, s.sessionExpired, s.signedOut]);
 
   const unlockWithFaceId = useCallback(async () => {
     if (!lockScreen) return;
@@ -308,7 +327,11 @@ export default function FieldLoginClient({
       // grants and fails closed to /launch/no-workspace on an unmatched role.
       // Deciding "everyone is an inspector, send them to /field" here left every
       // non-field persona — ops, leadership, planner, reviewer — with no way in.
-      if (returnTo) {
+      // A return path can originate from any governed workspace. Only Field
+      // routes require the inspector-specific preflight; applying that check
+      // to /planning or /dashboard silently signed valid Planners and
+      // Supervisors out immediately after a successful password login.
+      if (returnTo?.startsWith("/field")) {
         if (!(await authorizeInspectorLogin(supabaseBrowser(), data.session, keepSignedIn))) {
           await supabaseBrowser().auth.signOut();
           setMessage(null);
@@ -317,12 +340,16 @@ export default function FieldLoginClient({
         window.location.assign(safeReturnTo);
         return;
       }
+      if (returnTo) {
+        window.location.assign(safeAppReturnTo);
+        return;
+      }
       // No rememberInspector here: this path has NOT verified an inspector
       // grant, and marking the device "known inspector" would be a claim the
       // check never made. Supabase already persists the session itself.
       window.location.assign("/launch");
     },
-    [identifier, keepSignedIn, password, returnTo, s.directoryBlocked, s.authInvalid, s.authNetwork, s.offlineLoginBlocked],
+    [identifier, keepSignedIn, password, returnTo, safeAppReturnTo, s.directoryBlocked, s.authInvalid, s.authNetwork, s.offlineLoginBlocked],
   );
 
   const netLabel = online ? s.netOnline : s.netOffline;

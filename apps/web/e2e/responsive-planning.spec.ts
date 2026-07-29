@@ -19,15 +19,13 @@ test.describe("PKT-RESPONSIVE-PLANNING-003 source contracts", () => {
       expect(text).not.toContain("wa_preview");
       expect(text).not.toMatch(/service_role|SUPABASE_SERVICE|bypassRls|mockVisit/i);
     }
-    expect(source("src/app/(app)/planning/PlanningPreview.tsx")).toContain('href="/planning/visits"');
+    expect(source("src/app/(app)/planning/page.tsx")).toContain("planning-filter-toolbar");
   });
 
-  test("Inspector receives only Immediate while Planning-owned Visits fail closed before reads", () => {
+  test("Inspector is denied Planning before governed reads", () => {
     const home = source("src/app/(app)/planning/page.tsx");
-    expect(home).toContain('access.accessClass === "inspector"');
-    expect(home).toContain('"planning.create.immediate"');
-    expect(home).toContain("methods={[methods.immediate]}");
-    expect(home.indexOf('access.accessClass === "inspector"')).toBeLessThan(home.indexOf('sb.from("package_versions")'));
+    expect(home).toContain('access.accessClass !== "business_staff"');
+    expect(home.indexOf('access.accessClass !== "business_staff"')).toBeLessThan(home.indexOf('sb.from("package_versions")'));
 
     const list = source("src/app/(app)/planning/visits/page.tsx");
     expect(list.indexOf('access.accessClass !== "business_staff"')).toBeLessThan(list.indexOf("return Visits("));
@@ -36,12 +34,10 @@ test.describe("PKT-RESPONSIVE-PLANNING-003 source contracts", () => {
   });
 
   test("Planning and Visit-detail layouts declare bounded responsive and reduced-motion rules", () => {
-    const planningCss = source("src/app/(app)/planning/PlanningPreview.module.css");
+    const planningCss = source("src/app/saqeel-runtime.css");
     const detailCss = source("src/app/(app)/visits/[id]/VisitDetail.module.css");
-    expect(planningCss).toContain("repeat(3, minmax(0, 1fr))");
-    expect(planningCss).toContain("@media (max-width: 900px)");
-    expect(planningCss).toContain("@media (max-width: 600px)");
-    expect(planningCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(planningCss).toContain(".planning-filter-toolbar");
+    expect(planningCss).toContain("@media (max-width: 760px)");
     expect(detailCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(280px, 360px)");
     expect(detailCss).toContain("@media (max-width: 1024px)");
     expect(`${planningCss}\n${detailCss}`).toContain("min-inline-size: 0");
@@ -69,7 +65,7 @@ test.describe("PKT-RESPONSIVE-PLANNING-003 runtime", () => {
       await page.goto(`/locale?set=${state.locale}`);
       await page.evaluate(theme => localStorage.setItem("saqeel-theme", theme), state.theme);
       await page.goto("/planning");
-      await expect(page.locator('[data-saqeel-design="WA-DES-036"]')).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Planning", exact: true })).toBeVisible();
       await expect(page.locator("html")).toHaveAttribute("dir", state.locale === "ar" ? "rtl" : "ltr");
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -79,12 +75,13 @@ test.describe("PKT-RESPONSIVE-PLANNING-003 runtime", () => {
     await context.close();
   });
 
-  test("Inspector sees only Immediate and is denied Planning-owned Visits before content", async ({ browser }) => {
+  test("Inspector is denied Planning and Planning-owned Visits before content", async ({ browser }) => {
     const context = await browser.newContext({ storageState: storageStatePath("inspector") });
     const page = await context.newPage();
     await page.goto("/locale?set=en");
     await page.goto("/planning");
-    await expect(page.locator('a[href="/planning/immediate"]')).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Authorized role required/i })).toBeVisible();
+    await expect(page.locator('a[href="/planning/immediate"]')).toHaveCount(0);
     await expect(page.locator('a[href="/planning/bulk"]')).toHaveCount(0);
     await expect(page.locator('a[href="/planning/single"]')).toHaveCount(0);
     await expect(page.locator('a[href="/planning/visits"]')).toHaveCount(0);
@@ -100,7 +97,7 @@ test.describe("PKT-RESPONSIVE-PLANNING-003 runtime", () => {
     for (const route of ["/planning", "/planning/visits"]) {
       await page.goto(route);
       await expect(page.getByRole("heading", { name: /Authorized role required/i })).toBeVisible();
-      await expect(page.locator('[data-saqeel-design="WA-DES-036"], [data-saqeel-design="WA-DES-045"]')).toHaveCount(0);
+      await expect(page.locator('a[href="/planning/bulk"], a[href="/planning/single"], a[href="/planning/immediate"]')).toHaveCount(0);
     }
     await context.close();
   });

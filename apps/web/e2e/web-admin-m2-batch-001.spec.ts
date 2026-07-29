@@ -35,8 +35,7 @@ test.describe("WA-P1-M2-BATCH-001 planner runtime", () => {
 
   test("Planning target uses real package/draft reads and preserves the three governed creation paths", async ({ page }) => {
     await page.goto("/planning");
-    await expect(page.locator('[data-saqeel-design="WA-DES-036"]')).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Planning methods" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Planning", exact: true })).toBeVisible();
     for (const href of ["/planning/bulk", "/planning/single", "/planning/immediate"]) {
       await expect(page.locator(`a[href="${href}"]`)).toBeVisible();
     }
@@ -86,6 +85,6 @@ test("admin remains denied from canonical Planning routes", async ({ browser }) 
   await page.goto("/locale?set=en");
   await page.goto("/planning");
   await expect(page.getByRole("heading", { name: /Authorized role required/i })).toBeVisible();
-  await expect(page.locator('[data-saqeel-design="WA-DES-036"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/planning/bulk"], a[href="/planning/single"], a[href="/planning/immediate"]')).toHaveCount(0);
   await context.close();
 });

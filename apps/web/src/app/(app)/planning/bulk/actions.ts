@@ -3,7 +3,6 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { createHash, randomUUID } from "node:crypto";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { isPlausibleDate } from "@/lib/plausible-date";
-import { getWindowCapacity } from "@/lib/execution";
 import { getPlanningAccess } from "@/lib/planning/access";
 import { parseCt, hasCriteria } from "./criteria";
 
@@ -29,7 +28,7 @@ export type BulkMutationResult = {
 
 // CD-025 readiness preview. Structured, locale-neutral blocker KINDS (the review
 // workspace maps each kind to governed bilingual copy) plus recalculated counts.
-// This is a PREVIEW for the ReadinessRail + consequence ledger; publish_bulk_plan
+// This is a PREVIEW for the ReadinessRail + consequence ledger; the governed bulk submission
 // re-checks every guard authoritatively inside its transaction and remains the
 // source of truth. Kinds mirror STATE_MATRIX_CD-025 (dup/overlap/coverage/
 // nopackage/packageInvalid/nopool/source failures).
@@ -40,9 +39,9 @@ export type BlockerKind =
 export type Blocker = { kind: BlockerKind; targets?: string[] };
 // M6 — per-row eligibility partition. Every selected row is classified with
 // machine-stable reason codes (the review workspace maps them to governed
-// bilingual copy): the reviewer sees exactly WHICH rows would proceed and WHY
+// bilingual copy): the Supervisor sees exactly WHICH rows would proceed and WHY
 // the rest would not, before any publish attempt. Reasons are advisory
-// previews; publish_bulk_plan re-validates authoritatively in its transaction.
+// previews; the submission RPC re-validates authoritatively in its transaction.
 export type EligibilityReason = "duplicate_active_visit" | "out_of_scope" | "missing_location" | "inspector_conflict";
 export type EligibilityRow = { id: string; eligible: boolean; reasons: EligibilityReason[] };
 export type EligibilityCounts = {
@@ -66,7 +65,7 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-
 // client-held selection of factory ids; the review route loads their summaries,
 // the eligible inspector pool (M01-029) and published packages, all RLS-scoped
 // (no privileged bypass). Duplicate active periodic visits are flagged so the
-// reviewer sees them before publishing (M02-012).
+// Supervisor sees them before submitting (M02-012).
 export type ReviewFactory = {
   id: string; factory_code: string; name: string; cr_number: string;
   city: string | null; region: string | null; risk_band: string | null; risk_score: number | null; dup: boolean;
@@ -196,7 +195,7 @@ export async function loadBulkSelection(ids: string[], window?: { start: string;
   const missingFactoryIds = clean.filter(id => !foundFactoryIds.has(id));
   const packages: ReviewPackage[] = (pkgs ?? []).map(p => ({ id: p.id, version_label: p.version_label, code: (p.packages as unknown as { code: string }).code }));
   // M7 — the embedded profiles join is NULL for personas the profiles_self RLS
-  // policy does not cover (e.g. the Reviewer: business_staff with planning
+  // policy does not cover (for example a Supervisor: business_staff with planning
   // capabilities but no planner role). A null join must never 500 the whole
   // selection load; fall back to the language-neutral id prefix, exactly the
   // pattern the conflict copy already uses for unnameable inspectors.
@@ -206,7 +205,7 @@ export async function loadBulkSelection(ids: string[], window?: { start: string;
   // shared inspection window we run the SAME overlap query publish uses over the
   // whole eligible pool, so each manually chosen candidate can show its known
   // active-assignment overlaps (exact visit + window) BEFORE submit. Automatic
-  // assignments are selected and overlap-checked inside publish_bulk_plan's
+  // assignments are selected and overlap-checked inside the submission RPC's
   // transaction; this preview therefore proves sufficient conflict-free
   // coverage without pretending to know the final automatic assignee.
   const startMs = window ? Date.parse(window.start) : Number.NaN;
@@ -246,8 +245,8 @@ export async function loadBulkSelection(ids: string[], window?: { start: string;
 // Neutral, truthful, retry-only. All-or-nothing is stated so the operator knows
 // the failure left no partial plan behind.
 const NEUTRAL_PUBLISH_ERROR =
-  "Publishing failed — the plan was not created and no visits were scheduled. " +
-  "Nothing was published. Review the flagged items and try again.";
+  "Submission for supervision failed — the plan was not created and no visits were scheduled. " +
+  "Nothing was submitted. Review the flagged items and try again.";
 const NEUTRAL_READ_ERROR =
   "Planning data could not be verified (ERR-OPS-001). Nothing was published. Please try again.";
 
@@ -259,17 +258,14 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
     return { error: NEUTRAL_READ_ERROR };
   }
   if (!user) return { error: "Session expired." };
-  // M7 — capability gate. The page stages with planning.create.bulk; PUBLISH
-  // requires planning.publish, mirroring the RPC's widened guard
-  // (has_role('planner') OR has_planning_capability('planning.publish') —
-  // migration 20260721180000). Page, action and RPC now agree; the Reviewer
-  // persona (business staff, publish capability, no planner role) publishes.
-  const access = await getPlanningAccess(sb, ["planning.publish"]);
+  // A bulk plan is submitted for supervision. The Supervisor confirms each
+  // final Inspector and releases each visit from the shared queue.
+  const access = await getPlanningAccess(sb, ["planning.submit_for_supervision"]);
   if (access.error) {
     console.error("[ publishBulkPlan] access resolution failed");
     return { error: NEUTRAL_READ_ERROR };
   }
-  if (!access.can("planning.publish")) return { error: "Publishing requires the planning.publish capability." };
+  if (!access.can("planning.submit_for_supervision")) return { error: "Submitting requires the planning.submit_for_supervision capability." };
   let factoryIds = [...new Set(formData.getAll("factory_id").map(String))]
     .filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id))
     .slice(0, 500);
@@ -345,31 +341,23 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
 
   // per-row duplicate check — M6: 'validated' is an internal ACTIVE state.
   const { data: dups, error: duplicateError } = await sb.from("visits").select("factory_id")
-    .in("factory_id", factoryIds).eq("visit_type", visit_type).in("planning_status", ["draft", "validated", "published", "returned"]);
+    .in("factory_id", factoryIds).eq("visit_type", visit_type).in("planning_status", ["draft", "validated", "pending_supervision", "published", "returned"]);
   if (duplicateError) {
     console.error("[ publishBulkPlan] duplicate read failed:", duplicateError.message);
     return { error: NEUTRAL_READ_ERROR };
   }
   const dupSet = new Set((dups ?? []).map(d => d.factory_id as string));
 
-  // inspectors pool (ENG-05 automatic; capacity checks deepen in B7)
+  // A planner may propose an Inspector, but the Supervisor owns final
+  // assignment. We therefore validate a proposal only when one was supplied;
+  // an empty pool is not a reason to prevent submission for supervision.
   const { data: inspRows, error: inspectorError } = await sb.from("user_roles").select("user_id").eq("role_key", "inspector");
   if (inspectorError) {
     console.error("[ publishBulkPlan] inspector pool read failed:", inspectorError.message);
     return { error: NEUTRAL_READ_ERROR };
   }
   const inspectors = (inspRows ?? []).map(r => r.user_id as string);
-  if (!inspectors.length) blockers.push("No eligible inspector (P02 failure control)");
   const pool = new Set(inspectors);
-  // One busy-set read serves BOTH the manual-pick conflict partition and the
-  // automatic-coverage count. Fail closed: an unreadable check blocks
-  // publishing, never "no conflict".
-  const busyInspectors = new Set<string>();
-  if (window_start && window_end) {
-    const overlap = await readOverlappingAssignments(sb, inspectors, window_start, window_end);
-    if (!overlap.ok) return { error: NEUTRAL_READ_ERROR };
-    for (const r of overlap.rows) busyInspectors.add(r.inspector_id);
-  }
 
   const dropped: DroppedRow[] = [];
   const kept: string[] = [];
@@ -380,31 +368,26 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
     if (!fac) reasons.push("out_of_scope");
     if (dupSet.has(fid)) reasons.push("duplicate_active_visit");
     if (fac && (fac.official_lat == null || fac.official_lng == null)) reasons.push("missing_location");
-    if (pick && (!pool.has(pick) || busyInspectors.has(pick))) reasons.push("inspector_conflict");
+    if (pick && !pool.has(pick)) reasons.push("inspector_conflict");
     if (reasons.length) dropped.push({ id: fid, name: label(fid), reasons });
     else kept.push(fid);
   }
   if (factoryIds.length && kept.length === 0) {
     blockers.push(`Every selected row is ineligible at the authoritative re-check — nothing left to publish: ${dropped.map(d => `${d.name} (${d.reasons.join(", ")})`).join(" · ")}`);
   }
-  // Manual picks ride with their rows; coverage counts the kept set only.
+  // Proposals only ride with their rows. Capacity and overlap are resolved by
+  // the Supervisor at approval, alongside the final named assignment.
   for (const d of dropped) picks.delete(d.id);
-  const manualTaken = new Set([...picks.values()]);
-  const autoNeeded = kept.filter(fid => !picks.has(fid)).length;
-  const freePool = [...pool].filter(i => !busyInspectors.has(i) && !manualTaken.has(i)).length;
-  if (pool.size > 0 && autoNeeded > freePool) {
-    blockers.push(`${autoNeeded - freePool} visit(s) have no eligible Inspector available in this window (M01-029) — widen the window or assign an Inspector manually`);
-  }
   if (blockers.length) return { error: blockers.join(" · ") };
 
-  // CD-021 / CR-002..010 / CR-020 / CR-031: publish_bulk_plan_atomic performs
+  // CD-021 / CR-002..010 / CR-020 / CR-031: the submission RPC performs
   // every write — plan, visits, assignments, transitions, notifications,
   // package snapshots, priority and audit — in one SECURITY INVOKER
   // transaction. Any failure rolls the whole operation back.
   // M7 — the RPC commits EXACTLY the accepted eligible subset (kept).
   const manual: Record<string, string> = {};
   for (const [fid, insp] of picks) manual[fid] = insp;
-  const { data: planId, error } = await sb.rpc("publish_bulk_plan_atomic", {
+  const { data: planId, error } = await sb.rpc("submit_bulk_plan_for_supervision", {
     p_factory_ids: kept,
     p_package_version_ids: package_version_ids,
     p_window_start: window_start,
@@ -412,48 +395,27 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
     p_visit_type: visit_type,
     p_priority: priority,
     p_notes: notes,
-    p_manual: manual,
-    p_auto_pool: inspectors,
+    p_proposed_inspectors: manual,
   });
   if (error) {
     // Log the real cause server-side; return catalogued neutral copy only.
-    console.error("[] publish_bulk_plan_atomic failed:", error.message, error.code);
+    console.error("[] submit_bulk_plan_for_supervision failed:", error.message, error.code);
     // M7 — the in-transaction guards (RPC checks + the 0031 assignments
     // trigger, SQLSTATE 23505) rejected a conflict that appeared between the
     // preview and the commit. Name the conflicting rows honestly. The attempt
     // itself persists nowhere (the transaction rolled back and audit_events is
     // trigger/definer-only) — attempted-conflict audit needs a definer RPC
     // change and is a documented gap.
-    if (error.code === "23505" || /duplicate active visit|inspector unavailable|window is no longer available/i.test(error.message ?? "")) {
+    if (error.code === "23505" || /duplicate active visit/i.test(error.message ?? "")) {
       const parts: string[] = [];
       const { data: dupsNow } = await sb.from("visits").select("factory_id")
-        .in("factory_id", kept).eq("visit_type", visit_type).in("planning_status", ["draft", "validated", "published", "returned"]);
+        .in("factory_id", kept).eq("visit_type", visit_type).in("planning_status", ["draft", "validated", "pending_supervision", "published", "returned"]);
       if (dupsNow?.length) {
         parts.push(`active visit conflict: ${[...new Set(dupsNow.map(d => label(d.factory_id as string)))].join(" · ")}`);
       }
-      const chosenInspectors = [...new Set([...picks.values()])];
-      if (chosenInspectors.length) {
-        const overlapNow = await readOverlappingAssignments(sb, chosenInspectors, window_start, window_end);
-        if (overlapNow.ok && overlapNow.rows.length) {
-          const inspIds = [...new Set(overlapNow.rows.map(r => r.inspector_id))];
-          const { data: names } = await sb.from("profiles").select("user_id, full_name").in("user_id", inspIds);
-          const nameOf = new Map((names ?? []).map(n => [n.user_id as string, n.full_name as string]));
-          parts.push(`inspector window conflict: ${inspIds.map(i => nameOf.get(i) ?? i.slice(0, 8)).join(" · ")}`);
-        }
-      }
       return {
-        error: "Publishing failed — a conflicting visit or booking appeared at commit and the whole plan rolled back. Nothing was published."
+        error: "Submission failed — a conflicting active visit appeared at commit and the whole plan rolled back. Nothing was submitted."
           + (parts.length ? ` ${parts.join("; ")}.` : ""),
-      };
-    }
-    // TASK-EXECUTION-MODULE-001 · D-009 — the publish RPC evaluated the shared
-    // window capacity and found no selectable day for an assigned inspector.
-    // Governed blocker copy in the same style as the blockers above; the
-    // all-or-nothing rollback guarantee is stated exactly like the neutral copy.
-    if (error.message?.includes("EXE-CAPACITY-WINDOW-FULL")) {
-      return {
-        error: "Publishing failed — no day in the window has remaining daily capacity for an assigned inspector. " +
-          "Nothing was published. Widen the window or choose different assignments and try again (EXE-CAPACITY-WINDOW-FULL).",
       };
     }
     return { error: NEUTRAL_PUBLISH_ERROR };
@@ -555,7 +517,7 @@ export async function bulkUpdatePublishedVisits(
 // package validity, Inspector pool, manual eligibility/overlap, coverage and
 // scope counts against live RLS-scoped data for the CURRENT working set (the
 // ScopeReductionControl removes duplicate factory ids before calling this).
-// Every check here is a preview; publish_bulk_plan re-runs all of them inside
+// Every check here is a preview; the submission RPC re-runs all of them inside
 // its transaction and is the authority. Read failures surface as distinct
 // source-unavailable blockers (fail-closed, never a false "empty").
 export async function validateBulkPlan(input: {
@@ -621,7 +583,7 @@ export async function validateBulkPlan(input: {
 
   // duplicates (active periodic visit already exists)
   const { data: dups, error: dupErr } = await sb.from("visits").select("factory_id")
-    .in("factory_id", ids).eq("visit_type", visit_type).in("planning_status", ["draft", "validated", "published", "returned"]);
+    .in("factory_id", ids).eq("visit_type", visit_type).in("planning_status", ["draft", "validated", "pending_supervision", "published", "returned"]);
   if (dupErr) { console.error("[ validate] duplicates:", dupErr.message); blockers.push({ kind: "srcDuplicate" }); }
   const dupSet = new Set((dups ?? []).map(d => d.factory_id));
   if (dupSet.size) blockers.push({ kind: "duplicate", targets: [...dupSet].map(label) });
@@ -633,7 +595,6 @@ export async function validateBulkPlan(input: {
   const { data: inspRows, error: inspErr } = await sb.from("user_roles").select("user_id").eq("role_key", "inspector");
   if (inspErr) { console.error("[ validate] inspectors:", inspErr.message); blockers.push({ kind: "srcInspector" }); }
   const pool = new Set((inspRows ?? []).map(r => r.user_id));
-  if (!inspErr && pool.size === 0) blockers.push({ kind: "nopool" });
 
   // manual picks on retained factories
   const picks = input.picks ?? {};
@@ -641,69 +602,8 @@ export async function validateBulkPlan(input: {
   const manual = manualPicks.length;
   const auto = Math.max(0, retained - manual);
 
-  const overlapTargets = new Set<string>();
-  // M6 — conflict evidence hoisted so the per-row eligibility partition can
-  // reuse exactly what the blocker pass found (one source of truth).
-  const busyInspectors = new Set<string>();
-  const doubleBooked = new Set<string>();
-  // same-plan double booking: one Inspector picked for >1 retained visit in the shared window
-  const perInspector = new Map<string, string[]>();
-  for (const [fid, insp] of manualPicks) perInspector.set(insp, [...(perInspector.get(insp) ?? []), fid]);
-  for (const [insp, fids] of perInspector) if (fids.length > 1) { doubleBooked.add(insp); fids.forEach(fid => overlapTargets.add(label(fid))); }
-
-  if (windowOk && manualPicks.length) {
-    const chosen = [...perInspector.keys()];
-    // eligibility: a manual pick outside the Inspector pool
-    if (pool.size) for (const [fid, insp] of manualPicks) if (!pool.has(insp)) overlapTargets.add(label(fid));
-    // existing active assignment overlapping this window (same query publish uses)
-    const { data: conflicts, error: confErr } = await sb.from("assignments")
-      .select("inspector_id, visits!inner(window_start, window_end, planning_status)")
-      .in("inspector_id", chosen)
-      .in("visits.planning_status", ["draft", "validated", "published", "returned"])
-      .lt("visits.window_start", input.window_end)
-      .gt("visits.window_end", input.window_start);
-    if (confErr) { console.error("[ validate] overlap:", confErr.message); blockers.push({ kind: "srcInspector" }); }
-    else {
-      for (const c of conflicts ?? []) busyInspectors.add(c.inspector_id);
-      for (const [fid, insp] of manualPicks) if (busyInspectors.has(insp)) overlapTargets.add(label(fid));
-    }
-  }
-  if (overlapTargets.size) blockers.push({ kind: "overlap", targets: [...overlapTargets] });
-
-  // D-009 — daily-cap preview for manual picks, from the SAME shared window
-  // capacity service publish evaluates atomically. Best-effort: an unreadable
-  // service (older schema) adds no blocker here — publish re-checks and its
-  // EXE-CAPACITY-WINDOW-FULL failure is mapped at submit.
-  if (windowOk && manualPicks.length) {
-    const capped = new Set<string>();
-    for (const insp of [...perInspector.keys()]) {
-      const cap = await getWindowCapacity(sb, insp, input.window_start.slice(0, 10), input.window_end.slice(0, 10));
-      if (cap.capacity && !cap.capacity.has_availability) capped.add(insp);
-    }
-    if (capped.size) {
-      blockers.push({
-        kind: "capacity",
-        targets: manualPicks.filter(([, insp]) => capped.has(insp)).map(([fid]) => label(fid)),
-      });
-    }
-  }
-
-  // coverage: automatic visits each need a distinct Inspector free across the
-  // shared window; manual picks consume their Inspector too.
-  if (windowOk && auto > 0 && pool.size) {
-    const { data: busyRows, error: busyErr } = await sb.from("assignments")
-      .select("inspector_id, visits!inner(window_start, window_end, planning_status)")
-      .in("visits.planning_status", ["draft", "validated", "published", "returned"])
-      .lt("visits.window_start", input.window_end)
-      .gt("visits.window_end", input.window_start);
-    if (busyErr) { console.error("[ validate] coverage:", busyErr.message); blockers.push({ kind: "srcInspector" }); }
-    else {
-      const busy = new Set((busyRows ?? []).map(b => b.inspector_id));
-      const manualTaken = new Set(manualPicks.map(([, insp]) => insp));
-      const available = [...pool].filter(i => !busy.has(i) && !manualTaken.has(i)).length;
-      if (available < auto) blockers.push({ kind: "coverage", targets: [String(auto - available)] });
-    }
-  }
+  // A proposed Inspector is advisory. Do not make a Planner resolve capacity,
+  // overlaps or a final allocation before the Supervisor sees the request.
 
   // M6 — per-row eligibility partition. Every selected row is classified with
   // stable reason codes; the acknowledgement flow in the review workspace may
@@ -716,7 +616,7 @@ export async function validateBulkPlan(input: {
     if (dupSet.has(id)) reasons.push("duplicate_active_visit");
     if (fac && (fac.official_lat == null || fac.official_lng == null)) reasons.push("missing_location");
     const pick = (input.picks ?? {})[id];
-    if (pick && (!pool.has(pick) || busyInspectors.has(pick) || doubleBooked.has(pick))) reasons.push("inspector_conflict");
+    if (pick && !pool.has(pick)) reasons.push("inspector_conflict");
     return { id, eligible: reasons.length === 0, reasons };
   });
   const ledger: EligibilityCounts = {

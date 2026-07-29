@@ -23,8 +23,9 @@ test.describe("WA-P1-M2-BATCH-002 source, cutover and security", () => {
     expect(source("src/app/(app)/visits/page.tsx")).toContain('const routeBase = planningOwnedPreview ? "/planning/visits" : "/visits"');
     expect(source("src/app/(app)/visits/[id]/page.tsx")).toContain('.from("audit_events")');
     expect(source("src/app/(app)/visits/[id]/page.tsx")).toContain("DualStateRibbon");
-    expect(source("src/app/(app)/planning/PlanningPreview.tsx")).toContain('href="/planning/visits"');
-    expect(source("src/app/(app)/planning/PlanningPreview.tsx")).not.toContain("⚡");
+    const planningHome = source("src/app/(app)/planning/page.tsx");
+    expect(planningHome).toContain("CreateVisitSection");
+    expect(planningHome).toContain("planning-filter-toolbar");
     expect(source("src/components/ShellClient.tsx")).toContain('<Icon name="ai" />');
     const detailCss = source("src/app/(app)/visits/[id]/VisitDetail.module.css");
     expect(detailCss).toContain(".actions");
@@ -71,14 +72,12 @@ test.describe("WA-P1-M2-BATCH-002 planner journey", () => {
 
   test.beforeEach(async ({ page }) => { await page.goto("/locale?set=en"); });
 
-  test("Planning landing enters the Planning-owned Visits replacement", async ({ page }) => {
+  test("Planning landing exposes the canonical creation methods", async ({ page }) => {
     await page.goto("/planning");
-    await expect(page.locator('[data-saqeel-design="WA-DES-036"]')).toBeVisible();
-    await expect(page.locator(".wa-planning-method__icon svg")).toHaveCount(3);
-    await expect(page.locator('a[href="/planning/visits"]')).toBeVisible();
-    await page.locator('a[href="/planning/visits"]').click();
-    await expect(page).toHaveURL(/\/planning\/visits$/);
-    await expect(page.locator('[data-saqeel-design="WA-DES-045"]')).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Planning", exact: true })).toBeVisible();
+    for (const href of ["/planning/bulk", "/planning/single", "/planning/immediate"]) {
+      await expect(page.locator(`a[href="${href}"]`)).toBeVisible();
+    }
   });
 
   test("Visits list keeps real RLS scope, filters, dual states and Planning-owned detail links", async ({ page }) => {
@@ -138,6 +137,6 @@ test("admin remains denied from the Planning replacement entry", async ({ browse
   await page.goto("/locale?set=en");
   await page.goto("/planning");
   await expect(page.getByRole("heading", { name: /Authorized role required/i })).toBeVisible();
-  await expect(page.locator('[data-saqeel-design="WA-DES-036"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/planning/bulk"], a[href="/planning/single"], a[href="/planning/immediate"]')).toHaveCount(0);
   await context.close();
 });

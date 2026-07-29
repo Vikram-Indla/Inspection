@@ -107,7 +107,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     console.error("[ single-planning authorization]", userError.message);
     return unavailable;
   }
-  const access = await getPlanningAccess(sb, ["planning.create.single", "planning.publish"]);
+  const access = await getPlanningAccess(sb, ["planning.create.single", "planning.submit_for_supervision"]);
   if (access.error) {
     console.error("[ single-planning access resolution]", access.error);
     return unavailable;
@@ -256,6 +256,19 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
       if (hit.licence) initialSelection.licenceId = hit.licence.id;
       // CR-only multi-licence handoff: the portfolio renders and the planner
       // must pick a licence/plant — CR-level continuation stays blocked.
+    } else if (UUID.test(factoryParam)) {
+      // A Factory 360 link always carries its immutable legacy factory id as
+      // well as any canonical CR/licence/plant identifiers. Canonical
+      // provenance is preferred, but a temporarily incomplete canonical
+      // projection must not strand a planner who opened a real governed
+      // Factory 360 record. Recover the exact linked factory only; never pick
+      // a similarly named or best-effort alternative.
+      const legacy = await readLegacyFactory(sb, factoryParam);
+      if (legacy.unavailable) registryUnavailable = true;
+      else if (legacy.row) {
+        graded = [legacy.row];
+        initialSelection.factoryId = legacy.row.id;
+      } else prefillMiss = true;
     } else {
       prefillMiss = true;
     }
@@ -370,7 +383,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     freshnessLabel: t("plan.single.freshnessLabel", "Factory list sync"),
     freshnessNever: t("plan.single.freshnessNever", "no sync record"),
     factory360: t("plan.single.factory360", "Open Factory 360"),
-    configStep: t("plan.single.configStep", "4 · Configure & assign"),
+    configStep: t("plan.single.configStep", "4 · Configure & propose"),
     visitType: t("plan.single.visitType", "Visit type"),
     typePeriodic: t("enum.periodic", "Periodic compliance"),
     typeFollowUp: t("enum.follow_up", "Follow-up"),
@@ -385,23 +398,23 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     windowEnd: t("plan.single.windowEnd", "Window end"),
     inspector: t("plan.single.inspector", "Inspector"),
     selectOption: t("plan.single.select", "— select"),
-    autoAssign: t("plan.single.autoAssign", "Auto-assign — first available inspector"),
+    autoAssign: t("plan.single.autoAssign", "No preference — Supervisor assigns"),
     notes: t("plan.single.notes", "Notes (optional)"),
-    notesPlaceholder: t("plan.single.notesPlaceholder", "Anything the inspector or reviewer should know before this visit…"),
+    notesPlaceholder: t("plan.single.notesPlaceholder", "Anything the Inspector or Supervisor should know before this visit…"),
     readinessTitle: t("plan.single.readinessTitle", "Readiness"),
     readyIdentity: t("plan.single.readyIdentity", "Identity confirmed"),
     readyLicense: t("plan.single.readyLicense", "License confirmed"),
     readyLocation: t("plan.single.readyLocation", "Location confirmed"),
-    readyInspector: t("plan.single.readyInspector", "Inspector ready"),
-    blockedTitle: t("plan.single.blocked", "Publishing blocked — your work is preserved"),
-    publish: t("plan.single.publish", "Publish visit"),
-    publishing: t("plan.single.publishing", "Publishing…"),
+    readyInspector: t("plan.single.readyInspector", "Inspector proposed (optional)"),
+    blockedTitle: t("plan.single.blocked", "Submission blocked — your work is preserved"),
+    publish: t("plan.single.publish", "Submit for supervision"),
+    publishing: t("plan.single.publishing", "Submitting…"),
     retry: t("plan.single.retry", "Retry — resumes safely, will not duplicate"),
     stepPlan: t("plan.single.stepPlan", "Plan created"),
     stepVisit: t("plan.single.stepVisit", "Visit created"),
-    stepAssignment: t("plan.single.stepAssignment", "Inspector assigned"),
-    stepStatus: t("plan.single.stepStatus", "Published"),
-    stepNotification: t("plan.single.stepNotification", "Notification queued"),
+    stepAssignment: t("plan.single.stepAssignment", "Inspector proposed"),
+    stepStatus: t("plan.single.stepStatus", "Awaiting Supervisor"),
+    stepNotification: t("plan.single.stepNotification", "Supervisor notified"),
     stepDone: t("plan.single.stepDone", "done"),
     stepFailed: t("plan.single.stepFailed", "failed"),
     stepPending: t("plan.single.stepPending", "not attempted"),
@@ -429,7 +442,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
         inspectors={inspectors}
         strings={strings}
         virtualEligible={virtualEligible}
-        transitionsExecutable={access.can("planning.publish")}
+        transitionsExecutable={access.can("planning.submit_for_supervision")}
         locale={locale === "ar" ? "ar" : "en"}
       />
     </Shell>

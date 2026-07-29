@@ -9,12 +9,14 @@ import { IconSearch } from "@/app/icons";
 
 // TASK-MVP2-OCR-001. Advisory OCR review — extracted text helps a human read
 // a photo faster, never auto-fills any authoritative field. Flag-gated OFF by
-// default (FEATURE_OCR_REVIEW), Gemini vision, fail-closed without a key.
+// Marker OCR is a permanent Saqeel capability. The private worker remains
+// fail-closed when its runtime is unavailable, but the governed review surface
+// is visible by default instead of being hidden behind an off switch.
 const MODES = ["off", "on"] as const;
 
 export default async function EvidenceOcrPage() {
   const { t } = await useT();
-  if (resolveFeatureFlag(process.env.FEATURE_OCR_REVIEW, MODES, "off") !== "on") {
+  if (resolveFeatureFlag(process.env.FEATURE_OCR_REVIEW, MODES, "on") !== "on") {
     return (
       <Shell current="/evidence-ocr" title={t("ocr.title", "Evidence text extraction (OCR)")} context={<span className="badge badge-warning">REQ-OCR</span>}>
         <NotYetBoundary title={t("ocr.title", "Evidence text extraction (OCR)")}
@@ -51,7 +53,7 @@ export default async function EvidenceOcrPage() {
     openInspection: t("ocr.openInspection", "Open the inspection item that owns this evidence"),
     notExtracted: t("ocr.notExtracted", "not extracted"), extractedBadge: t("ocr.extractedBadge", "extracted"),
     failedBadge: t("ocr.failedBadge", "failed"),
-    extractHint: t("ocr.extractHint", "Runs Gemini vision on the stored file. The result is stored as an advisory extraction, timestamped, and shown here for a human to read."),
+    extractHint: t("ocr.extractHint", "Runs the private Marker document worker on the stored file. Markdown and retrieval derivatives are stored with provenance for a human to review."),
     failedBody: t("ocr.failedBody", "Extraction failed. The evidence is unaffected; no text is invented. Retry when the provider is available."),
     copy: t("ocr.copy", "Copy to note"), copied: t("ocr.copied", "Copied"),
     copyHint: t("ocr.copyHint", "Copy is manual — no field is auto-filled"),
@@ -62,7 +64,7 @@ export default async function EvidenceOcrPage() {
     <Shell current="/evidence-ocr" title={t("ocr.title", "Evidence text extraction (OCR)")}
       context={
         <>
-          <span className="id-code">{t("ocr.provenance", "REQ-OCR · Gemini vision · advisory only")}</span>
+          <span className="id-code">{t("ocr.provenance", "REQ-OCR · Marker · advisory only")}</span>
           <span className="badge badge-info"><span className="dot" />{t("ocr.advisoryBadge", "Advisory · never auto-fills")}</span>
         </>
       }>

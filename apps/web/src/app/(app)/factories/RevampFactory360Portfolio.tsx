@@ -28,6 +28,14 @@ export type RevampFactoryRow = {
 
 const titleCase = (value: string | null) => value ? value.replaceAll("_", " ").replace(/\b\w/g, letter => letter.toUpperCase()) : "—";
 
+function planningHandoffHref(factory: RevampFactoryRow): string {
+  const query = new URLSearchParams({ factory: factory.id, source: "factory360" });
+  if (factory.cr_number) query.set("cr", factory.cr_number);
+  if (factory.license?.license_number) query.set("license", factory.license.license_number);
+  if (factory.license?.plant_number) query.set("plant", factory.license.plant_number);
+  return `/planning/single?${query.toString()}`;
+}
+
 export default function RevampFactory360Portfolio({ factories, portfolioLabel, canCreateInspection, locale, provenanceStrings }: {
   factories: RevampFactoryRow[];
   portfolioLabel: string;
@@ -38,6 +46,8 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
     registeredBody: string;
     manual: string;
     manualBody: string;
+    test: string;
+    testBody: string;
     unavailable: string;
     unavailableBody: string;
     sourceStatus: string;
@@ -49,11 +59,12 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
   const [selectedId, setSelectedId] = useState(factories[0]?.id ?? "");
   const selected = factories.find(factory => factory.id === selectedId) ?? factories[0];
   const highRisk = factories.filter(factory => factory.risk_band === "high").length;
+  // Only show metrics backed by the current Factory 360 read. Compliance,
+  // violation and penalty totals are intentionally absent until their governed
+  // source is connected; a dash in a KPI-shaped card reads like a value.
   const summary = useMemo(() => [
     [String(factories.length), "Factories", ""],
     [String(highRisk), "High risk", highRisk ? "critical" : ""],
-    ["—", "Open violations", ""],
-    ["—", "Active penalties", ""],
   ], [factories.length, highRisk]);
   if (!selected) return null;
   const condition = selected.risk_band === "high" ? "Critical attention required"
@@ -67,6 +78,14 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
         badge: "sq-lozenge--warning",
         recorded: provenanceStrings.noSenaeiSync,
       }
+    : selected.source === "saqeel_test_data"
+      ? {
+          label: provenanceStrings.test,
+          body: provenanceStrings.testBody,
+          tone: "sq-banner--warning",
+          badge: "sq-lozenge--warning",
+          recorded: provenanceStrings.noSenaeiSync,
+        }
     : !selected.is_temporary && selected.source === "senaei"
       ? {
           label: provenanceStrings.registered,
@@ -103,19 +122,23 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
               <div><dt>Plant</dt><dd><bdi>{factory.license?.plant_number ?? "—"}</bdi></dd></div>
               <div><dt>Type</dt><dd>{titleCase(factory.license?.license_type ?? factory.activity_class)}</dd></div>
               <div><dt>Stage</dt><dd>{titleCase(factory.license?.stage ?? factory.license?.status ?? null)}</dd></div>
-              <div><dt>Compliance</dt><dd>—</dd></div>
-              <div><dt>Open violations</dt><dd>—</dd></div>
+              <div><dt>Compliance</dt><dd>Not available</dd></div>
+              <div><dt>Open violations</dt><dd>Not available</dd></div>
             </dl>
             <span><em>{titleCase(factory.license?.status ?? null)}</em><em data-risk={factory.risk_band ?? ""}>{titleCase(factory.risk_band)}</em></span>
             <span className={`sq-lozenge ${
               factory.is_temporary && factory.source === "immediate_manual"
                 ? "sq-lozenge--warning"
+                : factory.source === "saqeel_test_data"
+                  ? "sq-lozenge--warning"
                 : !factory.is_temporary && factory.source === "senaei"
                   ? "sq-lozenge--success"
                   : "sq-lozenge--critical"
             }`}>
               {factory.is_temporary && factory.source === "immediate_manual"
                 ? provenanceStrings.manual
+                : factory.source === "saqeel_test_data"
+                  ? provenanceStrings.test
                 : !factory.is_temporary && factory.source === "senaei"
                   ? provenanceStrings.registered
                   : provenanceStrings.unavailable}
@@ -133,11 +156,11 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
             <span>Reason · portfolio selection</span>
           </div>
           <nav>
-            {canCreateInspection && !selected.is_temporary && <a href={`/planning/single?cr=${encodeURIComponent(selected.cr_number)}`}>Create inspection</a>}
+            {canCreateInspection && !selected.is_temporary && <a href={planningHandoffHref(selected)}>Create inspection</a>}
             <a href={`/operations?region=${encodeURIComponent(selected.region ?? "")}`}>View on map</a>
             <a href={selected.dossier_href}>Open full dossier</a>
           </nav>
-          {canCreateInspection && !selected.is_temporary && <p role="status">Inspection submission remains unavailable while DEC-032 is unresolved.</p>}
+          {canCreateInspection && !selected.is_temporary && <p role="status">A Planner submits the selected target for Supervisor assignment and release.</p>}
           <dl>
             <div><dt>Industrial licence</dt><dd><bdi>{selected.license?.license_number ?? "—"}</bdi></dd></div>
             <div><dt>Plant number</dt><dd><bdi>{selected.license?.plant_number ?? "—"}</bdi></dd></div>

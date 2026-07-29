@@ -17,7 +17,7 @@ export async function findDuplicateActiveVisits(
 ): Promise<DuplicateVisitRead> {
   let q = sb.from("visits").select("id, visit_type, planning_status")
     .eq("factory_id", factoryId)
-    .in("planning_status", ["draft", "published", "returned"]);
+    .in("planning_status", ["draft", "pending_supervision", "published", "returned"]);
   if (visitType) q = q.eq("visit_type", visitType);
   const { data, error } = await q.limit(5);
   if (error) {

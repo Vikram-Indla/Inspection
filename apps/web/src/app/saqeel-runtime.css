@@ -837,7 +837,12 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .sq-f360__context section p { margin: 0; color: var(--text-secondary); font: var(--type-caption-font); }
 .sq-f360__ai { border-inline-start: 3px solid var(--action-primary) !important; background: var(--accent-soft) !important; }
 .sq-f360__ai a { align-self: flex-start; margin-block-start: 4px; }
-@media (max-width: 1180px) {
+/* The console shell consumes roughly 250px before Factory 360 starts. A
+   three-column dossier at a 1280px viewport leaves the primary identity panel
+   too narrow to read, even though the viewport itself exceeds 1180px. Keep
+   the portfolio beside the dossier, but move the auxiliary context below
+   until the actual working canvas can support all three columns. */
+@media (max-width: 1440px) {
   .sq-f360 { grid-template-columns: 224px minmax(0, 1fr); }
   .sq-f360__context { grid-column: 1 / -1; position: static; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
@@ -1159,6 +1164,34 @@ button.sq-shell-scope { cursor: pointer; }
 /* Command / filter bar */
 .sq-commandbar { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
 .sq-commandbar__spacer { flex: 1; }
+.planning-filter-shell { display: grid; gap: var(--space-3); padding: var(--space-3); }
+.planning-filter-toolbar {
+  display: grid;
+  grid-template-columns: minmax(10rem, 1fr) repeat(2, minmax(7rem, auto)) auto auto auto;
+  align-items: center;
+  gap: var(--space-2);
+}
+.planning-filter-toolbar > .sq-input { min-inline-size: 10rem; }
+.planning-filter-toolbar > .sq-select { min-inline-size: 7rem; max-inline-size: 12rem; }
+.planning-filter-toolbar > .sr-only { position: absolute; }
+.planning-filter-disclosure { min-inline-size: 0; }
+.planning-filter-disclosure[open] { grid-column: 1 / -1; }
+.planning-filter-disclosure > summary { list-style: none; inline-size: fit-content; }
+.planning-filter-disclosure > summary::-webkit-details-marker { display: none; }
+.planning-filter-disclosure__body { display: none; margin: var(--space-2) 0 0; padding: var(--space-4); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--surface-raised); box-shadow: var(--shadow-sm); }
+.planning-filter-disclosure[open] > .planning-filter-disclosure__body { display: block; }
+.planning-filter-disclosure--advanced[open] > .planning-filter-disclosure__body { display: grid; }
+.planning-date-presets { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-block-end: var(--space-3); }
+.planning-date-range { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.planning-filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: var(--space-4); align-items: end; }
+.planning-filter-disclosure__body.planning-filter-grid { display: none; }
+.planning-filter-disclosure--advanced[open] > .planning-filter-disclosure__body.planning-filter-grid { display: grid; }
+.planning-filter-chips { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+@media (max-width: 760px) {
+  .planning-filter-toolbar { grid-template-columns: 1fr 1fr; }
+  .planning-filter-toolbar > .sq-input { grid-column: 1 / -1; min-inline-size: 0; }
+  .planning-filter-toolbar > .sq-select { min-inline-size: 0; max-inline-size: none; }
+}
 .sq-filterchip {
   display: inline-flex; align-items: center; gap: 6px;
   border: 1px dashed var(--border-strong); border-radius: var(--radius-full);

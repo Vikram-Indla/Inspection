@@ -23,7 +23,7 @@ const sanitizeSourceChannel = (raw: string) =>
 // cause is logged server-side only. Validation blockers below are deliberate
 // governed business messages, not raw provider errors, and are unchanged.
 const NEUTRAL_WRITE_ERROR =
-  "Publishing could not complete a step. Your entries are preserved — review the step status below and retry; retry will not create a second visit.";
+  "Submitting for supervision could not complete a step. Your entries are preserved — review the step status below and retry; retry will not create a second visit.";
 const NEUTRAL_READ_ERROR =
   "Planning data could not be verified (ERR-OPS-001). Your entries are preserved — try again.";
 export async function publishSingleVisit(_: PublishResult, formData: FormData): Promise<PublishResult> {
@@ -69,19 +69,16 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   const resumeRaw = String(formData.get("resume_visit_plan_id") ?? "").trim();
   const resumeId = UUID.test(resumeRaw) ? resumeRaw : "";
 
-  // Publish validation gate (M01-041) — exact blockers, work preserved.
-  // Unchanged from the prior runtime.
-  // M7 — the publish gate is the planning.publish CAPABILITY, mirroring the
-  // RPC's widened guard (has_role('planner') OR
-  // has_planning_capability('planning.publish') — migration 20260721180000).
-  // Page (planning.create.single), action and RPC now agree.
+  // A Planner submits a complete plan to supervision. A Supervisor alone
+  // confirms the inspector and releases it. This action deliberately does
+  // not choose an inspector automatically or decide an availability conflict.
   const blockers: string[] = [];
-  const access = await getPlanningAccess(sb, ["planning.publish"]);
+  const access = await getPlanningAccess(sb, ["planning.submit_for_supervision"]);
   if (access.error) {
     console.error("[ publishSingleVisit] access resolution failed");
     return { error: NEUTRAL_READ_ERROR };
   }
-  if (!access.can("planning.publish")) blockers.push("Publishing requires the planning.publish capability");
+  if (!access.can("planning.submit_for_supervision")) blockers.push("Submitting requires the planning.submit_for_supervision capability");
   if (!["periodic", "follow_up", "complaint"].includes(visit_type)) blockers.push("Visit type is not supported");
   if (!["physical", "virtual"].includes(mode)) blockers.push("Execution mode is not supported");
   if (!factory_id) blockers.push("Factory not selected");
@@ -117,7 +114,7 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
       if (!otpEngine) blockers.push("Virtual execution is unavailable because identity verification is not configured");
     }
   }
-  if (!location_confirmed) blockers.push("Confirm the location on the map before publishing");
+  if (!location_confirmed) blockers.push("Confirm the location on the map before submitting");
   // M7 — zero packages is allowed (preparation-time choice); a selection is
   // validated: every chosen version must still be active.
   let packageRows: { id: string; version_label: string; status: string; packages: { code: string; title: string } | null }[] = [];
@@ -134,9 +131,6 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     packageRows = (pvs ?? []) as unknown as typeof packageRows;
     if (packageRows.length !== package_version_ids.length) blockers.push("A selected inspection checklist is no longer active (ERR-PUB-001)");
   }
-  // M01-040 — either a manual inspector or the auto-assign option ("auto") is required.
-  const autoAssign = inspector_id === "auto";
-  if (!inspector_id) blockers.push("Assign an inspector or choose auto-assign before publishing");
   const startMs = Date.parse(window_start);
   const endMs = Date.parse(window_end);
   if (!window_start || !window_end || !Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs)
@@ -152,40 +146,10 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   }
   if (blockers.length) return { error: blockers.join(" · ") };
 
-  // M01-040 — resolve the inspector with an availability check: auto-assign the
-  // first inspector with no overlapping active assignment in this window, or
-  // validate the manual pick's availability (no double-booking).
-  const { data: inspRows, error: inspectorPoolError } = await sb.from("user_roles").select("user_id").eq("role_key", "inspector");
-  if (inspectorPoolError) {
-    console.error("[ publishSingleVisit] inspector pool read failed:", inspectorPoolError.message);
-    return { error: NEUTRAL_READ_ERROR };
-  }
-  const pool = (inspRows ?? []).map(r => r.user_id as string);
-  if (pool.length === 0) return { error: "No eligible inspector is available" };
-  const { data: overlaps, error: overlapError } = await sb.from("assignments")
-    .select("inspector_id, visits!inner(planning_status, window_start, window_end)")
-    .in("inspector_id", autoAssign ? pool : [inspector_id])
-    .in("visits.planning_status", ["draft", "published", "returned"])
-    .lt("visits.window_start", window_end)
-    .gt("visits.window_end", window_start);
-  if (overlapError) {
-    console.error("[ publishSingleVisit] assignment overlap read failed:", overlapError.message);
-    return { error: NEUTRAL_READ_ERROR };
-  }
-  const booked = new Set((overlaps ?? []).map(o => o.inspector_id as string));
-  if (autoAssign) {
-    const available = pool.find(pid => !booked.has(pid));
-    if (!available) return { error: "No inspector is available in this window — all eligible inspectors are already booked" };
-  } else {
-    if (!pool.includes(inspector_id)) return { error: "The selected inspector is not eligible for this visit" };
-    if (booked.has(inspector_id)) return { error: "The selected inspector is already booked in this window — pick another or choose auto-assign" };
-  }
-
   const steps: PublishSteps = { plan: "pending", visit: "pending", assignment: "pending", status: "pending", notification: "pending" };
-  // Migration 0033 is the authoritative write boundary. It repeats every
-  // mutable guard inside one transaction, derives auto-assignment server-side,
-  // executes STM-PLAN-001 then STM-PLAN-002, and rolls back plan, visit,
-  // assignment, audit and notification together on any failure.
+  // The supervision RPC is the authoritative write boundary. It validates the
+  // target and packages in one transaction, creates a pending request and
+  // notifies eligible Supervisors. Approval is intentionally separate.
   // The full target provenance and every selected package version are inputs
   // to the database transaction. There are deliberately no post-publish
   // metadata or visit_packages writes in this action.
@@ -197,10 +161,11 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     plant_number: plant_number || null,
     source: target_source,
   };
-  const { data: visitId, error: publishError } = await sb.rpc("publish_single_visit_atomic", {
+  const proposedInspectorId = UUID.test(inspector_id) ? inspector_id : null;
+  const { data: visitId, error: publishError } = await sb.rpc("submit_single_visit_for_supervision", {
     p_factory_id: factory_id,
     p_package_version_ids: package_version_ids,
-    p_inspector_id: autoAssign ? null : inspector_id,
+    p_proposed_inspector_id: proposedInspectorId,
     p_visit_type: visit_type,
     p_execution_mode: mode,
     p_window_start: window_start,
@@ -217,37 +182,20 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   if (publishError || !visitId) {
     console.error("[ publishSingleVisit] atomic publish failed:", publishError?.message, publishError?.code);
     steps.plan = "failed";
-    // M7 — the in-transaction guards (RPC checks + the 0031 assignments
-    // trigger, SQLSTATE 23505) rejected a conflict that appeared between the
-    // preview and the commit. Name it honestly; the attempt persists nowhere
-    // (rolled back; audit_events is trigger/definer-only — documented gap).
-    if (publishError?.code === "23505" || /duplicate active visit|inspector unavailable|window is no longer available/i.test(publishError?.message ?? "")) {
+    if (publishError?.code === "23505" || /duplicate active visit/i.test(publishError?.message ?? "")) {
       const dupsNow = await findDuplicateActiveVisits(sb, factory_id, visit_type);
       if (dupsNow.visits.length > 0) {
         return {
-          error: "A conflicting active visit now exists for this factory and visit type — nothing was published.",
+          error: "A conflicting active visit now exists for this factory and visit type — nothing was submitted.",
           steps,
         };
       }
-      return {
-        error: "The assigned inspector was just booked on an overlapping visit in this window — nothing was published. Pick another inspector or window.",
-        steps,
-      };
-    }
-    // TASK-EXECUTION-MODULE-001 · D-009 — the publish RPC evaluated the shared
-    // window capacity and found no selectable day. Surface it as a governed
-    // blocker in the same style as the validation blockers above (plain copy,
-    // stable token), not as the generic neutral write failure.
-    if (publishError?.message?.includes("EXE-CAPACITY-WINDOW-FULL")) {
-      return {
-        error: "No day in this window has remaining daily capacity for the assigned inspector — pick another inspector or a different window (EXE-CAPACITY-WINDOW-FULL)",
-        steps,
-      };
+      return { error: NEUTRAL_WRITE_ERROR, steps };
     }
     return { error: NEUTRAL_WRITE_ERROR, steps };
   }
 
-  redirect(`/visits/${visitId}`);
+  redirect(`/planning/supervision?submitted=${visitId}`);
 }
 
 // ---------------------------------------------------------------------------

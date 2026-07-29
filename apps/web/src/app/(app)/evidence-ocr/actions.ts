@@ -2,10 +2,10 @@
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { logProviderError, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
-import { getOcrProvider } from "@/lib/providers/ocr-gemini";
+import { getOcrProvider } from "@/lib/providers/ocr-marker";
 
-// TASK-MVP2-OCR-001. On-demand extraction for one evidence row. Fail-closed:
-// no GEMINI_API_KEY -> records status='unavailable', extracts nothing.
+// On-demand Marker extraction for one evidence row. Fail-closed: no private
+// Marker worker -> records status='unavailable', extracts nothing.
 // ADVISORY ONLY — extracted_text is never auto-applied to any authoritative
 // field; a human reads it and transcribes/confirms manually.
 export type OcrActionResult = { error?: string; ok?: boolean; text?: string; status?: string };
@@ -37,11 +37,24 @@ export async function requestOcrExtraction(evidenceId: string): Promise<OcrActio
   }
   const buf = Buffer.from(await file.arrayBuffer());
   const mimeType = file.type || "image/jpeg";
-  const result = await provider.extractText(buf.toString("base64"), mimeType);
+  const filename = ev.storage_path.split("/").pop() || "evidence";
+  const result = await provider.extractDocument({
+    contentBase64: buf.toString("base64"), mimeType, filename,
+  });
 
   const status = !result.ok ? "failed" : (result.text ? "extracted" : "no_text_found");
   const { error: insErr } = await sb.from("ocr_extractions").insert({
-    evidence_id: evidenceId, status, extracted_text: result.text || null, requested_by: user.id,
+    evidence_id: evidenceId,
+    status,
+    extracted_text: result.text || null,
+    extraction_markdown: result.markdown || null,
+    structured_output: result.structuredOutput ?? null,
+    retrieval_chunks: result.retrievalChunks ?? null,
+    source_sha256: result.sourceSha256 || null,
+    processor_version: result.processorVersion || null,
+    processor_job_id: result.jobId || null,
+    provider: "marker",
+    requested_by: user.id,
   });
   if (insErr) { logProviderError("ocr record insert", insErr); return { error: NEUTRAL_WRITE_ERROR }; }
   if (!result.ok) return { error: `Extraction failed (${result.reason ?? "unknown"}).` };
