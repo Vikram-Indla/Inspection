@@ -1,4 +1,4 @@
--- REQ-007 · Location source and immutable history
+-- REQ-007 · Location source and immutable history · sequence 20260729081000
 -- Controlled visit corrections are append-only and never update Factory 360
 -- official coordinates or the visit's original/planning pins. Mirror each
 -- correction into the existing visit_location_events provenance stream so the

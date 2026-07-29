@@ -1,7 +1,7 @@
 \set ON_ERROR_STOP on
 begin;
 
-\ir ../migrations/20260729080000_requirements_alignment_location_provenance.sql
+\ir ../migrations/20260729081000_requirements_alignment_location_provenance.sql
 
 do $$
 declare
@@ -96,6 +96,6 @@ begin
 end
 $$;
 
-\ir ../migrations/20260729080000_requirements_alignment_location_provenance.sql
+\ir ../migrations/20260729081000_requirements_alignment_location_provenance.sql
 
 rollback;

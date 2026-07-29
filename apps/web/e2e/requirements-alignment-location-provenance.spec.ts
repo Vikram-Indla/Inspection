@@ -13,7 +13,7 @@ test("REQ-007 renders the append-only location provenance stream", () => {
 });
 
 test("REQ-007 mirrors corrections without overwriting master coordinates", () => {
-  const migration = read("../../supabase/migrations/20260729080000_requirements_alignment_location_provenance.sql");
+  const migration = read("../../supabase/migrations/20260729081000_requirements_alignment_location_provenance.sql");
   expect(migration).toContain("after insert on public.visit_location_corrections");
   expect(migration).toContain("new.corrected_by");
   expect(migration).toContain("new.corrected_at");
