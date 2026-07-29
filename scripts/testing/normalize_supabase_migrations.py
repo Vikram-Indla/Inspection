@@ -24,6 +24,9 @@ MAKER_CHECKER_OVERLAY = (
     "if new.status in ('published','locked') and new.approved_by is null\n"
     "     and (tg_op = 'INSERT' or old.status not in ('published','locked')) then"
 )
+CONCURRENT_INDEX_FILE = "20260721120000_perf_tier_c_global_search.sql"
+CONCURRENT_INDEX_ORIGINAL = "create index concurrently if not exists"
+CONCURRENT_INDEX_OVERLAY = "create index if not exists"
 
 
 def sha256(path: Path) -> str:
@@ -44,6 +47,14 @@ def main() -> int:
         help=(
             "Patch only the disposable copy of the legacy package approver "
             "trigger so metadata backfills on already-published rows can run."
+        ),
+    )
+    parser.add_argument(
+        "--supabase-pipeline-index-overlay",
+        action="store_true",
+        help=(
+            "Patch only the disposable copy of the legacy performance migration "
+            "so Supabase's transactional migration pipeline can build its indexes."
         ),
     )
     args = parser.parse_args()
@@ -88,6 +99,22 @@ def main() -> int:
                 encoding="utf-8",
             )
             overlay = "legacy_published_metadata_backfill_v1"
+        if args.supabase_pipeline_index_overlay and original_name == CONCURRENT_INDEX_FILE:
+            source_text = target.read_text(encoding="utf-8")
+            replacement_count = source_text.count(CONCURRENT_INDEX_ORIGINAL)
+            if replacement_count != 13:
+                parser.error(
+                    "Supabase pipeline index overlay target changed; refusing "
+                    "an unverified disposable transform"
+                )
+            target.write_text(
+                source_text.replace(
+                    CONCURRENT_INDEX_ORIGINAL,
+                    CONCURRENT_INDEX_OVERLAY,
+                ),
+                encoding="utf-8",
+            )
+            overlay = "supabase_transactional_index_build_v1"
         manifest.append(
             {
                 "ordinal": ordinal,
