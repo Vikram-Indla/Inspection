@@ -126,7 +126,13 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   const [packageRead, inspectorRead, otpRead] = await Promise.all([
     sb.from("package_versions").select("id, version_label, packages(code, title)").in("status", ["published", "locked"])
       .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`).order("published_at", { ascending: false }),
-    sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
+    // Start from profiles, as the Planning landing and Visit detail pages do.
+    // Reading from user_roles directly is filtered for the Planner session in
+    // the deployed RLS shape, leaving the manual assignment list empty even
+    // when active inspectors exist.  The inner, explicitly keyed role join
+    // keeps this an inspector-only roster without relying on that restricted
+    // child-table projection.
+    sb.from("profiles").select("user_id, full_name, user_roles!user_roles_user_id_fkey!inner(role_key)").eq("user_roles.role_key", "inspector").order("full_name"),
     sb.from("engine_settings").select("engine").eq("engine", "otp").maybeSingle(),
   ]);
   if (packageRead.error || inspectorRead.error || otpRead.error) {
@@ -136,7 +142,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   const pkgs = packageRead.data;
   const inspRoles = inspectorRead.data;
   const otpEngine = otpRead.data;
-  const inspectors = (inspRoles ?? []).map(r => ({ user_id: r.user_id, full_name: (r.profiles as unknown as { full_name: string }).full_name }));
+  const inspectors = (inspRoles ?? []).map(r => ({ user_id: r.user_id as string, full_name: r.full_name as string }));
   const virtualEligible = !!otpEngine;
 
   let portfolios: ResolvedPortfolio[] = [];
