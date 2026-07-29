@@ -206,7 +206,7 @@ select pg_temp.assert_true(
 -- Exercise the trigger path for all three modes. Capability and capacity are
 -- controlled probe seams inside this transaction only; rollback restores the
 -- installed functions and removes every fixture.
-create or replace function public.has_capability(text)
+create or replace function public.has_capability(p_capability text)
 returns boolean language sql stable as $$ select true $$;
 create or replace function public.planning_inspector_capacity_fact(
   p_inspector uuid,p_window_start date,p_window_end date
@@ -215,6 +215,10 @@ create or replace function public.planning_inspector_capacity_fact(
 $$;
 select set_config(
   'request.jwt.claim.sub','00000000-0000-4000-8000-000000004301',true);
+insert into auth.users(id,email)
+values
+  ('00000000-0000-4000-8000-000000004301','ral-active@example.invalid'),
+  ('00000000-0000-4000-8000-000000004302','ral-inactive@example.invalid');
 insert into public.profiles(user_id,full_name,region,account_status)
 values
   ('00000000-0000-4000-8000-000000004301','RAL active inspector','RAL','active'),
@@ -244,11 +248,11 @@ insert into public.visits(
     '00000000-0000-4000-8000-000000004305',
     '00000000-0000-4000-8000-000000004303',
     'ral-probe','physical','draft','new',
-    timestamptz '2030-04-01+00',timestamptz '2030-04-02+00'),
+    timestamptz '2030-04-03+00',timestamptz '2030-04-04+00'),
   ('00000000-0000-4000-8000-000000004308',null,
     '00000000-0000-4000-8000-000000004303',
     'ral-probe','physical','draft','new',
-    timestamptz '2030-04-01+00',timestamptz '2030-04-02+00');
+    timestamptz '2030-04-05+00',timestamptz '2030-04-06+00');
 insert into public.assignments(visit_id,inspector_id,method)
 values
   ('00000000-0000-4000-8000-000000004306',
