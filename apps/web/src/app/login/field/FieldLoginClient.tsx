@@ -5,7 +5,12 @@ import { supabaseBrowser } from "@/lib/supabase";
 import { getFieldDeviceIdentifier } from "@/lib/field-device";
 import { readFieldDeviceEnrollment } from "@/app/(app)/field/settings/actions";
 import { readBiometricUnlock, unlockWithBiometric, type BiometricUnlockRecord } from "@/lib/field-biometric-unlock";
-import { authorizeInspectorLogin, bootstrapFieldSession, safeFieldReturnPath } from "@/lib/field-auth";
+import {
+  authorizeInspectorLogin,
+  bootstrapFieldSession,
+  isFieldReturnPath,
+  safeFieldReturnPath,
+} from "@/lib/field-auth";
 import { establishAuthenticatedThemeDefault } from "@/lib/theme-preference";
 import "./field-login.css";
 
@@ -156,6 +161,7 @@ export default function FieldLoginClient({
   // returnTo is optional (the unified /login caller omits it); normalise once so
   // every navigation target below is a concrete, validated path.
   const safeReturnTo = useMemo(() => safeFieldReturnPath(returnTo), [returnTo]);
+  const isFieldRecovery = useMemo(() => isFieldReturnPath(returnTo), [returnTo]);
   const [lockScreen, setLockScreen] = useState<{ record: BiometricUnlockRecord; deviceId: string } | null>(null);
   const [unlocking, setUnlocking] = useState(false);
   const [showPasswordFallback, setShowPasswordFallback] = useState(false);
@@ -182,13 +188,31 @@ export default function FieldLoginClient({
     let cancelled = false;
     (async () => {
       const sb = supabaseBrowser();
+
+      // The unified /login surface serves every staff role. Only a validated
+      // /field return target may run the Inspector-specific bootstrap below.
+      // Running it for a Planner races the credential submit: once sign-in
+      // creates a session, verifyInspectorRole correctly rejects that Planner
+      // and the bootstrap signs the new session out before /launch can read the
+      // SSR cookie. A normal login therefore probes only for an existing
+      // session and hands it to the server-owned role router.
+      if (!isFieldRecovery) {
+        const { data: { session } } = await sb.auth.getSession();
+        if (cancelled) return;
+        if (session) {
+          window.location.replace("/launch");
+          return;
+        }
+        if (reason === "expired") setMessage(s.sessionExpired);
+        else if (reason === "signedout") setMessage(s.signedOut);
+        setBootstrapping(false);
+        return;
+      }
+
       const bootstrap = await bootstrapFieldSession(sb, navigator.onLine);
       if (cancelled) return;
       if (bootstrap.status === "ready") {
-        // Same rule as the credential path: an explicit returnTo means a field
-        // page asked for this user back; without one, let /launch route by the
-        // live role grants rather than assuming the field channel.
-        window.location.replace(returnTo ? safeReturnTo : "/launch");
+        window.location.replace(safeReturnTo);
         return;
       }
       if (bootstrap.status === "offline_known") {
@@ -228,7 +252,7 @@ export default function FieldLoginClient({
     return () => {
       cancelled = true;
     };
-  }, [reason, returnTo, s.offlineKnown, s.sessionExpired, s.signedOut]);
+  }, [isFieldRecovery, reason, s.offlineKnown, s.sessionExpired, s.signedOut, safeReturnTo]);
 
   const unlockWithFaceId = useCallback(async () => {
     if (!lockScreen) return;
@@ -308,7 +332,7 @@ export default function FieldLoginClient({
       // grants and fails closed to /launch/no-workspace on an unmatched role.
       // Deciding "everyone is an inspector, send them to /field" here left every
       // non-field persona — ops, leadership, planner, reviewer — with no way in.
-      if (returnTo) {
+      if (isFieldRecovery) {
         if (!(await authorizeInspectorLogin(supabaseBrowser(), data.session, keepSignedIn))) {
           await supabaseBrowser().auth.signOut();
           setMessage(null);
@@ -322,7 +346,7 @@ export default function FieldLoginClient({
       // check never made. Supabase already persists the session itself.
       window.location.assign("/launch");
     },
-    [identifier, keepSignedIn, password, returnTo, s.directoryBlocked, s.authInvalid, s.authNetwork, s.offlineLoginBlocked],
+    [identifier, isFieldRecovery, keepSignedIn, password, s.directoryBlocked, s.authInvalid, s.authNetwork, s.offlineLoginBlocked, safeReturnTo],
   );
 
   const netLabel = online ? s.netOnline : s.netOffline;

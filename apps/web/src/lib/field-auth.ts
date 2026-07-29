@@ -11,17 +11,25 @@ export type FieldSessionBootstrap =
   | { status: "anonymous" | "expired" | "unauthorized"; session: null }
   | { status: "ready" | "offline_known"; session: Session };
 
-export function safeFieldReturnPath(value: string | null | undefined): string {
-  if (!value) return "/field";
+function resolveFieldReturnPath(value: string | null | undefined): string | null {
+  if (!value) return null;
   try {
     const decoded = decodeURIComponent(value);
     const url = new URL(decoded, "https://field.invalid");
     const fieldPath = url.pathname === "/field" || url.pathname.startsWith("/field/");
     if (url.origin === "https://field.invalid" && fieldPath) return `${url.pathname}${url.search}${url.hash}`;
   } catch {
-    // Invalid or double-encoded input falls back to the field home.
+    // Invalid or double-encoded input is not a field recovery target.
   }
-  return "/field";
+  return null;
+}
+
+export function isFieldReturnPath(value: string | null | undefined): boolean {
+  return resolveFieldReturnPath(value) !== null;
+}
+
+export function safeFieldReturnPath(value: string | null | undefined): string {
+  return resolveFieldReturnPath(value) ?? "/field";
 }
 
 function readJson<T>(storage: Storage, key: string): T | null {
