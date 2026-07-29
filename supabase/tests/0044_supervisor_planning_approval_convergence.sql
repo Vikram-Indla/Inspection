@@ -56,15 +56,21 @@ begin
   select * into v_before from role_convergence_before;
 
   if exists (
-    select 1 from public.role_permissions
-    where role_key = 'supervisor'
-      and permission_key in (
-        'planning.approve',
-        'planning.return',
-        'planning.reject'
+    select 1
+    from unnest(array[
+      'planning.approve',
+      'planning.return',
+      'planning.reject'
+    ]) capability
+    where position(
+      'whenp_capabilityin(''planning.approve'',''planning.return'',''planning.reject'')thenfalse'
+      in regexp_replace(
+        pg_get_functiondef('public.has_planning_capability(text)'::regprocedure),
+        '[[:space:]]','','g'
       )
+    ) = 0
   ) then
-    raise exception 'ACT-004: unauthorized Supervisor Planning grants remain';
+    raise exception 'ACT-004: Planning approval capabilities are not fail-closed';
   end if;
 
   if (
@@ -76,6 +82,18 @@ begin
     )
   ) <> 3 then
     raise exception 'ACT-004: Planning permission catalogue was not preserved';
+  end if;
+
+  if (
+    select count(*) from public.role_permissions
+    where role_key = 'supervisor'
+      and permission_key in (
+        'planning.approve',
+        'planning.return',
+        'planning.reject'
+      )
+  ) <> 3 then
+    raise exception 'ACT-004: Supervisor catalogue assignments were not preserved';
   end if;
 
   if (
