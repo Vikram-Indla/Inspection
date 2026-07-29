@@ -27,6 +27,50 @@ MAKER_CHECKER_OVERLAY = (
 CONCURRENT_INDEX_FILE = "20260721120000_perf_tier_c_global_search.sql"
 CONCURRENT_INDEX_ORIGINAL = "create index concurrently if not exists"
 CONCURRENT_INDEX_OVERLAY = "create index if not exists"
+COMPLIANCE_LOOKUP_CONSUMER_FILE = "20260726042050_visit_result_reports.sql"
+COMPLIANCE_LOOKUP_PRELUDE = """\
+-- Disposable clean-apply compatibility schema reconstructed from the canonical
+-- schema catalogue. No governed lookup values are seeded.
+create table if not exists public.compliance_lookup_types (
+  lookup_type_key text primary key,
+  label_en text not null,
+  label_ar text,
+  requires_effective_dates boolean not null default false,
+  display_order integer not null default 0,
+  active boolean not null default true
+);
+
+create table if not exists public.compliance_lookup_values (
+  id uuid primary key default gen_random_uuid(),
+  lookup_type_key text not null references public.compliance_lookup_types(lookup_type_key),
+  code text not null,
+  label_en text not null,
+  label_ar text,
+  active boolean not null default true,
+  effective_from date,
+  effective_to date,
+  display_order integer not null default 0,
+  version_number integer not null default 1,
+  supersedes_id uuid references public.compliance_lookup_values(id),
+  deactivation_reason text,
+  created_by uuid not null references public.profiles(user_id),
+  created_at timestamptz not null default now(),
+  deactivated_by uuid references public.profiles(user_id),
+  deactivated_at timestamptz,
+  unique (lookup_type_key, code, version_number)
+);
+
+alter table public.compliance_lookup_types enable row level security;
+alter table public.compliance_lookup_values enable row level security;
+
+create policy compliance_lookup_types_read
+  on public.compliance_lookup_types for select to authenticated
+  using (active);
+create policy compliance_lookup_values_read
+  on public.compliance_lookup_values for select to authenticated
+  using (true);
+
+"""
 
 
 def sha256(path: Path) -> str:
@@ -55,6 +99,14 @@ def main() -> int:
         help=(
             "Patch only the disposable copy of the legacy performance migration "
             "so Supabase's transactional migration pipeline can build its indexes."
+        ),
+    )
+    parser.add_argument(
+        "--missing-compliance-lookup-overlay",
+        action="store_true",
+        help=(
+            "Prepend the catalogue-backed compliance lookup schema to its first "
+            "consumer in the disposable copy when no creation migration exists."
         ),
     )
     args = parser.parse_args()
@@ -115,6 +167,21 @@ def main() -> int:
                 encoding="utf-8",
             )
             overlay = "supabase_transactional_index_build_v1"
+        if (
+            args.missing_compliance_lookup_overlay
+            and original_name == COMPLIANCE_LOOKUP_CONSUMER_FILE
+        ):
+            source_text = target.read_text(encoding="utf-8")
+            if "insert into compliance_lookup_types" not in source_text:
+                parser.error(
+                    "compliance lookup overlay consumer changed; refusing "
+                    "an unverified disposable transform"
+                )
+            target.write_text(
+                COMPLIANCE_LOOKUP_PRELUDE + source_text,
+                encoding="utf-8",
+            )
+            overlay = "missing_compliance_lookup_schema_v1"
         manifest.append(
             {
                 "ordinal": ordinal,

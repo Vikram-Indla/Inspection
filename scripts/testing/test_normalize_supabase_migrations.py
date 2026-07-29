@@ -162,6 +162,58 @@ class NormalizeMigrationsTest(unittest.TestCase):
                 13,
             )
 
+    def test_missing_compliance_lookup_overlay_is_catalogue_backed(self) -> None:
+        repo = Path(__file__).resolve().parents[2]
+        source = repo / "supabase" / "migrations"
+        script = Path(__file__).with_name("normalize_supabase_migrations.py")
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "normalized"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(script),
+                    str(source),
+                    str(output),
+                    "--missing-compliance-lookup-overlay",
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            manifest = json.loads(
+                (output / "normalization-manifest.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            transformed = [
+                item
+                for item in manifest
+                if item["compatibility_overlay"] is not None
+            ]
+
+            self.assertEqual(len(transformed), 1)
+            self.assertEqual(
+                transformed[0]["original_file"],
+                "20260726042050_visit_result_reports.sql",
+            )
+            self.assertEqual(
+                transformed[0]["compatibility_overlay"],
+                "missing_compliance_lookup_schema_v1",
+            )
+            normalized = (
+                output / transformed[0]["normalized_file"]
+            ).read_text(encoding="utf-8")
+            self.assertIn(
+                "create table if not exists public.compliance_lookup_types",
+                normalized,
+            )
+            self.assertIn(
+                "create table if not exists public.compliance_lookup_values",
+                normalized,
+            )
+            self.assertNotIn("insert into public.compliance_lookup_values", normalized)
+
 
 if __name__ == "__main__":
     unittest.main()
