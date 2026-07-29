@@ -70,7 +70,7 @@ test.describe("CD-031 source truth — governed risk/spatial wiring, masking, is
     expect(src).toMatch(/HANDOFF_BLOCKED_ROLE/);
     expect(src).toMatch(/maskContacts\s*=\s*roles\.length > 0 && roles\.every\(r => r === "leadership"\)/);
     // Every other role still renders phone/email — masking is per-field, not per-page.
-    expect(src).toMatch(/!maskContacts && <><td className="numeric">\{r\.phone/); // SAQEEL: numeric replaces sq-numeric
+    expect(src).toMatch(/!maskContacts && <><td className="sq-numeric">\{r\.phone/);
   });
 
   test("leg 17 — one section's query error stays an isolated banner, never a whole-record failure", () => {
