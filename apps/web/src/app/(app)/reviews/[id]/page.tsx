@@ -41,11 +41,23 @@ export default async function ReviewWorkspace({ params, searchParams }: {
       </Shell>
     );
   }
-  const { data: roleRows, error: roleReadError } = user
-    ? await getUserRoles(user.id)
-    : { data: null, error: null };
-  if (roleReadError) {
-    console.error("[review workspace role read]", roleReadError.message, roleReadError.code);
+  const [roleRead, reviewView, reviewDecide] = user
+    ? await Promise.all([
+      getUserRoles(user.id),
+      sb.rpc("has_capability", { p_capability: "review.view" }),
+      sb.rpc("has_capability", { p_capability: "review.decide" }),
+    ])
+    : [
+      { data: null, error: null },
+      { data: false, error: null },
+      { data: false, error: null },
+    ];
+  const roleRows = roleRead.data;
+  if (roleRead.error || reviewView.error || reviewDecide.error) {
+    console.error(
+      "[review workspace role read]",
+      roleRead.error?.message ?? reviewView.error?.message ?? reviewDecide.error?.message,
+    );
     return (
       <Shell current="/reviews" title={t("review.ws.loadError", "Could not load")}>
         <section className="sq-surface cd-panelpad cd-result" role="alert">
@@ -64,9 +76,15 @@ export default async function ReviewWorkspace({ params, searchParams }: {
   // StartReview/DecisionPanel, which is the real guard against the read
   // roles ever submitting a decision (reviews_insert's RLS is not itself a
   // tight boundary here).
-  const authorized = !!user && (roleRows ?? []).some(r => ["reviewer", "ops", "auditor", "planner", "leadership", "inspector"].includes(r.role_key));
-  const canDecide = !!user && (roleRows ?? []).some(r => r.role_key === "reviewer" || r.role_key === "ops");
-  const viewerRole = (roleRows ?? []).find(r => ["reviewer", "ops", "auditor", "planner", "leadership", "inspector"].includes(r.role_key))?.role_key ?? null;
+  const authorized = !!user && (
+    reviewView.data === true
+    || (roleRows ?? []).some(r => ["reviewer", "ops", "auditor", "planner", "leadership", "inspector"].includes(r.role_key))
+  );
+  const canDecide = !!user && (
+    reviewDecide.data === true
+    || (roleRows ?? []).some(r => r.role_key === "reviewer" || r.role_key === "ops")
+  );
+  const viewerRole = (roleRows ?? []).find(r => ["supervisor", "reviewer", "ops", "auditor", "planner", "leadership", "inspector"].includes(r.role_key))?.role_key ?? null;
   if (!authorized) {
     return (
       <Shell current="/reviews" title={t("review.ws.unauthTitle", "You don’t have access to this review")}>

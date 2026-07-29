@@ -79,12 +79,20 @@ export default async function Reviews() {
   const fmt = (iso: string | null) => iso ? formatDateTime(iso, locale) : "—";
   const sb = await supabaseServer();
   const { data: { user } } = await getServerUser();
-  const { data: roleRows } = user ? await getUserRoles(user.id) : { data: null };
+  const [{ data: roleRows }, reviewView] = user
+    ? await Promise.all([
+      getUserRoles(user.id),
+      sb.rpc("has_capability", { p_capability: "review.view" }),
+    ])
+    : [{ data: null }, { data: false, error: null }];
   const roles = new Set((roleRows ?? []).map(row => row.role_key));
   // Queue visibility is broader than decision authority. Planner users can
   // monitor coordinated work, while inspectors remain limited by RLS to their
   // own assigned inspections. Canonical review actions stay reviewer/ops-only.
-  const authorized = ["reviewer", "ops", "planner", "inspector"].some(role => roles.has(role));
+  const authorized = reviewView.error == null && (
+    reviewView.data === true
+    || ["reviewer", "ops", "planner", "inspector"].some(role => roles.has(role))
+  );
 
   if (!authorized) {
     return (
