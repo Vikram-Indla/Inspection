@@ -483,8 +483,8 @@ export default function Wizard({
               <select key={resetKey} className="select" name="visit_type" id="wizard-visit-type" value={visitType} onChange={e => setVisitType(e.target.value)}>
                 <option value="periodic">{strings.typePeriodic}</option><option value="follow_up">{strings.typeFollowUp}</option><option value="complaint">{strings.typeComplaint}</option>
               </select></div>
-            <fieldset className={`field ${styles.packageField}`}>
-              <legend>{strings.packageLabel}</legend>
+            <div className={`field ${styles.packageField}`} role="group" aria-labelledby="wizard-package-label">
+              <span id="wizard-package-label">{strings.packageLabel}</span>
               <div className={styles.packageGrid}>
                 {packages.map(p => (
                   <label key={`${resetKey}-${p.id}`} className={`check ${styles.packageChoice}`}>
@@ -500,7 +500,7 @@ export default function Wizard({
                   {strings.packageOptionalHint}
                 </p>
               )}
-            </fieldset>
+            </div>
             <div className={`field ${styles.modeField}`}><label htmlFor="wizard-mode">{strings.mode}</label>
               <select key={resetKey} className="select" name="execution_mode" id="wizard-mode" value={executionMode} onChange={e => setExecutionMode(e.target.value as "physical" | "virtual")}>
                 <option value="physical" disabled={!physicalEligible}>{strings.modePhysical}{!physicalEligible ? ` — ${strings.modeIneligible}` : ""}</option>
