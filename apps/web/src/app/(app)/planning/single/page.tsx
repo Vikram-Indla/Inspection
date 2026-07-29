@@ -89,7 +89,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   const sb = await supabaseServer();
 
   const unavailable = (
-    <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
+    <Shell current="/planning" title={t("plan.single.title", "Plan single visit")}>
       <div className="sq-banner sq-banner--critical" role="alert">
         {tr("plan.single.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.", "بيانات التخطيط غير متاحة مؤقتًا (ERR-OPS-001). حاول مرة أخرى.")}
       </div>
@@ -114,9 +114,9 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   }
   if (!access.can("planning.create.single")) {
     return (
-      <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
+      <Shell current="/planning" title={t("plan.single.title", "Plan single visit")}>
         <EmptyState glyph="⛔" title={tr("plan.single.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
-          body={tr("plan.single.unauthorized.body", "Plan one visit is available to authorized planning staff.", "تخطيط زيارة واحدة متاح لموظفي التخطيط المصرح لهم.")} />
+          body={tr("plan.single.unauthorized.body", "Plan single visit is available to authorized planning staff.", "تخطيط زيارة واحدة متاح لموظفي التخطيط المصرح لهم.")} />
       </Shell>
     );
   }
@@ -393,15 +393,15 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     readyLicense: t("plan.single.readyLicense", "License confirmed"),
     readyLocation: t("plan.single.readyLocation", "Location confirmed"),
     readyInspector: t("plan.single.readyInspector", "Inspector ready"),
-    blockedTitle: t("plan.single.blocked", "Publishing blocked — your work is preserved"),
-    publish: t("plan.single.publish", "Publish visit"),
-    publishing: t("plan.single.publishing", "Publishing…"),
+    blockedTitle: t("plan.single.blocked", "Scheduling blocked — your work is preserved"),
+    publish: t("plan.single.publish", "Schedule visit"),
+    publishing: t("plan.single.publishing", "Scheduling…"),
     retry: t("plan.single.retry", "Retry — resumes safely, will not duplicate"),
     stepPlan: t("plan.single.stepPlan", "Plan created"),
     stepVisit: t("plan.single.stepVisit", "Visit created"),
     stepAssignment: t("plan.single.stepAssignment", "Inspector assigned"),
-    stepStatus: t("plan.single.stepStatus", "Published"),
-    stepNotification: t("plan.single.stepNotification", "Notification queued"),
+    stepStatus: t("plan.single.stepStatus", "Scheduled"),
+    stepNotification: t("plan.single.stepNotification", "Inspector notification queued"),
     stepDone: t("plan.single.stepDone", "done"),
     stepFailed: t("plan.single.stepFailed", "failed"),
     stepPending: t("plan.single.stepPending", "not attempted"),
@@ -412,7 +412,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     },
   };
   return (
-    <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}
+    <Shell current="/planning" title={t("plan.single.title", "Plan single visit")}
       context={<span className="sq-lozenge sq-lozenge--info">{t("plan.single.context", "Single visit planning")}</span>}>
       <Wizard
         query={q}
