@@ -4,7 +4,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import EmptyState from "@/components/EmptyState";
-import { getPlanningAccess } from "@/lib/planning/access";
+import { canScheduleSingleVisit, getPlanningAccess } from "@/lib/planning/access";
 import {
   resolvePlanningTargets,
   resolveHandoffTarget,
@@ -120,6 +120,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
       </Shell>
     );
   }
+  const canSchedule = await canScheduleSingleVisit(sb, access);
 
   const today = new Date().toISOString().slice(0, 10);
   const [packageRead, inspectorRead, otpRead] = await Promise.all([
@@ -429,7 +430,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
         inspectors={inspectors}
         strings={strings}
         virtualEligible={virtualEligible}
-        transitionsExecutable={access.can("planning.publish")}
+        transitionsExecutable={canSchedule}
         locale={locale === "ar" ? "ar" : "en"}
       />
     </Shell>

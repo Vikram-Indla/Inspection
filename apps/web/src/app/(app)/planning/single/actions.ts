@@ -2,7 +2,7 @@
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
-import { getPlanningAccess } from "@/lib/planning/access";
+import { canScheduleSingleVisit, getPlanningAccess } from "@/lib/planning/access";
 import { findDuplicateActiveVisits } from "./duplicate";
 import { isPlausibleDate, PLAUSIBLE_DATE_ERROR } from "@/lib/plausible-date";
 import { createHash, randomUUID } from "node:crypto";
@@ -75,14 +75,14 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   // M7 — the publish gate is the planning.publish CAPABILITY, mirroring the
   // RPC's widened guard (has_role('planner') OR
   // has_planning_capability('planning.publish') — migration 20260721180000).
-  // Page (planning.create.single), action and RPC now agree.
+  // Page, action and RPC now agree on direct Planner scheduling.
   const blockers: string[] = [];
   const access = await getPlanningAccess(sb, ["planning.publish"]);
   if (access.error) {
     console.error("[ publishSingleVisit] access resolution failed");
     return { error: NEUTRAL_READ_ERROR };
   }
-  if (!access.can("planning.publish")) blockers.push("Publishing requires the planning.publish capability");
+  if (!(await canScheduleSingleVisit(sb, access))) blockers.push("Scheduling requires Planner access");
   if (!["periodic", "follow_up", "complaint"].includes(visit_type)) blockers.push("Visit type is not supported");
   if (!["physical", "virtual"].includes(mode)) blockers.push("Execution mode is not supported");
   if (!factory_id) blockers.push("Factory not selected");
