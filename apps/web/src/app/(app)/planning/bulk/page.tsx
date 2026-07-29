@@ -67,8 +67,9 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   // and ANY combinations aren't simple equality, so evaluation is uniform here.
   const { data: allFactories, error: factoriesError } = await collectPostgrestPages<FactoryForCriteria & Record<string, unknown>>((from, to) => sb
     .from("factories")
-    .select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, activity_class, official_lat, official_lng, source_synced_at, visits(planning_status, visit_type)")
+    .select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, activity_class, official_lat, official_lng, source_synced_at, industrial_licenses!inner(commercial_registration_id), visits(planning_status, visit_type)")
     .eq("is_temporary", false)
+    .not("industrial_licenses.commercial_registration_id", "is", null)
     .like("factory_code", "F-%")
     .not("name", "ilike", "CD%")
     .order("risk_score", { ascending: false })
