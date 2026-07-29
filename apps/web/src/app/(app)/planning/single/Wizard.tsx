@@ -23,7 +23,7 @@ export type GradedFactory = {
   region: string | null; city: string | null; risk_band: string | null; risk_score: number | null;
   official_lat: number | null; official_lng: number | null; geofence_radius_m: number | null;
   source_synced_at: string | null;
-  source: "legacy";
+  source: string | null;
   grade: "exact" | "similar_name";
   degraded: boolean;
   duplicate: boolean;
@@ -37,7 +37,7 @@ export type GradedFactory = {
 export type DraftConfig = {
   visitType?: string; packageVersionId?: string; packageVersionIds?: string[]; executionMode?: string;
   windowStart?: string; windowEnd?: string; inspectorId?: string;
-  notes?: string; plannerLat?: string; plannerLng?: string; licenseNumber?: string;
+  notes?: string; licenseNumber?: string;
 };
 export type DraftInfo = { id: string; planReference: string; version: number };
 export type InitialSelection = { factoryId?: string; licenceId?: string };
@@ -60,6 +60,7 @@ type Target = {
   officialLng: number | null;
   riskBand: string | null;
   riskScore: number | null;
+  sourceSystem: string | null;
   sourceSyncedAt: string | null;
 };
 
@@ -73,8 +74,8 @@ export type WizardStrings = {
   prefilledHandoff: string; prefillMiss: string; draftRestored: string;
   saveDraft: string; savingDraft: string; draftSavedPrefix: string; draftError: string;
   licenseStep: string; licenseSelect: string; licenseLabel: string; licenseNone: string;
-  locationStep: string; officialPin: string; noOfficialPin: string;
-  plannerLat: string; plannerLng: string; plannerPin: string; locationConfirmed: string; mapLoading: string;
+  locationStep: string; officialPin: string; noOfficialPin: string; locationSource: string; locationReadOnly: string;
+  locationConfirmed: string; mapLoading: string;
   mapToggle: string; textEquivalent: string; riskContext: string; riskUnknown: string;
   freshnessLabel: string; freshnessNever: string; factory360: string;
   configStep: string;
@@ -123,8 +124,6 @@ export default function Wizard({
   // A resumed draft restores its historical target for review, never as a
   // publication confirmation. The planner must select the target again.
   const [targetReselected, setTargetReselected] = useState(draft == null);
-  const [plannerLat, setPlannerLat] = useState(draftConfig.plannerLat ?? "");
-  const [plannerLng, setPlannerLng] = useState(draftConfig.plannerLng ?? "");
   // Controlled, not uncontrolled — a blocked-publish retry (M01-041) re-renders
   // this form via useActionState, and uncontrolled inputs (date/radio/checkbox)
   // lose their entered value on that re-render, silently discarding the planner's
@@ -209,6 +208,7 @@ export default function Wizard({
         officialLng: selectedLicenceEntry.licence.factory.officialLng,
         riskBand: selectedLicenceEntry.licence.factory.riskBand,
         riskScore: selectedLicenceEntry.licence.factory.riskScore,
+        sourceSystem: selectedLicenceEntry.licence.factory.source ?? selectedLicenceEntry.licence.sourceSystem,
         sourceSyncedAt: selectedLicenceEntry.licence.factory.sourceSyncedAt ?? selectedLicenceEntry.licence.sourceSyncedAt,
       }
     : legacyFactory
@@ -222,19 +222,18 @@ export default function Wizard({
           plantNumber: null,
           officialLat: legacyFactory.official_lat,
           officialLng: legacyFactory.official_lng,
-          riskBand: legacyFactory.risk_band,
-          riskScore: legacyFactory.risk_score,
-          sourceSyncedAt: legacyFactory.source_synced_at,
+        riskBand: legacyFactory.risk_band,
+        riskScore: legacyFactory.risk_score,
+        sourceSystem: legacyFactory.source,
+        sourceSyncedAt: legacyFactory.source_synced_at,
         }
       : null;
 
   const hasOfficial = target != null && target.officialLat != null && target.officialLng != null;
-  const pLat = Number(plannerLat); const pLng = Number(plannerLng);
-  const hasPlannerPin = plannerLat !== "" && plannerLng !== "" && Number.isFinite(pLat) && Number.isFinite(pLng);
   // M03-011 — execution-mode eligibility: physical needs a GIS-verifiable
   // location (official pin, or a planner override pin); virtual needs the OTP
   // engine configured.
-  const physicalEligible = hasOfficial || hasPlannerPin;
+  const physicalEligible = hasOfficial;
   useEffect(() => {
     if (!target) return;
     if (executionMode === "physical" && !physicalEligible && virtualEligible) setExecutionMode("virtual");
@@ -278,8 +277,6 @@ export default function Wizard({
         windowEnd,
         inspectorId,
         notes,
-        plannerLat,
-        plannerLng,
       },
     });
     setSavingDraft(false);
@@ -350,7 +347,7 @@ export default function Wizard({
                 <label className={`radio ${styles.choiceRow}`}>
                   <input type="radio" name="factory_id" value={f.id} checked={factoryId === f.id}
                     onClick={() => setTargetReselected(true)}
-                    onChange={() => { setFactoryId(f.id); setLicenceId(null); setTargetReselected(true); setLicenseNumber(""); setLocationConfirmed(false); setPlannerLat(""); setPlannerLng(""); }} />
+                    onChange={() => { setFactoryId(f.id); setLicenceId(null); setTargetReselected(true); setLicenseNumber(""); setLocationConfirmed(false); }} />
                   <span className={`badge ${f.grade === "exact" ? "badge-compliant" : "badge-warning"}`}>
                     {f.grade === "exact" ? strings.exactBadge : strings.similarBadge}
                   </span>
@@ -359,7 +356,7 @@ export default function Wizard({
                 </label>
                 {factoryId === f.id && (
                   <div className={styles.dossier}>
-                    <IdentityDossier factory={f} plannerLat={plannerLat} plannerLng={plannerLng} strings={strings} locale={locale} />
+                    <IdentityDossier factory={f} strings={strings} locale={locale} />
                   </div>
                 )}
               </li>
@@ -403,7 +400,7 @@ export default function Wizard({
                           <input type="radio" name="licence_id" value={l.id} disabled={!l.factory}
                             checked={licenceId === l.id}
                             onClick={() => setTargetReselected(true)}
-                            onChange={() => { setLicenceId(l.id); setFactoryId(null); setTargetReselected(true); setLicenseNumber(""); setLocationConfirmed(false); setPlannerLat(""); setPlannerLng(""); }} />
+                            onChange={() => { setLicenceId(l.id); setFactoryId(null); setTargetReselected(true); setLicenseNumber(""); setLocationConfirmed(false); }} />
                           <span>
                             <strong className="numeric"><bdi>{l.licenseNumber}</bdi></strong>
                             {" · "}{strings.plantLabel} <bdi>{l.plantNumber ?? "—"}</bdi>
@@ -437,6 +434,7 @@ export default function Wizard({
             <div><dt className="t-caption">{strings.licenseLabel}</dt><dd><bdi>{target.canonicalLicenseNumber ?? "—"}</bdi></dd></div>
             <div><dt className="t-caption">{strings.plantLabel}</dt><dd><bdi>{target.plantNumber ?? "—"}</bdi></dd></div>
             <div><dt className="t-caption">{strings.officialPin}</dt><dd>{hasOfficial ? <bdi>{target.officialLat}, {target.officialLng}</bdi> : strings.noOfficialPin}</dd></div>
+            <div><dt className="t-caption">{strings.locationSource}</dt><dd><bdi>{target.sourceSystem ?? "—"}</bdi></dd></div>
           </dl>
           <p className="tl-meta">
             {strings.sourceLabel}: <bdi>{selectedLicenceEntry.licence.sourceSystem ?? "—"}</bdi>
@@ -472,12 +470,7 @@ export default function Wizard({
           {!hasOfficial && (
             <div className="alert alert-warning"><div>{strings.noOfficialPin}</div></div>
           )}
-          <div className={styles.locationGrid}>
-            <div className="field"><label htmlFor="wizard-planner-lat">{strings.plannerLat}</label>
-              <input key={resetKey} className="input" name="planner_lat" id="wizard-planner-lat" value={plannerLat} onChange={e => setPlannerLat(e.target.value)} /></div>
-            <div className="field"><label htmlFor="wizard-planner-lng">{strings.plannerLng}</label>
-              <input key={resetKey} className="input" name="planner_lng" id="wizard-planner-lng" value={plannerLng} onChange={e => setPlannerLng(e.target.value)} /></div>
-          </div>
+          <p className="tl-meta">{strings.locationReadOnly}</p>
           <label className={`check ${styles.confirmRow}`}>
             <input key={resetKey} type="checkbox" name="location_confirmed" value="1" required
               checked={locationConfirmed} onChange={e => setLocationConfirmed(e.target.checked)} />

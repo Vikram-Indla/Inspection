@@ -62,8 +62,6 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   const location_confirmed = formData.get("location_confirmed") === "1";
   const plannerLatRaw = String(formData.get("planner_lat") ?? "").trim();
   const plannerLngRaw = String(formData.get("planner_lng") ?? "").trim();
-  const planner_lat = plannerLatRaw === "" ? null : Number(plannerLatRaw);
-  const planner_lng = plannerLngRaw === "" ? null : Number(plannerLngRaw);
   const notesRaw = String(formData.get("notes") ?? "").trim();
   const notes = notesRaw === "" ? null : notesRaw;
   const resumeRaw = String(formData.get("resume_visit_plan_id") ?? "").trim();
@@ -96,19 +94,18 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     }
     if (fac?.license_number && license_number !== fac.license_number)
       blockers.push("Industrial License must be selected and confirmed before publishing");
-    const hasPlannerPin = planner_lat != null && planner_lng != null && Number.isFinite(planner_lat) && Number.isFinite(planner_lng);
-    if ((planner_lat != null || planner_lng != null) && !hasPlannerPin)
-      blockers.push("The visit pin needs a valid latitude and longitude");
+    if (plannerLatRaw !== "" || plannerLngRaw !== "")
+      blockers.push("Planner coordinate overrides are not permitted. Confirm the external master location instead");
     const hasOfficial = fac?.official_lat != null && fac?.official_lng != null;
-    if (fac && !hasOfficial && !hasPlannerPin)
-      blockers.push("No official location is recorded — pin the visit location manually");
+    if (fac && !hasOfficial)
+      blockers.push("No external master location is recorded for this factory");
     // Execution-mode eligibility (M03-011): physical needs GIS-verifiable
     // coordinates, virtual needs the OTP engine configured. Startup.tsx
     // already computes and displays this read-only after publish — this is
     // the only place mode is actually chosen, so it's the only place that
     // can enforce "an ineligible mode cannot be selected" for real.
-    if (mode === "physical" && !hasOfficial && !hasPlannerPin)
-      blockers.push("Physical execution needs a verifiable location — no official pin or planner pin is available");
+    if (mode === "physical" && !hasOfficial)
+      blockers.push("Physical execution needs a verifiable external master location");
     if (mode === "virtual") {
       const { data: otpEngine, error: otpError } = await sb.from("engine_settings").select("engine").eq("engine", "otp").maybeSingle();
       if (otpError) {
@@ -236,8 +233,8 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     window_end,
     license_number: license_number || null,
     location_confirmed,
-    planner_lat: planner_lat != null && Number.isFinite(planner_lat) ? planner_lat : null,
-    planner_lng: planner_lng != null && Number.isFinite(planner_lng) ? planner_lng : null,
+    planner_lat: null,
+    planner_lng: null,
     notes,
     target: canonicalTarget,
     source_channel,
@@ -256,8 +253,8 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     p_window_end: window_end,
     p_license_number: license_number || null,
     p_location_confirmed: location_confirmed,
-    p_planner_lat: planner_lat != null && Number.isFinite(planner_lat) ? planner_lat : null,
-    p_planner_lng: planner_lng != null && Number.isFinite(planner_lng) ? planner_lng : null,
+    p_planner_lat: null,
+    p_planner_lng: null,
     p_notes: notes,
     p_target: canonicalTarget,
     p_source_channel: source_channel,
@@ -341,8 +338,6 @@ export type SingleDraftInput = {
     windowEnd?: string;
     inspectorId?: string;
     notes?: string;
-    plannerLat?: string;
-    plannerLng?: string;
   };
 };
 export type DraftSaveResult = { error?: string; planId?: string; planReference?: string; version?: number };
@@ -392,8 +387,6 @@ export async function saveSingleDraft(input: SingleDraftInput): Promise<DraftSav
       window_end: emptyToNull(input.config?.windowEnd),
       inspector_id: emptyToNull(input.config?.inspectorId),
       notes: emptyToNull(input.config?.notes),
-      planner_lat: emptyToNull(input.config?.plannerLat),
-      planner_lng: emptyToNull(input.config?.plannerLng),
     },
     handoff: { source_channel: sourceChannel },
   };

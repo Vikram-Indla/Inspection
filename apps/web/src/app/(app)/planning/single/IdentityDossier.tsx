@@ -2,8 +2,8 @@
 // CD-022 — Identity dossier: identifier grid + provenance + official/planner
 // location (map with mandatory text equivalent) + risk context (advisory
 // only) + duplicate/overlap guard + Factory 360 deep link. Composed inside
-// the comparison rail in Wizard.tsx; nothing here mutates the registry —
-// the planner pin is per-visit only (M01-038).
+// the comparison rail in Wizard.tsx; normal planning never mutates the
+// external-master coordinates.
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import type { GeoMarkerData } from "@/components/GeoMap";
@@ -14,26 +14,27 @@ import type { Locale } from "@/lib/i18n";
 const GeoMap = dynamic(() => import("@/components/GeoMap"), { ssr: false });
 
 export default function IdentityDossier({
-  factory, plannerLat, plannerLng, strings, locale,
+  factory, strings, locale,
 }: {
-  factory: GradedFactory; plannerLat: string; plannerLng: string; strings: WizardStrings; locale: Locale;
+  factory: GradedFactory; strings: WizardStrings; locale: Locale;
 }) {
   const [view, setView] = useState<"map" | "text">("map");
   const hasOfficial = factory.official_lat != null && factory.official_lng != null;
-  const pLat = Number(plannerLat); const pLng = Number(plannerLng);
-  const hasPlannerPin = plannerLat !== "" && plannerLng !== "" && Number.isFinite(pLat) && Number.isFinite(pLng);
   const markers: GeoMarkerData[] = [
     ...(hasOfficial ? [{
       id: "official", lat: factory.official_lat as number, lng: factory.official_lng as number,
-      label: `${strings.officialPin} — ${factory.name}`,
+      label: [
+        `${strings.officialPin} — ${factory.name}`,
+        [factory.region, factory.city].filter(Boolean).join(", "),
+        `${factory.official_lat}, ${factory.official_lng}`,
+      ].filter(Boolean).join("\n"),
       tone: (factory.risk_band === "high" ? "high" : factory.risk_band === "medium" ? "medium" : "low") as GeoMarkerData["tone"],
       radiusM: factory.geofence_radius_m ?? undefined,
     }] : []),
-    ...(hasPlannerPin ? [{ id: "planner", lat: pLat, lng: pLng, label: strings.plannerPin, tone: "neutral" as const }] : []),
   ];
   const center: [number, number] = hasOfficial
     ? [factory.official_lat as number, factory.official_lng as number]
-    : hasPlannerPin ? [pLat, pLng] : [24.7136, 46.6753];
+    : [24.7136, 46.6753];
 
   return (
     <div className="panel panel-body" role="region" aria-label={factory.name}>
@@ -77,13 +78,13 @@ export default function IdentityDossier({
           <button className="seg-opt" type="button" aria-pressed={view === "text"} onClick={() => setView("text")}>{strings.mapToggle.split(" / ")[1]}</button>
         </div>
         {view === "map" ? (
-          <div className="map-panel">
-            <GeoMap center={center} zoom={hasOfficial || hasPlannerPin ? 14 : 6} markers={markers} height="100%" />
+          <div className="map-panel sq-execution__map">
+            <GeoMap center={center} zoom={hasOfficial ? 14 : 6} markers={markers} height="100%" showNativePins />
           </div>
         ) : (
           <ul className="timeline" aria-label={strings.textEquivalent}>
             <li>{strings.officialPin}: {hasOfficial ? <bdi>{factory.official_lat}, {factory.official_lng}</bdi> : strings.noOfficialPin}</li>
-            {hasPlannerPin && <li>{strings.plannerPin}: <bdi>{plannerLat}, {plannerLng}</bdi></li>}
+            <li>{strings.locationSource}: <bdi>{factory.source ?? "—"}</bdi></li>
           </ul>
         )}
       </div>
