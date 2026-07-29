@@ -149,7 +149,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     .from("user_roles")
     .select("role_key")
     .eq("user_id", user.id);
-  const dashboardRoleKeys = ["ops", "leadership"] as const;
+  const dashboardRoleKeys = ["supervisor", "ops", "leadership"] as const;
   const mayViewDashboard = !roleError && (dashboardRoles ?? []).some(row => dashboardRoleKeys.includes(row.role_key as typeof dashboardRoleKeys[number]));
   if (!mayViewDashboard) redirect("/launch");
 
