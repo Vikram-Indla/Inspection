@@ -214,6 +214,56 @@ class NormalizeMigrationsTest(unittest.TestCase):
             )
             self.assertNotIn("insert into public.compliance_lookup_values", normalized)
 
+    def test_missing_policy_targets_are_omitted_from_disposable_copy(self) -> None:
+        repo = Path(__file__).resolve().parents[2]
+        source = repo / "supabase" / "migrations"
+        script = Path(__file__).with_name("normalize_supabase_migrations.py")
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "normalized"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(script),
+                    str(source),
+                    str(output),
+                    "--missing-compliance-lookup-overlay",
+                    "--skip-missing-policy-targets-overlay",
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            manifest = json.loads(
+                (output / "normalization-manifest.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            transformed = {
+                item["original_file"]: item
+                for item in manifest
+                if item["compatibility_overlay"] is not None
+            }
+            rls = transformed["20260727010000_rls_initplan_wrap.sql"]
+            normalized = (output / rls["normalized_file"]).read_text(
+                encoding="utf-8"
+            )
+
+            self.assertIn(
+                "skip_missing_policy_targets_v1:reopening_notice_lines,"
+                "reopening_notices",
+                rls["compatibility_overlay"],
+            )
+            self.assertNotIn(
+                "ON public.reopening_notice_lines",
+                normalized,
+            )
+            self.assertNotIn("ON public.reopening_notices", normalized)
+            self.assertIn(
+                "ON public.compliance_lookup_types",
+                normalized,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

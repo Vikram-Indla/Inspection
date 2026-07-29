@@ -71,6 +71,16 @@ create policy compliance_lookup_values_read
   using (true);
 
 """
+RLS_INITPLAN_FILE = "20260727010000_rls_initplan_wrap.sql"
+CREATE_TABLE_NAME = re.compile(
+    r"create\s+table\s+(?:if\s+not\s+exists\s+)?"
+    r"(?:public\.)?([a-z_][a-z0-9_]*)",
+    re.IGNORECASE,
+)
+ALTER_POLICY_STATEMENT = re.compile(
+    r"ALTER\s+POLICY\b.*?\bON\s+public\.([a-z_][a-z0-9_]*)\b.*?;",
+    re.IGNORECASE | re.DOTALL,
+)
 
 
 def sha256(path: Path) -> str:
@@ -109,6 +119,14 @@ def main() -> int:
             "consumer in the disposable copy when no creation migration exists."
         ),
     )
+    parser.add_argument(
+        "--skip-missing-policy-targets-overlay",
+        action="store_true",
+        help=(
+            "Omit ALTER POLICY statements from the disposable RLS optimizer "
+            "when their target table has no creation source in the repository."
+        ),
+    )
     args = parser.parse_args()
 
     source = args.source.resolve()
@@ -126,6 +144,17 @@ def main() -> int:
             parser.error(f"unversioned SQL migration: {path.name}")
         migrations.append((int(match.group("version")), path.name, path))
     migrations.sort(key=lambda item: (item[0], item[1]))
+    created_tables = {
+        table.lower()
+        for _, _, migration_path in migrations
+        for table in CREATE_TABLE_NAME.findall(
+            migration_path.read_text(encoding="utf-8")
+        )
+    }
+    if args.missing_compliance_lookup_overlay:
+        created_tables.update(
+            {"compliance_lookup_types", "compliance_lookup_values"}
+        )
 
     manifest = []
     for ordinal, (original_version, original_name, path) in enumerate(
@@ -182,6 +211,36 @@ def main() -> int:
                 encoding="utf-8",
             )
             overlay = "missing_compliance_lookup_schema_v1"
+        if (
+            args.skip_missing_policy_targets_overlay
+            and original_name == RLS_INITPLAN_FILE
+        ):
+            source_text = target.read_text(encoding="utf-8")
+            skipped_targets: set[str] = set()
+
+            def keep_existing_policy(match: re.Match[str]) -> str:
+                target_table = match.group(1).lower()
+                if target_table in created_tables:
+                    return match.group(0)
+                skipped_targets.add(target_table)
+                return (
+                    "-- Disposable clean-apply: omitted ALTER POLICY for "
+                    f"missing repository table public.{target_table};"
+                )
+
+            normalized_text = ALTER_POLICY_STATEMENT.sub(
+                keep_existing_policy,
+                source_text,
+            )
+            if not skipped_targets:
+                parser.error(
+                    "missing-policy-target overlay found no missing targets; "
+                    "refusing an unnecessary disposable transform"
+                )
+            target.write_text(normalized_text, encoding="utf-8")
+            overlay = "skip_missing_policy_targets_v1:" + ",".join(
+                sorted(skipped_targets)
+            )
         manifest.append(
             {
                 "ordinal": ordinal,
