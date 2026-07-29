@@ -126,13 +126,14 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   const [packageRead, inspectorRead, otpRead] = await Promise.all([
     sb.from("package_versions").select("id, version_label, packages(code, title)").in("status", ["published", "locked"])
       .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`).order("published_at", { ascending: false }),
-    // Start from profiles, as the Planning landing and Visit detail pages do.
-    // Reading from user_roles directly is filtered for the Planner session in
-    // the deployed RLS shape, leaving the manual assignment list empty even
-    // when active inspectors exist.  The inner, explicitly keyed role join
-    // keeps this an inspector-only roster without relying on that restricted
-    // child-table projection.
-    sb.from("profiles").select("user_id, full_name, user_roles!user_roles_user_id_fkey!inner(role_key)").eq("user_roles.role_key", "inspector").order("full_name"),
+    // The manual picker uses the explicit non-production roster rather than
+    // exposing generic role labels. It is still role-gated, active-only and
+    // carries region/capacity/provenance with every candidate.
+    sb.from("profiles").select("user_id, full_name, region, user_roles!user_roles_user_id_fkey!inner(role_key), nonproduction_inspector_roster!inner(region, account_status, daily_capacity, provenance)")
+      .eq("user_roles.role_key", "inspector")
+      .eq("nonproduction_inspector_roster.account_status", "active")
+      .eq("nonproduction_inspector_roster.provenance", "NONPRODUCTION_SYNTHETIC")
+      .order("full_name"),
     sb.from("engine_settings").select("engine").eq("engine", "otp").maybeSingle(),
   ]);
   if (packageRead.error || inspectorRead.error || otpRead.error) {
@@ -142,7 +143,13 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   const pkgs = packageRead.data;
   const inspRoles = inspectorRead.data;
   const otpEngine = otpRead.data;
-  const inspectors = (inspRoles ?? []).map(r => ({ user_id: r.user_id as string, full_name: r.full_name as string }));
+  const inspectors = (inspRoles ?? []).map(r => {
+    const roster = r.nonproduction_inspector_roster as unknown as { region: string; daily_capacity: number };
+    return {
+      user_id: r.user_id as string,
+      full_name: `${r.full_name as string} — ${roster.region} · active · ${roster.daily_capacity}/day`,
+    };
+  });
   const virtualEligible = !!otpEngine;
 
   let portfolios: ResolvedPortfolio[] = [];
