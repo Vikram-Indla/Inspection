@@ -196,11 +196,10 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       glyph: "⚡",
       title: t("plan.method.immediate.title", "Create an urgent visit"),
       desc: t(
-        "plan.method.immediate.pending",
-        "Immediate and unregistered-factory creation remain unavailable until their role and factory-source decisions are approved.",
+        "plan.method.immediate.exception",
+        "Create a separately permissioned urgent visit. Manual establishments remain unverified and never update the registered master.",
       ),
       href: "/planning/immediate",
-      blockedReason: t("plan.method.decisionPending", "Decision pending"),
     },
   ];
 

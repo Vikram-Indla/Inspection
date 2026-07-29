@@ -23,7 +23,7 @@ const sanitizeSourceChannel = (raw: string) =>
 // cause is logged server-side only. Validation blockers below are deliberate
 // governed business messages, not raw provider errors, and are unchanged.
 const NEUTRAL_WRITE_ERROR =
-  "Publishing could not complete a step. Your entries are preserved — review the step status below and retry; retry will not create a second visit.";
+  "Scheduling could not complete a step. Your entries are preserved — review the step status below and retry; retry will not create a second visit.";
 const NEUTRAL_READ_ERROR =
   "Planning data could not be verified (ERR-OPS-001). Your entries are preserved — try again.";
 export async function publishSingleVisit(_: PublishResult, formData: FormData): Promise<PublishResult> {
@@ -68,6 +68,7 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   const notes = notesRaw === "" ? null : notesRaw;
   const resumeRaw = String(formData.get("resume_visit_plan_id") ?? "").trim();
   const resumeId = UUID.test(resumeRaw) ? resumeRaw : "";
+  const targetReselected = formData.get("target_reselected") === "1";
 
   // Publish validation gate (M01-041) — exact blockers, work preserved.
   // Unchanged from the prior runtime.
@@ -155,12 +156,21 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   // M01-040 — resolve the inspector with an availability check: auto-assign the
   // first inspector with no overlapping active assignment in this window, or
   // validate the manual pick's availability (no double-booking).
-  const { data: inspRows, error: inspectorPoolError } = await sb.from("user_roles").select("user_id").eq("role_key", "inspector");
+  const { data: recommendedRows, error: inspectorPoolError } = await sb.rpc("recommend_planning_inspectors", {
+    p_factory_id: factory_id,
+    p_window_start: window_start,
+    p_window_end: window_end,
+  });
   if (inspectorPoolError) {
     console.error("[ publishSingleVisit] inspector pool read failed:", inspectorPoolError.message);
     return { error: NEUTRAL_READ_ERROR };
   }
-  const pool = (inspRows ?? []).map(r => r.user_id as string);
+  const recommendations = Array.isArray(recommendedRows)
+    ? recommendedRows as { inspector_id?: string; has_availability?: boolean }[]
+    : [];
+  const pool = recommendations
+    .filter(r => r.has_availability === true && UUID.test(r.inspector_id ?? ""))
+    .map(r => r.inspector_id as string);
   if (pool.length === 0) return { error: "No eligible inspector is available" };
   const { data: overlaps, error: overlapError } = await sb.from("assignments")
     .select("inspector_id, visits!inner(planning_status, window_start, window_end)")
@@ -197,6 +207,25 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     plant_number: plant_number || null,
     source: target_source,
   };
+  if (resumeId) {
+    if (!targetReselected) {
+      return { error: "The saved establishment identity must be selected again before publishing. The historical draft remains unchanged." };
+    }
+    const { error: targetError } = await sb.rpc("assert_resumed_planning_target_current", {
+      p_plan_id: resumeId,
+      p_factory_id: factory_id,
+      p_cr_number: cr_number || null,
+      p_license_number: targetingLicense,
+      p_plant_number: plant_number || null,
+    });
+    if (targetError) {
+      console.error("[ publishSingleVisit] resumed target validation failed:", targetError.code, targetError.message);
+      if (targetError.code === "40001") {
+        return { error: "The saved establishment identity changed. Select the current CR, licence and plant again; the historical draft remains unchanged." };
+      }
+      return { error: NEUTRAL_READ_ERROR };
+    }
+  }
   const { data: visitId, error: publishError } = await sb.rpc("publish_single_visit_atomic", {
     p_factory_id: factory_id,
     p_package_version_ids: package_version_ids,

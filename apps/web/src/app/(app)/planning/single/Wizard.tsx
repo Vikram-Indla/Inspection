@@ -119,6 +119,9 @@ export default function Wizard({
   // initialSelection (server-resolved, never guessed client-side).
   const [factoryId, setFactoryId] = useState<string | null>(initialSelection.factoryId ?? null);
   const [licenceId, setLicenceId] = useState<string | null>(initialSelection.licenceId ?? null);
+  // A resumed draft restores its historical target for review, never as a
+  // publication confirmation. The planner must select the target again.
+  const [targetReselected, setTargetReselected] = useState(draft == null);
   const [plannerLat, setPlannerLat] = useState(draftConfig.plannerLat ?? "");
   const [plannerLng, setPlannerLng] = useState(draftConfig.plannerLng ?? "");
   // Controlled, not uncontrolled — a blocked-publish retry (M01-041) re-renders
@@ -306,6 +309,7 @@ export default function Wizard({
       <input type="hidden" name="target_source" value={target?.kind ?? ""} />
       <input type="hidden" name="source_channel" value={sourceChannel} />
       <input type="hidden" name="resume_visit_plan_id" value={state.resumeId ?? draftState?.id ?? ""} />
+      <input type="hidden" name="target_reselected" value={targetReselected ? "1" : "0"} />
 
       {draft && (
         <div className="alert alert-info" role="status">
@@ -341,7 +345,8 @@ export default function Wizard({
                     a single radio per result, nothing pre-checked by default (M01-035). */}
                 <label className={`radio ${styles.choiceRow}`}>
                   <input type="radio" name="factory_id" value={f.id} checked={factoryId === f.id}
-                    onChange={() => { setFactoryId(f.id); setLicenceId(null); setLicenseNumber(""); setLocationConfirmed(false); setPlannerLat(""); setPlannerLng(""); }} />
+                    onClick={() => setTargetReselected(true)}
+                    onChange={() => { setFactoryId(f.id); setLicenceId(null); setTargetReselected(true); setLicenseNumber(""); setLocationConfirmed(false); setPlannerLat(""); setPlannerLng(""); }} />
                   <span className={`badge ${f.grade === "exact" ? "badge-compliant" : "badge-warning"}`}>
                     {f.grade === "exact" ? strings.exactBadge : strings.similarBadge}
                   </span>
@@ -393,7 +398,8 @@ export default function Wizard({
                         <label className={`radio ${styles.choiceRow}`}>
                           <input type="radio" name="licence_id" value={l.id} disabled={!l.factory}
                             checked={licenceId === l.id}
-                            onChange={() => { setLicenceId(l.id); setFactoryId(null); setLicenseNumber(""); setLocationConfirmed(false); setPlannerLat(""); setPlannerLng(""); }} />
+                            onClick={() => setTargetReselected(true)}
+                            onChange={() => { setLicenceId(l.id); setFactoryId(null); setTargetReselected(true); setLicenseNumber(""); setLocationConfirmed(false); setPlannerLat(""); setPlannerLng(""); }} />
                           <span>
                             <strong className="numeric"><bdi>{l.licenseNumber}</bdi></strong>
                             {" · "}{strings.plantLabel} <bdi>{l.plantNumber ?? "—"}</bdi>
