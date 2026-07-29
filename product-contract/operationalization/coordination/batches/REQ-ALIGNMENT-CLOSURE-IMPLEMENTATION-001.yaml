@@ -75,6 +75,29 @@ evidence_required:
   - "No mutation of historical target snapshots or source master data."
   - "Exact forward-only migration and grant/RLS review."
   - "Authenticated non-production browser/database proof remains required before tracker closure."
+local_acceptance:
+  source_contract:
+    result: "PASS"
+    count: "6/6"
+  transactional_sql_probe:
+    result: "PASS"
+    count: "22/22"
+    rollback: true
+    covers:
+      - "Target migration clean apply on isolated probe schema and idempotent replay."
+      - "RLS and grants."
+      - "Exact 720h boundary and +/-1ms."
+      - "Attachment missing, negative, nonnumeric, zero, exact max and max+1."
+      - "Recommendation ordering, ties, unavailable factors and inactive-account exclusion."
+      - "Single, Bulk and Immediate automatic-assignment trigger execution."
+      - "Override audit and idempotency wiring."
+  repository_clean_reset:
+    result: "BLOCKED_PREEXISTING"
+    reason: >-
+      Duplicate migration versions stop the standard runner; test-only
+      normalized ordering then reaches an older package migration rejected by
+      its maker-checker guard. This bounded packet does not repair baseline
+      migration history.
 stop_conditions:
   - "Any required UI markup change before approved-design class/structure confirmation."
   - "Any provider, production or external-state write."

@@ -55,9 +55,15 @@ test.describe("REQ-ALIGNMENT-CLOSURE-IMPLEMENTATION-001 source contract", () => 
     expect(migration).toContain("planning.override_assignment");
     expect(migration).toContain("assignment_override_reason");
     expect(migration).toContain("PLANNING_ASSIGNMENT_OVERRIDE");
-    expect(migration).toContain("to_jsonb(p)->>'account_status','active'");
-    expect(migration).toContain("if v_visit.visit_plan_id is null then return new");
-    expect(migration).toContain("if v_plan_method is distinct from 'single' then return new");
+    expect(migration).toContain("and p.account_status='active'");
+    expect(migration).toContain("planning.create.single");
+    expect(migration).toContain("planning.create.bulk");
+    expect(migration).toContain("planning.create.immediate");
+    expect(migration).toContain("v_planning_method:='immediate'");
+    expect(migration).toContain("v_planning_method not in ('single','bulk','immediate')");
+    expect(migration).toContain("'planning_method',v_planning_method");
+    expect(migration).toContain("PLANNING-RECOMMENDATION-CAPACITY-UNAVAILABLE");
+    expect(migration).not.toContain("coalesce(to_jsonb(p)->>'account_status','active')");
   });
 
   test("REQ-018 uses configured attachment policy without invented defaults", () => {
@@ -78,5 +84,14 @@ test.describe("REQ-ALIGNMENT-CLOSURE-IMPLEMENTATION-001 source contract", () => 
     expect(planningPage).toContain("separately permissioned urgent visit");
     expect(planningPage).toContain("remain unverified");
     expect(planningPage).not.toContain("plan.method.decisionPending");
+  });
+
+  test("Single Visit search does not render stale results as a false no-match", () => {
+    expect(singleWizard).toContain("useTransition");
+    expect(singleWizard).toContain("const searchSettled = queryInput.trim() === query && !searchPending");
+    expect(singleWizard).toContain("searching && searchSettled && !registryUnavailable");
+    expect(singleWizard).toContain("aria-busy={!searchSettled}");
+    expect(singleWizard).toContain("searchSettled && results.length > 0");
+    expect(singleWizard).toContain("searchSettled && portfolios.length > 0");
   });
 });

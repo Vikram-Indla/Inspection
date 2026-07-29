@@ -32,6 +32,8 @@ alter table public.planning_lifecycle_rules enable row level security;
 revoke all on table public.planning_lifecycle_rules from anon, authenticated;
 grant select on table public.planning_lifecycle_rules to authenticated;
 
+drop policy if exists planning_lifecycle_rules_read
+  on public.planning_lifecycle_rules;
 create policy planning_lifecycle_rules_read
   on public.planning_lifecycle_rules for select to authenticated
   using (public.has_capability('planning.view'));
@@ -153,6 +155,8 @@ create table if not exists public.planning_attachment_policies (
 alter table public.planning_attachment_policies enable row level security;
 revoke all on table public.planning_attachment_policies from anon,authenticated;
 grant select on table public.planning_attachment_policies to authenticated;
+drop policy if exists planning_attachment_policies_read
+  on public.planning_attachment_policies;
 create policy planning_attachment_policies_read
   on public.planning_attachment_policies for select to authenticated
   using (public.has_capability('planning.view'));
@@ -192,6 +196,11 @@ begin
   end if;
   for v_item in select value from jsonb_array_elements(coalesce(p_attachments,'[]'::jsonb))
   loop
+    if jsonb_typeof(v_item)<>'object' then
+      return jsonb_build_object('configured',true,'allowed',false,
+        'policy_id',v_policy.id,'version',v_policy.version,
+        'reason','PLANNING-ATTACHMENT-SIZE');
+    end if;
     v_size_text:=nullif(v_item->>'size_bytes','');
     if v_size_text is null or v_size_text!~'^[0-9]+$' then
       return jsonb_build_object('configured',true,'allowed',false,
@@ -223,6 +232,74 @@ revoke all on function public.validate_planning_attachments(text,jsonb,timestamp
 grant execute on function public.validate_planning_attachments(text,jsonb,timestamptz)
   to authenticated;
 
+-- Repository bootstrap logic and the canonical/live schema catalog both
+-- require profiles.account_status, but the foundation SQL omitted its DDL.
+-- Reconcile that provenance forward-only. On the live schema this is a no-op;
+-- on a clean repository apply it creates the catalogued non-null default
+-- without deleting, deactivating, or replacing any profile.
+alter table public.profiles
+  add column if not exists account_status text not null default 'active';
+
+-- Refuse to install against any remaining drift: treating a missing/nullable
+-- status as active would silently admit inactive accounts.
+do $$
+begin
+  if not exists (
+    select 1 from information_schema.columns
+     where table_schema='public' and table_name='profiles'
+       and column_name='account_status' and is_nullable='NO'
+  ) then
+    raise exception using errcode='55000',
+      message='PLANNING-RECOMMENDATION-ACCOUNT-STATUS-SCHEMA-DRIFT';
+  end if;
+end
+$$;
+
+create or replace function public.planning_inspector_capacity_fact(
+  p_inspector uuid,
+  p_window_start date,
+  p_window_end date
+) returns jsonb
+language plpgsql security definer set search_path='' as $$
+begin
+  return jsonb_build_object(
+    'available',true,
+    'has_availability',coalesce((
+      public.inspector_window_capacity(
+        p_inspector,p_window_start,p_window_end
+      )->>'has_availability'
+    )::boolean,false)
+  );
+exception when others then
+  return jsonb_build_object(
+    'available',false,
+    'has_availability',false,
+    'reason','PLANNING-RECOMMENDATION-CAPACITY-UNAVAILABLE'
+  );
+end
+$$;
+revoke all on function public.planning_inspector_capacity_fact(uuid,date,date)
+  from public,anon,authenticated,service_role;
+
+create or replace function public.rank_planning_inspector_facts(
+  p_facts jsonb
+) returns jsonb
+language sql immutable set search_path='' as $$
+  select coalesce(jsonb_agg(fact order by
+    coalesce((fact->>'has_availability')::boolean,false) desc,
+    case when coalesce((fact->>'region_factor_available')::boolean,false)
+      then coalesce((fact->>'same_region')::boolean,false)
+      else false
+    end desc,
+    fact->>'inspector_id'
+  ),'[]'::jsonb)
+  from jsonb_array_elements(
+    case when jsonb_typeof(p_facts)='array' then p_facts else '[]'::jsonb end
+  ) as item(fact)
+$$;
+revoke all on function public.rank_planning_inspector_facts(jsonb)
+  from public,anon,authenticated,service_role;
+
 create or replace function public.recommend_planning_inspectors(
   p_factory_id uuid,
   p_window_start timestamptz,
@@ -233,7 +310,11 @@ declare
   v_region text;
   v_result jsonb;
 begin
-  if auth.uid() is null or not public.has_capability('planning.create.single') then
+  if auth.uid() is null or not (
+    public.has_capability('planning.create.single')
+    or public.has_capability('planning.create.bulk')
+    or public.has_capability('planning.create.immediate')
+  ) then
     raise exception using errcode='42501',message='PLANNING-RECOMMENDATION-DENIED';
   end if;
   if p_window_start is null or p_window_end is null or p_window_end<=p_window_start then
@@ -243,39 +324,47 @@ begin
   if not found then
     raise exception using errcode='P0002',message='PLANNING-RECOMMENDATION-FACTORY';
   end if;
-  select coalesce(jsonb_agg(row_data order by
-      (row_data->>'same_region')::boolean desc,
-      (row_data->>'has_availability')::boolean desc,
-      row_data->>'inspector_id'),'[]'::jsonb)
-    into v_result
+  select public.rank_planning_inspector_facts(
+    coalesce(jsonb_agg(row_data),'[]'::jsonb)
+  ) into v_result
   from (
     select jsonb_build_object(
       'inspector_id',p.user_id,
       'same_region',case when v_region is null or p.region is null then false
                          else p.region=v_region end,
       'region_factor_available',v_region is not null and p.region is not null,
-      'has_availability',coalesce(
-        (public.inspector_window_capacity(
-          p.user_id,p_window_start::date,p_window_end::date
-        )->>'has_availability')::boolean,false),
+      'has_availability',(capacity.fact->>'has_availability')::boolean,
+      'capacity_factor_available',(capacity.fact->>'available')::boolean,
       'factors',jsonb_build_array(
-        jsonb_build_object('key','active_inspector_role','result',true),
+        jsonb_build_object(
+          'key','active_inspector_role',
+          'role_result',true,
+          'account_status_result',p.account_status='active',
+          'result',true
+        ),
         jsonb_build_object('key','same_region','available',
           v_region is not null and p.region is not null,
           'result',case when v_region is null or p.region is null
                         then null else p.region=v_region end),
-        jsonb_build_object('key','window_capacity','result',coalesce(
-          (public.inspector_window_capacity(
-            p.user_id,p_window_start::date,p_window_end::date
-          )->>'has_availability')::boolean,false))
+        jsonb_build_object(
+          'key','window_capacity',
+          'available',(capacity.fact->>'available')::boolean,
+          'result',(capacity.fact->>'has_availability')::boolean,
+          'reason',capacity.fact->>'reason'
+        )
       )
     ) row_data
     from public.profiles p
+    cross join lateral (
+      select public.planning_inspector_capacity_fact(
+        p.user_id,p_window_start::date,p_window_end::date
+      ) as fact
+    ) capacity
     where exists (
       select 1 from public.user_roles ur
       where ur.user_id=p.user_id and ur.role_key='inspector'
     )
-      and coalesce(to_jsonb(p)->>'account_status','active')='active'
+      and p.account_status='active'
   ) ranked;
   return v_result;
 end
@@ -289,7 +378,7 @@ create or replace function public.apply_planning_assignment_recommendation()
 returns trigger language plpgsql security definer set search_path='' as $$
 declare
   v_visit public.visits%rowtype;
-  v_plan_method text;
+  v_planning_method text;
   v_ranked jsonb;
   v_chosen jsonb;
 begin
@@ -298,13 +387,17 @@ begin
   if not found then
     raise exception using errcode='P0002',message='PLANNING-RECOMMENDATION-VISIT';
   end if;
-  -- Bulk and Immediate retain their own governed assignment contracts.
-  -- This packet changes only Single Planning automatic recommendations.
-  if v_visit.visit_plan_id is null then return new; end if;
-  select vp.method into v_plan_method
-    from public.visit_plans vp
-   where vp.id=v_visit.visit_plan_id;
-  if v_plan_method is distinct from 'single' then return new; end if;
+  if v_visit.visit_plan_id is null then
+    v_planning_method:='immediate';
+  else
+    select vp.method into v_planning_method
+      from public.visit_plans vp
+     where vp.id=v_visit.visit_plan_id;
+  end if;
+  if v_planning_method not in ('single','bulk','immediate') then
+    raise exception using errcode='23514',
+      message='PLANNING-RECOMMENDATION-METHOD';
+  end if;
   v_ranked:=public.recommend_planning_inspectors(
     v_visit.factory_id,v_visit.window_start,v_visit.window_end
   );
@@ -323,6 +416,7 @@ begin
     'chosen',new.inspector_id,
     'chosen_factors',v_chosen->'factors',
     'ranked_candidates',v_ranked,
+    'planning_method',v_planning_method,
     'evaluated_at',transaction_timestamp()
   );
   return new;

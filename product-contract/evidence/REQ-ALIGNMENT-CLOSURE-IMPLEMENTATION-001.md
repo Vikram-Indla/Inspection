@@ -41,7 +41,7 @@ account changes, push and merge remain excluded.
 | REQ-015 | existing substantial | source-reviewed | filter/export proof required | open |
 | REQ-016 | handoff/draft identity must resolve and be explicitly reselected before publish | source contract PASS | Factory 360 handoff proof required | implemented, not live-closed |
 | REQ-017 | existing durable intent | source-reviewed | provider lifecycle proof required | open |
-| REQ-018 | versioned attachment-policy resolver validates count, MIME and size without invented defaults | source contract PASS | upload/publish integration proof required | backend partial |
+| REQ-018 | versioned attachment-policy resolver validates count, MIME and a present non-negative integer size without invented defaults | source + transactional SQL probe PASS | upload/publish integration proof required | implemented, not live-closed |
 
 No requirement is closed by this local packet. Authenticated non-production
 runtime evidence remains mandatory.
@@ -51,7 +51,24 @@ runtime evidence remains mandatory.
 - `git diff --check`: PASS.
 - Focused Playwright source contract:
   `requirements-alignment-closure.spec.ts --project=e2e --no-deps`:
-  **5 passed / 0 failed**.
+  **6 passed / 0 failed**.
+- Transactional SQL acceptance probe:
+  `supabase/tests/0043_requirements_alignment_closure.sql`:
+  **22 assertions passed / 0 failed**, followed by `ROLLBACK`.
+  It covered migration replay, RLS/grants, exact 720h/±1ms, no-policy
+  fail-closed, missing/negative/nonnumeric/zero/exact-max/max+1 attachment
+  sizes, recommendation ordering/ties/unavailable facts, inactive-account
+  exclusion, and actual Single/Bulk/Immediate automatic-assignment inserts.
+- The SQL probe ran in an isolated temporary database on the existing local
+  Supabase PostgreSQL stack. The target migration first applied cleanly to the
+  probe schema, replayed inside the probe transaction, and all fixtures/DDL
+  replay rolled back. The temporary database was then removed. No existing
+  local, production, or account data was changed.
+- Full repository clean reset: **BLOCKED before this packet**. The migration
+  runner rejects duplicate versions (`0015`, `0020`, `0024`, plus timestamp
+  duplicates); after test-only normalized ordering, an older package migration
+  is rejected by its maker-checker guard. These baseline defects were not
+  modified under this bounded packet.
 - Full TypeScript check: environment-blocked. This worktree has no dependency
   installation; invoking the canonical clone's compiler cannot resolve modules
   from this worktree. No dependency installation or layout mutation was made.
@@ -63,18 +80,24 @@ runtime evidence remains mandatory.
 The Action Register owner returned three defects and they were repaired
 forward-only in this packet:
 
-1. Automatic recommendation now applies only to Single Planning assignments.
-   Bulk and Immediate assignment inserts retain their existing governed
-   contracts.
-2. Inspector recommendations exclude profiles whose governed account status is
-   not active, without changing any profile, role or account.
+1. Automatic recommendation now fires for Single, Bulk and Immediate automatic
+   assignment inserts. The shared recommendation RPC accepts the corresponding
+   per-method creation capability, and the trigger stamps its resolved method.
+2. Inspector recommendations require both the inspector role and
+   `profiles.account_status='active'`. Repository/live schema provenance is
+   reconciled forward-only; existing profiles and statuses are preserved.
 3. Attachment validation fails closed for missing, negative, nonnumeric and
    out-of-range `size_bytes`; the configured maximum is evaluated only after a
    valid non-negative integer is established.
+4. The migration is replay-safe for its policies, triggers, seeds, columns and
+   relations, and the executable probe covers RLS/grants, rollback, exact
+   boundaries, ranking, unavailable factors, all three publish modes, and
+   override audit/idempotency wiring.
 
-Focused source verification was rerun after these repairs: **5 passed / 0
-failed**. `git diff --check` also passed. Executable SQL and authenticated
-non-production proofs remain required before any requirement is closed.
+Focused source verification was rerun after these repairs: **6 passed / 0
+failed**. The transactional SQL probe passed **22 / 22** and `git diff --check`
+passed. Authenticated non-production live proofs remain required before any
+requirement is closed.
 
 ## Concurrent-path disclosure
 
