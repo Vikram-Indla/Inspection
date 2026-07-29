@@ -73,6 +73,8 @@ test.describe("REQ-ALIGNMENT-CLOSURE-IMPLEMENTATION-001 source contract", () => 
   });
 
   test("REQ-005/014 retains Immediate as a truthful permissioned exception", () => {
+    expect(planningPage).toContain('title: t("plan.method.single.title", "Plan single visit")');
+    expect(planningPage).not.toContain('"Plan one visit"');
     expect(planningPage).toContain("separately permissioned urgent visit");
     expect(planningPage).toContain("remain unverified");
     expect(planningPage).not.toContain("plan.method.decisionPending");

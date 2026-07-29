@@ -191,7 +191,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
 
   const methods: CreateVisitMethod[] = [
     { glyph: "▦", title: t("plan.method.bulk.title", "Plan multiple visits"), desc: t("plan.method.bulk.desc", "Use AND/OR criteria over the factory list to create many visits under one plan."), href: "/planning/bulk" },
-    { glyph: "▣", title: t("plan.method.single.title", "Plan one visit"), desc: t("plan.method.single.desc", "Choose one registered factory by CR or Industrial License and create one visit."), href: "/planning/single" },
+    { glyph: "▣", title: t("plan.method.single.title", "Plan single visit"), desc: t("plan.method.single.desc", "Choose one registered factory by CR or Industrial License and create one visit."), href: "/planning/single" },
     {
       glyph: "⚡",
       title: t("plan.method.immediate.title", "Create an urgent visit"),
