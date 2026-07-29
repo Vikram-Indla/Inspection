@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
-import { safeFieldReturnPath } from "../src/lib/field-auth";
+import { isFieldReturnPath, safeFieldReturnPath } from "../src/lib/field-auth";
 import {
   establishAuthenticatedThemeDefault,
   SAQEEL_THEME_STORAGE_KEY,
@@ -13,8 +13,10 @@ const read = (relative: string) => fs.readFileSync(path.join(root, relative), "u
 test.describe("TASK-IPAD-AUTH-SESSION-RECOVERY-001", () => {
   test("return routing is field-only", () => {
     expect(safeFieldReturnPath("/field/inspection/a?tab=evidence")).toBe("/field/inspection/a?tab=evidence");
+    expect(isFieldReturnPath("/field/inspection/a?tab=evidence")).toBe(true);
     for (const unsafe of ["/field/../admin", "//example.com/field", "https://example.com/field", "/planning"]) {
       expect(safeFieldReturnPath(unsafe)).toBe("/field");
+      expect(isFieldReturnPath(unsafe)).toBe(false);
     }
   });
 
@@ -24,6 +26,8 @@ test.describe("TASK-IPAD-AUTH-SESSION-RECOVERY-001", () => {
     expect(auth).toContain('.eq("user_id", userId).eq("role_key", "inspector")');
     expect(login).toContain("authorizeInspectorLogin");
     expect(login).toContain("await supabaseBrowser().auth.signOut()");
+    expect(login).toContain("if (!isFieldRecovery)");
+    expect(login).toContain("if (isFieldRecovery)");
     expect(login).toContain("safeFieldReturnPath(returnTo)");
     expect(login).toContain("window.location.assign(safeReturnTo)");
     expect(login).toContain('window.location.assign("/launch")');

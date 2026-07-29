@@ -4,7 +4,13 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import EmptyState from "@/components/EmptyState";
-import { getPlanningAccess } from "@/lib/planning/access";
+import PlanningReadFailureState from "@/components/PlanningReadFailure";
+import {
+  getPlanningReadContract,
+  planningAuthenticationFailure,
+  planningDependencyFailure,
+  type PlanningSingleReadData,
+} from "@/lib/planning/read-contract";
 import {
   resolvePlanningTargets,
   resolveHandoffTarget,
@@ -43,7 +49,7 @@ type LegacyFactoryRow = {
   id: string; factory_code: string | null; name: string; cr_number: string | null; license_number: string | null;
   region: string | null; city: string | null; risk_band: string | null; risk_score: number | null;
   official_lat: number | null; official_lng: number | null; geofence_radius_m: number | null;
-  source_synced_at: string | null;
+  source: string | null; source_synced_at: string | null;
 };
 
 // One legacy factory by id (handoff prefill / draft-target hydration) with the
@@ -51,7 +57,7 @@ type LegacyFactoryRow = {
 // "unavailable", never a fabricated miss.
 async function readLegacyFactory(sb: SupabaseClient, id: string): Promise<{ row: GradedFactory | null; unavailable: boolean }> {
   const { data: f, error } = await sb.from("factories")
-    .select("id, factory_code, name, cr_number, license_number, region, city, risk_band, risk_score, official_lat, official_lng, geofence_radius_m, source_synced_at")
+    .select("id, factory_code, name, cr_number, license_number, region, city, risk_band, risk_score, official_lat, official_lng, geofence_radius_m, source, source_synced_at")
     .eq("id", id).maybeSingle();
   if (error) {
     console.error("[ single-planning prefill factory read]", error.message);
@@ -67,7 +73,7 @@ async function readLegacyFactory(sb: SupabaseClient, id: string): Promise<{ row:
       id: row.id, factory_code: row.factory_code, name: row.name, cr_number: row.cr_number, license_number: row.license_number,
       region: row.region, city: row.city, risk_band: row.risk_band, risk_score: row.risk_score,
       official_lat: row.official_lat, official_lng: row.official_lng, geofence_radius_m: row.geofence_radius_m,
-      source_synced_at: row.source_synced_at,
+      source_synced_at: row.source_synced_at, master_source: row.source,
       source: "legacy",
       grade: "exact",
       degraded: !row.license_number || row.official_lat == null || row.official_lng == null,
@@ -88,55 +94,55 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
 
-  const unavailable = (
-    <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
-      <div className="sq-banner sq-banner--critical" role="alert">
-        {tr("plan.single.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.", "بيانات التخطيط غير متاحة مؤقتًا (ERR-OPS-001). حاول مرة أخرى.")}
-      </div>
-    </Shell>
-  );
-
-  // PLN-REQ-007/008 — capability boundary, replacing the hand-rolled
-  // planner-role check. planning_access_class() classifies the session;
-  // has_planning_capability('planning.create.single') resolves explicit
-  // grants plus the business-staff class default. Business planning staff
-  // pass; inspector and admin classes are denied; any resolution failure
-  // fails closed to the same denial (never a permissive fallback).
-  const { data: { user }, error: userError } = await getVerifiedUser(sb);
-  if (userError) {
-    console.error("[ single-planning authorization]", userError.message);
-    return unavailable;
-  }
-  const access = await getPlanningAccess(sb, ["planning.create.single", "planning.submit_for_supervision"]);
-  if (access.error) {
-    console.error("[ single-planning access resolution]", access.error);
-    return unavailable;
-  }
-  if (!access.can("planning.create.single")) {
+  // DM-006 / PLN-READ-CONTRACT — one SECURITY INVOKER RPC resolves the
+  // Planner-only capability and the three configuration reads below. The
+  // caller's table grants and RLS remain authoritative; a missing contract or
+  // dependency becomes a correlated recovery state instead of a generic code.
+  const contract = await getPlanningReadContract<PlanningSingleReadData>(sb, "single");
+  if (!contract.ok) {
+    if (contract.kind === "denied") {
+      return (
+        <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
+          <EmptyState glyph="⛔" title={tr("plan.single.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+            body={tr("plan.single.unauthorized.body", "Plan one visit is available to authorized planning staff.", "تخطيط زيارة واحدة متاح لموظفي التخطيط المصرح لهم.")} />
+        </Shell>
+      );
+    }
     return (
       <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
-        <EmptyState glyph="⛔" title={tr("plan.single.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
-          body={tr("plan.single.unauthorized.body", "Plan one visit is available to authorized planning staff.", "تخطيط زيارة واحدة متاح لموظفي التخطيط المصرح لهم.")} />
+        <PlanningReadFailureState
+          failure={contract}
+          title={t("plan.read.failure.title", "Planning access needs attention")}
+          body={t("plan.read.failure.body", "The required planning read contract is unavailable. Nothing was changed. Retry after access configuration is restored.")}
+          referenceLabel={t("plan.read.failure.reference", "Support reference")}
+          retryLabel={t("plan.read.failure.retry", "Retry")}
+          retryHref="/planning/single"
+        />
       </Shell>
     );
   }
 
-  const today = new Date().toISOString().slice(0, 10);
-  const [packageRead, inspectorRead, otpRead] = await Promise.all([
-    sb.from("package_versions").select("id, version_label, packages(code, title)").in("status", ["published", "locked"])
-      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`).order("published_at", { ascending: false }),
-    sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
-    sb.from("engine_settings").select("engine").eq("engine", "otp").maybeSingle(),
-  ]);
-  if (packageRead.error || inspectorRead.error || otpRead.error) {
-    console.error("[ single-planning configuration]", packageRead.error?.message ?? inspectorRead.error?.message ?? otpRead.error?.message);
-    return unavailable;
+  const { data: { user }, error: userError } = await getVerifiedUser(sb);
+  if (userError) {
+    const failure = planningAuthenticationFailure();
+    console.error(`[planning.read:${failure.correlationId}] verified session failed`, userError.message);
+    return (
+      <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
+        <PlanningReadFailureState
+          failure={failure}
+          title={t("plan.read.session.title", "Session verification required")}
+          body={t("plan.read.session.body", "Your secure session could not be verified. Nothing was changed. Sign in again, then retry.")}
+          referenceLabel={t("plan.read.failure.reference", "Support reference")}
+          retryLabel={t("plan.read.session.retry", "Sign in again")}
+          retryHref="/login?next=/planning/single"
+        />
+      </Shell>
+    );
   }
-  const pkgs = packageRead.data;
-  const inspRoles = inspectorRead.data;
-  const otpEngine = otpRead.data;
-  const inspectors = (inspRoles ?? []).map(r => ({ user_id: r.user_id, full_name: (r.profiles as unknown as { full_name: string }).full_name }));
-  const virtualEligible = !!otpEngine;
+
+  const pkgs = contract.data.packages;
+  const inspectors = contract.data.inspectors;
+  const virtualEligible = contract.data.virtual_eligible;
 
   let portfolios: ResolvedPortfolio[] = [];
   let graded: GradedFactory[] = [];
@@ -162,7 +168,19 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
       .maybeSingle();
     if (planError) {
       console.error("[ single-planning draft read]", planError.message);
-      return unavailable;
+      const failure = planningDependencyFailure(contract.correlationId);
+      return (
+        <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
+          <PlanningReadFailureState
+            failure={failure}
+            title={t("plan.read.failure.title", "Planning access needs attention")}
+            body={t("plan.read.failure.body", "The required planning read contract is unavailable. Nothing was changed. Retry after access configuration is restored.")}
+            referenceLabel={t("plan.read.failure.reference", "Support reference")}
+            retryLabel={t("plan.read.failure.retry", "Retry")}
+            retryHref={`/planning/single?plan=${planParam}`}
+          />
+        </Shell>
+      );
     }
     if (!planRow) {
       prefillMiss = true;
@@ -189,8 +207,6 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
         windowEnd: str(cfg.window_end),
         inspectorId: str(cfg.inspector_id),
         notes: str(cfg.notes),
-        plannerLat: str(cfg.planner_lat),
-        plannerLng: str(cfg.planner_lng),
         // Legacy targets re-confirm their licence through the same radio the
         // fresh flow uses; the saved value pre-checks it (canonical targets
         // need no separate confirmation — the licence IS the selection).
@@ -298,7 +314,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
       // to the precise EXACT/SIMILAR-NAME rule in JS afterward.
       const esc = q.replace(/[%_]/g, c => `\\${c}`);
       const { data: candidates, error: searchError } = await sb.from("factories")
-        .select("id, factory_code, name, cr_number, license_number, region, city, risk_band, risk_score, official_lat, official_lng, geofence_radius_m, source_synced_at")
+        .select("id, factory_code, name, cr_number, license_number, region, city, risk_band, risk_score, official_lat, official_lng, geofence_radius_m, source, source_synced_at")
         .or(`cr_number.eq.${q},factory_code.ilike.%${esc}%,license_number.ilike.%${esc}%,name.ilike.%${esc}%`)
         // Keep the bounded search deterministic and make a newly-created
         // registry record discoverable when live test/manual data contains
@@ -321,7 +337,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
           id: f.id, factory_code: f.factory_code, name: f.name, cr_number: f.cr_number, license_number: f.license_number,
           region: f.region, city: f.city, risk_band: f.risk_band, risk_score: f.risk_score,
           official_lat: f.official_lat, official_lng: f.official_lng, geofence_radius_m: f.geofence_radius_m,
-          source_synced_at: f.source_synced_at,
+          source_synced_at: f.source_synced_at, master_source: f.source,
           source: "legacy" as const,
           grade,
           degraded: !f.license_number || f.official_lat == null || f.official_lng == null,
@@ -369,11 +385,11 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     licenseLabel: t("plan.single.licenseLabel", "Industrial license"),
     licenseNone: t("plan.single.licenseNone", "No Industrial License is recorded for this factory — the visit will use the CR."),
     locationStep: t("plan.single.locationStep", "3 · Confirm location"),
+    officialAddress: t("plan.single.officialAddress", "Official address"),
     officialPin: t("plan.single.officialPin", "Official factory pin"),
-    noOfficialPin: t("plan.single.noOfficialPin", "No official location on record — pin the visit location manually below."),
-    plannerLat: t("plan.single.plannerLat", "Planner pin latitude (optional override)"),
-    plannerLng: t("plan.single.plannerLng", "Planner pin longitude (optional override)"),
-    plannerPin: t("plan.single.plannerPin", "Planner pin (this visit only — official pin is GIS Admin owned)"),
+    noOfficialPin: t("plan.single.noOfficialPin", "No official location is available from the external master source."),
+    locationAuthority: t("plan.single.locationAuthority", "Senaei / external master source"),
+    locationReadOnly: t("plan.single.locationReadOnly", "Read-only — location master data cannot be changed in Planning"),
     locationConfirmed: t("plan.single.locationConfirmed", "Location confirmed"),
     mapLoading: t("plan.single.mapLoading", "Loading location map"),
     mapToggle: t("plan.single.mapToggle", "Map / Text"),
@@ -442,7 +458,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
         inspectors={inspectors}
         strings={strings}
         virtualEligible={virtualEligible}
-        transitionsExecutable={access.can("planning.submit_for_supervision")}
+        transitionsExecutable={contract.data.can_submit_for_supervision}
         locale={locale === "ar" ? "ar" : "en"}
       />
     </Shell>

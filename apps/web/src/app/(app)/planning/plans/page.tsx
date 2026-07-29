@@ -30,7 +30,7 @@ export default async function PlanRegister() {
       <Shell current="/planning" title={t("plan.register.title", "Visit plans")}>
         <EmptyState glyph="⚠"
           title={tr("plan.register.unavailable.title", "Plan register unavailable", "سجل الخطط غير متاح")}
-          body={tr("plan.register.unavailable.body", "Planning access could not be verified (ERR-OPS-001). Nothing was changed. Try again.", "تعذر التحقق من صلاحية التخطيط (ERR-OPS-001). لم يتم تغيير أي بيانات. أعد المحاولة.")} />
+          body={tr("plan.register.unavailable.body", "The Planning register read contract could not be verified. Nothing was changed. Retry after access configuration is restored.", "تعذر التحقق من عقد قراءة سجل التخطيط. لم يتم تغيير أي بيانات. أعد المحاولة بعد استعادة إعدادات الوصول.")} />
       </Shell>
     );
   }
@@ -51,7 +51,7 @@ export default async function PlanRegister() {
     console.error("[planning plan register]", error);
     return (
       <Shell current="/planning" title={t("plan.register.title", "Visit plans")}>
-        <div className="sq-banner sq-banner--critical"><div>{t("plan.register.loadErrorSafe", "Could not load plans. Nothing was changed. Try again (ERR-OPS-001).")}</div></div>
+        <div className="sq-banner sq-banner--critical"><div>{t("plan.register.loadErrorSafe", "Could not load plans through the authorized read path. Nothing was changed. Retry after access configuration is restored.")}</div></div>
       </Shell>
     );
   }

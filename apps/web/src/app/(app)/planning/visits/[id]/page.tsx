@@ -1,8 +1,8 @@
 import Shell from "@/components/Shell";
 import EmptyState from "@/components/EmptyState";
+import PlanningReadFailureState from "@/components/PlanningReadFailure";
 import { supabaseServer } from "@/lib/supabase-server";
-import { getVerifiedUser } from "@/lib/verified-user";
-import { getPlanningAccess } from "@/lib/planning/access";
+import { getPlanningReadContract } from "@/lib/planning/read-contract";
 import { useT } from "@/lib/i18n";
 import VisitDetail from "../../../visits/[id]/page";
 
@@ -17,21 +17,35 @@ export default async function PlanningVisitDetail({ params, searchParams }: {
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const title = t("visit.detail.title", "Visit details");
   const sb = await supabaseServer();
-  await getVerifiedUser(sb);
-  const access = await getPlanningAccess(sb, ["planning.view"]);
+  const { id } = await params;
+  const contract = await getPlanningReadContract<{ visit_id: string }>(sb, "visit_detail", id);
 
-  if (access.error) {
+  if (!contract.ok && contract.kind === "contract_gap") {
     return (
       <Shell current="/planning" title={title}>
-        <EmptyState
-          glyph="⚠"
-          title={tr("visit.detail.unavailable.title", "Visit unavailable", "الزيارة غير متاحة")}
-          body={tr("visit.list.loadErrorNeutral", "Visits are temporarily unavailable. Please try again.", "الزيارات غير متاحة مؤقتاً. حاول مرة أخرى.")}
+        <PlanningReadFailureState
+          failure={contract}
+          title={t("plan.read.failure.title", "Planning access needs attention")}
+          body={t("plan.read.failure.body", "The required planning read contract is unavailable. Nothing was changed. Retry after access configuration is restored.")}
+          referenceLabel={t("plan.read.failure.reference", "Support reference")}
+          retryLabel={t("plan.read.failure.retry", "Retry")}
+          retryHref={`/planning/visits/${id}`}
         />
       </Shell>
     );
   }
-  if (access.accessClass !== "business_staff" || !access.can("planning.view")) {
+  if (!contract.ok && contract.kind === "not_found") {
+    return (
+      <Shell current="/planning" title={title}>
+        <EmptyState
+          glyph="∅"
+          title={t("visit.detail.notFound", "Not in your scope or does not exist")}
+          body={t("visit.detail.notFoundDesc", "IDs never change or get reused (FLD-VIS-001).")}
+        />
+      </Shell>
+    );
+  }
+  if (!contract.ok) {
     return (
       <Shell current="/planning" title={title}>
         <EmptyState

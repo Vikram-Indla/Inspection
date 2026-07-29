@@ -4,6 +4,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { getPlanningAccess } from "@/lib/planning/access";
 import { findDuplicateActiveVisits } from "./duplicate";
+import { containsPlannerLocationOverride, PLANNER_LOCATION_OVERRIDE_ERROR } from "./location-authority";
 import { isPlausibleDate, PLAUSIBLE_DATE_ERROR } from "@/lib/plausible-date";
 import { createHash, randomUUID } from "node:crypto";
 
@@ -25,7 +26,7 @@ const sanitizeSourceChannel = (raw: string) =>
 const NEUTRAL_WRITE_ERROR =
   "Submitting for supervision could not complete a step. Your entries are preserved — review the step status below and retry; retry will not create a second visit.";
 const NEUTRAL_READ_ERROR =
-  "Planning data could not be verified (ERR-OPS-001). Your entries are preserved — try again.";
+  "Planning data could not be verified through the authorized read path. Your entries are preserved — retry after access configuration is restored.";
 export async function publishSingleVisit(_: PublishResult, formData: FormData): Promise<PublishResult> {
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
@@ -60,10 +61,10 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   const target_source = String(formData.get("target_source") ?? "") === "canonical" ? "canonical" : "legacy";
   const source_channel = sanitizeSourceChannel(String(formData.get("source_channel") ?? "").trim());
   const location_confirmed = formData.get("location_confirmed") === "1";
-  const plannerLatRaw = String(formData.get("planner_lat") ?? "").trim();
-  const plannerLngRaw = String(formData.get("planner_lng") ?? "").trim();
-  const planner_lat = plannerLatRaw === "" ? null : Number(plannerLatRaw);
-  const planner_lng = plannerLngRaw === "" ? null : Number(plannerLngRaw);
+  const plannerLocationOverrideAttempted = containsPlannerLocationOverride([
+    formData.get("planner_lat"),
+    formData.get("planner_lng"),
+  ]);
   const notesRaw = String(formData.get("notes") ?? "").trim();
   const notes = notesRaw === "" ? null : notesRaw;
   const resumeRaw = String(formData.get("resume_visit_plan_id") ?? "").trim();
@@ -79,6 +80,7 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     return { error: NEUTRAL_READ_ERROR };
   }
   if (!access.can("planning.submit_for_supervision")) blockers.push("Submitting requires the planning.submit_for_supervision capability");
+  if (plannerLocationOverrideAttempted) blockers.push(PLANNER_LOCATION_OVERRIDE_ERROR);
   if (!["periodic", "follow_up", "complaint"].includes(visit_type)) blockers.push("Visit type is not supported");
   if (!["physical", "virtual"].includes(mode)) blockers.push("Execution mode is not supported");
   if (!factory_id) blockers.push("Factory not selected");
@@ -92,19 +94,16 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     }
     if (fac?.license_number && license_number !== fac.license_number)
       blockers.push("Industrial License must be selected and confirmed before publishing");
-    const hasPlannerPin = planner_lat != null && planner_lng != null && Number.isFinite(planner_lat) && Number.isFinite(planner_lng);
-    if ((planner_lat != null || planner_lng != null) && !hasPlannerPin)
-      blockers.push("The visit pin needs a valid latitude and longitude");
     const hasOfficial = fac?.official_lat != null && fac?.official_lng != null;
-    if (fac && !hasOfficial && !hasPlannerPin)
-      blockers.push("No official location is recorded — pin the visit location manually");
+    if (fac && !hasOfficial)
+      blockers.push("No official location is available from the external master source");
     // Execution-mode eligibility (M03-011): physical needs GIS-verifiable
     // coordinates, virtual needs the OTP engine configured. Startup.tsx
     // already computes and displays this read-only after publish — this is
     // the only place mode is actually chosen, so it's the only place that
     // can enforce "an ineligible mode cannot be selected" for real.
-    if (mode === "physical" && !hasOfficial && !hasPlannerPin)
-      blockers.push("Physical execution needs a verifiable location — no official pin or planner pin is available");
+    if (mode === "physical" && !hasOfficial)
+      blockers.push("Physical execution needs an official location from the external master source");
     if (mode === "virtual") {
       const { data: otpEngine, error: otpError } = await sb.from("engine_settings").select("engine").eq("engine", "otp").maybeSingle();
       if (otpError) {
@@ -172,8 +171,8 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     p_window_end: window_end,
     p_license_number: license_number || null,
     p_location_confirmed: location_confirmed,
-    p_planner_lat: planner_lat != null && Number.isFinite(planner_lat) ? planner_lat : null,
-    p_planner_lng: planner_lng != null && Number.isFinite(planner_lng) ? planner_lng : null,
+    p_planner_lat: null,
+    p_planner_lng: null,
     p_notes: notes,
     p_target: canonicalTarget,
     p_source_channel: source_channel,
@@ -235,8 +234,6 @@ export type SingleDraftInput = {
     windowEnd?: string;
     inspectorId?: string;
     notes?: string;
-    plannerLat?: string;
-    plannerLng?: string;
   };
 };
 export type DraftSaveResult = { error?: string; planId?: string; planReference?: string; version?: number };
@@ -255,6 +252,11 @@ export async function saveSingleDraft(input: SingleDraftInput): Promise<DraftSav
     return { error: "denied" };
   }
   if (!input?.target || !UUID.test(input.target.factoryId)) return { error: "target" };
+  const rawConfig = (input.config ?? {}) as Record<string, unknown>;
+  const plannerLocationOverrideAttempted = containsPlannerLocationOverride([
+    "plannerLat", "plannerLng", "planner_lat", "planner_lng",
+  ].map(key => rawConfig[key]));
+  if (plannerLocationOverrideAttempted) return { error: "location_read_only" };
 
   const sourceChannel = sanitizeSourceChannel((input.sourceChannel ?? "").trim());
   const emptyToNull = (v: string | undefined) => (v != null && v.trim() !== "" ? v.trim() : null);
@@ -286,8 +288,6 @@ export async function saveSingleDraft(input: SingleDraftInput): Promise<DraftSav
       window_end: emptyToNull(input.config?.windowEnd),
       inspector_id: emptyToNull(input.config?.inspectorId),
       notes: emptyToNull(input.config?.notes),
-      planner_lat: emptyToNull(input.config?.plannerLat),
-      planner_lng: emptyToNull(input.config?.plannerLng),
     },
     handoff: { source_channel: sourceChannel },
   };
