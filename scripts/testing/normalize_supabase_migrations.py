@@ -16,6 +16,14 @@ from pathlib import Path
 
 VERSIONED_SQL = re.compile(r"^(?P<version>\d+)_(?P<name>.+\.sql)$")
 NORMALIZED_BASE = 20_000_000_000_000
+MAKER_CHECKER_FILE = "0006_package_maker_checker.sql"
+MAKER_CHECKER_ORIGINAL = (
+    "if new.status in ('published','locked') and new.approved_by is null then"
+)
+MAKER_CHECKER_OVERLAY = (
+    "if new.status in ('published','locked') and new.approved_by is null\n"
+    "     and (tg_op = 'INSERT' or old.status not in ('published','locked')) then"
+)
 
 
 def sha256(path: Path) -> str:
@@ -30,6 +38,14 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("source", type=Path)
     parser.add_argument("output", type=Path)
+    parser.add_argument(
+        "--legacy-maker-checker-overlay",
+        action="store_true",
+        help=(
+            "Patch only the disposable copy of the legacy package approver "
+            "trigger so metadata backfills on already-published rows can run."
+        ),
+    )
     args = parser.parse_args()
 
     source = args.source.resolve()
@@ -56,6 +72,22 @@ def main() -> int:
         suffix = VERSIONED_SQL.match(original_name).group("name")  # type: ignore[union-attr]
         target = output / f"{normalized_version}_{suffix}"
         shutil.copy2(path, target)
+        overlay = None
+        if args.legacy_maker_checker_overlay and original_name == MAKER_CHECKER_FILE:
+            source_text = target.read_text(encoding="utf-8")
+            if source_text.count(MAKER_CHECKER_ORIGINAL) != 1:
+                parser.error(
+                    "legacy maker-checker overlay target changed; refusing "
+                    "an unverified disposable transform"
+                )
+            target.write_text(
+                source_text.replace(
+                    MAKER_CHECKER_ORIGINAL,
+                    MAKER_CHECKER_OVERLAY,
+                ),
+                encoding="utf-8",
+            )
+            overlay = "legacy_published_metadata_backfill_v1"
         manifest.append(
             {
                 "ordinal": ordinal,
@@ -63,7 +95,9 @@ def main() -> int:
                 "original_version": str(original_version),
                 "normalized_file": target.name,
                 "normalized_version": str(normalized_version),
-                "sha256": sha256(path),
+                "source_sha256": sha256(path),
+                "normalized_sha256": sha256(target),
+                "compatibility_overlay": overlay,
             }
         )
 

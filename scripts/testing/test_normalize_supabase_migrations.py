@@ -47,7 +47,8 @@ class NormalizeMigrationsTest(unittest.TestCase):
             )
             self.assertTrue(
                 all(
-                    item["sha256"] == digest(source / item["original_file"])
+                    item["source_sha256"]
+                    == digest(source / item["original_file"])
                     for item in manifest
                 )
             )
@@ -56,6 +57,57 @@ class NormalizeMigrationsTest(unittest.TestCase):
                     digest(output / item["normalized_file"])
                     == digest(source / item["original_file"])
                     for item in manifest
+                )
+            )
+
+    def test_maker_checker_overlay_is_single_and_transparent(self) -> None:
+        repo = Path(__file__).resolve().parents[2]
+        source = repo / "supabase" / "migrations"
+        script = Path(__file__).with_name("normalize_supabase_migrations.py")
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "normalized"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(script),
+                    str(source),
+                    str(output),
+                    "--legacy-maker-checker-overlay",
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            manifest = json.loads(
+                (output / "normalization-manifest.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            transformed = [
+                item
+                for item in manifest
+                if item["compatibility_overlay"] is not None
+            ]
+
+            self.assertEqual(len(transformed), 1)
+            self.assertEqual(
+                transformed[0]["original_file"],
+                "0006_package_maker_checker.sql",
+            )
+            self.assertEqual(
+                transformed[0]["compatibility_overlay"],
+                "legacy_published_metadata_backfill_v1",
+            )
+            self.assertNotEqual(
+                transformed[0]["source_sha256"],
+                transformed[0]["normalized_sha256"],
+            )
+            self.assertTrue(
+                all(
+                    item["source_sha256"] == item["normalized_sha256"]
+                    for item in manifest
+                    if item["compatibility_overlay"] is None
                 )
             )
 
