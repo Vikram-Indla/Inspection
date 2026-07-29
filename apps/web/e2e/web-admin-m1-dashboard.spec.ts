@@ -47,7 +47,7 @@ async function waitForMapEvidence(page: Page) {
 
 test.describe("WA-M1-AC-001/002/005 source truth and negative contracts", () => {
   test("the route enforces the approved Operations/Leadership contract through the user-scoped client", () => {
-    expect(dashboardPage).toContain('const dashboardRoleKeys = ["ops", "leadership"] as const');
+    expect(dashboardPage).toContain('const dashboardRoleKeys = ["supervisor", "ops", "leadership"] as const');
     expect(dashboardPage).toContain('.eq("user_id", user.id)');
     expect(dashboardPage).toContain("if (!mayViewDashboard) redirect(\"/launch\")");
     expect(dashboardPage).toContain("const sb = await supabaseServer()");
