@@ -13,6 +13,9 @@ fidelity, and out-of-scope exclusion all pass.
 - `export-actions.ts` requires a verified user and
   `has_planning_capability('planning.export')`.
 - Export and the visible list use the same `queryPlanningVisits` read contract.
+- `20260729045000_planning_lifecycle_read_access_grant.sql` gives authenticated
+  callers SELECT-only access to lifecycle timestamps while retaining the
+  existing `visit_lifecycle_events_read` RLS policy.
 - The export cap is 5,000 authorized matching rows.
 - Unknown/unbacked CR Name and Plant Number values remain empty; they are not
   fabricated.
@@ -89,6 +92,12 @@ transactionally with isolated probe identities and records. It proves:
 2. the published predicate returns exactly one;
 3. the out-of-region control is invisible;
 4. rollback leaves no user or visit residue.
+
+`supabase/tests/0051_planning_lifecycle_read_access_grant.sql` proves the
+lifecycle relation is authenticated SELECT-only, anonymous access and direct
+mutation remain denied, and the RLS policy remains present. This repairs the
+live trace's prior `permission denied for table visit_lifecycle_events` rather
+than accepting fabricated or silently empty Last Update values.
 
 The CSV implementation and page still share `queryPlanningVisits`; therefore
 the browser row reconciliation plus the RLS probe proves the export is neither
