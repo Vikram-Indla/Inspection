@@ -743,6 +743,15 @@ Reference only; the SAQEEL visual system does not change.
 
 # DECIDED 2026-07-31 — final-cut is canon. 16 routes only.
 
+> ## ⛔ SUPERSEDED — DO NOT ACT ON THIS SECTION
+>
+> The ruling below was recorded mid-session and the Product Owner **narrowed it later the same
+> day**. It is wrong in one decisive respect: it says admin needs no Figma screens. Admin needs
+> ten. Jump to **“CORRECTED RULING — 2026-07-31 (authoritative)”** at the end of this file, and
+> read `docs/design/figma/BASELINE-2026-07-31.json` + `GAP-ANALYSIS.md` as the live records.
+>
+> Kept for provenance only.
+
 **Product Owner ruling: `design/final-cut/saqeel-revamp.html` is the canonical source for
 this Figma file. Sixteen routes. Nothing else.**
 
@@ -834,3 +843,90 @@ would be exactly the kind of bespoke value CLAUDE.md rule 2 forbids.
 
 `Panel`, `Card`, `Toolbar`, `Table row`, `Accordion` hard-code their children. Converting the
 content region to a Slot is what collapses eleven near-identical panels into one component.
+
+---
+
+# CORRECTED RULING — 2026-07-31 (authoritative)
+
+**This supersedes “DECIDED 2026-07-31 — final-cut is canon. 16 routes only.” above.**
+The Product Owner narrowed that ruling later the same day. Read this section, not that one.
+
+## Canon, by channel
+
+| Channel | Canon | State |
+|---|---|---|
+| **Web** | `design/final-cut/saqeel-revamp.html` — 16 routes | Built: 64 frames (16 × 4 variants) |
+| **Admin** | `designs/admin/` — 21 `.dc.html` | **0 screens built.** 10 board cards pending |
+| **PWA** | — | **Out of scope.** Do not plan, cost or build |
+
+## What the superseded section got wrong
+
+It claimed “the Figma is scope-complete… no further screens are to be built” and that
+“0 of 35 admin/PWA cards have a Figma screen… is now expected and correct.”
+
+That is false for admin. The six `/admin/*` frames in the file render the **RBAC refusal state**,
+because that is what final-cut renders for its persona. Faithful — but it means the file contains
+**zero admin UI**. `designs/admin/` describes a complete admin product behind its own `ad-*` shell
+(68 classes in `designs/admin/admin/saqeel/admin-shell.css`) that final-cut never covered.
+
+PWA being out of scope is the other half of the correction: the old “~90 screens missing” figure
+counted the 43 PWA files and must not be resurrected.
+
+## Real coverage
+
+Regenerate any time with `python3 docs/design/figma/gap-analysis.py` (deterministic off
+`status/saqeel-status.json`):
+
+- 32 in-scope board cards (22 web + 10 admin)
+- 8 satisfied by a Figma screen · 1 by components (`shell-f0`) · 1 reference-only (`webref`)
+- **22 pending — 12 web, 10 admin. 8 rated High** (`code ≥85%` with `design <65%`: shipped with
+  no design of record)
+
+## Admin shell — built since
+
+Not pending any more: `ad-rail` · `ad-util` · `ad-head` · `ad-subnav` · `ad-pal` · `ad-hub` ·
+`ad-cmdk` · `ad-iconbtn` · `ad-avatar` · `ad-hubcard` · `ad-state` · `ad-subnav__item` ·
+`ad-pal__item` · `ad-wordmark`, plus 13 icons (`icon/adhub/*`, `icon/adchrome/*`) and an
+assembled `Admin shell — /admin` in EN·Light and EN·Dark on page `Admin Shell` (`111:2`).
+The 10 admin cards compose onto this.
+
+## Corrections to earlier guidance in this file
+
+1. **“min-width on inputs/buttons/badges” is wrong as written.** `saqeel-components.css` grants
+   `min-width` to exactly three rules — `.page-btn` (`:289`), `.menu` (`:374`), `.map-cluster`
+   (`:363`). `.btn` and `.badge` are `inline-flex` + `white-space: nowrap`; they HUG. Adding a
+   min-width invents a value (CLAUDE.md rules 2 and 10).
+2. **“Convert the content region to a Slot” is not implementable.** `ComponentPropertyType` is
+   `BOOLEAN | TEXT | INSTANCE_SWAP | VARIANT` — there is no `SLOT` in the Plugin API. Use an
+   INSTANCE_SWAP content property plus BOOLEAN toggles. `Table row` (`108:296`, Kind × Columns
+   3–8) and `Table cell`’s `showText`/`showBadge` are the worked examples.
+3. **Session 11’s table conclusion was wrong for Planning.** `saqeel-components.css:154` says
+   *“at intrinsic width and scroll the bounded region instead of crushing text”* —
+   `.planning-visit-table { inline-size: max-content }` with `white-space: nowrap`. Equal columns
+   crushed 10-digit CR numbers. Fixed: intrinsic per-column widths in a clipping wrapper.
+
+## Traps that cost time here — check before trusting a value
+
+- **Wrong media-query branch.** `tokens.css` defines tokens three times: base `:root`, then
+  `[data-density="field"]` and `[data-density="compact"]`. Session 10 captured
+  `type-compact-size` from the wrong branch (14 vs 13); Button had the same bug
+  (`type-button-size` 14 vs base 13). Strip `@media` and density blocks before reading a value.
+- **Late override blocks.** `admin-shell.css:374–384` restates font sizes and supersedes the
+  earlier declarations — title 22 not 19, `ad-pal__name` 14.5 not 13.5. Read the file to the end.
+- **Six copies of `--text-muted` disagree.** The console runtime is `apps/web/src/app/tokens.css`;
+  `/field` separately loads `apps/web/public/saqeel-ds/…/colors.css`. `designs/*` and
+  `design/saqeel/*` are **not** loaded at runtime — do not compute contrast from them. Both
+  runtimes were unified to `#5f666c` / `#99a0a8` on 2026-07-31 (commit `b662407e`).
+- **Instances silently drop paint-level opacity.** A component fill at `opacity 0.08` renders at
+  `1.0` in every instance while still reading back `0.08`. Encode alpha in the colour **variable**
+  instead — see the ten `ad-*-bg/border/icon` derived tokens. Verify tints by sampling rendered
+  pixels, not by reading node properties.
+
+## Live records — prefer these over this file
+
+- `docs/design/figma/BASELINE-2026-07-31.json` — frozen file state + additions
+- `docs/design/figma/GAP-ANALYSIS.md` (+ `gap-analysis.py`) — coverage, regenerable
+- `docs/design/figma/QA-2026-07-31.md` — full-file QA pass and what is deliberately left alone
+- `docs/design/figma/jira-figma-subtasks.csv` / `.json` — importable payloads for the 22 pending
+  cards. **Jira is not reachable from Claude Code here** (no Atlassian MCP auth, no CLI, no
+  token); do not claim issues were created.
