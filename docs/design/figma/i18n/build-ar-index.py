@@ -2,7 +2,7 @@
 """
 One English -> Arabic index across every approved source in the repo.
 
-Arabic lives in three places that never got joined:
+Arabic lives in four places that never got joined:
 
   1. `docs/design/saqeel-ar-strings.json` — 648 pairs lifted from the approved
      design bundles, keyed by the English string.
@@ -11,7 +11,11 @@ Arabic lives in three places that never got joined:
      i18n key, not by English. Their English lives at the `t("key", "English")`
      call sites.
 
-  3. The `ui_strings` seeds under `supabase/` — 27 migrations and demo seeds whose
+  3. The vendored design bundles under `designs/**/*.dc.html`. Each carries per-file
+     dictionaries keyed as the template reads them ({{ t.someKey }}) — one English, one
+     Arabic. Joining them PER FILE recovers ~2,000 pairs. Per file matters: the same key
+     means different things on different screens.
+  4. The `ui_strings` seeds under `supabase/` — 27 migrations and demo seeds whose
      INSERT rows are (key, en, ar, status, context). This is the largest source by far
      and the one the runtime actually reads at request time; the fallbacks in (2) exist
      only until these are promoted in an environment.
@@ -82,13 +86,41 @@ for path in sorted((ROOT / "supabase").rglob("*.sql")):
         if status == "draft":
             drafts.add(en)
 
+# --- English -> Arabic, from the vendored design bundles themselves
+# Each .dc.html carries per-file dictionaries keyed the same way the template reads them
+# ({{ t.someKey }}), one holding English values and one Arabic. Nobody had joined them.
+# The join is done PER FILE: the same key means different things on different screens, so
+# a global join would mistranslate.
+KEYVAL = re.compile(r"([A-Za-z_$][\w$]*)\s*:\s*([\"'])((?:(?!\2)[^\\]|\\.)*)\2")
+bundles, bundle_files = {}, 0
+for path in sorted((ROOT / "designs").rglob("*.dc.html")):
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    en_d, ar_d = {}, {}
+    for key, _q, val in KEYVAL.findall(text):
+        val = val.replace('\\"', '"').replace("\\'", "'").strip()
+        if not val:
+            continue
+        if ARABIC.search(val):
+            ar_d.setdefault(key, val)
+        elif re.search(r"[A-Za-z]{2}", val):
+            en_d.setdefault(key, val)
+    matched = 0
+    for key, ar_val in ar_d.items():
+        en_val = en_d.get(key)
+        if en_val and len(en_val) > 1:
+            bundles.setdefault(en_val, ar_val)
+            matched += 1
+    if matched:
+        bundle_files += 1
+
 catalogue = json.loads((ROOT / "docs/design/saqeel-ar-strings.json").read_text(encoding="utf-8"))
 
-# Precedence, weakest first: seeds < runtime fallback < design catalogue. The catalogue is
-# the approved design copy; the fallbacks are a stopgap until the seeds are promoted; the
-# seeds themselves include draft rows.
+# Precedence, weakest first: ui_strings seeds < runtime fallback < design bundles <
+# design catalogue. The bundles ARE the vendored design authority, so they outrank the
+# runtime stopgap; the extracted catalogue stays top because it was reviewed.
 merged = dict(seeds)
 merged.update(runtime)
+merged.update(bundles)
 merged.update(catalogue)
 
 (HERE / "ar-index-draft-rows.json").write_text(
@@ -98,6 +130,7 @@ merged.update(catalogue)
 (HERE / "ar-index.json").write_text(
     json.dumps(merged, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
 
+print(f"design bundles joined      : {bundle_files} files, {len(bundles)} pairs")
 print(f"ui_strings sql files        : {sql_files}")
 print(f"  pairs from seeds          : {len(seeds)} ({len(drafts)} draft)")
 print(f"call-site keys with English : {len(key_en)}")
