@@ -655,3 +655,54 @@ Alert   OK (5 variants)      map-cluster  OK
    map frame across in the Figma UI and it can be wired into `/operations`.
 3. **IBM Plex Sans Arabic** — not in Figma's hosted catalogue and not uploadable on a Pro plan.
    Arabic renders in Noto Sans Arabic (decision recorded above; do not retry).
+
+---
+
+# Session 10 (2026-07-31) — typography fixed
+
+## The defect
+
+An audit of the 1,736 text nodes on the `EN · Light` screens found:
+
+- **0 used a text style.** The 12 styles were built in Phase 1 and never applied.
+- **0 had a line-height.** All were `AUTO`, so the design's ratios (body 1.5, heading 1.4,
+  label 1.35, page-title 1.3, metric 1.15) were absent everywhere.
+- 287 font sizes were raw literals across 14 distinct sizes.
+
+Font size *was* bound to variables, which is why earlier token audits looked clean — but size
+alone is not typography. This was the visible "text looks wrong" on every screen.
+
+## Token bug found underneath it
+
+The Figma variable `type-compact-size` held **14px**. That is the coarse-pointer media-query
+override at `tokens.css:310`; the base value at **`tokens.css:232` is 13px**. The variable had
+captured the wrong branch of the stylesheet, so `t-compact` was 1px too large everywhere it
+was used. Fixed at the variable, so the style and every consumer corrected together.
+
+## Applied
+
+1,735 of 1,736 nodes now carry a text style (1 mixed-font node skipped):
+
+```
+t-meta 456 · t-compact 404 · t-label 393 · t-body 230 · t-caption 84
+t-heading 80 · t-section 39 · t-page-title 36 · t-metric 8 · t-mono 5
+```
+
+Mapping is by size, disambiguated by weight where the ramp collides (14px → `t-heading` at
+600+, else `t-body`; 12px → `t-label` at 500+, else `t-meta`). Sizes with no token of their own
+(19, 16, 24, 11, 10.5, 10) map to the nearest semantic style rather than staying literal.
+
+**Line-height across the whole file: 8,452 of 8,464 nodes explicit, 12 `AUTO`.** The Arabic
+frames swap font family, which drops the style link, so line-height is re-applied there from
+the same token ratios after the swap.
+
+## Rebuilt
+
+All 48 variants regenerated from the corrected originals: 64 frames, 4 flows, 780 links,
+0 dangling.
+
+## The AR dictionary is back in the file — do not delete it again
+
+Page **`— AR STRINGS (do not delete) —`** holds the 648 pairs in two nodes (`ar-A`, `ar-B`),
+mirroring `docs/design/saqeel-ar-strings.json`. It was deleted once and regenerating the Arabic
+screens then required re-injecting 33KB by hand. Leave it in place.
