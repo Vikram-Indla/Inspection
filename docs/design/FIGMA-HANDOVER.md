@@ -738,3 +738,52 @@ The iPad file remains unreadable to this account beyond its Cover page.
 Figma's **Simple Design System** is worth reading as a *structural* reference — it is
 Figma-built, code-backed, and demonstrates Slots, min-widths and component-property patterns.
 Reference only; the SAQEEL visual system does not change.
+
+---
+
+# DECIDED 2026-07-31 — final-cut is canon. 16 routes only.
+
+**Product Owner ruling: `design/final-cut/saqeel-revamp.html` is the canonical source for
+this Figma file. Sixteen routes. Nothing else.**
+
+This resolves the conflict flagged in earlier sessions and is not to be re-litigated.
+
+## What this means
+
+- **The Figma is scope-complete for web.** The 16 routes below are the whole surface. No
+  further screens are to be built into this file.
+- `designs/` (42 web · 21 admin · 43 PWA `.dc.html`) is **not** the Figma's scope, despite the
+  slice context naming it `design_authority`. That field governs *app delivery* against the
+  55-card board; it does not govern this file. If a future session sees that field and reaches
+  for the 106 `.dc.html` screens, it is wrong — this ruling supersedes it for Figma.
+- The 57-card board in `status/saqeel-status.json` likewise tracks delivery, not Figma canon.
+  Roughly 8 of 22 web cards and 0 of 35 admin/PWA cards have a Figma screen, and **that is now
+  expected and correct**, not a gap to close.
+
+## The canonical 16
+
+/dashboard · /operations · /factory-360 · /planning · /execution · /reviews · /compliance ·
+/enforcement-library · /compliance/approvals · /analytics · /admin/access ·
+/admin/localization · /admin/risk · /admin/packages · /admin/notifications ·
+/admin/integrations
+
+Each exists in four variants: `EN · Light`, `EN · Dark`, `AR · RTL`, `AR · RTL · Dark` — 64
+frames total. The six `/admin/*` routes render the RBAC refusal state, which is what the design
+itself renders for its persona (CLAUDE.md rule 10). That is complete, not missing.
+
+## What "identify gaps against Jira scope" now means
+
+Not "which screens are missing from Figma" — none are. It means comparing the **16 canonical
+routes** against Jira/board scope to find:
+1. Board cards with no canonical route (out of Figma scope by this ruling — a delivery
+   question, not a design one).
+2. Canonical routes whose Figma screen shows governed states (`Not configured`,
+   `Decision required`) that correspond to **open product decisions** — these are the real
+   design-side gaps, and they are already visible on Analytics, Review & Approval and
+   Approval Queue.
+
+## Next work is now unblocked and unambiguous
+
+Standardisation proceeds against these 16 routes only, in this order: atomic constraints
+(min-width / HUG / FILL) → Slots on containers → componentise the remaining ~47% →
+publish + Code Connect when the plan allows.
