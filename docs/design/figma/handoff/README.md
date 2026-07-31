@@ -16,12 +16,13 @@ File: `ML2PNwfShlQM2k44MvSEw5`, page `— SCREENS —` unless stated otherwise.
 | `SCREENS — STATES · EN · Light` | every declared state | **73** |
 | `SCREENS — OVERLAYS · EN · Light` | dialog, drawer, toast, menu, column manager, tooltip, each over a real screen | 6 |
 | `SCREENS — 1024 · EN · Light` | the 1024 breakpoint: shell collapsed, rail off-canvas, plus a drawer-open frame | 17 |
+| `SCREENS — EXTERNAL (INSP-239) · EN · Light` | external requests and self-assessment — the module the catalogue never listed | 9 |
 | page `Admin Shell` | the 14 admin screens on the `ad-*` shell | 14 |
 | pages `Foundations: *` | colour, type, spacing, radius, effects | — |
 | component pages | Button, Badge, Form Controls, Table, Nav, Overlay, State, Map, Domain: Inspection | — |
 
-Governed coverage: **30/30 in-scope screens**, **103/103 screen-states** — 30 default
-frames plus the 73 states. **212 frames, 10,668 component instances** in total.
+Coverage: **30/30 governed screens**, **103/103 screen-states**, and **92/92 live Jira
+stories** in project INSP. **221 frames** in total.
 
 ## Read these next
 
@@ -30,6 +31,7 @@ frames plus the 73 states. **212 frames, 10,668 component instances** in total.
 | `SCREEN-SPEC.md` | per screen: route, personas, permission rule, mandatory regions, primary actions, every state and its frame name, requirement weight |
 | `component-map.json` | Figma component → React import path under `components/saqeel/` |
 | `KNOWN-DEFECTS.md` | the 2 open defects, and why the Planning table is *meant* to clip |
+| `../traceability/JIRA-COVERAGE-2026-08-01.md` | **Jira story → screen coverage, from live Jira** |
 | `../traceability/COVERAGE-STATISTICS-2026-07-31.md` | requirement → screen coverage, computed |
 | `../i18n/TRANSLATION-PACKET-2026-07-31.csv` | the 213 strings still needing Arabic |
 
@@ -112,9 +114,15 @@ regardless of width.
 3. **States are single-region.** A state frame shows the state block in the content
    region, not every surrounding control in its disabled or loading form.
 4. **Two open defects**, both cosmetic, in `KNOWN-DEFECTS.md`.
-5. **Jira is not the source here.** Coverage is measured against the governed catalogue
-   because Jira is unreachable from this environment. If Jira holds screens the catalogue
-   does not, this file will not know about them.
+5. **The nine EXTERNAL routes are proposals, not governed.** `CLAUDE.md` rule 9 fixes the
+   route list and contains none of them, because the catalogue never described that
+   module. They need a routing decision before implementation. Everything ungoverned
+   inside them renders *Not configured* — eligibility rules, objection windows,
+   self-assessment scoring and the effect of accepting a correction are all governed
+   behaviour nobody has specified yet.
+6. **The catalogue is incomplete.** Jira holds a module — INSP-239, 9 stories, 36
+   sub-tasks — that `screen_route_catalogue.csv` does not mention at all. Treat Jira as
+   canonical for scope, as the Product Owner said; the catalogue is a subset.
 
 ## Governance that overrides the picture
 
