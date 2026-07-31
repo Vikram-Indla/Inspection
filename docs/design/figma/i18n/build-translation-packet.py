@@ -15,23 +15,55 @@ proposed i18n key, and an empty `ar` column.
 
   python3 docs/design/figma/i18n/build-translation-packet.py
 
+Before asking for anything, it checks every row against `ar-index.json` — the joined
+design catalogue plus runtime fallbacks. Rows that already have approved Arabic are
+filled in and marked `reuse`; rows whose English differs only slightly from an approved
+term carry that term as a suggestion for the reviewer to accept or reject. What is left
+is genuinely new copy.
+
 Inputs
   docs/design/figma/i18n/untranslated-strings.json   [en, screens, role] triples
                                                       extracted from the Figma file
-  docs/design/saqeel-ar-strings.json                 the 648 already-approved pairs
+  docs/design/figma/i18n/ar-index.json               every approved pair in the repo
+                                                      (build-ar-index.py)
 
 Outputs
   docs/design/figma/i18n/TRANSLATION-PACKET-2026-07-31.csv   the reviewer's worksheet
   docs/design/figma/i18n/TRANSLATION-PACKET-2026-07-31.md    the brief around it
 """
-import csv, json, pathlib, re
+import csv, difflib, json, pathlib, re
 
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
 STAMP = "2026-07-31"
 
 rows = json.load(open(HERE / "untranslated-strings.json", encoding="utf-8"))
-approved = json.load(open(ROOT / "docs/design/saqeel-ar-strings.json", encoding="utf-8"))
+approved = json.load(open(HERE / "ar-index.json", encoding="utf-8"))
+
+
+def fold(s):
+    """Case and punctuation folded, so 'CR number' meets 'CR Number' and 'approved'
+    meets 'Approved'. Nothing semantic — a fold is not a translation decision."""
+    return re.sub(r"\s+", " ", re.sub(r"[^a-z0-9 ]", " ", s.lower())).strip()
+
+
+FOLDED = {}
+for _en, _ar in approved.items():
+    FOLDED.setdefault(fold(_en), (_en, _ar))
+FOLD_KEYS = list(FOLDED)
+
+
+def lookup(en):
+    """(arabic, source_english, status) — status is reuse | suggest | new."""
+    f = fold(en)
+    if f in FOLDED:
+        src, ar = FOLDED[f]
+        return ar, src, "reuse"
+    close = difflib.get_close_matches(f, FOLD_KEYS, n=1, cutoff=0.82)
+    if close:
+        src, ar = FOLDED[close[0]]
+        return "", src, "suggest"
+    return "", "", "new"
 
 # Screen -> i18n namespace. Mirrors the existing `nav.*` / `shell.*` convention in
 # apps/web/src/lib/i18n-keys.generated.ts: dotted, lowercase, English stays in code.
@@ -118,10 +150,13 @@ for en, screens, role in rows:
     while key in seen:
         key, n = f"{NS.get(first, 'unknown')}.{slug(en)}{n}", n + 1
     seen.add(key)
+    ar, src, status = lookup(en)
     out.append({
         "key": key,
         "en": en,
-        "ar": "",
+        "ar": ar,
+        "status": status,
+        "approved_source": src,
         "screens": screens.replace("|", " "),
         "role": role,
         "kind": kind,
@@ -129,18 +164,21 @@ for en, screens, role in rows:
         "shared": "yes" if "|" in screens else "",
     })
 
-out.sort(key=lambda r: (r["priority"], r["key"]))
+STATUS_ORDER = {"new": 0, "suggest": 1, "reuse": 2}
+out.sort(key=lambda r: (r["priority"], STATUS_ORDER[r["status"]], r["key"]))
 
 csv_path = HERE / f"TRANSLATION-PACKET-{STAMP}.csv"
 with open(csv_path, "w", newline="", encoding="utf-8") as fh:
-    w = csv.DictWriter(fh, fieldnames=["key", "en", "ar", "screens", "role", "kind",
-                                       "priority", "shared"])
+    w = csv.DictWriter(fh, fieldnames=["key", "en", "ar", "status", "approved_source",
+                                       "screens", "role", "kind", "priority", "shared"])
     w.writeheader()
     w.writerows(out)
 
-by_prio = {}
+by_prio, by_status = {}, {}
 for r in out:
     by_prio.setdefault(r["priority"], []).append(r)
+    by_status.setdefault(r["status"], []).append(r)
+todo = [r for r in out if r["status"] != "reuse"]
 
 L = [f"# Translation packet — {STAMP}\n",
      "Arabic needed for the 13 screens added to the SAQEEL Figma file on "
@@ -152,15 +190,32 @@ L = [f"# Translation packet — {STAMP}\n",
      "auto-layout reversed, inline padding swapped, text alignment flipped — but the "
      "copy is only as Arabic as the approved catalogue allowed.\n",
      f"- Strings on the new screens: **421**\n"
-     f"- Already approved in `docs/design/saqeel-ar-strings.json`: **{len(approved) and 61}**\n"
+     f"- Matched by the design catalogue when the AR frames were built: **61**\n"
      f"- Numbers, codes and glyphs needing no translation: **~68**\n"
-     f"- **In this packet: {len(out)}**\n",
+     f"- Carried into this packet: **{len(out)}**\n",
+     "## Already answered — do not re-translate\n",
+     f"`ar-index.json` joins the design catalogue (648 pairs) with the runtime fallbacks "
+     f"in `apps/web/src/lib/i18n.ts` and `apps/web/src/lib/factory360/arabic.ts`, whose "
+     f"Arabic is keyed by i18n key rather than by English and so was invisible to the "
+     f"first pass. That join is **{len(approved)}** approved pairs, and it answers rows "
+     f"this packet was about to ask for:\n",
+     f"- **{len(by_status.get('reuse', []))} rows** already have approved Arabic. They "
+     f"are filled in, `status = reuse`, with the catalogue English in `approved_source`. "
+     f"Nothing to do.\n"
+     f"- **{len(by_status.get('suggest', []))} rows** differ from an approved term only "
+     f"slightly (\"Qty / capacity\" vs \"Quantity / capacity\"). `ar` is left blank and "
+     f"the near term sits in `approved_source` — accept it, or translate afresh if it is "
+     f"a different concept.\n"
+     f"- **{len(by_status.get('new', []))} rows** are genuinely new copy.\n",
+     f"So the real ask is **{len(todo)} rows**, not {len(out)}.\n",
      "Nothing here was machine-translated. CLAUDE.md rule 8 keeps Arabic in the i18n "
      "layer under review; inventing it in a design file would put unreviewed government "
      "copy in front of inspectors.\n",
      "## How to use it\n",
-     f"1. Fill the `ar` column in `TRANSLATION-PACKET-{STAMP}.csv`. Leave a row blank "
-     "if the English is wrong — that is a copy defect, not a translation task.\n"
+     f"1. Fill the `ar` column in `TRANSLATION-PACKET-{STAMP}.csv` for every row where "
+     "`status` is `new` or `suggest` — they sort to the top of each priority band. "
+     "Leave a row blank if the English is wrong; that is a copy defect, not a "
+     "translation task.\n"
      "2. Return the file. The approved pairs merge into "
      "`docs/design/saqeel-ar-strings.json` and seed `ui_strings` via "
      "`/admin/localization`, which is where the runtime reads Arabic from "
@@ -177,12 +232,18 @@ L = [f"# Translation packet — {STAMP}\n",
      f"{len(by_prio.get('P2', []))} |",
      f"| P3 | Seeded demo content — factory names, visit references, timestamps. Visible "
      f"in the AR screenshots but not governed copy. | {len(by_prio.get('P3', []))} |",
-     "\n## P1 — blocks AR sign-off\n",
-     "| Key | English | Screens | Kind |",
-     "|---|---|---|---|"]
+     "\nCounts above are all rows. Subtract `reuse` for what is actually outstanding: "
+     + ", ".join(f"{p} {len([r for r in by_prio[p] if r['status'] != 'reuse'])}"
+                 for p in sorted(by_prio)) + ".\n",
+     "\n## P1 still needing Arabic\n",
+     "| Key | English | Screens | Kind | Near term |",
+     "|---|---|---|---|---|"]
 for r in by_prio.get("P1", []):
+    if r["status"] == "reuse":
+        continue
     en = r["en"].replace("|", "·")
-    L.append(f"| `{r['key']}` | {en} | {r['screens']} | {r['kind']} |")
+    L.append(f"| `{r['key']}` | {en} | {r['screens']} | {r['kind']} | "
+             f"{r['approved_source'] or ''} |")
 
 L.append("\n## Notes for the reviewer\n")
 L.append("- `shared = yes` means the string appears on more than one screen; one Arabic "
@@ -200,6 +261,10 @@ L.append("- Contract IDs inside a string (`SCR-WEB-140`, `SFR-2021 §4.2`) stay 
 
 print(f"rows      : {len(out)}")
 for p in sorted(by_prio):
-    print(f"  {p}      : {len(by_prio[p])}")
+    band = by_prio[p]
+    print(f"  {p}      : {len(band)} ({len([r for r in band if r['status'] != 'reuse'])} outstanding)")
+for s in ("reuse", "suggest", "new"):
+    print(f"  {s:8}: {len(by_status.get(s, []))}")
+print(f"outstanding: {len(todo)}")
 print(f"wrote {csv_path}")
 print(f"wrote {HERE / f'TRANSLATION-PACKET-{STAMP}.md'}")
