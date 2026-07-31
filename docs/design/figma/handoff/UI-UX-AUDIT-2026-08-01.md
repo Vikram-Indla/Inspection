@@ -102,7 +102,7 @@ column teaches a developer to build a field nobody fills.
 | P8 | Analytics | Eight filters stacked vertically in a narrow column; every other screen uses a horizontal filter bar | 🟡 |
 | P9 | Planning | `Confidence % 96` on cards, `92% confidence` on the badge — two formats for one metric | 🟢 |
 | P10 | Factory 360 vs SCR-WEB-400 | Two frames for one screen at wildly different fidelity — legacy is 2,156px with portfolio rail, metrics, trends and accordions; mine is 929px of four plain tables | 🔴 |
-| P11 | Review queue | Selection painted with **compliance green** (`#dfeee9` / `#176b52`), so a selected row reads as "passed" | 🔴 |
+| P11 | ~~Review queue selection~~ | **WITHDRAWN — misdiagnosis.** `#dfeee9`/`#176b52` *are* `accent-soft`/`action-primary`, correctly bound. The card only reads as compliance green because the SAQEEL brand accent and the compliant status share a hue family. Worth a palette conversation, not a defect | ⚪ |
 | P12 | Review queue | `Penalty proposed` on **100%** of rows — a signal with no variance is noise | 🟡 |
 | P13 | Dashboard | `Generated 6 min ago · Gemini provider` exposes the AI vendor in a government UI | 🟢 |
 
@@ -114,7 +114,7 @@ column teaches a developer to build a field nobody fills.
 1. S1 placeholder purge — one component property, clears 376 defects
 2. S2 status colour determinism — one label, one colour
 3. S3 `Identifier` component — mono, neutral, never badged
-4. P11 selection re-token to `--accent-soft` / `--action-primary`
+4. ~~P11 selection re-token~~ — withdrawn, it was already correct
 5. P12 remove the constant `Penalty proposed`, or make it conditional
 
 **Phase 2 — the credibility fixes** (≈1 session)
@@ -147,3 +147,25 @@ column had data. The defects above were found by looking at the screens.
 Any future audit should assert semantics, not structure: same label → same colour,
 identifiers never coloured, no column entirely empty, no literal `Placeholder text`, and
 AR component roles matching EN.
+
+
+---
+
+## Phase 1 — done 2026-08-01
+
+| Item | Result |
+|---|---|
+| S1 placeholders | **376 → 0.** 221 were the shell search (one component), 107 fields got domain copy, 32 AR fields echo their own Arabic label rather than carry English, 16 generic `Search` |
+| S2 status colour | **172 badges re-varianted, 0 conflicts left.** `Submitted`→Info, `Published`→Completed, `High`→Critical, `Medium`→Warning, `Draft`/`Not started`→Draft, plus the risk labels that were rendering grey |
+| S3 identifiers | **343 normalised** — all IBM Plex Mono, all token-bound to `text-secondary`, badge fills stripped from the 6 that were pill-wrapped |
+| P11 | Withdrawn — see above |
+| P12 | `Penalty proposed` hidden on all but the first row, 10 instances, so it reads as a signal rather than furniture |
+
+No new clipping. The 6 remaining clipped nodes are the pre-existing Factory 360 `identity`
+and AR caret defects, unchanged.
+
+**Two mistakes made and corrected inside this phase**, both worth recording because they
+have the same root cause: `setBoundVariableForPaint` keeps a *cached literal* alongside the
+binding. Passing a black base produced black cards; passing the light base produced a light
+card inside a dark frame. The cached colour must match the mode the frame renders in. The
+first attempt at both the identifier fills and the selection fill fell into this.
