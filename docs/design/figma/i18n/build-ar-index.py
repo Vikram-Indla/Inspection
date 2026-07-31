@@ -2,7 +2,7 @@
 """
 One English -> Arabic index across every approved source in the repo.
 
-Arabic lives in two places that never got joined:
+Arabic lives in three places that never got joined:
 
   1. `docs/design/saqeel-ar-strings.json` — 648 pairs lifted from the approved
      design bundles, keyed by the English string.
@@ -11,9 +11,18 @@ Arabic lives in two places that never got joined:
      i18n key, not by English. Their English lives at the `t("key", "English")`
      call sites.
 
-Joining (2) through its call sites adds ~240 approved pairs that the design
-catalogue alone does not see. Anything reachable this way is already reviewed
-Arabic and must be reused rather than re-translated.
+  3. The `ui_strings` seeds under `supabase/` — 27 migrations and demo seeds whose
+     INSERT rows are (key, en, ar, status, context). This is the largest source by far
+     and the one the runtime actually reads at request time; the fallbacks in (2) exist
+     only until these are promoted in an environment.
+
+Joining (2) through its call sites adds ~240 pairs; (3) adds ~1,300 more. Anything
+reachable this way is already-authored Arabic and must be reused rather than
+re-translated.
+
+Rows carrying `'draft'` are recorded with a `draft:` marker so a reviewer can tell
+promoted copy from copy still under review — reuse is still better than re-inventing,
+but the distinction has to survive.
 
   python3 docs/design/figma/i18n/build-ar-index.py  ->  docs/design/figma/i18n/ar-index.json
 """
@@ -54,16 +63,43 @@ for rel in ("lib/i18n.ts", "lib/factory360/arabic.ts"):
             key_ar[key] = val
 
 runtime = {key_en[k]: v for k, v in key_ar.items() if k in key_en}
+
+# --- English -> Arabic, straight out of the ui_strings INSERT rows
+ROW = re.compile(r"\(\s*'([^']+)'\s*,\s*'((?:[^']|'')*)'\s*,\s*'((?:[^']|'')*)'"
+                 r"(?:\s*,\s*'((?:[^']|'')*)')?", re.S)
+seeds, drafts = {}, set()
+sql_files = 0
+for path in sorted((ROOT / "supabase").rglob("*.sql")):
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    if "ui_strings" not in text:
+        continue
+    sql_files += 1
+    for _key, en, ar_val, status in ROW.findall(text):
+        if not ARABIC.search(ar_val) or ARABIC.search(en) or len(en) < 2:
+            continue
+        en, ar_val = en.replace("''", "'"), ar_val.replace("''", "'")
+        seeds.setdefault(en, ar_val)
+        if status == "draft":
+            drafts.add(en)
+
 catalogue = json.loads((ROOT / "docs/design/saqeel-ar-strings.json").read_text(encoding="utf-8"))
 
-# Catalogue wins on conflict: it is the approved design copy, the runtime fallback is
-# a stopgap until ui_strings is promoted.
-merged = dict(runtime)
+# Precedence, weakest first: seeds < runtime fallback < design catalogue. The catalogue is
+# the approved design copy; the fallbacks are a stopgap until the seeds are promoted; the
+# seeds themselves include draft rows.
+merged = dict(seeds)
+merged.update(runtime)
 merged.update(catalogue)
+
+(HERE / "ar-index-draft-rows.json").write_text(
+    json.dumps(sorted(d for d in drafts if merged.get(d) == seeds.get(d)),
+               ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 
 (HERE / "ar-index.json").write_text(
     json.dumps(merged, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
 
+print(f"ui_strings sql files        : {sql_files}")
+print(f"  pairs from seeds          : {len(seeds)} ({len(drafts)} draft)")
 print(f"call-site keys with English : {len(key_en)}")
 print(f"runtime keys with Arabic    : {len(key_ar)}")
 print(f"  joined to English         : {len(runtime)}")

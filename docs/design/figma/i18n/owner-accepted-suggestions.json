@@ -7,13 +7,13 @@
   "These 17 are kept separate from accepted-suggestions.json because they were applied",
   "on the owner's instruction over a stated objection, not because the match is sound.",
   "Each carries the reservation that was raised. A translation reviewer should read this",
-  "file as a list to re-check, not as approved copy."
+  "file as a list to re-check, not as approved copy.",
+  "",
+  "2026-07-31, later: the index gained the ui_strings SQL seeds (1,293 pairs). Six entries",
+  "here turned out to have a real approved term after all and were removed — Mode -> النمط,",
+  "Visit -> الزيارة, Reject -> رفض, Item -> البند, State -> الحالة, Actor -> المنفذ. The",
+  "Figma frames were updated to the approved values."
  ],
- "Mode": {
-  "ar": "النموذج",
-  "matched": "Model",
-  "reservation": "'Model' is a different concept; here Mode is physical vs virtual visit"
- },
  "Package version": {
   "ar": "قرار الحزمة",
   "matched": "Package decision",
@@ -29,25 +29,16 @@
   "matched": "2 visits",
   "reservation": "carries the literal count 2; the label is a section title with no count"
  },
- "Visit": {
-  "ar": "زيارة واحدة",
-  "matched": "1 visit",
-  "reservation": "carries the literal count 1; the label is a table column header"
- },
  "Visit configuration": {
   "ar": "تهيئة المخاطر",
   "matched": "Risk Configuration",
   "reservation": "reads 'risk configuration'; the screen configures a visit, not risk"
  },
  "Approve": {
-  "ar": "معتمد",
-  "matched": "Approved",
-  "reservation": "past participle on an action button that needs the imperative"
- },
- "Reject": {
-  "ar": "مرفوض",
-  "matched": "Rejected",
-  "reservation": "past participle on an action button that needs the imperative"
+  "ar": "اعتماد",
+  "matched": "Approval Queue / Approved",
+  "composed": true,
+  "reservation": "COMPOSED. The index has no imperative 'Approve' — only 'Approved' -> معتمد, a past participle that reads wrong on a button. Uses the verbal noun اعتماد from the approved root in 'Approval Queue' -> 'قائمة الاعتماد', matching the form of its sibling button 'Reject' -> رفض, which IS a catalogue term. Needs confirmation."
  },
  "Exception": {
   "ar": "الاستثناءات",
@@ -63,11 +54,6 @@
   "ar": "المنتجات",
   "matched": "Products",
   "reservation": "plural Arabic on a singular table cell value"
- },
- "Item": {
-  "ar": "البنود",
-  "matched": "Items",
-  "reservation": "plural Arabic on a singular column header"
  },
  "due 1d": {
   "ar": "خلال يوم",
@@ -92,14 +78,10 @@
   "matched": "Inspection",
   "reservation": "reads 'inspection'; the column lists the package section an item belongs to"
  },
- "State": {
-  "ar": "بدأت",
-  "matched": "Started",
-  "reservation": "reads 'started'; the column is a state, not a start event"
- },
- "Actor": {
-  "ar": "المنشأة",
-  "matched": "Factory",
-  "reservation": "reads 'factory'; the audit column names who performed the action"
+ "Escalate": {
+  "ar": "تصعيد",
+  "matched": "SLA -> escalation / Escalation role",
+  "composed": true,
+  "reservation": "COMPOSED. No standalone 'Escalate' exists, but تصعيد is the term every approved escalation string uses — 'SLA → escalation' -> 'اتفاقية مستوى الخدمة ← التصعيد', 'Escalation role' -> 'دور التصعيد', 'Repeat in 12mo → escalate one level' -> 'التكرار خلال 12 شهرًا ← تصعيد مستوى واحد'. Those rows are status 'draft' in ui_strings, so the term itself is not yet promoted. Verbal noun, matching رفض. Needs confirmation."
  }
 }

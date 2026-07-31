@@ -13,14 +13,14 @@ All four Figma sections now carry those screens. The AR·RTL and AR·RTL·Dark c
 
 ## Already answered — do not re-translate
 
-`ar-index.json` joins the design catalogue (648 pairs) with the runtime fallbacks in `apps/web/src/lib/i18n.ts` and `apps/web/src/lib/factory360/arabic.ts`, whose Arabic is keyed by i18n key rather than by English and so was invisible to the first pass. That join is **872** approved pairs, and it answers rows this packet was about to ask for:
+`ar-index.json` joins the design catalogue (648 pairs) with the runtime fallbacks in `apps/web/src/lib/i18n.ts` and `apps/web/src/lib/factory360/arabic.ts`, whose Arabic is keyed by i18n key rather than by English and so was invisible to the first pass. That join is **2111** approved pairs, and it answers rows this packet was about to ask for:
 
-- **21 rows** already have approved Arabic. They are filled in, `status = reuse`, with the catalogue English in `approved_source`. Nothing to do.
-- **2 rows** differ from an approved term only slightly ("Qty / capacity" vs "Quantity / capacity"). `ar` is left blank and the near term sits in `approved_source` — accept it, or translate afresh if it is a different concept.
-- **18 rows** are near matches the build rejected and the Product Owner applied anyway (ruling 2026-07-31). They render in Figma, but each carries a stated reservation in `owner-accepted-suggestions.json` and stays in the outstanding count — re-check them first.
-- **262 rows** are genuinely new copy.
+- **41 rows** already have approved Arabic. They are filled in, `status = reuse`, with the catalogue English in `approved_source`. Nothing to do.
+- **9 rows** differ from an approved term only slightly ("Qty / capacity" vs "Quantity / capacity"). `ar` is left blank and the near term sits in `approved_source` — accept it, or translate afresh if it is a different concept.
+- **13 rows** are near matches the build rejected and the Product Owner applied anyway (ruling 2026-07-31). They render in Figma, but each carries a stated reservation in `owner-accepted-suggestions.json` and stays in the outstanding count — re-check them first.
+- **240 rows** are genuinely new copy.
 
-So the real ask is **282 rows**, not 311.
+So the real ask is **262 rows**, not 311.
 
 Nothing here was machine-translated. CLAUDE.md rule 8 keeps Arabic in the i18n layer under review; inventing it in a design file would put unreviewed government copy in front of inspectors.
 
@@ -38,7 +38,7 @@ Nothing here was machine-translated. CLAUDE.md rule 8 keeps Arabic in the i18n l
 | P2 | Status and badge labels, counts, evidence captions. Should be translated; several may already exist in the catalogue under a different English string. | 89 |
 | P3 | Seeded demo content — factory names, visit references, timestamps. Visible in the AR screenshots but not governed copy. | 69 |
 
-Counts above are all rows. Subtract `reuse` and `accepted` for what is actually outstanding: P1 147, P2 67, P3 68.
+Counts above are all rows. Subtract `reuse` and `accepted` for what is actually outstanding: P1 135, P2 59, P3 68.
 
 
 ## P1 still needing Arabic
@@ -66,20 +66,15 @@ Counts above are all rows. Subtract `reuse` and `accepted` for what is actually 
 | `planning.configure.team` | Team | SCR-WEB-140 | section-title |  |
 | `planning.configure.thePublishedVersionTheVisit` | The published version the visit will execute | SCR-WEB-140 | field-hint |  |
 | `planning.configure.visitConfigurationAssignment` | Visit configuration & assignment | SCR-WEB-140 | page-title |  |
-| `planning.immediate.assignment` | Assignment | SCR-WEB-130 SCR-WEB-210 | section-title |  |
 | `planning.immediate.identityLocation` | Identity / location | SCR-WEB-130 | section-title |  |
 | `planning.immediate.immediateVisit` | Immediate visit | SCR-WEB-130 | page-title |  |
-| `planning.immediate.location` | Location | SCR-WEB-130 | form-label |  |
 | `planning.immediate.reasonForImmediateVisit` | Reason for immediate visit | SCR-WEB-130 | form-label |  |
 | `planning.immediate.registeredFactory` | Registered factory | SCR-WEB-130 | form-label |  |
 | `planning.immediate.unregisteredEstablishmentName` | Unregistered establishment name | SCR-WEB-130 | form-label |  |
 | `planning.immediate.urgencyReason` | Urgency reason | SCR-WEB-130 | section-title |  |
-| `planning.review.assignments` | Assignments | SCR-WEB-150 | section-title |  |
 | `planning.review.draftPlanUnderReview` | Draft plan under review | SCR-WEB-150 | field-hint |  |
 | `planning.review.howTheTargetsWereSelected` | How the targets were selected | SCR-WEB-150 | field-hint |  |
 | `planning.review.method` | Method | SCR-WEB-150 | field-term |  |
-| `planning.review.notifications` | Notifications | SCR-WEB-150 | section-title |  |
-| `planning.review.planReviewPublish` | Plan review & publish | SCR-WEB-150 | page-title |  |
 | `planning.review.plannerAndTimestamp` | Planner and timestamp | SCR-WEB-150 | field-hint |  |
 | `planning.review.publishNotificationsAreAMandatory` | Publish notifications are a mandatory region of SCR-WEB-150. No notification rule is configured. | SCR-WEB-150 | state-body |  |
 | `planning.review.publishValidationIsAMandatory` | Publish validation is a mandatory region of SCR-WEB-150. No validation rule set is configured. | SCR-WEB-150 | state-body |  |
@@ -93,16 +88,13 @@ Counts above are all rows. Subtract `reuse` and `accepted` for what is actually 
 | `reviews.compare.baseline` | Baseline | SCR-WEB-320 | field-term |  |
 | `reviews.compare.comparedVersions` | Compared versions | SCR-WEB-320 | section-title |  |
 | `reviews.compare.fieldLevelDifferences` | Field-level differences | SCR-WEB-320 | section-title |  |
-| `reviews.compare.inspectionWindow` | Inspection window | SCR-WEB-320 | field-term |  |
 | `reviews.compare.riskWeight` | Risk weight | SCR-WEB-320 | field-term |  |
 | `reviews.compare.theResubmittedVersionUnderReview` | The resubmitted version under review | SCR-WEB-320 | field-hint |  |
 | `reviews.compare.theVersionCurrentlyApproved` | The version currently approved | SCR-WEB-320 | field-hint |  |
 | `reviews.compare.versionComparison` | Version comparison | SCR-WEB-320 | page-title |  |
 | `reviews.workspace.decisionNote` | Decision note | SCR-WEB-310 | form-label |  |
-| `reviews.workspace.escalate` | Escalate | SCR-WEB-310 | action |  |
 | `reviews.workspace.findings` | Findings | SCR-WEB-310 | section-title |  |
 | `reviews.workspace.fireSuppressionSystemNotServiced` | Fire suppression system not serviced | SCR-WEB-310 | section-title |  |
-| `reviews.workspace.inspectionReviewQueue` | Inspection review queue | SCR-WEB-310 | page-title |  |
 | `reviews.workspace.queue` | Queue | SCR-WEB-310 | section-title |  |
 | `reviews.workspace.requiredForRejectionOrEscalation` | Required for rejection or escalation | SCR-WEB-310 | placeholder |  |
 | `reviews.workspace.supervisorReview` | Supervisor review | SCR-WEB-310 | section-title |  |
@@ -112,7 +104,6 @@ Counts above are all rows. Subtract `reuse` and `accepted` for what is actually 
 | `virtual.appointment.camera` | Camera | SCR-VIR-700 | field-term |  |
 | `virtual.appointment.checkedInTheBrowserBefore` | Checked in the browser before joining | SCR-VIR-700 | field-hint |  |
 | `virtual.appointment.connection` | Connection | SCR-VIR-700 SCR-VIR-720 | field-term |  |
-| `virtual.appointment.deviceReadiness` | Device readiness | SCR-VIR-700 | section-title |  |
 | `virtual.appointment.instructions` | Instructions | SCR-VIR-700 | section-title |  |
 | `virtual.appointment.joinAdmitAndRescheduleAre` | Join, admit and reschedule are a mandatory region of SCR-VIR-700. The virtual session provider is not configured. | SCR-VIR-700 | state-body |  |
 | `virtual.appointment.joinControls` | Join controls | SCR-VIR-700 | section-title |  |
@@ -135,18 +126,14 @@ Counts above are all rows. Subtract `reuse` and `accepted` for what is actually 
 | `virtual.session.fallback` | Fallback | SCR-VIR-720 | field-term |  |
 | `virtual.session.independentOfTheVisitPlanning` | Independent of the visit planning status | SCR-VIR-720 | field-hint |  |
 | `virtual.session.insufficientEvidence` | Insufficient evidence | SCR-VIR-720 | state-title |  |
-| `virtual.session.notes` | Notes | SCR-VIR-720 | section-title |  |
 | `virtual.session.oneAnsweredItemHasNo` | One answered item has no evidence attached. The session cannot be closed until every non-compliant response carries evidence. | SCR-VIR-720 | state-body |  |
 | `virtual.session.participantList` | Participant list | SCR-VIR-720 | section-title |  |
-| `virtual.session.sections` | Sections | SCR-VIR-720 | field-term |  |
 | `virtual.session.sessionNotes` | Session notes | SCR-VIR-720 | form-label |  |
 | `virtual.session.sessionState` | Session state | SCR-VIR-720 | field-term |  |
 | `virtual.session.theLiveVideoRegionIs` | The live video region is a mandatory region of SCR-VIR-720. The virtual session provider is not configured. | SCR-VIR-720 | state-body |  |
 | `virtual.session.thePublishedVersionThisSession` | The published version this session executes | SCR-VIR-720 | field-hint |  |
-| `virtual.session.video` | Video | SCR-VIR-720 | section-title |  |
 | `virtual.verify.appliedWhenTheRetryLimit` | Applied when the retry limit is reached | SCR-VIR-710 | field-hint |  |
 | `virtual.verify.attemptsUsed` | Attempts used | SCR-VIR-710 | field-term |  |
-| `virtual.verify.audit` | Audit | SCR-VIR-710 | section-title |  |
 | `virtual.verify.countedAgainstTheGovernedRetry` | Counted against the governed retry limit | SCR-VIR-710 | field-hint |  |
 | `virtual.verify.declaredAtAppointmentCreation` | Declared at appointment creation | SCR-VIR-710 | field-hint |  |
 | `virtual.verify.determinesWhatTheParticipantMay` | Determines what the participant may see | SCR-VIR-710 | field-hint |  |
@@ -165,9 +152,7 @@ Counts above are all rows. Subtract `reuse` and `accepted` for what is actually 
 | `visits.detail.geofenceAndArrivalAreA` | Geofence and arrival are a mandatory region of SCR-WEB-210. The map provider is not configured. | SCR-WEB-210 | state-body |  |
 | `visits.detail.independentOfOperationalState` | Independent of operational state | SCR-WEB-210 | field-hint |  |
 | `visits.detail.independentOfPlanningStatus` | Independent of planning status | SCR-WEB-210 | field-hint |  |
-| `visits.detail.map` | Map | SCR-WEB-210 | section-title |  |
 | `visits.detail.package` | Package | SCR-WEB-210 | section-title |  |
-| `visits.detail.schedule` | Schedule | SCR-WEB-210 | section-title |  |
 | `visits.detail.setDuringPlanning` | Set during planning | SCR-WEB-210 | field-hint |  |
 | `visits.detail.thePublishedVersionThisVisit` | The published version this visit executes | SCR-WEB-210 | field-hint |  |
 | `visits.detail.theVisitTimelineIsA` | The visit timeline is a mandatory region of SCR-WEB-210. No timeline source is configured. | SCR-WEB-210 | state-body |  |
@@ -182,14 +167,17 @@ Counts above are all rows. Subtract `reuse` and `accepted` for what is actually 
 | `visits.list.readOnlyWorkspace` | Read-only workspace | SCR-WEB-200 | alert-title |  |
 | `visits.list.visitIdReferenceFactoryName` | Visit ID / reference, factory name, CR number, industrial licence, inspector | SCR-WEB-200 | placeholder |  |
 | `visits.list.visitManagement` | Visit management | SCR-WEB-200 | page-title |  |
-| `virtual.appointment.unavailable` | Unavailable | SCR-VIR-700 SCR-VIR-720 | state-title | available |
-| `planning.configure.mode` | Mode | SCR-WEB-140 SCR-VIR-700 | section-title | Model |
+| `planning.immediate.assignment` | Assignment | SCR-WEB-130 SCR-WEB-210 | section-title | Assignments |
+| `reviews.compare.inspectionWindow` | Inspection window | SCR-WEB-320 | field-term | Shared inspection window |
+| `virtual.appointment.deviceReadiness` | Device readiness | SCR-VIR-700 | section-title | Review readiness |
+| `virtual.session.sections` | Sections | SCR-VIR-720 | field-term | section(s) |
+| `visits.detail.schedule` | Schedule | SCR-WEB-210 | section-title | Reschedule |
 | `planning.configure.packageVersion` | Package version | SCR-WEB-140 | section-title | Package decision |
 | `planning.review.assignedInspectors` | Assigned inspectors | SCR-WEB-150 | field-term | Assigned inspector |
 | `planning.review.visits` | Visits | SCR-WEB-150 | section-title | 2 visits |
 | `planning.single.visitConfiguration` | Visit configuration | SCR-WEB-120 | section-title | Risk Configuration |
-| `reviews.workspace.approve` | Approve | SCR-WEB-310 | action | Approved |
-| `reviews.workspace.reject` | Reject | SCR-WEB-310 | action | Rejected |
+| `reviews.workspace.approve` | Approve | SCR-WEB-310 | action | Approval Queue / Approved |
+| `reviews.workspace.escalate` | Escalate | SCR-WEB-310 | action | SLA -> escalation / Escalation role |
 | `virtual.verify.exception` | Exception | SCR-VIR-710 | section-title | Exceptions |
 | `visits.detail.plannedWindow` | Planned window | SCR-WEB-210 | field-hint | Planning window |
 
