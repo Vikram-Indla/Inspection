@@ -32,6 +32,12 @@ FIGMA = {
     "/admin/packages", "/admin/packages/[id]/designer", "/admin/violations",
     "/admin/penalties", "/admin/workflows", "/admin/workflows/[id]", "/admin/risk",
     "/admin/gis", "/admin/notifications", "/admin/access",
+    # web screens built from their .dc.html sources + catalogue contracts
+    "/visits", "/visits/[id]", "/reviews/[id]", "/factories/[id]/360",
+    "/planning/bulk", "/planning/single", "/planning/immediate",
+    "/planning/bulk/review", "/planning/[id]/review",
+    # virtual channel screens built from their catalogue contracts
+    "/virtual/appointments/[id]", "/virtual/sessions/[id]/verify", "/virtual/[id]",
 }
 # only these two still render the RBAC refusal state; the rest were rebuilt on the ad-* shell
 REFUSAL = {"/admin/localization", "/admin/integrations"}
