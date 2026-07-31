@@ -31,7 +31,7 @@ frames plus the 73 states. **212 frames, 10,668 component instances** in total.
 | `component-map.json` | Figma component → React import path under `components/saqeel/` |
 | `KNOWN-DEFECTS.md` | the 2 open defects, and why the Planning table is *meant* to clip |
 | `../traceability/COVERAGE-STATISTICS-2026-07-31.md` | requirement → screen coverage, computed |
-| `../i18n/TRANSLATION-PACKET-2026-07-31.csv` | the 262 strings still needing Arabic |
+| `../i18n/TRANSLATION-PACKET-2026-07-31.csv` | the 213 strings still needing Arabic |
 
 ## Frame naming
 
