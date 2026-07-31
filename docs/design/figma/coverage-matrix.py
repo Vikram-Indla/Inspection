@@ -23,12 +23,18 @@ cat = list(csv.DictReader(open(ROOT / "product-contract/screens/screen_route_cat
 # What Figma actually holds. The six /admin/* frames render the RBAC refusal state,
 # which is faithful to final-cut but is not admin UI.
 FIGMA = {
+    # web routes built in the original 16-frame matrix
     "/dashboard", "/operations", "/factory-360", "/planning", "/execution", "/reviews",
     "/compliance", "/enforcement-library", "/compliance/approvals", "/analytics",
-    "/admin/access", "/admin/localization", "/admin/risk", "/admin/packages",
-    "/admin/notifications", "/admin/integrations",
+    "/admin/localization", "/admin/integrations",
+    # admin screens built on the ad-* shell against their catalogue contracts
+    "/admin", "/admin/regulations", "/admin/regulations/[id]", "/admin/items",
+    "/admin/packages", "/admin/packages/[id]/designer", "/admin/violations",
+    "/admin/penalties", "/admin/workflows", "/admin/workflows/[id]", "/admin/risk",
+    "/admin/gis", "/admin/notifications", "/admin/access",
 }
-REFUSAL = {r for r in FIGMA if r.startswith("/admin/")}
+# only these two still render the RBAC refusal state; the rest were rebuilt on the ad-* shell
+REFUSAL = {"/admin/localization", "/admin/integrations"}
 # PWA/iPad is out of scope by PO ruling 2026-07-31
 OUT_OF_SCOPE_CHANNELS = {"iPad"}
 
