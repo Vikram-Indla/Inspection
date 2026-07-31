@@ -1,0 +1,111 @@
+# iPad Inspector backlog — created Jira keys
+
+Pushed 2026-08-01. 19 stories, 82 sub-tasks, 101 issues total.
+
+
+## Epic INSP-5 — Execution (field/iPad)
+
+- **[REUSE] [INSP-536](https://digital-transformation.atlassian.net/browse/INSP-536) — Execute a Chemical Release inspection checklist and submit**
+  - [INSP-537](https://digital-transformation.atlassian.net/browse/INSP-537)
+  - [INSP-634](https://digital-transformation.atlassian.net/browse/INSP-634)
+  - [INSP-635](https://digital-transformation.atlassian.net/browse/INSP-635)
+  - [INSP-636](https://digital-transformation.atlassian.net/browse/INSP-636)
+- **[REUSE] [INSP-538](https://digital-transformation.atlassian.net/browse/INSP-538) — Execute a Customs Exemption inspection checklist and submit**
+  - [INSP-539](https://digital-transformation.atlassian.net/browse/INSP-539)
+  - [INSP-540](https://digital-transformation.atlassian.net/browse/INSP-540)
+  - [INSP-541](https://digital-transformation.atlassian.net/browse/INSP-541)
+  - [INSP-542](https://digital-transformation.atlassian.net/browse/INSP-542)
+- **[REUSE] [INSP-543](https://digital-transformation.atlassian.net/browse/INSP-543) — Execute a Safety inspection checklist and submit**
+  - [INSP-544](https://digital-transformation.atlassian.net/browse/INSP-544)
+  - [INSP-545](https://digital-transformation.atlassian.net/browse/INSP-545)
+  - [INSP-546](https://digital-transformation.atlassian.net/browse/INSP-546)
+  - [INSP-547](https://digital-transformation.atlassian.net/browse/INSP-547)
+- **[REUSE] [INSP-548](https://digital-transformation.atlassian.net/browse/INSP-548) — Log a lightweight Visit Statement**
+  - [INSP-549](https://digital-transformation.atlassian.net/browse/INSP-549)
+  - [INSP-550](https://digital-transformation.atlassian.net/browse/INSP-550)
+  - [INSP-551](https://digital-transformation.atlassian.net/browse/INSP-551)
+  - [INSP-552](https://digital-transformation.atlassian.net/browse/INSP-552)
+- **[REUSE] [INSP-553](https://digital-transformation.atlassian.net/browse/INSP-553) — Branch a new inspection plan between Field Visit and Remote Visit**
+  - [INSP-554](https://digital-transformation.atlassian.net/browse/INSP-554)
+  - [INSP-555](https://digital-transformation.atlassian.net/browse/INSP-555)
+  - [INSP-556](https://digital-transformation.atlassian.net/browse/INSP-556)
+  - [INSP-557](https://digital-transformation.atlassian.net/browse/INSP-557)
+- **[REUSE] [INSP-558](https://digital-transformation.atlassian.net/browse/INSP-558) — Issue a Summons Notice from the field**
+  - [INSP-559](https://digital-transformation.atlassian.net/browse/INSP-559)
+  - [INSP-560](https://digital-transformation.atlassian.net/browse/INSP-560)
+  - [INSP-561](https://digital-transformation.atlassian.net/browse/INSP-561)
+  - [INSP-562](https://digital-transformation.atlassian.net/browse/INSP-562)
+- **[REUSE] [INSP-563](https://digital-transformation.atlassian.net/browse/INSP-563) — Record an Incident Report during a visit**
+  - [INSP-564](https://digital-transformation.atlassian.net/browse/INSP-564)
+  - [INSP-565](https://digital-transformation.atlassian.net/browse/INSP-565)
+  - [INSP-566](https://digital-transformation.atlassian.net/browse/INSP-566)
+  - [INSP-567](https://digital-transformation.atlassian.net/browse/INSP-567)
+- **[REUSE] [INSP-568](https://digital-transformation.atlassian.net/browse/INSP-568) — Record a Violation Report with signature capture**
+  - [INSP-569](https://digital-transformation.atlassian.net/browse/INSP-569)
+  - [INSP-570](https://digital-transformation.atlassian.net/browse/INSP-570)
+  - [INSP-571](https://digital-transformation.atlassian.net/browse/INSP-571)
+  - [INSP-572](https://digital-transformation.atlassian.net/browse/INSP-572)
+- **[REUSE] [INSP-573](https://digital-transformation.atlassian.net/browse/INSP-573) — Log a Sample Collection Report**
+  - [INSP-574](https://digital-transformation.atlassian.net/browse/INSP-574)
+  - [INSP-575](https://digital-transformation.atlassian.net/browse/INSP-575)
+  - [INSP-576](https://digital-transformation.atlassian.net/browse/INSP-576)
+  - [INSP-577](https://digital-transformation.atlassian.net/browse/INSP-577)
+- **[REUSE] [INSP-578](https://digital-transformation.atlassian.net/browse/INSP-578) — Record Non-Compliant Products Destruction**
+  - [INSP-579](https://digital-transformation.atlassian.net/browse/INSP-579)
+  - [INSP-580](https://digital-transformation.atlassian.net/browse/INSP-580)
+  - [INSP-581](https://digital-transformation.atlassian.net/browse/INSP-581)
+  - [INSP-582](https://digital-transformation.atlassian.net/browse/INSP-582)
+- **[REUSE] [INSP-583](https://digital-transformation.atlassian.net/browse/INSP-583) — Generate a Facility Report**
+  - [INSP-584](https://digital-transformation.atlassian.net/browse/INSP-584)
+  - [INSP-585](https://digital-transformation.atlassian.net/browse/INSP-585)
+  - [INSP-586](https://digital-transformation.atlassian.net/browse/INSP-586)
+  - [INSP-587](https://digital-transformation.atlassian.net/browse/INSP-587)
+- **[REUSE] [INSP-588](https://digital-transformation.atlassian.net/browse/INSP-588) — View establishment regulatory status and visit history mid-visit**
+  - [INSP-589](https://digital-transformation.atlassian.net/browse/INSP-589)
+  - [INSP-590](https://digital-transformation.atlassian.net/browse/INSP-590)
+  - [INSP-591](https://digital-transformation.atlassian.net/browse/INSP-591)
+  - [INSP-592](https://digital-transformation.atlassian.net/browse/INSP-592)
+- **[GAP] [INSP-593](https://digital-transformation.atlassian.net/browse/INSP-593) — Detect and recover from offline connectivity during a field-inspection journey**
+  - [INSP-594](https://digital-transformation.atlassian.net/browse/INSP-594)
+  - [INSP-595](https://digital-transformation.atlassian.net/browse/INSP-595)
+  - [INSP-596](https://digital-transformation.atlassian.net/browse/INSP-596)
+  - [INSP-597](https://digital-transformation.atlassian.net/browse/INSP-597)
+  - [INSP-598](https://digital-transformation.atlassian.net/browse/INSP-598)
+- **[GAP] [INSP-599](https://digital-transformation.atlassian.net/browse/INSP-599) — Confirm arrival within geofence or record a governed GPS-override exception**
+  - [INSP-600](https://digital-transformation.atlassian.net/browse/INSP-600)
+  - [INSP-601](https://digital-transformation.atlassian.net/browse/INSP-601)
+  - [INSP-602](https://digital-transformation.atlassian.net/browse/INSP-602)
+  - [INSP-603](https://digital-transformation.atlassian.net/browse/INSP-603)
+  - [INSP-604](https://digital-transformation.atlassian.net/browse/INSP-604)
+- **[GAP] [INSP-605](https://digital-transformation.atlassian.net/browse/INSP-605) — Capture and provisionally register an unregistered facility during a field visit**
+  - [INSP-606](https://digital-transformation.atlassian.net/browse/INSP-606)
+  - [INSP-607](https://digital-transformation.atlassian.net/browse/INSP-607)
+  - [INSP-608](https://digital-transformation.atlassian.net/browse/INSP-608)
+  - [INSP-609](https://digital-transformation.atlassian.net/browse/INSP-609)
+  - [INSP-610](https://digital-transformation.atlassian.net/browse/INSP-610)
+- **[GAP] [INSP-611](https://digital-transformation.atlassian.net/browse/INSP-611) — Grant temporary delegated execution of a visit without changing ownership**
+  - [INSP-612](https://digital-transformation.atlassian.net/browse/INSP-612)
+  - [INSP-613](https://digital-transformation.atlassian.net/browse/INSP-613)
+  - [INSP-614](https://digital-transformation.atlassian.net/browse/INSP-614)
+  - [INSP-615](https://digital-transformation.atlassian.net/browse/INSP-615)
+  - [INSP-616](https://digital-transformation.atlassian.net/browse/INSP-616)
+
+## Epic INSP-3 — Factory 360
+
+- **[REUSE] [INSP-617](https://digital-transformation.atlassian.net/browse/INSP-617) — Display factory identity, licence, location and capacity profile**
+  - [INSP-618](https://digital-transformation.atlassian.net/browse/INSP-618)
+  - [INSP-619](https://digital-transformation.atlassian.net/browse/INSP-619)
+  - [INSP-620](https://digital-transformation.atlassian.net/browse/INSP-620)
+  - [INSP-621](https://digital-transformation.atlassian.net/browse/INSP-621)
+- **[GAP] [INSP-622](https://digital-transformation.atlassian.net/browse/INSP-622) — Compute and display a Factory Health Score**
+  - [INSP-623](https://digital-transformation.atlassian.net/browse/INSP-623)
+  - [INSP-624](https://digital-transformation.atlassian.net/browse/INSP-624)
+  - [INSP-625](https://digital-transformation.atlassian.net/browse/INSP-625)
+  - [INSP-626](https://digital-transformation.atlassian.net/browse/INSP-626)
+  - [INSP-627](https://digital-transformation.atlassian.net/browse/INSP-627)
+- **[GAP] [INSP-628](https://digital-transformation.atlassian.net/browse/INSP-628) — Track penalty records and corrective-action status on factory history**
+  - [INSP-629](https://digital-transformation.atlassian.net/browse/INSP-629)
+  - [INSP-630](https://digital-transformation.atlassian.net/browse/INSP-630)
+  - [INSP-631](https://digital-transformation.atlassian.net/browse/INSP-631)
+  - [INSP-632](https://digital-transformation.atlassian.net/browse/INSP-632)
+  - [INSP-633](https://digital-transformation.atlassian.net/browse/INSP-633)

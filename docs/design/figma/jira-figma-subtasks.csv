@@ -1,0 +1,309 @@
+Project Key,Parent,Issue Type,Summary,Priority,Labels,Description
+INSP,INSP-1,Subtask,Figma: Brand identity WA-BRAND-r1 (web) — build design-system screen,Low,figma design-system channel-web card-brand,"Build the Figma screen(s) for board card `brand` (web).
+
+Design source: SAQEEL Brand Identity Proof.dc.html
+Repo route(s): web/src/components/ShellClient.tsx (.legacy-shell__brand-wordmark + __brand-sub)
+Board state at capture: design 100% / code 0% / wiring 100%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,Figma: Tasks (web) — build design-system screen,Low,figma design-system channel-web card-tasks,"Build the Figma screen(s) for board card `tasks` (web).
+
+Design source: SAQEEL Tasks.dc.html
+Repo route(s): web/src/app/(app)/tasks · TaskBoard.tsx · lib/workflow/tasks.ts
+Board state at capture: design 80% / code 65% / wiring 100%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,Figma: M2 Visits (web) — build design-system screen,Medium,figma design-system channel-web card-visits,"Build the Figma screen(s) for board card `visits` (web).
+
+Design source: SAQEEL Visits.dc.html (WA-DES-045)
+Repo route(s): web/src/app/(app)/visits (+ [id], calendar, map, workload) · actions.ts
+Board state at capture: design 70% / code 100% / wiring 100%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,Figma: Cases (web) — build design-system screen,Medium,figma design-system channel-web card-cases,"Build the Figma screen(s) for board card `cases` (web).
+
+Design source: SAQEEL Cases.dc.html
+Repo route(s): web/src/app/(app)/cases · actions.ts · lib/cases/spine.ts
+Board state at capture: design 75% / code 100% / wiring 100%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,Figma: Portal (external) (web) — build design-system screen,Medium,figma design-system channel-web card-portal,"Build the Figma screen(s) for board card `portal` (web).
+
+Design source: SAQEEL Portal.dc.html
+Repo route(s): web/src/app/(app)/portal · actions.ts · lib/portal/self-assessment.ts
+Board state at capture: design 70% / code 100% / wiring 100%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,Figma: Profile (web) — build design-system screen,Medium,figma design-system channel-web card-profile,"Build the Figma screen(s) for board card `profile` (web).
+
+Design source: SAQEEL Profile.dc.html
+Repo route(s): web/src/app/(app)/profile · NotificationPrefsForm.tsx
+Board state at capture: design 100% / code 100% / wiring 95%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,Figma: Virtual visits (console side) (web) — build design-system screen,Medium,figma design-system channel-web card-virtual,"Build the Figma screen(s) for board card `virtual` (web).
+
+Design source: SAQEEL Virtual.dc.html
+Repo route(s): web/src/app/(app)/virtual (+ [id]) · ScheduleForm.tsx · lib/providers/video.ts
+Board state at capture: design 88% / code 100% / wiring 82%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,Figma: Committee handoff (web) — build design-system screen,Medium,figma design-system channel-web card-m6-committee,"Build the Figma screen(s) for board card `m6-committee` (web).
+
+Design source: SAQEEL Committee.dc.html
+Repo route(s): web/src/app/(app)/committee · actions.ts · RecordSignature.tsx · lib/committee/signature.ts
+Board state at capture: design 65% / code 95% / wiring 80%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,Figma: Executive Overview (web) — build design-system screen,Medium,figma design-system channel-web card-exec,"Build the Figma screen(s) for board card `exec` (web).
+
+Design source: SAQEEL Executive Overview.html
+Repo route(s): web/src/app/(app)/dashboard (persona view) · lib/role-home.ts
+Board state at capture: design 93% / code 96% / wiring 95%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,Figma: AI Studio & advisory (web) — build design-system screen,Medium,figma design-system channel-web card-ai,"Build the Figma screen(s) for board card `ai` (web).
+
+Design source: SAQEEL AI Studio.dc.html · SAQEEL Evidence OCR.dc.html
+Repo route(s): web/src/app/(app)/ai/suggestions · evidence-ocr · lib/ai/* · lib/providers/ai-gemini.ts · ocr-gemini.ts
+Board state at capture: design 55% / code 70% / wiring 70%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,Figma: Reports & packages (web) — build design-system screen,High,figma design-system channel-web card-reports,"Build the Figma screen(s) for board card `reports` (web).
+
+Design source: SAQEEL Inspection Report.dc.html · Report Inventory · Report Deltas · Report Package Foundation
+Repo route(s): web/src/app/reports/inspection/[id] · report.css · admin/packages
+Board state at capture: design 60% / code 85% / wiring 75%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,Figma: Feedback module (web) — build design-system screen,Low,figma design-system channel-web card-feedback,"Build the Figma screen(s) for board card `feedback` (web).
+
+Design source: SAQEEL Feedback.dc.html
+Repo route(s): web/src/app/(app)/field/feedback/page.tsx · components/field/FieldQrPlaceholder.tsx
+Board state at capture: design 90% / code 65% / wiring 55%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,Figma: Control Panel core (21 sections) (admin) — build design-system screen,High,figma design-system channel-admin card-admin-core,"Build the Figma screen(s) for board card `admin-core` (admin).
+
+Design source: SAQEEL Control Panel.dc.html · SAQEEL Admin.dc.html · Admin Extended · Admin Detail
+Repo route(s): web/src/app/(app)/admin (21 sections) · app/admin/execution · app/admin/dashboard-config
+Board state at capture: design 60% / code 95% / wiring 85%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,Figma: KPI management & dashboard config (admin) — build design-system screen,High,figma design-system channel-admin card-admin-kpi,"Build the Figma screen(s) for board card `admin-kpi` (admin).
+
+Design source: SAQEEL KPI Management.dc.html · SAQEEL Dashboard Config.dc.html
+Repo route(s): web/src/app/admin/dashboard-config · lib/dashboard-kpi/registry.ts
+Board state at capture: design 60% / code 90% / wiring 70%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,Figma: Form & workflow builders (admin) — build design-system screen,High,figma design-system channel-admin card-admin-builders,"Build the Figma screen(s) for board card `admin-builders` (admin).
+
+Design source: SAQEEL Admin Form Builder.dc.html · Admin Workflow Builder · Item Execution
+Repo route(s): web/src/app/(app)/admin/templates · admin/workflows · app/admin/execution · lib/workflow/*
+Board state at capture: design 55% / code 90% / wiring 80%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,Figma: Execution settings (admin) — build design-system screen,High,figma design-system channel-admin card-admin-exec,"Build the Figma screen(s) for board card `admin-exec` (admin).
+
+Design source: SAQEEL Admin Execution.dc.html
+Repo route(s): web/src/app/admin/execution · lib/execution/*
+Board state at capture: design 60% / code 90% / wiring 85%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,"Figma: SENAI data, integrations, lookups (admin) — build design-system screen",High,figma design-system channel-admin card-admin-data,"Build the Figma screen(s) for board card `admin-data` (admin).
+
+Design source: SAQEEL Admin SENAI Data.dc.html · Admin Integrations · Admin Integrations Data · Admin Lookups
+Repo route(s): web/src/app/(app)/admin/integrations · admin/items · admin/localization · lib/integrations/senaei
+Board state at capture: design 55% / code 90% / wiring 65%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,"Figma: Users, roles, delegation (admin) — build design-system screen",High,figma design-system channel-admin card-admin-access,"Build the Figma screen(s) for board card `admin-access` (admin).
+
+Design source: SAQEEL Users Roles.dc.html · SAQEEL Admin Role Override.dc.html · SAQEEL Delegation.dc.html
+Repo route(s): web/src/app/(app)/admin/access · admin/security-access · lib/persona.ts
+Board state at capture: design 55% / code 85% / wiring 80%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,Figma: Trusted devices & biometric (admin) — build design-system screen,Medium,figma design-system channel-admin card-admin-devices,"Build the Figma screen(s) for board card `admin-devices` (admin).
+
+Design source: SAQEEL Users Roles.dc.html (devices section)
+Repo route(s): web/src/app/(app)/admin/devices · lib/field-biometric-unlock.ts
+Board state at capture: design 70% / code 90% / wiring 75%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,Figma: Geofence & GIS (admin) — build design-system screen,High,figma design-system channel-admin card-admin-geo,"Build the Figma screen(s) for board card `admin-geo` (admin).
+
+Design source: SAQEEL Admin Geofence.dc.html
+Repo route(s): web/src/app/(app)/admin/gis · lib/gis/spatial.ts · lib/providers/map.ts
+Board state at capture: design 55% / code 90% / wiring 75%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,"Figma: Platform ops, audit, notifications (admin) — build design-system screen",Medium,figma design-system channel-admin card-admin-platform,"Build the Figma screen(s) for board card `admin-platform` (admin).
+
+Design source: SAQEEL Admin Extended.dc.html · SAQEEL Risk.dc.html (audit section)
+Repo route(s): web/src/app/(app)/admin/operations · admin/audit · admin/notifications · lib/audit.ts · audit-replay.ts
+Board state at capture: design 80% / code 90% / wiring 80%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"
+INSP,INSP-1,Subtask,Figma: Risk settings (admin) — build design-system screen,Medium,figma design-system channel-admin card-admin-risk,"Build the Figma screen(s) for board card `admin-risk` (admin).
+
+Design source: SAQEEL Risk.dc.html
+Repo route(s): web/src/app/(app)/admin/risk · lib/risk/model.ts
+Board state at capture: design 65% / code 95% / wiring 60%
+
+Definition of done:
+- Screen built at 1280 wide from published SAQEEL library components (no hand-drawn frames)
+- Every fill and stroke bound to a Color variable (0 unbound paints)
+- Every text node carries a t-* text style with explicit line-height
+- Status renders as badge + text, never colour alone
+- Ungoverned values render 'Not configured' / 'Decision required'
+- EN·Light built first; Dark / AR·RTL generated in the batch pass
+"

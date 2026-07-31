@@ -1,0 +1,17 @@
+{
+ "_comment": [
+  "Near matches from the packet's `suggest` band that a human read and accepted.",
+  "Keyed by the screen's English, valued by the approved Arabic of the catalogue term",
+  "it was matched to. Only same-concept, same-number matches belong here — a fold that",
+  "merely looks close is not a translation decision. Rejected near matches stay in the",
+  "packet as work, with the near term still visible in `approved_source`."
+ ],
+ "Approved violations & corrective actions": "مخالفات التفتيش المعتمدة والإجراءات التصحيحية",
+ "Current official record": "البيانات الرسمية الحالية",
+ "Industrial licence": "الرخصة الصناعية",
+ "Originating report": "التقرير المصدر",
+ "Qty / capacity": "الكمية / الطاقة",
+ "Real / max production": "الإنتاج الفعلي / الأقصى",
+ "Last inspection": "آخر تفتيش",
+ "Al Rasheed Steel Works Co.": "مصانع الرشيد للصلب"
+}

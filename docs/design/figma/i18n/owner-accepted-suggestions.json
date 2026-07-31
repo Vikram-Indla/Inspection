@@ -1,0 +1,87 @@
+{
+ "_ruling": [
+  "Product Owner, 2026-07-31: apply the near matches that the build had rejected,",
+  "holding only the two that are factually false — 'Unavailable' (matched 'available',",
+  "the opposite meaning) and '01 – 15 Jul' (matched '1–5 Jul', different dates).",
+  "",
+  "These 17 are kept separate from accepted-suggestions.json because they were applied",
+  "on the owner's instruction over a stated objection, not because the match is sound.",
+  "Each carries the reservation that was raised. A translation reviewer should read this",
+  "file as a list to re-check, not as approved copy.",
+  "",
+  "2026-07-31, later: the index gained the ui_strings SQL seeds (1,293 pairs). Six entries",
+  "here turned out to have a real approved term after all and were removed — Mode -> النمط,",
+  "Visit -> الزيارة, Reject -> رفض, Item -> البند, State -> الحالة, Actor -> المنفذ. The",
+  "Figma frames were updated to the approved values."
+ ],
+ "Package version": {
+  "ar": "قرار الحزمة",
+  "matched": "Package decision",
+  "reservation": "'decision' is not 'version'"
+ },
+ "Assigned inspectors": {
+  "ar": "المفتش المعيّن",
+  "matched": "Assigned inspector",
+  "reservation": "singular Arabic on a plural label"
+ },
+ "Visits": {
+  "ar": "2 زيارة",
+  "matched": "2 visits",
+  "reservation": "carries the literal count 2; the label is a section title with no count"
+ },
+ "Visit configuration": {
+  "ar": "تهيئة المخاطر",
+  "matched": "Risk Configuration",
+  "reservation": "reads 'risk configuration'; the screen configures a visit, not risk"
+ },
+ "Approve": {
+  "ar": "اعتماد",
+  "matched": "Approval Queue / Approved",
+  "composed": true,
+  "reservation": "COMPOSED. The index has no imperative 'Approve' — only 'Approved' -> معتمد, a past participle that reads wrong on a button. Uses the verbal noun اعتماد from the approved root in 'Approval Queue' -> 'قائمة الاعتماد', matching the form of its sibling button 'Reject' -> رفض, which IS a catalogue term. Needs confirmation."
+ },
+ "Exception": {
+  "ar": "الاستثناءات",
+  "matched": "Exceptions",
+  "reservation": "plural Arabic on a singular section title"
+ },
+ "Planned window": {
+  "ar": "نافذة التخطيط",
+  "matched": "Planning window",
+  "reservation": "'planning window' is the period plans are made in, not the planned visit window"
+ },
+ "Product": {
+  "ar": "المنتجات",
+  "matched": "Products",
+  "reservation": "plural Arabic on a singular table cell value"
+ },
+ "due 1d": {
+  "ar": "خلال يوم",
+  "matched": "",
+  "composed": true,
+  "reservation": "COMPOSED, not a catalogue string, and not a near match — the index holds no term for 'due' at all. Built only from fragments that are approved: خلال ('within') from 'Schedule a re-inspection within 14 days' -> 'جدولة إعادة تفتيش خلال 14 يومًا' and 'Planning window expires in 2 days' -> 'نافذة التخطيط تنتهي خلال يومين', plus the singular يوم from '1 day ago' -> 'قبل يوم'. Reads as time remaining, which is what the SLA column means, and introduces no new vocabulary — but a translator may prefer an explicit مستحقة خلال يوم. Needs confirmation."
+ },
+ "overdue 1d": {
+  "ar": "متأخرة يومًا",
+  "matched": "overdue + 1 day ago",
+  "composed": true,
+  "reservation": "COMPOSED, not a catalogue string. Owner ruling 2026-07-31 required 1d and 2d to stay distinct, which the bare match 'overdue' -> متأخرة could not do. Built from the approved duration template 'Fire alarm test overdue by 41 days' -> 'اختبار إنذار الحريق متأخر 41 يومًا', taking the feminine متأخرة the catalogue uses for the bare term and the singular يومًا. Needs a translator's confirmation."
+ },
+ "overdue 2d": {
+  "ar": "متأخرة يومين",
+  "matched": "overdue + 2 days ago",
+  "composed": true,
+  "reservation": "COMPOSED, not a catalogue string. Same template as 'overdue 1d', with the dual يومين taken from the approved '2 days ago' -> 'قبل يومين'. Needs a translator's confirmation."
+ },
+ "Section": {
+  "ar": "التفتيش",
+  "matched": "Inspection",
+  "reservation": "reads 'inspection'; the column lists the package section an item belongs to"
+ },
+ "Escalate": {
+  "ar": "تصعيد",
+  "matched": "SLA -> escalation / Escalation role",
+  "composed": true,
+  "reservation": "COMPOSED. No standalone 'Escalate' exists, but تصعيد is the term every approved escalation string uses — 'SLA → escalation' -> 'اتفاقية مستوى الخدمة ← التصعيد', 'Escalation role' -> 'دور التصعيد', 'Repeat in 12mo → escalate one level' -> 'التكرار خلال 12 شهرًا ← تصعيد مستوى واحد'. Those rows are status 'draft' in ui_strings, so the term itself is not yet promoted. Verbal noun, matching رفض. Needs confirmation."
+ }
+}

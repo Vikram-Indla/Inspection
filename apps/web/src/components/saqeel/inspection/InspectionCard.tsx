@@ -15,6 +15,18 @@ export interface InspectionCardProps {
   variant?: "summary" | "assignment" | "queue";
   selected?: boolean;
   onOpen?: () => void;
+  /* ── facts row ────────────────────────────────────────────────────────────
+     A fourth line the review queue needs: the preliminary figure, supporting
+     counts and a lifecycle flag. Omit them all and the row does not render, so
+     existing callers are unaffected. */
+  /** tabular figure, e.g. "78.4% preliminary" */
+  score?: string;
+  /** supporting counts, e.g. ["3 violations"] */
+  facts?: string[];
+  /** lifecycle flag closing the row, e.g. "Penalty proposed" */
+  flag?: string;
+  /** status token behind `flag`; defaults to warning */
+  flagStatus?: string;
 }
 
 /* Summary / assignment / queue item — one component, three densities via variant. */
@@ -30,6 +42,10 @@ export function InspectionCard({
   onOpen,
   variant = "summary",
   selected,
+  score,
+  facts = [],
+  flag,
+  flagStatus = "warning",
 }: InspectionCardProps) {
   const compact = variant === "queue";
   return (
@@ -68,6 +84,28 @@ export function InspectionCard({
           </span>
         )}
       </span>
+      {(score || facts.length > 0 || flag) && (
+        /* gap 6 rather than .row's --space-2: the facts sit tighter than the lines above,
+           and the flag badge drops to 10px so it reads as a marker, not a second status. */
+        <span className="row" style={{ gap: 6 }}>
+          {score && (
+            <span style={{ fontSize: 11, color: "var(--text-secondary)", fontVariantNumeric: "tabular-nums" }}>
+              {score}
+            </span>
+          )}
+          {facts.map((f, i) => (
+            <span key={i} style={{ fontSize: 11, color: "var(--text-muted)" }}>
+              {f}
+            </span>
+          ))}
+          {flag && (
+            <span className={"badge badge-" + flagStatus} style={{ fontSize: 10 }}>
+              <i className="dot" aria-hidden="true" />
+              {flag}
+            </span>
+          )}
+        </span>
+      )}
     </button>
   );
 }
