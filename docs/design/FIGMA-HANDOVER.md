@@ -706,3 +706,35 @@ All 48 variants regenerated from the corrected originals: 64 frames, 4 flows, 78
 Page **`— AR STRINGS (do not delete) —`** holds the 648 pairs in two nodes (`ar-A`, `ar-B`),
 mirroring `docs/design/saqeel-ar-strings.json`. It was deleted once and regenerating the Arabic
 screens then required re-injecting 33KB by hand. Leave it in place.
+
+---
+
+# Session 11 — table overflow, and the reuse audit
+
+## Table: the diagnosis was wrong, the fix is different
+
+The design's table columns **are** equal width — 71px each (990 ÷ 14) — so equal columns in
+Figma were correct. The overflow came from the badge: in the design a status badge is 55px wide
+with its label **wrapped to two lines** (`37×36`), whereas ours hugged to one line and spilled
+into the next column.
+
+Fixed by letting badges inside `th`/`td` fill the column and their label wrap
+(`textAutoResize = HEIGHT`). 168 badges across all 64 frames. No overflow remains.
+
+Cosmetic residue: single-word labels ("Published", "Returned") break mid-word at 76px columns.
+The design has the same constraint; if this matters, the answer is fewer columns or a wider
+Status column — both are design changes, not Figma fixes.
+
+## Reuse audit — nothing internal exists
+
+`get_libraries` on the file returns:
+- **added:** only `Inspection - Web` (ours)
+- **available:** Material 3, Figma's Simple Design System, Apple iOS/iPadOS/macOS/watchOS/visionOS
+
+There is **no other internal SAQEEL/MIM/Senaei library published** in this account. Nothing can
+be reused from the other projects, because none of them are libraries — they are plain files.
+The iPad file remains unreadable to this account beyond its Cover page.
+
+Figma's **Simple Design System** is worth reading as a *structural* reference — it is
+Figma-built, code-backed, and demonstrates Slots, min-widths and component-property patterns.
+Reference only; the SAQEEL visual system does not change.
