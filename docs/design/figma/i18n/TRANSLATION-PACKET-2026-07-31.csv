@@ -213,8 +213,8 @@ visits.list.visitReference,Visit reference,,new,,SCR-WEB-200,cell-text,ui-text,P
 visits.list.visitWindow,Visit window,,new,,SCR-WEB-200 SCR-WEB-120 SCR-WEB-140 SCR-WEB-210,cell-text,ui-text,P2,yes
 factory360.product,Product,المنتجات,owner-applied,Products,SCR-WEB-400,cell-text,ui-text,P2,
 planning.review.visit,Visit,زيارة واحدة,owner-applied,1 visit,SCR-WEB-150 SCR-VIR-700,cell-text,ui-text,P2,yes
-reviews.workspace.overdue1d,overdue 1d,متأخرة,owner-applied,overdue,SCR-WEB-310,Critical,status-label,P2,
-reviews.workspace.overdue2d,overdue 2d,متأخرة,owner-applied,overdue,SCR-WEB-310,Critical,status-label,P2,
+reviews.workspace.overdue1d,overdue 1d,متأخرة يومًا,owner-applied,overdue + 1 day ago,SCR-WEB-310,Critical,status-label,P2,
+reviews.workspace.overdue2d,overdue 2d,متأخرة يومين,owner-applied,overdue + 2 days ago,SCR-WEB-310,Critical,status-label,P2,
 virtual.session.item,Item,البنود,owner-applied,Items,SCR-VIR-720,cell-text,ui-text,P2,
 virtual.session.section,Section,التفتيش,owner-applied,Inspection,SCR-VIR-720,cell-text,ui-text,P2,
 virtual.session.state,State,بدأت,owner-applied,Started,SCR-VIR-720,cell-text,ui-text,P2,

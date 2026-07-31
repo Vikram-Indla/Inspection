@@ -70,14 +70,16 @@
   "reservation": "plural Arabic on a singular column header"
  },
  "overdue 1d": {
-  "ar": "متأخرة",
-  "matched": "overdue",
-  "reservation": "drops the 1-day duration; renders identically to 'overdue 2d'"
+  "ar": "متأخرة يومًا",
+  "matched": "overdue + 1 day ago",
+  "composed": true,
+  "reservation": "COMPOSED, not a catalogue string. Owner ruling 2026-07-31 required 1d and 2d to stay distinct, which the bare match 'overdue' -> متأخرة could not do. Built from the approved duration template 'Fire alarm test overdue by 41 days' -> 'اختبار إنذار الحريق متأخر 41 يومًا', taking the feminine متأخرة the catalogue uses for the bare term and the singular يومًا. Needs a translator's confirmation."
  },
  "overdue 2d": {
-  "ar": "متأخرة",
-  "matched": "overdue",
-  "reservation": "drops the 2-day duration; renders identically to 'overdue 1d'"
+  "ar": "متأخرة يومين",
+  "matched": "overdue + 2 days ago",
+  "composed": true,
+  "reservation": "COMPOSED, not a catalogue string. Same template as 'overdue 1d', with the dual يومين taken from the approved '2 days ago' -> 'قبل يومين'. Needs a translator's confirmation."
  },
  "Section": {
   "ar": "التفتيش",
