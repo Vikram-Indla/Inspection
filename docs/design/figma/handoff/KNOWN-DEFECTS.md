@@ -8,15 +8,25 @@ re-running the clip census described at the bottom.
 A node counts as clipped when its bounds fall outside a clipping ancestor, so the text
 is cut on the canvas.
 
-| Section | Real defects | Intentional scroll |
-|---|---|---|
-| SCREENS — EN · Light | 1 | 19 |
-| SCREENS — EN · Dark | 1 | 19 |
-| SCREENS — AR · RTL | 2 | 26 |
-| SCREENS — AR · RTL · Dark | 2 | 26 |
-| SCREENS — STATES · EN · Light | **0** | 0 |
+| Section | Frames | Real defects | Intentional scroll |
+|---|---|---|---|
+| SCREENS — EN · Light | 29 | 1 | 19 |
+| SCREENS — EN · Dark | 29 | 1 | 19 |
+| SCREENS — AR · RTL | 29 | 2 | 26 |
+| SCREENS — AR · RTL · Dark | 29 | 2 | 26 |
+| SCREENS — STATES · EN · Light | 73 | **0** | 0 |
+| SCREENS — OVERLAYS · EN · Light | 6 | **0** | 0 |
 
-Down from 134 across the file at the start of this pass.
+195 frames, 9,630 component instances. Down from 134 clipped nodes at the start of
+this pass. No frame truncates its sidebar; no text node is blank.
+
+Width overflow, all 11 instances in EN · Light, accounted for:
+
+| Where | Count | Reading |
+|---|---|---|
+| `SCR-WEB-100 table-wrap > thead/tr` | 9 | the intentional Planning scroll |
+| `Factory 360 identity > context-badges` | 1 | open defect 1 below |
+| `Analytics Select > Select option` | 1 | parent does not clip; nothing is cut |
 
 ## Intentional, do not "fix"
 
