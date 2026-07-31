@@ -69,6 +69,12 @@
   "matched": "Items",
   "reservation": "plural Arabic on a singular column header"
  },
+ "due 1d": {
+  "ar": "خلال يوم",
+  "matched": "",
+  "composed": true,
+  "reservation": "COMPOSED, not a catalogue string, and not a near match — the index holds no term for 'due' at all. Built only from fragments that are approved: خلال ('within') from 'Schedule a re-inspection within 14 days' -> 'جدولة إعادة تفتيش خلال 14 يومًا' and 'Planning window expires in 2 days' -> 'نافذة التخطيط تنتهي خلال يومين', plus the singular يوم from '1 day ago' -> 'قبل يوم'. Reads as time remaining, which is what the SLA column means, and introduces no new vocabulary — but a translator may prefer an explicit مستحقة خلال يوم. Needs confirmation."
+ },
  "overdue 1d": {
   "ar": "متأخرة يومًا",
   "matched": "overdue + 1 day ago",

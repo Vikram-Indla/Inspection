@@ -17,8 +17,8 @@ All four Figma sections now carry those screens. The AR·RTL and AR·RTL·Dark c
 
 - **21 rows** already have approved Arabic. They are filled in, `status = reuse`, with the catalogue English in `approved_source`. Nothing to do.
 - **2 rows** differ from an approved term only slightly ("Qty / capacity" vs "Quantity / capacity"). `ar` is left blank and the near term sits in `approved_source` — accept it, or translate afresh if it is a different concept.
-- **17 rows** are near matches the build rejected and the Product Owner applied anyway (ruling 2026-07-31). They render in Figma, but each carries a stated reservation in `owner-accepted-suggestions.json` and stays in the outstanding count — re-check them first.
-- **263 rows** are genuinely new copy.
+- **18 rows** are near matches the build rejected and the Product Owner applied anyway (ruling 2026-07-31). They render in Figma, but each carries a stated reservation in `owner-accepted-suggestions.json` and stays in the outstanding count — re-check them first.
+- **262 rows** are genuinely new copy.
 
 So the real ask is **282 rows**, not 311.
 
