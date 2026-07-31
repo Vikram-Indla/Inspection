@@ -169,3 +169,34 @@ have the same root cause: `setBoundVariableForPaint` keeps a *cached literal* al
 binding. Passing a black base produced black cards; passing the light base produced a light
 card inside a dark frame. The cached colour must match the mode the frame renders in. The
 first attempt at both the identifier fills and the selection fill fell into this.
+
+
+---
+
+## Phase 2 — done 2026-08-01
+
+| Item | Result |
+|---|---|
+| P1 map | **The ellipse is gone.** Replaced with real Saudi ADM1 geometry — all 13 regions, projected from `apps/web/public/geo/sau-regions.geo.json` (GADM v4.1) using the exact bounds in `lib/ksa-regions.ts`, so Figma frames the Kingdom the way the app does. Markers moved onto real cities (Riyadh, Jeddah, Dammam, Madinah, Abha, Tabuk). Replicated to all five sections with mode-correct land and border colours. Deliberately **not** mirrored in AR — geography is geography |
+| P2/P3 charts | Compliance explorer gained a legend that reuses the bars' own paints, so the key cannot drift from the chart: *At or above the 85% national target* / *Below the national target*. Enforcement trend gained a scale line — *Scale 0–168 enforcement actions per quarter, bars are proportional*. Added at component level, so all four locale/theme variants inherit |
+| P4 admin | The six frames are the RBAC refusal a non-admin meets at an admin route — a real state, wrongly named. Renamed `RBAC refusal — <screen> — <route> — admin UI is SCR-ADM-0xx on page Admin Shell` |
+| P10 Factory 360 | The rich 2,156px legacy frame now carries the governed identity `SCR-WEB-400 — /factories/[id]/360`. My thin 929px rebuild is marked `SUPERSEDED — regions-only draft` |
+| Naming | Six frames that have no catalogue row but *are* justified by a Jira epic now carry it: Dashboard INSP-1, Execution INSP-5, Compliance Library INSP-7, Approval Queue INSP-8, Enforcement Library INSP-9, Analytics INSP-10 |
+
+Clip census unchanged at 6 — the known Factory 360 `identity` and AR caret defects. No regression.
+
+### Why the map is vectors, not a Mapbox raster
+
+The design bundle renders a live Mapbox GL map, so there are no SVG paths to import, and
+Figma's `createImageAsync` is unavailable in this environment — a Mapbox Static raster
+could not be fetched into the file. Drawing the canonical GeoJSON as vectors is arguably
+better for a design file anyway: it is crisp at any zoom, carries no API dependency, and
+comes from the same source the application uses.
+
+### Note on a credential
+
+`designs/**/ksa-adm1-map.js` contains a Mapbox `pk.` token in plaintext, committed to the
+repo. Mapbox public tokens are designed for client-side use so this is not a private-key
+leak, but an unrestricted `pk.` token can be used by anyone who finds it and billed to this
+account. Worth confirming it has URL restrictions set in the Mapbox dashboard. I did not
+use it — no request was made to Mapbox.
