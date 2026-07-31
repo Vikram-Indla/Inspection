@@ -1,0 +1,177 @@
+{
+  "$comment": "FROZEN BASELINE of the SAQEEL Figma design system. Captured 2026-07-31 by reading the live file via the Figma Plugin API — not transcribed from notes. Do not edit by hand; regenerate with the script in docs/design/figma/README.md.",
+  "capturedAt": "2026-07-31",
+  "file": {
+    "key": "ML2PNwfShlQM2k44MvSEw5",
+    "name": "Inspection - Web",
+    "url": "https://www.figma.com/design/ML2PNwfShlQM2k44MvSEw5",
+    "team": "Senaei 2.0",
+    "project": "Saqeel design system",
+    "plan": "Professional",
+    "libraryPublished": true,
+    "publishedAssets": 437
+  },
+  "scope": {
+    "webCanon": "design/final-cut/saqeel-revamp.html",
+    "adminCanon": "designs/admin/",
+    "pwa": "OUT OF SCOPE (Product Owner ruling 2026-07-31)"
+  },
+  "pages": [
+    "0:1|Cover", "6:2|Getting Started", "6:3|— FOUNDATIONS —",
+    "6:4|Foundations: Colors", "6:5|Foundations: Typography",
+    "6:6|Foundations: Spacing & Radius", "6:7|Foundations: Effects",
+    "6:8|— COMPONENTS —", "7:394|Button", "9:2|Badge, Tag & Chip",
+    "9:55|Form Controls", "11:22|Alert", "11:44|Panel & KPI", "13:2|Table",
+    "13:49|Nav & Chrome", "73:2|Icons", "14:2|Overlay", "14:31|Progress & Spine",
+    "14:87|Identity & Misc", "14:118|State", "14:157|Map", "6:9|— SCREENS —",
+    "96:2|— AR STRINGS (do not delete) —"
+  ],
+  "variableCollections": {
+    "$comment": "Values are NOT duplicated here. All 62 numeric variables were diffed against apps/web/src/app/tokens.css base :root (media queries stripped) on 2026-07-31: 62/62 exact match. tokens.css is the value authority.",
+    "Primitives": { "id": "VariableCollectionId:2:2", "modes": ["Value"], "count": 23, "note": "scoped [] (hidden) — login/print themes only" },
+    "Color":      { "id": "VariableCollectionId:3:2", "modes": ["Light", "Dark"], "count": 80 },
+    "Spacing":    { "id": "VariableCollectionId:3:83", "modes": ["Value"], "count": 10 },
+    "Radius":     { "id": "VariableCollectionId:3:94", "modes": ["Value"], "count": 5 },
+    "Sizing":     { "id": "VariableCollectionId:3:100", "modes": ["Value"], "count": 15 },
+    "Typography": { "id": "VariableCollectionId:3:116", "modes": ["Value"], "count": 33 },
+    "Shadow":     { "id": "VariableCollectionId:5:2", "modes": ["Light", "Dark"], "count": 20 }
+  },
+  "textStyles": [
+    "t-display|IBM Plex Sans SemiBold|28|125%",
+    "t-page-title|IBM Plex Sans SemiBold|22|130%",
+    "t-section|IBM Plex Sans SemiBold|17|135%",
+    "t-heading|IBM Plex Sans SemiBold|14|140%",
+    "t-body-lg|IBM Plex Sans Regular|15|155%",
+    "t-body|IBM Plex Sans Regular|14|150%",
+    "t-compact|IBM Plex Sans Regular|13|145%",
+    "t-label|IBM Plex Sans Medium|12|135%",
+    "t-meta|IBM Plex Sans Regular|12|140%",
+    "t-caption|IBM Plex Sans Regular|11.5|140%",
+    "t-metric|IBM Plex Sans Bold|30|115%",
+    "t-mono|IBM Plex Mono Regular|12.5|AUTO"
+  ],
+  "effectStyles": [
+    "shadow-xs|2", "shadow-sm|2", "shadow-md|1", "shadow-md-dark|2",
+    "shadow-lg|1", "shadow-lg-dark|2", "shadow-card|3", "shadow-card-dark|2",
+    "shadow-card-hover|3", "shadow-card-hover-dark|2"
+  ],
+  "components": {
+    "Button":            ["Button|COMPONENT_SET|8:32|60v (Color x Size x State)"],
+    "Badge, Tag & Chip": ["Badge|COMPONENT_SET|9:25|11v", "Tag|9:37", "Delta up|9:39", "Exc-chip critical|9:41", "Filter chip|9:43", "Filter chip is-set|9:45", "Combo chip|9:47"],
+    "Form Controls":     ["Input|COMPONENT_SET|9:66|5v", "Checkbox|9:71|2v", "Radio|9:74|2v", "Switch|9:79|2v", "Select|11:5", "seg-opt|70:6|3v", "stat|70:9", "section-title|70:12", "filter-chip|72:6736|3v"],
+    "Alert":             ["Alert|COMPONENT_SET|11:43|5v"],
+    "Panel & KPI":       ["Panel|11:45", "KPI panel|21:168", "Operational KPI|26:364", "Factory card|27:491"],
+    "Table":             ["grid-toolbar|15:9", "bulk-bar|15:10", "thead|15:11", "tr|15:12", "grid-footer|15:13", "Table cell|COMPONENT_SET|71:14|6v (Kind x State)"],
+    "Nav & Chrome":      ["sidebar|15:44", "topbar|15:45", "breadcrumb|15:46", "tabs|15:47", "nav-item|COMPONENT_SET|18:10|4v", "App sidebar|19:2", "App topbar|20:172", "App sidebar — Administration expanded|50:56"],
+    "Icons":             ["52 components: icon/nav/* (15), icon/ui/* (37)"],
+    "Overlay":           ["dialog|15:30", "toast|15:31", "tooltip|15:32", "menu|15:33", "popover|15:34", "drawer|15:35"],
+    "Progress & Spine":  ["progress|15:26", "steps|15:27", "timeline|15:28", "spine|15:29"],
+    "Identity & Misc":   ["avatar/avatar-sm|15:36", "avatar/avatar-md|15:37", "avatar/avatar-lg|15:38", "user-chip|15:39", "pagination|15:40", "kbd|15:41", "divider|15:42", "accordion|15:43", "Accordion header|27:629"],
+    "State":             ["saqeel-state--error|15:14", "saqeel-state--conflict|15:15", "saqeel-state--stale|15:16", "saqeel-state--provider-unavailable|15:17", "saqeel-state--degraded|15:18", "saqeel-state--not-yet|15:19", "saqeel-state--loading|15:20", "empty|15:21"],
+    "Map":               ["map-panel|15:22", "map-marker|15:23", "map-cluster|15:24", "map-legend|15:25"]
+  },
+  "screens": {
+    "count": 64,
+    "matrix": "16 routes x 4 variants (EN·Light, EN·Dark, AR·RTL, AR·RTL·Dark)",
+    "width": 1280,
+    "routes": [
+      "/dashboard", "/operations", "/factory-360", "/planning", "/execution",
+      "/reviews", "/compliance", "/enforcement-library", "/compliance/approvals",
+      "/analytics", "/admin/access", "/admin/localization", "/admin/risk",
+      "/admin/packages", "/admin/notifications", "/admin/integrations"
+    ],
+    "adminScreensAreRefusalStates": true,
+    "adminNote": "All six /admin/* frames render the RBAC-refused .saqeel-state, not admin UI. Real admin coverage is ZERO."
+  },
+  "prototype": { "flows": 4, "links": 780, "dangling": 0 },
+  "healthAtBaseline": {
+    "enLightInstances": 1155,
+    "enLightRawFrames": 518,
+    "pctInstance": 69,
+    "overflowingNodes_EN": 0,
+    "overflowingNodes_AR": 36,
+    "arDetachedPinnedAt60": 543,
+    "unboundPaints_EN": 0
+  },
+  "healthAfterFullQA_2026-07-31": {
+    "$comment": "Full-file QA pass. See docs/design/figma/QA-2026-07-31.md. Counts are visible nodes only.",
+    "pagesSwept": 24,
+    "unboundPaints_allPages": 0,
+    "unboundPaints_exceptions": "map-cluster x2 (mirrors a real code bug, locked decision); wordmark brand art x25 (DEC-011)",
+    "midWordBreaks_allRows": 0,
+    "clippedText_allRows": 0,
+    "autoLineHeights_allRows": 0,
+    "textStyleCoverage": {
+      "EN·Light": "1677/1684", "EN·Dark": "1693/1694",
+      "AR·RTL": "1731/1736", "AR·RTL·Dark": "1731/1736",
+      "unstyledAreJustified": "12px/600 seg-labels (no token), 12.5px mono id-code (no Arabic mono), 1 mixed-font node"
+    },
+    "newTextStyles": "11 Arabic — t-display-ar … t-metric-ar (Noto Sans Arabic, sizes and line-heights mirror the Latin ramp)",
+    "buttonCorrected": "60 variants — weight Medium per --type-button-w:500, line-height 100% per .btn line-height:1, sizes bound to type-label-size / type-button-size / type-body-size",
+    "tablesCorrected": "Planning, Analytics, Enforcement, Compliance, Execution — intrinsic per-column widths with clipping wrapper, per .planning-visit-table inline-size:max-content"
+  },
+  "additionsSinceBaseline": {
+    "$comment": "Work landed after the baseline snapshot. Regenerate the baseline to fold these in.",
+    "2026-07-31 admin shell": {
+      "page": "111:2 | Admin Shell",
+      "source": "designs/admin/admin/saqeel/admin-shell.css (68 classes) + SAQEEL Admin.dc.html DOM",
+      "components": [
+        "ad-hub|COMPONENT_SET|111:16|3v Default/Hover/Active + Icon INSTANCE_SWAP",
+        "ad-cmdk|112:7",
+        "ad-iconbtn|112:12|Icon swap + showIcon/showLabel/showBadge booleans",
+        "ad-avatar|112:15",
+        "ad-subnav__item|COMPONENT_SET|112:25|3v",
+        "ad-hubcard|112:32|Icon INSTANCE_SWAP",
+        "ad-state|COMPONENT_SET|112:51|3v Default/Error/Denied",
+        "ad-wordmark|COMPONENT_SET|118:40|2v Theme=Light/Dark (brand art verbatim, DEC-011)",
+        "ad-rail|119:99|252x900",
+        "ad-head|120:94",
+        "ad-subnav|120:108",
+        "ad-util|120:7182",
+        "ad-pal__item|COMPONENT_SET|121:99|2v",
+        "ad-pal|121:119",
+        "Admin shell — /admin — EN · Light|122:101|1280x900",
+        "Admin shell — /admin — EN · Dark|122:7299|1280x900"
+      ],
+      "icons": "13 new — icon/adhub/* (7: cp people rules planning risk connections governance), icon/adchrome/* (6: collapse search theme bell chevdown back). Path data verbatim from the design markup.",
+      "newVariables": {
+        "Color": [
+          "text-muted-admin — CREATED then RETIRED 2026-07-31. Superseded by unifying text-muted itself; see textMutedUnification below.",
+          "ad-hub-icon-rest, ad-cmdk-bg, ad-util-bg, ad-state-bg, ad-state-error-bg/border/icon, ad-state-denied-bg/border/icon — derived alpha tokens mirroring each color-mix() in admin-shell.css"
+        ],
+        "Motion": ["transition-fast 120", "transition-base 200", "transition-slow 320"]
+      },
+      "textMutedUnification": {
+        "decidedBy": "Product Owner, 2026-07-31",
+        "was": { "light": "#66727c", "dark": "#8e99a3" },
+        "now": { "light": "#5f666c", "dark": "#99a0a8" },
+        "reason": "Light #66727c scored 4.42 on --surface-secondary against the 4.5 AA threshold at 11.5px. New values score 5.83/5.42/5.23 light and 5.41-7.05 dark — AA on every surface, both modes.",
+        "correction": "An earlier figure in this session (4.48/4.17/4.25, 'fails everywhere') was computed against designs/web/.../colors.css (#71787e/#82888f), which the runtime does not use. Only the surface-secondary case actually failed.",
+        "changedIn": [
+          "apps/web/src/app/tokens.css (both modes) — console runtime",
+          "apps/web/public/saqeel-ds/saqeel/tokens/colors.css (both modes) — field runtime, served via field/layout.tsx:30",
+          "Figma Color/text-muted (both modes)"
+        ],
+        "fieldPaletteNote": "The field DS uses a warmer palette (canvas #f4f3f0, secondary #faf9f7) and was the worst case: #71787e failed ALL four light surfaces (4.04/4.48/4.26/3.79) and #82888f failed dark secondary (4.24) and raised (3.92). New values score 4.93-6.92 across every surface in both modes. The 4.48 figure mis-attributed earlier to the console belongs to this palette (#71787e on white).",
+        "forkRetired": "text-muted-admin — 4 consumers repointed, variable deleted",
+        "consumersOnScreensPage": 424,
+        "notChanged": [
+          "design/saqeel/tokens/tokens.css + tokens-css/colors.css (#71787e) — named as source of authority but already divergent from the compiled file",
+          "designs/web + designs/pwa (#71787e) — vendored design exports; designs/admin already correct"
+        ]
+      },
+      "verification": "Admin Shell page: 389 bound paints, 25 unbound — all 25 are wordmark brand art (Vector strokes + SAQEEL/|/صقيل text), intentionally on brand hex per DEC-011. Dark mode re-themes from tokens with no hand-recolouring.",
+      "openItems": [
+        "RECOMMENDATION PENDING PO: unify web --text-muted onto the admin values and retire text-muted-admin. Fixes a real WCAG AA failure on the web screens.",
+        "Table row (108:296) and Table cell showText/showBadge booleans also landed this session.",
+        "admin .dc.html references saqeel-wordmark-dark-mode.svg while nav-bg light is #ffffff — the light rail needs the light-mode lockup. Figma models this as a Theme variant per the asset README."
+      ]
+    }
+  },
+  "knownBlockers": [
+    "Code Connect — requires Organization/Enterprise; team is Professional. VERIFIED, do not retry.",
+    "IBM Plex Sans Arabic — absent from Figma's hosted catalogue, not uploadable on Pro. Arabic uses Noto Sans Arabic BY DECISION. SETTLED, do not reopen.",
+    "Figma Slots — ComponentPropertyType is BOOLEAN|TEXT|INSTANCE_SWAP|VARIANT only. No SLOT type in the Plugin API.",
+    "iPad file 8wGaofgbopqmGXc0Wjo0eW exposes only a Cover page to this account."
+  ]
+}

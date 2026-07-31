@@ -44,7 +44,10 @@
   /* Text */
   --text-primary:   #1b242c;
   --text-secondary: #49545e;
-  --text-muted:     #66727c;
+  /* AA at 11.5px on every light surface. #66727c scored 4.42 on --surface-secondary
+     (threshold 4.5); this scores 5.23 there, 5.83 on white, 5.42 on the canvas.
+     Unified onto the value already proven in designs/admin/admin/saqeel/tokens/colors.css. */
+  --text-muted:     #5f666c;
   --text-disabled:  #8f9aa3;
   --text-inverse:   #f5f6f7;
   --text-on-action: #ffffff;
@@ -165,7 +168,9 @@
 
   --text-primary:   #f1f4f6;
   --text-secondary: #abb4bd;
-  --text-muted:     #8e99a3;
+  /* Unified with the light mode onto the admin-proven value. #8e99a3 already met AA
+     (4.93-6.42); this raises the floor to 5.41 and keeps one muted token across channels. */
+  --text-muted:     #99a0a8;
   --text-disabled:  #626d77;
   --text-inverse:   #1a1d1f;
   --text-on-action: #08120e;
