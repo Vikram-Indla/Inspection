@@ -114,12 +114,13 @@ regardless of width.
 3. **States are single-region.** A state frame shows the state block in the content
    region, not every surrounding control in its disabled or loading form.
 4. **Two open defects**, both cosmetic, in `KNOWN-DEFECTS.md`.
-5. **The nine EXTERNAL routes are proposals, not governed.** `CLAUDE.md` rule 9 fixes the
-   route list and contains none of them, because the catalogue never described that
-   module. They need a routing decision before implementation. Everything ungoverned
-   inside them renders *Not configured* — eligibility rules, objection windows,
-   self-assessment scoring and the effect of accepting a correction are all governed
-   behaviour nobody has specified yet.
+5. **The five external submission surfaces are held in code, not by an open question.**
+   `portal/page.tsx` records the seam as `FEATURE_EXTERNAL_PORTAL=off + external identity
+   policy held` and renders `NotYetBoundary`; no external session is authorised. Their
+   frames carry that hold and are the design for when it lifts. The four internal review
+   surfaces on `/portal` are buildable today. Ungoverned values in all nine render *Not
+   configured* — eligibility rules, objection windows, self-assessment scoring and the
+   effect of accepting a correction are unspecified.
 6. **The catalogue is incomplete.** Jira holds a module — INSP-239, 9 stories, 36
    sub-tasks — that `screen_route_catalogue.csv` does not mention at all. Treat Jira as
    canonical for scope, as the Product Owner said; the catalogue is a subset.

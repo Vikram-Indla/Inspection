@@ -76,24 +76,37 @@ INSP stories" and **INSP-532** "Review stories with missing or ambiguous design 
 
 ### Now built — section `SCREENS — EXTERNAL (INSP-239) · EN · Light`
 
-| Story | Screen | Proposed route |
-|---|---|---|
-| INSP-246 | Linked Establishments & Eligible Services | `/external/establishments` |
-| INSP-248 | Submit Visit Request | `/external/requests/visit` |
-| INSP-249 | Submit Correction Request | `/external/requests/correction` |
-| INSP-250 | Submit Objection | `/external/requests/objection` |
-| INSP-251 | Self-Assessment | `/external/self-assessment` |
-| INSP-252 | Review Visit Request | `/requests/visit/[id]` |
-| INSP-253 | Review Self-Assessment | `/requests/self-assessment/[id]` |
-| INSP-254 | Review Correction Request | `/requests/correction/[id]` |
-| INSP-255 | Review Objection | `/requests/objection/[id]` |
+The route is **not invented — it already exists**: `apps/web/src/app/(app)/portal/` is the
+surface for `external_requests` and `self_assessments`. Rule 9 says tabs and filters are
+query state, never subroutes, so each story is a state of `/portal`.
 
-**The routes are proposals, not governed.** `CLAUDE.md` rule 9 fixes the route list and
-contains none of these, because the catalogue never described this module. They need a
-routing decision before implementation. Every ungoverned value inside them renders *Not
-configured* rather than being invented — eligibility rules, objection windows,
-self-assessment scoring and the effect of accepting a correction are all governed
-behaviour nobody has specified yet.
+| Story | Screen | Route | Channel |
+|---|---|---|---|
+| INSP-246 | Linked Establishments & Eligible Services | `/portal?tab=establishments` | external — **held** |
+| INSP-248 | Submit Visit Request | `/portal?tab=requests&type=visit` | external — **held** |
+| INSP-249 | Submit Correction Request | `/portal?tab=requests&type=correction` | external — **held** |
+| INSP-250 | Submit Objection | `/portal?tab=requests&type=objection` | external — **held** |
+| INSP-251 | Self-Assessment | `/portal?tab=self-assessment` | external — **held** |
+| INSP-252 | Review Visit Request | `/portal?tab=requests&type=visit&view=review` | internal — buildable |
+| INSP-253 | Review Self-Assessment | `/portal?tab=self-assessment&view=review` | internal — buildable |
+| INSP-254 | Review Correction Request | `/portal?tab=requests&type=correction&view=review` | internal — buildable |
+| INSP-255 | Review Objection | `/portal?tab=requests&type=objection&view=review` | internal — buildable |
+
+### The external channel is held, and that hold is not new
+
+`portal/page.tsx` says it plainly: *"External-rep IDENTITY is HELD — no external session is
+authorised here; this is the internal"* review view. The seam is recorded in the code as
+`FEATURE_EXTERNAL_PORTAL=off + external identity policy held`, and the route renders
+`NotYetBoundary` today.
+
+So the five external surfaces are **not blocked on a decision from anyone** — the decision
+was already taken and is enforced in code. Their frames carry that hold as a warning alert
+plus a line saying `/portal` renders the internal view only, and they stand as the design
+for when the hold lifts. The four internal review surfaces are buildable now.
+
+Ungoverned values inside all nine render *Not configured* rather than being invented —
+eligibility rules, objection windows, self-assessment scoring and what accepting a
+correction does to a violation are governed behaviour nobody has specified yet.
 
 ## Story coverage after this pass
 
