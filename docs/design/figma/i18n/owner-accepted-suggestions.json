@@ -1,0 +1,97 @@
+{
+ "_ruling": [
+  "Product Owner, 2026-07-31: apply the near matches that the build had rejected,",
+  "holding only the two that are factually false — 'Unavailable' (matched 'available',",
+  "the opposite meaning) and '01 – 15 Jul' (matched '1–5 Jul', different dates).",
+  "",
+  "These 17 are kept separate from accepted-suggestions.json because they were applied",
+  "on the owner's instruction over a stated objection, not because the match is sound.",
+  "Each carries the reservation that was raised. A translation reviewer should read this",
+  "file as a list to re-check, not as approved copy."
+ ],
+ "Mode": {
+  "ar": "النموذج",
+  "matched": "Model",
+  "reservation": "'Model' is a different concept; here Mode is physical vs virtual visit"
+ },
+ "Package version": {
+  "ar": "قرار الحزمة",
+  "matched": "Package decision",
+  "reservation": "'decision' is not 'version'"
+ },
+ "Assigned inspectors": {
+  "ar": "المفتش المعيّن",
+  "matched": "Assigned inspector",
+  "reservation": "singular Arabic on a plural label"
+ },
+ "Visits": {
+  "ar": "2 زيارة",
+  "matched": "2 visits",
+  "reservation": "carries the literal count 2; the label is a section title with no count"
+ },
+ "Visit": {
+  "ar": "زيارة واحدة",
+  "matched": "1 visit",
+  "reservation": "carries the literal count 1; the label is a table column header"
+ },
+ "Visit configuration": {
+  "ar": "تهيئة المخاطر",
+  "matched": "Risk Configuration",
+  "reservation": "reads 'risk configuration'; the screen configures a visit, not risk"
+ },
+ "Approve": {
+  "ar": "معتمد",
+  "matched": "Approved",
+  "reservation": "past participle on an action button that needs the imperative"
+ },
+ "Reject": {
+  "ar": "مرفوض",
+  "matched": "Rejected",
+  "reservation": "past participle on an action button that needs the imperative"
+ },
+ "Exception": {
+  "ar": "الاستثناءات",
+  "matched": "Exceptions",
+  "reservation": "plural Arabic on a singular section title"
+ },
+ "Planned window": {
+  "ar": "نافذة التخطيط",
+  "matched": "Planning window",
+  "reservation": "'planning window' is the period plans are made in, not the planned visit window"
+ },
+ "Product": {
+  "ar": "المنتجات",
+  "matched": "Products",
+  "reservation": "plural Arabic on a singular table cell value"
+ },
+ "Item": {
+  "ar": "البنود",
+  "matched": "Items",
+  "reservation": "plural Arabic on a singular column header"
+ },
+ "overdue 1d": {
+  "ar": "متأخرة",
+  "matched": "overdue",
+  "reservation": "drops the 1-day duration; renders identically to 'overdue 2d'"
+ },
+ "overdue 2d": {
+  "ar": "متأخرة",
+  "matched": "overdue",
+  "reservation": "drops the 2-day duration; renders identically to 'overdue 1d'"
+ },
+ "Section": {
+  "ar": "التفتيش",
+  "matched": "Inspection",
+  "reservation": "reads 'inspection'; the column lists the package section an item belongs to"
+ },
+ "State": {
+  "ar": "بدأت",
+  "matched": "Started",
+  "reservation": "reads 'started'; the column is a state, not a start event"
+ },
+ "Actor": {
+  "ar": "المنشأة",
+  "matched": "Factory",
+  "reservation": "reads 'factory'; the audit column names who performed the action"
+ }
+}

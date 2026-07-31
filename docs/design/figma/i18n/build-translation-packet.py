@@ -57,9 +57,15 @@ ACCEPTED = {k: v for k, v in
             json.loads((HERE / "accepted-suggestions.json").read_text(encoding="utf-8")).items()
             if not k.startswith("_")}
 
+# Near matches the build rejected and the Product Owner applied anyway. Kept apart so
+# the packet can say which Arabic is sound and which is on the record under objection.
+OWNER = {k: v for k, v in
+         json.loads((HERE / "owner-accepted-suggestions.json").read_text(encoding="utf-8")).items()
+         if not k.startswith("_")}
+
 
 def lookup(en):
-    """(arabic, source_english, status) — status is reuse | accepted | suggest | new."""
+    """(arabic, source_english, status) — reuse | accepted | owner-applied | suggest | new."""
     f = fold(en)
     if f in FOLDED:
         src, ar = FOLDED[f]
@@ -67,6 +73,8 @@ def lookup(en):
     if en in ACCEPTED:
         close = difflib.get_close_matches(f, FOLD_KEYS, n=1, cutoff=0.82)
         return ACCEPTED[en], (FOLDED[close[0]][0] if close else ""), "accepted"
+    if en in OWNER:
+        return OWNER[en]["ar"], OWNER[en]["matched"], "owner-applied"
     close = difflib.get_close_matches(f, FOLD_KEYS, n=1, cutoff=0.82)
     if close:
         src, ar = FOLDED[close[0]]
@@ -172,7 +180,9 @@ for en, screens, role in rows:
         "shared": "yes" if "|" in screens else "",
     })
 
-STATUS_ORDER = {"new": 0, "suggest": 1, "accepted": 2, "reuse": 3}
+STATUS_ORDER = {"new": 0, "suggest": 1, "owner-applied": 2, "accepted": 3, "reuse": 4}
+# owner-applied is rendered in Figma but is NOT settled copy — it stays outstanding so
+# a translation reviewer still sees it.
 DONE = {"reuse", "accepted"}
 out.sort(key=lambda r: (r["priority"], STATUS_ORDER[r["status"]], r["key"]))
 
@@ -215,6 +225,10 @@ L = [f"# Translation packet — {STAMP}\n",
      f"slightly (\"Qty / capacity\" vs \"Quantity / capacity\"). `ar` is left blank and "
      f"the near term sits in `approved_source` — accept it, or translate afresh if it is "
      f"a different concept.\n"
+     f"- **{len(by_status.get('owner-applied', []))} rows** are near matches the build "
+     f"rejected and the Product Owner applied anyway (ruling 2026-07-31). They render in "
+     f"Figma, but each carries a stated reservation in `owner-accepted-suggestions.json` "
+     f"and stays in the outstanding count — re-check them first.\n"
      f"- **{len(by_status.get('new', []))} rows** are genuinely new copy.\n",
      f"So the real ask is **{len(todo)} rows**, not {len(out)}.\n",
      "Nothing here was machine-translated. CLAUDE.md rule 8 keeps Arabic in the i18n "
@@ -273,7 +287,7 @@ print(f"rows      : {len(out)}")
 for p in sorted(by_prio):
     band = by_prio[p]
     print(f"  {p}      : {len(band)} ({len([r for r in band if r['status'] not in DONE])} outstanding)")
-for s in ("reuse", "accepted", "suggest", "new"):
+for s in ("reuse", "accepted", "owner-applied", "suggest", "new"):
     print(f"  {s:8}: {len(by_status.get(s, []))}")
 print(f"outstanding: {len(todo)}")
 print(f"wrote {csv_path}")

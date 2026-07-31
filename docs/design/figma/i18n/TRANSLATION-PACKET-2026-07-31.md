@@ -16,7 +16,8 @@ All four Figma sections now carry those screens. The AR·RTL and AR·RTL·Dark c
 `ar-index.json` joins the design catalogue (648 pairs) with the runtime fallbacks in `apps/web/src/lib/i18n.ts` and `apps/web/src/lib/factory360/arabic.ts`, whose Arabic is keyed by i18n key rather than by English and so was invisible to the first pass. That join is **872** approved pairs, and it answers rows this packet was about to ask for:
 
 - **21 rows** already have approved Arabic. They are filled in, `status = reuse`, with the catalogue English in `approved_source`. Nothing to do.
-- **19 rows** differ from an approved term only slightly ("Qty / capacity" vs "Quantity / capacity"). `ar` is left blank and the near term sits in `approved_source` — accept it, or translate afresh if it is a different concept.
+- **2 rows** differ from an approved term only slightly ("Qty / capacity" vs "Quantity / capacity"). `ar` is left blank and the near term sits in `approved_source` — accept it, or translate afresh if it is a different concept.
+- **17 rows** are near matches the build rejected and the Product Owner applied anyway (ruling 2026-07-31). They render in Figma, but each carries a stated reservation in `owner-accepted-suggestions.json` and stays in the outstanding count — re-check them first.
 - **263 rows** are genuinely new copy.
 
 So the real ask is **282 rows**, not 311.
@@ -181,6 +182,7 @@ Counts above are all rows. Subtract `reuse` and `accepted` for what is actually 
 | `visits.list.readOnlyWorkspace` | Read-only workspace | SCR-WEB-200 | alert-title |  |
 | `visits.list.visitIdReferenceFactoryName` | Visit ID / reference, factory name, CR number, industrial licence, inspector | SCR-WEB-200 | placeholder |  |
 | `visits.list.visitManagement` | Visit management | SCR-WEB-200 | page-title |  |
+| `virtual.appointment.unavailable` | Unavailable | SCR-VIR-700 SCR-VIR-720 | state-title | available |
 | `planning.configure.mode` | Mode | SCR-WEB-140 SCR-VIR-700 | section-title | Model |
 | `planning.configure.packageVersion` | Package version | SCR-WEB-140 | section-title | Package decision |
 | `planning.review.assignedInspectors` | Assigned inspectors | SCR-WEB-150 | field-term | Assigned inspector |
@@ -188,7 +190,6 @@ Counts above are all rows. Subtract `reuse` and `accepted` for what is actually 
 | `planning.single.visitConfiguration` | Visit configuration | SCR-WEB-120 | section-title | Risk Configuration |
 | `reviews.workspace.approve` | Approve | SCR-WEB-310 | action | Approved |
 | `reviews.workspace.reject` | Reject | SCR-WEB-310 | action | Rejected |
-| `virtual.appointment.unavailable` | Unavailable | SCR-VIR-700 SCR-VIR-720 | state-title | available |
 | `virtual.verify.exception` | Exception | SCR-VIR-710 | section-title | Exceptions |
 | `visits.detail.plannedWindow` | Planned window | SCR-WEB-210 | field-hint | Planning window |
 
