@@ -16,10 +16,10 @@ All four Figma sections now carry those screens. The AR·RTL and AR·RTL·Dark c
 `ar-index.json` joins the design catalogue (648 pairs) with the runtime fallbacks in `apps/web/src/lib/i18n.ts` and `apps/web/src/lib/factory360/arabic.ts`, whose Arabic is keyed by i18n key rather than by English and so was invisible to the first pass. That join is **872** approved pairs, and it answers rows this packet was about to ask for:
 
 - **21 rows** already have approved Arabic. They are filled in, `status = reuse`, with the catalogue English in `approved_source`. Nothing to do.
-- **27 rows** differ from an approved term only slightly ("Qty / capacity" vs "Quantity / capacity"). `ar` is left blank and the near term sits in `approved_source` — accept it, or translate afresh if it is a different concept.
+- **19 rows** differ from an approved term only slightly ("Qty / capacity" vs "Quantity / capacity"). `ar` is left blank and the near term sits in `approved_source` — accept it, or translate afresh if it is a different concept.
 - **263 rows** are genuinely new copy.
 
-So the real ask is **290 rows**, not 311.
+So the real ask is **282 rows**, not 311.
 
 Nothing here was machine-translated. CLAUDE.md rule 8 keeps Arabic in the i18n layer under review; inventing it in a design file would put unreviewed government copy in front of inspectors.
 
@@ -37,7 +37,7 @@ Nothing here was machine-translated. CLAUDE.md rule 8 keeps Arabic in the i18n l
 | P2 | Status and badge labels, counts, evidence captions. Should be translated; several may already exist in the catalogue under a different English string. | 89 |
 | P3 | Seeded demo content — factory names, visit references, timestamps. Visible in the AR screenshots but not governed copy. | 69 |
 
-Counts above are all rows. Subtract `reuse` for what is actually outstanding: P1 150, P2 71, P3 69.
+Counts above are all rows. Subtract `reuse` and `accepted` for what is actually outstanding: P1 147, P2 67, P3 68.
 
 
 ## P1 still needing Arabic
@@ -181,7 +181,6 @@ Counts above are all rows. Subtract `reuse` for what is actually outstanding: P1
 | `visits.list.readOnlyWorkspace` | Read-only workspace | SCR-WEB-200 | alert-title |  |
 | `visits.list.visitIdReferenceFactoryName` | Visit ID / reference, factory name, CR number, industrial licence, inspector | SCR-WEB-200 | placeholder |  |
 | `visits.list.visitManagement` | Visit management | SCR-WEB-200 | page-title |  |
-| `factory360.approvedViolationsCorrectiveActions` | Approved violations & corrective actions | SCR-WEB-400 | section-title | Approved inspection violations & corrective actions |
 | `planning.configure.mode` | Mode | SCR-WEB-140 SCR-VIR-700 | section-title | Model |
 | `planning.configure.packageVersion` | Package version | SCR-WEB-140 | section-title | Package decision |
 | `planning.review.assignedInspectors` | Assigned inspectors | SCR-WEB-150 | field-term | Assigned inspector |
@@ -191,8 +190,6 @@ Counts above are all rows. Subtract `reuse` for what is actually outstanding: P1
 | `reviews.workspace.reject` | Reject | SCR-WEB-310 | action | Rejected |
 | `virtual.appointment.unavailable` | Unavailable | SCR-VIR-700 SCR-VIR-720 | state-title | available |
 | `virtual.verify.exception` | Exception | SCR-VIR-710 | section-title | Exceptions |
-| `visits.detail.currentOfficialRecord` | Current official record | SCR-WEB-210 | field-hint | Current official |
-| `visits.detail.industrialLicence` | Industrial licence | SCR-WEB-210 | field-term | Industrial license |
 | `visits.detail.plannedWindow` | Planned window | SCR-WEB-210 | field-hint | Planning window |
 
 ## Notes for the reviewer

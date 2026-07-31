@@ -136,7 +136,6 @@ visits.list.planningStatusAndOperationalState,"Planning status and operational s
 visits.list.readOnlyWorkspace,Read-only workspace,,new,,SCR-WEB-200,alert-title,alert-title,P1,
 visits.list.visitIdReferenceFactoryName,"Visit ID / reference, factory name, CR number, industrial licence, inspector",,new,,SCR-WEB-200,Placeholder text,placeholder,P1,
 visits.list.visitManagement,Visit management,,new,,SCR-WEB-200,sq-content,page-title,P1,
-factory360.approvedViolationsCorrectiveActions,Approved violations & corrective actions,,suggest,Approved inspection violations & corrective actions,SCR-WEB-400,title,section-title,P1,
 planning.configure.mode,Mode,,suggest,Model,SCR-WEB-140 SCR-VIR-700,title,section-title,P1,yes
 planning.configure.packageVersion,Package version,,suggest,Package decision,SCR-WEB-140,title,section-title,P1,
 planning.review.assignedInspectors,Assigned inspectors,,suggest,Assigned inspector,SCR-WEB-150,term,field-term,P1,
@@ -146,9 +145,10 @@ reviews.workspace.approve,Approve,,suggest,Approved,SCR-WEB-310,Button,action,P1
 reviews.workspace.reject,Reject,,suggest,Rejected,SCR-WEB-310,Button,action,P1,
 virtual.appointment.unavailable,Unavailable,,suggest,available,SCR-VIR-700 SCR-VIR-720,ad-state__title,state-title,P1,yes
 virtual.verify.exception,Exception,,suggest,Exceptions,SCR-VIR-710,title,section-title,P1,
-visits.detail.currentOfficialRecord,Current official record,,suggest,Current official,SCR-WEB-210,hint,field-hint,P1,
-visits.detail.industrialLicence,Industrial licence,,suggest,Industrial license,SCR-WEB-210,term,field-term,P1,
 visits.detail.plannedWindow,Planned window,,suggest,Planning window,SCR-WEB-210,hint,field-hint,P1,
+factory360.approvedViolationsCorrectiveActions,Approved violations & corrective actions,مخالفات التفتيش المعتمدة والإجراءات التصحيحية,accepted,Approved inspection violations & corrective actions,SCR-WEB-400,title,section-title,P1,
+visits.detail.currentOfficialRecord,Current official record,البيانات الرسمية الحالية,accepted,Current official,SCR-WEB-210,hint,field-hint,P1,
+visits.detail.industrialLicence,Industrial licence,الرخصة الصناعية,accepted,Industrial license,SCR-WEB-210,term,field-term,P1,
 factory360.commercialRegistrationLegalIdentity,Commercial registration & legal identity,السجل التجاري والهوية النظامية,reuse,Commercial registration & legal identity,SCR-WEB-400,title,section-title,P1,
 planning.single.assignedInspector,Assigned inspector,المفتش المعيّن,reuse,Assigned inspector,SCR-WEB-120 SCR-WEB-130 SCR-WEB-140 SCR-WEB-210,field-label,form-label,P1,yes
 planning.single.commercialRegistration,Commercial registration,السجل التجاري,reuse,Commercial registration,SCR-WEB-120,hint,field-hint,P1,
@@ -211,11 +211,7 @@ visits.list.planningStatus,Planning status,,new,,SCR-WEB-200 SCR-WEB-210,cell-te
 visits.list.singleScheduled,Single · scheduled,,new,,SCR-WEB-200,cell-text,ui-text,P2,
 visits.list.visitReference,Visit reference,,new,,SCR-WEB-200,cell-text,ui-text,P2,
 visits.list.visitWindow,Visit window,,new,,SCR-WEB-200 SCR-WEB-120 SCR-WEB-140 SCR-WEB-210,cell-text,ui-text,P2,yes
-factory360.originatingReport,Originating report,,suggest,origin report,SCR-WEB-400,cell-text,ui-text,P2,
 factory360.product,Product,,suggest,Products,SCR-WEB-400,cell-text,ui-text,P2,
-factory360.qtyCapacity,Qty / capacity,,suggest,Quantity / capacity,SCR-WEB-400,cell-text,ui-text,P2,
-factory360.realMaxProduction,Real / max production,,suggest,Real / maximum production,SCR-WEB-400,cell-text,ui-text,P2,
-planning.bulk.lastInspection,Last inspection,,suggest,Latest inspection,SCR-WEB-110,cell-text,ui-text,P2,
 planning.review.visit,Visit,,suggest,1 visit,SCR-WEB-150 SCR-VIR-700,cell-text,ui-text,P2,yes
 reviews.workspace.overdue1d,overdue 1d,,suggest,overdue,SCR-WEB-310,Critical,status-label,P2,
 reviews.workspace.overdue2d,overdue 2d,,suggest,overdue,SCR-WEB-310,Critical,status-label,P2,
@@ -223,6 +219,10 @@ virtual.session.item,Item,,suggest,Items,SCR-VIR-720,cell-text,ui-text,P2,
 virtual.session.section,Section,,suggest,Inspection,SCR-VIR-720,cell-text,ui-text,P2,
 virtual.session.state,State,,suggest,Started,SCR-VIR-720,cell-text,ui-text,P2,
 virtual.verify.actor,Actor,,suggest,Factory,SCR-VIR-710,cell-text,ui-text,P2,
+factory360.originatingReport,Originating report,التقرير المصدر,accepted,origin report,SCR-WEB-400,cell-text,ui-text,P2,
+factory360.qtyCapacity,Qty / capacity,الكمية / الطاقة,accepted,Quantity / capacity,SCR-WEB-400,cell-text,ui-text,P2,
+factory360.realMaxProduction,Real / max production,الإنتاج الفعلي / الأقصى,accepted,Real / maximum production,SCR-WEB-400,cell-text,ui-text,P2,
+planning.bulk.lastInspection,Last inspection,آخر تفتيش,accepted,Latest inspection,SCR-WEB-110,cell-text,ui-text,P2,
 factory360.approved,approved,معتمد,reuse,Approved,SCR-WEB-400,Compliant,status-label,P2,
 factory360.comparison,Comparison,المقارنة,reuse,Comparison,SCR-WEB-400 SCR-WEB-320,cell-text,ui-text,P2,yes
 factory360.crNumber,CR number,رقم السجل التجاري,reuse,CR number,SCR-WEB-400 SCR-WEB-120,cell-text,ui-text,P2,yes
@@ -308,5 +308,5 @@ visits.list.vs40112,VS-40112,,new,,SCR-WEB-200,cell-text,sample-data,P3,
 visits.list.vs40159,VS-40159,,new,,SCR-WEB-200,cell-text,sample-data,P3,
 visits.list.vs40166,VS-40166,,new,,SCR-WEB-200,cell-text,sample-data,P3,
 visits.list.vs40170,VS-40170,,new,,SCR-WEB-200,cell-text,sample-data,P3,
-factory360.alRasheedSteelWorksCo,Al Rasheed Steel Works Co.,,suggest,Al Rasheed Steel Works,SCR-WEB-400,sq-content,sample-data,P3,
 reviews.compare.0115Jul,01 – 15 Jul,,suggest,1–5 Jul,SCR-WEB-320,del,sample-data,P3,
+factory360.alRasheedSteelWorksCo,Al Rasheed Steel Works Co.,مصانع الرشيد للصلب,accepted,Al Rasheed Steel Works,SCR-WEB-400,sq-content,sample-data,P3,

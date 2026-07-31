@@ -53,12 +53,20 @@ for _en, _ar in approved.items():
 FOLD_KEYS = list(FOLDED)
 
 
+ACCEPTED = {k: v for k, v in
+            json.loads((HERE / "accepted-suggestions.json").read_text(encoding="utf-8")).items()
+            if not k.startswith("_")}
+
+
 def lookup(en):
-    """(arabic, source_english, status) — status is reuse | suggest | new."""
+    """(arabic, source_english, status) — status is reuse | accepted | suggest | new."""
     f = fold(en)
     if f in FOLDED:
         src, ar = FOLDED[f]
         return ar, src, "reuse"
+    if en in ACCEPTED:
+        close = difflib.get_close_matches(f, FOLD_KEYS, n=1, cutoff=0.82)
+        return ACCEPTED[en], (FOLDED[close[0]][0] if close else ""), "accepted"
     close = difflib.get_close_matches(f, FOLD_KEYS, n=1, cutoff=0.82)
     if close:
         src, ar = FOLDED[close[0]]
@@ -164,7 +172,8 @@ for en, screens, role in rows:
         "shared": "yes" if "|" in screens else "",
     })
 
-STATUS_ORDER = {"new": 0, "suggest": 1, "reuse": 2}
+STATUS_ORDER = {"new": 0, "suggest": 1, "accepted": 2, "reuse": 3}
+DONE = {"reuse", "accepted"}
 out.sort(key=lambda r: (r["priority"], STATUS_ORDER[r["status"]], r["key"]))
 
 csv_path = HERE / f"TRANSLATION-PACKET-{STAMP}.csv"
@@ -178,7 +187,7 @@ by_prio, by_status = {}, {}
 for r in out:
     by_prio.setdefault(r["priority"], []).append(r)
     by_status.setdefault(r["status"], []).append(r)
-todo = [r for r in out if r["status"] != "reuse"]
+todo = [r for r in out if r["status"] not in DONE]
 
 L = [f"# Translation packet — {STAMP}\n",
      "Arabic needed for the 13 screens added to the SAQEEL Figma file on "
@@ -232,14 +241,15 @@ L = [f"# Translation packet — {STAMP}\n",
      f"{len(by_prio.get('P2', []))} |",
      f"| P3 | Seeded demo content — factory names, visit references, timestamps. Visible "
      f"in the AR screenshots but not governed copy. | {len(by_prio.get('P3', []))} |",
-     "\nCounts above are all rows. Subtract `reuse` for what is actually outstanding: "
-     + ", ".join(f"{p} {len([r for r in by_prio[p] if r['status'] != 'reuse'])}"
+     "\nCounts above are all rows. Subtract `reuse` and `accepted` for what is actually "
+     "outstanding: "
+     + ", ".join(f"{p} {len([r for r in by_prio[p] if r['status'] not in DONE])}"
                  for p in sorted(by_prio)) + ".\n",
      "\n## P1 still needing Arabic\n",
      "| Key | English | Screens | Kind | Near term |",
      "|---|---|---|---|---|"]
 for r in by_prio.get("P1", []):
-    if r["status"] == "reuse":
+    if r["status"] in DONE:
         continue
     en = r["en"].replace("|", "·")
     L.append(f"| `{r['key']}` | {en} | {r['screens']} | {r['kind']} | "
@@ -262,8 +272,8 @@ L.append("- Contract IDs inside a string (`SCR-WEB-140`, `SFR-2021 §4.2`) stay 
 print(f"rows      : {len(out)}")
 for p in sorted(by_prio):
     band = by_prio[p]
-    print(f"  {p}      : {len(band)} ({len([r for r in band if r['status'] != 'reuse'])} outstanding)")
-for s in ("reuse", "suggest", "new"):
+    print(f"  {p}      : {len(band)} ({len([r for r in band if r['status'] not in DONE])} outstanding)")
+for s in ("reuse", "accepted", "suggest", "new"):
     print(f"  {s:8}: {len(by_status.get(s, []))}")
 print(f"outstanding: {len(todo)}")
 print(f"wrote {csv_path}")
