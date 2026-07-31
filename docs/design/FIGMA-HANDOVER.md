@@ -787,3 +787,50 @@ routes** against Jira/board scope to find:
 Standardisation proceeds against these 16 routes only, in this order: atomic constraints
 (min-width / HUG / FILL) → Slots on containers → componentise the remaining ~47% →
 publish + Code Connect when the plan allows.
+
+---
+
+# Session 12 — atomic pass (started)
+
+## What the CSS actually says about sizing
+
+Audited all 68 components: 66 had no min-width. But the fix is **not** "add min-widths
+everywhere" — `saqeel-components.css` is explicit, and mostly the opposite:
+
+- **Containers set `min-inline-size: 0`** so children shrink freely — `.field` (67),
+  `.input` (79), `.kpi` (191), `.desc dd` (218), `.grow` (370), `.spine-body` (415),
+  `.saqeel-state__content` (480). In Figma an unset `minWidth` **is** that behaviour, so
+  those components were already correct. No change made.
+- **Only four atoms carry a positive minimum**, and those are now applied:
+
+| Component | min-width | Source |
+|---|---|---|
+| `menu` | 180 | `saqeel-components.css:374` |
+| `map-cluster` | 30 | `:363` |
+| `steps` | 16 | `:299` `.step-line` |
+| `pagination` | 28 | `:289` `.page-btn`, `--control-h-sm` |
+
+Each carries the citation in its component description.
+
+- **`.input { width: 100% }` (:79)** — 46 Input instances across the screens were FIXED width;
+  set to FILL where they sit in an auto-layout parent.
+
+**Nothing was invented.** Where the CSS has no minimum, none was added — a made-up min-width
+would be exactly the kind of bespoke value CLAUDE.md rule 2 forbids.
+
+## Still open in the atomic pass
+
+- `min-height` modifiers not yet modelled: `.btn-touch` 44 (`--touch-target`), `.btn-field` 52,
+  `textarea.input` 72 (`:40`, `:45`, `:81`). These are modifier classes; they want either
+  Button variants or separate components — a design-system decision, not a mechanical fix.
+- `Checkbox` / `Radio` / `Switch` have `layoutMode NONE`. That is correct — the CSS gives them
+  fixed pixel sizes (switch input 32×18, radio/checkbox 16×16). Left alone deliberately.
+- Fixed-width containers that should hug or fill: `Panel` (360), `Operational KPI` (238),
+  `Factory card` (280), `stat` (150), `Table cell` (120). These are placement defaults rather
+  than constraints; changing them affects every instance, so they need a screenshot-verified
+  pass rather than a blind sweep.
+
+## Next: Slots
+
+`Panel`, `Card`, `Toolbar`, `Table row`, `Accordion` hard-code their children. Converting the
+content region to a Slot is what collapses eleven near-identical panels into one component.
