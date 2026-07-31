@@ -50,6 +50,7 @@ export { Timeline, type TimelineProps, type TimelineItem } from "./data/Timeline
 export { KPICard, type KPICardProps } from "./data/KPICard";
 export { MetricStrip, type MetricStripProps } from "./data/MetricStrip";
 export { DescriptionList, type DescriptionListProps } from "./data/DescriptionList";
+export { DetailRow, DetailList, type DetailRowProps, type DetailListProps } from "./data/DetailRow";
 export { InspectionCard, type InspectionCardProps } from "./inspection/InspectionCard";
 export { FindingCard, type FindingCardProps } from "./inspection/FindingCard";
 export { ComplianceScore, type ComplianceScoreProps } from "./inspection/ComplianceScore";
