@@ -126,3 +126,41 @@ also outstanding.
 
 **Not claimed:** one of four migrate screens is built. The other three, and every state frame,
 are not.
+
+---
+
+# Batch 05 — Establishments required states
+
+Built in `SCREENS — INSPECTOR STATES 834 · EN · Light` (`311:41750`), which is **not** the
+section contested by the concurrent edit.
+
+| State | Node | Source of truth |
+|---|---|---|
+| No results | `338:41915` | `page.tsx` empty branch — *No establishments found* + the RLS sentence |
+| Source unavailable | `338:41966` | `page.tsx` `role="alert"` branch — *Establishments are temporarily unavailable. Nothing was changed.* |
+| Filter panel open | `338:42016` | `page.tsx` filter drawer — name, risk, region, city, Clear / Apply |
+
+Every string is the repo's own copy, not authored here.
+
+## Responsive
+
+| State | 1280 | 1024 | 834 | 680 |
+|---|--:|--:|--:|--:|
+| No results | 0 | 0 | 0 | 0 |
+| Source unavailable | 0 | 0 | 0 | 0 |
+| Filter panel open | 0 | 0 | 0 | 0 |
+
+0 clipping, 0 placeholder text, 0 off-ramp type sizes on all three, at all four widths.
+The filter panel grows at 680 as the fields stack — correct reflow.
+
+The error state uses `status-critical-soft` with a 3px `status-critical` inline-start border,
+matching the shipped `borderInlineStart` exactly — a logical property, so it mirrors in RTL
+without an override.
+
+**Known, not introduced here:** the `Input` component centres its placeholder text. That reads
+oddly in a form field, but it is the existing component's behaviour on every screen that uses
+it, so it is recorded rather than patched inside this batch.
+
+**Outstanding for Establishments:** Dark and AR variants of these three states. The web
+convention is EN-only state frames (delta D5), so they are consistent with the file as it
+stands.
