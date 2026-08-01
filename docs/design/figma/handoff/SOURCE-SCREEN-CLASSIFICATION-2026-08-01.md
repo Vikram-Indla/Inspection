@@ -105,22 +105,24 @@ Recorded, not delivered. No iPad route or device chrome is authoritative.
 | `Frame 1984078725` | 2 | Auto-generated name, no semantic identity |
 | `Content` | 1 | Unnamed 705px wrapper |
 
-### DECISION PENDING — 1 concept, 16 frames
+### DECISION PENDING — 0 concepts
 
-| Concept | Frames | Why it cannot be classified here |
-|---|--:|---|
-| **Production Line Report** | 16 | It is a fully designed report with 16 frames and **no repo route exists** — there is no `/field/production-line-reports`. Either the capability was dropped, or the route is missing. That is a product decision, not design work. Recorded as the one genuine external block |
+**Resolved in batch 06.** `Production Line Report` was carried here as the one unclassifiable
+concept. Reading source frame `2312:158225` shows why: it is the **production line seizure
+record**, one of eight record types inside the Summons Notice flow — not a standalone report.
+It has no route because *none* of the seizure types do. It is reclassified **MERGE**, into the
+records flow. See `CONSOLIDATION-BATCH-06-RECORDS.md`.
 
 ## Rollup
 
 | Bucket | Concepts | Frames |
 |---|--:|--:|
 | Migrate | 4 | 168 |
-| Merge | 3 | 72 |
+| Merge | 4 | 88 |
 | Reusable component | 3 | 29 |
 | Reference-only | 3 | 7 |
 | Obsolete | 2 | 3 |
-| Decision pending | 1 | 16 |
+| Decision pending | 0 | 0 |
 | **Total** | **16** | **295** |
 
 **295 of 295 classified.** Combined with the component page, the source file is now
@@ -133,11 +135,14 @@ the ungoverned ones — establishments, summons notices, destruction reports and
 reports. That strengthens the earlier finding: the catalogue is short rows, the routes are not
 unjustified.
 
-Two source concepts have **no repo route**: `Production Line Report` (above) and the source's
-own device home.
+**Corrected in batch 06.** This section previously claimed two repo routes had *neither a source
+design nor a governed screen* — `/field/sample-collection-reports` and `/field/facility-reports`.
+That was wrong. Both **are** designed, as record types inside the Summons Notice flow rather than
+as standalone screens. Only the device home has genuinely no repo route.
 
-Two repo routes have **neither a source design nor a governed screen**:
-`/field/sample-collection-reports` and `/field/facility-reports`.
+What is real is a **shape disagreement**: the source models one flow with eight record types; the
+repo ships five separate routes and omits three types. That decision is carried in
+`CONSOLIDATION-BATCH-06-RECORDS.md`.
 
 ## Untrusted content found on the source canvas
 

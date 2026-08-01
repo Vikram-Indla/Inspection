@@ -37,6 +37,13 @@ entered by an inspector using the app.
 Figma contract and no way to reach it**. Designing an entry point is a product decision about
 where findings sit in the flow, not a design fix I can take.
 
+**Partly answered in batch 06.** Four of these seven — summons, incident, destruction and
+sample collection — are unreachable because in the source they were never entered directly.
+They are record *types* chosen inside one record-authoring flow. The missing entry point is that
+flow, now built as `340:42098`. It still needs a link from `FieldNav` or the visit flow, and the
+repo-versus-source route shape is unresolved. `/field/inspection/[id]/results` and
+`/field/settings/readiness` are **not** explained by this and remain open.
+
 ## The journey
 
 Governed stages first, then ungoverned. `→` marks the primary path.
@@ -64,9 +71,9 @@ Governed stages first, then ungoverned. `→` marks the primary path.
 | Summons notices | Inspector | `/field/summons-notices` | **no** | **47 frames** | **MIGRATE** + entry point pending |
 | Destruction reports | Inspector | `/field/destruction-reports` | **no** | **15 frames** | **MIGRATE** + entry point pending |
 | Incident reports | Inspector | `/field/incident-reports` | **no** | **4 frames** | **MIGRATE** + entry point pending |
-| Sample collection reports | Inspector | `/field/sample-collection-reports` | **no** | none | Decision pending — no design, no entry |
-| Facility reports | Inspector | `/field/facility-reports` | **no** | none | Decision pending — no design, no entry |
-| Production line report | Inspector | **no route** | — | **16 frames** | **Decision pending** — designed, never built |
+| Sample collection reports | Inspector | `/field/sample-collection-reports` | **no** | record type in the Summons flow | Entry point = the records screen |
+| Facility reports | Inspector | `/field/facility-reports` | **no** | record type in the Summons flow | Entry point = the records screen |
+| Production line seizure | Inspector | **no route** | — | record type in the Summons flow | Route shape decision — see batch 06 |
 | Factory 360 | Inspector | `/field/factory-360/[id]` | yes | none | Build a contract |
 | Virtual session | Inspector | `/field/virtual/[id]` | yes | none | Build a contract |
 | Completed / history | Inspector | `/field/completed`, `/completed/[id]` | yes | none | Build a contract |
