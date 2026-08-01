@@ -1,5 +1,11 @@
 # Inspector journey contract — complete, all 36 routes
 
+> **SUPERSEDED IN PART, 2026-08-01.** A six-workstream parallel audit corrected the Jira and
+> reachability columns below. `Jira: NONE FOUND` was **wrong** — the inspector has 101 Jira
+> issues under epics INSP-5 and INSP-3. Reachability is **22 / 14**, not 29 / 7. The corrected
+> figures are applied in this document; the full account is in
+> `CORRECTIONS-FROM-PARALLEL-AUDIT-2026-08-01.md`.
+
 Supersedes the ungoverned table in `INSPECTOR-JOURNEY-CONTRACT-2026-08-01.md`, which named
 persona, route and decision but left **component dependencies** and **required states** blank
 for the ungoverned stages. Both are filled here for **every** route.
@@ -20,21 +26,21 @@ Neither column is designed. Both are read from the repository, so both can be re
 
 | Stage | Route | Figma (EN · Dark · AR) | Dependencies | Required states | Decision | Jira |
 |---|---|---|---|---|---|---|
-| Assigned visits | `/field/my-tasks` 1121ln | `305:40150` · `310:40973` · `312:42491` | `FieldHeader`, `FieldLocationMap`; `badge` `btn` `id-code` | empty, error, offline, permission, validation | Keep | **NONE FOUND** |
-| Startup pack | `/field/[visitId]` | `305:40298` · `310:40989` · `312:42925` | `PreInspectionPackSheet`, `GeoMap`, `EmptyState`, `ContextualAiPanel`; `field` `input` `panel` | via host + `/settings/readiness`: error, loading, offline, permission | Keep; readiness is a 2nd, unreachable route — **pending** | **NONE FOUND** |
-| Journey & check-in | `/field/[visitId]/travel` + `/field/map` | `305:40461` · `310:41015` · `312:43315` | `GeoMap`, `FieldConnectivityBanner`, `FieldFullMap`, `EmptyState`; `LocationVerification` `319:193`, `InspectionCard` `164:88` | error, permission | Figma folds 2 routes into 1 frame (D4) | **NONE FOUND** |
-| Inspection workspace | `/field/inspection/[id]` | `305:40533` · `310:41030` · `312:43466` | `OcrEvidenceCapture`, `ImageAnnotator`, `Modal`, `LiveRegion`, `a11y`, `RouteLoading`; `ChecklistQuestion` `317:137`, `AnswerBar` `318:107`, `MicButton` `318:125` | via host | Keep | **NONE FOUND** |
-| Evidence capture | **no route** — inside the workspace | `306:40569` · `310:41047` · `312:43795` | `FileUpload` `318:138`, `MediaThumb` `318:118` | via host | **Pending**: own route, or fold into 630 (D2) | **NONE FOUND** |
-| Findings & actions | `/field/inspection/[id]/results` | `306:40708` · `310:41069` · `312:44142` | `FieldConnectivityBanner`, `FieldHeader`; `badge` `input` `id-code` | error, permission | Keep route, **add an entry point — pending** | **NONE FOUND** |
-| Pre-submit statement | `/field/inspection/[id]/statement` 97ln | `306:40848` · `310:41088` · `312:44481` | `FieldHeader`; `badge` `btn` `id-code` | error, permission | Keep | **NONE FOUND** |
-| Returned correction | `/field/drafts` 150ln | `306:40976` · `310:41109` · `312:44825` | `FieldDraftList`, `FieldHeader`; `badge` `t-caption` | error, loading, offline, permission | Keep | **NONE FOUND** |
+| Assigned visits | `/field/my-tasks` 1121ln | `305:40150` · `310:40973` · `312:42491` | `FieldHeader`, `FieldLocationMap`; `badge` `btn` `id-code` | empty, error, offline, permission, validation | Keep | see Jira column below |
+| Startup pack | `/field/[visitId]` | `305:40298` · `310:40989` · `312:42925` | `PreInspectionPackSheet`, `GeoMap`, `EmptyState`, `ContextualAiPanel`; `field` `input` `panel` | via host + `/settings/readiness`: error, loading, offline, permission | Keep; readiness is a 2nd, unreachable route — **pending** | see Jira column below |
+| Journey & check-in | `/field/[visitId]/travel` + `/field/map` | `305:40461` · `310:41015` · `312:43315` | `GeoMap`, `FieldConnectivityBanner`, `FieldFullMap`, `EmptyState`; `LocationVerification` `319:193`, `InspectionCard` `164:88` | error, permission | Figma folds 2 routes into 1 frame (D4) | see Jira column below |
+| Inspection workspace | `/field/inspection/[id]` | `305:40533` · `310:41030` · `312:43466` | `OcrEvidenceCapture`, `ImageAnnotator`, `Modal`, `LiveRegion`, `a11y`, `RouteLoading`; `ChecklistQuestion` `317:137`, `AnswerBar` `318:107`, `MicButton` `318:125` | via host | Keep | see Jira column below |
+| Evidence capture | **no route** — inside the workspace | `306:40569` · `310:41047` · `312:43795` | `FileUpload` `318:138`, `MediaThumb` `318:118` | via host | **Pending**: own route, or fold into 630 (D2) | see Jira column below |
+| Findings & actions | `/field/inspection/[id]/results` | `306:40708` · `310:41069` · `312:44142` | `FieldConnectivityBanner`, `FieldHeader`; `badge` `input` `id-code` | error, permission | Keep route, **add an entry point — pending** | see Jira column below |
+| Pre-submit statement | `/field/inspection/[id]/statement` 97ln | `306:40848` · `310:41088` · `312:44481` | `FieldHeader`; `badge` `btn` `id-code` | error, permission | Keep | see Jira column below |
+| Returned correction | `/field/drafts` 150ln | `306:40976` · `310:41109` · `312:44825` | `FieldDraftList`, `FieldHeader`; `badge` `t-caption` | error, loading, offline, permission | Keep | see Jira column below |
 
 ## Built, ungoverned — 2
 
 | Stage | Route | Figma | Dependencies | Required states | Decision | Jira |
 |---|---|---|---|---|---|---|
-| Establishments | `/field/establishments` 406ln · `/unregistered` 331ln | `336:45825` · `336:46018` · `336:46351` + states `338:41915` `338:41966` `338:42016` | `FieldHeader`, `GeoMap`, `PackageTypeSelector`, `EmptyState`; `EstablishmentCard` `336:45591`, `Badge` `9:25`, `ExceptionMark` `172:98` | **empty, error, permission** (+ loading, validation on `/unregistered`) | **BUILT.** No catalogue row | **NONE FOUND** |
-| Summons & records | `/field/summons-notices` 286ln | `340:42098` · `342:42172` · `342:44733` | `FieldHeader`; `filter-chip` `72:6736`, `Field` `171:28`, `Radio` `9:74`, `FileUpload` `175:19` | **empty, error, permission, validation** | **BUILT** EN/Dark/AR. Route shape pending; needs `FieldNav` link | **NONE FOUND** |
+| Establishments | `/field/establishments` 406ln · `/unregistered` 331ln | `336:45825` · `336:46018` · `336:46351` + states `338:41915` `338:41966` `338:42016` | `FieldHeader`, `GeoMap`, `PackageTypeSelector`, `EmptyState`; `EstablishmentCard` `336:45591`, `Badge` `9:25`, `ExceptionMark` `172:98` | **empty, error, permission** (+ loading, validation on `/unregistered`) | **BUILT.** No catalogue row | see Jira column below |
+| Summons & records | `/field/summons-notices` 286ln | `340:42098` · `342:42172` · `342:44733` | `FieldHeader`; `filter-chip` `72:6736`, `Field` `171:28`, `Radio` `9:74`, `FileUpload` `175:19` | **empty, error, permission, validation** | **BUILT** EN/Dark/AR. Route shape pending; needs `FieldNav` link | see Jira column below |
 
 ## Not yet contracted — 26 routes
 
