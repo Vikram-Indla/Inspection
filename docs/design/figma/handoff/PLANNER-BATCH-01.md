@@ -79,3 +79,102 @@ into the **Admin** `ad-state` when the State page has Planner-specific copy.
 
 Two workstreams — repo route/data-state evidence and shared-capability duplication — are still
 running. D1–D7 will be actioned against their findings rather than piecemeal.
+
+---
+
+# Planner batch 02 — all six workstreams in
+
+## What the repo evidence corrected
+
+**SCR-WEB-150 maps to `/planning/bulk/review`, not `/planning/plans/[id]`.** Confirmed from the
+code header: *"CD-025 / SCR-WEB-150 / P03 — Plan Review & Publish… Mounted on the governed
+`/planning/bulk/review` route (relocation approved: `governance/HUMAN_APPROVALS.yaml` gate
+CD-021-P02-relocation-approval)"*. Every SCR-WEB-150 acceptance item — readiness/blockers,
+notification ledger, publish, return-to-edit — exists there and **none** exists at
+`/planning/plans/[id]`.
+
+**`/planning/plans/[id]` had no screen ID at all.** Now **`380:44764` SCR-PLN-161** — read-only
+drill-down, progress legend as shape-plus-label, 7-column child table.
+
+**The table note said 13 columns. The shipped table has 22.** Corrected on `373:44347` with the
+full column list.
+
+**`/planning/visits` is genuinely unreachable** — zero inbound navigation anywhere; the only
+matches are `revalidatePath` cache invalidation. Recorded on the frame.
+
+**`/planning/visits/[id]` is reachable from exactly one place, and it is not Planning** —
+`execution/RevampExecutionWorkspace.tsx:383`.
+
+**No `/planning/*` route implements an offline state** — zero matches for `offline`,
+`navigator.onLine` or `serviceWorker` across the tree. Recorded on all four new frames so no
+Planner design invents one.
+
+**`/planning/supervision` is the only planning route with no `loading.tsx` and no i18n at all** —
+every string hard-coded English, so no Arabic source exists for it.
+
+## A stale governance note, corrected
+
+SCR-WEB-110 carried *"AND/OR — Not configured. The operator model is not configured."* **It is
+configured.** `planning/bulk/criteria.ts` implements a `CondNode`/`GroupNode` ALL/ANY tree over a
+typed `FIELD_REGISTRY`, canonical operators `eq · neq · contains · in · gt · lt · between`,
+serialised to a single `ct` URL parameter with depth and node caps. `193:19081` now says so.
+
+This is the inverse of the usual defect: the design was **more** conservative than the code.
+
+## Duplicate dispositions taken
+
+`193:19843` "SCR-WEB-140-team" contains **no team** — it is `193:19631` plus one multi-select row,
+and the repo has no team concept at all: no `teams` table, no team picker, assignment is
+inspector-singular everywhere. Both renamed to `panel-content/inspector-picker — Multi=Yes|No`
+with the collapse recorded in their descriptions.
+
+Nine `panel-content` components are one component nine times; "Visit type" and "Assigned
+inspector" are each authored three times. Recorded for a single `FieldStack` with a `Fields=1…4`
+variant.
+
+## A false positive in my own detector
+
+`SCR-PLN-161` reported 8 clipped nodes at every width. They are **2px hatch rectangles inside
+`ExceptionMark`'s `stripes` frame**, deliberately overflowing a 14px clip to draw a diagonal
+pattern. Decorative overflow is not a defect. The check now excludes rectangles inside a
+`stripe|hatch|pattern` parent under 40px wide — and I had to look at the actual nodes to find
+that, which is the point.
+
+## Validation — all Planner frames, decorative overflow excluded
+
+| Frame | 1280 | 1024 | 834 | 680 |
+|---|---|---|---|---|
+| SCR-PLN-160 `378:44187` | clean | clean | clean | clean |
+| SCR-PLN-161 `380:44764` | clean | clean | clean | clean |
+| SCR-PLN-170 `378:44437` | clean | clean | clean | clean |
+| SCR-PLN-171 `378:44637` | clean | clean | clean | clean |
+| SCR-PLN-180 `378:44851` | clean | clean | clean | clean |
+| SCR-WEB-120 `193:19181` | clean | clean | clean | clean |
+| SCR-WEB-130 `193:19408` | clean | clean | clean | clean |
+| SCR-WEB-140 `193:19644` | clean | clean | clean | clean |
+| SCR-WEB-100 `29:528` | **9 clipped** | 9 | 15 + 1 crunched | 24 + 5 |
+| SCR-WEB-110 `193:18887` | clean | **8 clipped** | 12 | 16 |
+| SCR-WEB-150 `193:19875` | clean | **12 clipped** | 12 | 18 |
+
+The three failing frames all fail for the **same pre-existing cause**: `Table cell` instances at
+fixed widths (166 / 198 / 248) that cannot reflow. Every new frame in this batch is clean because
+it uses `Table row` `108:296` with cells sized to the column.
+
+**This is one column strategy decision across three frames**, not three bugs — and the shipped
+CSS already answers it: `inline-size: max-content` with `overflow: auto` and a stable scrollbar
+gutter. The frames need the scroll region declared and the fixed cells released; that is the next
+batch, not a piecemeal patch.
+
+## Still open — decisions, not fixes
+
+1. `screen_route_catalogue.csv:21` still points SCR-WEB-150 at `/planning/:id/review`, a route
+   that has never existed. Row 20 already records the DEC-024 reconciliation; row 21 does not.
+2. **INSP-4's 16 story keys are not in the repo**, and `story-screen-map.csv` — the INSP-524
+   deliverable — does not exist. At least 10 Planning stories have no identified screen.
+3. **`/planning/supervision` implies a Supervisor persona the catalogue never defines.**
+4. `/planning` and `/visits` render the same row under two different identities —
+   `visit_reference` versus `id.slice(0,8)`. A correctness defect surfaced by the audit.
+5. Five design-system components — `InspectionCard`, `FilterBar`, `Combobox`, `ReviewPanel`,
+   `DiffView` — are exported, persona-ready, and have **zero call sites**. Every screen
+   re-authored the markup instead. That is the root cause behind the duplicate count, and it is a
+   repo change, out of scope for the Figma master.
