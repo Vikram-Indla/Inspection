@@ -188,7 +188,7 @@ export default async function ApprovalQueue({
   const selectedById = new Map(selectedComponents.map(component => [component.id, component]));
 
   return (
-    <Shell current={current} title={t("approval.queue.title", "Approval Queue")}>
+    <Shell current={current} title={t("approval.queue.title", "Awaiting Approval")}>
       <main className="sq-content" data-saqeel-screen="APQ-S01" data-screen-id="APQ-S01">
         <div className="row">
           <span className="badge badge-info">{t("approval.queue.configuration", "Compliance configuration")}</span>
@@ -199,28 +199,28 @@ export default async function ApprovalQueue({
         <div className="alert alert-warning" role="note">
           <div>
             <strong>{t("approval.queue.scoringHold", "remain Not configured.")}</strong>
-            <p>{t("approval.queue.scoringHoldBody", "Item scoring and score-exclusion objects are rejected by the governed request contract.")}</p>
+            <p>{t("approval.queue.scoringHoldBody", "Item scoring and score-exclusion objects are not allowed by the request rules.")}</p>
           </div>
         </div>
 
         {!user ? (
           <section className="panel" role="alert">
             <div className="panel-header">
-              <h2 className="panel-title">{t("approval.queue.unauthorized", "Approval Queue access denied")}</h2>
+              <h2 className="panel-title">{t("approval.queue.unauthorized", "Awaiting Approval access denied")}</h2>
               <span className="badge badge-critical">{t("common.unauthorized", "Unauthorized")}</span>
             </div>
             <div className="panel-body">
-              <p>{t("approval.queue.unauthorizedBody", "Sign in with a governed reviewer role. No queue data or action controls are exposed.")}</p>
+              <p>{t("approval.queue.unauthorizedBody", "Sign in with a reviewer role. No list data or action controls are shown.")}</p>
             </div>
           </section>
         ) : readError ? (
           <section className="panel" role="alert">
             <div className="panel-header">
-              <h2 className="panel-title">{t("approval.queue.unavailable", "Approval Queue unavailable")}</h2>
+              <h2 className="panel-title">{t("approval.queue.unavailable", "Awaiting Approval unavailable")}</h2>
               <span className="badge badge-critical">{t("common.error", "Error")}</span>
             </div>
             <div className="panel-body stack">
-              <p>{t("approval.queue.unavailableBody", "No workload, eligibility or decision state has been inferred.")}</p>
+              <p>{t("approval.queue.unavailableBody", "No workload, eligibility, or decision data could be loaded.")}</p>
               <p className="id-code">{correlationId}</p>
               <Link className="btn btn-secondary" href="/compliance/approvals">{t("common.retry", "Retry")}</Link>
             </div>
@@ -290,7 +290,7 @@ export default async function ApprovalQueue({
                   {rows.length === 0 ? (
                     <div className="empty" role="status">
                       <h2 className="empty-title">{t("approval.queue.empty", "No eligible requests in your scope")}</h2>
-                      <p>{t("approval.queue.emptyBody", "The governed read succeeded and returned no maker-checker assignments.")}</p>
+                      <p>{t("approval.queue.emptyBody", "No maker-checker assignments were found for your access.")}</p>
                     </div>
                   ) : null}
                 </div>
@@ -361,7 +361,7 @@ export default async function ApprovalQueue({
                           {publication ? (
                             <div className="alert alert-success">
                               <div>
-                                <strong>{t("approval.queue.publishedVersion", "Published immutable version")}</strong>
+                                <strong>{t("approval.queue.publishedVersion", "Published final version")}</strong>
                                 <p className="id-code">{publication.version_id} · {new Date(publication.published_at).toLocaleString(locale)}</p>
                               </div>
                             </div>
@@ -461,7 +461,7 @@ export default async function ApprovalQueue({
 
             <section className="panel" aria-labelledby="approval-history">
               <div className="panel-header">
-                <h2 className="panel-title" id="approval-history">{t("approval.queue.history", "Immutable decision history")}</h2>
+                <h2 className="panel-title" id="approval-history">{t("approval.queue.history", "Decision history")}</h2>
                 <span className="badge badge-info">{decisions.length + publications.length}</span>
               </div>
               <div className="panel-body">
@@ -481,7 +481,7 @@ export default async function ApprovalQueue({
                   {publications.map(publication => (
                     <li key={publication.id}>
                       <span className="tl-dot is-accent" aria-hidden="true" />
-                      <strong>{t("approval.queue.versionPublished", "Immutable version published")}</strong>
+                      <strong>{t("approval.queue.versionPublished", "Final version published")}</strong>
                       <p className="tl-meta"><bdi>{publication.version_id}</bdi> · {new Date(publication.published_at).toLocaleString(locale)}</p>
                     </li>
                   ))}

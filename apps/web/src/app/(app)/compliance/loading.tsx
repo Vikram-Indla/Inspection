@@ -1,5 +1,5 @@
 import { StateSurface } from "@/components/saqeel/feedback/StateSurface";
 
 export default function ComplianceLoading() {
-  return <StateSurface kind="loading" title="Loading Compliance Library" body="Loading the RLS-scoped regulation catalogue and governed dependencies." />;
+  return <StateSurface kind="loading" title="Loading Inspection Rules" body="Loading the regulation list filtered to your access, with its linked records." />;
 }

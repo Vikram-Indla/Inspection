@@ -111,7 +111,7 @@ export default async function FieldReportsPage() {
             <ReportsLibrary userId={user.id} initialReports={[]} locale={lang} strings={{
               visitRecords: tr("field.reports.visitRecords", "Visit records", "محاضر الزيارة"),
               priorVisits: tr("field.reports.priorVisits", "Prior establishment visits", "زيارات المنشأة السابقة"),
-              recordsHint: tr("field.reports.recordsHint", "Submitted records available to this inspector — open a document to view its immutable version.", "المحاضر المقدمة المتاحة لهذا المفتش — افتح المستند لعرض نسخته غير القابلة للتغيير."),
+              recordsHint: tr("field.reports.recordsHint", "Submitted records available to this inspector — open a document to view its final version.", "المحاضر المقدمة المتاحة لهذا المفتش — افتح المستند لعرض نسخته النهائية."),
               visitsHint: tr("field.reports.visitsHint", "Prior visit reports for the selected establishment.", "تقارير الزيارات السابقة للمنشأة المحددة."),
               version: tr("field.reports.version", "Version", "الإصدار"),
               signed: tr("field.reports.signed", "Signed", "موقّع"),
@@ -137,7 +137,7 @@ export default async function FieldReportsPage() {
         ) : reports.length === 0 ? (
           <div className={styles.empty} role="status">
             <strong>{tr("field.reports.emptyTitle", "No submitted reports", "لا توجد تقارير مقدمة")}</strong>
-            <span>{tr("field.reports.emptyBody", "A report appears here only after an immutable submission exists.", "يظهر التقرير هنا فقط بعد وجود نسخة مقدمة غير قابلة للتغيير.")}</span>
+            <span>{tr("field.reports.emptyBody", "A report appears here only after a final version is submitted.", "يظهر التقرير هنا فقط بعد تقديم نسخة نهائية.")}</span>
           </div>
         ) : (
           <ReportsLibrary userId={user.id} initialReports={cachedReports} locale={lang} strings={{

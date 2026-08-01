@@ -88,7 +88,7 @@ export default async function EnforcementLibrary({
 
   if (verified.error || !verified.data.user) {
     return (
-      <Shell current="/enforcement-library" title={copy("Enforcement Library", "مكتبة الإنفاذ")}>
+      <Shell current="/enforcement-library" title={copy("Violations & Penalties", "المخالفات والعقوبات")}>
         <section className="sq-state" role="alert">
           <span className="sq-state__glyph" aria-hidden="true">🔒</span>
           <h1>{copy("Authorized access required", "يلزم وصول مصرح به")}</h1>
@@ -196,10 +196,10 @@ export default async function EnforcementLibrary({
   return (
     <Shell
       current="/enforcement-library"
-      title={copy("Enforcement Library", "مكتبة الإنفاذ")}
+      title={copy("Violations & Penalties", "المخالفات والعقوبات")}
       context={<span className="badge badge-info">ENF-S01 · {copy("Read only", "للقراءة فقط")}</span>}
     >
-      <h1 className="sq-sr-only">{copy("Enforcement Library", "مكتبة الإنفاذ")}</h1>
+      <h1 className="sq-sr-only">{copy("Violations & Penalties", "المخالفات والعقوبات")}</h1>
 
       <div className="alert alert-warning" role="note">
         <div>
@@ -249,14 +249,14 @@ export default async function EnforcementLibrary({
       {readError ? (
         <div className="alert alert-critical" role="alert">
           <div>
-            <strong>{copy("Enforcement Library unavailable.", "مكتبة الإنفاذ غير متاحة.")}</strong>{" "}
+            <strong>{copy("Violations & Penalties unavailable.", "المخالفات والعقوبات غير متاحة.")}</strong>{" "}
             {copy("No record count is claimed. Retry the page.", "لا يتم ادعاء أي عدد للسجلات. أعد تحميل الصفحة.")}
           </div>
         </div>
       ) : rows.length === 0 ? (
         <section className="sq-state" role="status">
           <span className="sq-state__glyph" aria-hidden="true">○</span>
-          <h2>{copy("No RLS-visible enforcement records", "لا توجد سجلات إنفاذ ظاهرة وفق أمان الصفوف")}</h2>
+          <h2>{copy("No violation records visible to you", "لا توجد سجلات مخالفات ظاهرة لك")}</h2>
           <p>{copy("The read succeeded and returned zero matching records.", "نجحت القراءة ولم تُرجع سجلات مطابقة.")}</p>
         </section>
       ) : (
@@ -388,7 +388,7 @@ export default async function EnforcementLibrary({
               <section className="panel">
                 <header className="panel-header"><h3 className="panel-title">{copy("Audit", "التدقيق")}</h3></header>
                 <dl className="panel-body">
-                  <dt>{copy("Immutable mapping version", "إصدار الربط غير القابل للتعديل")}</dt>
+                  <dt>{copy("Final mapping version", "إصدار الربط النهائي")}</dt>
                   <dd><span className="id-code">{selected.mapping_version}</span></dd>
                   <dt>{copy("Source violation", "مخالفة المصدر")}</dt>
                   <dd><span className="id-code">{selected.id}</span></dd>

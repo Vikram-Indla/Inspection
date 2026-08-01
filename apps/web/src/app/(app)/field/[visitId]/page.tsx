@@ -383,7 +383,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     exceptionHeading: t("field.start.exceptionHeading", "Report exception"),
     exceptionPlaceholder: t("field.start.exceptionPlaceholder", "Describe the exception — mandatory"),
     exceptionSend: t("field.start.exceptionSend", "Record exception"),
-    logExceptionSent: t("field.start.logExceptionSent", "Exception recorded at ±{acc}m — immutable geo event"),
+    logExceptionSent: t("field.start.logExceptionSent", "Exception recorded at ±{acc}m — this record cannot be changed"),
     logExceptionFailed: locale === "ar"
       ? "تعذر حفظ الاستثناء. تحقق من الاتصال ثم أعد المحاولة."
       : t("field.start.logExceptionFailedSafe", "The exception could not be saved. Check the connection, then try again."),
@@ -485,7 +485,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     arrivalComment: t("field.start.arrivalComment", "Arrival comment"),
     arrivalSave: t("field.start.arrivalSave", "Save arrival evidence"),
     arrivalSaved: t("field.start.arrivalSaved", "Arrival evidence saved or queued for sync"),
-    arrivalRequired: t("field.start.arrivalRequired", "arrival evidence is required by the active GIS configuration"),
+    arrivalRequired: t("field.start.arrivalRequired", "Arrival evidence is required by Map Settings"),
     arrivalEvidenceNote: t("field.start.arrivalEvidenceNote", "Arrival note"),
     arrivalEvidenceFile: t("field.start.arrivalEvidenceFile", "Arrival photo (optional)"),
     arrivalEvidenceSubmit: t("field.start.arrivalEvidenceSubmit", "Queue arrival evidence"),
@@ -617,7 +617,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     previousApproved: null,
     returnedContext: null,
     compliance: null,
-    repeatFindings: { value: null, unavailable: tr("field.pack.repeatUnavailable", "No governed violation lineage (STR-KPI-011)", "لا يوجد سجل مخالفات محكوم (STR-KPI-011)") },
+    repeatFindings: { value: null, unavailable: tr("field.pack.repeatUnavailable", "No violation history available (STR-KPI-011)", "لا يوجد سجل مخالفات متاح (STR-KPI-011)") },
     freshnessMinutes: null,
   };
   const packStrings: PackStrings = {

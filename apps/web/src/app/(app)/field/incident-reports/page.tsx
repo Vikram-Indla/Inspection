@@ -93,8 +93,8 @@ export default async function FieldIncidentReportsPage({ searchParams }: { searc
   );
   const lockNote = tr(
     "field.incidents.immediateLock",
-    "On start the package locks (immutable snapshot) — Immediate Inspection does NOT bypass package locking.",
-    "عند البدء تُقفل الحزمة (لقطة غير قابلة للتعديل) — لا يتجاوز التفتيش الفوري قفل الحزمة.",
+    "When it starts, the checklist locks and cannot be changed — Immediate Inspection does not skip this lock.",
+    "عند البدء، تُقفل قائمة التفتيش ولا يمكن تغييرها — التفتيش الفوري لا يتجاوز هذا القفل.",
   );
   const incidentNote = tr(
     "field.incidents.incidentNote",
