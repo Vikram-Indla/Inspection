@@ -52,7 +52,7 @@ export default async function AdminNotifications() {
     statusPublished: t("admin.notif.status.published", "Published"),
     statusDeactivated: t("admin.notif.status.deactivated", "Deactivated"),
     emptyTitle: t("admin.notif.empty.title", "No notification rules configured"),
-    emptyBody: t("admin.notif.empty.body", "The read succeeded — the register is genuinely empty. Create the first rule above."),
+    emptyBody: t("admin.notif.empty.body", "The read succeeded — the register is really empty. Create the first rule above."),
     colEvent: t("admin.notif.col.event", "Event"),
     colChannel: t("admin.notif.col.channel", "Channel"),
     colRecipient: t("admin.notif.col.recipient", "Recipient"),
@@ -61,23 +61,23 @@ export default async function AdminNotifications() {
     colVersion: t("admin.notif.col.version", "Version"),
     colActions: t("admin.notif.col.actions", "Actions"),
     missingRecipient: t("admin.notif.missingRecipient", "Missing recipient"),
-    rolesUnavailable: t("admin.notif.rolesUnavailable", "Recipient roles are unavailable. Rule creation is disabled; existing rules remain readable."),
+    rolesUnavailable: t("admin.notif.rolesUnavailable", "Recipient roles are not available. Rule creation is turned off; existing rules remain readable."),
   };
 
   const title = t("admin.notif.title", "Notification & SLA Rules");
   const context = (
     <span className="row" style={{ gap: "var(--space-3)" }}>
       <span className="badge badge-info">SCR-ADM-080</span>
-      {rulesError ? <span className="badge badge-warning"><span aria-hidden="true">⚠</span> {t("admin.notif.degraded.chip", "register unavailable")}</span> : null}
+      {rulesError ? <span className="badge badge-warning"><span aria-hidden="true">⚠</span> {t("admin.notif.degraded.chip", "register not available")}</span> : null}
     </span>
   );
 
   const readOnlyBanner = roleError ? (
-    <div className="alert alert-warning" role="alert"><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div>
+    <div className="alert alert-warning" role="alert"><strong>{t("admin.permissionsUnavailable.title", "Permissions not available")}</strong>{" "}{t("admin.permissionsUnavailable.body", "We couldn't check your settings permissions. Writes are turned off; reload the page.")}</div>
   ) : !isWriter ? (
     <div className="alert" role="note">
       <strong><IconEye size={16} /> {t("admin.notif.readonly.title", "Read-only for your role")}</strong>{" "}
-      {t("admin.notif.readonly.body", "You can view configuration; creating, publishing and deactivating rules require an admin configuration role and are enforced by row-level security.")}
+      {t("admin.notif.readonly.body", "You can view settings. Creating, publishing and deactivating rules need an admin settings role, and the system enforces this automatically.")}
     </div>
   ) : null;
 
@@ -90,7 +90,7 @@ export default async function AdminNotifications() {
 
   const escalationNote = (
     <p className="t-caption" style={{ margin: 0 }}>
-      <span aria-hidden="true">ⓘ</span> {t("admin.notif.escalationNote", "SLA timers and escalation roles are stored as governed configuration. Automatic breach-firing (a scheduled process that escalates when a timer elapses) is separate runtime scope and is not built by this screen.")}
+      <span aria-hidden="true">ⓘ</span> {t("admin.notif.escalationNote", "SLA timers and escalation roles are stored as settings. Automatic breach-firing (a scheduled process that escalates when a timer runs out) is separate, and this screen does not build it.")}
     </p>
   );
 

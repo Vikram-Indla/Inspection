@@ -35,8 +35,8 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
     return (
       <Shell current="/planning" title={t("plan.drill.errorTitle", "Plan — error")}>
         <EmptyState glyph="⚠"
-          title={tr("plan.drill.unavailable.title", "Plan unavailable", "الخطة غير متاحة")}
-          body={tr("plan.drill.unavailable.body", "The Planning read contract could not be verified. Nothing was changed. Retry after access configuration is restored.", "تعذر التحقق من عقد قراءة التخطيط. لم يتم تغيير أي بيانات. أعد المحاولة بعد استعادة إعدادات الوصول.")} />
+          title={tr("plan.drill.unavailable.title", "Plan not available", "الخطة غير متاحة")}
+          body={tr("plan.drill.unavailable.body", "We couldn't check your access to this plan. Nothing was changed. Try again once access is fixed.", "تعذّر التحقق من صلاحية الوصول إلى هذه الخطة. لم يتم تغيير أي بيانات. حاول مرة أخرى بعد إصلاح الوصول.")} />
       </Shell>
     );
   }
@@ -44,8 +44,8 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
     return (
       <Shell current="/planning" title={t("plan.drill.notFoundTitle", "Plan details")}>
         <EmptyState glyph="⛔"
-          title={tr("plan.home.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
-          body={tr("plan.drill.unauthorized.body", "Viewing plan details requires an authorized planning capability.", "يتطلب عرض تفاصيل الخطة صلاحية تخطيط مصرحاً بها.")} />
+          title={tr("plan.home.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
+          body={tr("plan.drill.unauthorized.body", "You need planning access to view plan details.", "يلزم صلاحية تخطيط لعرض تفاصيل الخطة.")} />
       </Shell>
     );
   }
@@ -54,7 +54,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
       <Shell current="/planning" title={t("plan.drill.notFoundTitle", "Plan not found")}>
         <EmptyState glyph="∅"
           title={t("plan.drill.notFound", "Not in your scope or does not exist")}
-          body={tr("plan.drill.invalidId", "The plan reference is invalid. Return to the plan register and choose an available plan.", "مرجع الخطة غير صالح. ارجع إلى سجل الخطط واختر خطة متاحة.")} />
+          body={tr("plan.drill.invalidId", "The plan reference is not valid. Go back to Visit plans and choose one that exists.", "مرجع الخطة غير صالح. ارجع إلى خطط الزيارات واختر خطة متاحة.")} />
       </Shell>
     );
   }
@@ -73,7 +73,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
   if (pErr || kErr) {
     console.error("[planning plan drill read]", pErr ?? kErr);
     return <Shell current="/planning" title={t("plan.drill.errorTitle", "Plan — error")}>
-      <div className="sq-banner sq-banner--critical"><div>{t("plan.drill.loadErrorSafe", "Could not load the plan through the authorized read path. Nothing was changed. Retry after access configuration is restored.")}</div></div>
+      <div className="sq-banner sq-banner--critical"><div>{t("plan.drill.loadErrorSafe", "We couldn't load the plan. Nothing was changed. Try again once access is fixed.")}</div></div>
     </Shell>;
   }
   if (!plan) {
@@ -107,7 +107,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
   ];
 
   return (
-    <Shell current="/planning" title={t("plan.drill.title", "Plan {id}").replace("{id}", plan.plan_reference ?? tr("plan.referenceUnavailable", "Reference unavailable", "المرجع غير متاح"))}
+    <Shell current="/planning" title={t("plan.drill.title", "Plan {id}").replace("{id}", plan.plan_reference ?? tr("plan.referenceUnavailable", "Reference not available", "المرجع غير متاح"))}
       context={<>
         <span className="sq-lozenge sq-lozenge--info">{t(`enum.${plan.method}`, plan.method)}</span>
         <span className={`sq-lozenge sq-lozenge--plan ${PLAN_TONE[plan.status] ?? ""}`}>{t(`enum.${plan.status}`, plan.status)}</span>
@@ -162,7 +162,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
           <tbody>
             {visits.map(v => (
               <tr key={v.id}>
-                <td className="sq-numeric"><a className="sq-link" href={`/visits/${v.id}`}><strong>{v.visit_reference ?? tr("plan.referenceUnavailable", "Reference unavailable", "المرجع غير متاح")}</strong></a></td>
+                <td className="sq-numeric"><a className="sq-link" href={`/visits/${v.id}`}><strong>{v.visit_reference ?? tr("plan.referenceUnavailable", "Reference not available", "المرجع غير متاح")}</strong></a></td>
                 <td>{v.factories ? <a className="sq-link" href={`/factories/${v.factories.id}`}>{v.factories.name}</a> : "—"}</td>
                 <td>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)}</td>
                 <td><span className={`sq-lozenge sq-lozenge--plan ${PLAN_TONE[v.planning_status] ?? ""}`}>{t(`enum.${v.planning_status}`, v.planning_status)}</span>

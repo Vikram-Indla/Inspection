@@ -108,7 +108,7 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
     <div className="sq-f360" data-saqeel-module="factory-360">
       <aside className="sq-f360__portfolio" data-screen-id="F360-S01">
         <section className="sq-f360__summary">
-          <span>Portfolio · <bdi>{portfolioLabel}</bdi></span>
+          <span>All licenses · <bdi>{portfolioLabel}</bdi></span>
           <div>{summary.map(([value, label, tone]) => (
             <div key={label} data-tone={tone}><strong>{value}</strong><small>{label}</small></div>
           ))}</div>
@@ -153,12 +153,12 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
             <h1>{selected.name}</h1>
             <p><bdi>{selected.factory_code || "—"}</bdi> · CR <bdi>{selected.cr_number || "—"}</bdi> · {[selected.region, selected.city].filter(Boolean).join(" / ") || "Location unavailable"}</p>
             <span>Opened from Factory 360</span>
-            <span>Reason · portfolio selection</span>
+            <span>Reason · selected from list</span>
           </div>
           <nav>
             {canCreateInspection && !selected.is_temporary && <a href={planningHandoffHref(selected)}>Create inspection</a>}
             <a href={`/operations?region=${encodeURIComponent(selected.region ?? "")}`}>View on map</a>
-            <a href={selected.dossier_href}>Open full dossier</a>
+            <a href={selected.dossier_href}>Open full profile</a>
           </nav>
           {canCreateInspection && !selected.is_temporary && <p role="status">A Planner submits the selected target for Supervisor assignment and release.</p>}
           <dl>
@@ -207,7 +207,7 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
         ].map(([title, description, href]) => (
           <details className="sq-f360__section" key={title}>
             <summary><span><strong>{title}</strong><small>{description}</small></span><b>+</b></summary>
-            <p>This section is available in the source-backed full dossier.</p>
+            <p>This section is available in the full factory profile.</p>
             <a href={href}>Open {title}</a>
           </details>
         ))}

@@ -28,7 +28,7 @@ export default async function Templates() {
 
   const templateStrings: TemplateStrings = {
     heading: t("admin.template.heading", "Governed template registry"),
-    intro: t("admin.template.intro", "Create versioned bilingual form, report, action-form, or penalty templates. Published versions are immutable and can be referenced by package action forms and penalty mappings."),
+    intro: t("admin.template.intro", "Create versioned, bilingual templates for forms, reports, action forms, or penalties. Published versions can’t be changed, and can be used by package action forms and penalty mappings."),
     key: t("admin.template.key", "Template key"),
     type: t("admin.template.type", "Type"),
     version: t("admin.template.version", "Version"),
@@ -46,7 +46,7 @@ export default async function Templates() {
     reason: t("admin.template.reason", "Reason"),
     deactivate: t("admin.template.deactivate", "Deactivate"),
     deactivating: t("admin.template.deactivating", "Deactivating…"),
-    historical: t("admin.template.historical", "Immutable historical template version."),
+    historical: t("admin.template.historical", "Locked historical template version."),
     saved: t("admin.template.saved", "Saved"),
     typeForm: t("admin.template.type.form", "Form"),
     typeReport: t("admin.template.type.report", "Report"),
@@ -93,7 +93,7 @@ export default async function Templates() {
           <span className="saqeel-state__glyph" aria-hidden="true">▦</span>
           <h3>{t("admin.templates.empty.title", "No templates configured")}</h3>
           <p className="t-caption">
-            {t("admin.templates.empty.body", "Templates are versioned bilingual schema objects referenced by packages and action forms.")}
+            {t("admin.templates.empty.body", "Templates are versioned, bilingual objects used by packages and action forms.")}
           </p>
         </div>
       )}

@@ -376,16 +376,16 @@ export default function ShellClient({
     ? {
         open: "فتح أدوات الإدارة",
         title: "الانتقال إلى أداة إدارية",
-        search: "ابحث في أدوات الإدارة المصرح بها",
-        results: (count: number) => `${count} نتيجة مصرح بها`,
+        search: "ابحث في أدوات الإدارة المسموح بها",
+        results: (count: number) => `${count} نتيجة مسموح بها`,
         empty: "لا توجد أدوات مطابقة",
         close: "إغلاق",
       }
     : {
         open: "Open admin tools",
         title: "Go to an admin tool",
-        search: "Search authorized admin tools",
-        results: (count: number) => `${count} authorized ${count === 1 ? "result" : "results"}`,
+        search: "Search allowed admin tools",
+        results: (count: number) => `${count} allowed ${count === 1 ? "result" : "results"}`,
         empty: "No matching tools",
         close: "Close",
       };

@@ -182,8 +182,8 @@ export default async function Packages() {
     effectiveFrom: t("admin.pkg.newDraft.effectiveFrom", "Effective from"),
     publishing: t("admin.pkg.publish.publishing", "Publishing…"),
     approvePublish: t("admin.pkg.publish.approve", "Approve & publish"),
-    published: t("admin.pkg.publish.published", "Version published. It is now immutable."),
-    publishHint: t("admin.pkg.publish.hint", "Publish rechecks item, evidence, condition, violation, penalty and action-form dependencies. The approver must differ from the creator (RBAC-002)."),
+    published: t("admin.pkg.publish.published", "Version published. It can no longer be changed."),
+    publishHint: t("admin.pkg.publish.hint", "Publishing rechecks item, evidence, condition, violation, penalty and action-form dependencies. The approver must be a different person from the creator (RBAC-002)."),
     effectiveTo: t("admin.pkg.deactivate.effectiveTo", "Effective to"), deactivationReason: t("admin.pkg.deactivate.reason", "Deactivation reason"), deactivate: t("admin.pkg.deactivate.action", "Deactivate version"), deactivating: t("admin.pkg.deactivate.working", "Deactivating…"), deactivated: t("admin.pkg.deactivate.done", "Package version deactivated"),
   };
   const editorStrings: DraftEditorStrings = {
@@ -221,8 +221,8 @@ export default async function Packages() {
     evidencePhoto: t("admin.pkg.editor.evidence.photo", "Photo"), evidenceVideo: t("admin.pkg.editor.evidence.video", "Video"), evidenceDocument: t("admin.pkg.editor.evidence.document", "Document"), evidenceComment: t("admin.pkg.editor.evidence.comment", "Comment"),
   };
   const templateStrings: TemplateStrings = {
-    heading: t("admin.template.heading", "Governed template registry"), intro: t("admin.template.intro", "Create versioned bilingual form, report, action-form, or penalty templates. Published versions are immutable and can be referenced by package action forms and penalty mappings."),
-    key: t("admin.template.key", "Template key"), type: t("admin.template.type", "Type"), version: t("admin.template.version", "Version"), effectiveFrom: t("admin.template.effectiveFrom", "Effective from"), titleEn: t("admin.template.titleEn", "English title"), titleAr: t("admin.template.titleAr", "Arabic title"), schema: t("admin.template.schema", "Schema (JSON object)"), create: t("admin.template.create", "Create draft template version"), creating: t("admin.template.creating", "Creating…"), save: t("admin.template.save", "Save draft"), saving: t("admin.template.saving", "Saving…"), publish: t("admin.template.publish", "Approve & publish"), publishing: t("admin.template.publishing", "Publishing…"), effectiveTo: t("admin.template.effectiveTo", "Effective to"), reason: t("admin.template.reason", "Reason"), deactivate: t("admin.template.deactivate", "Deactivate"), deactivating: t("admin.template.deactivating", "Deactivating…"), historical: t("admin.template.historical", "Immutable historical template version."), saved: t("admin.template.saved", "Saved"),
+    heading: t("admin.template.heading", "Governed template registry"), intro: t("admin.template.intro", "Create versioned, bilingual templates for forms, reports, action forms, or penalties. Published versions can’t be changed, and can be used by package action forms and penalty mappings."),
+    key: t("admin.template.key", "Template key"), type: t("admin.template.type", "Type"), version: t("admin.template.version", "Version"), effectiveFrom: t("admin.template.effectiveFrom", "Effective from"), titleEn: t("admin.template.titleEn", "English title"), titleAr: t("admin.template.titleAr", "Arabic title"), schema: t("admin.template.schema", "Schema (JSON object)"), create: t("admin.template.create", "Create draft template version"), creating: t("admin.template.creating", "Creating…"), save: t("admin.template.save", "Save draft"), saving: t("admin.template.saving", "Saving…"), publish: t("admin.template.publish", "Approve & publish"), publishing: t("admin.template.publishing", "Publishing…"), effectiveTo: t("admin.template.effectiveTo", "Effective to"), reason: t("admin.template.reason", "Reason"), deactivate: t("admin.template.deactivate", "Deactivate"), deactivating: t("admin.template.deactivating", "Deactivating…"), historical: t("admin.template.historical", "Locked historical template version."), saved: t("admin.template.saved", "Saved"),
     typeForm: t("admin.template.type.form", "Form"), typeReport: t("admin.template.type.report", "Report"), typeActionForm: t("admin.template.type.actionForm", "Action form"), typePenalty: t("admin.template.type.penalty", "Penalty"),
   };
   const previewStrings: PreviewStrings = {
@@ -253,8 +253,8 @@ export default async function Packages() {
     pinnedTitle: t("admin.pkg.impact.pinnedTitle", "In-flight work on prior published versions"),
     pinnedNone: t("admin.pkg.impact.pinnedNone", "No active visits or inspections are pinned to a prior published version."),
     pinnedVisits: t("admin.pkg.impact.pinnedVisits", "{n} active visit(s)"), pinnedInspections: t("admin.pkg.impact.pinnedInspections", "{n} active inspection(s)"),
-    pinnedHint: t("admin.pkg.impact.pinnedHint", "Existing work stays on the frozen version it downloaded; publishing never silently re-versions it."),
-    pinnedUnavailable: t("admin.pkg.impact.pinnedUnavailable", "In-flight counts are unavailable or outside your read scope — this is not zero."),
+    pinnedHint: t("admin.pkg.impact.pinnedHint", "Existing work stays on the version it downloaded. Publishing never switches it to a new version without notice."),
+    pinnedUnavailable: t("admin.pkg.impact.pinnedUnavailable", "Active counts aren’t available, or they’re outside what you can see. This does not mean zero."),
     priorLead: t("admin.pkg.impact.priorLead", "By prior version:"), priorLine: t("admin.pkg.impact.priorLine", "{label}: {visits} visit(s), {inspections} inspection(s)"),
     refTitle: t("admin.pkg.impact.refTitle", "Other published packages sharing these items"),
     refNone: t("admin.pkg.impact.refNone", "No other published package references items in this version."),
@@ -296,15 +296,15 @@ export default async function Packages() {
   const packageEditUnavailable = t(
     "admin.recordDrawer.package.editUnavailable",
     copy(
-      "Your RLS-visible role does not expose the governed package authoring actions.",
-      "لا يتيح دورك المرئي وفق أمن الصفوف إجراءات تأليف الحزم المحكومة.",
+      "Your role doesn’t give you access to package authoring actions.",
+      "لا يتيح دورك إجراءات تأليف الحزم.",
     ),
   );
 
   return (
     <AdminDestinationFrame
       current="/admin/packages"
-      title={t("admin.revamp.survey.title", copy("Survey Configuration", "تهيئة النماذج"))}
+      title={t("admin.revamp.survey.title", copy("Inspection Forms", "نماذج التفتيش"))}
       subtitle={t("admin.revamp.survey.subtitle", copy("Inspection forms, sections and response rules", "نماذج التفتيش والأقسام وقواعد الإجابة"))}
       hub={t("admin.revamp.hub.rules", copy("Rules & content", "القواعد والمحتوى"))}
       routeLabel="/admin/packages"
@@ -325,7 +325,7 @@ export default async function Packages() {
         {
           label: t("admin.revamp.survey.metric.items", copy("Inspection items", "بنود التفتيش")),
           value: itemBankUnavailable ? notConfigured : items.length,
-          note: t("admin.revamp.survey.metric.items.note", copy("RLS-visible governed catalogue", "كتالوج محكوم ومرئي حسب أمن الصفوف")),
+          note: t("admin.revamp.survey.metric.items.note", copy("Items you can see", "البنود التي يمكنك الاطلاع عليها")),
         },
         {
           label: t("admin.revamp.survey.metric.drafts", copy("Draft packages", "مسودات الحزم")),
@@ -340,11 +340,11 @@ export default async function Packages() {
         { label: t("admin.revamp.survey.tabs.versions", copy("Versions", "الإصدارات")), href: "/admin/packages#package-register" },
       ]}
       gate={{
-        title: t("admin.revamp.survey.gate.title", copy("Published packages are immutable", "الحزم المنشورة غير قابلة للتغيير")),
-        body: t("admin.revamp.survey.gate.body", copy("A package selected by a published visit cannot be structurally edited. Changes create additive drafts; existing and historical inspections remain pinned to their original package version.", "لا يمكن تعديل بنية حزمة اختارتها زيارة منشورة. تُنشئ التغييرات مسودات إضافية، وتبقى عمليات التفتيش الحالية والتاريخية مرتبطة بإصدار الحزمة الأصلي.")),
+        title: t("admin.revamp.survey.gate.title", copy("Published packages can’t be changed", "الحزم المنشورة غير قابلة للتغيير")),
+        body: t("admin.revamp.survey.gate.body", copy("A package used by a published visit can’t have its structure edited. Changes create a new draft instead. Existing and past inspections stay pinned to their original package version.", "لا يمكن تعديل بنية حزمة تستخدمها زيارة منشورة. تُنشئ التغييرات مسودة جديدة بدلاً من ذلك، وتبقى عمليات التفتيش الحالية والسابقة مرتبطة بإصدار الحزمة الأصلي.")),
       }}
       governance={surveyGovernance}
-      reconstructionNote={t("admin.revamp.survey.note", copy("The design’s sample package names, counts and rule contents are not copied. This workspace renders the real package, item, template, impact and immutable-version sources already used by execution.", "لا تُنسخ أسماء حزم التصميم النموذجية أو أعدادها أو محتوى قواعدها. تعرض مساحة العمل هذه مصادر الحزم والبنود والقوالب والأثر والإصدارات غير القابلة للتغيير التي يستخدمها التنفيذ فعلياً."))}
+      reconstructionNote={t("admin.revamp.survey.note", copy("The design’s sample package names, counts and rule contents are not copied. This workspace shows the real package, item, template, impact and locked-version data already used by execution.", "لا تُنسخ أسماء حزم التصميم النموذجية أو أعدادها أو محتوى قواعدها. تعرض مساحة العمل هذه مصادر الحزم والبنود والقوالب والأثر والإصدارات غير القابلة للتغيير التي يستخدمها التنفيذ فعلياً."))}
       context={<span className="row">
         <span className="badge badge-info">SCR-ADM-030/031 · ENG-02</span>
         <span className="t-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></span>
@@ -355,8 +355,8 @@ export default async function Packages() {
         <section className={`panel ${styles.hero}`} aria-labelledby="pkg-overview">
           <div className={styles.heroRow}>
             <div>
-              <h2 id="pkg-overview" style={{ margin: 0 }}>{t("admin.pkg.overview.title", "Version-governed inspection packages")}</h2>
-              <p className="t-caption">{t("admin.pkg.overview.body", "Drafts are editable. Publishing runs dependency validation and maker-checker approval; published and locked definitions remain immutable.")}</p>
+              <h2 id="pkg-overview" style={{ margin: 0 }}>{t("admin.pkg.overview.title", "Inspection packages, tracked by version")}</h2>
+              <p className="t-caption">{t("admin.pkg.overview.body", "Drafts can be edited. Publishing checks dependencies and needs maker-checker approval. Published and locked definitions can’t be changed.")}</p>
               <p className="t-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></p>
             </div>
             <span className={`badge ${canWrite ? "badge-compliant" : "badge-info"}`}>
@@ -376,8 +376,8 @@ export default async function Packages() {
 
         {!packageUnavailable && itemBankUnavailable && (
           <div className="alert alert-warning" role="status"><div>
-            <strong>{t("admin.pkg.itemsUnavailable.title", "Item catalogue unavailable.")}</strong>{" "}
-            {t("admin.pkg.itemsUnavailable.body", "Package versions and impact remain visible, but editing and field preview are paused because their item dependency could not be read. This is not an empty catalogue.")}
+            <strong>{t("admin.pkg.itemsUnavailable.title", "Item catalogue not available.")}</strong>{" "}
+            {t("admin.pkg.itemsUnavailable.body", "Package versions and impact still show, but editing and field preview are paused because we couldn’t read the item data they depend on. This is not an empty catalogue.")}
           </div></div>
         )}
 
@@ -385,8 +385,8 @@ export default async function Packages() {
           <section className={`panel ${styles.governance}`} aria-labelledby="pkg-access">
             <h3 id="pkg-access" style={{ margin: 0 }}>{t("admin.pkg.readonly.title", "Read-only package access")}</h3>
             <p className="t-caption">{roleRead.error
-              ? t("admin.pkg.readonly.unknown", "Your write permissions could not be verified, so all mutation controls are hidden. Reload to retry; RLS remains authoritative.")
-              : t("admin.pkg.readonly.body", "You can inspect versions, previews and publish impact. Creating, saving and publishing require compliance_admin or form_admin; navigation access does not grant write permission.")}</p>
+              ? t("admin.pkg.readonly.unknown", "We couldn’t check your write permissions, so all edit controls are hidden. Reload to try again.")
+              : t("admin.pkg.readonly.body", "You can view versions, previews and publish impact. To create, save or publish, you need the compliance_admin or form_admin role. Navigation access alone does not give you write permission.")}</p>
           </section>
         )}
 
@@ -395,7 +395,7 @@ export default async function Packages() {
             <div className="saqeel-state">
               <span className="saqeel-state__glyph" aria-hidden="true">▦</span>
               <h3>{t("admin.pkg.empty.title", "No packages configured")}</h3>
-              <p className="t-caption">{t("admin.pkg.empty.body", "The package read succeeded and returned no rows. Package creation is not exposed by this route, so no unsupported create control is shown.")}</p>
+              <p className="t-caption">{t("admin.pkg.empty.body", "We found no packages. This page doesn’t support creating new packages, so there’s no create button here.")}</p>
             </div>
           </section>
         )}
@@ -485,8 +485,8 @@ export default async function Packages() {
                       </summary>
                       <div className={styles.versionBody}>
                         {published && <div className="alert alert-immutable"><div>
-                          <strong><IconLock size={16} /> {t("admin.pkg.immutable.title", "Published version — immutable.")}</strong>{" "}
-                          {t("admin.pkg.immutable.body", "The database rejects definition and label edits. Create a new draft to change this package while existing inspections stay pinned to their downloaded version.")}
+                          <strong><IconLock size={16} /> {t("admin.pkg.immutable.title", "Published version — locked.")}</strong>{" "}
+                          {t("admin.pkg.immutable.body", "The system blocks edits to the definition and label. To change this package, create a new draft. Existing inspections stay pinned to the version they downloaded.")}
                         </div></div>}
 
                         {version.status === "draft" && canWrite && !itemBankUnavailable ? (
@@ -520,8 +520,8 @@ export default async function Packages() {
 
         {!packageUnavailable && <section className={`panel ${styles.governance}`} aria-labelledby="pkg-blockers">
           <h3 id="pkg-blockers" style={{ margin: 0 }}>{t("admin.pkg.blockers.title", "Boundaries kept visible")}</h3>
-          <p className="t-caption">{t("admin.pkg.blockers.body", "The designer now authors ordered bilingual sections, package-item policy, action forms, and governed template references. Publish revalidates dependencies and rejects circular conditions. Package footprint/fingerprint metrics and visual simulation remain unclaimed because no approved metric or simulator contract exists.")}</p>
-          <p className="t-caption" role="status">{t("admin.pkg.stale", "Data may have changed since this source read; no freshness threshold is defined.")} <a className="sq-link" href="/admin/packages">{t("admin.pkg.refresh", "Refresh to reconcile")}</a>.</p>
+          <p className="t-caption">{t("admin.pkg.blockers.body", "The designer creates ordered, bilingual sections, package-item rules, action forms, and template references. Publishing checks dependencies again and rejects circular conditions. Package footprint and fingerprint metrics, and visual simulation, are not built yet — there is no approved way to measure or simulate them.")}</p>
+          <p className="t-caption" role="status">{t("admin.pkg.stale", "Data may have changed since this was last read. There is no fixed rule for how fresh it must be.")} <a className="sq-link" href="/admin/packages">{t("admin.pkg.refresh", "Refresh to reconcile")}</a>.</p>
         </section>}
       </div>
     </AdminDestinationFrame>

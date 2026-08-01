@@ -157,8 +157,8 @@ export default async function Access({
   const accessEditUnavailable = t(
     "admin.recordDrawer.access.editUnavailable",
     copy(
-      "Your session does not have the governed access-management permission.",
-      "لا تملك جلستك صلاحية إدارة الوصول المحكومة.",
+      "Your session doesn't have the access-management permission.",
+      "لا تملك جلستك صلاحية إدارة الوصول.",
     ),
   );
 
@@ -181,10 +181,10 @@ export default async function Access({
         {
           label: t("admin.revamp.access.metric.users", copy("Accounts in scope", "الحسابات ضمن النطاق")),
           value: scopedUsers,
-          note: t("admin.revamp.access.metric.users.note", copy("RLS-visible profiles only", "الملفات المرئية حسب أمن الصفوف فقط")),
+          note: t("admin.revamp.access.metric.users.note", copy("Only profiles you can see", "الملفات المرئية لك فقط")),
         },
         {
-          label: t("admin.revamp.access.metric.roles", copy("Governed role keys", "مفاتيح الأدوار المحكومة")),
+          label: t("admin.revamp.access.metric.roles", copy("Role keys", "مفاتيح الأدوار")),
           value: governedRoles,
           note: t("admin.revamp.access.metric.roles.note", copy("Read from the role catalogue", "مقروءة من كتالوج الأدوار")),
         },
@@ -203,29 +203,29 @@ export default async function Access({
       gate={{
         title: t("admin.revamp.access.gate.title", copy("Role changes are guarded and audited", "تغييرات الأدوار محمية ومدققة")),
         body: t("admin.revamp.access.gate.body", copy(
-          "Every write is re-authorized on the server. Self-elevation and removal of the last security administrator are refused by governed RPCs; backend role keys remain unchanged until an approved mapping migration exists.",
-          "يُعاد التحقق من صلاحية كل كتابة على الخادم. ترفض إجراءات قاعدة البيانات المحكومة رفع المستخدم لصلاحياته أو إزالة آخر مسؤول أمان؛ وتبقى مفاتيح الأدوار الخلفية دون تغيير إلى أن تُعتمد ترحيلة للربط.",
+          "Every write is checked again on the server. Approved RPCs refuse self-elevation and removal of the last security administrator; backend role keys stay unchanged until an approved mapping migration exists.",
+          "يُعاد التحقق من صلاحية كل كتابة على الخادم. ترفض إجراءات قاعدة البيانات المعتمدة رفع المستخدم لصلاحياته أو إزالة آخر مسؤول أمان؛ وتبقى مفاتيح الأدوار الخلفية دون تغيير إلى أن تُعتمد ترحيلة للربط.",
         )),
       }}
       governance={accessGovernance}
       reconstructionNote={t("admin.revamp.access.note", copy(
-        "The design’s three presentation roles sit above the existing governed role catalogue. This route does not collapse or rename backend roles without an approved data and RLS migration.",
-        "توجد أدوار العرض الثلاثة في التصميم فوق كتالوج الأدوار المحكوم الحالي. لا تدمج هذه الوجهة أدوار النظام الخلفي ولا تعيد تسميتها دون ترحيلة معتمدة للبيانات وأمن الصفوف.",
+        "The design’s three presentation roles sit above the existing approved role catalogue. This route does not collapse or rename backend roles without an approved data and RLS migration.",
+        "توجد أدوار العرض الثلاثة في التصميم فوق كتالوج الأدوار المعتمد الحالي. لا تدمج هذه الوجهة أدوار النظام الخلفي ولا تعيد تسميتها دون ترحيلة معتمدة للبيانات وأمن الصفوف.",
       ))}
       context={<span className="badge badge-info">SCR-ADM-090 · RBAC-001..014 · EXE-ACCESS</span>}
     >
-      <div className="alert"><div><strong>{t("admin.access.banner.title", "Access is enforced by Row Level Security, not UI.")}</strong> {t("admin.access.banner.body", "54 policies realize the frozen RBAC matrix; role grants are audited automatically (this page's data itself passed through RLS to render).")}</div></div>
+      <div className="alert"><div><strong>{t("admin.access.banner.title", "Access is enforced by Row Level Security, not UI.")}</strong> {t("admin.access.banner.body", "54 policies apply the fixed RBAC matrix. Role grants are recorded automatically (this page's own data passed through RLS to render).")}</div></div>
       {(gateError || capGateError) && (
         <div className="alert alert-warning" role="alert"><div>
-          <strong>{t("admin.access.permissions.error.title", "Permissions unavailable.")}</strong>{" "}
-          {t("admin.access.permissions.error.body", "Your access-management permissions could not be verified. All write controls are unavailable; retry the page.")}
+          <strong>{t("admin.access.permissions.error.title", "Permissions not available.")}</strong>{" "}
+          {t("admin.access.permissions.error.body", "We couldn't verify your access-management permissions. All write controls are turned off; reload the page.")}
         </div></div>
       )}
 
       {view === "users" && (
         <>
           {profilesError && <div className="alert alert-critical" role="alert"><div><strong>{t("admin.access.error.title", "Couldn’t load the authorized user roster. Nothing was changed. Try again.")}</strong></div></div>}
-          {rolesError && !profilesError && <div className="alert alert-warning" role="alert"><div><strong>{t("admin.access.roles.error.title", "Role details are unavailable.")}</strong> {t("admin.access.roles.error.body", "The authorized user roster remains visible, but role labels and all access changes are unavailable.")}</div></div>}
+          {rolesError && !profilesError && <div className="alert alert-warning" role="alert"><div><strong>{t("admin.access.roles.error.title", "Role details are not available.")}</strong> {t("admin.access.roles.error.body", "The authorized user roster remains visible, but role labels and all access changes are not available.")}</div></div>}
           {!profilesError && (
             <div className="table-wrap"><table className="table">
               <thead><tr><th scope="col">{t("admin.access.table.user", "User")}</th><th scope="col">{t("admin.access.table.email", "Email")}</th><th scope="col">{t("admin.access.table.region", "Region")}</th><th scope="col">{t("admin.access.table.roles", "Roles")}</th></tr></thead>
@@ -233,7 +233,7 @@ export default async function Access({
                 {(profiles ?? []).map(p => {
                   const roleKeys = ((p.user_roles ?? []) as { role_key: string }[]).map(role => role.role_key);
                   const roleValue = rolesError
-                    ? t("common.unavailable", "Unavailable")
+                    ? t("common.unavailable", "Not available")
                     : roleKeys.join(", ") || notConfigured;
                   return (
                     <AdminRecordTableRow
@@ -258,7 +258,7 @@ export default async function Access({
                       <td><strong>{p.full_name}</strong></td>
                       <td className="t-caption">{p.email}</td>
                       <td>{p.region}</td>
-                      <td>{rolesError ? t("common.unavailable", "Unavailable") : roleKeys.map(roleKey =>
+                      <td>{rolesError ? t("common.unavailable", "Not available") : roleKeys.map(roleKey =>
                         <span key={roleKey} className={`badge ${(roles ?? []).find(x => x.role_key === roleKey)?.is_admin ? "badge-warning" : "badge-info"}`} style={{ marginInlineEnd: 6 }}>{roleKey}</span>)}</td>
                     </AdminRecordTableRow>
                   );
@@ -268,7 +268,7 @@ export default async function Access({
           )}
           <p className="t-caption" style={{ marginBlockStart: "var(--space-3)" }}>
             {canManage
-              ? t("admin.access.rlsNote.manage", "This roster is filtered to your access: users outside your visibility are absent, not hidden rows. Access changes use only governed server actions.")
+              ? t("admin.access.rlsNote.manage", "This roster is filtered to your access: users outside your visibility are absent, not hidden rows. Access changes use only approved server actions.")
               : t("admin.access.rlsNote", "This roster is filtered to your access: users outside your visibility are absent, not hidden rows. This screen is read-only.")}
           </p>
         </>
@@ -284,7 +284,7 @@ export default async function Access({
           initialSelectedUserId={targetUserId}
           labels={{
             panelTitle: t("admin.access.manage.title", "Access management"),
-            panelIntro: t("admin.access.manage.intro", "Grant or revoke roles and direct capability overrides. Every change runs through the governed RPCs: the self-escalation guard blocks changes to your own access, the last remaining security administrator cannot be revoked, and every change is recorded in the activity log."),
+            panelIntro: t("admin.access.manage.intro", "Grant or revoke roles and direct capability overrides. Every change runs through the approved RPCs: the self-escalation guard blocks changes to your own access, the last remaining security administrator cannot be revoked, and every change is recorded in the activity log."),
             selectUser: t("admin.access.manage.selectUser", "Select a user"),
             rolesTitle: t("admin.access.manage.roles", "Roles"),
             grantedAt: t("admin.access.manage.grantedAt", "granted"),
@@ -311,8 +311,8 @@ export default async function Access({
 
       {view === "users" && canManage && user && userAccessSourcesUnavailable && (
         <div className="alert alert-warning" role="alert"><div>
-          <strong>{t("admin.access.manage.error.title", "Access details are partially unavailable.")}</strong>{" "}
-          {t("admin.access.manage.error.body", "The user roster remains visible, but access changes are unavailable because one or more governed sources could not be read.")}
+          <strong>{t("admin.access.manage.error.title", "Access details are not fully available.")}</strong>{" "}
+          {t("admin.access.manage.error.body", "The user roster remains visible, but access changes are not available because one or more approved sources could not be read.")}
         </div></div>
       )}
 
@@ -340,7 +340,7 @@ export default async function Access({
                       label: t("admin.recordDrawer.roleType", copy("Access class", "فئة الوصول")),
                       value: role.is_admin
                         ? t("admin.access.roles.admin", "Administrator role")
-                        : t("admin.recordDrawer.roleStandard", copy("Standard governed role", "دور محكوم قياسي")),
+                        : t("admin.recordDrawer.roleStandard", copy("Standard role", "دور قياسي")),
                     },
                   ],
                   governance: accessGovernance,
@@ -364,7 +364,7 @@ export default async function Access({
           permissions={permissionCatalogue.map(p => ({ permissionKey: p.permission_key, title: p.title, description: p.description }))}
           grants={rolePermissionGrants.map(g => ({ roleKey: g.role_key, permissionKey: g.permission_key, grantedAt: g.granted_at }))}
           labels={{
-            panelTitle: t("admin.access.rolecaps.title", "Role capabilities (governed permission map)"),
+            panelTitle: t("admin.access.rolecaps.title", "Role capabilities (permission map)"),
             panelIntro: t("admin.access.rolecaps.intro", "Grant or revoke a capability for an entire role. The self-escalation guard blocks granting, to a role you hold, any capability you lack — and admin.access.manage can never be granted to or revoked from a role you hold. RLS (security_admin) remains the write authority."),
             selectRole: t("admin.access.rolecaps.selectRole", "Select a role"),
             grantedTitle: t("admin.access.rolecaps.granted", "Granted capabilities"),
@@ -382,8 +382,8 @@ export default async function Access({
       )}
       {view === "roles" && canManageRoleCaps && user && roleCapabilitySourcesUnavailable && (
         <div className="alert alert-warning" role="alert"><div>
-          <strong>{t("admin.access.rolecaps.error.title", "Role capability details are unavailable.")}</strong>{" "}
-          {t("admin.access.rolecaps.error.body", "The role catalogue remains visible, but capability changes are unavailable because a governed source could not be read.")}
+          <strong>{t("admin.access.rolecaps.error.title", "Role capability details are not available.")}</strong>{" "}
+          {t("admin.access.rolecaps.error.body", "The role catalogue remains visible, but capability changes are not available because an approved source could not be read.")}
         </div></div>
       )}
     </AdminDestinationFrame>

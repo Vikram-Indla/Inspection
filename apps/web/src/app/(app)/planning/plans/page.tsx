@@ -29,8 +29,8 @@ export default async function PlanRegister() {
     return (
       <Shell current="/planning" title={t("plan.register.title", "Visit plans")}>
         <EmptyState glyph="⚠"
-          title={tr("plan.register.unavailable.title", "Plan register unavailable", "سجل الخطط غير متاح")}
-          body={tr("plan.register.unavailable.body", "The Planning register read contract could not be verified. Nothing was changed. Retry after access configuration is restored.", "تعذر التحقق من عقد قراءة سجل التخطيط. لم يتم تغيير أي بيانات. أعد المحاولة بعد استعادة إعدادات الوصول.")} />
+          title={tr("plan.register.unavailable.title", "Visit plans not available", "خطط الزيارات غير متاحة")}
+          body={tr("plan.register.unavailable.body", "We couldn't check your access to visit plans. Nothing was changed. Try again once access is fixed.", "تعذّر التحقق من صلاحية الوصول إلى خطط الزيارات. لم يتم تغيير أي بيانات. حاول مرة أخرى بعد إصلاح الوصول.")} />
       </Shell>
     );
   }
@@ -38,8 +38,8 @@ export default async function PlanRegister() {
     return (
       <Shell current="/planning" title={t("plan.register.title", "Visit plans")}>
         <EmptyState glyph="⛔"
-          title={tr("plan.home.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
-          body={tr("plan.register.unauthorized.body", "Viewing visit plans requires an authorized planning capability.", "يتطلب عرض خطط الزيارات صلاحية تخطيط مصرحاً بها.")} />
+          title={tr("plan.home.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
+          body={tr("plan.register.unauthorized.body", "You need planning access to view visit plans.", "يلزم صلاحية تخطيط لعرض خطط الزيارات.")} />
       </Shell>
     );
   }
@@ -51,7 +51,7 @@ export default async function PlanRegister() {
     console.error("[planning plan register]", error);
     return (
       <Shell current="/planning" title={t("plan.register.title", "Visit plans")}>
-        <div className="sq-banner sq-banner--critical"><div>{t("plan.register.loadErrorSafe", "Could not load plans through the authorized read path. Nothing was changed. Retry after access configuration is restored.")}</div></div>
+        <div className="sq-banner sq-banner--critical"><div>{t("plan.register.loadErrorSafe", "We couldn't load the plans. Nothing was changed. Try again once access is fixed.")}</div></div>
       </Shell>
     );
   }
@@ -88,7 +88,7 @@ export default async function PlanRegister() {
           <tbody>
             {plans.map(p => (
               <tr key={p.id}>
-                <td className="sq-numeric"><a className="sq-link" href={`/planning/plans/${p.id}`}><strong>{p.plan_reference ?? tr("plan.referenceUnavailable", "Reference unavailable", "المرجع غير متاح")}</strong></a></td>
+                <td className="sq-numeric"><a className="sq-link" href={`/planning/plans/${p.id}`}><strong>{p.plan_reference ?? tr("plan.referenceUnavailable", "Reference not available", "المرجع غير متاح")}</strong></a></td>
                 <td><span className="sq-lozenge sq-lozenge--info">{t(`enum.${p.method}`, p.method)}</span></td>
                 <td><span className={`sq-lozenge sq-lozenge--plan ${PLAN_TONE[p.status] ?? ""}`}>{t(`enum.${p.status}`, p.status)}</span></td>
                 <td>{p.profiles?.full_name ?? "—"}</td>

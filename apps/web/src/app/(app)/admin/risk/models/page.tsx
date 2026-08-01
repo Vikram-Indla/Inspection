@@ -14,10 +14,10 @@ const MODES = ["off", "on"] as const;
 export default async function RiskModelsPage() {
   const { t } = await useT();
   const navLabels: RiskNavLabels = {
-    label: t("admin.risk.nav.label", "Risk configuration"),
+    label: t("admin.risk.nav.label", "Risk settings"),
     studio: t("admin.risk.nav.studio", "Risk Studio"),
     studioHint: t("admin.risk.nav.studioHint", "Immediate-live settings"),
-    models: t("admin.risk.nav.models", "Governed models"),
+    models: t("admin.risk.nav.models", "Model versions"),
     modelsHint: t("admin.risk.nav.modelsHint", "Draft and maker-checker lifecycle"),
   };
   const enabled = resolveFeatureFlag(process.env.FEATURE_RISK_WORKBENCH, MODES, "off") === "on";
@@ -27,7 +27,7 @@ export default async function RiskModelsPage() {
         context={<span className="badge badge-warning">MVP2-REQ-0005</span>}>
         <RiskSectionNav current="/admin/risk/models" labels={navLabels} />
         <NotYetBoundary title={t("risk.wb.title", "Risk model workbench")}
-          consequence={t("risk.wb.off", "The governed risk-model draft layer is not enabled here; live risk config is still edited on the Risk Studio.")}
+          consequence={t("risk.wb.off", "The risk-model draft layer is not turned on here; live risk settings are still edited on the Risk Studio.")}
           seam="FEATURE_RISK_WORKBENCH=off" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
       </Shell>
     );
@@ -53,18 +53,18 @@ export default async function RiskModelsPage() {
     validationReady: t("risk.wb.validationReady", "Canonical structure valid"),
     validationNeeded: t("risk.wb.validationNeeded", "Complete a valid model before creating the draft"),
     inspect: t("risk.wb.inspect", "Model structure"),
-    immutable: t("risk.wb.immutable", "Published versions are immutable"),
+    immutable: t("risk.wb.immutable", "Published versions can't be changed"),
     noTransitions: t("risk.wb.noTransitions", "No further transitions"),
   };
   return (
     <Shell current="/admin/risk" title={t("risk.wb.title", "Risk model workbench")}
       context={<span className="badge badge-info">MVP2-REQ-0005..0012</span>}>
       <RiskSectionNav current="/admin/risk/models" labels={navLabels} />
-      <div className="alert"><div><strong>{t("risk.wb.banner.title", "Governed draft layer.")}</strong> {t("risk.wb.banner.body", "Drafts validate weights-sum and bands (parity with Risk Studio) and publish through maker-checker; published versions are immutable. No policy value is set here that the accepted structure does not require.")}</div></div>
+      <div className="alert"><div><strong>{t("risk.wb.banner.title", "Draft layer.")}</strong> {t("risk.wb.banner.body", "Drafts check that weights add up and that bands match the Risk Studio, then publish through maker-checker. Published versions can't be changed. No value is set here that the approved structure doesn't require.")}</div></div>
       {error && <div className="alert alert-critical" role="alert"><div><strong>{t("risk.wb.error", "Couldn’t load risk models. Nothing changed.")}</strong></div></div>}
       {!error && (rows ?? []).length === 0 && (
         <EmptyState icon={<IconChart size={28} />} title={t("risk.wb.empty.title", "No risk model drafts")}
-          body={t("risk.wb.empty.body", "No governed risk models exist in your authorized scope. Create a draft to begin the maker-checker lifecycle.")} />
+          body={t("risk.wb.empty.body", "No risk models exist in your allowed scope. Create a draft to begin the maker-checker lifecycle.")} />
       )}
       {!error && <RiskModelsBoard rows={(rows ?? []) as RiskModelRow[]} strings={strings} />}
     </Shell>

@@ -24,8 +24,8 @@ export default async function PlanningVisits({ searchParams }: {
       <Shell current="/planning" title={title}>
         <EmptyState
           glyph="⚠"
-          title={tr("visit.list.unavailable.title", "Visits unavailable", "الزيارات غير متاحة")}
-          body={tr("visit.list.loadErrorNeutral", "Visits are temporarily unavailable. Please try again.", "الزيارات غير متاحة مؤقتاً. حاول مرة أخرى.")}
+          title={tr("visit.list.unavailable.title", "Visits not available", "الزيارات غير متاحة")}
+          body={tr("visit.list.loadErrorNeutral", "Visits are not available right now. Please try again.", "الزيارات غير متاحة حاليًا. حاول مرة أخرى.")}
         />
       </Shell>
     );
@@ -35,11 +35,11 @@ export default async function PlanningVisits({ searchParams }: {
       <Shell current="/planning" title={title}>
         <EmptyState
           glyph="⛔"
-          title={tr("plan.home.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+          title={tr("plan.home.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
           body={tr(
             "visit.list.unauthorized.body",
-            "Planning-owned visit management requires an authorized planning capability.",
-            "تتطلب إدارة الزيارات التابعة للتخطيط صلاحية تخطيط مصرحاً بها.",
+            "You need planning access to manage visits.",
+            "يلزم صلاحية تخطيط لإدارة الزيارات.",
           )}
         />
       </Shell>

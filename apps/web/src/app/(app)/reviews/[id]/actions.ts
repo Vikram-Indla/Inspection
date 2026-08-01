@@ -47,7 +47,7 @@ export async function startReview(_: DecisionResult, fd: FormData): Promise<Deci
   const ins = aggregate as unknown as StartAggregate | null;
   if (!ins) return { error: "Inspection not found, or outside your review scope." };
   if (ins.status !== "submitted")
-    return { error: "This inspection is not awaiting a Level 2 review." };
+    return { error: "This inspection is not waiting for a review." };
   const version = ins.submission_versions.find(row => row.id === submission_version_id);
   if (!version)
     return { error: "The submitted version does not belong to this inspection." };
@@ -80,7 +80,7 @@ export async function startReview(_: DecisionResult, fd: FormData): Promise<Deci
     if (detail.includes("REVIEW-START-VERSION"))
       return { error: "Only the latest submitted version can be started for review." };
     if (detail.includes("REVIEW-START-STATE") || detail.includes("REVIEW-START-RACE"))
-      return { error: "This inspection is no longer awaiting a Level 2 review. Refresh to see its current state." };
+      return { error: "This inspection is no longer waiting for a review. Refresh to see its current state." };
     if (detail.includes("REVIEW-START-DENIED") || error?.code === "42501")
       return { error: "The review could not be started — you may not have the Level 2 Reviewer role for this scope." };
     return { error: "The review could not be started. Nothing was changed — try again." };
@@ -124,7 +124,7 @@ export async function decide(_: DecisionResult, fd: FormData): Promise<DecisionR
   const validSectionKeys = new Set((definition?.sections ?? []).map(s => s.key));
   const invalidSections = sections.filter(s => !validSectionKeys.has(s));
   if (invalidSections.length > 0)
-    return { error: "Return scope contains a section that is not in the submitted package." };
+    return { error: "Return scope contains a section that is not in the submitted checklist." };
   if (["return", "reject"].includes(decision) && !reason)
     return { error: "Decision reason is mandatory for Return/Reject ( · ERR-REV-001)" };
   if (decision === "return" && sections.length === 0)
@@ -146,7 +146,7 @@ export async function decide(_: DecisionResult, fd: FormData): Promise<DecisionR
         || detail.includes("REVIEW-DECIDE-DENIED") || error.code === "42501")
       return { error: "Only the assigned Level 2 Reviewer can decide this review." };
     if (detail.includes("REVIEW-DECIDE-SECTIONS"))
-      return { error: "Return requires valid sections from the submitted package." };
+      return { error: "Return needs valid sections from the submitted checklist." };
     if (detail.includes("REVIEW-DECIDE-REASON"))
       return { error: "Decision reason is mandatory for Return/Reject ( · ERR-REV-001)" };
     if (detail.includes("REVIEW-DECIDE-SUBMISSION"))

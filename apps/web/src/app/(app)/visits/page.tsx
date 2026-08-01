@@ -56,7 +56,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     console.error(`[visits.list] load failed: ${error.message}`);
     return (
       <Shell current={shellCurrent} title={t("visit.list.title", "Visit management")}>
-        <div className="sq-banner sq-banner--critical" role="alert"><div>{t("visit.list.loadErrorNeutral", "Visits are temporarily unavailable. Please try again.")}</div></div>
+        <div className="sq-banner sq-banner--critical" role="alert"><div>{t("visit.list.loadErrorNeutral", "Visits aren't available right now. Try again.")}</div></div>
       </Shell>
     );
   }
@@ -129,7 +129,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     selectAllAria: t("visit.list.selectAllAria", "Select all visible visits"),
     selectRowAria: t("visit.list.selectRowAria", "Select visit {id}"),
     selectedCount: t("visit.list.selectedCount", "{n} selected"),
-    bulkHeading: t("visit.list.bulkHeading", "Bulk actions — per-row guards apply"),
+    bulkHeading: t("visit.list.bulkHeading", "Bulk actions — checked for each visit"),
     bulkWindowStart: t("visit.list.bulkWindowStart", "New window start"),
     bulkWindowEnd: t("visit.list.bulkWindowEnd", "New window end"),
     bulkChangeReason: t("visit.list.bulkChangeReason", "Reason for change *"),
@@ -171,7 +171,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     eligHeading: t("visit.elig.heading", "Eligibility preview"),
     eligVerified: t("visit.elig.verified", "Verified now — each item is re-checked on the server at submit."),
     eligCount: t("visit.elig.count", "{n} of {total} eligible"),
-    eligSamePlanBlocked: t("visit.elig.samePlanBlocked", "Bulk edit applies within one Plan. Cross-Plan enforcement is not yet in place on the server, so it is unavailable across Plans."),
+    eligSamePlanBlocked: t("visit.elig.samePlanBlocked", "Bulk edit only works within one Plan. It isn't available across different Plans yet."),
     eligReschedule: t("visit.elig.reschedule", "Reschedule"),
     eligReassign: t("visit.elig.reassign", "Reassign"),
     eligCancel: t("visit.elig.cancel", "Cancel"),
@@ -186,12 +186,12 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     ledgerSummaryNoNotif: t("visit.ledger.summaryNoNotif", "{n} changed — notification not queued"),
     ledgerRetrySafe: t("visit.ledger.retrySafe", "Blocked items were not changed and are safe to retry."),
     progressBusy: t("visit.ledger.progressBusy", "Applying to {n} visits…"),
-    frozenSelection: t("visit.ledger.frozenSelection", "Target membership frozen for this command"),
+    frozenSelection: t("visit.ledger.frozenSelection", "The list of visits is locked while this runs"),
     receiptCommand: t("visit.receipt.command", "Command"),
     receiptStatus: t("visit.receipt.status", "Status"),
     receiptProgress: t("visit.receipt.progress", "Processed"),
-    receiptInventory: t("visit.receipt.inventory", "Frozen inventory"),
-    receiptUnknown: t("visit.receipt.unknown", "Unknown / unavailable"),
+    receiptInventory: t("visit.receipt.inventory", "Locked list ID"),
+    receiptUnknown: t("visit.receipt.unknown", "Unknown / not available"),
     verbReschedule: t("visit.ledger.verbReschedule", "Reschedule result"),
     verbReassign: t("visit.ledger.verbReassign", "Reassign result"),
     verbCancel: t("visit.ledger.verbCancel", "Cancel result"),
@@ -206,8 +206,8 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     outcomeBlockedNoAssign: t("visit.outcome.blockedNoAssign", "Blocked before change — no assignment to update, or outside your scope. Nothing changed."),
     outcomeError: t("visit.outcome.error", "Not changed — something went wrong. This item is safe to retry."),
     errSelectOne: t("visit.err.selectOne", "Select at least one visit."),
-    errReasonRequired: t("visit.err.reasonRequired", "The mutation request identity is missing or invalid. Nothing changed."),
-    errReasonsUnavailable: t("visit.err.reasonsUnavailable", "Cancellation reasons are temporarily unavailable (ERR-OPS-001) — nothing was changed."),
+    errReasonRequired: t("visit.err.reasonRequired", "Something went wrong with this request. Nothing changed."),
+    errReasonsUnavailable: t("visit.err.reasonsUnavailable", "Cancellation reasons aren't available right now (ERR-OPS-001) — nothing was changed."),
     errSession: t("visit.err.session", "Session expired — sign in again."),
     errWindowRequired: t("visit.err.windowRequired", "A new window start and end are both required."),
     errWindowInvalid: t("visit.err.windowInvalid", "Enter valid date and time values."),
@@ -239,16 +239,16 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
               still resolve a locale override that carries one. */}
           {t("visit.list.planningLink", "Planning — drafts and plans").replace(/[←→]\s*$/u, "").trim()}
         </Link>
-        <span className={targetPreview ? "sq-numeric" : "t-caption sq-numeric"}>{t("visit.list.scope", "RLS-scoped — showing {shown} of {total}").replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}</span>
+        <span className={targetPreview ? "sq-numeric" : "t-caption sq-numeric"}>{t("visit.list.scope", "Showing {shown} of {total} — based on your access").replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}</span>
       </div>
       {/* M10 / canonical §19 — the AI widget fails isolated; it can never
           blank the visit board. */}
-      {!targetPreview && <WidgetBoundary label={t("visit.ai.unavailable", "AI summary unavailable — nothing was generated or changed.")}>
-        <ContextualAiPanel surface="visit_management_summary" title={t("visit.ai.title", "Visit management summary")} description={t("visit.ai.description", "Advisory summary of the visits currently in your authorized scope. It cannot change a visit, assignment, state or campaign.")} context={JSON.stringify({ scope: "visit-management" })} evidenceRefs={["MVP1-M02-001", "MVP1-M02-002", "MVP1-M02-017", "MVP1-M02-035", "SCR-WEB-200"]} generateLabel={t("visit.ai.generate", "Generate operational summary")} unavailableLabel={t("visit.ai.unavailable", "AI summary unavailable — nothing was generated or changed.")} evidenceLabel={t("visit.ai.evidence", "Source references")} advisoryLabel={t("visit.ai.advisory", "Advisory only · human decides")} reviewLabel={t("visit.ai.review", "Review or reject this advisory")} />
+      {!targetPreview && <WidgetBoundary label={t("visit.ai.unavailable", "AI summary not available — nothing was generated or changed.")}>
+        <ContextualAiPanel surface="visit_management_summary" title={t("visit.ai.title", "Visit management summary")} description={t("visit.ai.description", "A summary of the visits you can access. It can't change a visit, assignment, state, or campaign.")} context={JSON.stringify({ scope: "visit-management" })} evidenceRefs={["MVP1-M02-001", "MVP1-M02-002", "MVP1-M02-017", "MVP1-M02-035", "SCR-WEB-200"]} generateLabel={t("visit.ai.generate", "Generate summary")} unavailableLabel={t("visit.ai.unavailable", "AI summary not available — nothing was generated or changed.")} evidenceLabel={t("visit.ai.evidence", "Source references")} advisoryLabel={t("visit.ai.advisory", "Advisory only · human decides")} reviewLabel={t("visit.ai.review", "Review or reject this advisory")} />
       </WidgetBoundary>}
       {rows.length === 0 ? (
         <EmptyState icon={<IconCalendar size={28} />} title={t("visit.list.empty", "No visits in your scope")}
-          body={t("visit.list.emptyDesc", "Only visits inside your organizational scope are shown ( · RLS-enforced, not filtered client-side).")}>
+          body={t("visit.list.emptyDesc", "Only visits you have access to are shown.")}>
           <Link className="btn btn-primary" href="/planning" prefetch={false}>{t("visit.list.createPlan", "Create a plan")}</Link>
         </EmptyState>
       ) : (

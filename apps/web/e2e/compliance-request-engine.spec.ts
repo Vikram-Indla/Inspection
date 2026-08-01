@@ -87,7 +87,7 @@ test.describe("Prompt 02 governed Compliance Configuration Request contract", ()
     const actions = readWeb("src/app/(app)/admin/compliance-requests/actions.ts");
     const error = readWeb("src/app/(app)/admin/compliance-requests/error.tsx");
     expect(register).toContain("No configuration requests");
-    expect(register).toContain("Request register unavailable");
+    expect(register).toContain("Request list can&apos;t load");
     expect(create).toContain("Create Compliance Configuration Request");
     expect(detail).toContain("Current value");
     expect(detail).toContain("Proposed value");
@@ -97,6 +97,6 @@ test.describe("Prompt 02 governed Compliance Configuration Request contract", ()
     expect(actions).not.toMatch(/service[_-]?role/i);
     expect(actions).toContain('import { insertNotification');
     expect(actions).toContain('from("notification_rules")');
-    expect(error).toContain("Configuration requests are temporarily unavailable");
+    expect(error).toContain("Configuration requests can't load right now");
   });
 });

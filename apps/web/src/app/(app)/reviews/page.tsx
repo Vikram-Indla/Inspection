@@ -95,7 +95,7 @@ export default async function Reviews() {
               <div className="cd-result__icon cd-result__icon--critical" aria-hidden="true"><IconBlocked size={24} /></div>
               <div className="cd-stack">
                 <h2>{t("review.list.unauthTitle", "You don’t have access to the review queue")}</h2>
-                <p>{t("review.list.unauthBody", "This queue requires an authorized review, planning, operations or assigned-inspector role with matching scope. Navigation visibility is not authorization.")}</p>
+                <p>{t("review.list.unauthBody", "This queue needs an allowed role — review, planning, operations, or assigned inspector — with matching scope. Being visible in navigation does not mean you have access.")}</p>
               </div>
             </div>
           </section>
@@ -255,14 +255,14 @@ export default async function Reviews() {
     colStatus: t("review.list.colStatus", "Status"),
     colOpen: t("review.list.colOpen", "Review"),
     open: t("review.list.open", "Open review"),
-    openHint: t("review.list.openHint", "Opens the review read-only. Starting and deciding happen there as explicit audited actions."),
+    openHint: t("review.list.openHint", "Opens the review as read-only. Starting and deciding happen there, and we record both."),
     fpTitle: t("review.list.fpTitle", "Review readiness"),
-    fpHint: t("review.list.fpHint", "Facts come from RLS-scoped records. Unreadable facts remain unavailable."),
+    fpHint: t("review.list.fpHint", "Facts come from records you are allowed to see. Facts we cannot read stay marked as not available."),
     fp: {
       sla: t("review.list.fp.sla", "Deadline"),
       slaOverdue: t("review.list.fp.slaOverdue", "overdue"),
       slaOnTime: t("review.list.fp.slaOnTime", "on time"),
-      slaUnavailable: t("review.list.fp.slaUnavailable", "Deadline unavailable — required configuration or timestamp is missing"),
+      slaUnavailable: t("review.list.fp.slaUnavailable", "Deadline not available — a needed setting or timestamp is missing"),
       risk: t("review.list.fp.risk", "Risk"),
       critical: t("review.list.fp.critical", "critical (L1)"),
       priority: t("review.list.fp.priority", "priority"),
@@ -274,12 +274,12 @@ export default async function Reviews() {
       missing: t("review.list.fp.missing", "missing"),
       verified: t("review.list.fp.verified", "verified"),
       updated: t("review.list.fp.updated", "updated"),
-      unavailable: t("review.list.fp.unavailable", "unavailable"),
+      unavailable: t("review.list.fp.unavailable", "not available"),
       readyBlockTag: t("review.list.fp.readyBlockTag", "derived"),
       noEvidenceTitle: t("review.list.fp.noEvidenceTitle", "Evidence not yet readable"),
       noEvidenceBody: t("review.list.fp.noEvidenceBody", "A linked source could not be read. It is not counted as ready."),
       unassignedTitle: t("review.list.fp.unassignedTitle", "Unassigned reviewer"),
-      unassignedBlocked: t("review.list.fp.unassignedBlocked", "claim/reassign unavailable"),
+      unassignedBlocked: t("review.list.fp.unassignedBlocked", "claim/reassign not available"),
     },
   };
 
@@ -287,22 +287,22 @@ export default async function Reviews() {
     <Shell current="/reviews" title={t("review.list.title", "Inspection review queue")}
       context={<span className="sq-lozenge sq-lozenge--info">{t("review.list.context", "Read-only queue")}</span>}>
       <main className={styles.reviewRoot} data-screen-id="REV-S01">
-        <div className="sq-banner" role="note"><div><strong>{t("review.list.scanTitle", "Review overview")}</strong> — {t("review.list.scanBody", "Opening is read-only. Starting and deciding are explicit audited actions in the workspace.")}</div></div>
-        {reviewDays == null && <div className="sq-banner sq-banner--warning" role="note"><div><strong>{t("review.list.missingSlaTitle", "SLA configuration missing")}</strong> — {t("review.list.missingSlaBody", "No review deadline is derived. Rows remain unavailable rather than being reported on time.")}</div></div>}
-        {degraded && <div className="sq-banner sq-banner--warning" role="alert"><div><strong>{t("review.list.degradedTitle", "Some linked information is unavailable")}</strong> — {t("review.list.degradedBody", "The queue loaded, but one or more RLS-scoped linked sources could not be read. Those facts remain unavailable.")}</div></div>}
+        <div className="sq-banner" role="note"><div><strong>{t("review.list.scanTitle", "Review overview")}</strong> — {t("review.list.scanBody", "Opening only lets you look. Starting and deciding are separate actions, and we record both.")}</div></div>
+        {reviewDays == null && <div className="sq-banner sq-banner--warning" role="note"><div><strong>{t("review.list.missingSlaTitle", "Deadline settings missing")}</strong> — {t("review.list.missingSlaBody", "We cannot work out a review deadline. Rows show as not available instead of on time.")}</div></div>}
+        {degraded && <div className="sq-banner sq-banner--warning" role="alert"><div><strong>{t("review.list.degradedTitle", "Some linked information is not available")}</strong> — {t("review.list.degradedBody", "The queue loaded, but we could not read one or more linked sources. Those facts stay not available.")}</div></div>}
         {rows.length === 0 ? (
           <section className="sq-surface cd-panelpad cd-result" role="status">
             <div className="cd-result__row">
               <div className="cd-result__icon cd-result__icon--ok" aria-hidden="true">✓</div>
               <div className="cd-stack">
-                <h2>{t("review.list.empty", "No inspections awaiting review")}</h2>
-                <p>{t("review.list.emptyBody", "No reviews in your scope await a Level 2 decision.")}</p>
+                <h2>{t("review.list.empty", "No inspections waiting for review")}</h2>
+                <p>{t("review.list.emptyBody", "No reviews in your scope are waiting for a decision.")}</p>
               </div>
             </div>
           </section>
         ) : <ReviewQueue rows={queueRows} statusOptions={statusOptions} riskOptions={riskOptions} strings={strings} />}
-        <div className="sq-banner sq-banner--warning" role="note"><div><strong>{t("review.list.submissionBlockTitle", "Submission integrity blocker")}</strong> — {t("review.list.submissionBlockBody", "blocks claims that new real inspection submissions are available end to end. Existing RLS-visible review records remain readable; this queue does not bypass that platform blocker.")}</div></div>
-        <div className="sq-banner sq-banner--immutable"><div><strong>{t("review.list.immutableTitle", "Decisions are immutable")}</strong> {t("review.list.immutableBody", "— decided reviews cannot be edited. Every resubmission creates a new preserved version.")}</div></div>
+        <div className="sq-banner sq-banner--warning" role="note"><div><strong>{t("review.list.submissionBlockTitle", "New submissions are not confirmed working")}</strong> — {t("review.list.submissionBlockBody", "We cannot yet confirm that a brand-new inspection submission works end to end. Existing review records you have access to are still readable; this queue does not get around that limit.")}</div></div>
+        <div className="sq-banner sq-banner--immutable"><div><strong>{t("review.list.immutableTitle", "Decisions cannot be changed")}</strong> {t("review.list.immutableBody", "— decided reviews cannot be edited. Each resubmission creates a new, saved version.")}</div></div>
       </main>
     </Shell>
   );

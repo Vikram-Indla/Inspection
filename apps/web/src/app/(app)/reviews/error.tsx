@@ -12,8 +12,8 @@ export default function ReviewsError({
   return (
     <StateSurface
       kind="error"
-      title="Review queue unavailable"
-      body={`No review state was inferred.${error.digest ? ` Reference ${error.digest}.` : ""}`}
+      title="Review queue not available"
+      body={`We could not tell what state the reviews are in.${error.digest ? ` Reference ${error.digest}.` : ""}`}
       action={<button className="btn btn-secondary" type="button" onClick={reset}>Try again</button>}
     />
   );

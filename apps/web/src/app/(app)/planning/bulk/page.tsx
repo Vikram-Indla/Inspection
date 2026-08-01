@@ -37,15 +37,15 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     console.error("[ bulk planning authorization]", authError?.message ?? access.error);
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
-        <div className="sq-banner sq-banner--critical" role="alert">{t("plan.bulk.unavailable", "The authorized Planning read path is unavailable. Nothing was changed. Retry after access configuration is restored.")}</div>
+        <div className="sq-banner sq-banner--critical" role="alert">{t("plan.bulk.unavailable", "Planning data is not available right now. Nothing was changed. Try again once access is fixed.")}</div>
       </Shell>
     );
   }
   if (!user || !access.can("planning.create.bulk")) {
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
-        <EmptyState glyph="⛔" title={tr("plan.bulk.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
-          body={tr("plan.bulk.unauthorized.body", "Plan multiple visits requires the bulk-planning capability (Planner or Supervisor).", "تخطيط زيارات متعددة يتطلب صلاحية التخطيط الجماعي (المخطط أو المشرف).")} />
+        <EmptyState glyph="⛔" title={tr("plan.bulk.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
+          body={tr("plan.bulk.unauthorized.body", "Plan multiple visits needs Planner or Supervisor access.", "يتطلب تخطيط زيارات متعددة صلاحية المخطط أو المشرف.")} />
       </Shell>
     );
   }
@@ -84,8 +84,8 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     console.error("[] factories read failed:", factoriesError.message, factoriesError.code);
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
-        <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list unavailable")}
-          body={t("plan.bulk.serviceUnavailable.body", "The Factory list could not be read through the authorized Planning path. Nothing was filtered or published. Retry after access configuration is restored.")} />
+        <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list not available")}
+          body={t("plan.bulk.serviceUnavailable.body", "We couldn't load the Factory list. Nothing was filtered or published. Try again once access is fixed.")} />
       </Shell>
     );
   }
@@ -112,8 +112,8 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     console.error("[] criteria history read failed:", violationsRead.error?.message ?? inspectionsRead.error?.message);
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
-        <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list unavailable")}
-          body={t("plan.bulk.serviceUnavailable.body", "The Factory list could not be read through the authorized Planning path. Nothing was filtered or published. Retry after access configuration is restored.")} />
+        <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list not available")}
+          body={t("plan.bulk.serviceUnavailable.body", "We couldn't load the Factory list. Nothing was filtered or published. Try again once access is fixed.")} />
       </Shell>
     );
   }
@@ -251,13 +251,13 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     between: t("plan.bulk.criteria.opBetween", "between"),
   };
   const notSuppliedReasons: Record<string, string> = {
-    "plan.bulk.criteria.nsSector": t("plan.bulk.criteria.nsSector", "No governed sector source is populated — this dimension cannot be evaluated and is never treated as blank."),
-    "plan.bulk.criteria.nsLicenseStage": t("plan.bulk.criteria.nsLicenseStage", "Licence stage is ~1% populated in the licence register — too sparse to target against honestly."),
-    "plan.bulk.criteria.nsLicenseStatus": t("plan.bulk.criteria.nsLicenseStatus", "Licence status is ~1% populated in the licence register — too sparse to target against honestly."),
-    "plan.bulk.criteria.nsProductHs": t("plan.bulk.criteria.nsProductHs", "Product / HS codes exist for 4 factories only — not a governed targeting source yet."),
-    "plan.bulk.criteria.nsLandProvider": t("plan.bulk.criteria.nsLandProvider", "No land-provider attribute exists in the governed factory model."),
-    "plan.bulk.criteria.nsEmployeeCount": t("plan.bulk.criteria.nsEmployeeCount", "Employee count is recorded for 4 of 1,339 factories — far below a usable targeting threshold."),
-    "plan.bulk.criteria.nsIssuingAuthority": t("plan.bulk.criteria.nsIssuingAuthority", "Issuing authority is not available as a governed, populated attribute."),
+    "plan.bulk.criteria.nsSector": t("plan.bulk.criteria.nsSector", "There is no sector data set up yet — this can't be checked, and is never treated as blank."),
+    "plan.bulk.criteria.nsLicenseStage": t("plan.bulk.criteria.nsLicenseStage", "Licence stage is filled in for only about 1% of the licence list — too little to target by."),
+    "plan.bulk.criteria.nsLicenseStatus": t("plan.bulk.criteria.nsLicenseStatus", "Licence status is filled in for only about 1% of the licence list — too little to target by."),
+    "plan.bulk.criteria.nsProductHs": t("plan.bulk.criteria.nsProductHs", "Product / HS codes exist for only 4 factories — not enough to target by yet."),
+    "plan.bulk.criteria.nsLandProvider": t("plan.bulk.criteria.nsLandProvider", "There is no land-provider field in the factory data."),
+    "plan.bulk.criteria.nsEmployeeCount": t("plan.bulk.criteria.nsEmployeeCount", "Employee count is recorded for only 4 of 1,339 factories — far too few to target by."),
+    "plan.bulk.criteria.nsIssuingAuthority": t("plan.bulk.criteria.nsIssuingAuthority", "Issuing authority is not filled in yet, so it can't be used to target by."),
   };
   const builderFields: BuilderField[] = FIELD_REGISTRY.map(def => ({
     key: def.key,
@@ -375,12 +375,12 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
       {!criteriaApplied && !ctWasInvalid && (
         <div className="sq-banner sq-banner--warning" role="alert" aria-label={tr("plan.bulk.noCriteria.title", "At least one criterion is required", "يلزم معيار واحد على الأقل")}>
           <strong>{tr("plan.bulk.noCriteria.title", "At least one criterion is required", "يلزم معيار واحد على الأقل")}</strong>
-          <p>{tr("plan.bulk.noCriteria.body", "Bulk targeting never matches the whole registry by default. Add at least one criterion below to see matching factories; nothing is selected or published without an explicit scope.", "الاستهداف الجماعي لا يطابق السجل بالكامل افتراضيًا. أضف معيارًا واحدًا على الأقل أدناه لعرض المصانع المطابقة؛ لا يتم اختيار أو نشر أي شيء دون نطاق صريح.")}</p>
+          <p>{tr("plan.bulk.noCriteria.body", "Bulk targeting never matches the whole Factory list by default. Add at least one criterion below to see matching factories. Nothing is selected or sent without a clear scope.", "لا يطابق الاستهداف الجماعي كل قائمة المصانع تلقائيًا. أضف معيارًا واحدًا على الأقل أدناه لعرض المصانع المطابقة. لا يتم اختيار أو إرسال أي شيء دون نطاق واضح.")}</p>
         </div>
       )}
       {/* MVP1-M01-016 / MVP1-M01-026 · AC-0016 / AC-0026 — contextual planning summary.
           M10 / canonical §19 — fails isolated, never blanks the targeting UI. */}
-      <WidgetBoundary label={t("plan.bulk.ai.unavailable", "AI provider unavailable — nothing was generated or changed.")}>
+      <WidgetBoundary label={t("plan.bulk.ai.unavailable", "AI is not available right now — nothing was generated or changed.")}>
         <ContextualAiPanel
           surface="planning_summary"
           title={t("plan.bulk.ai.title", "AI planning summary")}
@@ -388,7 +388,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
           context={aiPlanningContext}
           evidenceRefs={["AC-0016", "AC-0026", "M01-016", "M01-026", "SCR-WEB-110"]}
           generateLabel={t("plan.bulk.ai.generate", "Generate planning summary")}
-          unavailableLabel={t("plan.bulk.ai.unavailable", "AI provider unavailable — nothing was generated or changed.")}
+          unavailableLabel={t("plan.bulk.ai.unavailable", "AI is not available right now — nothing was generated or changed.")}
           evidenceLabel={t("plan.bulk.ai.evidence", "Source evidence")}
           advisoryLabel={t("plan.bulk.ai.advisory", "Advisory only · human decides")}
         />

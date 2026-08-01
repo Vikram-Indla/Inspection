@@ -107,16 +107,16 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
   if (access.error) {
     return (
       <Shell current="/planning" title={title}>
-        <EmptyState icon={<IconBlocked />} title={tr("plan.home.unavailable.title", "Planning data unavailable", "بيانات التخطيط غير متاحة")}
-          body={tr("plan.home.unavailable.body", "The planning workspace read contract could not be verified. Nothing was created or changed. Retry after access configuration is restored.", "تعذر التحقق من عقد قراءة مساحة التخطيط. لم يتم إنشاء أو تغيير أي بيانات. أعد المحاولة بعد استعادة إعدادات الوصول.")} />
+        <EmptyState icon={<IconBlocked />} title={tr("plan.home.unavailable.title", "Planning data not available", "بيانات التخطيط غير متاحة")}
+          body={tr("plan.home.unavailable.body", "We couldn't check your access to Planning. Nothing was created or changed. Try again once access is fixed.", "تعذّر التحقق من صلاحية الوصول إلى التخطيط. لم يتم إنشاء أو تغيير أي بيانات. حاول مرة أخرى بعد إصلاح الوصول.")} />
       </Shell>
     );
   }
   if (access.accessClass !== "business_staff" || !access.can("planning.view")) {
     return (
       <Shell current="/planning" title={title}>
-        <EmptyState icon={<IconBlocked />} title={tr("plan.home.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
-          body={tr("plan.home.unauthorized.body", "Visit Planning is available to authorized planning staff.", "تخطيط الزيارات متاح لموظفي التخطيط المصرح لهم.")} />
+        <EmptyState icon={<IconBlocked />} title={tr("plan.home.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
+          body={tr("plan.home.unauthorized.body", "Only planning staff can use Visit Planning.", "تخطيط الزيارات متاح لموظفي التخطيط فقط.")} />
       </Shell>
     );
   }
@@ -147,8 +147,8 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
     if (optionError) console.error("[planning.list] option/draft read failed:", optionError.message);
     return (
       <Shell current="/planning" title={title}>
-        <EmptyState icon={<IconBlocked />} title={tr("plan.home.unavailable.title", "Planning data unavailable", "بيانات التخطيط غير متاحة")}
-          body={tr("plan.home.unavailable.body", "The planning workspace read contract could not be verified. Nothing was created or changed. Retry after access configuration is restored.", "تعذر التحقق من عقد قراءة مساحة التخطيط. لم يتم إنشاء أو تغيير أي بيانات. أعد المحاولة بعد استعادة إعدادات الوصول.")} />
+        <EmptyState icon={<IconBlocked />} title={tr("plan.home.unavailable.title", "Planning data not available", "بيانات التخطيط غير متاحة")}
+          body={tr("plan.home.unavailable.body", "We couldn't check your access to Planning. Nothing was created or changed. Try again once access is fixed.", "تعذّر التحقق من صلاحية الوصول إلى التخطيط. لم يتم إنشاء أو تغيير أي بيانات. حاول مرة أخرى بعد إصلاح الوصول.")} />
       </Shell>
     );
   }
@@ -193,7 +193,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       title: t("plan.method.immediate.title", "Create an urgent visit"),
       desc: t(
         "plan.method.immediate.desc",
-        "Submit an urgent request for one registered factory. A Supervisor assigns and releases it within the governed response window.",
+        "Submit an urgent request for one registered factory. A Supervisor assigns and releases it within the set response time.",
       ),
       href: "/planning/immediate",
     },
@@ -270,7 +270,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
           <ExportButton params={params} strings={{
             label: tr("plan.list.export", "Export (CSV)", "تصدير (CSV)"),
             busyLabel: tr("plan.list.exporting", "Exporting…", "جارٍ التصدير…"),
-            unauthorized: tr("plan.list.exportUnauthorized", "Export is not authorized for your account.", "التصدير غير مصرح لحسابك."),
+            unauthorized: tr("plan.list.exportUnauthorized", "Your account can't export this.", "لا يمكن لحسابك تصدير هذا."),
             unavailable: tr("plan.list.exportUnavailable", "Export failed — nothing was downloaded. Try again.", "فشل التصدير — لم يتم تنزيل أي ملف. أعد المحاولة."),
             cappedNote: tr("plan.list.exportCapped", "Exported the first {n} matching rows — refine the filters for the rest.", "تم تصدير أول {n} صفًا مطابقًا — حسّن عوامل التصفية للباقي."),
           }} />
@@ -426,7 +426,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
           <tbody>
             {visibleRows.map((row: PlanningVisitRow) => (
               <tr key={row.id}>
-                <td className="sq-numeric"><a className="sq-link" href={`/visits/${row.id}`}><strong>{row.visitReference ?? tr("plan.referenceUnavailable", "Reference unavailable", "المرجع غير متاح")}</strong></a></td>
+                <td className="sq-numeric"><a className="sq-link" href={`/visits/${row.id}`}><strong>{row.visitReference ?? tr("plan.referenceUnavailable", "Reference not available", "المرجع غير متاح")}</strong></a></td>
                 <td><span className="planning-method">{t(`enum.${row.method}`, row.method)}</span></td>
                 <td><span className={`badge planning-status ${STATUS_TONE[row.planningStatus] ?? "badge-pending"}`}>
                   <span className="dot" aria-hidden="true" />
@@ -491,7 +491,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
             <tbody>
               {drafts.map(d => (
                 <tr key={d.id}>
-                  <td className="sq-numeric"><strong>{d.plan_reference ?? tr("plan.referenceUnavailable", "Reference unavailable", "المرجع غير متاح")}</strong></td>
+                  <td className="sq-numeric"><strong>{d.plan_reference ?? tr("plan.referenceUnavailable", "Reference not available", "المرجع غير متاح")}</strong></td>
                   <td><span className="planning-method">{t(`enum.${d.method}`, d.method)}</span></td>
                   <td><span className="badge badge-draft planning-status"><span className="dot" aria-hidden="true" />{t("enum.draft", "draft")}</span></td>
                   <td>{d.profiles?.full_name ?? "—"}</td>
@@ -504,7 +504,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
                     {user && d.created_by === user.id ? (
                       <DiscardDraftButton planId={d.id} expectedVersion={d.draft_version}
                         label={tr("plan.list.discard", "Discard", "تجاهل")}
-                        discardAria={tr("plan.list.discardAria", "Discard draft {ref}", "تجاهل المسودة {ref}").replace("{ref}", d.plan_reference ?? tr("plan.referenceUnavailable", "Reference unavailable", "المرجع غير متاح"))} />
+                        discardAria={tr("plan.list.discardAria", "Discard draft {ref}", "تجاهل المسودة {ref}").replace("{ref}", d.plan_reference ?? tr("plan.referenceUnavailable", "Reference not available", "المرجع غير متاح"))} />
                     ) : "—"}
                   </td>
                 </tr>

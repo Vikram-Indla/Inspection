@@ -113,7 +113,7 @@ export async function updateItem(_: ItemResult, formData: FormData): Promise<Ite
   if (readError || !current) { if (readError) logProviderError("admin item edit read", readError); return { error: NEUTRAL_WRITE_ERROR }; }
   const { data: frozen, error: frozenError } = await sb.rpc("inspection_item_versions_are_frozen", { p_code: current.code });
   if (frozenError) { logProviderError("admin item frozen-version check", frozenError); return { error: NEUTRAL_WRITE_ERROR }; }
-  if (!frozen) return { error: "Edit blocked: a governed package version does not yet contain a frozen item snapshot." };
+  if (!frozen) return { error: "Edit blocked: no checklist version has locked in this item yet." };
 
   const { data, error } = await sb.from("inspection_items").update({
     title, clause_id, guidance_en: guidance_en || null,
@@ -144,7 +144,7 @@ export async function toggleItemActive(_: ItemResult, formData: FormData): Promi
       active: false, deactivated_at: new Date().toISOString(), deactivated_by: gate.userId, deactivation_reason: reason,
     }, { count: "exact" }).eq("id", id);
   if (error) { logProviderError("admin inspection item status", error); return { error: NEUTRAL_WRITE_ERROR }; }
-  if (!count) return { error: "No row updated — RLS requires compliance_admin/form_admin." };
+  if (!count) return { error: "No row updated — this needs the compliance_admin or form_admin role." };
   revalidatePath("/admin/items");
   return { ok: true };
 }

@@ -176,10 +176,10 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     download: t("visit.att.download", "Download"),
     remove: t("visit.att.remove", "Remove"),
     removeAria: t("visit.att.removeAria", "Remove attachment {name}"),
-    fileLabel: t("visit.att.fileLabel", "Attach a file (planner/ops — RLS-enforced)"),
+    fileLabel: t("visit.att.fileLabel", "Attach a file (planner or operations only)"),
     uploadBtn: t("visit.att.uploadBtn", "Upload"),
     uploading: t("visit.att.uploading", "Uploading…"),
-    urlFailed: t("visit.att.urlFailed", "download link unavailable"),
+    urlFailed: t("visit.att.urlFailed", "download link not available"),
   };
   const notesStrings: NotesStrings = {
     heading: t("visit.notes.heading", "Notes (M02-043)"),
@@ -187,10 +187,10 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     placeholder: t("visit.notes.placeholder", "Context for the inspector or operations — saved to the visit, audited"),
     saveBtn: t("visit.notes.saveBtn", "Save notes"),
     saving: t("visit.notes.saving", "Saving…"),
-    hint: t("visit.notes.hint", "planner/ops only (RLS visits_update) · return flows never write here — reasons live on the lifecycle stream (M8)"),
+    hint: t("visit.notes.hint", "Planner or operations only. Return reasons show in the visit history, not here (M8)."),
   };
   const actionStrings: ActionBarStrings = {
-    heading: t("visit.actions.heading", "Management actions — state-guarded (only valid transitions succeed)"),
+    heading: t("visit.actions.heading", "Management actions — only valid changes are allowed"),
     returnReason: t("visit.actions.returnReason", "Return reason *"),
     returnComments: t("visit.actions.returnComments", "Return comments"),
     returnBtn: t("visit.actions.returnBtn", "Return"),
@@ -209,23 +209,23 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     typePeriodic: t("enum.periodic", "Periodic compliance"),
     typeFollowUp: t("enum.follow_up", "Follow-up"),
     typeComplaint: t("enum.complaint", "Complaint"),
-    executionStarted: t("visit.actions.executionStarted", "execution started ({state}) — cancel / reschedule locked (M02-006)"),
+    executionStarted: t("visit.actions.executionStarted", "Execution already started ({state}) — cancel and reschedule are locked (M02-006)"),
     finalState: t("visit.actions.finalState", "final state — view only (M02-015/016)"),
     zoneAvailable: t("visit.actions.zoneAvailable", "Available now"),
     zoneBlocked: t("visit.actions.zoneBlocked", "Not available yet — why"),
-    zoneUnavailable: t("visit.actions.zoneUnavailable", "Unavailable in this state"),
+    zoneUnavailable: t("visit.actions.zoneUnavailable", "Not available in this state"),
     reassignLockedWhy: t("visit.actions.reassignLockedWhy", "reassign locked — inspection already started ({state}) (M02-006)"),
-    scheduleLockedWhy: t("visit.actions.scheduleLockedWhy", "locked — execution started ({state}); only published/new visits can be rescheduled, retyped or cancelled (M02-006/008)"),
+    scheduleLockedWhy: t("visit.actions.scheduleLockedWhy", "locked — execution already started ({state}). Only published, new visits can be rescheduled, changed, or cancelled (M02-006/008)"),
     noneAvailable: t("visit.actions.noneAvailable", "No management actions available in this state."),
     commentsHint: t("visit.actions.commentsHint", "mandatory when the reason is Other"),
     repackageLabel: t("visit.actions.repackageLabel", "New primary checklist (returned — PLN-CON-003)"),
-    repackageBtn: t("visit.actions.repackageBtn", "Repackage"),
+    repackageBtn: t("visit.actions.repackageBtn", "Change checklist"),
     duplicateBtn: t("visit.actions.duplicateBtn", "Duplicate visit"),
-    duplicateWhy: t("visit.actions.duplicateWhy", "Duplicate produces a new Draft with planning fields only (PLN-REQ-011)."),
-    cutoffTitle: t("visit.actions.cutoffTitle", "Cancellation and rescheduling cutoff"),
+    duplicateWhy: t("visit.actions.duplicateWhy", "Duplicate creates a new Draft with planning fields only (PLN-REQ-011)."),
+    cutoffTitle: t("visit.actions.cutoffTitle", "Cutoff for cancelling and rescheduling"),
     cutoffBody: t(
       "visit.actions.cutoffBody",
-      "The server re-checks the current visit window at transaction time. Cancellation or a window-changing reschedule is allowed through {cutoff} (Asia/Riyadh); reassignment does not use this 720-hour gate.",
+      "The system checks the visit window again when you submit. You can cancel or reschedule until {cutoff} (Asia/Riyadh). Reassignment has no time limit.",
     ),
   };
   // CD-027 — Dual-State Ribbon: five never-collapsed domains, each with the
@@ -251,7 +251,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   const planningBoundary = canManage
     ? t("visit.ribbon.b.manage", "Return · reschedule · change type · cancel")
     : v.planning_status === "returned" ? t("visit.ribbon.b.returned", "Republish · correct · cancel")
-    : v.planning_status === "published" ? t("visit.ribbon.b.locked", "Return only — execution started; reassignment authority is not configured")
+    : v.planning_status === "published" ? t("visit.ribbon.b.locked", "Return only — execution has started; you can't reassign this visit")
     : t("visit.ribbon.b.none", "None — final state, view only");
   const ribbonTracks: RibbonTrack[] = [
     { id: "planning", domainLabel: t("visit.ribbon.planning", "Planning"),
@@ -324,7 +324,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
 
           {(v.immediate_creator_role || v.source_channel) && (
             <p className="t-caption">
-              {t("visit.detail.immediateProvenance", "Immediate creation:")}{" "}
+              {t("visit.detail.immediateProvenance", "Urgent visit creation:")}{" "}
               {v.immediate_creator_role === "inspector"
                 ? tr("visit.detail.creatorInspector", "Inspector — self-created", "المفتش — إنشاء ذاتي")
                 : tr("visit.detail.creatorPlanner", "Planner", "المخطط")}
@@ -367,7 +367,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
             {" "}· <a className="btn btn-ghost btn-sm" href={`/planning/plans/${plan.id}`}>{t("visit.detail.openPlan", "Open plan")}</a>
           </p>
         ) : (
-          <p className="t-caption">{t("visit.detail.noPlan", "Immediate visit — created without a plan (M01-050).")}</p>
+          <p className="t-caption">{t("visit.detail.noPlan", "Urgent visit — created without a plan (M01-050).")}</p>
         )}
         </div>
       </section>
@@ -408,7 +408,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
           immutable snapshot; the primary (visits.package_version_id) is marked.
           Zero links = preparation chooses the checklist later (honest, allowed). */}
       <section id="packages" className="panel">
-        <div className="panel-header"><h2 className="panel-title">{t("visit.detail.packagesHeading", "Report packages")}</h2></div>
+        <div className="panel-header"><h2 className="panel-title">{t("visit.detail.packagesHeading", "Checklists used")}</h2></div>
         <div className="panel-body">
         {pkgLinks.length === 0 ? (
           <p className="t-caption">{t("visit.detail.noPackages", "No checklist selected — the inspector chooses an eligible checklist during preparation (PLN-CON-003).")}</p>

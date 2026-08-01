@@ -112,13 +112,13 @@ export default async function Items({
     evidenceVideoNc: t("admin.items.r2.form.evidenceVideoNc", "Video mandatory on non-compliant"),
     evidenceDocumentNc: t("admin.items.r2.form.evidenceDocumentNc", "Document mandatory on non-compliant"),
     evidenceCommentNc: t("admin.items.r2.form.evidenceCommentNc", "Comment mandatory on non-compliant"),
-    evidenceSource: t("admin.items.r2.form.evidenceSource", "Configured policy — governed preset, not free text (M09-005/025)."),
+    evidenceSource: t("admin.items.r2.form.evidenceSource", "Configured policy — a fixed preset, not free text (M09-005/025)."),
     requirementMode: t("admin.items.r2.form.requirementMode", "Requirement mode"),
     requirementRequired: t("admin.items.r2.form.requirementRequired", "Required"),
     requirementOptional: t("admin.items.r2.form.requirementOptional", "Optional"),
     requirementConditional: t("admin.items.r2.form.requirementConditional", "Conditional"),
     visibleWhen: t("admin.items.r2.form.visibleWhen", "Visible when"),
-    visibleWhenHint: t("admin.items.r2.form.visibleWhenHint", "Use the governed key=value grammar."),
+    visibleWhenHint: t("admin.items.r2.form.visibleWhenHint", "Use the fixed key=value format."),
     mandatoryWhenVisible: t("admin.items.r2.form.mandatoryWhenVisible", "Mandatory when visible"),
     scoringEnabled: t("admin.items.r2.form.scoringEnabled", "Scoring enabled"),
     scoringDisabled: t("admin.items.r2.form.scoringDisabled", "Scoring disabled"),
@@ -157,8 +157,8 @@ export default async function Items({
     optional: t("admin.items.r2.preview.optional", "Optional"),
     mandatoryVisible: t("admin.items.r2.preview.mandatoryVisible", "mandatory when visible"),
     scoringOff: t("admin.items.r2.preview.scoringOff", "scoring disabled; all responses excluded"),
-    readonly: t("admin.items.r2.preview.readonly", "Read-only projection of stored configuration — nothing here is editable."),
-    deactivated: t("admin.items.r2.preview.deactivated", "This item is deactivated — hidden from new package versions; existing history is preserved."),
+    readonly: t("admin.items.r2.preview.readonly", "This shows the saved configuration only — nothing here can be edited."),
+    deactivated: t("admin.items.r2.preview.deactivated", "This item is deactivated. It's hidden from new checklist versions; existing history is kept."),
     active: t("admin.items.r2.status.active", "active"),
     deactivatedWord: t("admin.items.r2.status.deactivated", "deactivated"),
     responseLabels,
@@ -227,15 +227,15 @@ export default async function Items({
         </div>
       )}
 
-      {roleError ? <div className="alert alert-warning" role="alert"><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div> : !isWriter && <div className="alert" role="note"><strong><span aria-hidden="true">👁 </span>{t("admin.items.r2.readonly.title", "Read-only catalogue")}</strong>{" "}{t("admin.items.r2.readonly.body", "Your role can inspect item semantics, usage and runtime previews. Creating or changing active state requires Compliance or Form Admin and is enforced by the server guard and RLS.")}</div>}
+      {roleError ? <div className="alert alert-warning" role="alert"><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div> : !isWriter && <div className="alert" role="note"><strong><span aria-hidden="true">👁 </span>{t("admin.items.r2.readonly.title", "Read-only catalogue")}</strong>{" "}{t("admin.items.r2.readonly.body", "Your role can view item details, usage and runtime previews. Creating or changing active state needs a Compliance or Form Admin role, enforced by the server and the database.")}</div>}
 
-      <nav className="cmp-library-tabs" aria-label="Compliance Library">
+      <nav className="cmp-library-tabs" aria-label="Inspection Rules">
         <a className="btn btn-secondary sq-link btn-touch" href="/admin/regulations">Regulations</a>
         <a className="btn btn-primary btn-lg btn-touch" href="/admin/items" aria-current="page">Inspection Items</a>
-        {isWriter ? <a className="btn btn-secondary sq-link btn-touch" href="/admin/compliance-requests/new">Create governed request</a> : null}
+        {isWriter ? <a className="btn btn-secondary sq-link btn-touch" href="/admin/compliance-requests/new">Create request</a> : null}
       </nav>
 
-      {isWriter ? <div className="alert alert-warning" role="note"><strong>Legacy compatibility authoring.</strong>{" "}Direct item controls remain temporarily available for continuity. New or modified governed configuration should begin in a Compliance Configuration Request; this catalogue remains the published source of truth.</div> : null}
+      {isWriter ? <div className="alert alert-warning" role="note"><strong>Legacy compatibility authoring.</strong>{" "}Direct item controls stay available for now, for continuity. New or changed configuration should start in a Compliance Configuration Request; this catalogue stays the published source of truth.</div> : null}
 
       {/* Permission + governance truth (S05/S06 + audit fact). Visibility is not
           authorization; the write path is RLS-guarded and every row change is audited. */}
@@ -263,8 +263,8 @@ export default async function Items({
       {/* S03 empty — read succeeded and the catalogue is genuinely empty (never
           confused with unavailable, which is the error banner above). */}
       {!error && rows.length === 0 && (
-        <EmptyState glyph="🧾" title={t("admin.items.r2.empty.title", "No inspection items configured")}
-          body={t("admin.items.r2.empty.body", "Items belong to regulation clauses and are reused across packages (M09-002). Add the first item above.")} />
+        <EmptyState glyph="🧾" title={t("admin.items.r2.empty.title", "No inspection items set up yet")}
+          body={t("admin.items.r2.empty.body", "Items belong to regulation clauses and are reused across checklists (M09-002). Add the first item above.")} />
       )}
 
       {!error && rows.length > 0 && (
@@ -323,7 +323,7 @@ export default async function Items({
                     <td>
                       <div className="row">
                         <a className="btn btn-secondary sq-link btn-touch" href={`/admin/items/${encodeURIComponent(i.id)}/runtime-preview`}>Inspector Runtime Preview</a>
-                        {isWriter ? <a className="btn btn-secondary sq-link btn-touch" href={`/admin/compliance-requests/new?request_type=modify&title=${encodeURIComponent(`Modify inspection item ${i.code}`)}&description=${encodeURIComponent(`Governed change request for inspection item ${i.code} — ${i.title}.`)}`}>Request change</a> : null}
+                        {isWriter ? <a className="btn btn-secondary sq-link btn-touch" href={`/admin/compliance-requests/new?request_type=modify&title=${encodeURIComponent(`Modify inspection item ${i.code}`)}&description=${encodeURIComponent(`Change request for inspection item ${i.code} — ${i.title}.`)}`}>Request change</a> : null}
                         {isWriter ? <ToggleActive itemId={i.id} active={i.active} strings={strings} /> : <span className="t-caption">{t("admin.items.r2.readonly.action", "Read only")}</span>}
                         {isWriter ? <a className="btn btn-secondary sq-link btn-touch" href={`/admin/items?audit=${encodeURIComponent(i.id)}#cd007-audit-h`}>{t("admin.items.r2.audit.open", "Audit")}</a> : null}
                         {isWriter ? <EditItemForm item={{ id: i.id, title: i.title, clauseId: i.clause_id, guidance: i.guidance_en, version: i.configuration_version ?? 1 }} clauses={clauseOptions} strings={strings} /> : null}
@@ -339,20 +339,20 @@ export default async function Items({
 
       {!error && rows.length > 0 && isWriter && (
         <section className="panel stack" aria-labelledby="cd007-audit-h" style={{ padding: "var(--space-6)" }}>
-          <h3 id="cd007-audit-h" style={{ margin: 0 }}>{t("admin.items.r2.audit.heading", "Scoped item audit")}</h3>
-          <p className="t-caption" style={{ margin: 0 }}>{t("admin.items.r2.audit.body", "Open Audit on one item to inspect its object-scoped configuration history; broad audit-table access is not granted.")}</p>
+          <h3 id="cd007-audit-h" style={{ margin: 0 }}>{t("admin.items.r2.audit.heading", "Item history")}</h3>
+          <p className="t-caption" style={{ margin: 0 }}>{t("admin.items.r2.audit.body", "Open Audit on one item to see its change history; broad access to the full audit table is not given.")}</p>
           {!auditItemId ? <p className="t-caption" role="status">{t("admin.items.r2.audit.select", "No item selected.")}</p>
             : !auditItem ? <div className="alert alert-warning" role="alert">{t("admin.items.r2.audit.notFound", "The selected item is no longer in the readable catalogue.")}</div>
-            : auditResult.error ? <div className="alert alert-warning" role="alert">{t("admin.items.r2.audit.unavailable", "Audit unavailable — reload to retry; history is not reported as empty.")}</div>
+            : auditResult.error ? <div className="alert alert-warning" role="alert">{t("admin.items.r2.audit.unavailable", "History couldn't load — reload to retry. This does not mean the history is empty.")}</div>
             : <div className="stack" style={{ gap: "var(--space-2)" }}><h4 style={{ margin: 0 }}><bdi dir="ltr" className="numeric">{auditItem.code}</bdi> — {auditItem.title}</h4>
-              {auditEvents.length === 0 ? <p className="t-caption" role="status">{t("admin.items.r2.audit.empty", "No scoped audit events returned — verified zero.")}</p>
+              {auditEvents.length === 0 ? <p className="t-caption" role="status">{t("admin.items.r2.audit.empty", "No activity found for this item.")}</p>
                 : <ol>{auditEvents.map(e => <li key={e.id}><strong>{e.action}</strong> · <bdi dir="ltr" className="numeric">{e.occurred_at}</bdi>{e.actor ? <> · <bdi dir="ltr">{e.actor}</bdi></> : null}</li>)}</ol>}
             </div>}
         </section>
       )}
 
       <p className="t-caption">
-        {t("admin.items.r2.footer", "Items belong to regulations and are reused across packages (M09-002/007); deactivation preserves history (M09-014). Writes require compliance_admin/form_admin — RLS is the authority. inspection_items row changes are audit-tracked (trg_audit_inspection_items).")}
+        {t("admin.items.r2.footer", "Items belong to regulations and are reused across checklists (M09-002/007); deactivation keeps history (M09-014). Writes need the compliance_admin/form_admin role — the database is the authority. inspection_items row changes are logged (trg_audit_inspection_items).")}
       </p>
     </Shell>
   );

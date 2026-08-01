@@ -31,8 +31,8 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
   if (!user || access.error !== null || !access.can("planning.create.immediate") || access.accessClass !== "business_staff") {
     return (
       <Shell current="/planning" title={t("plan.imm.title", "Create an urgent visit")}>
-        <EmptyState glyph="⛔" title={tr("plan.imm.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
-          body={tr("plan.imm.unauthorized.body", "Create an urgent visit is available to Planner and Supervisor roles. Inspectors raise urgent escalations from assigned work.", "إنشاء زيارة عاجلة متاح للمخطط والمشرف. يرفع المفتشون التصعيدات العاجلة من العمل المكلّف به.")} />
+        <EmptyState glyph="⛔" title={tr("plan.imm.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
+          body={tr("plan.imm.unauthorized.body", "Only Planner and Supervisor roles can use Create an urgent visit. Inspectors raise urgent issues from their own assigned work.", "إنشاء زيارة عاجلة متاح للمخطط والمشرف فقط. يرفع المفتشون البلاغات العاجلة من عملهم المكلّفين به.")} />
       </Shell>
     );
   }
@@ -108,12 +108,12 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
   const strings: ImmediateStrings = {
     identity: t("plan.imm.identity", "Identity — registered or minimum manual"),
     r05BlockedTitle: tr("plan.imm.r05BlockedTitle", "Urgent requests still require a registered factory", "تتطلب الطلبات العاجلة مصنعاً مسجلاً"),
-    r05BlockedBody: tr("plan.imm.r05BlockedBody", "Urgency changes the response time, not target identity or supervision. Select a registered factory; unregistered entry is unavailable.", "لا تغيّر العجلة هوية الهدف أو الإشراف. اختر مصنعاً مسجلاً؛ الإدخال غير المسجل غير متاح."),
+    r05BlockedBody: tr("plan.imm.r05BlockedBody", "Urgency only changes the response time — not who is checked or who supervises. Choose a registered factory; you can't enter one that isn't registered.", "لا تغيّر العجلة سوى وقت الاستجابة — لا هوية الهدف ولا الإشراف. اختر مصنعاً مسجلاً؛ لا يمكن إدخال مصنع غير مسجل."),
     identityToggleRegistered: t("plan.imm.identityToggleRegistered", "Registered factory"),
     identityToggleUnregistered: t("plan.imm.identityToggleUnregistered", "Unregistered / temporary"),
     manualLockedPermission: tr("plan.imm.manualLockedPermission", "Manual entry requires the manual-factory permission.", "الإدخال اليدوي يتطلب صلاحية المصنع اليدوي."),
     manualLockedType: tr("plan.imm.manualLockedType", "The selected visit type does not allow unregistered factories.", "نوع الزيارة المحدد لا يسمح بالمصانع غير المسجلة."),
-    manualLockedLookups: tr("plan.imm.manualLockedLookups", "Manual entry is unavailable — reference data could not be loaded.", "الإدخال اليدوي غير متاح — تعذر تحميل البيانات المرجعية."),
+    manualLockedLookups: tr("plan.imm.manualLockedLookups", "Manual entry is not available — we couldn't load reference data.", "الإدخال اليدوي غير متاح — تعذر تحميل البيانات المرجعية."),
     notFoundConfirm: tr("plan.imm.notFoundConfirm", "I confirm this factory was not found in the registered factory list", "أؤكد أن هذا المصنع غير موجود في قائمة المصانع المسجلة"),
     searchLabel: t("plan.imm.searchLabel", "Search registered factories — CR or Industrial License"),
     searchPlaceholder: t("plan.imm.searchPlaceholder", "CR number, Industrial License or name"),
@@ -166,7 +166,7 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
     windowStart: t("plan.imm.windowStart", "Window start"),
     windowEnd: t("plan.imm.windowEnd", "Window end"),
     windowHint: tr("plan.imm.windowHintExplicit", "Required. Start must be within 24 hours; end must be after start.", "مطلوبة. يجب أن تبدأ خلال 24 ساعة وأن تكون النهاية بعد البداية."),
-    priority: t("plan.imm.priority", "Priority (ungoverned — no approved value list)"),
+    priority: t("plan.imm.priority", "Priority (no approved list yet)"),
     priorityPlaceholder: t("plan.imm.priorityPlaceholder", "As set by your dispatch process — optional, free text"),
     notes: t("plan.imm.notes", "Notes"),
     notesPlaceholder: t("plan.imm.notesPlaceholder", "Context for the inspector — appended to the urgency reason"),

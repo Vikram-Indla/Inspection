@@ -26,7 +26,7 @@ export default async function PlanningVisitDetail({ params, searchParams }: {
         <PlanningReadFailureState
           failure={contract}
           title={t("plan.read.failure.title", "Planning access needs attention")}
-          body={t("plan.read.failure.body", "The required planning read contract is unavailable. Nothing was changed. Retry after access configuration is restored.")}
+          body={t("plan.read.failure.body", "Planning data is not available right now. Nothing was changed. Try again once access is fixed.")}
           referenceLabel={t("plan.read.failure.reference", "Support reference")}
           retryLabel={t("plan.read.failure.retry", "Retry")}
           retryHref={`/planning/visits/${id}`}
@@ -50,11 +50,11 @@ export default async function PlanningVisitDetail({ params, searchParams }: {
       <Shell current="/planning" title={title}>
         <EmptyState
           glyph="⛔"
-          title={tr("plan.home.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+          title={tr("plan.home.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
           body={tr(
             "visit.detail.unauthorized.body",
-            "Planning-owned visit details require an authorized planning capability.",
-            "تتطلب تفاصيل الزيارة التابعة للتخطيط صلاحية تخطيط مصرحاً بها.",
+            "You need planning access to view visit details.",
+            "يلزم صلاحية تخطيط لعرض تفاصيل الزيارة.",
           )}
         />
       </Shell>

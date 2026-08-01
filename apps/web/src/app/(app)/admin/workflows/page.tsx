@@ -84,23 +84,23 @@ export default async function Workflows() {
       <div className="breadcrumb" style={{ marginBlockEnd: 8 }}>
         <span>{t("admin.wf.crumb.root", "Workflow Settings")}</span>
         <span className="sep">/</span>
-        <span>{t("admin.wf.crumb.leaf", "Governed lifecycles")}</span>
+        <span>{t("admin.wf.crumb.leaf", "Lifecycles")}</span>
       </div>
       <p className="t-caption" style={{ margin: "0 0 12px" }}>
         {t("admin.wf.subtitle", "States → transitions → guards & SLA · workflow_admin only · versioned")}
       </p>
 
       <div className="alert"><div>
-        <strong>{t("admin.wf.banner.title", "Governed change only.")}</strong> {t("admin.wf.banner.before", "Runtime evaluates transitions against the published version — no status bypass (RBAC-003). Changes flow draft → distinct-approver publish (RBAC-002 maker-checker, enforced by a DB constraint on")} <code>config_versions</code>{t("admin.wf.banner.mid", "); published versions are immutable. Risk/SLA values live in")} <code>engine_settings</code> {t("admin.wf.banner.after", "and are not editable here.")}
+        <strong>{t("admin.wf.banner.title", "Only approved changes.")}</strong> {t("admin.wf.banner.before", "The system checks transitions against the published version only — no status bypass (RBAC-003). Changes go from draft to publish, and the approver must be a different person (RBAC-002 maker-checker), enforced by a database rule on")} <code>config_versions</code>{t("admin.wf.banner.mid", "); published versions can't be changed. Risk/SLA values live in")} <code>engine_settings</code> {t("admin.wf.banner.after", "and can't be edited here.")}
       </div></div>
       {error && (
         <div className="alert alert-critical"><div>
-          <strong>{t("admin.wf.error.title", "Couldn’t load workflow configuration. Nothing was changed. Try again.")}</strong>
+          <strong>{t("admin.wf.error.title", "Couldn’t load workflow settings. Nothing was changed. Try again.")}</strong>
         </div></div>
       )}
       {!error && (wfs ?? []).length === 0 && (
-        <EmptyState glyph="🔀" title={t("admin.wf.empty.title", "No workflow configuration published")}
-          body={t("admin.wf.empty.body", "Workflow state machines are versioned config (ENG-03).")} />
+        <EmptyState glyph="🔀" title={t("admin.wf.empty.title", "No workflow settings published")}
+          body={t("admin.wf.empty.body", "Workflow state machines are versioned settings (ENG-03).")} />
       )}
       {(wfs ?? []).map(w => {
         const p = w.payload as { object?: string };
@@ -116,7 +116,7 @@ export default async function Workflows() {
                 <span className={`badge ${w.status === "published" ? "badge-compliant" : "badge-warning"}`}>{t(`enum.${w.status}`, String(w.status).replace(/_/g, " "))}</span>
                 {w.status === "draft" && !isOwnDraft && <ApprovePublish versionId={w.id} strings={strings} />}
                 {isOwnDraft && (
-                  <span className="badge badge-warning" title={t("admin.wf.sod.desc", "You proposed this draft (the maker). A different checker must approve it — separation of duties is enforced by a DB constraint.")}>
+                  <span className="badge badge-warning" title={t("admin.wf.sod.desc", "You proposed this draft (the maker). A different checker must approve it — the database enforces this separation of duties.")}>
                     ⛔ {t("admin.wf.sod.title", "You proposed this — a distinct checker must approve")}
                   </span>
                 )}
@@ -129,7 +129,7 @@ export default async function Workflows() {
               {" → "}
               {w.approved_by
                 ? <>{t("admin.wf.chain.approved", "approved by")} <strong>{nameOf(w.approved_by)}</strong> <span className="badge badge-compliant">{t("admin.wf.chain.distinct", "distinct approver")}</span></>
-                : <>{t("admin.wf.chain.pending", "awaiting a distinct approver (maker-checker, DB-enforced)")}</>}
+                : <>{t("admin.wf.chain.pending", "awaiting a distinct approver (maker-checker, enforced by the database)")}</>}
             </p>
             {/* Builder canvas — lifecycle lane, branch strip, transition inspector,
                 states rail and the live VAL-01..06 validation rail. */}
@@ -169,7 +169,7 @@ export default async function Workflows() {
           <p className="t-caption" style={{ margin: 0 }}>{t("admin.wf.sla.loadError", "Couldn’t load the SLA calendars. Nothing was changed.")}</p>
         ) : (calendars ?? []).length === 0 ? (
           <p className="t-caption" style={{ margin: 0 }}>
-            {t("admin.wf.sla.none", "No SLA calendar is configured. Deadlines, working days and escalation are governed inputs (DEC-003) — until one is authorised, timers stay pending and no deadline is shown.")}
+            {t("admin.wf.sla.none", "No SLA calendar is set up. Deadlines, working days and escalation are set inputs (DEC-003) — until one is approved, timers stay pending and no deadline is shown.")}
           </p>
         ) : (
           <div className="table-wrap">
@@ -191,8 +191,8 @@ export default async function Workflows() {
                     <td>
                       <span className={`badge ${c.activation_authorized ? "badge-compliant" : "badge-warning"}`}>
                         {c.activation_authorized
-                          ? t("admin.wf.sla.authorized", "Authorised")
-                          : t("admin.wf.sla.pending", "Not authorised (DEC-003)")}
+                          ? t("admin.wf.sla.authorized", "Approved")
+                          : t("admin.wf.sla.pending", "Not approved (DEC-003)")}
                       </span>
                     </td>
                   </tr>
@@ -202,7 +202,7 @@ export default async function Workflows() {
           </div>
         )}
         <p className="t-caption" style={{ margin: "12px 0 0" }}>
-          {t("admin.wf.sla.note", "Deadlines are computed only from an authorised working calendar. There is no scheduler: a breach is never executed silently, and no default duration is assumed.")}
+          {t("admin.wf.sla.note", "Deadlines are computed only from an approved working calendar. There is no scheduler: a breach is never triggered on its own, and no default duration is assumed.")}
         </p>
       </section>
     </Shell>

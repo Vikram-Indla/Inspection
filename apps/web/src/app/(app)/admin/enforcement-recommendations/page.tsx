@@ -86,7 +86,7 @@ export default async function EnforcementRecommendations() {
   const readOnlyBanner = !isDecider ? (
     <div className="alert" role="note">
       <strong><IconEye size={16} /> {tr("admin.enf.rec.readonly.title", "Read-only for your role", "للعرض فقط بحسب دورك")}</strong>{" "}
-      {tr("admin.enf.rec.readonly.body", "You can view the recommendation queue; deciding requires an Operations or Compliance Admin role, enforced by row-level security.", "يمكنك عرض قائمة التوصيات؛ يتطلب اتخاذ القرار دور العمليات أو مسؤول الامتثال، ويُفرض ذلك عبر أمان مستوى الصف.")}
+      {tr("admin.enf.rec.readonly.body", "You can view this list. To decide, you need an Operations or Compliance Admin role — the database enforces this.", "يمكنك عرض هذه القائمة؛ يتطلب اتخاذ القرار دور العمليات أو مسؤول الامتثال، وتفرض قاعدة البيانات ذلك.")}
     </div>
   ) : null;
 
@@ -103,7 +103,7 @@ export default async function EnforcementRecommendations() {
       <div className={styles.pageRoot}>
       <div className="alert alert-warning" role="note"><div><strong>{tr("admin.enf.rec.configTitle", "Enforcement policy: Not configured.", "سياسة الإنفاذ: غير مهيأة.")}</strong>{" "}{tr("admin.enf.rec.configBody", "The sponsor must supply the approved enforcement measure catalogue and authoritative legal-basis wording for each measure, including the published instrument and version. No amount, escalation ladder, citation or Arabic legal wording is asserted until supplied.", "يجب على الراعي تزويد كتالوج تدابير الإنفاذ المعتمد والصياغة الموثوقة للأساس القانوني لكل تدبير، بما في ذلك الأداة المنشورة وإصدارها. لا تُعرض مبالغ أو سلالم تصعيد أو استشهادات أو صياغة قانونية عربية حتى يتم توفيرها.")}</div></div>
       <div className="alert" role="note"><div><strong>{tr("admin.enf.rec.scopeTitle", "Decision scope", "نطاق القرار")}</strong>{" "}
-        {tr("admin.enf.rec.scopeBody", "Decisions are temporarily read-only until the database exposes an atomic guarded decision transition. A future approval will record the recommendation decision only; it will not apply a penalty, close an establishment, issue a legal notice, or bypass governed enforcement configuration.", "القرارات للقراءة فقط مؤقتًا حتى توفر قاعدة البيانات انتقال قرار ذريًا ومحميًا. ستسجل الموافقة المستقبلية القرار بشأن التوصية فقط؛ ولن تطبق عقوبة أو تغلق منشأة أو تصدر إشعارًا قانونيًا أو تتجاوز إعدادات الإنفاذ المحكومة.")}</div></div>
+        {tr("admin.enf.rec.scopeBody", "Decisions are read-only for now, until the database supports a safe decision step. A future approval will only record the recommendation decision — it will not apply a penalty, close a factory, send a legal notice, or skip the enforcement rules.", "القرارات للقراءة فقط حاليًا، إلى أن تدعم قاعدة البيانات خطوة قرار آمنة. ستسجل الموافقة المستقبلية القرار بشأن التوصية فقط؛ ولن تطبق عقوبة أو تغلق منشأة أو ترسل إشعارًا قانونيًا أو تتجاوز قواعد الإنفاذ.")}</div></div>
       {readOnlyBanner}
       {pendingError && <div className="alert alert-warning" role="alert"><div>{tr("admin.enf.rec.loadError", "The recommendation queue is unavailable in this environment. No count is claimed.", "قائمة التوصيات غير متاحة في هذه البيئة. لا يُدَّعى أي عدد.")}</div></div>}
 
@@ -141,11 +141,11 @@ export default async function EnforcementRecommendations() {
                     already_decided: tr("admin.enf.rec.error.conflict", "This recommendation was already decided. Refresh the queue.", "تم البت في هذه التوصية مسبقًا. حدّث القائمة."),
                     maker_checker: tr("admin.enf.rec.error.makerChecker", "The recommender cannot decide their own recommendation.", "لا يمكن لمقدم التوصية البت في توصيته."),
                     write_failed: tr("admin.enf.rec.error.write", "The decision could not be recorded. No change was claimed.", "تعذر تسجيل القرار. لم يتم الادعاء بإجراء أي تغيير."),
-                    backend_guard_required: tr("admin.enf.rec.error.backendGuard", "Decision recording is unavailable until the guarded database transition is deployed.", "تسجيل القرار غير متاح حتى نشر انتقال قاعدة البيانات المحمي."),
+                    backend_guard_required: tr("admin.enf.rec.error.backendGuard", "Recording a decision is not available yet — a safe database step still needs to be added.", "تسجيل القرار غير متاح بعد — لا يزال يلزم إضافة خطوة آمنة في قاعدة البيانات."),
                   },
                 }} />
               : <p className="t-caption">{isDecider
-                ? tr("admin.enf.rec.guardPending", "Decision unavailable — guarded database transition required.", "القرار غير متاح — يلزم انتقال قاعدة بيانات محمي.")
+                ? tr("admin.enf.rec.guardPending", "Decision not available yet — a safe database step is still needed.", "القرار غير متاح بعد — لا يزال يلزم خطوة آمنة في قاعدة البيانات.")
                 : tr("admin.enf.rec.awaitingDecider", "Awaiting an Operations or Compliance Admin decision.", "بانتظار قرار من العمليات أو مسؤول الامتثال.")}</p>}
           </div>
         ))}

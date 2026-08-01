@@ -26,8 +26,8 @@ const DEFAULT_STRINGS: VisitMapStrings = {
   region: "Region", allRegions: "All regions", factoryVisitLegend: "factory / visit",
   inspectorLegend: "latest inspector position", noneInRegion: "No located visits in this region",
   visit: "Visit", factory: "Factory", regionCity: "Region / city", inspectorLocation: "Inspector location",
-  state: "State", assignedInspector: "Assigned inspector", inspectorFallback: "Inspector",
-  unavailableScope: "Unavailable under current scope", latestLocation: "latest location",
+  state: "Visit status", assignedInspector: "Assigned inspector", inspectorFallback: "Inspector",
+  unavailableScope: "Not available for your access", latestLocation: "latest location",
 };
 
 export default function VisitMap({ visits, strings: s = DEFAULT_STRINGS, locale = "en" }: { visits: MappedVisit[]; strings?: VisitMapStrings; locale?: Locale }) {

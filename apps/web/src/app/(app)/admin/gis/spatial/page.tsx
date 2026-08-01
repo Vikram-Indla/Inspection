@@ -29,7 +29,7 @@ export default async function SpatialPage() {
   if (error) console.error("[gis spatial] load", error);
   return (
     <Shell current="/admin/gis" title={t("gis.sp.title", "Spatial canvas")} context={<span className="badge badge-info">CD-045 · REQ-0087..0108</span>}>
-      <div className="alert"><div><strong>{t("gis.sp.banner.title", "Layers & locations.")}</strong> {t("gis.sp.banner.body", "The authoritative factory pin stays GIS-admin-owned (FND-007); these are additive working layers. Geofence/accuracy use accepted engine_settings.gis values. Mapbox rendering is held.")}</div></div>
+      <div className="alert"><div><strong>{t("gis.sp.banner.title", "Layers & locations.")}</strong> {t("gis.sp.banner.body", "The official factory pin stays owned by GIS admin (FND-007); these are extra working layers. Geofence and accuracy use the accepted engine_settings.gis values. Mapbox rendering is on hold.")}</div></div>
       <CreateLayer strings={{
         key: t("gis.sp.key", "Layer key"), label: t("gis.sp.label", "Label"), type: t("gis.sp.type", "Type"),
         create: t("gis.sp.create", "Create layer"), creating: t("gis.sp.creating", "Creating…"), created: t("gis.sp.created", "layer created"),
@@ -37,7 +37,7 @@ export default async function SpatialPage() {
       {error && <div className="alert alert-critical" role="alert"><div><strong>{t("gis.sp.error", "Couldn’t load spatial data. Nothing changed.")}</strong></div></div>}
       {!error && (layers ?? []).length === 0 && (locs ?? []).length === 0 && (
         <EmptyState icon={<IconMap size={28} />} title={t("gis.sp.empty.title", "No layers or working locations in scope")}
-          body={t("gis.sp.empty.body", "GIS layers and working factory locations appear here. Empty may also mean none are in your scope (RLS).")} />
+          body={t("gis.sp.empty.body", "GIS layers and working factory locations appear here. Empty may also mean none are in your scope.")} />
       )}
       {(layers ?? []).map((l) => (
         <div key={l.id} className="panel" style={{ padding: "var(--space-6)" }}>

@@ -68,12 +68,12 @@ export async function saveWorkflowDraft(_: WfResult, formData: FormData): Promis
     const { data: cur } = await sb.from("config_versions")
       .select("status, row_version").eq("id", version_id).eq("engine", "workflow").maybeSingle();
     if (cur && cur.status !== "draft") {
-      return { error: "Only draft versions are editable — published workflow config is immutable." };
+      return { error: "Only draft versions are editable — published workflow settings can't be changed." };
     }
     if (expectedRowVersion !== null && cur && cur.row_version !== expectedRowVersion) {
       return { error: "This draft changed since you loaded it — reload to see the latest, then re-apply your edit." };
     }
-    return { error: "Only draft versions are editable — published workflow config is immutable." };
+    return { error: "Only draft versions are editable — published workflow settings can't be changed." };
   }
   revalidatePath("/admin/workflows");
   return { ok: true };

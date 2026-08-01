@@ -60,7 +60,7 @@ export default async function InspectorRuntimePreview({
   const item = rawItem as unknown as Item | null;
 
   if (itemError || !item) {
-    return <Shell current="/admin/items" title="Inspector Runtime Preview"><div className="panel"><div className="saqeel-state" role="alert"><span className="saqeel-state__glyph" aria-hidden="true">🔎</span><h4>{itemError ? "Preview unavailable" : "Inspection item not found"}</h4><p className="t-caption">{itemError ? "The configuration read failed. Retry without assuming the item is absent." : "The read succeeded, but no item has this identifier."}</p><a className="sq-link" href="/admin/items">Back to Compliance Library</a></div></div></Shell>;
+    return <Shell current="/admin/items" title="Inspector Runtime Preview"><div className="panel"><div className="saqeel-state" role="alert"><span className="saqeel-state__glyph" aria-hidden="true">🔎</span><h4>{itemError ? "Preview can't load" : "Inspection item not found"}</h4><p className="t-caption">{itemError ? "The configuration read failed. Don't assume the item is missing — retry instead." : "The read worked, but no item has this identifier."}</p><a className="sq-link" href="/admin/items">Back to Inspection Rules</a></div></div></Shell>;
   }
 
   const [{ data: rawUses, error: useError }, { data: legacyVersions }, { data: governedVersions }] = await Promise.all([
@@ -99,28 +99,28 @@ export default async function InspectorRuntimePreview({
   const reportType = textValue(section?.report_type) ?? textValue(definition.report_type);
   const selfAssessment = section?.self_assessment_visible ?? responseModel.self_assessment_visible;
   const gaps = [
-    !selectedUse && "No immutable published package-version snapshot is available; exact execution context cannot be proven.",
-    !textValue(section?.name) && !textValue(section?.title) && "Inspection Section is not explicitly named in the selected package definition.",
-    !textValue(responseModel.type) && "Response Type is not explicitly configured; only response values are available.",
-    selfAssessment === undefined && "Self-Assessment visibility is not explicitly configured.",
-    !reportType && "Report Type/package placement is not explicitly configured.",
+    !selectedUse && "No final published checklist-version snapshot is available; the exact context it runs in can't be proven.",
+    !textValue(section?.name) && !textValue(section?.title) && "Inspection Section is not explicitly named in the selected checklist definition.",
+    !textValue(responseModel.type) && "Response Type is not explicitly set; only response values are available.",
+    selfAssessment === undefined && "Self-Assessment visibility is not explicitly set.",
+    !reportType && "Report Type/checklist placement is not explicitly set.",
     violationRef && !violation && `The configured trigger '${violationRef}' does not resolve to an accessible Violation.`,
   ].filter(Boolean) as string[];
 
   return (
-    <Shell current="/admin/items" title="Inspector Runtime Preview" context={<span className="badge badge-info">Read-only · configuration verification</span>}>
-      <nav className="cmp-library-tabs" aria-label="Compliance Library"><a className="btn btn-secondary sq-link btn-touch" href="/admin/regulations">Regulations</a><a className="btn btn-primary btn-lg btn-touch" href="/admin/items" aria-current="page">Inspection Items</a></nav>
-      <div className="alert" role="note"><strong>Control-plane preview only.</strong> This page reads approved Compliance configuration and immutable package snapshots. It does not author, publish, or change the Inspector application.</div>
-      {useError ? <div className="alert alert-warning" role="alert"><strong>Package usage unavailable.</strong> Exact runtime placement is unknown; the item itself is shown from the live library.</div> : null}
+    <Shell current="/admin/items" title="Inspector Runtime Preview" context={<span className="badge badge-info">Read-only · configuration check</span>}>
+      <nav className="cmp-library-tabs" aria-label="Inspection Rules"><a className="btn btn-secondary sq-link btn-touch" href="/admin/regulations">Regulations</a><a className="btn btn-primary btn-lg btn-touch" href="/admin/items" aria-current="page">Inspection Items</a></nav>
+      <div className="alert" role="note"><strong>Preview only — no changes made here.</strong> This page reads approved Compliance configuration and final checklist snapshots. It does not create, publish, or change anything in the Inspector app.</div>
+      {useError ? <div className="alert alert-warning" role="alert"><strong>Checklist usage not available.</strong> The exact runtime placement is unknown; the item itself is shown from the live library.</div> : null}
 
       <section className="panel cmp-runtime-head" aria-labelledby="runtime-item-heading">
         <div><p className="t-caption numeric"><bdi dir="ltr">{item.code}</bdi></p><h2 id="runtime-item-heading">{item.title}</h2><p>{textValue(source.guidance_en) ?? item.guidance_en ?? "No inspector guidance configured."}</p></div>
         <span className={`badge ${item.active ? "badge-compliant" : "badge-critical"}`}>{item.active ? "Operational" : "Inactive"}</span>
       </section>
 
-      {uses.length > 0 ? <form className="panel cmp-runtime-selector" method="get"><label className="sq-field"><span className="sq-field__label">Published package/version context</span><select className="select" name="package_version" defaultValue={selectedUse?.package_version_id}>{uses.map(use => <option key={use.package_version_id} value={use.package_version_id}>{use.package_versions?.packages?.code ?? "Package"} · {use.package_versions?.version_label ?? "version unknown"} · {use.package_versions?.status ?? "status unknown"}</option>)}</select></label><button className="btn btn-secondary btn-touch" type="submit">Preview exact version</button></form> : null}
+      {uses.length > 0 ? <form className="panel cmp-runtime-selector" method="get"><label className="sq-field"><span className="sq-field__label">Published checklist/version context</span><select className="select" name="package_version" defaultValue={selectedUse?.package_version_id}>{uses.map(use => <option key={use.package_version_id} value={use.package_version_id}>{use.package_versions?.packages?.code ?? "Checklist"} · {use.package_versions?.version_label ?? "version unknown"} · {use.package_versions?.status ?? "status unknown"}</option>)}</select></label><button className="btn btn-secondary btn-touch" type="submit">Preview exact version</button></form> : null}
 
-      <section className="panel cmp-runtime-card" aria-labelledby="runtime-config-heading"><h3 id="runtime-config-heading">Published execution configuration</h3><dl className="cmp-runtime-facts">
+      <section className="panel cmp-runtime-card" aria-labelledby="runtime-config-heading"><h3 id="runtime-config-heading">Published configuration</h3><dl className="cmp-runtime-facts">
         <Fact label="Regulation">{item.regulation_clauses?.regulations ? `${item.regulation_clauses.regulations.code} — ${item.regulation_clauses.regulations.title}` : "Not configured"}</Fact>
         <Fact label="Regulation version">{show(item.regulation_clauses?.regulations?.version_label)}</Fact>
         <Fact label="Inspection Section">{show(textValue(section?.name) ?? textValue(section?.title))}</Fact>
@@ -131,8 +131,8 @@ export default async function InspectorRuntimePreview({
         <Fact label="Evidence requirement">{boolLabel(evidenceRule.mandatory)}</Fact>
         <Fact label="Acceptable Evidence Types">{evidenceTypes.length ? evidenceTypes.join(", ") : "Not configured"}</Fact>
         <Fact label="Self-Assessment visibility">{boolLabel(selfAssessment)}</Fact>
-        <Fact label="Package / report usage">{packageInfo ? `${packageInfo.code} — ${packageInfo.title}` : "Not configured"}{reportType ? ` · ${reportType}` : ""}</Fact>
-        <Fact label="Exact effective version">{selectedUse ? `${selectedUse.package_versions?.version_label ?? "unknown"} · item configuration ${show(source.configuration_version)} · effective ${show(selectedUse.package_versions?.effective_from)}` : `Live item configuration ${item.configuration_version} (not a frozen execution snapshot)`}</Fact>
+        <Fact label="Checklist / report usage">{packageInfo ? `${packageInfo.code} — ${packageInfo.title}` : "Not configured"}{reportType ? ` · ${reportType}` : ""}</Fact>
+        <Fact label="Exact effective version">{selectedUse ? `${selectedUse.package_versions?.version_label ?? "unknown"} · item configuration ${show(source.configuration_version)} · effective ${show(selectedUse.package_versions?.effective_from)}` : `Live item configuration ${item.configuration_version} (not a locked-in execution snapshot)`}</Fact>
       </dl></section>
 
       <section className="panel cmp-runtime-card" aria-labelledby="runtime-enforcement-heading"><h3 id="runtime-enforcement-heading">Downstream enforcement context</h3><dl className="cmp-runtime-facts">
@@ -142,9 +142,9 @@ export default async function InspectorRuntimePreview({
         <Fact label="Application timing">Penalty is context only at response selection; final application follows Inspection Review and Enforcement.</Fact>
       </dl></section>
 
-      <section className="panel cmp-runtime-card" aria-labelledby="runtime-history-heading"><h3 id="runtime-history-heading">Immutable version lineage</h3>{(legacyVersions?.length ?? 0) + (governedVersions?.length ?? 0) === 0 ? <p className="t-caption">No historical version rows are available. Current configuration is not represented as historical evidence.</p> : <ul className="ccr-history">{(governedVersions ?? []).map(v => <li key={v.id}><strong>Governed version {v.version_number}</strong><span>{v.published_at} · correlation {v.correlation_id}</span></li>)}{(legacyVersions ?? []).map(v => <li key={`${v.configuration_version}-${v.recorded_at}`}><strong>Legacy configuration {v.configuration_version}</strong><span>{v.recorded_at}</span></li>)}</ul>}</section>
+      <section className="panel cmp-runtime-card" aria-labelledby="runtime-history-heading"><h3 id="runtime-history-heading">Version history</h3>{(legacyVersions?.length ?? 0) + (governedVersions?.length ?? 0) === 0 ? <p className="t-caption">No past version rows are available. The current configuration is not shown as historical evidence.</p> : <ul className="ccr-history">{(governedVersions ?? []).map(v => <li key={v.id}><strong>Version {v.version_number}</strong><span>{v.published_at} · correlation {v.correlation_id}</span></li>)}{(legacyVersions ?? []).map(v => <li key={`${v.configuration_version}-${v.recorded_at}`}><strong>Legacy configuration {v.configuration_version}</strong><span>{v.recorded_at}</span></li>)}</ul>}</section>
 
-      {gaps.length ? <section className="panel cmp-runtime-card cmp-runtime-gaps" aria-labelledby="runtime-gaps-heading"><h3 id="runtime-gaps-heading">INSPECTOR_RUNTIME_INTEGRATION_GAP</h3><p className="t-caption">These gaps require separate controlled change only if runtime consumption must be extended. No Inspector change is made here.</p><ol>{gaps.map((gap, index) => <li key={gap}><strong>CMP-REQ-LIB-{String(index + 1).padStart(3, "0")}</strong> — {gap}<br /><span className="t-caption">Affected runtime route/component: existing Inspection Execution item renderer · Required integration: consume the missing published field · Regression risk: execution rendering/evaluation · Separate slice: Yes</span></li>)}</ol></section> : <div className="alert alert-success" role="status"><strong>No visible runtime-consumption gap detected</strong> for this selected published package snapshot.</div>}
+      {gaps.length ? <section className="panel cmp-runtime-card cmp-runtime-gaps" aria-labelledby="runtime-gaps-heading"><h3 id="runtime-gaps-heading">Inspector runtime integration gaps</h3><p className="t-caption">These gaps only need a separate, controlled change if runtime use must be extended. No Inspector change is made here.</p><ol>{gaps.map((gap, index) => <li key={gap}><strong>CMP-REQ-LIB-{String(index + 1).padStart(3, "0")}</strong> — {gap}<br /><span className="t-caption">Affected runtime route/component: existing Inspection Execution item renderer · Needed integration: read the missing published field · Regression risk: execution rendering/evaluation · Separate slice: Yes</span></li>)}</ol></section> : <div className="alert alert-success" role="status"><strong>No visible runtime-use gap found</strong> for this selected published checklist snapshot.</div>}
     </Shell>
   );
 }

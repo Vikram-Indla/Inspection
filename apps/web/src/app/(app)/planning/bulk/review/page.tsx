@@ -35,7 +35,7 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
     console.error("[ bulk review authorization]", authError?.message ?? access.error);
     return (
       <Shell current="/planning" title={t("plan.review.title", "Plan review & supervision")}>
-        <div className="sq-banner sq-banner--critical" role="alert">{t("plan.bulk.unavailable", "The authorized Planning read path is unavailable. Nothing was changed. Retry after access configuration is restored.")}</div>
+        <div className="sq-banner sq-banner--critical" role="alert">{t("plan.bulk.unavailable", "Planning data is not available right now. Nothing was changed. Try again once access is fixed.")}</div>
       </Shell>
     );
   }
@@ -70,7 +70,7 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
     loadingNote: t("plan.review.loadingNote", "Validating factories, inspection checklist, Inspectors and duplicates…"),
     stagedBanner: t("plan.review.staged", "Staged review. No plan record exists yet — nothing is saved until you submit it for supervision."),
     stagedSub: t("plan.review.stagedSub", "Selected factories carried from targeting · verifying sources"),
-    unavailable: t("plan.review.unavailable", "The authorized Planning read path is unavailable. Return to targeting and retry after access configuration is restored."),
+    unavailable: t("plan.review.unavailable", "Planning data is not available right now. Go back to targeting and try again once access is fixed."),
     emptyTitle: t("plan.review.emptyTitle", "No factories selected"),
     emptyBody: t("plan.review.emptyBody", "Select target factories on the targeting screen, then continue to review."),
     backToTargeting: t("plan.review.back", "Back to targeting"),
@@ -221,7 +221,7 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
     draftSaved: t("plan.review.draftSaved", "Draft saved · {ref} (v{n})"),
     draftSaveFailed: t("plan.review.draftSaveFailed", "The draft could not be saved. Your working state is unchanged — you can retry or continue without saving."),
     draftBanner: t("plan.review.draftBanner", "Resumed from draft {ref} — saved working state; readiness is re-checked live."),
-    draftUnavailable: t("plan.review.draftUnavailable", "The referenced draft could not be loaded — it may have been published, archived or created by someone else. Falling back to the browser-held selection."),
+    draftUnavailable: t("plan.review.draftUnavailable", "We couldn't load this draft. It may have been published, archived, or created by someone else. Using your last selection instead."),
     discardDraft: t("plan.review.discardDraft", "Discard draft"),
 
     // CD-024 — Assignment Evidence Ledger + per-row evidence cells
@@ -267,8 +267,8 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
       configMissing: { title: t("plan.review.bl.cfg.t", "Mandatory configuration is missing"), detail: t("plan.review.bl.cfg.d", "Set the visit type, a valid window (end after start) and an inspection checklist.") },
       windowImplausible: { title: t("plan.review.bl.win.t", "Visit window date looks like a data-entry error"), detail: t("plan.review.bl.win.d", "Check for a mistyped year — the date is outside the plausible range (DEF-DATA-005).") },
       srcFactory: { title: t("plan.review.bl.srcf.t", "Factory/target source could not be verified"), detail: t("plan.review.bl.srcf.d", "Not evaluated — blocks safely rather than showing false emptiness.") },
-      srcPackage: { title: t("plan.review.bl.srcp.t", "Inspection checklist source is unavailable"), detail: t("plan.review.bl.srcp.d", "Distinct from ‘no inspection checklist’ — the state is not evaluated, not empty.") },
-      srcInspector: { title: t("plan.review.bl.srci.t", "Inspector source is unavailable"), detail: t("plan.review.bl.srci.d", "Distinct from ‘empty pool’ — an empty pool cannot be confirmed.") },
+      srcPackage: { title: t("plan.review.bl.srcp.t", "Inspection checklist data is not available"), detail: t("plan.review.bl.srcp.d", "Distinct from ‘no inspection checklist’ — the state is not evaluated, not empty.") },
+      srcInspector: { title: t("plan.review.bl.srci.t", "Inspector data is not available"), detail: t("plan.review.bl.srci.d", "Distinct from ‘empty pool’ — an empty pool cannot be confirmed.") },
       srcDuplicate: { title: t("plan.review.bl.srcd.t", "Duplicate check could not run"), detail: t("plan.review.bl.srcd.d", "Distinct from ‘verified zero conflicts’ — submission is not allowed without this check.") },
     },
   };

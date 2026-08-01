@@ -189,7 +189,7 @@ export default async function Localization() {
   return (
     <AdminDestinationFrame
       current="/admin/localization"
-      title={t("admin.revamp.lookup.title", copy("Lookup Management", "إدارة القوائم المرجعية"))}
+      title={t("admin.revamp.lookup.title", copy("Reference Lists", "القوائم المرجعية"))}
       subtitle={t("admin.revamp.lookup.subtitle", copy("Shared reference data used across the platform", "البيانات المرجعية المشتركة المستخدمة في المنصة"))}
       hub={t("admin.revamp.hub.rules", copy("Rules & content", "القواعد والمحتوى"))}
       routeLabel="/admin/localization"
@@ -205,7 +205,7 @@ export default async function Localization() {
         {
           label: t("l10n.kpi.total", copy("Reference strings", "النصوص المرجعية")),
           value: loadFailed ? notConfigured : total,
-          note: t("admin.revamp.lookup.metric.total.note", copy("RLS-visible, key-ordered registry", "سجل مرئي حسب صلاحيات الصفوف ومرتب بالمفتاح")),
+          note: t("admin.revamp.lookup.metric.total.note", copy("A key-ordered registry, showing only what you can see", "سجل مرتب بالمفتاح، يعرض فقط ما يُسمح لك برؤيته")),
         },
         {
           label: t("l10n.kpi.translated", copy("Translated (AR)", "مترجمة إلى العربية")),
@@ -224,7 +224,7 @@ export default async function Localization() {
         { label: t("admin.revamp.lookup.tabs.planning", copy("Planning lookups", "قوائم التخطيط")), href: "/admin/planning/lookups" },
       ]}
       governance={lookupGovernance}
-      reconstructionNote={t("admin.revamp.lookup.note", copy("The canonical Lookup destination resolves to the existing localization and governed planning-lookup sources. No reference-list count or language completeness claim is fabricated.", "تتجه وجهة القوائم المرجعية إلى مصادر الترجمة وقوائم التخطيط المحكومة الحالية. لا يتم اختلاق عدد للقوائم أو ادعاء اكتمال اللغة."))}
+      reconstructionNote={t("admin.revamp.lookup.note", copy("The canonical Lookup destination resolves to the existing localization and approved planning-lookup sources. No reference-list count or language completeness claim is made up.", "تتجه وجهة القوائم المرجعية إلى مصادر الترجمة وقوائم التخطيط المعتمدة الحالية. لا يتم اختلاق عدد للقوائم أو ادعاء اكتمال اللغة."))}
       context={
         <span className="row" style={{ gap: "var(--space-3)" }}>
           <span className="badge badge-info">SCR-ADM-100 · SB19</span>

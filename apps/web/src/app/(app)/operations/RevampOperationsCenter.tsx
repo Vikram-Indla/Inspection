@@ -62,7 +62,7 @@ export default function RevampOperationsCenter({
     [copy(locale, "Inspectors on the way", "المفتشون في الطريق"), String(onTheWayInspectors || counts.on_the_way || 0), mapViewHref, copy(locale, "Show on map", "إظهار على الخريطة")],
     [copy(locale, "Executing inspections", "التفتيشات قيد التنفيذ"), String(counts.executing || 0), "/execution", copy(locale, "Open Execution", "فتح التنفيذ")],
     [copy(locale, "Submitted today", "المقدمة اليوم"), "—", "/reviews", copy(locale, "Open Review & Approval", "فتح المراجعة والاعتماد")],
-    [copy(locale, "Active operational alerts", "التنبيهات التشغيلية النشطة"), "—", performanceViewHref, copy(locale, "Review exceptions", "مراجعة الاستثناءات")],
+    [copy(locale, "Active alerts", "التنبيهات النشطة"), "—", performanceViewHref, copy(locale, "Review exceptions", "مراجعة الاستثناءات")],
   ];
 
   return (
@@ -81,7 +81,7 @@ export default function RevampOperationsCenter({
               composition while making its live-status affordance complete the
               real Operations Center → Operations Live route flow. */}
           <a className="tl-meta" href="/operations/live">
-            {copy(locale, "Live governed positions", "مواقع معتمدة مباشرة")}
+            {copy(locale, "Live positions", "المواقع المباشرة")}
           </a>
           <button className="btn btn-secondary" type="button" onClick={() => setShowList(value => !value)}>
             {showList ? copy(locale, "Show map", "إظهار الخريطة") : copy(locale, "Show list equivalent", "إظهار القائمة المكافئة")}
@@ -95,7 +95,7 @@ export default function RevampOperationsCenter({
               <caption>{copy(locale, "Accessible equivalent of the live map. Same records, same actions, no map dependency.", "المكافئ القابل للوصول للخريطة المباشرة. السجلات والإجراءات نفسها دون الاعتماد على الخريطة.")}</caption>
               <thead><tr>
                 <th>{copy(locale, "Inspector", "المفتش")}</th>
-                <th>{copy(locale, "Operational state", "الحالة التشغيلية")}</th>
+                <th>{copy(locale, "Visit status", "حالة الزيارة")}</th>
                 <th>{copy(locale, "Visit", "الزيارة")}</th>
                 <th>{copy(locale, "Factory", "المصنع")}</th>
                 <th>{copy(locale, "Region / city", "المنطقة / المدينة")}</th>
@@ -106,7 +106,7 @@ export default function RevampOperationsCenter({
               <tbody>{activeMapEntries.map(entry => (
                 <tr key={entry.id}>
                   <th scope="row" data-label={copy(locale, "Inspector", "المفتش")}>{entry.inspectorName ?? "—"}</th>
-                  <td data-label={copy(locale, "Operational state", "الحالة التشغيلية")}><span className="badge badge-info">{entry.state}</span></td>
+                  <td data-label={copy(locale, "Visit status", "حالة الزيارة")}><span className="badge badge-info">{entry.state}</span></td>
                   <td data-label={copy(locale, "Visit", "الزيارة")}>{entry.visitId?.slice(0, 8) ?? "—"}</td>
                   <td data-label={copy(locale, "Factory", "المصنع")}>{entry.factoryName}</td>
                   <td data-label={copy(locale, "Region / city", "المنطقة / المدينة")}>{[entry.region, entry.city].filter(Boolean).join(" / ") || "—"}</td>
@@ -143,7 +143,7 @@ export default function RevampOperationsCenter({
       ) : null}
 
       <section>
-        <h2 className="tl-meta">{copy(locale, "Operational summary", "الملخص التشغيلي")}</h2>
+        <h2 className="tl-meta">{copy(locale, "Summary", "الملخص")}</h2>
         <div className="kpi-grid">
           {summary.map(([label, value, href, action]) => (
             <article className="panel kpi" key={label}>
@@ -157,8 +157,8 @@ export default function RevampOperationsCenter({
 
       <section className="panel stack">
         <div className="panel-row">
-          <h2>{copy(locale, "Live operational exceptions", "الاستثناءات التشغيلية المباشرة")}</h2>
-          <span className="tl-meta">{copy(locale, "Current RLS-scoped records", "السجلات الحالية المقيّدة بالصلاحيات")}</span>
+          <h2>{copy(locale, "Live exceptions", "الاستثناءات المباشرة")}</h2>
+          <span className="tl-meta">{copy(locale, "Records you can see", "السجلات التي يمكنك الاطلاع عليها")}</span>
         </div>
         {highlights.length ? highlights.slice(0, 8).map(item => (
           <article className="panel-row" key={item.id}>
@@ -169,7 +169,7 @@ export default function RevampOperationsCenter({
             </div>
             <a className="btn btn-secondary" href={item.href}>{copy(locale, "Open record", "فتح السجل")}</a>
           </article>
-        )) : <section className="saqeel-state"><div className="saqeel-state__content"><h2>{copy(locale, "No open operational exceptions", "لا توجد استثناءات تشغيلية مفتوحة")}</h2><p>{copy(locale, "No open operational exceptions in this scope.", "لا توجد استثناءات تشغيلية مفتوحة ضمن هذا النطاق.")}</p></div></section>}
+        )) : <section className="saqeel-state"><div className="saqeel-state__content"><h2>{copy(locale, "No open exceptions", "لا توجد استثناءات مفتوحة")}</h2><p>{copy(locale, "No open exceptions in this scope.", "لا توجد استثناءات مفتوحة ضمن هذا النطاق.")}</p></div></section>}
       </section>
     </div>
   );

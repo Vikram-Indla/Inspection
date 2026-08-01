@@ -50,7 +50,7 @@ async function callPlanningTransition(
     console.error(`[planning.${operation}] governed mutation failed:`, error.code, error.message);
     if (error.code === "42501") return "You do not have permission or scope for this Planning action. Nothing was changed.";
     if (error.code === "40001") return "This visit changed after the page loaded. Refresh before trying again.";
-    if (error.code === "23514") return "This Planning action is blocked by the current state or governed configuration.";
+    if (error.code === "23514") return "This Planning action is blocked by the current state or a system rule.";
     if (error.code === "23505") return "This retry does not match the original Planning request. Nothing was changed.";
     return "The Planning action could not be completed (ERR-OPS-001). Nothing was changed.";
   }
@@ -133,7 +133,7 @@ export async function returnVisit(_: ActionResult, fd: FormData): Promise<Action
   // PLN-CON-011 — governed reason: the key must be an active planning_lookups
   // return_reason; 'other' (and any comments_required key) demands comments.
   const { options, error: optErr } = await getReasonOptions(sb, "return_reason");
-  if (optErr) return { error: "Return reasons are temporarily unavailable (ERR-OPS-001) — nothing was changed." };
+  if (optErr) return { error: "Return reasons aren't available right now (ERR-OPS-001) — nothing was changed." };
   const bad = validateReason(options, reasonKey, comments, "return");
   if (bad) return { error: bad };
   const transitionError = await callPlanningTransition(sb, fd, "return", {
@@ -142,7 +142,7 @@ export async function returnVisit(_: ActionResult, fd: FormData): Promise<Action
   });
   if (transitionError) return { error: transitionError };
   revalidatePath(`/visits/${id}`); revalidatePath("/visits");
-  return { ok: "Returned atomically — lifecycle, audit and notification intent recorded." };
+  return { ok: "Returned. The history, audit record, and notification were saved." };
 }
 
 export async function republishVisit(_: ActionResult, fd: FormData): Promise<ActionResult> {
@@ -153,7 +153,7 @@ export async function republishVisit(_: ActionResult, fd: FormData): Promise<Act
   const transitionError = await callPlanningTransition(sb, fd, "republish", {});
   if (transitionError) return { error: transitionError };
   revalidatePath(`/visits/${id}`); revalidatePath("/visits");
-  return { ok: "Republished atomically — same Visit ID retained; audit and notification intent recorded." };
+  return { ok: "Republished. The same Visit ID was kept; audit and notification were saved." };
 }
 
 // M02-006 + PLN-R02/R03 — Planning cancellation accepts one optional note,
@@ -184,7 +184,7 @@ export async function cancelVisit(_: ActionResult, fd: FormData): Promise<Action
     console.error("[planning.cancelVisit] governed mutation failed:", error.code, error.message);
     if (error.code === "42501") return { error: "You do not have permission or scope to cancel this visit. Nothing was changed." };
     if (error.code === "40001") return { error: "This visit changed after the page loaded. Refresh before trying again." };
-    if (error.code === "23514") return { error: "Cancellation is blocked by the current state or governed cutoff. Nothing was changed." };
+    if (error.code === "23514") return { error: "Cancellation is blocked by the current state or the cutoff time. Nothing was changed." };
     if (error.code === "23505") return { error: "This retry does not match the original cancellation request. Nothing was changed." };
     return { error: "The visit could not be cancelled (ERR-OPS-001). Nothing was changed." };
   }
@@ -201,7 +201,7 @@ export async function cancelVisit(_: ActionResult, fd: FormData): Promise<Action
   }
   revalidatePath(`/visits/${id}`); revalidatePath(`/planning/visits/${id}`);
   revalidatePath("/visits"); revalidatePath("/planning/visits");
-  return { ok: "Visit cancelled atomically — audit and notification intent recorded." };
+  return { ok: "Visit cancelled. Audit and notification were saved." };
 }
 
 // M02-008 + M8 — Reschedule window: published/new OR returned/new (a returned
@@ -237,7 +237,7 @@ export async function rescheduleVisit(_: ActionResult, fd: FormData): Promise<Ac
     console.error("[planning.rescheduleVisit] governed mutation failed:", error.code, error.message);
     if (error.code === "42501") return { error: "You do not have permission or scope to reschedule this visit. Nothing was changed." };
     if (error.code === "40001") return { error: "This visit changed after the page loaded. Refresh before trying again." };
-    if (error.code === "23514") return { error: "Rescheduling is blocked by the current state or governed cutoff. Nothing was changed." };
+    if (error.code === "23514") return { error: "Rescheduling is blocked by the current state or the cutoff time. Nothing was changed." };
     if (error.code === "23505") return { error: "This retry does not match the original reschedule request. Nothing was changed." };
     return { error: "The visit could not be rescheduled (ERR-OPS-001). Nothing was changed." };
   }
@@ -254,7 +254,7 @@ export async function rescheduleVisit(_: ActionResult, fd: FormData): Promise<Ac
   }
   revalidatePath(`/visits/${id}`); revalidatePath(`/planning/visits/${id}`);
   revalidatePath("/visits"); revalidatePath("/planning/visits");
-  return { ok: "Window rescheduled atomically — audit and notification intent recorded." };
+  return { ok: "Window rescheduled. Audit and notification were saved." };
 }
 
 // FIX WAVE F4 · M02-042 — visit attachments: upload to private bucket 'attachments'
@@ -303,9 +303,9 @@ export async function removeVisitAttachment(_: ActionResult, fd: FormData): Prom
     .eq("id", attachmentId).is("removed_at", null)
     .select("id");
   if (error) return { error: mapError(error, "update") };
-  if (!updated?.length) return { error: "No row updated — already removed, or RLS denied (va_update requires planner/ops)" };
+  if (!updated?.length) return { error: "This attachment is already removed, or you don't have permission to remove it (planner/ops only)." };
   revalidatePath(`/visits/${visitId}`);
-  return { ok: "Attachment removed — soft delete, file and audit trail retained" };
+  return { ok: "Attachment removed. The file and its audit record are kept." };
 }
 
 // M02-043 — note changes use the same atomic metadata contract as visit type.
@@ -317,7 +317,7 @@ export async function updateVisitNotes(_: ActionResult, fd: FormData): Promise<A
   const transitionError = await callPlanningTransition(sb, fd, "metadata", { notes: notes || null });
   if (transitionError) return { error: transitionError };
   revalidatePath(`/visits/${id}`); revalidatePath("/visits");
-  return { ok: "Notes saved atomically with audit and notification intent." };
+  return { ok: "Notes saved and recorded for audit." };
 }
 
 // M02-006 — edit visit type: only before execution starts and only while the
@@ -334,7 +334,7 @@ export async function updateVisitType(_: ActionResult, fd: FormData): Promise<Ac
   const transitionError = await callPlanningTransition(sb, fd, "metadata", { visit_type });
   if (transitionError) return { error: transitionError };
   revalidatePath(`/visits/${id}`); revalidatePath("/visits");
-  return { ok: "Visit type updated atomically — pre-start only, audited." };
+  return { ok: "Visit type updated — only before start, and it's recorded for audit." };
 }
 
 // M02-009 / ENG-05 + M8 — Reassign inspector: updates assignments.inspector_id,
@@ -471,7 +471,7 @@ export async function duplicateVisit(_: ActionResult, fd: FormData): Promise<Act
   }
   revalidatePath(`/visits/${id}`); revalidatePath("/planning");
   return {
-    ok: "Duplicated atomically into a new Draft — execution evidence and review decisions were not copied.",
+    ok: "Duplicated into a new Draft. Execution evidence and review decisions were not copied.",
     planId: receipt.plan_id,
     method: receipt.method,
   };
@@ -493,5 +493,5 @@ export async function repackageVisit(_: ActionResult, fd: FormData): Promise<Act
   const transitionError = await callPlanningTransition(sb, fd, "repackage", { package_version_id: pkgId });
   if (transitionError) return { error: transitionError };
   revalidatePath(`/visits/${id}`);
-  return { ok: "Primary checklist swapped atomically — link history preserved; audit and notification intent recorded." };
+  return { ok: "Primary checklist changed. Link history is kept; audit and notification were saved." };
 }

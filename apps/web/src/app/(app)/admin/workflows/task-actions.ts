@@ -76,7 +76,7 @@ async function loadActorAndTask(taskId: string) {
 
 export async function reassignTask(_: TaskResult, formData: FormData): Promise<TaskResult> {
   if (resolveFeatureFlag(process.env.FEATURE_TASKS_WORKSPACE, MODES, "off") !== "on")
-    return { error: "Task workspace is feature-flagged off (FEATURE_TASKS_WORKSPACE)." };
+    return { error: "Task workspace is turned off (FEATURE_TASKS_WORKSPACE)." };
   const ctx = await loadActorAndTask(String(formData.get("task_id") ?? ""));
   if ("error" in ctx) return { error: ctx.error };
   const { sb, task, actor, manager } = ctx;
@@ -99,7 +99,7 @@ export async function reassignTask(_: TaskResult, formData: FormData): Promise<T
 
 export async function setTaskStatus(_: TaskResult, formData: FormData): Promise<TaskResult> {
   if (resolveFeatureFlag(process.env.FEATURE_TASKS_WORKSPACE, MODES, "off") !== "on")
-    return { error: "Task workspace is feature-flagged off (FEATURE_TASKS_WORKSPACE)." };
+    return { error: "Task workspace is turned off (FEATURE_TASKS_WORKSPACE)." };
   const ctx = await loadActorAndTask(String(formData.get("task_id") ?? ""));
   if ("error" in ctx) return { error: ctx.error };
   const { sb, task, actor, manager } = ctx;
@@ -116,7 +116,7 @@ export async function setTaskStatus(_: TaskResult, formData: FormData): Promise<
 
 export async function setTaskActive(_: TaskResult, formData: FormData): Promise<TaskResult> {
   if (resolveFeatureFlag(process.env.FEATURE_TASKS_WORKSPACE, MODES, "off") !== "on")
-    return { error: "Task workspace is feature-flagged off (FEATURE_TASKS_WORKSPACE)." };
+    return { error: "Task workspace is turned off (FEATURE_TASKS_WORKSPACE)." };
   const ctx = await loadActorAndTask(String(formData.get("task_id") ?? ""));
   if ("error" in ctx) return { error: ctx.error };
   const { sb, task, actor, manager } = ctx;

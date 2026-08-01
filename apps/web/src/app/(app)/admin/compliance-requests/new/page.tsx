@@ -15,10 +15,10 @@ export default async function NewComplianceRequest({
   return (
     <Shell current="/admin/compliance-requests" title="Create Compliance Configuration Request"
       context={<span className="badge badge-info">Draft · Revision 1</span>}>
-      <p className="t-caption"><Link className="sq-link" href="/admin/compliance-requests">← Request register</Link></p>
+      <p className="t-caption"><Link className="sq-link" href="/admin/compliance-requests">← Request list</Link></p>
       <section className="panel ccr-form-card" aria-labelledby="ccr-create-heading">
-        <h3 id="ccr-create-heading">Request foundation</h3>
-        <p className="t-caption">Create the governed envelope first. Components and dependencies are added in the request workspace.</p>
+        <h3 id="ccr-create-heading">Request basics</h3>
+        <p className="t-caption">First, create the request. You add components and dependencies on the request page next.</p>
         <ActionForm action={createComplianceRequest} className="ccr-form" redirectOnCreate>
           <label className="sq-field"><span className="sq-field__label">Request type</span><select className="select" name="request_type" required defaultValue={requestedType}><option value="create">Create</option><option value="modify">Modify</option></select></label>
           <label className="sq-field"><span className="sq-field__label">Title</span><input className="input" name="title" required maxLength={180} defaultValue={requestedTitle} /></label>

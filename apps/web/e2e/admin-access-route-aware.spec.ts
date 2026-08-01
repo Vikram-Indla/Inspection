@@ -23,15 +23,15 @@ test.describe("M8 admin access route-aware contract", () => {
     expect(page).toContain("roleCapabilitySourcesUnavailable");
     expect(page).toContain("!profilesError && !rolesError && !userAccessSourcesUnavailable");
     expect(page).toContain("!rolesError && !roleCapabilitySourcesUnavailable");
-    expect(page).toContain("All write controls are unavailable");
+    expect(page).toContain("All write controls are turned off");
   });
 
   test("partial reads are disclosed without replacing successful source data with a false empty state", () => {
-    expect(page).toContain("Role details are unavailable.");
-    expect(page).toContain("Access details are partially unavailable.");
-    expect(page).toContain("Role capability details are unavailable.");
+    expect(page).toContain("Role details are not available.");
+    expect(page).toContain("Access details are not fully available.");
+    expect(page).toContain("Role capability details are not available.");
     expect(page).toContain("The authorized user roster remains visible");
     expect(page).toContain("The role catalogue remains visible");
-    expect(page).toContain('rolesError ? t("common.unavailable", "Unavailable")');
+    expect(page).toContain('rolesError ? t("common.unavailable", "Not available")');
   });
 });

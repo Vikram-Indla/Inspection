@@ -31,8 +31,8 @@ test.describe("Prompt 03 Compliance Library and Inspector Runtime Preview contra
 
   test("reviewers can verify configuration but route and page remain read-only", () => {
     expect(layout).toContain('"reviewer"');
-    expect(preview).toContain("Read-only · configuration verification");
-    expect(preview).toContain("It does not author, publish, or change the Inspector application");
+    expect(preview).toContain("Read-only · configuration check");
+    expect(preview).toContain("It does not create, publish, or change anything in the Inspector app.");
     expect(preview).not.toMatch(/\.insert\(|\.update\(|\.delete\(|\.rpc\(/);
     expect(read("src/app/(app)/admin/items/[id]/runtime-preview/loading.tsx")).toContain("Loading runtime preview");
     expect(read("src/app/(app)/admin/items/[id]/runtime-preview/error.tsx")).toContain("No configuration has been changed");
@@ -43,7 +43,7 @@ test.describe("Prompt 03 Compliance Library and Inspector Runtime Preview contra
     expect(preview).toContain('from("inspection_item_versions")');
     expect(preview).toContain('from("compliance_entity_versions")');
     expect(preview).toContain("Exact effective version");
-    expect(preview).toContain("Immutable version lineage");
+    expect(preview).toContain("Version history");
     expect(preview).toContain("Live item configuration");
   });
 
@@ -52,14 +52,14 @@ test.describe("Prompt 03 Compliance Library and Inspector Runtime Preview contra
       "Regulation", "Inspection Section", "Response Type", "Response Values and evaluation mapping",
       "Mandatory status", "Evidence requirement", "Acceptable Evidence Types", "Self-Assessment visibility",
       "Non-Compliant Trigger Response", "Linked Violation", "Linked Penalty configuration (read-only)",
-      "Package / report usage", "Operational",
+      "Checklist / report usage", "Operational",
     ]) expect(preview).toContain(label);
     expect(preview).toContain('from("violation_codes")');
     expect(preview).toContain("final application follows Inspection Review and Enforcement");
   });
 
   test("missing consumption fields are explicit integration gaps, never invented defaults", () => {
-    expect(preview).toContain("INSPECTOR_RUNTIME_INTEGRATION_GAP");
+    expect(preview).toContain("Inspector runtime integration gaps");
     expect(preview).toContain("Affected runtime route/component");
     expect(preview).toContain("Regression risk");
     expect(preview).toContain("Separate slice: Yes");

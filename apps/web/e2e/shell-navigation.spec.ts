@@ -56,11 +56,11 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
     const administration = groups.find(group => group.id === "administration");
     expect(administration?.items.map(item => [item.labelEn, item.href])).toEqual([
       ["Users & Roles", "/admin/access"],
-      ["Lookup Management", "/admin/localization"],
-      ["Risk Configuration", "/admin/risk"],
-      ["Survey Configuration", "/admin/packages"],
-      ["Notification Configuration", "/admin/notifications"],
-      ["Integration Management", "/admin/integrations"],
+      ["Reference Lists", "/admin/localization"],
+      ["Risk Settings", "/admin/risk"],
+      ["Inspection Forms", "/admin/packages"],
+      ["Notification Settings", "/admin/notifications"],
+      ["System Connections", "/admin/integrations"],
     ]);
     expect(administration?.items.every(item => item.enabled)).toBe(true);
   });

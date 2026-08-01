@@ -72,8 +72,8 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
         {header(t("field.ws.notConfiguredTitle", "Not configured"))}
         <div className={styles.page}>
           <div className="empty">
-            <div className="empty-title">{t("field.ws.notConfigured", "Inspection package not configured")}</div>
-            <p className="t-caption">{t("field.ws.notConfiguredDesc", "This report type is not configured for field execution.")}</p>
+            <div className="empty-title">{t("field.ws.notConfigured", "Inspection checklist not set up")}</div>
+            <p className="t-caption">{t("field.ws.notConfiguredDesc", "This report type is not set up for field visits.")}</p>
           </div>
         </div>
       </>
@@ -330,7 +330,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   const factoryChecks = (checkRows ?? []) as { id: string; field_key: string; source_value: string | null; observed_value: string | null; status: "verified" | "updated"; evidence_note: string | null }[];
   const factoryChecksError = checksErr
     ? t("field.fv.loadError", "Saved checks could not be loaded: {error}")
-      .replace("{error}", t("field.fv.unavailable", "data source unavailable"))
+      .replace("{error}", t("field.fv.unavailable", "data source not available"))
     : null;
   const factoryFieldEvidence: FactoryFieldEvidence[] = evidenceRows
     .filter(e => e.linked_type === "factory_field")
@@ -406,7 +406,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     // Pending-integration scaffolding — design structure awaiting a governed
     // source/API; captured values are NOT persisted (pre-translated en+ar).
     pendingIntegration: tr("field.fv.pendingIntegration", "Pending integration", "قيد الربط"),
-    pendingCaption: tr("field.fv.pendingCaption", "Design structure pending a governed source — captured values are not saved yet.", "هيكل تصميمي بانتظار مصدر معتمد — القيم المدخلة لا تُحفظ بعد."),
+    pendingCaption: tr("field.fv.pendingCaption", "This section is a placeholder until a data source is connected — anything entered here is not saved yet.", "هذا القسم عنصر نائب حتى يتم ربط مصدر بيانات — أي قيمة تُدخل هنا لا تُحفظ بعد."),
     selectPlaceholder: tr("field.fv.selectPlaceholder", "Select…", "اختر…"),
     estDataTitle: tr("field.fv.estDataTitle", "Establishment data", "بيانات المنشأة"),
     spatialAuth: tr("field.fv.spatialAuth", "Establishment spatial authority", "الإشراف المكاني للمنشأة"),
@@ -450,12 +450,12 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     itemCheck1: tr("field.fv.itemCheck1", "Exemption beneficiary", "مستفيد من الإعفاء"),
     itemCheck2: tr("field.fv.itemCheck2", "Chemical clearance beneficiary", "مستفيد من الفسح الكيميائي"),
     itemCheck3: tr("field.fv.itemCheck3", "Present at site", "موجودة في المنشأة"),
-    categoryPending: tr("field.fv.categoryPending", "This category is pending integration — no governed source yet.", "هذه الفئة قيد الربط — لا يوجد مصدر معتمد بعد."),
+    categoryPending: tr("field.fv.categoryPending", "This category is not connected yet — there is no data source yet.", "هذه الفئة غير مرتبطة بعد — لا يوجد مصدر بيانات بعد."),
     // Presentational workflow step (Factory-360 header).
     stepBadge: tr("field.fv.stepBadge", "Step 2 of 4", "الخطوة 2 من 4"),
     // Violation history — no governed factory-scoped source; badged empty scaffold.
     violationHistory: tr("field.fv.violationHistory", "Violation history", "سجل المخالفات"),
-    violationHistoryPending: tr("field.fv.violationHistoryPending", "No governed violation-history source yet.", "لا يوجد مصدر معتمد لسجل المخالفات بعد."),
+    violationHistoryPending: tr("field.fv.violationHistoryPending", "No violation history source yet.", "لا يوجد مصدر لسجل المخالفات بعد."),
     // Standalone visit-notes scaffold (in-memory only, not persisted).
     visitNotesTitle: tr("field.fv.visitNotesTitle", "Notes", "الملاحظات"),
     visitNoteLabel: tr("field.fv.visitNoteLabel", "Note detail", "تفاصيل الملاحظة"),
@@ -499,7 +499,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     keepMine: t("field.ws.keepMine", "Keep mine"),
     keepServer: t("field.ws.keepServer", "Keep server"),
     reviewTitle: t("field.ws.review.title", "Final review"),
-    reviewHint: t("field.ws.review.hint", "Review the complete inspection package before creating an immutable submitted version."),
+    reviewHint: t("field.ws.review.hint", "Review the whole inspection checklist before you create the final submitted version."),
     reviewAnswers: t("field.ws.review.answers", "Answers"),
     reviewEvidence: t("field.ws.review.evidence", "Evidence"),
     reviewViolations: t("field.ws.review.violations", "Violations"),
@@ -508,7 +508,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     reviewBack: t("field.ws.review.back", "Back to inspection"),
     reviewContinue: t("field.ws.review.continue", "Confirm and submit"),
     jumpToSection: t("field.ws.review.jump", "Go to section"),
-    declarationRequired: t("field.ws.review.declaration", "I confirm this inspection package is ready for final submission."),
+    declarationRequired: t("field.ws.review.declaration", "I confirm this inspection checklist is ready to submit."),
     conflictReview: tr("field.ws.conflictReview", "Review in section", "مراجعة في القسم"),
     recoveryAdvancedTitle: tr("field.ws.recovery.advancedTitle", "This inspection changed on the server", "تغيّرت هذه الزيارة على الخادم"),
     recoveryAdvancedBody: tr("field.ws.recovery.advancedBody", "A newer submitted version exists on the server, so this device now holds an older working copy. Submission is blocked to protect the submitted version — reload the latest before continuing.", "توجد نسخة مُرسَلة أحدث على الخادم، وبالتالي يحمل هذا الجهاز نسخة عمل أقدم. تم إيقاف الإرسال لحماية النسخة المُرسَلة — أعد تحميل الأحدث قبل المتابعة."),
@@ -553,7 +553,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     // every one of these renders nothing until the server has confirmed.
     completionVersionLabel: t("field.ws.completionVersionLabel", "Submission version"),
     completionCreatedTitle: t("field.ws.completionCreatedTitle", "What this submission created"),
-    completionCreatedVersion: t("field.ws.completionCreatedVersion", "An immutable submitted version — content can no longer be edited here."),
+    completionCreatedVersion: t("field.ws.completionCreatedVersion", "A final submitted version — you can't edit it here anymore."),
     completionCreatedAudit: t("field.ws.completionCreatedAudit", "A submission audit event recording the version and section count."),
     completionCreatedReview: t("field.ws.completionCreatedReview", "A review task for the reviewer — approve, return for correction, or reject."),
     completionIdempotency: t("field.ws.completionIdempotency", "Protected by an idempotency key — a retry can never create a second version."),
@@ -589,7 +589,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     cancelApprovedBody: t("field.ws.cancel.approvedBody", "This visit is cancelled and the workspace is now read-only. Everything captured is preserved for audit."),
     cancelRejected: t("field.ws.cancel.rejected", "Cancellation was rejected by Operations — the visit continues. Reason: {reason}"),
     cancelFailed: t("field.ws.cancel.failed", "The cancellation request could not be sent. Check the connection, then try again."),
-    cancelReasonsMissing: t("field.ws.cancel.reasonsMissing", "Cancellation reasons unavailable — engine_settings.field not seeded yet (0020 pending)."),
+    cancelReasonsMissing: t("field.ws.cancel.reasonsMissing", "Cancellation reasons aren't available right now."),
     enumLabels,
     // — Slice E2 runtime depth —
     progress: t("field.ws.progress", "{pct}% complete"),
@@ -617,7 +617,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     aiExplainTitle: t("field.ws.aiExplain.title", "Explain this requirement"),
     aiExplainDescription: t("field.ws.aiExplain.description", "Advisory only. Uses this locked item, its guidance and evidence rule; it never changes your answer or decision."),
     aiExplain: t("field.ws.aiExplain.generate", "Explain requirement"),
-    aiUnavailable: t("field.ws.aiExplain.unavailable", "AI explanation unavailable"),
+    aiUnavailable: t("field.ws.aiExplain.unavailable", "AI explanation not available"),
     aiEvidence: t("field.ws.aiExplain.evidence", "Source references"),
     aiAdvisory: t("field.ws.aiExplain.advisory", "Human decision required"),
     noteLabel: t("field.ws.note.label", "Inspector note"),
@@ -668,7 +668,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     vioLevel: t("field.ws.vio.level", "Severity {level}"),
     vioAction: t("field.ws.vio.action", "Corrective action: {status}"),
     vioInvalidated: t("field.ws.vio.invalidated", "Invalidated — the answer changed back to compliant. Kept for audit; no penalty or action is due from this candidate."),
-    vioPenaltyConflict: t("field.ws.vio.penaltyConflict", "Penalty mapping unavailable — configuration conflict"),
+    vioPenaltyConflict: t("field.ws.vio.penaltyConflict", "Penalty mapping not available — settings conflict"),
     findingTitle: t("field.ws.finding.title", "Inspector finding"),
     findingNarrative: t("field.ws.finding.narrative", "Finding narrative"),
     findingPlaceholder: t("field.ws.finding.placeholder", "Describe what you observed and where. Do not propose a policy classification."),

@@ -12,8 +12,8 @@ export default function ReviewRecordError({
   return (
     <StateSurface
       kind="error"
-      title="Review record unavailable"
-      body={`No decision or workflow state was inferred.${error.digest ? ` Reference ${error.digest}.` : ""}`}
+      title="Review record not available"
+      body={`We could not tell the decision or workflow state.${error.digest ? ` Reference ${error.digest}.` : ""}`}
       action={<button className="btn btn-secondary" type="button" onClick={reset}>Try again</button>}
     />
   );

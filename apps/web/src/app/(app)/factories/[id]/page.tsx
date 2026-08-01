@@ -195,7 +195,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           yet (incident/challenge concepts don't exist — see reconciliation J-12/J-19);
           only wiring the one real, existing action rather than fabricating dead links. */}
       <div className="sq-row">
-        {permissions["create_inspection"] && <a className="sq-btn sq-btn--secondary" href={`/planning/single?factory=${f.id}&cr=${encodeURIComponent(f.cr_number ?? "")}&license=${encodeURIComponent(f.license_number ?? "")}&source=factory360`}>{t("f360.actions.planSingle", "Plan single visit")}</a>}
+        {permissions["create_inspection"] && <a className="sq-btn sq-btn--secondary" href={`/planning/single?factory=${f.id}&cr=${encodeURIComponent(f.cr_number ?? "")}&license=${encodeURIComponent(f.license_number ?? "")}&source=factory360`}>{t("f360.actions.planSingle", "Plan one visit")}</a>}
         {permissions["create_inspection"] && <a className="sq-btn sq-btn--secondary" href={`/planning/immediate?factory=${f.id}`}>{t("f360.actions.startPlan", "Start inspection plan")}</a>}
         {permissions["create_inspection"] && <span className="sq-caption" role="status">{t("f360.actions.supervisionRequired", "Every plan is submitted to a Supervisor, who confirms the final Inspector before release.")}</span>}
       </div>
@@ -329,7 +329,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                       <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-visit">◉</span><span className="cd-tl__line" /></span>
                       <div className="cd-tl__card">
                         <div className="cd-tl__head"><span className="cd-tl__kind">{enumLabel(v.visit_type)}</span><span className="cd-tl__title">{t("f360.hist.th.visit", "Visit")} <a className="sq-link" href={`/visits/${v.id}`}>{v.id.slice(0, 8)}</a></span></div>
-                        <p className="cd-tl__src">{t("f360.tl.planning", "planning")} {enumLabel(v.planning_status)} · {t("f360.tl.operational", "operational")} {enumLabel(v.operational_state)}</p>
+                        <p className="cd-tl__src">{t("f360.tl.planning", "planning")} {enumLabel(v.planning_status)} · {t("f360.tl.operational", "visit status")} {enumLabel(v.operational_state)}</p>
                         {ins && (
                           <>
                             <p className="cd-tl__src">{t("f360.hist.th.inspection", "Inspection")} {enumLabel(ins.status)}
@@ -389,7 +389,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                 <p className="sq-caption">{t("f360.hist.empty.desc", "History appears once visits are planned and executed.")}</p></div>
             ) : (
               <div className="sq-tablewrap"><table className="sq-table">
-                <thead><tr><th scope="col">{t("f360.hist.th.visit", "Visit")}</th><th scope="col" className="sq-td-num">{t("f360.hist.th.window", "Window")}</th><th scope="col">{t("f360.hist.th.planning", "Planning")}</th><th scope="col">{t("f360.hist.th.operational", "Operational")}</th><th scope="col">{t("f360.hist.th.inspection", "Inspection")}</th><th scope="col">{t("f360.hist.th.versions", "Versions")}</th><th scope="col">{t("f360.hist.th.violations", "Violations")}</th><th scope="col">{t("f360.hist.th.actions", "Actions")}</th><th scope="col">{t("f360.hist.th.review", "Review")}</th></tr></thead>
+                <thead><tr><th scope="col">{t("f360.hist.th.visit", "Visit")}</th><th scope="col" className="sq-td-num">{t("f360.hist.th.window", "Window")}</th><th scope="col">{t("f360.hist.th.planning", "Planning")}</th><th scope="col">{t("f360.hist.th.operational", "Visit status")}</th><th scope="col">{t("f360.hist.th.inspection", "Inspection")}</th><th scope="col">{t("f360.hist.th.versions", "Versions")}</th><th scope="col">{t("f360.hist.th.violations", "Violations")}</th><th scope="col">{t("f360.hist.th.actions", "Actions")}</th><th scope="col">{t("f360.hist.th.review", "Review")}</th></tr></thead>
                 <tbody>
                   {sortedVisits.map(v => {
                     const ins = v.inspections;

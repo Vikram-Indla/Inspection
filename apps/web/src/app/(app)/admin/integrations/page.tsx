@@ -31,22 +31,22 @@ export default async function IntegrationsPage() {
   const configuredEndpoints = endpoints.filter(row => row.status === "configured").length;
   const drawerLabels = createAdminRecordDrawerLabels(t, locale);
   const integrationGovernance = [
-    t("admin.revamp.integration.governance.truth", copy("Configuration, connectivity and delivery are distinct truth states.", "التهيئة والاتصال والتسليم حالات حقيقة منفصلة.")),
-    t("admin.revamp.integration.governance.secrets", copy("Secrets are never rendered; only governed contract and runtime state is shown.", "لا تُعرض الأسرار؛ ويُعرض فقط العقد المحكوم وحالة التشغيل.")),
-    t("admin.revamp.integration.governance.degrade", copy("Unavailable providers fail closed and dependent features disclose the boundary.", "تفشل الجهات المزودة غير المتاحة بأمان وتوضح الميزات المعتمدة عليها هذا الحد.")),
+    t("admin.revamp.integration.governance.truth", copy("Configuration, connectivity and delivery are different truth states.", "الإعداد والاتصال والتسليم حالات حقيقة منفصلة.")),
+    t("admin.revamp.integration.governance.secrets", copy("Secrets are never shown; only the approved contract and runtime state are shown.", "لا تُعرض الأسرار؛ ويُعرض فقط العقد المعتمد وحالة التشغيل.")),
+    t("admin.revamp.integration.governance.degrade", copy("Providers that aren't available are blocked safely, and features that depend on them show this limit.", "الجهات المزودة غير المتاحة تُمنع بأمان، وتوضح الميزات المعتمدة عليها هذا الحد.")),
   ];
   const endpointEditUnavailable = t(
     "admin.recordDrawer.integration.editUnavailable",
     copy(
-      "The endpoint registry has no governed edit workflow on this route. Connection-specific data actions remain on their authorized destinations.",
-      "لا يوفّر سجل نقاط التكامل مسار تعديل محكوماً في هذه الوجهة. تبقى إجراءات البيانات الخاصة بكل اتصال في وجهاتها المصرّح بها.",
+      "The endpoint registry has no approved edit workflow on this route. Connection-specific data actions stay on their approved destinations.",
+      "لا يوفّر سجل نقاط التكامل مسار تعديل معتمداً في هذه الوجهة. تبقى إجراءات البيانات الخاصة بكل اتصال في وجهاتها المصرّح بها.",
     ),
   );
 
   return (
     <AdminDestinationFrame
       current="/admin/integrations"
-      title={t("admin.revamp.integration.title", copy("Integration Management", "إدارة التكاملات"))}
+      title={t("admin.revamp.integration.title", copy("System Connections", "اتصالات النظام"))}
       subtitle={t("admin.revamp.integration.subtitle", copy("External data sources and connected systems", "مصادر البيانات الخارجية والأنظمة المتصلة"))}
       hub={t("admin.revamp.hub.connections", copy("Connections & geography", "التكاملات والجغرافيا"))}
       routeLabel="/admin/integrations"
@@ -62,7 +62,7 @@ export default async function IntegrationsPage() {
         {
           label: t("admin.revamp.integration.metric.registered", copy("Registered endpoints", "نقاط التكامل المسجلة")),
           value: endpointsRead.error ? notConfigured : endpoints.length,
-          note: t("admin.revamp.integration.metric.registered.note", copy("Read from the governed endpoint registry", "مقروءة من سجل نقاط التكامل المحكوم")),
+          note: t("admin.revamp.integration.metric.registered.note", copy("Read from the endpoint registry", "مقروءة من سجل نقاط التكامل")),
         },
         {
           label: t("admin.revamp.integration.metric.configured", copy("Configured endpoints", "نقاط التكامل المهيّأة")),
@@ -82,7 +82,7 @@ export default async function IntegrationsPage() {
         { label: t("admin.revamp.integration.tabs.history", copy("Sync history", "سجل المزامنة")), href: "/admin/integrations#integration-events" },
       ]}
       governance={integrationGovernance}
-      reconstructionNote={t("admin.revamp.integration.note", copy("Prototype provider names, sync times and health labels are not copied. The register, event stream and export jobs below are RLS-scoped backend reads; missing tables or rows remain unavailable or verified-empty states.", "لا تُنسخ أسماء الجهات المزودة أو أوقات المزامنة أو تسميات الصحة النموذجية. سجل التكامل وتدفق الأحداث ومهام التصدير أدناه قراءات خلفية محكومة بأمن الصفوف؛ وتبقى الجداول أو الصفوف المفقودة حالات غير متاحة أو فارغة تم التحقق منها."))}
+      reconstructionNote={t("admin.revamp.integration.note", copy("Prototype provider names, sync times and health labels are not copied. The register, event stream and export jobs below are backend reads limited to what you're allowed to see; missing tables or rows show as not available or as a checked, empty state.", "لا تُنسخ أسماء الجهات المزودة أو أوقات المزامنة أو تسميات الصحة النموذجية. سجل التكامل وتدفق الأحداث ومهام التصدير أدناه قراءات خلفية تقتصر على ما يُسمح لك برؤيته؛ وتظهر الجداول أو الصفوف المفقودة كحالة غير متاحة أو حالة فارغة تم التحقق منها."))}
       context={<span className="badge badge-info">M3-00</span>}
     >
       <div className="alert"><div><strong>{t("mvp3.integrations.truth", "Configuration is not connectivity.")}</strong> {t("mvp3.integrations.truthBody", "An endpoint becomes configured only with an approved contract and runtime address. Secrets are never displayed here.")}</div></div>
@@ -91,7 +91,7 @@ export default async function IntegrationsPage() {
         <Link className="btn btn-secondary btn-touch" href="/admin/integrations/factory-data">{t("mvp3.integrations.factoryData", "Factory data integration and import")}</Link>
       </div>
       <section className="panel stack" style={{ padding: "var(--space-6)" }} aria-labelledby="integration-registry">
-        <div className="row" style={{ justifyContent: "space-between" }}><div><h3 id="integration-registry">{t("mvp3.integrations.registry", "Governed endpoint registry")}</h3><p className="t-caption">{t("mvp3.integrations.registryHelp", "Contract version, runtime state and dependency truth—not secret material.")}</p></div><span className="badge">{(endpoints ?? []).length} endpoints</span></div>
+        <div className="row" style={{ justifyContent: "space-between" }}><div><h3 id="integration-registry">{t("mvp3.integrations.registry", "Endpoint registry")}</h3><p className="t-caption">{t("mvp3.integrations.registryHelp", "Contract version, runtime state and dependency truth—not secret material.")}</p></div><span className="badge">{(endpoints ?? []).length} endpoints</span></div>
         {endpointsRead.error ? <div className="alert alert-warning" role="alert">{t("mvp3.integrations.registryError", "The endpoint registry could not be read. Event and export data below may still be available.")}</div> : null}
         <div className="table-wrap"><table className="table"><thead><tr><th scope="col">{t("common.name", "Name")}</th><th scope="col">{t("common.type", "Type")}</th><th scope="col">{t("common.version", "Contract")}</th><th scope="col">{t("common.status", "Truth status")}</th></tr></thead><tbody>
           {endpoints.map(row => {
@@ -126,12 +126,12 @@ export default async function IntegrationsPage() {
               </AdminRecordTableRow>
             );
           })}
-          {!endpointsRead.error && endpoints.length === 0 ? <tr><td colSpan={4}>{t("mvp3.integrations.empty", "No endpoints are registered. This is a verified empty read.")}</td></tr> : null}
+          {!endpointsRead.error && endpoints.length === 0 ? <tr><td colSpan={4}>{t("mvp3.integrations.empty", "No endpoints are registered. This is a checked, empty result.")}</td></tr> : null}
         </tbody></table></div>
       </section>
       <div className="sq-grid" id="integration-events" style={{ marginBlockStart: "var(--space-4)" }}>
-        <section className="panel stack" style={{ padding: "var(--space-6)", minWidth: 0 }}><h3>{t("mvp3.integrations.events", "API and rule events")}</h3><p className="t-caption">{t("mvp3.integrations.eventsHelp", "Append-only outcomes linked by correlation ID.")}</p>{eventsRead.error ? <div className="alert alert-warning" role="alert">{t("mvp3.integrations.eventsError", "API events could not be read. This is unavailable data, not an empty event history.")}</div> : null}{events.slice(0, 8).map(e => <div className="row" key={e.id} style={{ justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", overflowWrap: "anywhere" }}><span><strong>{kindLabel(e.event_kind)}</strong><small className="t-caption"> · {kindLabel(e.direction)}</small><small className="t-caption" style={{ display: "block" }}><bdi dir="ltr">{e.event_kind}</bdi> · <bdi dir="ltr">{e.direction}</bdi> · <time dateTime={e.occurred_at}>{new Date(e.occurred_at).toLocaleString()}</time></small></span><span><span className="badge">{statusLabel(e.outcome)}</span><small className="t-caption" style={{ display: "block" }}><bdi dir="ltr">{e.outcome}</bdi></small></span></div>)}{!eventsRead.error && events.length === 0 ? <p className="t-caption">{t("mvp3.integrations.noEvents", "No RLS-visible events. This is a verified empty read.")}</p> : null}</section>
-        <section className="panel stack" style={{ padding: "var(--space-6)", minWidth: 0 }}><h3>{t("mvp3.integrations.exports", "Data-sharing exports")}</h3><p className="t-caption">{t("mvp3.integrations.exportsHelp", "Prepared is not delivered. Delivery requires an artifact hash and receipt.")}</p>{exportsRead.error ? <div className="alert alert-warning" role="alert">{t("mvp3.integrations.exportsError", "Export jobs could not be read. This is unavailable data, not an empty export history.")}</div> : null}{exports.slice(0, 8).map(e => <div className="row" key={e.id} style={{ justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", overflowWrap: "anywhere" }}><span><strong>{kindLabel(e.export_kind)}</strong><small className="t-caption"> · {e.purpose}</small><small className="t-caption" style={{ display: "block" }}><bdi dir="ltr">{e.export_kind}</bdi> · <time dateTime={e.requested_at}>{new Date(e.requested_at).toLocaleString()}</time></small></span><span><span className="badge">{statusLabel(e.status)}</span><small className="t-caption" style={{ display: "block" }}><bdi dir="ltr">{e.status}</bdi></small></span></div>)}{!exportsRead.error && exports.length === 0 ? <p className="t-caption">{t("mvp3.integrations.noExports", "No RLS-visible export jobs. This is a verified empty read.")}</p> : null}</section>
+        <section className="panel stack" style={{ padding: "var(--space-6)", minWidth: 0 }}><h3>{t("mvp3.integrations.events", "API and rule events")}</h3><p className="t-caption">{t("mvp3.integrations.eventsHelp", "Append-only outcomes linked by correlation ID.")}</p>{eventsRead.error ? <div className="alert alert-warning" role="alert">{t("mvp3.integrations.eventsError", "API events could not be read. This is data that's not available, not an empty event history.")}</div> : null}{events.slice(0, 8).map(e => <div className="row" key={e.id} style={{ justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", overflowWrap: "anywhere" }}><span><strong>{kindLabel(e.event_kind)}</strong><small className="t-caption"> · {kindLabel(e.direction)}</small><small className="t-caption" style={{ display: "block" }}><bdi dir="ltr">{e.event_kind}</bdi> · <bdi dir="ltr">{e.direction}</bdi> · <time dateTime={e.occurred_at}>{new Date(e.occurred_at).toLocaleString()}</time></small></span><span><span className="badge">{statusLabel(e.outcome)}</span><small className="t-caption" style={{ display: "block" }}><bdi dir="ltr">{e.outcome}</bdi></small></span></div>)}{!eventsRead.error && events.length === 0 ? <p className="t-caption">{t("mvp3.integrations.noEvents", "No events visible to you. This is a checked, empty result.")}</p> : null}</section>
+        <section className="panel stack" style={{ padding: "var(--space-6)", minWidth: 0 }}><h3>{t("mvp3.integrations.exports", "Data-sharing exports")}</h3><p className="t-caption">{t("mvp3.integrations.exportsHelp", "Prepared is not delivered. Delivery requires an artifact hash and receipt.")}</p>{exportsRead.error ? <div className="alert alert-warning" role="alert">{t("mvp3.integrations.exportsError", "Export jobs could not be read. This is data that's not available, not an empty export history.")}</div> : null}{exports.slice(0, 8).map(e => <div className="row" key={e.id} style={{ justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", overflowWrap: "anywhere" }}><span><strong>{kindLabel(e.export_kind)}</strong><small className="t-caption"> · {e.purpose}</small><small className="t-caption" style={{ display: "block" }}><bdi dir="ltr">{e.export_kind}</bdi> · <time dateTime={e.requested_at}>{new Date(e.requested_at).toLocaleString()}</time></small></span><span><span className="badge">{statusLabel(e.status)}</span><small className="t-caption" style={{ display: "block" }}><bdi dir="ltr">{e.status}</bdi></small></span></div>)}{!exportsRead.error && exports.length === 0 ? <p className="t-caption">{t("mvp3.integrations.noExports", "No export jobs visible to you. This is a checked, empty result.")}</p> : null}</section>
       </div>
     </AdminDestinationFrame>
   );

@@ -43,7 +43,7 @@ export default async function GisStudioPage() {
     noResults: t("gis.count.noResults", "No factories match the current filters."),
     noCoords: t("gis.count.noCoords", "without coordinates (table only)"),
     selectTitle: t("gis.select.title", "Select a factory pin"),
-    selectBody: t("gis.select.body", "Click any pin to review its official coordinates and govern its geofence radius (SB20)."),
+    selectBody: t("gis.select.body", "Click any pin to see its official coordinates and set its geofence radius (SB20)."),
     coordsLabel: t("gis.coords.label", "Official coordinates (GIS-Admin-owned, FND-007)"),
     coordsCaption: t("gis.coords.caption", "Field observation never overwrites the official pin."),
     radiusLabel: t("gis.radius.label", "Geofence radius (m) — SB20"),
@@ -74,17 +74,17 @@ export default async function GisStudioPage() {
     <Shell current="/admin/gis" title={t("gis.title", "GIS Studio — geofencing")}
       context={<><span className="badge badge-info">SCR-ADM-070 · ENG-06 · SB20</span><span className="id-code">{engRes.data?.version_label}</span></>}>
       <div className="stack" style={{ gap: "var(--space-6)" }}>
-        <div className="alert"><div><strong>{t("gis.banner.title", "GIS Studio.")}</strong> {t("gis.banner.body", "These governed values stamp every geo event (config version recorded with each check-in — EV-005). Official coordinates remain GIS-Admin-owned; field observation never overwrites them (FND-007). Per-factory geofence radii (SB20) are edited on the map below.")}</div></div>
+        <div className="alert"><div><strong>{t("gis.banner.title", "GIS Studio.")}</strong> {t("gis.banner.body", "These values are stamped on every geo event (the settings version is recorded with each check-in — EV-005). Official coordinates stay owned by GIS Admin; field observations never overwrite them (FND-007). Per-factory geofence radii (SB20) are edited on the map below.")}</div></div>
 
         {err && (
           <div className="alert alert-critical" role="alert">
-            <div><strong>{t("gis.error.title", "GIS data unavailable.")}</strong> {t("gis.error.body", NEUTRAL_LOAD_ERROR)}</div>
+            <div><strong>{t("gis.error.title", "GIS data not available.")}</strong> {t("gis.error.body", NEUTRAL_LOAD_ERROR)}</div>
           </div>
         )}
 
         {!err && factories.length === 0 && (
           <EmptyState glyph="◎" title={t("gis.empty.title", "No factories registered")}
-            body={t("gis.empty.body", "The factory registry is empty — geofences appear here once factories are synced (FND-007).")} />
+            body={t("gis.empty.body", "The Factory list is empty — geofences appear here once factories are synced (FND-007).")} />
         )}
 
         {!err && factories.length > 0 && (
