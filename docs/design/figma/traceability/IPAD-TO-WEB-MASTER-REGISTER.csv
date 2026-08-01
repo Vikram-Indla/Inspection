@@ -1,0 +1,45 @@
+source_item,source_kind,classification,web_figma_node,journey,persona,repo_route,route_decision,jira,responsive_states
+Establishment Details (75),page,MIGRATE,364:45987,Establishment file,Inspector,/field/establishments (read view),PENDING — source models a 9-tab dossier; repo splits list and Factory 360,INSP-588,1280/1024/834/680 clean
+Establishment Management (27),page,MIGRATE,366:43609,Establishment file — edit,Inspector,/field/establishments,PENDING — edit view has no distinct repo route,INSP-588,1280/1024/834/680 clean
+Summons Notice (47),page,MIGRATE,340:42098,Records flow,Inspector,/field/summons-notices,PENDING — one flow with 8 record types vs 5 separate repo routes,INSP-558,1280/1024/834/680 clean
+Non-Compliant Products Destruction (14),page,MIGRATE,366:44093,Records flow — destruction,Inspector,/field/destruction-reports,PENDING — record type in the flow above,INSP-578,1280/1024/834/680 clean
+Incident Report (4),page,MIGRATE,366:44012,Records flow — incident,Inspector,/field/incident-reports,PENDING — record type in the flow above,INSP-563,1280/1024/834/680 clean
+Violation Report (8),page,MERGE,366:43890,Records flow — violation,Inspector,/field/inspection/[id]/results,"PENDING — capture in workspace, standalone view has no route",INSP-568,1280/1024/834/680 clean
+Production Line Report (16),page,MERGE,366:44226,Records flow — production line seizure,Inspector,NO ROUTE,PENDING — seizure types have no repo route at all,GAP — no story found,1280/1024/834/680 clean
+Inspection Items (23),page,MIGRATE,366:43758,Item list,Inspector,/field/inspection/[id],KEEP,INSP-536 / 538 / 543,1280/1024/834/680 clean
+My Tasks (41),page,MERGE,"345:42242 (SCR-FLD-600, other workstream)",Assigned visits,Inspector,/field/my-tasks,KEEP,GAP — no story found,governed elsewhere
+Modal (24),form,REUSABLE COMPONENT,349:252 Dialog (5 kinds),cross-journey,Inspector,cross-route,KEEP,n/a,560/480/360 clean
+Actions (3),form,REUSABLE COMPONENT,344:156 ActionMenu (3 variants),cross-journey,Inspector,cross-route,KEEP,n/a,hug — no reflow
+Overlay - Alerts (2),component,REUSABLE COMPONENT,11:43 Alert (pre-existing),cross-journey,Inspector,cross-route,KEEP,n/a,FILL
+Login (5),page,REFERENCE-ONLY,n/a — not delivered,Sign in,Inspector,/login/field,SETTLED — web login governed by DEC-011,n/a,n/a — not delivered
+Top Bar (1 frame + 2 defs),component,REFERENCE-ONLY,n/a — not delivered,chrome,Inspector,n/a,SETTLED — web App topbar 20:172 collapses responsively,n/a,n/a — not delivered
+Home Screen - iPad (1),page,OBSOLETE,n/a — not delivered,n/a,n/a,n/a,"SETTLED — it is the iPadOS springboard, not a product surface",n/a,n/a — not delivered
+Frame 1984078725 (2),page,OBSOLETE,n/a — not delivered,n/a,n/a,n/a,SETTLED — annotation strip,n/a,n/a — not delivered
+Frame 1984078759 (1),page,OBSOLETE,n/a — not delivered,n/a,n/a,n/a,SETTLED — canvas banner,n/a,n/a — not delivered
+Content (1),page,OBSOLETE,n/a — not delivered,n/a,n/a,n/a,SETTLED — filter-panel fragment,n/a,n/a — not delivered
+"Questions + Questions New x4 + Questions New selection (6 defs, 21 variants)",component,MERGE,317:137 ChecklistQuestion (5 variants),Item list,Inspector,/field/inspection/[id],KEEP,INSP-536/538/543,1280/1024/834/680 clean
+Answer Bar / Answa / Answa 2 (3 defs),component,MERGE,318:107 AnswerBar (4 variants),Item list,Inspector,/field/inspection/[id],KEEP,INSP-536/538/543,1280/1024/834/680 clean
+Media Minis (8 variants),component,MERGE,318:118 MediaThumb (4 variants),Evidence,Inspector,/field/inspection/[id],KEEP,GAP,1280/1024/834/680 clean
+Multi Media Uploader (3) + Photos (1),component,MERGE,318:138 EvidenceAttachment (3 variants),Evidence,Inspector,/field/inspection/[id],KEEP,GAP,1280/1024/834/680 clean
+Mic Button (2 variants),component,MIGRATE,318:125 MicButton (3 variants),Item list,Inspector,/field/inspection/[id],KEEP,GAP,1280/1024/834/680 clean
+Checking list x2 (7 variants),component,MIGRATE,319:164 DataChecklist + 319:84 Row,Establishment file,Inspector,/field/establishments,PENDING,INSP-588,1280/1024/834/680 clean
+Location Verification (2 variants),component,MIGRATE,319:193 LocationVerification (2),Journey / arrival,Inspector,/field/[visitId]/travel,KEEP,INSP-599,1280/1024/834/680 clean
+Task Card / Task Card2 / Task Cards / Map Task Card (5 defs),component,MERGE,164:88 InspectionCard (8 variants),Assigned visits / map,Inspector,"/field/my-tasks, /field/map",KEEP,GAP,1280/1024/834/680 clean
+Factory Details (8) + Factory Detail Table Atom (15),component,MERGE,356:42542 + regions 167:78xx,Factory 360,Inspector,/field/factory-360/[id],KEEP — shared capability,INSP-617/622/628,1280/1024/834/680 clean
+Big Map (3) + Location Pin (5),component,MERGE,176:100 GeoWorkspace + 15:23 map-marker,Task map,Inspector,/field/map,KEEP,GAP,1280/1024/834/680 clean
+Tabs (4 variants),component,MERGE,72:6736 filter-chip strip,cross-journey,Inspector,cross-route,KEEP,n/a,component-level
+Task Chips (3 variants),component,REUSABLE COMPONENT,72:6736 filter-chip (pre-existing),cross-journey,Inspector,cross-route,KEEP,n/a,component-level
+Progress Status (1),component,REUSABLE COMPONENT,15:27 steps / 15:26 progress,cross-journey,Inspector,cross-route,KEEP,n/a,component-level
+Contact Person Info Mobile (1),component,MERGE,171:28 Field + 9:66 Input,Establishment file,Inspector,/field/establishments,PENDING,INSP-588,1280/1024/834/680 clean
+Summons/Violation/Incident/Sample/Facility/NCPD report defs (30 defs),component,OBSOLETE — duplicates,collapsed into the records flow,Records flow,Inspector,/field/summons-notices,PENDING,INSP-558/563/568/573/578/583,component-level
+Frame 1984078811 / 1984078775 / 1984078776 (3 defs),component,OBSOLETE,n/a — not delivered,n/a,Inspector,n/a,SETTLED — auto-named,n/a,component-level
+Task Cards Test (1),component,OBSOLETE,n/a — not delivered,n/a,Inspector,n/a,SETTLED — test artefact,n/a,component-level
+SCR-IPAD-600 state frames (3),state,REFERENCE-ONLY,311:41750 (reference),Assigned visits,Inspector,/field/my-tasks,PENDING — state names are input to canonical Web states,GAP,reference — 834 only
+SCR-IPAD-610 state frames (4),state,REFERENCE-ONLY,311:41750 (reference),Startup pack,Inspector,/field/[visitId],PENDING — state names are input to canonical Web states,GAP,reference — 834 only
+SCR-IPAD-620 state frames (4),state,REFERENCE-ONLY,311:41750 (reference),Journey,Inspector,/field/[visitId]/travel,PENDING — state names are input to canonical Web states,GAP,reference — 834 only
+SCR-IPAD-630 state frames (3),state,REFERENCE-ONLY,311:41750 (reference),Item list,Inspector,/field/inspection/[id],PENDING — state names are input to canonical Web states,GAP,reference — 834 only
+SCR-IPAD-640 state frames (4),state,REFERENCE-ONLY,311:41750 (reference),Evidence,Inspector,/field/inspection/[id],PENDING — state names are input to canonical Web states,GAP,reference — 834 only
+SCR-IPAD-650 state frames (3),state,REFERENCE-ONLY,311:41750 (reference),Findings,Inspector,/field/inspection/[id]/results,PENDING — state names are input to canonical Web states,GAP,reference — 834 only
+SCR-IPAD-660 state frames (3),state,REFERENCE-ONLY,311:41750 (reference),Pre-submit,Inspector,/field/inspection/[id]/statement,PENDING — state names are input to canonical Web states,GAP,reference — 834 only
+SCR-IPAD-670 state frames (3),state,REFERENCE-ONLY,311:41750 (reference),Returned,Inspector,/field/drafts,PENDING — state names are input to canonical Web states,GAP,reference — 834 only
+Establishments states (3),state,MIGRATE,338:41915 / 338:41966 / 338:42016,Establishment list,Inspector,/field/establishments,KEEP,INSP-588,1280/1024/834/680 clean
