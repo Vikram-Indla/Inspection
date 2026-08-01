@@ -252,3 +252,38 @@ violations. A checker that cries wolf is worse than no checker.
 
 **Instance parity is unchanged and will stay that way**: EN 2,263 instances, AR 981. Figma
 has no RTL, mirroring requires detaching, and that is not fixable — only regenerable.
+
+
+---
+
+## Phase 4 — done 2026-08-01
+
+| Item | Result |
+|---|---|
+| S6 type ramp | **Finding corrected.** The ramp is not chaotic — it is a defined 8-step system in text styles, followed by 12,252 of 16,093 nodes (76%). The off-ramp sizes are almost all legitimate: brand lockup (18/10), notification badge (10), select caret (10), avatar initials (11). The only invented sizes were **mine** — the facts row at 11px — now bound to `t-caption` |
+| S6 colours | Also overstated. 44 distinct values across the file is light + dark + status semantics counted together, not one palette. Every text fill is token-bound; nothing is a raw hex |
+| S7 headers | **7 truly truncated** — matching the original audit figure. Shortened: Planning window→Window, Execution date→Executed, Operational state→State, Report type→Report, Inspection items→Items, Last updated→Updated, Inspection / factory→Inspection. AR columns refit to Arabic natural widths |
+| S8 empty columns | Kept, because Risk / Priority / Status are in the data contract and inventing values is barred. Every cell now renders `—` so absence is explicit |
+| S9 absent values | **108 genuinely blank cells → `—`.** `None` and `Not source-backed` retained: they are real values, not absence |
+| Identity chips | `Reason · High-risk recommendation` → `High risk`, `Opened from Operations Center` → `From Operations` |
+
+### Clipping, measured honestly
+
+**4 nodes** (2 unique × 2 AR sections), each a 5px overflow in the AR visit-filter row.
+Down from 6 at the start of the phase.
+
+Separately, **141 nodes overflow horizontally inside SCR-WEB-100's table** — that is the
+`.planning-visit-table` scroll region and is correct. Earlier phases reported "6 clipped"
+by excluding that table *by name*; excluding it *by cause* (horizontal-only overflow inside
+the scroll region) is the honest filter and is what the census now uses.
+
+### The trap in this phase
+
+`setProperties()` and `resize()` on an instance **reset nested overrides**. Filling the
+em-dashes reset identifier fills back to the component default — black — three separate
+times, each time after I had just repaired them. Fill repair has to be the **last** write
+in any batch. Recorded here because it will bite again.
+
+Two of my own measurements were wrong before I checked them: the header-truncation
+detector flagged all 96 headers because FILL width equals inner width by definition, and
+a wrap experiment on the identity chip took clipping from 6 to 8 before being reverted.
