@@ -200,3 +200,55 @@ repo. Mapbox public tokens are designed for client-side use so this is not a pri
 leak, but an unrestricted `pk.` token can be used by anyone who finds it and billed to this
 account. Worth confirming it has URL restrictions set in the Mapbox dashboard. I did not
 use it — no request was made to Mapbox.
+
+
+---
+
+## Phase 3 — done 2026-08-01
+
+### S4 was real, and worse than the audit described
+
+The audit said the badge treatment was "swapped". The node trees are in fact **identical**
+between EN and AR — what diverged was which node held which value:
+
+| Node | EN | AR (before) |
+|---|---|---|
+| `id-code` | `INS-04412` | `مُسلَّم` |
+| `status-badge` | `Submitted` | `INS-04412` |
+| `score` / `fact` | 78.4% / 3 violations | 3 violations / 78.4% |
+
+The identifier was living inside the status badge, which is why the AR card showed a
+coloured ID pill while EN showed a neutral mono code. Every structural check passed
+because the structure was never wrong. **12 values transposed back** across both AR
+sections; the badge returned to `Status=Info` and the id node to mono.
+
+### Where AR stands now
+
+| | Before | After |
+|---|---|---|
+| Mixed-script visual rows | 223 / 701 (32%) | **130 / 645 (20%)** |
+| Identifiers in an Arabic face | 45 of 66 | **0 — all 66 mono** |
+| Identifiers inside a status badge | 3 | **0** |
+| Role-parity violations | not measured | **0 of 304 slots** |
+
+Identifiers are excluded from the mixed-row count now, correctly: `INS-04412` has no
+language, so a row containing one is not mixed script.
+
+The residual 20% is the **213 outstanding translations**, concentrated in Analytics,
+SCR-VIR-700/710/720 and SCR-WEB-200. That stays blocked on the Arabic reviewer — CLAUDE.md
+rule 8 keeps Arabic in the reviewed i18n layer.
+
+### The assertion that would have caught this
+
+`tooling/regenerate-ar-sections.js` now ends with a role-parity check: for every node name
+that occurs **once** in a frame, the *kind* of its content — identifier, number, arabic,
+latin, empty — must match between EN and AR, with latin↔arabic the only allowed
+difference.
+
+The first version paired every node by index and reported **210 violations, all false** —
+table cells legitimately reorder under RTL, so index *n* in EN is a different cell from
+index *n* in AR. Restricted to uniquely-named semantic slots it reports 304 checked, 0
+violations. A checker that cries wolf is worse than no checker.
+
+**Instance parity is unchanged and will stay that way**: EN 2,263 instances, AR 981. Figma
+has no RTL, mirroring requires detaching, and that is not fixable — only regenerable.

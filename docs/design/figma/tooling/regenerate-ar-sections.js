@@ -140,4 +140,64 @@ for (const frame of ar.children) {
   }
 }
 
+/* ROLE PARITY — the assertion that would have caught the worst AR bug.
+ *
+ * On 2026-08-01 the AR review-queue card had the identifier sitting inside the status
+ * badge and the status sitting in the id node, with the two metrics also transposed. The
+ * node TREE was identical to EN, so every structural check passed. Only the content was
+ * in the wrong places, and no amount of counting nodes finds that.
+ *
+ * So assert on meaning: a node named `id-code` must hold an identifier in AR exactly as
+ * it does in EN. Compare EN and AR frame by frame, node name by node name. */
+const IDENTIFIER = /^[A-Z]{2,5}-\d{2,6}$/;
+const KIND = value => {
+  const v = String(value).trim();
+  if (!v) return 'empty';
+  if (IDENTIFIER.test(v)) return 'identifier';
+  if (/^[\d.,]+\s*%?$/.test(v)) return 'number';
+  if (/[؀-ۿ]/.test(v)) return 'arabic';
+  if (/[A-Za-z]/.test(v)) return 'latin';
+  return 'other';
+};
+
+// Latin and arabic are the expected difference between the two sections; anything else
+// changing kind means content moved between nodes.
+const EQUIVALENT = (a, b) =>
+  a === b || (a === 'latin' && b === 'arabic') || (a === 'arabic' && b === 'latin');
+
+/* Compare ONLY names that occur once in a frame. Those are semantic slots — `id-code`,
+ * `facility`, `score`. A name repeated across table rows (`cell-text`) is positional, and
+ * RTL legitimately reorders those, so pairing them by index compares different cells.
+ *
+ * Learned the hard way: the first version of this check did pair by index and reported
+ * 210 violations, every one of them an artifact of that reordering. A checker that cries
+ * wolf is worse than no checker, because the real signal drowns. */
+const collectUniqueSlots = frame => {
+  const all = {};
+  for (const t of frame.findAll(n => n.type === 'TEXT' && n.name)) {
+    (all[t.name] = all[t.name] || []).push(t);
+  }
+  const slots = {};
+  for (const name of Object.keys(all)) {
+    if (all[name].length === 1) slots[name] = KIND(all[name][0].characters);
+  }
+  return slots;
+};
+
+report.parity = { checked: 0, violations: [] };
+for (const enFrame of en.children) {
+  const base = enFrame.name.replace(' — EN · Light', '');
+  const arFrame = ar.children.find(f => f.name.replace(' — AR · RTL', '') === base);
+  if (!arFrame) continue;
+  const enSlots = collectUniqueSlots(enFrame), arSlots = collectUniqueSlots(arFrame);
+  for (const name of Object.keys(enSlots)) {
+    if (!(name in arSlots)) continue;
+    report.parity.checked++;
+    if (!EQUIVALENT(enSlots[name], arSlots[name])) {
+      report.parity.violations.push(
+        `${base.split(' — ')[0]} · "${name}" EN=${enSlots[name]} AR=${arSlots[name]}`);
+    }
+  }
+}
+
 return report;
