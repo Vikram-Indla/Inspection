@@ -162,9 +162,9 @@ export default async function ComplianceLibrary({
   return (
     <Shell current={routeBase} title="">
       <div className="sq-content stack" data-screen-id="CMP-S01">
-        <section className="panel" aria-label="Compliance library navigation">
+        <section className="panel" aria-label="Inspection Rules navigation">
           <div className="panel-header">
-            <strong className="panel-title">Compliance Library</strong>
+            <strong className="panel-title">Inspection Rules</strong>
             <span className="badge">{rows.length} regulations</span>
           </div>
           <div className="panel-body stack">
@@ -196,9 +196,9 @@ export default async function ComplianceLibrary({
 
         <main className="stack">
           {error ? (
-            <div className="sq-banner sq-banner--critical" role="alert"><strong>Compliance Library unavailable.</strong> The read failed; no empty result is claimed. Reference {correlationId}.</div>
+            <div className="sq-banner sq-banner--critical" role="alert"><strong>Inspection Rules unavailable.</strong> The read failed. No empty result is claimed. Reference {correlationId}.</div>
           ) : !selected ? (
-            <section className="sq-state"><h2>{hasFilters && rows.length > 0 ? "No regulations match the filters" : "No regulations in scope"}</h2><p>{hasFilters && rows.length > 0 ? "The regulation register is not empty. Clear or change the current filters." : "The RLS-scoped read succeeded and returned no regulations."}</p></section>
+            <section className="sq-state"><h2>{hasFilters && rows.length > 0 ? "No regulations match the filters" : "No regulations in scope"}</h2><p>{hasFilters && rows.length > 0 ? "The regulation list is not empty. Clear or change the current filters." : "No regulations were found for your access."}</p></section>
           ) : (
             <>
               <header className="panel">
@@ -208,7 +208,7 @@ export default async function ComplianceLibrary({
                     <h1><bdi dir="auto">{selected.title}</bdi></h1>
                   <p>Version {selected.version_label} · {selected.operational_status}</p>
                 </div>
-                  <a className="btn btn-secondary" href={`/admin/regulations?id=${selected.entity_id}`}>Open governed dossier</a>
+                  <a className="btn btn-secondary" href={`/admin/regulations?id=${selected.entity_id}`}>Open full record</a>
                 </div>
               </header>
               <section className="kpi-grid" aria-label="Regulation facts">
@@ -264,9 +264,9 @@ export default async function ComplianceLibrary({
                   </div>
                 </div>
                 <div className="panel-body stack">
-                  <div className="alert alert-immutable"><strong>Approved content — read only.</strong> Create and modify actions open a governed configuration request.</div>
+                  <div className="alert alert-immutable"><strong>Approved content — locked and cannot be edited here.</strong> To create or change it, open a configuration request.</div>
                   <LibraryTabs tabs={libraryTabs} panels={libraryPanels} />
-                  <div className="alert alert-immutable"><strong>Read-only presentation.</strong> Authoring and maker-checker publication remain in the governed dossier and its database guards.</div>
+                  <div className="alert alert-immutable"><strong>Read-only view.</strong> Authoring and maker-checker approval stay in the full record and its database checks.</div>
                 </div>
                 </section>
             </>

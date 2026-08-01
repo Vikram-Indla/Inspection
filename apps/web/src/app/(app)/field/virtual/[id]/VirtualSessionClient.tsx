@@ -144,7 +144,7 @@ export default function VirtualSessionClient({ session, locale, userId }: { sess
         {closed && (
           <div className={styles.bannerDone} role="status">
             <strong>{tx("Session closed", "الجلسة مغلقة")}</strong>
-            <span>{tx("Read-only — a closed session is immutable. The stored close reason is preserved.", "للقراءة فقط — الجلسة المغلقة غير قابلة للتعديل. يُحفظ سبب الإغلاق المخزن.")}</span>
+            <span>{tx("Read-only — this session is closed and can no longer be changed. The saved close reason stays visible.", "للقراءة فقط — هذه الجلسة مغلقة ولا يمكن تعديلها بعد الآن. يبقى سبب الإغلاق المحفوظ ظاهراً.")}</span>
           </div>
         )}
         {!online && (

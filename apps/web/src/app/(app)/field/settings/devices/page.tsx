@@ -89,8 +89,8 @@ export default async function FieldTrustedDevicesPage() {
 
     dtChecking: tr(
       "field.devices.dt.checking",
-      "Reading the RLS-scoped device register.",
-      "جارٍ قراءة سجل الأجهزة ضمن نطاق سياسة الوصول.",
+      "Reading the device list for your account.",
+      "جارٍ قراءة قائمة الأجهزة الخاصة بحسابك.",
     ),
     dtNotEnrolled: tr(
       "field.devices.dt.notEnrolled",

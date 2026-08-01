@@ -268,7 +268,7 @@ export default async function FieldEstablishments({ searchParams }: { searchPara
           <div style={{ padding: "28px 8px", textAlign: "center" }}>
             <div style={{ fontWeight: 600, marginBlockEnd: 6 }}>{tr("field.establishments.empty", "No establishments found", "لم يتم العثور على منشآت")}</div>
             <p className="t-caption" style={{ maxWidth: 420, margin: "0 auto" }}>
-              {tr("field.establishments.emptyBody", "Change or clear the search filters. Only records visible through RLS can appear here.", "غيّر مرشحات البحث أو امسحها. لا تظهر هنا إلا السجلات المتاحة عبر صلاحيات الصفوف.")}
+              {tr("field.establishments.emptyBody", "Change or clear the search filters. Only records you can access will show here.", "غيّر مرشحات البحث أو امسحها. لا تظهر هنا إلا السجلات التي تملك صلاحية الوصول إليها.")}
             </p>
           </div>
         )}

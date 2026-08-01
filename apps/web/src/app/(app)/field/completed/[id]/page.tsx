@@ -47,7 +47,7 @@ export default async function CompletedInspectionDetail({ params }: { params: Pr
     return (
       <>
         <FieldHeader leading={back} title={tr("field.completed.notFound", "Receipt unavailable", "الإيصال غير متاح")} langHref={langHref} langLabel={locale === "ar" ? "EN" : "AR"} />
-        <main className={styles.page}><div className="alert alert-critical" role="alert">{tr("field.completed.integrity", "This inspection is unavailable, outside your assignment scope, or has no immutable submitted version. No mutable record was substituted.", "عملية التفتيش غير متاحة أو خارج نطاق إسنادك أو لا تحتوي على إصدار مُقدّم غير قابل للتعديل. لم يتم استبدالها بسجل قابل للتعديل.")}</div></main>
+        <main className={styles.page}><div className="alert alert-critical" role="alert">{tr("field.completed.integrity", "This inspection is unavailable, outside your assignment scope, or has no final submitted version. No editable record was used instead.", "عملية التفتيش غير متاحة أو خارج نطاق إسنادك أو لا تحتوي على نسخة نهائية مُقدّمة. لم يتم استخدام سجل قابل للتعديل بدلاً منها.")}</div></main>
       </>
     );
   }
@@ -67,7 +67,7 @@ export default async function CompletedInspectionDetail({ params }: { params: Pr
     <>
       <FieldHeader leading={back} title={tr("field.completed.receipt", "Completion receipt", "إيصال الإكمال")} subtitle={completionReference(record)} langHref={langHref} langLabel={locale === "ar" ? "EN" : "AR"} />
       <main className={styles.page}>
-        <div className={styles.locked} role="status"><span aria-hidden="true">🔒</span><strong>{tr("field.completed.readOnly", "Locked immutable version — read-only", "إصدار مقفل غير قابل للتعديل — للقراءة فقط")}</strong></div>
+        <div className={styles.locked} role="status"><span aria-hidden="true">🔒</span><strong>{tr("field.completed.readOnly", "Locked final version — read-only", "نسخة نهائية مقفلة — للقراءة فقط")}</strong></div>
         <section className="card" style={{ padding: 16 }}>
           <h1 style={{ margin: 0, fontSize: 19 }}><bdi>{record.factoryName}</bdi></h1>
           <dl style={{ display: "grid", gridTemplateColumns: "minmax(130px, .7fr) 1fr", gap: "9px 14px", marginBlockEnd: 0 }}>
@@ -90,7 +90,7 @@ export default async function CompletedInspectionDetail({ params }: { params: Pr
           {violations.length ? <ul>{violations.map((item, index) => <li key={`${item.code ?? "finding"}-${index}`}><strong>{item.code ?? tr("field.completed.finding", "Finding", "نتيجة")}</strong>{item.title ? ` — ${item.title}` : ""}{item.level ? ` · ${item.level}` : ""}</li>)}</ul> : <p className="t-caption">{tr("field.completed.noFindings", "No findings recorded in this submitted snapshot.", "لا توجد نتائج مسجلة في لقطة التسليم هذه.")}</p>}
           {evidence.length ? <ul>{evidence.map((item, index) => <li key={`${item.id ?? "evidence"}-${index}`}><bdi>{item.name ?? item.type ?? tr("field.completed.evidenceItem", "Evidence item", "عنصر دليل")}</bdi>{item.captured_at ? ` · ${dt(item.captured_at)}` : ""}{item.sha256 ? <div className="t-caption id-code">SHA-256 {item.sha256}</div> : null}</li>)}</ul> : <p className="t-caption">{tr("field.completed.noEvidenceManifest", "No evidence manifest entries are present in this submitted snapshot.", "لا توجد عناصر بيان أدلة في لقطة التسليم هذه.")}</p>}
         </section>
-        <p className="t-caption">{tr("field.completed.lineage", "immutable submission snapshot", "لقطة تسليم غير قابلة للتعديل")}</p>
+        <p className="t-caption">{tr("field.completed.lineage", "final submitted snapshot", "لقطة نهائية مقدَّمة")}</p>
       </main>
     </>
   );

@@ -436,7 +436,7 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
           {!selected ? (
             <div className={styles.empty}>
               <div className="panel-title">{tr("field.myTasks.selectPrompt", "Select a task", "اختر مهمة")}</div>
-              <p className="t-caption">{tr("field.myTasks.selectBody", "Pick a task from the list to see the establishment dossier.", "اختر مهمة من القائمة لعرض ملف المنشأة.")}</p>
+              <p className="t-caption">{tr("field.myTasks.selectBody", "Pick a task from the list to see the establishment record.", "اختر مهمة من القائمة لعرض ملف المنشأة.")}</p>
             </div>
           ) : (
             <>
@@ -453,7 +453,7 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
                   </div>
                   <p className="t-caption">{tr(
                     "field.myTasks.noDossier",
-                    "The full establishment dossier is unavailable until a commercial-registration/licence mapping exists for this factory, or Factory 360 access is granted.",
+                    "The full establishment record is unavailable until a commercial-registration/licence mapping exists for this factory, or Factory 360 access is granted.",
                     "ملف المنشأة الكامل غير متاح حتى يتوفر ربط بالسجل التجاري/الترخيص لهذا المصنع أو تُمنح صلاحية المصنع 360.",
                   )}</p>
                   <dl className={styles.row2}>

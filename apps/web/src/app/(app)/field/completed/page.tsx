@@ -73,7 +73,7 @@ export default async function CompletedInspectionsPage() {
       <FieldHeader
         leading={<Link href="/field" prefetch={false} className="btn btn-icon btn-ghost" aria-label={tr("common.back", "Back", "رجوع")}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" data-directional><path d="m15 18-6-6 6-6" /></svg></Link>}
         title={tr("field.completed.title", "Completed inspections", "عمليات التفتيش المكتملة")}
-        subtitle={tr("field.completed.subtitle", "Immutable submission history", "سجل التسليمات غير القابل للتعديل")}
+        subtitle={tr("field.completed.subtitle", "Final submitted report history", "سجل التقارير النهائية المقدمة")}
         langHref={langHref}
         langLabel={locale === "ar" ? "EN" : "AR"}
       />
