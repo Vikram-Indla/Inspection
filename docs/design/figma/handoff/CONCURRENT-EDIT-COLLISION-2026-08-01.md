@@ -74,3 +74,48 @@ register through four batches — appears to be **being answered by that agent's
 a governance ruling. If that rename is authoritative, the catalogue should be amended to match
 it. If it is not, it should be reverted. Right now the file and `screen_route_catalogue.csv`
 disagree, and the file changed without the catalogue changing.
+
+---
+
+## Update — the collision has spread to all three governed sections
+
+The original record said Dark and AR were intact. **They are not any more.**
+
+| Section | Node | Frames | Width | State |
+|---|---|--:|--:|---|
+| EN · Light | `305:40149` | 8 | **1024** | rebuilt |
+| EN · Dark | `310:40972` | 8 | **1024** | **rebuilt** |
+| AR · RTL | `312:42490` | 8 | **1024** | **rebuilt** |
+
+All three now carry the other agent's vocabulary — `Evidence Capture (embedded section —
+standalone-route decision pending)`, `Returned Correction (route decision pending — closest repo
+candidate /field/drafts, weak evidence)` — and the AR section has been retitled throughout
+(`مهامي`, `حزمة ما قبل التفتيش`, `الرحلة إلى الموقع`, `بنود التفتيش`, `مراجعة الأدلة`).
+
+**What survives of batches 02–03 in those sections:** exactly one instance of each component —
+`ChecklistQuestion` ×3, `MediaThumb` ×2, `AnswerBar`, `MicButton`, `FileUpload`,
+`LocationVerification`. The multi-state placements are gone, and **`DataChecklist` has no
+instances at all**.
+
+## What is unambiguously still mine
+
+| Area | Node | Contents |
+|---|---|---|
+| Component library | `158:2` | every component from batches 02, 04, 08 — intact |
+| Ungoverned EN · Light | `339:42098` | Establishments, Records |
+| Ungoverned EN · Dark | `342:42170` | Establishments, Records |
+| Ungoverned AR · RTL | `342:42171` | Establishments, Records |
+| States | `311:41750` | 3 Establishments states using `EstablishmentCard` |
+
+**I have stopped placing screen content in the governed sections entirely.** Two agents
+rebuilding the same eight frames from opposite ends produces churn, not progress.
+
+## The decision, restated and now more urgent
+
+It is no longer only about EN · Light. The question is which workstream owns the eight governed
+inspector contracts, and at which width. Their rebuild is **route-metadata-correct at 1024**;
+mine was **content-complete at 834 across three locales**. Both are real work, and merging them
+is one deliberate pass — not something either side should keep re-doing.
+
+The component library is the natural seam: it is shared, uncontested, and everything I have
+built since is reachable from it.
