@@ -166,9 +166,9 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     labelEn: "Compliance",
     labelAr: "الامتثال",
     items: [
-      { id: "compliance-library", labelKey: "shell.nav.complianceLibrary", labelEn: "Inspection Rules", labelAr: "قواعد التفتيش", href: "/admin/regulations", icon: "library", roles: allPresentationRoles, businessTab: "Inspection Rules", visibility: "business" },
-      { id: "approval-queue", labelKey: "shell.nav.approvalQueue", labelEn: "Awaiting Approval", labelAr: "بانتظار الاعتماد", href: "/admin/compliance-approvals", icon: "review", roles: allPresentationRoles, businessTab: "Awaiting Approval", visibility: "business" },
-      { id: "enforcement-library", labelKey: "shell.nav.enforcementLibrary", labelEn: "Violations & Penalties", labelAr: "المخالفات والعقوبات", href: "/admin/violations", icon: "enforcement", roles: allPresentationRoles, businessTab: "Violations & Penalties", visibility: "business" },
+      { id: "compliance-library", labelKey: "shell.nav.complianceLibrary", labelEn: "Compliance Library", labelAr: "مكتبة الامتثال", href: "/admin/regulations", icon: "library", roles: allPresentationRoles, businessTab: "Compliance Library", visibility: "business" },
+      { id: "approval-queue", labelKey: "shell.nav.approvalQueue", labelEn: "Approval Queue", labelAr: "قائمة انتظار الموافقات", href: "/admin/compliance-approvals", icon: "review", roles: allPresentationRoles, businessTab: "Approval Queue", visibility: "business" },
+      { id: "enforcement-library", labelKey: "shell.nav.enforcementLibrary", labelEn: "Enforcement Library", labelAr: "مكتبة الإنفاذ", href: "/admin/violations", icon: "enforcement", roles: allPresentationRoles, businessTab: "Enforcement Library", visibility: "business" },
     ],
   },
   {
@@ -187,11 +187,11 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     labelAr: "الإدارة",
     items: [
       { id: "adm-users", labelKey: "shell.nav.usersRoles", labelEn: "Users & Roles", labelAr: "المستخدمون والأدوار", href: "/admin/access", icon: "access", roles: allPresentationRoles, businessTab: "Users & Roles", visibility: "canonical-admin" },
-      { id: "adm-lookup", labelKey: "shell.nav.lookupManagement", labelEn: "Reference Lists", labelAr: "القوائم المرجعية", href: "/admin/localization", icon: "library", roles: allPresentationRoles, businessTab: "Reference Lists", visibility: "canonical-admin" },
-      { id: "adm-risk", labelKey: "shell.nav.riskConfiguration", labelEn: "Risk Settings", labelAr: "إعدادات المخاطر", href: "/admin/risk", icon: "risk", roles: allPresentationRoles, businessTab: "Risk Settings", visibility: "canonical-admin" },
-      { id: "adm-survey", labelKey: "shell.nav.surveyConfiguration", labelEn: "Inspection Forms", labelAr: "نماذج التفتيش", href: "/admin/packages", icon: "forms", roles: allPresentationRoles, businessTab: "Inspection Forms", visibility: "canonical-admin" },
-      { id: "adm-notif", labelKey: "shell.nav.notificationConfiguration", labelEn: "Notification Settings", labelAr: "إعدادات الإشعارات", href: "/admin/notifications", icon: "notify", roles: allPresentationRoles, businessTab: "Notification Settings", visibility: "canonical-admin" },
-      { id: "adm-integration", labelKey: "shell.nav.integrationManagement", labelEn: "System Connections", labelAr: "اتصالات النظام", href: "/admin/integrations", icon: "workflow", roles: allPresentationRoles, businessTab: "System Connections", visibility: "canonical-admin" },
+      { id: "adm-lookup", labelKey: "shell.nav.lookupManagement", labelEn: "Lookup Management", labelAr: "إدارة القوائم المرجعية", href: "/admin/localization", icon: "library", roles: allPresentationRoles, businessTab: "Lookup Management", visibility: "canonical-admin" },
+      { id: "adm-risk", labelKey: "shell.nav.riskConfiguration", labelEn: "Risk Configuration", labelAr: "تهيئة المخاطر", href: "/admin/risk", icon: "risk", roles: allPresentationRoles, businessTab: "Risk Configuration", visibility: "canonical-admin" },
+      { id: "adm-survey", labelKey: "shell.nav.surveyConfiguration", labelEn: "Survey Configuration", labelAr: "تهيئة الاستبيانات", href: "/admin/packages", icon: "forms", roles: allPresentationRoles, businessTab: "Survey Configuration", visibility: "canonical-admin" },
+      { id: "adm-notif", labelKey: "shell.nav.notificationConfiguration", labelEn: "Notification Configuration", labelAr: "تهيئة الإشعارات", href: "/admin/notifications", icon: "notify", roles: allPresentationRoles, businessTab: "Notification Configuration", visibility: "canonical-admin" },
+      { id: "adm-integration", labelKey: "shell.nav.integrationManagement", labelEn: "Integration Management", labelAr: "إدارة التكاملات", href: "/admin/integrations", icon: "workflow", roles: allPresentationRoles, businessTab: "Integration Management", visibility: "canonical-admin" },
     ],
   },
 ] as const;

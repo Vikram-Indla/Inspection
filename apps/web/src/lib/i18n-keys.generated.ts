@@ -22,7 +22,7 @@ export const KEYS: I18nKey[] = [
   { key: "nav.signout", en: "Sign out", context: "Shell: sign-out link at bottom of sidebar" },
   { key: "shell.nav.items", en: "Inspection Items", context: "Shell nav item -> /admin/items" },
   { key: "shell.nav.localization", en: "Language & Translations", context: "Shell nav item -> /admin/localization" },
-  { key: "shell.nav.audit", en: "Activity Log", context: "Shell nav item -> /admin/audit" },
+  { key: "shell.nav.audit", en: "Audit Trail", context: "Shell nav item -> /admin/audit" },
 
   // ---- landing.* — SCR-PUB-000 public marketing landing ----
   { key: "landing.nav.aria", en: "Marketing", context: "Landing: aria-label of top nav" },
