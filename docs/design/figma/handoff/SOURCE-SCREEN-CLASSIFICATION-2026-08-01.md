@@ -2,7 +2,10 @@
 
 Completes the audit. `SOURCE-COMPONENT-AUDIT-2026-08-01.md` classified the 61 definitions on
 the `⚙️ Components` page and explicitly did **not** cover the content pages. This document
-covers them: **295 frames, 8 pages, 17 concepts, 295 of 295 classified.**
+covers them: **295 frames, 8 pages, 18 distinct frame names, 17 concepts, 295 of 295 classified.**
+
+> **Corrected 2026-08-01 by an independent parallel audit.** Four counts in the first version of
+> this document were wrong. They are fixed in place below and listed in full under *Corrections*.
 
 Source file `8wGaofgbopqmGXc0Wjo0eW` is a **reference input**. Nothing is copied from it — the
 Figma plugin API cannot move nodes between files. Every item carries a disposition.
@@ -16,9 +19,9 @@ Figma plugin API cannot move nodes between files. Every item carries a dispositi
 | ↪ Identify Challenge | `620:45076` | 7 | 15 |
 | ↪ Report — chemical clearance | `1939:56734` | 10 | 18 |
 | ↪ Customs Report | `639:79065` | 4 | 12 |
-| ↪ Safety Report | `2312:95952` | 68 | 70 |
+| ↪ Safety Report | `2312:95952` | 67 | 70 |
 | ↪ افادة الزيارة | `2468:31912` | 1 | 1 |
-| ↪ Establishment Management | `1065:77494` | 106 | 112 |
+| ↪ Establishment Management | `1065:77494` | 107 | 112 |
 | **Total** | | **295** | 342 |
 
 The "other nodes" are flow arrows, step labels and annotations, not screens. On
@@ -36,7 +39,7 @@ the source file and is treated separately below.
 | Modal | 9 | 1 | – | – | – | 9 | – | 5 | **24** |
 | Inspection Items | 6 | – | 2 | 8 | 2 | 5 | – | – | **23** |
 | Production Line Report | 8 | – | – | – | – | 8 | – | – | **16** |
-| Non-Compliant Products Destruction | 7 | – | – | – | – | 8 | – | – | **15** |
+| Non-Compliant Products Destruction | 7 | – | – | – | – | 7 | – | – | **14** |
 | Violation Report | 4 | – | – | – | – | 4 | – | – | **8** |
 | Login | – | 5 | – | – | – | – | – | – | **5** |
 | Incident Report | 2 | – | – | – | – | 2 | – | – | **4** |
@@ -46,6 +49,7 @@ the source file and is treated separately below.
 | Home Screen — iPad | – | 1 | – | – | – | – | – | – | **1** |
 | Top Bar | 1 | – | – | – | – | – | – | – | **1** |
 | Content | – | – | – | – | – | – | – | 1 | **1** |
+| `Frame 1984078759` | – | – | – | – | – | – | – | 1 | **1** |
 | | | | | | | | | | **295** |
 
 **17 concepts, not 295 screens.** 75 frames named `Establishment Details` are one screen at
@@ -62,7 +66,7 @@ Real capabilities with a shipped repo route and **no governed screen** in the we
 |---|--:|---|---|---|
 | Establishment Details + Establishment Management | 102 | `/field/establishments`, `/field/establishments/unregistered` | **none** | **NONE FOUND** |
 | Summons Notice | 47 | `/field/summons-notices` | **none** | **NONE FOUND** |
-| Non-Compliant Products Destruction | 15 | `/field/destruction-reports` | **none** | **NONE FOUND** |
+| Non-Compliant Products Destruction | 14 | `/field/destruction-reports` | **none** | **NONE FOUND** |
 | Incident Report | 4 | `/field/incident-reports` | **none** | **NONE FOUND** |
 
 *(Establishment Details and Establishment Management are one concept in two naming
@@ -89,22 +93,23 @@ Not screens. Covered by, or belonging in, the component library.
 | Actions | 3 | none | Action menu — **build**, small |
 | Overlay — Alerts | 2 | `Alert` | Already covered |
 
-### REFERENCE-ONLY — 3 concepts, 7 frames
+### REFERENCE-ONLY — 2 concepts, 6 frames
 
 Recorded, not delivered. No iPad route or device chrome is authoritative.
 
 | Concept | Frames | Why |
 |---|--:|---|
 | Login | 5 | The web master already has one login, settled under DEC-011. Source login is not authoritative |
-| Home Screen — iPad | 1 | Device home. The web shell has no separate home surface; `/field` redirects |
 | Top Bar | 1 | Fixed-width tablet bar. The web `App topbar` already collapses responsively |
 
-### OBSOLETE — 2 concepts, 3 frames
+### OBSOLETE — 4 concepts, 5 frames
 
 | Concept | Frames | Why |
 |---|--:|---|
-| `Frame 1984078725` | 2 | Auto-generated name, no semantic identity |
-| `Content` | 1 | Unnamed 705px wrapper |
+| `Frame 1984078725` | 2 | Annotation strip — `في حال ان الاتصال ضعيف`, a note about weak connectivity, not a screen |
+| `Home Screen — iPad` | 1 | **The iPadOS springboard.** Its text is `FaceTime · Files · Preview · Maps · App Store · Settings`. It is the operating system's home screen, not a product surface. Previously misclassified as reference-only |
+| `Content` | 1 | 705px filter-panel body, `تصفية المنشآت` — a fragment, not a screen |
+| `Frame 1984078759` | 1 | 2513×379 canvas banner reading `المنشآت الغير مرخصة` — a section label |
 
 ### DECISION PENDING — 0 concepts
 
@@ -118,13 +123,17 @@ records flow. See `CONSOLIDATION-BATCH-06-RECORDS.md`.
 
 | Bucket | Concepts | Frames |
 |---|--:|--:|
-| Migrate | 4 | 168 |
+| Migrate | 4 | 167 |
 | Merge | 4 | 88 |
 | Reusable component | 3 | 29 |
-| Reference-only | 3 | 7 |
-| Obsolete | 2 | 3 |
+| Reference-only | 2 | 6 |
+| Obsolete | 4 | 5 |
 | Decision pending | 0 | 0 |
-| **Total** | **16** | **295** |
+| **Total** | **17** | **295** |
+
+**18 distinct frame names, 17 concepts.** The two collapse because `Establishment Details` and
+`Establishment Management` are one screen family under two naming conventions. That merge is a
+judgement call and is stated here rather than hidden in the arithmetic.
 
 **295 of 295 classified.** Combined with the component page, the source file is now
 **356 of 356 items classified** — 61 definitions and 295 frames.
@@ -144,6 +153,29 @@ as standalone screens. Only the device home has genuinely no repo route.
 What is real is a **shape disagreement**: the source models one flow with eight record types; the
 repo ships five separate routes and omits three types. That decision is carried in
 `CONSOLIDATION-BATCH-06-RECORDS.md`.
+
+## Corrections from the independent parallel audit
+
+A separate read-only agent re-inventoried all 8 pages. It found four errors in my first pass:
+
+| # | Claim | Correct | Cause |
+|---|---|---|---|
+| 1 | Safety Report has 68 frames | **67** | I over-counted Non-Compliant Destruction by one when tallying by hand from a truncated list |
+| 2 | Establishment Management has 106 frames | **107** | My traversal descended `SECTION` but **not `GROUP`**, so `Frame 1984078759` inside `Group 188` was never reached |
+| 3 | Non-Compliant Destruction totals 15 | **14** | Follows from #1 — 7 on Visit Reports, 7 on Safety |
+| 4 | 17 concepts | **18 names, 17 concepts** | I never surfaced the name/concept distinction |
+
+My original total of 295 was right **for the wrong reasons** — errors #1 and #2 cancelled out.
+The total is unchanged; the composition was not.
+
+Two further findings I had missed entirely:
+
+- **`Home Screen — iPad` is the iPadOS springboard.** Verified directly: `FaceTime`, `Files`,
+  `Preview`, `Maps`, `App Store`, `Settings`, `Clock`, `Weather`. Not a product screen at all.
+  Moved from reference-only to **obsolete**.
+- **Safety Report is largely a clone of Visit Reports.** 17 Summons Notice, 8 Production Line,
+  7 Destruction, 4 Violation and 2 Incident frames appear on both pages at identical heights —
+  e.g. `360:30151` ↔ `2312:158225`. The duplication is between *pages*, not only within them.
 
 ## Untrusted content found on the source canvas
 
