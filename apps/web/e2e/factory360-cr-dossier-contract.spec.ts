@@ -67,7 +67,7 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
     expect(src).toContain("calculateApprovedCompliance(latest.snapshot, report.package_versions?.definition)");
     expect(page).toContain('href={`/reports/inspection/${report.id}`}');
     expect(page).not.toContain('href={`/visits/${');
-    expect(page).toContain("Returned or rejected inspections remain visible below but never affect this rate.");
+    expect(page).toContain("Returned or rejected inspections stay visible below, but they never affect this rate.");
     expect(src).toContain("violations(id, mapping_version, violation_codes(code, title, level, corrective_action, grace_period_days))");
     expect(src).toContain('reports.filter(report => report.status === "approved")');
     expect(page).toContain("Approved inspection violations & corrective actions");
@@ -191,6 +191,6 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
     expect(src).toContain('sb.from("inspection_factory_snapshots")');
     expect(src).toContain('report.status === "approved"');
     expect(page).toContain("Official vs latest approved observed snapshot");
-    expect(page).toContain("does not overwrite current source truth");
+    expect(page).toContain("It does not change the current official record.");
   });
 });

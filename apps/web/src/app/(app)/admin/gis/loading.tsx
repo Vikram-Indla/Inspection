@@ -8,7 +8,7 @@ export default function Loading() {
     <Shell current="/admin/gis" title={"Map Settings · إعدادات الخرائط"}>
       <EmptyState glyph="…"
         title={<>{"Loading Map Settings…"} · <span lang="ar">{"جارٍ تحميل إعدادات الخرائط…"}</span></>}
-        body="Preparing governed map settings and geofence data." />
+        body="Preparing map settings and geofence data." />
     </Shell>
   );
 }

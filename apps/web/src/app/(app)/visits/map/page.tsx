@@ -41,15 +41,15 @@ export default async function VisitsMapPage() {
         <a className="sq-btn sq-btn--subtle" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
         <a className="sq-btn sq-btn--secondary" aria-current="page" href="/visits/map">{t("visit.views.map", "Map")}</a>
       </div>
-      {error ? <div className="sq-banner sq-banner--critical" role="alert"><div>{t("visit.map.error", "Map data is temporarily unavailable. Please try again.")}</div></div>
+      {error ? <div className="sq-banner sq-banner--critical" role="alert"><div>{t("visit.map.error", "Map data isn't available right now. Try again.")}</div></div>
         : <VisitMap visits={rows} strings={{
             region: t("visit.map.region", "Region"), allRegions: t("visit.map.allRegions", "All regions"),
             factoryVisitLegend: t("visit.map.legendFactory", "factory / visit"), inspectorLegend: t("visit.map.legendInspector", "latest inspector position"),
             noneInRegion: t("visit.map.empty", "No located visits in this region"), visit: t("visit.map.visit", "Visit"),
             factory: t("visit.map.factory", "Factory"), regionCity: t("visit.map.regionCity", "Region / city"),
-            inspectorLocation: t("visit.map.inspectorLocation", "Inspector location"), state: t("visit.map.state", "State"),
+            inspectorLocation: t("visit.map.inspectorLocation", "Inspector location"), state: t("visit.map.state", "Visit status"),
             assignedInspector: t("visit.map.assignedInspector", "Assigned inspector"), inspectorFallback: t("visit.map.inspectorFallback", "Inspector"),
-            unavailableScope: t("visit.map.unavailableScope", "Unavailable under current scope"), latestLocation: t("visit.map.latestLocation", "latest location"),
+            unavailableScope: t("visit.map.unavailableScope", "Not available for your access"), latestLocation: t("visit.map.latestLocation", "latest location"),
           }} locale={locale} />}
     </Shell>
   );

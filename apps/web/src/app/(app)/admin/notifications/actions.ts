@@ -56,8 +56,8 @@ export async function publishNotificationRule(_: NotifRuleResult, formData: Form
   if (error) {
     logProviderError("admin notification rule publish", error);
     const message = String(error.message ?? "");
-    if (message.includes("maker-checker")) return { error: "A different configuration writer must approve this draft." };
-    if (message.includes("missing recipient")) return { error: "Missing recipient — recipient role is not governed." };
+    if (message.includes("maker-checker")) return { error: "A different settings writer must approve this draft." };
+    if (message.includes("missing recipient")) return { error: "Missing recipient — recipient role is not set." };
     return { error: NEUTRAL_WRITE_ERROR };
   }
   revalidatePath("/admin/notifications");
@@ -92,7 +92,7 @@ export async function testNotificationRule(_: NotifRuleResult, formData: FormDat
   const { data: rule, error: ruleError } = await sb.from("notification_rules")
     .select("event_key, channel, template").eq("id", id).maybeSingle();
   if (ruleError) { logProviderError("admin notification rule test read", ruleError); return { error: NEUTRAL_WRITE_ERROR }; }
-  if (!rule) return { error: "Rule not found, or outside your scope (RLS)." };
+  if (!rule) return { error: "Rule not found, or outside your scope." };
   const outcome = await insertNotification(sb, {
     event_key: rule.event_key, recipient: user.id, channel: rule.channel as "inapp" | "push" | "sms" | "email",
     // Address the email channel to the tester so a configured provider (Resend)
@@ -104,7 +104,7 @@ export async function testNotificationRule(_: NotifRuleResult, formData: FormDat
   return {
     ok: true,
     notice: outcome.delivery_state === "not_configured"
-      ? "Provider unavailable — recorded as a test row only; no live provider is configured for this channel."
+      ? "Provider not available — recorded as a test row only; no live provider is set up for this channel."
       : "Test notification delivered.",
   };
 }

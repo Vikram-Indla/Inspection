@@ -76,7 +76,7 @@ export async function saveDraftDefinition(_: PkgResult, formData: FormData): Pro
     .update({ definition }, { count: "exact" })
     .eq("id", version_id).eq("status", "draft");
   if (error) { logProviderError("admin package definition", error); return { error: NEUTRAL_WRITE_ERROR }; }
-  if (!count) return { error: "Only draft versions are editable (published is immutable)." };
+  if (!count) return { error: "Only draft versions can be edited. Published versions are locked." };
   revalidatePath("/admin/packages");
   return { ok: true };
 }
@@ -346,7 +346,7 @@ export async function approveAndPublish(_: PkgResult, formData: FormData): Promi
   const { data: ver, error: verErr } = await sb.from("package_versions")
     .select("status, definition").eq("id", version_id).maybeSingle();
   if (verErr) { logProviderError("admin package version read", verErr); return { error: NEUTRAL_LOAD_ERROR }; }
-  if (!ver) return { error: "Version not found or outside your scope (RLS)." };
+  if (!ver) return { error: "Version not found, or it’s outside what you can see." };
   if (ver.status !== "draft") return { error: "Only draft versions can be published." };
 
   const blockers = await validateDefinition(sb, (ver.definition ?? {}) as PkgDefinition);
@@ -382,7 +382,7 @@ export async function deactivatePackageVersion(_: PkgResult, formData: FormData)
   const { data, error } = await sb.from("package_versions").update({ status: "deactivated", effective_to, deactivation_reason })
     .eq("id", version_id).in("status", ["published", "locked"]).select("id");
   if (error) { logProviderError("admin package deactivate", error); return { error: NEUTRAL_WRITE_ERROR }; }
-  if (!data?.length) return { error: "Only a governed active package version can be deactivated." };
+  if (!data?.length) return { error: "Only an active published package version can be deactivated." };
   revalidatePath("/admin/packages");
   return { ok: true };
 }

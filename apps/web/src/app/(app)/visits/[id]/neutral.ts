@@ -22,7 +22,7 @@ export function mapError(err: AnyErr, kind: ErrorKind): string {
   switch (kind) {
     case "load": return "This visit's data could not be loaded right now. Nothing was changed — reload to retry.";
     case "upload": return "The file could not be attached. Nothing was saved — try the upload again.";
-    case "link": return "download link unavailable";
+    case "link": return "download link not available";
     case "notify": return "the notification could not be queued";
     case "update":
     default: return "The change could not be completed. Nothing was modified — reload and try again.";

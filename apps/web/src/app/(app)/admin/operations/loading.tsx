@@ -4,5 +4,5 @@ import RouteLoading from "@/components/RouteLoading";
 // renders server-side; shares the RouteLoading skeleton (design-system
 // consistent, bilingual, aria-busy).
 export default function Loading() {
-  return <RouteLoading en="Loading platform operations…" ar="جارٍ تحميل عمليات المنصة…" />;
+  return <RouteLoading en="Loading system operations…" ar="جارٍ تحميل عمليات النظام…" />;
 }

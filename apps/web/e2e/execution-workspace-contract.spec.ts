@@ -155,7 +155,7 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 5 workspace item lifecycle", () =
     // penalty and null mapping_version; the first row is never picked silently.
     expect(page).toContain("v.penalty_mappings.length > 1");
     expect(page).toContain("penalty_conflict: true");
-    expect(page).toContain("Penalty mapping unavailable — configuration conflict");
+    expect(page).toContain("Penalty mapping not available — settings conflict");
   });
 
   test("new copy carries no banned plain-language-remediation phrases", () => {
@@ -218,7 +218,7 @@ test.describe("PLAN item 4 report-kind package switch", () => {
     expect(guardBlock).toContain("return (");
     expect(guardBlock).toContain("header(t(");
     expect(guardBlock).toContain('className="empty"');
-    expect(guardBlock).toContain("Inspection package not configured");
+    expect(guardBlock).toContain("Inspection checklist not set up");
     expect(guardBlock).not.toContain("<FactoryVerification");
     expect(guardBlock).not.toContain("<Workspace");
 

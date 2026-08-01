@@ -194,14 +194,14 @@ export default async function Violations({
     checkUnmapped: t("admin.viol.lens.c1", "The violation is not already mapped (one mapping per violation)."),
     checkUnique: t("admin.viol.lens.c2", "A second mapping is rejected by the database unique constraint."),
     checkLegalBasis: t("admin.viol.lens.c3", "Legal basis is present before create (never invented)."),
-    checkPresets: t("admin.viol.lens.c4", "Range and repeat presets are governed tokens, not amounts."),
+    checkPresets: t("admin.viol.lens.c4", "Range and repeat presets are fixed choices, not amounts."),
     pass: t("admin.viol.lens.pass", "Pass"),
     needsAttention: t("admin.viol.lens.needsAttention", "Needs attention"),
     deactivationReason: t("admin.viol.form.deactivationReason", "Deactivation reason"),
     penaltyType: t("admin.viol.map.penaltyType", "Penalty type"),
     amount: t("admin.viol.map.amount", "Amount (when applicable)"),
     duePeriod: t("admin.viol.map.duePeriod", "Due period (days)"),
-    template: t("admin.viol.map.template", "Governed template"),
+    template: t("admin.viol.map.template", "Template"),
     none: t("admin.viol.none", "None"),
     publishCode: t("admin.viol.publish", "Approve & publish code"),
     publishingCode: t("admin.viol.publishing", "Publishing…"),
@@ -248,10 +248,10 @@ export default async function Violations({
 
   function auditSummary(events: AuditEvent[] | null | undefined, label: string) {
     if (events === undefined) {
-      return <span className="t-caption"><span aria-hidden="true">🔒</span> {t("admin.viol.audit.writerOnly", "Audit history is available to configuration writers.")}</span>;
+      return <span className="t-caption"><span aria-hidden="true">🔒</span> {t("admin.viol.audit.writerOnly", "Audit history is only available to configuration writers.")}</span>;
     }
     if (events === null) {
-      return <span className="t-caption"><span aria-hidden="true">⚠</span> {t("admin.viol.audit.unavailable", "Audit history unavailable — no zero-event claim was made.")}</span>;
+      return <span className="t-caption"><span aria-hidden="true">⚠</span> {t("admin.viol.audit.unavailable", "Audit history couldn't load — this doesn't mean there are no events.")}</span>;
     }
     if (events.length === 0) {
       return <span className="t-caption"><span aria-hidden="true">○</span> {t("admin.viol.audit.empty", "No audit events returned for this object.")}</span>;
@@ -325,7 +325,7 @@ export default async function Violations({
         <div className="panel sq-permission" style={{ padding: "var(--space-6)" }}>
           <p className="t-caption" style={{ margin: 0 }}>
             <span aria-hidden="true">🔒</span>{" "}
-            {t("admin.viol.readonly", "Read-only view — configuration writes require the compliance-admin or form-admin role (RLS). Route visibility does not grant write authority.")}
+            {t("admin.viol.readonly", "Read-only view. To make changes you need the compliance-admin or form-admin role. Being able to see this page does not give you write access.")}
           </p>
         </div>
       )}
@@ -333,7 +333,7 @@ export default async function Violations({
         <div className="alert alert-warning" role="note">
           <div>
             <strong>{t("admin.viol.ccrRequired.title", "Configuration Request required.")}</strong>{" "}
-            {t("admin.viol.ccrRequired.body", "Violation and penalty creation, modification, publication, activation and deactivation are read-only here until the typed CCR validation and atomic dependency cascade are deployed. Use the Compliance Configuration Request workspace; this catalogue will not bypass it.")}{" "}
+            {t("admin.viol.ccrRequired.body", "Creating, changing, publishing, activating, and deactivating violations and penalties is read-only here for now. Use Compliance Configuration Requests instead — this catalogue will not skip that process.")}{" "}
             <a className="sq-link" href="/admin/compliance-requests">{t("admin.viol.ccrRequired.link", "Open Compliance Configuration Requests")}</a>
           </div>
         </div>
@@ -345,12 +345,12 @@ export default async function Violations({
           {/* Signature — Mapping Validation Lens: exactly the four proven checks. */}
           <section className="panel stack" aria-labelledby="pen-lens-h" style={{ padding: "var(--space-6)", gap: "var(--space-3)" }}>
             <h2 id="pen-lens-h" style={{ margin: 0 }}>{t("admin.viol.lens.title", "Mapping Validation Lens")}</h2>
-            <p className="t-caption" style={{ margin: 0 }}>{t("admin.viol.lens.intro", "Creating a mapping validates legal basis, lifecycle, type, optional amount, timing, repeat policy, and an optional immutable template reference. No value is inferred or invented.")}</p>
+            <p className="t-caption" style={{ margin: 0 }}>{t("admin.viol.lens.intro", "Creating a mapping checks legal basis, lifecycle, type, an optional amount, timing, repeat policy, and an optional template reference that can't change later. No value is guessed or made up.")}</p>
             <ul className="stack" style={{ gap: "var(--space-1)", margin: 0, paddingInlineStart: "var(--space-4)" }}>
               <li className="t-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c1", "The violation is not already mapped (one mapping per violation).")}</li>
               <li className="t-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c2", "A second mapping is rejected by the database unique constraint.")}</li>
-              <li className="t-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c3", "Legal basis is present before create (never invented).")}</li>
-              <li className="t-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c4", "Range and repeat presets are governed tokens, not amounts.")}</li>
+              <li className="t-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c3", "Legal basis is present before create (never made up).")}</li>
+              <li className="t-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c4", "Range and repeat presets are fixed choices, not amounts.")}</li>
             </ul>
           </section>
 
@@ -419,7 +419,7 @@ export default async function Violations({
             );
           })}
 
-          <p className="t-caption">{t("admin.viol.penalty.footer", "One violation = one penalty — the database rejects a second mapping. Presets are governed tokens, never monetary or legal values. The contract route /admin/penalties is not a live URL; this is its logical mode.")}</p>
+          <p className="t-caption">{t("admin.viol.penalty.footer", "One violation = one penalty — the database rejects a second mapping. Presets are fixed choices, never money amounts or legal values.")}</p>
         </>
       ) : (
         /* ============ CD-010 · Violation catalogue mode ============ */
@@ -488,9 +488,9 @@ export default async function Violations({
                       {t("admin.viol.usage.runtime", "Runtime references")}: <strong>{evidence.usage.runtime_count}</strong>
                     </span>
                   ) : canWrite ? (
-                    <span className="t-caption" data-usage-state="unavailable"><span aria-hidden="true">⚠</span> {t("admin.viol.usage.unavailable", "Usage unavailable — no zero-count claim was made.")}</span>
+                    <span className="t-caption" data-usage-state="unavailable"><span aria-hidden="true">⚠</span> {t("admin.viol.usage.unavailable", "Usage couldn't load — this doesn't mean the count is zero.")}</span>
                   ) : (
-                    <span className="t-caption" data-usage-state="restricted"><span aria-hidden="true">🔒</span> {t("admin.viol.usage.writerOnly", "Usage counts are available to configuration writers.")}</span>
+                    <span className="t-caption" data-usage-state="restricted"><span aria-hidden="true">🔒</span> {t("admin.viol.usage.writerOnly", "Usage counts are only available to configuration writers.")}</span>
                   )}
                   {auditSummary(evidence?.codeAudit, t("admin.viol.audit.code", "Violation audit events"))}
                 </div>

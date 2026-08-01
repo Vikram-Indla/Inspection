@@ -15,7 +15,7 @@ export default async function Loading() {
           {Array.from({ length: 5 }, (_, index) => <div className="panel kpi skeleton" key={index} />)}
         </div>
         <div className="map-panel skeleton" aria-hidden="true" />
-        <span className="tl-meta">{t("ops.loading.desc", "Fetching visits, geo events, corrective actions and notifications through RLS.")}</span>
+        <span className="tl-meta">{t("ops.loading.desc", "Loading visits, location events, corrective actions and notifications.")}</span>
       </div>
     </Shell>
   );

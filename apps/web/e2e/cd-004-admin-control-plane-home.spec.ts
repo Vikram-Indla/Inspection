@@ -49,8 +49,8 @@ test.describe("CD-004 work-first admin landing", () => {
     expect(page).toContain("requestRead.error");
     expect(page).toContain("componentRead.error");
     expect(page).toContain("auditRead.error");
-    expect(page).toContain("no empty-queue claim is made");
-    expect(page).toContain("no empty-state claim is made");
+    expect(page).toContain("so we can't say if it's empty");
+    expect(page).toContain("Recent changes are not available.");
   });
 
   test("ships complete EN and AR work-panel copy", () => {
@@ -63,7 +63,7 @@ test.describe("CD-004 work-first admin landing", () => {
   });
 
   test("keeps successful sibling data visible during partial failures", () => {
-    expect(page).toContain("Request areas could not be read; the returned requests remain visible.");
+    expect(page).toContain("We could not read some request details, but the requests below are still shown.");
     expect(page).toContain("!requestRead.error && requests.length > 0");
     expect(page).toContain("auditRows.length === 0");
   });

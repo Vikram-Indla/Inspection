@@ -258,7 +258,7 @@ export default async function Operations({ searchParams }: {
         <EmptyState
           glyph="⛨"
           title={t("ops.unauthorized.title", "Operations access required")}
-          body={t("ops.unauthorized.body", "No operational data has been loaded because this destination is not enabled in your assigned navigation.")}
+          body={t("ops.unauthorized.body", "This page is not turned on for your account, so no data has loaded.")}
         >
           <a className="sq-btn sq-btn--secondary" href="/launch">{t("ops.unauthorized.return", "Return to my workspace")}</a>
         </EmptyState>
@@ -646,7 +646,7 @@ export default async function Operations({ searchParams }: {
     pins.push({
       id: `f:${f.id}`, kind: "factory",
       lat: Number(f.official_lat), lng: Number(f.official_lng),
-      label: `${f.name} · ${local("Factory registry coordinate", "إحداثية سجل المصنع")}`, tone: "neutral",
+      label: `${f.name} · ${local("Factory list location", "موقع من قائمة المصانع")}`, tone: "neutral",
       href: `/factories/${f.id}`,
     });
   }
@@ -675,7 +675,7 @@ export default async function Operations({ searchParams }: {
     visits_overdue: local("Visits overdue", "الزيارات المتأخرة"),
     active_inspectors: local("Active inspectors", "المفتشون النشطون"),
     average_duration: local("Average duration", "متوسط المدة"),
-    sla_breach_rate: local("SLA breach rate", "معدل تجاوز اتفاقية مستوى الخدمة"),
+    sla_breach_rate: local("Deadline breach rate", "معدل تجاوز الموعد النهائي"),
   } as Record<string, string>)[metric] ?? metric.replace(/_/g, " ");
   const timelineVisitId = monitored.some(visit => visit.id === requestedTimelineVisit)
     ? requestedTimelineVisit
@@ -715,14 +715,14 @@ export default async function Operations({ searchParams }: {
     emptyDesc: t("ops.live.empty.desc", "Visits appear here once planning publishes them."),
     refreshedAt: t("ops.live.refreshedAt", "Refreshed"),
     refreshing: t("ops.live.refreshing", "Refreshing…"),
-    autoNote: t("ops.live.scopeNote", "RLS-scoped monitoring records"),
+    autoNote: t("ops.live.scopeNote", "Records limited to your access"),
   };
   const mapWorkspaceStrings: OperationsMapWorkspaceStrings = {
     mapLabel: t("ops.map.workspaceLabel", "Operations map"),
     loadingTitle: t("ops.map.loading.title", "Loading KSA map"),
     loadingBody: t("ops.map.loading.body", "Mapbox renders in the browser only."),
     listHeading: t("ops.map.list.heading", "Map records"),
-    listDescription: t("ops.map.list.description", "The list and map use the same RLS-scoped records."),
+    listDescription: t("ops.map.list.description", "The list and map show the same records you can see."),
     emptyTitle: t("ops.map.empty.title", "No mappable factories in scope"),
     emptyBody: t("ops.map.empty.desc", "Factories gain map positions when GIS Admin records official coordinates (/006)."),
     open: t("ops.map.open", "Open"),
@@ -735,14 +735,14 @@ export default async function Operations({ searchParams }: {
       factoryTitle: t("ops.preview.factory", "Factory quick card"),
       close: t("ops.preview.close", "Close preview"),
       currentVisit: t("ops.preview.currentVisit", "Current visit"),
-      operationalState: t("ops.preview.operationalState", "Operational state"),
+      operationalState: t("ops.preview.operationalState", "Visit status"),
       assignments: t("ops.preview.assignments", "Assignments in current scope"),
       lastGeoEvent: t("ops.preview.lastGeoEvent", "Last geo event"),
       noGeoEvent: t("ops.preview.noGeoEvent", "No recorded position"),
       openVisit: t("ops.preview.openVisit", "Open full visit"),
       location: t("ops.preview.location", "Location"),
       riskScore: t("ops.preview.riskScore", "Raw risk score"),
-      riskRank: t("ops.preview.riskRank", "RLS-visible rank"),
+      riskRank: t("ops.preview.riskRank", "Visible rank"),
       riskUnavailable: t("ops.preview.riskUnavailable", "Unavailable"),
       activeVisits: t("ops.preview.activeVisits", "Active visits"),
       openActions: t("ops.preview.openActions", "Open corrective actions"),
@@ -752,14 +752,14 @@ export default async function Operations({ searchParams }: {
   const overrideQueueStrings: OverrideQueueStrings = {
     heading: t("ops.override.heading", "Location exception requests"),
     caption: t("ops.override.caption", "Approve only the exact captured arrival attempt. The requester cannot decide; a pending request expires after 30 minutes or when the visit closes."),
-    emptyTitle: t("ops.override.empty.title", "No override approvals pending"),
-    emptyDesc: t("ops.override.empty.desc", "Outside-fence requests with their evidence appear here for Operations review."),
+    emptyTitle: t("ops.override.empty.title", "No location exceptions pending"),
+    emptyDesc: t("ops.override.empty.desc", "Location exception requests with their evidence appear here for Operations review."),
     factory: t("ops.override.factory", "Factory"), inspector: t("ops.override.inspector", "Inspector"),
     captured: t("ops.override.captured", "Captured"), accuracy: t("ops.override.accuracy", "Accuracy"),
     distance: t("ops.override.distance", "Distance"), evidence: t("ops.override.evidence", "Photo evidence"),
     safetyException: t("ops.override.safetyException", "Safety/security photo exception declared"), expires: t("ops.override.expires", "Expires"),
     viewEvidence: t("ops.override.viewEvidence", "View photo"), evidenceUnavailable: t("ops.override.evidenceUnavailable", "photo link unavailable"),
-    approve: t("ops.override.approve", "Approve override"), reject: t("ops.override.reject", "Reject"),
+    approve: t("ops.override.approve", "Approve exception"), reject: t("ops.override.reject", "Reject"),
     rejectReason: t("ops.override.rejectReason", "Rejection reason (mandatory to reject)"),
     deciding: t("ops.override.deciding", "Saving decision…"), decided: t("ops.override.decided", "Decision saved and the queue will refresh."),
     failure: t("ops.override.failure", "The decision could not be saved. Nothing changed."),
@@ -886,7 +886,7 @@ export default async function Operations({ searchParams }: {
     })),
     ...overrideQueueRows.map(item => ({
       id: `override:${item.id}`,
-      label: t("ops.highlights.override", "Override decision required"),
+      label: t("ops.highlights.override", "Location exception decision required"),
       description: `${item.factory_name ?? item.visit_id.slice(0, 8)} · ${item.inspector_name ?? "—"}`,
       at: Date.parse(item.requested_at),
       href: `/visits/${item.visit_id}`,
@@ -1051,7 +1051,7 @@ export default async function Operations({ searchParams }: {
           <div className={styles.detailHeading}>
             <div>
               <h2 id="operations-monitoring-heading">{t("ops.monitoring.heading", "Visit and inspector monitoring")}</h2>
-              <p>{t("ops.monitoring.body", "Current RLS-scoped operational states, assignments and latest recorded geofence results.")}</p>
+              <p>{t("ops.monitoring.body", "Visit status, assignments and the latest recorded geofence results you can see.")}</p>
             </div>
             <OperationsScopeFilter
               view={view}
@@ -1080,12 +1080,12 @@ export default async function Operations({ searchParams }: {
         <section className="sq-surface" aria-labelledby="operations-sla-heading">
           <div className={styles.detailHeading}>
             <div>
-              <h2 id="operations-sla-heading">{t("ops.sla.heading", local("SLA and resubmission monitoring", "تنبيهات المواعيد النهائية"))}</h2>
-              <p>{t("ops.sla.body", "Deadlines use server timestamps and governed SLA configuration. Missing configuration remains unavailable.")}</p>
+              <h2 id="operations-sla-heading">{t("ops.sla.heading", local("Deadline and resubmission alerts", "تنبيهات المواعيد النهائية وإعادة التقديم"))}</h2>
+              <p>{t("ops.sla.body", "Deadlines use server timestamps and deadline rules that are set up. If those rules are missing, this stays unavailable.")}</p>
             </div>
           </div>
           {slaFlags.length === 0 && resubFlags.length === 0 ? (
-            <EmptyState glyph="✓" title={t("ops.sla.empty", "No governed deadline alerts in this scope")} inline bare />
+            <EmptyState glyph="✓" title={t("ops.sla.empty", "No deadline alerts in this scope")} inline bare />
           ) : (
             <div className="sq-tablewrap"><table className="sq-table">
               <thead><tr>
@@ -1117,10 +1117,10 @@ export default async function Operations({ searchParams }: {
 
         <section className="sq-surface" aria-labelledby="operations-kpi-contract-heading">
           <div className={styles.detailHeading}><div>
-            <h2 id="operations-kpi-contract-heading">{t("ops.kpi.contractHeading", "Governed Operations KPI contract")}</h2>
+            <h2 id="operations-kpi-contract-heading">{t("ops.kpi.contractHeading", "Operations KPI contract")}</h2>
             <p>{operationsKpiContract?.configured
               ? t("ops.kpi.configured", "Published policy metadata and metric definitions are active.")
-              : t("ops.kpi.notConfigured", "policy or published metric definitions are not configured; undefined formulas remain unavailable.")}</p>
+              : t("ops.kpi.notConfigured", "Policy or published metric definitions are not set up. Undefined formulas stay unavailable.")}</p>
           </div></div>
           {kpiContractRpc.error ? (
             <EmptyState glyph="!" title={t("ops.kpi.unavailable", "KPI contract service unavailable")} body={t("ops.err.retry", "Retry")} inline bare />
@@ -1193,7 +1193,7 @@ export default async function Operations({ searchParams }: {
         <section className="sq-surface" aria-labelledby="operations-alerts-heading">
           <div className={styles.detailHeading}><div>
             <h2 id="operations-alerts-heading">{t("ops.alerts.heading", "Operational alerts and corrective actions")}</h2>
-            <p>{t("ops.alerts.body", "Current RLS-scoped action forms and notification delivery states. Changes remain guarded by database policy.")}</p>
+            <p>{t("ops.alerts.body", "Action forms and notification status you can see here. The database still protects any changes.")}</p>
           </div></div>
           {actions.length === 0 && notifs.length === 0 ? (
             <EmptyState glyph="✓" title={t("ops.alerts.empty", "No operational alerts in this scope")} inline bare />
@@ -1207,7 +1207,7 @@ export default async function Operations({ searchParams }: {
                       <div>
                         <strong>{action.inspections?.visits?.factories?.name ?? action.form_type}</strong>
                         <p>{action.required_correction ?? enumLabel(action.status)}</p>
-                        <small>{action.due_at ? formatDateTime(action.due_at, locale === "ar" ? "ar" : "en") : local("No governed due date", "لا يوجد تاريخ استحقاق معتمد")}</small>
+                        <small>{action.due_at ? formatDateTime(action.due_at, locale === "ar" ? "ar" : "en") : local("No due date set", "لا يوجد تاريخ استحقاق محدد")}</small>
                       </div>
                       {mayManageOperations ? (
                         <ActionFormControls actionFormId={action.id} status={action.status} strings={actionControlStrings} />
@@ -1242,7 +1242,7 @@ export default async function Operations({ searchParams }: {
         <section className="sq-surface" aria-labelledby="operations-cancellations-heading">
           <div className={styles.detailHeading}><div>
             <h2 id="operations-cancellations-heading">{t("ops.cancellations.heading", "Cancellation monitoring")}</h2>
-            <p>{t("ops.cancellations.body", "Recent RLS-scoped cancellation requests, reasons and immutable decision outcomes.")}</p>
+            <p>{t("ops.cancellations.body", "Recent cancellation requests, reasons and final decisions you can see. These decisions can't change.")}</p>
           </div></div>
           {cancellationHistoryRows.length === 0 ? (
             <EmptyState glyph="—" title={t("ops.cancellations.empty", "No cancellation history in this scope")} inline bare />
@@ -1281,7 +1281,7 @@ export default async function Operations({ searchParams }: {
           <section className="sq-surface" aria-labelledby="operations-decisions-heading">
             <EmptyState
               glyph="⛨"
-              title={t("ops.decisions.readOnly", "Operational decisions are read-only for your role")}
+              title={t("ops.decisions.readOnly", "These decisions are read-only for your role")}
               body={t("ops.decisions.readOnlyBody", "Only an authorized Operations supervisor can decide location exceptions or active-session cancellations.")}
               inline
               bare
@@ -1291,8 +1291,8 @@ export default async function Operations({ searchParams }: {
 
         <section className="sq-surface" aria-labelledby="operations-timeline-heading">
           <div className={styles.detailHeading}><div>
-            <h2 id="operations-timeline-heading">{t("ops.timeline.heading", "Operational timeline")}</h2>
-            <p>{t("ops.timeline.body", "Canonical chronology from planning through lifecycle, inspection, review and Compliance handoff.")}</p>
+            <h2 id="operations-timeline-heading">{t("ops.timeline.heading", "Visit timeline")}</h2>
+            <p>{t("ops.timeline.body", "The full order of events, from planning through inspection, review and handoff to Compliance.")}</p>
           </div></div>
           <form className={styles.timelineVisitPicker} method="get" action="/operations">
             {view === "performance" ? <input type="hidden" name="view" value="performance" /> : null}
@@ -1312,9 +1312,9 @@ export default async function Operations({ searchParams }: {
             <button className="sq-btn sq-btn--secondary" type="submit">{t("ops.timeline.load", "Load timeline")}</button>
           </form>
           {!timelineVisitId ? (
-            <EmptyState glyph="↗" title={t("ops.timeline.select", "Select a visit to load its governed timeline")} inline bare />
+            <EmptyState glyph="↗" title={t("ops.timeline.select", "Select a visit to load its timeline")} inline bare />
           ) : timelineRpc.error ? (
-            <EmptyState glyph="!" title={t("ops.timeline.unavailable", "Operational timeline unavailable")} body={t("ops.err.retry", "Retry")} inline bare />
+            <EmptyState glyph="!" title={t("ops.timeline.unavailable", "Visit timeline unavailable")} body={t("ops.err.retry", "Retry")} inline bare />
           ) : operationsTimeline.length === 0 ? (
             <EmptyState glyph="—" title={t("ops.timeline.empty", "No authorized timeline events for this visit")} inline bare />
           ) : (
@@ -1330,8 +1330,8 @@ export default async function Operations({ searchParams }: {
 
         <section className="sq-surface" aria-labelledby="operations-history-heading">
           <div className={styles.detailHeading}><div>
-            <h2 id="operations-history-heading">{t("ops.history.heading", "Immutable location and operational history")}</h2>
-            <p>{t("ops.history.body", "Latest 100 events from the append-only, RLS-scoped geo-event ledger. The source rows are never edited here.")}</p>
+            <h2 id="operations-history-heading">{t("ops.history.heading", "Location and visit status history")}</h2>
+            <p>{t("ops.history.body", "The last 100 events from the location history log you can see. These records are never changed here.")}</p>
           </div></div>
           {geoHistoryRows.length === 0 ? (
             <EmptyState glyph="—" title={t("ops.history.empty", "No recorded location history in this scope")} inline bare />
@@ -1353,8 +1353,8 @@ export default async function Operations({ searchParams }: {
 
         <section className="sq-surface" aria-labelledby="operations-export-heading">
           <div className={styles.detailHeading}><div>
-            <h2 id="operations-export-heading">{t("ops.export.heading", "Export operational data")}</h2>
-            <p>{t("ops.export.auditRequired", "Every file requires a matching role- and region-scoped database receipt plus an atomic audit event before download.")}</p>
+            <h2 id="operations-export-heading">{t("ops.export.heading", "Export data")}</h2>
+            <p>{t("ops.export.auditRequired", "Every file needs a matching database receipt for your role and region, plus a recorded audit event, before you can download it.")}</p>
           </div></div>
           {routeRoleKeys.some(role => ["ops", "leadership"].includes(role)) ? (
             <OpsExport datasets={exportDatasets} strings={exportStrings} />

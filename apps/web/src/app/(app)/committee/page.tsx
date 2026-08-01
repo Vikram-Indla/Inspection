@@ -15,7 +15,7 @@ export default async function CommitteePage() {
   if (resolveFeatureFlag(process.env.FEATURE_DECISION_DOSSIER, MODES, "off") !== "on") {
     return (
       <Shell current="/committee" title={t("cmte.title", "Committee & signatures")} context={<span className="badge badge-warning">REQ-0128</span>}>
-        <NotYetBoundary title={t("cmte.title", "Committee & signatures")} consequence={t("cmte.off", "The committee decision dossier is not enabled here. PKI/EBDA verification is held.")}
+        <NotYetBoundary title={t("cmte.title", "Committee & signatures")} consequence={t("cmte.off", "The committee decision record is not turned on here. PKI/EBDA verification is on hold.")}
           seam="FEATURE_DECISION_DOSSIER=off + PKI/EBDA held" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
       </Shell>
     );
@@ -29,15 +29,15 @@ export default async function CommitteePage() {
   if (error) console.error("[committee] load", error);
   return (
     <Shell current="/committee" title={t("cmte.title", "Committee & signatures")} context={<span className="badge badge-info">REQ-0128..0136</span>}>
-      <div className="sq-banner"><div><strong>{t("cmte.banner.title", "Signature & verification.")}</strong> {t("cmte.banner.body", "Signature and refusal are distinct facts; queued is not delivered. Verification is never “verified” without a provider — PKI/EBDA is held. Acknowledgement is not a signature.")}</div></div>
+      <div className="sq-banner"><div><strong>{t("cmte.banner.title", "Signature & verification.")}</strong> {t("cmte.banner.body", "Signature and refusal are distinct facts; queued is not delivered. Verification is never “verified” without a provider — PKI/EBDA is on hold. Acknowledgement is not a signature.")}</div></div>
       <RecordSignature strings={{
         record: t("cmte.record", "Record signature act"), recording: t("cmte.recording", "Recording…"),
         recorded: t("cmte.recorded", "recorded"), kind: t("cmte.kind", "Kind"), outcome: t("cmte.outcome", "Outcome"),
       }} />
       {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("cmte.error", "Couldn’t load committee data. Nothing changed.")}</strong></div></div>}
       {!error && (acts ?? []).length === 0 && (vers ?? []).length === 0 && (
-        <EmptyState glyph="✒️" title={t("cmte.empty.title", "No signature or verification records in scope")}
-          body={t("cmte.empty.body", "Records appear here as reports are signed and verifications requested. Empty may also mean none are in your scope (RLS).")} />
+        <EmptyState glyph="✒️" title={t("cmte.empty.title", "No signature or verification records to show")}
+          body={t("cmte.empty.body", "Records appear here as reports are signed and verifications are requested. If this is empty, it may also mean none are visible to your role.")} />
       )}
       {(acts ?? []).map((a) => (
         <div key={a.id} className="panel" style={{ padding: "var(--space-6)" }}>

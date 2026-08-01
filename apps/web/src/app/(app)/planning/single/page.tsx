@@ -103,8 +103,8 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     if (contract.kind === "denied") {
       return (
         <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
-          <EmptyState glyph="⛔" title={tr("plan.single.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
-            body={tr("plan.single.unauthorized.body", "Plan one visit is available to authorized planning staff.", "تخطيط زيارة واحدة متاح لموظفي التخطيط المصرح لهم.")} />
+          <EmptyState glyph="⛔" title={tr("plan.single.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
+            body={tr("plan.single.unauthorized.body", "Only planning staff can use Plan one visit.", "تخطيط زيارة واحدة متاح لموظفي التخطيط فقط.")} />
         </Shell>
       );
     }
@@ -113,7 +113,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
         <PlanningReadFailureState
           failure={contract}
           title={t("plan.read.failure.title", "Planning access needs attention")}
-          body={t("plan.read.failure.body", "The required planning read contract is unavailable. Nothing was changed. Retry after access configuration is restored.")}
+          body={t("plan.read.failure.body", "Planning data is not available right now. Nothing was changed. Try again once access is fixed.")}
           referenceLabel={t("plan.read.failure.reference", "Support reference")}
           retryLabel={t("plan.read.failure.retry", "Retry")}
           retryHref="/planning/single"
@@ -174,7 +174,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
           <PlanningReadFailureState
             failure={failure}
             title={t("plan.read.failure.title", "Planning access needs attention")}
-            body={t("plan.read.failure.body", "The required planning read contract is unavailable. Nothing was changed. Retry after access configuration is restored.")}
+            body={t("plan.read.failure.body", "Planning data is not available right now. Nothing was changed. Try again once access is fixed.")}
             referenceLabel={t("plan.read.failure.reference", "Support reference")}
             retryLabel={t("plan.read.failure.retry", "Retry")}
             retryHref={`/planning/single?plan=${planParam}`}
@@ -353,10 +353,10 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     findFactory: t("plan.single.findFactory", "1 · Find factory — CR, Industrial License, plant or name"),
     searchPlaceholder: t("plan.single.searchPlaceholder", "CR number, Industrial License, plant number, factory code or name"),
     noMatch: t("plan.single.noMatch", "No factory matches — check the number and try again."),
-    registryUnavailable: t("plan.single.registryUnavailable", "The Factory list is temporarily unavailable — try your search again."),
+    registryUnavailable: t("plan.single.registryUnavailable", "The Factory list is not available right now — try your search again."),
     crPrefix: t("plan.single.crPrefix", "CR"),
     exactBadge: t("plan.single.exactBadge", "EXACT"),
-    exactRule: t("plan.single.exactRule", "Matches a governed identifier exactly (CR, factory code or Industrial License)"),
+    exactRule: t("plan.single.exactRule", "Matches an exact identifier (CR, factory code or Industrial License)"),
     similarBadge: t("plan.single.similarBadge", "SIMILAR NAME"),
     similarRule: t("plan.single.similarRule", "Name matches — identifiers differ from your search"),
     degradedBadge: t("plan.single.degradedBadge", "DEGRADED RECORD"),
@@ -367,7 +367,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     portfolioStep: t("plan.single.portfolioStep", "2 · Select the Industrial License / plant"),
     crIdentity: t("plan.single.crIdentity", "Commercial Registration"),
     selectLicenceHint: t("plan.single.selectLicenceHint", "Every Industrial License and plant registered under this CR is listed — pick the one this visit targets."),
-    licenceRequired: t("plan.single.licenceRequired", "Select one license / plant to continue — a single visit targets one plant, never the whole CR (CR-level planning is not eligible here)."),
+    licenceRequired: t("plan.single.licenceRequired", "Select one license / plant to continue — a single visit targets one plant, never the whole CR (CR-level planning is not allowed here)."),
     noLicences: t("plan.single.noLicences", "No Industrial License is recorded for this CR, so a single visit cannot be planned."),
     noFactoryLink: t("plan.single.noFactoryLink", "no linked factory record"),
     plantLabel: t("plan.single.plantLabel", "Plant"),

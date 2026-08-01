@@ -86,9 +86,9 @@ export default async function Factories({ searchParams }: {
           body={t("f360.empty.desc", "Factory identity records sync from the national source.")} />
       )}
       {!error && !isEmpty && <>
-        <form method="get" className="sq-surface sq-row" aria-label={t("f360.list.portfolio", "Factory portfolio")}>
+        <form method="get" className="sq-surface sq-row" aria-label={t("f360.list.portfolio", "Choose a factory")}>
           <div className="sq-field">
-            <label className="sq-field__label" htmlFor="factory-cr-filter">{t("f360.list.portfolio", "Factory portfolio")}</label>
+            <label className="sq-field__label" htmlFor="factory-cr-filter">{t("f360.list.portfolio", "Choose a factory")}</label>
             <select id="factory-cr-filter" className="sq-select" name="scope" defaultValue={requestedScopeValue}>
               {scopeOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select>

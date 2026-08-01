@@ -28,7 +28,7 @@ export default async function VisitsCalendar() {
     console.error(`[visits.calendar] load failed: ${error.message}`);
     return (
       <Shell current="/visits" title={t("visit.cal.title", "Visit calendar")}>
-        <div className="sq-banner sq-banner--critical" role="alert"><div>{t("visit.list.loadErrorNeutral", "Visits are temporarily unavailable. Please try again.")}</div></div>
+        <div className="sq-banner sq-banner--critical" role="alert"><div>{t("visit.list.loadErrorNeutral", "Visits aren't available right now. Try again.")}</div></div>
       </Shell>
     );
   }

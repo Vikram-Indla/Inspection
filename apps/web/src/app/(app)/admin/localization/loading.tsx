@@ -7,8 +7,8 @@ export default function Loading() {
     <RouteLoading
       en="Loading localization registry…"
       ar="جارٍ تحميل سجل الترجمات…"
-      bodyEn="Loading the RLS-scoped translation dictionary."
-      bodyAr="جارٍ تحميل قاموس الترجمات المقيّد حسب صلاحيات الصفوف."
+      bodyEn="Loading the translation dictionary, limited to what you can see."
+      bodyAr="جارٍ تحميل قاموس الترجمات، بما يقتصر على ما يُسمح لك برؤيته."
     />
   );
 }

@@ -8,7 +8,7 @@ export default async function LoadingPackages() {
     <Shell current="/admin" title={t("admin.pkg.r2.title", "Package library & designer")}
       context={<span className="badge badge-info">{t("admin.pkg.context", "Package configuration")}</span>}>
       <div className="stack" role="status" aria-live="polite" aria-busy="true" style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
-        <span className="sr-only">{t("admin.pkg.loading", "Loading package versions and their governed dependencies…")}</span>
+        <span className="sr-only">{t("admin.pkg.loading", "Loading package versions and their dependencies…")}</span>
         <div className="panel" style={{ padding: "var(--space-6)" }}>
           <SkeletonBlock inlineSize="45%" blockSize={24} />
           <SkeletonBlock inlineSize="75%" blockSize={16} style={{ marginBlockStart: 12 }} />

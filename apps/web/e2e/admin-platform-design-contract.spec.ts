@@ -14,15 +14,15 @@ test.describe("admin platform design truth contract", () => {
     expect(source).toContain("errorsError");
     expect(source).toContain("flagsError");
     expect(source).toContain("endpointsError");
-    expect(source).toContain("never represented as zero or empty");
-    expect(source).toContain("No empty-state claim is made.");
+    expect(source).toContain("never shown as zero or empty");
+    expect(source).toContain("We don't claim it's empty.");
   });
 
   test("notification creation fails closed when the governed role catalogue is unavailable", () => {
     const page = read("apps/web/src/app/(app)/admin/notifications/page.tsx");
     const manager = read("apps/web/src/app/(app)/admin/notifications/NotificationRulesManager.tsx");
     expect(page).toContain("roleTableError");
-    expect(page).toContain("Rule creation is disabled; existing rules remain readable.");
+    expect(page).toContain("Rule creation is turned off; existing rules remain readable.");
     expect(manager).toContain("rolesAvailable");
     expect(manager).toContain("disabled={!rolesAvailable}");
   });

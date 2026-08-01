@@ -132,7 +132,7 @@ export default async function LiveOperations({ searchParams }: {
         <EmptyState
           icon={<IconBlocked size={24} />}
           title={t("ops.unauthorized.title", "Operations access required")}
-          body={t("ops.unauthorized.body", "No operational data has been loaded because this destination is not enabled in your assigned navigation.")}
+          body={t("ops.unauthorized.body", "This page is not turned on for your account, so no data has loaded.")}
         >
           <Link className="sq-btn sq-btn--secondary" href="/launch">{t("ops.unauthorized.return", "Return to my workspace")}</Link>
         </EmptyState>
@@ -304,7 +304,7 @@ export default async function LiveOperations({ searchParams }: {
     inspector: t("ops.live.inspectorLegend", local("Recorded inspector position marker", "مؤشر موقع مسجّل للمفتش")),
     projected: t("ops.live.projectedNote", local("Recorded positions — not live GPS", "مواقع مسجّلة — ليست تتبعاً مباشراً عبر GPS")),
     freshnessPolicy: t("ops.live.freshnessPolicy", local(
-      "Staleness cadence not yet configured — showing last-observed time only.",
+      "We don't track data freshness yet — showing the last recorded time only.",
       "لم يُضبط معيار حداثة البيانات بعد — يُعرض وقت آخر رصد فقط.",
     )),
     lastObserved: t("ops.live.lastObserved", local("Last recorded position", "آخر موقع مسجّل")),
@@ -337,7 +337,7 @@ export default async function LiveOperations({ searchParams }: {
     inspectorName: t("ops.live.inspectorName", local("Inspector", "المفتش")),
     factoryName: t("ops.live.factoryName", local("Factory", "المصنع")),
     regionName: t("ops.live.regionName", local("Region", "المنطقة")),
-    operationalState: t("ops.live.operationalState", local("Operational state", "الحالة التشغيلية")),
+    operationalState: t("ops.live.operationalState", local("Visit status", "حالة الزيارة")),
     visitReference: t("ops.live.visitReference", local("Visit reference", "مرجع الزيارة")),
     closeDetails: t("ops.live.closeDetails", local("Close inspector details", "إغلاق تفاصيل المفتش")),
     dataIntegrity: t(
@@ -369,11 +369,11 @@ export default async function LiveOperations({ searchParams }: {
       "بيانات موقع غير معقولة ومرفوضة",
     )),
     partialSource: t("ops.live.partialSource", local(
-      "Position source is unavailable. Active visits remain listed without location claims.",
+      "Position data is unavailable. Active visits still appear, without a location.",
       "مصدر المواقع غير متاح. تبقى الزيارات النشطة مدرجة دون ادعاءات عن الموقع.",
     )),
     factorySourceUnavailable: t("ops.live.factorySourceUnavailable", local(
-      "Factory marker source is unavailable. Inspector observations remain independently bounded.",
+      "Factory marker data is unavailable. Inspector positions still show on their own.",
       "مصدر مؤشرات المصانع غير متاح. تبقى مشاهدات المفتشين مستقلة ومحدودة.",
     )),
     sourceNotRecorded: t("ops.live.sourceNotRecorded", local("Not recorded", "غير مسجّل")),

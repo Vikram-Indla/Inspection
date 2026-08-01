@@ -120,15 +120,15 @@ export default async function AdminHome() {
       current="/admin"
       title={text("Control Panel", "لوحة التحكم")}
       context={<span className="t-caption">{text(
-        "What is waiting on you, and what changed recently. Move between areas from the side navigation. Only the areas your roles authorize are shown.",
-        "ما ينتظر إجراءً منك، وما تغيّر مؤخراً. تنقّل بين المجالات من الشريط الجانبي. وتُعرض المجالات المصرّح بها لأدوارك فقط.",
+        "What is waiting on you, and what changed recently. Move between areas using the side menu. You only see the areas your role allows.",
+        "ما ينتظر إجراءً منك، وما تغيّر مؤخراً. تنقّل بين المجالات من القائمة الجانبية. تظهر لك فقط المجالات التي يسمح بها دورك.",
       )}</span>}
     >
       {roleRead.error ? (
         <div className="alert alert-warning" role="alert">
           <div>
-            <strong>{text("Authorization could not be verified.", "تعذّر التحقق من الصلاحيات.")}</strong>{" "}
-            {text("No approval or audit workload is shown.", "لن يتم عرض أعمال الاعتماد أو التدقيق.")}
+            <strong>{text("We could not check your access.", "تعذّر التحقق من صلاحياتك.")}</strong>{" "}
+            {text("No approval or audit work is shown.", "لا تُعرض أي أعمال اعتماد أو تدقيق.")}
           </div>
         </div>
       ) : null}
@@ -136,8 +136,8 @@ export default async function AdminHome() {
       {noAuthorizedPanels ? (
         <div className="saqeel-state panel" role="status">
           <span className="saqeel-state__glyph" aria-hidden="true">✓</span>
-          <h3>{text("No administration work panels are assigned to this role", "لا توجد لوحات عمل إدارية مخصصة لهذا الدور")}</h3>
-          <p className="t-caption">{text("Use the authorized destinations in the navigation rail.", "استخدم الوجهات المصرّح بها في شريط التنقل.")}</p>
+          <h3>{text("No admin panels are assigned to this role", "لا توجد لوحات عمل إدارية مخصصة لهذا الدور")}</h3>
+          <p className="t-caption">{text("Use the pages listed in the side menu.", "استخدم الصفحات المدرجة في القائمة الجانبية.")}</p>
         </div>
       ) : null}
 
@@ -148,21 +148,21 @@ export default async function AdminHome() {
               <div>
                 <h3 id="waiting-on-you-title">{text("Waiting on you", "بانتظار إجراء منك")}</h3>
                 <p className="t-caption">{text(
-                  "Submitted configuration requests you are authorized to approve. Your own requests never appear here; decisions remain protected by maker-checker guards.",
-                  "طلبات التهيئة المُرسَلة التي تملك صلاحية اعتمادها. لا يظهر هنا ما طلبتَه بنفسك؛ وتظل القرارات محمية بضوابط فصل المُنشئ عن المعتمد.",
+                  "Submitted requests you are allowed to approve. Your own requests never appear here. Maker-checker rules protect every decision.",
+                  "الطلبات المُرسَلة التي يُسمح لك باعتمادها. لا تظهر هنا طلباتك الخاصة أبداً. تحمي قواعد فصل المُنشئ عن المعتمد كل قرار.",
                 )}</p>
               </div>
               <Link className="btn btn-secondary btn-touch" href="/admin/compliance-approvals?view=pending">
-                {text("Open approval queue", "فتح قائمة الاعتماد")}
+                {text("Open Awaiting Approval", "فتح قسم بانتظار الاعتماد")}
               </Link>
             </header>
             {requestRead.error || componentRead.error ? (
               <div className="alert alert-warning" role="alert">
                 <div>
-                  <strong>{text("Approval workload is partially unavailable.", "أعمال الاعتماد غير متاحة جزئياً.")}</strong>{" "}
+                  <strong>{text("Some approval work could not load.", "بعض أعمال الاعتماد لم يتم تحميلها.")}</strong>{" "}
                   {requestRead.error
-                    ? text("The request source could not be read; no empty-queue claim is made.", "تعذّرت قراءة مصدر الطلبات؛ لن يتم الادعاء بأن القائمة فارغة.")
-                    : text("Request areas could not be read; the returned requests remain visible.", "تعذّرت قراءة مجالات الطلبات؛ وتظل الطلبات المسترجعة ظاهرة.")}
+                    ? text("We could not read the request list, so we can't say if it's empty.", "تعذّرت قراءة قائمة الطلبات، لذا لا يمكن الجزم بأنها فارغة.")
+                    : text("We could not read some request details, but the requests below are still shown.", "تعذّرت قراءة بعض تفاصيل الطلبات، وتظل الطلبات أدناه ظاهرة.")}
                 </div>
               </div>
             ) : null}
@@ -203,8 +203,8 @@ export default async function AdminHome() {
               <div>
                 <h3 id="recent-changes-title">{text("Recent configuration changes", "آخر تغييرات التهيئة")}</h3>
                 <p className="t-caption">{text(
-                  "Approved changes inside your authorized scope, read from the append-only Activity Log. No event is summarized or inferred here.",
-                  "تغييرات معتمدة داخل نطاقك المصرّح به، مقروءة من سجل النشاط غير القابل للتعديل. لا يُختصر أي حدث ولا يُستنتج.",
+                  "Approved changes you're allowed to see, taken directly from the Activity Log. Nothing here is summarized or guessed.",
+                  "التغييرات المعتمدة التي يُسمح لك برؤيتها، مأخوذة مباشرة من سجل النشاط. لا شيء هنا مُلخّص أو مُخمَّن.",
                 )}</p>
               </div>
               <Link className="btn btn-secondary btn-touch" href="/admin/audit?view=recorder&q=compliance_configuration_request">
@@ -214,8 +214,8 @@ export default async function AdminHome() {
             {auditRead.error ? (
               <div className="alert alert-warning" role="alert">
                 <div>
-                  <strong>{text("Recent changes are unavailable.", "أحدث التغييرات غير متاحة.")}</strong>{" "}
-                  {text("The append-only audit source could not be read; no empty-state claim is made.", "تعذّرت قراءة مصدر التدقيق غير القابل للتعديل؛ لن يتم الادعاء بعدم وجود تغييرات.")}
+                  <strong>{text("Recent changes are not available.", "أحدث التغييرات غير متاحة.")}</strong>{" "}
+                  {text("We could not read the Activity Log, so we can't say there are no changes.", "تعذّرت قراءة سجل النشاط، لذا لا يمكن الجزم بعدم وجود تغييرات.")}
                 </div>
               </div>
             ) : auditRows.length === 0 ? (

@@ -7,8 +7,8 @@ export default function ViolationsError({ reset }: { error: Error & { digest?: s
   useEffect(() => { headingRef.current?.focus(); }, []);
   const ar = typeof document !== "undefined" && !document.cookie.includes("locale=en");
   const copy = ar
-    ? { title: "إعداد المخالفات غير متاح", body: "تعذّر تحميل الكتالوج. لم يُعرض أي ادعاء بعدد صفري أو حالة سليمة.", retry: "إعادة المحاولة" }
-    : { title: "Violation configuration is unavailable", body: "The catalogue could not be loaded. No zero-count or healthy-state claim has been made.", retry: "Retry" };
+    ? { title: "تعذّر تحميل إعداد المخالفات", body: "تعذّر تحميل الكتالوج. هذا لا يعني أن العدد صفر أو أن الحالة سليمة.", retry: "إعادة المحاولة" }
+    : { title: "Violation configuration can't load", body: "The catalogue could not load. This does not mean the count is zero or that everything is fine.", retry: "Retry" };
   return (
     <main id="main-content" className="stack" style={{ padding: "var(--space-8)" }}>
       <section className="sq-banner sq-banner--critical" role="alert" aria-labelledby="violations-error-title">

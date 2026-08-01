@@ -17,13 +17,13 @@ function slaMutationError(error: { message?: string } | null, action: "activate"
   const message = error?.message ?? "";
   if (message.includes("SLA-TIMER-REASON")) return { error: `A reason is required to ${action} this SLA timer.` };
   if (message.includes("SLA-TIMER-NOT-FOUND")) return { error: "SLA timer not found." };
-  if (message.includes("SLA-TIMER-STATE")) return { error: "The SLA timer changed or that action is no longer permitted. Reload and try again." };
-  if (message.includes("SLA-TIMER-DENIED")) return { error: "SLA timer change blocked — an authorized administration role is required." };
+  if (message.includes("SLA-TIMER-STATE")) return { error: "The SLA timer changed, or that action is no longer allowed. Reload and try again." };
+  if (message.includes("SLA-TIMER-DENIED")) return { error: "SLA timer change blocked — you need an admin role for this." };
   if (action === "activate" && (
     message.includes("SLA activation blocked")
     || message.includes("DEC-003")
   )) {
-    return { blocked: "SLA activation blocked by governance guard: calendar not authorized/complete." };
+    return { blocked: "SLA activation blocked: calendar is not approved or complete." };
   }
   return { error: NEUTRAL_WRITE_ERROR };
 }
@@ -67,7 +67,7 @@ export async function requestSlaActivation(_: SlaResult, formData: FormData): Pr
   const { sb, timer } = ctx;
   const reason = String(formData.get("reason") ?? "").trim();
   if (timer.due_at == null || timer.calendar_id == null) {
-    return { blocked: "SLA activation is on hold: no authorized working calendar. The timer stays pending; pause/resume remain available." };
+    return { blocked: "SLA activation is on hold: no approved working calendar. The timer stays pending; pause and resume are still available." };
   }
   if (!reason) return { error: "An activation reason is required." };
   return mutateSlaTimer(sb, timer.id, "activate", reason);
@@ -90,7 +90,7 @@ export async function resumeSlaTimer(_: SlaResult, formData: FormData): Promise<
   const reason = String(formData.get("reason") ?? "").trim();
   const decision = evaluateResume(timer.status as SlaStatus);
   if (!decision.ok) return { error: decision.why };
-  if (!isSlaTransitionAllowed("paused", "running")) return { error: "Resume not permitted." };
+  if (!isSlaTransitionAllowed("paused", "running")) return { error: "Resume not allowed." };
   if (!reason) return { error: "A resume reason is required." };
   return mutateSlaTimer(sb, timer.id, "resume", reason);
 }

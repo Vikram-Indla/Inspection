@@ -83,7 +83,7 @@ export async function deactivateTemplateVersion(_: TemplateResult, formData: For
   const { data, error } = await sb.from("configuration_templates").update({ status: "deactivated", effective_to, deactivation_reason })
     .eq("id", id).in("status", ["published", "locked"]).select("id");
   if (error) { logProviderError("admin template deactivate", error); return { error: NEUTRAL_WRITE_ERROR }; }
-  if (!data?.length) return { error: "Only a governed active template can be deactivated." };
+  if (!data?.length) return { error: "Only an active published template can be deactivated." };
   revalidatePath("/admin/packages");
   return { ok: true };
 }

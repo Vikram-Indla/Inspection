@@ -44,7 +44,7 @@ export async function authorizeOperationsExport(_: OpsResult, formData: FormData
   });
   if (error) {
     console.error("[operations authorize export]", error);
-    return { error: "Export authorization is unavailable or outside your permitted scope. No file was generated." };
+    return { error: "This export could not be authorized, or it's outside what you're allowed to access. No file was generated." };
   }
   const receipt = data as {
     receipt_id?: string; dataset?: string; row_count?: number; correlation_id?: string;
@@ -79,7 +79,7 @@ export async function updateActionFormStatus(_: OpsResult, formData: FormData): 
     .neq("status", "closed") // closed is terminal; never reopen from here (M09-027 blocking stays authoritative)
     .select("id");
   if (error) { console.error("[operations action status]", error); return { error: "The corrective action could not be updated. Nothing was changed. Try again." }; }
-  if (!data || data.length === 0) return { error: "No row updated — outside your RLS scope (actions_rw) or already closed." };
+  if (!data || data.length === 0) return { error: "Nothing was updated — this is outside what you can access, or it's already closed." };
 
   revalidatePath("/operations");
   return { ok: true };
@@ -114,7 +114,7 @@ export async function markNotificationHandled(_: OpsResult, formData: FormData):
     .neq("delivery_state", "handled")
     .select("id");
   if (error) { console.error("[operations notification status]", error); return { error: "The notification could not be marked handled. Try again." }; }
-  if (!data || data.length === 0) return { error: "No row updated — outside your notification scope or already handled." };
+  if (!data || data.length === 0) return { error: "Nothing was updated — this is outside what you can access, or it's already handled." };
 
   revalidatePath("/operations");
   return { ok: true };
@@ -132,7 +132,7 @@ export async function decideGeoOverride(_: OpsResult, formData: FormData): Promi
   const requestId = String(formData.get("request_id") ?? "");
   const decision = String(formData.get("decision") ?? "");
   const reason = String(formData.get("decision_reason") ?? "").trim();
-  if (!requestId || !["approved", "rejected"].includes(decision)) return { error: "Invalid override decision." };
+  if (!requestId || !["approved", "rejected"].includes(decision)) return { error: "Invalid location exception decision." };
   if (decision === "rejected" && !reason) return { error: "A rejection reason is mandatory." };
 
   const { data, error } = await sb.rpc("decide_geo_override", {
@@ -144,11 +144,11 @@ export async function decideGeoOverride(_: OpsResult, formData: FormData): Promi
     // Keep detailed RLS/RPC diagnostics server-side. The database has already
     // refused the write, so the UI must not claim a decision occurred.
     console.error("[operations decideGeoOverride]", error);
-    return { error: "The override could not be decided. It may be expired, outside your Operations scope, or no longer pending." };
+    return { error: "This location exception could not be decided. It may have expired, be outside your Operations access, or no longer be pending." };
   }
   const decided = (Array.isArray(data) ? data[0] : data) as { status?: string } | null;
   if (decided?.status === "expired") {
-    return { error: "No decision was saved — the override expired before Operations could act." };
+    return { error: "No decision was saved — the location exception expired before Operations could act." };
   }
   // The Operations page composes several large live ledgers. Revalidating it
   // synchronously inside the action can leave the client transition displaying
@@ -186,7 +186,7 @@ export async function decideActiveCancellation(_: OpsResult, formData: FormData)
     if (r.error === "CANCEL_SELF_DECIDE") return { error: "You cannot decide your own cancellation request." };
     if (r.error === "CANCEL_ALREADY_DECIDED") return { error: "This request was already decided — the queue will refresh." };
     if (r.error === "CANCEL_REJECTION_REASON_REQUIRED") return { error: "A rejection reason is mandatory." };
-    return { error: "The cancellation could not be decided. It may be outside your Operations scope or no longer pending." };
+    return { error: "The cancellation could not be decided. It may be outside your Operations access, or no longer pending." };
   }
   return { ok: true };
 }

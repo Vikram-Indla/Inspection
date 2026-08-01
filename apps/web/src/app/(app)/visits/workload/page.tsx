@@ -41,7 +41,7 @@ export default async function Workload() {
     console.error(`[visits.workload] load failed: ${error.message}`);
     return (
       <Shell current="/visits" title={t("visit.load.title", "Inspector workload")}>
-        <div className="sq-banner sq-banner--critical" role="alert"><div>{t("visit.load.loadErrorNeutral", "Assignments are temporarily unavailable. Please try again.")}</div></div>
+        <div className="sq-banner sq-banner--critical" role="alert"><div>{t("visit.load.loadErrorNeutral", "Assignments aren't available right now. Try again.")}</div></div>
       </Shell>
     );
   }
@@ -103,7 +103,7 @@ export default async function Workload() {
               ))}
               <th scope="col" className="sq-td-num">{t("visit.load.colLater", "Later")}</th>
               <th scope="col" className="sq-td-num">{t("visit.load.colTotal", "Active total")}</th>
-              <th scope="col" style={{ inlineSize: 180 }}>{t("visit.load.colUtilization", "Relative utilization")}</th>
+              <th scope="col" style={{ inlineSize: 180 }}>{t("visit.load.colUtilization", "Relative workload")}</th>
             </tr></thead>
             <tbody>
               {inspectors.map(a => (
@@ -134,7 +134,7 @@ export default async function Workload() {
           <p className="t-caption">
             {t("visit.load.dailyCap", "Daily visit limit: {n} (configured).").replace("{n}", String(dailyCap))}
             {" "}
-            {t("visit.load.relativeNote", "Utilization is relative to the busiest inspector — weekly counts are compared, not capped. Weeks start Sunday ( calendar).")}
+            {t("visit.load.relativeNote", "This shows how busy each inspector is, compared with the busiest inspector. Weekly counts are compared, not capped. Weeks start on Sunday.")}
           </p>
         </div>
       )}

@@ -26,7 +26,7 @@ const MVP3_AR_FALLBACK: Dict = {
   "mvp3.integrations.exports": "صادرات مشاركة البيانات",
   "mvp3.integrations.exportsHelp": "الحالة «مُعدّ» لا تعني «تم التسليم». يتطلب التسليم بصمة للعنصر وإيصالاً.",
   "mvp3.integrations.noExports": "لا توجد وظائف تصدير مرئية وفق سياسات الوصول.",
-  "mvp3.operations.title": "عمليات المنصة والمرونة",
+  "mvp3.operations.title": "عمليات النظام والمرونة",
   "mvp3.operations.endpoints": "عقود نقاط التكامل",
   "mvp3.operations.configured": "مهيأة",
   "mvp3.operations.openErrors": "سجلات الأخطاء المفتوحة",
@@ -84,9 +84,9 @@ const MVP3_AR_FALLBACK: Dict = {
   "mvp3.devices.noCommands": "لا توجد أوامر مرئية وفق سياسات الوصول.",
   // Added by TASK-I18N-RTL-AUDIT-001 — DRAFT, not yet reviewed like the
   // entries above. See product-contract/evidence/TASK-I18N-RTL-AUDIT-001.md.
-  "mvp3.devices.badge": "14 صفًا محكومًا",
-  "mvp3.integrations.badge": "14 صفًا محكومًا",
-  "mvp3.operations.badge": "عمليات مغلقة عند الفشل",
+  "mvp3.devices.badge": "14 صفًا مدرجًا",
+  "mvp3.integrations.badge": "14 صفًا مدرجًا",
+  "mvp3.operations.badge": "تتوقف العمليات تلقائيًا عند حدوث خطأ",
   "mvp3.security.badge": "وصول للأدلة مقيّد بالغرض",
   "mvp3.enforcement.badge": "حالات مرتبطة بالمصدر",
 };

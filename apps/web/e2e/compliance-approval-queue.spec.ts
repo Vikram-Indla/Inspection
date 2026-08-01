@@ -40,11 +40,11 @@ test.describe("Prompt 04 Compliance Approval Queue contract", () => {
     for (const label of ["Pending Review", "Partially Approved", "Ready to Publish", "Decision progress", "Dependencies", "Correlation"])
       expect(queue).toContain(label);
     expect(queue).toContain('.order("submitted_at", { ascending: true })');
-    expect(queue).toContain("no unapproved SLA or priority is inferred");
+    expect(queue).toContain("no deadline or priority is assumed");
   });
 
   test("review workspace preserves component compare, comments and publication controls", () => {
-    expect(queue).toContain("Open review workspace");
+    expect(queue).toContain("Open review");
     expect(workspace).toContain("Current value");
     expect(workspace).toContain("Proposed value");
     expect(workspace).toContain("Approve component");
@@ -57,9 +57,9 @@ test.describe("Prompt 04 Compliance Approval Queue contract", () => {
 
   test("queue performs no direct decision writes and exposes honest states", () => {
     expect(queue).not.toMatch(/\.insert\(|\.update\(|\.delete\(|\.rpc\(/);
-    expect(queue).toContain("Approval Queue unavailable");
-    expect(queue).toContain("returned zero eligible maker-checker assignments");
-    expect(readWeb("src/app/(app)/admin/compliance-approvals/loading.tsx")).toContain("Loading Compliance Approval Queue");
+    expect(queue).toContain("Awaiting Approval can't load");
+    expect(queue).toContain("found no eligible maker-checker assignments");
+    expect(readWeb("src/app/(app)/admin/compliance-approvals/loading.tsx")).toContain("Loading Awaiting Approval");
     expect(readWeb("src/app/(app)/admin/compliance-approvals/error.tsx")).toContain("no decision was recorded");
   });
 });

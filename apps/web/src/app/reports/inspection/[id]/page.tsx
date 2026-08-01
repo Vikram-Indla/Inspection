@@ -57,7 +57,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
     if (error) console.error("[inspection report] load failed", error);
     return (
       <div className="rp-page"><div className="rp-doc">
-        <p className="sq-caption">{error ? t("report.loadError", "The inspection report is temporarily unavailable. Nothing was changed. Try again.") : t("report.notFound", "Report unavailable — inspection not in your scope or does not exist (RLS).")}</p>
+        <p className="sq-caption">{error ? t("report.loadError", "The inspection report isn’t available right now. Nothing changed. Try again.") : t("report.notFound", "Report not available — this inspection isn’t in your scope, or it doesn’t exist.")}</p>
       </div></div>
     );
   }
@@ -91,7 +91,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
   // now also enforced at the DB layer by trg_guard_approved_requires_submission).
   const approvedWithoutVersion = ins.status === "approved" && !latest;
   const displayStatus = approvedWithoutVersion
-    ? t("report.integrityBlocked.status", "approval invalid — no immutable version")
+    ? t("report.integrityBlocked.status", "approval invalid — no final submitted version")
     : enumL(ins.status);
   const strings = {
     print: t("report.print", "Print / Save as PDF"),
@@ -125,11 +125,11 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
 
         {approvedWithoutVersion ? (
           <div className="sq-banner sq-banner--critical no-print" role="alert"><div>
-            <strong>{t("report.integrityBlocked.title", "Data-integrity defect — invalid approval")}</strong> {t("report.integrityBlocked.body", "This inspection is recorded as approved but has no immutable submitted version on file. The approval is not valid and must not be relied on as an official decision until an immutable submission exists (DEF-WF-006).")}
+            <strong>{t("report.integrityBlocked.title", "Data problem — invalid approval")}</strong> {t("report.integrityBlocked.body", "This inspection is marked as approved, but it has no final submitted version on file. The approval is not valid. Don’t treat it as an official decision until a final submission exists (DEF-WF-006).")}
           </div></div>
         ) : !latest && (
           <div className="sq-banner sq-banner--warning no-print"><div>
-            <strong>{t("report.notSubmitted.title", "No immutable submission yet.")}</strong> {t("report.notSubmitted.body", "The official report is generated from the submitted version snapshot; identity and configuration below are live records.")}
+            <strong>{t("report.notSubmitted.title", "No final submission yet.")}</strong> {t("report.notSubmitted.body", "The official report comes from the submitted version snapshot. The identity and visit details below are live records.")}
           </div></div>
         )}
 
@@ -151,14 +151,14 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
           </section>
 
           <section className="rp-section">
-            <h3>{t("report.visit.heading", "Visit configuration")}</h3>
+            <h3>{t("report.visit.heading", "Visit details")}</h3>
             <dl className="rp-kv">
               <div><dt>{t("report.visit.id", "Visit")}</dt><dd className="sq-numeric">{v.id.slice(0, 8)}</dd></div>
               <div><dt>{t("report.visit.type", "Type / mode")}</dt><dd>{enumL(v.visit_type)} · {enumL(v.execution_mode)}</dd></div>
               <div><dt>{t("report.visit.window", "Window")}</dt><dd className="sq-numeric">{dt(v.window_start)} → {dt(v.window_end)}</dd></div>
               <div><dt>{t("report.visit.state", "Lifecycle")}</dt><dd>{enumL(v.planning_status)} · {enumL(v.operational_state)}</dd></div>
               <div><dt>{t("report.visit.inspector", "Assigned inspector")}</dt><dd>{inspector}</dd></div>
-              <div><dt>{t("report.visit.package", "Checklist package (locked)")}</dt><dd>{pkg.packages.code} · {pkg.packages.title} <span className="sq-version">{pkg.version_label}</span></dd></div>
+              <div><dt>{t("report.visit.package", "Checklist version used for the inspection")}</dt><dd>{pkg.packages.code} · {pkg.packages.title} <span className="sq-version">{pkg.version_label}</span></dd></div>
             </dl>
           </section>
         </section>
@@ -168,7 +168,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
           <h2 id="rp-layer-2" className="rp-layer__heading">{t("report.layer2.heading", "Findings and compliance")}</h2>
           {latest && (
             <section className="rp-section">
-              <h3>{t("report.items.heading", "Checklist responses — immutable v{n}").replace("{n}", String(latest.version_number))}</h3>
+              <h3>{t("report.items.heading", "Checklist responses — final version v{n}").replace("{n}", String(latest.version_number))}</h3>
               {sections.map(s => (
                 <div key={s.key} className="rp-section">
                   <strong>{s.title}</strong>
@@ -284,7 +284,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
                 {subs.length === 0 && <tr><td colSpan={4} className="sq-caption">{t("report.hist.none", "No submitted versions yet.")}</td></tr>}
                 {subs.map(s => (
                   <tr key={s.id}>
-                    <td><span className="sq-version">v{s.version_number}</span> {t("report.hist.immutable", "immutable")}</td>
+                    <td><span className="sq-version">v{s.version_number}</span> {t("report.hist.immutable", "final")}</td>
                     <td className="sq-td-num sq-numeric">{dt(s.submitted_at)}</td>
                     <td>{s.profiles?.full_name ?? "—"}</td>
                     <td>{s.acknowledgement?.name ?? "—"}{s.acknowledgement?.signature_data_url ? ` · ${t("report.hist.signed", "signed")}` : ""}</td>
@@ -329,7 +329,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
 
         <footer className="rp-foot">
           <span>{t("report.foot.generated", "Generated from live records")} · <span className="sq-numeric">{dt(new Date().toISOString())}</span></span>
-          <span>{t("report.foot.immutable", "Immutable official inspection report")}</span>
+          <span>{t("report.foot.immutable", "Final official inspection report")}</span>
         </footer>
       </div>
     </div>
