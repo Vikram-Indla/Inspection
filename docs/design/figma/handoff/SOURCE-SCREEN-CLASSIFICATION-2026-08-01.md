@@ -54,7 +54,7 @@ every interaction step as its own frame.
 
 ## Classification
 
-### MIGRATE — 5 concepts, 90 frames
+### MIGRATE — 4 concepts, 168 frames
 
 Real capabilities with a shipped repo route and **no governed screen** in the web master.
 
@@ -68,7 +68,7 @@ Real capabilities with a shipped repo route and **no governed screen** in the we
 *(Establishment Details and Establishment Management are one concept in two naming
 conventions — 75 + 27 = 102 frames, one screen family.)*
 
-### MERGE — 3 concepts, 72 frames
+### MERGE — 4 concepts, 88 frames
 
 Already covered by a governed inspector screen. Do not create a second contract.
 
@@ -77,6 +77,7 @@ Already covered by a governed inspector screen. Do not create a second contract.
 | My Tasks | 41 | SCR-IPAD-600 Assigned Visits → `/field/my-tasks` | `305:40150` |
 | Inspection Items | 23 | SCR-IPAD-630 Inspection Workspace → `/field/inspection/[id]` | `305:40533` |
 | Violation Report | 8 | SCR-IPAD-650 Findings & Actions → `/field/inspection/[id]/results` | `306:40708` |
+| Production Line Report | 16 | Summons Notice records flow → record type *production line seizure* | `340:42098` |
 
 ### REUSABLE COMPONENT — 3 concepts, 29 frames
 
@@ -156,6 +157,7 @@ has since ruled out of scope.
 
 ## Not claimed
 
-This is classification with route reconciliation. **No screen has been built from it**, and
-every migrate row carries `Jira: NONE FOUND`. Frame counts are evidence of scale, not of
-delivery.
+This is classification with route reconciliation. Two of the four migrate concepts have since
+been built — Establishments (batch 04) and the Summons Notice records flow (batch 06), both EN
+only for the records flow. Every migrate row still carries `Jira: NONE FOUND`. Frame counts are
+evidence of scale, not of delivery.

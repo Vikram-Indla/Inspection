@@ -67,10 +67,10 @@ Governed stages first, then ungoverned. `→` marks the primary path.
 |---|---|---|---|---|---|
 | Sign in | Inspector | `/login/field` | yes | 5 frames — **reference only** | Web login settled under DEC-011 |
 | Home / daily briefing | Inspector | `/field` | yes (taskbar) | 1 frame — **reference only** | **Build a contract** |
-| Establishments | Inspector | `/field/establishments`, `/establishments/unregistered` | yes (taskbar) | **102 frames** | **MIGRATE** — highest-value ungoverned screen |
-| Summons notices | Inspector | `/field/summons-notices` | **no** | **47 frames** | **MIGRATE** + entry point pending |
-| Destruction reports | Inspector | `/field/destruction-reports` | **no** | **15 frames** | **MIGRATE** + entry point pending |
-| Incident reports | Inspector | `/field/incident-reports` | **no** | **4 frames** | **MIGRATE** + entry point pending |
+| Establishments | Inspector | `/field/establishments`, `/establishments/unregistered` | yes (taskbar) | **102 frames** | **BUILT** EN · Dark · AR + 3 states — `336:45825` · `336:46018` · `336:46351` |
+| Summons notices / records flow | Inspector | `/field/summons-notices` | **no** | **47 frames** | **BUILT** EN — `340:42098`; needs a `FieldNav` link |
+| Destruction reports | Inspector | `/field/destruction-reports` | **no** | 15 frames | Record type in the flow above |
+| Incident reports | Inspector | `/field/incident-reports` | **no** | 4 frames | Record type in the flow above |
 | Sample collection reports | Inspector | `/field/sample-collection-reports` | **no** | record type in the Summons flow | Entry point = the records screen |
 | Facility reports | Inspector | `/field/facility-reports` | **no** | record type in the Summons flow | Entry point = the records screen |
 | Production line seizure | Inspector | **no route** | — | record type in the Summons flow | Route shape decision — see batch 06 |
@@ -93,7 +93,7 @@ Governed stages first, then ungoverned. `→` marks the primary path.
 | Routes with a governed Figma contract | **11** (8 contracts, some spanning two routes) |
 | Routes reachable from the shipped app | **29** |
 | Routes both governed **and** reachable | **10** |
-| Source concepts with no repo route | **1** (Production Line Report) |
+| Source concepts with no repo route | **3** — product seizure, seizure release, production line seizure; all record types, not screens |
 
 **10 of 36.** That is the real number. It is not a frame count and it is not flattering.
 
@@ -122,6 +122,7 @@ updated programmatically.
 
 ## Not claimed
 
-This is a journey map with evidence behind every row. **No new screen has been built from
-it.** Stages 1–8 are built and verified; everything in the ungoverned table is a contract that
-does not exist yet.
+This is a journey map with evidence behind every row. Two ungoverned screens have since been
+built from it — Establishments and the records flow. Stages 1–8 are built and verified. Every
+other row in the ungoverned table is a contract that does not exist yet, and no row anywhere has
+Jira traceability.
