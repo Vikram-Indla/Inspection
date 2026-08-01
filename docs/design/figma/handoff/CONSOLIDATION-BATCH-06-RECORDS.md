@@ -99,3 +99,68 @@ this one. It belongs with the `section-title` text-style gap as a component-libr
 
 **Not claimed:** one EN frame with verified reflow. No Dark, no AR, no states, and the
 route-shape decision above is unresolved.
+
+---
+
+# Batch 07 — Dark and AR, and a collision-free home for ungoverned screens
+
+## Sections
+
+Three sibling sections now hold every migrated ungoverned screen, all clear of the contested
+`305:40149`:
+
+| Section | Node |
+|---|---|
+| `SCREENS — INSPECTOR UNGOVERNED (migrated from source · no catalogue row) · EN · Light` | `339:42098` |
+| `… · EN · Dark` | `342:42170` |
+| `… · AR · RTL` | `342:42171` |
+
+The Establishments Dark and AR frames were moved out of the governed theme sections into these,
+so all six ungoverned frames sit together and none of them depends on a section another agent
+is rebuilding.
+
+## Frames
+
+| Screen | EN · Light | EN · Dark | AR · RTL |
+|---|---|---|---|
+| Establishments | `336:45825` | `336:46018` | `336:46351` |
+| Summons Notice & Records | `340:42098` | **`342:42172`** | **`342:44733`** |
+
+Dark is a mode switch, not a repaint — `setExplicitVariableModeForCollection` on the `Color`
+collection. EN Light was pinned to `Light` explicitly at the same time so it cannot inherit a
+mode from a parent later.
+
+## Arabic
+
+Every Arabic string in `342:44733` is the **source design's own copy** from frame `2312:158225`
+— `مذكرة استدعاء`, `نوع المحضر`, `تاريخ المحضر`, `تأكيد الحضور والتوقيع`,
+`ارفع صورة التوقيع بصيغة PNG أو JPG أو PDF.` and the eight record-type names.
+
+Combined with batch 04, which used the repo's `page.tsx` strings, **neither ungoverned screen
+carries model-authored Arabic.** That is the standard to hold: take the copy from the source
+design or the shipped app, never invent it.
+
+The one authored string is the routeless-record-types note, which describes a repository fact
+that exists in no design and no app.
+
+## Verification — all six frames
+
+| Frame | 1280 | 1024 | 834 | 680 |
+|---|--:|--:|--:|--:|
+| Establishments EN · Light | 0 | 0 | 0 | 0 |
+| Establishments EN · Dark | 0 | 0 | 0 | 0 |
+| Establishments AR · RTL | 0 | 0 | 0 | 0 |
+| Records EN · Light | 0 | 0 | 0 | 0 |
+| Records EN · Dark | 0 | 0 | 0 | 0 |
+| Records AR · RTL | 0 | 0 | 0 | 0 |
+
+Also 0 across all six: off-ramp type sizes, `Placeholder text` literals, Arabic left in a mono
+slot.
+
+## Still outstanding
+
+- Records flow states — validation, saved, submitted.
+- Establishments states in Dark and AR (EN-only is the file convention, delta D5).
+- The route-shape decision from batch 06 — one flow with eight types, or separate routes.
+- A `FieldNav` entry point for the records flow.
+- **Jira: NONE FOUND** on both screens.
