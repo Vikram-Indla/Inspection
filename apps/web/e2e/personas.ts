@@ -91,7 +91,10 @@ export const PERSONAS = {
   },
   inspector: {
     get email(): string { return personaEmail("SAQEEL_TEST_INSPECTOR_EMAIL", "inspector"); },
-    home: "/field",
+    // Governed 2026-08-03: every role lands on /dashboard after login; /field
+    // is reached via navigation, not as the login home. Observed live during
+    // this session's auth setup (redirected to /dashboard, not /field).
+    home: "/dashboard",
     get password(): string { return sharedPassword("inspector"); },
   },
   reviewer: {

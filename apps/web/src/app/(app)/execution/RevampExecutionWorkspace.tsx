@@ -296,12 +296,12 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
         <section className="sq-execution__tablewrap">
           <table className="table">
             <thead><tr>
-              <th>{copy(locale, "Visit ref", "مرجع الزيارة")}</th><th>{copy(locale, "Factory", "المصنع")}</th><th>{copy(locale, "Planning window", "نافذة التخطيط")}</th><th>{copy(locale, "Execution date", "تاريخ التنفيذ")}</th><th>{copy(locale, "Visit type", "نوع الزيارة")}</th><th>{copy(locale, "Visit mode", "نمط الزيارة")}</th><th>{copy(locale, "Risk", "المخاطر")}</th>
-              {view === "all" && <><th>{copy(locale, "Inspector", "المفتش")}</th><th>{copy(locale, "Region / city", "المنطقة / المدينة")}</th></>}
-              <th>{copy(locale, "Operational state", "الحالة التشغيلية")}</th>
-              {view === "mine" && <><th>{copy(locale, "Preparation", "التحضير")}</th><th>{copy(locale, "Report type", "نوع التقرير")}</th></>}
-              {view === "all" && <th>{copy(locale, "Location data", "بيانات الموقع")}</th>}
-              <th>{copy(locale, "Action", "الإجراء")}</th>
+              <th scope="col">{copy(locale, "Visit ref", "مرجع الزيارة")}</th><th scope="col">{copy(locale, "Factory", "المصنع")}</th><th scope="col">{copy(locale, "Planning window", "نافذة التخطيط")}</th><th scope="col">{copy(locale, "Execution date", "تاريخ التنفيذ")}</th><th scope="col">{copy(locale, "Visit type", "نوع الزيارة")}</th><th scope="col">{copy(locale, "Visit mode", "نمط الزيارة")}</th><th scope="col">{copy(locale, "Risk", "المخاطر")}</th>
+              {view === "all" && <><th scope="col">{copy(locale, "Inspector", "المفتش")}</th><th scope="col">{copy(locale, "Region / city", "المنطقة / المدينة")}</th></>}
+              <th scope="col">{copy(locale, "Operational state", "الحالة التشغيلية")}</th>
+              {view === "mine" && <><th scope="col">{copy(locale, "Preparation", "التحضير")}</th><th scope="col">{copy(locale, "Report type", "نوع التقرير")}</th></>}
+              {view === "all" && <th scope="col">{copy(locale, "Location data", "بيانات الموقع")}</th>}
+              <th scope="col">{copy(locale, "Action", "الإجراء")}</th>
             </tr></thead>
             <tbody>{visibleRows.map(row => (
               <tr key={row.id}>

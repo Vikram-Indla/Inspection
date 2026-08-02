@@ -14,8 +14,8 @@ export function CreateDelegationForm({
   const [state, action, pending] = useActionState<DelegationResult, FormData>(createDelegation, {});
   return (
     <form action={action} className="panel dg-composer" style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-      <div className="sq-field"><label className="sq-field__label">{s.delegator}</label>
-        <input className="sq-input" value={delegatorName} readOnly disabled /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="dg-delegator">{s.delegator}</label>
+        <input className="sq-input" id="dg-delegator" value={delegatorName} readOnly disabled /></div>
       <div className="sq-field"><label className="sq-field__label" htmlFor="dg-to">{s.delegate}</label>
         <input className="sq-input" id="dg-to" name="delegate_email" type="email" required />
         <p className="t-caption">{s.delegateHelp}</p></div>

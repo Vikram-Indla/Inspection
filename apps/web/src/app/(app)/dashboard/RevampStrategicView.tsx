@@ -112,13 +112,13 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
               ["sector", "Sector", "القطاع"],
               ["authority", "Authority", "الجهة"],
             ].map(([id, en, ar]) => (
-              <a className="seg-opt" key={id} href={paramsHref(id)} aria-current={group === id} aria-pressed={group === id}>{copy(locale, en, ar)}</a>
+              <a className="seg-opt" key={id} href={paramsHref(id)} aria-current={group === id}>{copy(locale, en, ar)}</a>
             ))}
           </nav>
         </div>
         <div className="table-wrap">
           <table className="table">
-            <thead><tr><th>{copy(locale, "Lens value", "قيمة العدسة")}</th><th>{copy(locale, "Compliance", "الامتثال")}</th><th>{copy(locale, "Records", "السجلات")}</th></tr></thead>
+            <thead><tr><th scope="col">{copy(locale, "Lens value", "قيمة العدسة")}</th><th scope="col">{copy(locale, "Compliance", "الامتثال")}</th><th scope="col">{copy(locale, "Records", "السجلات")}</th></tr></thead>
             <tbody>
             {grouped.length ? grouped.slice(0, 8).map(row => (
               <tr key={row.label}>
