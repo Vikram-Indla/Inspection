@@ -1,0 +1,104 @@
+schema_version: "1.0"
+packet_id: "REQ-ALIGNMENT-CLOSURE-IMPLEMENTATION-001"
+task_id: "TASK-REQ-ALIGNMENT-CLOSURE-001"
+status: "ACTIVE_LOCAL_IMPLEMENTATION"
+authorized_at: "2026-07-29"
+authorized_by: "Vikram Indla / Product Owner"
+delivery_actor: "Codex"
+authorization: >
+  One bounded exception to the permanent no-holder rule. Repository changes
+  and local tests are authorized. Drive, production database, deployment,
+  account changes, push and merge are excluded.
+base_sha: "58b71f19"
+branch: "codex/requirements-alignment-closure"
+gate: "G10 verification / G11 hardening"
+requirements:
+  - "REQ-005"
+  - "REQ-006"
+  - "REQ-007"
+  - "REQ-008"
+  - "REQ-010"
+  - "REQ-011"
+  - "REQ-012"
+  - "REQ-013"
+  - "REQ-014"
+  - "REQ-015"
+  - "REQ-016"
+  - "REQ-017"
+  - "REQ-018"
+decisions:
+  immediate_manual_establishment:
+    outcome: "Retain as a separately permissioned exception."
+    constraints:
+      - "Normal Single Planning remains registered-establishment only."
+      - "Manual records remain visibly unverified and never overwrite Senaei or master establishment data."
+  stale_saved_target:
+    outcome: "Preserve the historical snapshot but require current target reselection before publication."
+  planning_cutoff:
+    outcome: "Inclusive configured 720-hour boundary."
+    exact_pass: "720:00:00.000"
+    exact_fail: "719:59:59.999"
+    provenance: "Persist rule id/version, evaluated server time, cutoff time and result."
+trace:
+  planning_rules: ["PLN-R03", "PLN-R05", "PLN-R08", "PLN-R10"]
+  journeys: ["PLN-J03", "PLN-J04", "PLN-J07", "PLN-J13", "PLN-J14", "PLN-J15", "PLN-J19", "PLN-J20"]
+  acceptance:
+    - "AC-0033"
+    - "AC-0044"
+    - "AC-0045"
+    - "AC-0046"
+    - "AC-0060"
+    - "AC-0062"
+    - "AC-0063"
+    - "AC-0080"
+    - "AC-0086"
+    - "AC-0453"
+    - "AC-0458"
+allowed_paths:
+  - "supabase/migrations/*_requirements_alignment_closure.sql"
+  - "supabase/tests/*_requirements_alignment_closure.sql"
+  - "apps/web/src/app/(app)/planning/**"
+  - "apps/web/src/lib/planning/**"
+  - "apps/web/e2e/requirements-alignment-closure.spec.ts"
+  - "product-contract/evidence/REQ-ALIGNMENT-CLOSURE-IMPLEMENTATION-001.md"
+  - "product-contract/operationalization/coordination/batches/REQ-ALIGNMENT-CLOSURE-IMPLEMENTATION-001.yaml"
+prohibited:
+  - "Existing migration edits"
+  - "New CSS, tokens, routes or governed values"
+  - "Drive writes"
+  - "Production database writes"
+  - "Deployment"
+  - "Account mutation"
+  - "Push or merge"
+evidence_required:
+  - "Local source contract tests covering positive, negative, exact boundary, replay and rollback semantics."
+  - "No mutation of historical target snapshots or source master data."
+  - "Exact forward-only migration and grant/RLS review."
+  - "Authenticated non-production browser/database proof remains required before tracker closure."
+local_acceptance:
+  source_contract:
+    result: "PASS"
+    count: "6/6"
+  transactional_sql_probe:
+    result: "PASS"
+    count: "22/22"
+    rollback: true
+    covers:
+      - "Target migration clean apply on isolated probe schema and idempotent replay."
+      - "RLS and grants."
+      - "Exact 720h boundary and +/-1ms."
+      - "Attachment missing, negative, nonnumeric, zero, exact max and max+1."
+      - "Recommendation ordering, ties, unavailable factors and inactive-account exclusion."
+      - "Single, Bulk and Immediate automatic-assignment trigger execution."
+      - "Override audit and idempotency wiring."
+  repository_clean_reset:
+    result: "BLOCKED_PREEXISTING"
+    reason: >-
+      Duplicate migration versions stop the standard runner; test-only
+      normalized ordering then reaches an older package migration rejected by
+      its maker-checker guard. This bounded packet does not repair baseline
+      migration history.
+stop_conditions:
+  - "Any required UI markup change before approved-design class/structure confirmation."
+  - "Any provider, production or external-state write."
+  - "Any unresolved policy value not fixed by this packet."

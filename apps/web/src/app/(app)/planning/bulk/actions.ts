@@ -152,7 +152,9 @@ export async function loadBulkSelection(ids: string[], window?: { start: string;
   const clean = [...new Set(ids)].filter(id => /^[0-9a-f-]{36}$/i.test(id)).slice(0, 500);
   if (clean.length === 0) return { factories: [], packages: [], inspectors: [] };
   const [factoryRead, packageRead, inspectorRead, lookupRead] = await Promise.all([
-    sb.from("factories").select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, visits(planning_status, visit_type)").in("id", clean),
+    sb.from("factories")
+      .select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, industrial_licenses!inner(commercial_registration_id), visits(planning_status, visit_type)")
+      .not("industrial_licenses.commercial_registration_id", "is", null).in("id", clean),
     sb.from("package_versions").select("id, version_label, packages(code)").in("status", ["published", "locked"])
       .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`),
     sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
@@ -331,7 +333,8 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   // commit are dropped and named in the result ledger. Nothing is silently
   // included and nothing is silently dropped.
   const { data: facRows, error: facErr } = await sb.from("factories")
-    .select("id, factory_code, name, official_lat, official_lng").in("id", factoryIds);
+    .select("id, factory_code, name, official_lat, official_lng, industrial_licenses!inner(commercial_registration_id)")
+    .not("industrial_licenses.commercial_registration_id", "is", null).in("id", factoryIds);
   if (facErr) {
     console.error("[ publishBulkPlan] factory partition read failed:", facErr.message);
     return { error: NEUTRAL_READ_ERROR };
@@ -577,7 +580,9 @@ export async function validateBulkPlan(input: {
 
   // factory existence + display names for blocker targets (+ official location
   // for the M6 missing-location eligibility reason)
-  const { data: facRows, error: facErr } = await sb.from("factories").select("id, factory_code, name, official_lat, official_lng").in("id", ids);
+  const { data: facRows, error: facErr } = await sb.from("factories")
+    .select("id, factory_code, name, official_lat, official_lng, industrial_licenses!inner(commercial_registration_id)")
+    .not("industrial_licenses.commercial_registration_id", "is", null).in("id", ids);
   if (facErr) { console.error("[ validate] factories:", facErr.message); blockers.push({ kind: "srcFactory" }); return done({}); }
   const label = (fid: string) => { const f = (facRows ?? []).find(x => x.id === fid); return f ? `${f.name} (${f.factory_code})` : fid.slice(0, 8); };
 
