@@ -41,6 +41,7 @@ import OpsMap, { type OpsMapStrings, type OpsPin } from "../operations/OpsMap";
 import styles from "./dashboard.module.css";
 import RevampStrategicView from "./RevampStrategicView";
 import RevampOperationalView from "./RevampOperationalView";
+import { ROLE_DASHBOARD_METRICS, type DashboardPersona } from "@/lib/dashboard-role";
 
 type Locale = "en" | "ar";
 type DashboardMetrics = ReturnType<typeof import("./metrics").buildDashboardMetrics>;
@@ -104,6 +105,31 @@ function stripStrings(locale: Locale): MetricStripStrings {
     blockedTitle: copy(locale, "Governed boundary", "حد معتمد"),
     drillFallback: copy(locale, "Open records", "فتح السجلات"),
   };
+}
+
+export function RoleDashboardSummary({ locale, persona, projection, partialSources }: {
+  locale: Locale;
+  persona: DashboardPersona;
+  projection: DashboardKpiProjection;
+  partialSources: string[];
+}) {
+  const roleName = {
+    admin: copy(locale, "Admin", "الإدارة"),
+    planner: copy(locale, "Planner", "المخطط"),
+    supervisor: copy(locale, "Supervisor", "المشرف"),
+    inspector: copy(locale, "Inspector", "المفتش"),
+  }[persona];
+  const strip = stripFor(projection, [...ROLE_DASHBOARD_METRICS[persona]], locale, partialSources);
+  return <section className="panel stack" aria-labelledby="role-dashboard-summary">
+    <div className="panel-header">
+      <div>
+        <p className="eyebrow">{copy(locale, "Your work", "عملك")}</p>
+        <h2 className="panel-title" id="role-dashboard-summary">{roleName}</h2>
+      </div>
+      <span className="badge badge-info">{copy(locale, "RLS scoped", "مقيّد بسياسات الصفوف")}</span>
+    </div>
+    <MetricStrip metrics={strip.metrics} methodology={strip.methodology} strings={stripStrings(locale)} />
+  </section>;
 }
 
 function Panel({ title, meta, children, accent = false }: {

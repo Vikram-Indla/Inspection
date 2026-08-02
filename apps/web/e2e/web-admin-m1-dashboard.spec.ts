@@ -46,17 +46,17 @@ async function waitForMapEvidence(page: Page) {
 }
 
 test.describe("WA-M1-AC-001/002/005 source truth and negative contracts", () => {
-  test("the route enforces the approved Operations/Leadership contract through the user-scoped client", () => {
-    expect(dashboardPage).toContain('const dashboardRoleKeys = ["supervisor", "ops", "leadership"] as const');
+  test("the route admits all four canonical roles through the user-scoped client", () => {
+    expect(dashboardPage).toContain("dashboardPersonaFor");
     expect(dashboardPage).toContain('.eq("user_id", user.id)');
-    expect(dashboardPage).toContain("if (!mayViewDashboard) redirect(\"/launch\")");
+    expect(dashboardPage).toContain("if (!dashboardPersona) redirect(\"/launch/no-workspace\")");
     expect(dashboardPage).toContain("const sb = await supabaseServer()");
     expect(dashboardPage).not.toMatch(/service_role|SUPABASE_SERVICE_ROLE|bypassRls/i);
     expect(roleHome).toContain('["ops", "/dashboard"]');
     expect(roleHome).toContain('["leadership", "/dashboard"]');
-    expect(roleHome).toContain('["planner", "/planning"]');
-    expect(roleHome).toContain('["reviewer", "/reviews"]');
-    expect(roleHome).not.toMatch(/\["(?:planner|reviewer|inspector|compliance_admin|form_admin|workflow_admin|security_admin|gis_admin|risk_owner)", "\/dashboard"\]/);
+    for (const role of ["admin", "planner", "supervisor", "inspector"]) {
+      expect(roleHome).toContain(`["${role}", "/dashboard"]`);
+    }
   });
 
   test("partial source state is propagated and cannot coexist with the overall Live state", () => {
