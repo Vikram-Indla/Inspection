@@ -48,7 +48,10 @@
      (threshold 4.5); this scores 5.23 there, 5.83 on white, 5.42 on the canvas.
      Unified onto the value already proven in designs/admin/admin/saqeel/tokens/colors.css. */
   --text-muted:     #5f666c;
-  --text-disabled:  #8f9aa3;
+  /* WCAG AA fix (INSP-702): #8f9aa3 on white scored 2.87:1, below even the
+     3:1 large-text floor. --neutral-700 already exists in the raw ramp below
+     and scores 7.91:1. */
+  --text-disabled:  #4c5258;
   --text-inverse:   #f5f6f7;
   --text-on-action: #ffffff;
   --text-link:      #175cd3;
@@ -171,7 +174,10 @@
   /* Unified with the light mode onto the admin-proven value. #8e99a3 already met AA
      (4.93-6.42); this raises the floor to 5.41 and keeps one muted token across channels. */
   --text-muted:     #99a0a8;
-  --text-disabled:  #626d77;
+  /* WCAG AA fix (INSP-702): #626d77 on --surface-primary scored 3.20:1,
+     large-text only. --neutral-400 already exists in the raw ramp and
+     scores 9.74:1. */
+  --text-disabled:  #c8c4bc;
   --text-inverse:   #1a1d1f;
   --text-on-action: #08120e;
   --text-link:      #78aeda;
