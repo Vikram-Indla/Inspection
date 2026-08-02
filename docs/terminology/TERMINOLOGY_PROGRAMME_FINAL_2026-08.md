@@ -212,14 +212,22 @@ the only two found across the whole tree — no new casing drift.
   the 9 files listed above touched, all within the terminology programme's
   scope — no accidental route/RBAC/schema/CSS-class edits.
 
-### Outstanding gaps (explicitly logged, not resolved this pass)
+### Follow-up fixes (same session, after the resume-pass above)
 
-- One dark-theme Figma node ID (`I167:10718;152:10;49:1517`) could not be
-  resolved by `getNodeByIdAsync` — likely renumbered since the original
-  edit. Needs a follow-up metadata re-query to confirm the edit is still
-  live in dark theme.
-- 4 duplicate "Inspection Execution" heading instances not individually
-  re-screenshotted (same component/text as the verified primary instance).
+- **Dark-theme node ID resolved — not a gap.** `I167:10718;152:10;49:1517`
+  failed to resolve because Figma numbers component-instance override paths
+  independently per instance; `;49:1517` was a stale sub-path copied from a
+  different instance. Located the live instance at `167:10718` (Analytics —
+  EN · Dark, 1280, frame `95:8372`), found its actual text node at
+  `I167:10718;152:10;95:8698`, and confirmed via `.characters` and a
+  screenshot that it already reads "The AI policy has not been enabled here,
+  so no brief is generated." — correctly edited, no action needed.
+- **4 remaining "Inspection Execution" heading duplicates** — screenshotted
+  `336:46760`, `337:44899`, `311:42165`, `311:42200`: all render
+  "Inspection Execution" cleanly, no truncation or wrap issue.
+
+### Outstanding gaps (still open — design-build or business-scope, not code)
+
 - STATES/OVERLAYS/1024/EXTERNAL Figma sections remain EN·Light only — still
   no AR/RTL or Dark duplicates exist to verify against (pre-existing design-
   build gap, not something this pass could create without inventing
