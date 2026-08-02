@@ -527,7 +527,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
 
       {/* FIX WAVE F4 — M02-035 plan register entry point (preserved) */}
       <p><a className="sq-link" href="/planning/plans">{t("plan.home.registerLink", "Visit plans — status, child visits and progress")}</a></p>
-      <p><a className="sq-link" href="/tasks">{t("plan.home.tasksLink", "Task workspace — assigned, in progress and completed")}</a></p>
+      <p><a className="sq-link" href="/tasks">{t("plan.home.tasksLink", "Tasks — assigned, in progress and completed")}</a></p>
       {access.can("planning.approve") && <p><a className="sq-link" href="/planning/supervision">Supervisor queue — confirm Inspector and release submitted visits</a></p>}
       {/* M8 — /visits is the accepted management alias surface; the two are
           cross-linked in both directions (canonical §5/§6 reconciliation). */}

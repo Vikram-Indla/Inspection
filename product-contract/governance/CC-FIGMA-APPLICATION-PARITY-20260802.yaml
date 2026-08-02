@@ -1,0 +1,46 @@
+schema_version: "1.0"
+change_control_id: "CC-FIGMA-APPLICATION-PARITY-20260802"
+task_id: "TASK-FIGMA-APPLICATION-PARITY-20260802"
+title: "Apply verified Figma terminology to the application"
+state: "VERIFIED_READY_FOR_INTEGRATION"
+approved_by: "Product Owner (Vikram)"
+approved_at: "2026-08-02"
+
+authority:
+  type: "BOUNDED_DIRECT_PRODUCT_OWNER_DIRECTIVE"
+  user_confirmation: "confirmed"
+  lease_required: false
+  broad_implementation_allowed: false
+
+figma_evidence:
+  file_key: "ML2PNwfShlQM2k44MvSEw5"
+  nodes:
+    - "6:10"
+    - "29:528"
+
+allowed_paths:
+  - "apps/web/src/app/(app)/planning/page.tsx"
+  - "apps/web/src/lib/i18n-keys.generated.ts"
+  - "apps/web/e2e/figma-application-terminology-parity.spec.ts"
+  - "scripts/seed_arabic.py"
+  - "supabase/migrations/20260802113000_figma_application_terminology_parity.sql"
+  - "product-contract/execution/CURRENT_SLICE.yaml"
+  - "product-contract/governance/CC-FIGMA-APPLICATION-PARITY-20260802.yaml"
+
+scope:
+  - "Replace visible retired 'workspace' copy with Dashboard or Tasks wording."
+  - "Replace visible retired 'iPad' persona copy with Inspector wording."
+  - "Keep internal routes, key identifiers, classes, RPCs and historical evidence unchanged."
+  - "Do not change CSS, workflow, permissions, scoring, thresholds or business rules."
+
+acceptance:
+  - "No retired term remains in the affected visible English catalogue values."
+  - "No retired term remains in the affected visible Arabic catalogue values."
+  - "The corrective database migration preserves localization status while updating approved copy."
+  - "Focused terminology contract, TypeScript and production build pass."
+
+verification:
+  focused_contract: "PASS — 3/3"
+  typescript: "PASS — tsc --noEmit --incremental false"
+  production_build: "PASS — Next.js optimized production build"
+  diff_check: "PASS"
