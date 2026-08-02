@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { beginRemote, joinParticipant, openWaitingRoom, type RoomActionResult } from "@/app/(app)/virtual/[id]/actions";
-import { selectVideoProvider, type VideoInspectionProvider, type VideoJoinResult } from "@/lib/providers/video";
+import RoomStage, { type RoomStageStrings } from "@/app/(app)/virtual/[id]/RoomStage";
 import { supabaseBrowser } from "@/lib/supabase";
 import styles from "../virtual.module.css";
 
@@ -22,46 +22,23 @@ export type FieldVirtualSession = {
 
 const ORDER = ["scheduled", "waiting", "joined", "verified", "in_progress", "closed"];
 
-export default function VirtualSessionClient({ session, locale, userId }: { session: FieldVirtualSession; locale: "en" | "ar"; userId: string }) {
+export default function VirtualSessionClient({ session, locale, transportConfigured, stage }: { session: FieldVirtualSession; locale: "en" | "ar"; transportConfigured: boolean; stage: RoomStageStrings }) {
   const ar = locale === "ar";
   const tx = (en: string, arabic: string) => ar ? arabic : en;
   const router = useRouter();
   const sb = supabaseBrowser();
   const rev = `${session.state}:${session.timeline?.length ?? 0}`;
-  const inspector = session.virtual_participants.find(p => p.role === "inspector");
   const representatives = session.virtual_participants.filter(p => p.role === "factory_rep");
   const allVerified = representatives.length > 0 && representatives.every(p => !!p.verified_at);
   const [waitState, waitAction, waitPending] = useActionState<RoomActionResult, FormData>(openWaitingRoom, {});
   const [joinState, joinAction, joinPending] = useActionState<RoomActionResult, FormData>(joinParticipant, {});
   const [beginState, beginAction, beginPending] = useActionState<RoomActionResult, FormData>(beginRemote, {});
-  // Three honest provider conditions. "resolving" is the pre-effect state and
-  // must never render a join affordance; "not_configured" is the fail-closed
-  // default (no NEXT_PUBLIC_FEATURE_VIDEO_PROVIDER opt-in, so selectVideoProvider
-  // returns null); "configured" only ever means the staging STUB today — there is
-  // no real vendor adapter, so it stays labelled SIMULATED at every step.
-  type ProviderStatus = "resolving" | "not_configured" | "configured";
-  const [providerStatus, setProviderStatus] = useState<ProviderStatus>("resolving");
-  const [provider, setProvider] = useState<VideoInspectionProvider | null>(null);
-  const [video, setVideo] = useState<VideoJoinResult | null>(null);
-  const [videoError, setVideoError] = useState<string | null>(null);
-  const [connecting, setConnecting] = useState(false);
   const [otpMessage, setOtpMessage] = useState<Record<string, string>>({});
   const [otpCodes, setOtpCodes] = useState<Record<string, string>>({});
   const [otpBusy, setOtpBusy] = useState(false);
   const [online, setOnline] = useState(true);
   const [staleDismissed, setStaleDismissed] = useState(false);
 
-  useEffect(() => {
-    try {
-      const selected = selectVideoProvider();
-      setProvider(selected);
-      setProviderStatus(selected ? "configured" : "not_configured");
-    } catch {
-      // A throwing adapter is still an unconfigured provider — never a joinable one.
-      setProvider(null);
-      setProviderStatus("not_configured");
-    }
-  }, []);
   useEffect(() => {
     const sync = () => setOnline(navigator.onLine);
     sync();
@@ -72,37 +49,6 @@ export default function VirtualSessionClient({ session, locale, userId }: { sess
   useEffect(() => {
     if (waitState.ok || joinState.ok) router.refresh();
   }, [waitState.ok, joinState.ok, router]);
-
-  async function connect() {
-    if (!provider || connecting) return;
-    setConnecting(true); setVideoError(null);
-    try {
-      const result = await provider.joinRoom(session.id, inspector?.id ?? userId);
-      // provider_unavailable is a failure, not a session. Keep it out of `video`
-      // so the room can never paint a "simulated session" over a dead room.
-      if (result.state === "provider_unavailable") {
-        setVideo(null);
-        setVideoError(tx(
-          "The simulated provider reported the room unavailable. Nothing was connected and the session state was not advanced.",
-          "أبلغ المزوّد المحاكى أن الغرفة غير متاحة. لم يتم أي اتصال ولم تتقدم حالة الجلسة.",
-        ));
-      } else {
-        setVideo(result);
-      }
-    } catch {
-      setVideo(null);
-      setVideoError(tx(
-        "The provider adapter threw while connecting. Nothing was connected and the session state was not advanced.",
-        "أخفق محوّل المزوّد أثناء الاتصال. لم يتم أي اتصال ولم تتقدم حالة الجلسة.",
-      ));
-    }
-    finally { setConnecting(false); }
-  }
-
-  async function endVideo() {
-    if (!provider) return;
-    try { await provider.endSession(session.id); } finally { setVideo(null); }
-  }
 
   async function requestOtp(participant: Participant) {
     setOtpBusy(true);
@@ -126,7 +72,6 @@ export default function VirtualSessionClient({ session, locale, userId }: { sess
 
   const actionState = beginState.error ?? joinState.error ?? waitState.error ?? beginState.ok ?? joinState.ok ?? waitState.ok;
   const current = ORDER.indexOf(session.state);
-  const roomReady = session.state === "in_progress";
   const closed = session.state === "closed";
   // S13 concurrent-change: the server guards already return `stale` when the
   // submitted rev no longer matches state:timelineLength. Surface it as its own
@@ -137,6 +82,8 @@ export default function VirtualSessionClient({ session, locale, userId }: { sess
     ? null
     : new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(appointment));
   const partial = !session.visits?.factories || !session.visits?.package_versions;
+  const remoteName = representatives[0]?.display_name ?? tx("Factory representative", "ممثل المنشأة");
+  const remoteInitials = (remoteName.trim().split(/\s+/).map(word => word[0] ?? "").join("").slice(0, 2) || "—").toUpperCase();
 
   return (
     <>
@@ -212,54 +159,13 @@ export default function VirtualSessionClient({ session, locale, userId }: { sess
             </div>)}
         </section>
 
-        <section className={styles.card}>
-          <div className={styles.roomHead}>
-            <h2>{tx("Session room", "غرفة الجلسة")}</h2>
-            {providerStatus === "configured"
-              ? <span className="badge badge-warning">{tx("Simulated", "محاكاة")}</span>
-              : <span className="badge badge-outline">{tx("Fail closed", "إغلاق آمن")}</span>}
-          </div>
-          <div className={styles.room}>
-            {providerStatus === "resolving" ? (
-              <span>{tx("Checking provider configuration…", "جارٍ التحقق من تهيئة المزوّد…")}</span>
-            ) : providerStatus === "not_configured" ? (
-              // FAIL CLOSED. No join affordance is rendered at all — a button that
-              // "connects" to nothing would be a lie about a governed capability.
-              <>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="5" width="14" height="14" rx="2" /><path d="m16 9 6-3v12l-6-3" /><path d="m3 3 18 18" /></svg>
-                <strong>{tx("No video provider is configured", "لم تتم تهيئة أي مزوّد فيديو")}</strong>
-                <span>{tx("Reason: no provider adapter is enabled for this environment, so no call surface exists and none is offered.", "السبب: لا يوجد محوّل مزوّد مُفعّل في هذه البيئة، لذا لا توجد واجهة اتصال ولا تُعرض أي واجهة.")}</span>
-                <span>{tx("Teams, Zoom and premium Twilio are provider facts that have not been selected or contracted — they are not assumed here.", "Teams وZoom وTwilio المدفوع حقائق تخص المزوّد لم يتم اختيارها أو التعاقد عليها — ولا تُفترض هنا.")}</span>
-              </>
-            ) : video ? (
-              <>
-                <strong>{tx("SIMULATED VIDEO SESSION", "جلسة فيديو محاكاة")}</strong>
-                <span><bdi>{tx(`State: ${video.state}`, `الحالة: ${video.state}`)}</bdi></span>
-                <span><bdi>{tx(`Camera: ${video.camera} · Mic: ${video.mic}`, `الكاميرا: ${video.camera} · الميكروفون: ${video.mic}`)}</bdi></span>
-                <span>{tx("No real call is connected. This is a staging stub, not a provider.", "لا توجد مكالمة حقيقية متصلة. هذه وحدة محاكاة للتجهيز وليست مزوّدًا.")}</span>
-              </>
-            ) : (
-              <>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="5" width="14" height="14" rx="2" /><path d="m16 9 6-3v12l-6-3" /></svg>
-                <strong>{tx("Simulated provider is enabled", "المزوّد المحاكى مُفعّل")}</strong>
-                <span>{tx("Opening it produces a staging stub only. It is never a real call and no real participant is reached.", "فتحه يُنتج وحدة محاكاة للتجهيز فقط. ليست مكالمة حقيقية ولا يتم الوصول إلى أي مشارك حقيقي.")}</span>
-              </>
-            )}
-          </div>
-          {videoError && <div className={styles.alert} role="alert">
-            {videoError}{" "}
-            {tx("Retry, reschedule or escalate — there is no bypass.", "أعد المحاولة أو الجدولة أو صعّد — لا يوجد تجاوز.")}
-          </div>}
-          {providerStatus === "not_configured" && (
-            <p className={styles.hint}>
-              {tx("Fallback: convert to a physical visit, reschedule, or escalate. The session cannot be advanced without a governed provider.", "البديل: التحويل إلى زيارة ميدانية أو إعادة الجدولة أو التصعيد. لا يمكن تقديم الجلسة دون مزوّد محكوم.")}
-            </p>
-          )}
-          <div className={styles.actions}>
-            {providerStatus === "configured" && !video && <button className="btn btn-primary" onClick={connect} disabled={connecting || !roomReady || !online || closed}>{connecting ? tx("Connecting…", "جارٍ الاتصال…") : tx("Open simulated provider", "فتح المزوّد المحاكى")}</button>}
-            {video && <button className="btn btn-secondary" onClick={endVideo}>{tx("End provider session", "إنهاء جلسة المزوّد")}</button>}
-          </div>
-        </section>
+        <RoomStage
+          strings={stage}
+          sessionId={session.id}
+          remoteName={remoteName}
+          remoteInitials={remoteInitials}
+          transportConfigured={transportConfigured && online && !closed}
+        />
       </main>
 
       <footer className={styles.sticky}>

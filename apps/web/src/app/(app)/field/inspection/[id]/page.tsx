@@ -545,7 +545,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     completionLocked: tr("field.ws.completion.locked", "Final submitted version. Content is locked; corrections are possible only through reviewer return.", "النسخة النهائية المرسلة. المحتوى مقفل؛ ولا يتم التصحيح إلا عبر إرجاع المراجع."),
     completionReports: tr("field.ws.completion.reports", "Reports & access", "التقارير والوصول"),
     completionStatement: tr("field.ws.completion.statement", "View visit statement", "عرض إفادة الزيارة"),
-    completionTasks: tr("field.ws.completion.tasks", "Back to tasks", "العودة إلى المهام"),
+    completionTasks: t("field.ws.completion.tasks", "Back to Dashboard"),
     completionSyncPending: tr("field.ws.completion.syncPending", "Submitted (locked)", "مُرسَل (مقفل)"),
     completionQueuedLock: tr("field.ws.completion.queuedLock", "The final snapshot is locked on this device while the existing FIFO outbox retries. It is not reported as submitted until the server accepts it.", "اللقطة النهائية مقفلة على هذا الجهاز بينما تعيد قائمة المزامنة الحالية المحاولة. ولا يُبلّغ عنها كمُرسلة حتى يقبلها الخادم."),
     // SCR-IPAD-660 completion state (CR-320/324/327/335/336). The version number

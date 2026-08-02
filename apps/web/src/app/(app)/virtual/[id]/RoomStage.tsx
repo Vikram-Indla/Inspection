@@ -13,7 +13,7 @@
 //
 // SB19 — every string is built server-side with t() and passed in as props.
 import { useCallback, useEffect, useRef, useState } from "react";
-import { requestRoomToken } from "./video-actions";
+import { recordRoomEvent, requestRoomToken } from "./video-actions";
 
 /** Minimal shape of what we use from twilio-video, so the SDK stays a dynamic
  *  import (it touches WebRTC globals and must never be pulled in during SSR). */
@@ -30,7 +30,7 @@ type TwilioParticipant = {
 type TwilioRoom = {
   localParticipant: { identity: string };
   participants: Map<string, TwilioParticipant>;
-  on: (ev: string, cb: (p: TwilioParticipant) => void) => void;
+  on: (ev: string, cb: (value: TwilioParticipant | unknown) => void) => void;
   disconnect: () => void;
 };
 
@@ -332,12 +332,24 @@ export default function RoomStage({
       roomRef.current = room;
 
       room.participants.forEach(p => { wireParticipant(p); });
-      room.on("participantConnected", p => { wireParticipant(p); });
-      room.on("participantDisconnected", p => { dropRemote(p.identity); });
+      room.on("participantConnected", value => {
+        const p = value as TwilioParticipant;
+        wireParticipant(p);
+        void recordRoomEvent(sessionId, "participant_connected", { identity: p.identity });
+      });
+      room.on("participantDisconnected", value => {
+        const p = value as TwilioParticipant;
+        dropRemote(p.identity);
+        void recordRoomEvent(sessionId, "participant_disconnected", { identity: p.identity });
+      });
+      room.on("reconnecting", () => { void recordRoomEvent(sessionId, "video_reconnecting"); });
+      room.on("reconnected", () => { void recordRoomEvent(sessionId, "video_reconnected"); });
       setJoined(true);
+      void recordRoomEvent(sessionId, "video_connected");
     } catch (err) {
       console.error("[virtual room connect]", err);
       setJoinError(t.errJoin);
+      void recordRoomEvent(sessionId, "video_connect_failed");
     } finally {
       setJoining(false);
     }
@@ -346,6 +358,7 @@ export default function RoomStage({
   const leave = () => {
     // Disconnect from the room BEFORE stopping local tracks, so remote peers see
     // a clean participantDisconnected rather than a frozen frame.
+    const wasJoined = roomRef.current !== null;
     roomRef.current?.disconnect();
     roomRef.current = null;
     if (remoteBox.current) remoteBox.current.replaceChildren();
@@ -356,6 +369,7 @@ export default function RoomStage({
     if (selfVideo.current) selfVideo.current.srcObject = null;
     if (shareVideo.current) shareVideo.current.srcObject = null;
     setCamOn(false); setMicOn(false); setSharing(false); setFailure(null);
+    if (wasJoined) void recordRoomEvent(sessionId, "video_left");
   };
 
   const live = camOn || micOn || sharing || joined;
