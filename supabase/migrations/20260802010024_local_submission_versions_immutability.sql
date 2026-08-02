@@ -22,4 +22,3 @@ before update or delete on public.submission_versions
 for each row execute function public.block_submission_version_mutation();
 
 revoke all on function public.block_submission_version_mutation() from public;
-
