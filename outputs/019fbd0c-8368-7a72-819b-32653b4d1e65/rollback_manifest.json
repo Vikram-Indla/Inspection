@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "seed_batch_id": "local-test-data-v1",
+  "environment": "local",
+  "project_id": "inspection-test-data-019fbd0c",
+  "database_port": 59422,
+  "production_accessed": false,
+  "pln012_source_access": "read_only_schema_and_governed_reference_clone",
+  "preexisting_records_deleted": 0,
+  "obsolete_records_deleted": 0,
+  "canonical_workflow_records": {
+    "submission_versions": 3,
+    "reviews": 3,
+    "cohort_4": "version 1 returned; version 2 corrected and approved",
+    "cohort_5": "version 1 submitted with open under_review review"
+  },
+  "local_forward_migrations": [
+    "20260802010024_local_submission_versions_immutability.sql"
+  ],
+  "verification": {
+    "submission_version_update_delete_guard": "PASS",
+    "foreign_key_orphans": 0,
+    "workbook_formula_errors": 0
+  },
+  "deletion_preview": {
+    "eligible": 0,
+    "retained_active_pln012_accounts": 4,
+    "retained_active_pln012_factories": 24,
+    "retained_active_pln012_plans": 3,
+    "retained_active_pln012_visits": 3
+  },
+  "recovery": {
+    "method": "Stop and remove only project inspection-test-data-019fbd0c, recreate the isolated stack, clone the current schema read-only, apply the listed local forward migration, then rerun the workbook importer.",
+    "source_of_truth": "SAQEEL_Local_Test_Data_Package.xlsx",
+    "deterministic_seed": "scripts/test-data/local_test_data_seed.sql"
+  },
+  "immutable_history_policy": "Never delete audit or immutable submitted history row-by-row; rebuild the dedicated disposable local stack instead."
+}
