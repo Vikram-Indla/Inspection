@@ -368,7 +368,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
             <div><dt>{copy(locale, "Offline and queued actions", "العمل دون اتصال والإجراءات المعلّقة")}</dt><dd>{copy(locale, "Not available in this web view; open the assigned Inspector responsive web app.", "غير متاح في عرض الويب هذا؛ افتح تطبيق ويب المفتش المسند.")}</dd></div>
           </dl>
           {selectedDetail?.status === "ok" ? selected.inspectorId === currentUserId ? (
-              <a className="btn btn-primary" href={`/field/${selected.id}`}>{selected.operationalState === "new" ? copy(locale, "Prepare in Field workspace", "التحضير في مساحة العمل الميدانية") : copy(locale, "Open Field workspace", "فتح مساحة العمل الميدانية")}</a>
+              <a className="btn btn-primary" href={`/field/${selected.id}`}>{selected.operationalState === "new" ? copy(locale, "Prepare in Inspector app", "التحضير في تطبيق المفتش") : copy(locale, "Open in Inspector app", "فتح في تطبيق المفتش")}</a>
             ) : (
               <a className="btn btn-primary" href={`/visits/${selected.id}`}>{copy(locale, "Open governed visit details", "فتح تفاصيل الزيارة المعتمدة")}</a>
             ) : null}

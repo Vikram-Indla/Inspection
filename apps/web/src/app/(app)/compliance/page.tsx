@@ -256,7 +256,7 @@ export default async function ComplianceLibrary({
                 <div className="panel-header">
                   <div>
                     <p className="sq-overline">Source-controlled compliance</p>
-                    <h2 className="panel-title">Regulation workspace</h2>
+                    <h2 className="panel-title">Regulation detail</h2>
                   </div>
                   <div className="row">
                     {selected.request_id ? <a className="btn btn-secondary btn-sm" href={`/admin/compliance-requests/${selected.request_id}`}>View request</a> : null}

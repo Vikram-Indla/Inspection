@@ -134,7 +134,7 @@ export default async function LiveOperations({ searchParams }: {
           title={t("ops.unauthorized.title", "Operations access required")}
           body={t("ops.unauthorized.body", "This page is not turned on for your account, so no data has loaded.")}
         >
-          <Link className="sq-btn sq-btn--secondary" href="/launch">{t("ops.unauthorized.return", "Return to my workspace")}</Link>
+          <Link className="sq-btn sq-btn--secondary" href="/launch">{t("ops.unauthorized.return", "Return to my area")}</Link>
         </EmptyState>
       </Shell>
     );

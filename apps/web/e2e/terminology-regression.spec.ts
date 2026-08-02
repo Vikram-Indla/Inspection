@@ -75,6 +75,24 @@ const DOSSIER_ALLOW = [
   /"f360\.list\.dossier",\s*"View factory"/, // key name; value is already the plain-language string
 ];
 
+// Internal-only "workspace" occurrences — component/type/file/CSS-class
+// names and console.error tags, never rendered as literal user text.
+// Rule of law: "Never a Workspace label" (terminology programme, 2026-08).
+const WORKSPACE_ALLOW = [
+  /\bWorkspace\b/, // component name (./Workspace, WorkspaceStrings, WorkspacePanel, AuditReplayWorkspace)
+  /ar-workspace/, // CSS class name
+  /workspace\.module\.css/, // CSS module file path
+  /styles\.workspace\b/, // CSS module class reference
+  /data-workspace-state/, // DOM data-attribute name, not visible text
+  /cd-review-workspace-grid/, // CSS class name
+  /no-workspace/i, // route segment /launch/no-workspace
+  /LEASE-SAQEEL-PWA-WORKSPACE/, // lease/task id
+  /ComplianceRequestWorkspace/, // internal component function name
+  /WorkspaceStrings/, // internal type/prop name
+  /"ops\.map\.workspaceLabel"/, // i18n key name; rendered value is already "Operations map"
+  /"access\.noWorkspace\.\w+"/, // i18n key names on /launch/no-workspace; rendered values already say "role", not "workspace"
+];
+
 // Prohibited literal phrases the task's plain-language remediation banned
 // from user-visible production copy.
 const BANNED_PHRASES = [
@@ -150,5 +168,22 @@ test.describe("Terminology regression guard", () => {
       });
     }
     expect(offenders, `Architecture jargon leaking into rendered text:\n${offenders.join("\n")}`).toEqual([]);
+  });
+
+  test("no bare 'workspace' in user-rendered production text outside the internal-symbol allowlist", () => {
+    const offenders: string[] = [];
+    for (const file of walk(srcRoot)) {
+      const rel = path.relative(webRoot, file);
+      const lines = fs.readFileSync(file, "utf8").split("\n");
+      lines.forEach((line, i) => {
+        if (!/workspace/i.test(line)) return;
+        if (isCommentLine(line)) return;
+        if (isDeveloperLogLine(line)) return;
+        if (!looksUserRendered(line)) return;
+        if (WORKSPACE_ALLOW.some((re) => re.test(line))) return;
+        offenders.push(`${rel}:${i + 1}: ${line.trim().slice(0, 160)}`);
+      });
+    }
+    expect(offenders, `Banned "workspace" found in user-rendered production text:\n${offenders.join("\n")}`).toEqual([]);
   });
 });
