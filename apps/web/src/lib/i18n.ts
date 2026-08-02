@@ -5,6 +5,7 @@
 import { cookies, headers } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
 import { FACTORY360_AR_FALLBACK } from "@/lib/factory360/arabic";
+import { VIRTUAL_AR_FALLBACK } from "@/lib/virtual-arabic";
 
 export type Locale = "en" | "ar";
 export type Dict = Record<string, string>;
@@ -139,7 +140,7 @@ export async function getDict(locale: Locale): Promise<Dict> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !supabaseAnonKey) {
-    return { ...MVP3_AR_FALLBACK, ...FACTORY360_AR_FALLBACK };
+    return { ...MVP3_AR_FALLBACK, ...FACTORY360_AR_FALLBACK, ...VIRTUAL_AR_FALLBACK };
   }
   // anon client: ui_strings is world-readable; avoids per-request cookie plumbing
   const sb = createClient(supabaseUrl, supabaseAnonKey);
@@ -159,6 +160,7 @@ export async function getDict(locale: Locale): Promise<Dict> {
   const complete = {
     ...MVP3_AR_FALLBACK,
     ...FACTORY360_AR_FALLBACK,
+    ...VIRTUAL_AR_FALLBACK,
     ...dict,
   };
   cache = { at: Date.now(), dict: complete };

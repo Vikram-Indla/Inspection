@@ -40,4 +40,50 @@ test.describe("CD-041..043 virtual backend verification gate", () => {
     expect(driven).toContain("DEF-DATA-005 (Cycle 2 completion pass)");
     expect(driven).toContain("now + (400 + Math.floor(Math.random() * 20000)) * DAY + stageCount * 2 * DAY");
   });
+
+  test("the inspector route uses real Twilio admission and never the staging video provider", () => {
+    const page = SRC("src/app/(app)/field/virtual/[id]/page.tsx");
+    const client = SRC("src/app/(app)/field/virtual/[id]/VirtualSessionClient.tsx");
+    const stage = SRC("src/app/(app)/virtual/[id]/RoomStage.tsx");
+    const admission = SRC("src/app/(app)/virtual/[id]/video-actions.ts");
+    const i18n = SRC("src/lib/i18n.ts");
+    const virtualArabic = SRC("src/lib/virtual-arabic.ts");
+
+    expect(page).toMatch(/videoRoomJoinable\(\)/);
+    expect(client).toMatch(/import RoomStage/);
+    expect(client).toMatch(/transportConfigured=\{transportConfigured && online && !closed\}/);
+    expect(client).not.toMatch(/selectVideoProvider|StagingVideoProvider|SIMULATED VIDEO SESSION|Open simulated provider/);
+    expect(client).not.toMatch(/const stageStrings|غرفة التفتيش|جاهزة للاتصال/);
+    expect(page).toMatch(/stage=\{stage\}/);
+    expect(page).toMatch(/t\("virtual\.stage\.title", "Inspection room"\)/);
+    expect(i18n).toMatch(/VIRTUAL_AR_FALLBACK/);
+    expect(virtualArabic).toMatch(/"virtual\.stage\.title": "غرفة التفتيش"/);
+    expect(stage).toMatch(/requestRoomToken\(sessionId\)/);
+    expect(stage).toMatch(/import\("twilio-video"\)/);
+    expect(stage).toMatch(/navigator\.mediaDevices/);
+    expect(stage).toMatch(/getUserMedia/);
+    expect(stage).toMatch(/getDisplayMedia/);
+    expect(admission).toMatch(/videoRoomJoinable\(\)/);
+    expect(admission).toMatch(/const identity = `user:\$\{user\.id\}`/);
+    expect(admission).toMatch(/ensureRoom\(sessionId\)/);
+    expect(admission).toMatch(/mintRoomToken\(sessionId, identity\)/);
+    expect(admission).toMatch(/AUDITABLE_ROOM_EVENTS/);
+    expect(admission).toMatch(/sb\.rpc\("vs_append_event"/);
+    expect(stage).toMatch(/recordRoomEvent\(sessionId, "video_connected"/);
+    expect(stage).toMatch(/recordRoomEvent\(sessionId, "video_left"/);
+    expect(stage).toMatch(/recordRoomEvent\(sessionId, "participant_connected"/);
+    expect(stage).toMatch(/recordRoomEvent\(sessionId, "participant_disconnected"/);
+    expect(stage).toMatch(/recordRoomEvent\(sessionId, "video_reconnecting"/);
+    expect(stage).toMatch(/recordRoomEvent\(sessionId, "video_reconnected"/);
+  });
+
+  test("remote completion returns to the Field Dashboard after evidence-backed submission", () => {
+    const workspace = SRC("src/app/(app)/field/inspection/[id]/Workspace.tsx");
+    const page = SRC("src/app/(app)/field/inspection/[id]/page.tsx");
+
+    expect(workspace).toMatch(/<EvidenceReview/);
+    expect(workspace).toMatch(/href="\/field"/);
+    expect(page).toMatch(/"Back to Dashboard"/);
+    expect(page).not.toMatch(/العودة إلى لوحة المعلومات/);
+  });
 });

@@ -31,6 +31,39 @@ export type RoomAdmission =
 
 const GENERIC = "The room could not be opened. Try again or contact support.";
 
+const AUDITABLE_ROOM_EVENTS = new Set([
+  "video_connected",
+  "video_left",
+  "participant_connected",
+  "participant_disconnected",
+  "video_reconnecting",
+  "video_reconnected",
+  "video_connect_failed",
+]);
+
+/**
+ * Append-only media lifecycle audit through the existing governed RPC.
+ * RLS remains authoritative: callers can only append to sessions they can
+ * manage, and a closed session remains immutable. Provider identities are
+ * recorded as opaque Twilio identities; no token or credential is persisted.
+ */
+export async function recordRoomEvent(
+  sessionId: string,
+  event: string,
+  detail: Record<string, unknown> = {},
+): Promise<void> {
+  if (!sessionId || !AUDITABLE_ROOM_EVENTS.has(event)) return;
+  const sb = await supabaseServer();
+  const { data: { user } } = await getVerifiedUser(sb);
+  if (!user) return;
+  const { error } = await sb.rpc("vs_append_event", {
+    p_session: sessionId,
+    p_event: event,
+    p_detail: detail,
+  });
+  if (error) console.error("[virtual room audit]", event, error);
+}
+
 export async function requestRoomToken(sessionId: string): Promise<RoomAdmission> {
   if (!videoRoomJoinable()) {
     return { ok: false, error: "Joining a room is not available in this environment." };

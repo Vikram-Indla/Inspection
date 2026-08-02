@@ -1190,7 +1190,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
             <span className="dot" />{serverSubmitted ? strings.completionSyncPending : strings.sync.pending}
           </span>
           <button className="btn btn-secondary" disabled>{completionText.saveDraft}</button>
-          <Link className="btn btn-primary" href="/field/my-tasks">{strings.completionTasks}</Link>
+          <Link className="btn btn-primary" href="/field">{strings.completionTasks}</Link>
         </div>
       </main>
     );
