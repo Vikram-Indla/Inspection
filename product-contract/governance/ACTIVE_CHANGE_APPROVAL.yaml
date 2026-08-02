@@ -21,6 +21,33 @@ scope_forbidden:
 decision_owner: "Vikram Indla"
 effective_date: "2026-07-20"
 
+saq_jm_breakpoint_remediation_001:
+  change_id: "CC-G11-SAQ-JM-BREAKPOINTS-001"
+  task_id: "TASK-G11-REMEDIATION-SAQ-JM-BREAKPOINTS-001"
+  title: "Operational visit remediation — Single, Bulk and Urgent"
+  requestor: "Vikram Indla"
+  approver: "Vikram Indla"
+  branch: "codex/saq-jm-breakpoints-001"
+  worktree: "/Users/vikramindla/Developer/Inspection-saq-jm-breakpoints-001"
+  authorization: >
+    Narrowly supersede the prior no-agent implementation prohibition for this
+    remediation packet only. Implement evidence-backed fixes for Single Visit,
+    Bulk Visit and Urgent Visit in approved slices. Urgent admission semantics,
+    capacity beyond overlap and any new file-upload feature remain behind their
+    named decisions. Preserve shared main; no commit, push, merge, deployment
+    or remote DDL.
+  current_state: "ACTIVATED_SLICE_005_BLOCKED_AWAITING_USER_OPEN_DESIGN_TAB"
+  active_slice: "SAQ-JM-VIS-SLICE-005"
+  completed_prerequisite:
+    slice: "SAQ-JM-VIS-SLICE-001"
+    status: "COMPLETED_ISOLATED_RUNTIME_TARGET_UNVERIFIED"
+    evidence: "product-contract/evidence/TASK-G11-REMEDIATION-SAQ-JM-BREAKPOINTS-001.md"
+  scoped_decisions:
+    - "DEC-SAQ-JM-URGENT-ADMISSION-001 — RESOLVED 2026-07-30: Inspector create permitted; unregistered target permitted"
+    - "DEC-SAQ-JM-CAPACITY-001"
+    - "DEC-SAQ-JM-BULK-UPLOAD-001"
+  effective_date: "2026-07-30"
+
 cross_provider_contract_014:
   change_id: "CC-FACTORY-360-CROSS-PROVIDER-CONTRACT-014"
   approver: "Vikram Indla"

@@ -1,0 +1,136 @@
+schema_version: "2.0"
+task_id: "TASK-G11-REMEDIATION-SAQ-JM-BREAKPOINTS-001"
+change_control_id: "CC-G11-SAQ-JM-BREAKPOINTS-001"
+gate: "G11 hardening"
+title: "Operational visit remediation — Single, Bulk and Urgent"
+status: "APPROVED_ACTIVATED_SLICE_001"
+priority: "P0"
+channel: "web"
+base_sha: "ada62124c5f8c8066cec397dc70fab31be9b0c7d"
+branch: "codex/saq-jm-breakpoints-001"
+worktree: "/Users/vikramindla/Developer/Inspection-saq-jm-breakpoints-001"
+
+objective: >
+  Repair and prove the three core visit journeys in dependency order without
+  substituting monitor UI or generic platform work: Bulk Visit, Single Visit
+  and Urgent Visit from creation through supervision, assignment, preparation,
+  execution handoff, notification and recovery.
+
+process_ids: ["G2-P01", "G2-P02"]
+requirement_ids:
+  bulk: ["CR-001..CR-033"]
+  single: ["CR-034..CR-042"]
+  urgent: ["CR-043..CR-052"]
+screen_ids: ["SCR-WEB-100", "SCR-WEB-110", "SCR-WEB-120", "SCR-WEB-130", "SCR-WEB-140", "SCR-WEB-150", "SCR-WEB-200", "SCR-WEB-210"]
+acceptance_ids:
+  source: ["WA-AC-0001..WA-AC-0052"]
+  task: ["JM-VIS-AC-001", "JM-VIS-AC-002", "JM-VIS-AC-003", "JM-VIS-AC-004", "JM-VIS-AC-005", "JM-VIS-AC-006", "JM-VIS-AC-007", "JM-VIS-AC-008", "JM-VIS-AC-009", "JM-VIS-AC-010", "JM-VIS-AC-011", "JM-VIS-AC-012"]
+evidence_ids: ["JM-VIS-EV-001", "JM-VIS-EV-002", "JM-VIS-EV-003", "JM-VIS-EV-004", "JM-VIS-EV-005", "JM-VIS-EV-006", "JM-VIS-EV-007", "JM-VIS-EV-008", "JM-VIS-EV-009", "JM-VIS-EV-010", "JM-VIS-EV-011", "JM-VIS-EV-012"]
+
+frozen_acceptance_criteria:
+  JM-VIS-AC-001: "A Bulk Visit plan with two or more eligible factories creates one plan, one visit and one supervision request per factory in one atomic transaction."
+  JM-VIS-AC-002: "Bulk failure at any target leaves no partial plan, visit, request, package snapshot, notification or audit state."
+  JM-VIS-AC-003: "A bulk plan aggregate status truthfully represents all child outcomes and cannot become fully published, returned or cancelled from one row decision."
+  JM-VIS-AC-004: "A returned Single, Bulk-row or Urgent visit has a governed, audited correction and resubmission path without editing immutable execution/submission evidence."
+  JM-VIS-AC-005: "Single, Bulk and Urgent targeting uses an exact factory/licence/location identity where the repository supplies one; ambiguous targets are identified before commit."
+  JM-VIS-AC-006: "Selected packages are server-validated as published/locked and effective; leaving package empty remains explicit and never silently selects the first package."
+  JM-VIS-AC-007: "Priority values for Bulk and Urgent are empty or an active governed planning lookup; crafted values fail closed."
+  JM-VIS-AC-008: "Final assignment requires an authorized Supervisor and named Inspector; concurrent overlapping approvals cannot double-book the same Inspector."
+  JM-VIS-AC-009: "Single and Bulk retries are receipt-idempotent for the same actor and payload and reject request-id reuse with a changed payload."
+  JM-VIS-AC-010: "Planner, Supervisor, Inspector and unauthorized callers receive only their allowed actions/data under server authorization and RLS."
+  JM-VIS-AC-011: "Supervision and assignment notifications expose queued/delivered/failed truth and can resume idempotently without duplicate user notifications where the configured provider contract permits."
+  JM-VIS-AC-012: "No journey is marked fixed until positive/negative database tests, typecheck/build, focused browser tests and target-bound runtime evidence pass at one pinned revision."
+criteria_hash_algorithm: "sha256 canonical UTF-8 lines JM-VIS-AC-001..012 in ID order"
+criteria_hash: "53fe1f22aadc5bbe42fefe6e6361aad00a319692883a03ef6ce3f29494780ecd"
+
+first_slice:
+  id: "SAQ-JM-VIS-SLICE-001"
+  status: "COMPLETED_ISOLATED_RUNTIME_TARGET_UNVERIFIED"
+  breakpoint_ids: ["JM-BP-BULK-001", "JM-BP-BULK-003"]
+  scope:
+    - "Prove the existing request-cardinality repair for one bulk plan with many visit requests."
+    - "Prove the existing aggregate-state trigger after each independently decided child request."
+    - "Patch product SQL only if proof exposes a defect; never duplicate an existing repair."
+  allowed_files:
+    - "supabase/tests/saq_jm_visit_breakpoints_slice1.sql"
+    - "apps/web/e2e/saq-jm-visit-breakpoints.spec.ts"
+  acceptance_ids: ["JM-VIS-AC-001", "JM-VIS-AC-002", "JM-VIS-AC-003", "JM-VIS-AC-010", "JM-VIS-AC-012"]
+  evidence_ids: ["JM-VIS-EV-001", "JM-VIS-EV-002", "JM-VIS-EV-003", "JM-VIS-EV-004", "JM-VIS-EV-005", "JM-VIS-EV-012"]
+  design_stop_required: false
+  data_mutation: "No remote/shared data mutation; transaction-wrapped local verification only."
+
+later_slices:
+  - id: "SAQ-JM-VIS-SLICE-002"
+    scope: "Returned correction/resubmit and durable Single/Bulk request receipts."
+    acceptance_ids: ["JM-VIS-AC-004", "JM-VIS-AC-009", "JM-VIS-AC-010", "JM-VIS-AC-012"]
+  - id: "SAQ-JM-VIS-SLICE-003"
+    scope: "Exact licence targeting and governed priority."
+    acceptance_ids: ["JM-VIS-AC-005", "JM-VIS-AC-007", "JM-VIS-AC-010", "JM-VIS-AC-012"]
+  - id: "SAQ-JM-VIS-SLICE-004"
+    scope: "Single optional-package correction and assignment overlap serialization."
+    acceptance_ids: ["JM-VIS-AC-006", "JM-VIS-AC-008", "JM-VIS-AC-010", "JM-VIS-AC-012"]
+  - id: "SAQ-JM-VIS-SLICE-005"
+    scope: "Implement the resolved Inspector-create and unregistered Urgent Visit contract."
+    state: "ACTIVE_BLOCKED_AWAITING_USER_OPEN_DESIGN_TAB"
+  - id: "SAQ-JM-VIS-SLICE-006"
+    scope: "Notification delivery/resumption proof and only evidence-backed remediation."
+    acceptance_ids: ["JM-VIS-AC-011", "JM-VIS-AC-012"]
+
+evidence_contract:
+  JM-VIS-EV-001: "Build identity, diff and allowlist check."
+  JM-VIS-EV-002: "Requirement/screen/state/RBAC trace for the three journeys."
+  JM-VIS-EV-003: "Source-to-RPC-to-schema wiring trace."
+  JM-VIS-EV-004: "Transaction-wrapped SQL positive/negative/rollback proof."
+  JM-VIS-EV-005: "Bulk 2+ target and mixed supervision outcome proof."
+  JM-VIS-EV-006: "Returned correction/resubmission and immutable-history proof."
+  JM-VIS-EV-007: "Exact target, package and governed lookup proof."
+  JM-VIS-EV-008: "Authorization/RLS and separation-of-duties proof."
+  JM-VIS-EV-009: "Concurrent assignment and retry-idempotency proof."
+  JM-VIS-EV-010: "Inspector preparation/execution/submission handoff proof."
+  JM-VIS-EV-011: "Notification queued/delivered/failed/resumed truth."
+  JM-VIS-EV-012: "Typecheck, production build, focused suite, runtime and residual-risk result."
+
+decision_dependencies:
+  - "DEC-SAQ-JM-URGENT-ADMISSION-001 is resolved and no longer blocks urgent admission/identity implementation."
+  - "DEC-SAQ-JM-CAPACITY-001 blocks only capacity rules beyond overlap."
+  - "DEC-SAQ-JM-BULK-UPLOAD-001 blocks only a new upload feature."
+
+allowed_paths:
+  - "Exactly the allowlist in CC-G11-SAQ-JM-BREAKPOINTS-001.yaml."
+do_not_touch:
+  - "Exactly the do-not-touch list in CC-G11-SAQ-JM-BREAKPOINTS-001.yaml."
+
+test_plan:
+  database:
+    - "Two and 500 eligible bulk rows create matching requests atomically."
+    - "Duplicate, ambiguous target and injected failure roll back the accepted subset."
+    - "Approve/return/reject mixed-order permutations compute the same truthful aggregate."
+    - "Unauthorized/self decision and invalid state fail closed."
+  source_and_browser:
+    - "Bulk review displays the committed eligible subset and residual outcomes."
+    - "No screen change is made in slice 001; existing behaviour is regression-tested."
+  quality:
+    - "Typecheck."
+    - "Production build."
+    - "Focused Playwright."
+    - "Relevant planning regression."
+
+runtime_target:
+  required: true
+  environment: "approved local or non-production Inspection target"
+  production_access_required: false
+  mutation_rule: "Use disposable scoped fixtures and transaction rollback; no shared or production data mutation."
+
+implementation_sequence:
+  - "Slice 001: prove the existing bulk request-cardinality and aggregate-state repairs."
+  - "Slice 002: returned recovery and request receipts."
+  - "Slice 003: exact target and priority."
+  - "Slice 004: optional package and concurrent assignment."
+  - "Resolve urgent admission decision, then Slice 005."
+  - "Prove notification failure/resumption in Slice 006."
+  - "Update Journey Monitor only after pinned product proof."
+
+exit_condition: >
+  JM-VIS-AC-001..012 pass with JM-VIS-EV-001..012 at one pinned revision and
+  target, no P0/P1 remains in the three journeys, and each unproved external
+  behaviour remains explicitly runtime-unverified rather than claimed fixed.
