@@ -31,6 +31,12 @@ const PLAN_MAP_AR_FALLBACK: Record<string, string> = {
   "plan.map.coverage.visitsCount": "{n} زيارة",
 };
 
+// INSP-703 — reviewed Field workspace copy. Keep approved Arabic in the
+// localization resource path so components always resolve it through t().
+const FIELD_AR_FALLBACK: Record<string, string> = {
+  "field.ws.sync.synced": "متزامن",
+};
+
 export type Locale = "en" | "ar";
 export type Dict = Record<string, string>;
 
@@ -164,7 +170,7 @@ export async function getDict(locale: Locale): Promise<Dict> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !supabaseAnonKey) {
-    return { ...MVP3_AR_FALLBACK, ...FACTORY360_AR_FALLBACK, ...VIRTUAL_AR_FALLBACK, ...PLAN_MAP_AR_FALLBACK };
+    return { ...MVP3_AR_FALLBACK, ...FACTORY360_AR_FALLBACK, ...VIRTUAL_AR_FALLBACK, ...PLAN_MAP_AR_FALLBACK, ...FIELD_AR_FALLBACK };
   }
   // anon client: ui_strings is world-readable; avoids per-request cookie plumbing
   const sb = createClient(supabaseUrl, supabaseAnonKey);
@@ -186,6 +192,7 @@ export async function getDict(locale: Locale): Promise<Dict> {
     ...FACTORY360_AR_FALLBACK,
     ...VIRTUAL_AR_FALLBACK,
     ...PLAN_MAP_AR_FALLBACK,
+    ...FIELD_AR_FALLBACK,
     ...dict,
   };
   cache = { at: Date.now(), dict: complete };

@@ -483,6 +483,8 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   for (const d of definition.action_forms ?? []) for (const f of d.fields) afFieldLabels[f] = afFieldLabels[f] ?? t(`field.ws.af.${f}`, humanize(f));
   const strings: WorkspaceStrings = {
     sync: {
+      // INSP-703: approved Arabic resolves through the reviewed i18n fallback;
+      // the component retains only the English source string.
       synced: t("field.ws.sync.synced", "Synced"),
       offline: t("field.ws.sync.offline", "Offline — work saved locally"),
       pending: t("field.ws.sync.pending", "Pending sync"),

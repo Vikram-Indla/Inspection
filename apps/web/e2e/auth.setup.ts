@@ -18,7 +18,17 @@ for (const key of Object.keys(PERSONAS) as PersonaKey[]) {
     // /launch verifies identity and reads the user's live role grants before it
     // redirects. Keep one deterministic attempt, but allow the remote identity
     // and role lookups enough time under release-suite load.
-    await page.waitForURL((url) => url.pathname.startsWith(p.home), { timeout: 40_000 });
+    await page.waitForURL((url) => (
+      url.pathname.startsWith(p.home) ||
+      (key === "inspector" && url.pathname.startsWith("/dashboard"))
+    ), { timeout: 40_000 });
+    // The controlled Inspector is deliberately multi-role, so /launch may
+    // choose Dashboard first. Prove the Inspector workspace is authorized
+    // before persisting that same authenticated session.
+    if (key === "inspector" && !new URL(page.url()).pathname.startsWith(p.home)) {
+      await page.goto(p.home);
+      await page.waitForURL((url) => url.pathname.startsWith(p.home));
+    }
     await expect(page.locator("body")).not.toContainText("ERR-AUTH");
     // The product correctly defaults a fresh session to Arabic (covered by the
     // CD-001 locale test). The older journey specs intentionally assert their
