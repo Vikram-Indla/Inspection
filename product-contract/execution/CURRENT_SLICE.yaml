@@ -1,78 +1,400 @@
-schema_version: "2.1"
-task_id: "TASK-G11-REMEDIATION-SAQ-JM-BREAKPOINTS-001"
-change_control_id: "CC-G11-SAQ-JM-BREAKPOINTS-001"
-slice_id: "SAQ-JM-VIS-SLICE-005"
-gate: "G11 hardening"
-title: "Urgent Visit — Inspector direct creation and capability-gated unregistered target"
-status: "APPROVED_ACTIVATED_BLOCKED_AWAITING_USER_OPEN_DESIGN_TAB"
+schema_version: "1.6"
+task_id: "SAQEEL-BOARD-DELIVERY-001"
+change_control_id: "SAQEEL-WORKFORCE-REINSTATEMENT-20260725"
+gate: "G10 verification / G11 hardening"
+title: "SAQEEL 55-card board delivery — multi-actor card leases"
+status: "LEASE_MECHANISM_RETIRED_PERMANENTLY_NO_HOLDER_POSSIBLE"
 enforce_stop_gate: true
 broad_implementation_allowed: false
 application_implementation_allowed: false
-approval:
-  approver: "Vikram Indla, Product Owner"
-  approved_at: "2026-07-30"
-  decision: "DEC-SAQ-JM-URGENT-ADMISSION-001"
-  exact_contract:
-    - "Authorized Inspector direct/self-assigned Urgent Visit without a Visit Plan."
-    - "Planner/Supervisor Urgent Visit retains supervised final assignment."
-    - "Unregistered factory is permitted through capability-gated validated identity/location, duplicate protection, provenance, audit and RLS."
-branch: "codex/saq-jm-breakpoints-001"
-worktree: "/Users/vikramindla/Developer/Inspection-saq-jm-breakpoints-001"
-base_sha: "ada62124c5f8c8066cec397dc70fab31be9b0c7d"
-active_packet: "product-contract/execution/TASK-G11-REMEDIATION-SAQ-JM-BREAKPOINTS-001.yaml"
-process_ids: ["G2-P01", "G2-P02"]
-requirement_ids: ["CR-043", "CR-044", "CR-045", "CR-046", "CR-047", "CR-048", "CR-049", "CR-050", "CR-051", "CR-052"]
-acceptance_ids: ["WA-AC-0043..WA-AC-0052", "JM-VIS-AC-005", "JM-VIS-AC-006", "JM-VIS-AC-007", "JM-VIS-AC-008", "JM-VIS-AC-010", "JM-VIS-AC-012"]
-evidence_ids: ["JM-VIS-EV-002", "JM-VIS-EV-003", "JM-VIS-EV-004", "JM-VIS-EV-007", "JM-VIS-EV-008", "JM-VIS-EV-009", "JM-VIS-EV-010", "JM-VIS-EV-012"]
-screens: ["SCR-WEB-130"]
-engines:
-  - "Urgent identity and location validation"
-  - "Direct Inspector self-assignment"
-  - "Planner/Supervisor supervision"
-  - "Package/priority validation"
-  - "Duplicate/idempotency guard"
-  - "Authorization/RLS/audit/provenance"
-required_context:
-  - "design/final-cut/saqeel-revamp.html"
-  - "docs/design/HANDOFF.md"
-  - "docs/design/FINAL-CUT-REVIEW.md"
-  - "docs/design/IMPLEMENTATION-RULES.md"
-  - "apps/web/src/app/(app)/planning/immediate/**"
-  - "supabase/migrations/0027_cd023_immediate_visit_atomic.sql"
-  - "supabase/migrations/20260729022000_immediate_supervision_lifecycle.sql"
-  - "supabase/migrations/20260729023000_immediate_role_grants.sql"
-  - "supabase/migrations/20260729028000_inspector_immediate_escalation_only.sql"
-allowed_paths:
-  - "apps/web/src/app/(app)/planning/immediate/page.tsx"
-  - "apps/web/src/app/(app)/planning/immediate/ImmediateForm.tsx"
-  - "apps/web/src/app/(app)/planning/immediate/actions.ts"
-  - "supabase/migrations/20260730*_saq_jm_visit_breakpoints_urgent*.sql"
-  - "supabase/tests/saq_jm_visit_breakpoints_urgent.sql"
-  - "apps/web/e2e/saq-jm-urgent-visit.spec.ts"
-  - "The governance/evidence files explicitly listed in CC-G11-SAQ-JM-BREAKPOINTS-001.yaml"
-do_not_touch:
-  - "Field/PWA/iPad product paths."
-  - "Shared main, existing dirty files, production/shared data, secrets and provider configuration."
-  - "Unrelated planning routes or shared design-system CSS."
-  - "Capacity policy beyond repository-backed overlap."
-  - "Commit, push, merge, deploy or remote DDL."
-design_stop:
-  required: true
-  state: "BROWSER_FILE_URL_BLOCKED_AWAITING_USER_OPEN_TAB"
+
+lease_state_summary:
+  as_at: "2026-07-28"
+  granted: 0
+  revoked_permanent: 16
+  revoked: 0
+  meaning: >
+    No agent holds a lease on any card, and none can be granted — the lease
+    mechanism is retired permanently for every agent without exception. See
+    permanent_lease_prohibition. broad_implementation_allowed and
+    application_implementation_allowed are false because no holder exists and
+    none may exist, not because a gate failed. Do not read this as a G10
+    regression and do not attempt to restore a holder.
+
+authority:
+  sponsor_direction: >
+    The Product Owner ruled on 2026-07-25 that the SAQEEL delivery skill is
+    authority over SAQEEL_OPERATING_SYSTEM.md V5 on the workforce question.
+    V5 removed Codex and Kimi from the workforce; the sponsor reinstates them.
+    Delivery runs from the 55-card board in status/saqeel-status.json.
+  issued_by: "Claude Orchestrator (SAQEEL_OPERATING_SYSTEM.md V5 §34.1 — packet issue, queue sequencing, lease arbitration)"
+  board: "status/saqeel-status.json"
+  design_authority: "designs/ (Web 42 · Admin 21 · PWA 43 .dc.html, vendored 2026-07-25)"
   rule: >
-    Open design/final-cut/saqeel-revamp.html in a browser, map every affected
-    region/element to an existing saqeel-components.css class, present the list,
-    and stop for confirmation before application code changes.
-  unblock_action: >
-    The Product Owner or coordinator opens
-    /Users/vikramindla/Developer/Inspection-saq-jm-breakpoints-001/design/final-cut/saqeel-revamp.html
-    in the in-app browser and confirms that the tab is ready to inspect.
-runtime_required:
-  - "Positive registered and unregistered Inspector creation."
-  - "Positive Planner/Supervisor supervised creation."
-  - "Negative unauthorized, cross-scope, invalid identity/location, duplicate and tampered-priority paths."
-  - "Typecheck, production build, focused and relevant regression suites."
+    A card is complete only when the shipped route matches its .dc.html
+    pixel-to-pixel at every declared width, EN/LTR and AR/RTL. No lane number
+    rises without evidence. Ungoverned values render "Not configured".
+
+queue_freeze:
+  state: "CLEARED"
+  cleared_by: "Claude Orchestrator"
+  cleared_at: "2026-07-25T22:45:00+03:00"
+  basis: >
+    The freeze descended from the superseded PKT-M3-OPS-LIVE-001 pin, whose own
+    packet records lease_state RETURNED_ACKED and released_at 2026-07-25T16:06.
+    The pin was stale bookkeeping, not an active hold. Board delivery is cleared.
+
+superseded_slice:
+  task_id: "PKT-M3-OPS-LIVE-001"
+  lease_id: "LEASE-M3-OPS-LIVE-001"
+  prior_state_in_this_file: "GRANTED (expired 2026-07-25T15:20:55+03:00)"
+  packet_state: "RETURNED_ACKED (released 2026-07-25T16:06:02+03:00, PR #60)"
+  disposition: >
+    Reconciled, not revoked. PR #60 is merged to main. The M3 P1 findings in the
+    Codex safety ruling remain open and are carried on the board's operations
+    card, not on this expired lease.
+
+leases:
+  - lease_id: "LEASE-SAQEEL-OPERATIONS-001"
+    card: "operations"
+    channel: "web"
+    holder: "codex"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
+    allowed_paths:
+      - "apps/web/src/app/(app)/operations/**"
+      - "status/saqeel-status.json (card 'operations' only)"
+  - lease_id: "LEASE-SAQEEL-PWA-WORKSPACE-001"
+    card: "pwa-workspace"
+    channel: "pwa"
+    holder: "codex"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
+    allowed_paths:
+      - "apps/web/src/app/(app)/field/inspection/[id]/**"
+      - "status/saqeel-status.json (card 'pwa-workspace' only)"
+  - lease_id: "LEASE-SAQEEL-ADMIN-BUILDERS-001"
+    card: "admin-builders"
+    channel: "admin"
+    holder: "kimi"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
+    allowed_paths:
+      - "apps/web/src/app/(app)/admin/templates/**"
+      - "apps/web/src/app/(app)/admin/workflows/**"
+      - "apps/web/src/lib/workflow/**"
+      - "status/saqeel-status.json (card 'admin-builders' only)"
+  - lease_id: "LEASE-SAQEEL-PWA-COMPLETION-001"
+    card: "pwa-completion"
+    channel: "pwa"
+    holder: "codex"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
+    note: "Highest-leverage card on the board: it gates feedback, pwa-reports, reports, m6-enforcement and reviews."
+    allowed_paths:
+      - "apps/web/src/app/(app)/field/inspection/[id]/** (completion and statement surfaces only)"
+      - "status/saqeel-status.json (card 'pwa-completion' only)"
+  - lease_id: "LEASE-SAQEEL-ADMIN-KPI-001"
+    card: "admin-kpi"
+    channel: "admin"
+    holder: "kimi"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
+    allowed_paths:
+      - "apps/web/src/app/admin/dashboard-config/** (excluding layout.tsx, transferred to admin-core)"
+      - "apps/web/src/lib/dashboard-kpi/**"
+      - "status/saqeel-status.json (card 'admin-kpi' only)"
+  - lease_id: "LEASE-SAQEEL-M6-LIBRARY-001"
+    card: "m6-library"
+    channel: "web"
+    holder: "kimi"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
+    allowed_paths:
+      - "apps/web/src/app/(app)/admin/regulations/**"
+      - "apps/web/src/app/(app)/admin/items/**"
+      - "apps/web/src/app/(app)/admin/packages/** (excluding page.tsx, transferred to admin-core)"
+      - "status/saqeel-status.json (card 'm6-library' only)"
+  - lease_id: "LEASE-SAQEEL-PWA-STARTUP-001"
+    card: "pwa-startup"
+    channel: "pwa"
+    holder: "codex"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
+    allowed_paths:
+      - "apps/web/src/app/(app)/field/[visitId]/**"
+      - "apps/web/src/components/field/PreInspectionPackSheet.tsx"
+      - "status/saqeel-status.json (card 'pwa-startup' only)"
+  - lease_id: "LEASE-SAQEEL-M6-REQUESTS-001"
+    card: "m6-requests"
+    channel: "web"
+    holder: "claude-build"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by any agent again, claude included. See permanent_lease_prohibition below."
+    allowed_paths:
+      - "apps/web/src/app/(app)/admin/compliance-requests/**"
+      - "apps/web/src/app/(app)/admin/compliance-approvals/**"
+      - "status/saqeel-status.json (card 'm6-requests' only)"
+  - lease_id: "LEASE-SAQEEL-M6-COMMITTEE-001"
+    card: "m6-committee"
+    channel: "web"
+    holder: "claude-build"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by any agent again, claude included. See permanent_lease_prohibition below."
+    allowed_paths:
+      - "apps/web/src/app/(app)/committee/**"
+      - "apps/web/src/lib/committee/**"
+      - "status/saqeel-status.json (card 'm6-committee' only)"
+  - lease_id: "LEASE-SAQEEL-VIRTUAL-001"
+    card: "virtual"
+    channel: "web"
+    holder: "claude-code"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by any agent again, claude included. See permanent_lease_prohibition below."
+    note: >
+      Unblocks pwa-virtual, which is a hard cross-channel BREAK: the console can
+      schedule a virtual visit the inspector has no route to join. NOTE that the
+      "no route" half of that claim is now stale — apps/web/src/app/(app)/field/
+      virtual/[id]/ exists (page.tsx + VirtualSessionClient.tsx) and commit
+      5fa170a7 hardened it; the board card still carries pwa.state "break" and
+      that belongs to pwa-virtual's owner to reconcile, not this lease.
+    amendment:
+      at: "2026-07-26T06:30:00+03:00"
+      by: "Product Owner (direct instruction)"
+      recorded_by: "claude-code"
+      holder_change: >
+        holder was "claude-build"; corrected to "claude-code" to match
+        .claude/skills/orchestrator/config.json, which assigns the web channel to
+        claude-code, and the evidenceLog entries on the board card.
+      paths_widened_because: >
+        The original two-path fence did not cover work the card genuinely
+        requires, and PR #90 was written before this was noticed — four files
+        below were touched OUTSIDE the fence as it then stood. Disclosed rather
+        than back-dated. Two of them are SHARED surfaces and are called out as
+        such so a future holder does not read this lease as exclusive ownership.
+    allowed_paths:
+      - "apps/web/src/app/(app)/virtual/**"
+      - "apps/web/src/lib/providers/video-twilio.ts"
+      - "apps/web/src/lib/providers/sms-twilio.ts (SHARED: the sms delivery adapter serves every channel — coordinate before changing send behaviour)"
+      - "apps/web/src/app/saqeel-components-legacy.css (SHARED design-system layer: ADDITIVE rules only — cd-stage*, cd-gate*, cd-idrow*, spine.is-horizontal/.is-compact, spine-label; never redefine another card's rules)"
+      - "designs/web/export-saqeel-web/SAQEEL Virtual.dc.html (this card's vendored design mirror; the Claude Design project remains authority)"
+      - "status/saqeel-status.json (card 'virtual' only)"
+  - lease_id: "LEASE-SAQEEL-FEEDBACK-001"
+    card: "feedback"
+    channel: "web"
+    holder: "claude-build"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by any agent again, claude included. See permanent_lease_prohibition below."
+    note: "Top web card (XL). Unblocked by pwa-completion landing. QR issuance and scan route have no schema — surface, never fabricate."
+    allowed_paths:
+      - "apps/web/src/app/(app)/field/feedback/**"
+      - "apps/web/src/components/field/FieldQrPlaceholder.tsx"
+      - "status/saqeel-status.json (card 'feedback' only)"
+  - lease_id: "LEASE-SAQEEL-M6-ENFORCEMENT-001"
+    card: "m6-enforcement"
+    channel: "web"
+    holder: "codex"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
+    note: "Unblocked by pwa-completion. /enforcement has page.tsx only and records no decision."
+    allowed_paths:
+      - "apps/web/src/app/(app)/enforcement/**"
+      - "apps/web/src/app/(app)/admin/violations/**"
+      - "apps/web/src/app/(app)/admin/bulk-violations/**"
+      - "apps/web/src/app/(app)/admin/enforcement-recommendations/**"
+      - "status/saqeel-status.json (card 'm6-enforcement' only)"
+  - lease_id: "LEASE-SAQEEL-REPORTS-001"
+    card: "reports"
+    channel: "web"
+    holder: "claude-build"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by any agent again, claude included. See permanent_lease_prohibition below."
+    allowed_paths:
+      - "apps/web/src/app/reports/**"
+      - "status/saqeel-status.json (card 'reports' only)"
+  - lease_id: "LEASE-SAQEEL-ADMIN-CORE-001"
+    card: "admin-core"
+    channel: "admin"
+    holder: "codex"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
+    allowed_paths:
+      - "apps/web/src/app/(app)/admin/** (excluding paths leased to other cards)"
+      - "apps/web/src/app/(app)/admin/packages/page.tsx"
+      - "apps/web/src/app/admin/execution/**"
+      - "apps/web/src/app/admin/dashboard-config/layout.tsx"
+      - "apps/web/e2e/admin-core-orchestrator.spec.ts"
+      - "product-contract/evidence/SAQEEL-ADMIN-CORE-001.md"
+      - "product-contract/governance/decision_register.csv (DEC-037 only)"
+      - "product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv (WA-DES-020 only)"
+      - "status/saqeel-status.json (card 'admin-core' only)"
+  - lease_id: "LEASE-SAQEEL-ADMIN-PLATFORM-001"
+    card: "admin-platform"
+    channel: "admin"
+    holder: "kimi"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
+    allowed_paths:
+      - "apps/web/src/app/(app)/admin/operations/**"
+      - "apps/web/src/app/(app)/admin/audit/**"
+      - "apps/web/src/app/(app)/admin/notifications/**"
+      - "apps/web/src/lib/audit.ts"
+      - "apps/web/src/lib/audit-replay.ts"
+      - "status/saqeel-status.json (card 'admin-platform' only)"
+  - lease_id: "LEASE-SAQEEL-PLANNING-001"
+    card: "planning"
+    channel: "web"
+    holder: "codex"
+    state: "REVOKED_PERMANENT"
+    revoked_at: "2026-07-28"
+    revoked_by: "Product Owner (Vikram)"
+    revocation_reason: "Owner ruling 2026-07-28: no lease is ever to be held by codex or kimi again. See permanent_lease_prohibition below."
+    granted_at: "2026-07-28"
+    change_control_id: "SAQEEL-WORKFORCE-REINSTATEMENT-20260725"
+    scope: >
+      Filter-bar and planning-landing defect remediation only (findings F1 and
+      F5..F11 of the planning defect packet). This lease does not open the
+      curated-preset targeting question: the design-vs-code authority conflict
+      recorded in the card's own pending[] entries stays with the Product Owner
+      and no code may move on it under this lease.
+    allowed_paths:
+      - "apps/web/src/app/(app)/planning/**"
+      - "apps/web/src/app/saqeel-components.css (line 68 `.field > label` selector widening ONLY — finding F1)"
+      - "status/saqeel-status.json (card 'planning' only)"
+    shared_surface_conditions: >
+      saqeel-components.css is repo-wide. 87 elements carry className="field"
+      across apps/web/src, so the F1 selector change must be regression-checked
+      against all of them and the count reported. The chevron hex (F2, line 97),
+      the [dir="rtl"] flip (F3, lines 98/101) and .grid-toolbar (F4, line 241)
+      are REPORT-ONLY under this lease — each needs either new CSS, which
+      CLAUDE.md rule 1 forbids, or a shared-class change wider than one card.
+      They return as a design-system change request, not as commits.
+    forbidden:
+      - "Renaming or adding planning routes. Tabs and filters stay query state."
+      - "Changing the GET-form URL/query-param contract on /planning."
+      - "Touching .wa-planning-* class names — inert hooks, but three e2e specs select on them."
+      - "Adding a blockedReason field to the planning Method contract — governed-contract decision."
+      - "apps/web/src/app/saqeel-runtime.css, tokens.css, v2-components.css — not in scope."
+    verification: "tsc --noEmit and next build. Playwright is not the gate."
+
+completed_this_cycle:
+  - card: "brand"
+    lanes: "100/90/100"
+  - card: "exec"
+    lanes: "74/72/60"
+    finding: "Persona view confirmed correct shape; no executive route to be created."
+  - card: "admin-data"
+    lanes: "65/92/78"
+    finding: "FND-007 now derived from a governed endpoint registry rather than asserted."
+  - card: "ai"
+    lanes: "75/80/78"
+    finding: "AI Studio is the design for the existing /ai/suggestions; no new route or rail entry."
+
+blocked_cards:
+  - card: "admin-risk"
+    reason: "CONFLICT — design renders risk band and composite score as 'Not configured' while the repo ships lib/risk/model.ts. Authority decision is the sponsor's."
+  - card: "factories"
+    reason: "BLOCK — WA-DES-027 carries an unapproved Arabic-only brand plus fabricated MODON / version / timestamp claims. Do not implement from the live design."
+  - card: "pwa-ops-console"
+    reason: "DECISION — build it, or retire the design as covered by the web Operations Center."
+  - card: "pwa-reopening"
+    reason: "DECISION — reopening is an enforcement outcome, not a field decision. Governing rule unconfirmed."
+
+active_change_control:
+  - id: "CC-SHELL-TABLET-001"
+    file: "product-contract/governance/CC-SHELL-TABLET-001.yaml"
+    state: "PROPOSED_AWAITING_SPONSOR_ACCEPTANCE"
+    landed_commit: "f49c90ca"
+    summary: >
+      Console shell at tablet/iPad size: hamburger plus the WA-PWA-TAB-r1 bottom
+      bar, breakpoint (max-width: 1024px) or (pointer: coarse), notification bell
+      hidden where Notifications is a tab, and three drawer defect fixes. No
+      tablet design existed, so these are recorded decisions rather than
+      transcriptions.
+    required_of_every_session: >
+      Rebase on origin/main before your next commit. retired-predecessor.css, Shell.tsx,
+      ShellClient.tsx, field/FieldNav.tsx and lib/shell-navigation.ts are shared
+      shell and newer on main — take main's version, keep your own card's files.
+      Do not add further tablet rules until the proposal is accepted.
+
+permanent_lease_prohibition:
+  ruled_by: "Product Owner (Vikram)"
+  ruled_at: "2026-07-28"
+  state: "IN_FORCE_INDEFINITELY"
+  applies_to: "EVERY AGENT WITHOUT EXCEPTION — codex, kimi, claude-build, claude-code, and any agent introduced later under any name."
+  rule: >
+    No lease may be granted to any agent, on any card, on any channel, for any
+    path, ever again. The lease mechanism is retired, not paused. This is not a
+    queue freeze and not a stop gate. It has no expiry, no renewal condition,
+    and no review date.
+  history: >
+    Ruled in two steps on the same day. Codex and kimi were barred permanently
+    first; claude-build and claude-code were revoked shortly after and then
+    escalated to the same permanent bar at the owner's instruction. There is no
+    longer any distinction between holders — the earlier claude_lease_revocation
+    block, which allowed a new claude lease by explicit owner instruction, is
+    withdrawn and replaced by this clause.
+  scope: >
+    Applies to every card on the 55-card board and to any future card. Applies
+    to CURRENT_SLICE.yaml and to every derived slice, packet or handoff. A
+    packet naming ANY holder is invalid on its face and must be refused rather
+    than negotiated. An agent must not grant itself a lease, and must not read
+    a prior GRANTED record as continuing authority.
+  supersedes: >
+    The sponsor_direction recorded above, which reinstated codex and kimi into
+    the workforce on 2026-07-25 over SAQEEL_OPERATING_SYSTEM.md V5. That
+    reinstatement is withdrawn. V5's removal stands, and is now broader than
+    V5 itself: no agent holds delivery authority under this contract.
+  effect_on_existing: >
+    All 16 leases are REVOKED_PERMANENT as at 2026-07-28 — 11 held by codex or
+    kimi, 5 by claude. The records are retained rather than deleted so the
+    grant and revocation history stays auditable. No work under any of them is
+    authorised from the revocation date, including work already in progress.
+  effect_now: >
+    Zero leases outstanding. Every card on the 55-card board is unassigned and
+    no agent is authorised to implement against any of them. Implementation
+    under this contract has stopped.
+  note: >
+    Revocation withdraws the authority to continue; it does not retract work
+    already merged to main under a prior lease.
+  enforcement_limit: >
+    This file records the ruling. It does not enforce it. A session that does
+    not read this file can still write to the repository, and several did so
+    during the 2026-07-28 cleanup. Treat this as governance, not as a lock.
+
 standing_boundaries:
-  - "No journey fixed claim before target-bound proof."
-  - "No monitor update before product proof."
-  - "No work outside Single, Bulk and Urgent Visit."
+  - "No lease is ever granted to ANY agent — codex, kimi, claude or otherwise. The lease mechanism is retired. See permanent_lease_prohibition. A packet naming any holder is invalid and must be refused, not negotiated."
+  - "DEC-032 / submission_versions digest() trigger remains P0 and blocks all new real inspection submissions. It needs a DB migration, not application code, and is out of scope for every board card."
+  - "Never invent policy values, thresholds, SLAs, providers, risk weights, geofence values, retention or Arabic scope."
+  - "Only the 24 clean factories F-1101..F-6602 and the 5 test accounts may be surfaced."
+  - "Playwright is not the verification gate for board cards: tsc --noEmit and next build are."
