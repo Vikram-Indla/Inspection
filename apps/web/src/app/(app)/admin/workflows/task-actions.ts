@@ -15,12 +15,12 @@ export type TaskResult = { error?: string; ok?: boolean };
 
 function taskMutationError(error: { message?: string } | null): string {
   const message = error?.message ?? "";
-  if (message.includes("WORKFLOW")) return "A reason is required. Nothing was changed.";
-  if (message.includes("WORKFLOW")) return "A new assignee is required.";
-  if (message.includes("WORKFLOW")) return "The task changed or that transition is no longer permitted. Reload and try again.";
-  if (message.includes("WORKFLOW")) return "A completed or cancelled task cannot be reactivated.";
-  if (message.includes("WORKFLOW")) return "Task not found or out of scope.";
-  if (message.includes("WORKFLOW") || message.includes("WORKFLOW")) {
+  if (message.includes("WORKFLOW-TASK-REASON")) return "A reason is required. Nothing was changed.";
+  if (message.includes("WORKFLOW-TASK-ASSIGNEE")) return "A new assignee is required.";
+  if (message.includes("WORKFLOW-TASK-TRANSITION")) return "The task changed or that transition is no longer permitted. Reload and try again.";
+  if (message.includes("WORKFLOW-TASK-TERMINAL")) return "A completed or cancelled task cannot be reactivated.";
+  if (message.includes("WORKFLOW-TASK-NOT-FOUND")) return "Task not found or out of scope.";
+  if (message.includes("WORKFLOW-TASK-DENIED") || message.includes("WORKFLOW-TASK-SCOPE")) {
     return "Task change blocked — a scoped manager role is required.";
   }
   return NEUTRAL_WRITE_ERROR;
