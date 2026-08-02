@@ -59,6 +59,21 @@ export function summarizeSnapshot(snapshot: SubmittedSnapshot) {
   };
 }
 
+// PostgREST embeds a nested relation as an array, a single object, or null/undefined
+// depending on how it infers the FK cardinality for a given query shape (INSP-699:
+// /field/completed crashed with "flatMap is not a function" because assignments →
+// visits → inspections returned a bare object, not an array, whenever a visit had
+// exactly one inspection). Normalize to an array without hiding genuinely invalid
+// data: anything that isn't an array, a plain object, null, or undefined is a real
+// shape violation and gets logged so it surfaces instead of silently vanishing.
+export function normalizeEmbedded<T>(value: unknown, context: string): T[] {
+  if (value == null) return [];
+  if (Array.isArray(value)) return value as T[];
+  if (typeof value === "object") return [value as T];
+  console.error(`[completed-history] unexpected embedded shape for ${context}:`, typeof value, value);
+  return [];
+}
+
 export function latestSubmittedVersions(records: CompletedHistoryRecord[]): CompletedHistoryRecord[] {
   const latest = new Map<string, CompletedHistoryRecord>();
   for (const record of records) {

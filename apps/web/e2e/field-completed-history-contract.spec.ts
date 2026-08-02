@@ -4,6 +4,7 @@ import path from "node:path";
 import {
   completionReference,
   latestSubmittedVersions,
+  normalizeEmbedded,
   summarizeSnapshot,
   type CompletedHistoryRecord,
 } from "../src/lib/field/completed-history";
@@ -32,6 +33,35 @@ test.describe("TASK-IPAD-COMPLETED-HISTORY-001 contract", () => {
     expect(summarizeSnapshot(record(1, "2026-07-25T08:00:00Z").snapshot)).toEqual({
       answered: 2, compliant: 1, nonCompliant: 1, findings: 1, evidence: 2,
     });
+  });
+
+  test("INSP-699 regression — normalizes array, single-object, and null/undefined embed shapes", () => {
+    // PostgREST returns array, bare object, or null for the same nested relation
+    // depending on inferred FK cardinality (INSP-699: /field/completed crashed
+    // with "flatMap is not a function" when a visit had exactly one inspection
+    // and the embed came back as a bare object instead of a one-item array).
+    const asArray = [{ id: "a" }, { id: "b" }];
+    const asObject = { id: "solo" };
+
+    expect(normalizeEmbedded(asArray, "test.array")).toEqual([{ id: "a" }, { id: "b" }]);
+    expect(normalizeEmbedded(asObject, "test.object")).toEqual([{ id: "solo" }]);
+    expect(normalizeEmbedded(null, "test.null")).toEqual([]);
+    expect(normalizeEmbedded(undefined, "test.undefined")).toEqual([]);
+
+    // Genuinely invalid shapes (not array/object/null/undefined) must NOT be
+    // silently hidden as an empty result set with no trace — they're logged.
+    const originalError = console.error;
+    const logged: unknown[][] = [];
+    console.error = (...args: unknown[]) => logged.push(args);
+    try {
+      expect(normalizeEmbedded("not-an-object-or-array", "test.invalid-string")).toEqual([]);
+      expect(normalizeEmbedded(42, "test.invalid-number")).toEqual([]);
+    } finally {
+      console.error = originalError;
+    }
+    expect(logged.length).toBe(2);
+    expect(logged[0].join(" ")).toContain("test.invalid-string");
+    expect(logged[1].join(" ")).toContain("test.invalid-number");
   });
 
   test("selects latest versions without merging mutable state", () => {
