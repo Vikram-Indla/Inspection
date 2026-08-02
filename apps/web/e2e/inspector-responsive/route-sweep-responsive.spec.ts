@@ -61,9 +61,11 @@ const WIDTHS = [
 const evidenceDir = evidenceDirectory("task-inspector-responsive-acceptance-001-sweep");
 
 type Variant = { key: string; theme: "light" | "dark"; locale: "en" | "ar" };
-// en-light already ran and passed 60/60 in a prior pass (see task evidence);
-// only dark and AR/RTL run here to avoid redoing a passed variant.
+// Rerunning en-light too: the original crash detector missed a real defect
+// (see /field/completed finding) because it required status !== 200, and
+// Next dev's RSC error boundary answers 200. Fixed detector, full rerun.
 const VARIANTS: Variant[] = [
+  { key: "en-light", theme: "light", locale: "en" },
   { key: "en-dark", theme: "dark", locale: "en" },
   { key: "ar-rtl", theme: "light", locale: "ar" },
 ];
@@ -75,7 +77,7 @@ async function loginInspector3(page: import("@playwright/test").Page, width: num
   await identifierField(page).fill(INSPECTOR_EMAIL);
   await passwordField(page).fill(INSPECTOR_PASSWORD);
   await submitCredentials(page);
-  await page.waitForURL((url) => url.pathname === "/dashboard", { timeout: 20_000 });
+  await page.waitForURL((url) => url.pathname === "/dashboard", { timeout: 45_000 });
 }
 
 async function sweepRoutes(
@@ -101,7 +103,14 @@ async function sweepRoutes(
     }
     const status = response?.status() ?? 0;
     const bodyText = await page.locator("body").innerText().catch(() => "");
-    const crashed = /Application error|500|This page could not be found/i.test(bodyText) && status !== 200 && status !== 0;
+    // Next dev's App Router error boundary renders its own <html id="__next_error__">
+    // shell and can still answer HTTP 200 (RSC render errors), so status alone is not
+    // a reliable crash signal — check the error-boundary marker directly.
+    const htmlId = await page.locator("html").getAttribute("id").catch(() => null);
+    const crashed =
+      htmlId === "__next_error__" ||
+      (/Application error|This page could not be found/i.test(bodyText) && status !== 200 && status !== 0) ||
+      (status >= 500);
     const dirAttr = await page.locator("html").getAttribute("dir").catch(() => null);
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -120,7 +129,7 @@ for (const variant of VARIANTS) {
   test.describe(`INSP route sweep — baseline responsive, ${variant.key}`, () => {
     for (const { label: wlabel, width, height } of WIDTHS) {
       test(`inspector3 route set at ${wlabel}px (${variant.key})`, async ({ page }) => {
-        test.setTimeout(240_000); // ~30 routes, dev-mode first-hit compile per route
+        test.setTimeout(420_000); // ~30 routes, dev-mode first-hit compile per route
         await loginInspector3(page, width, height);
         const failures = await sweepRoutes(page, variant, wlabel);
         // eslint-disable-next-line no-console

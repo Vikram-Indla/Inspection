@@ -5,28 +5,34 @@ import CompletedHistoryCache from "@/components/field/CompletedHistoryCache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
-import { latestSubmittedVersions, type CompletedHistoryRecord } from "@/lib/field/completed-history";
+import { latestSubmittedVersions, normalizeEmbedded, type CompletedHistoryRecord } from "@/lib/field/completed-history";
 import styles from "./completed.module.css";
 
 export const dynamic = "force-dynamic";
+
+type SubmissionVersionRow = {
+  id: string;
+  version_number: number;
+  snapshot: CompletedHistoryRecord["snapshot"];
+  acknowledgement: CompletedHistoryRecord["acknowledgement"];
+  submitted_at: string;
+  submitted_by: string;
+};
+
+type InspectionRow = {
+  id: string;
+  status: string;
+  // PostgREST embed cardinality is not stable across query shapes — see
+  // normalizeEmbedded() in completed-history.ts (INSP-699).
+  submission_versions: SubmissionVersionRow[] | SubmissionVersionRow | null;
+};
 
 type AssignmentRow = {
   visits: {
     id: string;
     visit_type: string | null;
     factories: { name: string; factory_code: string | null } | null;
-    inspections: Array<{
-      id: string;
-      status: string;
-      submission_versions: Array<{
-        id: string;
-        version_number: number;
-        snapshot: CompletedHistoryRecord["snapshot"];
-        acknowledgement: CompletedHistoryRecord["acknowledgement"];
-        submitted_at: string;
-        submitted_by: string;
-      }>;
-    }> | null;
+    inspections: InspectionRow[] | InspectionRow | null;
   } | null;
 };
 
@@ -49,8 +55,8 @@ export default async function CompletedInspectionsPage() {
   const flattened: CompletedHistoryRecord[] = ((read.data ?? []) as unknown as AssignmentRow[]).flatMap(assignment => {
     const visit = assignment.visits;
     if (!visit?.factories) return [];
-    return (visit.inspections ?? []).flatMap(inspection =>
-      (inspection.submission_versions ?? []).map(version => ({
+    return normalizeEmbedded<InspectionRow>(visit.inspections, "visits.inspections").flatMap(inspection =>
+      normalizeEmbedded<SubmissionVersionRow>(inspection.submission_versions, "inspections.submission_versions").map(version => ({
         inspectionId: inspection.id,
         visitId: visit.id,
         factoryName: visit.factories!.name,
