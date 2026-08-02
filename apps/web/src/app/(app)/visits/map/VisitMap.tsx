@@ -13,6 +13,9 @@ export type MappedVisit = {
   factoryLat: number; factoryLng: number; inspectorName: string;
   inspectorLat: number | null; inspectorLng: number | null; inspectorAt: string | null;
   operationalState: string;
+  // Planning-only fields (Coverage Filters / Unassigned Visits / Regional Summary, INSP-697).
+  // Optional so /visits and /virtual consumers of MappedVisit are unaffected.
+  riskBand?: string | null; windowStart?: string | null; windowEnd?: string | null;
 };
 
 export type VisitMapStrings = {

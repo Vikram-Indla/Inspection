@@ -6,6 +6,31 @@ import { cookies, headers } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
 import { FACTORY360_AR_FALLBACK } from "@/lib/factory360/arabic";
 
+// INSP-697 — Planning Map Coverage Filters / Unassigned Visits / Regional
+// Summary (visits/map/CoveragePanel.tsx, /planning/map only). Same
+// reviewed-fallback bridge pattern as MVP3_AR_FALLBACK below.
+const PLAN_MAP_AR_FALLBACK: Dict = {
+  "plan.map.coverage.title": "مرشحات التغطية",
+  "plan.map.coverage.filtersTitle": "مرشحات التغطية",
+  "plan.map.coverage.riskLabel": "فئة الخطورة",
+  "plan.map.coverage.allRisk": "أي فئة خطورة",
+  "plan.map.coverage.windowLabel": "النافذة الزمنية",
+  "plan.map.coverage.window7": "خلال 7 أيام",
+  "plan.map.coverage.window30": "خلال 30 يومًا",
+  "plan.map.coverage.window90": "خلال 90 يومًا",
+  "plan.map.coverage.windowAll": "أي مدة",
+  "plan.map.coverage.inspectorLabel": "حالة المفتش",
+  "plan.map.coverage.inspectorAll": "أي حالة",
+  "plan.map.coverage.inspectorAssigned": "مُسنَد",
+  "plan.map.coverage.inspectorUnassigned": "غير مُسنَد",
+  "plan.map.coverage.reset": "إعادة تعيين",
+  "plan.map.coverage.unassignedCount": "{n} زيارة غير مُسندة",
+  "plan.map.coverage.unassignedEmpty": "لا توجد زيارات ضمن هذا النطاق",
+  "plan.map.coverage.regionalTitle": "تغطية الزيارات حسب المنطقة",
+  "plan.map.coverage.regionalHelp": "الزيارات المحددة الموقع ضمن المرشح الحالي، مجمّعة حسب المنطقة",
+  "plan.map.coverage.visitsCount": "{n} زيارة",
+};
+
 export type Locale = "en" | "ar";
 export type Dict = Record<string, string>;
 
@@ -139,7 +164,7 @@ export async function getDict(locale: Locale): Promise<Dict> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !supabaseAnonKey) {
-    return { ...MVP3_AR_FALLBACK, ...FACTORY360_AR_FALLBACK };
+    return { ...MVP3_AR_FALLBACK, ...FACTORY360_AR_FALLBACK, ...PLAN_MAP_AR_FALLBACK };
   }
   // anon client: ui_strings is world-readable; avoids per-request cookie plumbing
   const sb = createClient(supabaseUrl, supabaseAnonKey);
@@ -159,6 +184,7 @@ export async function getDict(locale: Locale): Promise<Dict> {
   const complete = {
     ...MVP3_AR_FALLBACK,
     ...FACTORY360_AR_FALLBACK,
+    ...PLAN_MAP_AR_FALLBACK,
     ...dict,
   };
   cache = { at: Date.now(), dict: complete };
