@@ -586,7 +586,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     cancelSubmit: t("field.ws.cancel.submit", "Request cancellation"),
     cancelPending: t("field.ws.cancel.pending", "Cancellation requested — awaiting Operations decision. You can keep working."),
     cancelApprovedTitle: t("field.ws.cancel.approvedTitle", "Cancellation approved by Operations."),
-    cancelApprovedBody: t("field.ws.cancel.approvedBody", "This visit is cancelled and the workspace is now read-only. Everything captured is preserved for audit."),
+    cancelApprovedBody: t("field.ws.cancel.approvedBody", "This visit is cancelled and this screen is now read-only. Everything captured is preserved for audit."),
     cancelRejected: t("field.ws.cancel.rejected", "Cancellation was rejected by Operations — the visit continues. Reason: {reason}"),
     cancelFailed: t("field.ws.cancel.failed", "The cancellation request could not be sent. Check the connection, then try again."),
     cancelReasonsMissing: t("field.ws.cancel.reasonsMissing", "Cancellation reasons aren't available right now."),

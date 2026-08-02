@@ -55,7 +55,9 @@ const DOSSIER_ALLOW = [
   /\bopenDossier\b/, // internal prop/key name on regulations page (renders "Open record")
   /reg-dossier-h/, // HTML id attribute, not visible text
   /^\s*(const|let)\s+\w+\s*=\s*dossier\b/, // `const cr = dossier.cr;` style destructuring
-  /\bdossier\.(found|cr|crError|selected|factory|address|lines|reports|observedComparison|latestApprovedFactorySnapshot|governmentResult)\b/, // canonical-projection.ts/route.ts internal field access
+  /\bdossier\.(found|cr|crError|selected|factory|address|lines|reports|observedComparison|latestApprovedFactorySnapshot|governmentResult|docs|government)\b/, // canonical-projection.ts/route.ts/my-tasks internal field access
+  /\bdossier\?\.\w+/, // optional-chaining property access on the internal dossier variable
+  /[!?]\s*dossier\b(?!\.\w*Strings)/, // `if (!dossier)` / `dossier ?` truthiness checks on the internal variable
   /\bblankDossier\b/,
   /^\s*dossier:\s*(\{|string;|t\()/, // object-literal / type-field key named `dossier`
   /}\s*=\s*dossier;/, // `const { ... } = dossier;` destructure, single- or multi-line
@@ -63,6 +65,14 @@ const DOSSIER_ALLOW = [
   /ar-dossier/, // CSS class name
   /\bL\.dossier\b/, // property access on an internal EN/AR strings-lookup object
   /^\s*(en|ar):\s*\{.*\bdossier:/, // inline strings-object literal whose KEY is named `dossier` (value already remediated)
+  /\bdossierHref\b/, // internal variable name (establishments list row link target)
+  /"field\.establishments\.noDossier"|"field\.myTasks\.noDossier"/, // i18n key names; rendered values are already plain-language
+  /styles\.dossier\b/, // CSS module class reference
+  /"f360\.list\.dossier":/, // key name in the AR fallback map; value already "عرض المصنع"
+  /There is no dossier and no locked site/, // JSX comment continuation line (opening {\/\* is on the prior line)
+  /strings\.dossier\b/, // property access in FactoryList.tsx, a dead/unimported component (verified: not referenced anywhere)
+  /FactoryDossierError|FactoryLicenseDossierError/, // error-boundary component function names, no rendered text
+  /"f360\.list\.dossier",\s*"View factory"/, // key name; value is already the plain-language string
 ];
 
 // Prohibited literal phrases the task's plain-language remediation banned

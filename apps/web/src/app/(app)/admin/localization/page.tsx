@@ -49,8 +49,8 @@ export default async function Localization() {
           body={t(
             "admin.unauthorized.body",
             copy(
-              "No localization data has been loaded. Return to your assigned workspace or ask an administrator for the required role.",
-              "لم يتم تحميل أي بيانات ترجمة. ارجع إلى مساحة عملك أو اطلب من المسؤول منحك الدور المطلوب.",
+              "No localization data has been loaded. Return to your assigned area or ask an administrator for the required role.",
+              "لم يتم تحميل أي بيانات ترجمة. ارجع إلى القسم المخصص لك أو اطلب من المسؤول منحك الدور المطلوب.",
             ),
           )}
         >

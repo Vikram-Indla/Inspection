@@ -24,7 +24,7 @@ export default async function NoWorkspace() {
       tone="neutral"
       dir={dir}
       lang={locale}
-      heading={t("access.noWorkspace.title", "No workspace is assigned to your account yet")}
+      heading={t("access.noWorkspace.title", "No role is assigned to your account yet")}
       body={t("access.noWorkspace.body", "Your sign-in was successful, but no role has been assigned to your account. Contact your administrator to request access.")}
       identity={user.email ?? undefined}
       identityLabel={t("access.noWorkspace.signedInAs", "Signed in as")}

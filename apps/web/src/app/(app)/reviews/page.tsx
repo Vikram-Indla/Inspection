@@ -95,7 +95,7 @@ export default async function Reviews() {
               <div className="cd-result__icon cd-result__icon--critical" aria-hidden="true"><IconBlocked size={24} /></div>
               <div className="cd-stack">
                 <h2>{t("review.list.unauthTitle", "You don’t have access to the review queue")}</h2>
-                <p>{t("review.list.unauthBody", "This queue needs an allowed role — review, planning, operations, or assigned inspector — with matching scope. Being visible in navigation does not mean you have access.")}</p>
+                <p>{t("review.list.unauthBody", "This queue needs an allowed role — Admin, Planner, Supervisor, or assigned Inspector — with matching scope. Being visible in navigation does not mean you have access.")}</p>
               </div>
             </div>
           </section>

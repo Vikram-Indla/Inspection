@@ -39,7 +39,7 @@ export default async function ExceptionsPage() {
       <header className="page-header">
         <div>
           <h1>{t("exc.title", "Exception board")}</h1>
-          <p className="tl-meta">{t("exc.subtitle", "RLS-scoped operational exceptions derived from the owning case and risk records.")}</p>
+          <p className="tl-meta">{t("exc.subtitle", "Operational exceptions filtered to your access, derived from the owning case and risk records.")}</p>
         </div>
         <nav className="row" aria-label={t("exc.journey", "Supervisor operations journey")}>
           <Link className="btn btn-secondary" href="/operations">{t("ops.title", "Operations Center")}</Link>
@@ -51,21 +51,21 @@ export default async function ExceptionsPage() {
       <div className="sq-banner"><div><strong>{t("exc.banner.title", "Command posture.")}</strong> {t("exc.banner.body", "Exceptions are a projection over real objects — decisions stay on the owning object. Counts trace 1:1 to sources (no synthetic rows).")} {invariantOk ? "✓" : "⚠"}</div></div>
       {degraded ? (
         <div className="alert alert-warning" role="status">
-          <div><strong>{t("exc.degraded.title", "Exception sources are partially unavailable.")}</strong> {t("exc.degraded.body", "Available RLS-scoped groups remain visible; unavailable sources are not represented as zero.")}</div>
+          <div><strong>{t("exc.degraded.title", "Exception sources are partially unavailable.")}</strong> {t("exc.degraded.body", "Available groups filtered to your access remain visible; unavailable sources are not represented as zero.")}</div>
         </div>
       ) : null}
       {sources.length === 0 && (
         <EmptyState glyph="✅" title={t("exc.empty.title", "No open exceptions in scope")}
           body={degraded
             ? t("exc.empty.degraded", "No source could be verified. Retry after the affected service recovers.")
-            : t("exc.empty.body", "Open cases and risk exceptions surface here. Empty may also mean none are in your scope (RLS).")} />
+            : t("exc.empty.body", "Open cases and risk exceptions surface here. Empty may also mean none are in your scope.")} />
       )}
       {groups.map((g) => (
         <div key={g.category} className="panel">
           <div className="panel-row">
             <div>
               <h2>{g.category.replace(/_/g, " ")}</h2>
-              <p className="tl-meta">{t("exc.group.source", "Open the owning workspace to inspect and decide the source record.")}</p>
+              <p className="tl-meta">{t("exc.group.source", "Open the source record to inspect and decide.")}</p>
             </div>
             <span className="badge badge-warning numeric">{g.count}</span>
             <Link className="btn btn-secondary" href={g.category === "review_overdue" ? "/reviews" : "/execution"}>

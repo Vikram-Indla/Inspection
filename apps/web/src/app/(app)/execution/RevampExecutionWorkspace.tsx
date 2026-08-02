@@ -365,7 +365,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
             <div><dt>{copy(locale, "Journey / tracking record", "سجل الرحلة / التتبع")}</dt><dd>{selected.journeyStatus
               ? `${titleCase(locale, selected.journeyStatus)} · ${formatDateTime(locale, selected.journeyStartedAt)}${selected.journeyEndedAt ? ` – ${formatDateTime(locale, selected.journeyEndedAt)}` : ""}`
               : copy(locale, "No journey session recorded. Live tracking remains unavailable in this Web view.", "لا توجد جلسة رحلة مسجلة. يظل التتبع المباشر غير متاح في عرض الويب هذا.")}</dd></div>
-            <div><dt>{copy(locale, "Offline and queued actions", "العمل دون اتصال والإجراءات المعلّقة")}</dt><dd>{copy(locale, "Unavailable in this Web read model; open the assigned Field workspace.", "غير متاح في نموذج القراءة على الويب؛ افتح مساحة العمل الميدانية المسندة.")}</dd></div>
+            <div><dt>{copy(locale, "Offline and queued actions", "العمل دون اتصال والإجراءات المعلّقة")}</dt><dd>{copy(locale, "Not available in this web view; open the assigned Inspector responsive web app.", "غير متاح في عرض الويب هذا؛ افتح تطبيق ويب المفتش المسند.")}</dd></div>
           </dl>
           {selectedDetail?.status === "ok" ? selected.inspectorId === currentUserId ? (
               <a className="btn btn-primary" href={`/field/${selected.id}`}>{selected.operationalState === "new" ? copy(locale, "Prepare in Field workspace", "التحضير في مساحة العمل الميدانية") : copy(locale, "Open Field workspace", "فتح مساحة العمل الميدانية")}</a>

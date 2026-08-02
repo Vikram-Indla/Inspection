@@ -124,7 +124,7 @@ export default function DeviceReadinessClient({ locale, appVersion }: { locale: 
           label={copy(locale, "Offline app shell", "هيكل التطبيق دون اتصال")}
           tone={loading ? "muted" : shellRow.tone}
           badge={loading ? copy(locale, "Checking…", "جارٍ الفحص…") : shellRow.badge}
-          note={copy(locale, "The field workspace can cold-start offline once the shell is cached.", "يمكن لمساحة العمل الميدانية أن تبدأ دون اتصال بمجرد تخزين الهيكل.")}
+          note={copy(locale, "The field app can start offline once the shell is cached.", "يمكن لتطبيق الميدان أن يبدأ دون اتصال بمجرد تخزين الهيكل.")}
         />
         <StatusRow
           label={copy(locale, "Installed mode", "وضع التثبيت")}

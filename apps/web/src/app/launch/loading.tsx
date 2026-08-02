@@ -14,7 +14,7 @@ export default async function Loading() {
       <main className="lg-center">
         <div className="lg-card lg-waiting" role="status" aria-busy="true">
           <div className="lg-waiting__spinner" aria-hidden="true" />
-          <p className="lg-card__sub">{t("launch.preparing", "Preparing your workspace…")}</p>
+          <p className="lg-card__sub">{t("launch.preparing", "Getting things ready…")}</p>
         </div>
       </main>
     </div>
