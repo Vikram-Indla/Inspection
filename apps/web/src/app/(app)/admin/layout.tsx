@@ -2,22 +2,16 @@ import type { ReactNode } from "react";
 import AdminRouteBoundary from "@/components/AdminRouteBoundary";
 import AdminScreenRegistry from "./_components/AdminScreenRegistry";
 
-// CC-SAQEEL-RESPONSIVE-REVAMP-001: legacy capability profiles map to the
-// canonical Administrator presentation role. Planner and Inspector deliberately
-// reach the localized unauthorized state; nested module boundaries still apply
-// their narrower maker-checker and specialty-role rules.
+// CC-SAQEEL-RESPONSIVE-REVAMP-001: legacy capability profiles collapsed onto
+// the four canonical roles (public.roles: admin, planner, supervisor,
+// inspector). Supervisor absorbs the former reviewer/ops entry into the admin
+// tree (needed to reach compliance-approvals/audit/enforcement-recommendations);
+// every other legacy governance role folded into admin. Planner and Inspector
+// deliberately reach the localized unauthorized state; nested module
+// boundaries still apply their narrower maker-checker and specialty-role rules.
 const ADMINISTRATOR_CAPABILITY_ROLES = [
   "admin",
-  "compliance_admin",
-  "form_admin",
-  "workflow_admin",
-  "security_admin",
-  "gis_admin",
-  "risk_owner",
-  "reviewer",
-  "ops",
-  "auditor",
-  "leadership",
+  "supervisor",
 ] as const;
 
 export default function AdministrationLayout({ children }: { children: ReactNode }) {

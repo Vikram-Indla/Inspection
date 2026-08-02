@@ -28,7 +28,7 @@ export default async function BulkViolations() {
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[], error: null };
   const roles = (roleRows ?? []).map(r => r.role_key);
-  const isAuthorized = roles.includes("ops") || roles.includes("compliance_admin");
+  const isAuthorized = roles.includes("supervisor") || roles.includes("admin");
 
   if (roleError) {
     return (

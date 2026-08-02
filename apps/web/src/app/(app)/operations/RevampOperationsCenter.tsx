@@ -62,7 +62,7 @@ export default function RevampOperationsCenter({
     [copy(locale, "Inspectors on the way", "المفتشون في الطريق"), String(onTheWayInspectors || counts.on_the_way || 0), mapViewHref, copy(locale, "Show on map", "إظهار على الخريطة")],
     [copy(locale, "Executing inspections", "التفتيشات قيد التنفيذ"), String(counts.executing || 0), "/execution", copy(locale, "Open Execution", "فتح التنفيذ")],
     [copy(locale, "Submitted today", "المقدمة اليوم"), "—", "/reviews", copy(locale, "Open Review & Approval", "فتح المراجعة والاعتماد")],
-    [copy(locale, "Active operational alerts", "التنبيهات التشغيلية النشطة"), "—", performanceViewHref, copy(locale, "Review exceptions", "مراجعة الاستثناءات")],
+    [copy(locale, "Active operational alerts", "التنبيهات التشغيلية النشطة"), "—", "/operations/exceptions", copy(locale, "Review exceptions", "مراجعة الاستثناءات")],
   ];
 
   return (
@@ -82,6 +82,9 @@ export default function RevampOperationsCenter({
               real Operations Center → Operations Live route flow. */}
           <a className="tl-meta" href="/operations/live">
             {copy(locale, "Live governed positions", "مواقع معتمدة مباشرة")}
+          </a>
+          <a className="tl-meta" href="/operations/exceptions">
+            {copy(locale, "Exception board", "لوحة الاستثناءات")}
           </a>
           <button className="btn btn-secondary" type="button" onClick={() => setShowList(value => !value)}>
             {showList ? copy(locale, "Show map", "إظهار الخريطة") : copy(locale, "Show list equivalent", "إظهار القائمة المكافئة")}

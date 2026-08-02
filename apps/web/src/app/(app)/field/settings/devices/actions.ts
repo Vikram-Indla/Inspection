@@ -12,14 +12,15 @@ import type { DeviceTrustStatus } from "../actions";
 // `assigned_user_id = auth.uid()`, so every row this returns is one the
 // database itself agreed to release. The explicit `.eq("assigned_user_id", …)`
 // below is NOT the authorization — RLS is — it is required because that same
-// policy also releases every device in the estate to `ops`, `security_admin`
-// and `auditor`. Without the filter an Operations user opening their own field
-// settings would see the whole fleet on a personal screen.
+// policy was written to also release every device in the estate to a fleet-
+// wide role. That role no longer exists in the live four-role model (admin,
+// planner, supervisor, inspector), so the broader grant is currently inert —
+// but the filter stays as defense-in-depth in case a future role restores it.
 //
 // There is deliberately no write here. `mvp3_devices` has no UPDATE and no
 // DELETE policy at all; trust transitions exist only inside
-// `mvp3_issue_device_command` (SECURITY DEFINER, ops/security_admin), which
-// this route cannot call. Enrolment insert lives in `../actions.ts`.
+// `mvp3_issue_device_command` (SECURITY DEFINER, admin-scoped), which this
+// route cannot call. Enrolment insert lives in `../actions.ts`.
 
 export type FieldDeviceListRow = {
   deviceIdentifier: string;

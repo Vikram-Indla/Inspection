@@ -37,6 +37,8 @@ async function regulationLifecycle(
     return { error: NEUTRAL_WRITE_ERROR, errorCode: "provider" };
   }
   revalidatePath("/admin/regulations");
+  revalidatePath("/admin/items");
+  revalidatePath("/admin/packages");
   const result = (data ?? {}) as {
     operational_status?: string;
     idempotent?: boolean;

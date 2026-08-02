@@ -26,8 +26,7 @@ export default async function AdminNotifications() {
   if (rulesError) console.error("[admin notifications] load failed", rulesError);
 
   const roles = new Set((roleRows ?? []).map(r => r.role_key));
-  const isWriter = roles.has("compliance_admin") || roles.has("form_admin") || roles.has("workflow_admin")
-    || roles.has("risk_owner") || roles.has("gis_admin") || roles.has("security_admin");
+  const isWriter = roles.has("admin");
 
   const l: Labels = {
     eventKey: t("admin.notif.form.eventKey", "Event"),

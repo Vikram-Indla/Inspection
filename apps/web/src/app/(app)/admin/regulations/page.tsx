@@ -9,6 +9,7 @@ import {
   type RegStrings,
   type RegRowLite,
 } from "./Controls";
+import AdminConfigurationJourney from "../_components/AdminConfigurationJourney";
 
 // SCR-ADM-010 (CD-005 Regulation Library) + SCR-ADM-011 (CD-006 Regulation Detail).
 // The contract route /admin/regulations/:id is NOT implemented; the detail dossier is a
@@ -112,8 +113,8 @@ export default async function Regulations({
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[], error: null };
   const roles = new Set((roleRows ?? []).map(r => r.role_key));
-  const isWriter = roles.has("compliance_admin") || roles.has("form_admin");
-  const isReviewer = roles.has("reviewer");
+  const isWriter = roles.has("admin");
+  const isReviewer = roles.has("supervisor");
 
   const { data: regsData, error: regsError } = await sb
     .from("compliance_regulation_library")
@@ -237,6 +238,21 @@ export default async function Regulations({
       {isWriter ? <a className="btn btn-secondary sq-link btn-touch" href="/admin/compliance-requests/new">Create governed request</a> : null}
     </nav>
   );
+  const configurationJourney = (
+    <AdminConfigurationJourney
+      current="regulations"
+      labels={{
+        ariaLabel: t("admin.configurationJourney.ariaLabel", "Configuration journey"),
+        eyebrow: t("admin.configurationJourney.eyebrow", "Governed configuration"),
+        title: t("admin.configurationJourney.title", "Regulation to inspection package"),
+        description: t("admin.configurationJourney.description", "Publish the legal source, prepare immutable templates, then assemble and publish the inspection package that references them."),
+        regulations: t("admin.configurationJourney.regulations", "Regulations"),
+        templates: t("admin.configurationJourney.templates", "Templates"),
+        packages: t("admin.configurationJourney.packages", "Packages"),
+        current: t("admin.configurationJourney.current", "Current step"),
+      }}
+    />
+  );
 
   // ---- S05/S06 read-only disclosure inside the module route guard ----
   const readOnlyBanner = roleError ? (
@@ -290,6 +306,7 @@ export default async function Regulations({
         {readOnlyBanner}
         {libraryTabs}
 
+        {configurationJourney}
         <p className="t-caption" style={{ margin: 0 }}>
           <a className="sq-link" href="/admin/regulations">← {t("admin.reg.r1.backToRegister", "Back to register")}</a>
         </p>
@@ -496,6 +513,7 @@ export default async function Regulations({
       {readOnlyBanner}
       {libraryTabs}
 
+      {configurationJourney}
       {isWriter ? (
         <div className="alert" role="note">
           <strong>{t("admin.reg.requestOnly.title", copy("Request-controlled content", "محتوى خاضع لطلب تغيير"))}</strong>{" "}

@@ -17,7 +17,7 @@ const CLEAN_FACTORY_CODES = [
 
 // DEC-F — Unlicensed-establishment enforcement recommendation review.
 // Inspector-submitted recommendations (planning/immediate/actions.ts) land
-// here as 'pending'; only ops/compliance_admin can decide (RLS-enforced,
+// here as 'pending'; only supervisor/admin can decide (RLS-enforced,
 // see 20260719010000_dec_f_enforcement_recommendations.sql). This route
 // itself has no product-contract screen_id yet — a housekeeping follow-up,
 // not a blocker to the capability working.
@@ -31,9 +31,9 @@ export default async function EnforcementRecommendations() {
     ? await getUserRoles(user.id)
     : { data: [] as { role_key: string }[], error: null };
   const roles = (roleRows ?? []).map(r => r.role_key);
-  const isDecider = roles.includes("ops") || roles.includes("compliance_admin");
+  const isDecider = roles.includes("supervisor") || roles.includes("admin");
   const canDecide = false;
-  const isReader = isDecider || roles.includes("inspector") || roles.includes("planner") || roles.includes("auditor") || roles.includes("reviewer") || roles.includes("leadership");
+  const isReader = isDecider || roles.includes("inspector") || roles.includes("planner");
 
   const actionLabel = (action: string) => ({
     fine: tr("admin.enf.rec.measure.fine", "Financial fine", "غرامة مالية"),

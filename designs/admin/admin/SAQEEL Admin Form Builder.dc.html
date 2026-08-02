@@ -146,7 +146,7 @@
       <div dir="{{ dir }}" lang="{{ lang }}">
 
       <div class="fb-route">
-        <span class="gv-src"><b>{{ t.routeLbl }}</b><bdi><code>/admin/packages/:id/designer</code></bdi></span>
+        <span class="gv-src"><b>{{ t.routeLbl }}</b><bdi><code>/admin/packages</code></bdi></span>
         <span class="gv-src"><b>{{ t.pkgIdLbl }}</b><bdi><code>{{ slotNC }}</code></bdi></span>
         <span class="gv-src"><b>{{ t.verIdLbl }}</b><bdi><code>{{ slotNC }}</code></bdi></span>
         <span class="fb-route__spacer"></span>
@@ -607,7 +607,7 @@
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900},&quot;dataState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;loading&quot;,&quot;empty&quot;,&quot;readonly&quot;,&quot;stale&quot;,&quot;degraded&quot;,&quot;conflict&quot;,&quot;notfound&quot;,&quot;unauthorized&quot;,&quot;error&quot;,&quot;unavailable&quot;],&quot;default&quot;:&quot;empty&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Data state&quot;},&quot;locale&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;ar&quot;],&quot;default&quot;:&quot;en&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Data state&quot;},&quot;themeMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Data state&quot;},&quot;scoringConfigured&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Governance&quot;},&quot;isApprover&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Governance&quot;}}">
 class Component extends DCLogic {
   // SAQEEL Form Builder — focused package/version designer for
-  // /admin/packages/:id/designer. NO FIXTURES: every visible value is a
+  // /admin/packages. NO FIXTURES: every visible value is a
   // live-data slot that reads "Not configured" / "غير مُهيّأ" when absent.
   // Upstream governed records (items, response sets, violation codes, penalty
   // mappings, evidence policy, scoring configuration) are READ here, never

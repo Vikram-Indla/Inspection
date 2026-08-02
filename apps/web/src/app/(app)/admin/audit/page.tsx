@@ -6,7 +6,7 @@ import { type ExpectedAuditEvent, type ReplayEvent, neutralAuditError } from "@/
 import AuditReplayWorkspace from "./AuditReplayWorkspace";
 
 const PAGE_SIZE = 250;
-const AUDIT_READ_ROLES = new Set(["auditor","ops","security_admin","leadership","reviewer","planner","compliance_admin"]);
+const AUDIT_READ_ROLES = new Set(["admin","supervisor","planner"]);
 
 type GenericRow = {
   id: number; actor: string | null; object_type: string; object_id: string | null;
@@ -100,7 +100,7 @@ export default async function AuditReplayPage({ searchParams }: {
 
   const semanticUnavailable = Boolean(semanticError);
   const sourceError = Boolean(genericResult.error);
-  const partialScope = authorized && roles.some(role => ["planner","reviewer","leadership"].includes(role));
+  const partialScope = authorized && roles.some(role => ["planner","supervisor"].includes(role));
 
   const { data: versionRows, error: versionError } = authorized
     ? await sb.from("audit_event_ontology_versions").select("id").eq("case_type", "inspection.standard").eq("status", "published").order("effective_from", { ascending: false }).limit(1)

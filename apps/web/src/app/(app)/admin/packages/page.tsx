@@ -13,10 +13,11 @@ import TemplateRegistry, { type TemplateRow, type TemplateStrings } from "./Temp
 import { IconLock } from "@/app/icons";
 import { AdminRecordTableRow } from "../_components/AdminRecordDrawer";
 import { createAdminRecordDrawerLabels } from "../_components/adminRecordDrawerCopy";
+import AdminConfigurationJourney from "../_components/AdminConfigurationJourney";
 
 export const dynamic = "force-dynamic";
 
-const WRITER_ROLES = new Set(["compliance_admin", "form_admin"]);
+const WRITER_ROLES = new Set(["admin"]);
 type ItemRule = { requirement?: "required" | "optional" | "conditional"; conditional?: { visible_when?: string; mandatory_when_visible?: boolean }; evidence_rule?: ItemRow["evidence_rule"]; scoring_enabled?: boolean; score_weight?: number | null; response_mapping?: ResponseModel["mapping"] };
 type Section = { key: string; title?: string; title_en?: string; title_ar?: string; items?: string[]; mandatory?: boolean };
 type ActionFormDef = { key: string; title: string; blocking?: boolean; fields?: string[]; template_version_id?: string };
@@ -351,6 +352,19 @@ export default async function Packages() {
       </span>}
     >
       <div className={styles.pageStack} id="package-register">
+        <AdminConfigurationJourney
+          current="packages"
+          labels={{
+            ariaLabel: t("admin.configurationJourney.ariaLabel", "Configuration journey"),
+            eyebrow: t("admin.configurationJourney.eyebrow", "Governed configuration"),
+            title: t("admin.configurationJourney.title", "Regulation to inspection package"),
+            description: t("admin.configurationJourney.description", "Publish the legal source, prepare immutable templates, then assemble and publish the inspection package that references them."),
+            regulations: t("admin.configurationJourney.regulations", "Regulations"),
+            templates: t("admin.configurationJourney.templates", "Templates"),
+            packages: t("admin.configurationJourney.packages", "Packages"),
+            current: t("admin.configurationJourney.current", "Current step"),
+          }}
+        />
         {!packageUnavailable && canWrite && <TemplateRegistry templates={templates} strings={templateStrings} />}
         <section className={`panel ${styles.hero}`} aria-labelledby="pkg-overview">
           <div className={styles.heroRow}>
@@ -386,7 +400,7 @@ export default async function Packages() {
             <h3 id="pkg-access" style={{ margin: 0 }}>{t("admin.pkg.readonly.title", "Read-only package access")}</h3>
             <p className="t-caption">{roleRead.error
               ? t("admin.pkg.readonly.unknown", "Your write permissions could not be verified, so all mutation controls are hidden. Reload to retry; RLS remains authoritative.")
-              : t("admin.pkg.readonly.body", "You can inspect versions, previews and publish impact. Creating, saving and publishing require compliance_admin or form_admin; navigation access does not grant write permission.")}</p>
+              : t("admin.pkg.readonly.body", "You can inspect versions, previews and publish impact. Creating, saving and publishing require the admin role; navigation access does not grant write permission.")}</p>
           </section>
         )}
 
@@ -488,6 +502,17 @@ export default async function Packages() {
                           <strong><IconLock size={16} /> {t("admin.pkg.immutable.title", "Published version — immutable.")}</strong>{" "}
                           {t("admin.pkg.immutable.body", "The database rejects definition and label edits. Create a new draft to change this package while existing inspections stay pinned to their downloaded version.")}
                         </div></div>}
+
+                        {published && (
+                          <div className="row" style={{ alignItems: "center", gap: "var(--space-2)", flexWrap: "wrap" }}>
+                            <a className="sq-link" href={`/planning/single?package=${encodeURIComponent(version.id)}&source=admin.packages`}>
+                              {t("admin.pkg.handoff.plan", "Plan a visit using this version")}
+                            </a>
+                            <span className="t-caption">
+                              {t("admin.pkg.handoff.note", "Planner access and the current package contract are verified again on opening.")}
+                            </span>
+                          </div>
+                        )}
 
                         {version.status === "draft" && canWrite && !itemBankUnavailable ? (
                           <DraftEditor versionId={version.id} definition={definition}

@@ -14,7 +14,7 @@ export type FactoryDataResult = {
   rejected?: number;
 };
 
-const ADMIN_ROLES = ["security_admin", "workflow_admin", "compliance_admin"];
+const ADMIN_ROLES = ["admin"];
 const CSV_SCHEMA_VERSION = "factory360-v2-staging-1";
 const MAX_FILE_BYTES = 2 * 1024 * 1024;
 const MAX_ROWS = 5000;

@@ -77,19 +77,6 @@ type RegChip = (typeof REG_CHIPS)[number];
 // would misread as "your scope has none" instead of "no source is wired yet".
 const NO_SOURCE_CHIPS: readonly RegChip[] = ["manufacturing", "contacts"];
 
-// SAQEEL's governed field-data boundary is the same explicit 24-factory set
-// used by /field/reports. Keep this enumerated: a shape/prefix match could
-// admit a future legacy row, and the complete list avoids hiding valid work.
-const CLEAN_FACTORY_CODES = [
-  "F-1101", "F-1102", "F-1103", "F-1104", "F-1105",
-  "F-2201", "F-2202", "F-2203", "F-2204",
-  "F-2214", "F-2215", "F-2216", "F-2217",
-  "F-3301", "F-3302", "F-3303", "F-3304", "F-3305",
-  "F-4401", "F-4402",
-  "F-5501", "F-5502",
-  "F-6601", "F-6602",
-] as const;
-
 type SearchParams = { task?: string; reg?: string; view?: string };
 
 export default async function FieldMyTasks({ searchParams }: { searchParams: Promise<SearchParams> }) {
@@ -144,9 +131,8 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
   const assignments = (asg as unknown as Assignment[] ?? [])
     .filter((a): a is Assignment & { visits: VisitRow } => !!a.visits && !!a.visits.factories)
     .filter(a => ["published", "expired"].includes(a.visits.planning_status))
-    .filter(a => CLEAN_FACTORY_CODES.includes(
-      a.visits.factories!.factory_code as typeof CLEAN_FACTORY_CODES[number],
-    ))
+    // RLS-scoped assignments are the authoritative receipt inbox. A static
+    // factory fixture allowlist here would conceal newly approved work.
     .filter(a => !isTestFixtureEstablishment(a.visits.factories));
   const allTasks = assignments
     .map(a => a.visits)

@@ -7,6 +7,11 @@ import { logProviderError, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
 export type TemplateResult = { ok?: boolean; error?: string };
 const TYPES = new Set(["form", "report", "action_form", "penalty"]);
 
+function revalidateTemplateConfiguration() {
+  revalidatePath("/admin/templates");
+  revalidatePath("/admin/packages");
+}
+
 // M09-006/008/009 — frontend-independent Template Builder contract. The schema
 // is persisted as a governed version and packages reference its immutable UUID.
 export async function createTemplateVersion(_: TemplateResult, formData: FormData): Promise<TemplateResult> {
@@ -31,7 +36,7 @@ export async function createTemplateVersion(_: TemplateResult, formData: FormDat
     schema, status: "draft", created_by: gate.userId,
   });
   if (error) { logProviderError("admin template create", error); return { error: NEUTRAL_WRITE_ERROR }; }
-  revalidatePath("/admin/packages");
+  revalidateTemplateConfiguration();
   return { ok: true };
 }
 
@@ -50,7 +55,7 @@ export async function updateTemplateDraft(_: TemplateResult, formData: FormData)
     .eq("id", id).eq("status", "draft").select("id");
   if (error) { logProviderError("admin template update", error); return { error: NEUTRAL_WRITE_ERROR }; }
   if (!data?.length) return { error: "Only draft template versions are editable." };
-  revalidatePath("/admin/packages");
+  revalidateTemplateConfiguration();
   return { ok: true };
 }
 
@@ -68,7 +73,7 @@ export async function publishTemplateVersion(_: TemplateResult, formData: FormDa
     if (message.includes("successor effective date")) return { error: "The successor effective date must follow the active version." };
     return { error: NEUTRAL_WRITE_ERROR };
   }
-  revalidatePath("/admin/packages");
+  revalidateTemplateConfiguration();
   return { ok: true };
 }
 
@@ -84,6 +89,6 @@ export async function deactivateTemplateVersion(_: TemplateResult, formData: For
     .eq("id", id).in("status", ["published", "locked"]).select("id");
   if (error) { logProviderError("admin template deactivate", error); return { error: NEUTRAL_WRITE_ERROR }; }
   if (!data?.length) return { error: "Only a governed active template can be deactivated." };
-  revalidatePath("/admin/packages");
+  revalidateTemplateConfiguration();
   return { ok: true };
 }

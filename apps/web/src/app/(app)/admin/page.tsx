@@ -34,16 +34,8 @@ type AuditRow = {
   occurred_at: string | null;
 };
 
-const REVIEW_ROLES = new Set(["compliance_admin", "reviewer"]);
-const AUDIT_ROLES = new Set([
-  "auditor",
-  "ops",
-  "security_admin",
-  "leadership",
-  "reviewer",
-  "planner",
-  "compliance_admin",
-]);
+const REVIEW_ROLES = new Set(["admin", "supervisor"]);
+const AUDIT_ROLES = new Set(["admin", "supervisor", "planner"]);
 
 export default async function AdminHome() {
   const [{ locale }, sb] = await Promise.all([useT(), supabaseServer()]);

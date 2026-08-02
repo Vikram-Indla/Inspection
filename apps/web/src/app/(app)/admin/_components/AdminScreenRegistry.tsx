@@ -11,6 +11,7 @@ const ADMIN_SCREENS = [
   ["/admin/compliance-requests/:id", "ADM-S05"],
   ["/admin/compliance-requests/new", "ADM-S06"],
   ["/admin/compliance-requests", "ADM-S07"],
+  ["/admin/delegation", "ADM-S33"],
   ["/admin/devices", "ADM-S08"],
   ["/admin/enforcement-recommendations", "ADM-S09"],
   ["/admin/gis", "ADM-S10"],

@@ -924,7 +924,7 @@ export default async function Operations({ searchParams }: {
     // The RPC requires `region` to equal an Operations actor's assigned region.
     // Preserve the independently selected view filter as well so the receipt
     // and audit event describe the exact row-producing intersection.
-    region: routeRoleKeys.includes("leadership") ? region : authorizedScope,
+    region: routeRoleKeys.includes("admin") ? region : authorizedScope,
     view_region: region,
     city,
   };
@@ -978,7 +978,7 @@ export default async function Operations({ searchParams }: {
       ]),
     },
   ];
-  const mayManageOperations = routeRoleKeys.includes("ops");
+  const mayManageOperations = routeRoleKeys.includes("supervisor");
   // CR-440: workload is a roll-up over every assigned visit in the currently
   // authorized geography, not only the active monitoring subset. "Completed"
   // maps to the terminal field-work state `submitted`; overdue comes from the
@@ -1356,7 +1356,7 @@ export default async function Operations({ searchParams }: {
             <h2 id="operations-export-heading">{t("ops.export.heading", "Export operational data")}</h2>
             <p>{t("ops.export.auditRequired", "Every file requires a matching role- and region-scoped database receipt plus an atomic audit event before download.")}</p>
           </div></div>
-          {routeRoleKeys.some(role => ["ops", "leadership"].includes(role)) ? (
+          {routeRoleKeys.some(role => ["supervisor", "admin"].includes(role)) ? (
             <OpsExport datasets={exportDatasets} strings={exportStrings} />
           ) : (
             <EmptyState glyph="⛨" title={t("ops.export.unauthorized", "Export is not authorized for this role")} inline bare />

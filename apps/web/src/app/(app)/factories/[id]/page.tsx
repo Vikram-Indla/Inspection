@@ -100,9 +100,6 @@ export default async function Factory360({ params, searchParams }: { params: Pro
     </Shell>
   );
   const roles = (roleRows ?? []).map(r => r.role_key);
-  // HANDOFF_BLOCKED_ROLE — contact privacy for representatives is unproven
-  // specifically for the leadership persona; every other role is unaffected.
-  const maskContacts = roles.length > 0 && roles.every(r => r === "leadership");
   const visits = f.visits as unknown as {
     id: string; visit_type: string; planning_status: string; operational_state: string; window_start: string;
     // visits->inspections is to-one (unique visit_id): object or null, NOT an array
@@ -114,9 +111,9 @@ export default async function Factory360({ params, searchParams }: { params: Pro
   const sortedVisits = [...visits].sort((a, b) => b.window_start.localeCompare(a.window_start));
   const visitIds = visits.map(v => v.id);
   const inspectionIds = visits.flatMap(v => v.inspections ? [v.inspections.id] : []);
-  const canSeeSensitiveHistory = roles.some(r => ["reviewer", "ops", "auditor", "compliance_admin"].includes(r));
-  const canSeeDocuments = roles.some(r => ["planner", "inspector", "reviewer", "ops", "auditor", "compliance_admin", "gis_admin"].includes(r));
-  const canSeeContacts = !maskContacts && roles.some(r => ["planner", "inspector", "reviewer", "ops", "auditor", "compliance_admin"].includes(r));
+  const canSeeSensitiveHistory = roles.some(r => ["supervisor", "admin"].includes(r));
+  const canSeeDocuments = roles.some(r => ["planner", "inspector", "supervisor", "admin"].includes(r));
+  const canSeeContacts = roles.some(r => ["planner", "inspector", "supervisor", "admin"].includes(r));
   const [{ data: riskHistory }, { data: geoRows }, { data: evidenceRows }, { data: penaltyRows }] = await Promise.all([
     sb.from("factory_risk_snapshots").select("id, score, band, model_version, drivers, calculated_at").eq("factory_id", id).order("calculated_at", { ascending: false }).limit(20),
     visitIds.length ? sb.from("geo_events").select("id, visit_id, kind, observed_lat, observed_lng, override_reason, occurred_at").in("visit_id", visitIds).order("occurred_at", { ascending: false }).limit(100) : Promise.resolve({ data: [] }),
@@ -450,7 +447,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             )}
           </section>}
 
-          {/* Representatives — contact fields masked for leadership only (HANDOFF_BLOCKED_ROLE) */}
+          {/* Representatives — contacts gated by canSeeContacts (planner/inspector/supervisor/admin) */}
           {canSeeContacts && <section id="representatives" className="sq-surface cd-panelpad">
             <h4>{t("f360.reps.heading", "Representatives (SB11)")}</h4>
             {rErr && <div className="sq-banner sq-banner--critical"><div><strong>{t("f360.reps.err", "Couldn’t load representatives.")}</strong> {mapFactoryError(rErr, "load")} — {retry}.</div></div>}
@@ -459,17 +456,14 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                 <h4>{t("f360.reps.empty.title", "No representatives on record")}</h4>
                 <p className="sq-caption">{t("f360.reps.empty.desc", "No source-backed factory contacts are available.")}</p></div>
             )}
-            {!rErr && maskContacts && !repsEmpty && (
-              <div className="cd-masked" role="status"><span aria-hidden="true">🔒</span>{t("f360.reps.masked", "Contact details are role-restricted for this persona (HANDOFF_BLOCKED_ROLE).")}</div>
-            )}
             {!rErr && !repsEmpty && (
               <div className="sq-tablewrap"><table className="sq-table">
-                <thead><tr><th scope="col">{t("f360.reps.th.name", "Name")}</th><th scope="col">{t("f360.reps.th.role", "Role")}</th>{!maskContacts && <><th scope="col">{t("f360.reps.th.phone", "Phone")}</th><th scope="col">{t("f360.reps.th.email", "Email")}</th></>}<th scope="col">{t("f360.reps.th.flags", "Flags")}</th></tr></thead>
+                <thead><tr><th scope="col">{t("f360.reps.th.name", "Name")}</th><th scope="col">{t("f360.reps.th.role", "Role")}</th><th scope="col">{t("f360.reps.th.phone", "Phone")}</th><th scope="col">{t("f360.reps.th.email", "Email")}</th><th scope="col">{t("f360.reps.th.flags", "Flags")}</th></tr></thead>
                 <tbody>{(reps ?? []).map(r => (
                   <tr key={r.id}>
                     <td><strong>{r.full_name}</strong></td>
                     <td>{r.role_title ?? "—"}</td>
-                    {!maskContacts && <><td className="sq-numeric">{r.phone ?? "—"}</td><td>{r.email ?? "—"}</td></>}
+                    <td className="sq-numeric">{r.phone ?? "—"}</td><td>{r.email ?? "—"}</td>
                     <td>
                       {r.is_primary && <span className="sq-lozenge sq-lozenge--info">{t("f360.reps.primary", "primary")}</span>}
                       <span className={`sq-lozenge ${r.active ? "sq-lozenge--success" : "sq-lozenge--warning"}`}>{r.active ? t("f360.reps.active", "active") : t("f360.reps.inactive", "inactive")}</span>

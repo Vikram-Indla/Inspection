@@ -83,8 +83,8 @@ export default async function Reviews() {
   const roles = new Set((roleRows ?? []).map(row => row.role_key));
   // Queue visibility is broader than decision authority. Planner users can
   // monitor coordinated work, while inspectors remain limited by RLS to their
-  // own assigned inspections. Canonical review actions stay reviewer/ops-only.
-  const authorized = ["reviewer", "ops", "planner", "inspector"].some(role => roles.has(role));
+  // own assigned inspections. Canonical review actions stay supervisor/admin-only.
+  const authorized = ["supervisor", "admin", "planner", "inspector"].some(role => roles.has(role));
 
   if (!authorized) {
     return (

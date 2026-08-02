@@ -58,8 +58,8 @@ export default async function DashboardConfigPage() {
   const roleKeys = new Set((roleRead.data ?? []).map((r: { role_key: string }) => r.role_key));
   const userId = userRead.data.user?.id ?? null;
 
-  const canWrite = ["compliance_admin", "ops", "security_admin"].some((r) => roleKeys.has(r));
-  const canReview = ["compliance_admin", "leadership", "security_admin"].some((r) => roleKeys.has(r));
+  const canWrite = ["admin", "supervisor"].some((r) => roleKeys.has(r));
+  const canReview = roleKeys.has("admin");
 
   const versionById = new Map(versions.map((v) => [v.id, v]));
   const headByKey = new Map(heads.map((h) => [h.config_key, h]));

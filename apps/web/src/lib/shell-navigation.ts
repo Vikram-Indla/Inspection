@@ -5,21 +5,12 @@
 
 export const ADMIN_ROLE_KEYS = [
   "admin",
-  "compliance_admin",
-  "form_admin",
-  "workflow_admin",
-  "security_admin",
-  "gis_admin",
-  "risk_owner",
 ] as const;
 
 export const BUSINESS_ROLE_KEYS = [
   "supervisor",
   "planner",
   "inspector",
-  "reviewer",
-  "ops",
-  "leadership",
 ] as const;
 
 // Retained only for compatibility with field business-logic consumers while
@@ -131,7 +122,6 @@ export type BuiltShellNavGroup = Omit<ShellNavGroupDefinition, "items"> & {
 const allPresentationRoles = [
   ...BUSINESS_ROLE_KEYS,
   ...ADMIN_ROLE_KEYS,
-  "auditor",
 ] as readonly string[];
 
 // Exact rail inventory transcribed from the live canonical Claude Design
@@ -191,6 +181,7 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
       { id: "adm-risk", labelKey: "shell.nav.riskConfiguration", labelEn: "Risk Configuration", labelAr: "تهيئة المخاطر", href: "/admin/risk", icon: "risk", roles: allPresentationRoles, businessTab: "Risk Configuration", visibility: "canonical-admin" },
       { id: "adm-survey", labelKey: "shell.nav.surveyConfiguration", labelEn: "Survey Configuration", labelAr: "تهيئة النماذج", href: "/admin/packages", icon: "forms", roles: allPresentationRoles, businessTab: "Survey Configuration", visibility: "canonical-admin" },
       { id: "adm-notif", labelKey: "shell.nav.notificationConfiguration", labelEn: "Notification Configuration", labelAr: "تهيئة الإشعارات", href: "/admin/notifications", icon: "notify", roles: allPresentationRoles, businessTab: "Notification Configuration", visibility: "canonical-admin" },
+      { id: "adm-delegation", labelKey: "shell.nav.delegation", labelEn: "Delegation", labelAr: "التفويض", href: "/admin/delegation", icon: "access", roles: allPresentationRoles, businessTab: "Delegation", visibility: "canonical-admin" },
       { id: "adm-integration", labelKey: "shell.nav.integrationManagement", labelEn: "Integration Management", labelAr: "إدارة التكاملات", href: "/admin/integrations", icon: "workflow", roles: allPresentationRoles, businessTab: "Integration Management", visibility: "canonical-admin" },
     ],
   },

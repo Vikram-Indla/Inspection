@@ -11,7 +11,7 @@ type AuthorizedLocalizationUser =
   | { userId: string; error?: never }
   | { userId?: never; error: string };
 
-const LOCALIZATION_ROLES = ["compliance_admin", "security_admin", "workflow_admin"] as const;
+const LOCALIZATION_ROLES = ["admin"] as const;
 const localeFrom = (formData: FormData): Locale => formData.get("locale") === "ar" ? "ar" : "en";
 const copy = (locale: Locale, en: string, ar: string) => locale === "ar" ? ar : en;
 const neutralLoadError = (locale: Locale) => copy(
@@ -69,7 +69,7 @@ async function requireLocalizationManager(locale: Locale): Promise<AuthorizedLoc
 
 // SCR-ADM-100 · SB19 — ui_strings is the live Arabic dictionary consumed by
 // src/lib/i18n.ts (30s TTL cache). RLS is the authority: world read;
-// writes = compliance_admin / security_admin / workflow_admin. Provider errors
+// writes = admin. Provider errors
 // remain diagnostic-only; a 0-row update means RLS filtered the write silently.
 
 export async function saveTranslation(_: L10nResult, formData: FormData): Promise<L10nResult> {

@@ -84,7 +84,7 @@ async function readLegacyFactory(sb: SupabaseClient, id: string): Promise<{ row:
   };
 }
 
-type Sp = { q?: string; plan?: string; cr?: string; license?: string; plant?: string; factory?: string; source?: string };
+type Sp = { q?: string; plan?: string; package?: string; cr?: string; license?: string; plant?: string; factory?: string; source?: string };
 
 export default async function SinglePlanning({ searchParams }: { searchParams: Promise<Sp> }) {
   const sp = await searchParams;
@@ -144,6 +144,15 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   const inspectors = contract.data.inspectors;
   const virtualEligible = contract.data.virtual_eligible;
 
+  // A published Admin package can hand the Planner into this route with an
+  // immutable version already selected. The prefill is deliberately ignored
+  // when it is not in the Planner's current RLS-scoped read contract: a URL
+  // must never make an inactive or unauthorized package selectable.
+  const requestedPackageId = (sp.package ?? "").trim();
+  const packagePrefill = UUID.test(requestedPackageId) && pkgs.some(pkg => pkg.id === requestedPackageId)
+    ? requestedPackageId
+    : undefined;
+
   let portfolios: ResolvedPortfolio[] = [];
   let graded: GradedFactory[] = [];
   let registryUnavailable = false;
@@ -151,7 +160,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   let handoff = false;
   let prefillMiss = false;
   let draft: DraftInfo | null = null;
-  let draftConfig: DraftConfig = {};
+  let draftConfig: DraftConfig = packagePrefill ? { packageVersionIds: [packagePrefill] } : {};
   let sourceChannel = (sp.source ?? "").trim() || "planning.single";
 
   // ---------------------------------------------------------------------
@@ -349,6 +358,13 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     }
   }
 
+  // Keep the Admin → Planner handoff visible. The package is still validated
+  // again by the submit action; this banner is evidence of the governed
+  // preselection, not an authority bypass.
+  const adminPackageHandoff = sourceChannel === "admin.packages" && packagePrefill
+    ? pkgs.find(pkg => pkg.id === packagePrefill) ?? null
+    : null;
+
   const strings: WizardStrings = {
     findFactory: t("plan.single.findFactory", "1 · Find factory — CR, Industrial License, plant or name"),
     searchPlaceholder: t("plan.single.searchPlaceholder", "CR number, Industrial License, plant number, factory code or name"),
@@ -374,6 +390,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     selectedProfile: t("plan.single.selectedProfile", "Selected plant — registered profile (read-only)"),
     sourceLabel: t("plan.single.sourceLabel", "Source"),
     prefilledHandoff: t("plan.single.prefilledHandoff", "Target prefilled from Factory 360 — confirm the license / plant below."),
+    adminPackageHandoff: t("plan.single.adminPackageHandoff", "Admin package handoff — published version preselected:"),
     prefillMiss: t("plan.single.prefillMiss", "The handed-off target could not be resolved — search for it manually below."),
     draftRestored: t("plan.single.draftRestored", "Draft restored — review the target and configuration, then continue."),
     saveDraft: t("plan.single.saveDraft", "Save draft"),
@@ -453,6 +470,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
         draftConfig={draftConfig}
         sourceChannel={sourceChannel}
         handoff={handoff}
+        adminPackageHandoff={adminPackageHandoff ? `${adminPackageHandoff.packages.code} · ${adminPackageHandoff.version_label}` : null}
         prefillMiss={prefillMiss}
         packages={(pkgs ?? []) as never}
         inspectors={inspectors}

@@ -159,7 +159,7 @@ export default async function ApprovalQueue({
   const canReview = !!user
     && !!selectedRequest
     && selectedRequest.owner_id !== user.id
-    && (roles.has("compliance_admin") || roles.has("reviewer"));
+    && (roles.has("admin") || roles.has("supervisor"));
   const readError = requestRead.error ?? roleRead.error ?? componentRead.error;
   const selectedReadError = dependencyRead.error ?? decisionRead.error ?? publicationRead.error;
   const allDecided = selectedComponents.length > 0

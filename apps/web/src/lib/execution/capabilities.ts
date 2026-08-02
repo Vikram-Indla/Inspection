@@ -38,23 +38,12 @@ export const EXECUTION_CAPABILITIES = [
 
 export type ExecutionCapability = (typeof EXECUTION_CAPABILITIES)[number];
 
-/** Canonical roles plus transitional legacy aliases. */
+/** The four canonical, live-governed roles (public.roles). */
 export type RoleKey =
   | "admin"
   | "supervisor"
-  | "compliance_admin"
-  | "form_admin"
-  | "workflow_admin"
-  | "risk_owner"
-  | "gis_admin"
-  | "security_admin"
   | "planner"
-  | "inspector"
-  | "reviewer"
-  | "ops"
-  | "auditor"
-  | "leadership"
-  | "factory_rep";
+  | "inspector";
 
 const INSPECTOR_CAPS: readonly ExecutionCapability[] = [
   "execution.view_assigned",
@@ -91,35 +80,16 @@ const ADMIN_CAPS: readonly ExecutionCapability[] = [
   "admin.offline_policy",
 ];
 
-const ADMIN_ROLE_KEYS: readonly RoleKey[] = [
-  "compliance_admin",
-  "form_admin",
-  "workflow_admin",
-  "risk_owner",
-  "gis_admin",
-  "security_admin",
-];
-
-/** Mirrors the `role_capabilities` seed in the Phase 1 migration exactly. */
+/** Mirrors the `role_capabilities` seed, collapsed onto the four live roles.
+ *  Admin receives the union of every retired governance/oversight role's
+ *  capabilities (compliance_admin/form_admin/workflow_admin/risk_owner/
+ *  gis_admin/security_admin/auditor/leadership); supervisor receives the
+ *  union of reviewer + ops, per the four-role consolidation. */
 const DEFAULT_ROLE_CAPABILITIES: Readonly<Record<RoleKey, readonly ExecutionCapability[]>> = {
-  // Admin and supervisor intentionally receive the union of their deprecated
-  // predecessors during Phase 1. Further separation can later be restored
-  // with capability grants without adding another top-level role.
-  admin: ADMIN_CAPS,
+  admin: [...ADMIN_CAPS, "review.view", "operations.view"],
   supervisor: [...REVIEWER_CAPS, ...OPS_CAPS],
   inspector: INSPECTOR_CAPS,
-  reviewer: REVIEWER_CAPS,
-  ops: OPS_CAPS,
   planner: ["operations.view"],
-  leadership: ["review.view", "operations.view"],
-  auditor: ["review.view"],
-  factory_rep: [],
-  compliance_admin: ADMIN_CAPS,
-  form_admin: ADMIN_CAPS,
-  workflow_admin: ADMIN_CAPS,
-  risk_owner: ADMIN_CAPS,
-  gis_admin: ADMIN_CAPS,
-  security_admin: ADMIN_CAPS,
 };
 
 /**

@@ -5,7 +5,7 @@ import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import { formatDate, formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
-import type { WorkspaceDecisionStrings } from "./DecisionPanel";
+import DecisionPanel, { type WorkspaceDecisionStrings } from "./DecisionPanel";
 import RecordTabs, { type RecordTabDef } from "./RecordTabs";
 import StartReview, { type StartReviewStrings } from "./StartReview";
 import VersionCompare, { type VersionCompareStrings, type ItemSection } from "./VersionCompare";
@@ -55,25 +55,25 @@ export default async function ReviewWorkspace({ params, searchParams }: {
       </Shell>
     );
   }
-  // RLS (0002_rbac_audit.sql: inspections_read/subs_read/reviews_read) and the
-  // CD-030 design scope itself ("P11 · Reviewer/Auditor") grant auditor,
-  // planner, leadership and the assigned inspector read access to this record
-  // — the page-level gate
-  // must not be narrower than that or it silently weakens an accepted
-  // permission (CLAUDE.md). canDecide stays reviewer/ops-only: it gates
-  // StartReview/DecisionPanel, which is the real guard against the read
-  // roles ever submitting a decision (reviews_insert's RLS is not itself a
-  // tight boundary here).
-  const authorized = !!user && (roleRows ?? []).some(r => ["reviewer", "ops", "auditor", "planner", "leadership", "inspector"].includes(r.role_key));
-  const canDecide = !!user && (roleRows ?? []).some(r => r.role_key === "reviewer" || r.role_key === "ops");
-  const viewerRole = (roleRows ?? []).find(r => ["reviewer", "ops", "auditor", "planner", "leadership", "inspector"].includes(r.role_key))?.role_key ?? null;
+  // RLS (0002_rbac_audit.sql: inspections_read/subs_read/reviews_read,
+  // superseded by the capability-based policies in
+  // execution_supervisor_review_authority) and the CD-030 design scope grant
+  // admin, planner, supervisor and the assigned inspector read access to this
+  // record — the page-level gate must not be narrower than that or it
+  // silently weakens an accepted permission (CLAUDE.md). canDecide stays
+  // supervisor/admin-only: it gates StartReview/DecisionPanel, which is the
+  // real guard against the read roles ever submitting a decision
+  // (reviews_insert's RLS is not itself a tight boundary here).
+  const authorized = !!user && (roleRows ?? []).some(r => ["admin", "supervisor", "planner", "inspector"].includes(r.role_key));
+  const canDecide = !!user && (roleRows ?? []).some(r => r.role_key === "supervisor" || r.role_key === "admin");
+  const viewerRole = (roleRows ?? []).find(r => ["admin", "supervisor", "planner", "inspector"].includes(r.role_key))?.role_key ?? null;
   if (!authorized) {
     return (
       <Shell current="/reviews" title={t("review.ws.unauthTitle", "You don’t have access to this review")}>
         <section className="sq-surface cd-panelpad cd-result" role="alert">
           <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--critical" aria-hidden="true"><IconBlocked size={24} /></div>
             <div className="cd-stack"><h3 tabIndex={-1}>{t("review.ws.unauthTitle", "You don’t have access to this review")}</h3>
-              <p>{t("review.ws.unauthBody", "This workspace requires an authorized review, planning, operations, audit, leadership or assigned-inspector role with matching scope. Navigation visibility is not authorization.")}</p></div></div>
+              <p>{t("review.ws.unauthBody", "This workspace requires an authorized admin, planning, supervisor or assigned-inspector role with matching scope. Navigation visibility is not authorization.")}</p></div></div>
         </section>
       </Shell>
     );
@@ -294,14 +294,14 @@ const panelStrings: WorkspaceDecisionStrings = {
     start: t("review.ws.startAction", "Start review"),
     starting: t("review.ws.starting", "Starting…"),
   };
-  const decisionGate = {
-    title: tx("review.ws.dec032.title", "Decision controls are temporarily unavailable", "أدوات القرار غير متاحة مؤقتاً"),
+  const decisionBoundary = {
+    title: tx("review.ws.dec032.title", "Resubmission dependency", "اعتماد إعادة التقديم"),
     body: tx(
       "review.ws.dec032.body",
-      "DEC-032 is unresolved. Review evidence and returned scope remain visible, but Approve, Return and Reject stay disabled so this frame cannot create a false successful transition.",
-      "القرار DEC-032 غير محسوم. تبقى الأدلة ونطاق الإرجاع ظاهرين، لكن تظل إجراءات الاعتماد والإرجاع والرفض معطلة حتى لا ينشئ هذا الإطار انتقالاً ناجحاً غير صحيح.",
+      "DEC-032 blocks new submissions and returned-version resubmissions. Decisions on this already-immutable submission still use the canonical atomic review RPC; a Return can be recorded, but resubmission remains blocked until the database migration is applied.",
+      "يحظر القرار DEC-032 عمليات التقديم الجديدة وإعادة تقديم الإصدارات المعادة. تظل قرارات هذه النسخة غير القابلة للتعديل عبر إجراء المراجعة الذري المعتمد؛ ويمكن تسجيل الإعادة، لكن إعادة التقديم تبقى محظورة حتى تطبيق ترحيل قاعدة البيانات.",
     ),
-    status: tx("review.ws.dec032.status", "Blocked — DEC-032", "محظور — DEC-032"),
+    status: tx("review.ws.dec032.status", "Resubmission blocked — DEC-032", "إعادة التقديم محظورة — DEC-032"),
   };
   const traceStrings = {
     heading: t("review.ws.trace.heading", "Finding trace chain"),
@@ -331,7 +331,7 @@ const panelStrings: WorkspaceDecisionStrings = {
   ];
   return (
     <Shell current="/reviews" title={t("review.ws.title", "Review — {factory}").replace("{factory}", f.name)}
-      context={<><span className="sq-version">v{latest?.version_number} · {t("review.ws.latest", "latest")}</span><span className="sq-lozenge sq-lozenge--review sq-lozenge--info">{t(`enum.${ins.status}`, ins.status.replace(/_/g, " "))}</span>{!canDecide && <span className="sq-lozenge sq-lozenge--warning">{t("review.ws.readOnlyRole", "{role} · read-only").replace("{role}", viewerRole ? t(`enum.${viewerRole}`, viewerRole) : "—")}</span>}<a className="btn btn-secondary btn-sm" href={`/factories/${f.id}`}>{t("review.ws.openFactory360", "Open Factory 360")}</a><a className="btn btn-secondary btn-sm" href={`/reports/inspection/${ins.id}`}>{t("review.ws.reportLink", "Inspection report PDF")}</a></>}>
+      context={<><span className="sq-version">v{latest?.version_number} · {t("review.ws.latest", "latest")}</span><span className="sq-lozenge sq-lozenge--review sq-lozenge--info">{t(`enum.${ins.status}`, ins.status.replace(/_/g, " "))}</span>{!canDecide && <span className="sq-lozenge sq-lozenge--warning">{t("review.ws.readOnlyRole", "{role} · read-only").replace("{role}", viewerRole ? t(`enum.${viewerRole}`, viewerRole) : "—")}</span>}<a className="btn btn-secondary btn-sm" href={`/factories/${f.id}`}>{t("review.ws.openFactory360", "Open Factory 360")}</a><a className="btn btn-secondary btn-sm" href={`/reports/inspection/${ins.id}`}>{t("review.ws.reportLink", "Inspection report PDF")}</a><a className="btn btn-secondary btn-sm" href="/analytics">{t("review.ws.openAnalytics", "Open Analytics")}</a></>}>
       <div
         className={responsive.reviewRoot}
         data-saqeel-migration="review-approvals"
@@ -511,27 +511,32 @@ const panelStrings: WorkspaceDecisionStrings = {
         ]} />
         </div>
         {!canDecide
-          // HANDOFF read-only path — auditor/planner/leadership can read the
+          // HANDOFF read-only path — admin/planner can read the
           // whole workspace above but never see Start review / the decision
           // controls, regardless of open/canStart state.
           ? <div className="sq-surface cd-panelpad"><p className="sq-caption">{t("review.ws.readOnlyNote", "Read-only for this role — decision controls are limited to Level 2 Reviewer / Operations.")}</p></div>
           : open && ins.status === "under_review"
-          ? <section className="panel stack" aria-labelledby="review-decision-gate-title" data-state="blocked-dec032">
+          ? <section className="stack" aria-labelledby="review-decision-boundary-title" data-state="decision-enabled">
               <div className="alert alert-warning" role="status">
                 <div>
-                  <strong id="review-decision-gate-title">{decisionGate.title}</strong>{" "}
-                  {decisionGate.body}
+                  <strong id="review-decision-boundary-title">{decisionBoundary.title}</strong>{" "}
+                  {decisionBoundary.body}
                 </div>
               </div>
-              <div className="row" aria-label={panelStrings.heading}>
-                {(["approve", "return", "reject"] as const).map(decision => (
-                  <button key={decision} type="button" className="btn btn-secondary btn-lg" disabled>
-                    {panelStrings.decisions[decision]}
-                  </button>
-                ))}
-              </div>
-              <span className="badge badge-warning">{decisionGate.status}</span>
-              <p className="t-caption">{panelStrings.audited}</p>
+              <span className="badge badge-warning">{decisionBoundary.status}</span>
+              <DecisionPanel
+                reviewId={open.id}
+                sections={sections.map(section => ({ key: section.key, title: section.title }))}
+                summary={{
+                  version: latest!.version_number,
+                  violationCount: violations.length,
+                  criticalViolationCount: violations.filter(violation => violation.violation_codes?.level.toLowerCase().includes("critical")).length,
+                  actionFormCount: actionForms.length,
+                  evidenceCount: evidenceRows.length,
+                  factoryUpdateCount: fvUpdated,
+                }}
+                strings={panelStrings}
+              />
             </section>
           : canStart
           ? <StartReview inspectionId={ins.id} submissionVersionId={latest!.id} strings={startStrings} />
