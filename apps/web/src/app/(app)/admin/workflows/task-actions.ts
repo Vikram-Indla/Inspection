@@ -2,19 +2,16 @@
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { logProviderError, NEUTRAL_LOAD_ERROR, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
-import { resolveFeatureFlag } from "@/lib/providers/env-gate";
 import {
   canManageTask, evaluateReassign, evaluateActivation, isTaskStatusTransitionAllowed,
   type TaskStatus,
 } from "@/lib/workflow/tasks";
 
 // TASK-MVP2-M2-02-WORKFLOW-STUDIO-001 · MVP2-REQ-0032.
-// Governed task-workspace actions. Feature-flagged OFF by default
-// (FEATURE_TASKS_WORKSPACE=on). RLS already restricts writes to manager roles;
-// these actions add the state-contract + scope + reason + audit layer.
+// Governed task-workspace actions. RLS restricts writes to manager roles; these
+// actions add the state-contract + scope + reason + audit layer.
 
 export type TaskResult = { error?: string; ok?: boolean };
-const MODES = ["off", "on"] as const;
 
 function taskMutationError(error: { message?: string } | null): string {
   const message = error?.message ?? "";
@@ -75,8 +72,6 @@ async function loadActorAndTask(taskId: string) {
 }
 
 export async function reassignTask(_: TaskResult, formData: FormData): Promise<TaskResult> {
-  if (resolveFeatureFlag(process.env.FEATURE_TASKS_WORKSPACE, MODES, "off") !== "on")
-    return { error: "Task workspace is turned off (FEATURE_TASKS_WORKSPACE)." };
   const ctx = await loadActorAndTask(String(formData.get("task_id") ?? ""));
   if ("error" in ctx) return { error: ctx.error };
   const { sb, task, actor, manager } = ctx;
@@ -98,8 +93,6 @@ export async function reassignTask(_: TaskResult, formData: FormData): Promise<T
 }
 
 export async function setTaskStatus(_: TaskResult, formData: FormData): Promise<TaskResult> {
-  if (resolveFeatureFlag(process.env.FEATURE_TASKS_WORKSPACE, MODES, "off") !== "on")
-    return { error: "Task workspace is turned off (FEATURE_TASKS_WORKSPACE)." };
   const ctx = await loadActorAndTask(String(formData.get("task_id") ?? ""));
   if ("error" in ctx) return { error: ctx.error };
   const { sb, task, actor, manager } = ctx;
@@ -115,8 +108,6 @@ export async function setTaskStatus(_: TaskResult, formData: FormData): Promise<
 }
 
 export async function setTaskActive(_: TaskResult, formData: FormData): Promise<TaskResult> {
-  if (resolveFeatureFlag(process.env.FEATURE_TASKS_WORKSPACE, MODES, "off") !== "on")
-    return { error: "Task workspace is turned off (FEATURE_TASKS_WORKSPACE)." };
   const ctx = await loadActorAndTask(String(formData.get("task_id") ?? ""));
   if ("error" in ctx) return { error: ctx.error };
   const { sb, task, actor, manager } = ctx;

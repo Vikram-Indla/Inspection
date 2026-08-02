@@ -16,6 +16,7 @@ export type TaskBoardStrings = {
   changeStatus: string; apply: string; applying: string; statusChanged: string;
   deactivate: string; reactivate: string; activating: string; activeYes: string; activeNo: string;
   terminalNote: string;
+  readOnly: string;
 };
 
 export type TaskRowData = {
@@ -53,7 +54,7 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
         {[task.branch, task.sector].filter(Boolean).join(" · ") || "—"} · {task.assignee ?? "—"}
       </p>
 
-      {!task.canManage && <p className="t-caption">{/* read-only: RLS/scope */}—</p>}
+      {!task.canManage && <p className="t-caption">{s.readOnly}</p>}
 
       {task.canManage && (
         <div className="row" style={{ gap: "var(--space-6)", flexWrap: "wrap", alignItems: "flex-start" }}>
