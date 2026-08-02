@@ -163,8 +163,10 @@ test.describe("TASK-WEB-CHANNEL-ACCESS-GATE-001 field channel (rbac_matrix.csv R
     expect(isFieldOnlyPersona([])).toBe(false); // no roles → not field-only → gate must not redirect
   });
 
-  test("the Inspector field home matches the channel-gate redirect target", () => {
-    expect(homeForRoles(["inspector"])).toBe("/field");
+  test("every canonical role lands on the shared Dashboard", () => {
+    for (const role of ["admin", "planner", "supervisor", "inspector"]) {
+      expect(homeForRoles([role])).toBe("/dashboard");
+    }
   });
 });
 

@@ -27,7 +27,7 @@ test("AUTH-03: identity and role read failures route to the neutral error bounda
   expect(source).toContain('throw new Error("launch_roles_unavailable")');
 });
 
-test("PLN-AUTH-ENTRY-001: a normal Planner sign-in is role-routed to Planning", () => {
+test("PLN-AUTH-ENTRY-001: a normal Planner sign-in is role-routed to Dashboard", () => {
   const login = readFileSync(join(process.cwd(), "src/app/login/field/FieldLoginClient.tsx"), "utf8");
   const launch = readFileSync(join(process.cwd(), "src/app/launch/page.tsx"), "utf8");
   const planning = readFileSync(join(process.cwd(), "src/app/(app)/planning/page.tsx"), "utf8");
@@ -37,7 +37,7 @@ test("PLN-AUTH-ENTRY-001: a normal Planner sign-in is role-routed to Planning", 
   expect(login).toContain('window.location.assign("/launch")');
   expect(launch).toContain("getUserRoles(user.id)");
   expect(launch).toContain("homeForRoles((roles ?? []).map(r => r.role_key))");
-  expect(homeForRoles(["planner"])).toBe("/planning");
+  expect(homeForRoles(["planner"])).toBe("/dashboard");
 
   // The landing itself uses the Planning capability boundary, rather than a
   // browser-only menu check, so a matched Planner proceeds to the workspace.
@@ -45,7 +45,7 @@ test("PLN-AUTH-ENTRY-001: a normal Planner sign-in is role-routed to Planning", 
   expect(planning).toContain('access.accessClass !== "business_staff"');
 });
 
-test("CD003-SEC-001 regression: admin-family persona still lands on /admin via the six explicit role_key entries", async ({ page }) => {
+test("CD003-SEC-001 regression: admin-family persona lands on the shared Dashboard", async ({ page }) => {
   // Real user_roles verified live: admin@mim.gov.sa carries compliance_admin,
   // form_admin, workflow_admin, security_admin, gis_admin, risk_owner — never
   // a literal "admin" key. Before this fix these six were unmatched and this
@@ -55,6 +55,6 @@ test("CD003-SEC-001 regression: admin-family persona still lands on /admin via t
   await page.locator("#email").fill("admin@mim.gov.sa");
   await page.locator("#pw").fill("MimAdmin!2026");
   await page.getByRole("button", { name: /Sign In/i }).click();
-  await page.waitForURL((url) => url.pathname.startsWith("/admin"), { timeout: 20000 });
+  await page.waitForURL((url) => url.pathname === "/dashboard", { timeout: 20000 });
   await expect(page.locator("body")).not.toContainText("ERR-AUTH");
 });

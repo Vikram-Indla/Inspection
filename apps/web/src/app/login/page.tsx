@@ -18,10 +18,9 @@ export const dynamic = "force-dynamic";
 // from the same DC used by /login/field; atlas strings are the accepted CD-001
 // story copy.
 //
-// NOTE (flagged to PO): reusing the field card verbatim means its sign-in flow
-// (national-ID/staff → work email, redirect to /field) now governs /login. This
-// is the informed choice recorded in the session log; role-routed web-console
-// entry is not offered on this surface.
+// Successful ordinary sign-in resolves through /launch, whose canonical
+// four-role home is /dashboard. A validated `next` is retained only for an
+// expired-session recovery flow.
 
 type Locale = "ar" | "en";
 

@@ -5,9 +5,19 @@
 // server round trip).
 export const ROLE_HOME: [string, string][] = [
   ["supervisor", "/dashboard"],
-  ["inspector", "/field"],
-  ["planner", "/planning"],
-  ["admin", "/admin"],
+  ["inspector", "/dashboard"],
+  ["planner", "/dashboard"],
+  ["admin", "/dashboard"],
+  // Legacy compatibility aliases (non-assignable after migration).
+  ["ops", "/dashboard"],
+  ["leadership", "/dashboard"],
+  ["reviewer", "/dashboard"],
+  ["compliance_admin", "/dashboard"],
+  ["form_admin", "/dashboard"],
+  ["workflow_admin", "/dashboard"],
+  ["security_admin", "/dashboard"],
+  ["gis_admin", "/dashboard"],
+  ["risk_owner", "/dashboard"],
 ];
 
 export function homeForRoles(roleKeys: Iterable<string>): string | null {

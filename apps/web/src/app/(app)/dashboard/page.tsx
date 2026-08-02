@@ -21,11 +21,14 @@ import {
 import {
   DashboardControls,
   OperationalView,
+  RoleDashboardSummary,
   SearchResults,
   StrategicView,
 } from "./DashboardView";
 import { buildDashboardKpiProjection } from "@/lib/dashboard-kpi/projection";
+import { buildInspectorKpiProjection } from "@/lib/dashboard-kpi/inspector-projection";
 import { resolveDashboardPolicyVersion, resolveDashboardPolicyGates } from "@/lib/dashboard-kpi/loader";
+import { dashboardPersonaFor, type DashboardPersona } from "@/lib/dashboard-role";
 import type { MetricScope } from "@/lib/dashboard-kpi/contract";
 import { Suspense } from "react";
 
@@ -88,7 +91,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const unsupportedView = requestedView !== "strategic" && requestedView !== "operational"
     ? requestedView
     : null;
-  const view = requestedView === "operational" ? "operational" : "strategic";
+  let view: "operational" | "strategic" = requestedView === "operational" ? "operational" : "strategic";
   const group = (["region", "city", "sector", "authority"] as const).includes(params.group as "region" | "city" | "sector" | "authority")
     ? params.group as "region" | "city" | "sector" | "authority"
     : "region";
@@ -96,7 +99,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   // K-003 / DASH-015 — load only the source families rendered by the selected
   // perspective, and bound every historical source to the current/previous
   // comparison window. The search surface explicitly opts entity rows back in.
-  const strategic = view === "strategic";
+  let strategic = view === "strategic";
   const searching = query.trim().length > 0;
   const prevScopeFromMs = scope.fromMs - (scope.toMs - scope.fromMs + 1);
   const boundIso = new Date(Math.min(prevScopeFromMs, today.fromMs)).toISOString();
@@ -137,21 +140,22 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     return request.range(from, to) as unknown as PromiseLike<RowPage<ReviewRow>>;
   };
 
-  // The sidebar is only a usability filter. Enforce the dashboard persona at
-  // the route boundary as well so a copied URL cannot grant dashboard access.
-  // WA-M1-AC-002 / TRN-DASH-P1-001 — Dashboard is the governed
-  // Operations/Leadership surface. Other authenticated personas resolve to
-  // their own role home through /launch; the guard stays before dataPromise so
-  // a copied URL cannot trigger Dashboard reads for a denied persona.
+  // TASK-DASHBOARD-SHARED-FOUR-ROLE-20260802 — all four canonical roles may
+  // open Dashboard. This check establishes only the presentation persona;
+  // every source below still uses the signed-in Supabase client and RLS.
   const { data: { user } } = await getVerifiedUser(sb);
   if (!user) redirect("/login");
   const { data: dashboardRoles, error: roleError } = await sb
     .from("user_roles")
     .select("role_key")
     .eq("user_id", user.id);
-  const dashboardRoleKeys = ["admin", "supervisor"] as const;
-  const mayViewDashboard = !roleError && (dashboardRoles ?? []).some(row => dashboardRoleKeys.includes(row.role_key as typeof dashboardRoleKeys[number]));
-  if (!mayViewDashboard) redirect("/launch");
+  const dashboardPersona = roleError ? null : dashboardPersonaFor((dashboardRoles ?? []).map(row => row.role_key));
+  if (!dashboardPersona) redirect("/launch/no-workspace");
+  const persona: DashboardPersona = dashboardPersona;
+  if (params.view == null && persona !== "admin") {
+    view = "operational";
+    strategic = false;
+  }
 
   const dataPromise = Promise.all([
     collect<VisitRow>(loadVisits),
@@ -172,7 +176,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       inspections!inner(submitted_at, visits(factory_id)),
       violation_codes(title, level, regulation_clauses(regulations(title, issuing_authority)))
     `).gte("inspections.submitted_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<ViolationRow>>) : empty<ViolationRow>(),
-    !strategic ? collect<GeoRow>((from, to) => sb.from("geo_events").select(`
+    (!strategic || persona === "supervisor") ? collect<GeoRow>((from, to) => sb.from("geo_events").select(`
       id, visit_id, kind, geofence_result, override_reason, occurred_at, observed_lat, observed_lng,
       visits(planner_lat, planner_lng, factory_id)
     `).gte("occurred_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<GeoRow>>) : empty<GeoRow>(),
@@ -212,7 +216,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     ...reviewsResult.rows.map(row => row.id),
     ...violationsResult.rows.map(row => row.id),
   ];
-  const auditResult = !strategic
+  const auditResult = !strategic || persona === "admin"
     ? await collectLatestAudit(auditObjectIds, ids => sb.from("audit_events")
       .select("id, object_type, object_id, action, requirement_refs, occurred_at")
       .in("object_id", ids)
@@ -273,6 +277,20 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     generatedAtMs: nowMs,
     failedSources: [...failedSources, ...policy.failedSources, ...gates.failedSources],
   });
+  const roleProjection = persona === "inspector"
+    ? buildInspectorKpiProjection({
+        visits: visitsResult.rows.filter(row => Boolean(row.window_start)).map(row => ({ id: row.id, window_start: row.window_start!, operational_state: row.operational_state })),
+        inspections: inspectionsResult.rows.map(row => ({ id: row.id, visit_id: row.visit_id, status: row.status, submitted_at: row.submitted_at })),
+        reviews: reviewsResult.rows.map(row => ({ inspection_id: row.inspection_id, status: row.status, decision: row.decision, decided_at: row.decided_at })),
+        responses: responsesResult.rows,
+        syncQueueCount: 0,
+        nowMs,
+        policyVersionId: policy.policyVersionId,
+        targets: policy.targets,
+        refreshedAt: new Date(nowMs).toISOString(),
+        sourceStatus: failedSources.length ? "partial" : "live",
+      })
+    : projection;
 
   const factoryCoords = new Map<string, { lat: number; lng: number; radiusM: number | null }>();
   for (const factory of factoriesResult.rows) {
@@ -327,6 +345,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       {failedSources.length > 0 && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{text("Partial dashboard", "لوحة قيادة جزئية")}</strong> — {text("these sources are temporarily unavailable:", "هذه المصادر غير متاحة مؤقتاً:")} {failedSources.join(" · ")}. {text("Other panels remain usable; refresh to retry.", "تظل اللوحات الأخرى قابلة للاستخدام؛ حدّث الصفحة لإعادة المحاولة.")}</div></div>}
       <DashboardControls locale={locale} view={view} params={currentParams} from={scope.fromDate} to={scope.toDate}
         region={region} query={query} refreshedAt={refreshedAt} partialSources={partialSources} />
+      <RoleDashboardSummary locale={locale} persona={persona} projection={roleProjection} partialSources={partialSources} />
       <SearchResults locale={locale} query={query} factories={factoriesResult.rows} visits={visitsResult.rows} inspections={inspectionsResult.rows} />
       {view === "strategic"
           ? <StrategicView locale={locale} metrics={metrics} projection={projection} factories={factoriesResult.rows} group={group} params={currentParams} partialSources={partialSources} />
