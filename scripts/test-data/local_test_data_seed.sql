@@ -6,6 +6,9 @@ begin
   if current_setting('server_version_num')::int < 150000 then
     raise exception 'LOCAL-TEST-DATA-ENV-REFUSED: unsupported database';
   end if;
+  if coalesce(current_setting('app.local_test_seed_password', true), '') = '' then
+    raise exception 'LOCAL-TEST-DATA-ENV-REFUSED: operator password was not supplied';
+  end if;
 end $$;
 
 insert into public.roles(role_key,title,is_admin,is_assignable,is_internal,deprecated_at) values
@@ -38,7 +41,7 @@ with people(role_key,n,uid,full_name,region,scope) as (
 ), inserted_users as (
  insert into auth.users(instance_id,id,aud,role,email,encrypted_password,email_confirmed_at,raw_app_meta_data,raw_user_meta_data,created_at,updated_at,confirmation_token,recovery_token,email_change_token_new,email_change)
  select '00000000-0000-0000-0000-000000000000',uid,'authenticated','authenticated',role_key||n||'@local.saqeel.test',
-        crypt('Password',gen_salt('bf')),now(),jsonb_build_object('provider','email','providers',jsonb_build_array('email'),'role',role_key),
+        crypt(current_setting('app.local_test_seed_password'),gen_salt('bf')),now(),jsonb_build_object('provider','email','providers',jsonb_build_array('email'),'role',role_key),
         jsonb_build_object('username',role_key||n),now(),now(),'','','',''
  from people on conflict (id) do update set encrypted_password=excluded.encrypted_password,raw_app_meta_data=excluded.raw_app_meta_data,raw_user_meta_data=excluded.raw_user_meta_data,updated_at=now()
  returning id
@@ -47,6 +50,24 @@ insert into auth.identities(id,provider_id,user_id,identity_data,provider,last_s
 select ('b'||substr(replace(uid::text,'-',''),2))::uuid,role_key||n||'@local.saqeel.test',uid,
        jsonb_build_object('sub',uid::text,'email',role_key||n||'@local.saqeel.test'),'email',now(),now(),now()
 from people on conflict (provider_id,provider) do update set identity_data=excluded.identity_data,updated_at=now();
+
+with boundary_people(persona_key,uid,email,full_name,region,scope,app_role) as (
+ values
+ ('multi_role','a5000000-0000-4000-8000-000000000001'::uuid,'multi-role@local.saqeel.test','ضابط تخطيط ومراجعة تجريبي','Riyadh','regional','planner'),
+ ('no_workspace','a6000000-0000-4000-8000-000000000001'::uuid,'no-workspace@local.saqeel.test','مستخدم بلا مساحة عمل تجريبي',null,null,null)
+), inserted_users as (
+ insert into auth.users(instance_id,id,aud,role,email,encrypted_password,email_confirmed_at,raw_app_meta_data,raw_user_meta_data,created_at,updated_at,confirmation_token,recovery_token,email_change_token_new,email_change)
+ select '00000000-0000-0000-0000-000000000000',uid,'authenticated','authenticated',email,
+        crypt(current_setting('app.local_test_seed_password'),gen_salt('bf')),now(),
+        jsonb_strip_nulls(jsonb_build_object('provider','email','providers',jsonb_build_array('email'),'role',app_role)),
+        jsonb_build_object('username',persona_key),now(),now(),'','','',''
+ from boundary_people on conflict (id) do update set encrypted_password=excluded.encrypted_password,raw_app_meta_data=excluded.raw_app_meta_data,raw_user_meta_data=excluded.raw_user_meta_data,updated_at=now()
+ returning id
+)
+insert into auth.identities(id,provider_id,user_id,identity_data,provider,last_sign_in_at,created_at,updated_at)
+select ('b'||substr(replace(uid::text,'-',''),2))::uuid,email,uid,
+       jsonb_build_object('sub',uid::text,'email',email),'email',now(),now(),now()
+from boundary_people on conflict (provider_id,provider) do update set identity_data=excluded.identity_data,updated_at=now();
 
 with people(role_key,n,uid,full_name,region,scope) as (
  values
@@ -59,12 +80,22 @@ insert into public.profiles(user_id,full_name,email,region,org_scope,account_sta
 select uid,full_name,role_key||n||'@local.saqeel.test',region,scope,'active' from people
 on conflict (user_id) do update set full_name=excluded.full_name,email=excluded.email,region=excluded.region,org_scope=excluded.org_scope,account_status='active';
 
+insert into public.profiles(user_id,full_name,email,region,org_scope,account_status) values
+ ('a5000000-0000-4000-8000-000000000001','ضابط تخطيط ومراجعة تجريبي','multi-role@local.saqeel.test','Riyadh','regional','active'),
+ ('a6000000-0000-4000-8000-000000000001','مستخدم بلا مساحة عمل تجريبي','no-workspace@local.saqeel.test',null,null,'active')
+on conflict (user_id) do update set full_name=excluded.full_name,email=excluded.email,region=excluded.region,org_scope=excluded.org_scope,account_status='active';
+
 with p(role_key,n,uid) as (values
  ('admin',1,'a1000000-0000-4000-8000-000000000001'::uuid),('admin',2,'a1000000-0000-4000-8000-000000000002'::uuid),('admin',3,'a1000000-0000-4000-8000-000000000003'::uuid),('admin',4,'a1000000-0000-4000-8000-000000000004'::uuid),('admin',5,'a1000000-0000-4000-8000-000000000005'::uuid),
  ('planner',1,'a2000000-0000-4000-8000-000000000001'::uuid),('planner',2,'a2000000-0000-4000-8000-000000000002'::uuid),('planner',3,'a2000000-0000-4000-8000-000000000003'::uuid),('planner',4,'a2000000-0000-4000-8000-000000000004'::uuid),('planner',5,'a2000000-0000-4000-8000-000000000005'::uuid),
  ('supervisor',1,'a3000000-0000-4000-8000-000000000001'::uuid),('supervisor',2,'a3000000-0000-4000-8000-000000000002'::uuid),('supervisor',3,'a3000000-0000-4000-8000-000000000003'::uuid),('supervisor',4,'a3000000-0000-4000-8000-000000000004'::uuid),('supervisor',5,'a3000000-0000-4000-8000-000000000005'::uuid),
  ('inspector',1,'a4000000-0000-4000-8000-000000000001'::uuid),('inspector',2,'a4000000-0000-4000-8000-000000000002'::uuid),('inspector',3,'a4000000-0000-4000-8000-000000000003'::uuid),('inspector',4,'a4000000-0000-4000-8000-000000000004'::uuid),('inspector',5,'a4000000-0000-4000-8000-000000000005'::uuid))
 insert into public.user_roles(user_id,role_key,granted_by) select uid,role_key,'a1000000-0000-4000-8000-000000000001' from p
+on conflict (user_id,role_key) do nothing;
+
+insert into public.user_roles(user_id,role_key,granted_by) values
+ ('a5000000-0000-4000-8000-000000000001','planner','a1000000-0000-4000-8000-000000000001'),
+ ('a5000000-0000-4000-8000-000000000001','supervisor','a1000000-0000-4000-8000-000000000001')
 on conflict (user_id,role_key) do nothing;
 
 insert into public.factories(id,factory_code,name,legal_name,cr_number,license_number,region,city,activity_class,official_lat,official_lng,source,source_synced_at,employees_total,employees_saudi,capital_invested,production_capacity_note,license_status,license_stage,license_issue_date,license_expiry_date,license_holder,cr_status,exports_products) values

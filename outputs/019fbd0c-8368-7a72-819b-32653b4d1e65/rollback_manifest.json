@@ -9,18 +9,42 @@
   "preexisting_records_deleted": 0,
   "obsolete_records_deleted": 0,
   "canonical_workflow_records": {
+    "auth_users": 22,
+    "profiles": 22,
+    "role_grants": 22,
+    "factories": 5,
+    "industrial_licenses": 5,
+    "packages": 5,
+    "package_versions": 5,
+    "visit_plans": 5,
+    "visits": 5,
+    "assignments": 5,
+    "inspections": 3,
+    "checklist_responses": 3,
+    "findings": 1,
+    "evidence": 1,
     "submission_versions": 3,
     "reviews": 3,
+    "notifications": 3,
+    "audit_events": 81,
     "cohort_4": "version 1 returned; version 2 corrected and approved",
     "cohort_5": "version 1 submitted with open under_review review"
+  },
+  "boundary_personas": {
+    "multi_role": ["planner", "supervisor"],
+    "no_workspace_role_grants": 0
   },
   "local_forward_migrations": [
     "20260802010024_local_submission_versions_immutability.sql"
   ],
   "verification": {
     "submission_version_update_delete_guard": "PASS",
+    "idempotent_replays": 2,
+    "sampled_authentications": 6,
+    "valid_saudi_coordinates": 5,
     "foreign_key_orphans": 0,
-    "workbook_formula_errors": 0
+    "workbook_formula_errors": 0,
+    "workbook_credential_value_cells": 0
   },
   "deletion_preview": {
     "eligible": 0,
