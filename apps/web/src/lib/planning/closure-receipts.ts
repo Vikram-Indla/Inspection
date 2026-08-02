@@ -100,7 +100,7 @@ const textArray = (value: unknown): string[] | null =>
 export function classifyPlanningClosureError(error: { message?: string; code?: string } | null): PlanningClosureError {
   const message = error?.message ?? "";
   if (/PLANNING-CLOSURE-720H/.test(message)) return "cutoff_blocked";
-  if (/PLANNING-CLOSURE-(STALE|IDEMPOTENCY-CONFLICT)/.test(message)) return "conflict";
+  if (/PLANNING-CLOSURE-(STALE|IDEMPOTENCY-CONFLICT)|PLANNING-RESCHEDULE-CONFLICT/.test(message)) return "conflict";
   if (/PLANNING-(CLOSURE-STATE|ARCHIVE-(STATE|CHILD-STATE))/.test(message)) return "state_blocked";
   if (/PLANNING-CLOSURE-SCOPE-DENIED/.test(message)) return "scope_denied";
   if (/PLANNING-EXPIRY-SCHEDULER-ONLY/.test(message)) return "expiry_read_only";
