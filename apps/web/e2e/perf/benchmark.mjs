@@ -232,9 +232,9 @@ async function newContext(browser, personaKey) {
 
 async function loginFlow(page, persona) {
   await page.goto(`${BASE_URL}/login`, { waitUntil: "load" });
-  await page.locator("#email").fill(persona.email);
-  await page.locator("#pw").fill(persona.password);
-  await page.locator("form:has(#email) button.sq-btn--prominent").click();
+  await page.locator('input[autocomplete="username"]').fill(persona.email);
+  await page.locator('input[autocomplete="current-password"]').fill(persona.password);
+  await page.locator('button[type="submit"].fl-submit').click();
   await page.waitForURL((u) => !u.pathname.startsWith("/login") && !u.pathname.startsWith("/launch"), { timeout: 45000 });
   await page.waitForLoadState("load");
 }
@@ -266,11 +266,11 @@ async function cmdLogin(browser) {
     const net = await attachNetwork(page);
     try {
       await page.goto(`${BASE_URL}/login`, { waitUntil: "load" });
-      await page.locator("#email").fill(persona.email);
-      await page.locator("#pw").fill(persona.password);
+      await page.locator('input[autocomplete="username"]').fill(persona.email);
+      await page.locator('input[autocomplete="current-password"]').fill(persona.password);
       const mark = { requests: net.done.length, bytes: net.bytes, longtasks: 0 };
       const t0 = Date.now();
-      await page.locator("form:has(#email) button.sq-btn--prominent").click();
+      await page.locator('button[type="submit"].fl-submit').click();
       await page.waitForURL((u) => !u.pathname.startsWith("/login") && !u.pathname.startsWith("/launch"), { timeout: 45000 });
       await page.waitForLoadState("load");
       await waitSettled(net);

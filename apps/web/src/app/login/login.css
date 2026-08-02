@@ -346,7 +346,10 @@
 .lg-atlas-image__plane picture { position: absolute; inset: 0; transition: filter 800ms ease; }
 .lg-atlas-image.is-zone-engaged .lg-atlas-image__plane picture { filter: brightness(.73) saturate(.82); }
 .lg-atlas-image__media { position: absolute; inset: 0; inline-size: 100%; block-size: 100%;
-  object-fit: fill; opacity: 0;
+  /* Keep the atlas visible even when a cached image completes before React's
+     onLoad handler is attached (for example during full-page capture). The
+     loaded state may enhance motion, but must never gate core artwork. */
+  object-fit: fill; opacity: 1;
   /* the raster is graded toward the credential column's graphite ground */
   filter: saturate(.58) hue-rotate(-10deg) brightness(.93);
   transition: opacity var(--transition-base); user-select: none; }
