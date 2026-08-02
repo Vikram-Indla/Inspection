@@ -21,6 +21,8 @@ No remote ref, production service, or production data was changed.
 | `d8683eea` | G11 visit-breakpoints packet, acceptance, evidence, decision row, E2E and SQL tests |
 | `164237f9` | Reusable local Test Data package: workbook, inspection record, rollback manifest, generators, importer, SQL validation, RLS proof, and immutability migration |
 
+Full pre-removal snapshots were also tagged at `recovery/worktree-{3f83,9a05,a121,d532,fca0}-20260802` and `recovery/worktree-{inspector-responsive-acceptance-b645c6,pensive-ritchie-62420d}-20260802`. The canonical recovery chain is tagged at `recovery/pre-consolidation-20260802`.
+
 These commits are recovery points even where a later merge resolution intentionally retained a newer governed version.
 
 ## Initial worktree inventory
@@ -74,7 +76,8 @@ Counts are unique recovery paths across the seven recovery commits. Class G coun
 5. Older direct-scheduling Planner conflict variants in Dashboard/Planning pages, Wizard, actions, and three recovered-live migrations — class G. Replaced by the newer governed submit-for-supervision workflow and recovered-live SQL during `b0cffae6`; old versions remain reachable through `codex/requirements-alignment-closure` and the merge commit.
 6. Older Review/DEC-032, supervisor-approval evidence/migration/test variants from `codex/observation-ai-closure` — class G. Replaced by current atomic Review behavior and the applied DEC-032 fix during `1700b775`.
 7. Older Dashboard role gates (`admin`/`supervisor` only and non-Dashboard role homes) — class G. Replaced by Product Owner-authorized four-role `/dashboard` landing in `d22841f6`/`533d8489`.
-8. Detached-worktree broad dirty copies in `3f83`, `a121`, `d532`, `fca0`, and `9a05` — class G/E. Content comparison proved the A–D files byte-match `b05805d2`/`5585fd1a` or later integrated commits; only the explicitly listed unique Inspector/Test Data deltas were separately recovered.
+8. Detached-worktree broad dirty copies in `3f83`, `a121`, `d532`, `fca0`, and `9a05` — class G/E. Content comparison proved the selected final A–D implementations were already represented by the governed integration commits. Exact full snapshots were nevertheless committed and tagged before removal: `3c00a33b`, `0fb4af9e`, `2ec14d69`, `954a62a4`, and `c0d63936`.
+9. Test-created `.claude/worktrees/*` audit-log deltas — class E. Preserved in `fbe6ec0f` and `354d6b7a` and their recovery tags; excluded because they record tool/session activity rather than product behavior.
 
 ## Conflict resolutions
 
@@ -90,4 +93,14 @@ Counts are unique recovery paths across the seven recovery commits. Class G coun
 
 - Dashboard source branch: non-incremental TypeScript PASS; production build 62/62 PASS; focused tests 21/21 PASS; diff check PASS.
 - Test Data package: 20/20 passwords and role claims; 5 linked cohorts; 5/5 coordinates; zero FK orphans; Inspector/Planner/Supervisor RLS proofs; 12/12 workbook reconciliation; zero formula errors; idempotent second import; immutability update/delete guard; rendered workbook inspection PASS.
-- Consolidated branch: non-incremental TypeScript PASS after all source merges and before the final Test Data/evidence-only merges. Final TypeScript/build/focused checks are recorded in the closing commit/report.
+- Consolidated `main`: non-incremental TypeScript PASS twice; production build PASS with 67/67 pages (Supabase Edge warning only); focused static contract suite PASS 20/20; `git diff --check` PASS.
+- Responsive Playwright launch: 4/4 cases blocked before application execution because `playwright/.auth/planner.json` is absent. This is an authentication-fixture blocker, not an application assertion failure.
+
+## Final local state
+
+- Canonical checkout: `/Users/vikramindla/Developer/Inspection`, branch `main`.
+- Final integration head before this ledger closeout: `3cef987c`.
+- Worktrees retained: canonical checkout only.
+- Local branches retained: `main` only.
+- Local stashes: none.
+- Remote branches and production services: untouched; nothing pushed.
