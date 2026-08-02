@@ -26,7 +26,7 @@ export default async function ComplianceRequestRegister() {
     sb.from("user_roles").select("role_key"),
   ]);
   const rows = (data ?? []) as RequestRow[];
-  const canCreate = !roleRead.error && (roleRead.data ?? []).some(row => ["compliance_admin", "form_admin"].includes(row.role_key));
+  const canCreate = !roleRead.error && (roleRead.data ?? []).some(row => row.role_key === "admin");
   return (
     <Shell current="/admin/compliance-requests" title={t("admin.ccr.register.title", "Compliance Configuration Requests")}
       context={<><span className="badge badge-info">CMP-REQ-CCR-001..010</span><span className="t-caption">Request list</span></>}>

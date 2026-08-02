@@ -248,234 +248,492 @@ REQ-R0C-00259,SCR-WEB-200,4,WEAK,USER_ACTION,"visit planning- mangment",True
 REQ-R0C-00260,SCR-WEB-110,2,WEAK,SYSTEM_BEHAVIOR,"visit planning- mangment",True
 REQ-R0C-00261,SCR-WEB-100,8,STRONG,SYSTEM_BEHAVIOR,"visit planning- mangment",True
 REQ-R0C-00263,SCR-WEB-210,10,STRONG,SYSTEM_BEHAVIOR,"visit planning- mangment",True
-REQ-R0C-00264,SCR-ADM-051,6,STRONG,USER_ACTION,"inspection execution - prestart",True
-REQ-R0C-00265,SCR-ADM-001,2,WEAK,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
-REQ-R0C-00266,SCR-ADM-001,2,WEAK,BUSINESS_RULE,"inspection execution - prestart",True
-REQ-R0C-00267,SCR-ADM-031,4,WEAK,ACCEPTANCE_CRITERION,"inspection execution - prestart",True
-REQ-R0C-00268,SCR-WEB-200,12,STRONG,USER_ACTION,"inspection execution - prestart",True
-REQ-R0C-00269,SCR-WEB-150,4,WEAK,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
-REQ-R0C-00270,SCR-WEB-150,4,WEAK,BUSINESS_RULE,"inspection execution - prestart",True
-REQ-R0C-00271,SCR-ADM-031,4,WEAK,ACCEPTANCE_CRITERION,"inspection execution - prestart",True
-REQ-R0C-00272,SCR-WEB-200,6,STRONG,USER_ACTION,"inspection execution - prestart",True
-REQ-R0C-00273,SCR-WEB-210,3,WEAK,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
-REQ-R0C-00274,SCR-WEB-140,6,STRONG,BUSINESS_RULE,"inspection execution - prestart",True
-REQ-R0C-00275,SCR-WEB-200,6,STRONG,USER_ACTION,"inspection execution - prestart",True
-REQ-R0C-00276,SCR-ADM-010,2,WEAK,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
-REQ-R0C-00277,SCR-WEB-150,4,WEAK,BUSINESS_RULE,"inspection execution - prestart",True
-REQ-R0C-00278,SCR-ADM-010,2,WEAK,ACCEPTANCE_CRITERION,"inspection execution - prestart",True
-REQ-R0C-00279,SCR-ADM-051,4,WEAK,USER_ACTION,"inspection execution - prestart",True
-REQ-R0C-00280,SCR-WEB-210,3,WEAK,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
-REQ-R0C-00281,SCR-WEB-100,8,STRONG,BUSINESS_RULE,"inspection execution - prestart",True
-REQ-R0C-00282,SCR-ADM-051,4,WEAK,USER_ACTION,"inspection execution - prestart",True
-REQ-R0C-00283,SCR-WEB-140,7,STRONG,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
-REQ-R0C-00284,SCR-ADM-020,2,WEAK,BUSINESS_RULE,"inspection execution - prestart",True
-REQ-R0C-00285,SCR-WEB-120,8,STRONG,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
-REQ-R0C-00286,SCR-WEB-120,8,STRONG,BUSINESS_RULE,"inspection execution - prestart",True
-REQ-R0C-00287,SCR-WEB-400,16,STRONG,USER_ACTION,"inspection execution - prestart",True
-REQ-R0C-00288,SCR-WEB-400,14,STRONG,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
-REQ-R0C-00289,SCR-WEB-120,6,STRONG,BUSINESS_RULE,"inspection execution - prestart",True
-REQ-R0C-00291,SCR-ADM-020,2,WEAK,BUSINESS_RULE,"inspection execution - prestart",True
-REQ-R0C-00292,SCR-WEB-400,10,STRONG,USER_ACTION,"inspection execution - prestart",True
-REQ-R0C-00293,SCR-ADM-030,12,STRONG,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
-REQ-R0C-00294,SCR-ADM-020,8,STRONG,BUSINESS_RULE,"inspection execution - prestart",True
-REQ-R0C-00295,SCR-WEB-140,6,STRONG,DATA_REQUIREMENT,"inspection execution - prestart",True
-REQ-R0C-00296,SCR-ADM-051,4,WEAK,USER_ACTION,"inspection execution - prestart",True
-REQ-R0C-00297,SCR-ADM-020,2,WEAK,BUSINESS_RULE,"inspection execution - prestart",True
-REQ-R0C-00298,SCR-WEB-400,10,STRONG,DATA_REQUIREMENT,"inspection execution - prestart",True
-REQ-R0C-00299,SCR-ADM-031,21,STRONG,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
-REQ-R0C-00300,SCR-ADM-030,8,STRONG,BUSINESS_RULE,"inspection execution - prestart",True
-REQ-R0C-00301,SCR-WEB-140,6,STRONG,DATA_REQUIREMENT,"inspection execution - prestart",True
-REQ-R0C-00302,SCR-ADM-080,6,STRONG,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
-REQ-R0C-00303,SCR-VIR-700,12,STRONG,BUSINESS_RULE,"inspection execution - prestart",True
-REQ-R0C-00304,SCR-WEB-310,8,STRONG,USER_ACTION,"inspection execution - prestart",True
-REQ-R0C-00305,SCR-WEB-120,6,STRONG,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
-REQ-R0C-00306,SCR-VIR-700,14,STRONG,BUSINESS_RULE,"inspection execution - prestart",True
-REQ-R0C-00307,SCR-VIR-700,6,STRONG,DATA_REQUIREMENT,"inspection execution - prestart",True
-REQ-R0C-00308,SCR-ADM-010,2,WEAK,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
-REQ-R0C-00309,SCR-ADM-080,5,WEAK,BUSINESS_RULE,"inspection execution - prestart",True
-REQ-R0C-00324,SCR-VIR-720,7,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00325,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00264,SCR-IPAD-600,4,WEAK,USER_ACTION,"inspection execution - prestart",True
+REQ-R0C-00265,SCR-IPAD-610,5,WEAK,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
+REQ-R0C-00266,SCR-IPAD-610,5,WEAK,BUSINESS_RULE,"inspection execution - prestart",True
+REQ-R0C-00267,SCR-IPAD-600,9,STRONG,ACCEPTANCE_CRITERION,"inspection execution - prestart",True
+REQ-R0C-00268,SCR-IPAD-600,10,STRONG,USER_ACTION,"inspection execution - prestart",True
+REQ-R0C-00269,SCR-IPAD-600,10,STRONG,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
+REQ-R0C-00270,SCR-IPAD-600,10,STRONG,BUSINESS_RULE,"inspection execution - prestart",True
+REQ-R0C-00271,SCR-IPAD-600,11,STRONG,ACCEPTANCE_CRITERION,"inspection execution - prestart",True
+REQ-R0C-00272,SCR-IPAD-600,4,WEAK,USER_ACTION,"inspection execution - prestart",True
+REQ-R0C-00273,SCR-IPAD-600,2,WEAK,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
+REQ-R0C-00274,SCR-IPAD-600,12,STRONG,BUSINESS_RULE,"inspection execution - prestart",True
+REQ-R0C-00275,SCR-IPAD-600,2,WEAK,USER_ACTION,"inspection execution - prestart",True
+REQ-R0C-00277,SCR-IPAD-600,10,STRONG,BUSINESS_RULE,"inspection execution - prestart",True
+REQ-R0C-00279,SCR-IPAD-600,6,STRONG,USER_ACTION,"inspection execution - prestart",True
+REQ-R0C-00281,SCR-IPAD-600,2,WEAK,BUSINESS_RULE,"inspection execution - prestart",True
+REQ-R0C-00282,SCR-IPAD-600,4,WEAK,USER_ACTION,"inspection execution - prestart",True
+REQ-R0C-00283,SCR-IPAD-600,2,WEAK,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
+REQ-R0C-00284,SCR-IPAD-600,2,WEAK,BUSINESS_RULE,"inspection execution - prestart",True
+REQ-R0C-00285,SCR-IPAD-610,4,WEAK,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
+REQ-R0C-00286,SCR-IPAD-610,4,WEAK,BUSINESS_RULE,"inspection execution - prestart",True
+REQ-R0C-00287,SCR-IPAD-610,4,WEAK,USER_ACTION,"inspection execution - prestart",True
+REQ-R0C-00288,SCR-IPAD-610,2,WEAK,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
+REQ-R0C-00289,SCR-IPAD-610,2,WEAK,BUSINESS_RULE,"inspection execution - prestart",True
+REQ-R0C-00292,SCR-IPAD-600,4,WEAK,USER_ACTION,"inspection execution - prestart",True
+REQ-R0C-00293,SCR-IPAD-610,6,STRONG,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
+REQ-R0C-00294,SCR-IPAD-620,4,WEAK,BUSINESS_RULE,"inspection execution - prestart",True
+REQ-R0C-00295,SCR-IPAD-600,2,WEAK,DATA_REQUIREMENT,"inspection execution - prestart",True
+REQ-R0C-00296,SCR-IPAD-600,2,WEAK,USER_ACTION,"inspection execution - prestart",True
+REQ-R0C-00298,SCR-IPAD-610,2,WEAK,DATA_REQUIREMENT,"inspection execution - prestart",True
+REQ-R0C-00299,SCR-IPAD-610,6,STRONG,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
+REQ-R0C-00300,SCR-IPAD-610,4,WEAK,BUSINESS_RULE,"inspection execution - prestart",True
+REQ-R0C-00304,SCR-IPAD-600,2,WEAK,USER_ACTION,"inspection execution - prestart",True
+REQ-R0C-00305,SCR-IPAD-610,2,WEAK,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
+REQ-R0C-00307,SCR-IPAD-600,2,WEAK,DATA_REQUIREMENT,"inspection execution - prestart",True
+REQ-R0C-00308,SCR-IPAD-610,2,WEAK,SYSTEM_BEHAVIOR,"inspection execution - prestart",True
+REQ-R0C-00309,SCR-IPAD-600,2,WEAK,BUSINESS_RULE,"inspection execution - prestart",True
+REQ-R0C-00310,SCR-IPAD-620,10,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00311,SCR-IPAD-610,9,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00312,SCR-IPAD-600,13,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00313,SCR-IPAD-610,9,STRONG,DATA_REQUIREMENT,"inspection excution-start jou",True
+REQ-R0C-00314,SCR-IPAD-620,10,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00315,SCR-IPAD-610,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00316,SCR-IPAD-620,10,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00317,SCR-IPAD-620,10,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00318,SCR-IPAD-600,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00319,SCR-IPAD-620,10,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00320,SCR-IPAD-620,10,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00321,SCR-IPAD-610,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00322,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00323,SCR-IPAD-620,10,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00324,SCR-IPAD-610,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00325,SCR-IPAD-610,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00326,SCR-IPAD-610,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00327,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00328,SCR-IPAD-610,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00329,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00330,SCR-VIR-720,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00332,SCR-VIR-720,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00334,SCR-VIR-720,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00335,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00336,SCR-VIR-720,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00338,SCR-VIR-720,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00330,SCR-IPAD-620,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00331,SCR-IPAD-620,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00332,SCR-IPAD-640,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00334,SCR-IPAD-640,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00335,SCR-IPAD-640,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00336,SCR-IPAD-640,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00338,SCR-IPAD-640,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00339,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00340,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00343,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00340,SCR-IPAD-640,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00341,SCR-IPAD-600,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00342,SCR-IPAD-620,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00343,SCR-IPAD-620,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00344,SCR-IPAD-620,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00346,SCR-IPAD-610,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00348,SCR-IPAD-620,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00349,SCR-IPAD-620,8,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00350,SCR-IPAD-600,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00351,SCR-VIR-720,8,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00352,SCR-VIR-720,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00356,SCR-VIR-720,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00359,SCR-VIR-720,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00360,SCR-VIR-720,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00352,SCR-IPAD-640,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00354,SCR-IPAD-650,2,WEAK,ACCEPTANCE_CRITERION,"inspection excution-start jou",True
+REQ-R0C-00355,SCR-IPAD-620,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00356,SCR-IPAD-620,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00357,SCR-IPAD-620,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00358,SCR-IPAD-620,10,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00359,SCR-IPAD-640,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00360,SCR-IPAD-620,8,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00361,SCR-IPAD-610,5,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00363,SCR-IPAD-620,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00364,SCR-IPAD-620,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00365,SCR-IPAD-620,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00366,SCR-IPAD-620,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00367,SCR-IPAD-630,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00368,SCR-IPAD-620,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00369,SCR-IPAD-620,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00370,SCR-IPAD-600,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00372,SCR-IPAD-620,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00373,SCR-IPAD-620,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00374,SCR-IPAD-620,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00376,SCR-IPAD-610,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00377,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00385,SCR-VIR-720,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00387,SCR-VIR-720,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00388,SCR-VIR-720,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00393,SCR-VIR-720,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00406,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00378,SCR-IPAD-650,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00379,SCR-IPAD-620,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00380,SCR-IPAD-620,12,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00381,SCR-IPAD-660,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00382,SCR-IPAD-650,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00383,SCR-IPAD-650,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00384,SCR-IPAD-650,2,WEAK,ACCEPTANCE_CRITERION,"inspection excution-start jou",True
+REQ-R0C-00385,SCR-IPAD-620,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00386,SCR-IPAD-620,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00387,SCR-IPAD-620,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00388,SCR-IPAD-610,7,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00389,SCR-IPAD-620,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00390,SCR-IPAD-620,2,WEAK,DATA_REQUIREMENT,"inspection excution-start jou",True
+REQ-R0C-00391,SCR-IPAD-650,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00392,SCR-IPAD-620,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00393,SCR-IPAD-640,14,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00395,SCR-IPAD-620,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00396,SCR-IPAD-620,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00397,SCR-IPAD-610,5,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00401,SCR-IPAD-650,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00403,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00404,SCR-IPAD-610,5,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00405,SCR-IPAD-610,5,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00406,SCR-IPAD-630,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00407,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00408,SCR-VIR-720,4,WEAK,USER_ACTION,"inspection excution-start jou",True
-REQ-R0C-00409,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00410,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00411,SCR-VIR-720,6,STRONG,ACCEPTANCE_CRITERION,"inspection excution-start jou",True
-REQ-R0C-00412,SCR-VIR-720,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00408,SCR-IPAD-640,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00409,SCR-IPAD-640,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00410,SCR-IPAD-640,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00411,SCR-IPAD-640,6,STRONG,ACCEPTANCE_CRITERION,"inspection excution-start jou",True
+REQ-R0C-00412,SCR-IPAD-600,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00413,SCR-VIR-720,8,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00414,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00416,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00414,SCR-IPAD-620,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00415,SCR-IPAD-660,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00416,SCR-IPAD-640,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00417,SCR-IPAD-650,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00418,SCR-IPAD-650,2,WEAK,ACCEPTANCE_CRITERION,"inspection excution-start jou",True
+REQ-R0C-00419,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
 REQ-R0C-00420,SCR-VIR-720,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00425,SCR-VIR-720,3,WEAK,USER_ACTION,"inspection excution-start jou",True
-REQ-R0C-00426,SCR-VIR-720,3,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00428,SCR-VIR-720,2,WEAK,USER_ACTION,"inspection excution-start jou",True
-REQ-R0C-00437,SCR-VIR-720,6,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00421,SCR-IPAD-610,9,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00422,SCR-IPAD-610,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00423,SCR-IPAD-620,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00425,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00426,SCR-IPAD-610,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00427,SCR-IPAD-610,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00428,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00429,SCR-IPAD-610,9,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00430,SCR-IPAD-610,10,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00431,SCR-IPAD-620,16,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00432,SCR-IPAD-620,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00433,SCR-IPAD-610,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00434,SCR-IPAD-610,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00435,SCR-IPAD-630,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00436,SCR-IPAD-610,6,STRONG,DATA_REQUIREMENT,"inspection excution-start jou",True
+REQ-R0C-00437,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
 REQ-R0C-00438,SCR-VIR-720,12,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00439,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00439,SCR-IPAD-620,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00440,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00441,SCR-IPAD-650,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00442,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00446,SCR-VIR-720,2,WEAK,USER_ACTION,"inspection excution-start jou",True
-REQ-R0C-00447,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00448,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00449,SCR-VIR-720,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00443,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00444,SCR-IPAD-630,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00446,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00447,SCR-IPAD-640,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00448,SCR-IPAD-640,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00449,SCR-IPAD-600,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00450,SCR-IPAD-600,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
 REQ-R0C-00451,SCR-VIR-720,13,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00452,SCR-IPAD-650,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00453,SCR-IPAD-650,2,WEAK,ACCEPTANCE_CRITERION,"inspection excution-start jou",True
 REQ-R0C-00454,SCR-VIR-720,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00456,SCR-VIR-720,6,STRONG,USER_ACTION,"inspection excution-start jou",True
-REQ-R0C-00457,SCR-VIR-720,12,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00455,SCR-IPAD-620,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00456,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00457,SCR-IPAD-610,15,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00458,SCR-VIR-720,10,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00459,SCR-IPAD-610,9,STRONG,DATA_REQUIREMENT,"inspection excution-start jou",True
 REQ-R0C-00460,SCR-VIR-720,7,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00461,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00462,SCR-IPAD-630,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00463,SCR-IPAD-630,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00464,SCR-IPAD-650,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00465,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00466,SCR-VIR-720,7,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00475,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00466,SCR-IPAD-650,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00468,SCR-IPAD-630,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00469,SCR-IPAD-630,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00470,SCR-IPAD-650,10,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00471,SCR-IPAD-610,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00472,SCR-IPAD-630,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00473,SCR-IPAD-610,5,WEAK,ACCEPTANCE_CRITERION,"inspection excution-start jou",True
+REQ-R0C-00474,SCR-IPAD-610,6,STRONG,DATA_REQUIREMENT,"inspection excution-start jou",True
+REQ-R0C-00475,SCR-IPAD-650,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00476,SCR-IPAD-600,7,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00477,SCR-IPAD-650,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00478,SCR-IPAD-610,5,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00479,SCR-IPAD-610,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00480,SCR-IPAD-610,5,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
 REQ-R0C-00481,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00482,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00483,SCR-VIR-720,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00483,SCR-IPAD-640,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00484,SCR-IPAD-620,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00485,SCR-IPAD-610,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00486,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00487,SCR-VIR-720,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00487,SCR-IPAD-610,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00488,SCR-VIR-720,10,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00491,SCR-VIR-720,2,WEAK,USER_ACTION,"inspection excution-start jou",True
-REQ-R0C-00498,SCR-VIR-720,7,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00505,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00509,SCR-VIR-720,2,WEAK,USER_ACTION,"inspection excution-start jou",True
-REQ-R0C-00510,SCR-VIR-720,7,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00514,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00517,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00521,SCR-VIR-720,2,WEAK,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00489,SCR-IPAD-650,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00491,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00492,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00493,SCR-IPAD-600,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00494,SCR-IPAD-610,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00495,SCR-IPAD-640,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00496,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00498,SCR-IPAD-630,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00499,SCR-IPAD-630,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00500,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00501,SCR-IPAD-630,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00502,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00503,SCR-IPAD-650,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00504,SCR-IPAD-640,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00505,SCR-IPAD-640,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00507,SCR-IPAD-650,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00508,SCR-IPAD-650,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00509,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00510,SCR-IPAD-650,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00512,SCR-IPAD-600,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00513,SCR-IPAD-600,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00514,SCR-IPAD-650,16,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00515,SCR-IPAD-610,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00516,SCR-IPAD-650,10,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00517,SCR-IPAD-640,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00518,SCR-IPAD-600,7,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00519,SCR-IPAD-600,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00521,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00522,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00523,SCR-IPAD-660,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00524,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00525,SCR-IPAD-620,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00526,SCR-IPAD-640,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00527,SCR-IPAD-660,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00528,SCR-IPAD-640,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00529,SCR-IPAD-650,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00531,SCR-IPAD-650,2,WEAK,ACCEPTANCE_CRITERION,"inspection excution-start jou",True
+REQ-R0C-00532,SCR-IPAD-650,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00533,SCR-VIR-720,10,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00537,SCR-VIR-720,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00534,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00535,SCR-IPAD-610,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00536,SCR-IPAD-640,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00537,SCR-IPAD-600,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00538,SCR-IPAD-640,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
 REQ-R0C-00539,SCR-VIR-720,3,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00540,SCR-IPAD-640,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00541,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00542,SCR-IPAD-610,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00543,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00544,SCR-IPAD-640,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00545,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00546,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00553,SCR-VIR-720,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00556,SCR-VIR-720,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00562,SCR-VIR-720,2,WEAK,USER_ACTION,"inspection excution-start jou",True
-REQ-R0C-00563,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00564,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00566,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00568,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00547,SCR-IPAD-650,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00548,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00550,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00551,SCR-IPAD-610,5,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00553,SCR-IPAD-600,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00555,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00556,SCR-IPAD-600,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00558,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00560,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00561,SCR-IPAD-660,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00562,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00563,SCR-IPAD-640,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00564,SCR-IPAD-640,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00565,SCR-IPAD-630,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00566,SCR-IPAD-640,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00567,SCR-IPAD-610,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00568,SCR-IPAD-640,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00569,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00571,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00574,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00577,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00578,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00580,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00571,SCR-IPAD-640,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00572,SCR-IPAD-650,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00573,SCR-IPAD-650,2,WEAK,ACCEPTANCE_CRITERION,"inspection excution-start jou",True
+REQ-R0C-00574,SCR-IPAD-640,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00575,SCR-IPAD-610,5,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00576,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00577,SCR-IPAD-610,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00578,SCR-IPAD-630,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00579,SCR-IPAD-610,4,WEAK,DATA_REQUIREMENT,"inspection excution-start jou",True
+REQ-R0C-00580,SCR-IPAD-630,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00581,SCR-IPAD-640,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00582,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00583,SCR-IPAD-650,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00584,SCR-IPAD-630,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00585,SCR-IPAD-650,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00587,SCR-IPAD-650,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00589,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00590,SCR-IPAD-650,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00591,SCR-IPAD-650,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00592,SCR-IPAD-650,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00593,SCR-IPAD-650,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
 REQ-R0C-00594,SCR-VIR-720,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00595,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00596,SCR-VIR-720,2,WEAK,USER_ACTION,"inspection excution-start jou",True
-REQ-R0C-00597,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00598,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00601,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00606,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00607,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00611,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00613,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00614,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00615,SCR-VIR-720,2,WEAK,USER_ACTION,"inspection excution-start jou",True
-REQ-R0C-00616,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00596,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00597,SCR-IPAD-640,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00598,SCR-IPAD-640,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00599,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00601,SCR-IPAD-640,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00602,SCR-IPAD-660,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00603,SCR-IPAD-630,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00604,SCR-IPAD-630,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00605,SCR-IPAD-630,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00606,SCR-IPAD-630,8,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00607,SCR-IPAD-640,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00608,SCR-IPAD-660,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00609,SCR-IPAD-660,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00610,SCR-IPAD-660,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00611,SCR-IPAD-640,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00612,SCR-IPAD-630,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00613,SCR-IPAD-640,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00614,SCR-IPAD-630,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00615,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00616,SCR-IPAD-630,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00617,SCR-VIR-720,8,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00619,SCR-VIR-720,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00618,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00619,SCR-IPAD-650,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00621,SCR-IPAD-650,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00623,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00625,SCR-IPAD-630,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00626,SCR-IPAD-640,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
 REQ-R0C-00627,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00628,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00628,SCR-IPAD-640,8,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
 REQ-R0C-00629,SCR-VIR-720,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00631,SCR-VIR-720,7,STRONG,ACCEPTANCE_CRITERION,"inspection excution-start jou",True
-REQ-R0C-00632,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00632,SCR-IPAD-630,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00633,SCR-IPAD-640,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00634,SCR-IPAD-650,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00636,SCR-IPAD-650,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00637,SCR-IPAD-650,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00638,SCR-IPAD-610,5,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00639,SCR-IPAD-650,12,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00640,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00643,SCR-VIR-720,7,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00645,SCR-VIR-720,2,WEAK,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00641,SCR-IPAD-650,14,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00642,SCR-IPAD-650,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00643,SCR-IPAD-630,7,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00644,SCR-IPAD-660,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00645,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
 REQ-R0C-00646,SCR-VIR-720,12,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00647,SCR-VIR-720,12,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00649,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00651,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00652,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00653,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00655,SCR-VIR-720,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00656,SCR-VIR-720,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00657,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00658,SCR-VIR-720,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00659,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00660,SCR-VIR-720,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00661,SCR-VIR-720,2,WEAK,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00648,SCR-IPAD-630,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00649,SCR-IPAD-640,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00650,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00651,SCR-IPAD-630,8,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00652,SCR-IPAD-650,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00653,SCR-IPAD-640,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00654,SCR-IPAD-660,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00655,SCR-IPAD-660,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00656,SCR-IPAD-660,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00657,SCR-IPAD-650,12,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00658,SCR-IPAD-650,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00659,SCR-IPAD-640,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00660,SCR-IPAD-610,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00661,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
 REQ-R0C-00662,SCR-VIR-720,16,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00663,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00665,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00667,SCR-VIR-720,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00668,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00672,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00674,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00675,SCR-VIR-720,13,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00676,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00678,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00663,SCR-IPAD-640,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00664,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00665,SCR-IPAD-640,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00667,SCR-IPAD-640,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00668,SCR-IPAD-640,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00670,SCR-IPAD-640,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00671,SCR-IPAD-650,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00672,SCR-IPAD-640,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00673,SCR-IPAD-630,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00674,SCR-IPAD-640,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00675,SCR-IPAD-650,16,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00676,SCR-IPAD-640,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00677,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00678,SCR-IPAD-640,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00679,SCR-IPAD-640,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00680,SCR-IPAD-660,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
 REQ-R0C-00681,SCR-VIR-720,12,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00683,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00684,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00687,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00688,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00689,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00692,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00693,SCR-VIR-720,6,STRONG,ACCEPTANCE_CRITERION,"inspection excution-start jou",True
-REQ-R0C-00694,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00695,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00696,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00682,SCR-IPAD-660,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00683,SCR-IPAD-640,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00684,SCR-IPAD-640,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00685,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00687,SCR-IPAD-640,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00688,SCR-IPAD-640,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00689,SCR-IPAD-640,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00691,SCR-IPAD-640,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00692,SCR-IPAD-650,8,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00693,SCR-IPAD-640,6,STRONG,ACCEPTANCE_CRITERION,"inspection excution-start jou",True
+REQ-R0C-00694,SCR-IPAD-640,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00695,SCR-IPAD-640,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00696,SCR-IPAD-650,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00697,SCR-IPAD-630,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00698,SCR-IPAD-650,14,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00699,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00700,SCR-IPAD-650,12,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00701,SCR-IPAD-650,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00702,SCR-IPAD-630,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00703,SCR-IPAD-610,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00704,SCR-IPAD-600,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00705,SCR-IPAD-650,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00706,SCR-IPAD-650,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00708,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00709,SCR-IPAD-660,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00710,SCR-IPAD-650,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00711,SCR-IPAD-630,2,WEAK,ACCEPTANCE_CRITERION,"inspection excution-start jou",True
 REQ-R0C-00712,SCR-VIR-720,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00714,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00715,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00716,SCR-VIR-720,7,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00719,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00725,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00713,SCR-IPAD-660,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00714,SCR-IPAD-650,12,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00715,SCR-IPAD-640,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00716,SCR-IPAD-640,9,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00719,SCR-IPAD-650,12,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00720,SCR-IPAD-660,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00721,SCR-IPAD-650,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00722,SCR-IPAD-630,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00723,SCR-IPAD-650,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00724,SCR-IPAD-650,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00725,SCR-IPAD-650,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00726,SCR-VIR-720,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00730,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00727,SCR-IPAD-660,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00728,SCR-IPAD-650,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00729,SCR-IPAD-660,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00730,SCR-IPAD-640,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00731,SCR-IPAD-650,8,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00732,SCR-IPAD-630,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00733,SCR-IPAD-650,8,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00734,SCR-IPAD-610,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00735,SCR-IPAD-610,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
 REQ-R0C-00736,SCR-VIR-720,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00741,SCR-VIR-720,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00742,SCR-VIR-720,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00737,SCR-IPAD-640,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00738,SCR-IPAD-630,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00739,SCR-IPAD-610,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00740,SCR-IPAD-610,5,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00741,SCR-IPAD-610,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00742,SCR-IPAD-650,14,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00743,SCR-IPAD-650,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00744,SCR-IPAD-650,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00745,SCR-IPAD-610,5,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
 REQ-R0C-00746,SCR-VIR-720,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00748,SCR-VIR-720,9,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00749,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00750,SCR-VIR-720,3,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00752,SCR-VIR-720,9,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00754,SCR-VIR-720,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00764,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00766,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00768,SCR-VIR-720,6,STRONG,ACCEPTANCE_CRITERION,"inspection excution-start jou",True
+REQ-R0C-00748,SCR-IPAD-650,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00749,SCR-IPAD-640,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00750,SCR-IPAD-610,7,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00751,SCR-IPAD-650,8,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00752,SCR-IPAD-650,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00753,SCR-IPAD-660,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00754,SCR-IPAD-650,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00755,SCR-IPAD-660,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00756,SCR-IPAD-650,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00758,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00759,SCR-IPAD-620,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00761,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00762,SCR-IPAD-610,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00763,SCR-IPAD-600,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00764,SCR-IPAD-630,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00765,SCR-IPAD-660,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00766,SCR-IPAD-660,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00767,SCR-IPAD-660,8,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00768,SCR-IPAD-660,8,STRONG,ACCEPTANCE_CRITERION,"inspection excution-start jou",True
+REQ-R0C-00769,SCR-IPAD-610,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00770,SCR-IPAD-610,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
 REQ-R0C-00771,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00772,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00773,SCR-VIR-720,6,STRONG,USER_ACTION,"inspection excution-start jou",True
-REQ-R0C-00776,SCR-VIR-720,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00778,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00773,SCR-IPAD-650,8,STRONG,USER_ACTION,"inspection excution-start jou",True
+REQ-R0C-00774,SCR-IPAD-620,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00775,SCR-IPAD-660,8,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00776,SCR-IPAD-650,12,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00778,SCR-IPAD-650,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00779,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00780,SCR-VIR-720,9,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00782,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00780,SCR-IPAD-650,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00781,SCR-IPAD-660,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00782,SCR-IPAD-610,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00783,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00784,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00785,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00788,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00784,SCR-IPAD-640,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00785,SCR-IPAD-640,8,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00786,SCR-IPAD-650,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00787,SCR-IPAD-650,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00788,SCR-IPAD-650,16,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00789,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
 REQ-R0C-00790,SCR-VIR-720,16,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
-REQ-R0C-00791,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
-REQ-R0C-00792,SCR-VIR-720,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00791,SCR-IPAD-630,6,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00792,SCR-IPAD-600,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00794,SCR-IPAD-600,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00795,SCR-IPAD-600,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00796,SCR-IPAD-650,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00797,SCR-IPAD-600,2,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00798,SCR-IPAD-600,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00800,SCR-IPAD-660,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00801,SCR-IPAD-660,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00802,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
 REQ-R0C-00803,SCR-VIR-720,7,STRONG,BUSINESS_RULE,"inspection excution-start jou",True
 REQ-R0C-00804,SCR-VIR-720,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00805,SCR-IPAD-660,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
+REQ-R0C-00806,SCR-IPAD-660,4,WEAK,ACCEPTANCE_CRITERION,"inspection excution-start jou",True
 REQ-R0C-00807,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-start jou",True
+REQ-R0C-00808,SCR-IPAD-660,4,WEAK,BUSINESS_RULE,"inspection excution-start jou",True
 REQ-R0C-00809,SCR-VIR-700,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution - virtual",True
 REQ-R0C-00810,SCR-VIR-700,6,STRONG,BUSINESS_RULE,"inspection excution - virtual",True
 REQ-R0C-00811,SCR-VIR-710,4,WEAK,USER_ACTION,"inspection excution - virtual",True
@@ -485,6 +743,7 @@ REQ-R0C-00814,SCR-VIR-720,12,STRONG,SYSTEM_BEHAVIOR,"inspection excution - virtu
 REQ-R0C-00816,SCR-VIR-720,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution - virtual",True
 REQ-R0C-00817,SCR-VIR-720,8,STRONG,BUSINESS_RULE,"inspection excution - virtual",True
 REQ-R0C-00819,SCR-VIR-720,6,STRONG,BUSINESS_RULE,"inspection excution - virtual",True
+REQ-R0C-00820,SCR-IPAD-630,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution - virtual",True
 REQ-R0C-00821,SCR-VIR-710,5,WEAK,SYSTEM_BEHAVIOR,"inspection excution - virtual",True
 REQ-R0C-00823,SCR-VIR-700,6,STRONG,USER_ACTION,"inspection excution - virtual",True
 REQ-R0C-00824,SCR-VIR-710,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution - virtual",True
@@ -522,14 +781,14 @@ REQ-R0C-00860,SCR-WEB-310,2,WEAK,DATA_REQUIREMENT,"inspection excution-level2flo
 REQ-R0C-00861,SCR-WEB-310,2,WEAK,USER_ACTION,"inspection excution-level2flow",True
 REQ-R0C-00862,SCR-WEB-320,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
 REQ-R0C-00863,SCR-WEB-310,4,WEAK,BUSINESS_RULE,"inspection excution-level2flow",True
-REQ-R0C-00864,SCR-WEB-320,6,STRONG,USER_ACTION,"inspection excution-level2flow",True
-REQ-R0C-00865,SCR-WEB-320,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
-REQ-R0C-00866,SCR-WEB-310,3,WEAK,BUSINESS_RULE,"inspection excution-level2flow",True
+REQ-R0C-00864,SCR-IPAD-670,14,STRONG,USER_ACTION,"inspection excution-level2flow",True
+REQ-R0C-00865,SCR-IPAD-670,16,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
+REQ-R0C-00866,SCR-IPAD-670,10,STRONG,BUSINESS_RULE,"inspection excution-level2flow",True
 REQ-R0C-00867,SCR-WEB-300,2,WEAK,ACCEPTANCE_CRITERION,"inspection excution-level2flow",True
-REQ-R0C-00868,SCR-WEB-320,6,STRONG,DATA_REQUIREMENT,"inspection excution-level2flow",True
-REQ-R0C-00869,SCR-WEB-320,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
-REQ-R0C-00870,SCR-WEB-320,8,STRONG,BUSINESS_RULE,"inspection excution-level2flow",True
-REQ-R0C-00871,SCR-WEB-320,2,WEAK,ACCEPTANCE_CRITERION,"inspection excution-level2flow",True
+REQ-R0C-00868,SCR-IPAD-670,8,STRONG,DATA_REQUIREMENT,"inspection excution-level2flow",True
+REQ-R0C-00869,SCR-IPAD-670,9,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
+REQ-R0C-00870,SCR-IPAD-670,9,STRONG,BUSINESS_RULE,"inspection excution-level2flow",True
+REQ-R0C-00871,SCR-IPAD-670,7,STRONG,ACCEPTANCE_CRITERION,"inspection excution-level2flow",True
 REQ-R0C-00872,SCR-WEB-310,4,WEAK,USER_ACTION,"inspection excution-level2flow",True
 REQ-R0C-00873,SCR-WEB-310,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
 REQ-R0C-00874,SCR-WEB-310,2,WEAK,BUSINESS_RULE,"inspection excution-level2flow",True
@@ -539,13 +798,13 @@ REQ-R0C-00877,SCR-WEB-300,2,WEAK,BUSINESS_RULE,"inspection excution-level2flow",
 REQ-R0C-00878,SCR-WEB-320,11,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
 REQ-R0C-00879,SCR-WEB-310,6,STRONG,BUSINESS_RULE,"inspection excution-level2flow",True
 REQ-R0C-00880,SCR-WEB-310,2,WEAK,ACCEPTANCE_CRITERION,"inspection excution-level2flow",True
-REQ-R0C-00881,SCR-WEB-310,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
-REQ-R0C-00882,SCR-WEB-320,2,WEAK,USER_ACTION,"inspection excution-level2flow",True
+REQ-R0C-00881,SCR-IPAD-670,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
+REQ-R0C-00882,SCR-IPAD-670,7,STRONG,USER_ACTION,"inspection excution-level2flow",True
 REQ-R0C-00883,SCR-WEB-320,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
 REQ-R0C-00884,SCR-WEB-300,8,STRONG,BUSINESS_RULE,"inspection excution-level2flow",True
 REQ-R0C-00885,SCR-WEB-320,5,WEAK,ACCEPTANCE_CRITERION,"inspection excution-level2flow",True
 REQ-R0C-00886,SCR-WEB-310,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
-REQ-R0C-00887,SCR-WEB-310,3,WEAK,BUSINESS_RULE,"inspection excution-level2flow",True
+REQ-R0C-00887,SCR-IPAD-670,6,STRONG,BUSINESS_RULE,"inspection excution-level2flow",True
 REQ-R0C-00888,SCR-WEB-300,12,STRONG,USER_ACTION,"inspection excution-level2flow",True
 REQ-R0C-00889,SCR-WEB-300,11,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
 REQ-R0C-00890,SCR-WEB-300,3,WEAK,BUSINESS_RULE,"inspection excution-level2flow",True
@@ -555,13 +814,14 @@ REQ-R0C-00894,SCR-WEB-310,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2fl
 REQ-R0C-00895,SCR-WEB-320,6,STRONG,BUSINESS_RULE,"inspection excution-level2flow",True
 REQ-R0C-00896,SCR-WEB-310,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
 REQ-R0C-00897,SCR-WEB-320,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
+REQ-R0C-00898,SCR-IPAD-670,2,WEAK,BUSINESS_RULE,"inspection excution-level2flow",True
 REQ-R0C-00899,SCR-WEB-310,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
 REQ-R0C-00900,SCR-WEB-310,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
 REQ-R0C-00903,SCR-WEB-300,2,WEAK,USER_ACTION,"inspection excution-level2flow",True
 REQ-R0C-00906,SCR-WEB-310,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
 REQ-R0C-00907,SCR-WEB-320,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
 REQ-R0C-00908,SCR-WEB-300,2,WEAK,BUSINESS_RULE,"inspection excution-level2flow",True
-REQ-R0C-00909,SCR-WEB-310,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
+REQ-R0C-00909,SCR-IPAD-670,3,WEAK,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
 REQ-R0C-00910,SCR-WEB-310,2,WEAK,BUSINESS_RULE,"inspection excution-level2flow",True
 REQ-R0C-00911,SCR-WEB-320,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
 REQ-R0C-00912,SCR-WEB-310,4,WEAK,BUSINESS_RULE,"inspection excution-level2flow",True
@@ -602,18 +862,18 @@ REQ-R0C-00954,SCR-WEB-310,2,WEAK,BUSINESS_RULE,"inspection excution-level2flow",
 REQ-R0C-00955,SCR-WEB-300,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
 REQ-R0C-00956,SCR-WEB-320,6,STRONG,BUSINESS_RULE,"inspection excution-level2flow",True
 REQ-R0C-00957,SCR-WEB-320,3,WEAK,ACCEPTANCE_CRITERION,"inspection excution-level2flow",True
-REQ-R0C-00958,SCR-WEB-300,2,WEAK,USER_ACTION,"inspection excution-level2flow",True
-REQ-R0C-00959,SCR-WEB-320,2,WEAK,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
-REQ-R0C-00960,SCR-WEB-310,2,WEAK,BUSINESS_RULE,"inspection excution-level2flow",True
-REQ-R0C-00961,SCR-WEB-310,8,STRONG,USER_ACTION,"inspection excution-level2flow",True
-REQ-R0C-00962,SCR-WEB-320,7,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
+REQ-R0C-00958,SCR-IPAD-670,6,STRONG,USER_ACTION,"inspection excution-level2flow",True
+REQ-R0C-00959,SCR-IPAD-670,7,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
+REQ-R0C-00960,SCR-IPAD-670,9,STRONG,BUSINESS_RULE,"inspection excution-level2flow",True
+REQ-R0C-00961,SCR-IPAD-670,12,STRONG,USER_ACTION,"inspection excution-level2flow",True
+REQ-R0C-00962,SCR-IPAD-670,14,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
 REQ-R0C-00963,SCR-WEB-310,2,WEAK,BUSINESS_RULE,"inspection excution-level2flow",True
-REQ-R0C-00965,SCR-WEB-320,4,WEAK,USER_ACTION,"inspection excution-level2flow",True
-REQ-R0C-00966,SCR-WEB-310,4,WEAK,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
-REQ-R0C-00967,SCR-WEB-320,4,WEAK,BUSINESS_RULE,"inspection excution-level2flow",True
+REQ-R0C-00965,SCR-IPAD-670,14,STRONG,USER_ACTION,"inspection excution-level2flow",True
+REQ-R0C-00966,SCR-IPAD-670,12,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
+REQ-R0C-00967,SCR-IPAD-670,15,STRONG,BUSINESS_RULE,"inspection excution-level2flow",True
 REQ-R0C-00968,SCR-WEB-320,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
-REQ-R0C-00969,SCR-WEB-320,4,WEAK,BUSINESS_RULE,"inspection excution-level2flow",True
-REQ-R0C-00970,SCR-WEB-320,11,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
+REQ-R0C-00969,SCR-IPAD-670,6,STRONG,BUSINESS_RULE,"inspection excution-level2flow",True
+REQ-R0C-00970,SCR-IPAD-670,12,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
 REQ-R0C-00971,SCR-WEB-320,6,STRONG,BUSINESS_RULE,"inspection excution-level2flow",True
 REQ-R0C-00972,SCR-WEB-320,2,WEAK,USER_ACTION,"inspection excution-level2flow",True
 REQ-R0C-00973,SCR-WEB-320,10,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
@@ -623,7 +883,7 @@ REQ-R0C-00976,SCR-WEB-310,14,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2f
 REQ-R0C-00977,SCR-WEB-300,2,WEAK,BUSINESS_RULE,"inspection excution-level2flow",True
 REQ-R0C-00978,SCR-WEB-320,7,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
 REQ-R0C-00979,SCR-WEB-300,8,STRONG,BUSINESS_RULE,"inspection excution-level2flow",True
-REQ-R0C-00980,SCR-WEB-310,5,WEAK,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
+REQ-R0C-00980,SCR-IPAD-670,6,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
 REQ-R0C-00981,SCR-WEB-310,4,WEAK,BUSINESS_RULE,"inspection excution-level2flow",True
 REQ-R0C-00982,SCR-WEB-320,8,STRONG,SYSTEM_BEHAVIOR,"inspection excution-level2flow",True
 REQ-R0C-00983,SCR-WEB-320,8,STRONG,BUSINESS_RULE,"inspection excution-level2flow",True
@@ -824,14 +1084,23 @@ REQ-R0C-01233,SCR-WEB-400,2,WEAK,DATA_REQUIREMENT,"ops view",True
 REQ-R0C-01234,SCR-WEB-400,2,WEAK,DATA_REQUIREMENT,"ops view",True
 REQ-R0C-01235,SCR-WEB-400,2,WEAK,DATA_REQUIREMENT,"ops view",True
 REQ-R0C-01241,SCR-VIR-720,6,STRONG,BUSINESS_REQUIREMENT,"ipad scope",True
+REQ-R0C-01242,SCR-IPAD-610,2,WEAK,BUSINESS_REQUIREMENT,"ipad scope",True
 REQ-R0C-01244,SCR-VIR-720,7,STRONG,SYSTEM_BEHAVIOR,"ipad scope",True
 REQ-R0C-01246,SCR-WEB-320,2,WEAK,BUSINESS_REQUIREMENT,"ipad scope",True
-REQ-R0C-01250,SCR-WEB-320,4,WEAK,BUSINESS_REQUIREMENT,"ipad scope",True
-REQ-R0C-01253,SCR-VIR-720,12,STRONG,BUSINESS_REQUIREMENT,"ipad scope",True
-REQ-R0C-01254,SCR-WEB-320,2,WEAK,BUSINESS_REQUIREMENT,"ipad scope",True
+REQ-R0C-01250,SCR-IPAD-600,12,STRONG,BUSINESS_REQUIREMENT,"ipad scope",True
+REQ-R0C-01251,SCR-IPAD-610,8,STRONG,BUSINESS_REQUIREMENT,"ipad scope",True
+REQ-R0C-01252,SCR-IPAD-620,14,STRONG,BUSINESS_REQUIREMENT,"ipad scope",True
+REQ-R0C-01253,SCR-IPAD-650,12,STRONG,BUSINESS_REQUIREMENT,"ipad scope",True
+REQ-R0C-01254,SCR-IPAD-660,10,STRONG,BUSINESS_REQUIREMENT,"ipad scope",True
+REQ-R0C-01257,SCR-IPAD-610,2,WEAK,BUSINESS_REQUIREMENT,"ipad scope",True
+REQ-R0C-01258,SCR-IPAD-610,4,WEAK,BUSINESS_REQUIREMENT,"ipad scope",True
+REQ-R0C-01259,SCR-IPAD-610,6,STRONG,BUSINESS_REQUIREMENT,"ipad scope",True
+REQ-R0C-01262,SCR-IPAD-620,4,WEAK,BUSINESS_REQUIREMENT,"ipad scope",True
+REQ-R0C-01264,SCR-IPAD-630,2,WEAK,BUSINESS_REQUIREMENT,"ipad scope",True
 REQ-R0C-01265,SCR-WEB-320,2,WEAK,BUSINESS_REQUIREMENT,"ipad scope",True
-REQ-R0C-01266,SCR-VIR-720,6,STRONG,BUSINESS_REQUIREMENT,"ipad scope",True
+REQ-R0C-01266,SCR-IPAD-630,6,STRONG,BUSINESS_REQUIREMENT,"ipad scope",True
 REQ-R0C-01267,SCR-VIR-720,10,STRONG,BUSINESS_REQUIREMENT,"ipad scope",True
+REQ-R0C-01268,SCR-IPAD-610,2,WEAK,BUSINESS_REQUIREMENT,"ipad scope",True
 REQ-R0C-01269,SCR-WEB-400,3,WEAK,BUSINESS_REQUIREMENT,"dashboard req",True
 REQ-R0C-01270,SCR-WEB-400,2,WEAK,BUSINESS_REQUIREMENT,"dashboard req",True
 REQ-R0C-01271,SCR-WEB-400,8,STRONG,BUSINESS_REQUIREMENT,"dashboard req",True
@@ -844,19 +1113,19 @@ REQ-R0C-01277,SCR-WEB-400,2,WEAK,BUSINESS_REQUIREMENT,"dashboard req",True
 REQ-R0C-01278,SCR-WEB-400,2,WEAK,BUSINESS_REQUIREMENT,"dashboard req",True
 REQ-R0C-01279,SCR-WEB-400,2,WEAK,BUSINESS_REQUIREMENT,"dashboard req",True
 REQ-R0C-01280,SCR-WEB-400,2,WEAK,BUSINESS_REQUIREMENT,"dashboard req",True
-REQ-R0C-01281,SCR-ADM-051,4,WEAK,USER_ACTION,"sheet1",False
-REQ-R0C-01282,SCR-ADM-051,4,WEAK,USER_ACTION,"sheet1",False
+REQ-R0C-01281,SCR-IPAD-650,8,STRONG,USER_ACTION,"sheet1",False
+REQ-R0C-01282,SCR-IPAD-650,8,STRONG,USER_ACTION,"sheet1",False
 REQ-R0C-01283,SCR-WEB-130,11,STRONG,USER_ACTION,"sheet1",False
-REQ-R0C-01284,SCR-ADM-031,4,WEAK,USER_ACTION,"sheet1",False
+REQ-R0C-01284,SCR-IPAD-650,9,STRONG,USER_ACTION,"sheet1",False
 REQ-R0C-01285,SCR-WEB-210,10,STRONG,USER_ACTION,"sheet1",False
 REQ-R0C-01286,SCR-WEB-400,10,STRONG,USER_ACTION,"sheet1",False
 REQ-R0C-01287,SCR-ADM-030,2,WEAK,SYSTEM_BEHAVIOR,"sheet1",False
-REQ-R0C-01288,SCR-WEB-130,3,WEAK,SYSTEM_BEHAVIOR,"sheet1",False
+REQ-R0C-01288,SCR-IPAD-610,5,WEAK,SYSTEM_BEHAVIOR,"sheet1",False
 REQ-R0C-01289,SCR-WEB-400,8,STRONG,SYSTEM_BEHAVIOR,"sheet1",False
-REQ-R0C-01290,SCR-WEB-210,4,WEAK,SYSTEM_BEHAVIOR,"sheet1",False
+REQ-R0C-01290,SCR-IPAD-610,7,STRONG,SYSTEM_BEHAVIOR,"sheet1",False
 REQ-R0C-01291,SCR-WEB-120,8,STRONG,SYSTEM_BEHAVIOR,"sheet1",False
 REQ-R0C-01292,SCR-WEB-120,14,STRONG,SYSTEM_BEHAVIOR,"sheet1",False
-REQ-R0C-01293,SCR-ADM-020,4,WEAK,BUSINESS_RULE,"sheet1",False
+REQ-R0C-01293,SCR-IPAD-620,6,STRONG,BUSINESS_RULE,"sheet1",False
 REQ-R0C-01294,SCR-WEB-130,9,STRONG,BUSINESS_RULE,"sheet1",False
 REQ-R0C-01295,SCR-WEB-120,6,STRONG,BUSINESS_RULE,"sheet1",False
 REQ-R0C-01296,SCR-WEB-320,4,WEAK,BUSINESS_RULE,"sheet1",False
@@ -868,17 +1137,22 @@ REQ-R0C-01301,SCR-ADM-020,2,WEAK,BUSINESS_RULE,"sheet1",False
 REQ-R0C-01302,SCR-WEB-300,9,STRONG,BUSINESS_RULE,"sheet1",False
 REQ-R0C-01303,SCR-WEB-120,8,STRONG,BUSINESS_RULE,"sheet1",False
 REQ-R0C-01304,SCR-WEB-400,8,STRONG,BUSINESS_RULE,"sheet1",False
-REQ-R0C-01305,SCR-ADM-051,4,WEAK,USER_ACTION,"sheet1",False
-REQ-R0C-01306,SCR-ADM-051,4,WEAK,USER_ACTION,"sheet1",False
+REQ-R0C-01305,SCR-IPAD-650,8,STRONG,USER_ACTION,"sheet1",False
+REQ-R0C-01306,SCR-IPAD-650,8,STRONG,USER_ACTION,"sheet1",False
 REQ-R0C-01307,SCR-WEB-400,8,STRONG,USER_ACTION,"sheet1",False
 REQ-R0C-01308,SCR-WEB-400,10,STRONG,USER_ACTION,"sheet1",False
+REQ-R0C-01309,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"sheet1",False
+REQ-R0C-01310,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"sheet1",False
+REQ-R0C-01311,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"sheet1",False
+REQ-R0C-01312,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"sheet1",False
+REQ-R0C-01313,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"sheet1",False
 REQ-R0C-01314,SCR-WEB-120,6,STRONG,SYSTEM_BEHAVIOR,"sheet1",False
 REQ-R0C-01315,SCR-WEB-400,8,STRONG,SYSTEM_BEHAVIOR,"sheet1",False
 REQ-R0C-01316,SCR-WEB-120,6,STRONG,SYSTEM_BEHAVIOR,"sheet1",False
 REQ-R0C-01317,SCR-WEB-300,7,STRONG,BUSINESS_RULE,"sheet1",False
 REQ-R0C-01318,SCR-ADM-020,4,WEAK,BUSINESS_RULE,"sheet1",False
 REQ-R0C-01319,SCR-ADM-020,2,WEAK,BUSINESS_RULE,"sheet1",False
-REQ-R0C-01320,SCR-ADM-060,4,WEAK,BUSINESS_RULE,"sheet1",False
+REQ-R0C-01320,SCR-IPAD-600,6,STRONG,BUSINESS_RULE,"sheet1",False
 REQ-R0C-01321,SCR-ADM-020,2,WEAK,BUSINESS_RULE,"sheet1",False
 REQ-R0C-01322,SCR-WEB-400,8,STRONG,BUSINESS_RULE,"sheet1",False
 REQ-R0C-01323,SCR-WEB-400,10,STRONG,BUSINESS_RULE,"sheet1",False
@@ -888,13 +1162,15 @@ REQ-R0C-01326,SCR-WEB-120,6,STRONG,BUSINESS_RULE,"sheet1",False
 REQ-R0C-01327,SCR-ADM-011,2,WEAK,ACCEPTANCE_CRITERION,"sheet1",False
 REQ-R0C-01328,SCR-WEB-120,6,STRONG,ACCEPTANCE_CRITERION,"sheet1",False
 REQ-R0C-01329,SCR-ADM-020,2,WEAK,DATA_REQUIREMENT,"sheet1",False
-REQ-R0C-01330,SCR-ADM-051,4,WEAK,USER_ACTION,"sheet1",False
-REQ-R0C-01331,SCR-ADM-051,4,WEAK,USER_ACTION,"sheet1",False
-REQ-R0C-01332,SCR-ADM-051,4,WEAK,USER_ACTION,"sheet1",False
+REQ-R0C-01330,SCR-IPAD-650,8,STRONG,USER_ACTION,"sheet1",False
+REQ-R0C-01331,SCR-IPAD-650,8,STRONG,USER_ACTION,"sheet1",False
+REQ-R0C-01332,SCR-IPAD-650,10,STRONG,USER_ACTION,"sheet1",False
 REQ-R0C-01333,SCR-ADM-031,2,WEAK,SYSTEM_BEHAVIOR,"sheet1",False
-REQ-R0C-01336,SCR-WEB-320,2,WEAK,SYSTEM_BEHAVIOR,"sheet1",False
+REQ-R0C-01334,SCR-IPAD-650,2,WEAK,SYSTEM_BEHAVIOR,"sheet1",False
+REQ-R0C-01335,SCR-IPAD-600,2,WEAK,SYSTEM_BEHAVIOR,"sheet1",False
+REQ-R0C-01336,SCR-IPAD-620,4,WEAK,SYSTEM_BEHAVIOR,"sheet1",False
 REQ-R0C-01337,SCR-ADM-080,5,WEAK,BUSINESS_RULE,"sheet1",False
-REQ-R0C-01338,SCR-ADM-020,2,WEAK,BUSINESS_RULE,"sheet1",False
+REQ-R0C-01338,SCR-IPAD-650,4,WEAK,BUSINESS_RULE,"sheet1",False
 REQ-R0C-01339,SCR-ADM-020,4,WEAK,BUSINESS_RULE,"sheet1",False
 REQ-R0C-01340,SCR-WEB-120,4,WEAK,BUSINESS_RULE,"sheet1",False
 REQ-R0C-01341,SCR-ADM-020,2,WEAK,BUSINESS_RULE,"sheet1",False
@@ -928,20 +1204,20 @@ REQ-R0C-01368,SCR-WEB-400,10,STRONG,USER_ACTION,"paragraph 133",False
 REQ-R0C-01369,SCR-WEB-400,8,STRONG,USER_ACTION,"paragraph 135",False
 REQ-R0C-01370,SCR-WEB-310,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 136",False
 REQ-R0C-01371,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 137",False
-REQ-R0C-01372,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 138",False
+REQ-R0C-01372,SCR-IPAD-670,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 138",False
 REQ-R0C-01373,SCR-WEB-400,8,STRONG,USER_ACTION,"paragraph 140",False
 REQ-R0C-01374,SCR-ADM-060,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 142",False
 REQ-R0C-01375,SCR-WEB-400,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 145",False
-REQ-R0C-01376,SCR-WEB-130,3,WEAK,BUSINESS_REQUIREMENT,"paragraph 156",False
+REQ-R0C-01376,SCR-IPAD-670,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 156",False
 REQ-R0C-01377,SCR-WEB-400,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 157",False
 REQ-R0C-01378,SCR-ADM-020,2,WEAK,BUSINESS_RULE,"paragraph 159",False
 REQ-R0C-01379,SCR-WEB-130,3,WEAK,BUSINESS_REQUIREMENT,"paragraph 161",False
 REQ-R0C-01380,SCR-WEB-100,8,STRONG,BUSINESS_RULE,"paragraph 163",False
 REQ-R0C-01381,SCR-WEB-400,5,WEAK,BUSINESS_REQUIREMENT,"paragraph 166",False
-REQ-R0C-01382,SCR-VIR-720,6,STRONG,USER_ACTION,"paragraph 167",False
-REQ-R0C-01383,SCR-WEB-130,3,WEAK,BUSINESS_REQUIREMENT,"paragraph 170",False
-REQ-R0C-01384,SCR-ADM-070,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 171",False
-REQ-R0C-01385,SCR-WEB-130,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 180",False
+REQ-R0C-01382,SCR-IPAD-650,8,STRONG,USER_ACTION,"paragraph 167",False
+REQ-R0C-01383,SCR-IPAD-600,7,STRONG,BUSINESS_REQUIREMENT,"paragraph 170",False
+REQ-R0C-01384,SCR-IPAD-610,5,WEAK,BUSINESS_REQUIREMENT,"paragraph 171",False
+REQ-R0C-01385,SCR-IPAD-610,5,WEAK,BUSINESS_REQUIREMENT,"paragraph 180",False
 REQ-R0C-01386,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 182",False
 REQ-R0C-01387,SCR-ADM-001,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 184",False
 REQ-R0C-01388,SCR-WEB-150,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 188",False
@@ -953,21 +1229,21 @@ REQ-R0C-01393,SCR-WEB-130,11,STRONG,BUSINESS_REQUIREMENT,"paragraph 204",False
 REQ-R0C-01394,SCR-WEB-120,8,STRONG,BUSINESS_RULE,"paragraph 205",False
 REQ-R0C-01395,SCR-WEB-120,10,STRONG,USER_ACTION,"paragraph 210",False
 REQ-R0C-01396,SCR-WEB-100,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 211",False
-REQ-R0C-01397,SCR-ADM-031,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 213",False
-REQ-R0C-01398,SCR-ADM-031,4,WEAK,USER_ACTION,"paragraph 218",False
+REQ-R0C-01397,SCR-IPAD-610,5,WEAK,BUSINESS_REQUIREMENT,"paragraph 213",False
+REQ-R0C-01398,SCR-IPAD-650,10,STRONG,USER_ACTION,"paragraph 218",False
 REQ-R0C-01399,SCR-ADM-020,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 219",False
 REQ-R0C-01400,SCR-WEB-130,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 220",False
-REQ-R0C-01401,SCR-ADM-031,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 223",False
-REQ-R0C-01402,SCR-ADM-031,4,WEAK,USER_ACTION,"paragraph 228",False
+REQ-R0C-01401,SCR-IPAD-610,5,WEAK,BUSINESS_REQUIREMENT,"paragraph 223",False
+REQ-R0C-01402,SCR-IPAD-650,10,STRONG,USER_ACTION,"paragraph 228",False
 REQ-R0C-01403,SCR-ADM-020,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 229",False
 REQ-R0C-01404,SCR-WEB-130,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 230",False
 REQ-R0C-01405,SCR-WEB-400,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 237",False
 REQ-R0C-01406,SCR-WEB-130,12,STRONG,BUSINESS_REQUIREMENT,"paragraph 238",False
 REQ-R0C-01407,SCR-ADM-020,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 243",False
 REQ-R0C-01408,SCR-WEB-150,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 247",False
-REQ-R0C-01409,SCR-ADM-051,4,WEAK,USER_ACTION,"paragraph 248",False
+REQ-R0C-01409,SCR-IPAD-650,8,STRONG,USER_ACTION,"paragraph 248",False
 REQ-R0C-01410,SCR-WEB-150,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 259",False
-REQ-R0C-01411,SCR-ADM-051,4,WEAK,USER_ACTION,"paragraph 272",False
+REQ-R0C-01411,SCR-IPAD-650,8,STRONG,USER_ACTION,"paragraph 272",False
 REQ-R0C-01412,SCR-WEB-130,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 294",False
 REQ-R0C-01413,SCR-WEB-130,11,STRONG,BUSINESS_REQUIREMENT,"paragraph 297",False
 REQ-R0C-01414,SCR-WEB-400,5,WEAK,BUSINESS_REQUIREMENT,"paragraph 298",False
@@ -975,23 +1251,23 @@ REQ-R0C-01415,SCR-WEB-130,11,STRONG,BUSINESS_REQUIREMENT,"paragraph 299",False
 REQ-R0C-01416,SCR-WEB-400,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 301",False
 REQ-R0C-01417,SCR-WEB-130,11,STRONG,BUSINESS_REQUIREMENT,"paragraph 303",False
 REQ-R0C-01418,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 307",False
-REQ-R0C-01419,SCR-WEB-130,3,WEAK,BUSINESS_REQUIREMENT,"paragraph 328",False
+REQ-R0C-01419,SCR-IPAD-610,5,WEAK,BUSINESS_REQUIREMENT,"paragraph 328",False
 REQ-R0C-01420,SCR-WEB-130,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 341",False
 REQ-R0C-01421,SCR-WEB-130,11,STRONG,BUSINESS_REQUIREMENT,"paragraph 356",False
 REQ-R0C-01422,SCR-WEB-100,12,STRONG,BUSINESS_REQUIREMENT,"paragraph 357",False
 REQ-R0C-01423,SCR-WEB-100,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 358",False
 REQ-R0C-01424,SCR-WEB-200,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 362",False
-REQ-R0C-01425,SCR-WEB-200,8,STRONG,USER_ACTION,"paragraph 363",False
+REQ-R0C-01425,SCR-IPAD-650,10,STRONG,USER_ACTION,"paragraph 363",False
 REQ-R0C-01426,SCR-WEB-110,8,STRONG,BUSINESS_RULE,"paragraph 364",False
 REQ-R0C-01427,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 365",False
 REQ-R0C-01428,SCR-WEB-100,8,STRONG,BUSINESS_RULE,"paragraph 366",False
 REQ-R0C-01429,SCR-WEB-130,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 369",False
-REQ-R0C-01430,SCR-WEB-130,3,WEAK,BUSINESS_REQUIREMENT,"paragraph 370",False
-REQ-R0C-01431,SCR-WEB-300,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 371",False
-REQ-R0C-01432,SCR-WEB-150,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 374",False
+REQ-R0C-01430,SCR-IPAD-600,7,STRONG,BUSINESS_REQUIREMENT,"paragraph 370",False
+REQ-R0C-01431,SCR-IPAD-600,7,STRONG,BUSINESS_REQUIREMENT,"paragraph 371",False
+REQ-R0C-01432,SCR-IPAD-670,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 374",False
 REQ-R0C-01433,SCR-WEB-150,4,WEAK,BUSINESS_RULE,"paragraph 378",False
 REQ-R0C-01434,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 379",False
-REQ-R0C-01435,SCR-ADM-001,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 383",False
+REQ-R0C-01435,SCR-IPAD-600,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 383",False
 REQ-R0C-01436,SCR-WEB-200,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 385",False
 REQ-R0C-01437,SCR-WEB-130,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 387",False
 REQ-R0C-01438,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 389",False
@@ -1006,8 +1282,8 @@ REQ-R0C-01446,SCR-WEB-130,18,STRONG,BUSINESS_REQUIREMENT,"table 1, row 3, cell 1
 REQ-R0C-01447,SCR-WEB-130,12,STRONG,USER_ACTION,"table 1, row 3, cell 2",False
 REQ-R0C-01448,SCR-WEB-120,14,STRONG,BUSINESS_REQUIREMENT,"table 1, row 4, cell 1",False
 REQ-R0C-01449,SCR-WEB-120,14,STRONG,BUSINESS_REQUIREMENT,"table 1, row 5, cell 1",False
-REQ-R0C-01450,SCR-WEB-120,8,STRONG,USER_ACTION,"table 1, row 6, cell 2",False
-REQ-R0C-01451,SCR-WEB-150,4,WEAK,BUSINESS_REQUIREMENT,"table 2, row 2, cell 2",False
+REQ-R0C-01450,SCR-IPAD-670,10,STRONG,USER_ACTION,"table 1, row 6, cell 2",False
+REQ-R0C-01451,SCR-IPAD-600,6,STRONG,BUSINESS_REQUIREMENT,"table 2, row 2, cell 2",False
 REQ-R0C-01452,SCR-WEB-120,30,STRONG,BUSINESS_RULE,"table 4, row 4, cell 1",False
 REQ-R0C-01453,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 6, row 12, cell 2",False
 REQ-R0C-01454,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 6, row 13, cell 2",False
@@ -1022,42 +1298,42 @@ REQ-R0C-01462,SCR-WEB-400,8,STRONG,BUSINESS_REQUIREMENT,"table 14, row 8, cell 2
 REQ-R0C-01463,SCR-WEB-120,14,STRONG,BUSINESS_REQUIREMENT,"table 15, row 3, cell 2",False
 REQ-R0C-01464,SCR-WEB-130,14,STRONG,BUSINESS_REQUIREMENT,"table 15, row 7, cell 2",False
 REQ-R0C-01465,SCR-WEB-130,9,STRONG,USER_ACTION,"table 16, row 3, cell 3",False
-REQ-R0C-01466,SCR-ADM-030,8,STRONG,USER_ACTION,"table 17, row 2, cell 4",False
+REQ-R0C-01466,SCR-IPAD-600,9,STRONG,USER_ACTION,"table 17, row 2, cell 4",False
 REQ-R0C-01467,SCR-ADM-010,13,STRONG,BUSINESS_REQUIREMENT,"paragraph 14",False
-REQ-R0C-01468,SCR-WEB-210,17,STRONG,BUSINESS_REQUIREMENT,"paragraph 22",False
-REQ-R0C-01469,SCR-WEB-130,9,STRONG,USER_ACTION,"paragraph 23",False
+REQ-R0C-01468,SCR-IPAD-610,21,STRONG,BUSINESS_REQUIREMENT,"paragraph 22",False
+REQ-R0C-01469,SCR-IPAD-610,11,STRONG,USER_ACTION,"paragraph 23",False
 REQ-R0C-01470,SCR-WEB-120,19,STRONG,USER_ACTION,"paragraph 25",False
 REQ-R0C-01471,SCR-WEB-130,7,STRONG,BUSINESS_REQUIREMENT,"paragraph 32",False
 REQ-R0C-01472,SCR-ADM-030,12,STRONG,USER_ACTION,"paragraph 33",False
 REQ-R0C-01473,SCR-WEB-140,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 35",False
 REQ-R0C-01474,SCR-WEB-150,18,STRONG,USER_ACTION,"paragraph 44",False
-REQ-R0C-01475,SCR-VIR-720,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 50",False
+REQ-R0C-01475,SCR-IPAD-600,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 50",False
 REQ-R0C-01476,SCR-WEB-400,22,STRONG,BUSINESS_REQUIREMENT,"paragraph 57",False
 REQ-R0C-01477,SCR-WEB-130,14,STRONG,BUSINESS_REQUIREMENT,"paragraph 66",False
 REQ-R0C-01478,SCR-ADM-051,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 67",False
-REQ-R0C-01479,SCR-WEB-130,3,WEAK,BUSINESS_REQUIREMENT,"paragraph 69",False
+REQ-R0C-01479,SCR-IPAD-660,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 69",False
 REQ-R0C-01480,SCR-ADM-001,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 70",False
 REQ-R0C-01481,SCR-ADM-030,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 81",False
-REQ-R0C-01482,SCR-ADM-031,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 82",False
+REQ-R0C-01482,SCR-IPAD-620,7,STRONG,BUSINESS_REQUIREMENT,"paragraph 82",False
 REQ-R0C-01483,SCR-ADM-031,21,STRONG,BUSINESS_REQUIREMENT,"paragraph 89",False
-REQ-R0C-01484,SCR-WEB-130,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 96",False
-REQ-R0C-01485,SCR-WEB-500,9,STRONG,USER_ACTION,"paragraph 100",False
+REQ-R0C-01484,SCR-IPAD-620,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 96",False
+REQ-R0C-01485,SCR-IPAD-620,10,STRONG,USER_ACTION,"paragraph 100",False
 REQ-R0C-01486,SCR-WEB-120,14,STRONG,BUSINESS_REQUIREMENT,"paragraph 108",False
 REQ-R0C-01487,SCR-ADM-001,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 111",False
 REQ-R0C-01488,SCR-WEB-500,11,STRONG,USER_ACTION,"paragraph 112",False
 REQ-R0C-01489,SCR-WEB-130,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 113",False
-REQ-R0C-01490,SCR-WEB-130,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 119",False
-REQ-R0C-01491,SCR-ADM-020,2,WEAK,BUSINESS_RULE,"paragraph 121",False
+REQ-R0C-01490,SCR-IPAD-620,16,STRONG,BUSINESS_REQUIREMENT,"paragraph 119",False
+REQ-R0C-01491,SCR-IPAD-620,6,STRONG,BUSINESS_RULE,"paragraph 121",False
 REQ-R0C-01492,SCR-WEB-120,18,STRONG,USER_ACTION,"paragraph 129",False
-REQ-R0C-01493,SCR-ADM-070,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 136",False
+REQ-R0C-01493,SCR-IPAD-640,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 136",False
 REQ-R0C-01494,SCR-WEB-500,9,STRONG,USER_ACTION,"paragraph 138",False
-REQ-R0C-01495,SCR-ADM-020,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 139",False
-REQ-R0C-01496,SCR-WEB-130,3,WEAK,BUSINESS_REQUIREMENT,"paragraph 143",False
+REQ-R0C-01495,SCR-IPAD-650,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 139",False
+REQ-R0C-01496,SCR-IPAD-610,5,WEAK,BUSINESS_REQUIREMENT,"paragraph 143",False
 REQ-R0C-01497,SCR-WEB-120,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 144",False
 REQ-R0C-01498,SCR-WEB-400,11,STRONG,BUSINESS_RULE,"paragraph 146",False
-REQ-R0C-01499,SCR-VIR-720,9,STRONG,USER_ACTION,"paragraph 147",False
+REQ-R0C-01499,SCR-IPAD-650,11,STRONG,USER_ACTION,"paragraph 147",False
 REQ-R0C-01500,SCR-VIR-720,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 155",False
-REQ-R0C-01501,SCR-WEB-500,9,STRONG,USER_ACTION,"paragraph 159",False
+REQ-R0C-01501,SCR-IPAD-650,10,STRONG,USER_ACTION,"paragraph 159",False
 REQ-R0C-01502,SCR-WEB-400,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 165",False
 REQ-R0C-01503,SCR-ADM-031,13,STRONG,USER_ACTION,"paragraph 171",False
 REQ-R0C-01504,SCR-WEB-120,14,STRONG,BUSINESS_RULE,"paragraph 173",False
@@ -1066,32 +1342,32 @@ REQ-R0C-01506,SCR-ADM-010,15,STRONG,USER_ACTION,"paragraph 178",False
 REQ-R0C-01507,SCR-ADM-020,20,STRONG,BUSINESS_REQUIREMENT,"paragraph 180",False
 REQ-R0C-01508,SCR-ADM-020,17,STRONG,BUSINESS_REQUIREMENT,"paragraph 186",False
 REQ-R0C-01509,SCR-VIR-720,13,STRONG,BUSINESS_REQUIREMENT,"paragraph 190",False
-REQ-R0C-01510,SCR-VIR-720,13,STRONG,BUSINESS_REQUIREMENT,"paragraph 194",False
+REQ-R0C-01510,SCR-IPAD-640,17,STRONG,BUSINESS_REQUIREMENT,"paragraph 194",False
 REQ-R0C-01511,SCR-ADM-020,17,STRONG,BUSINESS_RULE,"paragraph 196",False
 REQ-R0C-01512,SCR-ADM-020,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 198",False
-REQ-R0C-01513,SCR-VIR-720,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 199",False
+REQ-R0C-01513,SCR-IPAD-640,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 199",False
 REQ-R0C-01514,SCR-VIR-720,12,STRONG,BUSINESS_REQUIREMENT,"paragraph 203",False
-REQ-R0C-01515,SCR-VIR-720,13,STRONG,BUSINESS_RULE,"paragraph 207",False
-REQ-R0C-01516,SCR-ADM-041,14,STRONG,BUSINESS_RULE,"paragraph 214",False
-REQ-R0C-01517,SCR-ADM-031,15,STRONG,USER_ACTION,"paragraph 224",False
+REQ-R0C-01515,SCR-IPAD-640,15,STRONG,BUSINESS_RULE,"paragraph 207",False
+REQ-R0C-01516,SCR-IPAD-650,23,STRONG,BUSINESS_RULE,"paragraph 214",False
+REQ-R0C-01517,SCR-IPAD-650,17,STRONG,USER_ACTION,"paragraph 224",False
 REQ-R0C-01518,SCR-ADM-031,21,STRONG,USER_ACTION,"paragraph 230",False
 REQ-R0C-01519,SCR-VIR-720,12,STRONG,BUSINESS_RULE,"paragraph 232",False
-REQ-R0C-01520,SCR-ADM-031,19,STRONG,USER_ACTION,"paragraph 241",False
-REQ-R0C-01521,SCR-ADM-001,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 244",False
+REQ-R0C-01520,SCR-IPAD-650,21,STRONG,USER_ACTION,"paragraph 241",False
+REQ-R0C-01521,SCR-IPAD-660,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 244",False
 REQ-R0C-01522,SCR-VIR-720,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 246",False
 REQ-R0C-01523,SCR-ADM-030,13,STRONG,BUSINESS_REQUIREMENT,"paragraph 248",False
-REQ-R0C-01524,SCR-WEB-400,9,STRONG,USER_ACTION,"paragraph 251",False
+REQ-R0C-01524,SCR-IPAD-650,10,STRONG,USER_ACTION,"paragraph 251",False
 REQ-R0C-01525,SCR-WEB-130,7,STRONG,BUSINESS_REQUIREMENT,"paragraph 252",False
-REQ-R0C-01526,SCR-ADM-031,4,WEAK,USER_ACTION,"paragraph 254",False
+REQ-R0C-01526,SCR-IPAD-650,11,STRONG,USER_ACTION,"paragraph 254",False
 REQ-R0C-01527,SCR-WEB-400,11,STRONG,BUSINESS_REQUIREMENT,"paragraph 256",False
 REQ-R0C-01528,SCR-VIR-720,13,STRONG,BUSINESS_RULE,"paragraph 259",False
 REQ-R0C-01529,SCR-WEB-310,12,STRONG,BUSINESS_REQUIREMENT,"paragraph 261",False
-REQ-R0C-01530,SCR-WEB-200,8,STRONG,USER_ACTION,"paragraph 266",False
+REQ-R0C-01530,SCR-IPAD-600,13,STRONG,USER_ACTION,"paragraph 266",False
 REQ-R0C-01531,SCR-WEB-210,21,STRONG,USER_ACTION,"paragraph 268",False
 REQ-R0C-01532,SCR-VIR-720,12,STRONG,BUSINESS_RULE,"paragraph 270",False
 REQ-R0C-01533,SCR-ADM-041,21,STRONG,BUSINESS_RULE,"paragraph 272",False
-REQ-R0C-01534,SCR-ADM-020,6,STRONG,USER_ACTION,"paragraph 278",False
-REQ-R0C-01535,SCR-ADM-011,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 281",False
+REQ-R0C-01534,SCR-IPAD-650,8,STRONG,USER_ACTION,"paragraph 278",False
+REQ-R0C-01535,SCR-IPAD-610,5,WEAK,BUSINESS_REQUIREMENT,"paragraph 281",False
 REQ-R0C-01536,SCR-ADM-050,9,STRONG,BUSINESS_REQUIREMENT,"paragraph 287",False
 REQ-R0C-01537,SCR-VIR-720,19,STRONG,BUSINESS_REQUIREMENT,"paragraph 297",False
 REQ-R0C-01538,SCR-WEB-400,9,STRONG,BUSINESS_REQUIREMENT,"paragraph 301",False
@@ -1099,10 +1375,10 @@ REQ-R0C-01539,SCR-VIR-720,10,STRONG,BUSINESS_RULE,"paragraph 303",False
 REQ-R0C-01540,SCR-WEB-140,20,STRONG,BUSINESS_REQUIREMENT,"paragraph 305",False
 REQ-R0C-01541,SCR-VIR-720,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 307",False
 REQ-R0C-01542,SCR-ADM-030,12,STRONG,BUSINESS_REQUIREMENT,"paragraph 309",False
-REQ-R0C-01543,SCR-WEB-500,9,STRONG,USER_ACTION,"paragraph 310",False
+REQ-R0C-01543,SCR-IPAD-650,10,STRONG,USER_ACTION,"paragraph 310",False
 REQ-R0C-01544,SCR-VIR-720,27,STRONG,BUSINESS_REQUIREMENT,"paragraph 312",False
 REQ-R0C-01545,SCR-ADM-020,10,STRONG,BUSINESS_RULE,"paragraph 313",False
-REQ-R0C-01546,SCR-VIR-720,12,STRONG,BUSINESS_RULE,"paragraph 315",False
+REQ-R0C-01546,SCR-IPAD-620,15,STRONG,BUSINESS_RULE,"paragraph 315",False
 REQ-R0C-01547,SCR-VIR-700,16,STRONG,BUSINESS_REQUIREMENT,"paragraph 317",False
 REQ-R0C-01548,SCR-WEB-130,19,STRONG,BUSINESS_REQUIREMENT,"paragraph 319",False
 REQ-R0C-01549,SCR-ADM-030,14,STRONG,USER_ACTION,"paragraph 321",False
@@ -1110,16 +1386,16 @@ REQ-R0C-01550,SCR-ADM-060,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 326",False
 REQ-R0C-01551,SCR-ADM-011,5,WEAK,BUSINESS_REQUIREMENT,"paragraph 327",False
 REQ-R0C-01552,SCR-WEB-150,18,STRONG,USER_ACTION,"paragraph 333",False
 REQ-R0C-01553,SCR-VIR-720,11,STRONG,BUSINESS_REQUIREMENT,"paragraph 339",False
-REQ-R0C-01554,SCR-VIR-720,7,STRONG,BUSINESS_REQUIREMENT,"table 2, row 9, cell 4",False
+REQ-R0C-01554,SCR-IPAD-670,13,STRONG,BUSINESS_REQUIREMENT,"table 2, row 9, cell 4",False
 REQ-R0C-01555,SCR-WEB-130,10,STRONG,BUSINESS_REQUIREMENT,"table 4, row 2, cell 2",False
-REQ-R0C-01556,SCR-ADM-031,4,WEAK,USER_ACTION,"table 4, row 5, cell 2",False
+REQ-R0C-01556,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 4, row 5, cell 2",False
 REQ-R0C-01557,SCR-ADM-030,13,STRONG,BUSINESS_REQUIREMENT,"table 5, row 2, cell 2",False
 REQ-R0C-01558,SCR-ADM-031,13,STRONG,BUSINESS_RULE,"table 5, row 5, cell 2",False
-REQ-R0C-01559,SCR-ADM-030,10,STRONG,USER_ACTION,"table 5, row 8, cell 2",False
+REQ-R0C-01559,SCR-IPAD-610,13,STRONG,USER_ACTION,"table 5, row 8, cell 2",False
 REQ-R0C-01560,SCR-WEB-120,14,STRONG,BUSINESS_REQUIREMENT,"table 6, row 4, cell 1",False
-REQ-R0C-01561,SCR-ADM-020,2,WEAK,BUSINESS_RULE,"table 8, row 2, cell 2",False
+REQ-R0C-01561,SCR-IPAD-620,6,STRONG,BUSINESS_RULE,"table 8, row 2, cell 2",False
 REQ-R0C-01562,SCR-ADM-020,4,WEAK,BUSINESS_RULE,"table 8, row 3, cell 2",False
-REQ-R0C-01563,SCR-VIR-720,10,STRONG,BUSINESS_RULE,"table 8, row 6, cell 2",False
+REQ-R0C-01563,SCR-IPAD-620,10,STRONG,BUSINESS_RULE,"table 8, row 6, cell 2",False
 REQ-R0C-01564,SCR-VIR-720,7,STRONG,BUSINESS_REQUIREMENT,"table 10, row 5, cell 2",False
 REQ-R0C-01565,SCR-ADM-020,6,STRONG,BUSINESS_RULE,"table 11, row 3, cell 2",False
 REQ-R0C-01566,SCR-WEB-120,8,STRONG,BUSINESS_RULE,"table 11, row 4, cell 2",False
@@ -1127,14 +1403,14 @@ REQ-R0C-01567,SCR-WEB-120,18,STRONG,BUSINESS_RULE,"table 13, row 2, cell 2",Fals
 REQ-R0C-01568,SCR-ADM-030,6,STRONG,BUSINESS_REQUIREMENT,"table 13, row 4, cell 2",False
 REQ-R0C-01569,SCR-WEB-310,6,STRONG,BUSINESS_REQUIREMENT,"table 13, row 5, cell 2",False
 REQ-R0C-01570,SCR-ADM-040,3,WEAK,BUSINESS_REQUIREMENT,"table 14, row 4, cell 2",False
-REQ-R0C-01571,SCR-ADM-020,13,STRONG,USER_ACTION,"table 15, row 4, cell 2",False
+REQ-R0C-01571,SCR-IPAD-650,14,STRONG,USER_ACTION,"table 15, row 4, cell 2",False
 REQ-R0C-01572,SCR-WEB-400,10,STRONG,USER_ACTION,"table 15, row 5, cell 2",False
-REQ-R0C-01573,SCR-WEB-130,3,WEAK,BUSINESS_REQUIREMENT,"table 18, row 4, cell 2",False
+REQ-R0C-01573,SCR-IPAD-610,5,WEAK,BUSINESS_REQUIREMENT,"table 18, row 4, cell 2",False
 REQ-R0C-01574,SCR-ADM-020,2,WEAK,BUSINESS_REQUIREMENT,"table 18, row 5, cell 2",False
 REQ-R0C-01575,SCR-WEB-130,11,STRONG,BUSINESS_REQUIREMENT,"table 18, row 7, cell 2",False
-REQ-R0C-01576,SCR-ADM-031,4,WEAK,USER_ACTION,"table 18, row 8, cell 2",False
+REQ-R0C-01576,SCR-IPAD-650,9,STRONG,USER_ACTION,"table 18, row 8, cell 2",False
 REQ-R0C-01577,SCR-WEB-120,8,STRONG,BUSINESS_RULE,"table 18, row 12, cell 2",False
-REQ-R0C-01578,SCR-WEB-400,12,STRONG,USER_ACTION,"table 21, row 10, cell 6",False
+REQ-R0C-01578,SCR-IPAD-650,20,STRONG,USER_ACTION,"table 21, row 10, cell 6",False
 REQ-R0C-01579,SCR-WEB-400,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 6",False
 REQ-R0C-01580,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 9",False
 REQ-R0C-01581,SCR-ADM-020,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 12",False
@@ -1147,7 +1423,7 @@ REQ-R0C-01587,SCR-WEB-210,10,STRONG,USER_ACTION,"paragraph 78",False
 REQ-R0C-01588,SCR-WEB-400,8,STRONG,USER_ACTION,"paragraph 84",False
 REQ-R0C-01589,SCR-VIR-720,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 98",False
 REQ-R0C-01590,SCR-WEB-120,6,STRONG,BUSINESS_RULE,"paragraph 104",False
-REQ-R0C-01591,SCR-WEB-400,7,STRONG,USER_ACTION,"paragraph 107",False
+REQ-R0C-01591,SCR-IPAD-650,8,STRONG,USER_ACTION,"paragraph 107",False
 REQ-R0C-01592,SCR-ADM-020,2,WEAK,BUSINESS_RULE,"paragraph 111",False
 REQ-R0C-01593,SCR-ADM-051,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 113",False
 REQ-R0C-01594,SCR-WEB-120,6,STRONG,BUSINESS_RULE,"paragraph 116",False
@@ -1156,7 +1432,7 @@ REQ-R0C-01596,SCR-ADM-060,9,STRONG,BUSINESS_REQUIREMENT,"table 1, row 6, cell 2"
 REQ-R0C-01597,SCR-ADM-040,5,WEAK,BUSINESS_REQUIREMENT,"table 1, row 7, cell 2",False
 REQ-R0C-01598,SCR-ADM-001,2,WEAK,BUSINESS_RULE,"table 1, row 9, cell 2",False
 REQ-R0C-01599,SCR-ADM-041,4,WEAK,BUSINESS_RULE,"table 1, row 13, cell 2",False
-REQ-R0C-01600,SCR-WEB-400,6,STRONG,USER_ACTION,"table 2, row 2, cell 2",False
+REQ-R0C-01600,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 2, row 2, cell 2",False
 REQ-R0C-01601,SCR-WEB-400,8,STRONG,BUSINESS_REQUIREMENT,"table 4, row 2, cell 1",False
 REQ-R0C-01602,SCR-WEB-400,8,STRONG,BUSINESS_REQUIREMENT,"table 4, row 2, cell 2",False
 REQ-R0C-01603,SCR-WEB-400,10,STRONG,BUSINESS_REQUIREMENT,"table 4, row 3, cell 2",False
@@ -1220,8 +1496,8 @@ REQ-R0C-01660,SCR-ADM-020,11,STRONG,BUSINESS_REQUIREMENT,"paragraph 126",False
 REQ-R0C-01661,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 128",False
 REQ-R0C-01662,SCR-VIR-720,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 131",False
 REQ-R0C-01663,SCR-ADM-020,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 132",False
-REQ-R0C-01664,SCR-VIR-720,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 133",False
-REQ-R0C-01665,SCR-ADM-020,10,STRONG,BUSINESS_RULE,"paragraph 136",False
+REQ-R0C-01664,SCR-IPAD-640,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 133",False
+REQ-R0C-01665,SCR-IPAD-650,16,STRONG,BUSINESS_RULE,"paragraph 136",False
 REQ-R0C-01666,SCR-ADM-060,7,STRONG,BUSINESS_REQUIREMENT,"paragraph 137",False
 REQ-R0C-01667,SCR-WEB-130,3,WEAK,BUSINESS_REQUIREMENT,"paragraph 138",False
 REQ-R0C-01668,SCR-ADM-020,15,STRONG,USER_ACTION,"paragraph 140",False
@@ -1232,14 +1508,14 @@ REQ-R0C-01672,SCR-ADM-020,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 148",False
 REQ-R0C-01673,SCR-ADM-060,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 149",False
 REQ-R0C-01674,SCR-ADM-020,12,STRONG,BUSINESS_REQUIREMENT,"paragraph 160",False
 REQ-R0C-01675,SCR-ADM-020,17,STRONG,BUSINESS_RULE,"paragraph 161",False
-REQ-R0C-01676,SCR-ADM-020,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 164",False
+REQ-R0C-01676,SCR-IPAD-640,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 164",False
 REQ-R0C-01677,SCR-VIR-720,12,STRONG,BUSINESS_REQUIREMENT,"paragraph 165",False
 REQ-R0C-01678,SCR-ADM-020,12,STRONG,USER_ACTION,"paragraph 166",False
 REQ-R0C-01679,SCR-ADM-040,7,STRONG,BUSINESS_REQUIREMENT,"paragraph 171",False
 REQ-R0C-01680,SCR-ADM-020,14,STRONG,USER_ACTION,"paragraph 172",False
 REQ-R0C-01681,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 177",False
-REQ-R0C-01682,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 178",False
-REQ-R0C-01683,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"paragraph 181",False
+REQ-R0C-01682,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 178",False
+REQ-R0C-01683,SCR-IPAD-650,12,STRONG,BUSINESS_REQUIREMENT,"paragraph 181",False
 REQ-R0C-01684,SCR-ADM-060,7,STRONG,BUSINESS_REQUIREMENT,"paragraph 182",False
 REQ-R0C-01685,SCR-WEB-130,3,WEAK,BUSINESS_REQUIREMENT,"paragraph 183",False
 REQ-R0C-01686,SCR-ADM-020,16,STRONG,BUSINESS_REQUIREMENT,"paragraph 184",False
@@ -1259,12 +1535,12 @@ REQ-R0C-01699,SCR-ADM-020,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 300",False
 REQ-R0C-01700,SCR-WEB-400,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 320",False
 REQ-R0C-01701,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 331",False
 REQ-R0C-01702,SCR-ADM-040,13,STRONG,BUSINESS_REQUIREMENT,"paragraph 352",False
-REQ-R0C-01703,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"paragraph 360",False
+REQ-R0C-01703,SCR-IPAD-650,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 360",False
 REQ-R0C-01704,SCR-ADM-001,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 363",False
 REQ-R0C-01705,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 385",False
 REQ-R0C-01706,SCR-ADM-041,11,STRONG,BUSINESS_REQUIREMENT,"paragraph 395",False
 REQ-R0C-01707,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 397",False
-REQ-R0C-01708,SCR-ADM-040,8,STRONG,USER_ACTION,"paragraph 404",False
+REQ-R0C-01708,SCR-IPAD-650,12,STRONG,USER_ACTION,"paragraph 404",False
 REQ-R0C-01709,SCR-ADM-060,7,STRONG,BUSINESS_REQUIREMENT,"paragraph 415",False
 REQ-R0C-01710,SCR-ADM-041,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 416",False
 REQ-R0C-01711,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 417",False
@@ -1276,8 +1552,8 @@ REQ-R0C-01716,SCR-ADM-041,11,STRONG,BUSINESS_REQUIREMENT,"paragraph 426",False
 REQ-R0C-01717,SCR-ADM-041,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 429",False
 REQ-R0C-01718,SCR-ADM-080,5,WEAK,BUSINESS_REQUIREMENT,"paragraph 432",False
 REQ-R0C-01719,SCR-ADM-041,10,STRONG,USER_ACTION,"paragraph 433",False
-REQ-R0C-01720,SCR-ADM-051,4,WEAK,USER_ACTION,"paragraph 434",False
-REQ-R0C-01721,SCR-WEB-130,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 435",False
+REQ-R0C-01720,SCR-IPAD-650,8,STRONG,USER_ACTION,"paragraph 434",False
+REQ-R0C-01721,SCR-IPAD-660,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 435",False
 REQ-R0C-01722,SCR-ADM-041,9,STRONG,BUSINESS_REQUIREMENT,"paragraph 436",False
 REQ-R0C-01723,SCR-ADM-041,9,STRONG,BUSINESS_REQUIREMENT,"paragraph 438",False
 REQ-R0C-01724,SCR-ADM-041,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 439",False
@@ -1286,8 +1562,8 @@ REQ-R0C-01726,SCR-ADM-041,12,STRONG,BUSINESS_REQUIREMENT,"paragraph 448",False
 REQ-R0C-01727,SCR-ADM-040,7,STRONG,BUSINESS_REQUIREMENT,"paragraph 453",False
 REQ-R0C-01728,SCR-ADM-020,14,STRONG,USER_ACTION,"paragraph 454",False
 REQ-R0C-01729,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 459",False
-REQ-R0C-01730,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 460",False
-REQ-R0C-01731,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"paragraph 463",False
+REQ-R0C-01730,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 460",False
+REQ-R0C-01731,SCR-IPAD-650,12,STRONG,BUSINESS_REQUIREMENT,"paragraph 463",False
 REQ-R0C-01732,SCR-ADM-060,7,STRONG,BUSINESS_REQUIREMENT,"paragraph 464",False
 REQ-R0C-01733,SCR-WEB-130,3,WEAK,BUSINESS_REQUIREMENT,"paragraph 465",False
 REQ-R0C-01734,SCR-ADM-020,16,STRONG,BUSINESS_REQUIREMENT,"paragraph 468",False
@@ -1304,7 +1580,7 @@ REQ-R0C-01744,SCR-ADM-020,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 548",False
 REQ-R0C-01745,SCR-WEB-400,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 568",False
 REQ-R0C-01746,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 579",False
 REQ-R0C-01747,SCR-ADM-040,13,STRONG,BUSINESS_REQUIREMENT,"paragraph 600",False
-REQ-R0C-01748,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"paragraph 608",False
+REQ-R0C-01748,SCR-IPAD-650,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 608",False
 REQ-R0C-01749,SCR-ADM-001,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 611",False
 REQ-R0C-01750,SCR-ADM-040,12,STRONG,BUSINESS_REQUIREMENT,"paragraph 612",False
 REQ-R0C-01751,SCR-ADM-040,11,STRONG,BUSINESS_REQUIREMENT,"paragraph 647",False
@@ -1323,7 +1599,7 @@ REQ-R0C-01763,SCR-WEB-130,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 853",False
 REQ-R0C-01764,SCR-WEB-400,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 857",False
 REQ-R0C-01765,SCR-ADM-041,11,STRONG,BUSINESS_REQUIREMENT,"paragraph 877",False
 REQ-R0C-01766,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 879",False
-REQ-R0C-01767,SCR-ADM-040,8,STRONG,USER_ACTION,"paragraph 886",False
+REQ-R0C-01767,SCR-IPAD-650,12,STRONG,USER_ACTION,"paragraph 886",False
 REQ-R0C-01768,SCR-ADM-060,7,STRONG,BUSINESS_REQUIREMENT,"paragraph 897",False
 REQ-R0C-01769,SCR-ADM-041,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 898",False
 REQ-R0C-01770,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 901",False
@@ -1335,8 +1611,8 @@ REQ-R0C-01775,SCR-ADM-041,11,STRONG,BUSINESS_REQUIREMENT,"paragraph 911",False
 REQ-R0C-01776,SCR-ADM-041,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 914",False
 REQ-R0C-01777,SCR-ADM-080,5,WEAK,BUSINESS_REQUIREMENT,"paragraph 917",False
 REQ-R0C-01778,SCR-ADM-041,10,STRONG,USER_ACTION,"paragraph 918",False
-REQ-R0C-01779,SCR-ADM-051,4,WEAK,USER_ACTION,"paragraph 919",False
-REQ-R0C-01780,SCR-WEB-130,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 920",False
+REQ-R0C-01779,SCR-IPAD-650,8,STRONG,USER_ACTION,"paragraph 919",False
+REQ-R0C-01780,SCR-IPAD-660,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 920",False
 REQ-R0C-01781,SCR-ADM-041,9,STRONG,BUSINESS_REQUIREMENT,"paragraph 921",False
 REQ-R0C-01782,SCR-ADM-041,9,STRONG,BUSINESS_REQUIREMENT,"paragraph 924",False
 REQ-R0C-01783,SCR-ADM-041,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 925",False
@@ -1352,35 +1628,35 @@ REQ-R0C-01792,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 979",False
 REQ-R0C-01793,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 991",False
 REQ-R0C-01794,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 992",False
 REQ-R0C-01795,SCR-ADM-040,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1008",False
-REQ-R0C-01796,SCR-ADM-040,10,STRONG,USER_ACTION,"paragraph 1017",False
+REQ-R0C-01796,SCR-IPAD-650,17,STRONG,USER_ACTION,"paragraph 1017",False
 REQ-R0C-01797,SCR-ADM-041,10,STRONG,BUSINESS_RULE,"paragraph 1043",False
 REQ-R0C-01798,SCR-ADM-041,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 1044",False
 REQ-R0C-01799,SCR-ADM-041,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 1047",False
-REQ-R0C-01800,SCR-ADM-041,12,STRONG,USER_ACTION,"paragraph 1066",False
-REQ-R0C-01801,SCR-ADM-031,6,STRONG,USER_ACTION,"paragraph 1069",False
+REQ-R0C-01800,SCR-IPAD-650,16,STRONG,USER_ACTION,"paragraph 1066",False
+REQ-R0C-01801,SCR-IPAD-650,10,STRONG,USER_ACTION,"paragraph 1069",False
 REQ-R0C-01802,SCR-ADM-041,10,STRONG,USER_ACTION,"paragraph 1070",False
-REQ-R0C-01803,SCR-VIR-720,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 1082",False
+REQ-R0C-01803,SCR-IPAD-620,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 1082",False
 REQ-R0C-01804,SCR-WEB-140,6,STRONG,BUSINESS_RULE,"paragraph 1088",False
 REQ-R0C-01805,SCR-ADM-010,13,STRONG,BUSINESS_REQUIREMENT,"paragraph 1089",False
 REQ-R0C-01806,SCR-WEB-310,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 1096",False
 REQ-R0C-01807,SCR-ADM-060,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1102",False
 REQ-R0C-01808,SCR-ADM-001,2,WEAK,BUSINESS_RULE,"paragraph 1103",False
-REQ-R0C-01809,SCR-WEB-320,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1104",False
+REQ-R0C-01809,SCR-IPAD-670,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 1104",False
 REQ-R0C-01810,SCR-WEB-130,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 1106",False
 REQ-R0C-01811,SCR-ADM-060,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1109",False
 REQ-R0C-01812,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1110",False
-REQ-R0C-01813,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1111",False
+REQ-R0C-01813,SCR-IPAD-670,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 1111",False
 REQ-R0C-01814,SCR-WEB-150,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 1112",False
 REQ-R0C-01815,SCR-ADM-040,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1114",False
 REQ-R0C-01816,SCR-WEB-300,5,WEAK,BUSINESS_REQUIREMENT,"paragraph 1115",False
-REQ-R0C-01817,SCR-ADM-040,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 1201",False
+REQ-R0C-01817,SCR-IPAD-650,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 1201",False
 REQ-R0C-01818,SCR-ADM-010,10,STRONG,USER_ACTION,"paragraph 1209",False
 REQ-R0C-01819,SCR-ADM-010,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 1211",False
 REQ-R0C-01820,SCR-ADM-010,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 1212",False
 REQ-R0C-01821,SCR-ADM-010,8,STRONG,BUSINESS_RULE,"paragraph 1213",False
 REQ-R0C-01822,SCR-ADM-020,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 1214",False
 REQ-R0C-01823,SCR-VIR-720,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 1215",False
-REQ-R0C-01824,SCR-ADM-041,6,STRONG,USER_ACTION,"paragraph 1227",False
+REQ-R0C-01824,SCR-IPAD-650,10,STRONG,USER_ACTION,"paragraph 1227",False
 REQ-R0C-01825,SCR-ADM-020,14,STRONG,BUSINESS_REQUIREMENT,"paragraph 1229",False
 REQ-R0C-01826,SCR-ADM-020,14,STRONG,BUSINESS_REQUIREMENT,"paragraph 1230",False
 REQ-R0C-01827,SCR-ADM-020,12,STRONG,BUSINESS_REQUIREMENT,"paragraph 1233",False
@@ -1391,12 +1667,12 @@ REQ-R0C-01831,SCR-ADM-040,12,STRONG,BUSINESS_REQUIREMENT,"paragraph 1257",False
 REQ-R0C-01832,SCR-ADM-020,16,STRONG,BUSINESS_RULE,"paragraph 1272",False
 REQ-R0C-01833,SCR-ADM-031,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1275",False
 REQ-R0C-01834,SCR-WEB-130,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1281",False
-REQ-R0C-01835,SCR-ADM-051,4,WEAK,USER_ACTION,"paragraph 1284",False
-REQ-R0C-01836,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1285",False
+REQ-R0C-01835,SCR-IPAD-650,8,STRONG,USER_ACTION,"paragraph 1284",False
+REQ-R0C-01836,SCR-IPAD-630,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1285",False
 REQ-R0C-01837,SCR-ADM-031,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1288",False
-REQ-R0C-01838,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1289",False
+REQ-R0C-01838,SCR-IPAD-660,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1289",False
 REQ-R0C-01839,SCR-WEB-130,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 1290",False
-REQ-R0C-01840,SCR-ADM-010,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1292",False
+REQ-R0C-01840,SCR-IPAD-660,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1292",False
 REQ-R0C-01841,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1293",False
 REQ-R0C-01842,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1295",False
 REQ-R0C-01843,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1296",False
@@ -1405,23 +1681,23 @@ REQ-R0C-01845,SCR-WEB-310,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1303",False
 REQ-R0C-01846,SCR-ADM-060,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1318",False
 REQ-R0C-01847,SCR-ADM-060,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1346",False
 REQ-R0C-01848,SCR-ADM-020,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 1351",False
-REQ-R0C-01849,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1352",False
+REQ-R0C-01849,SCR-IPAD-650,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1352",False
 REQ-R0C-01850,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1353",False
 REQ-R0C-01851,SCR-ADM-010,8,STRONG,BUSINESS_RULE,"paragraph 1356",False
 REQ-R0C-01852,SCR-ADM-020,12,STRONG,BUSINESS_RULE,"paragraph 1359",False
-REQ-R0C-01853,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1360",False
-REQ-R0C-01854,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1361",False
+REQ-R0C-01853,SCR-IPAD-650,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1360",False
+REQ-R0C-01854,SCR-IPAD-650,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1361",False
 REQ-R0C-01855,SCR-ADM-040,8,STRONG,BUSINESS_RULE,"paragraph 1364",False
 REQ-R0C-01856,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1365",False
 REQ-R0C-01857,SCR-ADM-041,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 1369",False
 REQ-R0C-01858,SCR-WEB-310,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1373",False
 REQ-R0C-01859,SCR-ADM-001,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1378",False
 REQ-R0C-01860,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1379",False
-REQ-R0C-01861,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1380",False
-REQ-R0C-01862,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1381",False
+REQ-R0C-01861,SCR-IPAD-670,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 1380",False
+REQ-R0C-01862,SCR-IPAD-670,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1381",False
 REQ-R0C-01863,SCR-ADM-060,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 1382",False
 REQ-R0C-01864,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1383",False
-REQ-R0C-01865,SCR-ADM-051,4,WEAK,USER_ACTION,"paragraph 1392",False
+REQ-R0C-01865,SCR-IPAD-670,10,STRONG,USER_ACTION,"paragraph 1392",False
 REQ-R0C-01866,SCR-WEB-130,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 1394",False
 REQ-R0C-01867,SCR-ADM-011,2,WEAK,BUSINESS_REQUIREMENT,"paragraph 1399",False
 REQ-R0C-01868,SCR-ADM-060,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1412",False
@@ -1453,7 +1729,7 @@ REQ-R0C-01893,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"paragraph 1496",False
 REQ-R0C-01894,SCR-ADM-060,4,WEAK,BUSINESS_REQUIREMENT,"paragraph 1498",False
 REQ-R0C-01895,SCR-ADM-060,8,STRONG,BUSINESS_REQUIREMENT,"paragraph 1504",False
 REQ-R0C-01896,SCR-WEB-130,6,STRONG,BUSINESS_REQUIREMENT,"paragraph 1505",False
-REQ-R0C-01897,SCR-ADM-051,4,WEAK,USER_ACTION,"table 1, row 2, cell 7",False
+REQ-R0C-01897,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 1, row 2, cell 7",False
 REQ-R0C-01898,SCR-ADM-060,4,WEAK,BUSINESS_REQUIREMENT,"table 3, row 6, cell 1",False
 REQ-R0C-01899,SCR-ADM-060,4,WEAK,BUSINESS_REQUIREMENT,"table 3, row 7, cell 1",False
 REQ-R0C-01900,SCR-ADM-010,10,STRONG,BUSINESS_REQUIREMENT,"table 3, row 7, cell 2",False
@@ -1468,7 +1744,7 @@ REQ-R0C-01908,SCR-ADM-010,8,STRONG,BUSINESS_REQUIREMENT,"table 4, row 7, cell 2"
 REQ-R0C-01909,SCR-ADM-010,8,STRONG,BUSINESS_RULE,"table 4, row 8, cell 2",False
 REQ-R0C-01910,SCR-ADM-040,6,STRONG,BUSINESS_REQUIREMENT,"table 4, row 10, cell 2",False
 REQ-R0C-01911,SCR-ADM-040,6,STRONG,BUSINESS_REQUIREMENT,"table 5, row 2, cell 2",False
-REQ-R0C-01912,SCR-ADM-051,4,WEAK,USER_ACTION,"table 7, row 2, cell 7",False
+REQ-R0C-01912,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 7, row 2, cell 7",False
 REQ-R0C-01913,SCR-ADM-060,4,WEAK,BUSINESS_REQUIREMENT,"table 9, row 7, cell 1",False
 REQ-R0C-01914,SCR-ADM-060,4,WEAK,BUSINESS_REQUIREMENT,"table 9, row 8, cell 1",False
 REQ-R0C-01915,SCR-ADM-010,17,STRONG,BUSINESS_REQUIREMENT,"table 9, row 8, cell 2",False
@@ -1482,7 +1758,7 @@ REQ-R0C-01922,SCR-ADM-010,8,STRONG,BUSINESS_RULE,"table 10, row 8, cell 2",False
 REQ-R0C-01923,SCR-ADM-010,10,STRONG,BUSINESS_REQUIREMENT,"table 10, row 10, cell 2",False
 REQ-R0C-01924,SCR-ADM-040,6,STRONG,BUSINESS_REQUIREMENT,"table 10, row 11, cell 2",False
 REQ-R0C-01925,SCR-ADM-040,6,STRONG,BUSINESS_REQUIREMENT,"table 11, row 2, cell 2",False
-REQ-R0C-01926,SCR-ADM-020,10,STRONG,USER_ACTION,"table 13, row 3, cell 8",False
+REQ-R0C-01926,SCR-IPAD-650,12,STRONG,USER_ACTION,"table 13, row 3, cell 8",False
 REQ-R0C-01927,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 13, row 4, cell 7",False
 REQ-R0C-01928,SCR-ADM-020,10,STRONG,BUSINESS_REQUIREMENT,"table 13, row 6, cell 6",False
 REQ-R0C-01929,SCR-ADM-020,10,STRONG,BUSINESS_REQUIREMENT,"table 13, row 6, cell 7",False
@@ -1495,12 +1771,12 @@ REQ-R0C-01935,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 13, row 10, cell 3"
 REQ-R0C-01936,SCR-ADM-020,10,STRONG,BUSINESS_REQUIREMENT,"table 13, row 10, cell 7",False
 REQ-R0C-01937,SCR-ADM-020,6,STRONG,BUSINESS_REQUIREMENT,"table 13, row 10, cell 8",False
 REQ-R0C-01938,SCR-ADM-030,2,WEAK,BUSINESS_REQUIREMENT,"table 13, row 12, cell 7",False
-REQ-R0C-01939,SCR-VIR-720,6,STRONG,BUSINESS_REQUIREMENT,"table 13, row 13, cell 6",False
+REQ-R0C-01939,SCR-IPAD-640,6,STRONG,BUSINESS_REQUIREMENT,"table 13, row 13, cell 6",False
 REQ-R0C-01940,SCR-ADM-020,12,STRONG,BUSINESS_REQUIREMENT,"table 13, row 13, cell 7",False
 REQ-R0C-01941,SCR-ADM-020,18,STRONG,BUSINESS_RULE,"table 13, row 13, cell 8",False
-REQ-R0C-01942,SCR-VIR-720,10,STRONG,BUSINESS_REQUIREMENT,"table 14, row 2, cell 7",False
+REQ-R0C-01942,SCR-IPAD-640,14,STRONG,BUSINESS_REQUIREMENT,"table 14, row 2, cell 7",False
 REQ-R0C-01943,SCR-VIR-720,12,STRONG,USER_ACTION,"table 14, row 2, cell 8",False
-REQ-R0C-01944,SCR-VIR-720,12,STRONG,BUSINESS_REQUIREMENT,"table 14, row 3, cell 7",False
+REQ-R0C-01944,SCR-IPAD-640,16,STRONG,BUSINESS_REQUIREMENT,"table 14, row 3, cell 7",False
 REQ-R0C-01945,SCR-ADM-020,10,STRONG,BUSINESS_REQUIREMENT,"table 14, row 3, cell 8",False
 REQ-R0C-01946,SCR-ADM-020,2,WEAK,BUSINESS_REQUIREMENT,"table 14, row 4, cell 8",False
 REQ-R0C-01947,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 14, row 5, cell 7",False
@@ -1509,14 +1785,14 @@ REQ-R0C-01949,SCR-ADM-020,10,STRONG,BUSINESS_REQUIREMENT,"table 15, row 2, cell 
 REQ-R0C-01950,SCR-ADM-020,10,STRONG,USER_ACTION,"table 15, row 4, cell 2",False
 REQ-R0C-01951,SCR-ADM-020,14,STRONG,BUSINESS_REQUIREMENT,"table 15, row 5, cell 2",False
 REQ-R0C-01952,SCR-ADM-020,18,STRONG,BUSINESS_RULE,"table 15, row 6, cell 2",False
-REQ-R0C-01953,SCR-ADM-020,4,WEAK,USER_ACTION,"table 15, row 7, cell 2",False
-REQ-R0C-01954,SCR-ADM-020,6,STRONG,USER_ACTION,"table 15, row 8, cell 2",False
+REQ-R0C-01953,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 15, row 7, cell 2",False
+REQ-R0C-01954,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 15, row 8, cell 2",False
 REQ-R0C-01955,SCR-ADM-020,6,STRONG,BUSINESS_REQUIREMENT,"table 15, row 9, cell 2",False
 REQ-R0C-01956,SCR-ADM-020,6,STRONG,BUSINESS_REQUIREMENT,"table 15, row 10, cell 2",False
-REQ-R0C-01957,SCR-VIR-720,6,STRONG,USER_ACTION,"table 15, row 11, cell 2",False
+REQ-R0C-01957,SCR-IPAD-650,10,STRONG,USER_ACTION,"table 15, row 11, cell 2",False
 REQ-R0C-01958,SCR-ADM-010,8,STRONG,BUSINESS_REQUIREMENT,"table 15, row 12, cell 2",False
 REQ-R0C-01959,SCR-ADM-020,10,STRONG,BUSINESS_REQUIREMENT,"table 15, row 13, cell 2",False
-REQ-R0C-01960,SCR-ADM-020,10,STRONG,BUSINESS_RULE,"table 15, row 14, cell 2",False
+REQ-R0C-01960,SCR-IPAD-650,16,STRONG,BUSINESS_RULE,"table 15, row 14, cell 2",False
 REQ-R0C-01961,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 15, row 15, cell 2",False
 REQ-R0C-01962,SCR-ADM-040,6,STRONG,BUSINESS_REQUIREMENT,"table 15, row 16, cell 2",False
 REQ-R0C-01963,SCR-ADM-020,8,STRONG,BUSINESS_REQUIREMENT,"table 16, row 2, cell 5",False
@@ -1526,8 +1802,8 @@ REQ-R0C-01966,SCR-ADM-020,12,STRONG,BUSINESS_REQUIREMENT,"table 16, row 5, cell 
 REQ-R0C-01967,SCR-ADM-010,8,STRONG,USER_ACTION,"table 16, row 6, cell 2",False
 REQ-R0C-01968,SCR-ADM-010,8,STRONG,USER_ACTION,"table 16, row 6, cell 3",False
 REQ-R0C-01969,SCR-ADM-020,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 7, cell 5",False
-REQ-R0C-01970,SCR-VIR-720,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 9, cell 2",False
-REQ-R0C-01971,SCR-VIR-720,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 9, cell 3",False
+REQ-R0C-01970,SCR-IPAD-640,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 9, cell 2",False
+REQ-R0C-01971,SCR-IPAD-640,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 9, cell 3",False
 REQ-R0C-01972,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 16, row 13, cell 3",False
 REQ-R0C-01973,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 16, row 13, cell 4",False
 REQ-R0C-01974,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 16, row 13, cell 5",False
@@ -1540,43 +1816,43 @@ REQ-R0C-01980,SCR-ADM-020,10,STRONG,USER_ACTION,"table 16, row 16, cell 5",False
 REQ-R0C-01981,SCR-ADM-041,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 17, cell 3",False
 REQ-R0C-01982,SCR-ADM-041,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 17, cell 4",False
 REQ-R0C-01983,SCR-ADM-041,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 17, cell 5",False
-REQ-R0C-01984,SCR-VIR-720,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 18, cell 1",False
-REQ-R0C-01985,SCR-VIR-720,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 18, cell 2",False
-REQ-R0C-01986,SCR-VIR-720,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 18, cell 3",False
-REQ-R0C-01987,SCR-VIR-720,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 18, cell 4",False
-REQ-R0C-01988,SCR-VIR-720,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 18, cell 5",False
-REQ-R0C-01989,SCR-VIR-720,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 19, cell 1",False
-REQ-R0C-01990,SCR-VIR-720,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 19, cell 2",False
+REQ-R0C-01984,SCR-IPAD-640,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 18, cell 1",False
+REQ-R0C-01985,SCR-IPAD-640,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 18, cell 2",False
+REQ-R0C-01986,SCR-IPAD-640,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 18, cell 3",False
+REQ-R0C-01987,SCR-IPAD-640,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 18, cell 4",False
+REQ-R0C-01988,SCR-IPAD-640,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 18, cell 5",False
+REQ-R0C-01989,SCR-IPAD-640,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 19, cell 1",False
+REQ-R0C-01990,SCR-IPAD-640,6,STRONG,BUSINESS_REQUIREMENT,"table 16, row 19, cell 2",False
 REQ-R0C-01991,SCR-ADM-020,8,STRONG,BUSINESS_REQUIREMENT,"table 16, row 22, cell 3",False
 REQ-R0C-01992,SCR-ADM-020,8,STRONG,BUSINESS_REQUIREMENT,"table 16, row 22, cell 4",False
 REQ-R0C-01993,SCR-ADM-020,8,STRONG,BUSINESS_REQUIREMENT,"table 16, row 22, cell 5",False
-REQ-R0C-01994,SCR-ADM-020,10,STRONG,USER_ACTION,"table 17, row 2, cell 8",False
+REQ-R0C-01994,SCR-IPAD-650,12,STRONG,USER_ACTION,"table 17, row 2, cell 8",False
 REQ-R0C-01995,SCR-ADM-020,16,STRONG,USER_ACTION,"table 17, row 3, cell 8",False
 REQ-R0C-01996,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 17, row 5, cell 7",False
-REQ-R0C-01997,SCR-ADM-020,14,STRONG,USER_ACTION,"table 17, row 5, cell 8",False
+REQ-R0C-01997,SCR-IPAD-650,15,STRONG,USER_ACTION,"table 17, row 5, cell 8",False
 REQ-R0C-01998,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 17, row 6, cell 8",False
 REQ-R0C-01999,SCR-ADM-060,9,STRONG,BUSINESS_REQUIREMENT,"table 17, row 9, cell 8",False
-REQ-R0C-02000,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 17, row 10, cell 6",False
+REQ-R0C-02000,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 17, row 10, cell 6",False
 REQ-R0C-02001,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 17, row 10, cell 7",False
-REQ-R0C-02002,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 17, row 11, cell 6",False
+REQ-R0C-02002,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 17, row 11, cell 6",False
 REQ-R0C-02003,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 17, row 11, cell 7",False
 REQ-R0C-02004,SCR-WEB-130,10,STRONG,BUSINESS_REQUIREMENT,"table 17, row 11, cell 8",False
 REQ-R0C-02005,SCR-ADM-080,4,WEAK,BUSINESS_REQUIREMENT,"table 17, row 12, cell 7",False
-REQ-R0C-02006,SCR-WEB-130,4,WEAK,BUSINESS_REQUIREMENT,"table 17, row 12, cell 8",False
+REQ-R0C-02006,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 17, row 12, cell 8",False
 REQ-R0C-02007,SCR-WEB-130,4,WEAK,BUSINESS_REQUIREMENT,"table 17, row 13, cell 6",False
 REQ-R0C-02008,SCR-ADM-020,2,WEAK,BUSINESS_REQUIREMENT,"table 17, row 13, cell 8",False
 REQ-R0C-02009,SCR-ADM-020,6,STRONG,BUSINESS_REQUIREMENT,"table 17, row 14, cell 8",False
 REQ-R0C-02010,SCR-WEB-130,5,WEAK,BUSINESS_REQUIREMENT,"table 17, row 15, cell 8",False
-REQ-R0C-02011,SCR-ADM-041,12,STRONG,USER_ACTION,"table 17, row 16, cell 8",False
-REQ-R0C-02012,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 17, row 17, cell 6",False
+REQ-R0C-02011,SCR-IPAD-650,16,STRONG,USER_ACTION,"table 17, row 16, cell 8",False
+REQ-R0C-02012,SCR-IPAD-650,12,STRONG,BUSINESS_REQUIREMENT,"table 17, row 17, cell 6",False
 REQ-R0C-02013,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"table 17, row 17, cell 7",False
-REQ-R0C-02014,SCR-ADM-031,9,STRONG,USER_ACTION,"table 17, row 17, cell 8",False
-REQ-R0C-02015,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 17, row 18, cell 6",False
-REQ-R0C-02016,SCR-ADM-031,9,STRONG,USER_ACTION,"table 17, row 18, cell 8",False
-REQ-R0C-02017,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"table 17, row 19, cell 7",False
+REQ-R0C-02014,SCR-IPAD-650,10,STRONG,USER_ACTION,"table 17, row 17, cell 8",False
+REQ-R0C-02015,SCR-IPAD-650,12,STRONG,BUSINESS_REQUIREMENT,"table 17, row 18, cell 6",False
+REQ-R0C-02016,SCR-IPAD-650,10,STRONG,USER_ACTION,"table 17, row 18, cell 8",False
+REQ-R0C-02017,SCR-IPAD-650,10,STRONG,BUSINESS_REQUIREMENT,"table 17, row 19, cell 7",False
 REQ-R0C-02018,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 17, row 20, cell 6",False
 REQ-R0C-02019,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 17, row 20, cell 7",False
-REQ-R0C-02020,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 17, row 20, cell 8",False
+REQ-R0C-02020,SCR-IPAD-650,16,STRONG,BUSINESS_REQUIREMENT,"table 17, row 20, cell 8",False
 REQ-R0C-02021,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 17, row 21, cell 7",False
 REQ-R0C-02022,SCR-WEB-150,3,WEAK,BUSINESS_RULE,"table 17, row 21, cell 8",False
 REQ-R0C-02023,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 19, row 2, cell 2",False
@@ -1587,19 +1863,19 @@ REQ-R0C-02027,SCR-ADM-040,8,STRONG,BUSINESS_RULE,"table 19, row 7, cell 2",False
 REQ-R0C-02028,SCR-ADM-040,10,STRONG,BUSINESS_RULE,"table 19, row 8, cell 2",False
 REQ-R0C-02029,SCR-ADM-020,16,STRONG,BUSINESS_RULE,"table 19, row 9, cell 2",False
 REQ-R0C-02030,SCR-ADM-041,12,STRONG,BUSINESS_REQUIREMENT,"table 19, row 10, cell 2",False
-REQ-R0C-02031,SCR-ADM-031,9,STRONG,USER_ACTION,"table 19, row 12, cell 2",False
+REQ-R0C-02031,SCR-IPAD-650,10,STRONG,USER_ACTION,"table 19, row 12, cell 2",False
 REQ-R0C-02032,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"table 19, row 14, cell 2",False
-REQ-R0C-02033,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 19, row 15, cell 2",False
+REQ-R0C-02033,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 19, row 15, cell 2",False
 REQ-R0C-02034,SCR-WEB-130,4,WEAK,BUSINESS_REQUIREMENT,"table 19, row 16, cell 2",False
-REQ-R0C-02035,SCR-ADM-051,4,WEAK,USER_ACTION,"table 19, row 17, cell 2",False
-REQ-R0C-02036,SCR-ADM-051,4,WEAK,USER_ACTION,"table 19, row 18, cell 2",False
+REQ-R0C-02035,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 19, row 17, cell 2",False
+REQ-R0C-02036,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 19, row 18, cell 2",False
 REQ-R0C-02037,SCR-ADM-030,6,STRONG,BUSINESS_REQUIREMENT,"table 19, row 19, cell 2",False
 REQ-R0C-02038,SCR-ADM-040,8,STRONG,BUSINESS_RULE,"table 19, row 20, cell 2",False
 REQ-R0C-02039,SCR-ADM-010,8,STRONG,BUSINESS_REQUIREMENT,"table 19, row 21, cell 2",False
 REQ-R0C-02040,SCR-ADM-020,10,STRONG,BUSINESS_REQUIREMENT,"table 19, row 22, cell 2",False
 REQ-R0C-02041,SCR-ADM-040,15,STRONG,BUSINESS_RULE,"table 19, row 23, cell 2",False
 REQ-R0C-02042,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 19, row 24, cell 2",False
-REQ-R0C-02043,SCR-ADM-040,6,STRONG,BUSINESS_REQUIREMENT,"table 19, row 25, cell 2",False
+REQ-R0C-02043,SCR-IPAD-650,12,STRONG,BUSINESS_REQUIREMENT,"table 19, row 25, cell 2",False
 REQ-R0C-02044,SCR-ADM-010,8,STRONG,BUSINESS_REQUIREMENT,"table 20, row 2, cell 4",False
 REQ-R0C-02045,SCR-ADM-020,12,STRONG,BUSINESS_REQUIREMENT,"table 20, row 3, cell 4",False
 REQ-R0C-02046,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 20, row 4, cell 2",False
@@ -1609,8 +1885,8 @@ REQ-R0C-02049,SCR-ADM-020,4,WEAK,BUSINESS_REQUIREMENT,"table 20, row 6, cell 4",
 REQ-R0C-02050,SCR-ADM-040,10,STRONG,BUSINESS_RULE,"table 20, row 7, cell 2",False
 REQ-R0C-02051,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 20, row 8, cell 4",False
 REQ-R0C-02052,SCR-ADM-010,8,STRONG,USER_ACTION,"table 20, row 9, cell 2",False
-REQ-R0C-02053,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 20, row 11, cell 2",False
-REQ-R0C-02054,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 20, row 11, cell 4",False
+REQ-R0C-02053,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 20, row 11, cell 2",False
+REQ-R0C-02054,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 20, row 11, cell 4",False
 REQ-R0C-02055,SCR-ADM-020,2,WEAK,BUSINESS_REQUIREMENT,"table 20, row 12, cell 2",False
 REQ-R0C-02056,SCR-WEB-130,4,WEAK,BUSINESS_REQUIREMENT,"table 20, row 12, cell 4",False
 REQ-R0C-02057,SCR-ADM-020,2,WEAK,BUSINESS_REQUIREMENT,"table 20, row 13, cell 2",False
@@ -1623,50 +1899,50 @@ REQ-R0C-02063,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"table 20, row 18, cell 
 REQ-R0C-02064,SCR-ADM-010,8,STRONG,USER_ACTION,"table 21, row 2, cell 2",False
 REQ-R0C-02065,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 21, row 4, cell 2",False
 REQ-R0C-02066,SCR-ADM-020,4,WEAK,BUSINESS_REQUIREMENT,"table 21, row 5, cell 2",False
-REQ-R0C-02067,SCR-WEB-140,6,STRONG,USER_ACTION,"table 21, row 6, cell 2",False
-REQ-R0C-02068,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 21, row 7, cell 1",False
-REQ-R0C-02069,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 21, row 7, cell 2",False
-REQ-R0C-02070,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 21, row 8, cell 1",False
+REQ-R0C-02067,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 21, row 6, cell 2",False
+REQ-R0C-02068,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 21, row 7, cell 1",False
+REQ-R0C-02069,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 21, row 7, cell 2",False
+REQ-R0C-02070,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 21, row 8, cell 1",False
 REQ-R0C-02071,SCR-WEB-130,4,WEAK,BUSINESS_REQUIREMENT,"table 21, row 9, cell 2",False
 REQ-R0C-02072,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"table 21, row 11, cell 1",False
 REQ-R0C-02073,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"table 21, row 11, cell 2",False
 REQ-R0C-02074,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"table 21, row 12, cell 1",False
-REQ-R0C-02075,SCR-ADM-031,9,STRONG,USER_ACTION,"table 21, row 13, cell 2",False
+REQ-R0C-02075,SCR-IPAD-650,12,STRONG,USER_ACTION,"table 21, row 13, cell 2",False
 REQ-R0C-02076,SCR-ADM-020,12,STRONG,BUSINESS_REQUIREMENT,"table 21, row 14, cell 2",False
-REQ-R0C-02077,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 21, row 16, cell 1",False
-REQ-R0C-02078,SCR-ADM-040,4,WEAK,BUSINESS_REQUIREMENT,"table 21, row 20, cell 2",False
+REQ-R0C-02077,SCR-IPAD-650,12,STRONG,BUSINESS_REQUIREMENT,"table 21, row 16, cell 1",False
+REQ-R0C-02078,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 21, row 20, cell 2",False
 REQ-R0C-02079,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 21, row 21, cell 2",False
 REQ-R0C-02080,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 23, row 2, cell 2",False
-REQ-R0C-02081,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 23, row 10, cell 2",False
+REQ-R0C-02081,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 23, row 10, cell 2",False
 REQ-R0C-02082,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"table 23, row 12, cell 2",False
 REQ-R0C-02083,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 23, row 15, cell 2",False
-REQ-R0C-02084,SCR-ADM-020,10,STRONG,USER_ACTION,"table 24, row 2, cell 8",False
+REQ-R0C-02084,SCR-IPAD-650,12,STRONG,USER_ACTION,"table 24, row 2, cell 8",False
 REQ-R0C-02085,SCR-ADM-020,16,STRONG,USER_ACTION,"table 24, row 3, cell 8",False
 REQ-R0C-02086,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 24, row 5, cell 7",False
-REQ-R0C-02087,SCR-ADM-020,14,STRONG,USER_ACTION,"table 24, row 5, cell 8",False
+REQ-R0C-02087,SCR-IPAD-650,15,STRONG,USER_ACTION,"table 24, row 5, cell 8",False
 REQ-R0C-02088,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 24, row 6, cell 8",False
 REQ-R0C-02089,SCR-ADM-060,9,STRONG,BUSINESS_REQUIREMENT,"table 24, row 9, cell 8",False
-REQ-R0C-02090,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 24, row 10, cell 6",False
+REQ-R0C-02090,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 24, row 10, cell 6",False
 REQ-R0C-02091,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 24, row 10, cell 7",False
-REQ-R0C-02092,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 24, row 11, cell 6",False
+REQ-R0C-02092,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 24, row 11, cell 6",False
 REQ-R0C-02093,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 24, row 11, cell 7",False
 REQ-R0C-02094,SCR-WEB-130,10,STRONG,BUSINESS_REQUIREMENT,"table 24, row 11, cell 8",False
 REQ-R0C-02095,SCR-ADM-080,4,WEAK,BUSINESS_REQUIREMENT,"table 24, row 12, cell 7",False
-REQ-R0C-02096,SCR-WEB-130,4,WEAK,BUSINESS_REQUIREMENT,"table 24, row 12, cell 8",False
+REQ-R0C-02096,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 24, row 12, cell 8",False
 REQ-R0C-02097,SCR-WEB-130,4,WEAK,BUSINESS_REQUIREMENT,"table 24, row 13, cell 6",False
 REQ-R0C-02098,SCR-ADM-020,2,WEAK,BUSINESS_REQUIREMENT,"table 24, row 13, cell 8",False
 REQ-R0C-02099,SCR-ADM-020,6,STRONG,BUSINESS_REQUIREMENT,"table 24, row 14, cell 8",False
 REQ-R0C-02100,SCR-WEB-130,5,WEAK,BUSINESS_REQUIREMENT,"table 24, row 15, cell 8",False
-REQ-R0C-02101,SCR-ADM-041,12,STRONG,USER_ACTION,"table 24, row 16, cell 8",False
-REQ-R0C-02102,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 24, row 17, cell 6",False
+REQ-R0C-02101,SCR-IPAD-650,16,STRONG,USER_ACTION,"table 24, row 16, cell 8",False
+REQ-R0C-02102,SCR-IPAD-650,12,STRONG,BUSINESS_REQUIREMENT,"table 24, row 17, cell 6",False
 REQ-R0C-02103,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"table 24, row 17, cell 7",False
-REQ-R0C-02104,SCR-ADM-031,9,STRONG,USER_ACTION,"table 24, row 17, cell 8",False
-REQ-R0C-02105,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 24, row 18, cell 6",False
-REQ-R0C-02106,SCR-ADM-031,9,STRONG,USER_ACTION,"table 24, row 18, cell 8",False
-REQ-R0C-02107,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"table 24, row 19, cell 7",False
+REQ-R0C-02104,SCR-IPAD-650,10,STRONG,USER_ACTION,"table 24, row 17, cell 8",False
+REQ-R0C-02105,SCR-IPAD-650,12,STRONG,BUSINESS_REQUIREMENT,"table 24, row 18, cell 6",False
+REQ-R0C-02106,SCR-IPAD-650,10,STRONG,USER_ACTION,"table 24, row 18, cell 8",False
+REQ-R0C-02107,SCR-IPAD-650,10,STRONG,BUSINESS_REQUIREMENT,"table 24, row 19, cell 7",False
 REQ-R0C-02108,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 24, row 20, cell 6",False
 REQ-R0C-02109,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 24, row 20, cell 7",False
-REQ-R0C-02110,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 24, row 20, cell 8",False
+REQ-R0C-02110,SCR-IPAD-650,16,STRONG,BUSINESS_REQUIREMENT,"table 24, row 20, cell 8",False
 REQ-R0C-02111,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 24, row 21, cell 7",False
 REQ-R0C-02112,SCR-WEB-150,3,WEAK,BUSINESS_RULE,"table 24, row 21, cell 8",False
 REQ-R0C-02113,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 26, row 2, cell 2",False
@@ -1677,19 +1953,19 @@ REQ-R0C-02117,SCR-ADM-040,8,STRONG,BUSINESS_RULE,"table 26, row 7, cell 2",False
 REQ-R0C-02118,SCR-ADM-040,10,STRONG,BUSINESS_RULE,"table 26, row 8, cell 2",False
 REQ-R0C-02119,SCR-ADM-020,16,STRONG,BUSINESS_RULE,"table 26, row 9, cell 2",False
 REQ-R0C-02120,SCR-ADM-041,12,STRONG,BUSINESS_REQUIREMENT,"table 26, row 10, cell 2",False
-REQ-R0C-02121,SCR-ADM-031,9,STRONG,USER_ACTION,"table 26, row 12, cell 2",False
+REQ-R0C-02121,SCR-IPAD-650,10,STRONG,USER_ACTION,"table 26, row 12, cell 2",False
 REQ-R0C-02122,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"table 26, row 14, cell 2",False
-REQ-R0C-02123,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 26, row 15, cell 2",False
+REQ-R0C-02123,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 26, row 15, cell 2",False
 REQ-R0C-02124,SCR-WEB-130,4,WEAK,BUSINESS_REQUIREMENT,"table 26, row 16, cell 2",False
-REQ-R0C-02125,SCR-ADM-051,4,WEAK,USER_ACTION,"table 26, row 17, cell 2",False
-REQ-R0C-02126,SCR-ADM-051,4,WEAK,USER_ACTION,"table 26, row 18, cell 2",False
+REQ-R0C-02125,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 26, row 17, cell 2",False
+REQ-R0C-02126,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 26, row 18, cell 2",False
 REQ-R0C-02127,SCR-ADM-030,6,STRONG,BUSINESS_REQUIREMENT,"table 26, row 19, cell 2",False
 REQ-R0C-02128,SCR-ADM-040,8,STRONG,BUSINESS_RULE,"table 26, row 20, cell 2",False
 REQ-R0C-02129,SCR-ADM-010,8,STRONG,BUSINESS_REQUIREMENT,"table 26, row 21, cell 2",False
 REQ-R0C-02130,SCR-ADM-020,10,STRONG,BUSINESS_REQUIREMENT,"table 26, row 22, cell 2",False
 REQ-R0C-02131,SCR-ADM-040,15,STRONG,BUSINESS_RULE,"table 26, row 23, cell 2",False
 REQ-R0C-02132,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 26, row 24, cell 2",False
-REQ-R0C-02133,SCR-ADM-040,6,STRONG,BUSINESS_REQUIREMENT,"table 26, row 25, cell 2",False
+REQ-R0C-02133,SCR-IPAD-650,12,STRONG,BUSINESS_REQUIREMENT,"table 26, row 25, cell 2",False
 REQ-R0C-02134,SCR-ADM-010,8,STRONG,BUSINESS_REQUIREMENT,"table 27, row 2, cell 4",False
 REQ-R0C-02135,SCR-ADM-020,12,STRONG,BUSINESS_REQUIREMENT,"table 27, row 3, cell 4",False
 REQ-R0C-02136,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 27, row 4, cell 2",False
@@ -1699,8 +1975,8 @@ REQ-R0C-02139,SCR-ADM-020,4,WEAK,BUSINESS_REQUIREMENT,"table 27, row 6, cell 4",
 REQ-R0C-02140,SCR-ADM-040,10,STRONG,BUSINESS_RULE,"table 27, row 7, cell 2",False
 REQ-R0C-02141,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 27, row 8, cell 4",False
 REQ-R0C-02142,SCR-ADM-010,8,STRONG,USER_ACTION,"table 27, row 9, cell 2",False
-REQ-R0C-02143,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 27, row 11, cell 2",False
-REQ-R0C-02144,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 27, row 11, cell 4",False
+REQ-R0C-02143,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 27, row 11, cell 2",False
+REQ-R0C-02144,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 27, row 11, cell 4",False
 REQ-R0C-02145,SCR-ADM-020,2,WEAK,BUSINESS_REQUIREMENT,"table 27, row 12, cell 2",False
 REQ-R0C-02146,SCR-WEB-130,4,WEAK,BUSINESS_REQUIREMENT,"table 27, row 12, cell 4",False
 REQ-R0C-02147,SCR-ADM-020,2,WEAK,BUSINESS_REQUIREMENT,"table 27, row 13, cell 2",False
@@ -1713,33 +1989,33 @@ REQ-R0C-02153,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"table 27, row 18, cell 
 REQ-R0C-02154,SCR-ADM-010,8,STRONG,USER_ACTION,"table 28, row 2, cell 2",False
 REQ-R0C-02155,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 28, row 4, cell 2",False
 REQ-R0C-02156,SCR-ADM-020,4,WEAK,BUSINESS_REQUIREMENT,"table 28, row 5, cell 2",False
-REQ-R0C-02157,SCR-WEB-140,6,STRONG,USER_ACTION,"table 28, row 6, cell 2",False
-REQ-R0C-02158,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 28, row 7, cell 1",False
-REQ-R0C-02159,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 28, row 7, cell 2",False
-REQ-R0C-02160,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 28, row 8, cell 1",False
+REQ-R0C-02157,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 28, row 6, cell 2",False
+REQ-R0C-02158,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 28, row 7, cell 1",False
+REQ-R0C-02159,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 28, row 7, cell 2",False
+REQ-R0C-02160,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 28, row 8, cell 1",False
 REQ-R0C-02161,SCR-WEB-130,4,WEAK,BUSINESS_REQUIREMENT,"table 28, row 9, cell 2",False
 REQ-R0C-02162,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"table 28, row 11, cell 1",False
 REQ-R0C-02163,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"table 28, row 11, cell 2",False
 REQ-R0C-02164,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"table 28, row 12, cell 1",False
-REQ-R0C-02165,SCR-ADM-031,9,STRONG,USER_ACTION,"table 28, row 13, cell 2",False
+REQ-R0C-02165,SCR-IPAD-650,12,STRONG,USER_ACTION,"table 28, row 13, cell 2",False
 REQ-R0C-02166,SCR-ADM-020,12,STRONG,BUSINESS_REQUIREMENT,"table 28, row 14, cell 2",False
-REQ-R0C-02167,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 28, row 16, cell 1",False
-REQ-R0C-02168,SCR-ADM-040,4,WEAK,BUSINESS_REQUIREMENT,"table 28, row 20, cell 2",False
+REQ-R0C-02167,SCR-IPAD-650,12,STRONG,BUSINESS_REQUIREMENT,"table 28, row 16, cell 1",False
+REQ-R0C-02168,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 28, row 20, cell 2",False
 REQ-R0C-02169,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 28, row 21, cell 2",False
 REQ-R0C-02170,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 30, row 2, cell 2",False
-REQ-R0C-02171,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 30, row 11, cell 2",False
+REQ-R0C-02171,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 30, row 11, cell 2",False
 REQ-R0C-02172,SCR-ADM-031,9,STRONG,BUSINESS_REQUIREMENT,"table 30, row 13, cell 2",False
 REQ-R0C-02173,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 30, row 16, cell 2",False
 REQ-R0C-02174,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 33, row 2, cell 2",False
-REQ-R0C-02175,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 33, row 4, cell 2",False
+REQ-R0C-02175,SCR-IPAD-650,6,STRONG,BUSINESS_REQUIREMENT,"table 33, row 4, cell 2",False
 REQ-R0C-02176,SCR-ADM-041,12,STRONG,BUSINESS_RULE,"table 35, row 2, cell 8",False
 REQ-R0C-02177,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 35, row 4, cell 6",False
-REQ-R0C-02178,SCR-ADM-020,14,STRONG,USER_ACTION,"table 35, row 4, cell 8",False
+REQ-R0C-02178,SCR-IPAD-650,16,STRONG,USER_ACTION,"table 35, row 4, cell 8",False
 REQ-R0C-02179,SCR-ADM-041,8,STRONG,BUSINESS_REQUIREMENT,"table 35, row 5, cell 7",False
 REQ-R0C-02180,SCR-ADM-041,8,STRONG,BUSINESS_REQUIREMENT,"table 35, row 5, cell 8",False
-REQ-R0C-02181,SCR-ADM-041,8,STRONG,USER_ACTION,"table 35, row 6, cell 8",False
+REQ-R0C-02181,SCR-IPAD-650,10,STRONG,USER_ACTION,"table 35, row 6, cell 8",False
 REQ-R0C-02182,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 35, row 7, cell 7",False
-REQ-R0C-02183,SCR-ADM-051,4,WEAK,USER_ACTION,"table 35, row 7, cell 8",False
+REQ-R0C-02183,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 35, row 7, cell 8",False
 REQ-R0C-02184,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 35, row 9, cell 8",False
 REQ-R0C-02185,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 36, row 4, cell 3",False
 REQ-R0C-02186,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 36, row 5, cell 3",False
@@ -1748,15 +2024,15 @@ REQ-R0C-02188,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 36, row 7, cell 3",
 REQ-R0C-02189,SCR-WEB-400,4,WEAK,BUSINESS_REQUIREMENT,"table 36, row 8, cell 3",False
 REQ-R0C-02190,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 36, row 9, cell 3",False
 REQ-R0C-02191,SCR-ADM-041,12,STRONG,BUSINESS_RULE,"table 38, row 2, cell 2",False
-REQ-R0C-02192,SCR-ADM-010,8,STRONG,USER_ACTION,"table 38, row 4, cell 2",False
-REQ-R0C-02193,SCR-ADM-020,10,STRONG,USER_ACTION,"table 38, row 5, cell 2",False
+REQ-R0C-02192,SCR-IPAD-650,12,STRONG,USER_ACTION,"table 38, row 4, cell 2",False
+REQ-R0C-02193,SCR-IPAD-650,12,STRONG,USER_ACTION,"table 38, row 5, cell 2",False
 REQ-R0C-02194,SCR-ADM-020,16,STRONG,BUSINESS_RULE,"table 38, row 6, cell 2",False
 REQ-R0C-02195,SCR-ADM-041,10,STRONG,USER_ACTION,"table 38, row 7, cell 2",False
 REQ-R0C-02196,SCR-ADM-041,8,STRONG,BUSINESS_REQUIREMENT,"table 38, row 8, cell 2",False
 REQ-R0C-02197,SCR-ADM-041,8,STRONG,BUSINESS_REQUIREMENT,"table 38, row 9, cell 2",False
-REQ-R0C-02198,SCR-ADM-051,4,WEAK,USER_ACTION,"table 38, row 10, cell 2",False
-REQ-R0C-02199,SCR-ADM-051,4,WEAK,USER_ACTION,"table 38, row 11, cell 2",False
-REQ-R0C-02200,SCR-ADM-051,4,WEAK,USER_ACTION,"table 38, row 12, cell 2",False
+REQ-R0C-02198,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 38, row 10, cell 2",False
+REQ-R0C-02199,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 38, row 11, cell 2",False
+REQ-R0C-02200,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 38, row 12, cell 2",False
 REQ-R0C-02201,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 38, row 13, cell 2",False
 REQ-R0C-02202,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 38, row 14, cell 2",False
 REQ-R0C-02203,SCR-ADM-020,2,WEAK,BUSINESS_RULE,"table 38, row 15, cell 2",False
@@ -1768,13 +2044,13 @@ REQ-R0C-02208,SCR-ADM-041,11,STRONG,BUSINESS_REQUIREMENT,"table 38, row 21, cell
 REQ-R0C-02209,SCR-ADM-041,8,STRONG,BUSINESS_REQUIREMENT,"table 38, row 22, cell 2",False
 REQ-R0C-02210,SCR-ADM-041,12,STRONG,BUSINESS_REQUIREMENT,"table 38, row 23, cell 2",False
 REQ-R0C-02211,SCR-ADM-041,8,STRONG,BUSINESS_REQUIREMENT,"table 38, row 24, cell 2",False
-REQ-R0C-02212,SCR-ADM-040,8,STRONG,USER_ACTION,"table 39, row 3, cell 4",False
+REQ-R0C-02212,SCR-IPAD-650,12,STRONG,USER_ACTION,"table 39, row 3, cell 4",False
 REQ-R0C-02213,SCR-ADM-010,8,STRONG,BUSINESS_REQUIREMENT,"table 39, row 4, cell 2",False
 REQ-R0C-02214,SCR-ADM-080,5,WEAK,BUSINESS_REQUIREMENT,"table 39, row 5, cell 4",False
-REQ-R0C-02215,SCR-ADM-051,4,WEAK,USER_ACTION,"table 39, row 6, cell 2",False
-REQ-R0C-02216,SCR-ADM-051,4,WEAK,USER_ACTION,"table 39, row 7, cell 2",False
+REQ-R0C-02215,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 39, row 6, cell 2",False
+REQ-R0C-02216,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 39, row 7, cell 2",False
 REQ-R0C-02217,SCR-ADM-020,2,WEAK,BUSINESS_REQUIREMENT,"table 39, row 7, cell 4",False
-REQ-R0C-02218,SCR-ADM-051,4,WEAK,USER_ACTION,"table 39, row 8, cell 2",False
+REQ-R0C-02218,SCR-IPAD-650,8,STRONG,USER_ACTION,"table 39, row 8, cell 2",False
 REQ-R0C-02219,SCR-ADM-020,2,WEAK,BUSINESS_REQUIREMENT,"table 39, row 8, cell 4",False
 REQ-R0C-02220,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 39, row 9, cell 2",False
 REQ-R0C-02221,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 39, row 9, cell 4",False
@@ -1791,9 +2067,9 @@ REQ-R0C-02231,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 40, row 8, cell 2",
 REQ-R0C-02232,SCR-WEB-130,4,WEAK,BUSINESS_REQUIREMENT,"table 40, row 9, cell 2",False
 REQ-R0C-02233,SCR-WEB-130,4,WEAK,BUSINESS_REQUIREMENT,"table 40, row 10, cell 2",False
 REQ-R0C-02234,SCR-ADM-041,12,STRONG,BUSINESS_REQUIREMENT,"table 40, row 15, cell 2",False
-REQ-R0C-02235,SCR-ADM-011,8,STRONG,USER_ACTION,"table 43, row 2, cell 3",False
+REQ-R0C-02235,SCR-IPAD-650,10,STRONG,USER_ACTION,"table 43, row 2, cell 3",False
 REQ-R0C-02236,SCR-WEB-310,12,STRONG,BUSINESS_REQUIREMENT,"table 43, row 3, cell 3",False
-REQ-R0C-02237,SCR-ADM-011,6,STRONG,USER_ACTION,"table 43, row 4, cell 3",False
+REQ-R0C-02237,SCR-IPAD-670,12,STRONG,USER_ACTION,"table 43, row 4, cell 3",False
 REQ-R0C-02238,SCR-ADM-040,6,STRONG,BUSINESS_REQUIREMENT,"table 43, row 5, cell 3",False
 REQ-R0C-02239,SCR-WEB-130,6,STRONG,BUSINESS_REQUIREMENT,"table 43, row 6, cell 3",False
 REQ-R0C-02240,SCR-VIR-720,4,WEAK,BUSINESS_REQUIREMENT,"table 43, row 7, cell 3",False
@@ -1801,20 +2077,20 @@ REQ-R0C-02241,SCR-ADM-010,10,STRONG,BUSINESS_REQUIREMENT,"table 44, row 2, cell 
 REQ-R0C-02242,SCR-WEB-150,8,STRONG,BUSINESS_REQUIREMENT,"table 48, row 2, cell 3",False
 REQ-R0C-02243,SCR-WEB-150,8,STRONG,BUSINESS_REQUIREMENT,"table 48, row 3, cell 3",False
 REQ-R0C-02244,SCR-WEB-150,8,STRONG,BUSINESS_REQUIREMENT,"table 48, row 4, cell 3",False
-REQ-R0C-02245,SCR-ADM-051,4,WEAK,USER_ACTION,"table 49, row 2, cell 2",False
+REQ-R0C-02245,SCR-IPAD-650,10,STRONG,USER_ACTION,"table 49, row 2, cell 2",False
 REQ-R0C-02246,SCR-WEB-130,6,STRONG,BUSINESS_REQUIREMENT,"table 49, row 2, cell 3",False
 REQ-R0C-02247,SCR-ADM-010,10,STRONG,BUSINESS_REQUIREMENT,"table 49, row 3, cell 2",False
 REQ-R0C-02248,SCR-ADM-020,6,STRONG,BUSINESS_REQUIREMENT,"table 49, row 4, cell 1",False
 REQ-R0C-02249,SCR-VIR-720,8,STRONG,BUSINESS_REQUIREMENT,"table 49, row 4, cell 2",False
 REQ-R0C-02250,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 49, row 5, cell 3",False
 REQ-R0C-02251,SCR-ADM-030,6,STRONG,BUSINESS_REQUIREMENT,"table 49, row 7, cell 3",False
-REQ-R0C-02252,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 49, row 7, cell 5",False
+REQ-R0C-02252,SCR-IPAD-660,4,WEAK,BUSINESS_REQUIREMENT,"table 49, row 7, cell 5",False
 REQ-R0C-02253,SCR-ADM-001,2,WEAK,BUSINESS_REQUIREMENT,"table 49, row 8, cell 3",False
 REQ-R0C-02254,SCR-WEB-310,6,STRONG,BUSINESS_REQUIREMENT,"table 49, row 9, cell 2",False
 REQ-R0C-02255,SCR-ADM-011,2,WEAK,BUSINESS_REQUIREMENT,"table 49, row 9, cell 3",False
 REQ-R0C-02256,SCR-WEB-310,6,STRONG,BUSINESS_REQUIREMENT,"table 49, row 9, cell 5",False
 REQ-R0C-02257,SCR-ADM-040,10,STRONG,BUSINESS_REQUIREMENT,"table 49, row 10, cell 2",False
-REQ-R0C-02258,SCR-ADM-040,2,WEAK,BUSINESS_REQUIREMENT,"table 49, row 11, cell 2",False
+REQ-R0C-02258,SCR-IPAD-670,6,STRONG,BUSINESS_REQUIREMENT,"table 49, row 11, cell 2",False
 REQ-R0C-02259,SCR-WEB-150,8,STRONG,BUSINESS_REQUIREMENT,"table 49, row 11, cell 3",False
 REQ-R0C-02260,SCR-WEB-130,6,STRONG,BUSINESS_REQUIREMENT,"table 49, row 12, cell 3",False
 REQ-R0C-02261,SCR-VIR-720,4,WEAK,BUSINESS_REQUIREMENT,"table 49, row 13, cell 3",False

@@ -1,0 +1,53 @@
+<style>
+  body { font: 12px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; padding: 12px; }
+  h2 { font-size: 12px; margin: 14px 0 6px; text-transform: uppercase; letter-spacing: .04em; opacity: .6; }
+  h2:first-child { margin-top: 0; }
+  button { font: inherit; padding: 6px 10px; margin: 0 6px 6px 0; cursor: pointer; }
+  textarea { width: 100%; box-sizing: border-box; font-family: ui-monospace, Menlo, monospace; font-size: 11px; }
+  #out { width: 100%; box-sizing: border-box; height: 240px; font-family: ui-monospace, Menlo, monospace; font-size: 11px; white-space: pre; overflow: auto; }
+  .row { display: flex; align-items: center; gap: 8px; }
+  .hint { opacity: .6; }
+</style>
+
+<h2>Inspect (read-only)</h2>
+<button id="i-pageback">page-back 401:47774</button>
+<button id="i-select">Select component set</button>
+
+<h2>Write (paste the payload Claude gives you)</h2>
+<div class="row">
+  <button id="w-font">Bind font sizes</button>
+  <span class="hint">[{"nodeId":"…","variableId":"…"}]</span>
+</div>
+<div class="row">
+  <button id="w-align">Set primary-axis align</button>
+  <span class="hint">{"nodeIds":["…"],"value":"SPACE_BETWEEN"}</span>
+</div>
+<textarea id="payload" rows="4" placeholder="JSON payload for the write buttons"></textarea>
+
+<h2>Run any script</h2>
+<textarea id="script" rows="6" placeholder="Plugin API JS. Top-level await and return both work.
+No node.query() / node.set() / figma.createAutoLayout() — those are use_figma-only helpers.
+Available: figma, summarise(node, depth), loadFontsFor(textNode), fontSizeTokenCandidates(size)"></textarea>
+<button id="run">Run</button>
+<button id="copy">Copy result</button>
+
+<h2>Result</h2>
+<textarea id="out" readonly></textarea>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const send = (type, payload) => parent.postMessage({ pluginMessage: { type, payload } }, '*');
+
+  $('i-pageback').onclick = () => send('inspect-page-back');
+  $('i-select').onclick   = () => send('inspect-select');
+  $('w-font').onclick     = () => send('bind-font-sizes', $('payload').value);
+  $('w-align').onclick    = () => send('set-align', $('payload').value);
+  $('run').onclick        = () => send('run-script', $('script').value);
+
+  $('copy').onclick = () => { $('out').select(); document.execCommand('copy'); };
+
+  onmessage = (e) => {
+    const msg = e.data.pluginMessage;
+    if (msg && msg.type === 'result') $('out').value = JSON.stringify(msg.result, null, 2);
+  };
+</script>

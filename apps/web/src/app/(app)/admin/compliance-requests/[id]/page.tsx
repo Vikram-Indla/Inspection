@@ -50,8 +50,8 @@ export default async function ComplianceRequestWorkspace({ params, searchParams 
   const request = requestRead.data as RequestRow | null;
   const roles = new Set((roleRead.data ?? []).map(row => row.role_key));
   const isOwner = !!user && request?.owner_id === user.id;
-  const canWrite = roles.has("compliance_admin") || roles.has("form_admin");
-  const canReview = !!user && (roles.has("compliance_admin") || roles.has("reviewer")) && !isOwner;
+  const canWrite = roles.has("admin");
+  const canReview = !!user && (roles.has("admin") || roles.has("supervisor")) && !isOwner;
   const revisions = (revisionRead.data ?? []) as Revision[];
   const components = (componentRead.data ?? []) as Component[];
   const dependencies = (dependencyRead.data ?? []) as Dependency[];

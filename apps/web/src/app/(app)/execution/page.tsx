@@ -11,7 +11,7 @@ import { parseExecutionWorkspaceRead } from "./read-model";
 
 export const dynamic = "force-dynamic";
 
-const EXECUTION_READ_ROLES = new Set(["inspector", "planner", "ops", "reviewer", "auditor", "leadership"]);
+const EXECUTION_READ_ROLES = new Set(["inspector", "planner", "supervisor", "admin"]);
 
 export default async function ExecutionPage() {
   const sb = await supabaseServer();

@@ -1,30 +1,204 @@
 # Last Session
-- Time: 2026-07-27T07:43:38.681775+00:00
-- Session ID: a31883f0-3dd3-4416-830a-6359b53ef879
+- Time: 2026-08-02T00:58:36.474506+00:00
+- Session ID: b1856b48-818c-426a-b8c2-e05420df39d8
 - End reason: other
-- Branch: fix/brand-mark-patch
-- Commit: bbc4a602
+- Branch: docs/saqeel-figma-design-system
+- Commit: ade23863
 - Working tree:
 ```
-M .project-memory/audit/instructions_loaded.jsonl
+M .design-sync/mapping/design-to-code-map.json
+ M .project-memory/audit/compactions.jsonl
+ M .project-memory/audit/instructions_loaded.jsonl
  M .project-memory/audit/session_end.jsonl
  M .project-memory/audit/tool_events.jsonl
- M apps/web/.env.example
- M apps/web/next-env.d.ts
- M apps/web/next.config.mjs
+ M apps/web/src/app/(app)/admin/_components/AdminScreenRegistry.tsx
+ M apps/web/src/app/(app)/admin/audit/page.tsx
+ M apps/web/src/app/(app)/admin/bulk-violations/page.tsx
+ M apps/web/src/app/(app)/admin/compliance-approvals/layout.tsx
+ M apps/web/src/app/(app)/admin/compliance-requests/[id]/page.tsx
+ M apps/web/src/app/(app)/admin/compliance-requests/actions.ts
+ M apps/web/src/app/(app)/admin/compliance-requests/layout.tsx
+ M apps/web/src/app/(app)/admin/compliance-requests/new/layout.tsx
+ M apps/web/src/app/(app)/admin/compliance-requests/page.tsx
+ M apps/web/src/app/(app)/admin/enforcement-recommendations/page.tsx
+ M apps/web/src/app/(app)/admin/integrations/factory-data/actions.ts
+ M apps/web/src/app/(app)/admin/integrations/factory-data/layout.tsx
+ M apps/web/src/app/(app)/admin/integrations/senai-data/layout.tsx
+ M apps/web/src/app/(app)/admin/items/layout.tsx
+ M apps/web/src/app/(app)/admin/items/page.tsx
+ M apps/web/src/app/(app)/admin/layout.tsx
+ M apps/web/src/app/(app)/admin/localization/actions.ts
+ M apps/web/src/app/(app)/admin/localization/page.tsx
+ M apps/web/src/app/(app)/admin/notifications/page.tsx
+ M apps/web/src/app/(app)/admin/packages/layout.tsx
+ M apps/web/src/app/(app)/admin/packages/page.tsx
+ M apps/web/src/app/(app)/admin/page.tsx
+ M apps/web/src/app/(app)/admin/regulations/actions.ts
+ M apps/web/src/app/(app)/admin/regulations/layout.tsx
+ M apps/web/src/app/(app)/admin/regulations/page.tsx
+ M apps/web/src/app/(app)/admin/templates/actions.ts
+ M apps/web/src/app/(app)/admin/templates/page.tsx
+ M apps/web/src/app/(app)/admin/violations/layout.tsx
+ M apps/web/src/app/(app)/admin/violations/page.tsx
  M apps/web/src/app/(app)/analytics/page.tsx
+ M apps/web/src/app/(app)/compliance/approvals/page.tsx
  M apps/web/src/app/(app)/dashboard/page.tsx
- M apps/web/src/app/saqeel-runtime.css
- M apps/web/src/lib/dashboard-kpi/inspector-projection.ts
- M apps/web/src/lib/dashboard-kpi/loader.ts
- M apps/web/src/lib/dashboard-kpi/projection.ts
+ M apps/web/src/app/(app)/execution/RevampExecutionWorkspace.tsx
+ M apps/web/src/app/(app)/execution/page.tsx
+ M apps/web/src/app/(app)/factories/[id]/page.tsx
+ M apps/web/src/app/(app)/field/establishments/page.tsx
+ M apps/web/src/app/(app)/field/incident-reports/incident-reports.module.css
+ M apps/web/src/app/(app)/field/my-tasks/page.tsx
+ M apps/web/src/app/(app)/field/settings/devices/actions.ts
+ M apps/web/src/app/(app)/field/visits/data.ts
+ M apps/web/src/app/(app)/operations/RevampOperationsCenter.tsx
+ M apps/web/src/app/(app)/operations/exceptions/page.tsx
+ M apps/web/src/app/(app)/operations/live/LiveOps.tsx
+ M apps/web/src/app/(app)/operations/live/page.tsx
+ M apps/web/src/app/(app)/operations/page.tsx
+ M apps/web/src/app/(app)/planning/page.tsx
+ M apps/web/src/app/(app)/planning/single/Wizard.tsx
+ M apps/web/src/app/(app)/planning/single/page.tsx
+ M apps/web/src/app/(app)/reviews/[id]/page.tsx
+ M apps/web/src/app/(app)/reviews/page.tsx
+ M apps/web/src/app/(app)/visits/calendar/page.tsx
+ M apps/web/src/app/(app)/visits/map/page.tsx
+ M apps/web/src/app/(app)/visits/workload/page.tsx
+ M apps/web/src/app/admin/dashboard-config/page.tsx
+ M apps/web/src/lib/admin-configuration.ts
+ M apps/web/src/lib/analytics/contract.ts
+ M apps/web/src/lib/dashboard-kpi/registry.ts
+ M apps/web/src/lib/execution/capabilities.ts
+ M apps/web/src/lib/role-home.ts
+ M apps/web/src/lib/shell-navigation.ts
+ M apps/web/src/lib/workflow/lifecycles.ts
+ M apps/web/src/lib/workflow/tasks.ts
+ M "designs/admin/admin/SAQEEL Admin Form Builder.dc.html"
+ M "designs/admin/admin/SAQEEL Users Roles.dc.html"
+ M docs/design/figma/i18n/untranslated-strings.json
+ D product-contract/execution/CONTEXT_LOADING_POLICY.md
+ D product-contract/execution/CURRENT_SLICE.AI-DELTA.yaml
+ D product-contract/execution/CURRENT_SLICE.CD-021-BULK-TARGETING.yaml
+ D product-contract/execution/CURRENT_SLICE.CD-023-IMMEDIATE-VISIT-REMEDIATION.yaml
+ D product-contract/execution/CURRENT_SLICE.SAQEEL-V5-IMPLEMENTATION.yaml
+ D product-contract/execution/CURRENT_SLICE.TASK-EXECUTION-MODULE-001.yaml
+ D product-contract/execution/CURRENT_SLICE.TASK-WEB-DASHBOARD-002.yaml
+ D product-contract/execution/CURRENT_SLICE.yaml
+ D product-contract/execution/EXECUTION_DECISION_LOG.md
+ D product-contract/execution/EXECUTION_PRESERVATION_LEDGER.csv
+ D product-contract/execution/RESUME_PROTOCOL.md
+ D product-contract/execution/SESSION_HANDOFF_TEMPLATE.md
+ D product-contract/execution/STASH_INDEX_20260728.md
+ D product-contract/execution/TASK-DEMO-SEED-EXPANSION-20260726-001.yaml
+ D product-contract/execution/TASK-PLANNING-FILTERBAR-20260728-001.md
+ D product-contract/execution/TASK-PROFILE-BOOTSTRAP-20260726-001.yaml
+ D product-contract/execution/TASK-RLS-INITPLAN-WRAP-20260727-001.yaml
+ D product-contract/execution/TASK_REPOSITORY_CONSOLIDATION_20260725.yaml
+ D product-contract/execution/TASK_ROUTER.yaml
+ D product-contract/execution/TASK_SAQEEL_RESPONSIVE_REVAMP_001.yaml
+ D product-contract/execution/WORK_QUEUE.yaml
+ D product-contract/execution/slice-history/CURRENT_SLICE_COMPLIANCE_APPROVAL_QUEUE_004_backup_2026-07-20.yaml
+ D product-contract/execution/slice-history/CURRENT_SLICE_CROSS_PROVIDER_CONTRACT_014_backup_2026-07-20.yaml
+ D product-contract/execution/slice-history/CURRENT_SLICE_FACTORY_360_IPAD_011_record_2026-07-20.yaml
+ D product-contract/execution/slice-history/CURRENT_SLICE_FACTORY_360_IPAD_API_CONTRACT_CONSUMPTION_015_backup_2026-07-20.yaml
+ D product-contract/execution/slice-history/CURRENT_SLICE_FACTORY_360_IPAD_API_CONTRACT_CONSUMPTION_015_record_2026-07-20.yaml
+ D product-contract/execution/slice-history/CURRENT_SLICE_INDUSTRY_SHARED_GAP_013_BACKUP_2026-07-20.yaml
+ D product-contract/execution/slice-history/CURRENT_SLICE_INSPECTOR_SHELL_UPLIFT_002_backup_2026-07-18.yaml
+ D product-contract/execution/slice-history/CURRENT_SLICE_IPAD_M04_OVERRIDE_003_backup_2026-07-17.yaml
+ D product-contract/execution/slice-history/CURRENT_SLICE_MVP3_COMPLETE_IMPLEMENTATION_001_backup_2026-07-18.yaml
+ D product-contract/execution/slice-history/CURRENT_SLICE_PLATFORM_FOUNDATION_PROMOTION_003_backup_2026-07-18.yaml
+ D product-contract/execution/slice-history/CURRENT_SLICE_QA_CYCLE2_RETEST_001_backup_2026-07-17.yaml
+ D product-contract/execution/slice-history/CURRENT_SLICE_TASK_G11_REMEDIATION_PERFORMANCE_001_backup_2026-07-23.yaml
+ D product-contract/execution/slice-history/CURRENT_SLICE_TASK_WEB_ADMIN_PHASE1_PLAN_001_approved_2026-07-23.yaml
+ M product-contract/sessions/COMPACTION_CHECKPOINT.md
  M product-contract/sessions/LAST_SESSION.md
-?? apps/web/.next-verify/
-?? apps/web/START-HERE.md
-?? apps/web/dump-shell.mjs
-?? supabase/seeds/demo/03-compliance.sql
-?? supabase/seeds/demo/05-configuration.sql
-?? supabase/seeds/demo/06-factory360.sql
-?? supabase/seeds/demo/CONFIGURATION-PROVENANCE.md
+ M supabase/seeds/demo/07-platform-admin.sql
+?? apps/web/demo-screens/
+?? apps/web/e2e/demo-screens.spec.ts
+?? apps/web/e2e/reviews-check.spec.ts
+?? apps/web/e2e/tour-built-pages.spec.ts
+?? apps/web/e2e/verify-unregistered-establishment.spec.ts
+?? apps/web/src/app/(app)/admin/_components/AdminConfigurationJourney.tsx
+?? apps/web/src/app/(app)/admin/delegation/
+?? apps/web/src/app/(app)/factory-360/
+?? apps/web/src/app/(app)/field/establishments/unregistered/
+?? apps/web/src/app/(app)/planning/calendar/
+?? apps/web/src/app/(app)/planning/map/
+?? apps/web/src/app/(app)/planning/workload/
+?? apps/web/src/app/(app)/visits/VisitViewNavigation.tsx
+?? apps/web/src/app/(app)/visits/calendar/CalendarView.tsx
+?? apps/web/src/app/(app)/visits/map/MapView.tsx
+?? apps/web/src/app/(app)/visits/workload/WorkloadView.tsx
+?? apps/web/src/app/saqeel-tokens.figma.json
+?? docs/architecture/
+?? docs/design/figma/handoff/BUILD-B3-VISIT-STATEMENT.md
+?? docs/design/figma/handoff/BUILD-N1-CONTROL-STATES.md
+?? docs/design/figma/handoff/BUILD-N2-FORM-PRIMITIVES.md
+?? docs/design/figma/handoff/BUILD-Q2-INCIDENT-VIOLATION.md
+?? docs/design/figma/handoff/BUILD-S2-SUMMONS-NOTICE.md
+?? docs/design/figma/handoff/BUILDPACK-W1-VISIT-REPORTS.md
+?? docs/design/figma/handoff/BUILDPACK-W2-HOME-TASKS.md
+?? docs/design/figma/handoff/BUILDPACK-W3-IDENTIFY-CHALLENGE.md
+?? docs/design/figma/handoff/BUILDPACK-W4-CHEMICAL-REPORT.md
+?? docs/design/figma/handoff/BUILDPACK-W5-CUSTOMS-REPORT.md
+?? docs/design/figma/handoff/BUILDPACK-W6-SAFETY-REPORT.md
+?? docs/design/figma/handoff/BUILDPACK-W7-VISIT-STATEMENT.md
+?? docs/design/figma/handoff/BUILDPACK-W8-ESTABLISHMENT-MANAGEMENT.md
+?? docs/design/figma/handoff/BUILDPACK-W9-COMPONENTS-FORMS.md
+?? docs/design/figma/handoff/P0-SOURCE-FIDELITY-2026-08-01.md
+?? docs/design/figma/handoff/RECONCILIATION-LEDGER.md
+?? docs/design/figma/handoff/RECONCILIATION-ORPHANED-WORK.md
+?? docs/design/figma/handoff/REPAIR-S1-CANVAS-PITCH-1024.md
+?? docs/design/figma/handoff/REPAIR-S8-PANEL-CONTENT-RELOCATION.md
+?? docs/design/figma/handoff/REPAIR-V1-TYPOGRAPHY.md
+?? docs/design/figma/handoff/REPAIR-V2-TABLES.md
+?? docs/design/figma/handoff/REPAIR-V3-CONTROLS.md
+?? docs/design/figma/handoff/REPAIR-V4-NAV-ICONS.md
+?? docs/design/figma/handoff/REPAIR-V6-CANVAS.md
+?? docs/design/figma/handoff/SIGNATURE-DIFF-METHOD.md
+?? docs/design/figma/handoff/_assets/
+?? docs/design/figma/handoff/evidence/
+?? docs/design/figma/tooling/saqeel-runner/
+?? docs/design/figma/traceability/INSPECTOR-DELINK-CLOSURE-2026-08-02.json
+?? docs/design/figma/traceability/INSPECTOR-DELINK-CLOSURE-2026-08-02.missing.csv
+?? docs/design/figma/traceability/INSPECTOR-DELINK-FINAL-2026-08-02.json
+?? docs/design/figma/traceability/INSPECTOR-DELINK-FINAL-2026-08-02.mappings.csv
+?? docs/design/figma/traceability/INSPECTOR-REST-RECONCILIATION-2026-08-02.json
+?? docs/design/figma/traceability/INSPECTOR-REST-RECONCILIATION-2026-08-02.missing.csv
+?? docs/design/figma/traceability/INSPECTOR-SHARED-DELIVERY-2026-08-02.json
+?? docs/design/figma/traceability/apply-inspector-route-authority-overrides.mjs
+?? docs/design/figma/traceability/apply-inspector-shared-delivery.mjs
+?? docs/design/figma/traceability/build-inspector-rest-reconciliation.mjs
+?? docs/design/figma/traceability/close-inspector-delink-reconciliation.mjs
+?? outputs/019fb049-a4b6-7db0-9e41-2dbe5c37510a/
+?? supabase/migrations/20260719220000_compliance_lookup_management.sql
+?? supabase/migrations/20260719223000_compliance_lookup_type_canonicalization.sql
+?? supabase/migrations/20260719224000_compliance_enforcement_component_atomic.sql
+?? supabase/migrations/20260721020805_planning_capabilities.sql
+?? supabase/migrations/20260721021513_planning_canonical_structures.sql
+?? supabase/migrations/20260721021552_planning_visits_update_policy.sql
+?? supabase/migrations/20260726103248_reopening_notices.sql
+?? supabase/migrations/20260726103328_reopening_notice_line_type_guard_revoke_execute.sql
+?? supabase/migrations/20260726112205_planning_visits_created_at_idx.sql
+?? supabase/migrations/20260727071506_dashboard_read_rls_consolidation.sql
+?? supabase/migrations/20260727073033_analytics_metrics_expansion.sql
+?? supabase/migrations/20260729003741_four_role_package_configuration_authority.sql
+?? supabase/migrations/20260729004357_execution_semantic_audit_registry_seed.sql
+?? supabase/migrations/20260729004841_execution_supervisor_review_authority.sql
+?? supabase/migrations/20260729004955_planning_single_publish_atomic_contract.sql
+?? supabase/migrations/20260729005053_planning_single_package_set_guard_fix.sql
+?? supabase/migrations/20260729005125_planning_single_package_set_guard_column_alias_fix.sql
+?? supabase/migrations/20260729005319_planning_single_package_set_duplicate_guard_fix.sql
+?? supabase/migrations/20260729005424_planning_single_package_version_alias_fix.sql
+?? supabase/migrations/20260729005528_planning_single_publisher_routing_authority.sql
+?? supabase/migrations/20260729005622_planning_single_atomic_routing_authority.sql
+?? supabase/migrations/20260729005840_execution_engine_settings_seed.sql
+?? supabase/migrations/20260729010740_execution_supervisor_review_read_capability.sql
+?? supabase/migrations/20260729012158_execution_four_role_review_read_convergence.sql
+?? supabase/migrations/20260729153000_planner_creator_scheduled_visit_read.sql
+?? supabase/migrations/20260729154000_planner_external_location_guard.sql
+?? supabase/migrations/20260729154500_planner_creator_scheduled_read_role_repair.sql
+?? supabase/migrations/20260801225413_fix_dec032_submission_snapshot_digest.sql
+?? supabase/migrations/20260802010000_admin_delegation.sql
 ```
 - Required next action: complete `SESSION_HANDOFF_TEMPLATE.md` and append `SESSION_LEDGER.json`.

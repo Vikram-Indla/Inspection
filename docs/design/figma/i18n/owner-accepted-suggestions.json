@@ -83,5 +83,17 @@
   "matched": "SLA -> escalation / Escalation role",
   "composed": true,
   "reservation": "COMPOSED. No standalone 'Escalate' exists, but تصعيد is the term every approved escalation string uses — 'SLA → escalation' -> 'اتفاقية مستوى الخدمة ← التصعيد', 'Escalation role' -> 'دور التصعيد', 'Repeat in 12mo → escalate one level' -> 'التكرار خلال 12 شهرًا ← تصعيد مستوى واحد'. Those rows are status 'draft' in ui_strings, so the term itself is not yet promoted. Verbal noun, matching رفض. Needs confirmation."
+ },
+ "Region boundaries: GADM v4.1 · lib/ksa-regions.ts · projected positions, not GPS": {
+  "ar": "حدود المناطق: GADM v4.1 · lib/ksa-regions.ts · مواقع تقديرية وليست GPS",
+  "matched": "Mapbox GL · mapbox/standard · projected positions, not GPS",
+  "composed": true,
+  "reservation": "COMPOSED. The EN caption is new copy written in phase 2 when the placeholder ellipse was replaced by real geometry, so it has no catalogue entry. The tail 'مواقع تقديرية وليست GPS' is lifted verbatim from the approved Arabic for the old Mapbox caption. 'حدود المناطق' is composed from حدود (Boundaries kept visible -> حدود ظاهرة بوضوح) and المناطق (All regions -> جميع المناطق). GADM v4.1, lib/ksa-regions.ts and GPS stay Latin — they are identifiers with no Arabic form. Needs confirmation."
+ },
+ "All report types": {
+  "ar": "جميع أنواع التقارير",
+  "matched": "All types / Report type lookup",
+  "composed": true,
+  "reservation": "COMPOSED from two approved strings: 'All types' -> 'جميع الأنواع' and 'Report type lookup' -> 'قائمة أنواع التقارير'. No new vocabulary. Needs confirmation."
  }
 }

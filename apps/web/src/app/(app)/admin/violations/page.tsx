@@ -23,14 +23,14 @@ import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 //    indexes enforce one active and one draft per violation.
 //  • violation_codes AND penalty_mappings row changes ARE audit-tracked at the DB
 //    (trg_audit_violation_codes / trg_audit_penalty_mappings → audit_events). RLS:
-//    SELECT any authenticated; writes compliance_admin/form_admin (fail-closed
+//    SELECT any authenticated; writes require the admin role (fail-closed
 //    requireConfigurationWriter guard), plus a module route-visibility guard.
 //
 // Category, applicability, governed version lineage, trigger trace and penalty
 // lifecycle fields consume the authoritative completion migration.
 export const dynamic = "force-dynamic";
 
-const WRITER_ROLES = new Set(["compliance_admin", "form_admin"]);
+const WRITER_ROLES = new Set(["admin"]);
 
 type Lifecycle = "active" | "future" | "deactivated";
 // Explicit derivation (never a stored enum): future if it has not started;

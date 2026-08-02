@@ -181,10 +181,14 @@ export default async function FieldEstablishments({ searchParams }: { searchPara
     value ? new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", { dateStyle: "medium" }).format(new Date(value)) : "—";
 
   // Header CTA — governed unregistered-visit entry point (matches the design's
-  // "+ Unlicensed establishment" action). Links to the Immediate Visit workflow
-  // rather than opening a fabricated create form.
+  // "+ Unlicensed establishment" action). Jira INSP-605: this used to hand off
+  // to /planning/immediate, but that page is planner/supervisor-only
+  // (hardcoded actorMode, explicit role gate) and would reject an inspector.
+  // Routes instead to field/establishments/unregistered, which calls the same
+  // governed create_immediate_visit RPC with actor_mode='inspector' — its own
+  // separate, already-authorized branch.
   const addUnlicensed = (
-    <Link className="btn btn-primary btn-sm" href="/planning/immediate">
+    <Link className="btn btn-primary btn-sm" href="/field/establishments/unregistered">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: 15, height: 15 }} aria-hidden="true">
         <path d="M12 5v14M5 12h14" />
       </svg>
@@ -230,7 +234,7 @@ export default async function FieldEstablishments({ searchParams }: { searchPara
                 "If no licensed establishment matches the search, a new (unlicensed) establishment can be created.",
                 "في حال عدم وجود منشأة مرخّصة مطابقة للبحث، يمكن إنشاء منشأة جديدة (غير مرخصة).")}
             </span>
-            <Link className="btn btn-primary btn-sm" href="/planning/immediate">
+            <Link className="btn btn-primary btn-sm" href="/field/establishments/unregistered">
               {tr("field.establishments.addUnlicensed", "Unlicensed establishment", "منشأة غير مرخصة")}
             </Link>
           </div>

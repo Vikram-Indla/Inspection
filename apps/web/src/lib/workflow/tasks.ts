@@ -39,13 +39,13 @@ export function taskScopeMatch(manager: ManagerScope, task: TaskScope): boolean 
 }
 
 export type Actor = { id: string; roles: string[] };
-const MANAGER_ROLES = ["ops", "planner", "leadership", "workflow_admin"];
+const MANAGER_ROLES = ["supervisor", "planner", "admin"];
 
 /** A user may manage (reassign / change status) a task if they are the assignee's
- *  manager (manager role + scope) or hold a workflow-admin role. */
+ *  manager (manager role + scope) or hold the admin role. */
 export function canManageTask(actor: Actor, manager: ManagerScope, task: TaskScope): boolean {
   if (!actor.roles.some((r) => MANAGER_ROLES.includes(r))) return false;
-  if (actor.roles.includes("workflow_admin")) return true;
+  if (actor.roles.includes("admin")) return true;
   return taskScopeMatch(manager, task);
 }
 

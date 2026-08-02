@@ -29,9 +29,14 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
         <p className="desc">Governed aggregates for {parsed.value.periodFrom} through {parsed.value.periodTo}. Values reflect only records visible to your role and scope.</p>
         {parsed.value.compareFrom && parsed.value.compareTo ? <p className="desc">Comparison period {parsed.value.compareFrom} through {parsed.value.compareTo}: Decision required before numeric comparison is enabled.</p> : null}
       </div>
-        <span className={`badge ${result.kind === "degraded" ? "badge-warning" : result.stale ? "badge-pending" : "badge-compliant"}`}>
-          {result.kind === "degraded" ? "Source degraded" : result.stale ? "Source stale" : "Source available"}
-        </span>
+        <div className="row">
+          <span className={`badge ${result.kind === "degraded" ? "badge-warning" : result.stale ? "badge-pending" : "badge-compliant"}`}>
+            {result.kind === "degraded" ? "Source degraded" : result.stale ? "Source stale" : "Source available"}
+          </span>
+          <Link className="btn btn-secondary btn-sm" href="/operations">Operations</Link>
+          <Link className="btn btn-secondary btn-sm" href="/execution">Execution</Link>
+          <Link className="btn btn-secondary btn-sm" href="/reviews">Review queue</Link>
+        </div>
       </header>
       <form className="grid-toolbar" method="get" action="/analytics" aria-label="Analytics filters">
         <div className="field"><label htmlFor="analytics-from">From</label><input className="input" id="analytics-from" type="date" name="periodFrom" defaultValue={parsed.value.periodFrom} /></div>

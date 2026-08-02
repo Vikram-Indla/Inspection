@@ -3,10 +3,11 @@ import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 import TemplateRegistry, { type TemplateRow, type TemplateStrings } from "../packages/TemplateRegistry";
+import AdminConfigurationJourney from "../_components/AdminConfigurationJourney";
 
 export const dynamic = "force-dynamic";
 
-const WRITER_ROLES = new Set(["compliance_admin", "form_admin"]);
+const WRITER_ROLES = new Set(["admin"]);
 
 export default async function Templates() {
   const { t, locale } = await useT();
@@ -62,6 +63,20 @@ export default async function Templates() {
         <span className="badge badge-info">{t("admin.templates.context", "Template configuration")}</span>
       }
     >
+      <AdminConfigurationJourney
+        current="templates"
+        labels={{
+          ariaLabel: t("admin.configurationJourney.ariaLabel", "Configuration journey"),
+          eyebrow: t("admin.configurationJourney.eyebrow", "Governed configuration"),
+          title: t("admin.configurationJourney.title", "Regulation to inspection package"),
+          description: t("admin.configurationJourney.description", "Publish the legal source, prepare immutable templates, then assemble and publish the inspection package that references them."),
+          regulations: t("admin.configurationJourney.regulations", "Regulations"),
+          templates: t("admin.configurationJourney.templates", "Templates"),
+          packages: t("admin.configurationJourney.packages", "Packages"),
+          current: t("admin.configurationJourney.current", "Current step"),
+        }}
+      />
+
       {error && (
         <div className="alert alert-critical" role="alert">
           <div>
@@ -84,7 +99,7 @@ export default async function Templates() {
       {!error && !canWrite && (
         <div className="alert" role="note">
           <strong>{t("admin.templates.readonly.title", "Read-only template access")}</strong>{" "}
-          {t("admin.templates.readonly.body", "Creating or changing templates requires compliance_admin or form_admin." )}
+          {t("admin.templates.readonly.body", "Creating or changing templates requires the admin role." )}
         </div>
       )}
 

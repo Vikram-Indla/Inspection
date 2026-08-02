@@ -12,9 +12,11 @@ import {
 import CreateVisitSection, { type CreateVisitMethod } from "./CreateVisitSection";
 import DiscardDraftButton from "./DiscardDraftButton";
 import ExportButton from "./ExportButton";
+import RefreshButton from "./RefreshButton";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { formatDateTime } from "@/lib/dates";
 import { IconBlocked, IconCalendar } from "@/app/icons";
+import VisitViewNavigation from "../visits/VisitViewNavigation";
 
 export const dynamic = "force-dynamic";
 
@@ -257,6 +259,9 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
 
   return (
     <Shell current="/planning" title="">
+      <VisitViewNavigation active="list" ariaLabel={t("visit.views.aria", "Planning views")}
+        labels={{ list: t("plan.home.title", "Planning"), calendar: t("visit.views.calendar", "Calendar"), map: t("visit.views.map", "Map"), workload: t("visit.views.workload", "Workload") }}
+        basePath="/planning" />
       <div className="sq-planning-heading">
         <h1>{title}</h1>
         <span>{tr("plan.list.subtitle", "Create inspection visits — bulk, single or immediate", "إنشاء زيارات التفتيش — جماعية أو فردية أو فورية")}</span>
@@ -275,7 +280,13 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
             cappedNote: tr("plan.list.exportCapped", "Exported the first {n} matching rows — refine the filters for the rest.", "تم تصدير أول {n} صفًا مطابقًا — حسّن عوامل التصفية للباقي."),
           }} />
         )}
-        <span />
+        <RefreshButton
+          label={tr("plan.list.refresh", "Refresh", "تحديث")}
+          busyLabel={tr("plan.list.refreshing", "Refreshing…", "جارٍ التحديث…")}
+        />
+        <a className="btn btn-ghost" href="/planning/visits">
+          {tr("plan.list.visitManagement", "Visit management", "إدارة الزيارات")}
+        </a>
       </CreateVisitSection>
 
       {/* The toolbar is one line on desktop. Its two disclosures expand inline

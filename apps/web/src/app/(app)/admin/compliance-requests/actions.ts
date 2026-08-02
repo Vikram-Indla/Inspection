@@ -72,7 +72,7 @@ async function notifyOwner(sb: Awaited<ReturnType<typeof supabaseServer>>, reque
 
 async function notifyReviewers(sb: Awaited<ReturnType<typeof supabaseServer>>, requestId: string) {
   const [{ data: roles }, { data: request }] = await Promise.all([
-    sb.from("user_roles").select("user_id").in("role_key", ["reviewer", "compliance_admin"]),
+    sb.from("user_roles").select("user_id").in("role_key", ["supervisor", "admin"]),
     sb.from("compliance_configuration_requests").select("owner_id,request_number,current_revision,status").eq("id", requestId).maybeSingle(),
   ]);
   const recipients = Array.from(new Set((roles ?? []).map(row => row.user_id)))

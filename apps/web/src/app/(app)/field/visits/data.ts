@@ -2,13 +2,6 @@ import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { FieldVisit } from "./VisitsClient";
 
-const CLEAN_FACTORY_CODES = new Set([
-  "F-1101", "F-1102", "F-1103", "F-1104", "F-1105",
-  "F-2201", "F-2202", "F-2203", "F-2204", "F-2214", "F-2215", "F-2216", "F-2217",
-  "F-3301", "F-3302", "F-3303", "F-3304", "F-3305", "F-4401", "F-4402",
-  "F-5501", "F-5502", "F-6601", "F-6602",
-]);
-
 type Row = {
   status: string | null; return_reason: string | null;
   visits: {
@@ -29,7 +22,9 @@ export async function loadAssignedVisits(sb: SupabaseClient, inspectorId: string
   if (read.error) return { visits: [] as FieldVisit[], error: read.error };
   const visits = ((read.data ?? []) as unknown as Row[])
     .filter((row): row is Row & { visits: NonNullable<Row["visits"]> } => !!row.visits?.factories)
-    .filter(row => CLEAN_FACTORY_CODES.has(row.visits.factories!.factory_code ?? ""))
+    // The assignment relation is the Inspector's governed scope. Do not apply
+    // a fixture-era factory-code allowlist here: it would hide a real visit
+    // immediately after a Supervisor approves and assigns it.
     .filter(row => !isTestFixtureEstablishment(row.visits.factories))
     .map((row): FieldVisit => ({
       id: row.visits.id, visitReference: row.visits.visit_reference,

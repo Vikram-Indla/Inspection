@@ -200,17 +200,24 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
   );
 
   return (
-    <div>
-      <div className="sq-topbar-row"><h1>{copy(locale, "Inspection Execution", "تنفيذ التفتيش")}</h1></div>
+    <div className="sq-execution" data-saqeel-screen="supervisor-execution">
+      <div className="sq-topbar-row">
+        <h1>{copy(locale, "Inspection Execution", "تنفيذ التفتيش")}</h1>
+        <nav className="row" aria-label={copy(locale, "Supervisor execution journey", "مسار المشرف للتنفيذ")}>
+          <a className="btn btn-secondary btn-sm" href="/operations">{copy(locale, "Operations", "العمليات")}</a>
+          <a className="btn btn-secondary btn-sm" href="/operations/live">{copy(locale, "Live operations", "العمليات المباشرة")}</a>
+          <a className="btn btn-secondary btn-sm" href="/reviews">{copy(locale, "Review queue", "قائمة المراجعة")}</a>
+        </nav>
+      </div>
       <div className="alert alert-critical" role="status">
         <div>
-          <strong>{copy(locale, "Submission service unavailable.", "خدمة التقديم غير متاحة.")}</strong> {copy(locale, "Inspection preparation and execution records remain available, but real submission is blocked by. No successful submission is claimed from this destination.", "تظل سجلات التحضير والتنفيذ متاحة، لكن التقديم الفعلي محظور بموجب. لا تدّعي هذه الوجهة نجاح أي تقديم.")}
+          <strong>{copy(locale, "Submission service unavailable.", "خدمة التقديم غير متاحة.")}</strong> {copy(locale, "Inspection preparation and execution records remain available, but new submissions and resubmissions are blocked by DEC-032. No successful submission is claimed from this destination.", "تظل سجلات التحضير والتنفيذ متاحة، لكن عمليات التقديم وإعادة التقديم الجديدة محظورة بموجب القرار DEC-032. لا تدّعي هذه الوجهة نجاح أي تقديم.")}
         </div>
       </div>
       <div className="alert alert-info" role="status">
         <div>
           <strong>{copy(locale, "Live tracking is not available in this Web view.", "التتبع المباشر غير متاح في عرض الويب هذا.")}</strong>{" "}
-          {copy(locale, "remains the authority boundary for telemetry frequency, accuracy, and geofence policy. The map uses recorded official factory coordinates only.", "يظل القرار هو الحد المرجعي لتواتر القياس ودقته وسياسة النطاق الجغرافي. تستخدم الخريطة إحداثيات المصنع الرسمية المسجلة فقط.")}
+          {copy(locale, "DEC-002 remains the authority boundary for telemetry frequency, accuracy, and geofence policy. The map uses recorded official factory coordinates only.", "يظل القرار DEC-002 هو الحد المرجعي لتواتر القياس ودقته وسياسة النطاق الجغرافي. تستخدم الخريطة إحداثيات المصنع الرسمية المسجلة فقط.")}
         </div>
       </div>
       {totalVisibleRows > rows.length ? (
@@ -221,12 +228,12 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
           </div>
         </div>
       ) : null}
-      <section className="panel">
+      <section className="sq-execution__week">
         <div className="panel-header">
           <strong>{calendarMode === "week" ? copy(locale, "Week", "أسبوع") : copy(locale, "Five-week view", "عرض خمسة أسابيع")} {formatDate(locale, weekStart.toISOString()).replace(/^\d{2} /, "")} – {formatDate(locale, calendarEnd.toISOString())}</strong>
           <span className="seg"><button className="seg-opt" type="button" aria-pressed={calendarMode === "week"} onClick={() => setCalendarMode("week")}>{copy(locale, "Week", "أسبوع")}</button><button className="seg-opt" type="button" aria-pressed={calendarMode === "month"} onClick={() => setCalendarMode("month")}>{copy(locale, "Month", "شهر")}</button></span>
         </div>
-        <div className="panel-body">
+        <div className="sq-execution__days">
           {calendarDays.map(day => {
             const key = day.toISOString().slice(0, 10);
             const dayRows = calendarRows.filter(row => (row.executionDate ?? row.windowStart).slice(0, 10) === key);
@@ -241,7 +248,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
         <p>{copy(locale, "Dragging a visit onto a day opens the configuration drawer with the planning window enforced — it never silently reschedules.", "يؤدي سحب الزيارة إلى يوم إلى فتح لوحة الإعداد مع فرض نافذة التخطيط، ولا تُعاد الجدولة بصمت.")}</p>
       </section>
 
-      <div>
+      <div className="sq-execution__viewbar">
         <nav className="seg" aria-label={copy(locale, "Execution view", "عرض التنفيذ")}>
           <button className="seg-opt" type="button" aria-pressed={view === "mine"} onClick={() => setView("mine")}>{copy(locale, "My inspections", "تفتيشاتي")}</button>
           <button className="seg-opt" type="button" aria-pressed={view === "all"} onClick={() => setView("all")}>{copy(locale, "All inspections", "كل التفتيشات")}</button>
@@ -250,7 +257,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
         <span className="tl-meta">{copy(locale, "Map markers use recorded official factory coordinates—not live inspector tracking.", "تستخدم علامات الخريطة إحداثيات المصنع الرسمية المسجلة، وليست تتبعاً حياً للمفتش.")}</span>
       </div>
 
-      <div className="grid-toolbar">
+      <div className="sq-execution__filters">
         <div className="input-affix"><input className="input" type="search" aria-label={copy(locale, "Search execution visits", "البحث في زيارات التنفيذ")} value={query} onChange={event => setQuery(event.target.value)} placeholder={copy(locale, "Search factory, CR, or visit reference…", "ابحث باسم المصنع أو السجل أو مرجع الزيارة…")} /></div>
         {filterButton(copy(locale, "Inspector", "المفتش"), "inspector")}
         {filterButton(copy(locale, "Region", "المنطقة"), "region")}
@@ -269,7 +276,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
       ) : null}
 
       {view === "map" ? (
-        <section className="map-panel">
+        <section className="sq-execution__map">
           {markers.length ? <GeoMap
             center={[23.8859, 45.0792]}
             zoom={5}
@@ -286,7 +293,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
             : <div><strong>{copy(locale, "No governed coordinates in this view", "لا توجد إحداثيات معتمدة في هذا العرض")}</strong><p>{copy(locale, "The table views remain fully usable.", "تظل عروض الجدول متاحة بالكامل.")}</p></div>}
         </section>
       ) : (
-        <section className="table-wrap">
+        <section className="sq-execution__tablewrap">
           <table className="table">
             <thead><tr>
               <th>{copy(locale, "Visit ref", "مرجع الزيارة")}</th><th>{copy(locale, "Factory", "المصنع")}</th><th>{copy(locale, "Planning window", "نافذة التخطيط")}</th><th>{copy(locale, "Execution date", "تاريخ التنفيذ")}</th><th>{copy(locale, "Visit type", "نوع الزيارة")}</th><th>{copy(locale, "Visit mode", "نمط الزيارة")}</th><th>{copy(locale, "Risk", "المخاطر")}</th>
@@ -319,7 +326,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
         </section>
       )}
       {selected ? (
-        <div ref={detailDialogRef} className="drawer" role="dialog" aria-modal="true" aria-labelledby="execution-detail-title" aria-busy={selectedDetail === null}>
+        <div ref={detailDialogRef} className="sq-execution__drawer" role="dialog" aria-modal="true" aria-labelledby="execution-detail-title" aria-busy={selectedDetail === null}>
           <div className="drawer-header">
           <h2 id="execution-detail-title">{selected.factory}</h2>
           <button className="btn btn-ghost btn-icon" ref={detailCloseRef} type="button" aria-label={copy(locale, "Close visit details", "إغلاق تفاصيل الزيارة")} onClick={() => setSelected(null)}>×</button>
@@ -370,7 +377,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
         </div>
       ) : null}
       {reschedule ? (
-        <div ref={rescheduleDialogRef} className="drawer" role="dialog" aria-modal="true" aria-labelledby="reschedule-title">
+        <div ref={rescheduleDialogRef} className="sq-execution__drawer" role="dialog" aria-modal="true" aria-labelledby="reschedule-title">
           <div className="drawer-header">
           <h2 id="reschedule-title">{copy(locale, "Configure", "إعداد")} {reschedule.row.visitReference}</h2>
           <button className="btn btn-ghost btn-icon" ref={rescheduleCloseRef} type="button" aria-label={copy(locale, "Close configuration drawer", "إغلاق لوحة الإعداد")} onClick={() => setReschedule(null)}>×</button>

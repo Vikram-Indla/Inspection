@@ -72,7 +72,7 @@ export type WizardStrings = {
   degradedBadge: string; degradedRule: string; duplicateWarning: string; duplicateOpenVisit: string; duplicateStatusLabel: string;
   portfolioStep: string; crIdentity: string; selectLicenceHint: string; licenceRequired: string;
   noLicences: string; noFactoryLink: string; plantLabel: string; selectedProfile: string; sourceLabel: string;
-  prefilledHandoff: string; prefillMiss: string; draftRestored: string;
+  prefilledHandoff: string; adminPackageHandoff: string; prefillMiss: string; draftRestored: string;
   saveDraft: string; savingDraft: string; draftSavedPrefix: string; draftError: string;
   licenseStep: string; licenseSelect: string; licenseLabel: string; licenseNone: string;
   locationStep: string; officialAddress: string; officialPin: string; noOfficialPin: string;
@@ -93,7 +93,7 @@ export type WizardStrings = {
 
 export default function Wizard({
   query, portfolios, results, registryUnavailable, initialSelection, draft, draftConfig,
-  sourceChannel, handoff, prefillMiss, packages, inspectors, strings, virtualEligible,
+  sourceChannel, handoff, adminPackageHandoff, prefillMiss, packages, inspectors, strings, virtualEligible,
   transitionsExecutable, locale,
 }: {
   query: string;
@@ -105,6 +105,7 @@ export default function Wizard({
   draftConfig: DraftConfig;
   sourceChannel: string;
   handoff: boolean;
+  adminPackageHandoff: string | null;
   prefillMiss: boolean;
   packages: Pkg[];
   inspectors: Insp[];
@@ -325,6 +326,11 @@ export default function Wizard({
       {prefillMiss && (
         <div className="alert alert-warning" role="status">
           <div>{strings.prefillMiss}</div>
+        </div>
+      )}
+      {adminPackageHandoff && (
+        <div className="alert alert-info" role="status">
+          <div>{strings.adminPackageHandoff} <bdi>{adminPackageHandoff}</bdi></div>
         </div>
       )}
 

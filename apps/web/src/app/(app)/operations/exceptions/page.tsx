@@ -5,6 +5,7 @@ import { resolveFeatureFlag } from "@/lib/providers/env-gate";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
 import { groupExceptions, groupCountEqualsSource, type ExceptionSource } from "@/lib/operations/exceptions";
 import EmptyState from "@/components/EmptyState";
+import Link from "next/link";
 
 // TASK-MVP2-M2-09-OPS-INTEL-001 · MVP2-REQ-0120,0124 · CD-047 (exception_board_v1).
 // Projection over EXISTING objects — no synthetic rows (group-count == source-count).
@@ -12,16 +13,16 @@ const MODES = ["off", "on"] as const;
 
 export default async function ExceptionsPage() {
   const { t } = await useT();
-  if (resolveFeatureFlag(process.env.FEATURE_EXCEPTION_BOARD, MODES, "off") !== "on") {
+  if (resolveFeatureFlag(process.env.FEATURE_EXCEPTION_BOARD, MODES, "on") !== "on") {
     return (
       <Shell current="/operations" title={t("exc.title", "Exception board")} context={<span className="badge badge-warning">REQ-0120</span>}>
-        <NotYetBoundary title={t("exc.title", "Exception board")} consequence={t("exc.off", "This board is not turned on here.")}
+        <NotYetBoundary title={t("exc.title", "Exception board")} consequence={t("exc.off", "The operations exception board is not enabled here.")}
           seam="FEATURE_EXCEPTION_BOARD=off" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
       </Shell>
     );
   }
   const sb = await supabaseServer();
-  const [{ data: cases }, { data: rex }] = await Promise.all([
+  const [{ data: cases, error: casesError }, { data: rex, error: riskError }] = await Promise.all([
     sb.from("cases").select("id, status, opened_at").in("status", ["open", "in_progress"]),
     sb.from("risk_exceptions").select("id, status, created_at").eq("status", "open"),
   ]);
@@ -31,20 +32,49 @@ export default async function ExceptionsPage() {
   ];
   const groups = groupExceptions(sources);
   const invariantOk = groupCountEqualsSource(sources); // must be true — no synthetic rows
+  const degraded = Boolean(casesError || riskError);
   return (
     <Shell current="/operations" title={t("exc.title", "Exception board")} context={<span className="badge badge-info">REQ-0120,0124</span>}>
-      <div className="sq-banner"><div><strong>{t("exc.banner.title", "Live status.")}</strong> {t("exc.banner.body", "This board shows real cases and risk exceptions. Decisions stay on the original record. Every count matches its source — nothing here is made up.")} {invariantOk ? "✓" : "⚠"}</div></div>
+      <div className="stack" data-saqeel-screen="supervisor-exceptions">
+      <header className="page-header">
+        <div>
+          <h1>{t("exc.title", "Exception board")}</h1>
+          <p className="tl-meta">{t("exc.subtitle", "RLS-scoped operational exceptions derived from the owning case and risk records.")}</p>
+        </div>
+        <nav className="row" aria-label={t("exc.journey", "Supervisor operations journey")}>
+          <Link className="btn btn-secondary" href="/operations">{t("ops.title", "Operations Center")}</Link>
+          <Link className="btn btn-secondary" href="/operations/live">{t("ops.live.title", "Live operations")}</Link>
+          <Link className="btn btn-secondary" href="/execution">{t("execution.title", "Execution")}</Link>
+          <Link className="btn btn-secondary" href="/reviews">{t("reviews.title", "Review queue")}</Link>
+        </nav>
+      </header>
+      <div className="sq-banner"><div><strong>{t("exc.banner.title", "Command posture.")}</strong> {t("exc.banner.body", "Exceptions are a projection over real objects — decisions stay on the owning object. Counts trace 1:1 to sources (no synthetic rows).")} {invariantOk ? "✓" : "⚠"}</div></div>
+      {degraded ? (
+        <div className="alert alert-warning" role="status">
+          <div><strong>{t("exc.degraded.title", "Exception sources are partially unavailable.")}</strong> {t("exc.degraded.body", "Available RLS-scoped groups remain visible; unavailable sources are not represented as zero.")}</div>
+        </div>
+      ) : null}
       {sources.length === 0 && (
-        <EmptyState glyph="✅" title={t("exc.empty.title", "No open exceptions you can see")}
-          body={t("exc.empty.body", "Open cases and risk exceptions show up here. If this is empty, it may also mean there are none you're allowed to see.")} />
+        <EmptyState glyph="✅" title={t("exc.empty.title", "No open exceptions in scope")}
+          body={degraded
+            ? t("exc.empty.degraded", "No source could be verified. Retry after the affected service recovers.")
+            : t("exc.empty.body", "Open cases and risk exceptions surface here. Empty may also mean none are in your scope (RLS).")} />
       )}
       {groups.map((g) => (
-        <div key={g.category} className="panel" style={{ padding: "var(--space-6)" }}>
-          <div className="row" style={{ justifyContent: "space-between" }}>
-            <h3>{g.category.replace(/_/g, " ")}</h3><span className="badge badge-warning numeric">{g.count}</span>
+        <div key={g.category} className="panel">
+          <div className="panel-row">
+            <div>
+              <h2>{g.category.replace(/_/g, " ")}</h2>
+              <p className="tl-meta">{t("exc.group.source", "Open the owning workspace to inspect and decide the source record.")}</p>
+            </div>
+            <span className="badge badge-warning numeric">{g.count}</span>
+            <Link className="btn btn-secondary" href={g.category === "review_overdue" ? "/reviews" : "/execution"}>
+              {g.category === "review_overdue" ? t("exc.group.review", "Open review queue") : t("exc.group.execution", "Open execution")}
+            </Link>
           </div>
         </div>
       ))}
+      </div>
     </Shell>
   );
 }

@@ -73,7 +73,7 @@ export default async function Items({
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[], error: null };
   const roles = new Set((roleRows ?? []).map(r => r.role_key));
-  const isWriter = roles.has("compliance_admin") || roles.has("form_admin");
+  const isWriter = roles.has("admin");
 
   const usageEntries = isWriter ? await Promise.all(rows.map(async i => [i.id, await getItemUsage(i.code)] as const)) : [];
   const usageById = new Map<string, ItemUsage | null>(usageEntries);
@@ -242,7 +242,7 @@ export default async function Items({
       <section className="panel sq-permission stack" aria-labelledby="cd007-gov-h" style={{ padding: "var(--space-6)" }}>
         <h3 id="cd007-gov-h" style={{ margin: 0 }}>{t("admin.items.r2.gov.heading", "How this catalogue is governed")}</h3>
         <p className="t-caption" style={{ margin: 0 }}>
-          {t("admin.items.r3.gov.body", "Anyone signed in can read the catalogue; writes require compliance_admin or form_admin. Deactivation preserves history and records a reason. Editing archives the previous configuration before advancing the version, and every row change is audited.")}
+          {t("admin.items.r3.gov.body", "Anyone signed in can read the catalogue; writes require the admin role. Deactivation preserves history and records a reason. Editing archives the previous configuration before advancing the version, and every row change is audited.")}
         </p>
       </section>
 

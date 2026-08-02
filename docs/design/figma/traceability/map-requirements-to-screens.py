@@ -75,7 +75,7 @@ for s in screens:
     fingerprint[s["screen_id"]] = fp
 
 by_id = {s["screen_id"]: s for s in screens}
-OUT_OF_SCOPE = {"iPad"}
+OUT_OF_SCOPE = set()   # the inspector channel is in scope as of 2026-08-01
 
 # What Figma actually holds, by screen_id (see COVERAGE-MATRIX.md).
 BUILT = {
@@ -86,6 +86,9 @@ BUILT = {
     "SCR-WEB-150", "SCR-WEB-200", "SCR-WEB-210", "SCR-WEB-300", "SCR-WEB-310",
     "SCR-WEB-320", "SCR-WEB-400", "SCR-WEB-500",
     "SCR-VIR-700", "SCR-VIR-710", "SCR-VIR-720",
+    # inspector channel, built at 834 on 2026-08-01
+    "SCR-IPAD-600", "SCR-IPAD-610", "SCR-IPAD-620", "SCR-IPAD-630",
+    "SCR-IPAD-640", "SCR-IPAD-650", "SCR-IPAD-660", "SCR-IPAD-670",
 }
 
 rows, unmapped = [], []

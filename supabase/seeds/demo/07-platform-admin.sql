@@ -1018,6 +1018,56 @@ on conflict do nothing;
 
 
 -- ---------------------------------------------------------------------
+-- Admin Delegation (SCR-ADM delegation) — demo coverage across active,
+-- received and history views. Scope reuses the existing roles.role_key
+-- catalogue (no invented taxonomy); reason text is plausible demo copy,
+-- clearly marked, not an approved ministry policy.
+--
+-- NOTE: unlike the rest of this file, these three rows use the
+-- *.saqeel.test demo identities (planner.one/two, supervisor.one/two,
+-- admin.one), not @mim.gov.sa — the linked project's live roles table was
+-- consolidated to four roles (admin, inspector, planner, supervisor) by
+-- four_role_package_configuration_authority, and only the saqeel.test
+-- identities exist there. Left as-is rather than rewritten to match the
+-- surrounding convention, which does not resolve on that project.
+insert into public.delegations
+  (id, delegator_id, delegate_id, scope, reason, starts_at, ends_at, status, created_by, created_at)
+select md5('demo:delegation:planner-to-supervisor')::uuid,
+  (select u.id from auth.users u where u.email='planner.one@saqeel.test'),
+  (select u.id from auth.users u where u.email='supervisor.one@saqeel.test'),
+  'planner', 'Demo · annual leave coverage 2026-08-03 to 2026-08-10 (Product-Owner authorised demo data — not an approved delegation).',
+  timestamptz '2026-08-03 06:00:00+03', timestamptz '2026-08-10 18:00:00+03', 'active',
+  (select u.id from auth.users u where u.email='planner.one@saqeel.test'),
+  timestamptz '2026-08-01 09:00:00+03'
+where not exists (select 1 from public.delegations where id = md5('demo:delegation:planner-to-supervisor')::uuid);
+
+insert into public.delegations
+  (id, delegator_id, delegate_id, scope, reason, starts_at, ends_at, status, created_by, created_at)
+select md5('demo:delegation:supervisor-to-inspector')::uuid,
+  (select u.id from auth.users u where u.email='supervisor.one@saqeel.test'),
+  (select u.id from auth.users u where u.email='inspector.one@saqeel.test'),
+  'supervisor', 'Demo · review coverage during training 2026-08-04 to 2026-08-06 (Product-Owner authorised demo data — not an approved delegation).',
+  timestamptz '2026-08-04 06:00:00+03', timestamptz '2026-08-06 18:00:00+03', 'active',
+  (select u.id from auth.users u where u.email='supervisor.one@saqeel.test'),
+  timestamptz '2026-08-02 08:30:00+03'
+where not exists (select 1 from public.delegations where id = md5('demo:delegation:supervisor-to-inspector')::uuid);
+
+insert into public.delegations
+  (id, delegator_id, delegate_id, scope, reason, starts_at, ends_at, status, created_by, created_at,
+   revoked_at, revoked_by, revoked_reason)
+select md5('demo:delegation:planner-to-supervisor-revoked')::uuid,
+  (select u.id from auth.users u where u.email='planner.two@saqeel.test'),
+  (select u.id from auth.users u where u.email='supervisor.two@saqeel.test'),
+  'planner', 'Demo · site-visit backup coverage 2026-07-20 to 2026-07-27 (Product-Owner authorised demo data — not an approved delegation).',
+  timestamptz '2026-07-20 06:00:00+03', timestamptz '2026-07-27 18:00:00+03', 'revoked',
+  (select u.id from auth.users u where u.email='planner.two@saqeel.test'),
+  timestamptz '2026-07-19 10:00:00+03',
+  timestamptz '2026-07-22 14:00:00+03',
+  (select u.id from auth.users u where u.email='admin.one@saqeel.test'),
+  'Demo · delegator returned from leave early, coverage no longer required (Product-Owner authorised demo data).'
+where not exists (select 1 from public.delegations where id = md5('demo:delegation:planner-to-supervisor-revoked')::uuid);
+
+-- ---------------------------------------------------------------------
 -- NOT SEEDED, deliberately:
 --   audit_event_source_contracts — a governed mapping between audit event
 --   types (audit_event_registry) and source object/action pairs, not demo
