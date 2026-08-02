@@ -21,7 +21,7 @@ test.describe("admin risk studio safe-now contract", () => {
     const studio = read("src/app/(app)/admin/risk/page.tsx");
     const models = read("src/app/(app)/admin/risk/models/page.tsx");
 
-    expect(studio).toContain("Couldn’t load risk configuration.");
+    expect(studio).toContain("Couldn’t load risk settings.");
     expect(studio).toContain("!error && !data");
     expect(models).toContain("Couldn’t load risk models. Nothing changed.");
     expect(models).toContain("!error && (rows ?? []).length === 0");

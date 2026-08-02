@@ -37,13 +37,8 @@ export async function createDelegation(_: DelegationResult, formData: FormData):
   if (!reason) return { error: "A reason is required." };
   if (!startsAt || !endsAt) return { error: "A start and end date are required." };
 
-  const { data: delegateProfile, error: lookupError } = await sb
-    .from("profiles").select("user_id").eq("email", delegateEmail).maybeSingle();
-  if (lookupError) { logProviderError("delegation delegate lookup", lookupError); return { error: NEUTRAL_WRITE_ERROR }; }
-  if (!delegateProfile) return { error: "No user found with that email in your authorized scope." };
-
-  const { error } = await sb.rpc("create_delegation", {
-    p_delegate: delegateProfile.user_id,
+  const { error } = await sb.rpc("create_delegation_by_email", {
+    p_delegate_email: delegateEmail,
     p_scope: scope,
     p_reason: reason,
     p_starts_at: new Date(startsAt).toISOString(),
