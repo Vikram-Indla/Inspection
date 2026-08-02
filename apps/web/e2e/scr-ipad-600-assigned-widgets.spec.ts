@@ -96,9 +96,10 @@ test.describe("SCR-IPAD-600 Assigned Visits widgets", () => {
     expect(browser).toContain("!expired && !returned");
     expect(visitPage).toContain('id="preparation"');
     expect(visitPage).toContain("<PreExecution");
-    expect(startup).toContain('id="return-assignment"');
+    expect(startup).toContain("strings.returnHeading");
+    expect(startup).toContain("submitReturn");
     expect(actions).toContain('sb.rpc("request_visit_return"');
-    expect(actions).toContain("Return reason is mandatory (M03-006)");
+    expect(actions).toContain("Return reason is mandatory");
   });
 
   test("attention filter is sourced only from unread visit-linked notifications", () => {

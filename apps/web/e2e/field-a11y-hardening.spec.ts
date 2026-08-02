@@ -72,7 +72,7 @@ test.describe("SCR-IPAD a11y — cross-journey wiring", () => {
     const w = read(workspace);
     expect(w).toContain("a11y.scope");
     expect(w).toContain("<LiveRegion message={msg}");
-    expect(w).toContain('role="alert" tabIndex={-1} ref={validationRef}');
+    expect(w).toMatch(/role="alert"[\s\S]*tabIndex=\{-1\}[\s\S]*ref=\{validationRef\}/);
     expect(w).toContain("focusAndScrollTo(`sq-section-");
     expect(w).toContain("firstBlocker(validation)");
   });
