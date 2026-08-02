@@ -1,0 +1,6 @@
+acceptance_id,requirement_id,assertion,evidence,status
+JM-VIS-AC-001,CR-002,"A Bulk Visit plan supports one supervision request per child visit","20260729025000; saq_jm_visit_breakpoints_slice1.sql; focused source test 4/4",PASS_ISOLATED_RUNTIME
+JM-VIS-AC-002,CR-002,"A failed accepted subset leaves no partial plan or supervision request","transaction-wrapped injected duplicate assertion followed by ROLLBACK",PASS_ISOLATED_RUNTIME
+JM-VIS-AC-003,CR-002,"Bulk aggregate status derives from all child outcomes","20260729027000; pending and mixed-outcome assertions",PASS_ISOLATED_RUNTIME
+JM-VIS-AC-010,CR-002,"The repair preserves authorization and separation of duties","focused source assertions for permission checks self-decision denial RLS non-weakening and fixed search_path",PASS_CODE_VERIFIED
+JM-VIS-AC-012,CR-002,"Required focused tests typecheck and production build pass at the pinned source revision","4/4 focused; SQL contract PASS; typecheck PASS; build PASS; target deployment and browser runtime unverified",PASS_WITH_TARGET_LIMITATION

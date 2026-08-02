@@ -1,0 +1,175 @@
+schema_version: "2.0"
+change_control_id: "CC-G11-SAQ-JM-BREAKPOINTS-001"
+task_id: "TASK-G11-REMEDIATION-SAQ-JM-BREAKPOINTS-001"
+title: "Narrow operational-visit remediation — Single, Bulk and Urgent"
+status: "SPONSOR_APPROVED_ACTIVATED"
+requestor: "Vikram Indla, Product Owner"
+approver: "Vikram Indla, Product Owner"
+approval_date: "2026-07-30"
+approval_evidence: >
+  The Product Owner explicitly rejected generic remediation and directed this
+  programme to the three core operational journeys only: Single Visit, Bulk
+  Visit and Urgent Visit. The instruction authorizes governed implementation
+  after packet activation and requires ambiguous business behaviour to stop at
+  a specific decision rather than be guessed.
+
+business_reason: >
+  Repository reconstruction found concrete visit-blocking defects: a bulk plan
+  cannot insert more than one supervision request under the current unique
+  constraint; row-by-row supervision decisions can misstate the aggregate bulk
+  plan status; returned visits cannot be corrected and resubmitted; and urgent
+  target/admission behaviour conflicts with the versioned requirement
+  baseline. This change control authorizes only evidence-backed remediation of
+  these three journeys and their direct planning, supervision, assignment,
+  notification and recovery boundaries.
+
+source_evidence:
+  - "product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv: CR-001..CR-052 and directly connected visit lifecycle rows"
+  - "product-contract/screens/screen_route_catalogue.csv: SCR-WEB-100, SCR-WEB-110, SCR-WEB-120, SCR-WEB-130, SCR-WEB-140, SCR-WEB-150, SCR-WEB-200, SCR-WEB-210"
+  - "product-contract/domain/state_transitions.csv: planning, visit, assignment, inspection, review and sync transitions"
+  - "product-contract/domain/rbac_matrix.csv: Planner, Supervisor and Inspector planning/execution rows"
+  - "apps/web/src/app/(app)/planning/single/**"
+  - "apps/web/src/app/(app)/planning/bulk/**"
+  - "apps/web/src/app/(app)/planning/immediate/**"
+  - "apps/web/src/app/(app)/planning/supervision/**"
+  - "supabase/migrations/20260729021000_single_visit_supervision_lifecycle.sql"
+  - "supabase/migrations/20260729022000_immediate_supervision_lifecycle.sql"
+  - "supabase/migrations/20260729024000_bulk_supervision_lifecycle.sql"
+  - "supabase/migrations/20260729028000_inspector_immediate_escalation_only.sql"
+
+supersession:
+  prior_slice: "SAQEEL-BOARD-DELIVERY-001"
+  prior_slice_archive: "product-contract/execution/slice-history/CURRENT_SLICE_SAQEEL_BOARD_DELIVERY_001_backup_2026-07-30.yaml"
+  prior_rule: "permanent_lease_prohibition"
+  effect: >
+    The Product Owner's 2026-07-30 approval narrowly supersedes the prior
+    no-agent implementation prohibition only for this task, branch, worktree,
+    three named journeys and allowlist. It does not authorize broad board work,
+    shared-main writes, Field/PWA/iPad changes, invented policy, production
+    deployment, remote DDL, commit, push or merge.
+
+delivery_authority:
+  governed_owner: "Codex task operating under the Product Owner approval above"
+  branch: "codex/saq-jm-breakpoints-001"
+  worktree: "/Users/vikramindla/Developer/Inspection-saq-jm-breakpoints-001"
+  base_sha: "ada62124c5f8c8066cec397dc70fab31be9b0c7d"
+  commit_allowed: false
+  push_allowed: false
+  merge_allowed: false
+  deployment_allowed: false
+  remote_ddl_allowed: false
+
+affected_contract:
+  process_ids: ["G2-P01", "G2-P02"]
+  requirement_ids:
+    bulk: ["CR-001..CR-033"]
+    single: ["CR-034..CR-042"]
+    urgent: ["CR-043..CR-052"]
+    connected_state_and_security: ["PLN-CON-003", "PLN-CON-007", "PLN-CON-012", "PLN-CON-013", "PLN-CON-014"]
+  screen_ids: ["SCR-WEB-100", "SCR-WEB-110", "SCR-WEB-120", "SCR-WEB-130", "SCR-WEB-140", "SCR-WEB-150", "SCR-WEB-200", "SCR-WEB-210"]
+  acceptance_ids: ["WA-AC-0001..WA-AC-0052", "JM-VIS-AC-001..JM-VIS-AC-012"]
+  evidence_ids: ["JM-VIS-EV-001..JM-VIS-EV-012"]
+  dependencies:
+    - "Factory and canonical licence identity"
+    - "Published/effective package versions and Inspector preparation resolution"
+    - "Planner/Supervisor capabilities and separation of duties"
+    - "Inspector assignment, availability and visit-state transitions"
+    - "Notification outbox/provider boundary"
+    - "Immutable inspection submission and conflict-safe recovery"
+
+allowed_paths:
+  governance:
+    - "product-contract/governance/CC-G11-SAQ-JM-BREAKPOINTS-001.yaml"
+    - "product-contract/governance/ACTIVE_CHANGE_APPROVAL.yaml (this change only)"
+    - "product-contract/execution/TASK-G11-REMEDIATION-SAQ-JM-BREAKPOINTS-001.yaml"
+    - "product-contract/execution/CURRENT_SLICE.yaml"
+    - "product-contract/execution/slice-history/CURRENT_SLICE_SAQEEL_BOARD_DELIVERY_001_backup_2026-07-30.yaml"
+    - "product-contract/governance/decision_register.csv (only the three decision IDs in this packet)"
+  product:
+    - "apps/web/src/app/(app)/planning/single/**"
+    - "apps/web/src/app/(app)/planning/bulk/**"
+    - "apps/web/src/app/(app)/planning/immediate/**"
+    - "apps/web/src/app/(app)/planning/supervision/**"
+    - "apps/web/src/lib/planning/**"
+    - "apps/web/e2e/saq-jm-visit-breakpoints.spec.ts"
+    - "supabase/migrations/20260730*_saq_jm_visit_breakpoints*.sql"
+    - "supabase/tests/saq_jm_visit_breakpoints*.sql"
+  evidence_after_proof:
+    - "product-contract/evidence/TASK-G11-REMEDIATION-SAQ-JM-BREAKPOINTS-001.md"
+    - "product-contract/acceptance/SAQ_JM_VISIT_BREAKPOINTS_001.csv"
+    - "product-contract/sessions/SESSION_LEDGER.json (append-only task entry)"
+    - "product-contract/execution/WORK_QUEUE.yaml (this task only)"
+    - "product-contract/CURRENT_STATE.md (bounded status update only)"
+
+do_not_touch:
+  - "Shared main checkout and every pre-existing dirty file in it."
+  - "Any route, module, schema, migration, RLS policy, test or evidence outside the allowlist."
+  - "Field/PWA/iPad paths, including apps/web/src/app/(app)/field/**."
+  - "Existing submitted inspection versions or historical audit/timeline rows."
+  - "Provider credentials, secret values, production configuration or invented capacity/SLA/priority values."
+  - "No widening beyond the resolved DEC-SAQ-JM-URGENT-ADMISSION-001 actor and unregistered-entry contract."
+  - "Capacity rules beyond overlap until DEC-SAQ-JM-CAPACITY-001 is resolved."
+  - "CSV/file-upload product work until DEC-SAQ-JM-BULK-UPLOAD-001 establishes it as a requirement."
+  - "Standalone Saqeel Journey Monitor fixed claims until product proof exists."
+  - "Commit, push, merge, deploy, remote DDL or shared-data mutation."
+
+security_and_rls_constraints:
+  - "Hidden navigation is never authorization; each action and RPC is server-authorized."
+  - "Planner submits; a different authorized Supervisor decides and names the final Inspector."
+  - "No client-provided role, actor, plan owner, assignment owner or aggregate status is trusted."
+  - "Package versions remain published/locked and effective at authoritative submit."
+  - "Returned correction never edits an immutable submitted inspection version."
+  - "Bulk accepted-subset writes are atomic; no partial plan/visit/request/assignment/audit state survives failure."
+  - "Idempotent retries return the original receipt only for the same actor and same canonical payload."
+  - "Availability decisions are serialized so concurrent approvals cannot double-book an Inspector."
+  - "RLS and capability denials remain fail-closed without disclosing out-of-scope visit data."
+  - "No secret, raw provider error or private contact value appears in browser output, logs or evidence."
+
+decision_gates:
+  - id: "DEC-SAQ-JM-URGENT-ADMISSION-001"
+    state: "RESOLVED_BY_PRODUCT_OWNER_2026-07-30"
+    blocks: "NONE"
+    questions:
+      - "Does an Authorized Inspector create and immediately start an Urgent Visit, or only raise an escalation for Planner/Supervisor creation?"
+      - "May an authorized creator enter a temporary/unregistered factory with minimum identity/location, or is Urgent Visit registered-only?"
+    decision:
+      - "An authorized Inspector may create an Urgent Visit."
+      - "An unregistered factory is permitted for an Urgent Visit."
+      - "Inspector-created Urgent Visits follow CR-043/CR-047/CR-048: create directly, self-assign and become available for immediate execution without a Visit Plan."
+      - "Planner/Supervisor-created Urgent Visits retain the governed supervision/final-assignment path."
+      - "Unregistered entry remains capability-gated and must preserve minimum identity/location, duplicate protection, provenance, audit and RLS; this does not authorize anonymous or unvalidated creation."
+    approval_evidence: >
+      Product Owner statement in the originating Codex task on 2026-07-30:
+      "inspector can create visit, unregistered also permitted".
+    conflict_evidence:
+      - "CR-043..CR-048 and SCR-WEB-130 describe Planner/Inspector and unregistered operation."
+      - "20260729022000 plus 20260729028000 implement Planner/Supervisor, registered-only and Inspector escalation-only."
+  - id: "DEC-SAQ-JM-CAPACITY-001"
+    state: "SPONSOR_DECISION_REQUIRED"
+    blocks: "Capacity rules beyond overlap only"
+    question: >
+      What governed source and rules define Inspector capacity beyond time
+      overlap: working hours, skills, territory, daily workload, travel or
+      proximity? Until answered, enforce only repository-backed overlap and do
+      not invent thresholds.
+  - id: "DEC-SAQ-JM-BULK-UPLOAD-001"
+    state: "SPONSOR_DECISION_REQUIRED_IF_REQUESTED"
+    blocks: "CSV/file-upload feature only"
+    question: >
+      Is a file-upload/CSV import journey required? The current repository and
+      route contract establish criteria-based factory selection and per-row
+      eligibility, not an upload workflow.
+
+first_implementation_slice:
+  id: "SAQ-JM-VIS-SLICE-001"
+  scope:
+    - "Verify the existing 20260729025000 cardinality repair against the current bulk submit contract."
+    - "Verify the existing 20260729027000 aggregate-state repair across mixed child outcomes."
+    - "Do not create a duplicate product migration unless verification proves the current repairs defective."
+  allowed_files:
+    - "supabase/tests/saq_jm_visit_breakpoints_slice1.sql"
+    - "apps/web/e2e/saq-jm-visit-breakpoints.spec.ts"
+  design_stop_required: false
+  reason: "No screen markup or styling changes in this slice."
+
+effective_version: "2.0"
