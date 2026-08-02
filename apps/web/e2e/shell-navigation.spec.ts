@@ -20,7 +20,7 @@ const enabledHrefsFor = (roles: string[]) => itemsFor(roles).filter(item => item
 const businessHrefsFor = (roles: string[]) =>
   itemsFor(roles).filter(item => item.visibility === "business" && item.enabled).map(item => item.href);
 const businessHrefs = [
-  "/dashboard", "/operations", "/factories", "/planning", "/field", "/reviews",
+  "/dashboard", "/operations", "/factories", "/planning", "/execution", "/reviews",
   "/admin/regulations", "/admin/compliance-approvals", "/admin/violations", "/analytics",
 ];
 
@@ -33,7 +33,7 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
         .flatMap(group => group.items);
       expect(adminItems.every(item => item.enabled)).toBe(true);
       expect(adminItems).toEqual(expect.arrayContaining([
-        expect.objectContaining({ id: "admin-home", href: "/admin" }),
+        expect.objectContaining({ id: "adm-users", href: "/admin/access" }),
       ]));
     }
   });
@@ -42,13 +42,13 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
     const security = itemsFor(["security_admin"]);
     expect(security.filter(item => item.visibility === "business").map(item => item.href)).toEqual(businessHrefs);
     expect(security.filter(item => item.visibility === "canonical-admin").map(item => item.id)).toEqual([
-      "adm-users", "adm-lookup", "adm-risk", "adm-survey", "adm-notif", "adm-integration",
+      "adm-users", "adm-lookup", "adm-risk", "adm-survey", "adm-notif", "adm-delegation", "adm-integration",
     ]);
     expect(itemsFor(["planner"]).map(item => item.id)).toEqual(security.map(item => item.id));
     expect(itemsFor(["inspector"]).map(item => item.id)).toEqual(security.map(item => item.id));
   });
 
-  test("administration is pinned as one collapsed group with six canonical destinations", () => {
+  test("administration is pinned as one collapsed group with seven canonical destinations", () => {
     const groups = buildShellNavigation(["planner"]);
     expect(groups.map(group => group.id)).toEqual([
       "overview", "operations", "compliance", "insights", "administration",
@@ -60,6 +60,7 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
       ["Risk Configuration", "/admin/risk"],
       ["Survey Configuration", "/admin/packages"],
       ["Notification Configuration", "/admin/notifications"],
+      ["Delegation", "/admin/delegation"],
       ["Integration Management", "/admin/integrations"],
     ]);
     expect(administration?.items.every(item => item.enabled)).toBe(true);
@@ -70,7 +71,7 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
     expect(hrefs).not.toEqual(expect.arrayContaining([
       "/visits", "/tasks", "/virtual", "/cases", "/committee", "/portal",
     ]));
-    expect(hrefs).toEqual(expect.arrayContaining(["/field", "/admin/violations"]));
+    expect(hrefs).toEqual(expect.arrayContaining(["/execution", "/admin/violations"]));
   });
 
   test("administrator capability profiles retain the canonical business catalogue", () => {
@@ -89,7 +90,7 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
     expect(source).toContain('event.key !== "Escape"');
     expect(source).toContain('className="sq-shell__nav-footer"');
     expect(source).toContain('group.id === "administration"');
-    expect(source).toContain("sq-shell__expand-row");
+    expect(source).toContain("sq-nav-group__trigger");
   });
 
   test("dashboard and live operations have distinct active states", () => {
@@ -108,9 +109,10 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
 
 test.describe("ADMIN-SHELL-PERSONA-001 admin-only channel", () => {
   test("admin-only detection requires an admin grant and no business grant", () => {
-    expect(isAdminOnlyPersona(["security_admin"])).toBe(true);
-    expect(isAdminOnlyPersona(["compliance_admin", "form_admin"])).toBe(true);
-    expect(isAdminOnlyPersona(["security_admin", "planner"])).toBe(false);
+    expect(isAdminOnlyPersona(["admin"])).toBe(true);
+    expect(isAdminOnlyPersona(["security_admin"])).toBe(false);
+    expect(isAdminOnlyPersona(["compliance_admin", "form_admin"])).toBe(false);
+    expect(isAdminOnlyPersona(["admin", "planner"])).toBe(false);
     expect(isAdminOnlyPersona(["planner"])).toBe(false);
     expect(isAdminOnlyPersona([])).toBe(false);
   });
@@ -147,13 +149,13 @@ test.describe("TASK-WEB-CHANNEL-ACCESS-GATE-001 field channel (rbac_matrix.csv R
     const groups = buildShellNavigation(["inspector"]);
     expect(groups.map(group => group.id)).toEqual(["overview", "operations", "compliance", "insights", "administration"]);
     expect(businessHrefsFor(["inspector"])).toEqual(businessHrefs);
-    expect(enabledHrefsFor(["inspector"])).toContain("/admin");
+    expect(enabledHrefsFor(["inspector"])).toContain("/admin/access");
   });
 
   test("a multi-role Inspector+Planner keeps the canonical catalogue", () => {
     expect(isFieldOnlyPersona(["inspector", "planner"])).toBe(false);
     expect(businessHrefsFor(["inspector", "planner"])).toEqual(businessHrefs);
-    expect(enabledHrefsFor(["inspector", "planner"])).toContain("/admin");
+    expect(enabledHrefsFor(["inspector", "planner"])).toContain("/admin/access");
   });
 
   test("field-only detection is precise and never locks out web or no-role sessions", () => {
