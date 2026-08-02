@@ -110,4 +110,3 @@ graph TD
 - Domain modules import Supabase client types/adapters and, where needed, `lib/integrations/*` or `lib/providers/*`; for example, `factory360/dossier.ts` imports the Senaei client and adapters.
 - `supabase-server.ts`, `supabase.ts`, `middleware.ts`, and `i18n.ts` use `@supabase/ssr` or `@supabase/supabase-js`.
 - The SQL migration history defines database tables, RLS policies, grants, triggers, functions/RPCs, localization data, workflow behavior, and indexes; SQL probes under `supabase/tests` validate those database contracts.
-

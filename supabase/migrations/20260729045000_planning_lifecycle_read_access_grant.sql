@@ -7,4 +7,3 @@ revoke all on public.visit_lifecycle_events
   from public, anon, authenticated;
 
 grant select on public.visit_lifecycle_events to authenticated;
-

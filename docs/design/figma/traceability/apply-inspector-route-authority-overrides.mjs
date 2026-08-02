@@ -60,4 +60,3 @@ reconciliation.route_authority_overrides = [...overrides.entries()].map(([source
 
 fs.writeFileSync(reconciliationPath, `${JSON.stringify(reconciliation, null, 2)}\n`, "utf8");
 console.log(JSON.stringify({ totals: reconciliation.totals, verdict: reconciliation.delink_verdict }, null, 2));
-

@@ -2,7 +2,7 @@
 
 Owner: **W10-ReconciliationLedger** (single master writer). 2026-08-01.
 
-Source (authoritative reference, never deleted): `8wGaofgbopqmGXc0Wjo0eW`  
+Source (authoritative reference, never deleted): `8wGaofgbopqmGXc0Wjo0eW`
 Target (sole delivery file): `ML2PNwfShlQM2k44MvSEw5`, page `— SCREENS —` `6:9`
 
 ## Method — and the bar for `migrated`
@@ -1308,4 +1308,3 @@ text. Until then, "Not configured" stands wherever the Inspector build would oth
 - **Component gaps that must not be papered over (per CLAUDE.md rule 3), reaffirmed:** `Weight`
   (60 source instances) and `Rating` (41 source instances) — both governed assessment-scoring
   components with no rule to build against. Neither was built as a guess.
-

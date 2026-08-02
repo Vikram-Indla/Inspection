@@ -546,4 +546,3 @@ reconciliation.closure_evidence = {
 
 fs.writeFileSync(outputPath, `${JSON.stringify(reconciliation, null, 2)}\n`, "utf8");
 console.log(JSON.stringify({ totals: reconciliation.totals, literal_ipad: reconciliation.literal_ipad_route_scan.count, verdict: reconciliation.delink_verdict }, null, 2));
-

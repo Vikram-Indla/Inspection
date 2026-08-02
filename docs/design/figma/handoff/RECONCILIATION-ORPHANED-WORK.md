@@ -1,8 +1,8 @@
 # Figma orphaned-work reconciliation
 
-Date: 2026-08-01  
-Mode: read-only Figma reconciliation  
-File: `ML2PNwfShlQM2k44MvSEw5` — Inspection - Web  
+Date: 2026-08-01
+Mode: read-only Figma reconciliation
+File: `ML2PNwfShlQM2k44MvSEw5` — Inspection - Web
 Figma calls used: 5
 
 ## Summary

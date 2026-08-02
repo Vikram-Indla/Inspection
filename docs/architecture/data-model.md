@@ -190,4 +190,3 @@ erDiagram
 - Actual provider import/call sites in committee, virtual inspection, notification, Factory 360, AI and OCR flows.
 - Environment-variable contract in `apps/web/.env.example`.
 - Supabase client, Storage and route-handler calls under `apps/web/src`.
-
