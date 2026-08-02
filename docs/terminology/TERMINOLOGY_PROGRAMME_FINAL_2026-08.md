@@ -113,6 +113,121 @@ was made or needed.
   session — text-only edits within existing auto-layout containers, low clipping risk,
   but not visually re-verified.
 
+## Resume pass (2026-08-02) — visual verification + residual sweep
+
+PR #158 (branch `fix/terminology-programme-final`) was open, not fully closed.
+This pass completed the outstanding visual verification and re-scan work
+without merging.
+
+### Figma visual re-screenshot validation
+
+`get_screenshot` rejects instance-scoped node IDs (format `I123:456;78:90` —
+nested inside a component INSTANCE); only simple `123:456` IDs are accepted.
+Worked around this via `use_figma`'s inline `node.screenshot()` capability,
+which resolves the same IDs `getNodeByIdAsync` already handles.
+
+Screenshotted and visually inspected (zero clipping, truncation, overlap, or
+broken control found in any of them):
+
+| Node(s) | Screen / text | Result |
+|---|---|---|
+| `47:1258`, `95:8372` | Analytics — EN Light/Dark, 1280 | frame renders, layout intact |
+| `189:17578`, `199:20883` | Visits — EN Light/Dark, 1280 | frame renders, layout intact |
+| `523:61820` (frame), `I523:61842;11:40` | Visits — RESPONSIVE 768, EN Light | "Plan already published" body copy — clean |
+| `345:42290` | Field Inspection — EN Light, 1280 | frame renders, layout intact |
+| `225:24936`, `I225:25072;11:40` | Regulation Detail — EN Light, 1280 | "Published version — read only" body copy — clean |
+| `227:29684`, `I227:29820;11:40` | Plan Review — EN Light, 1280 | "Plan already published" body copy — clean |
+| `227:30100`, `227:30240`, `227:30380` | Visit Management heading (3 instances) | "Visit Management" — clean, no truncation |
+| `227:31361`, `227:31503`, `227:31644` | Level 2 Review heading (3 instances) | "Level 2 Review" — clean |
+| `I227:31645;11:24` | Decision note required body copy | clean |
+| `I190:18020;11:40` | "Read-only" badge close-up | clean |
+| `I191:18215;108:197` | "Latest final version" table cell | clean, no wrap issue |
+| `I241:40289;70:13` | Standalone "Final" badge | clean, no clip on the short label |
+| `167:9132`, `I443:49763;152:10;49:1517` | AI-policy brief-state sentence (2 of 3 instances) | clean |
+
+Not screenshotted this pass (logged as a gap, not silently skipped):
+`I167:10718;152:10;49:1517` (dark-theme duplicate of the AI-policy sentence —
+node ID resolved to "not found" via `getNodeByIdAsync`, needs a follow-up
+metadata query to find its current ID) and the remaining "Inspection
+Execution" heading duplicates (`345:42291` + 3 more) — same component,
+already confirmed at the primary instance, low risk. Per the earlier-logged
+coverage gap, no 720px frame exists anywhere in the file and only Visits has
+a 768px frame, so 720/768 coverage for other screens could not be attempted
+— there is nothing to screenshot.
+
+### Residual "workspace" sweep (code)
+
+Re-grepped the full `apps/web/src/app` tree for `\bworkspace\b` case-
+insensitive and manually triaged every hit. Found and fixed 6 real
+user-visible violations the earlier batch missed (see commit `f87abff5`):
+
+| File | Before | After |
+|---|---|---|
+| `tasks/page.tsx`, `tasks/loading.tsx` | Shell title "Task workspace" | "Tasks" |
+| `admin/localization/page.tsx:58` | "Return to my workspace" / "العودة إلى مساحة عملي" | "Return to my area" / "العودة إلى القسم المخصص لي" |
+| `compliance/page.tsx:259` | Panel heading "Regulation workspace" | "Regulation detail" |
+| `operations/page.tsx:263`, `operations/live/page.tsx:137` | "Return to my workspace" | "Return to my area" |
+| `execution/RevampExecutionWorkspace.tsx:371` | "Prepare in Field workspace" / "Open Field workspace" (+ AR) | "Prepare in Inspector app" / "Open in Inspector app" (+ AR) |
+| `launch/error.tsx` | "We couldn't load your workspace" / AR equiv | "We couldn't check your role" / AR equiv (matches the `/launch/no-workspace` page's existing "no role" wording) |
+
+All other `workspace` hits verified as internal-only (component names
+`Workspace`/`AuditReplayWorkspace`/`ComplianceRequestWorkspace`, the
+`WorkspaceStrings` type, `workspace.module.css` imports, `styles.workspace`
+CSS-module refs, `data-workspace-state` DOM attribute, `ar-workspace` and
+`cd-review-workspace-grid` CSS classes, `console.error` developer-log tags,
+the `/launch/no-workspace` route segment, and the `LEASE-SAQEEL-PWA-
+WORKSPACE-*` task IDs) — left untouched per rule 5 (never rename internal
+identifiers/routes).
+
+Added a 4th regression test, `no bare 'workspace' in user-rendered
+production text outside the internal-symbol allowlist`, mirroring the
+existing dossier guard, so this class of drift is now caught automatically.
+
+### "Chemical Release" naming check
+
+Searched for `chemical.?(release|clearance|hazard)` across `apps/web/src`
+and `apps/web/e2e`. Found only `"Chemical clearance beneficiary"` (EN) /
+"مستفيد من الفسح الكيميائي" (AR) in `field/inspection/[id]/page.tsx:451` and
+the internal enum value `chemical_clearance` in one e2e spec. No
+inconsistent naming found — the term is used uniformly as "Chemical
+clearance" everywhere it renders. No change needed.
+
+### Persona casing re-check
+
+Re-grepped for role-name literals; the two casing fixes already recorded in
+the dictionary above (`reviews/[id]/page.tsx`, `reviews/page.tsx`) remain
+the only two found across the whole tree — no new casing drift.
+
+### Validation (this pass)
+
+- `npx tsc --noEmit` (apps/web): 0 errors.
+- `npx next build`: PASS, 0 errors/warnings, all routes compiled.
+- `terminology-regression.spec.ts`: 4/4 passed (added the new workspace
+  guard test).
+- Full static Playwright suite (`playwright.static.config.ts`): 55 failed /
+  357 passed — same 55 pre-existing failures as the earlier-recorded
+  baseline, +1 net passing test (the new workspace regression guard). Zero
+  net-new failures from this pass's changes.
+- Diff check: `git diff --stat` against the branch's prior tip shows only
+  the 9 files listed above touched, all within the terminology programme's
+  scope — no accidental route/RBAC/schema/CSS-class edits.
+
+### Outstanding gaps (explicitly logged, not resolved this pass)
+
+- One dark-theme Figma node ID (`I167:10718;152:10;49:1517`) could not be
+  resolved by `getNodeByIdAsync` — likely renumbered since the original
+  edit. Needs a follow-up metadata re-query to confirm the edit is still
+  live in dark theme.
+- 4 duplicate "Inspection Execution" heading instances not individually
+  re-screenshotted (same component/text as the verified primary instance).
+- STATES/OVERLAYS/1024/EXTERNAL Figma sections remain EN·Light only — still
+  no AR/RTL or Dark duplicates exist to verify against (pre-existing design-
+  build gap, not something this pass could create without inventing
+  content).
+- The `SCREENS — INSPECTOR UNGOVERNED` Figma section remains a genuine
+  business-scope decision (build it into governed scope, or leave as-is) —
+  still open, still not actioned.
+
 ## Rollback
 
 All code changes are on `fix/terminology-programme-final`, not merged. Figma edits are
