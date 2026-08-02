@@ -124,7 +124,7 @@ export function DataGrid({
           <thead>
             <tr>
               {selectable && (
-                <th style={{ width: 36 }}>
+                <th style={{ width: 36 }} scope="col">
                   <label className="check">
                     <input
                       type="checkbox"
@@ -138,7 +138,7 @@ export function DataGrid({
                   </label>
                 </th>
               )}
-              {expandRow && <th style={{ width: 30 }} />}
+              {expandRow && <th style={{ width: 30 }} scope="col" />}
               {columns.map((c) => {
                 const s = sortFor(c.id);
                 return (
@@ -163,7 +163,7 @@ export function DataGrid({
                 );
               })}
               {rowActions && (
-                <th style={{ width: 44 }}>
+                <th style={{ width: 44 }} scope="col">
                   <span className="sr-only">Actions</span>
                 </th>
               )}

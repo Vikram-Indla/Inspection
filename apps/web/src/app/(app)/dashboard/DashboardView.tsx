@@ -221,13 +221,11 @@ export function DashboardControls({ locale, view, params, from, to, region, quer
       <input type="hidden" name="to" value={to} />
       {region ? <input type="hidden" name="region" value={region} /> : null}
       <button className="seg-opt" type="submit" name="view" value="strategic"
-        aria-pressed={view === "strategic"}
         role="tab" aria-selected={view === "strategic"}
         id="dashboard-tab-strategic" aria-controls="dashboard-strategic">
         {copy(locale, "Strategic View", "المنظور الاستراتيجي")}
       </button>
       <button className="seg-opt" type="submit" name="view" value="operational"
-        aria-pressed={view === "operational"}
         role="tab" aria-selected={view === "operational"}
         id="dashboard-tab-operational" aria-controls="dashboard-operational">
         {copy(locale, "Operational View", "المنظور التشغيلي")}

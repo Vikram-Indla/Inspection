@@ -556,7 +556,7 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
                       {REG_CHIPS.map(chip => (
                         <Link key={chip} href={`/field/my-tasks?task=${selected.id}&reg=${chip}`} prefetch={false}
                           className={`${styles.chip} ${activeReg === chip ? styles.chipActive : ""}`}
-                          aria-pressed={activeReg === chip ? "true" : "false"}>
+                          aria-current={activeReg === chip ? "true" : undefined}>
                           {regChipLabel[chip]}
                         </Link>
                       ))}

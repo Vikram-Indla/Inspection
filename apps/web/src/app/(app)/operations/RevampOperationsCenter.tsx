@@ -97,14 +97,14 @@ export default function RevampOperationsCenter({
             <table className="table">
               <caption>{copy(locale, "Accessible equivalent of the live map. Same records, same actions, no map dependency.", "المكافئ القابل للوصول للخريطة المباشرة. السجلات والإجراءات نفسها دون الاعتماد على الخريطة.")}</caption>
               <thead><tr>
-                <th>{copy(locale, "Inspector", "المفتش")}</th>
-                <th>{copy(locale, "Operational state", "الحالة التشغيلية")}</th>
-                <th>{copy(locale, "Visit", "الزيارة")}</th>
-                <th>{copy(locale, "Factory", "المصنع")}</th>
-                <th>{copy(locale, "Region / city", "المنطقة / المدينة")}</th>
-                <th>{copy(locale, "Risk", "المخاطر")}</th>
-                <th>{copy(locale, "Last update", "آخر تحديث")}</th>
-                <th>{copy(locale, "Actions", "الإجراءات")}</th>
+                <th scope="col">{copy(locale, "Inspector", "المفتش")}</th>
+                <th scope="col">{copy(locale, "Operational state", "الحالة التشغيلية")}</th>
+                <th scope="col">{copy(locale, "Visit", "الزيارة")}</th>
+                <th scope="col">{copy(locale, "Factory", "المصنع")}</th>
+                <th scope="col">{copy(locale, "Region / city", "المنطقة / المدينة")}</th>
+                <th scope="col">{copy(locale, "Risk", "المخاطر")}</th>
+                <th scope="col">{copy(locale, "Last update", "آخر تحديث")}</th>
+                <th scope="col">{copy(locale, "Actions", "الإجراءات")}</th>
               </tr></thead>
               <tbody>{activeMapEntries.map(entry => (
                 <tr key={entry.id}>
