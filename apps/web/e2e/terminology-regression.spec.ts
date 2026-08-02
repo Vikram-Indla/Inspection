@@ -55,7 +55,9 @@ const DOSSIER_ALLOW = [
   /\bopenDossier\b/, // internal prop/key name on regulations page (renders "Open record")
   /reg-dossier-h/, // HTML id attribute, not visible text
   /^\s*(const|let)\s+\w+\s*=\s*dossier\b/, // `const cr = dossier.cr;` style destructuring
-  /\bdossier\.(found|cr|crError|selected|factory|address|lines|reports|observedComparison|latestApprovedFactorySnapshot|governmentResult)\b/, // canonical-projection.ts/route.ts internal field access
+  /\bdossier\.(found|cr|crError|selected|factory|address|lines|reports|observedComparison|latestApprovedFactorySnapshot|governmentResult|docs|government)\b/, // canonical-projection.ts/route.ts/my-tasks internal field access
+  /\bdossier\?\.\w+/, // optional-chaining property access on the internal dossier variable
+  /[!?]\s*dossier\b(?!\.\w*Strings)/, // `if (!dossier)` / `dossier ?` truthiness checks on the internal variable
   /\bblankDossier\b/,
   /^\s*dossier:\s*(\{|string;|t\()/, // object-literal / type-field key named `dossier`
   /}\s*=\s*dossier;/, // `const { ... } = dossier;` destructure, single- or multi-line
@@ -63,6 +65,32 @@ const DOSSIER_ALLOW = [
   /ar-dossier/, // CSS class name
   /\bL\.dossier\b/, // property access on an internal EN/AR strings-lookup object
   /^\s*(en|ar):\s*\{.*\bdossier:/, // inline strings-object literal whose KEY is named `dossier` (value already remediated)
+  /\bdossierHref\b/, // internal variable name (establishments list row link target)
+  /"field\.establishments\.noDossier"|"field\.myTasks\.noDossier"/, // i18n key names; rendered values are already plain-language
+  /styles\.dossier\b/, // CSS module class reference
+  /"f360\.list\.dossier":/, // key name in the AR fallback map; value already "عرض المصنع"
+  /There is no dossier and no locked site/, // JSX comment continuation line (opening {\/\* is on the prior line)
+  /strings\.dossier\b/, // property access in FactoryList.tsx, a dead/unimported component (verified: not referenced anywhere)
+  /FactoryDossierError|FactoryLicenseDossierError/, // error-boundary component function names, no rendered text
+  /"f360\.list\.dossier",\s*"View factory"/, // key name; value is already the plain-language string
+];
+
+// Internal-only "workspace" occurrences — component/type/file/CSS-class
+// names and console.error tags, never rendered as literal user text.
+// Rule of law: "Never a Workspace label" (terminology programme, 2026-08).
+const WORKSPACE_ALLOW = [
+  /\bWorkspace\b/, // component name (./Workspace, WorkspaceStrings, WorkspacePanel, AuditReplayWorkspace)
+  /ar-workspace/, // CSS class name
+  /workspace\.module\.css/, // CSS module file path
+  /styles\.workspace\b/, // CSS module class reference
+  /data-workspace-state/, // DOM data-attribute name, not visible text
+  /cd-review-workspace-grid/, // CSS class name
+  /no-workspace/i, // route segment /launch/no-workspace
+  /LEASE-SAQEEL-PWA-WORKSPACE/, // lease/task id
+  /ComplianceRequestWorkspace/, // internal component function name
+  /WorkspaceStrings/, // internal type/prop name
+  /"ops\.map\.workspaceLabel"/, // i18n key name; rendered value is already "Operations map"
+  /"access\.noWorkspace\.\w+"/, // i18n key names on /launch/no-workspace; rendered values already say "role", not "workspace"
 ];
 
 // Prohibited literal phrases the task's plain-language remediation banned
@@ -140,5 +168,22 @@ test.describe("Terminology regression guard", () => {
       });
     }
     expect(offenders, `Architecture jargon leaking into rendered text:\n${offenders.join("\n")}`).toEqual([]);
+  });
+
+  test("no bare 'workspace' in user-rendered production text outside the internal-symbol allowlist", () => {
+    const offenders: string[] = [];
+    for (const file of walk(srcRoot)) {
+      const rel = path.relative(webRoot, file);
+      const lines = fs.readFileSync(file, "utf8").split("\n");
+      lines.forEach((line, i) => {
+        if (!/workspace/i.test(line)) return;
+        if (isCommentLine(line)) return;
+        if (isDeveloperLogLine(line)) return;
+        if (!looksUserRendered(line)) return;
+        if (WORKSPACE_ALLOW.some((re) => re.test(line))) return;
+        offenders.push(`${rel}:${i + 1}: ${line.trim().slice(0, 160)}`);
+      });
+    }
+    expect(offenders, `Banned "workspace" found in user-rendered production text:\n${offenders.join("\n")}`).toEqual([]);
   });
 });

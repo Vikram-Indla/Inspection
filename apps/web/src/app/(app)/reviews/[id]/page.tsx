@@ -73,7 +73,7 @@ export default async function ReviewWorkspace({ params, searchParams }: {
         <section className="sq-surface cd-panelpad cd-result" role="alert">
           <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--critical" aria-hidden="true"><IconBlocked size={24} /></div>
             <div className="cd-stack"><h3 tabIndex={-1}>{t("review.ws.unauthTitle", "You don’t have access to this review")}</h3>
-              <p>{t("review.ws.unauthBody", "This workspace requires an authorized admin, planning, supervisor or assigned-inspector role with matching scope. Navigation visibility is not authorization.")}</p></div></div>
+              <p>{t("review.ws.unauthBody", "This review requires an authorized Admin, Planner, Supervisor or assigned Inspector role with matching scope. Navigation visibility is not authorization.")}</p></div></div>
         </section>
       </Shell>
     );

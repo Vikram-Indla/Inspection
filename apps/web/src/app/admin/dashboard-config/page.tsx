@@ -68,7 +68,7 @@ export default async function DashboardConfigPage() {
 
   return (
     <Shell current="/admin/dashboard-config" title={t("admin.dashcfg.title", "Dashboard Configuration")}
-      context={<><span className="badge badge-info">ADM-DASH-001..018</span><span className="t-caption">Governed KPI catalogue &amp; policy · RLS-scoped · maker-checker</span></>}>
+      context={<><span className="badge badge-info">ADM-DASH-001..018</span><span className="t-caption">Governed KPI catalogue &amp; policy · filtered to your access · maker-checker</span></>}>
 
       <div style={{ maxWidth: 1040, width: "100%", display: "flex", flexDirection: "column", gap: 16 }}>
 
@@ -141,7 +141,7 @@ export default async function DashboardConfigPage() {
 
         {/* ---- Draft workspace (maker-checker) ---- */}
         <section className="panel" style={{ padding: 18 }} aria-labelledby="dashcfg-drafts">
-          <h3 id="dashcfg-drafts" style={{ fontSize: "var(--type-heading-size)", fontWeight: 600, margin: "0 0 12px" }}>Draft workspace <span className="t-caption" style={{ fontWeight: 400 }}>maker-checker</span></h3>
+          <h3 id="dashcfg-drafts" style={{ fontSize: "var(--type-heading-size)", fontWeight: 600, margin: "0 0 12px" }}>Drafts <span className="t-caption" style={{ fontWeight: 400 }}>maker-checker</span></h3>
 
           {!canWrite && !canReview ? (
             <p className="t-caption" role="note">Dashboard configuration authoring requires Compliance/Ops/Security Admin authority; review/publish requires Compliance/Leadership/Security Admin.</p>

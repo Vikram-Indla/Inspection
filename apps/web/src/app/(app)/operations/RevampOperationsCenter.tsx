@@ -161,7 +161,7 @@ export default function RevampOperationsCenter({
       <section className="panel stack">
         <div className="panel-row">
           <h2>{copy(locale, "Live operational exceptions", "الاستثناءات التشغيلية المباشرة")}</h2>
-          <span className="tl-meta">{copy(locale, "Current RLS-scoped records", "السجلات الحالية المقيّدة بالصلاحيات")}</span>
+          <span className="tl-meta">{copy(locale, "Records filtered to your access", "السجلات الحالية المقيّدة بالصلاحيات")}</span>
         </div>
         {highlights.length ? highlights.slice(0, 8).map(item => (
           <article className="panel-row" key={item.id}>

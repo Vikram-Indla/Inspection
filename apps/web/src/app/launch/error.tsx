@@ -14,8 +14,8 @@ function locale(): "ar" | "en" {
 }
 
 const COPY = {
-  ar: { heading: "تعذّر تحميل مساحة عملك", body: "حدث خطأ أثناء تحديد دورك. تحقّق من الاتصال وحاول مرة أخرى.", retry: "إعادة المحاولة", signOut: "تسجيل الخروج" },
-  en: { heading: "We couldn't load your workspace", body: "Something went wrong while resolving your role. Check your connection and try again.", retry: "Try again", signOut: "Sign out" },
+  ar: { heading: "تعذّر تحديد دورك", body: "حدث خطأ أثناء تحديد دورك. تحقّق من الاتصال وحاول مرة أخرى.", retry: "إعادة المحاولة", signOut: "تسجيل الخروج" },
+  en: { heading: "We couldn't check your role", body: "Something went wrong while resolving your role. Check your connection and try again.", retry: "Try again", signOut: "Sign out" },
 };
 
 export default function LaunchError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {

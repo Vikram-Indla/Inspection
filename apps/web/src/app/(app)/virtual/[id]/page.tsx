@@ -54,7 +54,7 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     otpNoCode: t("virtual.room.otpNoCode", "no active code — send one first"),
     otpError: t("virtual.room.otpError", "Identity verification is temporarily unavailable. Try again or escalate."),
     otpCounters: t("virtual.room.otpCounters", "attempts {a}/{b} · resends {c}/{d} ( policy, server-enforced)"),
-    beginReady: t("virtual.room.beginReady", "Begin remote inspection → same workspace & submission flow"),
+    beginReady: t("virtual.room.beginReady", "Begin remote inspection → same screen & submission flow"),
     beginGated: t("virtual.room.beginGated", "Verification gates execution (no bypass)"),
     openWaiting: t("virtual.room.openWaiting", "Open waiting room"),
     rescheduleTitle: t("virtual.room.rescheduleTitle", "Reschedule"),
