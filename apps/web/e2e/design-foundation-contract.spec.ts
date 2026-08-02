@@ -40,6 +40,18 @@ test.describe("SAQEEL Inspection Design System v1.0 contract", () => {
     expect(contrast("#ffffff", "#b3261e")).toBeGreaterThanOrEqual(4.5); // --text-on-action / --status-critical
   });
 
+  // INSP-702: --text-disabled scored 2.87:1 (light) / 3.20:1 (dark) against its
+  // surface — below the WCAG AA 4.5:1 floor for normal text (light also failed
+  // the 3:1 large-text floor). Fixed onto the existing --neutral-700 / --neutral-400
+  // raw-ramp values; this guards the regression.
+  test("INSP-702 --text-disabled meets WCAG AA (4.5:1) on its surface in both themes", () => {
+    const tokens = read("src/app/tokens.css");
+    expect(tokens).toContain("--text-disabled:  #4c5258;"); // light: on --surface-primary #ffffff
+    expect(tokens).toContain("--text-disabled:  #c8c4bc;"); // dark: on --surface-primary #191d22
+    expect(contrast("#4c5258", "#ffffff")).toBeGreaterThanOrEqual(4.5);
+    expect(contrast("#c8c4bc", "#191d22")).toBeGreaterThanOrEqual(4.5);
+  });
+
   test("DSF-AC-007..013 typography is productive and bilingual (IBM Plex)", () => {
     const tokens = read("src/app/tokens.css");
     expect(tokens).toContain('--font-body:    var(--font-plex-arabic'); // one self-hosted bilingual metric system
