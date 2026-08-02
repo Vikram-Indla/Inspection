@@ -94,9 +94,8 @@ test.describe("Factory 360 iPad parity + non-regression contract", () => {
     expect(resolver).toContain("/field/factory-360/");
   });
 
-  test("assigned visit exposes a Factory 360 entry carrying its license and return context", () => {
-    const visit = read("src/app/(app)/field/[visitId]/page.tsx");
-    expect(visit).toContain("/field/factory-360?");
-    expect(visit).toContain("return=");
+  test("assigned work exposes a canonical Factory 360 detail entry carrying the selected license", () => {
+    const tasks = read("src/app/(app)/field/my-tasks/page.tsx");
+    expect(tasks).toContain("`/field/factory-360/${lic.commercial_registration_id}?license=${lic.id}`");
   });
 });

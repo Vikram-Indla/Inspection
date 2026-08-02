@@ -32,16 +32,17 @@ test.describe("PLAN v7 item 7 field establishments + incident logging", () => {
     expect(src).toContain('from("factories")');
     expect(src).toContain("industrial_licenses(id, commercial_registration_id, license_number, plant_number)");
     expect(src).toContain("/field/factory-360/");
-    expect(src).toContain('href="/planning/immediate"');
+    expect(src).toContain('href="/field/establishments/unregistered"');
     expect(src).toContain('is_temporary", status === "unlicensed"');
     expect(src).not.toContain('href="/factories');
   });
 
   test("unregistered creation delegates to the real atomic record-plus-visit workflow", () => {
-    const action = readWeb("src/app/(app)/planning/immediate/actions.ts");
+    const action = readWeb("src/app/(app)/field/establishments/unregistered/actions.ts");
     const rpc = readRepo("supabase/migrations/0027_cd023_immediate_visit_atomic.sql");
     expect(action).toContain('.rpc("create_immediate_visit"');
-    expect(action).toContain('redirect(`/field/${result.visit_id}?created=${createdParam}`)');
+    expect(action).toContain('p_actor_mode: "inspector"');
+    expect(action).toContain('redirect(`/field/${result.visit_id}`)');
     expect(rpc).toContain("insert into factories");
     expect(rpc).toContain("'immediate_manual', true");
     expect(rpc).toContain("insert into visits");
