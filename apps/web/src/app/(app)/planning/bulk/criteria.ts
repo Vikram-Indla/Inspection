@@ -42,6 +42,11 @@ export const FIELD_REGISTRY: FieldDef[] = [
   { key: "city", type: "text", operators: ["eq", "neq", "contains", "in"], supplied: true },
   { key: "risk_band", type: "enum", operators: ["eq", "neq", "in"], supplied: true },
   { key: "activity_class", type: "text", operators: ["eq", "neq", "contains", "in"], supplied: true },
+  { key: "license_type", type: "enum", operators: ["eq", "neq", "in"], supplied: true },
+  { key: "license_status", type: "enum", operators: ["eq", "neq", "in"], supplied: true },
+  { key: "plant_state", type: "enum", operators: ["eq", "neq", "in"], supplied: true },
+  { key: "investment_type", type: "enum", operators: ["eq", "neq", "in"], supplied: true },
+  { key: "investment_size", type: "number", operators: ["eq", "neq", "gt", "lt", "between"], supplied: true },
   // Computed per factory from violations → inspections → visits (count), the
   // latest review decision and the latest submitted inspection date. Missing
   // history matches NOTHING for numeric/date ops (absence ≠ 0), and previous
@@ -56,8 +61,6 @@ export const FIELD_REGISTRY: FieldDef[] = [
   // columns). They are listed honestly, never silently absent and never
   // evaluated as zero/blank.
   { key: "sector", type: "text", operators: ["eq"], supplied: false, notSuppliedKey: "plan.bulk.criteria.nsSector" },
-  { key: "license_stage", type: "enum", operators: ["eq"], supplied: false, notSuppliedKey: "plan.bulk.criteria.nsLicenseStage" },
-  { key: "license_status", type: "enum", operators: ["eq"], supplied: false, notSuppliedKey: "plan.bulk.criteria.nsLicenseStatus" },
   { key: "product_hs_code", type: "text", operators: ["eq", "contains"], supplied: false, notSuppliedKey: "plan.bulk.criteria.nsProductHs" },
   { key: "land_provider", type: "text", operators: ["eq"], supplied: false, notSuppliedKey: "plan.bulk.criteria.nsLandProvider" },
   { key: "employee_count", type: "number", operators: ["eq", "gt", "lt", "between"], supplied: false, notSuppliedKey: "plan.bulk.criteria.nsEmployeeCount" },

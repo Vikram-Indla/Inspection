@@ -16,6 +16,10 @@ import { parseCt, fromFlat, evalNode, hasCriteria, emptyTree, leaves, pathKey, F
 
 type FactoryForCriteria = {
   region: string | null; risk_band: string | null; activity_class: string | null; city: string | null;
+  industrial_licenses?: Array<{
+    license_type: string | null; status: string | null; stage: string | null;
+    investment_type: string | null; investment_size: number | null;
+  }> | null;
 };
 
 const toArr = (v: string | string[] | undefined): string[] => (v == null ? [] : Array.isArray(v) ? v : [v]);
@@ -67,7 +71,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   // and ANY combinations aren't simple equality, so evaluation is uniform here.
   const { data: allFactories, error: factoriesError } = await collectPostgrestPages<FactoryForCriteria & Record<string, unknown>>((from, to) => sb
     .from("factories")
-    .select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, activity_class, official_lat, official_lng, source_synced_at, visits(planning_status, visit_type)")
+    .select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, activity_class, official_lat, official_lng, source_synced_at, industrial_licenses(license_type,status,stage,investment_type,investment_size), visits(planning_status, visit_type)")
     .eq("is_temporary", false)
     // Include the one explicitly labelled Saqeel test target in the exact
     // same criteria journey as sourced factory records.
@@ -133,12 +137,20 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     lastInspectionByFactory.set(fid, { date: r.submitted_at, outcome: decision });
   }
 
-  const everyFactory = ((allFactories ?? []) as unknown as (FactoryForCriteria & Record<string, unknown>)[]).map(f => ({
-    ...f,
-    previous_violation_count: violationCountByFactory.get(String(f.id)) ?? 0,
-    previous_outcome: lastInspectionByFactory.get(String(f.id))?.outcome ?? null,
-    last_inspection_date: lastInspectionByFactory.get(String(f.id))?.date ?? null,
-  }));
+  const everyFactory = ((allFactories ?? []) as unknown as (FactoryForCriteria & Record<string, unknown>)[]).map(f => {
+    const licence = f.industrial_licenses?.[0] ?? null;
+    return {
+      ...f,
+      license_type: licence?.license_type ?? null,
+      license_status: licence?.status ?? null,
+      plant_state: licence?.stage ?? null,
+      investment_type: licence?.investment_type ?? null,
+      investment_size: licence?.investment_size ?? null,
+      previous_violation_count: violationCountByFactory.get(String(f.id)) ?? 0,
+      previous_outcome: lastInspectionByFactory.get(String(f.id))?.outcome ?? null,
+      last_inspection_date: lastInspectionByFactory.get(String(f.id))?.date ?? null,
+    };
+  });
   // M6 — at least one criterion is required (no match-all). An empty/absent
   // criteria tree yields NO results with an honest banner; the builder still
   // renders so the planner can compose criteria. The unrestricted-match
@@ -151,6 +163,8 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   const fieldOptions: Record<string, string[]> = {
     region: distinct("region"), risk_band: distinct("risk_band"),
     activity_class: distinct("activity_class"), city: distinct("city"),
+    license_type: distinct("license_type"), license_status: distinct("license_status"),
+    plant_state: distinct("plant_state"), investment_type: distinct("investment_type"),
     previous_outcome: distinct("previous_outcome"),
   };
   // Region → cities map for the dependent city dropdown (a city suggestion
@@ -229,13 +243,16 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     region: t("plan.bulk.criteria.fieldRegion", "Region"),
     city: t("plan.bulk.criteria.fieldCity", "City"),
     risk_band: t("plan.bulk.criteria.fieldRiskBand", "Risk band"),
-    activity_class: t("plan.bulk.criteria.fieldActivity", "Activity class"),
+    activity_class: t("plan.bulk.criteria.fieldActivity", "ISIC activity"),
+    license_type: t("plan.bulk.criteria.fieldLicenseType", "Licence tier / type"),
+    license_status: t("plan.bulk.criteria.fieldLicenseStatus", "Licence status"),
+    plant_state: t("plan.bulk.criteria.fieldPlantState", "Plant state"),
+    investment_type: t("plan.bulk.criteria.fieldInvestmentType", "Investment type"),
+    investment_size: t("plan.bulk.criteria.fieldInvestmentSize", "Investment size"),
     previous_violation_count: t("plan.bulk.criteria.fieldViolationCount", "Previous violation count"),
     previous_outcome: t("plan.bulk.criteria.fieldOutcome", "Previous inspection outcome"),
     last_inspection_date: t("plan.bulk.criteria.fieldLastInspection", "Last inspection date"),
     sector: t("plan.bulk.criteria.fieldSector", "Sector"),
-    license_stage: t("plan.bulk.criteria.fieldLicenseStage", "Licence stage"),
-    license_status: t("plan.bulk.criteria.fieldLicenseStatus", "Licence status"),
     product_hs_code: t("plan.bulk.criteria.fieldProductHs", "Product / HS code"),
     land_provider: t("plan.bulk.criteria.fieldLandProvider", "Land provider"),
     employee_count: t("plan.bulk.criteria.fieldEmployeeCount", "Employee count"),
