@@ -77,28 +77,86 @@ async function governedFixtureGeofenceRadius(plannerJwt: string): Promise<number
   return acceptedSeedGeofenceRadius();
 }
 
+type GoldenAssignmentWindow = {
+  visit_id: string;
+  visits: {
+    planning_status?: string;
+    operational_state?: string;
+    window_start: string;
+    window_end: string;
+    factories?: { factory_code: string };
+  };
+};
+
+function allocateRetirementWindows(
+  targets: GoldenAssignmentWindow[],
+  existing: GoldenAssignmentWindow[],
+  proposedStart: Date,
+): Array<{ visitId: string; start: Date; end: Date }> {
+  if (!Number.isFinite(proposedStart.getTime())) throw new Error("cannot allocate retirement windows without a valid proposed start");
+  const targetIds = new Set(targets.map(row => row.visit_id));
+  if (targetIds.size !== targets.length) throw new Error("cannot allocate retirement windows for duplicate visits");
+  const parse = (row: GoldenAssignmentWindow) => {
+    const start = new Date(row.visits.window_start);
+    const end = new Date(row.visits.window_end);
+    if (!UUID.test(row.visit_id) || !Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || end <= start) {
+      throw new Error(`cannot prove a safe retirement window for ${row.visit_id}`);
+    }
+    return { row, start, end };
+  };
+  const ordered = targets.map(parse).sort((left, right) =>
+    left.start.getTime() - right.start.getTime() || left.row.visit_id.localeCompare(right.row.visit_id));
+  const occupied = existing.filter(row => !targetIds.has(row.visit_id)).map(parse)
+    .map(({ start, end }) => ({ start, end }));
+  const allocated: Array<{ visitId: string; start: Date; end: Date }> = [];
+  let cursor = new Date(proposedStart.getTime() - 60_000);
+
+  for (const target of ordered) {
+    const duration = target.end.getTime() - target.start.getTime();
+    let attempts = 0;
+    while (true) {
+      const end = new Date(cursor);
+      const start = new Date(end.getTime() - duration);
+      const collisions = occupied.filter(slot => slot.start < end && slot.end > start);
+      if (collisions.length === 0) {
+        allocated.push({ visitId: target.row.visit_id, start, end });
+        occupied.push({ start, end });
+        cursor = new Date(start.getTime() - 60_000);
+        break;
+      }
+      cursor = new Date(Math.min(...collisions.map(slot => slot.start.getTime())) - 60_000);
+      attempts += 1;
+      if (attempts > existing.length + targets.length) {
+        throw new Error(`cannot prove a collision-free retirement window for ${target.row.visit_id}`);
+      }
+    }
+  }
+  return allocated;
+}
+
 async function retireOverlappingGoldenAssignments(plannerJwt: string, proposedStart: Date, proposedEnd: Date) {
   const rows = must(await rest("GET",
     `assignments?select=visit_id,visits!inner(id,planning_status,operational_state,window_start,window_end,factories!inner(factory_code))&inspector_id=eq.${inspectorUserId}&visits.planning_status=in.(published,returned)&visits.operational_state=eq.new&visits.window_start=lt.${proposedEnd.toISOString()}&visits.window_end=gt.${proposedStart.toISOString()}&visits.factories.factory_code=like.R3-QA-CERT-*`,
-    plannerJwt), "read prior golden assignments") as Array<{
-      visit_id: string;
-      visits: { factories: { factory_code: string } };
-    }>;
+    plannerJwt), "read prior golden assignments") as GoldenAssignmentWindow[];
+  const existing = must(await rest("GET",
+    `assignments?select=visit_id,visits!inner(window_start,window_end)&inspector_id=eq.${inspectorUserId}&status=in.(assigned,preparing,ready)&visits.planning_status=in.(draft,published,returned)&visits.window_start=lt.${proposedStart.toISOString()}`,
+    plannerJwt), "read occupied Inspector windows") as GoldenAssignmentWindow[];
 
   for (const row of rows) {
-    if (!row.visits.factories.factory_code.startsWith("R3-QA-CERT-")) {
+    if (!row.visits.factories?.factory_code.startsWith("R3-QA-CERT-")) {
       throw new Error("refusing to reschedule a non-golden assignment");
     }
-    const end = new Date(proposedStart.getTime() - 60_000);
-    const start = new Date(end.getTime() - 36e5);
+  }
+  const retirementWindows = allocateRetirementWindows(rows, existing, proposedStart);
+  for (const window of retirementWindows) {
     must(await rest("POST", "rpc/reschedule_published_visits_atomic", plannerJwt, {
-      p_visit_ids: [row.visit_id],
-      p_window_start: start.toISOString(),
-      p_window_end: end.toISOString(),
+      p_visit_ids: [window.visitId],
+      p_window_start: window.start.toISOString(),
+      p_window_end: window.end.toISOString(),
       p_reason: "Controlled UAT golden-journey fixture rollover",
-      p_idempotency_key: `golden-rollover-${row.visit_id}-${end.toISOString()}`,
+      p_idempotency_key: `golden-rollover-${window.visitId}-${window.end.toISOString()}`,
       p_correlation_id: crypto.randomUUID(),
-    }), `reschedule prior golden assignment ${row.visit_id}`);
+    }), `reschedule prior golden assignment ${window.visitId}`);
   }
 }
 
