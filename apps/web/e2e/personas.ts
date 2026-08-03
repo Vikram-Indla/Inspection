@@ -122,6 +122,23 @@ export const PERSONAS = {
 
 export type PersonaKey = keyof typeof PERSONAS;
 
+export function goldenInspectorPersona(): { email: string; password: string; slot: string; leaseId: string } {
+  const slot = requireSetting("GOLDEN_INSPECTOR_SLOT", "golden inspector lease");
+  if (!/^(0[1-9]|[12][0-9]|30)$/.test(slot)) throw new Error("Golden Inspector slot must be 01 through 30.");
+  const leaseId = requireSetting("GOLDEN_INSPECTOR_LEASE_ID", "golden inspector lease");
+  const indexedEmail = `SAQEEL_TEST_INSPECTOR_${slot}_EMAIL`;
+  const indexedPassword = `SAQEEL_TEST_INSPECTOR_${slot}_PASSWORD`;
+  if (slot === "01" && !Object.hasOwn(process.env, indexedEmail) && !Object.hasOwn(envValues(), indexedEmail)) {
+    return { email: PERSONAS.inspector.email, password: PERSONAS.inspector.password, slot, leaseId };
+  }
+  return {
+    email: requireSetting(indexedEmail, `golden inspector ${slot}`),
+    password: requireSetting(indexedPassword, `golden inspector ${slot}`, true),
+    slot,
+    leaseId,
+  };
+}
+
 // Keep reusable authentication outside Playwright's outputDir. Playwright may
 // clear test-results while recovering from a failed worker; storing state
 // there makes every later persona test fail with ENOENT instead of reporting

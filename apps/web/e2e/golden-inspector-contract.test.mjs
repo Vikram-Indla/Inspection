@@ -19,8 +19,9 @@ const reviewerJourney = source.slice(source.indexOf('test("P3 reviewer'), source
 const finalReviewerJourney = source.slice(source.indexOf('test("P5 reviewer'));
 
 test("golden P1 resolves the controlled Inspector identity without stale fixture credentials", () => {
-  assert.match(source, /email: PERSONAS\.inspector\.email/);
-  assert.match(source, /password: PERSONAS\.inspector\.password/);
+  assert.match(source, /const leasedInspector = goldenInspectorPersona\(\)/);
+  assert.match(source, /email: leasedInspector\.email/);
+  assert.match(source, /password: leasedInspector\.password/);
   assert.match(source, /const inspectorSession = await login\(inspectorCreds\.email, inspectorCreds\.password\)/);
   assert.match(source, /inspectorUserId = inspectorSession\.userId/);
   assert.doesNotMatch(source, /9b4d2c98-c284-49c1-81ee-d418efc23c31/);
@@ -64,6 +65,15 @@ test("golden fixture rollover retires only overlapping unstarted harness-owned a
   assert.match(source, /Controlled UAT golden-journey fixture rollover/);
   assert.match(source, /await retireOverlappingGoldenAssignments\(planner\.jwt\)/);
   assert.doesNotMatch(source, /SUPABASE_SERVICE_ROLE_KEY/);
+});
+
+test("golden P1 requires one externally leased Inspector slot", () => {
+  const personas = readFileSync(new URL("./personas.ts", import.meta.url), "utf8");
+  assert.match(personas, /GOLDEN_INSPECTOR_SLOT/);
+  assert.match(personas, /GOLDEN_INSPECTOR_LEASE_ID/);
+  assert.match(personas, /\^\(0\[1-9\]\|\[12\]\[0-9\]\|30\)\$/);
+  assert.match(personas, /SAQEEL_TEST_INSPECTOR_\$\{slot\}_EMAIL/);
+  assert.match(personas, /SAQEEL_TEST_INSPECTOR_\$\{slot\}_PASSWORD/);
 });
 
 test("golden fixture copies governed GIS authority and fails closed without a valid source", () => {

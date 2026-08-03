@@ -1,7 +1,7 @@
 import { test, expect, type BrowserContext, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { PERSONAS, storageStatePath } from "./personas";
+import { PERSONAS, goldenInspectorPersona, storageStatePath } from "./personas";
 import { login, rest, must } from "./live-rest";
 import { signAndConfirm } from "./sign-helper";
 import {
@@ -159,10 +159,8 @@ test.beforeAll(async () => {
   // Resolve the identity from existing controlled test configuration. P1 then
   // proves this authenticated user is still exposed by the Planner selector;
   // stale or ineligible identities are never substituted silently.
-  inspectorCreds = {
-    email: PERSONAS.inspector.email,
-    password: PERSONAS.inspector.password,
-  };
+  const leasedInspector = goldenInspectorPersona();
+  inspectorCreds = { email: leasedInspector.email, password: leasedInspector.password };
   const inspectorSession = await login(inspectorCreds.email, inspectorCreds.password);
   inspectorUserId = inspectorSession.userId;
   if (RECOVERY_VISIT_ID) {
