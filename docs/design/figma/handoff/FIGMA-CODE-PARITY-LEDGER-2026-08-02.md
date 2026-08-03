@@ -399,3 +399,85 @@ discipline, not because anything was compromised.
 
 Every item above has an exact named successor; nothing was invented to close a gap
 that isn't actually closed.
+
+---
+
+## Successor task — 2026-08-03: 11-screen canonical Figma coverage gap
+
+Found during `TASK-INSPECTOR-IPAD-VISUAL-PARITY-458597`'s Figma-sync closure (base
+`da8e110f`, code fix `7fbf7670`). Checked live against `ML2PNwfShlQM2k44MvSEw5`,
+section `148:6893` — confirmed, not assumed from this doc's own prior entries.
+
+**Gap:** of 13 `apps/web/src/app/(app)/field/*` screens whose CSS wrap was widened
+to the governed 1200px cap in `7fbf7670`, only 2 have a canonical `SCR-FLD-*` Figma
+node: `my-tasks` (`345:42242`, SCR-FLD-600) and `drafts`/Returned Correction
+(`704:95056`, SCR-FLD-670) — both annotated this pass, no visual change needed.
+
+**11 screens with no canonical Figma node at all:**
+
+| Route | Screen |
+|---|---|
+| `/field` | Dashboard (Home) |
+| `/field/establishments` | Establishments |
+| `/field/visits` | Visits list & calendar |
+| `/field/account` | Account |
+| `/field/notifications` | Notifications (list + detail) |
+| `/field/reports` | Reports library |
+| `/field/virtual` | Virtual visit |
+| `/field/incident-reports` | Immediate & Incident |
+| `/field/search` | Global search |
+| `/field/settings`, `/field/settings/conflicts`, `/field/settings/devices` | Settings, Conflicts, Trusted Devices |
+| `/field/completed` | Completed visit |
+
+**Why not closed in the parent task:** per this ledger's own terminology note
+(line 11-15), the design authority for these `pwa-*` board cards is the vendored
+Claude Design `.dc.html` mockups, not this Figma file — there was no numeric
+Figma node for them by design. Building new canonical `SCR-FLD-*` frames is new
+screen authoring at the same scale as the existing 8-screen SCR-FLD-6xx batch —
+out of scope for a provenance/annotation-only pass, so it was filed as a
+successor instead of done inline.
+
+### Closed same day, 2026-08-03 — 10 new frames built (11 routes; Settings/Conflicts/Devices share one hub frame)
+
+Built directly in section `148:6893`, EN·Light only (Dark/AR·RTL/AR·RTL·Dark not
+attempted — same staged rollout the original SCR-FLD-6xx batch used). Each frame
+cloned from SCR-FLD-600's chrome (App sidebar `666:229`/App topbar `666:335`
+pattern, 1280px outer / 1032px main / 968px sq-content column), then populated
+with real repo-sourced title/subtitle copy (`tr()` strings from each route's own
+`page.tsx`) and real design-system component instances — not re-derived from
+scratch. Each frame carries the same Dev Mode "Responsive implementation
+contract" annotation already applied to `345:42242`/`704:95056`.
+
+| Card | Route(s) | Node | Components used |
+|---|---|---|---|
+| SCR-FLD-DASH | `/field` | `808:81` | SyncIndicator, InspectionCard×2 |
+| SCR-FLD-ESTAB | `/field/establishments` | `809:81` | EstablishmentCard (Licensed, Unregistered) |
+| SCR-FLD-VISITS | `/field/visits` | `809:135674` | SyncIndicator, InspectionCard×2 |
+| SCR-FLD-ACCOUNT | `/field/account` | `809:135857` | DetailRow×3 (Personal ID/Mobile/Entity) |
+| SCR-FLD-NOTIF | `/field/notifications` | `809:135474` | NotificationRow (Unread, Read) |
+| SCR-FLD-REPORTS | `/field/reports` | `809:136054` | SyncIndicator, InspectionCard×2 |
+| SCR-FLD-VIRTUAL | `/field/virtual` | `809:136237` | Badge×3 (session-state placeholders) |
+| SCR-FLD-INCIDENT | `/field/incident-reports` | `809:136426` | seg-opt×2, Input×3 (Establishment Code/Report Source/Reporter Name) |
+| SCR-FLD-SEARCH | `/field/search` | `809:136620` | Input (search), filter-chip×4 |
+| SCR-FLD-SETTINGS | `/field/settings`, `/field/settings/conflicts`, `/field/settings/devices` | `809:136813` | DetailRow×3 — one hub frame covers all 3 routes (real app is one settings list linking to Conflicts/Devices, not 3 independent screens) |
+| SCR-FLD-COMPLETED | `/field/completed` | `809:137011` | SyncIndicator, InspectionCard×2, Badge=Completed |
+
+**Known, disclosed limitations of this batch (not silently glossed):**
+- Content is representative — matches the SCR-FLD-600/630 precedent bar, not
+  pixel parity. `InspectionCard`/`SyncIndicator` placeholders were reused as-is
+  on 4 screens (Dashboard, Visits, Reports, Completed) rather than building a
+  bespoke component per screen, given the batch size.
+- `seg-opt` instances on SCR-FLD-INCIDENT still show their default "Option"
+  label text (not overridden to "Immediate"/"Incident") — cosmetic, not fixed
+  this pass.
+- `DetailRow` instances on SCR-FLD-SETTINGS carry the component's own default
+  placeholder secondary text/ID ("Created in Planning, published to the
+  inspector", "VS-40188") alongside the real overridden label — not fully
+  cleared, could read as slightly confusing in Dev Mode.
+- Virtual's 3 Badge instances are generic status badges (Pending/Info/Completed),
+  not the app's actual scheduled/waiting/joined/verified/in_progress/closed
+  vocabulary — no matching Badge variant exists for those exact states.
+
+**Still open:** Dark, AR·RTL, AR·RTL·Dark for all 10 new frames — not attempted,
+same as the disclosed gap in the original SCR-FLD-6xx rollout before its own
+later closure pass. Owner: next Web Figma batch.
