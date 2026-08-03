@@ -1,50 +1,38 @@
 # Shared test accounts
 
-Test-environment credentials for the Supabase project `iiozvqntawxfwbgffzqu`.
-Every developer uses the same set, so nobody has to ask for a login.
+Governed test identities for the allowlisted non-production Supabase project
+`iiozvqntawxfwbgffzqu`.
 
-> **Test project only.** These passwords are deliberately trivial and are
-> committed on purpose so the shared environment is self-serve. They must never
-> be created in, copied to, or reused against a production project. Anything
-> that reaches production gets real credentials issued through the normal route.
+> **Test project only.** The shared secret is supplied through
+> `SAQEEL_UAT_PASSWORD`. It is never committed, printed, or copied to production.
+> Provisioning refuses every project except the allowlisted non-production target.
 
 ## Inspectors
 
-Five inspectors, one per region, each with a live journey seeded toward a real
-factory. **The password is the login id.**
+Inspectors 1–30 are the deterministic primary inventory. Inspectors 1–5 also
+own the five linked business-scenario cohorts; 6–30 are reusable UAT inventory.
 
-| Login | Sign in with | Password | Name | Region | Journey |
-|---|---|---|---|---|---|
-| Inspector1 | `inspector1@mim.gov.sa` | `Inspector1` | فهد عبدالعزيز الدوسري | Riyadh | Riyadh → F-1101 · on the way · 6.1 km |
-| Inspector2 | `inspector2@mim.gov.sa` | `Inspector2` | نورة سعد الغامدي | Makkah | Jeddah → F-2201 · on the way · 10.7 km |
-| Inspector3 | `inspector3@mim.gov.sa` | `Inspector3` | خالد إبراهيم الشمري | Eastern | Dammam → F-3301 · arrived · 2.0 km |
-| Inspector4 | `inspector4@mim.gov.sa` | `Inspector4` | ريم ماجد الحربي | Madinah | Madinah → F-4401 · executing · 150.8 km |
-| Inspector5 | `inspector5@mim.gov.sa` | `Inspector5` | سلطان ناصر القحطاني | Qassim | Buraydah → F-5501 · executing · 7.1 km |
+| Cohort | Sign in with | Secret reference | Scope |
+|---|---|---|---|
+| Admin 1–5 | `admin1@mim.gov.sa` … `admin5@mim.gov.sa` | `SAQEEL_UAT_PASSWORD` | National |
+| Planner 1–5 | `planner1@mim.gov.sa` … `planner5@mim.gov.sa` | `SAQEEL_UAT_PASSWORD` | Regional |
+| Supervisor 1–5 | `supervisor1@mim.gov.sa` … `supervisor5@mim.gov.sa` | `SAQEEL_UAT_PASSWORD` | Regional |
+| Inspector 1–30 | `inspector1@mim.gov.sa` … `inspector30@mim.gov.sa` | `SAQEEL_UAT_PASSWORD` | Regional |
 
 Sign-in uses the **email**, not the login id. The card is labelled "National ID
 / Staff number", but resolving a national ID or staff number to an account needs
 the MIM directory contract, which has not been supplied — the card says so
 rather than pretending. Until that contract exists, the email is the identifier.
 
-## Pre-existing persona accounts
-
-From `Seeders/CURRENT_LIVE_TEST_DATA_GUIDE.csv` on Drive.
-
-| Role | Email | Password | Lands on |
-|---|---|---|---|
-| Planner | `planner@mim.gov.sa` | `MimPlan!2026` | Planning |
-| Inspector | `inspector@mim.gov.sa` | `MimField!2026` | Field app — the account carrying the original 345 seeded visits |
-| Reviewer | `reviewer@mim.gov.sa` | `MimRev!2026` | Reviews |
-| Administrator | `admin@mim.gov.sa` | `MimAdmin!2026` | Admin console |
-| Operations | `ops@mim.gov.sa` | `MimOps!2026` | Operations dashboard |
-
-`approver@mim.gov.sa` exists but its password was never shared with us.
+Specialist legacy personas are outside the numbered primary cohort and must not
+be substituted into primary-cohort UAT journeys. Their credentials remain
+environment-referenced only.
 
 ## Reseeding
 
-```bash
-python3 scripts/seed/seed_inspectors.py
-```
+Run `node scripts/test-data/provision_governed_uat_identities.mjs` for a guarded
+dry run. Applying requires the explicit acknowledgement documented by the
+script and succeeds only for the allowlisted non-production project.
 
 Re-runnable. Existing users are reused; each run replaces only the geo trail it
 wrote previously. It reads `NEXT_PUBLIC_SUPABASE_URL` and

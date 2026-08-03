@@ -4,15 +4,18 @@ import { waitForCredentialsForm, identifierField, passwordField, submitCredentia
 
 // TASK-INSPECTOR-RESPONSIVE-ACCEPTANCE-001 — Visit Statement, positive path.
 //
-// Credentials match scripts/test-data/local_test_data_seed.sql (inspector3 /
-// literal "Password" — that file commits the password itself, so this is not
-// a secret). Inspection 77000000-0000-4000-8000-000000000003 was pushed to
+// Credentials match scripts/test-data/local_test_data_seed.sql and are loaded
+// only from the governed local environment reference. Inspection 77000000-0000-4000-8000-000000000003 was pushed to
 // status='submitted' via a one-off public.submit_inspection() call that
 // deliberately skips start_review(), because in normal flow a reviewer picks
 // up the review almost immediately and status advances past 'submitted' —
 // the exact state /field/inspection/[id]/statement requires (page.tsx:25).
-const INSPECTOR_EMAIL = "inspector3@local.saqeel.test";
-const INSPECTOR_PASSWORD = "Password";
+const INSPECTOR_EMAIL = "inspector3@mim.gov.sa";
+const requireUatSecret = (): string => {
+  const value = process.env.SAQEEL_UAT_PASSWORD;
+  if (!value) throw new Error("SAQEEL_UAT_PASSWORD is required for the governed UAT Inspector");
+  return value;
+};
 const SUBMITTED_INSPECTION_ID = "77000000-0000-4000-8000-000000000003";
 
 const WIDTHS = [
@@ -29,7 +32,7 @@ async function loginAsInspector3(page: import("@playwright/test").Page, width: n
   await page.goto("/login");
   await waitForCredentialsForm(page);
   await identifierField(page).fill(INSPECTOR_EMAIL);
-  await passwordField(page).fill(INSPECTOR_PASSWORD);
+  await passwordField(page).fill(requireUatSecret());
   await submitCredentials(page);
   await page.waitForURL((url) => url.pathname === "/dashboard", { timeout: 20_000 });
 }
