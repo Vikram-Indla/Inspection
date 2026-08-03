@@ -2,7 +2,12 @@ import { test, expect, type BrowserContext, type Page } from "@playwright/test";
 import { PERSONAS, storageStatePath } from "./personas";
 import { login, rest, must } from "./live-rest";
 import { signAndConfirm } from "./sign-helper";
-import { waitForCredentialsForm, submitCredentials } from "./login-helper";
+import {
+  identifierField,
+  passwordField,
+  waitForCredentialsForm,
+  submitCredentials,
+} from "./login-helper";
 
 // Golden journey B10 (B10-EV-001) driven entirely through the UI:
 // plan -> publish -> assign -> startup -> execute -> submit v1 -> Level-2 RETURN
@@ -14,6 +19,7 @@ import { waitForCredentialsForm, submitCredentials } from "./login-helper";
 test.describe.configure({ mode: "serial" });
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const P2_LOGIN_STEP_TIMEOUT = 20_000;
 
 let factory: { id: string; factory_code: string; name: string; official_lat: number; official_lng: number };
 let inspectorUserId: string;
@@ -46,12 +52,20 @@ async function journeyInspectorPage(browser: { newContext: (o: object) => Promis
   });
   lastContext = ctx;
   const page = await ctx.newPage();
-  await page.goto("/login");
-  await waitForCredentialsForm(page);
-  await page.locator("#email").fill(inspectorCreds.email);
-  await page.locator("#pw").fill(inspectorCreds.password);
-  await submitCredentials(page);
-  await page.waitForURL(url => url.pathname.startsWith("/field"), { timeout: 40_000 });
+  await test.step("P2 Inspector opens the governed login form", async () => {
+    await page.goto("/login");
+    await waitForCredentialsForm(page);
+  }, { timeout: P2_LOGIN_STEP_TIMEOUT });
+  await test.step("P2 Inspector submits controlled credentials", async () => {
+    await identifierField(page).fill(inspectorCreds.email);
+    await passwordField(page).fill(inspectorCreds.password);
+    await submitCredentials(page);
+  }, { timeout: P2_LOGIN_STEP_TIMEOUT });
+  await test.step("P2 Inspector reaches the approved Dashboard landing", async () => {
+    await page.waitForURL(url => url.pathname === "/dashboard", { timeout: P2_LOGIN_STEP_TIMEOUT });
+    await expect(page.locator("#role-dashboard-summary")).toBeVisible({ timeout: P2_LOGIN_STEP_TIMEOUT });
+    await expect(page.locator("main")).not.toContainText("ERR-AUTH", { timeout: P2_LOGIN_STEP_TIMEOUT });
+  }, { timeout: P2_LOGIN_STEP_TIMEOUT });
   const origin = new URL(page.url()).origin;
   await ctx.addCookies([
     { name: "locale", value: "en", url: origin },
@@ -207,7 +221,10 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   const page = await journeyInspectorPage(browser);
 
   // Assigned visit is visible on the field dashboard (RBAC-009 scope)
-  await page.goto("/field");
+  await test.step("P2 Inspector opens the governed field journey", async () => {
+    await page.goto("/field");
+    await page.waitForURL(url => url.pathname === "/field");
+  }, { timeout: 20_000 });
   // The dashboard replacement renders only the single "next" visit as a link
   // (FAB / Open directions); per-assignment cards are plain surfaces, and
   // leftover far-future assignments from prior runs can hold the next slot.
