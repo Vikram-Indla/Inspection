@@ -7,10 +7,10 @@
 //
 // Usage:
 //   node e2e/perf/benchmark.mjs setup                          # login all personas, save storage states
-//   node e2e/perf/benchmark.mjs login --cycles 5               # cold login-chain measurements (ops persona)
-//   node e2e/perf/benchmark.mjs cold --route /dashboard --cycles 10
-//   node e2e/perf/benchmark.mjs warm --route /dashboard --cycles 10
-//   node e2e/perf/benchmark.mjs warm-detail --cycles 10        # visits list -> first detail link
+//   node e2e/perf/benchmark.mjs login --cycles 20              # cold login-chain measurements (ops persona)
+//   node e2e/perf/benchmark.mjs cold --route /dashboard --cycles 20
+//   node e2e/perf/benchmark.mjs warm --route /dashboard --cycles 20
+//   node e2e/perf/benchmark.mjs warm-detail --cycles 20        # visits list -> first detail link
 //   node e2e/perf/benchmark.mjs aggregate                      # baseline.json + CSV + evidence pruning
 //
 // Env: BASE_URL (default http://127.0.0.1:3100), RESULTS_DIR (default docs/performance/results),
@@ -39,31 +39,112 @@ const EVIDENCE_DIR = join(REPO_ROOT, "docs", "performance", "evidence");
 const AUTH_DIR = join(__dirname, ".auth");
 const RUNS_FILE = join(RESULTS_DIR, `runs-${RESULTS_LABEL}.jsonl`);
 
-// Seeded demo personas — same credentials as e2e/personas.ts (already in-repo).
+// ---- env-based, fail-closed personas (same pattern as e2e/personas.ts) ------
+
+function parseEnvFile(path) {
+  if (!existsSync(path)) return {};
+  const values = {};
+  for (const rawLine of readFileSync(path, "utf8").split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith("#")) continue;
+    const separator = line.indexOf("=");
+    if (separator < 1) continue;
+    const key = line.slice(0, separator).trim().replace(/^export\s+/, "");
+    let value = line.slice(separator + 1).trim();
+    if ((value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    values[key] = value;
+  }
+  return values;
+}
+
+let fileCache = null;
+function envValues() {
+  if (fileCache) return fileCache;
+  const explicit = process.env.E2E_ENV_FILE?.trim();
+  const candidates = explicit
+    ? [explicit]
+    : [join(WEB_ROOT, ".env.local"), join(WEB_ROOT, ".env")];
+  fileCache = candidates.reduce(
+    (merged, path) => ({ ...merged, ...parseEnvFile(path) }),
+    {},
+  );
+  return fileCache;
+}
+
+function requireSetting(envVar, persona, allowEmpty = false) {
+  const files = envValues();
+  const processHas = Object.prototype.hasOwnProperty.call(process.env, envVar);
+  const fileHas = Object.prototype.hasOwnProperty.call(files, envVar);
+  if (!processHas && !fileHas) {
+    throw new Error(
+      `Persona "${persona}" is missing ${envVar}. Set it in apps/web/.env.local, ` +
+      `apps/web/.env, or E2E_ENV_FILE. Credentials are never committed to this repository.`,
+    );
+  }
+  const value = processHas ? process.env[envVar] : files[envVar];
+  if (!allowEmpty && !value.trim()) throw new Error(`Persona "${persona}" has an empty ${envVar}.`);
+  return value;
+}
+
+const sharedPassword = (persona) => requireSetting("SAQEEL_TEST_PASSWORD", persona, true);
+const personaEmail = (envVar, persona) => requireSetting(envVar, persona);
+
 const PERSONAS = {
-  planner: { email: "planner@mim.gov.sa", password: "MimPlan!2026", home: "/planning" },
-  inspector: { email: "inspector@mim.gov.sa", password: "MimField!2026", home: "/field" },
-  reviewer: { email: "reviewer@mim.gov.sa", password: "MimRev!2026", home: "/reviews" },
-  admin: { email: "admin@mim.gov.sa", password: "MimAdmin!2026", home: "/admin" },
-  ops: { email: "ops@mim.gov.sa", password: "MimOps!2026", home: "/dashboard" },
+  planner: {
+    get email() { return personaEmail("SAQEEL_TEST_PLANNER_EMAIL", "planner"); },
+    home: "/planning",
+    get password() { return sharedPassword("planner"); },
+  },
+  inspector: {
+    get email() { return personaEmail("SAQEEL_TEST_INSPECTOR_EMAIL", "inspector"); },
+    home: "/field",
+    get password() { return sharedPassword("inspector"); },
+  },
+  reviewer: {
+    get email() { return personaEmail("SAQEEL_TEST_REVIEWER_EMAIL", "reviewer"); },
+    home: "/reviews",
+    get password() { return sharedPassword("reviewer"); },
+  },
+  admin: {
+    get email() { return personaEmail("SAQEEL_TEST_COMPLIANCE_ADMIN_EMAIL", "admin"); },
+    home: "/admin",
+    get password() { return sharedPassword("admin"); },
+  },
+  ops: {
+    get email() { return personaEmail("SAQEEL_TEST_OPS_EMAIL", "ops"); },
+    home: "/dashboard",
+    get password() { return sharedPassword("ops"); },
+  },
 };
 
 // route -> owning persona (keeps warm nav inside that persona's shell nav)
 const ROUTE_PERSONA = {
   "/dashboard": "ops",
-  "/visits": "ops",
+  "/operations": "ops",
   "/factories": "ops",
   "/planning": "planner",
+  "/execution": "inspector",
+  "/reviews": "reviewer",
+  "/admin": "admin",
   "/field": "inspector",
 };
 
+const MIN_AGGREGATE_SAMPLES = 20;
 const args = process.argv.slice(2);
 const command = args[0];
 const opt = (name, dflt) => {
   const i = args.indexOf(`--${name}`);
   return i >= 0 ? args[i + 1] : dflt;
 };
-const CYCLES = Number(opt("cycles", "10"));
+const CYCLES_RAW = opt("cycles", "20");
+const CYCLES = Number(CYCLES_RAW);
+if (!Number.isInteger(CYCLES) || CYCLES < 20) {
+  console.error(`CYCLES must be an integer >= 20, got: ${CYCLES_RAW}`);
+  process.exit(1);
+}
 const ROUTE = opt("route", null);
 
 mkdirSync(RESULTS_DIR, { recursive: true });
@@ -71,6 +152,26 @@ mkdirSync(EVIDENCE_DIR, { recursive: true });
 mkdirSync(AUTH_DIR, { recursive: true });
 
 // ---- instrumentation injected before any page script ----------------------
+const USEFUL_CONTENT_SELECTOR = ".sq-content";
+
+async function waitForReady(page) {
+  await page.waitForSelector(USEFUL_CONTENT_SELECTOR, { state: "visible", timeout: 15000 });
+  // bounded settle: no long tasks for 200ms
+  const settleT0 = Date.now();
+  while (Date.now() - settleT0 < 200) {
+    const hadLongTask = await page.evaluate(() => {
+      if (!window.__perf || !window.__perf.longtasks) return false;
+      const recent = window.__perf.longtasks.filter((t) => t.start > performance.now() - 250);
+      return recent.some((t) => t.dur > 50);
+    });
+    if (hadLongTask) {
+      await new Promise((r) => setTimeout(r, 50));
+    } else {
+      break;
+    }
+  }
+}
+
 const INIT_SCRIPT = `
   window.__perf = { longtasks: [], lcp: [], paints: [] };
   try {
@@ -125,9 +226,6 @@ async function attachNetwork(page) {
 // Wait until network is quiet (no inflight for `quietMs`) or timeout.
 async function waitSettled(state, quietMs = 500, timeoutMs = 30000) {
   const t0 = Date.now();
-  // Mapbox telemetry/session beacons and realtime sockets are deliberately
-  // long-lived. They do not gate useful route content and must not force every
-  // navigation to consume the 30-second safety timeout.
   const blocksUsefulContent = ({ url }) => !(
     url.startsWith("blob:")
     || /\/events\/v2(?:\?|$)/.test(url)
@@ -145,7 +243,7 @@ async function waitSettled(state, quietMs = 500, timeoutMs = 30000) {
     }
     await new Promise((r) => setTimeout(r, 50));
   }
-  const blockers = [...state.inflight.values()].filter(blocksUsefulContent).map(({ url }) => url);
+  const blockers = [...state.inflight.values()].filter(blocksUsefulContent).map(({ url }) => evidenceUrl(url));
   console.error(`network settle timeout; blocking URLs: ${JSON.stringify(blockers)}`);
   return false;
 }
@@ -213,11 +311,24 @@ function appendRun(record) {
 function evidenceUrl(raw) {
   try {
     const url = new URL(raw);
-    for (const key of ["access_token", "apikey", "token", "signature"]) url.searchParams.delete(key);
-    return `${url.pathname}${url.search}`.slice(0, 160);
+    return url.pathname.replace(
+      /\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi,
+      "/[id]",
+    ).slice(0, 160);
   } catch {
     return raw.startsWith("blob:") ? "blob:[worker]" : "[unparseable-url]";
   }
+}
+
+function classifyError(err) {
+  const text = (err?.message ?? String(err) ?? "").toLowerCase();
+  if (/timeout|timed out/i.test(text)) return "timeout";
+  if (/network|fetch|connection|offline/i.test(text)) return "network";
+  if (/abort/i.test(text)) return "aborted";
+  if (/security|csp|mixed content|blocked/i.test(text)) return "security";
+  if (/not found|404|enoent/i.test(text)) return "not-found";
+  if (/auth|unauthorized|forbidden|401|403/i.test(text)) return "auth";
+  return "other";
 }
 
 async function newContext(browser, personaKey) {
@@ -231,17 +342,18 @@ async function newContext(browser, personaKey) {
 }
 
 async function loginFlow(page, persona) {
-  await page.goto(`${BASE_URL}/login`, { waitUntil: "load" });
-  await page.locator('input[autocomplete="username"]').fill(persona.email);
-  await page.locator('input[autocomplete="current-password"]').fill(persona.password);
-  await page.locator('button[type="submit"].fl-submit').click();
-  await page.waitForURL((u) => !u.pathname.startsWith("/login") && !u.pathname.startsWith("/launch"), { timeout: 45000 });
-  await page.waitForLoadState("load");
+  await page.goto(`${BASE_URL}/login`, { waitUntil: "domcontentloaded" });
+  await page.locator("form.fl-form input.fl-in").first().fill(persona.email);
+  await page.locator("form.fl-form input.fl-pw-in").fill(persona.password);
+  await page.locator("form.fl-form button.fl-submit").click();
+  await page.waitForURL((u) => u.pathname === persona.home, { timeout: 45000 });
+  await waitForReady(page);
 }
 
 // ---- subcommands ----------------------------------------------------------
 
 async function cmdSetup(browser) {
+  let anyFailed = false;
   for (const [key, persona] of Object.entries(PERSONAS)) {
     const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 } });
     const page = await ctx.newPage();
@@ -249,11 +361,16 @@ async function cmdSetup(browser) {
     try {
       await loginFlow(page, persona);
       await ctx.storageState({ path: join(AUTH_DIR, `${key}.json`) });
-      console.log(`setup ok: ${key} -> landed ${page.url()}`);
+      console.log(`setup ok: ${key} -> landed ${new URL(page.url()).pathname}`);
     } catch (e) {
-      console.error(`setup FAILED: ${key}: ${e.message}`);
+      anyFailed = true;
+      console.error(`setup FAILED: ${key}: ${classifyError(e)}`);
     }
     await ctx.close();
+  }
+  if (anyFailed) {
+    console.error("setup: one or more personas failed to authenticate");
+    process.exit(1);
   }
 }
 
@@ -265,22 +382,25 @@ async function cmdLogin(browser) {
     await page.addInitScript(INIT_SCRIPT);
     const net = await attachNetwork(page);
     try {
-      await page.goto(`${BASE_URL}/login`, { waitUntil: "load" });
-      await page.locator('input[autocomplete="username"]').fill(persona.email);
-      await page.locator('input[autocomplete="current-password"]').fill(persona.password);
+      await page.goto(`${BASE_URL}/login`, { waitUntil: "domcontentloaded" });
+      await page.locator("form.fl-form input.fl-in").first().fill(persona.email);
+      await page.locator("form.fl-form input.fl-pw-in").fill(persona.password);
       const mark = { requests: net.done.length, bytes: net.bytes, longtasks: 0 };
       const t0 = Date.now();
-      await page.locator('button[type="submit"].fl-submit').click();
+      await page.locator("form.fl-form button.fl-submit").click();
       await page.waitForURL((u) => !u.pathname.startsWith("/login") && !u.pathname.startsWith("/launch"), { timeout: 45000 });
-      await page.waitForLoadState("load");
-      await waitSettled(net);
       const wall = Date.now() - t0;
+      await waitForReady(page);
+      const ready = Date.now() - t0;
+      await waitSettled(net);
       const snap = await snapshot(page, net, mark);
-      appendRun(summarize({}, snap, wall, { mode: "login-chain", route: `/login->${persona.home}`, cycle, landed: new URL(page.url()).pathname }));
-      console.log(`login cycle ${cycle}: ${wall}ms landed=${new URL(page.url()).pathname}`);
+      appendRun(summarize({}, snap, wall, { mode: "login", route: `/login->${persona.home}`, cycle, landed: new URL(page.url()).pathname, wall_ms: wall, ready_ms: ready }));
+      console.log(`login cycle ${cycle}: wall=${wall}ms ready=${ready}ms landed=${new URL(page.url()).pathname}`);
     } catch (e) {
-      appendRun({ ts: new Date().toISOString(), mode: "login-chain", route: "/login", cycle, error: e.message.split("\n")[0] });
-      console.error(`login cycle ${cycle} FAILED: ${e.message.split("\n")[0]}`);
+      appendRun({ ts: new Date().toISOString(), mode: "login", route: "/login", cycle, error: classifyError(e) });
+      console.error(`login cycle ${cycle} FAILED: ${classifyError(e)}`);
+      await ctx.close();
+      process.exit(1);
     }
     await ctx.close();
   }
@@ -296,8 +416,8 @@ async function cmdCold(browser, route, { saveEvidence = false } = {}) {
     const net = await attachNetwork(page);
     try {
       if (route === "__VISIT_DETAIL__") {
-        // discover a real detail href from the visits list first
-        await page.goto(`${BASE_URL}/visits`, { waitUntil: "load" });
+        await page.goto(`${BASE_URL}/visits`, { waitUntil: "domcontentloaded" });
+        await waitForReady(page);
         await waitSettled(net);
         const href = await page.evaluate(() => {
           const a = document.querySelector('a[href^="/visits/"][class*="sq-link"], table a[href^="/visits/"]');
@@ -308,11 +428,12 @@ async function cmdCold(browser, route, { saveEvidence = false } = {}) {
       }
       const mark = { requests: 0, bytes: 0, longtasks: 0 };
       const t0 = Date.now();
-      await page.goto(`${BASE_URL}${resolvedRoute}`, { waitUntil: "load" });
+      await page.goto(`${BASE_URL}${resolvedRoute}`, { waitUntil: "domcontentloaded" });
+      await waitForReady(page);
       await waitSettled(net);
       const wall = Date.now() - t0;
       const snap = await snapshot(page, net, mark);
-      appendRun(summarize({}, snap, wall, { mode: "cold", route, resolved_route: resolvedRoute, persona: personaKey, cycle }));
+      appendRun(summarize({}, snap, wall, { mode: "cold", route, resolved_route: evidenceUrl(resolvedRoute), persona: personaKey, cycle }));
       if (saveEvidence && cycle === 1) {
         const name = route.replace(/[^\w]+/g, "_");
         writeFileSync(join(EVIDENCE_DIR, `${name}-requests.json`), JSON.stringify(snap.requests.map((r) => ({
@@ -322,8 +443,10 @@ async function cmdCold(browser, route, { saveEvidence = false } = {}) {
       }
       console.log(`cold ${route} cycle ${cycle}: ${wall}ms reqs=${snap.requests.length} supa=${snap.requests.filter((r) => r.supabase).length}`);
     } catch (e) {
-      appendRun({ ts: new Date().toISOString(), mode: "cold", route, persona: personaKey, cycle, error: e.message.split("\n")[0] });
-      console.error(`cold ${route} cycle ${cycle} FAILED: ${e.message.split("\n")[0]}`);
+      appendRun({ ts: new Date().toISOString(), mode: "cold", route, persona: personaKey, cycle, error: classifyError(e) });
+      console.error(`cold ${route} cycle ${cycle} FAILED: ${classifyError(e)}`);
+      await ctx.close();
+      process.exit(1);
     }
     await ctx.close();
   }
@@ -338,45 +461,41 @@ async function cmdWarm(browser, route) {
   const net = await attachNetwork(page);
   page.setDefaultTimeout(20000);
   try {
-    // Intermediate "somewhere else" route between measured navs. Must differ
-    // from the target (clicking a nav link to the CURRENT route measures a
-    // same-route refetch, not a transition). /factories is readable by every
-    // persona and relatively light.
     const OTHER = route === "/factories" ? persona.home : "/factories";
-    await page.goto(`${BASE_URL}${OTHER}`, { waitUntil: "load" });
+    await page.goto(`${BASE_URL}${OTHER}`, { waitUntil: "domcontentloaded" });
+    await waitForReady(page);
     await waitSettled(net);
     for (let cycle = 1; cycle <= CYCLES; cycle++) {
-      // ensure we start somewhere else (unmeasured)
-      if (new URL(page.url()).pathname === route || new URL(page.url()).pathname.startsWith(route + "/")) {
-        await page.goto(`${BASE_URL}${OTHER}`, { waitUntil: "load" });
+      if (new URL(page.url()).pathname === route) {
+        await page.goto(`${BASE_URL}${OTHER}`, { waitUntil: "domcontentloaded" });
+        await waitForReady(page);
         await waitSettled(net);
       }
       const ltMark = await page.evaluate(() => (window.__perf ? window.__perf.longtasks.length : 0));
       const mark = { requests: net.done.length, bytes: net.bytes, longtasks: ltMark };
       const t0 = Date.now();
-      let method = "link-click";
       const link = page.locator(`nav a[href="${route}"]`).first();
-      if ((await link.count()) > 0) {
-        if (ACTIVE_VIEWPORT.isMobile || !(await link.isVisible())) {
-          method = "responsive-link-click";
-          await link.evaluate((element) => element.click());
-        } else {
-          await link.click();
-        }
-      } else {
-        method = "in-context-goto";
-        await page.goto(`${BASE_URL}${route}`, { waitUntil: "load" });
+      if ((await link.count()) === 0) {
+        throw new Error(`warm nav link not found for route ${route}`);
       }
-      await page.waitForURL((u) => u.pathname === route || u.pathname.startsWith(route + "/"), { timeout: 20000 }).catch(() => {});
+      if (ACTIVE_VIEWPORT.isMobile || !(await link.isVisible())) {
+        await link.evaluate((element) => element.click());
+      } else {
+        await link.click();
+      }
+      await page.waitForURL((u) => u.pathname === route, { timeout: 20000 });
+      await waitForReady(page);
       await waitSettled(net);
       const wall = Date.now() - t0;
       const snap = await snapshot(page, net, mark);
-      appendRun(summarize({}, snap, wall, { mode: "warm", route, persona: personaKey, cycle, method }));
-      console.log(`warm ${route} cycle ${cycle}: ${wall}ms (${method}) reqs=${snap.requests.length}`);
+      appendRun(summarize({}, snap, wall, { mode: "warm", route, persona: personaKey, cycle, method: "link-click" }));
+      console.log(`warm ${route} cycle ${cycle}: ${wall}ms reqs=${snap.requests.length}`);
     }
   } catch (e) {
-    appendRun({ ts: new Date().toISOString(), mode: "warm", route, persona: personaKey, error: e.message.split("\n")[0] });
-    console.error(`warm ${route} FAILED: ${process.env.BENCHMARK_DEBUG ? e.stack : e.message.split("\n")[0]}`);
+    appendRun({ ts: new Date().toISOString(), mode: "warm", route, persona: personaKey, error: classifyError(e) });
+    console.error(`warm ${route} FAILED: ${classifyError(e)}`);
+    await ctx.close();
+    process.exit(1);
   }
   await ctx.close();
 }
@@ -388,11 +507,13 @@ async function cmdWarmDetail(browser) {
   const net = await attachNetwork(page);
   page.setDefaultTimeout(20000);
   try {
-    await page.goto(`${BASE_URL}/visits`, { waitUntil: "load" });
+    await page.goto(`${BASE_URL}/visits`, { waitUntil: "domcontentloaded" });
+    await waitForReady(page);
     await waitSettled(net);
     for (let cycle = 1; cycle <= CYCLES; cycle++) {
       if (!new URL(page.url()).pathname.startsWith("/visits")) {
-        await page.goto(`${BASE_URL}/visits`, { waitUntil: "load" });
+        await page.goto(`${BASE_URL}/visits`, { waitUntil: "domcontentloaded" });
+        await waitForReady(page);
         await waitSettled(net);
       }
       const href = await page.evaluate(() => {
@@ -407,23 +528,30 @@ async function cmdWarmDetail(browser) {
       await waitSettled(net);
       const wall = Date.now() - t0;
       const snap = await snapshot(page, net, mark);
-      appendRun(summarize({}, snap, wall, { mode: "warm", route: "/visits/[id]", resolved_route: href, persona: "ops", cycle, method: "link-click" }));
-      console.log(`warm /visits/[id] cycle ${cycle}: ${wall}ms -> ${href}`);
-      // go back to list (unmeasured)
-      await page.goto(`${BASE_URL}/visits`, { waitUntil: "load" });
+      appendRun(summarize({}, snap, wall, { mode: "warm", route: "/visits/[id]", resolved_route: evidenceUrl(href), persona: "ops", cycle, method: "link-click" }));
+      console.log(`warm /visits/[id] cycle ${cycle}: ${wall}ms -> ${evidenceUrl(href)}`);
+      await page.goto(`${BASE_URL}/visits`, { waitUntil: "domcontentloaded" });
+      await waitForReady(page);
       await waitSettled(net);
     }
   } catch (e) {
-    appendRun({ ts: new Date().toISOString(), mode: "warm", route: "/visits/[id]", persona: "ops", error: e.message.split("\n")[0] });
-    console.error(`warm detail FAILED: ${e.message.split("\n")[0]}`);
+    appendRun({ ts: new Date().toISOString(), mode: "warm", route: "/visits/[id]", persona: "ops", error: classifyError(e) });
+    console.error(`warm detail FAILED: ${classifyError(e)}`);
+    await ctx.close();
+    process.exit(1);
   }
   await ctx.close();
 }
 
 function percentile(sorted, p) {
   if (!sorted.length) return null;
-  const idx = Math.ceil((p / 100) * sorted.length) - 1;
-  return sorted[Math.max(0, Math.min(idx, sorted.length - 1))];
+  const n = sorted.length;
+  const idx = (p / 100) * (n - 1);
+  const lower = Math.floor(idx);
+  const upper = Math.ceil(idx);
+  const weight = idx - lower;
+  if (upper >= n) return sorted[n - 1];
+  return sorted[lower] * (1 - weight) + sorted[upper] * weight;
 }
 
 function cmdAggregate() {
@@ -438,16 +566,31 @@ function cmdAggregate() {
   }
   const summary = {};
   const metricKeys = ["nav_ms", "ttfb_ms", "dcl_ms", "load_ms", "fcp_ms", "lcp_ms", "longtask_count", "longtask_ms", "request_count", "bytes", "heap_mb", "horizontal_overflow_px", "supabase_calls", "supabase_ms_total", "supabase_ms_max"];
+  const rejected = [];
   for (const [key, list] of Object.entries(groups)) {
     const [mode, route] = key.split("|");
+    if (list.length < MIN_AGGREGATE_SAMPLES) {
+      console.error(`aggregate rejected: ${route} [${mode}] has ${list.length} valid samples (minimum ${MIN_AGGREGATE_SAMPLES})`);
+      rejected.push({ route, mode, n: list.length });
+      continue;
+    }
     const entry = { n: list.length, errors: errs.filter((e) => e.mode === mode && e.route === route).length };
     for (const m of metricKeys) {
       const vals = list.map((r) => r[m]).filter((v) => typeof v === "number").sort((a, b) => a - b);
       if (vals.length) {
-        entry[m] = { median: percentile(vals, 50), p75: percentile(vals, 75), p95: percentile(vals, 95) };
+        const mean = vals.reduce((a, b) => a + b, 0) / vals.length;
+        const variance = vals.length < 2 ? null : vals.map((v) => (v - mean) ** 2).reduce((a, b) => a + b, 0) / (vals.length - 1);
+        const iqr = vals.length < 2 ? null : percentile(vals, 75) - percentile(vals, 25);
+        entry[m] = { n: vals.length, median: percentile(vals, 50), p75: percentile(vals, 75), p95: percentile(vals, 95), mean, variance, iqr, min: vals[0], max: vals[vals.length - 1], max_is_sample_max_not_p95: true };
       }
     }
     (summary[route] ??= {})[mode] = entry;
+  }
+  // FAIL CLOSED: if any group was rejected for insufficient samples, do not
+  // produce accepted JSON/CSV results and exit nonzero.
+  if (rejected.length > 0) {
+    console.error(`aggregate FAILED: ${rejected.length} group(s) below minimum ${MIN_AGGREGATE_SAMPLES} samples`);
+    process.exit(1);
   }
   const out = {
     generated_at: new Date().toISOString(),
@@ -462,7 +605,6 @@ function cmdAggregate() {
     routes: summary,
   };
   writeFileSync(join(RESULTS_DIR, `${RESULTS_LABEL}.json`), JSON.stringify(out, null, 2));
-  // CSV: one row per individual run
   const header = ["mode", "route", "cycle", "persona", "method", "viewport_profile", "network_profile", "nav_ms", "ttfb_ms", "dcl_ms", "load_ms", "fp_ms", "fcp_ms", "lcp_ms", "longtask_count", "longtask_ms", "request_count", "bytes", "heap_mb", "horizontal_overflow_px", "supabase_calls", "supabase_ms_total", "supabase_ms_max", "error"];
   const lines = [header.join(",")];
   for (const r of runs) {
