@@ -1,5 +1,9 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import {
+  guardServiceFixtureEnvironment,
+  NONPRODUCTION_FIXTURE_ACK,
+} from "./service-fixture-guard";
 
 // Minimal PostgREST client mirroring product-contract/evidence/b10_golden_journey.py:
 // every call runs with the acting persona's own JWT so RLS and triggers stay the
@@ -9,6 +13,7 @@ const env = readFileSync(join(__dirname, "..", ".env.local"), "utf-8");
 const BASE = env.match(/NEXT_PUBLIC_SUPABASE_URL=(.+)/)![1].trim();
 const ANON = env.match(/NEXT_PUBLIC_SUPABASE_ANON_KEY=(.+)/)![1].trim();
 const SERVICE_ROLE = env.match(/SUPABASE_SERVICE_ROLE_KEY=(.+)/)?.[1].trim();
+const CONFIGURED_PROJECT_REF = env.match(/SUPABASE_PROJECT_REF=(.+)/)?.[1].trim();
 
 export async function login(email: string, password: string) {
   const r = await fetch(`${BASE}/auth/v1/token?grant_type=password`, {
@@ -54,12 +59,22 @@ export async function serviceFixtureRest<T = any>(
   body?: unknown,
   prefer = "return=representation",
 ): Promise<{ data: T | null; error: string | null }> {
-  if (!SERVICE_ROLE) return { data: null, error: "missing SUPABASE_SERVICE_ROLE_KEY" };
+  const guard = guardServiceFixtureEnvironment({
+    acknowledgement: process.env[NONPRODUCTION_FIXTURE_ACK],
+    supabaseUrl: BASE,
+    configuredProjectRef: CONFIGURED_PROJECT_REF,
+    serviceRoleKey: SERVICE_ROLE,
+  });
+  if (!guard.allowed) return { data: null, error: guard.code };
+  // guard.allowed proves this at runtime; retain an explicit local narrowing
+  // so the privileged credential can never reach fetch as undefined.
+  const serviceRole = SERVICE_ROLE;
+  if (!serviceRole) return { data: null, error: "FIXTURE_GUARD_SERVICE_ROLE_REQUIRED" };
   const r = await fetch(`${BASE}/rest/v1/${path}`, {
     method,
     headers: {
-      apikey: SERVICE_ROLE,
-      Authorization: `Bearer ${SERVICE_ROLE}`,
+      apikey: serviceRole,
+      Authorization: `Bearer ${serviceRole}`,
       "Content-Type": "application/json",
       Prefer: prefer,
     },
