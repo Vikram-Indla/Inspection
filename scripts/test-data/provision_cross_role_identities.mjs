@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const BATCH = "CROSS_ROLE_CERT_V1";
 const APPROVED_REF = "iiozvqntawxfwbgffzqu";
 const APPLY_ACK = "CONFIRM_PERSISTENT_NONPRODUCTION_ACCESS";
+const ROTATE_ACK = "CONFIRM_ROTATE_FIVE_NONPRODUCTION_IDENTITIES";
 const apply = process.argv.includes("--apply");
+const rotateOwnedPasswords = process.argv.includes("--rotate-owned-passwords");
 const envPath = resolve(process.env.E2E_ENV_FILE || "apps/web/.env.local");
 const manifestPath = resolve(".local-inputs/cross-role-cert-v1.manifest.json");
 
@@ -26,13 +28,15 @@ const setting = (name, allowEmpty = false) => {
 const url = setting("NEXT_PUBLIC_SUPABASE_URL");
 const anonKey = setting("NEXT_PUBLIC_SUPABASE_ANON_KEY");
 const serviceRole = setting("SUPABASE_SERVICE_ROLE_KEY");
-const password = apply ? setting("SAQEEL_CROSS_ROLE_PASSWORD", true) : null;
 const projectRef = new URL(url).hostname.match(/^([a-z0-9]+)\.supabase\.co$/)?.[1];
 if (process.env.NODE_ENV === "production" || projectRef !== APPROVED_REF) {
   throw new Error("CROSS_ROLE_REFUSED: target is not the approved non-production project");
 }
 if (apply && process.env.CROSS_ROLE_IDENTITY_APPLY !== APPLY_ACK) {
   throw new Error("CROSS_ROLE_REFUSED: persistent-access acknowledgement is absent");
+}
+if (rotateOwnedPasswords && (!apply || process.env.CROSS_ROLE_PASSWORD_ROTATION !== ROTATE_ACK)) {
+  throw new Error("CROSS_ROLE_REFUSED: five-identity password-rotation acknowledgement is absent");
 }
 
 const accounts = [
@@ -46,6 +50,24 @@ const serviceHeaders = { apikey: serviceRole, Authorization: `Bearer ${serviceRo
 const anonHeaders = jwt => ({ apikey: anonKey, Authorization: `Bearer ${jwt}`, "Content-Type": "application/json" });
 const scrub = text => text.replaceAll(/eyJ[\w-]+\.[\w-]+\.[\w-]+/g, "[REDACTED_JWT]");
 
+function persistLocalSetting(name, value) {
+  let text = existsSync(envPath) ? readFileSync(envPath, "utf8") : "";
+  const line = `${name}=${value}`;
+  const pattern = new RegExp(`^${name}=.*$`, "m");
+  text = pattern.test(text) ? text.replace(pattern, line) : `${text.replace(/\s*$/, "")}\n${line}\n`;
+  writeFileSync(envPath, text, { mode: 0o600 });
+  chmodSync(envPath, 0o600);
+}
+
+function resolvePassword() {
+  const current = Object.hasOwn(process.env, "SAQEEL_CROSS_ROLE_PASSWORD")
+    ? process.env.SAQEEL_CROSS_ROLE_PASSWORD
+    : fileEnv.SAQEEL_CROSS_ROLE_PASSWORD;
+  if (current?.trim()) return current;
+  throw new Error("CROSS_ROLE_REFUSED: SAQEEL_CROSS_ROLE_PASSWORD is required");
+}
+const password = apply ? resolvePassword() : null;
+
 async function fetchJson(path, { method = "GET", headers = serviceHeaders, body, prefer } = {}) {
   const response = await fetch(`${url}${path}`, {
     method, headers: { ...headers, ...(prefer ? { Prefer: prefer } : {}) },
@@ -55,17 +77,24 @@ async function fetchJson(path, { method = "GET", headers = serviceHeaders, body,
   if (!response.ok) throw new Error(`${method} ${path.split("?")[0]} failed: HTTP ${response.status} ${scrub(text).slice(0, 300)}`);
   return text ? JSON.parse(text) : null;
 }
-async function login(email) {
+async function login(email, loginPassword = password) {
   const response = await fetch(`${url}/auth/v1/token?grant_type=password`, {
     method: "POST", headers: { apikey: anonKey, "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password: loginPassword }),
   });
   if (!response.ok) throw new Error(`CROSS_ROLE_AUTH_FAILED: ${response.status}`);
   const body = await response.json();
   return { jwt: body.access_token, user_id: body.user.id };
 }
+async function revokeAllSessions(jwt) {
+  const response = await fetch(`${url}/auth/v1/logout?scope=global`, {
+    method: "POST", headers: anonHeaders(jwt),
+  });
+  if (!response.ok) throw new Error(`CROSS_ROLE_SESSION_REVOCATION_FAILED: ${response.status}`);
+}
 const digest = value => createHash("sha256").update(value).digest("hex").slice(0, 12);
 const metadataFor = account => ({ data_mode: "NONPRODUCTION_SYNTHETIC", seed_batch_id: BATCH, roles: account.roles, region: account.region, org_scope: account.org_scope });
+const metadataMatches = (actual, expected) => Object.entries(expected).every(([key, value]) => JSON.stringify(actual?.[key] ?? null) === JSON.stringify(value));
 
 async function authInventory() {
   const response = await fetchJson("/auth/v1/admin/users?page=1&per_page=1000");
@@ -119,13 +148,9 @@ function persistIgnoredReferences() {
     CROSS_ROLE_IDENTITY_BATCH: BATCH,
     CROSS_ROLE_ALLOWED_PROJECT_REF: APPROVED_REF,
   };
-  let text = existsSync(envPath) ? readFileSync(envPath, "utf8") : "";
   for (const [key, value] of Object.entries(updates)) {
-    const line = `${key}=${value}`;
-    const pattern = new RegExp(`^${key}=.*$`, "m");
-    text = pattern.test(text) ? text.replace(pattern, line) : `${text.replace(/\s*$/, "")}\n${line}\n`;
+    persistLocalSetting(key, value);
   }
-  writeFileSync(envPath, text, { mode: 0o600 });
 }
 
 async function certify(personas) {
@@ -160,12 +185,13 @@ async function certify(personas) {
 }
 
 if (!apply) {
-  process.stdout.write(`${JSON.stringify({ mode: "dry-run", target: "approved_nonproduction", batch: BATCH, planned_new_identities: 5, planned_role_grants: 5, reviewer_distinct: false, remote_writes: 0 }, null, 2)}\n`);
+  process.stdout.write(`${JSON.stringify({ mode: "dry-run", target: "approved_nonproduction", batch: BATCH, planned_new_identities: 5, planned_role_grants: 5, reviewer_distinct: false, password_rotation_authorized: rotateOwnedPasswords, remote_writes: 0 }, null, 2)}\n`);
   process.exit(0);
 }
 
 const existingUsers = await authInventory();
 const createdAliases = [];
+const counters = { auth_created: 0, auth_metadata_updated: 0, passwords_rotated: 0, sessions_revoked: 0, profiles_created: 0, bootstrap_roles_created: 0 };
 for (const account of accounts) {
   const byId = existingUsers.find(user => user.id === account.id);
   const byEmail = existingUsers.find(user => user.email === account.email);
@@ -176,12 +202,24 @@ for (const account of accounts) {
       app_metadata: metadataFor(account), user_metadata: {},
     } });
     createdAliases.push(account.alias);
-  } else {
+    counters.auth_created += 1;
+  } else if (rotateOwnedPasswords) {
+    await fetchJson(`/auth/v1/admin/users/${account.id}`, { method: "PUT", body: { password, app_metadata: metadataFor(account) } });
+    counters.passwords_rotated += 1;
+  } else if (!metadataMatches(byId.app_metadata, metadataFor(account))) {
     await fetchJson(`/auth/v1/admin/users/${account.id}`, { method: "PUT", body: { app_metadata: metadataFor(account) } });
+    counters.auth_metadata_updated += 1;
   }
 }
-for (const account of accounts) await reconcileProfile(account, createdAliases.includes(account.alias));
-await grantBootstrapAdmin();
+for (const account of accounts) if (await reconcileProfile(account, createdAliases.includes(account.alias))) counters.profiles_created += 1;
+if (await grantBootstrapAdmin()) counters.bootstrap_roles_created += 1;
+if (rotateOwnedPasswords) {
+  for (const account of accounts) {
+    const session = await login(account.email);
+    await revokeAllSessions(session.jwt);
+    counters.sessions_revoked += 1;
+  }
+}
 const admin = await login(accounts[0].email);
 for (const account of accounts.slice(1)) {
   for (const role of account.roles) await rpc("admin_grant_role", admin.jwt, { p_user: account.id, p_role: role });
@@ -189,10 +227,11 @@ for (const account of accounts.slice(1)) {
 const personas = [];
 for (const account of accounts) personas.push({ alias: account.alias, ...(await login(account.email)) });
 const inspectorEmail = setting("SAQEEL_TEST_INSPECTOR_EMAIL");
-personas.push({ alias: "inspector", ...(await login(inspectorEmail)) });
+const inspectorPassword = setting("SAQEEL_TEST_PASSWORD", true);
+personas.push({ alias: "inspector", ...(await login(inspectorEmail, inspectorPassword)) });
 persistIgnoredReferences();
 const evidence = await certify(personas);
-const manifest = { batch: BATCH, target_ref: APPROVED_REF, accounts: accounts.map(account => ({ alias: account.alias, id_hash: digest(account.id), created: createdAliases.includes(account.alias), roles: account.roles })), evidence };
+const manifest = { batch: BATCH, target_ref: APPROVED_REF, accounts: accounts.map(account => ({ alias: account.alias, id_hash: digest(account.id), created: createdAliases.includes(account.alias), roles: account.roles })), counters, staging_replay: { explicit_project_allowlist_required: true, production_refused: true, secret_external_and_ignored: true }, evidence };
 mkdirSync(resolve(".local-inputs"), { recursive: true, mode: 0o700 });
 writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, { mode: 0o600 });
-process.stdout.write(`${JSON.stringify({ mode: "apply", target: "approved_nonproduction", batch: BATCH, identities_reconciled: 5, identities_created: createdAliases.length, profiles_reconciled: 5, canonical_role_grants: 5, authenticated_personas: 6, reviewer_distinct: false, idempotent_replay_ready: true, evidence }, null, 2)}\n`);
+process.stdout.write(`${JSON.stringify({ mode: "apply", target: "approved_nonproduction", batch: BATCH, identities_reconciled: 5, identities_created: createdAliases.length, profiles_reconciled: 5, canonical_role_grants: 5, authenticated_personas: 6, reviewer_distinct: false, idempotent_replay_ready: true, counters, staging_replay: { explicit_project_allowlist_required: true, production_refused: true, secret_external_and_ignored: true }, evidence }, null, 2)}\n`);

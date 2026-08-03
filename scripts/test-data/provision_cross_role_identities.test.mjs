@@ -8,7 +8,22 @@ test("cross-role provisioning is production-refused and confirmation-gated", () 
   assert.match(source, /process\.env\.NODE_ENV === "production"/);
   assert.match(source, /projectRef !== APPROVED_REF/);
   assert.match(source, /CONFIRM_PERSISTENT_NONPRODUCTION_ACCESS/);
-  assert.match(source, /setting\("SAQEEL_CROSS_ROLE_PASSWORD", true\)/);
+  assert.match(source, /CONFIRM_ROTATE_FIVE_NONPRODUCTION_IDENTITIES/);
+  assert.match(source, /CROSS_ROLE_REFUSED: SAQEEL_CROSS_ROLE_PASSWORD is required/);
+  assert.doesNotMatch(source, /randomBytes|generated.*password/i);
+});
+
+test("rotation is restricted to the five owned accounts and globally revokes their sessions", () => {
+  assert.match(source, /for \(const account of accounts\)/);
+  assert.match(source, /\/auth\/v1\/admin\/users\/\$\{account\.id\}/);
+  assert.match(source, /\/auth\/v1\/logout\?scope=global/);
+  assert.doesNotMatch(source, /SAQEEL_TEST_INSPECTOR_EMAIL[^\n]+password/);
+});
+
+test("ordinary replay skips matching auth metadata instead of rewriting it", () => {
+  assert.match(source, /metadataMatches\(byId\.app_metadata, metadataFor\(account\)\)/);
+  assert.match(source, /auth_metadata_updated/);
+  assert.match(source, /passwords_rotated/);
 });
 
 test("cross-role identities use app_metadata and never assign authorization through user metadata", () => {
@@ -38,6 +53,8 @@ test("accepted workbook profiles replay only with exact identity and scope", () 
 
 test("existing Inspector is authenticated but never reconciled or modified", () => {
   assert.match(source, /setting\("SAQEEL_TEST_INSPECTOR_EMAIL"\)/);
+  assert.match(source, /setting\("SAQEEL_TEST_PASSWORD", true\)/);
+  assert.match(source, /login\(inspectorEmail, inspectorPassword\)/);
   assert.doesNotMatch(source, /SAQEEL_TEST_INSPECTOR_EMAIL[^\n]+admin\/users/);
 });
 
