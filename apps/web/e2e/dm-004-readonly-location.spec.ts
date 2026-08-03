@@ -29,7 +29,7 @@ test.describe("DM-004 Planner location authority", () => {
   test("publish rejects injected coordinates and never forwards an override", () => {
     const actions = source("src/app/(app)/planning/single/actions.ts");
     const blocker = actions.indexOf("if (plannerLocationOverrideAttempted) blockers.push(PLANNER_LOCATION_OVERRIDE_ERROR)");
-    const publish = actions.indexOf('sb.rpc("publish_single_visit_atomic"');
+    const publish = actions.indexOf('sb.rpc("submit_single_visit_for_supervision"');
 
     expect(blocker).toBeGreaterThan(-1);
     expect(publish).toBeGreaterThan(blocker);
