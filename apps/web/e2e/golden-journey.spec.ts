@@ -628,6 +628,7 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
 
   // Answer every item; FS-101 non-compliant (drives the V-FS-09 path)
   const sectionsNav = page.getByRole("navigation", { name: "Inspection sections" });
+  await expect(sectionsNav).toBeVisible({ timeout: 30_000 });
   const sectionCount = await sectionsNav.getByRole("listitem").count();
   expect(sectionCount, "governed inspection must expose at least one section").toBeGreaterThan(0);
   const answeredCodes = new Set<string>();
