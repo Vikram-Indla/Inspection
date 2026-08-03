@@ -39,8 +39,15 @@ test("golden P1.5 releases only the exact submitted visit to the controlled Insp
   assert.match(p1, /selectOption\(inspectorUserId\)/);
   assert.match(p1, /toHaveValue\(inspectorUserId\)/);
   assert.match(p1, /name: \/approve & release\/i/);
+  assert.match(p1, /approved request must leave the exact pending queue/);
+  assert.match(p1, /No visit is awaiting supervision\./);
+  assert.match(p1, /planning_supervision_requests\?visit_id=eq\.\$\{visitId\}&select=status,decision_by,decided_at,proposed_inspector_id/);
+  assert.match(p1, /decision_by: supervisorSession\.userId/);
+  assert.match(p1, /proposed_inspector_id: inspectorUserId/);
   assert.match(p1, /planning_status: "published"/);
   assert.match(p1, /inspector_id: inspectorUserId/);
+  assert.match(p1, /status: "assigned"/);
+  assert.doesNotMatch(p1, /exactRequest\.getByRole\("status"\)/);
 });
 
 test("golden P1.5 proves the exact request is Supervisor-visible before rendering", () => {

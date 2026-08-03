@@ -449,11 +449,32 @@ test("P1 planner: single visit publishes (M01-034/036/038/040/041)", async ({ br
   await finalInspector.selectOption(inspectorUserId);
   await expect(finalInspector).toHaveValue(inspectorUserId);
   await exactRequest.getByRole("button", { name: /approve & release/i }).click();
-  await expect(exactRequest.getByRole("status")).toHaveText("Visit approved, assigned, and released.");
+  await expect(exactRequest, "approved request must leave the exact pending queue").toHaveCount(0);
+  await expect(supervisor.getByText("No visit is awaiting supervision.", { exact: true })).toBeVisible();
+  const decision = must(await rest("GET",
+    `planning_supervision_requests?visit_id=eq.${visitId}&select=status,decision_by,decided_at,proposed_inspector_id`,
+    supervisorSession.jwt), "verify exact supervision decision") as Array<{
+      status: string;
+      decision_by: string;
+      decided_at: string;
+      proposed_inspector_id: string;
+    }>;
+  expect(decision).toEqual([{
+    status: "approved",
+    decision_by: supervisorSession.userId,
+    decided_at: expect.any(String),
+    proposed_inspector_id: inspectorUserId,
+  }]);
   const released = must(await rest("GET",
-    `visits?id=eq.${visitId}&select=planning_status,assignments(inspector_id)`, supervisorSession.jwt),
-  "verify released visit") as Array<{ planning_status: string; assignments: Array<{ inspector_id: string }> }>;
-  expect(released).toEqual([{ planning_status: "published", assignments: [{ inspector_id: inspectorUserId }] }]);
+    `visits?id=eq.${visitId}&select=planning_status,assignments(inspector_id,status)`, supervisorSession.jwt),
+  "verify released visit") as Array<{
+    planning_status: string;
+    assignments: Array<{ inspector_id: string; status: string }>;
+  }>;
+  expect(released).toEqual([{
+    planning_status: "published",
+    assignments: [{ inspector_id: inspectorUserId, status: "assigned" }],
+  }]);
 });
 
 test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1", async ({ browser }) => {
