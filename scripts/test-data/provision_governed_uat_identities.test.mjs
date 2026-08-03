@@ -8,7 +8,9 @@ test("governed UAT provisioning is project-allowlisted and confirmation-gated", 
   assert.match(source, /APPROVED_REF = "iiozvqntawxfwbgffzqu"/);
   assert.match(source, /process\.env\.NODE_ENV === "production"/);
   assert.match(source, /CONFIRM_GOVERNED_UAT_IDENTITIES_NONPRODUCTION/);
-  assert.match(source, /required\("SAQEEL_UAT_PASSWORD"\)/);
+  assert.match(source, /value\("SAQEEL_UAT_PASSWORD"\)\?\.trim\(\)/);
+  assert.match(source, /optionalOverride \|\| required\("SAQEEL_CROSS_ROLE_PASSWORD"\)/);
+  assert.doesNotMatch(source, /SAQEEL_UAT_PASSWORD[^\n]*\|\|[^\n]*["'][^"']+["']/);
 });
 
 test("complete deterministic cohort uses the government domain", () => {
@@ -30,4 +32,17 @@ test("all accounts are authenticated without secret output", () => {
   assert.match(source, /session\.user\?\.id !== account\.id/);
   assert.doesNotMatch(source, /console\.log/);
   assert.doesNotMatch(source, /sharedSecret[^\n]*process\.stdout/);
+});
+
+test("primary-cohort harnesses use the optional override then governed fallback", () => {
+  const harnesses = [
+    "../../apps/web/e2e/insp-primary-cohort-dashboard.spec.ts",
+    "../../apps/web/e2e/dm-007-planner-auth-session.spec.ts",
+    "../../apps/web/e2e/inspector-responsive/route-sweep-responsive.spec.ts",
+    "../../apps/web/e2e/inspector-responsive/visit-statement-responsive.spec.ts",
+  ];
+  for (const relativePath of harnesses) {
+    const harness = readFileSync(new URL(relativePath, import.meta.url), "utf8");
+    assert.match(harness, /SAQEEL_UAT_PASSWORD\?\.trim\(\) \|\| process\.env\.SAQEEL_CROSS_ROLE_PASSWORD\?\.trim\(\)/);
+  }
 });

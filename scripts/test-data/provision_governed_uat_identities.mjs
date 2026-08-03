@@ -15,11 +15,12 @@ const required = name => {
   if (!found) throw new Error(`UAT_IDENTITY_REFUSED: ${name} is required`);
   return found;
 };
+const optionalOverride = value("SAQEEL_UAT_PASSWORD")?.trim();
+const sharedSecret = optionalOverride || required("SAQEEL_CROSS_ROLE_PASSWORD");
 
 const url = required("NEXT_PUBLIC_SUPABASE_URL");
 const anonKey = required("NEXT_PUBLIC_SUPABASE_ANON_KEY");
 const serviceRole = required("SUPABASE_SERVICE_ROLE_KEY");
-const sharedSecret = required("SAQEEL_UAT_PASSWORD");
 const projectRef = new URL(url).hostname.match(/^([a-z0-9]+)\.supabase\.co$/)?.[1];
 if (process.env.NODE_ENV === "production" || projectRef !== APPROVED_REF) {
   throw new Error("UAT_IDENTITY_REFUSED: target is not the approved non-production project");

@@ -3,8 +3,9 @@
 Governed test identities for the allowlisted non-production Supabase project
 `iiozvqntawxfwbgffzqu`.
 
-> **Test project only.** The shared secret is supplied through
-> `SAQEEL_UAT_PASSWORD`. It is never committed, printed, or copied to production.
+> **Test project only.** The shared secret uses the existing
+> `SAQEEL_CROSS_ROLE_PASSWORD` reference. `SAQEEL_UAT_PASSWORD` is an optional
+> override. Neither value is committed, printed, or copied to production.
 > Provisioning refuses every project except the allowlisted non-production target.
 
 ## Inspectors
@@ -14,10 +15,10 @@ own the five linked business-scenario cohorts; 6–30 are reusable UAT inventory
 
 | Cohort | Sign in with | Secret reference | Scope |
 |---|---|---|---|
-| Admin 1–5 | `admin1@mim.gov.sa` … `admin5@mim.gov.sa` | `SAQEEL_UAT_PASSWORD` | National |
-| Planner 1–5 | `planner1@mim.gov.sa` … `planner5@mim.gov.sa` | `SAQEEL_UAT_PASSWORD` | Regional |
-| Supervisor 1–5 | `supervisor1@mim.gov.sa` … `supervisor5@mim.gov.sa` | `SAQEEL_UAT_PASSWORD` | Regional |
-| Inspector 1–30 | `inspector1@mim.gov.sa` … `inspector30@mim.gov.sa` | `SAQEEL_UAT_PASSWORD` | Regional |
+| Admin 1–5 | `admin1@mim.gov.sa` … `admin5@mim.gov.sa` | `SAQEEL_CROSS_ROLE_PASSWORD` | National |
+| Planner 1–5 | `planner1@mim.gov.sa` … `planner5@mim.gov.sa` | `SAQEEL_CROSS_ROLE_PASSWORD` | Regional |
+| Supervisor 1–5 | `supervisor1@mim.gov.sa` … `supervisor5@mim.gov.sa` | `SAQEEL_CROSS_ROLE_PASSWORD` | Regional |
+| Inspector 1–30 | `inspector1@mim.gov.sa` … `inspector30@mim.gov.sa` | `SAQEEL_CROSS_ROLE_PASSWORD` | Regional |
 
 Sign-in uses the **email**, not the login id. The card is labelled "National ID
 / Staff number", but resolving a national ID or staff number to an account needs

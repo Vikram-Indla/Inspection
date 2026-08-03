@@ -12,8 +12,8 @@ import { waitForCredentialsForm, identifierField, passwordField, submitCredentia
 // Credentials/data match scripts/test-data/local_test_data_seed.sql.
 const INSPECTOR_EMAIL = "inspector3@mim.gov.sa";
 const requireUatSecret = (): string => {
-  const value = process.env.SAQEEL_UAT_PASSWORD;
-  if (!value) throw new Error("SAQEEL_UAT_PASSWORD is required for the governed UAT Inspector");
+  const value = process.env.SAQEEL_UAT_PASSWORD?.trim() || process.env.SAQEEL_CROSS_ROLE_PASSWORD?.trim();
+  if (!value) throw new Error("The governed primary-cohort secret reference is required for the UAT Inspector");
   return value;
 };
 
