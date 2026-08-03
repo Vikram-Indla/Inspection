@@ -15,11 +15,9 @@ test.describe.configure({ mode: "serial" });
 
 let factory: { id: string; factory_code: string; name: string; official_lat: number; official_lng: number };
 let inspectorUserId: string;
-// Dedicated throwaway inspector per run: the shared seeded inspector is
-// booked around "now" (seed visit V-120), M01-040 blocks any overlapping
-// assignment, and EXE-JOURNEY-OUTSIDE-WINDOW (20260721140000) requires the
-// journey window to contain now — so no window satisfies both for the shared
-// persona. Same isolation pattern as the sacrificial factory (M02-012).
+// The controlled non-production Inspector identity is resolved through the
+// private persona environment and must also be present in the Planner's live
+// governed selector before P1 may assign it.
 let inspectorCreds: { email: string; password: string };
 let packageVersionId: string;
 let scopeSectionKey: string; // section containing FS-101 — the exact return scope
@@ -64,10 +62,14 @@ async function journeyInspectorPage(browser: { newContext: (o: object) => Promis
 test.beforeAll(async () => {
   const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
 
-  // Reuse a prior clearly disposable R3/G10 inspector because the available
-  // service-role credential is stale; no new auth identity is created here.
-  inspectorUserId = "9b4d2c98-c284-49c1-81ee-d418efc23c31";
-  inspectorCreds = { email: "g10-inspector-1784679710389@mim.gov.sa", password: "G10!Inspector2026" };
+  // Resolve the identity from existing controlled test configuration. P1 then
+  // proves this authenticated user is still exposed by the Planner selector;
+  // stale or ineligible identities are never substituted silently.
+  inspectorCreds = {
+    email: PERSONAS.inspector.email,
+    password: PERSONAS.inspector.password,
+  };
+  inspectorUserId = (await login(inspectorCreds.email, inspectorCreds.password)).userId;
 
   // M02-012 blocks publish while a factory has ANY active periodic visit. Picking
   // an existing shared factory races every other run (this suite's own retries,
@@ -181,7 +183,16 @@ test("P1 planner: single visit publishes (M01-034/036/038/040/041)", async ({ br
   const page = await personaPage(browser, "planner");
   await page.goto("/planning/single");
   await fillWizard(page);
-  await page.locator('select[name="inspector_id"]').selectOption(inspectorUserId);
+  const inspectorSelect = page.locator('select[name="inspector_id"]');
+  const eligibleInspectorIds = await inspectorSelect.locator('option:not([value=""])').evaluateAll(
+    options => options.map(option => (option as HTMLOptionElement).value),
+  );
+  expect(eligibleInspectorIds.length, "Planner selector must expose an eligible Inspector").toBeGreaterThan(0);
+  expect(
+    eligibleInspectorIds,
+    "controlled Inspector must remain eligible in the governed Planner selector",
+  ).toContain(inspectorUserId);
+  await inspectorSelect.selectOption(inspectorUserId);
   await page.getByRole("button", { name: /publish visit/i }).click();
   await page.waitForURL(/\/visits\/[0-9a-f-]+/, { timeout: 20_000 });
   visitId = page.url().match(/\/visits\/([0-9a-f-]+)/)![1];
