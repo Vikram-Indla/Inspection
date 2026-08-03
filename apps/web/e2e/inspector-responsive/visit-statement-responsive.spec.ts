@@ -12,8 +12,8 @@ import { waitForCredentialsForm, identifierField, passwordField, submitCredentia
 // the exact state /field/inspection/[id]/statement requires (page.tsx:25).
 const INSPECTOR_EMAIL = "inspector3@mim.gov.sa";
 const requireUatSecret = (): string => {
-  const value = process.env.SAQEEL_UAT_PASSWORD;
-  if (!value) throw new Error("SAQEEL_UAT_PASSWORD is required for the governed UAT Inspector");
+  const value = process.env.SAQEEL_UAT_PASSWORD?.trim() || process.env.SAQEEL_CROSS_ROLE_PASSWORD?.trim();
+  if (!value) throw new Error("The governed primary-cohort secret reference is required for the UAT Inspector");
   return value;
 };
 const SUBMITTED_INSPECTION_ID = "77000000-0000-4000-8000-000000000003";

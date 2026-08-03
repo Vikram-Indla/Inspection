@@ -12,10 +12,10 @@ import { waitForCredentialsForm, submitCredentials, identifierField, passwordFie
 // /login UI and lands on /dashboard with role-scoped data.
 
 function requireUatSecret(): string {
-  const value = process.env.SAQEEL_UAT_PASSWORD;
+  const value = process.env.SAQEEL_UAT_PASSWORD?.trim() || process.env.SAQEEL_CROSS_ROLE_PASSWORD?.trim();
   if (!value) {
     throw new Error(
-      "SAQEEL_UAT_PASSWORD is required to authenticate the primary business cohorts " +
+      "SAQEEL_UAT_PASSWORD or SAQEEL_CROSS_ROLE_PASSWORD is required to authenticate the primary business cohorts " +
       "(admin1/planner1/supervisor1/inspector1). Set it in apps/web/.env.local.",
     );
   }
