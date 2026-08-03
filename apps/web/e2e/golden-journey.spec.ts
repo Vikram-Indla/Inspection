@@ -557,8 +557,14 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
     await expect(page.getByRole("heading", { name: "Arrival evidence", exact: true, level: 5 })).toBeVisible();
   } else {
     // The measured distance badge is intentionally transient client state and
-    // is asserted only during the live check-in that produced it.
-    await expect(page.locator(".sq-lozenge--success, .badge-compliant", { hasText: "inside fence" })).toBeVisible();
+    // is asserted only during the live check-in that produced it. E3 arrival
+    // auto-detect can settle to "arrival auto-detected" before this poll ever
+    // observes the transient "inside fence" badge — either is a governed
+    // successful check-in outcome.
+    await expect(
+      page.locator(".sq-lozenge--success, .badge-compliant", { hasText: "inside fence" })
+        .or(page.getByText("arrival auto-detected", { exact: true }))
+    ).toBeVisible();
   }
 
   // M04-045 release certification — queue a comment-only arrival record through
