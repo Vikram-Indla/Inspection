@@ -317,12 +317,15 @@ test("golden P2 completes the approved OCR review modal before continuing", () =
   assert.doesNotMatch(source, /ocrDialog\.(?:press|evaluate)|ocrOverlay/);
 });
 
-test("golden P2 reuses exact governed FS-101 evidence or uploads once by accessible name", () => {
+test("golden P2 reuses exact governed FS-101 evidence or uploads once by its current accessible name", () => {
   assert.match(source, /getByText\(\/\^\\d\+\\\/\\d\+ evidence\$\//);
   assert.match(source, /FS-101 must expose one unambiguous governed evidence count/);
   assert.match(source, /attachedEvidence < requiredEvidence/);
-  assert.match(source, /getByLabel\("Mandatory photo", \{ exact: true \}\)/);
-  assert.match(source, /missing FS-101 evidence requires exactly one Mandatory photo control/);
+  assert.match(source, /getByLabel\("📷 Mandatory photo", \{ exact: true \}\)/);
+  assert.match(source, /missing FS-101 evidence requires exactly one governed photo control/);
+  assert.match(source, /FS-101 governed evidence control must remain a file upload/);
+  assert.match(source, /FS-101 governed evidence control must accept photo evidence/);
+  assert.doesNotMatch(source, /getByLabel\("Mandatory photo", \{ exact: true \}\)/);
   assert.match(source, /getByLabel\("Replace", \{ exact: true \}\)/);
   assert.match(source, /replacement must not be used to satisfy missing evidence/);
   assert.match(source, /existing FS-101 evidence must satisfy the governed minimum/);

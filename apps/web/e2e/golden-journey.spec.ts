@@ -650,8 +650,10 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
       const requiredEvidence = Number(evidenceMatch![2]);
       expect(requiredEvidence, "FS-101 must require positive governed evidence").toBeGreaterThan(0);
       if (attachedEvidence < requiredEvidence) {
-        const mandatoryPhoto = q.getByLabel("Mandatory photo", { exact: true });
-        await expect(mandatoryPhoto, "missing FS-101 evidence requires exactly one Mandatory photo control").toHaveCount(1);
+        const mandatoryPhoto = q.getByLabel("📷 Mandatory photo", { exact: true });
+        await expect(mandatoryPhoto, "missing FS-101 evidence requires exactly one governed photo control").toHaveCount(1);
+        await expect(mandatoryPhoto, "FS-101 governed evidence control must remain a file upload").toHaveAttribute("type", "file");
+        await expect(mandatoryPhoto, "FS-101 governed evidence control must accept photo evidence").toHaveAttribute("accept", "image/*");
         await expect(q.getByLabel("Replace", { exact: true }), "replacement must not be used to satisfy missing evidence").toHaveCount(0);
         await mandatoryPhoto.setInputFiles({ name: "fs-101.png", mimeType: "image/png", buffer: PIXEL_PNG });
         // M04-109 — attaching a photo opens an annotate-before-attach modal
