@@ -1,4 +1,6 @@
 import { test, expect, type BrowserContext, type Page } from "@playwright/test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { PERSONAS, storageStatePath } from "./personas";
 import { login, rest, must } from "./live-rest";
 import { signAndConfirm } from "./sign-helper";
@@ -21,7 +23,7 @@ test.describe.configure({ mode: "serial" });
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const P2_LOGIN_STEP_TIMEOUT = 20_000;
 
-let factory: { id: string; factory_code: string; name: string; official_lat: number; official_lng: number };
+let factory: { id: string; factory_code: string; name: string; official_lat: number; official_lng: number; geofence_radius_m: number };
 let inspectorUserId: string;
 // The controlled non-production Inspector identity is resolved through the
 // private persona environment and must also be present in the Planner's live
@@ -39,6 +41,34 @@ async function pollRest<T>(fn: () => Promise<T | null>, label: string, tries = 1
     await new Promise(r => setTimeout(r, 2000));
   }
   throw new Error(`timed out waiting for ${label}`);
+}
+
+function acceptedSeedGeofenceRadius(): number {
+  const foundation = readFileSync(join(__dirname, "..", "..", "..", "supabase", "migrations", "0001_foundation.sql"), "utf8");
+  const gisSeed = foundation.match(/\('gis',\s*'([^']+)'\s*,\s*'([^']+)'\)/);
+  if (!gisSeed) throw new Error("accepted GIS seed configuration is missing");
+  const settings = JSON.parse(gisSeed[1]) as { geofence_default_radius_m?: unknown };
+  const radius = settings.geofence_default_radius_m;
+  if (typeof radius !== "number" || !Number.isFinite(radius) || radius <= 0 || !Number.isInteger(radius)) {
+    throw new Error("accepted GIS seed must provide a positive integer geofence_default_radius_m");
+  }
+  if (!gisSeed[2]) throw new Error("accepted GIS seed must provide version provenance");
+  return radius;
+}
+
+async function governedFixtureGeofenceRadius(plannerJwt: string): Promise<number> {
+  const rows = must(await rest("GET",
+    "engine_settings?engine=eq.gis&select=settings,version_label&limit=1",
+    plannerJwt), "read governed GIS configuration") as Array<{
+      settings: { geofence_default_radius_m?: unknown };
+      version_label: string;
+    }>;
+  const liveRadius = rows[0]?.settings?.geofence_default_radius_m;
+  if (typeof liveRadius === "number" && Number.isFinite(liveRadius) && liveRadius > 0 && Number.isInteger(liveRadius)) {
+    if (!rows[0]?.version_label) throw new Error("governed GIS configuration must provide version provenance");
+    return liveRadius;
+  }
+  return acceptedSeedGeofenceRadius();
 }
 
 async function retireOverlappingGoldenAssignments(plannerJwt: string) {
@@ -104,6 +134,7 @@ async function journeyInspectorPage(browser: { newContext: (o: object) => Promis
 
 test.beforeAll(async () => {
   const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
+  const fixtureGeofenceRadius = await governedFixtureGeofenceRadius(planner.jwt);
 
   // Resolve the identity from existing controlled test configuration. P1 then
   // proves this authenticated user is still exposed by the Planner selector;
@@ -128,6 +159,7 @@ test.beforeAll(async () => {
     factory_code: code, name: `R3 QA Certification ${code}`,
     cr_number: `9999-${Date.now() % 1000000}`, region: "Riyadh", city: "Riyadh",
     official_lat: 24.7136, official_lng: 46.6753,
+    geofence_radius_m: fixtureGeofenceRadius,
     risk_band: "low", risk_score: 10,
   }), "create sacrificial factory")[0];
 

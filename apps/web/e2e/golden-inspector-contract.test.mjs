@@ -54,3 +54,20 @@ test("golden fixture rollover retires only overlapping unstarted harness-owned a
   assert.match(source, /await retireOverlappingGoldenAssignments\(planner\.jwt\)/);
   assert.doesNotMatch(source, /SUPABASE_SERVICE_ROLE_KEY/);
 });
+
+test("golden fixture copies governed GIS authority and fails closed without a valid source", () => {
+  assert.match(source, /function acceptedSeedGeofenceRadius\(\)/);
+  assert.match(source, /"supabase", "migrations", "0001_foundation\.sql"/);
+  assert.match(source, /accepted GIS seed must provide version provenance/);
+  assert.match(source, /async function governedFixtureGeofenceRadius\(plannerJwt: string\)/);
+  assert.match(source, /engine_settings\?engine=eq\.gis&select=settings,version_label&limit=1/);
+  assert.match(source, /settings\?\.geofence_default_radius_m/);
+  assert.match(source, /Number\.isFinite\(liveRadius\)/);
+  assert.match(source, /liveRadius > 0/);
+  assert.match(source, /Number\.isInteger\(liveRadius\)/);
+  assert.match(source, /must provide version provenance/);
+  assert.match(source, /return acceptedSeedGeofenceRadius\(\)/);
+  assert.match(source, /geofence_radius_m: fixtureGeofenceRadius/);
+  assert.doesNotMatch(source, /geofence_radius_m:\s*150/);
+  assert.doesNotMatch(source, /SUPABASE_SERVICE_ROLE_KEY/);
+});
