@@ -101,7 +101,7 @@ export const PERSONAS = {
     // is reached via navigation, not as the login home. Observed live during
     // this session's auth setup (redirected to /dashboard, not /field).
     home: "/dashboard",
-    get password(): string { return sharedPassword("inspector"); },
+    get password(): string { return primaryCohortPassword("inspector"); },
   },
   reviewer: {
     get email(): string { return personaEmail("SAQEEL_TEST_REVIEWER_EMAIL", "reviewer"); },

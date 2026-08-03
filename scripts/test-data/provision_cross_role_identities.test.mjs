@@ -64,11 +64,15 @@ test("evidence is secret-safe and ignored local state carries the manifest", () 
   assert.doesNotMatch(source, /console\.log\([^)]*(password|serviceRole|jwt)/i);
 });
 
-test("golden-journey Planner and Reviewer use the rotated primary-cohort password reference", () => {
+test("all five headed setup personas use the governed primary-cohort password reference", () => {
   const personas = readFileSync(new URL("../../apps/web/e2e/personas.ts", import.meta.url), "utf8");
   assert.match(personas, /primaryCohortPassword = \(persona: string\) => requireSetting\("SAQEEL_CROSS_ROLE_PASSWORD", persona\)/);
   assert.match(personas, /password\(\): string \{ return primaryCohortPassword\("planner"\); \}/);
+  assert.match(personas, /password\(\): string \{ return primaryCohortPassword\("supervisor"\); \}/);
   assert.match(personas, /password\(\): string \{ return primaryCohortPassword\("reviewer"\); \}/);
+  assert.match(personas, /password\(\): string \{ return primaryCohortPassword\("admin"\); \}/);
+  assert.match(personas, /password\(\): string \{ return primaryCohortPassword\("inspector"\); \}/);
+  assert.doesNotMatch(personas, /password\(\): string \{ return sharedPassword\("(?:admin|inspector)"\); \}/);
 });
 
 test("Admin-only repair is explicit, existing-identity-only and does not rotate the cohort", () => {
