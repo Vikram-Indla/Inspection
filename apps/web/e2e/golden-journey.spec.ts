@@ -1,8 +1,13 @@
 import { test, expect, type BrowserContext, type Page } from "@playwright/test";
-import { readFileSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { PERSONAS, goldenInspectorPersona, storageStatePath } from "./personas";
-import { login, rest, must } from "./live-rest";
+import { login, rest, serviceFixtureRest, must } from "./live-rest";
+import {
+  selectAvailableControlledInspector,
+  selectLeasedControlledInspector,
+  type ControlledInspectorCandidate,
+} from "./golden-inspector-selection";
 import { signAndConfirm } from "./sign-helper";
 import {
   identifierField,
@@ -30,6 +35,9 @@ let inspectorUserId: string;
 // private persona environment and must also be present in the Planner's live
 // governed selector before P1 may assign it.
 let inspectorCreds: { email: string; password: string };
+let goldenInspectorLeaseId = "";
+let controlledInspectorCandidates: ControlledInspectorCandidate<{ email: string; password: string }>[] = [];
+let proposedInspectorUserId = "";
 let packageVersionId: string;
 let scopeSectionKey: string; // section containing FS-101 — the exact return scope
 let visitId: string;
@@ -80,8 +88,6 @@ async function governedFixtureGeofenceRadius(plannerJwt: string): Promise<number
 type GoldenAssignmentWindow = {
   visit_id: string;
   visits: {
-    planning_status?: string;
-    operational_state?: string;
     window_start: string;
     window_end: string;
     factories?: { factory_code: string };
@@ -110,7 +116,6 @@ function allocateRetirementWindows(
     .map(({ start, end }) => ({ start, end }));
   const allocated: Array<{ visitId: string; start: Date; end: Date }> = [];
   let cursor = new Date(proposedStart.getTime() - 60_000);
-
   for (const target of ordered) {
     const duration = target.end.getTime() - target.start.getTime();
     let attempts = 0;
@@ -118,15 +123,14 @@ function allocateRetirementWindows(
       const end = new Date(cursor);
       const start = new Date(end.getTime() - duration);
       const collisions = occupied.filter(slot => slot.start < end && slot.end > start);
-      if (collisions.length === 0) {
+      if (!collisions.length) {
         allocated.push({ visitId: target.row.visit_id, start, end });
         occupied.push({ start, end });
         cursor = new Date(start.getTime() - 60_000);
         break;
       }
       cursor = new Date(Math.min(...collisions.map(slot => slot.start.getTime())) - 60_000);
-      attempts += 1;
-      if (attempts > existing.length + targets.length) {
+      if (++attempts > existing.length + targets.length) {
         throw new Error(`cannot prove a collision-free retirement window for ${target.row.visit_id}`);
       }
     }
@@ -134,21 +138,24 @@ function allocateRetirementWindows(
   return allocated;
 }
 
-async function retireOverlappingGoldenAssignments(plannerJwt: string, proposedStart: Date, proposedEnd: Date) {
+async function retireOverlappingGoldenAssignments(
+  plannerJwt: string,
+  controlledInspectorId: string,
+  proposedStart: Date,
+  proposedEnd: Date,
+) {
   const rows = must(await rest("GET",
-    `assignments?select=visit_id,visits!inner(id,planning_status,operational_state,window_start,window_end,factories!inner(factory_code))&inspector_id=eq.${inspectorUserId}&visits.planning_status=in.(published,returned)&visits.operational_state=eq.new&visits.window_start=lt.${proposedEnd.toISOString()}&visits.window_end=gt.${proposedStart.toISOString()}&visits.factories.factory_code=like.R3-QA-CERT-*`,
+    `assignments?select=visit_id,visits!inner(window_start,window_end,factories!inner(factory_code))&inspector_id=eq.${controlledInspectorId}&visits.planning_status=in.(published,returned)&visits.operational_state=eq.new&visits.window_start=lt.${proposedEnd.toISOString()}&visits.window_end=gt.${proposedStart.toISOString()}&visits.factories.factory_code=like.R3-QA-CERT-*`,
     plannerJwt), "read prior golden assignments") as GoldenAssignmentWindow[];
   const existing = must(await rest("GET",
-    `assignments?select=visit_id,visits!inner(window_start,window_end)&inspector_id=eq.${inspectorUserId}&status=in.(assigned,preparing,ready)&visits.planning_status=in.(draft,published,returned)&visits.window_start=lt.${proposedStart.toISOString()}`,
-    plannerJwt), "read occupied Inspector windows") as GoldenAssignmentWindow[];
-
+    `assignments?select=visit_id,visits!inner(window_start,window_end)&inspector_id=eq.${controlledInspectorId}&status=in.(assigned,preparing,ready)&visits.planning_status=in.(draft,published,returned)&visits.window_start=lt.${proposedStart.toISOString()}`,
+    plannerJwt), "read occupied controlled Inspector windows") as GoldenAssignmentWindow[];
   for (const row of rows) {
     if (!row.visits.factories?.factory_code.startsWith("R3-QA-CERT-")) {
       throw new Error("refusing to reschedule a non-golden assignment");
     }
   }
-  const retirementWindows = allocateRetirementWindows(rows, existing, proposedStart);
-  for (const window of retirementWindows) {
+  for (const window of allocateRetirementWindows(rows, existing, proposedStart)) {
     must(await rest("POST", "rpc/reschedule_published_visits_atomic", plannerJwt, {
       p_visit_ids: [window.visitId],
       p_window_start: window.start.toISOString(),
@@ -226,18 +233,15 @@ test.beforeAll(async () => {
   const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
   const fixtureGeofenceRadius = await governedFixtureGeofenceRadius(planner.jwt);
 
-  // Resolve the identity from existing controlled test configuration. P1 then
-  // proves this authenticated user is still exposed by the Planner selector;
-  // stale or ineligible identities are never substituted silently.
-  inspectorCreds = goldenInspectorPersona();
   const freshWindow = freshGoldenWindow();
   visitWindowStart = freshWindow.start;
   visitWindowEnd = freshWindow.end;
   visitWindowStartInput = freshWindow.startInput;
   visitWindowEndInput = freshWindow.endInput;
-  const inspectorSession = await login(inspectorCreds.email, inspectorCreds.password);
-  inspectorUserId = inspectorSession.userId;
   if (RECOVERY_VISIT_ID) {
+    inspectorCreds = goldenInspectorPersona();
+    const inspectorSession = await login(inspectorCreds.email, inspectorCreds.password);
+    inspectorUserId = inspectorSession.userId;
     if (!UUID.test(RECOVERY_VISIT_ID)) throw new Error("GOLDEN_RECOVERY_VISIT_ID must be a UUID");
     const rows = must(await rest("GET",
       `visits?id=eq.${RECOVERY_VISIT_ID}&select=id,planning_status,operational_state,package_version_id,factories(id,factory_code,name,region,official_lat,official_lng,geofence_radius_m),assignments(inspector_id,status)`,
@@ -291,7 +295,44 @@ test.beforeAll(async () => {
     visitId = row.id;
     return;
   }
-  await retireOverlappingGoldenAssignments(planner.jwt, new Date(visitWindowStart), new Date(visitWindowEnd));
+
+  // Resolve both controlled credentials, then let the guarded non-production
+  // lease choose one that is available for this exact window. The lease RPC
+  // uses the same overlap semantics as supervision and serializes golden runs.
+  const controlledCredentials = [goldenInspectorPersona(), {
+    email: PERSONAS.inspector.email,
+    password: PERSONAS.inspector.password,
+  }];
+  controlledInspectorCandidates = await Promise.all(controlledCredentials.map(async value => {
+    const session = await login(value.email, value.password);
+    return { userId: session.userId, value };
+  }));
+  for (const candidate of controlledInspectorCandidates) {
+    await retireOverlappingGoldenAssignments(
+      planner.jwt,
+      candidate.userId,
+      new Date(visitWindowStart),
+      new Date(visitWindowEnd),
+    );
+  }
+  const leaseResponse = await serviceFixtureRest("POST", "rpc/acquire_nonproduction_golden_inspector_lease", {
+    p_run_key: `golden-supervisor-${crypto.randomUUID()}`,
+    p_candidate_ids: controlledInspectorCandidates.map(candidate => candidate.userId),
+    p_window_start: visitWindowStart,
+    p_window_end: visitWindowEnd,
+    p_expires_at: new Date(Date.now() + 15 * 60_000).toISOString(),
+  });
+  if (!leaseResponse.error) {
+    const selectedInspector = selectLeasedControlledInspector(
+      controlledInspectorCandidates,
+      leaseResponse.data as Array<{ lease_id: string; inspector_id: string }>,
+    );
+    inspectorUserId = selectedInspector.userId;
+    inspectorCreds = selectedInspector.value;
+    goldenInspectorLeaseId = selectedInspector.leaseId;
+  } else if (!leaseResponse.error.includes("GOLDEN-LEASE-NO-AVAILABLE-INSPECTOR")) {
+    throw new Error(`reserve an available controlled Inspector: ${leaseResponse.error}`);
+  }
 
   // M02-012 blocks publish while a factory has ANY active periodic visit. Picking
   // an existing shared factory races every other run (this suite's own retries,
@@ -409,11 +450,12 @@ test("P1 planner: single visit publishes (M01-034/036/038/040/041)", async ({ br
     options => options.map(option => (option as HTMLOptionElement).value),
   );
   expect(eligibleInspectorIds.length, "Planner selector must expose an eligible Inspector").toBeGreaterThan(0);
-  expect(
-    eligibleInspectorIds,
-    "controlled Inspector must remain eligible in the governed Planner selector",
-  ).toContain(inspectorUserId);
-  await inspectorSelect.selectOption(inspectorUserId);
+  const plannerControlledInspectorIds = controlledInspectorCandidates
+    .map(candidate => candidate.userId)
+    .filter(candidateId => eligibleInspectorIds.includes(candidateId));
+  expect(plannerControlledInspectorIds.length, "Planner selector must expose a controlled Inspector").toBeGreaterThan(0);
+  proposedInspectorUserId = goldenInspectorLeaseId ? inspectorUserId : plannerControlledInspectorIds[0];
+  await inspectorSelect.selectOption(proposedInspectorUserId);
   const publish = page.getByRole("button", { name: /submit for supervision/i });
   await test.step("P1 Planner publish is interactive within the smoke-step timeout", async () => {
     await expect(publish).toBeEnabled();
@@ -440,6 +482,24 @@ test("P1 planner: single visit publishes (M01-034/036/038/040/041)", async ({ br
       ? rows[0]
       : null;
   }, "exact Supervisor-visible pending request", 5);
+  const authoritativeRoster = must(await rest("POST", "rpc/list_available_supervision_inspectors",
+    supervisorSession.jwt, { p_visit_ids: [visitId] }), "read authoritative Supervisor availability") as Array<{
+      visit_id: string;
+      inspector_id: string;
+    }>;
+  const authoritativeInspectorIds = authoritativeRoster
+    .filter(row => row.visit_id === visitId)
+    .map(row => row.inspector_id);
+  if (goldenInspectorLeaseId) {
+    expect(authoritativeInspectorIds, "reserved Inspector must remain authoritatively available").toContain(inspectorUserId);
+  } else {
+    const selectedInspector = selectAvailableControlledInspector(
+      controlledInspectorCandidates,
+      authoritativeInspectorIds,
+    );
+    inspectorUserId = selectedInspector.userId;
+    inspectorCreds = selectedInspector.value;
+  }
   await supervisor.goto(`/planning/supervision?submitted=${visitId}`);
   const exactRequest = supervisor.locator("section.sq-card").filter({
     has: supervisor.locator(`input[name="visit_id"][value="${visitId}"]`),
@@ -452,6 +512,11 @@ test("P1 planner: single visit publishes (M01-034/036/038/040/041)", async ({ br
   expect(supervisorEligibleInspectorIds, "Supervisor queue must expose the controlled Inspector").toContain(inspectorUserId);
   await finalInspector.selectOption(inspectorUserId);
   await expect(finalInspector).toHaveValue(inspectorUserId);
+  mkdirSync("test-results/golden-supervisor", { recursive: true });
+  await supervisor.screenshot({
+    path: "test-results/golden-supervisor/available-controlled-inspector.png",
+    fullPage: true,
+  });
   await exactRequest.getByRole("button", { name: /approve & release/i }).click();
   await expect(exactRequest, "approved request must leave the exact pending queue").toHaveCount(0);
   await expect(supervisor.getByText("No visit is awaiting supervision.", { exact: true })).toBeVisible();
@@ -467,7 +532,7 @@ test("P1 planner: single visit publishes (M01-034/036/038/040/041)", async ({ br
     status: "approved",
     decision_by: supervisorSession.userId,
     decided_at: expect.any(String),
-    proposed_inspector_id: inspectorUserId,
+    proposed_inspector_id: proposedInspectorUserId,
   }]);
   const released = must(await rest("GET",
     `visits?id=eq.${visitId}&select=planning_status,assignments(inspector_id,status)`, supervisorSession.jwt),
@@ -479,6 +544,14 @@ test("P1 planner: single visit publishes (M01-034/036/038/040/041)", async ({ br
     planning_status: "published",
     assignments: [{ inspector_id: inspectorUserId, status: "assigned" }],
   }]);
+  if (goldenInspectorLeaseId) {
+    must(await serviceFixtureRest("POST", "rpc/release_nonproduction_golden_inspector_lease", {
+      p_lease_id: goldenInspectorLeaseId,
+      p_event_type: "released",
+      p_visit_id: visitId,
+    }), "release assigned golden Inspector lease");
+    goldenInspectorLeaseId = "";
+  }
 });
 
 test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1", async ({ browser }) => {
