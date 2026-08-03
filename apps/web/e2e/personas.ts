@@ -81,13 +81,14 @@ function requireSetting(envVar: string, persona: string, allowEmpty = false): st
 }
 
 const sharedPassword = (persona: string) => requireSetting("SAQEEL_TEST_PASSWORD", persona, true);
+const primaryCohortPassword = (persona: string) => requireSetting("SAQEEL_CROSS_ROLE_PASSWORD", persona);
 const personaEmail = (envVar: string, persona: string) => requireSetting(envVar, persona);
 
 export const PERSONAS = {
   planner: {
     get email(): string { return personaEmail("SAQEEL_TEST_PLANNER_EMAIL", "planner"); },
     home: "/planning",
-    get password(): string { return sharedPassword("planner"); },
+    get password(): string { return primaryCohortPassword("planner"); },
   },
   inspector: {
     get email(): string { return personaEmail("SAQEEL_TEST_INSPECTOR_EMAIL", "inspector"); },
@@ -100,7 +101,7 @@ export const PERSONAS = {
   reviewer: {
     get email(): string { return personaEmail("SAQEEL_TEST_REVIEWER_EMAIL", "reviewer"); },
     home: "/reviews",
-    get password(): string { return sharedPassword("reviewer"); },
+    get password(): string { return primaryCohortPassword("reviewer"); },
   },
   admin: {
     get email(): string { return personaEmail("SAQEEL_TEST_COMPLIANCE_ADMIN_EMAIL", "admin"); },
