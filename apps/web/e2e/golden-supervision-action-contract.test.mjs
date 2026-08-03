@@ -71,10 +71,8 @@ test("Supervisor queue targets an exact validated visit instead of relying on th
   assert.doesNotMatch(supervisionPage, /delete\(|update\(|cancel_published_visits_atomic/);
 });
 
-test("Supervisor roster starts from governed Inspector grants and tolerates profile-name RLS", () => {
-  assert.match(supervisionPage, /from\("user_roles"\)/);
-  assert.match(supervisionPage, /eq\("role_key", "inspector"\)/);
-  assert.match(supervisionPage, /profiles!user_roles_user_id_fkey\(full_name\)/);
-  assert.match(supervisionPage, /profile\?\.full_name\?\.trim\(\) \|\| userId\.slice\(0, 8\)/);
-  assert.doesNotMatch(supervisionPage, /from\("profiles"\).*user_roles/);
+test("Supervisor roster is request-scoped by the same authoritative availability predicate as release", () => {
+  assert.match(supervisionPage, /rpc\("list_available_supervision_inspectors", \{ p_visit_ids: visitIds \}\)/);
+  assert.match(supervisionPage, /inspectorsByVisit\[visitId\]/);
+  assert.doesNotMatch(supervisionPage, /from\("user_roles"\)/);
 });

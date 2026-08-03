@@ -15,10 +15,10 @@ export type SupervisionStrings = {
   returnToPlanner: string; reject: string;
 };
 
-export default function SupervisionQueue({ requests, inspectors, strings, locale }: { requests: PendingSupervision[]; inspectors: Inspector[]; strings: SupervisionStrings; locale: "en" | "ar" }) {
+export default function SupervisionQueue({ requests, inspectorsByVisit, strings, locale }: { requests: PendingSupervision[]; inspectorsByVisit: Record<string, Inspector[]>; strings: SupervisionStrings; locale: "en" | "ar" }) {
   return <div className="sq-stack">
     {requests.length === 0 ? <div className="sq-banner sq-banner--info">{strings.empty}</div> : requests.map(request =>
-      <SupervisionCard key={request.id} request={request} inspectors={inspectors} strings={strings} locale={locale} />
+      <SupervisionCard key={request.id} request={request} inspectors={inspectorsByVisit[request.visitId] ?? []} strings={strings} locale={locale} />
     )}
   </div>;
 }
