@@ -11,6 +11,27 @@ const migration = readFileSync(
 );
 
 test.describe("TASK-ADMIN-DEVELOPMENT-CLOSURE-20260802", () => {
+  test("admin compliance/config guards use the canonical RLS role keys", () => {
+    const guard = readWeb("src/lib/admin-configuration.ts");
+    const regulations = readWeb("src/app/(app)/admin/regulations/page.tsx");
+    const items = readWeb("src/app/(app)/admin/items/page.tsx");
+    const packages = readWeb("src/app/(app)/admin/packages/page.tsx");
+    const violations = readWeb("src/app/(app)/admin/violations/page.tsx");
+    const localization = readWeb("src/app/(app)/admin/localization/page.tsx");
+    for (const source of [guard, regulations, items, packages, violations]) {
+      expect(source).toContain("compliance_admin");
+      expect(source).toContain("form_admin");
+    }
+    for (const role of ["compliance_admin", "security_admin", "workflow_admin"]) {
+      expect(localization).toContain(role);
+    }
+    expect(guard).toContain('role === "admin"');
+  });
+
+  test("shared Admin account disclosure has a discernible accessible name", () => {
+    const shell = readWeb("src/components/admin/AdminShellClient.tsx");
+    expect(shell).toContain('<summary aria-label={`${email.split("@")[0]} — ${roleSummary}`}>');
+  });
   test("delegation resolves email inside the guarded RPC", () => {
     const actions = readWeb("src/app/(app)/admin/delegation/actions.ts");
     expect(actions).toContain('sb.rpc("create_delegation_by_email"');
