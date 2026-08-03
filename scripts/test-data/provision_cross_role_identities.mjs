@@ -7,8 +7,10 @@ const BATCH = "CROSS_ROLE_CERT_V1";
 const APPROVED_REF = "iiozvqntawxfwbgffzqu";
 const APPLY_ACK = "CONFIRM_PERSISTENT_NONPRODUCTION_ACCESS";
 const ROTATE_ACK = "CONFIRM_ROTATE_FIVE_NONPRODUCTION_IDENTITIES";
+const REPAIR_ADMIN_ACK = "CONFIRM_REPAIR_EXISTING_NONPRODUCTION_ADMIN";
 const apply = process.argv.includes("--apply");
 const rotateOwnedPasswords = process.argv.includes("--rotate-owned-passwords");
+const repairAdmin = process.argv.includes("--repair-admin");
 const envPath = resolve(process.env.E2E_ENV_FILE || "apps/web/.env.local");
 const manifestPath = resolve(".local-inputs/cross-role-cert-v1.manifest.json");
 
@@ -37,6 +39,12 @@ if (apply && process.env.CROSS_ROLE_IDENTITY_APPLY !== APPLY_ACK) {
 }
 if (rotateOwnedPasswords && (!apply || process.env.CROSS_ROLE_PASSWORD_ROTATION !== ROTATE_ACK)) {
   throw new Error("CROSS_ROLE_REFUSED: five-identity password-rotation acknowledgement is absent");
+}
+if (repairAdmin && (!apply || process.env.CROSS_ROLE_ADMIN_REPAIR !== REPAIR_ADMIN_ACK)) {
+  throw new Error("CROSS_ROLE_REFUSED: existing Admin repair acknowledgement is absent");
+}
+if (repairAdmin && rotateOwnedPasswords) {
+  throw new Error("CROSS_ROLE_REFUSED: Admin-only repair cannot rotate the full identity cohort");
 }
 
 const accounts = [
@@ -85,6 +93,15 @@ async function login(email, loginPassword = password) {
   if (!response.ok) throw new Error(`CROSS_ROLE_AUTH_FAILED: ${response.status}`);
   const body = await response.json();
   return { jwt: body.access_token, user_id: body.user.id };
+}
+async function canLogin(email, loginPassword = password) {
+  const response = await fetch(`${url}/auth/v1/token?grant_type=password`, {
+    method: "POST", headers: { apikey: anonKey, "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password: loginPassword }),
+  });
+  if (response.ok) return true;
+  if (response.status === 400) return false;
+  throw new Error(`CROSS_ROLE_AUTH_PROBE_FAILED: ${response.status}`);
 }
 async function revokeAllSessions(jwt) {
   const response = await fetch(`${url}/auth/v1/logout?scope=global`, {
@@ -153,6 +170,61 @@ function persistIgnoredReferences() {
   }
 }
 
+async function repairExistingAdmin() {
+  const account = accounts[0];
+  const existingUsers = await authInventory();
+  const byId = existingUsers.find(user => user.id === account.id);
+  const byEmail = existingUsers.find(user => user.email === account.email);
+  if (!byId || !byEmail || byId !== byEmail) {
+    throw new Error("CROSS_ROLE_ADMIN_REPAIR_REFUSED: governed existing Admin identity is absent or ambiguous");
+  }
+  const counters = { password_reconciled: 0, metadata_reconciled: 0, profile_created: 0, role_created: 0, sessions_revoked: 0 };
+  const passwordMatches = await canLogin(account.email);
+  const metadataMatchesExpected = metadataMatches(byId.app_metadata, metadataFor(account));
+  if (!passwordMatches || !metadataMatchesExpected) {
+    await fetchJson(`/auth/v1/admin/users/${account.id}`, { method: "PUT", body: {
+      ...(!passwordMatches ? { password } : {}),
+      ...(!metadataMatchesExpected ? { app_metadata: metadataFor(account) } : {}),
+    } });
+    counters.password_reconciled = passwordMatches ? 0 : 1;
+    counters.metadata_reconciled = metadataMatchesExpected ? 0 : 1;
+  }
+  if (await reconcileProfile(account, false)) counters.profile_created += 1;
+  if (await grantBootstrapAdmin()) counters.role_created += 1;
+  if (!passwordMatches) {
+    const rotated = await login(account.email);
+    await revokeAllSessions(rotated.jwt);
+    counters.sessions_revoked += 1;
+  }
+  const verified = await login(account.email);
+  if (verified.user_id !== account.id) throw new Error("CROSS_ROLE_ADMIN_REPAIR_REFUSED: authenticated Admin identity mismatch");
+  const profile = await fetchJson(`/rest/v1/profiles?select=user_id,region,org_scope,account_status&user_id=eq.${account.id}`, { headers: anonHeaders(verified.jwt) });
+  const roles = await fetchJson(`/rest/v1/user_roles?select=user_id,role_key&user_id=eq.${account.id}&order=role_key`, { headers: anonHeaders(verified.jwt) });
+  if (profile.length !== 1 || profile[0].region !== account.region || profile[0].org_scope !== account.org_scope || profile[0].account_status !== "active") {
+    throw new Error("CROSS_ROLE_ADMIN_REPAIR_REFUSED: governed Admin profile scope mismatch");
+  }
+  if (roles.length !== 1 || roles[0].role_key !== "admin") {
+    throw new Error("CROSS_ROLE_ADMIN_REPAIR_REFUSED: governed Admin role mismatch");
+  }
+  const changed = Object.values(counters).some(value => value > 0);
+  if (changed) await fetchJson("/rest/v1/audit_events", { method: "POST", body: {
+    actor: account.id,
+    object_type: "controlled_test_identity",
+    object_id: account.id,
+    action: "nonproduction_admin_identity_reconciled",
+    before_state: null,
+    after_state: { seed_batch_id: BATCH, role_key: "admin", region: account.region, org_scope: account.org_scope, counters },
+    requirement_refs: ["RBAC-001", "CANONICAL-ROLE-001"],
+  }, prefer: "return=minimal" });
+  persistLocalSetting("SAQEEL_TEST_COMPLIANCE_ADMIN_EMAIL", account.email);
+  process.stdout.write(`${JSON.stringify({
+    mode: "apply", target: "approved_nonproduction", batch: BATCH,
+    repair: "existing_admin_only", identity_hash: digest(account.id),
+    authenticated: true, role: "admin", region: account.region, org_scope: account.org_scope,
+    idempotent_replay_ready: true, audit_appended: changed, counters,
+  }, null, 2)}\n`);
+}
+
 async function certify(personas) {
   const byAlias = Object.fromEntries(personas.map(row => [row.alias, row]));
   const reads = {
@@ -185,7 +257,12 @@ async function certify(personas) {
 }
 
 if (!apply) {
-  process.stdout.write(`${JSON.stringify({ mode: "dry-run", target: "approved_nonproduction", batch: BATCH, planned_new_identities: 5, planned_role_grants: 5, reviewer_distinct: false, password_rotation_authorized: rotateOwnedPasswords, remote_writes: 0 }, null, 2)}\n`);
+  process.stdout.write(`${JSON.stringify({ mode: "dry-run", target: "approved_nonproduction", batch: BATCH, planned_new_identities: repairAdmin ? 0 : 5, planned_role_grants: repairAdmin ? 1 : 5, reviewer_distinct: false, admin_only_repair: repairAdmin, password_rotation_authorized: rotateOwnedPasswords, remote_writes: 0 }, null, 2)}\n`);
+  process.exit(0);
+}
+
+if (repairAdmin) {
+  await repairExistingAdmin();
   process.exit(0);
 }
 
