@@ -57,7 +57,7 @@ test("M2-08 external request create is denied for a non-compliance persona (live
   const subj = page.locator('input[name="subject"]');
   if (await subj.count()) {
     await subj.fill(`neg-${Date.now()}`);
-    await page.getByRole("button", { name: /Create request/i }).click();
+    await page.getByRole("button", { name: /Create internal intake/i }).click();
     await expect(page.getByText(/scope required|not authorized|Couldn/i)).toBeVisible();
     await expect(page.getByText(/request created/i)).toHaveCount(0);
   }
