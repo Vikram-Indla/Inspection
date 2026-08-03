@@ -37,7 +37,8 @@ export default async function Localization() {
     throw new Error("localization_roles_unavailable");
   }
   const roles = new Set((roleRows ?? []).map(row => row.role_key));
-  const canManageLocalization = roles.has("admin");
+  const canManageLocalization = ["admin", "compliance_admin", "security_admin", "workflow_admin"]
+    .some(role => roles.has(role));
 
   if (!canManageLocalization) {
     return (
@@ -54,7 +55,7 @@ export default async function Localization() {
             ),
           )}
         >
-          <a className="btn btn-secondary sq-link btn-touch" href="/launch">
+          <a className="btn btn-secondary sq-link btn-touch" href="/launch" aria-label={copy("Return to my workspace", "العودة إلى مساحة عملي")}>
             {t("admin.unauthorized.return", copy("Return to my area", "العودة إلى القسم المخصص لي"))}
           </a>
         </EmptyState>
