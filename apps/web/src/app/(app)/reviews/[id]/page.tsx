@@ -294,15 +294,16 @@ const panelStrings: WorkspaceDecisionStrings = {
     start: t("review.ws.startAction", "Start review"),
     starting: t("review.ws.starting", "Starting…"),
   };
-  const decisionBoundary = {
-    title: tx("review.ws.dec032.title", "Resubmission dependency", "اعتماد إعادة التقديم"),
-    body: tx(
-      "review.ws.dec032.body",
-      "DEC-032 blocks new submissions and returned-version resubmissions. Decisions on this already-immutable submission still use the canonical atomic review RPC; a Return can be recorded, but resubmission remains blocked until the database migration is applied.",
-      "يحظر القرار DEC-032 عمليات التقديم الجديدة وإعادة تقديم الإصدارات المعادة. تظل قرارات هذه النسخة غير القابلة للتعديل عبر إجراء المراجعة الذري المعتمد؛ ويمكن تسجيل الإعادة، لكن إعادة التقديم تبقى محظورة حتى تطبيق ترحيل قاعدة البيانات.",
-    ),
-    status: tx("review.ws.dec032.status", "Resubmission blocked — DEC-032", "إعادة التقديم محظورة — DEC-032"),
-  };
+  // Note: the DEC-032 "resubmission blocked" boundary that previously rendered
+  // here was removed 2026-08-04. Migration 20260801225413_fix_dec032_submission_
+  // snapshot_digest.sql pins the pgcrypto extension schema and was verified live
+  // against the governed non-production project: a real return -> inspector
+  // resubmission -> new submission_versions row -> reviewer approval cycle
+  // completed successfully end to end (see docs/uat/TASK-5-SUPERVISOR-REVIEW-
+  // APPROVAL-REPORT.md). Leaving the old banner up made a false claim to every
+  // reviewer using Return — CLAUDE.md rule 10 forbids showing an untrue governed
+  // state. If a future regression reopens DEC-032, restate it from verified
+  // reproduction, not by reverting this comment.
   const traceStrings = {
     heading: t("review.ws.trace.heading", "Finding trace chain"),
     hint: t("review.ws.trace.hint", "Question → response → evidence → clause → violation → corrective action → decision comment. Each link is labelled by its source and version; unavailable links are never inferred."),
@@ -516,14 +517,7 @@ const panelStrings: WorkspaceDecisionStrings = {
           // controls, regardless of open/canStart state.
           ? <div className="sq-surface cd-panelpad"><p className="sq-caption">{t("review.ws.readOnlyNote", "Read-only for this role — decision controls are limited to Level 2 Reviewer / Operations.")}</p></div>
           : open && ins.status === "under_review"
-          ? <section className="stack" aria-labelledby="review-decision-boundary-title" data-state="decision-enabled">
-              <div className="alert alert-warning" role="status">
-                <div>
-                  <strong id="review-decision-boundary-title">{decisionBoundary.title}</strong>{" "}
-                  {decisionBoundary.body}
-                </div>
-              </div>
-              <span className="badge badge-warning">{decisionBoundary.status}</span>
+          ? <section className="stack" data-state="decision-enabled">
               <DecisionPanel
                 reviewId={open.id}
                 sections={sections.map(section => ({ key: section.key, title: section.title }))}
