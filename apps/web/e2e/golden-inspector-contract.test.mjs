@@ -135,7 +135,8 @@ test("golden rollover source sorts stably, preserves duration and refuses unprov
 
 test("golden P1 uses the existing controlled Inspector without a lease prerequisite", () => {
   const personas = readFileSync(new URL("./personas.ts", import.meta.url), "utf8");
-  assert.match(personas, /return \{ email: PERSONAS\.inspector\.email, password: PERSONAS\.inspector\.password \}/);
+  assert.match(personas, /SAQEEL_TEST_MULTI_ROLE_EMAIL", "golden alternate inspector"/);
+  assert.match(personas, /primaryCohortPassword\("golden alternate inspector"\)/);
   assert.doesNotMatch(personas, /GOLDEN_INSPECTOR_(?:LEASE|SLOT|WINDOW)/);
   assert.doesNotMatch(source, /acquire_nonproduction_golden_inspector_lease|verify_nonproduction_golden_inspector_lease/);
 });

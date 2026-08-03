@@ -111,7 +111,7 @@ export const PERSONAS = {
   admin: {
     get email(): string { return personaEmail("SAQEEL_TEST_COMPLIANCE_ADMIN_EMAIL", "admin"); },
     home: "/admin",
-    get password(): string { return sharedPassword("admin"); },
+    get password(): string { return primaryCohortPassword("admin"); },
   },
   ops: {
     get email(): string { return personaEmail("SAQEEL_TEST_OPS_EMAIL", "ops"); },
@@ -123,7 +123,10 @@ export const PERSONAS = {
 export type PersonaKey = keyof typeof PERSONAS;
 
 export function goldenInspectorPersona(): { email: string; password: string } {
-  return { email: PERSONAS.inspector.email, password: PERSONAS.inspector.password };
+  return {
+    email: personaEmail("SAQEEL_TEST_MULTI_ROLE_EMAIL", "golden alternate inspector"),
+    password: primaryCohortPassword("golden alternate inspector"),
+  };
 }
 
 // Keep reusable authentication outside Playwright's outputDir. Playwright may

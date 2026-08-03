@@ -414,7 +414,11 @@ test("P1 planner: single visit publishes (M01-034/036/038/040/041)", async ({ br
     "controlled Inspector must remain eligible in the governed Planner selector",
   ).toContain(inspectorUserId);
   await inspectorSelect.selectOption(inspectorUserId);
-  await page.getByRole("button", { name: /submit for supervision/i }).click();
+  const publish = page.getByRole("button", { name: /submit for supervision/i });
+  await test.step("P1 Planner publish is interactive within the smoke-step timeout", async () => {
+    await expect(publish).toBeEnabled();
+  }, { timeout: P2_LOGIN_STEP_TIMEOUT });
+  await publish.click();
   await page.waitForURL(url =>
     url.pathname === "/planning/supervision" && UUID.test(url.searchParams.get("submitted") ?? ""),
     { timeout: 20_000 },

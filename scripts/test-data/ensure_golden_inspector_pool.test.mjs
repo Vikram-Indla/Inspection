@@ -15,6 +15,13 @@ test("pool supports indexed slots 01 through 30 with legacy slot-one compatibili
   assert.match(source, /SAQEEL_TEST_INSPECTOR_EMAIL/);
   assert.match(source, /SAQEEL_TEST_PASSWORD/);
 });
+test("pool can reconcile the approved existing cross-role alternate without creating Auth credentials", () => {
+  assert.match(source, /--include-cross-role-alternate/);
+  assert.match(source, /SAQEEL_TEST_MULTI_ROLE_EMAIL/);
+  assert.match(source, /SAQEEL_CROSS_ROLE_PASSWORD/);
+  assert.match(source, /slot: "02"/);
+  assert.doesNotMatch(source, /\/auth\/v1\/admin\/users/);
+});
 test("partial and duplicate references fail closed and credentials are never created or printed", () => {
   assert.match(source, /partial slot/);
   assert.match(source, /duplicate Inspector email references/);
