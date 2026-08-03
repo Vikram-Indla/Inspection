@@ -317,8 +317,9 @@ test.describe("CD-023 database blockers, concurrency and idempotency", () => {
     ]);
     const ra = must(a, "first concurrent request");
     const rb = must(b, "second concurrent request");
-    expect(ra).toMatchObject({ status: "ok", actor_mode: "planner", replayed: false });
+    expect(ra).toMatchObject({ status: "ok", actor_mode: "planner" });
     expect(rb).toMatchObject({ status: "ok", actor_mode: "planner" });
+    expect([ra.replayed, rb.replayed].sort()).toEqual([false, true]);
     expect(ra.visit_id).toBe(rb.visit_id);
     const crossModeReplay = must(await rest("POST", "rpc/create_immediate_visit", planner.jwt, {
       ...payload,
