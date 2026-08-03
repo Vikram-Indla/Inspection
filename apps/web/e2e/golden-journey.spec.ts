@@ -122,17 +122,32 @@ async function fillWizard(page: Page) {
   // (M01-038) steps in the same React commit; wait for that render to land before
   // probing for the license radio's presence, since .count() (unlike .fill/.click)
   // does not auto-wait and would otherwise race the state update.
-  await page.getByText(/3 · Confirm location/).waitFor();
+  const locationHeading = page.getByText(/3 · Confirm location/);
+  await locationHeading.waitFor();
+  const locationPanel = locationHeading.locator("..");
 
   // License step (M01-036) — check the single radio if this factory carries a license.
   const licenseRadio = page.locator('input[name="license_number"]');
   if (await licenseRadio.count()) await licenseRadio.check();
 
-  // Location step (M01-038) — always provide a planner pin and confirm; satisfies
-  // both "no official pin on record" and "confirmation required" blockers.
-  await page.locator('input[name="planner_lat"]').fill("24.7136");
-  await page.locator('input[name="planner_lng"]').fill("46.6753");
-  await page.locator('input[name="location_confirmed"]').check();
+  // Location step (M01-038 / DM-004) — governed external/Senaei coordinates
+  // are read-only master data. Older/manual fixtures may still expose an
+  // editable pin; preserve that path without injecting overrides into the
+  // governed path.
+  const plannerLat = locationPanel.locator('input[name="planner_lat"]');
+  const plannerLng = locationPanel.locator('input[name="planner_lng"]');
+  const [latEditors, lngEditors] = await Promise.all([plannerLat.count(), plannerLng.count()]);
+  expect(latEditors, "location editor must expose both coordinates or neither").toBe(lngEditors);
+  if (latEditors > 0) {
+    await plannerLat.fill("24.7136");
+    await plannerLng.fill("46.6753");
+  } else {
+    await expect(locationPanel.getByText(/Read-only.*location master data cannot be changed in Planning/i)).toBeVisible();
+    await expect(locationPanel.getByText("Location confirmed", { exact: true })).toBeVisible();
+    await expect(plannerLat).toHaveCount(0);
+    await expect(plannerLng).toHaveCount(0);
+  }
+  await locationPanel.locator('input[name="location_confirmed"]').check();
 
   // Planning commit 7c904b8d ("optional zero-many packages") replaced the
   // single-select package picker with zero-many checkboxes; check the current
