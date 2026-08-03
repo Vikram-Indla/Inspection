@@ -42,3 +42,15 @@ test("golden P2 requires the shared Dashboard landing and useful content before 
   assert.match(source, /P2 Inspector opens the governed field journey/);
   assert.match(source, /page\.goto\("\/field"\)/);
 });
+
+test("golden fixture rollover retires only overlapping unstarted harness-owned assignments", () => {
+  assert.match(source, /async function retireOverlappingGoldenAssignments\(plannerJwt: string\)/);
+  assert.match(source, /visits\.planning_status=in\.\(published,returned\)/);
+  assert.match(source, /visits\.operational_state=eq\.new/);
+  assert.match(source, /visits\.factories\.factory_code=like\.R3-QA-CERT-\*/);
+  assert.match(source, /startsWith\("R3-QA-CERT-"\)/);
+  assert.match(source, /rpc\/reschedule_published_visits_atomic/);
+  assert.match(source, /Controlled UAT golden-journey fixture rollover/);
+  assert.match(source, /await retireOverlappingGoldenAssignments\(planner\.jwt\)/);
+  assert.doesNotMatch(source, /SUPABASE_SERVICE_ROLE_KEY/);
+});

@@ -41,6 +41,33 @@ async function pollRest<T>(fn: () => Promise<T | null>, label: string, tries = 1
   throw new Error(`timed out waiting for ${label}`);
 }
 
+async function retireOverlappingGoldenAssignments(plannerJwt: string) {
+  const proposedStart = new Date(Date.now() - 36e5);
+  const proposedEnd = new Date(Date.now() + 4 * 36e5);
+  const rows = must(await rest("GET",
+    `assignments?select=visit_id,visits!inner(id,planning_status,operational_state,window_start,window_end,factories!inner(factory_code))&inspector_id=eq.${inspectorUserId}&visits.planning_status=in.(published,returned)&visits.operational_state=eq.new&visits.window_start=lt.${proposedEnd.toISOString()}&visits.window_end=gt.${proposedStart.toISOString()}&visits.factories.factory_code=like.R3-QA-CERT-*`,
+    plannerJwt), "read prior golden assignments") as Array<{
+      visit_id: string;
+      visits: { factories: { factory_code: string } };
+    }>;
+
+  for (const row of rows) {
+    if (!row.visits.factories.factory_code.startsWith("R3-QA-CERT-")) {
+      throw new Error("refusing to reschedule a non-golden assignment");
+    }
+    const end = new Date(proposedStart.getTime() - 60_000);
+    const start = new Date(end.getTime() - 36e5);
+    must(await rest("POST", "rpc/reschedule_published_visits_atomic", plannerJwt, {
+      p_visit_ids: [row.visit_id],
+      p_window_start: start.toISOString(),
+      p_window_end: end.toISOString(),
+      p_reason: "Controlled UAT golden-journey fixture rollover",
+      p_idempotency_key: `golden-rollover-${row.visit_id}-${end.toISOString()}`,
+      p_correlation_id: crypto.randomUUID(),
+    }), `reschedule prior golden assignment ${row.visit_id}`);
+  }
+}
+
 // UI-login (SCR-PUB-010) for the throwaway inspector — no storage-state file
 // exists for a per-run identity, so authenticate through the real form exactly
 // like auth.setup does for the seeded personas.
@@ -86,6 +113,7 @@ test.beforeAll(async () => {
     password: PERSONAS.inspector.password,
   };
   inspectorUserId = (await login(inspectorCreds.email, inspectorCreds.password)).userId;
+  await retireOverlappingGoldenAssignments(planner.jwt);
 
   // M02-012 blocks publish while a factory has ANY active periodic visit. Picking
   // an existing shared factory races every other run (this suite's own retries,
