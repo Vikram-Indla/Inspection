@@ -113,6 +113,14 @@ test.describe("WA-M9-AC-001/004/005 source and governance contracts", () => {
 test.describe("WA-M9-AC-001/002/003/006 admin runtime", () => {
   test.use({ storageState: storageStatePath("admin") });
 
+  test("the shared Admin account disclosure has an accessible name", async ({ page }) => {
+    await setPresentation(page, "en", "light");
+    const accountDisclosure = page.locator("summary").filter({ has: page.locator("strong") });
+    await expect(accountDisclosure).toHaveAccessibleName(/admin1.*Admin/i);
+    const a11y = await new AxeBuilder({ page }).include("summary").analyze();
+    expect(a11y.violations).toEqual([]);
+  });
+
   test("desktop registry is bounded, searchable, keyboard operable and accessible", async ({ page }) => {
     const expectHealthyBrowser = watchBrowserHealth(page);
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -127,10 +135,10 @@ test.describe("WA-M9-AC-001/002/003/006 admin runtime", () => {
     await expect(page.getByRole("heading", { name: "Translation registry", exact: true })).toBeVisible();
     await expect(registry.locator("article")).toHaveCount(12);
     await expect(page.getByText(/Page 1 \//)).toBeVisible();
-    const totalKeys = Number(await page.locator(".sq-kpi")
-      .filter({ hasText: "Total keys" })
-      .locator(".sq-kpi__value")
-      .textContent());
+    const resultSummary = await registry.locator(".t-caption")
+      .filter({ hasText: /^Showing / })
+      .textContent();
+    const totalKeys = Number(resultSummary?.match(/\/(\d+)/)?.[1]);
     expect(totalKeys).toBeGreaterThan(1000);
 
     const addKey = page.getByRole("button", { name: "Add key", exact: true });
