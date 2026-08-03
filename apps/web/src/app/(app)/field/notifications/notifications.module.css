@@ -31,7 +31,7 @@
 
 /* --- 3. List (design .fn-wrap) ---------------------------------------- */
 .wrap {
-  max-width: 720px; margin: 0 auto; width: 100%;
+  max-width: 1200px; margin: 0 auto; width: 100%;
   padding: 0 0 60px; display: flex; flex-direction: column;
 }
 
@@ -86,7 +86,7 @@
 
 /* --- Detail (design isDetail branch: .fn-wrap padding 20px 18px 60px, gap 16) */
 .detailWrap {
-  max-width: 720px; margin: 0 auto; width: 100%; flex: 1;
+  max-width: 1200px; margin: 0 auto; width: 100%; flex: 1;
   padding: 20px 18px 60px; display: flex; flex-direction: column; gap: 16px;
 }
 
