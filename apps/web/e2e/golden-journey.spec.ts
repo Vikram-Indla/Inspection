@@ -355,7 +355,7 @@ test("P1 planner: single visit publishes (M01-034/036/038/040/041)", async ({ br
   visitId = new URL(page.url()).searchParams.get("submitted")!;
 
   const supervisor = await journeySupervisorPage(browser);
-  await supervisor.goto("/planning/supervision");
+  await supervisor.goto(`/planning/supervision?submitted=${visitId}`);
   const exactRequest = supervisor.locator("section.sq-card").filter({
     has: supervisor.locator(`input[name="visit_id"][value="${visitId}"]`),
   });

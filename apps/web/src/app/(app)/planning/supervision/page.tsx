@@ -7,7 +7,9 @@ import { useT } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
-export default async function SupervisionPage() {
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+export default async function SupervisionPage({ searchParams }: { searchParams: Promise<{ submitted?: string }> }) {
   const { t, locale } = await useT();
   const sb = await supabaseServer();
   const access = await getPlanningAccess(sb, ["planning.approve", "planning.return", "planning.reject"]);
@@ -15,8 +17,12 @@ export default async function SupervisionPage() {
   if (access.error) return <Shell current="/planning" title={title}><EmptyState glyph="⚠" title={t("plan.supervision.unavailable.title", "Supervision data not available")} body={t("plan.supervision.unavailable.body", "We couldn't load the queue. Nothing was changed.")} /></Shell>;
   if (!access.can("planning.approve")) return <Shell current="/planning" title={title}><EmptyState glyph="⛔" title={t("plan.supervision.denied.title", "Supervisor access required")} body={t("plan.supervision.denied.body", "Only Supervisors can approve, return, or reject submitted visits.")} /></Shell>;
 
+  const submitted = (await searchParams).submitted?.trim() ?? "";
+  if (submitted && !UUID.test(submitted)) return <Shell current="/planning" title={title}><EmptyState glyph="⚠" title={t("plan.supervision.unavailable.title", "Supervision data not available")} body={t("plan.supervision.unavailable.body", "We couldn't load the queue. Nothing was changed.")} /></Shell>;
+  let requestQuery = sb.from("planning_supervision_requests").select("id, visit_id, proposed_inspector_id, submitted_at, visits!inner(id, visit_reference, visit_type, window_start, window_end, planning_status, factories(name))").eq("status", "pending").order("submitted_at");
+  if (submitted) requestQuery = requestQuery.eq("visit_id", submitted);
   const [requestRead, inspectorRead] = await Promise.all([
-    sb.from("planning_supervision_requests").select("id, visit_id, proposed_inspector_id, submitted_at, visits!inner(id, visit_reference, visit_type, window_start, window_end, planning_status, factories(name))").eq("status", "pending").order("submitted_at"),
+    requestQuery,
     sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector").order("user_id"),
   ]);
   if (requestRead.error || inspectorRead.error) return <Shell current="/planning" title={title}><EmptyState glyph="⚠" title={t("plan.supervision.unavailable.title", "Supervision data not available")} body={t("plan.supervision.unavailable.body", "We couldn't load the queue. Nothing was changed.")} /></Shell>;

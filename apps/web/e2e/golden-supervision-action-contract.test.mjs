@@ -32,6 +32,7 @@ test("golden P1.5 releases only the exact submitted visit to the controlled Insp
   assert.match(journey, /url\.pathname === "\/dashboard"/);
   assert.match(journey, /#role-dashboard-summary/);
   assert.match(p1, /journeySupervisorPage\(browser\)/);
+  assert.match(p1, /goto\(`\/planning\/supervision\?submitted=\$\{visitId\}`\)/);
   assert.match(p1, /input\[name="visit_id"\]\[value="\$\{visitId\}"\]/);
   assert.match(p1, /toHaveCount\(1\)/);
   assert.match(p1, /Supervisor queue must expose the controlled Inspector/);
@@ -40,6 +41,14 @@ test("golden P1.5 releases only the exact submitted visit to the controlled Insp
   assert.match(p1, /name: \/approve & release\/i/);
   assert.match(p1, /planning_status: "published"/);
   assert.match(p1, /inspector_id: inspectorUserId/);
+});
+
+test("Supervisor queue targets an exact validated visit instead of relying on the bounded oldest-first list", () => {
+  assert.match(supervisionPage, /searchParams: Promise<\{ submitted\?: string \}>/);
+  assert.match(supervisionPage, /const UUID = \^?\/\^\[0-9a-f\]/);
+  assert.match(supervisionPage, /submitted && !UUID\.test\(submitted\)/);
+  assert.match(supervisionPage, /if \(submitted\) requestQuery = requestQuery\.eq\("visit_id", submitted\)/);
+  assert.doesNotMatch(supervisionPage, /delete\(|update\(|cancel_published_visits_atomic/);
 });
 
 test("Supervisor roster starts from governed Inspector grants and tolerates profile-name RLS", () => {
