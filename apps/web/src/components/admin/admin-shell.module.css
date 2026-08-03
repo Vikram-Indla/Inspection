@@ -47,15 +47,16 @@
 }
 
 .brand {
-  min-block-size: 58px;
+  min-block-size: 54px;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px;
-  border-block-end: 1px solid var(--nav-border);
+  padding: 4px 6px 14px;
 }
-.wordmark { inline-size: 142px; block-size: auto; }
-.mark { display: none; inline-size: 28px; block-size: 28px; }
+.wordmark { display: flex; flex-direction: column; align-items: flex-start; white-space: nowrap; }
+.wordmark > span:first-child { color: var(--text-primary); font-weight: 600; }
+.wordmark > span:last-child { color: var(--action-primary); font: var(--type-caption); letter-spacing: .2em; }
+.mark { display: block; inline-size: 30px; block-size: 30px; color: var(--action-primary); }
 .collapseButton {
   margin-inline-start: auto;
   inline-size: 32px;
@@ -139,6 +140,7 @@
   background: color-mix(in srgb, var(--surface-primary) 92%, transparent);
   backdrop-filter: blur(8px);
 }
+.utilityBar > .collapseButton { display: none; margin-inline-start: 0; }
 .location { color: var(--text-secondary); font: var(--type-overline); letter-spacing: .1em; text-transform: uppercase; }
 .utilitySpacer { flex: 1; }
 .language, .utilityButton {
@@ -219,37 +221,31 @@
 .compact { --admin-rail: 56px; }
 .compact .rail { padding-inline: 6px; }
 .compact .wordmark, .compact .hubLabel, .compact .findLabel, .compact .findTool kbd, .compact .viewAll { display: none; }
-.compact .mark { display: block; }
 .compact .brand { flex-direction: column; padding-inline: 0; }
 .compact .collapseButton { margin-inline-start: 0; }
 .compact .hub, .compact .findTool { grid-template-columns: 20px; justify-content: center; padding-inline: 0; }
 
-@media (max-width: 1180px) {
-  .shell { --admin-rail: 64px; }
-  .wordmark, .hubLabel, .findLabel, .findTool kbd, .viewAll, .collapseButton { display: none; }
-  .mark { display: block; }
-  .brand { justify-content: center; }
-  .hub, .findTool { grid-template-columns: 20px; justify-content: center; padding-inline: 0; }
-}
-
 @media (max-width: 820px) {
   .shell { grid-template-columns: minmax(0, 1fr); }
   .rail {
-    position: static;
-    min-block-size: auto;
-    inline-size: auto;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
-    overflow-x: auto;
-    padding: 6px 10px;
-    border-inline-end: 0;
-    border-block-end: 1px solid var(--nav-border);
+    display: none;
   }
-  .brand { min-block-size: 44px; padding: 0 6px; border-block-end: 0; }
-  .findTool { flex: 0 0 44px; margin: 0; }
-  .hubs { flex-direction: row; }
-  .hub { flex: 0 0 44px; }
+  .compact .rail {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    z-index: var(--z-modal);
+    display: flex;
+    inline-size: 252px;
+    min-block-size: 100dvh;
+    padding: 0 8px 10px;
+    box-shadow: var(--shadow-lg);
+  }
+  .compact .wordmark, .compact .hubLabel, .compact .findLabel, .compact .findTool kbd, .compact .viewAll { display: initial; }
+  .compact .brand { flex-direction: row; padding: 4px 6px 14px; }
+  .compact .collapseButton { margin-inline-start: auto; }
+  .compact .hub, .compact .findTool { justify-content: initial; padding-inline: 8px; }
+  .utilityBar > .collapseButton { display: grid; place-items: center; }
   .utilityBar { inset-block-start: 0; }
 }
 

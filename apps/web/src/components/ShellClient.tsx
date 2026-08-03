@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
+import AdminShellClient from "@/components/admin/AdminShellClient";
 import SaqeelBrandMark from "@/components/SaqeelBrandMark";
 import ShellNavIcon from "@/components/ShellNavIcon";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -58,6 +59,24 @@ export type ShellClientStrings = {
   themeDark: string;
   skipToContent: string;
   loadingDestination: string;
+  admin: {
+    languageSwitch: string;
+    navigation: string;
+    controlPanel: string;
+    authorized: string;
+    loadingDestination: string;
+    brandLabel: string;
+    brandArabic: string;
+    brandEnglish: string;
+    findTool: string;
+    viewAll: string;
+    administration: string;
+    allTools: string;
+    close: string;
+    paletteTitle: string;
+    noMatch: string;
+    hubs: Record<"control" | "people" | "rules" | "planning" | "risk" | "connections" | "governance", string>;
+  };
   tabbar: { home: string; myTasks: string; establishments: string; notifications: string; account: string };
 };
 
@@ -110,7 +129,7 @@ export default function ShellClient({
     setHydratedPathname(current);
   }, [current]);
   const fieldOnly = isFieldOnlyPersona(roles);
-  const adminWorkspace = false;
+  const adminWorkspace = current === "/admin" || current.startsWith("/admin/");
   // The canonical Claude Design topbar always exposes the assistant entry.
   // Provider and route-level availability are enforced by the destination.
   const aiVisible = true;
@@ -407,6 +426,54 @@ export default function ShellClient({
   }
 
   const routeScope = shellScopeForRoute(current);
+
+  if (adminWorkspace) {
+    const adminItems = groups
+      .filter(group => group.id.startsWith("admin-"))
+      .flatMap(group => group.items)
+      .map(item => ({
+        id: item.id,
+        label: itemLabel(item),
+        href: item.href,
+        icon: item.icon,
+        enabled: item.enabled,
+      }));
+
+    return (
+      <AdminShellClient
+        items={adminItems}
+        locale={locale}
+        email={email}
+        roles={roleTitles.length ? roleTitles : roles}
+        languageLabel={strings.admin.languageSwitch}
+        bellStrings={bellStrings}
+        labels={{
+          navigation: strings.admin.navigation,
+          controlPanel: strings.admin.controlPanel,
+          collapse: strings.collapse,
+          expand: strings.expand,
+          light: strings.themeLight,
+          dark: strings.themeDark,
+          signOut: strings.signOut,
+          authorized: strings.admin.authorized,
+          loadingDestination: strings.admin.loadingDestination,
+          brandLabel: strings.admin.brandLabel,
+          brandArabic: strings.admin.brandArabic,
+          brandEnglish: strings.admin.brandEnglish,
+          findTool: strings.admin.findTool,
+          viewAll: strings.admin.viewAll,
+          administration: strings.admin.administration,
+          allTools: strings.admin.allTools,
+          close: strings.admin.close,
+          paletteTitle: strings.admin.paletteTitle,
+          noMatch: strings.admin.noMatch,
+          hubs: strings.admin.hubs,
+        }}
+      >
+        {children}
+      </AdminShellClient>
+    );
+  }
 
   function handleShellNavigation(event: ReactMouseEvent<HTMLDivElement>) {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
