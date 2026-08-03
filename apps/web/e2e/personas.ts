@@ -122,39 +122,8 @@ export const PERSONAS = {
 
 export type PersonaKey = keyof typeof PERSONAS;
 
-function exactLeaseDatetimeLocal(iso: string, label: string): string {
-  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00\.000Z$/.test(iso)) {
-    throw new Error(`${label} must be an exact UTC minute (YYYY-MM-DDTHH:mm:00.000Z).`);
-  }
-  const local = iso.slice(0, 16);
-  if (`${local}:00.000Z` !== iso) throw new Error(`${label} is not losslessly representable by datetime-local.`);
-  return local;
-}
-
-export function goldenInspectorPersona(): { email: string; password: string; slot: string; leaseId: string; windowStart: string; windowEnd: string; windowStartInput: string; windowEndInput: string } {
-  const slot = requireSetting("GOLDEN_INSPECTOR_SLOT", "golden inspector lease");
-  if (!/^(0[1-9]|[12][0-9]|30)$/.test(slot)) throw new Error("Golden Inspector slot must be 01 through 30.");
-  const leaseId = requireSetting("GOLDEN_INSPECTOR_LEASE_ID", "golden inspector lease");
-  const windowStart = requireSetting("GOLDEN_INSPECTOR_WINDOW_START", "golden inspector lease");
-  const windowEnd = requireSetting("GOLDEN_INSPECTOR_WINDOW_END", "golden inspector lease");
-  const windowStartInput = exactLeaseDatetimeLocal(windowStart, "Golden Inspector lease start");
-  const windowEndInput = exactLeaseDatetimeLocal(windowEnd, "Golden Inspector lease end");
-  const startMs = Date.parse(windowStart);
-  const endMs = Date.parse(windowEnd);
-  const nowMs = Date.now();
-  if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || startMs > nowMs || nowMs - startMs > 120_000 || endMs <= nowMs) {
-    throw new Error("Golden Inspector lease window must start within two minutes before now and remain active.");
-  }
-  const indexedEmail = `SAQEEL_TEST_INSPECTOR_${slot}_EMAIL`;
-  const indexedPassword = `SAQEEL_TEST_INSPECTOR_${slot}_PASSWORD`;
-  if (slot === "01" && !Object.hasOwn(process.env, indexedEmail) && !Object.hasOwn(envValues(), indexedEmail)) {
-    return { email: PERSONAS.inspector.email, password: PERSONAS.inspector.password, slot, leaseId, windowStart, windowEnd, windowStartInput, windowEndInput };
-  }
-  return {
-    email: requireSetting(indexedEmail, `golden inspector ${slot}`),
-    password: requireSetting(indexedPassword, `golden inspector ${slot}`, true),
-    slot, leaseId, windowStart, windowEnd, windowStartInput, windowEndInput,
-  };
+export function goldenInspectorPersona(): { email: string; password: string } {
+  return { email: PERSONAS.inspector.email, password: PERSONAS.inspector.password };
 }
 
 // Keep reusable authentication outside Playwright's outputDir. Playwright may

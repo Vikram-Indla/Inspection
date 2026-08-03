@@ -34,10 +34,10 @@ let packageVersionId: string;
 let scopeSectionKey: string; // section containing FS-101 — the exact return scope
 let visitId: string;
 let inspectionId: string;
-let leasedWindowStart: string;
-let leasedWindowEnd: string;
-let leasedWindowStartInput: string;
-let leasedWindowEndInput: string;
+let visitWindowStart: string;
+let visitWindowEnd: string;
+let visitWindowStartInput: string;
+let visitWindowEndInput: string;
 let recoveryCheckpoint: "before_checkin" | "after_checkin" | "inspection_started" | "submitted_v1" | "reviewing_v1" | "returned_v1" | "submitted_v2" | "reviewing_v2" | "approved_v2" | null = null;
 
 async function pollRest<T>(fn: () => Promise<T | null>, label: string, tries = 15): Promise<T> {
@@ -102,9 +102,19 @@ async function retireOverlappingGoldenAssignments(plannerJwt: string, proposedSt
   }
 }
 
-// UI-login (SCR-PUB-010) for the throwaway inspector — no storage-state file
-// exists for a per-run identity, so authenticate through the real form exactly
-// like auth.setup does for the seeded personas.
+function freshGoldenWindow(now = new Date()): { start: string; end: string; startInput: string; endInput: string } {
+  if (!Number.isFinite(now.getTime())) throw new Error("golden visit window requires a valid current time");
+  const startDate = new Date(now);
+  startDate.setUTCSeconds(0, 0);
+  startDate.setUTCMinutes(startDate.getUTCMinutes() - 1);
+  const endDate = new Date(startDate.getTime() + 90 * 60_000);
+  const start = startDate.toISOString();
+  const end = endDate.toISOString();
+  return { start, end, startInput: start.slice(0, 16), endInput: end.slice(0, 16) };
+}
+
+// UI-login (SCR-PUB-010) for the controlled Inspector through the real form,
+// matching auth.setup without depending on a generated storage-state file.
 async function journeyInspectorPage(browser: { newContext: (o: object) => Promise<BrowserContext> }): Promise<Page> {
   if (lastContext) await lastContext.close();
   const ctx = await browser.newContext({
@@ -161,12 +171,12 @@ test.beforeAll(async () => {
   // Resolve the identity from existing controlled test configuration. P1 then
   // proves this authenticated user is still exposed by the Planner selector;
   // stale or ineligible identities are never substituted silently.
-  const leasedInspector = goldenInspectorPersona();
-  inspectorCreds = { email: leasedInspector.email, password: leasedInspector.password };
-  leasedWindowStart = leasedInspector.windowStart;
-  leasedWindowEnd = leasedInspector.windowEnd;
-  leasedWindowStartInput = leasedInspector.windowStartInput;
-  leasedWindowEndInput = leasedInspector.windowEndInput;
+  inspectorCreds = goldenInspectorPersona();
+  const freshWindow = freshGoldenWindow();
+  visitWindowStart = freshWindow.start;
+  visitWindowEnd = freshWindow.end;
+  visitWindowStartInput = freshWindow.startInput;
+  visitWindowEndInput = freshWindow.endInput;
   const inspectorSession = await login(inspectorCreds.email, inspectorCreds.password);
   inspectorUserId = inspectorSession.userId;
   if (RECOVERY_VISIT_ID) {
@@ -223,7 +233,7 @@ test.beforeAll(async () => {
     visitId = row.id;
     return;
   }
-  await retireOverlappingGoldenAssignments(planner.jwt, new Date(leasedWindowStart), new Date(leasedWindowEnd));
+  await retireOverlappingGoldenAssignments(planner.jwt, new Date(visitWindowStart), new Date(visitWindowEnd));
 
   // M02-012 blocks publish while a factory has ANY active periodic visit. Picking
   // an existing shared factory races every other run (this suite's own retries,
@@ -313,12 +323,11 @@ async function fillWizard(page: Page) {
   // Window must CONTAIN now: EXE-JOURNEY-OUTSIDE-WINDOW (20260721140000,
   // governed engine_settings.execution.journey_start_timing='inside_visit_window')
   // blocks journey start outside [window_start, window_end], which retired the
-  // old far-future-window trick. Overlap safety instead comes from the
-  // throwaway factory (M02-012) plus every other suite booking the shared
-  // inspector far in the future. The exact verified lease window is reused
-  // here so scheduling and lease conflict checks evaluate identical bounds.
-  await page.locator('input[name="window_start"]').fill(leasedWindowStartInput);
-  await page.locator('input[name="window_end"]').fill(leasedWindowEndInput);
+  // old far-future-window trick. The same exact minute-aligned window used by
+  // the narrowly scoped audited predecessor rollover is submitted here; the
+  // application still performs its ordinary conflict and authorization checks.
+  await page.locator('input[name="window_start"]').fill(visitWindowStartInput);
+  await page.locator('input[name="window_end"]').fill(visitWindowEndInput);
 }
 
 test("NEG: publish without an inspector is blocked, work preserved (M01-040/M01-041)", async ({ browser }) => {
