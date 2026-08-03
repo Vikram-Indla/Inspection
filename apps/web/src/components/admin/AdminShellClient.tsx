@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
+import SaqeelBrandMark from "@/components/SaqeelBrandMark";
 import ShellNavIcon from "@/components/ShellNavIcon";
 import ThemeToggle from "@/components/ThemeToggle";
 import { isShellRouteCurrent, type ShellIcon } from "@/lib/shell-navigation";
@@ -27,14 +28,10 @@ const HUB_ITEMS: Record<string, string[]> = {
   governance: ["audit", "notifications", "platform-operations", "enforcement-recommendations", "bulk-violations", "enforcement-cases"],
 };
 
-const HUB_META: Record<string, { en: string; ar: string; icon: ShellIcon }> = {
-  control: { en: "Control Panel", ar: "لوحة التحكم", icon: "admin" },
-  people: { en: "People & Access", ar: "المستخدمون والصلاحيات", icon: "access" },
-  rules: { en: "Rules & Content", ar: "القواعد والمحتوى", icon: "library" },
-  planning: { en: "Planning & Execution", ar: "التخطيط والتنفيذ", icon: "calendar" },
-  risk: { en: "Risk & Intelligence", ar: "المخاطر والذكاء", icon: "risk" },
-  connections: { en: "Connections & Geography", ar: "الاتصالات والجغرافيا", icon: "workflow" },
-  governance: { en: "Governance & Operations", ar: "الحوكمة والعمليات", icon: "radar" },
+const HUB_META: Record<string, { icon: ShellIcon }> = {
+  control: { icon: "admin" }, people: { icon: "access" }, rules: { icon: "library" },
+  planning: { icon: "calendar" }, risk: { icon: "risk" }, connections: { icon: "workflow" },
+  governance: { icon: "radar" },
 };
 
 export default function AdminShellClient({
@@ -63,6 +60,18 @@ export default function AdminShellClient({
     dark: string;
     signOut: string;
     authorized: string;
+    loadingDestination: string;
+    brandLabel: string;
+    brandArabic: string;
+    brandEnglish: string;
+    findTool: string;
+    viewAll: string;
+    administration: string;
+    allTools: string;
+    close: string;
+    paletteTitle: string;
+    noMatch: string;
+    hubs: Record<string, string>;
   };
 }) {
   const current = usePathname() || "/admin";
@@ -107,11 +116,12 @@ export default function AdminShellClient({
   const hubs = useMemo(() => Object.entries(HUB_ITEMS).map(([id, ids]) => ({
     id,
     ...HUB_META[id],
+    label: labels.hubs[id],
     items: ids.map(itemId => visibleItems.find(item => item.id === itemId)).filter((item): item is NavItem => !!item),
-  })).filter(hub => hub.items.length), [visibleItems]);
+  })).filter(hub => hub.items.length), [labels.hubs, visibleItems]);
   const activeHub = hubs.find(hub => hub.items.some(item => isShellRouteCurrent(current, item.href))) ?? hubs[0];
   const paletteItems = hubs.flatMap(hub => hub.items.map(item => ({ item, hub }))).filter(({ item, hub }) =>
-    `${item.label} ${locale === "ar" ? hub.ar : hub.en}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()),
+    `${item.label} ${hub.label}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()),
   );
   const initials = email.split("@")[0]?.split(/[._-]+/).map(part => part[0]).join("").slice(0, 2).toUpperCase() || "A";
   const roleSummary = roles.map(role => role.replaceAll("_", " ")).join(" · ");
@@ -139,38 +149,44 @@ export default function AdminShellClient({
       aria-busy={pendingHref ? "true" : undefined} onClickCapture={handleNavigationCapture}>
       {pendingHref ? (
         <div className={styles.routeProgress} role="status">
-          <span className="sq-sr-only">{locale === "ar" ? "جارٍ تحميل الوجهة…" : "Loading destination…"}</span>
+          <span className="sq-sr-only">{labels.loadingDestination}</span>
         </div>
       ) : null}
       <a className={styles.skip} href="#main-content">{labels.navigation}</a>
       <aside className={styles.rail} aria-label={labels.navigation}>
         <div className={styles.brand}>
-          <img className={styles.wordmark} src="/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" />
-          <img className={styles.mark} src="/saqeel-favicon.svg" alt="SAQEEL" />
+          <SaqeelBrandMark className={styles.mark} />
+          <span className={styles.wordmark} aria-label={labels.brandLabel}>
+            <span lang="ar">{labels.brandArabic}</span>
+            <span lang="en">{labels.brandEnglish}</span>
+          </span>
           <button type="button" className={styles.collapseButton} aria-label={compact ? labels.expand : labels.collapse} aria-expanded={!compact} onClick={() => setRailCompact(!compact)}>
             <span aria-hidden="true">⇄</span>
           </button>
         </div>
-        <button type="button" className={styles.findTool} aria-label={locale === "ar" ? "ابحث في الأدوات" : "Find a tool"} aria-keyshortcuts="Meta+K Control+K" onClick={() => setPaletteOpen(true)}>
-          <span aria-hidden="true">⌕</span><span className={styles.findLabel}>{locale === "ar" ? "ابحث في الأدوات" : "Find a tool"}</span><kbd>⌘K</kbd>
+        <button type="button" className={styles.findTool} aria-label={labels.findTool} aria-keyshortcuts="Meta+K Control+K" onClick={() => setPaletteOpen(true)}>
+          <span aria-hidden="true">⌕</span><span className={styles.findLabel}>{labels.findTool}</span><kbd>⌘K</kbd>
         </button>
         <nav className={styles.hubs}>
           {hubs.map(hub => {
             const active = activeHub?.id === hub.id;
             return (
-              <Link key={hub.id} href={hub.items[0].href} className={`${styles.hub}${active ? ` ${styles.active}` : ""}`} aria-label={locale === "ar" ? hub.ar : hub.en} aria-current={active ? "true" : undefined}>
+              <Link key={hub.id} href={hub.items[0].href} className={`${styles.hub}${active ? ` ${styles.active}` : ""}`} aria-label={hub.label} aria-current={active ? "true" : undefined}>
                 <span className={styles.hubIcon} aria-hidden="true"><ShellNavIcon name={hub.icon} /></span>
-                <span className={styles.hubLabel}>{locale === "ar" ? hub.ar : hub.en}</span>
+                <span className={styles.hubLabel}>{hub.label}</span>
               </Link>
             );
           })}
         </nav>
-        <Link className={styles.viewAll} href="/admin#all-tools">{locale === "ar" ? "عرض كل الأدوات المصرّح بها" : "View all authorized tools"}</Link>
+        <Link className={styles.viewAll} href="/admin#all-tools">{labels.viewAll}</Link>
       </aside>
 
       <main id="main-content" className={styles.main} tabIndex={-1}>
         <header className={styles.utilityBar}>
-          <span className={styles.location}>{locale === "ar" ? activeHub?.ar : activeHub?.en}</span>
+          <button type="button" className={styles.collapseButton} aria-label={labels.expand} aria-expanded={compact} onClick={() => setRailCompact(true)}>
+            <span aria-hidden="true">☰</span>
+          </button>
+          <span className={styles.location}>{labels.administration}</span>
           <span className={styles.utilitySpacer} />
           <Link
             className={styles.language}
@@ -193,8 +209,8 @@ export default function AdminShellClient({
         </header>
 
         {activeHub ? (
-          <nav className={styles.subnav} aria-label={locale === "ar" ? activeHub.ar : activeHub.en}>
-            <Link href="/admin" className={styles.subnavUp}>‹ <span>{locale === "ar" ? activeHub.ar : activeHub.en}</span></Link>
+          <nav className={styles.subnav} aria-label={activeHub.label}>
+            <Link href="/admin" className={styles.subnavUp}>‹ <span>{activeHub.label}</span></Link>
             <span className={styles.subnavRule} aria-hidden="true" />
             <div className={styles.subnavList}>
               {activeHub.items.map(item => {
@@ -207,11 +223,11 @@ export default function AdminShellClient({
         {children}
         {current === "/admin" ? (
           <details className={styles.toolDirectory} id="all-tools">
-            <summary>{locale === "ar" ? "كل الأدوات المصرّح بها، مرتّبة حسب المجال" : "All authorized tools, grouped by area"}</summary>
+            <summary>{labels.allTools}</summary>
             <div className={styles.toolGroups}>
               {hubs.map(hub => (
                 <section key={hub.id}>
-                  <h3>{locale === "ar" ? hub.ar : hub.en}</h3>
+                  <h3>{hub.label}</h3>
                   <div>{hub.items.map(item => <Link key={item.id} href={item.href}>{item.label}</Link>)}</div>
                 </section>
               ))}
@@ -222,15 +238,15 @@ export default function AdminShellClient({
 
       {paletteOpen ? (
         <div className={styles.palette}>
-          <button type="button" className={styles.paletteScrim} aria-label={locale === "ar" ? "إغلاق" : "Close"} onClick={() => setPaletteOpen(false)} />
-          <div className={styles.paletteBox} role="dialog" aria-modal="true" aria-label={locale === "ar" ? "ابحث عن أداة" : "Find a tool"}>
-            <input ref={paletteInput} className={styles.paletteInput} value={query} onChange={event => setQuery(event.target.value)} placeholder={locale === "ar" ? "ابحث عن أداة…" : "Find a tool…"} />
+          <button type="button" className={styles.paletteScrim} aria-label={labels.close} onClick={() => setPaletteOpen(false)} />
+          <div className={styles.paletteBox} role="dialog" aria-modal="true" aria-label={labels.paletteTitle}>
+            <input ref={paletteInput} className={styles.paletteInput} value={query} onChange={event => setQuery(event.target.value)} placeholder={labels.findTool} />
             <ul className={styles.paletteList}>
               {paletteItems.map(({ item, hub }) => (
-                <li key={item.id}><Link href={item.href} onClick={() => setPaletteOpen(false)}><span>{item.label}</span><small>{locale === "ar" ? hub.ar : hub.en}</small></Link></li>
+                <li key={item.id}><Link href={item.href} onClick={() => setPaletteOpen(false)}><span>{item.label}</span><small>{hub.label}</small></Link></li>
               ))}
             </ul>
-            {!paletteItems.length ? <p className={styles.paletteEmpty}>{locale === "ar" ? "لا توجد أداة مصرح بها تطابق البحث." : "No authorized tool matches."}</p> : null}
+            {!paletteItems.length ? <p className={styles.paletteEmpty}>{labels.noMatch}</p> : null}
           </div>
         </div>
       ) : null}
