@@ -56,14 +56,14 @@ test("golden P2 requires the shared Dashboard landing and useful content before 
 });
 
 test("golden fixture rollover retires only overlapping unstarted harness-owned assignments", () => {
-  assert.match(source, /async function retireOverlappingGoldenAssignments\(plannerJwt: string\)/);
+  assert.match(source, /async function retireOverlappingGoldenAssignments\(plannerJwt: string, proposedStart: Date, proposedEnd: Date\)/);
   assert.match(source, /visits\.planning_status=in\.\(published,returned\)/);
   assert.match(source, /visits\.operational_state=eq\.new/);
   assert.match(source, /visits\.factories\.factory_code=like\.R3-QA-CERT-\*/);
   assert.match(source, /startsWith\("R3-QA-CERT-"\)/);
   assert.match(source, /rpc\/reschedule_published_visits_atomic/);
   assert.match(source, /Controlled UAT golden-journey fixture rollover/);
-  assert.match(source, /await retireOverlappingGoldenAssignments\(planner\.jwt\)/);
+  assert.match(source, /await retireOverlappingGoldenAssignments\(planner\.jwt, new Date\(leasedWindowStart\), new Date\(leasedWindowEnd\)\)/);
   assert.doesNotMatch(source, /SUPABASE_SERVICE_ROLE_KEY/);
 });
 
@@ -71,9 +71,43 @@ test("golden P1 requires one externally leased Inspector slot", () => {
   const personas = readFileSync(new URL("./personas.ts", import.meta.url), "utf8");
   assert.match(personas, /GOLDEN_INSPECTOR_SLOT/);
   assert.match(personas, /GOLDEN_INSPECTOR_LEASE_ID/);
+  assert.match(personas, /GOLDEN_INSPECTOR_WINDOW_START/);
+  assert.match(personas, /GOLDEN_INSPECTOR_WINDOW_END/);
+  assert.match(personas, /nowMs - startMs > 120_000/);
+  assert.match(personas, /endMs <= nowMs/);
+  assert.match(personas, /exactLeaseDatetimeLocal\(windowStart/);
+  assert.match(personas, /exactLeaseDatetimeLocal\(windowEnd/);
+  assert.match(personas, /\^\\d\{4\}-\\d\{2\}-\\d\{2\}T\\d\{2\}:\\d\{2\}:00\\\.000Z\$/);
+  assert.match(personas, /`\$\{local\}:00\.000Z` !== iso/);
   assert.match(personas, /\^\(0\[1-9\]\|\[12\]\[0-9\]\|30\)\$/);
   assert.match(personas, /SAQEEL_TEST_INSPECTOR_\$\{slot\}_EMAIL/);
   assert.match(personas, /SAQEEL_TEST_INSPECTOR_\$\{slot\}_PASSWORD/);
+});
+
+test("golden leased window is currently executable and identical across cleanup and Planning UI", () => {
+  const journeyGuard = readFileSync(new URL("../../../supabase/migrations/20260721140000_execution_journey_cancellation.sql", import.meta.url), "utf8");
+  const immediateGuard = readFileSync(new URL("../../../supabase/migrations/20260729022000_immediate_supervision_lifecycle.sql", import.meta.url), "utf8");
+  assert.match(journeyGuard, /now\(\) < v_visit\.window_start or now\(\) > v_visit\.window_end/);
+  assert.match(immediateGuard, /p_window_start < clock_timestamp\(\) - interval '15 minutes'/);
+  assert.match(source, /retireOverlappingGoldenAssignments\(planner\.jwt, new Date\(leasedWindowStart\), new Date\(leasedWindowEnd\)\)/);
+  assert.match(source, /fill\(leasedWindowStartInput\)/);
+  assert.match(source, /fill\(leasedWindowEndInput\)/);
+  const fillWizard = source.slice(source.indexOf("async function fillWizard"), source.indexOf('test("NEG: publish'));
+  assert.doesNotMatch(fillWizard, /Date\.now\(\) - 36e5/);
+});
+
+function exactDatetimeLocal(iso) {
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00\.000Z$/.test(iso)) throw new Error("not exact UTC minute");
+  const local = iso.slice(0, 16);
+  if (`${local}:00.000Z` !== iso) throw new Error("not lossless");
+  return local;
+}
+
+test("golden lease bounds reject lossy seconds, milliseconds and timezone offsets", () => {
+  assert.equal(exactDatetimeLocal("2026-08-03T17:20:00.000Z"), "2026-08-03T17:20");
+  assert.throws(() => exactDatetimeLocal("2026-08-03T17:20:01.000Z"), /exact UTC minute/);
+  assert.throws(() => exactDatetimeLocal("2026-08-03T17:20:00.001Z"), /exact UTC minute/);
+  assert.throws(() => exactDatetimeLocal("2026-08-03T20:20:00.000+03:00"), /exact UTC minute/);
 });
 
 test("golden fixture copies governed GIS authority and fails closed without a valid source", () => {

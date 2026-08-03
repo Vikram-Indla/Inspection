@@ -34,6 +34,10 @@ let packageVersionId: string;
 let scopeSectionKey: string; // section containing FS-101 — the exact return scope
 let visitId: string;
 let inspectionId: string;
+let leasedWindowStart: string;
+let leasedWindowEnd: string;
+let leasedWindowStartInput: string;
+let leasedWindowEndInput: string;
 let recoveryCheckpoint: "before_checkin" | "after_checkin" | "inspection_started" | "submitted_v1" | "reviewing_v1" | "returned_v1" | "submitted_v2" | "reviewing_v2" | "approved_v2" | null = null;
 
 async function pollRest<T>(fn: () => Promise<T | null>, label: string, tries = 15): Promise<T> {
@@ -73,9 +77,7 @@ async function governedFixtureGeofenceRadius(plannerJwt: string): Promise<number
   return acceptedSeedGeofenceRadius();
 }
 
-async function retireOverlappingGoldenAssignments(plannerJwt: string) {
-  const proposedStart = new Date(Date.now() - 36e5);
-  const proposedEnd = new Date(Date.now() + 4 * 36e5);
+async function retireOverlappingGoldenAssignments(plannerJwt: string, proposedStart: Date, proposedEnd: Date) {
   const rows = must(await rest("GET",
     `assignments?select=visit_id,visits!inner(id,planning_status,operational_state,window_start,window_end,factories!inner(factory_code))&inspector_id=eq.${inspectorUserId}&visits.planning_status=in.(published,returned)&visits.operational_state=eq.new&visits.window_start=lt.${proposedEnd.toISOString()}&visits.window_end=gt.${proposedStart.toISOString()}&visits.factories.factory_code=like.R3-QA-CERT-*`,
     plannerJwt), "read prior golden assignments") as Array<{
@@ -161,6 +163,10 @@ test.beforeAll(async () => {
   // stale or ineligible identities are never substituted silently.
   const leasedInspector = goldenInspectorPersona();
   inspectorCreds = { email: leasedInspector.email, password: leasedInspector.password };
+  leasedWindowStart = leasedInspector.windowStart;
+  leasedWindowEnd = leasedInspector.windowEnd;
+  leasedWindowStartInput = leasedInspector.windowStartInput;
+  leasedWindowEndInput = leasedInspector.windowEndInput;
   const inspectorSession = await login(inspectorCreds.email, inspectorCreds.password);
   inspectorUserId = inspectorSession.userId;
   if (RECOVERY_VISIT_ID) {
@@ -217,7 +223,7 @@ test.beforeAll(async () => {
     visitId = row.id;
     return;
   }
-  await retireOverlappingGoldenAssignments(planner.jwt);
+  await retireOverlappingGoldenAssignments(planner.jwt, new Date(leasedWindowStart), new Date(leasedWindowEnd));
 
   // M02-012 blocks publish while a factory has ANY active periodic visit. Picking
   // an existing shared factory races every other run (this suite's own retries,
@@ -309,12 +315,10 @@ async function fillWizard(page: Page) {
   // blocks journey start outside [window_start, window_end], which retired the
   // old far-future-window trick. Overlap safety instead comes from the
   // throwaway factory (M02-012) plus every other suite booking the shared
-  // inspector far in the future — a narrow ±hours window around now can only
-  // collide with a same-moment concurrent run, which is the honest signal.
-  const start = new Date(Date.now() - 36e5).toISOString().slice(0, 16);
-  const end = new Date(Date.now() + 4 * 36e5).toISOString().slice(0, 16);
-  await page.locator('input[name="window_start"]').fill(start);
-  await page.locator('input[name="window_end"]').fill(end);
+  // inspector far in the future. The exact verified lease window is reused
+  // here so scheduling and lease conflict checks evaluate identical bounds.
+  await page.locator('input[name="window_start"]').fill(leasedWindowStartInput);
+  await page.locator('input[name="window_end"]').fill(leasedWindowEndInput);
 }
 
 test("NEG: publish without an inspector is blocked, work preserved (M01-040/M01-041)", async ({ browser }) => {
