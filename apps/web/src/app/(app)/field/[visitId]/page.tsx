@@ -120,6 +120,28 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     && Number.isFinite(fieldOverrideExpiresAtMs) && fieldOverrideExpiresAtMs <= Date.now()
     ? { ...rawOverride, status: "expired" as const }
     : rawOverride;
+  // M04-045 recovery: normal (non-override) arrival is immutable server state,
+  // so a reload must project the same existing journey and arrival event back
+  // into Startup. Both reads stay under the Inspector's RLS; an absent event
+  // fails closed and does not manufacture a checked-in UI state.
+  const { data: journeyRows } = await sb.from("journey_sessions")
+    .select("id, status")
+    .eq("visit_id", visitId)
+    .eq("inspector_id", user.id)
+    .order("started_at", { ascending: false })
+    .limit(1);
+  const initialJourneyRow = journeyRows?.[0] ?? null;
+  const { data: arrivalRows } = initialJourneyRow?.status === "arrived"
+    ? await sb.from("geo_events")
+      .select("id")
+      .eq("journey_id", initialJourneyRow.id)
+      .eq("kind", "arrival")
+      .order("occurred_at", { ascending: false })
+      .limit(1)
+    : { data: null };
+  const initialJourney = initialJourneyRow?.status === "arrived" && arrivalRows?.[0]?.id
+    ? { id: initialJourneyRow.id, status: "arrived" as const, arrivalEventId: arrivalRows[0].id }
+    : null;
   // TASK-EXECUTION-MODULE-001 · Phase 4B — journey schema probe (D-015). A
   // tolerant read on the Phase 4A table: while migration 20260721140000 is
   // not applied the probe fails and Startup keeps the EXACT legacy
@@ -751,6 +773,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
         )}
         <div id="startup" className="sq-anchor-target">
           <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} overrideReasons={overrideReasons} initialOverride={initialOverride as never} flags={flags} appVersion={packageInfo.version} locale={locale} userId={user.id} preparationGated={preparationGated}
+            initialJourney={initialJourney}
             journeySchemaAvailable={journeySchemaAvailable}
             initialCancellation={initialCancellation as never}
             initialCorrections={initialCorrections as never} />

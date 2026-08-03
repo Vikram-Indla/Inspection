@@ -17,11 +17,15 @@ export default async function SupervisionPage() {
 
   const [requestRead, inspectorRead] = await Promise.all([
     sb.from("planning_supervision_requests").select("id, visit_id, proposed_inspector_id, submitted_at, visits!inner(id, visit_reference, visit_type, window_start, window_end, planning_status, factories(name))").eq("status", "pending").order("submitted_at"),
-    sb.from("profiles").select("user_id, full_name, user_roles!user_roles_user_id_fkey!inner(role_key)").eq("user_roles.role_key", "inspector").order("full_name"),
+    sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector").order("user_id"),
   ]);
   if (requestRead.error || inspectorRead.error) return <Shell current="/planning" title={title}><EmptyState glyph="⚠" title={t("plan.supervision.unavailable.title", "Supervision data not available")} body={t("plan.supervision.unavailable.body", "We couldn't load the queue. Nothing was changed.")} /></Shell>;
   const inspectorMap = new Map<string, string>();
-  for (const row of inspectorRead.data ?? []) inspectorMap.set(row.user_id as string, row.full_name as string);
+  for (const row of inspectorRead.data ?? []) {
+    const profile = row.profiles as unknown as { full_name?: string | null } | null;
+    const userId = row.user_id as string;
+    inspectorMap.set(userId, profile?.full_name?.trim() || userId.slice(0, 8));
+  }
   const inspectors = [...inspectorMap].map(([user_id, full_name]) => ({ user_id, full_name }));
   const requests: PendingSupervision[] = (requestRead.data ?? []).map((row: any) => ({
     id: row.id, visitId: row.visit_id, reference: row.visits.visit_reference, factoryName: row.visits.factories?.name ?? "—",

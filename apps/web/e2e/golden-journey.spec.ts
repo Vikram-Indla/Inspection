@@ -22,6 +22,7 @@ test.describe.configure({ mode: "serial" });
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const P2_LOGIN_STEP_TIMEOUT = 20_000;
+const RECOVERY_VISIT_ID = process.env.GOLDEN_RECOVERY_VISIT_ID?.trim() ?? "";
 
 let factory: { id: string; factory_code: string; name: string; official_lat: number; official_lng: number; geofence_radius_m: number };
 let inspectorUserId: string;
@@ -33,6 +34,7 @@ let packageVersionId: string;
 let scopeSectionKey: string; // section containing FS-101 — the exact return scope
 let visitId: string;
 let inspectionId: string;
+let recoveryCheckpoint: "before_checkin" | "after_checkin" | "inspection_started" | "submitted_v1" | "reviewing_v1" | "returned_v1" | "submitted_v2" | "reviewing_v2" | "approved_v2" | null = null;
 
 async function pollRest<T>(fn: () => Promise<T | null>, label: string, tries = 15): Promise<T> {
   for (let i = 0; i < tries; i++) {
@@ -132,6 +134,24 @@ async function journeyInspectorPage(browser: { newContext: (o: object) => Promis
   return page;
 }
 
+async function journeySupervisorPage(browser: { newContext: (o: object) => Promise<BrowserContext> }): Promise<Page> {
+  if (lastContext) await lastContext.close();
+  const ctx = await browser.newContext({});
+  lastContext = ctx;
+  const page = await ctx.newPage();
+  await test.step("P1.5 Supervisor authenticates through the governed login form", async () => {
+    await page.goto("/login");
+    await waitForCredentialsForm(page);
+    await identifierField(page).fill(PERSONAS.supervisor.email);
+    await passwordField(page).fill(PERSONAS.supervisor.password);
+    await submitCredentials(page);
+    await page.waitForURL(url => url.pathname === "/dashboard", { timeout: P2_LOGIN_STEP_TIMEOUT });
+    await expect(page.locator("#role-dashboard-summary")).toBeVisible({ timeout: P2_LOGIN_STEP_TIMEOUT });
+    await expect(page.locator("main")).not.toContainText("ERR-AUTH", { timeout: P2_LOGIN_STEP_TIMEOUT });
+  }, { timeout: P2_LOGIN_STEP_TIMEOUT });
+  return page;
+}
+
 test.beforeAll(async () => {
   const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
   const fixtureGeofenceRadius = await governedFixtureGeofenceRadius(planner.jwt);
@@ -143,7 +163,62 @@ test.beforeAll(async () => {
     email: PERSONAS.inspector.email,
     password: PERSONAS.inspector.password,
   };
-  inspectorUserId = (await login(inspectorCreds.email, inspectorCreds.password)).userId;
+  const inspectorSession = await login(inspectorCreds.email, inspectorCreds.password);
+  inspectorUserId = inspectorSession.userId;
+  if (RECOVERY_VISIT_ID) {
+    if (!UUID.test(RECOVERY_VISIT_ID)) throw new Error("GOLDEN_RECOVERY_VISIT_ID must be a UUID");
+    const rows = must(await rest("GET",
+      `visits?id=eq.${RECOVERY_VISIT_ID}&select=id,planning_status,operational_state,package_version_id,factories(id,factory_code,name,region,official_lat,official_lng,geofence_radius_m),assignments(inspector_id,status)`,
+      planner.jwt), "read recovery visit") as Array<any>;
+    if (rows.length !== 1) throw new Error("recovery visit must resolve to exactly one governed row");
+    const row = rows[0];
+    if (!row.factories?.factory_code?.startsWith("R3-QA-CERT-") || row.factories.region !== "Riyadh") throw new Error("recovery visit is not owned by the Riyadh golden dataset");
+    if (row.planning_status !== "published" || !["on_the_way", "arrived", "executing", "submitted", "under_review"].includes(row.operational_state)) throw new Error("recovery visit is not at an approved P2 checkpoint");
+    if (row.assignments?.length !== 1 || row.assignments[0].inspector_id !== inspectorUserId) throw new Error("recovery visit is not assigned only to the controlled Inspector");
+    const journeys = must(await rest("GET", `journey_sessions?visit_id=eq.${RECOVERY_VISIT_ID}&select=id,status,inspector_id`, inspectorSession.jwt), "read recovery journey") as Array<any>;
+    if (journeys.length !== 1 || journeys[0].inspector_id !== inspectorUserId) throw new Error("recovery visit has no single controlled journey");
+    const checkpoint = `${row.operational_state}/${journeys[0].status}`;
+    if (checkpoint === "on_the_way/on_journey") recoveryCheckpoint = "before_checkin";
+    else if (checkpoint === "arrived/arrived") recoveryCheckpoint = "after_checkin";
+    else if (["executing/completed", "submitted/completed", "under_review/completed"].includes(checkpoint)) {
+      const inspections = must(await rest("GET",
+        `inspections?visit_id=eq.${RECOVERY_VISIT_ID}&select=id,status,started_at,submission_versions(version_number),reviews(decision,returned_sections,decided_at)`,
+        inspectorSession.jwt), "read recovery inspection") as Array<{ id: string; status: string; started_at: string | null; submission_versions: Array<{ version_number: number }>; reviews: Array<{ decision: string | null; returned_sections: string[] | null; decided_at: string | null }> }>;
+      if (inspections.length !== 1 || !inspections[0].started_at) {
+        throw new Error("recovery visit has no single controlled started inspection");
+      }
+      const versionNumbers = inspections[0].submission_versions.map(version => version.version_number).sort();
+      if (inspections[0].status === "in_progress") recoveryCheckpoint = "inspection_started";
+      else if (inspections[0].status === "submitted" && versionNumbers.join(",") === "1") {
+        recoveryCheckpoint = "submitted_v1";
+      } else if (inspections[0].status === "submitted" && versionNumbers.join(",") === "1,2") {
+        recoveryCheckpoint = "submitted_v2";
+      } else if (inspections[0].status === "under_review" && inspections[0].submission_versions.length === 1 && inspections[0].reviews.filter(review => !review.decided_at).length === 1) {
+        recoveryCheckpoint = "reviewing_v1";
+      } else if (inspections[0].status === "under_review" && versionNumbers.join(",") === "1,2" && inspections[0].reviews.filter(review => !review.decided_at).length === 1) {
+        recoveryCheckpoint = "reviewing_v2";
+      } else if (inspections[0].status === "returned" && inspections[0].submission_versions.length === 1) {
+        const decidedReturns = inspections[0].reviews.filter(review => review.decision === "return" && !!review.decided_at);
+        if (decidedReturns.length !== 1 || decidedReturns[0].returned_sections?.length !== 1) throw new Error("recovery returned v1 lacks one exact governed return scope");
+        recoveryCheckpoint = "returned_v1";
+      } else if (inspections[0].status === "approved" && versionNumbers.join(",") === "1,2" && inspections[0].reviews.filter(review => !!review.decided_at).length === 2) {
+        recoveryCheckpoint = "approved_v2";
+      } else {
+        throw new Error("recovery inspection is not at a governed P2-P4 checkpoint");
+      }
+      inspectionId = inspections[0].id;
+    }
+    else throw new Error("recovery visit and journey are not at the same approved P2 checkpoint");
+    const pkg = must(await rest("GET", `package_versions?id=eq.${row.package_version_id}&select=id,status,definition,packages(code)`, planner.jwt), "read recovery package")[0];
+    const sections: { key: string; items?: string[] }[] = pkg?.definition?.sections ?? [];
+    const scope = sections.find(section => (section.items ?? []).includes("FS-101"));
+    if (pkg?.status !== "published" || pkg?.packages?.code !== "PKG-UAT-GOLDEN-FS101" || !scope) throw new Error("recovery visit does not use the governed published FS-101 package");
+    factory = row.factories;
+    packageVersionId = pkg.id;
+    scopeSectionKey = scope.key;
+    visitId = row.id;
+    return;
+  }
   await retireOverlappingGoldenAssignments(planner.jwt);
 
   // M02-012 blocks publish while a factory has ANY active periodic visit. Picking
@@ -256,6 +331,7 @@ test("NEG: publish without an inspector is blocked, work preserved (M01-040/M01-
 });
 
 test("P1 planner: single visit publishes (M01-034/036/038/040/041)", async ({ browser }) => {
+  test.skip(!!RECOVERY_VISIT_ID, "recovering the exact governed active P1 visit");
   const page = await personaPage(browser, "planner");
   await page.goto("/planning/single");
   await fillWizard(page);
@@ -275,10 +351,42 @@ test("P1 planner: single visit publishes (M01-034/036/038/040/041)", async ({ br
     { timeout: 20_000 },
   );
   visitId = new URL(page.url()).searchParams.get("submitted")!;
+
+  const supervisor = await journeySupervisorPage(browser);
+  await supervisor.goto("/planning/supervision");
+  const exactRequest = supervisor.locator("section.sq-card").filter({
+    has: supervisor.locator(`input[name="visit_id"][value="${visitId}"]`),
+  });
+  await expect(exactRequest, "the exact P1 visit must have one pending supervision request").toHaveCount(1);
+  const finalInspector = exactRequest.locator('select[name="inspector_id"]');
+  const supervisorEligibleInspectorIds = await finalInspector.locator('option:not([value=""])').evaluateAll(
+    options => options.map(option => (option as HTMLOptionElement).value),
+  );
+  expect(supervisorEligibleInspectorIds, "Supervisor queue must expose the controlled Inspector").toContain(inspectorUserId);
+  await finalInspector.selectOption(inspectorUserId);
+  await expect(finalInspector).toHaveValue(inspectorUserId);
+  await exactRequest.getByRole("button", { name: /approve & release/i }).click();
+  await expect(exactRequest.getByRole("status")).toHaveText("Visit approved, assigned, and released.");
+  const supervisorSession = await login(PERSONAS.supervisor.email, PERSONAS.supervisor.password);
+  const released = must(await rest("GET",
+    `visits?id=eq.${visitId}&select=planning_status,assignments(inspector_id)`, supervisorSession.jwt),
+  "verify released visit") as Array<{ planning_status: string; assignments: Array<{ inspector_id: string }> }>;
+  expect(released).toEqual([{ planning_status: "published", assignments: [{ inspector_id: inspectorUserId }] }]);
 });
 
 test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1", async ({ browser }) => {
   const page = await journeyInspectorPage(browser);
+
+  if (["submitted_v1", "reviewing_v1", "returned_v1", "submitted_v2", "reviewing_v2", "approved_v2"].includes(recoveryCheckpoint ?? "")) {
+    await page.goto(`/field/inspection/${inspectionId}`);
+    if (recoveryCheckpoint === "submitted_v1") {
+      await expect(page.getByRole("heading", { name: "Submitted — final submitted version.", exact: true, level: 2 })).toBeVisible();
+    }
+    const inspector = await login(inspectorCreds.email, inspectorCreds.password);
+    const versions = must(await rest("GET", `submission_versions?select=id&inspection_id=eq.${inspectionId}&version_number=eq.1`, inspector.jwt), "verify resumed submission v1");
+    expect(versions).toHaveLength(1);
+    return;
+  }
 
   // Assigned visit is visible on the field dashboard (RBAC-009 scope)
   await test.step("P2 Inspector opens the governed field journey", async () => {
@@ -291,9 +399,13 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   // Navigate directly — assignment visibility is covered by RBAC-009 reads.
   // (Live cert Phase 8: the a.sq-surface card selector was stale.)
 
-  // Startup: four steps, enabled strictly in order (SB05)
-  await page.goto(`/field/${visitId}`);
-  const step = (re: RegExp) => page.getByRole("button", { name: re });
+  if (recoveryCheckpoint === "inspection_started") {
+    await page.goto(`/field/inspection/${inspectionId}`);
+    await page.waitForURL(`/field/inspection/${inspectionId}`);
+  } else {
+    // Startup: four steps, enabled strictly in order (SB05)
+    await page.goto(`/field/${visitId}`);
+    const step = (re: RegExp) => page.getByRole("button", { name: re });
 
   // READINESS LEG (TASK-EXECUTION-MODULE-001 Phase 3B, D-010) — depends on
   // migrations 20260721120000 (readiness RPCs) and 20260721130000 (journey
@@ -305,7 +417,7 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   // server-side — so this leg saves + confirms the preparation BEFORE any
   // package download or journey start, exactly like a real inspector.
   const prepPanel = page.getByTestId("pre-execution-panel");
-  if (await prepPanel.count()) {
+  if (await prepPanel.count() && !(await page.getByTestId("pre-execution-ready").count())) {
     await expect(prepPanel).toBeVisible();
     // Pick the first available in-window day (days at cap render disabled).
     await prepPanel.getByTestId("prep-day-available").first().click();
@@ -328,19 +440,26 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
     await expect(step(/1 ·/)).toBeEnabled({ timeout: 30_000 });
   }
 
-  await expect(step(/2 ·/)).toBeDisabled();
-  await step(/1 ·/).click();
-  await step(/2 ·/).click();
-  await step(/3 ·/).click();
-  // Execution-mode "eligible" badges also use .sq-lozenge--success, .badge-compliant now — match text directly.
-  await expect(page.locator(".sq-lozenge--success, .badge-compliant", { hasText: "inside fence" })).toBeVisible();
+  if (recoveryCheckpoint !== "after_checkin") {
+    await expect(step(/2 ·/)).toBeDisabled();
+    await step(/1 ·/).click();
+    await step(/2 ·/).click();
+    await step(/3 ·/).click();
+  }
+  if (recoveryCheckpoint === "after_checkin") {
+    await expect(page.getByRole("heading", { name: "Arrival evidence", exact: true, level: 5 })).toBeVisible();
+  } else {
+    // The measured distance badge is intentionally transient client state and
+    // is asserted only during the live check-in that produced it.
+    await expect(page.locator(".sq-lozenge--success, .badge-compliant", { hasText: "inside fence" })).toBeVisible();
+  }
 
   // M04-045 release certification — queue a comment-only arrival record through
   // the real IndexedDB outbox, then prove the live replay persisted the visit
   // linkage, new enum value and evidence_note column before inspection creation.
   const arrivalNote = `G12 arrival replay ${visitId}`;
   const arrivalSurface = page
-    .getByRole("heading", { name: /Arrival evidence \(M04-045\)/i, level: 5 })
+    .getByRole("heading", { name: "Arrival evidence", exact: true, level: 5 })
     .locator("..");
   // Obsolete-test fix (Cycle 2 completion pass): this UI's field/button copy
   // was relabeled by the already-merged iPad geofence-override work
@@ -376,126 +495,234 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   await checkboxes.nth(1).check();
   await step(/4 ·/).click();
   await page.waitForURL(/\/field\/inspection\/[0-9a-f-]+/, { timeout: 20_000 });
-  inspectionId = page.url().match(/\/field\/inspection\/([0-9a-f-]+)/)![1];
+    inspectionId = page.url().match(/\/field\/inspection\/([0-9a-f-]+)/)![1];
+  }
 
-  // NEG: submit with everything unanswered — ERR-SUB-001, state stays in progress.
-  // The button is aria-disabled (not the disabled attribute) while blocked —
-  // submit() does its own full validation internally, so force the click same
-  // as a real pointer click would (aria-disabled doesn't prevent DOM clicks).
-  await page.getByRole("button", { name: "Review & submit — final version" }).click({ force: true });
-  await expect(page.locator(".sq-banner").first()).toContainText("Blockers:");
+  if (!RECOVERY_VISIT_ID) {
+    // NEG: submit on a newly created inspection starts unanswered — ERR-SUB-001 keeps it
+    // in progress. A governed recovery record may already contain answers and
+    // must never be forced back into this fresh-state assertion.
+    const refusalState = page.getByText(/^\d+ blocking issue\(s\) — submission will be refused$/);
+    await expect(refusalState).toBeVisible();
+    const blockerCount = Number((await refusalState.innerText()).match(/^\d+/)?.[0]);
+    expect(blockerCount, "negative submit must expose a positive governed blocker count").toBeGreaterThan(0);
+    await expect(page.getByRole("button", { name: "Review & submit — final version" })).toHaveAttribute("aria-disabled", "true");
+  }
 
   // 1x1 PNG — satisfies the mandatory-evidence gate on a non-compliant answer (DEC-006).
   const PIXEL_PNG = Buffer.from(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=", "base64");
 
   // Answer every item; FS-101 non-compliant (drives the V-FS-09 path)
-  const qs = page.locator(".ipad-q");
-  const n = await qs.count();
-  expect(n).toBeGreaterThan(0);
-  for (let i = 0; i < n; i++) {
-    const q = qs.nth(i);
-    const target = (await q.innerText()).includes("FS-101");
-    const btn = target
-      ? q.getByRole("button", { name: /^non compliant$/i })
-      : q.getByRole("button", { name: /^compliant$/i });
-    if (await btn.count()) await btn.click();
-    else await q.getByRole("button").first().click();
-    await expect(q).toHaveClass(/is-answered/);
+  const sectionsNav = page.getByRole("navigation", { name: "Inspection sections" });
+  const sectionCount = await sectionsNav.getByRole("listitem").count();
+  expect(sectionCount, "governed inspection must expose at least one section").toBeGreaterThan(0);
+  const answeredCodes = new Set<string>();
+  for (let sectionIndex = 0; sectionIndex < sectionCount; sectionIndex++) {
+    const titles = page.locator("p").filter({ hasText: /^[A-Z]{2}-\d+ ·/ });
+    const titleCount = await titles.count();
+    for (let i = 0; i < titleCount; i++) {
+      const title = titles.nth(i);
+      const code = (await title.innerText()).match(/^([A-Z]{2}-\d+) ·/)?.[1];
+      expect(code, "rendered governed question must expose its item code").toBeTruthy();
+      expect(answeredCodes.has(code!), `governed question ${code} must render exactly once`).toBe(false);
+      answeredCodes.add(code!);
+      const q = title.locator("..").locator("..");
+      const target = code === "FS-101";
+      const btn = q.getByRole("button", { name: target ? /^non compliant$/i : /^compliant$/i });
+      await expect(btn, `governed question ${code} must expose one named response`).toHaveCount(1);
+      await btn.click();
+      await expect(btn).toHaveAttribute("aria-pressed", "true");
 
-    if (target) {
-      // Mandatory evidence (M04-199/evidence_rule) — attach a photo.
-      const fileInput = q.locator('input[type="file"]');
-      if (await fileInput.count()) {
-        await fileInput.setInputFiles({ name: "fs-101.png", mimeType: "image/png", buffer: PIXEL_PNG });
+      if (target) {
+      // Mandatory evidence (M04-199/evidence_rule) — resume idempotently when
+      // this exact question already has enough governed photo evidence. A new
+      // capture may use only the uniquely named mandatory-photo control;
+      // replacement remains a separate, explicitly governed action.
+      const evidenceState = q.getByText(/^\d+\/\d+ evidence$/);
+      await expect(evidenceState, "FS-101 must expose one unambiguous governed evidence count").toHaveCount(1);
+      const evidenceMatch = (await evidenceState.innerText()).match(/^(\d+)\/(\d+) evidence$/);
+      expect(evidenceMatch, "FS-101 evidence count must use the governed current/required format").toBeTruthy();
+      const attachedEvidence = Number(evidenceMatch![1]);
+      const requiredEvidence = Number(evidenceMatch![2]);
+      expect(requiredEvidence, "FS-101 must require positive governed evidence").toBeGreaterThan(0);
+      if (attachedEvidence < requiredEvidence) {
+        const mandatoryPhoto = q.getByLabel("Mandatory photo", { exact: true });
+        await expect(mandatoryPhoto, "missing FS-101 evidence requires exactly one Mandatory photo control").toHaveCount(1);
+        await expect(q.getByLabel("Replace", { exact: true }), "replacement must not be used to satisfy missing evidence").toHaveCount(0);
+        await mandatoryPhoto.setInputFiles({ name: "fs-101.png", mimeType: "image/png", buffer: PIXEL_PNG });
         // M04-109 — attaching a photo opens an annotate-before-attach modal
         // (pen/highlight over the image) that blocks the rest of the page
         // until confirmed or discarded.
         const annotateDialog = page.getByRole("dialog", { name: /annotate photo/i });
         await annotateDialog.getByRole("button", { name: /attach evidence/i }).click();
         await expect(annotateDialog).toBeHidden();
+        const ocrDialog = page.getByRole("dialog", { name: "Attach evidence · OCR scan", exact: true });
+        await expect(ocrDialog).toBeVisible();
+        await expect(ocrDialog).toContainText("Ready to attach as evidence");
+        const attachReviewedEvidence = ocrDialog.getByRole("button", { name: "Attach evidence", exact: true });
+        await expect(attachReviewedEvidence).toHaveCount(1);
+        await attachReviewedEvidence.click();
+        await expect(ocrDialog).toBeHidden();
+        await expect(q).toContainText("1/1 evidence");
+      } else {
+        expect(attachedEvidence, "existing FS-101 evidence must satisfy the governed minimum").toBeGreaterThanOrEqual(requiredEvidence);
       }
-      // Blocking action form (M04-171..184) — fill every generic field it asks for.
-      // Phase 5 workspace nests the hidden evidence file input inside
-      // .sq-panel — exclude non-fillable input types or fill() waits forever.
-      const formFields = q.locator(".sq-panel input:not([type=file]):not([type=checkbox]):not([type=radio]):not([type=hidden]), .sq-panel textarea, .panel input:not([type=file]):not([type=checkbox]):not([type=radio]):not([type=hidden]), .panel textarea");
-      const fc = await formFields.count();
-      for (let f = 0; f < fc; f++) {
-        const field = formFields.nth(f);
-        const tag = await field.evaluate(el => el.tagName.toLowerCase());
-        const type = tag === "input" ? await field.getAttribute("type") : null;
-        await field.fill(type === "date" ? "2026-08-01" : "G10 Playwright golden journey — corrective action.");
+      // Blocking action form (M04-171..184) — use the approved accessible
+      // fields and the existing deterministic golden content. The governed due
+      // date is product-generated from the configured action window; preserve it.
+      const deterministicCorrection = "G10 Playwright golden journey — corrective action.";
+      for (const name of ["Owner name*", "Owner role*", "Required correction*"]) {
+        const field = q.getByRole("textbox", { name, exact: true });
+        await expect(field, `required action field ${name} must render exactly once`).toHaveCount(1);
+        await field.fill(deterministicCorrection);
         await field.blur();
       }
+      const governedDueAt = q.getByRole("textbox", { name: "Due at*", exact: true });
+      await expect(governedDueAt, "governed due date must render exactly once").toHaveCount(1);
+      expect(await governedDueAt.inputValue(), "governed action-form due date must be preconfigured").toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      }
     }
+    if (sectionIndex < sectionCount - 1) await page.getByRole("button", { name: "Next section" }).click();
   }
+  expect(answeredCodes.size, "golden package must render governed checklist items").toBeGreaterThan(0);
+  expect([...answeredCodes].filter(code => code === "FS-101")).toHaveLength(1);
 
-  await page.getByRole("button", { name: "Review & submit — final version" }).click({ force: true });
+  const findingNarrative = page.getByRole("textbox", { name: "Finding narrative*", exact: true });
+  await expect(findingNarrative, "required finding narrative must render exactly once").toHaveCount(1);
+  await findingNarrative.fill("G10 Playwright golden journey — corrective action.");
+  await findingNarrative.blur();
+  await expect(page.getByTestId("finding-status-FS-101"), "finding must persist before final review is requested").toHaveText("Finding saved", { timeout: 30_000 });
+
+  await expect(page.getByText("All blocking validations pass — ready to submit", { exact: true })).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText(/^\d+ blocking issue\(s\) — submission will be refused$/)).toHaveCount(0);
+  const finalSubmit = page.getByRole("button", { name: "Review & submit — final version" });
+  await expect(finalSubmit).toHaveAttribute("aria-disabled", "false", { timeout: 30_000 });
+  await finalSubmit.click();
+  const finalReviewHeading = page.getByRole("heading", { name: "Final review", exact: true });
+  await expect(finalReviewHeading).toBeVisible();
+  const finalReview = finalReviewHeading.locator("..").locator("..");
+  const confirmSubmit = finalReview.getByRole("button", { name: "Confirm and submit", exact: true });
+  await expect(confirmSubmit).toBeEnabled();
+  await confirmSubmit.click();
   await signAndConfirm(page); // DEC-009 acknowledgement gate
-  await expect(page.locator(".sq-banner--immutable")).toContainText("Submitted — final submitted version.");
-  await expect(page.locator(".sq-sync")).toHaveClass(/sq-sync--synced/, { timeout: 30_000 });
-
   // Server truth: v1 exists and inspection is submitted
   const inspector = await login(inspectorCreds.email, inspectorCreds.password);
   await pollRest(async () => {
     const { data } = await rest("GET", `submission_versions?select=id&inspection_id=eq.${inspectionId}&version_number=eq.1`, inspector.jwt);
     return Array.isArray(data) && data.length === 1 ? data : null;
   }, "submission v1");
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Submitted — final submitted version.", exact: true, level: 2 })).toBeVisible({ timeout: 30_000 });
 });
 
 test("P3 reviewer: RETURN with exact scope and mandatory reason (M06-006, STM-REV-003)", async ({ browser }) => {
+  if (["returned_v1", "submitted_v2", "reviewing_v2", "approved_v2"].includes(recoveryCheckpoint ?? "")) {
+    const reviewer = await login(PERSONAS.reviewer.email, PERSONAS.reviewer.password);
+    const decided = must(await rest("GET", `reviews?select=decision,returned_sections&inspection_id=eq.${inspectionId}&decision=eq.return`, reviewer.jwt), "verify resumed return v1");
+    expect(decided).toEqual([{ decision: "return", returned_sections: [scopeSectionKey] }]);
+    return;
+  }
   const page = await personaPage(browser, "reviewer");
   await page.goto(`/reviews/${inspectionId}`); // CD-028 scan-first: opening is read-only, changes nothing
   await expect(page.locator(".sq-table, table")).toContainText("FS-101");
 
   // CD-028 leg 5 — starting the review is now an explicit, audited action
   // (opening the workspace no longer creates the review as a side-effect).
-  await page.getByRole("button", { name: /^start review$/i }).click();
-  await page.locator('input[name="decision"][value="return"]').waitFor({ timeout: 40_000 });
-  await page.locator('input[name="decision"][value="return"]').check();
-  await page.locator(`input[name="returned_section"][value="${scopeSectionKey}"]`).check();
-  await page.locator('textarea[name="reason"]').fill("FS-101 evidence insufficient — retag and re-shoot (G10 Playwright golden journey).");
-  await page.getByRole("button", { name: /confirm return/i }).click();
-  await page.waitForURL(/\/reviews$/, { timeout: 20_000 });
+  if (recoveryCheckpoint !== "reviewing_v1") {
+    const startReview = page.getByRole("button", { name: "Start review", exact: true });
+    await expect(startReview).toHaveCount(1);
+    await startReview.click();
+  }
+  const returnDecision = page.locator('input[name="decision"][value="return"]');
+  await expect(returnDecision).toHaveCount(1, { timeout: 40_000 });
+  await returnDecision.check();
+  const returnedSection = page.locator(`input[name="returned_section"][value="${scopeSectionKey}"]`);
+  await expect(returnedSection).toHaveCount(1);
+  await returnedSection.check();
+  const returnReason = page.locator('textarea[name="reason"]');
+  await expect(returnReason).toHaveCount(1);
+  await returnReason.fill("FS-101 evidence insufficient — retag and re-shoot (G10 Playwright golden journey).");
+  const reviewConfirmation = page.getByRole("button", { name: "Review confirmation", exact: true });
+  await expect(reviewConfirmation).toBeEnabled();
+  await reviewConfirmation.click();
+  await expect(page.getByRole("heading", { name: "Review decision before recording", exact: true })).toBeVisible();
+  const confirmReturn = page.getByRole("button", { name: "Confirm return", exact: true });
+  await expect(confirmReturn).toBeEnabled();
+  await confirmReturn.click();
+  await page.waitForURL(url => url.pathname === `/reviews/${inspectionId}` && url.searchParams.get("decision") === "return", { timeout: 20_000 });
 });
 
 test("P4 inspector: correct only the returned scope, resubmit v2 (STM-COR-002, M06-043)", async ({ browser }) => {
+  if (["submitted_v2", "reviewing_v2", "approved_v2"].includes(recoveryCheckpoint ?? "")) {
+    const inspector = await login(inspectorCreds.email, inspectorCreds.password);
+    const versions = must(await rest("GET", `submission_versions?select=id&inspection_id=eq.${inspectionId}&version_number=eq.2`, inspector.jwt), "verify resumed submission v2");
+    expect(versions).toHaveLength(1);
+    return;
+  }
   const page = await journeyInspectorPage(browser);
   await page.goto(`/field/inspection/${inspectionId}`);
 
-  await expect(page.locator(".sq-banner--warning")).toContainText(`Returned — correction scope: ${scopeSectionKey}.`);
-  await expect(page.getByText("Not in return scope — locked read-only").first()).toBeVisible();
+  await expect(page.getByText(`Returned — correction scope: ${scopeSectionKey}.`, { exact: true })).toBeVisible();
+  const openCorrection = page.getByRole("button", { name: "Open correction mode", exact: true });
+  await expect(openCorrection).toHaveCount(1);
+  await openCorrection.click();
 
-  const q101 = page.locator(".ipad-q", { hasText: "FS-101" });
+  const q101Title = page.locator("p").filter({ hasText: /^FS-101 ·/ });
+  await expect(q101Title, "returned FS-101 must remain uniquely addressable").toHaveCount(1);
+  const q101 = q101Title.locator("..").locator("..");
   await q101.getByRole("button", { name: /^compliant$/i }).click();
 
-  await page.getByRole("button", { name: "Review & submit — final version" }).click();
+  await expect(page.getByText("All blocking validations pass — ready to submit", { exact: true })).toBeVisible({ timeout: 30_000 });
+  const resubmit = page.getByRole("button", { name: "Resubmit — version 2", exact: true });
+  await expect(resubmit).toHaveAttribute("aria-disabled", "false", { timeout: 30_000 });
+  await resubmit.click();
+  const resubmitReviewHeading = page.getByRole("heading", { name: "Final review", exact: true });
+  await expect(resubmitReviewHeading).toBeVisible();
+  const resubmitReview = resubmitReviewHeading.locator("..").locator("..");
+  const confirmResubmit = resubmitReview.getByRole("button", { name: "Confirm and submit", exact: true });
+  await expect(confirmResubmit).toBeEnabled();
+  await confirmResubmit.click();
   await signAndConfirm(page); // DEC-009 acknowledgement gate
   // Two immutable banners are legitimately on screen post-resubmit (locked
   // read-only sections + the submission confirmation) — scope to the one
   // this assertion actually cares about, not just "first".
-  await expect(page.locator(".sq-banner--immutable", { hasText: "Submitted — final submitted version." })).toBeVisible();
-  await expect(page.locator(".sq-sync")).toHaveClass(/sq-sync--synced/, { timeout: 30_000 });
-
   const inspector = await login(inspectorCreds.email, inspectorCreds.password);
   await pollRest(async () => {
     const { data } = await rest("GET", `submission_versions?select=id&inspection_id=eq.${inspectionId}&version_number=eq.2`, inspector.jwt);
     return Array.isArray(data) && data.length === 1 ? data : null;
   }, "submission v2");
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Submitted — final submitted version.", exact: true, level: 2 })).toBeVisible({ timeout: 30_000 });
 });
 
 test("P5 reviewer: APPROVE v2; decided reviews lock; v1 stays intact (M06-009)", async ({ browser }) => {
   const page = await personaPage(browser, "reviewer");
   await page.goto(`/reviews/${inspectionId}`);
-  await expect(page.locator(".sq-banner--warning").first()).toContainText("Prior decision");
+  if (recoveryCheckpoint !== "approved_v2") {
+    await expect(page.getByRole("tab", { name: "Prior decision: 1", exact: true })).toBeVisible();
 
-  // CD-028 leg 5 — v2 review is started explicitly before the approve decision.
-  await page.getByRole("button", { name: /^start review$/i }).click();
-  await page.locator('input[name="decision"][value="approve"]').waitFor({ timeout: 40_000 });
-  await page.locator('input[name="decision"][value="approve"]').check();
-  await page.locator('textarea[name="reason"]').fill("Corrected evidence adequate (G10 Playwright golden journey).");
-  await page.getByRole("button", { name: /confirm approve/i }).click();
-  await page.waitForURL(/\/reviews$/, { timeout: 20_000 });
+    // CD-028 leg 5 — v2 review is started explicitly before the approve decision.
+    if (recoveryCheckpoint !== "reviewing_v2") {
+      const startReview = page.getByRole("button", { name: "Start review", exact: true });
+      await expect(startReview).toHaveCount(1);
+      await startReview.click();
+    }
+    const approveDecision = page.locator('input[name="decision"][value="approve"]');
+    await expect(approveDecision).toHaveCount(1, { timeout: 40_000 });
+    await approveDecision.check();
+    const approveReason = page.locator('textarea[name="reason"]');
+    await expect(approveReason).toHaveCount(1);
+    await approveReason.fill("Corrected evidence adequate (G10 Playwright golden journey).");
+    const reviewConfirmation = page.getByRole("button", { name: "Review confirmation", exact: true });
+    await expect(reviewConfirmation).toBeEnabled();
+    await reviewConfirmation.click();
+    await expect(page.getByRole("heading", { name: "Review decision before recording", exact: true })).toBeVisible();
+    const confirmApprove = page.getByRole("button", { name: "Confirm approve", exact: true });
+    await expect(confirmApprove).toBeEnabled();
+    await confirmApprove.click();
+    await page.waitForURL(url => url.pathname === `/reviews/${inspectionId}` && url.searchParams.get("decision") === "approve", { timeout: 20_000 });
+  }
 
   // Decided = locked: reopening the workspace offers no decision panel (M06-009)
   await page.goto(`/reviews/${inspectionId}`);

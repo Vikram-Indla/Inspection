@@ -9,6 +9,8 @@ const VERSION_ID = "9e5f0101-0000-4000-8000-000000000002";
 const PACKAGE_CODE = "PKG-UAT-GOLDEN-FS101";
 const VERSION_LABEL = "uat-golden-fs101-v1";
 const REQUIRED_ITEMS = ["FS-101", "FS-102", "FS-107", "EG-201", "HZ-310"];
+const GIS_AUTHORITY_PATH = resolve("supabase/migrations/0001_foundation.sql");
+const RECOVERY_FACTORY_ID = process.env.GOLDEN_RECOVERY_FACTORY_ID?.trim() || null;
 const REGULATION = { id: "9e5f0101-0000-4000-8000-000000000010", code: "SBC-801", version_label: "uat-golden-fs101-v2", title: "Fire Code — Industrial", issuing_authority: "Saudi Building Code Committee", effective_from: "2026-08-03" };
 const CLAUSES = [
   { id: "9e5f0101-0000-4000-8000-000000000011", regulation_id: REGULATION.id, clause_ref: "4.2", title: "Portable extinguishers — service & tagging", applicability: "all industrial occupancies", legal_source: "Royal Decree M/43 art. 12" },
@@ -79,12 +81,60 @@ async function login(email) {
 }
 const containsFs101 = definition => (definition?.sections ?? []).some(section => (section.items ?? []).includes("FS-101"));
 
+function acceptedGeofenceAuthority() {
+  const source = readFileSync(GIS_AUTHORITY_PATH, "utf8");
+  const match = source.match(/\('gis',\s*'([^']*"geofence_default_radius_m":\s*(\d+)[^']*)',\s*'([^']+)'\)/);
+  const radius = Number(match?.[2]);
+  if (!match || !Number.isSafeInteger(radius) || radius <= 0 || !match[3].startsWith("v1-accepted-")) {
+    throw new Error("GOLDEN_FIXTURE_REFUSED: accepted GIS geofence authority is unavailable");
+  }
+  return { radius, version: match[3] };
+}
+
 const planner = await login(plannerEmail);
 const admin = await login(adminEmail);
 const roleRows = await request(`/rest/v1/user_roles?select=user_id,role_key&user_id=in.(${planner.userId},${admin.userId})`);
 if (!roleRows.some(row => row.user_id === planner.userId && row.role_key === "planner")) throw new Error("GOLDEN_FIXTURE_REFUSED: planner role proof failed");
 if (!roleRows.some(row => row.user_id === admin.userId && row.role_key === "admin")) throw new Error("GOLDEN_FIXTURE_REFUSED: admin role proof failed");
 if (planner.userId === admin.userId) throw new Error("GOLDEN_FIXTURE_REFUSED: maker and approver must be distinct");
+
+async function reconcileRecoveryFactoryGeofence() {
+  if (!RECOVERY_FACTORY_ID) return { requested: false, changed: false };
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(RECOVERY_FACTORY_ID)) {
+    throw new Error("GOLDEN_FIXTURE_REFUSED: GOLDEN_RECOVERY_FACTORY_ID must be a UUID");
+  }
+  const authority = acceptedGeofenceAuthority();
+  const rows = await request(`/rest/v1/factories?select=id,factory_code,geofence_radius_m&id=eq.${RECOVERY_FACTORY_ID}`);
+  if (rows.length !== 1 || !rows[0].factory_code?.startsWith("R3-QA-CERT-")) {
+    throw new Error("GOLDEN_FIXTURE_REFUSED: recovery factory is absent or not harness-owned");
+  }
+  const before = rows[0].geofence_radius_m;
+  if (before !== null && before !== authority.radius) {
+    throw new Error("GOLDEN_FIXTURE_COLLISION: recovery factory has a different governed geofence radius");
+  }
+  if (before === authority.radius) return { requested: true, changed: false, ...authority };
+  if (apply) {
+    const updated = await request(`/rest/v1/factories?id=eq.${RECOVERY_FACTORY_ID}`, {
+      method: "PATCH", body: { geofence_radius_m: authority.radius }, prefer: "return=representation",
+    });
+    if (updated.length !== 1 || updated[0].id !== RECOVERY_FACTORY_ID || updated[0].geofence_radius_m !== authority.radius) {
+      throw new Error("GOLDEN_FIXTURE_CERTIFICATION_FAILED: recovery factory geofence");
+    }
+    await request("/rest/v1/audit_events", { method: "POST", body: {
+      actor: admin.userId,
+      object_type: "factories",
+      object_id: RECOVERY_FACTORY_ID,
+      action: "nonproduction_golden_geofence_reconciled",
+      before_state: { geofence_radius_m: before, fixture_owner: rows[0].factory_code },
+      after_state: { geofence_radius_m: authority.radius, fixture_owner: rows[0].factory_code },
+      requirement_refs: ["MVP1-M05-001", "EXE-GEO-001"],
+      config_versions: { gis: authority.version },
+    }, prefer: "return=minimal" });
+  }
+  return { requested: true, changed: apply, ...authority };
+}
+
+const geofenceReconciliation = await reconcileRecoveryFactoryGeofence();
 
 async function ensureExact(table, row, identityFields) {
   const existing = await request(`/rest/v1/${table}?select=*&id=eq.${row.id}`);
@@ -189,7 +239,7 @@ if (existingVersions.length) {
   }
   if (version.status === "published") {
     if (!containsFs101(version.definition)) throw new Error("GOLDEN_FIXTURE_COLLISION: published deterministic version lacks FS-101");
-    process.stdout.write(`${JSON.stringify({ mode: apply ? "apply" : "dry-run", target: "approved_nonproduction", changed: false, planner_authenticated: true, admin_authenticated: true, maker_checker_distinct: true, package_id: PACKAGE_ID, version_id: VERSION_ID, status: "published", has_fs101: true }, null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify({ mode: apply ? "apply" : "dry-run", target: "approved_nonproduction", changed: geofenceReconciliation.changed, geofence_reconciliation: geofenceReconciliation, planner_authenticated: true, admin_authenticated: true, maker_checker_distinct: true, package_id: PACKAGE_ID, version_id: VERSION_ID, status: "published", has_fs101: true }, null, 2)}\n`);
     process.exit(0);
   }
   if (!apply) {

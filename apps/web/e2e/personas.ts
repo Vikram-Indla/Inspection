@@ -90,6 +90,11 @@ export const PERSONAS = {
     home: "/planning",
     get password(): string { return primaryCohortPassword("planner"); },
   },
+  supervisor: {
+    get email(): string { return personaEmail("SAQEEL_TEST_SUPERVISOR_EMAIL", "supervisor"); },
+    home: "/dashboard",
+    get password(): string { return primaryCohortPassword("supervisor"); },
+  },
   inspector: {
     get email(): string { return personaEmail("SAQEEL_TEST_INSPECTOR_EMAIL", "inspector"); },
     // Governed 2026-08-03: every role lands on /dashboard after login; /field

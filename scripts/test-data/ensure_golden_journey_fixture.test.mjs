@@ -33,3 +33,25 @@ test("published linked fixture contains the governed FS-101 item set", () => {
   assert.match(source, /published\.package_id !== PACKAGE_ID/);
   assert.match(source, /!containsFs101\(published\.definition\)/);
 });
+
+test("recovery geofence uses only accepted versioned GIS authority", () => {
+  assert.match(source, /GIS_AUTHORITY_PATH = resolve\("supabase\/migrations\/0001_foundation\.sql"\)/);
+  assert.match(source, /"geofence_default_radius_m":\\s\*\(\\d\+\)/);
+  assert.match(source, /startsWith\("v1-accepted-"\)/);
+  assert.doesNotMatch(source, /const (?:GEOFENCE_)?RADIUS\s*=\s*\d+/);
+});
+
+test("recovery geofence is opt-in, harness-owned, idempotent and conflict-refused", () => {
+  assert.match(source, /GOLDEN_RECOVERY_FACTORY_ID/);
+  assert.match(source, /factory_code\?\.startsWith\("R3-QA-CERT-"\)/);
+  assert.match(source, /before === authority\.radius/);
+  assert.match(source, /different governed geofence radius/);
+  assert.match(source, /method: "PATCH", body: \{ geofence_radius_m: authority\.radius \}/);
+});
+
+test("recovery geofence writes an append-only provenance audit without weakening scope", () => {
+  assert.match(source, /action: "nonproduction_golden_geofence_reconciled"/);
+  assert.match(source, /config_versions: \{ gis: authority\.version \}/);
+  assert.match(source, /object_type: "factories"/);
+  assert.doesNotMatch(source, /audit_events[^\n]+method: "(?:PATCH|DELETE)"/);
+});
