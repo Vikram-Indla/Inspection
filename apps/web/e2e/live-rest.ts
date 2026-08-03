@@ -8,6 +8,7 @@ import { join } from "node:path";
 const env = readFileSync(join(__dirname, "..", ".env.local"), "utf-8");
 const BASE = env.match(/NEXT_PUBLIC_SUPABASE_URL=(.+)/)![1].trim();
 const ANON = env.match(/NEXT_PUBLIC_SUPABASE_ANON_KEY=(.+)/)![1].trim();
+const SERVICE_ROLE = env.match(/SUPABASE_SERVICE_ROLE_KEY=(.+)/)?.[1].trim();
 
 export async function login(email: string, password: string) {
   const r = await fetch(`${BASE}/auth/v1/token?grant_type=password`, {
@@ -32,6 +33,33 @@ export async function rest<T = any>(
     headers: {
       apikey: ANON,
       Authorization: `Bearer ${jwt}`,
+      "Content-Type": "application/json",
+      Prefer: prefer,
+    },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+  const raw = await r.text();
+  if (!r.ok) return { data: null, error: `${r.status} ${raw.slice(0, 220)}` };
+  return { data: raw ? JSON.parse(raw) : null, error: null };
+}
+
+/**
+ * Non-production fixture setup only. This deliberately has a separate name
+ * and fails closed when the private service credential is absent; product
+ * behavior assertions must continue through a governed persona JWT.
+ */
+export async function serviceFixtureRest<T = any>(
+  method: string,
+  path: string,
+  body?: unknown,
+  prefer = "return=representation",
+): Promise<{ data: T | null; error: string | null }> {
+  if (!SERVICE_ROLE) return { data: null, error: "missing SUPABASE_SERVICE_ROLE_KEY" };
+  const r = await fetch(`${BASE}/rest/v1/${path}`, {
+    method,
+    headers: {
+      apikey: SERVICE_ROLE,
+      Authorization: `Bearer ${SERVICE_ROLE}`,
       "Content-Type": "application/json",
       Prefer: prefer,
     },
