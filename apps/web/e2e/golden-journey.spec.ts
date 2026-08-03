@@ -13,6 +13,8 @@ import { waitForCredentialsForm, submitCredentials } from "./login-helper";
 
 test.describe.configure({ mode: "serial" });
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 let factory: { id: string; factory_code: string; name: string; official_lat: number; official_lng: number };
 let inspectorUserId: string;
 // The controlled non-production Inspector identity is resolved through the
@@ -193,9 +195,12 @@ test("P1 planner: single visit publishes (M01-034/036/038/040/041)", async ({ br
     "controlled Inspector must remain eligible in the governed Planner selector",
   ).toContain(inspectorUserId);
   await inspectorSelect.selectOption(inspectorUserId);
-  await page.getByRole("button", { name: /publish visit/i }).click();
-  await page.waitForURL(/\/visits\/[0-9a-f-]+/, { timeout: 20_000 });
-  visitId = page.url().match(/\/visits\/([0-9a-f-]+)/)![1];
+  await page.getByRole("button", { name: /submit for supervision/i }).click();
+  await page.waitForURL(url =>
+    url.pathname === "/planning/supervision" && UUID.test(url.searchParams.get("submitted") ?? ""),
+    { timeout: 20_000 },
+  );
+  visitId = new URL(page.url()).searchParams.get("submitted")!;
 });
 
 test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1", async ({ browser }) => {
