@@ -1,4 +1,4 @@
-.wrap { max-width: 900px; width: 100%; margin-inline: auto; padding: 16px 18px 130px; display: flex; flex-direction: column; gap: 14px; }
+.wrap { max-width: 1200px; width: 100%; margin-inline: auto; padding: 16px 18px 130px; display: flex; flex-direction: column; gap: 14px; }
 /* PWA field-channel geometry: 14px card radius, 12px nested rows, 600px
    breakpoint, 50px minimum touch targets — matching field-home, settings,
    drafts, account and the inspection workspace. */

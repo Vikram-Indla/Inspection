@@ -1,4 +1,4 @@
-.page{max-width:780px;margin:0 auto;width:100%;padding:16px 16px 24px;display:flex;flex-direction:column;gap:12px}
+.page{max-width:1200px;margin:0 auto;width:100%;padding:16px 16px 24px;display:flex;flex-direction:column;gap:12px}
 .header{position:sticky;top:0;z-index:20}
 .views,.segments{display:flex;gap:6px}
 .views a,.segments button,.sort{flex:1;min-height:44px;padding:9px 10px;border-radius:10px;border:1px solid var(--border-subtle);background:var(--surface-primary);color:var(--text-secondary);font:inherit;font-size:13px;text-decoration:none;text-align:center}
