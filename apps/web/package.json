@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev -H 127.0.0.1",
     "build": "next build",
+    "postbuild": "node scripts/copy-standalone-assets.mjs",
     "start": "next start",
     "seed:demo-admin": "node scripts/seed-demo-admin.mjs",
     "seed:kpi": "node scripts/seed-dashboard-kpis.mjs",

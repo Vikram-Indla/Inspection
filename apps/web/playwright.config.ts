@@ -44,11 +44,15 @@ export default defineConfig({
     },
   ],
   webServer: process.env.PIXEL_HARNESS === "1" ? undefined : {
-    command: `npm run start -- -H 127.0.0.1 -p ${playwrightPort}`,
+    // next.config.mjs sets output:"standalone" (apps/web/Dockerfile). "next
+    // start" errors out against a standalone build, so the server has to run
+    // as node .next/standalone/server.js, with public/ and .next/static
+    // copied alongside it exactly as `npm run build`'s postbuild step does.
+    command: "node .next/standalone/server.js",
     // Browser verification explicitly runs the replaceable field adapters.
     // The application default remains disabled; individual tests opt down to
     // production behavior with ?integrationMode=production to prove fail-closed.
-    env: { ...process.env, FIELD_TEST_STUBS_ENABLED: process.env.FIELD_TEST_STUBS_ENABLED ?? "true" },
+    env: { ...process.env, FIELD_TEST_STUBS_ENABLED: process.env.FIELD_TEST_STUBS_ENABLED ?? "true", PORT: String(playwrightPort), HOSTNAME: "127.0.0.1" },
     url: `${playwrightOrigin}/login`,
     reuseExistingServer: process.env.PLAYWRIGHT_REUSE_SERVER !== "0",
     timeout: 60_000,

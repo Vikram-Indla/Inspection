@@ -26,11 +26,22 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
   const planningAccess = await getPlanningAccess(sb, ["planning.reassign"]);
-  // ENG-05 — inspector pool; user_roles embed on profiles is ambiguous, disambiguate via !user_roles_user_id_fkey
-  const { data: inspRows } = await sb.from("profiles")
-    .select("user_id, full_name, user_roles!user_roles_user_id_fkey!inner(role_key)")
-    .eq("user_roles.role_key", "inspector").order("full_name");
-  const inspectors = (inspRows ?? []).map(r => ({ user_id: r.user_id as string, full_name: r.full_name as string }));
+  // ENG-05 — inspector pool. Query FROM user_roles, not profiles: profiles_self
+  // RLS (0001_foundation.sql) only grants full profiles reads to
+  // security_admin/ops/planner, not supervisor, so a base-table profiles query
+  // silently returned zero rows for a Supervisor here — the exact same trap
+  // planning/supervision/page.tsx already avoids by embedding profiles onto a
+  // user_roles base query instead. Same graceful fallback: an inspector whose
+  // embedded profile row is still unreadable degrades to a truncated id
+  // instead of disappearing from the reassignment picker entirely.
+  const { data: inspRoleRows } = await sb.from("user_roles")
+    .select("user_id, profiles!user_roles_user_id_fkey(full_name)")
+    .eq("role_key", "inspector").order("user_id");
+  const inspectors = (inspRoleRows ?? []).map(r => {
+    const profile = Array.isArray(r.profiles) ? r.profiles[0] : r.profiles;
+    const userId = r.user_id as string;
+    return { user_id: userId, full_name: profile?.full_name?.trim() || userId.slice(0, 8) };
+  }).sort((a, b) => a.full_name.localeCompare(b.full_name));
   const { data: v, error: vErr } = await sb.from("visits")
     .select(`id, visit_type, execution_mode, planning_status, planning_version, operational_state, window_start, window_end, cancellation_reason, notes,
       immediate_creator_role, source_channel, internal_reference, priority, visit_reference, expired_by_rule_id, package_version_id,
