@@ -9,11 +9,13 @@ const root = "src/lib/integrations/senaei";
 test.describe("Factory 360 typed Senaei integration contract", () => {
   test("uses one server-only, explicit and fail-closed environment contract", () => {
     const client = read(`${root}/client.ts`);
+    const contract = read(`${root}/contract.ts`);
     expect(client).toContain('import "server-only"');
     for (const key of ["SENAEI_BASE_URL", "SENAEI_ALLOWED_HOST_SUFFIX", "SENAEI_AUTH_MODE", "SENAEI_PUBLIC_ENDPOINT_AUTH_MODE", "SENAEI_API_KEY", "SENAEI_BEARER_TOKEN"]) expect(client).toContain(key);
     expect(client).not.toMatch(/console\.(?:log|error|warn)/);
     expect(client).toContain('baseUrl.protocol !== "https:"');
-    expect(client).toContain('const API_ROOT = "/api/inspection"');
+    expect(client).toContain("const API_ROOT = SENAEI_API_ROOT");
+    expect(contract).toContain('export const SENAEI_API_ROOT = "/api/inspection"');
   });
 
   test("bounds network behavior and retries GET only", () => {
@@ -49,7 +51,9 @@ test.describe("Factory 360 typed Senaei integration contract", () => {
     const factory360 = read(`${root}/adapters/factory360.ts`);
     for (const field of ["is_distrupted", "distrubtion_reason", "other_distrubtion_reason", "is_exmpted"]) expect(types).toContain(field);
     for (const canonical of ["isDisrupted", "disruptionReason", "otherDisruptionReason", "isExempted"]) expect(schemas).toContain(canonical);
-    for (const domain of ["incentives", "chemical permits", "factory document retrieval", "risk history", "violations and penalties"]) expect(factory360).toContain(`"${domain}"`);
+    for (const domain of ["incentives", "factory document retrieval", "risk history", "violations and penalties"]) expect(factory360).toContain(`"${domain}"`);
+    expect(factory360).toContain("listChemicalPermitsByPlant");
+    expect(factory360).toContain("/chemical-permits");
   });
 
   test("covers every remaining documented endpoint with explicit methods", () => {
