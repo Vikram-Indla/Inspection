@@ -19,7 +19,7 @@ if (!url?.includes("iiozvqntawxfwbgffzqu.supabase.co") || !serviceRole) {
   throw new Error("Refused: non-production target or local service authority is unavailable");
 }
 
-const planners = ["planner.one@saqeel.test", "planner.two@saqeel.test"];
+const planners = ["planner1@mim.gov.sa", "planner2@mim.gov.sa"];
 const headers = {
   apikey: serviceRole,
   Authorization: `Bearer ${serviceRole}`,

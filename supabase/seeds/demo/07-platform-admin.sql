@@ -1033,22 +1033,22 @@ on conflict do nothing;
 insert into public.delegations
   (id, delegator_id, delegate_id, scope, reason, starts_at, ends_at, status, created_by, created_at)
 select md5('demo:delegation:planner-to-supervisor')::uuid,
-  (select u.id from auth.users u where u.email='planner.one@saqeel.test'),
-  (select u.id from auth.users u where u.email='supervisor.one@saqeel.test'),
+  (select u.id from auth.users u where u.email='planner1@mim.gov.sa'),
+  (select u.id from auth.users u where u.email='supervisor1@mim.gov.sa'),
   'planner', 'Demo · annual leave coverage 2026-08-03 to 2026-08-10 (Product-Owner authorised demo data — not an approved delegation).',
   timestamptz '2026-08-03 06:00:00+03', timestamptz '2026-08-10 18:00:00+03', 'active',
-  (select u.id from auth.users u where u.email='planner.one@saqeel.test'),
+  (select u.id from auth.users u where u.email='planner1@mim.gov.sa'),
   timestamptz '2026-08-01 09:00:00+03'
 where not exists (select 1 from public.delegations where id = md5('demo:delegation:planner-to-supervisor')::uuid);
 
 insert into public.delegations
   (id, delegator_id, delegate_id, scope, reason, starts_at, ends_at, status, created_by, created_at)
 select md5('demo:delegation:supervisor-to-inspector')::uuid,
-  (select u.id from auth.users u where u.email='supervisor.one@saqeel.test'),
-  (select u.id from auth.users u where u.email='inspector.one@saqeel.test'),
+  (select u.id from auth.users u where u.email='supervisor1@mim.gov.sa'),
+  (select u.id from auth.users u where u.email='inspector1@mim.gov.sa'),
   'supervisor', 'Demo · review coverage during training 2026-08-04 to 2026-08-06 (Product-Owner authorised demo data — not an approved delegation).',
   timestamptz '2026-08-04 06:00:00+03', timestamptz '2026-08-06 18:00:00+03', 'active',
-  (select u.id from auth.users u where u.email='supervisor.one@saqeel.test'),
+  (select u.id from auth.users u where u.email='supervisor1@mim.gov.sa'),
   timestamptz '2026-08-02 08:30:00+03'
 where not exists (select 1 from public.delegations where id = md5('demo:delegation:supervisor-to-inspector')::uuid);
 
@@ -1056,14 +1056,14 @@ insert into public.delegations
   (id, delegator_id, delegate_id, scope, reason, starts_at, ends_at, status, created_by, created_at,
    revoked_at, revoked_by, revoked_reason)
 select md5('demo:delegation:planner-to-supervisor-revoked')::uuid,
-  (select u.id from auth.users u where u.email='planner.two@saqeel.test'),
-  (select u.id from auth.users u where u.email='supervisor.two@saqeel.test'),
+  (select u.id from auth.users u where u.email='planner2@mim.gov.sa'),
+  (select u.id from auth.users u where u.email='supervisor2@mim.gov.sa'),
   'planner', 'Demo · site-visit backup coverage 2026-07-20 to 2026-07-27 (Product-Owner authorised demo data — not an approved delegation).',
   timestamptz '2026-07-20 06:00:00+03', timestamptz '2026-07-27 18:00:00+03', 'revoked',
-  (select u.id from auth.users u where u.email='planner.two@saqeel.test'),
+  (select u.id from auth.users u where u.email='planner2@mim.gov.sa'),
   timestamptz '2026-07-19 10:00:00+03',
   timestamptz '2026-07-22 14:00:00+03',
-  (select u.id from auth.users u where u.email='admin.one@saqeel.test'),
+  (select u.id from auth.users u where u.email='admin1@mim.gov.sa'),
   'Demo · delegator returned from leave early, coverage no longer required (Product-Owner authorised demo data).'
 where not exists (select 1 from public.delegations where id = md5('demo:delegation:planner-to-supervisor-revoked')::uuid);
 
