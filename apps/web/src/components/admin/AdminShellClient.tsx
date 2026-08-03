@@ -198,7 +198,7 @@ export default function AdminShellClient({
           <ThemeToggle className={styles.utilityButton} labels={{ toLight: labels.light, toDark: labels.dark }} />
           <NotificationBell strings={bellStrings} locale={locale} fieldOnly={false} />
           <details className={styles.account}>
-            <summary>
+            <summary aria-label={`${email.split("@")[0]} — ${roleSummary}`}>
               <span className={styles.avatar} aria-hidden="true">{initials}</span>
               <span className={styles.accountCopy}><strong>{email.split("@")[0]}</strong><small>{roleSummary}</small></span>
             </summary>
