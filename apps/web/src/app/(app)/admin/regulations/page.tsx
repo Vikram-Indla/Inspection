@@ -113,8 +113,8 @@ export default async function Regulations({
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[], error: null };
   const roles = new Set((roleRows ?? []).map(r => r.role_key));
-  const isWriter = roles.has("admin") || roles.has("compliance_admin") || roles.has("form_admin");
-  const isReviewer = roles.has("supervisor") || roles.has("reviewer");
+  const isWriter = roles.has("admin");
+  const isReviewer = roles.has("supervisor");
 
   const { data: regsData, error: regsError } = await sb
     .from("compliance_regulation_library")

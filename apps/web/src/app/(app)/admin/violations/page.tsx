@@ -30,7 +30,7 @@ import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 // lifecycle fields consume the authoritative completion migration.
 export const dynamic = "force-dynamic";
 
-const WRITER_ROLES = new Set(["admin", "compliance_admin", "form_admin"]);
+const WRITER_ROLES = new Set(["admin"]);
 
 type Lifecycle = "active" | "future" | "deactivated";
 // Explicit derivation (never a stored enum): future if it has not started;

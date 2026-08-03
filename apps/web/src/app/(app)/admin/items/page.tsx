@@ -73,7 +73,7 @@ export default async function Items({
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[], error: null };
   const roles = new Set((roleRows ?? []).map(r => r.role_key));
-  const isWriter = roles.has("admin") || roles.has("compliance_admin") || roles.has("form_admin");
+  const isWriter = roles.has("admin");
 
   const usageEntries = isWriter ? await Promise.all(rows.map(async i => [i.id, await getItemUsage(i.code)] as const)) : [];
   const usageById = new Map<string, ItemUsage | null>(usageEntries);

@@ -17,7 +17,7 @@ import AdminConfigurationJourney from "../_components/AdminConfigurationJourney"
 
 export const dynamic = "force-dynamic";
 
-const WRITER_ROLES = new Set(["admin", "compliance_admin", "form_admin"]);
+const WRITER_ROLES = new Set(["admin"]);
 type ItemRule = { requirement?: "required" | "optional" | "conditional"; conditional?: { visible_when?: string; mandatory_when_visible?: boolean }; evidence_rule?: ItemRow["evidence_rule"]; scoring_enabled?: boolean; score_weight?: number | null; response_mapping?: ResponseModel["mapping"] };
 type Section = { key: string; title?: string; title_en?: string; title_ar?: string; items?: string[]; mandatory?: boolean };
 type ActionFormDef = { key: string; title: string; blocking?: boolean; fields?: string[]; template_version_id?: string };
