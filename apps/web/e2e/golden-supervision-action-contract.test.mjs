@@ -43,6 +43,19 @@ test("golden P1.5 releases only the exact submitted visit to the controlled Insp
   assert.match(p1, /inspector_id: inspectorUserId/);
 });
 
+test("golden P1.5 proves the exact request is Supervisor-visible before rendering", () => {
+  assert.match(p1, /const supervisorSession = await login\(PERSONAS\.supervisor\.email, PERSONAS\.supervisor\.password\)/);
+  assert.match(p1, /planning_supervision_requests\?visit_id=eq\.\$\{visitId\}&status=eq\.pending&select=id,visit_id,visits!inner\(planning_status\)/);
+  assert.match(p1, /verify exact pending supervision request/);
+  assert.match(p1, /rows\.length > 1/);
+  assert.match(p1, /rows\[0\]\.visit_id === visitId/);
+  assert.match(p1, /rows\[0\]\.visits\.planning_status === "pending_supervision"/);
+  assert.match(p1, /"exact Supervisor-visible pending request", 5/);
+  assert.match(p1, /await supervisor\.goto\(`\/planning\/supervision\?submitted=\$\{visitId\}`\)/);
+  assert.match(p1, /the exact P1 visit must have one pending supervision request/);
+  assert.doesNotMatch(p1, /waitForTimeout|setTimeout\([^)]*Supervisor/);
+});
+
 test("Supervisor queue targets an exact validated visit instead of relying on the bounded oldest-first list", () => {
   assert.match(supervisionPage, /searchParams: Promise<\{ submitted\?: string \}>/);
   assert.match(supervisionPage, /const UUID = \^?\/\^\[0-9a-f\]/);

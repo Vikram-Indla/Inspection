@@ -422,6 +422,20 @@ test("P1 planner: single visit publishes (M01-034/036/038/040/041)", async ({ br
   visitId = new URL(page.url()).searchParams.get("submitted")!;
 
   const supervisor = await journeySupervisorPage(browser);
+  const supervisorSession = await login(PERSONAS.supervisor.email, PERSONAS.supervisor.password);
+  await pollRest(async () => {
+    const rows = must(await rest("GET",
+      `planning_supervision_requests?visit_id=eq.${visitId}&status=eq.pending&select=id,visit_id,visits!inner(planning_status)`,
+      supervisorSession.jwt), "verify exact pending supervision request") as Array<{
+        id: string;
+        visit_id: string;
+        visits: { planning_status: string };
+      }>;
+    if (rows.length > 1) throw new Error("exact visit resolved to multiple pending supervision requests");
+    return rows.length === 1 && rows[0].visit_id === visitId && rows[0].visits.planning_status === "pending_supervision"
+      ? rows[0]
+      : null;
+  }, "exact Supervisor-visible pending request", 5);
   await supervisor.goto(`/planning/supervision?submitted=${visitId}`);
   const exactRequest = supervisor.locator("section.sq-card").filter({
     has: supervisor.locator(`input[name="visit_id"][value="${visitId}"]`),
@@ -436,7 +450,6 @@ test("P1 planner: single visit publishes (M01-034/036/038/040/041)", async ({ br
   await expect(finalInspector).toHaveValue(inspectorUserId);
   await exactRequest.getByRole("button", { name: /approve & release/i }).click();
   await expect(exactRequest.getByRole("status")).toHaveText("Visit approved, assigned, and released.");
-  const supervisorSession = await login(PERSONAS.supervisor.email, PERSONAS.supervisor.password);
   const released = must(await rest("GET",
     `visits?id=eq.${visitId}&select=planning_status,assignments(inspector_id)`, supervisorSession.jwt),
   "verify released visit") as Array<{ planning_status: string; assignments: Array<{ inspector_id: string }> }>;
