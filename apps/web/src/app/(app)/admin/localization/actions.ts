@@ -242,14 +242,20 @@ export async function syncFromCode(_: SyncResult, __: FormData): Promise<SyncRes
     return { error: copy(locale, "Source scan is temporarily unavailable. Try again.", "فحص المصدر غير متاح مؤقتًا. حاول مرة أخرى.") };
   }
 
-  const { data: db, error: dbErr } = await sb.from("ui_strings").select("key, en, orphaned");
+  const { data: db, error: dbErr } = await sb.from("ui_strings").select("key, en, ar, status, orphaned");
   if (dbErr) { logProviderError("localization read", dbErr); return { error: neutralLoadError(locale) }; }
   const plan = planSync(code, db ?? []);
 
   if (plan.inserts.length) {
     const { error } = await sb.from("ui_strings").insert(
-      plan.inserts.map(p => ({ key: p.key, en: p.en, status: "draft", updated_by: authorization.userId })));
+      plan.inserts.map(p => ({ key: p.key, en: p.en, ar: p.ar ?? null, status: "draft", updated_by: authorization.userId })));
     if (error) { logProviderError("localization sync insert", error); return { error: neutralWriteError(locale) }; }
+  }
+  for (const p of plan.arUpdates) {
+    const { error } = await sb.from("ui_strings")
+      .update({ ar: p.ar, updated_by: authorization.userId, updated_at: new Date().toISOString() })
+      .eq("key", p.key).neq("status", "reviewed");
+    if (error) { logProviderError("localization sync Arabic update", error); return { error: neutralWriteError(locale) }; }
   }
   for (const p of plan.enUpdates) {
     const { error } = await sb.from("ui_strings")

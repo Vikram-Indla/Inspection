@@ -24,23 +24,45 @@ def main() -> int:
     pat = os.environ.get("PAT")
     if not pat:
         print("PAT env var required"); return 1
-    code: dict[str, str] = {}
+    code: dict[str, dict[str, str | None]] = {}
+    literal = re.compile(r't\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"')
+    bilingual = (
+        re.compile(r't\(\s*"([^"]+)"\s*,\s*copy\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*\)\s*\)', re.S),
+        re.compile(r'\btr\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*\)', re.S),
+    )
+    manifest = re.compile(r'\{\s*key:\s*"([^"]+)"\s*,\s*en:\s*"((?:[^"\\]|\\.)*)"')
     for f in SRC.rglob("*.ts*"):
-        for m in re.finditer(r't\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"', f.read_text()):
-            code[m.group(1)] = m.group(2).replace('\\"', '"')
-    db = {r["key"]: r for r in q(pat, "select key, en, orphaned from ui_strings")}
+        source = f.read_text()
+        for m in literal.finditer(source):
+            code[m.group(1)] = {"en": m.group(2).replace('\\"', '"'), "ar": None}
+        if f.name == "i18n-keys.generated.ts":
+            for m in manifest.finditer(source):
+                code.setdefault(m.group(1), {"en": m.group(2).replace('\\"', '"'), "ar": None})
+        for pattern in bilingual:
+            for m in pattern.finditer(source):
+                code[m.group(1)] = {
+                    "en": m.group(2).replace('\\"', '"'),
+                    "ar": m.group(3).replace('\\"', '"'),
+                }
+    db = {r["key"]: r for r in q(pat, "select key, en, ar, status, orphaned from ui_strings")}
 
     inserts = {k: v for k, v in code.items() if k not in db}
-    en_updates = {k: v for k, v in code.items() if k in db and db[k]["en"] != v}
+    en_updates = {k: v for k, v in code.items() if k in db and db[k]["en"] != v["en"]}
+    ar_updates = {k: v for k, v in code.items() if k in db and v["ar"] and db[k]["status"] != "reviewed" and db[k]["ar"] != v["ar"]}
     orphans = [k for k in db if k not in code and not db[k]["orphaned"]]
     revive = [k for k in db if k in code and db[k]["orphaned"]]
 
     stmts = []
     if inserts:
-        vals = ",\n".join(f"('{esc(k)}','{esc(v)}','draft')" for k, v in sorted(inserts.items()))
-        stmts.append(f"insert into ui_strings (key, en, status) values\n{vals} on conflict (key) do nothing;")
+        vals = ",\n".join(
+            f"('{esc(k)}','{esc(str(v['en']))}',{("'" + esc(str(v['ar'])) + "'") if v['ar'] else 'null'},'draft')"
+            for k, v in sorted(inserts.items())
+        )
+        stmts.append(f"insert into ui_strings (key, en, ar, status) values\n{vals} on conflict (key) do nothing;")
     for k, v in en_updates.items():
-        stmts.append(f"update ui_strings set en = '{esc(v)}' where key = '{esc(k)}';")
+        stmts.append(f"update ui_strings set en = '{esc(str(v['en']))}' where key = '{esc(k)}';")
+    for k, v in ar_updates.items():
+        stmts.append(f"update ui_strings set ar = '{esc(str(v['ar']))}' where key = '{esc(k)}' and status != 'reviewed';")
     if orphans:
         keys = ",".join(f"'{esc(k)}'" for k in orphans)
         stmts.append(f"update ui_strings set orphaned = true where key in ({keys});")
@@ -50,7 +72,7 @@ def main() -> int:
 
     if stmts:
         q(pat, "set app.l10n_source = 'sync';\n" + "\n".join(stmts))
-    print(f"scanned {len(code)} keys · added {len(inserts)} · EN changed {len(en_updates)} · orphaned {len(orphans)} · revived {len(revive)}")
+    print(f"scanned {len(code)} keys · added {len(inserts)} · EN changed {len(en_updates)} · AR changed {len(ar_updates)} · orphaned {len(orphans)} · revived {len(revive)}")
     for k in sorted(inserts): print("  +", k)
     for k in sorted(en_updates): print("  Δ", k)
     for k in orphans: print("  ⌀", k)

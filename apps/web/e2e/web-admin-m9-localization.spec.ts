@@ -1,9 +1,11 @@
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { mkdirSync, readFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { inspectionDocsRoot } from "./evidence-path";
 import { storageStatePath } from "./personas";
+import { planSync, scanCodeForKeys } from "../src/lib/i18n-sync";
 
 const source = (file: string) => readFileSync(join(process.cwd(), file), "utf8");
 const EVIDENCE_DIR = join(
@@ -49,6 +51,37 @@ function watchBrowserHealth(page: Page) {
 }
 
 test.describe("WA-M9-AC-001/004/005 source and governance contracts", () => {
+  test("INSP-720 source sync inventories literal, bilingual helper and manifest keys", () => {
+    const fixture = mkdtempSync(join(tmpdir(), "insp-720-i18n-"));
+    try {
+      writeFileSync(join(fixture, "catalogue.tsx"), `
+        t("plain.key", "Plain English");
+        t("copy.key", copy("Governed English", "عربية معتمدة"));
+        tr("tr.key", "Three argument English", "ترجمة ثلاثية");
+      `);
+      writeFileSync(join(fixture, "i18n-keys.generated.ts"),
+        'export const KEYS = [{ key: "manifest.key", en: "Manifest English", context: "test" }];');
+      expect(scanCodeForKeys(fixture)).toEqual(expect.arrayContaining([
+        { key: "plain.key", en: "Plain English" },
+        { key: "copy.key", en: "Governed English", ar: "عربية معتمدة" },
+        { key: "tr.key", en: "Three argument English", ar: "ترجمة ثلاثية" },
+        { key: "manifest.key", en: "Manifest English" },
+      ]));
+    } finally {
+      rmSync(fixture, { recursive: true, force: true });
+    }
+  });
+
+  test("INSP-720 sync preserves reviewed Arabic and repairs draft Arabic", () => {
+    const code = [{ key: "reviewed.key", en: "English", ar: "العربية" }, { key: "draft.key", en: "English", ar: "العربية" }];
+    const plan = planSync(code, [
+      { key: "reviewed.key", en: "English", ar: "ترجمة بشرية", status: "reviewed", orphaned: false },
+      { key: "draft.key", en: "English", ar: null, status: "draft", orphaned: false },
+    ]);
+    expect(plan.arUpdates.map(row => row.key)).toEqual(["draft.key"]);
+    expect(plan.report.arChanged).toEqual(["draft.key"]);
+  });
+
   test("the registered design is traceable and existing localization behavior remains wired", () => {
     const manager = source("src/app/(app)/admin/localization/Manager.tsx");
     const actions = source("src/app/(app)/admin/localization/actions.ts");
@@ -169,19 +202,19 @@ test.describe("WA-M9-AC-001/002/003/006 admin runtime", () => {
     await expect(page.getByRole("heading", { name: "سجل الترجمات", exact: true })).toBeVisible();
   });
 
-  test("the restored governed key exposes persisted business state, version guard and immutable history", async ({ page }) => {
+  test("a governed key exposes persisted business state, version guard and immutable history", async ({ page }) => {
     const expectHealthyBrowser = watchBrowserHealth(page);
     await page.setViewportSize({ width: 1440, height: 900 });
     await setPresentation(page, "en", "light");
 
     const search = page.getByRole("textbox", { name: /Search key, English or Arabic/ });
-    await search.fill("admin.items.form.guidancePlaceholder");
+    await search.fill("admin.pkg.immutable.title");
     const row = page.locator('[data-saqeel-design="WA-DES-010"] article').filter({
-      hasText: "admin.items.form.guidancePlaceholder",
+      hasText: "admin.pkg.immutable.title",
     });
     await expect(row).toHaveCount(1);
-    await expect(row.getByRole("textbox", { name: /Arabic: admin.items.form.guidancePlaceholder/ }))
-      .toHaveValue("ما يتحقق منه المفتش");
+    await expect(row.getByRole("textbox", { name: /Arabic: admin.pkg.immutable.title/ }))
+      .toHaveValue("إصدار منشور — مقفل.");
     await expect(row.getByText("draft", { exact: true }).first()).toBeVisible();
 
     const versionInputs = row.locator('input[name="expected_updated_at"]');
