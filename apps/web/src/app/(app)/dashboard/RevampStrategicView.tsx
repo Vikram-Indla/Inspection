@@ -32,7 +32,7 @@ function MetricCard({ locale, question, title, value, valueKind = "number", empt
         ? <span className="badge badge-pending">{emptyText ?? copy(locale, "Unavailable", "غير متاح")}</span>
         : <strong className={valueKind === "text" ? "id-code" : "kpi-value"}>{value}</strong>}
       <details className="stack">
-        <summary className="btn btn-ghost btn-sm">{value == null ? copy(locale, "Why unavailable?", "لماذا غير متاح؟") : copy(locale, "Methodology", "المنهجية")}</summary>
+        <summary className="btn btn-ghost btn-sm">{value == null ? copy(locale, "Why unavailable?", "لماذا غير متاح؟") : copy(locale, "How this is calculated", "طريقة الاحتساب")}</summary>
         <p className="desc"><b>{copy(locale, "Definition", "التعريف")}</b> {definition}</p>
         <p className="tl-meta">{example}</p>
         <p>{interpretation}</p>

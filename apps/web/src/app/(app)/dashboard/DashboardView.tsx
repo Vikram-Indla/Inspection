@@ -98,24 +98,18 @@ function stripFor(projection: DashboardKpiProjection, ids: string[], locale: Loc
 
 function stripStrings(locale: Locale): MetricStripStrings {
   return {
-    methodology: copy(locale, "Methodology", "المنهجية"),
+    methodology: copy(locale, "How this is calculated", "طريقة الاحتساب"),
     why: copy(locale, "Why unavailable?", "لماذا غير متاح؟"),
     close: copy(locale, "Close", "إغلاق"),
     advisory: copy(locale, "Advisory only · traceable", "استشاري فقط · قابل للتتبع"),
-    blockedTitle: copy(locale, "Governed boundary", "حد معتمد"),
+    blockedTitle: copy(locale, "Why this is unavailable", "سبب عدم التوفر"),
     drillFallback: copy(locale, "Open records", "فتح السجلات"),
   };
 }
 
-// Operational-View-only disclosure strings for the requirement coverage strip.
-// "Methodology" and "Governed boundary" name their own internal governance
-// process rather than telling the reader what the control does; the CTA now
-// states the destination ("how this is calculated") and the blocked-state
-// heading answers the question its own trigger button asked ("Why
-// unavailable?" -> "Why this is unavailable"). The underlying formula/
-// numerator/denominator/policy rows and the blocked-reason text are
-// unchanged — only the entry-point labels move to business language.
-// Strategic View keeps stripStrings() untouched (Fixes 2 scope).
+// Keep the Operational requirement strip explicit at its call site while
+// sharing the accepted business labels with Strategic and Your Work. The
+// underlying formula/numerator/denominator/policy rows remain unchanged.
 function operationalRequirementStripStrings(locale: Locale): MetricStripStrings {
   return {
     ...stripStrings(locale),
@@ -213,7 +207,7 @@ function MetricCoverage({ projection, category, locale, excluded, partialSources
         <p className={styles.detail}>
           {display.kind === "status"
             ? blockedDetail
-            : display.sub ?? copy(locale, "Source-backed and RLS scoped.", "مدعوم بالمصدر ومقيّد حسب الصلاحيات.")}
+            : display.sub ?? copy(locale, "Source-backed and scoped to your access.", "مدعوم بالمصدر وضمن نطاق صلاحيتك.")}
         </p>
         {metric.drill.route && <a className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSm}`} href={metric.drill.route}>{copy(locale, "View details", "عرض التفاصيل")}</a>}
       </article>;
@@ -326,7 +320,7 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
   const canvasStrings: DecisionCanvasStrings = {
     panelTitle: copy(locale, "National factory map", "الخريطة الوطنية للمصانع"),
     rankTitle: copy(locale, "Regional compliance", "الامتثال حسب المنطقة"),
-    syncedToMap: copy(locale, `${ranking.length} regions · RLS-scoped records`, `${ranking.length} منطقة · سجلات مقيّدة حسب الصلاحيات`),
+    syncedToMap: copy(locale, `${ranking.length} regions · Scoped to your access`, `${ranking.length} منطقة · ضمن نطاق صلاحيتك`),
     provider: copy(locale, "Map source: Mapbox", "مصدر الخريطة: Mapbox"),
     loadingTitle: copy(locale, "Loading factory map", "جارٍ تحميل خريطة المصانع"),
     loadingBody: copy(locale, "Loading governed official coordinates.", "جارٍ تحميل الإحداثيات الرسمية المعتمدة."),
@@ -721,7 +715,7 @@ export function SearchResults({ locale, query, factories, visits, inspections }:
   return <section className={styles.results} aria-labelledby="dashboard-search-results">
     <h3 id="dashboard-search-results">{copy(locale, `Search results for “${query}”`, `نتائج البحث عن «${query}»`)}</h3>
     {!total
-      ? <p role="status">{copy(locale, "No RLS-visible factory, visit or inspection matched.", "لا يوجد مصنع أو زيارة أو تفتيش ظاهر حسب الصلاحيات يطابق البحث.")}</p>
+      ? <p role="status">{copy(locale, "No factory, visit, or inspection within your access matched.", "لا يوجد مصنع أو زيارة أو تفتيش ضمن نطاق صلاحيتك يطابق البحث.")}</p>
       : <div className={styles.resultGrid}>
         <div className={styles.resultGroup}>
           <h4>{copy(locale, "Factories", "المصانع")}</h4>
