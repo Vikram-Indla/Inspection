@@ -62,8 +62,11 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
 
   return (
     <div className="stack">
-      <section>
-        <h2 className="tl-meta">{copy(locale, "National performance", "الأداء الوطني")}</h2>
+      <section className="panel stack" aria-labelledby="national-performance">
+        <div className="panel-row">
+          <h2 id="national-performance">{copy(locale, "National performance", "الأداء الوطني")}</h2>
+        </div>
+        <div className="panel-body">
         <div className="kpi-grid">
           <MetricCard
             locale={locale}
@@ -96,6 +99,7 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             interpretation={copy(locale, "Approval is a review outcome and is not presented as compliance.", "الاعتماد نتيجة مراجعة ولا يُعرض على أنه امتثال.")}
             href="/reviews" action={copy(locale, "Open Review & Approval", "فتح المراجعة والاعتماد")}
           />
+        </div>
         </div>
       </section>
 
@@ -132,8 +136,11 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
         </div>
       </section>
 
-      <section>
-        <h2 className="tl-meta">{copy(locale, "Strategic intervention", "التدخل الاستراتيجي")}</h2>
+      <section className="panel stack" aria-labelledby="strategic-intervention">
+        <div className="panel-row">
+          <h2 id="strategic-intervention">{copy(locale, "Strategic intervention", "التدخل الاستراتيجي")}</h2>
+        </div>
+        <div className="panel-body">
         <div className="kpi-grid">
           <MetricCard
             locale={locale}
@@ -167,6 +174,7 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             interpretation={copy(locale, "The screen withholds a count until the inspection-year policy is published.", "تحجب الشاشة العدد حتى نشر سياسة سنة التفتيش.")}
             href="/planning" action={copy(locale, "Open Planning", "فتح التخطيط")}
           />
+        </div>
         </div>
       </section>
 
