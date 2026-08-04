@@ -145,9 +145,8 @@ export default function ShellClient({
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(groups.map(group => [
       group.id,
-      group.id === "admin-control"
-        || group.items.some(item => isShellRouteCurrent(current, item.href))
-        || (!group.id.startsWith("admin-") && group.id !== "administration"),
+      group.items.some(item => isShellRouteCurrent(current, item.href))
+        || group.id !== "administration",
     ])),
   );
   const navRef = useRef<HTMLElement>(null);

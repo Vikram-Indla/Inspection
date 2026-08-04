@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, useTransition, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState, useTransition, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
 import SaqeelBrandMark from "@/components/SaqeelBrandMark";
 import ShellNavIcon from "@/components/ShellNavIcon";
@@ -19,19 +19,26 @@ type NavItem = {
   enabled: boolean;
 };
 
+// Bucket ids/labels/icons here (HUB_META) come from the original hub-first
+// nav design and are unchanged. What each bucket CONTAINS had to be
+// recomputed: the "administration" catalogue in shell-navigation.ts was
+// consolidated to 7 items (adm-users/adm-lookup/adm-risk/adm-survey/
+// adm-notif/adm-delegation/adm-integration) and this map still pointed at
+// the old ~25-item id set, so no item ever matched and every hub — hence
+// the whole rail below "Find a tool" — silently rendered as empty. "control"
+// and "planning" have no surviving item to hold and are dropped rather than
+// left pointing at ids that no longer exist.
 const HUB_ITEMS: Record<string, string[]> = {
-  control: ["admin-home"],
-  people: ["users", "roles", "security-access", "devices"],
-  rules: ["surveys", "inspection-items", "lookups", "localization"],
-  planning: ["planning-lookups", "planning-expiry", "planning-status", "execution", "workflows"],
-  risk: ["risk"],
-  connections: ["integrations", "gis"],
-  governance: ["audit", "notifications", "platform-operations", "enforcement-recommendations", "bulk-violations", "enforcement-cases"],
+  people: ["adm-users"],
+  rules: ["adm-lookup", "adm-survey"],
+  risk: ["adm-risk"],
+  connections: ["adm-integration"],
+  governance: ["adm-notif", "adm-delegation"],
 };
 
 const HUB_META: Record<string, { icon: ShellIcon }> = {
-  control: { icon: "admin" }, people: { icon: "access" }, rules: { icon: "library" },
-  planning: { icon: "calendar" }, risk: { icon: "risk" }, connections: { icon: "workflow" },
+  people: { icon: "access" }, rules: { icon: "library" },
+  risk: { icon: "risk" }, connections: { icon: "workflow" },
   governance: { icon: "radar" },
 };
 
@@ -155,7 +162,6 @@ export default function AdminShellClient({
     label: labels.hubs[id],
     items: ids.map(itemId => visibleItems.find(item => item.id === itemId)).filter((item): item is NavItem => !!item),
   })).filter(hub => hub.items.length), [labels.hubs, visibleItems]);
-  const activeHub = hubs.find(hub => hub.items.some(item => isShellRouteCurrent(current, item.href))) ?? hubs[0];
   const paletteItems = hubs.flatMap(hub => hub.items.map(item => ({ item, hub }))).filter(({ item, hub }) =>
     `${item.label} ${hub.label}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()),
   );
@@ -206,16 +212,27 @@ export default function AdminShellClient({
         <button type="button" className={styles.findTool} aria-label={labels.findTool} aria-keyshortcuts="Meta+K Control+K" onClick={() => setPaletteOpen(true)}>
           <span aria-hidden="true">⌕</span><span className={styles.findLabel}>{labels.findTool}</span><kbd>⌘K</kbd>
         </button>
-        <nav className={styles.hubs}>
-          {hubs.map(hub => {
-            const active = activeHub?.id === hub.id;
-            return (
-              <Link key={hub.id} href={hub.items[0].href} className={`${styles.hub}${active ? ` ${styles.active}` : ""}`} aria-label={hub.label} aria-current={active ? "true" : undefined}>
-                <span className={styles.hubIcon} aria-hidden="true"><ShellNavIcon name={hub.icon} /></span>
-                <span className={styles.hubLabel}>{hub.label}</span>
-              </Link>
-            );
-          })}
+        {/* PO ruling (INSP-728 amendment): every manageable area must be
+            listed here, always visible — not gated behind a hub click or
+            the ⌘K palette. Each hub is a heading; every item under it is
+            its own always-visible row. ⌘K (the findTool button above)
+            stays as a secondary shortcut, not the only way to see what
+            exists. */}
+        <nav className={styles.hubs} aria-label={labels.administration}>
+          {hubs.map(hub => (
+            <Fragment key={hub.id}>
+              <h3 className={styles.hubLabel}>{hub.label}</h3>
+              {hub.items.map(item => {
+                const active = isShellRouteCurrent(current, item.href);
+                return (
+                  <Link key={item.id} href={item.href} className={`${styles.hub}${active ? ` ${styles.active}` : ""}`} aria-current={active ? "page" : undefined}>
+                    <span className={styles.hubIcon} aria-hidden="true"><ShellNavIcon name={item.icon} /></span>
+                    <span className={styles.hubLabel}>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </Fragment>
+          ))}
         </nav>
         <Link className={styles.viewAll} href="/admin#all-tools">{labels.viewAll}</Link>
       </aside>
@@ -246,18 +263,6 @@ export default function AdminShellClient({
           </details>
         </header>
 
-        {activeHub ? (
-          <nav className={styles.subnav} aria-label={activeHub.label}>
-            <Link href="/admin" className={styles.subnavUp}>‹ <span>{activeHub.label}</span></Link>
-            <span className={styles.subnavRule} aria-hidden="true" />
-            <div className={styles.subnavList}>
-              {activeHub.items.map(item => {
-                const active = isShellRouteCurrent(current, item.href);
-                return <Link key={item.id} href={item.href} className={`${styles.subnavItem}${active ? ` ${styles.subnavActive}` : ""}`} aria-current={active ? "page" : undefined}>{item.label}</Link>;
-              })}
-            </div>
-          </nav>
-        ) : null}
         {children}
         {current === "/admin" ? (
           <details className={styles.toolDirectory} id="all-tools">
