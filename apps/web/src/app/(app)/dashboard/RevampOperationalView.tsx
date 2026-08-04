@@ -146,7 +146,7 @@ export default function RevampOperationalView({ locale, metrics, requirementStri
         <div className="panel-body stack">
           <div className="table-wrap">
             <table className="table">
-              <thead><tr><th scope="col">{copy(locale, "Inspector", "المفتش")}</th><th scope="col">{copy(locale, "Active workload", "عبء العمل النشط")}</th><th scope="col">{copy(locale, "Daily capacity", "الطاقة اليومية")}</th></tr></thead>
+              <thead><tr><th scope="col">{copy(locale, "Inspector", "المفتش")}</th><th scope="col" className="cell-num">{copy(locale, "Active workload", "عبء العمل النشط")}</th><th scope="col">{copy(locale, "Daily capacity", "الطاقة اليومية")}</th></tr></thead>
               <tbody>
             {operational.workload.length ? operational.workload.slice(0, 8).map(row => (
               <tr key={row.id}>
