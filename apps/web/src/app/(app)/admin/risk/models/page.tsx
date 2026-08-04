@@ -55,6 +55,15 @@ export default async function RiskModelsPage() {
     inspect: t("risk.wb.inspect", "Model structure"),
     immutable: t("risk.wb.immutable", "Published versions can't be changed"),
     noTransitions: t("risk.wb.noTransitions", "No further transitions"),
+    // INSP-736 (same-pattern audit): the status badge and transition
+    // dropdown showed the raw RISK_MODEL_STATUSES enum value.
+    statusLabels: {
+      draft: t("risk.wb.status.draft", "Draft"),
+      review: t("risk.wb.status.review", "In review"),
+      approved: t("risk.wb.status.approved", "Approved"),
+      published: t("risk.wb.status.published", "Published"),
+      retired: t("risk.wb.status.retired", "Retired"),
+    },
   };
   return (
     <Shell current="/admin/risk" title={t("risk.wb.title", "Risk model workbench")}

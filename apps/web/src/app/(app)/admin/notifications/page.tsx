@@ -61,6 +61,32 @@ export default async function AdminNotifications() {
     colActions: t("admin.notif.col.actions", "Actions"),
     missingRecipient: t("admin.notif.missingRecipient", "Missing recipient"),
     rolesUnavailable: t("admin.notif.rolesUnavailable", "Recipient roles are not available. Rule creation is turned off; existing rules remain readable."),
+    // INSP-736: business labels for the governed event_key/channel enums,
+    // shown instead of the raw snake_case DB value in both the dropdowns
+    // and the results table.
+    eventLabels: {
+      assignment: t("bell.ev.assignment", "New visit assigned"),
+      reschedule: t("admin.notif.event.reschedule", "Visit rescheduled"),
+      review_decision: t("bell.ev.reviewDecision", "Review decided"),
+      virtual_closed: t("bell.ev.virtualClosed", "Virtual session closed"),
+      virtual_rescheduled: t("bell.ev.virtualRescheduled", "Virtual session rescheduled"),
+      virtual_scheduled: t("bell.ev.virtualScheduled", "Virtual session scheduled"),
+      visit_cancelled: t("bell.ev.visitCancelled", "Visit cancelled"),
+    },
+    channelLabels: {
+      inapp: t("bell.ch.inapp", "In-app"),
+      push: t("bell.ch.push", "Push"),
+      sms: t("bell.ch.sms", "SMS"),
+      email: t("bell.ch.email", "Email"),
+    },
+    // INSP-736: PO ruling requires a governed template picker, not free
+    // text. No template catalogue exists yet (checked: no
+    // notification_templates table, and configuration_templates is the
+    // unrelated M9 compliance-config domain) — a picker would need
+    // fabricated options, which governance forbids. Free text stays,
+    // honestly labeled as a decision-required gap rather than silently
+    // left unexplained.
+    templateNote: t("admin.notif.template.note", "Decision required: no governed template catalogue exists yet, so this is free text pending one."),
   };
 
   const title = t("admin.notif.title", "Notification & SLA Rules");
