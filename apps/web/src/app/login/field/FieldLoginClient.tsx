@@ -315,10 +315,19 @@ export default function FieldLoginClient({
       // contract, which is not supplied. Rather than silently treating the
       // value as an email, the unresolvable case is stated plainly.
       const id = identifier.trim();
-      // DEMO-ADMIN-ALIAS-001 — explicit Product Owner demo credential. Supabase
-      // Auth remains email-based; this single alias resolves to the separately
-      // seeded synthetic account and does not claim a ministry-directory lookup.
-      const email = id.toLocaleLowerCase() === "admin1" ? "admin1@mim.gov.sa" : id;
+      // DEMO-ADMIN-ALIAS-001, extended (INSP-741). admin1 was the only
+      // governed test persona with a bare-identifier convenience alias.
+      // docs/TEST_ACCOUNTS.md's numbered cohorts (admin1-5, planner1-5,
+      // supervisor1-5, inspector1-30) are equally real, equally governed
+      // accounts on the exact same @mim.gov.sa domain — typing the bare id
+      // for any of them hit this same directory-blocked message admin1
+      // alone was exempted from. Product Owner ruled that inconsistency a
+      // bug. Still resolves only to the address TEST_ACCOUNTS.md already
+      // documents, then goes through the identical signInWithPassword call
+      // below — no new credential, no security/RLS change, same mechanism
+      // admin1 already had.
+      const testPersonaMatch = /^(admin[1-5]|planner[1-5]|supervisor[1-5]|inspector([1-9]|[12]\d|30))$/i.exec(id);
+      const email = testPersonaMatch ? `${testPersonaMatch[0].toLowerCase()}@mim.gov.sa` : id;
       if (!email.includes("@")) {
         setMessage(s.directoryBlocked);
         return;
