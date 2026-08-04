@@ -138,14 +138,14 @@ export default function RevampOperationalView({ locale, metrics, requirementStri
         </section>
       ))}
 
-      <section className="panel stack">
+      <section className="panel stack" aria-labelledby="inspector-capacity-heading">
         <div className="panel-row">
-          <h2>{copy(locale, "Inspector capacity", "طاقة المفتشين")}</h2>
-          <span className="tl-meta">{copy(locale, "Planned + in progress; declared daily capacity is not configured", "المخطط + قيد التنفيذ؛ الطاقة اليومية المعلنة غير مهيأة")}</span>
+          <h2 id="inspector-capacity-heading">{copy(locale, "Inspector capacity", "طاقة المفتشين")}</h2>
+          <span id="inspector-capacity-note" className="tl-meta">{copy(locale, "Planned + in progress; declared daily capacity is not configured", "المخطط + قيد التنفيذ؛ الطاقة اليومية المعلنة غير مهيأة")}</span>
         </div>
         <div className="panel-body stack">
           <div className="table-wrap">
-            <table className="table">
+            <table className="table" aria-describedby="inspector-capacity-note">
               <thead><tr><th scope="col">{copy(locale, "Inspector", "المفتش")}</th><th scope="col" className="cell-num">{copy(locale, "Active workload", "عبء العمل النشط")}</th><th scope="col">{copy(locale, "Daily capacity", "الطاقة اليومية")}</th></tr></thead>
               <tbody>
             {operational.workload.length ? operational.workload.slice(0, 8).map(row => (
@@ -158,7 +158,7 @@ export default function RevampOperationalView({ locale, metrics, requirementStri
               </tbody>
             </table>
           </div>
-          <a className="btn btn-secondary" href="/execution">{copy(locale, "Open Execution, grouped by inspector", "فتح التنفيذ مجمعاً حسب المفتش")}</a>
+          <a className="btn btn-secondary" href="/execution">{copy(locale, "Open Execution", "فتح التنفيذ")}</a>
         </div>
       </section>
 
