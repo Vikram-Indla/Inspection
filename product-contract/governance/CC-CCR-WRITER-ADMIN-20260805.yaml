@@ -1,0 +1,124 @@
+schema_version: "1.0"
+change_control_id: "CC-CCR-WRITER-ADMIN-20260805"
+task_id: "TASK-CCR-WRITER-ADMIN-20260805"
+title: "Admit admin to the compliance configuration-request writer check"
+state: "APPROVED_NOT_STARTED"
+approved_by: "Product Owner (Vikram)"
+approved_at: "2026-08-05"
+jira: ["INSP-740", "INSP-745"]
+reporter: "Sujatha Sista"
+
+authority:
+  type: "BOUNDED_DIRECT_PRODUCT_OWNER_DIRECTIVE"
+  user_confirmation: "confirmed — Option A"
+  lease_required: false
+  broad_implementation_allowed: false
+  note: >
+    Covers only the recorded scope below. Grants no board lease and no broad
+    implementation authority. The retired lease mechanism remains retired.
+
+problem:
+  summary: >
+    public.ccr_is_writer() grants compliance configuration-request authoring to
+    exactly two roles — compliance_admin and form_admin. Neither role exists in
+    public.roles, and no account holds either. The function therefore returns
+    false for every user in the system, always. admin is absent from the list.
+  live_evidence:
+    checked_at: "2026-08-05"
+    project: "iiozvqntawxfwbgffzqu (staging)"
+    method: "Direct catalogue probe — pg_proc, pg_policies, roles, user_roles"
+    ccr_is_writer_body: "select public.has_any_role(array['compliance_admin','form_admin'])"
+    roles_defined: ["admin", "inspector", "planner", "supervisor"]
+    roles_deprecated: "none"
+    accounts_holding_compliance_admin: 0
+    accounts_holding_form_admin: 0
+    conclusion: "ccr_is_writer() is unsatisfiable for every principal."
+  gated_functions:
+    - "create_compliance_request"
+    - "update_compliance_request_draft"
+    - "submit_compliance_request"
+    - "revise_compliance_request"
+    - "cancel_compliance_request"
+    - "add_compliance_request_component"
+    - "add_compliance_request_dependency"
+    - "next_compliance_violation_code"
+  application_layer_divergence: >
+    requireConfigurationWriter() in apps/web/src/lib/admin-configuration.ts:27
+    admits admin, compliance_admin and form_admin. The database admits only the
+    latter two. An admin passes the page gate, sees the controls, and is refused
+    by the database — surfacing through configurationFailure() as "The change
+    could not be saved. Review the fields and try again.", which misdirects the
+    user to their input when the real cause is permission.
+  business_impact: >
+    Compliance authoring is closed to every user. No regulation can be created,
+    amended, submitted, revised or cancelled through the product by anyone. This
+    is the single root cause behind INSP-740 and INSP-745, and behind the wider
+    report that an administrator can configure nothing net-new.
+
+owner_ruling:
+  quote_basis: >
+    "Admin is a persona. who is part of MIM" and "sometimes planner can be a
+    supervisor and a admin aswell" — #insp, 2026-08-04. Administrators author
+    compliance content; no separate compliance-authoring role is intended.
+  decision: "Option A — admit admin to the existing check."
+
+scope:
+  - "Add 'admin' to the role array in public.ccr_is_writer()."
+  - "Ship it as a numbered migration file in supabase/migrations, and apply it to the live project."
+
+exact_change: |
+  create or replace function public.ccr_is_writer()
+  returns boolean
+  language sql
+  stable
+  security definer
+  set search_path to ''
+  as $$
+    select public.has_any_role(array['admin','compliance_admin','form_admin']);
+  $$;
+
+change_notes:
+  retain_absent_roles: >
+    compliance_admin and form_admin stay in the array deliberately. They resolve
+    to false while unregistered, so retaining them costs nothing and avoids
+    removing a distinction that may later be created. Only admin is added.
+  divergence_resolved_by_this_change: >
+    Once admin is admitted, the database and requireConfigurationWriter() admit
+    the same three names. The application-layer divergence closes as a
+    consequence; no separate application change is required.
+
+out_of_scope:
+  - "No change to approval, maker-checker, publication or lifecycle rules."
+  - "No new role created. No role granted to any account."
+  - "No change to any other function, policy or table."
+  - "No change to requireConfigurationWriter() — it is made consistent by this change, not edited."
+  - "No new CSS, no new tokens."
+  - "No invented governed value — no threshold, SLA, penalty or approval rule."
+
+acceptance:
+  - "An admin can create a compliance configuration request end to end — create, update draft, submit — verified live, not inferred."
+  - "An admin can revise and cancel a request."
+  - "Creating a new regulation from the Compliance Library succeeds — the INSP-740 report."
+  - "'Modify through request' on a regulation detail succeeds — the INSP-745 report."
+  - "inspector and planner remain refused. Prove this; do not assume."
+  - "supervisor rights are unchanged from their current state — confirm current state first, then confirm it is unchanged."
+  - "No approval or maker-checker control is weakened anywhere."
+  - "The migration exists as a committed file AND is applied to the live project — source and live reconciled, no drift."
+  - "TypeScript passes. Production build passes. Diff confined to allowed_paths."
+
+allowed_paths:
+  - "supabase/migrations/<new timestamped migration>.sql"
+  - "product-contract/execution/CURRENT_SLICE.yaml"
+  - "product-contract/governance/CC-CCR-WRITER-ADMIN-20260805.yaml"
+
+verification:
+  live_admin_create: "PENDING"
+  live_admin_submit: "PENDING"
+  live_inspector_refused: "PENDING"
+  live_planner_refused: "PENDING"
+  source_live_reconciled: "PENDING"
+  typescript: "PENDING"
+  production_build: "PENDING"
+  diff_check: "PENDING"
+
+lane: "Backend"

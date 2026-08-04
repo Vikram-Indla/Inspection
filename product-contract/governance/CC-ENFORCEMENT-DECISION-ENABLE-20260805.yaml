@@ -1,0 +1,93 @@
+schema_version: "1.0"
+change_control_id: "CC-ENFORCEMENT-DECISION-ENABLE-20260805"
+task_id: "TASK-ENFORCEMENT-DECISION-ENABLE-20260805"
+title: "Enable enforcement recommendation decisions on /admin/enforcement-recommendations"
+state: "APPROVED_NOT_STARTED"
+approved_by: "Product Owner (Vikram)"
+approved_at: "2026-08-05"
+
+authority:
+  type: "BOUNDED_DIRECT_PRODUCT_OWNER_DIRECTIVE"
+  user_confirmation: "confirmed — 'enable it'"
+  lease_required: false
+  broad_implementation_allowed: false
+  note: >
+    Covers only the recorded scope below. Grants no board lease and no broad
+    implementation authority. The retired lease mechanism remains retired.
+
+problem:
+  summary: >
+    apps/web/src/app/(app)/admin/enforcement-recommendations/page.tsx line 35
+    hardcodes `const canDecide = false`. Line 128 gates the decision control on
+    `isDecider && canDecide`, so the screen can never record a decision even for
+    a supervisor or admin. The line above it correctly derives isDecider from
+    the user's actual roles.
+  not_a_defect: >
+    The hardcoded false was a deliberate hold, not a bug. It was placed pending
+    confirmation that the supporting database migration was deployed.
+
+verified_backend_state:
+  checked_at: "2026-08-05"
+  project: "iiozvqntawxfwbgffzqu (staging)"
+  method: "Direct catalogue probe of pg_proc — probe-by-object, no schema_migrations table"
+  migration: "20260719010000_dec_f_enforcement_recommendations.sql"
+  findings:
+    function_present: "public.decide_enforcement_recommendation"
+    signature: "p_recommendation uuid, p_decision enforcement_recommendation_decision, p_reason text, p_idempotency_key uuid, p_correlation_id uuid"
+    client_call_matches_signature: true
+    security_definer: true
+    own_authorization_check: "true — raises ENF_DECISION_NOT_AUTHORIZED"
+    maker_checker_enforced_in_database: "true — raises ENF_MAKER_CHECKER"
+    reason_mandatory: "true — raises ENF_DECISION_REASON_REQUIRED"
+    idempotency_handled: true
+  conclusion: >
+    The capability is complete and safe on both sides. Every governed refusal is
+    enforced in the database and already mapped to a distinct outcome in
+    actions.ts. The page flag is the only thing holding it shut.
+
+risk_acknowledged:
+  statement: >
+    Enabling this turns on real enforcement decisions — financial fines,
+    committee referrals and factory closures. The Product Owner was told this
+    explicitly before approving.
+  residual_risk: "Low"
+  basis: >
+    Authorization, maker-checker, mandatory reason and idempotency are all
+    enforced inside a SECURITY DEFINER function. The page flag is a second
+    curtain in front of an already-locked door; removing it does not weaken any
+    governed control.
+
+allowed_paths:
+  - "apps/web/src/app/(app)/admin/enforcement-recommendations/page.tsx"
+  - "product-contract/execution/CURRENT_SLICE.yaml"
+  - "product-contract/governance/CC-ENFORCEMENT-DECISION-ENABLE-20260805.yaml"
+
+scope:
+  - "Remove the hardcoded canDecide = false so the decision control is gated on the user's real capability."
+  - "Ensure every refusal already mapped in actions.ts renders as a visible, explanatory state on the screen."
+
+out_of_scope:
+  - "No schema change. No migration. No change to decide_enforcement_recommendation."
+  - "No weakening of maker-checker, the mandatory reason, authorization or idempotency."
+  - "No change to actions.ts refusal mapping."
+  - "No new CSS, no new tokens, no new class."
+  - "No invented governed value — no penalty amount, threshold, SLA or approval rule."
+  - "No route added, renamed or nested."
+
+acceptance:
+  - "A supervisor or admin can record a decision and the outcome is persisted."
+  - "A user without the capability is refused server-side and the refusal renders as a state, not a silent failure."
+  - "Maker-checker still holds: the account that raised a recommendation cannot decide it, proven by test, not by inspection."
+  - "A decision without a reason is refused and the reason requirement is shown to the user."
+  - "Submitting the same decision twice does not double-apply."
+  - "Arabic strings come from the i18n resources. No Arabic authored in a component."
+  - "TypeScript passes — tsc --noEmit. Production build passes. Diff confined to allowed_paths."
+
+verification:
+  typescript: "PENDING"
+  production_build: "PENDING"
+  maker_checker_test: "PENDING"
+  unauthorized_refusal_test: "PENDING"
+  diff_check: "PENDING"
+
+lane: "Backend"
