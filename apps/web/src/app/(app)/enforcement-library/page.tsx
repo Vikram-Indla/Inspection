@@ -255,7 +255,11 @@ export default async function EnforcementLibrary({
         </div>
       ) : rows.length === 0 ? (
         <section className="sq-state" role="status">
-          <span className="sq-state__glyph" aria-hidden="true">○</span>
+          {/* INSP-734: "○" (plain circle) reads as the app's own loading
+              glyph "◌" (dotted circle, used app-wide in loading.tsx files)
+              at a glance — this state is fully resolved, not loading, so
+              the glyph must not be confusable with that one. */}
+          <span className="sq-state__glyph" aria-hidden="true">∅</span>
           <h2>{copy("No violation records visible to you", "لا توجد سجلات مخالفات ظاهرة لك")}</h2>
           <p>{copy("The read succeeded and returned zero matching records.", "نجحت القراءة ولم تُرجع سجلات مطابقة.")}</p>
         </section>
