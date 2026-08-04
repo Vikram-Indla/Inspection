@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
 import SaqeelBrandMark from "@/components/SaqeelBrandMark";
 import ShellNavIcon from "@/components/ShellNavIcon";
@@ -126,7 +126,6 @@ export default function AdminShellClient({
     label: labels.hubs[id],
     items: ids.map(itemId => visibleItems.find(item => item.id === itemId)).filter((item): item is NavItem => !!item),
   })).filter(hub => hub.items.length), [labels.hubs, visibleItems]);
-  const activeHub = hubs.find(hub => hub.items.some(item => isShellRouteCurrent(current, item.href))) ?? hubs[0];
   const paletteItems = hubs.flatMap(hub => hub.items.map(item => ({ item, hub }))).filter(({ item, hub }) =>
     `${item.label} ${hub.label}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()),
   );
@@ -174,16 +173,27 @@ export default function AdminShellClient({
         <button type="button" className={styles.findTool} aria-label={labels.findTool} aria-keyshortcuts="Meta+K Control+K" onClick={() => setPaletteOpen(true)}>
           <span aria-hidden="true">⌕</span><span className={styles.findLabel}>{labels.findTool}</span><kbd>⌘K</kbd>
         </button>
-        <nav className={styles.hubs}>
-          {hubs.map(hub => {
-            const active = activeHub?.id === hub.id;
-            return (
-              <Link key={hub.id} href={hub.items[0].href} className={`${styles.hub}${active ? ` ${styles.active}` : ""}`} aria-label={hub.label} aria-current={active ? "true" : undefined}>
-                <span className={styles.hubIcon} aria-hidden="true"><ShellNavIcon name={hub.icon} /></span>
-                <span className={styles.hubLabel}>{hub.label}</span>
-              </Link>
-            );
-          })}
+        {/* PO ruling (INSP-728 amendment): every manageable area must be
+            listed here, always visible — not gated behind a hub click or
+            the ⌘K palette. Each hub is a heading; every item under it is
+            its own always-visible row. ⌘K (the findTool button above)
+            stays as a secondary shortcut, not the only way to see what
+            exists. */}
+        <nav className={styles.hubs} aria-label={labels.administration}>
+          {hubs.map(hub => (
+            <Fragment key={hub.id}>
+              <h3 className={styles.hubLabel}>{hub.label}</h3>
+              {hub.items.map(item => {
+                const active = isShellRouteCurrent(current, item.href);
+                return (
+                  <Link key={item.id} href={item.href} className={`${styles.hub}${active ? ` ${styles.active}` : ""}`} aria-current={active ? "page" : undefined}>
+                    <span className={styles.hubIcon} aria-hidden="true"><ShellNavIcon name={item.icon} /></span>
+                    <span className={styles.hubLabel}>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </Fragment>
+          ))}
         </nav>
         <Link className={styles.viewAll} href="/admin#all-tools">{labels.viewAll}</Link>
       </aside>
@@ -215,18 +225,6 @@ export default function AdminShellClient({
           </details>
         </header>
 
-        {activeHub ? (
-          <nav className={styles.subnav} aria-label={activeHub.label}>
-            <Link href="/admin" className={styles.subnavUp}>‹ <span>{activeHub.label}</span></Link>
-            <span className={styles.subnavRule} aria-hidden="true" />
-            <div className={styles.subnavList}>
-              {activeHub.items.map(item => {
-                const active = isShellRouteCurrent(current, item.href);
-                return <Link key={item.id} href={item.href} className={`${styles.subnavItem}${active ? ` ${styles.subnavActive}` : ""}`} aria-current={active ? "page" : undefined}>{item.label}</Link>;
-              })}
-            </div>
-          </nav>
-        ) : null}
         {children}
         {current === "/admin" ? (
           <details className={styles.toolDirectory} id="all-tools">

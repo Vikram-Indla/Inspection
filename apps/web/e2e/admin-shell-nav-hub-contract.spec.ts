@@ -66,4 +66,26 @@ test.describe("Admin shell hub-nav source contract (INSP-728)", () => {
     const unreachable = catalogueIds.filter(id => !wiredIds.has(id));
     expect(unreachable).toEqual([]);
   });
+
+  test("the rail renders every hub item directly, not one link per hub gated behind a click (PO ruling, INSP-728 amendment)", () => {
+    // The original design rendered one Link per hub, pointed at
+    // hub.items[0].href — the rest of a hub's items were only reachable by
+    // clicking through to a subnav in the main content, or via the ⌘K
+    // palette. PO ruled every manageable area must be listed and visible
+    // in the sidebar itself. `hub.items.map` inside the `.hubs` nav proves
+    // every item gets its own row there, not just the first.
+    const hubsNavStart = adminShellClient.indexOf("className={styles.hubs}");
+    const hubsNavEnd = adminShellClient.indexOf("</nav>", hubsNavStart);
+    const hubsNavBlock = adminShellClient.slice(hubsNavStart, hubsNavEnd);
+    expect(hubsNavBlock).toContain("hub.items.map");
+    expect(hubsNavBlock).not.toContain("hub.items[0].href");
+  });
+
+  test("⌘K stays available as a secondary shortcut, not the only nav mechanism", () => {
+    // findTool must still exist (secondary shortcut) — it must not be the
+    // only way to discover admin areas, which the previous test already
+    // guards from the other direction.
+    expect(adminShellClient).toContain("styles.findTool");
+    expect(adminShellClient).toContain("aria-keyshortcuts=\"Meta+K Control+K\"");
+  });
 });
