@@ -31,9 +31,12 @@ function MetricCard({ locale, question, title, value, valueKind = "number", empt
       {value == null
         ? <span className="badge badge-pending">{emptyText ?? copy(locale, "Unavailable", "غير متاح")}</span>
         : <strong className={valueKind === "text" ? "id-code" : "kpi-value"}>{value}</strong>}
-      <p className="desc"><b>{copy(locale, "Definition", "التعريف")}</b> {definition}</p>
-      <p className="tl-meta">{example}</p>
-      <p>{interpretation}</p>
+      <details className="stack">
+        <summary className="btn btn-ghost btn-sm">{value == null ? copy(locale, "Why unavailable?", "لماذا غير متاح؟") : copy(locale, "Methodology", "المنهجية")}</summary>
+        <p className="desc"><b>{copy(locale, "Definition", "التعريف")}</b> {definition}</p>
+        <p className="tl-meta">{example}</p>
+        <p>{interpretation}</p>
+      </details>
       <a className="btn btn-secondary" href={href}>{action}</a>
     </article>
   );
@@ -59,6 +62,13 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
     const query = new URLSearchParams({ ...params, group: nextGroup });
     return `/dashboard?${query.toString()}`;
   };
+  const lenses: Array<[typeof group, string, string]> = [
+    ["region", "Region", "المنطقة"],
+    ["city", "City", "المدينة"],
+    ["sector", "Sector", "القطاع"],
+    ["authority", "Authority", "الجهة"],
+  ];
+  const activeLens = lenses.find(([id]) => id === group) ?? lenses[0];
 
   return (
     <div className="stack">
@@ -71,7 +81,7 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             title={copy(locale, "Inspection coverage against annual target", "تغطية التفتيش مقابل المستهدف السنوي")}
             value={null}
             emptyText={copy(locale, "Not configured", "غير مهيأ")}
-            definition={copy(locale, "(Completed inspections ÷ annual inspection target) × 100", "(التفتيشات المكتملة ÷ المستهدف السنوي) × 100")}
+            definition={copy(locale, "Completed inspections as a percentage of the annual inspection target", "التفتيشات المكتملة كنسبة مئوية من المستهدف السنوي للتفتيش")}
             example={copy(locale, `${strategic.completedInspections} completed inspections; no governed annual target is configured.`, `${strategic.completedInspections} تفتيشاً مكتملاً؛ لا يوجد مستهدف سنوي معتمد.`)}
             interpretation={copy(locale, "Coverage remains withheld until Administration publishes the governed inspection-cycle target.", "تبقى التغطية محجوبة حتى تنشر الإدارة مستهدف دورة التفتيش المعتمد.")}
             href="/planning" action={copy(locale, "Open Planning", "فتح التخطيط")}
@@ -81,7 +91,7 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             question={copy(locale, "How compliant is the industrial sector?", "ما مستوى امتثال القطاع الصناعي؟")}
             title={copy(locale, "National compliance rate", "معدل الامتثال الوطني")}
             value={percentOrNull(strategic.complianceRate)}
-            definition={copy(locale, "(Compliant answered items ÷ total eligible answered items) × 100", "(البنود المطابقة ÷ إجمالي البنود المؤهلة المجابة) × 100")}
+            definition={copy(locale, "Percentage of eligible inspection answers that were compliant", "النسبة المئوية لإجابات التفتيش المؤهلة المطابقة")}
             example={copy(locale, `${strategic.approvedCompliant} compliant of ${strategic.approvedAnsweredForCompliance} eligible answers.`, `${strategic.approvedCompliant} إجابة مطابقة من ${strategic.approvedAnsweredForCompliance} إجابة مؤهلة.`)}
             interpretation={copy(locale, "Calculated only from approved inspection work; pending reports are excluded.", "يُحسب من أعمال التفتيش المعتمدة فقط؛ وتُستبعد التقارير المعلقة.")}
             href="/analytics" action={copy(locale, "Open Analytics", "فتح التحليلات")}
@@ -91,7 +101,7 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             question={copy(locale, "Are inspection reports approved without excessive rework?", "هل تعتمد تقارير التفتيش دون إعادة عمل مفرطة؟")}
             title={copy(locale, "Inspection approval rate", "معدل اعتماد التفتيش")}
             value={percentOrNull(strategic.decisionApprovalRate)}
-            definition={copy(locale, "Approved Level-2 decisions ÷ all decided Level-2 outcomes", "قرارات المستوى الثاني المعتمدة ÷ جميع نتائج المستوى الثاني المحسومة")}
+            definition={copy(locale, "Percentage of decided Level-2 review outcomes that were approved", "النسبة المئوية لنتائج مراجعة المستوى الثاني المحسومة التي اعتُمدت")}
             example={copy(locale, `${strategic.approvedScoped} approved of ${strategic.decidedScoped} decided outcomes.`, `${strategic.approvedScoped} نتيجة معتمدة من ${strategic.decidedScoped} نتيجة محسومة.`)}
             interpretation={copy(locale, "Approval is a review outcome and is not presented as compliance.", "الاعتماد نتيجة مراجعة ولا يُعرض على أنه امتثال.")}
             href="/reviews" action={copy(locale, "Open Review & Approval", "فتح المراجعة والاعتماد")}
@@ -106,27 +116,23 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             <p>{copy(locale, "One compliance-rate formula, four lenses. Every row drills to the factories behind it.", "صيغة امتثال واحدة وأربع عدسات. كل صف ينتقل إلى المصانع المرتبطة به.")}</p>
           </div>
           <nav className="seg" aria-label={copy(locale, "Lens", "العدسة")}>
-            {[
-              ["region", "Region", "المنطقة"],
-              ["city", "City", "المدينة"],
-              ["sector", "Sector", "القطاع"],
-              ["authority", "Authority", "الجهة"],
-            ].map(([id, en, ar]) => (
+            {lenses.map(([id, en, ar]) => (
               <a className="seg-opt" key={id} href={paramsHref(id)} aria-current={group === id}>{copy(locale, en, ar)}</a>
             ))}
           </nav>
         </div>
         <div className="table-wrap">
           <table className="table">
-            <thead><tr><th scope="col">{copy(locale, "Lens value", "قيمة العدسة")}</th><th scope="col" className="cell-num">{copy(locale, "Compliance", "الامتثال")}</th><th scope="col">{copy(locale, "Records", "السجلات")}</th></tr></thead>
+            <thead><tr><th scope="col">{copy(locale, activeLens[1], activeLens[2])}</th><th scope="col" className="cell-num">{copy(locale, "Compliance", "الامتثال")}</th><th scope="col" className="cell-num">{copy(locale, "Records", "السجلات")}</th><th scope="col">{copy(locale, "Action", "الإجراء")}</th></tr></thead>
             <tbody>
             {grouped.length ? grouped.slice(0, 8).map(row => (
               <tr key={row.label}>
                 <th scope="row">{row.label}</th>
                 <td className="cell-num">{row.rate == null ? "—" : `${row.rate}%`}</td>
+                <td className="cell-num">{row.total}</td>
                 <td><a className="btn btn-ghost btn-sm" href={`/factories?${group}=${encodeURIComponent(row.label)}`}>{copy(locale, "Open factories", "فتح المصانع")}</a></td>
               </tr>
-            )) : <tr><td colSpan={3}>{copy(locale, "No eligible approved answers in scope.", "لا توجد إجابات معتمدة مؤهلة ضمن النطاق.")}</td></tr>}
+            )) : <tr><td colSpan={4}>{copy(locale, "No eligible approved answers in scope.", "لا توجد إجابات معتمدة مؤهلة ضمن النطاق.")}</td></tr>}
             </tbody>
           </table>
         </div>
