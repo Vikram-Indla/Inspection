@@ -1,9 +1,11 @@
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { mkdirSync, readFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { inspectionDocsRoot } from "./evidence-path";
 import { storageStatePath } from "./personas";
+import { extractAcceptedCalls, planSync, scanCodeForKeys } from "../src/lib/i18n-sync";
 
 const source = (file: string) => readFileSync(join(process.cwd(), file), "utf8");
 const EVIDENCE_DIR = join(
@@ -49,6 +51,58 @@ function watchBrowserHealth(page: Page) {
 }
 
 test.describe("WA-M9-AC-001/004/005 source and governance contracts", () => {
+  test("INSP-720 scanner admits accepted keys and rejects local bilingual prose", () => {
+    const fixture = mkdtempSync(join(tmpdir(), "insp-720-scanner-"));
+    const governed = [
+      { key: "governed.key", en: "Catalogue English" },
+      { key: "governed.copy", en: "Catalogue copy" },
+      { key: "catalogue.only", en: "Catalogue only" },
+    ];
+    try {
+      const calls = `
+        t("governed.key", "Governed English");
+        t("governed.copy", copy("Governed copy", "نسخة معتمدة"));
+        t("planned.but.unregistered", "Not accepted yet");
+        const t = (en: string, ar: string) => en;
+        t("NoDotEnglish", "نص محلي");
+        t("A new version is ready", "يتوفر إصدار جديد");
+        query.select("governed.key", "must not suffix-match");
+        state.set("governed.copy", "must not suffix-match");
+        value.format("catalogue.only", "must not suffix-match");
+      `;
+      writeFileSync(join(fixture, "calls.tsx"), calls);
+      expect(extractAcceptedCalls(calls, new Set(governed.map(row => row.key)))).toEqual([
+        { key: "governed.key", en: "Governed English" },
+        { key: "governed.copy", en: "Governed copy" },
+      ]);
+      expect(scanCodeForKeys(governed, fixture)).toEqual([
+        { key: "governed.key", en: "Catalogue English" },
+        { key: "governed.copy", en: "Catalogue copy" },
+        { key: "catalogue.only", en: "Catalogue only" },
+      ]);
+    } finally {
+      rmSync(fixture, { recursive: true, force: true });
+    }
+  });
+
+  test("INSP-720 second scan plans zero writes and preserves reviewed values", () => {
+    const rows = [
+      { key: "governed.key", en: "Governed English", ar: "ترجمة مراجعة", status: "reviewed", orphaned: false },
+      { key: "decision.required", en: "Decision required", ar: null, status: "draft", orphaned: false },
+    ];
+    const code = rows.map(({ key, en }) => ({ key, en }));
+    const first = planSync(code, rows);
+    const second = planSync(code, rows);
+    for (const plan of [first, second]) {
+      expect(plan.inserts).toEqual([]);
+      expect(plan.enUpdates).toEqual([]);
+      expect(plan.orphanKeys).toEqual([]);
+      expect(plan.reviveKeys).toEqual([]);
+    }
+    expect(rows[0].ar).toBe("ترجمة مراجعة");
+    expect(rows[1].ar).toBeNull();
+  });
+
   test("the registered design is traceable and existing localization behavior remains wired", () => {
     const manager = source("src/app/(app)/admin/localization/Manager.tsx");
     const actions = source("src/app/(app)/admin/localization/actions.ts");
@@ -175,13 +229,13 @@ test.describe("WA-M9-AC-001/002/003/006 admin runtime", () => {
     await setPresentation(page, "en", "light");
 
     const search = page.getByRole("textbox", { name: /Search key, English or Arabic/ });
-    await search.fill("admin.items.form.guidancePlaceholder");
+    await search.fill("admin.reg.r1.detail.auditNote");
     const row = page.locator('[data-saqeel-design="WA-DES-010"] article').filter({
-      hasText: "admin.items.form.guidancePlaceholder",
+      hasText: "admin.reg.r1.detail.auditNote",
     });
     await expect(row).toHaveCount(1);
-    await expect(row.getByRole("textbox", { name: /Arabic: admin.items.form.guidancePlaceholder/ }))
-      .toHaveValue("ما يتحقق منه المفتش");
+    await expect(row.getByRole("textbox", { name: /Arabic: admin.reg.r1.detail.auditNote/ }))
+      .not.toHaveValue("");
     await expect(row.getByText("draft", { exact: true }).first()).toBeVisible();
 
     const versionInputs = row.locator('input[name="expected_updated_at"]');

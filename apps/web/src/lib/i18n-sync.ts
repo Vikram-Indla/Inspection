@@ -1,9 +1,7 @@
 // Localization sync core (SB19) — scans the codebase for t("key","English")
-// pairs and reconciles them into ui_strings:
-//   new key      -> insert (ar null, status draft)  => shows under "Missing Arabic"
-//   changed EN   -> update en (DB trigger snapshots history + downgrades reviewed->draft)
-//   removed key  -> flag orphaned=true (never delete; history preserved)
-//   reappearing  -> orphaned=false
+// pairs and reconciles them against the accepted ui_strings catalogue. Only
+// existing governed keys cross the provenance boundary; local bilingual
+// helpers and planned/unregistered keys never become registry mutations.
 // Used by the /admin/localization "Sync from code" action (self-hosted: the
 // server can read its own source tree) and by scripts/i18n_sync.py in CI.
 import fs from "node:fs";
@@ -12,18 +10,42 @@ import path from "node:path";
 export type SyncPair = { key: string; en: string };
 export type SyncReport = { scanned: number; added: string[]; enChanged: string[]; orphaned: string[]; revived: string[] };
 
-const T_CALL = /t\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"/g;
+const T_CALL = /\bt\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"/g;
+const T_COPY_CALL = /\bt\(\s*"([^"]+)"\s*,\s*copy\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"(?:[^"\\]|\\.)*"\s*\)\s*\)/gs;
+const TR_CALL = /\btr\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*,\s*"(?:[^"\\]|\\.)*"\s*\)/gs;
 
-export function scanCodeForKeys(srcRoot?: string): SyncPair[] {
+const unescapeString = (value: string) => value.replace(/\\"/g, '"').replace(/\\n/g, "\n");
+
+export function extractAcceptedCalls(source: string, governedKeys: ReadonlySet<string>): SyncPair[] {
+  const pairs = new Map<string, SyncPair>();
+  for (const pattern of [T_CALL, T_COPY_CALL, TR_CALL]) {
+    for (const match of source.matchAll(pattern)) {
+      if (governedKeys.has(match[1])) {
+        pairs.set(match[1], { key: match[1], en: unescapeString(match[2]) });
+      }
+    }
+  }
+  return [...pairs.values()];
+}
+
+export function scanCodeForKeys(
+  governedRows: readonly { key: string; en: string }[],
+  srcRoot?: string,
+): SyncPair[] {
   const root = srcRoot ?? path.join(process.cwd(), "src");
-  const pairs = new Map<string, string>();
+  // Registry membership is the provenance boundary. A dotted-looking string
+  // is not sufficient: local bilingual helpers and planned keys also call t().
+  const governed = new Set(governedRows.map(row => row.key));
+  const pairs = new Map(governedRows.map(row => [row.key, row.en]));
   const walk = (dir: string) => {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const p = path.join(dir, entry.name);
       if (entry.isDirectory()) { if (entry.name !== "node_modules") walk(p); continue; }
       if (!entry.name.endsWith(".tsx") && !entry.name.endsWith(".ts")) continue;
       const srcText = fs.readFileSync(p, "utf8");
-      for (const m of srcText.matchAll(T_CALL)) pairs.set(m[1], m[2].replace(/\\"/g, '"'));
+      // A matching call proves usage, not authority to rewrite reviewed
+      // catalogue copy. English changes use the governed admin workflow.
+      extractAcceptedCalls(srcText, governed);
     }
   };
   walk(root);
