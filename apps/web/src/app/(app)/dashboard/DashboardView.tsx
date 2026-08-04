@@ -128,7 +128,9 @@ export function RoleDashboardSummary({ locale, persona, projection, partialSourc
       </div>
       <span className="badge badge-info">{copy(locale, "RLS scoped", "مقيّد بسياسات الصفوف")}</span>
     </div>
-    <MetricStrip metrics={strip.metrics} methodology={strip.methodology} strings={stripStrings(locale)} />
+    <div className="panel-body">
+      <MetricStrip metrics={strip.metrics} methodology={strip.methodology} strings={stripStrings(locale)} />
+    </div>
   </section>;
 }
 

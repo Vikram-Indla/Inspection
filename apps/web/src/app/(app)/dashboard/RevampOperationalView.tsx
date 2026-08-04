@@ -114,17 +114,19 @@ export default function RevampOperationalView({ locale, metrics, requirementStri
   return (
     <div className="stack" id="dashboard-operational" role="tabpanel" aria-labelledby="dashboard-tab-operational">
       <section className="panel">
-        <strong>{copy(locale, "Deterministic operational priorities", "أولويات تشغيلية حتمية")}</strong>
-        <p>{copy(
-          locale,
-          `${operational.highPriorityRows.length} high-priority visits are pending execution; ${operational.overdueRows.length} published visits are past their recorded window.`,
-          `${operational.highPriorityRows.length} زيارة عالية الأولوية بانتظار التنفيذ؛ و${operational.overdueRows.length} زيارة منشورة تجاوزت نافذتها المسجلة.`,
-        )}</p>
-        <span className="tl-meta">{copy(
-          locale,
-          "Live governed records · AI provider output withheld · no generated recommendation",
-          "سجلات معتمدة مباشرة · مخرجات مزود الذكاء الاصطناعي محجوبة · دون توصية مولدة",
-        )}</span>
+        <div className="panel-body stack">
+          <strong>{copy(locale, "Deterministic operational priorities", "أولويات تشغيلية حتمية")}</strong>
+          <p>{copy(
+            locale,
+            `${operational.highPriorityRows.length} high-priority visits are pending execution; ${operational.overdueRows.length} published visits are past their recorded window.`,
+            `${operational.highPriorityRows.length} زيارة عالية الأولوية بانتظار التنفيذ؛ و${operational.overdueRows.length} زيارة منشورة تجاوزت نافذتها المسجلة.`,
+          )}</p>
+          <span className="tl-meta">{copy(
+            locale,
+            "Live governed records · AI provider output withheld · no generated recommendation",
+            "سجلات معتمدة مباشرة · مخرجات مزود الذكاء الاصطناعي محجوبة · دون توصية مولدة",
+          )}</span>
+        </div>
       </section>
 
       {blocks.map(block => (

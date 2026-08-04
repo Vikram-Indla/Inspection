@@ -354,7 +354,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   }
 
   return <Shell current="/dashboard" title="">
-    <Suspense fallback={<div className="panel" aria-busy="true" role="status">{text("Loading dashboard data…", "جارٍ تحميل بيانات لوحة القيادة…")}</div>}>
+    <Suspense fallback={<div className="panel"><div className="panel-body" aria-busy="true" role="status">{text("Loading dashboard data…", "جارٍ تحميل بيانات لوحة القيادة…")}</div></div>}>
       <DashboardDataSections />
     </Suspense>
   </Shell>;
