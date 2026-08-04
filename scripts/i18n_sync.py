@@ -11,6 +11,28 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 SRC = ROOT / "apps/web/src"
 PROJECT = "iiozvqntawxfwbgffzqu"
 
+LITERAL_CALL = re.compile(r'\bt\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"')
+BILINGUAL_CALLS = (
+    re.compile(r'\bt\(\s*"([^"]+)"\s*,\s*copy\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*\)\s*\)', re.S),
+    re.compile(r'\btr\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*\)', re.S),
+)
+MANIFEST_ENTRY = re.compile(r'\{\s*key:\s*"([^"]+)"\s*,\s*en:\s*"((?:[^"\\]|\\.)*)"')
+
+def extract_source_pairs(source: str, include_manifest: bool = False) -> dict[str, dict[str, str | None]]:
+    pairs: dict[str, dict[str, str | None]] = {}
+    for match in LITERAL_CALL.finditer(source):
+        pairs[match.group(1)] = {"en": match.group(2).replace('\\"', '"'), "ar": None}
+    if include_manifest:
+        for match in MANIFEST_ENTRY.finditer(source):
+            pairs.setdefault(match.group(1), {"en": match.group(2).replace('\\"', '"'), "ar": None})
+    for pattern in BILINGUAL_CALLS:
+        for match in pattern.finditer(source):
+            pairs[match.group(1)] = {
+                "en": match.group(2).replace('\\"', '"'),
+                "ar": match.group(3).replace('\\"', '"'),
+            }
+    return pairs
+
 def q(pat: str, sql: str):
     req = urllib.request.Request(f"https://api.supabase.com/v1/projects/{PROJECT}/database/query",
         data=json.dumps({"query": sql}).encode(), method="POST",
@@ -25,25 +47,9 @@ def main() -> int:
     if not pat:
         print("PAT env var required"); return 1
     code: dict[str, dict[str, str | None]] = {}
-    literal = re.compile(r't\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"')
-    bilingual = (
-        re.compile(r't\(\s*"([^"]+)"\s*,\s*copy\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*\)\s*\)', re.S),
-        re.compile(r'\btr\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*\)', re.S),
-    )
-    manifest = re.compile(r'\{\s*key:\s*"([^"]+)"\s*,\s*en:\s*"((?:[^"\\]|\\.)*)"')
     for f in SRC.rglob("*.ts*"):
         source = f.read_text()
-        for m in literal.finditer(source):
-            code[m.group(1)] = {"en": m.group(2).replace('\\"', '"'), "ar": None}
-        if f.name == "i18n-keys.generated.ts":
-            for m in manifest.finditer(source):
-                code.setdefault(m.group(1), {"en": m.group(2).replace('\\"', '"'), "ar": None})
-        for pattern in bilingual:
-            for m in pattern.finditer(source):
-                code[m.group(1)] = {
-                    "en": m.group(2).replace('\\"', '"'),
-                    "ar": m.group(3).replace('\\"', '"'),
-                }
+        code.update(extract_source_pairs(source, f.name == "i18n-keys.generated.ts"))
     db = {r["key"]: r for r in q(pat, "select key, en, ar, status, orphaned from ui_strings")}
 
     inserts = {k: v for k, v in code.items() if k not in db}

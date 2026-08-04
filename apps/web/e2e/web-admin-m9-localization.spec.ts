@@ -98,6 +98,11 @@ test.describe("WA-M9-AC-001/004/005 source and governance contracts", () => {
         t("plain.key", "Plain English");
         t("copy.key", copy("Governed English", "عربية معتمدة"));
         tr("tr.key", "Three argument English", "ترجمة ثلاثية");
+        query.select("select.falsePositive", "must not scan");
+        state.set("set.falsePositive", "must not scan");
+        value.format("format.falsePositive", "must not scan");
+        list.collect("collect.falsePositive", "must not scan");
+        client.insert("insert.falsePositive", "must not scan");
       `);
       writeFileSync(join(fixture, "i18n-keys.generated.ts"),
         'export const KEYS = [{ key: "manifest.key", en: "Manifest English", context: "test" }];');
@@ -106,6 +111,13 @@ test.describe("WA-M9-AC-001/004/005 source and governance contracts", () => {
         { key: "copy.key", en: "Governed English", ar: "عربية معتمدة" },
         { key: "tr.key", en: "Three argument English", ar: "ترجمة ثلاثية" },
         { key: "manifest.key", en: "Manifest English" },
+      ]));
+      expect(scanCodeForKeys(fixture).map(pair => pair.key)).not.toEqual(expect.arrayContaining([
+        "select.falsePositive",
+        "set.falsePositive",
+        "format.falsePositive",
+        "collect.falsePositive",
+        "insert.falsePositive",
       ]));
     } finally {
       rmSync(fixture, { recursive: true, force: true });

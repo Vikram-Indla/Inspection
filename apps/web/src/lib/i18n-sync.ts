@@ -12,8 +12,8 @@ import path from "node:path";
 export type SyncPair = { key: string; en: string; ar?: string };
 export type SyncReport = { scanned: number; added: string[]; enChanged: string[]; arChanged: string[]; orphaned: string[]; revived: string[] };
 
-const T_CALL = /t\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"/g;
-const T_COPY_CALL = /t\(\s*"([^"]+)"\s*,\s*copy\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*\)\s*\)/gs;
+const T_CALL = /\bt\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"/g;
+const T_COPY_CALL = /\bt\(\s*"([^"]+)"\s*,\s*copy\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*\)\s*\)/gs;
 const TR_CALL = /\btr\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*\)/gs;
 const MANIFEST_ENTRY = /\{\s*key:\s*"([^"]+)"\s*,\s*en:\s*"((?:[^"\\]|\\.)*)"/g;
 
