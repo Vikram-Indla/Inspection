@@ -403,10 +403,24 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       </div>}
       </section>
 
-      {/* Canonical visit list (PLN-REQ-013) */}
+      {/* Canonical visit list (PLN-REQ-013)
+          INSP-738 — visibleRows and list.total can legitimately disagree: the
+          count query and the row query exclude fixtures through separate code
+          paths (see lib/planning/visit-list.ts), and each is independently
+          scoped by RLS. When that happens with no filter/search/tab active,
+          telling the planner to "reset filters" is actively wrong — there is
+          nothing to reset. Distinguish the two cases instead of reusing one
+          message for both. */}
       {visibleRows.length === 0 ? (
-        <EmptyState icon={<IconCalendar />} title={tr("plan.list.empty", "No visits match", "لا توجد زيارات مطابقة")}
-          body={tr("plan.list.emptyDesc", "No visits match the current tab, search and filters. Reset to see everything in your scope.", "لا توجد زيارات مطابقة للتبويب والبحث وعوامل التصفية الحالية. أعد التعيين لعرض كل ما في نطاقك.")} />
+        activeFilters.length > 0 ? (
+          <EmptyState icon={<IconCalendar />} title={tr("plan.list.empty", "No visits match", "لا توجد زيارات مطابقة")}
+            body={tr("plan.list.emptyDesc", "No visits match the current tab, search and filters. Reset to see everything in your scope.", "لا توجد زيارات مطابقة للتبويب والبحث وعوامل التصفية الحالية. أعد التعيين لعرض كل ما في نطاقك.")} />
+        ) : (
+          <EmptyState icon={<IconCalendar />} title={tr("plan.list.emptyUnfiltered", "No visits are currently displayable", "لا توجد زيارات قابلة للعرض حالياً")}
+            body={list.total > 0
+              ? tr("plan.list.emptyUnfilteredWithTotal", "{total} records exist in your scope, but none can be displayed right now. No filter, search or tab is limiting this — try again shortly.", "توجد {total} سجلات ضمن نطاقك، ولكن لا يمكن عرض أي منها حالياً. لا يوجد عامل تصفية أو بحث أو تبويب يحدّ من ذلك — حاول مرة أخرى بعد قليل.").replace("{total}", String(list.total))
+              : tr("plan.list.emptyUnfilteredNoTotal", "No visits are in your scope yet.", "لا توجد زيارات ضمن نطاقك حتى الآن.")} />
+        )
       ) : (
         <div className="sq-tablewrap planning-table-wrap"><table className="sq-table planning-visit-table" data-testid="planning-visit-table">
           <thead><tr>
@@ -470,8 +484,12 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
         </table></div>
       )}
 
-      {/* Pagination — state carried in the URL like every other control */}
-      {list.total > 0 && (
+      {/* Pagination — state carried in the URL like every other control.
+          INSP-738 — gated on visibleRows, not list.total: list.total can be
+          nonzero while nothing is displayable (see the empty-state block
+          above), and a "Showing 0 of N" footer under an empty-state message
+          is the exact contradiction this fixes. */}
+      {visibleRows.length > 0 && (
         <div className="sq-row" style={{ justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: "var(--space-3)" }}>
           <span className="sq-caption sq-numeric">
             {tr("plan.list.showing", "Showing {shown} of {total} · page {page} of {pages}", "عرض {shown} من {total} · صفحة {page} من {pages}")
