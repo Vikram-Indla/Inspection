@@ -39,6 +39,7 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
 
   return (
     <div className="panel stack">
+      <div className="panel-body stack">
       <div className="row">
         <h3>
           {task.taskType} <span className="sq-version">{task.taskRef ?? "—"}</span>
@@ -97,6 +98,7 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
         </div>
       )}
       {isTerminal && <p className="t-caption">{s.terminalNote}</p>}
+      </div>
     </div>
   );
 }

@@ -26,6 +26,7 @@ export default function AdminConfigurationJourney({
 }) {
   return (
     <nav className="panel stack" aria-label={labels.ariaLabel}>
+      <div className="panel-body stack">
       <div className="row">
         <span className="badge badge-info">{labels.eyebrow}</span>
         <strong>{labels.title}</strong>
@@ -46,6 +47,7 @@ export default function AdminConfigurationJourney({
             </a>
           );
         })}
+      </div>
       </div>
     </nav>
   );

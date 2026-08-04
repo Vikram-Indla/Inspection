@@ -349,9 +349,11 @@ export default async function Access({
                   editUnavailableReason: accessEditUnavailable,
                 }}
               >
-                <strong>{role.title || role.role_key}</strong>
-                <bdi className="t-caption" dir="ltr">{role.role_key}</bdi>
-                {role.is_admin && <span className="badge badge-warning">{t("admin.access.roles.admin", "Administrator role")}</span>}
+                <div className="panel-body">
+                  <strong>{role.title || role.role_key}</strong>
+                  <bdi className="t-caption" dir="ltr">{role.role_key}</bdi>
+                  {role.is_admin && <span className="badge badge-warning">{t("admin.access.roles.admin", "Administrator role")}</span>}
+                </div>
               </AdminRecordArticle>
             ))}
           </div>

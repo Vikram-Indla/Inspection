@@ -143,31 +143,35 @@ export default function RevampOperationalView({ locale, metrics, requirementStri
           <h2>{copy(locale, "Inspector capacity", "طاقة المفتشين")}</h2>
           <span className="tl-meta">{copy(locale, "Planned + in progress; declared daily capacity is not configured", "المخطط + قيد التنفيذ؛ الطاقة اليومية المعلنة غير مهيأة")}</span>
         </div>
-        <div className="table-wrap">
-          <table className="table">
-            <thead><tr><th scope="col">{copy(locale, "Inspector", "المفتش")}</th><th scope="col">{copy(locale, "Active workload", "عبء العمل النشط")}</th><th scope="col">{copy(locale, "Daily capacity", "الطاقة اليومية")}</th></tr></thead>
-            <tbody>
-          {operational.workload.length ? operational.workload.slice(0, 8).map(row => (
-            <tr key={row.id}>
-              <th scope="row">{row.name}</th>
-              <td className="cell-num">{row.active}</td>
-              <td><span className="badge badge-pending">{copy(locale, "Not configured", "غير مهيأ")}</span></td>
-            </tr>
-          )) : <tr><td colSpan={3}>{copy(locale, "No inspector assignments are visible in this scope.", "لا توجد إسنادات مفتشين ظاهرة ضمن هذا النطاق.")}</td></tr>}
-            </tbody>
-          </table>
+        <div className="panel-body stack">
+          <div className="table-wrap">
+            <table className="table">
+              <thead><tr><th scope="col">{copy(locale, "Inspector", "المفتش")}</th><th scope="col">{copy(locale, "Active workload", "عبء العمل النشط")}</th><th scope="col">{copy(locale, "Daily capacity", "الطاقة اليومية")}</th></tr></thead>
+              <tbody>
+            {operational.workload.length ? operational.workload.slice(0, 8).map(row => (
+              <tr key={row.id}>
+                <th scope="row">{row.nameResolved ? row.name : <span className="badge badge-pending">{copy(locale, "Unresolved identity", "هوية غير محلولة")}</span>}</th>
+                <td className="cell-num">{row.active}</td>
+                <td><span className="badge badge-pending">{copy(locale, "Not configured", "غير مهيأ")}</span></td>
+              </tr>
+            )) : <tr><td colSpan={3}>{copy(locale, "No inspector assignments are visible in this scope.", "لا توجد إسنادات مفتشين ظاهرة ضمن هذا النطاق.")}</td></tr>}
+              </tbody>
+            </table>
+          </div>
+          <a className="btn btn-secondary" href="/execution">{copy(locale, "Open Execution, grouped by inspector", "فتح التنفيذ مجمعاً حسب المفتش")}</a>
         </div>
-        <a className="btn btn-secondary" href="/execution">{copy(locale, "Open Execution, grouped by inspector", "فتح التنفيذ مجمعاً حسب المفتش")}</a>
       </section>
 
       <section className="panel stack" aria-labelledby="operational-requirement-coverage">
         <div className="panel-row">
           <div>
             <h2 id="operational-requirement-coverage">{copy(locale, "Operational requirement coverage", "تغطية المتطلبات التشغيلية")}</h2>
-            <p>{copy(locale, "All dashboard.xlsx operational measures are shown with their governed live or blocked state and auditable methodology.", "تُعرض جميع المقاييس التشغيلية في dashboard.xlsx بحالتها المباشرة أو المحجوبة المعتمدة ومنهجيتها القابلة للتدقيق.")}</p>
+            <p>{copy(locale, "Decision required: approved description pending.", "قرار مطلوب: الوصف المعتمد لم يُحدد بعد.")}</p>
           </div>
         </div>
-        <MetricStrip metrics={requirementStrip.metrics} methodology={requirementStrip.methodology} strings={requirementStripStrings} />
+        <div className="panel-body">
+          <MetricStrip metrics={requirementStrip.metrics} methodology={requirementStrip.methodology} strings={requirementStripStrings} />
+        </div>
       </section>
     </div>
   );

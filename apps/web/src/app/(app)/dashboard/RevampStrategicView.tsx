@@ -172,21 +172,25 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
 
       <section className="sq-grid-2">
         <article className="panel stack">
-          <h2>{copy(locale, "Enforcement action trend", "اتجاه إجراءات الإنفاذ")}</h2>
-          <div className="alert alert-warning">
-            <div>
-            <strong>{copy(locale, "Trend unavailable", "الاتجاه غير متاح")}</strong>
-            <p>{copy(locale, "The repository does not store a governed official violation issue date. No quarterly series is inferred.", "لا يخزن المستودع تاريخ إصدار رسمي معتمد للمخالفة. ولا تُستنتج سلسلة ربع سنوية.")}</p>
+          <div className="panel-body stack">
+            <h2>{copy(locale, "Enforcement action trend", "اتجاه إجراءات الإنفاذ")}</h2>
+            <div className="alert alert-warning">
+              <div>
+              <strong>{copy(locale, "Trend unavailable", "الاتجاه غير متاح")}</strong>
+              <p>{copy(locale, "The repository does not store a governed official violation issue date. No quarterly series is inferred.", "لا يخزن المستودع تاريخ إصدار رسمي معتمد للمخالفة. ولا تُستنتج سلسلة ربع سنوية.")}</p>
+              </div>
             </div>
+            <a className="btn btn-secondary" href="/enforcement-library">{copy(locale, "Open Enforcement Library", "فتح مكتبة الإنفاذ")}</a>
           </div>
-          <a className="btn btn-secondary" href="/enforcement-library">{copy(locale, "Open Enforcement Library", "فتح مكتبة الإنفاذ")}</a>
         </article>
         <article className="panel stack">
-          <span className="tl-meta">{copy(locale, "Executive AI brief", "موجز الذكاء الاصطناعي التنفيذي")}</span>
-          <h2>{copy(locale, "Provider output withheld", "تم حجب مخرجات المزود")}</h2>
-          <p>{copy(locale, "No generated claim is shown until a configured provider returns evidence-linked output for this scope.", "لا يُعرض أي ادعاء مولد حتى يعيد مزود مهيأ مخرجات مرتبطة بالأدلة لهذا النطاق.")}</p>
-          <span className="badge badge-pending">{copy(locale, "Not configured", "غير مهيأ")}</span>
-          <span className="tl-meta">{copy(locale, "Authoritative dashboard records remain available.", "تظل سجلات لوحة القيادة المعتمدة متاحة.")}</span>
+          <div className="panel-body stack">
+            <span className="tl-meta">{copy(locale, "Executive AI brief", "موجز الذكاء الاصطناعي التنفيذي")}</span>
+            <h2>{copy(locale, "Provider output withheld", "تم حجب مخرجات المزود")}</h2>
+            <p>{copy(locale, "No generated claim is shown until a configured provider returns evidence-linked output for this scope.", "لا يُعرض أي ادعاء مولد حتى يعيد مزود مهيأ مخرجات مرتبطة بالأدلة لهذا النطاق.")}</p>
+            <span className="badge badge-pending">{copy(locale, "Not configured", "غير مهيأ")}</span>
+            <span className="tl-meta">{copy(locale, "Authoritative dashboard records remain available.", "تظل سجلات لوحة القيادة المعتمدة متاحة.")}</span>
+          </div>
         </article>
       </section>
 
@@ -194,10 +198,12 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
         <div className="panel-row">
           <div>
             <h2 id="strategic-requirement-coverage">{copy(locale, "Strategic requirement coverage", "تغطية المتطلبات الاستراتيجية")}</h2>
-            <p>{copy(locale, "All dashboard.xlsx strategic measures are shown with their governed live or blocked state and auditable methodology.", "تُعرض جميع المقاييس الاستراتيجية في dashboard.xlsx بحالتها المباشرة أو المحجوبة المعتمدة ومنهجيتها القابلة للتدقيق.")}</p>
+            <p>{copy(locale, "Decision required: approved description pending.", "قرار مطلوب: الوصف المعتمد لم يُحدد بعد.")}</p>
           </div>
         </div>
-        <MetricStrip metrics={requirementStrip.metrics} methodology={requirementStrip.methodology} strings={requirementStripStrings} />
+        <div className="panel-body">
+          <MetricStrip metrics={requirementStrip.metrics} methodology={requirementStrip.methodology} strings={requirementStripStrings} />
+        </div>
       </section>
     </div>
   );
