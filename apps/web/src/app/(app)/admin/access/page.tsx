@@ -168,7 +168,6 @@ export default async function Access({
       title={t("admin.revamp.access.title", copy("Users & Roles", "المستخدمون والأدوار"))}
       subtitle={t("admin.revamp.access.subtitle", copy("Accounts, role assignment and access review", "الحسابات وتعيين الأدوار ومراجعة الوصول"))}
       hub={t("admin.revamp.hub.people", copy("People & access", "الأشخاص والوصول"))}
-      routeLabel="/admin/access"
       designId="frame-19-admin-users-roles"
       drawerLabels={drawerLabels}
       labels={{

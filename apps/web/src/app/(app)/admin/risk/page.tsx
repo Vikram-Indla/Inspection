@@ -62,7 +62,6 @@ export default async function RiskStudio() {
       title={t("admin.revamp.risk.title", copy("Risk Settings", "إعدادات المخاطر"))}
       subtitle={t("admin.revamp.risk.subtitle", copy("Risk factors, evaluation method and weighting", "عوامل المخاطر وطريقة التقييم والأوزان"))}
       hub={t("admin.revamp.hub.risk", copy("Risk & intelligence", "المخاطر والذكاء"))}
-      routeLabel="/admin/risk"
       designId="frame-21-admin-risk-configuration"
       drawerLabels={drawerLabels}
       labels={{

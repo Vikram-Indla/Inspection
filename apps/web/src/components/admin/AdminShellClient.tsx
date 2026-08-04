@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState, useTransition, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
 import SaqeelBrandMark from "@/components/SaqeelBrandMark";
 import ShellNavIcon from "@/components/ShellNavIcon";
 import ThemeToggle from "@/components/ThemeToggle";
 import { isShellRouteCurrent, type ShellIcon } from "@/lib/shell-navigation";
+import { initials } from "@/lib/shell-identity";
 import styles from "./admin-shell.module.css";
 
 type NavItem = {
@@ -37,10 +38,10 @@ const HUB_META: Record<string, { icon: ShellIcon }> = {
 export default function AdminShellClient({
   children,
   items,
-  locale,
+  locale: serverLocale,
   email,
+  displayName,
   roles,
-  languageLabel,
   bellStrings,
   labels,
 }: {
@@ -48,8 +49,8 @@ export default function AdminShellClient({
   items: NavItem[];
   locale: "ar" | "en";
   email: string;
+  displayName: string;
   roles: string[];
-  languageLabel: string;
   bellStrings: BellStrings;
   labels: {
     navigation: string;
@@ -71,15 +72,50 @@ export default function AdminShellClient({
     close: string;
     paletteTitle: string;
     noMatch: string;
+    language: string;
     hubs: Record<string, string>;
   };
 }) {
   const current = usePathname() || "/admin";
+  const router = useRouter();
+  const [languagePending, startLanguageTransition] = useTransition();
+  const [locale, setLocale] = useState(serverLocale);
   const [compact, setCompact] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [pendingHref, setPendingHref] = useState<string | null>(null);
   const paletteInput = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setLocale(serverLocale);
+  }, [serverLocale]);
+
+  // Matches ShellClient.switchLanguage exactly (INSP-732): client-side,
+  // optimistic, no full-page reload. AdminShellClient previously used a
+  // plain <a href="/locale?set=..."> anchor here, which read as a static
+  // label rather than a control and forced a document reload.
+  function switchLanguage(nextLocale: "en" | "ar") {
+    if (nextLocale === locale || languagePending) return;
+    const previousLocale = locale;
+    setLocale(nextLocale);
+    document.documentElement.lang = nextLocale;
+    document.documentElement.dir = nextLocale === "ar" ? "rtl" : "ltr";
+    startLanguageTransition(async () => {
+      try {
+        const response = await fetch("/locale", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ locale: nextLocale }),
+        });
+        if (!response.ok) throw new Error("locale update failed");
+        router.refresh();
+      } catch {
+        setLocale(previousLocale);
+        document.documentElement.lang = previousLocale;
+        document.documentElement.dir = previousLocale === "ar" ? "rtl" : "ltr";
+      }
+    });
+  }
 
   useEffect(() => {
     try { setCompact(localStorage.getItem("saqeel-admin-rail-compact") === "1"); } catch {}
@@ -123,7 +159,10 @@ export default function AdminShellClient({
   const paletteItems = hubs.flatMap(hub => hub.items.map(item => ({ item, hub }))).filter(({ item, hub }) =>
     `${item.label} ${hub.label}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()),
   );
-  const initials = email.split("@")[0]?.split(/[._-]+/).map(part => part[0]).join("").slice(0, 2).toUpperCase() || "A";
+  // INSP-735: previously derived a pseudo-name from the email local-part
+  // instead of the already-governed profile display name ShellClient already
+  // computes and now passes down.
+  const accountName = displayName || email.split("@")[0];
   const roleSummary = roles.map(role => role.replaceAll("_", " ")).join(" · ");
 
   function setRailCompact(value: boolean) {
@@ -188,19 +227,18 @@ export default function AdminShellClient({
           </button>
           <span className={styles.location}>{labels.administration}</span>
           <span className={styles.utilitySpacer} />
-          <Link
-            className={styles.language}
-            href={`/locale?set=${locale === "ar" ? "en" : "ar"}`}
-            hrefLang={locale === "ar" ? "en" : "ar"}
-          >
-            {languageLabel}
-          </Link>
+          <div className="seg" role="group" aria-label={labels.language}>
+            <button type="button" className="seg-opt" onClick={() => switchLanguage("en")}
+              aria-pressed={locale === "en"} disabled={languagePending} lang="en">EN</button>
+            <button type="button" className="seg-opt" onClick={() => switchLanguage("ar")}
+              aria-pressed={locale === "ar"} disabled={languagePending} lang="ar">ع</button>
+          </div>
           <ThemeToggle className={styles.utilityButton} labels={{ toLight: labels.light, toDark: labels.dark }} />
           <NotificationBell strings={bellStrings} locale={locale} fieldOnly={false} />
           <details className={styles.account}>
-            <summary aria-label={`${email.split("@")[0]} — ${roleSummary}`}>
-              <span className={styles.avatar} aria-hidden="true">{initials}</span>
-              <span className={styles.accountCopy}><strong>{email.split("@")[0]}</strong><small>{roleSummary}</small></span>
+            <summary aria-label={`${accountName} — ${roleSummary}`} title={email}>
+              <span className={styles.avatar} aria-hidden="true">{initials(accountName)}</span>
+              <span className={styles.accountCopy}><strong>{accountName}</strong><small>{roleSummary}</small></span>
             </summary>
             <div className={styles.accountMenu}>
               <Link href="/signout">{labels.signOut}</Link>

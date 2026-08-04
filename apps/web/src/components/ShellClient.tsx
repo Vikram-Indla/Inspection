@@ -17,6 +17,7 @@ import {
   type ShellGlobalSearchResultType,
   type ShellIcon,
 } from "@/lib/shell-navigation";
+import { initials } from "@/lib/shell-identity";
 
 export type ShellClientNavGroup = {
   id: string;
@@ -81,15 +82,6 @@ export type ShellClientStrings = {
 };
 
 const Icon = ShellNavIcon;
-
-// Initials come from the governed display name when one exists ("عبدالله محمد
-// القحطاني" -> "عم"), and only fall back to the email local-part when the
-// profile carries no name.
-function initials(label: string) {
-  const local = label.includes("@") ? label.split("@")[0] : label;
-  const parts = (local || "S").split(/[\s._-]+/).filter(Boolean);
-  return parts.slice(0, 2).map(part => part[0]?.toUpperCase()).join("") || "S";
-}
 
 type GlobalSearchResult = { id: string; type: ShellGlobalSearchResultType; label: string; detail: string; href: string };
 
@@ -411,7 +403,7 @@ export default function ShellClient({
   const adminPaletteResults = useMemo(() => {
     const normalized = adminPaletteQuery.trim().toLocaleLowerCase(locale);
     return groups
-      .filter(group => group.id.startsWith("admin-"))
+      .filter(group => group.id === "administration")
       .flatMap(group => group.items.map(item => ({ ...item, hubLabel: groupLabel(group) })))
       .filter(item =>
         !normalized
@@ -426,10 +418,16 @@ export default function ShellClient({
   }
 
   const routeScope = shellScopeForRoute(current);
+  // Normalized account chrome (INSP-735): name+role, matching the format
+  // AdminShellClient already used — the full email stays available via the
+  // title attribute and the account-menu detail row below, not as the
+  // primary visible label.
+  const accountName = displayName || email.split("@")[0];
+  const accountRoleSummary = (roleTitles.length ? roleTitles : roles).join(" · ");
 
   if (adminWorkspace) {
     const adminItems = groups
-      .filter(group => group.id.startsWith("admin-"))
+      .filter(group => group.id === "administration")
       .flatMap(group => group.items)
       .map(item => ({
         id: item.id,
@@ -444,8 +442,8 @@ export default function ShellClient({
         items={adminItems}
         locale={locale}
         email={email}
+        displayName={displayName}
         roles={roleTitles.length ? roleTitles : roles}
-        languageLabel={strings.admin.languageSwitch}
         bellStrings={bellStrings}
         labels={{
           navigation: strings.admin.navigation,
@@ -467,6 +465,7 @@ export default function ShellClient({
           close: strings.admin.close,
           paletteTitle: strings.admin.paletteTitle,
           noMatch: strings.admin.noMatch,
+          language: strings.language,
           hubs: strings.admin.hubs,
         }}
       >
@@ -597,7 +596,7 @@ export default function ShellClient({
   }
 
   function renderMobileAdminDiscovery() {
-    const adminGroups = groups.filter(group => group.id.startsWith("admin-"));
+    const adminGroups = groups.filter(group => group.id === "administration");
     const activeHub = adminGroups.find(group => group.id === activeMobileAdminHub);
     if (activeHub) {
       return (
@@ -793,11 +792,11 @@ export default function ShellClient({
                 </Link>
               ) : null}
               <div ref={accountRef} className="sq-shell-account">
-                <button className="sq-shell-account__trigger" type="button" aria-label={email} aria-expanded={accountOpen}
+                <button className="sq-shell-account__trigger" type="button" aria-label={`${accountName} — ${accountRoleSummary}`} aria-expanded={accountOpen}
                   title={email}
                   onClick={() => setAccountOpen(value => !value)}>
-                  <span className="sq-shell-account__avatar" aria-hidden="true">{initials(email)}</span>
-                  <span className="sq-shell-account__identity"><strong>{email}</strong><small aria-hidden="true" /></span>
+                  <span className="sq-shell-account__avatar" aria-hidden="true">{initials(displayName || email)}</span>
+                  <span className="sq-shell-account__identity"><strong>{accountName}</strong><small>{accountRoleSummary}</small></span>
                   <svg className="sq-shell-account__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
                 </button>
                 {accountOpen && accountMenuPos && typeof document !== "undefined" && createPortal(

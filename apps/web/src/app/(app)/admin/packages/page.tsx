@@ -308,7 +308,6 @@ export default async function Packages() {
       title={t("admin.revamp.survey.title", copy("Inspection Forms", "نماذج التفتيش"))}
       subtitle={t("admin.revamp.survey.subtitle", copy("Inspection forms, sections and response rules", "نماذج التفتيش والأقسام وقواعد الإجابة"))}
       hub={t("admin.revamp.hub.rules", copy("Rules & content", "القواعد والمحتوى"))}
-      routeLabel="/admin/packages"
       designId="frame-22-admin-survey-configuration"
       drawerLabels={drawerLabels}
       labels={{

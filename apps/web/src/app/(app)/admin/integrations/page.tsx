@@ -49,7 +49,6 @@ export default async function IntegrationsPage() {
       title={t("admin.revamp.integration.title", copy("System Connections", "اتصالات النظام"))}
       subtitle={t("admin.revamp.integration.subtitle", copy("External data sources and connected systems", "مصادر البيانات الخارجية والأنظمة المتصلة"))}
       hub={t("admin.revamp.hub.connections", copy("Connections & geography", "التكاملات والجغرافيا"))}
-      routeLabel="/admin/integrations"
       designId="frame-24-admin-integration-management"
       drawerLabels={drawerLabels}
       labels={{

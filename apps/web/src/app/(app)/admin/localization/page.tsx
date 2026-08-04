@@ -192,7 +192,6 @@ export default async function Localization() {
       title={t("admin.revamp.lookup.title", copy("Reference Lists", "القوائم المرجعية"))}
       subtitle={t("admin.revamp.lookup.subtitle", copy("Shared reference data used across the platform", "البيانات المرجعية المشتركة المستخدمة في المنصة"))}
       hub={t("admin.revamp.hub.rules", copy("Rules & content", "القواعد والمحتوى"))}
-      routeLabel="/admin/localization"
       designId="frame-20-admin-lookup-management"
       drawerLabels={drawerLabels}
       labels={{
