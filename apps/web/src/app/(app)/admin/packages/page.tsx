@@ -3,7 +3,7 @@ import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
 import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
-import { NewDraftForm, ApprovePublish, DeactivatePackage, type PublishStrings } from "./PublishControls";
+import { NewPackageForm, NewDraftForm, ApprovePublish, DeactivatePackage, type NewPackageStrings, type PublishStrings } from "./PublishControls";
 import DraftEditor, { type DraftEditorStrings } from "./DraftEditor";
 import PackagePreview, { type PreviewStrings, type PreviewItem } from "./PackagePreview";
 import ImpactPanel, { type ImpactStrings, type ImpactData, type ReferencingPackage, type DefinitionDiff } from "./ImpactPanel";
@@ -186,6 +186,19 @@ export default async function Packages() {
     published: t("admin.pkg.publish.published", "Version published. It can no longer be changed."),
     publishHint: t("admin.pkg.publish.hint", "Publishing rechecks item, evidence, condition, violation, penalty and action-form dependencies. The approver must be a different person from the creator (RBAC-002)."),
     effectiveTo: t("admin.pkg.deactivate.effectiveTo", "Effective to"), deactivationReason: t("admin.pkg.deactivate.reason", "Deactivation reason"), deactivate: t("admin.pkg.deactivate.action", "Deactivate version"), deactivating: t("admin.pkg.deactivate.working", "Deactivating…"), deactivated: t("admin.pkg.deactivate.done", "Package version deactivated"),
+  };
+  // INSP-747 / CC-ADMIN-PACKAGE-CREATION-20260805
+  const newPackageStrings: NewPackageStrings = {
+    heading: t("admin.pkg.create.heading", "Create a new package"),
+    codeLabel: t("admin.pkg.create.codeLabel", "Package code"),
+    codePlaceholder: t("admin.pkg.create.codePlaceholder", "Example: PKG-CHEM-001"),
+    titleLabel: t("admin.pkg.create.titleLabel", "Package title"),
+    titlePlaceholder: t("admin.pkg.create.titlePlaceholder", "Example: Chemical Storage Inspection"),
+    scopeLabel: t("admin.pkg.create.scopeLabel", "Scope (optional)"),
+    scopePlaceholder: t("admin.pkg.create.scopePlaceholder", "Example: Chemical facilities"),
+    create: t("admin.pkg.create.create", "Create package"),
+    creating: t("admin.pkg.newDraft.creating", "Creating…"),
+    created: t("admin.pkg.create.created", "Package created"),
   };
   const editorStrings: DraftEditorStrings = {
     heading: t("admin.pkg.editor.heading", "Package designer"),
@@ -403,12 +416,20 @@ export default async function Packages() {
           </section>
         )}
 
+        {/* INSP-747 / CC-ADMIN-PACKAGE-CREATION-20260805 — always rendered
+            for a writer, regardless of whether the list is empty, so
+            creation is available exactly where the read-only banner above
+            explains its absence for non-writers. */}
+        {!packageUnavailable && canWrite && <NewPackageForm strings={newPackageStrings} />}
+
         {!packageUnavailable && pkgs.length === 0 && (
           <section className={`panel ${styles.emptyState}`}>
             <div className="saqeel-state">
               <span className="saqeel-state__glyph" aria-hidden="true">▦</span>
               <h3>{t("admin.pkg.empty.title", "No packages configured")}</h3>
-              <p className="t-caption">{t("admin.pkg.empty.body", "We found no packages. This page doesn’t support creating new packages, so there’s no create button here.")}</p>
+              <p className="t-caption">{canWrite
+                ? t("admin.pkg.empty.bodyReady", "No packages exist yet. Create one above.")
+                : t("admin.pkg.empty.bodyReadOnly", "No packages exist yet. Creating one needs write access.")}</p>
             </div>
           </section>
         )}
