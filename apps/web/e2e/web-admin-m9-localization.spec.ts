@@ -51,6 +51,46 @@ function watchBrowserHealth(page: Page) {
 }
 
 test.describe("WA-M9-AC-001/004/005 source and governance contracts", () => {
+  test("INSP-720 keeps the exact Planner Decision-required catalogue honest and replay-safe", () => {
+    const migration = source("../../supabase/migrations/20260802100000_planner_supervision_localization_catalog.sql");
+    const designLedger = source("../../docs/design/figma/handoff/FIGMA-CODE-PARITY-LEDGER-2026-08-02.md");
+    const nullArabicKeys = [...migration.matchAll(/\('([^']+)',\s*'(?:''|[^'])*',\s*null,\s*'draft'/g)]
+      .map(match => match[1]);
+
+    expect(nullArabicKeys).toEqual([
+      "plan.home.tasksLink",
+      "plan.supervision.title",
+      "plan.supervision.unavailable.title",
+      "plan.supervision.unavailable.body",
+      "plan.supervision.denied.title",
+      "plan.supervision.denied.body",
+      "plan.supervision.empty",
+      "plan.supervision.requestLabel",
+      "plan.supervision.awaiting",
+      "plan.supervision.newVisit",
+      "plan.supervision.pending",
+      "plan.supervision.factory",
+      "plan.supervision.visitType",
+      "plan.supervision.window",
+      "plan.supervision.submitted",
+      "plan.supervision.finalInspector",
+      "plan.supervision.selectInspector",
+      "plan.supervision.noteOptional",
+      "plan.supervision.noteRequired",
+      "plan.supervision.approve",
+      "plan.supervision.releasing",
+      "plan.supervision.return",
+      "plan.supervision.reject",
+      "plan.supervision.actionRequired",
+    ]);
+    expect(designLedger).toContain("**AR blocked**: this route has zero");
+    expect(designLedger).toContain("no Arabic copy was invented");
+    expect(migration).toContain("set app.l10n_source = 'sync'");
+    expect(migration).toContain("public.ui_strings.en is distinct from excluded.en");
+    expect(migration).toContain("public.ui_strings.context is distinct from excluded.context");
+    expect(migration).toContain("public.ui_strings.orphaned is distinct from false");
+  });
+
   test("INSP-720 source sync inventories literal, bilingual helper and manifest keys", () => {
     const fixture = mkdtempSync(join(tmpdir(), "insp-720-i18n-"));
     try {
