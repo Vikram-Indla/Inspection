@@ -37,19 +37,13 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
   // M02-016 expiry is owned by pg_cron sweep expire_lapsed_visits_scheduled
   // (0025, every 15 min, unscoped); boards render display-level 'expired' for
   // lapsed windows in between ticks. No per-page-load mutating RPC (K-009).
-  const [{ data: visits, error, count }, { data: inspRows }] = await Promise.all([
-    sb.from("visits")
+  const { data: visits, error, count } = await sb.from("visits")
       .select(`id, visit_type, execution_mode, planning_status, operational_state, window_start, window_end, visit_plan_id,
         factories(name, factory_code, cr_number, license_number, region, city),
         visit_plans(method),
         assignments(profiles(full_name)),
         inspections(status)`, { count: "exact" })
-      .order("window_start", { ascending: true }).limit(limit),
-    // ENG-05 — inspector pool for bulk reassign (disambiguated embed, detail-page canon)
-    sb.from("profiles")
-      .select("user_id, full_name, user_roles!user_roles_user_id_fkey!inner(role_key)")
-      .eq("user_roles.role_key", "inspector").order("full_name"),
-  ]);
+      .order("window_start", { ascending: true }).limit(limit);
   if (error) {
     // CD-026 query-degraded — neutralise the provider error: raw Supabase/PostgREST
     // text is logged server-side only; the user sees stable neutral copy (no raw message).
@@ -60,7 +54,22 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
       </Shell>
     );
   }
-  const inspectors = (inspRows ?? []).map(r => ({ user_id: r.user_id as string, full_name: r.full_name as string }));
+  const rosterVisitIds = (visits ?? []).map(v => v.id as string);
+  const rosterChunks = Array.from({ length: Math.ceil(rosterVisitIds.length / 100) }, (_, i) => rosterVisitIds.slice(i * 100, i * 100 + 100));
+  const rosterResults = await Promise.all(rosterChunks.map(p_visit_ids =>
+    sb.rpc("list_available_reassignment_inspectors", { p_visit_ids })));
+  for (const result of rosterResults) {
+    if (result.error) console.error(`[visits.reassignment-roster] load failed: ${result.error.message}`);
+  }
+  const rosterRows = rosterResults.flatMap(result => result.data ?? []);
+  const rosterByInspector = new Map<string, { user_id: string; full_name: string; eligible_visit_ids: string[] }>();
+  for (const row of rosterRows ?? []) {
+    const inspectorId = row.inspector_id as string;
+    const entry = rosterByInspector.get(inspectorId) ?? { user_id: inspectorId, full_name: row.full_name as string, eligible_visit_ids: [] };
+    entry.eligible_visit_ids.push(row.visit_id as string);
+    rosterByInspector.set(inspectorId, entry);
+  }
+  const inspectors = [...rosterByInspector.values()];
   const rows: VisitRow[] = ((visits ?? []) as unknown as Joined[]).map(v => {
     const asg = v.assignments?.[0];
     return {
