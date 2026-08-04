@@ -107,6 +107,23 @@ function stripStrings(locale: Locale): MetricStripStrings {
   };
 }
 
+// Operational-View-only disclosure strings for the requirement coverage strip.
+// "Methodology" and "Governed boundary" name their own internal governance
+// process rather than telling the reader what the control does; the CTA now
+// states the destination ("how this is calculated") and the blocked-state
+// heading answers the question its own trigger button asked ("Why
+// unavailable?" -> "Why this is unavailable"). The underlying formula/
+// numerator/denominator/policy rows and the blocked-reason text are
+// unchanged — only the entry-point labels move to business language.
+// Strategic View keeps stripStrings() untouched (Fixes 2 scope).
+function operationalRequirementStripStrings(locale: Locale): MetricStripStrings {
+  return {
+    ...stripStrings(locale),
+    methodology: copy(locale, "How this is calculated", "طريقة الاحتساب"),
+    blockedTitle: copy(locale, "Why this is unavailable", "سبب عدم التوفر"),
+  };
+}
+
 export function RoleDashboardSummary({ locale, persona, projection, partialSources }: {
   locale: Locale;
   persona: DashboardPersona;
@@ -528,7 +545,7 @@ export function OperationalView({ locale, metrics, projection, factoryCoords, pa
     partialSources,
   );
   return <RevampOperationalView locale={locale} metrics={metrics}
-    requirementStrip={requirementStrip} requirementStripStrings={stripStrings(locale)} />;
+    requirementStrip={requirementStrip} requirementStripStrings={operationalRequirementStripStrings(locale)} />;
 
   const operational = metrics.operational;
   const headlineIds = ["OPS-KPI-003", "OPS-KPI-002", "OPS-KPI-004", "OPS-KPI-007"];

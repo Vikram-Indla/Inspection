@@ -124,7 +124,7 @@ export default function RevampOperationalView({ locale, metrics, requirementStri
         <div className="panel-row">
           <div>
             <h2 id="operational-requirement-coverage">{copy(locale, "Operational requirement coverage", "تغطية المتطلبات التشغيلية")}</h2>
-            <p>{copy(locale, "Decision required: approved description pending.", "قرار مطلوب: الوصف المعتمد لم يُحدد بعد.")}</p>
+            <p>{copy(locale, "Every governed operational measure, shown with its current live or blocked state.", "كل مقياس تشغيلي معتمد، معروض بحالته الحالية سواء كانت مباشرة أو محجوبة.")}</p>
           </div>
         </div>
         <div className="panel-body">
