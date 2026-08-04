@@ -11,6 +11,30 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 SRC = ROOT / "apps/web/src"
 PROJECT = "iiozvqntawxfwbgffzqu"
 
+LITERAL_CALL = re.compile(r'\bt\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"')
+BILINGUAL_CALLS = (
+    re.compile(r'\bt\(\s*"([^"]+)"\s*,\s*copy\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"(?:[^"\\]|\\.)*"\s*\)\s*\)', re.S),
+    re.compile(r'\btr\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*,\s*"(?:[^"\\]|\\.)*"\s*\)', re.S),
+)
+
+def extract_source_pairs(source: str, governed_keys: set[str]) -> dict[str, str]:
+    """Extract only calls whose first argument is an accepted registry key."""
+    pairs: dict[str, str] = {}
+    for pattern in (LITERAL_CALL, *BILINGUAL_CALLS):
+        for match in pattern.finditer(source):
+            if match.group(1) in governed_keys:
+                pairs[match.group(1)] = match.group(2).replace('\\"', '"').replace('\\n', '\n')
+    return pairs
+
+def scan_source_tree(src: pathlib.Path, governed_rows: dict[str, str]) -> dict[str, str]:
+    governed_keys = set(governed_rows)
+    pairs = dict(governed_rows)
+    for source_file in src.rglob("*.ts*"):
+        # Calls establish that an accepted key is used. They do not authorize
+        # fallback text to overwrite catalogue English or reviewed Arabic.
+        extract_source_pairs(source_file.read_text(), governed_keys)
+    return pairs
+
 def q(pat: str, sql: str):
     req = urllib.request.Request(f"https://api.supabase.com/v1/projects/{PROJECT}/database/query",
         data=json.dumps({"query": sql}).encode(), method="POST",
@@ -24,11 +48,8 @@ def main() -> int:
     pat = os.environ.get("PAT")
     if not pat:
         print("PAT env var required"); return 1
-    code: dict[str, str] = {}
-    for f in SRC.rglob("*.ts*"):
-        for m in re.finditer(r't\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"', f.read_text()):
-            code[m.group(1)] = m.group(2).replace('\\"', '"')
     db = {r["key"]: r for r in q(pat, "select key, en, orphaned from ui_strings")}
+    code = scan_source_tree(SRC, {key: row["en"] for key, row in db.items()})
 
     inserts = {k: v for k, v in code.items() if k not in db}
     en_updates = {k: v for k, v in code.items() if k in db and db[k]["en"] != v}

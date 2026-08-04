@@ -188,6 +188,11 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const [findings, setFindings] = useState<Record<string, FindingDraft>>(() => Object.fromEntries(serverFindings.filter(f => !!f.item_id).map(f =>
     [f.item_id!, { id: f.id, description: f.description, severity: f.severity, state: "saved" as const }])));
   const [queuedEv, setQueuedEv] = useState([] as QueuedEvidence[]);
+  // INSP-714 — server props do not change when the browser outbox replays.
+  // Keep an RLS-refreshed client copy so a successfully uploaded mandatory
+  // item remains counted after its queued operation is removed.
+  const [syncedEvidence, setSyncedEvidence] = useState(serverEvidence);
+  useEffect(() => { setSyncedEvidence(serverEvidence); }, [serverEvidence]);
   // SCR-IPAD-630 — item ids whose finding op is still in the canonical outbox
   // (unsynced). Authoritative source of the per-finding "pending" state and of
   // the submit gate; refreshed from the outbox on every sync tick.
@@ -391,14 +396,40 @@ export default function Workspace({ inspection, items, library, serverResponses,
     for (const o of ops) if (o.kind === "finding" && o.inspection_id === inspection.id) fids.add(o.item_id);
     setQueuedFindingItems(fids);
   }, [inspection.id]);
+  const refreshSyncedEvidence = useCallback(async () => {
+    if (!navigator.onLine) return;
+    const sb = supabaseBrowser();
+    const projection = "id, linked_type, linked_id, evidence_type, storage_path, captured_at, content_sha256, archived_at, superseded_by, deleted_at";
+    const [inspectionRows, visitRows] = await Promise.all([
+      sb.from("evidence").select(projection).eq("inspection_id", inspection.id),
+      sb.from("evidence").select(projection).eq("visit_id", inspection.visit_id),
+    ]);
+    if (inspectionRows.error || visitRows.error) {
+      console.error("[field workspace evidence refresh]", inspectionRows.error?.message ?? visitRows.error?.message);
+      router.refresh();
+      return;
+    }
+    const rows = [...(inspectionRows.data ?? []), ...(visitRows.data ?? [])] as SEv[];
+    setSyncedEvidence(rows.filter((row, index, all) => all.findIndex(candidate => candidate.id === row.id) === index));
+  }, [inspection.id, inspection.visit_id, router]);
+  const replayAndRefresh = useCallback(async () => {
+    await processOutbox(userId, onState);
+    await Promise.all([refreshQueued(), refreshSyncedEvidence()]);
+    flushRef.current();
+  }, [onState, refreshQueued, refreshSyncedEvidence, userId]);
   useEffect(() => {
-    const tick = () => { processOutbox(userId, onState); refreshQueued(); flushRef.current(); };
+    let running = false;
+    const tick = () => {
+      if (running) return;
+      running = true;
+      void replayAndRefresh().finally(() => { running = false; });
+    };
     tick();
     const goOffline = () => onState("offline");
     window.addEventListener("online", tick); window.addEventListener("offline", goOffline);
     const iv = setInterval(tick, 8000);
     return () => { clearInterval(iv); window.removeEventListener("online", tick); window.removeEventListener("offline", goOffline); };
-  }, [onState, refreshQueued, userId]);
+  }, [onState, replayAndRefresh]);
 
   // Reconnect stale-version guard: re-read the server inspection's status +
   // latest submission version and compare to what this device loaded. Runs on
@@ -485,7 +516,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
     const description = findingsRef.current[item.id]?.description ?? "";
     await queueFinding(item, code, description);
     if (!description.trim()) { setMsg(strings.findingRequired); return; }
-    processOutbox(userId, onState);
+    await replayAndRefresh();
     setMsg(navigator.onLine ? strings.findingPending : strings.findingPending);
   }
   /** A finding's effective state is derived from the outbox: still-queued →
@@ -711,9 +742,9 @@ export default function Workspace({ inspection, items, library, serverResponses,
     } else {
       setMsg(fmt(strings.evidenceQueued, { code: item.code, sha: sha.slice(0, 12) }));
     }
-    await refreshQueued();
-    processOutbox(userId, onState);
-    flushMedia();
+    await replayAndRefresh();
+    await flushMedia();
+    await refreshSyncedEvidence();
   }
   async function attachFiles(item: Item, files: FileList, replaceId?: string) {
     const rule = evidenceLeg(item, answersRef.current[item.id]?.value) ?? { type: item.evidence_rule?.type ?? "photo", applies: true, mandatory: false, min: 1 };
@@ -786,7 +817,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
     const o = evState[e.id];
     return !e.deleted_at && !e.archived_at && !o?.deleted && !o?.archived;
   }, [evState]);
-  const activeEvidence = useMemo(() => serverEvidence.filter(isActiveEv), [serverEvidence, isActiveEv]);
+  const activeEvidence = useMemo(() => syncedEvidence.filter(isActiveEv), [syncedEvidence, isActiveEv]);
   const evidencePerItem = useMemo(() => {
     const m: Record<string, Record<string, number>> = {};
     const add = (itemId: string, type: string) => {
@@ -871,8 +902,8 @@ export default function Workspace({ inspection, items, library, serverResponses,
   }, [sections, allMap, itemStates, runtimeCtx, answers, liveBlockers]);
   const retryUploads = useCallback(() => {
     setRetrying(true);
-    Promise.resolve(processOutbox(userId, onState)).finally(() => { refreshQueued(); setRetrying(false); });
-  }, [userId, onState, refreshQueued]);
+    void replayAndRefresh().finally(() => { setRetrying(false); });
+  }, [replayAndRefresh]);
   // §15 — actively deselected items stay visible in a collapsed audit list
   // with their reason; restore is available before submit.
   const deselectedItems = useMemo(() => Object.entries(itemStates)
@@ -1203,7 +1234,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
         <span className="row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
           <span className={`badge ${tone}`}><span className="dot" />{strings.sync[sync]}{detail ? ` · ${detail}` : ""}</span>
           {sync === "failed" && (
-            <button type="button" className="btn btn-ghost btn-sm" onClick={() => processOutbox(userId, onState)}>{strings.retryNow}</button>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => void replayAndRefresh()}>{strings.retryNow}</button>
           )}
         </span>
         <span className="row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
@@ -1796,7 +1827,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
                         : strings.findingPending}
                     </span>
                     {findingStatus(v.itemId) === "pending" && (
-                      <button type="button" className="btn btn-secondary btn-sm" onClick={() => processOutbox(userId, onState)}>{strings.findingRetry}</button>
+                      <button type="button" className="btn btn-secondary btn-sm" onClick={() => void replayAndRefresh()}>{strings.findingRetry}</button>
                     )}
                   </div>
                 </div>

@@ -37,6 +37,27 @@ const FIELD_AR_FALLBACK: Record<string, string> = {
   "field.ws.sync.synced": "متزامن",
 };
 
+// INSP-717 — reviewed copy for the governed reports index. Live ui_strings
+// values retain precedence over these environment-safe fallbacks.
+const REPORTS_AR_FALLBACK: Record<string, string> = {
+  "reports.title": "التقارير",
+  "reports.desc": "تقارير التفتيش المحكومة المرئية وفق دورك ونطاق بياناتك.",
+  "reports.source.available": "المصدر متاح",
+  "reports.source.degraded": "المصدر متعطل جزئياً",
+  "reports.source.degraded.body": "تعذر تحميل تقارير التفتيش. لا يتم استنتاج أي سجلات، وتظل الأسطح المحكومة الأخرى متاحة.",
+  "reports.analytics": "التحليلات",
+  "reports.reviews": "قائمة المراجعة",
+  "reports.inspections.title": "تقارير التفتيش",
+  "reports.inspections.desc": "افتح سجل التفتيش الرسمي وتتبّع حالته ومصدره.",
+  "reports.inspections.empty": "لا توجد تقارير تفتيش مرئية ضمن نطاقك.",
+  "reports.table.inspection": "التفتيش",
+  "reports.table.establishment": "المنشأة",
+  "reports.table.started": "تاريخ البدء",
+  "reports.table.status": "الحالة",
+  "reports.table.action": "الإجراء",
+  "reports.open": "فتح التقرير",
+};
+
 export type Locale = "en" | "ar";
 export type Dict = Record<string, string>;
 
@@ -170,7 +191,7 @@ export async function getDict(locale: Locale): Promise<Dict> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !supabaseAnonKey) {
-    return { ...MVP3_AR_FALLBACK, ...FACTORY360_AR_FALLBACK, ...VIRTUAL_AR_FALLBACK, ...PLAN_MAP_AR_FALLBACK, ...FIELD_AR_FALLBACK };
+    return { ...MVP3_AR_FALLBACK, ...FACTORY360_AR_FALLBACK, ...VIRTUAL_AR_FALLBACK, ...PLAN_MAP_AR_FALLBACK, ...FIELD_AR_FALLBACK, ...REPORTS_AR_FALLBACK };
   }
   // anon client: ui_strings is world-readable; avoids per-request cookie plumbing
   const sb = createClient(supabaseUrl, supabaseAnonKey);
@@ -193,6 +214,7 @@ export async function getDict(locale: Locale): Promise<Dict> {
     ...VIRTUAL_AR_FALLBACK,
     ...PLAN_MAP_AR_FALLBACK,
     ...FIELD_AR_FALLBACK,
+    ...REPORTS_AR_FALLBACK,
     ...dict,
   };
   cache = { at: Date.now(), dict: complete };

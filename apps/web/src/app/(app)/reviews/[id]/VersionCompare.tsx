@@ -295,23 +295,25 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
         [strings.actionCollection, actionDiff],
       ] as const).map(([label, diff]) => !diff || diff.empty ? null : (
         <div key={label} className="panel">
-          <div>
-            <span>{label}</span>
-            <span className="badge">
-              {diff.added.length} {strings.added} · {diff.removed.length} {strings.removed} · {diff.changed.length} {strings.changed}
-            </span>
+          <div className="panel-body stack">
+            <div>
+              <span>{label}</span>
+              <span className="badge">
+                {diff.added.length} {strings.added} · {diff.removed.length} {strings.removed} · {diff.changed.length} {strings.changed}
+              </span>
+            </div>
+            <ul className="stack">
+              {diff.items.map(item => (
+                <li key={`${item.kind}:${item.id}`}>
+                  <span className={`badge ${item.kind === "added" ? "badge-success" : item.kind === "removed" ? "badge-critical" : "badge-warning"}`}>
+                    {item.kind === "added" ? strings.added : item.kind === "removed" ? strings.removed : strings.changed}
+                  </span>
+                  <span>{item.id}</span>
+                  {item.kind === "changed" && <span className="t-caption">current → proposed</span>}
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="stack">
-            {diff.items.map(item => (
-              <li key={`${item.kind}:${item.id}`}>
-                <span className={`badge ${item.kind === "added" ? "badge-success" : item.kind === "removed" ? "badge-critical" : "badge-warning"}`}>
-                  {item.kind === "added" ? strings.added : item.kind === "removed" ? strings.removed : strings.changed}
-                </span>
-                <span>{item.id}</span>
-                {item.kind === "changed" && <span className="t-caption">current → proposed</span>}
-              </li>
-            ))}
-          </ul>
         </div>
       ))}
       <div className="panel panel-body">

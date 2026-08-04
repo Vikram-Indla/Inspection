@@ -24,7 +24,7 @@ export async function requireConfigurationWriter(): Promise<
   }
 
   const roles = Array.from(new Set((rows ?? []).map(row => row.role_key)));
-  if (!roles.some(role => role === "admin")) {
+  if (!roles.some(role => role === "admin" || role === "compliance_admin" || role === "form_admin")) {
     return { ok: false, message: "You do not have permission to change configuration." };
   }
   return { ok: true, userId: user.id, roles };

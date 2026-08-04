@@ -102,7 +102,8 @@ export default async function DelegationJourney({
   const dateRange = (row: DelegationRow) => formatDateRange(row.starts_at, row.ends_at, locale);
 
   const renderRow = (row: DelegationRow, showRevoke: boolean) => (
-    <article className="panel" key={row.id} style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+    <article className="panel" key={row.id}>
+      <div className="panel-body stack">
       <header className="row" style={{ justifyContent: "space-between" }}>
         <div>
           <p className="sq-overline">{row.scope}</p>
@@ -118,6 +119,7 @@ export default async function DelegationJourney({
         {row.revoked_at && <div><dt>{copy.revokedNote}</dt><dd className="numeric">{formatDate(row.revoked_at, locale)} — {row.revoked_reason}</dd></div>}
       </dl>
       {showRevoke && effectiveStatus(row) === "active" && <RevokeDelegationForm delegationId={row.id} strings={strings} />}
+      </div>
     </article>
   );
 
