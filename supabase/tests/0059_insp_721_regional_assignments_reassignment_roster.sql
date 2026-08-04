@@ -62,8 +62,18 @@ do $$ begin
    ('72100000-0000-4000-8000-000000000040','72100000-0000-4000-8000-000000000041'))<>1 then
    raise exception 'INSP-721 regional Supervisor scope failed'; end if;
  if (select count(*) from public.list_available_reassignment_inspectors(
-   array['72100000-0000-4000-8000-000000000030'::uuid]))<>1 then
-   raise exception 'INSP-721 same-region roster failed'; end if;
+   array['72100000-0000-4000-8000-000000000030'::uuid]) r
+   where r.visit_id='72100000-0000-4000-8000-000000000030'
+     and r.inspector_id='72100000-0000-4000-8000-000000000004')<>1 then
+   raise exception 'INSP-721 controlled same-region Inspector inclusion failed'; end if;
+ if exists (
+   select r.visit_id,r.inspector_id
+   from public.list_available_reassignment_inspectors(
+     array['72100000-0000-4000-8000-000000000030'::uuid]) r
+   group by r.visit_id,r.inspector_id
+   having count(*)>1
+ ) then
+   raise exception 'INSP-721 roster returned duplicate inspector/visit rows'; end if;
  begin
    perform * from public.list_available_reassignment_inspectors(
      array['72100000-0000-4000-8000-000000000031'::uuid]);

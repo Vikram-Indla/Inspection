@@ -38,3 +38,11 @@ test("INSP-721 reassignment mutation reuses overlap eligibility and remains audi
   expect(mutation).toContain("insert into public.audit_events");
   expect(mutation).toContain("'PLANNING_VISIT_' || upper(p_operation)");
 });
+
+test("INSP-721 SQL roster proof is isolated from populated cohorts", () => {
+  const testSql = read("supabase/tests/0059_insp_721_regional_assignments_reassignment_roster.sql");
+  expect(testSql).toContain("r.inspector_id='72100000-0000-4000-8000-000000000004'");
+  expect(testSql).toContain("group by r.visit_id,r.inspector_id");
+  expect(testSql).toContain("having count(*)>1");
+  expect(testSql).not.toContain("INSP-721 same-region roster failed");
+});
