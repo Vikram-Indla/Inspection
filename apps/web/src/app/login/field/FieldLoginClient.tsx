@@ -555,20 +555,14 @@ export default function FieldLoginClient({
           </button>
         </div>}
         <div className="fl-foot-row">
+          {/* INSP-746 — the DC's "Last sync 08:41" is a fact about a
+              signed-in device; before authentication there is no sync
+              history to report. This chip used to restate connectivity
+              instead of inventing a timestamp, but the top utility row
+              (fl-top, above) already states that same fact once. Removed
+              the repeat rather than leaving "Online"/"Offline" on screen
+              twice. */}
           <span className="t-caption">{s.copyright}</span>
-          {/* The DC's "Last sync 08:41" is a fact about a signed-in device.
-              Before authentication there is no sync history to report, so the
-              chip states connectivity instead of inventing a timestamp. */}
-          <span className="t-caption fl-sync">
-            {/* The dot states the same connectivity fact as the label beside
-                it — an offline device must never show a compliant indicator. */}
-            <span
-              className={`fl-sync-dot ${online ? "fl-sync-dot-online" : "fl-sync-dot-offline"}`}
-              data-online={online ? "true" : "false"}
-              aria-hidden="true"
-            />
-            {netLabel}
-          </span>
         </div>
       </div>
     </main>
