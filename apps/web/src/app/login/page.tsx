@@ -120,7 +120,7 @@ export default async function Login({ searchParams }: {
     // Login v2: the panel is the platform, not "the Saqeel atlas". The product
     // name already sits on the credential card beside it, so repeating it here
     // read as branding twice and called the panel by its mechanism.
-    title: ar ? "منصة التفتيش الصناعي" : "Industrial inspection platform",
+    title: ar ? "منصة التفتيش الصناعي" : "Industrial Inspection Platform",
     overline: ar ? "رحلة تفتيش واحدة · من البداية إلى النهاية" : "ONE VISIT · END TO END",
     riyadhLabel: ar ? "الرياض · مسيّجة جغرافيًا" : "RIYADH · GEOFENCED",
     stagesLabel: ar ? "مشاهد قصة التفتيش" : "Inspection story scenes",
