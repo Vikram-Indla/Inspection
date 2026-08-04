@@ -33,89 +33,69 @@ export default function RevampOperationalView({ locale, metrics, requirementStri
   requirementStripStrings: MetricStripStrings;
 }) {
   const operational = metrics.operational;
-  const blocks = [
+  const todaysOperations = [
     {
-      label: copy(locale, "Today's operations", "عمليات اليوم"),
-      metrics: [
-        {
-          question: copy(locale, "What needs to be executed today?", "ما الذي يجب تنفيذه اليوم؟"),
-          title: copy(locale, "Today's planned visits", "زيارات اليوم المخططة"),
-          value: String(operational.todayVisits.length),
-          definition: copy(locale, "Count of visits scheduled for today", "عدد الزيارات المجدولة لليوم"),
-          href: "/execution",
-          action: copy(locale, "Open Execution", "فتح التنفيذ"),
-        },
-        {
-          question: copy(locale, "How much work has been completed today?", "ما مقدار العمل المكتمل اليوم؟"),
-          title: copy(locale, "Today's visit completion rate", "معدل إكمال زيارات اليوم"),
-          value: operational.todayCompletionRate == null ? copy(locale, "Unavailable", "غير متاح") : `${operational.todayCompletionRate}%`,
-          definition: copy(locale, "(Completed visits today ÷ planned visits today) × 100", "(زيارات اليوم المكتملة ÷ زيارات اليوم المخططة) × 100"),
-          href: "/execution",
-          action: copy(locale, "Open Execution", "فتح التنفيذ"),
-        },
-      ],
+      question: copy(locale, "What needs to be executed today?", "ما الذي يجب تنفيذه اليوم؟"),
+      title: copy(locale, "Today's planned visits", "زيارات اليوم المخططة"),
+      value: String(operational.todayVisits.length),
+      definition: copy(locale, "Count of visits scheduled for today", "عدد الزيارات المجدولة لليوم"),
+      href: "/execution",
+      action: copy(locale, "Open Execution", "فتح التنفيذ"),
     },
     {
-      label: copy(locale, "Execution status", "حالة التنفيذ"),
-      metrics: [
-        {
-          question: copy(locale, "What inspections are currently active?", "ما التفتيشات النشطة حالياً؟"),
-          title: copy(locale, "Active field inspections", "التفتيشات الميدانية النشطة"),
-          value: String(operational.activeField),
-          definition: copy(locale, "Count of inspections with operational state = executing", "عدد التفتيشات التي تكون حالتها التشغيلية = قيد التنفيذ"),
-          href: "/operations",
-          action: copy(locale, "Open Operations Center", "فتح مركز العمليات"),
-        },
-        {
-          question: copy(locale, "Which visits are delayed?", "ما الزيارات المتأخرة؟"),
-          title: copy(locale, "Overdue planned visits", "الزيارات المخططة المتأخرة"),
-          value: String(operational.overdueRows.length),
-          definition: copy(locale, "Planned date earlier than today and status not completed or cancelled", "تاريخ مخطط يسبق اليوم والحالة ليست مكتملة أو ملغاة"),
-          href: "/planning",
-          action: copy(locale, "Open Planning", "فتح التخطيط"),
-        },
-      ],
+      question: copy(locale, "How much work has been completed today?", "ما مقدار العمل المكتمل اليوم؟"),
+      title: copy(locale, "Today's visit completion rate", "معدل إكمال زيارات اليوم"),
+      value: operational.todayCompletionRate == null ? copy(locale, "Unavailable", "غير متاح") : `${operational.todayCompletionRate}%`,
+      definition: copy(locale, "(Completed visits today ÷ planned visits today) × 100", "(زيارات اليوم المكتملة ÷ زيارات اليوم المخططة) × 100"),
+      href: "/execution",
+      action: copy(locale, "Open Execution", "فتح التنفيذ"),
     },
     {
-      label: copy(locale, "Approvals", "الاعتمادات"),
-      metrics: [
-        {
-          question: copy(locale, "Which inspection reports require review?", "ما تقارير التفتيش التي تتطلب المراجعة؟"),
-          title: copy(locale, "Inspection reports awaiting approval", "تقارير التفتيش بانتظار الاعتماد"),
-          value: String(operational.pendingApprovalsCount),
-          definition: copy(locale, "Count of submitted reports awaiting a review decision", "عدد التقارير المقدمة بانتظار قرار المراجعة"),
-          href: "/reviews",
-          action: copy(locale, "Open Review & Approval", "فتح المراجعة والاعتماد"),
-        },
-        {
-          question: copy(locale, "Which inspections require rework?", "ما التفتيشات التي تتطلب إعادة عمل؟"),
-          title: copy(locale, "Returned inspection reports", "تقارير التفتيش المعادة"),
-          value: String(operational.returnedRows.length),
-          definition: copy(locale, "Count of reports returned to inspectors", "عدد التقارير المعادة إلى المفتشين"),
-          href: "/execution",
-          action: copy(locale, "Open Execution", "فتح التنفيذ"),
-        },
-      ],
+      question: copy(locale, "What inspections are currently active?", "ما التفتيشات النشطة حالياً؟"),
+      title: copy(locale, "Active field inspections", "التفتيشات الميدانية النشطة"),
+      value: String(operational.activeField),
+      definition: copy(locale, "Count of inspections with operational state = executing", "عدد التفتيشات التي تكون حالتها التشغيلية = قيد التنفيذ"),
+      href: "/operations",
+      action: copy(locale, "Open Operations Center", "فتح مركز العمليات"),
     },
     {
-      label: copy(locale, "Operational exceptions", "الاستثناءات التشغيلية"),
-      metrics: [
-        {
-          question: copy(locale, "Which factories should be inspected next?", "ما المصانع التي يجب تفتيشها تالياً؟"),
-          title: copy(locale, "High-priority visits pending execution", "الزيارات عالية الأولوية بانتظار التنفيذ"),
-          value: String(operational.highPriorityRows.length),
-          definition: copy(locale, "Planned visits at high or critical risk, not yet executed", "زيارات مخططة بمخاطر عالية أو حرجة لم تُنفذ بعد"),
-          href: "/planning",
-          action: copy(locale, "Open Planning", "فتح التخطيط"),
-        },
-      ],
+      question: copy(locale, "Which visits are delayed?", "ما الزيارات المتأخرة؟"),
+      title: copy(locale, "Overdue planned visits", "الزيارات المخططة المتأخرة"),
+      value: String(operational.overdueRows.length),
+      definition: copy(locale, "Planned date earlier than today and status not completed or cancelled", "تاريخ مخطط يسبق اليوم والحالة ليست مكتملة أو ملغاة"),
+      href: "/planning",
+      action: copy(locale, "Open Planning", "فتح التخطيط"),
+    },
+    {
+      question: copy(locale, "Which inspection reports require review?", "ما تقارير التفتيش التي تتطلب المراجعة؟"),
+      title: copy(locale, "Inspection reports awaiting approval", "تقارير التفتيش بانتظار الاعتماد"),
+      value: String(operational.pendingApprovalsCount),
+      definition: copy(locale, "Count of submitted reports awaiting a review decision", "عدد التقارير المقدمة بانتظار قرار المراجعة"),
+      href: "/reviews",
+      action: copy(locale, "Open Review & Approval", "فتح المراجعة والاعتماد"),
+    },
+    {
+      question: copy(locale, "Which inspections require rework?", "ما التفتيشات التي تتطلب إعادة عمل؟"),
+      title: copy(locale, "Returned inspection reports", "تقارير التفتيش المعادة"),
+      value: String(operational.returnedRows.length),
+      definition: copy(locale, "Count of reports returned to inspectors", "عدد التقارير المعادة إلى المفتشين"),
+      href: "/execution",
+      action: copy(locale, "Open Execution", "فتح التنفيذ"),
+    },
+    {
+      question: copy(locale, "Which factories should be inspected next?", "ما المصانع التي يجب تفتيشها تالياً؟"),
+      title: copy(locale, "High-priority visits pending execution", "الزيارات عالية الأولوية بانتظار التنفيذ"),
+      value: String(operational.highPriorityRows.length),
+      definition: copy(locale, "Planned visits at high or critical risk, not yet executed", "زيارات مخططة بمخاطر عالية أو حرجة لم تُنفذ بعد"),
+      href: "/planning",
+      action: copy(locale, "Open Planning", "فتح التخطيط"),
     },
   ];
   return (
     <div className="stack" id="dashboard-operational" role="tabpanel" aria-labelledby="dashboard-tab-operational">
       <section className="panel">
         <div className="panel-body stack">
-          <strong>{copy(locale, "Deterministic operational priorities", "أولويات تشغيلية حتمية")}</strong>
+          <strong>{copy(locale, "Operational priorities", "الأولويات التشغيلية")}</strong>
           <p>{copy(
             locale,
             `${operational.highPriorityRows.length} high-priority visits are pending execution; ${operational.overdueRows.length} published visits are past their recorded window.`,
@@ -123,20 +103,34 @@ export default function RevampOperationalView({ locale, metrics, requirementStri
           )}</p>
           <span className="tl-meta">{copy(
             locale,
-            "Live governed records · AI provider output withheld · no generated recommendation",
-            "سجلات معتمدة مباشرة · مخرجات مزود الذكاء الاصطناعي محجوبة · دون توصية مولدة",
+            "Based on current records only. No AI-generated recommendation.",
+            "استناداً إلى السجلات الحالية فقط. لا توجد توصية مولدة بالذكاء الاصطناعي.",
           )}</span>
         </div>
       </section>
 
-      {blocks.map(block => (
-        <section key={block.label}>
-          <h2 className="tl-meta">{block.label}</h2>
+      <section className="panel stack" aria-labelledby="todays-operations">
+        <div className="panel-row">
+          <h2 id="todays-operations">{copy(locale, "Today's operations", "عمليات اليوم")}</h2>
+        </div>
+        <div className="panel-body">
           <div className="kpi-grid">
-            {block.metrics.map(metric => <OperationalCard key={metric.title} locale={locale} {...metric} />)}
+            {todaysOperations.map(metric => <OperationalCard key={metric.title} locale={locale} {...metric} />)}
           </div>
-        </section>
-      ))}
+        </div>
+      </section>
+
+      <section className="panel stack" aria-labelledby="operational-requirement-coverage">
+        <div className="panel-row">
+          <div>
+            <h2 id="operational-requirement-coverage">{copy(locale, "Operational requirement coverage", "تغطية المتطلبات التشغيلية")}</h2>
+            <p>{copy(locale, "Decision required: approved description pending.", "قرار مطلوب: الوصف المعتمد لم يُحدد بعد.")}</p>
+          </div>
+        </div>
+        <div className="panel-body">
+          <MetricStrip metrics={requirementStrip.metrics} methodology={requirementStrip.methodology} strings={requirementStripStrings} />
+        </div>
+      </section>
 
       <section className="panel stack" aria-labelledby="inspector-capacity-heading">
         <div className="panel-row">
@@ -159,18 +153,6 @@ export default function RevampOperationalView({ locale, metrics, requirementStri
             </table>
           </div>
           <a className="btn btn-secondary" href="/execution">{copy(locale, "Open Execution", "فتح التنفيذ")}</a>
-        </div>
-      </section>
-
-      <section className="panel stack" aria-labelledby="operational-requirement-coverage">
-        <div className="panel-row">
-          <div>
-            <h2 id="operational-requirement-coverage">{copy(locale, "Operational requirement coverage", "تغطية المتطلبات التشغيلية")}</h2>
-            <p>{copy(locale, "Decision required: approved description pending.", "قرار مطلوب: الوصف المعتمد لم يُحدد بعد.")}</p>
-          </div>
-        </div>
-        <div className="panel-body">
-          <MetricStrip metrics={requirementStrip.metrics} methodology={requirementStrip.methodology} strings={requirementStripStrings} />
         </div>
       </section>
     </div>

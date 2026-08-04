@@ -126,7 +126,7 @@ export function RoleDashboardSummary({ locale, persona, projection, partialSourc
         <p className="eyebrow">{copy(locale, "Your work", "عملك")}</p>
         <h2 className="panel-title" id="role-dashboard-summary">{roleName}</h2>
       </div>
-      <span className="badge badge-info">{copy(locale, "RLS scoped", "مقيّد بسياسات الصفوف")}</span>
+      <span className="badge badge-info">{copy(locale, "Scoped to your access", "ضمن نطاق صلاحيتك")}</span>
     </div>
     <div className="panel-body">
       <MetricStrip metrics={strip.metrics} methodology={strip.methodology} strings={stripStrings(locale)} />
@@ -238,16 +238,13 @@ export function DashboardControls({ locale, view, params, from, to, region, quer
       <span>{partialSources.join(" · ")}</span>
     </div>}
     {/* refreshedAt was computed with a deliberate Riyadh formatter, passed in,
-        typed — and never rendered. "As of" is the provenance this reader
-        actually needs, and it is the honest frame for every number below.
-        Riyadh is named because the whole dashboard is scoped to that calendar
-        day, so an unlabelled clock time would be ambiguous. */}
+        typed — and never rendered. It stays a subtle caption, not a headline:
+        the timezone that disambiguates it is available on demand via title
+        rather than spelled out inline. */}
     <span className="grow" />
-    <p className="desc">
-      <span className="tl-meta">
-        {copy(locale, "As of", "حتى")} {refreshedAt} · {copy(locale, "Riyadh", "الرياض")}
-      </span>
-    </p>
+    <span className="tl-meta" title={copy(locale, "Riyadh time", "توقيت الرياض")}>
+      {copy(locale, "Updated", "آخر تحديث")} {refreshedAt}
+    </span>
   </header>;
 }
 
