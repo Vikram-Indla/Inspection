@@ -26,11 +26,14 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
   const planningAccess = await getPlanningAccess(sb, ["planning.reassign"]);
-  // ENG-05 — inspector pool; user_roles embed on profiles is ambiguous, disambiguate via !user_roles_user_id_fkey
-  const { data: inspRows } = await sb.from("profiles")
-    .select("user_id, full_name, user_roles!user_roles_user_id_fkey!inner(role_key)")
-    .eq("user_roles.role_key", "inspector").order("full_name");
-  const inspectors = (inspRows ?? []).map(r => ({ user_id: r.user_id as string, full_name: r.full_name as string }));
+  const { data: rosterRows, error: rosterError } = await sb.rpc(
+    "list_available_reassignment_inspectors", { p_visit_ids: [id] },
+  );
+  if (rosterError) console.error(`[visit.reassignment-roster] load failed: ${rosterError.message}`);
+  const inspectors = (rosterRows ?? []).map((r: { inspector_id: string; full_name: string }) => ({
+    user_id: r.inspector_id as string,
+    full_name: r.full_name as string,
+  }));
   const { data: v, error: vErr } = await sb.from("visits")
     .select(`id, visit_type, execution_mode, planning_status, planning_version, operational_state, window_start, window_end, cancellation_reason, notes,
       immediate_creator_role, source_channel, internal_reference, priority, visit_reference, expired_by_rule_id, package_version_id,
