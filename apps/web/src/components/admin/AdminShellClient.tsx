@@ -18,19 +18,26 @@ type NavItem = {
   enabled: boolean;
 };
 
+// Bucket ids/labels/icons here (HUB_META) come from the original hub-first
+// nav design and are unchanged. What each bucket CONTAINS had to be
+// recomputed: the "administration" catalogue in shell-navigation.ts was
+// consolidated to 7 items (adm-users/adm-lookup/adm-risk/adm-survey/
+// adm-notif/adm-delegation/adm-integration) and this map still pointed at
+// the old ~25-item id set, so no item ever matched and every hub — hence
+// the whole rail below "Find a tool" — silently rendered as empty. "control"
+// and "planning" have no surviving item to hold and are dropped rather than
+// left pointing at ids that no longer exist.
 const HUB_ITEMS: Record<string, string[]> = {
-  control: ["admin-home"],
-  people: ["users", "roles", "security-access", "devices"],
-  rules: ["surveys", "inspection-items", "lookups", "localization"],
-  planning: ["planning-lookups", "planning-expiry", "planning-status", "execution", "workflows"],
-  risk: ["risk"],
-  connections: ["integrations", "gis"],
-  governance: ["audit", "notifications", "platform-operations", "enforcement-recommendations", "bulk-violations", "enforcement-cases"],
+  people: ["adm-users"],
+  rules: ["adm-lookup", "adm-survey"],
+  risk: ["adm-risk"],
+  connections: ["adm-integration"],
+  governance: ["adm-notif", "adm-delegation"],
 };
 
 const HUB_META: Record<string, { icon: ShellIcon }> = {
-  control: { icon: "admin" }, people: { icon: "access" }, rules: { icon: "library" },
-  planning: { icon: "calendar" }, risk: { icon: "risk" }, connections: { icon: "workflow" },
+  people: { icon: "access" }, rules: { icon: "library" },
+  risk: { icon: "risk" }, connections: { icon: "workflow" },
   governance: { icon: "radar" },
 };
 

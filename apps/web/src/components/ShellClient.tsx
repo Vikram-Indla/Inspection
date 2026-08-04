@@ -153,9 +153,8 @@ export default function ShellClient({
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(groups.map(group => [
       group.id,
-      group.id === "admin-control"
-        || group.items.some(item => isShellRouteCurrent(current, item.href))
-        || (!group.id.startsWith("admin-") && group.id !== "administration"),
+      group.items.some(item => isShellRouteCurrent(current, item.href))
+        || group.id !== "administration",
     ])),
   );
   const navRef = useRef<HTMLElement>(null);
@@ -411,7 +410,7 @@ export default function ShellClient({
   const adminPaletteResults = useMemo(() => {
     const normalized = adminPaletteQuery.trim().toLocaleLowerCase(locale);
     return groups
-      .filter(group => group.id.startsWith("admin-"))
+      .filter(group => group.id === "administration")
       .flatMap(group => group.items.map(item => ({ ...item, hubLabel: groupLabel(group) })))
       .filter(item =>
         !normalized
@@ -429,7 +428,7 @@ export default function ShellClient({
 
   if (adminWorkspace) {
     const adminItems = groups
-      .filter(group => group.id.startsWith("admin-"))
+      .filter(group => group.id === "administration")
       .flatMap(group => group.items)
       .map(item => ({
         id: item.id,
@@ -597,7 +596,7 @@ export default function ShellClient({
   }
 
   function renderMobileAdminDiscovery() {
-    const adminGroups = groups.filter(group => group.id.startsWith("admin-"));
+    const adminGroups = groups.filter(group => group.id === "administration");
     const activeHub = adminGroups.find(group => group.id === activeMobileAdminHub);
     if (activeHub) {
       return (
