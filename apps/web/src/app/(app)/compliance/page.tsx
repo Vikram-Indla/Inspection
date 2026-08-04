@@ -220,21 +220,42 @@ export default async function ComplianceLibrary({
             ) : filtered.length === 0 ? (
               <section className="sq-state"><h2>{hasFilters && rows.length > 0 ? "No regulations match the filters" : "No regulations in scope"}</h2><p>{hasFilters && rows.length > 0 ? "The regulation list is not empty. Clear or change the current filters." : "No regulations were found for your access."}</p></section>
             ) : (
-              // CLASS-CONTRACT.md § Compliance Library — regulation rows carry
-              // id-code (the regulation code) + a status badge. The contract
-              // names badge-plan, which is NOT defined in either stylesheet,
-              // so the defined base .badge is used instead. Reported as a
-              // design-system gap, not worked around here. Ordered by title
-              // (case-insensitive), code as tiebreak — see `filtered` above.
-              <div className="stack">
-                {filtered.map(row => (
-                  <a className="panel" key={row.entity_id} href={`${routeBase}?libraryId=${row.entity_id}${authority ? `&authority=${encodeURIComponent(authority)}` : ""}`} aria-current={selected && row.entity_id === selected.entity_id ? "true" : undefined}>
-                    <span className="panel-row">
-                      <span className="grow"><strong><bdi dir="auto">{row.title}</bdi></strong><br /><span className="id-code">{row.code}</span></span>
-                      <span className="row"><span className="badge">{row.operational_status}</span><span className="badge">{row.version_label}</span><span aria-hidden="true">›</span></span>
-                    </span>
-                  </a>
-                ))}
+              // INSP-744/INSP-748 — was a stack of whole-row anchors with a
+              // decorative "›" glyph and badges sitting inside the link, so
+              // everything in the row read as equally clickable and nothing
+              // stood out as the one way to open a regulation. A real table
+              // (existing .table-wrap/.table pattern — see
+              // admin/compliance-requests/page.tsx for the same Status-badge +
+              // single-action-link shape) makes Status and Version plain data
+              // cells and gives each row exactly one explicit action.
+              // CLASS-CONTRACT.md § Compliance Library — the contract names
+              // badge-plan for the status cell, which is NOT defined in either
+              // stylesheet, so the defined base .badge is used instead.
+              // Reported as a design-system gap, not worked around here.
+              // Ordered by title (case-insensitive), code as tiebreak — see
+              // `filtered` above.
+              <div className="table-wrap">
+                <table className="table">
+                  <caption className="sr-only">Regulations list</caption>
+                  <thead><tr>
+                    <th scope="col">Regulation</th>
+                    <th scope="col">Authority</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Version</th>
+                    <th scope="col">Open</th>
+                  </tr></thead>
+                  <tbody>
+                    {filtered.map(row => (
+                      <tr key={row.entity_id} aria-current={selected && row.entity_id === selected.entity_id ? "true" : undefined}>
+                        <th scope="row"><strong><bdi dir="auto">{row.title}</bdi></strong><div className="t-caption"><span className="id-code">{row.code}</span></div></th>
+                        <td><bdi dir="auto">{row.issuing_authority ?? "Not recorded"}</bdi></td>
+                        <td><span className="badge">{row.operational_status}</span></td>
+                        <td><span className="badge">{row.version_label}</span></td>
+                        <td><a className="sq-link" href={`${routeBase}?libraryId=${row.entity_id}${authority ? `&authority=${encodeURIComponent(authority)}` : ""}`}>Open regulation</a></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
