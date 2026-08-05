@@ -614,6 +614,21 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     ctxYes: t("field.ws.ctx.yes", "Yes"),
     ctxNo: t("field.ws.ctx.no", "No"),
     ctxLabels,
+    // INSP-773 — facility status according to the on-site visit (INS-BR-045).
+    // A violation is only recordable while this is "Production"; every other
+    // status blocks data-mismatch violations from being recorded at all.
+    facStatusTitle: t("field.ws.facStatus.title", "Facility status (this visit)"),
+    facStatusHint: t("field.ws.facStatus.hint", "A violation can only be recorded from a data mismatch while the facility's status is Production. Any other status blocks it."),
+    facStatusLabel: t("field.ws.facStatus.pick", "Factory status according to the on-site visit"),
+    facStatusLabels: {
+      production: t("field.ws.facStatus.production", "Production"),
+      creation: t("field.ws.facStatus.creation", "Creation"),
+      establishment: t("field.ws.facStatus.establishment", "Establishment"),
+      transfer: t("field.ws.facStatus.transfer", "Transfer"),
+      repair: t("field.ws.facStatus.repair", "Repair"),
+      closed: t("field.ws.facStatus.closed", "Closed"),
+      suspended: t("field.ws.facStatus.suspended", "Suspended"),
+    } as Record<string, string>,
     guidanceLabel: t("field.ws.guidance", "Guidance"),
     conditionalBadge: t("field.ws.conditional", "Conditional"),
     aiExplainTitle: t("field.ws.aiExplain.title", "Explain this requirement"),
@@ -670,6 +685,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     vioLevel: t("field.ws.vio.level", "Severity {level}"),
     vioAction: t("field.ws.vio.action", "Corrective action: {status}"),
     vioInvalidated: t("field.ws.vio.invalidated", "Invalidated — the answer changed back to compliant. Kept for audit; no penalty or action is due from this candidate."),
+    vioFacilityNotProduction: t("field.ws.vio.notProduction", "This response was not recorded as a violation — the facility's status for this visit is not Production, so a data-mismatch violation cannot be recorded (INS-BR-045). Set the facility status to Production if that is not correct."),
     vioPenaltyConflict: t("field.ws.vio.penaltyConflict", "Penalty mapping not available — settings conflict"),
     findingTitle: t("field.ws.finding.title", "Inspector finding"),
     findingNarrative: t("field.ws.finding.narrative", "Finding narrative"),

@@ -246,3 +246,58 @@ test.describe("PLAN item 4 report-kind package switch", () => {
     expect(guardBlock).not.toMatch(/includes|switch|case/);
   });
 });
+
+// INSP-773 — violations recordable against a facility not in production.
+// Confirmed governed rule (INS-BR-045/BC021, product-contract/requirements-
+// control/brd-notion-index/INS.md): a data-mismatch response is only
+// recordable as a violation while the facility's on-site status this visit
+// is Production; every other status must refuse it, explicitly, not
+// silently. Source-contract assertions only: no browser, no live backend.
+test.describe("INSP-773 facility production-status gate on violation creation", () => {
+  const insp773MigrationPath = "supabase/migrations/20260805190000_insp773_violation_production_status_gate.sql";
+
+  test("migration adds a BEFORE INSERT trigger on violations keyed on inspections.context->>'factory_status'", () => {
+    expect(exists(insp773MigrationPath)).toBeTruthy();
+    const sql = read(insp773MigrationPath);
+    expect(sql).toContain("create or replace function public.guard_violation_production_status_gate()");
+    expect(sql).toContain("set search_path = ''");
+    expect(sql).toContain("i.context ->> 'factory_status'");
+    // Refuses every non-Production status, explicitly — never a silent no-op.
+    expect(sql).toContain("lower(v_factory_status) <> 'production'");
+    expect(sql).toContain("EXE-VIOLATION-NOT-PRODUCTION");
+    // Documented scope decision: no answer yet (null) does not retroactively
+    // block every inspection that predates this field.
+    expect(sql).toContain("v_factory_status is not null and lower(v_factory_status)");
+    expect(sql).toContain("before insert on public.violations");
+    expect(sql).toContain("trg_guard_violation_production_status");
+    // The trigger function body itself only checks facility status — it has
+    // no branch for INS-BR-047/BC023 (the two system-auto-generated
+    // violation types, unimplemented in this codebase) to accidentally catch.
+    const fn = sql.slice(sql.indexOf("create or replace function public.guard_violation_production_status_gate()"), sql.indexOf("revoke all"));
+    expect(fn).not.toContain("BC023");
+  });
+
+  test("Workspace pre-checks facility status client-side before inserting, and surfaces the DB's refusal explicitly rather than a generic save-failed message", () => {
+    const ws = read(workspacePath);
+    expect(ws).toContain('const facilityStatus = ctxRef.current.factory_status;');
+    expect(ws).toContain('if (facilityStatus && facilityStatus !== "production")');
+    expect(ws).toContain("strings.vioFacilityNotProduction");
+    // The DB trigger remains the authority: a stale-client race still gets
+    // the same explicit message, not the generic save-failed copy, and is
+    // never queued for a retry that would just refuse again.
+    expect(ws).toContain('error.message.includes("EXE-VIOLATION-NOT-PRODUCTION")');
+    // The mandatory facility-status picker is presented, wired through the
+    // existing durable context mechanism (pushCtx/saveCtx) — no new
+    // persistence path was invented for it.
+    expect(ws).toContain("strings.facStatusTitle");
+    expect(ws).toContain('saveCtx("factory_status", e.target.value)');
+  });
+
+  test("page defines the facility-status options and the explicit refusal copy, in business language", () => {
+    const page = read(workspacePagePath);
+    expect(page).toContain("facStatusLabels");
+    expect(page).toContain("field.ws.facStatus.production");
+    expect(page).toContain("field.ws.vio.notProduction");
+    expect(page).toContain("INS-BR-045");
+  });
+});
