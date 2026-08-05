@@ -33,6 +33,35 @@ export async function getPinnedActiveImpact(versionId: string): Promise<PinnedAc
   };
 }
 
+// INSP-747 / CC-ADMIN-PACKAGE-CREATION-20260805 — creates a new package
+// record. Only the fields the packages table already defines (code, title,
+// scope) are collected; nothing governed is invented here. RLS
+// (packages_admin, migration 20260729003741) is authoritative and restricts
+// the actual insert to the admin role — requireConfigurationWriter also
+// allows compliance_admin/form_admin at the application layer, same
+// two-layer pattern already used by every other write in this file, so a
+// non-admin writer is refused by the database itself rather than by this
+// gate, and that refusal is surfaced below, not swallowed.
+export async function createPackage(_: PkgResult, formData: FormData): Promise<PkgResult> {
+  const gate = await requireConfigurationWriter();
+  if (!gate.ok) return { error: gate.message };
+
+  const code = String(formData.get("code") ?? "").trim();
+  const title = String(formData.get("title") ?? "").trim();
+  const scope = String(formData.get("scope") ?? "").trim();
+  if (!code || !title) return { error: "Package code and title are required." };
+
+  const sb = await supabaseServer();
+  const { error } = await sb.from("packages").insert({ code, title, scope: scope || null });
+  if (error) {
+    if (error.code === "23505") return { error: "A package with that code already exists." };
+    logProviderError("admin package create", error);
+    return { error: NEUTRAL_WRITE_ERROR };
+  }
+  revalidatePath("/admin/packages");
+  return { ok: true };
+}
+
 // M09-030 — new draft version clones the latest definition; published versions stay immutable.
 export async function createDraftVersion(_: PkgResult, formData: FormData): Promise<PkgResult> {
   const gate = await requireConfigurationWriter();

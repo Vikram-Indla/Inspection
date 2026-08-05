@@ -111,15 +111,15 @@ type LocationCorrectionView = {
   reason: string; source: string; corrected_at: string; capture_context: string;
 };
 
-export default function Startup({ visit, gis, strings, reasons, overrideReasons, initialOverride, flags, appVersion, locale, userId, preparationGated, journeySchemaAvailable, initialCancellation, initialCorrections }: { visit: V; gis: Gis; strings: StartupStrings; reasons: Reason[]; overrideReasons: Reason[]; initialOverride: InitialOverride | null; flags: Flags; appVersion: string; locale: Locale; userId: string; preparationGated?: boolean; journeySchemaAvailable?: boolean; initialCancellation?: ActiveCancellation | null; initialCorrections?: LocationCorrectionView[] }) {
+export default function Startup({ visit, gis, strings, reasons, overrideReasons, initialOverride, initialJourney, flags, appVersion, locale, userId, preparationGated, journeySchemaAvailable, initialCancellation, initialCorrections }: { visit: V; gis: Gis; strings: StartupStrings; reasons: Reason[]; overrideReasons: Reason[]; initialOverride: InitialOverride | null; initialJourney?: { id: string; status: "arrived"; arrivalEventId: string } | null; flags: Flags; appVersion: string; locale: Locale; userId: string; preparationGated?: boolean; journeySchemaAvailable?: boolean; initialCancellation?: ActiveCancellation | null; initialCorrections?: LocationCorrectionView[] }) {
   const local = useMemo(() => localForUser(userId), [userId]);
   const dLang = locale === "ar" ? "ar" : "en";
   mapLoadingLabel = strings.mapLoading;
   const router = useRouter();
   const [log, setLog] = useState([] as string[]);
-  const [cached, setCached] = useState(false);
-  const [journeyId, setJourneyId] = useState(null as string | null);
-  const [checkedIn, setCheckedIn] = useState(initialOverride?.status === "approved");
+  const [cached, setCached] = useState(!!initialJourney);
+  const [journeyId, setJourneyId] = useState(initialJourney?.id ?? null as string | null);
+  const [checkedIn, setCheckedIn] = useState(initialOverride?.status === "approved" || initialJourney?.status === "arrived");
   const [busy, setBusy] = useState(false);
   const [checkin, setCheckin] = useState(null as { lat: number; lng: number; acc: number; d: number; inside: boolean } | null);
   // E3 — live journey telemetry + arrival auto-detect + pre-start confirmations
@@ -152,7 +152,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
   const [overrideState, setOverrideState] = useState<"none" | "queued" | "pending" | "approved" | "closed">(
     initialOverride?.status === "approved" ? "approved" : initialOverride?.status === "pending" ? "pending" : initialOverride ? "closed" : "none",
   );
-  const [arrivalEventId, setArrivalEventId] = useState(initialOverride?.decision_event_id ?? null as string | null);
+  const [arrivalEventId, setArrivalEventId] = useState(initialOverride?.decision_event_id ?? initialJourney?.arrivalEventId ?? null as string | null);
   const [arrivalFile, setArrivalFile] = useState(null as File | null);
   const [arrivalComment, setArrivalComment] = useState("");
   const [arrivalEvidenceSaved, setArrivalEvidenceSaved] = useState(false);
@@ -1078,7 +1078,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       {/* SB20 / ENG-08 — compact geofence map card; official and visit-selected coordinates remain distinct (FND-007/M01-046). */}
       <div className={styles.sectionCard}>
         <div className="panel-header">
-          <h4>{fmt(strings.geofenceHeading, { name: visit.factories.name })} <span className="badge badge-info">SB20 · ENG-08</span></h4>
+          <h4>{fmt(strings.geofenceHeading, { name: visit.factories.name })} </h4>
           <span className="row">
             {/* M04-037 — live distance-to-fence readout while journey active */}
             {live && !checkedIn && (

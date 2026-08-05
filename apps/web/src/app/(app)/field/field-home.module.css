@@ -8,7 +8,7 @@
 /* Canonical .fd-wrap: max-width 1040px, 18px/100px padding, 16px column gap —
    the design's own .fd-wrap. */
 .wrap {
-  max-width: 1040px; margin: 0 auto; width: 100%;
+  max-width: 1200px; margin: 0 auto; width: 100%;
   padding: 18px 18px 100px; display: flex; flex-direction: column; gap: 16px;
 }
 @media (max-width: 560px) { .wrap { padding: 14px 12px 100px; } }

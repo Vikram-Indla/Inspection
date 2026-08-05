@@ -11,6 +11,7 @@ import {
   planningDependencyFailure,
   type PlanningSingleReadData,
 } from "@/lib/planning/read-contract";
+import { getPlanningAccess } from "@/lib/planning/access";
 import {
   resolvePlanningTargets,
   resolveHandoffTarget,
@@ -143,6 +144,13 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   const pkgs = contract.data.packages;
   const inspectors = contract.data.inspectors;
   const virtualEligible = contract.data.virtual_eligible;
+  // The transition gate must use the same fail-closed capability resolver as
+  // the server action. The read contract remains authoritative for page data,
+  // but its cached projection must not contradict a current explicit grant
+  // and leave a valid governed submission permanently disabled.
+  const transitionAccess = await getPlanningAccess(sb, ["planning.submit_for_supervision"]);
+  const transitionsExecutable = transitionAccess.error === null
+    && transitionAccess.can("planning.submit_for_supervision");
 
   // A published Admin package can hand the Planner into this route with an
   // immutable version already selected. The prefill is deliberately ignored
@@ -476,7 +484,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
         inspectors={inspectors}
         strings={strings}
         virtualEligible={virtualEligible}
-        transitionsExecutable={contract.data.can_submit_for_supervision}
+        transitionsExecutable={transitionsExecutable}
         locale={locale === "ar" ? "ar" : "en"}
       />
     </Shell>

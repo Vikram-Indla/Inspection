@@ -8,8 +8,8 @@ export default function AdminLoading() {
     <RouteLoading
       en="Loading administration"
       ar="جارٍ تحميل الإدارة"
-      bodyEn="Verifying access and loading RLS-scoped administration data."
-      bodyAr="جارٍ التحقق من الصلاحيات وتحميل بيانات الإدارة المقيّدة حسب صلاحيات الصفوف."
+      bodyEn="Checking your access and loading the records you can see."
+      bodyAr="جارٍ التحقق من صلاحياتك وتحميل السجلات التي يمكنك الاطلاع عليها."
     />
   );
 }

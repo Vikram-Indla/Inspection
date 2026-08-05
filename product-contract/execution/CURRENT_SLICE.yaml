@@ -413,3 +413,18 @@ standing_boundaries:
   - "Never invent policy values, thresholds, SLAs, providers, risk weights, geofence values, retention or Arabic scope."
   - "Only the 24 clean factories F-1101..F-6602 and the 5 test accounts may be surfaced."
   - "Playwright is not the verification gate for board cards: tsc --noEmit and next build are."
+
+bounded_direct_authority_insp747:
+  task_id: "TASK-ADMIN-PACKAGE-CREATION-20260805"
+  change_control: "product-contract/governance/CC-ADMIN-PACKAGE-CREATION-20260805.yaml"
+  approved_by: "Product Owner (Vikram)"
+  approved_at: "2026-08-05"
+  jira: "INSP-747"
+  reporter: "Sujatha Sista"
+  state: "IMPLEMENTED_LIVE_VERIFIED_PENDING_ORCHESTRATOR_REVIEW"
+  rule: >
+    This approval covers only the recorded scope in the change control file
+    above (createPackage server action, package-creation form on
+    /admin/packages, and the empty-list-only disclosure fix). It grants no
+    board lease and no broad implementation authority. The retired lease
+    mechanism remains retired.

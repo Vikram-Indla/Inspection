@@ -1,0 +1,103 @@
+schema_version: "1.0"
+change_control_id: "CC-ADMIN-PACKAGE-CREATION-20260805"
+task_id: "TASK-ADMIN-PACKAGE-CREATION-20260805"
+title: "Add package creation to the admin Inspection Package Library"
+state: "IMPLEMENTED_LIVE_VERIFIED_PENDING_ORCHESTRATOR_REVIEW"
+approved_by: "Product Owner (Vikram)"
+approved_at: "2026-08-05"
+jira: "INSP-747"
+reporter: "Sujatha Sista"
+
+authority:
+  type: "BOUNDED_DIRECT_PRODUCT_OWNER_DIRECTIVE"
+  user_confirmation: "confirmed — 'go ahead with option 1'"
+  lease_required: false
+  broad_implementation_allowed: false
+  note: >
+    This approval covers only the recorded scope below. It grants no board lease
+    and no broad implementation authority. The retired lease mechanism remains
+    retired.
+
+problem:
+  summary: >
+    /admin/packages offers no way to create a new inspection package. The only
+    creation-shaped control on the screen calls createDraftVersion, which
+    requires an existing package_id and produces a new VERSION of a package that
+    already exists. No createPackage server action exists anywhere in the
+    codebase.
+  authorization_already_present: >
+    Row Level Security already grants the admin role full insert, update and
+    delete on the packages table — policy packages_admin, migration
+    20260729003741, "for all to authenticated using has_internal_role('admin')".
+    Building this finishes an already-authorized capability rather than granting
+    a new one. No new permission, role or governed rule is introduced.
+  secondary_defect: >
+    The screen carries an honest note stating that creation is not supported,
+    but renders it only when the package list is empty. Once a single package
+    exists the note disappears and the screen explains nothing. The disclosure
+    is hidden precisely when a user needs it.
+  business_impact: >
+    Blocks the configuration chain end to end — regulations, then inspection
+    items against their clauses, then packages, then approve and publish, then
+    ready for planning. With no package creation the chain cannot be walked or
+    tested.
+
+allowed_paths:
+  - "apps/web/src/app/(app)/admin/packages/actions.ts"
+  - "apps/web/src/app/(app)/admin/packages/page.tsx"
+  - "apps/web/src/app/(app)/admin/packages/PublishControls.tsx"
+  - "apps/web/src/lib/i18n.ts"
+  - "product-contract/execution/CURRENT_SLICE.yaml"
+  - "product-contract/governance/CC-ADMIN-PACKAGE-CREATION-20260805.yaml"
+
+scope:
+  - "Add a createPackage server action that creates a new package record."
+  - "Add a form on /admin/packages collecting only the fields the packages table already requires."
+  - "Make the existing not-supported disclosure render regardless of whether the list is empty, until creation ships; remove it once creation is live."
+  - "Surface server-side failures as an honest error state on the screen."
+
+out_of_scope:
+  - "No schema change. No migration. The packages table and its RLS policy are unchanged."
+  - "No new CSS, no new tokens, no new class. Existing classes in saqeel-components.css only."
+  - "No change to approval, publication, versioning or lifecycle rules."
+  - "No invented governed value — no risk weight, penalty, SLA, threshold or approval rule."
+  - "No change to createDraftVersion, approveAndPublish or deactivatePackageVersion."
+  - "No route added, renamed or nested. Creation lives on /admin/packages."
+
+acceptance:
+  - "An administrator can create a new package from /admin/packages and it appears in the list."
+  - "Creation is refused server-side for any role without the admin capability, and the refusal renders as a state rather than a silent failure."
+  - "Only fields the packages table already defines are collected; no field invents a governed value."
+  - "Absent or unavailable data renders as Not configured / Unavailable / Insufficient evidence."
+  - "The stale empty-list-only disclosure no longer misleads: it either always renders or is removed because creation now exists."
+  - "Arabic strings come from the i18n resources. No Arabic is authored inside a component."
+  - "TypeScript passes — tsc --noEmit."
+  - "Production build passes."
+  - "Diff confined to allowed_paths."
+
+verification:
+  typescript: "PASS — tsc --noEmit clean"
+  production_build: "PASS — next build succeeded for all routes"
+  live_check: >
+    PASS (admin capability). Created a real package (PKG-TEST-747 — Test
+    Package INSP-747, scope "Verification only") live on /admin/packages as
+    admin1@mim.gov.sa; it appeared immediately in the list with its existing
+    version-creation form attached, proving the package_id wiring end to end.
+    Screenshot: ~/Desktop/Inspection Documentation/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/insp-747-package-creation/insp-747-package-created.png
+  live_check_refusal: >
+    NOT independently live-tested. No compliance_admin/form_admin-only test
+    identity exists among the governed cohorts in docs/TEST_ACCOUNTS.md
+    (admin/planner/supervisor/inspector only), and that same doc says
+    specialist/legacy personas must not be substituted into these journeys.
+    Evidence instead: packages_admin RLS (migration 20260729003741) checks
+    only has_internal_role('admin'), so a compliance_admin/form_admin user
+    who clears the application-layer requireConfigurationWriter() gate would
+    still be rejected by Postgres at the insert; createPackage's `if (error)`
+    branch renders that as the same visible error state used by
+    createDraftVersion/saveDraftDefinition, not a silent failure — identical,
+    pre-existing pattern in this file, not new code written for this ticket.
+    Flag if a specific non-admin writer identity should be provisioned to
+    close this gap with a live test.
+  diff_check: "PASS — diff confined to the 6 allowed_paths"
+
+lane: "Integration"

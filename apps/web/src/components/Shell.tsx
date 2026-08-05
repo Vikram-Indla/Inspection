@@ -137,6 +137,7 @@ export async function AppShell({ children }: { children: ReactNode }) {
         risk: t("admin.shell.hub.risk", "Risk & Intelligence"),
         connections: t("admin.shell.hub.connections", "Connections & Geography"),
         governance: t("admin.shell.hub.governance", "Governance & Operations"),
+        security: t("admin.shell.hub.security", "Security & Audit"),
       },
     },
     // WA-PWA-TAB-r1 — labels transcribed from designs/pwa/pwa/pwa-tabbar.js,

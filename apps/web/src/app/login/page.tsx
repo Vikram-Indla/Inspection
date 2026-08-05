@@ -1,5 +1,5 @@
 import "./login.css";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import FieldLoginClient, { type FieldLoginStrings } from "./field/FieldLoginClient";
 import StoryPanel, { type StoryStrings } from "./StoryPanel";
 
@@ -24,9 +24,15 @@ export const dynamic = "force-dynamic";
 
 type Locale = "ar" | "en";
 
+// Same rule as getLocale() in @/lib/i18n: an explicit choice wins, otherwise
+// follow the browser. This previously returned Arabic for every state that was
+// not exactly "en", so the sign-in page opened in Arabic for an English reader
+// who had never used the language switch.
 async function resolveLocale(): Promise<Locale> {
-  const c = await cookies();
-  return c.get("login_locale")?.value === "en" ? "en" : "ar";
+  const chosen = (await cookies()).get("login_locale")?.value;
+  if (chosen === "ar" || chosen === "en") return chosen;
+  const accept = (await headers()).get("accept-language")?.toLowerCase() ?? "";
+  return /(^|[,\s])ar\b/.test(accept) ? "ar" : "en";
 }
 
 export default async function Login({ searchParams }: {
@@ -100,7 +106,7 @@ export default async function Login({ searchParams }: {
         bioUnavailable: "Face ID unlock could not be completed on this device. Use your password.",
         bioFallback: "Use password instead",
         directoryBlocked:
-          "National ID / staff number sign-in is not enabled yet — the ministry directory contract has not been supplied. Use your work email address.",
+          "National ID / staff number sign-in is not enabled. Use your work email address.",
         authInvalid:
           "We could not sign you in with those details. Check your information or reset your password.",
         authNetwork:
@@ -120,7 +126,7 @@ export default async function Login({ searchParams }: {
     // Login v2: the panel is the platform, not "the Saqeel atlas". The product
     // name already sits on the credential card beside it, so repeating it here
     // read as branding twice and called the panel by its mechanism.
-    title: ar ? "منصة التفتيش الصناعي" : "Industrial inspection platform",
+    title: ar ? "منصة التفتيش الصناعي" : "Industrial Inspection Platform",
     overline: ar ? "رحلة تفتيش واحدة · من البداية إلى النهاية" : "ONE VISIT · END TO END",
     riyadhLabel: ar ? "الرياض · مسيّجة جغرافيًا" : "RIYADH · GEOFENCED",
     stagesLabel: ar ? "مشاهد قصة التفتيش" : "Inspection story scenes",

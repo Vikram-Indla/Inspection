@@ -23,8 +23,7 @@ export default async function RiskModelsPage() {
   const enabled = resolveFeatureFlag(process.env.FEATURE_RISK_WORKBENCH, MODES, "off") === "on";
   if (!enabled) {
     return (
-      <Shell current="/admin/risk" title={t("risk.wb.title", "Risk model workbench")}
-        context={<span className="badge badge-warning">MVP2-REQ-0005</span>}>
+      <Shell current="/admin/risk" title={t("risk.wb.title", "Risk model workbench")}>
         <RiskSectionNav current="/admin/risk/models" labels={navLabels} />
         <NotYetBoundary title={t("risk.wb.title", "Risk model workbench")}
           consequence={t("risk.wb.off", "The risk-model draft layer is not turned on here; live risk settings are still edited on the Risk Studio.")}
@@ -55,10 +54,18 @@ export default async function RiskModelsPage() {
     inspect: t("risk.wb.inspect", "Model structure"),
     immutable: t("risk.wb.immutable", "Published versions can't be changed"),
     noTransitions: t("risk.wb.noTransitions", "No further transitions"),
+    // INSP-736 (same-pattern audit): the status badge and transition
+    // dropdown showed the raw RISK_MODEL_STATUSES enum value.
+    statusLabels: {
+      draft: t("risk.wb.status.draft", "Draft"),
+      review: t("risk.wb.status.review", "In review"),
+      approved: t("risk.wb.status.approved", "Approved"),
+      published: t("risk.wb.status.published", "Published"),
+      retired: t("risk.wb.status.retired", "Retired"),
+    },
   };
   return (
-    <Shell current="/admin/risk" title={t("risk.wb.title", "Risk model workbench")}
-      context={<span className="badge badge-info">MVP2-REQ-0005..0012</span>}>
+    <Shell current="/admin/risk" title={t("risk.wb.title", "Risk model workbench")}>
       <RiskSectionNav current="/admin/risk/models" labels={navLabels} />
       <div className="alert"><div><strong>{t("risk.wb.banner.title", "Draft layer.")}</strong> {t("risk.wb.banner.body", "Drafts check that weights add up and that bands match the Risk Studio, then publish through maker-checker. Published versions can't be changed. No value is set here that the approved structure doesn't require.")}</div></div>
       {error && <div className="alert alert-critical" role="alert"><div><strong>{t("risk.wb.error", "Couldn’t load risk models. Nothing changed.")}</strong></div></div>}

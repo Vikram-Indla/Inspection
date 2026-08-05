@@ -3,8 +3,9 @@ import { PERSONAS, storageStatePath, type PersonaKey } from "./personas";
 import { waitForCredentialsForm, submitCredentials, identifierField, passwordField } from "./login-helper";
 
 // Signs each persona in through the real /login UI (SCR-PUB-010) and captures
-// storage state so specs start authenticated. Landing is decided by role via
-// /launch, never by URL — asserting the role home is itself a persona-tour check.
+// storage state so specs start authenticated. Every governed role now lands on
+// the shared Dashboard; each role's operational home remains the useful-content
+// authorization check before its authenticated state is persisted.
 for (const key of Object.keys(PERSONAS) as PersonaKey[]) {
   const p = PERSONAS[key];
   setup(`authenticate ${key}`, async ({ page }) => {
@@ -20,12 +21,12 @@ for (const key of Object.keys(PERSONAS) as PersonaKey[]) {
     // and role lookups enough time under release-suite load.
     await page.waitForURL((url) => (
       url.pathname.startsWith(p.home) ||
-      (key === "inspector" && url.pathname.startsWith("/dashboard"))
+      url.pathname.startsWith("/dashboard")
     ), { timeout: 40_000 });
-    // The controlled Inspector is deliberately multi-role, so /launch may
-    // choose Dashboard first. Prove the Inspector workspace is authorized
-    // before persisting that same authenticated session.
-    if (key === "inspector" && !new URL(page.url()).pathname.startsWith(p.home)) {
+    // Dashboard arrival proves the shared post-login route, not the role's
+    // operational content. Prove that content remains authorized before
+    // persisting the same authenticated session.
+    if (!new URL(page.url()).pathname.startsWith(p.home)) {
       await page.goto(p.home);
       await page.waitForURL((url) => url.pathname.startsWith(p.home));
     }

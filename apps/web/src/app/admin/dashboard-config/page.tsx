@@ -68,7 +68,7 @@ export default async function DashboardConfigPage() {
 
   return (
     <Shell current="/admin/dashboard-config" title={t("admin.dashcfg.title", "Dashboard Configuration")}
-      context={<><span className="badge badge-info">ADM-DASH-001..018</span><span className="t-caption">Governed KPI catalogue &amp; policy · filtered to your access · maker-checker</span></>}>
+      context={<span className="t-caption">Governed KPI catalogue &amp; policy · filtered to your access · maker-checker</span>}>
 
       <div style={{ maxWidth: 1040, width: "100%", display: "flex", flexDirection: "column", gap: 16 }}>
 

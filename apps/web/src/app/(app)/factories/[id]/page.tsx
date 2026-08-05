@@ -182,7 +182,6 @@ export default async function Factory360({ params, searchParams }: { params: Pro
   return (
     <Shell current="/factories" title={`${f.name} — ${identity(f.factory_code)}`}
       context={<>
-        <span className="sq-lozenge sq-lozenge--info">SB11</span>
         <span className={`sq-lozenge ${bandTone}`}>{f.risk_band ? enumLabel(f.risk_band) : "—"} · {f.risk_score}</span>
         <span className="sq-freshness">{t("f360.meta.source", "source")} {sourceLabel} · {t("f360.meta.synced", "synced")} {f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</span>
       </>}>
@@ -201,7 +200,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
         {/* Provenance-led aside — persistent identity, freshness, risk summary, location facts */}
         <aside className="cd-side3">
           <div className="sq-surface cd-idcard">
-            <h4>{t("f360.id.heading", "Identity — read-only from source (M07-002)")}</h4>
+            <h4>{t("f360.id.heading", "Identity — read-only from source")}</h4>
             <span className="cd-idcard__code"><bdi>{identity(f.factory_code)}</bdi></span>
             <p className="cd-idrow"><span className="cd-idk">{t("f360.id.cr", "CR")}</span> <span className="cd-idv"><bdi>{identity(f.cr_number)}</bdi></span></p>
             <p className="cd-idrow"><span className="cd-idk">{t("f360.id.license", "license")}</span> <span className="cd-idv"><bdi>{identity(f.license_number)}</bdi></span></p>
@@ -219,7 +218,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           </div>
 
           <div className="sq-surface cd-riskcard">
-            <h4>{t("f360.risk.heading", "Risk — reproducible (EV-004)")}</h4>
+            <h4>{t("f360.risk.heading", "Risk — reproducible")}</h4>
             <span className={`cd-riskscore ${riskTone}`}>{f.risk_score}</span>
             <p>{t("f360.risk.band", "band")} <strong>{f.risk_band ? enumLabel(f.risk_band) : "—"}</strong> · <span className="sq-version">{f.risk_version}</span></p>
             <p className="sq-caption">{t("f360.risk.desc", "Recomputable from stored normalized inputs + this version; every calculation is retained.")}</p>
@@ -232,10 +231,10 @@ export default async function Factory360({ params, searchParams }: { params: Pro
 
           <div className="sq-surface cd-maplens">
             <h4>{t("f360.geo.heading", "Location")}</h4>
-            <p className="cd-coords"><bdi>{f.official_lat}, {f.official_lng}</bdi> <span className="sq-caption">{t("f360.id.gisOwned", "(GIS-Admin-owned, FND-007)")}</span></p>
+            <p className="cd-coords"><bdi>{f.official_lat}, {f.official_lng}</bdi> <span className="sq-caption">{t("f360.id.gisOwned", "— owned by the GIS administrator")}</span></p>
             <p className="sq-caption">{t("f360.geo.label", "Geofence (G-MAP):")} {f.geofence_radius_m != null
               ? <><span className="sq-numeric">{f.geofence_radius_m} {t("f360.geo.unitM", "m")}</span> — {t("f360.geo.override", "per-factory override")}</>
-              : t("f360.geo.engineDefault", "engine default (engine_settings gis.geofence_default_radius_m)")}</p>
+              : t("f360.geo.engineDefault", "engine default")}</p>
             {f.official_lat != null && f.official_lng != null
               ? <FactorySpatialMap officialLat={Number(f.official_lat)} officialLng={Number(f.official_lng)} geofenceRadius={f.geofence_radius_m} events={locationEvents} strings={{
                   officialPin: t("f360.geo.legend.official", "official / planned pin"),
@@ -255,7 +254,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           </nav>
 
           <section id="location" className="sq-surface cd-panelpad">
-            <h4>{t("f360.geo.historyHeading", "Official, planned and observed locations (M07-005)")}</h4>
+            <h4>{t("f360.geo.historyHeading", "Official, planned and observed locations")}</h4>
             <p className="sq-caption">{t("f360.geo.historyCaption", "Official coordinates remain source-owned. Arrival, check-in and override coordinates are locked inspection observations and never overwrite the Factory list.")}</p>
             {locationEvents.length ? <div className="sq-tablewrap"><table className="sq-table">
               <thead><tr><th scope="col">{t("common.when", "When")}</th><th scope="col">{t("common.kind", "Kind")}</th><th scope="col">{t("f360.geo.actual", "Observed coordinates")}</th><th scope="col">{t("f360.geo.mismatch", "Mismatch / reason")}</th><th scope="col">{t("common.visit", "Visit")}</th></tr></thead>
@@ -270,8 +269,8 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           </section>
 
           <section id="risk" className="sq-surface cd-panelpad">
-            <h4>{t("f360.risk.historyHeading", "Factory health score and risk history (M07-014/015)")}</h4>
-            <p className="sq-caption">{t("f360.risk.historyCaption", "Each row freezes the DEC-001 model version, normalized driver values, weights and contributions used at recalculation time.")}</p>
+            <h4>{t("f360.risk.historyHeading", "Factory health score and risk history")}</h4>
+            <p className="sq-caption">{t("f360.risk.historyCaption", "Each row freezes the scoring model version, normalized driver values, weights and contributions used at recalculation time.")}</p>
             <ContextualAiPanel
               surface="factory_risk_explanation"
               title={t("f360.risk.ai.title", "Explain health score and risk drivers")}
@@ -379,7 +378,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
 
           {/* Inspection history — tabular record, distinct from the narrative timeline above. */}
           <section id="history" className="sq-surface cd-panelpad">
-            <h4>{t("f360.hist.heading", "Inspection history — official records only (M07-011/012)")}</h4>
+            <h4>{t("f360.hist.heading", "Inspection history — official records only")}</h4>
             {sortedVisits.length === 0 ? (
               <div className="sq-state sq-state--inline"><span className="sq-state__glyph">🗓</span>
                 <h4>{t("f360.hist.empty.title", "No visits recorded for this factory")}</h4>
@@ -414,7 +413,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
 
           {/* Documents — metadata registry; per-section failure isolation (SB11) */}
           {canSeeDocuments && <section id="documents" className="sq-surface cd-panelpad">
-            <h4>{t("f360.docs.heading", "Documents — metadata registry (SB11)")}</h4>
+            <h4>{t("f360.docs.heading", "Documents — metadata registry")}</h4>
             {dErr && <div className="sq-banner sq-banner--critical"><div><strong>{t("f360.docs.err", "Couldn’t load documents.")}</strong> {mapFactoryError(dErr, "load")} — {retry}.</div></div>}
             {!dErr && docsEmpty && (
               <div className="sq-state sq-state--inline"><span className="sq-state__glyph">📄</span>
@@ -441,7 +440,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                 </table></div>
                 <div className="cd-docrow is-unavail" role="status">
                   <span className="cd-docrow__icon" aria-hidden="true">📄</span>
-                  <span>{t("f360.docs.previewUnavail", "Document preview is unavailable — this surface exposes metadata and storage path only, with no signed URL, viewer or custody retrieval (HANDOFF_BLOCKED_DOCUMENT_VIEWER).")}</span>
+                  <span>{t("f360.docs.previewUnavail", "Document preview is unavailable — this screen shows metadata and storage path only. No document can be opened or downloaded from here.")}</span>
                 </div>
               </>
             )}
@@ -449,7 +448,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
 
           {/* Representatives — contacts gated by canSeeContacts (planner/inspector/supervisor/admin) */}
           {canSeeContacts && <section id="representatives" className="sq-surface cd-panelpad">
-            <h4>{t("f360.reps.heading", "Representatives (SB11)")}</h4>
+            <h4>{t("f360.reps.heading", "Representatives")}</h4>
             {rErr && <div className="sq-banner sq-banner--critical"><div><strong>{t("f360.reps.err", "Couldn’t load representatives.")}</strong> {mapFactoryError(rErr, "load")} — {retry}.</div></div>}
             {!rErr && repsEmpty && (
               <div className="sq-state sq-state--inline"><span className="sq-state__glyph">👤</span>
@@ -476,7 +475,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
 
           {/* Products & HS codes — read-only from the authoritative source (W3 / M07-006). */}
           <section id="products" className="sq-surface cd-panelpad">
-            <h4>{t("f360.prod.heading", "Products & HS codes (M07-006)")}</h4>
+            <h4>{t("f360.prod.heading", "Products & HS codes")}</h4>
             {pErr && <div className="sq-banner sq-banner--critical"><div><strong>{t("f360.prod.err", "Couldn’t load products.")}</strong> {mapFactoryError(pErr, "load")} — {retry}.</div></div>}
             {!pErr && productsEmpty && (
               <div className="sq-state sq-state--inline"><span className="sq-state__glyph">📦</span>
@@ -501,7 +500,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
 
           {/* Raw materials — read-only from the authoritative source (W3 / M07-007). */}
           <section id="materials" className="sq-surface cd-panelpad">
-            <h4>{t("f360.mat.heading", "Raw materials (M07-007)")}</h4>
+            <h4>{t("f360.mat.heading", "Raw materials")}</h4>
             {mErr && <div className="sq-banner sq-banner--critical"><div><strong>{t("f360.mat.err", "Couldn’t load materials.")}</strong> {mapFactoryError(mErr, "load")} — {retry}.</div></div>}
             {!mErr && materialsEmpty && (
               <div className="sq-state sq-state--inline"><span className="sq-state__glyph">🧱</span>
@@ -524,7 +523,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
 
           {/* Workforce & industrial indicators — source-owned, display-only (W3 / M07-008/009) */}
           <section id="workforce" className="sq-surface cd-panelpad">
-            <h4>{t("f360.wf.heading", "Workforce & indicators — read-only from source (M07-008/009)")}</h4>
+            <h4>{t("f360.wf.heading", "Workforce & indicators — read-only from source")}</h4>
             {f.employees_total == null && f.capital_invested == null && f.production_capacity_note == null ? (
               <div className="sq-state sq-state--inline"><span className="sq-state__glyph">🏭</span>
                 <h4>{t("f360.wf.empty.title", "No workforce or indicator data synced")}</h4>

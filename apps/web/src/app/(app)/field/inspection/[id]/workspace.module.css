@@ -21,7 +21,7 @@
   padding: var(--space-4);
   /* .if-wrap caps the form at 880px and centres it: on iPad landscape an
      uncapped column stretches the checklist to an unreadable measure. */
-  max-inline-size: 880px;
+  max-inline-size: 1200px;
   margin-inline: auto;
   inline-size: 100%;
   /* Clearance for the sticky action bar so the last question is never trapped
@@ -424,7 +424,7 @@
 
 /* SCR-IPAD-660 completion lifecycle — composition mirrors the approved
    completion design while all phase/status facts remain server-derived. */
-.completionPage { max-inline-size: 900px; gap: 14px; padding: 16px 18px 130px; }
+.completionPage { max-inline-size: 1200px; gap: 14px; padding: 16px 18px 130px; }
 .completionPage > .card { padding: 15px 16px; }
 .lifecycleCard { display: flex; flex-direction: column; gap: 9px; }
 .lifecycleSegments {

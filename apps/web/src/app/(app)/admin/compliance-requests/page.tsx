@@ -29,7 +29,7 @@ export default async function ComplianceRequestRegister() {
   const canCreate = !roleRead.error && (roleRead.data ?? []).some(row => row.role_key === "admin");
   return (
     <Shell current="/admin/compliance-requests" title={t("admin.ccr.register.title", "Compliance Configuration Requests")}
-      context={<><span className="badge badge-info">CMP-REQ-CCR-001..010</span><span className="t-caption">Request list</span></>}>
+      context={<span className="t-caption">Request list</span>}>
       <div className="ccr-toolbar">
         <div><h3>{t("admin.ccr.register.heading", "Request list")}</h3><p className="t-caption">Create and change Regulations, Inspection Items, Violations and Penalties through final submitted versions and two-person review.</p></div>
         {canCreate ? <Link className="btn btn-primary btn-lg btn-touch" href="/admin/compliance-requests/new">Create Request</Link>
@@ -38,7 +38,9 @@ export default async function ComplianceRequestRegister() {
       {error ? (
         <div className="panel"><div className="saqeel-state" role="alert"><span className="saqeel-state__glyph" aria-hidden="true">⚠</span><h4>Request list can&apos;t load</h4><p className="t-caption">The read failed. Counts and status are not shown.</p><a className="sq-link" href="/admin/compliance-requests">Retry</a></div></div>
       ) : rows.length === 0 ? (
-        <div className="panel"><div className="saqeel-state" role="status"><span className="saqeel-state__glyph" aria-hidden="true">◇</span><h4>No configuration requests</h4><p className="t-caption">The read worked and returned zero requests. Create the first request when you're allowed to.</p>{canCreate ? <Link className="btn btn-secondary btn-touch" href="/admin/compliance-requests/new">Create Request</Link> : null}</div></div>
+        // The toolbar's "Create Request" button above stays visible in every
+        // state, including this one — a second copy here duplicated it.
+        <div className="panel"><div className="saqeel-state" role="status"><span className="saqeel-state__glyph" aria-hidden="true">◇</span><h4>No configuration requests</h4><p className="t-caption">The read worked and returned zero requests. Create the first request when you're allowed to.</p></div></div>
       ) : (
         <div className="table-wrap"><table className="table"><caption className="sr-only">Compliance Configuration Request list</caption><thead><tr><th scope="col">Request</th><th scope="col">Type</th><th scope="col">Status</th><th scope="col">Revision</th><th scope="col">Created</th><th scope="col">Open</th></tr></thead><tbody>
           {rows.map(row => <tr key={row.id}><th scope="row"><strong>{row.request_number}</strong><div className="t-caption">{row.title}</div></th><td>{row.request_type === "create" ? "Create" : "Modify"}</td><td><span className={`badge ccr-status ccr-status--${row.status}`}>{statusLabel[row.status] ?? row.status}</span></td><td className="numeric">R{row.current_revision}</td><td className="numeric">{new Date(row.created_at).toISOString().slice(0, 10)}</td><td><Link className="sq-link" href={`/admin/compliance-requests/${row.id}`}>Open request</Link></td></tr>)}

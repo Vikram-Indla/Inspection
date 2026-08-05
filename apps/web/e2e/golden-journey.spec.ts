@@ -1,8 +1,20 @@
 import { test, expect, type BrowserContext, type Page } from "@playwright/test";
-import { PERSONAS, storageStatePath } from "./personas";
-import { login, rest, must } from "./live-rest";
+import { mkdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { PERSONAS, goldenInspectorPersona, storageStatePath } from "./personas";
+import { login, rest, serviceFixtureRest, must } from "./live-rest";
+import {
+  selectAvailableControlledInspector,
+  selectLeasedControlledInspector,
+  type ControlledInspectorCandidate,
+} from "./golden-inspector-selection";
 import { signAndConfirm } from "./sign-helper";
-import { waitForCredentialsForm, submitCredentials } from "./login-helper";
+import {
+  identifierField,
+  passwordField,
+  waitForCredentialsForm,
+  submitCredentials,
+} from "./login-helper";
 
 // Golden journey B10 (B10-EV-001) driven entirely through the UI:
 // plan -> publish -> assign -> startup -> execute -> submit v1 -> Level-2 RETURN
@@ -13,18 +25,28 @@ import { waitForCredentialsForm, submitCredentials } from "./login-helper";
 
 test.describe.configure({ mode: "serial" });
 
-let factory: { id: string; factory_code: string; name: string; official_lat: number; official_lng: number };
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const P2_LOGIN_STEP_TIMEOUT = 20_000;
+const RECOVERY_VISIT_ID = process.env.GOLDEN_RECOVERY_VISIT_ID?.trim() ?? "";
+
+let factory: { id: string; factory_code: string; name: string; official_lat: number; official_lng: number; geofence_radius_m: number };
 let inspectorUserId: string;
-// Dedicated throwaway inspector per run: the shared seeded inspector is
-// booked around "now" (seed visit V-120), M01-040 blocks any overlapping
-// assignment, and EXE-JOURNEY-OUTSIDE-WINDOW (20260721140000) requires the
-// journey window to contain now — so no window satisfies both for the shared
-// persona. Same isolation pattern as the sacrificial factory (M02-012).
+// The controlled non-production Inspector identity is resolved through the
+// private persona environment and must also be present in the Planner's live
+// governed selector before P1 may assign it.
 let inspectorCreds: { email: string; password: string };
+let goldenInspectorLeaseId = "";
+let controlledInspectorCandidates: ControlledInspectorCandidate<{ email: string; password: string }>[] = [];
+let proposedInspectorUserId = "";
 let packageVersionId: string;
 let scopeSectionKey: string; // section containing FS-101 — the exact return scope
 let visitId: string;
 let inspectionId: string;
+let visitWindowStart: string;
+let visitWindowEnd: string;
+let visitWindowStartInput: string;
+let visitWindowEndInput: string;
+let recoveryCheckpoint: "before_checkin" | "after_checkin" | "inspection_started" | "submitted_v1" | "reviewing_v1" | "returned_v1" | "submitted_v2" | "reviewing_v2" | "approved_v2" | null = null;
 
 async function pollRest<T>(fn: () => Promise<T | null>, label: string, tries = 15): Promise<T> {
   for (let i = 0; i < tries; i++) {
@@ -35,9 +57,129 @@ async function pollRest<T>(fn: () => Promise<T | null>, label: string, tries = 1
   throw new Error(`timed out waiting for ${label}`);
 }
 
-// UI-login (SCR-PUB-010) for the throwaway inspector — no storage-state file
-// exists for a per-run identity, so authenticate through the real form exactly
-// like auth.setup does for the seeded personas.
+function acceptedSeedGeofenceRadius(): number {
+  const foundation = readFileSync(join(__dirname, "..", "..", "..", "supabase", "migrations", "0001_foundation.sql"), "utf8");
+  const gisSeed = foundation.match(/\('gis',\s*'([^']+)'\s*,\s*'([^']+)'\)/);
+  if (!gisSeed) throw new Error("accepted GIS seed configuration is missing");
+  const settings = JSON.parse(gisSeed[1]) as { geofence_default_radius_m?: unknown };
+  const radius = settings.geofence_default_radius_m;
+  if (typeof radius !== "number" || !Number.isFinite(radius) || radius <= 0 || !Number.isInteger(radius)) {
+    throw new Error("accepted GIS seed must provide a positive integer geofence_default_radius_m");
+  }
+  if (!gisSeed[2]) throw new Error("accepted GIS seed must provide version provenance");
+  return radius;
+}
+
+async function governedFixtureGeofenceRadius(plannerJwt: string): Promise<number> {
+  const rows = must(await rest("GET",
+    "engine_settings?engine=eq.gis&select=settings,version_label&limit=1",
+    plannerJwt), "read governed GIS configuration") as Array<{
+      settings: { geofence_default_radius_m?: unknown };
+      version_label: string;
+    }>;
+  const liveRadius = rows[0]?.settings?.geofence_default_radius_m;
+  if (typeof liveRadius === "number" && Number.isFinite(liveRadius) && liveRadius > 0 && Number.isInteger(liveRadius)) {
+    if (!rows[0]?.version_label) throw new Error("governed GIS configuration must provide version provenance");
+    return liveRadius;
+  }
+  return acceptedSeedGeofenceRadius();
+}
+
+type GoldenAssignmentWindow = {
+  visit_id: string;
+  visits: {
+    window_start: string;
+    window_end: string;
+    factories?: { factory_code: string };
+  };
+};
+
+function allocateRetirementWindows(
+  targets: GoldenAssignmentWindow[],
+  existing: GoldenAssignmentWindow[],
+  proposedStart: Date,
+): Array<{ visitId: string; start: Date; end: Date }> {
+  if (!Number.isFinite(proposedStart.getTime())) throw new Error("cannot allocate retirement windows without a valid proposed start");
+  const targetIds = new Set(targets.map(row => row.visit_id));
+  if (targetIds.size !== targets.length) throw new Error("cannot allocate retirement windows for duplicate visits");
+  const parse = (row: GoldenAssignmentWindow) => {
+    const start = new Date(row.visits.window_start);
+    const end = new Date(row.visits.window_end);
+    if (!UUID.test(row.visit_id) || !Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || end <= start) {
+      throw new Error(`cannot prove a safe retirement window for ${row.visit_id}`);
+    }
+    return { row, start, end };
+  };
+  const ordered = targets.map(parse).sort((left, right) =>
+    left.start.getTime() - right.start.getTime() || left.row.visit_id.localeCompare(right.row.visit_id));
+  const occupied = existing.filter(row => !targetIds.has(row.visit_id)).map(parse)
+    .map(({ start, end }) => ({ start, end }));
+  const allocated: Array<{ visitId: string; start: Date; end: Date }> = [];
+  let cursor = new Date(proposedStart.getTime() - 60_000);
+  for (const target of ordered) {
+    const duration = target.end.getTime() - target.start.getTime();
+    let attempts = 0;
+    while (true) {
+      const end = new Date(cursor);
+      const start = new Date(end.getTime() - duration);
+      const collisions = occupied.filter(slot => slot.start < end && slot.end > start);
+      if (!collisions.length) {
+        allocated.push({ visitId: target.row.visit_id, start, end });
+        occupied.push({ start, end });
+        cursor = new Date(start.getTime() - 60_000);
+        break;
+      }
+      cursor = new Date(Math.min(...collisions.map(slot => slot.start.getTime())) - 60_000);
+      if (++attempts > existing.length + targets.length) {
+        throw new Error(`cannot prove a collision-free retirement window for ${target.row.visit_id}`);
+      }
+    }
+  }
+  return allocated;
+}
+
+async function retireOverlappingGoldenAssignments(
+  plannerJwt: string,
+  controlledInspectorId: string,
+  proposedStart: Date,
+  proposedEnd: Date,
+) {
+  const rows = must(await rest("GET",
+    `assignments?select=visit_id,visits!inner(window_start,window_end,factories!inner(factory_code))&inspector_id=eq.${controlledInspectorId}&visits.planning_status=in.(published,returned)&visits.operational_state=eq.new&visits.window_start=lt.${proposedEnd.toISOString()}&visits.window_end=gt.${proposedStart.toISOString()}&visits.factories.factory_code=like.R3-QA-CERT-*`,
+    plannerJwt), "read prior golden assignments") as GoldenAssignmentWindow[];
+  const existing = must(await rest("GET",
+    `assignments?select=visit_id,visits!inner(window_start,window_end)&inspector_id=eq.${controlledInspectorId}&status=in.(assigned,preparing,ready)&visits.planning_status=in.(draft,published,returned)&visits.window_start=lt.${proposedStart.toISOString()}`,
+    plannerJwt), "read occupied controlled Inspector windows") as GoldenAssignmentWindow[];
+  for (const row of rows) {
+    if (!row.visits.factories?.factory_code.startsWith("R3-QA-CERT-")) {
+      throw new Error("refusing to reschedule a non-golden assignment");
+    }
+  }
+  for (const window of allocateRetirementWindows(rows, existing, proposedStart)) {
+    must(await rest("POST", "rpc/reschedule_published_visits_atomic", plannerJwt, {
+      p_visit_ids: [window.visitId],
+      p_window_start: window.start.toISOString(),
+      p_window_end: window.end.toISOString(),
+      p_reason: "Controlled UAT golden-journey fixture rollover",
+      p_idempotency_key: `golden-rollover-${window.visitId}-${window.end.toISOString()}`,
+      p_correlation_id: crypto.randomUUID(),
+    }), `reschedule prior golden assignment ${window.visitId}`);
+  }
+}
+
+function freshGoldenWindow(now = new Date()): { start: string; end: string; startInput: string; endInput: string } {
+  if (!Number.isFinite(now.getTime())) throw new Error("golden visit window requires a valid current time");
+  const startDate = new Date(now);
+  startDate.setUTCSeconds(0, 0);
+  startDate.setUTCMinutes(startDate.getUTCMinutes() - 1);
+  const endDate = new Date(startDate.getTime() + 90 * 60_000);
+  const start = startDate.toISOString();
+  const end = endDate.toISOString();
+  return { start, end, startInput: start.slice(0, 16), endInput: end.slice(0, 16) };
+}
+
+// UI-login (SCR-PUB-010) for the controlled Inspector through the real form,
+// matching auth.setup without depending on a generated storage-state file.
 async function journeyInspectorPage(browser: { newContext: (o: object) => Promise<BrowserContext> }): Promise<Page> {
   if (lastContext) await lastContext.close();
   const ctx = await browser.newContext({
@@ -46,12 +188,20 @@ async function journeyInspectorPage(browser: { newContext: (o: object) => Promis
   });
   lastContext = ctx;
   const page = await ctx.newPage();
-  await page.goto("/login");
-  await waitForCredentialsForm(page);
-  await page.locator("#email").fill(inspectorCreds.email);
-  await page.locator("#pw").fill(inspectorCreds.password);
-  await submitCredentials(page);
-  await page.waitForURL(url => url.pathname.startsWith("/field"), { timeout: 40_000 });
+  await test.step("P2 Inspector opens the governed login form", async () => {
+    await page.goto("/login");
+    await waitForCredentialsForm(page);
+  }, { timeout: P2_LOGIN_STEP_TIMEOUT });
+  await test.step("P2 Inspector submits controlled credentials", async () => {
+    await identifierField(page).fill(inspectorCreds.email);
+    await passwordField(page).fill(inspectorCreds.password);
+    await submitCredentials(page);
+  }, { timeout: P2_LOGIN_STEP_TIMEOUT });
+  await test.step("P2 Inspector reaches the approved Dashboard landing", async () => {
+    await page.waitForURL(url => url.pathname === "/dashboard", { timeout: P2_LOGIN_STEP_TIMEOUT });
+    await expect(page.locator("#role-dashboard-summary")).toBeVisible({ timeout: P2_LOGIN_STEP_TIMEOUT });
+    await expect(page.locator("main")).not.toContainText("ERR-AUTH", { timeout: P2_LOGIN_STEP_TIMEOUT });
+  }, { timeout: P2_LOGIN_STEP_TIMEOUT });
   const origin = new URL(page.url()).origin;
   await ctx.addCookies([
     { name: "locale", value: "en", url: origin },
@@ -61,13 +211,128 @@ async function journeyInspectorPage(browser: { newContext: (o: object) => Promis
   return page;
 }
 
+async function journeySupervisorPage(browser: { newContext: (o: object) => Promise<BrowserContext> }): Promise<Page> {
+  if (lastContext) await lastContext.close();
+  const ctx = await browser.newContext({});
+  lastContext = ctx;
+  const page = await ctx.newPage();
+  await test.step("P1.5 Supervisor authenticates through the governed login form", async () => {
+    await page.goto("/login");
+    await waitForCredentialsForm(page);
+    await identifierField(page).fill(PERSONAS.supervisor.email);
+    await passwordField(page).fill(PERSONAS.supervisor.password);
+    await submitCredentials(page);
+    await page.waitForURL(url => url.pathname === "/dashboard", { timeout: P2_LOGIN_STEP_TIMEOUT });
+    await expect(page.locator("#role-dashboard-summary")).toBeVisible({ timeout: P2_LOGIN_STEP_TIMEOUT });
+    await expect(page.locator("main")).not.toContainText("ERR-AUTH", { timeout: P2_LOGIN_STEP_TIMEOUT });
+  }, { timeout: P2_LOGIN_STEP_TIMEOUT });
+  return page;
+}
+
 test.beforeAll(async () => {
   const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
+  const fixtureGeofenceRadius = await governedFixtureGeofenceRadius(planner.jwt);
 
-  // Reuse a prior clearly disposable R3/G10 inspector because the available
-  // service-role credential is stale; no new auth identity is created here.
-  inspectorUserId = "9b4d2c98-c284-49c1-81ee-d418efc23c31";
-  inspectorCreds = { email: "g10-inspector-1784679710389@mim.gov.sa", password: "G10!Inspector2026" };
+  const freshWindow = freshGoldenWindow();
+  visitWindowStart = freshWindow.start;
+  visitWindowEnd = freshWindow.end;
+  visitWindowStartInput = freshWindow.startInput;
+  visitWindowEndInput = freshWindow.endInput;
+  if (RECOVERY_VISIT_ID) {
+    inspectorCreds = goldenInspectorPersona();
+    const inspectorSession = await login(inspectorCreds.email, inspectorCreds.password);
+    inspectorUserId = inspectorSession.userId;
+    if (!UUID.test(RECOVERY_VISIT_ID)) throw new Error("GOLDEN_RECOVERY_VISIT_ID must be a UUID");
+    const rows = must(await rest("GET",
+      `visits?id=eq.${RECOVERY_VISIT_ID}&select=id,planning_status,operational_state,package_version_id,factories(id,factory_code,name,region,official_lat,official_lng,geofence_radius_m),assignments(inspector_id,status)`,
+      planner.jwt), "read recovery visit") as Array<any>;
+    if (rows.length !== 1) throw new Error("recovery visit must resolve to exactly one governed row");
+    const row = rows[0];
+    if (!row.factories?.factory_code?.startsWith("R3-QA-CERT-") || row.factories.region !== "Riyadh") throw new Error("recovery visit is not owned by the Riyadh golden dataset");
+    if (row.planning_status !== "published" || !["on_the_way", "arrived", "executing", "submitted", "under_review"].includes(row.operational_state)) throw new Error("recovery visit is not at an approved P2 checkpoint");
+    if (row.assignments?.length !== 1 || row.assignments[0].inspector_id !== inspectorUserId) throw new Error("recovery visit is not assigned only to the controlled Inspector");
+    const journeys = must(await rest("GET", `journey_sessions?visit_id=eq.${RECOVERY_VISIT_ID}&select=id,status,inspector_id`, inspectorSession.jwt), "read recovery journey") as Array<any>;
+    if (journeys.length !== 1 || journeys[0].inspector_id !== inspectorUserId) throw new Error("recovery visit has no single controlled journey");
+    const checkpoint = `${row.operational_state}/${journeys[0].status}`;
+    if (checkpoint === "on_the_way/on_journey") recoveryCheckpoint = "before_checkin";
+    else if (checkpoint === "arrived/arrived") recoveryCheckpoint = "after_checkin";
+    else if (["executing/completed", "submitted/completed", "under_review/completed"].includes(checkpoint)) {
+      const inspections = must(await rest("GET",
+        `inspections?visit_id=eq.${RECOVERY_VISIT_ID}&select=id,status,started_at,submission_versions(version_number),reviews(decision,returned_sections,decided_at)`,
+        inspectorSession.jwt), "read recovery inspection") as Array<{ id: string; status: string; started_at: string | null; submission_versions: Array<{ version_number: number }>; reviews: Array<{ decision: string | null; returned_sections: string[] | null; decided_at: string | null }> }>;
+      if (inspections.length !== 1 || !inspections[0].started_at) {
+        throw new Error("recovery visit has no single controlled started inspection");
+      }
+      const versionNumbers = inspections[0].submission_versions.map(version => version.version_number).sort();
+      if (inspections[0].status === "in_progress") recoveryCheckpoint = "inspection_started";
+      else if (inspections[0].status === "submitted" && versionNumbers.join(",") === "1") {
+        recoveryCheckpoint = "submitted_v1";
+      } else if (inspections[0].status === "submitted" && versionNumbers.join(",") === "1,2") {
+        recoveryCheckpoint = "submitted_v2";
+      } else if (inspections[0].status === "under_review" && inspections[0].submission_versions.length === 1 && inspections[0].reviews.filter(review => !review.decided_at).length === 1) {
+        recoveryCheckpoint = "reviewing_v1";
+      } else if (inspections[0].status === "under_review" && versionNumbers.join(",") === "1,2" && inspections[0].reviews.filter(review => !review.decided_at).length === 1) {
+        recoveryCheckpoint = "reviewing_v2";
+      } else if (inspections[0].status === "returned" && inspections[0].submission_versions.length === 1) {
+        const decidedReturns = inspections[0].reviews.filter(review => review.decision === "return" && !!review.decided_at);
+        if (decidedReturns.length !== 1 || decidedReturns[0].returned_sections?.length !== 1) throw new Error("recovery returned v1 lacks one exact governed return scope");
+        recoveryCheckpoint = "returned_v1";
+      } else if (inspections[0].status === "approved" && versionNumbers.join(",") === "1,2" && inspections[0].reviews.filter(review => !!review.decided_at).length === 2) {
+        recoveryCheckpoint = "approved_v2";
+      } else {
+        throw new Error("recovery inspection is not at a governed P2-P4 checkpoint");
+      }
+      inspectionId = inspections[0].id;
+    }
+    else throw new Error("recovery visit and journey are not at the same approved P2 checkpoint");
+    const pkg = must(await rest("GET", `package_versions?id=eq.${row.package_version_id}&select=id,status,definition,packages(code)`, planner.jwt), "read recovery package")[0];
+    const sections: { key: string; items?: string[] }[] = pkg?.definition?.sections ?? [];
+    const scope = sections.find(section => (section.items ?? []).includes("FS-101"));
+    if (pkg?.status !== "published" || pkg?.packages?.code !== "PKG-UAT-GOLDEN-FS101" || !scope) throw new Error("recovery visit does not use the governed published FS-101 package");
+    factory = row.factories;
+    packageVersionId = pkg.id;
+    scopeSectionKey = scope.key;
+    visitId = row.id;
+    return;
+  }
+
+  // Resolve both controlled credentials, then let the guarded non-production
+  // lease choose one that is available for this exact window. The lease RPC
+  // uses the same overlap semantics as supervision and serializes golden runs.
+  const controlledCredentials = [goldenInspectorPersona(), {
+    email: PERSONAS.inspector.email,
+    password: PERSONAS.inspector.password,
+  }];
+  controlledInspectorCandidates = await Promise.all(controlledCredentials.map(async value => {
+    const session = await login(value.email, value.password);
+    return { userId: session.userId, value };
+  }));
+  for (const candidate of controlledInspectorCandidates) {
+    await retireOverlappingGoldenAssignments(
+      planner.jwt,
+      candidate.userId,
+      new Date(visitWindowStart),
+      new Date(visitWindowEnd),
+    );
+  }
+  const leaseResponse = await serviceFixtureRest("POST", "rpc/acquire_nonproduction_golden_inspector_lease", {
+    p_run_key: `golden-supervisor-${crypto.randomUUID()}`,
+    p_candidate_ids: controlledInspectorCandidates.map(candidate => candidate.userId),
+    p_window_start: visitWindowStart,
+    p_window_end: visitWindowEnd,
+    p_expires_at: new Date(Date.now() + 15 * 60_000).toISOString(),
+  });
+  if (!leaseResponse.error) {
+    const selectedInspector = selectLeasedControlledInspector(
+      controlledInspectorCandidates,
+      leaseResponse.data as Array<{ lease_id: string; inspector_id: string }>,
+    );
+    inspectorUserId = selectedInspector.userId;
+    inspectorCreds = selectedInspector.value;
+    goldenInspectorLeaseId = selectedInspector.leaseId;
+  } else if (!leaseResponse.error.includes("GOLDEN-LEASE-NO-AVAILABLE-INSPECTOR")) {
+    throw new Error(`reserve an available controlled Inspector: ${leaseResponse.error}`);
+  }
 
   // M02-012 blocks publish while a factory has ANY active periodic visit. Picking
   // an existing shared factory races every other run (this suite's own retries,
@@ -82,6 +347,7 @@ test.beforeAll(async () => {
     factory_code: code, name: `R3 QA Certification ${code}`,
     cr_number: `9999-${Date.now() % 1000000}`, region: "Riyadh", city: "Riyadh",
     official_lat: 24.7136, official_lng: 46.6753,
+    geofence_radius_m: fixtureGeofenceRadius,
     risk_band: "low", risk_score: 10,
   }), "create sacrificial factory")[0];
 
@@ -122,17 +388,32 @@ async function fillWizard(page: Page) {
   // (M01-038) steps in the same React commit; wait for that render to land before
   // probing for the license radio's presence, since .count() (unlike .fill/.click)
   // does not auto-wait and would otherwise race the state update.
-  await page.getByText(/3 · Confirm location/).waitFor();
+  const locationHeading = page.getByText(/3 · Confirm location/);
+  await locationHeading.waitFor();
+  const locationPanel = locationHeading.locator("..");
 
   // License step (M01-036) — check the single radio if this factory carries a license.
   const licenseRadio = page.locator('input[name="license_number"]');
   if (await licenseRadio.count()) await licenseRadio.check();
 
-  // Location step (M01-038) — always provide a planner pin and confirm; satisfies
-  // both "no official pin on record" and "confirmation required" blockers.
-  await page.locator('input[name="planner_lat"]').fill("24.7136");
-  await page.locator('input[name="planner_lng"]').fill("46.6753");
-  await page.locator('input[name="location_confirmed"]').check();
+  // Location step (M01-038 / DM-004) — governed external/Senaei coordinates
+  // are read-only master data. Older/manual fixtures may still expose an
+  // editable pin; preserve that path without injecting overrides into the
+  // governed path.
+  const plannerLat = locationPanel.locator('input[name="planner_lat"]');
+  const plannerLng = locationPanel.locator('input[name="planner_lng"]');
+  const [latEditors, lngEditors] = await Promise.all([plannerLat.count(), plannerLng.count()]);
+  expect(latEditors, "location editor must expose both coordinates or neither").toBe(lngEditors);
+  if (latEditors > 0) {
+    await plannerLat.fill("24.7136");
+    await plannerLng.fill("46.6753");
+  } else {
+    await expect(locationPanel.getByText(/Read-only.*location master data cannot be changed in Planning/i)).toBeVisible();
+    await expect(locationPanel.getByText("Location confirmed", { exact: true })).toBeVisible();
+    await expect(plannerLat).toHaveCount(0);
+    await expect(plannerLng).toHaveCount(0);
+  }
+  await locationPanel.locator('input[name="location_confirmed"]').check();
 
   // Planning commit 7c904b8d ("optional zero-many packages") replaced the
   // single-select package picker with zero-many checkboxes; check the current
@@ -141,14 +422,11 @@ async function fillWizard(page: Page) {
   // Window must CONTAIN now: EXE-JOURNEY-OUTSIDE-WINDOW (20260721140000,
   // governed engine_settings.execution.journey_start_timing='inside_visit_window')
   // blocks journey start outside [window_start, window_end], which retired the
-  // old far-future-window trick. Overlap safety instead comes from the
-  // throwaway factory (M02-012) plus every other suite booking the shared
-  // inspector far in the future — a narrow ±hours window around now can only
-  // collide with a same-moment concurrent run, which is the honest signal.
-  const start = new Date(Date.now() - 36e5).toISOString().slice(0, 16);
-  const end = new Date(Date.now() + 4 * 36e5).toISOString().slice(0, 16);
-  await page.locator('input[name="window_start"]').fill(start);
-  await page.locator('input[name="window_end"]').fill(end);
+  // old far-future-window trick. The same exact minute-aligned window used by
+  // the narrowly scoped audited predecessor rollover is submitted here; the
+  // application still performs its ordinary conflict and authorization checks.
+  await page.locator('input[name="window_start"]').fill(visitWindowStartInput);
+  await page.locator('input[name="window_end"]').fill(visitWindowEndInput);
 }
 
 test("NEG: publish without an inspector is blocked, work preserved (M01-040/M01-041)", async ({ browser }) => {
@@ -163,29 +441,151 @@ test("NEG: publish without an inspector is blocked, work preserved (M01-040/M01-
 });
 
 test("P1 planner: single visit publishes (M01-034/036/038/040/041)", async ({ browser }) => {
+  test.skip(!!RECOVERY_VISIT_ID, "recovering the exact governed active P1 visit");
   const page = await personaPage(browser, "planner");
   await page.goto("/planning/single");
   await fillWizard(page);
-  await page.locator('select[name="inspector_id"]').selectOption(inspectorUserId);
-  await page.getByRole("button", { name: /publish visit/i }).click();
-  await page.waitForURL(/\/visits\/[0-9a-f-]+/, { timeout: 20_000 });
-  visitId = page.url().match(/\/visits\/([0-9a-f-]+)/)![1];
+  const inspectorSelect = page.locator('select[name="inspector_id"]');
+  const eligibleInspectorIds = await inspectorSelect.locator('option:not([value=""])').evaluateAll(
+    options => options.map(option => (option as HTMLOptionElement).value),
+  );
+  expect(eligibleInspectorIds.length, "Planner selector must expose an eligible Inspector").toBeGreaterThan(0);
+  const plannerControlledInspectorIds = controlledInspectorCandidates
+    .map(candidate => candidate.userId)
+    .filter(candidateId => eligibleInspectorIds.includes(candidateId));
+  expect(plannerControlledInspectorIds.length, "Planner selector must expose a controlled Inspector").toBeGreaterThan(0);
+  proposedInspectorUserId = goldenInspectorLeaseId ? inspectorUserId : plannerControlledInspectorIds[0];
+  await inspectorSelect.selectOption(proposedInspectorUserId);
+  const publish = page.getByRole("button", { name: /submit for supervision/i });
+  await test.step("P1 Planner publish is interactive within the smoke-step timeout", async () => {
+    await expect(publish).toBeEnabled();
+  }, { timeout: P2_LOGIN_STEP_TIMEOUT });
+  await publish.click();
+  await page.waitForURL(url =>
+    url.pathname === "/planning/supervision" && UUID.test(url.searchParams.get("submitted") ?? ""),
+    { timeout: 20_000 },
+  );
+  visitId = new URL(page.url()).searchParams.get("submitted")!;
+
+  const supervisor = await journeySupervisorPage(browser);
+  const supervisorSession = await login(PERSONAS.supervisor.email, PERSONAS.supervisor.password);
+  await pollRest(async () => {
+    const rows = must(await rest("GET",
+      `planning_supervision_requests?visit_id=eq.${visitId}&status=eq.pending&select=id,visit_id,visits!inner(planning_status)`,
+      supervisorSession.jwt), "verify exact pending supervision request") as Array<{
+        id: string;
+        visit_id: string;
+        visits: { planning_status: string };
+      }>;
+    if (rows.length > 1) throw new Error("exact visit resolved to multiple pending supervision requests");
+    return rows.length === 1 && rows[0].visit_id === visitId && rows[0].visits.planning_status === "pending_supervision"
+      ? rows[0]
+      : null;
+  }, "exact Supervisor-visible pending request", 5);
+  const authoritativeRoster = must(await rest("POST", "rpc/list_available_supervision_inspectors",
+    supervisorSession.jwt, { p_visit_ids: [visitId] }), "read authoritative Supervisor availability") as Array<{
+      visit_id: string;
+      inspector_id: string;
+    }>;
+  const authoritativeInspectorIds = authoritativeRoster
+    .filter(row => row.visit_id === visitId)
+    .map(row => row.inspector_id);
+  if (goldenInspectorLeaseId) {
+    expect(authoritativeInspectorIds, "reserved Inspector must remain authoritatively available").toContain(inspectorUserId);
+  } else {
+    const selectedInspector = selectAvailableControlledInspector(
+      controlledInspectorCandidates,
+      authoritativeInspectorIds,
+    );
+    inspectorUserId = selectedInspector.userId;
+    inspectorCreds = selectedInspector.value;
+  }
+  await supervisor.goto(`/planning/supervision?submitted=${visitId}`);
+  const exactRequest = supervisor.locator("section.sq-card").filter({
+    has: supervisor.locator(`input[name="visit_id"][value="${visitId}"]`),
+  });
+  await expect(exactRequest, "the exact P1 visit must have one pending supervision request").toHaveCount(1);
+  const finalInspector = exactRequest.locator('select[name="inspector_id"]');
+  const supervisorEligibleInspectorIds = await finalInspector.locator('option:not([value=""])').evaluateAll(
+    options => options.map(option => (option as HTMLOptionElement).value),
+  );
+  expect(supervisorEligibleInspectorIds, "Supervisor queue must expose the controlled Inspector").toContain(inspectorUserId);
+  await finalInspector.selectOption(inspectorUserId);
+  await expect(finalInspector).toHaveValue(inspectorUserId);
+  mkdirSync("test-results/golden-supervisor", { recursive: true });
+  await supervisor.screenshot({
+    path: "test-results/golden-supervisor/available-controlled-inspector.png",
+    fullPage: true,
+  });
+  await exactRequest.getByRole("button", { name: /approve & release/i }).click();
+  await expect(exactRequest, "approved request must leave the exact pending queue").toHaveCount(0);
+  await expect(supervisor.getByText("No visit is awaiting supervision.", { exact: true })).toBeVisible();
+  const decision = must(await rest("GET",
+    `planning_supervision_requests?visit_id=eq.${visitId}&select=status,decision_by,decided_at,proposed_inspector_id`,
+    supervisorSession.jwt), "verify exact supervision decision") as Array<{
+      status: string;
+      decision_by: string;
+      decided_at: string;
+      proposed_inspector_id: string;
+    }>;
+  expect(decision).toEqual([{
+    status: "approved",
+    decision_by: supervisorSession.userId,
+    decided_at: expect.any(String),
+    proposed_inspector_id: proposedInspectorUserId,
+  }]);
+  const released = must(await rest("GET",
+    `visits?id=eq.${visitId}&select=planning_status,assignments(inspector_id,status)`, supervisorSession.jwt),
+  "verify released visit") as Array<{
+    planning_status: string;
+    assignments: Array<{ inspector_id: string; status: string }>;
+  }>;
+  expect(released).toEqual([{
+    planning_status: "published",
+    assignments: [{ inspector_id: inspectorUserId, status: "assigned" }],
+  }]);
+  if (goldenInspectorLeaseId) {
+    must(await serviceFixtureRest("POST", "rpc/release_nonproduction_golden_inspector_lease", {
+      p_lease_id: goldenInspectorLeaseId,
+      p_event_type: "released",
+      p_visit_id: visitId,
+    }), "release assigned golden Inspector lease");
+    goldenInspectorLeaseId = "";
+  }
 });
 
 test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1", async ({ browser }) => {
   const page = await journeyInspectorPage(browser);
 
+  if (["submitted_v1", "reviewing_v1", "returned_v1", "submitted_v2", "reviewing_v2", "approved_v2"].includes(recoveryCheckpoint ?? "")) {
+    await page.goto(`/field/inspection/${inspectionId}`);
+    if (recoveryCheckpoint === "submitted_v1") {
+      await expect(page.getByRole("heading", { name: "Submitted — final submitted version.", exact: true, level: 2 })).toBeVisible();
+    }
+    const inspector = await login(inspectorCreds.email, inspectorCreds.password);
+    const versions = must(await rest("GET", `submission_versions?select=id&inspection_id=eq.${inspectionId}&version_number=eq.1`, inspector.jwt), "verify resumed submission v1");
+    expect(versions).toHaveLength(1);
+    return;
+  }
+
   // Assigned visit is visible on the field dashboard (RBAC-009 scope)
-  await page.goto("/field");
+  await test.step("P2 Inspector opens the governed field journey", async () => {
+    await page.goto("/field");
+    await page.waitForURL(url => url.pathname === "/field");
+  }, { timeout: 20_000 });
   // The dashboard replacement renders only the single "next" visit as a link
   // (FAB / Open directions); per-assignment cards are plain surfaces, and
   // leftover far-future assignments from prior runs can hold the next slot.
   // Navigate directly — assignment visibility is covered by RBAC-009 reads.
   // (Live cert Phase 8: the a.sq-surface card selector was stale.)
 
-  // Startup: four steps, enabled strictly in order (SB05)
-  await page.goto(`/field/${visitId}`);
-  const step = (re: RegExp) => page.getByRole("button", { name: re });
+  if (recoveryCheckpoint === "inspection_started") {
+    await page.goto(`/field/inspection/${inspectionId}`);
+    await page.waitForURL(`/field/inspection/${inspectionId}`);
+  } else {
+    // Startup: four steps, enabled strictly in order (SB05)
+    await page.goto(`/field/${visitId}`);
+    const step = (re: RegExp) => page.getByRole("button", { name: re });
 
   // READINESS LEG (TASK-EXECUTION-MODULE-001 Phase 3B, D-010) — depends on
   // migrations 20260721120000 (readiness RPCs) and 20260721130000 (journey
@@ -197,7 +597,7 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   // server-side — so this leg saves + confirms the preparation BEFORE any
   // package download or journey start, exactly like a real inspector.
   const prepPanel = page.getByTestId("pre-execution-panel");
-  if (await prepPanel.count()) {
+  if (await prepPanel.count() && !(await page.getByTestId("pre-execution-ready").count())) {
     await expect(prepPanel).toBeVisible();
     // Pick the first available in-window day (days at cap render disabled).
     await prepPanel.getByTestId("prep-day-available").first().click();
@@ -220,19 +620,32 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
     await expect(step(/1 ·/)).toBeEnabled({ timeout: 30_000 });
   }
 
-  await expect(step(/2 ·/)).toBeDisabled();
-  await step(/1 ·/).click();
-  await step(/2 ·/).click();
-  await step(/3 ·/).click();
-  // Execution-mode "eligible" badges also use .sq-lozenge--success, .badge-compliant now — match text directly.
-  await expect(page.locator(".sq-lozenge--success, .badge-compliant", { hasText: "inside fence" })).toBeVisible();
+  if (recoveryCheckpoint !== "after_checkin") {
+    await expect(step(/2 ·/)).toBeDisabled();
+    await step(/1 ·/).click();
+    await step(/2 ·/).click();
+    await step(/3 ·/).click();
+  }
+  if (recoveryCheckpoint === "after_checkin") {
+    await expect(page.getByRole("heading", { name: "Arrival evidence", exact: true, level: 5 })).toBeVisible();
+  } else {
+    // The measured distance badge is intentionally transient client state and
+    // is asserted only during the live check-in that produced it. E3 arrival
+    // auto-detect can settle to "arrival auto-detected" before this poll ever
+    // observes the transient "inside fence" badge — either is a governed
+    // successful check-in outcome.
+    await expect(
+      page.locator(".sq-lozenge--success, .badge-compliant", { hasText: "inside fence" })
+        .or(page.getByText("arrival auto-detected", { exact: true }))
+    ).toBeVisible();
+  }
 
   // M04-045 release certification — queue a comment-only arrival record through
   // the real IndexedDB outbox, then prove the live replay persisted the visit
   // linkage, new enum value and evidence_note column before inspection creation.
   const arrivalNote = `G12 arrival replay ${visitId}`;
   const arrivalSurface = page
-    .getByRole("heading", { name: /Arrival evidence \(M04-045\)/i, level: 5 })
+    .getByRole("heading", { name: "Arrival evidence", exact: true, level: 5 })
     .locator("..");
   // Obsolete-test fix (Cycle 2 completion pass): this UI's field/button copy
   // was relabeled by the already-merged iPad geofence-override work
@@ -268,126 +681,237 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   await checkboxes.nth(1).check();
   await step(/4 ·/).click();
   await page.waitForURL(/\/field\/inspection\/[0-9a-f-]+/, { timeout: 20_000 });
-  inspectionId = page.url().match(/\/field\/inspection\/([0-9a-f-]+)/)![1];
+    inspectionId = page.url().match(/\/field\/inspection\/([0-9a-f-]+)/)![1];
+  }
 
-  // NEG: submit with everything unanswered — ERR-SUB-001, state stays in progress.
-  // The button is aria-disabled (not the disabled attribute) while blocked —
-  // submit() does its own full validation internally, so force the click same
-  // as a real pointer click would (aria-disabled doesn't prevent DOM clicks).
-  await page.getByRole("button", { name: "Review & submit — final version" }).click({ force: true });
-  await expect(page.locator(".sq-banner").first()).toContainText("Blockers:");
+  if (!RECOVERY_VISIT_ID) {
+    // NEG: submit on a newly created inspection starts unanswered — ERR-SUB-001 keeps it
+    // in progress. A governed recovery record may already contain answers and
+    // must never be forced back into this fresh-state assertion.
+    const refusalState = page.getByText(/^\d+ blocking issue\(s\) — submission will be refused$/);
+    await expect(refusalState).toBeVisible();
+    const blockerCount = Number((await refusalState.innerText()).match(/^\d+/)?.[0]);
+    expect(blockerCount, "negative submit must expose a positive governed blocker count").toBeGreaterThan(0);
+    await expect(page.getByRole("button", { name: "Review & submit — final version" })).toHaveAttribute("aria-disabled", "true");
+  }
 
   // 1x1 PNG — satisfies the mandatory-evidence gate on a non-compliant answer (DEC-006).
   const PIXEL_PNG = Buffer.from(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=", "base64");
 
   // Answer every item; FS-101 non-compliant (drives the V-FS-09 path)
-  const qs = page.locator(".ipad-q");
-  const n = await qs.count();
-  expect(n).toBeGreaterThan(0);
-  for (let i = 0; i < n; i++) {
-    const q = qs.nth(i);
-    const target = (await q.innerText()).includes("FS-101");
-    const btn = target
-      ? q.getByRole("button", { name: /^non compliant$/i })
-      : q.getByRole("button", { name: /^compliant$/i });
-    if (await btn.count()) await btn.click();
-    else await q.getByRole("button").first().click();
-    await expect(q).toHaveClass(/is-answered/);
+  const sectionsNav = page.getByRole("navigation", { name: "Inspection sections" });
+  await expect(sectionsNav).toBeVisible({ timeout: 30_000 });
+  const sectionCount = await sectionsNav.getByRole("listitem").count();
+  expect(sectionCount, "governed inspection must expose at least one section").toBeGreaterThan(0);
+  const answeredCodes = new Set<string>();
+  for (let sectionIndex = 0; sectionIndex < sectionCount; sectionIndex++) {
+    const titles = page.locator("p").filter({ hasText: /^[A-Z]{2}-\d+ ·/ });
+    const titleCount = await titles.count();
+    for (let i = 0; i < titleCount; i++) {
+      const title = titles.nth(i);
+      const code = (await title.innerText()).match(/^([A-Z]{2}-\d+) ·/)?.[1];
+      expect(code, "rendered governed question must expose its item code").toBeTruthy();
+      expect(answeredCodes.has(code!), `governed question ${code} must render exactly once`).toBe(false);
+      answeredCodes.add(code!);
+      const q = title.locator("..").locator("..");
+      const target = code === "FS-101";
+      const btn = q.getByRole("button", { name: target ? /^non compliant$/i : /^compliant$/i });
+      await expect(btn, `governed question ${code} must expose one named response`).toHaveCount(1);
+      await btn.click();
+      await expect(btn).toHaveAttribute("aria-pressed", "true");
 
-    if (target) {
-      // Mandatory evidence (M04-199/evidence_rule) — attach a photo.
-      const fileInput = q.locator('input[type="file"]');
-      if (await fileInput.count()) {
-        await fileInput.setInputFiles({ name: "fs-101.png", mimeType: "image/png", buffer: PIXEL_PNG });
+      if (target) {
+      // Mandatory evidence (M04-199/evidence_rule) — resume idempotently when
+      // this exact question already has enough governed photo evidence. A new
+      // capture may use only the uniquely named mandatory-photo control;
+      // replacement remains a separate, explicitly governed action.
+      const evidenceState = q.getByText(/^\d+\/\d+ evidence$/);
+      await expect(evidenceState, "FS-101 must expose one unambiguous governed evidence count").toHaveCount(1);
+      const evidenceMatch = (await evidenceState.innerText()).match(/^(\d+)\/(\d+) evidence$/);
+      expect(evidenceMatch, "FS-101 evidence count must use the governed current/required format").toBeTruthy();
+      const attachedEvidence = Number(evidenceMatch![1]);
+      const requiredEvidence = Number(evidenceMatch![2]);
+      expect(requiredEvidence, "FS-101 must require positive governed evidence").toBeGreaterThan(0);
+      if (attachedEvidence < requiredEvidence) {
+        const mandatoryPhoto = q.getByLabel("📷 Mandatory photo", { exact: true });
+        await expect(mandatoryPhoto, "missing FS-101 evidence requires exactly one governed photo control").toHaveCount(1);
+        await expect(mandatoryPhoto, "FS-101 governed evidence control must remain a file upload").toHaveAttribute("type", "file");
+        await expect(mandatoryPhoto, "FS-101 governed evidence control must accept photo evidence").toHaveAttribute("accept", "image/*");
+        await expect(q.getByLabel("Replace", { exact: true }), "replacement must not be used to satisfy missing evidence").toHaveCount(0);
+        await mandatoryPhoto.setInputFiles({ name: "fs-101.png", mimeType: "image/png", buffer: PIXEL_PNG });
         // M04-109 — attaching a photo opens an annotate-before-attach modal
         // (pen/highlight over the image) that blocks the rest of the page
         // until confirmed or discarded.
         const annotateDialog = page.getByRole("dialog", { name: /annotate photo/i });
         await annotateDialog.getByRole("button", { name: /attach evidence/i }).click();
         await expect(annotateDialog).toBeHidden();
+        const ocrDialog = page.getByRole("dialog", { name: "Attach evidence · OCR scan", exact: true });
+        await expect(ocrDialog).toBeVisible();
+        await expect(ocrDialog).toContainText("Ready to attach as evidence");
+        const attachReviewedEvidence = ocrDialog.getByRole("button", { name: "Attach evidence", exact: true });
+        await expect(attachReviewedEvidence).toHaveCount(1);
+        await attachReviewedEvidence.click();
+        await expect(ocrDialog).toBeHidden();
+        await expect(q).toContainText("1/1 evidence");
+      } else {
+        expect(attachedEvidence, "existing FS-101 evidence must satisfy the governed minimum").toBeGreaterThanOrEqual(requiredEvidence);
       }
-      // Blocking action form (M04-171..184) — fill every generic field it asks for.
-      // Phase 5 workspace nests the hidden evidence file input inside
-      // .sq-panel — exclude non-fillable input types or fill() waits forever.
-      const formFields = q.locator(".sq-panel input:not([type=file]):not([type=checkbox]):not([type=radio]):not([type=hidden]), .sq-panel textarea, .panel input:not([type=file]):not([type=checkbox]):not([type=radio]):not([type=hidden]), .panel textarea");
-      const fc = await formFields.count();
-      for (let f = 0; f < fc; f++) {
-        const field = formFields.nth(f);
-        const tag = await field.evaluate(el => el.tagName.toLowerCase());
-        const type = tag === "input" ? await field.getAttribute("type") : null;
-        await field.fill(type === "date" ? "2026-08-01" : "G10 Playwright golden journey — corrective action.");
+      // Blocking action form (M04-171..184) — use the approved accessible
+      // fields and the existing deterministic golden content. The governed due
+      // date is product-generated from the configured action window; preserve it.
+      const deterministicCorrection = "G10 Playwright golden journey — corrective action.";
+      for (const name of ["Owner name*", "Owner role*", "Required correction*"]) {
+        const field = q.getByRole("textbox", { name, exact: true });
+        await expect(field, `required action field ${name} must render exactly once`).toHaveCount(1);
+        await field.fill(deterministicCorrection);
         await field.blur();
       }
+      const governedDueAt = q.getByRole("textbox", { name: "Due at*", exact: true });
+      await expect(governedDueAt, "governed due date must render exactly once").toHaveCount(1);
+      expect(await governedDueAt.inputValue(), "governed action-form due date must be preconfigured").toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      }
     }
+    if (sectionIndex < sectionCount - 1) await page.getByRole("button", { name: "Next section" }).click();
   }
+  expect(answeredCodes.size, "golden package must render governed checklist items").toBeGreaterThan(0);
+  expect([...answeredCodes].filter(code => code === "FS-101")).toHaveLength(1);
 
-  await page.getByRole("button", { name: "Review & submit — final version" }).click({ force: true });
+  const findingNarrative = page.getByRole("textbox", { name: "Finding narrative*", exact: true });
+  await expect(findingNarrative, "required finding narrative must render exactly once").toHaveCount(1);
+  await findingNarrative.fill("G10 Playwright golden journey — corrective action.");
+  await findingNarrative.blur();
+  await expect(page.getByTestId("finding-status-FS-101"), "finding must persist before final review is requested").toHaveText("Finding saved", { timeout: 30_000 });
+
+  await expect(page.getByText("All blocking validations pass — ready to submit", { exact: true })).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText(/^\d+ blocking issue\(s\) — submission will be refused$/)).toHaveCount(0);
+  const finalSubmit = page.getByRole("button", { name: "Review & submit — final version" });
+  await expect(finalSubmit).toHaveAttribute("aria-disabled", "false", { timeout: 30_000 });
+  await finalSubmit.click();
+  const finalReviewHeading = page.getByRole("heading", { name: "Final review", exact: true });
+  await expect(finalReviewHeading).toBeVisible();
+  const finalReview = finalReviewHeading.locator("..").locator("..");
+  const confirmSubmit = finalReview.getByRole("button", { name: "Confirm and submit", exact: true });
+  await expect(confirmSubmit).toBeEnabled();
+  await confirmSubmit.click();
   await signAndConfirm(page); // DEC-009 acknowledgement gate
-  await expect(page.locator(".sq-banner--immutable")).toContainText("Submitted — final submitted version.");
-  await expect(page.locator(".sq-sync")).toHaveClass(/sq-sync--synced/, { timeout: 30_000 });
-
   // Server truth: v1 exists and inspection is submitted
   const inspector = await login(inspectorCreds.email, inspectorCreds.password);
   await pollRest(async () => {
     const { data } = await rest("GET", `submission_versions?select=id&inspection_id=eq.${inspectionId}&version_number=eq.1`, inspector.jwt);
     return Array.isArray(data) && data.length === 1 ? data : null;
   }, "submission v1");
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Submitted — final submitted version.", exact: true, level: 2 })).toBeVisible({ timeout: 30_000 });
 });
 
 test("P3 reviewer: RETURN with exact scope and mandatory reason (M06-006, STM-REV-003)", async ({ browser }) => {
+  if (["returned_v1", "submitted_v2", "reviewing_v2", "approved_v2"].includes(recoveryCheckpoint ?? "")) {
+    const reviewer = await login(PERSONAS.reviewer.email, PERSONAS.reviewer.password);
+    const decided = must(await rest("GET", `reviews?select=decision,returned_sections&inspection_id=eq.${inspectionId}&decision=eq.return`, reviewer.jwt), "verify resumed return v1");
+    expect(decided).toEqual([{ decision: "return", returned_sections: [scopeSectionKey] }]);
+    return;
+  }
   const page = await personaPage(browser, "reviewer");
   await page.goto(`/reviews/${inspectionId}`); // CD-028 scan-first: opening is read-only, changes nothing
   await expect(page.locator(".sq-table, table")).toContainText("FS-101");
 
   // CD-028 leg 5 — starting the review is now an explicit, audited action
   // (opening the workspace no longer creates the review as a side-effect).
-  await page.getByRole("button", { name: /^start review$/i }).click();
-  await page.locator('input[name="decision"][value="return"]').waitFor({ timeout: 40_000 });
-  await page.locator('input[name="decision"][value="return"]').check();
-  await page.locator(`input[name="returned_section"][value="${scopeSectionKey}"]`).check();
-  await page.locator('textarea[name="reason"]').fill("FS-101 evidence insufficient — retag and re-shoot (G10 Playwright golden journey).");
-  await page.getByRole("button", { name: /confirm return/i }).click();
-  await page.waitForURL(/\/reviews$/, { timeout: 20_000 });
+  if (recoveryCheckpoint !== "reviewing_v1") {
+    const startReview = page.getByRole("button", { name: "Start review", exact: true });
+    await expect(startReview).toHaveCount(1);
+    await startReview.click();
+  }
+  const returnDecision = page.locator('input[name="decision"][value="return"]');
+  await expect(returnDecision).toHaveCount(1, { timeout: 40_000 });
+  await returnDecision.check();
+  const returnedSection = page.locator(`input[name="returned_section"][value="${scopeSectionKey}"]`);
+  await expect(returnedSection).toHaveCount(1);
+  await returnedSection.check();
+  const returnReason = page.locator('textarea[name="reason"]');
+  await expect(returnReason).toHaveCount(1);
+  await returnReason.fill("FS-101 evidence insufficient — retag and re-shoot (G10 Playwright golden journey).");
+  const reviewConfirmation = page.getByRole("button", { name: "Review confirmation", exact: true });
+  await expect(reviewConfirmation).toBeEnabled();
+  await reviewConfirmation.click();
+  await expect(page.getByRole("heading", { name: "Review decision before recording", exact: true })).toBeVisible();
+  const confirmReturn = page.getByRole("button", { name: "Confirm return", exact: true });
+  await expect(confirmReturn).toBeEnabled();
+  await confirmReturn.click();
+  await page.waitForURL(url => url.pathname === `/reviews/${inspectionId}` && url.searchParams.get("decision") === "return", { timeout: 20_000 });
 });
 
 test("P4 inspector: correct only the returned scope, resubmit v2 (STM-COR-002, M06-043)", async ({ browser }) => {
+  if (["submitted_v2", "reviewing_v2", "approved_v2"].includes(recoveryCheckpoint ?? "")) {
+    const inspector = await login(inspectorCreds.email, inspectorCreds.password);
+    const versions = must(await rest("GET", `submission_versions?select=id&inspection_id=eq.${inspectionId}&version_number=eq.2`, inspector.jwt), "verify resumed submission v2");
+    expect(versions).toHaveLength(1);
+    return;
+  }
   const page = await journeyInspectorPage(browser);
   await page.goto(`/field/inspection/${inspectionId}`);
 
-  await expect(page.locator(".sq-banner--warning")).toContainText(`Returned — correction scope: ${scopeSectionKey}.`);
-  await expect(page.getByText("Not in return scope — locked read-only").first()).toBeVisible();
+  await expect(page.getByText(`Returned — correction scope: ${scopeSectionKey}.`, { exact: true })).toBeVisible();
+  const openCorrection = page.getByRole("button", { name: "Open correction mode", exact: true });
+  await expect(openCorrection).toHaveCount(1);
+  await openCorrection.click();
 
-  const q101 = page.locator(".ipad-q", { hasText: "FS-101" });
+  const q101Title = page.locator("p").filter({ hasText: /^FS-101 ·/ });
+  await expect(q101Title, "returned FS-101 must remain uniquely addressable").toHaveCount(1);
+  const q101 = q101Title.locator("..").locator("..");
   await q101.getByRole("button", { name: /^compliant$/i }).click();
 
-  await page.getByRole("button", { name: "Review & submit — final version" }).click();
+  await expect(page.getByText("All blocking validations pass — ready to submit", { exact: true })).toBeVisible({ timeout: 30_000 });
+  const resubmit = page.getByRole("button", { name: "Resubmit — version 2", exact: true });
+  await expect(resubmit).toHaveAttribute("aria-disabled", "false", { timeout: 30_000 });
+  await resubmit.click();
+  const resubmitReviewHeading = page.getByRole("heading", { name: "Final review", exact: true });
+  await expect(resubmitReviewHeading).toBeVisible();
+  const resubmitReview = resubmitReviewHeading.locator("..").locator("..");
+  const confirmResubmit = resubmitReview.getByRole("button", { name: "Confirm and submit", exact: true });
+  await expect(confirmResubmit).toBeEnabled();
+  await confirmResubmit.click();
   await signAndConfirm(page); // DEC-009 acknowledgement gate
   // Two immutable banners are legitimately on screen post-resubmit (locked
   // read-only sections + the submission confirmation) — scope to the one
   // this assertion actually cares about, not just "first".
-  await expect(page.locator(".sq-banner--immutable", { hasText: "Submitted — final submitted version." })).toBeVisible();
-  await expect(page.locator(".sq-sync")).toHaveClass(/sq-sync--synced/, { timeout: 30_000 });
-
   const inspector = await login(inspectorCreds.email, inspectorCreds.password);
   await pollRest(async () => {
     const { data } = await rest("GET", `submission_versions?select=id&inspection_id=eq.${inspectionId}&version_number=eq.2`, inspector.jwt);
     return Array.isArray(data) && data.length === 1 ? data : null;
   }, "submission v2");
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Submitted — final submitted version.", exact: true, level: 2 })).toBeVisible({ timeout: 30_000 });
 });
 
 test("P5 reviewer: APPROVE v2; decided reviews lock; v1 stays intact (M06-009)", async ({ browser }) => {
   const page = await personaPage(browser, "reviewer");
   await page.goto(`/reviews/${inspectionId}`);
-  await expect(page.locator(".sq-banner--warning").first()).toContainText("Prior decision");
+  if (recoveryCheckpoint !== "approved_v2") {
+    await expect(page.getByRole("tab", { name: "Prior decision: 1", exact: true })).toBeVisible();
 
-  // CD-028 leg 5 — v2 review is started explicitly before the approve decision.
-  await page.getByRole("button", { name: /^start review$/i }).click();
-  await page.locator('input[name="decision"][value="approve"]').waitFor({ timeout: 40_000 });
-  await page.locator('input[name="decision"][value="approve"]').check();
-  await page.locator('textarea[name="reason"]').fill("Corrected evidence adequate (G10 Playwright golden journey).");
-  await page.getByRole("button", { name: /confirm approve/i }).click();
-  await page.waitForURL(/\/reviews$/, { timeout: 20_000 });
+    // CD-028 leg 5 — v2 review is started explicitly before the approve decision.
+    if (recoveryCheckpoint !== "reviewing_v2") {
+      const startReview = page.getByRole("button", { name: "Start review", exact: true });
+      await expect(startReview).toHaveCount(1);
+      await startReview.click();
+    }
+    const approveDecision = page.locator('input[name="decision"][value="approve"]');
+    await expect(approveDecision).toHaveCount(1, { timeout: 40_000 });
+    await approveDecision.check();
+    const approveReason = page.locator('textarea[name="reason"]');
+    await expect(approveReason).toHaveCount(1);
+    await approveReason.fill("Corrected evidence adequate (G10 Playwright golden journey).");
+    const reviewConfirmation = page.getByRole("button", { name: "Review confirmation", exact: true });
+    await expect(reviewConfirmation).toBeEnabled();
+    await reviewConfirmation.click();
+    await expect(page.getByRole("heading", { name: "Review decision before recording", exact: true })).toBeVisible();
+    const confirmApprove = page.getByRole("button", { name: "Confirm approve", exact: true });
+    await expect(confirmApprove).toBeEnabled();
+    await confirmApprove.click();
+    await page.waitForURL(url => url.pathname === `/reviews/${inspectionId}` && url.searchParams.get("decision") === "approve", { timeout: 20_000 });
+  }
 
   // Decided = locked: reopening the workspace offers no decision panel (M06-009)
   await page.goto(`/reviews/${inspectionId}`);

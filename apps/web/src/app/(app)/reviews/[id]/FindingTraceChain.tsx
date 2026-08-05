@@ -18,13 +18,17 @@ export type FindingTrace = {
   decision: TraceNode;
 };
 
-function Node({ node }: { node: TraceNode }) {
+// An absent link is one state, so it reads the same on every row. Only the
+// evidence node used to be swapped for the canonical word, which left the
+// chain showing "Unavailable" on one row and "Clause link unavailable" on the
+// next for the identical condition. The <dt> already names which link is gone.
+function Node({ node, unavailableLabel }: { node: TraceNode; unavailableLabel: string }) {
   return (
     <div className="sq-trace__node">
       <dt className="sq-overline">{node.label ?? ""}</dt>
       <dd>
         {node.unavailable
-          ? <span className="badge badge-warning">○ {node.value}</span>
+          ? <span className="badge badge-warning">○ {unavailableLabel}</span>
           : node.value}
         <span className="t-caption sq-trace__source">{node.source}</span>
       </dd>
@@ -44,7 +48,10 @@ export default function FindingTraceChain({ traces, strings }: {
   return (
     <section className="panel sq-trace" aria-labelledby="finding-trace-heading">
       <h2 id="finding-trace-heading">{strings.heading}</h2>
-      <p className="t-caption">{strings.hint}</p>
+      {/* The hint explains how to read the seven-link chain. With no chain on
+          screen it explained nothing and left the empty state as a caption, a
+          long spec sentence and a bare banner stacked in a full-height panel. */}
+      {traces.length > 0 && <p className="t-caption">{strings.hint}</p>}
       {traces.length === 0 ? (
         <div className="sq-banner" role="status"><div>{strings.empty}</div></div>
       ) : (
@@ -57,13 +64,13 @@ export default function FindingTraceChain({ traces, strings }: {
                   <span>{trace.question.value}</span>
                 </summary>
                 <dl className="sq-trace__nodes">
-                  <Node node={{ ...trace.question, label: strings.question }} />
-                  <Node node={{ ...trace.response, label: strings.response }} />
-                  <Node node={{ ...trace.evidence, label: strings.evidence, value: trace.evidence.unavailable ? strings.unavailable : trace.evidence.value }} />
-                  <Node node={{ ...trace.clause, label: strings.clause }} />
-                  <Node node={{ ...trace.violation, label: strings.violation }} />
-                  <Node node={{ ...trace.action, label: strings.action }} />
-                  <Node node={{ ...trace.decision, label: strings.decision }} />
+                  <Node unavailableLabel={strings.unavailable} node={{ ...trace.question, label: strings.question }} />
+                  <Node unavailableLabel={strings.unavailable} node={{ ...trace.response, label: strings.response }} />
+                  <Node unavailableLabel={strings.unavailable} node={{ ...trace.evidence, label: strings.evidence }} />
+                  <Node unavailableLabel={strings.unavailable} node={{ ...trace.clause, label: strings.clause }} />
+                  <Node unavailableLabel={strings.unavailable} node={{ ...trace.violation, label: strings.violation }} />
+                  <Node unavailableLabel={strings.unavailable} node={{ ...trace.action, label: strings.action }} />
+                  <Node unavailableLabel={strings.unavailable} node={{ ...trace.decision, label: strings.decision }} />
                 </dl>
               </details>
             </li>

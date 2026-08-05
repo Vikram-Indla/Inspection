@@ -5,7 +5,7 @@
    they are page-local in the .dc.html and are not part of the shared DS. */
 
 .wrap {
-  max-width: 960px; margin: 0 auto; width: 100%;
+  max-width: 1200px; margin: 0 auto; width: 100%;
   padding: 18px 18px 100px; display: flex; flex-direction: column; gap: 16px;
 }
 @media (max-width: 560px) { .wrap { padding: 14px 12px 100px; } }
