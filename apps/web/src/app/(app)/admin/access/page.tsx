@@ -365,7 +365,7 @@ export default async function Access({
           grants={rolePermissionGrants.map(g => ({ roleKey: g.role_key, permissionKey: g.permission_key, grantedAt: g.granted_at }))}
           labels={{
             panelTitle: t("admin.access.rolecaps.title", "Role capabilities (permission map)"),
-            panelIntro: t("admin.access.rolecaps.intro", "Grant or revoke a capability for an entire role. The self-escalation guard blocks granting, to a role you hold, any capability you lack — and admin.access.manage can never be granted to or revoked from a role you hold. RLS (security_admin) remains the write authority."),
+            panelIntro: t("admin.access.rolecaps.intro", "Grant or revoke a capability for an entire role. The self-escalation guard blocks granting, to a role you hold, any capability you lack — and access management can never be granted to or revoked from a role you hold. The security administrator role remains the write authority."),
             selectRole: t("admin.access.rolecaps.selectRole", "Select a role"),
             grantedTitle: t("admin.access.rolecaps.granted", "Granted capabilities"),
             noGrants: t("admin.access.rolecaps.none", "This role currently has no capability grants."),
