@@ -709,7 +709,12 @@ export default function ShellClient({
                 </label>
             </div> : (
               <div className="sq-pagehead__workspace-label">
-                <span>{strings.primary}</span>
+                {/* nav.primary is the landmark name for the navigation region.
+                    It was rendering as visible interface text on every admin
+                    route — a label that names nothing on screen and that no
+                    reader can act on. Kept as the accessible name, hidden
+                    visually. */}
+                <span className="sr-only">{strings.primary}</span>
                 <button ref={adminPaletteTriggerRef} type="button" className="sq-btn sq-btn--secondary"
                   aria-label={`${adminPaletteCopy.open} (Ctrl/⌘ K)`}
                   aria-haspopup="dialog" aria-expanded={adminPaletteOpen}
