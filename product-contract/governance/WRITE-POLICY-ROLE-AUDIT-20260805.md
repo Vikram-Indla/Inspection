@@ -75,11 +75,24 @@ no PO ruling right now, only a note for when a screen is eventually built:
 | route_snapshots | 0 | No screen. May need no ruling now. |
 | location_visibility_matrix | 0 | No screen. May need no ruling now. |
 | workflow_outbox | 1 (`lib/workflow/outbox.ts`) | Written only by a server-side helper, never a user screen — confirms the system/service-actor flag already on this row in Group G, not a human-capability gap. |
+| risk_exceptions | 1 (`operations/exceptions/page.tsx`) | The one reference is a read-only `select`. No insert/update call anywhere in the app. Same status as the four deferred risk_* tables above — a ruling here changes nothing observable until a write screen is built. Corrected from an earlier draft of this file that paired it with risk_models. |
 
-Risk-engine Group E splits on this: `risk_models` and `risk_exceptions` do
-have a screen and need a real ruling; `risk_overrides`/`risk_runs`/
-`risk_simulations`/`risk_variables` do not — the PO can defer those four
-without blocking the group.
+Risk-engine Group E splits on this: `risk_models` alone has a real, live
+write path and needs a ruling now — `risk_exceptions`, `risk_overrides`,
+`risk_runs`, `risk_simulations`, `risk_variables` do not, and the PO can
+defer all five without blocking the group.
+
+**risk_models detail, verified live:** `apps/web/src/app/(app)/admin/risk/models/actions.ts`
+has a working create-draft + status-transition flow (feature-flagged on
+`FEATURE_RISK_WORKBENCH`, default off, but the code path is real). The
+phantom-role problem is doubled — both the RLS INSERT/UPDATE policies
+(`has_any_role(['risk_owner','compliance_admin','security_admin'])`) and
+the `risk_model_transition()` RPC's own internal check gate on the exact
+same phantom roles. With the flag on today, nobody could create or
+transition a risk model through either path. The RPC's existing
+maker-checker (creator ≠ approver, approver ≠ publisher) is untouched —
+not proposing to weaken it, only naming that the role gate around it is
+broken.
 
 Everything else in Groups A–J has at least one reference in `apps/web/src`
 (a screen exists) — that confirms a screen exists, not that a write UI
