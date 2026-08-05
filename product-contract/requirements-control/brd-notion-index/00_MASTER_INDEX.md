@@ -39,6 +39,26 @@ Each document's full row-level table (ID, type, English title, English statement
 
 No prior BRD-Notion-specific index was found anywhere in this repository, any other worktree, or the connected Notion workspace under this task's search terms — the existing `product-contract/requirements-control/` folder indexes a *different* nine-source set (SRC-001..009: Compliance Mgmt, Factory 360 Spec, Inspection Project spreadsheet, API docs, Planning.docx, dashboard spreadsheet, etc. — not the Arabic BRD-Notion documents this task named). If prior partial work on these specific nine documents exists, it was not discoverable by search; this index was built from scratch, covering all nine documents completely rather than assuming or estimating which three might already be done.
 
+## RULED 2026-08-05 — the Arabic text prevails
+
+`CC-BRD-LANGUAGE-PRECEDENCE-20260805`. Where the Arabic and English text of the
+same rule disagree, **the Arabic is the requirement** and the English is an
+inaccurate translation of it. These are Arabic documents; a translation cannot
+outrank its source.
+
+**One carve-out.** The Arabic does *not* automatically prevail where following
+it would widen a permission, weaken a control, or remove a restriction the
+English imposes. There the narrower reading holds until ruled item by item — a
+mistake that blocks someone gets reported, a mistake that quietly grants
+something does not.
+
+Resolved by the ruling: SYS-BR-010, SYS-BR-016, VIS-BR-062/063 — Arabic governs.
+Carved out and still open: **USR-BR-069** (whether permissions may be modified).
+Moot: ORD-BR-042, out of scope.
+
+The contradictions below stay recorded as written. The ruling sits beside them;
+it does not edit them.
+
 ## Known cross-document/cross-language issues found during indexing (not resolved here — PO decision)
 
 - **USR-BR-069**: Arabic text says permissions CAN be modified; English text says they CANNOT except by the system vendor. Direct contradiction.

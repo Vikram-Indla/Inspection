@@ -1,0 +1,99 @@
+schema_version: "1.0"
+change_control_id: "CC-BRD-LANGUAGE-PRECEDENCE-20260805"
+task_id: "TASK-BRD-LANGUAGE-PRECEDENCE-20260805"
+title: "Where the Arabic and English text of a requirement disagree, the Arabic prevails"
+state: "APPROVED_WITH_CARVE_OUT"
+approved_by: "Product Owner (Vikram)"
+approved_at: "2026-08-05"
+
+authority:
+  type: "BOUNDED_DIRECT_PRODUCT_OWNER_DIRECTIVE"
+  user_confirmation: "instructed — 'rule on the Arabic/English contradictions'"
+
+the_ruling:
+  statement: >
+    The Arabic text of a requirement document is authoritative. Where the
+    Arabic and the English text of the same rule disagree, the Arabic is the
+    requirement and the English is treated as an inaccurate translation of it.
+  basis: >
+    This is not a preference. The nine documents are Arabic documents — the
+    files are Arabic-titled, authored for a Saudi ministry, and the English text
+    sits alongside as a mirror. A translation cannot outrank its source. Making
+    the rule explicit stops the choice being made silently, differently, by
+    whoever happens to be reading.
+  what_this_prevents: >
+    Two people implementing opposite behaviour from the same rule and both
+    believing they followed the requirement.
+
+the_carve_out:
+  rule: >
+    The Arabic does NOT automatically prevail where following it would widen a
+    permission, weaken a control, or remove a restriction that the English
+    imposes. In that case the narrower reading holds until the Product Owner
+    rules on that specific item.
+  why: >
+    A translation error that accidentally opens a capability is indistinguishable
+    from one that accidentally closes it — until you look at which way it fails.
+    Defaulting to the narrower reading means a mistake costs a blocked user who
+    complains, rather than an unnoticed permission nobody asked for. The first
+    is recoverable; the second is a finding in an audit.
+  consequence: >
+    Every carved-out item stays open and is listed below. None is implemented on
+    either reading until it is ruled.
+
+resolved_by_this_ruling:
+  - id: "SYS-BR-010"
+    disagreement: "Arabic: multiple tasks can be reassigned at once. English: a task may be reassigned repeatedly but not simultaneously."
+    resolution: "Arabic prevails — multiple tasks may be reassigned simultaneously."
+    why_not_carved_out: "This is a convenience for the person doing the reassigning. It widens no permission and removes no control; who may reassign is unchanged."
+  - id: "SYS-BR-016"
+    disagreement: "Arabic and English describe materially different behaviour when a case is deactivated."
+    resolution: "Arabic prevails."
+    caveat: "The specific behaviours must be read from the Arabic before implementation. This ruling settles which text governs, not what the behaviour is."
+  - id: "VIS-BR-062/063"
+    disagreement: "Arabic and English describe different behaviour for editing or replacing the target-establishments list."
+    resolution: "Arabic prevails."
+    caveat: "Same as above — the Arabic must be read for the actual behaviour."
+
+carved_out_still_needing_a_ruling:
+  - id: "USR-BR-069"
+    disagreement: "Arabic: permissions CAN be modified. English: they CANNOT be modified except by the system vendor."
+    why_carved_out: >
+      Following the Arabic would widen who may change permissions — the control
+      that governs every other control. This is exactly the case the carve-out
+      exists for.
+    interim_position: "The narrower English reading holds. Permissions are not modifiable in the product until ruled."
+    question_for_the_product_owner: >
+      Can an administrator in the ministry change what a role is allowed to do,
+      or is that fixed and changed only by the supplier?
+    note: >
+      This question has practical weight today. The platform has four
+      disagreeing role vocabularies and 99 permission rules naming roles that do
+      not exist. If permissions are ministry-modifiable, that repair is
+      configuration. If they are vendor-fixed, it is a release every time.
+
+not_a_language_disagreement:
+  note: "These were flagged alongside the translation conflicts but are a different kind of fault, and this ruling does not cover them."
+  items:
+    - id: "VIS-BR-044/045"
+      problem: "A 'from' date is stated as needing to be later than the 'to' date."
+      assessment: "Reads as a transcription error rather than a rule. Not corrected here — correcting it would be inventing a requirement, however obvious. Raised for the Product Owner as a document defect."
+    - id: "SYS-BR-039/040"
+      problem: "Minimum question weight stated as both 'not less than 0%' and 'minimum 5%' within one document."
+      assessment: "A governed number that contradicts itself. Neither value is adopted. Renders as Not configured until ruled."
+    - id: "ITM-BR-099..102"
+      problem: "Grid fields behave differently between the add and edit flows of the same use case, with no explanation."
+      assessment: "May be deliberate or may be an omission. Needs the Product Owner, not a translator."
+    - id: "Response-time threshold"
+      problem: "Every document says response time must not exceed 'the standard approved by the Ministry' without giving a number."
+      assessment: "The standard exists outside these documents. Not invented. Renders as Not configured."
+  out_of_scope_now:
+    - id: "ORD-BR-042"
+      note: "Moot — Request and Order Management was ruled out of scope on the same day under CC-ORD-OUT-OF-SCOPE-20260805."
+
+application:
+  - "The master index records this ruling and marks each item resolved or carved out."
+  - "No indexed requirement text is edited. The contradictions stay visible as written; the ruling sits beside them."
+  - "No story is rewritten from a carved-out item until it is ruled."
+
+lane: "Integration (requirements)"
