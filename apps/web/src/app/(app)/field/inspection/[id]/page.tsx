@@ -563,6 +563,8 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     completionPendingSync: t("field.ws.completionPendingSync", "Not submitted yet — this is queued on the device and will submit exactly once when the connection returns. No version exists until the server assigns one."),
     completionFailedTitle: t("field.ws.completionFailedTitle", "Submission did not complete."),
     completionFailedBody: t("field.ws.completionFailedBody", "The server rejected this submission, so no submitted version was created. Your answers are safe on this device. Retry, or contact your supervisor if it keeps failing."),
+    backToInspection: t("field.ws.backToInspection", "Back to inspection"),
+    pkgFormsGroupTitle: t("field.ws.pkgFormsGroupTitle", "Required action forms"),
     lockedSection: t("field.ws.lockedSection", "Not in return scope — locked read-only; DB also rejects edits."),
     mandatoryPhoto: t("field.ws.mandatoryPhoto", "📷 Mandatory photo"),
     submitBtn: t("field.ws.submitBtn", "Review & submit — final version"),

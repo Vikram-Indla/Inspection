@@ -232,3 +232,30 @@ export function computeBlockers(
   }
   return out;
 }
+
+/** Row shape the submit-time gate needs from an existing action_forms record
+ *  (server-confirmed only — an unsynced client draft is not proof anything
+ *  exists yet). Mirrors the same four required fields the DB enforces. */
+export type ExistingForm = {
+  form_type: string;
+  owner_name: string | null; owner_role: string | null;
+  due_at: string | null; required_correction: string | null;
+};
+
+/**
+ * Package-level mandatory action forms (INSP-758-class gap): entries in the
+ * frozen snapshot's action_forms marked blocking apply to every submission of
+ * this package UNCONDITIONALLY — never tied to an item response, so
+ * computeBlockers' per-item formRequired() walk never sees them. This is the
+ * client-side mirror of the DB trigger guard_submission_action_forms_and_
+ * config (existence by form_type match, completeness by the same four
+ * fields) — it must ask the identical question the server will ask, so
+ * "ready to submit" is never shown for a submission the server will refuse.
+ */
+export function packageFormBlockers(defs: FormDef[], existing: ExistingForm[]): FormDef[] {
+  return defs.filter(d => d.blocking).filter(d => {
+    const row = existing.find(f => f.form_type === d.key);
+    if (!row) return true;
+    return !d.fields.every(f => !!(row as unknown as Record<string, string | null>)[f]?.trim());
+  });
+}
