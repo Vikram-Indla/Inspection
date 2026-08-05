@@ -72,6 +72,79 @@ test("golden P1 uses only configured controlled candidates through the guarded l
   assert.doesNotMatch(source, /SUPABASE_SERVICE_ROLE_KEY/);
 });
 
+function allocate(targets, existing, proposedStart) {
+  const targetIds = new Set(targets.map(row => row.id));
+  if (targetIds.size !== targets.length) throw new Error("duplicate visits");
+  const ordered = [...targets].sort((a, b) => a.start - b.start || a.id.localeCompare(b.id));
+  const occupied = existing.filter(row => !targetIds.has(row.id)).map(row => ({ start: row.start, end: row.end }));
+  const result = [];
+  let cursor = proposedStart - 60_000;
+  for (const target of ordered) {
+    const duration = target.end - target.start;
+    if (!(duration > 0)) throw new Error("unsafe duration");
+    let attempts = 0;
+    while (true) {
+      const end = cursor;
+      const start = end - duration;
+      const collisions = occupied.filter(slot => slot.start < end && slot.end > start);
+      if (!collisions.length) {
+        result.push({ id: target.id, start, end, duration });
+        occupied.push({ start, end });
+        cursor = start - 60_000;
+        break;
+      }
+      cursor = Math.min(...collisions.map(slot => slot.start)) - 60_000;
+      if (++attempts > existing.length + targets.length) throw new Error("no safe slot");
+    }
+  }
+  return result;
+}
+
+test("golden rollover deterministically allocates unique duration-preserving slots", () => {
+  const minute = 60_000;
+  const targets = [
+    { id: "b", start: 20 * minute, end: 50 * minute },
+    { id: "a", start: 10 * minute, end: 70 * minute },
+  ];
+  const first = allocate(targets, [], 200 * minute);
+  const second = allocate([...targets].reverse(), [], 200 * minute);
+  assert.deepEqual(first, second);
+  assert.deepEqual(first.map(slot => slot.id), ["a", "b"]);
+  assert.deepEqual(first.map(slot => slot.duration), [60 * minute, 30 * minute]);
+  assert.ok(first[0].start >= first[1].end + minute);
+});
+
+test("golden rollover skips existing retired collisions and fails closed on ambiguity", () => {
+  const minute = 60_000;
+  const slots = allocate(
+    [{ id: "target", start: 0, end: 60 * minute }],
+    [{ id: "retired", start: 100 * minute, end: 180 * minute }],
+    200 * minute,
+  );
+  assert.equal(slots[0].end, 99 * minute);
+  assert.throws(() => allocate([
+    { id: "duplicate", start: 0, end: minute },
+    { id: "duplicate", start: minute, end: 2 * minute },
+  ], [], 200 * minute), /duplicate visits/);
+  assert.throws(() => allocate([{ id: "invalid", start: minute, end: minute }], [], 200 * minute), /unsafe duration/);
+});
+
+test("golden rollover source sorts stably, preserves duration and refuses unprovable slots", () => {
+  assert.match(source, /left\.start\.getTime\(\) - right\.start\.getTime\(\) \|\| left\.row\.visit_id\.localeCompare\(right\.row\.visit_id\)/);
+  assert.match(source, /const duration = target\.end\.getTime\(\) - target\.start\.getTime\(\)/);
+  assert.match(source, /occupied\.push\(\{ start, end \}\)/);
+  assert.match(source, /attempts > existing\.length \+ targets\.length/);
+  assert.match(source, /cannot prove a collision-free retirement window/);
+});
+
+test("golden P1 uses the existing controlled Inspector without a lease prerequisite", () => {
+  const personas = readFileSync(new URL("./personas.ts", import.meta.url), "utf8");
+  assert.match(personas, /SAQEEL_TEST_MULTI_ROLE_EMAIL", "golden alternate inspector"/);
+  assert.match(personas, /primaryCohortPassword\("golden alternate inspector"\)/);
+  assert.doesNotMatch(personas, /GOLDEN_INSPECTOR_(?:LEASE|SLOT|WINDOW)/);
+  assert.doesNotMatch(source, /acquire_nonproduction_golden_inspector_lease|verify_nonproduction_golden_inspector_lease/);
+});
+
 test("golden rollover is candidate-scoped and refuses non-harness assignments", () => {
   assert.match(source, /async function retireOverlappingGoldenAssignments\([\s\S]*controlledInspectorId: string/);
   assert.match(source, /inspector_id=eq\.\$\{controlledInspectorId\}/);
