@@ -1,0 +1,143 @@
+schema_version: "1.0"
+change_control_id: "CC-CCR-REVIEWER-SUPERVISOR-20260805"
+task_id: "TASK-CCR-REVIEWER-SUPERVISOR-20260805"
+title: "Supervisors approve compliance changes, and no one approves their own"
+state: "APPROVED_NOT_STARTED"
+approved_by: "Product Owner (Vikram)"
+approved_at: "2026-08-05"
+jira: ["INSP-751"]
+
+authority:
+  type: "BOUNDED_DIRECT_PRODUCT_OWNER_DIRECTIVE"
+  user_confirmation: "confirmed — 'supervisors approve'"
+  lease_required: false
+  broad_implementation_allowed: false
+  note: >
+    Covers only the recorded scope below. Grants no board lease and no broad
+    implementation authority.
+
+problem:
+  summary: >
+    public.ccr_is_reviewer() grants compliance approval to two roles —
+    compliance_admin and reviewer. Neither exists in public.roles, which holds
+    only admin, inspector, planner and supervisor. The function is therefore
+    unsatisfiable for every principal, and no one in the system can approve a
+    compliance change.
+  live_evidence:
+    checked_at: "2026-08-05"
+    project: "iiozvqntawxfwbgffzqu (staging)"
+    method: "Direct catalogue probe of pg_proc and pg_policies"
+    ccr_is_reviewer_roles: ["compliance_admin", "reviewer"]
+    admin_present: false
+    supervisor_present: false
+    roles_that_exist: ["admin", "inspector", "planner", "supervisor"]
+  gated_functions:
+    - "ccr_can_read — reviewers cannot even SEE pending requests"
+    - "publish_compliance_request"
+    - "reject_compliance_request"
+    - "return_compliance_request"
+    - "decide_compliance_request_component"
+  business_impact: >
+    The authoring half was fixed earlier today, so an administrator can now
+    create, amend and submit a compliance request. Nothing can be approved, so
+    nothing becomes active. The configuration chain still cannot complete:
+    regulations, then inspection items, then packages, then approve and publish,
+    then plan a visit. Records can be created and then never used — arguably
+    more confusing for a tester than being blocked at the start.
+
+critical_finding:
+  no_self_approval_control_exists:
+    statement: >
+      None of the four decision functions — publish, reject, return, or
+      decide_component — check created_by or submitted_by. There is no
+      separation-of-duties control anywhere in this flow today.
+    why_it_matters: >
+      Simply adding supervisor to ccr_is_reviewer would let a supervisor approve
+      a request they submitted themselves. The Product Owner has ruled that a
+      person may hold more than one role — "sometimes planner can be a
+      supervisor and a admin as well" — so an individual holding both admin and
+      supervisor could author a regulation and approve it end to end, with no
+      second pair of eyes.
+    consequence_for_scope: >
+      The role change alone is not an acceptable fix. Self-approval prevention
+      is part of this change, not a follow-up.
+  requirement_basis: >
+    The approved BRD describes the Approver as reviewing what the Creator
+    entered, then approving or returning it — two distinct parties. The
+    product's own role catalogue states that an administrator "cannot approve
+    their own change". The control is required; it was simply never built.
+
+owner_ruling:
+  decision: "Supervisors approve compliance changes."
+  quote_basis: >
+    Product Owner, 2026-08-05, in response to a choice between supervisors
+    approving, a second administrator approving with self-approval blocked, or
+    creating a dedicated approver role.
+
+scope:
+  - "Add 'supervisor' to the role array in public.ccr_is_reviewer()."
+  - "Add self-approval prevention to publish_compliance_request, reject_compliance_request, return_compliance_request and decide_compliance_request_component: the account that created or submitted a request cannot decide it."
+  - "Raise a distinct, catchable error for a self-approval attempt so the screen can explain it, rather than failing generically."
+  - "Ship as a committed migration, applied to the live project, with source and live confirmed to agree."
+
+exact_change_role_admission: |
+  create or replace function public.ccr_is_reviewer()
+  returns boolean
+  language sql
+  stable
+  security definer
+  set search_path to ''
+  as $$
+    select public.has_any_role(array['supervisor','compliance_admin','reviewer']);
+  $$;
+
+change_notes:
+  retain_absent_roles: >
+    compliance_admin and reviewer stay in the array deliberately. They resolve
+    to false while unregistered, so retaining them costs nothing and preserves a
+    distinction that may later be created. Only supervisor is added.
+  admin_deliberately_excluded: >
+    admin is NOT added. Administrators author compliance content under
+    CC-CCR-WRITER-ADMIN-20260805. Granting them approval as well would collapse
+    the separation this change exists to create.
+  self_approval_shape: >
+    The precise mechanism is left to implementation, but it must be enforced
+    inside the SECURITY DEFINER functions, not at the page. A page-level check
+    is a courtesy; the database is the control.
+
+out_of_scope:
+  - "No new role created. No role granted to any account."
+  - "No change to ccr_is_writer() — that was settled under CC-CCR-WRITER-ADMIN-20260805."
+  - "No change to what approval does once granted — only who may perform it, and who may not."
+  - "No change to the enforcement-decision work under CC-ENFORCEMENT-DECISION-ENABLE-20260805."
+  - "No new CSS, no new tokens."
+  - "No invented governed value — no threshold, SLA, penalty or approval rule beyond the separation stated here."
+
+acceptance:
+  - "A supervisor can see pending compliance requests — ccr_can_read must now resolve for them."
+  - "A supervisor can publish, reject and return a compliance request submitted by someone else."
+  - "A supervisor CANNOT decide a request they created or submitted. Prove this with an actual test using two accounts, not by reading the function."
+  - "An administrator cannot approve — authoring and approval stay separate."
+  - "inspector and planner remain refused. Prove it; do not assume the array implies it."
+  - "A self-approval attempt produces a distinct, explanatory refusal, not a generic failure."
+  - "Approval and the approver's identity are recorded in the audit history, per the BRD's repeated audit mandate."
+  - "The migration exists as a committed file AND is applied to the live project — confirmed separately, by probing the objects it alters rather than by filename."
+  - "TypeScript passes. Production build passes. Diff confined to allowed_paths."
+
+allowed_paths:
+  - "supabase/migrations/<new timestamped migration>.sql"
+  - "product-contract/execution/CURRENT_SLICE.yaml"
+  - "product-contract/governance/CC-CCR-REVIEWER-SUPERVISOR-20260805.yaml"
+
+verification:
+  live_supervisor_can_read: "PENDING"
+  live_supervisor_can_decide_others: "PENDING"
+  live_supervisor_cannot_self_approve: "PENDING"
+  live_admin_cannot_approve: "PENDING"
+  live_inspector_planner_refused: "PENDING"
+  source_live_reconciled: "PENDING"
+  typescript: "PENDING"
+  production_build: "PENDING"
+  diff_check: "PENDING"
+
+lane: "Backend"
