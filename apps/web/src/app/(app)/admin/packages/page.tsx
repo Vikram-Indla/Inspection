@@ -438,7 +438,7 @@ export default async function Packages() {
           const versions = orderedVersions(pkg);
           const latestPublished = currentPublished(pkg);
           return (
-            <details key={pkg.id} className={`panel ${styles.packageGroup}`} open>
+            <details key={pkg.id} className={`panel ${styles.packageGroup}`}>
               <summary>
                 <span className={styles.packageHeading}>
                   <span><strong><bdi dir="ltr">{pkg.code}</bdi> — {pkg.title}</strong><br /><span className="t-caption">{pkg.scope ?? t("admin.pkg.scopeNone", "No scope recorded")}</span></span>
