@@ -182,7 +182,6 @@ export default async function Factory360({ params, searchParams }: { params: Pro
   return (
     <Shell current="/factories" title={`${f.name} — ${identity(f.factory_code)}`}
       context={<>
-        <span className="sq-lozenge sq-lozenge--info">SB11</span>
         <span className={`sq-lozenge ${bandTone}`}>{f.risk_band ? enumLabel(f.risk_band) : "—"} · {f.risk_score}</span>
         <span className="sq-freshness">{t("f360.meta.source", "source")} {sourceLabel} · {t("f360.meta.synced", "synced")} {f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</span>
       </>}>
