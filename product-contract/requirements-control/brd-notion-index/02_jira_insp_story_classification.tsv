@@ -1,0 +1,129 @@
+INSP-17	REPO_EVIDENCE_ONLY	Supervisor — Verify dashboard role and read-failure boundaries
+INSP-18	SUPERSEDED	Supervisor — Superseded — Monitor scoped operations
+INSP-19	SUPERSEDED	Supervisor — Superseded — View scoped strategic and operational dashboard
+INSP-20	SUPERSEDED	Supervisor — Superseded — Operational exception scenarios require an approved source
+INSP-21	REPO_EVIDENCE_ONLY	Browse factory portfolio
+INSP-22	REPO_EVIDENCE_ONLY	Open scoped factory dossier and provenance
+INSP-23	SUPERSEDED	Planner — Superseded — Browse visits and resume planning drafts
+INSP-24	SUPERSEDED	Planner — Superseded — Create and approve inspection plans by capability
+INSP-25	REPO_EVIDENCE_ONLY	Inspector — Read assigned execution workspace
+INSP-26	REPO_EVIDENCE_ONLY	Inspector — Refuse non-execution personas
+INSP-27	REPO_EVIDENCE_ONLY	Supervisor — Browse scoped review queue and detail
+INSP-28	REPO_EVIDENCE_ONLY	Supervisor — Record guarded review decision and version comparison
+INSP-29	REPO_EVIDENCE_ONLY	Admin — Browse regulation library and detail mode
+INSP-30	REPO_EVIDENCE_ONLY	Admin — Author, review, and publish immutable regulation versions
+INSP-31	REPO_EVIDENCE_ONLY	Admin — Filter eligible approval workload
+INSP-32	REPO_EVIDENCE_ONLY	Admin — Review and publish through maker-checker
+INSP-33	REPO_EVIDENCE_ONLY	Admin — Read violation and penalty catalogue
+INSP-34	REPO_EVIDENCE_ONLY	Admin — Validate enforcement configuration readiness
+INSP-35	REPO_EVIDENCE_ONLY	Admin — Perform audited guarded assignment changes
+INSP-36	REPO_EVIDENCE_ONLY	Supervisor — Filter and drill into governed analytics
+INSP-37	REPO_EVIDENCE_ONLY	Supervisor — Represent unavailable or decision-required analytics
+INSP-38	REPO_EVIDENCE_ONLY	Admin — Inspect role and capability matrix
+INSP-39	REPO_EVIDENCE_ONLY	Admin — Save authorized risk configuration without invented values
+INSP-40	REPO_EVIDENCE_ONLY	Admin — Inspect inspection package versions, preview, and impact
+INSP-41	REPO_EVIDENCE_ONLY	Admin — Browse and search localization register
+INSP-42	REPO_EVIDENCE_ONLY	Admin — Read versioned risk model and trace
+INSP-43	REPO_EVIDENCE_ONLY	Admin — Create, revise, and publish governed strings
+INSP-44	REPO_EVIDENCE_ONLY	Admin — Draft and publish inspection package by capability
+INSP-45	REPO_EVIDENCE_ONLY	Admin — Read notification rule register
+INSP-46	REPO_EVIDENCE_ONLY	Admin — Read endpoint, event, and export registers
+INSP-47	REPO_EVIDENCE_ONLY	Admin — Create, publish, and deactivate notification rules
+INSP-48	REPO_EVIDENCE_ONLY	Admin — Open linked factory-data management tools
+INSP-178	DRIVE_CITED	Planner — 01 — Open Planning with the right access
+INSP-179	DRIVE_CITED	Planner — 04 — Review a controlled Planning draft
+INSP-180	EXPERT_JUDGEMENT_ONLY	Planner — 03 — Build and validate a safe visit draft
+INSP-181	EXPERT_JUDGEMENT_ONLY	Planner — 05 — Publish exactly one governed visit
+INSP-182	DRIVE_CITED	Planner — 02 — Select an eligible target and load trusted planning data
+INSP-183	DRIVE_CITED	Planner — 06 — Confirm the published visit and retain evidence
+INSP-184	SUPERSEDED	Planner — Superseded — Planning decisions require direct approval in the affected stories
+INSP-185	SUPERSEDED	Inspector — Superseded — Execution decisions without approved BRD source
+INSP-187	SUPERSEDED	Inspector — Superseded — Remote eligibility candidate policy
+INSP-188	SUPERSEDED	Admin — Superseded — Legacy account-administration candidate policy
+INSP-189	SUPERSEDED	Admin — Superseded — Legacy inspection-item candidate policy
+INSP-190	DRIVE_CITED	Supervisor — View strategic inspection KPIs with governed drill-down
+INSP-191	DRIVE_CITED	Supervisor — Read a traceable strategic AI summary
+INSP-192	DRIVE_CITED	Supervisor — Monitor the operational dashboard and work queue
+INSP-193	DRIVE_CITED	Supervisor — Receive advisory operational AI nudges with direct context
+INSP-194	DRIVE_CITED	Supervisor — Monitor active field visits on the live operations map
+INSP-195	DRIVE_CITED	Supervisor — Compare regional inspection performance and drill to factories
+INSP-196	DRIVE_CITED	Supervisor — Review prioritized operational highlights
+INSP-197	DRIVE_CITED	Planner — Manage planned visits through their operational lifecycle
+INSP-198	OTHER_UNCLASSIFIED	Planner — Apply governed bulk changes and cancellations to visits
+INSP-199	DRIVE_CITED	Planner — Monitor planning expiry, conflicts, calendars, and assignment load
+INSP-200	DRIVE_CITED	Inspector — Prepare an assigned visit before inspection starts
+INSP-201	DRIVE_CITED	Inspector — Start and track a field-inspection journey with offline support
+INSP-202	DRIVE_CITED	Inspector — Confirm arrival or record a governed arrival exception
+INSP-203	DRIVE_CITED	Inspector — Complete an inspection in a governed workspace
+INSP-204	DRIVE_CITED	Inspector — Verify factory data and record evidence-backed updates
+INSP-205	DRIVE_CITED	Inspector — Capture inspection responses, evidence, and action forms
+INSP-206	DRIVE_CITED	Inspector — Submit an immutable inspection for review
+INSP-207	DRIVE_CITED	Inspector — Conduct a verified virtual inspection session
+INSP-208	DRIVE_CITED	Supervisor — Review a submitted inspection and record an auditable decision
+INSP-209	DRIVE_CITED	Supervisor — Correct and resubmit returned inspection work with version control
+INSP-210	DRIVE_CITED	View the complete Factory 360 operational profile
+INSP-211	DRIVE_CITED	Trace factory inspection, enforcement, and corrective-action history
+INSP-212	DRIVE_CITED	Understand factory health and risk in context
+INSP-213	ARABIC_BRD_CITED	Admin — Manage regulations, inspection items, and compliance packages
+INSP-214	ARABIC_BRD_CITED	Admin — Govern compliance configuration through versioning and publish controls
+INSP-215	ARABIC_BRD_CITED	Admin — Configure inspection-item response, conditional, and scoring rules
+INSP-216	ARABIC_BRD_CITED	Admin — Configure violation, penalty, and corrective-action triggers
+INSP-217	ARABIC_BRD_CITED	Supervisor — Monitor operational SLA, workload, risk, and alerts
+INSP-218	ARABIC_BRD_CITED	Supervisor — Investigate operational history and export governed data
+INSP-219	ARABIC_BRD_CITED	Supervisor — Analyze source-defined inspection KPIs beyond dashboard views
+INSP-223	DRIVE_CITED	Planner — Choose the planning method for a new visit
+INSP-224	DRIVE_CITED	Planner — Create and publish a bulk visit plan
+INSP-225	DRIVE_CITED	Planner — Create an immediate visit and start inspection
+INSP-226	EXPERT_JUDGEMENT_ONLY	Planner — Assign and reassign inspectors using availability and capacity
+INSP-227	DRIVE_CITED	Planner — Manage planning notes, attachments, and notifications
+INSP-228	ARABIC_BRD_CITED	Planner — Prevent duplicate visits and resolve scheduling conflicts
+INSP-229	SUPERSEDED	Planner — Superseded — Advisory AI planning summary (no Phase 2)
+INSP-235	REPO_EVIDENCE_ONLY	Admin — Connect SENAEI factory-master API to the governed mirror
+INSP-240	ARABIC_BRD_CITED	Planner — Import and validate a target-establishments file
+INSP-241	ARABIC_BRD_CITED	Admin — Configure SLA policies, reminders, and activation
+INSP-242	ARABIC_BRD_CITED	Inspector — Capture an unregistered facility during a field visit
+INSP-243	ARABIC_BRD_CITED	Inspector — Bind inspection evidence to the exact inspection item
+INSP-244	OTHER_UNCLASSIFIED	Inspector — Grant temporary delegated execution without changing ownership
+INSP-245	OTHER_UNCLASSIFIED	Inspector — Apply production-status rules before creating violations
+INSP-246	OTHER_UNCLASSIFIED	View linked establishments and eligible services
+INSP-247	ARABIC_BRD_CITED	Supervisor — Escalate penalties and sample results after review
+INSP-248	ARABIC_BRD_CITED	Submit an inspection-related visit request
+INSP-249	ARABIC_BRD_CITED	Submit a correction request for eligible violations
+INSP-250	ARABIC_BRD_CITED	Submit an objection request within the allowed period
+INSP-251	ARABIC_BRD_CITED	Complete and submit an eligible self-assessment
+INSP-252	ARABIC_BRD_CITED	Review and decide an external visit request
+INSP-253	ARABIC_BRD_CITED	Review and decide an external self-assessment
+INSP-254	ARABIC_BRD_CITED	Review and decide an external correction request
+INSP-255	ARABIC_BRD_CITED	Review and decide an external objection request
+INSP-490	ARABIC_BRD_CITED	Supervisor — Route post-inspection review through the administrative hierarchy
+INSP-491	ARABIC_BRD_CITED	Supervisor — Govern establishment approval of inspection-led data updates
+INSP-492	ARABIC_BRD_CITED	Search and export the leadership industrial-investor record
+INSP-493	ARABIC_BRD_CITED	Admin — Manage user accounts, branch users, and role permissions
+INSP-494	ARABIC_BRD_CITED	Supervisor — Produce governed regulatory and operational reports
+INSP-495	ARABIC_BRD_CITED	Supervisor — Manage operational tasks and work tracking
+INSP-536	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Inspector — Execute a Chemical Release inspection checklist and submit
+INSP-538	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Inspector — Execute a Customs Exemption inspection checklist and submit
+INSP-543	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Inspector — Execute a Safety inspection checklist and submit
+INSP-548	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Inspector — Log a lightweight Visit Statement
+INSP-553	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Inspector — Branch a new inspection plan between Field Visit and Remote Visit
+INSP-558	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Inspector — Issue a Summons Notice from the field
+INSP-563	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Inspector — Record an Incident Report during a visit
+INSP-568	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Inspector — Record a Violation Report with signature capture
+INSP-573	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Inspector — Log a Sample Collection Report
+INSP-578	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Inspector — Record Non-Compliant Products Destruction
+INSP-583	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Inspector — Generate a Facility Report
+INSP-588	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Inspector — View establishment regulatory status and visit history mid-visit
+INSP-593	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Inspector — Detect and recover from offline connectivity during a field-inspection journey
+INSP-599	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Inspector — Confirm arrival within geofence or record a governed GPS-override exception
+INSP-605	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Inspector — Capture and provisionally register an unregistered facility during a field visit
+INSP-611	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Inspector — Grant temporary delegated execution of a visit without changing ownership
+INSP-617	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Display factory identity, licence, location and capacity profile
+INSP-622	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Compute and display a Factory Health Score
+INSP-628	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Track penalty records and corrective-action status on factory history
+INSP-640	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Capture a voice note during an inspection
+INSP-646	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Determine module ownership and build the Map Task Card status view
+INSP-652	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Build a dedicated Report Details read view for Summons Notice
+INSP-657	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Audit Machines and Base Element tabs against existing Factory 360 code
+INSP-663	DESIGN_ONLY_NO_FUNCTIONAL_SOURCE	Resolve the canonical Violation Report detail variant(s)
+INSP-669	NOT_YET_EVIDENCED	Confirm whether a distinct "Visit Reports" page exists in the Figma file
+INSP-678	OTHER_UNCLASSIFIED	Rewrite the demo seed pack (02-10) to bind dynamically to live data instead of dead anchor UUIDs
