@@ -14,9 +14,9 @@ export default async function CommitteePage() {
   const { t } = await useT();
   if (resolveFeatureFlag(process.env.FEATURE_DECISION_DOSSIER, MODES, "off") !== "on") {
     return (
-      <Shell current="/committee" title={t("cmte.title", "Committee & signatures")} context={<span className="badge badge-warning">REQ-0128</span>}>
-        <NotYetBoundary title={t("cmte.title", "Committee & signatures")} consequence={t("cmte.off", "The committee decision record is not turned on here. PKI/EBDA verification is on hold.")}
-          seam="FEATURE_DECISION_DOSSIER=off + PKI/EBDA held" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
+      <Shell current="/committee" title={t("cmte.title", "Committee & signatures")}>
+        <NotYetBoundary title={t("cmte.title", "Committee & signatures")} consequence={t("cmte.off", "The committee decision record is not switched on here. Digital signature verification is still on hold.")}
+          seam={t("cmte.offSeam", "Waiting on: the committee record being switched on, and digital signature verification going live.")} notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
       </Shell>
     );
   }

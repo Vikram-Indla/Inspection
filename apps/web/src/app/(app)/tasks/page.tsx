@@ -51,7 +51,7 @@ export default async function TasksPage() {
     activeYes: t("tasks.activeYes", "active"),
     activeNo: t("tasks.activeNo", "inactive"),
     terminalNote: t("tasks.terminal", "This task is terminal — no further transitions are possible."),
-    readOnly: t("tasks.readOnly", "Scope-locked — visible, not yours to manage (RLS)"),
+    readOnly: t("tasks.readOnly", "You can see this task but it is not yours to manage"),
   };
   const columns = [
     { key: "assigned", label: t("tasks.column.assigned", "Assigned"), tasks: tasks.filter(task => ["new", "assigned", "suspended"].includes(task.status)) },
