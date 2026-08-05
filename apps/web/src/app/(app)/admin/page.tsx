@@ -153,7 +153,7 @@ export default async function AdminHome() {
                 <div>
                   <strong>{text("Some approval work could not load.", "بعض أعمال الاعتماد لم يتم تحميلها.")}</strong>{" "}
                   {requestRead.error
-                    ? text("We could not read the request list, so we can't say if it's empty.", "تعذّرت قراءة قائمة الطلبات، لذا لا يمكن الجزم بأنها فارغة.")
+                    ? text("The request list could not be loaded. Requests may exist that are not shown.", "تعذّرت قراءة قائمة الطلبات، لذا لا يمكن الجزم بأنها فارغة.")
                     : text("We could not read some request details, but the requests below are still shown.", "تعذّرت قراءة بعض تفاصيل الطلبات، وتظل الطلبات أدناه ظاهرة.")}
                 </div>
               </div>
@@ -207,7 +207,7 @@ export default async function AdminHome() {
               <div className="alert alert-warning" role="alert">
                 <div>
                   <strong>{text("Recent changes are not available.", "أحدث التغييرات غير متاحة.")}</strong>{" "}
-                  {text("We could not read the Activity Log, so we can't say there are no changes.", "تعذّرت قراءة سجل النشاط، لذا لا يمكن الجزم بعدم وجود تغييرات.")}
+                  {text("The Activity Log could not be loaded. Changes may exist that are not shown.", "تعذّرت قراءة سجل النشاط، لذا لا يمكن الجزم بعدم وجود تغييرات.")}
                 </div>
               </div>
             ) : auditRows.length === 0 ? (

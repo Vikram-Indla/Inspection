@@ -79,7 +79,7 @@ export default async function FieldTrustedDevicesPage() {
     stSignedOut: tr("field.devices.st.signedOut", "Session expired", "انتهت صلاحية الجلسة"),
     stInvalidId: tr("field.devices.st.invalidId", "Device identifier unavailable", "معرّف الجهاز غير متاح"),
     stUnavailable: tr("field.devices.st.unavailable", "Enrollment status unavailable", "حالة التسجيل غير متاحة"),
-    stPolicyPending: tr("field.devices.st.policyPending", "Self-enrollment not yet enabled", "التسجيل الذاتي غير مفعّل بعد"),
+    stPolicyPending: tr("field.devices.st.policyPending", "Self-enrollment not enabled", "التسجيل الذاتي غير مفعّل بعد"),
     stPending: tr("field.devices.st.pending", "Pending approval", "بانتظار الموافقة"),
     stTrusted: tr("field.devices.st.trusted", "Trusted", "موثوق"),
     stSuspended: tr("field.devices.st.suspended", "Suspended", "موقوف"),

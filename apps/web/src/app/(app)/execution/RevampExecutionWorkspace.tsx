@@ -211,20 +211,20 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
       </div>
       <div className="alert alert-critical" role="status">
         <div>
-          <strong>{copy(locale, "Submission service unavailable.", "خدمة التقديم غير متاحة.")}</strong> {copy(locale, "Inspection preparation and execution records remain available, but new submissions and resubmissions are blocked by DEC-032. No successful submission is claimed from this destination.", "تظل سجلات التحضير والتنفيذ متاحة، لكن عمليات التقديم وإعادة التقديم الجديدة محظورة بموجب القرار DEC-032. لا تدّعي هذه الوجهة نجاح أي تقديم.")}
+          <strong>{copy(locale, "Submission service unavailable.", "خدمة التقديم غير متاحة.")}</strong> {copy(locale, "Inspection preparation and execution records remain available. New submissions and resubmissions cannot be sent right now.", "تظل سجلات التحضير والتنفيذ متاحة. لا يمكن إرسال عمليات تقديم أو إعادة تقديم جديدة حاليًا.")}
         </div>
       </div>
       <div className="alert alert-info" role="status">
         <div>
           <strong>{copy(locale, "Live tracking is not available in this Web view.", "التتبع المباشر غير متاح في عرض الويب هذا.")}</strong>{" "}
-          {copy(locale, "DEC-002 remains the authority boundary for telemetry frequency, accuracy, and geofence policy. The map uses recorded official factory coordinates only.", "يظل القرار DEC-002 هو الحد المرجعي لتواتر القياس ودقته وسياسة النطاق الجغرافي. تستخدم الخريطة إحداثيات المصنع الرسمية المسجلة فقط.")}
+          {copy(locale, "The map uses recorded official factory coordinates only.", "تستخدم الخريطة إحداثيات المصنع الرسمية المسجلة فقط.")}
         </div>
       </div>
       {totalVisibleRows > rows.length ? (
         <div className="alert alert-info" role="status">
           <div>
             <strong>{copy(locale, "Bounded result set.", "مجموعة نتائج محدودة.")}</strong>{" "}
-            {copy(locale, `Showing ${rows.length.toLocaleString("en-GB")} non-fixture rows from a 1,000-row bounded fetch; ${totalVisibleRows.toLocaleString("en-GB")} visits are RLS-visible. Fixtures and records beyond the bound are not claimed visible here.`, `يُعرض ${rows.length.toLocaleString("ar-SA")} صفاً غير تجريبي من قراءة محدودة بألف صف؛ توجد ${totalVisibleRows.toLocaleString("ar-SA")} زيارة ظاهرة وفق سياسات أمان الصفوف. لا يُدّعى عرض السجلات التجريبية أو السجلات التي تتجاوز الحد هنا.`)}
+            {copy(locale, `Showing ${rows.length.toLocaleString("en-GB")} of ${totalVisibleRows.toLocaleString("en-GB")} visits in your scope. Sample records and rows beyond this limit are not shown.`, `يُعرض ${rows.length.toLocaleString("ar-SA")} من أصل ${totalVisibleRows.toLocaleString("ar-SA")} زيارة ضمن نطاقك. لا تُعرض السجلات التجريبية ولا الصفوف التي تتجاوز هذا الحد.`)}
           </div>
         </div>
       ) : null}
@@ -321,8 +321,8 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
             ))}</tbody>
           </table>
           {!visibleRows.length && <p>{hasActiveFilters
-            ? copy(locale, "No RLS-visible inspections match the current search and filters. Clear the filters to restore this view.", "لا توجد تفتيشات ظاهرة وفق سياسات أمان الصفوف تطابق البحث وعوامل التصفية الحالية. امسح عوامل التصفية لاستعادة العرض.")
-            : copy(locale, "No inspections are available in this RLS-scoped view.", "لا توجد تفتيشات متاحة في هذا العرض المقيّد بسياسات أمان الصفوف.")}</p>}
+            ? copy(locale, "No inspections match the current search and filters. Clear the filters to restore this view.", "لا توجد تفتيشات ظاهرة وفق سياسات أمان الصفوف تطابق البحث وعوامل التصفية الحالية. امسح عوامل التصفية لاستعادة العرض.")
+            : copy(locale, "No inspections are available in your scope.", "لا توجد تفتيشات متاحة في هذا العرض المقيّد بسياسات أمان الصفوف.")}</p>}
         </section>
       )}
       {selected ? (

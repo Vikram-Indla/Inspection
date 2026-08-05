@@ -138,6 +138,8 @@ export type OutboxOp =
   // (guard_violation_invalidate), so it is never mutated from the client — the
   // finding↔violation association rides findings.item_id + the submission manifest.
   | { kind: "finding"; id: string; inspection_id: string; item_id: string; severity: string; description: string; queued_at: string };
+/** A queued op together with its own storage key, read as one unit. */
+export type OutboxEntry = { key: IDBValidKey; op: OutboxOp };
 export type Conflict = { key: string; local: unknown; server: unknown; item_id: string; detected_at: string };
 export type CachedRouteEstimate = {
   etaMinutes: number;
@@ -278,7 +280,31 @@ function createUserOfflineStore(userId: string) {
     enqueue: (op: OutboxOp) => tx(verifiedUserId, "outbox", "readwrite", s => s.add(op)),
     peekAll: () => tx<OutboxOp[]>(verifiedUserId, "outbox", "readonly", s => s.getAll() as IDBRequest<OutboxOp[]>),
     keys: () => tx<IDBValidKey[]>(verifiedUserId, "outbox", "readonly", s => s.getAllKeys()),
-    remove: (key: IDBValidKey) => tx(verifiedUserId, "outbox", "readwrite", s => s.delete(key)),
+    /** Keys paired with their own op, read in ONE transaction.
+     *
+     *  Callers used to read keys() and peekAll() separately and pair them by
+     *  position. Those are two transactions, so anything enqueued between them
+     *  shifted the lists out of step and a key came back undefined — which
+     *  IndexedDB reports as "No key or key range specified" on the delete that
+     *  follows. A cursor pairs each key with its own value and cannot drift. */
+    entries: () => tx<OutboxEntry[]>(verifiedUserId, "outbox", "readonly", s => {
+      const out: OutboxEntry[] = [];
+      const rq = s.openCursor();
+      rq.onsuccess = () => {
+        const cursor = rq.result;
+        if (!cursor) return;
+        out.push({ key: cursor.primaryKey, op: cursor.value as OutboxOp });
+        cursor.continue();
+      };
+      return { get result() { return out; } } as unknown as IDBRequest<OutboxEntry[]>;
+    }),
+    // A missing key is a caller bug, not a storage failure. Deleting nothing is
+    // the safe outcome — the op stays queued and is retried — where throwing
+    // takes down the whole replay and strands every other queued op with it.
+    remove: (key: IDBValidKey | undefined) =>
+      key == null
+        ? Promise.resolve(undefined as unknown as void)
+        : tx(verifiedUserId, "outbox", "readwrite", s => s.delete(key)),
     addConflict: (c: Conflict) => tx(verifiedUserId, "conflicts", "readwrite", s => s.put(c)),
     conflicts: () => tx<Conflict[]>(verifiedUserId, "conflicts", "readonly", s => s.getAll() as IDBRequest<Conflict[]>),
     resolveConflict: (key: string) => tx(verifiedUserId, "conflicts", "readwrite", s => s.delete(key)),
@@ -418,6 +444,44 @@ export class ReplaySessionChanged extends Error {
   constructor() { super("Replay session changed"); }
 }
 
+/**
+ * A refusal, not a hang (INSP-758-class). submit_inspection and its guard
+ * trigger raise stable EXE-SUBMIT-* tokens for a semantic rejection (missing
+ * config, a required action form, a scope violation, …) — none of these
+ * become true on an unattended retry, so replaying them every tick just
+ * disguises "the server said no" as "still working on it" forever. This
+ * class marks that distinction for the catch block below: the token text
+ * itself is never shown as user copy (same convention as the neutral-code
+ * maps elsewhere) — only the mapped, stable code travels to the UI.
+ */
+export class SubmitRejected extends Error {
+  code: string;
+  constructor(code: string, message: string) { super(message); this.code = code; }
+}
+const SUBMIT_TOKEN_CODES: Record<string, string> = {
+  "EXE-SUBMIT-DENIED": "SUBMIT_DENIED",
+  "EXE-SUBMIT-IDEMPOTENCY": "SUBMIT_IDEMPOTENCY",
+  "EXE-SUBMIT-NOT-FOUND": "SUBMIT_NOT_FOUND",
+  "EXE-SUBMIT-TERMINAL": "SUBMIT_TERMINAL_STATE",
+  "EXE-SUBMIT-UNDER-REVIEW": "SUBMIT_UNDER_REVIEW",
+  "EXE-SUBMIT-STATE": "SUBMIT_STATE",
+  "EXE-SUBMIT-EVIDENCE-PENDING": "SUBMIT_EVIDENCE_PENDING",
+  "EXE-SUBMIT-SCOPE-VIOLATION": "SUBMIT_SCOPE_VIOLATION",
+  "EXE-SUBMIT-RACE": "SUBMIT_RACE",
+  "EXE-SUBMIT-CONFIG-VERSION-MISMATCH": "SUBMIT_CONFIG_MISMATCH",
+  "EXE-SUBMIT-CONFIG-CHECKSUM-MISMATCH": "SUBMIT_CONFIG_MISMATCH",
+  "EXE-SUBMIT-SNAPSHOT-VERSION-MISMATCH": "SUBMIT_CONFIG_MISMATCH",
+  "EXE-SUBMIT-CONFIG-SNAPSHOT-REQUIRED": "SUBMIT_CONFIG_MISMATCH",
+  "EXE-SUBMIT-ACTION-FORM-MISSING": "SUBMIT_ACTION_FORM_MISSING",
+  "EXE-SUBMIT-ACTION-FORM-INCOMPLETE": "SUBMIT_ACTION_FORM_INCOMPLETE",
+};
+function classifySubmitRejection(message: string): string {
+  for (const token of Object.keys(SUBMIT_TOKEN_CODES)) {
+    if (message.includes(token)) return SUBMIT_TOKEN_CODES[token];
+  }
+  return "SUBMIT_REJECTED";
+}
+
 export function createReplayGuard(capturedUserId: string, liveUserId: () => Promise<string | null>) {
   const assertLive = async () => {
     if ((await liveUserId()) !== capturedUserId) throw new ReplaySessionChanged();
@@ -468,11 +532,13 @@ export async function processOutbox(verifiedUserId: string, onState: (s: SyncSta
     const { data } = await shared.auth.getSession();
     return data.session?.user.id ?? null;
   });
-  const keys = await local.keys(); const ops = await local.peekAll();
-  if (!ops.length) { onState("synced"); return; }
-  onState("syncing", `${ops.length} queued`);
-  for (let i = 0; i < ops.length; i++) {
-    const op = ops[i]; const key = keys[i];
+  // One read, so each op arrives with its own key. Reading keys and values
+  // separately let an enqueue between the two calls shift them out of step.
+  const entries = await local.entries();
+  if (!entries.length) { onState("synced"); return; }
+  onState("syncing", `${entries.length} queued`);
+  for (let i = 0; i < entries.length; i++) {
+    const op = entries[i].op; const key = entries[i].key;
     try {
       if (op.kind === "response") {
         const { data: server } = await guard.network(() => sb.from("checklist_responses").select("id, response, updated_at")
@@ -539,7 +605,11 @@ export async function processOutbox(verifiedUserId: string, onState: (s: SyncSta
           const missing =
             rpcError.code === "42883" || rpcError.code === "PGRST202" ||
             String(rpcError.message).includes("Could not find the function");
-          if (!missing) throw rpcError; // EXE-* token — explicit failure, never masked
+          if (!missing) {
+            // A genuine EXE-SUBMIT-* refusal — explicit failure, never masked
+            // as "still working on it" (INSP-758-class: see SubmitRejected).
+            throw new SubmitRejected(classifySubmitRejection(String(rpcError.message)), String(rpcError.message));
+          }
           // LEGACY FALLBACK (pre-20260721160000 servers): the original direct
           // insert with its duplicate-tolerance. The unguarded status update
           // and client-side version_number stay as-is on this path only.
@@ -666,6 +736,16 @@ export async function processOutbox(verifiedUserId: string, onState: (s: SyncSta
       if (e instanceof ReplaySessionChanged) {
         onState("pending");
         return;  // original user's current + remaining entries stay untouched
+      }
+      if (e instanceof SubmitRejected) {
+        // Terminal, not transient: nothing about this op changes on its own,
+        // so leaving it queued would just replay the identical refusal every
+        // tick forever while the UI kept implying patience would fix it
+        // (INSP-758-class). Drop it and say what happened; other queued ops
+        // (other inspections) still get their turn.
+        await local.remove(key);
+        onState("failed", e.code);
+        continue;
       }
       // Provider details stay diagnostic-only. The field surface supplies the
       // localized neutral recovery copy for the failed-sync state.

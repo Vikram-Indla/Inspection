@@ -181,7 +181,11 @@ export default async function ReviewWorkspace({ params, searchParams }: {
     const itemClause = Array.isArray(item?.regulation_clauses) ? item?.regulation_clauses[0] : item?.regulation_clauses;
     const violationClause = Array.isArray(violation?.violation_codes?.regulation_clauses) ? violation?.violation_codes?.regulation_clauses[0] : violation?.violation_codes?.regulation_clauses;
     const clause = itemClause ?? violationClause ?? null;
-    const responseValue = typeof raw === "string" ? raw : JSON.stringify(raw);
+    // Same answer value, same label everywhere: the Checklist tab renders it
+    // through enum.* but the trace chain used to print the raw token, so one
+    // screen showed "non compliant" and the other "non_compliant".
+    const rawResponse = typeof raw === "string" ? raw : JSON.stringify(raw);
+    const responseValue = t(`enum.${rawResponse}`, rawResponse.replace(/_/g, " "));
     return {
       key,
       question: present(item?.title ?? key, `${versionLabel} · package item`),
@@ -199,7 +203,7 @@ export default async function ReviewWorkspace({ params, searchParams }: {
         ? present(`${action.required_correction ?? "Corrective action"} · ${action.status}`, `Action form · ${action.owner_name ?? "owner unavailable"}`)
         : present("No corrective action recorded", "Inspection action-form set"),
       decision: decidedReview
-        ? present(`${decidedReview.decision ?? "decision"}${decidedReview.decision_reason ? ` · ${decidedReview.decision_reason}` : ""}`, `Review decision · ${decidedReview.decided_at}`)
+        ? present(`${decidedReview.decision ? t(`enum.${decidedReview.decision}`, decidedReview.decision.replace(/_/g, " ")) : "decision"}${decidedReview.decision_reason ? ` · ${decidedReview.decision_reason}` : ""}`, `Review decision · ${decidedReview.decided_at ? formatDateTime(decidedReview.decided_at, lang) : "—"}`)
         : unavailable("Review decision record", "Decision comment pending"),
     };
   });
@@ -235,7 +239,7 @@ export default async function ReviewWorkspace({ params, searchParams }: {
     unavailEvidence: t("review.cmp.unavailEvidence", "Evidence / media comparison — not derived; shown unavailable, never 'unchanged'."),
     unavailPackage: t("review.cmp.unavailPackage", "Package-semantic comparison — answer meaning across package versions is not reconciled."),
     unavailMetadata: t("review.cmp.unavailMetadata", "Metadata / section-order comparison — not diffed."),
-    unavailNote: t("review.cmp.unavailNote", "These are honestly unavailable (HANDOFF_BLOCKED_MEDIADIFF/_PKGSEMANTIC/_METADIFF), not equal."),
+    unavailNote: t("review.cmp.unavailNote", "These comparisons are unavailable — that is not the same as equal."),
     collectionHeading: tx("review.cmp.collectionHeading", "Immutable collection comparison", "مقارنة المجموعات غير القابلة للتعديل"),
     evidenceCollection: tx("review.cmp.evidenceCollection", "Evidence manifest (ID + SHA metadata)", "بيان الأدلة (المعرّف وبصمة SHA)"),
     actionCollection: tx("review.cmp.actionCollection", "Action forms", "نماذج الإجراءات"),
@@ -260,7 +264,7 @@ export default async function ReviewWorkspace({ params, searchParams }: {
 const panelStrings: WorkspaceDecisionStrings = {
     heading: t("review.ws.panelHeading", "Decision — irreversible once confirmed"),
     decisions: { approve: t("enum.approve", "approve"), return: t("enum.return", "return"), reject: t("enum.reject", "reject") },
-    returnScopeTitle: t("review.ws.returnScopeTitle", "Exact return scope (STM-REV-003)"),
+    returnScopeTitle: t("review.ws.returnScopeTitle", "Exact return scope"),
     returnScopeHint: t("review.ws.returnScopeHint", "Only selected sections unlock; the rest stays locked."),
     reason: t("review.ws.reason", "Reason"),
     reasonPlaceholder: t("review.ws.reasonPlaceholder", "mandatory for return/reject — recorded immutably"),
@@ -290,18 +294,9 @@ const panelStrings: WorkspaceDecisionStrings = {
   };
   const startStrings: StartReviewStrings = {
     title: t("review.ws.startTitle", "Start Level 2 review"),
-    body: t("review.ws.startBody", "Opening this record does not change anything (CD-028). Starting the review claims it for you and moves the inspection to under review — an explicit, audited action."),
+    body: t("review.ws.startBody", "Opening this record does not change anything. Starting the review claims it for you and moves the inspection to under review — an explicit, audited action."),
     start: t("review.ws.startAction", "Start review"),
     starting: t("review.ws.starting", "Starting…"),
-  };
-  const decisionBoundary = {
-    title: tx("review.ws.dec032.title", "Resubmission dependency", "اعتماد إعادة التقديم"),
-    body: tx(
-      "review.ws.dec032.body",
-      "DEC-032 blocks new submissions and returned-version resubmissions. Decisions on this already-immutable submission still use the canonical atomic review RPC; a Return can be recorded, but resubmission remains blocked until the database migration is applied.",
-      "يحظر القرار DEC-032 عمليات التقديم الجديدة وإعادة تقديم الإصدارات المعادة. تظل قرارات هذه النسخة غير القابلة للتعديل عبر إجراء المراجعة الذري المعتمد؛ ويمكن تسجيل الإعادة، لكن إعادة التقديم تبقى محظورة حتى تطبيق ترحيل قاعدة البيانات.",
-    ),
-    status: tx("review.ws.dec032.status", "Resubmission blocked — DEC-032", "إعادة التقديم محظورة — DEC-032"),
   };
   const traceStrings = {
     heading: t("review.ws.trace.heading", "Finding trace chain"),
@@ -320,14 +315,19 @@ const panelStrings: WorkspaceDecisionStrings = {
   // span.tab-count, 7 total. Tabs are the record's existing content regions;
   // no new content is introduced here, only the switcher.
   const decidedCount = reviews.filter(r => !!r.decided_at).length;
+  // Tab labels are short switcher labels, NOT the panel headings. Reusing the
+  // full headings here squeezed seven flex children into three-line stacks
+  // ("Checkl / ist — / v2") and leaked the heading's trailing colon into the
+  // "Prior decision:" tab. Each panel still renders its full <h2>, so nothing
+  // is lost — only the switcher gets a one-line label.
   const recordTabs: RecordTabDef[] = [
-    { key: "checklist", label: t("review.ws.checklist", "Checklist — v{n}").replace("{n}", String(latest?.version_number)), count: answerEntries.length },
-    { key: "evidence", label: t("review.ws.evidenceHeading", "Violations · actions · evidence (read-only)"), count: violations.length },
-    { key: "factory", label: t("review.ws.fvHeading", "Factory data verification (Senaei source vs observed)"), count: fv.checks.length },
-    { key: "ack", label: t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)"), count: latest?.acknowledgement != null ? 1 : 0 },
-    { key: "compare", label: t("review.cmp.heading", "Version comparison — Tamper-evident Scope Rail"), count: compareVersions.length },
-    { key: "timeline", label: tx("review.ws.timelineHeading", "Canonical review timeline", "الخط الزمني المعتمد للمراجعة"), count: (trail ?? []).length },
-    { key: "prior", label: t("review.ws.priorDecision", "Prior decision:"), count: decidedCount },
+    { key: "checklist", label: t("review.ws.tab.checklist", "Checklist"), count: answerEntries.length },
+    { key: "evidence", label: t("review.ws.tab.evidence", "Violations"), count: violations.length },
+    { key: "factory", label: t("review.ws.tab.factory", "Factory data"), count: fv.checks.length },
+    { key: "ack", label: t("review.ws.tab.ack", "Acknowledgement"), count: latest?.acknowledgement != null ? 1 : 0 },
+    { key: "compare", label: t("review.ws.tab.compare", "Version comparison"), count: compareVersions.length },
+    { key: "timeline", label: t("review.ws.tab.timeline", "Timeline"), count: (trail ?? []).length },
+    { key: "prior", label: t("review.ws.tab.prior", "Prior decisions"), count: decidedCount },
   ];
   return (
     <Shell current="/reviews" title={t("review.ws.title", "Review — {factory}").replace("{factory}", f.name)}
@@ -347,11 +347,11 @@ const panelStrings: WorkspaceDecisionStrings = {
             {" · "}{tx("review.ws.correlation", "correlation", "معرّف الارتباط")} <bdi className="sq-numeric">{receiptCorrelation}</bdi>
             {receiptComment && <>{" · "}{tx("review.ws.commentRecord", "comment", "التعليق")} <bdi className="sq-numeric">{receiptComment}</bdi></>}
             {receiptHandoff && <>{" · "}{tx("review.ws.handoffRecord", "Compliance handoff", "إحالة الامتثال")} <bdi className="sq-numeric">{receiptHandoff}</bdi></>}
-            {!receiptHandoff && receiptDecision === "approve" && <>{" · "}{tx("review.ws.handoffUnavailable", "Compliance handoff ID unavailable — do not claim handoff completion.", "معرّف إحالة الامتثال غير متاح — لا يمكن اعتبار الإحالة مكتملة.")}</>}
+            {!receiptHandoff && receiptDecision === "approve" && <>{" · "}{tx("review.ws.handoffUnavailable", "Compliance handoff reference unavailable — the handoff is not confirmed.", "معرّف إحالة الامتثال غير متاح — لم تُؤكَّد الإحالة.")}</>}
           </div>
         </div>
       )}
-      <div className="sq-banner sq-banner--immutable"><div><strong>{t("review.ws.readOnlyTitle", "Read-only submitted version.")}</strong> {t("review.ws.readOnlyBody", "Content edits are impossible — the database rejects them (proven B3). Corrections happen only via Return with exact scope.")}</div></div>
+      <div className="sq-banner sq-banner--immutable"><div><strong>{t("review.ws.readOnlyTitle", "Read-only submitted version.")}</strong> {t("review.ws.readOnlyBody", "Content edits are impossible — the database rejects them. Corrections happen only via Return with exact scope.")}</div></div>
       <FindingTraceChain traces={traceRows} strings={traceStrings} />
       <div className="cd-review-workspace-grid">
         <div className="sq-stack">
@@ -404,7 +404,7 @@ const panelStrings: WorkspaceDecisionStrings = {
               </span>
             </h2>
             {fv.error ? (
-              <p className="sq-caption">{t("review.ws.fvError", "Verification data is temporarily unavailable. Source-versus-observed comparison cannot be shown yet.")}</p>
+              <p className="sq-caption">{t("review.ws.fvError", "Verification data is temporarily unavailable. Source-versus-observed comparison cannot be shown.")}</p>
             ) : fv.checks.length === 0 ? (
               <p className="sq-caption">{t("review.ws.fvEmpty", "No factory-field checks recorded for this inspection.")}</p>
             ) : (
@@ -440,7 +440,7 @@ const panelStrings: WorkspaceDecisionStrings = {
               const ack = latest.acknowledgement as { name?: string; ts?: string; signed_at?: string; signature_data_url?: string };
               return (
                 <>
-                  <h2>{t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)")}</h2>
+                  <h2>{t("review.ws.sigHeading", "Acknowledgement signature")}</h2>
                   <p>
                     <strong>{ack.name ?? "—"}</strong> · <span className="sq-numeric">{(ack.signed_at ?? ack.ts) ? formatDateTime(ack.signed_at ?? ack.ts!, lang) : "—"}</span>
                     {" "}<span className="sq-version">v{latest.version_number}</span>
@@ -453,7 +453,7 @@ const panelStrings: WorkspaceDecisionStrings = {
               );
             })() : (
               <>
-                <h2>{t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)")}</h2>
+                <h2>{t("review.ws.sigHeading", "Acknowledgement signature")}</h2>
                 <p className="sq-caption">{t("review.ws.sigNone", "No drawn signature stored with this version (acknowledged by name only).")}</p>
               </>
             )}
@@ -494,7 +494,7 @@ const panelStrings: WorkspaceDecisionStrings = {
                     {typeof ev.payload.handoff_id === "string" && <>{" · "}{tx("review.ws.handoffRecord", "Compliance handoff", "إحالة الامتثال")} <bdi className="sq-numeric">{ev.payload.handoff_id}</bdi></>}
                   </p>
                 ))}
-                <p className="sq-caption">{tx("review.ws.timelineNote", "Canonical submission, resubmission, review, comment and Compliance handoff events from review_timeline().", "أحداث التقديم وإعادة التقديم والمراجعة والتعليقات وإحالة الامتثال المعتمدة من review_timeline().")}</p>
+                <p className="sq-caption">{tx("review.ws.timelineNote", "Canonical submission, resubmission, review, comment and Compliance handoff events.", "أحداث التقديم وإعادة التقديم والمراجعة والتعليقات وإحالة الامتثال المعتمدة.")}</p>
               </>
             ) : (
               <p className="sq-caption">{t("review.ws.trace.unavailable", "Unavailable")}</p>
@@ -516,14 +516,7 @@ const panelStrings: WorkspaceDecisionStrings = {
           // controls, regardless of open/canStart state.
           ? <div className="sq-surface cd-panelpad"><p className="sq-caption">{t("review.ws.readOnlyNote", "Read-only for this role — decision controls are limited to Level 2 Reviewer / Operations.")}</p></div>
           : open && ins.status === "under_review"
-          ? <section className="stack" aria-labelledby="review-decision-boundary-title" data-state="decision-enabled">
-              <div className="alert alert-warning" role="status">
-                <div>
-                  <strong id="review-decision-boundary-title">{decisionBoundary.title}</strong>{" "}
-                  {decisionBoundary.body}
-                </div>
-              </div>
-              <span className="badge badge-warning">{decisionBoundary.status}</span>
+          ? <section className="stack" data-state="decision-enabled">
               <DecisionPanel
                 reviewId={open.id}
                 sections={sections.map(section => ({ key: section.key, title: section.title }))}

@@ -82,7 +82,7 @@
    the measured 834/600/390 viewports. */
 .chip,
 .filter {
-  flex: none; display: inline-flex; align-items: center;
+  flex: none; display: inline-flex; align-items: center; gap: 6px;
   padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border-subtle);
   background: var(--surface-sunken); font: inherit; font-size: 13px; cursor: pointer;
   white-space: nowrap; color: var(--text-secondary); text-decoration: none;

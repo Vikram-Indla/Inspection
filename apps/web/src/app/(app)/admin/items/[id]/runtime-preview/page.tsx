@@ -60,7 +60,7 @@ export default async function InspectorRuntimePreview({
   const item = rawItem as unknown as Item | null;
 
   if (itemError || !item) {
-    return <Shell current="/admin/items" title="Inspector Runtime Preview"><div className="panel"><div className="saqeel-state" role="alert"><span className="saqeel-state__glyph" aria-hidden="true">🔎</span><h4>{itemError ? "Preview can't load" : "Inspection item not found"}</h4><p className="t-caption">{itemError ? "The configuration read failed. Don't assume the item is missing — retry instead." : "The read worked, but no item has this identifier."}</p><a className="sq-link" href="/admin/items">Back to Inspection Rules</a></div></div></Shell>;
+    return <Shell current="/admin/items" title="Inspector Runtime Preview"><div className="panel"><div className="saqeel-state" role="alert"><span className="saqeel-state__glyph" aria-hidden="true">🔎</span><h4>{itemError ? "Preview can't load" : "Inspection item not found"}</h4><p className="t-caption">{itemError ? "The configuration read failed. Don't assume the item is missing — retry instead." : "No item has this identifier."}</p><a className="sq-link" href="/admin/items">Back to Inspection Rules</a></div></div></Shell>;
   }
 
   const [{ data: rawUses, error: useError }, { data: legacyVersions }, { data: governedVersions }] = await Promise.all([

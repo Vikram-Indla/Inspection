@@ -13,7 +13,7 @@
   flex-direction: column;
   gap: 18px;
   inline-size: 100%;
-  max-inline-size: 880px;
+  max-inline-size: 1200px;
   margin-inline: auto;
   padding: 20px 18px 120px;
 }

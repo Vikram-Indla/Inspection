@@ -303,9 +303,13 @@ export default async function LiveOperations({ searchParams }: {
     totalsLabel: t("ops.live.totalsLabel", local("Live operations totals", "إجماليات العمليات المباشرة")),
     inspector: t("ops.live.inspectorLegend", local("Recorded inspector position marker", "مؤشر موقع مسجّل للمفتش")),
     projected: t("ops.live.projectedNote", local("Recorded positions — not live GPS", "مواقع مسجّلة — ليست تتبعاً مباشراً عبر GPS")),
+    // Product voice: state the fact about the data, not the state of the
+    // roadmap. The old copy ("We don't track data freshness yet") narrated an
+    // unbuilt capability in the first person; the disclosure it carried — that
+    // times are recording times, not live — is preserved.
     freshnessPolicy: t("ops.live.freshnessPolicy", local(
-      "We don't track data freshness yet — showing the last recorded time only.",
-      "لم يُضبط معيار حداثة البيانات بعد — يُعرض وقت آخر رصد فقط.",
+      "Times shown are when each position was recorded.",
+      "الأوقات المعروضة هي وقت تسجيل كل موقع.",
     )),
     lastObserved: t("ops.live.lastObserved", local("Last recorded position", "آخر موقع مسجّل")),
     snapshotGenerated: t("ops.live.snapshotGenerated", local("Snapshot generated", "وقت إنشاء اللقطة")),
@@ -347,8 +351,10 @@ export default async function LiveOperations({ searchParams }: {
     dataIntegrity: t(
       "ops.live.dataIntegrity",
       local(
-        "Verification fixtures and future-dated visit windows are excluded from this live view. Excluded records:",
-        "تُستبعد سجلات التحقق التجريبية ونوافذ الزيارات المستقبلية من العرض المباشر. السجلات المستبعدة:",
+        // "Verification fixtures" is test-harness vocabulary, not something a
+        // supervisor can act on. Same exclusion rule, named in product terms.
+        "Sample records and visits scheduled for later are excluded from this view. Excluded:",
+        "تُستبعد السجلات التجريبية والزيارات المجدولة لوقت لاحق من هذا العرض. المستبعدة:",
       ),
     ),
     outOfScopeGeography: t(

@@ -22,7 +22,6 @@ export default async function AdminShell({
             <span className="sep" aria-hidden="true">/</span>
             <span>{title}</span>
           </nav>
-          <span className="id-code"><bdi dir="ltr">{current}</bdi></span>
         </header>
         {children}
       </div>

@@ -257,7 +257,7 @@ export default async function Reviews() {
     open: t("review.list.open", "Open review"),
     openHint: t("review.list.openHint", "Opens the review as read-only. Starting and deciding happen there, and we record both."),
     fpTitle: t("review.list.fpTitle", "Review readiness"),
-    fpHint: t("review.list.fpHint", "Facts come from records you are allowed to see. Facts we cannot read stay marked as not available."),
+    fpHint: t("review.list.fpHint", "Facts come from records you are allowed to see. Anything outside your scope shows as unavailable."),
     fp: {
       sla: t("review.list.fp.sla", "Deadline"),
       slaOverdue: t("review.list.fp.slaOverdue", "overdue"),
@@ -288,8 +288,8 @@ export default async function Reviews() {
       context={<span className="sq-lozenge sq-lozenge--info">{t("review.list.context", "Read-only queue")}</span>}>
       <main className={styles.reviewRoot} data-screen-id="REV-S01">
         <div className="sq-banner" role="note"><div><strong>{t("review.list.scanTitle", "Review overview")}</strong> — {t("review.list.scanBody", "Opening only lets you look. Starting and deciding are separate actions, and we record both.")}</div></div>
-        {reviewDays == null && <div className="sq-banner sq-banner--warning" role="note"><div><strong>{t("review.list.missingSlaTitle", "Deadline settings missing")}</strong> — {t("review.list.missingSlaBody", "We cannot work out a review deadline. Rows show as not available instead of on time.")}</div></div>}
-        {degraded && <div className="sq-banner sq-banner--warning" role="alert"><div><strong>{t("review.list.degradedTitle", "Some linked information is not available")}</strong> — {t("review.list.degradedBody", "The queue loaded, but we could not read one or more linked sources. Those facts stay not available.")}</div></div>}
+        {reviewDays == null && <div className="sq-banner sq-banner--warning" role="note"><div><strong>{t("review.list.missingSlaTitle", "Deadline settings missing")}</strong> — {t("review.list.missingSlaBody", "No review deadline is configured. Rows show as unavailable instead of on time.")}</div></div>}
+        {degraded && <div className="sq-banner sq-banner--warning" role="alert"><div><strong>{t("review.list.degradedTitle", "Some linked information is not available")}</strong> — {t("review.list.degradedBody", "The queue loaded, but one or more linked sources could not be read. Those details show as unavailable.")}</div></div>}
         {rows.length === 0 ? (
           <section className="sq-surface cd-panelpad cd-result" role="status">
             <div className="cd-result__row">
@@ -301,7 +301,7 @@ export default async function Reviews() {
             </div>
           </section>
         ) : <ReviewQueue rows={queueRows} statusOptions={statusOptions} riskOptions={riskOptions} strings={strings} />}
-        <div className="sq-banner sq-banner--warning" role="note"><div><strong>{t("review.list.submissionBlockTitle", "New submissions are not confirmed working")}</strong> — {t("review.list.submissionBlockBody", "We cannot yet confirm that a brand-new inspection submission works end to end. Existing review records you have access to are still readable; this queue does not get around that limit.")}</div></div>
+        <div className="sq-banner sq-banner--warning" role="note"><div><strong>{t("review.list.submissionBlockTitle", "New submissions unavailable")}</strong> — {t("review.list.submissionBlockBody", "New inspection submissions cannot be sent right now. Existing review records in your scope are still available.")}</div></div>
         <div className="sq-banner sq-banner--immutable"><div><strong>{t("review.list.immutableTitle", "Decisions cannot be changed")}</strong> {t("review.list.immutableBody", "— decided reviews cannot be edited. Each resubmission creates a new, saved version.")}</div></div>
       </main>
     </Shell>
