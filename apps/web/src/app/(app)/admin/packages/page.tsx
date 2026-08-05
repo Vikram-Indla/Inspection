@@ -359,7 +359,7 @@ export default async function Packages() {
       governance={surveyGovernance}
       reconstructionNote={t("admin.revamp.survey.note", copy("The design’s sample package names, counts and rule contents are not copied. This screen shows the real package, item, template, impact and locked-version data already used by execution.", "لا تُنسخ أسماء حزم التصميم النموذجية أو أعدادها أو محتوى قواعدها. تعرض هذه الشاشة مصادر الحزم والبنود والقوالب والأثر والإصدارات غير القابلة للتغيير التي يستخدمها التنفيذ فعلياً."))}
       context={<span className="row">
-        <span className="badge badge-info">SCR-ADM-030/031 · ENG-02</span>
+        
         <span className="t-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></span>
       </span>}
     >

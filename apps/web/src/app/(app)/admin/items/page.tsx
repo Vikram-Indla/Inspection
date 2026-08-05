@@ -197,7 +197,7 @@ export default async function Items({
       title={t("admin.items.r2.title", "Inspection Item Catalogue")}
       context={
         <span className="row" style={{ gap: "var(--space-3)" }}>
-          <span className="badge badge-info">SCR-ADM-020 · ENG-01</span>
+          
           <span role="status" className="t-caption">
             {fill(t("admin.items.r2.readAt", "catalogue read {time} — a source fact, not a freshness verdict"), { time: readAt })}
           </span>

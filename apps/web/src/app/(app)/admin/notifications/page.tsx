@@ -92,7 +92,7 @@ export default async function AdminNotifications() {
   const title = t("admin.notif.title", "Notification & SLA Rules");
   const context = (
     <span className="row" style={{ gap: "var(--space-3)" }}>
-      <span className="badge badge-info">SCR-ADM-080</span>
+      
       {rulesError ? <span className="badge badge-warning"><span aria-hidden="true">⚠</span> {t("admin.notif.degraded.chip", "register not available")}</span> : null}
     </span>
   );

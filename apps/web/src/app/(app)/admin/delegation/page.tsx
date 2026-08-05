@@ -42,10 +42,10 @@ export default async function DelegationJourney({
   } : {
     title: "Delegation", subtitle: "Temporarily delegate a governed role's authority to another authorized user",
     tabActive: "Active", tabReceived: "Received", tabNew: "New Delegation", tabHistory: "History",
-    unavailableTitle: "Delegation list unavailable", unavailableBody: "The RLS-scoped read failed. Nothing has been inferred.",
+    unavailableTitle: "Delegation list unavailable", unavailableBody: "We could not read the delegation records. Nothing has been guessed.",
     emptyActiveTitle: "No active delegations", emptyActiveBody: "You haven't created an active delegation in your authorized scope yet.",
     emptyReceivedTitle: "No delegations received", emptyReceivedBody: "No one has delegated an active role to you yet.",
-    emptyHistoryTitle: "No history", emptyHistoryBody: "The RLS-scoped read returned no delegations in your scope.",
+    emptyHistoryTitle: "No history", emptyHistoryBody: "There are no delegations to show for your access.",
     noScopesTitle: "No delegable roles", noScopesBody: "You don't currently hold a role that can be delegated to another user.",
     delegator: "Delegator", delegate: "Delegate", delegateHelp: "Enter the email of an existing authorized user.",
     scope: "Scope (role)", reason: "Reason", startsAt: "Starts", endsAt: "Ends",

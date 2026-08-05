@@ -197,7 +197,7 @@ export default async function EnforcementLibrary({
     <Shell
       current="/enforcement-library"
       title={copy("Violations & Penalties", "المخالفات والعقوبات")}
-      context={<span className="badge badge-info">ENF-S01 · {copy("Read only", "للقراءة فقط")}</span>}
+      context={<span className="badge badge-info">{copy("Read only", "للقراءة فقط")}</span>}
     >
       <h1 className="sq-sr-only">{copy("Violations & Penalties", "المخالفات والعقوبات")}</h1>
 

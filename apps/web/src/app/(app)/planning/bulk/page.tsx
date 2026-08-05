@@ -335,7 +335,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     invalidBody: t("plan.bulk.invalidBody", "{n} previously selected factories no longer match the current criteria and were removed from your selection."),
     invalidKeep: t("plan.bulk.invalidKeep", "Keep remaining selection"),
     invalidClear: t("plan.bulk.invalidClear", "Clear all"),
-    summaryTitle: t("plan.bulk.summaryTitle", "Campaign summary — deterministic"),
+    summaryTitle: t("plan.bulk.summaryTitle", "Campaign summary"),
     summarySelected: t("plan.bulk.summarySelected", "Selected factories"),
     summaryByBand: t("plan.bulk.summaryByBand", "By risk band"),
     summaryByRegion: t("plan.bulk.summaryByRegion", "By region"),

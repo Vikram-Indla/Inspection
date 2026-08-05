@@ -18,10 +18,10 @@ export default async function EvidenceOcrPage() {
   const { t } = await useT();
   if (resolveFeatureFlag(process.env.FEATURE_OCR_REVIEW, MODES, "on") !== "on") {
     return (
-      <Shell current="/evidence-ocr" title={t("ocr.title", "Evidence text extraction (OCR)")} context={<span className="badge badge-warning">REQ-OCR</span>}>
-        <NotYetBoundary title={t("ocr.title", "Evidence text extraction (OCR)")}
-          consequence={t("ocr.off", "OCR review is not enabled here. Extracted text is always advisory and never auto-fills a field.")}
-          seam="FEATURE_OCR_REVIEW=off" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
+      <Shell current="/evidence-ocr" title={t("ocr.title", "Reading text from evidence")}>
+        <NotYetBoundary title={t("ocr.title", "Reading text from evidence")}
+          consequence={t("ocr.off", "Reading text from evidence is not switched on here. Any text read this way is only a suggestion and never fills in a field on its own.")}
+          seam={t("ocr.offSeam", "Waiting on: this feature being switched on.")} notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
       </Shell>
     );
   }
@@ -61,7 +61,7 @@ export default async function EvidenceOcrPage() {
     linked: t("ocr.linked", "linked"), captured: t("ocr.captured", "captured"),
   };
   return (
-    <Shell current="/evidence-ocr" title={t("ocr.title", "Evidence text extraction (OCR)")}
+    <Shell current="/evidence-ocr" title={t("ocr.title", "Reading text from evidence")}
       context={
         <>
           <span className="id-code">{t("ocr.provenance", "REQ-OCR · Marker · advisory only")}</span>

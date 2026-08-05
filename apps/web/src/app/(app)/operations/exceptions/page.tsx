@@ -15,7 +15,7 @@ export default async function ExceptionsPage() {
   const { t } = await useT();
   if (resolveFeatureFlag(process.env.FEATURE_EXCEPTION_BOARD, MODES, "on") !== "on") {
     return (
-      <Shell current="/operations" title={t("exc.title", "Exception board")} context={<span className="badge badge-warning">REQ-0120</span>}>
+      <Shell current="/operations" title={t("exc.title", "Exception board")}>
         <NotYetBoundary title={t("exc.title", "Exception board")} consequence={t("exc.off", "The operations exception board is not enabled here.")}
           seam="FEATURE_EXCEPTION_BOARD=off" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
       </Shell>
@@ -34,7 +34,7 @@ export default async function ExceptionsPage() {
   const invariantOk = groupCountEqualsSource(sources); // must be true — no synthetic rows
   const degraded = Boolean(casesError || riskError);
   return (
-    <Shell current="/operations" title={t("exc.title", "Exception board")} context={<span className="badge badge-info">REQ-0120,0124</span>}>
+    <Shell current="/operations" title={t("exc.title", "Exception board")}>
       <div className="stack" data-saqeel-screen="supervisor-exceptions">
       <header className="page-header">
         <div>

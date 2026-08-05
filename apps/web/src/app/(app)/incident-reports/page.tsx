@@ -28,7 +28,6 @@ export default async function IncidentReportsPage() {
     <Shell
       current="/incident-reports"
       title={t("figma.establishmentmanagement.em029", "Report an Incident")}
-      context={<span className="badge badge-info">FNS-033 · J-12</span>}
     >
       <div className="sq-banner">
         <div>

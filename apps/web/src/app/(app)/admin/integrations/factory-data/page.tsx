@@ -28,7 +28,7 @@ export default async function FactoryDataPage({ searchParams }: { searchParams: 
 
   const statusLabel = (value: string) => t(`admin.factoryData.status.${value}`, rawLabel(value));
 
-  return <Shell current="/admin/integrations" title={t("admin.factoryData.title", "Factory data integration")} context={<span className="badge badge-info">TASK-FACTORY-360-COMPLETE-010 · P12</span>}>
+  return <Shell current="/admin/integrations" title={t("admin.factoryData.title", "Factory data integration")}>
     <div className="alert"><div><strong>{t("admin.factoryData.controlPlane", "Settings only.")}</strong> {t("admin.factoryData.truth", "Factory 360 profiles are read-only. Setting up a provider does not prove it's connected. CSV rows stay staged until a separate, approved reconciliation, and source identifiers can't be silently replaced.")}</div></div>
 
     <div className="sq-grid" style={{ marginBlock: "var(--space-4)" }}>

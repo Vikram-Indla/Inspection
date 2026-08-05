@@ -25,7 +25,7 @@ export default async function PlatformOperationsPage() {
   ].filter((value): value is string => Boolean(value));
   return (
     <Shell current="/admin/operations" title={t("mvp3.operations.title", "System operations and resilience")}
-      context={<span className="badge badge-info">{"M3-00 · CD-050 · "}{t("mvp3.operations.badge", "blocks safely when something fails")}</span>}>
+      context={<span className="badge badge-info">{t("mvp3.operations.badge", "blocks safely when something fails")}</span>}>
       {sourceFailures.length ? <div className="alert alert-warning" role="alert"><div><strong>{t("mvp3.operations.sourcesUnavailable", "Some data sources aren't available.")}</strong>{" "}{t("mvp3.operations.sourcesUnavailableBody", "Sources that aren't available are listed below. They're never shown as zero or empty.")}<span className="t-caption" style={{ display: "block", marginBlockStart: "var(--space-2)" }}>{sourceFailures.join(" · ")}</span></div></div> : null}
       <div className="sq-grid">
         <section className="panel" style={{ padding: "var(--space-6)" }}><p className="t-caption">{t("mvp3.operations.endpoints", "Endpoint contracts")}</p><strong className="kpi-value">{endpointsError ? t("common.unavailable", "Not available") : endpointRows.length}</strong>{!endpointsError ? <p>{endpointRows.filter(x => x.status === "configured").length} {t("mvp3.operations.configured", "configured")}</p> : null}</section>

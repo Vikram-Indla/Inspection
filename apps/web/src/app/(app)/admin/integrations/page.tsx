@@ -82,7 +82,6 @@ export default async function IntegrationsPage() {
       ]}
       governance={integrationGovernance}
       reconstructionNote={t("admin.revamp.integration.note", copy("Prototype provider names, sync times and health labels are not copied. The register, event stream and export jobs below are backend reads limited to what you're allowed to see; missing tables or rows show as not available or as a checked, empty state.", "لا تُنسخ أسماء الجهات المزودة أو أوقات المزامنة أو تسميات الصحة النموذجية. سجل التكامل وتدفق الأحداث ومهام التصدير أدناه قراءات خلفية تقتصر على ما يُسمح لك برؤيته؛ وتظهر الجداول أو الصفوف المفقودة كحالة غير متاحة أو حالة فارغة تم التحقق منها."))}
-      context={<span className="badge badge-info">M3-00</span>}
     >
       <div className="alert"><div><strong>{t("mvp3.integrations.truth", "Configuration is not connectivity.")}</strong> {t("mvp3.integrations.truthBody", "An endpoint becomes configured only with an approved contract and runtime address. Secrets are never displayed here.")}</div></div>
       <div className="row" style={{ marginBlock: "var(--space-4)", gap: "var(--space-3)" }}>

@@ -103,8 +103,7 @@ export default async function EnforcementRecommendations() {
   }[];
 
   return (
-    <Shell current="/admin/enforcement-recommendations" title={tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}
-      context={<span className="badge badge-info">DEC-F</span>}>
+    <Shell current="/admin/enforcement-recommendations" title={tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}>
       <h1 className="sr-only">{tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}</h1>
       <div className={styles.pageRoot}>
       <div className="alert alert-warning" role="note"><div><strong>{tr("admin.enf.rec.configTitle", "Enforcement policy: Not configured.", "سياسة الإنفاذ: غير مهيأة.")}</strong>{" "}{tr("admin.enf.rec.configBody", "The sponsor must supply the approved enforcement measure catalogue and authoritative legal-basis wording for each measure, including the published instrument and version. No amount, escalation ladder, citation or Arabic legal wording is asserted until supplied.", "يجب على الراعي تزويد كتالوج تدابير الإنفاذ المعتمد والصياغة الموثوقة للأساس القانوني لكل تدبير، بما في ذلك الأداة المنشورة وإصدارها. لا تُعرض مبالغ أو سلالم تصعيد أو استشهادات أو صياغة قانونية عربية حتى يتم توفيرها.")}</div></div>

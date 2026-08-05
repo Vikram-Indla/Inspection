@@ -51,7 +51,7 @@ export default async function TasksPage() {
     activeYes: t("tasks.activeYes", "active"),
     activeNo: t("tasks.activeNo", "inactive"),
     terminalNote: t("tasks.terminal", "This task is terminal — no further transitions are possible."),
-    readOnly: t("tasks.readOnly", "Scope-locked — visible, not yours to manage (RLS)"),
+    readOnly: t("tasks.readOnly", "You can see this task but it is not yours to manage"),
   };
   const columns = [
     { key: "assigned", label: t("tasks.column.assigned", "Assigned"), tasks: tasks.filter(task => ["new", "assigned", "suspended"].includes(task.status)) },
@@ -60,8 +60,7 @@ export default async function TasksPage() {
   ];
 
   return (
-    <Shell current="/tasks" title={t("tasks.title", "Tasks")}
-      context={<span className="badge badge-info">MVP2-REQ-0032</span>}>
+    <Shell current="/tasks" title={t("tasks.title", "Tasks")}>
       <div className="sq-banner"><div>
         <strong>{t("tasks.banner.title", "Governed task management.")}</strong> {t("tasks.banner.body", "Reassignment and status changes require a manager role in scope and a reason; every change is audited. You see only tasks in your scope (RLS).")}
       </div></div>

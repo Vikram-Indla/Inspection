@@ -165,7 +165,7 @@ export default async function Access({
   return (
     <AdminDestinationFrame
       current="/admin/access"
-      title={t("admin.revamp.access.title", copy("Users & Roles", "المستخدمون والأدوار"))}
+      title={t("admin.revamp.access.title", copy("Users & roles", "المستخدمون والأدوار"))}
       subtitle={t("admin.revamp.access.subtitle", copy("Accounts, role assignment and access review", "الحسابات وتعيين الأدوار ومراجعة الوصول"))}
       hub={t("admin.revamp.hub.people", copy("People & access", "الأشخاص والوصول"))}
       designId="frame-19-admin-users-roles"
@@ -211,7 +211,6 @@ export default async function Access({
         "The design’s three presentation roles sit above the existing approved role catalogue. This route does not collapse or rename backend roles without an approved data and RLS migration.",
         "توجد أدوار العرض الثلاثة في التصميم فوق كتالوج الأدوار المعتمد الحالي. لا تدمج هذه الوجهة أدوار النظام الخلفي ولا تعيد تسميتها دون ترحيلة معتمدة للبيانات وأمن الصفوف.",
       ))}
-      context={<span className="badge badge-info">SCR-ADM-090 · RBAC-001..014 · EXE-ACCESS</span>}
     >
       <div className="alert"><div><strong>{t("admin.access.banner.title", "Access is enforced by Row Level Security, not UI.")}</strong> {t("admin.access.banner.body", "54 policies apply the fixed RBAC matrix. Role grants are recorded automatically (this page's own data passed through RLS to render).")}</div></div>
       {(gateError || capGateError) && (

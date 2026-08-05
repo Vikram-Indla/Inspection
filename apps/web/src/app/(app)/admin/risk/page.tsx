@@ -98,7 +98,7 @@ export default async function RiskStudio() {
       }}
       governance={riskGovernance}
       reconstructionNote={t("admin.revamp.risk.note", copy("Prototype weights, bands and recalculation times are intentionally absent. This surface reads the live engine settings, while per-factory score explanation remains on the factory record where its scoring inputs exist.", "تم حذف أوزان النموذج ونطاقاته وأوقات إعادة الحساب عمداً. تقرأ هذه الواجهة إعدادات المحرك الفعلية، بينما يبقى تفسير درجة كل مصنع في سجل المصنع حيث توجد مدخلات الحساب."))}
-      context={<><span className="badge badge-info">SCR-ADM-060 · ENG-04</span><span className="id-code">{data?.version_label ?? notConfigured}</span></>}
+      context={<span className="id-code">{data?.version_label ?? notConfigured}</span>}
     >
       <div className="alert"><div><strong>{t("admin.risk.banner.title", "This is the Risk Studio (MVP1 starting scope).")}</strong> {t("admin.risk.banner.before", "Weights and bands are live settings in")} <code>engine_settings</code> {t("admin.risk.banner.after", "— scores must be able to be reproduced from stored inputs plus this version (EV-004). Only the risk_owner role can write; everyone else is blocked. Every save is recorded in the Activity Log, which can't be changed.")}</div></div>
 
