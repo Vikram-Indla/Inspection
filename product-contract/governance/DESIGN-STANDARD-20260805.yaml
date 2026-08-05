@@ -83,9 +83,42 @@ constraints_that_still_bind:
   - "Routes are fixed. A route path is never visible label text."
   - "Presentation changes must not alter behaviour. Anything touching behaviour is raised separately."
 
-open_question_for_product_owner:
-  role_colour_tokens: >
-    The Color collection was built for surfaces, text, borders and status — not
-    for role identity. Whether role colour becomes a new token family, or is
-    expressed through the existing accent and status families, is a Product
-    Owner decision. Recorded as open; not assumed.
+resolved_role_colour_tokens:
+  decision: "Role colour gets its own token set."
+  decided_by: "Product Owner (Vikram)"
+  decided_at: "2026-08-05"
+  rationale: >
+    The Color collection was built for surfaces, text, borders and status. It
+    has no concept of role identity. Expressing role through the existing status
+    family would make green mean both "inspector" and "success" on the same
+    screen — precisely the ambiguity this standard exists to remove.
+  authorisation_note: >
+    The standing rule is no new tokens. This decision is the sanctioned
+    exception: the gap was raised rather than invented, and the Product Owner
+    approved creating a new family. It authorises the family, not free invention
+    inside it.
+  values_come_from_the_diagram: >
+    The colour values are taken from the approved journey diagram, which already
+    carries them. They are not chosen afresh. Anyone implementing this samples
+    the diagram; nobody picks a shade they like.
+  roles:
+    - "admin — purple"
+    - "planner — blue"
+    - "supervisor — green"
+    - "inspector — green"
+    - "system — amber"
+    - "review and correction — red"
+  open_gap_dark_mode:
+    statement: >
+      The Color collection carries both a Light and a Dark mode. The journey
+      diagram exists only in light. Dark values for the role family therefore do
+      not exist anywhere and must be derived.
+    rule: >
+      Derived dark values are a proposal until the Product Owner accepts them.
+      They are not to be treated as approved simply because the light values
+      were. Contrast must hold on a dark ground; do not naively invert.
+  constraints:
+    - "Role colour identifies who is acting. It never encodes status, severity or outcome."
+    - "Status stays text plus shape. Role colour does not become a substitute for a labelled badge."
+    - "Supervisor and inspector share green in the diagram. If they must be told apart on a screen, that is a further decision — do not invent a distinction."
+    - "No literal hex at a screen. Every use resolves through the token."
