@@ -479,11 +479,10 @@ export default function Workspace({ inspection, items, library, serverResponses,
   // stable id, so a re-save/retry REPLACES rather than duplicates (idempotency
   // at the queue level; the replay UPSERT is idempotent at the row level too).
   async function removeFindingOps(id: string) {
-    const ops = await local.peekAll();
-    const keys = await local.keys();
-    for (let i = 0; i < ops.length; i++) {
-      const o = ops[i];
-      if (o.kind === "finding" && (o as FindingOp).id === id) await local.remove(keys[i]);
+    // One read, so each op carries its own key. Reading them separately and
+    // pairing by position drifted whenever anything was queued in between.
+    for (const { key, op } of await local.entries()) {
+      if (op.kind === "finding" && (op as FindingOp).id === id) await local.remove(key);
     }
   }
   /** Persist the finding narrative locally and (re)enqueue its canonical FIFO
