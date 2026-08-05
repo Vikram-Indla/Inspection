@@ -1057,9 +1057,15 @@ button.sq-shell-scope { cursor: pointer; }
    Pro in landscape, which is wider than 1024 but still an iPad. */
 @media (max-width: 1024px), (pointer: coarse) {
   .sq-shell, .sq-shell.is-collapsed { grid-template-columns: minmax(0, 1fr); }
-  .sq-shell__nav, .sq-shell.is-collapsed .sq-shell__nav { position: fixed; z-index: var(--z-drawer); inset-block: 0; inset-inline-start: 0; inline-size: min(var(--sidebar-w), 88vw); block-size: 100dvh; padding: var(--space-4); transform: translateX(-105%); transition: transform var(--transition-base); box-shadow: var(--shadow-lg); overflow: hidden; }
+  /* The closed drawer used to be hidden by the transform alone. Crossing this
+     breakpoint upward and back down leaves the transform transition stuck in
+     'running' with a computed value of identity, so the drawer sat on top of
+     the page with is-drawer-open false — the administration sidebar covering
+     the topbar and clipping the search field. visibility is not transitioned
+     here, so the closed state no longer depends on the transform settling. */
+  .sq-shell__nav, .sq-shell.is-collapsed .sq-shell__nav { position: fixed; z-index: var(--z-drawer); inset-block: 0; inset-inline-start: 0; inline-size: min(var(--sidebar-w), 88vw); block-size: 100dvh; padding: var(--space-4); transform: translateX(-105%); visibility: hidden; transition: transform var(--transition-base); box-shadow: var(--shadow-lg); overflow: hidden; }
   [dir="rtl"] .sq-shell__nav, [dir="rtl"] .sq-shell.is-collapsed .sq-shell__nav { transform: translateX(105%); }
-  .sq-shell.is-drawer-open .sq-shell__nav { transform: translateX(0); }
+  .sq-shell.is-drawer-open .sq-shell__nav { transform: translateX(0); visibility: visible; }
   [dir="rtl"] .sq-shell.is-drawer-open .sq-shell__nav,
   [dir="rtl"] .sq-shell.is-collapsed.is-drawer-open .sq-shell__nav { transform: translateX(0); }
   /* The collapsed rail packs brand into a 28px/28px grid. The drawer is a full
