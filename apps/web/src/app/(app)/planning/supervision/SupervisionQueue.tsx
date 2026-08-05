@@ -15,10 +15,10 @@ export type SupervisionStrings = {
   returnToPlanner: string; reject: string;
 };
 
-export default function SupervisionQueue({ requests, inspectors, strings, locale }: { requests: PendingSupervision[]; inspectors: Inspector[]; strings: SupervisionStrings; locale: "en" | "ar" }) {
+export default function SupervisionQueue({ requests, inspectorsByVisit, strings, locale }: { requests: PendingSupervision[]; inspectorsByVisit: Record<string, Inspector[]>; strings: SupervisionStrings; locale: "en" | "ar" }) {
   return <div className="sq-stack">
     {requests.length === 0 ? <div className="sq-banner sq-banner--info">{strings.empty}</div> : requests.map(request =>
-      <SupervisionCard key={request.id} request={request} inspectors={inspectors} strings={strings} locale={locale} />
+      <SupervisionCard key={request.id} request={request} inspectors={inspectorsByVisit[request.visitId] ?? []} strings={strings} locale={locale} />
     )}
   </div>;
 }
@@ -36,7 +36,6 @@ function SupervisionCard({ request, inspectors, strings: s, locale }: { request:
     </dl>
     <form action={action} className="sq-stack" style={{ marginTop: "var(--space-4)" }}>
       <input type="hidden" name="visit_id" value={request.visitId} />
-      <input type="hidden" name="decision" value={decision} />
       <div className="field"><label htmlFor={`inspector-${request.id}`}>{s.finalInspector}</label>
         <select className="select" id={`inspector-${request.id}`} name="inspector_id" defaultValue={request.proposedInspectorId ?? ""} disabled={decision !== "approve"}>
           <option value="">{s.selectInspector}</option>{inspectors.map(inspector => <option key={inspector.user_id} value={inspector.user_id}>{inspector.full_name}</option>)}
@@ -47,9 +46,9 @@ function SupervisionCard({ request, inspectors, strings: s, locale }: { request:
       {state.error && <p className="sq-banner sq-banner--critical" role="alert">{state.error}</p>}
       {state.done && <p className="sq-banner sq-banner--success" role="status">{state.done}</p>}
       <div className="sq-actions">
-        <button type="submit" className="btn btn-primary" disabled={pending} onClick={() => setDecision("approve")}>{pending && decision === "approve" ? s.releasing : s.approve}</button>
-        <button type="submit" className="btn btn-secondary" disabled={pending} onClick={() => setDecision("return")}>{s.returnToPlanner}</button>
-        <button type="submit" className="btn btn-danger" disabled={pending} onClick={() => setDecision("reject")}>{s.reject}</button>
+        <button type="submit" name="decision" value="approve" className="btn btn-primary" disabled={pending} onClick={() => setDecision("approve")}>{pending && decision === "approve" ? s.releasing : s.approve}</button>
+        <button type="submit" name="decision" value="return" className="btn btn-secondary" disabled={pending} onClick={() => setDecision("return")}>{s.returnToPlanner}</button>
+        <button type="submit" name="decision" value="reject" className="btn btn-danger" disabled={pending} onClick={() => setDecision("reject")}>{s.reject}</button>
       </div>
     </form>
   </section>;

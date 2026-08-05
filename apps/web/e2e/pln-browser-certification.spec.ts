@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { PERSONAS, storageStatePath } from "./personas";
-import { login, rest, must } from "./live-rest";
+import { login, rest, serviceFixtureRest, must } from "./live-rest";
 
 // M12 / PROMPT-90 browser certification supplement. Covers the acceptance
 // matrix rows the milestone specs do not exercise end-to-end:
@@ -86,70 +86,53 @@ test.describe("PLN-J certification — rule-driven expiry engine", () => {
     const now = Date.now();
     const iso = (t: number) => new Date(t).toISOString();
 
-    const factory = must(await rest("POST", "factories", planner.jwt, {
-      name: `PLN-J expiry fixture ${now}`,
-      official_lat: 24.7136, official_lng: 46.6753,
-      source: "manual", is_temporary: true,
-    }, "return=representation"), "expiry fixture factory")[0];
+    const factories = [];
+    for (const label of ["J027", "J029", "J030"]) {
+      factories.push(must(await rest("POST", "factories", planner.jwt, {
+        name: `PLN-J expiry fixture ${label} ${now}`,
+        official_lat: 24.7136, official_lng: 46.6753,
+        source: "manual", is_temporary: true,
+      }, "return=representation"), `expiry fixture factory ${label}`)[0]);
+    }
 
     const plan = must(await rest("POST", "visit_plans", planner.jwt, {
       method: "single", status: "draft", created_by: planner.userId,
     }, "return=representation"), "expiry fixture plan")[0];
-
     const base = {
-      visit_plan_id: plan.id,
-      factory_id: factory.id,
-      visit_type: "periodic",
-      execution_mode: "physical",
+      visit_plan_id: plan.id, visit_type: "periodic", execution_mode: "physical",
       planning_status: "published",
     };
-    // J-030 not_completed_at_window_end: past window, operational_state left
-    // 'new', NO assignment (so no_acknowledgement cannot match first).
-    const j30 = must(await rest("POST", "visits", planner.jwt, {
-      ...base, operational_state: "prepared",
+    // Synthetic historical state is fixture plumbing, not a Planner product
+    // operation. Stage it with the private non-production fixture boundary;
+    // the expiry action and all evidence reads below still use Planner RLS.
+    const j27 = must(await serviceFixtureRest("POST", "visits", {
+      ...base, factory_id: factories[0].id, operational_state: "prepared",
       window_start: iso(now - 4 * day), window_end: iso(now - 2 * day),
-    }, "return=representation"), "J-030 visit")[0];
-    // J-027 no_acknowledgement: past window + assignment still 'assigned'.
-    // The assignment overlap guard (0031) refuses inserts into windows that
-    // collide with the inspector's existing load, so stage the visit in a
-    // FUTURE window, attach the assignment, then move the window to the past.
-    const j27 = must(await rest("POST", "visits", planner.jwt, {
-      ...base, operational_state: "prepared",
-      window_start: iso(now + 400 * day), window_end: iso(now + 401 * day),
-    }, "return=representation"), "J-027 visit")[0];
-    // J-029 no_execution_start: operational_state 'new', window START past but
-    // window END in the future (so not_completed cannot match first).
-    const j29 = must(await rest("POST", "visits", planner.jwt, {
-      ...base, operational_state: "new",
+    }), "J-027 fixture visit")[0];
+    const j29 = must(await serviceFixtureRest("POST", "visits", {
+      ...base, factory_id: factories[1].id, operational_state: "new",
       window_start: iso(now - 4 * day), window_end: iso(now + 4 * day),
-    }, "return=representation"), "J-029 visit")[0];
-
-    const inspectors = must(await rest("GET", "user_roles?role_key=eq.inspector&select=user_id", planner.jwt), "inspector pool");
-    // The 0031 overlap guard refuses any assignment colliding with the
-    // inspector's existing load; probe the whole pool on a far-future window
-    // (well clear of clustered test traffic) until one insert lands.
-    let j27Assigned = false;
-    for (const row of inspectors) {
-      const attempt = await rest("POST", "assignments", planner.jwt, {
-        visit_id: j27.id, inspector_id: row.user_id, status: "assigned", method: "manual",
-      }, "return=representation");
-      if (!attempt.error) { j27Assigned = true; break; }
-    }
-    if (!j27Assigned) throw new Error("J-027 assignment: no inspector accepted the far-future window");
-    // Move the J-027 window into the past AFTER the guard-checked insert.
-    must(await rest("PATCH", `visits?id=eq.${j27.id}`, planner.jwt, {
+    }), "J-029 fixture visit")[0];
+    const j30 = must(await serviceFixtureRest("POST", "visits", {
+      ...base, factory_id: factories[2].id, operational_state: "prepared",
       window_start: iso(now - 4 * day), window_end: iso(now - 2 * day),
-    }, "return=representation"), "J-027 window shift");
+    }), "J-030 fixture visit")[0];
+    const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
+    must(await serviceFixtureRest("POST", "assignments", {
+      visit_id: j27.id, inspector_id: inspector.userId, status: "assigned", method: "manual",
+    }), "J-027 fixture assignment");
 
-    // Fire the user-scoped sweep (planner coverage) — the pg_cron
-    // expire_lapsed_visits_scheduled variant shares the same rule core.
-    // Staging seeds only not_completed_at_window_end; enable the other three
-    // rule types as governed fixtures via the admin control plane (the same
-    // surface cd-044 exercises), and disable them again in cleanup.
+    // Fire the user-scoped sweep (Planner coverage) — the pg_cron variant
+    // shares this rule core. Stage one rule/window at a time so another rule
+    // cannot pre-empt the intended fixture merely because all begin in 'new'.
     const admin = await login(PERSONAS.admin.email, PERSONAS.admin.password);
+    const priorHarnessRules = must(await rest("GET", "planning_expiry_rules?reason=like.M12%20certification%20fixture*&select=id", admin.jwt), "prior harness expiry rules");
+    for (const row of priorHarnessRules) {
+      await rest("PATCH", `planning_expiry_rules?id=eq.${row.id}`, admin.jwt, { enabled: false });
+    }
     const existing = must(await rest("GET", "planning_expiry_rules?select=rule_type,version,enabled", admin.jwt), "existing expiry rules");
     const stagedRules: string[] = [];
-    for (const rt of ["no_acknowledgement", "no_execution_start", "no_execution_date"]) {
+    const enableRule = async (rt: string) => {
       const versions = existing.filter((r: { rule_type: string }) => r.rule_type === rt).map((r: { version: number }) => r.version);
       const nextVersion = versions.length ? Math.max(...versions) + 1 : 1;
       const row = must(await rest("POST", "planning_expiry_rules", admin.jwt, {
@@ -157,9 +140,20 @@ test.describe("PLN-J certification — rule-driven expiry engine", () => {
         reason: `M12 certification fixture (${rt})`, notify_plan_creator: true, notify_inspector: true,
       }, "return=representation"), `enable rule ${rt}`)[0];
       stagedRules.push(row.id);
-    }
-    const expiredCount = must(await rest("POST", "rpc/expire_lapsed_visits", planner.jwt, {}), "expiry sweep");
-    expect(typeof expiredCount).toBe("number");
+      return row.id as string;
+    };
+
+    const noAckRule = await enableRule("no_acknowledgement");
+    expect(typeof must(await rest("POST", "rpc/expire_lapsed_visits", planner.jwt, {}), "J-027 expiry sweep")).toBe("number");
+    await rest("PATCH", `planning_expiry_rules?id=eq.${noAckRule}`, admin.jwt, { enabled: false });
+
+    const noStartRule = await enableRule("no_execution_start");
+    expect(typeof must(await rest("POST", "rpc/expire_lapsed_visits", planner.jwt, {}), "J-029 expiry sweep")).toBe("number");
+    await rest("PATCH", `planning_expiry_rules?id=eq.${noStartRule}`, admin.jwt, { enabled: false });
+
+    await enableRule("not_completed_at_window_end");
+    expect(typeof must(await rest("POST", "rpc/expire_lapsed_visits", planner.jwt, {}), "J-030 expiry sweep")).toBe("number");
+    await enableRule("no_execution_date");
 
     const rules = must(await rest("GET", "planning_expiry_rules?select=id,rule_type,reason", planner.jwt), "expiry rules");
     const ruleName = (id: string) => rules.find((r: { id: string }) => r.id === id)?.rule_type;
@@ -195,7 +189,7 @@ test.describe("PLN-J certification — rule-driven expiry engine", () => {
     for (const id of stagedRules) {
       await rest("PATCH", `planning_expiry_rules?id=eq.${id}`, admin.jwt, { enabled: false });
     }
-    await rest("DELETE", `factories?id=eq.${factory.id}`, planner.jwt);
+    await rest("DELETE", `factories?id=in.(${factories.map(f => f.id).join(",")})`, planner.jwt);
   });
 });
 

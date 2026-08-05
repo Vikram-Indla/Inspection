@@ -51,7 +51,7 @@ export default async function AdminNotifications() {
     statusPublished: t("admin.notif.status.published", "Published"),
     statusDeactivated: t("admin.notif.status.deactivated", "Deactivated"),
     emptyTitle: t("admin.notif.empty.title", "No notification rules configured"),
-    emptyBody: t("admin.notif.empty.body", "The read succeeded — the register is really empty. Create the first rule above."),
+    emptyBody: t("admin.notif.empty.body", "The register is empty. Create the first rule above."),
     colEvent: t("admin.notif.col.event", "Event"),
     colChannel: t("admin.notif.col.channel", "Channel"),
     colRecipient: t("admin.notif.col.recipient", "Recipient"),
@@ -61,12 +61,38 @@ export default async function AdminNotifications() {
     colActions: t("admin.notif.col.actions", "Actions"),
     missingRecipient: t("admin.notif.missingRecipient", "Missing recipient"),
     rolesUnavailable: t("admin.notif.rolesUnavailable", "Recipient roles are not available. Rule creation is turned off; existing rules remain readable."),
+    // INSP-736: business labels for the governed event_key/channel enums,
+    // shown instead of the raw snake_case DB value in both the dropdowns
+    // and the results table.
+    eventLabels: {
+      assignment: t("bell.ev.assignment", "New visit assigned"),
+      reschedule: t("admin.notif.event.reschedule", "Visit rescheduled"),
+      review_decision: t("bell.ev.reviewDecision", "Review decided"),
+      virtual_closed: t("bell.ev.virtualClosed", "Virtual session closed"),
+      virtual_rescheduled: t("bell.ev.virtualRescheduled", "Virtual session rescheduled"),
+      virtual_scheduled: t("bell.ev.virtualScheduled", "Virtual session scheduled"),
+      visit_cancelled: t("bell.ev.visitCancelled", "Visit cancelled"),
+    },
+    channelLabels: {
+      inapp: t("bell.ch.inapp", "In-app"),
+      push: t("bell.ch.push", "Push"),
+      sms: t("bell.ch.sms", "SMS"),
+      email: t("bell.ch.email", "Email"),
+    },
+    // INSP-736: PO ruling requires a governed template picker, not free
+    // text. No template catalogue exists yet (checked: no
+    // notification_templates table, and configuration_templates is the
+    // unrelated M9 compliance-config domain) — a picker would need
+    // fabricated options, which governance forbids. Free text stays,
+    // honestly labeled as a decision-required gap rather than silently
+    // left unexplained.
+    templateNote: t("admin.notif.template.note", "No template catalogue is configured, so this is free text."),
   };
 
   const title = t("admin.notif.title", "Notification & SLA Rules");
   const context = (
     <span className="row" style={{ gap: "var(--space-3)" }}>
-      <span className="badge badge-info">SCR-ADM-080</span>
+      
       {rulesError ? <span className="badge badge-warning"><span aria-hidden="true">⚠</span> {t("admin.notif.degraded.chip", "register not available")}</span> : null}
     </span>
   );

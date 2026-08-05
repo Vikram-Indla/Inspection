@@ -10,8 +10,12 @@ import { waitForCredentialsForm, identifierField, passwordField, submitCredentia
 // route. Full dark/AR coverage per route is NOT done here — see the report.
 //
 // Credentials/data match scripts/test-data/local_test_data_seed.sql.
-const INSPECTOR_EMAIL = "inspector3@local.saqeel.test";
-const INSPECTOR_PASSWORD = "Password";
+const INSPECTOR_EMAIL = "inspector3@mim.gov.sa";
+const requireUatSecret = (): string => {
+  const value = process.env.SAQEEL_UAT_PASSWORD?.trim() || process.env.SAQEEL_CROSS_ROLE_PASSWORD?.trim();
+  if (!value) throw new Error("The governed primary-cohort secret reference is required for the UAT Inspector");
+  return value;
+};
 
 const VISIT_ID = "75000000-0000-4000-8000-000000000003"; // owned by inspector3
 const INSPECTION_ID = "77000000-0000-4000-8000-000000000003"; // status='submitted', owned by inspector3
@@ -75,7 +79,7 @@ async function loginInspector3(page: import("@playwright/test").Page, width: num
   await page.goto("/login");
   await waitForCredentialsForm(page);
   await identifierField(page).fill(INSPECTOR_EMAIL);
-  await passwordField(page).fill(INSPECTOR_PASSWORD);
+  await passwordField(page).fill(requireUatSecret());
   await submitCredentials(page);
   await page.waitForURL((url) => url.pathname === "/dashboard", { timeout: 45_000 });
 }

@@ -98,12 +98,23 @@ function stripFor(projection: DashboardKpiProjection, ids: string[], locale: Loc
 
 function stripStrings(locale: Locale): MetricStripStrings {
   return {
-    methodology: copy(locale, "Methodology", "المنهجية"),
+    methodology: copy(locale, "How this is calculated", "طريقة الاحتساب"),
     why: copy(locale, "Why unavailable?", "لماذا غير متاح؟"),
     close: copy(locale, "Close", "إغلاق"),
     advisory: copy(locale, "Advisory only · traceable", "استشاري فقط · قابل للتتبع"),
-    blockedTitle: copy(locale, "Governed boundary", "حد معتمد"),
+    blockedTitle: copy(locale, "Why this is unavailable", "سبب عدم التوفر"),
     drillFallback: copy(locale, "Open records", "فتح السجلات"),
+  };
+}
+
+// Keep the Operational requirement strip explicit at its call site while
+// sharing the accepted business labels with Strategic and Your Work. The
+// underlying formula/numerator/denominator/policy rows remain unchanged.
+function operationalRequirementStripStrings(locale: Locale): MetricStripStrings {
+  return {
+    ...stripStrings(locale),
+    methodology: copy(locale, "How this is calculated", "طريقة الاحتساب"),
+    blockedTitle: copy(locale, "Why this is unavailable", "سبب عدم التوفر"),
   };
 }
 
@@ -126,9 +137,11 @@ export function RoleDashboardSummary({ locale, persona, projection, partialSourc
         <p className="eyebrow">{copy(locale, "Your work", "عملك")}</p>
         <h2 className="panel-title" id="role-dashboard-summary">{roleName}</h2>
       </div>
-      <span className="badge badge-info">{copy(locale, "RLS scoped", "مقيّد بسياسات الصفوف")}</span>
+      <span className="badge badge-info">{copy(locale, "Scoped to your access", "ضمن نطاق صلاحيتك")}</span>
     </div>
-    <MetricStrip metrics={strip.metrics} methodology={strip.methodology} strings={stripStrings(locale)} />
+    <div className="panel-body">
+      <MetricStrip metrics={strip.metrics} methodology={strip.methodology} strings={stripStrings(locale)} />
+    </div>
   </section>;
 }
 
@@ -194,7 +207,7 @@ function MetricCoverage({ projection, category, locale, excluded, partialSources
         <p className={styles.detail}>
           {display.kind === "status"
             ? blockedDetail
-            : display.sub ?? copy(locale, "Source-backed and RLS scoped.", "مدعوم بالمصدر ومقيّد حسب الصلاحيات.")}
+            : display.sub ?? copy(locale, "Source-backed and scoped to your access.", "مدعوم بالمصدر وضمن نطاق صلاحيتك.")}
         </p>
         {metric.drill.route && <a className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSm}`} href={metric.drill.route}>{copy(locale, "View details", "عرض التفاصيل")}</a>}
       </article>;
@@ -236,16 +249,13 @@ export function DashboardControls({ locale, view, params, from, to, region, quer
       <span>{partialSources.join(" · ")}</span>
     </div>}
     {/* refreshedAt was computed with a deliberate Riyadh formatter, passed in,
-        typed — and never rendered. "As of" is the provenance this reader
-        actually needs, and it is the honest frame for every number below.
-        Riyadh is named because the whole dashboard is scoped to that calendar
-        day, so an unlabelled clock time would be ambiguous. */}
+        typed — and never rendered. It stays a subtle caption, not a headline:
+        the timezone that disambiguates it is available on demand via title
+        rather than spelled out inline. */}
     <span className="grow" />
-    <p className="desc">
-      <span className="tl-meta">
-        {copy(locale, "As of", "حتى")} {refreshedAt} · {copy(locale, "Riyadh", "الرياض")}
-      </span>
-    </p>
+    <span className="tl-meta" title={copy(locale, "Riyadh time", "توقيت الرياض")}>
+      {copy(locale, "Updated", "آخر تحديث")} {refreshedAt}
+    </span>
   </header>;
 }
 
@@ -310,7 +320,7 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
   const canvasStrings: DecisionCanvasStrings = {
     panelTitle: copy(locale, "National factory map", "الخريطة الوطنية للمصانع"),
     rankTitle: copy(locale, "Regional compliance", "الامتثال حسب المنطقة"),
-    syncedToMap: copy(locale, `${ranking.length} regions · RLS-scoped records`, `${ranking.length} منطقة · سجلات مقيّدة حسب الصلاحيات`),
+    syncedToMap: copy(locale, `${ranking.length} regions · Scoped to your access`, `${ranking.length} منطقة · ضمن نطاق صلاحيتك`),
     provider: copy(locale, "Map source: Mapbox", "مصدر الخريطة: Mapbox"),
     loadingTitle: copy(locale, "Loading factory map", "جارٍ تحميل خريطة المصانع"),
     loadingBody: copy(locale, "Loading governed official coordinates.", "جارٍ تحميل الإحداثيات الرسمية المعتمدة."),
@@ -500,12 +510,12 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
         </Panel>
     </div>
 
-    <Panel title={copy(locale, "Strategic requirement coverage", "تغطية المتطلبات الاستراتيجية")} meta="STR-KPI-001..012">
+    <Panel title={copy(locale, "Strategic requirement coverage", "تغطية المتطلبات الاستراتيجية")}>
       <MetricCoverage projection={projection} category="strategic" locale={locale} excluded={representedIds} partialSources={partialSources} />
     </Panel>
 
-    <Panel title={copy(locale, "Traceable strategic summary", "ملخص استراتيجي قابل للتتبع")} meta={copy(locale, "deterministic · not AI", "حتمي · ليس ذكاءً اصطناعياً")}>
-      <p className={styles.detail}>{copy(locale, "No generated narrative or forecast. Every statement below is a deterministic record summary with a real drill action.", "لا يوجد سرد أو توقع مُنشأ. كل عبارة أدناه ملخص حتمي للسجلات مع إجراء انتقال حقيقي.")}</p>
+    <Panel title={copy(locale, "Traceable strategic summary", "ملخص استراتيجي قابل للتتبع")} meta={copy(locale, "from records · not AI", "من السجلات · ليس ذكاءً اصطناعياً")}>
+      <p className={styles.detail}>{copy(locale, "Nothing here is generated or predicted. Every statement below summarises real records, and each one opens the records behind it.", "لا شيء هنا مُنشأ أو متوقَّع. كل عبارة أدناه تلخّص سجلات حقيقية، وكل منها يفتح السجلات التي تستند إليها.")}</p>
       <ul className={styles.summaryList}>
         <li><span className="dot" /><span>{copy(locale, `Approved compliance: ${strategic.complianceRate == null ? "unavailable" : `${strategic.complianceRate}%`} across ${strategic.approvedAnsweredForCompliance} eligible answers.`, `الامتثال المعتمد: ${strategic.complianceRate == null ? "غير متاح" : `${strategic.complianceRate}%`} عبر ${strategic.approvedAnsweredForCompliance} إجابة مؤهلة.`)}</span><a className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSm}`} href="/reports">{copy(locale, "Open records", "فتح السجلات")}</a></li>
         <li><span className="dot" /><span>{copy(locale, `${strategic.scopedViolations.length} linked violations; official issue-date trend is blocked.`, `${strategic.scopedViolations.length} مخالفة مرتبطة؛ اتجاه تاريخ الإصدار الرسمي محجوب.`)}</span><a className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSm}`} href="/enforcement">{copy(locale, "Open violations", "فتح المخالفات")}</a></li>
@@ -529,7 +539,7 @@ export function OperationalView({ locale, metrics, projection, factoryCoords, pa
     partialSources,
   );
   return <RevampOperationalView locale={locale} metrics={metrics}
-    requirementStrip={requirementStrip} requirementStripStrings={stripStrings(locale)} />;
+    requirementStrip={requirementStrip} requirementStripStrings={operationalRequirementStripStrings(locale)} />;
 
   const operational = metrics.operational;
   const headlineIds = ["OPS-KPI-003", "OPS-KPI-002", "OPS-KPI-004", "OPS-KPI-007"];
@@ -646,7 +656,7 @@ export function OperationalView({ locale, metrics, projection, factoryCoords, pa
           : <div className={styles.empty} role="status">{copy(locale, "No assignments are visible in this scope.", "لا توجد إسنادات ظاهرة ضمن هذا النطاق.")}</div>}
       </Panel>
 
-      <Panel accent title={copy(locale, "Operational priorities", "الأولويات التشغيلية")} meta={copy(locale, "deterministic · not AI", "حتمية · ليست ذكاءً اصطناعياً")}>
+      <Panel accent title={copy(locale, "Operational priorities", "الأولويات التشغيلية")} meta={copy(locale, "from records · not AI", "من السجلات · ليست ذكاءً اصطناعياً")}>
         <p className={styles.detail}>{copy(locale, "These are record filters and links. No recommendation is generated and no action is executed automatically.", "هذه مرشحات وروابط للسجلات. لا يتم إنشاء توصية ولا تنفيذ أي إجراء تلقائياً.")}</p>
         <ul className={styles.nudgeList}>
           <li><span className="dot" /><span>{copy(locale, `${operational.overdueRows.length} published visits past their recorded window.`, `${operational.overdueRows.length} زيارة منشورة تجاوزت نافذتها المسجلة.`)}</span><a className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSm}`} href="/operations">{copy(locale, "Open operations", "فتح العمليات")}</a></li>
@@ -655,12 +665,12 @@ export function OperationalView({ locale, metrics, projection, factoryCoords, pa
       </Panel>
     </div>
 
-    <Panel title={copy(locale, "Operational requirement coverage", "تغطية المتطلبات التشغيلية")} meta="OPS-KPI-001..009">
+    <Panel title={copy(locale, "Operational requirement coverage", "تغطية المتطلبات التشغيلية")}>
       <MetricCoverage projection={projection} category="operational" locale={locale} excluded={representedIds} partialSources={partialSources} />
     </Panel>
 
     <div className={styles.pairGrid}>
-      <Panel title={copy(locale, "Deterministic alert board", "لوحة التنبيهات الحتمية")}>
+      <Panel title={copy(locale, "Alert board", "لوحة التنبيهات")}>
         {alerts.length
           ? <div className={styles.tableWrap}><table className={styles.table}>
             <thead><tr><th scope="col">{copy(locale, "Condition", "الشرط")}</th><th scope="col">{copy(locale, "Object", "العنصر")}</th><th scope="col">{copy(locale, "Action", "الإجراء")}</th></tr></thead>
@@ -705,7 +715,7 @@ export function SearchResults({ locale, query, factories, visits, inspections }:
   return <section className={styles.results} aria-labelledby="dashboard-search-results">
     <h3 id="dashboard-search-results">{copy(locale, `Search results for “${query}”`, `نتائج البحث عن «${query}»`)}</h3>
     {!total
-      ? <p role="status">{copy(locale, "No RLS-visible factory, visit or inspection matched.", "لا يوجد مصنع أو زيارة أو تفتيش ظاهر حسب الصلاحيات يطابق البحث.")}</p>
+      ? <p role="status">{copy(locale, "No factory, visit, or inspection within your access matched.", "لا يوجد مصنع أو زيارة أو تفتيش ضمن نطاق صلاحيتك يطابق البحث.")}</p>
       : <div className={styles.resultGrid}>
         <div className={styles.resultGroup}>
           <h4>{copy(locale, "Factories", "المصانع")}</h4>

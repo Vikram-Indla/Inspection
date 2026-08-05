@@ -292,11 +292,18 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
   // Re-colour the region choropleth when postures change (no source rebuild).
   useEffect(() => { const map = mapRef.current; if (map?.isStyleLoaded()) applyPostures(map, regionPostures); }, [regionPostures]);
 
+  // Two different causes were collapsed into one message, so a map that failed
+  // to load told the reader it was "not configured" — a wrong diagnosis, and
+  // one only a developer could act on anyway. Separate them, and say what the
+  // reader loses rather than naming the vendor and the environment.
   if (!token || failed) {
     const ar = mapLocale === "ar";
-    return <div className="sq-state sq-state--inline" role="status" style={{ blockSize: height, inlineSize: "100%" }} data-map-provider="mapbox-unavailable">
-      <span className="sq-state__glyph">⌖</span><h4>{ar ? "خدمة الخريطة غير متاحة" : "Map service unavailable"}</h4>
-      <p className="t-caption">{ar ? "لم يتم تكوين خدمة Mapbox لهذه البيئة." : "Mapbox is not configured for this environment."}</p>
+    return <div className="sq-state sq-state--inline" role="status" style={{ blockSize: height, inlineSize: "100%" }} data-map-provider={failed ? "mapbox-failed" : "mapbox-unavailable"}>
+      <span className="sq-state__glyph">⌖</span>
+      <h4>{ar ? "الخريطة غير متاحة" : "Map unavailable"}</h4>
+      <p className="t-caption">{failed
+        ? (ar ? "تعذّر تحميل الخريطة. تبقى السجلات متاحة في القائمة." : "The map could not load. The records are still available as a list.")
+        : (ar ? "الخريطة غير متاحة في هذه البيئة. تبقى السجلات متاحة في القائمة." : "The map is not available here. The records are still available as a list.")}</p>
     </div>;
   }
   // Until the basemap paints, the container is an empty dark box — measured at

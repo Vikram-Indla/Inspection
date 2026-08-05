@@ -52,7 +52,7 @@ export default function AuditReplayWorkspace(props: Props) {
   const close = () => { const id = selectedId; setSelectedId(null); requestAnimationFrame(() => id && triggerRefs.current.get(id)?.focus()); };
   const modes = [["recorder",L.recorder],["reconstruct",L.reconstruct],["compare",L.compare],["ledger",L.ledger],["custody",L.custody],["print",L.print]];
 
-  if (!props.authorized) return <section className="panel ar-denied" role="alert"><span aria-hidden="true">🛡</span><h2>{L.unauthorized}</h2><p>{"RBAC / RLS · "}{L.zeroDisclosure}</p></section>;
+  if (!props.authorized) return <section className="panel ar-denied" role="alert"><span aria-hidden="true">🛡</span><h2>{L.unauthorized}</h2><p>{L.zeroDisclosure}</p></section>;
 
   return <div className="ar-workspace" dir={props.locale === "ar" ? "rtl" : "ltr"}>
     <a className="sq-shell__skip" href="#audit-chronology">{L.skip}</a>
@@ -80,7 +80,7 @@ export default function AuditReplayWorkspace(props: Props) {
         <div><strong>{event.eventType}</strong><p>{event.aggregateType} · <bdi>{event.aggregateId ?? "—"}</bdi></p><span className={`sq-lozenge ${event.provenance === "semantic" ? "sq-lozenge--success" : "sq-lozenge--warning"}`}>{event.provenance === "semantic" ? auditTerms.semantic : auditTerms.generic}</span></div>
         <button ref={el => { if (el) triggerRefs.current.set(event.id,el); }} className="btn btn-ghost btn-touch" type="button" onClick={() => open(event.id)}>{L.detail}</button>
       </li>)}</ol>
-      <aside className="ar-dossier panel"><h3>{L.dossier}</h3><p>{atState.length ? String(atState.length) : L.noEvent}</p><dl><dt>{L.governing}</dt><dd>{L.missing}</dd><dt>{L.correlation}</dt><dd>{props.events.some(e => e.correlationId) ? auditTerms.partial : L.missing}</dd><dt>{L.legal}</dt><dd>{L.policyHeldTag}{" · DEC-006 / DEC2-009"}</dd></dl></aside>
+      <aside className="ar-dossier panel"><h3>{L.dossier}</h3><p>{atState.length ? String(atState.length) : L.noEvent}</p><dl><dt>{L.governing}</dt><dd>{L.missing}</dd><dt>{L.correlation}</dt><dd>{props.events.some(e => e.correlationId) ? auditTerms.partial : L.missing}</dd><dt>{L.legal}</dt><dd>{L.policyHeldTag}</dd></dl></aside>
     </section>}
 
     {props.mode === "reconstruct" && <section className="panel ar-modepanel"><form method="get"><input type="hidden" name="view" value="reconstruct"/><input type="hidden" name="case" value={props.caseRef}/><label className="sq-field"><span className="sq-field__label">{L.at}</span><input className="sq-input" type="datetime-local" name="at" defaultValue={props.at?.slice(0,16)}/></label><button className="btn btn-primary btn-lg btn-touch">{L.apply}</button></form><h3>{atState.length} {auditTerms.reconstructedStates}</h3>{atState.map(row => <article key={row.key} className="ar-custody"><strong>{row.key}</strong><span>{row.eventIds.length} {auditTerms.sourceEvents} · {auditTerms.last} {row.lastOccurredAt}</span>{row.conflicts.length > 0 && <span className="badge badge-critical">{L.conflictTag}</span>}<pre>{json(row.state)}</pre></article>)}</section>}

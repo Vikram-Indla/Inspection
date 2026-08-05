@@ -1,13 +1,12 @@
 import { expect, test } from "@playwright/test";
 import { identifierField, passwordField, submitCredentials, waitForCredentialsForm } from "./login-helper";
 
-const PLANNER_EMAIL = "planner.one@saqeel.test";
+const PLANNER_EMAIL = "planner1@mim.gov.sa";
 
 function plannerPassword(): string {
-  if (!Object.prototype.hasOwnProperty.call(process.env, "SAQEEL_TEST_PASSWORD")) {
-    throw new Error("DM-007 requires SAQEEL_TEST_PASSWORD in the local test environment.");
-  }
-  return process.env.SAQEEL_TEST_PASSWORD!;
+  const value = process.env.SAQEEL_UAT_PASSWORD?.trim() || process.env.SAQEEL_CROSS_ROLE_PASSWORD?.trim();
+  if (!value) throw new Error("DM-007 requires the governed primary-cohort secret reference in the local test environment.");
+  return value;
 }
 
 test.use({ storageState: { cookies: [], origins: [] } });

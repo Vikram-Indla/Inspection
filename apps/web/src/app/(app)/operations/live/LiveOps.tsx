@@ -125,11 +125,16 @@ export default function LiveOps({
             <span className="badge badge-pending">{s.unavailableState}</span>
             <span className="badge badge-critical">{s.rejectedState}</span>
           </div>
+          {/* Three inline spans in a plain <p> render with no separator, so the
+              caption read as one run-on sentence: "…2:27:33 PMNo recorded
+              inspector positionsWe don't track…". Separate the facts explicitly. */}
           <p className="tl-meta">
             <span>{s.snapshotGenerated}: <time data-testid="live-snapshot-at" dateTime={snapshotAt}>{formattedSnapshotAt}</time></span>
+            {" · "}
             <span>{formattedPositionObservedAt
               ? <>{s.lastObserved}: <time dateTime={positionObservedAt!}>{formattedPositionObservedAt}</time></>
               : s.noRecordedPositions}</span>
+            {" · "}
             <span>{s.freshnessPolicy}</span>
           </p>
           {excludedRecordCount > 0 ? (
@@ -160,7 +165,14 @@ export default function LiveOps({
       </div>
 
       <div className="sq-grid-2">
-        <section className="map-panel" aria-label={s.mapAriaLabel}>
+        {/* .map-panel carries surface styling but no height, and LiveMapInner's
+            container is blockSize:100%, so the canvas resolved to 0. Mapbox
+            still constructed and fetched its style (200), but a zero-size map
+            never fires "load", so the 12s provider timeout fired and the panel
+            reported "basemap provider failed" — a layout bug wearing a network
+            error's message. .lv-map is the design system's live-map sizing
+            (block-size: min(64vh, 560px)); it was defined and used nowhere. */}
+        <section className="map-panel lv-map" aria-label={s.mapAriaLabel}>
           {visitReadError ? (
             <EmptyState glyph="!" title={s.loadError} bare role="alert">
               <button className="btn btn-secondary" type="button" onClick={() => window.location.reload()}>{s.retry}</button>
@@ -276,14 +288,16 @@ export default function LiveOps({
               ))}
             </ul>
           ) : (
-            <section className="saqeel-state"><div className="saqeel-state__content"><h2>{s.activeList}</h2><p>{noScopeRows ? s.noScope : s.noPositions}</p></div></section>
+            <section className="saqeel-state"><div className="saqeel-state__content"><p>{noScopeRows ? s.noScope : s.noPositions}</p></div></section>
           )}
         </aside>
       </div>
 
+      {/* The recording-time disclosure is already stated in the header caption
+          and by the "Last recorded position" badge in the legend. Repeating it
+          here in <strong> made a caveat the heaviest text on the page. */}
       <footer className="panel-row" role="note">
         <span className="badge badge-info">{s.inspector}</span>
-        <strong>{s.freshnessPolicy}</strong>
       </footer>
     </div>
   );

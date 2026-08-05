@@ -81,13 +81,19 @@ function requireSetting(envVar: string, persona: string, allowEmpty = false): st
 }
 
 const sharedPassword = (persona: string) => requireSetting("SAQEEL_TEST_PASSWORD", persona, true);
+const primaryCohortPassword = (persona: string) => requireSetting("SAQEEL_CROSS_ROLE_PASSWORD", persona);
 const personaEmail = (envVar: string, persona: string) => requireSetting(envVar, persona);
 
 export const PERSONAS = {
   planner: {
     get email(): string { return personaEmail("SAQEEL_TEST_PLANNER_EMAIL", "planner"); },
     home: "/planning",
-    get password(): string { return sharedPassword("planner"); },
+    get password(): string { return primaryCohortPassword("planner"); },
+  },
+  supervisor: {
+    get email(): string { return personaEmail("SAQEEL_TEST_SUPERVISOR_EMAIL", "supervisor"); },
+    home: "/dashboard",
+    get password(): string { return primaryCohortPassword("supervisor"); },
   },
   inspector: {
     get email(): string { return personaEmail("SAQEEL_TEST_INSPECTOR_EMAIL", "inspector"); },
@@ -95,17 +101,17 @@ export const PERSONAS = {
     // is reached via navigation, not as the login home. Observed live during
     // this session's auth setup (redirected to /dashboard, not /field).
     home: "/dashboard",
-    get password(): string { return sharedPassword("inspector"); },
+    get password(): string { return primaryCohortPassword("inspector"); },
   },
   reviewer: {
     get email(): string { return personaEmail("SAQEEL_TEST_REVIEWER_EMAIL", "reviewer"); },
     home: "/reviews",
-    get password(): string { return sharedPassword("reviewer"); },
+    get password(): string { return primaryCohortPassword("reviewer"); },
   },
   admin: {
     get email(): string { return personaEmail("SAQEEL_TEST_COMPLIANCE_ADMIN_EMAIL", "admin"); },
     home: "/admin",
-    get password(): string { return sharedPassword("admin"); },
+    get password(): string { return primaryCohortPassword("admin"); },
   },
   ops: {
     get email(): string { return personaEmail("SAQEEL_TEST_OPS_EMAIL", "ops"); },
@@ -115,6 +121,13 @@ export const PERSONAS = {
 } as const;
 
 export type PersonaKey = keyof typeof PERSONAS;
+
+export function goldenInspectorPersona(): { email: string; password: string } {
+  return {
+    email: personaEmail("SAQEEL_TEST_MULTI_ROLE_EMAIL", "golden alternate inspector"),
+    password: primaryCohortPassword("golden alternate inspector"),
+  };
+}
 
 // Keep reusable authentication outside Playwright's outputDir. Playwright may
 // clear test-results while recovering from a failed worker; storing state

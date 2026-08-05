@@ -10,6 +10,12 @@
 // panel-header/panel-title/panel-body/row/grow/numeric/t-caption/sq-grid-2
 // for the two-panel layout). No inline style props, no new CSS.
 import { useMemo, useState } from "react";
+
+// Counts arrive as templates carrying {n}, not as formatter functions.
+// Functions cannot cross the server/client boundary: passing them threw
+// "Functions cannot be passed directly to Client Components" and took the
+// whole /planning/map route down with a server-side exception.
+const fill = (template: string, n: number) => template.replace("{n}", String(n));
 import type { MappedVisit } from "./VisitMap";
 import { filterVisits, regionalCoverage } from "./coverage-filters";
 
@@ -21,8 +27,8 @@ export type CoveragePanelStrings = {
   windowLabel: string; window7: string; window30: string; window90: string; windowAll: string;
   inspectorLabel: string; inspectorAll: string; inspectorAssigned: string; inspectorUnassigned: string;
   resetLabel: string;
-  unassignedCount: (n: number) => string; unassignedEmpty: string;
-  regionalTitle: string; regionalHelp: string; visitsCount: (n: number) => string;
+  unassignedCount: string; unassignedEmpty: string;
+  regionalTitle: string; regionalHelp: string; visitsCount: string;
 };
 
 const riskLabelKey = (band: string) =>
@@ -87,9 +93,9 @@ export default function CoveragePanel({ visits, strings: s }: { visits: MappedVi
           </div>
         </section>
 
-        <section className="panel" aria-label={s.unassignedCount(unassigned.length)}>
+        <section className="panel" aria-label={fill(s.unassignedCount, unassigned.length)}>
           <header className="panel-header">
-            <h3 className="panel-title">{s.unassignedCount(unassigned.length)}</h3>
+            <h3 className="panel-title">{fill(s.unassignedCount, unassigned.length)}</h3>
           </header>
           {unassigned.length === 0
             ? <p className="panel-body field-help">{s.unassignedEmpty}</p>
@@ -120,8 +126,8 @@ export default function CoveragePanel({ visits, strings: s }: { visits: MappedVi
               {regionalCounts.map(([r, count]) => (
                 <li key={r} className="row">
                   <span className="grow"><bdi>{r}</bdi></span>
-                  <progress max={maxRegional} value={count} aria-label={`${r}: ${s.visitsCount(count)}`} />
-                  <span className="numeric t-caption">{s.visitsCount(count)}</span>
+                  <progress max={maxRegional} value={count} aria-label={`${r}: ${fill(s.visitsCount, count)}`} />
+                  <span className="numeric t-caption">{fill(s.visitsCount, count)}</span>
                 </li>
               ))}
             </ul>}

@@ -1,0 +1,118 @@
+schema_version: "1.0"
+change_control_id: "CC-GIS-ARRIVAL-RADIUS-20260805"
+task_id: "TASK-GIS-ARRIVAL-RADIUS-20260805"
+title: "Supply the governed arrival radius so inspections can be carried out"
+state: "APPROVED_NOT_STARTED"
+approved_by: "Product Owner (Vikram)"
+approved_at: "2026-08-05"
+jira: "INSP-757"
+
+authority:
+  type: "BOUNDED_DIRECT_PRODUCT_OWNER_DIRECTIVE"
+  user_confirmation: "confirmed — '100 metres, global default'"
+  lease_required: false
+  broad_implementation_allowed: false
+
+governed_value:
+  statement: >
+    The arrival radius is 100 metres, applied as a single global default across
+    the platform.
+  supplied_by: "Product Owner (Vikram)"
+  supplied_at: "2026-08-05"
+  why_this_is_recorded_here: >
+    This is a governed value. It decides whether an inspector is treated as
+    present at a factory, so it carries legal weight. It was supplied by the
+    Product Owner and is written down with attribution. It was not inferred,
+    defaulted or derived from code.
+  scope_of_the_ruling:
+    - "One value for the whole platform, not per factory."
+    - "Per-factory override remains possible where a factory record sets its own radius — the ruling establishes the default, not a prohibition."
+    - "The existing override path for exceeding the radius is unchanged."
+
+problem:
+  summary: >
+    No inspection can be carried out. An inspector with a published, ready visit
+    is stopped at check-in with: "Arrival radius is not configured. Check-in is
+    blocked until administration provides a governed radius."
+  root_cause_verified: >
+    Checked directly against the live project on 2026-08-05. The table
+    public.engine_settings holds one row per engine. There is no row where
+    engine = 'gis'. The administration screen queries that row with .single()
+    and the field readiness check reads arrival_detection_radius_m from it, so
+    the value is undefined and check-in refuses.
+  not_a_code_defect: >
+    The refusal is the platform behaving correctly under the rule that a
+    governed value is never invented. The fault is that the value was never
+    supplied.
+  evidence: >
+    Found by walking the thirteen-step journey end to end with real accounts on
+    2026-08-05. Steps 00 to 05 all produced their intended outcome. Step 06
+    stopped here, and step 07 was unreachable in consequence.
+
+scope:
+  - "Create the gis row in engine_settings with a governed arrival radius of 100 metres."
+  - "Ship it as a committed migration and apply it to the live project."
+  - "Confirm an inspector can complete check-in afterwards, by walking it."
+
+exact_change: |
+  insert into public.engine_settings (engine, version_label, settings)
+  values (
+    'gis',
+    'v1-gis-arrival-radius-2026-08-05',
+    jsonb_build_object(
+      'arrival_detection_radius_m', 100,
+      'geofence_default_radius_m', 100
+    )
+  )
+  on conflict (engine) do update
+    set settings = public.engine_settings.settings
+                   || excluded.settings,
+        version_label = excluded.version_label;
+
+change_notes:
+  both_keys_set: >
+    The screen reads two values: arrival_detection_radius_m, which gates
+    check-in, and geofence_default_radius_m, which is the fallback for a factory
+    with no radius of its own. The ruling is one global radius, so both take
+    100. Setting only the first would leave the factory default falling back to
+    a hardcoded 150 in the interface, which would contradict the ruling without
+    anyone noticing.
+  hardcoded_150_flagged: >
+    GisStudio.tsx carries a hardcoded fallback of 150 metres, commented as an
+    engine default. Once the governed row exists that fallback is unreachable,
+    but it should be removed in a later change so a second, undocumented number
+    cannot resurface.
+  merge_not_overwrite: >
+    The upsert merges into any existing settings rather than replacing them, so
+    a future gis setting added by someone else is not silently destroyed.
+
+out_of_scope:
+  - "No change to any factory's own radius."
+  - "No change to the override path for exceeding the radius."
+  - "No change to check-in logic, telemetry or the journey session."
+  - "No other engine settings touched."
+  - "No new CSS, no new tokens."
+
+acceptance:
+  - "The gis row exists in engine_settings on the live project with arrival_detection_radius_m = 100."
+  - "The administration GIS screen shows the arrival radius rather than a dash."
+  - "An inspector with a published visit can complete check-in — walked with a real account, not inferred."
+  - "Exceeding the radius still offers the override path."
+  - "The migration exists as a committed file AND is applied live, verified by querying the row rather than by filename."
+
+allowed_paths:
+  - "supabase/migrations/<new timestamped migration>.sql"
+  - "product-contract/execution/CURRENT_SLICE.yaml"
+  - "product-contract/governance/CC-GIS-ARRIVAL-RADIUS-20260805.yaml"
+
+verification:
+  row_present_live: "PENDING"
+  admin_screen_shows_value: "PENDING"
+  inspector_check_in_walked: "PENDING"
+  override_path_intact: "PENDING"
+  source_live_reconciled: "PENDING"
+
+lane: "Backend"
+priority: >
+  Highest open item. Everything downstream — carrying out the inspection,
+  capturing evidence, submitting for review — is blocked until this exists.

@@ -7,12 +7,13 @@ const read = (path: string) => readFileSync(resolve(process.cwd(), path), "utf8"
 test("REQ-006 filters every Bulk read through the registered-source chain", () => {
   const page = read("src/app/(app)/planning/bulk/page.tsx");
   const actions = read("src/app/(app)/planning/bulk/actions.ts");
-  const relation = "industrial_licenses!inner(commercial_registration_id)";
+  const pageRelation = "industrial_licenses!inner(commercial_registration_id,";
+  const actionRelation = "industrial_licenses!inner(commercial_registration_id)";
   const nonNull = '.not("industrial_licenses.commercial_registration_id", "is", null)';
 
-  expect(page).toContain(relation);
+  expect(page).toContain(pageRelation);
   expect(page).toContain(nonNull);
-  expect(actions.match(new RegExp(relation.replace(/[!()]/g, "\\$&"), "g"))).toHaveLength(3);
+  expect(actions.match(new RegExp(actionRelation.replace(/[!()]/g, "\\$&"), "g"))).toHaveLength(3);
   expect(actions.match(/industrial_licenses\.commercial_registration_id/g)).toHaveLength(3);
 });
 

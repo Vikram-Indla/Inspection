@@ -12,7 +12,6 @@ export type BulkViolationStrings = {
   acknowledgeLabel: string; submit: string; submitting: string;
   resultsTitle: string; resultSuccess: string; resultFailed: string;
   partialWarning: string; allSucceeded: string;
-  blockedReason: string;
   errors: Record<NonNullable<BulkResult["error"]>, string>;
 };
 
@@ -48,7 +47,16 @@ export default function BulkViolationForm({ factories, violations, packages, str
   }
 
   const chosenViolation = violations.find(v => v.code === violationCode) ?? null;
-  const canSubmit = false;
+  // Mirrors exactly the preconditions issueBulkViolation checks before it calls
+  // the RPC — no stricter. Authorization, violation governance, penalty mapping
+  // and package validity are the server's and the RPC's decisions, so this gate
+  // must not pre-empt them or the form would refuse work the database allows.
+  const canSubmit = Boolean(requestId)
+    && selected.size > 0
+    && Boolean(violationCode)
+    && Boolean(packageVersionId)
+    && acknowledged
+    && !pending;
 
   const results = state.results ?? [];
   const successCount = results.filter(r => r.status === "success").length;
@@ -107,9 +115,6 @@ export default function BulkViolationForm({ factories, violations, packages, str
       )}
 
       {state.error && <div className="sq-banner sq-banner--critical" role="alert"><div>{strings.errors[state.error]}</div></div>}
-      <div className="sq-banner sq-banner--warning" role="status">
-        <div>{strings.blockedReason}</div>
-      </div>
 
       {results.length > 0 && (
         <section className="panel stack" style={{ padding: "var(--space-6)" }}>
@@ -129,7 +134,7 @@ export default function BulkViolationForm({ factories, violations, packages, str
         </section>
       )}
 
-      <button type="submit" className={`btn btn-primary btn-field ${styles.submit}`} aria-disabled={!canSubmit} disabled={!canSubmit} title={strings.blockedReason}>
+      <button type="submit" className={`btn btn-primary btn-field ${styles.submit}`} aria-disabled={!canSubmit} disabled={!canSubmit}>
         {pending ? strings.submitting : strings.submit}
       </button>
     </form>

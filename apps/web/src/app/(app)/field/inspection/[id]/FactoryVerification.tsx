@@ -11,6 +11,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSubmittedInSession } from "./submissionLock";
 import { localForUser, processOutbox, sha256b64, type OutboxOp, type SyncState } from "@/lib/offline";
+import { supabaseBrowser } from "@/lib/supabase";
 import Modal from "@/components/Modal";
 import styles from "./factory-verification.module.css";
 
@@ -193,6 +194,8 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
   const [notes, setNotes] = useState(() => Object.fromEntries(initialChecks.map(c => [c.field_key, c.evidence_note ?? ""])) as Record<string, string>);
   const [idMap, setIdMap] = useState({} as Record<string, string>);
   const [queuedEv, setQueuedEv] = useState([] as QueuedEvidence[]);
+  const [syncedFieldEvidence, setSyncedFieldEvidence] = useState(serverFieldEvidence);
+  useEffect(() => { setSyncedFieldEvidence(serverFieldEvidence); }, [serverFieldEvidence]);
   const [msg, setMsg] = useState(null as string | null);
   const [failDetail, setFailDetail] = useState(null as string | null);
   const [annotating, setAnnotating] = useState(null as null | { field: string; name: string; mime: string; b64: string });
@@ -245,6 +248,15 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
     else if (s === "synced" || s === "pending") setFailDetail(null);
   };
 
+  async function replayAndRefresh() {
+    await processOutbox(userId, onState);
+    await refreshQueued();
+    const { data, error } = await supabaseBrowser().from("evidence")
+      .select("linked_id").eq("inspection_id", inspectionId).eq("linked_type", "factory_field");
+    if (error) console.error("[factory verification evidence refresh]", error.message);
+    else setSyncedFieldEvidence((data ?? []) as FactoryFieldEvidence[]);
+  }
+
   async function persist(field: FactoryField, observed: string, statusOverride?: "verified") {
     const id = idMap[field.key] ?? await deterministicId(inspectionId, field.key);
     const src = (field.source ?? "").trim();
@@ -257,7 +269,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
     await local.saveDraft(inspectionId, `fv:${field.key}`, next);           // durable local home (M04-114 — nothing lost)
     await local.enqueue({ kind: "factory_check", inspection_id: inspectionId, check: next, queued_at: new Date().toISOString() });
     setMsg(strings.savedLocal);
-    processOutbox(userId, onState);
+    await replayAndRefresh();
   }
   async function persistNote(field: FactoryField) {
     const existing = checksRef.current[field.key];
@@ -269,8 +281,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
     const id = idMap[fieldKey] ?? await deterministicId(inspectionId, fieldKey);
     const sha = await sha256b64(b64);
     await local.enqueue({ kind: "evidence", inspection_id: inspectionId, linked_type: "factory_field", linked_id: id, name, mime, data_b64: b64, captured_at: new Date().toISOString(), sha256: sha, queued_at: new Date().toISOString() });
-    await refreshQueued();
-    processOutbox(userId, onState);
+    await replayAndRefresh();
   }
   async function attach(field: FactoryField, files: FileList) {
     for (const file of Array.from(files)) {
@@ -305,10 +316,10 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
   const evCountFor = useMemo(() => {
     const m: Record<string, number> = {};
     for (const [key, id] of Object.entries(idMap)) {
-      m[key] = serverFieldEvidence.filter(e => e.linked_id === id).length + queuedEv.filter(q => q.linked_id === id).length;
+      m[key] = syncedFieldEvidence.filter(e => e.linked_id === id).length + queuedEv.filter(q => q.linked_id === id).length;
     }
     return m;
-  }, [idMap, serverFieldEvidence, queuedEv]);
+  }, [idMap, syncedFieldEvidence, queuedEv]);
 
   const updatedFields = fields.filter(f => checks[f.key]?.status === "updated");
   const changeCount = updatedFields.length;                                              // M04-110
@@ -402,7 +413,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
       {failDetail !== null && (
         <div className="alert alert-critical"><div className={styles.bannerRow}>
           <span>{strings.syncFailed}{failDetail ? ` · ${failDetail}` : ""}</span>
-          <button className="btn btn-secondary" onClick={() => processOutbox(userId, onState)}>{strings.retry}</button>
+          <button className="btn btn-secondary" onClick={() => void replayAndRefresh()}>{strings.retry}</button>
         </div></div>
       )}
       {msg && <div className="alert alert-info"><div>{msg}</div></div>}

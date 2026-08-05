@@ -8,9 +8,15 @@
 import "../login/login.css";
 import AccessState from "@/components/AccessState";
 
+// Mirrors getLocale() in @/lib/i18n: an explicit choice wins, and with no
+// choice recorded we follow the browser rather than forcing a language on it.
+// This previously returned Arabic for every state that was not exactly
+// "locale=en", so an English reader with no cookie yet was shown Arabic.
 function locale(): "ar" | "en" {
-  if (typeof document === "undefined") return "ar";
-  return document.cookie.includes("locale=en") ? "en" : "ar";
+  if (typeof document === "undefined") return "en";
+  if (document.cookie.includes("locale=ar")) return "ar";
+  if (document.cookie.includes("locale=en")) return "en";
+  return navigator.language?.toLowerCase().startsWith("ar") ? "ar" : "en";
 }
 
 const COPY = {

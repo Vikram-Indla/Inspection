@@ -55,8 +55,25 @@ self.addEventListener("notificationclick", (e) => {
 self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== "GET") return;
-  if (url.pathname.startsWith("/_next/static/") || url.pathname === "/saqeel-favicon.svg" || url.pathname === "/manifest.json") {
+  // /_next/static/ URLs are content-hashed, so a given URL always maps to the
+  // same bytes and cache-first can never serve "wrong" code for an asset the
+  // current HTML asks for. Keep it cache-first: it is what makes the field app
+  // usable offline (FND-005).
+  if (url.pathname.startsWith("/_next/static/")) {
     e.respondWith(caches.open(SHELL).then(async (c) => (await c.match(e.request)) ?? fetch(e.request).then((r) => { c.put(e.request, r.clone()); return r; })));
+    return;
+  }
+  // /manifest.json and /saqeel-favicon.svg are NOT content-hashed — they are
+  // fixed paths whose bytes change in place on deploy. Cache-first pinned the
+  // first copy a browser ever saw, for the life of the cache, which outlives
+  // every deployment because SHELL is a hand-edited constant. Go to the network
+  // first and fall back to the cached copy only when offline.
+  if (url.pathname === "/saqeel-favicon.svg" || url.pathname === "/manifest.json") {
+    e.respondWith(
+      fetch(e.request)
+        .then((r) => { const copy = r.clone(); caches.open(SHELL).then((c) => c.put(e.request, copy)); return r; })
+        .catch(async () => (await caches.match(e.request)) ?? Response.error()),
+    );
     return;
   }
   if (e.request.mode === "navigate") {

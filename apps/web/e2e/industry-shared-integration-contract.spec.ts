@@ -36,11 +36,13 @@ test.describe("Industry Shared API v2 contract gate", () => {
   test("is isolated from the existing Senaei provider and cannot make an inferred request", () => {
     const client = read(`${root}/client.ts`);
     const senaeiClient = read("src/lib/integrations/senaei/client.ts");
+    const senaeiContract = read("src/lib/integrations/senaei/contract.ts");
     expect(client).toContain('import "server-only"');
     expect(client).not.toContain("fetch(");
     expect(client).not.toMatch(/method:\s*["'](?:GET|POST|PUT|PATCH|DELETE)["']/);
     expect(client).not.toMatch(/bearer|api[_-]?key|cookie/i);
-    expect(senaeiClient).toContain('const API_ROOT = "/api/inspection"');
+    expect(senaeiClient).toContain("const API_ROOT = SENAEI_API_ROOT");
+    expect(senaeiContract).toContain('export const SENAEI_API_ROOT = "/api/inspection"');
     expect(senaeiClient).not.toContain("/shared/api/v2");
   });
 

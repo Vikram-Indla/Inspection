@@ -216,7 +216,7 @@ export default async function FieldIncidentReportsPage({ searchParams }: { searc
           {!error && rows.length === 0 && (
             <div className={styles.empty}>
               <div className={styles.emptyTitle}>{tr("field.incidents.empty", "No incident reports in scope", "لا توجد بلاغات حوادث ضمن النطاق")}</div>
-              <p className="t-caption">{tr("field.incidents.emptyBody", "Submitted incident reports appear here according to incident_reports RLS.", "تظهر بلاغات الحوادث المرسلة هنا وفق صلاحيات صفوف جدول بلاغات الحوادث.")}</p>
+              <p className="t-caption">{tr("field.incidents.emptyBody", "Submitted incident reports appear here when they are within your scope.", "تظهر بلاغات الحوادث المرسلة هنا وفق صلاحيات صفوف جدول بلاغات الحوادث.")}</p>
             </div>
           )}
           {!error && rows.map(row => (

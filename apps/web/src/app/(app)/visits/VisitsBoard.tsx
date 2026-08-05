@@ -53,7 +53,7 @@ export type VisitRow = {
   opsLabel: string;
 };
 
-export type Inspector = { user_id: string; full_name: string };
+export type Inspector = { user_id: string; full_name: string; eligible_visit_ids: string[] };
 
 export type VisitsBoardStrings = {
   searchPlaceholder: string;
@@ -352,6 +352,10 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
     () => [...selected].map(id => rowById.get(id)).filter((v): v is VisitRow => !!v),
     [selected, rowById],
   );
+  const eligibleInspectors = useMemo(
+    () => inspectors.filter(i => [...selected].every(id => i.eligible_visit_ids.includes(id))),
+    [inspectors, selected],
+  );
   const elig = useMemo(() => {
     const publishNew = selectedRows.filter(isPublishNew).length;
     const notStarted = selectedRows.filter(isNotStarted).length;
@@ -535,7 +539,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
               {identityFields("reassign")}
               <div className="field" style={{ maxInlineSize: 220 }}><label className="sq-field__label" htmlFor="bulk-inspector">{strings.bulkReassignTo}</label>
                 <select id="bulk-inspector" className="select" name="inspector_id"><option value="">{strings.selectOption}</option>
-                  {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
+                  {eligibleInspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
               <div className="field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="bulk-reassign-reason">{strings.bulkChangeReason}</label>
                 <input id="bulk-reassign-reason" className="input" name="mutation_reason" required /></div>
               <button className="btn btn-secondary btn-touch" disabled={busy || !requestIdentity}>{strings.bulkReassignBtn}</button>

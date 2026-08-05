@@ -50,7 +50,7 @@ export async function RouteProvenance({
       {extra}
       <span className="grow" />
       <span className={styles.prov}>
-        {t("admin.m6.rlsProvenance", "authorized compliance user · RLS zone scope applied server-side")}
+        {t("admin.m6.rlsProvenance", "authorized compliance user · zone scope applied server-side")}
       </span>
     </span>
   );
@@ -78,7 +78,7 @@ export default async function RouteContract({ acceptanceId, routePath, read, gra
         <dd className={styles.contractDef}>
           <span className="id-code">{read}</span>
           {" — "}
-          {t("admin.m6.contract.readRule", "RLS zone-scoped, server-paged")}
+          {t("admin.m6.contract.readRule", "Zone-scoped, server-paged")}
         </dd>
 
         <dt className={styles.contractTerm}>{t("admin.m6.contract.grant", "Grant")}</dt>

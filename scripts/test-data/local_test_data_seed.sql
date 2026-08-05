@@ -6,7 +6,7 @@ begin
   if current_setting('server_version_num')::int < 150000 then
     raise exception 'LOCAL-TEST-DATA-ENV-REFUSED: unsupported database';
   end if;
-  if coalesce(current_setting('app.local_test_seed_password', true), '') = '' then
+  if coalesce(current_setting('app.saqeel_uat_secret', true), '') = '' then
     raise exception 'LOCAL-TEST-DATA-ENV-REFUSED: operator password was not supplied';
   end if;
 end $$;
@@ -40,34 +40,34 @@ with people(role_key,n,uid,full_name,region,scope) as (
  ('inspector',5,'a4000000-0000-4000-8000-000000000005'::uuid,'راشد المطيري','Qassim','regional')
 ), inserted_users as (
  insert into auth.users(instance_id,id,aud,role,email,encrypted_password,email_confirmed_at,raw_app_meta_data,raw_user_meta_data,created_at,updated_at,confirmation_token,recovery_token,email_change_token_new,email_change)
- select '00000000-0000-0000-0000-000000000000',uid,'authenticated','authenticated',role_key||n||'@local.saqeel.test',
-        crypt(current_setting('app.local_test_seed_password'),gen_salt('bf')),now(),jsonb_build_object('provider','email','providers',jsonb_build_array('email'),'role',role_key),
+ select '00000000-0000-0000-0000-000000000000',uid,'authenticated','authenticated',role_key||n||'@mim.gov.sa',
+        crypt(current_setting('app.saqeel_uat_secret'),gen_salt('bf')),now(),jsonb_build_object('provider','email','providers',jsonb_build_array('email'),'role',role_key),
         jsonb_build_object('username',role_key||n),now(),now(),'','','',''
- from people on conflict (id) do update set encrypted_password=excluded.encrypted_password,raw_app_meta_data=excluded.raw_app_meta_data,raw_user_meta_data=excluded.raw_user_meta_data,updated_at=now()
+ from people on conflict (id) do update set email=excluded.email,encrypted_password=excluded.encrypted_password,raw_app_meta_data=excluded.raw_app_meta_data,raw_user_meta_data=excluded.raw_user_meta_data,updated_at=now()
  returning id
 )
 insert into auth.identities(id,provider_id,user_id,identity_data,provider,last_sign_in_at,created_at,updated_at)
-select ('b'||substr(replace(uid::text,'-',''),2))::uuid,role_key||n||'@local.saqeel.test',uid,
-       jsonb_build_object('sub',uid::text,'email',role_key||n||'@local.saqeel.test'),'email',now(),now(),now()
-from people on conflict (provider_id,provider) do update set identity_data=excluded.identity_data,updated_at=now();
+select ('b'||substr(replace(uid::text,'-',''),2))::uuid,role_key||n||'@mim.gov.sa',uid,
+       jsonb_build_object('sub',uid::text,'email',role_key||n||'@mim.gov.sa'),'email',now(),now(),now()
+from people on conflict (id) do update set provider_id=excluded.provider_id,identity_data=excluded.identity_data,updated_at=now();
 
 with boundary_people(persona_key,uid,email,full_name,region,scope,app_role) as (
  values
- ('multi_role','a5000000-0000-4000-8000-000000000001'::uuid,'multi-role@local.saqeel.test','ضابط تخطيط ومراجعة تجريبي','Riyadh','regional','planner'),
- ('no_workspace','a6000000-0000-4000-8000-000000000001'::uuid,'no-workspace@local.saqeel.test','مستخدم بلا مساحة عمل تجريبي',null,null,null)
+ ('multi_role','a5000000-0000-4000-8000-000000000001'::uuid,'multi-role@mim.gov.sa','ضابط تخطيط ومراجعة تجريبي','Riyadh','regional','planner'),
+ ('no_workspace','a6000000-0000-4000-8000-000000000001'::uuid,'no-workspace@mim.gov.sa','مستخدم بلا مساحة عمل تجريبي',null,null,null)
 ), inserted_users as (
  insert into auth.users(instance_id,id,aud,role,email,encrypted_password,email_confirmed_at,raw_app_meta_data,raw_user_meta_data,created_at,updated_at,confirmation_token,recovery_token,email_change_token_new,email_change)
  select '00000000-0000-0000-0000-000000000000',uid,'authenticated','authenticated',email,
-        crypt(current_setting('app.local_test_seed_password'),gen_salt('bf')),now(),
+        crypt(current_setting('app.saqeel_uat_secret'),gen_salt('bf')),now(),
         jsonb_strip_nulls(jsonb_build_object('provider','email','providers',jsonb_build_array('email'),'role',app_role)),
         jsonb_build_object('username',persona_key),now(),now(),'','','',''
- from boundary_people on conflict (id) do update set encrypted_password=excluded.encrypted_password,raw_app_meta_data=excluded.raw_app_meta_data,raw_user_meta_data=excluded.raw_user_meta_data,updated_at=now()
+ from boundary_people on conflict (id) do update set email=excluded.email,encrypted_password=excluded.encrypted_password,raw_app_meta_data=excluded.raw_app_meta_data,raw_user_meta_data=excluded.raw_user_meta_data,updated_at=now()
  returning id
 )
 insert into auth.identities(id,provider_id,user_id,identity_data,provider,last_sign_in_at,created_at,updated_at)
 select ('b'||substr(replace(uid::text,'-',''),2))::uuid,email,uid,
        jsonb_build_object('sub',uid::text,'email',email),'email',now(),now(),now()
-from boundary_people on conflict (provider_id,provider) do update set identity_data=excluded.identity_data,updated_at=now();
+from boundary_people on conflict (id) do update set provider_id=excluded.provider_id,identity_data=excluded.identity_data,updated_at=now();
 
 with people(role_key,n,uid,full_name,region,scope) as (
  values
@@ -77,12 +77,12 @@ with people(role_key,n,uid,full_name,region,scope) as (
  ('inspector',1,'a4000000-0000-4000-8000-000000000001'::uuid,'فهد الدوسري','Riyadh','regional'),('inspector',2,'a4000000-0000-4000-8000-000000000002'::uuid,'عمر القحطاني','Eastern Province','regional'),('inspector',3,'a4000000-0000-4000-8000-000000000003'::uuid,'زياد الحارثي','Makkah','regional'),('inspector',4,'a4000000-0000-4000-8000-000000000004'::uuid,'ناصر البلوي','Madinah','regional'),('inspector',5,'a4000000-0000-4000-8000-000000000005'::uuid,'راشد المطيري','Qassim','regional')
 )
 insert into public.profiles(user_id,full_name,email,region,org_scope,account_status)
-select uid,full_name,role_key||n||'@local.saqeel.test',region,scope,'active' from people
+select uid,full_name,role_key||n||'@mim.gov.sa',region,scope,'active' from people
 on conflict (user_id) do update set full_name=excluded.full_name,email=excluded.email,region=excluded.region,org_scope=excluded.org_scope,account_status='active';
 
 insert into public.profiles(user_id,full_name,email,region,org_scope,account_status) values
- ('a5000000-0000-4000-8000-000000000001','ضابط تخطيط ومراجعة تجريبي','multi-role@local.saqeel.test','Riyadh','regional','active'),
- ('a6000000-0000-4000-8000-000000000001','مستخدم بلا مساحة عمل تجريبي','no-workspace@local.saqeel.test',null,null,'active')
+ ('a5000000-0000-4000-8000-000000000001','ضابط تخطيط ومراجعة تجريبي','multi-role@mim.gov.sa','Riyadh','regional','active'),
+ ('a6000000-0000-4000-8000-000000000001','مستخدم بلا مساحة عمل تجريبي','no-workspace@mim.gov.sa',null,null,'active')
 on conflict (user_id) do update set full_name=excluded.full_name,email=excluded.email,region=excluded.region,org_scope=excluded.org_scope,account_status='active';
 
 with p(role_key,n,uid) as (values
@@ -91,6 +91,43 @@ with p(role_key,n,uid) as (values
  ('supervisor',1,'a3000000-0000-4000-8000-000000000001'::uuid),('supervisor',2,'a3000000-0000-4000-8000-000000000002'::uuid),('supervisor',3,'a3000000-0000-4000-8000-000000000003'::uuid),('supervisor',4,'a3000000-0000-4000-8000-000000000004'::uuid),('supervisor',5,'a3000000-0000-4000-8000-000000000005'::uuid),
  ('inspector',1,'a4000000-0000-4000-8000-000000000001'::uuid),('inspector',2,'a4000000-0000-4000-8000-000000000002'::uuid),('inspector',3,'a4000000-0000-4000-8000-000000000003'::uuid),('inspector',4,'a4000000-0000-4000-8000-000000000004'::uuid),('inspector',5,'a4000000-0000-4000-8000-000000000005'::uuid))
 insert into public.user_roles(user_id,role_key,granted_by) select uid,role_key,'a1000000-0000-4000-8000-000000000001' from p
+on conflict (user_id,role_key) do nothing;
+
+-- Inspector 6-30 are deterministic inventory accounts. Business journeys remain
+-- limited to the five governed scenario cohorts below.
+with inspectors as (
+  select g,
+    ('a4000000-0000-4000-8000-'||lpad(g::text,12,'0'))::uuid uid,
+    'inspector'||g||'@mim.gov.sa' email
+  from generate_series(6,30) g
+), users as (
+  insert into auth.users(instance_id,id,aud,role,email,encrypted_password,email_confirmed_at,raw_app_meta_data,raw_user_meta_data,created_at,updated_at,confirmation_token,recovery_token,email_change_token_new,email_change)
+  select '00000000-0000-0000-0000-000000000000',uid,'authenticated','authenticated',email,
+    crypt(current_setting('app.saqeel_uat_secret'),gen_salt('bf')),now(),
+    jsonb_build_object('provider','email','providers',jsonb_build_array('email'),'role','inspector'),
+    jsonb_build_object('username','inspector'||g),now(),now(),'','','',''
+  from inspectors
+  on conflict (id) do update set email=excluded.email,encrypted_password=excluded.encrypted_password,
+    raw_app_meta_data=excluded.raw_app_meta_data,raw_user_meta_data=excluded.raw_user_meta_data,updated_at=now()
+  returning id
+), identities as (
+  insert into auth.identities(id,provider_id,user_id,identity_data,provider,last_sign_in_at,created_at,updated_at)
+  select ('b'||substr(replace(uid::text,'-',''),2))::uuid,email,uid,
+    jsonb_build_object('sub',uid::text,'email',email),'email',now(),now(),now()
+  from inspectors
+  on conflict (id) do update set provider_id=excluded.provider_id,identity_data=excluded.identity_data,updated_at=now()
+  returning user_id
+), profiles as (
+  insert into public.profiles(user_id,full_name,email,region,org_scope,account_status)
+  select uid,'Synthetic Inspector '||lpad(g::text,2,'0'),email,
+    (array['Riyadh','Eastern Province','Makkah','Madinah','Qassim'])[((g-1)%5)+1],
+    'regional','active' from inspectors
+  on conflict (user_id) do update set email=excluded.email,region=excluded.region,
+    org_scope=excluded.org_scope,account_status='active'
+  returning user_id
+)
+insert into public.user_roles(user_id,role_key,granted_by)
+select uid,'inspector','a1000000-0000-4000-8000-000000000001' from inspectors
 on conflict (user_id,role_key) do nothing;
 
 insert into public.user_roles(user_id,role_key,granted_by) values

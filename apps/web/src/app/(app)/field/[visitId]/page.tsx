@@ -24,7 +24,7 @@ import packStyles from "../field-dashboard.module.css";
 // BUG-2 fix — [visitId] sits beside static field/* routes (drafts, notifications,
 // settings, …) with no more-specific match; Next.js still routes an unmatched
 // literal like "notifications" or "xyz123notarealid" here and it was treated
-// as a visitId, producing a misleading "Visit not found (M02-001)" after a
+// as a visitId, producing a misleading "Visit not found" after a
 // wasted authorization-scoped DB round trip. This guard is a cheap, honest short-circuit
 // on shape alone — it does not enumerate route names and never widens what a
 // valid visit lookup can match.
@@ -120,6 +120,28 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     && Number.isFinite(fieldOverrideExpiresAtMs) && fieldOverrideExpiresAtMs <= Date.now()
     ? { ...rawOverride, status: "expired" as const }
     : rawOverride;
+  // M04-045 recovery: normal (non-override) arrival is immutable server state,
+  // so a reload must project the same existing journey and arrival event back
+  // into Startup. Both reads stay under the Inspector's RLS; an absent event
+  // fails closed and does not manufacture a checked-in UI state.
+  const { data: journeyRows } = await sb.from("journey_sessions")
+    .select("id, status")
+    .eq("visit_id", visitId)
+    .eq("inspector_id", user.id)
+    .order("started_at", { ascending: false })
+    .limit(1);
+  const initialJourneyRow = journeyRows?.[0] ?? null;
+  const { data: arrivalRows } = initialJourneyRow?.status === "arrived"
+    ? await sb.from("geo_events")
+      .select("id")
+      .eq("journey_id", initialJourneyRow.id)
+      .eq("kind", "arrival")
+      .order("occurred_at", { ascending: false })
+      .limit(1)
+    : { data: null };
+  const initialJourney = initialJourneyRow?.status === "arrived" && arrivalRows?.[0]?.id
+    ? { id: initialJourneyRow.id, status: "arrived" as const, arrivalEventId: arrivalRows[0].id }
+    : null;
   // TASK-EXECUTION-MODULE-001 · Phase 4B — journey schema probe (D-015). A
   // tolerant read on the Phase 4A table: while migration 20260721140000 is
   // not applied the probe fails and Startup keeps the EXACT legacy
@@ -356,7 +378,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     logJourneyBlocked: locale === "ar"
       ? "تعذر بدء الرحلة. تحقق من التكليف والاتصال ثم أعد المحاولة."
       : t("field.start.logJourneyBlockedSafe", "The journey could not be started. Check the assignment and connection, then try again."),
-    logJourneyStarted: t("field.start.logJourneyStarted", "Journey started — telemetry active (STM-JRN-001)"),
+    logJourneyStarted: t("field.start.logJourneyStarted", "Journey started — telemetry active"),
     logAccuracyBlocked: t("field.start.logAccuracyBlocked", "BLOCKED: accuracy ±{acc}m > {max}m required (ERR-GEO-001) — retry or governed override"),
     logCheckinRejected: locale === "ar"
       ? "تعذر حفظ تسجيل الوصول. تحقق من الاتصال ثم أعد المحاولة."
@@ -365,7 +387,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
       ? "تعذر حفظ الوصول. تحقق من الاتصال ثم أعد المحاولة."
       : t("field.start.logArrivalRejectedSafe", "Arrival could not be saved. Check the connection, then try again."),
     logOutside: t("field.start.logOutside", "OUTSIDE geofence ({d}m > {fence}m) — check-in recorded as outside; governed override required (ERR-GEO-002)"),
-    logInside: t("field.start.logInside", "Checked in INSIDE fence ({d}m, ±{acc}m) — start allowed (STM-JRN-003)"),
+    logInside: t("field.start.logInside", "Checked in inside the fence ({d}m, ±{acc}m) — start allowed"),
     logStartBlocked: t("field.start.logStartBlocked", "Start blocked: {error}"),
     logInspectionCreateFailed: locale === "ar"
       ? "تعذر بدء التفتيش. تحقق من الجاهزية ثم أعد المحاولة."
@@ -388,7 +410,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
       ? "تعذر حفظ الاستثناء. تحقق من الاتصال ثم أعد المحاولة."
       : t("field.start.logExceptionFailedSafe", "The exception could not be saved. Check the connection, then try again."),
     logDeviation: t("field.start.logDeviation", "Route deviation recorded — {d} m beyond closest approach, sustained {s}s ( route_deviation)"),
-    logOpState: t("field.start.logOpState", "Operational state → {state} (STM-OPS)"),
+    logOpState: t("field.start.logOpState", "Operational state → {state}"),
     logOpBlocked: locale === "ar"
       ? "تعذر تحديث حالة الزيارة. تحقق من الجاهزية والاتصال ثم أعد المحاولة."
       : t("field.start.logOpBlockedSafe", "The visit state could not be updated. Check readiness and the connection, then try again."),
@@ -426,7 +448,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     cancelEvidenceLabel: t("field.start.cancelEvidenceLabel", "Photo evidence (optional, )"),
     cancelSubmit: t("field.start.cancelSubmit", "Request cancellation"),
     cancelRequestedChip: t("field.start.cancelRequestedChip", "cancellation requested — awaiting planner/ops"),
-    cancelReasonsMissing: t("field.start.cancelReasonsMissing", "Cancellation reasons unavailable — engine_settings.field not seeded yet (0020 pending)."),
+    cancelReasonsMissing: t("field.start.cancelReasonsMissing", "Cancellation reasons are not configured."),
     logCancelEvidenceQueued: t("field.start.logCancelEvidenceQueued", "Cancellation evidence {name} queued (sha256 {sha}…) — syncs to the visit record"),
     logCancelSent: t("field.start.logCancelSent", "Cancellation requested — planner/ops notified; execution stopped"),
     logCancelFailed: locale === "ar"
@@ -751,6 +773,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
         )}
         <div id="startup" className="sq-anchor-target">
           <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} overrideReasons={overrideReasons} initialOverride={initialOverride as never} flags={flags} appVersion={packageInfo.version} locale={locale} userId={user.id} preparationGated={preparationGated}
+            initialJourney={initialJourney}
             journeySchemaAvailable={journeySchemaAvailable}
             initialCancellation={initialCancellation as never}
             initialCorrections={initialCorrections as never} />

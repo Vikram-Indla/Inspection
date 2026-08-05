@@ -165,31 +165,16 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .sq-field.is-invalid .sq-field__error { display: block; }
 .sq-field--field .sq-input, .sq-field--field .sq-select { min-height: var(--control-h-field); font: var(--type-input-field); } /* iPad */
 
-/* Standards-based customizable select. Supporting browsers render the picker
-   as a translucent Saqeel surface; others retain the accessible native picker. */
-@supports (appearance: base-select) {
-  .sq-select, .select { appearance: base-select; }
-  .sq-select::picker(select), .select::picker(select) {
-    appearance: base-select;
-    background: color-mix(in srgb, var(--surface-raised) 90%, transparent);
-    color: var(--text-primary);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    padding: var(--space-1);
-  }
-  .sq-select option, .select option {
-    padding: var(--space-2) var(--space-3);
-    background: transparent;
-    color: var(--text-primary);
-    border-radius: var(--radius-xs);
-  }
-  .sq-select option:hover, .sq-select option:checked,
-  .select option:hover, .select option:checked {
-    background: var(--accent-soft);
-    color: var(--accent-text);
-  }
-}
+/* INSP-736: the experimental customizable-select picker (appearance:
+   base-select) rendered its open popup with most options dimmed under the
+   translucent color-mix() background — only one option painted correctly.
+   `appearance: base-select` is a very new, still-unstable Chrome API; the
+   @supports guard meant a browser could opt in via feature detection while
+   still hitting incomplete popup-paint support underneath. Removed rather
+   than patched: every select now uses the plain native picker the comment
+   above already documented as the safe fallback for non-supporting
+   browsers — pure subtraction, no new risk, applies to every .select/
+   .sq-select in the app in one place. */
 
 .sq-search { position: relative; }
 .sq-search .sq-input { padding-inline-start: var(--space-8); }
@@ -1597,7 +1582,7 @@ button.sq-shell-scope { cursor: pointer; }
 .cd-fpchip--unknown { border-style: dashed; color: var(--text-secondary); }
 
 /* tags */
-.cd-tag { display: inline-block; font: var(--type-micro); font-family: var(--font-mono); padding: 3px 8px; border-radius: 6px; letter-spacing: .03em; }
+.cd-tag { display: inline-block; font: var(--type-micro); padding: 3px 8px; border-radius: 6px; letter-spacing: .03em; }
 .cd-tag--blocked { background: var(--status-critical-soft); color: var(--status-critical-text); border: 1px solid color-mix(in srgb, var(--status-critical) 40%, transparent); }
 .cd-tag--warn { background: var(--status-warning-soft); color: var(--status-warning-text); }
 

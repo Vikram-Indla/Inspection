@@ -134,13 +134,18 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 5 workspace item lifecycle", () =
     expect(ws).toContain('data-state="invalidated"');
     expect(ws).toContain("vioInvalidated");
     expect(ws).toContain("vioPenaltyConflict");
-    // Manual action forms from published templates; included ≠ completed.
-    expect(ws).toContain("addManualForm");
-    expect(ws).toContain("afAddBtn");
-    expect(ws).toContain("actionTemplates");
+    // The manual "add action form" affordance was removed (governance finding
+    // 2026-08-05): no BRD document describes a standalone form-creation path,
+    // and the manual route produced forms with no way to fill their mandatory
+    // fields, permanently blocking submission. The per-item flow (pushForm/
+    // editForm, asserted elsewhere in this file) is the only route now, and
+    // is what the requirements actually describe.
+    expect(ws).not.toContain("addManualForm");
+    expect(ws).not.toContain("afAddBtn");
+    expect(ws).not.toContain("actionTemplates");
   });
 
-  test("page loads library/item states/templates tolerantly and fails closed on penalty conflicts", () => {
+  test("page loads library/item states tolerantly and fails closed on penalty conflicts", () => {
     const page = read(workspacePagePath);
     expect(page).toContain("inspection_item_states");
     expect(page).toContain("serverItemStates");
@@ -148,9 +153,10 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 5 workspace item lifecycle", () =
     expect(page).toContain('sb.from("inspection_items")');
     expect(page).toContain('.eq("active", true)');
     expect(page).toContain("library={library}");
-    // Published action_form configuration templates for the manual add (§18).
-    expect(page).toContain('sb.from("configuration_templates")');
-    expect(page).toContain('"action_form"');
+    // The manual "add action form" affordance's supporting fetch was removed
+    // alongside the button (governance finding 2026-08-05) — no BRD document
+    // describes a standalone form-creation path.
+    expect(page).not.toContain('sb.from("configuration_templates")');
     // Penalty singularity: more than one active mapping → violation WITHOUT a
     // penalty and null mapping_version; the first row is never picked silently.
     expect(page).toContain("v.penalty_mappings.length > 1");

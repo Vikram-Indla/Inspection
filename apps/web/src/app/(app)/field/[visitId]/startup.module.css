@@ -11,7 +11,7 @@
   flex-direction: column;
   gap: 14px;
   inline-size: 100%;
-  max-inline-size: 760px;
+  max-inline-size: 1200px;
   margin-inline: auto;
   padding: 16px 18px 100px;
 }
@@ -121,10 +121,15 @@
   color: var(--text-on-action);
 }
 
+/* Not actually sticky: when showPreparation is true, PreExecution's card
+   list (ending in this bar) shares one continuous scroll with Startup's own
+   sections rendered right after it (page.tsx). position:sticky here pinned
+   to the viewport bottom while Startup's later cards were still below it in
+   flow, hiding part of the Visit-mode card above and the top of the next
+   Inspection-package card below at natural page-load rest. Plain flow
+   placement removes the overlap; the bar still reads as the closing action
+   row for the preparation card list. */
 .stickyActions {
-  position: sticky;
-  inset-block-end: 0;
-  z-index: 30;
   display: flex;
   align-items: center;
   justify-content: flex-end;

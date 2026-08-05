@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import Shell from "@/components/Shell";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { getUserRoles } from "@/lib/persona";
-import { isAdminOnlyPersona } from "@/lib/shell-navigation";
 import { supabaseServer } from "@/lib/supabase-server";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { getLocale, type Locale } from "@/lib/i18n";
@@ -27,7 +26,7 @@ export default async function ExecutionPage() {
   const roleKeys = (roleRows ?? []).map(row => row.role_key);
   const canReadExecution = roleKeys.some(role => EXECUTION_READ_ROLES.has(role));
 
-  if (!roleError && (isAdminOnlyPersona(roleKeys) || !canReadExecution)) {
+  if (!roleError && !canReadExecution) {
     return (
       <Shell current="/execution" title="">
         <section className="panel panel-body" role="alert">
@@ -38,7 +37,6 @@ export default async function ExecutionPage() {
             <a className="btn btn-primary" href="/profile">{copy("Request access", "طلب الوصول")}</a>
             <a className="btn btn-secondary" href="/dashboard">{copy("Back to default state", "العودة إلى الصفحة الافتراضية")}</a>
           </div>
-          <small>{copy("Execution is refused for an Administrator-only persona. Backend RLS remains authoritative.", "يُرفض التنفيذ لحساب يقتصر على دور المسؤول. وتظل سياسات أمان الصفوف في قاعدة البيانات هي المرجع.")}</small>
         </section>
       </Shell>
     );

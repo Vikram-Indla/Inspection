@@ -18,7 +18,11 @@ export default function IdentityDossier({
 }: {
   factory: GradedFactory; strings: WizardStrings; locale: Locale;
 }) {
-  const [view, setView] = useState<"map" | "text">("map");
+  // Keep the evidence-equivalent text view immediately available during the
+  // scheduling transaction. Mapbox GL is a large client runtime; mounting it
+  // only after the Planner explicitly selects Map prevents its initialization
+  // from monopolising the main thread while the Publish action is being used.
+  const [view, setView] = useState<"map" | "text">("text");
   const hasOfficial = factory.official_lat != null && factory.official_lng != null;
   const markers: GeoMarkerData[] = [
     ...(hasOfficial ? [{

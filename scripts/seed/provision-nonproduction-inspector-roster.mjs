@@ -35,7 +35,7 @@ const people = [
   persona_key: key,
   full_name,
   region,
-  email: `np.inspector.${key}@saqeel.test`,
+  email: `np.inspector.${key}@mim.gov.sa`,
   daily_capacity: 10,
 }));
 const deterministicUuid = value => {

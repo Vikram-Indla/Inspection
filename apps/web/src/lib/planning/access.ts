@@ -42,17 +42,3 @@ export async function getPlanningAccess(sb: SupabaseClient, capabilities: string
   }
   return { accessClass: accessClass as PlanningAccessClass, can: capability => granted.has(capability), error: null };
 }
-
-// Single-visit publishing is intentionally a direct Planner operation. The
-// guarded database publisher enforces the same rule: canonical Planner role
-// OR planning.publish capability. Keeping the UI/action gate aligned avoids a
-// stale role_permissions row presenting a false supervisory hand-off.
-export async function canScheduleSingleVisit(sb: SupabaseClient, access: PlanningAccess): Promise<boolean> {
-  if (access.can("planning.publish")) return true;
-  const { data: isPlanner, error } = await sb.rpc("has_role", { r: "planner" });
-  if (error) {
-    console.error("[planning.access] planner role resolution failed:", error.message);
-    return false;
-  }
-  return isPlanner === true;
-}
