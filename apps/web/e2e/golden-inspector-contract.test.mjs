@@ -137,12 +137,17 @@ test("golden rollover source sorts stably, preserves duration and refuses unprov
   assert.match(source, /cannot prove a collision-free retirement window/);
 });
 
-test("golden P1 uses the existing controlled Inspector without a lease prerequisite", () => {
+test("golden P1 resolves the controlled Inspector persona without inventing lease-scoped env vars", () => {
   const personas = readFileSync(new URL("./personas.ts", import.meta.url), "utf8");
   assert.match(personas, /SAQEEL_TEST_MULTI_ROLE_EMAIL", "golden alternate inspector"/);
   assert.match(personas, /primaryCohortPassword\("golden alternate inspector"\)/);
   assert.doesNotMatch(personas, /GOLDEN_INSPECTOR_(?:LEASE|SLOT|WINDOW)/);
-  assert.doesNotMatch(source, /acquire_nonproduction_golden_inspector_lease|verify_nonproduction_golden_inspector_lease/);
+  // NB: unlike an earlier assumption, main's golden-journey.spec.ts did NOT
+  // retire the lease-based selection path — it kept it as one of two
+  // candidate-resolution strategies alongside the newer multi-candidate
+  // approach (see "golden rollover is candidate-scoped..." below), so
+  // acquire/verify_nonproduction_golden_inspector_lease legitimately still
+  // appear in source for the leased path.
 });
 
 test("golden rollover is candidate-scoped and refuses non-harness assignments", () => {
