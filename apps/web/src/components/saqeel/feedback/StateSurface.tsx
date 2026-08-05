@@ -15,8 +15,10 @@ export type StateSurfaceKind =
   | "unauthorized";
 
 type Locale = "en" | "ar";
+type DefaultStateSurfaceKind = Exclude<StateSurfaceKind, "offline">;
+type StateSurfaceMessage = { title: string; body: string };
 
-const copy: Record<Locale, Partial<Record<StateSurfaceKind, { title: string; body: string }>>> = {
+const copy: Record<Locale, Record<DefaultStateSurfaceKind, StateSurfaceMessage>> = {
   en: {
     empty: {
       title: "No records",
@@ -45,10 +47,6 @@ const copy: Record<Locale, Partial<Record<StateSurfaceKind, { title: string; bod
     degraded: {
       title: "Limited information",
       body: "Only verified available information is shown. Missing information has not been inferred.",
-    },
-    offline: {
-      title: "Offline",
-      body: "Live information is unavailable while this device is offline. No cached value is presented as current.",
     },
     stale: {
       title: "Information changed",
@@ -129,16 +127,27 @@ function StateGlyph({ kind }: { kind: StateSurfaceKind }) {
   return <svg {...common}><path d="M3 7h6l2 3h10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>;
 }
 
-export interface StateSurfaceProps {
-  kind: StateSurfaceKind;
+interface StateSurfaceCommonProps {
   locale?: Locale;
-  title?: string;
-  body?: string;
   action?: React.ReactNode;
   /** Optional governed seam identifier; shown only for an intentionally unavailable capability. */
   seam?: string;
   className?: string;
   children?: React.ReactNode;
+}
+
+export type StateSurfaceProps = StateSurfaceCommonProps & (
+  | { kind: "offline"; title: string; body: string }
+  | { kind: DefaultStateSurfaceKind; title?: string; body?: string }
+);
+
+export function resolveStateSurfaceMessage(
+  kind: StateSurfaceKind,
+  locale: Locale,
+  supplied?: StateSurfaceMessage,
+): StateSurfaceMessage | null {
+  if (kind === "offline") return supplied ?? null;
+  return copy[locale][kind];
 }
 
 export function StateSurface({
@@ -151,7 +160,7 @@ export function StateSurface({
   className,
   children,
 }: StateSurfaceProps) {
-  const message = copy[locale][kind] ?? copy.en[kind];
+  const message = resolveStateSurfaceMessage(kind, locale, title && body ? { title, body } : undefined);
   if (!message) return null;
   if (kind === "loading") {
     return (
@@ -192,5 +201,5 @@ export function StateSurface({
 
 export const STATE_SURFACE_KINDS: readonly StateSurfaceKind[] = [
   "empty", "loading", "error", "rls-denied", "not-yet",
-  "provider-unavailable", "degraded", "stale", "conflict", "unauthorized",
+  "provider-unavailable", "degraded", "offline", "stale", "conflict", "unauthorized",
 ];

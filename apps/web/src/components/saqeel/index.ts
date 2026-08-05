@@ -27,7 +27,8 @@ export { Drawer, type DrawerProps } from "./feedback/Drawer";
 export { Tooltip, type TooltipProps } from "./feedback/Tooltip";
 export { Menu, type MenuProps, type MenuItem } from "./feedback/Menu";
 export { EmptyState, type EmptyStateProps } from "./feedback/EmptyState";
-export { StateSurface, STATE_SURFACE_KINDS, type StateSurfaceProps, type StateSurfaceKind } from "./feedback/StateSurface";
+export { StateSurface, STATE_SURFACE_KINDS, resolveStateSurfaceMessage, type StateSurfaceProps, type StateSurfaceKind } from "./feedback/StateSurface";
+export { MapTruthState, type MapTruthStateProps, type MapTruthStateKind } from "./feedback/MapTruthState";
 export { SyncIndicator, type SyncIndicatorProps, type SyncState } from "./feedback/SyncIndicator";
 export { DiffView, type DiffViewProps, type DiffRow } from "./feedback/DiffView";
 // PR5 — forms
@@ -36,6 +37,7 @@ export { DateRangePicker, type DateRangePickerProps } from "./inputs/DateRangePi
 export { StatusSelector, type StatusSelectorProps } from "./inputs/StatusSelector";
 export { Accordion, type AccordionProps, type AccordionSection } from "./data/Accordion";
 export { ChecklistQuestion, type ChecklistQuestionProps } from "./inspection/ChecklistQuestion";
+export { CheckInOverride, isCheckInOverrideReady, type CheckInOverrideProps, type CheckInOverrideValue } from "./inspection/CheckInOverride";
 // PR6 — data grid
 export { DataGrid, type DataGridProps, type DataGridColumn, type SortRule } from "./grid/DataGrid";
 export { FilterBar, FilterRule, type FilterBarProps, type FilterRuleProps, type FilterRuleValue } from "./navigation/FilterBar";
