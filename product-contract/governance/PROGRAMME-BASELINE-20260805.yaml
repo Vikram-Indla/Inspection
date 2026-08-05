@@ -112,3 +112,47 @@ standing_constraint:
     Every change is marked presentation-only or touching behaviour. Behaviour
     changes are raised separately, never bundled into a cosmetic sweep, and are
     verified by walking the affected screens afterwards.
+
+goal:
+  statement: >
+    An enterprise-grade application that adheres to the requirements of the BRDs
+    and Jira.
+  ruled_by: "Product Owner (Vikram)"
+  ruled_at: "2026-08-05"
+  what_enterprise_grade_means_here:
+    - "No interface defects. Nothing clipped, truncated, cramped or overrunning its container."
+    - "No prose masquerading as function. A screen does something; it does not describe itself."
+    - "No weak components. One way to express a table, a state, a status, an action."
+    - "A coherent mental model. The same idea looks and behaves the same everywhere, and a user can predict the next screen."
+    - "Every rule carried by a requirement is satisfied by the running system."
+  no_silver_bullet: >
+    No single change is expected to achieve this. The measure is whether the
+    requirements are met and the product reads as enterprise software — not
+    whether any particular fix was applied.
+  freedom_granted: >
+    Anything may be changed in service of that goal. Existing structure is not
+    protected by having been built first. The only limits are the standing
+    constraint above, the governed values rule, and approvals already recorded.
+
+orchestrator_authority:
+  granted_by: "Product Owner (Vikram)"
+  granted_at: "2026-08-05"
+  statement: >
+    Lanes report to the orchestrator. The orchestrator directs them on its own
+    authority and makes the decisions, rather than returning routine questions
+    to the Product Owner.
+  decides_directly:
+    - "Sequencing, priority and which lane takes which work."
+    - "Interface, layout, component and terminology decisions."
+    - "Whether a finding is a defect, already known, or not reproducible."
+    - "Whether work is ready to land, and landing it."
+    - "Design-system corrections that serve the approved standard."
+  still_escalates:
+    - "Anything inventing a governed value — a risk weight, penalty, threshold, SLA or approval rule."
+    - "Separation-of-duties and who-may-do-what decisions not already settled."
+    - "Anything contradicting an approved requirement, or where the requirements are silent and the answer is a business rule."
+    - "Deployment, and work belonging to other sessions or agents."
+  reporting_obligation: >
+    Report outcomes, not requests for permission. State what was decided and
+    why. The Product Owner overrides freely; the orchestrator does not wait for
+    instruction it can reasonably form itself.
