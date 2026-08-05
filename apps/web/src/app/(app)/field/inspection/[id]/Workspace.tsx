@@ -9,6 +9,7 @@ import {
   type Item, type Answer, type FormDef, type FormDraft, type VioConfig, type Section, type ItemStates,
   isVisible, contextFlags, conditionContext, scoreExcluded, computeHealthScore, evidenceLeg, formRequired, formComplete,
   sectionProgress, summarize, impliedViolations, computeBlockers, type SectionBlockers, effectiveSections, ADDED_SECTION_KEY,
+  packageFormBlockers, type ExistingForm,
 } from "./runtime";
 import SignaturePad, { type SignaturePadStrings, type SignatureAck } from "./SignaturePad";
 import { findingSubmitBlockers, type FindingOp, type FindingSyncState } from "./finding-outbox";
@@ -69,8 +70,6 @@ type FindingDraft = { id: string | null; description: string; severity: string; 
 type SVio = { id: string; violation_code_id: string; invalidated_at?: string | null; invalidate_reason?: string | null };
 // Phase 5 (§15) — per-visit item lifecycle row from inspection_item_states.
 type SItemState = { item_id: string; state: "added" | "deselected"; reason: string | null; reverted_at: string | null };
-// Phase 5 (§18) — published action_form configuration template for manual add.
-type ActionTemplate = { id: string; key: string; title: string };
 type QueuedEvidence = Extract<OutboxOp, { kind: "evidence" }>;
 type EvidenceLimits = Record<string, { formats?: string[]; max_mb?: number }>;
 // Phase 4B — latest active-session cancellation request for the visit (§12).
@@ -111,6 +110,8 @@ export type WorkspaceStrings = {
   completionCreatedVersion: string; completionCreatedAudit: string; completionCreatedReview: string;
   completionIdempotency: string; completionReused: string; completionPendingSync: string;
   completionFailedTitle: string; completionFailedBody: string;
+  backToInspection: string;
+  pkgFormsGroupTitle: string;
   lockedSection: string;
   mandatoryPhoto: string; submitBtn: string;
   autoViolation: string; plusActionForm: string; plusPhoto: string;
@@ -143,8 +144,6 @@ export type WorkspaceStrings = {
   deselectBtn: string; deselectTitle: string; deselectReason: string; deselectReasonPh: string;
   deselectConfirm: string; deselectCancel: string; deselectNeedsReason: string;
   deselectedTitle: string; deselectedAudit: string; restoreBtn: string; restoredMsg: string;
-  // — Phase 5 manual action forms (§18) —
-  afAddTitle: string; afAddHint: string; afAddPick: string; afAddBtn: string; afAddedMsg: string; afNone: string;
   valTitle: string; valUnanswered: string; valEvidence: string; valForms: string;
   valGoToFirst: string; valGoToSection: string;
   ready: string; notReady: string;
@@ -166,10 +165,10 @@ export type WorkspaceStrings = {
 const fmt = (s: string, vars: Record<string, string | number>) => { return s.replace(/\{(\w+)\}/g, (m, k) => String(vars[k] ?? m)); };
 const acceptFor = (type: string) => type === "document" ? ".pdf,application/pdf" : type === "video" ? "video/*" : "image/*";
 
-export default function Workspace({ inspection, items, library, serverResponses, serverEvidence, serverForms, serverFindings, serverViolations, serverItemStates, actionTemplates, serverContext, vioConfig, evidenceLimits, actionDueDays, strings, evidenceUrls, prev, panel, inspectionNo, locale, userId, cancellation, cancelReasons, journeySchemaAvailable }: {
+export default function Workspace({ inspection, items, library, serverResponses, serverEvidence, serverForms, serverFindings, serverViolations, serverItemStates, serverContext, vioConfig, evidenceLimits, actionDueDays, strings, evidenceUrls, prev, panel, inspectionNo, locale, userId, cancellation, cancelReasons, journeySchemaAvailable }: {
   inspection: Ins; items: Item[]; library: Item[]; serverResponses: SResp[]; serverEvidence: SEv[]; serverForms: SForm[]; serverFindings: SFinding[]; serverViolations: SVio[];
   userId: string;
-  serverItemStates: SItemState[]; actionTemplates: ActionTemplate[];
+  serverItemStates: SItemState[];
   serverContext: Record<string, string>; vioConfig: Record<string, VioConfig>; evidenceLimits: EvidenceLimits; actionDueDays: number; strings: WorkspaceStrings;
   evidenceUrls: Record<string, string>; prev: PrevComparison | null; panel: WorkspacePanel; inspectionNo: string | null; locale: "en" | "ar";
   // Phase 4B — active-session cancellation (inert unless the schema probe passed)
@@ -291,10 +290,6 @@ export default function Workspace({ inspection, items, library, serverResponses,
     serverItemStates.map(r => [r.item_id, { state: r.state, reason: r.reason, active: r.reverted_at == null }]),
   ) as ItemStates);
   const [deselecting, setDeselecting] = useState(null as { item: Item; reason: string } | null);
-  // Phase 5 (§18) — manually added action forms (offline-pending ones ride a
-  // durable draft until the reconnect flush inserts them).
-  const [manualForms, setManualForms] = useState([] as { id: string; form_type: string; title: string; status: string }[]);
-  const [afPick, setAfPick] = useState("");
   const baseline = useMemo(() => Object.fromEntries(serverResponses.map(r => [r.item_id, r.updated_at])), [serverResponses]);
   const imap = useMemo(() => Object.fromEntries(items.map(i => [i.code, i])), [items]);
   // Effective-scope item map: frozen configured items + the full active library
@@ -337,8 +332,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const findingsRef = useRef(findings); findingsRef.current = findings;
   const vioIdsRef = useRef(vioIds); vioIdsRef.current = vioIds;
   const itemStatesRef = useRef(itemStates); itemStatesRef.current = itemStates;
-  const manualFormsRef = useRef(manualForms); manualFormsRef.current = manualForms;
-  const pending = useRef({ ctx: false, forms: new Set(), vios: new Set(), manual: [] as { id: string; form_type: string; title: string }[] } as { ctx: boolean; forms: Set<string>; vios: Set<string>; manual: { id: string; form_type: string; title: string }[] });
+  const pending = useRef({ ctx: false, forms: new Set(), vios: new Set() } as { ctx: boolean; forms: Set<string>; vios: Set<string> });
   const flushRef = useRef(() => {});
   // F2 — durable media pendings (replace-archive M04-163 · soft delete M04-164);
   // persisted as local drafts so they survive reload while offline.
@@ -350,15 +344,6 @@ export default function Workspace({ inspection, items, library, serverResponses,
         const k = String(r.k);
         if (k === `${inspection.id}:__arch`) pendingArch.current = (r.v as typeof pendingArch.current) ?? [];
         if (k === `${inspection.id}:__del`) pendingDel.current = (r.v as typeof pendingDel.current) ?? [];
-        if (k === `${inspection.id}:__manual_forms`) {
-          pending.current.manual = (r.v as typeof pending.current.manual) ?? [];
-          if (pending.current.manual.length) {
-            setManualForms(f => {
-              const have = new Set(f.map(x => x.id));
-              return [...f, ...pending.current.manual.filter(m => !have.has(m.id)).map(m => ({ ...m, status: "open" }))];
-            });
-          }
-        }
         if (k.startsWith(`${inspection.id}:finding:`)) {
           // Restore the narrative TEXT after a reload; the outbox (durable in
           // IndexedDB) remains the authority for whether it is still unsynced.
@@ -476,11 +461,10 @@ export default function Workspace({ inspection, items, library, serverResponses,
   // stable id, so a re-save/retry REPLACES rather than duplicates (idempotency
   // at the queue level; the replay UPSERT is idempotent at the row level too).
   async function removeFindingOps(id: string) {
-    const ops = await local.peekAll();
-    const keys = await local.keys();
-    for (let i = 0; i < ops.length; i++) {
-      const o = ops[i];
-      if (o.kind === "finding" && (o as FindingOp).id === id) await local.remove(keys[i]);
+    // One read, so each op carries its own key. Reading them separately and
+    // pairing by position drifted whenever anything was queued in between.
+    for (const { key, op } of await local.entries()) {
+      if (op.kind === "finding" && (op as FindingOp).id === id) await local.remove(key);
     }
   }
   /** Persist the finding narrative locally and (re)enqueue its canonical FIFO
@@ -587,32 +571,6 @@ export default function Workspace({ inspection, items, library, serverResponses,
     setDeselecting(null);
     await pushItemState(item, "deselected", reason, false);
   }
-  /** Phase 5 (§18) — manual action form from a published configuration
-   *  template: included ≠ completed. Client-generated id keeps the insert
-   *  replay-safe; offline adds ride a durable draft until the flush. */
-  async function addManualForm() {
-    const tpl = actionTemplates.find(t2 => t2.id === afPick);
-    if (!tpl) return;
-    if (manualFormsRef.current.some(f => f.form_type === tpl.key) || serverForms.some(f => !f.item_id && f.form_type === tpl.key)) return;  // no duplicates
-    const row = { id: crypto.randomUUID(), form_type: tpl.key, title: tpl.title, status: "open" };
-    setManualForms(f => [...f, row]);
-    setAfPick("");
-    setMsg(strings.afAddedMsg);
-    if (!navigator.onLine) {
-      pending.current.manual.push({ id: row.id, form_type: row.form_type, title: row.title });
-      await local.saveDraft(inspection.id, "__manual_forms", pending.current.manual);
-      return;
-    }
-    const { error } = await supabaseBrowser().from("action_forms").insert({
-      id: row.id, inspection_id: inspection.id, item_id: null, violation_id: null,
-      form_type: row.form_type, status: "open",
-    });
-    if (error) {
-      console.error("[field workspace manual action form]", error.message); setMsg(strings.saveFailed);
-      pending.current.manual.push({ id: row.id, form_type: row.form_type, title: row.title });
-      await local.saveDraft(inspection.id, "__manual_forms", pending.current.manual);
-    }
-  }
   async function pushForm(item: Item, def: FormDef) {
     const draft = formsRef.current[item.id] ?? {};
     if (!navigator.onLine) { pending.current.forms.add(item.id); return; }
@@ -675,21 +633,6 @@ export default function Workspace({ inspection, items, library, serverResponses,
     }
     // Findings are canonical outbox ops now — processOutbox() replays them in
     // FIFO order; no bespoke reconnect replay needed here.
-    // Phase 5 (§18) — replay queued manual action-form adds (id-keyed inserts).
-    if (pending.current.manual.length) {
-      const rest: typeof pending.current.manual = [];
-      (async () => {
-        for (const m of pending.current.manual) {
-          const { error } = await supabaseBrowser().from("action_forms").insert({
-            id: m.id, inspection_id: inspection.id, item_id: null, violation_id: null,
-            form_type: m.form_type, status: "open",
-          });
-          if (error && !String(error.message).includes("duplicate")) { console.error("[field workspace manual action form flush]", error.message); rest.push(m); }
-        }
-        pending.current.manual = rest;
-        await local.saveDraft(inspection.id, "__manual_forms", rest);
-      })();
-    }
     flushMedia();
   };
 
@@ -844,7 +787,32 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const summary = summarize(sections, allMap, answers, runtimeCtx, activeEvidence.length + queuedEv.length, itemStates);
   const healthScore = computeHealthScore(sectionItems, answers, runtimeCtx, itemStates);
   const implied = impliedViolations(sectionItems, answers, runtimeCtx, vioConfig);
-  const liveBlockers = computeBlockers(sections, allMap, answers, runtimeCtx, evidencePerItem, forms, formDefs, itemStates);
+  const itemBlockers = computeBlockers(sections, allMap, answers, runtimeCtx, evidencePerItem, forms, formDefs, itemStates);
+  // Package-level mandatory forms (INSP-758-class): unconditional on any item
+  // response, so they never appear in itemBlockers — checked separately here
+  // and folded into ONE synthetic group so "ready to submit" asks the exact
+  // question the DB trigger will ask before it ever lets the review screen
+  // (and the signature it demands) claim there is nothing left to fix.
+  //
+  // The trigger's existence check (guard_submission_action_forms_and_config)
+  // matches by form_type alone — it does NOT filter on item_id. An item-tied
+  // form (e.g. FS-101's corrective_blocking, filled via the per-item flow)
+  // legitimately satisfies a package-level requirement with the same key.
+  // Filtering to `!f.item_id` here made this mirror STRICTER than the server
+  // it mirrors: it refused submissions the database would accept. Match the
+  // server's own question, not a narrower one.
+  const existingBlockingForms: ExistingForm[] = useMemo(
+    () => serverForms.map(f => ({
+      form_type: f.form_type, owner_name: f.owner_name, owner_role: f.owner_role,
+      due_at: f.due_at, required_correction: f.required_correction,
+    })),
+    [serverForms]);
+  const missingPackageForms = useMemo(
+    () => packageFormBlockers(formDefs, existingBlockingForms),
+    [formDefs, existingBlockingForms]);
+  const liveBlockers: SectionBlockers[] = missingPackageForms.length
+    ? [...itemBlockers, { key: "__package_forms", title: strings.pkgFormsGroupTitle, unanswered: [], evidence: [], forms: missingPackageForms.map(d => d.title) }]
+    : itemBlockers;
   const blockCount = liveBlockers.reduce((n, g) => n + g.unanswered.length + g.evidence.length + g.forms.length, 0);
 
   // --- Evidence Review panel (additive, read-only) ------------------------
@@ -950,7 +918,14 @@ export default function Workspace({ inspection, items, library, serverResponses,
     }
     // Full readiness re-validation: answers + mandatory evidence + blocking forms (M04-199/204/208).
     const submitCtx = conditionContext(sectionItems, answersRef.current, ctxRef.current);
-    const blockers = computeBlockers(sections, allMap, answersRef.current, submitCtx, evidencePerItem, formsRef.current, formDefs, itemStatesRef.current);
+    const itemLevelBlockers = computeBlockers(sections, allMap, answersRef.current, submitCtx, evidencePerItem, formsRef.current, formDefs, itemStatesRef.current);
+    // INSP-758-class: re-ask the package-level mandatory-form question at the
+    // moment of truth too — live display and the actual gate must never
+    // diverge, or "ready to submit" stops meaning anything.
+    const missingAtSubmit = packageFormBlockers(formDefs, existingBlockingForms);
+    const blockers: SectionBlockers[] = missingAtSubmit.length
+      ? [...itemLevelBlockers, { key: "__package_forms", title: strings.pkgFormsGroupTitle, unanswered: [], evidence: [], forms: missingAtSubmit.map(d => d.title) }]
+      : itemLevelBlockers;
     if (blockers.length) {
       setValidation(blockers);
       const missing = blockers.flatMap(b => b.unanswered);
@@ -1170,8 +1145,12 @@ export default function Workspace({ inspection, items, library, serverResponses,
         <section className={`${styles.card} ${styles.completionBanner}`} aria-labelledby="completion-title">
           <div className={styles.completionMark} aria-hidden="true">✓</div>
           <div>
-            <h2 id="completion-title">{serverSubmitted ? strings.submittedTitle : strings.queuedOffline}</h2>
-            <p>{serverSubmitted ? strings.completionLocked : strings.completionQueuedLock}</p>
+            {/* INSP-758-class fix 2: this headline must never claim "queued,
+                will submit" once the server has actually refused — that is
+                the exact contradiction that turned a rejection into an
+                apparent hang. */}
+            <h2 id="completion-title">{serverSubmitted ? strings.submittedTitle : sync === "failed" ? strings.completionFailedTitle : strings.queuedOffline}</h2>
+            <p>{serverSubmitted ? strings.completionLocked : sync === "failed" ? strings.completionFailedBody : strings.completionQueuedLock}</p>
           </div>
         </section>
         <section className={styles.card}>
@@ -1379,6 +1358,13 @@ export default function Workspace({ inspection, items, library, serverResponses,
           <div>
             <strong>{strings.completionFailedTitle}</strong> {strings.completionFailedBody}
             {detail ? <div className="t-caption id-code" style={{ marginBlockStart: "var(--space-1)" }}>{detail}</div> : null}
+            {/* INSP-758-class fix 2/3: a refusal is not read-only like a real
+                submitted version — the inspector must be able to act on it
+                (add what is missing, correct an answer) rather than stay
+                stranded on this locked completion screen. */}
+            <div style={{ marginBlockStart: "var(--space-2)" }}>
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => setSubmitted(false)}>{strings.backToInspection}</button>
+            </div>
           </div>
         </div>
       )}
@@ -1731,33 +1717,6 @@ export default function Workspace({ inspection, items, library, serverResponses,
               </div>
             );
           })}
-        </div>
-      )}
-
-      {/* §18 — action forms: package-included & trigger-generated render per
-          item above; here the inspector adds published configuration templates
-          manually. Included ≠ completed: new rows stay open. */}
-      {!submitted && (
-        <div className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
-          <h4 data-screen-id="EXE-S13">{strings.afAddTitle}</h4>
-          <p className="t-caption">{strings.afAddHint}</p>
-          <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap", alignItems: "center" }}>
-            <label className={styles.fld}>
-              <span>{strings.afAddPick}</span>
-              <select className="select" value={afPick} onChange={e => setAfPick(e.target.value)}>
-                <option value="">—</option>
-                {actionTemplates.map(t2 => <option key={t2.id} value={t2.id}>{t2.title}</option>)}
-              </select>
-            </label>
-            <button type="button" className="btn btn-secondary" disabled={!afPick} onClick={addManualForm}>{strings.afAddBtn}</button>
-          </div>
-          {actionTemplates.length === 0 && <p className="t-caption">{strings.afNone}</p>}
-          {manualForms.map(f => (
-            <div key={f.id} className="row" style={{ justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: "var(--type-compact-size)" }}>{f.title}</span>
-              <span className="badge badge-warning">{f.status}</span>
-            </div>
-          ))}
         </div>
       )}
 

@@ -29,9 +29,9 @@ export default async function PortalPage({ searchParams }: {
   const { t } = await useT();
   if (resolveFeatureFlag(process.env.FEATURE_EXTERNAL_PORTAL, MODES, "off") !== "on") {
     return (
-      <Shell current="/portal" title={t("portal.title", "External portal")} context={<span className="badge badge-warning">REQ-0109</span>}>
-        <NotYetBoundary title={t("portal.title", "External portal")} consequence={t("portal.off", "The external factory portal is not enabled here. External-representative identity policy is also held.")}
-          seam="FEATURE_EXTERNAL_PORTAL=off + external identity policy held" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
+      <Shell current="/portal" title={t("portal.title", "External portal")}>
+        <NotYetBoundary title={t("portal.title", "External portal")} consequence={t("portal.off", "The external factory portal is not switched on here.")}
+          seam={t("portal.offSeam", "Waiting on: the portal being switched on, and an agreed way to identify external representatives.")} notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
       </Shell>
     );
   }
@@ -61,7 +61,7 @@ export default async function PortalPage({ searchParams }: {
   };
 
   return (
-    <Shell current="/portal" title={t("portal.title", "External portal")} context={<span className="badge badge-info">INSP-239</span>}>
+    <Shell current="/portal" title={t("portal.title", "External portal")}>
       <div className="stack">
         <div className="alert alert-warning">
           <div><div className="alert-title">{t("portal.banner.title", "Internal compliance view")}</div>
@@ -88,13 +88,13 @@ export default async function PortalPage({ searchParams }: {
               {(["visit", "correction", "objection"] as const).map((type) => <a key={type} className={`btn ${state.type === type ? "btn-primary" : "btn-secondary"}`} href={`/portal?tab=requests&type=${type}${state.review ? "&view=review" : ""}`}>{requestLabels[type]}</a>)}
             </div>
             <div className="panel"><div className="panel-header"><h2 className="panel-title">{requestLabels[state.type]} {state.review ? t("portal.review", "review") : t("portal.intake", "internal intake")}</h2><span className="badge badge-warning">{state.review ? t("portal.decisionRequired", "Decision required") : t("portal.externalHeld", "External access held")}</span></div>
-              <div className="panel-body"><p className="t-caption">{state.review ? t("portal.reviewScope", "Only records within the signed-in reviewer’s RLS scope are shown.") : t("portal.intakeScope", "This internal intake does not authorize an external representative or infer eligibility.")}</p></div>
+              <div className="panel-body"><p className="t-caption">{state.review ? t("portal.reviewScope", "Only the records you are allowed to review are shown.") : t("portal.intakeScope", "This internal intake does not authorize an external representative or infer eligibility.")}</p></div>
             </div>
             {!state.review && <CreateRequest factoryId={factory?.id ?? null} requestType={state.type} strings={{
               type: t("portal.type", "Request type"), subject: t("portal.subject", "Subject"), create: t("portal.create", "Create internal intake"), creating: t("portal.creating", "Creating…"), created: t("portal.created", "Request created"), noFactory: t("portal.noFactory", "No factory in scope."),
             }} />}
             {error && <div className="alert alert-critical" role="alert"><div><div className="alert-title">{t("portal.error", "Couldn’t load portal data")}</div>{t("portal.errorSafe", "Nothing changed. Access or review scope is required.")}</div></div>}
-            {!error && (reqs ?? []).length === 0 && <div className="empty"><div className="empty-title">{t("portal.empty.title", "No requests in scope")}</div><p>{t("portal.empty.body", "No matching request is available in your RLS scope.")}</p></div>}
+            {!error && (reqs ?? []).length === 0 && <div className="empty"><div className="empty-title">{t("portal.empty.title", "No requests in scope")}</div><p>{t("portal.empty.body", "There is no matching request you can see.")}</p></div>}
             {(reqs ?? []).map((request) => <div key={request.id} className="panel"><div className="panel-header"><h3 className="panel-title">{request.subject || request.request_type}</h3><span className={statusClass(request.status)}>{request.status}</span></div>
               <div className="panel-body stack"><p className="t-caption">{new Date(request.created_at).toLocaleString()}</p>{request.decision_reason && <div className="alert alert-info">{request.decision_reason}</div>}{state.review && !["accepted", "rejected", "withdrawn"].includes(request.status) && <ReviewAction id={request.id} kind="request" status={request.status} strings={reviewStrings} />}</div></div>)}
           </>
@@ -103,10 +103,10 @@ export default async function PortalPage({ searchParams }: {
         {state.tab === "self-assessment" && (
           <>
             <div className="panel"><div className="panel-header"><h2 className="panel-title">{state.review ? t("portal.selfReview", "Self-assessment review") : t("portal.selfAssessment", "Self-assessment")}</h2><span className="badge badge-onhold">{state.review ? t("portal.decisionRequired", "Decision required") : t("portal.externalHeld", "External access held")}</span></div>
-              <div className="panel-body"><div className="alert alert-info"><div><div className="alert-title">{state.review ? t("portal.reviewScope", "Scoped internal review") : t("portal.notConfigured", "Not configured")}</div>{state.review ? t("portal.reviewScopeBody", "Only submitted assessments within the signed-in reviewer’s RLS scope are shown.") : t("portal.selfHeld", "Assessment availability, required answers, scoring, and external evidence rules are not configured. No submission is fabricated.")}</div></div></div>
+              <div className="panel-body"><div className="alert alert-info"><div><div className="alert-title">{state.review ? t("portal.reviewScope", "Scoped internal review") : t("portal.notConfigured", "Not configured")}</div>{state.review ? t("portal.reviewScopeBody", "Only the submitted assessments you are allowed to review are shown.") : t("portal.selfHeld", "Assessment availability, required answers, scoring, and external evidence rules are not configured. No submission is fabricated.")}</div></div></div>
             </div>
             {error && <div className="alert alert-critical" role="alert">{t("portal.errorSafe", "Nothing changed. Access or review scope is required.")}</div>}
-            {!error && (assessments ?? []).length === 0 && <div className="empty"><div className="empty-title">{t("portal.selfEmpty", "No self-assessments in scope")}</div><p>{t("portal.empty.body", "No matching submission is available in your RLS scope.")}</p></div>}
+            {!error && (assessments ?? []).length === 0 && <div className="empty"><div className="empty-title">{t("portal.selfEmpty", "No self-assessments in scope")}</div><p>{t("portal.empty.body", "No matching submission is available in your scope.")}</p></div>}
             {(assessments ?? []).map((assessment) => <div key={assessment.id} className="panel"><div className="panel-header"><h3 className="panel-title">{t("portal.selfAssessment", "Self-assessment")}</h3><span className={statusClass(assessment.status)}>{assessment.status}</span></div>
               <div className="panel-body stack"><p className="t-caption">{new Date(assessment.created_at).toLocaleString()}</p>{assessment.review_reason && <div className="alert alert-info">{assessment.review_reason}</div>}{state.review && assessment.status === "submitted" && <ReviewAction id={assessment.id} kind="self-assessment" status={assessment.status} strings={reviewStrings} />}</div></div>)}
           </>

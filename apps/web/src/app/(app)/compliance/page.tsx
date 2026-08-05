@@ -51,7 +51,7 @@ export default async function ComplianceLibrary({
     const matchesStatus = !status || row.operational_status === status;
     const haystack = `${row.code} ${row.title} ${row.issuing_authority ?? ""}`.toLowerCase();
     return matchesAuthority && matchesStatus && (!query || haystack.includes(query));
-  });
+  }).sort((a, b) => a.title.localeCompare(b.title) || a.code.localeCompare(b.code));
   const selected = rows.find(row => row.entity_id === selectedId) ?? filtered[0] ?? null;
   const clausesVerified = selected?.clauses_status === "verified" && Array.isArray(selected.clauses);
   const clauseCount = clausesVerified ? selected.clauses!.length : null;
@@ -162,17 +162,39 @@ export default async function ComplianceLibrary({
   return (
     <Shell current={routeBase} title="">
       <div className="sq-content stack" data-screen-id="CMP-S01">
-        <section className="panel" aria-label="Inspection Rules navigation">
+        {/* INSP-742/INSP-743 — was two panels ("Inspection Rules" nav +
+            "Regulations" list) each with its own search input, both filtering
+            the exact same `q` param against the exact same regulation rows.
+            Product Owner approved a single title/search/list flow; merged
+            into one panel, kept the fuller search+Status+Create toolbar
+            (the other had no Status filter and no submit affordance) and
+            dropped the duplicate. */}
+        <section className="panel" aria-label="Regulations">
           <div className="panel-header">
-            <strong className="panel-title">Inspection Rules</strong>
+            <strong className="panel-title">Regulations</strong>
             <span className="badge">{rows.length} regulations</span>
           </div>
           <div className="panel-body stack">
-            <form className="input-affix">
-              <input className="input" name="q" defaultValue={typeof sp.q === "string" ? sp.q : ""} placeholder="Search library…" aria-label="Search library" />
+            {/* CLASS-CONTRACT.md § Compliance Library — catalogue toolbar:
+                search, Status and Inspection-type filter-chips, Create.
+                "Inspection type" has no governed field on `regulations`
+                or `inspection_items` (checked the schema) — the chip is
+                structurally present but inert rather than fabricating a
+                filter over a field that does not exist. */}
+            <form className="grid-toolbar" method="get" action={routeBase}>
+              {authority ? <input type="hidden" name="authority" value={authority} /> : null}
+              <div className="input-affix"><input className="input" type="search" name="q" defaultValue={typeof sp.q === "string" ? sp.q : ""} placeholder="Search regulations…" aria-label="Search regulations" /></div>
+              <select className="select" name="status" defaultValue={status} aria-label="Status">
+                <option value="">Status</option>
+                {statuses.map(value => <option value={value} key={value}>{value}</option>)}
+              </select>
+              <button type="button" className="filter-chip" disabled title="No governed inspection-type field exists on this data yet">Inspection type</button>
+              <button type="submit" className="btn btn-secondary btn-sm">Apply</button>
+              <span className="sq-toolbar__spacer" />
+              <a className="btn btn-primary btn-sm" href="/admin/compliance-requests/new">Create</a>
             </form>
-          {/* CLASS-CONTRACT.md § Compliance Library — authority counts render
-              as span.badge. */}
+            {/* CLASS-CONTRACT.md § Compliance Library — authority counts render
+                as span.badge. */}
             <div className="row">
               <a className={`btn btn-sm ${!authority ? "btn-primary" : "btn-secondary"}`} href={routeBase}>
                 All regulations <span className="badge">{rows.length}</span>
@@ -183,95 +205,98 @@ export default async function ComplianceLibrary({
                 </a>
               ))}
             </div>
-            <div className="row">
-              <span className="sq-overline">Recently opened</span>
-              {rows.slice(0, 2).map(row => (
-                <a className="btn btn-ghost btn-sm" key={row.entity_id} href={`${routeBase}?libraryId=${row.entity_id}`}>
-                  <bdi dir="auto">{row.title}</bdi>
-                </a>
-              ))}
-            </div>
+            {rows.length > 0 && (
+              <div className="row">
+                <span className="sq-overline">Recently opened</span>
+                {rows.slice(0, 2).map(row => (
+                  <a className="btn btn-ghost btn-sm" key={row.entity_id} href={`${routeBase}?libraryId=${row.entity_id}`}>
+                    <bdi dir="auto">{row.title}</bdi>
+                  </a>
+                ))}
+              </div>
+            )}
+            {error ? (
+              <div className="sq-banner sq-banner--critical" role="alert"><strong>Regulations unavailable.</strong> The read failed. No empty result is claimed. Reference {correlationId}.</div>
+            ) : filtered.length === 0 ? (
+              <section className="sq-state"><h2>{hasFilters && rows.length > 0 ? "No regulations match the filters" : "No regulations in scope"}</h2><p>{hasFilters && rows.length > 0 ? "The regulation list is not empty. Clear or change the current filters." : "No regulations were found for your access."}</p></section>
+            ) : (
+              // INSP-744/INSP-748 — was a stack of whole-row anchors with a
+              // decorative "›" glyph and badges sitting inside the link, so
+              // everything in the row read as equally clickable and nothing
+              // stood out as the one way to open a regulation. A real table
+              // (existing .table-wrap/.table pattern — see
+              // admin/compliance-requests/page.tsx for the same Status-badge +
+              // single-action-link shape) makes Status and Version plain data
+              // cells and gives each row exactly one explicit action.
+              // CLASS-CONTRACT.md § Compliance Library — the contract names
+              // badge-plan for the status cell, which is NOT defined in either
+              // stylesheet, so the defined base .badge is used instead.
+              // Reported as a design-system gap, not worked around here.
+              // Ordered by title (case-insensitive), code as tiebreak — see
+              // `filtered` above.
+              <div className="table-wrap">
+                <table className="table">
+                  <caption className="sr-only">Regulations list</caption>
+                  <thead><tr>
+                    <th scope="col">Regulation</th>
+                    <th scope="col">Authority</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Version</th>
+                    <th scope="col">Open</th>
+                  </tr></thead>
+                  <tbody>
+                    {filtered.map(row => (
+                      <tr key={row.entity_id} aria-current={selected && row.entity_id === selected.entity_id ? "true" : undefined}>
+                        <th scope="row"><strong><bdi dir="auto">{row.title}</bdi></strong><div className="t-caption"><span className="id-code">{row.code}</span></div></th>
+                        <td><bdi dir="auto">{row.issuing_authority ?? "Not recorded"}</bdi></td>
+                        <td><span className="badge">{row.operational_status}</span></td>
+                        <td><span className="badge">{row.version_label}</span></td>
+                        <td><a className="sq-link" href={`${routeBase}?libraryId=${row.entity_id}${authority ? `&authority=${encodeURIComponent(authority)}` : ""}`}>Open regulation</a></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </section>
 
-        <main className="stack">
-          {error ? (
-            <div className="sq-banner sq-banner--critical" role="alert"><strong>Inspection Rules unavailable.</strong> The read failed. No empty result is claimed. Reference {correlationId}.</div>
-          ) : !selected ? (
-            <section className="sq-state"><h2>{hasFilters && rows.length > 0 ? "No regulations match the filters" : "No regulations in scope"}</h2><p>{hasFilters && rows.length > 0 ? "The regulation list is not empty. Clear or change the current filters." : "No regulations were found for your access."}</p></section>
-          ) : (
-            <>
-              <header className="panel">
-                <div className="panel-row">
-                  <div className="grow">
-                  <p className="sq-overline">{selected.code} · {selected.issuing_authority ?? "Authority not recorded"}</p>
-                    <h1><bdi dir="auto">{selected.title}</bdi></h1>
-                  <p>Version {selected.version_label} · {selected.operational_status}</p>
+        {selected && (
+          <main className="stack">
+            <header className="panel">
+              <div className="panel-row">
+                <div className="grow">
+                <p className="sq-overline">{selected.code} · {selected.issuing_authority ?? "Authority not recorded"}</p>
+                  <h1><bdi dir="auto">{selected.title}</bdi></h1>
+                <p>Version {selected.version_label} · {selected.operational_status}</p>
+              </div>
+                <a className="btn btn-secondary" href={`/admin/regulations?id=${selected.entity_id}`}>Open Full Record</a>
+              </div>
+            </header>
+            <section className="kpi-grid" aria-label="Regulation facts">
+              <article className="panel kpi"><span className="kpi-label">Clauses</span><strong className="kpi-value">{clauseCount ?? "Unavailable"}</strong></article>
+              <article className="panel kpi"><span className="kpi-label">Inspection items</span><strong className="kpi-value">{itemCount ?? "Unavailable"}</strong></article>
+              <article className="panel kpi"><span className="kpi-label">Effective from</span><strong>{selected.release_date?.slice(0, 10) ?? "Not recorded"}</strong></article>
+            </section>
+            <section className="panel">
+              <div className="panel-header">
+                <div>
+                  <p className="sq-overline">Source-controlled compliance</p>
+                  <h2 className="panel-title">Regulation detail</h2>
                 </div>
-                  <a className="btn btn-secondary" href={`/admin/regulations?id=${selected.entity_id}`}>Open full record</a>
+                <div className="row">
+                  {selected.request_id ? <a className="btn btn-secondary btn-sm" href={`/admin/compliance-requests/${selected.request_id}`}>View request</a> : null}
+                  <a className="btn btn-secondary btn-sm" href={`/admin/compliance-requests/new?request_type=modify&target_entity_id=${selected.entity_id}`}>Modify through request</a>
                 </div>
-              </header>
-              <section className="kpi-grid" aria-label="Regulation facts">
-                <article className="panel kpi"><span className="kpi-label">Clauses</span><strong className="kpi-value">{clauseCount ?? "Unavailable"}</strong></article>
-                <article className="panel kpi"><span className="kpi-label">Inspection items</span><strong className="kpi-value">{itemCount ?? "Unavailable"}</strong></article>
-                <article className="panel kpi"><span className="kpi-label">Effective from</span><strong>{selected.release_date?.slice(0, 10) ?? "Not recorded"}</strong></article>
-              </section>
-              <section className="panel">
-                <div className="panel-header"><h2 className="panel-title">Regulations</h2></div>
-                  {/* CLASS-CONTRACT.md § Compliance Library — catalogue toolbar:
-                      search, Status and Inspection-type filter-chips, Create.
-                      "Inspection type" has no governed field on `regulations`
-                      or `inspection_items` (checked the schema) — the chip is
-                      structurally present but inert rather than fabricating a
-                      filter over a field that does not exist. */}
-                  <form className="grid-toolbar" method="get" action={routeBase}>
-                    {authority ? <input type="hidden" name="authority" value={authority} /> : null}
-                    <div className="input-affix"><input className="input" type="search" name="q" defaultValue={typeof sp.q === "string" ? sp.q : ""} placeholder="Search catalogue…" aria-label="Search catalogue" /></div>
-                    <select className="select" name="status" defaultValue={status} aria-label="Status">
-                      <option value="">Status</option>
-                      {statuses.map(value => <option value={value} key={value}>{value}</option>)}
-                    </select>
-                    <button type="button" className="filter-chip" disabled title="No governed inspection-type field exists on this data yet">Inspection type</button>
-                    <button type="submit" className="btn btn-secondary btn-sm">Apply</button>
-                    <span className="sq-toolbar__spacer" />
-                    <a className="btn btn-primary btn-sm" href="/admin/compliance-requests/new">Create</a>
-                  </form>
-                  <div className="panel-body stack">
-                  {filtered.map(row => (
-                    // CLASS-CONTRACT.md § Compliance Library — regulation rows
-                    // carry id-code (the regulation code) + a status badge. The
-                    // contract names badge-plan, which is NOT defined in either
-                    // stylesheet, so the defined base .badge is used instead.
-                    // Reported as a design-system gap, not worked around here.
-                      <a className="panel" key={row.entity_id} href={`${routeBase}?libraryId=${row.entity_id}${authority ? `&authority=${encodeURIComponent(authority)}` : ""}`} aria-current={row.entity_id === selected.entity_id ? "true" : undefined}>
-                        <span className="panel-row">
-                          <span className="grow"><strong><bdi dir="auto">{row.title}</bdi></strong><br /><span className="id-code">{row.code}</span></span>
-                          <span className="row"><span className="badge">{row.operational_status}</span><span className="badge">{row.version_label}</span><span aria-hidden="true">›</span></span>
-                        </span>
-                    </a>
-                  ))}
-                  </div>
-                </section>
-              <section className="panel">
-                <div className="panel-header">
-                  <div>
-                    <p className="sq-overline">Source-controlled compliance</p>
-                    <h2 className="panel-title">Regulation detail</h2>
-                  </div>
-                  <div className="row">
-                    {selected.request_id ? <a className="btn btn-secondary btn-sm" href={`/admin/compliance-requests/${selected.request_id}`}>View request</a> : null}
-                    <a className="btn btn-secondary btn-sm" href={`/admin/compliance-requests/new?request_type=modify&target_entity_id=${selected.entity_id}`}>Modify through request</a>
-                  </div>
-                </div>
-                <div className="panel-body stack">
-                  <div className="alert alert-immutable"><strong>Approved content — locked and cannot be edited here.</strong> To create or change it, open a configuration request.</div>
-                  <LibraryTabs tabs={libraryTabs} panels={libraryPanels} />
-                  <div className="alert alert-immutable"><strong>Read-only view.</strong> Authoring and maker-checker approval stay in the full record and its database checks.</div>
-                </div>
-                </section>
-            </>
-          )}
-        </main>
+              </div>
+              <div className="panel-body stack">
+                <div className="alert alert-immutable"><strong>Approved content — locked and cannot be edited here.</strong> To create or change it, open a configuration request.</div>
+                <LibraryTabs tabs={libraryTabs} panels={libraryPanels} />
+                <div className="alert alert-immutable"><strong>Read-only view.</strong> Authoring and maker-checker approval stay in the full record and its database checks.</div>
+              </div>
+            </section>
+          </main>
+        )}
       </div>
     </Shell>
   );

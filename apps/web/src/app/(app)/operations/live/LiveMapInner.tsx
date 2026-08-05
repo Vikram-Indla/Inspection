@@ -201,7 +201,6 @@ export default function LiveMapInner({
   strings: LiveMapStrings;
 }) {
   const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
-  console.log("tokennn mapbox", token);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const canonicalRef = useRef<KsaRegionCollection | null>(null);

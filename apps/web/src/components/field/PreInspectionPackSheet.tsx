@@ -14,7 +14,7 @@ import { localForUser } from "@/lib/offline";
 
 export type PackSection = {
   /** governed value present */ value: string | null;
-  /** honest blocked note when value is null (e.g. "Not available — DEC-DASH-002"). */
+  /** honest blocked note when value is null (e.g. "Not available"). */
   unavailable: string | null;
 };
 

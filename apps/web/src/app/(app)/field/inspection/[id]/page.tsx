@@ -116,13 +116,11 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     sb.from("inspections").select("inspection_no").eq("id", id).maybeSingle(),
     sb.from("evidence").select("id, archived_at, superseded_by, deleted_at").eq("inspection_id", id),
   ]);
-  // Phase 5 (§15/§18) — tolerant reads for migration 20260721150000 objects:
-  // per-visit item lifecycle rows, and published action_form configuration
-  // templates for the manual "Add action form" affordance (§18). A missing
-  // table degrades the feature instead of killing the page.
-  const [{ data: itemStateRows }, { data: actionTemplateRows }] = await Promise.all([
+  // Phase 5 (§15) — tolerant read for migration 20260721150000 objects:
+  // per-visit item lifecycle rows. A missing table degrades the feature
+  // instead of killing the page.
+  const [{ data: itemStateRows }] = await Promise.all([
     sb.from("inspection_item_states").select("item_id, state, reason, reverted_at").eq("inspection_id", id),
-    sb.from("configuration_templates").select("id, template_key, title_en, title_ar").eq("template_type", "action_form").eq("status", "published"),
   ]);
   // Arrival/cancellation evidence is captured before an inspection exists and
   // is therefore anchored to visit_id. Read it back into the inspection
@@ -406,7 +404,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     // Pending-integration scaffolding — design structure awaiting a governed
     // source/API; captured values are NOT persisted (pre-translated en+ar).
     pendingIntegration: tr("field.fv.pendingIntegration", "Pending integration", "قيد الربط"),
-    pendingCaption: tr("field.fv.pendingCaption", "This section is a placeholder until a data source is connected — anything entered here is not saved yet.", "هذا القسم عنصر نائب حتى يتم ربط مصدر بيانات — أي قيمة تُدخل هنا لا تُحفظ بعد."),
+    pendingCaption: tr("field.fv.pendingCaption", "This section is not connected to a data source. Nothing entered here is saved.", "هذا القسم عنصر نائب حتى يتم ربط مصدر بيانات — أي قيمة تُدخل هنا لا تُحفظ بعد."),
     selectPlaceholder: tr("field.fv.selectPlaceholder", "Select…", "اختر…"),
     estDataTitle: tr("field.fv.estDataTitle", "Establishment data", "بيانات المنشأة"),
     spatialAuth: tr("field.fv.spatialAuth", "Establishment spatial authority", "الإشراف المكاني للمنشأة"),
@@ -450,7 +448,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     itemCheck1: tr("field.fv.itemCheck1", "Exemption beneficiary", "مستفيد من الإعفاء"),
     itemCheck2: tr("field.fv.itemCheck2", "Chemical clearance beneficiary", "مستفيد من الفسح الكيميائي"),
     itemCheck3: tr("field.fv.itemCheck3", "Present at site", "موجودة في المنشأة"),
-    categoryPending: tr("field.fv.categoryPending", "This category is not connected yet — there is no data source yet.", "هذه الفئة غير مرتبطة بعد — لا يوجد مصدر بيانات بعد."),
+    categoryPending: tr("field.fv.categoryPending", "This category is not configured — no data source is connected.", "هذه الفئة غير مرتبطة بعد — لا يوجد مصدر بيانات بعد."),
     // Presentational workflow step (Factory-360 header).
     stepBadge: tr("field.fv.stepBadge", "Step 2 of 4", "الخطوة 2 من 4"),
     // Violation history — no governed factory-scoped source; badged empty scaffold.
@@ -495,7 +493,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     connectivityOffline: t("field.ws.connectivity.offline", "No connection — your work is saved locally and will sync when you're back online."),
     connectivityWeak: t("field.ws.connectivity.weak", "Weak connection detected — saves may be slower than usual."),
     answered: t("field.ws.answered", "{a}/{b} answered · autosaved locally"),
-    conflictHead: t("field.ws.conflictHead", "⚠ Conflict on {code} — explicit resolution (STM-SYNC-002, no silent overwrite)"),
+    conflictHead: t("field.ws.conflictHead", "⚠ Conflict on {code} — resolve explicitly; nothing is overwritten silently"),
     thisDevice: t("field.ws.thisDevice", "This device"),
     server: t("field.ws.server", "Server"),
     keepMine: t("field.ws.keepMine", "Keep mine"),
@@ -519,7 +517,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     recoveryReload: tr("field.ws.recovery.reload", "Reload latest", "إعادة تحميل الأحدث"),
     recoveryBlockSubmit: tr("field.ws.recovery.blockSubmit", "Submission is blocked: the server copy changed. Reload the latest, then resubmit.", "الإرسال متوقف: تغيّرت نسخة الخادم. أعد تحميل الأحدث ثم أعد الإرسال."),
     returnedScope: t("field.ws.returnedScope", "Returned — correction scope: {sections}."),
-    returnedNote: t("field.ws.returnedNote", "Only these sections are editable; resubmission creates the next final submitted version (STM-COR-001/002)."),
+    returnedNote: t("field.ws.returnedNote", "Only these sections are editable; resubmission creates the next final submitted version."),
     returnedBadge: t("field.ws.returnedBadge", "Returned"),
     openCorrection: t("field.ws.openCorrection", "Open correction mode"),
     correctionOpen: t("field.ws.correctionOpen", "Correction mode open — only returned sections are editable."),
@@ -537,7 +535,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     historyApproved: t("field.ws.historyApproved", "Approved"),
     historyRejected: t("field.ws.historyRejected", "Rejected"),
     submittedTitle: t("field.ws.submittedTitle", "Submitted — final submitted version."),
-    submittedBody: t("field.ws.submittedBody", "Content locked by the database (proven B3); corrections only via reviewer return."),
+    submittedBody: t("field.ws.submittedBody", "Content locked by the database; corrections only via reviewer return."),
     completionReview: tr("field.ws.completion.review", "Review summary", "ملخّص المراجعة"),
     completionAnswered: tr("field.ws.completion.answered", "Answered", "مُجاب"),
     completionViolations: tr("field.ws.completion.violations", "Violations", "مخالفات"),
@@ -563,6 +561,8 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     completionPendingSync: t("field.ws.completionPendingSync", "Not submitted yet — this is queued on the device and will submit exactly once when the connection returns. No version exists until the server assigns one."),
     completionFailedTitle: t("field.ws.completionFailedTitle", "Submission did not complete."),
     completionFailedBody: t("field.ws.completionFailedBody", "The server rejected this submission, so no submitted version was created. Your answers are safe on this device. Retry, or contact your supervisor if it keeps failing."),
+    backToInspection: t("field.ws.backToInspection", "Back to inspection"),
+    pkgFormsGroupTitle: t("field.ws.pkgFormsGroupTitle", "Required action forms"),
     lockedSection: t("field.ws.lockedSection", "Not in return scope — locked read-only; DB also rejects edits."),
     mandatoryPhoto: t("field.ws.mandatoryPhoto", "📷 Mandatory photo"),
     submitBtn: t("field.ws.submitBtn", "Review & submit — final version"),
@@ -696,13 +696,6 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     deselectedAudit: t("field.ws.deselected.audit", "Deselected items stay in the audit trail with their reason. They need no answer or evidence, create no violation, and are excluded from the compliance rate."),
     restoreBtn: t("field.ws.restore.btn", "Restore"),
     restoredMsg: t("field.ws.restore.msg", "{code} restored to this visit"),
-    // — Phase 5 manual action forms (§18) —
-    afAddTitle: t("field.ws.af.addTitle", "Action forms"),
-    afAddHint: t("field.ws.af.addHint", "Included is not completed: an added form stays open until its mandatory fields are filled and it is completed separately."),
-    afAddPick: t("field.ws.af.addPick", "Published action form template"),
-    afAddBtn: t("field.ws.af.addBtn", "Add action form"),
-    afAddedMsg: t("field.ws.af.addedMsg", "Action form added — it is open, not completed"),
-    afNone: t("field.ws.af.none", "No published action form templates available."),
     valTitle: t("field.ws.val.title", "Validation issues (grouped by section)"),
     valUnanswered: t("field.ws.val.unanswered", "Unanswered: {items}"),
     valEvidence: t("field.ws.val.evidence", "Mandatory evidence missing: {items}"),
@@ -729,7 +722,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     evArchived: t("field.ws.ev.archived", "Archived — replaced"),
     evReplace: t("field.ws.ev.replace", "Replace"),
     evDelete: t("field.ws.ev.delete", "Delete"),
-    evDeletedMsg: t("field.ws.ev.deleted", "Evidence removed from the checklist — soft-deleted with reason, audit event recorded"),
+    evDeletedMsg: t("field.ws.ev.deleted", "Evidence removed from the checklist — deleted with a reason, audit event recorded"),
     saveFailed: t("field.ws.saveFailed", "This change could not be synchronized. It remains queued where possible — try again."),
     evDeleteQueuedOffline: t("field.ws.ev.deleteQueued", "Delete queued — will apply with reason on reconnect"),
     evArchiveQueued: t("field.ws.ev.archiveQueued", "Replacement queued for {code} — previous file will be archived, never destroyed"),
@@ -761,7 +754,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
       absent: tr("field.ws.sig.absent", "Did not attend", "لم يحضر"),
       objected: tr("field.ws.sig.objected", "Objected to signing", "اعترض على التوقيع"),
       reasonLabel: tr("field.ws.sig.reason", "Reason for absence / objection", "سبب عدم الحضور/الاعتراض"),
-      unsupported: tr("field.ws.sig.unsupported", "Not configured — the submission service does not yet accept or audit this acknowledgement branch.", "غير مهيأ — لا تقبل خدمة الإرسال مسار الإقرار هذا أو تدققه بعد."),
+      unsupported: tr("field.ws.sig.unsupported", "Not configured — this acknowledgement branch is not accepted.", "غير مهيأ — لا تقبل خدمة الإرسال مسار الإقرار هذا أو تدققه بعد."),
       nameLabel: t("field.ws.sig.name", "Representative name"),
       namePlaceholder: t("field.ws.sig.namePh", "Full name as recorded on site"),
       clear: t("field.ws.sig.clear", "Clear"),
@@ -834,10 +827,6 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
         serverViolations={(vios ?? []) as never}
         serverItemStates={(itemStateRows ?? []) as never}
         library={library}
-        actionTemplates={((actionTemplateRows ?? []) as { id: string; template_key: string; title_en: string; title_ar: string }[]).map(row => ({
-          id: row.id, key: row.template_key,
-          title: (locale === "ar" && row.title_ar) ? row.title_ar : row.title_en,
-        }))}
         serverContext={(ctxRow as { context?: Record<string, string> } | null)?.context ?? {}}
         vioConfig={vioConfig}
         evidenceLimits={settings.evidence ?? {}}

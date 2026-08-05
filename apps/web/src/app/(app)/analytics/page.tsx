@@ -81,14 +81,18 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
       </section>}
       <section className="sq-grid-2" aria-label="Analytics investigations">
         <article className="panel stack">
-          <h2>Planning-to-execution</h2>
-          <p className="desc">Chronology is sourced through governed metric snapshots. No unavailable stage is represented as zero.</p>
-          <div className="alert alert-warning"><div><strong>Insufficient evidence.</strong> Stage-level conversion is unavailable from the current aggregate contract.</div></div>
+          <div className="panel-body stack">
+            <h2>Planning-to-execution</h2>
+            <p className="desc">Chronology is sourced through governed metric snapshots. No unavailable stage is represented as zero.</p>
+            <div className="alert alert-warning"><div><strong>Insufficient evidence.</strong> Stage-level conversion is unavailable from the current aggregate contract.</div></div>
+          </div>
         </article>
         <article className="panel stack">
-          <h2>Regional and factory investigation</h2>
-          <p className="desc">Factory drill-through remains available from governed metric cards where the source provides supporting records.</p>
-          <div className="alert alert-warning"><div><strong>Insufficient evidence.</strong> No ranked regional result is inferred from the current response.</div></div>
+          <div className="panel-body stack">
+            <h2>Regional and factory investigation</h2>
+            <p className="desc">Factory drill-through remains available from governed metric cards where the source provides supporting records.</p>
+            <div className="alert alert-warning"><div><strong>Insufficient evidence.</strong> No ranked regional result is inferred from the current response.</div></div>
+          </div>
         </article>
       </section>
       <section aria-labelledby="unconfigured-metrics"><h2 id="unconfigured-metrics">Operational bottlenecks</h2>

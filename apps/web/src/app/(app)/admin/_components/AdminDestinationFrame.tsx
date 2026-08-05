@@ -35,7 +35,6 @@ export default function AdminDestinationFrame({
   title,
   subtitle,
   hub,
-  routeLabel,
   metrics,
   tabs,
   gate,
@@ -51,7 +50,6 @@ export default function AdminDestinationFrame({
   title: string;
   subtitle: string;
   hub: string;
-  routeLabel: string;
   metrics: readonly AdminMetric[];
   tabs: readonly AdminTab[];
   gate?: AdminGate;
@@ -79,7 +77,6 @@ export default function AdminDestinationFrame({
                 <p>{subtitle}</p>
               </div>
             </div>
-            <span className="id-code"><bdi dir="ltr">{routeLabel}</bdi></span>
           </header>
 
           <section className="metric-strip" aria-label={`${title} governance figures`}>

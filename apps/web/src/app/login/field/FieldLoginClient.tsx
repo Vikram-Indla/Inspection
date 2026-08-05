@@ -315,10 +315,19 @@ export default function FieldLoginClient({
       // contract, which is not supplied. Rather than silently treating the
       // value as an email, the unresolvable case is stated plainly.
       const id = identifier.trim();
-      // DEMO-ADMIN-ALIAS-001 — explicit Product Owner demo credential. Supabase
-      // Auth remains email-based; this single alias resolves to the separately
-      // seeded synthetic account and does not claim a ministry-directory lookup.
-      const email = id.toLocaleLowerCase() === "admin1" ? "admin1@mim.gov.sa" : id;
+      // DEMO-ADMIN-ALIAS-001, extended (INSP-741). admin1 was the only
+      // governed test persona with a bare-identifier convenience alias.
+      // docs/TEST_ACCOUNTS.md's numbered cohorts (admin1-5, planner1-5,
+      // supervisor1-5, inspector1-30) are equally real, equally governed
+      // accounts on the exact same @mim.gov.sa domain — typing the bare id
+      // for any of them hit this same directory-blocked message admin1
+      // alone was exempted from. Product Owner ruled that inconsistency a
+      // bug. Still resolves only to the address TEST_ACCOUNTS.md already
+      // documents, then goes through the identical signInWithPassword call
+      // below — no new credential, no security/RLS change, same mechanism
+      // admin1 already had.
+      const testPersonaMatch = /^(admin[1-5]|planner[1-5]|supervisor[1-5]|inspector([1-9]|[12]\d|30))$/i.exec(id);
+      const email = testPersonaMatch ? `${testPersonaMatch[0].toLowerCase()}@mim.gov.sa` : id;
       if (!email.includes("@")) {
         setMessage(s.directoryBlocked);
         return;
@@ -546,20 +555,14 @@ export default function FieldLoginClient({
           </button>
         </div>}
         <div className="fl-foot-row">
+          {/* INSP-746 — the DC's "Last sync 08:41" is a fact about a
+              signed-in device; before authentication there is no sync
+              history to report. This chip used to restate connectivity
+              instead of inventing a timestamp, but the top utility row
+              (fl-top, above) already states that same fact once. Removed
+              the repeat rather than leaving "Online"/"Offline" on screen
+              twice. */}
           <span className="t-caption">{s.copyright}</span>
-          {/* The DC's "Last sync 08:41" is a fact about a signed-in device.
-              Before authentication there is no sync history to report, so the
-              chip states connectivity instead of inventing a timestamp. */}
-          <span className="t-caption fl-sync">
-            {/* The dot states the same connectivity fact as the label beside
-                it — an offline device must never show a compliant indicator. */}
-            <span
-              className={`fl-sync-dot ${online ? "fl-sync-dot-online" : "fl-sync-dot-offline"}`}
-              data-online={online ? "true" : "false"}
-              aria-hidden="true"
-            />
-            {netLabel}
-          </span>
         </div>
       </div>
     </main>

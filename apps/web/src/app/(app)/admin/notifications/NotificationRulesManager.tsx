@@ -33,6 +33,12 @@ export type Labels = {
   colEvent: string; colChannel: string; colRecipient: string; colSla: string; colStatus: string; colVersion: string; colActions: string;
   missingRecipient: string;
   rolesUnavailable: string;
+  // INSP-736: business labels for the governed event_key/channel enums —
+  // dropdown options and the results table both showed the raw snake_case
+  // DB value before this.
+  eventLabels: Record<string, string>;
+  channelLabels: Record<string, string>;
+  templateNote: string;
 };
 
 const EVENT_KEYS = ["assignment", "reschedule", "review_decision", "virtual_closed", "virtual_rescheduled", "virtual_scheduled", "visit_cancelled"];
@@ -52,12 +58,12 @@ function CreateForm({ roles, rolesAvailable, l }: { roles: { role_key: string; t
         <label className="sq-field"><span>{l.eventKey}</span>
           <select name="event_key" required defaultValue="">
             <option value="" disabled>—</option>
-            {EVENT_KEYS.map(k => <option key={k} value={k}>{k}</option>)}
+            {EVENT_KEYS.map(k => <option key={k} value={k}>{l.eventLabels[k] ?? k}</option>)}
           </select>
         </label>
         <label className="sq-field"><span>{l.channel}</span>
           <select name="channel" required defaultValue="inapp">
-            {CHANNELS.map(c => <option key={c} value={c}>{c}</option>)}
+            {CHANNELS.map(c => <option key={c} value={c}>{l.channelLabels[c] ?? c}</option>)}
           </select>
         </label>
         <label className="sq-field"><span>{l.recipientRole}</span>
@@ -78,6 +84,7 @@ function CreateForm({ roles, rolesAvailable, l }: { roles: { role_key: string; t
       </div>
       <label className="sq-field"><span>{l.template}</span>
         <textarea name="template" required rows={2} placeholder="e.g. Review decision recorded: {decision}" />
+        <span className="t-caption">{l.templateNote}</span>
       </label>
       <div className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
         <button type="submit" className="btn btn-primary btn-lg btn-touch" disabled={pending || !rolesAvailable}>{pending ? l.creating : l.create}</button>
@@ -139,8 +146,8 @@ export default function NotificationRulesManager({ rows, roles, rolesAvailable, 
           <tbody>
             {rows.map(r => (
               <tr key={r.id}>
-                <td className="numeric">{r.event_key}</td>
-                <td>{r.channel}</td>
+                <td className="numeric">{l.eventLabels[r.event_key] ?? r.event_key}</td>
+                <td>{l.channelLabels[r.channel] ?? r.channel}</td>
                 <td>{r.recipient_role || <span className="badge badge-warning">{l.missingRecipient}</span>}</td>
                 <td>{r.sla_minutes ? `${r.sla_minutes}m → ${r.escalation_role}` : "—"}</td>
                 <td><span className={`sq-lozenge ${r.status === "published" ? "sq-lozenge--success" : r.status === "deactivated" ? "sq-lozenge--critical" : "sq-lozenge--warning"}`}>

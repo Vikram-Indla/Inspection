@@ -502,7 +502,7 @@ export default async function Violations({
             );
           })}
 
-          <p className="t-caption">{t("admin.viol.footer", "Violations generate automatically from configured responses; the inspector can never type or override one. Legal basis belongs to the penalty mapping, not the code row. Config violation_codes is distinct from runtime violations, and its row changes are audit-tracked (trg_audit_violation_codes).")}</p>
+          <p className="t-caption">{t("admin.viol.footer", "Violations generate automatically from configured responses; the inspector can never type or override one. Legal basis belongs to the penalty mapping, not the code row. Catalogue codes are separate from issued violations, and every change to a code is audit-tracked.")}</p>
         </>
       )}
       </div>

@@ -3,7 +3,7 @@ import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
 import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
-import { NewDraftForm, ApprovePublish, DeactivatePackage, type PublishStrings } from "./PublishControls";
+import { NewPackageForm, NewDraftForm, ApprovePublish, DeactivatePackage, type NewPackageStrings, type PublishStrings } from "./PublishControls";
 import DraftEditor, { type DraftEditorStrings } from "./DraftEditor";
 import PackagePreview, { type PreviewStrings, type PreviewItem } from "./PackagePreview";
 import ImpactPanel, { type ImpactStrings, type ImpactData, type ReferencingPackage, type DefinitionDiff } from "./ImpactPanel";
@@ -184,8 +184,21 @@ export default async function Packages() {
     publishing: t("admin.pkg.publish.publishing", "Publishing…"),
     approvePublish: t("admin.pkg.publish.approve", "Approve & publish"),
     published: t("admin.pkg.publish.published", "Version published. It can no longer be changed."),
-    publishHint: t("admin.pkg.publish.hint", "Publishing rechecks item, evidence, condition, violation, penalty and action-form dependencies. The approver must be a different person from the creator (RBAC-002)."),
+    publishHint: t("admin.pkg.publish.hint", "Publishing rechecks item, evidence, condition, violation, penalty and action-form dependencies. The approver must be a different person from the creator."),
     effectiveTo: t("admin.pkg.deactivate.effectiveTo", "Effective to"), deactivationReason: t("admin.pkg.deactivate.reason", "Deactivation reason"), deactivate: t("admin.pkg.deactivate.action", "Deactivate version"), deactivating: t("admin.pkg.deactivate.working", "Deactivating…"), deactivated: t("admin.pkg.deactivate.done", "Package version deactivated"),
+  };
+  // INSP-747 / CC-ADMIN-PACKAGE-CREATION-20260805
+  const newPackageStrings: NewPackageStrings = {
+    heading: t("admin.pkg.create.heading", "Create a new package"),
+    codeLabel: t("admin.pkg.create.codeLabel", "Package code"),
+    codePlaceholder: t("admin.pkg.create.codePlaceholder", "Example: PKG-CHEM-001"),
+    titleLabel: t("admin.pkg.create.titleLabel", "Package title"),
+    titlePlaceholder: t("admin.pkg.create.titlePlaceholder", "Example: Chemical Storage Inspection"),
+    scopeLabel: t("admin.pkg.create.scopeLabel", "Scope (optional)"),
+    scopePlaceholder: t("admin.pkg.create.scopePlaceholder", "Example: Chemical facilities"),
+    create: t("admin.pkg.create.create", "Create package"),
+    creating: t("admin.pkg.newDraft.creating", "Creating…"),
+    created: t("admin.pkg.create.created", "Package created"),
   };
   const editorStrings: DraftEditorStrings = {
     heading: t("admin.pkg.editor.heading", "Package designer"),
@@ -308,7 +321,6 @@ export default async function Packages() {
       title={t("admin.revamp.survey.title", copy("Inspection Forms", "نماذج التفتيش"))}
       subtitle={t("admin.revamp.survey.subtitle", copy("Inspection forms, sections and response rules", "نماذج التفتيش والأقسام وقواعد الإجابة"))}
       hub={t("admin.revamp.hub.rules", copy("Rules & content", "القواعد والمحتوى"))}
-      routeLabel="/admin/packages"
       designId="frame-22-admin-survey-configuration"
       drawerLabels={drawerLabels}
       labels={{
@@ -347,7 +359,7 @@ export default async function Packages() {
       governance={surveyGovernance}
       reconstructionNote={t("admin.revamp.survey.note", copy("The design’s sample package names, counts and rule contents are not copied. This screen shows the real package, item, template, impact and locked-version data already used by execution.", "لا تُنسخ أسماء حزم التصميم النموذجية أو أعدادها أو محتوى قواعدها. تعرض هذه الشاشة مصادر الحزم والبنود والقوالب والأثر والإصدارات غير القابلة للتغيير التي يستخدمها التنفيذ فعلياً."))}
       context={<span className="row">
-        <span className="badge badge-info">SCR-ADM-030/031 · ENG-02</span>
+        
         <span className="t-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></span>
       </span>}
     >
@@ -391,7 +403,7 @@ export default async function Packages() {
         {!packageUnavailable && itemBankUnavailable && (
           <div className="alert alert-warning" role="status"><div>
             <strong>{t("admin.pkg.itemsUnavailable.title", "Item catalogue not available.")}</strong>{" "}
-            {t("admin.pkg.itemsUnavailable.body", "Package versions and impact still show, but editing and field preview are paused because we couldn’t read the item data they depend on. This is not an empty catalogue.")}
+            {t("admin.pkg.itemsUnavailable.body", "Package versions and impact still show. Editing and field preview are paused because the item data they depend on could not be loaded.")}
           </div></div>
         )}
 
@@ -400,16 +412,24 @@ export default async function Packages() {
             <h3 id="pkg-access" style={{ margin: 0 }}>{t("admin.pkg.readonly.title", "Read-only package access")}</h3>
             <p className="t-caption">{roleRead.error
               ? t("admin.pkg.readonly.unknown", "We couldn’t check your write permissions, so all edit controls are hidden. Reload to try again.")
-              : t("admin.pkg.readonly.body", "You can view versions, previews and publish impact. To create, save or publish, you need the compliance_admin or form_admin role. Navigation access alone does not give you write permission.")}</p>
+              : t("admin.pkg.readonly.body", "You can view versions, previews and publish impact. To create, save or publish, you need the compliance or form administrator role. Navigation access alone does not give you write permission.")}</p>
           </section>
         )}
+
+        {/* INSP-747 / CC-ADMIN-PACKAGE-CREATION-20260805 — always rendered
+            for a writer, regardless of whether the list is empty, so
+            creation is available exactly where the read-only banner above
+            explains its absence for non-writers. */}
+        {!packageUnavailable && canWrite && <NewPackageForm strings={newPackageStrings} />}
 
         {!packageUnavailable && pkgs.length === 0 && (
           <section className={`panel ${styles.emptyState}`}>
             <div className="saqeel-state">
               <span className="saqeel-state__glyph" aria-hidden="true">▦</span>
               <h3>{t("admin.pkg.empty.title", "No packages configured")}</h3>
-              <p className="t-caption">{t("admin.pkg.empty.body", "We found no packages. This page doesn’t support creating new packages, so there’s no create button here.")}</p>
+              <p className="t-caption">{canWrite
+                ? t("admin.pkg.empty.bodyReady", "No packages exist yet. Create one above.")
+                : t("admin.pkg.empty.bodyReadOnly", "No packages exist yet. Creating one needs write access.")}</p>
             </div>
           </section>
         )}
@@ -418,7 +438,7 @@ export default async function Packages() {
           const versions = orderedVersions(pkg);
           const latestPublished = currentPublished(pkg);
           return (
-            <details key={pkg.id} className={`panel ${styles.packageGroup}`} open>
+            <details key={pkg.id} className={`panel ${styles.packageGroup}`}>
               <summary>
                 <span className={styles.packageHeading}>
                   <span><strong><bdi dir="ltr">{pkg.code}</bdi> — {pkg.title}</strong><br /><span className="t-caption">{pkg.scope ?? t("admin.pkg.scopeNone", "No scope recorded")}</span></span>

@@ -5,7 +5,6 @@ import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
-import AdminShellClient from "@/components/admin/AdminShellClient";
 import SaqeelBrandMark from "@/components/SaqeelBrandMark";
 import ShellNavIcon from "@/components/ShellNavIcon";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -17,6 +16,7 @@ import {
   type ShellGlobalSearchResultType,
   type ShellIcon,
 } from "@/lib/shell-navigation";
+import { initials } from "@/lib/shell-identity";
 
 export type ShellClientNavGroup = {
   id: string;
@@ -75,21 +75,36 @@ export type ShellClientStrings = {
     close: string;
     paletteTitle: string;
     noMatch: string;
-    hubs: Record<"control" | "people" | "rules" | "planning" | "risk" | "connections" | "governance", string>;
+    hubs: Record<"control" | "people" | "rules" | "planning" | "risk" | "connections" | "governance" | "security", string>;
   };
   tabbar: { home: string; myTasks: string; establishments: string; notifications: string; account: string };
 };
 
 const Icon = ShellNavIcon;
 
-// Initials come from the governed display name when one exists ("عبدالله محمد
-// القحطاني" -> "عم"), and only fall back to the email local-part when the
-// profile carries no name.
-function initials(label: string) {
-  const local = label.includes("@") ? label.split("@")[0] : label;
-  const parts = (local || "S").split(/[\s._-]+/).filter(Boolean);
-  return parts.slice(0, 2).map(part => part[0]?.toUpperCase()).join("") || "S";
-}
+// Hub grouping for the pinned "administration" nav-footer section (INSP-752,
+// extended to full coverage by INSP-753). The original 5 buckets' ids/labels/
+// icons come from the hub-first admin nav design and are unchanged from
+// before the shell merge. "Security & Audit" is new: audit, access-review and
+// trusted-devices are security-posture/audit-review tools, distinct in kind
+// from People & Access (which is role/account management, not review) —
+// grouping them separately keeps People & Access meaning one thing. "control"
+// and "planning" (the pre-merge placeholders) still have no surviving item
+// and stay absent — do not add items to them without an approved
+// shell-navigation.ts change.
+const ADMIN_HUB_ORDER = ["people", "rules", "risk", "connections", "governance", "security"] as const;
+type AdminHubId = (typeof ADMIN_HUB_ORDER)[number];
+const ADMIN_HUB_ITEMS: Record<AdminHubId, string[]> = {
+  people: ["adm-users"],
+  rules: ["adm-lookup", "adm-survey", "adm-planning-expiry", "adm-planning-lookups", "adm-planning-status", "adm-compliance-requests"],
+  risk: ["adm-risk"],
+  connections: ["adm-integration", "adm-gis", "adm-gis-spatial"],
+  governance: ["adm-notif", "adm-delegation", "adm-operations", "adm-enforcement-recommendations", "adm-workflows"],
+  security: ["adm-audit", "adm-access-review", "adm-devices"],
+};
+const ADMIN_HUB_ICON: Record<AdminHubId, ShellIcon> = {
+  people: "access", rules: "library", risk: "risk", connections: "workflow", governance: "radar", security: "access",
+};
 
 type GlobalSearchResult = { id: string; type: ShellGlobalSearchResultType; label: string; detail: string; href: string };
 
@@ -136,7 +151,6 @@ export default function ShellClient({
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [compactNavigation, setCompactNavigation] = useState(false);
-  const [activeMobileAdminHub, setActiveMobileAdminHub] = useState<string | null>(null);
   const [accountOpen, setAccountOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -153,9 +167,8 @@ export default function ShellClient({
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(groups.map(group => [
       group.id,
-      group.id === "admin-control"
-        || group.items.some(item => isShellRouteCurrent(current, item.href))
-        || (!group.id.startsWith("admin-") && group.id !== "administration"),
+      group.items.some(item => isShellRouteCurrent(current, item.href))
+        || group.id !== "administration",
     ])),
   );
   const navRef = useRef<HTMLElement>(null);
@@ -215,10 +228,6 @@ export default function ShellClient({
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
   }, []);
-
-  useEffect(() => {
-    if (!drawerOpen) setActiveMobileAdminHub(null);
-  }, [drawerOpen]);
 
   // The persistent route-group layout survives navigation. Pathname changes
   // only after the destination commits, so this clears acknowledgement without
@@ -411,7 +420,7 @@ export default function ShellClient({
   const adminPaletteResults = useMemo(() => {
     const normalized = adminPaletteQuery.trim().toLocaleLowerCase(locale);
     return groups
-      .filter(group => group.id.startsWith("admin-"))
+      .filter(group => group.id === "administration")
       .flatMap(group => group.items.map(item => ({ ...item, hubLabel: groupLabel(group) })))
       .filter(item =>
         !normalized
@@ -426,54 +435,11 @@ export default function ShellClient({
   }
 
   const routeScope = shellScopeForRoute(current);
-
-  if (adminWorkspace) {
-    const adminItems = groups
-      .filter(group => group.id.startsWith("admin-"))
-      .flatMap(group => group.items)
-      .map(item => ({
-        id: item.id,
-        label: itemLabel(item),
-        href: item.href,
-        icon: item.icon,
-        enabled: item.enabled,
-      }));
-
-    return (
-      <AdminShellClient
-        items={adminItems}
-        locale={locale}
-        email={email}
-        roles={roleTitles.length ? roleTitles : roles}
-        languageLabel={strings.admin.languageSwitch}
-        bellStrings={bellStrings}
-        labels={{
-          navigation: strings.admin.navigation,
-          controlPanel: strings.admin.controlPanel,
-          collapse: strings.collapse,
-          expand: strings.expand,
-          light: strings.themeLight,
-          dark: strings.themeDark,
-          signOut: strings.signOut,
-          authorized: strings.admin.authorized,
-          loadingDestination: strings.admin.loadingDestination,
-          brandLabel: strings.admin.brandLabel,
-          brandArabic: strings.admin.brandArabic,
-          brandEnglish: strings.admin.brandEnglish,
-          findTool: strings.admin.findTool,
-          viewAll: strings.admin.viewAll,
-          administration: strings.admin.administration,
-          allTools: strings.admin.allTools,
-          close: strings.admin.close,
-          paletteTitle: strings.admin.paletteTitle,
-          noMatch: strings.admin.noMatch,
-          hubs: strings.admin.hubs,
-        }}
-      >
-        {children}
-      </AdminShellClient>
-    );
-  }
+  // Normalized account chrome (INSP-735): name+role — the full email stays
+  // available via the title attribute and the account-menu detail row below,
+  // not as the primary visible label.
+  const accountName = displayName || email.split("@")[0];
+  const accountRoleSummary = (roleTitles.length ? roleTitles : roles).join(" · ");
 
   function handleShellNavigation(event: ReactMouseEvent<HTMLDivElement>) {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -575,8 +541,23 @@ export default function ShellClient({
           <span className="sq-nav-group__chevron" aria-hidden="true">›</span>
         </button>
         <div id={`nav-group-${group.id}`} hidden={!groupOpen}>
-          {group.items.map((item, index) => {
-            if (isAdministration) return renderNavItem(item, true, false);
+          {isAdministration
+            ? ADMIN_HUB_ORDER.map(hubId => {
+                const hubItems = ADMIN_HUB_ITEMS[hubId]
+                  .map(id => group.items.find(candidate => candidate.id === id))
+                  .filter((item): item is ShellClientNavGroup["items"][number] => !!item);
+                if (!hubItems.length) return null;
+                return (
+                  <div className="sq-nav-subgroup" role="group" aria-labelledby={`nav-hub-${hubId}`} key={hubId}>
+                    <div className="sq-nav-subgroup__label" id={`nav-hub-${hubId}`}>
+                      <span className="sq-nav-icon"><Icon name={ADMIN_HUB_ICON[hubId]} /></span>
+                      <span className="sq-nav-label">{strings.admin.hubs[hubId]}</span>
+                    </div>
+                    {hubItems.map(item => renderNavItem(item, true))}
+                  </div>
+                );
+              })
+            : group.items.map((item, index) => {
             if (!item.parentId) return renderNavItem(item);
             if (group.items.findIndex(candidate => candidate.parentId === item.parentId) !== index) return null;
             const children = group.items.filter(candidate => candidate.parentId === item.parentId);
@@ -593,38 +574,6 @@ export default function ShellClient({
           })}
         </div>
       </section>
-    );
-  }
-
-  function renderMobileAdminDiscovery() {
-    const adminGroups = groups.filter(group => group.id.startsWith("admin-"));
-    const activeHub = adminGroups.find(group => group.id === activeMobileAdminHub);
-    if (activeHub) {
-      return (
-        <section className="sq-nav-group" data-mobile-admin-hub={activeHub.id}>
-          <button className="sq-nav-group__trigger is-administration" type="button"
-            aria-label={locale === "ar" ? "العودة إلى مجموعات الإدارة" : "Back to admin hubs"}
-            onClick={() => setActiveMobileAdminHub(null)}>
-            <span aria-hidden="true">{locale === "ar" ? "→" : "←"}</span>
-            <span className="sq-nav-label">{locale === "ar" ? "رجوع" : "Back"}</span>
-          </button>
-          <h2 className="sq-nav-subgroup__label">{groupLabel(activeHub)}</h2>
-          {activeHub.items.map(item => renderNavItem(item))}
-        </section>
-      );
-    }
-    return (
-      <div aria-label={locale === "ar" ? "مجموعات الإدارة" : "Admin hubs"}>
-        {adminGroups.map(group => (
-          <button className="sq-nav-group__trigger is-administration" type="button"
-            key={group.id} aria-label={groupLabel(group)}
-            onClick={() => setActiveMobileAdminHub(group.id)}>
-            <span className="sq-nav-icon"><Icon name="admin" /></span>
-            <span className="sq-nav-label">{groupLabel(group)}</span>
-            <span aria-hidden="true">{locale === "ar" ? "←" : "→"}</span>
-          </button>
-        ))}
-      </div>
     );
   }
 
@@ -760,8 +709,13 @@ export default function ShellClient({
                 </label>
             </div> : (
               <div className="sq-pagehead__workspace-label">
-                <span>{strings.primary}</span>
-                <button ref={adminPaletteTriggerRef} type="button"
+                {/* nav.primary is the landmark name for the navigation region.
+                    It was rendering as visible interface text on every admin
+                    route — a label that names nothing on screen and that no
+                    reader can act on. Kept as the accessible name, hidden
+                    visually. */}
+                <span className="sr-only">{strings.primary}</span>
+                <button ref={adminPaletteTriggerRef} type="button" className="sq-btn sq-btn--secondary"
                   aria-label={`${adminPaletteCopy.open} (Ctrl/⌘ K)`}
                   aria-haspopup="dialog" aria-expanded={adminPaletteOpen}
                   onClick={() => {
@@ -793,11 +747,11 @@ export default function ShellClient({
                 </Link>
               ) : null}
               <div ref={accountRef} className="sq-shell-account">
-                <button className="sq-shell-account__trigger" type="button" aria-label={email} aria-expanded={accountOpen}
+                <button className="sq-shell-account__trigger" type="button" aria-label={`${accountName} — ${accountRoleSummary}`} aria-expanded={accountOpen}
                   title={email}
                   onClick={() => setAccountOpen(value => !value)}>
-                  <span className="sq-shell-account__avatar" aria-hidden="true">{initials(email)}</span>
-                  <span className="sq-shell-account__identity"><strong>{email}</strong><small aria-hidden="true" /></span>
+                  <span className="sq-shell-account__avatar" aria-hidden="true">{initials(displayName || email)}</span>
+                  <span className="sq-shell-account__identity"><strong>{accountName}</strong><small>{accountRoleSummary}</small></span>
                   <svg className="sq-shell-account__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
                 </button>
                 {accountOpen && accountMenuPos && typeof document !== "undefined" && createPortal(
@@ -827,60 +781,33 @@ export default function ShellClient({
       </main>
 
       {adminWorkspace && adminPaletteOpen && typeof document !== "undefined" && createPortal(
-        <div role="presentation" onMouseDown={event => {
+        <div className="sq-modal-backdrop" role="presentation" onMouseDown={event => {
           if (event.target === event.currentTarget) closeAdminPalette();
-        }} style={{
-          position: "fixed", inset: 0, zIndex: 10000, display: "grid",
-          alignItems: "start", justifyItems: "center", padding: "min(12vh, 7rem) 1rem 1rem",
-          background: "rgba(4, 9, 14, .72)", backdropFilter: "blur(4px)",
         }}>
-          <section role="dialog" aria-modal="true" aria-labelledby="admin-palette-title"
-            dir={locale === "ar" ? "rtl" : "ltr"}
-            style={{
-              inlineSize: "min(42rem, 100%)", maxBlockSize: "min(42rem, 78vh)",
-              display: "flex", flexDirection: "column", overflow: "hidden",
-              border: "1px solid var(--border-subtle, #39434d)", borderRadius: "1rem",
-              background: "var(--surface-primary, #171c22)", color: "var(--text-primary, #f4f6f8)",
-              boxShadow: "0 24px 80px rgba(0,0,0,.45)",
-            }}>
-            <div style={{ display: "flex", alignItems: "center", gap: ".75rem", padding: "1rem 1rem .75rem" }}>
-              <strong id="admin-palette-title" style={{ flex: 1 }}>{adminPaletteCopy.title}</strong>
-              <button type="button" aria-label={adminPaletteCopy.close} onClick={closeAdminPalette}>Esc</button>
+          <section className="sq-modal" role="dialog" aria-modal="true" aria-labelledby="admin-palette-title"
+            dir={locale === "ar" ? "rtl" : "ltr"}>
+            <div className="sq-modal__header">
+              <strong id="admin-palette-title">{adminPaletteCopy.title}</strong>
+              <button type="button" className="sq-btn sq-btn--secondary" aria-label={adminPaletteCopy.close} onClick={closeAdminPalette}>Esc</button>
             </div>
-            <input ref={adminPaletteInputRef} type="search" value={adminPaletteQuery}
-              aria-controls="admin-palette-results" aria-describedby="admin-palette-count"
-              placeholder={adminPaletteCopy.search} aria-label={adminPaletteCopy.search}
-              onChange={event => setAdminPaletteQuery(event.target.value)}
-              style={{
-                margin: "0 1rem .75rem", padding: ".8rem 1rem", borderRadius: ".65rem",
-                border: "1px solid var(--border-subtle, #39434d)",
-                background: "var(--surface-raised, #20262d)", color: "inherit",
-              }} />
-            <p id="admin-palette-count" role="status" aria-live="polite"
-              style={{ margin: "0 1rem .5rem", color: "var(--text-muted, #aab2bd)", fontSize: ".875rem" }}>
-              {adminPaletteCopy.results(adminPaletteResults.length)}
-            </p>
-            <div id="admin-palette-results" role="listbox" aria-label={adminPaletteCopy.title}
-              style={{ overflowY: "auto", padding: "0 .5rem 1rem" }}>
-              {adminPaletteResults.map(item => (
-                <Link key={item.id} role="option" href={item.href} data-next-spa="true" prefetch={false}
-                  onClick={closeAdminPalette}
-                  style={{
-                    display: "flex", alignItems: "center", gap: ".75rem", padding: ".75rem",
-                    borderRadius: ".6rem", color: "inherit", textDecoration: "none",
-                  }}>
-                  <span aria-hidden="true"><Icon name={item.icon} /></span>
-                  <span style={{ display: "grid" }}>
-                    <strong>{itemLabel(item)}</strong>
-                    <small style={{ color: "var(--text-muted, #aab2bd)" }}>{item.hubLabel}</small>
-                  </span>
-                </Link>
-              ))}
-              {!adminPaletteResults.length ? (
-                <p style={{ padding: "1rem", textAlign: "center", color: "var(--text-muted, #aab2bd)" }}>
-                  {adminPaletteCopy.empty}
-                </p>
-              ) : null}
+            <div className="sq-modal__body">
+              <input ref={adminPaletteInputRef} type="search" className="sq-input" value={adminPaletteQuery}
+                aria-controls="admin-palette-results" aria-describedby="admin-palette-count"
+                placeholder={adminPaletteCopy.search} aria-label={adminPaletteCopy.search}
+                onChange={event => setAdminPaletteQuery(event.target.value)} />
+              <p id="admin-palette-count" role="status" aria-live="polite" className="sq-caption">
+                {adminPaletteCopy.results(adminPaletteResults.length)}
+              </p>
+              <div id="admin-palette-results" role="listbox" aria-label={adminPaletteCopy.title}>
+                {adminPaletteResults.map(item => (
+                  <Link key={item.id} role="option" className="sq-nav-item" href={item.href} data-next-spa="true" prefetch={false}
+                    onClick={closeAdminPalette}>
+                    <span className="sq-nav-icon"><Icon name={item.icon} /></span>
+                    <span className="sq-nav-label">{itemLabel(item)}</span>
+                  </Link>
+                ))}
+                {!adminPaletteResults.length ? <p className="sq-caption">{adminPaletteCopy.empty}</p> : null}
+              </div>
             </div>
           </section>
         </div>,

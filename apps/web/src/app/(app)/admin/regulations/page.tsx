@@ -163,7 +163,7 @@ export default async function Regulations({
     adding: t("admin.reg.clause.adding", "Adding…"),
     addClause: t("admin.reg.clause.add", "Add clause"),
     added: t("admin.reg.clause.added", "Clause added"),
-    clauseNotAudited: t("admin.reg.clause.notAudited", "Clause changes are audit-tracked at the database (trg_audit_regulation_clauses), the same as regulation-row changes."),
+    clauseNotAudited: t("admin.reg.clause.notAudited", "Clause changes are audit-tracked, the same as regulation-row changes."),
     publishing: t("admin.reg.publishing", "Publishing…"),
     publish: t("admin.reg.publish", "Validate and publish"),
     saveDraft: t("admin.reg.edit.save", "Save draft"),
@@ -218,10 +218,12 @@ export default async function Regulations({
     );
   })();
 
-  const title = t("admin.reg.r1.title", "Inspection Rules — regulation list");
+  const listTitle = t("admin.reg.r1.title", "Inspection Rules — regulation list");
+  const detailTitle = t("admin.reg.r1.detailTitle", "Regulation record");
+  const title = detailId ? detailTitle : listTitle;
   const context = (
     <span className="row" style={{ gap: "var(--space-3)" }}>
-      <span className="badge badge-info">SCR-ADM-010/011</span>
+      
       <a className="sq-link" href="/admin/compliance-requests">
         {t("admin.reg.requests", "Configuration Requests")}
       </a>
@@ -231,11 +233,16 @@ export default async function Regulations({
       ) : null}
     </span>
   );
+  // Sujatha (INSP): multiple Configuration Request / Create Request links
+  // stacked on one screen — this section-switcher tab bar also carried its
+  // own "Create request" link, duplicating the dedicated Create/View links
+  // in the Configuration actions section below (detail mode) and the
+  // request-only banner (list mode). A section switcher is not the place
+  // for a create action; removed here, kept where it belongs.
   const libraryTabs = (
     <nav className="cmp-library-tabs" aria-label="Inspection Rules">
       <a className="btn btn-primary btn-lg btn-touch" href="/admin/regulations" aria-current="page">Regulations</a>
       <a className="btn btn-secondary sq-link btn-touch" href="/admin/items">Inspection Items</a>
-      {isWriter ? <a className="btn btn-secondary sq-link btn-touch" href="/admin/compliance-requests/new">Create request</a> : null}
     </nav>
   );
   const configurationJourney = (
@@ -313,7 +320,7 @@ export default async function Regulations({
 
         {regsError ? null : !reg ? (
           <EmptyState role="status" glyph="🔎" title={t("admin.reg.r1.detail.notFound.title", "Regulation not found")}
-            body={t("admin.reg.r1.detail.notFound.body", "The read succeeded but no regulation has this identifier. It may have been removed.")} />
+            body={t("admin.reg.r1.detail.notFound.body", "No regulation has this identifier. It may have been removed.")} />
         ) : (
           <>
             {/* Dossier header */}
@@ -336,7 +343,7 @@ export default async function Regulations({
                 </span>
               </div>
               <p className="t-caption" style={{ margin: 0 }}>
-                <span aria-hidden="true">ⓘ</span> {t("admin.reg.r1.detail.auditNote", "Changes to this regulation row are logged. Clauses added to this record are logged too (trg_audit_regulation_clauses).")}
+                <span aria-hidden="true">ⓘ</span> {t("admin.reg.r1.detail.auditNote", "Changes to this regulation row are logged. Clauses added to this record are logged too.")}
               </p>
             </section>
 
@@ -365,7 +372,7 @@ export default async function Regulations({
                 <div className="saqeel-state sq-state--inline" role="status">
                   <span className="saqeel-state__glyph" aria-hidden="true">📄</span>
                   <h4>{t("admin.reg.r1.detail.clauses.empty.title", "No clauses yet")}</h4>
-                  <p className="t-caption">{t("admin.reg.r1.detail.clauses.empty.body", "This regulation has no clauses. Add the first clause below — the read worked, it is really empty.")}</p>
+                  <p className="t-caption">{t("admin.reg.r1.detail.clauses.empty.body", "This regulation has no clauses. Add the first clause below.")}</p>
                 </div>
               ) : (
                 <div className="table-wrap">
@@ -421,12 +428,13 @@ export default async function Regulations({
                   <strong><span aria-hidden="true">🔒</span> {t("admin.reg.requestOnly.title", copy("Request-controlled content", "محتوى خاضع لطلب تغيير"))}</strong>{" "}
                   {t("admin.reg.requestOnly.body", copy("To create or change clauses, attachments, release dates, or new versions, you must submit a Compliance Configuration Request. The current approved version stays available until that request is approved and published.", "لإنشاء أو تعديل البنود أو المرفقات أو تواريخ الإصدار أو الإصدارات الجديدة، يجب تقديم طلب تهيئة الامتثال. ويظل الإصدار المعتمد الحالي متاحاً حتى اعتماد الطلب ونشره."))}
                 </div>
+                {/* "View configuration requests" removed — duplicated the
+                    "Configuration Requests" link already in this page's
+                    header context (Shell context prop above). One view-link,
+                    one create-link per screen. */}
                 <div className="row" style={{ gap: "var(--space-3)" }}>
                   <a className="btn btn-primary btn-lg btn-touch" href="/admin/compliance-requests/new">
                     {t("admin.reg.requestOnly.create", copy("Create configuration request", "إنشاء طلب تهيئة"))}
-                  </a>
-                  <a className="btn btn-secondary sq-link btn-touch" href="/admin/compliance-requests">
-                    {t("admin.reg.requestOnly.view", copy("View configuration requests", "عرض طلبات التهيئة"))}
                   </a>
                 </div>
                 {reg.status !== "deactivated" ? (
@@ -501,6 +509,7 @@ export default async function Regulations({
       title: r.title,
       issuing_authority: r.issuing_authority,
       status: r.status,
+      version_label: r.version_label,
       created_at: r.created_at,
       clauseCount: fp.clauseCount,
       itemCount: fp.itemCount,
@@ -527,8 +536,8 @@ export default async function Regulations({
         // S03 EMPTY — verified zero (read succeeded, genuinely no regulations)
         <EmptyState role="status" glyph="📜" title={t("admin.reg.r1.empty.title", "No regulations set up yet")}
           body={isWriter
-            ? t("admin.reg.r1.empty.body.writer", "The read worked — the library is really empty. Create the first configuration through a Compliance Configuration Request.")
-            : t("admin.reg.r1.empty.body", "The read worked — the library is really empty (MVP1-M09-001: regulations are the parents of inspection items).")} />
+            ? t("admin.reg.r1.empty.body.writer", "The library is empty. Create the first configuration through a Compliance Configuration Request.")
+            : t("admin.reg.r1.empty.body", "The library is empty. Regulations are the parents of inspection items — add one to begin.")} />
       ) : (
         <RegulationRegister rows={lite} strings={strings} />
       )}

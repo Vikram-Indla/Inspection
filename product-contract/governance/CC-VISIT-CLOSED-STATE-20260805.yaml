@@ -1,0 +1,99 @@
+schema_version: "1.0"
+change_control_id: "CC-VISIT-CLOSED-STATE-20260805"
+task_id: "TASK-VISIT-CLOSED-STATE-20260805"
+title: "A visit closes when its inspection is approved"
+state: "APPROVED_NOT_STARTED"
+approved_by: "Product Owner (Vikram)"
+approved_at: "2026-08-05"
+
+authority:
+  type: "BOUNDED_DIRECT_PRODUCT_OWNER_DIRECTIVE"
+  user_confirmation: "confirmed — 'visit closes when its inspection is approved'"
+  lease_required: false
+  broad_implementation_allowed: false
+
+governed_rule:
+  statement: >
+    A visit reaches its final state when the inspection belonging to it is
+    approved. Approval of the inspection closes the visit.
+  supplied_by: "Product Owner (Vikram)"
+  supplied_at: "2026-08-05"
+  why_this_is_recorded_here: >
+    This is a governed rule about the lifecycle of a national inspection visit.
+    It decides when the record is sealed, so it carries legal weight. It was
+    ruled by the Product Owner. It was not inferred from the schema, from the
+    screens, or chosen by the orchestrator.
+  alternative_considered_and_rejected: >
+    The alternative put to the Product Owner was that approval hands the visit
+    to enforcement, and the visit stays open until any penalty or corrective
+    action is resolved — which would have needed more than one new state and
+    extended a visit's life beyond its inspection. He ruled for the simpler
+    model: approval closes the visit.
+
+problem:
+  summary: >
+    A visit has nowhere to go once its inspection is approved. The journey
+    cannot be completed by anyone, for any inspection.
+  root_cause_verified: >
+    The visit operational_state enum has no terminal state. Its full set is
+    new, prepared, on_the_way, arrived, executing, submitted, under_review.
+    There is no approved, completed or closed. Confirmed on 2026-08-05 by
+    reading the enum directly, not inferred from a screen.
+  not_a_screen_defect: >
+    An earlier reading of this attributed it to a screen being read-only. That
+    was one level too shallow. There is no state for a screen to move the visit
+    into.
+  evidence: >
+    Found by walking the journey end to end with real accounts on 2026-08-05.
+    Madinah Dates Processing Co., visit b7eec84d, inspection db2450d2. Steps 04
+    to 10 all produced their intended outcome, including a supervisor reviewing
+    and approving with the decision committed atomically. The inspection is
+    approved. The visit cannot follow it.
+
+scope:
+  - "Add a terminal state to the visit lifecycle representing a closed visit."
+  - "Move the visit to it when its inspection is approved."
+  - "Ship as a committed migration and apply it to the live project."
+  - "Prove it by walking an approval and seeing the visit close."
+
+out_of_scope:
+  - "No change to what approval itself means or who may approve."
+  - "No weakening of the atomic decision commit, the recorded comment, or the compliance handoff."
+  - "No change to any other lifecycle state or transition."
+  - "No enforcement lifecycle. The ruling deliberately does not extend a visit's life past its inspection."
+  - "No new CSS, no new tokens."
+
+ambiguity_instruction:
+  rule: >
+    If a returned or rejected inspection implies a different terminal state,
+    stop and escalate. The ruling covers approval only. Do not infer what
+    happens on rejection.
+
+open_and_not_covered_by_this_ruling:
+  - "Step 11 — correction and resubmission — has never been exercised. The walked inspection was clean and was approved, so that path never triggered."
+  - "What terminal state, if any, a visit reaches when its inspection is returned or rejected rather than approved."
+
+acceptance:
+  - "A visit whose inspection is approved reaches its closed state — walked with real accounts, not inferred."
+  - "The visit's state is visible as a business word on screen, never a raw stored value."
+  - "No other transition changed, proven by reading the lifecycle after applying."
+  - "Arabic from i18n resources. No Arabic authored in a component."
+  - "The migration exists as a committed file AND is applied live, verified by querying the object rather than by filename."
+
+allowed_paths:
+  - "supabase/migrations/<new timestamped migration>.sql"
+  - "product-contract/governance/CC-VISIT-CLOSED-STATE-20260805.yaml"
+
+verification:
+  enum_extended_live: "PENDING"
+  visit_closes_on_approval_walked: "PENDING"
+  state_renders_as_business_language: "PENDING"
+  other_transitions_unchanged: "PENDING"
+  source_live_reconciled: "PENDING"
+
+lane: "Backend"
+baseline: "Committed to B2."
+priority: >
+  High. It is the final step of the inspection journey and the only one with no
+  destination in the data. Steps 04 to 10 are proven working; this is what stands
+  between the platform and a complete, closable inspection.

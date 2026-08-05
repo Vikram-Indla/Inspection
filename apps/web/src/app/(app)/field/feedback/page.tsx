@@ -51,8 +51,8 @@ export default async function FieldFeedbackQrPage({ searchParams }: { searchPara
 
           <p className="t-caption" style={{ textAlign: "center", margin: 0, maxWidth: 360 }}>
             {tr("field.qr.note",
-              "Illustrative only — the self-serve scan flow is not built (open decision O-15). To capture a rating now, use the button below on this device.",
-              "توضيحي فقط — لم يُبنَ بعد مسار المسح الذاتي (قرار مفتوح O-15). لتسجيل تقييم الآن، استخدم الزر أدناه على هذا الجهاز.")}
+              "Illustrative only — the self-serve scan flow is not available. To capture a rating now, use the button below on this device.",
+              "توضيحي فقط — مسار المسح الذاتي غير متاح. لتسجيل تقييم الآن، استخدم الزر أدناه على هذا الجهاز.")}
           </p>
 
           <div style={{ width: "100%", borderBlockStart: "1px solid var(--border-subtle)", paddingBlockStart: 14, display: "flex", flexDirection: "column", gap: 6 }}>

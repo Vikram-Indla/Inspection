@@ -46,7 +46,7 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
           <div className="sq-state sq-state--inline">
             <span className="sq-state__glyph" aria-hidden="true"><IconBlocked size={24} /></span>
             <h4 tabIndex={-1}>{t("plan.review.unauth.title", "You don’t have access to review this plan")}</h4>
-            <p className="t-caption">{t("plan.review.unauth.body", "This view requires the bulk-planning capability and matching scope. Navigation visibility is not authorization; RLS remains the boundary.")}</p>
+            <p className="t-caption">{t("plan.review.unauth.body", "This view requires the bulk-planning capability and matching scope. Navigation visibility is not authorization; your permissions remain the boundary.")}</p>
             <a className="sq-link" href="/planning">{t("plan.review.unauth.back", "Back to planning")}</a>
           </div>
         </section>

@@ -247,10 +247,13 @@ export default async function Operations({ searchParams }: {
       .find(item => item.href === "/operations");
   // PKT-RESPONSIVE-DASHBOARD-OPERATIONS-002 — field-shell convergence does not
   // retire the Inspector's CR-430..CR-448 observation capability. All canonical
-  // business roles may enter the read surface; capability-only Administrator
-  // profiles still require an operational legacy grant and otherwise fail
-  // closed before the first operational read.
-  const hasOperationalRole = routeRoleKeys.some(role => BUSINESS_ROLE_KEYS.includes(role));
+  // business roles may enter the read surface. PROGRAMME-BASELINE-20260805
+  // canonical_rule_visibility: "Regardless of persona, everybody can see
+  // everything. The only restriction is that administration functionality is
+  // reachable by an administrator alone." Operations is not administration
+  // functionality, so admin is admitted to the read surface alongside the
+  // business roles — same as every other canonical role, no separate grant.
+  const hasOperationalRole = routeRoleKeys.some(role => BUSINESS_ROLE_KEYS.includes(role) || role === "admin");
   const mayViewOperations = operationsDestination?.enabled === true && hasOperationalRole;
   if (!mayViewOperations) {
     return (
@@ -1132,7 +1135,7 @@ export default async function Operations({ searchParams }: {
                 <div><dt>{t("ops.kpi.period", "Calculation period")}</dt><dd>{contractValue(operationsKpiContract?.period)}</dd></div>
                 <div><dt>{t("ops.kpi.timezone", "Timezone")}</dt><dd>{contractValue(operationsKpiContract?.timezone)}</dd></div>
                 <div><dt>{t("ops.kpi.policyVersion", "Policy version")}</dt><dd>{contractValue(operationsKpiContract?.policy_version)}</dd></div>
-                <div><dt>{t("ops.kpi.decision", "Decision authority")}</dt><dd>{operationsKpiContract?.decision ?? "DEC-028"}</dd></div>
+                <div><dt>{t("ops.kpi.decision", "Decision authority")}</dt><dd>{operationsKpiContract?.decision ?? t("common.notConfigured", "Not configured")}</dd></div>
               </dl>
               <div className="sq-tablewrap"><table className="sq-table">
                 <thead><tr><th scope="col">{t("ops.kpi.metric", "Metric")}</th><th scope="col">{t("ops.kpi.status", "Source status")}</th><th scope="col">{t("ops.kpi.formula", "Published formula")}</th></tr></thead>
@@ -1183,8 +1186,10 @@ export default async function Operations({ searchParams }: {
               <tbody>{highRisk.map(factory => <tr key={factory.id}>
                 <th scope="row"><a className="sq-link" href={`/factories/${factory.id}`}>{factory.name}</a></th>
                 <td>{[factory.region, factory.city].filter(Boolean).join(" · ") || "—"}</td>
-                <td>{factory.risk_score ?? local("Not configured", "غير مهيأ")}</td>
-                <td>{factory.risk_band ? enumLabel(factory.risk_band) : local("Not configured", "غير مهيأ")}</td>
+                <td className="sq-td-num">{factory.risk_score != null ? Number(factory.risk_score).toFixed(1) : local("Not configured", "غير مهيأ")}</td>
+                <td>{factory.risk_band
+                  ? <span className={`sq-lozenge ${factory.risk_band === "high" ? "sq-lozenge--critical" : factory.risk_band === "medium" ? "sq-lozenge--warning" : "sq-lozenge--success"}`}>{enumLabel(factory.risk_band)}</span>
+                  : local("Not configured", "غير مهيأ")}</td>
               </tr>)}</tbody>
             </table></div>
           )}
@@ -1223,7 +1228,7 @@ export default async function Operations({ searchParams }: {
                     {notifs.map(notification => <article className={styles.alertCard} key={notification.id}>
                       <div>
                         <strong>{enumLabel(notification.event_key)}</strong>
-                        <p>{notification.channel} · <time dateTime={notification.created_at}>{formatDateTime(notification.created_at, locale === "ar" ? "ar" : "en")}</time></p>
+                        <p>{t(`enum.channel.${notification.channel}`, notification.channel === "inapp" ? "In-app" : notification.channel.replace(/_/g, " "))} · <time dateTime={notification.created_at}>{formatDateTime(notification.created_at, locale === "ar" ? "ar" : "en")}</time></p>
                       </div>
                       <div className="sq-row">
                         <span className={`sq-lozenge ${NOTIF_TONE[notification.delivery_state] ?? "sq-lozenge--neutral"}`}>{enumLabel(notification.delivery_state)}</span>

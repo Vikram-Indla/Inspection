@@ -60,7 +60,7 @@ export default async function FieldDestructionReportsPage({ searchParams }: { se
     absent: tr("field.destruction.absent", "Did not attend", "لم يحضر"),
     objected: tr("field.destruction.objected", "Attended but objected to signing", "حضر واعترض على التوقيع"),
     reasonLabel: tr("field.destruction.reasonLabel", "Reason", "السبب"),
-    unsupported: tr("field.destruction.unsupported", "Absent/objected recording is not yet wired to a write path — capture in the notes for now.", "تسجيل حالة عدم الحضور/الاعتراض غير موصول بعد بمسار كتابة — سجّلها ضمن الملاحظات حاليًا."),
+    unsupported: tr("field.destruction.unsupported", "Absent/objected recording is not available. Capture it in the notes for now.", "تسجيل حالة عدم الحضور/الاعتراض غير موصول بعد بمسار كتابة — سجّلها ضمن الملاحظات حاليًا."),
   };
 
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
@@ -91,7 +91,7 @@ export default async function FieldDestructionReportsPage({ searchParams }: { se
           {!error && rows.length === 0 && (
             <div className={styles.empty}>
               <div className={styles.emptyTitle}>{tr("field.destruction.empty", "No destruction reports in scope", "لا توجد محاضر إتلاف ضمن النطاق")}</div>
-              <p className="t-caption">{tr("field.destruction.emptyBody", "Logged reports appear here according to non_compliant_destruction_reports RLS.", "تظهر المحاضر المسجلة هنا وفق صلاحيات صفوف جدول محاضر الإتلاف.")}</p>
+              <p className="t-caption">{tr("field.destruction.emptyBody", "Logged reports appear here when they are within your scope.", "تظهر المحاضر المسجلة هنا وفق صلاحيات صفوف جدول محاضر الإتلاف.")}</p>
             </div>
           )}
           {!error && rows.map(row => (
