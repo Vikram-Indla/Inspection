@@ -168,6 +168,14 @@ export async function AppShell({ children }: { children: ReactNode }) {
     justNow: t("bell.justNow", locale === "ar" ? "الآن" : "Just now"),
     events: {
       assignment: t("bell.ev.assignment", locale === "ar" ? "تم إسناد زيارة جديدة" : "New visit assigned"),
+      // The four planning events carried no label, so they fell through to the
+      // raw event key: "planning supervision requested". They are 838 of the
+      // ~1041 notifications on record — roughly 80% of everything the bell
+      // shows was rendering as a machine identifier.
+      planning_supervision_requested: t("bell.ev.planSupervisionRequested", locale === "ar" ? "خطة بانتظار الإشراف" : "Plan awaiting supervision"),
+      planning_supervision_rejected: t("bell.ev.planSupervisionRejected", locale === "ar" ? "رُفض إشراف الخطة" : "Plan supervision rejected"),
+      planning_visit_reschedule: t("bell.ev.planVisitReschedule", locale === "ar" ? "أُعيدت جدولة زيارة مخططة" : "Planned visit rescheduled"),
+      planning_visit_reassign: t("bell.ev.planVisitReassign", locale === "ar" ? "أُعيد إسناد زيارة مخططة" : "Planned visit reassigned"),
       visit_cancelled: t("bell.ev.visitCancelled", locale === "ar" ? "تم إلغاء الزيارة" : "Visit cancelled"),
       visit_returned: t("bell.ev.visitReturned", locale === "ar" ? "أُعيدت الزيارة" : "Visit returned"),
       visit_expired: t("bell.ev.visitExpired", locale === "ar" ? "انتهت صلاحية الزيارة" : "Visit expired"),
