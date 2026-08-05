@@ -17,7 +17,7 @@ export default async function FieldVisits() {
   const { visits, error } = await loadAssignedVisits(sb, user.id);
   const header = <div className={styles.header}><FieldHeader
     title={tr("field.visits.title", "My Visits", "زياراتي")}
-    subtitle={tr("field.visits.scope", "Assigned to you · RLS scoped", "المسندة إليك · ضمن نطاق الصلاحية")}
+    subtitle={tr("field.visits.scope", "Assigned to you", "المسندة إليك")}
     langHref={locale === "ar" ? "/locale?set=en" : "/locale?set=ar"} langLabel={locale === "ar" ? "EN" : "AR"}
     right={<FieldHeaderSync userId={user.id} strings={{
       online: tr("field.sync.online", "Online", "متصل"), offline: tr("field.sync.offline", "Offline", "غير متصل"),
