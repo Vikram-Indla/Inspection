@@ -138,6 +138,8 @@ export type OutboxOp =
   // (guard_violation_invalidate), so it is never mutated from the client — the
   // finding↔violation association rides findings.item_id + the submission manifest.
   | { kind: "finding"; id: string; inspection_id: string; item_id: string; severity: string; description: string; queued_at: string };
+/** A queued op together with its own storage key, read as one unit. */
+export type OutboxEntry = { key: IDBValidKey; op: OutboxOp };
 export type Conflict = { key: string; local: unknown; server: unknown; item_id: string; detected_at: string };
 export type CachedRouteEstimate = {
   etaMinutes: number;
@@ -278,7 +280,31 @@ function createUserOfflineStore(userId: string) {
     enqueue: (op: OutboxOp) => tx(verifiedUserId, "outbox", "readwrite", s => s.add(op)),
     peekAll: () => tx<OutboxOp[]>(verifiedUserId, "outbox", "readonly", s => s.getAll() as IDBRequest<OutboxOp[]>),
     keys: () => tx<IDBValidKey[]>(verifiedUserId, "outbox", "readonly", s => s.getAllKeys()),
-    remove: (key: IDBValidKey) => tx(verifiedUserId, "outbox", "readwrite", s => s.delete(key)),
+    /** Keys paired with their own op, read in ONE transaction.
+     *
+     *  Callers used to read keys() and peekAll() separately and pair them by
+     *  position. Those are two transactions, so anything enqueued between them
+     *  shifted the lists out of step and a key came back undefined — which
+     *  IndexedDB reports as "No key or key range specified" on the delete that
+     *  follows. A cursor pairs each key with its own value and cannot drift. */
+    entries: () => tx<OutboxEntry[]>(verifiedUserId, "outbox", "readonly", s => {
+      const out: OutboxEntry[] = [];
+      const rq = s.openCursor();
+      rq.onsuccess = () => {
+        const cursor = rq.result;
+        if (!cursor) return;
+        out.push({ key: cursor.primaryKey, op: cursor.value as OutboxOp });
+        cursor.continue();
+      };
+      return { get result() { return out; } } as unknown as IDBRequest<OutboxEntry[]>;
+    }),
+    // A missing key is a caller bug, not a storage failure. Deleting nothing is
+    // the safe outcome — the op stays queued and is retried — where throwing
+    // takes down the whole replay and strands every other queued op with it.
+    remove: (key: IDBValidKey | undefined) =>
+      key == null
+        ? Promise.resolve(undefined as unknown as void)
+        : tx(verifiedUserId, "outbox", "readwrite", s => s.delete(key)),
     addConflict: (c: Conflict) => tx(verifiedUserId, "conflicts", "readwrite", s => s.put(c)),
     conflicts: () => tx<Conflict[]>(verifiedUserId, "conflicts", "readonly", s => s.getAll() as IDBRequest<Conflict[]>),
     resolveConflict: (key: string) => tx(verifiedUserId, "conflicts", "readwrite", s => s.delete(key)),
@@ -506,11 +532,13 @@ export async function processOutbox(verifiedUserId: string, onState: (s: SyncSta
     const { data } = await shared.auth.getSession();
     return data.session?.user.id ?? null;
   });
-  const keys = await local.keys(); const ops = await local.peekAll();
-  if (!ops.length) { onState("synced"); return; }
-  onState("syncing", `${ops.length} queued`);
-  for (let i = 0; i < ops.length; i++) {
-    const op = ops[i]; const key = keys[i];
+  // One read, so each op arrives with its own key. Reading keys and values
+  // separately let an enqueue between the two calls shift them out of step.
+  const entries = await local.entries();
+  if (!entries.length) { onState("synced"); return; }
+  onState("syncing", `${entries.length} queued`);
+  for (let i = 0; i < entries.length; i++) {
+    const op = entries[i].op; const key = entries[i].key;
     try {
       if (op.kind === "response") {
         const { data: server } = await guard.network(() => sb.from("checklist_responses").select("id, response, updated_at")
