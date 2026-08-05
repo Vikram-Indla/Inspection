@@ -127,25 +127,30 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
         </div>
         {/* The design (design/final-cut/saqeel-revamp.html, "Compliance
             performance explorer") is not a table. It is a column of rows, each
-            one label / rate bar / value, and the whole row drills — "Every row
-            drills to the factories behind it" is the subtitle's promise. The
-            four-column table shipped instead, which is why the label column
-            stranded a dead gap beside three sparse columns and why the drill
-            was demoted to a text link in an Action column.
-            Rebuilt to the design's structure using existing classes only:
-            .panel-row for the row, .progress for the bar. */}
+            one label / rate bar / value. The four-column table shipped instead,
+            which is why the label column stranded a dead gap beside three
+            sparse columns.
+            The design's row is a plain div — it carries no link, despite the
+            subtitle promising a drill. Keeping it a div is also what keeps the
+            label at normal text colour: an anchor row would tint every child
+            with --text-link, and there is no text-primary utility to override
+            it with. So the row stays plain and the drill is an explicit
+            control at the end, which is the affordance the app already had.
+            Existing classes only: .panel-row, .progress, .cell-num. */}
         <div className="stack">
           {grouped.length ? grouped.slice(0, 8).map(row => (
-            <a className="panel-row" key={row.label}
-              href={`/factories?${group}=${encodeURIComponent(row.label)}`}
-              aria-label={`${row.label} — ${row.rate == null ? copy(locale, "no rate", "لا توجد نسبة") : `${row.rate}%`}, ${row.total} ${copy(locale, "records", "سجل")}`}>
+            <div className="panel-row" key={row.label}>
               <span>{row.label}</span>
               <span className="progress" style={{ flex: 1 }} aria-hidden="true">
                 {row.rate != null && <i style={{ inlineSize: `${row.rate}%` }} />}
               </span>
               <span className="cell-num">{row.rate == null ? "—" : `${row.rate}%`}</span>
               <span className="t-caption cell-num">{row.total}</span>
-            </a>
+              <a className="btn btn-ghost btn-sm" href={`/factories?${group}=${encodeURIComponent(row.label)}`}
+                aria-label={`${copy(locale, "Open factories", "فتح المصانع")} — ${row.label}`}>
+                {copy(locale, "Open factories", "فتح المصانع")}
+              </a>
+            </div>
           )) : (
             <div className="panel-body">
               <p className="t-caption">{copy(locale, "No eligible approved answers in scope.", "لا توجد إجابات معتمدة مؤهلة ضمن النطاق.")}</p>
@@ -155,8 +160,8 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
         <div className="panel-row">
           <span className="t-caption">
             {copy(locale,
-              `${activeLens[1]} · compliance rate and record count. Select a row to open the factories behind it.`,
-              `${activeLens[2]} · نسبة الامتثال وعدد السجلات. اختر صفاً لفتح المصانع المرتبطة به.`)}
+              `${activeLens[1]} · compliance rate and record count.`,
+              `${activeLens[2]} · نسبة الامتثال وعدد السجلات.`)}
           </span>
         </div>
       </section>
