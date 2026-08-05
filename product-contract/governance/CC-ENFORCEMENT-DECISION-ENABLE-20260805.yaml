@@ -66,8 +66,47 @@ scope:
   - "Remove the hardcoded canDecide = false so the decision control is gated on the user's real capability."
   - "Ensure every refusal already mapped in actions.ts renders as a visible, explanatory state on the screen."
 
+amendment_20260805:
+  reason: >
+    This record originally stated that no change to
+    decide_enforcement_recommendation was needed, on the basis that the database
+    already enforced authorization correctly and only a page flag held the
+    screen shut. That was wrong.
+  what_was_missed: >
+    The orchestrator verified the safety machinery — SECURITY DEFINER, the
+    maker-checker rule, the mandatory reason, idempotency — and confirmed all of
+    it. It did not verify that the authorization list was satisfiable. The live
+    function checks has_any_role(array['ops','compliance_admin']). Neither role
+    exists in public.roles. The function therefore refuses every principal,
+    including a legitimate decider.
+  consequence_if_unamended: >
+    Removing the page flag alone would have offered a decision the database
+    refuses from everyone — a screen that appears to work and cannot. The lane
+    refused to build it and was right to.
+  found_by: "Backend lane, holding rather than proceeding under delegated authority."
+  third_occurrence: >
+    This is the third invented role pair found in one night, after
+    ccr_is_writer (compliance_admin, form_admin) and ccr_is_reviewer
+    (compliance_admin, reviewer). The pattern is systemic, not incidental.
+
+owner_ruling_enforcement_deciders:
+  decision: "Supervisors decide enforcement. Administrators are excluded."
+  decided_by: "Product Owner (Vikram)"
+  decided_at: "2026-08-05"
+  rationale: >
+    Consistent with the compliance ruling. Administrators configure the
+    platform; supervisors decide. Excluding administrators preserves the
+    separation of duties that recording a financial penalty, a committee
+    referral or a factory closure demands.
+
+amended_scope:
+  - "Replace the unsatisfiable role array in public.decide_enforcement_recommendation with one naming supervisor."
+  - "Administrators are not admitted."
+  - "Remove the hardcoded canDecide = false so the control is gated on the user's real capability."
+  - "Every refusal already mapped in actions.ts renders as a visible, explanatory state."
+
 out_of_scope:
-  - "No schema change. No migration. No change to decide_enforcement_recommendation."
+  - "No schema change beyond the role array in that one function."
   - "No weakening of maker-checker, the mandatory reason, authorization or idempotency."
   - "No change to actions.ts refusal mapping."
   - "No new CSS, no new tokens, no new class."
