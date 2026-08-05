@@ -35,7 +35,7 @@ export default async function PlanningExpiry() {
   })) as ExpiryRuleRow[];
 
   const labels: ExpiryLabels = {
-    readOnlyWhy: t("admin.planning.expiry.readOnly", "Read-only: configuring expiry rules requires the planning.configure_expiry capability. A security administrator can grant it under Roles & permissions."),
+    readOnlyWhy: t("admin.planning.expiry.readOnly", "You can view these but not change them. A security administrator can give your role permission to edit them, under Users & Roles."),
     ruleTypes: {
       no_acknowledgement: t("admin.planning.expiry.type.no_acknowledgement", "No acknowledgement"),
       no_execution_date: t("admin.planning.expiry.type.no_execution_date", "No execution date"),

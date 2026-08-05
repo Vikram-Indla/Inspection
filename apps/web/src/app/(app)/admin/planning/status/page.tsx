@@ -151,7 +151,7 @@ export default async function PlanningStatus() {
           </tbody>
         </table></div>
         <p className="t-caption" style={{ marginBlockEnd: 0 }}>
-          {t("admin.planning.status.capabilitiesNote", "Capability grants per role are managed under Roles & permissions (admin.access.manage).")}
+          {t("admin.planning.status.capabilitiesNote", "What each role is allowed to do is managed under Users & Roles.")}
         </p>
       </section>
     </Shell>

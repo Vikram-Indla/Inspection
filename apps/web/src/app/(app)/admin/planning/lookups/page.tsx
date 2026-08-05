@@ -60,7 +60,7 @@ export default async function PlanningLookups() {
     colActions: t("admin.planning.lookups.col.actions", "Actions"),
     active: t("admin.planning.lookups.active", "active"),
     inactive: t("admin.planning.lookups.inactive", "inactive"),
-    readOnlyWhy: t("admin.planning.lookups.readOnly", "Read-only: configuring planning lookups requires the planning.configure_lookups capability. A security administrator can grant it under Roles & permissions."),
+    readOnlyWhy: t("admin.planning.lookups.readOnly", "You can view these but not change them. A security administrator can give your role permission to edit them, under Users & Roles."),
     deleteNote: t("admin.planning.lookups.deleteNote", "Lookup values are never deleted — history and existing records keep referring to them. Deactivation retires a value: governed selects only read active rows."),
   };
 

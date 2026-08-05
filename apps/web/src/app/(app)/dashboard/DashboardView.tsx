@@ -514,8 +514,8 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
       <MetricCoverage projection={projection} category="strategic" locale={locale} excluded={representedIds} partialSources={partialSources} />
     </Panel>
 
-    <Panel title={copy(locale, "Traceable strategic summary", "ملخص استراتيجي قابل للتتبع")} meta={copy(locale, "deterministic · not AI", "حتمي · ليس ذكاءً اصطناعياً")}>
-      <p className={styles.detail}>{copy(locale, "No generated narrative or forecast. Every statement below is a deterministic record summary with a real drill action.", "لا يوجد سرد أو توقع مُنشأ. كل عبارة أدناه ملخص حتمي للسجلات مع إجراء انتقال حقيقي.")}</p>
+    <Panel title={copy(locale, "Traceable strategic summary", "ملخص استراتيجي قابل للتتبع")} meta={copy(locale, "from records · not AI", "من السجلات · ليس ذكاءً اصطناعياً")}>
+      <p className={styles.detail}>{copy(locale, "Nothing here is generated or predicted. Every statement below summarises real records, and each one opens the records behind it.", "لا شيء هنا مُنشأ أو متوقَّع. كل عبارة أدناه تلخّص سجلات حقيقية، وكل منها يفتح السجلات التي تستند إليها.")}</p>
       <ul className={styles.summaryList}>
         <li><span className="dot" /><span>{copy(locale, `Approved compliance: ${strategic.complianceRate == null ? "unavailable" : `${strategic.complianceRate}%`} across ${strategic.approvedAnsweredForCompliance} eligible answers.`, `الامتثال المعتمد: ${strategic.complianceRate == null ? "غير متاح" : `${strategic.complianceRate}%`} عبر ${strategic.approvedAnsweredForCompliance} إجابة مؤهلة.`)}</span><a className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSm}`} href="/reports">{copy(locale, "Open records", "فتح السجلات")}</a></li>
         <li><span className="dot" /><span>{copy(locale, `${strategic.scopedViolations.length} linked violations; official issue-date trend is blocked.`, `${strategic.scopedViolations.length} مخالفة مرتبطة؛ اتجاه تاريخ الإصدار الرسمي محجوب.`)}</span><a className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSm}`} href="/enforcement">{copy(locale, "Open violations", "فتح المخالفات")}</a></li>
@@ -656,7 +656,7 @@ export function OperationalView({ locale, metrics, projection, factoryCoords, pa
           : <div className={styles.empty} role="status">{copy(locale, "No assignments are visible in this scope.", "لا توجد إسنادات ظاهرة ضمن هذا النطاق.")}</div>}
       </Panel>
 
-      <Panel accent title={copy(locale, "Operational priorities", "الأولويات التشغيلية")} meta={copy(locale, "deterministic · not AI", "حتمية · ليست ذكاءً اصطناعياً")}>
+      <Panel accent title={copy(locale, "Operational priorities", "الأولويات التشغيلية")} meta={copy(locale, "from records · not AI", "من السجلات · ليست ذكاءً اصطناعياً")}>
         <p className={styles.detail}>{copy(locale, "These are record filters and links. No recommendation is generated and no action is executed automatically.", "هذه مرشحات وروابط للسجلات. لا يتم إنشاء توصية ولا تنفيذ أي إجراء تلقائياً.")}</p>
         <ul className={styles.nudgeList}>
           <li><span className="dot" /><span>{copy(locale, `${operational.overdueRows.length} published visits past their recorded window.`, `${operational.overdueRows.length} زيارة منشورة تجاوزت نافذتها المسجلة.`)}</span><a className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSm}`} href="/operations">{copy(locale, "Open operations", "فتح العمليات")}</a></li>
@@ -670,7 +670,7 @@ export function OperationalView({ locale, metrics, projection, factoryCoords, pa
     </Panel>
 
     <div className={styles.pairGrid}>
-      <Panel title={copy(locale, "Deterministic alert board", "لوحة التنبيهات الحتمية")}>
+      <Panel title={copy(locale, "Alert board", "لوحة التنبيهات")}>
         {alerts.length
           ? <div className={styles.tableWrap}><table className={styles.table}>
             <thead><tr><th scope="col">{copy(locale, "Condition", "الشرط")}</th><th scope="col">{copy(locale, "Object", "العنصر")}</th><th scope="col">{copy(locale, "Action", "الإجراء")}</th></tr></thead>
