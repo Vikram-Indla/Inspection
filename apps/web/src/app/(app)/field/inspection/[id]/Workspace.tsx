@@ -853,8 +853,16 @@ export default function Workspace({ inspection, items, library, serverResponses,
   // and folded into ONE synthetic group so "ready to submit" asks the exact
   // question the DB trigger will ask before it ever lets the review screen
   // (and the signature it demands) claim there is nothing left to fix.
+  //
+  // The trigger's existence check (guard_submission_action_forms_and_config)
+  // matches by form_type alone — it does NOT filter on item_id. An item-tied
+  // form (e.g. FS-101's corrective_blocking, filled via the per-item flow)
+  // legitimately satisfies a package-level requirement with the same key.
+  // Filtering to `!f.item_id` here made this mirror STRICTER than the server
+  // it mirrors: it refused submissions the database would accept. Match the
+  // server's own question, not a narrower one.
   const existingBlockingForms: ExistingForm[] = useMemo(
-    () => serverForms.filter(f => !f.item_id).map(f => ({
+    () => serverForms.map(f => ({
       form_type: f.form_type, owner_name: f.owner_name, owner_role: f.owner_role,
       due_at: f.due_at, required_correction: f.required_correction,
     })),
