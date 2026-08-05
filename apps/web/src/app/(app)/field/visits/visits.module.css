@@ -23,7 +23,7 @@
 .footnote{text-align:center;margin-block-start:6px;display:flex;align-items:center;gap:6px;justify-content:center}
 .footnote svg{width:14px;height:14px}
 .state{padding:28px 18px;text-align:center;border:1px dashed var(--border-subtle);border-radius:14px;background:var(--surface-primary)}
-.calendarShell{max-width:1080px}
+.calendarShell{max-width:1200px}
 .calendarGrid{overflow-x:auto}
 .calendarInner{min-width:760px}
 @media(max-width:600px){.controlRow{align-items:stretch;flex-direction:column}.sort{width:100%}.page{padding-inline:12px}.views a{padding-inline:6px}}
