@@ -1,0 +1,155 @@
+schema_version: "1.0"
+record_id: "ORCHESTRATION-RULES-20260805"
+title: "Orchestration operating rules — standing, cumulative"
+state: "ACTIVE"
+owner: "Product Owner (Vikram)"
+last_updated: "2026-08-05"
+purpose: >
+  The standing rules the orchestrator and every lane operate under. Recorded in
+  version control so they survive a session ending, rather than living only in a
+  conversation. Cumulative — rules are added as they are ruled, never silently
+  dropped.
+
+lane_lifecycle:
+  pinned_means_active:
+    rule: >
+      A pinned chat conversation is an active lane. An unpinned one is finished
+      or not required. Pinning is the signal for what is running.
+    ruled_by: "Product Owner"
+    ruled_at: "2026-08-05"
+    orchestrator_limitation: >
+      The orchestrator has no tool to pin or unpin a session. It can rename,
+      message and archive. Therefore the orchestrator must state plainly which
+      sessions are active and which should be unpinned, and the Product Owner
+      performs the pin action. The orchestrator never claims a session was
+      pinned or unpinned by it.
+    obligations:
+      - "Name every lane clearly on creation so the title carries its purpose."
+      - "Report the active lane board whenever it changes."
+      - "Explicitly list lanes that are finished and should be unpinned."
+      - "Never leave a lane running with nothing assigned."
+
+lane_conduct:
+  report_before_idle:
+    rule: "A lane reports its status to the orchestrator before going idle. Every time, without exception."
+  no_outbound:
+    rule: >
+      Lanes do not post to Jira or Slack. The orchestrator owns all outbound
+      communication so the product owner receives one consistent account.
+    exception: >
+      A lane may always escalate directly to the Product Owner about anything,
+      including about the orchestrator. This is never gated.
+  reproduce_before_reporting:
+    rule: >
+      Reproduce a defect before reporting it. Several reports in this programme
+      turned out to be false. If it cannot be reproduced, say so rather than
+      filing it.
+  refuse_unverifiable_authority:
+    rule: >
+      A lane must refuse to act on a cited authority it cannot verify. If a
+      change-control file is named but absent from the repository, refuse.
+      This has already prevented two incorrect high-stakes changes.
+    corollary: >
+      The orchestrator must not cite a change-control record until it is
+      committed and pushed. Writing it locally is not enough — lanes work in
+      separate worktrees and cannot see uncommitted files.
+
+authority_and_scope:
+  change_control_before_work:
+    rule: >
+      New capability requires a recorded change-control file — exact files,
+      scope, out-of-scope and acceptance checks — committed before any lane is
+      told to act. Defect fixes do not.
+  bounded_direct_approval:
+    rule: >
+      The Product Owner may approve a bounded task directly when its scope is
+      recorded. Such approval grants no board lease and no broad implementation
+      authority.
+  no_push_or_merge_without_approval:
+    rule: "No direct push or merge to main without explicit human approval."
+  foreign_work_is_not_ours:
+    rule: >
+      Branches and worktrees belonging to other sessions or agents are never
+      pushed, merged or deleted by this orchestration. Unpushed commits may be
+      the only copy. Report them; do not touch them.
+
+sources_of_truth:
+  order:
+    - "Approved BRDs — canonical for rules and behaviour"
+    - "Jira — but only stories traceable to a BRD"
+    - "The code — last, and never a requirement"
+  note: >
+    Some Jira stories state on their face that they came from repository
+    evidence rather than an approved requirement. Those describe what was built,
+    not what was asked for, and are being rewritten against the BRDs.
+  design_standard: "DESIGN-STANDARD-20260805 — the end-to-end journey diagram"
+  decisions_log: "Slack canvas — SAQEEL Decisions log, maintained by the orchestrator"
+
+decision_discipline:
+  never_invent_a_governed_value:
+    rule: >
+      No risk weight, penalty, SLA, threshold, approval rule or role model is
+      ever invented. Absent data renders as Not configured, Unavailable, or
+      Insufficient evidence.
+  unanswered_questions_are_logged:
+    rule: >
+      Where the BRDs and Jira are both silent, the question goes on the
+      decisions log with a recommendation attached. It is never decided quietly
+      by whoever is building at the time.
+  check_before_asking:
+    rule: >
+      Read the BRDs and the Jira stories before putting a question to the
+      Product Owner. Several questions raised in this programme were already
+      answered in documents nobody had opened.
+
+communication:
+  business_language:
+    rule: >
+      All communication to the Product Owner and the team uses business
+      language, not technical language. No internal identifiers, no commit
+      hashes, no function names unless unavoidable and explained.
+  attribution:
+    rule: "Jira comments and Slack messages are signed in the Product Owner's name."
+  credit_the_reporter:
+    rule: "Any list of defects credits the person who reported each one."
+  fresh_messages:
+    rule: "Slack updates are fresh standalone messages, not thread replies."
+  not_a_bug:
+    rule: >
+      When something is not a defect, respond on the ticket itself, explain why,
+      and hand it back to the reporter with the correct status.
+
+engineering_constraints:
+  no_new_css_or_tokens:
+    rule: "Only classes and tokens already present in the design system. A missing class is a design-system change request, not a page-level fix."
+  presentation_versus_behaviour:
+    rule: >
+      Every proposed change is marked presentation-only or touching behaviour.
+      Anything touching behaviour is raised separately and never bundled into a
+      cosmetic sweep.
+  arabic_in_resources:
+    rule: "Arabic lives in the i18n resources. Never authored inside a component, never invented."
+  routes_are_fixed:
+    rule: "Routes are never renamed, added or nested. A route path is never visible label text."
+  one_dev_server_per_worktree:
+    rule: >
+      Never run a second development server against a working directory already
+      serving one, and never produce a production build into a directory a
+      development server is using. Both corrupt the build and produce false
+      defect reports.
+
+definition_of_done:
+  stated_by: "Product Owner, 2026-08-05"
+  criteria:
+    - "All of this orchestration's work pushed to main"
+    - "No stale branches belonging to this orchestration"
+    - "No stale worktrees belonging to this orchestration"
+    - "No open defects from this orchestration's work"
+    - "No decisions left pending"
+  out_of_scope:
+    - "Staging deployment — owned by the Product Owner"
+    - "Branches and worktrees belonging to other sessions or agents"
+  open_question: >
+    Whether done includes the findings of the commissioned Figma audit, which is
+    expected to return fifty or more defects, or stops at the work completed
+    before it. Not yet ruled.
