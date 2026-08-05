@@ -128,7 +128,6 @@ export default function ShellClient({
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [compactNavigation, setCompactNavigation] = useState(false);
-  const [activeMobileAdminHub, setActiveMobileAdminHub] = useState<string | null>(null);
   const [accountOpen, setAccountOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -206,10 +205,6 @@ export default function ShellClient({
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
   }, []);
-
-  useEffect(() => {
-    if (!drawerOpen) setActiveMobileAdminHub(null);
-  }, [drawerOpen]);
 
   // The persistent route-group layout survives navigation. Pathname changes
   // only after the destination commits, so this clears acknowledgement without
@@ -594,38 +589,6 @@ export default function ShellClient({
     );
   }
 
-  function renderMobileAdminDiscovery() {
-    const adminGroups = groups.filter(group => group.id === "administration");
-    const activeHub = adminGroups.find(group => group.id === activeMobileAdminHub);
-    if (activeHub) {
-      return (
-        <section className="sq-nav-group" data-mobile-admin-hub={activeHub.id}>
-          <button className="sq-nav-group__trigger is-administration" type="button"
-            aria-label={locale === "ar" ? "العودة إلى مجموعات الإدارة" : "Back to admin hubs"}
-            onClick={() => setActiveMobileAdminHub(null)}>
-            <span aria-hidden="true">{locale === "ar" ? "→" : "←"}</span>
-            <span className="sq-nav-label">{locale === "ar" ? "رجوع" : "Back"}</span>
-          </button>
-          <h2 className="sq-nav-subgroup__label">{groupLabel(activeHub)}</h2>
-          {activeHub.items.map(item => renderNavItem(item))}
-        </section>
-      );
-    }
-    return (
-      <div aria-label={locale === "ar" ? "مجموعات الإدارة" : "Admin hubs"}>
-        {adminGroups.map(group => (
-          <button className="sq-nav-group__trigger is-administration" type="button"
-            key={group.id} aria-label={groupLabel(group)}
-            onClick={() => setActiveMobileAdminHub(group.id)}>
-            <span className="sq-nav-icon"><Icon name="admin" /></span>
-            <span className="sq-nav-label">{groupLabel(group)}</span>
-            <span aria-hidden="true">{locale === "ar" ? "←" : "→"}</span>
-          </button>
-        ))}
-      </div>
-    );
-  }
-
   return (
     <div className={`sq-shell${effectiveCollapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}${pendingHref ? " is-navigating" : ""}`}
       dir={locale === "ar" ? "rtl" : "ltr"} lang={locale}
@@ -759,7 +722,7 @@ export default function ShellClient({
             </div> : (
               <div className="sq-pagehead__workspace-label">
                 <span>{strings.primary}</span>
-                <button ref={adminPaletteTriggerRef} type="button"
+                <button ref={adminPaletteTriggerRef} type="button" className="sq-btn sq-btn--secondary"
                   aria-label={`${adminPaletteCopy.open} (Ctrl/⌘ K)`}
                   aria-haspopup="dialog" aria-expanded={adminPaletteOpen}
                   onClick={() => {
@@ -825,60 +788,33 @@ export default function ShellClient({
       </main>
 
       {adminWorkspace && adminPaletteOpen && typeof document !== "undefined" && createPortal(
-        <div role="presentation" onMouseDown={event => {
+        <div className="sq-modal-backdrop" role="presentation" onMouseDown={event => {
           if (event.target === event.currentTarget) closeAdminPalette();
-        }} style={{
-          position: "fixed", inset: 0, zIndex: 10000, display: "grid",
-          alignItems: "start", justifyItems: "center", padding: "min(12vh, 7rem) 1rem 1rem",
-          background: "rgba(4, 9, 14, .72)", backdropFilter: "blur(4px)",
         }}>
-          <section role="dialog" aria-modal="true" aria-labelledby="admin-palette-title"
-            dir={locale === "ar" ? "rtl" : "ltr"}
-            style={{
-              inlineSize: "min(42rem, 100%)", maxBlockSize: "min(42rem, 78vh)",
-              display: "flex", flexDirection: "column", overflow: "hidden",
-              border: "1px solid var(--border-subtle, #39434d)", borderRadius: "1rem",
-              background: "var(--surface-primary, #171c22)", color: "var(--text-primary, #f4f6f8)",
-              boxShadow: "0 24px 80px rgba(0,0,0,.45)",
-            }}>
-            <div style={{ display: "flex", alignItems: "center", gap: ".75rem", padding: "1rem 1rem .75rem" }}>
-              <strong id="admin-palette-title" style={{ flex: 1 }}>{adminPaletteCopy.title}</strong>
-              <button type="button" aria-label={adminPaletteCopy.close} onClick={closeAdminPalette}>Esc</button>
+          <section className="sq-modal" role="dialog" aria-modal="true" aria-labelledby="admin-palette-title"
+            dir={locale === "ar" ? "rtl" : "ltr"}>
+            <div className="sq-modal__header">
+              <strong id="admin-palette-title">{adminPaletteCopy.title}</strong>
+              <button type="button" className="sq-btn sq-btn--secondary" aria-label={adminPaletteCopy.close} onClick={closeAdminPalette}>Esc</button>
             </div>
-            <input ref={adminPaletteInputRef} type="search" value={adminPaletteQuery}
-              aria-controls="admin-palette-results" aria-describedby="admin-palette-count"
-              placeholder={adminPaletteCopy.search} aria-label={adminPaletteCopy.search}
-              onChange={event => setAdminPaletteQuery(event.target.value)}
-              style={{
-                margin: "0 1rem .75rem", padding: ".8rem 1rem", borderRadius: ".65rem",
-                border: "1px solid var(--border-subtle, #39434d)",
-                background: "var(--surface-raised, #20262d)", color: "inherit",
-              }} />
-            <p id="admin-palette-count" role="status" aria-live="polite"
-              style={{ margin: "0 1rem .5rem", color: "var(--text-muted, #aab2bd)", fontSize: ".875rem" }}>
-              {adminPaletteCopy.results(adminPaletteResults.length)}
-            </p>
-            <div id="admin-palette-results" role="listbox" aria-label={adminPaletteCopy.title}
-              style={{ overflowY: "auto", padding: "0 .5rem 1rem" }}>
-              {adminPaletteResults.map(item => (
-                <Link key={item.id} role="option" href={item.href} data-next-spa="true" prefetch={false}
-                  onClick={closeAdminPalette}
-                  style={{
-                    display: "flex", alignItems: "center", gap: ".75rem", padding: ".75rem",
-                    borderRadius: ".6rem", color: "inherit", textDecoration: "none",
-                  }}>
-                  <span aria-hidden="true"><Icon name={item.icon} /></span>
-                  <span style={{ display: "grid" }}>
-                    <strong>{itemLabel(item)}</strong>
-                    <small style={{ color: "var(--text-muted, #aab2bd)" }}>{item.hubLabel}</small>
-                  </span>
-                </Link>
-              ))}
-              {!adminPaletteResults.length ? (
-                <p style={{ padding: "1rem", textAlign: "center", color: "var(--text-muted, #aab2bd)" }}>
-                  {adminPaletteCopy.empty}
-                </p>
-              ) : null}
+            <div className="sq-modal__body">
+              <input ref={adminPaletteInputRef} type="search" className="sq-input" value={adminPaletteQuery}
+                aria-controls="admin-palette-results" aria-describedby="admin-palette-count"
+                placeholder={adminPaletteCopy.search} aria-label={adminPaletteCopy.search}
+                onChange={event => setAdminPaletteQuery(event.target.value)} />
+              <p id="admin-palette-count" role="status" aria-live="polite" className="sq-caption">
+                {adminPaletteCopy.results(adminPaletteResults.length)}
+              </p>
+              <div id="admin-palette-results" role="listbox" aria-label={adminPaletteCopy.title}>
+                {adminPaletteResults.map(item => (
+                  <Link key={item.id} role="option" className="sq-nav-item" href={item.href} data-next-spa="true" prefetch={false}
+                    onClick={closeAdminPalette}>
+                    <span className="sq-nav-icon"><Icon name={item.icon} /></span>
+                    <span className="sq-nav-label">{itemLabel(item)}</span>
+                  </Link>
+                ))}
+                {!adminPaletteResults.length ? <p className="sq-caption">{adminPaletteCopy.empty}</p> : null}
+              </div>
             </div>
           </section>
         </div>,
