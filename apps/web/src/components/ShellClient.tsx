@@ -82,14 +82,13 @@ export type ShellClientStrings = {
 
 const Icon = ShellNavIcon;
 
-// Hub grouping for the pinned "administration" nav-footer section. Mirrors
-// AdminShellClient's own HUB_ITEMS/HUB_META exactly (INSP-752): the bucket
-// ids/labels/icons come from the original hub-first admin nav design and are
-// unchanged, only rendered through the shared shell's existing
-// sq-nav-subgroup markup instead of a second, admin-only implementation.
-// "control" and "planning" have no surviving item and are intentionally
-// absent — do not add items to them without an approved shell-navigation.ts
-// change.
+// Hub grouping for the pinned "administration" nav-footer section (INSP-752).
+// The bucket ids/labels/icons come from the original hub-first admin nav
+// design and are unchanged from before the shell merge, only rendered
+// through the shared shell's existing sq-nav-subgroup markup now instead of
+// the retired admin-only shell. "control" and "planning" have no surviving
+// item and are intentionally absent — do not add items to them without an
+// approved shell-navigation.ts change.
 const ADMIN_HUB_ORDER = ["people", "rules", "risk", "connections", "governance"] as const;
 type AdminHubId = (typeof ADMIN_HUB_ORDER)[number];
 const ADMIN_HUB_ITEMS: Record<AdminHubId, string[]> = {

@@ -1,7 +1,7 @@
-// Shared identity-chrome helpers for the shell family (ShellClient,
-// AdminShellClient). Kept as a small dependency-free module rather than
-// exported from either shell component, since ShellClient renders
-// AdminShellClient and a cross-import back the other way would be circular.
+// Shared identity-chrome helper for the shell (ShellClient). Kept as its own
+// small dependency-free module rather than exported from the shell component
+// itself, so other account-chrome consumers can import it without pulling in
+// the shell's full render tree.
 
 // Initials come from the governed display name when one exists ("عبدالله محمد
 // القحطاني" -> "عم"), and only fall back to the email local-part when no
