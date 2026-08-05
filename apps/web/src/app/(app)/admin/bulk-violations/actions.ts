@@ -4,15 +4,15 @@ import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 
-// DEC-032 is a platform-wide P0: submission_versions cannot produce its
-// required digest, so no route may claim or attempt a real inspection
-// submission. Keep the server action fail-closed as a second boundary even
-// though the client submit control is disabled.
+// Fail-closed on the deployment flag: if the enforcement RPCs are not present
+// in this environment, refuse rather than attempt a write that cannot succeed.
+// DEC-032 (the submission_versions digest failure this guard was originally
+// named for) closed on 2026-08-01 and is no longer a reason to refuse.
 
 export type BulkItemResult = { factory_id: string; status: "success" | "failed"; violation_id: string | null; inspection_id: string | null; error_code: string | null };
 export type BulkResult = {
   error?:
-    | "dec032_blocked"
+    | "issuing_unavailable"
     | "auth_required"
     | "invalid_request"
     | "acknowledgement_required"
@@ -31,7 +31,7 @@ export type BulkResult = {
 
 export async function issueBulkViolation(_: BulkResult, _formData: FormData): Promise<BulkResult> {
   if (process.env.ENFORCEMENT_P0_RPCS_DEPLOYED !== "true") {
-    return { error: "dec032_blocked" };
+    return { error: "issuing_unavailable" };
   }
   const requestId = String(_formData.get("request_id") ?? "");
   const factoryIds = _formData.getAll("factory_id").map(String).filter(Boolean);

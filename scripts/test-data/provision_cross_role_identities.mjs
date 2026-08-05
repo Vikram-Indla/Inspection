@@ -48,11 +48,11 @@ if (repairAdmin && rotateOwnedPasswords) {
 }
 
 const accounts = [
-  { alias: "admin", id: "a1000000-0000-4000-8000-000000000001", email: "admin1@local.saqeel.test", roles: ["admin"], full_name: "Cross-role certification Admin", region: "Riyadh", org_scope: "national" },
-  { alias: "planner", id: "a2000000-0000-4000-8000-000000000001", email: "planner1@local.saqeel.test", roles: ["planner"], full_name: "Cross-role certification Planner", region: "Riyadh", org_scope: "regional" },
-  { alias: "supervisor", id: "a3000000-0000-4000-8000-000000000001", email: "supervisor1@local.saqeel.test", roles: ["supervisor"], full_name: "Cross-role certification Supervisor", region: "Riyadh", org_scope: "regional" },
-  { alias: "multi_role", id: "a5000000-0000-4000-8000-000000000001", email: "multi-role@local.saqeel.test", roles: ["planner", "supervisor"], full_name: "Cross-role certification Multi-role", region: "Riyadh", org_scope: "regional" },
-  { alias: "no_workspace", id: "a6000000-0000-4000-8000-000000000001", email: "no-workspace@local.saqeel.test", roles: [], full_name: "Cross-role certification No-workspace", region: null, org_scope: null },
+  { alias: "admin", id: "a1000000-0000-4000-8000-000000000001", email: "admin1@mim.gov.sa", roles: ["admin"], full_name: "Cross-role certification Admin", region: "Riyadh", org_scope: "national" },
+  { alias: "planner", id: "a2000000-0000-4000-8000-000000000001", email: "planner1@mim.gov.sa", roles: ["planner"], full_name: "Cross-role certification Planner", region: "Riyadh", org_scope: "regional" },
+  { alias: "supervisor", id: "a3000000-0000-4000-8000-000000000001", email: "supervisor1@mim.gov.sa", roles: ["supervisor"], full_name: "Cross-role certification Supervisor", region: "Riyadh", org_scope: "regional" },
+  { alias: "multi_role", id: "a5000000-0000-4000-8000-000000000001", email: "multi-role@mim.gov.sa", roles: ["planner", "supervisor"], full_name: "Cross-role certification Multi-role", region: "Riyadh", org_scope: "regional" },
+  { alias: "no_workspace", id: "a6000000-0000-4000-8000-000000000001", email: "no-workspace@mim.gov.sa", roles: [], full_name: "Cross-role certification No-workspace", region: null, org_scope: null },
 ];
 const serviceHeaders = { apikey: serviceRole, Authorization: `Bearer ${serviceRole}`, "Content-Type": "application/json" };
 const anonHeaders = jwt => ({ apikey: anonKey, Authorization: `Bearer ${jwt}`, "Content-Type": "application/json" });

@@ -14,7 +14,7 @@ export default async function SpatialPage() {
   const { t } = await useT();
   if (resolveFeatureFlag(process.env.FEATURE_SPATIAL_CANVAS, MODES, "off") !== "on") {
     return (
-      <Shell current="/admin/gis" title={t("gis.sp.title", "Spatial canvas")} context={<span className="badge badge-warning">CD-045 · REQ-0087</span>}>
+      <Shell current="/admin/gis" title={t("gis.sp.title", "Spatial canvas")}>
         <NotYetBoundary title={t("gis.sp.title", "Spatial canvas")} consequence={t("gis.sp.off", "The spatial canvas is not enabled here. Mapbox provider is held.")}
           seam="FEATURE_SPATIAL_CANVAS=off + Mapbox held" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
       </Shell>
@@ -28,8 +28,8 @@ export default async function SpatialPage() {
   const error = e1 || e2;
   if (error) console.error("[gis spatial] load", error);
   return (
-    <Shell current="/admin/gis" title={t("gis.sp.title", "Spatial canvas")} context={<span className="badge badge-info">CD-045 · REQ-0087..0108</span>}>
-      <div className="alert"><div><strong>{t("gis.sp.banner.title", "Layers & locations.")}</strong> {t("gis.sp.banner.body", "The official factory pin stays owned by GIS admin (FND-007); these are extra working layers. Geofence and accuracy use the accepted engine_settings.gis values. Mapbox rendering is on hold.")}</div></div>
+    <Shell current="/admin/gis" title={t("gis.sp.title", "Spatial canvas")}>
+      <div className="alert"><div><strong>{t("gis.sp.banner.title", "Layers & locations.")}</strong> {t("gis.sp.banner.body", "The official factory pin stays owned by the GIS administrator; these are extra working layers. Geofence and accuracy use the approved engine defaults.")}</div></div>
       <CreateLayer strings={{
         key: t("gis.sp.key", "Layer key"), label: t("gis.sp.label", "Label"), type: t("gis.sp.type", "Type"),
         create: t("gis.sp.create", "Create layer"), creating: t("gis.sp.creating", "Creating…"), created: t("gis.sp.created", "layer created"),

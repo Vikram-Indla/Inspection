@@ -11,6 +11,12 @@ test.use({ storageState: storageStatePath("inspector") });
 test("M2-04 risk draft is denied for a non-risk_owner (live RLS)", async ({ page }) => {
   await page.goto("/locale?set=en");
   await page.goto("/admin/risk/models");
+  const boundary = page.getByRole("heading", { name: "You do not have access to this destination", exact: true });
+  if (await boundary.count()) {
+    await expect(boundary).toBeVisible();
+    await expect(page.locator('input[name="version_label"]')).toHaveCount(0);
+    return;
+  }
   await page.locator('input[name="version_label"]').fill(`neg-${Date.now()}`);
   await page.locator('textarea[name="payload"]').fill('{"factors":[{"key":"a","weight":1}],"bands":{"low":[0,39],"medium":[40,69],"high":[70,100]}}');
   await page.getByRole("button", { name: /Create draft/i }).click();
@@ -21,6 +27,12 @@ test("M2-04 risk draft is denied for a non-risk_owner (live RLS)", async ({ page
 test("M2-06 GIS layer create is denied for a non-gis_admin (live RLS)", async ({ page }) => {
   await page.goto("/locale?set=en");
   await page.goto("/admin/gis/spatial");
+  const boundary = page.getByRole("heading", { name: "You do not have access to this destination", exact: true });
+  if (await boundary.count()) {
+    await expect(boundary).toBeVisible();
+    await expect(page.locator('input[name="layer_key"]')).toHaveCount(0);
+    return;
+  }
   await page.locator('input[name="layer_key"]').fill(`neg-${Date.now()}`);
   await page.locator('input[name="label"]').fill("neg");
   await page.getByRole("button", { name: /Create layer/i }).click();
@@ -45,7 +57,7 @@ test("M2-08 external request create is denied for a non-compliance persona (live
   const subj = page.locator('input[name="subject"]');
   if (await subj.count()) {
     await subj.fill(`neg-${Date.now()}`);
-    await page.getByRole("button", { name: /Create request/i }).click();
+    await page.getByRole("button", { name: /Create internal intake/i }).click();
     await expect(page.getByText(/scope required|not authorized|Couldn/i)).toBeVisible();
     await expect(page.getByText(/request created/i)).toHaveCount(0);
   }

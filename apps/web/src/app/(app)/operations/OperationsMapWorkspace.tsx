@@ -113,15 +113,17 @@ export default function OperationsMapWorkspace({
         </ul>
         {selected && (
           <div className="panel stack" role="status" aria-live="polite">
-            <p className="tl-meta">{s.selected}</p>
-            <p><strong>{selected.label}</strong></p>
-            <div className="row">
-              <button className="btn btn-secondary" type="button" onClick={() => setPreviewId(selected.id)}>
-                {s.preview}
-              </button>
-              <a className="btn btn-ghost" href={selected.href}>
-                {s.open} {selected.kind === "visit" ? s.visit : s.factory}
-              </a>
+            <div className="panel-body stack">
+              <p className="tl-meta">{s.selected}</p>
+              <p><strong>{selected.label}</strong></p>
+              <div className="row">
+                <button className="btn btn-secondary" type="button" onClick={() => setPreviewId(selected.id)}>
+                  {s.preview}
+                </button>
+                <a className="btn btn-ghost" href={selected.href}>
+                  {s.open} {selected.kind === "visit" ? s.visit : s.factory}
+                </a>
+              </div>
             </div>
           </div>
         )}

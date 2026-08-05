@@ -15,7 +15,7 @@
   flex-direction: column;
   gap: 14px;
   padding: 16px 18px 110px;
-  max-inline-size: 720px;
+  max-inline-size: 1200px;
   margin-inline: auto;
   inline-size: 100%;
 }
@@ -158,7 +158,7 @@
 }
 
 .footerInner {
-  max-inline-size: 720px;
+  max-inline-size: 1200px;
   margin-inline: auto;
   display: flex;
   align-items: center;

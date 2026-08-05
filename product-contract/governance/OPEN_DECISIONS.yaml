@@ -22,5 +22,21 @@ priority_decisions:
   - DEC-027 Industry Shared API contract authority, workforce precedence, privacy/masking/retention and plant-cardinality conflict handling
   - DEC-028 Dashboard KPI/Admin formula, source, eligibility, cycle, iPad and AI semantics
   - DEC-030 Saqeel V5 iPad hardware verification (Wave 6; CC-SAQEEL-V5-IMPLEMENTATION-001; filed 2026-07-20; needs a provisioned physical device or device-lab service)
-  - DEC-031 Saqeel V5 report print-fixture synthesis (Wave 8; CC-SAQEEL-V5-IMPLEMENTATION-001; filed 2026-07-20; root cause now confirmed as DEC-032, not a scope/rule boundary)
-  - DEC-032 submission_versions digest() trigger failure (platform-wide, outside CC-SAQEEL-V5-IMPLEMENTATION-001; filed 2026-07-20; P0 — blocks ALL real inspection submissions; needs a DB migration, not application code)
+  - DEC-031 Saqeel V5 report print-fixture synthesis (Wave 8; CC-SAQEEL-V5-IMPLEMENTATION-001; filed 2026-07-20; its DEC-032 blocker closed 2026-08-05, so many-violations and long-notes fixtures are now buildable; the 20/100/300-item tiers still need their own checklist-package decision)
+
+closed_decisions:
+  - id: "DEC-032"
+    title: "submission_versions digest() trigger failure"
+    closed_at: "2026-08-05"
+    closed_under: "CC-DEC-032-CLOSURE-20260805"
+    fixed_by: "migration 20260801225413_fix_dec032_submission_snapshot_digest, applied 2026-08-01"
+    evidence: >
+      Proven by walking, not by inspection. On 2026-08-05 an inspection was
+      submitted, returned for correction, corrected, resubmitted and approved
+      with real accounts, writing two submission versions with no digest error.
+    lesson: >
+      This sat in the register as an open P0 reading "blocks ALL real inspection
+      submissions" for four days after it was fixed, and a banner repeated the
+      false claim to users. A P0 that is wrongly open says the platform cannot
+      do the one thing it exists for, and every judgement made from the register
+      inherits that. Closing a decision is part of fixing it.

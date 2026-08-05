@@ -24,6 +24,10 @@ export type RiskStrings = {
   factorKey: string; factorWeight: string; addFactor: string; removeFactor: string;
   lowEnds: string; mediumEnds: string; validationReady: string; validationNeeded: string;
   inspect: string; immutable: string; noTransitions: string;
+  // INSP-736 (same-pattern audit): business labels for RiskModelStatus,
+  // shown instead of the raw enum value in the status badge and the
+  // transition dropdown.
+  statusLabels: Record<RiskModelStatus, string>;
 };
 
 export function RiskModelsBoard({ rows, strings: s }: { rows: RiskModelRow[]; strings: RiskStrings }) {
@@ -119,7 +123,7 @@ function RiskRow({ m, strings: s }: { m: RiskModelRow; strings: RiskStrings }) {
     <article className="panel rk-model-card">
       <div className="row" style={{ justifyContent: "space-between" }}>
         <h3>{m.version_label} <span className="sq-version">v{m.row_version}</span></h3>
-        <span className="badge badge-info">{m.status}</span>
+        <span className="badge badge-info">{s.statusLabels[m.status]}</span>
       </div>
       <details className="rk-model-detail">
         <summary>{s.inspect}</summary>
@@ -141,7 +145,7 @@ function RiskRow({ m, strings: s }: { m: RiskModelRow; strings: RiskStrings }) {
           <input type="hidden" name="from_status" value={m.status} />
           <input type="hidden" name="row_version" value={m.row_version} />
           <div className="sq-field"><label className="sq-field__label" htmlFor={`${fieldId}-to-status`}>{s.transition}</label>
-            <select className="sq-input" name="to_status" id={`${fieldId}-to-status`}>{targets.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
+            <select className="sq-input" name="to_status" id={`${fieldId}-to-status`}>{targets.map((t) => <option key={t} value={t}>{s.statusLabels[t]}</option>)}</select></div>
           <div className="sq-field"><label className="sq-field__label" htmlFor={`${fieldId}-reason`}>{s.reasonPh}</label><input className="sq-input" name="reason" id={`${fieldId}-reason`} /></div>
           <button className="btn btn-primary btn-touch" disabled={applying}>{applying ? s.applying : s.apply}</button>
           {tState.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{tState.error}</span>}

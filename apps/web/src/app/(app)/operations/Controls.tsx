@@ -40,7 +40,7 @@ export function MarkNotificationHandled({ notificationId, strings }: { notificat
   return (
     <form action={formAction} className="row" style={{ gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
       <input type="hidden" name="notification_id" value={notificationId} />
-      <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? "…" : strings.markHandled}</button>
+      <button className="btn btn-secondary btn-touch" disabled={pending}>{pending ? "…" : strings.markHandled}</button>
       {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="badge badge-compliant">{strings.handled}</span>}
     </form>

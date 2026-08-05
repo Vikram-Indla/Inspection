@@ -78,7 +78,7 @@ export default async function ComplianceRequestWorkspace({ params, searchParams 
 
   return (
     <Shell current={shellCurrent} title={`${request.request_number} — ${request.title}`}
-      context={<><span className={`badge ccr-status ccr-status--${request.status}`}>{label(request.status)}</span><span className="t-caption">Revision {request.current_revision} · Correlation <bdi>{request.correlation_id}</bdi></span></>}>
+      context={<><span className={`badge ccr-status ccr-status--${request.status}`}>{label(request.status)}</span><span className="t-caption">Revision {request.current_revision}</span></>}>
       <p className="t-caption"><Link className="sq-link" href={fromQueue ? "/admin/compliance-approvals" : "/admin/compliance-requests"}>← {fromQueue ? "Awaiting Approval" : "Request list"}</Link></p>
 
       {request.return_reason ? <div className="alert alert-warning" role="alert"><strong>Return or rejection reason:</strong> {request.return_reason}</div> : null}

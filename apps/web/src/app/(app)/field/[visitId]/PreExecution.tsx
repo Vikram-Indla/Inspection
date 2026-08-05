@@ -116,21 +116,25 @@ export default function PreExecution(props: {
     } finally { setBusy(false); }
   }
 
+  function draftPayload() {
+    return {
+      visitId: props.visitId,
+      executionDate: date,
+      confirmedMode: mode,
+      // A Planning-set package stays planner-owned: the draft references no
+      // override and the RPC resolves the visit's own package_version_id.
+      packageVersionId: props.plannedPackage ? null : packageId,
+      formConfig: {
+        removed_optional_section_keys: [...removed],
+        added_action_form_template_ids: [...added],
+        notify_factory: notifyFactory,
+      },
+    };
+  }
+
   function onSave() {
     void run(
-      () => savePreparation({
-        visitId: props.visitId,
-        executionDate: date,
-        confirmedMode: mode,
-        // A Planning-set package stays planner-owned: the draft references no
-        // override and the RPC resolves the visit's own package_version_id.
-        packageVersionId: props.plannedPackage ? null : packageId,
-        formConfig: {
-          removed_optional_section_keys: [...removed],
-          added_action_form_template_ids: [...added],
-          notify_factory: notifyFactory,
-        },
-      }),
+      () => savePreparation(draftPayload()),
       // No router.refresh() on save: the inline confirmation must stay stable
       // for the next interaction; the draft is server-persisted either way.
       () => setStatus(s.saved),
@@ -139,7 +143,16 @@ export default function PreExecution(props: {
 
   function onConfirm() {
     void run(
-      () => confirmReady(props.visitId),
+      // Confirm must never refuse on the strength of a choice the inspector
+      // can see selected on screen but has not yet saved — the server only
+      // knows what was last persisted. Saving the current draft first closes
+      // that gap instead of surfacing a refusal that describes a condition
+      // already satisfied in the UI.
+      async () => {
+        const saved = await savePreparation(draftPayload());
+        if (saved.error) return saved;
+        return confirmReady(props.visitId);
+      },
       r => {
         setConfirmed(r.snapshot ?? { preparation_version: props.snapshot?.preparation_version ?? 1, checksum: props.snapshot?.checksum ?? "" });
         setStatus(null);

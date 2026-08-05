@@ -4,23 +4,23 @@ import { resolve } from "node:path";
 
 const read = (path: string) => readFileSync(resolve(process.cwd(), path), "utf8");
 
-test("REQ-012 server action sends a stable idempotent publish request", () => {
+test("REQ-012 server action submits the complete governed supervision request", () => {
   const action = read("src/app/(app)/planning/single/actions.ts");
-  expect(action).toContain('sb.rpc("publish_single_visit_atomic_v2"');
-  expect(action).toContain('createHash("sha256")');
-  expect(action).toContain("actor: user.id");
-  expect(action).toContain("p_idempotency_key:");
-  expect(action).toContain("p_correlation_id: randomUUID()");
-  expect(action).toContain("publishReceipt");
+  expect(action).toContain('sb.rpc("submit_single_visit_for_supervision"');
+  expect(action).toContain("p_target: canonicalTarget");
+  expect(action).toContain("p_package_version_ids: package_version_ids");
+  expect(action).toContain("p_proposed_inspector_id: proposedInspectorId");
+  expect(action).toContain("p_resume_plan_id: resumeId || null");
+  expect(action).toContain('redirect(`/planning/supervision?submitted=${visitId}`)');
 });
 
-test("REQ-012 receipt covers the complete atomic result", () => {
-  const migration = read("../../supabase/migrations/20260729130000_single_publish_idempotency_receipt.sql");
-  for (const field of [
-    "visit_id", "plan_id", "assignment_id", "audit_event_id",
-    "notification_count", "correlation_id", "request_hash",
-  ]) expect(migration).toContain(`'${field}'`);
-  expect(migration).toContain("PLANNING-CLOSURE-IDEMPOTENCY-CONFLICT");
-  expect(migration).toContain("pg_advisory_xact_lock");
-  expect(migration).toContain("return v_existing.result||jsonb_build_object('idempotent',true)");
+test("REQ-012 supervision transaction covers plan, visit, packages, request, notification and audit", () => {
+  const migration = read("../../supabase/migrations/20260729021000_single_visit_supervision_lifecycle.sql");
+  for (const table of [
+    "visit_plans", "visits", "visit_packages", "planning_supervision_requests",
+    "notifications", "audit_events",
+  ]) expect(migration).toContain(table);
+  expect(migration).toContain("PLANNING-SUPERVISION-DUPLICATE");
+  expect(migration).toContain("PLANNING-SUPERVISION-CANONICAL-TARGET");
+  expect(migration).toContain("SINGLE_VISIT_SUBMITTED_FOR_SUPERVISION");
 });

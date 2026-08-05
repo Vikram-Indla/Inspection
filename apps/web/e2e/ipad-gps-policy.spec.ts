@@ -23,7 +23,10 @@ test.describe("TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003", () => {
 
     expect(fieldPage).toContain('select("engine, settings").in("engine", ["gis", "otp", "field"])');
     expect(startup).toContain("const maxAcc = gis.gps_accuracy_checkin_max_m ?? 25;");
-    expect(startup).toContain("visit.factories.geofence_radius_m ?? gis.geofence_default_radius_m ?? 150");
+    expect(startup).toContain("visit.factories.geofence_radius_m ?? gis.geofence_default_radius_m ?? null");
+    expect(startup).toContain("const fenceConfigured = fence != null;");
+    expect(startup).toContain("disabled={!journeyId || checkedIn || busy || overrideState !== \"none\" || cancelApproved || !fenceConfigured}");
+    expect(startup).toContain('aria-describedby={!fenceConfigured ? "geofence-unconfigured" : undefined}');
     expect(startup).toContain("const telemetryS = gis.telemetry_interval_s ?? 30;");
     expect(gisPage).toContain('sb.from("engine_settings").select("settings, version_label").eq("engine", "gis")');
   });

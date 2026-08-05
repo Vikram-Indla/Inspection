@@ -197,7 +197,7 @@ export default async function EnforcementLibrary({
     <Shell
       current="/enforcement-library"
       title={copy("Violations & Penalties", "المخالفات والعقوبات")}
-      context={<span className="badge badge-info">ENF-S01 · {copy("Read only", "للقراءة فقط")}</span>}
+      context={<span className="badge badge-info">{copy("Read only", "للقراءة فقط")}</span>}
     >
       <h1 className="sq-sr-only">{copy("Violations & Penalties", "المخالفات والعقوبات")}</h1>
 
@@ -255,9 +255,13 @@ export default async function EnforcementLibrary({
         </div>
       ) : rows.length === 0 ? (
         <section className="sq-state" role="status">
-          <span className="sq-state__glyph" aria-hidden="true">○</span>
+          {/* INSP-734: "○" (plain circle) reads as the app's own loading
+              glyph "◌" (dotted circle, used app-wide in loading.tsx files)
+              at a glance — this state is fully resolved, not loading, so
+              the glyph must not be confusable with that one. */}
+          <span className="sq-state__glyph" aria-hidden="true">∅</span>
           <h2>{copy("No violation records visible to you", "لا توجد سجلات مخالفات ظاهرة لك")}</h2>
-          <p>{copy("The read succeeded and returned zero matching records.", "نجحت القراءة ولم تُرجع سجلات مطابقة.")}</p>
+          <p>{copy("No records match.", "لا توجد سجلات مطابقة.")}</p>
         </section>
       ) : (
         <section className="table-wrap" aria-label={copy("Enforcement records", "سجلات الإنفاذ")}>

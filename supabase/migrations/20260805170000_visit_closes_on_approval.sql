@@ -1,0 +1,31 @@
+-- CC-VISIT-CLOSED-STATE-20260805
+--
+-- The visit lifecycle (public.operational_state) had no terminal state:
+-- new, prepared, on_the_way, arrived, executing, submitted, under_review.
+-- A visit whose inspection reached 'approved' had nowhere to go. Confirmed
+-- live before writing this: inspection db2450d2 (Madinah Dates Processing
+-- Co., visit b7eec84d) is approved and its visit sits at 'under_review'
+-- permanently.
+--
+-- Product Owner ruling, verbatim: "a visit closes when its inspection is
+-- approved." Approval only — a returned or rejected inspection's terminal
+-- state is explicitly out of scope and not inferred here (per the ruling's
+-- own ambiguity instruction). No enforcement lifecycle: the Product Owner
+-- rejected keeping a visit open until a penalty resolves.
+--
+-- public.decide_review() — the atomic decision commit (reviews.status,
+-- inspections.status, notification, audit_event) — is untouched. This adds
+-- a separate AFTER UPDATE trigger on public.inspections that reacts to any
+-- transition into 'approved', rather than editing that function, so the
+-- verified atomic commit, its recorded comment and the compliance handoff
+-- keep their exact existing shape.
+--
+-- Business-word rendering needs no app change: every screen that shows
+-- visit.operational_state already calls t(`enum.${state}`, state.replace(/_/g,' '))
+-- (apps/web/src/app/(app)/visits/[id]/page.tsx, visits/page.tsx,
+-- planning/plans/[id]/page.tsx) — the new 'closed' value renders as the
+-- word "closed" through that existing generic path with zero code change.
+-- (dashboard/DashboardView.tsx:726 prints operational_state raw for a
+-- different row already, pre-existing and out of scope for this CC.)
+
+alter type public.operational_state add value if not exists 'closed';

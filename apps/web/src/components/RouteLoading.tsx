@@ -12,7 +12,7 @@ export default async function RouteLoading({ en, ar, bodyEn, bodyAr }: {
   return (
     <main className="sq-content" aria-busy="true" aria-live="polite">
       <EmptyState glyph="◫" title={isAr ? ar : en}
-        body={isAr ? (bodyAr ?? "جارٍ تحميل البيانات المقيّدة حسب صلاحيات الصفوف.") : (bodyEn ?? "Loading RLS-scoped data.")} />
+        body={isAr ? (bodyAr ?? "جارٍ التحميل…") : (bodyEn ?? "Loading…")} />
     </main>
   );
 }

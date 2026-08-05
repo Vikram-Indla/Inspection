@@ -7,7 +7,7 @@ export default async function Loading() {
   return (
     <Shell current="/tasks" title={t("tasks.title", "Tasks")}>
       <EmptyState glyph="…" title={t("tasks.loading", "Loading tasks")}
-        body={t("tasks.loadingDesc", "Fetching tasks in your organizational scope (RLS).")} />
+        body={t("tasks.loadingDesc", "Loading the tasks you can see.")} />
     </Shell>
   );
 }

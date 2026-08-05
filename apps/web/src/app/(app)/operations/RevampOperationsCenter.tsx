@@ -80,18 +80,21 @@ export default function RevampOperationsCenter({
           {/* CR-431 · WA-M3-AC-001 — preserve the accepted command-bar
               composition while making its live-status affordance complete the
               real Operations Center → Operations Live route flow. */}
-          <a className="tl-meta" href="/operations/live">
-            {copy(locale, "Live governed positions", "مواقع معتمدة مباشرة")}
+          <a className="btn btn-secondary" href="/operations/live">
+            {copy(locale, "Live positions", "المواقع المباشرة")}
           </a>
-          <a className="tl-meta" href="/operations/exceptions">
+          <a className="btn btn-secondary" href="/operations/exceptions">
             {copy(locale, "Exception board", "لوحة الاستثناءات")}
           </a>
           <button className="btn btn-secondary" type="button" onClick={() => setShowList(value => !value)}>
-            {showList ? copy(locale, "Show map", "إظهار الخريطة") : copy(locale, "Show list equivalent", "إظهار القائمة المكافئة")}
+            {showList ? copy(locale, "Show map", "إظهار الخريطة") : copy(locale, "Show list", "إظهار القائمة")}
           </button>
         </div>
       </div>
 
+      {/* Map branch below uses .map-panel + .lv-map: .map-panel sets no height
+          and OperationsMapWorkspace fills its parent, so it collapsed to the
+          breadcrumb line alone — the reason "View on map" opened nothing. */}
       {showList ? (
           <section className="table-wrap">
             <table className="table">
@@ -121,7 +124,7 @@ export default function RevampOperationsCenter({
             </table>
           </section>
       ) : (
-          <section className="map-panel">
+          <section className="map-panel lv-map">
             <nav className="breadcrumb" aria-label={copy(locale, "Map drill", "التنقل في الخريطة")}><ul className="breadcrumb"><li>{copy(locale, "Saudi Arabia", "المملكة العربية السعودية")}</li></ul></nav>
             <OperationsMapWorkspace entries={activeMapEntries} strings={mapStrings} mapOnly />
           </section>

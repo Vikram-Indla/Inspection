@@ -66,7 +66,7 @@ export default async function FieldSampleCollectionReportsPage({ searchParams }:
     absent: tr("field.samples.absent", "Did not attend", "لم يحضر"),
     objected: tr("field.samples.objected", "Attended but objected to signing", "حضر واعترض على التوقيع"),
     reasonLabel: tr("field.samples.reasonLabel", "Reason", "السبب"),
-    unsupported: tr("field.samples.unsupported", "Absent/objected recording is not yet wired to a write path — capture in the notes for now.", "تسجيل حالة عدم الحضور/الاعتراض غير موصول بعد بمسار كتابة — سجّلها ضمن الملاحظات حاليًا."),
+    unsupported: tr("field.samples.unsupported", "Absent/objected recording is not available. Capture it in the notes for now.", "تسجيل حالة عدم الحضور/الاعتراض غير موصول بعد بمسار كتابة — سجّلها ضمن الملاحظات حاليًا."),
   };
 
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
@@ -97,7 +97,7 @@ export default async function FieldSampleCollectionReportsPage({ searchParams }:
           {!error && rows.length === 0 && (
             <div className={styles.empty}>
               <div className={styles.emptyTitle}>{tr("field.samples.empty", "No sample collection reports in scope", "لا توجد تقارير جمع عينات ضمن النطاق")}</div>
-              <p className="t-caption">{tr("field.samples.emptyBody", "Logged reports appear here according to sample_collection_reports RLS.", "تظهر التقارير المسجلة هنا وفق صلاحيات صفوف جدول تقارير جمع العينات.")}</p>
+              <p className="t-caption">{tr("field.samples.emptyBody", "Logged reports appear here when they are within your scope.", "تظهر التقارير المسجلة هنا وفق صلاحيات صفوف جدول تقارير جمع العينات.")}</p>
             </div>
           )}
           {!error && rows.map(row => (

@@ -1,4 +1,4 @@
-// R2/R3 evidence grammar (CD-013/014/016/017/019). An honest "Not available yet"
+// R2/R3 evidence grammar (CD-013/014/016/017/019). An honest "Not available"
 // boundary: it names a capability deliberately ABSENT from the current build and
 // the human consequence of that absence. It is never a disabled control or a fake
 // feature — the boundary itself is the truthful UI.
@@ -13,7 +13,7 @@ export function NotYetBoundary({
   consequence,
   seam,
   prerequisites,
-  notAvailableLabel = "Not available yet",
+  notAvailableLabel = "Not available",
   detailLabel = "Why / prerequisites",
 }: {
   title: string;

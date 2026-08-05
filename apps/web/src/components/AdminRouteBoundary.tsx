@@ -30,7 +30,7 @@ export default async function AdminRouteBoundary({ allowedRoles, children }: { a
           <Link className="sq-btn" href="/profile">{t("admin.unauthorized.request", "Request access")}</Link>
           <Link className="sq-btn sq-btn--secondary" href="/dashboard">{t("admin.unauthorized.return", "Back to default state")}</Link>
         </div>
-        <small>{t("admin.unauthorized.detail", "Administration routes are guarded by the admin role family (security_admin / compliance_admin / risk_owner / form_admin / workflow_admin). A Planner reaches the destination and is refused at the boundary.")}</small>
+        <small>{t("admin.unauthorized.detail", "Administration routes are guarded by the administrator role family. A Planner reaches the destination and is refused at the boundary.")}</small>
       </section>
     </Shell>
   );

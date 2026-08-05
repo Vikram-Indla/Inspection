@@ -1,0 +1,158 @@
+schema_version: "1.0"
+record_id: "PROGRAMME-BASELINE-20260805"
+title: "Baseline programme — requirements, shell, design, application, journey"
+state: "ACTIVE"
+owner: "Product Owner (Vikram)"
+opened: "2026-08-05"
+supersedes_approach: >
+  Defect-by-defect working. Faults were being found, logged and routed
+  individually. That produced real fixes but no baseline, so nobody could say
+  what "done" meant or whether coverage was complete. The Product Owner has
+  directed a sequenced programme instead.
+
+canonical_rule_visibility:
+  statement: >
+    Regardless of persona, everybody can see everything. The only restriction is
+    that administration functionality is reachable by an administrator alone.
+  ruled_by: "Product Owner (Vikram)"
+  ruled_at: "2026-08-05"
+  meaning:
+    - "One shell for every role. One navigation catalogue. The frame does not change by persona."
+    - "Every screen appears in navigation for everyone. Discovery is not rationed by role."
+    - "Administration screens are visible to all but usable only by an administrator."
+    - "A user who cannot act on a screen is told why. They are not left wondering whether it exists."
+  consistent_with: >
+    The earlier ruling recorded in ShellClient that chrome is not persona-based,
+    and with INSP-727, which correctly stopped a supervisor reaching
+    administration functionality.
+  resolves:
+    INSP-752: >
+      The two shells collapse into one. There is no basis for a separate
+      administration frame once chrome is common to every role.
+    INSP-753: >
+      The 22 administration screens with no menu entry get one. The open
+      question was which belong in the menu; under this rule the answer is all
+      of them, with administration gated on capability rather than hidden.
+
+phases:
+  1_baseline:
+    name: "Requirements baseline — the BRDs become the Jira stories"
+    why: >
+      Sujatha and Sikander cannot be expected to read nine Arabic requirement
+      documents to know what correct behaviour is. Jira must carry the rules, in
+      plain user language, completely.
+    deliverables:
+      - "Every use case and every business rule from all nine BRDs, indexed with its document and identifier."
+      - "Every Jira story classified: traceable to a requirement, or generated from the code."
+      - "Generated stories rewritten from the requirements, in user language, with the rule identifier cited."
+      - "Complete coverage — every requirement has a story; every story has a requirement or is recorded as having none."
+      - "The role-model reconciliation: every actor named in a requirement against what the product implements."
+    language_rule: >
+      Written for a business reader. No identifiers, no function names, no
+      commit references. A tester must be able to read a story and know what to
+      expect on screen.
+    lane: "Requirements — Jira vs BRD"
+    state: "IN PROGRESS"
+
+  2_shell:
+    name: "One shell, one navigation"
+    why: "The shell is the largest single fault. Every persona inconsistency traces to it."
+    order: "First of the build work. Nothing else in the interface is stable until this is."
+    deliverables:
+      - "INSP-752 — administration renders through the shared shell."
+      - "INSP-753 — every screen reachable from navigation, administration gated on capability."
+      - "Nothing an administrator relies on is lost: command palette, screen registry, page frames, route progress."
+    lane: "Integration"
+    state: "PLAN COMPLETE, HELD"
+
+  3_design_audit:
+    name: "Figma audit against the requirements and the standard"
+    deliverables:
+      - "Every frame judged against the approved visual standard."
+      - "Truncation, clipping, text against panel edges, route paths on canvas, internal vocabulary, meaningless grey — all catalogued with node identifiers."
+      - "Every finding marked presentation-only or touching behaviour."
+      - "Where the design already satisfies a requirement, recorded as satisfied. Where it does not, recorded as a gap."
+    gap_recording: >
+      Gaps closed are recorded on the decisions canvas so the team can see what
+      was fixed and when, rather than discovering it by accident.
+    lane: "Front End"
+    state: "IN PROGRESS"
+
+  4_sync:
+    name: "Design corrections applied to the application"
+    rule: >
+      A defect found in the design is assumed present in the application until
+      proven otherwise. Both are corrected together, never one alone.
+    depends_on: ["2_shell", "3_design_audit"]
+    state: "NOT STARTED"
+
+  5_journey:
+    name: "The golden path works end to end"
+    deliverables:
+      - "Every rule carried by a Jira story is satisfied by the running system."
+      - "The full journey walked: configure and publish, plan, review and publish, receive, execute, evidence, submit, review and decide, correct and resubmit, close the loop."
+      - "Walked by each persona, against real data."
+    depends_on: ["1_baseline", "2_shell", "3_design_audit", "4_sync"]
+    state: "NOT STARTED"
+
+definition_of_done:
+  - "Jira carries every requirement rule, in user language, with complete coverage."
+  - "One shell, one navigation, administration gated by capability."
+  - "Design and application agree, with gaps recorded as closed."
+  - "The golden path is walked successfully by every persona."
+  - "All work on main. No stale branches or worktrees belonging to this orchestration."
+  - "No open defects from this orchestration's work. No decisions left pending."
+  out_of_scope:
+    - "Staging deployment — owned by the Product Owner."
+    - "Branches and worktrees belonging to other sessions or agents."
+
+standing_constraint:
+  statement: "Do not break the functionality. This cannot be afforded."
+  application: >
+    Every change is marked presentation-only or touching behaviour. Behaviour
+    changes are raised separately, never bundled into a cosmetic sweep, and are
+    verified by walking the affected screens afterwards.
+
+goal:
+  statement: >
+    An enterprise-grade application that adheres to the requirements of the BRDs
+    and Jira.
+  ruled_by: "Product Owner (Vikram)"
+  ruled_at: "2026-08-05"
+  what_enterprise_grade_means_here:
+    - "No interface defects. Nothing clipped, truncated, cramped or overrunning its container."
+    - "No prose masquerading as function. A screen does something; it does not describe itself."
+    - "No weak components. One way to express a table, a state, a status, an action."
+    - "A coherent mental model. The same idea looks and behaves the same everywhere, and a user can predict the next screen."
+    - "Every rule carried by a requirement is satisfied by the running system."
+  no_silver_bullet: >
+    No single change is expected to achieve this. The measure is whether the
+    requirements are met and the product reads as enterprise software — not
+    whether any particular fix was applied.
+  freedom_granted: >
+    Anything may be changed in service of that goal. Existing structure is not
+    protected by having been built first. The only limits are the standing
+    constraint above, the governed values rule, and approvals already recorded.
+
+orchestrator_authority:
+  granted_by: "Product Owner (Vikram)"
+  granted_at: "2026-08-05"
+  statement: >
+    Lanes report to the orchestrator. The orchestrator directs them on its own
+    authority and makes the decisions, rather than returning routine questions
+    to the Product Owner.
+  decides_directly:
+    - "Sequencing, priority and which lane takes which work."
+    - "Interface, layout, component and terminology decisions."
+    - "Whether a finding is a defect, already known, or not reproducible."
+    - "Whether work is ready to land, and landing it."
+    - "Design-system corrections that serve the approved standard."
+  still_escalates:
+    - "Anything inventing a governed value — a risk weight, penalty, threshold, SLA or approval rule."
+    - "Separation-of-duties and who-may-do-what decisions not already settled."
+    - "Anything contradicting an approved requirement, or where the requirements are silent and the answer is a business rule."
+    - "Deployment, and work belonging to other sessions or agents."
+  reporting_obligation: >
+    Report outcomes, not requests for permission. State what was decided and
+    why. The Product Owner overrides freely; the orchestrator does not wait for
+    instruction it can reasonably form itself.

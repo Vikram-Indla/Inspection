@@ -350,12 +350,13 @@ export function buildDashboardMetrics(input: {
     ? Math.round(durationRows.reduce((sum, x) => sum + (x.end - x.start), 0) / durationRows.length)
     : null;
 
-  const inspectorMap = new Map<string, { id: string; name: string; assigned: number; active: number; completed: number; overdue: number }>();
+  const inspectorMap = new Map<string, { id: string; name: string; nameResolved: boolean; assigned: number; active: number; completed: number; overdue: number }>();
   for (const visit of scopedVisits) {
     for (const assignment of visit.assignments ?? []) {
       const row = inspectorMap.get(assignment.inspector_id) ?? {
         id: assignment.inspector_id,
         name: assignment.profiles?.full_name ?? assignment.inspector_id.slice(0, 8),
+        nameResolved: Boolean(assignment.profiles?.full_name),
         assigned: 0,
         active: 0,
         completed: 0,
