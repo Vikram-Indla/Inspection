@@ -1,0 +1,260 @@
+schema_version: "1.0"
+packet_id: "PKT-M4-FACTORY360-READ-001"
+authored_by: "ChatGPT"
+planning_lane: "gpt-w1"
+status: "READY_FOR_CODEX_LEASE_REVIEW"
+module: "M4 Factories and Factory 360"
+vertical_slice: >-
+  An authorized scoped Web/Admin user opens /factories, filters the real registry,
+  opens /factories/:id, and reads a source-backed Factory 360 profile. Verified
+  repository facts render normally. Industry Shared-owned fields whose eleven
+  contracts remain unverified render explicit fail-closed unavailable states with
+  no network call, invented value or permanent mock.
+
+contract_anchor:
+  repository: "Vikram-Indla/Inspection"
+  control_branch: "chatgpt/m4-factory360-activation"
+  implementation_branch: "codex/m4-factory360-read"
+  implementation_worktree: "/Users/vikramindla/Developer/Inspection-codex-m4-factory360"
+  baseline_ref: "setup/Inspection"
+  baseline_commit: "3eebbf8643c86df6e03e44e7dec737d799b8d993"
+  requirement_ids: ["CR-410..CR-429"]
+  screen_ids: ["SCR-WEB-400", "WA-DES-026", "WA-DES-027"]
+  engine_ids: ["G2-P12", "MOD-15", "M07-001", "ENG-WAP1-M4", "WA-MIG-040", "WA-MIG-041"]
+  acceptance_ids:
+    - "WA-AC-0410..0429"
+    - "WA-M4-AC-001..006"
+    - "F360-ISH-AC-001..016"
+  evidence_ids: ["WA-EV-0410..0429", "WA-M4-EV-001..006", "F360-ISH-EV-001..012"]
+  routes: ["/factories", "/factories/:id", "/factories/:id?compat=legacy"]
+  design_authority:
+    - id: "WA-DES-026"
+      source: "SAQEEL Factories.dc.html"
+      sha256: "b6fbf963aee937be7cf40b8df65862b10a88ccd8a89dd3ac5a6021a87f2244c6"
+      reference_viewport: "1200x860"
+    - id: "WA-DES-027"
+      source: "SAQEEL Factory 360.dc.html"
+      sha256: "680c838cde826e24d1ad53ac4438a4de06379e0cf07605d30ad3d1d1a2392d77"
+      reference_viewport: "1440x900"
+
+sponsor_direction:
+  received_on: "2026-08-05"
+  instruction: >-
+    Execute functionality-first now. Do not wait for the eleven Industry Shared
+    contracts. Keep unavailable source/provider fields truthful and fail closed;
+    invent no data and introduce no permanent mock.
+  interpretation: >-
+    The prior FACTORY_360_EXECUTION_STATE sponsor-wait stop blocks live-provider
+    verification only. It no longer blocks this bounded application read slice.
+    No provider contract is upgraded or inferred.
+
+business_scope:
+  persona: "Authenticated scoped business user"
+  outcome: >-
+    Preserve the current Factory 360 business truth while delivering the accepted
+    SAQEEL list/detail hierarchy: registry filtering; identity; licence and CR;
+    official versus observed location; products; materials; workforce and
+    investment when verified; visit and inspection history; approved compliance
+    outcomes; corrective actions; risk; documents; timeline; provenance; access
+    control; and partial-source behavior.
+  read_only_boundary:
+    - "No new create, update, delete, upload, workflow transition or provider forwarding."
+    - "Existing Controls.tsx and current write actions are untouched regression boundaries."
+    - "CR-423 Health Score remains decision-required; Risk Score is never relabelled as Health Score."
+    - "Factory, licence, CR, product, material, workforce and provider-owned facts remain read-only."
+  required_interactions:
+    - "Open /factories from the retained authenticated shell."
+    - "Filter by existing licensed/unlicensed, region and city controls."
+    - "Open the governed factory destination without breaking normalized CR redirect or legacy compatibility."
+    - "Navigate accepted read-only Factory 360 sections and permitted existing drilldowns."
+  required_states:
+    - "loading"
+    - "populated"
+    - "empty registry"
+    - "no filter matches"
+    - "not found"
+    - "unauthorized or permission-restricted section"
+    - "partial verified-source error"
+    - "source field unavailable"
+    - "source timestamp unavailable"
+    - "Industry Shared contract unavailable"
+    - "map/provider unavailable while non-map content remains usable"
+    - "document preview unavailable while metadata remains truthful"
+    - "Health Score decision-required with Risk Profile kept separate"
+  delivery_matrix:
+    locales: ["EN/LTR", "AR/RTL"]
+    themes: ["light", "dark"]
+    viewports: ["1440x900", "1200x860", "1024x768", "412x915", "390x844", "320x800 reflow"]
+    accessibility: >-
+      Keyboard-operable filters, links and section navigation; visible focus;
+      semantic alternatives; non-colour status cues; accessible source and
+      unavailable-state labels.
+
+wiring_contract:
+  verified_repository_sources:
+    - "Existing Supabase server reads and RLS for factories and industrial_licenses."
+    - "Existing factory_documents, factory_representatives, factory_products and factory_materials reads."
+    - "Existing visits, inspections, submission_versions, reviews, violations, action_forms and penalty_notices lineage."
+    - "Existing factory_risk_snapshots and risk provenance; no new formula or Health Score inference."
+    - "Existing geo_events official/observed separation and Mapbox fail-closed boundary."
+    - "Existing evidence metadata visibility and role-sensitive masking."
+    - "Existing /factories/cr/:id normalized route is a read-only dependency and redirect destination, not an owned edit path."
+  rls_rbac:
+    - "Direct route and nested reads remain constrained by existing authenticated RLS/RBAC."
+    - "Positive test: authorized scoped business user."
+    - "Negative tests: unauthenticated, unauthorized role and restricted documents/evidence/contacts."
+    - "Client hiding never substitutes for server/RLS enforcement."
+  audit_and_versioning:
+    - "No new write action or audit event is introduced."
+    - "Submitted/approved inspection versions and official compliance lineage stay immutable and read-only."
+    - "Timeline/source facts are displayed without manufacturing events or causal links."
+  truth_rules:
+    - "Render only facts returned by existing verified repository contracts."
+    - "Expose source/source_synced_at where available, otherwise an explicit unavailable state."
+    - "Missing is not zero, healthy, compliant, current or synchronized."
+    - "One failed source or unverified contract never blanks the whole route."
+    - "No source conflict is silently resolved and no observed value overwrites official master data."
+    - "No Industry Shared endpoint is called until separately CONTRACT_VERIFIED."
+
+industry_shared_fail_closed_contract:
+  canonical_code: "INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED"
+  user_behavior: "Show unavailable; do not call network; expose no sensitive detail; offer no false retry."
+  endpoint_contracts:
+    - { id: "ISH-API-001", key: "license_info", state: "BLOCKED_EXTERNAL" }
+    - { id: "ISH-API-002", key: "license_info_products", state: "BLOCKED_EXTERNAL" }
+    - { id: "ISH-API-003", key: "license_info_preview", state: "BLOCKED_EXTERNAL" }
+    - { id: "ISH-API-004", key: "job_workforce_info", state: "BLOCKED_EXTERNAL" }
+    - { id: "ISH-API-005", key: "contact_list", state: "BLOCKED_EXTERNAL" }
+    - { id: "ISH-API-006", key: "plants", state: "BLOCKED_EXTERNAL" }
+    - { id: "ISH-API-007", key: "plant_with_labors", state: "BLOCKED_EXTERNAL" }
+    - { id: "ISH-API-008", key: "is_industrial_activity", state: "BLOCKED_EXTERNAL" }
+    - { id: "ISH-API-009", key: "get_industrial_activities", state: "BLOCKED_EXTERNAL" }
+    - { id: "ISH-API-010", key: "delegations", state: "BLOCKED_EXTERNAL" }
+    - { id: "ISH-API-011", key: "hrsd_labors", state: "BLOCKED_EXTERNAL" }
+  non_blocking_rule: >-
+    These contracts block only their source-owned fields and live-provider claims.
+    They do not block verified Factory, Senaei, Visit, Inspection, Compliance,
+    Risk, GIS, evidence or audit facts.
+
+write_lease:
+  lease_id: "LEASE-M4-FACTORY360-READ-001"
+  requested_owner: "cc-w2"
+  session_id: "local_db4e51e9-6fd7-4fd2-8039-d4fc01887224"
+  module: "M4"
+  state: "REQUESTED_NOT_GRANTED"
+  requested_branch: "codex/m4-factory360-read"
+  requested_worktree: "/Users/vikramindla/Developer/Inspection-codex-m4-factory360"
+  baseline_head: "3eebbf8643c86df6e03e44e7dec737d799b8d993"
+  ttl_minutes: 90
+  maximum_renewals: 2
+  breaker: "Codex"
+  rule: >-
+    Codex alone grants, renews or breaks this lease after confirming branch,
+    dirty ownership and non-overlap. One M4 write lease maximum; M6 holds none.
+  non_overlap:
+    - "No allowed path overlaps any /operations/** lease."
+    - "No allowed path overlaps Field/PWA, Admin, shared shell, provider or database leases."
+  allowed_paths:
+    - "apps/web/src/app/(app)/factories/page.tsx"
+    - "apps/web/src/app/(app)/factories/FactoryList.tsx"
+    - "apps/web/src/app/(app)/factories/[id]/page.tsx"
+    - "apps/web/e2e/web-admin-m4-factory360.spec.ts"
+    - "product-contract/evidence/PKT-M4-FACTORY360-READ-001.md"
+  prohibited_paths:
+    - "apps/web/src/app/(app)/factories/cr/**"
+    - "apps/web/src/app/(app)/factories/[id]/Controls.tsx"
+    - "apps/web/src/app/(app)/factories/[id]/actions.ts"
+    - "apps/web/src/app/(app)/factories/[id]/FactorySpatialMap.tsx"
+    - "apps/web/src/app/(app)/factories/[id]/neutral.ts"
+    - "apps/web/src/lib/factory360/**"
+    - "apps/web/src/lib/integrations/**"
+    - "apps/web/src/lib/providers/**"
+    - "apps/web/src/app/api/**"
+    - "apps/web/src/app/(app)/operations/**"
+    - "apps/web/src/app/(app)/admin/**"
+    - "apps/web/src/app/(app)/layout.tsx"
+    - "apps/web/src/components/Shell.tsx"
+    - "apps/web/src/components/ShellClient.tsx"
+    - "apps/web/src/app/globals.css"
+    - "apps/web/src/app/astryx.css"
+    - "apps/web/public/**"
+    - "supabase/**"
+    - "**/migrations/**"
+    - "/field/**"
+    - "PWA, iPad, offline, service-worker and manifest paths"
+    - "main, setup/Inspection, active worker worktrees, stashes, shared data and remote systems"
+
+implementation_instructions:
+  - "Read the canonical bootstrap and report branch, HEAD, dirty paths, packet and lease before product edits."
+  - "Preserve normalized-CR redirect and /factories/:id?compat=legacy; do not reroute /factories/cr/:id."
+  - "Use existing SAQEEL route-local components/classes; request a new packet rather than touching shared shell/global CSS/providers."
+  - "Do not remove fields, sections, permissions, actions or compatibility behavior because a design is visually narrower."
+  - "Do not hardcode provider values, demo data, thresholds, Health Score, AI summaries or freshness rules."
+  - "Keep current write controls untouched; this packet is read-only presentation and source-state correction."
+
+verification_required:
+  focused_tests:
+    - "apps/web/e2e/web-admin-m4-factory360.spec.ts"
+    - "apps/web/e2e/factory360-cr-dossier-contract.spec.ts"
+    - "apps/web/e2e/factory360-cross-provider-contract.spec.ts"
+    - "apps/web/e2e/industry-shared-integration-contract.spec.ts"
+    - "apps/web/e2e/factory360-admin-control-plane.spec.ts"
+    - "apps/web/e2e/cd-031-factory-360.spec.ts"
+    - "apps/web/e2e/neutral-error-sweep.spec.ts"
+    - "apps/web/e2e/shell-navigation.spec.ts"
+  commands:
+    - "npm run typecheck"
+    - "npm run build"
+    - "npx playwright test --config=playwright.static.config.ts <focused M4 specs>"
+    - "node scripts/validate_web_admin_phase1.mjs"
+    - "git diff --check"
+    - "exact allowed-path lease audit"
+  negative_and_truth_cases:
+    - "unauthenticated and unauthorized direct route"
+    - "permission-restricted documents, evidence and contacts"
+    - "empty registry and no filter matches"
+    - "factory not found"
+    - "partial verified-source failure leaves healthy sections usable"
+    - "ISH-API-001..011 show governed unavailable and make no network call"
+    - "Health Score unavailable without Risk Score substitution"
+    - "missing field/source timestamp is not rendered as zero/current"
+    - "map/provider unavailable leaves non-map profile readable"
+    - "normalized CR redirect and legacy compatibility remain intact"
+  browser_handoff_for_codex:
+    - "Authorized persona on /factories and one /factories/:id?compat=legacy record."
+    - "EN/LTR and AR/RTL; light/dark; all named viewports."
+    - "Record persona, route, commit, locale, theme, viewport, console and network result."
+    - "Demonstrate populated, partial/unavailable and negative states."
+
+evidence_required:
+  - "Commit-pinned functional/negative report for CR-410..429 and WA-M4-AC-001..006."
+  - "No-network proof for ISH-API-001..011 with the canonical unavailable code."
+  - "Source-provenance proof for every visible external/master-data claim where current fields exist."
+  - "RLS/RBAC negative evidence for route and restricted sections."
+  - "Visual comparison to WA-DES-026 at 1200x860 and WA-DES-027 at 1440x900."
+  - "EN/AR, RTL, responsive and accessibility evidence."
+  - "Protected Factory 360, Industry Shared, shell and adjacent-route regression evidence."
+  - "Textual index: product-contract/evidence/PKT-M4-FACTORY360-READ-001.md; binaries remain under INSPECTION_DOCS_ROOT."
+
+stop_conditions:
+  - "STOP THE LINE for auth/RLS bypass, PII leakage, source overwrite, data corruption, secret exposure or silent requirement loss."
+  - "Stop if an allowed path is dirty without cc-w2 ownership, gains another owner or overlaps a live lease."
+  - "Stop rather than edit /factories/cr/:id, shared Factory 360 services, providers, APIs, migrations or current write controls."
+  - "Stop rather than infer Industry Shared contract details, source values, privacy, Health Score, threshold or AI output."
+  - "Stop completion claims if a required ID, state, locale, viewport, negative test or evidence leg is absent or stale."
+  - "Do not certify, audit, set severity, accept, merge, deploy, run DDL, mutate data, change providers or write outside allowed paths."
+
+pr_sized_exit:
+  target: "One bounded implementation commit and one unmerged PR from codex/m4-factory360-read."
+  exit_condition: >-
+    Stop after cc-w2 hands off an exact allowed-path commit containing the
+    /factories and /factories/:id read-only correction, focused tests and textual
+    evidence. Codex then performs safety, test and real-browser review. No
+    certification, acceptance, cutover, deletion, merge, deployment, DDL,
+    provider change or successor work is authorized.
+  rollback: "Revert the bounded implementation commit; routes and data remain intact."
+
+queued_successor:
+  packet_id: "PKT-M6-COMPLIANCE-REQUESTS-001"
+  path: "product-contract/operationalization/packets/PKT-M6-COMPLIANCE-REQUESTS-001.yaml"
+  state: "QUEUED_NO_LEASE"
