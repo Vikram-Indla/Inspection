@@ -1,5 +1,5 @@
 import "./login.css";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import FieldLoginClient, { type FieldLoginStrings } from "./field/FieldLoginClient";
 import StoryPanel, { type StoryStrings } from "./StoryPanel";
 
@@ -24,9 +24,15 @@ export const dynamic = "force-dynamic";
 
 type Locale = "ar" | "en";
 
+// Same rule as getLocale() in @/lib/i18n: an explicit choice wins, otherwise
+// follow the browser. This previously returned Arabic for every state that was
+// not exactly "en", so the sign-in page opened in Arabic for an English reader
+// who had never used the language switch.
 async function resolveLocale(): Promise<Locale> {
-  const c = await cookies();
-  return c.get("login_locale")?.value === "en" ? "en" : "ar";
+  const chosen = (await cookies()).get("login_locale")?.value;
+  if (chosen === "ar" || chosen === "en") return chosen;
+  const accept = (await headers()).get("accept-language")?.toLowerCase() ?? "";
+  return /(^|[,\s])ar\b/.test(accept) ? "ar" : "en";
 }
 
 export default async function Login({ searchParams }: {
