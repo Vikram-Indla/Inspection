@@ -1,0 +1,91 @@
+schema_version: "1.0"
+record_id: "DESIGN-STANDARD-20260805"
+title: "SAQEEL visual standard — the end-to-end journey diagram"
+state: "APPROVED"
+approved_by: "Product Owner (Vikram)"
+approved_at: "2026-08-05"
+
+decision: >
+  The end-to-end four-role journey diagram is the approved visual standard for
+  the product. Screens are judged against it. Where a screen and the standard
+  disagree, the standard wins.
+
+source:
+  artefact: "saqeel-end-to-end-four-role-model.svg"
+  location: "Notion — Inspection Platform Repository Architecture"
+  why: >
+    It is the only artefact in the programme with a coherent, deliberate visual
+    language. It states a role, a purpose, its supporting facts, its outcome and
+    its traceability in one unit, with restraint and no decoration. It is better
+    designed than most of the screens it describes.
+
+what_transfers:
+  role_colour:
+    rule: >
+      Colour identifies the role acting, consistently, everywhere.
+    mapping:
+      admin: "purple"
+      planner: "blue"
+      supervisor: "green"
+      inspector: "green"
+      system: "amber"
+      review_and_correction: "red"
+    constraint: >
+      These must resolve to variables in the existing Color collection. If a
+      role colour has no token, that is a design-system change request for the
+      Product Owner — never a literal hex invented at the screen.
+  unit_structure:
+    rule: >
+      A content unit reads in a fixed order: a small role or category label,
+      then a plain title, then the few facts that matter, then the outcome it
+      produces, then its traceability.
+    note: "The outcome line is the part most screens are missing."
+  every_unit_states_its_outcome:
+    rule: >
+      A screen or region must make clear what the user ends up with. The journey
+      names an outcome for all thirteen steps. A region that produces no outcome
+      is a placeholder, not a design.
+  traceability_is_visible:
+    rule: >
+      The origin of a thing is shown, quietly, in a subordinate position — the
+      way the diagram carries its story references.
+  restraint:
+    rule: >
+      No decoration. Generous whitespace. One accent per unit. Semantic colour
+      only — colour that carries no meaning is not used.
+  semantic_status:
+    rule: >
+      Status is text plus shape, never colour alone. Unchanged from the existing
+      rule; the diagram already obeys it.
+
+what_does_not_transfer:
+  numbered_markers: >
+    The 00–12 markers are valid because the journey genuinely is a sequence.
+    Numbering must encode something true. Do not apply numbered markers to
+    screens whose content is not ordered.
+  connectors_and_flow_layout: >
+    The arrows and left-to-right flow express a process. They are not a page
+    layout and must not be reproduced as chrome on a screen.
+  card_grid: >
+    The diagram's card grid suits a diagram. Screens keep their own layouts.
+
+application:
+  - "The Figma audit judges every frame against this standard."
+  - "Application screens are judged against the same standard, not a separate one."
+  - "All four roles converge on it. No role keeps a private visual language."
+  - "Where a screen already meets it — the Planner work is closest — that screen becomes the worked example."
+
+constraints_that_still_bind:
+  - "No new CSS. Only classes already in apps/web/src/app/saqeel-components.css."
+  - "No new tokens. If the standard needs a token that does not exist, raise it; do not invent it."
+  - "Never invent a governed value. Absent data renders as Not configured / Unavailable / Insufficient evidence."
+  - "Arabic lives in the i18n resources, never authored in a component."
+  - "Routes are fixed. A route path is never visible label text."
+  - "Presentation changes must not alter behaviour. Anything touching behaviour is raised separately."
+
+open_question_for_product_owner:
+  role_colour_tokens: >
+    The Color collection was built for surfaces, text, borders and status — not
+    for role identity. Whether role colour becomes a new token family, or is
+    expressed through the existing accent and status families, is a Product
+    Owner decision. Recorded as open; not assumed.
