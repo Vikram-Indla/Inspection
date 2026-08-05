@@ -1,40 +1,63 @@
-# V5 §5 — the two-hour planning/reconciliation horizon (NOT an idle tolerance).
-# Referenced by the §2 bootstrap read-order. Regenerate CONTROL_BOARD.md from state.
-schema_version: "1.0"
+schema_version: "1.1"
+control_id: "SAQEEL-OS-TWO-HOUR-CYCLE-001"
+authority: "AGENTS.md and product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md"
+status: "OPEN_M4_LEASE_REVIEW"
+updated_at: "2026-08-05T16:22:00+03:00"
 cycle_hours: 2
-idle_tolerance_minutes: 5          # no passive idle > 5 min while a safe READY packet exists
-heartbeat_interval_minutes: 5      # missing 10 min => ORCH-DEFECT (§5)
+idle_tolerance_minutes: 5
+heartbeat_interval_minutes: 5
 
-orchestrator_cycle_actions:        # §5, run every 2 hours
-  - "Read context-health bands for every actor (§17)."
-  - "Read gate, slice, decisions, worktrees, branches, dirty paths."
-  - "Inspect each lane: running / ready / completed / blocked / suspect / stalled."
-  - "Review finished handoffs -> ACK / RETURNED / BLOCKED."
-  - "Reconcile completion against all 478 requirement rows."
-  - "Browser delivery gate on newly delivered work (§6)."
-  - "Commit + push reviewed-green work; update PR. Never merge/deploy without authority."
-  - "Refresh CONTROL_BOARD.md from evidence only."
-  - "Publish flow metrics, decisions at risk, verification ledger (independence split), sampling status."
-  - "Issue next two-hour queue."
+sponsor_override:
+  subject: "M4 Factory 360 functionality-first activation"
+  effect: >-
+    Remove only the application-build wait caused by unverified Industry Shared
+    contracts. ISH-API-001..011 stay blocked external and fail closed. No live
+    provider, DDL, data, certification, audit, merge or deployment authority is
+    created.
 
-cycle_close_invariants:            # §5
-  - "Every lane: active work OR handoff-under-review OR recorded dependency + active fallback."
-  - "At least one worker RUNNING unless every READY task is contract-blocked."
-  - "Each active worker has one bounded READY packet queued behind current work."
-  - "Each packet has requirement/screen/engine/acceptance IDs + frozen criteria hash."
-  - "No two write packets overlap."
-  - "No row reached figure 2 without blind verification by a non-authoring session."
-  - "Sponsor sampling queue <= 1 cycle behind."
+current_cycle:
+  cycle_id: "SAQEEL-CYCLE-2026-08-05-M4-001"
+  active_packet: "PKT-M4-FACTORY360-READ-001"
+  packet_path: "product-contract/operationalization/packets/PKT-M4-FACTORY360-READ-001.yaml"
+  implementation_actor: "cc-w2"
+  implementation_session: "local_db4e51e9-6fd7-4fd2-8039-d4fc01887224"
+  state: "READY_FOR_CODEX_LEASE_REVIEW"
+  lease:
+    id: "LEASE-M4-FACTORY360-READ-001"
+    state: "REQUESTED_NOT_GRANTED"
+    ttl_minutes: 90
+    maximum_renewals: 2
+    breaker: "Codex"
+  successor:
+    packet_id: "PKT-M6-COMPLIANCE-REQUESTS-001"
+    path: "product-contract/operationalization/packets/PKT-M6-COMPLIANCE-REQUESTS-001.yaml"
+    state: "QUEUED_NO_LEASE"
+  next_actions:
+    - "Codex checks requested implementation branch and exact baseline."
+    - "Codex checks dirty ownership for every allowed path."
+    - "Codex checks non-overlap against all live leases."
+    - "Codex grants or returns the requested M4 lease; no implicit grant."
+    - "After grant, cc-w2 executes only the packet's bounded read-only vertical."
+    - "At commit-pinned handoff, Codex runs safety, tests and real-browser review."
+  stop_conditions:
+    - "Overlapping owner or dirty path outside cc-w2 ownership"
+    - "Need to edit a prohibited path"
+    - "Need to infer provider contract, source value, Health Score, threshold, privacy or AI output"
+    - "Auth/RLS bypass, PII/secret exposure, source overwrite or data corruption risk"
+    - "Lease expiry"
 
-thresholds:                        # Appendix A.2 (subset)
-  wip_commit_interval_minutes: 30  # no repo delta => SUSPECT
-  suspect_unanswered_minutes: 15   # => STALLED, lease reclaimed
+thresholds:
+  wip_commit_interval_minutes: 30
+  suspect_unanswered_minutes: 15
   lease_ttl_minutes: 90
   lease_max_renewals: 2
   concurrent_write_leases_max: 3
-  review_queue_stop_depth: 2       # > 2 => stop issuing build packets (§34.2.6)
+  review_queue_stop_depth: 2
   median_review_latency_minutes: 30
-  return_rate_escalate_pct: 30
-  blocked_time_escalate_pct: 25
 
-cutover_state: "PARKED — queue frozen at GATE-SAMPLING-RATE (§0.1.8). No cycle issues build packets until resolved."
+cycle_close_invariants:
+  - "M4 packet has exact requirement, screen, engine, acceptance and evidence IDs."
+  - "M4 allowed paths do not overlap another live lease."
+  - "M4 provider-owned unavailable fields remain fail closed with no network call."
+  - "M6 remains queued without a lease."
+  - "No certification, audit, DDL, provider, data, main, merge or deployment action is inferred."
