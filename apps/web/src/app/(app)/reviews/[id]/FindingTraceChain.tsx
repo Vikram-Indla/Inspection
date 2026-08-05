@@ -47,36 +47,38 @@ export default function FindingTraceChain({ traces, strings }: {
 }) {
   return (
     <section className="panel sq-trace" aria-labelledby="finding-trace-heading">
-      <h2 id="finding-trace-heading">{strings.heading}</h2>
-      {/* The hint explains how to read the seven-link chain. With no chain on
-          screen it explained nothing and left the empty state as a caption, a
-          long spec sentence and a bare banner stacked in a full-height panel. */}
-      {traces.length > 0 && <p className="t-caption">{strings.hint}</p>}
-      {traces.length === 0 ? (
-        <div className="sq-banner" role="status"><div>{strings.empty}</div></div>
-      ) : (
-        <ol className="sq-trace__list">
-          {traces.map(trace => (
-            <li key={trace.key} className="sq-trace__item">
-              <details open>
-                <summary className="sq-trace__summary">
-                  <span className="numeric">{trace.key}</span>
-                  <span>{trace.question.value}</span>
-                </summary>
-                <dl className="sq-trace__nodes">
-                  <Node unavailableLabel={strings.unavailable} node={{ ...trace.question, label: strings.question }} />
-                  <Node unavailableLabel={strings.unavailable} node={{ ...trace.response, label: strings.response }} />
-                  <Node unavailableLabel={strings.unavailable} node={{ ...trace.evidence, label: strings.evidence }} />
-                  <Node unavailableLabel={strings.unavailable} node={{ ...trace.clause, label: strings.clause }} />
-                  <Node unavailableLabel={strings.unavailable} node={{ ...trace.violation, label: strings.violation }} />
-                  <Node unavailableLabel={strings.unavailable} node={{ ...trace.action, label: strings.action }} />
-                  <Node unavailableLabel={strings.unavailable} node={{ ...trace.decision, label: strings.decision }} />
-                </dl>
-              </details>
-            </li>
-          ))}
-        </ol>
-      )}
+      <div className="panel-body">
+        <h2 id="finding-trace-heading">{strings.heading}</h2>
+        {/* The hint explains how to read the seven-link chain. With no chain on
+            screen it explained nothing and left the empty state as a caption, a
+            long spec sentence and a bare banner stacked in a full-height panel. */}
+        {traces.length > 0 && <p className="t-caption">{strings.hint}</p>}
+        {traces.length === 0 ? (
+          <div className="sq-banner" role="status"><div>{strings.empty}</div></div>
+        ) : (
+          <ol className="sq-trace__list">
+            {traces.map(trace => (
+              <li key={trace.key} className="sq-trace__item">
+                <details open>
+                  <summary className="sq-trace__summary">
+                    <span className="numeric">{trace.key}</span>
+                    <span>{trace.question.value}</span>
+                  </summary>
+                  <dl className="sq-trace__nodes">
+                    <Node unavailableLabel={strings.unavailable} node={{ ...trace.question, label: strings.question }} />
+                    <Node unavailableLabel={strings.unavailable} node={{ ...trace.response, label: strings.response }} />
+                    <Node unavailableLabel={strings.unavailable} node={{ ...trace.evidence, label: strings.evidence }} />
+                    <Node unavailableLabel={strings.unavailable} node={{ ...trace.clause, label: strings.clause }} />
+                    <Node unavailableLabel={strings.unavailable} node={{ ...trace.violation, label: strings.violation }} />
+                    <Node unavailableLabel={strings.unavailable} node={{ ...trace.action, label: strings.action }} />
+                    <Node unavailableLabel={strings.unavailable} node={{ ...trace.decision, label: strings.decision }} />
+                  </dl>
+                </details>
+              </li>
+            ))}
+          </ol>
+        )}
+      </div>
     </section>
   );
 }
