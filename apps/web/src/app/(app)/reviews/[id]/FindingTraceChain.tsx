@@ -48,7 +48,10 @@ export default function FindingTraceChain({ traces, strings }: {
   return (
     <section className="panel sq-trace" aria-labelledby="finding-trace-heading">
       <h2 id="finding-trace-heading">{strings.heading}</h2>
-      <p className="t-caption">{strings.hint}</p>
+      {/* The hint explains how to read the seven-link chain. With no chain on
+          screen it explained nothing and left the empty state as a caption, a
+          long spec sentence and a bare banner stacked in a full-height panel. */}
+      {traces.length > 0 && <p className="t-caption">{strings.hint}</p>}
       {traces.length === 0 ? (
         <div className="sq-banner" role="status"><div>{strings.empty}</div></div>
       ) : (

@@ -2,6 +2,18 @@
    Logical properties throughout: every component works LTR and RTL.
    Consume semantic tokens only. */
 
+/* ══ Anchor reset ═════════════════════════════════════════════
+   Ported verbatim from design/final-cut/saqeel-revamp.html, which carries
+   `a { color: var(--text-link); text-decoration: none; }`. The app never
+   ported it, so every anchor fell back to the browser's default underline —
+   including anchors wearing component classes that assume no underline
+   (.seg-opt segmented controls, .tl-meta toolbar links). That is why the
+   Operations Center perspective switcher and the dashboard lens switcher
+   rendered as underlined text instead of as controls.
+   Components that want a visible underline opt in explicitly and still do:
+   a.sq-link re-declares text-decoration: underline below. */
+a { color: var(--text-link); text-decoration: none; }
+
 /* ══ Buttons ══════════════════════════════════════════════════ */
 .btn {
   display: inline-flex; align-items: center; justify-content: center;

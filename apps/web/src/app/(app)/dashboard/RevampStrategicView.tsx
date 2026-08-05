@@ -132,7 +132,16 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             {grouped.length ? grouped.slice(0, 8).map(row => (
               <tr key={row.label}>
                 <th scope="row">{row.label}</th>
-                <td className="cell-num">{row.rate == null ? "—" : `${row.rate}%`}</td>
+                {/* A column of bare percentages makes the reader compare numbers
+                    by eye. .progress is the design system's existing bar (it was
+                    defined and unused); the number stays as the accessible value
+                    and the bar is decorative reinforcement beside it. */}
+                <td className="cell-num">
+                  {row.rate == null ? "—" : `${row.rate}%`}
+                  {row.rate != null && (
+                    <span className="progress" aria-hidden="true"><i style={{ width: `${row.rate}%` }} /></span>
+                  )}
+                </td>
                 <td className="cell-num">{row.total}</td>
                 <td><a className="btn btn-ghost btn-sm" href={`/factories?${group}=${encodeURIComponent(row.label)}`}>{copy(locale, "Open factories", "فتح المصانع")}</a></td>
               </tr>
