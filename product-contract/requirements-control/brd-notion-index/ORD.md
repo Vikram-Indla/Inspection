@@ -1,4 +1,16 @@
 # ORD — BRD - إدارة الطلبات (Request/Order Management)
+
+> **OUT OF SCOPE — ruled by the Product Owner on 5 August 2026.**
+> Recorded in `CC-ORD-OUT-OF-SCOPE-20260805`.
+>
+> Not one Jira story cites this document, and that is deliberate rather than a
+> gap. The index below stays as written so the decision is visible and the cost
+> is known if scope ever changes — but these 69 requirements are **not** counted
+> in any coverage figure, and nothing here is a defect for being unbuilt.
+>
+> Nothing in this document is implemented, including the working-time rule
+> (07:30–16:30, weekends and holidays excluded) and the thirteen request types.
+
 Source: /Users/vikramindla/Desktop/BRD Notion/BRD - إدارة الطلبات- MIM-V0.1.docx
 Total: 2 use cases, 67 business rules. Full file read (lines 1-920).
 
