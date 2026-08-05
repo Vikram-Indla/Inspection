@@ -117,23 +117,51 @@ design.** The architecture record is explicit that Factory 360 "must remain one
 shared capability, not duplicate persona screens". Designing five Factory 360
 screens would make the problem permanent.
 
-**Group C — unattributed routes.** No design, no obvious requirement, unclear
-purpose:
+**Group C — routes with no design.** Originally recorded here as "no evident
+requirement, probably dead". **That was wrong, and the correction matters.**
 
-```
-/ai/suggestions   /cases      /committee     /enforcement
-/evidence-ocr     /incident-reports          /profile
-/launch           /launch/no-workspace       /reset
-/operations/exceptions        /operations/live
-/reference/web-admin/f0       /reports       /reports/inspection/[id]
-/reviews/[id]/started         /login/field/logout
-```
+Investigated 5 August. Every one has inbound links — none is orphaned — and
+they fall into four kinds, only one of which needs anything doing:
 
-Each needs the same question asked: which requirement does this serve? Where
-the answer is none, the route is a candidate for removal, not for design.
+*Legacy redirects, deliberate. Keep.*
+`/enforcement` is named `LegacyEnforcementRoute` in its own source and forwards
+to `/enforcement-library`, preserving the violation parameter. Removing it
+breaks old links and bookmarks.
 
-`/reference/web-admin/f0` and `/page.tsx` in the enumeration are artefacts and
-should be confirmed as such.
+*Technical bridges, necessary. Keep.*
+`/reviews/[id]/started` is a documented navigation bridge for Next 15, with a
+comment explaining that a server action must leave the current path before
+returning to the server-rendered workspace. Not redundancy — a framework
+requirement.
+
+*Feature-flagged screens that ARE requirement-traced.*
+`/cases` cites MVP2-REQ-0114 to 0119. `/committee` cites MVP2-REQ-0128 to 0136.
+Both are switched off by a feature flag and render an honest "not available
+yet" state naming the prerequisite — for the committee screen, PKI and EBDA
+verification being on hold.
+
+**These trace to a requirement set — MVP2-REQ — that was not consulted when this
+matrix was first drafted.** The claim of "no requirement" was a gap in the
+measurement, not in the product. Any future coverage figure must include that
+set.
+
+*Real screens genuinely needing design.*
+`/operations/live` (406 lines), `/profile`, `/ai/suggestions`, `/evidence-ocr`,
+`/incident-reports`, `/operations/exceptions`, `/tasks`. These are substantial
+and in use.
+
+`/reference/web-admin/f0` and the `/page.tsx` entry are enumeration artefacts.
+
+### A defect found while investigating Group C
+
+The "not available yet" screens disclose their technical seam to the user —
+`FEATURE_CASE_SPINE=off`, `FEATURE_DECISION_DOSSIER=off + PKI/EBDA held`. An
+environment variable name is engineering vocabulary.
+
+Graded P2, not P0, deliberately: the detail sits behind a "Why / prerequisites"
+disclosure rather than on the face of the screen, so someone already thought
+about this. The pattern is honest and worth keeping. Only the wording needs
+replacing with something a business reader recognises.
 
 ## What this changes
 
