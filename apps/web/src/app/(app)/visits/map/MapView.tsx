@@ -66,11 +66,11 @@ export async function VisitsMapView({ basePath = "/visits" }: { basePath?: Visit
                 inspectorLabel: t("plan.map.coverage.inspectorLabel", "Inspector status"), inspectorAll: t("plan.map.coverage.inspectorAll", "Any status"),
                 inspectorAssigned: t("plan.map.coverage.inspectorAssigned", "Assigned"), inspectorUnassigned: t("plan.map.coverage.inspectorUnassigned", "Unassigned"),
                 resetLabel: t("plan.map.coverage.reset", "Reset"),
-                unassignedCount: (n: number) => t("plan.map.coverage.unassignedCount", "{n} unassigned visits").replace("{n}", String(n)),
+                unassignedCount: t("plan.map.coverage.unassignedCount", "{n} unassigned visits"),
                 unassignedEmpty: t("plan.map.coverage.unassignedEmpty", "No visits in this scope"),
                 regionalTitle: t("plan.map.coverage.regionalTitle", "Regional visit coverage"),
                 regionalHelp: t("plan.map.coverage.regionalHelp", "Located visits in the current filter, grouped by region"),
-                visitsCount: (n: number) => t("plan.map.coverage.visitsCount", "{n} visits").replace("{n}", String(n)),
+                visitsCount: t("plan.map.coverage.visitsCount", "{n} visits"),
               }} />}
           </>}
     </Shell>
