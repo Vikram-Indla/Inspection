@@ -206,9 +206,9 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             <p className="cd-idrow"><span className="cd-idk">{t("f360.id.license", "license")}</span> <span className="cd-idv"><bdi>{identity(f.license_number)}</bdi></span></p>
             <p className="cd-idrow"><span className="cd-idk">{t("f360.id.licenseStatus", "license status / stage")}</span> <span className="cd-idv">{identity(f.license_status)} · {identity(f.license_stage)}</span></p>
             <p className="cd-idrow"><span className="cd-idk">{t("f360.id.licenseDates", "issued / expires")}</span> <span className="cd-idv sq-numeric">{identity(f.license_issue_date)} → {identity(f.license_expiry_date)}</span></p>
-            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.licenseHolder", "license holder")}</span> <span className="cd-idv">{identity(f.license_holder)}</span></p>
-            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.legalName", "CR legal name")}</span> <span className="cd-idv">{identity(f.legal_name)}</span></p>
-            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.crStatus", "CR status / owner")}</span> <span className="cd-idv">{identity(f.cr_status)} · {identity(f.cr_owner_details)}</span></p>
+            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.licenseHolder", "license holder")}</span> <span>{identity(f.license_holder)}</span></p>
+            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.legalName", "CR legal name")}</span> <span>{identity(f.legal_name)}</span></p>
+            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.crStatus", "CR status / owner")}</span> <span><span className="cd-idv">{identity(f.cr_status)}</span> · {identity(f.cr_owner_details)}</span></p>
             <p className="cd-idrow">{f.activity_class} · {f.region} · {f.city}</p>
           </div>
 

@@ -1582,7 +1582,7 @@ button.sq-shell-scope { cursor: pointer; }
 .cd-fpchip--unknown { border-style: dashed; color: var(--text-secondary); }
 
 /* tags */
-.cd-tag { display: inline-block; font: var(--type-micro); font-family: var(--font-mono); padding: 3px 8px; border-radius: 6px; letter-spacing: .03em; }
+.cd-tag { display: inline-block; font: var(--type-micro); padding: 3px 8px; border-radius: 6px; letter-spacing: .03em; }
 .cd-tag--blocked { background: var(--status-critical-soft); color: var(--status-critical-text); border: 1px solid color-mix(in srgb, var(--status-critical) 40%, transparent); }
 .cd-tag--warn { background: var(--status-warning-soft); color: var(--status-warning-text); }
 

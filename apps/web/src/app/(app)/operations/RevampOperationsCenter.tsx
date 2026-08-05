@@ -80,10 +80,10 @@ export default function RevampOperationsCenter({
           {/* CR-431 · WA-M3-AC-001 — preserve the accepted command-bar
               composition while making its live-status affordance complete the
               real Operations Center → Operations Live route flow. */}
-          <a className="btn btn-ghost btn-sm" href="/operations/live">
+          <a className="btn btn-secondary" href="/operations/live">
             {copy(locale, "Live positions", "المواقع المباشرة")}
           </a>
-          <a className="btn btn-ghost btn-sm" href="/operations/exceptions">
+          <a className="btn btn-secondary" href="/operations/exceptions">
             {copy(locale, "Exception board", "لوحة الاستثناءات")}
           </a>
           <button className="btn btn-secondary" type="button" onClick={() => setShowList(value => !value)}>
