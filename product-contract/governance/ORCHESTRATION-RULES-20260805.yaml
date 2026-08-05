@@ -17,17 +17,45 @@ lane_lifecycle:
       or not required. Pinning is the signal for what is running.
     ruled_by: "Product Owner"
     ruled_at: "2026-08-05"
-    orchestrator_limitation: >
-      The orchestrator has no tool to pin or unpin a session. It can rename,
-      message and archive. Therefore the orchestrator must state plainly which
-      sessions are active and which should be unpinned, and the Product Owner
-      performs the pin action. The orchestrator never claims a session was
-      pinned or unpinned by it.
+    orchestrator_capability: >
+      The session-management tools cannot pin — they only rename, message,
+      archive and list. The computer-use tools can, by driving the desktop
+      application interface, and this has been done before. The orchestrator
+      therefore pins and unpins its own lanes and does not delegate that to the
+      Product Owner. Claiming the capability does not exist is a false
+      limitation and was corrected on 2026-08-05.
     obligations:
+      - "Pin a task lane when it is opened. Unpin it when its work is finished."
       - "Name every lane clearly on creation so the title carries its purpose."
       - "Report the active lane board whenever it changes."
-      - "Explicitly list lanes that are finished and should be unpinned."
       - "Never leave a lane running with nothing assigned."
+
+  canonical_lanes:
+    rule: >
+      Front End, Backend and Integration are permanent lanes. They stay pinned
+      whether or not they currently hold work, because they are the standing
+      capability the programme routes future work through.
+    ruled_by: "Product Owner"
+    ruled_at: "2026-08-05"
+    never_unpin:
+      - "Front End"
+      - "Backend"
+      - "Integration"
+    rationale: >
+      Idle is a normal state for a canonical lane between assignments. Unpinning
+      one because it has nothing to do would discard accumulated context — its
+      worktree, its history of what it has already fixed and verified, and its
+      judgement about the areas it owns. That context is the reason routing to a
+      known lane is faster than opening a fresh one.
+    contrast_with_task_lanes: >
+      Task lanes — a design critique, an audit, a requirements reconciliation —
+      exist for one piece of work. They are pinned while running and unpinned
+      once their findings are harvested. The pinned-means-active rule governs
+      these, not the canonical three.
+    routing_note: >
+      Route by the nature of the work, not by who is free. Front End takes
+      presentation, Backend takes data and permissions, Integration takes
+      verification, reconciliation and cross-cutting audits.
 
 lane_conduct:
   report_before_idle:
