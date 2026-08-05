@@ -165,7 +165,14 @@ export default function LiveOps({
       </div>
 
       <div className="sq-grid-2">
-        <section className="map-panel" aria-label={s.mapAriaLabel}>
+        {/* .map-panel carries surface styling but no height, and LiveMapInner's
+            container is blockSize:100%, so the canvas resolved to 0. Mapbox
+            still constructed and fetched its style (200), but a zero-size map
+            never fires "load", so the 12s provider timeout fired and the panel
+            reported "basemap provider failed" — a layout bug wearing a network
+            error's message. .lv-map is the design system's live-map sizing
+            (block-size: min(64vh, 560px)); it was defined and used nowhere. */}
+        <section className="map-panel lv-map" aria-label={s.mapAriaLabel}>
           {visitReadError ? (
             <EmptyState glyph="!" title={s.loadError} bare role="alert">
               <button className="btn btn-secondary" type="button" onClick={() => window.location.reload()}>{s.retry}</button>
