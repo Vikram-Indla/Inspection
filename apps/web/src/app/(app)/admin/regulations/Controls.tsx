@@ -111,6 +111,12 @@ export function RegulationLifecycleControl({
         : state.errorCode === "not_found" ? labels.notFound
           : state.errorCode === "provider" ? labels.providerError
             : state.error;
+  // A draft was never activated, so deactivation is not a lifecycle transition
+  // that applies to it — the affordance doesn't exist here, rather than
+  // existing and being refused. Only active/deactivated regulations get the
+  // control at all. Hooks above still run every render (Rules of Hooks); only
+  // the render output is skipped.
+  if (operationalStatus === "draft") return null;
   return (
     <form action={formAction} className="stack" style={{ gap: "var(--space-2)", alignItems: "flex-start" }}>
       <input type="hidden" name="entity_id" value={entityId} />
@@ -118,7 +124,7 @@ export function RegulationLifecycleControl({
         <span className="sq-field__label">{activating ? labels.activationReason : labels.deactivationReason}</span>
         <textarea className="sq-input" name="reason" required />
       </label>
-      <button className={activating ? "btn btn-primary btn-touch" : "btn btn-ghost btn-touch"} disabled={pending}>
+      <button className={activating ? "btn btn-primary btn-touch" : "btn btn-secondary btn-touch"} disabled={pending}>
         {pending ? labels.applying : activating ? labels.activate : labels.deactivate}
       </button>
       {errorMessage ? <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{errorMessage}</span> : null}
@@ -145,6 +151,7 @@ export type RegRowLite = {
   title: string;
   issuing_authority: string | null;
   status: string;
+  version_label: string;
   created_at: string | null;
   clauseCount: number | null; // null => unknown (read anomaly), never rendered as zero
   itemCount: number | null;   // null => unknown, never rendered as zero
@@ -267,29 +274,40 @@ export function RegulationRegister({ rows, strings: s }: { rows: RegRowLite[]; s
       {filtered.length === 0 ? (
         <EmptyState icon={<IconSearch size={28} />} title={s.filteredEmptyTitle} body={s.filteredEmptyBody} inline role="status" />
       ) : (
-        <ul className="stack" style={{ gap: "var(--space-4)", listStyle: "none", margin: 0, padding: 0 }}>
-          {filtered.map(r => (
-            <li key={r.id} className="panel" style={{ padding: "var(--space-6)" }}>
-              <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: "var(--space-3)", flexWrap: "wrap" }}>
-                <div className="stack" style={{ gap: "var(--space-1)" }}>
-                  <h3 style={{ margin: 0 }}><span className="numeric"><bdi dir="ltr">{r.code}</bdi></span> — {r.title}</h3>
-                  <p className="t-caption" style={{ margin: 0 }}>
-                    {r.issuing_authority || "—"}
-                    {r.created_at ? <> · {s.createdAtLabel} <bdi dir="ltr" className="numeric">{r.created_at.slice(0, 10)}</bdi></> : null}
-                  </p>
-                </div>
-                <div className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
-                  <StatusChip status={r.status} s={s} />
-                  {/* Logical detail mode — same route, ?id= query param (CD-006). */}
-                  <a className="btn btn-secondary sq-link btn-touch" href={`/admin/regulations/${encodeURIComponent(r.id)}`}>
-                    {s.openDossier}
-                  </a>
-                </div>
-              </div>
-              <ImpactRail r={r} s={s} />
-            </li>
-          ))}
-        </ul>
+        // Sujatha (INSP): the list read as "too many hyperlinks and arrow
+        // elements" — a stack of whole-panel cards, each carrying its own
+        // status chip and a separate action link. A table with one Status
+        // cell, one Version cell and one View action per row is the target
+        // shape (same pattern already used on /compliance). Also fixes a
+        // broken link: the old href built /admin/regulations/{id}, a path
+        // this file's own routing comment says is never implemented — the
+        // real detail mode is this same route with ?id= (CD-006).
+        <div className="table-wrap">
+          <table className="table">
+            <caption className="sr-only">Regulations register</caption>
+            <thead><tr>
+              <th scope="col">{s.railRegulation}</th>
+              <th scope="col">{s.issuingAuthority}</th>
+              <th scope="col">Status</th>
+              <th scope="col">{s.versionLabel}</th>
+              <th scope="col">{s.openDossier}</th>
+            </tr></thead>
+            <tbody>
+              {filtered.map(r => (
+                <tr key={r.id}>
+                  <th scope="row">
+                    <strong>{r.title}</strong>
+                    <div className="t-caption"><span className="numeric"><bdi dir="ltr">{r.code}</bdi></span></div>
+                  </th>
+                  <td>{r.issuing_authority || "—"}</td>
+                  <td><StatusChip status={r.status} s={s} /></td>
+                  <td><span className="badge"><bdi dir="ltr">{r.version_label}</bdi></span></td>
+                  <td><a className="sq-link" href={`/admin/regulations?id=${encodeURIComponent(r.id)}`}>{s.openDossier}</a></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
