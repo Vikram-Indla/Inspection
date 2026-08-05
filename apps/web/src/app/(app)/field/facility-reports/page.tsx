@@ -67,7 +67,7 @@ export default async function FieldFacilityReportsPage({ searchParams }: { searc
     absent: tr("field.facilityReport.absent", "Did not attend", "لم يحضر"),
     objected: tr("field.facilityReport.objected", "Attended but objected to signing", "حضر واعترض على التوقيع"),
     reasonLabel: tr("field.facilityReport.reasonLabel", "Reason", "السبب"),
-    unsupported: tr("field.facilityReport.unsupported", "Absent/objected recording is not yet wired to a write path — capture in the notes for now.", "تسجيل حالة عدم الحضور/الاعتراض غير موصول بعد بمسار كتابة — سجّلها ضمن الملاحظات حاليًا."),
+    unsupported: tr("field.facilityReport.unsupported", "Absent/objected recording is not available. Capture it in the notes for now.", "تسجيل حالة عدم الحضور/الاعتراض غير موصول بعد بمسار كتابة — سجّلها ضمن الملاحظات حاليًا."),
   };
 
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
@@ -98,7 +98,7 @@ export default async function FieldFacilityReportsPage({ searchParams }: { searc
           {!error && rows.length === 0 && (
             <div className={styles.empty}>
               <div className={styles.emptyTitle}>{tr("field.facilityReport.empty", "No facility reports in scope", "لا توجد محاضر منشآت ضمن النطاق")}</div>
-              <p className="t-caption">{tr("field.facilityReport.emptyBody", "Logged reports appear here according to facility_reports RLS.", "تظهر المحاضر المسجلة هنا وفق صلاحيات صفوف جدول محاضر المنشآت.")}</p>
+              <p className="t-caption">{tr("field.facilityReport.emptyBody", "Logged reports appear here when they are within your scope.", "تظهر المحاضر المسجلة هنا وفق صلاحيات صفوف جدول محاضر المنشآت.")}</p>
             </div>
           )}
           {!error && rows.map(row => (

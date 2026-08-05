@@ -1,0 +1,74 @@
+schema_version: "1.0"
+change_control_id: "CC-DEC-032-CLOSURE-20260805"
+task_id: "TASK-DEC-032-CLOSURE-20260805"
+title: "Close DEC-032 — submission failure was fixed on 1 August and the register never caught up"
+state: "APPROVED_AND_APPLIED"
+raised_by: "Claude Orchestrator"
+raised_at: "2026-08-05"
+approved_by: "Product Owner (Vikram)"
+approved_at: "2026-08-05"
+user_confirmation: "confirmed — 'approve the closure and push it'"
+
+applied:
+  - "decision_register.csv — DEC-032 marked Closed with the migration and the walk as its evidence."
+  - "decision_register.csv — DEC-031 updated: its DEC-032 blocker is gone; its own checklist-package blocker stands. NOT closed by association."
+  - "decision_register.csv — DEC-036 updated: the DEC-032 caveat is spent, but the prohibition on writing submission_versions directly stands on its own reasoning."
+  - "OPEN_DECISIONS.yaml — DEC-032 moved out of the open list into a closed_decisions section carrying its evidence and the lesson."
+
+why_this_needs_an_approval:
+  rule: >
+    The decision register and OPEN_DECISIONS.yaml are controlled contract files.
+    They are not edited without an approved change ID. This record exists to be
+    that change ID. Nothing is edited until the Product Owner approves it.
+  found_by: >
+    The Integration lane, which removed a stale banner in the product and then
+    declined to edit the register on its own authority. That was correct.
+
+the_problem:
+  summary: >
+    The register says DEC-032 is open and P0, and that it "blocks ALL real
+    inspection submissions". That is no longer true, and has not been true
+    since 1 August.
+  why_it_matters: >
+    An open P0 that is actually closed is not harmless bookkeeping. It says the
+    platform cannot do the one thing it exists to do. Anyone reading the
+    register to decide what is safe to test, demonstrate or release would draw
+    exactly the wrong conclusion. Two other decisions cite it as their root
+    cause and inherit the same wrong status.
+
+evidence_it_is_fixed:
+  migration: "20260801225413_fix_dec032_submission_snapshot_digest"
+  applied: "2026-08-01, four days before this record"
+  verified_live_2026_08_05:
+    - "The digest function is pinned to the extensions schema with an empty search path."
+    - "pgcrypto is present in that schema."
+    - "Two submission versions were written today, v1 and v2, on inspection db2450d2, with no digest error."
+  walked_not_inferred: >
+    An inspection was submitted, returned for correction, corrected, resubmitted
+    and approved today with real accounts. Submission is demonstrably working.
+
+requested_change:
+  - "Mark DEC-032 closed, with the migration and today's walk as its evidence."
+  - "Re-examine DEC-031, whose record already states its root cause is DEC-032. If that was the only blocker, it closes too."
+  - "Re-examine DEC-036, which cites DEC-032 for a demo-seed constraint."
+  - "Leave every other decision untouched."
+
+explicitly_out_of_scope:
+  - "No other register entry is altered."
+  - "No decision is closed because it looks stale. DEC-031 and DEC-036 are re-examined on their own evidence, not closed by association."
+  - "No stable ID is reused or renumbered."
+
+what_was_already_done_without_approval:
+  change: >
+    The reviewer screen carried a banner reading "Resubmission blocked —
+    DEC-032". It was removed, because a screen stating a restriction that does
+    not exist misinforms the person reading it.
+  why_that_did_not_need_this_approval: >
+    That is product presentation, not a controlled contract. The register itself
+    was left untouched pending this record.
+  commit: "05a57b6d"
+
+lane: "Orchestrator"
+priority: >
+  Low urgency, high accuracy value. Nothing is blocked by the register being
+  wrong, but every judgement made from it is.

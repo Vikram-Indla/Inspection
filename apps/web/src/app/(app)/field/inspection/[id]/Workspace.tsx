@@ -9,6 +9,7 @@ import {
   type Item, type Answer, type FormDef, type FormDraft, type VioConfig, type Section, type ItemStates,
   isVisible, contextFlags, conditionContext, scoreExcluded, computeHealthScore, evidenceLeg, formRequired, formComplete,
   sectionProgress, summarize, impliedViolations, computeBlockers, type SectionBlockers, effectiveSections, ADDED_SECTION_KEY,
+  packageFormBlockers, type ExistingForm,
 } from "./runtime";
 import SignaturePad, { type SignaturePadStrings, type SignatureAck } from "./SignaturePad";
 import { findingSubmitBlockers, type FindingOp, type FindingSyncState } from "./finding-outbox";
@@ -111,6 +112,8 @@ export type WorkspaceStrings = {
   completionCreatedVersion: string; completionCreatedAudit: string; completionCreatedReview: string;
   completionIdempotency: string; completionReused: string; completionPendingSync: string;
   completionFailedTitle: string; completionFailedBody: string;
+  backToInspection: string;
+  pkgFormsGroupTitle: string;
   lockedSection: string;
   mandatoryPhoto: string; submitBtn: string;
   autoViolation: string; plusActionForm: string; plusPhoto: string;
@@ -188,6 +191,11 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const [findings, setFindings] = useState<Record<string, FindingDraft>>(() => Object.fromEntries(serverFindings.filter(f => !!f.item_id).map(f =>
     [f.item_id!, { id: f.id, description: f.description, severity: f.severity, state: "saved" as const }])));
   const [queuedEv, setQueuedEv] = useState([] as QueuedEvidence[]);
+  // INSP-714 — server props do not change when the browser outbox replays.
+  // Keep an RLS-refreshed client copy so a successfully uploaded mandatory
+  // item remains counted after its queued operation is removed.
+  const [syncedEvidence, setSyncedEvidence] = useState(serverEvidence);
+  useEffect(() => { setSyncedEvidence(serverEvidence); }, [serverEvidence]);
   // SCR-IPAD-630 — item ids whose finding op is still in the canonical outbox
   // (unsynced). Authoritative source of the per-finding "pending" state and of
   // the submit gate; refreshed from the outbox on every sync tick.
@@ -391,14 +399,40 @@ export default function Workspace({ inspection, items, library, serverResponses,
     for (const o of ops) if (o.kind === "finding" && o.inspection_id === inspection.id) fids.add(o.item_id);
     setQueuedFindingItems(fids);
   }, [inspection.id]);
+  const refreshSyncedEvidence = useCallback(async () => {
+    if (!navigator.onLine) return;
+    const sb = supabaseBrowser();
+    const projection = "id, linked_type, linked_id, evidence_type, storage_path, captured_at, content_sha256, archived_at, superseded_by, deleted_at";
+    const [inspectionRows, visitRows] = await Promise.all([
+      sb.from("evidence").select(projection).eq("inspection_id", inspection.id),
+      sb.from("evidence").select(projection).eq("visit_id", inspection.visit_id),
+    ]);
+    if (inspectionRows.error || visitRows.error) {
+      console.error("[field workspace evidence refresh]", inspectionRows.error?.message ?? visitRows.error?.message);
+      router.refresh();
+      return;
+    }
+    const rows = [...(inspectionRows.data ?? []), ...(visitRows.data ?? [])] as SEv[];
+    setSyncedEvidence(rows.filter((row, index, all) => all.findIndex(candidate => candidate.id === row.id) === index));
+  }, [inspection.id, inspection.visit_id, router]);
+  const replayAndRefresh = useCallback(async () => {
+    await processOutbox(userId, onState);
+    await Promise.all([refreshQueued(), refreshSyncedEvidence()]);
+    flushRef.current();
+  }, [onState, refreshQueued, refreshSyncedEvidence, userId]);
   useEffect(() => {
-    const tick = () => { processOutbox(userId, onState); refreshQueued(); flushRef.current(); };
+    let running = false;
+    const tick = () => {
+      if (running) return;
+      running = true;
+      void replayAndRefresh().finally(() => { running = false; });
+    };
     tick();
     const goOffline = () => onState("offline");
     window.addEventListener("online", tick); window.addEventListener("offline", goOffline);
     const iv = setInterval(tick, 8000);
     return () => { clearInterval(iv); window.removeEventListener("online", tick); window.removeEventListener("offline", goOffline); };
-  }, [onState, refreshQueued, userId]);
+  }, [onState, replayAndRefresh]);
 
   // Reconnect stale-version guard: re-read the server inspection's status +
   // latest submission version and compare to what this device loaded. Runs on
@@ -445,11 +479,10 @@ export default function Workspace({ inspection, items, library, serverResponses,
   // stable id, so a re-save/retry REPLACES rather than duplicates (idempotency
   // at the queue level; the replay UPSERT is idempotent at the row level too).
   async function removeFindingOps(id: string) {
-    const ops = await local.peekAll();
-    const keys = await local.keys();
-    for (let i = 0; i < ops.length; i++) {
-      const o = ops[i];
-      if (o.kind === "finding" && (o as FindingOp).id === id) await local.remove(keys[i]);
+    // One read, so each op carries its own key. Reading them separately and
+    // pairing by position drifted whenever anything was queued in between.
+    for (const { key, op } of await local.entries()) {
+      if (op.kind === "finding" && (op as FindingOp).id === id) await local.remove(key);
     }
   }
   /** Persist the finding narrative locally and (re)enqueue its canonical FIFO
@@ -485,7 +518,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
     const description = findingsRef.current[item.id]?.description ?? "";
     await queueFinding(item, code, description);
     if (!description.trim()) { setMsg(strings.findingRequired); return; }
-    processOutbox(userId, onState);
+    await replayAndRefresh();
     setMsg(navigator.onLine ? strings.findingPending : strings.findingPending);
   }
   /** A finding's effective state is derived from the outbox: still-queued →
@@ -711,9 +744,9 @@ export default function Workspace({ inspection, items, library, serverResponses,
     } else {
       setMsg(fmt(strings.evidenceQueued, { code: item.code, sha: sha.slice(0, 12) }));
     }
-    await refreshQueued();
-    processOutbox(userId, onState);
-    flushMedia();
+    await replayAndRefresh();
+    await flushMedia();
+    await refreshSyncedEvidence();
   }
   async function attachFiles(item: Item, files: FileList, replaceId?: string) {
     const rule = evidenceLeg(item, answersRef.current[item.id]?.value) ?? { type: item.evidence_rule?.type ?? "photo", applies: true, mandatory: false, min: 1 };
@@ -786,7 +819,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
     const o = evState[e.id];
     return !e.deleted_at && !e.archived_at && !o?.deleted && !o?.archived;
   }, [evState]);
-  const activeEvidence = useMemo(() => serverEvidence.filter(isActiveEv), [serverEvidence, isActiveEv]);
+  const activeEvidence = useMemo(() => syncedEvidence.filter(isActiveEv), [syncedEvidence, isActiveEv]);
   const evidencePerItem = useMemo(() => {
     const m: Record<string, Record<string, number>> = {};
     const add = (itemId: string, type: string) => {
@@ -813,7 +846,32 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const summary = summarize(sections, allMap, answers, runtimeCtx, activeEvidence.length + queuedEv.length, itemStates);
   const healthScore = computeHealthScore(sectionItems, answers, runtimeCtx, itemStates);
   const implied = impliedViolations(sectionItems, answers, runtimeCtx, vioConfig);
-  const liveBlockers = computeBlockers(sections, allMap, answers, runtimeCtx, evidencePerItem, forms, formDefs, itemStates);
+  const itemBlockers = computeBlockers(sections, allMap, answers, runtimeCtx, evidencePerItem, forms, formDefs, itemStates);
+  // Package-level mandatory forms (INSP-758-class): unconditional on any item
+  // response, so they never appear in itemBlockers — checked separately here
+  // and folded into ONE synthetic group so "ready to submit" asks the exact
+  // question the DB trigger will ask before it ever lets the review screen
+  // (and the signature it demands) claim there is nothing left to fix.
+  //
+  // The trigger's existence check (guard_submission_action_forms_and_config)
+  // matches by form_type alone — it does NOT filter on item_id. An item-tied
+  // form (e.g. FS-101's corrective_blocking, filled via the per-item flow)
+  // legitimately satisfies a package-level requirement with the same key.
+  // Filtering to `!f.item_id` here made this mirror STRICTER than the server
+  // it mirrors: it refused submissions the database would accept. Match the
+  // server's own question, not a narrower one.
+  const existingBlockingForms: ExistingForm[] = useMemo(
+    () => serverForms.map(f => ({
+      form_type: f.form_type, owner_name: f.owner_name, owner_role: f.owner_role,
+      due_at: f.due_at, required_correction: f.required_correction,
+    })),
+    [serverForms]);
+  const missingPackageForms = useMemo(
+    () => packageFormBlockers(formDefs, existingBlockingForms),
+    [formDefs, existingBlockingForms]);
+  const liveBlockers: SectionBlockers[] = missingPackageForms.length
+    ? [...itemBlockers, { key: "__package_forms", title: strings.pkgFormsGroupTitle, unanswered: [], evidence: [], forms: missingPackageForms.map(d => d.title) }]
+    : itemBlockers;
   const blockCount = liveBlockers.reduce((n, g) => n + g.unanswered.length + g.evidence.length + g.forms.length, 0);
 
   // --- Evidence Review panel (additive, read-only) ------------------------
@@ -871,8 +929,8 @@ export default function Workspace({ inspection, items, library, serverResponses,
   }, [sections, allMap, itemStates, runtimeCtx, answers, liveBlockers]);
   const retryUploads = useCallback(() => {
     setRetrying(true);
-    Promise.resolve(processOutbox(userId, onState)).finally(() => { refreshQueued(); setRetrying(false); });
-  }, [userId, onState, refreshQueued]);
+    void replayAndRefresh().finally(() => { setRetrying(false); });
+  }, [replayAndRefresh]);
   // §15 — actively deselected items stay visible in a collapsed audit list
   // with their reason; restore is available before submit.
   const deselectedItems = useMemo(() => Object.entries(itemStates)
@@ -919,7 +977,14 @@ export default function Workspace({ inspection, items, library, serverResponses,
     }
     // Full readiness re-validation: answers + mandatory evidence + blocking forms (M04-199/204/208).
     const submitCtx = conditionContext(sectionItems, answersRef.current, ctxRef.current);
-    const blockers = computeBlockers(sections, allMap, answersRef.current, submitCtx, evidencePerItem, formsRef.current, formDefs, itemStatesRef.current);
+    const itemLevelBlockers = computeBlockers(sections, allMap, answersRef.current, submitCtx, evidencePerItem, formsRef.current, formDefs, itemStatesRef.current);
+    // INSP-758-class: re-ask the package-level mandatory-form question at the
+    // moment of truth too — live display and the actual gate must never
+    // diverge, or "ready to submit" stops meaning anything.
+    const missingAtSubmit = packageFormBlockers(formDefs, existingBlockingForms);
+    const blockers: SectionBlockers[] = missingAtSubmit.length
+      ? [...itemLevelBlockers, { key: "__package_forms", title: strings.pkgFormsGroupTitle, unanswered: [], evidence: [], forms: missingAtSubmit.map(d => d.title) }]
+      : itemLevelBlockers;
     if (blockers.length) {
       setValidation(blockers);
       const missing = blockers.flatMap(b => b.unanswered);
@@ -1139,8 +1204,12 @@ export default function Workspace({ inspection, items, library, serverResponses,
         <section className={`${styles.card} ${styles.completionBanner}`} aria-labelledby="completion-title">
           <div className={styles.completionMark} aria-hidden="true">✓</div>
           <div>
-            <h2 id="completion-title">{serverSubmitted ? strings.submittedTitle : strings.queuedOffline}</h2>
-            <p>{serverSubmitted ? strings.completionLocked : strings.completionQueuedLock}</p>
+            {/* INSP-758-class fix 2: this headline must never claim "queued,
+                will submit" once the server has actually refused — that is
+                the exact contradiction that turned a rejection into an
+                apparent hang. */}
+            <h2 id="completion-title">{serverSubmitted ? strings.submittedTitle : sync === "failed" ? strings.completionFailedTitle : strings.queuedOffline}</h2>
+            <p>{serverSubmitted ? strings.completionLocked : sync === "failed" ? strings.completionFailedBody : strings.completionQueuedLock}</p>
           </div>
         </section>
         <section className={styles.card}>
@@ -1203,7 +1272,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
         <span className="row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
           <span className={`badge ${tone}`}><span className="dot" />{strings.sync[sync]}{detail ? ` · ${detail}` : ""}</span>
           {sync === "failed" && (
-            <button type="button" className="btn btn-ghost btn-sm" onClick={() => processOutbox(userId, onState)}>{strings.retryNow}</button>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => void replayAndRefresh()}>{strings.retryNow}</button>
           )}
         </span>
         <span className="row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
@@ -1348,6 +1417,13 @@ export default function Workspace({ inspection, items, library, serverResponses,
           <div>
             <strong>{strings.completionFailedTitle}</strong> {strings.completionFailedBody}
             {detail ? <div className="t-caption id-code" style={{ marginBlockStart: "var(--space-1)" }}>{detail}</div> : null}
+            {/* INSP-758-class fix 2/3: a refusal is not read-only like a real
+                submitted version — the inspector must be able to act on it
+                (add what is missing, correct an answer) rather than stay
+                stranded on this locked completion screen. */}
+            <div style={{ marginBlockStart: "var(--space-2)" }}>
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => setSubmitted(false)}>{strings.backToInspection}</button>
+            </div>
           </div>
         </div>
       )}
@@ -1796,7 +1872,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
                         : strings.findingPending}
                     </span>
                     {findingStatus(v.itemId) === "pending" && (
-                      <button type="button" className="btn btn-secondary btn-sm" onClick={() => processOutbox(userId, onState)}>{strings.findingRetry}</button>
+                      <button type="button" className="btn btn-secondary btn-sm" onClick={() => void replayAndRefresh()}>{strings.findingRetry}</button>
                     )}
                   </div>
                 </div>

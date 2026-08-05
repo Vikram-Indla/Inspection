@@ -115,9 +115,16 @@ export function metricDisplay(metric: SharedMetric, locale: Locale): MetricDispl
       kind: "status",
       text: statusLabel(metric.sourceStatus, locale),
       tone: statusTone(metric.sourceStatus),
+      // The status chip above (statusLabel) already names the precise reason
+      // (Not configured / Decision required / Unavailable / Stale / Offline).
+      // A blanket "Governance blocked" sub-line restated that under one word
+      // that was often wrong — "governance" implies a policy hold, but stale/
+      // offline are data-freshness/connectivity states, not policy blocks.
+      // Only keep a sub-line where it adds real, metric-specific information
+      // the chip doesn't already carry.
       sub: metric.metricId === "STR-KPI-007"
         ? t(locale, "Needs cycle policy", "يتطلب سياسة الدورة")
-        : t(locale, "Governance blocked", "محجوب بالحوكمة"),
+        : null,
     };
   }
   // Live value + optional comparison sub-line.

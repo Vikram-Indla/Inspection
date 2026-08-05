@@ -415,13 +415,12 @@ test.describe("CD-022 authorization boundary — business staff", () => {
   });
 });
 
-test("CD-022 publish and duplicate reads fail closed behind the shared atomic boundary", () => {
+test("CD-022 supervision submission and duplicate reads fail closed behind the shared atomic boundary", () => {
   const action = readFileSync(join(process.cwd(), "src/app/(app)/planning/single/actions.ts"), "utf8");
   const duplicate = readFileSync(join(process.cwd(), "src/app/(app)/planning/single/duplicate.ts"), "utf8");
   const resolver = readFileSync(join(process.cwd(), "src/lib/planning/factory-resolver.ts"), "utf8");
-  const legacyMigration = readFileSync(join(process.cwd(), "../..", "supabase/migrations/20260714091727_planning_publish_guards.sql"), "utf8");
-  const atomicMigration = readFileSync(join(process.cwd(), "../..", "supabase/migrations/20260728013000_planning_single_publish_atomic_contract.sql"), "utf8");
-  expect(action).toContain('sb.rpc("publish_single_visit_atomic"');
+  const supervisionMigration = readFileSync(join(process.cwd(), "../..", "supabase/migrations/20260729021000_single_visit_supervision_lifecycle.sql"), "utf8");
+  expect(action).toContain('sb.rpc("submit_single_visit_for_supervision"');
   // saveSingleDraft deliberately inserts/updates a draft visit_plan
   // (status 'draft'); the PUBLISH path itself never writes visit rows, target
   // provenance or package snapshots outside the atomic RPC.
@@ -430,13 +429,13 @@ test("CD-022 publish and duplicate reads fail closed behind the shared atomic bo
   expect(action).not.toContain('.from("visit_packages").insert');
   expect(action).toContain("p_target: canonicalTarget");
   expect(action).toContain("p_package_version_ids: package_version_ids");
-  expect(action).toContain('status: "draft"');
+  expect(action).toContain('.eq("method", "single").eq("status", "draft")');
   expect(action).toContain("saveSingleDraft");
   expect(resolver).toContain("resolveHandoffTarget");
   expect(duplicate).toContain("unavailable: true");
-  expect(legacyMigration).toContain("single publish duplicate active visit");
-  expect(legacyMigration).toContain("set status = 'validated'");
-  expect(legacyMigration).toContain("insert into notifications");
-  expect(atomicMigration).toContain("PLANNING-SINGLE-PUBLISH-CANONICAL-TARGET");
-  expect(atomicMigration).toContain("insert into public.visit_packages");
+  expect(supervisionMigration).toContain("PLANNING-SUPERVISION-DUPLICATE");
+  expect(supervisionMigration).toContain("PLANNING-SUPERVISION-CANONICAL-TARGET");
+  expect(supervisionMigration).toContain("insert into public.visit_packages");
+  expect(supervisionMigration).toContain("planning_supervision_requested");
+  expect(supervisionMigration).toContain("SINGLE_VISIT_SUBMITTED_FOR_SUPERVISION");
 });

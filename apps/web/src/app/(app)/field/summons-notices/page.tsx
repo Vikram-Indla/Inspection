@@ -72,7 +72,7 @@ export default async function FieldSummonsNoticesPage({ searchParams }: { search
     absent: tr("field.summons.absent", "Did not attend", "لم يحضر"),
     objected: tr("field.summons.objected", "Attended but objected to signing", "حضر واعترض على التوقيع"),
     reasonLabel: tr("field.summons.reasonLabel", "Reason", "السبب"),
-    unsupported: tr("field.summons.unsupported", "Absent/objected recording is not yet wired to a write path — capture in the notes for now.", "تسجيل حالة عدم الحضور/الاعتراض غير موصول بعد بمسار كتابة — سجّلها ضمن الملاحظات حاليًا."),
+    unsupported: tr("field.summons.unsupported", "Absent/objected recording is not available. Capture it in the notes for now.", "تسجيل حالة عدم الحضور/الاعتراض غير موصول بعد بمسار كتابة — سجّلها ضمن الملاحظات حاليًا."),
   };
 
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
@@ -103,7 +103,7 @@ export default async function FieldSummonsNoticesPage({ searchParams }: { search
           {!error && rows.length === 0 && (
             <div className={styles.empty}>
               <div className={styles.emptyTitle}>{tr("field.summons.empty", "No summons notices in scope", "لا توجد محاضر ضمن النطاق")}</div>
-              <p className="t-caption">{tr("field.summons.emptyBody", "Issued summons notices appear here according to summons_notices RLS.", "تظهر المحاضر الصادرة هنا وفق صلاحيات صفوف جدول المحاضر.")}</p>
+              <p className="t-caption">{tr("field.summons.emptyBody", "Issued summons notices appear here when they are within your scope.", "تظهر المحاضر الصادرة هنا وفق صلاحيات صفوف جدول المحاضر.")}</p>
             </div>
           )}
           {!error && rows.map(row => (

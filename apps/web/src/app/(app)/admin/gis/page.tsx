@@ -34,7 +34,7 @@ export default async function GisStudioPage() {
 
   const strings: GisStrings = {
     loadingTitle: t("gis.loading.title", "Loading map"),
-    loadingBody: t("gis.loading.body", "Preparing the KSA geofencing view (ENG-06)."),
+    loadingBody: t("gis.loading.body", "Preparing the KSA geofencing view."),
     searchLabel: t("gis.search.label", "Search factories"),
     searchPlaceholder: t("gis.search.placeholder", "Search by name, code, city or region…"),
     filterRegionAll: t("gis.filter.regionAll", "All regions"),
@@ -43,15 +43,15 @@ export default async function GisStudioPage() {
     noResults: t("gis.count.noResults", "No factories match the current filters."),
     noCoords: t("gis.count.noCoords", "without coordinates (table only)"),
     selectTitle: t("gis.select.title", "Select a factory pin"),
-    selectBody: t("gis.select.body", "Click any pin to see its official coordinates and set its geofence radius (SB20)."),
-    coordsLabel: t("gis.coords.label", "Official coordinates (GIS-Admin-owned, FND-007)"),
+    selectBody: t("gis.select.body", "Click any pin to see its official coordinates and set its geofence radius."),
+    coordsLabel: t("gis.coords.label", "Official coordinates — owned by the GIS administrator"),
     coordsCaption: t("gis.coords.caption", "Field observation never overwrites the official pin."),
-    radiusLabel: t("gis.radius.label", "Geofence radius (m) — SB20"),
+    radiusLabel: t("gis.radius.label", "Geofence radius (m)"),
     radiusHint: t("gis.radius.hint", "Tip: with this factory selected, click the map to set the fence edge at that point. Blank override falls back to the engine default"),
     save: t("gis.radius.save", "Save radius"),
     saving: t("gis.radius.saving", "Saving…"),
     saved: t("gis.radius.saved", "saved"),
-    defaultsTitle: t("gis.defaults.title", "Engine defaults (ENG-06 · read-only)"),
+    defaultsTitle: t("gis.defaults.title", "Engine defaults (read-only)"),
     defaultsCheckin: t("gis.defaults.checkin", "Check-in accuracy"),
     defaultsArrival: t("gis.defaults.arrival", "Arrival detection"),
     defaultsFence: t("gis.defaults.fence", "Default geofence"),
@@ -72,9 +72,9 @@ export default async function GisStudioPage() {
 
   return (
     <Shell current="/admin/gis" title={t("gis.title", "GIS Studio — geofencing")}
-      context={<><span className="badge badge-info">SCR-ADM-070 · ENG-06 · SB20</span><span className="id-code">{engRes.data?.version_label}</span></>}>
+      context={<span className="id-code">{engRes.data?.version_label}</span>}>
       <div className="stack" style={{ gap: "var(--space-6)" }}>
-        <div className="alert"><div><strong>{t("gis.banner.title", "GIS Studio.")}</strong> {t("gis.banner.body", "These values are stamped on every geo event (the settings version is recorded with each check-in — EV-005). Official coordinates stay owned by GIS Admin; field observations never overwrite them (FND-007). Per-factory geofence radii (SB20) are edited on the map below.")}</div></div>
+        <div className="alert"><div><strong>{t("gis.banner.title", "GIS Studio.")}</strong> {t("gis.banner.body", "These values are stamped on every geo event, and the settings version is recorded with each check-in. Official coordinates stay owned by the GIS administrator; field observations never overwrite them. Per-factory geofence radii are edited on the map below.")}</div></div>
 
         {err && (
           <div className="alert alert-critical" role="alert">
@@ -84,7 +84,7 @@ export default async function GisStudioPage() {
 
         {!err && factories.length === 0 && (
           <EmptyState glyph="◎" title={t("gis.empty.title", "No factories registered")}
-            body={t("gis.empty.body", "The Factory list is empty — geofences appear here once factories are synced (FND-007).")} />
+            body={t("gis.empty.body", "The Factory list is empty — geofences appear here once factories are synced.")} />
         )}
 
         {!err && factories.length > 0 && (
@@ -93,8 +93,12 @@ export default async function GisStudioPage() {
 
         {!err && (
           <div className="table-wrap"><table className="table">
-            <thead><tr><th scope="col">{t("gis.settings.setting", "Setting")}</th><th scope="col">{t("gis.settings.value", "Value")}</th><th scope="col">{t("gis.settings.contract", "Contract")}</th></tr></thead>
-            <tbody>{settingsRows.map(([k, v, c]) => <tr key={k}><td><strong>{k}</strong></td><td className="numeric" dir="ltr">{v}</td><td className="t-caption">{c}</td></tr>)}</tbody>
+            {/* The "Contract" column rendered nothing but internal contract IDs
+                (ENG-06, STM-JRN-002, FND-009 …) — traceability data, not
+                something a GIS administrator can act on. The reference moves to
+                a data attribute so it stays greppable without being on screen. */}
+            <thead><tr><th scope="col">{t("gis.settings.setting", "Setting")}</th><th scope="col">{t("gis.settings.value", "Value")}</th></tr></thead>
+            <tbody>{settingsRows.map(([k, v, c]) => <tr key={k} data-contract-ref={c}><td><strong>{k}</strong></td><td className="numeric" dir="ltr">{v}</td></tr>)}</tbody>
           </table></div>
         )}
       </div>
