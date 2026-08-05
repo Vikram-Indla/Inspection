@@ -30,11 +30,35 @@ governed_rule:
     submission. The ruling narrows when the requirement applies. It does not
     soften the requirement itself.
 
+amendment_20260805_scope:
+  reason: >
+    This record originally read as though submission were broken for every
+    fully compliant inspection. That was too broad and is corrected here.
+  what_was_established_after_writing_it: >
+    The Integration lane planned a separate visit on a different checklist
+    package with no mandatory action forms — Madinah Dates Processing Co., visit
+    b7eec84d, package TST-PKG-004 — walked it from startup pack through to
+    submission, and it submitted cleanly. Inspection db2450d2, status submitted.
+  corrected_statement: >
+    The submission pipeline is sound. The trap is confined to packages that
+    declare a hard-blocking mandatory action form. Every inspection against such
+    a package is unsubmittable regardless of what it found; inspections against
+    any other package submit normally.
+  effect_on_this_change: >
+    None. The rule, the scope, the acceptance checks and the priority are
+    unchanged. What changes is the account of how much of the platform was
+    affected, and that account should be right.
+  why_recorded_rather_than_edited: >
+    The original claim was acted on — testers were told in writing to skip the
+    field journey, which was wrong and had to be corrected publicly. A record
+    that quietly changed its own story would hide that.
+
 problem:
   summary: >
-    A fully compliant inspection can never be submitted. The inspector completes
-    the checklist, captures evidence, signs, and the submission is refused with
-    no explanation and no way forward.
+    An inspection against a package declaring a hard-blocking mandatory action
+    form can never be submitted, whether or not it found anything wrong. The
+    inspector completes the checklist, captures evidence, signs, and the
+    submission is refused with no explanation and no way forward.
   root_cause_verified: >
     The trigger guard_submission_action_forms_and_config enforces a package's
     hard-blocking mandatory action form on every submission attempt without
@@ -98,6 +122,10 @@ verification:
 
 lane: "Backend"
 priority: >
-  Highest open item. It is the last blocker on the inspection journey. Steps 10
-  to 12 — supervisor decision, correction and resubmission, closing the loop —
-  have never been reached because nothing can be submitted.
+  High. It is the remaining trap on the inspection journey. Steps 10 to 12 are
+  no longer blocked by it — the Integration lane reached submission on a
+  different package and is walking the supervisor decision now — but any package
+  carrying a hard-blocking form still cannot be used at all, and an inspector
+  meeting that trap has no way to see or escape it.
+
+baseline: "Not in B1 (baseline-b1-20260805). Committed to B2."
