@@ -43,33 +43,35 @@ export default function FindingTraceChain({ traces, strings }: {
 }) {
   return (
     <section className="panel sq-trace" aria-labelledby="finding-trace-heading">
-      <h2 id="finding-trace-heading">{strings.heading}</h2>
-      <p className="t-caption">{strings.hint}</p>
-      {traces.length === 0 ? (
-        <div className="sq-banner" role="status"><div>{strings.empty}</div></div>
-      ) : (
-        <ol className="sq-trace__list">
-          {traces.map(trace => (
-            <li key={trace.key} className="sq-trace__item">
-              <details open>
-                <summary className="sq-trace__summary">
-                  <span className="numeric">{trace.key}</span>
-                  <span>{trace.question.value}</span>
-                </summary>
-                <dl className="sq-trace__nodes">
-                  <Node node={{ ...trace.question, label: strings.question }} />
-                  <Node node={{ ...trace.response, label: strings.response }} />
-                  <Node node={{ ...trace.evidence, label: strings.evidence, value: trace.evidence.unavailable ? strings.unavailable : trace.evidence.value }} />
-                  <Node node={{ ...trace.clause, label: strings.clause }} />
-                  <Node node={{ ...trace.violation, label: strings.violation }} />
-                  <Node node={{ ...trace.action, label: strings.action }} />
-                  <Node node={{ ...trace.decision, label: strings.decision }} />
-                </dl>
-              </details>
-            </li>
-          ))}
-        </ol>
-      )}
+      <div className="panel-body">
+        <h2 id="finding-trace-heading">{strings.heading}</h2>
+        <p className="t-caption">{strings.hint}</p>
+        {traces.length === 0 ? (
+          <div className="sq-banner" role="status"><div>{strings.empty}</div></div>
+        ) : (
+          <ol className="sq-trace__list">
+            {traces.map(trace => (
+              <li key={trace.key} className="sq-trace__item">
+                <details open>
+                  <summary className="sq-trace__summary">
+                    <span className="numeric">{trace.key}</span>
+                    <span>{trace.question.value}</span>
+                  </summary>
+                  <dl className="sq-trace__nodes">
+                    <Node node={{ ...trace.question, label: strings.question }} />
+                    <Node node={{ ...trace.response, label: strings.response }} />
+                    <Node node={{ ...trace.evidence, label: strings.evidence, value: trace.evidence.unavailable ? strings.unavailable : trace.evidence.value }} />
+                    <Node node={{ ...trace.clause, label: strings.clause }} />
+                    <Node node={{ ...trace.violation, label: strings.violation }} />
+                    <Node node={{ ...trace.action, label: strings.action }} />
+                    <Node node={{ ...trace.decision, label: strings.decision }} />
+                  </dl>
+                </details>
+              </li>
+            ))}
+          </ol>
+        )}
+      </div>
     </section>
   );
 }
