@@ -1,5 +1,5 @@
 import "../login/login.css";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import ResetClient, { type ResetStrings } from "./ResetClient";
 
 export const dynamic = "force-dynamic";
@@ -9,9 +9,15 @@ export const dynamic = "force-dynamic";
 // new password here.
 type Locale = "ar" | "en";
 
+// Same rule as getLocale() in @/lib/i18n: an explicit choice wins, otherwise
+// follow the browser. This previously returned Arabic for every state that was
+// not exactly "en", so an English reader arriving from a reset link with no
+// cookie yet was shown Arabic.
 async function resolveLocale(): Promise<Locale> {
-  const c = await cookies();
-  return c.get("locale")?.value === "en" ? "en" : "ar";
+  const chosen = (await cookies()).get("locale")?.value;
+  if (chosen === "ar" || chosen === "en") return chosen;
+  const accept = (await headers()).get("accept-language")?.toLowerCase() ?? "";
+  return /(^|[,\s])ar\b/.test(accept) ? "ar" : "en";
 }
 
 export default async function Reset() {

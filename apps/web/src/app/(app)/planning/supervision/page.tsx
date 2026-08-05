@@ -21,18 +21,21 @@ export default async function SupervisionPage({ searchParams }: { searchParams: 
   if (submitted && !UUID.test(submitted)) return <Shell current="/planning" title={title}><EmptyState glyph="⚠" title={t("plan.supervision.unavailable.title", "Supervision data not available")} body={t("plan.supervision.unavailable.body", "We couldn't load the queue. Nothing was changed.")} /></Shell>;
   let requestQuery = sb.from("planning_supervision_requests").select("id, visit_id, proposed_inspector_id, submitted_at, visits!inner(id, visit_reference, visit_type, window_start, window_end, planning_status, factories(name))").eq("status", "pending").order("submitted_at");
   if (submitted) requestQuery = requestQuery.eq("visit_id", submitted);
-  const [requestRead, inspectorRead] = await Promise.all([
-    requestQuery,
-    sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector").order("user_id"),
-  ]);
+  const requestRead = await requestQuery;
+  const visitIds = (requestRead.data ?? []).map(row => row.visit_id as string);
+  const inspectorRead = requestRead.error || visitIds.length === 0
+    ? { data: [], error: requestRead.error }
+    : await sb.rpc("list_available_supervision_inspectors", { p_visit_ids: visitIds });
   if (requestRead.error || inspectorRead.error) return <Shell current="/planning" title={title}><EmptyState glyph="⚠" title={t("plan.supervision.unavailable.title", "Supervision data not available")} body={t("plan.supervision.unavailable.body", "We couldn't load the queue. Nothing was changed.")} /></Shell>;
-  const inspectorMap = new Map<string, string>();
+  const inspectorsByVisit: Record<string, { user_id: string; full_name: string }[]> = {};
   for (const row of inspectorRead.data ?? []) {
-    const profile = row.profiles as unknown as { full_name?: string | null } | null;
-    const userId = row.user_id as string;
-    inspectorMap.set(userId, profile?.full_name?.trim() || userId.slice(0, 8));
+    const visitId = row.visit_id as string;
+    const userId = row.inspector_id as string;
+    (inspectorsByVisit[visitId] ??= []).push({
+      user_id: userId,
+      full_name: (row.full_name as string | null)?.trim() || userId.slice(0, 8),
+    });
   }
-  const inspectors = [...inspectorMap].map(([user_id, full_name]) => ({ user_id, full_name }));
   const requests: PendingSupervision[] = (requestRead.data ?? []).map((row: any) => ({
     id: row.id, visitId: row.visit_id, reference: row.visits.visit_reference, factoryName: row.visits.factories?.name ?? "—",
     visitType: row.visits.visit_type, windowStart: row.visits.window_start, windowEnd: row.visits.window_end,
@@ -53,5 +56,5 @@ export default async function SupervisionPage({ searchParams }: { searchParams: 
     approve: t("plan.supervision.approve", "Approve & release"), releasing: t("plan.supervision.releasing", "Releasing…"),
     returnToPlanner: t("plan.supervision.return", "Return to Planner"), reject: t("plan.supervision.reject", "Reject"),
   };
-  return <Shell current="/planning" title={title} context={<span className="sq-lozenge sq-lozenge--warning">{t("plan.supervision.actionRequired", "Supervisor action required")}</span>}><SupervisionQueue requests={requests} inspectors={inspectors} strings={strings} locale={locale} /></Shell>;
+  return <Shell current="/planning" title={title} context={<span className="sq-lozenge sq-lozenge--warning">{t("plan.supervision.actionRequired", "Supervisor action required")}</span>}><SupervisionQueue requests={requests} inspectorsByVisit={inspectorsByVisit} strings={strings} locale={locale} /></Shell>;
 }

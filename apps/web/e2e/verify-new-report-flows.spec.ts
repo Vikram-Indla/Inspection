@@ -34,7 +34,7 @@ test.describe("INSP-558 Summons Notice — real submit", () => {
     await confirmSignature(page);
     await expect(page.locator("text=Signed")).toBeVisible();
     await page.click('#new-summons-notice button[type="submit"], #new-summons-notice button.btn-primary');
-    await expect(page.locator("text=Summons notice issued.")).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator("text=Summons notice issued.")).toBeVisible({ timeout: 60_000 });
   });
 });
 

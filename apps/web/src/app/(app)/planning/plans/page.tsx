@@ -34,7 +34,7 @@ export default async function PlanRegister() {
       </Shell>
     );
   }
-  if (access.accessClass !== "business_staff" || !access.can("planning.view")) {
+  if (!["business_staff", "admin"].includes(access.accessClass) || !access.can("planning.view")) {
     return (
       <Shell current="/planning" title={t("plan.register.title", "Visit plans")}>
         <EmptyState glyph="⛔"

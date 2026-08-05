@@ -164,9 +164,6 @@ export function WfDeck({ payload, strings }: Props) {
               {inspected ? `${strings.transitionTitle} — ${inspected.from} → ${inspected.to}` : strings.inspectorTitle}
             </h3>
             <span className="grow" />
-            {inspected && selectedIdx != null && (
-              <span className="id-code t-caption">TRN-{String(selectedIdx + 1).padStart(2, "0")}</span>
-            )}
           </div>
           {inspected ? (
             <div className="stack" style={{ gap: 14 }}>

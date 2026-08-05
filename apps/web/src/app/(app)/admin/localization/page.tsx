@@ -37,7 +37,8 @@ export default async function Localization() {
     throw new Error("localization_roles_unavailable");
   }
   const roles = new Set((roleRows ?? []).map(row => row.role_key));
-  const canManageLocalization = roles.has("admin");
+  const canManageLocalization = ["admin", "compliance_admin", "security_admin", "workflow_admin"]
+    .some(role => roles.has(role));
 
   if (!canManageLocalization) {
     return (
@@ -54,7 +55,7 @@ export default async function Localization() {
             ),
           )}
         >
-          <a className="btn btn-secondary sq-link btn-touch" href="/launch">
+          <a className="btn btn-secondary sq-link btn-touch" href="/launch" aria-label={copy("Return to my workspace", "العودة إلى مساحة عملي")}>
             {t("admin.unauthorized.return", copy("Return to my area", "العودة إلى القسم المخصص لي"))}
           </a>
         </EmptyState>
@@ -191,7 +192,6 @@ export default async function Localization() {
       title={t("admin.revamp.lookup.title", copy("Reference Lists", "القوائم المرجعية"))}
       subtitle={t("admin.revamp.lookup.subtitle", copy("Shared reference data used across the platform", "البيانات المرجعية المشتركة المستخدمة في المنصة"))}
       hub={t("admin.revamp.hub.rules", copy("Rules & content", "القواعد والمحتوى"))}
-      routeLabel="/admin/localization"
       designId="frame-20-admin-lookup-management"
       drawerLabels={drawerLabels}
       labels={{
@@ -226,7 +226,7 @@ export default async function Localization() {
       reconstructionNote={t("admin.revamp.lookup.note", copy("The canonical Lookup destination resolves to the existing localization and approved planning-lookup sources. No reference-list count or language completeness claim is made up.", "تتجه وجهة القوائم المرجعية إلى مصادر الترجمة وقوائم التخطيط المعتمدة الحالية. لا يتم اختلاق عدد للقوائم أو ادعاء اكتمال اللغة."))}
       context={
         <span className="row" style={{ gap: "var(--space-3)" }}>
-          <span className="badge badge-info">SCR-ADM-100 · SB19</span>
+          
           <LocaleSwitch locale={locale} />
         </span>
       }

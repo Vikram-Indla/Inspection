@@ -52,4 +52,23 @@ test.describe("PKT-RESPONSIVE-DASHBOARD-OPERATIONS-002", () => {
     expect(styles).toContain("@media (prefers-reduced-motion: reduce)");
     expect(live).toContain("providerFailed");
   });
+
+  test("Dashboard user-facing copy describes access scope without RLS or workbook jargon", () => {
+    const dashboard = read("src/app/(app)/dashboard/DashboardView.tsx");
+    const strategic = read("src/app/(app)/dashboard/RevampStrategicView.tsx");
+    const registry = read("src/lib/dashboard-kpi/registry.ts");
+    const format = read("src/app/(app)/dashboard/dashboard-format.ts");
+    const userFacingSources = `${dashboard}\n${strategic}\n${registry}`;
+
+    expect(userFacingSources).not.toMatch(/RLS[- ](?:visible|scoped)|RLS scoped|dashboard\.xlsx/i);
+    expect(userFacingSources).not.toContain("مقيّد حسب الصلاحيات");
+    expect(userFacingSources).toContain("Scoped to your access");
+    expect(userFacingSources).toContain("ضمن نطاق صلاحيتك");
+    expect(userFacingSources).not.toContain('copy(locale, "Methodology", "المنهجية")');
+    expect(userFacingSources).toContain('copy(locale, "How this is calculated", "طريقة الاحتساب")');
+    expect(dashboard).not.toContain('copy(locale, "Governed boundary", "حد معتمد")');
+    expect(dashboard).toContain('copy(locale, "Why this is unavailable", "سبب عدم التوفر")');
+    expect(format).not.toContain('t(locale, "Governance blocked", "محجوب بالحوكمة")');
+    expect(format).toContain('t(locale, "Needs cycle policy", "يتطلب سياسة الدورة")');
+  });
 });

@@ -1078,7 +1078,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       {/* SB20 / ENG-08 — compact geofence map card; official and visit-selected coordinates remain distinct (FND-007/M01-046). */}
       <div className={styles.sectionCard}>
         <div className="panel-header">
-          <h4>{fmt(strings.geofenceHeading, { name: visit.factories.name })} <span className="badge badge-info">SB20 · ENG-08</span></h4>
+          <h4>{fmt(strings.geofenceHeading, { name: visit.factories.name })} </h4>
           <span className="row">
             {/* M04-037 — live distance-to-fence readout while journey active */}
             {live && !checkedIn && (

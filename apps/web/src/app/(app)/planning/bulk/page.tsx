@@ -71,7 +71,8 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   // and ANY combinations aren't simple equality, so evaluation is uniform here.
   const { data: allFactories, error: factoriesError } = await collectPostgrestPages<FactoryForCriteria & Record<string, unknown>>((from, to) => sb
     .from("factories")
-    .select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, activity_class, official_lat, official_lng, source_synced_at, industrial_licenses(license_type,status,stage,investment_type,investment_size), visits(planning_status, visit_type)")
+    .select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, activity_class, official_lat, official_lng, source_synced_at, industrial_licenses!inner(commercial_registration_id,license_type,status,stage,investment_type,investment_size), visits(planning_status, visit_type)")
+    .not("industrial_licenses.commercial_registration_id", "is", null)
     .eq("is_temporary", false)
     // Include the one explicitly labelled Saqeel test target in the exact
     // same criteria journey as sourced factory records.
@@ -268,7 +269,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     between: t("plan.bulk.criteria.opBetween", "between"),
   };
   const notSuppliedReasons: Record<string, string> = {
-    "plan.bulk.criteria.nsSector": t("plan.bulk.criteria.nsSector", "There is no sector data set up yet — this can't be checked, and is never treated as blank."),
+    "plan.bulk.criteria.nsSector": t("plan.bulk.criteria.nsSector", "No sector data is configured, so this cannot be checked. It is not treated as blank."),
     "plan.bulk.criteria.nsLicenseStage": t("plan.bulk.criteria.nsLicenseStage", "Licence stage is filled in for only about 1% of the licence list — too little to target by."),
     "plan.bulk.criteria.nsLicenseStatus": t("plan.bulk.criteria.nsLicenseStatus", "Licence status is filled in for only about 1% of the licence list — too little to target by."),
     "plan.bulk.criteria.nsProductHs": t("plan.bulk.criteria.nsProductHs", "Product / HS codes exist for only 4 factories — not enough to target by yet."),
@@ -334,7 +335,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     invalidBody: t("plan.bulk.invalidBody", "{n} previously selected factories no longer match the current criteria and were removed from your selection."),
     invalidKeep: t("plan.bulk.invalidKeep", "Keep remaining selection"),
     invalidClear: t("plan.bulk.invalidClear", "Clear all"),
-    summaryTitle: t("plan.bulk.summaryTitle", "Campaign summary — deterministic"),
+    summaryTitle: t("plan.bulk.summaryTitle", "Campaign summary"),
     summarySelected: t("plan.bulk.summarySelected", "Selected factories"),
     summaryByBand: t("plan.bulk.summaryByBand", "By risk band"),
     summaryByRegion: t("plan.bulk.summaryByRegion", "By region"),

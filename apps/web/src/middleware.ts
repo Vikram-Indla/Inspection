@@ -5,7 +5,7 @@ import { isInvalidRefreshToken } from "@/lib/auth/refresh-token-error";
 const PROTECTED_PAGE_PREFIXES = [
   "/dashboard",
   "/operations",
-  "/factory-360",
+  "/factories",
   "/planning",
   "/execution",
   "/reviews",

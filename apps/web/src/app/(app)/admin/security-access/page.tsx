@@ -14,9 +14,9 @@ export default async function SecurityAccessPage() {
   const now = Date.now();
   return (
     <Shell current="/admin/security-access" title={t("mvp3.security.title", "Security posture and access review")}
-      context={<span className="badge badge-info">{"M3-00 · CD-050 · "}{t("mvp3.security.badge", "purpose-bound evidence access")}</span>}>
-      <div className="alert"><div><strong>{t("mvp3.security.boundary", "Navigation is not authorization.")}</strong> {t("mvp3.security.boundaryBody", "Database grants and RLS enforce every read and action. This screen exposes only the signed-in actor's readable scope.")}</div></div>
-      {error ? <div className="alert alert-warning" role="alert">{t("mvp3.schema.pending", "MVP3 database contract is not applied in this environment. No data is inferred.")}</div> : null}
+      context={<span className="badge badge-info">{t("mvp3.security.badge", "purpose-bound evidence access")}</span>}>
+      <div className="alert"><div><strong>{t("mvp3.security.boundary", "Navigation is not authorization.")}</strong> {t("mvp3.security.boundaryBody", "Access policy enforces every read and action. This screen exposes only the signed-in actor's readable scope.")}</div></div>
+      {error ? <div className="alert alert-warning" role="alert">{t("mvp3.schema.pending", "This data is unavailable in this environment. Nothing is inferred.")}</div> : null}
       <div className="sq-grid" style={{ marginBlock: "var(--space-4)" }}>
         <section className="panel" style={{ padding: "var(--space-6)" }}><p className="t-caption">{t("mvp3.security.roleHoldings", "Role holdings visible to you")}</p><strong className="kpi-value">{roleCount ?? 0}</strong><p>{t("mvp3.security.notPermission", "Holdings are not an effective-permission proof.")}</p></section>
         <section className="panel" style={{ padding: "var(--space-6)" }}><p className="t-caption">{t("mvp3.security.openReviews", "Open reviews")}</p><strong className="kpi-value">{(reviews ?? []).filter(x => x.status === "open").length}</strong><p>{(reviews ?? []).filter(x => x.status === "open" && new Date(x.due_at).getTime() < now).length} {t("mvp3.security.overdue", "overdue")}</p></section>

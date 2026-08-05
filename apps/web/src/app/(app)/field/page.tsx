@@ -141,8 +141,10 @@ export default async function Field() {
           </p>
           {degradedBrief ? (
             <section className="panel">
-              <h4>{tr("field.home.brief.daily", "Daily brief", "الموجز اليومي")}</h4>
-              <p>{degradedBrief}</p>
+              <div className="panel-body stack">
+                <h4>{tr("field.home.brief.daily", "Daily brief", "الموجز اليومي")}</h4>
+                <p>{degradedBrief}</p>
+              </div>
             </section>
           ) : null}
           {/* Independent surfaces still reachable — the inspector is not stranded. */}

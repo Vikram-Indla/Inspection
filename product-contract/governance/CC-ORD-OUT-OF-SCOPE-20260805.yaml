@@ -1,0 +1,66 @@
+schema_version: "1.0"
+change_control_id: "CC-ORD-OUT-OF-SCOPE-20260805"
+task_id: "TASK-ORD-OUT-OF-SCOPE-20260805"
+title: "Request and Order Management (ORD) is out of scope"
+state: "APPROVED"
+approved_by: "Product Owner (Vikram)"
+approved_at: "2026-08-05"
+
+authority:
+  type: "BOUNDED_DIRECT_PRODUCT_OWNER_DIRECTIVE"
+  user_confirmation: "asked directly whether Request and Order Management is in scope; answered 'no'"
+
+ruling:
+  statement: >
+    The Request and Order Management document — BRD - إدارة الطلبات — is not in
+    scope. Its absence from Jira is deliberate, not a gap.
+  decided_by: "Product Owner (Vikram)"
+  decided_at: "2026-08-05"
+
+why_this_is_recorded:
+  reason: >
+    The requirements index found that not one Jira story cites this document.
+    Without this ruling, the next person to measure coverage finds 67 unmet
+    business rules and reports a missing module. That has now happened once and
+    should not happen again.
+  the_finding_it_closes: >
+    ORD holds 2 use cases and 67 business rules — Work Activity Monitoring and
+    Task Viewing — with zero citing stories, in an index of 894 requirements
+    across nine documents.
+
+what_this_ruling_does_not_do:
+  - "It does not remove the document from the index. It stays indexed, as written, marked out of scope."
+  - "It does not delete or alter any Jira story."
+  - "It does not decide the other eight documents. They remain in scope."
+
+specific_content_now_deliberately_unbuilt:
+  note: >
+    Recorded so that nobody later mistakes any of these for an oversight, and so
+    that if scope changes the cost is visible rather than rediscovered.
+  items:
+    - "Work Activity Monitoring — a branch-scoped view of activity with filters, detail, attachments and export."
+    - "Task Viewing."
+    - "A governed working-time calculation: duration counted only within 07:30–16:30, weekends and holidays excluded. This value was never supplied and is not needed while ORD is out of scope."
+    - "Thirteen enumerated request types."
+    - "Role-scoped visibility rules — Branch Manager sees only their branches; region and city filters shown to an Administrator alone."
+
+role_vocabulary_note:
+  observation: >
+    ORD names Field Supervisor, Branch Manager, Sector Manager, Administrator
+    and Committee. Three of those appear in no other source.
+  why_it_still_matters: >
+    The platform now has four separate role vocabularies that do not agree: the
+    database holds admin, inspector, planner and supervisor; the code references
+    eleven names that do not exist; another document names Data Entry User and
+    Approver; this one adds three more. ORD being out of scope removes three
+    names from the problem. It does not resolve it. The reconciliation of the
+    remaining vocabularies is still open.
+
+coverage_effect:
+  before: "894 requirements indexed across nine documents; ORD's 69 uncited and counted as a gap."
+  after: "ORD's 69 are out of scope. Coverage is measured against the remaining eight documents."
+  instruction: >
+    Any coverage figure quoted from here on excludes ORD and says so. A number
+    that silently drops it is as misleading as one that counts it.
+
+lane: "Integration (requirements)"

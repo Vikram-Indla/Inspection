@@ -37,6 +37,23 @@ const FIELD_AR_FALLBACK: Record<string, string> = {
   "field.ws.sync.synced": "متزامن",
 };
 
+// INSP-747 / CC-ADMIN-PACKAGE-CREATION-20260805 — new package-creation copy.
+// New keys, so no live ui_strings row exists yet to take precedence; these
+// are the reviewed Arabic values until /admin/localization carries them.
+const PACKAGE_CREATE_AR_FALLBACK: Record<string, string> = {
+  "admin.pkg.create.heading": "إنشاء حزمة جديدة",
+  "admin.pkg.create.codeLabel": "رمز الحزمة",
+  "admin.pkg.create.codePlaceholder": "مثال: PKG-CHEM-001",
+  "admin.pkg.create.titleLabel": "عنوان الحزمة",
+  "admin.pkg.create.titlePlaceholder": "مثال: تفتيش تخزين المواد الكيميائية",
+  "admin.pkg.create.scopeLabel": "النطاق (اختياري)",
+  "admin.pkg.create.scopePlaceholder": "مثال: المنشآت الكيميائية",
+  "admin.pkg.create.create": "إنشاء الحزمة",
+  "admin.pkg.create.created": "تم إنشاء الحزمة",
+  "admin.pkg.empty.bodyReady": "لا توجد حزم بعد. أنشئ حزمة أعلاه.",
+  "admin.pkg.empty.bodyReadOnly": "لا توجد حزم بعد. يتطلب إنشاؤها صلاحية الكتابة.",
+};
+
 // INSP-717 — reviewed copy for the governed reports index. Live ui_strings
 // values retain precedence over these environment-safe fallbacks.
 const REPORTS_AR_FALLBACK: Record<string, string> = {
@@ -191,7 +208,7 @@ export async function getDict(locale: Locale): Promise<Dict> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !supabaseAnonKey) {
-    return { ...MVP3_AR_FALLBACK, ...FACTORY360_AR_FALLBACK, ...VIRTUAL_AR_FALLBACK, ...PLAN_MAP_AR_FALLBACK, ...FIELD_AR_FALLBACK, ...REPORTS_AR_FALLBACK };
+    return { ...MVP3_AR_FALLBACK, ...FACTORY360_AR_FALLBACK, ...VIRTUAL_AR_FALLBACK, ...PLAN_MAP_AR_FALLBACK, ...FIELD_AR_FALLBACK, ...REPORTS_AR_FALLBACK, ...PACKAGE_CREATE_AR_FALLBACK };
   }
   // anon client: ui_strings is world-readable; avoids per-request cookie plumbing
   const sb = createClient(supabaseUrl, supabaseAnonKey);
@@ -215,6 +232,7 @@ export async function getDict(locale: Locale): Promise<Dict> {
     ...PLAN_MAP_AR_FALLBACK,
     ...FIELD_AR_FALLBACK,
     ...REPORTS_AR_FALLBACK,
+    ...PACKAGE_CREATE_AR_FALLBACK,
     ...dict,
   };
   cache = { at: Date.now(), dict: complete };

@@ -1,0 +1,37 @@
+schema_version: "1.0"
+change_control_id: "CC-SIKANDER-FIGMA-DEFECTS-20260805"
+approved_by: "Product Owner (Vikram)"
+approved_at: "2026-08-05"
+source: "Sikander Ahmad, Slack DM, 2026-08-05 12:38-13:27 — 10 Figma walkthrough defects"
+jira: [INSP-759, INSP-760, INSP-761, INSP-762, INSP-763, INSP-764, INSP-765, INSP-766, INSP-767, INSP-768]
+
+figma_fixes:
+  file: "ML2PNwfShlQM2k44MvSEw5"
+  state: "8 of 10 fixed and screenshot-verified; INSP-765 and INSP-767 held, insufficient evidence"
+
+application_fixes:
+  scope: "presentation-only, matching confirmed Figma defects only"
+  files:
+    - path: "apps/web/src/app/saqeel-components.css"
+      change: ".tabs gains overflow-x:auto + .tab flex-shrink:0 (INSP-763 inline+scroll); .tab-count becomes a rounded token-backed badge instead of bare text (INSP-763 badge ask)"
+      acceptance: "tsc --noEmit clean; diff uses only existing var(--*) tokens, no new tokens, no hex/rgb"
+  already_correct_no_change_needed:
+    - defect: "INSP-761 sidebar toggle placement"
+      file: "apps/web/src/app/saqeel-runtime.css:682"
+      note: "margin-inline-start:auto already present on .sq-shell__collapse — app was already correct, Figma-only drift"
+    - defect: "INSP-762 queue-filters not inline"
+      file: "apps/web/src/app/saqeel-runtime.css:1576"
+      note: ".cd-filters already flex-wrap:wrap, align-items:flex-end — app was already correct, Figma-only drift"
+  not_located_within_this_pass:
+    - defect: "INSP-759 week-board card height"
+      note: "RevampExecutionWorkspace.tsx located but exact week-grid markup not pinned down before session time ran out"
+    - defect: "INSP-760 pending-queue border clip"
+      note: "ReviewQueue.tsx renders this screen as a table, not the card-queue layout Sikander screenshotted in Figma — no direct app equivalent found; needs product confirmation on which is canonical"
+    - defect: "INSP-764 decision dot alignment"
+      note: "the validation-row/check-dot content Sikander saw in Figma corresponds by text to apps/web/src/app/(app)/field/inspection/[id]/page.tsx (inspector submit screen), not the reviewer DecisionPanel.tsx — needs confirmation before editing either"
+    - defect: "INSP-766 library-head two-row split"
+      note: "apps/web/src/app/(app)/compliance/page.tsx already renders panel-header and grid-toolbar as separate stacked blocks — appears already correct, not independently confirmed with a running app screenshot"
+    - defect: "INSP-768 analytics-filters alignment"
+      note: "apps/web/src/app/(app)/analytics/page.tsx located, fields present, row/wrap layout not yet inspected"
+
+rule: "no governed value invented; unresolved items left as findings, not guesses"

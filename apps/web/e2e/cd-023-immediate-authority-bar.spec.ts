@@ -3,7 +3,7 @@ import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { randomUUID } from "node:crypto";
 import { evidenceDirectory } from "./evidence-path";
-import { storageStatePath, PERSONAS } from "./personas";
+import { goldenInspectorPersona, storageStatePath, PERSONAS } from "./personas";
 import { login, rest, must } from "./live-rest";
 
 // CD-023 · SCR-WEB-130 · MVP1-M01-043..052 / M02-012.
@@ -317,8 +317,9 @@ test.describe("CD-023 database blockers, concurrency and idempotency", () => {
     ]);
     const ra = must(a, "first concurrent request");
     const rb = must(b, "second concurrent request");
-    expect(ra).toMatchObject({ status: "ok", actor_mode: "planner", replayed: false });
+    expect(ra).toMatchObject({ status: "ok", actor_mode: "planner" });
     expect(rb).toMatchObject({ status: "ok", actor_mode: "planner" });
+    expect([ra.replayed, rb.replayed].sort()).toEqual([false, true]);
     expect(ra.visit_id).toBe(rb.visit_id);
     const crossModeReplay = must(await rest("POST", "rpc/create_immediate_visit", planner.jwt, {
       ...payload,
@@ -372,26 +373,34 @@ test.describe("CD-023 database blockers, concurrency and idempotency", () => {
 
   test("concurrent manual identities sharing one licence cannot create two factories", async () => {
     const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
-    const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
+    // Identity serialization is the behavior under test. Use two distinct
+    // governed Inspectors so an overlap left by another certification lane
+    // cannot turn the winning identity request into inspector_unavailable.
+    const [inspector, alternateInspector] = await Promise.all([
+      login(PERSONAS.inspector.email, PERSONAS.inspector.password),
+      login(goldenInspectorPersona().email, goldenInspectorPersona().password),
+    ]);
     const pkg = await packageId(planner.jwt);
     const sharedLicense = `LIC-CONCURRENT-${Date.now()}`;
-    const manual = (cr: string): RpcPayload => ({
-      ...plannerPayload(randomUUID(), pkg, inspector.userId),
+    const manual = (cr: string, inspectorId: string): RpcPayload => ({
+      ...plannerPayload(randomUUID(), pkg, inspectorId),
       p_existing_factory_id: null,
       p_manual_name: `Concurrent identity ${cr}`,
       p_manual_cr: cr,
       p_manual_license: sharedLicense,
       p_manual_activity: "Concurrent identity proof",
+      p_manual_region: "Riyadh",
+      p_manual_city: "Riyadh",
       p_lat: 24.8,
       p_lng: 46.8,
       p_location_source: "manual",
     });
     const [a, b] = await Promise.all([
-      rest("POST", "rpc/create_immediate_visit", planner.jwt, manual(`CR-A-${Date.now()}`)),
-      rest("POST", "rpc/create_immediate_visit", planner.jwt, manual(`CR-B-${Date.now()}`)),
+      rest("POST", "rpc/create_immediate_visit", planner.jwt, manual(`CR-A-${Date.now()}`, inspector.userId)),
+      rest("POST", "rpc/create_immediate_visit", planner.jwt, manual(`CR-B-${Date.now()}`, alternateInspector.userId)),
     ]);
     const results = [must(a, "first identity request"), must(b, "second identity request")];
-    expect(results.map(result => result.status).sort()).toEqual(["blocked", "ok"]);
+    expect(results.map(result => result.status).sort(), JSON.stringify(results)).toEqual(["blocked", "ok"]);
     expect(results.find(result => result.status === "blocked")).toMatchObject({ code: "factory_identity_match" });
   });
 });

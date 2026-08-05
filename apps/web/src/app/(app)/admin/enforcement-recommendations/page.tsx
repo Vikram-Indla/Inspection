@@ -17,10 +17,16 @@ const CLEAN_FACTORY_CODES = [
 
 // DEC-F — Unlicensed-establishment enforcement recommendation review.
 // Inspector-submitted recommendations (planning/immediate/actions.ts) land
-// here as 'pending'; only supervisor/admin can decide (RLS-enforced,
-// see 20260719010000_dec_f_enforcement_recommendations.sql). This route
-// itself has no product-contract screen_id yet — a housekeeping follow-up,
-// not a blocker to the capability working.
+// here as 'pending'. Owner ruling (CC-ENFORCEMENT-DECISION-ENABLE-20260805,
+// amended): supervisors decide; administrators are excluded, consistent with
+// administrators configuring the platform rather than deciding on it. Admin
+// keeps read visibility (isDecider) into the pending queue and decision
+// history — the ruling is about who may write a decision, not who may see
+// one. decide_enforcement_recommendation() enforces the same role
+// (RLS/SECURITY DEFINER, see 20260805120000_enforcement_decision_admit_
+// supervisor.sql) — canDecide mirrors that, not a separate policy. This
+// route itself has no product-contract screen_id yet — a housekeeping
+// follow-up, not a blocker to the capability working.
 export default async function EnforcementRecommendations() {
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
@@ -32,7 +38,7 @@ export default async function EnforcementRecommendations() {
     : { data: [] as { role_key: string }[], error: null };
   const roles = (roleRows ?? []).map(r => r.role_key);
   const isDecider = roles.includes("supervisor") || roles.includes("admin");
-  const canDecide = false;
+  const canDecide = roles.includes("supervisor");
   const isReader = isDecider || roles.includes("inspector") || roles.includes("planner");
 
   const actionLabel = (action: string) => ({
@@ -97,8 +103,7 @@ export default async function EnforcementRecommendations() {
   }[];
 
   return (
-    <Shell current="/admin/enforcement-recommendations" title={tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}
-      context={<span className="badge badge-info">DEC-F</span>}>
+    <Shell current="/admin/enforcement-recommendations" title={tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}>
       <h1 className="sr-only">{tr("admin.enf.rec.title", "Enforcement recommendations", "توصيات الإنفاذ")}</h1>
       <div className={styles.pageRoot}>
       <div className="alert alert-warning" role="note"><div><strong>{tr("admin.enf.rec.configTitle", "Enforcement policy: Not configured.", "سياسة الإنفاذ: غير مهيأة.")}</strong>{" "}{tr("admin.enf.rec.configBody", "The sponsor must supply the approved enforcement measure catalogue and authoritative legal-basis wording for each measure, including the published instrument and version. No amount, escalation ladder, citation or Arabic legal wording is asserted until supplied.", "يجب على الراعي تزويد كتالوج تدابير الإنفاذ المعتمد والصياغة الموثوقة للأساس القانوني لكل تدبير، بما في ذلك الأداة المنشورة وإصدارها. لا تُعرض مبالغ أو سلالم تصعيد أو استشهادات أو صياغة قانونية عربية حتى يتم توفيرها.")}</div></div>
@@ -141,12 +146,10 @@ export default async function EnforcementRecommendations() {
                     already_decided: tr("admin.enf.rec.error.conflict", "This recommendation was already decided. Refresh the queue.", "تم البت في هذه التوصية مسبقًا. حدّث القائمة."),
                     maker_checker: tr("admin.enf.rec.error.makerChecker", "The recommender cannot decide their own recommendation.", "لا يمكن لمقدم التوصية البت في توصيته."),
                     write_failed: tr("admin.enf.rec.error.write", "The decision could not be recorded. No change was claimed.", "تعذر تسجيل القرار. لم يتم الادعاء بإجراء أي تغيير."),
-                    backend_guard_required: tr("admin.enf.rec.error.backendGuard", "Recording a decision is not available yet — a safe database step still needs to be added.", "تسجيل القرار غير متاح بعد — لا يزال يلزم إضافة خطوة آمنة في قاعدة البيانات."),
+                    backend_guard_required: tr("admin.enf.rec.error.backendGuard", "Recording a decision is not available.", "تسجيل القرار غير متاح بعد — لا يزال يلزم إضافة خطوة آمنة في قاعدة البيانات."),
                   },
                 }} />
-              : <p className="t-caption">{isDecider
-                ? tr("admin.enf.rec.guardPending", "Decision not available yet — a safe database step is still needed.", "القرار غير متاح بعد — لا يزال يلزم خطوة آمنة في قاعدة البيانات.")
-                : tr("admin.enf.rec.awaitingDecider", "Awaiting an Operations or Compliance Admin decision.", "بانتظار قرار من العمليات أو مسؤول الامتثال.")}</p>}
+              : <p className="t-caption">{tr("admin.enf.rec.awaitingDecider", "Awaiting an Operations or Compliance Admin decision.", "بانتظار قرار من العمليات أو مسؤول الامتثال.")}</p>}
           </div>
         ))}
       </section>
@@ -156,7 +159,7 @@ export default async function EnforcementRecommendations() {
           <h2>{tr("admin.enf.rec.recent", "Recently decided", "تم البت فيها مؤخرًا")}</h2>
           {decidedError ? (
             <div className="alert alert-warning" role="alert"><div>
-              {tr("admin.enf.rec.decidedLoadError", "Recent decisions are unavailable. No history count is claimed.", "القرارات الأخيرة غير متاحة. لا يُدّعى أي عدد للسجل.")}
+              {tr("admin.enf.rec.decidedLoadError", "Recent decisions are unavailable. No count is shown.", "القرارات الأخيرة غير متاحة. لا يُعرض أي عدد.")}
             </div></div>
           ) : !(decided ?? []).length ? <p className="t-caption">{tr("admin.enf.rec.noneDecided", "No decisions recorded yet.", "لم تُسجَّل أي قرارات بعد.")}</p> : (
             <div className="table-wrap" tabIndex={0} aria-label={tr("admin.enf.rec.recent", "Recently decided", "تم البت فيها مؤخرًا")}><table className="table"><tbody>

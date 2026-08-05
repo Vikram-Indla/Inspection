@@ -13,7 +13,8 @@ export function CreateDelegationForm({
 }: { delegatorName: string; availableScopes: { key: string; title: string }[]; strings: DelegationStrings }) {
   const [state, action, pending] = useActionState<DelegationResult, FormData>(createDelegation, {});
   return (
-    <form action={action} className="panel dg-composer" style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+    <form action={action} className="panel dg-composer">
+      <div className="panel-body stack">
       <div className="sq-field"><label className="sq-field__label" htmlFor="dg-delegator">{s.delegator}</label>
         <input className="sq-input" id="dg-delegator" value={delegatorName} readOnly disabled /></div>
       <div className="sq-field"><label className="sq-field__label" htmlFor="dg-to">{s.delegate}</label>
@@ -36,6 +37,7 @@ export function CreateDelegationForm({
         <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? s.creating : s.create}</button>
         {state.error && <span className="t-caption" role="alert" style={{ color: "var(--status-critical)" }}>{state.error}</span>}
         {state.ok && <span className="badge badge-compliant">{s.created}</span>}
+      </div>
       </div>
     </form>
   );
