@@ -15,9 +15,10 @@ const CLEAN_FACTORY_CODES = [
 
 export const dynamic = "force-dynamic";
 
-// DEC-L (option 1) is visible as a read-only impact preview. DEC-032 blocks the
-// underlying real inspection submission until its database digest migration is
-// approved and deployed.
+// Issuing is gated by ENFORCEMENT_P0_RPCS_DEPLOYED and re-validated by the
+// issue_bulk_violation RPC (authorization, violation governance, penalty
+// mapping, package validity). DEC-032 closed on 2026-08-01; it is no longer a
+// reason to refuse.
 export default async function BulkViolations() {
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
@@ -89,25 +90,20 @@ export default async function BulkViolations() {
     notesLabel: tr("admin.bulkvio.notesLabel", "Notes (optional)", "ملاحظات (اختياري)"),
     notesPlaceholder: tr("admin.bulkvio.notesPlaceholder", "Recorded with the audit event", "يُسجَّل مع حدث التدقيق"),
     previewTitle: tr("admin.bulkvio.previewTitle", "Impact summary", "ملخص الأثر"),
-    previewBody: tr("admin.bulkvio.previewBody", "Read-only preview: {n} factory/factories are selected for one {level} violation ({code} · {penalty}). Issuing is unavailable, so nothing will be created.", "معاينة للقراءة فقط: تم تحديد {n} منشأة/منشآت لمخالفة واحدة من نوع {level} ({code} · {penalty}). الإصدار غير متاح، لذلك لن يُنشأ أي سجل."),
-    acknowledgeLabel: tr("admin.bulkvio.acknowledge", "I have reviewed this blocked impact preview.", "لقد راجعت معاينة الأثر المحظورة هذه."),
-    submit: tr("admin.bulkvio.submit", "Issuing is not available", "الإصدار غير متاح"),
+    previewBody: tr("admin.bulkvio.previewBody", "This issues one {level} violation ({code} · {penalty}) against {n} factory/factories. Each creates an inspection record and is audited.", "يصدر هذا مخالفة واحدة من نوع {level} ({code} · {penalty}) على {n} منشأة/منشآت. ينشئ كل إصدار سجل تفتيش ويُدقَّق."),
+    acknowledgeLabel: tr("admin.bulkvio.acknowledge", "I have reviewed this impact summary.", "لقد راجعت ملخص الأثر هذا."),
+    submit: tr("admin.bulkvio.submit", "Issue violations", "إصدار المخالفات"),
     submitting: tr("admin.bulkvio.submitting", "Issuing…", "جارٍ الإصدار…"),
     resultsTitle: tr("admin.bulkvio.resultsTitle", "Result", "النتيجة"),
     resultSuccess: tr("admin.bulkvio.resultSuccess", "issued", "تم الإصدار"),
     resultFailed: tr("admin.bulkvio.resultFailed", "failed", "فشل"),
     partialWarning: tr("admin.bulkvio.partialWarning", "Not everything succeeded — check the failed rows below before assuming this batch is done.", "لم تنجح جميع الأهداف — راجع الصفوف الفاشلة أدناه قبل افتراض اكتمال هذه الدفعة."),
     allSucceeded: tr("admin.bulkvio.allSucceeded", "All {n} violations issued successfully.", "تم إصدار جميع المخالفات البالغ عددها {n} بنجاح."),
-    blockedReason: tr(
-      "admin.bulkvio.dec032",
-      "Submitting is unavailable. No violation will be issued from this page.",
-      "الإرسال غير متاح. لن تُصدر أي مخالفة من هذه الصفحة.",
-    ),
     errors: {
-      dec032_blocked: tr(
-        "admin.bulkvio.error.dec032",
-        "No change was made. Submitting is unavailable.",
-        "لم يتم إجراء أي تغيير. الإرسال غير متاح.",
+      issuing_unavailable: tr(
+        "admin.bulkvio.error.unavailable",
+        "No change was made. Issuing is unavailable in this environment.",
+        "لم يتم إجراء أي تغيير. الإصدار غير متاح في هذه البيئة.",
       ),
       auth_required: tr("admin.bulkvio.error.auth", "Your session is unavailable. Sign in again.", "جلستك غير متاحة. سجّل الدخول مرة أخرى."),
       invalid_request: tr("admin.bulkvio.error.invalid", "Select factories, a violation and a checklist version.", "حدد المنشآت والمخالفة وإصدار قائمة تفتيش."),
@@ -124,10 +120,6 @@ export default async function BulkViolations() {
   return (
     <Shell current="/admin/bulk-violations" title={tr("admin.bulkvio.title", "Issue Multiple Violations", "إصدار مخالفات متعددة")}>
       <h1 className="sr-only">{tr("admin.bulkvio.title", "Issue Multiple Violations", "إصدار مخالفات متعددة")}</h1>
-      <div className="alert alert-warning">
-        <div><strong>{tr("admin.bulkvio.warnTitle", "Issuing is temporarily unavailable.", "الإصدار غير متاح مؤقتًا.")}</strong>{" "}
-          {tr("admin.bulkvio.warnBody", "You can review the eligible factories and mapped violations. This page cannot create an inspection or violation right now.", "يمكنك مراجعة المنشآت المؤهلة والمخالفات المرتبطة. لا يمكن لهذه الصفحة إنشاء تفتيش أو مخالفة حاليًا.")}</div>
-      </div>
       {factoriesError && <div className="alert alert-warning" role="alert"><div>{tr("admin.bulkvio.factoriesError", "The factory list is not available in this environment.", "قائمة المنشآت غير متاحة في هذه البيئة.")}</div></div>}
       {violationsError && <div className="alert alert-warning" role="alert"><div>{tr("admin.bulkvio.violationsError", "The violation catalogue is not available in this environment.", "كتالوج المخالفات غير متاح في هذه البيئة.")}</div></div>}
       {packagesError && <div className="alert alert-warning" role="alert"><div>{tr("admin.bulkvio.packagesError", "Published checklist versions are not available in this environment.", "إصدارات قوائم التفتيش المنشورة غير متاحة في هذه البيئة.")}</div></div>}
