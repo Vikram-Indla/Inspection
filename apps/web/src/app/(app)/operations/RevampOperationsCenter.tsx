@@ -92,6 +92,9 @@ export default function RevampOperationsCenter({
         </div>
       </div>
 
+      {/* Map branch below uses .map-panel + .lv-map: .map-panel sets no height
+          and OperationsMapWorkspace fills its parent, so it collapsed to the
+          breadcrumb line alone — the reason "View on map" opened nothing. */}
       {showList ? (
           <section className="table-wrap">
             <table className="table">
@@ -121,7 +124,7 @@ export default function RevampOperationsCenter({
             </table>
           </section>
       ) : (
-          <section className="map-panel">
+          <section className="map-panel lv-map">
             <nav className="breadcrumb" aria-label={copy(locale, "Map drill", "التنقل في الخريطة")}><ul className="breadcrumb"><li>{copy(locale, "Saudi Arabia", "المملكة العربية السعودية")}</li></ul></nav>
             <OperationsMapWorkspace entries={activeMapEntries} strings={mapStrings} mapOnly />
           </section>

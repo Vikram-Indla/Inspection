@@ -38,7 +38,7 @@ export default async function ExceptionsPage() {
       <div className="stack" data-saqeel-screen="supervisor-exceptions">
       <header className="page-header">
         <div>
-          <h1>{t("exc.title", "Exception board")}</h1>
+          <h1 className="sr-only">{t("exc.title", "Exception board")}</h1>
           <p className="tl-meta">{t("exc.subtitle", "Operational exceptions filtered to your access, derived from the owning case and risk records.")}</p>
         </div>
         <nav className="row" aria-label={t("exc.journey", "Supervisor operations journey")}>
@@ -48,14 +48,14 @@ export default async function ExceptionsPage() {
           <Link className="btn btn-secondary" href="/reviews">{t("reviews.title", "Review queue")}</Link>
         </nav>
       </header>
-      <div className="sq-banner"><div><strong>{t("exc.banner.title", "Command posture.")}</strong> {t("exc.banner.body", "Exceptions are a projection over real objects — decisions stay on the owning object. Counts trace one-to-one to their sources.")} {invariantOk ? "✓" : "⚠"}</div></div>
+      <div className="sq-banner"><div><strong>{t("exc.banner.title", "How this board is built.")}</strong> {t("exc.banner.body", "Exceptions are a projection over real objects — decisions stay on the owning object. Counts trace one-to-one to their sources.")} {invariantOk ? "✓" : "⚠"}</div></div>
       {degraded ? (
         <div className="alert alert-warning" role="status">
           <div><strong>{t("exc.degraded.title", "Exception sources are partially unavailable.")}</strong> {t("exc.degraded.body", "Available groups filtered to your access remain visible; unavailable sources are not represented as zero.")}</div>
         </div>
       ) : null}
       {sources.length === 0 && (
-        <EmptyState glyph="✅" title={t("exc.empty.title", "No open exceptions in scope")}
+        <EmptyState glyph="—" title={t("exc.empty.title", "No open exceptions in scope")}
           body={degraded
             ? t("exc.empty.degraded", "No source could be verified. Retry after the affected service recovers.")
             : t("exc.empty.body", "Open cases and risk exceptions surface here. Empty may also mean none are in your scope.")} />

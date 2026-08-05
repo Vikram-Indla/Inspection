@@ -288,7 +288,7 @@ export default function LiveOps({
               ))}
             </ul>
           ) : (
-            <section className="saqeel-state"><div className="saqeel-state__content"><h2>{s.activeList}</h2><p>{noScopeRows ? s.noScope : s.noPositions}</p></div></section>
+            <section className="saqeel-state"><div className="saqeel-state__content"><p>{noScopeRows ? s.noScope : s.noPositions}</p></div></section>
           )}
         </aside>
       </div>

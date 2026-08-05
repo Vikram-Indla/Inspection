@@ -1186,8 +1186,10 @@ export default async function Operations({ searchParams }: {
               <tbody>{highRisk.map(factory => <tr key={factory.id}>
                 <th scope="row"><a className="sq-link" href={`/factories/${factory.id}`}>{factory.name}</a></th>
                 <td>{[factory.region, factory.city].filter(Boolean).join(" · ") || "—"}</td>
-                <td>{factory.risk_score ?? local("Not configured", "غير مهيأ")}</td>
-                <td>{factory.risk_band ? enumLabel(factory.risk_band) : local("Not configured", "غير مهيأ")}</td>
+                <td className="sq-td-num">{factory.risk_score != null ? Number(factory.risk_score).toFixed(1) : local("Not configured", "غير مهيأ")}</td>
+                <td>{factory.risk_band
+                  ? <span className={`sq-lozenge ${factory.risk_band === "high" ? "sq-lozenge--critical" : factory.risk_band === "medium" ? "sq-lozenge--warning" : "sq-lozenge--success"}`}>{enumLabel(factory.risk_band)}</span>
+                  : local("Not configured", "غير مهيأ")}</td>
               </tr>)}</tbody>
             </table></div>
           )}
@@ -1226,7 +1228,7 @@ export default async function Operations({ searchParams }: {
                     {notifs.map(notification => <article className={styles.alertCard} key={notification.id}>
                       <div>
                         <strong>{enumLabel(notification.event_key)}</strong>
-                        <p>{notification.channel} · <time dateTime={notification.created_at}>{formatDateTime(notification.created_at, locale === "ar" ? "ar" : "en")}</time></p>
+                        <p>{t(`enum.channel.${notification.channel}`, notification.channel === "inapp" ? "In-app" : notification.channel.replace(/_/g, " "))} · <time dateTime={notification.created_at}>{formatDateTime(notification.created_at, locale === "ar" ? "ar" : "en")}</time></p>
                       </div>
                       <div className="sq-row">
                         <span className={`sq-lozenge ${NOTIF_TONE[notification.delivery_state] ?? "sq-lozenge--neutral"}`}>{enumLabel(notification.delivery_state)}</span>
