@@ -1,0 +1,26 @@
+schema_version: "1.0"
+packet_id: "PKT-M6-COMPLIANCE-REQUESTS-001"
+authored_by: "ChatGPT"
+planning_lane: "gpt-w1"
+status: "QUEUED_NO_LEASE"
+queue_after: "PKT-M4-FACTORY360-READ-001"
+module: "M6 Compliance, Enforcement, Committee and Risk"
+vertical_slice: >-
+  Queued successor only: one source-backed read-first Compliance Requests list
+  and detail vertical after M4 handoff review. No M6 implementation authority or
+  write lease exists in this artifact.
+contract_anchor:
+  repository: "Vikram-Indla/Inspection"
+  requirement_ids: ["CR-449..CR-478"]
+  screen_ids: ["WA-DES-019"]
+  engine_ids: ["G2-P12", "MOD-17", "ENG-WAP1-M6"]
+  acceptance_ids: ["WA-AC-0449..0478", "WA-M6-AC-001..006"]
+  routes: ["/admin/compliance-requests", "/admin/compliance-requests/:id"]
+lease:
+  state: "NONE"
+  holder: null
+  rule: "Codex may consider an M6 lease only after M4 reaches commit-pinned handoff review and ChatGPT confirms the exact non-overlapping M6 packet scope."
+prohibited_now:
+  - "No M6 application edit, certification, audit, DDL, provider, data, main, merge or deployment action."
+  - "Do not infer legal, SLA, risk, penalty, committee or provider values."
+stop_condition: "Remain queued with no lease until the M4 exit handoff is under Codex review."
