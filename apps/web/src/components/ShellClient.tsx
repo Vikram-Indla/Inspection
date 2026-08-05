@@ -5,7 +5,6 @@ import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
-import AdminShellClient from "@/components/admin/AdminShellClient";
 import SaqeelBrandMark from "@/components/SaqeelBrandMark";
 import ShellNavIcon from "@/components/ShellNavIcon";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -433,61 +432,11 @@ export default function ShellClient({
   }
 
   const routeScope = shellScopeForRoute(current);
-  // Normalized account chrome (INSP-735): name+role, matching the format
-  // AdminShellClient already used — the full email stays available via the
-  // title attribute and the account-menu detail row below, not as the
-  // primary visible label.
+  // Normalized account chrome (INSP-735): name+role — the full email stays
+  // available via the title attribute and the account-menu detail row below,
+  // not as the primary visible label.
   const accountName = displayName || email.split("@")[0];
   const accountRoleSummary = (roleTitles.length ? roleTitles : roles).join(" · ");
-
-  if (adminWorkspace) {
-    const adminItems = groups
-      .filter(group => group.id === "administration")
-      .flatMap(group => group.items)
-      .map(item => ({
-        id: item.id,
-        label: itemLabel(item),
-        href: item.href,
-        icon: item.icon,
-        enabled: item.enabled,
-      }));
-
-    return (
-      <AdminShellClient
-        items={adminItems}
-        locale={locale}
-        email={email}
-        displayName={displayName}
-        roles={roleTitles.length ? roleTitles : roles}
-        bellStrings={bellStrings}
-        labels={{
-          navigation: strings.admin.navigation,
-          controlPanel: strings.admin.controlPanel,
-          collapse: strings.collapse,
-          expand: strings.expand,
-          light: strings.themeLight,
-          dark: strings.themeDark,
-          signOut: strings.signOut,
-          authorized: strings.admin.authorized,
-          loadingDestination: strings.admin.loadingDestination,
-          brandLabel: strings.admin.brandLabel,
-          brandArabic: strings.admin.brandArabic,
-          brandEnglish: strings.admin.brandEnglish,
-          findTool: strings.admin.findTool,
-          viewAll: strings.admin.viewAll,
-          administration: strings.admin.administration,
-          allTools: strings.admin.allTools,
-          close: strings.admin.close,
-          paletteTitle: strings.admin.paletteTitle,
-          noMatch: strings.admin.noMatch,
-          language: strings.language,
-          hubs: strings.admin.hubs,
-        }}
-      >
-        {children}
-      </AdminShellClient>
-    );
-  }
 
   function handleShellNavigation(event: ReactMouseEvent<HTMLDivElement>) {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
