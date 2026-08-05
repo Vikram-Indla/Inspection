@@ -1,0 +1,103 @@
+schema_version: "1.0"
+change_control_id: "CC-SUBMIT-ACTION-FORM-VIOLATION-GATED-20260805"
+task_id: "TASK-SUBMIT-ACTION-FORM-VIOLATION-GATED-20260805"
+title: "A corrective action form is required only when a violation exists"
+state: "APPROVED_NOT_STARTED"
+approved_by: "Product Owner (Vikram)"
+approved_at: "2026-08-05"
+
+authority:
+  type: "BOUNDED_DIRECT_PRODUCT_OWNER_DIRECTIVE"
+  user_confirmation: "confirmed — 'the corrective form should only be required when there's a violation'"
+  lease_required: false
+  broad_implementation_allowed: false
+
+governed_rule:
+  statement: >
+    A hard-blocking corrective action form is required before an inspection may
+    be submitted only when that inspection recorded at least one violation or
+    non-compliant answer. An inspection that found nothing wrong is submitted
+    without one.
+  supplied_by: "Product Owner (Vikram)"
+  supplied_at: "2026-08-05"
+  why_this_is_recorded_here: >
+    This is a governed rule. It decides when a national inspection may be
+    submitted and locked, so it carries legal weight. It was ruled by the
+    Product Owner and is written down with attribution. It was not inferred
+    from code, defaulted, or chosen by the orchestrator.
+  what_this_does_not_change: >
+    Where a violation exists the form remains mandatory and still blocks
+    submission. The ruling narrows when the requirement applies. It does not
+    soften the requirement itself.
+
+problem:
+  summary: >
+    A fully compliant inspection can never be submitted. The inspector completes
+    the checklist, captures evidence, signs, and the submission is refused with
+    no explanation and no way forward.
+  root_cause_verified: >
+    The trigger guard_submission_action_forms_and_config enforces a package's
+    hard-blocking mandatory action form on every submission attempt without
+    asking whether any violation exists. Confirmed against the live project on
+    2026-08-05 by reading the trigger source and the submission logs, not by
+    inference.
+  evidence: >
+    Found by walking the journey end to end with real accounts on 2026-08-05.
+    Rabigh Polymers Complex, visit ea32f474, inspection d70ac807, package
+    PKG-UAT-GOLDEN-FS101. Steps 00 to 08 all produced their intended outcome.
+    The inspection recorded zero violations and step 09 refused with
+    EXE-SUBMIT-ACTION-FORM-MISSING. The inspection remains in_progress.
+  not_a_package_defect: >
+    The package was considered as the fault and rejected as the explanation.
+    The package declares a blocking form, which is legitimate. The fault is that
+    the rule fires whether or not there is anything to correct.
+
+scope:
+  - "Gate the blocking-action-form requirement on at least one violation or non-compliant answer existing on the inspection."
+  - "Ship as a committed migration and apply it to the live project."
+  - "Prove both directions by walking them, not by reading the trigger back."
+
+out_of_scope:
+  - "No change to any other submission guard — evidence, signature, configuration pinning, idempotency, frozen package snapshot."
+  - "No edit to the package or its snapshot. The package is not the fault."
+  - "No invented threshold. A violation means what the data already records as a violation or non-compliant answer."
+  - "No new CSS, no new tokens."
+
+ambiguity_instruction:
+  rule: >
+    If the schema carries two plausible readings of what counts as a violation,
+    stop and escalate. Choosing one quietly would be inventing a governed value.
+
+related_client_defects:
+  note: >
+    Three client-side faults were found alongside this and are real regardless
+    of how the rule is answered. They are held by the Integration lane, not by
+    this change control.
+  items:
+    - "Pre-submit validation does not check what the server will enforce, so the screen states that submission is ready when it is not."
+    - "The server's refusal is never surfaced. The client retries silently and indefinitely, which is indistinguishable from a hang."
+    - "The action form picker offers only organisation-wide templates, so the form a package requires cannot be chosen by anyone."
+
+acceptance:
+  - "An inspection with no violation submits and locks — walked with a real account."
+  - "An inspection with a violation and no corrective form is still refused."
+  - "The refusal, where it still applies, reaches the inspector as an explanation naming what is missing."
+  - "No other submission guard changed, proven by reading the trigger definition after applying."
+  - "The migration exists as a committed file AND is applied live, verified by querying the object rather than by filename."
+
+allowed_paths:
+  - "supabase/migrations/<new timestamped migration>.sql"
+  - "product-contract/governance/CC-SUBMIT-ACTION-FORM-VIOLATION-GATED-20260805.yaml"
+
+verification:
+  trigger_definition_live: "PENDING"
+  clean_inspection_submits: "PENDING"
+  violation_inspection_still_refused: "PENDING"
+  other_guards_unchanged: "PENDING"
+  source_live_reconciled: "PENDING"
+
+lane: "Backend"
+priority: >
+  Highest open item. It is the last blocker on the inspection journey. Steps 10
+  to 12 — supervisor decision, correction and resubmission, closing the loop —
+  have never been reached because nothing can be submitted.
