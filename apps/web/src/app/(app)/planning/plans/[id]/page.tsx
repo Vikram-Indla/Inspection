@@ -40,7 +40,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
       </Shell>
     );
   }
-  if (access.accessClass !== "business_staff" || !access.can("planning.view")) {
+  if (!["business_staff", "admin"].includes(access.accessClass) || !access.can("planning.view")) {
     return (
       <Shell current="/planning" title={t("plan.drill.notFoundTitle", "Plan details")}>
         <EmptyState glyph="⛔"
