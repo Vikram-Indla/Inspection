@@ -247,10 +247,13 @@ export default async function Operations({ searchParams }: {
       .find(item => item.href === "/operations");
   // PKT-RESPONSIVE-DASHBOARD-OPERATIONS-002 — field-shell convergence does not
   // retire the Inspector's CR-430..CR-448 observation capability. All canonical
-  // business roles may enter the read surface; capability-only Administrator
-  // profiles still require an operational legacy grant and otherwise fail
-  // closed before the first operational read.
-  const hasOperationalRole = routeRoleKeys.some(role => BUSINESS_ROLE_KEYS.includes(role));
+  // business roles may enter the read surface. PROGRAMME-BASELINE-20260805
+  // canonical_rule_visibility: "Regardless of persona, everybody can see
+  // everything. The only restriction is that administration functionality is
+  // reachable by an administrator alone." Operations is not administration
+  // functionality, so admin is admitted to the read surface alongside the
+  // business roles — same as every other canonical role, no separate grant.
+  const hasOperationalRole = routeRoleKeys.some(role => BUSINESS_ROLE_KEYS.includes(role) || role === "admin");
   const mayViewOperations = operationsDestination?.enabled === true && hasOperationalRole;
   if (!mayViewOperations) {
     return (

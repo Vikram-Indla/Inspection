@@ -114,7 +114,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       </Shell>
     );
   }
-  if (access.accessClass !== "business_staff" || !access.can("planning.view")) {
+  if (!["business_staff", "admin"].includes(access.accessClass) || !access.can("planning.view")) {
     return (
       <Shell current="/planning" title={title}>
         <EmptyState icon={<IconBlocked />} title={tr("plan.home.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
