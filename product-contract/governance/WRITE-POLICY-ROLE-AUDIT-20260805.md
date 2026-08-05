@@ -57,6 +57,36 @@ duties. No fix proposed for any of them; that is the Product Owner's call.
   `visits_insert_immediate_inspector`, etc.) are the sender's "also names a
   real role" column — already functioning, not reproduced here.
 
+## Dead-capability check — screen existence, verified live against `apps/web/src`
+
+Grepped the full `apps/web/src` tree (not just `app/`) for every table name
+in Groups C, D, E and `workflow_outbox`. A table with **zero** references
+anywhere in app source has no screen calling it at all today — tightening
+or loosening its write policy changes nothing observable, so it may need
+no PO ruling right now, only a note for when a screen is eventually built:
+
+| Table | References in apps/web/src | Verdict |
+|---|---|---|
+| senaei_raw_snapshots | 0 | No screen. May need no ruling now. |
+| risk_overrides | 0 | No screen. May need no ruling now. |
+| risk_runs | 0 | No screen. May need no ruling now. |
+| risk_simulations | 0 | No screen. May need no ruling now. |
+| risk_variables | 0 | No screen. May need no ruling now. |
+| route_snapshots | 0 | No screen. May need no ruling now. |
+| location_visibility_matrix | 0 | No screen. May need no ruling now. |
+| workflow_outbox | 1 (`lib/workflow/outbox.ts`) | Written only by a server-side helper, never a user screen — confirms the system/service-actor flag already on this row in Group G, not a human-capability gap. |
+
+Risk-engine Group E splits on this: `risk_models` and `risk_exceptions` do
+have a screen and need a real ruling; `risk_overrides`/`risk_runs`/
+`risk_simulations`/`risk_variables` do not — the PO can defer those four
+without blocking the group.
+
+Everything else in Groups A–J has at least one reference in `apps/web/src`
+(a screen exists) — that confirms a screen exists, not that a write UI
+exists behind it; distinguishing "read-only screen" from "has a write
+form/action" for each would be the next level of rigor if wanted, not done
+here.
+
 ## Totals
 
 79 write policies (INSERT 30, UPDATE 25, ALL 22, DELETE 2) name only
