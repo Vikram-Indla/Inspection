@@ -75,31 +75,35 @@ export type ShellClientStrings = {
     close: string;
     paletteTitle: string;
     noMatch: string;
-    hubs: Record<"control" | "people" | "rules" | "planning" | "risk" | "connections" | "governance", string>;
+    hubs: Record<"control" | "people" | "rules" | "planning" | "risk" | "connections" | "governance" | "security", string>;
   };
   tabbar: { home: string; myTasks: string; establishments: string; notifications: string; account: string };
 };
 
 const Icon = ShellNavIcon;
 
-// Hub grouping for the pinned "administration" nav-footer section (INSP-752).
-// The bucket ids/labels/icons come from the original hub-first admin nav
-// design and are unchanged from before the shell merge, only rendered
-// through the shared shell's existing sq-nav-subgroup markup now instead of
-// the retired admin-only shell. "control" and "planning" have no surviving
-// item and are intentionally absent — do not add items to them without an
-// approved shell-navigation.ts change.
-const ADMIN_HUB_ORDER = ["people", "rules", "risk", "connections", "governance"] as const;
+// Hub grouping for the pinned "administration" nav-footer section (INSP-752,
+// extended to full coverage by INSP-753). The original 5 buckets' ids/labels/
+// icons come from the hub-first admin nav design and are unchanged from
+// before the shell merge. "Security & Audit" is new: audit, access-review and
+// trusted-devices are security-posture/audit-review tools, distinct in kind
+// from People & Access (which is role/account management, not review) —
+// grouping them separately keeps People & Access meaning one thing. "control"
+// and "planning" (the pre-merge placeholders) still have no surviving item
+// and stay absent — do not add items to them without an approved
+// shell-navigation.ts change.
+const ADMIN_HUB_ORDER = ["people", "rules", "risk", "connections", "governance", "security"] as const;
 type AdminHubId = (typeof ADMIN_HUB_ORDER)[number];
 const ADMIN_HUB_ITEMS: Record<AdminHubId, string[]> = {
   people: ["adm-users"],
-  rules: ["adm-lookup", "adm-survey"],
+  rules: ["adm-lookup", "adm-survey", "adm-planning-expiry", "adm-planning-lookups", "adm-planning-status", "adm-compliance-requests"],
   risk: ["adm-risk"],
-  connections: ["adm-integration"],
-  governance: ["adm-notif", "adm-delegation"],
+  connections: ["adm-integration", "adm-gis", "adm-gis-spatial"],
+  governance: ["adm-notif", "adm-delegation", "adm-operations", "adm-enforcement-recommendations", "adm-workflows"],
+  security: ["adm-audit", "adm-access-review", "adm-devices"],
 };
 const ADMIN_HUB_ICON: Record<AdminHubId, ShellIcon> = {
-  people: "access", rules: "library", risk: "risk", connections: "workflow", governance: "radar",
+  people: "access", rules: "library", risk: "risk", connections: "workflow", governance: "radar", security: "access",
 };
 
 type GlobalSearchResult = { id: string; type: ShellGlobalSearchResultType; label: string; detail: string; href: string };

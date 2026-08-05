@@ -175,14 +175,47 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     labelKey: "shell.nav.administration",
     labelEn: "Administration",
     labelAr: "الإدارة",
+    // INSP-753: every /admin/* route gets a navigation decision, recorded
+    // here rather than left implicit, so the next person does not read an
+    // absence as an oversight.
+    //  - /admin/items, /admin/templates, /admin/risk/models,
+    //    /admin/integrations/factory-data and /admin/integrations/senai-data
+    //    are NOT listed separately: each is a tab on a page already listed
+    //    below (Survey Configuration, Risk Configuration and Integration
+    //    Management respectively) — two sidebar rows for one destination the
+    //    user experiences as a single screen would work against "predict the
+    //    next screen", not for it.
+    //  - /admin/compliance-requests/new and /admin/compliance-requests/[id]
+    //    are the create/detail sub-flow of Configuration Requests below, not
+    //    separate destinations.
+    //  - /admin/regulations/[id] is the detail drill-down of Compliance
+    //    Library (shared "compliance" group above), same reasoning.
+    //  - /admin/bulk-violations is deliberately NOT listed here. It is
+    //    admin-gated but not admin-shaped: issuing violations is enforcement
+    //    work, reached from Enforcement Library (shared "compliance" group),
+    //    not from Administration. A non-admin who follows that link sees the
+    //    destination and is refused at the boundary — that is "reachable",
+    //    not a gap.
     items: [
       { id: "adm-users", labelKey: "shell.nav.usersRoles", labelEn: "Users & Roles", labelAr: "المستخدمون والأدوار", href: "/admin/access", icon: "access", roles: allPresentationRoles, businessTab: "Users & Roles", visibility: "canonical-admin" },
       { id: "adm-lookup", labelKey: "shell.nav.lookupManagement", labelEn: "Lookup Management", labelAr: "إدارة القوائم المرجعية", href: "/admin/localization", icon: "library", roles: allPresentationRoles, businessTab: "Lookup Management", visibility: "canonical-admin" },
-      { id: "adm-risk", labelKey: "shell.nav.riskConfiguration", labelEn: "Risk Configuration", labelAr: "تهيئة المخاطر", href: "/admin/risk", icon: "risk", roles: allPresentationRoles, businessTab: "Risk Configuration", visibility: "canonical-admin" },
       { id: "adm-survey", labelKey: "shell.nav.surveyConfiguration", labelEn: "Survey Configuration", labelAr: "تهيئة الاستبيانات", href: "/admin/packages", icon: "forms", roles: allPresentationRoles, businessTab: "Survey Configuration", visibility: "canonical-admin" },
+      { id: "adm-planning-expiry", labelKey: "shell.nav.planningExpiry", labelEn: "Planning Expiry Rules", labelAr: "قواعد انتهاء صلاحية التخطيط", href: "/admin/planning/expiry", icon: "calendar", roles: allPresentationRoles, businessTab: "Planning Expiry Rules", visibility: "canonical-admin" },
+      { id: "adm-planning-lookups", labelKey: "shell.nav.planningLookups", labelEn: "Planning Lookups", labelAr: "القوائم المرجعية للتخطيط", href: "/admin/planning/lookups", icon: "library", roles: allPresentationRoles, businessTab: "Planning Lookups", visibility: "canonical-admin" },
+      { id: "adm-planning-status", labelKey: "shell.nav.planningStatus", labelEn: "Planning Status Rules", labelAr: "قواعد حالة التخطيط", href: "/admin/planning/status", icon: "workflow", roles: allPresentationRoles, businessTab: "Planning Status Rules", visibility: "canonical-admin" },
+      { id: "adm-compliance-requests", labelKey: "shell.nav.configurationRequests", labelEn: "Configuration Requests", labelAr: "طلبات التهيئة", href: "/admin/compliance-requests", icon: "forms", roles: allPresentationRoles, businessTab: "Configuration Requests", visibility: "canonical-admin" },
+      { id: "adm-risk", labelKey: "shell.nav.riskConfiguration", labelEn: "Risk Configuration", labelAr: "تهيئة المخاطر", href: "/admin/risk", icon: "risk", roles: allPresentationRoles, businessTab: "Risk Configuration", visibility: "canonical-admin" },
+      { id: "adm-integration", labelKey: "shell.nav.integrationManagement", labelEn: "Integration Management", labelAr: "إدارة التكاملات", href: "/admin/integrations", icon: "workflow", roles: allPresentationRoles, businessTab: "Integration Management", visibility: "canonical-admin" },
+      { id: "adm-gis", labelKey: "shell.nav.gisStudio", labelEn: "GIS Studio", labelAr: "استوديو الخرائط الجغرافية", href: "/admin/gis", icon: "map", roles: allPresentationRoles, businessTab: "GIS Studio", visibility: "canonical-admin" },
+      { id: "adm-gis-spatial", labelKey: "shell.nav.spatialCanvas", labelEn: "Spatial Canvas", labelAr: "اللوحة المكانية", href: "/admin/gis/spatial", icon: "map", roles: allPresentationRoles, businessTab: "Spatial Canvas", visibility: "canonical-admin" },
       { id: "adm-notif", labelKey: "shell.nav.notificationConfiguration", labelEn: "Notification Configuration", labelAr: "تهيئة الإشعارات", href: "/admin/notifications", icon: "notify", roles: allPresentationRoles, businessTab: "Notification Configuration", visibility: "canonical-admin" },
       { id: "adm-delegation", labelKey: "shell.nav.delegation", labelEn: "Delegation", labelAr: "التفويض", href: "/admin/delegation", icon: "access", roles: allPresentationRoles, businessTab: "Delegation", visibility: "canonical-admin" },
-      { id: "adm-integration", labelKey: "shell.nav.integrationManagement", labelEn: "Integration Management", labelAr: "إدارة التكاملات", href: "/admin/integrations", icon: "workflow", roles: allPresentationRoles, businessTab: "Integration Management", visibility: "canonical-admin" },
+      { id: "adm-operations", labelKey: "shell.nav.systemOperations", labelEn: "System Operations", labelAr: "عمليات النظام", href: "/admin/operations", icon: "workflow", roles: allPresentationRoles, businessTab: "System Operations", visibility: "canonical-admin" },
+      { id: "adm-enforcement-recommendations", labelKey: "shell.nav.enforcementRecommendations", labelEn: "Enforcement Recommendations", labelAr: "توصيات الإنفاذ", href: "/admin/enforcement-recommendations", icon: "enforcement", roles: allPresentationRoles, businessTab: "Enforcement Recommendations", visibility: "canonical-admin" },
+      { id: "adm-workflows", labelKey: "shell.nav.workflowBuilder", labelEn: "Workflow Builder", labelAr: "منشئ سير العمل", href: "/admin/workflows", icon: "workflow", roles: allPresentationRoles, businessTab: "Workflow Builder", visibility: "canonical-admin" },
+      { id: "adm-audit", labelKey: "shell.nav.auditTrail", labelEn: "Audit Trail", labelAr: "سجل التدقيق", href: "/admin/audit", icon: "review", roles: allPresentationRoles, businessTab: "Audit Trail", visibility: "canonical-admin" },
+      { id: "adm-access-review", labelKey: "shell.nav.accessReview", labelEn: "Access Review", labelAr: "مراجعة الوصول", href: "/admin/security-access", icon: "access", roles: allPresentationRoles, businessTab: "Access Review", visibility: "canonical-admin" },
+      { id: "adm-devices", labelKey: "shell.nav.trustedDevices", labelEn: "Trusted Devices", labelAr: "الأجهزة الموثوقة", href: "/admin/devices", icon: "access", roles: allPresentationRoles, businessTab: "Trusted Devices", visibility: "canonical-admin" },
     ],
   },
 ] as const;
