@@ -51,7 +51,7 @@ export default async function Items({
   // catalogue: the catalogue renders and only the clause control degrades.
   const [{ data: items, error }, { data: clauses, error: clauseError }] = await Promise.all([
     sb.from("inspection_items")
-      .select("id, code, title, clause_id, active, configuration_version, deactivation_reason, score_weight, response_model, evidence_rule, score_excluded_on, guidance_en, guidance_ar, regulation_clauses(clause_ref, regulations(code))")
+      .select("id, code, title, clause_id, active, configuration_version, deactivation_reason, score_weight, response_model, evidence_rule, score_excluded_on, guidance_en, guidance_ar, regulation_clauses(clause_ref, regulations(id, code))")
       .order("code"),
     sb.from("regulation_clauses")
       .select("id, clause_ref, title, regulations(code)")
@@ -284,7 +284,7 @@ export default async function Items({
             </tr></thead>
             <tbody>
               {rows.map(i => {
-                const rc = i.regulation_clauses as unknown as { clause_ref: string; regulations: { code: string } } | null;
+                const rc = i.regulation_clauses as unknown as { clause_ref: string; regulations: { id: string; code: string } } | null;
                 const rm = (i.response_model ?? {}) as ResponseModel;
                 const nc = rm.mapping?.non_compliant;
                 const ncTarget = nc?.violation ?? nc?.result ?? null;
@@ -295,7 +295,7 @@ export default async function Items({
                   <tr key={i.id}>
                     <td className="numeric"><strong><bdi dir="ltr">{i.code}</bdi></strong></td>
                     <td>{i.title}</td>
-                    <td className="numeric">{rc ? <bdi dir="ltr">{`${rc.regulations.code} §${rc.clause_ref}`}</bdi> : "—"}</td>
+                    <td className="numeric">{rc ? <a className="sq-link" href={`/admin/regulations?id=${encodeURIComponent(rc.regulations.id)}`}><bdi dir="ltr">{`${rc.regulations.code} §${rc.clause_ref}`}</bdi></a> : "—"}</td>
                     <td className="t-caption">
                       {(rm.responses ?? []).map(rLabel).join(" / ") || "—"}
                       {ncTarget && ` · ${t("admin.items.r2.sem.nc", "NC→")}${ncTarget}`}
