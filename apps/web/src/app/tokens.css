@@ -322,7 +322,7 @@
   --type-button-size: 14px; --type-label-size: 13px;
 }
 [data-density="compact"] {
-  --control-h-sm: 24px; --control-h-md: 28px; --control-h-lg: 36px;
+  --control-h-sm: var(--touch-target); --control-h-md: var(--touch-target); --control-h-lg: var(--touch-target);
   --row-h: 34px; --page-pad: var(--space-4);
   --type-body-size: 13px; --type-table-size: 12.5px;
 }

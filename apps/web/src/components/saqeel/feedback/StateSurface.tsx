@@ -9,13 +9,14 @@ export type StateSurfaceKind =
   | "not-yet"
   | "provider-unavailable"
   | "degraded"
+  | "offline"
   | "stale"
   | "conflict"
   | "unauthorized";
 
 type Locale = "en" | "ar";
 
-const copy: Record<Locale, Record<StateSurfaceKind, { title: string; body: string }>> = {
+const copy: Record<Locale, Partial<Record<StateSurfaceKind, { title: string; body: string }>>> = {
   en: {
     empty: {
       title: "No records",
@@ -44,6 +45,10 @@ const copy: Record<Locale, Record<StateSurfaceKind, { title: string; body: strin
     degraded: {
       title: "Limited information",
       body: "Only verified available information is shown. Missing information has not been inferred.",
+    },
+    offline: {
+      title: "Offline",
+      body: "Live information is unavailable while this device is offline. No cached value is presented as current.",
     },
     stale: {
       title: "Information changed",
@@ -118,7 +123,7 @@ function StateGlyph({ kind }: { kind: StateSurfaceKind }) {
   if (kind === "error" || kind === "conflict" || kind === "stale") {
     return <svg {...common}><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>;
   }
-  if (kind === "provider-unavailable" || kind === "degraded" || kind === "not-yet") {
+  if (kind === "provider-unavailable" || kind === "degraded" || kind === "offline" || kind === "not-yet") {
     return <svg {...common}><path d="M4 18h16M6 15l3-4 3 2 4-6 2 3"/><path d="M18 5v5h-5"/></svg>;
   }
   return <svg {...common}><path d="M3 7h6l2 3h10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>;
@@ -133,6 +138,7 @@ export interface StateSurfaceProps {
   /** Optional governed seam identifier; shown only for an intentionally unavailable capability. */
   seam?: string;
   className?: string;
+  children?: React.ReactNode;
 }
 
 export function StateSurface({
@@ -143,8 +149,10 @@ export function StateSurface({
   action,
   seam,
   className,
+  children,
 }: StateSurfaceProps) {
-  const message = copy[locale][kind];
+  const message = copy[locale][kind] ?? copy.en[kind];
+  if (!message) return null;
   if (kind === "loading") {
     return (
       <section
@@ -174,6 +182,7 @@ export function StateSurface({
         {kind === "not-yet" ? <span className="badge badge-pending"><span className="dot" />{message.title}</span> : null}
         <h2>{title ?? message.title}</h2>
         <p>{body ?? message.body}</p>
+        {children}
         {action ? <div className="saqeel-state__action">{action}</div> : null}
         {kind === "not-yet" && seam ? <code className="id-code">seam: {seam}</code> : null}
       </div>
