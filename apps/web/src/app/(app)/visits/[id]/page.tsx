@@ -503,7 +503,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         </div>
       </section>
       <section id="journey" className="panel">
-        <div className="panel-header"><h2 className="panel-title">{t("visit.detail.journeyHeading", "Journey & location events — cannot be edited (EV-005)")}</h2></div>
+        <div className="panel-header"><h2 className="panel-title">{t("visit.detail.journeyHeading", "Journey & location events — cannot be edited")}</h2></div>
         <div className="panel-body">
         <ul className="timeline">
           {journeys.flatMap(j => j.geo_events.map(g => (

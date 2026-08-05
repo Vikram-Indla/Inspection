@@ -46,7 +46,7 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     verify: t("virtual.room.verify", "Verify"),
     otpSent: t("virtual.room.otpSent", "sent · DEV provider shows code (release: Unifonic) · {n} resends left"),
     otpCooldown: t("virtual.room.otpCooldown", "cooldown — retry in {s}s"),
-    otpVerified: t("virtual.room.otpVerified", "verified ✓ — bound to session (STM-VIR-002)"),
+    otpVerified: t("virtual.room.otpVerified", "verified ✓ — bound to session"),
     otpWrong: t("virtual.room.otpWrong", "wrong — {n} attempts left, then lock (no bypass)"),
     otpLocked: t("virtual.room.otpLocked", "locked — attempts exhausted; resend or escalate (audited exception)"),
     otpExpired: t("virtual.room.otpExpired", "code expired — request a new one"),

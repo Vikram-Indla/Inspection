@@ -90,7 +90,7 @@ export default async function Workflows() {
       </p>
 
       <div className="alert"><div>
-        <strong>{t("admin.wf.banner.title", "Only approved changes.")}</strong> {t("admin.wf.banner.before", "The system checks transitions against the published version only — no status bypass. Changes go from draft to publish, and the approver must be a different person, enforced by a rule on")} <code>config_versions</code>{t("admin.wf.banner.mid", "); published versions can't be changed. Risk/SLA values live in")} <code>engine_settings</code> {t("admin.wf.banner.after", "and can't be edited here.")}
+        <strong>{t("admin.wf.banner.title", "Only approved changes.")}</strong> {t("admin.wf.banner.before", "The system checks transitions against the published version only — no status bypass. Changes go from draft to publish, and the approver must be a different person, enforced by a database rule.")}{t("admin.wf.banner.mid", " Published versions cannot be changed. Risk and SLA values live in the engine settings")} {t("admin.wf.banner.after", "and cannot be edited here.")}
       </div></div>
       {error && (
         <div className="alert alert-critical"><div>

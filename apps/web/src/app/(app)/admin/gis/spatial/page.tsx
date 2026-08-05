@@ -29,7 +29,7 @@ export default async function SpatialPage() {
   if (error) console.error("[gis spatial] load", error);
   return (
     <Shell current="/admin/gis" title={t("gis.sp.title", "Spatial canvas")}>
-      <div className="alert"><div><strong>{t("gis.sp.banner.title", "Layers & locations.")}</strong> {t("gis.sp.banner.body", "The official factory pin stays owned by GIS admin (FND-007); these are extra working layers. Geofence and accuracy use the accepted engine_settings.gis values. Mapbox rendering is on hold.")}</div></div>
+      <div className="alert"><div><strong>{t("gis.sp.banner.title", "Layers & locations.")}</strong> {t("gis.sp.banner.body", "The official factory pin stays owned by the GIS administrator; these are extra working layers. Geofence and accuracy use the approved engine defaults.")}</div></div>
       <CreateLayer strings={{
         key: t("gis.sp.key", "Layer key"), label: t("gis.sp.label", "Label"), type: t("gis.sp.type", "Type"),
         create: t("gis.sp.create", "Create layer"), creating: t("gis.sp.creating", "Creating…"), created: t("gis.sp.created", "layer created"),

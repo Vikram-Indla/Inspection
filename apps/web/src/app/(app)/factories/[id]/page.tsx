@@ -218,7 +218,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           </div>
 
           <div className="sq-surface cd-riskcard">
-            <h4>{t("f360.risk.heading", "Risk — reproducible (EV-004)")}</h4>
+            <h4>{t("f360.risk.heading", "Risk — reproducible")}</h4>
             <span className={`cd-riskscore ${riskTone}`}>{f.risk_score}</span>
             <p>{t("f360.risk.band", "band")} <strong>{f.risk_band ? enumLabel(f.risk_band) : "—"}</strong> · <span className="sq-version">{f.risk_version}</span></p>
             <p className="sq-caption">{t("f360.risk.desc", "Recomputable from stored normalized inputs + this version; every calculation is retained.")}</p>
@@ -231,10 +231,10 @@ export default async function Factory360({ params, searchParams }: { params: Pro
 
           <div className="sq-surface cd-maplens">
             <h4>{t("f360.geo.heading", "Location")}</h4>
-            <p className="cd-coords"><bdi>{f.official_lat}, {f.official_lng}</bdi> <span className="sq-caption">{t("f360.id.gisOwned", "(GIS-Admin-owned, FND-007)")}</span></p>
+            <p className="cd-coords"><bdi>{f.official_lat}, {f.official_lng}</bdi> <span className="sq-caption">{t("f360.id.gisOwned", "— owned by the GIS administrator")}</span></p>
             <p className="sq-caption">{t("f360.geo.label", "Geofence (G-MAP):")} {f.geofence_radius_m != null
               ? <><span className="sq-numeric">{f.geofence_radius_m} {t("f360.geo.unitM", "m")}</span> — {t("f360.geo.override", "per-factory override")}</>
-              : t("f360.geo.engineDefault", "engine default (engine_settings gis.geofence_default_radius_m)")}</p>
+              : t("f360.geo.engineDefault", "engine default")}</p>
             {f.official_lat != null && f.official_lng != null
               ? <FactorySpatialMap officialLat={Number(f.official_lat)} officialLng={Number(f.official_lng)} geofenceRadius={f.geofence_radius_m} events={locationEvents} strings={{
                   officialPin: t("f360.geo.legend.official", "official / planned pin"),
@@ -413,7 +413,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
 
           {/* Documents — metadata registry; per-section failure isolation (SB11) */}
           {canSeeDocuments && <section id="documents" className="sq-surface cd-panelpad">
-            <h4>{t("f360.docs.heading", "Documents — metadata registry (SB11)")}</h4>
+            <h4>{t("f360.docs.heading", "Documents — metadata registry")}</h4>
             {dErr && <div className="sq-banner sq-banner--critical"><div><strong>{t("f360.docs.err", "Couldn’t load documents.")}</strong> {mapFactoryError(dErr, "load")} — {retry}.</div></div>}
             {!dErr && docsEmpty && (
               <div className="sq-state sq-state--inline"><span className="sq-state__glyph">📄</span>
@@ -440,7 +440,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                 </table></div>
                 <div className="cd-docrow is-unavail" role="status">
                   <span className="cd-docrow__icon" aria-hidden="true">📄</span>
-                  <span>{t("f360.docs.previewUnavail", "Document preview is unavailable — this surface exposes metadata and storage path only, with no signed URL, viewer or custody retrieval (HANDOFF_BLOCKED_DOCUMENT_VIEWER).")}</span>
+                  <span>{t("f360.docs.previewUnavail", "Document preview is unavailable — this screen shows metadata and storage path only. No document can be opened or downloaded from here.")}</span>
                 </div>
               </>
             )}
@@ -448,7 +448,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
 
           {/* Representatives — contacts gated by canSeeContacts (planner/inspector/supervisor/admin) */}
           {canSeeContacts && <section id="representatives" className="sq-surface cd-panelpad">
-            <h4>{t("f360.reps.heading", "Representatives (SB11)")}</h4>
+            <h4>{t("f360.reps.heading", "Representatives")}</h4>
             {rErr && <div className="sq-banner sq-banner--critical"><div><strong>{t("f360.reps.err", "Couldn’t load representatives.")}</strong> {mapFactoryError(rErr, "load")} — {retry}.</div></div>}
             {!rErr && repsEmpty && (
               <div className="sq-state sq-state--inline"><span className="sq-state__glyph">👤</span>

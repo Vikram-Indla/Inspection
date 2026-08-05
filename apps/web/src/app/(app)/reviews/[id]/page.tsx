@@ -239,7 +239,7 @@ export default async function ReviewWorkspace({ params, searchParams }: {
     unavailEvidence: t("review.cmp.unavailEvidence", "Evidence / media comparison — not derived; shown unavailable, never 'unchanged'."),
     unavailPackage: t("review.cmp.unavailPackage", "Package-semantic comparison — answer meaning across package versions is not reconciled."),
     unavailMetadata: t("review.cmp.unavailMetadata", "Metadata / section-order comparison — not diffed."),
-    unavailNote: t("review.cmp.unavailNote", "These are honestly unavailable (HANDOFF_BLOCKED_MEDIADIFF/_PKGSEMANTIC/_METADIFF), not equal."),
+    unavailNote: t("review.cmp.unavailNote", "These comparisons are unavailable — that is not the same as equal."),
     collectionHeading: tx("review.cmp.collectionHeading", "Immutable collection comparison", "مقارنة المجموعات غير القابلة للتعديل"),
     evidenceCollection: tx("review.cmp.evidenceCollection", "Evidence manifest (ID + SHA metadata)", "بيان الأدلة (المعرّف وبصمة SHA)"),
     actionCollection: tx("review.cmp.actionCollection", "Action forms", "نماذج الإجراءات"),
@@ -264,7 +264,7 @@ export default async function ReviewWorkspace({ params, searchParams }: {
 const panelStrings: WorkspaceDecisionStrings = {
     heading: t("review.ws.panelHeading", "Decision — irreversible once confirmed"),
     decisions: { approve: t("enum.approve", "approve"), return: t("enum.return", "return"), reject: t("enum.reject", "reject") },
-    returnScopeTitle: t("review.ws.returnScopeTitle", "Exact return scope (STM-REV-003)"),
+    returnScopeTitle: t("review.ws.returnScopeTitle", "Exact return scope"),
     returnScopeHint: t("review.ws.returnScopeHint", "Only selected sections unlock; the rest stays locked."),
     reason: t("review.ws.reason", "Reason"),
     reasonPlaceholder: t("review.ws.reasonPlaceholder", "mandatory for return/reject — recorded immutably"),

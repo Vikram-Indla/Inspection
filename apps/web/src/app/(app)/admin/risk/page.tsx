@@ -29,10 +29,10 @@ export default async function RiskStudio() {
     high: t("admin.risk.bands.high", "High"),
     sumOk: t("admin.risk.sumOk", "Σ weights = 1.00 ✓"),
     sumBad: t("admin.risk.sumBad", "Σ weights = {sum} — must equal 1.00 before saving"),
-    save: t("admin.risk.save", "Save settings (risk_owner only)"),
+    save: t("admin.risk.save", "Save settings (risk owner only)"),
     saving: t("admin.risk.saving", "Saving…"),
     saved: t("admin.risk.saved", "saved — takes effect right away"),
-    savedNote: t("admin.risk.savedNote", "Saving writes factors and bands to engine_settings after the weights-sum check. It takes effect right away for new score calculations — there is no draft or approval step on this screen."),
+    savedNote: t("admin.risk.savedNote", "Saving writes factors and bands to the engine settings after the weights-sum check. It takes effect right away for new score calculations — there is no draft or approval step on this screen."),
     lastUpdated: t("admin.risk.lastUpdated", "last updated"),
     bandLow: t("admin.risk.band.low", "Low"),
     bandMedium: t("admin.risk.band.medium", "Medium"),
@@ -84,7 +84,7 @@ export default async function RiskStudio() {
         {
           label: t("admin.revamp.risk.metric.version", copy("Settings version", "إصدار الإعدادات")),
           value: error ? notConfigured : (data?.version_label ?? notConfigured),
-          note: t("admin.revamp.risk.metric.version.note", copy("Read from engine_settings", "مقروء من engine_settings")),
+          note: t("admin.revamp.risk.metric.version.note", copy("Read from the engine settings", "مقروء من إعدادات المحرك")),
         },
       ]}
       tabs={[
@@ -94,13 +94,13 @@ export default async function RiskStudio() {
       ]}
       gate={{
         title: t("admin.revamp.risk.gate.title", copy("The two risk lifecycles remain explicit", "تظل دورتا حياة المخاطر واضحتين")),
-        body: t("admin.revamp.risk.gate.body", copy("MVP1 engine settings take effect only through the existing risk-owner action, after validation and confirmation. Model drafts use a separate maker-checker route. This screen does not treat the two as one.", "لا تصبح إعدادات محرك MVP1 نافذة إلا عبر إجراء مالك المخاطر الحالي بعد التحقق والتأكيد. تستخدم مسودات النماذج مساراً منفصلاً لفصل المُعدّ عن المعتمد. لا تعامل هذه الشاشة العقدين كعقد واحد.")),
+        body: t("admin.revamp.risk.gate.body", copy("Engine settings take effect only through the existing risk-owner action, after validation and confirmation. Model drafts use a separate maker-checker route. This screen does not treat the two as one.", "لا تصبح إعدادات المحرك نافذة إلا عبر إجراء مالك المخاطر الحالي بعد التحقق والتأكيد. تستخدم مسودات النماذج مساراً منفصلاً لفصل المُعدّ عن المعتمد. لا تعامل هذه الشاشة العقدين كعقد واحد.")),
       }}
       governance={riskGovernance}
       reconstructionNote={t("admin.revamp.risk.note", copy("Prototype weights, bands and recalculation times are intentionally absent. This surface reads the live engine settings, while per-factory score explanation remains on the factory record where its scoring inputs exist.", "تم حذف أوزان النموذج ونطاقاته وأوقات إعادة الحساب عمداً. تقرأ هذه الواجهة إعدادات المحرك الفعلية، بينما يبقى تفسير درجة كل مصنع في سجل المصنع حيث توجد مدخلات الحساب."))}
       context={<span className="id-code">{data?.version_label ?? notConfigured}</span>}
     >
-      <div className="alert"><div><strong>{t("admin.risk.banner.title", "This is the Risk Studio (MVP1 starting scope).")}</strong> {t("admin.risk.banner.before", "Weights and bands are live settings in")} <code>engine_settings</code> {t("admin.risk.banner.after", "— scores must be able to be reproduced from stored inputs plus this version (EV-004). Only the risk_owner role can write; everyone else is blocked. Every save is recorded in the Activity Log, which can't be changed.")}</div></div>
+      <div className="alert"><div><strong>{t("admin.risk.banner.title", "This is the Risk Studio.")}</strong> {t("admin.risk.banner.before", "Weights and bands are live engine settings")} {t("admin.risk.banner.after", "— scores must be able to be reproduced from stored inputs plus this version. Only the risk owner can write; everyone else is blocked. Every save is recorded in the Activity Log, which can't be changed.")}</div></div>
 
       {error && (
         <div className="alert alert-critical" role="alert"><div>

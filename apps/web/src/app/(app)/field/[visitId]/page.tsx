@@ -378,7 +378,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     logJourneyBlocked: locale === "ar"
       ? "تعذر بدء الرحلة. تحقق من التكليف والاتصال ثم أعد المحاولة."
       : t("field.start.logJourneyBlockedSafe", "The journey could not be started. Check the assignment and connection, then try again."),
-    logJourneyStarted: t("field.start.logJourneyStarted", "Journey started — telemetry active (STM-JRN-001)"),
+    logJourneyStarted: t("field.start.logJourneyStarted", "Journey started — telemetry active"),
     logAccuracyBlocked: t("field.start.logAccuracyBlocked", "BLOCKED: accuracy ±{acc}m > {max}m required (ERR-GEO-001) — retry or governed override"),
     logCheckinRejected: locale === "ar"
       ? "تعذر حفظ تسجيل الوصول. تحقق من الاتصال ثم أعد المحاولة."
@@ -387,7 +387,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
       ? "تعذر حفظ الوصول. تحقق من الاتصال ثم أعد المحاولة."
       : t("field.start.logArrivalRejectedSafe", "Arrival could not be saved. Check the connection, then try again."),
     logOutside: t("field.start.logOutside", "OUTSIDE geofence ({d}m > {fence}m) — check-in recorded as outside; governed override required (ERR-GEO-002)"),
-    logInside: t("field.start.logInside", "Checked in INSIDE fence ({d}m, ±{acc}m) — start allowed (STM-JRN-003)"),
+    logInside: t("field.start.logInside", "Checked in inside the fence ({d}m, ±{acc}m) — start allowed"),
     logStartBlocked: t("field.start.logStartBlocked", "Start blocked: {error}"),
     logInspectionCreateFailed: locale === "ar"
       ? "تعذر بدء التفتيش. تحقق من الجاهزية ثم أعد المحاولة."
@@ -410,7 +410,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
       ? "تعذر حفظ الاستثناء. تحقق من الاتصال ثم أعد المحاولة."
       : t("field.start.logExceptionFailedSafe", "The exception could not be saved. Check the connection, then try again."),
     logDeviation: t("field.start.logDeviation", "Route deviation recorded — {d} m beyond closest approach, sustained {s}s ( route_deviation)"),
-    logOpState: t("field.start.logOpState", "Operational state → {state} (STM-OPS)"),
+    logOpState: t("field.start.logOpState", "Operational state → {state}"),
     logOpBlocked: locale === "ar"
       ? "تعذر تحديث حالة الزيارة. تحقق من الجاهزية والاتصال ثم أعد المحاولة."
       : t("field.start.logOpBlockedSafe", "The visit state could not be updated. Check readiness and the connection, then try again."),
