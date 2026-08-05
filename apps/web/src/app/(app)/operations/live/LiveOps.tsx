@@ -125,11 +125,16 @@ export default function LiveOps({
             <span className="badge badge-pending">{s.unavailableState}</span>
             <span className="badge badge-critical">{s.rejectedState}</span>
           </div>
+          {/* Three inline spans in a plain <p> render with no separator, so the
+              caption read as one run-on sentence: "…2:27:33 PMNo recorded
+              inspector positionsWe don't track…". Separate the facts explicitly. */}
           <p className="tl-meta">
             <span>{s.snapshotGenerated}: <time data-testid="live-snapshot-at" dateTime={snapshotAt}>{formattedSnapshotAt}</time></span>
+            {" · "}
             <span>{formattedPositionObservedAt
               ? <>{s.lastObserved}: <time dateTime={positionObservedAt!}>{formattedPositionObservedAt}</time></>
               : s.noRecordedPositions}</span>
+            {" · "}
             <span>{s.freshnessPolicy}</span>
           </p>
           {excludedRecordCount > 0 ? (
@@ -281,9 +286,11 @@ export default function LiveOps({
         </aside>
       </div>
 
+      {/* The recording-time disclosure is already stated in the header caption
+          and by the "Last recorded position" badge in the legend. Repeating it
+          here in <strong> made a caveat the heaviest text on the page. */}
       <footer className="panel-row" role="note">
         <span className="badge badge-info">{s.inspector}</span>
-        <strong>{s.freshnessPolicy}</strong>
       </footer>
     </div>
   );
