@@ -100,22 +100,55 @@ several carry work completed today.
 /admin/items/[id]/runtime-preview
 ```
 
-**Group B — duplicate route families. The over-build already present.**
+**Group B — routes that looked like duplication.**
 
-The same capability exists at several addresses:
+Originally recorded here as "the over-build already present", listing five
+families. **Investigated 5 August, and that reading was substantially wrong.**
+Only one family contained genuine redundancy.
 
-| Capability | Addresses |
-|---|---|
-| Factory 360 | `/factory-360` · `/factory-360/[id]` · `/factories/[id]/360` · `/field/factory-360` · `/field/factory-360/[id]` |
-| Virtual inspection | `/virtual` · `/virtual/[id]` · `/field/virtual` · `/field/virtual/[id]` |
-| Tasks | `/tasks` · `/field/my-tasks` |
-| Visit views | `/visits/calendar` · `/visits/map` · `/visits/workload` alongside `/planning/calendar` · `/planning/map` · `/planning/workload` |
-| Factories | `/factories` · `/factories/[id]` · `/factories/cr/[id]` |
+*Factory 360 — two real duplicates, now removed.*
+`/factory-360` and `/factory-360/[id]` were three-line files re-exporting
+`/factories`. Deleted in `8416452f`. Removing them exposed that the middleware
+protected-route list named the alias and not the real route; corrected in the
+same change. The inspector screens are a genuine second channel and already
+share the dossier loader.
 
-**This is the over-build to address, and the answer is consolidation, not
-design.** The architecture record is explicit that Factory 360 "must remain one
-shared capability, not duplicate persona screens". Designing five Factory 360
-screens would make the problem permanent.
+*Tasks — not duplicates. Both kept.*
+`/tasks` is a manager-facing board over `workflow_task_assignments` — backend
+workflow items, rendered in the shared shell. `/field/my-tasks` is the
+inspector's own master-detail screen over `assignments`, with the shared Factory
+360 dossier in its right pane and native field chrome. Different tables,
+different audiences, no data overlap. Two features that share an English word.
+
+*Virtual inspection — a two-channel split, like Factory 360. Both kept.*
+Both read `virtual_sessions`. The web route is the unfiltered management and
+scheduling view; the field route is filtered to the signed-in inspector's own
+confirmed sessions, read-only, native chrome. No cross-links in either
+direction — each is its own entry point.
+
+*Visit views — already the shared-core answer. No refactor needed.*
+All six files are short wrappers. The three planning routes import the exact
+same components as the visits routes and pass a base path used only for nav
+highlighting and internal tab links. One screen, two doors, deliberately: the
+planning page links to visits describing them as "bulk actions and lenses over
+the same visits", and the visits page links back. Neither triplet has a
+top-level menu entry; both are reached by an in-page tab bar, consistent with
+the tab-reached pattern recorded under INSP-753.
+
+*Factories — three routes, distinct purposes.* Registry, factory detail, and a
+commercial-registration view. Not investigated in depth; no evidence of
+duplication.
+
+### What this correction means
+
+The route count implied redundancy that the code does not contain. Of roughly
+fifteen routes flagged as duplicate, **two were**. The rest are deliberate
+architecture: shared data layers with channel-specific presentation, or one
+component behind two entry points.
+
+The lesson is the same one this matrix has now hit three times: **shape is not
+intent.** Identical names, similar sizes and missing designs each looked like a
+defect and each turned out, on reading the code, to be considered work.
 
 **Group C — routes with no design.** Originally recorded here as "no evident
 requirement, probably dead". **That was wrong, and the correction matters.**
