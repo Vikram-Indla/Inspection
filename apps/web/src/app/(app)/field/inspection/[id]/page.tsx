@@ -116,13 +116,11 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     sb.from("inspections").select("inspection_no").eq("id", id).maybeSingle(),
     sb.from("evidence").select("id, archived_at, superseded_by, deleted_at").eq("inspection_id", id),
   ]);
-  // Phase 5 (§15/§18) — tolerant reads for migration 20260721150000 objects:
-  // per-visit item lifecycle rows, and published action_form configuration
-  // templates for the manual "Add action form" affordance (§18). A missing
-  // table degrades the feature instead of killing the page.
-  const [{ data: itemStateRows }, { data: actionTemplateRows }] = await Promise.all([
+  // Phase 5 (§15) — tolerant read for migration 20260721150000 objects:
+  // per-visit item lifecycle rows. A missing table degrades the feature
+  // instead of killing the page.
+  const [{ data: itemStateRows }] = await Promise.all([
     sb.from("inspection_item_states").select("item_id, state, reason, reverted_at").eq("inspection_id", id),
-    sb.from("configuration_templates").select("id, template_key, title_en, title_ar").eq("template_type", "action_form").eq("status", "published"),
   ]);
   // Arrival/cancellation evidence is captured before an inspection exists and
   // is therefore anchored to visit_id. Read it back into the inspection
@@ -698,13 +696,6 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     deselectedAudit: t("field.ws.deselected.audit", "Deselected items stay in the audit trail with their reason. They need no answer or evidence, create no violation, and are excluded from the compliance rate."),
     restoreBtn: t("field.ws.restore.btn", "Restore"),
     restoredMsg: t("field.ws.restore.msg", "{code} restored to this visit"),
-    // — Phase 5 manual action forms (§18) —
-    afAddTitle: t("field.ws.af.addTitle", "Action forms"),
-    afAddHint: t("field.ws.af.addHint", "Included is not completed: an added form stays open until its mandatory fields are filled and it is completed separately."),
-    afAddPick: t("field.ws.af.addPick", "Published action form template"),
-    afAddBtn: t("field.ws.af.addBtn", "Add action form"),
-    afAddedMsg: t("field.ws.af.addedMsg", "Action form added — it is open, not completed"),
-    afNone: t("field.ws.af.none", "No published action form templates available."),
     valTitle: t("field.ws.val.title", "Validation issues (grouped by section)"),
     valUnanswered: t("field.ws.val.unanswered", "Unanswered: {items}"),
     valEvidence: t("field.ws.val.evidence", "Mandatory evidence missing: {items}"),
@@ -836,10 +827,6 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
         serverViolations={(vios ?? []) as never}
         serverItemStates={(itemStateRows ?? []) as never}
         library={library}
-        actionTemplates={((actionTemplateRows ?? []) as { id: string; template_key: string; title_en: string; title_ar: string }[]).map(row => ({
-          id: row.id, key: row.template_key,
-          title: (locale === "ar" && row.title_ar) ? row.title_ar : row.title_en,
-        }))}
         serverContext={(ctxRow as { context?: Record<string, string> } | null)?.context ?? {}}
         vioConfig={vioConfig}
         evidenceLimits={settings.evidence ?? {}}
