@@ -955,8 +955,11 @@ button.sq-shell-scope { cursor: pointer; }
    (viewport coordinates measured off the trigger), not the static inset
    values above, which assumed a `position:relative` ancestor it no longer has. */
 .sq-shell-account__menu--portal { position: fixed; inset-block-start: auto; inset-inline-end: auto; z-index: var(--z-toast); }
-.sq-shell-account__menu a { color: var(--action-primary-hover); text-decoration: none; padding-block: var(--space-1); }
-.sq-shell-account__menu a:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* Scoped away from .menu-item: this rule styles bare anchors in the account
+   menu, and it outranks .menu-item (0,1,1 vs 0,1,0), so without the guard the
+   menu actions kept rendering as green body links with a hover underline. */
+.sq-shell-account__menu a:not(.menu-item) { color: var(--action-primary-hover); text-decoration: none; padding-block: var(--space-1); }
+.sq-shell-account__menu a:not(.menu-item):hover { text-decoration: underline; text-underline-offset: 3px; }
 .sq-pagehead__row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
 .sq-pagehead__context { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; min-inline-size: 0; max-inline-size: 100%; }
 .sq-pagehead__context > h2 { min-inline-size: 0; overflow-wrap: anywhere; word-break: break-word; }

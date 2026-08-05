@@ -757,19 +757,39 @@ export default function ShellClient({
                 {accountOpen && accountMenuPos && typeof document !== "undefined" && createPortal(
                   <div ref={accountMenuRef} className="sq-shell-account__menu sq-shell-account__menu--portal" role="dialog" aria-label={strings.account}
                     style={{ top: accountMenuPos.top, left: accountMenuPos.left, right: accountMenuPos.right }}>
+                    {/* The menu kit already exists in the design system —
+                        .menu-label / .menu-sep / .menu-item / .is-danger — and was
+                        unused here. Identity, attributes and actions are now three
+                        separated groups rather than six stacked lines, and the two
+                        actions read as menu items rather than as body links. */}
+                    {/* The menu is already a flex column with its own gap, so the
+                        identity lines need no wrapper. .grow on the label pushes the
+                        value to the end of the row — no justify-content needed, and
+                        it stays correct in RTL because it is a flex property, not a
+                        side. */}
                     <strong>{displayName || email.split("@")[0]}</strong>
                     <span className="sq-caption">{email}</span>
-                    <span className="sq-caption">{strings.roles}: {roleTitles.length ? roleTitles.join(", ") : roles.join(", ")}</span>
-                    {homeRegion ? <span className="sq-caption">{strings.regionScope}: {homeRegion}</span> : null}
+                    <hr className="menu-sep" />
+                    <div className="row">
+                      <span className="menu-label grow">{strings.roles}</span>
+                      <span className="sq-caption">{roleTitles.length ? roleTitles.join(", ") : roles.join(", ")}</span>
+                    </div>
+                    {homeRegion ? (
+                      <div className="row">
+                        <span className="menu-label grow">{strings.regionScope}</span>
+                        <span className="sq-caption">{homeRegion}</span>
+                      </div>
+                    ) : null}
+                    <hr className="menu-sep" />
                     {/* /locale and /signout are route handlers (cookie/session
                         mutations), so they intentionally stay plain anchors. */}
                     {/* The menu itself is universal; only this destination stays
                         persona-aware, because an Inspector's settings live on
                         the field channel. Routing, not chrome. */}
-                    <Link href="/profile" prefetch={false}>
+                    <Link className="menu-item" role="menuitem" href="/profile" prefetch={false}>
                       {strings.profileSettings}
                     </Link>
-                    <a href="/signout">{strings.signOut}</a>
+                    <a className="menu-item is-danger" role="menuitem" href="/signout">{strings.signOut}</a>
                   </div>,
                   document.body,
                 )}
