@@ -9,6 +9,7 @@ import {
   type Item, type Answer, type FormDef, type FormDraft, type VioConfig, type Section, type ItemStates,
   isVisible, contextFlags, conditionContext, scoreExcluded, computeHealthScore, evidenceLeg, formRequired, formComplete,
   sectionProgress, summarize, impliedViolations, computeBlockers, type SectionBlockers, effectiveSections, ADDED_SECTION_KEY,
+  packageFormBlockers, type ExistingForm,
 } from "./runtime";
 import SignaturePad, { type SignaturePadStrings, type SignatureAck } from "./SignaturePad";
 import { findingSubmitBlockers, type FindingOp, type FindingSyncState } from "./finding-outbox";
@@ -111,6 +112,8 @@ export type WorkspaceStrings = {
   completionCreatedVersion: string; completionCreatedAudit: string; completionCreatedReview: string;
   completionIdempotency: string; completionReused: string; completionPendingSync: string;
   completionFailedTitle: string; completionFailedBody: string;
+  backToInspection: string;
+  pkgFormsGroupTitle: string;
   lockedSection: string;
   mandatoryPhoto: string; submitBtn: string;
   autoViolation: string; plusActionForm: string; plusPhoto: string;
@@ -844,7 +847,24 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const summary = summarize(sections, allMap, answers, runtimeCtx, activeEvidence.length + queuedEv.length, itemStates);
   const healthScore = computeHealthScore(sectionItems, answers, runtimeCtx, itemStates);
   const implied = impliedViolations(sectionItems, answers, runtimeCtx, vioConfig);
-  const liveBlockers = computeBlockers(sections, allMap, answers, runtimeCtx, evidencePerItem, forms, formDefs, itemStates);
+  const itemBlockers = computeBlockers(sections, allMap, answers, runtimeCtx, evidencePerItem, forms, formDefs, itemStates);
+  // Package-level mandatory forms (INSP-758-class): unconditional on any item
+  // response, so they never appear in itemBlockers — checked separately here
+  // and folded into ONE synthetic group so "ready to submit" asks the exact
+  // question the DB trigger will ask before it ever lets the review screen
+  // (and the signature it demands) claim there is nothing left to fix.
+  const existingBlockingForms: ExistingForm[] = useMemo(
+    () => serverForms.filter(f => !f.item_id).map(f => ({
+      form_type: f.form_type, owner_name: f.owner_name, owner_role: f.owner_role,
+      due_at: f.due_at, required_correction: f.required_correction,
+    })),
+    [serverForms]);
+  const missingPackageForms = useMemo(
+    () => packageFormBlockers(formDefs, existingBlockingForms),
+    [formDefs, existingBlockingForms]);
+  const liveBlockers: SectionBlockers[] = missingPackageForms.length
+    ? [...itemBlockers, { key: "__package_forms", title: strings.pkgFormsGroupTitle, unanswered: [], evidence: [], forms: missingPackageForms.map(d => d.title) }]
+    : itemBlockers;
   const blockCount = liveBlockers.reduce((n, g) => n + g.unanswered.length + g.evidence.length + g.forms.length, 0);
 
   // --- Evidence Review panel (additive, read-only) ------------------------
@@ -950,7 +970,14 @@ export default function Workspace({ inspection, items, library, serverResponses,
     }
     // Full readiness re-validation: answers + mandatory evidence + blocking forms (M04-199/204/208).
     const submitCtx = conditionContext(sectionItems, answersRef.current, ctxRef.current);
-    const blockers = computeBlockers(sections, allMap, answersRef.current, submitCtx, evidencePerItem, formsRef.current, formDefs, itemStatesRef.current);
+    const itemLevelBlockers = computeBlockers(sections, allMap, answersRef.current, submitCtx, evidencePerItem, formsRef.current, formDefs, itemStatesRef.current);
+    // INSP-758-class: re-ask the package-level mandatory-form question at the
+    // moment of truth too — live display and the actual gate must never
+    // diverge, or "ready to submit" stops meaning anything.
+    const missingAtSubmit = packageFormBlockers(formDefs, existingBlockingForms);
+    const blockers: SectionBlockers[] = missingAtSubmit.length
+      ? [...itemLevelBlockers, { key: "__package_forms", title: strings.pkgFormsGroupTitle, unanswered: [], evidence: [], forms: missingAtSubmit.map(d => d.title) }]
+      : itemLevelBlockers;
     if (blockers.length) {
       setValidation(blockers);
       const missing = blockers.flatMap(b => b.unanswered);
@@ -1170,8 +1197,12 @@ export default function Workspace({ inspection, items, library, serverResponses,
         <section className={`${styles.card} ${styles.completionBanner}`} aria-labelledby="completion-title">
           <div className={styles.completionMark} aria-hidden="true">✓</div>
           <div>
-            <h2 id="completion-title">{serverSubmitted ? strings.submittedTitle : strings.queuedOffline}</h2>
-            <p>{serverSubmitted ? strings.completionLocked : strings.completionQueuedLock}</p>
+            {/* INSP-758-class fix 2: this headline must never claim "queued,
+                will submit" once the server has actually refused — that is
+                the exact contradiction that turned a rejection into an
+                apparent hang. */}
+            <h2 id="completion-title">{serverSubmitted ? strings.submittedTitle : sync === "failed" ? strings.completionFailedTitle : strings.queuedOffline}</h2>
+            <p>{serverSubmitted ? strings.completionLocked : sync === "failed" ? strings.completionFailedBody : strings.completionQueuedLock}</p>
           </div>
         </section>
         <section className={styles.card}>
@@ -1379,6 +1410,13 @@ export default function Workspace({ inspection, items, library, serverResponses,
           <div>
             <strong>{strings.completionFailedTitle}</strong> {strings.completionFailedBody}
             {detail ? <div className="t-caption id-code" style={{ marginBlockStart: "var(--space-1)" }}>{detail}</div> : null}
+            {/* INSP-758-class fix 2/3: a refusal is not read-only like a real
+                submitted version — the inspector must be able to act on it
+                (add what is missing, correct an answer) rather than stay
+                stranded on this locked completion screen. */}
+            <div style={{ marginBlockStart: "var(--space-2)" }}>
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => setSubmitted(false)}>{strings.backToInspection}</button>
+            </div>
           </div>
         </div>
       )}

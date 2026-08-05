@@ -418,6 +418,44 @@ export class ReplaySessionChanged extends Error {
   constructor() { super("Replay session changed"); }
 }
 
+/**
+ * A refusal, not a hang (INSP-758-class). submit_inspection and its guard
+ * trigger raise stable EXE-SUBMIT-* tokens for a semantic rejection (missing
+ * config, a required action form, a scope violation, …) — none of these
+ * become true on an unattended retry, so replaying them every tick just
+ * disguises "the server said no" as "still working on it" forever. This
+ * class marks that distinction for the catch block below: the token text
+ * itself is never shown as user copy (same convention as the neutral-code
+ * maps elsewhere) — only the mapped, stable code travels to the UI.
+ */
+export class SubmitRejected extends Error {
+  code: string;
+  constructor(code: string, message: string) { super(message); this.code = code; }
+}
+const SUBMIT_TOKEN_CODES: Record<string, string> = {
+  "EXE-SUBMIT-DENIED": "SUBMIT_DENIED",
+  "EXE-SUBMIT-IDEMPOTENCY": "SUBMIT_IDEMPOTENCY",
+  "EXE-SUBMIT-NOT-FOUND": "SUBMIT_NOT_FOUND",
+  "EXE-SUBMIT-TERMINAL": "SUBMIT_TERMINAL_STATE",
+  "EXE-SUBMIT-UNDER-REVIEW": "SUBMIT_UNDER_REVIEW",
+  "EXE-SUBMIT-STATE": "SUBMIT_STATE",
+  "EXE-SUBMIT-EVIDENCE-PENDING": "SUBMIT_EVIDENCE_PENDING",
+  "EXE-SUBMIT-SCOPE-VIOLATION": "SUBMIT_SCOPE_VIOLATION",
+  "EXE-SUBMIT-RACE": "SUBMIT_RACE",
+  "EXE-SUBMIT-CONFIG-VERSION-MISMATCH": "SUBMIT_CONFIG_MISMATCH",
+  "EXE-SUBMIT-CONFIG-CHECKSUM-MISMATCH": "SUBMIT_CONFIG_MISMATCH",
+  "EXE-SUBMIT-SNAPSHOT-VERSION-MISMATCH": "SUBMIT_CONFIG_MISMATCH",
+  "EXE-SUBMIT-CONFIG-SNAPSHOT-REQUIRED": "SUBMIT_CONFIG_MISMATCH",
+  "EXE-SUBMIT-ACTION-FORM-MISSING": "SUBMIT_ACTION_FORM_MISSING",
+  "EXE-SUBMIT-ACTION-FORM-INCOMPLETE": "SUBMIT_ACTION_FORM_INCOMPLETE",
+};
+function classifySubmitRejection(message: string): string {
+  for (const token of Object.keys(SUBMIT_TOKEN_CODES)) {
+    if (message.includes(token)) return SUBMIT_TOKEN_CODES[token];
+  }
+  return "SUBMIT_REJECTED";
+}
+
 export function createReplayGuard(capturedUserId: string, liveUserId: () => Promise<string | null>) {
   const assertLive = async () => {
     if ((await liveUserId()) !== capturedUserId) throw new ReplaySessionChanged();
@@ -539,7 +577,11 @@ export async function processOutbox(verifiedUserId: string, onState: (s: SyncSta
           const missing =
             rpcError.code === "42883" || rpcError.code === "PGRST202" ||
             String(rpcError.message).includes("Could not find the function");
-          if (!missing) throw rpcError; // EXE-* token — explicit failure, never masked
+          if (!missing) {
+            // A genuine EXE-SUBMIT-* refusal — explicit failure, never masked
+            // as "still working on it" (INSP-758-class: see SubmitRejected).
+            throw new SubmitRejected(classifySubmitRejection(String(rpcError.message)), String(rpcError.message));
+          }
           // LEGACY FALLBACK (pre-20260721160000 servers): the original direct
           // insert with its duplicate-tolerance. The unguarded status update
           // and client-side version_number stay as-is on this path only.
@@ -666,6 +708,16 @@ export async function processOutbox(verifiedUserId: string, onState: (s: SyncSta
       if (e instanceof ReplaySessionChanged) {
         onState("pending");
         return;  // original user's current + remaining entries stay untouched
+      }
+      if (e instanceof SubmitRejected) {
+        // Terminal, not transient: nothing about this op changes on its own,
+        // so leaving it queued would just replay the identical refusal every
+        // tick forever while the UI kept implying patience would fix it
+        // (INSP-758-class). Drop it and say what happened; other queued ops
+        // (other inspections) still get their turn.
+        await local.remove(key);
+        onState("failed", e.code);
+        continue;
       }
       // Provider details stay diagnostic-only. The field surface supplies the
       // localized neutral recovery copy for the failed-sync state.
