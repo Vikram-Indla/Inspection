@@ -218,16 +218,16 @@ textarea.input { height: auto; min-height: 72px; padding-block: var(--space-2); 
 .desc dd { margin: 0; color: var(--text-primary); min-inline-size: 0; overflow-wrap: anywhere; }
 
 /* ══ Tables & data grid ═══════════════════════════════════════ */
-.table-wrap { border: var(--border-w) solid var(--border-subtle); border-radius: var(--radius-md); background: var(--surface-primary); overflow: auto; }
-.table { width: 100%; border-collapse: collapse; font-size: var(--type-table-size); line-height: var(--type-table-lh); }
+.table-wrap { border: var(--border-w) solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--surface-primary); overflow: auto; }
+.table { inline-size: 100%; border-collapse: collapse; font: var(--type-body-font); }
 .table th {
-  position: sticky; top: 0; z-index: 2; text-align: start;
-  background: var(--surface-secondary); color: var(--text-secondary);
-  font-size: var(--type-label-size); font-weight: 500;
-  padding: 0 var(--space-3); height: 36px; white-space: nowrap;
-  border-block-end: var(--border-w) solid var(--border-strong);
+  position: sticky; inset-block-start: 0; z-index: 2; text-align: start;
+  background: var(--surface-sunken); color: var(--text-secondary);
+  font: var(--type-micro); letter-spacing: .01em;
+  padding-block: var(--space-2); padding-inline: var(--space-4); white-space: nowrap;
+  border-block-end: var(--border-w) solid var(--border-subtle);
 }
-.table td { padding: 0 var(--space-3); height: var(--row-h); border-block-end: var(--border-w) solid var(--border-subtle); }
+.table td { padding-block: var(--space-3); padding-inline: var(--space-4); vertical-align: middle; border-block-end: var(--border-w) solid var(--border-subtle); }
 .table tr:last-child td { border-block-end: 0; }
 .table tbody tr { transition: background var(--motion-fast); }
 .table tbody tr:hover { background: var(--surface-secondary); }
