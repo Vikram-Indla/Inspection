@@ -1,0 +1,39 @@
+figma_page,page_node_id,page_class,top_level_nodes,contains_screens,text_nodes_scanned,scan_status,notes
+Cover,0:1,cover,unknown,no,not scanned,DEFERRED,Non-product cover page
+Getting Started,6:2,doc,unknown,no,not scanned,PENDING,File usage documentation
+00 Start Here,386:2,journey-index,4,no,not scanned,INVENTORIED,README + J-A spine + independent journeys + journey entry index
+10 Planner,465:2,journey-index,1,no,not scanned,INVENTORIED,Journey entry index frame only (1120x1800)
+20 Inspector,465:3,journey-index,1,no,not scanned,INVENTORIED,Journey entry index frame only (1120x1800)
+30 Supervisor,465:4,journey-index,1,no,not scanned,INVENTORIED,Journey entry index frame only
+40 Admin,465:5,journey-index,1,no,not scanned,INVENTORIED,Journey entry index frame only
+50 Shared,465:6,journey-index,1,no,not scanned,INVENTORIED,Journey entry index frame only
+90 Reference,465:7,journey-index,1,no,not scanned,INVENTORIED,Journey entry index frame only
+— FOUNDATIONS —,6:3,divider,0,no,n/a,N/A,Page divider
+Foundations: Colors,6:4,foundation,n/a,no,n/a,SCANNED (variables),"Color collection: 95 variables, Light + Dark modes. Zero paint styles - colour is variables only. GOLDEN PATTERN."
+Foundations: Typography,6:5,foundation,n/a,no,n/a,SCANNED (styles),"27 text styles, every Latin style paired with an Arabic twin. Ramp minimum 11.5px. GOLDEN PATTERN."
+Foundations: Spacing & Radius,6:6,foundation,n/a,no,n/a,SCANNED (variables),"Spacing 10 vars, Radius 5 vars, Sizing 15 vars, Typography 33 vars, Motion 3 vars"
+Foundations: Effects,6:7,foundation,n/a,no,n/a,SCANNED (styles),"10 effect styles with explicit dark twins; Shadow collection 20 vars Light+Dark"
+— COMPONENTS —,6:8,divider,0,no,n/a,N/A,Page divider
+Button,7:394,component,3,no,73,SCANNED,"Button(60v). 72 of 73 text nodes UNSTYLED (1.4% bound) - worst in the library. 6 nodes at 10px below ramp minimum. One 5px icon-only clip."
+"Badge, Tag & Chip",9:2,component,unknown,no,not scanned,PENDING,Root of filter-chip clipping (INSP-777)
+Form Controls,9:55,component,22,no,98,SCANNED,"filter-chip master clips label 8px (root of INSP-777); seg-opt clips 3-4px; Input master ships Placeholder text in all 5 states (root of INSP-754). INSP-788"
+Alert,11:22,component,1,no,10,SCANNED,"Alert(5v). 0 clipping. 10/10 styled. CLEAN - best-behaved component page"
+Panel & KPI,11:44,component,25,no,210,SCANNED,"Field label clips 11px and pushes required asterisk 20px outside the clip box - asterisk never renders. INSP-788. 17 nodes below ramp minimum."
+Table,13:2,component,2,no,91,SCANNED,"Table cell (6v) + Table row (12v). MASTER Table cell clips label 8px - root cause of INSP-776. CFX-018"
+Nav & Chrome,13:49,component,13,no,130,SCANNED,"nav-item clips chevron 8px; 2 nodes below ramp minimum; 2 DEPRECATED components correctly labelled with replacement IDs"
+Icons,73:2,component,68,no,83,SCANNED,"146 icon components, zero duplicate names. Six distinct icon sizes in use (24/20/18/16/15/14) - inconsistent sizing. 81 specimen frames at 180x160."
+Overlay,14:2,component,8,no,25,SCANNED,"dialog clips body 179px - destructive-confirmation warning truncated to This cannot b. INSP-785 STOP-SHIP"
+Progress & Spine,14:31,component,4,no,18,SCANNED,"progress/steps/timeline/spine. 0 clipping. 17/18 styled. CLEAN"
+Identity & Misc,14:87,component,8,no,24,SCANNED,"0 clipping. 4 nodes below ramp minimum incl 2 at 9.5px. 17/24 styled"
+State,14:118,component,5,no,18,SCANNED,"9 states incl error/conflict/stale/provider-unavailable/degraded/not-configured inside frame 14:119. GOLDEN PATTERN. rls-denied variant broken - CFX-016"
+Map,14:157,component,5,no,11,SCANNED,"map-panel/marker/cluster/legend + MapPanel(3v). 0 of 11 text nodes styled. CFX-019. Map STATE coverage not yet verified"
+— SCREENS —,6:9,screens,36,YES,38176,SCANNED (clipping + content + typography),"29 sections: EN Light/Dark, AR RTL, AR RTL Dark (29 routes each), 73 states, 6 overlays, 17 at 1024, 9 external, inspector 834 EN/Dark/AR, 13 BUILD sections"
+— AR STRINGS (do not delete) —,96:2,resource,unknown,no,not scanned,DEFERRED,Arabic string store - do not modify
+Admin Shell,111:2,screens,878,YES,28000,SCANNED (clipping + content + typography),"Admin components + SCR-ADM-001..450 across EN/AR x Light/Dark x 1280/compact/720"
+Screen content,152:7440,panel-library,180,partial,2834,SCANNED,"45 panels x 4 locale/theme variants. 11 clipped nodes. 24-node RBAC implementation-prose leak (CFX-017). 8 literal Placeholder text inputs."
+Domain: Inspection,158:2,component,54,no,1696,SCANNED,"53 component sets. 0 clipping. 563 Inter nodes + 55% unstyled = CFX-015 / INSP-783"
+State & Overlay (build),432:48135,build,7,partial,75,SCANNED,"CLEAN - 0 clipping, 0 content leaks, Plex only"
+Inspector Form Primitives (build),450:2,build,4,partial,29,SCANNED,"CLEAN - 0 clipping, 0 content leaks, 27/29 styled"
+Question & Finding (build),450:59478,build,10,partial,973,SCANNED,"CLEAN - 0 clipping, 0 content leaks, Plex Sans + Mono"
+— ANNOTATIONS —,577:101785,annotation,unknown,no,not scanned,DEFERRED,
+80 QA Frame Sweep · 2026-08-02,601:92038,audit-artifact,1,no,read,READ,"Prior automated sweep: 627 frames, 563 active, 100 P1 / 316 P2 / 42 P3, only 4 frames visually verified"
