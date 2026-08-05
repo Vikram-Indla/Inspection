@@ -125,29 +125,39 @@ export default function RevampStrategicView({ locale, metrics, factories, group,
             ))}
           </nav>
         </div>
-        <div className="table-wrap">
-          <table className="table">
-            <thead><tr><th scope="col">{copy(locale, activeLens[1], activeLens[2])}</th><th scope="col" className="cell-num">{copy(locale, "Compliance", "الامتثال")}</th><th scope="col" className="cell-num">{copy(locale, "Records", "السجلات")}</th><th scope="col">{copy(locale, "Action", "الإجراء")}</th></tr></thead>
-            <tbody>
-            {grouped.length ? grouped.slice(0, 8).map(row => (
-              <tr key={row.label}>
-                <th scope="row">{row.label}</th>
-                {/* A column of bare percentages makes the reader compare numbers
-                    by eye. .progress is the design system's existing bar (it was
-                    defined and unused); the number stays as the accessible value
-                    and the bar is decorative reinforcement beside it. */}
-                <td className="cell-num">
-                  {row.rate == null ? "—" : `${row.rate}%`}
-                  {row.rate != null && (
-                    <span className="progress" aria-hidden="true"><i style={{ width: `${row.rate}%` }} /></span>
-                  )}
-                </td>
-                <td className="cell-num">{row.total}</td>
-                <td><a className="btn btn-ghost btn-sm" href={`/factories?${group}=${encodeURIComponent(row.label)}`}>{copy(locale, "Open factories", "فتح المصانع")}</a></td>
-              </tr>
-            )) : <tr><td colSpan={4}>{copy(locale, "No eligible approved answers in scope.", "لا توجد إجابات معتمدة مؤهلة ضمن النطاق.")}</td></tr>}
-            </tbody>
-          </table>
+        {/* The design (design/final-cut/saqeel-revamp.html, "Compliance
+            performance explorer") is not a table. It is a column of rows, each
+            one label / rate bar / value, and the whole row drills — "Every row
+            drills to the factories behind it" is the subtitle's promise. The
+            four-column table shipped instead, which is why the label column
+            stranded a dead gap beside three sparse columns and why the drill
+            was demoted to a text link in an Action column.
+            Rebuilt to the design's structure using existing classes only:
+            .panel-row for the row, .progress for the bar. */}
+        <div className="stack">
+          {grouped.length ? grouped.slice(0, 8).map(row => (
+            <a className="panel-row" key={row.label}
+              href={`/factories?${group}=${encodeURIComponent(row.label)}`}
+              aria-label={`${row.label} — ${row.rate == null ? copy(locale, "no rate", "لا توجد نسبة") : `${row.rate}%`}, ${row.total} ${copy(locale, "records", "سجل")}`}>
+              <span>{row.label}</span>
+              <span className="progress" style={{ flex: 1 }} aria-hidden="true">
+                {row.rate != null && <i style={{ inlineSize: `${row.rate}%` }} />}
+              </span>
+              <span className="cell-num">{row.rate == null ? "—" : `${row.rate}%`}</span>
+              <span className="t-caption cell-num">{row.total}</span>
+            </a>
+          )) : (
+            <div className="panel-body">
+              <p className="t-caption">{copy(locale, "No eligible approved answers in scope.", "لا توجد إجابات معتمدة مؤهلة ضمن النطاق.")}</p>
+            </div>
+          )}
+        </div>
+        <div className="panel-row">
+          <span className="t-caption">
+            {copy(locale,
+              `${activeLens[1]} · compliance rate and record count. Select a row to open the factories behind it.`,
+              `${activeLens[2]} · نسبة الامتثال وعدد السجلات. اختر صفاً لفتح المصانع المرتبطة به.`)}
+          </span>
         </div>
       </section>
 
