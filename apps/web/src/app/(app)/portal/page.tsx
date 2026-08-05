@@ -30,7 +30,7 @@ export default async function PortalPage({ searchParams }: {
   if (resolveFeatureFlag(process.env.FEATURE_EXTERNAL_PORTAL, MODES, "off") !== "on") {
     return (
       <Shell current="/portal" title={t("portal.title", "External portal")}>
-        <NotYetBoundary title={t("portal.title", "External portal")} consequence={t("portal.off", "The external factory portal is not switched on here. The rules for identifying an external representative have not been agreed yet.")}
+        <NotYetBoundary title={t("portal.title", "External portal")} consequence={t("portal.off", "The external factory portal is not switched on here.")}
           seam={t("portal.offSeam", "Waiting on: the portal being switched on, and an agreed way to identify external representatives.")} notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
       </Shell>
     );
@@ -106,7 +106,7 @@ export default async function PortalPage({ searchParams }: {
               <div className="panel-body"><div className="alert alert-info"><div><div className="alert-title">{state.review ? t("portal.reviewScope", "Scoped internal review") : t("portal.notConfigured", "Not configured")}</div>{state.review ? t("portal.reviewScopeBody", "Only the submitted assessments you are allowed to review are shown.") : t("portal.selfHeld", "Assessment availability, required answers, scoring, and external evidence rules are not configured. No submission is fabricated.")}</div></div></div>
             </div>
             {error && <div className="alert alert-critical" role="alert">{t("portal.errorSafe", "Nothing changed. Access or review scope is required.")}</div>}
-            {!error && (assessments ?? []).length === 0 && <div className="empty"><div className="empty-title">{t("portal.selfEmpty", "No self-assessments in scope")}</div><p>{t("portal.empty.body", "No matching submission is available in your RLS scope.")}</p></div>}
+            {!error && (assessments ?? []).length === 0 && <div className="empty"><div className="empty-title">{t("portal.selfEmpty", "No self-assessments in scope")}</div><p>{t("portal.empty.body", "No matching submission is available in your scope.")}</p></div>}
             {(assessments ?? []).map((assessment) => <div key={assessment.id} className="panel"><div className="panel-header"><h3 className="panel-title">{t("portal.selfAssessment", "Self-assessment")}</h3><span className={statusClass(assessment.status)}>{assessment.status}</span></div>
               <div className="panel-body stack"><p className="t-caption">{new Date(assessment.created_at).toLocaleString()}</p>{assessment.review_reason && <div className="alert alert-info">{assessment.review_reason}</div>}{state.review && assessment.status === "submitted" && <ReviewAction id={assessment.id} kind="self-assessment" status={assessment.status} strings={reviewStrings} />}</div></div>)}
           </>

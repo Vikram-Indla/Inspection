@@ -65,7 +65,7 @@ export default async function FieldUnregisteredEstablishmentPage() {
     reasonOtherHint: tr("plan.imm.reasonOtherHint", "Justify the \"Other\" reason in Notes below.", "برّر سبب «أخرى» في الملاحظات أدناه."),
     notes: tr("field.unregistered.notes", "Notes", "ملاحظات"),
     notesPlaceholder: tr("field.unregistered.notesPlaceholder", "Additional detail about this visit", "تفاصيل إضافية عن هذه الزيارة"),
-    photosNote: tr("field.unregistered.photosNote", "Photo capture for this flow is not wired yet — the design shows it, but no governed storage path exists for it. Location and report type are captured below.", "التقاط الصور لهذا المسار غير موصول بعد — يُظهره التصميم، لكن لا يوجد مسار تخزين معتمد له بعد. يتم التقاط الموقع ونوع التقرير أدناه."),
+    photosNote: tr("field.unregistered.photosNote", "Photo capture is not available for this flow. Location and report type are captured below.", "التقاط الصور لهذا المسار غير موصول بعد — يُظهره التصميم، لكن لا يوجد مسار تخزين معتمد له بعد. يتم التقاط الموقع ونوع التقرير أدناه."),
     submit: tr("field.unregistered.submit", "Create visit", "إنشاء الزيارة"),
     submitting: tr("common.submitting", "Submitting…", "جارٍ الإرسال…"),
   };

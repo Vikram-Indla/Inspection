@@ -406,7 +406,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     // Pending-integration scaffolding — design structure awaiting a governed
     // source/API; captured values are NOT persisted (pre-translated en+ar).
     pendingIntegration: tr("field.fv.pendingIntegration", "Pending integration", "قيد الربط"),
-    pendingCaption: tr("field.fv.pendingCaption", "This section is a placeholder until a data source is connected — anything entered here is not saved yet.", "هذا القسم عنصر نائب حتى يتم ربط مصدر بيانات — أي قيمة تُدخل هنا لا تُحفظ بعد."),
+    pendingCaption: tr("field.fv.pendingCaption", "This section is not connected to a data source. Nothing entered here is saved.", "هذا القسم عنصر نائب حتى يتم ربط مصدر بيانات — أي قيمة تُدخل هنا لا تُحفظ بعد."),
     selectPlaceholder: tr("field.fv.selectPlaceholder", "Select…", "اختر…"),
     estDataTitle: tr("field.fv.estDataTitle", "Establishment data", "بيانات المنشأة"),
     spatialAuth: tr("field.fv.spatialAuth", "Establishment spatial authority", "الإشراف المكاني للمنشأة"),
@@ -450,7 +450,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     itemCheck1: tr("field.fv.itemCheck1", "Exemption beneficiary", "مستفيد من الإعفاء"),
     itemCheck2: tr("field.fv.itemCheck2", "Chemical clearance beneficiary", "مستفيد من الفسح الكيميائي"),
     itemCheck3: tr("field.fv.itemCheck3", "Present at site", "موجودة في المنشأة"),
-    categoryPending: tr("field.fv.categoryPending", "This category is not connected yet — there is no data source yet.", "هذه الفئة غير مرتبطة بعد — لا يوجد مصدر بيانات بعد."),
+    categoryPending: tr("field.fv.categoryPending", "This category is not configured — no data source is connected.", "هذه الفئة غير مرتبطة بعد — لا يوجد مصدر بيانات بعد."),
     // Presentational workflow step (Factory-360 header).
     stepBadge: tr("field.fv.stepBadge", "Step 2 of 4", "الخطوة 2 من 4"),
     // Violation history — no governed factory-scoped source; badged empty scaffold.
@@ -537,7 +537,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     historyApproved: t("field.ws.historyApproved", "Approved"),
     historyRejected: t("field.ws.historyRejected", "Rejected"),
     submittedTitle: t("field.ws.submittedTitle", "Submitted — final submitted version."),
-    submittedBody: t("field.ws.submittedBody", "Content locked by the database (proven B3); corrections only via reviewer return."),
+    submittedBody: t("field.ws.submittedBody", "Content locked by the database; corrections only via reviewer return."),
     completionReview: tr("field.ws.completion.review", "Review summary", "ملخّص المراجعة"),
     completionAnswered: tr("field.ws.completion.answered", "Answered", "مُجاب"),
     completionViolations: tr("field.ws.completion.violations", "Violations", "مخالفات"),
@@ -731,7 +731,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     evArchived: t("field.ws.ev.archived", "Archived — replaced"),
     evReplace: t("field.ws.ev.replace", "Replace"),
     evDelete: t("field.ws.ev.delete", "Delete"),
-    evDeletedMsg: t("field.ws.ev.deleted", "Evidence removed from the checklist — soft-deleted with reason, audit event recorded"),
+    evDeletedMsg: t("field.ws.ev.deleted", "Evidence removed from the checklist — deleted with a reason, audit event recorded"),
     saveFailed: t("field.ws.saveFailed", "This change could not be synchronized. It remains queued where possible — try again."),
     evDeleteQueuedOffline: t("field.ws.ev.deleteQueued", "Delete queued — will apply with reason on reconnect"),
     evArchiveQueued: t("field.ws.ev.archiveQueued", "Replacement queued for {code} — previous file will be archived, never destroyed"),
@@ -763,7 +763,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
       absent: tr("field.ws.sig.absent", "Did not attend", "لم يحضر"),
       objected: tr("field.ws.sig.objected", "Objected to signing", "اعترض على التوقيع"),
       reasonLabel: tr("field.ws.sig.reason", "Reason for absence / objection", "سبب عدم الحضور/الاعتراض"),
-      unsupported: tr("field.ws.sig.unsupported", "Not configured — the submission service does not yet accept or audit this acknowledgement branch.", "غير مهيأ — لا تقبل خدمة الإرسال مسار الإقرار هذا أو تدققه بعد."),
+      unsupported: tr("field.ws.sig.unsupported", "Not configured — this acknowledgement branch is not accepted.", "غير مهيأ — لا تقبل خدمة الإرسال مسار الإقرار هذا أو تدققه بعد."),
       nameLabel: t("field.ws.sig.name", "Representative name"),
       namePlaceholder: t("field.ws.sig.namePh", "Full name as recorded on site"),
       clear: t("field.ws.sig.clear", "Clear"),

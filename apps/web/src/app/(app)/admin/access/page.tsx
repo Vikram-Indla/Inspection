@@ -202,17 +202,17 @@ export default async function Access({
       gate={{
         title: t("admin.revamp.access.gate.title", copy("Role changes are guarded and audited", "تغييرات الأدوار محمية ومدققة")),
         body: t("admin.revamp.access.gate.body", copy(
-          "Every write is checked again on the server. Approved RPCs refuse self-elevation and removal of the last security administrator; backend role keys stay unchanged until an approved mapping migration exists.",
+          "Every write is checked again on the server. Self-elevation and removal of the last security administrator are always refused.",
           "يُعاد التحقق من صلاحية كل كتابة على الخادم. ترفض إجراءات قاعدة البيانات المعتمدة رفع المستخدم لصلاحياته أو إزالة آخر مسؤول أمان؛ وتبقى مفاتيح الأدوار الخلفية دون تغيير إلى أن تُعتمد ترحيلة للربط.",
         )),
       }}
       governance={accessGovernance}
       reconstructionNote={t("admin.revamp.access.note", copy(
-        "The design’s three presentation roles sit above the existing approved role catalogue. This route does not collapse or rename backend roles without an approved data and RLS migration.",
+        "The design’s three presentation roles sit above the existing approved role catalogue. This route does not collapse or rename the underlying roles.",
         "توجد أدوار العرض الثلاثة في التصميم فوق كتالوج الأدوار المعتمد الحالي. لا تدمج هذه الوجهة أدوار النظام الخلفي ولا تعيد تسميتها دون ترحيلة معتمدة للبيانات وأمن الصفوف.",
       ))}
     >
-      <div className="alert"><div><strong>{t("admin.access.banner.title", "Access is enforced by Row Level Security, not UI.")}</strong> {t("admin.access.banner.body", "54 policies apply the fixed RBAC matrix. Role grants are recorded automatically (this page's own data passed through RLS to render).")}</div></div>
+      <div className="alert"><div><strong>{t("admin.access.banner.title", "Access is enforced by Row Level Security, not UI.")}</strong> {t("admin.access.banner.body", "Role grants are recorded automatically and every read is checked against the access matrix.")}</div></div>
       {(gateError || capGateError) && (
         <div className="alert alert-warning" role="alert"><div>
           <strong>{t("admin.access.permissions.error.title", "Permissions not available.")}</strong>{" "}
@@ -376,7 +376,7 @@ export default async function Access({
             confirm: t("admin.access.manage.confirm", "Confirm"),
             cancel: t("common.cancel", "Cancel"),
             working: t("admin.access.manage.working", "Applying…"),
-            auditNote: t("admin.access.rolecaps.auditNote", "Audit note: user_roles changes are recorded by the existing audit trigger; role_permissions audit coverage is migration 20260722120000 (authored, pending apply)."),
+            auditNote: t("admin.access.rolecaps.auditNote", "Role changes are recorded in the audit trail."),
           }}
         />
       )}

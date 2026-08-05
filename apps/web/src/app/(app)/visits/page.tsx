@@ -180,7 +180,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     eligHeading: t("visit.elig.heading", "Eligibility preview"),
     eligVerified: t("visit.elig.verified", "Verified now — each item is re-checked on the server at submit."),
     eligCount: t("visit.elig.count", "{n} of {total} eligible"),
-    eligSamePlanBlocked: t("visit.elig.samePlanBlocked", "Bulk edit only works within one Plan. It isn't available across different Plans yet."),
+    eligSamePlanBlocked: t("visit.elig.samePlanBlocked", "Bulk edit only works within one Plan. It is not available across different Plans."),
     eligReschedule: t("visit.elig.reschedule", "Reschedule"),
     eligReassign: t("visit.elig.reassign", "Reassign"),
     eligCancel: t("visit.elig.cancel", "Cancel"),

@@ -106,7 +106,7 @@ export default async function Login({ searchParams }: {
         bioUnavailable: "Face ID unlock could not be completed on this device. Use your password.",
         bioFallback: "Use password instead",
         directoryBlocked:
-          "National ID / staff number sign-in is not enabled yet — the ministry directory contract has not been supplied. Use your work email address.",
+          "National ID / staff number sign-in is not enabled. Use your work email address.",
         authInvalid:
           "We could not sign you in with those details. Check your information or reset your password.",
         authNetwork:

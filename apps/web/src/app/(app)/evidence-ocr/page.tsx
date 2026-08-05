@@ -75,7 +75,7 @@ export default async function EvidenceOcrPage() {
       {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("ocr.error", "Couldn’t load evidence. Nothing changed.")}</strong></div></div>}
       {!error && rows.length === 0 && (
         <EmptyState icon={<IconSearch size={28} />} title={t("ocr.empty.title", "No evidence in scope")}
-          body={t("ocr.empty.body", "Only stored photos and documents appear here. First attach evidence to a checklist item in a field inspection; empty may also mean none are in your scope (RLS).")} />
+          body={t("ocr.empty.body", "Only stored photos and documents appear here. First attach evidence to a checklist item in a field inspection; empty may also mean none are in your scope.")} />
       )}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "var(--space-4)" }}>
         {rows.map((row) => <OcrRowView key={row.id} row={row} strings={strings} />)}

@@ -1135,7 +1135,7 @@ export default async function Operations({ searchParams }: {
                 <div><dt>{t("ops.kpi.period", "Calculation period")}</dt><dd>{contractValue(operationsKpiContract?.period)}</dd></div>
                 <div><dt>{t("ops.kpi.timezone", "Timezone")}</dt><dd>{contractValue(operationsKpiContract?.timezone)}</dd></div>
                 <div><dt>{t("ops.kpi.policyVersion", "Policy version")}</dt><dd>{contractValue(operationsKpiContract?.policy_version)}</dd></div>
-                <div><dt>{t("ops.kpi.decision", "Decision authority")}</dt><dd>{operationsKpiContract?.decision ?? "DEC-028"}</dd></div>
+                <div><dt>{t("ops.kpi.decision", "Decision authority")}</dt><dd>{operationsKpiContract?.decision ?? t("common.notConfigured", "Not configured")}</dd></div>
               </dl>
               <div className="sq-tablewrap"><table className="sq-table">
                 <thead><tr><th scope="col">{t("ops.kpi.metric", "Metric")}</th><th scope="col">{t("ops.kpi.status", "Source status")}</th><th scope="col">{t("ops.kpi.formula", "Published formula")}</th></tr></thead>

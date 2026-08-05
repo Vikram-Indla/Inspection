@@ -50,7 +50,7 @@ export default async function Workflows() {
     approvePublish: t("admin.wf.publish.approve", "Approve & publish"),
   };
   const deckStrings: WfDeckStrings = {
-    ledgerTitle: t("admin.wf.deck.ledger", "Validation (VAL-01..06)"),
+    ledgerTitle: t("admin.wf.deck.ledger", "Validation"),
     graphTitle: t("admin.wf.deck.graph", "Lifecycle"),
     inspectorTitle: t("admin.wf.deck.inspector", "Transition inspector"),
     passed: t("admin.wf.deck.passed", "valid"),
@@ -90,7 +90,7 @@ export default async function Workflows() {
       </p>
 
       <div className="alert"><div>
-        <strong>{t("admin.wf.banner.title", "Only approved changes.")}</strong> {t("admin.wf.banner.before", "The system checks transitions against the published version only — no status bypass (RBAC-003). Changes go from draft to publish, and the approver must be a different person (RBAC-002 maker-checker), enforced by a database rule on")} <code>config_versions</code>{t("admin.wf.banner.mid", "); published versions can't be changed. Risk/SLA values live in")} <code>engine_settings</code> {t("admin.wf.banner.after", "and can't be edited here.")}
+        <strong>{t("admin.wf.banner.title", "Only approved changes.")}</strong> {t("admin.wf.banner.before", "The system checks transitions against the published version only — no status bypass. Changes go from draft to publish, and the approver must be a different person, enforced by a rule on")} <code>config_versions</code>{t("admin.wf.banner.mid", "); published versions can't be changed. Risk/SLA values live in")} <code>engine_settings</code> {t("admin.wf.banner.after", "and can't be edited here.")}
       </div></div>
       {error && (
         <div className="alert alert-critical"><div>
@@ -99,7 +99,7 @@ export default async function Workflows() {
       )}
       {!error && (wfs ?? []).length === 0 && (
         <EmptyState glyph="🔀" title={t("admin.wf.empty.title", "No workflow settings published")}
-          body={t("admin.wf.empty.body", "Workflow state machines are versioned settings (ENG-03).")} />
+          body={t("admin.wf.empty.body", "Workflow state machines are versioned settings.")} />
       )}
       {(wfs ?? []).map(w => {
         const p = w.payload as { object?: string };
@@ -142,12 +142,12 @@ export default async function Workflows() {
                     evaluator exists (lib/workflow/transition), but the fixture store and
                     replay persistence are not built, so no run-replay is claimed here. */}
                 <NotYetBoundary
-                  title={t("admin.wf.sim.title", "Simulation fixtures & persisted replay")}
-                  consequence={t("admin.wf.sim.desc", "The graph and validation ledger above are live; a persisted simulation/replay run (fixtures + audit) is not built yet, so no run history is shown.")}
-                  seam="NEEDS_APPROVED_CONTRACT — simulation fixtures / replay persistence (GAP-02)"
+                  title={t("admin.wf.sim.title", "Simulation & replay history")}
+                  consequence={t("admin.wf.sim.desc", "The graph and validation ledger above are live. Saved simulation and replay runs are not available, so no run history is shown.")}
+                  seam="Not configured"
                   prerequisites={[
-                    t("admin.wf.sim.pre1", "A fixture store (sim_fixtures) and seed context"),
-                    t("admin.wf.sim.pre2", "Persisted simulation runs (sim_runs) with audit"),
+                    t("admin.wf.sim.pre1", "A stored set of simulation inputs"),
+                    t("admin.wf.sim.pre2", "Saved simulation runs with an audit trail"),
                   ]}
                   notAvailableLabel={t("admin.wf.notYet", "Not available yet")}
                   detailLabel={t("common.whyPrereq", "Why / prerequisites")}
@@ -168,7 +168,7 @@ export default async function Workflows() {
           <p className="t-caption" style={{ margin: 0 }}>{t("admin.wf.sla.loadError", "Couldn’t load the SLA calendars. Nothing was changed.")}</p>
         ) : (calendars ?? []).length === 0 ? (
           <p className="t-caption" style={{ margin: 0 }}>
-            {t("admin.wf.sla.none", "No SLA calendar is set up. Deadlines, working days and escalation are set inputs (DEC-003) — until one is approved, timers stay pending and no deadline is shown.")}
+            {t("admin.wf.sla.none", "No SLA calendar is set up. Deadlines, working days and escalation are set inputs — until one is approved, timers stay pending and no deadline is shown.")}
           </p>
         ) : (
           <div className="table-wrap">
@@ -191,7 +191,7 @@ export default async function Workflows() {
                       <span className={`badge ${c.activation_authorized ? "badge-compliant" : "badge-warning"}`}>
                         {c.activation_authorized
                           ? t("admin.wf.sla.authorized", "Approved")
-                          : t("admin.wf.sla.pending", "Not approved (DEC-003)")}
+                          : t("admin.wf.sla.pending", "Not approved")}
                       </span>
                     </td>
                   </tr>

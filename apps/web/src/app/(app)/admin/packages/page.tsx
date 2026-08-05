@@ -184,7 +184,7 @@ export default async function Packages() {
     publishing: t("admin.pkg.publish.publishing", "Publishing…"),
     approvePublish: t("admin.pkg.publish.approve", "Approve & publish"),
     published: t("admin.pkg.publish.published", "Version published. It can no longer be changed."),
-    publishHint: t("admin.pkg.publish.hint", "Publishing rechecks item, evidence, condition, violation, penalty and action-form dependencies. The approver must be a different person from the creator (RBAC-002)."),
+    publishHint: t("admin.pkg.publish.hint", "Publishing rechecks item, evidence, condition, violation, penalty and action-form dependencies. The approver must be a different person from the creator."),
     effectiveTo: t("admin.pkg.deactivate.effectiveTo", "Effective to"), deactivationReason: t("admin.pkg.deactivate.reason", "Deactivation reason"), deactivate: t("admin.pkg.deactivate.action", "Deactivate version"), deactivating: t("admin.pkg.deactivate.working", "Deactivating…"), deactivated: t("admin.pkg.deactivate.done", "Package version deactivated"),
   };
   // INSP-747 / CC-ADMIN-PACKAGE-CREATION-20260805
@@ -403,7 +403,7 @@ export default async function Packages() {
         {!packageUnavailable && itemBankUnavailable && (
           <div className="alert alert-warning" role="status"><div>
             <strong>{t("admin.pkg.itemsUnavailable.title", "Item catalogue not available.")}</strong>{" "}
-            {t("admin.pkg.itemsUnavailable.body", "Package versions and impact still show, but editing and field preview are paused because we couldn’t read the item data they depend on. This is not an empty catalogue.")}
+            {t("admin.pkg.itemsUnavailable.body", "Package versions and impact still show. Editing and field preview are paused because the item data they depend on could not be loaded.")}
           </div></div>
         )}
 
@@ -412,7 +412,7 @@ export default async function Packages() {
             <h3 id="pkg-access" style={{ margin: 0 }}>{t("admin.pkg.readonly.title", "Read-only package access")}</h3>
             <p className="t-caption">{roleRead.error
               ? t("admin.pkg.readonly.unknown", "We couldn’t check your write permissions, so all edit controls are hidden. Reload to try again.")
-              : t("admin.pkg.readonly.body", "You can view versions, previews and publish impact. To create, save or publish, you need the compliance_admin or form_admin role. Navigation access alone does not give you write permission.")}</p>
+              : t("admin.pkg.readonly.body", "You can view versions, previews and publish impact. To create, save or publish, you need the compliance or form administrator role. Navigation access alone does not give you write permission.")}</p>
           </section>
         )}
 

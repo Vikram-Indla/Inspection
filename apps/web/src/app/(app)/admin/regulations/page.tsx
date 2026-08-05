@@ -163,7 +163,7 @@ export default async function Regulations({
     adding: t("admin.reg.clause.adding", "Adding…"),
     addClause: t("admin.reg.clause.add", "Add clause"),
     added: t("admin.reg.clause.added", "Clause added"),
-    clauseNotAudited: t("admin.reg.clause.notAudited", "Clause changes are audit-tracked at the database (trg_audit_regulation_clauses), the same as regulation-row changes."),
+    clauseNotAudited: t("admin.reg.clause.notAudited", "Clause changes are audit-tracked, the same as regulation-row changes."),
     publishing: t("admin.reg.publishing", "Publishing…"),
     publish: t("admin.reg.publish", "Validate and publish"),
     saveDraft: t("admin.reg.edit.save", "Save draft"),
@@ -320,7 +320,7 @@ export default async function Regulations({
 
         {regsError ? null : !reg ? (
           <EmptyState role="status" glyph="🔎" title={t("admin.reg.r1.detail.notFound.title", "Regulation not found")}
-            body={t("admin.reg.r1.detail.notFound.body", "The read succeeded but no regulation has this identifier. It may have been removed.")} />
+            body={t("admin.reg.r1.detail.notFound.body", "No regulation has this identifier. It may have been removed.")} />
         ) : (
           <>
             {/* Dossier header */}
@@ -343,7 +343,7 @@ export default async function Regulations({
                 </span>
               </div>
               <p className="t-caption" style={{ margin: 0 }}>
-                <span aria-hidden="true">ⓘ</span> {t("admin.reg.r1.detail.auditNote", "Changes to this regulation row are logged. Clauses added to this record are logged too (trg_audit_regulation_clauses).")}
+                <span aria-hidden="true">ⓘ</span> {t("admin.reg.r1.detail.auditNote", "Changes to this regulation row are logged. Clauses added to this record are logged too.")}
               </p>
             </section>
 
@@ -372,7 +372,7 @@ export default async function Regulations({
                 <div className="saqeel-state sq-state--inline" role="status">
                   <span className="saqeel-state__glyph" aria-hidden="true">📄</span>
                   <h4>{t("admin.reg.r1.detail.clauses.empty.title", "No clauses yet")}</h4>
-                  <p className="t-caption">{t("admin.reg.r1.detail.clauses.empty.body", "This regulation has no clauses. Add the first clause below — the read worked, it is really empty.")}</p>
+                  <p className="t-caption">{t("admin.reg.r1.detail.clauses.empty.body", "This regulation has no clauses. Add the first clause below.")}</p>
                 </div>
               ) : (
                 <div className="table-wrap">
@@ -536,8 +536,8 @@ export default async function Regulations({
         // S03 EMPTY — verified zero (read succeeded, genuinely no regulations)
         <EmptyState role="status" glyph="📜" title={t("admin.reg.r1.empty.title", "No regulations set up yet")}
           body={isWriter
-            ? t("admin.reg.r1.empty.body.writer", "The read worked — the library is really empty. Create the first configuration through a Compliance Configuration Request.")
-            : t("admin.reg.r1.empty.body", "The read worked — the library is really empty (MVP1-M09-001: regulations are the parents of inspection items).")} />
+            ? t("admin.reg.r1.empty.body.writer", "The library is empty. Create the first configuration through a Compliance Configuration Request.")
+            : t("admin.reg.r1.empty.body", "The library is empty. Regulations are the parents of inspection items — add one to begin.")} />
       ) : (
         <RegulationRegister rows={lite} strings={strings} />
       )}

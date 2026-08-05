@@ -269,7 +269,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     between: t("plan.bulk.criteria.opBetween", "between"),
   };
   const notSuppliedReasons: Record<string, string> = {
-    "plan.bulk.criteria.nsSector": t("plan.bulk.criteria.nsSector", "There is no sector data set up yet — this can't be checked, and is never treated as blank."),
+    "plan.bulk.criteria.nsSector": t("plan.bulk.criteria.nsSector", "No sector data is configured, so this cannot be checked. It is not treated as blank."),
     "plan.bulk.criteria.nsLicenseStage": t("plan.bulk.criteria.nsLicenseStage", "Licence stage is filled in for only about 1% of the licence list — too little to target by."),
     "plan.bulk.criteria.nsLicenseStatus": t("plan.bulk.criteria.nsLicenseStatus", "Licence status is filled in for only about 1% of the licence list — too little to target by."),
     "plan.bulk.criteria.nsProductHs": t("plan.bulk.criteria.nsProductHs", "Product / HS codes exist for only 4 factories — not enough to target by yet."),

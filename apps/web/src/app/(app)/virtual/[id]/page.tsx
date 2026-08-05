@@ -131,7 +131,7 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     reasonPh: t("virtual.room.reasonPh", "Required reason (recorded immutably)"),
     reasonReq: t("virtual.room.reasonReq", "A reason is required."),
     fallback: t("virtual.room.fallback", "Fallback"),
-    fallbackBody: t("virtual.room.fallbackBody", "If the provider is unavailable, keep the session state and audit trail; do not claim a video connection."),
+    fallbackBody: t("virtual.room.fallbackBody", "The video provider is unavailable. The session state and audit trail are preserved; no call is connected."),
     fallbackTag: t("virtual.room.fallbackTag", "provider unavailable"),
     fallbackResched: t("virtual.room.fallbackResched", "Reschedule or escalate through the governed path."),
     degraded: t("virtual.room.degraded", "Related source unavailable"),
@@ -167,13 +167,13 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     stateLocalOnly: t("virtual.stage.stateLocalOnly", "Your devices only"),
     stateUnavailable: t("virtual.stage.stateUnavailable", "Room not available"),
     remoteWaiting: t("virtual.stage.remoteWaiting", "No one else is in this room yet."),
-    remoteRepNoRoute: t("virtual.stage.remoteRepNoRoute", "The factory representative cannot join yet — there is no route for them to enter a room, so this room is reachable only from the console."),
+    remoteRepNoRoute: t("virtual.stage.remoteRepNoRoute", "The factory representative cannot join. This room is reachable only from the console."),
     // Same "cannot join" outcome, two different causes — and telling the
     // operator the wrong one wastes their time. Before the API key existed the
     // service was genuinely off; now it is configured and the gap is this build.
     remoteUnavailable: transport.configured
-      ? t("virtual.stage.remoteUnavailableNoClient", "The video service is configured, but joining a room is not available in this version yet, so the representative cannot join.")
-      : t("virtual.stage.remoteUnavailable", "The video service is not switched on for this environment, so the representative cannot join yet."),
+      ? t("virtual.stage.remoteUnavailableNoClient", "The video service is configured, but joining a room is not available, so the representative cannot join.")
+      : t("virtual.stage.remoteUnavailable", "The video service is not switched on for this environment, so the representative cannot join."),
     remoteUnavailableReason: t("virtual.stage.remoteUnavailableReason", "Your camera, microphone and screen sharing still work below, and the rest of the session — identity checks, the appointment, the decision to begin and the audit trail — runs now."),
     selfView: t("virtual.stage.selfView", "Your camera"),
     cameraOff: t("virtual.stage.cameraOff", "Camera off"),

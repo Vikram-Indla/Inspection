@@ -28,10 +28,10 @@ export default async function DelegationJourney({
   const copy = ar ? {
     title: "التفويض", subtitle: "تفويض السلطة الحاكمة للأدوار مؤقتاً بين المستخدمين المصرح لهم",
     tabActive: "التفويضات النشطة", tabReceived: "المستلمة", tabNew: "تفويض جديد", tabHistory: "السجل",
-    unavailableTitle: "قائمة التفويضات غير متاحة", unavailableBody: "فشلت القراءة المحكومة بسياسات RLS. لم يتم استنتاج أي بيانات.",
+    unavailableTitle: "قائمة التفويضات غير متاحة", unavailableBody: "فشلت القراءة المحكومة بسياسات الوصول. لم يتم استنتاج أي بيانات.",
     emptyActiveTitle: "لا توجد تفويضات نشطة", emptyActiveBody: "لم تُنشئ أي تفويض نشط ضمن نطاق صلاحياتك بعد.",
     emptyReceivedTitle: "لا توجد تفويضات مستلمة", emptyReceivedBody: "لم يفوّضك أحد أي دور نشط حتى الآن.",
-    emptyHistoryTitle: "لا يوجد سجل", emptyHistoryBody: "القراءة المقيّدة بسياسات RLS لم تُرجع أي تفويضات ضمن نطاقك.",
+    emptyHistoryTitle: "لا يوجد سجل", emptyHistoryBody: "لم تُرجع القراءة أي تفويضات ضمن نطاقك.",
     noScopesTitle: "لا توجد أدوار قابلة للتفويض", noScopesBody: "لا تحمل أي دور حالياً يمكن تفويضه لمستخدم آخر.",
     delegator: "المفوِّض", delegate: "المفوَّض إليه", delegateHelp: "أدخل البريد الإلكتروني لمستخدم مصرّح له موجود في النظام.",
     scope: "نطاق الصلاحية (الدور)", reason: "السبب", startsAt: "تاريخ البدء", endsAt: "تاريخ الانتهاء",
@@ -42,7 +42,7 @@ export default async function DelegationJourney({
   } : {
     title: "Delegation", subtitle: "Temporarily delegate a governed role's authority to another authorized user",
     tabActive: "Active", tabReceived: "Received", tabNew: "New Delegation", tabHistory: "History",
-    unavailableTitle: "Delegation list unavailable", unavailableBody: "We could not read the delegation records. Nothing has been guessed.",
+    unavailableTitle: "Delegation list unavailable", unavailableBody: "The delegation records could not be loaded.",
     emptyActiveTitle: "No active delegations", emptyActiveBody: "You haven't created an active delegation in your authorized scope yet.",
     emptyReceivedTitle: "No delegations received", emptyReceivedBody: "No one has delegated an active role to you yet.",
     emptyHistoryTitle: "No history", emptyHistoryBody: "There are no delegations to show for your access.",

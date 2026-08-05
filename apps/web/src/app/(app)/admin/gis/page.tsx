@@ -34,7 +34,7 @@ export default async function GisStudioPage() {
 
   const strings: GisStrings = {
     loadingTitle: t("gis.loading.title", "Loading map"),
-    loadingBody: t("gis.loading.body", "Preparing the KSA geofencing view (ENG-06)."),
+    loadingBody: t("gis.loading.body", "Preparing the KSA geofencing view."),
     searchLabel: t("gis.search.label", "Search factories"),
     searchPlaceholder: t("gis.search.placeholder", "Search by name, code, city or region…"),
     filterRegionAll: t("gis.filter.regionAll", "All regions"),
@@ -51,7 +51,7 @@ export default async function GisStudioPage() {
     save: t("gis.radius.save", "Save radius"),
     saving: t("gis.radius.saving", "Saving…"),
     saved: t("gis.radius.saved", "saved"),
-    defaultsTitle: t("gis.defaults.title", "Engine defaults (ENG-06 · read-only)"),
+    defaultsTitle: t("gis.defaults.title", "Engine defaults (read-only)"),
     defaultsCheckin: t("gis.defaults.checkin", "Check-in accuracy"),
     defaultsArrival: t("gis.defaults.arrival", "Arrival detection"),
     defaultsFence: t("gis.defaults.fence", "Default geofence"),
@@ -93,8 +93,12 @@ export default async function GisStudioPage() {
 
         {!err && (
           <div className="table-wrap"><table className="table">
-            <thead><tr><th scope="col">{t("gis.settings.setting", "Setting")}</th><th scope="col">{t("gis.settings.value", "Value")}</th><th scope="col">{t("gis.settings.contract", "Contract")}</th></tr></thead>
-            <tbody>{settingsRows.map(([k, v, c]) => <tr key={k}><td><strong>{k}</strong></td><td className="numeric" dir="ltr">{v}</td><td className="t-caption">{c}</td></tr>)}</tbody>
+            {/* The "Contract" column rendered nothing but internal contract IDs
+                (ENG-06, STM-JRN-002, FND-009 …) — traceability data, not
+                something a GIS administrator can act on. The reference moves to
+                a data attribute so it stays greppable without being on screen. */}
+            <thead><tr><th scope="col">{t("gis.settings.setting", "Setting")}</th><th scope="col">{t("gis.settings.value", "Value")}</th></tr></thead>
+            <tbody>{settingsRows.map(([k, v, c]) => <tr key={k} data-contract-ref={c}><td><strong>{k}</strong></td><td className="numeric" dir="ltr">{v}</td></tr>)}</tbody>
           </table></div>
         )}
       </div>

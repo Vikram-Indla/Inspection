@@ -261,7 +261,7 @@ export default async function EnforcementLibrary({
               the glyph must not be confusable with that one. */}
           <span className="sq-state__glyph" aria-hidden="true">∅</span>
           <h2>{copy("No violation records visible to you", "لا توجد سجلات مخالفات ظاهرة لك")}</h2>
-          <p>{copy("The read succeeded and returned zero matching records.", "نجحت القراءة ولم تُرجع سجلات مطابقة.")}</p>
+          <p>{copy("No records match.", "لا توجد سجلات مطابقة.")}</p>
         </section>
       ) : (
         <section className="table-wrap" aria-label={copy("Enforcement records", "سجلات الإنفاذ")}>

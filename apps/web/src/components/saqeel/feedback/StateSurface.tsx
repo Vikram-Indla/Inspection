@@ -19,7 +19,7 @@ const copy: Record<Locale, Record<StateSurfaceKind, { title: string; body: strin
   en: {
     empty: {
       title: "No records",
-      body: "The governed read succeeded and returned no visible records.",
+      body: "No records are visible in your scope.",
     },
     loading: {
       title: "Loading",
@@ -31,10 +31,10 @@ const copy: Record<Locale, Record<StateSurfaceKind, { title: string; body: strin
     },
     "rls-denied": {
       title: "Nothing in your scope",
-      body: "This view may be empty because access policy (RLS) restricts rows to your authority — not a claim that no data exists.",
+      body: "This view may be empty because access policy restricts rows to your authority — not a claim that no data exists.",
     },
     "not-yet": {
-      title: "Not available yet",
+      title: "Not available",
       body: "This capability is off by default. When enabled it remains governed and requires human disposition.",
     },
     "provider-unavailable": {
@@ -73,7 +73,7 @@ const copy: Record<Locale, Record<StateSurfaceKind, { title: string; body: strin
     },
     "rls-denied": {
       title: "لا توجد سجلات ضمن نطاقك",
-      body: "قد يكون هذا العرض فارغاً لأن سياسات الوصول (RLS) تحصر الصفوف على صلاحيتك — وليس تأكيداً على عدم وجود بيانات.",
+      body: "قد يكون هذا العرض فارغاً لأن سياسات الوصول تحصر الصفوف على صلاحيتك — وليس تأكيداً على عدم وجود بيانات.",
     },
     "not-yet": {
       title: "غير متاح بعد",

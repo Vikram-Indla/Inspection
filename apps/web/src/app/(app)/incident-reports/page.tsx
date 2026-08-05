@@ -32,7 +32,7 @@ export default async function IncidentReportsPage() {
       <div className="sq-banner">
         <div>
           <strong>{t("figma.establishmentmanagement.em028", "Incident Observation Details")}</strong>{" "}
-          {t("incident.report.help", "Record a field incident observation. Report Source and Incident Type option lists are not yet defined, so they are captured as free text.")}
+          {t("incident.report.help", "Record a field incident observation. Report Source and Incident Type are not configured, so they are captured as free text.")}
         </div>
       </div>
 
@@ -66,7 +66,7 @@ export default async function IncidentReportsPage() {
         <EmptyState
           glyph="⚠️"
           title={t("incident.report.empty.title", "No incident reports in scope")}
-          body={t("incident.report.empty.body", "Recorded incidents appear here. Empty may also mean none are in your scope (RLS).")}
+          body={t("incident.report.empty.body", "Recorded incidents appear here. Empty may also mean none are in your scope.")}
         />
       )}
       {(rows ?? []).map((r) => (

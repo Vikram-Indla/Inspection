@@ -52,7 +52,7 @@ export default async function RiskStudio() {
   const drawerLabels = createAdminRecordDrawerLabels(t, locale);
   const riskGovernance = [
     t("admin.revamp.risk.governance.sum", copy("The stored factor total must equal the engine’s accepted invariant before a save.", "يجب أن يساوي مجموع العوامل المخزنة ثابت المحرك المقبول قبل الحفظ.")),
-    t("admin.revamp.risk.governance.rls", copy("Risk-owner authorization and RLS are rechecked on every write.", "يُعاد التحقق من صلاحية مالك المخاطر وأمن الصفوف عند كل كتابة.")),
+    t("admin.revamp.risk.governance.rls", copy("Risk-owner authorization is rechecked on every write.", "يُعاد التحقق من صلاحية مالك المخاطر وأمن الصفوف عند كل كتابة.")),
     t("admin.revamp.risk.governance.trace", copy("Scores can always be reproduced from the stored inputs and the settings version.", "يمكن دائماً إعادة إنتاج الدرجات من المدخلات المخزنة وإصدار الإعدادات.")),
   ];
 

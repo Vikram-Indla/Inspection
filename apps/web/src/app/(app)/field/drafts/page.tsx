@@ -130,8 +130,8 @@ export default async function FieldDraftsPage() {
           </svg>
           <span>
             {tr("field.drafts.offlineNote",
-              "Drafts are stored on your device (IndexedDB) and stay available offline until final submission.",
-              "المسودات مخزّنة على جهازك (IndexedDB) وتبقى متاحة دون اتصال حتى الإرسال النهائي.")}
+              "Drafts are stored on your device and stay available offline until final submission.",
+              "المسودات مخزّنة على جهازك وتبقى متاحة دون اتصال حتى الإرسال النهائي.")}
           </span>
         </div>
         <div className={`panel ${styles.note}`}>
@@ -140,8 +140,8 @@ export default async function FieldDraftsPage() {
           </svg>
           <span>
             {tr("field.drafts.grounding",
-              "Read from the real `drafts` IndexedDB store (mim-field-v1, offline.ts) — item responses are keyed `<inspection_id>:<item_id>` and read via getDrafts().",
-              "مبني على مخزن drafts الفعلي في IndexedDB (mim-field-v1، offline.ts) — إجابات البنود تُخزّن بمفتاح ‎<معرّف_التفتيش>:<معرّف_البند> وتُقرأ عبر getDrafts().")}
+              "Drafts are read from this device's local store, one entry per inspection item.",
+              "تُقرأ المسودات من المخزن المحلي على هذا الجهاز، بإدخال واحد لكل بند تفتيش.")}
           </span>
         </div>
       </div>

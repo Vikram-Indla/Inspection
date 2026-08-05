@@ -48,7 +48,7 @@ export default async function ExceptionsPage() {
           <Link className="btn btn-secondary" href="/reviews">{t("reviews.title", "Review queue")}</Link>
         </nav>
       </header>
-      <div className="sq-banner"><div><strong>{t("exc.banner.title", "Command posture.")}</strong> {t("exc.banner.body", "Exceptions are a projection over real objects — decisions stay on the owning object. Counts trace 1:1 to sources (no synthetic rows).")} {invariantOk ? "✓" : "⚠"}</div></div>
+      <div className="sq-banner"><div><strong>{t("exc.banner.title", "Command posture.")}</strong> {t("exc.banner.body", "Exceptions are a projection over real objects — decisions stay on the owning object. Counts trace one-to-one to their sources.")} {invariantOk ? "✓" : "⚠"}</div></div>
       {degraded ? (
         <div className="alert alert-warning" role="status">
           <div><strong>{t("exc.degraded.title", "Exception sources are partially unavailable.")}</strong> {t("exc.degraded.body", "Available groups filtered to your access remain visible; unavailable sources are not represented as zero.")}</div>

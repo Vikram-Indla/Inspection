@@ -146,7 +146,7 @@ export default async function EnforcementRecommendations() {
                     already_decided: tr("admin.enf.rec.error.conflict", "This recommendation was already decided. Refresh the queue.", "تم البت في هذه التوصية مسبقًا. حدّث القائمة."),
                     maker_checker: tr("admin.enf.rec.error.makerChecker", "The recommender cannot decide their own recommendation.", "لا يمكن لمقدم التوصية البت في توصيته."),
                     write_failed: tr("admin.enf.rec.error.write", "The decision could not be recorded. No change was claimed.", "تعذر تسجيل القرار. لم يتم الادعاء بإجراء أي تغيير."),
-                    backend_guard_required: tr("admin.enf.rec.error.backendGuard", "Recording a decision is not available yet — a safe database step still needs to be added.", "تسجيل القرار غير متاح بعد — لا يزال يلزم إضافة خطوة آمنة في قاعدة البيانات."),
+                    backend_guard_required: tr("admin.enf.rec.error.backendGuard", "Recording a decision is not available.", "تسجيل القرار غير متاح بعد — لا يزال يلزم إضافة خطوة آمنة في قاعدة البيانات."),
                   },
                 }} />
               : <p className="t-caption">{tr("admin.enf.rec.awaitingDecider", "Awaiting an Operations or Compliance Admin decision.", "بانتظار قرار من العمليات أو مسؤول الامتثال.")}</p>}
@@ -159,7 +159,7 @@ export default async function EnforcementRecommendations() {
           <h2>{tr("admin.enf.rec.recent", "Recently decided", "تم البت فيها مؤخرًا")}</h2>
           {decidedError ? (
             <div className="alert alert-warning" role="alert"><div>
-              {tr("admin.enf.rec.decidedLoadError", "Recent decisions are unavailable. No history count is claimed.", "القرارات الأخيرة غير متاحة. لا يُدّعى أي عدد للسجل.")}
+              {tr("admin.enf.rec.decidedLoadError", "Recent decisions are unavailable. No count is shown.", "القرارات الأخيرة غير متاحة. لا يُعرض أي عدد.")}
             </div></div>
           ) : !(decided ?? []).length ? <p className="t-caption">{tr("admin.enf.rec.noneDecided", "No decisions recorded yet.", "لم تُسجَّل أي قرارات بعد.")}</p> : (
             <div className="table-wrap" tabIndex={0} aria-label={tr("admin.enf.rec.recent", "Recently decided", "تم البت فيها مؤخرًا")}><table className="table"><tbody>

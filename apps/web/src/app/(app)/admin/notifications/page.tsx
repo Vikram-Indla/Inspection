@@ -51,7 +51,7 @@ export default async function AdminNotifications() {
     statusPublished: t("admin.notif.status.published", "Published"),
     statusDeactivated: t("admin.notif.status.deactivated", "Deactivated"),
     emptyTitle: t("admin.notif.empty.title", "No notification rules configured"),
-    emptyBody: t("admin.notif.empty.body", "The read succeeded — the register is really empty. Create the first rule above."),
+    emptyBody: t("admin.notif.empty.body", "The register is empty. Create the first rule above."),
     colEvent: t("admin.notif.col.event", "Event"),
     colChannel: t("admin.notif.col.channel", "Channel"),
     colRecipient: t("admin.notif.col.recipient", "Recipient"),
@@ -86,7 +86,7 @@ export default async function AdminNotifications() {
     // fabricated options, which governance forbids. Free text stays,
     // honestly labeled as a decision-required gap rather than silently
     // left unexplained.
-    templateNote: t("admin.notif.template.note", "Decision required: no governed template catalogue exists yet, so this is free text pending one."),
+    templateNote: t("admin.notif.template.note", "No template catalogue is configured, so this is free text."),
   };
 
   const title = t("admin.notif.title", "Notification & SLA Rules");

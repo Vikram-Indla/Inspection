@@ -29,7 +29,7 @@ export default async function CasesPage() {
   const factoryId = fac?.id ?? null;
   return (
     <Shell current="/cases" title={t("cases.title", "Cases")}>
-      <div className="sq-banner"><div><strong>{t("cases.banner.title", "Correction / reinspection / appeal.")}</strong> {t("cases.banner.body", "One open case per origin object is enforced by the database. You see only cases in your scope (RLS).")}</div></div>
+      <div className="sq-banner"><div><strong>{t("cases.banner.title", "Correction / reinspection / appeal.")}</strong> {t("cases.banner.body", "Only one case can be open per origin object. You see only cases in your scope.")}</div></div>
       <OpenCase factoryId={factoryId} strings={{
         type: t("cases.type", "Case type"), open: t("cases.open", "Open case"), opening: t("cases.opening", "Opening…"),
         opened: t("cases.opened", "case opened"), noFactory: t("cases.noFactory", "No factory in scope to open a case against."),
@@ -37,7 +37,7 @@ export default async function CasesPage() {
       {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("cases.error", "Couldn’t load cases. Nothing changed.")}</strong></div></div>}
       {!error && (rows ?? []).length === 0 && (
         <EmptyState icon={<IconFolder size={28} />} title={t("cases.empty.title", "No cases in your scope")}
-          body={t("cases.empty.body", "Cases open from a review, violation or inspection. Empty may also mean none are in your scope (RLS).")} />
+          body={t("cases.empty.body", "Cases open from a review, violation or inspection. Empty may also mean none are in your scope.")} />
       )}
       {(rows ?? []).map((c) => (
         <div key={c.id} className="panel" style={{ padding: "var(--space-6)" }}>

@@ -62,7 +62,7 @@ export default async function TasksPage() {
   return (
     <Shell current="/tasks" title={t("tasks.title", "Tasks")}>
       <div className="sq-banner"><div>
-        <strong>{t("tasks.banner.title", "Governed task management.")}</strong> {t("tasks.banner.body", "Reassignment and status changes require a manager role in scope and a reason; every change is audited. You see only tasks in your scope (RLS).")}
+        <strong>{t("tasks.banner.title", "Governed task management.")}</strong> {t("tasks.banner.body", "Reassignment and status changes require a manager role in scope and a reason; every change is audited. You see only tasks in your scope.")}
       </div></div>
       {error && (
         <div className="sq-banner sq-banner--critical" role="alert"><div>
@@ -71,7 +71,7 @@ export default async function TasksPage() {
       )}
       {!error && tasks.length === 0 && (
         <EmptyState icon={<IconFolder size={28} />} title={t("tasks.empty.title", "No tasks in your scope")}
-          body={t("tasks.empty.body", "Tasks appear here when assigned within your branch or sector. An empty list may mean none exist, or none are in your scope (RLS).")} />
+          body={t("tasks.empty.body", "Tasks appear here when assigned within your branch or sector. An empty list may mean none exist, or none are in your scope.")} />
       )}
       {!error && tasks.length > 0 && <div className="sq-planning-insights" aria-label={t("tasks.board.label", "Task status board")}>
         {columns.map(column => <section key={column.key} aria-labelledby={`tasks-column-${column.key}`}>

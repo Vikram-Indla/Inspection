@@ -24,7 +24,7 @@ import packStyles from "../field-dashboard.module.css";
 // BUG-2 fix — [visitId] sits beside static field/* routes (drafts, notifications,
 // settings, …) with no more-specific match; Next.js still routes an unmatched
 // literal like "notifications" or "xyz123notarealid" here and it was treated
-// as a visitId, producing a misleading "Visit not found (M02-001)" after a
+// as a visitId, producing a misleading "Visit not found" after a
 // wasted authorization-scoped DB round trip. This guard is a cheap, honest short-circuit
 // on shape alone — it does not enumerate route names and never widens what a
 // valid visit lookup can match.
@@ -448,7 +448,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     cancelEvidenceLabel: t("field.start.cancelEvidenceLabel", "Photo evidence (optional, )"),
     cancelSubmit: t("field.start.cancelSubmit", "Request cancellation"),
     cancelRequestedChip: t("field.start.cancelRequestedChip", "cancellation requested — awaiting planner/ops"),
-    cancelReasonsMissing: t("field.start.cancelReasonsMissing", "Cancellation reasons unavailable — engine_settings.field not seeded yet (0020 pending)."),
+    cancelReasonsMissing: t("field.start.cancelReasonsMissing", "Cancellation reasons are not configured."),
     logCancelEvidenceQueued: t("field.start.logCancelEvidenceQueued", "Cancellation evidence {name} queued (sha256 {sha}…) — syncs to the visit record"),
     logCancelSent: t("field.start.logCancelSent", "Cancellation requested — planner/ops notified; execution stopped"),
     logCancelFailed: locale === "ar"

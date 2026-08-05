@@ -85,7 +85,7 @@ export default async function AiSuggestionsPage() {
       <AiDockets rows={mapped} strings={strings} providerConfigured={providerConfigured} />
       {!error && mapped.length === 0 && (
         <EmptyState icon={<IconRobot size={28} />} title={t("ai.empty.title", "No suggestions")}
-          body={t("ai.empty.body", "With no configured provider, none are generated. A human may propose an advisory item for disposition. Empty may also mean none are in your scope (RLS).")} />
+          body={t("ai.empty.body", "With no configured provider, none are generated. A human may propose an advisory item for disposition. Empty may also mean none are in your scope.")} />
       )}
     </Shell>
   );
