@@ -60,8 +60,7 @@ export default async function TasksPage() {
   ];
 
   return (
-    <Shell current="/tasks" title={t("tasks.title", "Tasks")}
-      context={<span className="badge badge-info">MVP2-REQ-0032</span>}>
+    <Shell current="/tasks" title={t("tasks.title", "Tasks")}>
       <div className="sq-banner"><div>
         <strong>{t("tasks.banner.title", "Governed task management.")}</strong> {t("tasks.banner.body", "Reassignment and status changes require a manager role in scope and a reason; every change is audited. You see only tasks in your scope (RLS).")}
       </div></div>

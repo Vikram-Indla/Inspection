@@ -29,7 +29,7 @@ export default async function ComplianceRequestRegister() {
   const canCreate = !roleRead.error && (roleRead.data ?? []).some(row => row.role_key === "admin");
   return (
     <Shell current="/admin/compliance-requests" title={t("admin.ccr.register.title", "Compliance Configuration Requests")}
-      context={<><span className="badge badge-info">CMP-REQ-CCR-001..010</span><span className="t-caption">Request list</span></>}>
+      context={<span className="t-caption">Request list</span>}>
       <div className="ccr-toolbar">
         <div><h3>{t("admin.ccr.register.heading", "Request list")}</h3><p className="t-caption">Create and change Regulations, Inspection Items, Violations and Penalties through final submitted versions and two-person review.</p></div>
         {canCreate ? <Link className="btn btn-primary btn-lg btn-touch" href="/admin/compliance-requests/new">Create Request</Link>

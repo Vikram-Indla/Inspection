@@ -17,7 +17,7 @@ export default async function AiSuggestionsPage() {
   const { t } = await useT();
   if (resolveFeatureFlag(process.env.FEATURE_AI_DOCKETS, MODES, "off") !== "on") {
     return (
-      <Shell current="/ai/suggestions" title={t("ai.title", "Assistive AI dockets")} context={<span className="badge badge-warning">REQ-0056</span>}>
+      <Shell current="/ai/suggestions" title={t("ai.title", "Assistive AI dockets")}>
         <NotYetBoundary title={t("ai.title", "Assistive AI dockets")}
           consequence={t("ai.off", "Assistive AI is off by default. Suggestions are advisory and require human disposition; the AI provider is fail-closed until configured, and legal source text is never generated.")}
           seam="FEATURE_AI_DOCKETS=off + AI provider held" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />

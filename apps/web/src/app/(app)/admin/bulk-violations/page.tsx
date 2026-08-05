@@ -122,8 +122,7 @@ export default async function BulkViolations() {
   };
 
   return (
-    <Shell current="/admin/bulk-violations" title={tr("admin.bulkvio.title", "Issue Multiple Violations", "إصدار مخالفات متعددة")}
-      context={<span className="badge badge-info">DEC-L</span>}>
+    <Shell current="/admin/bulk-violations" title={tr("admin.bulkvio.title", "Issue Multiple Violations", "إصدار مخالفات متعددة")}>
       <h1 className="sr-only">{tr("admin.bulkvio.title", "Issue Multiple Violations", "إصدار مخالفات متعددة")}</h1>
       <div className="alert alert-warning">
         <div><strong>{tr("admin.bulkvio.warnTitle", "Real issuing is blocked by DEC-032.", "الإصدار الفعلي محظور بموجب DEC-032.")}</strong>{" "}

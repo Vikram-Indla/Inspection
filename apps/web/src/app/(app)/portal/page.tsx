@@ -61,7 +61,7 @@ export default async function PortalPage({ searchParams }: {
   };
 
   return (
-    <Shell current="/portal" title={t("portal.title", "External portal")} context={<span className="badge badge-info">INSP-239</span>}>
+    <Shell current="/portal" title={t("portal.title", "External portal")}>
       <div className="stack">
         <div className="alert alert-warning">
           <div><div className="alert-title">{t("portal.banner.title", "Internal compliance view")}</div>

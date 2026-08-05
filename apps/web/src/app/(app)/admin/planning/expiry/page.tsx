@@ -73,7 +73,7 @@ export default async function PlanningExpiry() {
     effectiveFrom: t("admin.planning.expiry.effectiveFrom", "from"),
     ongoing: t("admin.planning.expiry.ongoing", "ongoing"),
     noVersions: t("admin.planning.expiry.noVersions", "No versions of this rule type exist yet."),
-    schedulerNote: t("admin.planning.expiry.schedulerNote", "These rules are evaluated every 15 minutes by the pg_cron job expire_lapsed_visits_scheduled. Only the enabled version of each rule type applies; a change takes effect on the next sweep."),
+    schedulerNote: t("admin.planning.expiry.schedulerNote", "These rules are checked every 15 minutes. Only the enabled version of each rule applies, and a change takes effect at the next check."),
     scopeOptions: {
       visit_type: {
         periodic: t("admin.planning.expiry.visitType.periodic", "Periodic"),
@@ -95,8 +95,7 @@ export default async function PlanningExpiry() {
   };
 
   return (
-    <Shell current="/admin/planning/expiry" title={t("admin.planning.expiry.title", "Planning expiry rules")}
-      context={<span className="badge badge-info">PLN-CON-013 · planning.configure_expiry</span>}>
+    <Shell current="/admin/planning/expiry" title={t("admin.planning.expiry.title", "Planning expiry rules")}>
       <div className="alert"><div>
         <strong>{t("admin.planning.expiry.banner.title", "One enabled version per rule type.")}</strong>{" "}
         {t("admin.planning.expiry.banner.body", "Enabling a version retires every other version of that rule type. New versions are created disabled so nothing changes silently; every change is recorded in the audit trail.")}

@@ -28,7 +28,7 @@ export default async function CommitteePage() {
   const error = e1 || e2;
   if (error) console.error("[committee] load", error);
   return (
-    <Shell current="/committee" title={t("cmte.title", "Committee & signatures")} context={<span className="badge badge-info">REQ-0128..0136</span>}>
+    <Shell current="/committee" title={t("cmte.title", "Committee & signatures")}>
       <div className="sq-banner"><div><strong>{t("cmte.banner.title", "Signature & verification.")}</strong> {t("cmte.banner.body", "Signature and refusal are distinct facts; queued is not delivered. Verification is never “verified” without a provider — PKI/EBDA is on hold. Acknowledgement is not a signature.")}</div></div>
       <RecordSignature strings={{
         record: t("cmte.record", "Record signature act"), recording: t("cmte.recording", "Recording…"),

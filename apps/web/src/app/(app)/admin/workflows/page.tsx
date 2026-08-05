@@ -76,8 +76,7 @@ export default async function Workflows() {
   };
 
   return (
-    <Shell current="/admin/workflows" title={t("admin.wf.title", "Workflow builder")}
-      context={<span className="badge badge-info">SCR-ADM-050/051 · ENG-03</span>}>
+    <Shell current="/admin/workflows" title={t("admin.wf.title", "Workflow builder")}>
       {/* Design header block — breadcrumb + purpose line. The governed actions
           (validate / publish) live on each version card: validation is the live
           VAL ledger in the rail, publishing needs a distinct checker. */}

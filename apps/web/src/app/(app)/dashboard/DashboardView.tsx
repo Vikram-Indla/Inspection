@@ -510,7 +510,7 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
         </Panel>
     </div>
 
-    <Panel title={copy(locale, "Strategic requirement coverage", "تغطية المتطلبات الاستراتيجية")} meta="STR-KPI-001..012">
+    <Panel title={copy(locale, "Strategic requirement coverage", "تغطية المتطلبات الاستراتيجية")}>
       <MetricCoverage projection={projection} category="strategic" locale={locale} excluded={representedIds} partialSources={partialSources} />
     </Panel>
 
@@ -665,7 +665,7 @@ export function OperationalView({ locale, metrics, projection, factoryCoords, pa
       </Panel>
     </div>
 
-    <Panel title={copy(locale, "Operational requirement coverage", "تغطية المتطلبات التشغيلية")} meta="OPS-KPI-001..009">
+    <Panel title={copy(locale, "Operational requirement coverage", "تغطية المتطلبات التشغيلية")}>
       <MetricCoverage projection={projection} category="operational" locale={locale} excluded={representedIds} partialSources={partialSources} />
     </Panel>
 

@@ -76,7 +76,7 @@ export default async function PlanningStatus() {
 
   return (
     <Shell current="/admin/planning/status" title={t("admin.planning.status.title", "Planning status rules")}
-      context={<span className="badge badge-info">PLN-CON-014 · read-only</span>}>
+      context={<span className="badge badge-info">Read only</span>}>
       <div className="alert"><div>
         <strong>{t("admin.planning.status.banner.title", "These rules are governed by workflow configuration.")}</strong>{" "}
         {t("admin.planning.status.banner.body", "Status transitions are defined by the published workflow configuration and enforced by the database. This screen is read-only; changes go through the governed publish flow.")}{" "}
@@ -91,7 +91,7 @@ export default async function PlanningStatus() {
         </div></div>
       ) : (
         <p className="t-caption">
-          {t("admin.planning.status.source", "Source: config_versions · engine=workflow · status=published")}
+          {t("admin.planning.status.source", "Showing the published workflow configuration")}
           {data?.version_label ? ` · ${data.version_label}` : ""}
           {data?.effective_from ? ` · ${t("admin.planning.status.effectiveFrom", "effective from")} ${new Date(data.effective_from).toLocaleDateString()}` : ""}
         </p>

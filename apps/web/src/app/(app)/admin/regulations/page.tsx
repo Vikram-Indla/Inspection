@@ -221,7 +221,7 @@ export default async function Regulations({
   const title = t("admin.reg.r1.title", "Inspection Rules — regulation list");
   const context = (
     <span className="row" style={{ gap: "var(--space-3)" }}>
-      <span className="badge badge-info">SCR-ADM-010/011</span>
+      
       <a className="sq-link" href="/admin/compliance-requests">
         {t("admin.reg.requests", "Configuration Requests")}
       </a>

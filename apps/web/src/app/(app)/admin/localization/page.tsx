@@ -226,7 +226,7 @@ export default async function Localization() {
       reconstructionNote={t("admin.revamp.lookup.note", copy("The canonical Lookup destination resolves to the existing localization and approved planning-lookup sources. No reference-list count or language completeness claim is made up.", "تتجه وجهة القوائم المرجعية إلى مصادر الترجمة وقوائم التخطيط المعتمدة الحالية. لا يتم اختلاق عدد للقوائم أو ادعاء اكتمال اللغة."))}
       context={
         <span className="row" style={{ gap: "var(--space-3)" }}>
-          <span className="badge badge-info">SCR-ADM-100 · SB19</span>
+          
           <LocaleSwitch locale={locale} />
         </span>
       }
