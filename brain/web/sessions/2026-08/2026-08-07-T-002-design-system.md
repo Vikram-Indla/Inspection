@@ -29,19 +29,34 @@ Nothing under `apps/web/src/components/` was created or modified.
 
 ## Decisions
 
-**1. The prefix is `--saqeel-` / `.saqeel-`, not `--sq-`.** The brief mandated
-`--sq-` unless a pre-existing hit was found. `grep -r -- "--sq-" apps/web/src`
-returns 25 hits across 10 files, seven of which are live custom properties still
-consumed at runtime (`--sq-nav-gap`, `--sq-nav-pad-inline`, `--sq-nav-font`,
-`--sq-nav-icon-size`, `--sq-nav-group-font`, `--sq-nav-group-color` in
-`saqeel-runtime.css`; `--sq-map-loading-label` set by `GeoMap.tsx`). `.sq-*` is
-worse — 804 class hits. The fallback prefix applies to custom properties, classes,
-**layer names and keyframe names**: keyframe identifiers share one global
-namespace with the legacy sheet's `sq-spin` / `sq-pulse` / `sq-shimmer` /
-`sq-halo`, so a mixed vocabulary would have been a collision waiting to happen.
-One prefix, everywhere. The only pre-existing `.saqeel-*` classes are
-`.saqeel-state` and `.saqeel-reference`; neither collides with the 59 classes
-here.
+**1. The prefix is `--sqx-` / `.sqx-`.** It took two moves to get there and the
+history matters, because the next agent will otherwise re-litigate it.
+
+The brief mandated `--sq-` unless a pre-existing hit was found. There were many:
+`grep -r -- "--sq-" apps/web/src` returns 25 hits across 10 files, seven of them
+live custom properties still consumed at runtime (`--sq-nav-gap`,
+`--sq-nav-pad-inline`, `--sq-nav-font`, `--sq-nav-icon-size`,
+`--sq-nav-group-font`, `--sq-nav-group-color` in `saqeel-runtime.css`;
+`--sq-map-loading-label` set by `GeoMap.tsx`). `.sq-*` is worse — 804 class hits,
+281 distinct classes in `saqeel-runtime.css` alone. So the brief's own fallback,
+`--saqeel-` / `.saqeel-`, was used for the first build.
+
+That fallback had its own flaw: `saqeel-components.css` already owns
+`.saqeel-state` and `.saqeel-reference`. No collision with the 59 classes here,
+but the namespace was shared rather than clean. The owner then directed the
+prefix to `--sqx-` / `.sqx-`, which collides with nothing at all —
+`grep -c sqx` returns **0** in `tokens.css`, `saqeel-components.css`,
+`saqeel-runtime.css` and `v2-components.css`. It is also four characters shorter
+than `saqeel`, which took 4.7 KB off the raw file.
+
+The prefix applies to **custom properties, classes, cascade layer names and
+keyframe names alike**. Keyframe identifiers share one global namespace with the
+legacy sheet's `sq-spin` / `sq-pulse` / `sq-shimmer` / `sq-halo`, so a mixed
+vocabulary would have been a collision waiting to happen. One prefix, everywhere,
+no exceptions.
+
+The file is still named `saqeel.css` — the design system is SAQEEL, `sqx` is
+merely its identifier prefix.
 
 **2. The legacy sheets outrank `saqeel.css` and that is deliberate — for now.**
 `saqeel-runtime.css`, `saqeel-components.css` and `v2-components.css` are
@@ -49,17 +64,17 @@ unlayered, and unlayered rules beat every cascade layer regardless of import
 order. So the new sheet cannot fight the old one on specificity, which is exactly
 why the visual diff of this task is zero. It also means a migrated screen will
 need the legacy rule *deleted*, not overridden. Wrapping the legacy sheets in a
-`legacy` layer declared before `saqeel.*` would invert this — parked, because it
+`legacy` layer declared before `sqx.*` would invert this — parked, because it
 changes cascade behaviour application-wide and needs its own regression pass.
 
 **3. Variants are data attributes, not modifier classes.** `data-variant`,
 `data-tone`, `data-size`, `data-status`, `data-gap`, `data-density`,
 `data-elevation`, `data-padding`. A React prop maps 1:1 onto the DOM with no
 string concatenation and no `clsx`. It also keeps specificity flat: every rule in
-`saqeel.components` is one class plus attributes.
+`sqx.components` is one class plus attributes.
 
 **4. Direction is six tokens and two rules.** CSS has no `to inline-end`, so
-`--saqeel-flow-angle` / `-flow-from` / `-flow-to` / `-sweep-start` / `-sweep-end`
+`--sqx-flow-angle` / `-flow-from` / `-flow-to` / `-sweep-start` / `-sweep-end`
 / `-sweep-skew` are declared at `:root` and mirrored at `:root:dir(rtl)`. These
 are the only direction-aware rules in the file. The switch thumb was initially
 written with a third `:dir(rtl)` rule to flip a `translateX`; it was rewritten as
@@ -69,26 +84,26 @@ with no override at all. Written into WEB-001 §9.
 **5. Two primitives were added beyond the brief.** The chart scale needs eight
 series; the brief's light list contains `#12557F` and the dark list `#6EC8FF`,
 neither of which is in the primitive ramps. Since §4 forbids a literal in the
-semantic layer, they became `--saqeel-neon-steel-deep` and `--saqeel-neon-sky`.
-Measured: `#12557F` 7.98:1 on `--saqeel-warm-000`, `#6EC8FF` 10.85:1 on
-`--saqeel-ink-1000`.
+semantic layer, they became `--sqx-neon-steel-deep` and `--sqx-neon-sky`.
+Measured: `#12557F` 7.98:1 on `--sqx-warm-000`, `#6EC8FF` 10.85:1 on
+`--sqx-ink-1000`.
 
 **6. Shadow alpha lives in primitives.** Elevation must be per-theme (dark needs
 tighter, deeper shadows plus a rim light) and a shadow needs alpha, which no
-opaque primitive provides. Nine alpha primitives — `--saqeel-shade-050…200`,
-`--saqeel-void-200…500`, `--saqeel-rim-light` — carry it, and the two theme
-blocks compose `--saqeel-elevation-0…4` from them. `rgba()` appears only in the
-primitives section and in the two `--saqeel-surface-overlay` declarations the
+opaque primitive provides. Nine alpha primitives — `--sqx-shade-050…200`,
+`--sqx-void-200…500`, `--sqx-rim-light` — carry it, and the two theme
+blocks compose `--sqx-elevation-0…4` from them. `rgba()` appears only in the
+primitives section and in the two `--sqx-surface-overlay` declarations the
 brief explicitly sanctions.
 
 **7. Zero media queries except reduced motion.** A media query cannot read a
 custom property, so every breakpoint would have been a hardcoded pixel literal.
-`.saqeel-page` uses `clamp()` on its inline padding and `.saqeel-grid` uses
+`.sqx-page` uses `clamp()` on its inline padding and `.sqx-grid` uses
 `repeat(auto-fit, minmax(min(100%, calc(…))))`, which collapses columns
 intrinsically. The file therefore contains exactly one `@media` block:
 `prefers-reduced-motion: reduce`.
 
-**8. `--saqeel-ease-linear: linear` was added.** A seamlessly looping gradient
+**8. `--sqx-ease-linear: linear` was added.** A seamlessly looping gradient
 must animate linearly or it visibly pulses once per iteration, and every other
 easing token is a cubic-bezier. Adding the token was preferable to writing the
 `linear` keyword inline in five component rules.
@@ -121,8 +136,8 @@ ledger for T-001.
   single import statement, so the state ladder does not apply.
 - **literals mapped to tokens** — the reverse of the usual direction: this task
   *creates* the token vocabulary. 108 hex literals, 11 `rgba()` values and 2 font
-  stacks all sit inside `saqeel.tokens`; the last hex in the file is on line 119.
-  `saqeel.components` contains no colour, font, shadow or z-index literal.
+  stacks all sit inside `sqx.tokens`; the last hex in the file is on line 119.
+  `sqx.components` contains no colour, font, shadow or z-index literal.
 - **`<svg>` mapped to semantic icon names** — none. The file draws no icons; the
   loading, checkbox and radio indicators are CSS shapes, and the icon layer is
   T-001.
@@ -133,8 +148,8 @@ ledger for T-001.
 
 ```
 Route: all (global stylesheet)
-saqeel.css source           0 B  → 65,058 B  (2,050 lines)
-saqeel.css gzip             0 B  →  8,999 B  (brotli 7,686 B)
+saqeel.css source           0 B  → 60,378 B  (2,050 lines)
+saqeel.css gzip             0 B  →  8,914 B  (brotli 7,637 B)
 first-load JS                   unchanged (one import line, no TypeScript shipped)
 LCP / INP / CLS                 unchanged (no render-path change)
 client islands                  unchanged (0 added)
@@ -146,7 +161,7 @@ Source and compressed figures are measured on the file itself. The built global
 CSS chunk is **not** measured here — WEB-005 §8 and WEB-006 §3 were amended
 mid-task to put `npm run build` in the human's hands, so the chunk table is a
 measurement request (below), not something this session produced. The honest
-bound in the meantime: `saqeel.css` adds at most its own 65 KB raw / 9.0 KB gzip
+bound in the meantime: `saqeel.css` adds at most its own 59 KB raw / 8.7 KB gzip
 to the one global chunk every route already loads, and less after minification.
 The whole file is additive — it introduces no rule any existing sheet could
 deduplicate against — so nothing else in the bundle moves.
@@ -181,8 +196,8 @@ that begins; recorded here so the regression is not discovered later.
   for:
 
 ```
---saqeel-text-muted    on --saqeel-surface-subtle    light  5.64:1   dark  6.25:1
---saqeel-border-strong on --saqeel-surface-default   light  3.23:1   dark  3.24:1
+--sqx-text-muted    on --sqx-surface-subtle    light  5.64:1   dark  6.25:1
+--sqx-border-strong on --sqx-surface-default   light  3.23:1   dark  3.24:1
 ```
 
   Text floor is 4.5:1 and both muted values clear it. Border floor is 3:1
@@ -195,12 +210,12 @@ that begins; recorded here so the regression is not discovered later.
   This task ships no rendered markup, so there is nothing to traverse, announce
   or zoom. What *was* verified statically, and is the reason T-004 can pass it:
   every interactive class carries a `:focus-visible` ring; every control honours
-  `--saqeel-touch-target` (44 px); `.saqeel-pill` always renders a text label
+  `--sqx-touch-target` (44 px); `.sqx-pill` always renders a text label
   with the dot as an optional adjunct, so greyscale never removes meaning;
   `aria-invalid="true"` thickens the input border as well as recolouring it; the
   file contains zero physical direction properties; and the reduced-motion block
   stops all four animations while leaving every gradient in place.
-- **Anything found and fixed:** the first draft's `.saqeel-btn[data-loading]`
+- **Anything found and fixed:** the first draft's `.sqx-btn[data-loading]`
   hid nothing but spun a fourth keyframe; it was rewritten to a continuous sweep
   over the still-visible label, which also satisfies the repository's existing
   `transparent-loading-label` guardrail in `check-design-system-v5.mjs`.
@@ -227,7 +242,7 @@ that begins; recorded here so the regression is not discovered later.
 - [x] `git diff apps/web/src/app/layout.tsx` — exactly one added line
 - [x] `git status` shows only the files listed above; nothing under
       `apps/web/src/components/`
-- [x] Zero hex, `rgb()`, font stack or shadow literal outside `saqeel.tokens`
+- [x] Zero hex, `rgb()`, font stack or shadow literal outside `sqx.tokens`
 - [x] Zero `left` / `right` / `margin-left` / `padding-right` in the file
 - [x] `!important` appears only in the reduced-motion block
 - [x] Exactly two direction rules, exactly three keyframes
@@ -284,7 +299,7 @@ Unverified in a browser. The claim rests on cascade analysis alone:
 If the browser check does surface a regression, the narrow fix is to drop
 `ol, ul, dl, dd, figure, blockquote` from the base margin reset and `svg` from
 the media reset, keeping `img` and `video`. That preserves the base layer's
-purpose for new `.saqeel-*` markup while touching nothing legacy.
+purpose for new `.sqx-*` markup while touching nothing legacy.
 
 ## Retirement
 
@@ -297,7 +312,7 @@ where it previously named two.
 
 Copied into the tracker's PARKED section: `gate:one-stylesheet`;
 `gate:one-prefix`; wrapping the legacy sheets in a `legacy` cascade layer;
-base-layer reset scope; the two extra chart primitives; `--saqeel-ease-linear`.
+base-layer reset scope; the two extra chart primitives; `--sqx-ease-linear`.
 
 ## Blocked / open questions
 

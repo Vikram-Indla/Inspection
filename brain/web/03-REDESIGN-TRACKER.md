@@ -54,9 +54,9 @@ CSS Modules, React components) was replaced before it started. The design system
 is now **one stylesheet**, not a component library plus per-component modules.
 
 Delivered: `apps/web/src/app/saqeel.css` — 2,050 lines, one file, three cascade
-layers (`saqeel.tokens`, `saqeel.base`, `saqeel.components`). 339 custom
-properties, 59 classes, 3 keyframes. Prefix is `--saqeel-` / `.saqeel-`
-because `--sq-` is already occupied in `apps/web/src`. Variants are data
+layers (`sqx.tokens`, `sqx.base`, `sqx.components`). 339 custom
+properties, 59 classes, 3 keyframes. Prefix is `--sqx-` / `.sqx-` — `--sq-` and
+`.sq-` belong to the legacy sheets, and `sqx` collides with nothing. Variants are data
 attributes, not modifier classes. Imported once from `app/layout.tsx`.
 `tokens.css` untouched. WEB-002 §6 replaced; WEB-001 §9 gained the direction
 exception.
@@ -69,7 +69,7 @@ now T-004.
 ### T-003 · Install and self-host Readex Pro
 `status: todo` · `rules: WEB-005 §5` · `est: 2h`
 
-`saqeel.css` declares `--saqeel-font-sans: "Readex Pro", "IBM Plex Sans Arabic",
+`saqeel.css` declares `--sqx-font-sans: "Readex Pro", "IBM Plex Sans Arabic",
 system-ui, sans-serif` but ships no font files, so the fallback currently carries
 the app. This task self-hosts the family.
 
@@ -87,7 +87,7 @@ recorded.
 `status: todo` · `rules: WEB-002, WEB-003` · `est: 5h` · `blocked-by: T-001`
 
 The typed component layer that applies the classes T-002 built. Components ship
-**no CSS** — they map props onto `.saqeel-*` classes and data attributes.
+**no CSS** — they map props onto `.sqx-*` classes and data attributes.
 
 - `surface/` — `Card`, `Panel`, `Section`, `SectionHeader`, `Divider`
 - `surface/` layout — `Stack`, `Cluster`, `Grid` (the only sources of spacing)
@@ -174,7 +174,7 @@ Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
 
 - **`gate:one-stylesheet`** — fail CI on any new `.module.css` under
-  `apps/web/src`, on any `--saqeel-*` or `.saqeel-*` declaration outside
+  `apps/web/src`, on any `--sqx-*` or `.sqx-*` declaration outside
   `saqeel.css`, and on any `dir()` / `[dir]` rule outside the two direction rules
   in `saqeel.css`. Belongs with T-000.
 - **`gate:one-prefix`** — the legacy sheets own 804 `.sq-*` class hits and seven
@@ -187,16 +187,16 @@ Pull one in only if it is genuinely part of doing the active task well.
   *before* `saqeel.*` would invert that and let migrated screens win without
   specificity games. Cheap, high leverage, but it changes cascade behaviour app
   wide — it needs its own task and its own visual regression pass.
-- **Base-layer reset scope.** `saqeel.base` resets margins on `h5 h6 figure
+- **Base-layer reset scope.** `sqx.base` resets margins on `h5 h6 figure
   blockquote dl dd ol ul` and sets `img/svg/video { display: block }` globally.
   Legacy screens zero those per class rather than globally, so the reset is new
   behaviour for any element the legacy sheets miss. Verified against the built
   app; if a screen is ever found to depend on a UA default, the fix is that
   screen, not the reset.
-- **Chart series 7 and 8** are `--saqeel-neon-steel-deep` / `--saqeel-neon-sky`,
+- **Chart series 7 and 8** are `--sqx-neon-steel-deep` / `--sqx-neon-sky`,
   primitives added to satisfy the eight-series chart scale. They are the only
   primitives in `saqeel.css` not named in the T-002 brief.
-- **`--saqeel-ease-linear`** exists solely so seamless looping gradients do not
+- **`--sqx-ease-linear`** exists solely so seamless looping gradients do not
   have to write the `linear` keyword inline. Delete it if a future motion pass
   removes the looping gradients.
 

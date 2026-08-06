@@ -183,16 +183,23 @@ last import is gone.
 
 ## 6. Styling mechanism — one system stylesheet
 
-The entire visual system lives in `apps/web/src/app/saqeel.css`: tokens, base layer,
-and every component class, organised with
-`@layer saqeel.tokens, saqeel.base, saqeel.components`. Components apply
-`.saqeel-*` classes and data attributes; they do not ship CSS. There are no
-`.module.css` files, no CSS-in-JS, no Tailwind, and no `style` prop except a
-token-valued custom property. A visual change is made in one file, reviewed in
-one diff, and cannot drift per screen. The legacy sheets `saqeel-components.css`,
-`saqeel-runtime.css` and `v2-components.css` are frozen and shrink as screens
-migrate. `tokens.css` is frozen and untouched. This supersedes the previous CSS
-Modules rule.
+The entire visual system lives in `apps/web/src/app/saqeel.css`: tokens, base
+layer, and every component class, organised with
+`@layer sqx.tokens, sqx.base, sqx.components`. Every custom property is prefixed
+`--sqx-` and every class `.sqx-`; components apply `.sqx-*` classes and data
+attributes, and they do not ship CSS. There are no `.module.css` files, no
+CSS-in-JS, no Tailwind, and no `style` prop except a token-valued custom
+property. A visual change is made in one file, reviewed in one diff, and cannot
+drift per screen. The legacy sheets `saqeel-components.css`, `saqeel-runtime.css`
+and `v2-components.css` are frozen and shrink as screens migrate. `tokens.css` is
+frozen and untouched. This supersedes the previous CSS Modules rule.
+
+**The prefix is `sqx`, not `sq`.** `--sq-` and `.sq-` belong to the legacy
+sheets — `saqeel-runtime.css` holds 281 `.sq-` classes and 7 live `--sq-`
+custom properties. `sqx` collides with nothing: `grep -c sqx` returns 0 in
+`tokens.css`, `saqeel-components.css`, `saqeel-runtime.css` and
+`v2-components.css`. The prefix applies to custom properties, classes, cascade
+layer names and keyframe names alike — one vocabulary, no exceptions.
 
 ---
 

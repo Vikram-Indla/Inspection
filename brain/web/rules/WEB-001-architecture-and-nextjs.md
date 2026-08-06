@@ -214,9 +214,9 @@ it could read directly on the server.
 **The one direction exception.** CSS has no logical equivalent of a gradient
 direction — there is no `to inline-end`. Direction is therefore a token set
 declared exactly once, at `:root` and `:root:dir(rtl)` in
-`apps/web/src/app/saqeel.css`: `--saqeel-flow-angle`, `--saqeel-flow-from`,
-`--saqeel-flow-to`, `--saqeel-sweep-start`, `--saqeel-sweep-end`,
-`--saqeel-sweep-skew`. Every gradient consumes those tokens. No other `dir()` or
+`apps/web/src/app/saqeel.css`: `--sqx-flow-angle`, `--sqx-flow-from`,
+`--sqx-flow-to`, `--sqx-sweep-start`, `--sqx-sweep-end`,
+`--sqx-sweep-skew`. Every gradient consumes those tokens. No other `dir()` or
 `[dir]` rule may exist anywhere in `apps/web/src`, and no component may declare a
 directional override.
 

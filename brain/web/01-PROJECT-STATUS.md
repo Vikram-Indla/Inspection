@@ -21,7 +21,7 @@ a rebuild.
 **Phase: 1 — the visual vocabulary exists; nothing consumes it yet.**
 
 `apps/web/src/app/saqeel.css` is the design system: one file, three cascade layers
-(`saqeel.tokens`, `saqeel.base`, `saqeel.components`), 339 custom properties, 59
+(`sqx.tokens`, `sqx.base`, `sqx.components`), 339 custom properties, 59
 classes, 3 keyframes, imported once from `app/layout.tsx`. Variants are data
 attributes. It sits entirely inside cascade layers while the three legacy sheets
 are unlayered, so it cannot override them and the visual diff of adding it is
@@ -50,7 +50,7 @@ the highest-priority unblocked item.
 | Source bytes | ≈ 5.9 MB |
 | Route files under `app/(app)` | 495 |
 | Saqeel primitives already built | 60 |
-| Global CSS | `saqeel-runtime.css` 170 KB · `saqeel-components.css` 50 KB · `login.css` 57 KB · `tokens.css` 18 KB · **`saqeel.css` 65 KB (added 2026-08-07, 9.0 KB gzip)** |
+| Global CSS | `saqeel-runtime.css` 170 KB · `saqeel-components.css` 50 KB · `login.css` 57 KB · `tokens.css` 18 KB · **`saqeel.css` 59 KB (added 2026-08-07, 8.7 KB gzip)** |
 | Lint config | none |
 | CI gates | none beyond a PR contract check |
 
@@ -102,8 +102,8 @@ the highest-priority unblocked item.
 | 2026-08-06 | Design system is **SAQEEL**. Astryx stays banned. Existing tokens are kept; the component layer is hardened on top of them. |
 | 2026-08-06 | Icons: **`lucide-react`** behind a semantic registry and one `Icon` primitive. Hand-authored `<svg>` banned in application code. |
 | 2026-08-06 | ~~Styling mechanism for new work: **CSS Modules** colocated with the component.~~ **Superseded 2026-08-07.** |
-| 2026-08-07 | Styling mechanism: **one system stylesheet**, `apps/web/src/app/saqeel.css`. Tokens, base and every component class in one file under `@layer saqeel.tokens, saqeel.base, saqeel.components`. Components ship no CSS — they apply `.saqeel-*` classes and data attributes. No `.module.css`, no CSS-in-JS, no Tailwind. WEB-002 §6 rewritten. |
-| 2026-08-07 | Prefix is **`--saqeel-` / `.saqeel-`**, not `--sq-`. `--sq-` is still live in `saqeel-runtime.css` (seven nav/map custom properties) and `.sq-*` owns 804 class hits. One prefix across custom properties, classes, layer names and keyframe names. |
+| 2026-08-07 | Styling mechanism: **one system stylesheet**, `apps/web/src/app/saqeel.css`. Tokens, base and every component class in one file under `@layer sqx.tokens, sqx.base, sqx.components`. Components ship no CSS — they apply `.sqx-*` classes and data attributes. No `.module.css`, no CSS-in-JS, no Tailwind. WEB-002 §6 rewritten. |
+| 2026-08-07 | Prefix is **`--sqx-` / `.sqx-`**. `--sq-` is still live in `saqeel-runtime.css` (seven nav/map custom properties) and `.sq-` owns 281 legacy classes there; `.saqeel-` is taken by `.saqeel-state` / `.saqeel-reference`. `sqx` collides with nothing — `grep -c sqx` is 0 in every legacy sheet. One prefix across custom properties, classes, cascade layer names and keyframe names. |
 | 2026-08-07 | Direction is a **six-token set** declared at `:root` and `:root:dir(rtl)` in `saqeel.css` — the only `dir()` / `[dir]` rules permitted in `apps/web/src`. CSS has no `to inline-end`, so a gradient angle cannot be logical. WEB-001 §9. |
 | 2026-08-07 | The three legacy sheets stay **unlayered** for now, so they outrank `saqeel.css` by construction. Migration deletes legacy rules; it never overrides them. |
 | 2026-08-06 | Accessibility target raised to **WCAG 2.2 Level AA**. |
@@ -117,5 +117,5 @@ the highest-priority unblocked item.
 See `03-REDESIGN-TRACKER.md`.
 
 T-000 now also owes two gates that T-002 created the need for:
-`gate:one-stylesheet` (no new `.module.css`; no `--saqeel-*` or `.saqeel-*`
+`gate:one-stylesheet` (no new `.module.css`; no `--sqx-*` or `.sqx-*`
 declared outside `saqeel.css`) and the `dir()` check that enforces WEB-001 §9.
