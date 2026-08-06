@@ -220,9 +220,9 @@ export async function addKey(_: L10nResult, formData: FormData): Promise<L10nRes
 }
 
 // ---------------------------------------------------------------------------
-// Sync from code (self-hosted: server scans its own source tree). Registry
-// membership is the provenance boundary: unregistered/planned/local helper
-// calls cannot insert rows or rewrite governed English/Arabic copy.
+// Sync from code (self-hosted: server scans its own source tree) — new keys
+// insert as draft, EN drift updates (trigger snapshots history + downgrades
+// reviewed→draft), removed keys flag orphaned, reappearing keys revive.
 // ---------------------------------------------------------------------------
 import { scanCodeForKeys, planSync, type SyncReport } from "@/lib/i18n-sync";
 
@@ -235,20 +235,27 @@ export async function syncFromCode(_: SyncResult, __: FormData): Promise<SyncRes
 
   const sb = await supabaseServer();
 
-  const { data: db, error: dbErr } = await sb.from("ui_strings").select("key, en, orphaned");
-  if (dbErr) { logProviderError("localization read", dbErr); return { error: neutralLoadError(locale) }; }
   let code;
-  try { code = scanCodeForKeys(db ?? []); }
+  try { code = scanCodeForKeys(); }
   catch (e) {
     logProviderError("localization source scan", e);
     return { error: copy(locale, "Source scan is temporarily unavailable. Try again.", "فحص المصدر غير متاح مؤقتًا. حاول مرة أخرى.") };
   }
+
+  const { data: db, error: dbErr } = await sb.from("ui_strings").select("key, en, ar, status, orphaned");
+  if (dbErr) { logProviderError("localization read", dbErr); return { error: neutralLoadError(locale) }; }
   const plan = planSync(code, db ?? []);
 
   if (plan.inserts.length) {
     const { error } = await sb.from("ui_strings").insert(
-      plan.inserts.map(p => ({ key: p.key, en: p.en, status: "draft", updated_by: authorization.userId })));
+      plan.inserts.map(p => ({ key: p.key, en: p.en, ar: p.ar ?? null, status: "draft", updated_by: authorization.userId })));
     if (error) { logProviderError("localization sync insert", error); return { error: neutralWriteError(locale) }; }
+  }
+  for (const p of plan.arUpdates) {
+    const { error } = await sb.from("ui_strings")
+      .update({ ar: p.ar, updated_by: authorization.userId, updated_at: new Date().toISOString() })
+      .eq("key", p.key).neq("status", "reviewed");
+    if (error) { logProviderError("localization sync Arabic update", error); return { error: neutralWriteError(locale) }; }
   }
   for (const p of plan.enUpdates) {
     const { error } = await sb.from("ui_strings")

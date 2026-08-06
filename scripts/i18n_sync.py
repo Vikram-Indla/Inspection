@@ -13,26 +13,24 @@ PROJECT = "iiozvqntawxfwbgffzqu"
 
 LITERAL_CALL = re.compile(r'\bt\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"')
 BILINGUAL_CALLS = (
-    re.compile(r'\bt\(\s*"([^"]+)"\s*,\s*copy\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"(?:[^"\\]|\\.)*"\s*\)\s*\)', re.S),
-    re.compile(r'\btr\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*,\s*"(?:[^"\\]|\\.)*"\s*\)', re.S),
+    re.compile(r'\bt\(\s*"([^"]+)"\s*,\s*copy\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*\)\s*\)', re.S),
+    re.compile(r'\btr\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*\)', re.S),
 )
+MANIFEST_ENTRY = re.compile(r'\{\s*key:\s*"([^"]+)"\s*,\s*en:\s*"((?:[^"\\]|\\.)*)"')
 
-def extract_source_pairs(source: str, governed_keys: set[str]) -> dict[str, str]:
-    """Extract only calls whose first argument is an accepted registry key."""
-    pairs: dict[str, str] = {}
-    for pattern in (LITERAL_CALL, *BILINGUAL_CALLS):
+def extract_source_pairs(source: str, include_manifest: bool = False) -> dict[str, dict[str, str | None]]:
+    pairs: dict[str, dict[str, str | None]] = {}
+    for match in LITERAL_CALL.finditer(source):
+        pairs[match.group(1)] = {"en": match.group(2).replace('\\"', '"'), "ar": None}
+    if include_manifest:
+        for match in MANIFEST_ENTRY.finditer(source):
+            pairs.setdefault(match.group(1), {"en": match.group(2).replace('\\"', '"'), "ar": None})
+    for pattern in BILINGUAL_CALLS:
         for match in pattern.finditer(source):
-            if match.group(1) in governed_keys:
-                pairs[match.group(1)] = match.group(2).replace('\\"', '"').replace('\\n', '\n')
-    return pairs
-
-def scan_source_tree(src: pathlib.Path, governed_rows: dict[str, str]) -> dict[str, str]:
-    governed_keys = set(governed_rows)
-    pairs = dict(governed_rows)
-    for source_file in src.rglob("*.ts*"):
-        # Calls establish that an accepted key is used. They do not authorize
-        # fallback text to overwrite catalogue English or reviewed Arabic.
-        extract_source_pairs(source_file.read_text(), governed_keys)
+            pairs[match.group(1)] = {
+                "en": match.group(2).replace('\\"', '"'),
+                "ar": match.group(3).replace('\\"', '"'),
+            }
     return pairs
 
 def q(pat: str, sql: str):
@@ -48,20 +46,29 @@ def main() -> int:
     pat = os.environ.get("PAT")
     if not pat:
         print("PAT env var required"); return 1
-    db = {r["key"]: r for r in q(pat, "select key, en, orphaned from ui_strings")}
-    code = scan_source_tree(SRC, {key: row["en"] for key, row in db.items()})
+    code: dict[str, dict[str, str | None]] = {}
+    for f in SRC.rglob("*.ts*"):
+        source = f.read_text()
+        code.update(extract_source_pairs(source, f.name == "i18n-keys.generated.ts"))
+    db = {r["key"]: r for r in q(pat, "select key, en, ar, status, orphaned from ui_strings")}
 
     inserts = {k: v for k, v in code.items() if k not in db}
-    en_updates = {k: v for k, v in code.items() if k in db and db[k]["en"] != v}
+    en_updates = {k: v for k, v in code.items() if k in db and db[k]["en"] != v["en"]}
+    ar_updates = {k: v for k, v in code.items() if k in db and v["ar"] and db[k]["status"] != "reviewed" and db[k]["ar"] != v["ar"]}
     orphans = [k for k in db if k not in code and not db[k]["orphaned"]]
     revive = [k for k in db if k in code and db[k]["orphaned"]]
 
     stmts = []
     if inserts:
-        vals = ",\n".join(f"('{esc(k)}','{esc(v)}','draft')" for k, v in sorted(inserts.items()))
-        stmts.append(f"insert into ui_strings (key, en, status) values\n{vals} on conflict (key) do nothing;")
+        vals = ",\n".join(
+            f"('{esc(k)}','{esc(str(v['en']))}',{("'" + esc(str(v['ar'])) + "'") if v['ar'] else 'null'},'draft')"
+            for k, v in sorted(inserts.items())
+        )
+        stmts.append(f"insert into ui_strings (key, en, ar, status) values\n{vals} on conflict (key) do nothing;")
     for k, v in en_updates.items():
-        stmts.append(f"update ui_strings set en = '{esc(v)}' where key = '{esc(k)}';")
+        stmts.append(f"update ui_strings set en = '{esc(str(v['en']))}' where key = '{esc(k)}';")
+    for k, v in ar_updates.items():
+        stmts.append(f"update ui_strings set ar = '{esc(str(v['ar']))}' where key = '{esc(k)}' and status != 'reviewed';")
     if orphans:
         keys = ",".join(f"'{esc(k)}'" for k in orphans)
         stmts.append(f"update ui_strings set orphaned = true where key in ({keys});")
@@ -71,7 +78,7 @@ def main() -> int:
 
     if stmts:
         q(pat, "set app.l10n_source = 'sync';\n" + "\n".join(stmts))
-    print(f"scanned {len(code)} keys · added {len(inserts)} · EN changed {len(en_updates)} · orphaned {len(orphans)} · revived {len(revive)}")
+    print(f"scanned {len(code)} keys · added {len(inserts)} · EN changed {len(en_updates)} · AR changed {len(ar_updates)} · orphaned {len(orphans)} · revived {len(revive)}")
     for k in sorted(inserts): print("  +", k)
     for k in sorted(en_updates): print("  Δ", k)
     for k in orphans: print("  ⌀", k)

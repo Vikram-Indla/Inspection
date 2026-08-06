@@ -2,6 +2,8 @@
 -- the governed localization catalogue. Arabic remains NULL unless an approved
 -- translation already exists; the application honestly falls back to English
 -- instead of inventing Arabic in a component or migration.
+set app.l10n_source = 'sync';
+
 insert into public.ui_strings (key, en, ar, status, context) values
   ('plan.home.tasksLink', 'Task workspace — assigned, in progress and completed', null, 'draft', 'Planning landing — governed task-board entry point'),
   ('plan.supervision.title', 'Supervision queue', null, 'draft', 'Planning supervision page title'),
@@ -32,4 +34,9 @@ on conflict (key) do update set
   context = excluded.context,
   orphaned = false,
   updated_at = now()
-where public.ui_strings.status = 'draft';
+where public.ui_strings.status = 'draft'
+  and (
+    public.ui_strings.en is distinct from excluded.en
+    or public.ui_strings.context is distinct from excluded.context
+    or public.ui_strings.orphaned is distinct from false
+  );

@@ -232,7 +232,7 @@ function SyncButton({ labels, locale }: { labels: Labels; locale: "en" | "ar" })
       <button className="btn btn-secondary btn-touch" disabled={pending}>{pending ? labels.syncing : labels.sync}</button>
       {state.report && !pending && (
         <span className="t-caption">
-          {labels.syncReport} <span className="numeric">+{state.report.added.length}</span> · EN Δ <span className="numeric">{state.report.enChanged.length}</span> · ⌀ <span className="numeric">{state.report.orphaned.length}</span> · ↻ <span className="numeric">{state.report.revived.length}</span>
+          {labels.syncReport} <span className="numeric">+{state.report.added.length}</span> · EN Δ <span className="numeric">{state.report.enChanged.length}</span> · AR Δ <span className="numeric">{state.report.arChanged.length}</span> · ⌀ <span className="numeric">{state.report.orphaned.length}</span> · ↻ <span className="numeric">{state.report.revived.length}</span>
         </span>
       )}
       {state.error && <span className={`t-caption ${styles.criticalText}`} role="alert">{state.error}</span>}
