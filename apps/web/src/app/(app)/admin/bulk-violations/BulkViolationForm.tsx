@@ -63,15 +63,15 @@ export default function BulkViolationForm({ factories, violations, packages, str
   const failedCount = results.filter(r => r.status === "failed").length;
 
   return (
-    <form action={formAction} className={`stack ${styles.form}`} style={{ gap: "var(--space-6)" }}>
+    <form action={formAction} className={`sq-stack sq-stack--roomy ${styles.form}`}>
       <input type="hidden" name="request_id" value={requestId} />
 
-      <section className="panel stack" style={{ padding: "var(--space-6)" }}>
-        <label className="sq-field" style={{ maxInlineSize: "none" }}>
+      <section className="panel panel-body--roomy stack">
+        <label className="sq-field sq-field--wide">
           <span className="sq-field__label">{strings.searchFactoryLabel}</span>
           <input className="sq-input" value={query} onChange={e => setQuery(e.target.value)} placeholder={strings.searchFactoryPlaceholder} />
         </label>
-        <label className="sq-field" style={{ maxInlineSize: "none" }}>
+        <label className="sq-field sq-field--wide">
           <span className="sq-field__label">{strings.packageLabel}</span>
           <select className="sq-select" name="package_version_id" value={packageVersionId} onChange={e => setPackageVersionId(e.target.value)}>
             <option value="">{strings.packagePlaceholder}</option>
@@ -79,9 +79,9 @@ export default function BulkViolationForm({ factories, violations, packages, str
           </select>
         </label>
         <p className="t-caption numeric">{fmt(strings.selectedCount, { n: selected.size })}</p>
-        <div className="stack" style={{ gap: "var(--space-1)", maxBlockSize: 320, overflow: "auto" }}>
+        <div className="sq-stack sq-stack--tight sq-scrollbox">
           {shown.map(f => (
-            <label key={f.id} className="sq-choice" style={{ display: "flex", alignItems: "center" }}>
+            <label key={f.id} className="sq-choice sq-choice--block">
               <input type="checkbox" name="factory_id" value={f.id} checked={selected.has(f.id)} onChange={() => toggle(f.id)} />
               <span>{f.name} <span className="t-caption">{f.factory_code ?? f.cr_number ?? "—"} · {f.city ?? "—"}{f.region ? `, ${f.region}` : ""}</span></span>
             </label>
@@ -89,25 +89,25 @@ export default function BulkViolationForm({ factories, violations, packages, str
         </div>
       </section>
 
-      <section className="panel stack" style={{ padding: "var(--space-6)" }}>
-        <label className="sq-field" style={{ maxInlineSize: "none" }}>
+      <section className="panel panel-body--roomy stack">
+        <label className="sq-field sq-field--wide">
           <span className="sq-field__label">{strings.violationLabel}</span>
           <select className="sq-select" name="violation_code" value={violationCode} onChange={e => setViolationCode(e.target.value)}>
             <option value="">{strings.violationPlaceholder}</option>
             {violations.map(v => <option key={v.code} value={v.code}>{v.code} · {v.title} ({v.level})</option>)}
           </select>
         </label>
-        <label className="sq-field" style={{ maxInlineSize: "none" }}>
+        <label className="sq-field sq-field--wide">
           <span className="sq-field__label">{strings.notesLabel}</span>
           <textarea className="sq-textarea" name="notes" rows={2} value={notes} onChange={e => setNotes(e.target.value)} placeholder={strings.notesPlaceholder} />
         </label>
       </section>
 
       {selected.size > 0 && chosenViolation && (
-        <section className="panel stack" style={{ padding: "var(--space-6)" }}>
+        <section className="panel panel-body--roomy stack">
           <h4>{strings.previewTitle}</h4>
           <p>{fmt(strings.previewBody, { n: selected.size, level: chosenViolation.level, code: chosenViolation.code, penalty: chosenViolation.penalty_ref ?? "—" })}</p>
-          <label className="sq-choice" style={{ display: "flex" }}>
+          <label className="sq-choice sq-choice--block">
             <input type="checkbox" name="acknowledged" checked={acknowledged} onChange={e => setAcknowledged(e.target.checked)} />
             <span>{strings.acknowledgeLabel}</span>
           </label>
@@ -117,7 +117,7 @@ export default function BulkViolationForm({ factories, violations, packages, str
       {state.error && <div className="sq-banner sq-banner--critical" role="alert"><div>{strings.errors[state.error]}</div></div>}
 
       {results.length > 0 && (
-        <section className="panel stack" style={{ padding: "var(--space-6)" }}>
+        <section className="panel panel-body--roomy stack">
           <h4>{strings.resultsTitle}</h4>
           {failedCount > 0
             ? <div className="sq-banner sq-banner--warning" role="alert"><div>{strings.partialWarning}</div></div>

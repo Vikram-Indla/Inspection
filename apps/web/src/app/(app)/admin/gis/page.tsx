@@ -73,7 +73,7 @@ export default async function GisStudioPage() {
   return (
     <Shell current="/admin/gis" title={t("gis.title", "GIS Studio — geofencing")}
       context={<span className="id-code">{engRes.data?.version_label}</span>}>
-      <div className="stack" style={{ gap: "var(--space-6)" }}>
+      <div className="sq-stack sq-stack--roomy">
         <div className="alert"><div><strong>{t("gis.banner.title", "GIS Studio.")}</strong> {t("gis.banner.body", "These values are stamped on every geo event, and the settings version is recorded with each check-in. Official coordinates stay owned by the GIS administrator; field observations never overwrite them. Per-factory geofence radii are edited on the map below.")}</div></div>
 
         {err && (

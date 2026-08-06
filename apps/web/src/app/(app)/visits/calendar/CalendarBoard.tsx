@@ -112,14 +112,14 @@ export default function CalendarBoard({ visits, locale, strings }: {
   const dayVisits = byDay.get(keyOf(anchorMs)) ?? [];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-      <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-3)" }}>
+    <div className="sq-stack">
+      <div className="sq-row sq-row--spread">
         <div className="sq-segmented" role="group" aria-label={strings.viewSwitchAria}>
           {([["day", strings.viewDay], ["week", strings.viewWeek], ["month", strings.viewMonth]] as [ViewKey, string][]).map(([k, label]) => (
             <button key={k} type="button" aria-pressed={view === k} onClick={() => setView(k)}>{label}</button>
           ))}
         </div>
-        <div className="row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
+        <div className="row">
           <button type="button" className="btn btn-ghost btn-touch" onClick={() => shift(-1)} aria-label={strings.prev}>‹</button>
           <button type="button" className="btn btn-ghost btn-touch" onClick={() => setAnchorMs(utcMidnight(new Date()))}>{strings.today}</button>
           <button type="button" className="btn btn-ghost btn-touch" onClick={() => shift(1)} aria-label={strings.next}>›</button>
@@ -128,7 +128,7 @@ export default function CalendarBoard({ visits, locale, strings }: {
       </div>
 
       {view === "month" && (
-        <div className="panel" style={{ padding: "var(--space-4)" }}>
+        <div className="panel panel-body">
           <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 2 }}>
             {weekDays.map(ms => (
               <div key={`h${ms}`} className="sq-overline" style={{ padding: "var(--space-1)", textAlign: "center" }}>{weekdayName.format(new Date(ms))}</div>
@@ -160,7 +160,7 @@ export default function CalendarBoard({ visits, locale, strings }: {
       )}
 
       {view === "week" && (
-        <div className="panel" style={{ padding: "var(--space-4)" }}>
+        <div className="panel panel-body">
           <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: "var(--space-2)" }}>
             {weekDays.map(ms => {
               const k = keyOf(ms);
@@ -182,7 +182,7 @@ export default function CalendarBoard({ visits, locale, strings }: {
       )}
 
       {view === "day" && (
-        <div className="panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+        <div className="panel panel-body--roomy stack">
           <span className="t-caption numeric">{strings.visitsOn.replace("{n}", String(dayVisits.length))}</span>
           {dayVisits.length === 0 ? (
             <div className="sq-state sq-state--inline"><p className="t-caption">{strings.emptyRange}</p></div>
