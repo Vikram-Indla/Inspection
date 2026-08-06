@@ -3,7 +3,7 @@
    tokens linked by (app)/field/layout.tsx. Only DS tokens — no bare colors. */
 
 .wrap {
-  max-width: 1200px; margin: 0 auto; width: 100%; flex: 1;
+  max-width: 640px; margin: 0 auto; width: 100%; flex: 1;
   padding: 18px 18px 40px; display: flex; flex-direction: column; gap: 14px;
 }
 
