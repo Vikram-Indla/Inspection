@@ -1,9 +1,9 @@
 {
-  "revision": "SB-r28",
-  "updated": "2026-07-26T13:35:00+03:00",
+  "revision": "SB-r29",
+  "updated": "2026-08-06T19:22:17+03:00",
   "updatedBy": "claude-code",
-  "branch": "feat/saqeel-shell-rail-profile-switch",
-  "committed": false,
+  "branch": "main",
+  "committed": true,
   "law": "A card is 100% on Design only when the shipped route matches its .dc.html pixel-to-pixel at every declared width, in EN/LTR and AR/RTL. Structure, rules, enums and field names come from source. No number may be raised without evidence.",
   "channels": [
     {
@@ -201,7 +201,7 @@
       "pending": [
         {
           "lane": "code",
-          "text": "DEFECT — repo still renders the retired split صقيل / صناعي lockup. Replace with saqeel-wordmark-dark-mode.svg expanded, saqeel-favicon.svg collapsed, wordmark in mobile drawer. Both SVGs already in web/public/. Fingerprint 9dbf9042…6cf5dc05 (O-26)."
+          "text": "SUPERSEDED, NEEDS RULING — the recorded defect names .legacy-shell__brand-wordmark/__brand-sub, classes that no longer exist at main 2f28a14, and prescribes saqeel-wordmark-dark-mode.svg as an <img>. ShellClient.tsx:600-619 has deliberately rejected that prescription with a written rationale (SVG <text> inside <img> is an isolated document and cannot reach page webfonts, so both scripts fell back to system faces) and renders an inline SaqeelBrandMark plus a two-line sq-shell__brand-ar/-en name. Product Owner must rule which is canonical; code=0 no longer reflects the tree either way."
         }
       ],
       "phase": 1,
@@ -254,7 +254,7 @@
         },
         {
           "lane": "code",
-          "text": "FEATURE_TASKS_WORKSPACE is off with an explicit 'flag-gated until nav/permission regression passes' note — needs a decision owner before enabling or building further."
+          "text": "NEEDS ENV CONFIRMATION — the recorded state 'FEATURE_TASKS_WORKSPACE is off' is contradicted by .env.example:58 (FEATURE_TASKS_WORKSPACE=on) at main 2f28a14. The deployed value was not read this session. Confirm the runtime flag before treating the workspace as gated."
         }
       ],
       "phase": 3,
@@ -790,10 +790,6 @@
       "pwa": null,
       "pending": [
         {
-          "lane": "code",
-          "text": "/enforcement has page.tsx only — no actions.ts, so it reads but records no decision."
-        },
-        {
           "lane": "wiring",
           "text": "Enforcement measure catalogue and legal-basis wording are source-governed — still unsupplied."
         }
@@ -803,6 +799,17 @@
       "dependsOn": [
         "pwa-completion",
         "m6-library"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-08-06T19:22:17+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "code",
+            "text": "/enforcement has page.tsx only — no actions.ts, so it reads but records no decision."
+          },
+          "evidence": "Board reconciliation against main 2f28a14. STALE at main 2f28a14: (app)/enforcement/ now contains actions.ts and EnforcementDecisionForm.tsx alongside page.tsx, so the route records a decision. Verified by directory listing."
+        }
       ]
     },
     {
@@ -1295,10 +1302,6 @@
       "pwa": null,
       "pending": [
         {
-          "lane": "code",
-          "text": "No /delegation route — absence-cover delegation is design-only."
-        },
-        {
           "lane": "design",
           "text": "Roles is a LOCKED rail item (administrator access required) — design must show that state."
         }
@@ -1307,6 +1310,17 @@
       "complexity": "M",
       "dependsOn": [
         "shell-f0"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-08-06T19:22:17+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "code",
+            "text": "No /delegation route — absence-cover delegation is design-only."
+          },
+          "evidence": "Board reconciliation against main 2f28a14. STALE at main 2f28a14: (app)/admin/delegation/ exists with page.tsx, actions.ts, DelegationForms.tsx and layout.tsx. Verified by path search."
+        }
       ]
     },
     {
@@ -1435,10 +1449,6 @@
       },
       "pending": [
         {
-          "lane": "code",
-          "text": "CLOSED — FieldNav is now position:fixed with inset-inline:0, z-index 60, safe-area insets on all sides, and a .field-nav-spacer of calc(56px + env(safe-area-inset-bottom)) reserving scroll space so the bar can never cover a page's last element. Larger 60px targets at >=834px."
-        },
-        {
           "lane": "design",
           "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         },
@@ -1455,6 +1465,17 @@
       "complexity": "M",
       "dependsOn": [
         "shell-f0"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-08-06T19:22:17+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "code",
+            "text": "CLOSED — FieldNav is now position:fixed with inset-inline:0, z-index 60, safe-area insets on all sides, and a .field-nav-spacer of calc(56px + env(safe-area-inset-bottom)) reserving scroll space so the bar can never cover a page's last element. Larger 60px targets at >=834px."
+          },
+          "evidence": "Board reconciliation against main 2f28a14. Self-declared CLOSED in its own text; carried in pending as bookkeeping debt."
+        }
       ]
     },
     {
@@ -1638,10 +1659,6 @@
       "pending": [
         {
           "lane": "design",
-          "text": "CLOSED — result grouping plus explicit empty and error states."
-        },
-        {
-          "lane": "design",
           "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run (BS-1). Number rests on geometry verified against the .dc.html source plus a clean typecheck, not a rendered diff. The pixel-diff harness under apps/web/e2e/pixel/ is being built to replace this judgement with a measurement — some of these numbers may fall when it lands."
         }
       ],
@@ -1649,6 +1666,17 @@
       "complexity": "S",
       "dependsOn": [
         "pwa-shell"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-08-06T19:22:17+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "design",
+            "text": "CLOSED — result grouping plus explicit empty and error states."
+          },
+          "evidence": "Board reconciliation against main 2f28a14. Self-declared CLOSED in its own text; carried in pending as bookkeeping debt."
+        }
       ]
     },
     {
@@ -1729,10 +1757,6 @@
         {
           "lane": "design",
           "text": "Runtime EN/LTR and AR/RTL comparison remains. The pixel-diff harness at apps/web/e2e/pixel/ now covers this card; its measurement replaces the earlier sandbox port-binding blocker."
-        },
-        {
-          "lane": "design",
-          "text": "RESOLVED 2026-07-25 — the 'Completion' design page DOES have a repo counterpart. Product Owner ruled SCR-IPAD-670 stale and completion is built as the post-submit STATE of /field/inspection/[id], not a separate route (see pwa-completion). This card no longer carries that question."
         }
       ],
       "phase": 5,
@@ -1740,6 +1764,17 @@
       "dependsOn": [
         "pwa-visits",
         "admin-builders"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-08-06T19:22:17+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "design",
+            "text": "RESOLVED 2026-07-25 — the 'Completion' design page DOES have a repo counterpart. Product Owner ruled SCR-IPAD-670 stale and completion is built as the post-submit STATE of /field/inspection/[id], not a separate route (see pwa-completion). This card no longer carries that question."
+          },
+          "evidence": "Board reconciliation against main 2f28a14. Self-declared RESOLVED in its own text; carried in pending as bookkeeping debt."
+        }
       ]
     },
     {
@@ -1820,10 +1855,6 @@
       },
       "pending": [
         {
-          "lane": "code",
-          "text": "RESOLVED — section, not screen. Visit Results.dc.html is 'Step 3 of 4' and carries samples + seizure inline. No /field/seizure-records route created."
-        },
-        {
           "lane": "wiring",
           "text": "Nothing seeded: sections start at zero rows, 'Yes' reveals only the add control, every row blank. No invented units, sample types or product categories."
         },
@@ -1836,6 +1867,17 @@
       "complexity": "M",
       "dependsOn": [
         "pwa-workspace"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-08-06T19:22:17+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "code",
+            "text": "RESOLVED — section, not screen. Visit Results.dc.html is 'Step 3 of 4' and carries samples + seizure inline. No /field/seizure-records route created."
+          },
+          "evidence": "Board reconciliation against main 2f28a14. Self-declared RESOLVED in its own text; carried in pending as bookkeeping debt."
+        }
       ]
     },
     {
@@ -1888,10 +1930,6 @@
       },
       "pending": [
         {
-          "lane": "code",
-          "text": "RESOLVED — in-form affordance, not a route. Same evidence that settled pwa-samples: Visit Results.dc.html is 'Step 3 of 4' with capture inline. No /field/ocr route created."
-        },
-        {
           "lane": "wiring",
           "text": "Honest by construction: extracted text NEVER fills an inspection field, confidence renders 'unavailable — not inferred' rather than a manufactured score, failure/timeout states say no text or confidence was invented, and GEMINI_API_KEY absent fails closed with the reason in EN and AR. Losing OCR never costs the inspector their evidence."
         },
@@ -1904,6 +1942,17 @@
       "complexity": "M",
       "dependsOn": [
         "pwa-workspace"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-08-06T19:22:17+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "code",
+            "text": "RESOLVED — in-form affordance, not a route. Same evidence that settled pwa-samples: Visit Results.dc.html is 'Step 3 of 4' with capture inline. No /field/ocr route created."
+          },
+          "evidence": "Board reconciliation against main 2f28a14. Self-declared RESOLVED in its own text; carried in pending as bookkeeping debt."
+        }
       ]
     },
     {
@@ -2009,10 +2058,6 @@
       },
       "pending": [
         {
-          "lane": "wiring",
-          "text": "FIXED — keep-mine enqueued the resolution but never flushed it, so it waited for the next surface running the reconnect runner. Now calls processOutbox right after, ordered so the enqueue and conflict-clear commit first. Conflict DETECTION untouched (STM-SYNC-002, lib/offline.ts never edited)."
-        },
-        {
           "lane": "design",
           "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
@@ -2021,6 +2066,17 @@
       "complexity": "L",
       "dependsOn": [
         "pwa-drafts"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-08-06T19:22:17+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "wiring",
+            "text": "FIXED — keep-mine enqueued the resolution but never flushed it, so it waited for the next surface running the reconnect runner. Now calls processOutbox right after, ordered so the enqueue and conflict-clear commit first. Conflict DETECTION untouched (STM-SYNC-002, lib/offline.ts never edited)."
+          },
+          "evidence": "Board reconciliation against main 2f28a14. Self-declared FIXED in its own text; carried in pending as bookkeeping debt."
+        }
       ]
     },
     {
@@ -2161,16 +2217,8 @@
       },
       "pending": [
         {
-          "lane": "wiring",
-          "text": "RESOLVED by Product Owner ruling 2026-07-25: SCR-IPAD-670 /ipad/returned/:id is STALE. Returned correction is a MODE of /field/inspection/[id], not a separate route. Already working: returned-scope section locking (Workspace.tsx:799-802,848-853,1042-1045), DB byte-equality guard EXE-SUBMIT-SCOPE-VIOLATION (migration 20260721160000 SQL:230-268), and atomic version N+1 with relock (SQL:274-279). The assigned-work UI already routes returned inspections into that workspace. Catalogue row to be retired by the maintainer."
-        },
-        {
           "lane": "design",
           "text": "IMPLEMENTED in /field/inspection/[id] returned mode: real workflow-state Return badge (no fabricated 'Major' severity because no governed severity field exists), explicit 'Open correction mode' gate, 'Resubmit — version N+1' labelling, real submission_versions snapshot comparison only when two versions and actual changed values exist, and a real submission/review version-history timeline. npm run typecheck and scoped git diff --check PASS 2026-07-25; scores unchanged pending runtime EN/LTR + AR/RTL evidence."
-        },
-        {
-          "lane": "code",
-          "text": "RESOLVED — Completion is the post-submit STATE of /field/inspection/[id], not a separate route. Evidence: canonical capture matrix maps SCR-IPAD-660 to that same url (PHASE2_FULL_38_CAPTURE_MATRIX_20260718.csv:4424); submit is async via the outbox so a route push at submit would land on a completion URL for an inspection the server may still reject."
         },
         {
           "lane": "design",
@@ -2190,6 +2238,26 @@
       "dependsOn": [
         "pwa-workspace",
         "pwa-verification"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-08-06T19:22:17+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "wiring",
+            "text": "RESOLVED by Product Owner ruling 2026-07-25: SCR-IPAD-670 /ipad/returned/:id is STALE. Returned correction is a MODE of /field/inspection/[id], not a separate route. Already working: returned-scope section locking (Workspace.tsx:799-802,848-853,1042-1045), DB byte-equality guard EXE-SUBMIT-SCOPE-VIOLATION (migration 20260721160000 SQL:230-268), and atomic version N+1 with relock (SQL:274-279). The assigned-work UI already routes returned inspections into that workspace. Catalogue row to be retired by the maintainer."
+          },
+          "evidence": "Board reconciliation against main 2f28a14. Self-declared RESOLVED in its own text; carried in pending as bookkeeping debt."
+        },
+        {
+          "at": "2026-08-06T19:22:17+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "code",
+            "text": "RESOLVED — Completion is the post-submit STATE of /field/inspection/[id], not a separate route. Evidence: canonical capture matrix maps SCR-IPAD-660 to that same url (PHASE2_FULL_38_CAPTURE_MATRIX_20260718.csv:4424); submit is async via the outbox so a route push at submit would land on a completion URL for an inspection the server may still reject."
+          },
+          "evidence": "Board reconciliation against main 2f28a14. Self-declared RESOLVED in its own text; carried in pending as bookkeeping debt."
+        }
       ]
     },
     {
