@@ -10,8 +10,10 @@ component by component.
 2. **`brain/web/01-PROJECT-STATUS.md`** — where the redesign stands.
 3. **`brain/web/03-REDESIGN-TRACKER.md`** — the work board. Take the top
    unblocked item in NOW unless told otherwise.
-4. **The rule documents your task names** — `brain/web/rules/WEB-000` … `WEB-007`.
-   Read them before writing code, not after review rejects the diff.
+4. **`brain/web/rules/WEB-008-standing-task-contract.md`** — what every task
+   prompt implies but does not repeat. Then the rule documents your task names,
+   `WEB-000` … `WEB-009`. Read them before writing code, not after review
+   rejects the diff.
 5. **`brain/web/04-COMPONENT-LEDGER.md`** — never build what already exists.
 
 `AGENTS.md` covers repository-wide governance (product contract, database,
@@ -65,19 +67,20 @@ The approved design is `design/final-cut/saqeel-revamp.html`. Open it in a
 browser and inspect it. Do not work from screenshots or from prose descriptions
 of it.
 
-1. **`apps/web/src/app/tokens.css` is the single source of visual truth.** Raw
-   colour and size values may appear only there. Everything else consumes
-   `var(--surface-*)`, `var(--text-*)`, `var(--action-*)`, `var(--status-*)`,
-   `var(--space-*)`, `var(--radius-*)`, `var(--shadow-*)`.
-2. **No new tokens without a change request.** If a value looks bespoke, it is a
-   token you have not found yet. If it genuinely does not exist, **stop** and
-   record the gap — a missing token is a design-system change, never a
-   page-level fix. New tokens carry their measured contrast ratio.
-3. **New styling is CSS Modules colocated with the component**, consuming tokens
-   only. The legacy global sheets `saqeel-components.css` and
-   `saqeel-runtime.css` are **frozen** — nothing is added to them, and each
-   migrated screen deletes the rules it exclusively owned. No CSS-in-JS, no
-   Tailwind, no `style={{ }}` except a token-valued custom property.
+1. **`apps/web/src/saqeel.css` is the single source of visual truth.** Raw colour
+   and size values appear only in its primitives block. Everything else consumes
+   `var(--sqx-*)`. The prefix is `--sqx-` / `.sqx-` — never `--sq-`, `.sq-`, or
+   `.saqeel-`, all of which collide with the frozen legacy sheets.
+2. **`saqeel.css` is core tokens only.** No component classes. Adding a token is
+   a change request, not a task step: if a component appears to need a new one,
+   it almost always needs an existing one. A genuine gap **stops the work** and
+   is raised — never filled inline. New tokens carry their measured contrast ratio.
+3. **Component styles are colocated CSS Modules** — `shell/shell.tsx` +
+   `shell/shell.module.css` — consuming `var(--sqx-*)` only. The legacy sheets
+   `tokens.css`, `saqeel-components.css`, `saqeel-runtime.css` and
+   `v2-components.css` are **frozen**; each migrated screen deletes the rules it
+   exclusively owned. No CSS-in-JS, no Tailwind, no `style={{ }}` except a
+   token-valued custom property.
 4. **Copy the markup structure of the approved design.** Element order, nesting
    depth, and semantics are the contract.
 5. **Status is text plus shape, never colour alone.** Every status renders as a

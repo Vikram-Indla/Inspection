@@ -21,11 +21,31 @@ programme builds that layer. It does not restart the token work.
 
 ## 2. The single source of visual truth
 
-`apps/web/src/app/tokens.css` is the **only** file in the repository permitted
-to contain a raw visual value.
+`apps/web/src/saqeel.css` is the **core system sheet** and the **only** file in
+the repository permitted to contain a raw visual value. It holds primitives,
+semantic colour roles, the typography scale, space, radius, sizing, elevation,
+z-index, motion, gradient and direction tokens, the keyframes, the base layer,
+and the reduced-motion block.
 
-Banned everywhere else in `apps/web/src/**` — components, CSS modules, page
-files, inline styles:
+It holds **no component classes**. Component styling is §6.
+
+`apps/web/src/app/tokens.css` is the **frozen legacy** sheet. It is still
+consumed by hundreds of files and is retired screen by screen. Never edit it,
+never add to it, never delete from it.
+
+### The prefix
+
+Every token in the new system is prefixed **`--sqx-`** and every class
+**`.sqx-`**. Both were verified free before adoption. Neither `--sq-` nor
+`.sq-` nor `.saqeel-` may be used: `saqeel-runtime.css` already defines 281
+`.sq-*` classes — including `.sq-btn`, `.sq-panel`, `.sq-stack`, `.sq-table`,
+`.sq-input`, `.sq-modal`, `.sq-shell` — plus seven surviving `--sq-*`
+properties, and 16 `.saqeel-*` classes exist. The prefix is also the migration
+signal: a file using `--sqx-*` is on the new system, a file using bare
+`--surface-*` is not, and one grep tells you which screens are done.
+
+Banned everywhere in `apps/web/src/**` outside the `saqeel.css` primitives
+block — components, CSS modules, page files, inline styles:
 
 - hex colours (`#0f4938`), `rgb()`, `rgba()`, `hsl()`, named colours (`red`)
 - pixel, rem, or em literals for spacing, size, radius, border width, or blur
@@ -34,22 +54,26 @@ files, inline styles:
 - numeric `z-index`
 - `transition`/`animation` durations and easing curves as literals
 
-Permitted: `var(--token)` and nothing else.
+Permitted: `var(--sqx-*)` and nothing else.
 
 ```css
-.card {
-  background: var(--surface-primary);
-  border: var(--border-w) solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
-  box-shadow: var(--shadow-card);
+.root {
+  background: var(--sqx-surface-default);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-card);
+  padding: var(--sqx-inset-card);
+  box-shadow: var(--sqx-shadow-card);
 }
 ```
 
-If a value looks bespoke, it is a token you have not found yet. If the token
-truly does not exist, **stop**. A missing token is a design-system change
-request recorded in the tracker, resolved in `tokens.css` with its contrast
-ratio measured — never a local workaround.
+If a value looks bespoke, it is a token you have not found yet.
+
+**Adding a token is a change request, not a task step.** If a component appears
+to need a new one, it almost always needs an existing one. A genuine gap is
+**reported and stopped on** — recorded in the task, raised, and resolved
+deliberately in `saqeel.css` with its measured contrast ratio. It is never added
+inline while building a component. This single rule is what stops the token
+sheet growing a token per screen.
 
 `gate:no-literals` fails the build on any of the banned forms.
 
@@ -57,25 +81,29 @@ ratio measured — never a local workaround.
 
 ## 3. Where components live
 
+**One folder per component. The file is named after the component. Its CSS
+Module sits beside it.** No `index.tsx` containing a component.
+
 ```
-apps/web/src/components/saqeel/
-  actions/      Button, IconButton, ButtonGroup, SplitButton
-  inputs/       Field, Input, TextArea, Select, Combobox, Choice, Switch,
-                SegmentedControl, FileUpload, DateRangePicker, StatusSelector
-  surface/      Card, Panel, Section, SectionHeader, Divider, Stack, Grid, Cluster
-  data/         StatusPill, Tag, Avatar, KpiTile, MetricStrip, DescriptionList,
-                DetailRow, Timeline, Accordion, DataGrid
-  feedback/     Alert, Toast, Modal, Drawer, Tooltip, Menu, EmptyState,
-                Skeleton, Progress, StateSurface, SyncIndicator, DiffView
-  navigation/   Sidebar, TopBar, PageHeader, Breadcrumb, Tabs, Steps, Pagination,
-                UserMenu, CommandPalette, FilterBar, ColumnManager
-  media/        Icon, IconRegistry, Thumbnail, Figure
-  index.ts      the one sanctioned barrel in the repository
+apps/web/src/components/saqeel/<name>/
+  <name>.tsx
+  <name>.module.css
+  <name>.types.ts        only when the types exceed ~30 lines
 ```
 
-Domain components — anything that knows what an inspection is — live in
-`components/<domain>/` and are **composed from** Saqeel primitives. They never
-reach past the primitive to write their own visuals.
+Design-system primitives — anything with no domain knowledge — live under
+`components/saqeel/`. Everything that knows what an inspection is lives under
+`components/<area>/<name>/` and is **composed from** primitives; it never
+reaches past a primitive to write its own visuals.
+
+```
+components/saqeel/select/select.tsx           a primitive
+components/app-shell/shell/shell.tsx          an app component
+components/app-shell/shell/shell.module.css   its styles
+```
+
+The one sanctioned barrel in the repository is `components/saqeel/index.ts`.
+Barrels anywhere else create import cycles and defeat tree-shaking.
 
 ---
 
@@ -181,51 +209,49 @@ last import is gone.
 
 ---
 
-## 6. Styling mechanism — one token sheet, CSS Modules per component
+## 6. Styling mechanism
 
-`apps/web/src/app/saqeel.css` holds **only the core system**: tokens, the base
-layer, the three keyframes and the reduced-motion block, under
-`@layer sqx.tokens, sqx.base`. It declares no component class. Every custom
-property is prefixed `--sqx-`.
+Two layers, and nothing between them.
 
-**Every component class lives in a CSS Module paired with its component, in the
-same directory:**
+**The core sheet.** `apps/web/src/saqeel.css` holds the system: primitives,
+semantic colour roles, typography scale, space, radius, sizing, elevation,
+z-index, motion, gradient and direction tokens, the keyframes, the base layer,
+and the reduced-motion block. It contains **no component classes**. It is
+imported once, in `app/layout.tsx`.
+
+**The component layer.** Every component's styles are a **colocated CSS Module**
+beside it:
 
 ```
-shell-rail/shell-rail.tsx
-shell-rail/shell-rail.module.css
+components/app-shell/shell/shell.tsx
+components/app-shell/shell/shell.module.css
 ```
 
-The component imports its module and applies `styles.x`. No CSS-in-JS, no
-Tailwind, no global component stylesheet, and no `style` prop except a
-token-valued custom property. Class names inside a module are local and
-semantic — `.rail`, `.item`, `.itemLabel` — with no prefix, because the module
-scopes them. Variants stay data attributes (`data-variant`, `data-state`).
+CSS Modules are scoped by construction so there are no cascade accidents, cost
+nothing at runtime, work in Server Components, ship only the CSS a route
+actually uses, and cannot leak into a neighbour.
 
-A module may be shared by the components in its own directory — `shell-rail.tsx`,
-`shell-nav-group.tsx`, `shell-nav-item.tsx` and `shell-rail-toggle.tsx` all import
-`shell-rail.module.css` — because they style one another as descendants. **A
-module is never imported across directories.** When one component needs to reach
-another's element, use a data attribute, not a foreign class: the rail's
-collapsed rules target `[data-brand-name]`, not `.brandName`.
+Rules for a module:
 
-This supersedes the one-stylesheet rule (2026-08-07 owner decision) and restores
-CSS Modules. It changes only where component CSS lives; the token contract in §2
-is unchanged and still binding.
+- It consumes `var(--sqx-*)` and nothing else. Not one literal colour, size,
+  radius, shadow, font, or z-index.
+- Class names are local and semantic: `.root`, `.header`, `.isActive`,
+  `.toneCritical`. No utility soup.
+- Variants are data attributes on the root — `[data-tone="subtle"]`,
+  `[data-size="lg"]` — so a React prop maps onto the DOM with no string
+  concatenation.
+- Logical properties only. No `left`, `right`, `margin-left`, `padding-right`.
+- No `!important`, no `:global`, no element selectors beyond one level, no
+  selector deeper than a class plus a data attribute.
+- **A missing token stops the work** (§2). It is never invented in a module.
 
-**The prefix is `sqx`, and it now applies only to custom properties, cascade
-layer names and keyframe names.** Component class names are module-local and
-carry no prefix. `--sq-` and `.sq-` belong to the legacy sheets —
-`saqeel-runtime.css` holds 281 `.sq-` classes and 7 live `--sq-` custom
-properties. `grep -c sqx` returns 0 in `tokens.css`, `saqeel-components.css`,
-`saqeel-runtime.css` and `v2-components.css`.
+Banned throughout: CSS-in-JS, Tailwind, any new global stylesheet, and the
+`style` prop except for a token-valued custom property.
 
-**Modules are unlayered, and that is deliberate.** `saqeel-components.css:15`
-declares `a { color: var(--text-link) }` with no layer, and an unlayered
-declaration beats a cascade layer at any specificity. Component CSS therefore has
-to compete on normal specificity to style a link at all. Once that declaration is
-deleted from the frozen sheet — or the legacy sheets are wrapped in a `legacy`
-layer — modules can move into a layer.
+**The legacy sheets** `tokens.css` (18 KB), `saqeel-components.css` (50 KB),
+`saqeel-runtime.css` (170 KB) and `v2-components.css` are **frozen**: nothing is
+added to any of them. As each screen migrates, the rules it exclusively owned
+are deleted. Shrinking them is a tracked metric of this programme.
 
 ---
 
@@ -243,12 +269,16 @@ a token change request, not a new colour in a component.
 
 - Two densities only: `comfortable` (default) and `compact` (dense grids). They
   are a prop on the primitive, driven by token pairs. No third.
-- Elevation is a fixed ladder: flat → `--shadow-xs` → `--shadow-card` →
-  `--shadow-md` → `--shadow-lg`. Nothing between rungs.
-- Motion uses `--motion-fast|base|slow` and `--ease-standard` only, and every
-  animation is disabled under `prefers-reduced-motion: reduce`.
-- Z-index comes from the token ladder (`--z-sticky`, `--z-toast`, …). A raw
-  number is a defect.
+- Elevation is a fixed ladder, `--sqx-elevation-0` … `-4`. Nothing between rungs.
+- Motion uses `--sqx-duration-*` and `--sqx-ease-*` only, and every animation is
+  disabled under `prefers-reduced-motion: reduce`.
+- Z-index comes from the token ladder (`--sqx-z-sticky`, `--sqx-z-toast`, …). A
+  raw number is a defect.
+
+The full visual grammar every component obeys — control heights, border and
+surface behaviour, the rim light, focus, radii, icon sizing, spacing, motion,
+and the gradient budget — is
+[`WEB-009-component-design-language.md`](./WEB-009-component-design-language.md).
 
 ---
 
@@ -258,12 +288,13 @@ A new primitive requires, in this order:
 
 1. A tracker entry stating which two existing usages justify it (Rule of Two).
 2. Confirmation that no existing primitive plus a variant covers it.
-3. Tokens verified to exist; any new token added to `tokens.css` **with its
-   measured contrast ratio recorded**.
-4. The component, its CSS module, and its entry in `components/saqeel/index.ts`.
+3. Every token it needs verified to already exist in `saqeel.css`. A gap stops
+   the work and is raised (§2) — never filled inline.
+4. The component folder: `<name>.tsx`, `<name>.module.css`, and its entry in
+   `components/saqeel/index.ts`.
 5. A row in `brain/web/04-COMPONENT-LEDGER.md`.
 6. A rendered example on the internal reference route so the manager can see it.
 
 A "variant" that only one screen will ever use is not a variant. It is that
 screen composing primitives differently, and it belongs in
-`components/<domain>/`.
+`components/<area>/`.

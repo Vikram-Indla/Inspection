@@ -33,6 +33,12 @@ between them. What is not written here did not happen.
 | [`rules/WEB-005-performance.md`](rules/WEB-005-performance.md) | budgets, bundle discipline, CSS deletion, measurement |
 | [`rules/WEB-006-definition-of-done.md`](rules/WEB-006-definition-of-done.md) | task lifecycle, CI gates, retirement protocol, Definition of Done |
 | [`rules/WEB-007-session-record-and-commits.md`](rules/WEB-007-session-record-and-commits.md) | the per-task record, the four closing steps, never commit, the one-line commit message |
+| [`rules/WEB-008-standing-task-contract.md`](rules/WEB-008-standing-task-contract.md) | **what every task prompt implies.** Read this first — prompts state only what is task-specific |
+| [`rules/WEB-009-component-design-language.md`](rules/WEB-009-component-design-language.md) | the visual grammar: control heights, borders, rim light, focus, radii, icon sizing, spacing, motion, the gradient budget |
+
+**Task prompts are deliberately short.** Everything a prompt does not say is in
+`WEB-008` and `WEB-009`. If a prompt seems to be missing the rules, it is not —
+it is refusing to repeat them.
 
 ---
 
@@ -53,8 +59,10 @@ If you read nothing else, these are the ones that get a diff rejected on sight.
    `eslint-disable`.
 6. **No `let` in `.tsx`.** Ever.
 7. **No literal visual values.** No hex, px, rem, font-family, font-size,
-   shadow, radius, or z-index outside `apps/web/src/app/tokens.css`. Only
-   `var(--token)`.
+   shadow, radius, or z-index outside the primitives block of
+   `apps/web/src/saqeel.css`. Only `var(--sqx-*)`. `saqeel.css` is core tokens
+   only — component styles are colocated CSS Modules, and **a missing token
+   stops the work** rather than being added inline.
 8. **No `<svg>` in application code.** Icons come from `lucide-react` through
    the icon registry, by semantic name.
 9. **No `alt=""`.** Every image carries alt text that conveys purpose. A
