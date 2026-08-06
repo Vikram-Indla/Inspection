@@ -15,6 +15,13 @@ secrets/
 .project-memory/tmp/
 .claude/session-cache/
 
+# Session hooks append to these on every session event, so a tracked copy
+# dirties the tree again the moment it is committed. They record local
+# execution state — timestamps, session ids, branch names, tool calls — and
+# no governed contract reads them. Kept local; the governed session record
+# is product-contract/sessions/.
+.project-memory/audit/
+
 # OS/editor
 .DS_Store
 Thumbs.db
