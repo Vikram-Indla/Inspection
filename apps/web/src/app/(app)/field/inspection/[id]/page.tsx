@@ -116,11 +116,13 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     sb.from("inspections").select("inspection_no").eq("id", id).maybeSingle(),
     sb.from("evidence").select("id, archived_at, superseded_by, deleted_at").eq("inspection_id", id),
   ]);
-  // Phase 5 (§15) — tolerant read for migration 20260721150000 objects:
-  // per-visit item lifecycle rows. A missing table degrades the feature
-  // instead of killing the page.
-  const [{ data: itemStateRows }] = await Promise.all([
+  // Phase 5 (§15/§18) — tolerant reads for migration 20260721150000 objects:
+  // per-visit item lifecycle rows, and published action_form configuration
+  // templates for the manual "Add action form" affordance (§18). A missing
+  // table degrades the feature instead of killing the page.
+  const [{ data: itemStateRows }, { data: actionTemplateRows }] = await Promise.all([
     sb.from("inspection_item_states").select("item_id, state, reason, reverted_at").eq("inspection_id", id),
+    sb.from("configuration_templates").select("id, template_key, title_en, title_ar").eq("template_type", "action_form").eq("status", "published"),
   ]);
   // Arrival/cancellation evidence is captured before an inspection exists and
   // is therefore anchored to visit_id. Read it back into the inspection
@@ -579,7 +581,6 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     completionPendingSync: t("field.ws.completionPendingSync", "Not submitted yet — this is queued on the device and will submit exactly once when the connection returns. No version exists until the server assigns one."),
     completionFailedTitle: t("field.ws.completionFailedTitle", "Submission did not complete."),
     completionFailedBody: t("field.ws.completionFailedBody", "The server rejected this submission, so no submitted version was created. Your answers are safe on this device. Retry, or contact your supervisor if it keeps failing."),
-    backToInspection: t("field.ws.backToInspection", "Back to inspection"),
     pkgFormsGroupTitle: t("field.ws.pkgFormsGroupTitle", "Required action forms"),
     lockedSection: t("field.ws.lockedSection", "Not in return scope — locked read-only; DB also rejects edits."),
     mandatoryPhoto: t("field.ws.mandatoryPhoto", "📷 Mandatory photo"),
@@ -861,6 +862,10 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
         serverViolations={(vios ?? []) as never}
         serverItemStates={(itemStateRows ?? []) as never}
         library={library}
+        actionTemplates={((actionTemplateRows ?? []) as { id: string; template_key: string; title_en: string; title_ar: string }[]).map(row => ({
+          id: row.id, key: row.template_key,
+          title: (locale === "ar" && row.title_ar) ? row.title_ar : row.title_en,
+        }))}
         serverContext={(ctxRow as { context?: Record<string, string> } | null)?.context ?? {}}
         vioConfig={vioConfig}
         evidenceLimits={settings.evidence ?? {}}
