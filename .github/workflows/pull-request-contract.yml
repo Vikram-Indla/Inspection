@@ -3,6 +3,11 @@ name: Pull request contract
 on:
   pull_request:
     branches:
+      # main became the canonical default branch in the 2026-07-25
+      # consolidation (product-contract/CURRENT_STATE.md); setup/Inspection is
+      # retained only as preserved history. Until this line was added, no pull
+      # request into main ran any check at all.
+      - main
       - setup/Inspection
   workflow_dispatch:
 
@@ -23,11 +28,11 @@ jobs:
           BRANCH: ${{ github.head_ref }}
         run: |
           case "$BRANCH" in
-            codex/ipad/*|codex/web/*|codex/admin/*|codex/shared/*|codex/governance/*|codex/release/*|feat/*|fix/*|hotfix/*|docs/*|chore/*)
+            codex/ipad/*|codex/web/*|codex/admin/*|codex/shared/*|codex/governance/*|codex/release/*|claude/*|catalyst/*|feat/*|fix/*|hotfix/*|docs/*|chore/*)
               exit 0
               ;;
             *)
-              echo "Use a surface branch such as codex/ipad/TASK-IPAD-123-description, codex/web/TASK-WEB-123-description, codex/admin/TASK-ADM-123-description, or codex/shared/TASK-123-description."
+              echo "Use a surface branch such as codex/ipad/TASK-IPAD-123-description, codex/web/TASK-WEB-123-description, codex/admin/TASK-ADM-123-description, codex/shared/TASK-123-description, or an agent-session branch (claude/*, catalyst/*)."
               exit 1
               ;;
           esac
