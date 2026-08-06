@@ -177,6 +177,24 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
       if (signed.signedUrl) evidenceUrls[photoRows[index].id] = signed.signedUrl;
     }
   }
+  // The embedded visits(...) join reads null (not an error) when RLS denies
+  // the acting user's own read of the linked visit row — e.g. an assigned
+  // inspector whose profile region no longer matches the visit's factory
+  // region (visits_read_explicit_scope, 20260728010000_planning_closure_p0).
+  // The inspection row itself may still be visible; render the same
+  // "Not found" fallback used above rather than crash on a null read.
+  if (!ins.visits) {
+    return (
+      <>
+        {header(t("field.ws.notFound", "Not found"))}
+        <div className={styles.page}>
+          <div className="empty">
+            <div className="empty-title">{t("field.ws.notFound", "Not found")}</div>
+          </div>
+        </div>
+      </>
+    );
+  }
   const visitRow = ins.visits as unknown as {
     factory_id: string; visit_type: string; execution_mode: string; window_start: string; window_end: string;
     factories: { name: string; factory_code: string | null; region: string | null; city: string | null; license_number: string | null; activity_class: string | null };
