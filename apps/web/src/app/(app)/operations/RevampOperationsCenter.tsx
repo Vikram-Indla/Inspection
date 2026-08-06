@@ -50,7 +50,8 @@ export default function RevampOperationsCenter({
   regions: RegionSummary[];
 }) {
   const [showList, setShowList] = useState(false);
-  const activeMapEntries = view === "performance" ? regionalMapEntries : mapEntries;
+  const [activeView, setActiveView] = useState<"map" | "performance">(view);
+  const activeMapEntries = activeView === "performance" ? regionalMapEntries : mapEntries;
   const onTheWayInspectors = new Set(
     mapEntries
       .filter(entry => entry.state === "on_the_way" || entry.state.toLowerCase().includes("way"))
@@ -69,12 +70,12 @@ export default function RevampOperationsCenter({
     <div className="stack">
       <div className="grid-toolbar">
         <nav className="seg" aria-label={copy(locale, "Operations perspective", "منظور العمليات")}>
-          <a className="seg-opt" href={mapViewHref} aria-current={view === "map" ? "page" : undefined} aria-pressed={view === "map"}>
+          <button className="seg-opt" type="button" aria-pressed={activeView === "map"} onClick={() => setActiveView("map")}>
             {copy(locale, "Operations map", "خريطة العمليات")}
-          </a>
-          <a className="seg-opt" href={performanceViewHref} aria-current={view === "performance" ? "page" : undefined} aria-pressed={view === "performance"}>
+          </button>
+          <button className="seg-opt" type="button" aria-pressed={activeView === "performance"} onClick={() => setActiveView("performance")}>
             {copy(locale, "National performance", "الأداء الوطني")}
-          </a>
+          </button>
         </nav>
         <div className="row">
           {/* CR-431 · WA-M3-AC-001 — preserve the accepted command-bar
@@ -125,7 +126,7 @@ export default function RevampOperationsCenter({
           </section>
       ) : (
           <section className="map-panel lv-map">
-            <nav className="breadcrumb" aria-label={copy(locale, "Map drill", "التنقل في الخريطة")}><ul className="breadcrumb"><li>{copy(locale, "Saudi Arabia", "المملكة العربية السعودية")}</li></ul></nav>
+            <h2>{copy(locale, "Saudi Arabia", "المملكة العربية السعودية")}</h2>
             <OperationsMapWorkspace entries={activeMapEntries} strings={mapStrings} mapOnly />
           </section>
       )}
