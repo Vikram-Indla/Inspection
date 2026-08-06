@@ -703,7 +703,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     vioLevel: t("field.ws.vio.level", "Severity {level}"),
     vioAction: t("field.ws.vio.action", "Corrective action: {status}"),
     vioInvalidated: t("field.ws.vio.invalidated", "Invalidated — the answer changed back to compliant. Kept for audit; no penalty or action is due from this candidate."),
-    vioFacilityNotProduction: t("field.ws.vio.notProduction", "This response was not recorded as a violation — the facility's status for this visit is not Production, so a data-mismatch violation cannot be recorded. Set the facility status to Production if that is not correct."),
+    vioFacilityNotProduction: t("field.ws.vio.notProduction", "This response was not recorded as a violation — the facility's status for this visit is not Production, so a data-mismatch violation cannot be recorded (INS-BR-045). Set the facility status to Production if that is not correct."),
     vioPenaltyConflict: t("field.ws.vio.penaltyConflict", "Penalty mapping not available — settings conflict"),
     findingTitle: t("field.ws.finding.title", "Inspector finding"),
     findingNarrative: t("field.ws.finding.narrative", "Finding narrative"),

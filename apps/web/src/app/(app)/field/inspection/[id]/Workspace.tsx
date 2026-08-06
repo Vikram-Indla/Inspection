@@ -128,6 +128,8 @@ export type WorkspaceStrings = {
   previousSection: string; nextSection: string; nextIncomplete: string;
   summaryTitle: string; sumAnswered: string; sumPending: string; sumCompliant: string; sumNonCompliant: string; sumViolations: string; sumEvidence: string;
   ctxTitle: string; ctxHint: string; ctxYes: string; ctxNo: string; ctxLabels: { [k: string]: string };
+  // — INSP-773: facility status this visit (INS-BR-045) —
+  facStatusTitle: string; facStatusHint: string; facStatusLabel: string; facStatusLabels: { [k: string]: string };
   guidanceLabel: string; conditionalBadge: string;
   aiExplainTitle: string; aiExplainDescription: string; aiExplain: string; aiUnavailable: string; aiEvidence: string; aiAdvisory: string;
   noteLabel: string; notePlaceholder: string;
@@ -135,7 +137,7 @@ export type WorkspaceStrings = {
   evAdd: string; evAddDoc: string; evCount: string; evRequired: string; evQueuedAlt: string; evTooLarge: string; evBadFormat: string;
   afBlocking: string; afComplete: string; afIncomplete: string; afSaved: string; afFieldLabels: { [k: string]: string };
   vioTitle: string; vioNone: string; vioPenalty: string; vioLevel: string; vioAction: string;
-  vioInvalidated: string; vioPenaltyConflict: string;
+  vioInvalidated: string; vioPenaltyConflict: string; vioFacilityNotProduction: string;
   findingTitle: string; findingNarrative: string; findingPlaceholder: string;
   findingRequired: string; findingSaved: string; findingPending: string; findingRetry: string;
   // — Phase 5 item lifecycle (§15) —
@@ -533,6 +535,16 @@ export default function Workspace({ inspection, items, library, serverResponses,
     const known = vioIdsRef.current[code]; if (known) return known;
     const cfg = vioConfig[code];
     if (!cfg?.mapping_version) return null;                 // no accepted penalty mapping → never invent one
+    // INSP-773 (INS-BR-045) — a data-mismatch violation is only recordable
+    // while the facility's on-site status this visit is Production. Fail
+    // fast client-side with an explicit reason (never a silent no-op); the
+    // DB trigger (trg_guard_violation_production_status) is the authority
+    // and re-checks this on insert regardless of what the client believes.
+    const facilityStatus = ctxRef.current.factory_status;
+    if (facilityStatus && facilityStatus !== "production") {
+      setMsg(strings.vioFacilityNotProduction);
+      return null;
+    }
     if (!navigator.onLine) { pending.current.vios.add(code); return null; }
     const sb = supabaseBrowser();
     // Phase 5 (§18, D-018) — reuse only the ACTIVE candidate; an invalidated
@@ -550,7 +562,19 @@ export default function Workspace({ inspection, items, library, serverResponses,
     }
     if (existing?.id) { setVioIds(m => ({ ...m, [code]: existing.id })); pending.current.vios.delete(code); return existing.id; }
     const { data, error } = await sb.from("violations").insert({ inspection_id: inspection.id, violation_code_id: cfg.id, mapping_version: cfg.mapping_version }).select("id").single();
-    if (error) { console.error("[field workspace violation]", error.message); setMsg(strings.saveFailed); pending.current.vios.add(code); return null; }
+    if (error) {
+      console.error("[field workspace violation]", error.message);
+      // INSP-773 — the DB trigger is the authority; if the client's local
+      // ctx was stale (offline edit elsewhere, race) and the server still
+      // refuses on facility-status grounds, surface the same explicit
+      // reason rather than the generic save-failed message. This is a
+      // permanent business-rule refusal, not a transient failure — do NOT
+      // queue it for retry, or every reconnect would keep re-refusing it.
+      if (error.message.includes("EXE-VIOLATION-NOT-PRODUCTION")) { setMsg(strings.vioFacilityNotProduction); return null; }
+      setMsg(strings.saveFailed);
+      pending.current.vios.add(code);
+      return null;
+    }
     setVioIds(m => ({ ...m, [code]: data.id })); pending.current.vios.delete(code);
     return data.id;
   }
@@ -1486,6 +1510,26 @@ export default function Workspace({ inspection, items, library, serverResponses,
           </div>
         </nav>
       )}
+      {/* INSP-773 (INS-BR-045) — facility status this visit: the single gate
+          that decides whether a data-mismatch response may become a
+          recordable violation. Persisted in the same context bag as the
+          site-condition flags (key "factory_status"); the DB trigger
+          trg_guard_violation_production_status re-checks this on every
+          violation insert regardless of what the client shows. */}
+      {!submitted && (
+        <div className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+          <h4>{strings.facStatusTitle}</h4>
+          <p className="t-caption">{strings.facStatusHint}</p>
+          <label className={styles.fld}>
+            <span>{strings.facStatusLabel}</span>
+            <select className="select" value={ctx.factory_status ?? ""} onChange={e => saveCtx("factory_status", e.target.value)}>
+              <option value="">—</option>
+              {Object.entries(strings.facStatusLabels).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
+            </select>
+          </label>
+        </div>
+      )}
+
       {/* Site conditions — flags feeding conditional.visible_when (M04-119); persisted on the inspection row */}
       {!submitted && flags.length > 0 && (
         <div className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
