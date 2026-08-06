@@ -1,0 +1,47 @@
+.shell {
+  display: flex;
+  block-size: 100dvh;
+  overflow: hidden;
+  background: var(--sqx-surface-canvas);
+  color: var(--sqx-text-primary);
+}
+
+.skipLink {
+  position: absolute;
+  inset-block-start: var(--sqx-space-3);
+  inset-inline-start: var(--sqx-space-3);
+  z-index: var(--sqx-z-toast);
+  transform: translateY(-200%);
+  padding-block: var(--sqx-space-3);
+  padding-inline: var(--sqx-space-5);
+  background: var(--sqx-surface-raised);
+  color: var(--sqx-text-link);
+  font: var(--sqx-text-label);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-strong);
+  border-radius: var(--sqx-radius-control);
+  box-shadow: var(--sqx-shadow-menu);
+}
+
+.skipLink:focus-visible {
+  transform: translateY(0);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-inline-size: 0;
+  block-size: 100dvh;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-inline-size: 0;
+  min-block-size: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  background: var(--sqx-surface-canvas);
+}

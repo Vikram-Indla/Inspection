@@ -93,8 +93,8 @@ Once these exist, **no component sets its own outer margin** (WEB-002 §4.6).
 
 | Component | Status | Notes |
 | --- | --- | --- |
-| `Icon` | to-build | T-001; the only component that may render a glyph |
-| `icon-registry.ts` | to-build | T-001; semantic name → `lucide-react` component |
+| `Icon` | hardened | `saqeel/icon/icon.tsx` (17 lines). Built by T-004, not T-001. Server component, sizes from `--sqx-icon-*`, colour always `currentColor`, `aria-hidden` by default, `label` promotes it to `role="img"`. `mirrored` applies `scaleX(var(--sqx-mirror))` for directional glyphs. No `className` escape hatch. |
+| `icon-registry.ts` | hardened | `saqeel/icon/icon-registry.ts` (72 lines). 34 semantic names → `lucide-react`. **The only file in the repository permitted to import `lucide-react`.** 18 names carry the `ShellIcon` union from `lib/shell-navigation.ts` so the rail maps straight through; 16 more cover topbar and control chrome. |
 | `Thumbnail` | to-build | `next/image` wrapper enforcing the alt-text law |
 | `Figure` | to-build | image + caption + accessible description |
 
@@ -121,6 +121,36 @@ duplicate Saqeel primitives, plus `components/field/` (22 files) and
 `components/charts/` (3). Each is either absorbed into the system or marked in
 `05-RETIREMENT-LEDGER.md`. Nothing new is added to `components/` root — that
 directory is closed.
+
+---
+
+## `components/app-shell/` — the application shell (T-004)
+
+Not design-system primitives: these know what a nav group, a persona and a
+region scope are, so they live outside `components/saqeel/` by the WEB-000 §6
+layer map. They ship **no CSS** — every visual is a `.sqx-shell*` class in
+`app/saqeel.css`.
+
+| Component | Kind | Lines | Notes |
+| --- | --- | --- | --- |
+| `app-shell.tsx` | server | 39 | Composes rail + topbar + `<main id="main-content">`. Redirects to `/login` when there is no session. |
+| `shell-brand/shell-brand.tsx` | server | 14 | Mark + bilingual wordmark. Reuses `SaqeelBrandMark`. |
+| `shell-rail/shell-rail.tsx` | server | 44 | The whole sidebar. `variant="rail" \| "drawer"` — one component, two aria-labelled landmarks. |
+| `shell-rail/shell-nav-group.tsx` | server | 58 | Native `<details>`/`<summary>` disclosure. Zero JS. |
+| `shell-rail/shell-nav-item.tsx` | server | 47 | `<Link>` + server-computed `aria-current`, or a disabled `role="link"` with its reason. |
+| `shell-rail/shell-rail-toggle.tsx` | **client** | 49 | Collapse/expand; writes `data-shell-rail` on `<html>` so CSS does the rest. |
+| `shell-topbar/shell-topbar.tsx` | server | 113 | Composes every control and owns all topbar i18n. |
+| `shell-topbar/shell-search.tsx` | **client** | 122 | Global search combobox; nav matches + `/api/shell/search`. |
+| `shell-topbar/shell-user-menu.tsx` | **client** | 88 | Account dropdown; Escape + outside-pointer close, focus returns to trigger. |
+| `shell-topbar/shell-theme-toggle.tsx` | **client** | 75 | Three-way cycle system → light → dark. |
+| `shell-topbar/shell-locale-toggle.tsx` | **client** | 48 | EN/ع. Preserved from `ShellClient`, not in the T-004 brief. |
+| `shell-topbar/shell-scope-controls.tsx` | **client** | 80 | Date + region scope → `searchParams`. Preserved, not in the brief. |
+| `shell-topbar/shell-admin-palette.tsx` | **client** | 93 | ⌘K admin tool palette. Preserved, not in the brief. |
+| `shell-mobile-nav/shell-mobile-nav.tsx` | **client** | 83 | Drawer; focus trap, Escape, scroll lock, focus return. Takes the rail as `children` through the boundary. |
+| `shell-page-frame/shell-page-frame.tsx` | server | 44 | Title + description + breadcrumb + actions + content slot. **Supersedes the default `Shell` export**; adopting it in the 55 route files is future work. |
+
+`features/shell/` holds the data layer: `queries.ts` (63), `mappers.ts` (132),
+`types.ts` (54), `notification-strings.ts` (58).
 
 ---
 

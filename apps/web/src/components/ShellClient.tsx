@@ -1,3 +1,4 @@
+/* @retiring 2026-08-07 · replaced-by components/app-shell/app-shell · pending /admin/execution,/admin/dashboard-config · delete-when 0-imports */
 "use client";
 
 import Link from "next/link";

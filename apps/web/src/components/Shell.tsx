@@ -1,3 +1,4 @@
+/* @retiring 2026-08-07 · replaced-by components/app-shell/shell-page-frame/shell-page-frame · pending /admin/execution,/admin/dashboard-config,55-app-route-files · delete-when 0-imports */
 import { redirect } from "next/navigation";
 import { type ReactNode } from "react";
 import { getRoleTitles, getShellRegions, getUserProfile, getUserRoles } from "@/lib/persona";

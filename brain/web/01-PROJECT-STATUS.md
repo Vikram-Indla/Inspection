@@ -18,7 +18,7 @@ a rebuild.
 
 ## Where we stand
 
-**Phase: 1 — the visual vocabulary exists; nothing consumes it yet.**
+**Phase: 2 — the shell consumes the system; pages do not yet.**
 
 `apps/web/src/app/saqeel.css` is the design system: one file, three cascade layers
 (`sqx.tokens`, `sqx.base`, `sqx.components`), 339 custom properties, 59
@@ -27,7 +27,20 @@ attributes. It sits entirely inside cascade layers while the three legacy sheets
 are unlayered, so it cannot override them and the visual diff of adding it is
 zero — a migrated screen must *delete* the legacy rule, not out-specify it.
 
-No screen uses it yet. The React layer that applies these classes is **T-004**.
+**T-004 rebuilt the authenticated shell on it.** `components/app-shell/**` (15
+files) plus `features/shell/**` (4) render the rail and topbar as Server
+Components; eight scoped client islands replace the single 839-line
+`ShellClient`. The icon layer is `lucide-react` behind one registry —
+`components/saqeel/icon/icon-registry.ts` is the only file allowed to import it.
+`app/(app)/layout.tsx` is six lines.
+
+No **page** uses the system yet. The typed primitive layer is now **T-006**,
+adopting `ShellPageFrame` across 55 route files is **T-007**, and finishing the
+two out-of-group admin layouts is **T-008** — until T-007 and T-008 land,
+`ShellClient.tsx` and `Shell.tsx` are marked but not deletable, and none of the
+46 KB is actually recovered.
+
+**The shell has never been rendered.** See the blocker below.
 
 The rulebook is still not machine-enforced. No lint config, no gate scripts —
 every rule T-002 obeyed was checked by hand. That is **T-000**, and it remains
@@ -39,6 +52,12 @@ the highest-priority unblocked item.
 > numbers — every task is currently limited to static verification, and the
 > Definition of Done cannot be fully ticked by anyone working here. See
 > BLOCKED in `03-REDESIGN-TRACKER.md`. This outranks T-000.
+>
+> **This is now urgent, not merely inconvenient.** T-004 replaced the chrome on
+> every authenticated route and not one page was ever rendered to check it.
+> `tsc` passes; nothing else was possible. If the first render is wrong, the
+> revert is one line — point `app/(app)/layout.tsx` back at `AppShell` from
+> `@/components/Shell`. Nothing was deleted.
 
 ---
 
@@ -102,10 +121,16 @@ the highest-priority unblocked item.
 | 2026-08-06 | Design system is **SAQEEL**. Astryx stays banned. Existing tokens are kept; the component layer is hardened on top of them. |
 | 2026-08-06 | Icons: **`lucide-react`** behind a semantic registry and one `Icon` primitive. Hand-authored `<svg>` banned in application code. |
 | 2026-08-06 | ~~Styling mechanism for new work: **CSS Modules** colocated with the component.~~ **Superseded 2026-08-07.** |
-| 2026-08-07 | Styling mechanism: **one system stylesheet**, `apps/web/src/app/saqeel.css`. Tokens, base and every component class in one file under `@layer sqx.tokens, sqx.base, sqx.components`. Components ship no CSS — they apply `.sqx-*` classes and data attributes. No `.module.css`, no CSS-in-JS, no Tailwind. WEB-002 §6 rewritten. |
+| 2026-08-07 | Styling mechanism, **final**: `app/saqeel.css` holds **only tokens, base, keyframes and reduced motion** (801 lines, `@layer sqx.tokens, sqx.base`). Every component class lives in a **CSS Module paired with its component in the same directory** (`shell-rail/shell-rail.tsx` + `shell-rail/shell-rail.module.css`). Modules are never imported across directories — cross-component styling uses data attributes (`[data-brand-name]`), never a foreign class. Modules are unlayered so they can out-specify the legacy unlayered `a { color }`. Reverses the one-stylesheet decision below. WEB-002 §6 rewritten. |
+| 2026-08-07 | ~~Styling mechanism: **one system stylesheet**, `apps/web/src/app/saqeel.css`.~~ **Superseded the same day.** Tokens, base and every component class in one file under `@layer sqx.tokens, sqx.base, sqx.components`. Components ship no CSS — they apply `.sqx-*` classes and data attributes. No `.module.css`, no CSS-in-JS, no Tailwind. WEB-002 §6 rewritten. |
 | 2026-08-07 | Prefix is **`--sqx-` / `.sqx-`**. `--sq-` is still live in `saqeel-runtime.css` (seven nav/map custom properties) and `.sq-` owns 281 legacy classes there; `.saqeel-` is taken by `.saqeel-state` / `.saqeel-reference`. `sqx` collides with nothing — `grep -c sqx` is 0 in every legacy sheet. One prefix across custom properties, classes, cascade layer names and keyframe names. |
 | 2026-08-07 | Direction is a **six-token set** declared at `:root` and `:root:dir(rtl)` in `saqeel.css` — the only `dir()` / `[dir]` rules permitted in `apps/web/src`. CSS has no `to inline-end`, so a gradient angle cannot be logical. WEB-001 §9. |
 | 2026-08-07 | The three legacy sheets stay **unlayered** for now, so they outrank `saqeel.css` by construction. Migration deletes legacy rules; it never overrides them. |
+| 2026-08-07 | ~~Shell active state is **server-rendered** via the `x-pathname` request header.~~ **Superseded the same day.** `app/(app)/layout.tsx` is a persistent layout — Next does not re-render it on navigation between child routes, so `headers()` is read once and the highlight never updates without a refresh. Server-computed active state is incompatible with a persistent layout. `shell-nav-group.tsx` is now a client component reading `usePathname()`; the rail, brand, topbar and page frame stay Server Components. This is the fallback T-004's §6.1 anticipated, taken as narrowly as possible. |
+| 2026-08-07 | Icons are **`lucide-react` behind `components/saqeel/icon/icon-registry.ts`** — the only file permitted to import it. 34 semantic names. Hand-authored `<svg>` is banned in application code. |
+| 2026-08-07 | The shell's scroll model is fixed: `.sqx-shell` is `100dvh`/`overflow:hidden`, `.sqx-shell__main` owns `overflow-y`, the topbar is a non-sticky sibling above it. This is **required**, not stylistic — the legacy `.sq-pagehead` is sticky and 55 pages still render it. |
+| 2026-08-07 | **Chrome is a flat colour, not a gradient.** Rail, topbar and drawer use `--sqx-surface-chrome` — `#EAF8F0` light, `--sqx-green-950` `#001F11` near-black green dark. Gradients are reserved for small surfaces: the CTA, the active-row edge, labels and cards. Supersedes §4.1 of the T-004 brief. "Deep green" here means **near-black green**, not a brighter forest green — `--sqx-green-800` was tried and is the wrong direction. The rail and topbar dividers use `--sqx-border-strong` and are load-bearing in both themes; `--sqx-border-subtle` scores 1.14:1 on the dark chrome and disappears. |
+| 2026-08-07 | `<main>` keeps `id="main-content"`. The T-004 brief asked for `id="main"`; three assertions in `e2e/ui-compliance-runtime.spec.ts` pin the existing id and e2e was out of scope. |
 | 2026-08-06 | Accessibility target raised to **WCAG 2.2 Level AA**. |
 | 2026-08-06 | Rulebook and session memory live in `brain/web/`. Root `CLAUDE.md` is the onboarding pointer. |
 

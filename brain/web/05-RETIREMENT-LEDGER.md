@@ -20,7 +20,25 @@ The banner on line 1 of a marked file, exact form:
 
 | File | Replaced by | Marked | Pending routes | Gate |
 | --- | --- | --- | --- | --- |
-| _(none yet — T-001 adds the first)_ | | | | |
+| `components/ShellClient.tsx` (46 KB, 840 lines) | `components/app-shell/app-shell` | 2026-08-07 | `/admin/execution`, `/admin/dashboard-config` | 0-imports |
+| `components/Shell.tsx` (16 KB, 251 lines) | `components/app-shell/shell-page-frame/shell-page-frame` | 2026-08-07 | `/admin/execution`, `/admin/dashboard-config`, plus 55 route files still importing the default `Shell` page-frame export | 0-imports |
+| `components/ShellNavIcon.tsx` (3 KB, 36 lines) | `components/saqeel/icon/icon` | 2026-08-07 | `/field` (`components/field/FieldShellDrawer.tsx`) | 0-imports |
+
+**Read the `pending` lists before assuming T-004 finished the job.** None of the
+three is close to deletion:
+
+- `ShellClient` is off every `(app)` route but still renders the chrome on the
+  two `/admin/*` layouts that sit **outside** the `(app)` route group
+  (`app/admin/execution/layout.tsx`, `app/admin/dashboard-config/layout.tsx`).
+  They import the named `AppShell` export from `Shell.tsx`, which renders
+  `ShellClient`. Migrating those two layouts is what empties this row.
+- `Shell.tsx` has **two** exports with different fates. The named `AppShell` is
+  superseded by `components/app-shell/app-shell`. The **default** `Shell` export
+  is the per-route page-header/content frame and is imported by 55 files under
+  `app/(app)/**`; it is superseded by `shell-page-frame`, and T-004 was
+  explicitly forbidden from touching those pages. Each future screen migration
+  swaps one `Shell` for one `ShellPageFrame`.
+- `ShellNavIcon` is untouched by T-004 and stays until the field shell migrates.
 
 ---
 

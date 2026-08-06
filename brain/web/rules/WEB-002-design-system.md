@@ -181,25 +181,51 @@ last import is gone.
 
 ---
 
-## 6. Styling mechanism — one system stylesheet
+## 6. Styling mechanism — one token sheet, CSS Modules per component
 
-The entire visual system lives in `apps/web/src/app/saqeel.css`: tokens, base
-layer, and every component class, organised with
-`@layer sqx.tokens, sqx.base, sqx.components`. Every custom property is prefixed
-`--sqx-` and every class `.sqx-`; components apply `.sqx-*` classes and data
-attributes, and they do not ship CSS. There are no `.module.css` files, no
-CSS-in-JS, no Tailwind, and no `style` prop except a token-valued custom
-property. A visual change is made in one file, reviewed in one diff, and cannot
-drift per screen. The legacy sheets `saqeel-components.css`, `saqeel-runtime.css`
-and `v2-components.css` are frozen and shrink as screens migrate. `tokens.css` is
-frozen and untouched. This supersedes the previous CSS Modules rule.
+`apps/web/src/app/saqeel.css` holds **only the core system**: tokens, the base
+layer, the three keyframes and the reduced-motion block, under
+`@layer sqx.tokens, sqx.base`. It declares no component class. Every custom
+property is prefixed `--sqx-`.
 
-**The prefix is `sqx`, not `sq`.** `--sq-` and `.sq-` belong to the legacy
-sheets — `saqeel-runtime.css` holds 281 `.sq-` classes and 7 live `--sq-`
-custom properties. `sqx` collides with nothing: `grep -c sqx` returns 0 in
-`tokens.css`, `saqeel-components.css`, `saqeel-runtime.css` and
-`v2-components.css`. The prefix applies to custom properties, classes, cascade
-layer names and keyframe names alike — one vocabulary, no exceptions.
+**Every component class lives in a CSS Module paired with its component, in the
+same directory:**
+
+```
+shell-rail/shell-rail.tsx
+shell-rail/shell-rail.module.css
+```
+
+The component imports its module and applies `styles.x`. No CSS-in-JS, no
+Tailwind, no global component stylesheet, and no `style` prop except a
+token-valued custom property. Class names inside a module are local and
+semantic — `.rail`, `.item`, `.itemLabel` — with no prefix, because the module
+scopes them. Variants stay data attributes (`data-variant`, `data-state`).
+
+A module may be shared by the components in its own directory — `shell-rail.tsx`,
+`shell-nav-group.tsx`, `shell-nav-item.tsx` and `shell-rail-toggle.tsx` all import
+`shell-rail.module.css` — because they style one another as descendants. **A
+module is never imported across directories.** When one component needs to reach
+another's element, use a data attribute, not a foreign class: the rail's
+collapsed rules target `[data-brand-name]`, not `.brandName`.
+
+This supersedes the one-stylesheet rule (2026-08-07 owner decision) and restores
+CSS Modules. It changes only where component CSS lives; the token contract in §2
+is unchanged and still binding.
+
+**The prefix is `sqx`, and it now applies only to custom properties, cascade
+layer names and keyframe names.** Component class names are module-local and
+carry no prefix. `--sq-` and `.sq-` belong to the legacy sheets —
+`saqeel-runtime.css` holds 281 `.sq-` classes and 7 live `--sq-` custom
+properties. `grep -c sqx` returns 0 in `tokens.css`, `saqeel-components.css`,
+`saqeel-runtime.css` and `v2-components.css`.
+
+**Modules are unlayered, and that is deliberate.** `saqeel-components.css:15`
+declares `a { color: var(--text-link) }` with no layer, and an unlayered
+declaration beats a cascade layer at any specificity. Component CSS therefore has
+to compete on normal specificity to style a link at all. Once that declaration is
+deleted from the frozen sheet — or the legacy sheets are wrapped in a `legacy`
+layer — modules can move into a layer.
 
 ---
 

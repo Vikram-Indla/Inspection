@@ -1,0 +1,25 @@
+.icon {
+  inline-size: var(--sqx-icon-md);
+  block-size: var(--sqx-icon-md);
+  flex: none;
+  color: currentColor;
+}
+
+.icon[data-size="sm"] {
+  inline-size: var(--sqx-icon-sm);
+  block-size: var(--sqx-icon-sm);
+}
+
+.icon[data-size="lg"] {
+  inline-size: var(--sqx-icon-lg);
+  block-size: var(--sqx-icon-lg);
+}
+
+.icon[data-size="xl"] {
+  inline-size: var(--sqx-icon-xl);
+  block-size: var(--sqx-icon-xl);
+}
+
+.mirrored {
+  transform: scaleX(var(--sqx-mirror));
+}

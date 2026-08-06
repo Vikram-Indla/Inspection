@@ -83,8 +83,26 @@ recorded.
 
 ---
 
-### T-004 · React primitives over `saqeel.css`
-`status: todo` · `rules: WEB-002, WEB-003` · `est: 5h` · `blocked-by: T-001`
+### T-004 · App shell — header, sidebar, content frame
+`status: done` · `rules: WEB-000…005, WEB-007` · `est: 6h`
+`record:` [2026-08-07-T-004-app-shell](sessions/2026-08/2026-08-07-T-004-app-shell.md)
+
+**Redefined by the owner on 2026-08-07** — the board's T-004 was "React
+primitives over `saqeel.css`"; that work is now **T-006**.
+
+Delivered: `components/app-shell/**` (15 files, 897 lines), `features/shell/**`
+(4 files, 307 lines), `components/saqeel/icon/**` (2 files, 89 lines), plus 638
+lines of `.sqx-shell*` CSS in `app/saqeel.css`. `(app)/layout.tsx` is 6 lines.
+`ShellClient.tsx` (46 KB) is off every `(app)` route. Icon layer is
+`lucide-react` behind one registry — zero hand-authored `<svg>` in the shell.
+
+**Not verified in a browser.** The SWC blocker below meant none of the brief's
+13 runtime checks could run. Static verification only.
+
+---
+
+### T-006 · React primitives over `saqeel.css`
+`status: todo` · `rules: WEB-002, WEB-003` · `est: 5h`
 
 The typed component layer that applies the classes T-002 built. Components ship
 **no CSS** — they map props onto `.sqx-*` classes and data attributes.
@@ -98,6 +116,27 @@ The typed component layer that applies the classes T-002 built. Components ship
 
 Acceptance: each primitive under 200 lines, zero colocated CSS, axe-clean,
 correct in dark and RTL, ledger rows written.
+
+---
+
+### T-007 · Adopt `ShellPageFrame` across the 55 route files
+`status: todo` · `rules: WEB-001 §2, WEB-005` · `est: 6h` · `blocked-by: T-004`
+
+T-004 built `shell-page-frame` but was forbidden from touching pages, so the
+default `Shell` export from `components/Shell.tsx` is still imported by 55 files
+under `app/(app)/**`. Each one swaps `<Shell title>` for `<ShellPageFrame>`.
+Only when all 55 are migrated — plus T-008 — can `Shell.tsx` be deleted.
+
+---
+
+### T-008 · Migrate the two out-of-group admin layouts
+`status: todo` · `rules: WEB-001 §7` · `est: 2h` · `blocked-by: T-004`
+
+`app/admin/execution/layout.tsx` and `app/admin/dashboard-config/layout.tsx` sit
+**outside** the `(app)` route group and still import the named `AppShell` from
+`components/Shell.tsx`, so `ShellClient.tsx` (46 KB) still ships on those two
+routes. Point them at `components/app-shell/app-shell` and `ShellClient` reaches
+zero imports.
 
 ---
 
@@ -199,6 +238,46 @@ Pull one in only if it is genuinely part of doing the active task well.
 - **`--sqx-ease-linear`** exists solely so seamless looping gradients do not
   have to write the `linear` keyword inline. Delete it if a future motion pass
   removes the looping gradients.
+- **`ThemeScript` cannot see `prefers-color-scheme`.** WEB-002/T-004 asked for
+  resolution order stored → `prefers-color-scheme` → dark, but `ThemeScript.tsx`
+  was outside T-004's editable file list. The toggle works around it by writing
+  a resolved value to the `saqeel-theme` key that `ThemeScript` already reads, so
+  first paint never flashes. A proper fix edits `ThemeScript` to read the media
+  query itself, and must keep `ThemeChannelSync` and the toggle in agreement —
+  all three encode the same fallback today.
+- **Three preserved topbar controls have no home in the shell brief.** Locale
+  toggle, date/region scope and the ⌘K admin palette exist in `ShellClient` and
+  would have been deleted by building only the files T-004 listed. They were
+  rebuilt as islands under `shell-topbar/`. If the product wants them gone, that
+  is a product decision and its own task — not a side effect of a refactor.
+- **Shell island count is 8, not the brief's 5.** See the T-004 record. Getting
+  to 5 means deleting the three controls above.
+- **`e2e/ui-compliance-runtime.spec.ts` pins `main#main-content`.** T-004's brief
+  asked for `<main id="main">`; the id was kept as `main-content` so three
+  existing assertions stay green. Renaming it is a cross-cutting change that
+  needs the e2e file in scope.
+- **`a { color: var(--text-link) }` in `saqeel-components.css:15` is unlayered
+  and beats every cascade layer.** It repainted every anchor in the new shell
+  legacy-blue. `.sqx-shell*` had to be moved **out** of `@layer sqx.components`
+  to compete on specificity. This is the first time the "legacy outranks
+  `saqeel.css`" property caused a defect rather than preventing one, and it will
+  recur on every migrated screen that renders a link. Two clean fixes, both
+  already parked: delete that one declaration from the frozen sheet, or wrap the
+  legacy sheets in a `legacy` layer declared before `sqx.*`. Either lets the
+  shell move back inside the layer. **Until then, check any new `.sqx-*` rule
+  that sets `color` on an anchor.**
+- **`--sqx-surface-accent` is invisible on `--sqx-gradient-chrome`.** In dark it
+  is `#0A2416` and the chrome's top stop is `#0A2A18` — 1.02:1. T-004's first
+  cut used it for the active nav fill and the indicator effectively did not
+  exist. Anything placed on the chrome gradient must have its separation
+  measured against **all three** stops, not against `--sqx-surface-default`.
+  Fixed by `--sqx-nav-active-bg` / `--sqx-nav-group-bg`; the same trap is waiting
+  for any future chrome element.
+- **`.sq-pagehead` is `position: sticky` inside the scrolling `main`.** The new
+  shell had to reproduce that scroll model exactly (`.sqx-shell__main` owns
+  `overflow-y`, topbar is a flex sibling above it, not sticky) or every one of
+  the 55 pages still using the legacy `Shell` frame would have had two elements
+  stuck to the viewport top. Keep this in mind for T-007.
 
 ---
 
