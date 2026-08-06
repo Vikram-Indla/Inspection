@@ -81,6 +81,17 @@ green locally, so the first CI run holds no surprises.
 `npm run verify` runs: `typecheck` → `lint` → `gates` → `test:unit` →
 `test:e2e` → `gate:budgets`.
 
+### Commands an agent must never run
+
+| Command | Why | Who runs it |
+| --- | --- | --- |
+| `npm run build` · `next build` | minutes long, contends with the dev server over `.next`, a half-finished build leaves a corrupted cache | the human |
+| `git add` · `commit` · `push` · `checkout` · `branch` · `merge` · `rebase` · `reset` · `stash` | the commit is the last human checkpoint before code becomes history (WEB-007 §4) | the human |
+
+An agent verifies with `typecheck`, `lint`, `gates`, and the feature exercised by hand in
+the running dev server. Anything requiring a production compile becomes a **measurement
+request** handed back to the human (WEB-005 §8) — never a command the agent runs itself.
+
 ---
 
 ## 4. Retirement protocol
@@ -141,6 +152,7 @@ A task is done when **every** box is ticked. Not "mostly".
 - [ ] `npm run gates` — every gate green
 - [ ] `npm run test:e2e` — green on affected routes
 - [ ] The feature works in the browser, exercised by hand, not assumed
+- [ ] No production build was run; the measurement request was handed back instead
 
 **Code law (WEB-000)**
 

@@ -45,11 +45,49 @@ Acceptance: `<Icon name="riskCritical" />` renders; zero new `<svg>` possible.
 
 ---
 
-### T-002 · Core primitives: surface, layout, status
+### T-002 · SAQEEL design system — one stylesheet
+`status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-005, WEB-007` · `est: 5h`
+`record:` [2026-08-07-T-002-design-system](sessions/2026-08/2026-08-07-T-002-design-system.md)
+
+**Redefined by the owner on 2026-08-07.** The original T-002 ("core primitives",
+CSS Modules, React components) was replaced before it started. The design system
+is now **one stylesheet**, not a component library plus per-component modules.
+
+Delivered: `apps/web/src/app/saqeel.css` — 2,050 lines, one file, three cascade
+layers (`saqeel.tokens`, `saqeel.base`, `saqeel.components`). 339 custom
+properties, 59 classes, 3 keyframes. Prefix is `--saqeel-` / `.saqeel-`
+because `--sq-` is already occupied in `apps/web/src`. Variants are data
+attributes, not modifier classes. Imported once from `app/layout.tsx`.
+`tokens.css` untouched. WEB-002 §6 replaced; WEB-001 §9 gained the direction
+exception.
+
+The React primitives that consume these classes are **not** part of T-002 and are
+now T-004.
+
+---
+
+### T-003 · Install and self-host Readex Pro
+`status: todo` · `rules: WEB-005 §5` · `est: 2h`
+
+`saqeel.css` declares `--saqeel-font-sans: "Readex Pro", "IBM Plex Sans Arabic",
+system-ui, sans-serif` but ships no font files, so the fallback currently carries
+the app. This task self-hosts the family.
+
+- `next/font/local`, variable 160–700, one file per script (Latin, Arabic)
+- Only the weights the twelve type roles use: 400, 500, 600, 700
+- `display: swap`, preloaded, subset where the character set allows
+- Record the byte cost per weight and drop any weight that cannot justify itself
+
+Acceptance: no external font request, no FOIT, first-load JS unchanged, byte cost
+recorded.
+
+---
+
+### T-004 · React primitives over `saqeel.css`
 `status: todo` · `rules: WEB-002, WEB-003` · `est: 5h` · `blocked-by: T-001`
 
-The reusable vocabulary every later screen is built from. CSS Modules, tokens
-only, server components, closed variant APIs, no `className` escape hatch.
+The typed component layer that applies the classes T-002 built. Components ship
+**no CSS** — they map props onto `.saqeel-*` classes and data attributes.
 
 - `surface/` — `Card`, `Panel`, `Section`, `SectionHeader`, `Divider`
 - `surface/` layout — `Stack`, `Cluster`, `Grid` (the only sources of spacing)
@@ -58,13 +96,13 @@ only, server components, closed variant APIs, no `className` escape hatch.
 - `actions/Button`, `actions/IconButton` — rebuilt to the primitive contract
 - `data/KpiTile`, `feedback/EmptyState`, `feedback/Skeleton` — rebuilt
 
-Acceptance: each primitive under 200 lines, axe-clean, correct in dark and RTL,
-ledger rows written.
+Acceptance: each primitive under 200 lines, zero colocated CSS, axe-clean,
+correct in dark and RTL, ledger rows written.
 
 ---
 
-### T-003 · Reference route — the showcase
-`status: todo` · `rules: WEB-002 §9` · `est: 2h` · `blocked-by: T-002`
+### T-005 · Reference route — the showcase
+`status: todo` · `rules: WEB-002 §9` · `est: 2h` · `blocked-by: T-004`
 
 A single internal route rendering every primitive in every variant, in light,
 dark, English and Arabic. This is what gets opened in the manager meeting and it
@@ -135,13 +173,53 @@ filters and tabs moved to `searchParams`.
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
 
-- _(empty)_
+- **`gate:one-stylesheet`** — fail CI on any new `.module.css` under
+  `apps/web/src`, on any `--saqeel-*` or `.saqeel-*` declaration outside
+  `saqeel.css`, and on any `dir()` / `[dir]` rule outside the two direction rules
+  in `saqeel.css`. Belongs with T-000.
+- **`gate:one-prefix`** — the legacy sheets own 804 `.sq-*` class hits and seven
+  live `--sq-nav-*` / `--sq-map-*` custom properties. Once T-032 clears them, a
+  gate should stop `--sq-` coming back so a future rename to the shorter prefix
+  stays possible.
+- **`@layer` the legacy sheets.** `saqeel-runtime.css`, `saqeel-components.css`
+  and `v2-components.css` are unlayered, so they outrank everything in
+  `saqeel.css` regardless of order. Wrapping them in a `legacy` layer declared
+  *before* `saqeel.*` would invert that and let migrated screens win without
+  specificity games. Cheap, high leverage, but it changes cascade behaviour app
+  wide — it needs its own task and its own visual regression pass.
+- **Base-layer reset scope.** `saqeel.base` resets margins on `h5 h6 figure
+  blockquote dl dd ol ul` and sets `img/svg/video { display: block }` globally.
+  Legacy screens zero those per class rather than globally, so the reset is new
+  behaviour for any element the legacy sheets miss. Verified against the built
+  app; if a screen is ever found to depend on a UA default, the fix is that
+  screen, not the reset.
+- **Chart series 7 and 8** are `--saqeel-neon-steel-deep` / `--saqeel-neon-sky`,
+  primitives added to satisfy the eight-series chart scale. They are the only
+  primitives in `saqeel.css` not named in the T-002 brief.
+- **`--saqeel-ease-linear`** exists solely so seamless looping gradients do not
+  have to write the `linear` keyword inline. Delete it if a future motion pass
+  removes the looping gradients.
 
 ---
 
 ## BLOCKED
 
-- _(empty)_
+- **The app will not run on this workstation.** Windows Application Control
+  blocks Next.js's native compiler:
+
+  ```
+  ⚠ Attempted to load @next/swc-win32-x64-msvc, but an error occurred:
+    An Application Control policy has blocked this file.
+    apps\web\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node
+  ```
+
+  `next dev` starts, then serves nothing. `next build` hangs. Consequences: no
+  browser verification, no e2e, no axe, no Lighthouse, no bundle numbers. Every
+  task is limited to static verification, and WEB-006 §3's "exercised by hand in
+  the running dev server" and WEB-003 §10's manual checklist cannot be satisfied
+  by anyone working on this machine. Not a code problem — it needs the binary
+  allowlisted, or a WASM-compiler fallback accepted for local work. **This blocks
+  the Definition of Done for every task from T-000 onward.**
 
 ---
 

@@ -1,6 +1,6 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-06` · `Updated by: rulebook establishment session`
+`Last updated: 2026-08-07` · `Updated by: T-002 — SAQEEL design system`
 
 ---
 
@@ -18,11 +18,27 @@ a rebuild.
 
 ## Where we stand
 
-**Phase: 0 — rules established, no code changed yet.**
+**Phase: 1 — the visual vocabulary exists; nothing consumes it yet.**
 
-The rulebook is written and binding. No gates are wired yet, so nothing is
-enforced by machine. That is task **T-000**, and it is the next thing that
-happens.
+`apps/web/src/app/saqeel.css` is the design system: one file, three cascade layers
+(`saqeel.tokens`, `saqeel.base`, `saqeel.components`), 339 custom properties, 59
+classes, 3 keyframes, imported once from `app/layout.tsx`. Variants are data
+attributes. It sits entirely inside cascade layers while the three legacy sheets
+are unlayered, so it cannot override them and the visual diff of adding it is
+zero — a migrated screen must *delete* the legacy rule, not out-specify it.
+
+No screen uses it yet. The React layer that applies these classes is **T-004**.
+
+The rulebook is still not machine-enforced. No lint config, no gate scripts —
+every rule T-002 obeyed was checked by hand. That is **T-000**, and it remains
+the highest-priority unblocked item.
+
+> **The app does not run on this workstation.** Windows Application Control
+> blocks `@next/swc-win32-x64-msvc`, so `next dev` serves nothing and
+> `next build` hangs. No browser verification, no e2e, no axe, no bundle
+> numbers — every task is currently limited to static verification, and the
+> Definition of Done cannot be fully ticked by anyone working here. See
+> BLOCKED in `03-REDESIGN-TRACKER.md`. This outranks T-000.
 
 ---
 
@@ -34,7 +50,7 @@ happens.
 | Source bytes | ≈ 5.9 MB |
 | Route files under `app/(app)` | 495 |
 | Saqeel primitives already built | 60 |
-| Global CSS | `saqeel-runtime.css` 170 KB · `saqeel-components.css` 50 KB · `login.css` 57 KB · `tokens.css` 18 KB |
+| Global CSS | `saqeel-runtime.css` 170 KB · `saqeel-components.css` 50 KB · `login.css` 57 KB · `tokens.css` 18 KB · **`saqeel.css` 65 KB (added 2026-08-07, 9.0 KB gzip)** |
 | Lint config | none |
 | CI gates | none beyond a PR contract check |
 
@@ -85,7 +101,11 @@ happens.
 | --- | --- |
 | 2026-08-06 | Design system is **SAQEEL**. Astryx stays banned. Existing tokens are kept; the component layer is hardened on top of them. |
 | 2026-08-06 | Icons: **`lucide-react`** behind a semantic registry and one `Icon` primitive. Hand-authored `<svg>` banned in application code. |
-| 2026-08-06 | Styling mechanism for new work: **CSS Modules** colocated with the component. The two legacy global sheets are frozen and shrink as screens migrate. |
+| 2026-08-06 | ~~Styling mechanism for new work: **CSS Modules** colocated with the component.~~ **Superseded 2026-08-07.** |
+| 2026-08-07 | Styling mechanism: **one system stylesheet**, `apps/web/src/app/saqeel.css`. Tokens, base and every component class in one file under `@layer saqeel.tokens, saqeel.base, saqeel.components`. Components ship no CSS — they apply `.saqeel-*` classes and data attributes. No `.module.css`, no CSS-in-JS, no Tailwind. WEB-002 §6 rewritten. |
+| 2026-08-07 | Prefix is **`--saqeel-` / `.saqeel-`**, not `--sq-`. `--sq-` is still live in `saqeel-runtime.css` (seven nav/map custom properties) and `.sq-*` owns 804 class hits. One prefix across custom properties, classes, layer names and keyframe names. |
+| 2026-08-07 | Direction is a **six-token set** declared at `:root` and `:root:dir(rtl)` in `saqeel.css` — the only `dir()` / `[dir]` rules permitted in `apps/web/src`. CSS has no `to inline-end`, so a gradient angle cannot be logical. WEB-001 §9. |
+| 2026-08-07 | The three legacy sheets stay **unlayered** for now, so they outrank `saqeel.css` by construction. Migration deletes legacy rules; it never overrides them. |
 | 2026-08-06 | Accessibility target raised to **WCAG 2.2 Level AA**. |
 | 2026-08-06 | Rulebook and session memory live in `brain/web/`. Root `CLAUDE.md` is the onboarding pointer. |
 
@@ -95,3 +115,7 @@ happens.
 
 **T-000 — Guardrails: gate scripts, lint, verify pipeline.**
 See `03-REDESIGN-TRACKER.md`.
+
+T-000 now also owes two gates that T-002 created the need for:
+`gate:one-stylesheet` (no new `.module.css`; no `--saqeel-*` or `.saqeel-*`
+declared outside `saqeel.css`) and the `dir()` check that enforces WEB-001 §9.

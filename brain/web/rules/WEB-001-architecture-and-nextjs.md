@@ -211,6 +211,15 @@ it could read directly on the server.
 - Numerals, dates, and currency go through the shared formatters in `lib/`,
   never through ad-hoc `toLocaleString` calls scattered in components.
 
+**The one direction exception.** CSS has no logical equivalent of a gradient
+direction — there is no `to inline-end`. Direction is therefore a token set
+declared exactly once, at `:root` and `:root:dir(rtl)` in
+`apps/web/src/app/saqeel.css`: `--saqeel-flow-angle`, `--saqeel-flow-from`,
+`--saqeel-flow-to`, `--saqeel-sweep-start`, `--saqeel-sweep-end`,
+`--saqeel-sweep-skew`. Every gradient consumes those tokens. No other `dir()` or
+`[dir]` rule may exist anywhere in `apps/web/src`, and no component may declare a
+directional override.
+
 ---
 
 ## 10. Security baseline

@@ -181,22 +181,18 @@ last import is gone.
 
 ---
 
-## 6. Styling mechanism — CSS Modules
+## 6. Styling mechanism — one system stylesheet
 
-New and rebuilt components use **CSS Modules colocated with the component**:
-`Card.tsx` + `Card.module.css`. Rationale: scoped by construction (no cascade
-accidents), zero runtime cost, works in Server Components, ships only the CSS a
-route actually uses, and cannot leak into a neighbour.
-
-- No CSS-in-JS. No Tailwind. No new global stylesheet.
-- The legacy global sheets `saqeel-components.css` (50 KB) and
-  `saqeel-runtime.css` (170 KB) are **frozen**: nothing is added to them. As
-  each screen migrates, the classes it exclusively used are deleted from them.
-  Shrinking those two files is a tracked metric of this programme.
-- `tokens.css` stays global. It is the only global sheet that grows.
-- Class names inside a module are semantic and local: `.root`, `.header`,
-  `.isSelected`, `.toneCritical`. No utility soup.
-- No `!important`. No element selectors beyond one level. No `:global`.
+The entire visual system lives in `apps/web/src/app/saqeel.css`: tokens, base layer,
+and every component class, organised with
+`@layer saqeel.tokens, saqeel.base, saqeel.components`. Components apply
+`.saqeel-*` classes and data attributes; they do not ship CSS. There are no
+`.module.css` files, no CSS-in-JS, no Tailwind, and no `style` prop except a
+token-valued custom property. A visual change is made in one file, reviewed in
+one diff, and cannot drift per screen. The legacy sheets `saqeel-components.css`,
+`saqeel-runtime.css` and `v2-components.css` are frozen and shrink as screens
+migrate. `tokens.css` is frozen and untouched. This supersedes the previous CSS
+Modules rule.
 
 ---
 

@@ -118,13 +118,31 @@ client islands  1      → 3 (each < 120 lines)
 legacy CSS deleted: 412 lines from saqeel-runtime.css
 ```
 
-Commands:
+### The agent never runs the production build
+
+`npm run build`, `next build`, and any other full production compile are **owned by the
+human**. An agent must not run them. They take minutes, they contend with the running dev
+server over `.next`, and a half-finished build leaves a corrupted cache that costs more
+time than the measurement was worth.
+
+So the measurement protocol splits:
+
+**The agent produces the measurement request** — a short block at the end of its report
+naming the exact routes to measure and the exact numbers to capture:
 
 ```
-npm run build                 # per-route First Load JS table
-npm run perf:lighthouse       # scripted Lighthouse run, JSON archived
-npm run perf:bundle           # bundle composition report
+Measure before merging — routes touched: /operations, /operations/[id]
+  npm run build            → First Load JS for both routes
+  npm run perf:lighthouse  → LCP, INP, CLS on /operations
+  npm run perf:bundle      → shared chunk delta
 ```
+
+**The human runs it and pastes the numbers back.** The agent then fills them into the task
+record. Until they arrive, the record's Numbers block reads `pending measurement` and the
+task stays `in-progress`.
+
+Everything else the agent verifies itself: `npm run typecheck`, `npm run lint`,
+`npm run gates`, and the feature exercised by hand in the running dev server.
 
 A task without numbers is not finished. "Feels faster" is not a measurement.
 

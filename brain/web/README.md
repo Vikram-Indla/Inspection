@@ -36,7 +36,7 @@ between them. What is not written here did not happen.
 
 ---
 
-## The thirteen non-negotiables
+## The fourteen non-negotiables
 
 If you read nothing else, these are the ones that get a diff rejected on sight.
 
@@ -71,6 +71,12 @@ If you read nothing else, these are the ones that get a diff rejected on sight.
     `git add`, `git commit`, `git push`, or any other git write command —
     finish by listing the changed files and proposing **one** Conventional
     Commit line, ≤ 72 characters, for the human to run.
+14. **Never run the production build.** `npm run build` and `next build` belong
+    to the human — they take minutes, fight the dev server over `.next`, and a
+    half-finished one corrupts the cache. Verify with `typecheck`, `lint`,
+    `gates`, and the running dev server. Anything needing a production compile
+    becomes a measurement request handed back (WEB-005 §8), never a command the
+    agent runs.
 
 ---
 

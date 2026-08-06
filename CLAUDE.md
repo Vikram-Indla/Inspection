@@ -129,6 +129,12 @@ of it.
   parked ideas, blockers. This app is transformed by agents with no memory
   between sessions. The record is the memory. A task that is not written did not
   happen.
+- **Never run the production build.** `npm run build` and `next build` belong to the human:
+  they take minutes, contend with the running dev server over `.next`, and a half-finished
+  build leaves a corrupted cache. Verify with `npm run typecheck`, `npm run lint`,
+  `npm run gates`, and the feature exercised by hand in the dev server. Anything needing a
+  production compile becomes a **measurement request** handed back for the human to run
+  (WEB-005 §8) — never a command you run yourself.
 - **Never commit.** No `git add`, `commit`, `push`, `checkout`, `switch`,
   `branch`, `merge`, `rebase`, `reset`, `revert`, `stash`, `tag`, `clean`, or
   `gh pr create`. Read-only git (`status`, `diff`, `log`, `show`) is fine and

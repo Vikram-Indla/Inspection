@@ -1,4 +1,5 @@
 import "./tokens.css";
+import "./saqeel.css";
 import "./saqeel-components.css";
 import "./saqeel-runtime.css";
 import PwaRegister from "@/components/PwaRegister";
