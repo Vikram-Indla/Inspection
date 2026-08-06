@@ -496,7 +496,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
               .replace("{shown}", String(visibleRows.length)).replace("{total}", String(list.total))
               .replace("{page}", String(page)).replace("{pages}", String(totalPages))}
           </span>
-          <div className="sq-row" style={{ gap: "var(--space-3)" }}>
+          <div className="sq-row">
             {page > 1 && <a className="sq-btn sq-btn--subtle" href={hrefWith(sp, { page: String(page - 1) })}>{tr("plan.list.prev", "← Previous", "→ السابق")}</a>}
             {page < totalPages && <a className="sq-btn sq-btn--subtle" href={hrefWith(sp, { page: String(page + 1) })}>{tr("plan.list.next", "Next →", "التالي ←")}</a>}
           </div>

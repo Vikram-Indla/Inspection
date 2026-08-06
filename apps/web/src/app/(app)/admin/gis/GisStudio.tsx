@@ -191,7 +191,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
                 <p className="t-caption">{s.coordsCaption}</p>
               </div>
 
-              <form action={formAction} className="stack" style={{ gap: "var(--space-3)" }}>
+              <form action={formAction} className="stack">
                 <input type="hidden" name="factory_id" value={selected.id} />
                 <div className="sq-field">
                   <label className="sq-field__label" htmlFor="gis-radius">{s.radiusLabel}</label>
