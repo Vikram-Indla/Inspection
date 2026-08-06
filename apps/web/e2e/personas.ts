@@ -101,7 +101,7 @@ export const PERSONAS = {
     // is reached via navigation, not as the login home. Observed live during
     // this session's auth setup (redirected to /dashboard, not /field).
     home: "/dashboard",
-    get password(): string { return primaryCohortPassword("inspector"); },
+    get password(): string { return sharedPassword("inspector"); },
   },
   reviewer: {
     get email(): string { return personaEmail("SAQEEL_TEST_REVIEWER_EMAIL", "reviewer"); },
@@ -111,7 +111,7 @@ export const PERSONAS = {
   admin: {
     get email(): string { return personaEmail("SAQEEL_TEST_COMPLIANCE_ADMIN_EMAIL", "admin"); },
     home: "/admin",
-    get password(): string { return primaryCohortPassword("admin"); },
+    get password(): string { return sharedPassword("admin"); },
   },
   ops: {
     get email(): string { return personaEmail("SAQEEL_TEST_OPS_EMAIL", "ops"); },
@@ -123,10 +123,7 @@ export const PERSONAS = {
 export type PersonaKey = keyof typeof PERSONAS;
 
 export function goldenInspectorPersona(): { email: string; password: string } {
-  return {
-    email: personaEmail("SAQEEL_TEST_MULTI_ROLE_EMAIL", "golden alternate inspector"),
-    password: primaryCohortPassword("golden alternate inspector"),
-  };
+  return { email: PERSONAS.inspector.email, password: PERSONAS.inspector.password };
 }
 
 // Keep reusable authentication outside Playwright's outputDir. Playwright may

@@ -64,77 +64,9 @@ test("evidence is secret-safe and ignored local state carries the manifest", () 
   assert.doesNotMatch(source, /console\.log\([^)]*(password|serviceRole|jwt)/i);
 });
 
-test("all five headed setup personas use the governed primary-cohort password reference", () => {
+test("golden-journey Planner and Reviewer use the rotated primary-cohort password reference", () => {
   const personas = readFileSync(new URL("../../apps/web/e2e/personas.ts", import.meta.url), "utf8");
   assert.match(personas, /primaryCohortPassword = \(persona: string\) => requireSetting\("SAQEEL_CROSS_ROLE_PASSWORD", persona\)/);
   assert.match(personas, /password\(\): string \{ return primaryCohortPassword\("planner"\); \}/);
-  assert.match(personas, /password\(\): string \{ return primaryCohortPassword\("supervisor"\); \}/);
   assert.match(personas, /password\(\): string \{ return primaryCohortPassword\("reviewer"\); \}/);
-  assert.match(personas, /password\(\): string \{ return primaryCohortPassword\("admin"\); \}/);
-  assert.match(personas, /password\(\): string \{ return primaryCohortPassword\("inspector"\); \}/);
-  assert.doesNotMatch(personas, /password\(\): string \{ return sharedPassword\("(?:admin|inspector)"\); \}/);
-});
-
-test("Admin-only repair is explicit, existing-identity-only and does not rotate the cohort", () => {
-  assert.match(source, /CONFIRM_REPAIR_EXISTING_NONPRODUCTION_ADMIN/);
-  assert.match(source, /repairAdmin && rotateOwnedPasswords/);
-  assert.match(source, /governed existing Admin identity is absent or ambiguous/);
-  assert.match(source, /if \(repairAdmin\) \{\s*await repairExistingAdmin\(\);\s*process\.exit\(0\);/);
-  assert.match(source, /persistLocalSetting\("SAQEEL_TEST_COMPLIANCE_ADMIN_EMAIL", account\.email\)/);
-  assert.doesNotMatch(source.slice(source.indexOf("async function repairExistingAdmin"), source.indexOf("async function certify")), /\/auth\/v1\/admin\/users[^`]*method: "POST"/);
-});
-
-test("Admin-only repair verifies login, exact role and organization scope without secret output", () => {
-  const repair = source.slice(source.indexOf("async function repairExistingAdmin"), source.indexOf("async function certify"));
-  assert.match(source, /verified\.user_id !== account\.id/);
-  assert.match(source, /profile\[0\]\.region !== account\.region/);
-  assert.match(source, /profile\[0\]\.org_scope !== account\.org_scope/);
-  assert.match(source, /roles\.length !== 1 \|\| roles\[0\]\.role_key !== "admin"/);
-  assert.match(source, /nonproduction_admin_identity_reconciled/);
-  assert.match(source, /identity_hash: digest\(account\.id\)/);
-  assert.doesNotMatch(repair.slice(repair.indexOf("process.stdout.write")), /password|serviceRole|jwt/);
-});
-
-test("golden-journey Admin uses the governed primary-cohort password reference", () => {
-  const personas = readFileSync(new URL("../../apps/web/e2e/personas.ts", import.meta.url), "utf8");
-  assert.match(personas, /password\(\): string \{ return primaryCohortPassword\("admin"\); \}/);
-  assert.doesNotMatch(personas, /password\(\): string \{ return sharedPassword\("admin"\); \}/);
-});
-
-test("golden journey selects the approved existing cross-role alternate Inspector", () => {
-  const personas = readFileSync(new URL("../../apps/web/e2e/personas.ts", import.meta.url), "utf8");
-  assert.match(personas, /SAQEEL_TEST_MULTI_ROLE_EMAIL", "golden alternate inspector"/);
-  assert.match(personas, /primaryCohortPassword\("golden alternate inspector"\)/);
-});
-
-test("Admin-only repair is explicit, existing-identity-only and does not rotate the cohort", () => {
-  assert.match(source, /CONFIRM_REPAIR_EXISTING_NONPRODUCTION_ADMIN/);
-  assert.match(source, /repairAdmin && rotateOwnedPasswords/);
-  assert.match(source, /governed existing Admin identity is absent or ambiguous/);
-  assert.match(source, /if \(repairAdmin\) \{\s*await repairExistingAdmin\(\);\s*process\.exit\(0\);/);
-  assert.match(source, /persistLocalSetting\("SAQEEL_TEST_COMPLIANCE_ADMIN_EMAIL", account\.email\)/);
-  assert.doesNotMatch(source.slice(source.indexOf("async function repairExistingAdmin"), source.indexOf("async function certify")), /\/auth\/v1\/admin\/users[^`]*method: "POST"/);
-});
-
-test("Admin-only repair verifies login, exact role and organization scope without secret output", () => {
-  const repair = source.slice(source.indexOf("async function repairExistingAdmin"), source.indexOf("async function certify"));
-  assert.match(source, /verified\.user_id !== account\.id/);
-  assert.match(source, /profile\[0\]\.region !== account\.region/);
-  assert.match(source, /profile\[0\]\.org_scope !== account\.org_scope/);
-  assert.match(source, /roles\.length !== 1 \|\| roles\[0\]\.role_key !== "admin"/);
-  assert.match(source, /nonproduction_admin_identity_reconciled/);
-  assert.match(source, /identity_hash: digest\(account\.id\)/);
-  assert.doesNotMatch(repair.slice(repair.indexOf("process.stdout.write")), /password|serviceRole|jwt/);
-});
-
-test("golden-journey Admin uses the governed primary-cohort password reference", () => {
-  const personas = readFileSync(new URL("../../apps/web/e2e/personas.ts", import.meta.url), "utf8");
-  assert.match(personas, /password\(\): string \{ return primaryCohortPassword\("admin"\); \}/);
-  assert.doesNotMatch(personas, /password\(\): string \{ return sharedPassword\("admin"\); \}/);
-});
-
-test("golden journey selects the approved existing cross-role alternate Inspector", () => {
-  const personas = readFileSync(new URL("../../apps/web/e2e/personas.ts", import.meta.url), "utf8");
-  assert.match(personas, /SAQEEL_TEST_MULTI_ROLE_EMAIL", "golden alternate inspector"/);
-  assert.match(personas, /primaryCohortPassword\("golden alternate inspector"\)/);
 });

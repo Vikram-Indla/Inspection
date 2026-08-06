@@ -3,7 +3,6 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 const sql = readFileSync(new URL("../../supabase/migrations/20260803210000_nonproduction_golden_inspector_leases.sql", import.meta.url), "utf8");
-const reuseSql = readFileSync(new URL("../../supabase/migrations/20260803213000_nonproduction_golden_inspector_lease_reuse.sql", import.meta.url), "utf8");
 
 test("golden leases are isolated, immutable, service-role-only test coordination", () => {
   assert.match(sql, /nonproduction_golden_inspector_leases/);
@@ -71,37 +70,4 @@ test("verification RPC is service-role-only and checks every active binding", ()
   assert.match(sql, /where event\.lease_id=v_lease\.id/);
   assert.match(sql, /v_lease\.window_start is distinct from p_window_start/);
   assert.match(sql, /revoke all on function public\.verify_nonproduction_golden_inspector_lease[\s\S]*from public,anon,authenticated/);
-});
-
-function canReacquire({ activeLease, overlap }) {
-  if (activeLease && !activeLease.released && !activeLease.expired) return false;
-  if (!overlap) return true;
-  return overlap.factoryCode.startsWith("R3-QA-CERT-") && overlap.planningStatus === "published" && overlap.operationalState === "new";
-}
-
-test("behavior: acquire then terminal release permits reacquire with a new run key", () => {
-  assert.equal(canReacquire({ activeLease: { released: true, expired: false }, overlap: null }), true);
-  assert.match(reuseSql, /GOLDEN-LEASE-RUN-KEY-CLOSED/);
-  assert.match(reuseSql, /not exists \(select 1 from public\.nonproduction_golden_inspector_lease_events/);
-});
-
-test("behavior: an active overlapping lease still refuses reacquisition", () => {
-  assert.equal(canReacquire({ activeLease: { released: false, expired: false }, overlap: null }), false);
-});
-
-test("behavior: only an unstarted harness predecessor may defer to governed cleanup", () => {
-  const ownedNew = { factoryCode: "R3-QA-CERT-123", planningStatus: "published", operationalState: "new" };
-  assert.equal(canReacquire({ activeLease: null, overlap: ownedNew }), true);
-  assert.equal(canReacquire({ activeLease: null, overlap: { ...ownedNew, factoryCode: "BUSINESS-123" } }), false);
-  assert.equal(canReacquire({ activeLease: null, overlap: { ...ownedNew, operationalState: "prepared" } }), false);
-  assert.equal(canReacquire({ activeLease: null, overlap: { ...ownedNew, operationalState: "under_review" } }), false);
-});
-
-test("reuse migration preserves service-role, roster, conflict and audit boundaries", () => {
-  assert.match(reuseSql, /auth\.role\(\)\) <> 'service_role'/);
-  assert.match(reuseSql, /roster\.provenance='NONPRODUCTION_SYNTHETIC'/);
-  assert.match(reuseSql, /factory\.factory_code like 'R3-QA-CERT-%'/);
-  assert.match(reuseSql, /visit\.operational_state='new'/);
-  assert.match(reuseSql, /NONPRODUCTION_GOLDEN_INSPECTOR_LEASE_ACQUIRED/);
-  assert.doesNotMatch(reuseSql, /alter table public\.(assignments|visits)|disable row level security|delete from/i);
 });

@@ -18,29 +18,20 @@ const blockerResolution = source.slice(source.indexOf("// Blocking action form")
 const reviewerJourney = source.slice(source.indexOf('test("P3 reviewer'), source.indexOf('test("P5 reviewer'));
 const finalReviewerJourney = source.slice(source.indexOf('test("P5 reviewer'));
 
-test("golden P1 resolves controlled Inspector candidates without stale fixture credentials", () => {
-  assert.match(source, /const controlledCredentials = \[goldenInspectorPersona\(\)/);
-  assert.match(source, /email: PERSONAS\.inspector\.email/);
-  assert.match(source, /controlledCredentials\.map/);
-  assert.match(source, /selectLeasedControlledInspector/);
+test("golden P1 resolves the controlled Inspector identity without stale fixture credentials", () => {
+  assert.match(source, /inspectorCreds = goldenInspectorPersona\(\)/);
+  assert.match(source, /const inspectorSession = await login\(inspectorCreds\.email, inspectorCreds\.password\)/);
+  assert.match(source, /inspectorUserId = inspectorSession\.userId/);
   assert.doesNotMatch(source, /9b4d2c98-c284-49c1-81ee-d418efc23c31/);
   assert.doesNotMatch(source, /g10-inspector-1784679710389@mim\.gov\.sa/);
 });
 
-test("golden P1 fails closed unless the reserved controlled Inspector is governed and available", () => {
-  assert.match(source, /rpc\/acquire_nonproduction_golden_inspector_lease/);
-  assert.match(source, /p_candidate_ids: controlledInspectorCandidates\.map/);
-  assert.match(source, /p_window_start: visitWindowStart/);
-  assert.match(source, /p_window_end: visitWindowEnd/);
-  assert.match(source, /rpc\/list_available_supervision_inspectors/);
-  assert.match(source, /authoritativeInspectorIds/);
-  assert.match(source, /reserved Inspector must remain authoritatively available/);
-  assert.match(source, /selectAvailableControlledInspector/);
+test("golden P1 fails closed unless the controlled Inspector is a governed live option", () => {
   assert.match(source, /option:not\(\[value=""\]\)/);
   assert.match(source, /Planner selector must expose an eligible Inspector/);
-  assert.match(source, /Planner selector must expose a controlled Inspector/);
+  assert.match(source, /controlled Inspector must remain eligible in the governed Planner selector/);
   assert.match(source, /\.toContain\(inspectorUserId\)/);
-  assert.match(source, /await inspectorSelect\.selectOption\(proposedInspectorUserId\)/);
+  assert.match(source, /await inspectorSelect\.selectOption\(inspectorUserId\)/);
 });
 
 test("golden P2 Inspector login uses the governed structural form helpers", () => {
@@ -62,13 +53,18 @@ test("golden P2 requires the shared Dashboard landing and useful content before 
   assert.match(source, /page\.goto\("\/field"\)/);
 });
 
-test("golden P1 uses only configured controlled candidates through the guarded lease", () => {
-  const personas = readFileSync(new URL("./personas.ts", import.meta.url), "utf8");
-  assert.match(personas, /SAQEEL_TEST_MULTI_ROLE_EMAIL", "golden alternate inspector"/);
-  assert.match(personas, /primaryCohortPassword\("golden alternate inspector"\)/);
-  assert.doesNotMatch(personas, /GOLDEN_INSPECTOR_(?:LEASE|SLOT|WINDOW)/);
-  assert.match(source, /serviceFixtureRest\("POST", "rpc\/acquire_nonproduction_golden_inspector_lease"/);
-  assert.match(source, /serviceFixtureRest\("POST", "rpc\/release_nonproduction_golden_inspector_lease"/);
+test("golden fixture rollover retires only overlapping unstarted harness-owned assignments", () => {
+  assert.match(source, /async function retireOverlappingGoldenAssignments\(plannerJwt: string, proposedStart: Date, proposedEnd: Date\)/);
+  assert.match(source, /visits\.planning_status=in\.\(published,returned\)/);
+  assert.match(source, /visits\.operational_state=eq\.new/);
+  assert.match(source, /visits\.factories\.factory_code=like\.R3-QA-CERT-\*/);
+  assert.match(source, /startsWith\("R3-QA-CERT-"\)/);
+  assert.match(source, /rpc\/reschedule_published_visits_atomic/);
+  assert.match(source, /Controlled UAT golden-journey fixture rollover/);
+  assert.match(source, /read occupied Inspector windows/);
+  assert.match(source, /status=in\.\(assigned,preparing,ready\)/);
+  assert.match(source, /visits\.planning_status=in\.\(draft,published,returned\)/);
+  assert.match(source, /await retireOverlappingGoldenAssignments\(planner\.jwt, new Date\(visitWindowStart\), new Date\(visitWindowEnd\)\)/);
   assert.doesNotMatch(source, /SUPABASE_SERVICE_ROLE_KEY/);
 });
 
@@ -137,28 +133,11 @@ test("golden rollover source sorts stably, preserves duration and refuses unprov
   assert.match(source, /cannot prove a collision-free retirement window/);
 });
 
-test("golden P1 resolves the controlled Inspector persona without inventing lease-scoped env vars", () => {
+test("golden P1 uses the existing controlled Inspector without a lease prerequisite", () => {
   const personas = readFileSync(new URL("./personas.ts", import.meta.url), "utf8");
-  assert.match(personas, /SAQEEL_TEST_MULTI_ROLE_EMAIL", "golden alternate inspector"/);
-  assert.match(personas, /primaryCohortPassword\("golden alternate inspector"\)/);
+  assert.match(personas, /return \{ email: PERSONAS\.inspector\.email, password: PERSONAS\.inspector\.password \}/);
   assert.doesNotMatch(personas, /GOLDEN_INSPECTOR_(?:LEASE|SLOT|WINDOW)/);
-  // NB: unlike an earlier assumption, main's golden-journey.spec.ts did NOT
-  // retire the lease-based selection path — it kept it as one of two
-  // candidate-resolution strategies alongside the newer multi-candidate
-  // approach (see "golden rollover is candidate-scoped..." below), so
-  // acquire/verify_nonproduction_golden_inspector_lease legitimately still
-  // appear in source for the leased path.
-});
-
-test("golden rollover is candidate-scoped and refuses non-harness assignments", () => {
-  assert.match(source, /async function retireOverlappingGoldenAssignments\([\s\S]*controlledInspectorId: string/);
-  assert.match(source, /inspector_id=eq\.\$\{controlledInspectorId\}/);
-  assert.match(source, /visits\.factories\.factory_code=like\.R3-QA-CERT-\*/);
-  assert.match(source, /startsWith\("R3-QA-CERT-"\)/);
-  assert.match(source, /refusing to reschedule a non-golden assignment/);
-  assert.match(source, /for \(const candidate of controlledInspectorCandidates\)/);
-  assert.match(source, /candidate\.userId/);
-  assert.doesNotMatch(source, /retireOverlappingGoldenAssignments\(planner\.jwt, inspectorUserId/);
+  assert.doesNotMatch(source, /acquire_nonproduction_golden_inspector_lease|verify_nonproduction_golden_inspector_lease/);
 });
 
 test("golden fresh window is current, minute-aligned and identical across cleanup and Planning UI", () => {
@@ -169,8 +148,7 @@ test("golden fresh window is current, minute-aligned and identical across cleanu
   assert.match(source, /startDate\.setUTCSeconds\(0, 0\)/);
   assert.match(source, /startDate\.setUTCMinutes\(startDate\.getUTCMinutes\(\) - 1\)/);
   assert.match(source, /startDate\.getTime\(\) \+ 90 \* 60_000/);
-  assert.match(source, /p_window_start: visitWindowStart/);
-  assert.match(source, /p_window_end: visitWindowEnd/);
+  assert.match(source, /retireOverlappingGoldenAssignments\(planner\.jwt, new Date\(visitWindowStart\), new Date\(visitWindowEnd\)\)/);
   assert.match(source, /fill\(visitWindowStartInput\)/);
   assert.match(source, /fill\(visitWindowEndInput\)/);
   const fillWizard = source.slice(source.indexOf("async function fillWizard"), source.indexOf('test("NEG: publish'));

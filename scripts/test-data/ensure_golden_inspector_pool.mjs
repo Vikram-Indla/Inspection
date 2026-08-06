@@ -9,7 +9,6 @@ const apply = process.argv.includes("--apply");
 const acquire = process.argv.includes("--acquire");
 const release = process.argv.includes("--release");
 const verify = process.argv.includes("--verify");
-const includeCrossRoleAlternate = process.argv.includes("--include-cross-role-alternate");
 if ([acquire, release, verify].filter(Boolean).length > 1) throw new Error("GOLDEN_POOL_REFUSED: acquire, verify and release are mutually exclusive");
 const envPath = resolve(process.env.E2E_ENV_FILE || "apps/web/.env.local");
 const fileEnv = existsSync(envPath) ? Object.fromEntries(readFileSync(envPath, "utf8").split(/\r?\n/)
@@ -48,13 +47,6 @@ function slotReference(index) {
   };
 }
 const references = Array.from({ length: 30 }, (_, index) => slotReference(index + 1)).filter(Boolean);
-if (includeCrossRoleAlternate && !references.some(reference => reference.slot === "02")) {
-  references.push({
-    slot: "02",
-    email: required("SAQEEL_TEST_MULTI_ROLE_EMAIL"),
-    password: required("SAQEEL_CROSS_ROLE_PASSWORD"),
-  });
-}
 if (references.length === 0) throw new Error("GOLDEN_POOL_REFUSED: no Inspector slot references are configured");
 if (new Set(references.map(reference => reference.email.trim().toLowerCase())).size !== references.length) {
   throw new Error("GOLDEN_POOL_REFUSED: duplicate Inspector email references");

@@ -51,7 +51,7 @@ test.describe("INSP visit statement — responsive positive path — EN · Light
       // be present, and the layout must not overflow the viewport at this width.
       await expect(page.locator("text=Final version — not editable.")).toBeVisible();
       await expect(page.locator("dt", { hasText: "Visitor name" })).toBeVisible();
-      await expect(page.locator("dd", { hasText: "Synthetic inspector3" })).toBeVisible();
+      await expect(page.locator("dd", { hasText: "زياد الحارثي" })).toBeVisible();
       await expect(page.locator("text=Submitted (locked)")).toBeVisible();
 
       const horizontalOverflow = await page.evaluate(
@@ -80,7 +80,7 @@ test.describe("INSP visit statement — responsive positive path — EN · Dark"
 
       await expect(page.locator("text=Final version — not editable.")).toBeVisible();
       await expect(page.locator("dt", { hasText: "Visitor name" })).toBeVisible();
-      await expect(page.locator("dd", { hasText: "Synthetic inspector3" })).toBeVisible();
+      await expect(page.locator("dd", { hasText: "زياد الحارثي" })).toBeVisible();
       await expect(page.locator("text=Submitted (locked)")).toBeVisible();
 
       const horizontalOverflow = await page.evaluate(
@@ -107,7 +107,7 @@ test.describe("INSP visit statement — responsive positive path — AR · RTL",
       // Arabic strings from page.tsx tr() calls — real translated text, not transliteration.
       await expect(page.locator("text=النسخة النهائية غير قابلة للتعديل.")).toBeVisible();
       await expect(page.locator("dt", { hasText: "اسم الزائر" })).toBeVisible();
-      await expect(page.locator("dd", { hasText: "Synthetic inspector3" })).toBeVisible();
+      await expect(page.locator("dd", { hasText: "زياد الحارثي" })).toBeVisible();
       await expect(page.locator("text=مُرسَل (مقفل)")).toBeVisible();
 
       const horizontalOverflow = await page.evaluate(
