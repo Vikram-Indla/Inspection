@@ -10,7 +10,7 @@
    tab-bar gutter. This route deliberately renders no bottom nav, so the block-end
    gutter is the safe-area-aware equivalent instead. */
 .wrap {
-  max-width: 1200px;
+  max-width: 720px;
   margin-inline: auto;
   width: 100%;
   padding-inline: 18px;

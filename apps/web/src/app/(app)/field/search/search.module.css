@@ -20,7 +20,7 @@
 .chipActive { background: var(--action-primary); border-color: var(--action-primary); color: var(--text-on-action); }
 .chipActive:hover { color: var(--text-on-action); }
 
-.wrap { max-width: 1200px; margin: 0 auto; width: 100%; padding: 0 0 60px; display: flex; flex-direction: column; }
+.wrap { max-width: 720px; margin: 0 auto; width: 100%; padding: 0 0 60px; display: flex; flex-direction: column; }
 
 .row { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-block-end: 1px solid var(--border-subtle); background: var(--surface-primary); text-align: start; font: inherit; color: inherit; width: 100%; text-decoration: none; }
 .row:hover { background: var(--surface-sunken); }
