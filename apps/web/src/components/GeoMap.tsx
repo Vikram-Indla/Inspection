@@ -266,12 +266,21 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
       map.on("mouseenter", MARKER_LAYER, () => { map.getCanvas().style.cursor = "pointer"; });
       map.on("mouseleave", MARKER_LAYER, () => { map.getCanvas().style.cursor = ""; });
     };
-    const onIdle = () => setReady(true);
+    // A hung request (blocked domain, dead network, stalled tile) can leave
+    // the map neither idle nor erroring — mapboxgl.Map has no built-in
+    // request timeout, so without this the loading shimmer covers the map
+    // forever with no way out. 15s clears comfortably above the ~5s warm-
+    // machine load noted below, so a genuinely slow (cellular) load still
+    // finishes before this fires.
+    const stallTimer = window.setTimeout(() => setFailed(true), 15_000);
+    const onIdle = () => { window.clearTimeout(stallTimer); setReady(true); };
     const onError = (event: { error?: Error }) => {
+      window.clearTimeout(stallTimer);
       if (/access token|authorization|unauthori[sz]ed|forbidden|failed to load.*style/i.test(event.error?.message ?? "")) setFailed(true);
     };
     map.on("load", onLoad); map.on("idle", onIdle); map.on("error", onError);
     return () => {
+      window.clearTimeout(stallTimer);
       map.off("load", onLoad); map.off("idle", onIdle); map.off("error", onError);
       map.remove(); mapRef.current = null;
     };

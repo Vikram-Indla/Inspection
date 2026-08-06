@@ -33,7 +33,7 @@ The design is styled entirely with classes and tokens that ALREADY EXIST in
 8. **ARABIC LIVES IN i18n RESOURCES.** The design carries ~725 approved Arabic strings; they move
    into the repo's i18n layer, not into components. Never translate inside a component.
 
-9. **ROUTES ARE FIXED.** `/dashboard` `/operations` `/factory-360` `/planning` `/execution`
+9. **ROUTES ARE FIXED.** `/dashboard` `/operations` `/factories` `/planning` `/execution`
    `/reviews` `/compliance` `/compliance/approvals` `/enforcement-library` `/analytics`
    `/admin/*`. Do not rename, add, or nest. Tabs and filters are query state, never subroutes.
 

@@ -1466,7 +1466,14 @@ button.sq-shell-scope { cursor: pointer; }
 @keyframes lv-pulse { 50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--status-compliant) 8%, transparent); } }
 
 .lv-map { block-size: min(64vh, 560px); border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md); overflow: hidden; }
+  border-radius: var(--radius-md); overflow: hidden; display: flex; flex-direction: column; }
+/* Operations Center's map-only path (OperationsMapWorkspace mapOnly) nests an
+   extra .stack > .map-panel layer inside .lv-map that Live Ops' Map doesn't
+   have. Neither ancestor carries a height, so GeoMap's own blockSize:100%
+   div had nothing real to resolve against and rendered short, leaving dead
+   space inside .lv-map's already-correct fixed box. Scoped to a direct
+   .lv-map > .stack so Live Ops (no .stack there) is unaffected. */
+.lv-map > .stack, .lv-map > .stack > .map-panel { flex: 1; min-block-size: 0; }
 
 .lv-legend { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4);
   font: var(--type-caption-font); color: var(--text-secondary); }
