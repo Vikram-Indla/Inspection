@@ -1,0 +1,27 @@
+check,scope,mode,measured,threshold,result,evidence,disposition,jira
+Contrast — real usage,— SCREENS — page,Light + Dark (mode-aware),"37603 text/background pairs resolved via resolveForConsumer",4.5:1 text / 3:1 large,149 FAIL (0.40%),8 failing groups; worst 1.10:1,OPEN,INSP-792
+Contrast — real usage,Admin Shell page,Light + Dark (mode-aware),25694 pairs,4.5:1 / 3:1,29 FAIL (0.11%),2 groups; worst 1.27:1 on accent-soft,OPEN,INSP-792
+Contrast — real usage,Screen content page,Light + Dark,758 pairs,4.5:1 / 3:1,0 FAIL,PASS,none needed,-
+Contrast — token pairs,Color collection (95 vars),Light + Dark,100 semantic pairs computed,4.5:1 / 3:1,86 PASS / 14 FAIL,Token system broadly sound,OPEN for the 14,INSP-792
+Unbound text fills,SCR-FLD-610 / SCR-FLD-600 / SCR-ADM-001 / SCR-ADM-040,Dark + Light,~115 nodes with raw #000000 or raw fills,must bind to a text token,FAIL,"709:386, 709:389, 683:57 — #000000 on #191d22 = 1.24:1",OPEN,INSP-792
+Missing surface fill,Build sections / Planning Calendar / SCR-IPAD-630,Dark,~30 nodes: dark text token falling through to a raw white ancestor,must carry surface-* fill,FAIL,"716:44 text-primary Dark on white = 1.10:1",OPEN,INSP-792
+Token hierarchy,text-* ramp,Light + Dark,"text-disabled 7.91:1 Light / 9.74:1 Dark vs text-muted 5.83 / 6.41",disabled should be weakest,FAIL (semantic inversion),Disabled renders stronger than secondary and muted,OPEN,INSP-792
+Non-text contrast,border-subtle,Light + Dark,1.37:1 / 1.52:1,3:1 (SC 1.4.11),FAIL if used as a meaningful boundary,Exempt on decorative dividers; border-input (4.13:1) is the correct token for inputs,OPEN - needs usage judgement,INSP-792
+Non-text contrast,border-strong,Light + Dark,2.49:1 / 2.68:1,3:1,FAIL,,OPEN,INSP-792
+Non-text contrast,nav-indicator,Light,2.67:1,3:1,FAIL,Marks the selected nav item = meaningful state,OPEN,INSP-792
+Non-text contrast,focus-ring,Light + Dark,"action-primary value 176b52 / 64c2a1",3:1,NOT YET COMPUTED against every surface,Focus indication needs its own pass,PENDING,-
+Chart label legibility,chart-label on all surfaces,Light + Dark,3.83-4.48:1 Light / 4.00-4.73:1 Dark,4.5:1,FAIL on 4 of 5 Light surfaces,Affects every analytics screen,OPEN,INSP-792
+Status text legibility,status-disabled-text on status-disabled-soft,Light + Dark,3.86:1 / 4.25:1,4.5:1,FAIL,Confirmed in real usage,OPEN,INSP-792
+Status text legibility,"9 other status-*-text on matching -soft",Light + Dark,all >= 4.5:1,4.5:1,PASS,"critical, major, warning, compliant, info, pending, draft, onhold, completed",none needed,-
+Semi-transparent tokens,"surface-overlay, map-panel, ad-state-* (14-99% alpha)",Light + Dark,NOT COMPUTED,4.5:1 / 3:1,DEFERRED,Effective contrast depends on what sits beneath at runtime,MUST VERIFY IN CODE,-
+Colour-only communication,status tokens,both,Every status carries a -text and a -soft pair plus a text label in the State components,not colour alone,PASS (design intent),State components use border + words,none needed,-
+Arabic / RTL parity,Admin Shell AR frames,Light + Dark,"180 AR admin frames present; ad-head__title clips 23px/75px at compact/720",no clipping,PARTIAL FAIL,CFX-013,OPEN,INSP-782
+Arabic / RTL parity,— SCREENS — AR sections,Light + Dark,"29 routes x AR RTL and AR RTL Dark present",parity with EN,PRESENT - not yet screen-by-screen reviewed,Arabic thead clipping claim was RETRACTED (hidden layers),PARTIAL,-
+Arabic type ramp,Foundations,n/a,13 of 14 Latin styles have a paired -ar twin,full parity,PASS,GOLDEN PATTERN,none needed,-
+Responsive,/visits 768 and /planning 1024,Light + Dark,tables clipped up to 324px,no clipping,FAIL,CFX-002/003,OPEN,INSP-776
+Responsive,Admin compact and 720,Light + Dark,AR GIS title clipped 23px/75px,no clipping,FAIL,CFX-013,OPEN,INSP-782
+Responsive,Planning Calendar 1024/768,Light,Visit chip clipped 23-29px,no clipping,FIXED 2026-08-05,rescan 0,CLOSED in Figma,INSP-777
+Target size,all,n/a,NOT MEASURED,24x24 CSS px (SC 2.5.8),PENDING,Requires per-control measurement,PENDING,-
+Focus order / keyboard,all,n/a,NOT ASSESSABLE FROM FIGMA,SC 2.4.3 / 2.1.1,CODE VERIFICATION REQUIRED,No prototype interaction wiring reviewed yet,PENDING,-
+Screen-reader naming,all,n/a,NOT ASSESSABLE FROM FIGMA,SC 4.1.2,CODE VERIFICATION REQUIRED,,PENDING,-
+Reflow / zoom,all,n/a,NOT ASSESSABLE FROM FIGMA,SC 1.4.10,CODE VERIFICATION REQUIRED,Figma frames are fixed-width artefacts not reflow behaviour,PENDING,-
