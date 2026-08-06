@@ -122,9 +122,9 @@ export default function GisStudio({ factories, gis, strings: s }: {
     `sq-lozenge ${b === "high" ? "sq-lozenge--critical" : b === "medium" ? "sq-lozenge--warning" : b === "low" ? "sq-lozenge--success" : "sq-lozenge--info"}`;
 
   return (
-    <div className="stack" style={{ gap: "var(--space-6)" }}>
+    <div className="sq-stack sq-stack--roomy">
       {/* Toolbar — search + filters + result count (RTL mirrors via flex) */}
-      <div className="row" style={{ gap: "var(--space-4)", alignItems: "center", flexWrap: "wrap" }}>
+      <div className="sq-row sq-row--roomy">
         <input
           className="sq-input" type="search" value={query}
           aria-label={s.searchLabel} placeholder={s.searchPlaceholder}
@@ -203,7 +203,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
                   />
                   <p className="sq-field__hint">{s.radiusHint} (<span className="numeric">{defaultFence}</span> m)</p>
                 </div>
-                <div className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
+                <div className="sq-row">
                   <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? s.saving : s.save}</button>
                   {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
                   {state.ok && <span className="badge badge-compliant">{s.saved}</span>}

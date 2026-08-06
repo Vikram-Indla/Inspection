@@ -113,7 +113,7 @@ export default function CalendarBoard({ visits, locale, strings }: {
 
   return (
     <div className="sq-stack">
-      <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-3)" }}>
+      <div className="sq-row sq-row--spread">
         <div className="sq-segmented" role="group" aria-label={strings.viewSwitchAria}>
           {([["day", strings.viewDay], ["week", strings.viewWeek], ["month", strings.viewMonth]] as [ViewKey, string][]).map(([k, label]) => (
             <button key={k} type="button" aria-pressed={view === k} onClick={() => setView(k)}>{label}</button>
@@ -182,7 +182,7 @@ export default function CalendarBoard({ visits, locale, strings }: {
       )}
 
       {view === "day" && (
-        <div className="panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+        <div className="panel panel-body--roomy stack">
           <span className="t-caption numeric">{strings.visitsOn.replace("{n}", String(dayVisits.length))}</span>
           {dayVisits.length === 0 ? (
             <div className="sq-state sq-state--inline"><p className="t-caption">{strings.emptyRange}</p></div>

@@ -194,6 +194,9 @@ textarea.input { height: auto; min-height: 72px; padding-block: var(--space-2); 
 .panel-header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-block-end: var(--border-w) solid var(--border-subtle); }
 .panel-title { font: var(--type-heading); letter-spacing: -0.006em; }
 .panel-body { padding: var(--space-4); }
+/* Roomier body padding for a form panel, where controls need more breathing
+   room than a dense read-only panel. Same --space-* scale, one step up. */
+.panel-body--roomy { padding: var(--space-6); }
 .panel-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-4); padding: var(--space-3) var(--space-4); }
 .panel-row.sticky { position: sticky; inset-block-end: 0; padding: var(--space-4) var(--space-6); }
 

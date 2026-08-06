@@ -490,7 +490,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
           above), and a "Showing 0 of N" footer under an empty-state message
           is the exact contradiction this fixes. */}
       {visibleRows.length > 0 && (
-        <div className="sq-row" style={{ justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: "var(--space-3)" }}>
+        <div className="sq-row sq-row--spread">
           <span className="sq-caption sq-numeric">
             {tr("plan.list.showing", "Showing {shown} of {total} · page {page} of {pages}", "عرض {shown} من {total} · صفحة {page} من {pages}")
               .replace("{shown}", String(visibleRows.length)).replace("{total}", String(list.total))
@@ -505,7 +505,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
 
       {/* Draft continuation (PLN-REQ-010 entry point; resume consumption is a later phase) */}
       {drafts.length > 0 && (
-        <section className="sq-surface sq-panel" style={{ padding: "var(--space-6)" }}>
+        <section className="sq-surface sq-panel sq-panel--roomy">
           <h3>{tr("plan.list.draftsHeading", "Draft plans — continue where you left off", "خطط مسودة — تابع من حيث توقفت")}</h3>
           <div className="sq-tablewrap"><table className="sq-table planning-draft-table">
             <thead><tr>

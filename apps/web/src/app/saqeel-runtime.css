@@ -68,6 +68,11 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   border-radius: var(--radius-sm);
 }
 .sq-panel { border-radius: var(--radius-md); padding: var(--space-5); }
+/* Padding variants. --flush is for a panel whose whole area is filled by one
+   child that clips to the corner radius itself (a map canvas, a full-bleed
+   table), where the panel's own padding would show as a border. */
+.sq-panel--roomy { padding: var(--space-6); }
+.sq-panel--flush { padding: 0; overflow: hidden; }
 
 /* ============================================================ CORE: BUTTONS
    States: default/hover/focus/active/disabled/loading.
@@ -129,6 +134,9 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
    Validation errors preserve user work + identify exact blockers (BRD cross-
    cutting; ERR-SUB-001). Read-only ≠ disabled: read-only remains legible. */
 .sq-field { display: flex; flex-direction: column; gap: var(--space-1); max-inline-size: 420px; }
+/* Drops the readable-line cap for a field that must fill its panel — a search
+   box, or a select whose option text is longer than the measure allows. */
+.sq-field--wide { max-inline-size: none; }
 .sq-field__label { font: var(--type-body-strong); }
 .sq-field__label .sq-req { color: var(--status-critical); }
 .sq-field__hint { font: var(--type-caption-font); color: var(--text-secondary); }
@@ -185,6 +193,9 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 
 /* Checkbox / radio / switch — 20px marks inside ≥40px targets */
 .sq-choice { display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--touch-target); cursor: pointer; }
+/* Full-width choice row: the whole line is the hit target, which is what a
+   stacked list of checkboxes needs. Keeps the base touch-target height. */
+.sq-choice--block { display: flex; }
 .sq-choice input { inline-size: 20px; block-size: 20px; accent-color: var(--action-primary); cursor: pointer; }
 .sq-choice input:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: var(--space-1); }
 .sq-choice.is-disabled { color: var(--text-disabled); cursor: not-allowed; }
@@ -1438,6 +1449,17 @@ button.sq-shell-scope { cursor: pointer; }
 /* ============================================================ UTILITIES    */
 .sq-stack { display: flex; flex-direction: column; gap: var(--space-4); }
 .sq-row { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+/* Modifiers on the two primitives above. Each changes exactly one declaration
+   of its base and adds nothing else, so a page can express a spacing choice
+   without an inline style prop (CLAUDE.md rule 1). Spacing comes from the
+   existing --space-* scale; no new token is introduced. */
+.sq-stack--tight { gap: var(--space-1); }
+.sq-stack--roomy { gap: var(--space-6); }
+.sq-row--roomy { gap: var(--space-4); }
+.sq-row--spread { justify-content: space-between; }
+/* A bounded, independently scrolling region — a long picker list inside a
+   form panel, where the panel itself must not grow with the list. */
+.sq-scrollbox { max-block-size: 320px; overflow-y: auto; }
 .sq-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-6); }
 .sq-sr-only { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 [hidden] { display: none !important; }
