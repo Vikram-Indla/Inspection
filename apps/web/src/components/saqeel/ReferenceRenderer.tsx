@@ -78,12 +78,14 @@ export function ReferenceRenderer() {
                 { value: "empty", label: "Empty" }, { value: "loading", label: "Loading" },
                 { value: "error", label: "Error" }, { value: "rls-denied", label: "RLS-denied" },
                 { value: "not-yet", label: "Not-yet" }, { value: "provider-unavailable", label: "Provider unavailable" },
-                { value: "degraded", label: "Degraded" }, { value: "stale", label: "Stale" },
+                { value: "degraded", label: "Degraded" }, { value: "offline", label: "Offline" }, { value: "stale", label: "Stale" },
                 { value: "conflict", label: "Conflict" }, { value: "unauthorized", label: "Unauthorized" },
               ]}
             />
           </div>
-          <StateSurface kind={state} locale={locale} seam={state === "not-yet" ? "FEATURE_*=off" : undefined} action={state === "error" ? <Button size="sm">{locale === "ar" ? "إعادة المحاولة" : "Try again"}</Button> : undefined} />
+          {state === "offline"
+            ? <StateSurface kind="provider-unavailable" locale={locale} />
+            : <StateSurface kind={state} locale={locale} seam={state === "not-yet" ? "FEATURE_*=off" : undefined} action={state === "error" ? <Button size="sm">{locale === "ar" ? "إعادة المحاولة" : "Try again"}</Button> : undefined} />}
         </section>
       </div>
     </main>
