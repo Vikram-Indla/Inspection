@@ -11,7 +11,7 @@
   scrollbar-width: thin;
   scrollbar-color: var(--sqx-border-strong) transparent;
   background: var(--sqx-surface-chrome);
-  border-inline-end: var(--sqx-border-width-hair) solid var(--sqx-border-strong);
+  border-inline-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
 }
 
 .rail[data-variant="rail"] {

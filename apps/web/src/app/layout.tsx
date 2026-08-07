@@ -40,8 +40,8 @@ const plexArabic = localFont({
 
 export const viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F5F7F8" },
-    { media: "(prefers-color-scheme: dark)", color: "#101317" },
+    { media: "(prefers-color-scheme: light)", color: "#F5FAF8" },
+    { media: "(prefers-color-scheme: dark)", color: "#071411" },
   ],
   // iPad standalone PWA: draw under the status bar / home indicator so the field
   // chrome's env(safe-area-inset-*) padding (FieldHeader/FieldNav) governs the

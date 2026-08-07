@@ -8,7 +8,7 @@
   min-block-size: var(--sqx-topbar-h);
   padding-inline: var(--sqx-space-5);
   background: var(--sqx-surface-chrome);
-  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-strong);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
 }
 
 .controls {
