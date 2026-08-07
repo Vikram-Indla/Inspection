@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { Card, CardBody, CardGrid, CardHeader } from "@/components/saqeel/card/card";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
+import { ListRow, ListRows } from "@/components/saqeel/list-row/list-row";
 import type { FactoryRef, VisitRow } from "@/app/(app)/dashboard/metrics";
 import { fill, getMessages } from "@/i18n/messages";
 import type { Locale } from "@/lib/i18n";
@@ -93,13 +93,19 @@ export default function SearchResults({ locale, query, factories, visits, inspec
           <CardGrid min="sm">
             {groups.filter(group => group.rows.length).map(group => (
               <div className={styles.group} key={group.key}>
-                <p className={styles.heading}>{group.heading}</p>
-                {group.rows.map(row => (
-                  <Link className={styles.result} href={row.href} key={row.id} prefetch={false}>
-                    <span className={styles.title} dir="auto">{row.title}</span>
-                    <span className={styles.detail}><bdi>{row.detail}</bdi></span>
-                  </Link>
-                ))}
+                <p className={styles.heading} id={`dashboard-search-${group.key}`}>{group.heading}</p>
+                {/* bleed={false}: these lists sit in grid columns, so they
+                    must not pull out to the card edge. */}
+                <ListRows bleed={false} labelledBy={`dashboard-search-${group.key}`}>
+                  {group.rows.map(row => (
+                    <ListRow
+                      key={row.id}
+                      href={row.href}
+                      title={row.title}
+                      description={<bdi>{row.detail}</bdi>}
+                    />
+                  ))}
+                </ListRows>
               </div>
             ))}
           </CardGrid>

@@ -1,0 +1,107 @@
+.rows {
+  --sqx-list-inset: var(--sqx-space-3);
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+  margin-inline: calc(var(--sqx-list-inset) * -1);
+}
+
+.rows[data-bleed] {
+  --sqx-list-inset: var(--sqx-inset-card);
+}
+
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--sqx-space-4);
+  min-inline-size: 0;
+  min-block-size: var(--sqx-control-h-lg);
+  padding-inline: var(--sqx-list-inset);
+  padding-block: var(--sqx-space-4);
+  transition: background-color var(--sqx-duration-fast) var(--sqx-ease-standard);
+}
+
+.row + .row {
+  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.row:hover {
+  background: var(--sqx-surface-subtle);
+}
+
+.leading,
+.trailing,
+.meta {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+}
+
+/* Above the stretched link so a row can carry both a whole-row target and
+   its own action button. */
+.trailing {
+  position: relative;
+  z-index: 1;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.title {
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
+  font-weight: var(--sqx-weight-semibold);
+  color: var(--sqx-text-primary);
+  overflow-wrap: anywhere;
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--sqx-radius-xs);
+}
+
+.link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.link:focus-visible {
+  outline: var(--sqx-border-width-hair) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}
+
+.description {
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}
+
+.meta {
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
+  font-variant-numeric: tabular-nums;
+  color: var(--sqx-text-secondary);
+}
+
+@media (max-width: 60rem) {
+  .row {
+    flex-wrap: wrap;
+  }
+
+  .body {
+    flex-basis: 100%;
+    order: -1;
+  }
+}

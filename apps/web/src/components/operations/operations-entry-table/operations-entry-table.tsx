@@ -1,5 +1,6 @@
 import Button from "@/components/saqeel/button/button";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
+import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-table";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import styles from "./operations-entry-table.module.css";
 
@@ -29,72 +30,64 @@ export type EntryTableStrings = {
   readonly actions: string;
   readonly openRecord: string;
   readonly notConfigured: string;
+  readonly emptyTitle: string;
 };
 
-const ID_PREVIEW = 8;
 const MISSING = "—";
+const ID_PREVIEW = 8;
 
 export default function OperationsEntryTable({ rows, strings }: {
   rows: readonly EntryRow[];
   strings: EntryTableStrings;
 }) {
+  const columns: DataColumn<EntryRow>[] = [
+    {
+      key: "inspector", header: strings.inspector, isRowHeader: true,
+      cell: row => row.inspectorName ?? MISSING,
+    },
+    {
+      key: "state", header: strings.state,
+      cell: row => <StatusPill tone="info" size="sm">{row.state}</StatusPill>,
+    },
+    {
+      key: "visit", header: strings.visit, numeric: true,
+      cell: row => <bdi className={styles.code}>{row.visitId?.slice(0, ID_PREVIEW) ?? MISSING}</bdi>,
+    },
+    { key: "factory", header: strings.factory, width: "grow", cell: row => row.factoryName },
+    {
+      key: "location", header: strings.location,
+      cell: row => [row.region, row.city].filter(Boolean).join(" · ") || MISSING,
+    },
+    {
+      key: "risk", header: strings.risk, align: "end", numeric: true,
+      cell: row => row.riskScore === null
+        ? <StatusPill tone="warning" size="sm" ping>{strings.notConfigured}</StatusPill>
+        : row.riskScore,
+    },
+    {
+      key: "lastUpdate", header: strings.lastUpdate, numeric: true,
+      cell: row => <span className={styles.muted}>{row.lastGeoAt ?? MISSING}</span>,
+    },
+    {
+      key: "actions", header: strings.actions, align: "end", width: "min",
+      cell: row => (
+        <Button variant="secondary" size="sm" href={row.href} label={`${strings.openRecord} — ${row.factoryName}`}>
+          {strings.openRecord}
+        </Button>
+      ),
+    },
+  ];
+
   return (
     <Card as="section" labelledBy="operations-entry-table">
-      <CardHeader
-        level="h2"
-        titleId="operations-entry-table"
-        title={strings.title}
-        description={strings.caption}
-      />
+      <CardHeader level="h2" titleId="operations-entry-table" title={strings.title} description={strings.caption} />
       <CardBody>
-        <div className={styles.scroll}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th className={styles.head} scope="col">{strings.inspector}</th>
-                <th className={styles.head} scope="col">{strings.state}</th>
-                <th className={styles.head} scope="col">{strings.visit}</th>
-                <th className={styles.head} scope="col">{strings.factory}</th>
-                <th className={styles.head} scope="col">{strings.location}</th>
-                <th className={styles.head} scope="col">{strings.risk}</th>
-                <th className={styles.head} scope="col">{strings.lastUpdate}</th>
-                <th className={styles.head} scope="col">{strings.actions}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map(row => (
-                <tr className={styles.row} key={row.id}>
-                  <th className={styles.rowHead} scope="row" data-label={strings.inspector}>
-                    {row.inspectorName ?? MISSING}
-                  </th>
-                  <td className={styles.cell} data-label={strings.state}>
-                    <StatusPill tone="info" size="sm">{row.state}</StatusPill>
-                  </td>
-                  <td className={styles.cell} data-label={strings.visit}>
-                    <bdi className={styles.code}>{row.visitId?.slice(0, ID_PREVIEW) ?? MISSING}</bdi>
-                  </td>
-                  <td className={styles.cell} data-label={strings.factory}>{row.factoryName}</td>
-                  <td className={styles.cell} data-label={strings.location}>
-                    {[row.region, row.city].filter(Boolean).join(" · ") || MISSING}
-                  </td>
-                  <td className={styles.cell} data-label={strings.risk}>
-                    {row.riskScore === null
-                      ? <StatusPill tone="warning" size="sm" ping>{strings.notConfigured}</StatusPill>
-                      : <span className={styles.number}>{row.riskScore}</span>}
-                  </td>
-                  <td className={styles.cell} data-label={strings.lastUpdate}>
-                    <span className={styles.muted}>{row.lastGeoAt ?? MISSING}</span>
-                  </td>
-                  <td className={styles.cell} data-label={strings.actions}>
-                    <Button variant="secondary" size="sm" href={row.href} label={`${strings.openRecord} — ${row.factoryName}`}>
-                      {strings.openRecord}
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          rows={rows}
+          columns={columns}
+          getRowId={row => row.id}
+          empty={{ icon: "radar", title: strings.emptyTitle }}
+        />
       </CardBody>
     </Card>
   );

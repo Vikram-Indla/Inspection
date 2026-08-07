@@ -1,0 +1,18 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+  min-inline-size: 0;
+}
+
+.label {
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
+  font-weight: var(--sqx-weight-semibold);
+  color: var(--sqx-text-secondary);
+}
+
+.hint {
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+}

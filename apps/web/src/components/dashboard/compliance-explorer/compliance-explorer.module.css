@@ -1,72 +1,23 @@
-.table {
-  display: flex;
-  flex-direction: column;
-  min-inline-size: 0;
-}
-
-.head {
-  display: grid;
-  grid-template-columns:
-    minmax(0, var(--sqx-grid-min-sm))
-    minmax(0, 1fr)
-    max-content
-    max-content
-    max-content;
-  align-items: center;
-  gap: var(--sqx-space-4);
-  padding-inline: var(--sqx-space-3);
-  padding-block-end: var(--sqx-space-3);
-  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
-  margin-block-end: var(--sqx-space-2);
-}
-
-.headCell {
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
-  color: var(--sqx-text-muted);
-}
-
-.headCell[data-align="end"] {
-  text-align: end;
-}
-
-.row {
-  display: grid;
-  grid-template-columns:
-    minmax(0, var(--sqx-grid-min-sm))
-    minmax(0, 1fr)
-    max-content
-    max-content
-    max-content;
-  align-items: center;
-  gap: var(--sqx-space-4);
-  min-block-size: var(--sqx-control-h-md);
-  padding-inline: var(--sqx-space-3);
-  border-radius: var(--sqx-radius-sm);
-  transition: background-color var(--sqx-duration-fast) var(--sqx-ease-standard);
-}
-
-.row:hover {
-  background: var(--sqx-surface-subtle);
-}
-
-.row + .row {
-  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
-}
-
 .label {
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
-  color: var(--sqx-text-primary);
+  display: block;
+  max-inline-size: var(--sqx-grid-min-sm);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.meter {
+  display: flex;
+  align-items: center;
+  gap: var(--sqx-space-4);
+  min-inline-size: 0;
+}
+
 .track {
   position: relative;
   display: block;
+  flex: 1;
+  min-inline-size: var(--sqx-grid-min-sm);
   block-size: var(--sqx-space-2);
   overflow: hidden;
   background: var(--sqx-surface-sunken);
@@ -84,13 +35,12 @@
 
 .rate,
 .total {
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
   font-variant-numeric: tabular-nums;
   text-align: end;
 }
 
 .rate {
+  flex: none;
   color: var(--sqx-text-primary);
   font-weight: var(--sqx-weight-semibold);
 }
@@ -102,19 +52,4 @@
 .footnote {
   font: var(--sqx-text-caption);
   color: var(--sqx-text-muted);
-}
-
-@media (max-width: 60rem) {
-  .head {
-    display: none;
-  }
-
-  .row {
-    grid-template-columns: minmax(0, 1fr) max-content max-content;
-  }
-
-  .track {
-    grid-column: 1 / -1;
-    order: 1;
-  }
 }

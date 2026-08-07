@@ -1,7 +1,7 @@
 import { type CSSProperties } from "react";
 import Button from "@/components/saqeel/button/button";
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/saqeel/card/card";
-import EmptyState from "@/components/saqeel/empty-state/empty-state";
+import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-table";
 import SegmentedControl, { type SegmentedItem } from "@/components/saqeel/segmented-control/segmented-control";
 import styles from "./compliance-explorer.module.css";
 
@@ -40,6 +40,42 @@ export default function ComplianceExplorer({ rows, lenses, currentLens, hrefFor,
   hrefFor: (label: string) => string;
   strings: ExplorerStrings;
 }) {
+  // Was a hand-rolled grid with its own header row, hover and separators.
+  // DataTable is the one table grammar, so this list now shares column
+  // padding, stacking behaviour and hover with every other table.
+  const columns: DataColumn<ExplorerRow>[] = [
+    {
+      key: "label", header: strings.lensLabel, isRowHeader: true,
+      cell: row => <span className={styles.label} title={row.label}>{row.label}</span>,
+    },
+    {
+      key: "rate", header: strings.rateHeading, width: "grow",
+      cell: row => (
+        <span className={styles.meter}>
+          <span className={styles.track} aria-hidden="true">
+            {row.rate === null ? null : <span className={styles.fill} style={rateStyle(row.rate)} />}
+          </span>
+          <span className={styles.rate}>{row.rate === null ? strings.missing : `${row.rate}%`}</span>
+        </span>
+      ),
+    },
+    {
+      key: "total", header: strings.countHeading, align: "end", numeric: true,
+      cell: row => <span className={styles.total}>{row.total}</span>,
+    },
+    {
+      key: "open", header: "", align: "end", width: "min",
+      cell: row => (
+        <Button
+          variant="tertiary" size="sm" href={hrefFor(row.label)}
+          label={`${strings.openFactories} — ${row.label}`} compactLabel
+        >
+          {strings.openFactories}
+        </Button>
+      ),
+    },
+  ];
+
   return (
     <Card as="section" labelledBy="dashboard-compliance-explorer">
       <CardHeader
@@ -50,35 +86,12 @@ export default function ComplianceExplorer({ rows, lenses, currentLens, hrefFor,
         trailing={<SegmentedControl items={lenses} value={currentLens} label={strings.lens} tone="accent" />}
       />
       <CardBody gap="tight">
-        {rows.length ? (
-          <div className={styles.table}>
-            <div className={styles.head} aria-hidden="true">
-              <span className={styles.headCell}>{strings.lensLabel}</span>
-              <span />
-              <span className={styles.headCell} data-align="end">{strings.rateHeading}</span>
-              <span className={styles.headCell} data-align="end">{strings.countHeading}</span>
-              <span />
-            </div>
-            {rows.slice(0, MAX_ROWS).map(row => (
-              <div className={styles.row} key={row.label}>
-                <span className={styles.label} title={row.label}>{row.label}</span>
-                <span className={styles.track} aria-hidden="true">
-                  {row.rate === null ? null : <span className={styles.fill} style={rateStyle(row.rate)} />}
-                </span>
-                <span className={styles.rate}>{row.rate === null ? strings.missing : `${row.rate}%`}</span>
-                <span className={styles.total}>{row.total}</span>
-                <Button
-                  variant="tertiary" size="sm" href={hrefFor(row.label)}
-                  label={`${strings.openFactories} — ${row.label}`} compactLabel
-                >
-                  {strings.openFactories}
-                </Button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <EmptyState icon="radar" title={strings.emptyTitle} description={strings.empty} />
-        )}
+        <DataTable
+          rows={rows.slice(0, MAX_ROWS)}
+          columns={columns}
+          getRowId={row => row.label}
+          empty={{ icon: "radar", title: strings.emptyTitle, description: strings.empty }}
+        />
       </CardBody>
       <CardFooter>
         <span className={styles.footnote}>{strings.footnote}</span>

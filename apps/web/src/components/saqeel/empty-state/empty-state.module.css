@@ -17,6 +17,12 @@
   padding-block: var(--sqx-space-7);
 }
 
+.root[data-variant="inline"] {
+  padding-block: var(--sqx-space-6);
+  background: transparent;
+  border: 0;
+}
+
 .badge {
   display: inline-flex;
   align-items: center;
@@ -26,6 +32,21 @@
   color: var(--sqx-text-muted);
   background: var(--sqx-surface-subtle);
   border-radius: var(--sqx-radius-full);
+}
+
+.root[data-tone="warning"] .badge {
+  color: var(--sqx-status-warning-on-soft);
+  background: var(--sqx-status-warning-soft);
+}
+
+.root[data-tone="danger"] .badge {
+  color: var(--sqx-status-critical-on-soft);
+  background: var(--sqx-status-critical-soft);
+}
+
+.root[data-tone="info"] .badge {
+  color: var(--sqx-status-info-on-soft);
+  background: var(--sqx-status-info-soft);
 }
 
 .title {

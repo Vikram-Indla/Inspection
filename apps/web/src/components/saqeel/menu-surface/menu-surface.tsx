@@ -11,11 +11,9 @@ import {
 } from "react";
 import styles from "./menu-surface.module.css";
 
-const OVERFLOW_GUARD = 12;
-
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-type AnchorStyle = CSSProperties & Record<"--sqx-menu-anchor-w", string>;
+type AnchorStyle = CSSProperties & Record<"--sqx-menu-anchor-w" | "--sqx-menu-shift", string>;
 
 export type MenuSurfaceProps = {
   id?: string;
@@ -43,34 +41,7 @@ export default function MenuSurface({
   children,
 }: MenuSurfaceProps) {
   const panelRef = useRef<HTMLDivElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [isScrollable, setIsScrollable] = useState(false);
-
-  useLayoutEffect(() => {
-    const panel = panelRef.current;
-    const trigger = triggerRef.current;
-    if (!open || !panel || !trigger) return;
-    const measure = () => {
-      const box = panel.getBoundingClientRect();
-      const isRtl = getComputedStyle(panel).direction === "rtl";
-      const room = isRtl ? box.right : window.innerWidth - box.left;
-      panel.style.setProperty("--sqx-menu-avail", `${Math.max(room - OVERFLOW_GUARD, 0)}px`);
-      panel.style.setProperty("--sqx-menu-anchor-w", `${trigger.getBoundingClientRect().width}px`);
-    };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [open, triggerRef, children]);
-
-  useLayoutEffect(() => {
-    const node = scrollRef.current;
-    if (!open || !node) return;
-    const measure = () => setIsScrollable(node.scrollHeight > node.clientHeight + 1);
-    measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [open, children]);
+  const [shift, setShift] = useState(0);
 
   useEffect(() => {
     if (!open) return;
@@ -112,11 +83,28 @@ export default function MenuSurface({
     };
   }, [onClose, open, trapFocus, triggerRef]);
 
+  useLayoutEffect(() => {
+    if (!open) {
+      setShift(0);
+      return;
+    }
+    const panel = panelRef.current;
+    if (!panel) return;
+    const rect = panel.getBoundingClientRect();
+    const margin = 8;
+    const overflowEnd = rect.right - (window.innerWidth - margin);
+    const overflowStart = margin - rect.left;
+    setShift(overflowEnd > 0 ? -overflowEnd : overflowStart > 0 ? overflowStart : 0);
+  }, [open]);
+
   if (!open) return null;
 
-  const style: AnchorStyle | undefined = anchorWidth
-    ? { "--sqx-menu-anchor-w": `${anchorWidth}px`, minInlineSize: `${anchorWidth}px` }
-    : undefined;
+  const style: AnchorStyle = {
+    "--sqx-menu-shift": `${shift}px`,
+    ...(anchorWidth
+      ? { "--sqx-menu-anchor-w": `${anchorWidth}px`, minInlineSize: `${anchorWidth}px` }
+      : {}),
+  } as AnchorStyle;
 
   return (
     <div
@@ -124,15 +112,11 @@ export default function MenuSurface({
       id={id}
       ref={panelRef}
       data-align={align === "end" ? "end" : undefined}
-      data-panel={role === "dialog" ? "" : undefined}
-      data-scrollable={isScrollable ? "" : undefined}
       role={role}
       aria-label={label}
       style={style}
     >
-      <div className={styles.scroll} ref={scrollRef}>
-        {children}
-      </div>
+      {children}
     </div>
   );
 }

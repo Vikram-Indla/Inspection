@@ -1,0 +1,35 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-4);
+  min-inline-size: 0;
+}
+
+.link {
+  color: var(--sqx-text-link);
+  text-decoration: none;
+  border-radius: var(--sqx-radius-xs);
+}
+
+.link:hover {
+  color: var(--sqx-text-link-hover);
+  text-decoration: underline;
+}
+
+.link:focus-visible {
+  outline: var(--sqx-border-width-hair) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}
+
+.muted {
+  color: var(--sqx-text-muted);
+}
+
+.footnote {
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+}
+
+.time {
+  font-variant-numeric: tabular-nums;
+}

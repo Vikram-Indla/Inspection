@@ -21,7 +21,7 @@ const PING_TONE: Readonly<Record<StatusTone, PingDotTone>> = {
   info: "info",
 };
 
-export default function StatusPill({ children, tone = "neutral", size = "md", ping, title }: {
+export default function StatusPill({ children, tone = "neutral", size = "md", ping = true, title }: {
   children: ReactNode;
   tone?: StatusTone;
   size?: "sm" | "md";

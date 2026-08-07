@@ -124,6 +124,7 @@ export default function RevampOperationsCenter({
               actions: operations.table.actions,
               openRecord: operations.table.openRecord,
               notConfigured: common.state.notConfigured,
+              emptyTitle: operations.table.emptyTitle,
             }}
           />
       ) : (

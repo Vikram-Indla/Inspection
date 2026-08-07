@@ -9,15 +9,13 @@
 // detail. Opening a row also records its read receipt.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import Icon from "@/components/saqeel/icon/icon";
-import PingDot from "@/components/saqeel/ping-dot/ping-dot";
-import styles from "./NotificationBell.module.css";
 import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { formatDate, riyadhDayDiff } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import { isNotificationUnread, notificationHref, notificationReadPatch } from "@/lib/notification-read";
+import { humaniseEnum } from "@/lib/text";
 
 export type BellStrings = {
   label: string;            // accessible name for the toggle
@@ -74,11 +72,18 @@ function dayHeading(createdAt: string, strings: BellStrings, locale: Locale, now
 // each mount. A fresh-enough cached snapshot serves remounts; the 30 s poll
 // and opening the dropdown still hit the database. Marking rows read updates
 // the cache in place so the badge never goes stale between polls.
-type Snapshot = { at: number; rows: Row[]; unreadTotal: number; userId: string; visitNames: Record<string, string> };
-
-const cache: { current: Snapshot | null } = { current: null };
+let snapshot: { at: number; rows: Row[]; unreadTotal: number; userId: string; visitNames: Record<string, string> } | null = null;
 const SNAPSHOT_TTL_MS = POLL_MS;
 
+function BellIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+      <path d="M10 21h4" />
+    </svg>
+  );
+}
 
 export default function NotificationBell({ strings, locale, fieldOnly = false }: { strings: BellStrings; locale: Locale; fieldOnly?: boolean }) {
   const [rows, setRows] = useState<Row[]>([]);
@@ -97,12 +102,11 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
     const { data: { user } } = await getVerifiedUser(sb);
     if (!user) { setAuthed(false); return; }
     setAuthed(true);
-    const cached = cache.current;
-    if (!force && cached && cached.userId === user.id && Date.now() - cached.at < SNAPSHOT_TTL_MS) {
+    if (!force && snapshot && snapshot.userId === user.id && Date.now() - snapshot.at < SNAPSHOT_TTL_MS) {
       setErr("");
-      setRows(cached.rows);
-      setUnreadTotal(cached.unreadTotal);
-      setVisitNames(cached.visitNames);
+      setRows(snapshot.rows);
+      setUnreadTotal(snapshot.unreadTotal);
+      setVisitNames(snapshot.visitNames);
       return;
     }
     const [{ data, error }, { count }] = await Promise.all([
@@ -132,7 +136,7 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
         if (v.factories?.name) visitNames[v.id] = v.factories.name;
       }
     }
-    cache.current = { at: Date.now(), rows, unreadTotal, userId: user.id, visitNames };
+    snapshot = { at: Date.now(), rows, unreadTotal, userId: user.id, visitNames };
     setRows(rows);
     setUnreadTotal(unreadTotal);
     setVisitNames(visitNames);
@@ -192,13 +196,9 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
     const patch = notificationReadPatch(r.delivery_state, new Date().toISOString());
     const { error } = await sb.from("notifications").update(patch).eq("id", r.id);
     if (error) { setErr(strings.loadError); return; }
-    const cached = cache.current;
-    if (cached) {
-      cache.current = {
-        ...cached,
-        rows: cached.rows.map(x => x.id === r.id ? { ...x, ...patch } as Row : x),
-        unreadTotal: Math.max(0, cached.unreadTotal - 1),
-      };
+    if (snapshot) {
+      snapshot.rows = snapshot.rows.map(x => x.id === r.id ? { ...x, ...patch } as Row : x);
+      snapshot.unreadTotal = Math.max(0, snapshot.unreadTotal - 1);
     }
     setRows(rs => rs.map(x => x.id === r.id ? { ...x, ...patch } as Row : x));
     setUnreadTotal(n => Math.max(0, n - 1));
@@ -223,86 +223,84 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
     return null;
   };
   return (
-    <div ref={wrapRef} className={styles.root}>
-      <button className={styles.trigger} aria-label={strings.label} aria-expanded={open}
+    <div ref={wrapRef} className="sq-notification">
+      <button className="sq-notification__trigger" aria-label={strings.label} aria-expanded={open}
         onClick={() => { setOpen(o => !o); if (!open) void load(true); }}>
-        <Icon name="notify" size="lg" />
-        {unread > 0 && <span className={styles.badge} aria-hidden="true">{unread > 99 ? "99+" : unread}</span>}
+        <BellIcon />
+        {unread > 0 && <span className="sq-notification__badge" aria-hidden="true">{unread > 99 ? "99+" : unread}</span>}
       </button>
       {open && popoverPos && typeof document !== "undefined" && createPortal(
-        <div ref={popoverRef} className={styles.panel} role="dialog" aria-label={strings.heading}
-          style={{ position: "fixed", top: popoverPos.top, left: popoverPos.left, right: popoverPos.right, zIndex: 30 }}>
-          <div className={styles.header}>
-            <span className={styles.headingGroup}>
-              <span className={styles.heading}>{strings.heading}</span>
-              {unread > 0 && <span className={styles.count}>{unread > 99 ? "99+" : unread}</span>}
+        <div ref={popoverRef} className="menu" role="dialog" aria-label={strings.heading}
+          style={{ position: "fixed", top: popoverPos.top, left: popoverPos.left, right: popoverPos.right, inlineSize: 360, maxInlineSize: "80vw", zIndex: 30, display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+          <div className="row" style={{ justifyContent: "space-between" }}>
+            <span className="row" style={{ gap: "var(--space-2)" }}>
+              <strong>{strings.heading}</strong>
+              {unread > 0 && <span className="badge">{unread > 99 ? "99+" : unread}</span>}
             </span>
-            {unread > 0 && (
-              <button type="button" className={styles.markAll} onClick={markAllRead}>{strings.markAll}</button>
-            )}
+            {unread > 0 && <button className="btn btn-ghost btn-sm" onClick={markAllRead}>{strings.markAll}</button>}
           </div>
-          {err && <p className={styles.state} data-error="" role="alert">{err}</p>}
-          {!err && rows.length === 0 && <p className={styles.state}>{strings.empty}</p>}
-          {rows.length > 0 && (
-            <div className={styles.list}>
-              {(() => {
-                const now = new Date();
-                const shown = rows.slice(0, MAX_ROWS);
-                const headings = shown.map(r => dayHeading(r.created_at, strings, locale, now));
-                return shown.map((r, i) => {
-                  const showHeading = headings[i] !== headings[i - 1];
-                  const href = notificationHref(r.event_key, r.payload, fieldOnly);
-                  const unreadRow = isUnread(r);
-                  const context = detail(r.payload);
-                  const body = (
-                    <>
-                      <span className={styles.marker}>
-                        {unreadRow ? <PingDot tone="accent" /> : null}
-                      </span>
-                      <span className={styles.body}>
-                        <span className={styles.title}>
-                          {strings.events[r.event_key] ?? r.event_key.replace(/_/g, " ")}
-                          {unreadRow && <span className="sqx-visually-hidden"> — {strings.unreadBadge}</span>}
-                        </span>
-                        {context && (
-                          <span className={styles.context}>
-                            <span className={styles.contextLabel}>{context.label}</span>{" "}{context.value.slice(0, 80)}
-                          </span>
-                        )}
-                        <span className={styles.meta}>
-                          <span>{relativeLabel(r.created_at, strings, locale, now)}</span>
-                          {r.channel !== "inapp" && <span>{strings.channels[r.channel] ?? r.channel}</span>}
-                          {r.delivery_state === "not_configured" && (
-                            <span className={styles.pending}>{strings.notConfigured}</span>
-                          )}
-                        </span>
-                      </span>
-                    </>
-                  );
-                  return (
-                    <div key={r.id}>
-                      {showHeading && <div className={styles.dayHeading}>{headings[i]}</div>}
-                      {href ? (
-                        <Link className={styles.item} data-interactive="" data-read={unreadRow ? undefined : ""}
-                          href={href} prefetch={false}
-                          onClick={() => { if (unreadRow) void markRead(r); }}>
-                          {body}
-                        </Link>
-                      ) : (
-                        <div className={styles.item} data-read={unreadRow ? undefined : ""}>{body}</div>
-                      )}
+          {err && <p className="t-caption" role="alert">{err}</p>}
+          {rows.length === 0 && <p className="t-caption">{strings.empty}</p>}
+          {(() => {
+            const now = new Date();
+            const shown = rows.slice(0, MAX_ROWS);
+            let lastHeading: string | null = null;
+            return shown.map((r, i) => {
+              const heading = dayHeading(r.created_at, strings, locale, now);
+              const showHeading = heading !== lastHeading;
+              lastHeading = heading;
+              const href = notificationHref(r.event_key, r.payload, fieldOnly);
+              const unreadRow = isUnread(r);
+              const context = detail(r.payload);
+              const row = (
+                <>
+                  {unreadRow && (
+                    <span aria-hidden="true"
+                      style={{ inlineSize: 6, blockSize: 6, borderRadius: "50%", background: "var(--action-primary)", flex: "none", marginBlockStart: 8 }} />
+                  )}
+                  <div style={{ minInlineSize: 0, display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
+                    <strong className="t-heading"
+                      style={{ fontWeight: unreadRow ? 600 : 500, color: unreadRow ? undefined : "var(--text-muted)" }}>
+                      {strings.events[r.event_key] ?? humaniseEnum(r.event_key)}
+                      {unreadRow && <span className="sq-sr-only"> — {strings.unreadBadge}</span>}
+                    </strong>
+                    {context && (
+                      <div className="t-caption">
+                        {context.label}{" "}{context.value.slice(0, 80)}
+                      </div>
+                    )}
+                    <div className="t-caption">
+                      {relativeLabel(r.created_at, strings, locale, now)}
+                      {r.channel !== "inapp" && <>{" · "}{strings.channels[r.channel] ?? r.channel}</>}
+                      {r.delivery_state === "not_configured" && <> · <span className="badge badge-warning">{strings.notConfigured}</span></>}
                     </div>
-                  );
-                });
-              })()}
-            </div>
-          )}
+                  </div>
+                </>
+              );
+              return (
+                <div key={r.id}>
+                  {showHeading && <div className="menu-label">{heading}</div>}
+                  {!showHeading && i > 0 && <hr className="menu-sep" />}
+                  {href ? (
+                    <Link className="menu-item" href={href} prefetch={false}
+                      style={{ alignItems: "flex-start", paddingBlock: "var(--space-2)" }}
+                      onClick={() => { if (unreadRow) void markRead(r); }}>
+                      {row}
+                    </Link>
+                  ) : (
+                    <div className="menu-item" style={{ alignItems: "flex-start", paddingBlock: "var(--space-2)" }}>{row}</div>
+                  )}
+                </div>
+              );
+            });
+          })()}
           {fieldOnly && (
-            <div className={styles.footer}>
-              <Link className={styles.viewAll} href="/field/notifications" prefetch={false}>
+            <>
+              <hr className="menu-sep" />
+              <Link className="menu-item" href="/field/notifications" prefetch={false}>
                 {strings.viewAll}
               </Link>
-            </div>
+            </>
           )}
         </div>,
         document.body,

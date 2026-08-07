@@ -2,13 +2,20 @@ import Shell, { preloadShell } from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { formatDate, formatDateTime } from "@/lib/dates";
+import { humaniseEnum, sentenceCase } from "@/lib/text";
 import {
   ActionFormControls, MarkNotificationHandled,
   type ActionFormControlsStrings, type MarkHandledStrings,
 } from "./Controls";
-import { MonitoringTable, type MonitoringStrings } from "./Monitoring";
+import { type MonitoringStrings } from "./Monitoring";
+import OperationsMonitoringTable from "@/components/operations/operations-monitoring-table/operations-monitoring-table";
 import type { OpsPin } from "./OpsMap";
-import EmptyState from "@/components/EmptyState";
+import EmptyState from "@/components/saqeel/empty-state/empty-state";
+import Button from "@/components/saqeel/button/button";
+import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
+import OperationsScopeFilter from "@/components/operations/operations-scope-filter/operations-scope-filter";
+import OperationsSlaTable, { type SlaAlertRow } from "@/components/operations/operations-sla-table/operations-sla-table";
+import { getMessages } from "@/i18n/messages";
 import { IconPin, IconBell } from "@/app/icons";
 import OpsExport, { type ExportDataset, type OpsExportStrings } from "./OpsExport";
 import OverrideQueue, { type GeoOverrideQueueRow, type OverrideQueueStrings } from "./OverrideQueue";
@@ -25,7 +32,6 @@ import OperationsMapWorkspace, {
   type OperationsMapEntry,
   type OperationsMapWorkspaceStrings,
 } from "./OperationsMapWorkspace";
-import OperationsScopeFilter from "./OperationsScopeFilter";
 import { resolveRegionId } from "@/lib/ksa-regions";
 import styles from "./operations.module.css";
 import RevampOperationsCenter from "./RevampOperationsCenter";
@@ -220,6 +226,7 @@ export default async function Operations({ searchParams }: {
   const view = sp.view === "performance" ? "performance" : "map";
   const requestedTimelineVisit = typeof sp.timelineVisit === "string" ? sp.timelineVisit : "";
   const { t, locale } = await useT();
+  const { common: commonText, operations: opsText } = getMessages(locale);
   const local = (english: string, arabic: string) => locale === "ar" ? arabic : english;
   const localePersonName = (name: string | null | undefined) => {
     const value = name?.trim();
@@ -259,12 +266,16 @@ export default async function Operations({ searchParams }: {
     return (
       <Shell current="/operations" title={t("ops.title", "Operations Center")}>
         <EmptyState
-          glyph="⛨"
+          icon="restricted"
+          tone="warning"
           title={t("ops.unauthorized.title", "Operations access required")}
-          body={t("ops.unauthorized.body", "This page is not turned on for your account, so no data has loaded.")}
-        >
-          <a className="sq-btn sq-btn--secondary" href="/launch">{t("ops.unauthorized.return", "Return to my area")}</a>
-        </EmptyState>
+          description={t("ops.unauthorized.body", "This page is not turned on for your account, so no data has loaded.")}
+          action={
+            <Button variant="secondary" href="/launch" label={t("ops.unauthorized.return", "Return to my area")}>
+              {t("ops.unauthorized.return", "Return to my area")}
+            </Button>
+          }
+        />
       </Shell>
     );
   }
@@ -614,7 +625,8 @@ export default async function Operations({ searchParams }: {
       latestObservedPosition.set(event.visit_id, event);
     }
   }
-  const enumLabel = (value: string) => t(`enum.${value}`, value.replace(/_/g, " "));
+  const enumLabel = (value: string) =>
+    sentenceCase(t(`enum.${value}`, humaniseEnum(value)));
 
   // ---------- ENG-09 SLA watch: engine thresholds vs live visit windows ----------
   const slaFlags = computeSlaFlags(monitored, slaConf, now);
@@ -679,7 +691,7 @@ export default async function Operations({ searchParams }: {
     active_inspectors: local("Active inspectors", "المفتشون النشطون"),
     average_duration: local("Average duration", "متوسط المدة"),
     sla_breach_rate: local("Deadline breach rate", "معدل تجاوز الموعد النهائي"),
-  } as Record<string, string>)[metric] ?? metric.replace(/_/g, " ");
+  } as Record<string, string>)[metric] ?? humaniseEnum(metric);
   const timelineVisitId = monitored.some(visit => visit.id === requestedTimelineVisit)
     ? requestedTimelineVisit
     : null;
@@ -793,6 +805,29 @@ export default async function Operations({ searchParams }: {
 
   // ---------- M08-017 CSV export — three tables, region/city scope honored ----------
   const fmtTs = (ms: number) => formatDateTime(ms, locale === "ar" ? "ar" : "en");
+
+  const slaAlertRows: SlaAlertRow[] = [
+    ...slaFlags.map(flag => ({
+      id: `visit:${flag.visit.id}`,
+      visitHref: `/visits/${flag.visit.id}`,
+      visitLabel: flag.visit.id.slice(0, 8),
+      factoryName: flag.visit.factories?.name ?? "—",
+      deadline: fmtTs(flag.deadlineMs),
+      status: slaKindLabel(flag),
+      overdue: flag.kind !== "reminder",
+      escalation: flag.escalation,
+    })),
+    ...resubFlags.map(flag => ({
+      id: `resubmission:${flag.inspection_id}`,
+      visitHref: `/visits/${flag.visit_id}`,
+      visitLabel: flag.visit_id.slice(0, 8),
+      factoryName: flag.factory_name ?? "—",
+      deadline: fmtTs(flag.deadlineMs),
+      status: flag.overdue ? opsText.sla.resubmissionOverdue : opsText.sla.resubmissionPending,
+      overdue: flag.overdue,
+      escalation: resubSlaAvailable ? null : commonText.state.notConfigured,
+    })),
+  ];
   const rankedFactories = scopedFactories
     .filter(factory => factory.risk_score != null)
     .sort((a, b) => Number(b.risk_score) - Number(a.risk_score));
@@ -1039,6 +1074,7 @@ export default async function Operations({ searchParams }: {
         locale={locale}
         view={view}
         mapViewHref={mapViewHref}
+        performanceViewHref={performanceViewHref}
         mapEntries={mapEntries}
         regionalMapEntries={regionalMapEntries}
         mapStrings={mapWorkspaceStrings}
@@ -1049,73 +1085,54 @@ export default async function Operations({ searchParams }: {
       />
 
       <div className={styles.operationalDetails}>
-        <section className="sq-surface" aria-labelledby="operations-monitoring-heading">
-          <div className={styles.detailHeading}>
-            <div>
-              <h2 id="operations-monitoring-heading">{t("ops.monitoring.heading", "Visit and inspector monitoring")}</h2>
-              <p>{t("ops.monitoring.body", "Visit status, assignments and the latest recorded geofence results you can see.")}</p>
-            </div>
-            <OperationsScopeFilter
-              view={view}
-              region={region}
-              city={city}
-              regions={regions}
-              cities={cities}
-              labels={{
-                region: monitoringStrings.regionLabel,
-                city: monitoringStrings.cityLabel,
-                allRegions: monitoringStrings.allRegions,
-                allCities: monitoringStrings.allCities,
-              }}
-            />
-          </div>
-          <MonitoringTable
-            initialRows={monitorRows}
-            initialAt={nowIso}
-            region={region}
-            city={city}
-            enumLabels={enumLabels}
-            strings={monitoringStrings}
+        <Card as="section" labelledBy="operations-monitoring-heading">
+          <CardHeader
+            level="h2"
+            titleId="operations-monitoring-heading"
+            title={opsText.monitoring.title}
+            description={opsText.monitoring.description}
+            trailing={
+              <OperationsScopeFilter
+                view={view}
+                region={region}
+                city={city}
+                regions={regions}
+                cities={cities}
+                basePath="/operations"
+                strings={opsText.scope}
+              />
+            }
           />
-        </section>
+          <CardBody>
+          <OperationsMonitoringTable
+            rows={monitorRows}
+            refreshedAt={nowIso}
+            enumLabels={enumLabels}
+            strings={{
+              visit: monitoringStrings.thVisit,
+              factory: monitoringStrings.thFactory,
+              state: monitoringStrings.thOperational,
+              geofence: monitoringStrings.thGeofence,
+              inspector: monitoringStrings.thInspector,
+              emptyTitle: monitoringStrings.emptyTitle,
+              emptyBody: monitoringStrings.emptyDesc,
+              refreshedAt: monitoringStrings.refreshedAt,
+              autoNote: monitoringStrings.autoNote,
+            }}
+          />
+          </CardBody>
+        </Card>
 
-        <section className="sq-surface" aria-labelledby="operations-sla-heading">
-          <div className={styles.detailHeading}>
-            <div>
-              <h2 id="operations-sla-heading">{t("ops.sla.heading", local("Deadline and resubmission alerts", "تنبيهات المواعيد النهائية وإعادة التقديم"))}</h2>
-              <p>{t("ops.sla.body", "Deadlines use server timestamps and deadline rules that are set up. If those rules are missing, this stays unavailable.")}</p>
-            </div>
-          </div>
-          {slaFlags.length === 0 && resubFlags.length === 0 ? (
-            <EmptyState glyph="✓" title={t("ops.sla.empty", "No deadline alerts in this scope")} inline bare />
-          ) : (
-            <div className="sq-tablewrap"><table className="sq-table">
-              <thead><tr>
-                <th scope="col">{t("ops.sla.th.visit", "Visit")}</th>
-                <th scope="col">{t("ops.sla.th.factory", "Factory")}</th>
-                <th scope="col">{t("ops.sla.th.deadline", "Deadline")}</th>
-                <th scope="col">{t("ops.sla.th.sla", "Deadline status")}</th>
-                <th scope="col">{t("ops.sla.th.escalation", "Escalation")}</th>
-              </tr></thead>
-              <tbody>
-                {slaFlags.map(flag => <tr key={`visit:${flag.visit.id}`}>
-                  <td><a className="sq-link" href={`/visits/${flag.visit.id}`}>{flag.visit.id.slice(0, 8)}</a></td>
-                  <td>{flag.visit.factories?.name ?? "—"}</td>
-                  <td>{fmtTs(flag.deadlineMs)}</td>
-                  <td>{slaKindLabel(flag)}</td>
-                  <td>{flag.escalation ?? "—"}</td>
-                </tr>)}
-                {resubFlags.map(flag => <tr key={`resubmission:${flag.inspection_id}`}>
-                  <td><a className="sq-link" href={`/visits/${flag.visit_id}`}>{flag.visit_id.slice(0, 8)}</a></td>
-                  <td>{flag.factory_name ?? "—"}</td>
-                  <td>{fmtTs(flag.deadlineMs)}</td>
-                  <td>{flag.overdue ? t("ops.sla.resubmissionOverdue", "Resubmission overdue") : t("ops.sla.resubmissionPending", "Resubmission pending")}</td>
-                  <td>{resubSlaAvailable ? "—" : local("Not configured", "غير مهيأ")}</td>
-                </tr>)}
-              </tbody>
-            </table></div>
-          )}
-        </section>
+        <OperationsSlaTable rows={slaAlertRows} strings={{
+          title: opsText.sla.title,
+          description: opsText.sla.description,
+          visit: opsText.sla.visit,
+          factory: opsText.sla.factory,
+          deadline: opsText.sla.deadline,
+          status: opsText.sla.status,
+          escalation: opsText.sla.escalation,
+          emptyTitle: opsText.sla.emptyTitle,
+        }} />
 
         <section className="sq-surface" aria-labelledby="operations-kpi-contract-heading">
           <div className={styles.detailHeading}><div>
@@ -1125,9 +1142,9 @@ export default async function Operations({ searchParams }: {
               : t("ops.kpi.notConfigured", "Policy or published metric definitions are not set up. Undefined formulas stay unavailable.")}</p>
           </div></div>
           {kpiContractRpc.error ? (
-            <EmptyState glyph="!" title={t("ops.kpi.unavailable", "KPI contract service unavailable")} body={t("ops.err.retry", "Retry")} inline bare />
+            <EmptyState icon="risk" title={t("ops.kpi.unavailable", "KPI contract service unavailable")} description={t("ops.err.retry", "Retry")} variant="inline" />
           ) : operationsKpiContract?.authorized === false ? (
-            <EmptyState glyph="⛨" title={t("ops.kpi.unauthorized", "KPI contract access is not authorized for this role")} inline bare />
+            <EmptyState icon="restricted" title={t("ops.kpi.unauthorized", "KPI contract access is not authorized for this role")} variant="inline" />
           ) : (
             <>
               <dl className={styles.contractFacts}>
@@ -1154,7 +1171,7 @@ export default async function Operations({ searchParams }: {
             <p>{t("ops.workload.body", "Assigned, active, submitted and overdue visits in the current authorized geography.")}</p>
           </div></div>
           {workloadRows.length === 0 ? (
-            <EmptyState glyph="—" title={t("ops.workload.empty", "No inspector workload in this scope")} inline bare />
+            <EmptyState title={t("ops.workload.empty", "No inspector workload in this scope")} variant="inline" />
           ) : (
             <div className="sq-tablewrap"><table className="sq-table">
               <thead><tr>
@@ -1178,7 +1195,7 @@ export default async function Operations({ searchParams }: {
             <p>{t("ops.risk.body", "Read-only Risk Engine outputs in the current authorized scope.")}</p>
           </div></div>
           {highRisk.length === 0 ? (
-            <EmptyState glyph="—" title={t("ops.risk.empty", "No configured risk scores in this scope")} inline bare />
+            <EmptyState title={t("ops.risk.empty", "No configured risk scores in this scope")} variant="inline" />
           ) : (
             <div className="sq-tablewrap"><table className="sq-table">
               <thead><tr><th scope="col">{t("ops.risk.th.factory", "Factory")}</th><th scope="col">{t("ops.risk.th.location", "Location")}</th><th scope="col">{t("ops.risk.th.score", "Score")}</th><th scope="col">{t("ops.risk.th.band", "Band")}</th></tr></thead>
@@ -1200,7 +1217,7 @@ export default async function Operations({ searchParams }: {
             <p>{t("ops.alerts.body", "Action forms and notification status you can see here. The database still protects any changes.")}</p>
           </div></div>
           {actions.length === 0 && notifs.length === 0 ? (
-            <EmptyState glyph="✓" title={t("ops.alerts.empty", "No operational alerts in this scope")} inline bare />
+            <EmptyState icon="selected" title={t("ops.alerts.empty", "No operational alerts in this scope")} variant="inline" />
           ) : (
             <div className={styles.alertColumns}>
               <div>
@@ -1227,7 +1244,7 @@ export default async function Operations({ searchParams }: {
                     {notifs.map(notification => <article className={styles.alertCard} key={notification.id}>
                       <div>
                         <strong>{enumLabel(notification.event_key)}</strong>
-                        <p>{t(`enum.channel.${notification.channel}`, notification.channel === "inapp" ? "In-app" : notification.channel.replace(/_/g, " "))} · <time dateTime={notification.created_at}>{formatDateTime(notification.created_at, locale === "ar" ? "ar" : "en")}</time></p>
+                        <p>{t(`enum.channel.${notification.channel}`, notification.channel === "inapp" ? "In-app" : humaniseEnum(notification.channel))} · <time dateTime={notification.created_at}>{formatDateTime(notification.created_at, locale === "ar" ? "ar" : "en")}</time></p>
                       </div>
                       <div className="sq-row">
                         <span className={`sq-lozenge ${NOTIF_TONE[notification.delivery_state] ?? "sq-lozenge--neutral"}`}>{enumLabel(notification.delivery_state)}</span>
@@ -1249,7 +1266,7 @@ export default async function Operations({ searchParams }: {
             <p>{t("ops.cancellations.body", "Recent cancellation requests, reasons and final decisions you can see. These decisions can't change.")}</p>
           </div></div>
           {cancellationHistoryRows.length === 0 ? (
-            <EmptyState glyph="—" title={t("ops.cancellations.empty", "No cancellation history in this scope")} inline bare />
+            <EmptyState title={t("ops.cancellations.empty", "No cancellation history in this scope")} variant="inline" />
           ) : (
             <div className="sq-tablewrap"><table className="sq-table">
               <thead><tr>
@@ -1283,13 +1300,7 @@ export default async function Operations({ searchParams }: {
           </>
         ) : (
           <section className="sq-surface" aria-labelledby="operations-decisions-heading">
-            <EmptyState
-              glyph="⛨"
-              title={t("ops.decisions.readOnly", "These decisions are read-only for your role")}
-              body={t("ops.decisions.readOnlyBody", "Only an authorized Operations supervisor can decide location exceptions or active-session cancellations.")}
-              inline
-              bare
-            />
+            <EmptyState icon="restricted" title={t("ops.decisions.readOnly", "These decisions are read-only for your role")} description={t("ops.decisions.readOnlyBody", "Only an authorized Operations supervisor can decide location exceptions or active-session cancellations.")} variant="inline" />
           </section>
         )}
 
@@ -1316,11 +1327,11 @@ export default async function Operations({ searchParams }: {
             <button className="sq-btn sq-btn--secondary" type="submit">{t("ops.timeline.load", "Load timeline")}</button>
           </form>
           {!timelineVisitId ? (
-            <EmptyState glyph="↗" title={t("ops.timeline.select", "Select a visit to load its timeline")} inline bare />
+            <EmptyState icon="search" title={t("ops.timeline.select", "Select a visit to load its timeline")} variant="inline" />
           ) : timelineRpc.error ? (
-            <EmptyState glyph="!" title={t("ops.timeline.unavailable", "Visit timeline unavailable")} body={t("ops.err.retry", "Retry")} inline bare />
+            <EmptyState icon="risk" title={t("ops.timeline.unavailable", "Visit timeline unavailable")} description={t("ops.err.retry", "Retry")} variant="inline" />
           ) : operationsTimeline.length === 0 ? (
-            <EmptyState glyph="—" title={t("ops.timeline.empty", "No authorized timeline events for this visit")} inline bare />
+            <EmptyState title={t("ops.timeline.empty", "No authorized timeline events for this visit")} variant="inline" />
           ) : (
             <ol className={styles.timelineList}>
               {operationsTimeline.map(event => <li key={`${event.object_type}:${event.object_id}:${event.event_key}`}>
@@ -1338,7 +1349,7 @@ export default async function Operations({ searchParams }: {
             <p>{t("ops.history.body", "The last 100 events from the location history log you can see. These records are never changed here.")}</p>
           </div></div>
           {geoHistoryRows.length === 0 ? (
-            <EmptyState glyph="—" title={t("ops.history.empty", "No recorded location history in this scope")} inline bare />
+            <EmptyState title={t("ops.history.empty", "No recorded location history in this scope")} variant="inline" />
           ) : (
             <div className="sq-tablewrap"><table className="sq-table">
               <thead><tr><th scope="col">{t("ops.history.time", "Recorded at")}</th><th scope="col">{monitoringStrings.thVisit}</th><th scope="col">{t("ops.history.event", "Event")}</th><th scope="col">{monitoringStrings.thGeofence}</th><th scope="col">{t("ops.history.position", "Recorded position")}</th></tr></thead>
@@ -1363,7 +1374,7 @@ export default async function Operations({ searchParams }: {
           {routeRoleKeys.some(role => ["supervisor", "admin"].includes(role)) ? (
             <OpsExport datasets={exportDatasets} strings={exportStrings} />
           ) : (
-            <EmptyState glyph="⛨" title={t("ops.export.unauthorized", "Export is not authorized for this role")} inline bare />
+            <EmptyState icon="restricted" title={t("ops.export.unauthorized", "Export is not authorized for this role")} variant="inline" />
           )}
         </section>
       </div>

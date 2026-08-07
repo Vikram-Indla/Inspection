@@ -1,6 +1,6 @@
 import Button from "@/components/saqeel/button/button";
 import { Card, CardBody, CardFooter, CardGrid, CardHeader } from "@/components/saqeel/card/card";
-import EmptyState from "@/components/saqeel/empty-state/empty-state";
+import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-table";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import MetricCard, { type MetricCardModel, type MetricCardStrings } from "@/components/dashboard/metric-card/metric-card";
 import MetricStrip from "@/components/dashboard/metric-strip/metric-strip";
@@ -12,6 +12,7 @@ import { localeHref } from "@/lib/locale-path";
 import styles from "./operational-view.module.css";
 
 type DashboardMetrics = ReturnType<typeof import("@/app/(app)/dashboard/metrics").buildDashboardMetrics>;
+type WorkloadRow = DashboardMetrics["operational"]["workload"][number];
 
 const MAX_ROWS = 8;
 
@@ -46,7 +47,26 @@ export default function OperationalView({ locale, metrics, projection, partialSo
   ];
 
   const requirementStrip = buildMetricStrip(projection, OPERATIONAL_REQUIREMENT_IDS, locale, partialSources);
-  const workload = operational.workload.slice(0, MAX_ROWS);
+
+  // Inspector capacity used to be a bespoke grid with its own header row and
+  // hover rule, which is why it never lined up with the tables on
+  // /operations. It is a table, so it uses the table component.
+  const capacityColumns: DataColumn<WorkloadRow>[] = [
+    {
+      key: "inspector", header: copy.capacity.inspector, isRowHeader: true, width: "grow",
+      cell: row => row.nameResolved
+        ? <span className={styles.name} dir="auto">{row.name}</span>
+        : <StatusPill tone="neutral" size="sm">{copy.capacity.unresolved}</StatusPill>,
+    },
+    {
+      key: "workload", header: copy.capacity.workload, align: "end", numeric: true,
+      cell: row => row.active,
+    },
+    {
+      key: "capacity", header: copy.capacity.dailyCapacity, align: "end", width: "min",
+      cell: () => <StatusPill tone="warning" size="sm">{common.state.notConfigured}</StatusPill>,
+    },
+  ];
 
   return (
     <div className={styles.stack}>
@@ -98,30 +118,12 @@ export default function OperationalView({ locale, metrics, projection, partialSo
           trailing={<StatusPill tone="neutral" size="sm">{copy.capacity.note}</StatusPill>}
         />
         <CardBody gap="tight">
-          {workload.length ? (
-            <div className={styles.table}>
-              <div className={styles.head} aria-hidden="true">
-                <span className={styles.headCell}>{copy.capacity.inspector}</span>
-                <span className={styles.headCell} data-align="end">{copy.capacity.workload}</span>
-                <span className={styles.headCell} data-align="end">{copy.capacity.dailyCapacity}</span>
-              </div>
-              {workload.map(row => (
-                <div className={styles.row} key={row.id}>
-                  <span className={styles.name}>
-                    {row.nameResolved
-                      ? row.name
-                      : <StatusPill tone="neutral" size="sm">{copy.capacity.unresolved}</StatusPill>}
-                  </span>
-                  <span className={styles.count}>{row.active}</span>
-                  <span className={styles.capacity}>
-                    <StatusPill tone="warning" size="sm" ping>{common.state.notConfigured}</StatusPill>
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <EmptyState icon="access" title={copy.capacity.emptyTitle} description={copy.capacity.empty} />
-          )}
+          <DataTable
+            rows={operational.workload.slice(0, MAX_ROWS)}
+            columns={capacityColumns}
+            getRowId={row => row.id}
+            empty={{ icon: "access", title: copy.capacity.emptyTitle, description: copy.capacity.empty }}
+          />
         </CardBody>
         <CardFooter>
           <Button variant="secondary" size="sm" href={localeHref(locale, "/execution")} label={copy.capacity.action}>
