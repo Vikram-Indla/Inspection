@@ -101,6 +101,39 @@ lines of `.sqx-shell*` CSS in `app/saqeel.css`. `(app)/layout.tsx` is 6 lines.
 
 ---
 
+### T-005a · Kill the native dropdown and date picker
+`status: done` · `rules: WEB-002 §2 (suspended), WEB-008, WEB-009` · `est: 3h`
+`record:` [2026-08-07-T-005a-native-controls](sessions/2026-08/2026-08-07-T-005a-native-controls.md)
+
+`menu-surface`, `select` and `date-range-picker` built; the topbar scope controls
+rebuilt on them. Both Definition-of-Done greps pass. The ink and green ramps were
+re-saturated at hue 152 — `--sqx-surface-canvas` is now `#000A05` and all 20
+claimed contrast ratios were re-measured and confirmed.
+
+`--sqx-rim-light` changed from a colour to a shadow, which required rewriting
+`--sqx-elevation-1…4`; without it every dark elevation would have silently
+dropped. `--sqx-gradient-chrome` was restated as instructed but is **not
+consumed** — the chrome stays flat per the owner's earlier decision.
+
+---
+
+### T-005 · Header controls — the reusable control family
+`status: blocked` · `rules: WEB-002 §2, WEB-008, WEB-009` · `est: 8h`
+`record:` [2026-08-07-T-005-header-controls](sessions/2026-08/2026-08-07-T-005-header-controls.md)
+
+**Blocked on 13 missing tokens.** WEB-002 §2 and WEB-008 §2 forbid adding a token
+inline; a gap is reported and stopped on. Two of the ten components need no new
+token and are delivered: `icon-button`, `kbd`. The other eight are blocked, and
+`menu-surface` blocks five of them on its own.
+
+Delivered: `components/saqeel/icon-button/**`, `components/saqeel/kbd/**`,
+barrel exports, and the topbar's hand-built icon buttons replaced.
+
+**Unblocking is one change request**: add the 13 tokens in the record's gap block
+to `saqeel.css`, then T-005 completes in one pass.
+
+---
+
 ### T-006 · React primitives over `saqeel.css`
 `status: todo` · `rules: WEB-002, WEB-003` · `est: 5h`
 

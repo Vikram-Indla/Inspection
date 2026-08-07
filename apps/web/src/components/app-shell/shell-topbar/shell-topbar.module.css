@@ -95,9 +95,6 @@
   border-radius: var(--sqx-radius-control);
 }
 
-.search:focus-within {
-  border-color: var(--sqx-border-focus);
-}
 
 .searchInput {
   flex: 1;
@@ -121,7 +118,7 @@
   overflow-y: auto;
   padding: var(--sqx-space-2);
   background: var(--sqx-surface-raised);
-  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-default);
   border-radius: var(--sqx-radius-card);
   box-shadow: var(--sqx-shadow-menu);
 }
@@ -189,92 +186,7 @@
 .scope {
   display: flex;
   align-items: center;
-  gap: var(--sqx-space-2);
-}
-
-.scopeDate,
-.scopeRegion {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sqx-space-2);
-  min-block-size: var(--sqx-control-h-md);
-  padding-inline: var(--sqx-space-3);
-  font: var(--sqx-text-caption);
-  color: var(--sqx-text-secondary);
-  background: transparent;
-  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
-  border-radius: var(--sqx-radius-control);
-  cursor: pointer;
-}
-
-.scopeDate summary {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sqx-space-2);
-  list-style: none;
-}
-
-.scopeDate summary::-webkit-details-marker {
-  display: none;
-}
-
-.scopeDate[disabled],
-.scopeRegion[data-disabled] {
-  color: var(--sqx-text-disabled);
-  cursor: not-allowed;
-}
-
-.scopePanel {
-  position: absolute;
-  inset-block-start: calc(100% + var(--sqx-space-2));
-  inset-inline-end: 0;
-  z-index: var(--sqx-z-popover);
-  display: flex;
-  flex-direction: column;
-  gap: var(--sqx-space-3);
-  padding: var(--sqx-inset-control);
-  background: var(--sqx-surface-raised);
-  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
-  border-radius: var(--sqx-radius-card);
-  box-shadow: var(--sqx-shadow-menu);
-}
-
-.scopePanel label {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sqx-space-2);
-  font: var(--sqx-text-label);
-  color: var(--sqx-text-secondary);
-  white-space: nowrap;
-}
-
-.scopePanel input {
-  min-block-size: var(--sqx-touch-target);
-  padding-inline: var(--sqx-space-3);
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-primary);
-  background: var(--sqx-surface-default);
-  border: var(--sqx-border-width-hair) solid var(--sqx-border-input);
-  border-radius: var(--sqx-radius-control);
-}
-
-.scopePanel button {
-  min-block-size: var(--sqx-control-h-md);
-  font: var(--sqx-text-label);
-  color: var(--sqx-action-primary-text);
-  background: var(--sqx-action-primary-bg);
-  border: 0;
-  border-radius: var(--sqx-radius-control);
-  cursor: pointer;
-}
-
-.scopeRegion select {
-  font: var(--sqx-text-caption);
-  color: inherit;
-  background: transparent;
-  border: 0;
-  outline: none;
+  gap: var(--sqx-space-4);
 }
 
 .user {
@@ -498,4 +410,9 @@
     .scope {
     display: none;
   }
+}
+
+.search:focus-within {
+  outline: none;
+  border-color: var(--sqx-border-focus);
 }

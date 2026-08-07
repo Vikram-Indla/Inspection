@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
-import Icon from "@/components/saqeel/icon/icon";
+import IconButton from "@/components/saqeel/icon-button/icon-button";
 import styles from "./shell-mobile-nav.module.css";
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), summary, [tabindex]:not([tabindex="-1"])';
@@ -54,17 +54,16 @@ export default function ShellMobileNav({ children, strings }: {
 
   return (
     <>
-      <button
-        className={styles.trigger}
-        type="button"
-        ref={triggerRef}
-        aria-label={strings.open}
-        aria-controls={drawerId}
-        aria-expanded={isOpen}
-        onClick={() => setIsOpen(true)}
-      >
-        <Icon name="openNavigation" size="md" />
-      </button>
+      <span className={styles.trigger}>
+        <IconButton
+          icon="openNavigation"
+          label={strings.open}
+          ref={triggerRef}
+          aria-controls={drawerId}
+          aria-expanded={isOpen}
+          onClick={() => setIsOpen(true)}
+        />
+      </span>
 
       <div className={styles.drawer} id={drawerId} data-open={isOpen ? "" : undefined} hidden={!isOpen}>
         <button
@@ -74,14 +73,9 @@ export default function ShellMobileNav({ children, strings }: {
           onClick={() => setIsOpen(false)}
         />
         <div className={styles.panel} ref={drawerRef} role="dialog" aria-modal="true" aria-label={strings.navigation}>
-          <button
-            className={styles.close}
-            type="button"
-            aria-label={strings.close}
-            onClick={() => setIsOpen(false)}
-          >
-            <Icon name="dismiss" size="md" />
-          </button>
+          <span className={styles.close}>
+            <IconButton icon="dismiss" label={strings.close} onClick={() => setIsOpen(false)} />
+          </span>
           <div className={styles.content} onClick={() => setIsOpen(false)}>
             {children}
           </div>

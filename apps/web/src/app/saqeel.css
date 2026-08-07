@@ -2,156 +2,136 @@
 
 @layer sqx.tokens {
   :root {
-    /* Green — measured WCAG contrast
-       #00512E 9.47:1 on --sqx-warm-000   #00512E 9.00:1 on --sqx-warm-050
-       #00512E 8.56:1 on --sqx-warm-100   #00512E 8.66:1 on --sqx-warm-tint-success
-       #003D22 12.42:1 on --sqx-warm-000  #002D19 15.11:1 on --sqx-warm-000
-       #FFFFFF 9.47:1 on --sqx-green-800  #00150C 10.07:1 on --sqx-green-400
-       #00150C 12.45:1 on --sqx-green-350 #00D97A 10.70:1 on --sqx-ink-1000
-       #00D97A 10.33:1 on --sqx-ink-950   #4DFFAE 14.96:1 on --sqx-ink-950
-       #4DFFAE 15.50:1 on --sqx-ink-1000  #4DFFAE 12.71:1 on --sqx-ink-tint-success
-       #8FFFCB 15.98:1 on --sqx-ink-950 */
-    --sqx-green-1000: #00150C;
-    --sqx-green-950: #001F11;
-    --sqx-green-900: #002D19;
-    --sqx-green-850: #003D22;
-    --sqx-green-800: #00512E;
-    --sqx-green-750: #006B3C;
-    --sqx-green-700: #00713F;
-    --sqx-green-600: #008C4E;
-    --sqx-green-500: #00B364;
-    --sqx-green-400: #00D97A;
-    --sqx-green-350: #0FF08A;
-    --sqx-green-300: #4DFFAE;
-    --sqx-green-200: #8FFFCB;
-    --sqx-green-100: #C2FFE2;
-    --sqx-green-050: #E8FFF3;
+    /* Green — the single accent. Measured WCAG contrast:
+       #186243 7.32:1 with #FFFFFF   #1D7C54 5.17:1 with #FFFFFF
+       Light theme primary is a solid, bright green with white text and no
+       border: #158454 carries #FFFFFF at 4.71:1 and reads 4.71:1 as a shape
+       against white, so it needs no outline to be identifiable. Hover #106B44
+       6.54:1, pressed #0C5435 8.99:1. Link, accent and focus border use
+       #106B44 so they hold 4.5:1 on the chrome surfaces too.
+       The ramp runs at 72-80% saturation throughout; the earlier 45-62% values
+       were what read as dated.
+       #38B27F 7.04:1 on --sqx-ink-950   #38B27F 7.02:1 with --sqx-green-1000
+       #68CAA1 9.48:1 on --sqx-ink-950   #186243 6.96:1 on --sqx-warm-050 */
+    --sqx-green-1000: #071411;
+    --sqx-green-950: #0A1F18;
+    --sqx-green-900: #0C3222;
+    --sqx-green-850: #103D2A;
+    --sqx-green-800: #0C5435;
+    --sqx-green-750: #156045;
+    --sqx-green-700: #106B44;
+    --sqx-green-600: #158454;
+    --sqx-green-500: #259365;
+    --sqx-green-400: #38B27F;
+    --sqx-green-350: #46BC8B;
+    --sqx-green-300: #6EE7B7;
+    --sqx-green-200: #A7F3D0;
+    --sqx-green-100: #D1FAE5;
+    --sqx-green-050: #ECFDF5;
 
-    /* Ink — measured WCAG contrast
-       #E4F1E8 16.63:1 on --sqx-ink-950   #E4F1E8 17.23:1 on --sqx-ink-1000
-       #ABC2B3 10.23:1 on --sqx-ink-950   #ABC2B3 9.73:1 on --sqx-ink-900
-       #849C8E 6.57:1 on --sqx-ink-950    #849C8E 6.25:1 on --sqx-ink-900
-       #849C8E 5.88:1 on --sqx-ink-850    #5C7A66 4.08:1 on --sqx-ink-950
-       #4E6A56 3.24:1 on --sqx-ink-950    #4E6A56 3.36:1 on --sqx-ink-1000
-       #010A06 17.23:1 on --sqx-ink-100 */
-    --sqx-ink-1000: #010A06;
-    --sqx-ink-950: #05100A;
-    --sqx-ink-900: #081710;
-    --sqx-ink-850: #0C1E14;
-    --sqx-ink-800: #142A1C;
-    --sqx-ink-700: #1E3527;
-    --sqx-ink-600: #4E6A56;
-    --sqx-ink-550: #5C7A66;
-    --sqx-ink-400: #849C8E;
-    --sqx-ink-300: #ABC2B3;
-    --sqx-ink-200: #C9DCD1;
-    --sqx-ink-100: #E4F1E8;
-    --sqx-ink-tint-success: #0A2416;
-    --sqx-ink-tint-danger: #260E13;
-    --sqx-ink-tint-warning: #261E05;
-    --sqx-ink-tint-info: #032027;
-    --sqx-ink-tint-major: #2B1A0C;
+    /* Ink — the dark rendering of the one hue, at a whisper of saturation.
+       The earlier build failed because it held 87% saturation into the darks;
+       this holds 5-12%, so surfaces read green-grey rather than green.
+       Measured on --sqx-ink-950 #101412:
+       #EDF2F0 16.41:1  #B8C1BD 10.08:1  #939F99 6.77:1  #74817B 4.57:1
+       #6B7671 3.94:1, and 3.35:1 on --sqx-ink-850 */
+    --sqx-ink-1000: #090B0A;
+    --sqx-ink-950: #101412;
+    --sqx-ink-900: #171C1A;
+    --sqx-ink-850: #1E2421;
+    --sqx-ink-800: #2A322E;
+    --sqx-ink-700: #373F3B;
+    --sqx-ink-650: #414A46;
+    --sqx-ink-600: #6B7671;
+    --sqx-ink-550: #74817B;
+    --sqx-ink-400: #939F99;
+    --sqx-ink-300: #B8C1BD;
+    --sqx-ink-200: #D6DCD9;
+    --sqx-ink-100: #EDF2F0;
+    --sqx-ink-tint-success: #10241B;
+    --sqx-ink-tint-danger: #2A1512;
+    --sqx-ink-tint-warning: #26200F;
+    --sqx-ink-tint-info: #14202A;
+    --sqx-ink-tint-major: #2A1C12;
 
-    /* Warm — measured WCAG contrast
-       #0B1912 18.07:1 on --sqx-warm-000  #0B1912 17.16:1 on --sqx-warm-050
-       #404A44 9.21:1 on --sqx-warm-000   #59635C 6.24:1 on --sqx-warm-000
-       #59635C 5.93:1 on --sqx-warm-050   #59635C 5.64:1 on --sqx-warm-100
-       #6F776E 4.63:1 on --sqx-warm-000   #6F776E 3.91:1 on --sqx-warm-200
-       #8A9189 3.23:1 on --sqx-warm-000   #8A9189 3.07:1 on --sqx-warm-050 */
+    /* Light — the light rendering of the same hue. Surfaces are tinted green,
+       never grey, so the two themes are one palette at two lightnesses.
+       Measured on #FFFFFF:
+       #151917 17.75:1  #414845 9.38:1  #5A635F 6.20:1
+       #6D7873 4.58:1   #7A8882 3.71:1, and 3.16:1 on --sqx-warm-200
+       Chrome stops #EFF6F2 / #F2F8F5 / #F5FAF8 carry primary text at
+       16.17:1 and muted at 5.65:1 or better */
     --sqx-warm-000: #FFFFFF;
-    --sqx-warm-050: #FAF9F6;
-    --sqx-warm-100: #F2F4F0;
-    --sqx-warm-200: #E9EDE8;
-    --sqx-warm-300: #DEE3DC;
-    --sqx-warm-400: #8A9189;
-    --sqx-warm-500: #6F776E;
-    --sqx-warm-900: #404A44;
-    --sqx-warm-950: #59635C;
-    --sqx-warm-1000: #0B1912;
-    --sqx-warm-tint-success: #E0FBED;
-    --sqx-warm-tint-danger: #FDE9EB;
-    --sqx-warm-tint-warning: #FBF1DC;
-    --sqx-warm-tint-info: #E0F7FA;
-    --sqx-warm-tint-major: #FDEEE3;
-    --sqx-warm-tint-success-border: #B6EFD3;
+    --sqx-warm-050: #F5FAF8;
+    --sqx-warm-100: #EFF6F2;
+    --sqx-warm-200: #E6EFEB;
+    --sqx-warm-300: #DBE6E1;
+    --sqx-warm-350: #BCCDC4;
+    --sqx-warm-400: #7A8882;
+    --sqx-warm-500: #6D7873;
+    --sqx-warm-900: #414845;
+    --sqx-warm-950: #5A635F;
+    --sqx-warm-1000: #151917;
+    --sqx-warm-tint-success: #E7F4ED;
+    --sqx-warm-tint-danger: #FBEAE8;
+    --sqx-warm-tint-warning: #FAF1DF;
+    --sqx-warm-tint-info: #EAF1F6;
+    --sqx-warm-tint-major: #FAEDE4;
+    --sqx-warm-tint-success-border: #C4E0D2;
 
-    /* Neon — measured WCAG contrast
-       #00E87A 11.82:1 on --sqx-ink-950   #00E87A 10.04:1 on --sqx-ink-tint-success
-       #FFC61A 12.30:1 on --sqx-ink-950   #FFC61A 10.50:1 on --sqx-ink-tint-warning
-       #FF4D5E 5.97:1 on --sqx-ink-950    #FF4D5E 5.61:1 on --sqx-ink-tint-danger
-       #00E5FF 12.58:1 on --sqx-ink-950   #00E5FF 11.01:1 on --sqx-ink-tint-info
-       #B8FF2E 16.02:1 on --sqx-ink-950   #B57BFF 6.67:1 on --sqx-ink-950
-       #00FFA3 14.59:1 on --sqx-ink-950   #FF9A4D 9.20:1 on --sqx-ink-950
-       #FF9A4D 7.95:1 on --sqx-ink-tint-major  #E0B84A 10.25:1 on --sqx-ink-950
-       #E0B84A 8.76:1 on --sqx-ink-tint-warning  #FF6B78 7.03:1 on --sqx-ink-950
-       #00150C 5.82:1 on --sqx-neon-danger #6EC8FF 10.85:1 on --sqx-ink-1000
-       #006B3C 6.63:1 on --sqx-warm-000   #006B3C 6.06:1 on --sqx-warm-tint-success
-       #7A4A00 7.48:1 on --sqx-warm-000   #7A4A00 6.67:1 on --sqx-warm-tint-warning
-       #B3101F 6.98:1 on --sqx-warm-000   #B3101F 5.99:1 on --sqx-warm-tint-danger
-       #8F0C18 9.40:1 on --sqx-warm-000   #00636F 6.97:1 on --sqx-warm-000
-       #00636F 6.25:1 on --sqx-warm-tint-info  #4A5D08 7.34:1 on --sqx-warm-000
-       #5B3FC7 7.05:1 on --sqx-warm-000   #00693F 6.79:1 on --sqx-warm-000
-       #98380B 7.23:1 on --sqx-warm-000   #98380B 6.37:1 on --sqx-warm-tint-major
-       #FFFFFF 6.98:1 on --sqx-neon-danger-deep  #12557F 7.98:1 on --sqx-warm-000
-       Flat chrome #EAF8F0 (rail, topbar, drawer) primary 16.51:1
-       secondary 8.41:1 muted 5.70:1 nav-text 16.51:1; flat chrome #001F11
-       primary 14.99:1 secondary 9.22:1 muted 5.92:1 nav-text 16.57:1
-       accent 10.65:1
-       Canvas #F7FAF8 primary 17.20:1 secondary 8.76:1 muted 5.94:1
-       Chrome divider --sqx-border-strong on chrome: 2.95:1 light, 2.92:1 dark
-       Nav veils composited on flat chrome, separation then accent text:
-       light hover 1.10 / parent 1.10 7.85:1 / active 1.18 7.33:1
-       dark  hover 1.16 / parent 1.18 9.03:1 / active 1.30 8.19:1
-       AI action fill, text on it: #5B3FC7 7.05:1 and #3F2E9E 10.02:1 on
-       --sqx-warm-000; #B57BFF 6.51:1 and #D6A6FF 9.67:1 on --sqx-green-1000
-       Nav active fill: #9FE7C4 6.63:1 with --sqx-green-800, separated from the
-       lightest chrome stop by 1.29:1; #1B4A31 6.19:1 with --sqx-neon-success,
-       separated from the lightest chrome stop by 1.53:1
-       Nav group fill: #DEE3DC 7.07:1 with --sqx-warm-900, chrome separation
-       1.18:1; #123A24 6.70:1 with --sqx-ink-300, chrome separation 1.22:1 */
-    --sqx-neon-success: #00E87A;
-    --sqx-neon-success-deep: #006B3C;
-    --sqx-neon-warning: #FFC61A;
-    --sqx-neon-warning-deep: #7A4A00;
-    --sqx-neon-danger: #FF4D5E;
-    --sqx-neon-danger-deep: #B3101F;
-    --sqx-neon-info: #00E5FF;
-    --sqx-neon-info-deep: #00636F;
-    --sqx-neon-live: #B8FF2E;
-    --sqx-neon-live-deep: #4A5D08;
-    --sqx-neon-ai: #B57BFF;
-    --sqx-neon-ai-deep: #5B3FC7;
-    --sqx-neon-ai-light: #D6A6FF;
-    --sqx-neon-ai-shade: #3F2E9E;
-    --sqx-green-veil-soft: rgba(0, 81, 46, 0.06);
-    --sqx-green-veil-strong: rgba(0, 81, 46, 0.1);
-    --sqx-neon-veil-soft: rgba(0, 232, 122, 0.08);
-    --sqx-neon-veil-strong: rgba(0, 232, 122, 0.12);
-    --sqx-glare-050: rgba(250, 249, 246, 0.06);
-    --sqx-neon-mint: #00FFA3;
-    --sqx-neon-mint-deep: #00693F;
-    --sqx-neon-major: #FF9A4D;
-    --sqx-neon-major-deep: #98380B;
-    --sqx-neon-onhold: #E0B84A;
-    --sqx-neon-danger-hover: #FF6B78;
-    --sqx-neon-danger-deep-hover: #8F0C18;
-    --sqx-neon-sky: #6EC8FF;
-    --sqx-neon-steel-deep: #12557F;
-    --sqx-halo-green: #083019;
-    --sqx-halo-cyan: #032A31;
-    --sqx-halo-light: #E8FBF1;
-    --sqx-chrome-glow-light: #EAF8F0;
-    --sqx-chrome-mid-light: #F7FAF8;
+    /* Semantics — muted, professional. No violet, no purple: the AI tokens now
+       resolve to the single green accent. Measured on --sqx-ink-950 #121110:
+       #3DBE85 8.00:1  #E0A83A 8.83:1  #E5645F 5.68:1  #6FAECF 7.75:1
+       #D98A4F 6.91:1  #C9A24E 7.87:1
+       Measured on #FFFFFF:
+       #116B45 6.54:1  #8A5A00 5.93:1  #B02A24 6.56:1  #1D5F82 6.97:1
+       Soft fills, text on fill:
+       #3DBE85 on #10241B 6.90:1   #E5645F on #2A1512 5.20:1
+       #E0A83A on #26200F 7.59:1   #6FAECF on #14202A 6.80:1
+       #116B45 on #E7F4ED 5.78:1   #B02A24 on #FBEAE8 5.63:1
+       #8A5A00 on #FAF1DF 5.28:1   #1D5F82 on #EAF1F6 6.11:1 */
+    --sqx-neon-success: #3DBE85;
+    --sqx-neon-success-deep: #116B45;
+    --sqx-neon-warning: #E0A83A;
+    --sqx-neon-warning-deep: #8A5A00;
+    --sqx-neon-danger: #E5645F;
+    --sqx-neon-danger-deep: #B02A24;
+    --sqx-neon-info: #6FAECF;
+    --sqx-neon-info-deep: #1D5F82;
+    --sqx-neon-live: #8FBF5A;
+    --sqx-neon-live-deep: #4E6320;
+    --sqx-neon-ai: #38B27F;
+    --sqx-neon-ai-deep: #186243;
+    --sqx-neon-ai-light: #68CAA1;
+    --sqx-neon-ai-shade: #124932;
+    --sqx-green-veil-soft: rgba(24, 98, 67, 0.06);
+    --sqx-green-veil-strong: rgba(24, 98, 67, 0.11);
+    --sqx-neon-veil-soft: rgba(56, 178, 127, 0.07);
+    --sqx-neon-veil-strong: rgba(56, 178, 127, 0.13);
+    --sqx-glare-050: rgba(255, 255, 255, 0.05);
+    --sqx-neon-mint: #68CAA1;
+    --sqx-neon-mint-deep: #116B45;
+    --sqx-neon-major: #D98A4F;
+    --sqx-neon-major-deep: #8A4218;
+    --sqx-neon-onhold: #C9A24E;
+    --sqx-neon-danger-hover: #F07D78;
+    --sqx-neon-danger-deep-hover: #8E211C;
+    --sqx-neon-sky: #7FB3D5;
+    --sqx-neon-steel-deep: #2B5D7D;
+    --sqx-halo-green: #1B211E;
+    --sqx-halo-cyan: #171C1A;
+    --sqx-halo-light: #EFF6F2;
+    --sqx-chrome-glow-light: #EFF6F2;
+    --sqx-chrome-mid-light: #F5FAF8;
 
-    --sqx-shade-050: rgba(11, 25, 18, 0.05);
-    --sqx-shade-100: rgba(11, 25, 18, 0.08);
-    --sqx-shade-150: rgba(11, 25, 18, 0.12);
-    --sqx-shade-200: rgba(11, 25, 18, 0.18);
-    --sqx-void-200: rgba(1, 10, 6, 0.28);
-    --sqx-void-300: rgba(1, 10, 6, 0.4);
-    --sqx-void-400: rgba(1, 10, 6, 0.55);
-    --sqx-void-500: rgba(1, 10, 6, 0.68);
-    --sqx-rim-light: rgba(143, 255, 203, 0.06);
+    --sqx-shade-050: rgba(21, 25, 23, 0.05);
+    --sqx-shade-100: rgba(21, 25, 23, 0.08);
+    --sqx-shade-150: rgba(21, 25, 23, 0.12);
+    --sqx-shade-200: rgba(21, 25, 23, 0.18);
+    --sqx-void-200: rgba(9, 11, 10, 0.30);
+    --sqx-void-300: rgba(9, 11, 10, 0.42);
+    --sqx-void-400: rgba(9, 11, 10, 0.58);
+    --sqx-void-500: rgba(9, 11, 10, 0.70);
   }
 
   :root,
@@ -160,13 +140,15 @@
 
     --sqx-surface-canvas: var(--sqx-chrome-mid-light);
     --sqx-surface-chrome: var(--sqx-chrome-glow-light);
+    --sqx-gradient-chrome: linear-gradient(180deg, #EFF6F2 0%, #F2F8F5 42%, #F5FAF8 100%);
+    --sqx-rim-light: inset 0 1px 0 rgb(255 255 255 / 0.85);
     --sqx-surface-default: var(--sqx-warm-000);
     --sqx-surface-subtle: var(--sqx-warm-100);
-    --sqx-surface-sunken: var(--sqx-warm-200);
+    --sqx-surface-sunken: var(--sqx-warm-000);
     --sqx-surface-raised: var(--sqx-warm-000);
     --sqx-surface-accent: var(--sqx-warm-tint-success);
     --sqx-surface-inverse: var(--sqx-warm-1000);
-    --sqx-surface-overlay: rgba(11, 25, 18, 0.52);
+    --sqx-surface-overlay: rgba(21, 25, 23, 0.52);
 
     --sqx-text-primary: var(--sqx-warm-1000);
     --sqx-text-secondary: var(--sqx-warm-900);
@@ -174,25 +156,26 @@
     --sqx-text-disabled: var(--sqx-warm-500);
     --sqx-text-inverse: var(--sqx-warm-000);
     --sqx-text-on-action: var(--sqx-warm-000);
-    --sqx-text-link: var(--sqx-green-800);
-    --sqx-text-link-hover: var(--sqx-green-900);
-    --sqx-text-accent: var(--sqx-green-800);
+    --sqx-text-link: var(--sqx-green-700);
+    --sqx-text-link-hover: var(--sqx-green-800);
+    --sqx-text-accent: var(--sqx-green-700);
     --sqx-text-success: var(--sqx-neon-success-deep);
     --sqx-text-warning: var(--sqx-neon-warning-deep);
     --sqx-text-danger: var(--sqx-neon-danger-deep);
     --sqx-text-info: var(--sqx-neon-info-deep);
 
     --sqx-border-subtle: var(--sqx-warm-300);
-    --sqx-border-default: var(--sqx-warm-300);
+    --sqx-border-default: var(--sqx-warm-350);
     --sqx-border-strong: var(--sqx-warm-400);
     --sqx-border-input: var(--sqx-warm-500);
     --sqx-border-accent: var(--sqx-green-800);
-    --sqx-border-focus: var(--sqx-green-800);
+    --sqx-border-focus: var(--sqx-green-700);
 
-    --sqx-action-primary-bg: var(--sqx-green-800);
-    --sqx-action-primary-hover: var(--sqx-green-850);
-    --sqx-action-primary-active: var(--sqx-green-900);
+    --sqx-action-primary-bg: var(--sqx-green-600);
+    --sqx-action-primary-hover: var(--sqx-green-700);
+    --sqx-action-primary-active: var(--sqx-green-800);
     --sqx-action-primary-text: var(--sqx-warm-000);
+    --sqx-action-primary-border: var(--sqx-action-primary-bg);
     --sqx-action-secondary-border: var(--sqx-warm-400);
     --sqx-action-secondary-text: var(--sqx-warm-1000);
     --sqx-action-secondary-hover: var(--sqx-warm-100);
@@ -286,14 +269,16 @@
     color-scheme: dark;
 
     --sqx-surface-canvas: var(--sqx-ink-1000);
-    --sqx-surface-chrome: var(--sqx-green-950);
+    --sqx-surface-chrome: var(--sqx-ink-900);
+    --sqx-rim-light: inset 0 1px 0 rgb(255 255 255 / 0.045);
+    --sqx-gradient-chrome: linear-gradient(180deg, #1B211E 0%, #151A18 42%, #101412 100%);
     --sqx-surface-default: var(--sqx-ink-950);
     --sqx-surface-subtle: var(--sqx-ink-900);
-    --sqx-surface-sunken: var(--sqx-ink-900);
+    --sqx-surface-sunken: var(--sqx-ink-1000);
     --sqx-surface-raised: var(--sqx-ink-850);
     --sqx-surface-accent: var(--sqx-ink-tint-success);
     --sqx-surface-inverse: var(--sqx-ink-100);
-    --sqx-surface-overlay: rgba(1, 10, 6, 0.68);
+    --sqx-surface-overlay: rgba(9, 11, 10, 0.70);
 
     --sqx-text-primary: var(--sqx-ink-100);
     --sqx-text-secondary: var(--sqx-ink-300);
@@ -310,7 +295,7 @@
     --sqx-text-info: var(--sqx-neon-info);
 
     --sqx-border-subtle: var(--sqx-ink-800);
-    --sqx-border-default: var(--sqx-ink-700);
+    --sqx-border-default: var(--sqx-ink-650);
     --sqx-border-strong: var(--sqx-ink-600);
     --sqx-border-input: var(--sqx-ink-550);
     --sqx-border-accent: var(--sqx-green-800);
@@ -320,6 +305,7 @@
     --sqx-action-primary-hover: var(--sqx-green-350);
     --sqx-action-primary-active: var(--sqx-green-500);
     --sqx-action-primary-text: var(--sqx-green-1000);
+    --sqx-action-primary-border: var(--sqx-action-primary-bg);
     --sqx-action-secondary-border: var(--sqx-ink-600);
     --sqx-action-secondary-text: var(--sqx-ink-100);
     --sqx-action-secondary-hover: var(--sqx-ink-900);
@@ -375,13 +361,13 @@
 
     --sqx-elevation-0: none;
     --sqx-elevation-1: 0 0 0 1px var(--sqx-void-200),
-      0 1px 3px var(--sqx-void-300), inset 0 1px 0 var(--sqx-rim-light);
+      0 1px 3px var(--sqx-void-300), var(--sqx-rim-light);
     --sqx-elevation-2: 0 0 0 1px var(--sqx-void-200),
-      0 3px 8px var(--sqx-void-400), inset 0 1px 0 var(--sqx-rim-light);
+      0 3px 8px var(--sqx-void-400), var(--sqx-rim-light);
     --sqx-elevation-3: 0 0 0 1px var(--sqx-void-300),
-      0 8px 20px var(--sqx-void-400), inset 0 1px 0 var(--sqx-rim-light);
+      0 8px 20px var(--sqx-void-400), var(--sqx-rim-light);
     --sqx-elevation-4: 0 0 0 1px var(--sqx-void-300),
-      0 18px 44px var(--sqx-void-500), inset 0 1px 0 var(--sqx-rim-light);
+      0 18px 44px var(--sqx-void-500), var(--sqx-rim-light);
 
     --sqx-gradient-cta: linear-gradient(
       var(--sqx-flow-angle),
@@ -527,6 +513,8 @@
     --sqx-control-h-md: 2.375rem;
     --sqx-control-h-lg: 2.75rem;
     --sqx-touch-target: 2.75rem;
+    --sqx-ping-sm: 0.375rem;
+    --sqx-ping-md: 0.5rem;
     --sqx-icon-sm: 1rem;
     --sqx-icon-md: 1.125rem;
     --sqx-icon-lg: 1.375rem;
@@ -541,6 +529,12 @@
     --sqx-grid-min-sm: 14rem;
     --sqx-grid-min-md: 18rem;
     --sqx-grid-min-lg: 24rem;
+    --sqx-control-pad-icon: 2.25rem;
+    --sqx-menu-pad: 0.375rem;
+    --sqx-menu-row-h: 2rem;
+    --sqx-menu-max-h: 20rem;
+    --sqx-menu-max-w: 22rem;
+    --sqx-day-cell: 2.25rem;
     --sqx-border-width-hair: 1px;
     --sqx-border-width-thick: 2px;
     --sqx-focus-ring-width: 2px;
@@ -567,6 +561,7 @@
     --sqx-duration-sweep: 850ms;
     --sqx-duration-flow: 5500ms;
     --sqx-duration-drift: 22000ms;
+    --sqx-duration-ping: 1900ms;
     --sqx-ease-standard: cubic-bezier(0.2, 0, 0, 1);
     --sqx-ease-decelerate: cubic-bezier(0, 0, 0, 1);
     --sqx-ease-accelerate: cubic-bezier(0.3, 0, 1, 1);

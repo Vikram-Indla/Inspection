@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Icon, { type IconSize } from "@/components/saqeel/icon/icon";
+import IconButton from "@/components/saqeel/icon-button/icon-button";
 import type { IconName } from "@/components/saqeel/icon/icon-registry";
-import styles from "./shell-topbar.module.css";
 
 type ThemeMode = "system" | "light" | "dark";
 type ResolvedTheme = "light" | "dark";
@@ -47,9 +46,8 @@ function applyTheme(mode: ThemeMode): void {
   }
 }
 
-export default function ShellThemeToggle({ labels, size = "sm" }: {
+export default function ShellThemeToggle({ labels }: {
   labels: Readonly<Record<ThemeMode, string>>;
-  size?: IconSize;
 }) {
   const [mode, setMode] = useState<ThemeMode>("dark");
 
@@ -75,14 +73,11 @@ export default function ShellThemeToggle({ labels, size = "sm" }: {
   }
 
   return (
-    <button
-      className={styles.iconButton}
-      type="button"
-      onClick={cycle}
-      aria-label={labels[next]}
+    <IconButton
+      icon={MODE_ICON[mode]}
+      label={labels[next]}
       title={labels[mode]}
-    >
-      <Icon name={MODE_ICON[mode]} size={size} />
-    </button>
+      onClick={cycle}
+    />
   );
 }

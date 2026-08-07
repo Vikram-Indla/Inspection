@@ -1,0 +1,67 @@
+.root {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  inline-size: var(--sqx-ping-md);
+  block-size: var(--sqx-ping-md);
+}
+
+.root[data-size="sm"] {
+  inline-size: var(--sqx-ping-sm);
+  block-size: var(--sqx-ping-sm);
+}
+
+.root[data-tone="accent"] {
+  --sqx-ping-color: var(--sqx-text-accent);
+}
+
+.root[data-tone="success"] {
+  --sqx-ping-color: var(--sqx-status-compliant);
+}
+
+.root[data-tone="warning"] {
+  --sqx-ping-color: var(--sqx-status-warning);
+}
+
+.root[data-tone="danger"] {
+  --sqx-ping-color: var(--sqx-status-critical);
+}
+
+.root[data-tone="info"] {
+  --sqx-ping-color: var(--sqx-status-info);
+}
+
+.root[data-tone="neutral"] {
+  --sqx-ping-color: var(--sqx-text-muted);
+}
+
+.core,
+.wave {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--sqx-radius-pill);
+  background: var(--sqx-ping-color);
+}
+
+.wave {
+  animation: sqx-ping var(--sqx-duration-ping) var(--sqx-ease-decelerate) infinite;
+}
+
+@keyframes sqx-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+
+  70%,
+  100% {
+    transform: scale(2.75);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave {
+    display: none;
+  }
+}

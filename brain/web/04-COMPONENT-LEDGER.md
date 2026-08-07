@@ -93,7 +93,7 @@ Once these exist, **no component sets its own outer margin** (WEB-002 §4.6).
 
 | Component | Status | Notes |
 | --- | --- | --- |
-| `Icon` | hardened | `saqeel/icon/icon.tsx` (17 lines). Built by T-004, not T-001. Server component, sizes from `--sqx-icon-*`, colour always `currentColor`, `aria-hidden` by default, `label` promotes it to `role="img"`. `mirrored` applies `scaleX(var(--sqx-mirror))` for directional glyphs. No `className` escape hatch. |
+| `Icon` | hardened | `saqeel/icon/icon.tsx` (17 lines). Built by T-004, not T-001. Server component, sizes from `--sqx-icon-*`, colour always `currentColor`, `aria-hidden` by default, `label` promotes it to `role="img"`. `mirrored` applies `scale(var(--sqx-mirror))` for directional glyphs. No `className` escape hatch. |
 | `icon-registry.ts` | hardened | `saqeel/icon/icon-registry.ts` (72 lines). 34 semantic names → `lucide-react`. **The only file in the repository permitted to import `lucide-react`.** 18 names carry the `ShellIcon` union from `lib/shell-navigation.ts` so the rail maps straight through; 16 more cover topbar and control chrome. |
 | `Thumbnail` | to-build | `next/image` wrapper enforcing the alt-text law |
 | `Figure` | to-build | image + caption + accessible description |
@@ -121,6 +121,29 @@ duplicate Saqeel primitives, plus `components/field/` (22 files) and
 `components/charts/` (3). Each is either absorbed into the system or marked in
 `05-RETIREMENT-LEDGER.md`. Nothing new is added to `components/` root — that
 directory is closed.
+
+---
+
+## `components/saqeel/<name>/` — folder-per-component primitives (T-005)
+
+| Component | Status | Lines | Notes |
+| --- | --- | --- | --- |
+| `icon-button` | hardened | 41 | Square, transparent by default — no border, no fill. `label` is **required in the type** and the component writes `aria-label` itself, so an unlabelled icon button cannot be built. Icon stays `--sqx-icon-md` at every size (WEB-009 §7). `forwardRef`. Badge pending `--sqx-badge-size`. |
+| `kbd` | hardened | 9 | `text.code` on `--sqx-font-mono`, sunken, `--sqx-radius-inline`. `min-inline-size` pending `--sqx-kbd-min-w`. |
+| `menu-surface` | hardened | 102 + 32 | **The single raised panel behind every menu** (WEB-009 §13). Owns the three dismissal behaviours no caller may reimplement: outside `pointerdown` close, `Escape` close with focus return to the trigger, optional focus trap. Rows reserve the check gutter on unselected items so labels share one axis (§12). `menu-row.tsx` sits beside it. |
+| `select` | hardened | 143 | No native `select`. `button role="combobox"` driving a `role="listbox"` surface with `aria-activedescendant`. Full APG: Space/Enter/↓ opens · arrows move · Home/End jump · letter type-ahead · Enter selects · Escape returns focus · Tab closes. |
+| `date-range-picker` | hardened | 157 + 75 | No `input type="date"`. Presets column plus a 42-cell `button` grid (`calendar-month.tsx`). `Intl.NumberFormat` renders Arabic-Indic digits; in-range week caps use logical corner radii so the range mirrors in RTL. |
+| `text-input` | blocked | — | Needs nothing now — `--sqx-control-pad-icon` was added by T-005a. Ready to build. |
+| `search-field` | blocked | — | Needs `--sqx-search-w`, `--sqx-kbd-min-w`. `menu-surface` now exists. |
+| `switch` | blocked | — | Needs `--sqx-switch-track-w`, `-track-h`, `-thumb`. |
+| `segmented-control` | blocked | — | Needs `--sqx-segmented-pad`. The `--sqx-rim-light` shape is resolved — it is now a per-theme shadow. |
+| `avatar` | blocked | — | Needs `--sqx-avatar-sm/md/lg`, `--sqx-avatar-status`. |
+
+**Barrel name collisions.** `components/saqeel/index.ts` still exports `Select`,
+`Switch`, `SegmentedControl`, `Avatar` and `DateRangePicker` from the legacy
+`inputs/` and `data/` trees. T-005a exported the new ones as `SaqeelSelect` and
+`SaqeelDateRangePicker` rather than touching files outside its scope. Retire the
+legacy exports and the prefixes come off.
 
 ---
 

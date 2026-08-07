@@ -64,3 +64,15 @@ export { StatusSpine, SPINE_STAGES, type StatusSpineProps, type StatusSpineStage
 export { EvidenceStack, type EvidenceStackProps, type EvidenceStackItem } from "./signature/EvidenceStack";
 export { CommandPalette, type CommandPaletteProps, type CommandPaletteItem } from "./navigation/CommandPalette";
 export { ReferenceRenderer, F0_REFERENCE_DESIGN_HASHES } from "./ReferenceRenderer";
+export { default as Icon, type IconSize } from "./icon/icon";
+export { ICONS, type IconName } from "./icon/icon-registry";
+export { default as IconButton, type IconButtonProps } from "./icon-button/icon-button";
+export { default as Kbd, type KbdProps } from "./kbd/kbd";
+export { default as MenuSurface, type MenuSurfaceProps } from "./menu-surface/menu-surface";
+export { default as MenuRow, type MenuRowProps } from "./menu-surface/menu-row";
+export { default as SaqeelSelect, type SelectProps as SaqeelSelectProps, type SelectOption } from "./select/select";
+export {
+  default as SaqeelDateRangePicker,
+  type DateRangePickerProps as SaqeelDateRangePickerProps,
+  type DateRangePreset,
+} from "./date-range-picker/date-range-picker";

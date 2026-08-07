@@ -31,14 +31,6 @@
   inset-inline-end: var(--sqx-space-3);
   z-index: var(--sqx-z-raised);
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  inline-size: var(--sqx-touch-target);
-  block-size: var(--sqx-touch-target);
-  color: var(--sqx-text-secondary);
-  background: transparent;
-  border: 0;
-  cursor: pointer;
 }
 
 .content {
@@ -50,21 +42,6 @@
 
 .trigger {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  inline-size: var(--sqx-touch-target);
-  block-size: var(--sqx-touch-target);
-  flex: none;
-  color: var(--sqx-text-secondary);
-  background: transparent;
-  border: var(--sqx-border-width-hair) solid transparent;
-  border-radius: var(--sqx-radius-control);
-  cursor: pointer;
-}
-
-.trigger:hover {
-  color: var(--sqx-text-primary);
-  background: var(--sqx-surface-subtle);
 }
 
 @media (min-width: 1025px) {

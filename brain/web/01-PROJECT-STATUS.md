@@ -136,6 +136,21 @@ the highest-priority unblocked item.
 
 ---
 
+## Open change request — 13 tokens (blocks T-005)
+
+T-005 stopped on WEB-002 §2: a missing token is raised, never added inline. Eight
+of its ten primitives are blocked, and `menu-surface` alone blocks five of them.
+The exact declarations are in
+[the T-005 record](sessions/2026-08/2026-08-07-T-005-header-controls.md).
+
+One of the thirteen needs a **decision**, not just a value:
+`--sqx-rim-light` already exists as a colour and is consumed by
+`--sqx-elevation-1…4`, but WEB-009 §4 specifies it as a per-theme box-shadow.
+Redefining it in place breaks all four elevation tokens. The record proposes
+renaming the colour to `--sqx-rim-tint`.
+
+---
+
 ## Next action
 
 **T-000 — Guardrails: gate scripts, lint, verify pipeline.**
