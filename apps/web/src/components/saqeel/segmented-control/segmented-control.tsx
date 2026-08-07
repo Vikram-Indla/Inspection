@@ -1,19 +1,19 @@
-"use client";
-
-import { useRef, type CSSProperties, type KeyboardEvent } from "react";
+import Link from "next/link";
+import { type CSSProperties, type KeyboardEvent } from "react";
 import styles from "./segmented-control.module.css";
 
-export type SegmentedOption<T extends string> = {
+export type SegmentedItem<T extends string> = {
   readonly value: T;
   readonly label: string;
+  readonly href?: string;
   readonly lang?: string;
 };
 
 export type SegmentedControlProps<T extends string> = {
-  options: readonly SegmentedOption<T>[];
+  items: readonly SegmentedItem<T>[];
   value: T;
-  onChange: (value: T) => void;
   label: string;
+  onChange?: (value: T) => void;
   size?: "sm" | "md";
   tone?: "subtle" | "accent";
   disabled?: boolean;
@@ -30,81 +30,85 @@ const STEP: Readonly<Record<string, number>> = {
 };
 
 export default function SegmentedControl<T extends string>({
-  options,
+  items,
   value,
-  onChange,
   label,
+  onChange,
   size = "md",
   tone = "subtle",
   disabled,
 }: SegmentedControlProps<T>) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const activeIndex = Math.max(
-    options.findIndex(option => option.value === value),
-    0,
-  );
+  const navigates = items.every(item => typeof item.href === "string");
+  const activeIndex = Math.max(items.findIndex(item => item.value === value), 0);
+  const style: TrackStyle = {
+    "--sqx-segment-count": String(items.length),
+    "--sqx-segment-index": String(activeIndex),
+  };
 
-  function focusSegment(index: number): void {
-    const segments = trackRef.current?.querySelectorAll<HTMLButtonElement>("button");
-    segments?.item(index)?.focus();
+  function move(track: HTMLElement, index: number): void {
+    const next = (index + items.length) % items.length;
+    onChange?.(items[next].value);
+    track.querySelectorAll<HTMLButtonElement>("button").item(next)?.focus();
   }
 
-  function select(index: number): void {
-    const next = options[(index + options.length) % options.length];
-    onChange(next.value);
-    focusSegment((index + options.length) % options.length);
-  }
-
-  function onKeyDown(event: KeyboardEvent<HTMLDivElement>): void {
+  function onKeyDown(event: KeyboardEvent<HTMLElement>): void {
+    const track = event.currentTarget;
     if (event.key === "Home") {
       event.preventDefault();
-      select(0);
+      move(track, 0);
       return;
     }
     if (event.key === "End") {
       event.preventDefault();
-      select(options.length - 1);
+      move(track, items.length - 1);
       return;
     }
     const step = STEP[event.key];
     if (step === undefined) return;
     event.preventDefault();
-    select(activeIndex + step);
+    move(track, activeIndex + step);
   }
 
-  const style: TrackStyle = {
-    "--sqx-segment-count": String(options.length),
-    "--sqx-segment-index": String(activeIndex),
-  };
+  const Root = navigates ? "nav" : "div";
 
   return (
-    <div
+    <Root
       className={styles.root}
-      ref={trackRef}
-      role="radiogroup"
       aria-label={label}
+      role={navigates ? undefined : "radiogroup"}
       data-size={size}
       data-tone={tone}
       data-disabled={disabled ? "" : undefined}
       style={style}
-      onKeyDown={onKeyDown}
+      onKeyDown={onChange ? onKeyDown : undefined}
     >
       <span className={styles.pill} aria-hidden="true" />
-      {options.map((option, index) => (
+      {items.map((item, index) => item.href ? (
+        <Link
+          className={styles.segment}
+          key={item.value}
+          href={item.href}
+          lang={item.lang}
+          prefetch={false}
+          aria-current={item.value === value ? "page" : undefined}
+        >
+          {item.label}
+        </Link>
+      ) : (
         <button
           className={styles.segment}
-          key={option.value}
+          key={item.value}
           type="button"
           role="radio"
-          lang={option.lang}
-          aria-checked={option.value === value}
+          lang={item.lang}
+          aria-checked={item.value === value}
           tabIndex={index === activeIndex ? 0 : -1}
           disabled={disabled}
-          onClick={() => onChange(option.value)}
+          onClick={() => onChange?.(item.value)}
         >
-          {option.label}
+          {item.label}
         </button>
       ))}
-    </div>
+    </Root>
   );
 }

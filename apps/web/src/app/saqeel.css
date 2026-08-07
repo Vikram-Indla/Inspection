@@ -144,13 +144,13 @@
   :root[data-theme="light"] {
     color-scheme: light;
 
-    --sqx-surface-canvas: var(--sqx-chrome-mid-light);
-    --sqx-surface-chrome: var(--sqx-chrome-mid-light);
+    --sqx-surface-canvas: var(--sqx-warm-200);
+    --sqx-surface-chrome: var(--sqx-warm-200);
     --sqx-gradient-chrome: linear-gradient(180deg, #EFF6F2 0%, #F2F8F5 42%, #F5FAF8 100%);
     --sqx-rim-light: inset 0 1px 0 rgb(255 255 255 / 0.85);
-    --sqx-surface-default: var(--sqx-warm-000);
+    --sqx-surface-default: var(--sqx-warm-050);
     --sqx-surface-subtle: var(--sqx-warm-100);
-    --sqx-surface-sunken: var(--sqx-warm-000);
+    --sqx-surface-sunken: var(--sqx-warm-300);
     --sqx-surface-raised: var(--sqx-warm-000);
     --sqx-surface-accent: var(--sqx-warm-tint-success);
     --sqx-surface-inverse: var(--sqx-warm-1000);
@@ -280,9 +280,9 @@
     --sqx-surface-chrome: var(--sqx-green-1000);
     --sqx-rim-light: inset 0 1px 0 rgb(255 255 255 / 0.045);
     --sqx-gradient-chrome: linear-gradient(180deg, #0C241C 0%, #0A1F18 42%, #071411 100%);
-    --sqx-surface-default: var(--sqx-ink-950);
-    --sqx-surface-subtle: var(--sqx-ink-900);
-    --sqx-surface-sunken: var(--sqx-green-1000);
+    --sqx-surface-default: var(--sqx-ink-900);
+    --sqx-surface-subtle: var(--sqx-ink-800);
+    --sqx-surface-sunken: var(--sqx-ink-950);
     --sqx-surface-raised: var(--sqx-ink-850);
     --sqx-surface-accent: var(--sqx-ink-tint-success);
     --sqx-surface-inverse: var(--sqx-ink-100);
@@ -554,6 +554,8 @@
     --sqx-focus-ring-offset: 2px;
 
     --sqx-shadow-card: var(--sqx-elevation-1);
+    --sqx-shadow-lift: var(--sqx-elevation-3);
+    --sqx-lift-card: var(--sqx-space-1);
     --sqx-shadow-card-hover: var(--sqx-elevation-2);
     --sqx-shadow-menu: var(--sqx-elevation-3);
     --sqx-shadow-modal: var(--sqx-elevation-4);
@@ -670,6 +672,11 @@
     --sqx-sweep-end: -140%;
     --sqx-mirror: -1;
   }
+}
+
+[lang="ar"],
+:lang(ar) {
+  letter-spacing: normal !important;
 }
 
 @layer sqx.base {

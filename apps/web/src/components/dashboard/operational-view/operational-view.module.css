@@ -1,0 +1,100 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-section);
+  min-inline-size: 0;
+}
+
+.footnote {
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content minmax(0, var(--sqx-grid-min-sm));
+  align-items: center;
+  gap: var(--sqx-space-5);
+  padding-inline: var(--sqx-space-3);
+  padding-block-end: var(--sqx-space-3);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  margin-block-end: var(--sqx-space-2);
+}
+
+.headCell {
+  font: var(--sqx-text-overline);
+  letter-spacing: var(--sqx-text-overline-tracking);
+  text-transform: uppercase;
+  color: var(--sqx-text-muted);
+}
+
+.headCell[data-align="end"] {
+  text-align: end;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content minmax(0, var(--sqx-grid-min-sm));
+  align-items: center;
+  gap: var(--sqx-space-5);
+  min-block-size: var(--sqx-control-h-md);
+  padding-inline: var(--sqx-space-3);
+  border-radius: var(--sqx-radius-sm);
+  transition: background-color var(--sqx-duration-fast) var(--sqx-ease-standard);
+}
+
+.row:hover {
+  background: var(--sqx-surface-subtle);
+}
+
+.row + .row {
+  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  min-inline-size: 0;
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
+  color: var(--sqx-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.count {
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
+  font-weight: var(--sqx-weight-semibold);
+  color: var(--sqx-text-primary);
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+.capacity {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 60rem) {
+  .head {
+    display: none;
+  }
+
+  .row {
+    grid-template-columns: minmax(0, 1fr) max-content;
+  }
+
+  .capacity {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+}

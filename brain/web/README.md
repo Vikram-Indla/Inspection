@@ -12,7 +12,7 @@ between them. What is not written here did not happen.
 1. **`01-PROJECT-STATUS.md`** — where the redesign stands right now.
 2. **`03-REDESIGN-TRACKER.md`** — the work board. Take the top unblocked item in
    NOW unless told otherwise.
-3. **The rule documents your task names** — `rules/WEB-000` … `WEB-010`.
+3. **The rule documents your task names** — `rules/WEB-000` … `WEB-011`.
    Read them before writing a line of code, not after review rejects the diff.
 4. **`04-COMPONENT-LEDGER.md`** — what the design system already provides. Never
    build something that exists.
@@ -36,6 +36,7 @@ between them. What is not written here did not happen.
 | [`rules/WEB-008-standing-task-contract.md`](rules/WEB-008-standing-task-contract.md) | **what every task prompt implies.** Read this first — prompts state only what is task-specific |
 | [`rules/WEB-009-component-design-language.md`](rules/WEB-009-component-design-language.md) | the visual grammar: control heights, borders, rim light, focus, radii, icon sizing, spacing, motion, the gradient budget |
 | [`rules/WEB-010-performance-and-lifecycle.md`](rules/WEB-010-performance-and-lifecycle.md) | cleanup of every subscription, compositor-only animation, no layout thrash, no waterfalls |
+| [`rules/WEB-011-arabic-first.md`](rules/WEB-011-arabic-first.md) | **Arabic is the primary language.** Both locales in every commit, Arabic punctuation, no letter-spacing on Arabic, logical properties, Arabic-first review |
 
 **Task prompts are deliberately short.** Everything a prompt does not say is in
 `WEB-008` and `WEB-009`. If a prompt seems to be missing the rules, it is not —
@@ -43,7 +44,7 @@ it is refusing to repeat them.
 
 ---
 
-## The fifteen non-negotiables
+## The sixteen non-negotiables
 
 If you read nothing else, these are the ones that get a diff rejected on sight.
 
@@ -90,6 +91,11 @@ If you read nothing else, these are the ones that get a diff rejected on sight.
     `gates`, and the running dev server. Anything needing a production compile
     becomes a measurement request handed back (WEB-005 §8), never a command the
     agent runs.
+16. **Arabic first.** This is a Saudi ministry platform — Arabic is the primary
+    language, not a translation. Every user-facing string ships in `en` **and**
+    `ar` in the same commit, Arabic questions end in `؟`, Arabic never receives
+    `letter-spacing`, and a screen is reviewed in Arabic before it is called
+    done. English gets the compromise, never Arabic (WEB-011).
 
 ---
 

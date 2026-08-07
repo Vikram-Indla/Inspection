@@ -1,11 +1,11 @@
 "use client";
 
 import { useTransition } from "react";
-import SegmentedControl, { type SegmentedOption } from "@/components/saqeel/segmented-control/segmented-control";
+import SegmentedControl, { type SegmentedItem } from "@/components/saqeel/segmented-control/segmented-control";
 import { switchLocale } from "@/features/shell/locale-actions";
 import type { Locale } from "@/lib/locale-path";
 
-const LOCALES: readonly SegmentedOption<Locale>[] = [
+const LOCALES: readonly SegmentedItem<Locale>[] = [
   { value: "en", label: "EN", lang: "en" },
   { value: "ar", label: "ع", lang: "ar" },
 ];
@@ -25,7 +25,7 @@ export default function ShellLocaleToggle({ locale, label }: {
 
   return (
     <SegmentedControl
-      options={LOCALES}
+      items={LOCALES}
       value={locale}
       onChange={choose}
       label={label}

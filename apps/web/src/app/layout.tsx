@@ -40,7 +40,7 @@ const plexArabic = localFont({
 
 export const viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F5FAF8" },
+    { media: "(prefers-color-scheme: light)", color: "#E6EFEB" },
     { media: "(prefers-color-scheme: dark)", color: "#071411" },
   ],
   // iPad standalone PWA: draw under the status bar / home indicator so the field

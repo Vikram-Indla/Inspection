@@ -1,0 +1,210 @@
+{
+  "title": "Dashboard",
+  "loading": "Loading dashboard…",
+  "loadingDetail": "Loading dashboard sources filtered to your access.",
+  "perspective": {
+    "label": "Dashboard perspective",
+    "strategic": "Strategic View",
+    "operational": "Operational View"
+  },
+  "updated": {
+    "label": "Updated",
+    "timezone": "Riyadh time"
+  },
+  "partial": {
+    "title": "Partial dashboard",
+    "sources": "these sources are temporarily unavailable:",
+    "retry": "Other panels remain usable; refresh to retry.",
+    "sourceSet": "Partial source set: {sources}"
+  },
+  "source": {
+    "visits": "visits",
+    "inspections": "inspections",
+    "reviews": "reviews",
+    "responses": "checklist answers",
+    "checklistItems": "checklist items",
+    "violations": "violations",
+    "geo": "location events",
+    "factories": "factories",
+    "audit": "audit timeline",
+    "sla": "SLA configuration"
+  },
+  "yourWork": {
+    "eyebrow": "Your work",
+    "scoped": "Scoped to your access"
+  },
+  "persona": {
+    "admin": "Admin",
+    "planner": "Planner",
+    "supervisor": "Supervisor",
+    "inspector": "Inspector"
+  },
+  "metric": {
+    "methodology": "How is this calculated?",
+    "why": "Why unavailable?",
+    "definition": "Definition",
+    "advisory": "Advisory only · traceable",
+    "blockedTitle": "Why is this unavailable?",
+    "drill": "Open records"
+  },
+  "national": {
+    "title": "National performance",
+    "coverage": {
+      "question": "Are we achieving the national inspection strategy?",
+      "title": "Inspection coverage against annual target",
+      "definition": "Completed inspections as a percentage of the annual inspection target",
+      "example": "{count} completed inspections; no governed annual target is configured.",
+      "interpretation": "Coverage remains withheld until Administration publishes the governed inspection-cycle target.",
+      "action": "Open Planning"
+    },
+    "compliance": {
+      "question": "How compliant is the industrial sector?",
+      "title": "National compliance rate",
+      "definition": "Percentage of eligible inspection answers that were compliant",
+      "example": "{compliant} compliant of {eligible} eligible answers.",
+      "interpretation": "Calculated only from approved inspection work; pending reports are excluded.",
+      "action": "Open Analytics"
+    },
+    "approval": {
+      "question": "Are inspection reports approved without excessive rework?",
+      "title": "Inspection approval rate",
+      "definition": "Percentage of decided Level-2 review outcomes that were approved",
+      "example": "{approved} approved of {decided} decided outcomes.",
+      "interpretation": "Approval is a review outcome and is not presented as compliance.",
+      "action": "Open Review & Approval"
+    }
+  },
+  "intervention": {
+    "title": "Strategic intervention",
+    "topViolation": {
+      "question": "Which regulations generate the most violations?",
+      "title": "Top violated regulation",
+      "definition": "Count of violations grouped by regulation",
+      "example": "{count} linked violations in the current scope.",
+      "exampleEmpty": "No regulation-linked violations in scope.",
+      "interpretation": "Only violations carrying a governed regulation relationship are counted.",
+      "action": "Open the regulation"
+    },
+    "critical": {
+      "question": "Which factories require immediate intervention?",
+      "title": "Critical factories requiring intervention",
+      "definition": "Factories carrying a recorded high-risk band or active critical violation",
+      "example": "{count} factories match the governed recorded conditions.",
+      "interpretation": "No substitute threshold is introduced by this screen.",
+      "action": "Open Factory 360"
+    },
+    "annual": {
+      "question": "Which factories still require inspection this year?",
+      "title": "Factories pending annual inspection",
+      "definition": "Active factories with no completed inspection in the governed inspection year",
+      "example": "{count} factories are visible, but the annual-cycle policy is not configured.",
+      "interpretation": "The screen withholds a count until the inspection-year policy is published.",
+      "action": "Open Planning"
+    }
+  },
+  "explorer": {
+    "title": "Compliance performance explorer",
+    "description": "One compliance-rate formula, four lenses. Every row drills to the factories behind it.",
+    "lens": "Lens",
+    "openFactories": "Open factories",
+    "empty": "No eligible approved answers in scope.",
+    "footnote": "{lens} · compliance rate and record count.",
+    "notRecorded": "Not recorded",
+    "emptyTitle": "Nothing to compare yet",
+    "rateHeading": "Compliance rate",
+    "countHeading": "Records"
+  },
+  "enforcement": {
+    "title": "Enforcement action trend",
+    "blockedTitle": "Trend unavailable",
+    "blockedDetail": "The repository does not store a governed official violation issue date. No quarterly series is inferred.",
+    "action": "Open Enforcement Library"
+  },
+  "aiBrief": {
+    "eyebrow": "Executive AI brief",
+    "title": "Provider output withheld",
+    "detail": "No generated claim is shown until a configured provider returns evidence-linked output for this scope.",
+    "footnote": "Authoritative dashboard records remain available."
+  },
+  "requirement": {
+    "title": "Strategic requirement coverage",
+    "description": "Decision required: approved description pending."
+  },
+  "search": {
+    "heading": "Search results for “{query}”",
+    "empty": "No factory, visit, or inspection within your access matched.",
+    "visitFallback": "Visit",
+    "inspectionFallback": "Inspection"
+  },
+  "unsupported": {
+    "title": "Dashboard view not configured",
+    "detail": "The “{view}” perspective is not an approved M1 view. Choose an available perspective."
+  },
+  "operational": {
+    "priorities": {
+      "title": "Operational priorities",
+      "summary": "{high} high-priority visits are pending execution; {overdue} published visits are past their recorded window.",
+      "footnote": "Based on current records only. No AI-generated recommendation."
+    },
+    "today": {
+      "title": "Today's operations",
+      "planned": {
+        "question": "What needs to be executed today?",
+        "title": "Today's planned visits",
+        "definition": "Count of visits scheduled for today",
+        "action": "Open Execution"
+      },
+      "completion": {
+        "question": "How much work has been completed today?",
+        "title": "Today's visit completion rate",
+        "definition": "(Completed visits today ÷ planned visits today) × 100",
+        "action": "Open Execution"
+      },
+      "active": {
+        "question": "What inspections are currently active?",
+        "title": "Active field inspections",
+        "definition": "Count of inspections with operational state = executing",
+        "action": "Open Operations Center"
+      },
+      "overdue": {
+        "question": "Which visits are delayed?",
+        "title": "Overdue planned visits",
+        "definition": "Planned date earlier than today and status not completed or cancelled",
+        "action": "Open Planning"
+      },
+      "awaiting": {
+        "question": "Which inspection reports require review?",
+        "title": "Inspection reports awaiting approval",
+        "definition": "Count of submitted reports awaiting a review decision",
+        "action": "Open Review & Approval"
+      },
+      "returned": {
+        "question": "Which inspections require rework?",
+        "title": "Returned inspection reports",
+        "definition": "Count of reports returned to inspectors",
+        "action": "Open Execution"
+      },
+      "highPriority": {
+        "question": "Which factories should be inspected next?",
+        "title": "High-priority visits pending execution",
+        "definition": "Planned visits at high or critical risk, not yet executed",
+        "action": "Open Planning"
+      }
+    },
+    "requirement": {
+      "title": "Operational requirement coverage",
+      "description": "Every governed operational measure, shown with its current live or blocked state."
+    },
+    "capacity": {
+      "title": "Inspector capacity",
+      "note": "Planned + in progress; declared daily capacity is not configured",
+      "inspector": "Inspector",
+      "workload": "Active workload",
+      "dailyCapacity": "Daily capacity",
+      "unresolved": "Unresolved identity",
+      "emptyTitle": "No inspectors in scope",
+      "empty": "No inspector assignments are visible in this scope.",
+      "action": "Open Execution, grouped by inspector"
+    }
+  }
+}

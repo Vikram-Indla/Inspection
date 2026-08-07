@@ -1,0 +1,27 @@
+.label {
+  min-block-size: calc(var(--sqx-text-overline-size) * var(--sqx-text-overline-line) * 2);
+  font: var(--sqx-text-overline);
+  letter-spacing: var(--sqx-text-overline-tracking);
+  text-transform: uppercase;
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}
+
+.foot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sqx-space-3);
+  margin-block-start: auto;
+}
+
+.disclosure {
+  display: inline-flex;
+  align-self: flex-start;
+  margin-inline-start: calc(var(--sqx-space-4) * -1);
+}
+
+.sub {
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+}

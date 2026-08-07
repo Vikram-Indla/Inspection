@@ -1,0 +1,72 @@
+.pill {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  gap: var(--sqx-space-2);
+  min-block-size: var(--sqx-control-h-sm);
+  padding-inline: var(--sqx-space-3);
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
+  font-weight: var(--sqx-weight-semibold);
+  white-space: nowrap;
+  border: var(--sqx-border-width-hair) solid transparent;
+  border-radius: var(--sqx-radius-pill);
+}
+
+.pill[data-size="sm"] {
+  min-block-size: var(--sqx-space-6);
+  padding-inline: var(--sqx-space-2);
+  font: var(--sqx-text-caption);
+  letter-spacing: var(--sqx-text-caption-tracking);
+  font-weight: var(--sqx-weight-semibold);
+}
+
+.label {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pill[data-ping] {
+  gap: var(--sqx-space-3);
+  padding-inline-start: var(--sqx-space-4);
+}
+
+.pill[data-ping][data-size="sm"] {
+  padding-inline-start: var(--sqx-space-3);
+}
+
+.pill[data-tone="neutral"],
+.pill[data-tone="pending"] {
+  color: var(--sqx-status-pending-on-soft);
+  background: var(--sqx-status-pending-soft);
+  border-color: var(--sqx-border-subtle);
+}
+
+.pill[data-tone="accent"] {
+  color: var(--sqx-text-accent);
+  background: var(--sqx-surface-accent);
+  border-color: var(--sqx-border-accent);
+}
+
+.pill[data-tone="success"] {
+  color: var(--sqx-status-compliant-on-soft);
+  background: var(--sqx-status-compliant-soft);
+}
+
+.pill[data-tone="warning"] {
+  color: var(--sqx-status-warning-on-soft);
+  background: var(--sqx-status-warning-soft);
+}
+
+.pill[data-tone="danger"] {
+  color: var(--sqx-status-critical-on-soft);
+  background: var(--sqx-status-critical-soft);
+}
+
+.pill[data-tone="info"] {
+  color: var(--sqx-status-info-on-soft);
+  background: var(--sqx-status-info-soft);
+}

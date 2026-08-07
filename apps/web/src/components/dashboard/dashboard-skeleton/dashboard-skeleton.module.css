@@ -1,0 +1,15 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-4);
+  inline-size: 100%;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 3fr) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sqx-space-5);
+  min-block-size: var(--sqx-control-h-md);
+}

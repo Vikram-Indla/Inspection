@@ -9,6 +9,15 @@
     "markAllRead": "تعليم الكل كمقروء",
     "signOut": "تسجيل الخروج"
   },
+  "entity": {
+    "authority": "الجهة",
+    "city": "المدينة",
+    "factories": "المصانع",
+    "inspections": "التفتيشات",
+    "region": "المنطقة",
+    "sector": "القطاع",
+    "visits": "الزيارات"
+  },
   "field": {
     "account": "الحساب",
     "dateScope": "نطاق التاريخ",

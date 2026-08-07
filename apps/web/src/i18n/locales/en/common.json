@@ -9,6 +9,15 @@
     "markAllRead": "Mark all read",
     "signOut": "Sign out"
   },
+  "entity": {
+    "authority": "Authority",
+    "city": "City",
+    "factories": "Factories",
+    "inspections": "Inspections",
+    "region": "Region",
+    "sector": "Sector",
+    "visits": "Visits"
+  },
   "field": {
     "account": "Account",
     "dateScope": "Date scope",
