@@ -1,8 +1,6 @@
-import Link from "next/link";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
-import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-table";
+import DataTable, { CellLink, CellMuted, type DataColumn } from "@/components/saqeel/data-table/data-table";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
-import styles from "./operations-sla-table.module.css";
 
 export type SlaAlertRow = {
   readonly id: string;
@@ -35,16 +33,12 @@ export default function OperationsSlaTable({ rows, strings }: {
   const columns: DataColumn<SlaAlertRow>[] = [
     {
       key: "visit", header: strings.visit, isRowHeader: true,
-      cell: row => (
-        <Link className={styles.link} href={row.visitHref} prefetch={false}>
-          <bdi>{row.visitLabel}</bdi>
-        </Link>
-      ),
+      cell: row => <CellLink href={row.visitHref}><bdi>{row.visitLabel}</bdi></CellLink>,
     },
     { key: "factory", header: strings.factory, width: "grow", cell: row => row.factoryName },
     {
       key: "deadline", header: strings.deadline, numeric: true,
-      cell: row => <span className={styles.muted}>{row.deadline}</span>,
+      cell: row => <CellMuted>{row.deadline}</CellMuted>,
     },
     {
       key: "status", header: strings.status,

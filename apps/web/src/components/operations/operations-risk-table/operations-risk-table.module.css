@@ -1,0 +1,19 @@
+.link {
+  color: var(--sqx-text-link);
+  text-decoration: none;
+  border-radius: var(--sqx-radius-xs);
+}
+
+.link:hover {
+  color: var(--sqx-text-link-hover);
+  text-decoration: underline;
+}
+
+.link:focus-visible {
+  outline: var(--sqx-border-width-hair) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}
+
+.muted {
+  color: var(--sqx-text-muted);
+}

@@ -21,76 +21,87 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    SAQEEL SEMANTIC TOKENS — LIGHT (default)
    ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   SEMANTIC COLOUR — ALIASES ONLY
+
+   These names are the app's legacy vocabulary and the entire .sq-* runtime
+   (saqeel-runtime.css, 2.3k lines) still speaks it. Their VALUES now come
+   from the --sqx-* sheet in saqeel.css, which holds the IRP palette.
+
+   That is deliberate. Two independent palettes with two independent dark
+   blocks is how the shell ended up green while the migrated components were
+   not. One source, one theme switch. The [data-theme="dark"] block that used
+   to live here is gone — saqeel.css already flips every value below.
+
+   Custom properties resolve at use, not at declaration, so referencing
+   --sqx-* here is safe even though saqeel.css is imported after this file.
+   ═══════════════════════════════════════════════════════════════════════════ */
 :root, :root[data-theme="light"] {
   color-scheme: light;
 
   /* Surfaces */
-  --surface-canvas:    #f5f7f8;
-  --surface-primary:   #ffffff;
-  --surface-secondary: #f0f3f5;
-  --surface-sunken:    #e9eef1;
-  --surface-raised:    #ffffff;
-  --surface-overlay:   rgba(21, 23, 26, 0.44);
+  --surface-canvas:    var(--sqx-surface-canvas);
+  --surface-primary:   var(--sqx-surface-default);
+  --surface-secondary: var(--sqx-surface-raised);
+  --surface-sunken:    var(--sqx-surface-sunken);
+  --surface-raised:    var(--sqx-surface-default);
+  --surface-overlay:   var(--sqx-surface-overlay);
+  --surface-header:    var(--sqx-surface-header);
 
-  /* Navigation — the supplied light shell is a white control rail. */
-  --nav-bg:          #ffffff;
-  --nav-bg-hover:    #f0f3f5;
-  --nav-bg-selected: #dfeee9;
-  --nav-border:      #d6dde2;
-  --nav-text:        #49545e;
-  --nav-text-active: #104f3d;
-  --nav-indicator:   #35b285;
+  /* Navigation — neutral rail. The selected state is a brand tint, never a fill. */
+  --nav-bg:          var(--sqx-surface-chrome);
+  --nav-bg-hover:    var(--sqx-nav-hover-bg);
+  --nav-bg-selected: var(--sqx-nav-active-bg);
+  --nav-border:      var(--sqx-border-subtle);
+  --nav-text:        var(--sqx-nav-text);
+  --nav-text-active: var(--sqx-nav-active-text);
+  --nav-indicator:   var(--sqx-action-primary-bg);
 
   /* Text */
-  --text-primary:   #1b242c;
-  --text-secondary: #49545e;
-  /* AA at 11.5px on every light surface. #66727c scored 4.42 on --surface-secondary
-     (threshold 4.5); this scores 5.23 there, 5.83 on white, 5.42 on the canvas.
-     Unified onto the value already proven in designs/admin/admin/saqeel/tokens/colors.css. */
-  --text-muted:     #5f666c;
-  /* WCAG AA fix (INSP-702): #8f9aa3 on white scored 2.87:1, below even the
-     3:1 large-text floor. --neutral-700 already exists in the raw ramp below
-     and scores 7.91:1. */
-  --text-disabled:  #4c5258;
-  --text-inverse:   #f5f6f7;
-  --text-on-action: #ffffff;
-  --text-link:      #175cd3;
+  --text-primary:   var(--sqx-text-primary);
+  --text-secondary: var(--sqx-text-secondary);
+  --text-muted:     var(--sqx-text-muted);
+  --text-disabled:  var(--sqx-text-disabled);
+  --text-inverse:   var(--sqx-text-inverse);
+  --text-on-action: var(--sqx-text-on-action);
+  --text-link:      var(--sqx-text-link);
 
   /* Borders & focus */
-  --border-subtle: #d6dde2;
-  --border-strong: #9aa6af;
-  --border-input:  #7a8894;
-  --focus-ring:    #176b52;
+  --border-subtle: var(--sqx-border-subtle);
+  --border-strong: var(--sqx-border-strong);
+  --border-input:  var(--sqx-border-input);
+  --focus-ring:    var(--sqx-border-focus);
 
-  /* Primary action — restrained emerald */
-  --action-primary:         #176b52;
-  --action-primary-hover:   #125541;
-  --action-primary-pressed: #0f4938;
-  --accent-soft:            #dfeee9;
-  --accent-soft-hover:      #beddd2;
-  --accent-text:            #104f3d;
+  /* Primary action — aubergine */
+  --action-primary:         var(--sqx-action-primary-bg);
+  --action-primary-hover:   var(--sqx-action-primary-hover);
+  --action-primary-pressed: var(--sqx-action-primary-active);
+  --accent-soft:            var(--sqx-surface-accent);
+  --accent-soft-hover:      var(--sqx-surface-accent-hover);
+  --accent-text:            var(--sqx-text-accent);
 
   /* Destructive */
-  --action-danger:         #b3261e;
-  --action-danger-hover:   #991f18;
-  --action-danger-pressed: #801913;
+  --action-danger:         var(--sqx-action-danger-bg);
+  --action-danger-hover:   var(--sqx-action-danger-hover);
+  --action-danger-pressed: var(--sqx-action-danger-hover);
 
   /* Status semantics (base / soft fill / text-on-soft) — 10 canonical roles */
-  --status-critical:  #b3261e; --status-critical-soft:  #f8e6e4; --status-critical-text:  #8c1d17;
-  --status-major:     #c2410c; --status-major-soft:     #faeadd; --status-major-text:     #9a3412;
-  --status-warning:   #b45309; --status-warning-soft:   #f8efd6; --status-warning-text:   #8a4207;
-  --status-compliant: #1a7a4f; --status-compliant-soft: #e2f0e7; --status-compliant-text: #14603e;
-  --status-info:      #25619a; --status-info-soft:      #e5edf5; --status-info-text:      #1d4d7c;
-  --status-pending:   #5b6472; --status-pending-soft:   #e9ebee; --status-pending-text:   #454d59;
-  --status-draft:     #6f6a5f; --status-draft-soft:     #edeae2; --status-draft-text:     #565248;
-  --status-onhold:    #8f6b2e; --status-onhold-soft:    #f2ecdc; --status-onhold-text:    #6f5324;
-  --status-completed: #256d5f; --status-completed-soft: #e0eeeb; --status-completed-text: #1b544a;
-  --status-disabled:  #a4aab0; --status-disabled-soft:  #efeeea; --status-disabled-text:  #71787e;
+  --status-critical:  var(--sqx-status-critical);  --status-critical-soft:  var(--sqx-status-critical-soft);  --status-critical-text:  var(--sqx-status-critical-on-soft);
+  --status-major:     var(--sqx-status-major);     --status-major-soft:     var(--sqx-status-major-soft);     --status-major-text:     var(--sqx-status-major-on-soft);
+  --status-warning:   var(--sqx-status-warning);   --status-warning-soft:   var(--sqx-status-warning-soft);   --status-warning-text:   var(--sqx-status-warning-on-soft);
+  --status-compliant: var(--sqx-status-compliant); --status-compliant-soft: var(--sqx-status-compliant-soft); --status-compliant-text: var(--sqx-status-compliant-on-soft);
+  --status-info:      var(--sqx-status-info);      --status-info-soft:      var(--sqx-status-info-soft);      --status-info-text:      var(--sqx-status-info-on-soft);
+  --status-pending:   var(--sqx-status-pending);   --status-pending-soft:   var(--sqx-status-pending-soft);   --status-pending-text:   var(--sqx-status-pending-on-soft);
+  --status-draft:     var(--sqx-status-draft);     --status-draft-soft:     var(--sqx-status-draft-soft);     --status-draft-text:     var(--sqx-status-draft-on-soft);
+  --status-onhold:    var(--sqx-status-onhold);    --status-onhold-soft:    var(--sqx-status-onhold-soft);    --status-onhold-text:    var(--sqx-status-onhold-on-soft);
+  --status-completed: var(--sqx-status-completed); --status-completed-soft: var(--sqx-status-completed-soft); --status-completed-text: var(--sqx-status-completed-on-soft);
+  --status-disabled:  var(--sqx-status-disabled);  --status-disabled-soft:  var(--sqx-status-disabled-soft);  --status-disabled-text:  var(--sqx-status-disabled-on-soft);
 
-  /* Charts (categorical; 1 = accent) */
-  --chart-1: #115c44; --chart-2: #4a7396; --chart-3: #b08334;
-  --chart-4: #6b7280; --chart-5: #8a5f8f; --chart-6: #3f8d84;
-  --chart-grid: #e6e3dd; --chart-label: #71787e;
+  /* Charts — no green. A green series beside a green success pill is exactly
+     the ambiguity the new palette exists to remove. */
+  --chart-1: var(--sqx-chart-1); --chart-2: var(--sqx-chart-2); --chart-3: var(--sqx-chart-3);
+  --chart-4: var(--sqx-chart-4); --chart-5: var(--sqx-chart-5); --chart-6: var(--sqx-chart-6);
+  --chart-grid: var(--sqx-chart-grid); --chart-label: var(--sqx-chart-axis);
 
   /* Evidence */
   --evidence-verified: var(--status-compliant);
@@ -99,32 +110,33 @@
   --evidence-rejected: var(--status-critical);
 
   /* Map */
-  --map-panel: rgba(255, 255, 255, 0.96);
+  --map-panel: var(--sqx-map-panel);
   --map-control-surface: var(--map-panel);
-  --map-zone-fill: rgba(17, 92, 68, 0.10);
-  --map-zone-stroke: #115c44;
+  --map-zone-fill: var(--sqx-map-zone-fill);
+  --map-zone-stroke: var(--sqx-map-zone-stroke);
 
   /* Elevation */
-  --shadow-xs: 0 1px 2px rgba(28,32,36,0.05), 0 0 0 1px rgba(28,32,36,0.015);
-  --shadow-sm: 0 1px 2px rgba(28,32,36,0.05), 0 6px 14px -6px rgba(28,32,36,0.12);
-  --shadow-md: 0 8px 24px -6px rgba(28,32,36,0.14);
-  --shadow-lg: 0 20px 44px -10px rgba(28,32,36,0.20);
-  --shadow-card:       0 1px 2px rgba(28,32,36,0.04), 0 5px 14px -3px rgba(28,32,36,0.09), 0 14px 32px -10px rgba(28,32,36,0.10);
-  --shadow-card-hover: 0 2px 5px rgba(28,32,36,0.06), 0 10px 22px -4px rgba(28,32,36,0.13), 0 24px 48px -12px rgba(28,32,36,0.18);
-  --shadow-card-elevated: 0 1px 2px rgba(28,32,36,0.04), 0 8px 20px -4px rgba(28,32,36,0.09), 0 20px 48px -14px rgba(28,32,36,0.10);
+  --shadow-xs: var(--sqx-elevation-1);
+  --shadow-sm: var(--sqx-elevation-1);
+  --shadow-md: var(--sqx-elevation-2);
+  --shadow-lg: var(--sqx-elevation-3);
+  --shadow-card:          var(--sqx-elevation-1);
+  --shadow-card-hover:    var(--sqx-elevation-2);
+  --shadow-card-elevated: var(--sqx-elevation-2);
 
-  /* Raw ramp (maintenance only) */
-  --neutral-100: #f7f6f4; --neutral-200: #edece8; --neutral-300: #dcdad4;
-  --neutral-400: #c8c4bc; --neutral-500: #a4aab0; --neutral-600: #71787e;
-  --neutral-700: #4c5258; --neutral-800: #2c3136; --neutral-900: #1a1d1f;
-  --emerald-100: #e3efe9; --emerald-300: #8fcbb2; --emerald-500: #2e9e77;
-  --emerald-700: #115c44; --emerald-900: #0b3a2a;
+  /* Raw ramp (maintenance only) — the --emerald-* names are retained for the
+     legacy runtime and repointed at the brand ramp. They are not emerald. */
+  --neutral-100: var(--sqx-grey-100); --neutral-200: var(--sqx-grey-200); --neutral-300: var(--sqx-grey-300);
+  --neutral-400: var(--sqx-grey-400); --neutral-500: var(--sqx-grey-500); --neutral-600: var(--sqx-grey-600);
+  --neutral-700: var(--sqx-grey-700); --neutral-800: var(--sqx-grey-800); --neutral-900: var(--sqx-grey-900);
+  --emerald-100: var(--sqx-brand-100); --emerald-300: var(--sqx-brand-300); --emerald-500: var(--sqx-brand-400);
+  --emerald-700: var(--sqx-brand-600); --emerald-900: var(--sqx-brand-900);
 
   /* Login Cinematic Atlas (approved standalone exception) + print + magenta accent */
   --atlas-canvas:  #050A18; --atlas-surface: #0E1428; --atlas-text: #F6F2FF;
   --atlas-muted:   #B5AEC9; --atlas-border:  #34285F; --prism-magenta: #D946EF;
   --print-text:    #111111; --print-surface: #FFFFFF; --print-border:  #555555;
-  --shadow-base:   #1a1d1f;
+  --shadow-base:   #000000;
 
   /* Composite type shorthands (font: <weight> <size>/<lh> <family>) */
   --type-display: 600 28px/1.25 var(--font-body);
@@ -149,83 +161,19 @@
   --transition-base: var(--motion-base) var(--ease-standard);
   --grid-desktop-max: 1440px; --panel-w: 360px;
   --numeric-features: "tnum" 1, "lnum" 1;
+
+  /* Referenced by saqeel-runtime.css but never defined — an invalid var()
+     falls back to unset, so these rendered as no fill and no shadow.
+     Pre-existing; defined here now that there is one palette to define
+     them against. */
+  --action-primary-soft: var(--sqx-surface-accent);
+  --shadow-overlay: var(--sqx-elevation-3);
 }
 
-/* ═══ DARK — layered charcoal, composed on its own terms ═══ */
+/* Dark is not redeclared here. Every colour above resolves through --sqx-*,
+   and saqeel.css switches those on :root[data-theme="dark"]. */
 :root[data-theme="dark"] {
   color-scheme: dark;
-
-  --surface-canvas:    #101317;
-  --surface-primary:   #191d22;
-  --surface-secondary: #252b31;
-  --surface-sunken:    #12161a;
-  --surface-raised:    #20262d;
-  --surface-overlay:   rgba(8, 9, 11, 0.62);
-
-  --nav-bg:          #131519;
-  --nav-bg-hover:    #1d2025;
-  --nav-bg-selected: #16342a;
-  --nav-border:      #262a30;
-  --nav-text:        #a8adb4;
-  --nav-text-active: #f2f4f5;
-  --nav-indicator:   #3fbd8d;
-
-  --text-primary:   #f1f4f6;
-  --text-secondary: #abb4bd;
-  /* Unified with the light mode onto the admin-proven value. #8e99a3 already met AA
-     (4.93-6.42); this raises the floor to 5.41 and keeps one muted token across channels. */
-  --text-muted:     #99a0a8;
-  /* WCAG AA fix (INSP-702): #626d77 on --surface-primary scored 3.20:1,
-     large-text only. --neutral-400 already exists in the raw ramp and
-     scores 9.74:1. */
-  --text-disabled:  #c8c4bc;
-  --text-inverse:   #1a1d1f;
-  --text-on-action: #08120e;
-  --text-link:      #78aeda;
-
-  --border-subtle: #353c44;
-  --border-strong: #56616b;
-  --border-input:  #6b7680;
-  --focus-ring:    #64c2a1;
-
-  --action-primary:         #64c2a1;
-  --action-primary-hover:   #7fd0b3;
-  --action-primary-pressed: #94dbc1;
-  --accent-soft:            #203a32;
-  --accent-soft-hover:      #29483d;
-  --accent-text:            #9dddc5;
-
-  --action-danger:         #d5554c;
-  --action-danger-hover:   #de6c64;
-  --action-danger-pressed: #e5847d;
-
-  --status-critical:  #e0655c; --status-critical-soft:  #3a201e; --status-critical-text:  #f0a29b;
-  --status-major:     #e0763c; --status-major-soft:     #392318; --status-major-text:     #f0ab84;
-  --status-warning:   #d9982e; --status-warning-soft:   #372a14; --status-warning-text:   #ecc27b;
-  --status-compliant: #47b381; --status-compliant-soft: #1c3529; --status-compliant-text: #8ed4b3;
-  --status-info:      #5b96d1; --status-info-soft:      #1d2b3b; --status-info-text:      #9dc2e8;
-  --status-pending:   #8b95a4; --status-pending-soft:   #262b33; --status-pending-text:   #b9c1cc;
-  --status-draft:     #a29a88; --status-draft-soft:     #2b2822; --status-draft-text:     #c9c2b3;
-  --status-onhold:    #c09a52; --status-onhold-soft:    #322817; --status-onhold-text:    #dcc08a;
-  --status-completed: #4aa896; --status-completed-soft: #1b322e; --status-completed-text: #90cec2;
-  --status-disabled:  #565c63; --status-disabled-soft:  #22262b; --status-disabled-text:  #82888f;
-
-  --chart-1: #3aa87d; --chart-2: #6c96bd; --chart-3: #cfa14e;
-  --chart-4: #8b93a0; --chart-5: #a985ae; --chart-6: #5cab9f;
-  --chart-grid: #2c3036; --chart-label: #82888f;
-
-  --map-panel: rgba(30, 33, 38, 0.96);
-  --map-control-surface: var(--map-panel);
-  --map-zone-fill: rgba(63, 189, 141, 0.12);
-  --map-zone-stroke: #3fbd8d;
-
-  --shadow-xs: 0 0 0 1px rgba(0,0,0,0.28), 0 1px 2px rgba(0,0,0,0.30);
-  --shadow-sm: 0 0 0 1px rgba(0,0,0,0.30), 0 2px 5px rgba(0,0,0,0.36);
-  --shadow-md: 0 0 0 1px rgba(0,0,0,0.34), 0 6px 18px rgba(0,0,0,0.44);
-  --shadow-lg: 0 0 0 1px rgba(0,0,0,0.38), 0 16px 40px rgba(0,0,0,0.55);
-  --shadow-card:       0 0 0 1px rgba(0,0,0,0.32), 0 6px 18px rgba(0,0,0,0.42);
-  --shadow-card-hover: 0 0 0 1px rgba(0,0,0,0.36), 0 12px 30px rgba(0,0,0,0.52);
-  --shadow-card-elevated: 0 0 0 1px rgba(0,0,0,0.32), 0 10px 28px rgba(0,0,0,0.42);  --shadow-base: #000000;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -256,6 +204,7 @@
   --type-caption-size: 11.5px;    --type-caption-lh: 1.4;
   --type-metric-size: 30px;       --type-metric-lh: 1.15; --type-metric-w: 700;
   --type-mono-size: 12.5px;
+  --text-lg: 17px;
 }
 
 /* Arabic-first metrics */
@@ -289,7 +238,7 @@
 :root {
   --space-0: 0; --space-1: 4px; --space-2: 8px; --space-3: 12px;
   --space-4: 16px; --space-5: 20px; --space-6: 24px; --space-8: 32px;
-  --space-10: 40px; --space-12: 48px;
+  --space-7: 28px; --space-10: 40px; --space-12: 48px;
 
   --radius-xs: 4px;
   --radius-sm: 6px;

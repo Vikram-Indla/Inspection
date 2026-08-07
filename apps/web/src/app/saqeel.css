@@ -2,413 +2,540 @@
 
 @layer sqx.tokens {
   :root {
-    /* Green — the single accent. Measured WCAG contrast:
-       #186243 7.32:1 with #FFFFFF   #1D7C54 5.17:1 with #FFFFFF
-       Light theme primary is a solid, bright green with white text and no
-       border: #158454 carries #FFFFFF at 4.71:1 and reads 4.71:1 as a shape
-       against white, so it needs no outline to be identifiable. Hover #106B44
-       6.54:1, pressed #0C5435 8.99:1. Link, accent and focus border use
-       #106B44 so they hold 4.5:1 on the chrome surfaces too.
-       The ramp runs at 72-80% saturation throughout; the earlier 45-62% values
-       were what read as dated.
-       #38B27F 7.04:1 on --sqx-ink-950   #38B27F 7.02:1 with --sqx-green-1000
-       #68CAA1 9.48:1 on --sqx-ink-950   #186243 6.96:1 on --sqx-warm-050 */
-    --sqx-green-1000: #071411;
-    --sqx-green-950: #0A1F18;
-    --sqx-green-900: #0C3222;
-    --sqx-green-850: #103D2A;
-    --sqx-green-800: #0C5435;
-    --sqx-green-750: #156045;
-    --sqx-green-700: #106B44;
-    --sqx-green-600: #158454;
-    --sqx-green-500: #259365;
-    --sqx-green-400: #38B27F;
-    --sqx-green-350: #46BC8B;
-    --sqx-green-300: #6EE7B7;
-    --sqx-green-200: #A7F3D0;
-    --sqx-green-100: #D1FAE5;
-    --sqx-green-050: #ECFDF5;
+    /* ------------------------------------------------------------------
+       Palette source: IRP (ir-frontend), src/theme/theme-config.ts.
+       Adopted 2026-08 on the manager's instruction. Two rules govern it:
 
-    /* Ink — the dark rendering of the one hue, at a whisper of saturation.
-       The earlier build failed because it held 87% saturation into the darks;
-       this holds 5-12%, so surfaces read green-grey rather than green.
-       Measured on --sqx-ink-950 #101412:
-       #EDF2F0 16.41:1  #B8C1BD 10.08:1  #939F99 6.77:1  #74817B 4.57:1
-       #6B7671 3.94:1, and 3.35:1 on --sqx-ink-850 */
-    --sqx-ink-1000: #090B0A;
-    --sqx-ink-950: #101412;
-    --sqx-ink-900: #171C1A;
-    --sqx-ink-850: #1E2421;
-    --sqx-ink-800: #2A322E;
-    --sqx-ink-700: #373F3B;
-    --sqx-ink-650: #414A46;
-    --sqx-ink-600: #6B7671;
-    --sqx-ink-550: #74817B;
-    --sqx-ink-400: #939F99;
-    --sqx-ink-300: #B8C1BD;
-    --sqx-ink-200: #D6DCD9;
-    --sqx-ink-100: #EDF2F0;
-    --sqx-ink-tint-success: #10241B;
-    --sqx-ink-tint-danger: #2A1512;
-    --sqx-ink-tint-warning: #26200F;
-    --sqx-ink-tint-info: #14202A;
-    --sqx-ink-tint-major: #2A1C12;
+       1. Surfaces are NEUTRAL. Pure white in light, near-black in dark.
+          No hue in any page, card, dropdown, header or sidebar fill.
+       2. Colour is reserved for meaning: the primary action, status, and
+          data. GREEN NOW MEANS SUCCESS AND NOTHING ELSE — it is not a
+          brand colour, an accent, a chart series or a nav state.
 
-    /* Light — the light rendering of the same hue. Surfaces are tinted green,
-       never grey, so the two themes are one palette at two lightnesses.
-       Measured on #FFFFFF:
-       #151917 17.75:1  #414845 9.38:1  #5A635F 6.20:1
-       #6D7873 4.58:1   #7A8882 3.71:1, and 3.16:1 on --sqx-warm-200
-       Chrome stops #EFF6F2 / #F2F8F5 / #F5FAF8 carry primary text at
-       16.17:1 and muted at 5.65:1 or better */
+       IRP ships light only, so the dark theme is derived here: the grey
+       ramp is extended below IRP's 900 in the same blue-grey hue so the
+       page reads near-black while staying in one family with the light
+       theme, and every accent gets a light-on-dark counterpart.
+       ------------------------------------------------------------------ */
+
+    /* Grey — IRP's ramp verbatim from 50 to 900, extended at 950/1000.
+       Measured on #FFFFFF:  #1C252E 15.52:1   #454F5B 8.33:1   #637381 4.88:1
+       Measured on #141A21:  #FFFFFF 17.51:1   #C4CDD5 10.87:1  #919EAB 6.41:1
+       Ladder deltas — light #FFFFFF->#F9FAFB 1.045, dark #080B10->#141A21
+       1.126 and #141A21->#1C252E 1.128, so nesting stays visible. */
+    --sqx-grey-050: #FCFDFD;
+    --sqx-grey-100: #F9FAFB;
+    --sqx-grey-200: #F4F6F8;
+    --sqx-grey-300: #DFE3E8;
+    --sqx-grey-400: #C4CDD5;
+    --sqx-grey-500: #919EAB;
+    --sqx-grey-600: #637381;
+    --sqx-grey-700: #454F5B;
+    --sqx-grey-800: #1C252E;
+    --sqx-grey-900: #141A21;
+    --sqx-grey-950: #0E131A;
+    --sqx-grey-1000: #080B10;
+    --sqx-grey-neutral-dark: #28323D;
+
+    /* Brand — IRP primary, aubergine. The only non-status accent.
+
+       Filled controls use #7E61AC (IRP's own primary.light), NOT the #413259
+       main. At full strength the fill read as near-black, and a CTA that dark
+       is hard to tell from a disabled slab. #7E61AC carries #FFFFFF at
+       5.01:1, hover #6A5391 at 6.44:1, pressed #52406F at 9.05:1 — the
+       control darkens under the pointer and contrast only ever improves.
+
+       Text keeps the darker #413259. A fill needs to look light; a label on
+       a light surface needs to be readable, and #7E61AC on the brand tint is
+       only 4.19:1. Fills lighten, text does not.
+
+       Dark theme flips to #B49AD8, which carries #0D0A12 at 8.00:1. */
+    --sqx-brand-050: #F2EDF9;
+    --sqx-brand-100: #E4DBF2;
+    --sqx-brand-200: #CDBAEA;
+    --sqx-brand-300: #B49AD8;
+    --sqx-brand-400: #7E61AC;
+    --sqx-brand-450: #6A5391;
+    --sqx-brand-500: #52406F;
+    --sqx-brand-600: #413259;
+    --sqx-brand-700: #342847;
+    --sqx-brand-800: #271E35;
+    --sqx-brand-900: #1A1423;
+    --sqx-brand-950: #0D0A12;
+
+    /* IRP's secondary (teal #18D8C6) is deliberately NOT adopted and not
+       defined here. At that saturation it reads as green to anyone
+       scanning the page, which would break rule 2 above. */
+
+    /* Status — IRP's four, plus one interpolated orange for the severity
+       tier between warning and critical. Pill text uses the *darker* stop
+       in light mode: IRP's own .dark stops only reach 3.6:1 on a 16% tint,
+       which is a large-text pass at best.
+       Light pill, text on tint:  success 6.79  warning 7.32  error 9.27
+                                  info 6.78    major 8.05    neutral 7.23
+       Dark  pill, text on tint:  success 9.04  warning 9.21  error 7.88
+                                  info 8.56    major 8.20    neutral 8.40 */
+    --sqx-success-lighter: #D3FCD2;
+    --sqx-success-light: #77ED8B;
+    --sqx-success-main: #22C55E;
+    --sqx-success-dark: #118D57;
+    --sqx-success-darker: #065E49;
+    --sqx-warning-lighter: #FFF5CC;
+    --sqx-warning-light: #FFD666;
+    --sqx-warning-main: #FFAB00;
+    --sqx-warning-dark: #B76E00;
+    --sqx-warning-darker: #7A4100;
+    --sqx-error-lighter: #FFE9D5;
+    --sqx-error-light: #FFAC82;
+    --sqx-error-main: #FF5630;
+    --sqx-error-dark: #B71D18;
+    --sqx-error-darker: #7A0916;
+    --sqx-info-lighter: #C9F4FC;
+    --sqx-info-light: #7EE4F6;
+    --sqx-info-main: #46CFE7;
+    --sqx-info-dark: #49AABB;
+    --sqx-info-darker: #215C66;
+    --sqx-major-light: #FDBA74;
+    --sqx-major-main: #FF7A1A;
+    --sqx-major-dark: #B54708;
+    --sqx-major-darker: #7C2D12;
+
+    /* AI — violet. Kept as the one accent outside the palette because every
+       product signals AI this way, and an aubergine AI entry point would be
+       indistinguishable from a primary action. Saturated (70%) where the
+       brand is desaturated (17%), so the two never read as the same thing.
+       #6D28D9 carries #FFFFFF at 7.10:1; #A78BFA carries #0D0A12 at 7.22:1. */
+    --sqx-ai-light: #C4B5FD;
+    --sqx-ai-main: #A78BFA;
+    --sqx-ai-shade: #5B3FC7;
+    --sqx-ai-deep: #6D28D9;
+
+    /* Flattened tints. Written as hex, not alpha, so a pill nested inside a
+       card does not compound its own background against the one below it. */
+    --sqx-tint-brand-light: #ECEAEE;
+    --sqx-tint-brand-light-soft: #F4F3F5;
+    --sqx-tint-success-light: #DCF6E5;
+    --sqx-tint-warning-light: #FFF2D6;
+    --sqx-tint-error-light: #FFE4DE;
+    --sqx-tint-info-light: #E1F7FB;
+    --sqx-tint-major-light: #FFEADA;
+    --sqx-tint-neutral-light: #EDEFF2;
+    --sqx-tint-ai-light: #EBE1FA;
+    --sqx-tint-brand-dark: #262A35;
+    --sqx-tint-success-dark: #16352B;
+    --sqx-tint-warning-dark: #3A311C;
+    --sqx-tint-error-dark: #3A2423;
+    --sqx-tint-info-dark: #1C3741;
+    --sqx-tint-major-dark: #3A2920;
+    --sqx-tint-neutral-dark: #282F37;
+    --sqx-tint-ai-dark: #262238;
+
+    /* Alphas. IRP builds every divider, hover and disabled fill from the
+       grey-500 channel, which is why its chrome stays neutral over any
+       surface. Same here. */
+    --sqx-grey-a08: rgba(145, 158, 171, 0.08);
+    --sqx-grey-a12: rgba(145, 158, 171, 0.12);
+    --sqx-grey-a16: rgba(145, 158, 171, 0.16);
+    --sqx-grey-a20: rgba(145, 158, 171, 0.2);
+    --sqx-grey-a24: rgba(145, 158, 171, 0.24);
+    --sqx-grey-a32: rgba(145, 158, 171, 0.32);
+    --sqx-grey-a48: rgba(145, 158, 171, 0.48);
+    --sqx-shade-050: rgba(145, 158, 171, 0.08);
+    --sqx-shade-100: rgba(145, 158, 171, 0.12);
+    --sqx-shade-150: rgba(145, 158, 171, 0.16);
+    --sqx-shade-200: rgba(145, 158, 171, 0.24);
+    --sqx-void-200: rgba(0, 0, 0, 0.32);
+    --sqx-void-300: rgba(0, 0, 0, 0.44);
+    --sqx-void-400: rgba(0, 0, 0, 0.6);
+    --sqx-void-500: rgba(0, 0, 0, 0.72);
+    --sqx-glare-050: rgba(255, 255, 255, 0.06);
+
+    /* ------------------------------------------------------------------
+       Deprecated primitive aliases, kept as a safety net.
+
+       The names lie about their hue now — --sqx-green-600 is aubergine.
+       They are retained because they are repointed, not because they are
+       needed: a CSS module on a route not yet audited that still says
+       var(--sqx-green-600) renders aubergine rather than green, which is
+       the failure mode worth insuring against. Verified unreferenced by
+       tokens.css, saqeel-runtime.css, saqeel-components.css,
+       v2-components.css and every component module under /app-shell,
+       /dashboard, /operations and /saqeel.
+
+       NOT verified across the routes outside that set (planning, execution,
+       reviews, admin, factories, field). Grep those, then delete this block.
+       Do not use these names in new work.
+       ------------------------------------------------------------------ */
+    --sqx-green-1000: var(--sqx-brand-950);
+    --sqx-green-950: var(--sqx-brand-900);
+    --sqx-green-900: var(--sqx-brand-900);
+    --sqx-green-850: var(--sqx-brand-800);
+    --sqx-green-800: var(--sqx-brand-800);
+    --sqx-green-750: var(--sqx-brand-700);
+    --sqx-green-700: var(--sqx-brand-600);
+    --sqx-green-600: var(--sqx-brand-600);
+    --sqx-green-500: var(--sqx-brand-500);
+    --sqx-green-400: var(--sqx-brand-300);
+    --sqx-green-350: var(--sqx-brand-300);
+    --sqx-green-300: var(--sqx-brand-200);
+    --sqx-green-200: var(--sqx-brand-100);
+    --sqx-green-100: var(--sqx-brand-100);
+    --sqx-green-050: var(--sqx-brand-050);
+
+    --sqx-ink-1000: var(--sqx-grey-1000);
+    --sqx-ink-950: var(--sqx-grey-950);
+    --sqx-ink-900: var(--sqx-grey-900);
+    --sqx-ink-850: var(--sqx-grey-900);
+    --sqx-ink-800: var(--sqx-grey-800);
+    --sqx-ink-700: var(--sqx-grey-neutral-dark);
+    --sqx-ink-650: var(--sqx-grey-neutral-dark);
+    --sqx-ink-600: var(--sqx-grey-600);
+    --sqx-ink-550: var(--sqx-grey-600);
+    --sqx-ink-400: var(--sqx-grey-500);
+    --sqx-ink-300: var(--sqx-grey-400);
+    --sqx-ink-200: var(--sqx-grey-300);
+    --sqx-ink-100: #FFFFFF;
+    --sqx-ink-tint-success: var(--sqx-tint-success-dark);
+    --sqx-ink-tint-danger: var(--sqx-tint-error-dark);
+    --sqx-ink-tint-warning: var(--sqx-tint-warning-dark);
+    --sqx-ink-tint-info: var(--sqx-tint-info-dark);
+    --sqx-ink-tint-major: var(--sqx-tint-major-dark);
+
     --sqx-warm-000: #FFFFFF;
-    --sqx-warm-050: #F5FAF8;
-    --sqx-warm-100: #EFF6F2;
-    --sqx-warm-200: #E6EFEB;
-    --sqx-warm-300: #DBE6E1;
-    --sqx-warm-350: #BCCDC4;
-    --sqx-warm-400: #7A8882;
-    --sqx-warm-500: #6D7873;
-    --sqx-warm-900: #414845;
-    --sqx-warm-950: #5A635F;
-    --sqx-warm-1000: #151917;
-    --sqx-warm-tint-success: #E7F4ED;
-    --sqx-warm-tint-danger: #FBEAE8;
-    --sqx-warm-tint-warning: #FAF1DF;
-    --sqx-warm-tint-info: #EAF1F6;
-    --sqx-warm-tint-major: #FAEDE4;
-    --sqx-warm-tint-success-border: #C4E0D2;
+    --sqx-warm-050: var(--sqx-grey-050);
+    --sqx-warm-100: var(--sqx-grey-100);
+    --sqx-warm-200: var(--sqx-grey-200);
+    --sqx-warm-300: var(--sqx-grey-300);
+    --sqx-warm-350: var(--sqx-grey-400);
+    --sqx-warm-400: var(--sqx-grey-500);
+    --sqx-warm-500: var(--sqx-grey-500);
+    --sqx-warm-900: var(--sqx-grey-700);
+    --sqx-warm-950: var(--sqx-grey-600);
+    --sqx-warm-1000: var(--sqx-grey-800);
+    --sqx-warm-tint-success: var(--sqx-tint-success-light);
+    --sqx-warm-tint-danger: var(--sqx-tint-error-light);
+    --sqx-warm-tint-warning: var(--sqx-tint-warning-light);
+    --sqx-warm-tint-info: var(--sqx-tint-info-light);
+    --sqx-warm-tint-major: var(--sqx-tint-major-light);
+    --sqx-warm-tint-success-border: var(--sqx-success-light);
 
-    /* Semantics — muted, professional. No violet, no purple: the AI tokens now
-       AI is the one deliberate exception to the single-accent rule: violet,
-       because every product signals AI that way and a green AI entry point is
-       indistinguishable from a primary action. Light fill #5B3FC7 carries
-       #FFFFFF at 7.05:1, second stop #6B4BD8 at 5.80:1. Dark fill #A78BFA
-       carries #090B0A at 7.25:1, second stop #C0A8FF at 9.67:1, and reads
-       6.82:1 against the dark surface.
-       Measured on --sqx-ink-950 #121110:
-       #3DBE85 8.00:1  #E0A83A 8.83:1  #E5645F 5.68:1  #6FAECF 7.75:1
-       #D98A4F 6.91:1  #C9A24E 7.87:1
-       Measured on #FFFFFF:
-       #116B45 6.54:1  #8A5A00 5.93:1  #B02A24 6.56:1  #1D5F82 6.97:1
-       Soft fills, text on fill:
-       #3DBE85 on #10241B 6.90:1   #E5645F on #2A1512 5.20:1
-       #E0A83A on #26200F 7.59:1   #6FAECF on #14202A 6.80:1
-       #116B45 on #E7F4ED 5.78:1   #B02A24 on #FBEAE8 5.63:1
-       #8A5A00 on #FAF1DF 5.28:1   #1D5F82 on #EAF1F6 6.11:1 */
-    --sqx-neon-success: #3DBE85;
-    --sqx-neon-success-deep: #116B45;
-    --sqx-neon-warning: #E0A83A;
-    --sqx-neon-warning-deep: #8A5A00;
-    --sqx-neon-danger: #E5645F;
-    --sqx-neon-danger-deep: #B02A24;
-    --sqx-neon-info: #6FAECF;
-    --sqx-neon-info-deep: #1D5F82;
-    --sqx-neon-live: #8FBF5A;
-    --sqx-neon-live-deep: #4E6320;
-    --sqx-neon-ai: #A78BFA;
-    --sqx-neon-ai-deep: #5B3FC7;
-    --sqx-neon-ai-light: #C0A8FF;
-    --sqx-neon-ai-shade: #6B4BD8;
-    --sqx-green-veil-soft: rgba(24, 98, 67, 0.06);
-    --sqx-green-veil-strong: rgba(24, 98, 67, 0.11);
-    --sqx-neon-veil-soft: rgba(56, 178, 127, 0.07);
-    --sqx-neon-veil-strong: rgba(56, 178, 127, 0.13);
-    --sqx-glare-050: rgba(255, 255, 255, 0.05);
-    --sqx-neon-mint: #68CAA1;
-    --sqx-neon-mint-deep: #116B45;
-    --sqx-neon-major: #D98A4F;
-    --sqx-neon-major-deep: #8A4218;
-    --sqx-neon-onhold: #C9A24E;
-    --sqx-neon-danger-hover: #F07D78;
-    --sqx-neon-danger-deep-hover: #8E211C;
-    --sqx-neon-sky: #7FB3D5;
-    --sqx-neon-steel-deep: #2B5D7D;
-    --sqx-halo-green: #1B211E;
-    --sqx-halo-cyan: #171C1A;
-    --sqx-halo-light: #EFF6F2;
-    --sqx-chrome-glow-light: #EFF6F2;
-    --sqx-chrome-mid-light: #F5FAF8;
+    --sqx-neon-success: var(--sqx-success-light);
+    --sqx-neon-success-deep: var(--sqx-success-darker);
+    --sqx-neon-warning: var(--sqx-warning-light);
+    --sqx-neon-warning-deep: var(--sqx-warning-darker);
+    --sqx-neon-danger: var(--sqx-error-light);
+    --sqx-neon-danger-deep: var(--sqx-error-darker);
+    --sqx-neon-danger-hover: #FFC7A8;
+    --sqx-neon-danger-deep-hover: #5C0710;
+    --sqx-neon-info: var(--sqx-info-light);
+    --sqx-neon-info-deep: var(--sqx-info-darker);
+    --sqx-neon-major: var(--sqx-major-light);
+    --sqx-neon-major-deep: var(--sqx-major-darker);
+    --sqx-neon-onhold: var(--sqx-warning-light);
+    /* live / mint / sky / steel were all greens or near-greens. Repointed
+       away from green so nothing but success can render green. */
+    --sqx-neon-live: var(--sqx-info-light);
+    --sqx-neon-live-deep: var(--sqx-info-darker);
+    --sqx-neon-mint: var(--sqx-brand-200);
+    --sqx-neon-mint-deep: var(--sqx-brand-600);
+    --sqx-neon-sky: var(--sqx-info-light);
+    --sqx-neon-steel-deep: var(--sqx-info-darker);
+    --sqx-neon-ai: var(--sqx-ai-main);
+    --sqx-neon-ai-deep: var(--sqx-ai-deep);
+    --sqx-neon-ai-light: var(--sqx-ai-light);
+    --sqx-neon-ai-shade: var(--sqx-ai-shade);
 
-    --sqx-shade-050: rgba(21, 25, 23, 0.05);
-    --sqx-shade-100: rgba(21, 25, 23, 0.08);
-    --sqx-shade-150: rgba(21, 25, 23, 0.12);
-    --sqx-shade-200: rgba(21, 25, 23, 0.18);
-    --sqx-void-200: rgba(9, 11, 10, 0.30);
-    --sqx-void-300: rgba(9, 11, 10, 0.42);
-    --sqx-void-400: rgba(9, 11, 10, 0.58);
-    --sqx-void-500: rgba(9, 11, 10, 0.70);
+    --sqx-green-veil-soft: rgba(65, 50, 89, 0.06);
+    --sqx-green-veil-strong: rgba(65, 50, 89, 0.1);
+    --sqx-neon-veil-soft: rgba(205, 186, 234, 0.08);
+    --sqx-neon-veil-strong: rgba(205, 186, 234, 0.14);
+    --sqx-halo-green: var(--sqx-grey-900);
+    --sqx-halo-cyan: var(--sqx-grey-900);
+    --sqx-halo-light: var(--sqx-grey-100);
+    --sqx-chrome-glow-light: #FFFFFF;
+    --sqx-chrome-mid-light: #FFFFFF;
   }
 
   :root,
   :root[data-theme="light"] {
     color-scheme: light;
 
-    --sqx-surface-canvas: var(--sqx-warm-200);
-    --sqx-surface-chrome: var(--sqx-warm-200);
-    --sqx-gradient-chrome: linear-gradient(180deg, #EFF6F2 0%, #F2F8F5 42%, #F5FAF8 100%);
-    --sqx-rim-light: inset 0 1px 0 rgb(255 255 255 / 0.85);
-    --sqx-surface-default: var(--sqx-warm-050);
-    --sqx-surface-subtle: var(--sqx-warm-100);
-    --sqx-surface-sunken: var(--sqx-warm-300);
-    --sqx-surface-raised: var(--sqx-warm-000);
-    --sqx-surface-accent: var(--sqx-warm-tint-success);
-    --sqx-surface-inverse: var(--sqx-warm-1000);
-    --sqx-surface-overlay: rgba(21, 25, 23, 0.52);
+    /* Page, chrome and card are all pure white. They are told apart by a
+       hairline and a shadow, never by fill — that is the whole point of a
+       neutral palette. Nesting is the one exception: a card inside a card
+       steps to grey-100 so depth still reads. */
+    --sqx-surface-canvas: #FFFFFF;
+    --sqx-surface-chrome: #FFFFFF;
+    --sqx-gradient-chrome: none;
+    --sqx-rim-light: none;
+    --sqx-surface-default: #FFFFFF;
+    --sqx-surface-raised: var(--sqx-grey-100);
+    --sqx-surface-menu: #FFFFFF;
+    --sqx-surface-subtle: var(--sqx-grey-a08);
+    --sqx-surface-sunken: var(--sqx-grey-200);
+    --sqx-surface-header: var(--sqx-grey-200);
+    --sqx-surface-accent: var(--sqx-tint-brand-light);
+    --sqx-surface-inverse: var(--sqx-grey-800);
+    --sqx-surface-overlay: rgba(28, 37, 46, 0.48);
 
-    --sqx-text-primary: var(--sqx-warm-1000);
-    --sqx-text-secondary: var(--sqx-warm-900);
-    --sqx-text-muted: var(--sqx-warm-950);
-    --sqx-text-disabled: var(--sqx-warm-500);
-    --sqx-text-inverse: var(--sqx-warm-000);
-    --sqx-text-on-action: var(--sqx-warm-000);
-    --sqx-text-link: var(--sqx-green-700);
-    --sqx-text-link-hover: var(--sqx-green-800);
-    --sqx-text-accent: var(--sqx-green-700);
-    --sqx-text-success: var(--sqx-neon-success-deep);
-    --sqx-text-warning: var(--sqx-neon-warning-deep);
-    --sqx-text-danger: var(--sqx-neon-danger-deep);
-    --sqx-text-info: var(--sqx-neon-info-deep);
+    --sqx-text-primary: var(--sqx-grey-800);
+    --sqx-text-secondary: var(--sqx-grey-700);
+    --sqx-text-muted: var(--sqx-grey-600);
+    --sqx-text-disabled: var(--sqx-grey-500);
+    --sqx-text-inverse: #FFFFFF;
+    --sqx-text-on-action: #FFFFFF;
+    --sqx-text-link: var(--sqx-brand-600);
+    --sqx-text-link-hover: var(--sqx-brand-800);
+    --sqx-text-accent: var(--sqx-brand-600);
+    --sqx-text-success: var(--sqx-success-darker);
+    --sqx-text-warning: var(--sqx-warning-darker);
+    --sqx-text-danger: var(--sqx-error-darker);
+    --sqx-text-info: var(--sqx-info-darker);
 
-    --sqx-border-subtle: var(--sqx-warm-300);
-    --sqx-border-default: var(--sqx-warm-350);
-    --sqx-border-strong: var(--sqx-warm-400);
-    --sqx-border-input: var(--sqx-warm-500);
-    --sqx-border-accent: var(--sqx-green-800);
-    --sqx-border-focus: var(--sqx-green-700);
+    --sqx-border-subtle: var(--sqx-grey-a24);
+    --sqx-border-default: var(--sqx-grey-a32);
+    --sqx-border-strong: var(--sqx-grey-a48);
+    --sqx-border-input: var(--sqx-grey-a48);
+    --sqx-border-accent: var(--sqx-brand-600);
+    --sqx-border-focus: var(--sqx-brand-600);
 
-    --sqx-action-primary-bg: var(--sqx-green-600);
-    --sqx-action-primary-hover: var(--sqx-green-700);
-    --sqx-action-primary-active: var(--sqx-green-800);
-    --sqx-action-primary-text: var(--sqx-warm-000);
+    --sqx-action-primary-bg: var(--sqx-brand-400);
+    --sqx-action-primary-hover: var(--sqx-brand-450);
+    --sqx-action-primary-active: var(--sqx-brand-500);
+    --sqx-action-primary-text: #FFFFFF;
     --sqx-action-primary-border: var(--sqx-action-primary-bg);
-    --sqx-segment-track: var(--sqx-green-100);
-    --sqx-segment-label: var(--sqx-green-800);
-    --sqx-action-secondary-border: var(--sqx-warm-400);
-    --sqx-action-secondary-text: var(--sqx-warm-1000);
-    --sqx-action-secondary-hover: var(--sqx-warm-100);
-    --sqx-action-tertiary-text: var(--sqx-green-800);
-    --sqx-action-tertiary-hover: var(--sqx-warm-tint-success);
-    --sqx-action-danger-bg: var(--sqx-neon-danger-deep);
-    --sqx-action-danger-hover: var(--sqx-neon-danger-deep-hover);
-    --sqx-action-danger-text: var(--sqx-warm-000);
-    --sqx-action-disabled-bg: var(--sqx-warm-200);
-    --sqx-action-disabled-text: var(--sqx-warm-500);
+    --sqx-segment-track: var(--sqx-grey-200);
+    --sqx-segment-label: var(--sqx-brand-600);
+    --sqx-action-secondary-border: var(--sqx-grey-a32);
+    --sqx-action-secondary-text: var(--sqx-grey-800);
+    --sqx-action-secondary-hover: var(--sqx-grey-a08);
+    --sqx-action-tertiary-text: var(--sqx-brand-600);
+    --sqx-action-tertiary-hover: var(--sqx-tint-brand-light);
+    --sqx-action-danger-bg: var(--sqx-error-dark);
+    --sqx-action-danger-hover: var(--sqx-error-darker);
+    --sqx-action-danger-text: #FFFFFF;
+    --sqx-action-disabled-bg: var(--sqx-grey-200);
+    --sqx-action-disabled-text: var(--sqx-grey-500);
 
-    --sqx-status-critical: var(--sqx-neon-danger-deep);
-    --sqx-status-critical-soft: var(--sqx-warm-tint-danger);
-    --sqx-status-critical-on-soft: var(--sqx-neon-danger-deep);
-    --sqx-status-major: var(--sqx-neon-major-deep);
-    --sqx-status-major-soft: var(--sqx-warm-tint-major);
-    --sqx-status-major-on-soft: var(--sqx-neon-major-deep);
-    --sqx-status-warning: var(--sqx-neon-warning-deep);
-    --sqx-status-warning-soft: var(--sqx-warm-tint-warning);
-    --sqx-status-warning-on-soft: var(--sqx-neon-warning-deep);
-    --sqx-status-compliant: var(--sqx-neon-success-deep);
-    --sqx-status-compliant-soft: var(--sqx-warm-tint-success);
-    --sqx-status-compliant-on-soft: var(--sqx-neon-success-deep);
-    --sqx-status-info: var(--sqx-neon-info-deep);
-    --sqx-status-info-soft: var(--sqx-warm-tint-info);
-    --sqx-status-info-on-soft: var(--sqx-neon-info-deep);
-    --sqx-status-pending: var(--sqx-warm-950);
-    --sqx-status-pending-soft: var(--sqx-warm-100);
-    --sqx-status-pending-on-soft: var(--sqx-warm-950);
-    --sqx-status-draft: var(--sqx-warm-950);
-    --sqx-status-draft-soft: var(--sqx-warm-100);
-    --sqx-status-draft-on-soft: var(--sqx-warm-950);
-    --sqx-status-onhold: var(--sqx-neon-warning-deep);
-    --sqx-status-onhold-soft: var(--sqx-warm-tint-warning);
-    --sqx-status-onhold-on-soft: var(--sqx-neon-warning-deep);
-    --sqx-status-completed: var(--sqx-green-800);
-    --sqx-status-completed-soft: var(--sqx-warm-tint-success);
-    --sqx-status-completed-on-soft: var(--sqx-green-800);
-    --sqx-status-disabled: var(--sqx-warm-500);
-    --sqx-status-disabled-soft: var(--sqx-warm-200);
-    --sqx-status-disabled-on-soft: var(--sqx-warm-500);
+    --sqx-status-critical: var(--sqx-error-darker);
+    --sqx-status-critical-soft: var(--sqx-tint-error-light);
+    --sqx-status-critical-on-soft: var(--sqx-error-darker);
+    --sqx-status-major: var(--sqx-major-darker);
+    --sqx-status-major-soft: var(--sqx-tint-major-light);
+    --sqx-status-major-on-soft: var(--sqx-major-darker);
+    --sqx-status-warning: var(--sqx-warning-darker);
+    --sqx-status-warning-soft: var(--sqx-tint-warning-light);
+    --sqx-status-warning-on-soft: var(--sqx-warning-darker);
+    --sqx-status-compliant: var(--sqx-success-darker);
+    --sqx-status-compliant-soft: var(--sqx-tint-success-light);
+    --sqx-status-compliant-on-soft: var(--sqx-success-darker);
+    --sqx-status-info: var(--sqx-info-darker);
+    --sqx-status-info-soft: var(--sqx-tint-info-light);
+    --sqx-status-info-on-soft: var(--sqx-info-darker);
+    --sqx-status-pending: var(--sqx-grey-700);
+    --sqx-status-pending-soft: var(--sqx-tint-neutral-light);
+    --sqx-status-pending-on-soft: var(--sqx-grey-700);
+    --sqx-status-draft: var(--sqx-grey-700);
+    --sqx-status-draft-soft: var(--sqx-tint-neutral-light);
+    --sqx-status-draft-on-soft: var(--sqx-grey-700);
+    --sqx-status-onhold: var(--sqx-warning-darker);
+    --sqx-status-onhold-soft: var(--sqx-tint-warning-light);
+    --sqx-status-onhold-on-soft: var(--sqx-warning-darker);
+    --sqx-status-completed: var(--sqx-success-darker);
+    --sqx-status-completed-soft: var(--sqx-tint-success-light);
+    --sqx-status-completed-on-soft: var(--sqx-success-darker);
+    --sqx-status-disabled: var(--sqx-grey-600);
+    --sqx-status-disabled-soft: var(--sqx-tint-neutral-light);
+    --sqx-status-disabled-on-soft: var(--sqx-grey-600);
 
-    --sqx-chart-1: var(--sqx-green-800);
-    --sqx-chart-2: var(--sqx-neon-info-deep);
-    --sqx-chart-3: var(--sqx-neon-live-deep);
-    --sqx-chart-4: var(--sqx-neon-warning-deep);
-    --sqx-chart-5: var(--sqx-neon-danger-deep);
-    --sqx-chart-6: var(--sqx-neon-ai-deep);
-    --sqx-chart-7: var(--sqx-neon-steel-deep);
-    --sqx-chart-8: var(--sqx-neon-mint-deep);
-    --sqx-chart-grid: var(--sqx-warm-300);
-    --sqx-chart-axis: var(--sqx-warm-500);
+    /* No green in the chart ramp. A green series next to a green success
+       pill is exactly the ambiguity this palette exists to remove. */
+    --sqx-chart-1: var(--sqx-brand-600);
+    --sqx-chart-2: var(--sqx-info-darker);
+    --sqx-chart-3: var(--sqx-ai-deep);
+    --sqx-chart-4: var(--sqx-warning-darker);
+    --sqx-chart-5: var(--sqx-major-darker);
+    --sqx-chart-6: var(--sqx-error-darker);
+    --sqx-chart-7: var(--sqx-grey-600);
+    --sqx-chart-8: var(--sqx-brand-400);
+    --sqx-chart-grid: var(--sqx-grey-a24);
+    --sqx-chart-axis: var(--sqx-grey-600);
 
+    /* IRP's card shadow: a 2px ambient ring plus a soft drop, both built
+       from the grey-500 channel so the shadow stays neutral over white. */
     --sqx-elevation-0: none;
-    --sqx-elevation-1: 0 1px 2px var(--sqx-shade-050),
-      0 4px 12px -4px var(--sqx-shade-100);
-    --sqx-elevation-2: 0 2px 4px var(--sqx-shade-050),
-      0 10px 24px -6px var(--sqx-shade-150);
-    --sqx-elevation-3: 0 4px 8px -2px var(--sqx-shade-100),
-      0 18px 40px -10px var(--sqx-shade-200);
-    --sqx-elevation-4: 0 8px 16px -4px var(--sqx-shade-100),
-      0 32px 72px -16px var(--sqx-shade-200);
+    --sqx-elevation-1: 0 0 2px 0 var(--sqx-shade-200),
+      0 12px 24px -4px var(--sqx-shade-100);
+    --sqx-elevation-2: 0 0 2px 0 var(--sqx-shade-200),
+      0 16px 32px -4px var(--sqx-shade-150);
+    --sqx-elevation-3: 0 0 2px 0 var(--sqx-shade-200),
+      0 20px 40px -4px var(--sqx-shade-200);
+    --sqx-elevation-4: 0 0 2px 0 var(--sqx-shade-200),
+      0 24px 48px 0 var(--sqx-shade-200);
 
     --sqx-gradient-cta: linear-gradient(
       var(--sqx-flow-angle),
-      var(--sqx-green-850),
-      var(--sqx-green-700),
-      var(--sqx-green-850)
+      var(--sqx-brand-400),
+      var(--sqx-brand-450),
+      var(--sqx-brand-400)
     );
-    --sqx-gradient-halo: linear-gradient(
-      180deg,
-      var(--sqx-halo-light) 0%,
-      var(--sqx-warm-050) 60%
-    );
-    --sqx-accent-ai: var(--sqx-neon-ai-deep);
+    --sqx-gradient-halo: none;
+    --sqx-accent-ai: var(--sqx-ai-deep);
     --sqx-gradient-ai: linear-gradient(
       var(--sqx-flow-angle),
-      var(--sqx-neon-ai-deep),
-      var(--sqx-neon-ai-shade),
-      var(--sqx-neon-ai-deep)
+      var(--sqx-ai-deep),
+      var(--sqx-ai-shade),
+      var(--sqx-ai-deep)
     );
-    --sqx-nav-active-bg: var(--sqx-green-veil-strong);
-    --sqx-nav-parent-bg: var(--sqx-green-veil-soft);
-    --sqx-nav-hover-bg: var(--sqx-shade-050);
-    --sqx-nav-connector: var(--sqx-border-strong);
-    --sqx-nav-text: var(--sqx-warm-1000);
-    --sqx-on-accent-ai: var(--sqx-warm-000);
+    --sqx-nav-active-bg: var(--sqx-tint-brand-light);
+    --sqx-nav-active-text: var(--sqx-brand-600);
+    --sqx-nav-parent-bg: var(--sqx-tint-brand-light-soft);
+    --sqx-nav-hover-bg: var(--sqx-grey-a08);
+    --sqx-nav-connector: var(--sqx-grey-a32);
+    --sqx-nav-text: var(--sqx-grey-700);
+    --sqx-on-accent-ai: #FFFFFF;
+    --sqx-surface-accent-hover: #E1DEE4;
+    --sqx-map-panel: rgba(255, 255, 255, 0.96);
+    --sqx-map-zone-fill: rgba(65, 50, 89, 0.1);
+    --sqx-map-zone-stroke: var(--sqx-brand-600);
   }
 
   :root[data-theme="dark"] {
     color-scheme: dark;
 
-    --sqx-surface-canvas: var(--sqx-green-1000);
-    --sqx-surface-chrome: var(--sqx-green-1000);
-    --sqx-rim-light: inset 0 1px 0 rgb(255 255 255 / 0.045);
-    --sqx-gradient-chrome: linear-gradient(180deg, #0C241C 0%, #0A1F18 42%, #071411 100%);
-    --sqx-surface-default: var(--sqx-ink-900);
-    --sqx-surface-subtle: var(--sqx-ink-800);
-    --sqx-surface-sunken: var(--sqx-ink-950);
-    --sqx-surface-raised: var(--sqx-ink-850);
-    --sqx-surface-accent: var(--sqx-ink-tint-success);
-    --sqx-surface-inverse: var(--sqx-ink-100);
-    --sqx-surface-overlay: rgba(9, 11, 10, 0.70);
+    /* Near-black page, and the same neutral ladder inverted. The page is
+       darker than the card so cards read as lit surfaces, which is what
+       makes a dark theme legible at all. */
+    --sqx-surface-canvas: var(--sqx-grey-1000);
+    --sqx-surface-chrome: var(--sqx-grey-1000);
+    --sqx-gradient-chrome: none;
+    --sqx-rim-light: none;
+    --sqx-surface-default: var(--sqx-grey-900);
+    --sqx-surface-raised: var(--sqx-grey-800);
+    --sqx-surface-menu: var(--sqx-grey-800);
+    --sqx-surface-subtle: var(--sqx-grey-a12);
+    --sqx-surface-sunken: var(--sqx-grey-950);
+    --sqx-surface-header: var(--sqx-grey-neutral-dark);
+    --sqx-surface-accent: var(--sqx-tint-brand-dark);
+    --sqx-surface-inverse: var(--sqx-grey-100);
+    --sqx-surface-overlay: rgba(0, 0, 0, 0.72);
 
-    --sqx-text-primary: var(--sqx-ink-100);
-    --sqx-text-secondary: var(--sqx-ink-300);
-    --sqx-text-muted: var(--sqx-ink-400);
-    --sqx-text-disabled: var(--sqx-ink-550);
-    --sqx-text-inverse: var(--sqx-ink-1000);
-    --sqx-text-on-action: var(--sqx-green-1000);
-    --sqx-text-link: var(--sqx-green-300);
-    --sqx-text-link-hover: var(--sqx-green-200);
-    --sqx-text-accent: var(--sqx-neon-success);
-    --sqx-text-success: var(--sqx-neon-success);
-    --sqx-text-warning: var(--sqx-neon-warning);
-    --sqx-text-danger: var(--sqx-neon-danger);
-    --sqx-text-info: var(--sqx-neon-info);
+    --sqx-text-primary: #FFFFFF;
+    --sqx-text-secondary: var(--sqx-grey-400);
+    --sqx-text-muted: var(--sqx-grey-500);
+    --sqx-text-disabled: var(--sqx-grey-600);
+    --sqx-text-inverse: var(--sqx-grey-900);
+    --sqx-text-on-action: var(--sqx-brand-950);
+    --sqx-text-link: var(--sqx-brand-200);
+    --sqx-text-link-hover: var(--sqx-brand-100);
+    --sqx-text-accent: var(--sqx-brand-200);
+    --sqx-text-success: var(--sqx-success-light);
+    --sqx-text-warning: var(--sqx-warning-light);
+    --sqx-text-danger: var(--sqx-error-light);
+    --sqx-text-info: var(--sqx-info-light);
 
-    --sqx-border-subtle: var(--sqx-ink-800);
-    --sqx-border-default: var(--sqx-ink-650);
-    --sqx-border-strong: var(--sqx-ink-600);
-    --sqx-border-input: var(--sqx-ink-550);
-    --sqx-border-accent: var(--sqx-green-800);
-    --sqx-border-focus: var(--sqx-neon-success);
+    --sqx-border-subtle: var(--sqx-grey-a16);
+    --sqx-border-default: var(--sqx-grey-a24);
+    --sqx-border-strong: var(--sqx-grey-a48);
+    --sqx-border-input: var(--sqx-grey-a48);
+    --sqx-border-accent: var(--sqx-brand-300);
+    --sqx-border-focus: var(--sqx-brand-300);
 
-    --sqx-action-primary-bg: var(--sqx-green-400);
-    --sqx-action-primary-hover: var(--sqx-green-350);
-    --sqx-action-primary-active: var(--sqx-green-500);
-    --sqx-action-primary-text: var(--sqx-green-1000);
+    --sqx-action-primary-bg: var(--sqx-brand-300);
+    --sqx-action-primary-hover: var(--sqx-brand-200);
+    --sqx-action-primary-active: var(--sqx-brand-100);
+    --sqx-action-primary-text: var(--sqx-brand-950);
     --sqx-action-primary-border: var(--sqx-action-primary-bg);
-    --sqx-segment-track: var(--sqx-green-900);
-    --sqx-segment-label: var(--sqx-green-200);
-    --sqx-action-secondary-border: var(--sqx-ink-600);
-    --sqx-action-secondary-text: var(--sqx-ink-100);
-    --sqx-action-secondary-hover: var(--sqx-ink-900);
-    --sqx-action-tertiary-text: var(--sqx-green-300);
-    --sqx-action-tertiary-hover: var(--sqx-ink-tint-success);
-    --sqx-action-danger-bg: var(--sqx-neon-danger);
-    --sqx-action-danger-hover: var(--sqx-neon-danger-hover);
-    --sqx-action-danger-text: var(--sqx-green-1000);
-    --sqx-action-disabled-bg: var(--sqx-ink-900);
-    --sqx-action-disabled-text: var(--sqx-ink-550);
+    --sqx-segment-track: var(--sqx-grey-800);
+    --sqx-segment-label: var(--sqx-brand-200);
+    --sqx-action-secondary-border: var(--sqx-grey-a32);
+    --sqx-action-secondary-text: #FFFFFF;
+    --sqx-action-secondary-hover: var(--sqx-grey-a12);
+    --sqx-action-tertiary-text: var(--sqx-brand-200);
+    --sqx-action-tertiary-hover: var(--sqx-tint-brand-dark);
+    --sqx-action-danger-bg: var(--sqx-error-light);
+    --sqx-action-danger-hover: #FFC7A8;
+    --sqx-action-danger-text: var(--sqx-brand-950);
+    --sqx-action-disabled-bg: var(--sqx-grey-800);
+    --sqx-action-disabled-text: var(--sqx-grey-600);
 
-    --sqx-status-critical: var(--sqx-neon-danger);
-    --sqx-status-critical-soft: var(--sqx-ink-tint-danger);
-    --sqx-status-critical-on-soft: var(--sqx-neon-danger);
-    --sqx-status-major: var(--sqx-neon-major);
-    --sqx-status-major-soft: var(--sqx-ink-tint-major);
-    --sqx-status-major-on-soft: var(--sqx-neon-major);
-    --sqx-status-warning: var(--sqx-neon-warning);
-    --sqx-status-warning-soft: var(--sqx-ink-tint-warning);
-    --sqx-status-warning-on-soft: var(--sqx-neon-warning);
-    --sqx-status-compliant: var(--sqx-neon-success);
-    --sqx-status-compliant-soft: var(--sqx-ink-tint-success);
-    --sqx-status-compliant-on-soft: var(--sqx-neon-success);
-    --sqx-status-info: var(--sqx-neon-info);
-    --sqx-status-info-soft: var(--sqx-ink-tint-info);
-    --sqx-status-info-on-soft: var(--sqx-neon-info);
-    --sqx-status-pending: var(--sqx-ink-300);
-    --sqx-status-pending-soft: var(--sqx-ink-900);
-    --sqx-status-pending-on-soft: var(--sqx-ink-300);
-    --sqx-status-draft: var(--sqx-ink-400);
-    --sqx-status-draft-soft: var(--sqx-ink-900);
-    --sqx-status-draft-on-soft: var(--sqx-ink-400);
-    --sqx-status-onhold: var(--sqx-neon-onhold);
-    --sqx-status-onhold-soft: var(--sqx-ink-tint-warning);
-    --sqx-status-onhold-on-soft: var(--sqx-neon-onhold);
-    --sqx-status-completed: var(--sqx-green-300);
-    --sqx-status-completed-soft: var(--sqx-ink-tint-success);
-    --sqx-status-completed-on-soft: var(--sqx-green-300);
-    --sqx-status-disabled: var(--sqx-ink-400);
-    --sqx-status-disabled-soft: var(--sqx-ink-850);
-    --sqx-status-disabled-on-soft: var(--sqx-ink-400);
+    --sqx-status-critical: var(--sqx-error-light);
+    --sqx-status-critical-soft: var(--sqx-tint-error-dark);
+    --sqx-status-critical-on-soft: var(--sqx-error-light);
+    --sqx-status-major: var(--sqx-major-light);
+    --sqx-status-major-soft: var(--sqx-tint-major-dark);
+    --sqx-status-major-on-soft: var(--sqx-major-light);
+    --sqx-status-warning: var(--sqx-warning-light);
+    --sqx-status-warning-soft: var(--sqx-tint-warning-dark);
+    --sqx-status-warning-on-soft: var(--sqx-warning-light);
+    --sqx-status-compliant: var(--sqx-success-light);
+    --sqx-status-compliant-soft: var(--sqx-tint-success-dark);
+    --sqx-status-compliant-on-soft: var(--sqx-success-light);
+    --sqx-status-info: var(--sqx-info-light);
+    --sqx-status-info-soft: var(--sqx-tint-info-dark);
+    --sqx-status-info-on-soft: var(--sqx-info-light);
+    --sqx-status-pending: var(--sqx-grey-400);
+    --sqx-status-pending-soft: var(--sqx-tint-neutral-dark);
+    --sqx-status-pending-on-soft: var(--sqx-grey-400);
+    --sqx-status-draft: var(--sqx-grey-400);
+    --sqx-status-draft-soft: var(--sqx-tint-neutral-dark);
+    --sqx-status-draft-on-soft: var(--sqx-grey-400);
+    --sqx-status-onhold: var(--sqx-warning-light);
+    --sqx-status-onhold-soft: var(--sqx-tint-warning-dark);
+    --sqx-status-onhold-on-soft: var(--sqx-warning-light);
+    --sqx-status-completed: var(--sqx-success-light);
+    --sqx-status-completed-soft: var(--sqx-tint-success-dark);
+    --sqx-status-completed-on-soft: var(--sqx-success-light);
+    --sqx-status-disabled: var(--sqx-grey-500);
+    --sqx-status-disabled-soft: var(--sqx-tint-neutral-dark);
+    --sqx-status-disabled-on-soft: var(--sqx-grey-500);
 
-    --sqx-chart-1: var(--sqx-neon-success);
-    --sqx-chart-2: var(--sqx-neon-info);
-    --sqx-chart-3: var(--sqx-neon-live);
-    --sqx-chart-4: var(--sqx-neon-warning);
-    --sqx-chart-5: var(--sqx-neon-danger);
-    --sqx-chart-6: var(--sqx-neon-ai);
-    --sqx-chart-7: var(--sqx-neon-sky);
-    --sqx-chart-8: var(--sqx-green-300);
-    --sqx-chart-grid: var(--sqx-ink-800);
-    --sqx-chart-axis: var(--sqx-ink-400);
+    --sqx-chart-1: var(--sqx-brand-300);
+    --sqx-chart-2: var(--sqx-info-light);
+    --sqx-chart-3: var(--sqx-ai-main);
+    --sqx-chart-4: var(--sqx-warning-light);
+    --sqx-chart-5: var(--sqx-major-light);
+    --sqx-chart-6: var(--sqx-error-light);
+    --sqx-chart-7: var(--sqx-grey-400);
+    --sqx-chart-8: var(--sqx-brand-100);
+    --sqx-chart-grid: var(--sqx-grey-a16);
+    --sqx-chart-axis: var(--sqx-grey-500);
 
     --sqx-elevation-0: none;
-    --sqx-elevation-1: 0 0 0 1px var(--sqx-void-200),
-      0 1px 3px var(--sqx-void-300), var(--sqx-rim-light);
-    --sqx-elevation-2: 0 0 0 1px var(--sqx-void-200),
-      0 3px 8px var(--sqx-void-400), var(--sqx-rim-light);
-    --sqx-elevation-3: 0 0 0 1px var(--sqx-void-300),
-      0 8px 20px var(--sqx-void-400), var(--sqx-rim-light);
-    --sqx-elevation-4: 0 0 0 1px var(--sqx-void-300),
-      0 18px 44px var(--sqx-void-500), var(--sqx-rim-light);
+    --sqx-elevation-1: 0 0 0 1px var(--sqx-grey-a08),
+      0 1px 3px var(--sqx-void-300);
+    --sqx-elevation-2: 0 0 0 1px var(--sqx-grey-a08),
+      0 4px 10px var(--sqx-void-300);
+    --sqx-elevation-3: 0 0 0 1px var(--sqx-grey-a12),
+      0 10px 24px var(--sqx-void-400);
+    --sqx-elevation-4: 0 0 0 1px var(--sqx-grey-a12),
+      0 20px 48px var(--sqx-void-500);
 
     --sqx-gradient-cta: linear-gradient(
       var(--sqx-flow-angle),
-      var(--sqx-green-400),
-      var(--sqx-neon-info),
-      var(--sqx-green-400)
+      var(--sqx-brand-300),
+      var(--sqx-brand-200),
+      var(--sqx-brand-300)
     );
-    --sqx-gradient-halo: radial-gradient(
-        90% 130% at 15% -20%,
-        var(--sqx-halo-green),
-        transparent 58%
-      ),
-      radial-gradient(
-        80% 120% at 85% -10%,
-        var(--sqx-halo-cyan),
-        transparent 55%
-      ),
-      var(--sqx-ink-1000);
-    --sqx-accent-ai: var(--sqx-neon-ai);
+    --sqx-gradient-halo: none;
+    --sqx-accent-ai: var(--sqx-ai-main);
     --sqx-gradient-ai: linear-gradient(
       var(--sqx-flow-angle),
-      var(--sqx-neon-ai),
-      var(--sqx-neon-ai-light),
-      var(--sqx-neon-ai)
+      var(--sqx-ai-main),
+      var(--sqx-ai-light),
+      var(--sqx-ai-main)
     );
-    --sqx-nav-active-bg: var(--sqx-neon-veil-strong);
-    --sqx-nav-parent-bg: var(--sqx-neon-veil-soft);
-    --sqx-nav-hover-bg: var(--sqx-glare-050);
-    --sqx-nav-connector: var(--sqx-border-strong);
-    --sqx-nav-text: var(--sqx-warm-050);
-    --sqx-on-accent-ai: var(--sqx-ink-1000);
+    --sqx-nav-active-bg: var(--sqx-tint-brand-dark);
+    --sqx-nav-active-text: var(--sqx-brand-200);
+    --sqx-nav-parent-bg: var(--sqx-grey-a08);
+    --sqx-nav-hover-bg: var(--sqx-grey-a08);
+    --sqx-nav-connector: var(--sqx-grey-a24);
+    --sqx-nav-text: var(--sqx-grey-400);
+    --sqx-on-accent-ai: var(--sqx-brand-950);
+    --sqx-surface-accent-hover: #323441;
+    --sqx-map-panel: rgba(20, 26, 33, 0.96);
+    --sqx-map-zone-fill: rgba(180, 154, 216, 0.14);
+    --sqx-map-zone-stroke: var(--sqx-brand-300);
   }
 
   :root {
@@ -525,6 +652,7 @@
     --sqx-touch-target: 2.75rem;
     --sqx-segment-pad: 0.3125rem;
     --sqx-badge-size: 0.875rem;
+    --sqx-count-size: 1.5rem;
     --sqx-badge-font: 0.625rem;
     --sqx-ping-sm: 0.375rem;
     --sqx-ping-md: 0.5rem;
@@ -588,23 +716,26 @@
     --sqx-ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
     --sqx-ease-linear: linear;
 
+    /* Both of these used to flow through green. Under the IRP palette green
+       is reserved for success, so a decorative signal sweep may not spend
+       it — they run on the brand instead. */
     --sqx-gradient-signal: linear-gradient(
       var(--sqx-flow-angle),
-      var(--sqx-neon-success),
-      var(--sqx-neon-live),
-      var(--sqx-neon-success)
+      var(--sqx-action-primary-bg),
+      var(--sqx-text-accent),
+      var(--sqx-action-primary-bg)
     );
     --sqx-gradient-edge: linear-gradient(
       var(--sqx-flow-angle),
       transparent,
-      var(--sqx-green-400),
-      var(--sqx-neon-info),
+      var(--sqx-action-primary-bg),
+      var(--sqx-border-accent),
       transparent
     );
     --sqx-gradient-sweep: linear-gradient(
       var(--sqx-flow-angle),
       transparent,
-      var(--sqx-halo-light),
+      var(--sqx-grey-a16),
       transparent
     );
     --sqx-gradient-flow-size: 220% 100%;

@@ -71,7 +71,10 @@
   transition: color var(--sqx-duration-fast) var(--sqx-ease-standard);
 }
 
-.segment:hover:not(:disabled) {
+/* :not(selected) matters. The selected segment sits on the filled pill and
+   already carries --sqx-action-primary-text; letting a generic hover repaint
+   it --sqx-text-primary put near-black text on a dark fill. */
+.segment:hover:not(:disabled):not([aria-checked="true"]):not([aria-current="page"]) {
   color: var(--sqx-text-primary);
 }
 
@@ -90,8 +93,8 @@
   color: var(--sqx-segment-label);
 }
 
-.root[data-tone="accent"] .segment:hover:not(:disabled) {
-  color: var(--sqx-text-primary);
+.root[data-tone="accent"] .segment:hover:not(:disabled):not([aria-checked="true"]):not([aria-current="page"]) {
+  color: var(--sqx-text-accent);
 }
 
 .root[data-tone="accent"] .segment[aria-checked="true"],

@@ -1,22 +1,67 @@
 .root {
   position: absolute;
   inset-block-start: calc(100% + var(--sqx-space-2));
-  inset-inline-start: 0;
   z-index: var(--sqx-z-popover);
   display: flex;
   flex-direction: column;
   gap: var(--sqx-space-1);
   padding: var(--sqx-menu-pad);
-  max-block-size: var(--sqx-menu-max-h);
+  /* --sqx-menu-avail-h/-w are measured in menu-surface.tsx from the real gap
+     to the viewport edge. A list is additionally capped so a long one does
+     not become a full-height wall. */
+  max-block-size: min(var(--sqx-menu-max-h), var(--sqx-menu-avail-h, 100dvh));
+  max-inline-size: var(--sqx-menu-avail-w, none);
   overflow-y: auto;
+  /* Explicit, not incidental: a non-visible overflow on one axis computes the
+     other to auto, so `overflow-y: auto` alone was giving every panel a
+     horizontal scrollbar the moment the vertical one narrowed its content
+     box. Menu labels ellipsis, so nothing here scrolls sideways. */
+  overflow-x: hidden;
   overscroll-behavior: contain;
-  background: var(--sqx-surface-raised);
+  scrollbar-width: thin;
+  scrollbar-color: var(--sqx-grey-a32) transparent;
+  background: var(--sqx-surface-menu);
   border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
   border-radius: var(--sqx-radius-card);
-  box-shadow: var(--sqx-shadow-menu), var(--sqx-rim-light);
+  box-shadow: var(--sqx-shadow-menu);
   opacity: 0;
   transform: translate(var(--sqx-menu-shift, 0px), calc(var(--sqx-space-2) * -1));
   animation: sqx-menu-enter var(--sqx-duration-fast) var(--sqx-ease-decelerate) forwards;
+}
+
+/* A dialog panel (the date range picker) sizes itself; capping it at the list
+   height is what forced it to scroll in both directions. */
+.root[role="dialog"] {
+  max-block-size: var(--sqx-menu-avail-h, none);
+}
+
+/* Chromium on Windows ignores scrollbar-color and paints the full-width OS
+   scrollbar, permanently visible. */
+.root::-webkit-scrollbar {
+  inline-size: var(--sqx-space-3);
+  block-size: var(--sqx-space-3);
+}
+
+.root::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.root::-webkit-scrollbar-thumb {
+  background: var(--sqx-grey-a32);
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: var(--sqx-radius-pill);
+}
+
+.root::-webkit-scrollbar-thumb:hover {
+  background: var(--sqx-grey-a48);
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+.root[data-align="start"] {
+  inset-inline-start: 0;
+  inset-inline-end: auto;
 }
 
 .root[data-align="end"] {

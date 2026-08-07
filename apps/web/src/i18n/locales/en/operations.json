@@ -1,5 +1,9 @@
 {
   "title": "Operations Center",
+  "loading": {
+    "label": "Loading the Operations Center…",
+    "detail": "Loading visits, location events, corrective actions and notifications."
+  },
   "perspective": {
     "label": "Operations perspective",
     "map": "Operations map",

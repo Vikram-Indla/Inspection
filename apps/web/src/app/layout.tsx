@@ -40,8 +40,9 @@ const plexArabic = localFont({
 
 export const viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#E6EFEB" },
-    { media: "(prefers-color-scheme: dark)", color: "#071411" },
+    // Matches --sqx-surface-canvas in each theme (IRP palette, 2026-08).
+    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
+    { media: "(prefers-color-scheme: dark)", color: "#080B10" },
   ],
   // iPad standalone PWA: draw under the status bar / home indicator so the field
   // chrome's env(safe-area-inset-*) padding (FieldHeader/FieldNav) governs the

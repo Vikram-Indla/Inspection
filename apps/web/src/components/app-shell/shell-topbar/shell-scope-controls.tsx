@@ -76,7 +76,6 @@ export default function ShellScopeControls({ scope, regions, initialFrom, initia
         locale={locale}
         monthLabels={{ previous: strings.previousMonth, next: strings.nextMonth }}
         disabled={!scope.date}
-        align="end"
       />
 
       <SaqeelSelect
@@ -89,7 +88,6 @@ export default function ShellScopeControls({ scope, regions, initialFrom, initia
         label={strings.regionScope}
         placeholder={strings.allRegions}
         disabled={!scope.region || !regions.length}
-        align="end"
       />
     </div>
   );

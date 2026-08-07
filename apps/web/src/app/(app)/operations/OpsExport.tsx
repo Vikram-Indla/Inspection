@@ -1,6 +1,10 @@
 "use client";
 import { useState, useTransition } from "react";
+import Button from "@/components/saqeel/button/button";
+import CountBadge from "@/components/saqeel/count-badge/count-badge";
+import Toolbar from "@/components/saqeel/toolbar/toolbar";
 import { authorizeOperationsExport } from "./actions";
+import styles from "./OpsExport.module.css";
 // M08-017 — Operations Center CSV export. One button per table (live monitoring,
 // SLA watch, high-risk board); each exports the CURRENT region/city-scoped view.
 // Rows + headers are formatted server-side and passed in, so this module owns no
@@ -67,16 +71,29 @@ export default function OpsExport({ datasets, strings }: { datasets: ExportDatas
     });
   };
   return (
-    <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap", alignItems: "center" }}>
-      <strong>{strings.heading}</strong>
-      {datasets.map(ds => (
-        <button key={ds.key} type="button" className="btn btn-ghost btn-touch" disabled={pending || ds.rows.length === 0}
-          onClick={() => requestDownload(ds)}>
-          {ds.label} <span className="numeric">{ds.rows.length}</span>
-        </button>
+    <Toolbar
+      label={strings.heading}
+      trailing={
+        <>
+          <span className={styles.note}>{strings.scopeNote}</span>
+          {message ? <span className={styles.note} role="status">{message}</span> : null}
+        </>
+      }
+    >
+      <span className={styles.heading}>{strings.heading}</span>
+      {datasets.map(dataset => (
+        <Button
+          key={dataset.key}
+          variant="secondary"
+          size="sm"
+          disabled={pending || dataset.rows.length === 0}
+          onClick={() => requestDownload(dataset)}
+          label={`${dataset.label} — ${dataset.rows.length}`}
+        >
+          {dataset.label}
+          <CountBadge value={dataset.rows.length} />
+        </Button>
       ))}
-      <span className="t-caption">{strings.scopeNote}</span>
-      {message ? <span className="t-caption" role="status">{message}</span> : null}
-    </div>
+    </Toolbar>
   );
 }

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { type ReactNode } from "react";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import type { IconName } from "@/components/saqeel/icon/icon-registry";
@@ -86,4 +87,24 @@ export default function DataTable<T>({ rows, columns, getRowId, caption, empty, 
       </table>
     </div>
   );
+}
+
+// Cell presentation lives with the table. These three were being redeclared,
+// byte for byte, in every table module that needed a linked identifier or a
+// muted timestamp — sla, risk and cancellations all carried the same .link
+// and .muted rules.
+export function CellLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link className={styles.cellLink} href={href} prefetch={false}>
+      {children}
+    </Link>
+  );
+}
+
+export function CellTime({ dateTime, children }: { dateTime?: string; children: ReactNode }) {
+  return <time className={styles.cellMuted} dateTime={dateTime}>{children}</time>;
+}
+
+export function CellMuted({ children }: { children: ReactNode }) {
+  return <span className={styles.cellMuted} dir="auto">{children}</span>;
 }

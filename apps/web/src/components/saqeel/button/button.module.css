@@ -43,13 +43,20 @@
   cursor: not-allowed;
 }
 
+/* gap, not a text space: these are inline-flex, so a label followed by a
+   count element becomes two flex items and any whitespace between them is
+   discarded — which is why counts rendered flush against their label. */
 .label {
   display: inline-flex;
+  align-items: center;
+  gap: var(--sqx-space-3);
   min-inline-size: 0;
 }
 
 .compact {
   display: inline-flex;
+  align-items: center;
+  gap: var(--sqx-space-3);
   min-inline-size: 0;
 }
 

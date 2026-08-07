@@ -12,9 +12,19 @@ import OperationsMonitoringTable from "@/components/operations/operations-monito
 import type { OpsPin } from "./OpsMap";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import Button from "@/components/saqeel/button/button";
+import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import OperationsScopeFilter from "@/components/operations/operations-scope-filter/operations-scope-filter";
 import OperationsSlaTable, { type SlaAlertRow } from "@/components/operations/operations-sla-table/operations-sla-table";
+import OperationsKpiContract from "@/components/operations/operations-kpi-contract/operations-kpi-contract";
+import OperationsWorkloadTable from "@/components/operations/operations-workload-table/operations-workload-table";
+import OperationsRiskTable, { type RiskBand, type RiskRow } from "@/components/operations/operations-risk-table/operations-risk-table";
+import OperationsAlerts, { DELIVERY_TONE, type AlertRow } from "@/components/operations/operations-alerts/operations-alerts";
+import OperationsCancellations, { type CancellationRow } from "@/components/operations/operations-cancellations/operations-cancellations";
+import OperationsTimeline from "@/components/operations/operations-timeline/operations-timeline";
+import type { TimelineEvent } from "@/components/saqeel/timeline/timeline";
+import OperationsHistoryTable, { type HistoryRow } from "@/components/operations/operations-history-table/operations-history-table";
+import OperationsExport from "@/components/operations/operations-export/operations-export";
 import { getMessages } from "@/i18n/messages";
 import { IconPin, IconBell } from "@/app/icons";
 import OpsExport, { type ExportDataset, type OpsExportStrings } from "./OpsExport";
@@ -103,7 +113,7 @@ type OperationsKpiDefinition = {
   definition_version: number | null;
   source_status: string;
 };
-type OperationsKpiContract = {
+type OperationsKpiContractData = {
   authorized?: boolean;
   configured?: boolean;
   decision?: string;
@@ -123,14 +133,6 @@ const CLEAN_FACTORY_CODES = new Set([
 
 const isCleanFactory = (factory: { factory_code?: string | null } | null | undefined) =>
   Boolean(factory?.factory_code && CLEAN_FACTORY_CODES.has(factory.factory_code));
-
-const NOTIF_TONE: Record<string, string> = {
-  queued: "sq-lozenge--warning",
-  sent: "sq-lozenge--info",
-  delivered: "sq-lozenge--info",
-  handled: "sq-lozenge--success",
-  failed: "sq-lozenge--critical",
-};
 
 // Active operational states → map pin tone (GeoMap resolves tones to legacy tokens).
 const ACTIVE_TONE: Record<string, GeoTone> = {
@@ -704,7 +706,7 @@ export default async function Operations({ searchParams }: {
   if (timelineRpc.error) console.error(`[operations] timeline read failed: ${timelineRpc.error.message}`);
   if (kpiContractRpc.error) console.error(`[operations] KPI contract read failed: ${kpiContractRpc.error.message}`);
   const operationsTimeline = (timelineRpc.data ?? []) as unknown as OperationsTimelineRow[];
-  const operationsKpiContract = (kpiContractRpc.data ?? null) as OperationsKpiContract | null;
+  const operationsKpiContract = (kpiContractRpc.data ?? null) as OperationsKpiContractData | null;
 
   const visitWord = t("ops.visit", "visit");
   const actionControlStrings: ActionFormControlsStrings = {
@@ -1134,164 +1136,139 @@ export default async function Operations({ searchParams }: {
           emptyTitle: opsText.sla.emptyTitle,
         }} />
 
-        <section className="sq-surface" aria-labelledby="operations-kpi-contract-heading">
-          <div className={styles.detailHeading}><div>
-            <h2 id="operations-kpi-contract-heading">{t("ops.kpi.contractHeading", "Operations KPI contract")}</h2>
-            <p>{operationsKpiContract?.configured
-              ? t("ops.kpi.configured", "Published policy metadata and metric definitions are active.")
-              : t("ops.kpi.notConfigured", "Policy or published metric definitions are not set up. Undefined formulas stay unavailable.")}</p>
-          </div></div>
-          {kpiContractRpc.error ? (
-            <EmptyState icon="risk" title={t("ops.kpi.unavailable", "KPI contract service unavailable")} description={t("ops.err.retry", "Retry")} variant="inline" />
-          ) : operationsKpiContract?.authorized === false ? (
-            <EmptyState icon="restricted" title={t("ops.kpi.unauthorized", "KPI contract access is not authorized for this role")} variant="inline" />
-          ) : (
-            <>
-              <dl className={styles.contractFacts}>
-                <div><dt>{t("ops.kpi.period", "Calculation period")}</dt><dd>{contractValue(operationsKpiContract?.period)}</dd></div>
-                <div><dt>{t("ops.kpi.timezone", "Timezone")}</dt><dd>{contractValue(operationsKpiContract?.timezone)}</dd></div>
-                <div><dt>{t("ops.kpi.policyVersion", "Policy version")}</dt><dd>{contractValue(operationsKpiContract?.policy_version)}</dd></div>
-                <div><dt>{t("ops.kpi.decision", "Decision authority")}</dt><dd>{operationsKpiContract?.decision ?? t("common.notConfigured", "Not configured")}</dd></div>
-              </dl>
-              <div className="sq-tablewrap"><table className="sq-table">
-                <thead><tr><th scope="col">{t("ops.kpi.metric", "Metric")}</th><th scope="col">{t("ops.kpi.status", "Source status")}</th><th scope="col">{t("ops.kpi.formula", "Published formula")}</th></tr></thead>
-                <tbody>{(operationsKpiContract?.definitions ?? []).map(definition => <tr key={definition.metric_key}>
-                  <th scope="row">{kpiMetricLabel(definition.metric_key)}</th>
-                  <td>{enumLabel(definition.source_status)}</td>
-                  <td>{definition.formula ?? local("Not configured", "غير مهيأ")}</td>
-                </tr>)}</tbody>
-              </table></div>
-            </>
-          )}
-        </section>
+        <OperationsKpiContract
+          configured={Boolean(operationsKpiContract?.configured)}
+          unavailable={Boolean(kpiContractRpc.error)}
+          unauthorized={operationsKpiContract?.authorized === false}
+          facts={[
+            { label: t("ops.kpi.period", "Calculation period"), value: contractValue(operationsKpiContract?.period) },
+            { label: t("ops.kpi.timezone", "Timezone"), value: contractValue(operationsKpiContract?.timezone) },
+            { label: t("ops.kpi.policyVersion", "Policy version"), value: contractValue(operationsKpiContract?.policy_version) },
+            { label: t("ops.kpi.decision", "Decision authority"), value: operationsKpiContract?.decision ?? t("common.notConfigured", "Not configured") },
+          ]}
+          rows={(operationsKpiContract?.definitions ?? []).map(definition => ({
+            key: definition.metric_key,
+            metric: kpiMetricLabel(definition.metric_key),
+            sourceStatus: enumLabel(definition.source_status),
+            formula: definition.formula ?? null,
+          }))}
+          strings={{
+            title: t("ops.kpi.contractHeading", "Operations KPI contract"),
+            configured: t("ops.kpi.configured", "Published policy metadata and metric definitions are active."),
+            notConfigured: t("ops.kpi.notConfigured", "Policy or published metric definitions are not set up. Undefined formulas stay unavailable."),
+            metric: t("ops.kpi.metric", "Metric"),
+            status: t("ops.kpi.status", "Source status"),
+            formula: t("ops.kpi.formula", "Published formula"),
+            unavailableTitle: t("ops.kpi.unavailable", "KPI contract service unavailable"),
+            unavailableBody: t("ops.err.retry", "Retry"),
+            unauthorizedTitle: t("ops.kpi.unauthorized", "KPI contract access is not authorized for this role"),
+            emptyTitle: t("ops.kpi.emptyDefinitions", "No published metric definitions"),
+            missing: local("Not configured", "غير مهيأ"),
+          }}
+        />
 
-        <section className="sq-surface" aria-labelledby="operations-workload-heading">
-          <div className={styles.detailHeading}><div>
-            <h2 id="operations-workload-heading">{t("ops.workload.heading", "Inspector workload")}</h2>
-            <p>{t("ops.workload.body", "Assigned, active, submitted and overdue visits in the current authorized geography.")}</p>
-          </div></div>
-          {workloadRows.length === 0 ? (
-            <EmptyState title={t("ops.workload.empty", "No inspector workload in this scope")} variant="inline" />
-          ) : (
-            <div className="sq-tablewrap"><table className="sq-table">
-              <thead><tr>
-                <th scope="col">{monitoringStrings.thInspector}</th>
-                <th scope="col">{t("ops.workload.assigned", "Assigned")}</th>
-                <th scope="col">{t("ops.workload.active", "Active")}</th>
-                <th scope="col">{t("ops.workload.completed", "Submitted")}</th>
-                <th scope="col">{t("ops.workload.overdue", "Overdue")}</th>
-              </tr></thead>
-              <tbody>{workloadRows.map(row => <tr key={row.inspector}>
-                <th scope="row"><bdi dir="auto">{row.inspector}</bdi></th>
-                <td>{row.assigned}</td><td>{row.active}</td><td>{row.completed}</td><td>{row.overdue}</td>
-              </tr>)}</tbody>
-            </table></div>
-          )}
-        </section>
+        <OperationsWorkloadTable
+          rows={workloadRows}
+          strings={{
+            title: t("ops.workload.heading", "Inspector workload"),
+            description: t("ops.workload.body", "Assigned, active, submitted and overdue visits in the current authorized geography."),
+            inspector: monitoringStrings.thInspector,
+            assigned: t("ops.workload.assigned", "Assigned"),
+            active: t("ops.workload.active", "Active"),
+            completed: t("ops.workload.completed", "Submitted"),
+            overdue: t("ops.workload.overdue", "Overdue"),
+            emptyTitle: t("ops.workload.empty", "No inspector workload in this scope"),
+          }}
+        />
 
-        <section className="sq-surface" aria-labelledby="operations-risk-heading">
-          <div className={styles.detailHeading}><div>
-            <h2 id="operations-risk-heading">{t("ops.risk.heading", "Risk monitoring")}</h2>
-            <p>{t("ops.risk.body", "Read-only Risk Engine outputs in the current authorized scope.")}</p>
-          </div></div>
-          {highRisk.length === 0 ? (
-            <EmptyState title={t("ops.risk.empty", "No configured risk scores in this scope")} variant="inline" />
-          ) : (
-            <div className="sq-tablewrap"><table className="sq-table">
-              <thead><tr><th scope="col">{t("ops.risk.th.factory", "Factory")}</th><th scope="col">{t("ops.risk.th.location", "Location")}</th><th scope="col">{t("ops.risk.th.score", "Score")}</th><th scope="col">{t("ops.risk.th.band", "Band")}</th></tr></thead>
-              <tbody>{highRisk.map(factory => <tr key={factory.id}>
-                <th scope="row"><a className="sq-link" href={`/factories/${factory.id}`}>{factory.name}</a></th>
-                <td>{[factory.region, factory.city].filter(Boolean).join(" · ") || "—"}</td>
-                <td className="sq-td-num">{factory.risk_score != null ? Number(factory.risk_score).toFixed(1) : local("Not configured", "غير مهيأ")}</td>
-                <td>{factory.risk_band
-                  ? <span className={`sq-lozenge ${factory.risk_band === "high" ? "sq-lozenge--critical" : factory.risk_band === "medium" ? "sq-lozenge--warning" : "sq-lozenge--success"}`}>{enumLabel(factory.risk_band)}</span>
-                  : local("Not configured", "غير مهيأ")}</td>
-              </tr>)}</tbody>
-            </table></div>
-          )}
-        </section>
+        <OperationsRiskTable
+          rows={highRisk.map<RiskRow>(factory => ({
+            id: factory.id,
+            name: factory.name,
+            href: `/factories/${factory.id}`,
+            location: [factory.region, factory.city].filter(Boolean).join(" · ") || "—",
+            score: factory.risk_score != null ? Number(factory.risk_score).toFixed(1) : local("Not configured", "غير مهيأ"),
+            band: (factory.risk_band as RiskBand | null) ?? null,
+            bandLabel: factory.risk_band ? enumLabel(factory.risk_band) : "",
+          }))}
+          strings={{
+            title: t("ops.risk.heading", "Risk monitoring"),
+            description: t("ops.risk.body", "Read-only Risk Engine outputs in the current authorized scope."),
+            factory: t("ops.risk.th.factory", "Factory"),
+            location: t("ops.risk.th.location", "Location"),
+            score: t("ops.risk.th.score", "Score"),
+            band: t("ops.risk.th.band", "Band"),
+            emptyTitle: t("ops.risk.empty", "No configured risk scores in this scope"),
+            missing: local("Not configured", "غير مهيأ"),
+          }}
+        />
 
-        <section className="sq-surface" aria-labelledby="operations-alerts-heading">
-          <div className={styles.detailHeading}><div>
-            <h2 id="operations-alerts-heading">{t("ops.alerts.heading", "Operational alerts and corrective actions")}</h2>
-            <p>{t("ops.alerts.body", "Action forms and notification status you can see here. The database still protects any changes.")}</p>
-          </div></div>
-          {actions.length === 0 && notifs.length === 0 ? (
-            <EmptyState icon="selected" title={t("ops.alerts.empty", "No operational alerts in this scope")} variant="inline" />
-          ) : (
-            <div className={styles.alertColumns}>
-              <div>
-                <h3>{t("ops.actions.heading", "Corrective actions")}</h3>
-                {actions.length === 0 ? <p className="sq-caption">{t("ops.actions.empty", "No open corrective actions.")}</p> : (
-                  <div className="sq-stack">
-                    {actions.map(action => <article className={styles.alertCard} key={action.id}>
-                      <div>
-                        <strong>{action.inspections?.visits?.factories?.name ?? action.form_type}</strong>
-                        <p>{action.required_correction ?? enumLabel(action.status)}</p>
-                        <small>{action.due_at ? formatDateTime(action.due_at, locale === "ar" ? "ar" : "en") : local("No due date set", "لا يوجد تاريخ استحقاق محدد")}</small>
-                      </div>
-                      {mayManageOperations ? (
-                        <ActionFormControls actionFormId={action.id} status={action.status} strings={actionControlStrings} />
-                      ) : <span className="sq-lozenge sq-lozenge--neutral">{t("ops.readOnly", "Read only")}</span>}
-                    </article>)}
-                  </div>
-                )}
-              </div>
-              <div>
-                <h3>{t("ops.notifs.heading", "Notification delivery")}</h3>
-                {notifs.length === 0 ? <p className="sq-caption">{t("ops.notifs.empty", "No notification events.")}</p> : (
-                  <div className="sq-stack">
-                    {notifs.map(notification => <article className={styles.alertCard} key={notification.id}>
-                      <div>
-                        <strong>{enumLabel(notification.event_key)}</strong>
-                        <p>{t(`enum.channel.${notification.channel}`, notification.channel === "inapp" ? "In-app" : humaniseEnum(notification.channel))} · <time dateTime={notification.created_at}>{formatDateTime(notification.created_at, locale === "ar" ? "ar" : "en")}</time></p>
-                      </div>
-                      <div className="sq-row">
-                        <span className={`sq-lozenge ${NOTIF_TONE[notification.delivery_state] ?? "sq-lozenge--neutral"}`}>{enumLabel(notification.delivery_state)}</span>
-                        {mayManageOperations && notification.delivery_state !== "handled"
-                          ? <MarkNotificationHandled notificationId={notification.id} strings={markHandledStrings} />
-                          : null}
-                      </div>
-                    </article>)}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </section>
+        <OperationsAlerts
+          actions={actions.map<AlertRow>(action => ({
+            id: action.id,
+            title: action.inspections?.visits?.factories?.name ?? action.form_type,
+            description: action.required_correction ?? enumLabel(action.status),
+            meta: action.due_at
+              ? formatDateTime(action.due_at, locale === "ar" ? "ar" : "en")
+              : local("No due date set", "لا يوجد تاريخ استحقاق محدد"),
+            action: mayManageOperations
+              ? <ActionFormControls actionFormId={action.id} status={action.status} strings={actionControlStrings} />
+              : <StatusPill tone="neutral" size="sm" ping={false}>{t("ops.readOnly", "Read only")}</StatusPill>,
+          }))}
+          notifications={notifs.map<AlertRow>(notification => ({
+            id: notification.id,
+            title: enumLabel(notification.event_key),
+            description: `${t(`enum.channel.${notification.channel}`, notification.channel === "inapp" ? "In-app" : humaniseEnum(notification.channel))} · ${formatDateTime(notification.created_at, locale === "ar" ? "ar" : "en")}`,
+            status: {
+              label: enumLabel(notification.delivery_state),
+              tone: DELIVERY_TONE[notification.delivery_state] ?? "neutral",
+            },
+            action: mayManageOperations && notification.delivery_state !== "handled"
+              ? <MarkNotificationHandled notificationId={notification.id} strings={markHandledStrings} />
+              : null,
+          }))}
+          strings={{
+            title: t("ops.alerts.heading", "Operational alerts and corrective actions"),
+            description: t("ops.alerts.body", "Action forms and notification status you can see here. The database still protects any changes."),
+            actionsHeading: t("ops.actions.heading", "Corrective actions"),
+            actionsEmpty: t("ops.actions.empty", "No open corrective actions."),
+            notificationsHeading: t("ops.notifs.heading", "Notification delivery"),
+            notificationsEmpty: t("ops.notifs.empty", "No notification events."),
+            emptyTitle: t("ops.alerts.empty", "No operational alerts in this scope"),
+          }}
+        />
 
-        <section className="sq-surface" aria-labelledby="operations-cancellations-heading">
-          <div className={styles.detailHeading}><div>
-            <h2 id="operations-cancellations-heading">{t("ops.cancellations.heading", "Cancellation monitoring")}</h2>
-            <p>{t("ops.cancellations.body", "Recent cancellation requests, reasons and final decisions you can see. These decisions can't change.")}</p>
-          </div></div>
-          {cancellationHistoryRows.length === 0 ? (
-            <EmptyState title={t("ops.cancellations.empty", "No cancellation history in this scope")} variant="inline" />
-          ) : (
-            <div className="sq-tablewrap"><table className="sq-table">
-              <thead><tr>
-                <th scope="col">{monitoringStrings.thVisit}</th>
-                <th scope="col">{monitoringStrings.thFactory}</th>
-                <th scope="col">{monitoringStrings.thInspector}</th>
-                <th scope="col">{monitoringStrings.regionLabel}</th>
-                <th scope="col">{t("ops.cancellations.reason", "Reason")}</th>
-                <th scope="col">{t("ops.cancellations.status", "Status")}</th>
-                <th scope="col">{t("ops.cancellations.requested", "Requested")}</th>
-                <th scope="col">{t("ops.cancellations.decided", "Decided")}</th>
-              </tr></thead>
-              <tbody>{cancellationHistoryRows.map(row => <tr key={row.id}>
-                <td><a className="sq-link" href={`/visits/${row.visit_id}`}>{row.visit_id.slice(0, 8)}</a></td>
-                <td>{row.factory_name ?? "—"}</td>
-                <td><bdi dir="auto">{row.inspector_name ?? "—"}</bdi></td>
-                <td>{row.region ?? "—"}</td>
-                <td>{row.reason_label}{row.decision_reason ? ` · ${row.decision_reason}` : ""}</td>
-                <td>{enumLabel(row.status)}</td>
-                <td><time dateTime={row.requested_at}>{formatDateTime(row.requested_at, locale === "ar" ? "ar" : "en")}</time></td>
-                <td>{row.decided_at ? <time dateTime={row.decided_at}>{formatDateTime(row.decided_at, locale === "ar" ? "ar" : "en")}</time> : "—"}</td>
-              </tr>)}</tbody>
-            </table></div>
-          )}
-        </section>
+        <OperationsCancellations
+          rows={cancellationHistoryRows.map<CancellationRow>(row => ({
+            id: row.id,
+            visitHref: `/visits/${row.visit_id}`,
+            visitLabel: row.visit_id.slice(0, 8),
+            factoryName: row.factory_name ?? "—",
+            inspectorName: row.inspector_name ?? "—",
+            region: row.region ?? "—",
+            reason: `${row.reason_label}${row.decision_reason ? ` · ${row.decision_reason}` : ""}`,
+            status: enumLabel(row.status),
+            statusKey: row.status,
+            requestedAt: formatDateTime(row.requested_at, locale === "ar" ? "ar" : "en"),
+            requestedAtIso: row.requested_at,
+            decidedAt: row.decided_at ? formatDateTime(row.decided_at, locale === "ar" ? "ar" : "en") : null,
+            decidedAtIso: row.decided_at,
+          }))}
+          strings={{
+            title: t("ops.cancellations.heading", "Cancellation monitoring"),
+            description: t("ops.cancellations.body", "Recent cancellation requests, reasons and final decisions you can see. These decisions can't change."),
+            visit: monitoringStrings.thVisit,
+            factory: monitoringStrings.thFactory,
+            inspector: monitoringStrings.thInspector,
+            region: monitoringStrings.regionLabel,
+            reason: t("ops.cancellations.reason", "Reason"),
+            status: t("ops.cancellations.status", "Status"),
+            requested: t("ops.cancellations.requested", "Requested"),
+            decided: t("ops.cancellations.decided", "Decided"),
+            emptyTitle: t("ops.cancellations.empty", "No cancellation history in this scope"),
+            missing: "—",
+          }}
+        />
 
         {mayManageOperations ? (
           <>
@@ -1299,84 +1276,85 @@ export default async function Operations({ searchParams }: {
             <CancellationQueue rows={cancellationQueueRows} strings={cancellationQueueStrings} locale={locale} />
           </>
         ) : (
-          <section className="sq-surface" aria-labelledby="operations-decisions-heading">
-            <EmptyState icon="restricted" title={t("ops.decisions.readOnly", "These decisions are read-only for your role")} description={t("ops.decisions.readOnlyBody", "Only an authorized Operations supervisor can decide location exceptions or active-session cancellations.")} variant="inline" />
-          </section>
+          <Card as="section">
+            <CardBody>
+              <EmptyState
+                icon="restricted"
+                title={t("ops.decisions.readOnly", "These decisions are read-only for your role")}
+                description={t("ops.decisions.readOnlyBody", "Only an authorized Operations supervisor can decide location exceptions or active-session cancellations.")}
+              />
+            </CardBody>
+          </Card>
         )}
 
-        <section className="sq-surface" aria-labelledby="operations-timeline-heading">
-          <div className={styles.detailHeading}><div>
-            <h2 id="operations-timeline-heading">{t("ops.timeline.heading", "Visit timeline")}</h2>
-            <p>{t("ops.timeline.body", "The full order of events, from planning through inspection, review and handoff to Compliance.")}</p>
-          </div></div>
-          <form className={styles.timelineVisitPicker} method="get" action="/operations">
-            {view === "performance" ? <input type="hidden" name="view" value="performance" /> : null}
-            {region ? <input type="hidden" name="region" value={region} /> : null}
-            {city ? <input type="hidden" name="city" value={city} /> : null}
-            <label className="sq-field" htmlFor="operations-timeline-visit">
-              <span className="sq-field__label">{t("ops.timeline.choose", "Choose a visit timeline")}</span>
-              <select className="sq-select" id="operations-timeline-visit" name="timelineVisit" defaultValue={timelineVisitId ?? ""}>
-                <option value="">{t("ops.timeline.selectPlaceholder", "Select visit")}</option>
-                {monitored.map(visit => (
-                  <option value={visit.id} key={visit.id}>
-                    {visit.factories?.name ?? visit.id.slice(0, 8)} · {visit.id.slice(0, 8)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <button className="sq-btn sq-btn--secondary" type="submit">{t("ops.timeline.load", "Load timeline")}</button>
-          </form>
-          {!timelineVisitId ? (
-            <EmptyState icon="search" title={t("ops.timeline.select", "Select a visit to load its timeline")} variant="inline" />
-          ) : timelineRpc.error ? (
-            <EmptyState icon="risk" title={t("ops.timeline.unavailable", "Visit timeline unavailable")} description={t("ops.err.retry", "Retry")} variant="inline" />
-          ) : operationsTimeline.length === 0 ? (
-            <EmptyState title={t("ops.timeline.empty", "No authorized timeline events for this visit")} variant="inline" />
-          ) : (
-            <ol className={styles.timelineList}>
-              {operationsTimeline.map(event => <li key={`${event.object_type}:${event.object_id}:${event.event_key}`}>
-                <time dateTime={event.occurred_at}>{formatDateTime(event.occurred_at, locale === "ar" ? "ar" : "en")}</time>
-                <div><strong>{enumLabel(event.event_key)}</strong><span>{event.object_type}</span></div>
-                <code>{JSON.stringify(event.payload)}</code>
-              </li>)}
-            </ol>
-          )}
-        </section>
+        <OperationsTimeline
+          options={monitored.map(visit => ({
+            value: visit.id,
+            label: `${visit.factories?.name ?? visit.id.slice(0, 8)} · ${visit.id.slice(0, 8)}`,
+          }))}
+          selected={timelineVisitId ?? ""}
+          scope={{
+            ...(view === "performance" ? { view: "performance" } : {}),
+            ...(region ? { region } : {}),
+            ...(city ? { city } : {}),
+          }}
+          events={operationsTimeline.map<TimelineEvent>(event => ({
+            id: `${event.object_type}:${event.object_id}:${event.event_key}`,
+            dateTime: event.occurred_at,
+            time: formatDateTime(event.occurred_at, locale === "ar" ? "ar" : "en"),
+            title: enumLabel(event.event_key),
+            meta: event.object_type,
+            detail: <code>{JSON.stringify(event.payload)}</code>,
+          }))}
+          unavailable={Boolean(timelineRpc.error)}
+          strings={{
+            title: t("ops.timeline.heading", "Visit timeline"),
+            description: t("ops.timeline.body", "The full order of events, from planning through inspection, review and handoff to Compliance."),
+            label: t("ops.timeline.choose", "Choose a visit timeline"),
+            placeholder: t("ops.timeline.selectPlaceholder", "Select visit"),
+            load: t("ops.timeline.load", "Load timeline"),
+            selectPrompt: t("ops.timeline.select", "Select a visit to load its timeline"),
+            unavailableTitle: t("ops.timeline.unavailable", "Visit timeline unavailable"),
+            unavailableBody: t("ops.err.retry", "Retry"),
+            emptyTitle: t("ops.timeline.empty", "No authorized timeline events for this visit"),
+          }}
+        />
 
-        <section className="sq-surface" aria-labelledby="operations-history-heading">
-          <div className={styles.detailHeading}><div>
-            <h2 id="operations-history-heading">{t("ops.history.heading", "Location and visit status history")}</h2>
-            <p>{t("ops.history.body", "The last 100 events from the location history log you can see. These records are never changed here.")}</p>
-          </div></div>
-          {geoHistoryRows.length === 0 ? (
-            <EmptyState title={t("ops.history.empty", "No recorded location history in this scope")} variant="inline" />
-          ) : (
-            <div className="sq-tablewrap"><table className="sq-table">
-              <thead><tr><th scope="col">{t("ops.history.time", "Recorded at")}</th><th scope="col">{monitoringStrings.thVisit}</th><th scope="col">{t("ops.history.event", "Event")}</th><th scope="col">{monitoringStrings.thGeofence}</th><th scope="col">{t("ops.history.position", "Recorded position")}</th></tr></thead>
-              <tbody>{geoHistoryRows.map(event => <tr key={event.id}>
-                <td><time dateTime={event.occurred_at}>{formatDateTime(event.occurred_at, locale === "ar" ? "ar" : "en")}</time></td>
-                <td><a className="sq-link" href={`/visits/${event.visit_id}`}>{event.visit_id.slice(0, 8)}</a></td>
-                <td>{enumLabel(event.kind)}</td>
-                <td>{event.geofence_result ? enumLabel(event.geofence_result) : "—"}</td>
-                <td>{Number.isFinite(Number(event.observed_lat)) && Number.isFinite(Number(event.observed_lng))
-                  ? `${Number(event.observed_lat).toFixed(6)}, ${Number(event.observed_lng).toFixed(6)}`
-                  : "—"}</td>
-              </tr>)}</tbody>
-            </table></div>
-          )}
-        </section>
+        <OperationsHistoryTable
+          rows={geoHistoryRows.map<HistoryRow>(event => ({
+            id: event.id,
+            occurredAt: formatDateTime(event.occurred_at, locale === "ar" ? "ar" : "en"),
+            occurredAtIso: event.occurred_at,
+            visitHref: `/visits/${event.visit_id}`,
+            visitLabel: event.visit_id.slice(0, 8),
+            event: enumLabel(event.kind),
+            geofence: event.geofence_result ? enumLabel(event.geofence_result) : "—",
+            position: Number.isFinite(Number(event.observed_lat)) && Number.isFinite(Number(event.observed_lng))
+              ? `${Number(event.observed_lat).toFixed(6)}, ${Number(event.observed_lng).toFixed(6)}`
+              : "—",
+          }))}
+          strings={{
+            title: t("ops.history.heading", "Location and visit status history"),
+            description: t("ops.history.body", "The last 100 events from the location history log you can see. These records are never changed here."),
+            time: t("ops.history.time", "Recorded at"),
+            visit: monitoringStrings.thVisit,
+            event: t("ops.history.event", "Event"),
+            geofence: monitoringStrings.thGeofence,
+            position: t("ops.history.position", "Recorded position"),
+            emptyTitle: t("ops.history.empty", "No recorded location history in this scope"),
+          }}
+        />
 
-        <section className="sq-surface" aria-labelledby="operations-export-heading">
-          <div className={styles.detailHeading}><div>
-            <h2 id="operations-export-heading">{t("ops.export.heading", "Export data")}</h2>
-            <p>{t("ops.export.auditRequired", "Every file needs a matching database receipt for your role and region, plus a recorded audit event, before you can download it.")}</p>
-          </div></div>
-          {routeRoleKeys.some(role => ["supervisor", "admin"].includes(role)) ? (
-            <OpsExport datasets={exportDatasets} strings={exportStrings} />
-          ) : (
-            <EmptyState icon="restricted" title={t("ops.export.unauthorized", "Export is not authorized for this role")} variant="inline" />
-          )}
-        </section>
+        <OperationsExport
+          authorized={routeRoleKeys.some(role => ["supervisor", "admin"].includes(role))}
+          strings={{
+            title: t("ops.export.heading", "Export data"),
+            description: t("ops.export.auditRequired", "Every file needs a matching database receipt for your role and region, plus a recorded audit event, before you can download it."),
+            unauthorizedTitle: t("ops.export.unauthorized", "Export is not authorized for this role"),
+          }}
+        >
+          <OpsExport datasets={exportDatasets} strings={exportStrings} />
+        </OperationsExport>
       </div>
     </Shell>
   );

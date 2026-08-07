@@ -4,7 +4,6 @@ import {
   useEffect,
   useLayoutEffect,
   useRef,
-  useState,
   type CSSProperties,
   type ReactNode,
   type RefObject,
@@ -13,7 +12,16 @@ import styles from "./menu-surface.module.css";
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-type AnchorStyle = CSSProperties & Record<"--sqx-menu-anchor-w" | "--sqx-menu-shift", string>;
+// Gap kept between the panel and the viewport edge.
+const MARGIN = 8;
+// A menu squeezed below this is worse than one that overlaps the fold.
+const MIN_BLOCK_SIZE = 180;
+
+// useLayoutEffect warns when it runs during SSR, and hooks run before the
+// `open` early-return, so the isomorphic form is required rather than tidy.
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
+
+type AnchorStyle = CSSProperties & Record<"--sqx-menu-anchor-w", string>;
 
 export type MenuSurfaceProps = {
   id?: string;
@@ -21,6 +29,7 @@ export type MenuSurfaceProps = {
   onClose: () => void;
   triggerRef: RefObject<HTMLElement | null>;
   anchorWidth?: number;
+  /** Preferred edge. Overridden at open time if that edge would overflow. */
   align?: "start" | "end";
   label?: string;
   role?: "listbox" | "dialog" | "menu";
@@ -41,7 +50,52 @@ export default function MenuSurface({
   children,
 }: MenuSurfaceProps) {
   const panelRef = useRef<HTMLDivElement>(null);
-  const [shift, setShift] = useState(0);
+
+  // Placement is measured, not assumed. Callers state a preference; if that
+  // edge would push the panel off-screen it flips to the other edge, and if
+  // neither edge fits it is nudged back inside. Height is capped to the real
+  // gap below the trigger — a panel allowed to run past the viewport floor is
+  // what produced a scrollbar on a menu that had room to sit open, and a
+  // vertical scrollbar narrows the content box enough to trigger a horizontal
+  // one too.
+  useIsomorphicLayoutEffect(() => {
+    const panel = panelRef.current;
+    const trigger = triggerRef.current;
+    if (!open || !panel || !trigger) return;
+
+    const place = () => {
+      // Reset to the requested edge first so a resize can undo an earlier flip.
+      panel.dataset.align = align === "end" ? "end" : "start";
+      panel.style.setProperty("--sqx-menu-shift", "0px");
+
+      const vw = document.documentElement.clientWidth;
+      const vh = document.documentElement.clientHeight;
+      const anchor = trigger.getBoundingClientRect();
+
+      panel.style.setProperty(
+        "--sqx-menu-avail-h",
+        `${Math.max(MIN_BLOCK_SIZE, Math.round(vh - anchor.bottom - MARGIN * 2))}px`,
+      );
+      panel.style.setProperty("--sqx-menu-avail-w", `${vw - MARGIN * 2}px`);
+
+      // Reading the rect flushes the style change above, so each measurement
+      // reflects the edge just applied.
+      let rect = panel.getBoundingClientRect();
+      if (rect.right > vw - MARGIN || rect.left < MARGIN) {
+        panel.dataset.align = panel.dataset.align === "end" ? "start" : "end";
+        rect = panel.getBoundingClientRect();
+      }
+
+      const overflowEnd = rect.right - (vw - MARGIN);
+      const overflowStart = MARGIN - rect.left;
+      const shift = overflowEnd > 0 ? -overflowEnd : overflowStart > 0 ? overflowStart : 0;
+      if (shift !== 0) panel.style.setProperty("--sqx-menu-shift", `${Math.round(shift)}px`);
+    };
+
+    place();
+    window.addEventListener("resize", place);
+    return () => window.removeEventListener("resize", place);
+  }, [align, open, triggerRef]);
 
   useEffect(() => {
     if (!open) return;
@@ -83,35 +137,18 @@ export default function MenuSurface({
     };
   }, [onClose, open, trapFocus, triggerRef]);
 
-  useLayoutEffect(() => {
-    if (!open) {
-      setShift(0);
-      return;
-    }
-    const panel = panelRef.current;
-    if (!panel) return;
-    const rect = panel.getBoundingClientRect();
-    const margin = 8;
-    const overflowEnd = rect.right - (window.innerWidth - margin);
-    const overflowStart = margin - rect.left;
-    setShift(overflowEnd > 0 ? -overflowEnd : overflowStart > 0 ? overflowStart : 0);
-  }, [open]);
-
   if (!open) return null;
 
-  const style: AnchorStyle = {
-    "--sqx-menu-shift": `${shift}px`,
-    ...(anchorWidth
-      ? { "--sqx-menu-anchor-w": `${anchorWidth}px`, minInlineSize: `${anchorWidth}px` }
-      : {}),
-  } as AnchorStyle;
+  const style: AnchorStyle | undefined = anchorWidth
+    ? { "--sqx-menu-anchor-w": `${anchorWidth}px`, minInlineSize: `${anchorWidth}px` }
+    : undefined;
 
   return (
     <div
       className={styles.root}
       id={id}
       ref={panelRef}
-      data-align={align === "end" ? "end" : undefined}
+      data-align={align === "end" ? "end" : "start"}
       role={role}
       aria-label={label}
       style={style}
