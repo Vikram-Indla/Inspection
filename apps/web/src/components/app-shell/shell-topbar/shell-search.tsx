@@ -9,6 +9,7 @@ import {
   shellGlobalSearchHref,
   type ShellGlobalSearchResultType,
 } from "@/lib/shell-navigation";
+import { localeHref } from "@/lib/locale-path";
 import styles from "./shell-topbar.module.css";
 
 type SearchResult = {
@@ -110,14 +111,14 @@ export default function ShellSearch({ isFieldOnly, locale, navigationItems, stri
         <div className={styles.searchResults} id={listboxId} role="listbox" aria-label={strings.results}>
           {navigationMatches.map(item => (
             <Link className={styles.searchResult} role="option" aria-selected="false"
-              key={`nav-${item.id}`} href={item.href} prefetch={false} data-next-spa="true" onClick={dismiss}>
+              key={`nav-${item.id}`} href={localeHref(locale, item.href)} prefetch={false} data-next-spa="true" onClick={dismiss}>
               <Icon name={item.icon} size="sm" />
               <span><strong>{item.label}</strong><small>{strings.navigation}</small></span>
             </Link>
           ))}
           {results.map(result => (
             <Link className={styles.searchResult} role="option" aria-selected="false"
-              key={`${result.type}-${result.id}`} href={result.href} prefetch={false} data-next-spa="true" onClick={dismiss}>
+              key={`${result.type}-${result.id}`} href={localeHref(locale, result.href)} prefetch={false} data-next-spa="true" onClick={dismiss}>
               <Icon name={RESULT_ICON[result.type]} size="sm" />
               <span><strong>{result.label}</strong><small>{result.detail}</small></span>
             </Link>

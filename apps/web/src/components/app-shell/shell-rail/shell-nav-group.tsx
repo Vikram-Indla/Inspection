@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { type CSSProperties } from "react";
 import Icon from "@/components/saqeel/icon/icon";
+import { stripLocale, type Locale } from "@/lib/locale-path";
 import { isShellRouteCurrent } from "@/lib/shell-navigation";
 import type { ShellNavGroup, ShellNavItem, ShellNavSubgroup } from "@/features/shell/types";
 import ShellNavItemLink from "./shell-nav-item";
@@ -10,6 +11,7 @@ import styles from "./shell-rail.module.css";
 
 type ShellNavGroupProps = {
   group: ShellNavGroup;
+  locale: Locale;
   pathname: string;
 };
 
@@ -25,9 +27,10 @@ function connectorStyle(rowsAfter: number | null): ConnectorStyle | undefined {
   return { "--sqx-rows-after-active": String(rowsAfter) };
 }
 
-function Subgroup({ entry, groupId, pathname }: {
+function Subgroup({ entry, groupId, locale, pathname }: {
   entry: ShellNavSubgroup;
   groupId: string;
+  locale: Locale;
   pathname: string;
 }) {
   const rowsAfter = rowsAfterActive(entry.items, pathname);
@@ -47,6 +50,7 @@ function Subgroup({ entry, groupId, pathname }: {
         <ShellNavItemLink
           key={item.id}
           item={item}
+          locale={locale}
           isChild
           isCurrent={isShellRouteCurrent(pathname, item.href)}
         />
@@ -55,8 +59,8 @@ function Subgroup({ entry, groupId, pathname }: {
   );
 }
 
-export default function ShellNavGroupSection({ group, pathname }: ShellNavGroupProps) {
-  const livePathname = usePathname() || pathname;
+export default function ShellNavGroupSection({ group, locale, pathname }: ShellNavGroupProps) {
+  const livePathname = stripLocale(usePathname() || pathname);
   const holdsCurrentRoute = group.items.some(item => isShellRouteCurrent(livePathname, item.href));
 
   return (
@@ -80,10 +84,11 @@ export default function ShellNavGroupSection({ group, pathname }: ShellNavGroupP
             <ShellNavItemLink
               key={entry.item.id}
               item={entry.item}
+              locale={locale}
               isCurrent={isShellRouteCurrent(livePathname, entry.item.href)}
             />
           ) : (
-            <Subgroup key={entry.id} entry={entry} groupId={group.id} pathname={livePathname} />
+            <Subgroup key={entry.id} entry={entry} groupId={group.id} locale={locale} pathname={livePathname} />
           ),
         )}
       </div>

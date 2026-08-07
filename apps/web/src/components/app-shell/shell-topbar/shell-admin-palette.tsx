@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import Icon from "@/components/saqeel/icon/icon";
 import type { ShellNavItem } from "@/features/shell/types";
+import { localeHref } from "@/lib/locale-path";
 import styles from "./shell-topbar.module.css";
 
 type PaletteStrings = Readonly<Record<
@@ -89,7 +90,7 @@ export default function ShellAdminPalette({ items, locale, strings }: {
             <div className={styles.paletteResults} role="listbox" aria-label={strings.title}>
               {matches.map(item => (
                 <Link className={styles.paletteResult} role="option" aria-selected="false"
-                  key={item.id} href={item.href} prefetch={false} data-next-spa="true"
+                  key={item.id} href={localeHref(locale, item.href)} prefetch={false} data-next-spa="true"
                   onClick={() => setIsOpen(false)}>
                   <Icon name={item.icon} size="sm" />
                   <span>{item.label}</span>

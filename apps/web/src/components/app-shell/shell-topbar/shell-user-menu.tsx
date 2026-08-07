@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useId, useRef, useState } from "react";
 import Icon from "@/components/saqeel/icon/icon";
 import MenuSurface from "@/components/saqeel/menu-surface/menu-surface";
+import { localeHref, type Locale } from "@/lib/locale-path";
 import type { ShellIdentity } from "@/features/shell/types";
 import styles from "./shell-user-menu.module.css";
 
@@ -12,8 +13,9 @@ type UserMenuStrings = Readonly<Record<
   string
 >>;
 
-export default function ShellUserMenu({ identity, strings }: {
+export default function ShellUserMenu({ identity, locale, strings }: {
   identity: ShellIdentity;
+  locale: Locale;
   strings: UserMenuStrings;
 }) {
   const menuId = useId();
@@ -76,7 +78,7 @@ export default function ShellUserMenu({ identity, strings }: {
           </div>
           <div className={styles.divider} />
           <div className={styles.actions}>
-            <Link className={styles.action} href="/profile" prefetch={false}
+            <Link className={styles.action} href={localeHref(locale, "/profile")} prefetch={false}
               onClick={() => close(false)}>
               <Icon name="identity" size="md" />
               {strings.profileSettings}

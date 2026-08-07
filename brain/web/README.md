@@ -12,7 +12,7 @@ between them. What is not written here did not happen.
 1. **`01-PROJECT-STATUS.md`** — where the redesign stands right now.
 2. **`03-REDESIGN-TRACKER.md`** — the work board. Take the top unblocked item in
    NOW unless told otherwise.
-3. **The rule documents your task names** — `rules/WEB-000` … `WEB-006`.
+3. **The rule documents your task names** — `rules/WEB-000` … `WEB-010`.
    Read them before writing a line of code, not after review rejects the diff.
 4. **`04-COMPONENT-LEDGER.md`** — what the design system already provides. Never
    build something that exists.
@@ -35,6 +35,7 @@ between them. What is not written here did not happen.
 | [`rules/WEB-007-session-record-and-commits.md`](rules/WEB-007-session-record-and-commits.md) | the per-task record, the four closing steps, never commit, the one-line commit message |
 | [`rules/WEB-008-standing-task-contract.md`](rules/WEB-008-standing-task-contract.md) | **what every task prompt implies.** Read this first — prompts state only what is task-specific |
 | [`rules/WEB-009-component-design-language.md`](rules/WEB-009-component-design-language.md) | the visual grammar: control heights, borders, rim light, focus, radii, icon sizing, spacing, motion, the gradient budget |
+| [`rules/WEB-010-performance-and-lifecycle.md`](rules/WEB-010-performance-and-lifecycle.md) | cleanup of every subscription, compositor-only animation, no layout thrash, no waterfalls |
 
 **Task prompts are deliberately short.** Everything a prompt does not say is in
 `WEB-008` and `WEB-009`. If a prompt seems to be missing the rules, it is not —
@@ -42,7 +43,7 @@ it is refusing to repeat them.
 
 ---
 
-## The fourteen non-negotiables
+## The fifteen non-negotiables
 
 If you read nothing else, these are the ones that get a diff rejected on sight.
 
@@ -79,7 +80,11 @@ If you read nothing else, these are the ones that get a diff rejected on sight.
     `git add`, `git commit`, `git push`, or any other git write command —
     finish by listing the changed files and proposing **one** Conventional
     Commit line, ≤ 72 characters, for the human to run.
-14. **Never run the production build.** `npm run build` and `next build` belong
+14. **Everything we touch leaves our hands optimised.** Every subscription,
+    timer and observer has a cleanup; only `transform` and `opacity` are
+    animated; layout is never read in a loop. We migrate gradually, but we never
+    come back to fix performance we introduced (WEB-010).
+15. **Never run the production build.** `npm run build` and `next build` belong
     to the human — they take minutes, fight the dev server over `.next`, and a
     half-finished one corrupts the cache. Verify with `typecheck`, `lint`,
     `gates`, and the running dev server. Anything needing a production compile

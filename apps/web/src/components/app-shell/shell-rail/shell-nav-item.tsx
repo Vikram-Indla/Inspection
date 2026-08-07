@@ -1,16 +1,18 @@
 import Link from "next/link";
 import Icon from "@/components/saqeel/icon/icon";
+import { localeHref, type Locale } from "@/lib/locale-path";
 import type { ShellNavItem } from "@/features/shell/types";
 import styles from "./shell-rail.module.css";
 
 type ShellNavItemProps = {
   item: ShellNavItem;
+  locale: Locale;
   isCurrent: boolean;
   isChild?: boolean;
   onNavigateLabel?: string;
 };
 
-export default function ShellNavItemLink({ item, isCurrent, isChild }: ShellNavItemProps) {
+export default function ShellNavItemLink({ item, locale, isCurrent, isChild }: ShellNavItemProps) {
   if (!item.enabled) {
     const reason = item.disabledReason ?? "";
     return (
@@ -40,7 +42,7 @@ export default function ShellNavItemLink({ item, isCurrent, isChild }: ShellNavI
       className={styles.item}
       data-child={isChild ? "" : undefined}
       data-state="enabled"
-      href={item.href}
+      href={localeHref(locale, item.href)}
       title={item.label}
       aria-current={isCurrent ? "page" : undefined}
       data-next-spa="true"

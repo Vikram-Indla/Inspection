@@ -1,4 +1,6 @@
 import { redirect } from "next/navigation";
+import { getLocale } from "@/lib/i18n";
+import { localeHref } from "@/lib/locale-path";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 
@@ -16,11 +18,12 @@ import { getVerifiedUser } from "@/lib/verified-user";
 export const dynamic = "force-dynamic";
 
 export default async function Root() {
+  const locale = await getLocale();
   const sb = await supabaseServer();
   const { data: { user }, error } = await getVerifiedUser(sb);
   // Any doubt about the session resolves to sign-in. This is a routing
   // decision, not an authorization one — /launch and the middleware remain
   // the authority on what a signed-in user may actually reach.
-  if (error || !user) redirect("/login");
-  redirect("/launch");
+  if (error || !user) redirect(localeHref(locale, "/login"));
+  redirect(localeHref(locale, "/launch"));
 }

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { type ReactNode } from "react";
 import { getShellView } from "@/features/shell/queries";
 import { useT } from "@/lib/i18n";
+import { localeHref } from "@/lib/locale-path";
 import ShellMobileNav from "./shell-mobile-nav/shell-mobile-nav";
 import ShellRail from "./shell-rail/shell-rail";
 import ShellTopbar from "./shell-topbar/shell-topbar";
@@ -9,7 +10,7 @@ import styles from "./app-shell.module.css";
 
 export default async function AppShell({ children }: { children: ReactNode }) {
   const [view, { t, locale }] = await Promise.all([getShellView(), useT()]);
-  if (!view) redirect("/login");
+  if (!view) redirect(localeHref(locale, "/login"));
   const ar = locale === "ar";
 
   return (

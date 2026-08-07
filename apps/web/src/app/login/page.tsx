@@ -29,9 +29,12 @@ type Locale = "ar" | "en";
 // not exactly "en", so the sign-in page opened in Arabic for an English reader
 // who had never used the language switch.
 async function resolveLocale(): Promise<Locale> {
+  const headerBag = await headers();
+  const fromPath = headerBag.get("x-locale");
+  if (fromPath === "ar" || fromPath === "en") return fromPath;
   const chosen = (await cookies()).get("login_locale")?.value;
   if (chosen === "ar" || chosen === "en") return chosen;
-  const accept = (await headers()).get("accept-language")?.toLowerCase() ?? "";
+  const accept = headerBag.get("accept-language")?.toLowerCase() ?? "";
   return /(^|[,\s])ar\b/.test(accept) ? "ar" : "en";
 }
 

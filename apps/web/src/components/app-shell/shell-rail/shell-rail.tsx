@@ -36,13 +36,13 @@ export default async function ShellRail({ groups, pathname, variant }: ShellRail
 
       <div className={styles.groups}>
         {groups.filter(group => !group.isAdministration).map(group => (
-          <ShellNavGroupSection key={group.id} group={group} pathname={pathname} />
+          <ShellNavGroupSection key={group.id} group={group} locale={locale} pathname={pathname} />
         ))}
       </div>
 
       <div className={styles.footer}>
         {groups.filter(group => group.isAdministration).map(group => (
-          <ShellNavGroupSection key={group.id} group={group} pathname={pathname} />
+          <ShellNavGroupSection key={group.id} group={group} locale={locale} pathname={pathname} />
         ))}
       </div>
     </nav>

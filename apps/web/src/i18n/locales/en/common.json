@@ -1,0 +1,34 @@
+{
+  "action": {
+    "apply": "Apply",
+    "reset": "Reset",
+    "cancel": "Cancel",
+    "close": "Close",
+    "search": "Search",
+    "viewAll": "View all",
+    "markAllRead": "Mark all read",
+    "signOut": "Sign out"
+  },
+  "field": {
+    "account": "Account",
+    "dateScope": "Date scope",
+    "from": "From",
+    "language": "Language",
+    "navigation": "Navigation",
+    "profileSettings": "Profile settings",
+    "regionScope": "Region scope",
+    "roles": "Roles",
+    "to": "To"
+  },
+  "scope": {
+    "allRegions": "All Regions",
+    "last30Days": "Last 30 days"
+  },
+  "state": {
+    "empty": "Nothing yet",
+    "loading": "Loading…",
+    "notApplicable": "Not applicable on this page",
+    "notConfigured": "Not configured",
+    "unavailable": "Unavailable"
+  }
+}

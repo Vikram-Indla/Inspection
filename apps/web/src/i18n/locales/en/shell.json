@@ -1,0 +1,23 @@
+{
+  "aiInsights": "AI Insights",
+  "search": {
+    "placeholder": "Search factory, CR, license, inspection…",
+    "results": "Global search results",
+    "empty": "No results available to you",
+    "loading": "Searching…",
+    "unavailable": "Search not available right now"
+  },
+  "theme": {
+    "system": "Follow system",
+    "light": "Light mode",
+    "dark": "Dark mode"
+  },
+  "admin": {
+    "open": "Open admin tools",
+    "title": "Go to an admin tool",
+    "search": "Search allowed admin tools",
+    "empty": "No matching tools",
+    "resultsOne": "{count} allowed result",
+    "resultsOther": "{count} allowed results"
+  }
+}
