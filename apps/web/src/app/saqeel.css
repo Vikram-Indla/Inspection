@@ -539,6 +539,10 @@
     --sqx-topbar-h: 3.5rem;
     --sqx-container-max: 90rem;
     --sqx-prose-max: 68ch;
+    --sqx-media-h-sm: 16rem;
+    --sqx-media-h-md: 24rem;
+    --sqx-media-h-lg: 34rem;
+
     --sqx-grid-min-sm: 14rem;
     --sqx-grid-min-md: 18rem;
     --sqx-grid-min-lg: 24rem;

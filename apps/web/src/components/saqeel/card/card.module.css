@@ -170,3 +170,20 @@
     transition: none;
   }
 }
+
+.media {
+  position: relative;
+  min-inline-size: 0;
+  overflow: hidden;
+  background: var(--sqx-surface-sunken);
+  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.media[data-height="sm"] { block-size: min(var(--sqx-media-h-sm), 60dvh); }
+.media[data-height="md"] { block-size: min(var(--sqx-media-h-md), 65dvh); }
+.media[data-height="lg"] { block-size: min(var(--sqx-media-h-lg), 70dvh); }
+
+.media:last-child {
+  border-end-start-radius: inherit;
+  border-end-end-radius: inherit;
+}

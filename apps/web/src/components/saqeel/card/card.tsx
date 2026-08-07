@@ -55,6 +55,18 @@ export function CardBody({ children, gap = "default" }: {
   return <div className={styles.body} data-gap={gap}>{children}</div>;
 }
 
+export function CardMedia({ children, height = "md", label }: {
+  children: ReactNode;
+  height?: "sm" | "md" | "lg";
+  label?: string;
+}) {
+  return (
+    <div className={styles.media} data-height={height} role={label ? "region" : undefined} aria-label={label}>
+      {children}
+    </div>
+  );
+}
+
 export function CardFooter({ children, align = "start" }: {
   children: ReactNode;
   align?: "start" | "between" | "end";

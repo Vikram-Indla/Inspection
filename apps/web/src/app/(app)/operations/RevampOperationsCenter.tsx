@@ -1,6 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import OperationsMapPanel from "@/components/operations/operations-map-panel/operations-map-panel";
+import OperationsToolbar from "@/components/operations/operations-toolbar/operations-toolbar";
+import { getMessages } from "@/i18n/messages";
+import { localeHref } from "@/lib/locale-path";
 import OperationsMapWorkspace, {
   type OperationsMapEntry,
   type OperationsMapWorkspaceStrings,
@@ -28,7 +32,6 @@ export default function RevampOperationsCenter({
   locale,
   view,
   mapViewHref,
-  performanceViewHref,
   mapEntries,
   regionalMapEntries,
   mapStrings,
@@ -40,7 +43,6 @@ export default function RevampOperationsCenter({
   locale: Locale;
   view: "map" | "performance";
   mapViewHref: string;
-  performanceViewHref: string;
   mapEntries: OperationsMapEntry[];
   regionalMapEntries: OperationsMapEntry[];
   mapStrings: OperationsMapWorkspaceStrings;
@@ -49,6 +51,9 @@ export default function RevampOperationsCenter({
   highlights: Highlight[];
   regions: RegionSummary[];
 }) {
+  const { operations } = getMessages(locale);
+  const liveHref = localeHref(locale, "/operations/live");
+  const exceptionsHref = localeHref(locale, "/operations/exceptions");
   const [showList, setShowList] = useState(false);
   const [activeView, setActiveView] = useState<"map" | "performance">(view);
   const activeMapEntries = activeView === "performance" ? regionalMapEntries : mapEntries;
@@ -68,30 +73,23 @@ export default function RevampOperationsCenter({
 
   return (
     <div className="stack">
-      <div className="grid-toolbar">
-        <nav className="seg" aria-label={copy(locale, "Operations perspective", "منظور العمليات")}>
-          <button className="seg-opt" type="button" aria-pressed={activeView === "map"} onClick={() => setActiveView("map")}>
-            {copy(locale, "Operations map", "خريطة العمليات")}
-          </button>
-          <button className="seg-opt" type="button" aria-pressed={activeView === "performance"} onClick={() => setActiveView("performance")}>
-            {copy(locale, "National performance", "الأداء الوطني")}
-          </button>
-        </nav>
-        <div className="row">
-          {/* CR-431 · WA-M3-AC-001 — preserve the accepted command-bar
-              composition while making its live-status affordance complete the
-              real Operations Center → Operations Live route flow. */}
-          <a className="btn btn-secondary" href="/operations/live">
-            {copy(locale, "Live positions", "المواقع المباشرة")}
-          </a>
-          <a className="btn btn-secondary" href="/operations/exceptions">
-            {copy(locale, "Exception board", "لوحة الاستثناءات")}
-          </a>
-          <button className="btn btn-secondary" type="button" onClick={() => setShowList(value => !value)}>
-            {showList ? copy(locale, "Show map", "إظهار الخريطة") : copy(locale, "Show list", "إظهار القائمة")}
-          </button>
-        </div>
-      </div>
+      <OperationsToolbar
+        view={activeView}
+        onViewChange={setActiveView}
+        showList={showList}
+        onToggleList={() => setShowList(value => !value)}
+        livePositionsHref={liveHref}
+        exceptionBoardHref={exceptionsHref}
+        strings={{
+          label: operations.perspective.label,
+          map: operations.perspective.map,
+          performance: operations.perspective.performance,
+          livePositions: operations.action.livePositions,
+          exceptionBoard: operations.action.exceptionBoard,
+          showList: operations.action.showList,
+          showMap: operations.action.showMap,
+        }}
+      />
 
       {/* Map branch below uses .map-panel + .lv-map: .map-panel sets no height
           and OperationsMapWorkspace fills its parent, so it collapsed to the
@@ -125,10 +123,14 @@ export default function RevampOperationsCenter({
             </table>
           </section>
       ) : (
-          <section className="map-panel lv-map">
-            <h2>{copy(locale, "Saudi Arabia", "المملكة العربية السعودية")}</h2>
+          <OperationsMapPanel
+            title={operations.map.title}
+            description={operations.map.description}
+            count={activeMapEntries.length}
+            countLabel={operations.map.countLabel}
+          >
             <OperationsMapWorkspace entries={activeMapEntries} strings={mapStrings} mapOnly />
-          </section>
+          </OperationsMapPanel>
       )}
 
       {view === "performance" ? (

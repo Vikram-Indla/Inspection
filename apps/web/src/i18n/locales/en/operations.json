@@ -1,0 +1,19 @@
+{
+  "title": "Operations Center",
+  "perspective": {
+    "label": "Operations perspective",
+    "map": "Operations map",
+    "performance": "National performance"
+  },
+  "action": {
+    "livePositions": "Live positions",
+    "exceptionBoard": "Exception board",
+    "showList": "Show list",
+    "showMap": "Show map"
+  },
+  "map": {
+    "title": "Saudi Arabia",
+    "description": "Live inspector and factory positions across the Kingdom.",
+    "countLabel": "on map"
+  }
+}

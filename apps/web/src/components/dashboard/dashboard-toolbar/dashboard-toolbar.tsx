@@ -1,4 +1,5 @@
 import SegmentedControl, { type SegmentedItem } from "@/components/saqeel/segmented-control/segmented-control";
+import Toolbar from "@/components/saqeel/toolbar/toolbar";
 import { DASHBOARD_VIEWS, scopeToSearchParams, type DashboardScope, type DashboardView } from "@/features/dashboard/scope";
 import { getMessages } from "@/i18n/messages";
 import type { Locale } from "@/lib/i18n";
@@ -22,12 +23,16 @@ export default function DashboardToolbar({ locale, scope, view, refreshedAt }: {
   }));
 
   return (
-    <header className={styles.toolbar}>
+    <Toolbar
+      as="header"
+      trailing={
+        <p className={styles.updated} title={dashboard.updated.timezone}>
+          <span>{dashboard.updated.label}</span>
+          <time className={styles.updatedValue}>{refreshedAt}</time>
+        </p>
+      }
+    >
       <SegmentedControl items={items} value={view} label={dashboard.perspective.label} tone="accent" />
-      <p className={styles.updated} title={dashboard.updated.timezone}>
-        <span className={styles.updatedLabel}>{dashboard.updated.label}</span>
-        <time className={styles.updatedValue}>{refreshedAt}</time>
-      </p>
-    </header>
+    </Toolbar>
   );
 }

@@ -1039,7 +1039,6 @@ export default async function Operations({ searchParams }: {
         locale={locale}
         view={view}
         mapViewHref={mapViewHref}
-        performanceViewHref={performanceViewHref}
         mapEntries={mapEntries}
         regionalMapEntries={regionalMapEntries}
         mapStrings={mapWorkspaceStrings}
