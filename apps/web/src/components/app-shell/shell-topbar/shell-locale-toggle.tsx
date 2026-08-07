@@ -2,9 +2,14 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import styles from "./shell-topbar.module.css";
+import SegmentedControl, { type SegmentedOption } from "@/components/saqeel/segmented-control/segmented-control";
 
 type Locale = "ar" | "en";
+
+const LOCALES: readonly SegmentedOption<Locale>[] = [
+  { value: "en", label: "EN", lang: "en" },
+  { value: "ar", label: "ع", lang: "ar" },
+];
 
 function applyDocumentLocale(locale: Locale): void {
   document.documentElement.lang = locale;
@@ -41,15 +46,13 @@ export default function ShellLocaleToggle({ locale: serverLocale, label }: {
   }
 
   return (
-    <div className={styles.locale} role="group" aria-label={label}>
-      <button type="button" className={styles.localeOption} lang="en"
-        aria-pressed={locale === "en"} disabled={isPending} onClick={() => switchTo("en")}>
-        EN
-      </button>
-      <button type="button" className={styles.localeOption} lang="ar"
-        aria-pressed={locale === "ar"} disabled={isPending} onClick={() => switchTo("ar")}>
-        ع
-      </button>
-    </div>
+    <SegmentedControl
+      options={LOCALES}
+      value={locale}
+      onChange={switchTo}
+      label={label}
+      tone="accent"
+      disabled={isPending}
+    />
   );
 }

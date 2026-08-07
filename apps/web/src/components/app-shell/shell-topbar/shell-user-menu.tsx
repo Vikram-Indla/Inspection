@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import Icon from "@/components/saqeel/icon/icon";
+import MenuSurface from "@/components/saqeel/menu-surface/menu-surface";
 import type { ShellIdentity } from "@/features/shell/types";
-import styles from "./shell-topbar.module.css";
+import styles from "./shell-user-menu.module.css";
 
 type UserMenuStrings = Readonly<Record<
   "account" | "roles" | "region" | "profileSettings" | "signOut",
@@ -17,79 +18,76 @@ export default function ShellUserMenu({ identity, strings }: {
 }) {
   const menuId = useId();
   const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      event.preventDefault();
-      setIsOpen(false);
-      triggerRef.current?.focus();
-    };
-    const onPointerDown = (event: PointerEvent) => {
-      if (containerRef.current?.contains(event.target as Node)) return;
-      setIsOpen(false);
-    };
-    document.addEventListener("keydown", onKeyDown);
-    document.addEventListener("pointerdown", onPointerDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.removeEventListener("pointerdown", onPointerDown);
-    };
-  }, [isOpen]);
+  function close(returnFocus: boolean): void {
+    setIsOpen(false);
+    if (returnFocus) triggerRef.current?.focus();
+  }
 
   return (
-    <div className={styles.user} ref={containerRef}>
+    <div className={styles.root}>
       <button
-        className={styles.userTrigger}
+        className={styles.trigger}
         type="button"
         ref={triggerRef}
         aria-label={`${identity.name} — ${identity.roleSummary}`}
         aria-expanded={isOpen}
-        aria-haspopup="menu"
+        aria-haspopup="dialog"
         aria-controls={menuId}
         title={identity.email}
         onClick={() => setIsOpen(value => !value)}
       >
-        <span className={styles.userAvatar} aria-hidden="true">{identity.initials}</span>
-        <span className={styles.userIdentity}>
-          <strong>{identity.name}</strong>
-          <small>{identity.roleSummary}</small>
+        <span className={styles.avatar} aria-hidden="true">{identity.initials}</span>
+        <span className={styles.identity}>
+          <span className={styles.name}>{identity.name}</span>
+          <span className={styles.role}>{identity.roleSummary}</span>
         </span>
         <Icon name="disclosure" size="sm" />
       </button>
 
-      {isOpen ? (
-        <div className={styles.userMenu} id={menuId} role="menu" aria-label={strings.account}>
-          <p className={styles.userHeadline}>
-            <strong>{identity.name}</strong>
-            <small>{identity.email}</small>
-          </p>
-          <hr className={styles.userSeparator} />
-          <p className={styles.userDetail}>
-            <span>{strings.roles}</span>
-            <span>{identity.roleSummary}</span>
-          </p>
-          {identity.homeRegion ? (
-            <p className={styles.userDetail}>
-              <span>{strings.region}</span>
-              <span>{identity.homeRegion}</span>
-            </p>
-          ) : null}
-          <hr className={styles.userSeparator} />
-          <Link className={styles.userAction} role="menuitem" href="/profile" prefetch={false}
-            onClick={() => setIsOpen(false)}>
-            <Icon name="identity" size="sm" />
-            {strings.profileSettings}
-          </Link>
-          <a className={styles.userAction} data-tone="danger" role="menuitem" href="/signout">
-            <Icon name="signOut" size="sm" />
-            {strings.signOut}
-          </a>
+      <MenuSurface
+        id={menuId}
+        open={isOpen}
+        onClose={() => close(false)}
+        triggerRef={triggerRef}
+        align="end"
+        label={strings.account}
+        role="dialog"
+        trapFocus
+      >
+        <div className={styles.panel}>
+          <div className={styles.headline}>
+            <span className={styles.headlineName}>{identity.name}</span>
+            <span className={styles.headlineEmail}>{identity.email}</span>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.details}>
+            <span className={styles.detail}>
+              <span className={styles.detailLabel}>{strings.roles}</span>
+              <span className={styles.detailValue}>{identity.roleSummary}</span>
+            </span>
+            {identity.homeRegion ? (
+              <span className={styles.detail}>
+                <span className={styles.detailLabel}>{strings.region}</span>
+                <span className={styles.detailValue}>{identity.homeRegion}</span>
+              </span>
+            ) : null}
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.actions}>
+            <Link className={styles.action} href="/profile" prefetch={false}
+              onClick={() => close(false)}>
+              <Icon name="identity" size="md" />
+              {strings.profileSettings}
+            </Link>
+            <a className={styles.action} data-tone="danger" href="/signout">
+              <Icon name="signOut" size="md" />
+              {strings.signOut}
+            </a>
+          </div>
         </div>
-      ) : null}
+      </MenuSurface>
     </div>
   );
 }

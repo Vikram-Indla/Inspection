@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { type ReactNode } from "react";
 import NotificationBell from "@/components/NotificationBell";
+import Button from "@/components/saqeel/button/button";
 import Icon from "@/components/saqeel/icon/icon";
 import { getNotificationStrings } from "@/features/shell/notification-strings";
 import type { ShellView } from "@/features/shell/types";
@@ -76,7 +76,6 @@ export default async function ShellTopbar({ view, mobileNav }: {
             initialFrom={range.from}
             initialTo={range.to}
             initialRegion=""
-            locale={locale}
             strings={{
               dateScope: t("shell.dateScope", ar ? "نطاق التاريخ" : "Date scope"),
               last30Days: t("shell.last30Days", ar ? "آخر 30 يوماً" : "Last 30 days"),
@@ -86,14 +85,6 @@ export default async function ShellTopbar({ view, mobileNav }: {
               regionScope: t("shell.regionScope", ar ? "نطاق المنطقة" : "Region scope"),
               allRegions: t("shell.allRegions", ar ? "جميع المناطق" : "All Regions"),
               notApplicable: t("shell.notApplicable", ar ? "غير منطبق على هذه الصفحة" : "Not applicable on this page"),
-              previousMonth: t("shell.previousMonth", ar ? "الشهر السابق" : "Previous month"),
-              nextMonth: t("shell.nextMonth", ar ? "الشهر التالي" : "Next month"),
-              today: t("shell.today", ar ? "اليوم" : "Today"),
-              yesterday: t("shell.yesterday", ar ? "أمس" : "Yesterday"),
-              last7Days: t("shell.last7Days", ar ? "آخر 7 أيام" : "Last 7 days"),
-              thisMonth: t("shell.thisMonth", ar ? "هذا الشهر" : "This month"),
-              thisQuarter: t("shell.thisQuarter", ar ? "هذا الربع" : "This quarter"),
-              thisYear: t("shell.thisYear", ar ? "هذه السنة" : "This year"),
             }}
           />
         </div>
@@ -109,11 +100,9 @@ export default async function ShellTopbar({ view, mobileNav }: {
           }}
         />
         <NotificationBell strings={await getNotificationStrings()} locale={locale} fieldOnly={view.isFieldOnly} />
-        <Link className={styles.cta} href="/ai/suggestions" aria-label={aiLabel}
-          title={aiLabel} data-next-spa="true" prefetch={false}>
-          <Icon name="ai" size="sm" />
-          <span className={styles.ctaLabel}>{aiLabel}</span>
-        </Link>
+        <Button variant="ai" icon="ai" href="/ai/suggestions" label={aiLabel} compactLabel>
+          {aiLabel}
+        </Button>
         <ShellUserMenu
           identity={view.identity}
           strings={{

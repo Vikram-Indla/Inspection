@@ -14,7 +14,7 @@
 .controls {
   display: flex;
   align-items: center;
-  gap: var(--sqx-space-3);
+  gap: var(--sqx-space-4);
   flex: 1;
   min-inline-size: 0;
 }
@@ -22,7 +22,7 @@
 .actions {
   display: flex;
   align-items: center;
-  gap: var(--sqx-space-2);
+  gap: var(--sqx-space-4);
   margin-inline-start: auto;
 }
 
