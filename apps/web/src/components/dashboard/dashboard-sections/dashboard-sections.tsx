@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
-import { SearchResults } from "@/app/(app)/dashboard/DashboardView";
 import DashboardToolbar from "@/components/dashboard/dashboard-toolbar/dashboard-toolbar";
 import RoleSummary from "@/components/dashboard/role-summary/role-summary";
+import SearchResults from "@/components/dashboard/search-results/search-results";
 import OperationalView from "@/components/dashboard/operational-view/operational-view";
 import StrategicView from "@/components/dashboard/strategic-view/strategic-view";
 import { buildDashboardMetrics } from "@/app/(app)/dashboard/metrics";

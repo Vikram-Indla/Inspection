@@ -1,8 +1,16 @@
 import { buildMethodology, metricDisplay, type MetricDisplay, type MethodologyEntry } from "@/app/(app)/dashboard/dashboard-format";
-import type { MetricStripStrings } from "@/app/(app)/dashboard/MetricStrip";
 import { findMetric, type DashboardKpiProjection, type SharedMetric } from "@/lib/dashboard-kpi/contract";
 import { fill, getMessages } from "@/i18n/messages";
 import type { Locale } from "@/lib/i18n";
+
+export type MetricStripStrings = {
+  readonly methodology: string;
+  readonly why: string;
+  readonly close: string;
+  readonly advisory: string;
+  readonly blockedTitle: string;
+  readonly drillFallback: string;
+};
 
 export type MetricStripData = {
   readonly metrics: MetricDisplay[];

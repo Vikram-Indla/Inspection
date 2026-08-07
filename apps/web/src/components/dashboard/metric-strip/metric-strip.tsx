@@ -4,8 +4,8 @@ import { Card, CardBody, CardGrid, CardValue, CardValueSlot } from "@/components
 import Button from "@/components/saqeel/button/button";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import { useExplain } from "@/components/dashboard/explain-panel/explain-panel";
+import type { MetricStripStrings } from "@/features/dashboard/strip";
 import type { DisplayTone, MetricDisplay, MethodologyEntry } from "@/app/(app)/dashboard/dashboard-format";
-import type { MetricStripStrings } from "@/app/(app)/dashboard/MetricStrip";
 import styles from "./metric-strip.module.css";
 
 const TONE: Readonly<Record<DisplayTone, StatusTone>> = {
