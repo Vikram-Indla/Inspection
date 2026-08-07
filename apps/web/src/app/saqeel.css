@@ -1,0 +1,952 @@
+@layer sqx.tokens, sqx.base;
+
+@layer sqx.tokens {
+  :root {
+    /* ------------------------------------------------------------------
+       Palette source: IRP (ir-frontend), src/theme/theme-config.ts.
+       Adopted 2026-08 on the manager's instruction. Two rules govern it:
+
+       1. Surfaces are NEUTRAL. Pure white in light, near-black in dark.
+          No hue in any page, card, dropdown, header or sidebar fill.
+       2. Colour is reserved for meaning: the primary action, status, and
+          data. GREEN NOW MEANS SUCCESS AND NOTHING ELSE — it is not a
+          brand colour, an accent, a chart series or a nav state.
+
+       IRP ships light only, so the dark theme is derived here: the grey
+       ramp is extended below IRP's 900 in the same blue-grey hue so the
+       page reads near-black while staying in one family with the light
+       theme, and every accent gets a light-on-dark counterpart.
+       ------------------------------------------------------------------ */
+
+    /* Grey — IRP's ramp verbatim from 50 to 900, extended at 950/1000.
+       Measured on #FFFFFF:  #1C252E 15.52:1   #454F5B 8.33:1   #637381 4.88:1
+       Measured on #141A21:  #FFFFFF 17.51:1   #C4CDD5 10.87:1  #919EAB 6.41:1
+       Ladder deltas — light #FFFFFF->#F9FAFB 1.045, dark #080B10->#141A21
+       1.126 and #141A21->#1C252E 1.128, so nesting stays visible. */
+    --sqx-grey-050: #FCFDFD;
+    --sqx-grey-100: #F9FAFB;
+    --sqx-grey-200: #F4F6F8;
+    --sqx-grey-300: #DFE3E8;
+    --sqx-grey-400: #C4CDD5;
+    --sqx-grey-500: #919EAB;
+    --sqx-grey-600: #637381;
+    --sqx-grey-700: #454F5B;
+    --sqx-grey-800: #1C252E;
+    --sqx-grey-900: #141A21;
+    --sqx-grey-950: #0E131A;
+    --sqx-grey-1000: #080B10;
+    --sqx-grey-neutral-dark: #28323D;
+
+    /* Brand — IRP primary, aubergine. The only non-status accent.
+
+       Filled controls use #7E61AC (IRP's own primary.light), NOT the #413259
+       main. At full strength the fill read as near-black, and a CTA that dark
+       is hard to tell from a disabled slab. #7E61AC carries #FFFFFF at
+       5.01:1, hover #6A5391 at 6.44:1, pressed #52406F at 9.05:1 — the
+       control darkens under the pointer and contrast only ever improves.
+
+       Text keeps the darker #413259. A fill needs to look light; a label on
+       a light surface needs to be readable, and #7E61AC on the brand tint is
+       only 4.19:1. Fills lighten, text does not.
+
+       Dark theme flips to #B49AD8, which carries #0D0A12 at 8.00:1. */
+    --sqx-brand-050: #F2EDF9;
+    --sqx-brand-100: #E4DBF2;
+    --sqx-brand-200: #CDBAEA;
+    --sqx-brand-300: #B49AD8;
+    --sqx-brand-400: #7E61AC;
+    --sqx-brand-450: #6A5391;
+    --sqx-brand-500: #52406F;
+    --sqx-brand-600: #413259;
+    --sqx-brand-700: #342847;
+    --sqx-brand-800: #271E35;
+    --sqx-brand-900: #1A1423;
+    --sqx-brand-950: #0D0A12;
+
+    /* IRP's secondary (teal #18D8C6) is deliberately NOT adopted and not
+       defined here. At that saturation it reads as green to anyone
+       scanning the page, which would break rule 2 above. */
+
+    /* Status — IRP's four, plus one interpolated orange for the severity
+       tier between warning and critical. Pill text uses the *darker* stop
+       in light mode: IRP's own .dark stops only reach 3.6:1 on a 16% tint,
+       which is a large-text pass at best.
+       Light pill, text on tint:  success 6.79  warning 7.32  error 9.27
+                                  info 6.78    major 8.05    neutral 7.23
+       Dark  pill, text on tint:  success 9.04  warning 9.21  error 7.88
+                                  info 8.56    major 8.20    neutral 8.40 */
+    --sqx-success-lighter: #D3FCD2;
+    --sqx-success-light: #77ED8B;
+    --sqx-success-main: #22C55E;
+    --sqx-success-dark: #118D57;
+    --sqx-success-darker: #065E49;
+    --sqx-warning-lighter: #FFF5CC;
+    --sqx-warning-light: #FFD666;
+    --sqx-warning-main: #FFAB00;
+    --sqx-warning-dark: #B76E00;
+    --sqx-warning-darker: #7A4100;
+    --sqx-error-lighter: #FFE9D5;
+    --sqx-error-light: #FFAC82;
+    --sqx-error-main: #FF5630;
+    --sqx-error-dark: #B71D18;
+    --sqx-error-darker: #7A0916;
+    --sqx-info-lighter: #C9F4FC;
+    --sqx-info-light: #7EE4F6;
+    --sqx-info-main: #46CFE7;
+    --sqx-info-dark: #49AABB;
+    --sqx-info-darker: #215C66;
+    --sqx-major-light: #FDBA74;
+    --sqx-major-main: #FF7A1A;
+    --sqx-major-dark: #B54708;
+    --sqx-major-darker: #7C2D12;
+
+    /* AI — violet. Kept as the one accent outside the palette because every
+       product signals AI this way, and an aubergine AI entry point would be
+       indistinguishable from a primary action. Saturated (70%) where the
+       brand is desaturated (17%), so the two never read as the same thing.
+       #6D28D9 carries #FFFFFF at 7.10:1; #A78BFA carries #0D0A12 at 7.22:1. */
+    --sqx-ai-light: #C4B5FD;
+    --sqx-ai-main: #A78BFA;
+    --sqx-ai-shade: #5B3FC7;
+    --sqx-ai-deep: #6D28D9;
+
+    /* Flattened tints. Written as hex, not alpha, so a pill nested inside a
+       card does not compound its own background against the one below it. */
+    --sqx-tint-brand-light: #ECEAEE;
+    --sqx-tint-brand-light-soft: #F4F3F5;
+    --sqx-tint-success-light: #DCF6E5;
+    --sqx-tint-warning-light: #FFF2D6;
+    --sqx-tint-error-light: #FFE4DE;
+    --sqx-tint-info-light: #E1F7FB;
+    --sqx-tint-major-light: #FFEADA;
+    --sqx-tint-neutral-light: #EDEFF2;
+    --sqx-tint-ai-light: #EBE1FA;
+    --sqx-tint-brand-dark: #262A35;
+    --sqx-tint-success-dark: #16352B;
+    --sqx-tint-warning-dark: #3A311C;
+    --sqx-tint-error-dark: #3A2423;
+    --sqx-tint-info-dark: #1C3741;
+    --sqx-tint-major-dark: #3A2920;
+    --sqx-tint-neutral-dark: #282F37;
+    --sqx-tint-ai-dark: #262238;
+
+    /* Alphas. IRP builds every divider, hover and disabled fill from the
+       grey-500 channel, which is why its chrome stays neutral over any
+       surface. Same here. */
+    --sqx-grey-a08: rgba(145, 158, 171, 0.08);
+    --sqx-grey-a12: rgba(145, 158, 171, 0.12);
+    --sqx-grey-a16: rgba(145, 158, 171, 0.16);
+    --sqx-grey-a20: rgba(145, 158, 171, 0.2);
+    --sqx-grey-a24: rgba(145, 158, 171, 0.24);
+    --sqx-grey-a32: rgba(145, 158, 171, 0.32);
+    --sqx-grey-a48: rgba(145, 158, 171, 0.48);
+    --sqx-shade-050: rgba(145, 158, 171, 0.08);
+    --sqx-shade-100: rgba(145, 158, 171, 0.12);
+    --sqx-shade-150: rgba(145, 158, 171, 0.16);
+    --sqx-shade-200: rgba(145, 158, 171, 0.24);
+    --sqx-void-200: rgba(0, 0, 0, 0.32);
+    --sqx-void-300: rgba(0, 0, 0, 0.44);
+    --sqx-void-400: rgba(0, 0, 0, 0.6);
+    --sqx-void-500: rgba(0, 0, 0, 0.72);
+    --sqx-glare-050: rgba(255, 255, 255, 0.06);
+
+    /* ------------------------------------------------------------------
+       Deprecated primitive aliases, kept as a safety net.
+
+       The names lie about their hue now — --sqx-green-600 is aubergine.
+       They are retained because they are repointed, not because they are
+       needed: a CSS module on a route not yet audited that still says
+       var(--sqx-green-600) renders aubergine rather than green, which is
+       the failure mode worth insuring against. Verified unreferenced by
+       tokens.css, saqeel-runtime.css, saqeel-components.css,
+       v2-components.css and every component module under /app-shell,
+       /dashboard, /operations and /saqeel.
+
+       NOT verified across the routes outside that set (planning, execution,
+       reviews, admin, factories, field). Grep those, then delete this block.
+       Do not use these names in new work.
+       ------------------------------------------------------------------ */
+    --sqx-green-1000: var(--sqx-brand-950);
+    --sqx-green-950: var(--sqx-brand-900);
+    --sqx-green-900: var(--sqx-brand-900);
+    --sqx-green-850: var(--sqx-brand-800);
+    --sqx-green-800: var(--sqx-brand-800);
+    --sqx-green-750: var(--sqx-brand-700);
+    --sqx-green-700: var(--sqx-brand-600);
+    --sqx-green-600: var(--sqx-brand-600);
+    --sqx-green-500: var(--sqx-brand-500);
+    --sqx-green-400: var(--sqx-brand-300);
+    --sqx-green-350: var(--sqx-brand-300);
+    --sqx-green-300: var(--sqx-brand-200);
+    --sqx-green-200: var(--sqx-brand-100);
+    --sqx-green-100: var(--sqx-brand-100);
+    --sqx-green-050: var(--sqx-brand-050);
+
+    --sqx-ink-1000: var(--sqx-grey-1000);
+    --sqx-ink-950: var(--sqx-grey-950);
+    --sqx-ink-900: var(--sqx-grey-900);
+    --sqx-ink-850: var(--sqx-grey-900);
+    --sqx-ink-800: var(--sqx-grey-800);
+    --sqx-ink-700: var(--sqx-grey-neutral-dark);
+    --sqx-ink-650: var(--sqx-grey-neutral-dark);
+    --sqx-ink-600: var(--sqx-grey-600);
+    --sqx-ink-550: var(--sqx-grey-600);
+    --sqx-ink-400: var(--sqx-grey-500);
+    --sqx-ink-300: var(--sqx-grey-400);
+    --sqx-ink-200: var(--sqx-grey-300);
+    --sqx-ink-100: #FFFFFF;
+    --sqx-ink-tint-success: var(--sqx-tint-success-dark);
+    --sqx-ink-tint-danger: var(--sqx-tint-error-dark);
+    --sqx-ink-tint-warning: var(--sqx-tint-warning-dark);
+    --sqx-ink-tint-info: var(--sqx-tint-info-dark);
+    --sqx-ink-tint-major: var(--sqx-tint-major-dark);
+
+    --sqx-warm-000: #FFFFFF;
+    --sqx-warm-050: var(--sqx-grey-050);
+    --sqx-warm-100: var(--sqx-grey-100);
+    --sqx-warm-200: var(--sqx-grey-200);
+    --sqx-warm-300: var(--sqx-grey-300);
+    --sqx-warm-350: var(--sqx-grey-400);
+    --sqx-warm-400: var(--sqx-grey-500);
+    --sqx-warm-500: var(--sqx-grey-500);
+    --sqx-warm-900: var(--sqx-grey-700);
+    --sqx-warm-950: var(--sqx-grey-600);
+    --sqx-warm-1000: var(--sqx-grey-800);
+    --sqx-warm-tint-success: var(--sqx-tint-success-light);
+    --sqx-warm-tint-danger: var(--sqx-tint-error-light);
+    --sqx-warm-tint-warning: var(--sqx-tint-warning-light);
+    --sqx-warm-tint-info: var(--sqx-tint-info-light);
+    --sqx-warm-tint-major: var(--sqx-tint-major-light);
+    --sqx-warm-tint-success-border: var(--sqx-success-light);
+
+    --sqx-neon-success: var(--sqx-success-light);
+    --sqx-neon-success-deep: var(--sqx-success-darker);
+    --sqx-neon-warning: var(--sqx-warning-light);
+    --sqx-neon-warning-deep: var(--sqx-warning-darker);
+    --sqx-neon-danger: var(--sqx-error-light);
+    --sqx-neon-danger-deep: var(--sqx-error-darker);
+    --sqx-neon-danger-hover: #FFC7A8;
+    --sqx-neon-danger-deep-hover: #5C0710;
+    --sqx-neon-info: var(--sqx-info-light);
+    --sqx-neon-info-deep: var(--sqx-info-darker);
+    --sqx-neon-major: var(--sqx-major-light);
+    --sqx-neon-major-deep: var(--sqx-major-darker);
+    --sqx-neon-onhold: var(--sqx-warning-light);
+    /* live / mint / sky / steel were all greens or near-greens. Repointed
+       away from green so nothing but success can render green. */
+    --sqx-neon-live: var(--sqx-info-light);
+    --sqx-neon-live-deep: var(--sqx-info-darker);
+    --sqx-neon-mint: var(--sqx-brand-200);
+    --sqx-neon-mint-deep: var(--sqx-brand-600);
+    --sqx-neon-sky: var(--sqx-info-light);
+    --sqx-neon-steel-deep: var(--sqx-info-darker);
+    --sqx-neon-ai: var(--sqx-ai-main);
+    --sqx-neon-ai-deep: var(--sqx-ai-deep);
+    --sqx-neon-ai-light: var(--sqx-ai-light);
+    --sqx-neon-ai-shade: var(--sqx-ai-shade);
+
+    --sqx-green-veil-soft: rgba(65, 50, 89, 0.06);
+    --sqx-green-veil-strong: rgba(65, 50, 89, 0.1);
+    --sqx-neon-veil-soft: rgba(205, 186, 234, 0.08);
+    --sqx-neon-veil-strong: rgba(205, 186, 234, 0.14);
+    --sqx-halo-green: var(--sqx-grey-900);
+    --sqx-halo-cyan: var(--sqx-grey-900);
+    --sqx-halo-light: var(--sqx-grey-100);
+    --sqx-chrome-glow-light: #FFFFFF;
+    --sqx-chrome-mid-light: #FFFFFF;
+  }
+
+  :root,
+  :root[data-theme="light"] {
+    color-scheme: light;
+
+    /* Page, chrome and card are all pure white. They are told apart by a
+       hairline and a shadow, never by fill — that is the whole point of a
+       neutral palette. Nesting is the one exception: a card inside a card
+       steps to grey-100 so depth still reads. */
+    --sqx-surface-canvas: #FFFFFF;
+    --sqx-surface-chrome: #FFFFFF;
+    --sqx-gradient-chrome: none;
+    --sqx-rim-light: none;
+    --sqx-surface-default: #FFFFFF;
+    --sqx-surface-raised: var(--sqx-grey-100);
+    --sqx-surface-menu: #FFFFFF;
+    --sqx-surface-subtle: var(--sqx-grey-a08);
+    --sqx-surface-sunken: var(--sqx-grey-200);
+    --sqx-surface-header: var(--sqx-grey-200);
+    --sqx-surface-accent: var(--sqx-tint-brand-light);
+    --sqx-surface-inverse: var(--sqx-grey-800);
+    --sqx-surface-overlay: rgba(28, 37, 46, 0.48);
+
+    --sqx-text-primary: var(--sqx-grey-800);
+    --sqx-text-secondary: var(--sqx-grey-700);
+    --sqx-text-muted: var(--sqx-grey-600);
+    --sqx-text-disabled: var(--sqx-grey-500);
+    --sqx-text-inverse: #FFFFFF;
+    --sqx-text-on-action: #FFFFFF;
+    --sqx-text-link: var(--sqx-brand-600);
+    --sqx-text-link-hover: var(--sqx-brand-800);
+    --sqx-text-accent: var(--sqx-brand-600);
+    --sqx-text-success: var(--sqx-success-darker);
+    --sqx-text-warning: var(--sqx-warning-darker);
+    --sqx-text-danger: var(--sqx-error-darker);
+    --sqx-text-info: var(--sqx-info-darker);
+
+    --sqx-border-subtle: var(--sqx-grey-a24);
+    --sqx-border-default: var(--sqx-grey-a32);
+    --sqx-border-strong: var(--sqx-grey-a48);
+    --sqx-border-input: var(--sqx-grey-a48);
+    --sqx-border-accent: var(--sqx-brand-600);
+    --sqx-border-focus: var(--sqx-brand-600);
+
+    --sqx-action-primary-bg: var(--sqx-brand-400);
+    --sqx-action-primary-hover: var(--sqx-brand-450);
+    --sqx-action-primary-active: var(--sqx-brand-500);
+    --sqx-action-primary-text: #FFFFFF;
+    --sqx-action-primary-border: var(--sqx-action-primary-bg);
+    --sqx-segment-track: var(--sqx-grey-200);
+    --sqx-segment-label: var(--sqx-brand-600);
+    --sqx-action-secondary-border: var(--sqx-grey-a32);
+    --sqx-action-secondary-text: var(--sqx-grey-800);
+    --sqx-action-secondary-hover: var(--sqx-grey-a08);
+    --sqx-action-tertiary-text: var(--sqx-brand-600);
+    --sqx-action-tertiary-hover: var(--sqx-tint-brand-light);
+    --sqx-action-danger-bg: var(--sqx-error-dark);
+    --sqx-action-danger-hover: var(--sqx-error-darker);
+    --sqx-action-danger-text: #FFFFFF;
+    --sqx-action-disabled-bg: var(--sqx-grey-200);
+    --sqx-action-disabled-text: var(--sqx-grey-500);
+
+    --sqx-status-critical: var(--sqx-error-darker);
+    --sqx-status-critical-soft: var(--sqx-tint-error-light);
+    --sqx-status-critical-on-soft: var(--sqx-error-darker);
+    --sqx-status-major: var(--sqx-major-darker);
+    --sqx-status-major-soft: var(--sqx-tint-major-light);
+    --sqx-status-major-on-soft: var(--sqx-major-darker);
+    --sqx-status-warning: var(--sqx-warning-darker);
+    --sqx-status-warning-soft: var(--sqx-tint-warning-light);
+    --sqx-status-warning-on-soft: var(--sqx-warning-darker);
+    --sqx-status-compliant: var(--sqx-success-darker);
+    --sqx-status-compliant-soft: var(--sqx-tint-success-light);
+    --sqx-status-compliant-on-soft: var(--sqx-success-darker);
+    --sqx-status-info: var(--sqx-info-darker);
+    --sqx-status-info-soft: var(--sqx-tint-info-light);
+    --sqx-status-info-on-soft: var(--sqx-info-darker);
+    --sqx-status-pending: var(--sqx-grey-700);
+    --sqx-status-pending-soft: var(--sqx-tint-neutral-light);
+    --sqx-status-pending-on-soft: var(--sqx-grey-700);
+    --sqx-status-draft: var(--sqx-grey-700);
+    --sqx-status-draft-soft: var(--sqx-tint-neutral-light);
+    --sqx-status-draft-on-soft: var(--sqx-grey-700);
+    --sqx-status-onhold: var(--sqx-warning-darker);
+    --sqx-status-onhold-soft: var(--sqx-tint-warning-light);
+    --sqx-status-onhold-on-soft: var(--sqx-warning-darker);
+    --sqx-status-completed: var(--sqx-success-darker);
+    --sqx-status-completed-soft: var(--sqx-tint-success-light);
+    --sqx-status-completed-on-soft: var(--sqx-success-darker);
+    --sqx-status-disabled: var(--sqx-grey-600);
+    --sqx-status-disabled-soft: var(--sqx-tint-neutral-light);
+    --sqx-status-disabled-on-soft: var(--sqx-grey-600);
+
+    /* No green in the chart ramp. A green series next to a green success
+       pill is exactly the ambiguity this palette exists to remove. */
+    --sqx-chart-1: var(--sqx-brand-600);
+    --sqx-chart-2: var(--sqx-info-darker);
+    --sqx-chart-3: var(--sqx-ai-deep);
+    --sqx-chart-4: var(--sqx-warning-darker);
+    --sqx-chart-5: var(--sqx-major-darker);
+    --sqx-chart-6: var(--sqx-error-darker);
+    --sqx-chart-7: var(--sqx-grey-600);
+    --sqx-chart-8: var(--sqx-brand-400);
+    --sqx-chart-grid: var(--sqx-grey-a24);
+    --sqx-chart-axis: var(--sqx-grey-600);
+
+    /* IRP's card shadow: a 2px ambient ring plus a soft drop, both built
+       from the grey-500 channel so the shadow stays neutral over white. */
+    --sqx-elevation-0: none;
+    --sqx-elevation-1: 0 0 2px 0 var(--sqx-shade-200),
+      0 12px 24px -4px var(--sqx-shade-100);
+    --sqx-elevation-2: 0 0 2px 0 var(--sqx-shade-200),
+      0 16px 32px -4px var(--sqx-shade-150);
+    --sqx-elevation-3: 0 0 2px 0 var(--sqx-shade-200),
+      0 20px 40px -4px var(--sqx-shade-200);
+    --sqx-elevation-4: 0 0 2px 0 var(--sqx-shade-200),
+      0 24px 48px 0 var(--sqx-shade-200);
+
+    --sqx-gradient-cta: linear-gradient(
+      var(--sqx-flow-angle),
+      var(--sqx-brand-400),
+      var(--sqx-brand-450),
+      var(--sqx-brand-400)
+    );
+    --sqx-gradient-halo: none;
+    --sqx-accent-ai: var(--sqx-ai-deep);
+    --sqx-gradient-ai: linear-gradient(
+      var(--sqx-flow-angle),
+      var(--sqx-ai-deep),
+      var(--sqx-ai-shade),
+      var(--sqx-ai-deep)
+    );
+    --sqx-nav-active-bg: var(--sqx-tint-brand-light);
+    --sqx-nav-active-text: var(--sqx-brand-600);
+    --sqx-nav-parent-bg: var(--sqx-tint-brand-light-soft);
+    --sqx-nav-hover-bg: var(--sqx-grey-a08);
+    --sqx-nav-connector: var(--sqx-grey-a32);
+    --sqx-nav-text: var(--sqx-grey-700);
+    --sqx-on-accent-ai: #FFFFFF;
+    --sqx-surface-accent-hover: #E1DEE4;
+    --sqx-map-panel: rgba(255, 255, 255, 0.96);
+    --sqx-map-zone-fill: rgba(65, 50, 89, 0.1);
+    --sqx-map-zone-stroke: var(--sqx-brand-600);
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+
+    /* Near-black page, and the same neutral ladder inverted. The page is
+       darker than the card so cards read as lit surfaces, which is what
+       makes a dark theme legible at all. */
+    --sqx-surface-canvas: var(--sqx-grey-1000);
+    --sqx-surface-chrome: var(--sqx-grey-1000);
+    --sqx-gradient-chrome: none;
+    --sqx-rim-light: none;
+    --sqx-surface-default: var(--sqx-grey-900);
+    --sqx-surface-raised: var(--sqx-grey-800);
+    --sqx-surface-menu: var(--sqx-grey-800);
+    --sqx-surface-subtle: var(--sqx-grey-a12);
+    --sqx-surface-sunken: var(--sqx-grey-950);
+    --sqx-surface-header: var(--sqx-grey-neutral-dark);
+    --sqx-surface-accent: var(--sqx-tint-brand-dark);
+    --sqx-surface-inverse: var(--sqx-grey-100);
+    --sqx-surface-overlay: rgba(0, 0, 0, 0.72);
+
+    --sqx-text-primary: #FFFFFF;
+    --sqx-text-secondary: var(--sqx-grey-400);
+    --sqx-text-muted: var(--sqx-grey-500);
+    --sqx-text-disabled: var(--sqx-grey-600);
+    --sqx-text-inverse: var(--sqx-grey-900);
+    --sqx-text-on-action: var(--sqx-brand-950);
+    --sqx-text-link: var(--sqx-brand-200);
+    --sqx-text-link-hover: var(--sqx-brand-100);
+    --sqx-text-accent: var(--sqx-brand-200);
+    --sqx-text-success: var(--sqx-success-light);
+    --sqx-text-warning: var(--sqx-warning-light);
+    --sqx-text-danger: var(--sqx-error-light);
+    --sqx-text-info: var(--sqx-info-light);
+
+    --sqx-border-subtle: var(--sqx-grey-a16);
+    --sqx-border-default: var(--sqx-grey-a24);
+    --sqx-border-strong: var(--sqx-grey-a48);
+    --sqx-border-input: var(--sqx-grey-a48);
+    --sqx-border-accent: var(--sqx-brand-300);
+    --sqx-border-focus: var(--sqx-brand-300);
+
+    --sqx-action-primary-bg: var(--sqx-brand-300);
+    --sqx-action-primary-hover: var(--sqx-brand-200);
+    --sqx-action-primary-active: var(--sqx-brand-100);
+    --sqx-action-primary-text: var(--sqx-brand-950);
+    --sqx-action-primary-border: var(--sqx-action-primary-bg);
+    --sqx-segment-track: var(--sqx-grey-800);
+    --sqx-segment-label: var(--sqx-brand-200);
+    --sqx-action-secondary-border: var(--sqx-grey-a32);
+    --sqx-action-secondary-text: #FFFFFF;
+    --sqx-action-secondary-hover: var(--sqx-grey-a12);
+    --sqx-action-tertiary-text: var(--sqx-brand-200);
+    --sqx-action-tertiary-hover: var(--sqx-tint-brand-dark);
+    --sqx-action-danger-bg: var(--sqx-error-light);
+    --sqx-action-danger-hover: #FFC7A8;
+    --sqx-action-danger-text: var(--sqx-brand-950);
+    --sqx-action-disabled-bg: var(--sqx-grey-800);
+    --sqx-action-disabled-text: var(--sqx-grey-600);
+
+    --sqx-status-critical: var(--sqx-error-light);
+    --sqx-status-critical-soft: var(--sqx-tint-error-dark);
+    --sqx-status-critical-on-soft: var(--sqx-error-light);
+    --sqx-status-major: var(--sqx-major-light);
+    --sqx-status-major-soft: var(--sqx-tint-major-dark);
+    --sqx-status-major-on-soft: var(--sqx-major-light);
+    --sqx-status-warning: var(--sqx-warning-light);
+    --sqx-status-warning-soft: var(--sqx-tint-warning-dark);
+    --sqx-status-warning-on-soft: var(--sqx-warning-light);
+    --sqx-status-compliant: var(--sqx-success-light);
+    --sqx-status-compliant-soft: var(--sqx-tint-success-dark);
+    --sqx-status-compliant-on-soft: var(--sqx-success-light);
+    --sqx-status-info: var(--sqx-info-light);
+    --sqx-status-info-soft: var(--sqx-tint-info-dark);
+    --sqx-status-info-on-soft: var(--sqx-info-light);
+    --sqx-status-pending: var(--sqx-grey-400);
+    --sqx-status-pending-soft: var(--sqx-tint-neutral-dark);
+    --sqx-status-pending-on-soft: var(--sqx-grey-400);
+    --sqx-status-draft: var(--sqx-grey-400);
+    --sqx-status-draft-soft: var(--sqx-tint-neutral-dark);
+    --sqx-status-draft-on-soft: var(--sqx-grey-400);
+    --sqx-status-onhold: var(--sqx-warning-light);
+    --sqx-status-onhold-soft: var(--sqx-tint-warning-dark);
+    --sqx-status-onhold-on-soft: var(--sqx-warning-light);
+    --sqx-status-completed: var(--sqx-success-light);
+    --sqx-status-completed-soft: var(--sqx-tint-success-dark);
+    --sqx-status-completed-on-soft: var(--sqx-success-light);
+    --sqx-status-disabled: var(--sqx-grey-500);
+    --sqx-status-disabled-soft: var(--sqx-tint-neutral-dark);
+    --sqx-status-disabled-on-soft: var(--sqx-grey-500);
+
+    --sqx-chart-1: var(--sqx-brand-300);
+    --sqx-chart-2: var(--sqx-info-light);
+    --sqx-chart-3: var(--sqx-ai-main);
+    --sqx-chart-4: var(--sqx-warning-light);
+    --sqx-chart-5: var(--sqx-major-light);
+    --sqx-chart-6: var(--sqx-error-light);
+    --sqx-chart-7: var(--sqx-grey-400);
+    --sqx-chart-8: var(--sqx-brand-100);
+    --sqx-chart-grid: var(--sqx-grey-a16);
+    --sqx-chart-axis: var(--sqx-grey-500);
+
+    --sqx-elevation-0: none;
+    --sqx-elevation-1: 0 0 0 1px var(--sqx-grey-a08),
+      0 1px 3px var(--sqx-void-300);
+    --sqx-elevation-2: 0 0 0 1px var(--sqx-grey-a08),
+      0 4px 10px var(--sqx-void-300);
+    --sqx-elevation-3: 0 0 0 1px var(--sqx-grey-a12),
+      0 10px 24px var(--sqx-void-400);
+    --sqx-elevation-4: 0 0 0 1px var(--sqx-grey-a12),
+      0 20px 48px var(--sqx-void-500);
+
+    --sqx-gradient-cta: linear-gradient(
+      var(--sqx-flow-angle),
+      var(--sqx-brand-300),
+      var(--sqx-brand-200),
+      var(--sqx-brand-300)
+    );
+    --sqx-gradient-halo: none;
+    --sqx-accent-ai: var(--sqx-ai-main);
+    --sqx-gradient-ai: linear-gradient(
+      var(--sqx-flow-angle),
+      var(--sqx-ai-main),
+      var(--sqx-ai-light),
+      var(--sqx-ai-main)
+    );
+    --sqx-nav-active-bg: var(--sqx-tint-brand-dark);
+    --sqx-nav-active-text: var(--sqx-brand-200);
+    --sqx-nav-parent-bg: var(--sqx-grey-a08);
+    --sqx-nav-hover-bg: var(--sqx-grey-a08);
+    --sqx-nav-connector: var(--sqx-grey-a24);
+    --sqx-nav-text: var(--sqx-grey-400);
+    --sqx-on-accent-ai: var(--sqx-brand-950);
+    --sqx-surface-accent-hover: #323441;
+    --sqx-map-panel: rgba(20, 26, 33, 0.96);
+    --sqx-map-zone-fill: rgba(180, 154, 216, 0.14);
+    --sqx-map-zone-stroke: var(--sqx-brand-300);
+  }
+
+  :root {
+    --sqx-status-success: var(--sqx-status-compliant);
+    --sqx-status-success-soft: var(--sqx-status-compliant-soft);
+    --sqx-status-success-on-soft: var(--sqx-status-compliant-on-soft);
+    --sqx-status-danger: var(--sqx-status-critical);
+    --sqx-status-danger-soft: var(--sqx-status-critical-soft);
+    --sqx-status-danger-on-soft: var(--sqx-status-critical-on-soft);
+
+    --sqx-font-sans: "Readex Pro", "IBM Plex Sans Arabic", system-ui, sans-serif;
+    --sqx-font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+    --sqx-weight-regular: 400;
+    --sqx-weight-medium: 500;
+    --sqx-weight-semibold: 600;
+    --sqx-weight-bold: 700;
+    --sqx-numeric-tabular: tabular-nums;
+
+    --sqx-text-display-size: 2.5rem;
+    --sqx-text-display-line: 1.1;
+    --sqx-text-display-weight: var(--sqx-weight-bold);
+    --sqx-text-display-tracking: -0.03em;
+    --sqx-text-title-size: 1.875rem;
+    --sqx-text-title-line: 1.2;
+    --sqx-text-title-weight: var(--sqx-weight-bold);
+    --sqx-text-title-tracking: -0.025em;
+    --sqx-text-heading-size: 1.375rem;
+    --sqx-text-heading-line: 1.3;
+    --sqx-text-heading-weight: var(--sqx-weight-bold);
+    --sqx-text-heading-tracking: -0.02em;
+    --sqx-text-subheading-size: 1.0625rem;
+    --sqx-text-subheading-line: 1.4;
+    --sqx-text-subheading-weight: var(--sqx-weight-semibold);
+    --sqx-text-subheading-tracking: -0.01em;
+    --sqx-text-body-lg-size: 1rem;
+    --sqx-text-body-lg-line: 1.6;
+    --sqx-text-body-lg-weight: var(--sqx-weight-regular);
+    --sqx-text-body-lg-tracking: 0;
+    --sqx-text-body-size: 0.9375rem;
+    --sqx-text-body-line: 1.6;
+    --sqx-text-body-weight: var(--sqx-weight-regular);
+    --sqx-text-body-tracking: 0;
+    --sqx-text-body-strong-size: 0.9375rem;
+    --sqx-text-body-strong-line: 1.6;
+    --sqx-text-body-strong-weight: var(--sqx-weight-semibold);
+    --sqx-text-body-strong-tracking: 0;
+    --sqx-text-label-size: 0.8125rem;
+    --sqx-text-label-line: 1.4;
+    --sqx-text-label-weight: var(--sqx-weight-semibold);
+    --sqx-text-label-tracking: 0.01em;
+    --sqx-text-caption-size: 0.78125rem;
+    --sqx-text-caption-line: 1.45;
+    --sqx-text-caption-weight: var(--sqx-weight-regular);
+    --sqx-text-caption-tracking: 0;
+    --sqx-text-overline-size: 0.6875rem;
+    --sqx-text-overline-line: 1.3;
+    --sqx-text-overline-weight: var(--sqx-weight-bold);
+    --sqx-text-overline-tracking: 0.12em;
+    --sqx-text-metric-size: 1.75rem;
+    --sqx-text-metric-line: 1.15;
+    --sqx-text-metric-weight: var(--sqx-weight-bold);
+    --sqx-text-metric-tracking: -0.02em;
+    --sqx-text-code-size: 0.78125rem;
+    --sqx-text-code-line: 1.6;
+    --sqx-text-code-weight: var(--sqx-weight-medium);
+    --sqx-text-code-tracking: 0;
+
+    --sqx-space-0: 0;
+    --sqx-space-1: 0.125rem;
+    --sqx-space-2: 0.25rem;
+    --sqx-space-3: 0.5rem;
+    --sqx-space-4: 0.75rem;
+    --sqx-space-5: 1rem;
+    --sqx-space-6: 1.25rem;
+    --sqx-space-7: 1.5rem;
+    --sqx-space-8: 2rem;
+    --sqx-space-9: 2.5rem;
+    --sqx-space-10: 3rem;
+    --sqx-space-11: 4rem;
+    --sqx-space-12: 5rem;
+    --sqx-space-13: 6rem;
+
+    --sqx-inset-card: var(--sqx-space-6);
+    --sqx-inset-panel: var(--sqx-space-7);
+    --sqx-inset-control: var(--sqx-space-4);
+    --sqx-inset-cell: var(--sqx-space-4);
+    --sqx-inset-cell-compact: var(--sqx-space-3);
+    --sqx-stack-tight: var(--sqx-space-3);
+    --sqx-stack-default: var(--sqx-space-5);
+    --sqx-stack-loose: var(--sqx-space-8);
+    --sqx-stack-section: var(--sqx-space-10);
+    --sqx-gutter: var(--sqx-space-5);
+    --sqx-page-inline: var(--sqx-space-8);
+    --sqx-page-inline-sm: var(--sqx-space-5);
+    --sqx-page-block: var(--sqx-space-8);
+
+    --sqx-radius-xs: 0.25rem;
+    --sqx-radius-sm: 0.375rem;
+    --sqx-radius-md: 0.5625rem;
+    --sqx-radius-lg: 0.75rem;
+    --sqx-radius-xl: 1rem;
+    --sqx-radius-2xl: 1.375rem;
+    --sqx-radius-full: 999px;
+    --sqx-radius-control: var(--sqx-radius-md);
+    --sqx-radius-card: var(--sqx-radius-lg);
+    --sqx-radius-surface: var(--sqx-radius-xl);
+    --sqx-radius-pill: var(--sqx-radius-full);
+    --sqx-radius-inline: var(--sqx-radius-xs);
+
+    --sqx-control-h-sm: 2rem;
+    --sqx-control-h-md: 2.375rem;
+    --sqx-control-h-lg: 2.75rem;
+    --sqx-touch-target: 2.75rem;
+    --sqx-segment-pad: 0.3125rem;
+    --sqx-badge-size: 0.875rem;
+    --sqx-count-size: 1.5rem;
+    --sqx-badge-font: 0.625rem;
+    --sqx-ping-sm: 0.375rem;
+    --sqx-ping-md: 0.5rem;
+    --sqx-icon-sm: 1rem;
+    --sqx-icon-md: 1.125rem;
+    --sqx-icon-lg: 1.375rem;
+    --sqx-icon-xl: 1.75rem;
+    --sqx-row-h: 3rem;
+    --sqx-row-h-compact: 2.5rem;
+    --sqx-sidebar-w: 15.5rem;
+    --sqx-sidebar-w-collapsed: 4rem;
+    --sqx-topbar-h: 3.5rem;
+    --sqx-container-max: 90rem;
+    --sqx-prose-max: 68ch;
+    --sqx-media-h-sm: 16rem;
+    --sqx-media-h-md: 24rem;
+    --sqx-media-h-lg: 34rem;
+
+    --sqx-grid-min-sm: 14rem;
+    --sqx-grid-min-md: 18rem;
+    --sqx-grid-min-lg: 24rem;
+    --sqx-control-pad-icon: 2.25rem;
+    --sqx-menu-pad: 0.375rem;
+    --sqx-menu-row-h: 2rem;
+    --sqx-menu-max-h: 20rem;
+    --sqx-menu-max-w: 22rem;
+    --sqx-day-cell: 2.25rem;
+    --sqx-border-width-hair: 1px;
+    --sqx-border-width-thick: 2px;
+    --sqx-focus-ring-width: 2px;
+    --sqx-focus-ring-offset: 2px;
+
+    --sqx-shadow-card: var(--sqx-elevation-1);
+    --sqx-shadow-lift: var(--sqx-elevation-3);
+    --sqx-lift-card: var(--sqx-space-1);
+    --sqx-shadow-card-hover: var(--sqx-elevation-2);
+    --sqx-shadow-menu: var(--sqx-elevation-3);
+    --sqx-shadow-modal: var(--sqx-elevation-4);
+
+    --sqx-z-base: 0;
+    --sqx-z-raised: 10;
+    --sqx-z-sticky: 100;
+    --sqx-z-drawer: 200;
+    --sqx-z-modal: 300;
+    --sqx-z-popover: 400;
+    --sqx-z-toast: 500;
+    --sqx-z-tooltip: 600;
+
+    --sqx-duration-instant: 100ms;
+    --sqx-duration-fast: 160ms;
+    --sqx-duration-base: 240ms;
+    --sqx-duration-slow: 360ms;
+    --sqx-duration-sweep: 850ms;
+    --sqx-duration-flow: 5500ms;
+    --sqx-duration-drift: 22000ms;
+    --sqx-duration-ping: 1900ms;
+    --sqx-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+    --sqx-ease-decelerate: cubic-bezier(0, 0, 0, 1);
+    --sqx-ease-accelerate: cubic-bezier(0.3, 0, 1, 1);
+    --sqx-ease-sweep: cubic-bezier(0.3, 0, 0.2, 1);
+    --sqx-ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+    --sqx-ease-linear: linear;
+
+    /* Both of these used to flow through green. Under the IRP palette green
+       is reserved for success, so a decorative signal sweep may not spend
+       it — they run on the brand instead. */
+    --sqx-gradient-signal: linear-gradient(
+      var(--sqx-flow-angle),
+      var(--sqx-action-primary-bg),
+      var(--sqx-text-accent),
+      var(--sqx-action-primary-bg)
+    );
+    --sqx-gradient-edge: linear-gradient(
+      var(--sqx-flow-angle),
+      transparent,
+      var(--sqx-action-primary-bg),
+      var(--sqx-border-accent),
+      transparent
+    );
+    --sqx-gradient-sweep: linear-gradient(
+      var(--sqx-flow-angle),
+      transparent,
+      var(--sqx-grey-a16),
+      transparent
+    );
+    --sqx-gradient-flow-size: 220% 100%;
+    --sqx-gradient-halo-size: 180% 180%;
+  }
+
+  :lang(ar) {
+    --sqx-text-title-line: 1.35;
+    --sqx-text-heading-line: 1.45;
+    --sqx-text-body-line: 1.8;
+    --sqx-text-label-line: 1.55;
+    --sqx-text-caption-line: 1.6;
+  }
+
+  :root {
+    --sqx-text-display: var(--sqx-text-display-weight)
+      var(--sqx-text-display-size) / var(--sqx-text-display-line)
+      var(--sqx-font-sans);
+    --sqx-text-title: var(--sqx-text-title-weight)
+      var(--sqx-text-title-size) / var(--sqx-text-title-line)
+      var(--sqx-font-sans);
+    --sqx-text-heading: var(--sqx-text-heading-weight)
+      var(--sqx-text-heading-size) / var(--sqx-text-heading-line)
+      var(--sqx-font-sans);
+    --sqx-text-subheading: var(--sqx-text-subheading-weight)
+      var(--sqx-text-subheading-size) / var(--sqx-text-subheading-line)
+      var(--sqx-font-sans);
+    --sqx-text-body-lg: var(--sqx-text-body-lg-weight)
+      var(--sqx-text-body-lg-size) / var(--sqx-text-body-lg-line)
+      var(--sqx-font-sans);
+    --sqx-text-body: var(--sqx-text-body-weight)
+      var(--sqx-text-body-size) / var(--sqx-text-body-line)
+      var(--sqx-font-sans);
+    --sqx-text-body-strong: var(--sqx-text-body-strong-weight)
+      var(--sqx-text-body-strong-size) / var(--sqx-text-body-strong-line)
+      var(--sqx-font-sans);
+    --sqx-text-label: var(--sqx-text-label-weight)
+      var(--sqx-text-label-size) / var(--sqx-text-label-line)
+      var(--sqx-font-sans);
+    --sqx-text-caption: var(--sqx-text-caption-weight)
+      var(--sqx-text-caption-size) / var(--sqx-text-caption-line)
+      var(--sqx-font-sans);
+    --sqx-text-overline: var(--sqx-text-overline-weight)
+      var(--sqx-text-overline-size) / var(--sqx-text-overline-line)
+      var(--sqx-font-sans);
+    --sqx-text-metric: var(--sqx-text-metric-weight)
+      var(--sqx-text-metric-size) / var(--sqx-text-metric-line)
+      var(--sqx-font-sans);
+    --sqx-text-code: var(--sqx-text-code-weight)
+      var(--sqx-text-code-size) / var(--sqx-text-code-line)
+      var(--sqx-font-mono);
+  }
+
+  :root {
+    --sqx-flow-angle: 104deg;
+    --sqx-flow-from: 0% 50%;
+    --sqx-flow-to: 100% 50%;
+    --sqx-sweep-start: -140%;
+    --sqx-sweep-end: 240%;
+    --sqx-sweep-skew: -18deg;
+    --sqx-mirror: 1;
+  }
+
+  :root:dir(rtl) {
+    --sqx-flow-angle: 256deg;
+    --sqx-flow-from: 100% 50%;
+    --sqx-flow-to: 0% 50%;
+    --sqx-sweep-start: 240%;
+    --sqx-sweep-end: -140%;
+    --sqx-mirror: -1;
+  }
+}
+
+[lang="ar"],
+:lang(ar) {
+  letter-spacing: normal !important;
+}
+
+@layer sqx.base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  figure,
+  blockquote,
+  dl,
+  dd,
+  ol,
+  ul {
+    margin: 0;
+  }
+
+  body {
+    background: var(--sqx-surface-canvas);
+    color: var(--sqx-text-primary);
+    font: var(--sqx-text-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: var(--sqx-focus-ring-width) solid var(--sqx-border-focus);
+    outline-offset: var(--sqx-focus-ring-offset);
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  ::selection {
+    background: var(--sqx-surface-accent);
+    color: var(--sqx-text-primary);
+  }
+
+  ::placeholder {
+    color: var(--sqx-text-muted);
+    opacity: 1;
+  }
+
+  img,
+  svg,
+  video {
+    display: block;
+    max-inline-size: 100%;
+  }
+
+  [hidden] {
+    display: none;
+  }
+
+  .sqx-visually-hidden {
+    position: absolute;
+    inline-size: var(--sqx-border-width-hair);
+    block-size: var(--sqx-border-width-hair);
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .sqx-skip-link {
+    position: absolute;
+    inset-block-start: var(--sqx-space-3);
+    inset-inline-start: var(--sqx-space-3);
+    z-index: var(--sqx-z-toast);
+    transform: translateY(-200%);
+    padding-block: var(--sqx-space-3);
+    padding-inline: var(--sqx-space-5);
+    background: var(--sqx-surface-raised);
+    color: var(--sqx-text-link);
+    font: var(--sqx-text-label);
+    letter-spacing: var(--sqx-text-label-tracking);
+    border: var(--sqx-border-width-hair) solid var(--sqx-border-strong);
+    border-radius: var(--sqx-radius-control);
+    box-shadow: var(--sqx-shadow-menu);
+    transition: transform var(--sqx-duration-fast) var(--sqx-ease-decelerate);
+  }
+
+  .sqx-skip-link:focus-visible {
+    transform: translateY(0);
+  }
+}
+
+@keyframes sqx-flow {
+  from {
+    background-position: var(--sqx-flow-from);
+  }
+  to {
+    background-position: var(--sqx-flow-to);
+  }
+}
+
+@keyframes sqx-sweep {
+  from {
+    transform: translateX(var(--sqx-sweep-start))
+      skewX(var(--sqx-sweep-skew));
+  }
+  to {
+    transform: translateX(var(--sqx-sweep-end))
+      skewX(var(--sqx-sweep-skew));
+  }
+}
+
+@keyframes sqx-drift {
+  0%,
+  100% {
+    background-position: var(--sqx-flow-from);
+  }
+  50% {
+    background-position: var(--sqx-flow-to);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

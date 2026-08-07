@@ -1,0 +1,162 @@
+.scroll {
+  min-inline-size: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sqx-border-strong) transparent;
+}
+
+/* Cancel the card body inset so the table rules and the row hover fill run
+   card edge to card edge, then hand that inset back to the outer cells so
+   the first column still lines up with the card heading. */
+.scroll[data-bleed] {
+  margin-inline: calc(var(--sqx-inset-card) * -1);
+}
+
+.scroll[data-bleed] :is(.head, .rowHead, .cell):first-child {
+  padding-inline-start: var(--sqx-inset-card);
+}
+
+.scroll[data-bleed] :is(.head, .rowHead, .cell):last-child {
+  padding-inline-end: var(--sqx-inset-card);
+}
+
+.table {
+  inline-size: 100%;
+  border-collapse: collapse;
+}
+
+.caption {
+  padding-block-end: var(--sqx-space-4);
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  text-align: start;
+  text-wrap: pretty;
+}
+
+.head {
+  padding-inline: var(--sqx-inset-cell);
+  padding-block: var(--sqx-inset-cell-compact);
+  font: var(--sqx-text-overline);
+  letter-spacing: var(--sqx-text-overline-tracking);
+  text-transform: uppercase;
+  color: var(--sqx-text-secondary);
+  text-align: start;
+  white-space: nowrap;
+  /* The header is a greyed band, not bare text on the card. This is the one
+     place the neutral palette is allowed to step off the card surface —
+     it separates labels from data without spending a colour on it.
+     Square corners on purpose: the band runs the full width of the card and
+     ends at its edge, so rounding it would read as a floating chip rather
+     than a header rule. */
+  border-radius: 0;
+  background: var(--sqx-surface-header);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+
+.head[data-align="end"] { text-align: end; }
+.head[data-width="min"] { inline-size: 0; }
+.head[data-width="grow"] { inline-size: 100%; }
+
+.row {
+  transition: background-color var(--sqx-duration-fast) var(--sqx-ease-standard);
+}
+
+.row:hover {
+  background: var(--sqx-surface-subtle);
+}
+
+.row + .row .rowHead,
+.row + .row .cell {
+  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.rowHead,
+.cell {
+  padding-inline: var(--sqx-inset-cell);
+  padding-block: var(--sqx-inset-cell);
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
+  color: var(--sqx-text-secondary);
+  text-align: start;
+  vertical-align: middle;
+}
+
+.table[data-density="compact"] .rowHead,
+.table[data-density="compact"] .cell {
+  padding-block: var(--sqx-inset-cell-compact);
+}
+
+.rowHead {
+  font-weight: var(--sqx-weight-semibold);
+  color: var(--sqx-text-primary);
+}
+
+.rowHead[data-align="end"],
+.cell[data-align="end"] { text-align: end; }
+
+.cell[data-numeric] {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 75rem) {
+  .head {
+    position: absolute;
+    inline-size: var(--sqx-border-width-hair);
+    block-size: var(--sqx-border-width-hair);
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: var(--sqx-space-2) var(--sqx-space-4);
+    padding-block: var(--sqx-space-4);
+    border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  }
+
+  /* Stacked rows drop cell padding with `display: contents`, so the inset
+     has to move to the row itself. */
+  .scroll[data-bleed] .row {
+    padding-inline: var(--sqx-inset-card);
+  }
+
+  .rowHead,
+  .cell {
+    display: contents;
+    border: 0;
+  }
+
+  .rowHead::before,
+  .cell::before {
+    content: attr(data-label);
+    font: var(--sqx-text-caption);
+    color: var(--sqx-text-muted);
+  }
+
+  .rowHead[data-align="end"],
+  .cell[data-align="end"] { text-align: start; }
+}
+
+.cellLink {
+  color: var(--sqx-text-link);
+  font-variant-numeric: var(--sqx-numeric-tabular);
+  text-decoration: none;
+  border-radius: var(--sqx-radius-xs);
+}
+
+.cellLink:hover {
+  color: var(--sqx-text-link-hover);
+  text-decoration: underline;
+}
+
+.cellLink:focus-visible {
+  outline: var(--sqx-border-width-hair) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}
+
+.cellMuted {
+  color: var(--sqx-text-muted);
+  font-variant-numeric: var(--sqx-numeric-tabular);
+}

@@ -1,0 +1,17 @@
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-4);
+  min-inline-size: 0;
+}
+
+.lead,
+.trail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+  min-inline-size: 0;
+}

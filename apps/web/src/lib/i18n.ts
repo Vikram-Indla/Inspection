@@ -180,6 +180,8 @@ function prefersArabic(acceptLanguage: string): boolean {
 }
 
 export async function getLocale(): Promise<Locale> {
+  const resolved = (await headers()).get("x-locale");
+  if (resolved === "en" || resolved === "ar") return resolved;
   const c = await cookies();
   const chosen = c.get("locale")?.value;
   // An explicit choice on the AR/EN switch always wins and persists (1-year cookie).

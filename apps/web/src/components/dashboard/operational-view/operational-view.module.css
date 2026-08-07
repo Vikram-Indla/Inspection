@@ -1,0 +1,19 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-section);
+  min-inline-size: 0;
+}
+
+.footnote {
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}
+
+.name {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -15,6 +15,7 @@ import { getVerifiedUser } from "@/lib/verified-user";
 import { formatDate, riyadhDayDiff } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import { isNotificationUnread, notificationHref, notificationReadPatch } from "@/lib/notification-read";
+import { humaniseEnum } from "@/lib/text";
 
 export type BellStrings = {
   label: string;            // accessible name for the toggle
@@ -260,7 +261,7 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
                   <div style={{ minInlineSize: 0, display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
                     <strong className="t-heading"
                       style={{ fontWeight: unreadRow ? 600 : 500, color: unreadRow ? undefined : "var(--text-muted)" }}>
-                      {strings.events[r.event_key] ?? r.event_key.replace(/_/g, " ")}
+                      {strings.events[r.event_key] ?? humaniseEnum(r.event_key)}
                       {unreadRow && <span className="sq-sr-only"> — {strings.unreadBadge}</span>}
                     </strong>
                     {context && (

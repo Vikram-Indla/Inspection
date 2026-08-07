@@ -13,12 +13,12 @@
    scrollbar to reach it. .sq-shell__main owns horizontal overflow instead.
    the retired compatibility layer once duplicated this block; the consolidated
    runtime is now the only authenticated-shell authority. */
-html { background: var(--surface-canvas); }
+html { background: var(--sqx-surface-canvas); }
 body {
   margin: 0;
   font: var(--type-body-font);
-  color: var(--text-primary);
-  background: var(--surface-canvas);
+  color: var(--sqx-text-primary);
+  background: var(--sqx-surface-canvas);
   -webkit-font-smoothing: antialiased;
   font-synthesis: none;
 }

@@ -1,0 +1,13 @@
+.updated {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sqx-space-2);
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+}
+
+.updatedValue {
+  font-weight: var(--sqx-weight-semibold);
+  color: var(--sqx-text-secondary);
+  font-variant-numeric: tabular-nums;
+}

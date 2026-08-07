@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { isInvalidRefreshToken } from "@/lib/auth/refresh-token-error";
+import { DEFAULT_LOCALE, LOCALES, localeFromPathname, stripLocale, type Locale } from "@/lib/locale-path";
 
 const PROTECTED_PAGE_PREFIXES = [
   "/dashboard",
@@ -26,6 +27,20 @@ function clearSupabaseAuthCookies(request: NextRequest, response: NextResponse):
     .forEach(({ name }) => response.cookies.set(name, "", { path: "/", maxAge: 0 }));
 }
 
+function preferredLocale(request: NextRequest): Locale {
+  const chosen = request.cookies.get("locale")?.value;
+  if (LOCALES.some(locale => locale === chosen)) return chosen as Locale;
+  const accept = request.headers.get("accept-language") ?? "";
+  return /(^|,)\s*ar\b/i.test(accept) ? "ar" : DEFAULT_LOCALE;
+}
+
+function isLocalisable(pathname: string): boolean {
+  if (pathname.startsWith("/api")) return false;
+  if (pathname.startsWith("/_next")) return false;
+  if (pathname.startsWith("/locale")) return false;
+  return !pathname.includes(".");
+}
+
 function isProtectedPage(pathname: string): boolean {
   return PROTECTED_PAGE_PREFIXES.some(prefix =>
     pathname === prefix || pathname.startsWith(`${prefix}/`),
@@ -47,21 +62,31 @@ function isProtectedPage(pathname: string): boolean {
 // flow itself — re-introducing a catch-all auth redirect here would change
 // behaviour for public routes that currently work.
 export async function middleware(request: NextRequest) {
+  const requested = request.nextUrl.pathname;
+  const localisable = isLocalisable(requested);
+  const pathLocale = localisable ? localeFromPathname(requested) : null;
+  const locale = pathLocale ?? preferredLocale(request);
+  const pathname = pathLocale ? stripLocale(requested) : requested;
+
   const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-pathname", request.nextUrl.pathname);
+  requestHeaders.set("x-pathname", pathname);
+  requestHeaders.set("x-locale", locale);
   const designRoute =
-    request.nextUrl.pathname === "/admin/regulations" && !request.nextUrl.searchParams.has("id")
+    pathname === "/admin/regulations" && !request.nextUrl.searchParams.has("id")
       ? "/compliance"
-      : request.nextUrl.pathname === "/admin/compliance-approvals"
+      : pathname === "/admin/compliance-approvals"
         ? "/compliance/approvals"
-        : request.nextUrl.pathname === "/admin/violations" && !request.nextUrl.searchParams.has("mode")
+        : pathname === "/admin/violations" && !request.nextUrl.searchParams.has("mode")
           ? "/enforcement-library"
           : null;
   const buildResponse = () => {
-    if (!designRoute) return NextResponse.next({ request: { headers: requestHeaders } });
+    const target = designRoute ?? pathname;
+    if (target === requested) {
+      return NextResponse.next({ request: { headers: requestHeaders } });
+    }
     const rewritten = request.nextUrl.clone();
-    rewritten.pathname = designRoute;
-    rewritten.searchParams.set("__shellRoute", request.nextUrl.pathname);
+    rewritten.pathname = target;
+    if (designRoute) rewritten.searchParams.set("__shellRoute", pathname);
     return NextResponse.rewrite(rewritten, { request: { headers: requestHeaders } });
   };
   let response = buildResponse();
@@ -94,11 +119,11 @@ export async function middleware(request: NextRequest) {
     }
 
     if (isInvalidRefreshToken(claimsError)) {
-      if (request.method === "GET" && isProtectedPage(request.nextUrl.pathname)) {
+      if (request.method === "GET" && isProtectedPage(pathname)) {
         const loginUrl = request.nextUrl.clone();
-        loginUrl.pathname = "/login";
+        loginUrl.pathname = `/${locale}/login`;
         loginUrl.search = "";
-        loginUrl.searchParams.set("next", `${request.nextUrl.pathname}${request.nextUrl.search}`);
+        loginUrl.searchParams.set("next", `${requested}${request.nextUrl.search}`);
         loginUrl.searchParams.set("reason", "expired");
         response = NextResponse.redirect(loginUrl);
       } else {

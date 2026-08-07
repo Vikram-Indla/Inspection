@@ -1,0 +1,9 @@
+.code {
+  font: var(--sqx-text-code);
+  letter-spacing: var(--sqx-text-code-tracking);
+  color: var(--sqx-text-muted);
+}
+
+.muted {
+  color: var(--sqx-text-muted);
+}

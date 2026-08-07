@@ -1,0 +1,37 @@
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sqx-space-3);
+  min-inline-size: 0;
+}
+
+.brandMark {
+  display: inline-flex;
+  inline-size: var(--sqx-icon-xl);
+  block-size: var(--sqx-icon-xl);
+  flex: none;
+  color: var(--sqx-text-accent);
+}
+
+.brandMark svg {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.brandName {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.brandAr {
+  font: var(--sqx-text-subheading);
+  letter-spacing: var(--sqx-text-subheading-tracking);
+  color: var(--sqx-text-primary);
+}
+
+.brandEn {
+  font: var(--sqx-text-overline);
+  letter-spacing: var(--sqx-text-overline-tracking);
+  color: var(--sqx-text-muted);
+}

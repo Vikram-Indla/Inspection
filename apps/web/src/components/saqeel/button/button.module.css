@@ -1,0 +1,170 @@
+.root {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sqx-space-3);
+  min-block-size: var(--sqx-control-h-md);
+  padding-inline: var(--sqx-inset-control);
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
+  white-space: nowrap;
+  text-decoration: none;
+  overflow: hidden;
+  isolation: isolate;
+  border: var(--sqx-border-width-hair) solid transparent;
+  border-radius: var(--sqx-radius-control);
+  cursor: pointer;
+  transition:
+    background-color var(--sqx-duration-fast) var(--sqx-ease-standard),
+    border-color var(--sqx-duration-fast) var(--sqx-ease-standard),
+    color var(--sqx-duration-fast) var(--sqx-ease-standard);
+}
+
+.root[data-size="sm"] {
+  min-block-size: var(--sqx-control-h-sm);
+  padding-inline: var(--sqx-space-4);
+}
+
+.root[data-size="lg"] {
+  min-block-size: var(--sqx-control-h-lg);
+  padding-inline: var(--sqx-space-7);
+}
+
+.root[data-block] {
+  display: flex;
+  inline-size: 100%;
+}
+
+.root:disabled {
+  color: var(--sqx-action-disabled-text);
+  background: var(--sqx-action-disabled-bg);
+  border-color: transparent;
+  cursor: not-allowed;
+}
+
+/* gap, not a text space: these are inline-flex, so a label followed by a
+   count element becomes two flex items and any whitespace between them is
+   discarded — which is why counts rendered flush against their label. */
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sqx-space-3);
+  min-inline-size: 0;
+}
+
+.compact {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sqx-space-3);
+  min-inline-size: 0;
+}
+
+.root[data-variant="primary"] {
+  color: var(--sqx-action-primary-text);
+  background: var(--sqx-action-primary-bg);
+}
+
+.root[data-variant="primary"]:hover:not(:disabled) {
+  background: var(--sqx-action-primary-hover);
+}
+
+.root[data-variant="secondary"] {
+  color: var(--sqx-action-secondary-text);
+  background: transparent;
+  border-color: var(--sqx-action-secondary-border);
+}
+
+.root[data-variant="secondary"]:hover:not(:disabled) {
+  background: var(--sqx-action-secondary-hover);
+}
+
+.root[data-variant="tertiary"] {
+  color: var(--sqx-action-tertiary-text);
+  background: transparent;
+}
+
+.root[data-variant="tertiary"]:hover:not(:disabled) {
+  background: var(--sqx-action-tertiary-hover);
+}
+
+.root[data-variant="danger"] {
+  color: var(--sqx-action-danger-text);
+  background: var(--sqx-action-danger-bg);
+}
+
+.root[data-variant="danger"]:hover:not(:disabled) {
+  background: var(--sqx-action-danger-hover);
+}
+
+.root[data-variant="ai"] {
+  color: var(--sqx-on-accent-ai);
+  background-image: var(--sqx-gradient-ai);
+  background-size: var(--sqx-gradient-flow-size);
+  animation: sqx-flow var(--sqx-duration-flow) linear infinite;
+}
+
+.root[data-variant="ai"]::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset-block: calc(var(--sqx-space-8) * -1);
+  inline-size: 40%;
+  inset-inline-start: 0;
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    var(--sqx-glare-050),
+    transparent
+  );
+  opacity: 0;
+  pointer-events: none;
+}
+
+.root[data-variant="ai"]:hover::after {
+  animation: button-sweep var(--sqx-duration-sweep) var(--sqx-ease-sweep) 1;
+}
+
+@keyframes button-sweep {
+  from {
+    transform: translateX(var(--sqx-sweep-start)) skewX(var(--sqx-sweep-skew));
+    opacity: 0;
+  }
+
+  40% {
+    opacity: 1;
+  }
+
+  to {
+    transform: translateX(var(--sqx-sweep-end)) skewX(var(--sqx-sweep-skew));
+    opacity: 0;
+  }
+}
+
+@media (max-width: 40rem) {
+  .compact {
+    position: absolute;
+    inline-size: var(--sqx-border-width-hair);
+    block-size: var(--sqx-border-width-hair);
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root[data-variant="ai"] {
+    animation: none;
+  }
+
+  .root[data-variant="ai"]:hover::after {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+.root:focus-visible {
+  outline: none;
+  border-color: var(--sqx-border-focus);
+}

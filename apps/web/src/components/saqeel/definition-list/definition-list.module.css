@@ -1,0 +1,35 @@
+.root {
+  display: grid;
+  gap: var(--sqx-space-5);
+  min-inline-size: 0;
+  margin: 0;
+}
+
+.root[data-columns="auto"] {
+  grid-template-columns: repeat(auto-fit, minmax(var(--sqx-grid-min-sm), 1fr));
+}
+
+.root[data-columns="two"] {
+  grid-template-columns: repeat(auto-fit, minmax(var(--sqx-grid-min-md), 1fr));
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+  min-inline-size: 0;
+}
+
+.term {
+  font: var(--sqx-text-overline);
+  letter-spacing: var(--sqx-text-overline-tracking);
+  text-transform: uppercase;
+  color: var(--sqx-text-muted);
+}
+
+.value {
+  margin: 0;
+  font: var(--sqx-text-body-strong);
+  color: var(--sqx-text-primary);
+  overflow-wrap: anywhere;
+}

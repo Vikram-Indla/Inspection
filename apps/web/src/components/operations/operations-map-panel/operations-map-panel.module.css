@@ -1,0 +1,94 @@
+.canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.canvas > :global(.stack),
+.canvas :global(.map-panel) {
+  block-size: 100%;
+  min-block-size: 0;
+  padding: 0;
+  margin: 0;
+  gap: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.canvas :global(.mapboxgl-map),
+.canvas :global(.mapboxgl-canvas-container),
+.canvas :global(.mapboxgl-canvas) {
+  block-size: 100%;
+  inline-size: 100%;
+}
+
+.canvas :global(.mapboxgl-ctrl-top-right) {
+  padding: var(--sqx-space-4);
+}
+
+.canvas :global(.mapboxgl-ctrl-bottom-right),
+.canvas :global(.mapboxgl-ctrl-bottom-left) {
+  padding: var(--sqx-space-3);
+}
+
+.canvas :global(.mapboxgl-ctrl-group) {
+  overflow: hidden;
+  background: var(--sqx-surface-raised);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-control);
+  box-shadow: var(--sqx-shadow-card);
+}
+
+.canvas :global(.mapboxgl-ctrl-group button) {
+  inline-size: var(--sqx-control-h-md);
+  block-size: var(--sqx-control-h-md);
+  background: transparent;
+  transition: background-color var(--sqx-duration-fast) var(--sqx-ease-standard);
+}
+
+.canvas :global(.mapboxgl-ctrl-group button + button) {
+  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.canvas :global(.mapboxgl-ctrl-group button:hover) {
+  background: var(--sqx-surface-subtle);
+}
+
+.canvas :global(.mapboxgl-ctrl-group button:focus-visible) {
+  outline: none;
+  background: var(--sqx-surface-subtle);
+  box-shadow: inset 0 0 0 var(--sqx-border-width-hair) var(--sqx-border-focus);
+}
+
+.canvas :global(.mapboxgl-ctrl-attrib) {
+  padding-inline: var(--sqx-space-3);
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  background: var(--sqx-surface-raised);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-pill);
+}
+
+.canvas :global(.mapboxgl-ctrl-attrib a) {
+  color: var(--sqx-text-muted);
+}
+
+.canvas :global(.mapboxgl-ctrl-logo) {
+  opacity: 0.55;
+}
+
+:global(:root[data-theme="dark"]) .canvas :global(.mapboxgl-ctrl-icon) {
+  filter: invert(1);
+}
+
+:global(:root[data-theme="dark"]) .canvas :global(.mapboxgl-ctrl-logo) {
+  filter: invert(1);
+  opacity: 0.45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .canvas :global(.mapboxgl-ctrl-group button) {
+    transition: none;
+  }
+}

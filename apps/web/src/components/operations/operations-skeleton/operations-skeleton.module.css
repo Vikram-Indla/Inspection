@@ -1,0 +1,63 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-4);
+  inline-size: 100%;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
+/* Same column rhythm as a compact DataTable, so the placeholder rows sit where
+   the real cells will. */
+.head,
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) max-content minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sqx-space-5);
+}
+
+.head {
+  padding-block-end: var(--sqx-space-3);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.row {
+  min-block-size: var(--sqx-control-h-md);
+}
+
+.listRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sqx-space-4);
+  min-block-size: var(--sqx-control-h-lg);
+  padding-block: var(--sqx-space-4);
+}
+
+.listRow + .listRow {
+  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.listBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+  flex: 1;
+  min-inline-size: 0;
+}
+
+@media (max-width: 60rem) {
+  .head {
+    display: none;
+  }
+
+  .row {
+    grid-template-columns: minmax(0, 1fr) max-content;
+  }
+}

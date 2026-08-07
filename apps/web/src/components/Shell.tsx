@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { localeHref } from "@/lib/locale-path";
 import { type ReactNode } from "react";
 import { getRoleTitles, getShellRegions, getUserProfile, getUserRoles } from "@/lib/persona";
 import { useT } from "@/lib/i18n";
@@ -48,7 +49,7 @@ export async function AppShell({ children }: { children: ReactNode }) {
     // on the field-specific biometric sign-in (SAQEEL Field Login.dc.html),
     // matching the /field top-level entry — not the desktop /login
     // story-panel surface.
-    redirect("/login");
+    redirect(localeHref(locale, "/login"));
   }
   const groups = buildShellNavigation(roles).map(group => ({
     id: group.id,

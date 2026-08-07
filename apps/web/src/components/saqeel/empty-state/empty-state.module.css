@@ -1,0 +1,69 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sqx-space-3);
+  min-inline-size: 0;
+  padding-block: var(--sqx-space-10);
+  padding-inline: var(--sqx-inset-card);
+  text-align: center;
+  background: var(--sqx-surface-sunken);
+  border: var(--sqx-border-width-hair) dashed var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-md);
+}
+
+.root[data-size="sm"] {
+  padding-block: var(--sqx-space-7);
+}
+
+.root[data-variant="inline"] {
+  padding-block: var(--sqx-space-6);
+  background: transparent;
+  border: 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--sqx-space-10);
+  block-size: var(--sqx-space-10);
+  color: var(--sqx-text-muted);
+  background: var(--sqx-surface-subtle);
+  border-radius: var(--sqx-radius-full);
+}
+
+.root[data-tone="warning"] .badge {
+  color: var(--sqx-status-warning-on-soft);
+  background: var(--sqx-status-warning-soft);
+}
+
+.root[data-tone="danger"] .badge {
+  color: var(--sqx-status-critical-on-soft);
+  background: var(--sqx-status-critical-soft);
+}
+
+.root[data-tone="info"] .badge {
+  color: var(--sqx-status-info-on-soft);
+  background: var(--sqx-status-info-soft);
+}
+
+.title {
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
+  font-weight: var(--sqx-weight-semibold);
+  color: var(--sqx-text-primary);
+  text-wrap: balance;
+}
+
+.description {
+  max-inline-size: var(--sqx-grid-min-lg);
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}
+
+.action {
+  margin-block-start: var(--sqx-space-2);
+}

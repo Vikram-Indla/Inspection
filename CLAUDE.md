@@ -1,56 +1,162 @@
-# Saqeel design implementation rules — non-negotiable
+# Inspection Platform — session onboarding (read this first)
 
-The approved design is `design/final-cut/saqeel-revamp.html`. Open it in a browser and inspect it.
-Do not work from screenshots or from prose descriptions of it.
+This repository is the MIM Inspection Platform. Active work is the **redesign of
+the Next.js application at `apps/web`**, carried out file by file, page by page,
+component by component.
 
-The design is styled entirely with classes and tokens that ALREADY EXIST in
-`apps/web/src/app/`. Nothing was invented. Your job is markup and wiring, **not styling**.
+## Before doing any work, read in this order
 
-1. **NO NEW CSS.** Do not write a new class, a new CSS file, a styled-component, a Tailwind
-   utility, or a `style={{ }}` prop. Every element must render with a class that already exists
-   in `apps/web/src/app/saqeel-components.css`.
+1. **`brain/web/README.md`** — the law and the memory for `apps/web`.
+2. **`brain/web/01-PROJECT-STATUS.md`** — where the redesign stands.
+3. **`brain/web/03-REDESIGN-TRACKER.md`** — the work board. Take the top
+   unblocked item in NOW unless told otherwise.
+4. **`brain/web/rules/WEB-008-standing-task-contract.md`** — what every task
+   prompt implies but does not repeat. Then the rule documents your task names,
+   `WEB-000` … `WEB-009`. Read them before writing code, not after review
+   rejects the diff.
+5. **`brain/web/04-COMPONENT-LEDGER.md`** — never build what already exists.
 
-2. **NO NEW TOKENS.** Use `var(--surface-*)`, `var(--text-*)`, `var(--action-*)`,
-   `var(--status-*)`, `var(--space-*)`, `var(--radius-*)`, `var(--shadow-*)`. Never a raw hex,
-   `rgb()`, px font size, or px radius. If a value looks bespoke, it is a token you have not
-   found yet.
+`AGENTS.md` covers repository-wide governance (product contract, database,
+release gates). `brain/web/` is authoritative for everything inside `apps/web`.
 
-3. **IF A CLASS IS MISSING, STOP.** Do not style the page locally to work around it. Report the
-   gap. A missing class is a design-system change request, not a page-level fix.
+---
 
-4. **COPY THE MARKUP STRUCTURE.** Element order, nesting depth, and class names in the design are
-   the contract. If the design has `div.panel > div (header) > span + span`, produce the same.
+## Binding rules — non-negotiable
 
-5. **NO ASTRYX.** No `ax-` class, `ax-` token, or `astryx.css` import. Zero references.
+Full text in `brain/web/rules/`. The twelve that reject a diff on sight:
 
-6. **STATUS IS TEXT PLUS SHAPE, NEVER COLOUR ALONE.** Every status renders as a `.badge` with a
-   text label. Never replace one with a coloured dot.
+1. **Zero comments.** No `//`, no `/* */`, no `{/* */}`. Code that needs a
+   sentence to be understood is not finished — the fix is better names, smaller
+   functions, clearer structure. Two narrow exceptions only: TSDoc on
+   design-system public API, and the regex-locked `@retiring` banner
+   (WEB-006 §4). No `@ts-ignore`, no `eslint-disable`.
+2. **Components ≤ 200 lines, hard ceiling 400. Route files ≤ 40 lines.**
+3. **Route files contain no client code.** `page.tsx` composes named components
+   and awaits queries from `features/*/queries.ts`. Only `error.tsx` may carry
+   `"use client"`.
+4. **Server Components by default.** `"use client"` at the leaf, smallest
+   possible subtree, justified in writing in the tracker task.
+5. **No `any`.** No `as any`, no `as unknown as`, no `!`. Unknown input is
+   `unknown`, narrowed once at the boundary. Illegal states unrepresentable.
+6. **No `let` in `.tsx`.** Ever.
+7. **No literal visual values.** No hex, rgb, px, rem, font-family, font-size,
+   shadow, radius, or z-index outside `apps/web/src/app/tokens.css`. Only
+   `var(--token)`.
+8. **No `<svg>` in application code.** Icons come from `lucide-react` through
+   `components/saqeel/media/icon-registry.ts`, by semantic name.
+9. **No `alt=""`.** Every image carries alt text conveying purpose. A decorative
+   graphic is never an `<img>` — it is CSS or an `aria-hidden` icon.
+   WCAG 2.2 Level AA throughout.
+10. **No useless state or effects.** Walk the state ladder (WEB-004 §1):
+    server data → URL state → derived → uncontrolled DOM → `useState` →
+    context. `useEffect` is banned except for external synchronisation.
+11. **No dumping grounds.** Max 12 files per directory, grouped by domain. No
+    `utils`, `helpers`, `common`, `misc`, `v2`, `final`.
+12. **No Astryx.** No `ax-` class, `ax-` token, or `astryx.css` import. The
+    design system is **SAQEEL**.
+13. **Record every task, commit nothing.** Every completed task gets its own
+    record at `brain/web/sessions/<YYYY-MM>/<YYYY-MM-DD>-<TASK-ID>-<slug>.md`.
+    Never run a git write command — finish with the changed-file list and
+    **one** Conventional Commit line for the human to run.
 
-7. **RTL VIA LOGICAL PROPERTIES ONLY.** `padding-inline`, `margin-inline-start`,
-   `inset-inline-start`, `border-inline-end`. Never `left`/`right`. Never a `[dir="rtl"]`
-   override that flips a value.
+---
 
-8. **ARABIC LIVES IN i18n RESOURCES.** The design carries ~725 approved Arabic strings; they move
-   into the repo's i18n layer, not into components. Never translate inside a component.
+## Design authority
 
-9. **ROUTES ARE FIXED.** `/dashboard` `/operations` `/factories` `/planning` `/execution`
-   `/reviews` `/compliance` `/compliance/approvals` `/enforcement-library` `/analytics`
-   `/admin/*`. Do not rename, add, or nest. Tabs and filters are query state, never subroutes.
+The approved design is `design/final-cut/saqeel-revamp.html`. Open it in a
+browser and inspect it. Do not work from screenshots or from prose descriptions
+of it.
 
-10. **NEVER INVENT A GOVERNED VALUE.** No risk weight, penalty amount, SLA, threshold, or approval
-    rule. Absent data renders as a state: *Not configured* / *Unavailable* / *Insufficient
-    evidence*.
+1. **`apps/web/src/saqeel.css` is the single source of visual truth.** Raw colour
+   and size values appear only in its primitives block. Everything else consumes
+   `var(--sqx-*)`. The prefix is `--sqx-` / `.sqx-` — never `--sq-`, `.sq-`, or
+   `.saqeel-`, all of which collide with the frozen legacy sheets.
+2. **`saqeel.css` is core tokens only.** No component classes. Adding a token is
+   a change request, not a task step: if a component appears to need a new one,
+   it almost always needs an existing one. A genuine gap **stops the work** and
+   is raised — never filled inline. New tokens carry their measured contrast ratio.
+3. **Component styles are colocated CSS Modules** — `shell/shell.tsx` +
+   `shell/shell.module.css` — consuming `var(--sqx-*)` only. The legacy sheets
+   `tokens.css`, `saqeel-components.css`, `saqeel-runtime.css` and
+   `v2-components.css` are **frozen**; each migrated screen deletes the rules it
+   exclusively owned. No CSS-in-JS, no Tailwind, no `style={{ }}` except a
+   token-valued custom property.
+4. **Copy the markup structure of the approved design.** Element order, nesting
+   depth, and semantics are the contract.
+5. **Status is text plus shape, never colour alone.** Every status renders as a
+   `StatusPill` with a text label. A coloured dot never stands alone.
+6. **RTL via logical properties only** — `padding-inline`,
+   `margin-inline-start`, `inset-inline-start`, `border-inline-end`. Never
+   `left`/`right`. Never a `[dir="rtl"]` override that flips a value.
+7. **Arabic lives in i18n resources**, never inside a component. No user-visible
+   string literal in any component.
+8. **Routes are fixed.** `/dashboard` `/operations` `/factories` `/planning`
+   `/execution` `/reviews` `/compliance` `/compliance/approvals`
+   `/enforcement-library` `/analytics` `/admin/*` `/field/*`. Do not rename,
+   add, or nest. Tabs and filters are query state, never subroutes.
+9. **Never invent a governed value.** No risk weight, penalty amount, SLA,
+   threshold, or approval rule. Absent data renders as a state: *Not
+   configured* / *Unavailable* / *Insufficient evidence*.
 
-## Before writing code for any screen
+---
 
-1. Open `design/final-cut/saqeel-revamp.html` and navigate to that screen.
-2. For each region, list the elements and the CLASS each one uses.
-3. Show that list and STOP for confirmation.
+## Working protocol
 
-Only then implement, using those classes only.
+- **One task at a time.** Work the single active tracker item to full
+  completion — zero errors, zero warnings, every gate green — before starting
+  anything else. No parallel work.
+- **Inventory before code.** For a screen migration, list every file, every
+  piece of state, every effect, every literal, every `<svg>`, and every
+  accessibility failure, present that list, and **stop for confirmation** before
+  writing anything.
+- **New ideas are parked, not chased.** A non-blocking idea goes to the tracker's
+  PARKED section and work continues. Pull one in only if it is genuinely part of
+  doing the active task well.
+- **Run every gate locally before calling anything done.** `npm run verify`
+  covers typecheck, lint, gates, unit, e2e, and budgets. The first CI run should
+  hold no surprises.
+- **Definition of Done is a checklist, not a feeling** —
+  `brain/web/rules/WEB-006-definition-of-done.md` §5. Before/after performance
+  numbers and the manual accessibility checklist are part of it.
+- **Retire, do not orphan.** When a component is superseded, mark it with the
+  `@retiring` banner and add its ledger row. Delete only when zero imports
+  remain and the gate in WEB-006 §4 clears.
+- **Record every task the moment it completes** — not batched at session end.
+  One task, one record. Four steps, in order: update the tracker → write the
+  record from `brain/web/sessions/_TEMPLATE-session.md` to
+  `brain/web/sessions/<YYYY-MM>/<YYYY-MM-DD>-<TASK-ID>-<slug>.md` → index it in
+  `brain/web/02-SESSION-LOG.md` → refresh `brain/web/01-PROJECT-STATUS.md` (plus
+  the component and retirement ledgers if touched). Every section of the
+  template is filled: file table with line counts, before/after performance
+  numbers, axe result and the manual accessibility checklist, decisions taken,
+  parked ideas, blockers. This app is transformed by agents with no memory
+  between sessions. The record is the memory. A task that is not written did not
+  happen.
+- **Never run the production build.** `npm run build` and `next build` belong to the human:
+  they take minutes, contend with the running dev server over `.next`, and a half-finished
+  build leaves a corrupted cache. Verify with `npm run typecheck`, `npm run lint`,
+  `npm run gates`, and the feature exercised by hand in the dev server. Anything needing a
+  production compile becomes a **measurement request** handed back for the human to run
+  (WEB-005 §8) — never a command you run yourself.
+- **Never commit.** No `git add`, `commit`, `push`, `checkout`, `switch`,
+  `branch`, `merge`, `rebase`, `reset`, `revert`, `stash`, `tag`, `clean`, or
+  `gh pr create`. Read-only git (`status`, `diff`, `log`, `show`) is fine and
+  encouraged. If the tree needs cleaning, reverting, or branching — **ask**.
+- **Finish with a changed-file list and one line.** A single Conventional Commit
+  subject: `<type>(<scope>): <subject>`, imperative mood, lowercase, ≤ 72
+  characters, no body, no emoji, no ticket number, no attribution. If the change
+  cannot be described in one line, the task was too big — say so.
+  Full law: `brain/web/rules/WEB-007-session-record-and-commits.md`.
 
-## Reference
+  ```
+  perf(operations): rebuild board server-first, -316 KB first-load JS
+  ```
 
-- `docs/design/HANDOFF.md` — route contracts, states, RBAC, per-screen detail
-- `docs/design/FINAL-CUT-REVIEW.md` — every visual decision and its reasoning
-- `docs/design/IMPLEMENTATION-RULES.md` — verification commands and implementation order
+---
+
+## Layout
+
+`apps/web/` the Next.js application (the active work) · `brain/web/` the rulebook
+and session memory for it · `design/` approved design authority ·
+`product-contract/` product law · `docs/` architecture, handoff and UAT records ·
+`supabase/` migrations · `scripts/`, `tools/` operational tooling.

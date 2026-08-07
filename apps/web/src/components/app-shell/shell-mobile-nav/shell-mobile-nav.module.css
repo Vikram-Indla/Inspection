@@ -1,0 +1,51 @@
+.drawer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--sqx-z-drawer);
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  background: var(--sqx-surface-overlay);
+  border: 0;
+  cursor: pointer;
+}
+
+.panel {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  display: flex;
+  flex-direction: column;
+  inline-size: min(100%, var(--sqx-sidebar-w));
+  overflow-y: auto;
+  background: var(--sqx-surface-chrome);
+  box-shadow: var(--sqx-shadow-modal);
+}
+
+.close {
+  position: absolute;
+  inset-block-start: var(--sqx-space-3);
+  inset-inline-end: var(--sqx-space-3);
+  z-index: var(--sqx-z-raised);
+  display: inline-flex;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-block-size: 0;
+}
+
+.trigger {
+  display: inline-flex;
+}
+
+@media (min-width: 1025px) {
+  .trigger {
+    display: none;
+  }
+}

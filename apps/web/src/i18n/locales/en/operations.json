@@ -1,0 +1,87 @@
+{
+  "title": "Operations Center",
+  "loading": {
+    "label": "Loading the Operations Center…",
+    "detail": "Loading visits, location events, corrective actions and notifications."
+  },
+  "perspective": {
+    "label": "Operations perspective",
+    "map": "Operations map",
+    "performance": "National performance"
+  },
+  "action": {
+    "livePositions": "Live positions",
+    "exceptionBoard": "Exception board",
+    "showList": "Show list",
+    "showMap": "Show map"
+  },
+  "map": {
+    "title": "Saudi Arabia",
+    "description": "Live inspector and factory positions across the Kingdom.",
+    "countLabel": "on map"
+  },
+  "summary": {
+    "title": "Operational summary"
+  },
+  "regions": {
+    "title": "National performance by region",
+    "description": "Selecting a region drills to its factories and active visits.",
+    "unavailable": "Compliance unavailable",
+    "detail": "{factories} factories · {active} active visits"
+  },
+  "exceptions": {
+    "title": "Live operational exceptions",
+    "scope": "Records filtered to your access",
+    "open": "Open",
+    "openRecord": "Open record",
+    "emptyTitle": "No open operational exceptions",
+    "emptyBody": "No open operational exceptions in this scope."
+  },
+  "stat": {
+    "activeVisits": "Active visits",
+    "onTheWay": "Inspectors on the way",
+    "executing": "Executing inspections",
+    "submittedToday": "Submitted today",
+    "alerts": "Active operational alerts",
+    "openExecution": "Open Execution",
+    "showOnMap": "Show on map",
+    "openReviews": "Open Review & Approval",
+    "reviewExceptions": "Review exceptions"
+  },
+  "table": {
+    "title": "Live positions list",
+    "caption": "Accessible equivalent of the live map. Same records, same actions, no map dependency.",
+    "inspector": "Inspector",
+    "state": "Operational state",
+    "visit": "Visit",
+    "factory": "Factory",
+    "location": "Region / city",
+    "risk": "Risk",
+    "lastUpdate": "Last update",
+    "actions": "Actions",
+    "openRecord": "Open record",
+    "emptyTitle": "No live positions in this scope"
+  },
+  "scope": {
+    "region": "Region",
+    "city": "City",
+    "allRegions": "All regions",
+    "allCities": "All cities"
+  },
+  "sla": {
+    "title": "Deadline and resubmission alerts",
+    "description": "Deadlines use server timestamps and deadline rules that are set up. If those rules are missing, this stays unavailable.",
+    "visit": "Visit",
+    "factory": "Factory",
+    "deadline": "Deadline",
+    "status": "Deadline status",
+    "escalation": "Escalation",
+    "emptyTitle": "No deadline alerts in this scope",
+    "resubmissionOverdue": "Resubmission overdue",
+    "resubmissionPending": "Resubmission pending"
+  },
+  "monitoring": {
+    "title": "Visit and inspector monitoring",
+    "description": "Visit status, assignments and the latest recorded geofence results you can see."
+  }
+}

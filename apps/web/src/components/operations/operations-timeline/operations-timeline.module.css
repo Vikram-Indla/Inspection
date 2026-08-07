@@ -1,0 +1,7 @@
+.picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sqx-space-4);
+  min-inline-size: 0;
+}

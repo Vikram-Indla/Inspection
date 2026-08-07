@@ -1,0 +1,10 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.root[data-gap="tight"] { gap: var(--sqx-stack-tight); }
+.root[data-gap="default"] { gap: var(--sqx-stack-default); }
+.root[data-gap="loose"] { gap: var(--sqx-stack-loose); }
+.root[data-gap="section"] { gap: var(--sqx-stack-section); }

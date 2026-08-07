@@ -1,3 +1,4 @@
+/* @retiring 2026-08-07 · replaced-by components/saqeel/icon/icon · pending /field · delete-when 0-imports */
 import type { ReactNode } from "react";
 import type { ShellIcon } from "@/lib/shell-navigation";
 

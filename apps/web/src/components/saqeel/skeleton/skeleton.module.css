@@ -1,0 +1,82 @@
+.bone {
+  position: relative;
+  display: block;
+  flex: none;
+  overflow: hidden;
+  background: var(--sqx-surface-subtle);
+  border-radius: var(--sqx-radius-sm);
+}
+
+.bone[data-shape="line"] { block-size: var(--sqx-space-4); }
+.bone[data-shape="line"][data-size="sm"] { block-size: var(--sqx-space-3); }
+.bone[data-shape="line"][data-size="lg"] { block-size: var(--sqx-space-6); }
+.bone[data-shape="line"][data-size="xl"] { block-size: var(--sqx-space-9); }
+
+.bone[data-shape="block"] { block-size: var(--sqx-space-12); border-radius: var(--sqx-radius-md); }
+.bone[data-shape="block"][data-size="lg"] { block-size: var(--sqx-space-13); }
+
+.bone[data-shape="pill"] {
+  block-size: var(--sqx-control-h-sm);
+  border-radius: var(--sqx-radius-pill);
+}
+
+.bone[data-shape="circle"] {
+  inline-size: var(--sqx-space-8);
+  block-size: var(--sqx-space-8);
+  border-radius: var(--sqx-radius-full);
+}
+
+.bone[data-width="full"] { inline-size: 100%; }
+.bone[data-width="wide"] { inline-size: 75%; }
+.bone[data-width="half"] { inline-size: 50%; }
+.bone[data-width="narrow"] { inline-size: 32%; }
+.bone[data-width="tiny"] { inline-size: 18%; }
+
+.bone[data-shape="circle"][data-width] { inline-size: var(--sqx-space-8); }
+
+.bone::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: 100%;
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    var(--sqx-glare-050),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: skeleton-sweep var(--sqx-duration-flow) var(--sqx-ease-standard) infinite;
+}
+
+@keyframes skeleton-sweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+  inline-size: 100%;
+}
+
+.region {
+  display: block;
+  inline-size: 100%;
+}
+
+.regionInner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-section);
+  inline-size: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bone::after {
+    animation: none;
+    opacity: 0;
+  }
+}

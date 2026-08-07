@@ -1,4 +1,5 @@
 import "./tokens.css";
+import "./saqeel.css";
 import "./saqeel-components.css";
 import "./saqeel-runtime.css";
 import PwaRegister from "@/components/PwaRegister";
@@ -39,8 +40,9 @@ const plexArabic = localFont({
 
 export const viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F5F7F8" },
-    { media: "(prefers-color-scheme: dark)", color: "#101317" },
+    // Matches --sqx-surface-canvas in each theme (IRP palette, 2026-08).
+    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
+    { media: "(prefers-color-scheme: dark)", color: "#080B10" },
   ],
   // iPad standalone PWA: draw under the status bar / home indicator so the field
   // chrome's env(safe-area-inset-*) padding (FieldHeader/FieldNav) governs the

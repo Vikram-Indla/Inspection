@@ -1,0 +1,43 @@
+{
+  "action": {
+    "apply": "تطبيق",
+    "reset": "إعادة تعيين",
+    "cancel": "إلغاء",
+    "close": "إغلاق",
+    "search": "بحث",
+    "viewAll": "عرض الكل",
+    "markAllRead": "تعليم الكل كمقروء",
+    "signOut": "تسجيل الخروج"
+  },
+  "entity": {
+    "authority": "الجهة",
+    "city": "المدينة",
+    "factories": "المصانع",
+    "inspections": "التفتيشات",
+    "region": "المنطقة",
+    "sector": "القطاع",
+    "visits": "الزيارات"
+  },
+  "field": {
+    "account": "الحساب",
+    "dateScope": "نطاق التاريخ",
+    "from": "من",
+    "language": "اللغة",
+    "navigation": "وجهة",
+    "profileSettings": "إعدادات الملف الشخصي",
+    "regionScope": "نطاق المنطقة",
+    "roles": "الأدوار",
+    "to": "إلى"
+  },
+  "scope": {
+    "allRegions": "جميع المناطق",
+    "last30Days": "آخر 30 يوماً"
+  },
+  "state": {
+    "empty": "لا يوجد شيء بعد",
+    "loading": "جارٍ التحميل…",
+    "notApplicable": "غير منطبق على هذه الصفحة",
+    "notConfigured": "غير مُهيأ",
+    "unavailable": "غير متاح"
+  }
+}
