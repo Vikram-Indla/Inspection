@@ -15,5 +15,46 @@
     "title": "Saudi Arabia",
     "description": "Live inspector and factory positions across the Kingdom.",
     "countLabel": "on map"
+  },
+  "summary": {
+    "title": "Operational summary"
+  },
+  "regions": {
+    "title": "National performance by region",
+    "description": "Selecting a region drills to its factories and active visits.",
+    "unavailable": "Compliance unavailable",
+    "detail": "{factories} factories · {active} active visits"
+  },
+  "exceptions": {
+    "title": "Live operational exceptions",
+    "scope": "Records filtered to your access",
+    "open": "Open",
+    "openRecord": "Open record",
+    "emptyTitle": "No open operational exceptions",
+    "emptyBody": "No open operational exceptions in this scope."
+  },
+  "stat": {
+    "activeVisits": "Active visits",
+    "onTheWay": "Inspectors on the way",
+    "executing": "Executing inspections",
+    "submittedToday": "Submitted today",
+    "alerts": "Active operational alerts",
+    "openExecution": "Open Execution",
+    "showOnMap": "Show on map",
+    "openReviews": "Open Review & Approval",
+    "reviewExceptions": "Review exceptions"
+  },
+  "table": {
+    "title": "Live positions list",
+    "caption": "Accessible equivalent of the live map. Same records, same actions, no map dependency.",
+    "inspector": "Inspector",
+    "state": "Operational state",
+    "visit": "Visit",
+    "factory": "Factory",
+    "location": "Region / city",
+    "risk": "Risk",
+    "lastUpdate": "Last update",
+    "actions": "Actions",
+    "openRecord": "Open record"
   }
 }

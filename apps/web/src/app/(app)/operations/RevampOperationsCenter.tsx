@@ -1,9 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Stack from "@/components/saqeel/stack/stack";
+import OperationsEntryTable from "@/components/operations/operations-entry-table/operations-entry-table";
+import OperationsExceptions from "@/components/operations/operations-exceptions/operations-exceptions";
 import OperationsMapPanel from "@/components/operations/operations-map-panel/operations-map-panel";
+import { OperationsRegions, OperationsSummary } from "@/components/operations/operations-summary/operations-summary";
 import OperationsToolbar from "@/components/operations/operations-toolbar/operations-toolbar";
-import { getMessages } from "@/i18n/messages";
+import { fill, getMessages } from "@/i18n/messages";
 import { localeHref } from "@/lib/locale-path";
 import OperationsMapWorkspace, {
   type OperationsMapEntry,
@@ -25,8 +29,6 @@ type RegionSummary = {
   active: number;
   href: string;
 };
-
-const copy = (locale: Locale, en: string, ar: string) => locale === "ar" ? ar : en;
 
 export default function RevampOperationsCenter({
   locale,
@@ -51,7 +53,7 @@ export default function RevampOperationsCenter({
   highlights: Highlight[];
   regions: RegionSummary[];
 }) {
-  const { operations } = getMessages(locale);
+  const { common, operations } = getMessages(locale);
   const liveHref = localeHref(locale, "/operations/live");
   const exceptionsHref = localeHref(locale, "/operations/exceptions");
   const [showList, setShowList] = useState(false);
@@ -63,16 +65,17 @@ export default function RevampOperationsCenter({
       .map(entry => entry.inspectorName)
       .filter(Boolean),
   ).size;
+  const stat = operations.stat;
   const summary = [
-    [copy(locale, "Active visits", "الزيارات النشطة"), String(monitoredCount), "/execution", copy(locale, "Open Execution", "فتح التنفيذ")],
-    [copy(locale, "Inspectors on the way", "المفتشون في الطريق"), String(onTheWayInspectors || counts.on_the_way || 0), mapViewHref, copy(locale, "Show on map", "إظهار على الخريطة")],
-    [copy(locale, "Executing inspections", "التفتيشات قيد التنفيذ"), String(counts.executing || 0), "/execution", copy(locale, "Open Execution", "فتح التنفيذ")],
-    [copy(locale, "Submitted today", "المقدمة اليوم"), "—", "/reviews", copy(locale, "Open Review & Approval", "فتح المراجعة والاعتماد")],
-    [copy(locale, "Active operational alerts", "التنبيهات التشغيلية النشطة"), "—", "/operations/exceptions", copy(locale, "Review exceptions", "مراجعة الاستثناءات")],
+    { label: stat.activeVisits, value: String(monitoredCount), href: localeHref(locale, "/execution"), action: stat.openExecution },
+    { label: stat.onTheWay, value: String(onTheWayInspectors || counts.on_the_way || 0), href: mapViewHref, action: stat.showOnMap },
+    { label: stat.executing, value: String(counts.executing || 0), href: localeHref(locale, "/execution"), action: stat.openExecution },
+    { label: stat.submittedToday, value: "—", href: localeHref(locale, "/reviews"), action: stat.openReviews },
+    { label: stat.alerts, value: "—", href: exceptionsHref, action: stat.reviewExceptions },
   ];
 
   return (
-    <div className="stack">
+    <Stack>
       <OperationsToolbar
         view={activeView}
         onViewChange={setActiveView}
@@ -95,33 +98,34 @@ export default function RevampOperationsCenter({
           and OperationsMapWorkspace fills its parent, so it collapsed to the
           breadcrumb line alone — the reason "View on map" opened nothing. */}
       {showList ? (
-          <section className="table-wrap">
-            <table className="table">
-              <caption>{copy(locale, "Accessible equivalent of the live map. Same records, same actions, no map dependency.", "المكافئ القابل للوصول للخريطة المباشرة. السجلات والإجراءات نفسها دون الاعتماد على الخريطة.")}</caption>
-              <thead><tr>
-                <th scope="col">{copy(locale, "Inspector", "المفتش")}</th>
-                <th scope="col">{copy(locale, "Operational state", "الحالة التشغيلية")}</th>
-                <th scope="col">{copy(locale, "Visit", "الزيارة")}</th>
-                <th scope="col">{copy(locale, "Factory", "المصنع")}</th>
-                <th scope="col">{copy(locale, "Region / city", "المنطقة / المدينة")}</th>
-                <th scope="col">{copy(locale, "Risk", "المخاطر")}</th>
-                <th scope="col">{copy(locale, "Last update", "آخر تحديث")}</th>
-                <th scope="col">{copy(locale, "Actions", "الإجراءات")}</th>
-              </tr></thead>
-              <tbody>{activeMapEntries.map(entry => (
-                <tr key={entry.id}>
-                  <th scope="row" data-label={copy(locale, "Inspector", "المفتش")}>{entry.inspectorName ?? "—"}</th>
-                  <td data-label={copy(locale, "Operational state", "الحالة التشغيلية")}><span className="badge badge-info">{entry.state}</span></td>
-                  <td data-label={copy(locale, "Visit", "الزيارة")}>{entry.visitId?.slice(0, 8) ?? "—"}</td>
-                  <td data-label={copy(locale, "Factory", "المصنع")}>{entry.factoryName}</td>
-                  <td data-label={copy(locale, "Region / city", "المنطقة / المدينة")}>{[entry.region, entry.city].filter(Boolean).join(" / ") || "—"}</td>
-                  <td data-label={copy(locale, "Risk", "المخاطر")}><span className="badge badge-pending">{entry.riskScore ?? copy(locale, "Not configured", "غير مهيأ")}</span></td>
-                  <td data-label={copy(locale, "Last update", "آخر تحديث")}>{entry.lastGeoAt ?? "—"}</td>
-                  <td data-label={copy(locale, "Actions", "الإجراءات")}><a className="btn btn-secondary" href={entry.href}>{copy(locale, "Open record", "فتح السجل")}</a></td>
-                </tr>
-              ))}</tbody>
-            </table>
-          </section>
+          <OperationsEntryTable
+            rows={activeMapEntries.map(entry => ({
+              id: entry.id,
+              inspectorName: entry.inspectorName ?? null,
+              state: entry.state,
+              visitId: entry.visitId ?? null,
+              factoryName: entry.factoryName,
+              region: entry.region ?? null,
+              city: entry.city ?? null,
+              riskScore: entry.riskScore ?? null,
+              lastGeoAt: entry.lastGeoAt ?? null,
+              href: entry.href,
+            }))}
+            strings={{
+              title: operations.table.title,
+              caption: operations.table.caption,
+              inspector: operations.table.inspector,
+              state: operations.table.state,
+              visit: operations.table.visit,
+              factory: operations.table.factory,
+              location: operations.table.location,
+              risk: operations.table.risk,
+              lastUpdate: operations.table.lastUpdate,
+              actions: operations.table.actions,
+              openRecord: operations.table.openRecord,
+              notConfigured: common.state.notConfigured,
+            }}
+          />
       ) : (
           <OperationsMapPanel
             title={operations.map.title}
@@ -134,52 +138,31 @@ export default function RevampOperationsCenter({
       )}
 
       {view === "performance" ? (
-        <section className="stack">
-          <div className="panel-row">
-            <h2>{copy(locale, "National performance by region", "الأداء الوطني حسب المنطقة")}</h2>
-            <p>{copy(locale, "Selecting a region drills to its factories and active visits.", "يؤدي تحديد المنطقة إلى مصانعها وزياراتها النشطة.")}</p>
-          </div>
-          <div className="kpi-grid">
-            {regions.map(region => (
-              <a className="panel kpi" href={region.href} key={region.name}>
-                <span><strong>{region.name}</strong><b>—</b></span>
-                <span className="badge badge-pending">{copy(locale, "Compliance unavailable", "الامتثال غير متاح")}</span>
-                <span className="tl-meta">{region.factories} {copy(locale, "factories", "مصانع")} · {region.active} {copy(locale, "active visits", "زيارات نشطة")}</span>
-              </a>
-            ))}
-          </div>
-        </section>
+        <OperationsRegions
+          title={operations.regions.title}
+          description={operations.regions.description}
+          unavailable={operations.regions.unavailable}
+          regions={regions.map(region => ({
+            name: region.name,
+            href: region.href,
+            detail: fill(operations.regions.detail, { factories: region.factories, active: region.active }),
+          }))}
+        />
       ) : null}
 
-      <section>
-        <h2 className="tl-meta">{copy(locale, "Operational summary", "الملخص التشغيلي")}</h2>
-        <div className="kpi-grid">
-          {summary.map(([label, value, href, action]) => (
-            <article className="panel kpi" key={label}>
-              <span>{label}</span>
-              <strong className="sq-kpi__value">{value}</strong>
-              <a className="btn btn-ghost" href={href}>{action}</a>
-            </article>
-          ))}
-        </div>
-      </section>
+      <OperationsSummary title={operations.summary.title} stats={summary} />
 
-      <section className="panel stack">
-        <div className="panel-row">
-          <h2>{copy(locale, "Live operational exceptions", "الاستثناءات التشغيلية المباشرة")}</h2>
-          <span className="tl-meta">{copy(locale, "Records filtered to your access", "السجلات الحالية المقيّدة بالصلاحيات")}</span>
-        </div>
-        {highlights.length ? highlights.slice(0, 8).map(item => (
-          <article className="panel-row" key={item.id}>
-            <span className="badge badge-warning">{copy(locale, "Open", "مفتوح")}</span>
-            <div className="grow">
-              <strong>{item.label}</strong>
-              <p>{item.description}</p>
-            </div>
-            <a className="btn btn-secondary" href={item.href}>{copy(locale, "Open record", "فتح السجل")}</a>
-          </article>
-        )) : <section className="saqeel-state"><div className="saqeel-state__content"><h2>{copy(locale, "No open operational exceptions", "لا توجد استثناءات تشغيلية مفتوحة")}</h2><p>{copy(locale, "No open operational exceptions in this scope.", "لا توجد استثناءات تشغيلية مفتوحة ضمن هذا النطاق.")}</p></div></section>}
-      </section>
-    </div>
+      <OperationsExceptions
+        rows={highlights}
+        strings={{
+          title: operations.exceptions.title,
+          scope: operations.exceptions.scope,
+          open: operations.exceptions.open,
+          openRecord: operations.exceptions.openRecord,
+          emptyTitle: operations.exceptions.emptyTitle,
+          emptyBody: operations.exceptions.emptyBody,
+        }}
+      />
+    </Stack>
   );
 }

@@ -1,0 +1,99 @@
+.scroll {
+  min-inline-size: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sqx-border-strong) transparent;
+}
+
+.table {
+  inline-size: 100%;
+  border-collapse: collapse;
+}
+
+.head {
+  padding-inline: var(--sqx-inset-cell);
+  padding-block: var(--sqx-inset-cell-compact);
+  font: var(--sqx-text-overline);
+  letter-spacing: var(--sqx-text-overline-tracking);
+  text-transform: uppercase;
+  color: var(--sqx-text-muted);
+  text-align: start;
+  white-space: nowrap;
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.row {
+  transition: background-color var(--sqx-duration-fast) var(--sqx-ease-standard);
+}
+
+.row:hover {
+  background: var(--sqx-surface-subtle);
+}
+
+.row + .row .rowHead,
+.row + .row .cell {
+  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.rowHead,
+.cell {
+  padding-inline: var(--sqx-inset-cell);
+  padding-block: var(--sqx-inset-cell-compact);
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
+  color: var(--sqx-text-secondary);
+  text-align: start;
+  vertical-align: middle;
+}
+
+.rowHead {
+  font-weight: var(--sqx-weight-semibold);
+  color: var(--sqx-text-primary);
+  white-space: nowrap;
+}
+
+.code,
+.number {
+  font-variant-numeric: tabular-nums;
+}
+
+.code {
+  font: var(--sqx-text-code);
+  letter-spacing: var(--sqx-text-code-tracking);
+  color: var(--sqx-text-muted);
+}
+
+.muted {
+  color: var(--sqx-text-muted);
+}
+
+@media (max-width: 75rem) {
+  .head {
+    position: absolute;
+    inline-size: var(--sqx-border-width-hair);
+    block-size: var(--sqx-border-width-hair);
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: var(--sqx-space-2) var(--sqx-space-4);
+    padding-block: var(--sqx-space-4);
+    border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  }
+
+  .rowHead,
+  .cell {
+    display: contents;
+    border: 0;
+  }
+
+  .rowHead::before,
+  .cell::before {
+    content: attr(data-label);
+    font: var(--sqx-text-caption);
+    color: var(--sqx-text-muted);
+  }
+}
