@@ -1,0 +1,8 @@
+{
+  "scope": {
+    "portfolio": "Choose a factory",
+    "dossier": "View factory",
+    "shown": "Factories shown",
+    "total": "of {total} factories"
+  }
+}
