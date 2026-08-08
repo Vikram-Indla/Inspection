@@ -143,7 +143,7 @@ export default async function DashboardSections({ locale, scope }: {
         drillFallback: dashboard.metric.drill,
       }}
     >
-      <div className={styles.stack}>
+      <div className={styles.stack} data-sqx-cards="flush">
         {partialSources.length ? (
         <DashboardNotice tone="danger" pill={dashboard.partial.title} title={dashboard.partial.sources}>
           <p className={styles.text}>{partialSources.join(" · ")}</p>

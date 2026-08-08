@@ -1072,21 +1072,22 @@ export default async function Operations({ searchParams }: {
         </div></div>
       )}
 
-      <RevampOperationsCenter
-        locale={locale}
-        view={view}
-        mapViewHref={mapViewHref}
-        performanceViewHref={performanceViewHref}
-        mapEntries={mapEntries}
-        regionalMapEntries={regionalMapEntries}
-        mapStrings={mapWorkspaceStrings}
-        counts={counts}
-        monitoredCount={monitored.length}
-        highlights={highlights}
-        regions={regionSummaries}
-      />
+      <div data-sqx-cards="flush">
+        <RevampOperationsCenter
+          locale={locale}
+          view={view}
+          mapViewHref={mapViewHref}
+          mapEntries={mapEntries}
+          regionalMapEntries={regionalMapEntries}
+          mapStrings={mapWorkspaceStrings}
+          counts={counts}
+          monitoredCount={monitored.length}
+          highlights={highlights}
+          regions={regionSummaries}
+        />
+      </div>
 
-      <div className={styles.operationalDetails}>
+      <div className={styles.operationalDetails} data-sqx-cards="flush">
         <Card as="section" labelledBy="operations-monitoring-heading">
           <CardHeader
             level="h2"
