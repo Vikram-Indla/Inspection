@@ -7,7 +7,7 @@ export default function FactoryDossier({ aside, screenId, children }: {
   children: ReactNode;
 }) {
   return (
-    <div className={styles.root} data-screen-id={screenId}>
+    <div className={styles.root} data-sqx-cards="flush" data-screen-id={screenId}>
       <aside className={styles.aside}>{aside}</aside>
       <div className={styles.main}>{children}</div>
     </div>

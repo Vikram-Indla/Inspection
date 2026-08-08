@@ -1,15 +1,8 @@
 .root {
-  position: sticky;
-  inset-block-start: 0;
-  z-index: var(--sqx-z-sticky);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--sqx-space-2);
-  padding: var(--sqx-space-3);
-  background: var(--sqx-surface-header);
-  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
-  border-radius: var(--sqx-radius-card);
 }
 
 .item {
@@ -20,7 +13,7 @@
   padding-inline: var(--sqx-space-4);
   border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
   border-radius: var(--sqx-radius-pill);
-  background: var(--sqx-surface-sunken);
+  background: var(--sqx-surface-default);
   color: var(--sqx-text-primary);
   font: var(--sqx-text-body);
   text-decoration: none;
@@ -28,7 +21,7 @@
 }
 
 .item:hover {
-  background: var(--sqx-surface-default);
+  background: var(--sqx-surface-raised);
 }
 
 .item:focus-visible {
