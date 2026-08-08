@@ -63,7 +63,7 @@ export function provenanceOf(factory: FactoryRow, strings: ProvenanceStrings): {
   if (factory.is_temporary && factory.source === "immediate_manual") {
     return { label: strings.manual, tone: "warning" };
   }
-  if (factory.source === "saqeel_test_data") {
+  if (factory.source === "saqeel_test_data" || (factory.source?.includes("test") ?? false)) {
     return { label: strings.test, tone: "warning" };
   }
   if (!factory.is_temporary && factory.source === "senaei") {

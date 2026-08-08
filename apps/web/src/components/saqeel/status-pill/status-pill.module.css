@@ -1,7 +1,7 @@
 .pill {
   display: inline-flex;
   align-items: center;
-  align-self: flex-start;
+  vertical-align: middle;
   inline-size: fit-content;
   max-inline-size: 100%;
   gap: var(--sqx-space-2);

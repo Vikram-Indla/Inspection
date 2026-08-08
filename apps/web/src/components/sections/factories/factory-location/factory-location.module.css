@@ -1,0 +1,28 @@
+.coords {
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-secondary);
+  font-variant-numeric: var(--sqx-numeric-tabular);
+}
+
+.owner {
+  color: var(--sqx-text-muted);
+}
+
+.geofence {
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}
+
+.placeholder {
+  display: grid;
+  place-items: center;
+  min-block-size: min(var(--sqx-media-h-md), 60dvh);
+  padding: var(--sqx-inset-card);
+  border-radius: var(--sqx-radius-card);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  background: var(--sqx-surface-sunken);
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  text-align: center;
+}

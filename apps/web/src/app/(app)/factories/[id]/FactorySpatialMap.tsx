@@ -2,6 +2,7 @@
 import dynamic from "next/dynamic";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import type { GeoMarkerData } from "@/components/GeoMap";
+import { titleCase } from "@/features/factories/portfolio";
 import { formatDateTime } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import styles from "./FactorySpatialMap.module.css";
@@ -25,7 +26,7 @@ export default function FactorySpatialMap({ officialLat, officialLng, geofenceRa
     { id: "official", lat: officialLat, lng: officialLng, label: s.officialPin, tone: "neutral", radiusM: geofenceRadius ?? undefined },
     ...events.slice(0, 50).map(e => ({
       id: e.id, lat: e.lat, lng: e.lng,
-      label: `${e.kind.replace(/_/g, " ")} · ${formatDateTime(e.occurredAt, locale === "ar" ? "ar" : "en")}${e.overrideReason ? ` · ${e.overrideReason}` : ""}`,
+      label: `${titleCase(e.kind)} · ${formatDateTime(e.occurredAt, locale === "ar" ? "ar" : "en")}${e.overrideReason ? ` · ${e.overrideReason}` : ""}`,
       tone: (e.kind === "override" ? "high" : e.kind === "checkin" || e.kind === "arrival" ? "low" : "medium") as GeoMarkerData["tone"],
     })),
   ];
