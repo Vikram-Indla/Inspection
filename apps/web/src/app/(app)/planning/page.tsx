@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
+import { getMessages, fill } from "@/i18n/messages";
 import EmptyState from "@/components/EmptyState";
 import { getPlanningAccess } from "@/lib/planning/access";
 import {
@@ -19,7 +20,10 @@ import { humaniseEnum, sentenceCase } from "@/lib/text";
 import { IconBlocked, IconCalendar } from "@/app/icons";
 import VisitViewNavigation from "../visits/VisitViewNavigation";
 import { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
+import Button from "@/components/saqeel/button/button";
 import PlanningVisitTable, { type PlanningVisitDisplayRow } from "@/components/sections/planning/planning-visit-table/planning-visit-table";
+import PlanningFilterBar from "@/components/sections/planning/planning-filter-bar/planning-filter-bar";
+import { type SelectOption } from "@/components/saqeel/select/select";
 
 export const dynamic = "force-dynamic";
 
@@ -103,25 +107,25 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
   const sp = await searchParams;
   const { t, locale } = await useT();
   const fmt = (iso: string) => formatDateTime(iso, locale);
-  const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
   const { data: { user } } = await getVerifiedUser(sb); // identity verified once; the RPC class check below is the access decision
 
   const access = await getPlanningAccess(sb, ["planning.view", "planning.create", "planning.export", "planning.approve"]);
-  const title = t("plan.home.title", "Planning");
+  const { planning } = getMessages(locale);
+  const title = planning.home.title;
   if (access.error) {
     return (
       <Shell current="/planning" title={title}>
-        <EmptyState icon={<IconBlocked />} title={tr("plan.home.unavailable.title", "Planning data not available", "بيانات التخطيط غير متاحة")}
-          body={tr("plan.home.unavailable.body", "We couldn't check your access to Planning. Nothing was created or changed. Try again once access is fixed.", "تعذّر التحقق من صلاحية الوصول إلى التخطيط. لم يتم إنشاء أو تغيير أي بيانات. حاول مرة أخرى بعد إصلاح الوصول.")} />
+        <EmptyState icon={<IconBlocked />} title={planning.access.unavailableTitle}
+          body={planning.access.unavailableBody} />
       </Shell>
     );
   }
   if (!["business_staff", "admin"].includes(access.accessClass) || !access.can("planning.view")) {
     return (
       <Shell current="/planning" title={title}>
-        <EmptyState icon={<IconBlocked />} title={tr("plan.home.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
-          body={tr("plan.home.unauthorized.body", "Only planning staff can use Visit Planning.", "تخطيط الزيارات متاح لموظفي التخطيط فقط.")} />
+        <EmptyState icon={<IconBlocked />} title={planning.access.unauthorizedTitle}
+          body={planning.access.unauthorizedBody} />
       </Shell>
     );
   }
@@ -152,15 +156,15 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
     if (optionError) console.error("[planning.list] option/draft read failed:", optionError.message);
     return (
       <Shell current="/planning" title={title}>
-        <EmptyState icon={<IconBlocked />} title={tr("plan.home.unavailable.title", "Planning data not available", "بيانات التخطيط غير متاحة")}
-          body={tr("plan.home.unavailable.body", "We couldn't check your access to Planning. Nothing was created or changed. Try again once access is fixed.", "تعذّر التحقق من صلاحية الوصول إلى التخطيط. لم يتم إنشاء أو تغيير أي بيانات. حاول مرة أخرى بعد إصلاح الوصول.")} />
+        <EmptyState icon={<IconBlocked />} title={planning.access.unavailableTitle}
+          body={planning.access.unavailableBody} />
       </Shell>
     );
   }
 
   const visibleRows = list.rows.filter(row => !isTestFixtureEstablishment({ name: row.factoryName }));
   const lastUpdates = await fetchLastUpdates(sb, visibleRows.map(r => r.id));
-  const refUnavailable = tr("plan.referenceUnavailable", "Reference not available", "المرجع غير متاح");
+  const refUnavailable = planning.table.referenceUnavailable;
   const visitDisplayRows: PlanningVisitDisplayRow[] = visibleRows.map((row: PlanningVisitRow) => {
     const statusKey = row.planningStatus === "validated" ? "draft" : row.planningStatus;
     return {
@@ -226,220 +230,131 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
   const drafts = (draftsRead.data ?? []) as unknown as DraftRow[];
 
   const methods: CreateVisitMethod[] = [
-    { glyph: "▦", title: t("plan.method.bulk.title", "Plan multiple visits"), desc: t("plan.method.bulk.desc", "Use AND/OR criteria over the factory list to create many visits under one plan."), href: "/planning/bulk" },
-    { glyph: "▣", title: t("plan.method.single.title", "Plan one visit"), desc: t("plan.method.single.desc", "Choose one registered factory by CR or Industrial License and create one visit."), href: "/planning/single" },
-    {
-      glyph: "⚡",
-      title: t("plan.method.immediate.title", "Create an urgent visit"),
-      desc: t(
-        "plan.method.immediate.desc",
-        "Submit an urgent request for one registered factory. A Supervisor assigns and releases it within the set response time.",
-      ),
-      href: "/planning/immediate",
-    },
+    { glyph: "▦", title: planning.methods.bulkTitle, desc: planning.methods.bulkDesc, href: "/planning/bulk" },
+    { glyph: "▣", title: planning.methods.singleTitle, desc: planning.methods.singleDesc, href: "/planning/single" },
+    { glyph: "⚡", title: planning.methods.immediateTitle, desc: planning.methods.immediateDesc, href: "/planning/immediate" },
   ];
 
+  const enumLabel = (value: string) => sentenceCase(t(`enum.${value}`, humaniseEnum(value)));
   const tabLabels: Record<PlanningTab, string> = {
-    all: tr("plan.list.tabAll", "All", "الكل"),
-    draft: t("enum.draft", "Draft"),
-    pending_supervision: t("plan.list.pendingSupervision", "Awaiting Supervisor"),
-    published: t("enum.published", "Published"),
-    returned: t("enum.returned", "Returned"),
-    cancelled: t("enum.cancelled", "Cancelled"),
-    expired: t("enum.expired", "Expired"),
-  };
-
-  const sortLabels: Record<string, string> = {
-    created_desc: tr("plan.list.sortCreatedDesc", "Created — newest first", "الإنشاء — الأحدث أولاً"),
-    created_asc: tr("plan.list.sortCreatedAsc", "Created — oldest first", "الإنشاء — الأقدم أولاً"),
-    window_asc: tr("plan.list.sortWindowAsc", "Window — earliest first", "النافذة — الأقرب أولاً"),
-    window_desc: tr("plan.list.sortWindowDesc", "Window — latest first", "النافذة — الأبعد أولاً"),
-    reference_asc: tr("plan.list.sortReferenceAsc", "Visit reference", "مرجع الزيارة"),
-    status_asc: tr("plan.list.sortStatusAsc", "Planning status", "حالة التخطيط"),
+    all: planning.tabs.all,
+    draft: enumLabel("draft"),
+    pending_supervision: planning.tabs.pendingSupervision,
+    published: enumLabel("published"),
+    returned: enumLabel("returned"),
+    cancelled: enumLabel("cancelled"),
+    expired: enumLabel("expired"),
   };
 
   const totalPages = Math.max(1, Math.ceil(list.total / list.pageSize));
   const page = Math.min(list.page, totalPages);
+  const advLabels: Record<string, string> = {
+    method: planning.filter.method, visitType: planning.filter.visitType, priority: planning.filter.priority,
+    region: planning.filter.region, city: planning.filter.city, packageVersionId: planning.filter.reportPackage,
+    createdFrom: planning.filter.createdFrom, createdTo: planning.filter.createdTo, bulkPlanRef: planning.filter.bulkPlanRef,
+  };
   const activeFilters = [
-    params.search ? { label: `${tr("plan.list.searchLabel", "Search", "بحث")} · ${params.search}`, href: hrefWith(sp, { q: "", page: "" }) } : null,
-    params.tab !== "all" ? { label: `${tr("plan.list.tabsAria", "Planning status", "حالة التخطيط")} · ${tabLabels[params.tab]}`, href: hrefWith(sp, { tab: "", page: "" }) } : null,
-    params.filters.inspectorId ? { label: `${tr("plan.list.filterInspector", "Inspector", "المفتش")} · ${inspectors.find(i => i.user_id === params.filters.inspectorId)?.label ?? params.filters.inspectorId}`, href: hrefWith(sp, { inspectorId: "", page: "" }) } : null,
-    params.filters.windowFrom || params.filters.windowTo ? { label: `${tr("plan.list.filterVisitDate", "Visit date", "تاريخ الزيارة")} · ${params.filters.windowFrom || "…"} — ${params.filters.windowTo || "…"}`, href: hrefWith(sp, { windowFrom: "", windowTo: "", page: "" }) } : null,
+    params.search ? { label: `${planning.filter.searchLabel} · ${params.search}`, href: hrefWith(sp, { q: "", page: "" }) } : null,
+    params.tab !== "all" ? { label: `${planning.filter.status} · ${tabLabels[params.tab]}`, href: hrefWith(sp, { tab: "", page: "" }) } : null,
+    params.filters.inspectorId ? { label: `${planning.filter.inspector} · ${inspectors.find(i => i.user_id === params.filters.inspectorId)?.label ?? params.filters.inspectorId}`, href: hrefWith(sp, { inspectorId: "", page: "" }) } : null,
+    params.filters.windowFrom || params.filters.windowTo ? { label: `${planning.filter.visitDate} · ${params.filters.windowFrom || "…"} — ${params.filters.windowTo || "…"}`, href: hrefWith(sp, { windowFrom: "", windowTo: "", page: "" }) } : null,
     ...(["method", "visitType", "priority", "region", "city", "packageVersionId", "createdFrom", "createdTo", "bulkPlanRef"] as const)
-      .map(key => params.filters[key] ? { label: `${key} · ${params.filters[key]}`, href: hrefWith(sp, { [key]: "", page: "" }) } : null),
+      .map(key => params.filters[key] ? { label: `${advLabels[key]} · ${params.filters[key]}`, href: hrefWith(sp, { [key]: "", page: "" }) } : null),
   ].filter((filter): filter is { label: string; href: string } => Boolean(filter));
   // The badge belongs to the expandable panel only. Status, Inspector and
   // Visit date are already visible in the primary row, so including them here
   // falsely suggests that hidden filters are active.
   const advancedFilterCount = (["method", "visitType", "priority", "region", "city", "packageVersionId", "createdFrom", "createdTo", "bulkPlanRef"] as const)
     .filter(key => Boolean(params.filters[key])).length;
-  // Visit-window shortcuts are deliberately separate from Created date, which
-  // remains an audit filter in the advanced panel. A planner should never have
-  // to infer which date a compact label applies to.
-  const dayKey = (date: Date) => {
-    const parts = new Intl.DateTimeFormat("en-US", {
-      timeZone: "Asia/Riyadh", year: "numeric", month: "2-digit", day: "2-digit",
-    }).formatToParts(date);
-    const value = (type: Intl.DateTimeFormatPartTypes) => parts.find(part => part.type === type)?.value ?? "";
-    return `${value("year")}-${value("month")}-${value("day")}`;
-  };
-  const today = new Date();
-  const addDays = (days: number) => {
-    const copy = new Date(today);
-    copy.setDate(copy.getDate() + days);
-    return dayKey(copy);
-  };
   const visitDatePresets = [
-    { label: tr("plan.list.datePresetToday", "Today", "اليوم"), from: dayKey(today), to: dayKey(today) },
-    { label: tr("plan.list.datePresetNext7", "Next 7 days", "الأيام السبعة القادمة"), from: dayKey(today), to: addDays(6) },
-    { label: tr("plan.list.datePresetNext30", "Next 30 days", "الثلاثون يوماً القادمة"), from: dayKey(today), to: addDays(29) },
+    { id: "today", label: planning.filter.presetToday, days: 1, direction: "future" as const },
+    { id: "next7", label: planning.filter.presetNext7, days: 7, direction: "future" as const },
+    { id: "next30", label: planning.filter.presetNext30, days: 30, direction: "future" as const },
   ];
+  const allOption: SelectOption = { value: "", label: planning.filter.all };
+  const statusOptions: SelectOption[] = PLANNING_TABS.map(tab => ({
+    value: tab === "all" ? "" : tab,
+    label: tabLabels[tab],
+    count: list.countsAvailable ? list.counts[tab] : undefined,
+  }));
+  const inspectorOptions: SelectOption[] = [{ value: "", label: planning.filter.allInspectors }, ...inspectors.map(i => ({ value: i.user_id, label: i.label }))];
+  const sortOptions: SelectOption[] = PLANNING_SORT_KEYS.map(key => ({ value: key, label: (planning.filter.sort as Record<string, string>)[key] ?? key }));
+  const methodOptions: SelectOption[] = [allOption, ...["bulk", "single", "immediate"].map(m => ({ value: m, label: sentenceCase(t(`enum.${m}`, humaniseEnum(m))) }))];
+  const visitTypeSelectOptions: SelectOption[] = [allOption, ...visitTypeOptions.map(o => ({ value: o.key, label: lookupLabel(o) }))];
+  const prioritySelectOptions: SelectOption[] = [allOption, ...priorityOptions.map(o => ({ value: o.key, label: lookupLabel(o) }))];
+  const regionSelectOptions: SelectOption[] = [allOption, ...regionOptions.map(r => ({ value: r, label: r }))];
+  const citySelectOptions: SelectOption[] = [allOption, ...cityOptions.map(c => ({ value: c, label: c }))];
+  const packageSelectOptions: SelectOption[] = [allOption, ...packageOptions.map(p => ({ value: p.id, label: p.label }))];
+  const filterChips = activeFilters.map((filter, index) => ({ key: `chip-${index}`, label: filter.label, href: filter.href }));
 
   return (
     <Shell current="/planning" title="">
-      <VisitViewNavigation active="list" ariaLabel={t("visit.views.aria", "Planning views")}
-        labels={{ list: t("plan.home.title", "Planning"), calendar: t("visit.views.calendar", "Calendar"), map: t("visit.views.map", "Map"), workload: t("visit.views.workload", "Workload") }}
+      <VisitViewNavigation active="list" ariaLabel={planning.views.aria}
+        labels={{ list: planning.views.list, calendar: planning.views.calendar, map: planning.views.map, workload: planning.views.workload }}
         basePath="/planning" />
       <div className="sq-planning-heading">
         <h1>{title}</h1>
-        <span>{tr("plan.list.subtitle", "Create inspection visits — bulk, single or immediate", "إنشاء زيارات التفتيش — جماعية أو فردية أو فورية")}</span>
+        <span>{planning.home.subtitle}</span>
       </div>
       {/* Page actions are intentional: creation and scoped export only. */}
       <CreateVisitSection methods={methods} canCreate={access.can("planning.create")} strings={{
-        createLabel: tr("plan.list.createVisit", "Create visit", "إنشاء زيارة"),
-        oneMethodNote: t("plan.home.oneMethod", "Choose one planning method for this creation session."),
+        createLabel: planning.home.createVisit,
+        oneMethodNote: planning.home.oneMethod,
       }}>
         {access.can("planning.export") && (
           <ExportButton params={params} strings={{
-            label: tr("plan.list.export", "Export (CSV)", "تصدير (CSV)"),
-            busyLabel: tr("plan.list.exporting", "Exporting…", "جارٍ التصدير…"),
-            unauthorized: tr("plan.list.exportUnauthorized", "Your account can't export this.", "لا يمكن لحسابك تصدير هذا."),
-            unavailable: tr("plan.list.exportUnavailable", "Export failed — nothing was downloaded. Try again.", "فشل التصدير — لم يتم تنزيل أي ملف. أعد المحاولة."),
-            cappedNote: tr("plan.list.exportCapped", "Exported the first {n} matching rows — refine the filters for the rest.", "تم تصدير أول {n} صفًا مطابقًا — حسّن عوامل التصفية للباقي."),
+            label: planning.actions.export,
+            busyLabel: planning.actions.exporting,
+            unauthorized: planning.actions.exportUnauthorized,
+            unavailable: planning.actions.exportUnavailable,
+            cappedNote: planning.actions.exportCapped,
           }} />
         )}
         <RefreshButton
-          label={tr("plan.list.refresh", "Refresh", "تحديث")}
-          busyLabel={tr("plan.list.refreshing", "Refreshing…", "جارٍ التحديث…")}
+          label={planning.actions.refresh}
+          busyLabel={planning.actions.refreshing}
         />
-        <a className="btn btn-ghost" href="/planning/visits">
-          {tr("plan.list.visitManagement", "Visit management", "إدارة الزيارات")}
-        </a>
+        <Button variant="tertiary" href="/planning/visits">
+          {planning.home.visitManagement}
+        </Button>
       </CreateVisitSection>
 
       {/* The toolbar is one line on desktop. Its two disclosures expand inline
           below the controls so a planner can adjust filters and read results in
           one continuous flow — never through an overlay. */}
-      <section className="sq-surface sq-panel planning-filter-shell" aria-label={tr("plan.list.filterControls", "Planning filters", "عوامل تصفية التخطيط")}>
-      <form id="planning-filter-form" method="get" action="/planning" className="planning-filter-toolbar">
-        <label className="sr-only" htmlFor="planning-search">{tr("plan.list.searchLabel", "Search", "بحث")}</label>
-        <input id="planning-search" className="sq-input" type="search" name="q" defaultValue={params.search}
-          placeholder={tr("plan.list.searchPlaceholder", "Search visits, CR, licence, factory or inspector…", "ابحث في الزيارات أو السجل التجاري أو الرخصة أو المصنع أو المفتش…")} />
-        <label className="sr-only" htmlFor="planning-status-filter">{tr("plan.list.tabsAria", "Planning status", "حالة التخطيط")}</label>
-        <select id="planning-status-filter" className="sq-select" name="tab" defaultValue={params.tab}>
-          {PLANNING_TABS.map(tab => (
-            <option key={tab} value={tab === "all" ? "" : tab}>
-              {`${tabLabels[tab]} · ${list.countsAvailable ? list.counts[tab] : "—"}`}
-            </option>
-          ))}
-        </select>
-        <label className="sr-only" htmlFor="planning-inspector-filter">{tr("plan.list.filterInspector", "Inspector", "المفتش")}</label>
-        <select id="planning-inspector-filter" className="sq-select" name="inspectorId" defaultValue={params.filters.inspectorId ?? ""}>
-          <option value="">{tr("plan.list.allInspectors", "All inspectors", "كل المفتشين")}</option>
-          {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.label}</option>)}
-        </select>
-        <details name="planning-inline-filter" className="planning-filter-disclosure planning-filter-disclosure--date">
-          <summary className="sq-btn sq-btn--subtle">{params.filters.windowFrom || params.filters.windowTo
-            ? `${tr("plan.list.filterVisitDate", "Visit date", "تاريخ الزيارة")} · ${params.filters.windowFrom || "…"} — ${params.filters.windowTo || "…"}`
-            : tr("plan.list.filterVisitDate", "Visit date", "تاريخ الزيارة")}</summary>
-          <fieldset className="sq-field planning-filter-disclosure__body">
-            <legend className="sq-field__label">{tr("plan.list.filterVisitDate", "Visit date", "تاريخ الزيارة")}</legend>
-            <div className="planning-date-presets" aria-label={tr("plan.list.datePresets", "Visit date presets", "إعدادات تاريخ الزيارة")}>
-              {visitDatePresets.map(preset => <a key={preset.label} className="sq-btn sq-btn--subtle" href={hrefWith(sp, { windowFrom: preset.from, windowTo: preset.to, page: "" })}>{preset.label}</a>)}
-            </div>
-            <div className="planning-date-range">
-              <label className="sr-only" htmlFor="planning-window-from">{tr("plan.list.filterWindowFrom", "Window from", "النافذة من")}</label>
-              <input id="planning-window-from" className="sq-input sq-numeric" type="date" name="windowFrom" defaultValue={params.filters.windowFrom ?? ""} aria-label={tr("plan.list.filterWindowFrom", "Window from", "النافذة من")} />
-              <span aria-hidden="true">—</span>
-              <label className="sr-only" htmlFor="planning-window-to">{tr("plan.list.filterWindowTo", "Window to", "النافذة إلى")}</label>
-              <input id="planning-window-to" className="sq-input sq-numeric" type="date" name="windowTo" defaultValue={params.filters.windowTo ?? ""} aria-label={tr("plan.list.filterWindowTo", "Window to", "النافذة إلى")} />
-            </div>
-          </fieldset>
-        </details>
-        <details name="planning-inline-filter" className="planning-filter-disclosure planning-filter-disclosure--advanced">
-          <summary className="sq-btn sq-btn--subtle">{advancedFilterCount > 0 ? `${tr("plan.list.moreFilters", "Filters", "عوامل التصفية")} (${advancedFilterCount})` : tr("plan.list.moreFilters", "Filters", "عوامل التصفية")}</summary>
-          <div className="planning-filter-disclosure__body planning-filter-grid">
-            <label className="sq-field">
-              <span className="sq-field__label">{tr("plan.list.sortLabel", "Sort", "الترتيب")}</span>
-              <select className="sq-select" name="sort" defaultValue={params.sort}>
-                {PLANNING_SORT_KEYS.map(k => <option key={k} value={k}>{sortLabels[k]}</option>)}
-              </select>
-            </label>
-            <label className="sq-field">
-              <span className="sq-field__label">{tr("plan.list.filterMethod", "Planning type", "نوع التخطيط")}</span>
-              <select className="sq-select" name="method" defaultValue={params.filters.method ?? ""}>
-                <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
-                {["bulk", "single", "immediate"].map(m => <option key={m} value={m}>{t(`enum.${m}`, m)}</option>)}
-              </select>
-            </label>
-            <label className="sq-field">
-              <span className="sq-field__label">{tr("plan.list.filterVisitType", "Visit type", "نوع الزيارة")}</span>
-              <select className="sq-select" name="visitType" defaultValue={params.filters.visitType ?? ""}>
-                <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
-                {visitTypeOptions.map(o => <option key={o.key} value={o.key}>{lookupLabel(o)}</option>)}
-              </select>
-            </label>
-            <label className="sq-field">
-              <span className="sq-field__label">{tr("plan.list.filterPriority", "Priority", "الأولوية")}</span>
-              <select className="sq-select" name="priority" defaultValue={params.filters.priority ?? ""}>
-                <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
-                {priorityOptions.map(o => <option key={o.key} value={o.key}>{lookupLabel(o)}</option>)}
-              </select>
-            </label>
-            <label className="sq-field">
-              <span className="sq-field__label">{tr("plan.list.filterRegion", "Region", "المنطقة")}</span>
-              <select className="sq-select" name="region" defaultValue={params.filters.region ?? ""}>
-                <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
-                {regionOptions.map(r => <option key={r} value={r}>{r}</option>)}
-              </select>
-            </label>
-            <label className="sq-field">
-              <span className="sq-field__label">{tr("plan.list.filterCity", "City", "المدينة")}</span>
-              <select className="sq-select" name="city" defaultValue={params.filters.city ?? ""}>
-                <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
-                {cityOptions.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </label>
-            <label className="sq-field">
-              <span className="sq-field__label">{tr("plan.list.filterPackage", "Report package", "حزمة التقارير")}</span>
-              <select className="sq-select" name="packageVersionId" defaultValue={params.filters.packageVersionId ?? ""}>
-                <option value="">{tr("plan.list.allOptions", "All", "الكل")}</option>
-                {packageOptions.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
-              </select>
-            </label>
-            <label className="sq-field">
-              <span className="sq-field__label">{tr("plan.list.filterCreatedFrom", "Created from", "أُنشئت من")}</span>
-              <input className="sq-input sq-numeric" type="date" name="createdFrom" defaultValue={params.filters.createdFrom ?? ""} />
-            </label>
-            <label className="sq-field">
-              <span className="sq-field__label">{tr("plan.list.filterCreatedTo", "Created to", "أُنشئت إلى")}</span>
-              <input className="sq-input sq-numeric" type="date" name="createdTo" defaultValue={params.filters.createdTo ?? ""} />
-            </label>
-            <label className="sq-field">
-              <span className="sq-field__label">{tr("plan.list.filterBulkPlanRef", "Bulk plan reference", "مرجع الخطة الجماعية")}</span>
-              <input className="sq-input" type="text" name="bulkPlanRef" defaultValue={params.filters.bulkPlanRef ?? ""} placeholder="BP-…" />
-            </label>
-          </div>
-        </details>
-        <button type="submit" className="sq-btn sq-btn--secondary planning-filter-toolbar__apply">
-          {tr("plan.list.apply", "Apply", "تطبيق")}
-        </button>
-      </form>
-      {activeFilters.length > 0 && <div className="planning-filter-chips" aria-label={tr("plan.list.activeFilters", "Active filters", "عوامل التصفية النشطة")}>
-        {activeFilters.map(filter => <a key={filter.label} className="sq-filterchip is-active" href={filter.href} aria-label={`${tr("plan.list.removeFilter", "Remove filter", "إزالة عامل التصفية")} ${filter.label}`}>{filter.label} <span aria-hidden="true">×</span></a>)}
-        <a className="sq-btn sq-btn--subtle" href="/planning">{tr("plan.list.clearAll", "Clear all", "مسح الكل")}</a>
-      </div>}
-      </section>
+      <PlanningFilterBar
+        locale={locale}
+        action="/planning"
+        strings={planning.filter}
+        search={params.search}
+        status={params.tab === "all" ? "" : params.tab}
+        statusOptions={statusOptions}
+        inspector={params.filters.inspectorId ?? ""}
+        inspectorOptions={inspectorOptions}
+        windowFrom={params.filters.windowFrom ?? ""}
+        windowTo={params.filters.windowTo ?? ""}
+        datePresets={visitDatePresets}
+        sort={params.sort}
+        sortOptions={sortOptions}
+        method={params.filters.method ?? ""}
+        methodOptions={methodOptions}
+        visitType={params.filters.visitType ?? ""}
+        visitTypeOptions={visitTypeSelectOptions}
+        priority={params.filters.priority ?? ""}
+        priorityOptions={prioritySelectOptions}
+        region={params.filters.region ?? ""}
+        regionOptions={regionSelectOptions}
+        city={params.filters.city ?? ""}
+        cityOptions={citySelectOptions}
+        reportPackage={params.filters.packageVersionId ?? ""}
+        packageOptions={packageSelectOptions}
+        createdFrom={params.filters.createdFrom ?? ""}
+        createdTo={params.filters.createdTo ?? ""}
+        bulkPlanRef={params.filters.bulkPlanRef ?? ""}
+        advancedCount={advancedFilterCount}
+        chips={filterChips}
+        clearHref="/planning"
+      />
 
       {/* Canonical visit list (PLN-REQ-013)
           INSP-738 — visibleRows and list.total can legitimately disagree: the
@@ -451,43 +366,43 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
           message for both. */}
       {visibleRows.length === 0 ? (
         activeFilters.length > 0 ? (
-          <EmptyState icon={<IconCalendar />} title={tr("plan.list.empty", "No visits match", "لا توجد زيارات مطابقة")}
-            body={tr("plan.list.emptyDesc", "No visits match the current tab, search and filters. Reset to see everything in your scope.", "لا توجد زيارات مطابقة للتبويب والبحث وعوامل التصفية الحالية. أعد التعيين لعرض كل ما في نطاقك.")} />
+          <EmptyState icon={<IconCalendar />} title={planning.list.emptyTitle}
+            body={planning.list.emptyBody} />
         ) : (
-          <EmptyState icon={<IconCalendar />} title={tr("plan.list.emptyUnfiltered", "No visits are currently displayable", "لا توجد زيارات قابلة للعرض حالياً")}
+          <EmptyState icon={<IconCalendar />} title={planning.list.emptyUnfilteredTitle}
             body={list.total > 0
-              ? tr("plan.list.emptyUnfilteredWithTotal", "{total} records exist in your scope, but none can be displayed right now. No filter, search or tab is limiting this — try again shortly.", "توجد {total} سجلات ضمن نطاقك، ولكن لا يمكن عرض أي منها حالياً. لا يوجد عامل تصفية أو بحث أو تبويب يحدّ من ذلك — حاول مرة أخرى بعد قليل.").replace("{total}", String(list.total))
-              : tr("plan.list.emptyUnfilteredNoTotal", "No visits are in your scope yet.", "لا توجد زيارات ضمن نطاقك حتى الآن.")} />
+              ? fill(planning.list.emptyUnfilteredWithTotal, { total: list.total })
+              : planning.list.emptyUnfilteredNoTotal} />
         )
       ) : (
         <PlanningVisitTable
           rows={visitDisplayRows}
           strings={{
-            caption: tr("plan.list.tableCaption", "Planning visits", "زيارات التخطيط"),
-            reference: tr("plan.list.colVisitRef", "Visit Reference", "مرجع الزيارة"),
-            planningType: tr("plan.list.colPlanningType", "Planning Type", "نوع التخطيط"),
-            planningStatus: tr("plan.list.colPlanningStatus", "Planning Status", "حالة التخطيط"),
-            operationalState: tr("plan.list.colOperationalState", "Operational State", "الحالة التشغيلية"),
-            visitType: tr("plan.list.colVisitType", "Visit Type", "نوع الزيارة"),
-            visitMode: tr("plan.list.colVisitMode", "Visit Mode", "نمط الزيارة"),
-            priority: tr("plan.list.colPriority", "Priority", "الأولوية"),
-            crNumber: tr("plan.list.colCrNumber", "CR Number", "رقم السجل التجاري"),
-            licenceNumber: tr("plan.list.colLicenceNumber", "Licence Number", "رقم الرخصة"),
-            factoryName: tr("plan.list.colFactoryName", "Factory Name", "اسم المصنع"),
-            region: tr("plan.list.colRegion", "Region", "المنطقة"),
-            city: tr("plan.list.colCity", "City", "المدينة"),
-            inspector: tr("plan.list.colInspector", "Assigned Inspector", "المفتش المعيّن"),
-            windowStart: tr("plan.list.colWindowStart", "Window Start", "بداية النافذة"),
-            windowEnd: tr("plan.list.colWindowEnd", "Window End", "نهاية النافذة"),
-            executionDate: tr("plan.list.colExecutionDate", "Execution Date", "تاريخ التنفيذ"),
-            packages: tr("plan.list.colPackages", "Report Packages", "حزم التقارير"),
-            createdBy: tr("plan.list.colCreatedBy", "Created By", "أُنشئت بواسطة"),
-            createdDate: tr("plan.list.colCreatedDate", "Created Date", "تاريخ الإنشاء"),
-            sourceChannel: tr("plan.list.colSourceChannel", "Source Channel", "قناة المصدر"),
-            returnStatus: tr("plan.list.colReturnStatus", "Return Status", "حالة الإرجاع"),
-            bulkPlanRef: tr("plan.list.colBulkPlanRef", "Bulk Plan Reference", "مرجع الخطة الجماعية"),
-            lastUpdate: tr("plan.list.colLastUpdate", "Last Update", "آخر تحديث"),
-            emptyTitle: tr("plan.list.empty", "No visits match", "لا توجد زيارات مطابقة"),
+            caption: planning.table.caption,
+            reference: planning.table.colVisitRef,
+            planningType: planning.table.colPlanningType,
+            planningStatus: planning.table.colPlanningStatus,
+            operationalState: planning.table.colOperationalState,
+            visitType: planning.table.colVisitType,
+            visitMode: planning.table.colVisitMode,
+            priority: planning.table.colPriority,
+            crNumber: planning.table.colCrNumber,
+            licenceNumber: planning.table.colLicenceNumber,
+            factoryName: planning.table.colFactoryName,
+            region: planning.table.colRegion,
+            city: planning.table.colCity,
+            inspector: planning.table.colInspector,
+            windowStart: planning.table.colWindowStart,
+            windowEnd: planning.table.colWindowEnd,
+            executionDate: planning.table.colExecutionDate,
+            packages: planning.table.colPackages,
+            createdBy: planning.table.colCreatedBy,
+            createdDate: planning.table.colCreatedDate,
+            sourceChannel: planning.table.colSourceChannel,
+            returnStatus: planning.table.colReturnStatus,
+            bulkPlanRef: planning.table.colBulkPlanRef,
+            lastUpdate: planning.table.colLastUpdate,
+            emptyTitle: planning.table.empty,
           }}
         />
       )}
@@ -500,13 +415,11 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       {visibleRows.length > 0 && (
         <div className="sq-row sq-row--spread">
           <span className="sq-caption sq-numeric">
-            {tr("plan.list.showing", "Showing {shown} of {total} · page {page} of {pages}", "عرض {shown} من {total} · صفحة {page} من {pages}")
-              .replace("{shown}", String(visibleRows.length)).replace("{total}", String(list.total))
-              .replace("{page}", String(page)).replace("{pages}", String(totalPages))}
+            {fill(planning.list.showing, { shown: visibleRows.length, total: list.total, page, pages: totalPages })}
           </span>
           <div className="sq-row">
-            {page > 1 && <a className="sq-btn sq-btn--subtle" href={hrefWith(sp, { page: String(page - 1) })}>{tr("plan.list.prev", "← Previous", "→ السابق")}</a>}
-            {page < totalPages && <a className="sq-btn sq-btn--subtle" href={hrefWith(sp, { page: String(page + 1) })}>{tr("plan.list.next", "Next →", "التالي ←")}</a>}
+            {page > 1 && <a className="sq-btn sq-btn--subtle" href={hrefWith(sp, { page: String(page - 1) })}>{planning.list.prev}</a>}
+            {page < totalPages && <a className="sq-btn sq-btn--subtle" href={hrefWith(sp, { page: String(page + 1) })}>{planning.list.next}</a>}
           </div>
         </div>
       )}
@@ -514,34 +427,34 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       {/* Draft continuation (PLN-REQ-010 entry point; resume consumption is a later phase) */}
       {drafts.length > 0 && (
         <section className="sq-surface sq-panel sq-panel--roomy">
-          <h3>{tr("plan.list.draftsHeading", "Draft plans — continue where you left off", "خطط مسودة — تابع من حيث توقفت")}</h3>
+          <h3>{planning.list.draftsHeading}</h3>
           <div className="sq-tablewrap"><table className="sq-table planning-draft-table">
             <thead><tr>
-              <th scope="col">{tr("plan.list.colPlanRef", "Plan Reference", "مرجع الخطة")}</th>
-              <th scope="col">{tr("plan.list.colPlanningType", "Planning Type", "نوع التخطيط")}</th>
-              <th scope="col">{tr("plan.list.colPlanningStatus", "Planning Status", "حالة التخطيط")}</th>
-              <th scope="col">{tr("plan.list.colCreatedBy", "Created By", "أُنشئت بواسطة")}</th>
-              <th scope="col" className="sq-td-num">{tr("plan.list.colCreatedDate", "Created Date", "تاريخ الإنشاء")}</th>
-              <th scope="col">{tr("plan.list.colContinue", "Continue", "متابعة")}</th>
-              <th scope="col">{tr("plan.list.colDiscard", "Discard", "تجاهل")}</th>
+              <th scope="col">{planning.list.colPlanRef}</th>
+              <th scope="col">{planning.list.colPlanningType}</th>
+              <th scope="col">{planning.list.colPlanningStatus}</th>
+              <th scope="col">{planning.list.colCreatedBy}</th>
+              <th scope="col" className="sq-td-num">{planning.list.colCreatedDate}</th>
+              <th scope="col">{planning.list.colContinue}</th>
+              <th scope="col">{planning.list.colDiscard}</th>
             </tr></thead>
             <tbody>
               {drafts.map(d => (
                 <tr key={d.id}>
-                  <td className="sq-numeric"><strong>{d.plan_reference ?? tr("plan.referenceUnavailable", "Reference not available", "المرجع غير متاح")}</strong></td>
-                  <td><span className="planning-method">{t(`enum.${d.method}`, d.method)}</span></td>
-                  <td><span className="badge badge-draft planning-status"><span className="dot" aria-hidden="true" />{t("enum.draft", "draft")}</span></td>
+                  <td className="sq-numeric"><strong>{d.plan_reference ?? planning.table.referenceUnavailable}</strong></td>
+                  <td><span className="planning-method">{enumLabel(d.method)}</span></td>
+                  <td><span className="badge badge-draft planning-status"><span className="dot" aria-hidden="true" />{enumLabel("draft")}</span></td>
                   <td>{d.profiles?.full_name ?? "—"}</td>
                   <td className="sq-td-num sq-numeric">{fmt(d.created_at)}</td>
-                  <td><a className="sq-link" href={continueHref(d)}>{tr("plan.list.continue", "Continue", "متابعة")}</a></td>
+                  <td><a className="sq-link" href={continueHref(d)}>{planning.list.continue}</a></td>
                   <td>
                     {/* M8 / PLN-CON-018 — discard is offered on OWN drafts only
                         (same ownership boundary as resume); the copy stays
                         distinct from cancelling a published visit. */}
                     {user && d.created_by === user.id ? (
                       <DiscardDraftButton planId={d.id} expectedVersion={d.draft_version}
-                        label={tr("plan.list.discard", "Discard", "تجاهل")}
-                        discardAria={tr("plan.list.discardAria", "Discard draft {ref}", "تجاهل المسودة {ref}").replace("{ref}", d.plan_reference ?? tr("plan.referenceUnavailable", "Reference not available", "المرجع غير متاح"))} />
+                        label={planning.list.discard}
+                        discardAria={fill(planning.list.discardAria, { ref: d.plan_reference ?? planning.table.referenceUnavailable })} />
                     ) : "—"}
                   </td>
                 </tr>
@@ -552,12 +465,12 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       )}
 
       {/* FIX WAVE F4 — M02-035 plan register entry point (preserved) */}
-      <p><a className="sq-link" href="/planning/plans">{t("plan.home.registerLink", "Visit plans — status, child visits and progress")}</a></p>
-      <p><a className="sq-link" href="/tasks">{t("plan.home.tasksLink", "Tasks — assigned, in progress and completed")}</a></p>
-      {access.can("planning.approve") && <p><a className="sq-link" href="/planning/supervision">Supervisor queue — confirm Inspector and release submitted visits</a></p>}
+      <p><a className="sq-link" href="/planning/plans">{planning.links.register}</a></p>
+      <p><a className="sq-link" href="/tasks">{planning.links.tasks}</a></p>
+      {access.can("planning.approve") && <p><a className="sq-link" href="/planning/supervision">{planning.links.supervision}</a></p>}
       {/* M8 — /visits is the accepted management alias surface; the two are
           cross-linked in both directions (canonical §5/§6 reconciliation). */}
-      <p><a className="sq-link" href="/visits">{tr("plan.home.visitsLink", "Visit management — bulk actions and lenses over the same visits (/visits)", "إدارة الزيارات — إجراءات جماعية وعدسات على نفس الزيارات")}</a></p>
+      <p><a className="sq-link" href="/visits">{planning.links.visits}</a></p>
     </Shell>
   );
 }

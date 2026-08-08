@@ -1,8 +1,6 @@
 "use client";
-// Create Visit is a deliberate chooser, not a dense list of implementation
-// routes. All methods remain available for the governed role; blocked methods
-// are explanatory status rather than fake disabled links.
 import { type ReactNode, useState } from "react";
+import Button from "@/components/saqeel/button/button";
 
 export type CreateVisitMethod = {
   glyph: string;
@@ -29,10 +27,9 @@ export default function CreateVisitSection({ methods, strings, canCreate, childr
       <div className="grid-toolbar">
         {children}
         {canCreate && (
-          <button type="button" className="btn btn-primary" aria-expanded={open} aria-controls="plan-create-methods"
-            onClick={() => setOpen(v => !v)}>
+          <Button variant="primary" expanded={open} controls="plan-create-methods" onClick={() => setOpen(v => !v)}>
             {strings.createLabel}
-          </button>
+          </Button>
         )}
       </div>
       {canCreate && open && (

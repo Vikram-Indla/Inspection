@@ -1,4 +1,4 @@
-import { Card, CardBody } from "@/components/saqeel/card/card";
+import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import DataTable, { CellLink, CellMuted, CellTime, type DataColumn } from "@/components/saqeel/data-table/data-table";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 
@@ -92,13 +92,13 @@ export default function PlanningVisitTable({ rows, strings }: {
     { key: "lastUpdate", header: strings.lastUpdate, numeric: true, cell: row => <CellMuted>{row.lastUpdate}</CellMuted> },
   ];
   return (
-    <Card as="section">
+    <Card as="section" labelledBy="planning-visit-heading">
+      <CardHeader level="h2" titleId="planning-visit-heading" title={strings.caption} />
       <CardBody>
         <DataTable
           rows={rows}
           columns={columns}
           getRowId={row => row.id}
-          caption={strings.caption}
           empty={{ icon: "calendar", title: strings.emptyTitle }}
           density="compact"
         />

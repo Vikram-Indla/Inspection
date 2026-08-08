@@ -1,10 +1,9 @@
 "use client";
-// Export page action (PLN-REQ-017). Calls the planning.export-capability-gated
-// server action with the CURRENT URL filter state and downloads the returned
-// CSV client-side. Failures surface as neutral inline copy — never provider text.
 import { useState, useTransition } from "react";
+import Button from "@/components/saqeel/button/button";
 import { exportPlanningVisitsCsv } from "./export-actions";
 import type { PlanningListParams } from "@/lib/planning/visit-list";
+import styles from "./ExportButton.module.css";
 
 export type ExportButtonStrings = {
   label: string;
@@ -37,10 +36,10 @@ export default function ExportButton({ params, strings }: { params: PlanningList
   };
   return (
     <span>
-      <button type="button" className="btn btn-secondary" disabled={pending} onClick={run}>
+      <Button variant="secondary" disabled={pending} onClick={run}>
         {pending ? strings.busyLabel : strings.label}
-      </button>
-      {message && <span className="alert alert-info" role="status">{message}</span>}
+      </Button>
+      {message && <span className={styles.note} role="status">{message}</span>}
     </span>
   );
 }

@@ -3,11 +3,13 @@ import arCommon from "./locales/ar/common.json";
 import arDashboard from "./locales/ar/dashboard.json";
 import arFactories from "./locales/ar/factories.json";
 import arOperations from "./locales/ar/operations.json";
+import arPlanning from "./locales/ar/planning.json";
 import arShell from "./locales/ar/shell.json";
 import enCommon from "./locales/en/common.json";
 import enDashboard from "./locales/en/dashboard.json";
 import enFactories from "./locales/en/factories.json";
 import enOperations from "./locales/en/operations.json";
+import enPlanning from "./locales/en/planning.json";
 import enShell from "./locales/en/shell.json";
 
 export type Messages = {
@@ -15,12 +17,13 @@ export type Messages = {
   readonly dashboard: typeof enDashboard;
   readonly factories: typeof enFactories;
   readonly operations: typeof enOperations;
+  readonly planning: typeof enPlanning;
   readonly shell: typeof enShell;
 };
 
 const MESSAGES: Readonly<Record<Locale, Messages>> = {
-  en: { common: enCommon, dashboard: enDashboard, factories: enFactories, operations: enOperations, shell: enShell },
-  ar: { common: arCommon, dashboard: arDashboard, factories: arFactories, operations: arOperations, shell: arShell },
+  en: { common: enCommon, dashboard: enDashboard, factories: enFactories, operations: enOperations, planning: enPlanning, shell: enShell },
+  ar: { common: arCommon, dashboard: arDashboard, factories: arFactories, operations: arOperations, planning: arPlanning, shell: arShell },
 };
 
 export function getMessages(locale: Locale): Messages {

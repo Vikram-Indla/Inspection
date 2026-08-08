@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useRef, useState, type KeyboardEvent } from "react";
+import CountBadge from "../count-badge/count-badge";
 import Icon from "../icon/icon";
 import MenuSurface from "../menu-surface/menu-surface";
 import MenuRow from "../menu-surface/menu-row";
@@ -9,6 +10,7 @@ import styles from "./select.module.css";
 export type SelectOption = {
   readonly value: string;
   readonly label: string;
+  readonly count?: number;
 };
 
 export type SelectProps = {
@@ -113,6 +115,7 @@ export default function SaqeelSelect({
         <span className={styles.value} data-placeholder={selected ? undefined : ""}>
           {selected?.label ?? placeholder ?? label}
         </span>
+        {selected && typeof selected.count === "number" ? <CountBadge value={selected.count} /> : null}
         <span className={styles.chevron}>
           <Icon name="disclosure" size="md" />
         </span>
@@ -134,6 +137,7 @@ export default function SaqeelSelect({
             label={option.label}
             selected={option.value === value}
             active={index === activeIndex}
+            count={option.count}
             onSelect={() => commit(index)}
           />
         ))}
