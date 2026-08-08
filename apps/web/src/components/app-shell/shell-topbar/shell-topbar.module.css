@@ -45,6 +45,23 @@
   background: var(--sqx-surface-subtle);
 }
 
+.aiButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--sqx-touch-target);
+  block-size: var(--sqx-touch-target);
+  flex: none;
+  color: var(--sqx-accent-ai);
+  background: transparent;
+  border: var(--sqx-border-width-hair) solid transparent;
+  border-radius: var(--sqx-radius-control);
+}
+
+.aiButton:hover {
+  background: var(--sqx-surface-subtle);
+}
+
 .cta {
   position: relative;
   display: inline-flex;

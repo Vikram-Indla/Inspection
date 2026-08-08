@@ -1,6 +1,6 @@
+import Link from "next/link";
 import { type ReactNode } from "react";
 import NotificationBell from "@/components/NotificationBell";
-import Button from "@/components/saqeel/button/button";
 import Icon from "@/components/saqeel/icon/icon";
 import { getNotificationStrings } from "@/features/shell/notification-strings";
 import type { ShellView } from "@/features/shell/types";
@@ -102,9 +102,9 @@ export default async function ShellTopbar({ view, mobileNav }: {
           }}
         />
         <NotificationBell strings={await getNotificationStrings()} locale={locale} fieldOnly={view.isFieldOnly} />
-        <Button variant="ai" icon="ai" href={localeHref(locale, "/ai/suggestions")} label={aiLabel} compactLabel>
-          {aiLabel}
-        </Button>
+        <Link className={styles.aiButton} href={localeHref(locale, "/ai/suggestions")} aria-label={aiLabel} title={aiLabel} prefetch={false}>
+          <Icon name="ai" />
+        </Link>
         <ShellUserMenu
           identity={view.identity}
           locale={locale}
