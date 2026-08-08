@@ -1,0 +1,24 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+  min-inline-size: 0;
+}
+
+.frame {
+  block-size: min(var(--sqx-media-h-md), 60dvh);
+  border-radius: var(--sqx-radius-card);
+  overflow: hidden;
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-3);
+}
+
+.empty {
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+}

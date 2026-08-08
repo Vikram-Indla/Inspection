@@ -7,6 +7,9 @@ import { logFactoryError, mapFactoryError } from "./neutral";
 import FactorySpatialMap, { type FactoryLocationEvent } from "./FactorySpatialMap";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import EmptyState from "@/components/EmptyState";
+import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
+import FactoryIdentity from "@/components/sections/factories/factory-identity/factory-identity";
+import FactoryActions from "@/components/sections/factories/factory-actions/factory-actions";
 import { redirect } from "next/navigation";
 import { resolveFactory360Permissions } from "@/lib/factory360/dossier";
 
@@ -124,7 +127,6 @@ export default async function Factory360({ params, searchParams }: { params: Pro
     id: g.id, visitId: g.visit_id, kind: g.kind, lat: Number(g.observed_lat), lng: Number(g.observed_lng),
     occurredAt: g.occurred_at, overrideReason: g.override_reason,
   }));
-  const bandTone = f.risk_band === "high" ? "sq-lozenge--critical" : f.risk_band === "medium" ? "sq-lozenge--warning" : "sq-lozenge--success";
   const riskTone = f.risk_band === "high" ? "cd-risk-high" : f.risk_band === "medium" ? "cd-risk-medium" : "cd-risk-low";
   const today = new Date().toISOString().slice(0, 10);
   const enumLabel = (value: string) => t(`enum.${value}`, value.replace(/_/g, " "));
@@ -179,43 +181,52 @@ export default async function Factory360({ params, searchParams }: { params: Pro
     { id: "workforce", label: t("f360.tab.workforce", "Workforce & Indicators") },
   ];
 
+  const syncedText = f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—";
+  const bandStatusTone: StatusTone = f.risk_band === "high" ? "danger" : f.risk_band === "medium" ? "warning" : "success";
+  const provenanceTone: StatusTone = f.source === "saqeel_test_data" ? "warning" : f.source === "senaei" ? "success" : "danger";
+  const identityFacts = [
+    { label: t("f360.id.cr", "CR"), value: <bdi>{identity(f.cr_number)}</bdi> },
+    { label: t("f360.id.license", "license"), value: <bdi>{identity(f.license_number)}</bdi> },
+    { label: t("f360.id.licenseStatus", "license status / stage"), value: `${identity(f.license_status)} · ${identity(f.license_stage)}` },
+    { label: t("f360.id.licenseDates", "issued / expires"), value: `${identity(f.license_issue_date)} → ${identity(f.license_expiry_date)}` },
+    { label: t("f360.id.licenseHolder", "license holder"), value: identity(f.license_holder) },
+    { label: t("f360.id.legalName", "CR legal name"), value: identity(f.legal_name) },
+    { label: t("f360.id.crStatus", "CR status / owner"), value: `${identity(f.cr_status)} · ${identity(f.cr_owner_details)}` },
+  ];
+  const contextLine = [f.activity_class, f.region, f.city].filter(Boolean).join(" · ");
+
   return (
     <Shell current="/factories" title={`${f.name} — ${identity(f.factory_code)}`}
       context={<>
-        <span className={`sq-lozenge ${bandTone}`}>{f.risk_band ? enumLabel(f.risk_band) : "—"} · {f.risk_score}</span>
-        <span className="sq-freshness">{t("f360.meta.source", "source")} {sourceLabel} · {t("f360.meta.synced", "synced")} {f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</span>
+        <StatusPill tone={bandStatusTone}>{f.risk_band ? enumLabel(f.risk_band) : "—"} · {f.risk_score}</StatusPill>
+        <span className="sq-freshness">{t("f360.meta.source", "source")} {sourceLabel} · {t("f360.meta.synced", "synced")} {syncedText}</span>
       </>}>
 
-      {/* الاجراءات quick action (Figma J-21) — the other three (إنشاء رصد حادث /
-          عرض مرفقات المحاضر / عرض تقرير التحديات) have no built feature to link to
-          yet (incident/challenge concepts don't exist — see reconciliation J-12/J-19);
-          only wiring the one real, existing action rather than fabricating dead links. */}
-      <div className="sq-row">
-        {permissions["create_inspection"] && <a className="sq-btn sq-btn--secondary" href={`/planning/single?factory=${f.id}&cr=${encodeURIComponent(f.cr_number ?? "")}&license=${encodeURIComponent(f.license_number ?? "")}&source=factory360`}>{t("f360.actions.planSingle", "Plan one visit")}</a>}
-        {permissions["create_inspection"] && <a className="sq-btn sq-btn--secondary" href={`/planning/immediate?factory=${f.id}`}>{t("f360.actions.startPlan", "Start inspection plan")}</a>}
-        {permissions["create_inspection"] && <span className="sq-caption" role="status">{t("f360.actions.supervisionRequired", "Every plan is submitted to a Supervisor, who confirms the final Inspector before release.")}</span>}
-      </div>
+      {permissions["create_inspection"] ? (
+        <FactoryActions
+          planSingleHref={`/planning/single?factory=${f.id}&cr=${encodeURIComponent(f.cr_number ?? "")}&license=${encodeURIComponent(f.license_number ?? "")}&source=factory360`}
+          immediateHref={`/planning/immediate?factory=${f.id}`}
+          strings={{
+            planSingle: t("f360.actions.planSingle", "Plan one visit"),
+            startPlan: t("f360.actions.startPlan", "Start inspection plan"),
+            supervisionNote: t("f360.actions.supervisionRequired", "Every plan is submitted to a Supervisor, who confirms the final Inspector before release."),
+          }}
+        />
+      ) : null}
 
       <div className="cd-w3" data-screen-id="F360-S03">
-        {/* Provenance-led aside — persistent identity, freshness, risk summary, location facts */}
         <aside className="cd-side3">
-          <div className="sq-surface cd-idcard">
-            <h4>{t("f360.id.heading", "Identity — read-only from source")}</h4>
-            <span className="cd-idcard__code"><bdi>{identity(f.factory_code)}</bdi></span>
-            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.cr", "CR")}</span> <span className="cd-idv"><bdi>{identity(f.cr_number)}</bdi></span></p>
-            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.license", "license")}</span> <span className="cd-idv"><bdi>{identity(f.license_number)}</bdi></span></p>
-            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.licenseStatus", "license status / stage")}</span> <span className="cd-idv">{identity(f.license_status)} · {identity(f.license_stage)}</span></p>
-            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.licenseDates", "issued / expires")}</span> <span className="cd-idv sq-numeric">{identity(f.license_issue_date)} → {identity(f.license_expiry_date)}</span></p>
-            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.licenseHolder", "license holder")}</span> <span>{identity(f.license_holder)}</span></p>
-            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.legalName", "CR legal name")}</span> <span>{identity(f.legal_name)}</span></p>
-            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.crStatus", "CR status / owner")}</span> <span><span className="cd-idv">{identity(f.cr_status)}</span> · {identity(f.cr_owner_details)}</span></p>
-            <p className="cd-idrow">{f.activity_class} · {f.region} · {f.city}</p>
-          </div>
-
-          <div className="sq-surface cd-fresh">
-            <span className="cd-fresh__g" aria-hidden="true">⏱</span>
-            <span>{t("f360.meta.source", "source")} <strong>{sourceLabel}</strong> · {t("f360.meta.synced", "synced")} <bdi className="cd-idv">{f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</bdi></span>
-          </div>
+          <FactoryIdentity
+            code={identity(f.factory_code)}
+            contextLine={contextLine}
+            facts={identityFacts}
+            provenance={{ label: sourceLabel, tone: provenanceTone }}
+            synced={syncedText}
+            strings={{
+              heading: t("f360.id.heading", "Identity — read-only from source"),
+              syncedLabel: t("f360.meta.synced", "synced"),
+            }}
+          />
 
           <div className="sq-surface cd-riskcard">
             <h4>{t("f360.risk.heading", "Risk — reproducible")}</h4>
