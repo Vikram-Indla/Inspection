@@ -1,5 +1,5 @@
 import Shell from "@/components/Shell";
-import OperationsSkeleton from "@/components/operations/operations-skeleton/operations-skeleton";
+import OperationsSkeleton from "@/components/sections/operations/operations-skeleton/operations-skeleton";
 import { getMessages } from "@/i18n/messages";
 import { getLocale } from "@/lib/i18n";
 

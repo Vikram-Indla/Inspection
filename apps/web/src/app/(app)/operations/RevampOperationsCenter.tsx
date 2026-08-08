@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import Stack from "@/components/saqeel/stack/stack";
-import OperationsEntryTable from "@/components/operations/operations-entry-table/operations-entry-table";
-import OperationsExceptions from "@/components/operations/operations-exceptions/operations-exceptions";
-import OperationsMapPanel from "@/components/operations/operations-map-panel/operations-map-panel";
-import { OperationsRegions, OperationsSummary } from "@/components/operations/operations-summary/operations-summary";
-import OperationsToolbar from "@/components/operations/operations-toolbar/operations-toolbar";
+import OperationsEntryTable from "@/components/sections/operations/operations-entry-table/operations-entry-table";
+import OperationsExceptions from "@/components/sections/operations/operations-exceptions/operations-exceptions";
+import OperationsMapPanel from "@/components/sections/operations/operations-map-panel/operations-map-panel";
+import { OperationsRegions, OperationsSummary } from "@/components/sections/operations/operations-summary/operations-summary";
+import OperationsToolbar from "@/components/sections/operations/operations-toolbar/operations-toolbar";
 import { fill, getMessages } from "@/i18n/messages";
 import { localeHref } from "@/lib/locale-path";
 import OperationsMapWorkspace, {
