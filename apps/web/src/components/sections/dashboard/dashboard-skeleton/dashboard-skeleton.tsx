@@ -44,44 +44,46 @@ function ExplorerRowSkeleton() {
 
 export default function DashboardSkeleton({ label }: { label: string }) {
   return (
-    <SkeletonRegion label={label}>
-      <div className={styles.toolbar}>
-        <Skeleton shape="pill" width="narrow" />
-        <Skeleton shape="line" width="tiny" size="sm" />
-      </div>
+    <div data-sqx-cards="flush">
+      <SkeletonRegion label={label}>
+        <div className={styles.toolbar}>
+          <Skeleton shape="pill" width="narrow" />
+          <Skeleton shape="line" width="tiny" size="sm" />
+        </div>
 
-      <Card as="div">
-        <CardHeader
-          eyebrow={<Skeleton shape="line" width="tiny" size="sm" />}
-          title={<Skeleton shape="line" width="narrow" size="lg" />}
-          trailing={<Skeleton shape="pill" width="full" />}
-        />
-        <CardBody>
-          <CardGrid min="sm">
-            {Array.from({ length: 4 }, (_, index) => <MetricTileSkeleton key={index} />)}
-          </CardGrid>
-        </CardBody>
-      </Card>
+        <Card as="div">
+          <CardHeader
+            eyebrow={<Skeleton shape="line" width="tiny" size="sm" />}
+            title={<Skeleton shape="line" width="narrow" size="lg" />}
+            trailing={<Skeleton shape="pill" width="full" />}
+          />
+          <CardBody>
+            <CardGrid min="sm">
+              {Array.from({ length: 4 }, (_, index) => <MetricTileSkeleton key={index} />)}
+            </CardGrid>
+          </CardBody>
+        </Card>
 
-      <Card as="div">
-        <CardHeader title={<Skeleton shape="line" width="narrow" size="lg" />} />
-        <CardBody>
-          <CardGrid min="md">
-            {Array.from({ length: 3 }, (_, index) => <MetricCardSkeleton key={index} />)}
-          </CardGrid>
-        </CardBody>
-      </Card>
+        <Card as="div">
+          <CardHeader title={<Skeleton shape="line" width="narrow" size="lg" />} />
+          <CardBody>
+            <CardGrid min="md">
+              {Array.from({ length: 3 }, (_, index) => <MetricCardSkeleton key={index} />)}
+            </CardGrid>
+          </CardBody>
+        </Card>
 
-      <Card as="div">
-        <CardHeader
-          title={<Skeleton shape="line" width="half" size="lg" />}
-          description={<Skeleton shape="line" width="wide" size="sm" />}
-          trailing={<Skeleton shape="pill" width="full" />}
-        />
-        <CardBody gap="tight">
-          {Array.from({ length: 6 }, (_, index) => <ExplorerRowSkeleton key={index} />)}
-        </CardBody>
-      </Card>
-    </SkeletonRegion>
+        <Card as="div">
+          <CardHeader
+            title={<Skeleton shape="line" width="half" size="lg" />}
+            description={<Skeleton shape="line" width="wide" size="sm" />}
+            trailing={<Skeleton shape="pill" width="full" />}
+          />
+          <CardBody gap="tight">
+            {Array.from({ length: 6 }, (_, index) => <ExplorerRowSkeleton key={index} />)}
+          </CardBody>
+        </Card>
+      </SkeletonRegion>
+    </div>
   );
 }
