@@ -57,7 +57,7 @@ export default function OperationsCancellations({ rows, strings }: {
     {
       key: "status", header: strings.status, width: "min",
       cell: row => (
-        <StatusPill tone={STATUS_TONE[row.statusKey] ?? "neutral"} size="sm">{row.status}</StatusPill>
+        <StatusPill tone={STATUS_TONE[row.statusKey] ?? "neutral"}>{row.status}</StatusPill>
       ),
     },
     {

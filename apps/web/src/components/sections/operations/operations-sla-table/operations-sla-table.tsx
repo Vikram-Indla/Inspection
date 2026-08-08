@@ -43,13 +43,13 @@ export default function OperationsSlaTable({ rows, strings }: {
     {
       key: "status", header: strings.status,
       cell: row => (
-        <StatusPill tone={row.overdue ? "danger" : "warning"} size="sm" ping>{row.status}</StatusPill>
+        <StatusPill tone={row.overdue ? "danger" : "warning"} ping>{row.status}</StatusPill>
       ),
     },
     {
       key: "escalation", header: strings.escalation, align: "end", width: "min",
       cell: row => row.escalation
-        ? <StatusPill tone="neutral" size="sm">{row.escalation}</StatusPill>
+        ? <StatusPill tone="neutral">{row.escalation}</StatusPill>
         : MISSING,
     },
   ];

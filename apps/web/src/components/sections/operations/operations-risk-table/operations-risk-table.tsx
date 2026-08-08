@@ -50,7 +50,7 @@ export default function OperationsRiskTable({ rows, strings }: {
     {
       key: "band", header: strings.band, align: "end", width: "min",
       cell: row => row.band
-        ? <StatusPill tone={BAND_TONE[row.band]} size="sm">{row.bandLabel}</StatusPill>
+        ? <StatusPill tone={BAND_TONE[row.band]}>{row.bandLabel}</StatusPill>
         : strings.missing,
     },
   ];

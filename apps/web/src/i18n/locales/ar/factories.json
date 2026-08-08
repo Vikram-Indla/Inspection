@@ -4,5 +4,29 @@
     "dossier": "عرض المصنع",
     "shown": "المصانع المعروضة",
     "total": "من أصل {total} مصنع"
+  },
+  "workspace": {
+    "portfolio": "محفظة التراخيص",
+    "context": "السياق المحدد"
+  },
+  "portfolio": {
+    "allLicences": "جميع التراخيص",
+    "factories": "المصانع",
+    "highRisk": "خطورة عالية",
+    "licenceNumber": "رقم الترخيص",
+    "plantNumber": "رقم المصنع",
+    "type": "النوع",
+    "stage": "المرحلة",
+    "licenceStatus": "حالة الترخيص",
+    "risk": "الخطورة",
+    "compliance": "الالتزام",
+    "openViolations": "المخالفات المفتوحة",
+    "notAvailable": "غير متاح",
+    "missing": "—"
+  },
+  "risk": {
+    "high": "عالية",
+    "medium": "متوسطة",
+    "low": "منخفضة"
   }
 }

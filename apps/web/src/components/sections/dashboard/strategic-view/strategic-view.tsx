@@ -2,9 +2,6 @@ import { Card, CardBody, CardFooter, CardGrid, CardHeader } from "@/components/s
 import Button from "@/components/saqeel/button/button";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import type { SegmentedItem } from "@/components/saqeel/segmented-control/segmented-control";
-import ComplianceExplorer from "@/components/dashboard/compliance-explorer/compliance-explorer";
-import MetricCard, { type MetricCardModel, type MetricCardStrings } from "@/components/dashboard/metric-card/metric-card";
-import MetricStrip from "@/components/dashboard/metric-strip/metric-strip";
 import { complianceBreakdown, type FactoryRef, type ResponseRow } from "@/app/(app)/dashboard/metrics";
 import { buildMetricStrip, metricStripStrings, STRATEGIC_REQUIREMENT_IDS } from "@/features/dashboard/strip";
 import type { DashboardLens, DashboardScope } from "@/features/dashboard/scope";
@@ -14,6 +11,9 @@ import type { DashboardKpiProjection } from "@/lib/dashboard-kpi/contract";
 import type { Locale } from "@/lib/i18n";
 import { localeHref } from "@/lib/locale-path";
 import styles from "./strategic-view.module.css";
+import MetricStrip from "../metric-strip/metric-strip";
+import MetricCard, { MetricCardModel, MetricCardStrings } from "../metric-card/metric-card";
+import ComplianceExplorer from "../compliance-explorer/compliance-explorer";
 
 type DashboardMetrics = ReturnType<typeof import("@/app/(app)/dashboard/metrics").buildDashboardMetrics>;
 

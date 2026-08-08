@@ -1,34 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import FactoriesPortfolio from "@/components/sections/factories/factories-portfolio/factories-portfolio";
+import FactoryWorkspace from "@/components/sections/factories/factory-workspace/factory-workspace";
+import {
+  titleCase,
+  toLicence,
+  type FactoryRow,
+  type ProvenanceStrings,
+} from "@/features/factories/portfolio";
+import { getMessages } from "@/i18n/messages";
 
-export type RevampFactoryRow = {
-  id: string;
-  factory_code: string;
-  name: string;
-  cr_number: string;
-  region: string | null;
-  city: string | null;
-  activity_class: string | null;
-  risk_band: string | null;
-  risk_score: number | null;
-  source: string | null;
-  source_synced_at: string | null;
-  is_temporary: boolean;
-  dossier_href: string;
-  license: {
-    id: string;
-    license_number: string;
-    plant_number: string | null;
-    license_type: string | null;
-    status: string | null;
-    stage: string | null;
-  } | null;
-};
+export type RevampFactoryRow = FactoryRow;
 
-const titleCase = (value: string | null) => value ? value.replaceAll("_", " ").replace(/\b\w/g, letter => letter.toUpperCase()) : "—";
-
-function planningHandoffHref(factory: RevampFactoryRow): string {
+function planningHandoffHref(factory: FactoryRow): string {
   const query = new URLSearchParams({ factory: factory.id, source: "factory360" });
   if (factory.cr_number) query.set("cr", factory.cr_number);
   if (factory.license?.license_number) query.set("license", factory.license.license_number);
@@ -37,35 +22,17 @@ function planningHandoffHref(factory: RevampFactoryRow): string {
 }
 
 export default function RevampFactory360Portfolio({ factories, portfolioLabel, canCreateInspection, locale, provenanceStrings }: {
-  factories: RevampFactoryRow[];
+  factories: FactoryRow[];
   portfolioLabel: string;
   canCreateInspection: boolean;
   locale: "en" | "ar";
-  provenanceStrings: {
-    registered: string;
-    registeredBody: string;
-    manual: string;
-    manualBody: string;
-    test: string;
-    testBody: string;
-    unavailable: string;
-    unavailableBody: string;
-    sourceStatus: string;
-    recorded: string;
-    freshnessUnavailable: string;
-    noSenaeiSync: string;
-  };
+  provenanceStrings: ProvenanceStrings;
 }) {
+  const { factories: copy } = getMessages(locale);
   const [selectedId, setSelectedId] = useState(factories[0]?.id ?? "");
   const selected = factories.find(factory => factory.id === selectedId) ?? factories[0];
   const highRisk = factories.filter(factory => factory.risk_band === "high").length;
-  // Only show metrics backed by the current Factory 360 read. Compliance,
-  // violation and penalty totals are intentionally absent until their governed
-  // source is connected; a dash in a KPI-shaped card reads like a value.
-  const summary = useMemo(() => [
-    [String(factories.length), "Factories", ""],
-    [String(highRisk), "High risk", highRisk ? "critical" : ""],
-  ], [factories.length, highRisk]);
+  const licences = factories.map(factory => toLicence(factory, provenanceStrings));
   if (!selected) return null;
   const condition = selected.risk_band === "high" ? "Critical attention required"
     : selected.risk_band === "medium" ? "Attention required"
@@ -78,14 +45,6 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
         badge: "sq-lozenge--warning",
         recorded: provenanceStrings.noSenaeiSync,
       }
-    : selected.source === "saqeel_test_data"
-      ? {
-          label: provenanceStrings.test,
-          body: provenanceStrings.testBody,
-          tone: "sq-banner--warning",
-          badge: "sq-lozenge--warning",
-          recorded: provenanceStrings.noSenaeiSync,
-        }
     : !selected.is_temporary && selected.source === "senaei"
       ? {
           label: provenanceStrings.registered,
@@ -96,6 +55,14 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
             ? `${provenanceStrings.recorded} · ${new Date(selected.source_synced_at).toLocaleString(locale === "ar" ? "ar-SA" : "en-SA")}`
             : provenanceStrings.freshnessUnavailable,
         }
+    : selected.source === "saqeel_test_data"
+      ? {
+          label: provenanceStrings.test,
+          body: provenanceStrings.testBody,
+          tone: "sq-banner--warning",
+          badge: "sq-lozenge--warning",
+          recorded: provenanceStrings.noSenaeiSync,
+        }
       : {
           label: provenanceStrings.unavailable,
           body: provenanceStrings.unavailableBody,
@@ -105,49 +72,60 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
         };
 
   return (
-    <div className="sq-f360" data-saqeel-module="factory-360">
-      <aside className="sq-f360__portfolio" data-screen-id="F360-S01">
-        <section className="sq-f360__summary">
-          <span>All licenses · <bdi>{portfolioLabel}</bdi></span>
-          <div>{summary.map(([value, label, tone]) => (
-            <div key={label} data-tone={tone}><strong>{value}</strong><small>{label}</small></div>
-          ))}</div>
-        </section>
-        {factories.map(factory => (
-          <button type="button" className="sq-f360__license" key={factory.id}
-            aria-pressed={factory.id === selected.id} onClick={() => setSelectedId(factory.id)}>
-            <strong>{factory.name}</strong>
-            <dl>
-              <div><dt>Licence</dt><dd><bdi>{factory.license?.license_number ?? "—"}</bdi></dd></div>
-              <div><dt>Plant</dt><dd><bdi>{factory.license?.plant_number ?? "—"}</bdi></dd></div>
-              <div><dt>Type</dt><dd>{titleCase(factory.license?.license_type ?? factory.activity_class)}</dd></div>
-              <div><dt>Stage</dt><dd>{titleCase(factory.license?.stage ?? factory.license?.status ?? null)}</dd></div>
-              <div><dt>Compliance</dt><dd>Not available</dd></div>
-              <div><dt>Open violations</dt><dd>Not available</dd></div>
-            </dl>
-            <span><em>{titleCase(factory.license?.status ?? null)}</em><em data-risk={factory.risk_band ?? ""}>{titleCase(factory.risk_band)}</em></span>
-            <span className={`sq-lozenge ${
-              factory.is_temporary && factory.source === "immediate_manual"
-                ? "sq-lozenge--warning"
-                : factory.source === "saqeel_test_data"
-                  ? "sq-lozenge--warning"
-                : !factory.is_temporary && factory.source === "senaei"
-                  ? "sq-lozenge--success"
-                  : "sq-lozenge--critical"
-            }`}>
-              {factory.is_temporary && factory.source === "immediate_manual"
-                ? provenanceStrings.manual
-                : factory.source === "saqeel_test_data"
-                  ? provenanceStrings.test
-                : !factory.is_temporary && factory.source === "senaei"
-                  ? provenanceStrings.registered
-                  : provenanceStrings.unavailable}
-            </span>
-          </button>
-        ))}
-      </aside>
-
-      <main className="sq-f360__main" data-screen-id="F360-S03">
+    <FactoryWorkspace
+      startLabel={copy.workspace.portfolio}
+      endLabel={copy.workspace.context}
+      start={
+        <FactoriesPortfolio
+          portfolioLabel={portfolioLabel}
+          licences={licences}
+          selectedId={selected.id}
+          onSelect={setSelectedId}
+          highRiskCount={highRisk}
+          strings={{
+            allLicences: copy.portfolio.allLicences,
+            factories: copy.portfolio.factories,
+            highRisk: copy.portfolio.highRisk,
+            licenceNumber: copy.portfolio.licenceNumber,
+            plantNumber: copy.portfolio.plantNumber,
+            type: copy.portfolio.type,
+            stage: copy.portfolio.stage,
+            licenceStatus: copy.portfolio.licenceStatus,
+            risk: copy.portfolio.risk,
+            compliance: copy.portfolio.compliance,
+            openViolations: copy.portfolio.openViolations,
+            notAvailable: copy.portfolio.notAvailable,
+            missing: copy.portfolio.missing,
+            riskHigh: copy.risk.high,
+            riskMedium: copy.risk.medium,
+            riskLow: copy.risk.low,
+          }}
+        />
+      }
+      end={
+        <div className="sq-f360__context">
+          <section>
+            <span>Selected context</span>
+            <strong>{selected.name}</strong>
+            <p>CR <bdi>{selected.cr_number || "—"}</bdi></p>
+            <p>Licence <bdi>{selected.license?.license_number ?? "—"}</bdi></p>
+            <p>Plant <bdi>{selected.license?.plant_number ?? "—"}</bdi></p>
+          </section>
+          <section>
+            <span>{provenanceStrings.sourceStatus}</span>
+            <strong><span className={`sq-lozenge ${provenance.badge}`}>{provenance.label}</span></strong>
+            <p>{provenance.body}</p>
+            <p>{provenance.recorded}</p>
+          </section>
+          <section className="sq-f360__ai">
+            <span>Contextual AI</span>
+            <strong>Provider output withheld</strong>
+            <p>No generated factory claim is shown without an evidence-linked provider response.</p>
+            <a href={selected.dossier_href}>Review authoritative evidence</a>
+          </section>
+        </div>
+      }
+    >
         <section className="sq-f360__hero" data-screen-id="F360-S02">
           <div>
             <h1>{selected.name}</h1>
@@ -211,29 +189,6 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
             <a href={href}>Open {title}</a>
           </details>
         ))}
-      </main>
-
-      <aside className="sq-f360__context">
-        <section>
-          <span>Selected context</span>
-          <strong>{selected.name}</strong>
-          <p>CR <bdi>{selected.cr_number || "—"}</bdi></p>
-          <p>Licence <bdi>{selected.license?.license_number ?? "—"}</bdi></p>
-          <p>Plant <bdi>{selected.license?.plant_number ?? "—"}</bdi></p>
-        </section>
-        <section>
-          <span>{provenanceStrings.sourceStatus}</span>
-          <strong><span className={`sq-lozenge ${provenance.badge}`}>{provenance.label}</span></strong>
-          <p>{provenance.body}</p>
-          <p>{provenance.recorded}</p>
-        </section>
-        <section className="sq-f360__ai">
-          <span>Contextual AI</span>
-          <strong>Provider output withheld</strong>
-          <p>No generated factory claim is shown without an evidence-linked provider response.</p>
-          <a href={selected.dossier_href}>Review authoritative evidence</a>
-        </section>
-      </aside>
-    </div>
+    </FactoryWorkspace>
   );
 }

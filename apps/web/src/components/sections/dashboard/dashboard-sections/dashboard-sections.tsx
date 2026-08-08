@@ -1,13 +1,6 @@
 import { redirect } from "next/navigation";
-import DashboardToolbar from "@/components/dashboard/dashboard-toolbar/dashboard-toolbar";
-import RoleSummary from "@/components/dashboard/role-summary/role-summary";
-import SearchResults from "@/components/dashboard/search-results/search-results";
-import OperationalView from "@/components/dashboard/operational-view/operational-view";
-import StrategicView from "@/components/dashboard/strategic-view/strategic-view";
 import { buildDashboardMetrics } from "@/app/(app)/dashboard/metrics";
 import Button from "@/components/saqeel/button/button";
-import DashboardNotice from "@/components/dashboard/dashboard-notice/dashboard-notice";
-import ExplainProvider from "@/components/dashboard/explain-panel/explain-panel";
 import { fetchDashboardSnapshot } from "@/features/dashboard/client";
 import { withView, type DashboardScope } from "@/features/dashboard/scope";
 import type { DashboardSnapshot } from "@/features/dashboard/types";
@@ -19,6 +12,13 @@ import { buildDashboardKpiProjection } from "@/lib/dashboard-kpi/projection";
 import type { MetricScope } from "@/lib/dashboard-kpi/contract";
 import type { DashboardPersona } from "@/lib/dashboard-role";
 import styles from "./dashboard-sections.module.css";
+import ExplainProvider from "../explain-panel/explain-panel";
+import DashboardNotice from "../dashboard-notice/dashboard-notice";
+import StrategicView from "../strategic-view/strategic-view";
+import OperationalView from "../operational-view/operational-view";
+import SearchResults from "../search-results/search-results";
+import RoleSummary from "../role-summary/role-summary";
+import DashboardToolbar from "../dashboard-toolbar/dashboard-toolbar";
 
 function refreshedLabel(nowMs: number): string {
   return new Intl.DateTimeFormat("en-GB", {

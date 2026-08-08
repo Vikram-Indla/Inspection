@@ -64,7 +64,7 @@ export function OperationsRegions({ title, description, unavailable, regions }: 
               key={region.name}
               label={region.name}
               href={region.href}
-              status={<StatusPill tone="warning" size="sm" ping>{unavailable}</StatusPill>}
+              status={<StatusPill tone="warning" ping>{unavailable}</StatusPill>}
               sub={region.detail}
             />
           ))}

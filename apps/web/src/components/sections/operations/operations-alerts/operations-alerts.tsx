@@ -58,7 +58,7 @@ function AlertColumn({ id, heading, rows, empty }: {
                   row.status || row.action ? (
                     <>
                       {row.status
-                        ? <StatusPill tone={row.status.tone} size="sm">{row.status.label}</StatusPill>
+                        ? <StatusPill tone={row.status.tone}>{row.status.label}</StatusPill>
                         : null}
                       {row.action}
                     </>

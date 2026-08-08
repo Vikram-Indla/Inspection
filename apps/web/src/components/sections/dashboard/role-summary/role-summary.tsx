@@ -1,11 +1,11 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
-import MetricStrip from "@/components/dashboard/metric-strip/metric-strip";
 import { buildMetricStrip, metricStripStrings } from "@/features/dashboard/strip";
 import { getMessages } from "@/i18n/messages";
 import type { DashboardKpiProjection } from "@/lib/dashboard-kpi/contract";
 import { ROLE_DASHBOARD_METRICS, type DashboardPersona } from "@/lib/dashboard-role";
 import type { Locale } from "@/lib/i18n";
+import MetricStrip from "../metric-strip/metric-strip";
 
 export default function RoleSummary({ locale, persona, projection, partialSources }: {
   locale: Locale;

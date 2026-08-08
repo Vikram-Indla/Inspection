@@ -3,10 +3,10 @@
 import { Card, CardBody, CardGrid, CardValue, CardValueSlot } from "@/components/saqeel/card/card";
 import Button from "@/components/saqeel/button/button";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
-import { useExplain } from "@/components/dashboard/explain-panel/explain-panel";
 import type { MetricStripStrings } from "@/features/dashboard/strip";
 import type { DisplayTone, MetricDisplay, MethodologyEntry } from "@/app/(app)/dashboard/dashboard-format";
 import styles from "./metric-strip.module.css";
+import { useExplain } from "../explain-panel/explain-panel";
 
 const TONE: Readonly<Record<DisplayTone, StatusTone>> = {
   critical: "danger",
@@ -35,7 +35,7 @@ export default function MetricStrip({ metrics, methodology, strings, min = "sm" 
               <p className={styles.label}>{metric.title}</p>
               <CardValueSlot>
                 {metric.kind === "status"
-                  ? <StatusPill tone={TONE[metric.tone]} size="sm" ping>{metric.text}</StatusPill>
+                  ? <StatusPill tone={TONE[metric.tone]} ping>{metric.text}</StatusPill>
                   : <CardValue size="md">{metric.text}</CardValue>}
               </CardValueSlot>
               <span className={styles.foot}>

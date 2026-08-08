@@ -4,5 +4,29 @@
     "dossier": "View factory",
     "shown": "Factories shown",
     "total": "of {total} factories"
+  },
+  "workspace": {
+    "portfolio": "Licence portfolio",
+    "context": "Selected context"
+  },
+  "portfolio": {
+    "allLicences": "All licences",
+    "factories": "Factories",
+    "highRisk": "High risk",
+    "licenceNumber": "Licence number",
+    "plantNumber": "Plant number",
+    "type": "Type",
+    "stage": "Stage",
+    "licenceStatus": "Licence status",
+    "risk": "Risk",
+    "compliance": "Compliance",
+    "openViolations": "Open violations",
+    "notAvailable": "Not available",
+    "missing": "—"
+  },
+  "risk": {
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low"
   }
 }
