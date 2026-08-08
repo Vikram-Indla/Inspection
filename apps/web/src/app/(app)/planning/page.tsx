@@ -15,8 +15,11 @@ import ExportButton from "./ExportButton";
 import RefreshButton from "./RefreshButton";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { formatDateTime } from "@/lib/dates";
+import { humaniseEnum, sentenceCase } from "@/lib/text";
 import { IconBlocked, IconCalendar } from "@/app/icons";
 import VisitViewNavigation from "../visits/VisitViewNavigation";
+import { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
+import PlanningVisitTable, { type PlanningVisitDisplayRow } from "@/components/sections/planning/planning-visit-table/planning-visit-table";
 
 export const dynamic = "force-dynamic";
 
@@ -31,10 +34,10 @@ export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 25;
 
-const STATUS_TONE: Record<string, string> = {
-  draft: "badge-draft", validated: "badge-draft", published: "badge-compliant",
-  pending_supervision: "badge-warning",
-  returned: "badge-warning", cancelled: "badge-critical", expired: "badge-disabled",
+const STATUS_PILL_TONE: Record<string, StatusTone> = {
+  draft: "neutral", validated: "neutral", published: "success",
+  pending_supervision: "warning", returned: "warning",
+  cancelled: "danger", expired: "neutral",
 };
 
 const dash = (v: string | null) => (v && v.length > 0 ? v : "—");
@@ -157,6 +160,41 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
 
   const visibleRows = list.rows.filter(row => !isTestFixtureEstablishment({ name: row.factoryName }));
   const lastUpdates = await fetchLastUpdates(sb, visibleRows.map(r => r.id));
+  const refUnavailable = tr("plan.referenceUnavailable", "Reference not available", "المرجع غير متاح");
+  const visitDisplayRows: PlanningVisitDisplayRow[] = visibleRows.map((row: PlanningVisitRow) => {
+    const statusKey = row.planningStatus === "validated" ? "draft" : row.planningStatus;
+    return {
+      id: row.id,
+      reference: row.visitReference ?? refUnavailable,
+      href: `/visits/${row.id}`,
+      planningType: sentenceCase(t(`enum.${row.method}`, humaniseEnum(row.method))),
+      statusLabel: sentenceCase(t(`enum.${statusKey}`, humaniseEnum(statusKey))),
+      statusTone: STATUS_PILL_TONE[row.planningStatus] ?? "pending",
+      operationalState: sentenceCase(t(`enum.${row.operationalState}`, humaniseEnum(row.operationalState))),
+      visitType: sentenceCase(t(`enum.${row.visitType}`, humaniseEnum(row.visitType))),
+      visitMode: sentenceCase(t(`enum.${row.executionMode}`, humaniseEnum(row.executionMode))),
+      priority: row.priority ? sentenceCase(t(`enum.${row.priority}`, humaniseEnum(row.priority))) : "—",
+      crNumber: dash(row.crNumber),
+      licenceNumber: dash(row.licenseNumber),
+      factoryName: dash(row.factoryName),
+      region: dash(row.region),
+      city: dash(row.city),
+      inspector: dash(row.inspectorName),
+      windowStart: fmt(row.windowStart),
+      windowStartIso: row.windowStart,
+      windowEnd: fmt(row.windowEnd),
+      windowEndIso: row.windowEnd,
+      executionDate: row.executionDate ? fmt(row.executionDate) : "—",
+      packages: row.packageTitles.length > 0 ? row.packageTitles.join(", ") : "—",
+      createdBy: dash(row.createdBy),
+      createdDate: fmt(row.createdAt),
+      createdDateIso: row.createdAt,
+      sourceChannel: dash(row.sourceChannel),
+      returnStatus: dash(row.returnReason ?? (row.planningStatus === "returned" ? sentenceCase(t("enum.returned", humaniseEnum("returned"))) : null)),
+      bulkPlanRef: row.method === "bulk" ? dash(row.planReference) : "—",
+      lastUpdate: lastUpdates[row.id] ? fmt(lastUpdates[row.id]) : "—",
+    };
+  });
 
   const lookups = (lookupsRead.data ?? []) as { kind: string; key: string; label_en: string; label_ar: string | null }[];
   const lookupLabel = (l: { label_en: string; label_ar: string | null }) => (locale === "ar" ? (l.label_ar ?? l.label_en) : l.label_en);
@@ -422,66 +460,36 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
               : tr("plan.list.emptyUnfilteredNoTotal", "No visits are in your scope yet.", "لا توجد زيارات ضمن نطاقك حتى الآن.")} />
         )
       ) : (
-        <div className="sq-tablewrap planning-table-wrap"><table className="sq-table planning-visit-table" data-testid="planning-visit-table">
-          <thead><tr>
-            <th scope="col">{tr("plan.list.colVisitRef", "Visit Reference", "مرجع الزيارة")}</th>
-            <th scope="col">{tr("plan.list.colPlanningType", "Planning Type", "نوع التخطيط")}</th>
-            <th scope="col">{tr("plan.list.colPlanningStatus", "Planning Status", "حالة التخطيط")}</th>
-            <th scope="col">{tr("plan.list.colOperationalState", "Operational State", "الحالة التشغيلية")}</th>
-            <th scope="col">{tr("plan.list.colVisitType", "Visit Type", "نوع الزيارة")}</th>
-            <th scope="col">{tr("plan.list.colVisitMode", "Visit Mode", "نمط الزيارة")}</th>
-            <th scope="col">{tr("plan.list.colPriority", "Priority", "الأولوية")}</th>
-            <th scope="col">{tr("plan.list.colCrNumber", "CR Number", "رقم السجل التجاري")}</th>
-            <th scope="col">{tr("plan.list.colLicenceNumber", "Licence Number", "رقم الرخصة")}</th>
-            <th scope="col">{tr("plan.list.colFactoryName", "Factory Name", "اسم المصنع")}</th>
-            <th scope="col">{tr("plan.list.colRegion", "Region", "المنطقة")}</th>
-            <th scope="col">{tr("plan.list.colCity", "City", "المدينة")}</th>
-            <th scope="col">{tr("plan.list.colInspector", "Assigned Inspector", "المفتش المعيّن")}</th>
-            <th scope="col" className="sq-td-num">{tr("plan.list.colWindowStart", "Window Start", "بداية النافذة")}</th>
-            <th scope="col" className="sq-td-num">{tr("plan.list.colWindowEnd", "Window End", "نهاية النافذة")}</th>
-            <th scope="col" className="sq-td-num">{tr("plan.list.colExecutionDate", "Execution Date", "تاريخ التنفيذ")}</th>
-            <th scope="col">{tr("plan.list.colPackages", "Report Packages", "حزم التقارير")}</th>
-            <th scope="col">{tr("plan.list.colCreatedBy", "Created By", "أُنشئت بواسطة")}</th>
-            <th scope="col" className="sq-td-num">{tr("plan.list.colCreatedDate", "Created Date", "تاريخ الإنشاء")}</th>
-            <th scope="col">{tr("plan.list.colSourceChannel", "Source Channel", "قناة المصدر")}</th>
-            <th scope="col">{tr("plan.list.colReturnStatus", "Return Status", "حالة الإرجاع")}</th>
-            <th scope="col">{tr("plan.list.colBulkPlanRef", "Bulk Plan Reference", "مرجع الخطة الجماعية")}</th>
-            <th scope="col" className="sq-td-num">{tr("plan.list.colLastUpdate", "Last Update", "آخر تحديث")}</th>
-          </tr></thead>
-          <tbody>
-            {visibleRows.map((row: PlanningVisitRow) => (
-              <tr key={row.id}>
-                <td className="sq-numeric"><a className="sq-link" href={`/visits/${row.id}`}><strong>{row.visitReference ?? tr("plan.referenceUnavailable", "Reference not available", "المرجع غير متاح")}</strong></a></td>
-                <td><span className="planning-method">{t(`enum.${row.method}`, row.method)}</span></td>
-                <td><span className={`badge planning-status ${STATUS_TONE[row.planningStatus] ?? "badge-pending"}`}>
-                  <span className="dot" aria-hidden="true" />
-                  {/* validated is internal — it displays and counts as Draft, never its own label */}
-                  {row.planningStatus === "validated" ? t("enum.draft", "draft") : t(`enum.${row.planningStatus}`, row.planningStatus)}
-                </span></td>
-                <td>{t(`enum.${row.operationalState}`, row.operationalState.replace(/_/g, " "))}</td>
-                <td>{t(`enum.${row.visitType}`, row.visitType)}</td>
-                <td>{t(`enum.${row.executionMode}`, row.executionMode)}</td>
-                <td>{row.priority ? t(`enum.${row.priority}`, row.priority) : "—"}</td>
-                <td className="sq-numeric">{dash(row.crNumber)}</td>
-                <td className="sq-numeric">{dash(row.licenseNumber)}</td>
-                <td className="planning-cell-wrap">{dash(row.factoryName)}</td>
-                <td>{dash(row.region)}</td>
-                <td>{dash(row.city)}</td>
-                <td className="planning-cell-wrap">{dash(row.inspectorName)}</td>
-                <td className="sq-td-num sq-numeric">{fmt(row.windowStart)}</td>
-                <td className="sq-td-num sq-numeric">{fmt(row.windowEnd)}</td>
-                <td className="sq-td-num sq-numeric">{row.executionDate ? fmt(row.executionDate) : "—"}</td>
-                <td className="planning-cell-wrap">{row.packageTitles.length > 0 ? row.packageTitles.join(", ") : "—"}</td>
-                <td>{dash(row.createdBy)}</td>
-                <td className="sq-td-num sq-numeric">{fmt(row.createdAt)}</td>
-                <td>{dash(row.sourceChannel)}</td>
-                <td>{dash(row.returnReason ?? (row.planningStatus === "returned" ? t("enum.returned", "returned") : null))}</td>
-                <td className="sq-numeric">{row.method === "bulk" ? dash(row.planReference) : "—"}</td>
-                <td className="sq-td-num sq-numeric">{lastUpdates[row.id] ? fmt(lastUpdates[row.id]) : "—"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table></div>
+        <PlanningVisitTable
+          rows={visitDisplayRows}
+          strings={{
+            caption: tr("plan.list.tableCaption", "Planning visits", "زيارات التخطيط"),
+            reference: tr("plan.list.colVisitRef", "Visit Reference", "مرجع الزيارة"),
+            planningType: tr("plan.list.colPlanningType", "Planning Type", "نوع التخطيط"),
+            planningStatus: tr("plan.list.colPlanningStatus", "Planning Status", "حالة التخطيط"),
+            operationalState: tr("plan.list.colOperationalState", "Operational State", "الحالة التشغيلية"),
+            visitType: tr("plan.list.colVisitType", "Visit Type", "نوع الزيارة"),
+            visitMode: tr("plan.list.colVisitMode", "Visit Mode", "نمط الزيارة"),
+            priority: tr("plan.list.colPriority", "Priority", "الأولوية"),
+            crNumber: tr("plan.list.colCrNumber", "CR Number", "رقم السجل التجاري"),
+            licenceNumber: tr("plan.list.colLicenceNumber", "Licence Number", "رقم الرخصة"),
+            factoryName: tr("plan.list.colFactoryName", "Factory Name", "اسم المصنع"),
+            region: tr("plan.list.colRegion", "Region", "المنطقة"),
+            city: tr("plan.list.colCity", "City", "المدينة"),
+            inspector: tr("plan.list.colInspector", "Assigned Inspector", "المفتش المعيّن"),
+            windowStart: tr("plan.list.colWindowStart", "Window Start", "بداية النافذة"),
+            windowEnd: tr("plan.list.colWindowEnd", "Window End", "نهاية النافذة"),
+            executionDate: tr("plan.list.colExecutionDate", "Execution Date", "تاريخ التنفيذ"),
+            packages: tr("plan.list.colPackages", "Report Packages", "حزم التقارير"),
+            createdBy: tr("plan.list.colCreatedBy", "Created By", "أُنشئت بواسطة"),
+            createdDate: tr("plan.list.colCreatedDate", "Created Date", "تاريخ الإنشاء"),
+            sourceChannel: tr("plan.list.colSourceChannel", "Source Channel", "قناة المصدر"),
+            returnStatus: tr("plan.list.colReturnStatus", "Return Status", "حالة الإرجاع"),
+            bulkPlanRef: tr("plan.list.colBulkPlanRef", "Bulk Plan Reference", "مرجع الخطة الجماعية"),
+            lastUpdate: tr("plan.list.colLastUpdate", "Last Update", "آخر تحديث"),
+            emptyTitle: tr("plan.list.empty", "No visits match", "لا توجد زيارات مطابقة"),
+          }}
+        />
       )}
 
       {/* Pagination — state carried in the URL like every other control.
