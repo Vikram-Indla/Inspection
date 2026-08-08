@@ -8,23 +8,23 @@ import {
   type ActionFormControlsStrings, type MarkHandledStrings,
 } from "./Controls";
 import { type MonitoringStrings } from "./Monitoring";
-import OperationsMonitoringTable from "@/components/operations/operations-monitoring-table/operations-monitoring-table";
+import OperationsMonitoringTable from "@/components/sections/operations/operations-monitoring-table/operations-monitoring-table";
 import type { OpsPin } from "./OpsMap";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import Button from "@/components/saqeel/button/button";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
-import OperationsScopeFilter from "@/components/operations/operations-scope-filter/operations-scope-filter";
-import OperationsSlaTable, { type SlaAlertRow } from "@/components/operations/operations-sla-table/operations-sla-table";
-import OperationsKpiContract from "@/components/operations/operations-kpi-contract/operations-kpi-contract";
-import OperationsWorkloadTable from "@/components/operations/operations-workload-table/operations-workload-table";
-import OperationsRiskTable, { type RiskBand, type RiskRow } from "@/components/operations/operations-risk-table/operations-risk-table";
-import OperationsAlerts, { DELIVERY_TONE, type AlertRow } from "@/components/operations/operations-alerts/operations-alerts";
-import OperationsCancellations, { type CancellationRow } from "@/components/operations/operations-cancellations/operations-cancellations";
-import OperationsTimeline from "@/components/operations/operations-timeline/operations-timeline";
+import OperationsScopeFilter from "@/components/sections/operations/operations-scope-filter/operations-scope-filter";
+import OperationsSlaTable, { type SlaAlertRow } from "@/components/sections/operations/operations-sla-table/operations-sla-table";
+import OperationsKpiContract from "@/components/sections/operations/operations-kpi-contract/operations-kpi-contract";
+import OperationsWorkloadTable from "@/components/sections/operations/operations-workload-table/operations-workload-table";
+import OperationsRiskTable, { type RiskBand, type RiskRow } from "@/components/sections/operations/operations-risk-table/operations-risk-table";
+import OperationsAlerts, { DELIVERY_TONE, type AlertRow } from "@/components/sections/operations/operations-alerts/operations-alerts";
+import OperationsCancellations, { type CancellationRow } from "@/components/sections/operations/operations-cancellations/operations-cancellations";
+import OperationsTimeline from "@/components/sections/operations/operations-timeline/operations-timeline";
 import type { TimelineEvent } from "@/components/saqeel/timeline/timeline";
-import OperationsHistoryTable, { type HistoryRow } from "@/components/operations/operations-history-table/operations-history-table";
-import OperationsExport from "@/components/operations/operations-export/operations-export";
+import OperationsHistoryTable, { type HistoryRow } from "@/components/sections/operations/operations-history-table/operations-history-table";
+import OperationsExport from "@/components/sections/operations/operations-export/operations-export";
 import { getMessages } from "@/i18n/messages";
 import { IconPin, IconBell } from "@/app/icons";
 import OpsExport, { type ExportDataset, type OpsExportStrings } from "./OpsExport";
@@ -1072,21 +1072,22 @@ export default async function Operations({ searchParams }: {
         </div></div>
       )}
 
-      <RevampOperationsCenter
-        locale={locale}
-        view={view}
-        mapViewHref={mapViewHref}
-        performanceViewHref={performanceViewHref}
-        mapEntries={mapEntries}
-        regionalMapEntries={regionalMapEntries}
-        mapStrings={mapWorkspaceStrings}
-        counts={counts}
-        monitoredCount={monitored.length}
-        highlights={highlights}
-        regions={regionSummaries}
-      />
+      <div data-sqx-cards="flush">
+        <RevampOperationsCenter
+          locale={locale}
+          view={view}
+          mapViewHref={mapViewHref}
+          mapEntries={mapEntries}
+          regionalMapEntries={regionalMapEntries}
+          mapStrings={mapWorkspaceStrings}
+          counts={counts}
+          monitoredCount={monitored.length}
+          highlights={highlights}
+          regions={regionSummaries}
+        />
+      </div>
 
-      <div className={styles.operationalDetails}>
+      <div className={styles.operationalDetails} data-sqx-cards="flush">
         <Card as="section" labelledBy="operations-monitoring-heading">
           <CardHeader
             level="h2"
@@ -1213,7 +1214,7 @@ export default async function Operations({ searchParams }: {
               : local("No due date set", "لا يوجد تاريخ استحقاق محدد"),
             action: mayManageOperations
               ? <ActionFormControls actionFormId={action.id} status={action.status} strings={actionControlStrings} />
-              : <StatusPill tone="neutral" size="sm" ping={false}>{t("ops.readOnly", "Read only")}</StatusPill>,
+              : <StatusPill tone="neutral" ping={false}>{t("ops.readOnly", "Read only")}</StatusPill>,
           }))}
           notifications={notifs.map<AlertRow>(notification => ({
             id: notification.id,

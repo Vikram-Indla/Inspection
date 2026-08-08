@@ -9,6 +9,7 @@
   /* --sqx-menu-avail-h/-w are measured in menu-surface.tsx from the real gap
      to the viewport edge. A list is additionally capped so a long one does
      not become a full-height wall. */
+  min-inline-size: var(--sqx-menu-anchor-w, auto);
   max-block-size: min(var(--sqx-menu-max-h), var(--sqx-menu-avail-h, 100dvh));
   max-inline-size: var(--sqx-menu-avail-w, none);
   overflow-y: auto;

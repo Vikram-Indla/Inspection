@@ -16,6 +16,14 @@
   background: var(--sqx-surface-raised);
 }
 
+[data-theme="dark"] [data-sqx-cards="flush"] .root {
+  background: var(--sqx-surface-canvas);
+}
+
+[data-theme="dark"] [data-sqx-cards="flush"] .root .root {
+  background: var(--sqx-surface-default);
+}
+
 .root::after {
   content: "";
   position: absolute;

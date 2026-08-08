@@ -72,6 +72,7 @@ export default function MenuSurface({
       const vh = document.documentElement.clientHeight;
       const anchor = trigger.getBoundingClientRect();
 
+      panel.style.setProperty("--sqx-menu-anchor-w", `${Math.round(anchor.width)}px`);
       panel.style.setProperty(
         "--sqx-menu-avail-h",
         `${Math.max(MIN_BLOCK_SIZE, Math.round(vh - anchor.bottom - MARGIN * 2))}px`,

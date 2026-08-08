@@ -1,0 +1,32 @@
+.fact {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+  align-items: center;
+  gap: var(--sqx-space-4);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 3fr) minmax(0, 1.5fr) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sqx-space-4);
+  min-block-size: var(--sqx-control-h-md);
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-2);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-3);
+}
+
+.map {
+  min-block-size: min(var(--sqx-media-h-md), 60dvh);
+  border-radius: var(--sqx-radius-card);
+  background: var(--sqx-surface-subtle);
+}

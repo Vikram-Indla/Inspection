@@ -1,0 +1,5 @@
+.note {
+  margin-inline-start: var(--sqx-space-2);
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-info);
+}

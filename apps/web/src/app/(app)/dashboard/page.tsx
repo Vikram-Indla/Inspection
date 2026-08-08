@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import Shell from "@/components/Shell";
-import DashboardSections from "@/components/dashboard/dashboard-sections/dashboard-sections";
-import DashboardSkeleton from "@/components/dashboard/dashboard-skeleton/dashboard-skeleton";
 import { readDashboardScope, type DashboardScopeInput } from "@/features/dashboard/scope";
 import { getMessages } from "@/i18n/messages";
 import { getLocale } from "@/lib/i18n";
+import DashboardSkeleton from "@/components/sections/dashboard/dashboard-skeleton/dashboard-skeleton";
+import DashboardSections from "@/components/sections/dashboard/dashboard-sections/dashboard-sections";
 
 export const dynamic = "force-dynamic";
 

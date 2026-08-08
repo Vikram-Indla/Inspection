@@ -12,9 +12,6 @@ export type TimelineEvent = {
   readonly meta?: string;
 };
 
-// The ordered-event grammar. A legacy Timeline exists at saqeel/data/Timeline
-// but it renders global class names and inline styles, consumes no tokens and
-// has zero importers — this replaces it rather than joining it.
 export default function Timeline({ events, label, labelledBy }: {
   events: readonly TimelineEvent[];
   label?: string;

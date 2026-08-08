@@ -1,0 +1,13 @@
+.scopebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-4);
+  inline-size: 100%;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--sqx-space-4);
+}
