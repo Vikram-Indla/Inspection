@@ -48,9 +48,6 @@ export default function OperationalView({ locale, metrics, projection, partialSo
 
   const requirementStrip = buildMetricStrip(projection, OPERATIONAL_REQUIREMENT_IDS, locale, partialSources);
 
-  // Inspector capacity used to be a bespoke grid with its own header row and
-  // hover rule, which is why it never lined up with the tables on
-  // /operations. It is a table, so it uses the table component.
   const capacityColumns: DataColumn<WorkloadRow>[] = [
     {
       key: "inspector", header: copy.capacity.inspector, isRowHeader: true, width: "grow",

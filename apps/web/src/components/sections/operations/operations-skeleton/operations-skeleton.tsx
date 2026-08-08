@@ -2,11 +2,6 @@ import { Card, CardBody, CardGrid, CardHeader, CardMedia, CardValueSlot } from "
 import { Skeleton, SkeletonRegion } from "@/components/saqeel/skeleton/skeleton";
 import styles from "./operations-skeleton.module.css";
 
-// Mirrors the real /operations layout: perspective toggle and scope filters,
-// the map panel, the summary stat grid, the live positions table, then the
-// stacked detail cards. The shapes match what actually arrives, so the page
-// does not reflow when the data lands.
-
 function StatTileSkeleton() {
   return (
     <Card as="div">

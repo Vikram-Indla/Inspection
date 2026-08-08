@@ -25,8 +25,6 @@ export type RiskStrings = {
   readonly missing: string;
 };
 
-// Low risk is the compliant outcome, so it takes the success tone — the same
-// semantic a success pill carries anywhere else, not a decorative green.
 const BAND_TONE: Readonly<Record<RiskBand, StatusTone>> = {
   high: "danger",
   medium: "warning",
