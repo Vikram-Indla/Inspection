@@ -10,6 +10,75 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-020a · `/factories` — top stripe
+`status: done` · `rules: WEB-002, WEB-003, WEB-008, WEB-009, WEB-011` · `est: 1h`
+`record:` [2026-08-08-T-020a-factories-scope-bar](sessions/2026-08/2026-08-08-T-020a-factories-scope-bar.md)
+
+First slice of T-020. The portfolio chooser is now
+`components/sections/factories/factories-scope-bar` — `Field` + `SaqeelSelect` +
+`Button` + `CountBadge` on a GET form, new `factories` i18n namespace in `en` and
+`ar`. The owner chose to keep the two-step interaction (select, then
+`View factory`) rather than route on change as `operations-scope-filter` does.
+
+Static verification only. Nothing on the row became deletable.
+
+---
+
+### T-030 · `StatusPill` — one size
+`status: done` · `rules: WEB-002 §4.5 §7, WEB-009 §1` · `est: 30m`
+`record:` [2026-08-08-T-030-status-pill-one-size](sessions/2026-08/2026-08-08-T-030-status-pill-one-size.md)
+
+Owner-reported: two pill sizes shipping side by side on the dashboard. Cause was
+`size?: "sm" | "md"` **defaulting to `md`** — 19 of 25 call sites passed `sm`,
+six did not. The prop is deleted rather than re-defaulted, so the rung cannot
+come back. 15 files rewritten; verified from disk at 28 call sites, zero `size=`.
+
+One site was missed on the first pass — `app/(app)/operations/page.tsx:1216`, the
+only `StatusPill` outside `components/sections/**`. **Grep the route files too.**
+
+**This is the pattern to repeat as the app migrates:** when a primitive offers a
+rung nobody should use, delete the rung. A prop with one correct value is a
+future inconsistency, not a variant.
+
+---
+
+### T-020b · `/factories` — workspace grid and start panel
+`status: done` · `rules: WEB-000…003, WEB-008, WEB-009, WEB-011` · `est: 2h`
+`record:` [2026-08-08-T-020b-factory-workspace-and-portfolio](sessions/2026-08/2026-08-08-T-020b-factory-workspace-and-portfolio.md)
+
+The screen is now a real grid: `factory-workspace` (18 + 36 lines) owns
+start / middle / end on fractional columns, collapsing 3 → 2 → 1. The start
+panel is `factories-portfolio` (144 + 94) on `Card`, `StatCard`, `StatusPill`
+and `Icon`; mapping moved to `features/factories/portfolio.ts`.
+
+Fixed on the way through: `<dl>` inside `<button>`, a `[dir="rtl"]` box-shadow
+flip, colour-only selection, and a missing heading level. Also made
+`e2e/factory360-provenance-contract.spec.ts` pass — it was already red.
+
+Middle and end columns are still legacy. Static verification only.
+
+---
+
+### T-020c · `/factories` — middle column and end panel
+`status: todo` · `rules: WEB-000 §2, WEB-001 §2, WEB-002, WEB-011` · `est: 4h`
+
+What is left of the legacy screen: `sq-f360__hero`, `__condition`, `__snapshot`,
+the four `<details>` `__section` accordions, and the `__context` end panel — all
+with **hard-coded English labels** (`Overall condition`, `Factory snapshot`,
+`Industrial licence`, `Contextual AI`, `Inspection history`, …) that never reach
+the `ar` locale at all. The end panel still carries `className="sq-f360__context"`
+as a deliberate bridge; that comes off here.
+
+Deletes on completion: `saqeel-runtime.css` 786–804 — the eighteen
+`.sq-f360__summary` / `.sq-f360__license` rules orphaned by T-020b — plus
+whatever the middle column releases.
+
+Route file `app/(app)/factories/page.tsx` is 121 lines of data logic and four
+comments; WEB-001 §2 caps it at 40 and moves the reads into
+`features/factories/queries.ts`.
+
+---
+
 ### T-000 · Guardrails: gate scripts, lint, verify pipeline
 `status: todo` · `rules: WEB-000, WEB-006` · `est: 3h`
 
@@ -245,6 +314,24 @@ filters and tabs moved to `searchParams`.
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
 
+- **`highRisk` has no non-colour way to signal "attention required".** The
+  legacy `[data-tone="critical"] strong { color: … }` tint was dropped by T-020b
+  as colour-alone signalling. Either a governed label exists for it, or the
+  figure stays plain. Product question.
+- **Licence selection is a toggle-button list, not an APG radiogroup.** Arrow
+  keys do not move between licences; Tab does. Pre-existing behaviour, preserved.
+- **`FactoryWorkspace` is a candidate primitive.** Promote it out of
+  `sections/factories/` the moment a second screen wants the same three-pane
+  shape — not before (Rule of Two, WEB-002 §9).
+- **`e2e/factory360-provenance-contract.spec.ts` asserts against raw source
+  text.** It survived T-020b's refactor as much by luck as by design; any future
+  move of the provenance ternary breaks it. It should assert behaviour.
+- **`Field` + `SaqeelSelect` produce an orphan `<label>`.** `Field` renders a
+  visible `<label>` with no `for`, because `SaqeelSelect` exposes no id. The
+  accessible name is still correct — the select self-labels via `aria-label` —
+  but `jsx-a11y/label-has-associated-control` will flag every use once T-000
+  lands. Fixing it inside `SaqeelSelect` fixes `operations-scope-filter` and
+  `factories-scope-bar` together.
 - **`gate:one-stylesheet`** — fail CI on any new `.module.css` under
   `apps/web/src`, on any `--sqx-*` or `.sqx-*` declaration outside
   `saqeel.css`, and on any `dir()` / `[dir]` rule outside the two direction rules
@@ -315,6 +402,16 @@ Pull one in only if it is genuinely part of doing the active task well.
 ---
 
 ## BLOCKED
+
+- ~~**`app/(app)/dashboard` imports a folder that no longer exists.**~~
+  **RESOLVED / was already fixed (verified 2026-08-08).** `page.tsx` and
+  `loading.tsx` now import `@/components/sections/dashboard/dashboard-sections/…`
+  and `…/dashboard-skeleton/…` — the correct paths. A static import resolver
+  over the migrated surface (dashboard, operations, factories, shell) checked
+  371 edges for path and named-export correctness and found **zero** broken
+  imports. Note: this is not a full-repo `tsc` (the SWC blocker below prevents
+  that); it covers the migrated surface and the legacy files in its route
+  folders. See the 2026-08-08 comments/`let` sweep record.
 
 - **The app will not run on this workstation.** Windows Application Control
   blocks Next.js's native compiler:

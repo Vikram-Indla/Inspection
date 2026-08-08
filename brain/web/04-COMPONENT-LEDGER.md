@@ -173,7 +173,28 @@ layer map. They ship **no CSS** — every visual is a `.sqx-shell*` class in
 | `shell-page-frame/shell-page-frame.tsx` | server | 44 | Title + description + breadcrumb + actions + content slot. **Supersedes the default `Shell` export**; adopting it in the 55 route files is future work. |
 
 `features/shell/` holds the data layer: `queries.ts` (63), `mappers.ts` (132),
-`types.ts` (54), `notification-strings.ts` (58).
+`types.ts` (54), `notification-strings.ts` (58). `features/factories/` holds
+`portfolio.ts` (82) — the row type, the provenance rule and the row → panel
+mapping.
+
+---
+
+## `components/sections/<screen>/` — screen sections
+
+Domain components composed from Saqeel primitives. They know what a factory, a
+visit or a KPI is, so by WEB-002 §4.1 they are not primitives. One folder per
+component, module beside it, no `className` reaching in from outside.
+
+`sections/dashboard/**` (13 components) and `sections/operations/**` (17) were
+built by the dashboard and operations migrations; **neither has a session
+record** — see `02-SESSION-LOG.md`.
+
+| Component | Kind | Lines | Notes |
+| --- | --- | --- | --- |
+| `saqeel/status-pill` | server | 34 + 57 | **One size, no `size` prop.** Geometry is what `size="sm"` used to be: `--sqx-space-6` min height, `--sqx-space-2` inline padding, `--sqx-text-caption`. The `md` rung existed, six call sites defaulted into it, and the dashboard shipped two pill sizes side by side. A prop whose only correct value is one value is not a variant — it is a defect waiting to happen, so it is gone rather than defaulted. `ping` (default `true`) renders `PingDot`, which animates transform/opacity only and hides under `prefers-reduced-motion`. Tone stays the closed seven-role union. |
+| `factories/factory-workspace` | server | 18 + 36 | The `/factories` three-column grid: `start` / children / `end`, each an aria-labelled region. Fractional columns (`1fr 2.6fr 1fr`) rather than the legacy `236px 1fr 286px`, so no panel width is a literal and Arabic cannot be clipped by a width measured in English. Collapses 3 → 2 → 1; below `100rem` the end panel drops under the middle column and the start panel spans both rows. **Candidate primitive** — promote only when a second screen wants the same shape (Rule of Two). |
+| `factories/factories-portfolio` | **client** | 144 + 94 | The `/factories` start panel: a summary `Card` (`CardHeader` eyebrow + two `StatCard`s) above one `Card` per licence. The licence card is a stretched-button heading, **not** a `<button>` wrapping a `<dl>` — the old markup was invalid HTML. Selection is a reserved `--sqx-icon-md` check gutter plus a weight change (WEB-009 §12), replacing a colour fill and a `[dir="rtl"]`-mirrored edge bar. Risk band renders as a `StatusPill` inside its fact value; licence status stays raw data under `dir="auto"` because its enum is unbounded. Fact rows are local, not `DefinitionList`, which is label-over-value and wrong for a one-column panel. |
+| `factories/factories-scope-bar` | **client** | 44 + 25 | The `/factories` top stripe. `Field` + `SaqeelSelect` + `Button` + `CountBadge` on a real `<form method="get">`; the pending scope rides a hidden `scope` input, so submitting is a document navigation and the server re-reads `searchParams`. One `useState` (pending scope), no effect. Deliberately **not** built on `Toolbar` — `Toolbar` centres its items and this row must align on `flex-end` because `Field` is two lines tall, the same reason `operations-scope-filter` owns a module. Select trigger and `Button size="md"` both resolve `--sqx-control-h-md`, so WEB-009 §1 holds by construction. |
 
 ---
 
