@@ -28,5 +28,65 @@
     "high": "High",
     "medium": "Medium",
     "low": "Low"
+  },
+  "action": {
+    "createInspection": "Create inspection",
+    "viewOnMap": "View on map",
+    "openProfile": "Open full profile"
+  },
+  "hero": {
+    "opened": "Opened from Factory 360",
+    "plannerNote": "A Planner submits the selected target for Supervisor assignment and release.",
+    "industrialLicence": "Industrial licence",
+    "activity": "Activity",
+    "sourceRecord": "Source record"
+  },
+  "condition": {
+    "title": "Overall condition",
+    "critical": "Critical attention required",
+    "attention": "Attention required",
+    "stable": "Stable condition",
+    "unavailable": "Condition unavailable",
+    "basis": "Based only on the saved governed risk band. Compliance and enforcement are shown separately and are never inferred.",
+    "savedRisk": "Saved risk",
+    "riskBand": "Risk band",
+    "approvedCompliance": "Approved compliance"
+  },
+  "snapshot": {
+    "title": "Factory snapshot",
+    "factoryCode": "Factory code",
+    "commercialRegistration": "Commercial registration",
+    "region": "Region",
+    "city": "City",
+    "activity": "Activity",
+    "licenceState": "Licence state"
+  },
+  "sections": {
+    "availableInProfile": "This section is available in the full factory profile.",
+    "open": "Open {title}",
+    "items": {
+      "inspectionHistory": {
+        "title": "Inspection history",
+        "body": "Approved and submitted inspection records, immutable versions and report outcomes."
+      },
+      "violations": {
+        "title": "Violations & enforcement",
+        "body": "Violation, corrective-action and penalty records attached to approved inspection evidence."
+      },
+      "industrial": {
+        "title": "Industrial information",
+        "body": "Products, materials, production lines, machinery and source reconciliation."
+      },
+      "documents": {
+        "title": "Documents & media",
+        "body": "Governed factory documents and official media, separated from inspection evidence."
+      }
+    }
+  },
+  "ai": {
+    "title": "Contextual AI",
+    "withheld": "Provider output withheld",
+    "body": "No generated factory claim is shown without an evidence-linked provider response.",
+    "action": "Review authoritative evidence"
   }
 }

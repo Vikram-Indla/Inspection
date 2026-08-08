@@ -59,7 +59,7 @@ function riskLabel(band: string | null, strings: PortfolioStrings): string | nul
 function riskValue(band: string | null, strings: PortfolioStrings): ReactNode {
   const label = riskLabel(band, strings);
   if (!label) return strings.missing;
-  return <StatusPill tone={riskTone(band)} ping={false}>{label}</StatusPill>;
+  return <StatusPill tone={riskTone(band)}>{label}</StatusPill>;
 }
 
 function factsOf(licence: PortfolioLicence, strings: PortfolioStrings): readonly Fact[] {

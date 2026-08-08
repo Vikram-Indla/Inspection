@@ -60,14 +60,27 @@ Middle and end columns are still legacy. Static verification only.
 ---
 
 ### T-020c · `/factories` — middle column and end panel
-`status: todo` · `rules: WEB-000 §2, WEB-001 §2, WEB-002, WEB-011` · `est: 4h`
+`status: in-progress (sliced)` · `rules: WEB-000 §2, WEB-001 §2, WEB-002, WEB-011, WEB-012` · `est: 4h`
+`record (pass 1):` [2026-08-08-T-020c-p1-factory-middle-column](sessions/2026-08/2026-08-08-T-020c-p1-factory-middle-column.md)
+`record (pass 2):` [2026-08-08-T-020c-p2-factory-end-panel](sessions/2026-08/2026-08-08-T-020c-p2-factory-end-panel.md)
 
-What is left of the legacy screen: `sq-f360__hero`, `__condition`, `__snapshot`,
-the four `<details>` `__section` accordions, and the `__context` end panel — all
-with **hard-coded English labels** (`Overall condition`, `Factory snapshot`,
-`Industrial licence`, `Contextual AI`, `Inspection history`, …) that never reach
-the `ar` locale at all. The end panel still carries `className="sq-f360__context"`
-as a deliberate bridge; that comes off here.
+**Pass 1 done:** the middle column (`sq-f360__hero`, provenance banner,
+`__condition`, `__snapshot`, four `__section` accordions) is now
+`components/sections/factories/factory-overview` on Saqeel primitives; ~25 labels
+moved to the `factories` i18n namespace in `en` + `ar`; risk is a `StatusPill`,
+not colour-only. Static verification only.
+
+**Pass 2 done:** the `__context` **end panel** is now
+`components/sections/factories/factory-context` (Selected context / source status
+/ Contextual AI cards); the `sq-f360__context` bridge and the `provenanceBadge`
+map are gone; new `ai` i18n group (en + ar). All `StatusPill`s on the screen now
+ping (owner request). Static verification only.
+
+**Still remaining for full T-020c:** the route-file slim
+(`app/(app)/factories/page.tsx` reads → `features/factories/queries.ts`, clearing
+its legacy `//` comments and the `let`), and the orphaned-CSS deletion below.
+Also open: whether pill-ping becomes a global rule (owner decision — affects
+dense operations/risk tables).
 
 Deletes on completion: `saqeel-runtime.css` 786–804 — the eighteen
 `.sq-f360__summary` / `.sq-f360__license` rules orphaned by T-020b — plus

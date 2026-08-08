@@ -40,6 +40,13 @@ export type ProvenanceStrings = {
   noSenaeiSync: string;
 };
 
+export type ConditionStrings = {
+  critical: string;
+  attention: string;
+  stable: string;
+  unavailable: string;
+};
+
 export function titleCase(value: string | null): string {
   if (!value) return "—";
   return value.replaceAll("_", " ").replace(/\b\w/g, letter => letter.toUpperCase());
@@ -63,6 +70,41 @@ export function provenanceOf(factory: FactoryRow, strings: ProvenanceStrings): {
     return { label: strings.registered, tone: "success" };
   }
   return { label: strings.unavailable, tone: "danger" };
+}
+
+export function provenanceDetail(factory: FactoryRow, strings: ProvenanceStrings, locale: "en" | "ar"): {
+  label: string;
+  tone: StatusTone;
+  body: string;
+  recorded: string;
+} {
+  const base = provenanceOf(factory, strings);
+  if (base.tone === "success") {
+    return {
+      ...base,
+      body: strings.registeredBody,
+      recorded: factory.source_synced_at
+        ? `${strings.recorded} · ${new Date(factory.source_synced_at).toLocaleString(locale === "ar" ? "ar-SA" : "en-SA")}`
+        : strings.freshnessUnavailable,
+    };
+  }
+  if (base.label === strings.manual) {
+    return { ...base, body: strings.manualBody, recorded: strings.noSenaeiSync };
+  }
+  if (base.label === strings.test) {
+    return { ...base, body: strings.testBody, recorded: strings.noSenaeiSync };
+  }
+  return { ...base, body: strings.unavailableBody, recorded: strings.freshnessUnavailable };
+}
+
+export function conditionOf(band: string | null, strings: ConditionStrings): {
+  label: string;
+  tone: StatusTone;
+} {
+  if (band === "high") return { label: strings.critical, tone: "danger" };
+  if (band === "medium") return { label: strings.attention, tone: "warning" };
+  if (band === "low") return { label: strings.stable, tone: "success" };
+  return { label: strings.unavailable, tone: "neutral" };
 }
 
 export function toLicence(factory: FactoryRow, strings: ProvenanceStrings): PortfolioLicence {

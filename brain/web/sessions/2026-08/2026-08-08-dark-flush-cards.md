@@ -48,8 +48,13 @@ added. The shimmer bones use `--sqx-surface-subtle` (a translucent overlay), so
 they stay legible on the grey-900 child surface; they are placeholder content,
 not a third background tone.
 
-Chosen scope: dashboard + operations only (owner's call). Factories and all
-other Card users keep the current dark look.
+| `app/(app)/factories/page.tsx` | modified | Wrapped `RevampFactory360Portfolio` in `data-sqx-cards="flush"`, extending the two-tone scheme to the migrated `/factories` portfolio. The summary and licence cards are top-level `.root` → grey-1000 (flush); the `StatCard`s nested in the summary are `.root .root` → grey-900. Three tones become two, matching how light already renders this panel. Placed on the page wrapper rather than inside `FactoryWorkspace` (a documented candidate primitive that must stay context-agnostic); it automatically covers the middle/end panels once they migrate (T-020c). |
+
+Chosen scope: dashboard + operations + the migrated `/factories` portfolio
+(owner's call). Other Card users (and the still-legacy `.sq-f360__*` middle/end
+panels) keep the current dark look until migrated. `/factories`' route file
+still carries legacy `//` comments and a `let` — untouched here, slated for
+T-020c's route-file slim-down.
 
 ## Decisions
 
