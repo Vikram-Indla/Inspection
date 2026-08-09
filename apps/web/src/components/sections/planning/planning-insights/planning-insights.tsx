@@ -1,5 +1,6 @@
 import { type ReactNode } from "react";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
+import CountBadge from "@/components/saqeel/count-badge/count-badge";
 import Icon from "@/components/saqeel/icon/icon";
 import styles from "./planning-insights.module.css";
 
@@ -16,19 +17,20 @@ export default function PlanningInsights({ headline, facts, strings, advisory }:
   advisory: ReactNode;
 }) {
   return (
-    <Card as="section" labelledBy="planning-insights-heading">
+    <Card as="section" accent="ai" labelledBy="planning-insights-heading">
       <CardHeader
         level="h2"
         titleId="planning-insights-heading"
-        title={strings.title}
-        eyebrow={<Icon name="ai" size="sm" label={strings.title} />}
+        title={<span className={styles.heading}><Icon name="ai" size="sm" />{strings.title}</span>}
       />
       <CardBody>
         <p className={styles.headline}>{headline}</p>
         <ul className={styles.facts} aria-label={strings.factsLabel}>
           {facts.map(fact => (
             <li key={fact.key} className={styles.fact}>
-              <span className={styles.count}>{fact.count === null ? strings.unavailable : fact.count}</span>
+              {fact.count === null
+                ? <span className={styles.unavailable}>{strings.unavailable}</span>
+                : <CountBadge value={fact.count} superscript />}
               <span>{fact.label}</span>
             </li>
           ))}

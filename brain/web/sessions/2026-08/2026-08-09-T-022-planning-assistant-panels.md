@@ -24,7 +24,8 @@ platform's existing governed AI foundation.
 | `components/sections/planning/planning-quick-actions/` (+ module) | created | 42 + 47 |
 | `components/sections/planning/planning-stat-cards/` | created | 31 |
 | `components/sections/planning/planning-skeleton/` (+ module) | extended | 125 + 129 |
-| `app/(app)/planning/page.tsx` | modified | 480 → 555 |
+| `components/saqeel/card/card.tsx` (+ module) | modified — `accent="ai"` | 95 + 187 |
+| `app/(app)/planning/page.tsx` | modified | 480 → 556 |
 | `i18n/locales/{en,ar}/planning.json` | extended — 47 keys each | 309 keys, parity |
 
 ## Decisions
@@ -81,6 +82,40 @@ embedded resource could not be verified without a database. A quick action that
 links somewhere other than what its label promises is worse than one that is
 absent. Replaced with *Review visits awaiting supervisor*, which is real and
 filterable. Parked.
+
+## Corrected after owner review
+
+Five presentation defects, four fixed at the source rather than in the panels:
+
+1. **Icon and title were on separate lines.** The icon was passed as `eyebrow`,
+   which `CardHeader` stacks *above* the title. It now sits inside the `title`
+   node in an inline-flex span, adjacent to the text. This also removed an
+   accessibility flaw: the icon carried `label={title}`, so it announced as an
+   image repeating the heading it sat next to. It is decorative beside its own
+   label, so it is `aria-hidden` now.
+2. **Insight counts were bare bold numerals.** They are now
+   `CountBadge superscript` — the same treatment T-021c built for the select, so
+   a count looks the same everywhere in the app.
+3. **The middle panel was taller, leaving dead space under the other two.** The
+   grid was `align-items: start`. It is now `stretch`, and each `.column` is
+   `display: grid` so its single child fills the row height — which stretches
+   the card **without the section reaching into `Card`**, since a primitive
+   accepts no class from outside (WEB-002 §4.5).
+4. **The risk-band pill printed the raw enum (`high`).** It now goes through the
+   app's common `enumLabel` path — `sentenceCase(t("enum.<value>",
+   humaniseEnum(value)))` — the same function every other screen uses. The
+   labelling happens in `assistant-view.ts`, keeping `assistant.ts` free of i18n.
+5. **AI surfaces were visually indistinguishable from recorded data.** `Card`
+   gained an `accent?: "ai"` prop — a **stroke only**, on `--sqx-accent-ai`
+   (declared in both themes), plus the title in the same colour. The fill stays
+   neutral deliberately: tinting the surface would make advisory content read as
+   a status.
+
+**One deliberate deviation from the mock:** Quick Actions does **not** get the AI
+accent or the sparkle icon, and now uses `workflow`. It is deterministic
+navigation with counted links — nothing about it is generated. Marking it as AI
+would defeat the point of the accent, which is to let a reader tell generated
+content from recorded content at a glance.
 
 ## Inventory taken before writing code
 

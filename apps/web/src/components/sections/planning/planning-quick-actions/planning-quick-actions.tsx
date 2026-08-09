@@ -20,8 +20,7 @@ export default function PlanningQuickActions({ actions, strings }: {
       <CardHeader
         level="h2"
         titleId="planning-quick-actions-heading"
-        title={strings.title}
-        eyebrow={<Icon name="ai" size="sm" label={strings.title} />}
+        title={<span className={styles.heading}><Icon name="workflow" size="sm" />{strings.title}</span>}
       />
       <CardBody gap="tight">
         <ul className={styles.list}>

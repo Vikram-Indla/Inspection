@@ -16,6 +16,18 @@
   background: var(--sqx-surface-raised);
 }
 
+/* An AI surface is marked by its stroke, so a reader can tell generated content
+   from recorded content before reading a word of it. Stroke only — the fill
+   stays neutral, because tinting the surface would make advisory content read
+   as a status. */
+.root[data-accent="ai"] {
+  border-color: var(--sqx-accent-ai);
+}
+
+.root[data-accent="ai"] .title {
+  color: var(--sqx-accent-ai);
+}
+
 [data-theme="dark"] [data-sqx-cards="flush"] .root {
   background: var(--sqx-surface-canvas);
 }

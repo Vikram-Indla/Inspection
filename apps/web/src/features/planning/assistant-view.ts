@@ -3,19 +3,24 @@ import type { PlanningListCounts, PlanningTab } from "@/lib/planning/visit-list"
 import type { PlanningInsightFact } from "@/components/sections/planning/planning-insights/planning-insights";
 import type { PlanningQuickAction } from "@/components/sections/planning/planning-quick-actions/planning-quick-actions";
 import type { PlanningStat } from "@/components/sections/planning/planning-stat-cards/planning-stat-cards";
-import type { PlanningAssistantData } from "./assistant";
+import type { PlanningAssistantData, PlanningRecommendation } from "./assistant";
 
 type AssistantStrings = Record<string, string>;
+
+export type PlanningRecommendationView = PlanningRecommendation & {
+  readonly riskBandLabel: string | null;
+};
 
 export type PlanningAssistantView = {
   readonly headline: string;
   readonly facts: readonly PlanningInsightFact[];
   readonly quickActions: readonly PlanningQuickAction[];
   readonly stats: readonly PlanningStat[];
+  readonly recommendations: readonly PlanningRecommendationView[];
 };
 
 export function buildPlanningAssistantView({
-  assistant, counts, countsAvailable, activeTab, assistantStrings, statStrings, tabHref,
+  assistant, counts, countsAvailable, activeTab, assistantStrings, statStrings, tabHref, enumLabel,
 }: {
   assistant: PlanningAssistantData;
   counts: PlanningListCounts;
@@ -24,6 +29,7 @@ export function buildPlanningAssistantView({
   assistantStrings: AssistantStrings;
   statStrings: AssistantStrings;
   tabHref: (tab: string) => string;
+  enumLabel: (value: string) => string;
 }): PlanningAssistantView {
   const visitCount = (tab: PlanningTab) => (countsAvailable ? counts[tab] : null);
   const attention = countsAvailable ? counts.draft + counts.returned + counts.expired : null;
@@ -69,5 +75,10 @@ export function buildPlanningAssistantView({
     { key: "aiSuggested", label: statStrings.aiSuggested, count: assistant.aiSuggested, href: null, active: false },
   ];
 
-  return { headline, facts, quickActions, stats };
+  const recommendations: PlanningRecommendationView[] = assistant.recommendations.map(item => ({
+    ...item,
+    riskBandLabel: item.riskBand === null ? null : enumLabel(item.riskBand),
+  }));
+
+  return { headline, facts, quickActions, stats, recommendations };
 }

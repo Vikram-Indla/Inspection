@@ -3,7 +3,8 @@ import Button from "@/components/saqeel/button/button";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import Icon from "@/components/saqeel/icon/icon";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
-import type { PlanningRecommendation, PlanningRecommendationReason } from "@/features/planning/assistant";
+import type { PlanningRecommendationReason } from "@/features/planning/assistant";
+import type { PlanningRecommendationView } from "@/features/planning/assistant-view";
 import styles from "./planning-recommendations.module.css";
 
 export type PlanningRecommendationStrings = {
@@ -19,16 +20,15 @@ export type PlanningRecommendationStrings = {
 };
 
 export default function PlanningRecommendations({ recommendations, strings }: {
-  recommendations: readonly PlanningRecommendation[];
+  recommendations: readonly PlanningRecommendationView[];
   strings: PlanningRecommendationStrings;
 }) {
   return (
-    <Card as="section" labelledBy="planning-recommendations-heading">
+    <Card as="section" accent="ai" labelledBy="planning-recommendations-heading">
       <CardHeader
         level="h2"
         titleId="planning-recommendations-heading"
-        title={strings.title}
-        eyebrow={<Icon name="ai" size="sm" label={strings.title} />}
+        title={<span className={styles.heading}><Icon name="ai" size="sm" />{strings.title}</span>}
       />
       <CardBody>
         {recommendations.length === 0 ? (
@@ -45,7 +45,7 @@ export default function PlanningRecommendations({ recommendations, strings }: {
                   </span>
                 </div>
                 <div className={styles.tags}>
-                  <StatusPill tone={item.riskTone}>{item.riskBand ?? strings.bandUnavailable}</StatusPill>
+                  <StatusPill tone={item.riskTone}>{item.riskBandLabel ?? strings.bandUnavailable}</StatusPill>
                   <span className={styles.reason}>{strings.reason[item.reason]}</span>
                 </div>
                 <div className={styles.actions}>

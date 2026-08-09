@@ -14,19 +14,23 @@
   list-style: none;
 }
 
+.heading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
 .fact {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--sqx-space-3);
   font: var(--sqx-text-label);
   color: var(--sqx-text-secondary);
   text-wrap: pretty;
 }
 
-.count {
+.unavailable {
   flex: none;
-  min-inline-size: var(--sqx-space-6);
-  font-variant-numeric: var(--sqx-numeric-tabular);
-  font-weight: var(--sqx-weight-bold);
-  color: var(--sqx-text-primary);
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
 }

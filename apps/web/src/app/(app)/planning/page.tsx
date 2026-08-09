@@ -285,6 +285,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
     assistantStrings: planning.assistant,
     statStrings: planning.stats,
     tabHref: tab => hrefWith(sp, { tab, page: "" }),
+    enumLabel,
   });
   const allOption: SelectOption = { value: "", label: planning.filter.all };
   const statusOptions: SelectOption[] = PLANNING_TABS.map(tab => ({
@@ -362,7 +363,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
         }
         recommendations={
           <PlanningRecommendations
-            recommendations={assistant.recommendations}
+            recommendations={assistantView.recommendations}
             strings={{
               title: planning.assistant.recommendationsTitle,
               emptyTitle: planning.assistant.recommendationsEmptyTitle,
