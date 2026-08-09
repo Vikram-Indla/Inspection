@@ -11,6 +11,7 @@ import { formatDateTime } from "@/lib/dates";
 import { humaniseEnum, sentenceCase } from "@/lib/text";
 import type { PlanningListParams, PlanningTab } from "@/lib/planning/visit-list";
 import { visitHref, hasActiveVisitFilters, VISIT_PAGE_MAX, type VisitRouteBase, type VisitSearchParams } from "@/features/visits/params";
+import { windowDateRangePresets } from "@/components/saqeel/date-range-picker/date-range-presets";
 import { toVisitBoardRow } from "@/features/visits/rows";
 import { buildVisitsBoardStrings } from "@/features/visits/board-strings";
 import {
@@ -99,8 +100,8 @@ export default async function VisitManagementScreen({ data, params, sp, routeBas
           from: getMessages(locale).planning.filter.from, to: getMessages(locale).planning.filter.to,
           pickStart: getMessages(locale).planning.filter.pickStart, pickEnd: getMessages(locale).planning.filter.pickEnd,
           reset: getMessages(locale).planning.filter.reset,
-          previousMonth: getMessages(locale).planning.filter.previousMonth,
-          nextMonth: getMessages(locale).planning.filter.nextMonth,
+          previousMonth: getMessages(locale).common.action.previousMonth,
+          nextMonth: getMessages(locale).common.action.nextMonth,
         }}
         search={params.search}
         tab={params.tab === "all" ? "" : params.tab}
@@ -115,7 +116,7 @@ export default async function VisitManagementScreen({ data, params, sp, routeBas
         cityOptions={options.cityOptions}
         windowFrom={params.filters.windowFrom ?? ""}
         windowTo={params.filters.windowTo ?? ""}
-        datePresets={[]}
+        datePresets={windowDateRangePresets(getMessages(locale).common.scope)}
         sort={params.sort}
         sortOptions={Object.entries(messages.sortLabels).map(([value, label]) => ({ value, label }))}
         advancedCount={advancedCount}

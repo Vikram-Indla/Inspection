@@ -17,6 +17,7 @@ export type VisitBoardRow = {
   readonly planningLabel: string;
   readonly planningTone: StatusTone;
   readonly operationalLabel: string;
+  readonly operationalTone: StatusTone;
   readonly inspectorName: string;
   readonly windowStart: string;
   readonly windowStartIso: string;
@@ -35,6 +36,17 @@ export const VISIT_STATUS_TONE: Record<string, StatusTone> = {
   returned: "warning",
   cancelled: "danger",
   expired: "danger",
+};
+
+export const VISIT_OPERATIONAL_TONE: Record<string, StatusTone> = {
+  new: "neutral",
+  prepared: "info",
+  on_the_way: "info",
+  arrived: "info",
+  executing: "accent",
+  submitted: "info",
+  under_review: "warning",
+  closed: "success",
 };
 
 export const VISIT_ALLOWED_TONE: Record<VisitAllowedKey, StatusTone> = {
@@ -95,6 +107,7 @@ export function toVisitBoardRow(
       : labels.enumLabel(row.planningStatus),
     planningTone: VISIT_STATUS_TONE[effective] ?? "neutral",
     operationalLabel: labels.enumLabel(row.operationalState),
+    operationalTone: VISIT_OPERATIONAL_TONE[row.operationalState] ?? "neutral",
     inspectorName: row.inspectorName ?? labels.missing,
     windowStart: labels.formatDateTime(row.windowStart),
     windowStartIso: row.windowStart,

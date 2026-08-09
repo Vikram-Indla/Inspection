@@ -24,6 +24,7 @@ import Button from "@/components/saqeel/button/button";
 import PlanningVisitTable, { type PlanningVisitDisplayRow } from "@/components/sections/planning/planning-visit-table/planning-visit-table";
 import PlanningFilterBar from "@/components/sections/planning/planning-filter-bar/planning-filter-bar";
 import { type SelectOption } from "@/components/saqeel/select/select";
+import { windowDateRangePresets } from "@/components/saqeel/date-range-picker/date-range-presets";
 
 export const dynamic = "force-dynamic";
 
@@ -266,11 +267,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
   // falsely suggests that hidden filters are active.
   const advancedFilterCount = (["method", "visitType", "priority", "region", "city", "packageVersionId", "createdFrom", "createdTo", "bulkPlanRef"] as const)
     .filter(key => Boolean(params.filters[key])).length;
-  const visitDatePresets = [
-    { id: "today", label: planning.filter.presetToday, days: 1, direction: "future" as const },
-    { id: "next7", label: planning.filter.presetNext7, days: 7, direction: "future" as const },
-    { id: "next30", label: planning.filter.presetNext30, days: 30, direction: "future" as const },
-  ];
+  const visitDatePresets = windowDateRangePresets(getMessages(locale).common.scope);
   const allOption: SelectOption = { value: "", label: planning.filter.all };
   const statusOptions: SelectOption[] = PLANNING_TABS.map(tab => ({
     value: tab === "all" ? "" : tab,

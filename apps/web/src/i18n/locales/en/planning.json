@@ -274,8 +274,6 @@
     "visitDateEmpty": "Any date",
     "datePresets": "Visit date presets",
     "presetToday": "Today",
-    "presetNext7": "Next 7 days",
-    "presetNext30": "Next 30 days",
     "filters": "Filters",
     "apply": "Apply",
     "clearAll": "Clear all",

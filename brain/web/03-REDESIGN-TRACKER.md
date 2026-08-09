@@ -31,6 +31,21 @@ review by a native speaker, and the bundle measurement request.
 
 ---
 
+### T-021d · Shared date presets, visit-status pill, ping geometry
+`status: done (static verification only)` · `rules: WEB-000, WEB-002, WEB-008, WEB-009, WEB-011` · `est: 1h`
+`record:` [2026-08-09-T-021d-shared-date-presets-status-pill-ping](sessions/2026-08/2026-08-09-T-021d-shared-date-presets-status-pill-ping.md)
+
+- **One preset set** in `saqeel/date-range-picker/date-range-presets.ts`, labels
+  in `common.scope`. Shell, `/planning` and Visit Management all consume it.
+- **The shell's own picker was broken** — 8 of 16 required strings, no `locale`.
+  That was the `shell-topbar.tsx:81` "pre-existing" error; it hid two defects.
+  **The repo now typechecks clean for the first time on this branch.**
+- **Visit status** is a pinging `StatusPill`, not bare text.
+- **`PingDot`** is circular by construction (`aspect-ratio`) and centred
+  (`vertical-align`, explicit `transform-origin`).
+
+---
+
 ### T-021c · Primitive refinements + Visit Management skeleton
 `status: done (static verification only)` · `rules: WEB-000, WEB-002, WEB-003, WEB-009, WEB-011` · `est: 1.5h`
 `record:` [2026-08-09-T-021c-primitive-refinements-and-visits-skeleton](sessions/2026-08/2026-08-09-T-021c-primitive-refinements-and-visits-skeleton.md)
@@ -379,6 +394,20 @@ filters and tabs moved to `searchParams`.
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
 
+- **Calendar-period date presets do not exist.** `DateRangePreset` only
+  expresses "N days from today", so "this month / quarter / year" cannot be
+  built from it — the shell's old labels claiming otherwise were removed rather
+  than kept as a lie (T-021d). Reintroducing them needs month-boundary maths in
+  the primitive **and** a ruling on Gregorian vs Hijri periods, which a Saudi
+  ministry platform must not assume (WEB-011).
+- **Two pinging pills per visit row.** Planning status and visit status both
+  ping; at 100 rows that is 200 infinite animations. Compositor-only and
+  reduced-motion-safe, but if the board reads as busy the answer is a rule about
+  *which* pill pings — not demoting one back to plain text.
+- **A type error in a shared component is a live defect, not background noise.**
+  `ShellScopeControls` carried a 16-key strings contract no call site satisfied;
+  it was reported as "pre-existing" across two sessions and was hiding both
+  `undefined` preset labels and a missing `locale` in the topbar (T-021d).
 - **WEB-000 §2 bans `/* */` but does not scope the ban to a language**, and the
   design-system CSS (`saqeel.css`, `data-table.module.css`,
   `menu-surface.module.css`) is full of rationale comments written under these

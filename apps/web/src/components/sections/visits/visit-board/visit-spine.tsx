@@ -30,7 +30,7 @@ export default function VisitSpine({ visit, strings }: {
                 { label: strings.colFactory, value: visit.factoryName },
                 { label: strings.colTypeMode, value: `${visit.typeLabel} · ${visit.modeLabel}` },
                 { label: strings.colPlanning, value: <StatusPill tone={visit.planningTone}>{visit.planningLabel}</StatusPill> },
-                { label: strings.colOperational, value: visit.operationalLabel },
+                { label: strings.colOperational, value: <StatusPill tone={visit.operationalTone}>{visit.operationalLabel}</StatusPill> },
                 { label: strings.spineWindow, value: `${visit.windowStart} — ${visit.windowEnd}` },
                 { label: strings.spineInspector, value: visit.inspectorName },
               ]}

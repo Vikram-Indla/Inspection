@@ -28,6 +28,13 @@ exists to correct while `/planning` stays provably unchanged. 14 `useState` → 
 only retirement row with an empty `pending` list — deleting it needs the e2e
 specs updated, nothing more.
 
+**`npm run typecheck` is clean across the whole repository (2026-08-09).** It had
+not been: `shell-topbar.tsx:81` failed for several sessions and was carried as
+"pre-existing". T-021d found it was masking two live defects in the topbar's date
+scope — five of seven presets rendering `undefined` labels, and a `locale` that
+was never passed, so the shell never rendered Arabic-Indic digits. Treat a
+standing type error in a shared component as a defect, not as noise.
+
 ---
 
 ---

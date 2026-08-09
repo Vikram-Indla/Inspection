@@ -68,7 +68,11 @@ export default function VisitTable({ rows, selected, activeId, strings, onToggle
       header: strings.colPlanning,
       cell: row => <StatusPill tone={row.planningTone}>{row.planningLabel}</StatusPill>,
     },
-    { key: "operational", header: strings.colOperational, cell: row => row.operationalLabel },
+    {
+      key: "operational",
+      header: strings.colOperational,
+      cell: row => <StatusPill tone={row.operationalTone}>{row.operationalLabel}</StatusPill>,
+    },
     { key: "inspector", header: strings.colInspector, cell: row => row.inspectorName },
     {
       key: "window",
