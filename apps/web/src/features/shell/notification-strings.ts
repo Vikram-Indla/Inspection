@@ -51,6 +51,7 @@ export async function getNotificationStrings(): Promise<BellStrings> {
     notConfigured: t("bell.notConfigured", locale === "ar" ? "المزود قيد الانتظار" : "provider pending"),
     contextLabels: {
       factory: t("bell.ctx.factory", locale === "ar" ? "المنشأة" : "Factory"),
+      visit: t("bell.ctx.visit", locale === "ar" ? "الزيارة" : "Visit"),
       reason: t("bell.ctx.reason", locale === "ar" ? "السبب" : "Reason"),
       decision: t("bell.ctx.decision", locale === "ar" ? "القرار" : "Decision"),
     },

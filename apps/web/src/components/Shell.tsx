@@ -129,6 +129,12 @@ export async function AppShell({ children }: { children: ReactNode }) {
       allTools: t("admin.shell.allTools", "All authorized tools, grouped by area"),
       close: t("admin.shell.close", "Close"),
       paletteTitle: t("admin.shell.paletteTitle", "Find a tool"),
+      paletteOpen: t("admin.shell.paletteOpen", "Open admin tools"),
+      paletteGoTo: t("admin.shell.paletteGoTo", "Go to an admin tool"),
+      paletteSearch: t("admin.shell.paletteSearch", "Search allowed admin tools"),
+      paletteResultsOne: t("admin.shell.paletteResultsOne", "{count} allowed result"),
+      paletteResultsOther: t("admin.shell.paletteResultsOther", "{count} allowed results"),
+      paletteEmpty: t("admin.shell.paletteEmpty", "No matching tools"),
       noMatch: t("admin.shell.noMatch", "No authorized tool matches."),
       hubs: {
         control: t("admin.shell.hub.control", "Control Panel"),
@@ -204,6 +210,7 @@ export async function AppShell({ children }: { children: ReactNode }) {
     notConfigured: t("bell.notConfigured", locale === "ar" ? "المزود قيد الانتظار" : "provider pending"),
     contextLabels: {
       factory: t("bell.ctx.factory", locale === "ar" ? "المنشأة" : "Factory"),
+      visit: t("bell.ctx.visit", locale === "ar" ? "الزيارة" : "Visit"),
       reason: t("bell.ctx.reason", locale === "ar" ? "السبب" : "Reason"),
       decision: t("bell.ctx.decision", locale === "ar" ? "القرار" : "Decision"),
     },
