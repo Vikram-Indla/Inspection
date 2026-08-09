@@ -68,10 +68,13 @@ snapshot history (compliance trend states its absence — no such score exists),
 and the four disclosures moved to the very end via a new `factory-sections`.
 `record:` [2026-08-09-T-028-factories-trends-and-order](sessions/2026-08/2026-08-09-T-028-factories-trends-and-order.md)
 
-**BLOCKING before any further `/factories` work:** extract the view models out
-of `RevampFactory360Portfolio.tsx` — **361 lines against a 200-line limit**,
-ceiling **400**, and now almost entirely view-model construction. It was 170
-three slices ago. One more slice breaches it.
+**Extraction done + Factory profile card (T-029):** `features/factories/view.ts`
+now owns every view model, taking `RevampFactory360Portfolio.tsx` from **361 to
+202 lines** of pure composition. The profile card leads the disclosure stack —
+Activity, Region, City and the primary representative are real; Sector shows
+*Not available* (no column); media is **counted, never previewed** (no signed
+retrieval surface on this screen).
+`record:` [2026-08-09-T-029-factories-profile-and-extraction](sessions/2026-08/2026-08-09-T-029-factories-profile-and-extraction.md)
 
 **Remaining slices:** filling the four disclosure sections (they only link into
 the dossier today), and `/factories/cr/[id]`, untouched legacy.
@@ -527,6 +530,21 @@ Pull one in only if it is genuinely part of doing the active task well.
   a partial filter or none. **Before any customer demo**, fold both into one
   shared predicate applied at the query layer, so a caller cannot apply half of
   it.
+- **`align-items: flex-start` on a container silently kills any grid inside it.**
+  It shrink-wraps children to their content width, so a
+  `repeat(auto-fit, minmax(…, 1fr))` grid has nothing to fill and collapses to
+  one column. `factory-sections`' disclosure chrome carries it — correct for a
+  note plus a button, wrong the moment a disclosure holds a grid (T-029).
+  Anything reusing those styles inherits the trap.
+- **A media gallery needs a signed-URL retrieval surface and a per-asset access
+  check.** `/factories` counts `factory_media_assets` rather than previewing
+  them (T-029) — an `<img>` with no working source is a broken image, not a
+  placeholder. Building the real gallery is its own task.
+- **`factories` has no sector column**, so the profile card's Sector reads
+  *Not available*. Schema gap, not a UI one.
+- **`/factories` issues eight reads per page load** across three batched
+  `Promise.all` groups, all scoped to the visible portfolio. Worth a measurement
+  pass once the app can run.
 - **An empty result under RLS must never render as an absence of facts.**
   `penalty_notices` is readable only by reviewer/ops/auditor/compliance_admin/
   leadership; every other role gets an **empty set, not an error**. T-027 renders

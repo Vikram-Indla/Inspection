@@ -8,27 +8,26 @@ import FactoryContext from "@/components/sections/factories/factory-context/fact
 import FactoryRiskOutlook from "@/components/sections/factories/factory-risk-outlook/factory-risk-outlook";
 import FactoryTrust from "@/components/sections/factories/factory-trust/factory-trust";
 import FactoryOverview from "@/components/sections/factories/factory-overview/factory-overview";
+import FactoryProfile from "@/components/sections/factories/factory-profile/factory-profile";
 import FactorySections from "@/components/sections/factories/factory-sections/factory-sections";
 import FactoryTrends from "@/components/sections/factories/factory-trends/factory-trends";
 import FactorySnapshot from "@/components/sections/factories/factory-snapshot/factory-snapshot";
 import FactoryWorkspace from "@/components/sections/factories/factory-workspace/factory-workspace";
 import {
-  conditionOf,
   provenanceDetail,
   provenanceOf,
-  titleCase,
   toLicence,
-  licenceExpiryState,
-  LICENCE_EXPIRY_SOON_DAYS,
   type FactoryRow,
   type ProvenanceStrings,
 } from "@/features/factories/portfolio";
+import { buildFactoryView } from "@/features/factories/view";
 import type { PortfolioCounts } from "@/features/factories/portfolio-counts";
 import type { FactoryCompliance as FactoryComplianceData } from "@/features/factories/compliance";
+import type { FactoryProfileRecord } from "@/features/factories/profile";
 import { toDriverLines, type FactoryRiskMovement } from "@/features/factories/risk-context";
 import type { StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import { formatDate } from "@/lib/dates";
-import { fill, getMessages } from "@/i18n/messages";
+import { getMessages } from "@/i18n/messages";
 
 export type RevampFactoryRow = FactoryRow;
 
@@ -43,7 +42,7 @@ function planningHandoffHref(factory: FactoryRow): string {
   return `/planning/single?${query.toString()}`;
 }
 
-export default function RevampFactory360Portfolio({ factories, portfolioLabel, canCreateInspection, locale, provenanceStrings, counts, complianceByFactory, penaltiesReadable, riskMovement, now }: {
+export default function RevampFactory360Portfolio({ factories, portfolioLabel, canCreateInspection, locale, provenanceStrings, counts, complianceByFactory, penaltiesReadable, profiles, riskMovement, now }: {
   factories: FactoryRow[];
   portfolioLabel: string;
   canCreateInspection: boolean;
@@ -52,6 +51,7 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
   counts: PortfolioCounts;
   complianceByFactory: ReadonlyMap<string, FactoryComplianceData>;
   penaltiesReadable: boolean;
+  profiles: ReadonlyMap<string, FactoryProfileRecord>;
   riskMovement: ReadonlyMap<string, FactoryRiskMovement>;
   now: number;
 }) {
@@ -72,159 +72,19 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
     .find(entry => entry.tone !== "success") ?? null;
   if (!selected) return null;
 
-  const condition = conditionOf(selected.risk_band, {
-    critical: copy.condition.critical,
-    attention: copy.condition.attention,
-    stable: copy.condition.stable,
-    unavailable: copy.condition.unavailable,
+  const view = buildFactoryView({
+    factory: selected,
+    locale,
+    counts,
+    movement: riskMovement.get(selected.id) ?? null,
+    compliance: complianceByFactory.get(selected.id),
+    profile: profiles.get(selected.id),
+    now,
+    freshnessUnavailable: provenanceStrings.freshnessUnavailable,
+    sourceStatus: provenanceStrings.sourceStatus,
   });
   const provenance = provenanceDetail(selected, provenanceStrings, locale);
   const createHref = canCreateInspection && !selected.is_temporary ? planningHandoffHref(selected) : null;
-  const contextStrings = {
-    selectedContext: copy.workspace.context,
-    cr: copy.snapshot.commercialRegistration,
-    licence: copy.hero.industrialLicence,
-    plant: copy.portfolio.plantNumber,
-    sourceStatus: provenanceStrings.sourceStatus,
-    missing: copy.portfolio.missing,
-  };
-  const movement = riskMovement.get(selected.id) ?? null;
-  const day = (iso: string | null) => (iso ? formatDate(iso, locale) : copy.portfolio.missing);
-  const latestChange = movement === null
-    ? copy.context.change.none
-    : movement.previous === null
-      ? copy.context.change.first
-      : fill(copy.context.change.moved, {
-        from: movement.previous.score,
-        to: movement.latest.score,
-        date: day(movement.latest.calculatedAt),
-      });
-  const sources = [
-    {
-      key: "senaei",
-      label: copy.context.sources.senaei,
-      state: selected.source_synced_at ? copy.context.sources.synced : copy.context.sources.notSynced,
-      tone: selected.source_synced_at ? ("success" as StatusTone) : ("neutral" as StatusTone),
-    },
-    {
-      key: "riskEngine",
-      label: copy.context.sources.riskEngine,
-      state: movement ? copy.context.sources.calculated : copy.context.sources.notCalculated,
-      tone: movement ? ("success" as StatusTone) : ("neutral" as StatusTone),
-    },
-  ];
-  const sections = [
-    { key: "inspectionHistory", ...copy.sections.items.inspectionHistory },
-    { key: "violations", ...copy.sections.items.violations },
-    { key: "industrial", ...copy.sections.items.industrial },
-    { key: "documents", ...copy.sections.items.documents },
-  ].map(item => ({
-    key: item.key,
-    title: item.title,
-    body: item.body,
-    openLabel: fill(copy.sections.open, { title: item.title }),
-    href: selected.dossier_href,
-  }));
-  const overviewStrings = {
-    opened: copy.hero.opened,
-    plannerNote: copy.hero.plannerNote,
-    plantNumber: copy.portfolio.plantNumber,
-    licenceType: copy.hero.licenceType,
-    stage: copy.hero.stage,
-    licenceState: copy.snapshot.licenceState,
-    createInspection: copy.action.createInspection,
-    viewOnMap: copy.action.viewOnMap,
-    openProfile: copy.action.openProfile,
-    missing: copy.portfolio.missing,
-  };
-  const openViolations = counts.openViolationsAvailable ? counts.openViolations.get(selected.id) ?? 0 : null;
-  const activePenalties = counts.activePenaltiesAvailable ? counts.activePenalties.get(selected.id) ?? 0 : null;
-  const products = counts.productsAvailable ? counts.products.get(selected.id) ?? 0 : null;
-  const inspectedAt = counts.lastInspection.get(selected.id) ?? null;
-  const daysSinceInspection = inspectedAt === null
-    ? null
-    : Math.floor((now - new Date(inspectedAt).getTime()) / 86_400_000);
-  const expiryState = licenceExpiryState(selected.license?.expiry_date ?? null, now);
-  const conditionReasons = [
-    openViolations !== null && openViolations > 0
-      ? fill(copy.reason.openViolations, { n: openViolations }) : null,
-    daysSinceInspection === null
-      ? copy.reason.neverInspected
-      : fill(copy.reason.inspectedDaysAgo, { n: daysSinceInspection }),
-    expiryState === "expired" ? copy.reason.licenceExpired : null,
-    expiryState === "expiringSoon"
-      ? fill(copy.reason.licenceExpiring, { n: LICENCE_EXPIRY_SOON_DAYS }) : null,
-  ].filter((reason): reason is string => reason !== null);
-  const numberMetric = (key: string, label: string, value: number | null, tone: StatusTone) => ({
-    key,
-    label,
-    value: value === null ? copy.snapshot.notAvailable : String(value),
-    tone: value === null ? ("neutral" as StatusTone) : tone,
-    kind: (value === null ? "text" : "number") as "number" | "text",
-  });
-  const trendSeries = (movement?.series ?? []).map((snapshot, index) => ({
-    key: `${snapshot.calculatedAt ?? index}`,
-    value: snapshot.score,
-    label: `${snapshot.score} · ${day(snapshot.calculatedAt)}`,
-  }));
-  const riskChange = movement?.previous ? movement.latest.score - movement.previous.score : null;
-  const riskDelta = riskChange === null
-    ? (movement ? copy.trends.firstCalculation : null)
-    : fill(riskChange > 0 ? copy.trends.rising : riskChange < 0 ? copy.trends.falling : copy.trends.steady,
-      { n: Math.abs(riskChange) });
-  const riskTone: StatusTone = riskChange === null || riskChange === 0
-    ? "neutral"
-    : riskChange > 0 ? "danger" : "success";
-  const compliance = complianceByFactory.get(selected.id) ?? { reports: [], violations: [], penalties: [] };
-  const DECISION_TONE: Record<string, StatusTone> = { approve: "success", return: "warning", reject: "danger" };
-  const LEVEL_TONE: Record<string, StatusTone> = { critical: "danger", major: "warning", minor: "info" };
-  const PENALTY_TONE: Record<string, StatusTone> = {
-    issued: "warning", served: "warning", settled: "success", withdrawn: "neutral",
-  };
-  const complianceRows = {
-    reports: compliance.reports.map(report => ({
-      id: report.id,
-      reference: report.reference ?? copy.portfolio.missing,
-      recorded: day(report.recordedAt),
-      recordedIso: report.recordedAt,
-      status: report.status ? titleCase(report.status) : copy.portfolio.missing,
-      statusTone: "neutral" as StatusTone,
-      decision: report.decision ? titleCase(report.decision) : copy.compliance.noDecision,
-      decisionTone: report.decision ? DECISION_TONE[report.decision] ?? "neutral" : null,
-    })),
-    violations: compliance.violations.map(violation => ({
-      id: violation.id,
-      title: violation.title ?? copy.portfolio.missing,
-      code: violation.code ?? copy.portfolio.missing,
-      level: violation.level ? titleCase(violation.level) : copy.portfolio.missing,
-      levelTone: violation.level ? LEVEL_TONE[violation.level] ?? "neutral" : "neutral",
-      recorded: day(violation.recordedAt),
-      recordedIso: violation.recordedAt,
-    })),
-    penalties: compliance.penalties.map(penalty => ({
-      id: penalty.id,
-      noticeNumber: penalty.noticeNumber,
-      status: titleCase(penalty.status),
-      statusTone: PENALTY_TONE[penalty.status] ?? "neutral",
-      issued: day(penalty.issuedAt),
-      issuedIso: penalty.issuedAt,
-      violation: penalty.violationTitle ?? copy.portfolio.missing,
-    })),
-  };
-  const metrics = [
-    numberMetric("riskScore", copy.snapshot.riskScore, selected.risk_score, condition.tone),
-    {
-      key: "latestInspection",
-      label: copy.snapshot.latestInspection,
-      value: inspectedAt === null ? copy.snapshot.never : day(inspectedAt),
-      tone: "neutral" as StatusTone,
-      kind: "text" as const,
-    },
-    numberMetric("openViolations", copy.snapshot.openViolations, openViolations, alertTone(openViolations, "danger")),
-    numberMetric("activePenalties", copy.snapshot.activePenalties, activePenalties, alertTone(activePenalties, "warning")),
-    numberMetric("employees", copy.snapshot.employees, selected.employees_total, "neutral"),
-    numberMetric("products", copy.snapshot.products, products, "neutral"),
-  ];
 
   return (
     <FactoryWorkspace
@@ -254,48 +114,30 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
           ]}
           provenanceNotice={provenanceNotice}
           formatDate={iso => formatDate(iso, locale)}
-          strings={{
-            portfolio: copy.portfolio.portfolio,
-            factories: copy.portfolio.factories,
-            highRisk: copy.portfolio.highRisk,
-            openViolations: copy.portfolio.openViolations,
-            activePenalties: copy.portfolio.activePenalties,
-            licenceNumber: copy.portfolio.licenceNumber,
-            plantNumber: copy.portfolio.plantNumber,
-            type: copy.portfolio.type,
-            stage: copy.portfolio.stage,
-            expiry: copy.portfolio.expiry,
-            notAvailable: copy.portfolio.notAvailable,
-            missing: copy.portfolio.missing,
-            riskHigh: copy.risk.high,
-            riskMedium: copy.risk.medium,
-            riskLow: copy.risk.low,
-            expired: copy.portfolio.expired,
-            expiringSoon: copy.portfolio.expiringSoon,
-          }}
+          strings={view.strings.portfolio}
         />
       }
       end={
         <FactoryContext
           factory={selected}
           provenance={provenance}
-          strings={contextStrings}
+          strings={view.strings.context}
           outlook={
             <FactoryRiskOutlook
               score={selected.risk_score === null ? copy.portfolio.missing : String(selected.risk_score)}
-              band={selected.risk_band ? { label: condition.label, tone: condition.tone } : null}
+              band={selected.risk_band ? view.condition : null}
               noScoreLabel={copy.context.outlook.noScore}
               modelVersion={selected.risk_version ?? copy.portfolio.missing}
               drivers={toDriverLines(selected.risk_drivers, copy.portfolio.missing)}
-              latestChange={latestChange}
+              latestChange={view.latestChange}
               actionHref={selected.dossier_href}
               strings={copy.context.outlook}
             />
           }
           trust={
             <FactoryTrust
-              lastSynchronised={selected.source_synced_at ? day(selected.source_synced_at) : provenanceStrings.freshnessUnavailable}
-              sources={sources}
+              lastSynchronised={view.lastSynchronised}
+              sources={view.sources}
               strings={copy.context.trust}
             />
           }
@@ -303,15 +145,7 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
             <FactoryAiAdvisory
               factoryId={selected.id}
               locale={locale}
-              strings={{
-                title: copy.context.advisory.title,
-                advisory: copy.context.advisory.advisory,
-                evidence: copy.context.advisory.evidence,
-                idle: copy.context.advisory.idle,
-                generate: copy.context.advisory.generate,
-                generating: copy.context.advisory.generating,
-                confidenceUnavailable: copy.context.advisory.confidenceUnavailable,
-              }}
+              strings={view.strings.advisory}
             />
           }
         />
@@ -321,9 +155,9 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
         factory={selected}
         snapshot={
           <FactorySnapshot
-            condition={condition}
-            reasons={conditionReasons}
-            metrics={metrics}
+            condition={view.condition}
+            reasons={view.conditionReasons}
+            metrics={view.metrics}
             strings={{
               title: copy.snapshot.title,
               overallCondition: copy.snapshot.overallCondition,
@@ -334,27 +168,35 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
         createHref={createHref}
         mapHref={`/operations?region=${encodeURIComponent(selected.region ?? "")}`}
         profileHref={selected.dossier_href}
-        strings={overviewStrings}
+        strings={view.strings.overview}
       />
 
       <FactoryCompliance
-        reports={complianceRows.reports}
-        violations={complianceRows.violations}
-        penalties={complianceRows.penalties}
+        reports={view.compliance.reports}
+        violations={view.compliance.violations}
+        penalties={view.compliance.penalties}
         penaltiesReadable={penaltiesReadable}
         trends={
           <FactoryTrends
-            series={trendSeries}
-            current={movement ? String(movement.latest.score) : copy.snapshot.notAvailable}
-            delta={riskDelta}
-            tone={riskTone}
+            series={view.trendSeries}
+            current={view.riskCurrent}
+            delta={view.riskDelta}
+            tone={view.riskTone}
             strings={copy.trends}
           />
         }
         strings={copy.compliance}
       />
 
-      <FactorySections sections={sections} availableLabel={copy.sections.availableInProfile} />
+      <FactoryProfile
+        groups={view.profileGroups}
+        official={profiles.get(selected.id)?.media.official ?? 0}
+        inspection={profiles.get(selected.id)?.media.inspection ?? 0}
+        href={selected.dossier_href}
+        strings={copy.profile}
+      />
+
+      <FactorySections sections={view.sections} availableLabel={copy.sections.availableInProfile} />
     </FactoryWorkspace>
   );
 }

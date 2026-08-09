@@ -171,5 +171,24 @@
     "complianceTitle": "Compliance trend",
     "complianceUnavailable": "Not available — no compliance score is recorded for a factory, so there is no series to trend.",
     "seriesLabel": "Recorded risk scores, oldest first"
+  },
+  "profile": {
+    "title": "Factory profile",
+    "identity": "Identity",
+    "location": "Location",
+    "contacts": "Contacts",
+    "sector": "Sector",
+    "activity": "Activity",
+    "region": "Region",
+    "city": "City",
+    "contact": "Primary contact",
+    "role": "Role",
+    "phone": "Phone",
+    "media": "Recorded media",
+    "officialCount": "{n} official factory images",
+    "inspectionCount": "{n} inspection images",
+    "mediaNote": "Counts only — images are previewed and downloaded from the factory profile, where access is checked per asset.",
+    "openLabel": "Open factory profile",
+    "noContact": "No active representative is recorded"
   }
 }
