@@ -3,6 +3,7 @@
 import { useState } from "react";
 import FactoriesPortfolio from "@/components/sections/factories/factories-portfolio/factories-portfolio";
 import FactoryAiAdvisory from "@/components/sections/factories/factory-ai-advisory/factory-ai-advisory";
+import FactoryCompliance from "@/components/sections/factories/factory-compliance/factory-compliance";
 import FactoryContext from "@/components/sections/factories/factory-context/factory-context";
 import FactoryRiskOutlook from "@/components/sections/factories/factory-risk-outlook/factory-risk-outlook";
 import FactoryTrust from "@/components/sections/factories/factory-trust/factory-trust";
@@ -13,6 +14,7 @@ import {
   conditionOf,
   provenanceDetail,
   provenanceOf,
+  titleCase,
   toLicence,
   licenceExpiryState,
   LICENCE_EXPIRY_SOON_DAYS,
@@ -20,6 +22,7 @@ import {
   type ProvenanceStrings,
 } from "@/features/factories/portfolio";
 import type { PortfolioCounts } from "@/features/factories/portfolio-counts";
+import type { FactoryCompliance as FactoryComplianceData } from "@/features/factories/compliance";
 import { toDriverLines, type FactoryRiskMovement } from "@/features/factories/risk-context";
 import type { StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import { formatDate } from "@/lib/dates";
@@ -38,13 +41,15 @@ function planningHandoffHref(factory: FactoryRow): string {
   return `/planning/single?${query.toString()}`;
 }
 
-export default function RevampFactory360Portfolio({ factories, portfolioLabel, canCreateInspection, locale, provenanceStrings, counts, riskMovement, now }: {
+export default function RevampFactory360Portfolio({ factories, portfolioLabel, canCreateInspection, locale, provenanceStrings, counts, complianceByFactory, penaltiesReadable, riskMovement, now }: {
   factories: FactoryRow[];
   portfolioLabel: string;
   canCreateInspection: boolean;
   locale: "en" | "ar";
   provenanceStrings: ProvenanceStrings;
   counts: PortfolioCounts;
+  complianceByFactory: ReadonlyMap<string, FactoryComplianceData>;
+  penaltiesReadable: boolean;
   riskMovement: ReadonlyMap<string, FactoryRiskMovement>;
   now: number;
 }) {
@@ -156,6 +161,42 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
     tone: value === null ? ("neutral" as StatusTone) : tone,
     kind: (value === null ? "text" : "number") as "number" | "text",
   });
+  const compliance = complianceByFactory.get(selected.id) ?? { reports: [], violations: [], penalties: [] };
+  const DECISION_TONE: Record<string, StatusTone> = { approve: "success", return: "warning", reject: "danger" };
+  const LEVEL_TONE: Record<string, StatusTone> = { critical: "danger", major: "warning", minor: "info" };
+  const PENALTY_TONE: Record<string, StatusTone> = {
+    issued: "warning", served: "warning", settled: "success", withdrawn: "neutral",
+  };
+  const complianceRows = {
+    reports: compliance.reports.map(report => ({
+      id: report.id,
+      reference: report.reference ?? copy.portfolio.missing,
+      recorded: day(report.recordedAt),
+      recordedIso: report.recordedAt,
+      status: report.status ? titleCase(report.status) : copy.portfolio.missing,
+      statusTone: "neutral" as StatusTone,
+      decision: report.decision ? titleCase(report.decision) : copy.compliance.noDecision,
+      decisionTone: report.decision ? DECISION_TONE[report.decision] ?? "neutral" : null,
+    })),
+    violations: compliance.violations.map(violation => ({
+      id: violation.id,
+      title: violation.title ?? copy.portfolio.missing,
+      code: violation.code ?? copy.portfolio.missing,
+      level: violation.level ? titleCase(violation.level) : copy.portfolio.missing,
+      levelTone: violation.level ? LEVEL_TONE[violation.level] ?? "neutral" : "neutral",
+      recorded: day(violation.recordedAt),
+      recordedIso: violation.recordedAt,
+    })),
+    penalties: compliance.penalties.map(penalty => ({
+      id: penalty.id,
+      noticeNumber: penalty.noticeNumber,
+      status: titleCase(penalty.status),
+      statusTone: PENALTY_TONE[penalty.status] ?? "neutral",
+      issued: day(penalty.issuedAt),
+      issuedIso: penalty.issuedAt,
+      violation: penalty.violationTitle ?? copy.portfolio.missing,
+    })),
+  };
   const metrics = [
     numberMetric("riskScore", copy.snapshot.riskScore, selected.risk_score, condition.tone),
     {
@@ -281,6 +322,14 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
         mapHref={`/operations?region=${encodeURIComponent(selected.region ?? "")}`}
         profileHref={selected.dossier_href}
         strings={overviewStrings}
+      />
+
+      <FactoryCompliance
+        reports={complianceRows.reports}
+        violations={complianceRows.violations}
+        penalties={complianceRows.penalties}
+        penaltiesReadable={penaltiesReadable}
+        strings={copy.compliance}
       />
     </FactoryWorkspace>
   );

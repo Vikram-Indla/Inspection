@@ -96,41 +96,39 @@ available" was the loudest thing in the card, which is the opposite of what an
 absent value should do. A `null` metric now renders as `text`, so absence never
 shouts.
 
-### Type scale reduced by 2 px across every role (owner request)
+### Type scale rebased, net −1 px across every role (owner request)
 
-| Role | Was | Now |
-| --- | --- | --- |
-| display | 40 px | 38 px |
-| title | 30 px | 28 px |
-| heading | 22 px | 20 px |
-| subheading | 17 px | 15 px |
-| body-lg | 16 px | 14 px |
-| body / body-strong | 15 px | 13 px |
-| label | 13 px | 11 px |
-| caption / code | 12.5 px | 10.5 px |
-| overline | 11 px | **9 px** |
-| metric | 28 px | 26 px |
+Applied in two uniform steps at the owner's direction: `-0.125rem`, then
+`+0.0625rem` after seeing it rendered.
 
-One uniform `-0.125rem` step, applied only to the `-size` tokens in the
-primitives block — line heights, weights and tracking are untouched, so every
-role keeps its proportions.
+| Role | Original | Now | Net |
+| --- | --- | --- | --- |
+| display | 40 px | 39 px | −1 |
+| title | 30 px | 29 px | −1 |
+| heading | 22 px | 21 px | −1 |
+| subheading | 17 px | 16 px | −1 |
+| body-lg | 16 px | 15 px | −1 |
+| body / body-strong | 15 px | 14 px | −1 |
+| label | 13 px | 12 px | −1 |
+| caption / code | 12.5 px | 11.5 px | −1 |
+| overline | 11 px | 10 px | −1 |
+| metric | 28 px | 27 px | −1 |
 
-**Two concerns recorded, not resolved** (the owner asked for a uniform step and
-got one):
+Only the `-size` tokens in the primitives block changed — line heights, weights
+and tracking are untouched, so every role keeps its proportions and the scale
+stays internally consistent.
 
-- **Overline is now 9 px and caption 10.5 px.** Overline is also uppercase with
-  `0.12em` tracking, which is the hardest combination to read at small sizes.
-  This is a Saudi ministry platform targeting WCAG 2.2 AA; nothing in WCAG sets
-  a minimum size, but 9 px is below what most public-sector guidance accepts.
-- **Body dropping to 13 px moves text across the WCAG "large text" boundary.**
-  Contrast ratios recorded against the old scale assumed some roles qualified as
-  large text (≥ 24 px, or ≥ 18.66 px bold), where 3:1 suffices. `heading` at
-  20 px bold still clears it; `subheading` at 15 px semibold no longer does, so
-  any pair relying on 3:1 there now needs 4.5:1. **The recorded ratios in
-  `saqeel.css` should be re-checked against the new sizes.**
+**The small-size concern is largely resolved by the rebase.** At the interim
+−2 px the two smallest roles were overline **9 px** and caption **10.5 px**;
+overline is uppercase with `0.12em` tracking, the hardest combination to read
+small. At net −1 px they are **10 px** and **11.5 px** — tight but defensible.
+Worth a real look at 200 % zoom and on a phone before sign-off.
 
-A floor on the two smallest roles (say 10 px overline, 11 px caption) would keep
-the reduction everywhere it reads well. That is the owner's call, not mine.
+**The contrast concern stands.** Ratios recorded in `saqeel.css` predate the
+change, and some pairs were justified at 3:1 on the WCAG "large text" allowance
+(≥ 24 px, or ≥ 18.66 px bold). `heading` at 21 px bold still clears it;
+**`subheading` at 16 px semibold does not**, so any pair relying on 3:1 there now
+needs 4.5:1. **Re-measure before the next accessibility sign-off.**
 
 ## Inventory taken before writing code
 

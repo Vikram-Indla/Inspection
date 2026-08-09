@@ -135,5 +135,27 @@
     "neverInspected": "No inspection has been recorded",
     "licenceExpired": "Industrial licence has expired",
     "licenceExpiring": "Industrial licence expires within {n} days"
+  },
+  "compliance": {
+    "title": "Compliance",
+    "description": "Inspection reports, violations and penalties recorded for this factory.",
+    "reports": "Inspection reports",
+    "violations": "Violations",
+    "penalties": "Penalties",
+    "reference": "Visit reference",
+    "recorded": "Recorded",
+    "status": "Status",
+    "decision": "Review decision",
+    "violation": "Violation",
+    "code": "Code",
+    "level": "Level",
+    "notice": "Notice number",
+    "issued": "Issued",
+    "reportsEmpty": "No inspection has been recorded for this factory",
+    "violationsEmpty": "No violation is recorded against this factory",
+    "penaltiesEmpty": "No penalty notice has been issued to this factory",
+    "penaltiesRestricted": "Penalty notices are not visible to your role",
+    "openStateUnavailable": "Violations carry no open or closed state in the record. Only retracted violations are excluded.",
+    "noDecision": "Not reviewed"
   }
 }

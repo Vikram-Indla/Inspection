@@ -6,6 +6,7 @@ import FactoriesScopeBar from "@/components/sections/factories/factories-scope-b
 import RevampFactory360Portfolio, { type RevampFactoryRow } from "./RevampFactory360Portfolio";
 import { queryPortfolioCounts } from "@/features/factories/portfolio-counts";
 import { queryFactoryRiskMovement } from "@/features/factories/risk-context";
+import { queryFactoryCompliance } from "@/features/factories/compliance";
 import { isTestSourceFactory } from "@/features/factories/portfolio";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { resolveFactory360Permissions } from "@/lib/factory360/dossier";
@@ -81,9 +82,10 @@ export default async function Factories({ searchParams }: {
     };
   });
   const portfolioIds = portfolioRows.map(row => row.id);
-  const [portfolioCounts, riskMovement] = await Promise.all([
+  const [portfolioCounts, riskMovement, compliance] = await Promise.all([
     queryPortfolioCounts(sb, portfolioIds),
     queryFactoryRiskMovement(sb, portfolioIds),
+    queryFactoryCompliance(sb, portfolioIds),
   ]);
   const error = scopeError ?? portfolioError;
   const isEmpty = visibleScopeRows.length === 0 || portfolioRows.length === 0;
@@ -114,6 +116,8 @@ export default async function Factories({ searchParams }: {
             locale={locale}
             counts={portfolioCounts}
             riskMovement={riskMovement}
+            complianceByFactory={compliance.byFactory}
+            penaltiesReadable={compliance.penaltiesReadable}
             now={Date.now()}
             provenanceStrings={{
               registered: t("f360.provenance.registered", "Registered · Senaei source"),

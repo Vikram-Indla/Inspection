@@ -57,8 +57,19 @@ provenance card, the condition card and the snapshot-facts card;
 `factory-overview` 159 → 104 lines.
 `record:` [2026-08-09-T-026-factories-middle-column](sessions/2026-08/2026-08-09-T-026-factories-middle-column.md)
 
+**Compliance section done (T-027):** inspection reports, violations and
+penalties on three canonical `DataTable`s at the end of the middle column, with
+the reference's un-sourced columns (violation open/closed, penalty amount)
+dropped rather than faked, and a **restricted** state for RLS-hidden penalties.
+`record:` [2026-08-09-T-027-factories-compliance-section](sessions/2026-08/2026-08-09-T-027-factories-compliance-section.md)
+
+**Next, before any further `/factories` work:** extract the view models out of
+`RevampFactory360Portfolio.tsx` — **336 lines against a 200-line limit**, ceiling
+400, and mostly view-model construction now.
+
 **Remaining slices:** the four disclosure sections in the middle column (they
-only link into the dossier today), and `/factories/cr/[id]`, untouched legacy.
+only link into the dossier today), trends, and `/factories/cr/[id]`, untouched
+legacy.
 
 ---
 
@@ -488,16 +499,15 @@ Pull one in only if it is genuinely part of doing the active task well.
   against raw source text and was already flagged fragile; T-024 and T-025
   reshaped both side panels, and **T-026 deleted the middle column's provenance
   block outright** (the end panel now owns provenance).
-- **The type scale dropped 2 px per role (T-026, owner request), and two roles
-  are now very small:** overline **9 px** (uppercase, `0.12em` tracking — the
-  hardest combination to read) and caption/code **10.5 px**. Nothing in WCAG
-  sets a minimum size, but this is below what most public-sector guidance
-  accepts on a platform targeting WCAG 2.2 AA. A floor on those two roles would
-  keep the reduction everywhere it reads well.
-- **The recorded contrast ratios in `saqeel.css` predate the smaller scale.**
+- **The type scale is net −1 px per role (T-026, owner request)** — applied as
+  −2 px then +1 px after seeing it rendered. Smallest roles are now overline
+  **10 px** (uppercase, `0.12em` tracking) and caption/code **11.5 px**: tight
+  but defensible. Worth a look at 200 % zoom and on a phone before sign-off.
+- **The recorded contrast ratios in `saqeel.css` predate the scale change.**
   Some pairs were justified at 3:1 on the WCAG "large text" allowance (≥ 24 px,
-  or ≥ 18.66 px bold). `subheading` at 15 px semibold no longer qualifies, so
-  those pairs now need 4.5:1. **Re-measure before the next accessibility sign-off.**
+  or ≥ 18.66 px bold). `heading` at 21 px bold still clears it; **`subheading` at
+  16 px semibold does not**, so pairs relying on 3:1 there now need 4.5:1.
+  **Re-measure before the next accessibility sign-off.**
 - **"Latest inspection" counts an inspection in any state**, including started
   but unsubmitted. If the product means *completed*, the read filters on
   `submitted_at` alone — one line, once ruled.
@@ -512,6 +522,17 @@ Pull one in only if it is genuinely part of doing the active task well.
   a partial filter or none. **Before any customer demo**, fold both into one
   shared predicate applied at the query layer, so a caller cannot apply half of
   it.
+- **An empty result under RLS must never render as an absence of facts.**
+  `penalty_notices` is readable only by reviewer/ops/auditor/compliance_admin/
+  leadership; every other role gets an **empty set, not an error**. T-027 renders
+  a *restricted* state for it — but **T-024's Active-penalties stat tile still
+  shows `0`** for those roles and needs the same treatment. Check every
+  role-restricted table for this pattern.
+- **`penalty_notices` has no amount column**, so a penalty value cannot be shown
+  anywhere. The reference's "Fine — SAR 4,000" has no source.
+- **Trends are unbuilt.** A compliance trend has no source at all; a risk trend
+  could come from `factory_risk_snapshots`, but a sparkline is a charting task
+  with its own guidance and should be its own slice.
 - **`invalidated_at is null` is a proxy for "open violation", not a definition.**
   `violations` has no resolution or closure state, so T-024's count means *not
   retracted*. If the table gains one, the count must move to it.
