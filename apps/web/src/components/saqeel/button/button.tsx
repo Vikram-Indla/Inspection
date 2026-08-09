@@ -4,7 +4,7 @@ import Icon from "../icon/icon";
 import type { IconName } from "../icon/icon-registry";
 import styles from "./button.module.css";
 
-export type ButtonVariant = "primary" | "secondary" | "tertiary" | "danger" | "ai";
+export type ButtonVariant = "primary" | "secondary" | "tertiary" | "danger" | "ai" | "link";
 export type ButtonSize = "sm" | "md" | "lg";
 
 export type ButtonProps = {

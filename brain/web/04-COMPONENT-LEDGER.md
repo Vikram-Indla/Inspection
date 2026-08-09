@@ -21,7 +21,7 @@ Status values:
 
 | Component | Status | Notes |
 | --- | --- | --- |
-| `Button` | inherited | accepts `className` — must lose the escape hatch (WEB-002 §4.5) |
+| `Button` | inherited | accepts `className` — must lose the escape hatch (WEB-002 §4.5). **`variant="link"` (T-025)**: a text action for prose — no fill, no inline padding, so the label sits on the same start edge as the paragraphs around it, and hover underlines rather than painting a background. Added instead of changing `tertiary`, which carries a hover fill that is correct in the control rows where it is used everywhere else. Consumers: the planning and factories AI advisories. |
 | `IconButton` | to-build | currently a `Button` variant; needs its own labelling contract |
 | `ButtonGroup` | inherited | |
 | `SplitButton` | inherited | |

@@ -108,6 +108,19 @@ avoids elsewhere. Ours points at the factory profile — "review the recorded
 violations, actions and evidence before deciding" — which is true regardless of
 what the record holds.
 
+### `Button` gained a `link` variant
+
+The advisory's generate button was `tertiary`, which paints a hover fill and
+carries inline padding — so it read as a block floating in the middle of body
+copy, its label indented past the paragraphs above it.
+
+**`variant="link"`** is a text action for prose: no fill, no inline padding (the
+label lands on the same start edge as the surrounding text), and hover
+underlines instead of filling. It was added rather than changing `tertiary`,
+whose hover fill is correct in the control rows it is used in everywhere else —
+the planning filter bar, the visit scope bar, quick actions. Both AI advisories
+adopted it.
+
 Four string groups went stale in the move (`context.risk.*`, the two
 `predicted*` advisory keys, `context.sources.title`, `context.change.title`) and
 are deleted; the orphaned `.predicted*` and `.sources*` CSS classes with them.

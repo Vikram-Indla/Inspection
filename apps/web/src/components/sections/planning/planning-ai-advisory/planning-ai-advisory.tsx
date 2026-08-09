@@ -41,7 +41,7 @@ export default function PlanningAiAdvisory({ locale, strings }: {
         <input type="hidden" name="context" value={JSON.stringify({ scope: "planning-visit-list" })} />
         <input type="hidden" name="evidence_refs" value={EVIDENCE_REFS} />
         <input type="hidden" name="locale" value={locale} />
-        <Button type="submit" variant="tertiary" disabled={pending}>
+        <Button type="submit" variant="link" disabled={pending}>
           {pending ? strings.generating : strings.generate}
         </Button>
       </form>
