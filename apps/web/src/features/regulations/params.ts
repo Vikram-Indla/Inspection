@@ -5,15 +5,21 @@ export const REGULATION_ROUTE = "/compliance";
 
 export const UNRECORDED_AUTHORITY = "__unrecorded";
 
+export const WORKSPACE_TABS = ["overview", "items", "violations", "penalties", "versions", "audit"] as const;
+export type WorkspaceTab = (typeof WORKSPACE_TABS)[number];
+
 export type RegulationScope = {
   readonly routeBase: string;
   readonly search: string;
   readonly authority: string;
   readonly status: string;
   readonly selectedId: string;
+  readonly tab: WorkspaceTab;
 };
 
 const first = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value) ?? "";
+
+const isTab = (value: string): value is WorkspaceTab => (WORKSPACE_TABS as readonly string[]).includes(value);
 
 /**
  * `/admin/regulations` is rewritten to `/compliance` by the middleware, which
@@ -28,6 +34,7 @@ export function readRegulationScope(input: RegulationScopeInput): RegulationScop
     authority: first(input.authority).trim(),
     status: first(input.status).trim(),
     selectedId: first(input.libraryId).trim(),
+    tab: isTab(first(input.tab)) ? first(input.tab) as WorkspaceTab : "overview",
   };
 }
 
@@ -36,12 +43,13 @@ export function readRegulationScope(input: RegulationScopeInput): RegulationScop
  * catalogue that no longer lists it is a lie about what is selected.
  */
 export function regulationHref(scope: RegulationScope, overrides: Partial<RegulationScope>): string {
-  const next = { ...scope, selectedId: "", ...overrides };
+  const next = { ...scope, selectedId: "", tab: "overview" as WorkspaceTab, ...overrides };
   const query = new URLSearchParams();
   if (next.search) query.set("q", next.search);
   if (next.authority) query.set("authority", next.authority);
   if (next.status) query.set("status", next.status);
   if (next.selectedId) query.set("libraryId", next.selectedId);
+  if (next.selectedId && next.tab !== "overview") query.set("tab", next.tab);
   const suffix = query.toString();
   return suffix ? `${scope.routeBase}?${suffix}` : scope.routeBase;
 }

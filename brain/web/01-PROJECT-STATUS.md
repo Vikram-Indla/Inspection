@@ -1,14 +1,20 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-09` · `Updated by: T-036 — compliance library catalogue`
+`Last updated: 2026-08-10` · `Updated by: T-037 + T-038 — regulation workspace and record`
 
 ## Where the compliance library stands (2026-08-09)
 
-The catalogue is migrated: `app/(app)/compliance/page.tsx` **303 → 27**, with
-`/admin/regulations` reduced to the `?id=` record (546 → 21). Authority
-navigator, status chips and search are all `searchParams`; each row carries a
-clause / inspection-item / **violation** footprint. The six-tab workspace and the
-`?id=` record are quarantined as `@retiring` for T-038 and T-037.
+**The compliance library is fully migrated.** `app/(app)/compliance/page.tsx`
+**303 → 27** and `/admin/regulations` **546 → 21**. Catalogue, six-tab workspace
+and the governed record are all on SAQEEL, and **every `@retiring` file is
+deleted** — the retirement ledger's Marked section is empty. Search, filters and
+the active tab are all `searchParams`; the only client code left on either screen
+is the lifecycle form.
+
+The pattern worth reusing: `WorkspaceTable<T>` is
+`{kind:"rows", rows} | {kind:"unavailable"}`, so a failed read **cannot** be
+handed to a table as an empty array. Prefer that to a boolean beside the data —
+the two drift, the union cannot.
 
 **Three admin routes do not render their own page.** `middleware.ts` rewrites
 `/admin/regulations` → `/compliance`, `/admin/compliance-approvals` →

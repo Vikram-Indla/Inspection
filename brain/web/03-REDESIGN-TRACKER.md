@@ -28,39 +28,17 @@ measurement.
 
 ---
 
-### T-038 · Compliance library — six-tab workspace
-`status: todo` · `rules: WEB-000…004, WEB-008, WEB-011` · `est: 3h`
+### T-037 + T-038 · Compliance library — workspace and record
+`status: done (NEVER LOADED IN A BROWSER)` · `rules: WEB-000…006, WEB-008, WEB-009, WEB-011` · `est: 2.5h`
+`record:` [2026-08-10-T-037-T-038-regulation-workspace-and-record](sessions/2026-08/2026-08-10-T-037-T-038-regulation-workspace-and-record.md)
 
-Rebuild `components/sections/regulations/regulation-workspace` (`@retiring`, 116
-lines of legacy `.panel-row`/`.badge`, hardcoded English) on SAQEEL primitives.
-The reads already exist in `features/regulations/workspace-source.ts`; what is
-missing is the columns they do not select:
+The six-tab workspace and the `?id=` record are on SAQEEL, with tabs as URL
+state and the full violation / penalty / item column set. **Every `@retiring`
+file from T-036 is deleted** — 519 lines, all at zero importers. 202 i18n keys at
+exact en/ar parity.
 
-- **Violations** — `violation_codes` also has `corrective_action`,
-  `grace_period_days`, `category`, `applicability`. Only `level` is shown today.
-- **Penalties** — `penalty_mappings` also has `penalty_type`, `amount`,
-  `grace_period_days`, `due_period_days`, `legal_basis`, and a
-  `template_version_id` naming the action form. Only `penalty_ref` and
-  `mapping_version` are shown today.
-- **Inspection items** — `response_model.responses` is the response type,
-  `evidence_rule` the evidence requirement, and
-  `response_model.mapping.non_compliant.violation` a **direct item→violation
-  link** with `.action_form` beside it.
-
-**Render as absence, never invent:** regulation description, regulation-level
-legal reference (only `regulation_clauses.legal_source` exists, per clause),
-inspection type, item section, report type, self-assessment, a real
-`updated_at`, per-user favourites / recently-opened. The mock fabricates its
-superseded version row by subtracting 0.1 — do not copy that.
-
----
-
-### T-037 · `/admin/regulations?id=` — regulation record
-`status: todo` · `rules: WEB-000…004, WEB-008, WEB-011` · `est: 2h`
-
-Rebuild `components/sections/regulations/regulation-dossier` (`@retiring`, 193
-lines) — attachments, clause table, configuration actions, change history and
-version lineage. Deletes `Controls.tsx` when it lands.
+**Owed:** load `/compliance` and `/admin/regulations?id=…` as a writer and as a
+reader, axe, Arabic review, bundle measurement.
 
 ---
 

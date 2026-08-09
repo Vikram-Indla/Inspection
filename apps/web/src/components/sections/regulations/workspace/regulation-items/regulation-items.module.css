@@ -1,0 +1,34 @@
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+}
+
+.title {
+  font: var(--sqx-text-body-strong);
+  color: var(--sqx-text-primary);
+}
+
+.code {
+  font: var(--sqx-text-code);
+  font-variant-numeric: var(--sqx-numeric-tabular);
+  color: var(--sqx-text-muted);
+}
+
+.codes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-2);
+}
+
+.absent {
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+}
+
+.footnote {
+  margin: var(--sqx-space-3) 0 0;
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}

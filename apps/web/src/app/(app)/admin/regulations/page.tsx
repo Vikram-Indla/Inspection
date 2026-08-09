@@ -1,5 +1,5 @@
 import AdminShell from "@/app/(app)/admin/_components/AdminShell";
-import RegulationDossier from "@/components/sections/regulations/regulation-dossier/regulation-dossier";
+import RegulationRecord from "@/components/sections/regulations/record/regulation-record/regulation-record";
 import { getMessages } from "@/i18n/messages";
 import { getLocale } from "@/lib/i18n";
 
@@ -15,7 +15,7 @@ export default async function RegulationRecordPage({ searchParams }: {
 
   return (
     <AdminShell current="/admin/regulations" title={regulations.detailTitle}>
-      <RegulationDossier detailId={first(params.id).trim()} />
+      <RegulationRecord locale={locale} entityId={first(params.id).trim()} />
     </AdminShell>
   );
 }

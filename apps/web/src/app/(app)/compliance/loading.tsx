@@ -1,4 +1,4 @@
-import RegulationsSkeleton from "@/components/sections/regulations/regulations-skeleton/regulations-skeleton";
+import RegulationsSkeleton from "@/components/sections/regulations/catalogue/regulations-skeleton/regulations-skeleton";
 import { getMessages } from "@/i18n/messages";
 import { getLocale } from "@/lib/i18n";
 
