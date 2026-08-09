@@ -18,9 +18,18 @@ const ANON = env.match(/^NEXT_PUBLIC_SUPABASE_ANON_KEY=(.+)$/m)?.[1]?.trim();
 if (!BASE || !ANON) throw new Error("Supabase URL/publishable key missing from apps/web/.env.local");
 
 const ACTORS = {
-  planner: { email: "planner@mim.gov.sa", password: "MimPlan!2026" },
-  inspector: { email: "inspector@mim.gov.sa", password: "MimField!2026" },
-  ops: { email: "ops@mim.gov.sa", password: "MimOps!2026" },
+  planner: {
+    email: env.match(/^SAQEEL_TEST_COMPLIANCE_ADMIN_EMAIL=(.+)$/m)?.[1]?.trim() || "planner@mim.gov.sa",
+    password: env.match(/^SAQEEL_TEST_PASSWORD=(.+)$/m)?.[1]?.trim() || "MimPlan!2026",
+  },
+  inspector: {
+    email: env.match(/^SAQEEL_TEST_INSPECTOR_EMAIL=(.+)$/m)?.[1]?.trim() || "inspector@mim.gov.sa",
+    password: env.match(/^SAQEEL_TEST_PASSWORD=(.+)$/m)?.[1]?.trim() || "MimField!2026",
+  },
+  ops: {
+    email: env.match(/^SAQEEL_TEST_OPS_EMAIL=(.+)$/m)?.[1]?.trim() || "ops@mim.gov.sa",
+    password: env.match(/^SAQEEL_TEST_PASSWORD=(.+)$/m)?.[1]?.trim() || "MimOps!2026",
+  },
 };
 
 const IDS = {
@@ -125,7 +134,7 @@ const factories = states.map((state, i) => ({
   name: `KPI Verify — ${names[i]}`,
   cr_number: `VERIFY-${String(i + 1).padStart(4, "0")}`,
   license_number: `KPI-LIC-${String(i + 1).padStart(3, "0")}`,
-  region: "Verification Fixtures",
+  region: "Riyadh",
   city: "Dashboard KPI",
   activity_class: "verification_fixture",
   official_lat: 24.69 + i * 0.018,
@@ -149,7 +158,7 @@ const visits = states.map((state, i) => ({
   operational_state: state, window_start: iso(windows[i][0]), window_end: iso(windows[i][1]),
   priority: i >= 4 ? "high" : "normal",
   notes: `TASK-DASH-KPI-SEED-001 · ${state} · deterministic verification fixture`,
-  planner_lat: factories[i].official_lat, planner_lng: factories[i].official_lng,
+
   package_version_id: packageVersionId,
 }));
 
@@ -229,7 +238,7 @@ if (truth.length !== 6 || new Set(truth.map(row => row.operational_state)).size 
 console.log(JSON.stringify({
   task: "TASK-DASH-KPI-SEED-001",
   status: "PASS",
-  fixtureRegion: "Verification Fixtures",
+  fixtureRegion: "Riyadh",
   fixtureCity: "Dashboard KPI",
   stateCounts: Object.fromEntries(states.map(state => [state, truth.filter(row => row.operational_state === state).length])),
   rows: result,
