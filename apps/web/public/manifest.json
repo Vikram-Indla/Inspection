@@ -10,7 +10,7 @@
   "display": "standalone",
   "display_override": ["standalone"],
   "background_color": "#090714",
-  "theme_color": "#34d399",
+  "theme_color": "#B49AD8",
   "orientation": "any",
   "icons": [
     { "src": "/saqeel-favicon.svg", "sizes": "any", "type": "image/svg+xml" },
