@@ -201,6 +201,30 @@ Fixed:
 visit-type selects in `visit-bulk-actions`. Both replaced the same way. There
 are now **zero native `<select>` elements in `components/sections/`**.
 
+## Second correction — spacing
+
+The owner reported the screen "has no spacings". The panel in the screenshot was
+the **error boundary**, not the migrated screen — the page had thrown, and a
+thrown page never renders its own `Shell`, so the boundary sat directly in the
+app layout with **no page inset at all**. The throw was transient and did not
+recur; the layout problem was real.
+
+- New `components/saqeel/route-error` primitive: Card + `EmptyState` + retry,
+  carrying the page inset itself rather than relying on a wrapper that is not
+  there when it renders. The three boundaries on migrated routes
+  (`enforcement-library`, `compliance`, `admin/violations`) now use it, replacing
+  legacy `StateSurface` + `sq-btn` markup.
+- **Doubled gaps removed.** `CardBody` already gaps its children, and four of my
+  modules added a `margin-block` on top of it — the enforcement filter bar, the
+  regulation workspace panel, and both skeletons. Reading a primitive before
+  spacing around it would have caught all four.
+- The enforcement filter bar gained a larger row gap for wrapped lines and
+  pushes Apply/Export to the end edge, so they fall onto their own line rather
+  than squeezing a select narrower than its label.
+- **CSS comments removed.** WEB-000 bans `/* */` with only two exceptions, and
+  neither is a CSS module. One had also slipped into `trend-bars.module.css`
+  earlier in the session and is now gone.
+
 ## Parked
 
 - **`ENFORCEMENT_ROWS` order in the export CSV** was not reviewed against the new
@@ -218,6 +242,9 @@ are now **zero native `<select>` elements in `components/sections/`**.
   but the visible `<label>` element points at nothing. This is the established
   `visit-filter-bar` pattern and was followed for consistency; resolving it is a
   primitive-level decision about how `Field` and `SaqeelSelect` compose.
+- **Route error boundaries are English-only.** `error.tsx` is client-only, so it
+  cannot read the server locale, and reading `document` during render is the
+  pattern that caused T-039. Needs its own decision.
 - **Action-form closed statuses are inferred from a set** (`closed`,
   `completed`, `verified`, `resolved`). `action_forms.status` has no check
   constraint, so the vocabulary is not enforced by the database; a status

@@ -30,7 +30,6 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--sqx-space-3);
-  margin-block-end: var(--sqx-space-4);
 }
 
 .table {

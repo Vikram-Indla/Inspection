@@ -1,4 +1,4 @@
 .stack { display: flex; flex-direction: column; gap: var(--sqx-space-5); }
-.filters { display: flex; flex-wrap: wrap; gap: var(--sqx-space-3); margin-block-end: var(--sqx-space-4); }
+.filters { display: flex; flex-wrap: wrap; gap: var(--sqx-space-3); }
 .row { display: grid; grid-template-columns: 2fr repeat(8, minmax(0, 1fr)); gap: var(--sqx-space-3); align-items: center; }
 .rows { display: flex; flex-direction: column; gap: var(--sqx-space-3); }

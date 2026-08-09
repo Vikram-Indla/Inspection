@@ -16,9 +16,6 @@
   block-size: 100%;
 }
 
-/* `--sqx-trend-value` is a bare number, the same shape `SegmentedControl` uses
-   for its index: a caller supplies data, never a length. The floor keeps a very
-   small value visible as a bar rather than a hairline. */
 .bar {
   inline-size: 100%;
   block-size: max(var(--sqx-space-2), calc(var(--sqx-trend-value, 0) * 1%));
