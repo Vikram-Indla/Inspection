@@ -23,9 +23,18 @@ The banner on line 1 of a marked file, exact form:
 | `components/ShellClient.tsx` (46 KB, 840 lines) | `components/app-shell/app-shell` | 2026-08-07 | `/admin/execution`, `/admin/dashboard-config` | 0-imports |
 | `components/Shell.tsx` (16 KB, 251 lines) | `components/app-shell/shell-page-frame/shell-page-frame` | 2026-08-07 | `/admin/execution`, `/admin/dashboard-config`, plus 55 route files still importing the default `Shell` page-frame export | 0-imports |
 | `components/ShellNavIcon.tsx` (3 KB, 36 lines) | `components/saqeel/icon/icon` | 2026-08-07 | `/field` (`components/field/FieldShellDrawer.tsx`) | 0-imports |
+| `app/(app)/visits/VisitsBoard.tsx` (707 lines) | `components/sections/visits/visit-board/visit-board` | 2026-08-09 | **none — zero importers** | 0-imports |
+
+`VisitsBoard.tsx` is the **only** row whose `pending` list is empty. It is still
+not deletable: WEB-006 §4's gate also requires a green e2e suite on the
+replacement route and one demo cycle, and `cd-026-visit-management.spec.ts` /
+`ai-user-journey.spec.ts` still assert against its DOM (`table.sq-table`, the
+view-switcher `role="group"`). Update those specs, run them green, then delete —
+that removes ~707 lines and the last `sq-table`/`sq-lozenge` use on the list
+route.
 
 **Read the `pending` lists before assuming T-004 finished the job.** None of the
-three is close to deletion:
+three shell files is close to deletion:
 
 - `ShellClient` is off every `(app)` route but still renders the chrome on the
   two `/admin/*` layouts that sit **outside** the `(app)` route group

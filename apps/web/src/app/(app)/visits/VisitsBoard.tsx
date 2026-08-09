@@ -1,3 +1,4 @@
+/* @retiring 2026-08-09 · replaced-by components/sections/visits/visit-board/visit-board · pending none · delete-when 0-imports */
 "use client";
 import EmptyState from "@/components/EmptyState";
 // W2/P2 — Visit Management board (SCR-WEB-200/210).

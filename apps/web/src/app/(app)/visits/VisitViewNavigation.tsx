@@ -1,10 +1,11 @@
 import SegmentedControl, { type SegmentedItem } from "@/components/saqeel/segmented-control/segmented-control";
 
-export type VisitBasePath = "/visits" | "/planning";
+export type VisitBasePath = "/visits" | "/planning" | "/planning/visits";
 export type VisitView = "list" | "calendar" | "map" | "workload";
 
 type VisitViewNavigationProps = {
   basePath?: VisitBasePath;
+  viewBasePath?: Exclude<VisitBasePath, "/planning/visits">;
   active: VisitView;
   ariaLabel: string;
   labels: {
@@ -23,11 +24,13 @@ const ROUTES: Record<Exclude<VisitView, "list">, string> = {
 
 export default function VisitViewNavigation({
   basePath = "/visits",
+  viewBasePath,
   active,
   ariaLabel,
   labels,
 }: VisitViewNavigationProps) {
-  const href = (view: VisitView) => view === "list" ? basePath : `${basePath}${ROUTES[view]}`;
+  const views = viewBasePath ?? (basePath === "/planning/visits" ? "/visits" : basePath);
+  const href = (view: VisitView) => view === "list" ? basePath : `${views}${ROUTES[view]}`;
   const items: SegmentedItem<VisitView>[] = [
     { value: "list", label: labels.list, href: href("list") },
     { value: "calendar", label: labels.calendar, href: href("calendar") },

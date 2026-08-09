@@ -1,0 +1,6 @@
+.scope {
+  font: var(--sqx-text-caption);
+  font-variant-numeric: var(--sqx-numeric-tabular);
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}

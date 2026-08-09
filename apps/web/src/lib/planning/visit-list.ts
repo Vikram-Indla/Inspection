@@ -37,6 +37,7 @@ export type PlanningTab = (typeof PLANNING_TABS)[number];
 export type PlanningListFilters = {
   method?: string;            // visit_plans.method (planning type)
   visitType?: string;
+  executionMode?: string;     // visits.execution_mode (visit mode)
   region?: string;
   city?: string;
   inspectorId?: string;
@@ -56,11 +57,17 @@ export type PlanningListParams = {
   sort: string;
   page: number;               // 1-based
   pageSize: number;
+  // Planning's canonical list hides visits that have no governed human-readable
+  // reference (see applyFilters). Visit Management manages those same visits
+  // including immediate and freshly drafted ones, so it opts out rather than
+  // losing rows it exists to act on. Defaults to Planning's behaviour.
+  requireReference?: boolean;
 };
 
 export type PlanningVisitRow = {
   id: string;
   visitReference: string | null;
+  visitPlanId: string | null; // null = immediate (no plan); the bulk-edit same-plan guard key
   method: string;             // plan method; "immediate" when the visit has no plan
   planReference: string | null;
   planningStatus: string;
@@ -69,6 +76,7 @@ export type PlanningVisitRow = {
   executionMode: string;
   priority: string | null;
   factoryName: string | null;
+  factoryCode: string | null;
   crNumber: string | null;
   licenseNumber: string | null;
   region: string | null;
@@ -80,6 +88,7 @@ export type PlanningVisitRow = {
   windowStart: string;
   windowEnd: string;
   executionDate: string | null;   // inspections.started_at — null until execution begins
+  inspectionStatus: string | null; // null = no inspection row yet; drives the "already started" guard
   packageTitles: string[];
   createdBy: string | null;
   createdAt: string;
@@ -175,7 +184,7 @@ async function collectSearchVisitIds(sb: SupabaseClient, search: string): Promis
   for (const r of local.data ?? []) matched.add(r.id);
 
   const [factories, plans, inspectors] = await Promise.all([
-    sb.from("factories").select("id").or(`name.ilike.${like},cr_number.ilike.${like},license_number.ilike.${like}`).limit(SEARCH_ID_CAP),
+    sb.from("factories").select("id").or(`name.ilike.${like},factory_code.ilike.${like},cr_number.ilike.${like},license_number.ilike.${like}`).limit(SEARCH_ID_CAP),
     sb.from("visit_plans").select("id").ilike("plan_reference", like).limit(SEARCH_ID_CAP),
     sb.from("profiles").select("user_id").ilike("full_name", like).limit(200),
   ]);
@@ -213,12 +222,12 @@ async function collectSearchVisitIds(sb: SupabaseClient, search: string): Promis
 // embed is !inner, so embeds become inner exactly when a filter targets them.
 function rowSelect(f: PlanningListFilters): string {
   const plans = f.method || f.bulkPlanRef ? "visit_plans!inner(method, plan_reference)" : "visit_plans(method, plan_reference)";
-  const factories = f.region || f.city ? "factories!inner(name, cr_number, license_number, region, city)" : "factories(name, cr_number, license_number, region, city)";
+  const factories = f.region || f.city ? "factories!inner(name, factory_code, cr_number, license_number, region, city)" : "factories(name, factory_code, cr_number, license_number, region, city)";
   const assignments = f.inspectorId ? "assignments!inner(inspector_id, status, return_reason, profiles(full_name))" : "assignments(inspector_id, status, return_reason, profiles(full_name))";
   const packages = f.packageVersionId ? "visit_packages!inner(package_version_id, package_versions(id, packages(title)))" : "visit_packages(package_version_id, package_versions(id, packages(title)))";
-  return `id, visit_reference, visit_type, execution_mode, planning_status, operational_state, priority, window_start, window_end, created_at, source_channel, internal_reference, cancellation_reason,
+  return `id, visit_reference, visit_plan_id, visit_type, execution_mode, planning_status, operational_state, priority, window_start, window_end, created_at, source_channel, internal_reference, cancellation_reason,
     ${plans}, ${factories}, ${assignments}, ${packages},
-    profiles(full_name), inspections(started_at)`;
+    profiles(full_name), inspections(started_at, status)`;
 }
 
 // Head-count projection: only the embeds the active filters need.
@@ -232,16 +241,19 @@ function countSelect(f: PlanningListFilters): string {
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-function applyFilters(query: any, tab: PlanningTab, filters: PlanningListFilters) {
+function applyFilters(query: any, tab: PlanningTab, filters: PlanningListFilters, requireReference = true) {
   // A visit without its governed human-readable reference is not a usable
   // planning record. Keep legacy/incomplete rows out of customer-facing lists
   // rather than exposing a database UUID or a meaningless fallback label.
-  let q = query.not("visit_reference", "is", null).neq("visit_reference", "");
+  // Visit Management opts out: it acts ON those visits, so hiding them there
+  // would remove the only surface that can correct them.
+  let q = requireReference ? query.not("visit_reference", "is", null).neq("visit_reference", "") : query;
   if (tab === "draft") q = q.in("planning_status", ["draft", "validated"]); // validated folds into Draft — never a user tab
   else if (tab !== "all") q = q.eq("planning_status", tab);
   if (filters.method) q = q.eq("visit_plans.method", filters.method);
   if (filters.bulkPlanRef) q = q.ilike("visit_plans.plan_reference", `%${escLike(filters.bulkPlanRef)}%`);
   if (filters.visitType) q = q.eq("visit_type", filters.visitType);
+  if (filters.executionMode) q = q.eq("execution_mode", filters.executionMode);
   if (filters.region) q = q.eq("factories.region", filters.region);
   if (filters.city) q = q.eq("factories.city", filters.city);
   if (filters.inspectorId) q = q.eq("assignments.inspector_id", filters.inspectorId);
@@ -256,16 +268,17 @@ function applyFilters(query: any, tab: PlanningTab, filters: PlanningListFilters
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 type Joined = {
-  id: string; factory_id: string; visit_reference: string | null; visit_type: string; execution_mode: string;
+  id: string; factory_id: string; visit_reference: string | null; visit_plan_id: string | null;
+  visit_type: string; execution_mode: string;
   planning_status: string; operational_state: string; priority: string | null;
   window_start: string; window_end: string; created_at: string;
   source_channel: string | null; internal_reference: string | null; cancellation_reason: string | null;
   visit_plans: { method: string; plan_reference: string | null } | null;
-  factories: { name: string; cr_number: string | null; license_number: string | null; region: string | null; city: string | null } | null;
+  factories: { name: string; factory_code: string | null; cr_number: string | null; license_number: string | null; region: string | null; city: string | null } | null;
   assignments: { inspector_id: string; status: string; return_reason: string | null; profiles: { full_name: string } | null }[] | null;
   visit_packages: { package_version_id: string; package_versions: { id: string; packages: { title: string } | null } | null }[] | null;
   profiles: { full_name: string } | null;      // created_by → profiles
-  inspections: { started_at: string | null } | null;
+  inspections: { started_at: string | null; status: string | null } | null;
 };
 
 function toRow(v: Joined): PlanningVisitRow {
@@ -273,6 +286,7 @@ function toRow(v: Joined): PlanningVisitRow {
   return {
     id: v.id,
     visitReference: v.visit_reference,
+    visitPlanId: v.visit_plan_id,
     method: v.visit_plans?.method ?? "immediate",
     planReference: v.visit_plans?.plan_reference ?? null,
     planningStatus: v.planning_status,
@@ -281,6 +295,7 @@ function toRow(v: Joined): PlanningVisitRow {
     executionMode: v.execution_mode,
     priority: v.priority,
     factoryName: v.factories?.name ?? null,
+    factoryCode: v.factories?.factory_code ?? null,
     crNumber: v.factories?.cr_number ?? null,
     licenseNumber: v.factories?.license_number ?? null,
     region: v.factories?.region ?? null,
@@ -292,6 +307,7 @@ function toRow(v: Joined): PlanningVisitRow {
     windowStart: v.window_start,
     windowEnd: v.window_end,
     executionDate: v.inspections?.started_at ?? null,
+    inspectionStatus: v.inspections?.status ?? null,
     packageTitles: (v.visit_packages ?? [])
       .map(p => p.package_versions?.packages?.title)
       .filter((title): title is string => !!title),
@@ -341,7 +357,7 @@ async function readVisibleRows(
   fixtureFactoryIds: Set<string>,
 ): Promise<{ ok: true; rows: PlanningVisitRow[] } | { ok: false }> {
   const fetchRows = async (ids: string[] | null, from: number, to: number) => {
-    let query = applyFilters(sb.from("visits").select(rowSelect(params.filters)), params.tab, params.filters);
+    let query = applyFilters(sb.from("visits").select(rowSelect(params.filters)), params.tab, params.filters, params.requireReference);
     if (ids) query = query.in("id", ids);
     return query.order(sort.column, { ascending: sort.ascending }).order("id", { ascending: true }).range(from, to);
   };
@@ -381,11 +397,12 @@ async function countFixtureRows(
   filters: PlanningListFilters,
   idChunks: (string[] | null)[],
   fixtureFactoryIds: Set<string>,
+  requireReference: boolean | undefined,
 ): Promise<number | null> {
   let count = 0;
   for (const ids of idChunks) {
     const read = await collectPostgrestPages<{ factory_id: string }>((from, to) => {
-      let query = applyFilters(sb.from("visits").select("factory_id"), tab, filters);
+      let query = applyFilters(sb.from("visits").select("factory_id"), tab, filters, requireReference);
       if (ids) query = query.in("id", ids);
       return query.range(from, to);
     });
@@ -427,11 +444,11 @@ export async function queryPlanningVisits(sb: SupabaseClient, params: PlanningLi
     Promise.all(idChunks.flatMap(ids =>
       PLANNING_TABS.map(tab =>
         (ids
-          ? applyFilters(sb.from("visits").select(countSelect(params.filters), { count: "exact", head: true }), tab, params.filters).in("id", ids)
-          : applyFilters(sb.from("visits").select(countSelect(params.filters), { count: "exact", head: true }), tab, params.filters)),
+          ? applyFilters(sb.from("visits").select(countSelect(params.filters), { count: "exact", head: true }), tab, params.filters, params.requireReference).in("id", ids)
+          : applyFilters(sb.from("visits").select(countSelect(params.filters), { count: "exact", head: true }), tab, params.filters, params.requireReference)),
       ),
     )),
-    Promise.all(PLANNING_TABS.map(tab => countFixtureRows(sb, tab, params.filters, idChunks, fixtureFactoryIds))),
+    Promise.all(PLANNING_TABS.map(tab => countFixtureRows(sb, tab, params.filters, idChunks, fixtureFactoryIds, params.requireReference))),
   ]);
 
   const failedCount = countResults.find(c => c.error);

@@ -10,6 +10,38 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-021a · Visit Management — server-driven list, filters and board
+`status: done (static verification only)` · `rules: WEB-000…004, WEB-008, WEB-009, WEB-011, WEB-012` · `est: 5h`
+`record:` [2026-08-09-T-021a-visit-management-server-filters](sessions/2026-08/2026-08-09-T-021a-visit-management-server-filters.md)
+
+The screen behind `/planning` → **Visit management** (`/planning/visits` and its
+`/visits` twin). The 706-line `VisitsBoard` island is superseded by six
+components under `components/sections/visits/**`, none over 182 lines; the route
+went 272 → 36. Filters moved from client `useState` to `searchParams` **by
+reusing `queryPlanningVisits`**, with an additive `requireReference: false` so
+Visit Management keeps reference-less visits while `/planning` is unchanged.
+259 i18n keys at exact `en`/`ar` parity.
+
+`VisitsBoard.tsx` is marked `@retiring` with **zero importers** — it cannot be
+deleted until the e2e gate clears.
+
+**Owed before this can be called fully done:** e2e (`cd-026-visit-management`
+and `ai-user-journey` assert against the old DOM and will fail), axe, Arabic
+review by a native speaker, and the bundle measurement request.
+
+---
+
+### T-021b · Visit Management — remaining surfaces
+`status: todo` · `rules: WEB-002 §2, WEB-003` · `est: 4h` · `blocked-by: T-021a e2e`
+
+The bulk-action forms still hold native `<select>` and `datetime-local`
+controls — **there is no datetime primitive**, which is the one genuine gap
+blocking a fully native-control-free screen. The four sibling views
+(`calendar`, `map`, `workload`, `[id]`) are untouched legacy and still hold the
+`sq-table` / `sq-lozenge` rules that keep the legacy sheets alive.
+
+---
+
 ### T-020a · `/factories` — top stripe
 `status: done` · `rules: WEB-002, WEB-003, WEB-008, WEB-009, WEB-011` · `est: 1h`
 `record:` [2026-08-08-T-020a-factories-scope-bar](sessions/2026-08/2026-08-08-T-020a-factories-scope-bar.md)
@@ -326,6 +358,32 @@ filters and tabs moved to `searchParams`.
 
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
+
+- **There is no datetime primitive.** `DatePicker` is date-only, and T-005a's
+  "no native date input" rule has no answer for a date **and time** window. Visit
+  Management's bulk-reschedule form is the only place left holding a native
+  `datetime-local`. Needed before that screen can be called control-clean.
+- **`--sqx-control-accent` does not exist**, so native checkboxes cannot be
+  tinted to brand without inventing a token. Left on the UA default. A real
+  `checkbox`/`switch` primitive removes the need.
+- **`rowSelect()` in `lib/planning/visit-list.ts` never selects `factory_id`**,
+  yet `readVisibleRows` filters fixtures on `row.factory_id` — that filter has
+  always been a no-op. Both `/planning` and Visit Management compensate with a
+  name-based post-filter. Fixing it silently removes rows from `/planning`, so it
+  needs its own task and a visual regression pass.
+- **The factory-name sort was dropped from Visit Management.** The shared sort
+  whitelist has no embedded-column sort, and PostgREST parent-ordering on a
+  to-one embed could not be verified without a database. Either add it to
+  `visit-list.ts` with a real DB to test against, or accept Planning's sort
+  vocabulary everywhere.
+- **`SegmentedControl` renders no ARIA role when its items are links** (it is a
+  `radiogroup` only when it holds buttons). `ai-user-journey.spec.ts` asserts a
+  `role="group"` around the visit view switcher. Either the spec updates, or the
+  primitive gains a `group` role for the navigating variant — a design-system
+  decision, not a screen one.
+- **`DataTable` has no sortable-header contract.** Sorting is a `Select` in the
+  filter panel. The moment a second screen wants column-header sorting, that is
+  a primitive change.
 
 - **`highRisk` has no non-colour way to signal "attention required".** The
   legacy `[data-tone="critical"] strong { color: … }` tint was dropped by T-020b

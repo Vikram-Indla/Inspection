@@ -66,6 +66,10 @@
   background: var(--sqx-surface-subtle);
 }
 
+.row[data-selected] {
+  background: var(--sqx-surface-accent);
+}
+
 .row + .row .rowHead,
 .row + .row .cell {
   border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
