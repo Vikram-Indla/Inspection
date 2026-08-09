@@ -295,6 +295,7 @@
     --sqx-border-subtle: var(--sqx-grey-a24);
     --sqx-border-default: var(--sqx-grey-a32);
     --sqx-border-strong: var(--sqx-grey-a48);
+    --sqx-choice-border: var(--sqx-grey-600);
     --sqx-border-input: var(--sqx-grey-a48);
     --sqx-border-accent: var(--sqx-brand-600);
     --sqx-border-focus: var(--sqx-brand-600);
@@ -437,6 +438,7 @@
     --sqx-border-subtle: var(--sqx-grey-a16);
     --sqx-border-default: var(--sqx-grey-a24);
     --sqx-border-strong: var(--sqx-grey-a48);
+    --sqx-choice-border: var(--sqx-grey-500);
     --sqx-border-input: var(--sqx-grey-a48);
     --sqx-border-accent: var(--sqx-brand-300);
     --sqx-border-focus: var(--sqx-brand-300);
@@ -645,6 +647,10 @@
     --sqx-radius-surface: var(--sqx-radius-xl);
     --sqx-radius-pill: var(--sqx-radius-full);
     --sqx-radius-inline: var(--sqx-radius-xs);
+
+    --sqx-choice-size: 1.125rem;
+    --sqx-choice-radius: 0.25rem;
+    --sqx-choice-gap: 0.625rem;
 
     --sqx-control-h-sm: 2rem;
     --sqx-control-h-md: 2.375rem;

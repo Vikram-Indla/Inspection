@@ -103,14 +103,14 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   if (!contract.ok) {
     if (contract.kind === "denied") {
       return (
-        <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
+        <Shell current="/planning" title={t("plan.single.title", "Plan a single visit")}>
           <EmptyState glyph="⛔" title={tr("plan.single.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
-            body={tr("plan.single.unauthorized.body", "Only planning staff can use Plan one visit.", "تخطيط زيارة واحدة متاح لموظفي التخطيط فقط.")} />
+            body={tr("plan.single.unauthorized.body", "Only planning staff can use Plan a single visit.", "تخطيط الزيارة المفردة متاح لموظفي التخطيط فقط.")} />
         </Shell>
       );
     }
     return (
-      <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
+      <Shell current="/planning" title={t("plan.single.title", "Plan a single visit")}>
         <PlanningReadFailureState
           failure={contract}
           title={t("plan.read.failure.title", "Planning access needs attention")}
@@ -128,7 +128,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     const failure = planningAuthenticationFailure();
     console.error(`[planning.read:${failure.correlationId}] verified session failed`, userError.message);
     return (
-      <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
+      <Shell current="/planning" title={t("plan.single.title", "Plan a single visit")}>
         <PlanningReadFailureState
           failure={failure}
           title={t("plan.read.session.title", "Session verification required")}
@@ -187,7 +187,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
       console.error("[ single-planning draft read]", planError.message);
       const failure = planningDependencyFailure(contract.correlationId);
       return (
-        <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
+        <Shell current="/planning" title={t("plan.single.title", "Plan a single visit")}>
           <PlanningReadFailureState
             failure={failure}
             title={t("plan.read.failure.title", "Planning access needs attention")}
@@ -466,7 +466,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     },
   };
   return (
-    <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}
+    <Shell current="/planning" title={t("plan.single.title", "Plan a single visit")}
       context={<span className="sq-lozenge sq-lozenge--info">{t("plan.single.context", "Single visit planning")}</span>}>
       <Wizard
         query={q}

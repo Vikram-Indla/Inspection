@@ -1,0 +1,106 @@
+.root {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sqx-choice-gap);
+  min-block-size: var(--sqx-control-h-md);
+  padding-block: var(--sqx-space-2);
+  cursor: pointer;
+}
+
+.root[data-disabled] {
+  cursor: not-allowed;
+}
+
+.input {
+  position: absolute;
+  inline-size: var(--sqx-choice-size);
+  block-size: var(--sqx-choice-size);
+  margin: 0;
+  opacity: 0;
+}
+
+.box {
+  flex: none;
+  position: relative;
+  inline-size: var(--sqx-choice-size);
+  block-size: var(--sqx-choice-size);
+  margin-block-start: var(--sqx-space-1);
+  background: var(--sqx-surface-default);
+  border: var(--sqx-border-width-hair) solid var(--sqx-choice-border);
+  border-radius: var(--sqx-choice-radius);
+}
+
+.box[data-kind="radio"] {
+  border-radius: var(--sqx-radius-full);
+}
+
+.root:hover .box {
+  border-color: var(--sqx-action-primary-bg);
+}
+
+.input:focus-visible ~ .box {
+  outline: var(--sqx-border-width-hair) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}
+
+.input:checked ~ .box {
+  background: var(--sqx-action-primary-bg);
+  border-color: var(--sqx-action-primary-bg);
+}
+
+.input:checked ~ .box[data-kind="checkbox"]::after {
+  content: "";
+  position: absolute;
+  inset-block-start: 12%;
+  inset-inline-start: 32%;
+  inline-size: 28%;
+  block-size: 55%;
+  border-inline-end: var(--sqx-border-width-thick) solid var(--sqx-action-primary-text);
+  border-block-end: var(--sqx-border-width-thick) solid var(--sqx-action-primary-text);
+  transform: rotate(45deg);
+}
+
+.input:checked ~ .box[data-kind="radio"]::after {
+  content: "";
+  position: absolute;
+  inset: 25%;
+  background: var(--sqx-action-primary-text);
+  border-radius: var(--sqx-radius-full);
+}
+
+.input:disabled ~ .box {
+  background: var(--sqx-action-disabled-bg);
+  border-color: var(--sqx-border-subtle);
+}
+
+.input:checked:disabled ~ .box {
+  background: var(--sqx-action-disabled-bg);
+}
+
+.input:checked:disabled ~ .box::after {
+  border-color: var(--sqx-action-disabled-text);
+  background: var(--sqx-action-disabled-text);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  min-inline-size: 0;
+}
+
+.label {
+  font: var(--sqx-text-body);
+  color: var(--sqx-text-primary);
+}
+
+.description {
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}
+
+.root[data-disabled] .label,
+.root[data-disabled] .description {
+  color: var(--sqx-text-muted);
+}
