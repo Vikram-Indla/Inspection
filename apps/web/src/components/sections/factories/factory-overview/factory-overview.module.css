@@ -10,16 +10,7 @@
   text-wrap: pretty;
 }
 
-.body {
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-secondary);
-  text-wrap: pretty;
-}
 
-.recorded {
-  font: var(--sqx-text-caption);
-  color: var(--sqx-text-muted);
-}
 
 .sections {
   display: flex;

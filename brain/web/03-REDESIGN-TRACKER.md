@@ -49,8 +49,16 @@ ticks, and **predicted risk renders "Not available"** because no forecasting
 model exists.
 `record:` [2026-08-09-T-025-factories-end-panel-ai](sessions/2026-08/2026-08-09-T-025-factories-end-panel-ai.md)
 
-**Remaining slices:** the **middle column**, and `/factories/cr/[id]`, which is
-untouched legacy.
+**Middle column done (T-026):** header 4-up fact row, and a `factory-snapshot`
+carrying an overall-condition panel with **derived** reasons (open violations,
+days since last inspection, licence expiry) plus six real metrics. Compliance
+rate and machines dropped — neither exists in the schema. Removed the duplicated
+provenance card, the condition card and the snapshot-facts card;
+`factory-overview` 159 → 104 lines.
+`record:` [2026-08-09-T-026-factories-middle-column](sessions/2026-08/2026-08-09-T-026-factories-middle-column.md)
+
+**Remaining slices:** the four disclosure sections in the middle column (they
+only link into the dossier today), and `/factories/cr/[id]`, untouched legacy.
 
 ---
 
@@ -476,9 +484,26 @@ Pull one in only if it is genuinely part of doing the active task well.
 - **There is no risk forecasting model.** `/factories`' end panel states
   "Predicted risk — not available" rather than projecting one. Any future
   forecast is a modelling decision, not a UI one.
-- **`e2e/factory360-provenance-contract.spec.ts` asserts against raw source
-  text** and was already flagged fragile. T-024 and T-025 changed both side
-  panels substantially; it very likely needs updating.
+- **`e2e/factory360-provenance-contract.spec.ts` is very likely red.** It asserts
+  against raw source text and was already flagged fragile; T-024 and T-025
+  reshaped both side panels, and **T-026 deleted the middle column's provenance
+  block outright** (the end panel now owns provenance).
+- **The type scale dropped 2 px per role (T-026, owner request), and two roles
+  are now very small:** overline **9 px** (uppercase, `0.12em` tracking — the
+  hardest combination to read) and caption/code **10.5 px**. Nothing in WCAG
+  sets a minimum size, but this is below what most public-sector guidance
+  accepts on a platform targeting WCAG 2.2 AA. A floor on those two roles would
+  keep the reduction everywhere it reads well.
+- **The recorded contrast ratios in `saqeel.css` predate the smaller scale.**
+  Some pairs were justified at 3:1 on the WCAG "large text" allowance (≥ 24 px,
+  or ≥ 18.66 px bold). `subheading` at 15 px semibold no longer qualifies, so
+  those pairs now need 4.5:1. **Re-measure before the next accessibility sign-off.**
+- **"Latest inspection" counts an inspection in any state**, including started
+  but unsubmitted. If the product means *completed*, the read filters on
+  `submitted_at` alone — one line, once ruled.
+- **Neither a compliance score nor a machines table exists.** Both were dropped
+  from the `/factories` snapshot rather than stubbed; they are schema gaps, not
+  UI ones.
 - **Seeded test data is excluded on `/factories` only.** T-024 added
   `isTestSourceFactory` (source-marked test rows) beside the existing
   `isTestFixtureEstablishment` (name/code fixtures) — **two independent signals,

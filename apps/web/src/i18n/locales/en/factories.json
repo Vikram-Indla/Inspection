@@ -39,28 +39,31 @@
     "opened": "Opened from Factory 360",
     "plannerNote": "A Planner submits the selected target for Supervisor assignment and release.",
     "industrialLicence": "Industrial licence",
-    "activity": "Activity",
-    "sourceRecord": "Source record"
+    "licenceType": "Licence type",
+    "stage": "Stage"
   },
   "condition": {
     "title": "Overall condition",
     "critical": "Critical attention required",
     "attention": "Attention required",
     "stable": "Stable condition",
-    "unavailable": "Condition unavailable",
-    "basis": "Based only on the saved governed risk band. Compliance and enforcement are shown separately and are never inferred.",
-    "savedRisk": "Saved risk",
-    "riskBand": "Risk band",
-    "approvedCompliance": "Approved compliance"
+    "unavailable": "Condition unavailable"
   },
   "snapshot": {
     "title": "Factory snapshot",
-    "factoryCode": "Factory code",
     "commercialRegistration": "Commercial registration",
-    "region": "Region",
-    "city": "City",
     "activity": "Activity",
-    "licenceState": "Licence state"
+    "licenceState": "Licence state",
+    "overallCondition": "Overall condition",
+    "noReasons": "No recorded signal is raising this condition.",
+    "riskScore": "Risk score",
+    "latestInspection": "Latest inspection",
+    "openViolations": "Open violations",
+    "activePenalties": "Active penalties",
+    "employees": "Employees",
+    "products": "Products",
+    "never": "Never inspected",
+    "notAvailable": "Not available"
   },
   "sections": {
     "availableInProfile": "This section is available in the full factory profile.",
@@ -125,5 +128,12 @@
       "lastSynchronisation": "Last synchronisation",
       "dataSources": "Data sources"
     }
+  },
+  "reason": {
+    "openViolations": "{n} open violations recorded",
+    "inspectedDaysAgo": "Last inspection {n} days ago",
+    "neverInspected": "No inspection has been recorded",
+    "licenceExpired": "Industrial licence has expired",
+    "licenceExpiring": "Industrial licence expires within {n} days"
   }
 }

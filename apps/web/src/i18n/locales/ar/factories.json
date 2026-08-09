@@ -39,28 +39,31 @@
     "opened": "فُتِح من Factory 360",
     "plannerNote": "يرسل المخطِّط الهدف المحدد لإسناد المشرف وإصداره.",
     "industrialLicence": "الترخيص الصناعي",
-    "activity": "النشاط",
-    "sourceRecord": "سجل المصدر"
+    "licenceType": "نوع الرخصة",
+    "stage": "المرحلة"
   },
   "condition": {
     "title": "الحالة العامة",
     "critical": "يتطلب اهتماماً عاجلاً",
     "attention": "يتطلب اهتماماً",
     "stable": "حالة مستقرة",
-    "unavailable": "الحالة غير متاحة",
-    "basis": "استناداً فقط إلى نطاق الخطورة المحوكم المحفوظ. يُعرض الالتزام والإنفاذ بصورة منفصلة ولا يُستنتجان أبداً.",
-    "savedRisk": "الخطورة المحفوظة",
-    "riskBand": "نطاق الخطورة",
-    "approvedCompliance": "الالتزام المعتمد"
+    "unavailable": "الحالة غير متاحة"
   },
   "snapshot": {
     "title": "لمحة عن المصنع",
-    "factoryCode": "رمز المصنع",
     "commercialRegistration": "السجل التجاري",
-    "region": "المنطقة",
-    "city": "المدينة",
     "activity": "النشاط",
-    "licenceState": "حالة الترخيص"
+    "licenceState": "حالة الترخيص",
+    "overallCondition": "الحالة العامة",
+    "noReasons": "لا توجد إشارة مسجَّلة ترفع هذه الحالة.",
+    "riskScore": "درجة الخطورة",
+    "latestInspection": "آخر تفتيش",
+    "openViolations": "مخالفات مفتوحة",
+    "activePenalties": "عقوبات سارية",
+    "employees": "الموظفون",
+    "products": "المنتجات",
+    "never": "لم يُفتَّش",
+    "notAvailable": "غير متاح"
   },
   "sections": {
     "availableInProfile": "هذا القسم متاح في ملف المصنع الكامل.",
@@ -125,5 +128,12 @@
       "lastSynchronisation": "آخر مزامنة",
       "dataSources": "مصادر البيانات"
     }
+  },
+  "reason": {
+    "openViolations": "{n} مخالفات مفتوحة مسجَّلة",
+    "inspectedDaysAgo": "آخر تفتيش قبل {n} يومًا",
+    "neverInspected": "لم يُسجَّل أي تفتيش",
+    "licenceExpired": "انتهت الرخصة الصناعية",
+    "licenceExpiring": "تنتهي الرخصة الصناعية خلال {n} يومًا"
   }
 }

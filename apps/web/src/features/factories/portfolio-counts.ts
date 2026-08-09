@@ -3,8 +3,11 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 export type PortfolioCounts = {
   readonly openViolations: ReadonlyMap<string, number>;
   readonly activePenalties: ReadonlyMap<string, number>;
+  readonly products: ReadonlyMap<string, number>;
+  readonly lastInspection: ReadonlyMap<string, string>;
   readonly openViolationsAvailable: boolean;
   readonly activePenaltiesAvailable: boolean;
+  readonly productsAvailable: boolean;
 };
 
 export const ACTIVE_PENALTY_STATUSES = ["issued", "served"] as const;
@@ -39,20 +42,42 @@ function factoryIdOf(row: Record<string, unknown>): string | null {
 export const EMPTY_PORTFOLIO_COUNTS: PortfolioCounts = {
   openViolations: new Map(),
   activePenalties: new Map(),
+  products: new Map(),
+  lastInspection: new Map(),
   openViolationsAvailable: false,
   activePenaltiesAvailable: false,
+  productsAvailable: false,
 };
+
+/** Latest recorded inspection per factory — submitted where it exists, else
+ *  started. Nothing is inferred from a visit that never became an inspection. */
+function latestInspections(data: unknown): Map<string, string> {
+  const latest = new Map<string, string>();
+  for (const row of rows(data)) {
+    const factoryId = factoryIdOf(row);
+    const when = text(row, "submitted_at") ?? text(row, "started_at");
+    if (!factoryId || !when) continue;
+    const held = latest.get(factoryId);
+    if (!held || held < when) latest.set(factoryId, when);
+  }
+  return latest;
+}
 
 export async function queryPortfolioCounts(
   sb: SupabaseClient,
   factoryIds: readonly string[],
 ): Promise<PortfolioCounts> {
   if (factoryIds.length === 0) {
-    return { ...EMPTY_PORTFOLIO_COUNTS, openViolationsAvailable: true, activePenaltiesAvailable: true };
+    return {
+      ...EMPTY_PORTFOLIO_COUNTS,
+      openViolationsAvailable: true,
+      activePenaltiesAvailable: true,
+      productsAvailable: true,
+    };
   }
 
   const ids = [...factoryIds];
-  const [violationRead, penaltyRead] = await Promise.all([
+  const [violationRead, penaltyRead, productRead, inspectionRead] = await Promise.all([
     sb.from("violations")
       .select("id, inspections!inner(visits!inner(factory_id))")
       .is("invalidated_at", null)
@@ -61,15 +86,24 @@ export async function queryPortfolioCounts(
       .select("id, factory_id")
       .in("factory_id", ids)
       .in("status", [...ACTIVE_PENALTY_STATUSES]),
+    sb.from("factory_products").select("id, factory_id").in("factory_id", ids),
+    sb.from("inspections")
+      .select("started_at, submitted_at, visits!inner(factory_id)")
+      .in("visits.factory_id", ids),
   ]);
 
   if (violationRead.error) console.error(`[factories.counts] violations failed: ${violationRead.error.message}`);
   if (penaltyRead.error) console.error(`[factories.counts] penalties failed: ${penaltyRead.error.message}`);
+  if (productRead.error) console.error(`[factories.counts] products failed: ${productRead.error.message}`);
+  if (inspectionRead.error) console.error(`[factories.counts] inspections failed: ${inspectionRead.error.message}`);
 
   return {
     openViolations: violationRead.error ? new Map() : tally(rows(violationRead.data).map(factoryIdOf)),
     activePenalties: penaltyRead.error ? new Map() : tally(rows(penaltyRead.data).map(row => text(row, "factory_id"))),
+    products: productRead.error ? new Map() : tally(rows(productRead.data).map(row => text(row, "factory_id"))),
+    lastInspection: inspectionRead.error ? new Map() : latestInspections(inspectionRead.data),
     openViolationsAvailable: !violationRead.error,
     activePenaltiesAvailable: !penaltyRead.error,
+    productsAvailable: !productRead.error,
   };
 }

@@ -1,0 +1,106 @@
+.root {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: var(--sqx-space-6);
+  align-items: start;
+}
+
+.condition {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sqx-space-3);
+  padding: var(--sqx-inset-control);
+  background: var(--sqx-surface-sunken);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-control);
+}
+
+/* The band tints only the edge, never the panel fill: a filled critical block
+   behind the reason list made the text the least readable thing on the screen. */
+.condition[data-tone="danger"] { border-inline-start: var(--sqx-border-width-thick) solid var(--sqx-status-critical); }
+.condition[data-tone="warning"] { border-inline-start: var(--sqx-border-width-thick) solid var(--sqx-status-warning); }
+.condition[data-tone="success"] { border-inline-start: var(--sqx-border-width-thick) solid var(--sqx-status-compliant); }
+
+.conditionLabel {
+  margin: 0;
+  font: var(--sqx-text-overline);
+  letter-spacing: var(--sqx-text-overline-tracking);
+  text-transform: uppercase;
+  color: var(--sqx-text-muted);
+}
+
+.reasons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+  margin: 0;
+  padding-inline-start: var(--sqx-space-5);
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-secondary);
+}
+
+.reason {
+  margin: 0;
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}
+
+/* A fixed column count, not `auto-fit`: the tracks were sized from a spacing
+   token, which let a six-column row form and then let long values like
+   "Never inspected" spill across their neighbours. */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--sqx-space-6) var(--sqx-space-4);
+  align-items: start;
+  margin: 0;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: var(--sqx-space-1);
+  min-inline-size: 0;
+}
+
+.metricLabel {
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}
+
+.metricValue {
+  min-inline-size: 0;
+  margin: 0;
+  font: var(--sqx-text-metric);
+  font-variant-numeric: var(--sqx-numeric-tabular);
+  color: var(--sqx-text-primary);
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+
+/* A metric whose value is a phrase, not a figure. At display size "Not
+   available" dwarfs the numbers beside it and reads as the loudest thing in
+   the card, which is the opposite of what an absent value should do. */
+.metricValue[data-kind="text"] {
+  font: var(--sqx-text-body-strong);
+  color: var(--sqx-text-secondary);
+}
+
+.metricValue[data-tone="danger"] { color: var(--sqx-status-critical); }
+.metricValue[data-tone="warning"] { color: var(--sqx-status-warning); }
+.metricValue[data-tone="success"] { color: var(--sqx-status-compliant); }
+.metricValue[data-tone="info"] { color: var(--sqx-status-info); }
+
+@media (max-width: 75rem) {
+  .root {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

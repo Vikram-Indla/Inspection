@@ -60,7 +60,7 @@ export default async function Factories({ searchParams }: {
     ? visibleScopeRows.filter(row => row.is_temporary && row.source === "immediate_manual").length
     : visibleScopeRows.filter(row => row.cr_number === selectedCr).length;
   let portfolioQuery = sb.from("factories")
-    .select("id, factory_code, name, cr_number, region, city, activity_class, risk_band, risk_score, risk_version, risk_drivers, risk_calculated_at, source, source_synced_at, is_temporary, industrial_licenses(id, commercial_registration_id, license_number, plant_number, license_type, status, stage, expiry_date)")
+    .select("id, factory_code, name, cr_number, region, city, activity_class, risk_band, risk_score, risk_version, risk_drivers, risk_calculated_at, employees_total, source, source_synced_at, is_temporary, industrial_licenses(id, commercial_registration_id, license_number, plant_number, license_type, status, stage, expiry_date)")
     .order("risk_score", { ascending: false });
   portfolioQuery = requestedScopeValue === manualScope
     ? portfolioQuery.eq("is_temporary", true).eq("source", "immediate_manual")

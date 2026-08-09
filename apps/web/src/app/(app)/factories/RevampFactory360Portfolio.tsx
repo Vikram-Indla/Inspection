@@ -7,12 +7,15 @@ import FactoryContext from "@/components/sections/factories/factory-context/fact
 import FactoryRiskOutlook from "@/components/sections/factories/factory-risk-outlook/factory-risk-outlook";
 import FactoryTrust from "@/components/sections/factories/factory-trust/factory-trust";
 import FactoryOverview from "@/components/sections/factories/factory-overview/factory-overview";
+import FactorySnapshot from "@/components/sections/factories/factory-snapshot/factory-snapshot";
 import FactoryWorkspace from "@/components/sections/factories/factory-workspace/factory-workspace";
 import {
   conditionOf,
   provenanceDetail,
   provenanceOf,
   toLicence,
+  licenceExpiryState,
+  LICENCE_EXPIRY_SOON_DAYS,
   type FactoryRow,
   type ProvenanceStrings,
 } from "@/features/factories/portfolio";
@@ -118,29 +121,55 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
   const overviewStrings = {
     opened: copy.hero.opened,
     plannerNote: copy.hero.plannerNote,
-    industrialLicence: copy.hero.industrialLicence,
     plantNumber: copy.portfolio.plantNumber,
-    activity: copy.hero.activity,
-    sourceRecord: copy.hero.sourceRecord,
+    licenceType: copy.hero.licenceType,
+    stage: copy.hero.stage,
+    licenceState: copy.snapshot.licenceState,
     createInspection: copy.action.createInspection,
     viewOnMap: copy.action.viewOnMap,
     openProfile: copy.action.openProfile,
-    conditionTitle: copy.condition.title,
-    conditionBasis: copy.condition.basis,
-    savedRisk: copy.condition.savedRisk,
-    riskBand: copy.condition.riskBand,
-    approvedCompliance: copy.condition.approvedCompliance,
-    openViolations: copy.portfolio.openViolations,
-    notAvailable: copy.portfolio.notAvailable,
     missing: copy.portfolio.missing,
-    snapshotTitle: copy.snapshot.title,
-    factoryCode: copy.snapshot.factoryCode,
-    commercialRegistration: copy.snapshot.commercialRegistration,
-    region: copy.snapshot.region,
-    city: copy.snapshot.city,
-    licenceState: copy.snapshot.licenceState,
     sectionAvailable: copy.sections.availableInProfile,
   };
+  const openViolations = counts.openViolationsAvailable ? counts.openViolations.get(selected.id) ?? 0 : null;
+  const activePenalties = counts.activePenaltiesAvailable ? counts.activePenalties.get(selected.id) ?? 0 : null;
+  const products = counts.productsAvailable ? counts.products.get(selected.id) ?? 0 : null;
+  const inspectedAt = counts.lastInspection.get(selected.id) ?? null;
+  const daysSinceInspection = inspectedAt === null
+    ? null
+    : Math.floor((now - new Date(inspectedAt).getTime()) / 86_400_000);
+  const expiryState = licenceExpiryState(selected.license?.expiry_date ?? null, now);
+  const conditionReasons = [
+    openViolations !== null && openViolations > 0
+      ? fill(copy.reason.openViolations, { n: openViolations }) : null,
+    daysSinceInspection === null
+      ? copy.reason.neverInspected
+      : fill(copy.reason.inspectedDaysAgo, { n: daysSinceInspection }),
+    expiryState === "expired" ? copy.reason.licenceExpired : null,
+    expiryState === "expiringSoon"
+      ? fill(copy.reason.licenceExpiring, { n: LICENCE_EXPIRY_SOON_DAYS }) : null,
+  ].filter((reason): reason is string => reason !== null);
+  const numberMetric = (key: string, label: string, value: number | null, tone: StatusTone) => ({
+    key,
+    label,
+    value: value === null ? copy.snapshot.notAvailable : String(value),
+    tone: value === null ? ("neutral" as StatusTone) : tone,
+    kind: (value === null ? "text" : "number") as "number" | "text",
+  });
+  const metrics = [
+    numberMetric("riskScore", copy.snapshot.riskScore, selected.risk_score, condition.tone),
+    {
+      key: "latestInspection",
+      label: copy.snapshot.latestInspection,
+      value: inspectedAt === null ? copy.snapshot.never : day(inspectedAt),
+      tone: "neutral" as StatusTone,
+      kind: "text" as const,
+    },
+    numberMetric("openViolations", copy.snapshot.openViolations, openViolations, alertTone(openViolations, "danger")),
+    numberMetric("activePenalties", copy.snapshot.activePenalties, activePenalties, alertTone(activePenalties, "warning")),
+    numberMetric("employees", copy.snapshot.employees, selected.employees_total, "neutral"),
+    numberMetric("products", copy.snapshot.products, products, "neutral"),
+  ];
 
   return (
     <FactoryWorkspace
@@ -235,9 +264,19 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
     >
       <FactoryOverview
         factory={selected}
-        condition={condition}
-        provenance={provenance}
         sections={sections}
+        snapshot={
+          <FactorySnapshot
+            condition={condition}
+            reasons={conditionReasons}
+            metrics={metrics}
+            strings={{
+              title: copy.snapshot.title,
+              overallCondition: copy.snapshot.overallCondition,
+              noReasons: copy.snapshot.noReasons,
+            }}
+          />
+        }
         createHref={createHref}
         mapHref={`/operations?region=${encodeURIComponent(selected.region ?? "")}`}
         profileHref={selected.dossier_href}
