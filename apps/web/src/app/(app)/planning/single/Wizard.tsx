@@ -5,8 +5,9 @@ import { publishSingleVisit, saveSingleDraft, type PublishResult } from "./actio
 import IdentityDossier from "./IdentityDossier";
 import type { ResolvedLicence, ResolvedPortfolio } from "@/lib/planning/factory-resolver";
 import type { Locale } from "@/lib/i18n";
+import { formatDate } from "@/lib/dates";
 import Button from "@/components/saqeel/button/button";
-import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
+import { Card, CardBody, CardFooter, CardHeader } from "@/components/saqeel/card/card";
 import Choice from "@/components/saqeel/choice/choice";
 import DefinitionList from "@/components/saqeel/definition-list/definition-list";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
@@ -312,14 +313,13 @@ export default function Wizard({
   }
 
   const steps = state.steps;
-  const StepRow = ({ label, status }: { label: string; status?: "pending" | "done" | "failed" }) => (
-    <li className="timeline">
-      <span aria-hidden="true">{status === "done" ? "✓" : status === "failed" ? "✕" : "◌"}</span>{" "}
-      {label} — {status === "done" ? strings.stepDone : status === "failed" ? strings.stepFailed : strings.stepPending}
-    </li>
-  );
+  const stepLabel = (status?: "pending" | "done" | "failed") =>
+    status === "done" ? strings.stepDone : status === "failed" ? strings.stepFailed : strings.stepPending;
+  const stepTone = (status?: "pending" | "done" | "failed") =>
+    status === "done" ? "success" : status === "failed" ? "danger" : "neutral";
 
-  const licenceFreshness = (l: ResolvedLicence) => l.sourceSyncedAt ? new Date(l.sourceSyncedAt).toISOString().slice(0, 10) : strings.freshnessNever;
+  const licenceFreshness = (l: ResolvedLicence) =>
+    l.sourceSyncedAt ? formatDate(l.sourceSyncedAt, locale) : strings.freshnessNever;
 
   return (
     <form action={formAction} className={`sq-stack ${styles.form}`}>
@@ -387,27 +387,27 @@ export default function Wizard({
           licences can never be targeted as a whole (explicit eligibility
           state), and a CR with none is not plannable at all (M01-036). */}
       {portfolios.length > 0 && (
-        <div className={`panel panel-body ${styles.stepPanel}`}>
-          <h4 className="panel-title">{strings.portfolioStep}</h4>
+        <Card as="section" labelledBy="single-visit-portfolio">
+          <CardHeader level="h2" titleId="single-visit-portfolio" title={strings.portfolioStep} />
+          <CardBody>
           {handoff && (
             <PlanningNotice tone="info">{strings.prefilledHandoff}</PlanningNotice>
           )}
           {portfolios.map(p => (
-            <section key={p.id} className={`panel panel-body ${styles.nestedPanel}`}>
-              <header className="panel-header">
-                <strong>{strings.crIdentity}</strong>{" "}
-                <bdi className="numeric">{p.crNumber}</bdi>
-                {p.legalNameEn || p.legalName ? <> · {p.legalNameEn ?? p.legalName}</> : null}
-                {p.status ? <> · <span className="t-caption">{p.status}</span></> : null}
-                <p className="tl-meta">
-                  {strings.sourceLabel}: <bdi>{p.sourceSystem ?? "—"}</bdi> · {strings.freshnessLabel}: <bdi>{p.sourceSyncedAt ? new Date(p.sourceSyncedAt).toISOString().slice(0, 10) : strings.freshnessNever}</bdi>
-                </p>
-              </header>
+            <Card as="article" key={p.id}>
+              <CardHeader
+                level="h3"
+                eyebrow={<>{strings.crIdentity} <bdi>{p.crNumber}</bdi></>}
+                title={p.legalNameEn ?? p.legalName ?? p.crNumber}
+                description={`${strings.sourceLabel}: ${p.sourceSystem ?? "—"} · ${strings.freshnessLabel}: ${p.sourceSyncedAt ? formatDate(p.sourceSyncedAt, locale) : strings.freshnessNever}`}
+                trailing={p.status ? <StatusPill tone="neutral">{p.status}</StatusPill> : undefined}
+              />
+              <CardBody gap="tight">
               {p.licences.length === 0 ? (
                 <PlanningNotice tone="warning">{strings.noLicences}</PlanningNotice>
               ) : (
                 <>
-                  <p className="tl-meta">{strings.selectLicenceHint}</p>
+                  <p className={styles.hint}>{strings.selectLicenceHint}</p>
                   <ul className={styles.resultList} role="listbox" aria-label={strings.portfolioStep}>
                     {p.licences.map(l => (
                       <li className={styles.resultItem} key={l.id}>
@@ -439,31 +439,58 @@ export default function Wizard({
                   )}
                 </>
               )}
-            </section>
+              </CardBody>
+            </Card>
           ))}
-        </div>
+          </CardBody>
+        </Card>
       )}
 
       {/* Selected canonical plant profile — registered fields + provenance,
           read-only; nothing here mutates the registry. */}
       {target?.kind === "canonical" && selectedLicenceEntry && (
-        <div className={`panel panel-body ${styles.stepPanel} ${styles.profilePanel}`} role="region" aria-label={strings.selectedProfile}>
-          <h4 className="panel-title">{strings.selectedProfile}</h4>
-          <p><strong>{target.name}</strong></p>
-          <dl>
-            <div><dt className="t-caption">{strings.crPrefix}</dt><dd><bdi>{target.crNumber ?? "—"}</bdi></dd></div>
-            <div><dt className="t-caption">{strings.licenseLabel}</dt><dd><bdi>{target.canonicalLicenseNumber ?? "—"}</bdi></dd></div>
-            <div><dt className="t-caption">{strings.plantLabel}</dt><dd><bdi>{target.plantNumber ?? "—"}</bdi></dd></div>
-            <div><dt className="t-caption">{strings.officialAddress}</dt><dd>{target.officialAddress}</dd></div>
-            <div><dt className="t-caption">{strings.officialPin}</dt><dd>{hasOfficial ? <bdi>{target.officialLat}, {target.officialLng}</bdi> : strings.noOfficialPin}</dd></div>
-          </dl>
-          <p className="tl-meta">
-            {strings.sourceLabel}: <bdi>{selectedLicenceEntry.licence.sourceSystem ?? "—"}</bdi>
-            {" · "}{strings.freshnessLabel}: <bdi>{licenceFreshness(selectedLicenceEntry.licence)}</bdi>
-            {" · "}{strings.riskContext}: {target.riskBand ?? strings.riskUnknown}{target.riskScore != null ? ` (${target.riskScore})` : ""}
-          </p>
-          <a href={`/factories/${target.factoryId}`} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-touch">{strings.factory360}</a>
-        </div>
+        <Card as="section" labelledBy="single-visit-profile">
+          <CardHeader
+            level="h2"
+            titleId="single-visit-profile"
+            eyebrow={strings.selectedProfile}
+            title={target.name}
+            description={`${strings.sourceLabel}: ${selectedLicenceEntry.licence.sourceSystem ?? "—"} · ${strings.freshnessLabel}: ${licenceFreshness(selectedLicenceEntry.licence)}`}
+            trailing={
+              <StatusPill tone="neutral">
+                {strings.riskContext}: {target.riskBand ?? strings.riskUnknown}
+                {target.riskScore != null ? ` (${target.riskScore})` : ""}
+              </StatusPill>
+            }
+          />
+          <CardBody>
+            <DefinitionList
+              columns="two"
+              items={[
+                { label: strings.crPrefix, value: <bdi>{target.crNumber ?? "—"}</bdi> },
+                { label: strings.licenseLabel, value: <bdi>{target.canonicalLicenseNumber ?? "—"}</bdi> },
+                { label: strings.plantLabel, value: <bdi>{target.plantNumber ?? "—"}</bdi> },
+                { label: strings.officialAddress, value: target.officialAddress },
+                {
+                  label: strings.officialPin,
+                  value: hasOfficial
+                    ? <bdi>{target.officialLat}, {target.officialLng}</bdi>
+                    : strings.noOfficialPin,
+                },
+              ]}
+            />
+          </CardBody>
+          <CardFooter>
+            <Button
+              variant="secondary"
+              size="sm"
+              href={`/factories/${target.factoryId}`}
+              label={strings.factory360}
+            >
+              {strings.factory360}
+            </Button>
+          </CardFooter>
+        </Card>
       )}
 
       {/* Legacy license step — unchanged: explicit radio when the legacy
@@ -581,17 +608,36 @@ export default function Wizard({
       )}
 
       {state.error && (
-        <div ref={errorRef} tabIndex={-1} className="alert alert-critical" role="alert"><strong>{strings.blockedTitle}</strong>
-          <ul>{state.error.split(" · ").map(b => <li key={b}>{b}</li>)}</ul>
-          {steps && (
-            <ul className="timeline">
-              <StepRow label={strings.stepPlan} status={steps.plan} />
-              <StepRow label={strings.stepVisit} status={steps.visit} />
-              <StepRow label={strings.stepAssignment} status={steps.assignment} />
-              <StepRow label={strings.stepStatus} status={steps.status} />
-              <StepRow label={strings.stepNotification} status={steps.notification} />
-            </ul>
-          )}
+        <div ref={errorRef} tabIndex={-1}>
+          <Card as="section" labelledBy="single-visit-blocked">
+            <CardHeader
+              level="h2"
+              titleId="single-visit-blocked"
+              title={strings.blockedTitle}
+              trailing={<StatusPill tone="danger">{strings.blockedTitle}</StatusPill>}
+            />
+            <CardBody gap="tight">
+              <ul className={styles.blockers}>
+                {state.error.split(" · ").map(blocker => <li key={blocker}>{blocker}</li>)}
+              </ul>
+              {steps ? (
+                <ul className={styles.steps}>
+                  {[
+                    { key: "plan", label: strings.stepPlan, status: steps.plan },
+                    { key: "visit", label: strings.stepVisit, status: steps.visit },
+                    { key: "assignment", label: strings.stepAssignment, status: steps.assignment },
+                    { key: "status", label: strings.stepStatus, status: steps.status },
+                    { key: "notification", label: strings.stepNotification, status: steps.notification },
+                  ].map(step => (
+                    <li className={styles.step} key={step.key}>
+                      <span>{step.label}</span>
+                      <StatusPill tone={stepTone(step.status)}>{stepLabel(step.status)}</StatusPill>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </CardBody>
+          </Card>
         </div>
       )}
 
@@ -599,7 +645,9 @@ export default function Wizard({
         <PlanningNotice tone="danger">{strings.draftError}</PlanningNotice>
       )}
       {draftJustSaved && draftState && (
-        <p className="tl-meta" role="status">{strings.draftSavedPrefix} — <bdi>{draftState.planReference}</bdi> · v{draftState.version}</p>
+        <PlanningNotice tone="info">
+          {strings.draftSavedPrefix} <bdi>{draftState.planReference}</bdi> · v{draftState.version}
+        </PlanningNotice>
       )}
 
       {!transitionsExecutable && (
