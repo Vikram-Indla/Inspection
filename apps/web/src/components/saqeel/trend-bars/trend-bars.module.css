@@ -1,0 +1,30 @@
+.chart {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sqx-space-2);
+  block-size: var(--sqx-space-11);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.column {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  min-inline-size: 0;
+  block-size: 100%;
+}
+
+.bar {
+  inline-size: 100%;
+  block-size: max(var(--sqx-space-2), calc(var(--sqx-trend-value, 0) * 1%));
+  background: var(--sqx-status-pending);
+  border-radius: var(--sqx-radius-xs);
+}
+
+.bar[data-tone="danger"] { background: var(--sqx-status-critical); }
+.bar[data-tone="warning"] { background: var(--sqx-status-warning); }
+.bar[data-tone="success"] { background: var(--sqx-status-compliant); }
+.bar[data-tone="info"] { background: var(--sqx-status-info); }
+.bar[data-tone="accent"] { background: var(--sqx-accent-ai); }

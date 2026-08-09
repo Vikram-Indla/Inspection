@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { isInvalidRefreshToken } from "@/lib/auth/refresh-token-error";
 import { DEFAULT_LOCALE, LOCALES, localeFromPathname, stripLocale, type Locale } from "@/lib/locale-path";
+import { designRouteFor } from "@/lib/route-rewrites";
 
 const PROTECTED_PAGE_PREFIXES = [
   "/dashboard",
@@ -71,14 +72,7 @@ export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-pathname", pathname);
   requestHeaders.set("x-locale", locale);
-  const designRoute =
-    pathname === "/admin/regulations" && !request.nextUrl.searchParams.has("id")
-      ? "/compliance"
-      : pathname === "/admin/compliance-approvals"
-        ? "/compliance/approvals"
-        : pathname === "/admin/violations" && !request.nextUrl.searchParams.has("mode")
-          ? "/enforcement-library"
-          : null;
+  const designRoute = designRouteFor(pathname, request.nextUrl.searchParams);
   const buildResponse = () => {
     const target = designRoute ?? pathname;
     if (target === requested) {

@@ -1,6 +1,103 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-09` · `Updated by: T-021a — Visit Management`
+`Last updated: 2026-08-10` · `Updated by: T-041 — enforcement library + violation catalogue`
+
+## Where enforcement stands (2026-08-10)
+
+Both screens behind `/admin/violations` are migrated: the enforcement library
+(410 → 24) and the catalogue admin (511 → 26). **All three rewritten routes are
+now done** — compliance library, approval queue, enforcement.
+
+The recurring lesson across T-036…T-041 is that **the schema holds more than the
+screens admit**. Every one of these migrations found recorded columns the UI was
+ignoring while showing a placeholder or a UUID: `inspections.inspection_no`,
+`inspection_penalties.status`, penalty `amount`, `violation_codes.corrective_action`,
+`compliance_configuration_requests.description`. Read the migrations before
+concluding a value is unavailable — `0001_foundation.sql` alone understates the
+schema badly.
+
+**Dates:** `new Date().toISOString().slice(0, 10)` appears in unmigrated code as
+a "today" for date-bounded comparisons. It is the UTC day and rolls over three
+hours early in Riyadh. `riyadhToday()` in `lib/dates.ts` is the correct one.
+
+---
+
+## Where the approval queue stands (2026-08-10)
+
+`/compliance/approvals` is migrated — 499 → 25 lines — with the request rail,
+review sequence, field diffs, per-object and package decisions, progress and a
+timeline that now includes submission and return. Reached from
+`/admin/compliance-approvals`, which the middleware rewrites **unconditionally**;
+those four files are marked `@retiring` because that segment never runs at all.
+
+Three live defects were fixed on the way, all of the same shape — **a value that
+looked wired but was never read**: `?view=pending` from the admin home, a
+correlation id minted fresh on every failed render (so the reference shown to the
+user matched nothing in the logs), and `toLocaleString(locale)` instead of
+Asia/Riyadh. Worth a look on any screen not yet migrated.
+
+---
+
+## Where the compliance library stands (2026-08-09)
+
+**The compliance library is fully migrated.** `app/(app)/compliance/page.tsx`
+**303 → 27** and `/admin/regulations` **546 → 21**. Catalogue, six-tab workspace
+and the governed record are all on SAQEEL, and **every `@retiring` file is
+deleted** — the retirement ledger's Marked section is empty. Search, filters and
+the active tab are all `searchParams`; the only client code left on either screen
+is the lifecycle form.
+
+The pattern worth reusing: `WorkspaceTable<T>` is
+`{kind:"rows", rows} | {kind:"unavailable"}`, so a failed read **cannot** be
+handed to a table as an empty array. Prefer that to a boolean beside the data —
+the two drift, the union cannot.
+
+**Three admin routes do not render their own page.** `middleware.ts` rewrites
+`/admin/regulations` → `/compliance`, `/admin/compliance-approvals` →
+`/compliance/approvals`, and `/admin/violations` → `/enforcement-library`,
+passing the typed path in `__shellRoute`. T-036 was first built against
+`/admin/regulations` and the entire rebuild was unreachable. **Read
+`middleware.ts` during inventory, before deciding which file a screen lives in.**
+
+**The schema is richer than any admin screen currently admits.** `violation_codes`
+already carries `level`, `corrective_action`, `grace_period_days`, `category` and
+`applicability`; `penalty_mappings` carries `penalty_type`, `amount`,
+`grace_period_days`, `due_period_days`, `legal_basis` and a `template_version_id`
+naming the action form; and `inspection_items.response_model.mapping` holds a
+**direct item→violation link**. All of it is governed with maker-checker and
+immutability triggers. Before concluding a field is missing, read
+`supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql` —
+the foundation migration alone understates what exists.
+
+---
+
+## Where the dashboard stands (2026-08-09)
+
+`/dashboard?view=strategic` no longer ends in two placeholders. The
+**enforcement action trend** is computed from `penalty_notices.issued_at` over
+the scoped period against the immediately preceding period of equal length, and
+the **executive AI brief** is a real governed advisory on the `executive_brief`
+surface, generated on demand.
+
+Two rulings from that work generalise:
+
+- **An empty result under RLS is not an absence of facts.** `penalty_notices` is
+  invisible to most roles and returns an empty set rather than an error. Any
+  query over a role-gated table must carry a `readable` flag, and the screen
+  must render a restricted state — not a zero. The same flag goes into any AI
+  context built from that table.
+- **A client field may be a filter; it is never a fact.** The executive brief's
+  hidden `context` is convenience only: `generateContextualInsight` re-reads
+  every figure under the caller's RLS and accepts from the client only the
+  reporting period, validated as an ISO day with `from <= to`.
+
+`RevampStrategicView.tsx` and `DashboardView.tsx` still hold the old
+placeholders in legacy markup, but both are unreachable — `DashboardView`
+returns before its remaining hundred-plus lines, and `page.tsx` imports neither.
+They belong to the retirement sweep.
+
+---
+
 
 > **The tracker's NOW section below is older than the work.** Since the last
 > status refresh, `/dashboard`, `/operations`, `/factories` (list **and**

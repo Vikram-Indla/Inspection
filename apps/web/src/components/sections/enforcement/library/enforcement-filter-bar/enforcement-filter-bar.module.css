@@ -1,0 +1,35 @@
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sqx-space-4) var(--sqx-space-3);
+}
+
+.input {
+  flex: 1 1 var(--sqx-grid-min-sm);
+  min-inline-size: 0;
+  min-block-size: var(--sqx-control-h-md);
+  padding-inline: var(--sqx-space-3);
+  font: var(--sqx-text-body);
+  color: var(--sqx-text-primary);
+  background: var(--sqx-surface-default);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-control);
+}
+
+.input::placeholder {
+  color: var(--sqx-text-muted);
+}
+
+.input:focus-visible {
+  outline: var(--sqx-border-width-hair) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+  margin-inline-start: auto;
+}

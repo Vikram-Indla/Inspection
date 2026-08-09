@@ -1,24 +1,26 @@
 import { Suspense } from "react";
 import Shell from "@/components/Shell";
-import LibrarySections from "@/components/compliance/library-sections/library-sections";
-import EmptyState from "@/components/saqeel/empty-state/empty-state";
-import { readLibraryScope, type SearchParamsInput } from "@/features/compliance/scope";
+import RegulationsScreen from "@/components/sections/regulations/catalogue/regulations-screen/regulations-screen";
+import RegulationsSkeleton from "@/components/sections/regulations/catalogue/regulations-skeleton/regulations-skeleton";
+import RegulationWorkspace from "@/components/sections/regulations/workspace/regulation-workspace/regulation-workspace";
+import { readRegulationScope, type RegulationScopeInput } from "@/features/regulations/params";
 import { getMessages } from "@/i18n/messages";
 import { getLocale } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function ComplianceLibraryPage({ searchParams }: {
-  searchParams: Promise<SearchParamsInput>;
+  searchParams: Promise<RegulationScopeInput>;
 }) {
   const [params, locale] = await Promise.all([searchParams, getLocale()]);
-  const scope = readLibraryScope(params);
-  const messages = getMessages(locale).compliance.library;
+  const { regulations } = getMessages(locale);
+  const scope = readRegulationScope(params);
 
   return (
-    <Shell current={scope.routeBase} title={messages.title}>
-      <Suspense fallback={<EmptyState title={messages.loading} busy />}>
-        <LibrarySections locale={locale} scope={scope} />
+    <Shell current={scope.routeBase} title={regulations.title}>
+      <Suspense fallback={<RegulationsSkeleton label={regulations.loading} />}>
+        <RegulationsScreen locale={locale} scope={scope} />
+        {scope.selectedId ? <RegulationWorkspace locale={locale} scope={scope} /> : null}
       </Suspense>
     </Shell>
   );

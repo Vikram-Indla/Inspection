@@ -1,5 +1,5 @@
+import { type ReactNode } from "react";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
-import Button from "@/components/saqeel/button/button";
 import DefinitionList from "@/components/saqeel/definition-list/definition-list";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import { type FactoryRow } from "@/features/factories/portfolio";
@@ -11,16 +11,15 @@ export type FactoryContextStrings = {
   readonly licence: string;
   readonly plant: string;
   readonly sourceStatus: string;
-  readonly aiTitle: string;
-  readonly aiWithheld: string;
-  readonly aiBody: string;
-  readonly aiAction: string;
   readonly missing: string;
 };
 
-export default function FactoryContext({ factory, provenance, strings }: {
+export default function FactoryContext({ factory, provenance, outlook, trust, advisory, strings }: {
   factory: FactoryRow;
   provenance: { readonly label: string; readonly tone: StatusTone; readonly body: string; readonly recorded: string };
+  outlook: ReactNode;
+  trust: ReactNode;
+  advisory: ReactNode;
   strings: FactoryContextStrings;
 }) {
   const facts = [
@@ -30,6 +29,8 @@ export default function FactoryContext({ factory, provenance, strings }: {
   ];
   return (
     <>
+      {advisory}
+
       <Card as="section" labelledBy="factory-context-title">
         <CardHeader
           level="h2"
@@ -42,21 +43,15 @@ export default function FactoryContext({ factory, provenance, strings }: {
         </CardBody>
       </Card>
 
+      {outlook}
+      {trust}
+
       <Card as="section" labelledBy="factory-source-title">
         <CardHeader level="h2" titleId="factory-source-title" title={strings.sourceStatus} />
         <CardBody gap="tight">
           <StatusPill tone={provenance.tone}>{provenance.label}</StatusPill>
           <p className={styles.body} dir="auto">{provenance.body}</p>
           <p className={styles.recorded} dir="auto">{provenance.recorded}</p>
-        </CardBody>
-      </Card>
-
-      <Card as="section" labelledBy="factory-ai-title">
-        <CardHeader level="h2" titleId="factory-ai-title" title={strings.aiTitle} />
-        <CardBody gap="tight">
-          <StatusPill tone="info">{strings.aiWithheld}</StatusPill>
-          <p className={styles.body}>{strings.aiBody}</p>
-          <Button variant="secondary" size="sm" href={factory.dossier_href} label={strings.aiAction}>{strings.aiAction}</Button>
         </CardBody>
       </Card>
     </>

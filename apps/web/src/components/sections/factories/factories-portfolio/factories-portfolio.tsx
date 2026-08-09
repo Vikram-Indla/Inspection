@@ -1,8 +1,8 @@
 import { type ReactNode } from "react";
-import { Card, CardBody, CardGrid, CardHeader } from "@/components/saqeel/card/card";
+import { Card, CardBody } from "@/components/saqeel/card/card";
 import Icon from "@/components/saqeel/icon/icon";
-import StatCard from "@/components/saqeel/stat-card/stat-card";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
+import type { LicenceExpiryState } from "@/features/factories/portfolio";
 import styles from "./factories-portfolio.module.css";
 
 export type PortfolioLicence = {
@@ -14,32 +14,49 @@ export type PortfolioLicence = {
   readonly stage: string | null;
   readonly licenceStatus: string | null;
   readonly riskBand: string | null;
+  readonly expiryDate: string | null;
+  readonly expiryState: LicenceExpiryState | null;
+  readonly openViolations: number | null;
   readonly provenanceLabel: string;
   readonly provenanceTone: StatusTone;
 };
 
+export type PortfolioStat = {
+  readonly key: string;
+  readonly label: string;
+  readonly value: number | null;
+  readonly tone: StatusTone;
+};
+
 export type PortfolioStrings = {
-  readonly allLicences: string;
+  readonly portfolio: string;
   readonly factories: string;
   readonly highRisk: string;
+  readonly openViolations: string;
+  readonly activePenalties: string;
   readonly licenceNumber: string;
   readonly plantNumber: string;
   readonly type: string;
   readonly stage: string;
-  readonly licenceStatus: string;
-  readonly risk: string;
-  readonly compliance: string;
-  readonly openViolations: string;
+  readonly expiry: string;
   readonly notAvailable: string;
   readonly missing: string;
   readonly riskHigh: string;
   readonly riskMedium: string;
   readonly riskLow: string;
+  readonly expired: string;
+  readonly expiringSoon: string;
 };
 
 type Fact = {
   readonly term: string;
   readonly value: ReactNode;
+};
+
+const EXPIRY_TONE: Record<LicenceExpiryState, StatusTone> = {
+  expired: "danger",
+  expiringSoon: "warning",
+  valid: "success",
 };
 
 function riskTone(band: string | null): StatusTone {
@@ -56,22 +73,14 @@ function riskLabel(band: string | null, strings: PortfolioStrings): string | nul
   return band;
 }
 
-function riskValue(band: string | null, strings: PortfolioStrings): ReactNode {
-  const label = riskLabel(band, strings);
-  if (!label) return strings.missing;
-  return <StatusPill tone={riskTone(band)}>{label}</StatusPill>;
-}
-
-function factsOf(licence: PortfolioLicence, strings: PortfolioStrings): readonly Fact[] {
+function factsOf(licence: PortfolioLicence, strings: PortfolioStrings, formatDate: (iso: string) => string): readonly Fact[] {
   return [
     { term: strings.licenceNumber, value: licence.licenceNumber ?? strings.missing },
     { term: strings.plantNumber, value: licence.plantNumber ?? strings.missing },
     { term: strings.type, value: licence.type ?? strings.missing },
     { term: strings.stage, value: licence.stage ?? strings.missing },
-    { term: strings.licenceStatus, value: licence.licenceStatus ?? strings.missing },
-    { term: strings.risk, value: riskValue(licence.riskBand, strings) },
-    { term: strings.compliance, value: strings.notAvailable },
-    { term: strings.openViolations, value: strings.notAvailable },
+    { term: strings.expiry, value: licence.expiryDate ? formatDate(licence.expiryDate) : strings.missing },
+    { term: strings.openViolations, value: licence.openViolations ?? strings.notAvailable },
   ];
 }
 
@@ -80,30 +89,40 @@ export default function FactoriesPortfolio({
   licences,
   selectedId,
   onSelect,
-  highRiskCount,
+  stats,
+  provenanceNotice,
+  formatDate,
   strings,
 }: {
   portfolioLabel: string;
   licences: readonly PortfolioLicence[];
   selectedId: string;
   onSelect: (id: string) => void;
-  highRiskCount: number;
+  stats: readonly PortfolioStat[];
+  provenanceNotice: { readonly label: string; readonly tone: StatusTone } | null;
+  formatDate: (iso: string) => string;
   strings: PortfolioStrings;
 }) {
   return (
     <>
       <Card as="section" labelledBy="factories-portfolio-summary">
-        <CardHeader
-          level="h2"
-          titleId="factories-portfolio-summary"
-          eyebrow={strings.allLicences}
-          title={<span dir="auto">{portfolioLabel}</span>}
-        />
-        <CardBody>
-          <CardGrid min="sm">
-            <StatCard label={strings.factories} value={licences.length} />
-            <StatCard label={strings.highRisk} value={highRiskCount} />
-          </CardGrid>
+        <CardBody gap="tight">
+          <h2 className={styles.summaryLabel} id="factories-portfolio-summary">
+            {strings.portfolio} — <span dir="auto">{portfolioLabel}</span>
+          </h2>
+          <dl className={styles.summaryGrid}>
+            {stats.map(stat => (
+              <div className={styles.stat} key={stat.key}>
+                <dt className={styles.statLabel}>{stat.label}</dt>
+                <dd className={styles.statValue} data-tone={stat.tone}>
+                  {stat.value ?? strings.notAvailable}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          {provenanceNotice
+            ? <StatusPill tone={provenanceNotice.tone}>{provenanceNotice.label}</StatusPill>
+            : null}
         </CardBody>
       </Card>
 
@@ -125,7 +144,7 @@ export default function FactoriesPortfolio({
             </h3>
 
             <dl className={styles.facts}>
-              {factsOf(licence, strings).map(fact => (
+              {factsOf(licence, strings, formatDate).map(fact => (
                 <div className={styles.fact} key={fact.term}>
                   <dt className={styles.term}>{fact.term}</dt>
                   <dd className={styles.value} dir="auto">{fact.value}</dd>
@@ -133,9 +152,21 @@ export default function FactoriesPortfolio({
               ))}
             </dl>
 
-            <StatusPill tone={licence.provenanceTone}>
-              {licence.provenanceLabel}
-            </StatusPill>
+            <div className={styles.pills}>
+              {licence.licenceStatus
+                ? <StatusPill tone="info">{licence.licenceStatus}</StatusPill>
+                : null}
+              {licence.expiryState && licence.expiryState !== "valid"
+                ? (
+                  <StatusPill tone={EXPIRY_TONE[licence.expiryState]}>
+                    {licence.expiryState === "expired" ? strings.expired : strings.expiringSoon}
+                  </StatusPill>
+                )
+                : null}
+              {riskLabel(licence.riskBand, strings)
+                ? <StatusPill tone={riskTone(licence.riskBand)}>{riskLabel(licence.riskBand, strings)}</StatusPill>
+                : null}
+            </div>
           </CardBody>
         </Card>
       ))}

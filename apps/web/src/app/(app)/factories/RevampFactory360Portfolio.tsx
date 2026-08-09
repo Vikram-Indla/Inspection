@@ -2,19 +2,37 @@
 
 import { useState } from "react";
 import FactoriesPortfolio from "@/components/sections/factories/factories-portfolio/factories-portfolio";
+import FactoryAiAdvisory from "@/components/sections/factories/factory-ai-advisory/factory-ai-advisory";
+import FactoryCompliance from "@/components/sections/factories/factory-compliance/factory-compliance";
 import FactoryContext from "@/components/sections/factories/factory-context/factory-context";
+import FactoryRiskOutlook from "@/components/sections/factories/factory-risk-outlook/factory-risk-outlook";
+import FactoryTrust from "@/components/sections/factories/factory-trust/factory-trust";
 import FactoryOverview from "@/components/sections/factories/factory-overview/factory-overview";
+import FactoryProfile from "@/components/sections/factories/factory-profile/factory-profile";
+import FactorySections from "@/components/sections/factories/factory-sections/factory-sections";
+import FactoryTrends from "@/components/sections/factories/factory-trends/factory-trends";
+import FactorySnapshot from "@/components/sections/factories/factory-snapshot/factory-snapshot";
 import FactoryWorkspace from "@/components/sections/factories/factory-workspace/factory-workspace";
 import {
-  conditionOf,
   provenanceDetail,
+  provenanceOf,
   toLicence,
   type FactoryRow,
   type ProvenanceStrings,
 } from "@/features/factories/portfolio";
-import { fill, getMessages } from "@/i18n/messages";
+import { buildFactoryView } from "@/features/factories/view";
+import type { PortfolioCounts } from "@/features/factories/portfolio-counts";
+import type { FactoryCompliance as FactoryComplianceData } from "@/features/factories/compliance";
+import type { FactoryProfileRecord } from "@/features/factories/profile";
+import { toDriverLines, type FactoryRiskMovement } from "@/features/factories/risk-context";
+import type { StatusTone } from "@/components/saqeel/status-pill/status-pill";
+import { formatDate } from "@/lib/dates";
+import { getMessages } from "@/i18n/messages";
 
 export type RevampFactoryRow = FactoryRow;
+
+const alertTone = (value: number | null, raised: StatusTone): StatusTone =>
+  (value === null || value === 0 ? "neutral" : raised);
 
 function planningHandoffHref(factory: FactoryRow): string {
   const query = new URLSearchParams({ factory: factory.id, source: "factory360" });
@@ -24,78 +42,49 @@ function planningHandoffHref(factory: FactoryRow): string {
   return `/planning/single?${query.toString()}`;
 }
 
-export default function RevampFactory360Portfolio({ factories, portfolioLabel, canCreateInspection, locale, provenanceStrings }: {
+export default function RevampFactory360Portfolio({ factories, portfolioLabel, canCreateInspection, locale, provenanceStrings, counts, complianceByFactory, penaltiesReadable, profiles, riskMovement, now }: {
   factories: FactoryRow[];
   portfolioLabel: string;
   canCreateInspection: boolean;
   locale: "en" | "ar";
   provenanceStrings: ProvenanceStrings;
+  counts: PortfolioCounts;
+  complianceByFactory: ReadonlyMap<string, FactoryComplianceData>;
+  penaltiesReadable: boolean;
+  profiles: ReadonlyMap<string, FactoryProfileRecord>;
+  riskMovement: ReadonlyMap<string, FactoryRiskMovement>;
+  now: number;
 }) {
   const { factories: copy } = getMessages(locale);
   const [selectedId, setSelectedId] = useState(factories[0]?.id ?? "");
   const selected = factories.find(factory => factory.id === selectedId) ?? factories[0];
   const highRisk = factories.filter(factory => factory.risk_band === "high").length;
-  const licences = factories.map(factory => toLicence(factory, provenanceStrings));
+  const licences = factories.map(factory => toLicence(factory, provenanceStrings, {
+    openViolations: counts.openViolationsAvailable ? counts.openViolations.get(factory.id) ?? 0 : null,
+    now,
+  }));
+  const sum = (values: ReadonlyMap<string, number>) =>
+    factories.reduce((total, factory) => total + (values.get(factory.id) ?? 0), 0);
+  const totalOpenViolations = sum(counts.openViolations);
+  const totalActivePenalties = sum(counts.activePenalties);
+  const provenanceNotice = factories
+    .map(factory => provenanceOf(factory, provenanceStrings))
+    .find(entry => entry.tone !== "success") ?? null;
   if (!selected) return null;
 
-  const condition = conditionOf(selected.risk_band, {
-    critical: copy.condition.critical,
-    attention: copy.condition.attention,
-    stable: copy.condition.stable,
-    unavailable: copy.condition.unavailable,
+  const view = buildFactoryView({
+    factory: selected,
+    locale,
+    counts,
+    movement: riskMovement.get(selected.id) ?? null,
+    compliance: complianceByFactory.get(selected.id),
+    profile: profiles.get(selected.id),
+    now,
+    freshnessUnavailable: provenanceStrings.freshnessUnavailable,
+    sourceStatus: provenanceStrings.sourceStatus,
   });
   const provenance = provenanceDetail(selected, provenanceStrings, locale);
   const createHref = canCreateInspection && !selected.is_temporary ? planningHandoffHref(selected) : null;
-  const contextStrings = {
-    selectedContext: copy.workspace.context,
-    cr: copy.snapshot.commercialRegistration,
-    licence: copy.hero.industrialLicence,
-    plant: copy.portfolio.plantNumber,
-    sourceStatus: provenanceStrings.sourceStatus,
-    aiTitle: copy.ai.title,
-    aiWithheld: copy.ai.withheld,
-    aiBody: copy.ai.body,
-    aiAction: copy.ai.action,
-    missing: copy.portfolio.missing,
-  };
-  const sections = [
-    { key: "inspectionHistory", ...copy.sections.items.inspectionHistory },
-    { key: "violations", ...copy.sections.items.violations },
-    { key: "industrial", ...copy.sections.items.industrial },
-    { key: "documents", ...copy.sections.items.documents },
-  ].map(item => ({
-    key: item.key,
-    title: item.title,
-    body: item.body,
-    openLabel: fill(copy.sections.open, { title: item.title }),
-    href: selected.dossier_href,
-  }));
-  const overviewStrings = {
-    opened: copy.hero.opened,
-    plannerNote: copy.hero.plannerNote,
-    industrialLicence: copy.hero.industrialLicence,
-    plantNumber: copy.portfolio.plantNumber,
-    activity: copy.hero.activity,
-    sourceRecord: copy.hero.sourceRecord,
-    createInspection: copy.action.createInspection,
-    viewOnMap: copy.action.viewOnMap,
-    openProfile: copy.action.openProfile,
-    conditionTitle: copy.condition.title,
-    conditionBasis: copy.condition.basis,
-    savedRisk: copy.condition.savedRisk,
-    riskBand: copy.condition.riskBand,
-    approvedCompliance: copy.condition.approvedCompliance,
-    openViolations: copy.portfolio.openViolations,
-    notAvailable: copy.portfolio.notAvailable,
-    missing: copy.portfolio.missing,
-    snapshotTitle: copy.snapshot.title,
-    factoryCode: copy.snapshot.factoryCode,
-    commercialRegistration: copy.snapshot.commercialRegistration,
-    region: copy.snapshot.region,
-    city: copy.snapshot.city,
-    licenceState: copy.snapshot.licenceState,
-    sectionAvailable: copy.sections.availableInProfile,
-  };
 
   return (
     <FactoryWorkspace
@@ -107,39 +96,107 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
           licences={licences}
           selectedId={selected.id}
           onSelect={setSelectedId}
-          highRiskCount={highRisk}
-          strings={{
-            allLicences: copy.portfolio.allLicences,
-            factories: copy.portfolio.factories,
-            highRisk: copy.portfolio.highRisk,
-            licenceNumber: copy.portfolio.licenceNumber,
-            plantNumber: copy.portfolio.plantNumber,
-            type: copy.portfolio.type,
-            stage: copy.portfolio.stage,
-            licenceStatus: copy.portfolio.licenceStatus,
-            risk: copy.portfolio.risk,
-            compliance: copy.portfolio.compliance,
-            openViolations: copy.portfolio.openViolations,
-            notAvailable: copy.portfolio.notAvailable,
-            missing: copy.portfolio.missing,
-            riskHigh: copy.risk.high,
-            riskMedium: copy.risk.medium,
-            riskLow: copy.risk.low,
-          }}
+          stats={[
+            { key: "factories", label: copy.portfolio.factories, value: factories.length, tone: "neutral" },
+            { key: "highRisk", label: copy.portfolio.highRisk, value: highRisk, tone: alertTone(highRisk, "danger") },
+            {
+              key: "openViolations",
+              label: copy.portfolio.openViolations,
+              value: counts.openViolationsAvailable ? totalOpenViolations : null,
+              tone: alertTone(counts.openViolationsAvailable ? totalOpenViolations : null, "danger"),
+            },
+            {
+              key: "activePenalties",
+              label: copy.portfolio.activePenalties,
+              value: counts.activePenaltiesAvailable ? totalActivePenalties : null,
+              tone: alertTone(counts.activePenaltiesAvailable ? totalActivePenalties : null, "warning"),
+            },
+          ]}
+          provenanceNotice={provenanceNotice}
+          formatDate={iso => formatDate(iso, locale)}
+          strings={view.strings.portfolio}
         />
       }
-      end={<FactoryContext factory={selected} provenance={provenance} strings={contextStrings} />}
+      end={
+        <FactoryContext
+          factory={selected}
+          provenance={provenance}
+          strings={view.strings.context}
+          outlook={
+            <FactoryRiskOutlook
+              score={selected.risk_score === null ? copy.portfolio.missing : String(selected.risk_score)}
+              band={selected.risk_band ? view.condition : null}
+              noScoreLabel={copy.context.outlook.noScore}
+              modelVersion={selected.risk_version ?? copy.portfolio.missing}
+              drivers={toDriverLines(selected.risk_drivers, copy.portfolio.missing)}
+              latestChange={view.latestChange}
+              actionHref={selected.dossier_href}
+              strings={copy.context.outlook}
+            />
+          }
+          trust={
+            <FactoryTrust
+              lastSynchronised={view.lastSynchronised}
+              sources={view.sources}
+              strings={copy.context.trust}
+            />
+          }
+          advisory={
+            <FactoryAiAdvisory
+              factoryId={selected.id}
+              locale={locale}
+              strings={view.strings.advisory}
+            />
+          }
+        />
+      }
     >
       <FactoryOverview
         factory={selected}
-        condition={condition}
-        provenance={provenance}
-        sections={sections}
+        snapshot={
+          <FactorySnapshot
+            condition={view.condition}
+            reasons={view.conditionReasons}
+            metrics={view.metrics}
+            strings={{
+              title: copy.snapshot.title,
+              overallCondition: copy.snapshot.overallCondition,
+              noReasons: copy.snapshot.noReasons,
+            }}
+          />
+        }
         createHref={createHref}
         mapHref={`/operations?region=${encodeURIComponent(selected.region ?? "")}`}
         profileHref={selected.dossier_href}
-        strings={overviewStrings}
+        strings={view.strings.overview}
       />
+
+      <FactoryCompliance
+        reports={view.compliance.reports}
+        violations={view.compliance.violations}
+        penalties={view.compliance.penalties}
+        penaltiesReadable={penaltiesReadable}
+        trends={
+          <FactoryTrends
+            series={view.trendSeries}
+            current={view.riskCurrent}
+            delta={view.riskDelta}
+            tone={view.riskTone}
+            strings={copy.trends}
+          />
+        }
+        strings={copy.compliance}
+      />
+
+      <FactoryProfile
+        groups={view.profileGroups}
+        official={profiles.get(selected.id)?.media.official ?? 0}
+        inspection={profiles.get(selected.id)?.media.inspection ?? 0}
+        href={selected.dossier_href}
+        strings={copy.profile}
+      />
+
+      <FactorySections sections={view.sections} availableLabel={copy.sections.availableInProfile} />
     </FactoryWorkspace>
   );
 }

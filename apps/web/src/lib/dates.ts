@@ -83,6 +83,18 @@ export function riyadhDateParts(value: string | number | Date): { year: number; 
   return { year: get("year"), month: get("month"), day: get("day") };
 }
 
+/**
+ * The Riyadh calendar day as `YYYY-MM-DD`.
+ *
+ * `toISOString().slice(0, 10)` is the UTC day, which rolls over three hours
+ * early here — a date-bounded comparison made after 21:00 local would answer
+ * for tomorrow.
+ */
+export function riyadhToday(value: string | number | Date = new Date()): string {
+  const { year, month, day } = riyadhDateParts(value);
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
 function partsToUtcDays({ year, month, day }: { year: number; month: number; day: number }): number {
   return Date.UTC(year, month - 1, day) / 86_400_000;
 }

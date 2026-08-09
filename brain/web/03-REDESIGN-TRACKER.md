@@ -10,6 +10,108 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-036 · Compliance library — catalogue
+`status: done (catalogue; NEVER LOADED IN A BROWSER)` · `rules: WEB-000…006, WEB-008, WEB-011` · `est: 3h`
+`record:` [2026-08-09-T-036-regulations-catalogue](sessions/2026-08/2026-08-09-T-036-regulations-catalogue.md)
+
+`/compliance` 303 → 27 lines; `/admin/regulations` reduced to the `?id=` record,
+546 → 21. Authority navigator, status chips and search all in `searchParams`,
+a clause/item/violation footprint per row, a mirroring skeleton, and 52 i18n keys
+on a screen that had **no Arabic at all**.
+
+**This task was first built against `/admin/regulations`, which `middleware.ts`
+rewrites to `/compliance`.** The rebuild was unreachable and the owner caught it.
+Two other routes rewrite the same way. **Read `middleware.ts` during inventory.**
+
+**Owed:** load `/compliance` in the dev server, axe, Arabic review, bundle
+measurement.
+
+---
+
+### T-041 · Enforcement library + violation catalogue
+`status: done (NEVER LOADED IN A BROWSER)` · `rules: WEB-000…006, WEB-008, WEB-009, WEB-011` · `est: 3.5h`
+`record:` [2026-08-10-T-041-enforcement-library-and-catalogue](sessions/2026-08/2026-08-10-T-041-enforcement-library-and-catalogue.md)
+
+Both screens behind `/admin/violations`: the enforcement library (410 → 24) and
+the catalogue admin (511 → 26). Record/Action split, the official inspection
+number, penalty amount and issued-vs-informational state, a Riyadh-correct
+lifecycle clock, and 166 i18n keys. 275 lines of unreachable write layer deleted.
+
+**Owed:** load both, confirm the inspection number renders, decide whether the
+catalogue admin needs a navigation entry — it is currently reachable only by
+typing `?mode=`.
+
+---
+
+### T-040 · Compliance approval queue
+`status: done (NEVER LOADED IN A BROWSER)` · `rules: WEB-000…006, WEB-008, WEB-009, WEB-011` · `est: 3h`
+`record:` [2026-08-10-T-040-approval-queue](sessions/2026-08/2026-08-10-T-040-approval-queue.md)
+
+`/compliance/approvals` 499 → 25. Request rail, step navigation, field diffs,
+per-object and package decisions, review progress and a timeline that finally
+includes submission and return — all on SAQEEL, all URL-driven. 136 i18n keys on
+a screen that had no Arabic.
+
+Fixed in passing: `?view=pending` never read, a per-render correlation id that
+matched nothing in the logs, and browser-locale timestamps. The auto-reject
+cascade is warned about before the reviewer commits.
+
+`app/(app)/admin/compliance-approvals/**` marked `@retiring` — rewritten
+unconditionally, so nothing in that segment ever runs.
+
+**Owed:** load it as reviewer and as observer, axe, Arabic review, bundle
+measurement.
+
+---
+
+### T-037 + T-038 · Compliance library — workspace and record
+`status: done (NEVER LOADED IN A BROWSER)` · `rules: WEB-000…006, WEB-008, WEB-009, WEB-011` · `est: 2.5h`
+`record:` [2026-08-10-T-037-T-038-regulation-workspace-and-record](sessions/2026-08/2026-08-10-T-037-T-038-regulation-workspace-and-record.md)
+
+The six-tab workspace and the `?id=` record are on SAQEEL, with tabs as URL
+state and the full violation / penalty / item column set. **Every `@retiring`
+file from T-036 is deleted** — 519 lines, all at zero importers. 202 i18n keys at
+exact en/ar parity.
+
+**Owed:** load `/compliance` and `/admin/regulations?id=…` as a writer and as a
+reader, axe, Arabic review, bundle measurement.
+
+---
+
+### T-039 · Shell rail hydration on rewritten routes
+`status: done (fix by construction; not observed in a browser)` · `rules: WEB-000, WEB-004, WEB-011` · `est: 0.5h`
+`record:` [2026-08-10-T-039-shell-rail-hydration](sessions/2026-08/2026-08-10-T-039-shell-rail-hydration.md)
+
+The rewrite table moved out of `middleware.ts` into `lib/route-rewrites.ts` and
+is now read in both directions. The rail normalises the server pathname and
+`usePathname()` into the same space, so `aria-current` cannot differ between the
+two passes.
+
+**Owed:** reload `/admin/compliance-approvals` and `/admin/regulations` and
+confirm the warning is gone. If it persists, capture what `usePathname()`
+actually returns on a rewritten route before changing anything else.
+
+---
+
+### T-035 · `/dashboard` — enforcement trend + executive AI brief
+`status: done (static verification only)` · `rules: WEB-000…004, WEB-008, WEB-009, WEB-011` · `est: 1.5h`
+`record:` [2026-08-09-T-035-dashboard-enforcement-trend-and-brief](sessions/2026-08/2026-08-09-T-035-dashboard-enforcement-trend-and-brief.md)
+
+The two placeholder cards at the end of the strategic view are gone. The
+**enforcement trend** counts `penalty_notices.issued_at` over the scoped period
+against the immediately preceding period of equal length, and renders a
+**restricted** state — never a zero — for roles RLS hides the table from. The
+**executive brief** is a real governed advisory on a new `executive_brief`
+surface, generated on demand, with every fact re-read server-side under the
+caller's RLS and a prompt that forbids attributing a cause. New `trend-bars`
+primitive (Rule of Two: `factory-trends` + dashboard).
+
+**Owed before this can be called fully done:** the screen exercised in the dev
+server as both a penalty-readable and a penalty-blind role, axe, Arabic review,
+and the bundle measurement request.
+
+---
+
 ### T-021a · Visit Management — server-driven list, filters and board
 `status: done (static verification only)` · `rules: WEB-000…004, WEB-008, WEB-009, WEB-011, WEB-012` · `est: 5h`
 `record:` [2026-08-09-T-021a-visit-management-server-filters](sessions/2026-08/2026-08-09-T-021a-visit-management-server-filters.md)
@@ -28,6 +130,56 @@ deleted until the e2e gate clears.
 **Owed before this can be called fully done:** e2e (`cd-026-visit-management`
 and `ai-user-journey` assert against the old DOM and will fail), axe, Arabic
 review by a native speaker, and the bundle measurement request.
+
+---
+
+### T-024 · `/factories` — replace mock content, slice by slice
+`status: in-progress (start panel done)` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-011` · `est: 1.5h per slice`
+`record (start panel):` [2026-08-09-T-024-factories-portfolio-panel](sessions/2026-08/2026-08-09-T-024-factories-portfolio-panel.md)
+
+Owner is replacing the vendor mock's content one panel at a time. **Start panel
+done:** real open-violation and active-penalty counts (owner-agreed
+definitions), licence expiry with an `Expired`/`Expiring soon` pill at 30 days,
+Compliance % removed (no column exists), and the repeated provenance pill
+reduced to one conditional warning on the portfolio header.
+
+**End panel done (T-025):** "why this risk" reuses `FactoryRisk` over the
+recorded driver breakdown, "latest change" comes from the two most recent risk
+snapshots, the AI advisory reuses the existing `factory_risk_explanation`
+surface, data sources show two honest states rather than three unconditional
+ticks, and **predicted risk renders "Not available"** because no forecasting
+model exists.
+`record:` [2026-08-09-T-025-factories-end-panel-ai](sessions/2026-08/2026-08-09-T-025-factories-end-panel-ai.md)
+
+**Middle column done (T-026):** header 4-up fact row, and a `factory-snapshot`
+carrying an overall-condition panel with **derived** reasons (open violations,
+days since last inspection, licence expiry) plus six real metrics. Compliance
+rate and machines dropped — neither exists in the schema. Removed the duplicated
+provenance card, the condition card and the snapshot-facts card;
+`factory-overview` 159 → 104 lines.
+`record:` [2026-08-09-T-026-factories-middle-column](sessions/2026-08/2026-08-09-T-026-factories-middle-column.md)
+
+**Compliance section done (T-027):** inspection reports, violations and
+penalties on three canonical `DataTable`s at the end of the middle column, with
+the reference's un-sourced columns (violation open/closed, penalty amount)
+dropped rather than faked, and a **restricted** state for RLS-hidden penalties.
+`record:` [2026-08-09-T-027-factories-compliance-section](sessions/2026-08/2026-08-09-T-027-factories-compliance-section.md)
+
+**Trends + ordering done (T-028):** a real risk-score trend from the recorded
+snapshot history (compliance trend states its absence — no such score exists),
+and the four disclosures moved to the very end via a new `factory-sections`.
+`record:` [2026-08-09-T-028-factories-trends-and-order](sessions/2026-08/2026-08-09-T-028-factories-trends-and-order.md)
+
+**Extraction done + Factory profile card (T-029):** `features/factories/view.ts`
+now owns every view model, taking `RevampFactory360Portfolio.tsx` from **361 to
+202 lines** of pure composition. The profile card leads the disclosure stack —
+Activity, Region, City and the primary representative are real; Sector shows
+*Not available* (no column); media is **counted, never previewed** (no signed
+retrieval surface on this screen).
+`record:` [2026-08-09-T-029-factories-profile-and-extraction](sessions/2026-08/2026-08-09-T-029-factories-profile-and-extraction.md)
+
+**Remaining slices:** filling the four disclosure sections (they only link into
+the dossier today), and `/factories/cr/[id]`, untouched legacy.
 
 ---
 
@@ -442,6 +594,80 @@ Pull one in only if it is genuinely part of doing the active task well.
   that bug invisibly until a page placed it outside a toolbar (T-021e). Any
   other primitive relying on an inline display type for its width has the same
   trap armed; worth a sweep at the next design-system audit.
+- **`FactoryRisk` and `factory-risk-outlook` overlap.** Both render a score, band
+  pill and driver lines; the outlook adds predicted risk, latest change and the
+  action. If `/factories/[id]` ever wants those three sections, it should adopt
+  `factory-risk-outlook` and `FactoryRisk` retires.
+- **The mock's "Top Risks" list has no source.** Overdue checklist items, repeat
+  violations within 12 months and inspection-cycle breaches each need a governed
+  definition and a query. The recorded driver breakdown is the honest stand-in
+  shipped by T-025.
+- **There is no risk forecasting model.** `/factories`' end panel states
+  "Predicted risk — not available" rather than projecting one. Any future
+  forecast is a modelling decision, not a UI one.
+- **`e2e/factory360-provenance-contract.spec.ts` is very likely red.** It asserts
+  against raw source text and was already flagged fragile; T-024 and T-025
+  reshaped both side panels, and **T-026 deleted the middle column's provenance
+  block outright** (the end panel now owns provenance).
+- **The type scale is net −1 px per role (T-026, owner request)** — applied as
+  −2 px then +1 px after seeing it rendered. Smallest roles are now overline
+  **10 px** (uppercase, `0.12em` tracking) and caption/code **11.5 px**: tight
+  but defensible. Worth a look at 200 % zoom and on a phone before sign-off.
+- **The recorded contrast ratios in `saqeel.css` predate the scale change.**
+  Some pairs were justified at 3:1 on the WCAG "large text" allowance (≥ 24 px,
+  or ≥ 18.66 px bold). `heading` at 21 px bold still clears it; **`subheading` at
+  16 px semibold does not**, so pairs relying on 3:1 there now need 4.5:1.
+  **Re-measure before the next accessibility sign-off.**
+- **"Latest inspection" counts an inspection in any state**, including started
+  but unsubmitted. If the product means *completed*, the read filters on
+  `submitted_at` alone — one line, once ruled.
+- **Neither a compliance score nor a machines table exists.** Both were dropped
+  from the `/factories` snapshot rather than stubbed; they are schema gaps, not
+  UI ones.
+- **Seeded test data is excluded on `/factories` only.** T-024 added
+  `isTestSourceFactory` (source-marked test rows) beside the existing
+  `isTestFixtureEstablishment` (name/code fixtures) — **two independent signals,
+  and only the first was being applied**. Every other screen reading `factories`
+  (`/operations`, `/planning`, the dossier routes, the AI briefing) still carries
+  a partial filter or none. **Before any customer demo**, fold both into one
+  shared predicate applied at the query layer, so a caller cannot apply half of
+  it.
+- **`align-items: flex-start` on a container silently kills any grid inside it.**
+  It shrink-wraps children to their content width, so a
+  `repeat(auto-fit, minmax(…, 1fr))` grid has nothing to fill and collapses to
+  one column. `factory-sections`' disclosure chrome carries it — correct for a
+  note plus a button, wrong the moment a disclosure holds a grid (T-029).
+  Anything reusing those styles inherits the trap.
+- **A media gallery needs a signed-URL retrieval surface and a per-asset access
+  check.** `/factories` counts `factory_media_assets` rather than previewing
+  them (T-029) — an `<img>` with no working source is a broken image, not a
+  placeholder. Building the real gallery is its own task.
+- **`factories` has no sector column**, so the profile card's Sector reads
+  *Not available*. Schema gap, not a UI one.
+- **`/factories` issues eight reads per page load** across three batched
+  `Promise.all` groups, all scoped to the visible portfolio. Worth a measurement
+  pass once the app can run.
+- **An empty result under RLS must never render as an absence of facts.**
+  `penalty_notices` is readable only by reviewer/ops/auditor/compliance_admin/
+  leadership; every other role gets an **empty set, not an error**. T-027 renders
+  a *restricted* state for it — but **T-024's Active-penalties stat tile still
+  shows `0`** for those roles and needs the same treatment. Check every
+  role-restricted table for this pattern.
+- **`penalty_notices` has no amount column**, so a penalty value cannot be shown
+  anywhere. The reference's "Fine — SAR 4,000" has no source.
+- **Trends are unbuilt.** A compliance trend has no source at all; a risk trend
+  could come from `factory_risk_snapshots`, but a sparkline is a charting task
+  with its own guidance and should be its own slice.
+- **`invalidated_at is null` is a proxy for "open violation", not a definition.**
+  `violations` has no resolution or closure state, so T-024's count means *not
+  retracted*. If the table gains one, the count must move to it.
+- **"Active penalty" is inferred, not a status.** `penalty_notices` has
+  `issued/served/settled/withdrawn`; T-024 treats the first two as active. If the
+  lifecycle grows a state, revisit.
+- **`LICENCE_EXPIRY_SOON_DAYS = 30` is a display rule only.** It must not leak
+  into planning or enforcement logic without being ruled a governed SLA.
+- **Per-factory Compliance % has no source at all** — not a UI gap. A score would
+  have to be defined and computed before the slot can return.
 - **43 `emoji-as-icon` findings remain**, all on un-migrated planning sub-routes
   (`bulk`, `immediate`, `plans`, `supervision`, `single`) and other legacy
   screens. `CreateVisitSection` was cleared in T-022.

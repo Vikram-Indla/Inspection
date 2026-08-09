@@ -1,6 +1,6 @@
 .form {
-  inline-size: min(100%, 1120px);
-  margin-inline: auto;
+  inline-size: 100%;
+  min-inline-size: 0;
   padding-block-end: var(--space-8);
 }
 
@@ -259,4 +259,49 @@
   .actionBar > button {
     flex: 1;
   }
+}
+
+.choiceLabel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--type-caption-size);
+}
+
+.blockers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding-inline-start: var(--space-5);
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.mapFrame {
+  block-size: 260px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
 }

@@ -5,14 +5,27 @@ export type DateRangePresetLabels = Readonly<Record<
   string
 >>;
 
+type PastPreset = { readonly id: string; readonly days: number; readonly labelKey: keyof DateRangePresetLabels };
+
+/**
+ * The one past-window vocabulary, as data.
+ *
+ * A screen that filters by "the last N days" without rendering a calendar still
+ * has to offer the same N as everywhere else — exporting the days lets it reuse
+ * the vocabulary without reaching for the picker.
+ */
+export const PAST_DATE_RANGE_PRESETS: readonly PastPreset[] = [
+  { id: "today", days: 1, labelKey: "today" },
+  { id: "last7", days: 7, labelKey: "last7Days" },
+  { id: "last30", days: 30, labelKey: "last30Days" },
+  { id: "last90", days: 90, labelKey: "last90Days" },
+  { id: "lastYear", days: 365, labelKey: "lastYear" },
+];
+
 export function pastDateRangePresets(labels: DateRangePresetLabels): readonly DateRangePreset[] {
-  return [
-    { id: "today", label: labels.today, days: 1 },
-    { id: "last7", label: labels.last7Days, days: 7 },
-    { id: "last30", label: labels.last30Days, days: 30 },
-    { id: "last90", label: labels.last90Days, days: 90 },
-    { id: "lastYear", label: labels.lastYear, days: 365 },
-  ];
+  return PAST_DATE_RANGE_PRESETS.map(preset => ({
+    id: preset.id, label: labels[preset.labelKey], days: preset.days,
+  }));
 }
 
 export function upcomingDateRangePresets(labels: DateRangePresetLabels): readonly DateRangePreset[] {

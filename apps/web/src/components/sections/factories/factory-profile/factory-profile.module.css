@@ -1,0 +1,113 @@
+.section {
+  background: var(--sqx-surface-default);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-card);
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  gap: var(--sqx-space-4);
+  padding: var(--sqx-inset-card);
+  cursor: pointer;
+  list-style: none;
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary:focus-visible {
+  outline: var(--sqx-focus-ring-width) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}
+
+.summaryText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+  min-inline-size: 0;
+}
+
+.title {
+  font: var(--sqx-text-body-strong);
+  color: var(--sqx-text-primary);
+}
+
+.marker {
+  position: relative;
+  flex: none;
+  inline-size: var(--sqx-icon-md);
+  block-size: var(--sqx-icon-md);
+}
+
+.marker::before,
+.marker::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 50%;
+  block-size: var(--sqx-border-width-hair);
+  background: var(--sqx-text-muted);
+}
+
+.marker::after {
+  transform: rotate(90deg);
+  transition: transform var(--sqx-duration-fast) var(--sqx-ease-standard);
+}
+
+.section[open] .marker::after {
+  transform: rotate(0deg);
+}
+
+/* No `align-items: flex-start` here. It shrink-wrapped every child, which
+   collapsed the fact grids to a single column and left the card half empty. */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-5);
+  padding: var(--sqx-inset-card);
+  padding-block-start: 0;
+}
+
+.groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--sqx-grid-min-sm), 1fr));
+  gap: var(--sqx-space-6) var(--sqx-space-5);
+  align-items: start;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+  min-inline-size: 0;
+}
+
+.label {
+  margin: 0;
+  font: var(--sqx-text-overline);
+  letter-spacing: var(--sqx-text-overline-tracking);
+  text-transform: uppercase;
+  color: var(--sqx-text-muted);
+}
+
+.counts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+  margin: 0;
+  padding: 0;
+  font: var(--sqx-text-body-strong);
+  font-variant-numeric: var(--sqx-numeric-tabular);
+  color: var(--sqx-text-primary);
+  list-style: none;
+}
+
+.note {
+  margin: 0;
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}

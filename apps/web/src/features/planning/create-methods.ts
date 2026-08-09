@@ -19,10 +19,15 @@ export type PlanningMethodStrings = {
   readonly immediateDesc: string;
 };
 
+/**
+ * Ordered from the narrowest commitment to the widest: one visit, then a bulk
+ * plan, then the urgent path that pulls a supervisor in. A planner reaching for
+ * the common case should meet it first.
+ */
 export function planningCreateMethods(strings: PlanningMethodStrings): readonly PlanningCreateMethod[] {
   return [
-    { key: "bulk", icon: "workflow", title: strings.bulkTitle, description: strings.bulkDesc, href: "/planning/bulk" },
     { key: "single", icon: "visits", title: strings.singleTitle, description: strings.singleDesc, href: "/planning/single" },
+    { key: "bulk", icon: "workflow", title: strings.bulkTitle, description: strings.bulkDesc, href: "/planning/bulk" },
     { key: "immediate", icon: "risk", title: strings.immediateTitle, description: strings.immediateDesc, href: "/planning/immediate" },
   ];
 }

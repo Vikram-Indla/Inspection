@@ -5,12 +5,6 @@
   min-inline-size: 0;
 }
 
-.text {
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-secondary);
-  text-wrap: pretty;
-}
-
 .footnote {
   font: var(--sqx-text-caption);
   color: var(--sqx-text-muted);

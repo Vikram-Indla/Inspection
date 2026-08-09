@@ -95,10 +95,11 @@ export class GeminiSuggestionProvider {
    * the M2-11 docket prompt so contextual surfaces can require source facts,
    * evidence references and a bounded response without changing docket UX.
    */
-  async generateContextual(surface: "planning_summary" | "preparation_assistant" | "inspection_item_explanation" | "factory_risk_explanation" | "inspector_daily_briefing" | "visit_management_summary", context: string, outputLanguage: "en" | "ar" = "en"): Promise<AiGenResult> {
+  async generateContextual(surface: "planning_summary" | "preparation_assistant" | "inspection_item_explanation" | "factory_risk_explanation" | "inspector_daily_briefing" | "visit_management_summary" | "executive_brief", context: string, outputLanguage: "en" | "ar" = "en"): Promise<AiGenResult> {
     const itemExplanation = surface === "inspection_item_explanation";
     const riskExplanation = surface === "factory_risk_explanation";
     const dailyBriefing = surface === "inspector_daily_briefing";
+    const executiveBrief = surface === "executive_brief";
     // Language directive must live IN the prompt (not just the context JSON,
     // which the model treats as data and ignores). The Arabic inspector profile
     // requires the whole advisory in Arabic.
@@ -108,7 +109,7 @@ export class GeminiSuggestionProvider {
     const prompt = [
       "You are an advisory assistant for a government factory-inspection platform.",
       languageLine,
-      `Produce a concise ${surface === "planning_summary" ? "planning summary" : surface === "preparation_assistant" ? "inspector preparation brief" : itemExplanation ? "inspection-item explanation" : riskExplanation ? "factory risk and health-score explanation" : surface === "inspector_daily_briefing" ? "daily inspector briefing" : "visit-management operational summary"}.`,
+      `Produce a concise ${surface === "planning_summary" ? "planning summary" : surface === "preparation_assistant" ? "inspector preparation brief" : itemExplanation ? "inspection-item explanation" : riskExplanation ? "factory risk and health-score explanation" : surface === "inspector_daily_briefing" ? "daily inspector briefing" : executiveBrief ? "executive summary of the recorded national figures" : "visit-management operational summary"}.`,
       "Use only the supplied source facts. Never invent a threshold, score, legal clause, penalty, severity, license decision, route, assignment, or policy value.",
       itemExplanation
         ? "Explain only the recorded item title, official guidance, clause reference and evidence rule in at most 4 short sentences. Do not recommend an answer or interpret law; tell the inspector to verify the actual observation and source evidence."
@@ -116,6 +117,8 @@ export class GeminiSuggestionProvider {
           ? "Explain only the recorded risk score, band, model version and stored driver values in at most 4 short sentences. Do not recalculate risk, infer a cause, assign a priority, or recommend an enforcement, licensing or inspection action."
           : dailyBriefing
             ? "Summarize the inspector's recorded assigned visits in a concrete, useful way, and ALWAYS give several distinct findings — not one summary line. Name specific establishments and give real counts. Cover, as separate lines where the data supports it: how many visits today vs upcoming; a breakdown by visit type (e.g. periodic vs complaint); a breakdown by region; how many high-risk factories and which ones; anything returned, overdue or expiring; and the two or three establishments the inspector will reach soonest by window. When nothing is scheduled today, still break down the upcoming assigned visits this way rather than stopping at 'none today'. Do not invent a route, timing, priority, risk score, or visit-state change; briefly note where a fact is genuinely unavailable."
+            : executiveBrief
+              ? "Summarize only the movement visible in the supplied figures, in at most 4 short sentences. State a change as a change (what moved, by how much, over which period). NEVER assert or imply a CAUSE, a responsible party, a regulation, or a policy as the reason for a movement — correlation in these figures is not evidence of cause. Do not recommend an enforcement, licensing, planning or staffing action."
         : "Write at most 5 short sentences, one each covering Risk, Workload, Hotspot, Route, or Recommendation as applicable.",
       dailyBriefing
         ? "Write the briefing as 4 to 6 separate bullet lines. Each line is one finished finding, on its own line, starting with \"- \". Write ONLY the briefing content — do not describe your own output, do not count or mention the number of words, do not add any meta or formatting commentary. No paragraph, no headings, no bold, no nested bullets."

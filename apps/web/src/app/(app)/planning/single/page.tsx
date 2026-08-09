@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
@@ -103,14 +104,14 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   if (!contract.ok) {
     if (contract.kind === "denied") {
       return (
-        <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
+        <Shell current="/planning" title={t("plan.single.title", "Plan a single visit")}>
           <EmptyState glyph="⛔" title={tr("plan.single.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
-            body={tr("plan.single.unauthorized.body", "Only planning staff can use Plan one visit.", "تخطيط زيارة واحدة متاح لموظفي التخطيط فقط.")} />
+            body={tr("plan.single.unauthorized.body", "Only planning staff can use Plan a single visit.", "تخطيط الزيارة المفردة متاح لموظفي التخطيط فقط.")} />
         </Shell>
       );
     }
     return (
-      <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
+      <Shell current="/planning" title={t("plan.single.title", "Plan a single visit")}>
         <PlanningReadFailureState
           failure={contract}
           title={t("plan.read.failure.title", "Planning access needs attention")}
@@ -128,7 +129,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     const failure = planningAuthenticationFailure();
     console.error(`[planning.read:${failure.correlationId}] verified session failed`, userError.message);
     return (
-      <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
+      <Shell current="/planning" title={t("plan.single.title", "Plan a single visit")}>
         <PlanningReadFailureState
           failure={failure}
           title={t("plan.read.session.title", "Session verification required")}
@@ -187,7 +188,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
       console.error("[ single-planning draft read]", planError.message);
       const failure = planningDependencyFailure(contract.correlationId);
       return (
-        <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
+        <Shell current="/planning" title={t("plan.single.title", "Plan a single visit")}>
           <PlanningReadFailureState
             failure={failure}
             title={t("plan.read.failure.title", "Planning access needs attention")}
@@ -442,6 +443,29 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     autoAssign: t("plan.single.autoAssign", "No preference — Supervisor assigns"),
     notes: t("plan.single.notes", "Notes (optional)"),
     notesPlaceholder: t("plan.single.notesPlaceholder", "Anything the Inspector or Supervisor should know before this visit…"),
+    noMatchBody: t("plan.single.noMatchBody", "No registered factory matches that search within your access scope."),
+    gateMet: t("plan.single.gateMet", "Met"),
+    gateUnmet: t("plan.single.gateUnmet", "Not met"),
+    gateOptional: t("plan.single.gateOptional", "Optional"),
+    presetLabels: {
+      today: t("common.scope.today", "Today"),
+      last7Days: t("common.scope.last7Days", "Last 7 days"),
+      last30Days: t("common.scope.last30Days", "Last 30 days"),
+      last90Days: t("common.scope.last90Days", "Last 90 days"),
+      lastYear: t("common.scope.lastYear", "Last year"),
+      next7Days: t("common.scope.next7Days", "Next 7 days"),
+      next30Days: t("common.scope.next30Days", "Next 30 days"),
+    },
+    window: t("plan.single.window", "Visit window"),
+    windowStartTime: t("plan.single.windowStartTime", "Start time"),
+    windowEndTime: t("plan.single.windowEndTime", "End time"),
+    windowApply: t("plan.single.windowApply", "Apply window"),
+    windowClear: t("plan.single.windowClear", "Clear"),
+    windowEmpty: t("plan.single.windowEmpty", "No date chosen"),
+    previousMonth: t("plan.single.previousMonth", "Previous month"),
+    nextMonth: t("plan.single.nextMonth", "Next month"),
+    windowHint: t("plan.single.windowHint", "The window must end after it starts."),
+    noPackages: t("plan.single.noPackages", "No inspection package is published for this scope."),
     readinessTitle: t("plan.single.readinessTitle", "Readiness"),
     readyIdentity: t("plan.single.readyIdentity", "Identity confirmed"),
     readyLicense: t("plan.single.readyLicense", "License confirmed"),
@@ -466,8 +490,8 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     },
   };
   return (
-    <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}
-      context={<span className="sq-lozenge sq-lozenge--info">{t("plan.single.context", "Single visit planning")}</span>}>
+    <Shell current="/planning" title={t("plan.single.title", "Plan a single visit")}
+      context={<StatusPill tone="info">{t("plan.single.context", "Single visit planning")}</StatusPill>}>
       <Wizard
         query={q}
         portfolios={portfolios}

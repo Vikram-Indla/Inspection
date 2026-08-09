@@ -2,11 +2,13 @@ import { redirect } from "next/navigation";
 import { buildDashboardMetrics } from "@/app/(app)/dashboard/metrics";
 import Button from "@/components/saqeel/button/button";
 import { fetchDashboardSnapshot } from "@/features/dashboard/client";
+import { queryEnforcementTrend } from "@/features/dashboard/enforcement-trend";
 import { withView, type DashboardScope } from "@/features/dashboard/scope";
 import type { DashboardSnapshot } from "@/features/dashboard/types";
 import { fill, getMessages } from "@/i18n/messages";
 import type { Locale } from "@/lib/i18n";
 import { localeHref } from "@/lib/locale-path";
+import { supabaseServer } from "@/lib/supabase-server";
 import { buildInspectorKpiProjection } from "@/lib/dashboard-kpi/inspector-projection";
 import { buildDashboardKpiProjection } from "@/lib/dashboard-kpi/projection";
 import type { MetricScope } from "@/lib/dashboard-kpi/contract";
@@ -134,6 +136,12 @@ export default async function DashboardSections({ locale, scope }: {
 
   const partialSources = snapshot.failedSources.map(key => dashboard.source[key]);
   const { metrics, projection, roleProjection } = projectionFor(persona, snapshot, resolved, partialSources);
+  const enforcementTrend = await queryEnforcementTrend(
+    await supabaseServer(),
+    resolved.scope.fromDate,
+    resolved.scope.toDate,
+    resolved.region,
+  );
 
   return (
     <ExplainProvider
@@ -166,6 +174,7 @@ export default async function DashboardSections({ locale, scope }: {
         ? <StrategicView
             locale={locale} scope={resolved} metrics={metrics} projection={projection}
             factories={snapshot.factories} partialSources={partialSources}
+            enforcementTrend={enforcementTrend}
           />
         : <OperationalView
             locale={locale} metrics={metrics} projection={projection}

@@ -3,6 +3,10 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import Button from "@/components/saqeel/button/button";
 import Field from "@/components/saqeel/field/field";
+import SaqeelSelect from "@/components/saqeel/select/select";
+import DateRangePicker from "@/components/saqeel/date-range-picker/date-range-picker";
+import type { DateRangePreset } from "@/components/saqeel/date-range-picker/date-range-picker";
+import { formatDate } from "@/lib/dates";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import {
@@ -17,16 +21,22 @@ import styles from "./visit-board.module.css";
 
 const EMPTY: ActionResult = {};
 
-export default function VisitBulkActions({ selectedRows, inspectors, reassignmentAvailable, visitTypeOptions, strings, routeBase, onClearSelection }: {
+export default function VisitBulkActions({ selectedRows, inspectors, reassignmentAvailable, visitTypeOptions, strings, routeBase, locale, datePresets, monthLabels, onClearSelection }: {
   selectedRows: readonly VisitBoardRow[];
   inspectors: readonly VisitReassignmentInspector[];
   reassignmentAvailable: boolean;
   visitTypeOptions: readonly { readonly value: string; readonly label: string }[];
   strings: VisitsBoardStrings;
   routeBase: string;
+  locale: "ar" | "en";
+  datePresets: readonly DateRangePreset[];
+  monthLabels: { previous: string; next: string };
   onClearSelection: () => void;
 }) {
   const [lastVerb, setLastVerb] = useState<BulkVerb | null>(null);
+  const [inspectorId, setInspectorId] = useState("");
+  const [visitType, setVisitType] = useState("");
+  const [window, setWindow] = useState({ from: "", to: "" });
   const [identity, setIdentity] = useState<Record<BulkVerb, { key: string; correlation: string }> | null>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
 
@@ -71,6 +81,15 @@ export default function VisitBulkActions({ selectedRows, inspectors, reassignmen
       <input type="hidden" name="correlation_id" value={identity[verb].correlation} />
     </>
   );
+  const readableWindow = (value: string) => {
+    const [day, time] = value.split("T");
+    if (!day) return strings.bulkWindowEmpty;
+    const date = formatDate(`${day}T00:00:00`, locale);
+    return time ? `${date} ${time}` : date;
+  };
+  const windowDisplay = window.from || window.to
+    ? `${readableWindow(window.from)} — ${readableWindow(window.to)}`
+    : strings.bulkWindowEmpty;
   const disabled = busy || !identity;
 
   return (
@@ -100,12 +119,29 @@ export default function VisitBulkActions({ selectedRows, inspectors, reassignmen
           <div className={styles.forms}>
             <form className={styles.form} action={rescheduleAction} onSubmit={() => setLastVerb("reschedule")}>
               {hidden}{identityFields("reschedule")}
-              <Field label={strings.bulkWindowStart} htmlFor="bulk-window-start">
-                <input id="bulk-window-start" className={styles.control} type="datetime-local" name="window_start" />
-              </Field>
-              <Field label={strings.bulkWindowEnd} htmlFor="bulk-window-end">
-                <input id="bulk-window-end" className={styles.control} type="datetime-local" name="window_end" />
-              </Field>
+              <input type="hidden" name="window_start" value={window.from} />
+              <input type="hidden" name="window_end" value={window.to} />
+              <DateRangePicker
+                from={window.from}
+                to={window.to}
+                onChange={setWindow}
+                label={strings.bulkWindowStart}
+                displayValue={windowDisplay}
+                presets={datePresets}
+                locale={locale}
+                monthLabels={monthLabels}
+                strings={{
+                  from: strings.bulkWindowStart,
+                  to: strings.bulkWindowEnd,
+                  pickStart: strings.bulkWindowStart,
+                  pickEnd: strings.bulkWindowEnd,
+                  reset: strings.clearSelection,
+                  apply: strings.bulkRescheduleBtn,
+                  empty: strings.bulkWindowEmpty,
+                }}
+                timeLabels={{ from: strings.bulkWindowStart, to: strings.bulkWindowEnd }}
+                withTime
+              />
               <Field label={strings.bulkReason} htmlFor="bulk-reschedule-reason">
                 <input id="bulk-reschedule-reason" className={styles.control} name="mutation_reason" required />
               </Field>
@@ -115,13 +151,17 @@ export default function VisitBulkActions({ selectedRows, inspectors, reassignmen
             {reassignmentAvailable ? (
               <form className={styles.form} action={reassignAction} onSubmit={() => setLastVerb("reassign")}>
                 {hidden}{identityFields("reassign")}
-                <Field label={strings.bulkReassignTo} htmlFor="bulk-inspector">
-                  <select id="bulk-inspector" className={styles.control} name="inspector_id">
-                    <option value="">{strings.bulkSelectOption}</option>
-                    {eligibleInspectors.map(inspector => (
-                      <option key={inspector.userId} value={inspector.userId}>{inspector.fullName}</option>
-                    ))}
-                  </select>
+                <input type="hidden" name="inspector_id" value={inspectorId} />
+                <Field label={strings.bulkReassignTo}>
+                  <SaqeelSelect
+                    label={strings.bulkReassignTo}
+                    value={inspectorId}
+                    onChange={setInspectorId}
+                    options={[
+                      { value: "", label: strings.bulkSelectOption },
+                      ...eligibleInspectors.map(inspector => ({ value: inspector.userId, label: inspector.fullName })),
+                    ]}
+                  />
                 </Field>
                 <Field label={strings.bulkReason} htmlFor="bulk-reassign-reason">
                   <input id="bulk-reassign-reason" className={styles.control} name="mutation_reason" required />
@@ -149,13 +189,17 @@ export default function VisitBulkActions({ selectedRows, inspectors, reassignmen
 
             <form className={styles.form} action={editAction} onSubmit={() => setLastVerb("edit")}>
               {hidden}{identityFields("edit")}
-              <Field label={strings.bulkEditType} htmlFor="bulk-visit-type">
-                <select id="bulk-visit-type" className={styles.control} name="visit_type">
-                  <option value="">{strings.bulkSelectOption}</option>
-                  {visitTypeOptions.map(option => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
-                  ))}
-                </select>
+              <input type="hidden" name="visit_type" value={visitType} />
+              <Field label={strings.bulkEditType}>
+                <SaqeelSelect
+                  label={strings.bulkEditType}
+                  value={visitType}
+                  onChange={setVisitType}
+                  options={[
+                    { value: "", label: strings.bulkSelectOption },
+                    ...visitTypeOptions,
+                  ]}
+                />
               </Field>
               <Field label={strings.bulkEditNotes} htmlFor="bulk-edit-notes">
                 <input id="bulk-edit-notes" className={styles.control} name="notes"

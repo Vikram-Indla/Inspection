@@ -5,6 +5,18 @@ import { publishSingleVisit, saveSingleDraft, type PublishResult } from "./actio
 import IdentityDossier from "./IdentityDossier";
 import type { ResolvedLicence, ResolvedPortfolio } from "@/lib/planning/factory-resolver";
 import type { Locale } from "@/lib/i18n";
+import { formatDate } from "@/lib/dates";
+import { titleCase } from "@/features/factories/portfolio";
+import Button from "@/components/saqeel/button/button";
+import type { DateRangePresetLabels } from "@/components/saqeel/date-range-picker/date-range-presets";
+import { Card, CardBody, CardFooter, CardHeader } from "@/components/saqeel/card/card";
+import Choice from "@/components/saqeel/choice/choice";
+import DefinitionList from "@/components/saqeel/definition-list/definition-list";
+import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
+import FactoryResults from "@/components/sections/planning-single/factory-results/factory-results";
+import PublishReadiness from "@/components/sections/planning-single/publish-readiness/publish-readiness";
+import VisitConfiguration from "@/components/sections/planning-single/visit-configuration/visit-configuration";
 import styles from "./single-planning.module.css";
 
 // CD-022 / PLN-REQ-020..024 — a search result graded by RULE, never scored.
@@ -71,7 +83,7 @@ export type WizardStrings = {
   exactBadge: string; exactRule: string; similarBadge: string; similarRule: string;
   degradedBadge: string; degradedRule: string; duplicateWarning: string; duplicateOpenVisit: string; duplicateStatusLabel: string;
   portfolioStep: string; crIdentity: string; selectLicenceHint: string; licenceRequired: string;
-  noLicences: string; noFactoryLink: string; plantLabel: string; selectedProfile: string; sourceLabel: string;
+  noMatchBody: string; noLicences: string; noFactoryLink: string; plantLabel: string; selectedProfile: string; sourceLabel: string;
   prefilledHandoff: string; adminPackageHandoff: string; prefillMiss: string; draftRestored: string;
   saveDraft: string; savingDraft: string; draftSavedPrefix: string; draftError: string;
   licenseStep: string; licenseSelect: string; licenseLabel: string; licenseNone: string;
@@ -84,7 +96,13 @@ export type WizardStrings = {
   packageLabel: string; packageOptionalHint: string; mode: string; modePhysical: string; modeVirtual: string; modeIneligible: string;
   windowStart: string; windowEnd: string; inspector: string; selectOption: string; autoAssign: string;
   notes: string; notesPlaceholder: string;
+  windowHint: string; noPackages: string;
+  window: string; windowStartTime: string; windowEndTime: string;
+  windowClear: string; windowApply: string; windowEmpty: string;
+  previousMonth: string; nextMonth: string;
+  presetLabels: DateRangePresetLabels;
   readinessTitle: string; readyIdentity: string; readyLicense: string; readyLocation: string; readyInspector: string;
+  gateMet: string; gateUnmet: string; gateOptional: string;
   blockedTitle: string; publish: string; publishing: string; retry: string;
   stepPlan: string; stepVisit: string; stepAssignment: string; stepStatus: string; stepNotification: string;
   stepDone: string; stepFailed: string; stepPending: string;
@@ -148,21 +166,6 @@ export default function Wizard({
   const [savingDraft, setSavingDraft] = useState(false);
   const [draftSaveFailed, setDraftSaveFailed] = useState(false);
   const [draftJustSaved, setDraftJustSaved] = useState(false);
-  // React 19 auto-resets a <form action={...}>'s native controls after every
-  // action completion (success AND blocked/validation failure) — a documented
-  // behavior that writes directly to the DOM and bypasses controlled-input
-  // reconciliation, silently wiping the planner's already-entered values on a
-  // blocked-publish retry (M01-041). React's own state above is untouched by
-  // that reset; remounting the affected controls once `state` settles makes
-  // them re-initialize from that still-correct state instead of the DOM value
-  // the native reset left behind.
-  const isFirstRender = useRef(true);
-  const [resetKey, setResetKey] = useState(0);
-  useEffect(() => {
-    if (isFirstRender.current) { isFirstRender.current = false; return; }
-    setResetKey(k => k + 1);
-  }, [state]);
-
   // Focus transfer to the first blocking error (DSG-A11Y-001) — the alert is
   // a real DOM focus target (tabIndex=-1), not just an aria-live announcement,
   // so keyboard-only planners land there directly on a blocked publish.
@@ -192,6 +195,32 @@ export default function Wizard({
   const selectedLicenceEntry = portfolios
     .flatMap(p => p.licences.map(l => ({ portfolio: p, licence: l })))
     .find(x => x.licence.id === licenceId) ?? null;
+  const configStrings = {
+    visitType: strings.visitType,
+    packageLabel: strings.packageLabel,
+    packageOptionalHint: strings.packageOptionalHint,
+    mode: strings.mode,
+    modePhysical: strings.modePhysical,
+    modeVirtual: strings.modeVirtual,
+    modeIneligible: strings.modeIneligible,
+    windowStart: strings.windowStart,
+    windowEnd: strings.windowEnd,
+    windowHint: strings.windowHint,
+    inspector: strings.inspector,
+    autoAssign: strings.autoAssign,
+    notes: strings.notes,
+    notesPlaceholder: strings.notesPlaceholder,
+    noPackages: strings.noPackages,
+    window: strings.window,
+    windowStartTime: strings.windowStartTime,
+    windowEndTime: strings.windowEndTime,
+    windowApply: strings.windowApply,
+    windowClear: strings.windowClear,
+    windowEmpty: strings.windowEmpty,
+    previousMonth: strings.previousMonth,
+    nextMonth: strings.nextMonth,
+    presetLabels: strings.presetLabels,
+  };
   const searching = queryInput.trim().length >= 3;
   const searchSettled = queryInput.trim() === query && !searchPending;
   const joinAddress = (parts: Array<string | null | undefined>) =>
@@ -302,14 +331,13 @@ export default function Wizard({
   }
 
   const steps = state.steps;
-  const StepRow = ({ label, status }: { label: string; status?: "pending" | "done" | "failed" }) => (
-    <li className="timeline">
-      <span aria-hidden="true">{status === "done" ? "✓" : status === "failed" ? "✕" : "◌"}</span>{" "}
-      {label} — {status === "done" ? strings.stepDone : status === "failed" ? strings.stepFailed : strings.stepPending}
-    </li>
-  );
+  const stepLabel = (status?: "pending" | "done" | "failed") =>
+    status === "done" ? strings.stepDone : status === "failed" ? strings.stepFailed : strings.stepPending;
+  const stepTone = (status?: "pending" | "done" | "failed") =>
+    status === "done" ? "success" : status === "failed" ? "danger" : "neutral";
 
-  const licenceFreshness = (l: ResolvedLicence) => l.sourceSyncedAt ? new Date(l.sourceSyncedAt).toISOString().slice(0, 10) : strings.freshnessNever;
+  const licenceFreshness = (l: ResolvedLicence) =>
+    l.sourceSyncedAt ? formatDate(l.sourceSyncedAt, locale) : strings.freshnessNever;
 
   return (
     <form action={formAction} className={`sq-stack ${styles.form}`}>
@@ -324,278 +352,347 @@ export default function Wizard({
       <input type="hidden" name="resume_visit_plan_id" value={state.resumeId ?? draftState?.id ?? ""} />
       <input type="hidden" name="target_reselected" value={targetReselected ? "1" : "0"} />
 
-      {draft && (
-        <div className="alert alert-info" role="status">
-          <div>{strings.draftRestored} <bdi>{draft.planReference}</bdi></div>
-        </div>
-      )}
-      {prefillMiss && (
-        <div className="alert alert-warning" role="status">
-          <div>{strings.prefillMiss}</div>
-        </div>
-      )}
-      {adminPackageHandoff && (
-        <div className="alert alert-info" role="status">
-          <div>{strings.adminPackageHandoff} <bdi>{adminPackageHandoff}</bdi></div>
-        </div>
-      )}
+      {draft ? (
+        <PlanningNotice tone="info">{strings.draftRestored} <bdi>{draft.planReference}</bdi></PlanningNotice>
+      ) : null}
+      {prefillMiss ? <PlanningNotice tone="warning">{strings.prefillMiss}</PlanningNotice> : null}
+      {adminPackageHandoff ? (
+        <PlanningNotice tone="info">{strings.adminPackageHandoff} <bdi>{adminPackageHandoff}</bdi></PlanningNotice>
+      ) : null}
 
-      <div className={`panel panel-body ${styles.stepPanel}`} aria-busy={!searchSettled}>
-        <h4 className="panel-title">{strings.findFactory}</h4>
-        <span className={`input-affix ${styles.searchField}`}><input className="input" placeholder={strings.searchPlaceholder} value={queryInput} onChange={e => setQueryInput(e.target.value)} /></span>
-        {searching && registryUnavailable && (
-          <div className="alert alert-critical" role="alert">
-            <div>{strings.registryUnavailable}</div>
-            <button type="button" className="btn btn-secondary btn-touch" onClick={() => router.refresh()}>{strings.retry}</button>
-          </div>
-        )}
-        {searching && searchSettled && !registryUnavailable && portfolios.length === 0 && results.length === 0 && (
-          <div className="alert alert-warning"><div>{strings.noMatch}</div></div>
-        )}
-
-        {/* Legacy fallback comparison rail — graded result cards (source:'legacy'),
-            nothing pre-selected; opening a dossier is an explicit click. */}
-        {searchSettled && results.length > 0 && (
-          <ul className={styles.resultList} role="listbox" aria-label={strings.findFactory}>
-            {results.map(f => (
-              <li className={styles.resultItem} key={f.id}>
-                {/* Selecting a candidate IS the explicit act that opens its dossier —
-                    a single radio per result, nothing pre-checked by default (M01-035). */}
-                <label className={`radio ${styles.choiceRow}`}>
-                  <input type="radio" name="factory_id" value={f.id} checked={factoryId === f.id}
-                    onClick={() => setTargetReselected(true)}
-                    onChange={() => { setFactoryId(f.id); setLicenceId(null); setTargetReselected(true); setLicenseNumber(""); setLocationConfirmed(false); }} />
-                  <span className={`badge ${f.grade === "exact" ? "badge-compliant" : "badge-warning"}`}>
-                    {f.grade === "exact" ? strings.exactBadge : strings.similarBadge}
-                  </span>
-                  {f.degraded && <span className="badge badge-critical">{strings.degradedBadge}</span>}
-                  <span><strong>{f.name}</strong> · <bdi>{f.cr_number ?? "—"}</bdi>{f.license_number ? <> · <bdi>{f.license_number}</bdi></> : null}</span>
-                </label>
-                {factoryId === f.id && (
-                  <div className={styles.dossier}>
-                    <IdentityDossier factory={f} strings={strings} locale={locale} />
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <Card as="section" labelledBy="single-visit-search">
+        <CardHeader level="h2" titleId="single-visit-search" title={strings.findFactory} />
+        <CardBody>
+          <FactoryResults
+            query={queryInput}
+            results={results.map(f => ({
+              id: f.id,
+              name: f.name,
+              crNumber: f.cr_number,
+              licenseNumber: f.license_number,
+              grade: f.grade,
+              degraded: f.degraded,
+              duplicate: f.duplicate,
+            }))}
+            registryUnavailable={registryUnavailable}
+            settled={searchSettled}
+            selectedId={factoryId}
+            onQueryChange={setQueryInput}
+            onSelect={id => { setFactoryId(id); setLicenceId(null); setTargetReselected(true); setLicenseNumber(""); setLocationConfirmed(false); }}
+            onRetry={() => router.refresh()}
+            dossierFor={id => {
+              const found = results.find(entry => entry.id === id);
+              return found ? <IdentityDossier factory={found} strings={strings} locale={locale} /> : null;
+            }}
+            strings={{
+              heading: strings.findFactory,
+              searchLabel: strings.findFactory,
+              searchPlaceholder: strings.searchPlaceholder,
+              exactBadge: strings.exactBadge,
+              similarBadge: strings.similarBadge,
+              degradedBadge: strings.degradedBadge,
+              duplicateWarning: strings.duplicateWarning,
+              noMatch: strings.noMatch,
+              noMatchBody: strings.noMatchBody,
+              registryUnavailable: strings.registryUnavailable,
+              retry: strings.retry,
+              absent: "—",
+            }}
+          />
+        </CardBody>
+      </Card>
 
       {/* Canonical portfolio — CR identity plus EVERY licence/plant under it.
           A licence/plant selection is mandatory before continuing; a CR with
           licences can never be targeted as a whole (explicit eligibility
           state), and a CR with none is not plannable at all (M01-036). */}
       {searchSettled && portfolios.length > 0 && (
-        <div className={`panel panel-body ${styles.stepPanel}`}>
-          <h4 className="panel-title">{strings.portfolioStep}</h4>
+        <Card as="section" labelledBy="single-visit-portfolio">
+          <CardHeader level="h2" titleId="single-visit-portfolio" title={strings.portfolioStep} />
+          <CardBody>
           {handoff && (
-            <div className="alert alert-info" role="status">
-              <div>{strings.prefilledHandoff}</div>
-            </div>
+            <PlanningNotice tone="info">{strings.prefilledHandoff}</PlanningNotice>
           )}
           {portfolios.map(p => (
-            <section key={p.id} className={`panel panel-body ${styles.nestedPanel}`}>
-              <header className="panel-header">
-                <strong>{strings.crIdentity}</strong>{" "}
-                <bdi className="numeric">{p.crNumber}</bdi>
-                {p.legalNameEn || p.legalName ? <> · {p.legalNameEn ?? p.legalName}</> : null}
-                {p.status ? <> · <span className="t-caption">{p.status}</span></> : null}
-                <p className="tl-meta">
-                  {strings.sourceLabel}: <bdi>{p.sourceSystem ?? "—"}</bdi> · {strings.freshnessLabel}: <bdi>{p.sourceSyncedAt ? new Date(p.sourceSyncedAt).toISOString().slice(0, 10) : strings.freshnessNever}</bdi>
-                </p>
-              </header>
+            <Card as="article" key={p.id}>
+              <CardHeader
+                level="h3"
+                eyebrow={<>{strings.crIdentity} <bdi>{p.crNumber}</bdi></>}
+                title={p.legalNameEn ?? p.legalName ?? p.crNumber}
+                description={`${strings.sourceLabel}: ${p.sourceSystem ?? "—"} · ${strings.freshnessLabel}: ${p.sourceSyncedAt ? formatDate(p.sourceSyncedAt, locale) : strings.freshnessNever}`}
+                trailing={p.status ? <StatusPill tone="neutral">{titleCase(p.status)}</StatusPill> : undefined}
+              />
+              <CardBody gap="tight">
               {p.licences.length === 0 ? (
-                <div className="alert alert-warning" role="status"><div>{strings.noLicences}</div></div>
+                <PlanningNotice tone="warning">{strings.noLicences}</PlanningNotice>
               ) : (
                 <>
-                  <p className="tl-meta">{strings.selectLicenceHint}</p>
+                  <p className={styles.hint}>{strings.selectLicenceHint}</p>
                   <ul className={styles.resultList} role="listbox" aria-label={strings.portfolioStep}>
                     {p.licences.map(l => (
                       <li className={styles.resultItem} key={l.id}>
-                        <label className={`radio ${styles.choiceRow}`}>
-                          <input type="radio" name="licence_id" value={l.id} disabled={!l.factory}
-                            checked={licenceId === l.id}
-                            onClick={() => setTargetReselected(true)}
-                            onChange={() => { setLicenceId(l.id); setFactoryId(null); setTargetReselected(true); setLicenseNumber(""); setLocationConfirmed(false); }} />
-                          <span>
-                            <strong className="numeric"><bdi>{l.licenseNumber}</bdi></strong>
-                            {" · "}{strings.plantLabel} <bdi>{l.plantNumber ?? "—"}</bdi>
-                            {" · "}{l.factory ? l.factory.name : strings.noFactoryLink}
-                            {l.status ? <> · <span className="badge badge-info">{l.status}</span></> : null}
-                          </span>
-                        </label>
+                        <Choice
+                          kind="radio"
+                          name="licence_id"
+                          value={l.id}
+                          disabled={!l.factory}
+                          checked={licenceId === l.id}
+                          onChange={() => { setLicenceId(l.id); setFactoryId(null); setTargetReselected(true); setLicenseNumber(""); setLocationConfirmed(false); }}
+                          label={
+                            <span className={styles.choiceLabel}>
+                              <bdi>{l.licenseNumber}</bdi>
+                              {l.status ? <StatusPill tone="info">{titleCase(l.status)}</StatusPill> : null}
+                            </span>
+                          }
+                          description={
+                            <>
+                              {strings.plantLabel} <bdi>{l.plantNumber ?? "—"}</bdi>
+                              {" · "}{l.factory ? l.factory.name : strings.noFactoryLink}
+                            </>
+                          }
+                        />
                       </li>
                     ))}
                   </ul>
                   {licenceId == null && (
-                    <div className="alert alert-info" role="status">
-                      <div>{strings.licenceRequired}</div>
-                    </div>
+                    <PlanningNotice tone="info">{strings.licenceRequired}</PlanningNotice>
                   )}
                 </>
               )}
-            </section>
+              </CardBody>
+            </Card>
           ))}
-        </div>
+          </CardBody>
+        </Card>
       )}
 
       {/* Selected canonical plant profile — registered fields + provenance,
           read-only; nothing here mutates the registry. */}
       {target?.kind === "canonical" && selectedLicenceEntry && (
-        <div className={`panel panel-body ${styles.stepPanel} ${styles.profilePanel}`} role="region" aria-label={strings.selectedProfile}>
-          <h4 className="panel-title">{strings.selectedProfile}</h4>
-          <p><strong>{target.name}</strong></p>
-          <dl>
-            <div><dt className="t-caption">{strings.crPrefix}</dt><dd><bdi>{target.crNumber ?? "—"}</bdi></dd></div>
-            <div><dt className="t-caption">{strings.licenseLabel}</dt><dd><bdi>{target.canonicalLicenseNumber ?? "—"}</bdi></dd></div>
-            <div><dt className="t-caption">{strings.plantLabel}</dt><dd><bdi>{target.plantNumber ?? "—"}</bdi></dd></div>
-            <div><dt className="t-caption">{strings.officialAddress}</dt><dd>{target.officialAddress}</dd></div>
-            <div><dt className="t-caption">{strings.officialPin}</dt><dd>{hasOfficial ? <bdi>{target.officialLat}, {target.officialLng}</bdi> : strings.noOfficialPin}</dd></div>
-          </dl>
-          <p className="tl-meta">
-            {strings.sourceLabel}: <bdi>{selectedLicenceEntry.licence.sourceSystem ?? "—"}</bdi>
-            {" · "}{strings.freshnessLabel}: <bdi>{licenceFreshness(selectedLicenceEntry.licence)}</bdi>
-            {" · "}{strings.riskContext}: {target.riskBand ?? strings.riskUnknown}{target.riskScore != null ? ` (${target.riskScore})` : ""}
-          </p>
-          <a href={`/factories/${target.factoryId}`} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-touch">{strings.factory360}</a>
-        </div>
+        <Card as="section" labelledBy="single-visit-profile">
+          <CardHeader
+            level="h2"
+            titleId="single-visit-profile"
+            eyebrow={strings.selectedProfile}
+            title={target.name}
+            description={`${strings.sourceLabel}: ${selectedLicenceEntry.licence.sourceSystem ?? "—"} · ${strings.freshnessLabel}: ${licenceFreshness(selectedLicenceEntry.licence)}`}
+            trailing={
+              <StatusPill tone="neutral">
+                {strings.riskContext}: {target.riskBand ?? strings.riskUnknown}
+                {target.riskScore != null ? ` (${target.riskScore})` : ""}
+              </StatusPill>
+            }
+          />
+          <CardBody>
+            <DefinitionList
+              columns="two"
+              items={[
+                { label: strings.crPrefix, value: <bdi>{target.crNumber ?? "—"}</bdi> },
+                { label: strings.licenseLabel, value: <bdi>{target.canonicalLicenseNumber ?? "—"}</bdi> },
+                { label: strings.plantLabel, value: <bdi>{target.plantNumber ?? "—"}</bdi> },
+                { label: strings.officialAddress, value: target.officialAddress },
+                {
+                  label: strings.officialPin,
+                  value: hasOfficial
+                    ? <bdi>{target.officialLat}, {target.officialLng}</bdi>
+                    : strings.noOfficialPin,
+                },
+              ]}
+            />
+          </CardBody>
+          <CardFooter>
+            <Button
+              variant="secondary"
+              size="sm"
+              href={`/factories/${target.factoryId}`}
+              label={strings.factory360}
+            >
+              {strings.factory360}
+            </Button>
+          </CardFooter>
+        </Card>
       )}
 
       {/* Legacy license step — unchanged: explicit radio when the legacy
           factory carries a license_number, otherwise the CR-only note. */}
       {target?.kind === "legacy" && legacyFactory && (
-        <div className={`panel panel-body ${styles.stepPanel}`}>
-          <h4 className="panel-title">{strings.licenseStep}</h4>
-          {legacyFactory.license_number ? (
-            <>
-              <p className="tl-meta">{strings.licenseSelect}</p>
-              <label className={`radio ${styles.choiceRow}`}>
-                <input key={resetKey} type="radio" name="license_number" value={legacyFactory.license_number} required
-                  checked={licenseNumber === legacyFactory.license_number} onChange={() => setLicenseNumber(legacyFactory.license_number as string)} />
-                <span><strong className="numeric">{legacyFactory.license_number}</strong> · {strings.licenseLabel} · {legacyFactory.name}</span>
-              </label>
-            </>
-          ) : (
-            <div className="alert alert-info"><div>{strings.licenseNone}</div></div>
-          )}
-        </div>
+        <Card as="section" labelledBy="single-visit-licence">
+          <CardHeader
+            level="h2"
+            titleId="single-visit-licence"
+            title={strings.licenseStep}
+            description={legacyFactory.license_number ? strings.licenseSelect : undefined}
+          />
+          <CardBody>
+            {legacyFactory.license_number ? (
+              <Choice
+                kind="radio"
+                name="license_number"
+                value={legacyFactory.license_number}
+                required
+                checked={licenseNumber === legacyFactory.license_number}
+                onChange={() => setLicenseNumber(legacyFactory.license_number as string)}
+                label={<bdi>{legacyFactory.license_number}</bdi>}
+                description={`${strings.licenseLabel} · ${legacyFactory.name}`}
+              />
+            ) : (
+              <PlanningNotice tone="info">{strings.licenseNone}</PlanningNotice>
+            )}
+          </CardBody>
+        </Card>
       )}
       {target && (
-        <div className={`panel panel-body ${styles.stepPanel}`}>
-          <h4 className="panel-title">{strings.locationStep}</h4>
-          {!hasOfficial && (
-            <div className="alert alert-warning"><div>{strings.noOfficialPin}</div></div>
-          )}
-          <dl>
-            <div><dt className="t-caption">{strings.officialAddress}</dt><dd>{target.officialAddress}</dd></div>
-            <div><dt className="t-caption">{strings.officialPin}</dt><dd>{hasOfficial ? <bdi>{target.officialLat}, {target.officialLng}</bdi> : strings.noOfficialPin}</dd></div>
-          </dl>
-          <p className="tl-meta">
-            {strings.locationAuthority}: <bdi>{target.masterSource ?? "—"}</bdi> · {strings.locationReadOnly}
-          </p>
-          <label className={`check ${styles.confirmRow}`}>
-            <input key={resetKey} type="checkbox" name="location_confirmed" value="1" required
+        <Card as="section" labelledBy="single-visit-location">
+          <CardHeader
+            level="h2"
+            titleId="single-visit-location"
+            title={strings.locationStep}
+            description={`${strings.locationAuthority}: ${target.masterSource ?? "—"} · ${strings.locationReadOnly}`}
+          />
+          <CardBody gap="tight">
+            {!hasOfficial ? <PlanningNotice tone="warning">{strings.noOfficialPin}</PlanningNotice> : null}
+            <DefinitionList
+              columns="two"
+              items={[
+                { label: strings.officialAddress, value: target.officialAddress },
+                {
+                  label: strings.officialPin,
+                  value: hasOfficial
+                    ? <bdi>{target.officialLat}, {target.officialLng}</bdi>
+                    : strings.noOfficialPin,
+                },
+              ]}
+            />
+            <Choice
+              kind="checkbox"
+              name="location_confirmed"
+              value="1"
+              required
               disabled={!hasOfficial}
-              checked={locationConfirmed} onChange={e => setLocationConfirmed(e.target.checked)} />
-            <span>{strings.locationConfirmed}</span>
-          </label>
-        </div>
+              checked={locationConfirmed}
+              onChange={setLocationConfirmed}
+              label={strings.locationConfirmed}
+            />
+          </CardBody>
+        </Card>
       )}
       {target && configUnlocked && (
-        <div className={`panel panel-body ${styles.stepPanel}`}>
-          <h4 className="panel-title">{strings.configStep}</h4>
-          <div className={styles.configGrid}>
-            <div className={`field ${styles.visitTypeField}`}><label htmlFor="wizard-visit-type">{strings.visitType}</label>
-              <select key={resetKey} className="select" name="visit_type" id="wizard-visit-type" value={visitType} onChange={e => setVisitType(e.target.value)}>
-                <option value="periodic">{strings.typePeriodic}</option><option value="follow_up">{strings.typeFollowUp}</option><option value="complaint">{strings.typeComplaint}</option>
-              </select></div>
-            <div className={`field ${styles.packageField}`} role="group" aria-labelledby="wizard-package-label">
-              <span id="wizard-package-label">{strings.packageLabel}</span>
-              <div className={styles.packageGrid}>
-                {packages.map(p => (
-                  <label key={`${resetKey}-${p.id}`} className={`check ${styles.packageChoice}`}>
-                    <input type="checkbox" name="package_version_id" value={p.id}
-                      checked={packageIds.includes(p.id)}
-                      onChange={e => setPackageIds(ids => e.target.checked ? [...ids, p.id] : ids.filter(x => x !== p.id))} />
-                    <span>{p.packages.code} · {p.version_label}</span>
-                  </label>
-                ))}
-              </div>
-              {packageIds.length === 0 && (
-                <p className="alert alert-info" role="status">
-                  {strings.packageOptionalHint}
-                </p>
-              )}
-            </div>
-            <div className={`field ${styles.modeField}`}><label htmlFor="wizard-mode">{strings.mode}</label>
-              <select key={resetKey} className="select" name="execution_mode" id="wizard-mode" value={executionMode} onChange={e => setExecutionMode(e.target.value as "physical" | "virtual")}>
-                <option value="physical" disabled={!physicalEligible}>{strings.modePhysical}{!physicalEligible ? ` — ${strings.modeIneligible}` : ""}</option>
-                <option value="virtual" disabled={!virtualEligible}>{strings.modeVirtual}{!virtualEligible ? ` — ${strings.modeIneligible}` : ""}</option>
-              </select></div>
-            <div className={`field ${styles.startField}`}><label htmlFor="wizard-window-start">{strings.windowStart}</label>
-              <input key={resetKey} className="input" name="window_start" id="wizard-window-start" type="datetime-local" required value={windowStart} onChange={e => setWindowStart(e.target.value)} /></div>
-            <div className={`field ${styles.endField}`}><label htmlFor="wizard-window-end">{strings.windowEnd}</label>
-              <input key={resetKey} className="input" name="window_end" id="wizard-window-end" type="datetime-local" required min={windowStart || undefined} value={windowEnd} onChange={e => setWindowEnd(e.target.value)} /></div>
-            {/* The Planner may suggest an Inspector. “No preference” leaves the
-                governed final assignment to the approving Supervisor. */}
-            <div className={`field ${styles.inspectorField}`}><label htmlFor="wizard-inspector">{strings.inspector}</label>
-              <select key={resetKey} className="select" name="inspector_id" id="wizard-inspector" value={inspectorId} onChange={e => setInspectorId(e.target.value)}><option value="">{strings.autoAssign}</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
-          </div>
-          <div className={`field ${styles.notesField}`}><label htmlFor="wizard-notes">{strings.notes}</label>
-            <textarea key={resetKey} className="input" name="notes" id="wizard-notes" rows={2} placeholder={strings.notesPlaceholder}
-              value={notes} onChange={e => setNotes(e.target.value)} /></div>
-        </div>
+        <Card as="section" labelledBy="single-visit-config">
+          <CardHeader level="h2" titleId="single-visit-config" title={strings.configStep} />
+          <CardBody>
+            <VisitConfiguration
+              value={{ visitType, packageIds, mode: executionMode, windowStart, windowEnd, inspectorId, notes }}
+              onChange={next => {
+                setVisitType(next.visitType);
+                setPackageIds([...next.packageIds]);
+                setExecutionMode(next.mode);
+                setWindowStart(next.windowStart);
+                setWindowEnd(next.windowEnd);
+                setInspectorId(next.inspectorId);
+                setNotes(next.notes);
+              }}
+              visitTypeOptions={[
+                { value: "periodic", label: strings.typePeriodic },
+                { value: "follow_up", label: strings.typeFollowUp },
+                { value: "complaint", label: strings.typeComplaint },
+              ]}
+              inspectorOptions={inspectors.map(entry => ({ value: entry.user_id, label: entry.full_name }))}
+              packages={packages.map(entry => ({
+                id: entry.id,
+                versionLabel: entry.version_label,
+                code: entry.packages.code,
+                title: entry.packages.title,
+              }))}
+              eligibility={{ physical: physicalEligible, virtual: virtualEligible }}
+              locale={locale === "ar" ? "ar" : "en"}
+              strings={configStrings}
+            />
+          </CardBody>
+        </Card>
       )}
 
       {target && (
-        <div className={`panel panel-body ${styles.stepPanel}`}>
-          <h4 className="panel-title">{strings.readinessTitle}</h4>
-          <div className={styles.readinessGrid}>
-            <span className="badge badge-compliant">✓ {strings.readyIdentity}</span>
-            <span className={`badge ${licenseOk ? "badge-compliant" : "badge-critical"}`}>{licenseOk ? "✓" : "✕"} {strings.readyLicense}</span>
-            <span className={`badge ${locationConfirmed ? "badge-compliant" : "badge-critical"}`}>{locationConfirmed ? "✓" : "✕"} {strings.readyLocation}</span>
-            <span className={`badge ${inspectorId ? "badge-compliant" : "badge-draft"}`}>{inspectorId ? "✓" : "○"} {strings.readyInspector}</span>
-          </div>
-        </div>
+        <PublishReadiness
+          gates={[
+            { key: "identity", label: strings.readyIdentity, state: "met" },
+            { key: "licence", label: strings.readyLicense, state: licenseOk ? "met" : "unmet" },
+            { key: "location", label: strings.readyLocation, state: locationConfirmed ? "met" : "unmet" },
+            { key: "inspector", label: strings.readyInspector, state: inspectorId ? "met" : "optional" },
+          ]}
+          strings={{
+            heading: strings.readinessTitle,
+            met: strings.gateMet,
+            unmet: strings.gateUnmet,
+            optional: strings.gateOptional,
+          }}
+        />
       )}
 
       {state.error && (
-        <div ref={errorRef} tabIndex={-1} className="alert alert-critical" role="alert"><strong>{strings.blockedTitle}</strong>
-          <ul>{state.error.split(" · ").map(b => <li key={b}>{b}</li>)}</ul>
-          {steps && (
-            <ul className="timeline">
-              <StepRow label={strings.stepPlan} status={steps.plan} />
-              <StepRow label={strings.stepVisit} status={steps.visit} />
-              <StepRow label={strings.stepAssignment} status={steps.assignment} />
-              <StepRow label={strings.stepStatus} status={steps.status} />
-              <StepRow label={strings.stepNotification} status={steps.notification} />
-            </ul>
-          )}
+        <div ref={errorRef} tabIndex={-1}>
+          <Card as="section" labelledBy="single-visit-blocked">
+            <CardHeader
+              level="h2"
+              titleId="single-visit-blocked"
+              title={strings.blockedTitle}
+              trailing={<StatusPill tone="danger">{strings.blockedTitle}</StatusPill>}
+            />
+            <CardBody gap="tight">
+              <ul className={styles.blockers}>
+                {state.error.split(" · ").map(blocker => <li key={blocker}>{blocker}</li>)}
+              </ul>
+              {steps ? (
+                <ul className={styles.steps}>
+                  {[
+                    { key: "plan", label: strings.stepPlan, status: steps.plan },
+                    { key: "visit", label: strings.stepVisit, status: steps.visit },
+                    { key: "assignment", label: strings.stepAssignment, status: steps.assignment },
+                    { key: "status", label: strings.stepStatus, status: steps.status },
+                    { key: "notification", label: strings.stepNotification, status: steps.notification },
+                  ].map(step => (
+                    <li className={styles.step} key={step.key}>
+                      <span>{step.label}</span>
+                      <StatusPill tone={stepTone(step.status)}>{stepLabel(step.status)}</StatusPill>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </CardBody>
+          </Card>
         </div>
       )}
 
       {draftSaveFailed && (
-        <div className="alert alert-critical" role="alert"><div>{strings.draftError}</div></div>
+        <PlanningNotice tone="danger">{strings.draftError}</PlanningNotice>
       )}
       {draftJustSaved && draftState && (
-        <p className="tl-meta" role="status">{strings.draftSavedPrefix} — <bdi>{draftState.planReference}</bdi> · v{draftState.version}</p>
+        <PlanningNotice tone="info">
+          {strings.draftSavedPrefix} <bdi>{draftState.planReference}</bdi> · v{draftState.version}
+        </PlanningNotice>
       )}
 
       {!transitionsExecutable && (
-        <div className="alert alert-warning" role="status">
-          <div><strong>{strings.blockedTitle}</strong></div>
-        </div>
+        <PlanningNotice tone="warning">{strings.blockedTitle}</PlanningNotice>
       )}
       <div className={styles.actionBar}>
-        <button type="button" className="btn btn-secondary btn-touch"
-          disabled={!transitionsExecutable || savingDraft || !target} onClick={onSaveDraft}>
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={!transitionsExecutable || savingDraft || !target}
+          onClick={onSaveDraft}
+          label={strings.saveDraft}
+        >
           {savingDraft ? strings.savingDraft : strings.saveDraft}
-        </button>
-        <button className="btn btn-primary btn-lg btn-touch"
-          disabled={!transitionsExecutable || pending || !publishReady}>
+        </Button>
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          disabled={!transitionsExecutable || pending || !publishReady}
+          label={strings.publish}
+        >
           {pending ? strings.publishing : state.resumeId ? strings.retry : strings.publish}
-        </button>
+        </Button>
       </div>
     </form>
   );

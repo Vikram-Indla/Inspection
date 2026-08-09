@@ -4,6 +4,11 @@ import { useT } from "@/lib/i18n";
 import EmptyState from "@/components/EmptyState";
 import FactoriesScopeBar from "@/components/sections/factories/factories-scope-bar/factories-scope-bar";
 import RevampFactory360Portfolio, { type RevampFactoryRow } from "./RevampFactory360Portfolio";
+import { queryPortfolioCounts } from "@/features/factories/portfolio-counts";
+import { queryFactoryRiskMovement } from "@/features/factories/risk-context";
+import { queryFactoryCompliance } from "@/features/factories/compliance";
+import { queryFactoryProfiles } from "@/features/factories/profile";
+import { isTestSourceFactory } from "@/features/factories/portfolio";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { resolveFactory360Permissions } from "@/lib/factory360/dossier";
 
@@ -32,7 +37,8 @@ export default async function Factories({ searchParams }: {
     .order("cr_number", { ascending: true })
     .range(0, 4_999);
   if (scopeError) console.error("[factory registry] scope load failed", scopeError);
-  const visibleScopeRows = (scopeRows ?? []).filter(row => !isTestFixtureEstablishment(row));
+  const visibleScopeRows = (scopeRows ?? [])
+    .filter(row => !isTestFixtureEstablishment(row) && !isTestSourceFactory(row));
   const crNumbers = [...new Set(visibleScopeRows.map(row => row.cr_number).filter((value): value is string => Boolean(value)))];
   const manualScope = "manual-r05";
   const hasManualRows = visibleScopeRows.some(row => row.is_temporary && row.source === "immediate_manual");
@@ -56,7 +62,7 @@ export default async function Factories({ searchParams }: {
     ? visibleScopeRows.filter(row => row.is_temporary && row.source === "immediate_manual").length
     : visibleScopeRows.filter(row => row.cr_number === selectedCr).length;
   let portfolioQuery = sb.from("factories")
-    .select("id, factory_code, name, cr_number, region, city, activity_class, risk_band, risk_score, source, source_synced_at, is_temporary, industrial_licenses(id, commercial_registration_id, license_number, plant_number, license_type, status, stage)")
+    .select("id, factory_code, name, cr_number, region, city, activity_class, risk_band, risk_score, risk_version, risk_drivers, risk_calculated_at, employees_total, source, source_synced_at, is_temporary, industrial_licenses(id, commercial_registration_id, license_number, plant_number, license_type, status, stage, expiry_date)")
     .order("risk_score", { ascending: false });
   portfolioQuery = requestedScopeValue === manualScope
     ? portfolioQuery.eq("is_temporary", true).eq("source", "immediate_manual")
@@ -66,7 +72,9 @@ export default async function Factories({ searchParams }: {
   // F360-SRCH-001/F360-ARCH-001 — prefer the additive CR-centred dossier when
   // this legacy factory has a verified license mapping. If the new projection
   // is unavailable or unmapped, preserve the established /factories/:id path.
-  const portfolioRows: RevampFactoryRow[] = (fs ?? []).filter(row => !isTestFixtureEstablishment(row)).map(({ industrial_licenses, ...row }) => {
+  const portfolioRows: RevampFactoryRow[] = (fs ?? [])
+    .filter(row => !isTestFixtureEstablishment(row) && !isTestSourceFactory(row))
+    .map(({ industrial_licenses, ...row }) => {
     const commercialRegistrationId = industrial_licenses?.[0]?.commercial_registration_id ?? null;
     return {
       ...row,
@@ -74,8 +82,15 @@ export default async function Factories({ searchParams }: {
       license: industrial_licenses?.[0] ?? null,
     };
   });
+  const portfolioIds = portfolioRows.map(row => row.id);
+  const [portfolioCounts, riskMovement, compliance, profiles] = await Promise.all([
+    queryPortfolioCounts(sb, portfolioIds),
+    queryFactoryRiskMovement(sb, portfolioIds),
+    queryFactoryCompliance(sb, portfolioIds),
+    queryFactoryProfiles(sb, portfolioIds),
+  ]);
   const error = scopeError ?? portfolioError;
-  const isEmpty = visibleScopeRows.length === 0;
+  const isEmpty = visibleScopeRows.length === 0 || portfolioRows.length === 0;
   const portfolioLabel = requestedScopeValue === manualScope
     ? t("f360.provenance.manualPortfolio", "Manual R05 establishments")
     : `CR ${selectedCr || "—"}`;
@@ -101,6 +116,12 @@ export default async function Factories({ searchParams }: {
             portfolioLabel={portfolioLabel}
             canCreateInspection={permissions["create_inspection"]}
             locale={locale}
+            counts={portfolioCounts}
+            riskMovement={riskMovement}
+            complianceByFactory={compliance.byFactory}
+            penaltiesReadable={compliance.penaltiesReadable}
+            profiles={profiles}
+            now={Date.now()}
             provenanceStrings={{
               registered: t("f360.provenance.registered", "Registered · Senaei source"),
               registeredBody: t("f360.provenance.registeredBody", "Registered factory identity from the governed Senaei source."),

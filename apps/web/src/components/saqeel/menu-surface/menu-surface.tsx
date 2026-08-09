@@ -88,7 +88,14 @@ export default function MenuSurface({
       panel.style.setProperty("--sqx-menu-avail-h", `${Math.max(MIN_BLOCK_SIZE, room)}px`);
 
       // Block edge, measured from the viewport because the panel is fixed.
-      const height = Math.min(panel.scrollHeight, Math.max(MIN_BLOCK_SIZE, room));
+      //
+      // The height has to be the panel's **rendered** box, read after the cap
+      // above is in effect — not `scrollHeight`, which reports what the content
+      // wants. Opening upward positions the panel by its top edge, so any
+      // difference between wanted and rendered height became a gap between the
+      // panel's bottom and the trigger, leaving the menu floating away from
+      // what it belongs to.
+      const height = panel.getBoundingClientRect().height;
       const rawTop = openAbove ? anchor.top - MARGIN - height : anchor.bottom + MARGIN;
       const top = Math.max(MARGIN, Math.min(rawTop, vh - height - MARGIN));
       panel.style.setProperty("--sqx-menu-top", `${Math.round(top)}px`);

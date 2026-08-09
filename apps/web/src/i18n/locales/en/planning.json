@@ -21,9 +21,9 @@
     "unauthorizedBody": "Only planning staff can use Visit Planning."
   },
   "methods": {
-    "bulkTitle": "Plan multiple visits",
+    "bulkTitle": "Plan bulk visits",
     "bulkDesc": "Use AND/OR criteria over the factory list to create many visits under one plan.",
-    "singleTitle": "Plan one visit",
+    "singleTitle": "Plan a single visit",
     "singleDesc": "Choose one registered factory by CR or Industrial License and create one visit.",
     "immediateTitle": "Create an urgent visit",
     "immediateDesc": "Submit an urgent request for one registered factory. A Supervisor assigns and releases it within the set response time.",
@@ -51,8 +51,8 @@
     "refreshing": "Refreshing…"
   },
   "table": {
-    "caption": "Planned visits",
-    "empty": "—",
+    "caption": "Planning visits",
+    "empty": "No visits match",
     "referenceUnavailable": "Reference not available",
     "colVisitRef": "Visit Reference",
     "colPlanningType": "Planning Type",
@@ -143,8 +143,8 @@
     "generating": "Generating…",
     "confidenceUnavailable": "The provider returns no calibrated confidence score, so none is shown.",
     "recommendationsTitle": "AI Recommendations",
-    "recommendationsEmptyTitle": "Not configured",
-    "recommendationsEmptyBody": "AI recommendations are not configured for this workspace.",
+    "recommendationsEmptyTitle": "No high-risk factories to recommend",
+    "recommendationsEmptyBody": "Recommendations rank factories by their recorded risk score. None in your scope currently carries a high risk band.",
     "plan": "Plan",
     "review": "Review",
     "riskScore": "Risk score",
@@ -288,7 +288,8 @@
       "editNotes": "New notes",
       "editNotesPlaceholder": "Leave blank to clear",
       "editSetNotes": "Update notes",
-      "editBtn": "Apply to selected"
+      "editBtn": "Apply to selected",
+      "windowEmpty": "No window chosen"
     },
     "elig": {
       "heading": "Eligibility preview",
@@ -550,5 +551,8 @@
     "tasks": "Tasks — assigned, in progress and completed",
     "supervision": "Supervisor queue — confirm Inspector and release submitted visits",
     "visits": "Visit management — bulk actions and lenses over the same visits"
+  },
+  "single": {
+    "loading": "Loading the single-visit planner…"
   }
 }

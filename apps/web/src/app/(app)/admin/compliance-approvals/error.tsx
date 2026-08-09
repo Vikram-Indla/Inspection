@@ -1,3 +1,4 @@
+/* @retiring 2026-08-10 · replaced-by app/(app)/compliance/approvals · pending none — middleware.ts rewrites /admin/compliance-approvals to /compliance/approvals unconditionally, so no request reaches this segment · delete-when 0-imports */
 "use client";
 
 export default function ComplianceApprovalQueueError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {

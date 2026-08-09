@@ -1,0 +1,14 @@
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sqx-space-5);
+  align-items: start;
+}
+
+@media (min-width: 90rem) {
+  .layout { grid-template-columns: var(--sqx-grid-min-sm) minmax(0, 1fr) var(--sqx-grid-min-sm); }
+}
+
+.main { display: flex; flex-direction: column; gap: var(--sqx-space-4); min-inline-size: 0; }
+.aside { display: flex; flex-direction: column; gap: var(--sqx-space-4); }
+.objects { display: flex; flex-direction: column; gap: var(--sqx-space-4); }

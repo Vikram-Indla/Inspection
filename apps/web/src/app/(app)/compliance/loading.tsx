@@ -1,5 +1,13 @@
-import { StateSurface } from "@/components/saqeel/feedback/StateSurface";
+import RegulationsSkeleton from "@/components/sections/regulations/catalogue/regulations-skeleton/regulations-skeleton";
+import Shell from "@/components/Shell";
+import { getMessages } from "@/i18n/messages";
+import { getLocale } from "@/lib/i18n";
 
-export default function ComplianceLoading() {
-  return <StateSurface kind="loading" title="Loading Inspection Rules" body="Loading the regulation list filtered to your access, with its linked records." />;
+export default async function ComplianceLoading() {
+  const { regulations } = getMessages(await getLocale());
+  return (
+    <Shell current="/compliance" title={regulations.title}>
+      <RegulationsSkeleton label={regulations.loading} />
+    </Shell>
+  );
 }

@@ -11,6 +11,10 @@ export type FactoryRow = {
   activity_class: string | null;
   risk_band: string | null;
   risk_score: number | null;
+  risk_version: string | null;
+  risk_drivers: unknown;
+  risk_calculated_at: string | null;
+  employees_total: number | null;
   source: string | null;
   source_synced_at: string | null;
   is_temporary: boolean;
@@ -22,8 +26,28 @@ export type FactoryRow = {
     license_type: string | null;
     status: string | null;
     stage: string | null;
+    expiry_date: string | null;
   } | null;
 };
+
+/**
+ * Working threshold for the "expiring soon" licence pill, agreed with the owner
+ * on 2026-08-09. It is a display rule only — no planning, enforcement or
+ * licensing decision reads it. Replace with the governed value when product
+ * rules one.
+ */
+export const LICENCE_EXPIRY_SOON_DAYS = 30;
+
+export type LicenceExpiryState = "expired" | "expiringSoon" | "valid";
+
+export function licenceExpiryState(expiry: string | null, now: number): LicenceExpiryState | null {
+  if (!expiry) return null;
+  const due = new Date(expiry).getTime();
+  if (Number.isNaN(due)) return null;
+  const days = Math.floor((due - now) / 86_400_000);
+  if (days < 0) return "expired";
+  return days <= LICENCE_EXPIRY_SOON_DAYS ? "expiringSoon" : "valid";
+}
 
 export type ProvenanceStrings = {
   registered: string;
@@ -54,6 +78,17 @@ export function titleCase(value: string | null): string {
 
 function humanised(value: string | null | undefined): string | null {
   return value ? titleCase(value) : null;
+}
+
+/**
+ * Seeded/demo records identified by their recorded source. This is the second
+ * of two independent test filters and they catch different things:
+ * `isTestFixtureEstablishment` matches e2e fixtures by name and factory code,
+ * while this matches anything the source system itself marks as test data.
+ * Neither may reach a customer-facing surface.
+ */
+export function isTestSourceFactory(factory: { source: string | null }): boolean {
+  return factory.source === "saqeel_test_data" || (factory.source?.includes("test") ?? false);
 }
 
 export function provenanceOf(factory: FactoryRow, strings: ProvenanceStrings): {
@@ -107,8 +142,12 @@ export function conditionOf(band: string | null, strings: ConditionStrings): {
   return { label: strings.unavailable, tone: "neutral" };
 }
 
-export function toLicence(factory: FactoryRow, strings: ProvenanceStrings): PortfolioLicence {
+export function toLicence(factory: FactoryRow, strings: ProvenanceStrings, counts: {
+  openViolations: number | null;
+  now: number;
+}): PortfolioLicence {
   const provenance = provenanceOf(factory, strings);
+  const expiry = factory.license?.expiry_date ?? null;
   return {
     id: factory.id,
     name: factory.name,
@@ -118,6 +157,9 @@ export function toLicence(factory: FactoryRow, strings: ProvenanceStrings): Port
     stage: humanised(factory.license?.stage ?? factory.license?.status),
     licenceStatus: humanised(factory.license?.status),
     riskBand: factory.risk_band,
+    expiryDate: expiry,
+    expiryState: licenceExpiryState(expiry, counts.now),
+    openViolations: counts.openViolations,
     provenanceLabel: provenance.label,
     provenanceTone: provenance.tone,
   };

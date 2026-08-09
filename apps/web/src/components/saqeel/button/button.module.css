@@ -88,6 +88,28 @@
   background: var(--sqx-action-tertiary-hover);
 }
 
+/* A text action that lives inside prose rather than in a control row: no fill,
+   no inline padding, so its label sits on the same start edge as the paragraphs
+   around it. Hover underlines instead of painting a background — a filled block
+   in the middle of body copy reads as a separate surface. */
+.root[data-variant="link"] {
+  min-block-size: auto;
+  padding-inline: 0;
+  color: var(--sqx-text-link);
+  background: transparent;
+  border-color: transparent;
+  border-radius: var(--sqx-radius-xs);
+}
+
+.root[data-variant="link"]:hover:not(:disabled) {
+  color: var(--sqx-text-link-hover);
+  text-decoration: underline;
+}
+
+.root[data-variant="link"]:disabled {
+  background: transparent;
+}
+
 .root[data-variant="danger"] {
   color: var(--sqx-action-danger-text);
   background: var(--sqx-action-danger-bg);

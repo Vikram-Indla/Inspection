@@ -1,24 +1,24 @@
 import { Suspense } from "react";
 import Shell from "@/components/Shell";
-import ApprovalsSections from "@/components/compliance/approvals-sections/approvals-sections";
-import EmptyState from "@/components/saqeel/empty-state/empty-state";
-import { readApprovalsScope, type SearchParamsInput } from "@/features/compliance/scope";
+import ApprovalQueueScreen from "@/components/sections/approvals/queue/approval-queue-screen/approval-queue-screen";
+import ApprovalsSkeleton from "@/components/sections/approvals/queue/approvals-skeleton/approvals-skeleton";
+import { readApprovalScope, type ApprovalScopeInput } from "@/features/approvals/params";
 import { getMessages } from "@/i18n/messages";
 import { getLocale } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function ApprovalQueuePage({ searchParams }: {
-  searchParams: Promise<SearchParamsInput>;
+  searchParams: Promise<ApprovalScopeInput>;
 }) {
   const [params, locale] = await Promise.all([searchParams, getLocale()]);
-  const scope = readApprovalsScope(params);
-  const messages = getMessages(locale).compliance.approvals;
+  const { approvals } = getMessages(locale);
+  const scope = readApprovalScope(params);
 
   return (
-    <Shell current={scope.routeBase} title={messages.title}>
-      <Suspense fallback={<EmptyState title={messages.loading} busy />}>
-        <ApprovalsSections locale={locale} scope={scope} />
+    <Shell current={scope.routeBase} title={approvals.title}>
+      <Suspense fallback={<ApprovalsSkeleton label={approvals.loading} />}>
+        <ApprovalQueueScreen locale={locale} scope={scope} />
       </Suspense>
     </Shell>
   );

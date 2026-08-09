@@ -114,18 +114,6 @@
     "rateHeading": "Compliance rate",
     "countHeading": "Records"
   },
-  "enforcement": {
-    "title": "Enforcement action trend",
-    "blockedTitle": "Trend unavailable",
-    "blockedDetail": "The repository does not store a governed official violation issue date. No quarterly series is inferred.",
-    "action": "Open Enforcement Library"
-  },
-  "aiBrief": {
-    "eyebrow": "Executive AI brief",
-    "title": "Provider output withheld",
-    "detail": "No generated claim is shown until a configured provider returns evidence-linked output for this scope.",
-    "footnote": "Authoritative dashboard records remain available."
-  },
   "requirement": {
     "title": "Strategic requirement coverage",
     "description": "Decision required: approved description pending."
@@ -206,5 +194,24 @@
       "empty": "No inspector assignments are visible in this scope.",
       "action": "Open Execution"
     }
+  },
+  "trend": {
+    "title": "Enforcement action trend",
+    "current": "{n} this period",
+    "comparison": "{sign}{n}% vs previous period",
+    "noBaseline": "No baseline in the previous period",
+    "restricted": "Penalty notices are not visible to your role",
+    "seriesLabel": "Penalty notices issued, previous period then current",
+    "footnote": "Count of penalty notices issued in the scoped period against the preceding period of equal length.",
+    "action": "Open Enforcement Library"
+  },
+  "executive": {
+    "title": "Executive AI brief",
+    "advisory": "Advisory only · human decides",
+    "evidence": "Generated from the recorded national figures in your access scope.",
+    "idle": "No brief has been generated for this scope yet.",
+    "generate": "Generate brief",
+    "generating": "Generating…",
+    "noCause": "The brief describes recorded movement only. It does not attribute a cause — these figures cannot establish one."
   }
 }

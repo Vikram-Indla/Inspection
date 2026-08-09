@@ -25,6 +25,7 @@ The banner on line 1 of a marked file, exact form:
 | `components/ShellNavIcon.tsx` (3 KB, 36 lines) | `components/saqeel/icon/icon` | 2026-08-07 | `/field` (`components/field/FieldShellDrawer.tsx`) | 0-imports |
 | `app/(app)/operations/sections/operations-details.tsx` (29 lines) | `design/final-cut/saqeel-revamp.html` | 2026-08-08 | `e2e/web-admin-m3-operations.spec.ts` (readFileSync composition assertion) | 0-imports |
 | `app/(app)/visits/VisitsBoard.tsx` (707 lines) | `components/sections/visits/visit-board/visit-board` | 2026-08-09 | **none — zero importers** | 0-imports |
+| `app/(app)/admin/compliance-approvals/**` (page, layout, loading, error) | `app/(app)/compliance/approvals` | 2026-08-10 | **none — `middleware.ts` rewrites this path unconditionally, so the segment never runs** | 0-imports |
 
 `VisitsBoard.tsx` is the **only** row whose `pending` list is empty. It is still
 not deletable: WEB-006 §4's gate also requires a green e2e suite on the
@@ -87,7 +88,16 @@ task that supersedes them lands.
 
 | File | Deleted | Replaced by | Bytes removed |
 | --- | --- | --- | --- |
-| _(none yet)_ | | | |
+| `app/(app)/admin/regulations/RouteContract.tsx` (121 lines) | 2026-08-09 | nothing — never imported by any route | ~4.6 KB |
+| `app/(app)/admin/regulations/m6-library.module.css` (67 lines) | 2026-08-09 | colocated SAQEEL modules under `sections/regulations/**` | ~1.7 KB |
+| `app/(app)/admin/regulations/Controls.tsx` (71 lines, was 314) | 2026-08-10 | `regulations/record/regulation-lifecycle` | ~2.6 KB |
+| `app/(app)/compliance/LibraryTabs.tsx` (39 lines) | 2026-08-10 | `SegmentedControl` + `tab` in `searchParams` | ~1.3 KB |
+| `features/regulations/dossier-source.ts` (100 lines) | 2026-08-10 | `features/regulations/record-source.ts` | ~3.4 KB |
+| `components/sections/regulations/regulation-workspace` (116 lines) | 2026-08-10 | `regulations/workspace/**` | ~5.2 KB |
+| `components/sections/regulations/regulation-dossier` (193 lines) | 2026-08-10 | `regulations/record/regulation-record` | ~9.1 KB |
+| `app/(app)/admin/violations/Controls.tsx` (190 lines) | 2026-08-10 | nothing — every form sat behind `canConfigure = false` | ~7.8 KB |
+| `app/(app)/admin/violations/Controls.module.css` (40 lines) | 2026-08-10 | colocated modules under `sections/enforcement/**` | ~0.9 KB |
+| `app/(app)/admin/violations/actions.ts` (45 lines) | 2026-08-10 | nothing — only `Controls` called it | ~1.8 KB |
 
 ---
 
@@ -95,10 +105,10 @@ task that supersedes them lands.
 
 | | |
 | --- | --- |
-| Files marked | 0 |
-| Files deleted | 0 |
-| Source bytes removed | 0 |
-| CSS bytes removed from legacy sheets | 0 |
+| Files marked | 8 (4 shell/visits pre-dating this work, 4 in the unreachable `/admin/compliance-approvals` segment) |
+| Files deleted | 10 |
+| Source bytes removed | ~36 KB deleted outright; ~2,870 source lines rewritten out of the compliance and enforcement screens (T-036…T-041) |
+| CSS bytes removed from legacy sheets | ~2.6 KB (`m6-library.module.css` T-036, `violations/Controls.module.css` T-041) |
 
 Update this table in every session that deletes anything. It is the clearest
 single measure of whether the redesign is actually reducing the surface area or

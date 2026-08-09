@@ -40,16 +40,16 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   if (authError || access.error !== null) {
     console.error("[ bulk planning authorization]", authError?.message ?? access.error);
     return (
-      <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
+      <Shell current="/planning" title={t("plan.bulk.title", "Plan bulk visits — criteria & targeting")}>
         <div className="sq-banner sq-banner--critical" role="alert">{t("plan.bulk.unavailable", "Planning data is not available right now. Nothing was changed. Try again once access is fixed.")}</div>
       </Shell>
     );
   }
   if (!user || !access.can("planning.create.bulk")) {
     return (
-      <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
+      <Shell current="/planning" title={t("plan.bulk.title", "Plan bulk visits — criteria & targeting")}>
         <EmptyState glyph="⛔" title={tr("plan.bulk.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
-          body={tr("plan.bulk.unauthorized.body", "Plan multiple visits needs Planner or Supervisor access.", "يتطلب تخطيط زيارات متعددة صلاحية المخطط أو المشرف.")} />
+          body={tr("plan.bulk.unauthorized.body", "Plan bulk visits needs Planner or Supervisor access.", "يتطلب تخطيط الزيارات المجمَّعة صلاحية المخطط أو المشرف.")} />
       </Shell>
     );
   }
@@ -88,7 +88,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   if (factoriesError) {
     console.error("[] factories read failed:", factoriesError.message, factoriesError.code);
     return (
-      <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
+      <Shell current="/planning" title={t("plan.bulk.title", "Plan bulk visits — criteria & targeting")}>
         <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list not available")}
           body={t("plan.bulk.serviceUnavailable.body", "We couldn't load the Factory list. Nothing was filtered or published. Try again once access is fixed.")} />
       </Shell>
@@ -116,7 +116,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   if (violationsRead.error || inspectionsRead.error) {
     console.error("[] criteria history read failed:", violationsRead.error?.message ?? inspectionsRead.error?.message);
     return (
-      <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
+      <Shell current="/planning" title={t("plan.bulk.title", "Plan bulk visits — criteria & targeting")}>
         <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list not available")}
           body={t("plan.bulk.serviceUnavailable.body", "We couldn't load the Factory list. Nothing was filtered or published. Try again once access is fixed.")} />
       </Shell>
@@ -382,7 +382,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     unfocusLabel: t("plan.bulk.criteria.unfocusLabel", "Clear focus"),
   };
   return (
-    <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}
+    <Shell current="/planning" title={t("plan.bulk.title", "Plan bulk visits — criteria & targeting")}
       context={<span className="sq-lozenge sq-lozenge--info">{t("plan.bulk.context", "AND/OR criteria builder")}</span>}>
       {ctWasInvalid && (
         <div className="sq-banner sq-banner--warning" role="alert" aria-label={t("plan.bulk.invalidCt.title", "Criteria could not be read")}>

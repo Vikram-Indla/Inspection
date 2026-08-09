@@ -30,6 +30,7 @@ export type VisitsBoardStrings = {
   readonly bulkHeading: string;
   readonly bulkWindowStart: string;
   readonly bulkWindowEnd: string;
+  readonly bulkWindowEmpty: string;
   readonly bulkReason: string;
   readonly bulkRescheduleBtn: string;
   readonly bulkReassignTo: string;
@@ -109,6 +110,7 @@ export function buildVisitsBoardStrings(locale: Locale): VisitsBoardStrings {
     bulkHeading: visit.bulk.heading,
     bulkWindowStart: visit.bulk.windowStart,
     bulkWindowEnd: visit.bulk.windowEnd,
+    bulkWindowEmpty: visit.bulk.windowEmpty,
     bulkReason: visit.bulk.reason,
     bulkRescheduleBtn: visit.bulk.rescheduleBtn,
     bulkReassignTo: visit.bulk.reassignTo,

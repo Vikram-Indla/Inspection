@@ -75,6 +75,60 @@
   min-inline-size: 0;
 }
 
+.summaryLabel {
+  margin: 0;
+  font: var(--sqx-text-overline);
+  letter-spacing: var(--sqx-text-overline-tracking);
+  text-transform: uppercase;
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--sqx-space-5) var(--sqx-space-4);
+  margin: 0;
+}
+
+/* `column-reverse` so the count reads above its label while the DOM keeps the
+   only order a `<dl>` allows — the `<dt>` before its `<dd>`. */
+.stat {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: var(--sqx-space-1);
+  min-inline-size: 0;
+}
+
+/* The label always carries the meaning; tone is redundancy, never the signal
+   (WEB-003 — nothing communicated by colour alone). */
+.statValue {
+  margin: 0;
+  font: var(--sqx-text-metric);
+  font-variant-numeric: var(--sqx-numeric-tabular);
+  color: var(--sqx-text-primary);
+}
+
+.statValue[data-tone="danger"] { color: var(--sqx-status-critical); }
+.statValue[data-tone="warning"] { color: var(--sqx-status-warning); }
+.statValue[data-tone="success"] { color: var(--sqx-status-compliant); }
+.statValue[data-tone="info"] { color: var(--sqx-status-info); }
+
+.statLabel {
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-2);
+  margin-block-start: var(--sqx-space-2);
+}
+
 .term {
   flex: none;
   font: var(--sqx-text-caption);

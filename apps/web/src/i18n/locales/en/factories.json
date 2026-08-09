@@ -10,19 +10,20 @@
     "context": "Selected context"
   },
   "portfolio": {
-    "allLicences": "All licences",
+    "portfolio": "Portfolio",
     "factories": "Factories",
     "highRisk": "High risk",
     "licenceNumber": "Licence number",
     "plantNumber": "Plant number",
     "type": "Type",
     "stage": "Stage",
-    "licenceStatus": "Licence status",
-    "risk": "Risk",
-    "compliance": "Compliance",
     "openViolations": "Open violations",
     "notAvailable": "Not available",
-    "missing": "—"
+    "missing": "—",
+    "activePenalties": "Active penalties",
+    "expiry": "Licence expiry",
+    "expired": "Expired",
+    "expiringSoon": "Expiring soon"
   },
   "risk": {
     "high": "High",
@@ -38,28 +39,31 @@
     "opened": "Opened from Factory 360",
     "plannerNote": "A Planner submits the selected target for Supervisor assignment and release.",
     "industrialLicence": "Industrial licence",
-    "activity": "Activity",
-    "sourceRecord": "Source record"
+    "licenceType": "Licence type",
+    "stage": "Stage"
   },
   "condition": {
     "title": "Overall condition",
     "critical": "Critical attention required",
     "attention": "Attention required",
     "stable": "Stable condition",
-    "unavailable": "Condition unavailable",
-    "basis": "Based only on the saved governed risk band. Compliance and enforcement are shown separately and are never inferred.",
-    "savedRisk": "Saved risk",
-    "riskBand": "Risk band",
-    "approvedCompliance": "Approved compliance"
+    "unavailable": "Condition unavailable"
   },
   "snapshot": {
     "title": "Factory snapshot",
-    "factoryCode": "Factory code",
     "commercialRegistration": "Commercial registration",
-    "region": "Region",
-    "city": "City",
     "activity": "Activity",
-    "licenceState": "Licence state"
+    "licenceState": "Licence state",
+    "overallCondition": "Overall condition",
+    "noReasons": "No recorded signal is raising this condition.",
+    "riskScore": "Risk score",
+    "latestInspection": "Latest inspection",
+    "openViolations": "Open violations",
+    "activePenalties": "Active penalties",
+    "employees": "Employees",
+    "products": "Products",
+    "never": "Never inspected",
+    "notAvailable": "Not available"
   },
   "sections": {
     "availableInProfile": "This section is available in the full factory profile.",
@@ -83,10 +87,108 @@
       }
     }
   },
-  "ai": {
-    "title": "Contextual AI",
-    "withheld": "Provider output withheld",
-    "body": "No generated factory claim is shown without an evidence-linked provider response.",
-    "action": "Review authoritative evidence"
+  "context": {
+    "change": {
+      "moved": "Risk moved from {from} to {to} on {date}.",
+      "first": "Only one risk calculation is recorded, so there is no movement to show.",
+      "none": "No risk calculation has been recorded for this factory."
+    },
+    "sources": {
+      "senaei": "Senaei registry",
+      "riskEngine": "Risk engine",
+      "synced": "Synced",
+      "notSynced": "Not synced",
+      "calculated": "Calculated",
+      "notCalculated": "Not calculated"
+    },
+    "advisory": {
+      "title": "AI assistant",
+      "advisory": "Advisory only · human decides",
+      "evidence": "Generated from this factory’s recorded risk score, band, model version and stored drivers.",
+      "idle": "No advisory has been generated for this factory yet.",
+      "generate": "Explain this risk",
+      "generating": "Generating…",
+      "confidenceUnavailable": "The provider returns no calibrated confidence score, so none is shown."
+    },
+    "outlook": {
+      "title": "Risk outlook",
+      "predictedRisk": "Predicted risk",
+      "predictedUnavailable": "Not available — no forecasting model is configured. Only recorded calculations are shown.",
+      "whyHighRisk": "Why this risk",
+      "driversUnavailable": "No driver breakdown was recorded for this score. The absence is preserved, not reconstructed.",
+      "modelVersion": "Model version",
+      "latestChange": "Latest change",
+      "nextBestAction": "Next best action",
+      "nextBestActionBody": "Review the recorded violations, actions and evidence on the factory profile before deciding.",
+      "nextBestActionLink": "Open factory profile",
+      "noScore": "No risk score recorded"
+    },
+    "trust": {
+      "title": "Source trust",
+      "lastSynchronisation": "Last synchronisation",
+      "dataSources": "Data sources"
+    }
+  },
+  "reason": {
+    "openViolations": "{n} open violations recorded",
+    "inspectedDaysAgo": "Last inspection {n} days ago",
+    "neverInspected": "No inspection has been recorded",
+    "licenceExpired": "Industrial licence has expired",
+    "licenceExpiring": "Industrial licence expires within {n} days"
+  },
+  "compliance": {
+    "title": "Compliance",
+    "description": "Inspection reports, violations and penalties recorded for this factory.",
+    "reports": "Inspection reports",
+    "violations": "Violations",
+    "penalties": "Penalties",
+    "reference": "Visit reference",
+    "recorded": "Recorded",
+    "status": "Status",
+    "decision": "Review decision",
+    "violation": "Violation",
+    "code": "Code",
+    "level": "Level",
+    "notice": "Notice number",
+    "issued": "Issued",
+    "reportsEmpty": "No inspection has been recorded for this factory",
+    "violationsEmpty": "No violation is recorded against this factory",
+    "penaltiesEmpty": "No penalty notice has been issued to this factory",
+    "penaltiesRestricted": "Penalty notices are not visible to your role",
+    "openStateUnavailable": "Violations carry no open or closed state in the record. Only retracted violations are excluded.",
+    "noDecision": "Not reviewed",
+    "trends": "Trends"
+  },
+  "trends": {
+    "title": "Trends",
+    "riskTitle": "Risk trend",
+    "current": "Current",
+    "rising": "+{n} pts vs last calculation",
+    "falling": "−{n} pts vs last calculation",
+    "steady": "No change vs last calculation",
+    "firstCalculation": "First recorded calculation",
+    "noHistory": "No risk calculation has been recorded for this factory.",
+    "complianceTitle": "Compliance trend",
+    "complianceUnavailable": "Not available — no compliance score is recorded for a factory, so there is no series to trend.",
+    "seriesLabel": "Recorded risk scores, oldest first"
+  },
+  "profile": {
+    "title": "Factory profile",
+    "identity": "Identity",
+    "location": "Location",
+    "contacts": "Contacts",
+    "sector": "Sector",
+    "activity": "Activity",
+    "region": "Region",
+    "city": "City",
+    "contact": "Primary contact",
+    "role": "Role",
+    "phone": "Phone",
+    "media": "Recorded media",
+    "officialCount": "{n} official factory images",
+    "inspectionCount": "{n} inspection images",
+    "mediaNote": "Counts only — images are previewed and downloaded from the factory profile, where access is checked per asset.",
+    "openLabel": "Open factory profile",
+    "noContact": "No active representative is recorded"
   }
 }
