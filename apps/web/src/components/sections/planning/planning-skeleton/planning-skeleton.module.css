@@ -1,0 +1,86 @@
+/* Mirrors `.sq-planning-heading`: the title and its subtitle share one row,
+   pushed apart and aligned on their bottom edge — not stacked. */
+.heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sqx-space-5);
+}
+
+/* Mirrors `.grid-toolbar`: a bordered bar whose actions run from the start
+   edge. The columns are sized so the bones read as buttons; the design system
+   has no button-width token, and a percentage would scale them to the page. */
+.toolbar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, var(--sqx-space-13));
+  justify-content: start;
+  align-items: center;
+  gap: var(--sqx-space-3);
+  padding-inline: var(--sqx-space-4);
+  padding-block: var(--sqx-space-3);
+  background: var(--sqx-surface-default);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+  padding: var(--sqx-inset-card);
+  background: var(--sqx-surface-default);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-card);
+}
+
+.filters > :first-child {
+  flex: 1;
+  min-inline-size: var(--sqx-grid-min-sm);
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  margin-inline: calc(var(--sqx-inset-card) * -1);
+}
+
+/* Mirrors the real table: one grid so the bones line up in columns, the header
+   band shaded like `DataTable`'s, and the same cell inset at either edge. */
+.head,
+.row {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: center;
+  gap: var(--sqx-inset-cell);
+  padding-inline: var(--sqx-inset-card);
+  padding-block: var(--sqx-inset-cell-compact);
+}
+
+.head {
+  background: var(--sqx-surface-header);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.row + .row {
+  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-4);
+}
+
+@media (max-width: 75rem) {
+  .head {
+    display: none;
+  }
+
+  .row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    padding-block: var(--sqx-space-4);
+  }
+}

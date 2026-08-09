@@ -1,8 +1,13 @@
-import RouteLoading from "@/components/RouteLoading";
+import Shell from "@/components/Shell";
+import PlanningSkeleton from "@/components/sections/planning/planning-skeleton/planning-skeleton";
+import { getMessages } from "@/i18n/messages";
+import { getLocale } from "@/lib/i18n";
 
-// K-017 — instant visual acknowledgement while the force-dynamic segment
-// renders server-side; shares the RouteLoading skeleton (design-system
-// consistent, bilingual, aria-busy).
-export default function Loading() {
-  return <RouteLoading en="Loading visit planning…" ar="جارٍ تحميل تخطيط الزيارات…" />;
+export default async function Loading() {
+  const { planning } = getMessages(await getLocale());
+  return (
+    <Shell current="/planning" title="">
+      <PlanningSkeleton label={planning.home.loading} />
+    </Shell>
+  );
 }

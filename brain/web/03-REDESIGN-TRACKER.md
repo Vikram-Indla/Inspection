@@ -31,6 +31,22 @@ review by a native speaker, and the bundle measurement request.
 
 ---
 
+### T-021e · Planning skeleton + segmented-control width
+`status: done (static verification only)` · `rules: WEB-000, WEB-002, WEB-003, WEB-009, WEB-011` · `est: 40m`
+`record:` [2026-08-09-T-021e-planning-skeleton-and-segment-width](sessions/2026-08/2026-08-09-T-021e-planning-skeleton-and-segment-width.md)
+
+- **`SegmentedControl` gained `inline-size: fit-content`.** `inline-grid` is not
+  "shrink to fit" for a flex/grid child — those parents blockify and stretch it,
+  which is why the same control was inline in every toolbar but full-width on
+  `/planning`. Fixed once at the base rather than wrapped at one call site.
+- **`planning-skeleton`** replaces `RouteLoading` on `/planning`, mirroring the
+  real first-paint order. The collapsed create-method grid is deliberately not
+  drawn. `RouteLoading` stays — 10+ admin routes still use it.
+
+Touches five screens; wants an LTR **and** RTL pass (mirrored sliding pill).
+
+---
+
 ### T-021d · Shared date presets, visit-status pill, ping geometry
 `status: done (static verification only)` · `rules: WEB-000, WEB-002, WEB-008, WEB-009, WEB-011` · `est: 1h`
 `record:` [2026-08-09-T-021d-shared-date-presets-status-pill-ping](sessions/2026-08/2026-08-09-T-021d-shared-date-presets-status-pill-ping.md)
@@ -394,6 +410,25 @@ filters and tabs moved to `searchParams`.
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
 
+- **`inline-grid` / `inline-flex` is not "shrink to fit" for a flex or grid
+  child** — the parent blockifies and stretches it. `SegmentedControl` carried
+  that bug invisibly until a page placed it outside a toolbar (T-021e). Any
+  other primitive relying on an inline display type for its width has the same
+  trap armed; worth a sweep at the next design-system audit.
+- **A skeleton for a part-migrated screen must be read from the CSS, not the
+  JSX.** `/planning` still gets `.sq-planning-heading` (one row, `space-between`)
+  and `.grid-toolbar` (a bordered bar, actions from the start edge) from the
+  frozen sheets — both lay out differently from how the component tree reads,
+  and T-021e's first cut mirrored the tree and got both wrong. `/planning/bulk`,
+  `/reviews` and `/field` are in the same position.
+- **There is no button-width token.** A skeleton bone standing in for a control
+  has to borrow a spacing token, because every `Skeleton` width is a percentage
+  of its container and percentages scale controls with the viewport. If more
+  skeletons mirror action rows, a real control-width token is the fix.
+- **Every remaining `RouteLoading` consumer is an un-mirrored loading state.**
+  `/dashboard`, `/factories`, `/visits` and `/planning` now have skeletons that
+  match their layout; 10+ admin routes still flash a centred glyph inside a
+  nested `<main>` and re-lay-out on hydration. One per admin migration.
 - **Calendar-period date presets do not exist.** `DateRangePreset` only
   expresses "N days from today", so "this month / quarter / year" cannot be
   built from it — the shell's old labels claiming otherwise were removed rather
