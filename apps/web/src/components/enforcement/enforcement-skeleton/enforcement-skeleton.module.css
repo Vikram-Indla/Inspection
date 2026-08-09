@@ -1,0 +1,13 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: var(--sqx-grid-min-sm) 1fr auto;
+  align-items: center;
+  gap: var(--sqx-space-4);
+}

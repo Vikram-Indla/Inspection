@@ -1,0 +1,6 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-default);
+  min-inline-size: 0;
+}
