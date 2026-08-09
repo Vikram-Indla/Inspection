@@ -1,0 +1,25 @@
+.gates {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--sqx-grid-min-sm), 1fr));
+  gap: var(--sqx-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gate {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-3);
+  min-inline-size: 0;
+  padding: var(--sqx-inset-control);
+  background: var(--sqx-surface-sunken);
+  border-radius: var(--sqx-radius-control);
+}
+
+.label {
+  font: var(--sqx-text-body);
+  color: var(--sqx-text-secondary);
+}

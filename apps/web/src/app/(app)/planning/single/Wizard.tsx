@@ -8,6 +8,8 @@ import type { Locale } from "@/lib/i18n";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import Choice from "@/components/saqeel/choice/choice";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import FactoryResults from "@/components/sections/planning-single/factory-results/factory-results";
+import PublishReadiness from "@/components/sections/planning-single/publish-readiness/publish-readiness";
 import VisitConfiguration from "@/components/sections/planning-single/visit-configuration/visit-configuration";
 import styles from "./single-planning.module.css";
 
@@ -75,7 +77,7 @@ export type WizardStrings = {
   exactBadge: string; exactRule: string; similarBadge: string; similarRule: string;
   degradedBadge: string; degradedRule: string; duplicateWarning: string; duplicateOpenVisit: string; duplicateStatusLabel: string;
   portfolioStep: string; crIdentity: string; selectLicenceHint: string; licenceRequired: string;
-  noLicences: string; noFactoryLink: string; plantLabel: string; selectedProfile: string; sourceLabel: string;
+  noMatchBody: string; noLicences: string; noFactoryLink: string; plantLabel: string; selectedProfile: string; sourceLabel: string;
   prefilledHandoff: string; adminPackageHandoff: string; prefillMiss: string; draftRestored: string;
   saveDraft: string; savingDraft: string; draftSavedPrefix: string; draftError: string;
   licenseStep: string; licenseSelect: string; licenseLabel: string; licenseNone: string;
@@ -90,6 +92,7 @@ export type WizardStrings = {
   notes: string; notesPlaceholder: string;
   windowDate: string; windowTime: string; windowHint: string; noPackages: string;
   readinessTitle: string; readyIdentity: string; readyLicense: string; readyLocation: string; readyInspector: string;
+  gateMet: string; gateUnmet: string; gateOptional: string;
   blockedTitle: string; publish: string; publishing: string; retry: string;
   stepPlan: string; stepVisit: string; stepAssignment: string; stepStatus: string; stepNotification: string;
   stepDone: string; stepFailed: string; stepPending: string;
@@ -343,54 +346,46 @@ export default function Wizard({
         </div>
       )}
 
-      <div className={`panel panel-body ${styles.stepPanel}`}>
-        <h4 className="panel-title">{strings.findFactory}</h4>
-        <span className={`input-affix ${styles.searchField}`}><input className="input" placeholder={strings.searchPlaceholder} value={queryInput} onChange={e => setQueryInput(e.target.value)} /></span>
-        {searching && registryUnavailable && (
-          <div className="alert alert-critical" role="alert">
-            <div>{strings.registryUnavailable}</div>
-            <button type="button" className="btn btn-secondary btn-touch" onClick={() => router.refresh()}>{strings.retry}</button>
-          </div>
-        )}
-        {searching && !registryUnavailable && portfolios.length === 0 && results.length === 0 && (
-          <div className="alert alert-warning"><div>{strings.noMatch}</div></div>
-        )}
-
-        {/* Legacy fallback comparison rail — graded result cards (source:'legacy'),
-            nothing pre-selected; opening a dossier is an explicit click. */}
-        {results.length > 0 && (
-          <ul className={styles.resultList} role="listbox" aria-label={strings.findFactory}>
-            {results.map(f => (
-              <li className={styles.resultItem} key={f.id}>
-                {/* Selecting a candidate IS the explicit act that opens its dossier —
-                    a single radio per result, nothing pre-checked by default (M01-035). */}
-                <Choice
-                  kind="radio"
-                  name="factory_id"
-                  value={f.id}
-                  checked={factoryId === f.id}
-                  onChange={() => { setFactoryId(f.id); setLicenceId(null); setLicenseNumber(""); setLocationConfirmed(false); }}
-                  label={
-                    <span className={styles.choiceLabel}>
-                      <strong>{f.name}</strong>
-                      <StatusPill tone={f.grade === "exact" ? "success" : "warning"}>
-                        {f.grade === "exact" ? strings.exactBadge : strings.similarBadge}
-                      </StatusPill>
-                      {f.degraded ? <StatusPill tone="danger">{strings.degradedBadge}</StatusPill> : null}
-                    </span>
-                  }
-                  description={<><bdi>{f.cr_number ?? "—"}</bdi>{f.license_number ? <> · <bdi>{f.license_number}</bdi></> : null}</>}
-                />
-                {factoryId === f.id && (
-                  <div className={styles.dossier}>
-                    <IdentityDossier factory={f} strings={strings} locale={locale} />
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <Card as="section" labelledBy="single-visit-search">
+        <CardHeader level="h2" titleId="single-visit-search" title={strings.findFactory} />
+        <CardBody>
+          <FactoryResults
+            query={queryInput}
+            results={results.map(f => ({
+              id: f.id,
+              name: f.name,
+              crNumber: f.cr_number,
+              licenseNumber: f.license_number,
+              grade: f.grade,
+              degraded: f.degraded,
+              duplicate: f.duplicate,
+            }))}
+            registryUnavailable={registryUnavailable}
+            selectedId={factoryId}
+            onQueryChange={setQueryInput}
+            onSelect={id => { setFactoryId(id); setLicenceId(null); setLicenseNumber(""); setLocationConfirmed(false); }}
+            onRetry={() => router.refresh()}
+            dossierFor={id => {
+              const found = results.find(entry => entry.id === id);
+              return found ? <IdentityDossier factory={found} strings={strings} locale={locale} /> : null;
+            }}
+            strings={{
+              heading: strings.findFactory,
+              searchLabel: strings.findFactory,
+              searchPlaceholder: strings.searchPlaceholder,
+              exactBadge: strings.exactBadge,
+              similarBadge: strings.similarBadge,
+              degradedBadge: strings.degradedBadge,
+              duplicateWarning: strings.duplicateWarning,
+              noMatch: strings.noMatch,
+              noMatchBody: strings.noMatchBody,
+              registryUnavailable: strings.registryUnavailable,
+              retry: strings.retry,
+              absent: "—",
+            }}
+          />
+        </CardBody>
+      </Card>
 
       {/* Canonical portfolio — CR identity plus EVERY licence/plant under it.
           A licence/plant selection is mandatory before continuing; a CR with
@@ -564,15 +559,20 @@ export default function Wizard({
       )}
 
       {target && (
-        <div className={`panel panel-body ${styles.stepPanel}`}>
-          <h4 className="panel-title">{strings.readinessTitle}</h4>
-          <div className={styles.readinessGrid}>
-            <span className="badge badge-compliant">✓ {strings.readyIdentity}</span>
-            <span className={`badge ${licenseOk ? "badge-compliant" : "badge-critical"}`}>{licenseOk ? "✓" : "✕"} {strings.readyLicense}</span>
-            <span className={`badge ${locationConfirmed ? "badge-compliant" : "badge-critical"}`}>{locationConfirmed ? "✓" : "✕"} {strings.readyLocation}</span>
-            <span className={`badge ${inspectorId ? "badge-compliant" : "badge-draft"}`}>{inspectorId ? "✓" : "○"} {strings.readyInspector}</span>
-          </div>
-        </div>
+        <PublishReadiness
+          gates={[
+            { key: "identity", label: strings.readyIdentity, state: "met" },
+            { key: "licence", label: strings.readyLicense, state: licenseOk ? "met" : "unmet" },
+            { key: "location", label: strings.readyLocation, state: locationConfirmed ? "met" : "unmet" },
+            { key: "inspector", label: strings.readyInspector, state: inspectorId ? "met" : "optional" },
+          ]}
+          strings={{
+            heading: strings.readinessTitle,
+            met: strings.gateMet,
+            unmet: strings.gateUnmet,
+            optional: strings.gateOptional,
+          }}
+        />
       )}
 
       {state.error && (
