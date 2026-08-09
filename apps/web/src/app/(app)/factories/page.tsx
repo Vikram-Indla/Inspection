@@ -5,6 +5,7 @@ import EmptyState from "@/components/EmptyState";
 import FactoriesScopeBar from "@/components/sections/factories/factories-scope-bar/factories-scope-bar";
 import RevampFactory360Portfolio, { type RevampFactoryRow } from "./RevampFactory360Portfolio";
 import { queryPortfolioCounts } from "@/features/factories/portfolio-counts";
+import { isTestSourceFactory } from "@/features/factories/portfolio";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { resolveFactory360Permissions } from "@/lib/factory360/dossier";
 
@@ -33,7 +34,8 @@ export default async function Factories({ searchParams }: {
     .order("cr_number", { ascending: true })
     .range(0, 4_999);
   if (scopeError) console.error("[factory registry] scope load failed", scopeError);
-  const visibleScopeRows = (scopeRows ?? []).filter(row => !isTestFixtureEstablishment(row));
+  const visibleScopeRows = (scopeRows ?? [])
+    .filter(row => !isTestFixtureEstablishment(row) && !isTestSourceFactory(row));
   const crNumbers = [...new Set(visibleScopeRows.map(row => row.cr_number).filter((value): value is string => Boolean(value)))];
   const manualScope = "manual-r05";
   const hasManualRows = visibleScopeRows.some(row => row.is_temporary && row.source === "immediate_manual");
@@ -67,7 +69,9 @@ export default async function Factories({ searchParams }: {
   // F360-SRCH-001/F360-ARCH-001 — prefer the additive CR-centred dossier when
   // this legacy factory has a verified license mapping. If the new projection
   // is unavailable or unmapped, preserve the established /factories/:id path.
-  const portfolioRows: RevampFactoryRow[] = (fs ?? []).filter(row => !isTestFixtureEstablishment(row)).map(({ industrial_licenses, ...row }) => {
+  const portfolioRows: RevampFactoryRow[] = (fs ?? [])
+    .filter(row => !isTestFixtureEstablishment(row) && !isTestSourceFactory(row))
+    .map(({ industrial_licenses, ...row }) => {
     const commercialRegistrationId = industrial_licenses?.[0]?.commercial_registration_id ?? null;
     return {
       ...row,
@@ -77,7 +81,7 @@ export default async function Factories({ searchParams }: {
   });
   const portfolioCounts = await queryPortfolioCounts(sb, portfolioRows.map(row => row.id));
   const error = scopeError ?? portfolioError;
-  const isEmpty = visibleScopeRows.length === 0;
+  const isEmpty = visibleScopeRows.length === 0 || portfolioRows.length === 0;
   const portfolioLabel = requestedScopeValue === manualScope
     ? t("f360.provenance.manualPortfolio", "Manual R05 establishments")
     : `CR ${selectedCr || "—"}`;

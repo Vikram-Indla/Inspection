@@ -459,6 +459,14 @@ Pull one in only if it is genuinely part of doing the active task well.
   that bug invisibly until a page placed it outside a toolbar (T-021e). Any
   other primitive relying on an inline display type for its width has the same
   trap armed; worth a sweep at the next design-system audit.
+- **Seeded test data is excluded on `/factories` only.** T-024 added
+  `isTestSourceFactory` (source-marked test rows) beside the existing
+  `isTestFixtureEstablishment` (name/code fixtures) — **two independent signals,
+  and only the first was being applied**. Every other screen reading `factories`
+  (`/operations`, `/planning`, the dossier routes, the AI briefing) still carries
+  a partial filter or none. **Before any customer demo**, fold both into one
+  shared predicate applied at the query layer, so a caller cannot apply half of
+  it.
 - **`invalidated_at is null` is a proxy for "open violation", not a definition.**
   `violations` has no resolution or closure state, so T-024's count means *not
   retracted*. If the table gains one, the count must move to it.

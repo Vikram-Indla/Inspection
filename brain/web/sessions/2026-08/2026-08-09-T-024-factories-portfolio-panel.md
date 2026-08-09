@@ -60,7 +60,9 @@ Every figure was traced to the schema before anything was built:
    "Not available", never `0`. A fabricated zero on a violations count is worse
    than an admitted gap.
 
-### The provenance pill was not simply deleted
+### The provenance pill — first pass, superseded below
+
+*(Kept for the reasoning; the second pass removed the test rows themselves.)*
 
 The owner called "Test data · not production" useless. It is a **safety signal** —
 it exists so a seeded test factory is not mistaken for a real establishment on a
@@ -72,6 +74,46 @@ It now appears **once**, on the portfolio header, and **only when the portfolio
 is not clean registry data**. Production data shows nothing at all; a test or
 manual establishment shows one warning where it cannot be missed. The signal is
 stronger than before, not weaker.
+
+## Second pass — test data removed, not just its label
+
+The first pass moved the "Test data · not production" pill to a single header
+notice. The owner's point was broader: **this screen is going in front of real
+users, so seeded records must not appear at all** — and where data is genuinely
+absent, say so.
+
+1. **Test factories are now filtered out of the screen entirely.** There were
+   **two independent test signals and only one was being applied**:
+   - `isTestFixtureEstablishment` — matches e2e fixtures by name and factory
+     code (already applied);
+   - `source === "saqeel_test_data"` or a source containing `"test"` — the
+     source system's own marking, which `provenanceOf` used to *label* a row but
+     nothing used to *exclude* it.
+
+   The second is now `isTestSourceFactory`, applied to **both** the scope
+   projection and the portfolio query. That matters: without the scope filter a
+   test CR would still have appeared in the portfolio chooser even once its rows
+   were hidden.
+
+2. **An emptied portfolio now says so.** `isEmpty` covers
+   `portfolioRows.length === 0`, so a CR whose rows were all test data renders
+   the existing "No factories in the list" state instead of a blank column —
+   previously the panel returned `null` and left nothing behind.
+
+3. **The four stats are one card, not four.** A single `Card` with an overline
+   `PORTFOLIO — <CR>` heading over a 2 × 2 `<dl>`, matching the reference. The
+   pair is `column-reverse` so the count reads above its label while the DOM
+   keeps the only order a `<dl>` permits — `<dt>` before its `<dd>`.
+
+4. **Counts carry a tone.** `neutral` by default; `danger` for high risk and open
+   violations, `warning` for active penalties — but **only when the value is
+   non-zero**. A zero high-risk count is good news and must not be painted red,
+   and an unavailable count stays neutral. The label always carries the meaning,
+   so tone is redundancy, never the signal (WEB-003).
+
+The provenance notice stays, but it can no longer say "test" — it now fires only
+for manually created or unverified-source establishments, which are real records
+a user should be warned about.
 
 ## Inventory taken before writing code
 
@@ -130,6 +172,15 @@ new queries     2 (violations via inner joins, penalty_notices), both scoped to
   Contextual AI card. That is the natural next slice.
 - **The middle column is still largely mock-shaped**, and `/factories/cr/[id]`
   is untouched legacy.
+- **`isTestSourceFactory` is applied on `/factories` only.** The same seeded
+  rows are still reachable from every other screen that reads `factories`
+  directly — `/operations`, `/planning`, the dossier routes and the AI briefing
+  each carry their own partial filter or none. A single shared exclusion at the
+  query layer would be the real fix, and it is a repo-wide change.
+- **Two independent test filters now exist** (`isTestFixtureEstablishment` by
+  name/code, `isTestSourceFactory` by source). They catch different things and
+  both are needed; they should be folded into one predicate so a caller cannot
+  apply half of it, which is exactly the bug this pass fixed.
 
 ## Blocked / open questions
 

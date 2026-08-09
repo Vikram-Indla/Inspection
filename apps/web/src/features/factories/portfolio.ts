@@ -76,6 +76,17 @@ function humanised(value: string | null | undefined): string | null {
   return value ? titleCase(value) : null;
 }
 
+/**
+ * Seeded/demo records identified by their recorded source. This is the second
+ * of two independent test filters and they catch different things:
+ * `isTestFixtureEstablishment` matches e2e fixtures by name and factory code,
+ * while this matches anything the source system itself marks as test data.
+ * Neither may reach a customer-facing surface.
+ */
+export function isTestSourceFactory(factory: { source: string | null }): boolean {
+  return factory.source === "saqeel_test_data" || (factory.source?.includes("test") ?? false);
+}
+
 export function provenanceOf(factory: FactoryRow, strings: ProvenanceStrings): {
   label: string;
   tone: StatusTone;

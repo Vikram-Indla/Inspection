@@ -14,10 +14,14 @@ import {
   type ProvenanceStrings,
 } from "@/features/factories/portfolio";
 import type { PortfolioCounts } from "@/features/factories/portfolio-counts";
+import type { StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import { formatDate } from "@/lib/dates";
 import { fill, getMessages } from "@/i18n/messages";
 
 export type RevampFactoryRow = FactoryRow;
+
+const alertTone = (value: number | null, raised: StatusTone): StatusTone =>
+  (value === null || value === 0 ? "neutral" : raised);
 
 function planningHandoffHref(factory: FactoryRow): string {
   const query = new URLSearchParams({ factory: factory.id, source: "factory360" });
@@ -122,12 +126,22 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
           licences={licences}
           selectedId={selected.id}
           onSelect={setSelectedId}
-          summary={{
-            factories: factories.length,
-            highRisk,
-            openViolations: counts.openViolationsAvailable ? totalOpenViolations : null,
-            activePenalties: counts.activePenaltiesAvailable ? totalActivePenalties : null,
-          }}
+          stats={[
+            { key: "factories", label: copy.portfolio.factories, value: factories.length, tone: "neutral" },
+            { key: "highRisk", label: copy.portfolio.highRisk, value: highRisk, tone: alertTone(highRisk, "danger") },
+            {
+              key: "openViolations",
+              label: copy.portfolio.openViolations,
+              value: counts.openViolationsAvailable ? totalOpenViolations : null,
+              tone: alertTone(counts.openViolationsAvailable ? totalOpenViolations : null, "danger"),
+            },
+            {
+              key: "activePenalties",
+              label: copy.portfolio.activePenalties,
+              value: counts.activePenaltiesAvailable ? totalActivePenalties : null,
+              tone: alertTone(counts.activePenaltiesAvailable ? totalActivePenalties : null, "warning"),
+            },
+          ]}
           provenanceNotice={provenanceNotice}
           formatDate={iso => formatDate(iso, locale)}
           strings={{

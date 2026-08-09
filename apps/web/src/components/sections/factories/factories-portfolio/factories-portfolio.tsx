@@ -1,7 +1,6 @@
 import { type ReactNode } from "react";
-import { Card, CardBody, CardGrid, CardHeader } from "@/components/saqeel/card/card";
+import { Card, CardBody } from "@/components/saqeel/card/card";
 import Icon from "@/components/saqeel/icon/icon";
-import StatCard from "@/components/saqeel/stat-card/stat-card";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import type { LicenceExpiryState } from "@/features/factories/portfolio";
 import styles from "./factories-portfolio.module.css";
@@ -22,11 +21,11 @@ export type PortfolioLicence = {
   readonly provenanceTone: StatusTone;
 };
 
-export type PortfolioSummary = {
-  readonly factories: number;
-  readonly highRisk: number;
-  readonly openViolations: number | null;
-  readonly activePenalties: number | null;
+export type PortfolioStat = {
+  readonly key: string;
+  readonly label: string;
+  readonly value: number | null;
+  readonly tone: StatusTone;
 };
 
 export type PortfolioStrings = {
@@ -90,7 +89,7 @@ export default function FactoriesPortfolio({
   licences,
   selectedId,
   onSelect,
-  summary,
+  stats,
   provenanceNotice,
   formatDate,
   strings,
@@ -99,7 +98,7 @@ export default function FactoriesPortfolio({
   licences: readonly PortfolioLicence[];
   selectedId: string;
   onSelect: (id: string) => void;
-  summary: PortfolioSummary;
+  stats: readonly PortfolioStat[];
   provenanceNotice: { readonly label: string; readonly tone: StatusTone } | null;
   formatDate: (iso: string) => string;
   strings: PortfolioStrings;
@@ -107,22 +106,23 @@ export default function FactoriesPortfolio({
   return (
     <>
       <Card as="section" labelledBy="factories-portfolio-summary">
-        <CardHeader
-          level="h2"
-          titleId="factories-portfolio-summary"
-          eyebrow={strings.portfolio}
-          title={<span dir="auto">{portfolioLabel}</span>}
-          trailing={provenanceNotice
+        <CardBody gap="tight">
+          <h2 className={styles.summaryLabel} id="factories-portfolio-summary">
+            {strings.portfolio} — <span dir="auto">{portfolioLabel}</span>
+          </h2>
+          <dl className={styles.summaryGrid}>
+            {stats.map(stat => (
+              <div className={styles.stat} key={stat.key}>
+                <dt className={styles.statLabel}>{stat.label}</dt>
+                <dd className={styles.statValue} data-tone={stat.tone}>
+                  {stat.value ?? strings.notAvailable}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          {provenanceNotice
             ? <StatusPill tone={provenanceNotice.tone}>{provenanceNotice.label}</StatusPill>
-            : undefined}
-        />
-        <CardBody>
-          <CardGrid min="sm">
-            <StatCard label={strings.factories} value={summary.factories} />
-            <StatCard label={strings.highRisk} value={summary.highRisk} />
-            <StatCard label={strings.openViolations} value={summary.openViolations ?? strings.notAvailable} />
-            <StatCard label={strings.activePenalties} value={summary.activePenalties ?? strings.notAvailable} />
-          </CardGrid>
+            : null}
         </CardBody>
       </Card>
 
