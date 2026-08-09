@@ -94,9 +94,6 @@ export default function RevampOperationsCenter({
         }}
       />
 
-      {/* Map branch below uses .map-panel + .lv-map: .map-panel sets no height
-          and OperationsMapWorkspace fills its parent, so it collapsed to the
-          breadcrumb line alone — the reason "View on map" opened nothing. */}
       {showList ? (
           <OperationsEntryTable
             rows={activeMapEntries.map(entry => ({
