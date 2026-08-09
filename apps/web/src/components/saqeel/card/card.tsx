@@ -7,6 +7,7 @@ type CardProps = {
   children: ReactNode;
   as?: CardElement;
   interactive?: boolean;
+  accent?: "ai";
   labelledBy?: string;
   role?: string;
 };
@@ -20,12 +21,13 @@ type CardHeaderProps = {
   level?: "h2" | "h3";
 };
 
-export function Card({ children, as = "article", interactive, labelledBy, role }: CardProps) {
+export function Card({ children, as = "article", interactive, accent, labelledBy, role }: CardProps) {
   const Root = as;
   return (
     <Root
       className={styles.root}
       data-interactive={interactive ? "" : undefined}
+      data-accent={accent}
       aria-labelledby={labelledBy}
       role={role}
     >

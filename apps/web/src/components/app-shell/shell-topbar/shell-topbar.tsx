@@ -78,15 +78,18 @@ export default async function ShellTopbar({ view, mobileNav }: {
             initialFrom={range.from}
             initialTo={range.to}
             initialRegion=""
+            locale={locale}
             strings={{
               dateScope: common.field.dateScope,
-              last30Days: common.scope.last30Days,
               from: common.field.from,
               to: common.field.to,
               apply: common.action.apply,
+              previousMonth: common.action.previousMonth,
+              nextMonth: common.action.nextMonth,
               regionScope: common.field.regionScope,
               allRegions: common.scope.allRegions,
               notApplicable: common.state.notApplicable,
+              presets: common.scope,
             }}
           />
         </div>

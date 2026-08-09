@@ -1,6 +1,8 @@
 {
   "action": {
     "apply": "تطبيق",
+    "previousMonth": "الشهر السابق",
+    "nextMonth": "الشهر التالي",
     "reset": "إعادة تعيين",
     "cancel": "إلغاء",
     "close": "إغلاق",
@@ -31,7 +33,13 @@
   },
   "scope": {
     "allRegions": "جميع المناطق",
-    "last30Days": "آخر 30 يوماً"
+    "today": "اليوم",
+    "last7Days": "آخر 7 أيام",
+    "last30Days": "آخر 30 يوماً",
+    "last90Days": "آخر 90 يوماً",
+    "lastYear": "آخر سنة",
+    "next7Days": "خلال 7 أيام",
+    "next30Days": "خلال 30 يوماً"
   },
   "state": {
     "empty": "لا يوجد شيء بعد",

@@ -47,8 +47,7 @@ export default function ComplianceExplorer({ rows, lenses, currentLens, hrefFor,
       cell: row => <span className={styles.label} title={row.label}>{row.label}</span>,
     },
     {
-      key: "rate", header: strings.rateHeading, width: "grow",
-      cell: row => (
+      key: "rate", header: strings.rateHeading,      cell: row => (
         <span className={styles.meter}>
           <span className={styles.track} aria-hidden="true">
             {row.rate === null ? null : <span className={styles.fill} style={rateStyle(row.rate)} />}

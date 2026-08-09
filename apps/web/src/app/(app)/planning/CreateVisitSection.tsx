@@ -1,9 +1,11 @@
 "use client";
 import { type ReactNode, useState } from "react";
 import Button from "@/components/saqeel/button/button";
+import Icon from "@/components/saqeel/icon/icon";
+import type { IconName } from "@/components/saqeel/icon/icon-registry";
 
 export type CreateVisitMethod = {
-  glyph: string;
+  icon: IconName;
   title: string;
   desc: string;
   href: string;
@@ -41,13 +43,13 @@ export default function CreateVisitSection({ methods, strings, canCreate, childr
           <div className="planning-create-methods__grid">
             {methods.map(m => m.blockedReason ? (
               <div key={m.href} className="planning-create-method planning-create-method--blocked" aria-disabled="true">
-                <span className="planning-create-method__glyph" aria-hidden="true">{m.glyph}</span>
+                <span className="planning-create-method__glyph"><Icon name={m.icon} size="md" /></span>
                 <div><span className="panel-title">{m.title}</span><span>{m.desc}</span></div>
                 <span className="badge badge-warning">{m.blockedReason}</span>
               </div>
             ) : (
               <a key={m.href} href={m.href} className="planning-create-method">
-                <span className="planning-create-method__glyph" aria-hidden="true">{m.glyph}</span>
+                <span className="planning-create-method__glyph"><Icon name={m.icon} size="md" /></span>
                 <span><span className="panel-title">{m.title}</span><span>{m.desc}</span></span>
               </a>
             ))}

@@ -2,14 +2,21 @@ import styles from "./count-badge.module.css";
 
 export type CountBadgeTone = "neutral" | "accent" | "danger";
 
-export default function CountBadge({ value, tone = "neutral", label }: {
+export default function CountBadge({ value, tone = "neutral", label, superscript }: {
   value: number | string;
   tone?: CountBadgeTone;
   label?: string;
+  superscript?: boolean;
 }) {
+  const Root = superscript ? "sup" : "span";
   return (
-    <span className={styles.root} data-tone={tone} aria-label={label}>
+    <Root
+      className={styles.root}
+      data-tone={tone}
+      data-superscript={superscript ? "" : undefined}
+      aria-label={label}
+    >
       {value}
-    </span>
+    </Root>
   );
 }

@@ -1,4 +1,5 @@
 import {
+  ArrowUpRight,
   Bell,
   Building2,
   CalendarDays,
@@ -74,6 +75,7 @@ export const ICONS = {
   regionScope: MapPin,
   dateScope: CalendarDays,
   commandPalette: Command,
+  externalLink: ArrowUpRight,
 } as const;
 
 export type IconName = keyof typeof ICONS;

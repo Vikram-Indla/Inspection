@@ -43,8 +43,7 @@ export default function OperationsKpiContract({
       cell: row => <StatusPill tone="neutral" ping={false}>{row.sourceStatus}</StatusPill>,
     },
     {
-      key: "formula", header: strings.formula, width: "grow",
-      cell: row => row.formula ?? strings.missing,
+      key: "formula", header: strings.formula,      cell: row => row.formula ?? strings.missing,
     },
   ];
 

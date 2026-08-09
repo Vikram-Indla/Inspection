@@ -55,8 +55,12 @@
 
 
 .head[data-align="end"] { text-align: end; }
+
+/* `min` hugs its content (control and flag columns). Every other column is
+   auto, so the table's surplus is distributed across all of them in proportion
+   to their content instead of being handed to one column — which is what put a
+   dead gap after the widest column and squeezed its neighbours into wrapping. */
 .head[data-width="min"] { inline-size: 0; }
-.head[data-width="grow"] { inline-size: 100%; }
 
 .row {
   transition: background-color var(--sqx-duration-fast) var(--sqx-ease-standard);
@@ -64,6 +68,10 @@
 
 .row:hover {
   background: var(--sqx-surface-subtle);
+}
+
+.row[data-selected] {
+  background: var(--sqx-surface-accent);
 }
 
 .row + .row .rowHead,

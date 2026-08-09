@@ -25,11 +25,13 @@ export default function MenuRow({ id, label, selected, active, count, onSelect }
       tabIndex={-1}
       onClick={onSelect}
     >
+      <span className={styles.label}>
+        {label}
+        {typeof count === "number" ? <CountBadge value={count} superscript /> : null}
+      </span>
       <span className={styles.check}>
         <Icon name="selected" size="md" />
       </span>
-      <span className={styles.label}>{label}</span>
-      {typeof count === "number" ? <CountBadge value={count} /> : null}
     </button>
   );
 }

@@ -7,9 +7,10 @@ import styles from "./data-table.module.css";
 export type DataColumn<T> = {
   readonly key: string;
   readonly header: string;
+  readonly headerControl?: ReactNode;
   readonly cell: (row: T) => ReactNode;
   readonly align?: "start" | "end";
-  readonly width?: "min" | "auto" | "grow";
+  readonly width?: "min" | "auto";
   readonly isRowHeader?: boolean;
   readonly numeric?: boolean;
 };
@@ -20,10 +21,11 @@ export type DataTableEmpty = {
   readonly icon?: IconName;
 };
 
-export default function DataTable<T>({ rows, columns, getRowId, caption, empty, density = "default", bleed = true }: {
+export default function DataTable<T>({ rows, columns, getRowId, getRowSelected, caption, empty, density = "default", bleed = true }: {
   rows: readonly T[];
   columns: readonly DataColumn<T>[];
   getRowId: (row: T) => string;
+  getRowSelected?: (row: T) => boolean;
   caption?: string;
   empty: DataTableEmpty;
   density?: "compact" | "default";
@@ -47,14 +49,14 @@ export default function DataTable<T>({ rows, columns, getRowId, caption, empty, 
                 data-align={column.align ?? "start"}
                 data-width={column.width ?? "auto"}
               >
-                {column.header}
+                {column.headerControl ?? column.header}
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
           {rows.map(row => (
-            <tr className={styles.row} key={getRowId(row)}>
+            <tr className={styles.row} key={getRowId(row)} data-selected={getRowSelected?.(row) ? "" : undefined}>
               {columns.map(column => column.isRowHeader ? (
                 <th
                   className={styles.rowHead}

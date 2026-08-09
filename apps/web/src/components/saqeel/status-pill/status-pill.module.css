@@ -6,7 +6,7 @@
   max-inline-size: 100%;
   gap: var(--sqx-space-2);
   min-block-size: var(--sqx-space-6);
-  padding-inline: var(--sqx-space-2);
+  padding-inline: var(--sqx-space-3);
   font: var(--sqx-text-caption);
   letter-spacing: var(--sqx-text-caption-tracking);
   font-weight: var(--sqx-weight-semibold);
@@ -21,9 +21,11 @@
   text-overflow: ellipsis;
 }
 
+/* The ping only widens the gap between dot and label. It must not touch
+   padding: setting only `padding-inline-start` left the trailing letter sitting
+   on the border while the leading edge had twice the air. */
 .pill[data-ping] {
   gap: var(--sqx-space-3);
-  padding-inline-start: var(--sqx-space-3);
 }
 
 .pill[data-tone="neutral"],

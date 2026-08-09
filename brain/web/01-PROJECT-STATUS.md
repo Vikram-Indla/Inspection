@@ -1,6 +1,41 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-07` · `Updated by: T-002 — SAQEEL design system`
+`Last updated: 2026-08-09` · `Updated by: T-021a — Visit Management`
+
+> **The tracker's NOW section below is older than the work.** Since the last
+> status refresh, `/dashboard`, `/operations`, `/factories` (list **and**
+> `[id]` dossier), the `/planning` list, and now **Visit Management**
+> (`/planning/visits` + `/visits`) have all been migrated onto SAQEEL. Several
+> of those tasks have session records; the dashboard and operations migrations
+> still do not. Read `02-SESSION-LOG.md` for what actually happened.
+
+## Where Visit Management stands (2026-08-09)
+
+The screen behind `/planning` → **Visit management** is migrated. The 706-line
+`VisitsBoard` client monolith is superseded by six components under
+`components/sections/visits/**` (none over 182 lines) plus a five-module data
+layer at `features/visits/**`; both route files are 36 lines.
+
+**The list is now server-driven.** Nine client filter states became
+`searchParams`, implemented by reusing `queryPlanningVisits` — the hardened
+query already behind `/planning` — extended additively with
+`requireReference: false` so Visit Management keeps the reference-less visits it
+exists to correct while `/planning` stays provably unchanged. 14 `useState` → 2,
+3 effects → 2, 37 inline style objects → tokens, one inline `<svg>` → the new
+`externalLink` registry name, and 259 i18n keys at exact `en`/`ar` parity.
+
+`VisitsBoard.tsx` has **zero importers** and is marked `@retiring`. It is the
+only retirement row with an empty `pending` list — deleting it needs the e2e
+specs updated, nothing more.
+
+**`npm run typecheck` is clean across the whole repository (2026-08-09).** It had
+not been: `shell-topbar.tsx:81` failed for several sessions and was carried as
+"pre-existing". T-021d found it was masking two live defects in the topbar's date
+scope — five of seven presets rendering `undefined` labels, and a `locale` that
+was never passed, so the shell never rendered Arabic-Indic digits. Treat a
+standing type error in a shared component as a defect, not as noise.
+
+---
 
 ---
 

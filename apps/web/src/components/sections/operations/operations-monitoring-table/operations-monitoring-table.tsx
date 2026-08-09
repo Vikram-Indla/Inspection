@@ -55,8 +55,7 @@ export default function OperationsMonitoringTable({ rows, refreshedAt, enumLabel
       ),
     },
     {
-      key: "factory", header: strings.factory, width: "grow",
-      cell: row => row.factory_id
+      key: "factory", header: strings.factory,      cell: row => row.factory_id
         ? <Link className={styles.link} href={`/factories/${row.factory_id}`} prefetch={false}>{row.factory_name ?? MISSING}</Link>
         : (row.factory_name ?? MISSING),
     },

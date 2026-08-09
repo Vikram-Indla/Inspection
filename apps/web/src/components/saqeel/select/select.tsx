@@ -114,8 +114,8 @@ export default function SaqeelSelect({
       >
         <span className={styles.value} data-placeholder={selected ? undefined : ""}>
           {selected?.label ?? placeholder ?? label}
+          {selected && typeof selected.count === "number" ? <CountBadge value={selected.count} superscript /> : null}
         </span>
-        {selected && typeof selected.count === "number" ? <CountBadge value={selected.count} /> : null}
         <span className={styles.chevron}>
           <Icon name="disclosure" size="md" />
         </span>

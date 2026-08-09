@@ -1,6 +1,8 @@
 {
   "action": {
     "apply": "Apply",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
     "reset": "Reset",
     "cancel": "Cancel",
     "close": "Close",
@@ -31,7 +33,13 @@
   },
   "scope": {
     "allRegions": "All Regions",
-    "last30Days": "Last 30 days"
+    "today": "Today",
+    "last7Days": "Last 7 days",
+    "last30Days": "Last 30 days",
+    "last90Days": "Last 90 days",
+    "lastYear": "Last year",
+    "next7Days": "Next 7 days",
+    "next30Days": "Next 30 days"
   },
   "state": {
     "empty": "Nothing yet",

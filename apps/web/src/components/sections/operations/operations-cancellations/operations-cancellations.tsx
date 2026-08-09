@@ -50,7 +50,7 @@ export default function OperationsCancellations({ rows, strings }: {
       key: "visit", header: strings.visit, isRowHeader: true, width: "min",
       cell: row => <CellLink href={row.visitHref}><bdi>{row.visitLabel}</bdi></CellLink>,
     },
-    { key: "factory", header: strings.factory, width: "grow", cell: row => <span dir="auto">{row.factoryName}</span> },
+    { key: "factory", header: strings.factory, cell: row => <span dir="auto">{row.factoryName}</span> },
     { key: "inspector", header: strings.inspector, cell: row => <bdi dir="auto">{row.inspectorName}</bdi> },
     { key: "region", header: strings.region, cell: row => row.region },
     { key: "reason", header: strings.reason, cell: row => <span dir="auto">{row.reason}</span> },

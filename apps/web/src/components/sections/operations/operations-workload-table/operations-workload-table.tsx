@@ -26,8 +26,7 @@ export default function OperationsWorkloadTable({ rows, strings }: {
 }) {
   const columns: DataColumn<WorkloadRow>[] = [
     {
-      key: "inspector", header: strings.inspector, isRowHeader: true, width: "grow",
-
+      key: "inspector", header: strings.inspector, isRowHeader: true,
       cell: row => <bdi dir="auto">{row.inspector}</bdi>,
     },
     { key: "assigned", header: strings.assigned, align: "end", numeric: true, cell: row => row.assigned },

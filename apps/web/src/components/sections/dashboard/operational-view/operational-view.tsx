@@ -50,8 +50,7 @@ export default function OperationalView({ locale, metrics, projection, partialSo
 
   const capacityColumns: DataColumn<WorkloadRow>[] = [
     {
-      key: "inspector", header: copy.capacity.inspector, isRowHeader: true, width: "grow",
-      cell: row => row.nameResolved
+      key: "inspector", header: copy.capacity.inspector, isRowHeader: true,      cell: row => row.nameResolved
         ? <span className={styles.name} dir="auto">{row.name}</span>
         : <StatusPill tone="neutral">{copy.capacity.unresolved}</StatusPill>,
     },
