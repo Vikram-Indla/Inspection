@@ -465,9 +465,10 @@ Pull one in only if it is genuinely part of doing the active task well.
   that bug invisibly until a page placed it outside a toolbar (T-021e). Any
   other primitive relying on an inline display type for its width has the same
   trap armed; worth a sweep at the next design-system audit.
-- **`FactoryRisk` now has two consumers** (`/factories/[id]` and the end panel),
-  so by the Rule of Two it has earned promotion out of `sections/factories/` —
-  but its copy is still Factory-360-specific and would need generalising first.
+- **`FactoryRisk` and `factory-risk-outlook` overlap.** Both render a score, band
+  pill and driver lines; the outlook adds predicted risk, latest change and the
+  action. If `/factories/[id]` ever wants those three sections, it should adopt
+  `factory-risk-outlook` and `FactoryRisk` retires.
 - **The mock's "Top Risks" list has no source.** Overdue checklist items, repeat
   violations within 12 months and inspection-cycle breaches each need a governed
   definition and a query. The recorded driver breakdown is the honest stand-in

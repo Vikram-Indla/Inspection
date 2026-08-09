@@ -18,8 +18,6 @@ export type FactoryAiAdvisoryStrings = {
   readonly generate: string;
   readonly generating: string;
   readonly confidenceUnavailable: string;
-  readonly predictedRisk: string;
-  readonly predictedUnavailable: string;
 };
 
 export default function FactoryAiAdvisory({ factoryId, locale, strings }: {
@@ -56,11 +54,6 @@ export default function FactoryAiAdvisory({ factoryId, locale, strings }: {
             {pending ? strings.generating : strings.generate}
           </Button>
         </form>
-
-        <p className={styles.predicted}>
-          <span className={styles.predictedTerm}>{strings.predictedRisk}</span>
-          <span className={styles.muted}>{strings.predictedUnavailable}</span>
-        </p>
       </CardBody>
     </Card>
   );

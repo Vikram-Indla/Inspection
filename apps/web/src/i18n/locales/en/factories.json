@@ -85,23 +85,12 @@
     }
   },
   "context": {
-    "risk": {
-      "heading": "Why this risk",
-      "score": "Risk score",
-      "noScore": "No risk score recorded",
-      "version": "Model version",
-      "recalculated": "Last recalculated",
-      "desc": "Recomputed from the stored inputs for this model version. Every calculation is retained.",
-      "driversUnavailable": "No driver breakdown was recorded for this score. The absence is preserved, not reconstructed."
-    },
     "change": {
-      "title": "Latest change",
       "moved": "Risk moved from {from} to {to} on {date}.",
       "first": "Only one risk calculation is recorded, so there is no movement to show.",
       "none": "No risk calculation has been recorded for this factory."
     },
     "sources": {
-      "title": "Data sources",
       "senaei": "Senaei registry",
       "riskEngine": "Risk engine",
       "synced": "Synced",
@@ -116,9 +105,25 @@
       "idle": "No advisory has been generated for this factory yet.",
       "generate": "Explain this risk",
       "generating": "Generating…",
-      "confidenceUnavailable": "The provider returns no calibrated confidence score, so none is shown.",
+      "confidenceUnavailable": "The provider returns no calibrated confidence score, so none is shown."
+    },
+    "outlook": {
+      "title": "Risk outlook",
       "predictedRisk": "Predicted risk",
-      "predictedUnavailable": "Not available — no forecasting model is configured. Only recorded calculations are shown."
+      "predictedUnavailable": "Not available — no forecasting model is configured. Only recorded calculations are shown.",
+      "whyHighRisk": "Why this risk",
+      "driversUnavailable": "No driver breakdown was recorded for this score. The absence is preserved, not reconstructed.",
+      "modelVersion": "Model version",
+      "latestChange": "Latest change",
+      "nextBestAction": "Next best action",
+      "nextBestActionBody": "Review the recorded violations, actions and evidence on the factory profile before deciding.",
+      "nextBestActionLink": "Open factory profile",
+      "noScore": "No risk score recorded"
+    },
+    "trust": {
+      "title": "Source trust",
+      "lastSynchronisation": "Last synchronisation",
+      "dataSources": "Data sources"
     }
   }
 }

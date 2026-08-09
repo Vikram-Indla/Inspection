@@ -26,18 +26,4 @@
   text-wrap: pretty;
 }
 
-.predicted {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sqx-space-1);
-  margin: 0;
-  padding-block-start: var(--sqx-space-4);
-  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
-}
 
-.predictedTerm {
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
-  color: var(--sqx-text-muted);
-}

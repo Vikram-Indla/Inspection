@@ -4,7 +4,8 @@ import { useState } from "react";
 import FactoriesPortfolio from "@/components/sections/factories/factories-portfolio/factories-portfolio";
 import FactoryAiAdvisory from "@/components/sections/factories/factory-ai-advisory/factory-ai-advisory";
 import FactoryContext from "@/components/sections/factories/factory-context/factory-context";
-import FactoryRisk from "@/components/sections/factories/factory-risk/factory-risk";
+import FactoryRiskOutlook from "@/components/sections/factories/factory-risk-outlook/factory-risk-outlook";
+import FactoryTrust from "@/components/sections/factories/factory-trust/factory-trust";
 import FactoryOverview from "@/components/sections/factories/factory-overview/factory-overview";
 import FactoryWorkspace from "@/components/sections/factories/factory-workspace/factory-workspace";
 import {
@@ -75,8 +76,6 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
     licence: copy.hero.industrialLicence,
     plant: copy.portfolio.plantNumber,
     sourceStatus: provenanceStrings.sourceStatus,
-    dataSources: copy.context.sources.title,
-    latestChange: copy.context.change.title,
     missing: copy.portfolio.missing,
   };
   const movement = riskMovement.get(selected.id) ?? null;
@@ -196,22 +195,24 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
         <FactoryContext
           factory={selected}
           provenance={provenance}
-          sources={sources}
-          latestChange={latestChange}
           strings={contextStrings}
-          risk={
-            <FactoryRisk
-              heading={copy.context.risk.heading}
+          outlook={
+            <FactoryRiskOutlook
               score={selected.risk_score === null ? copy.portfolio.missing : String(selected.risk_score)}
               band={selected.risk_band ? { label: condition.label, tone: condition.tone } : null}
-              noScoreLabel={copy.context.risk.noScore}
-              facts={[
-                { label: copy.context.risk.version, value: selected.risk_version ?? copy.portfolio.missing },
-                { label: copy.context.risk.recalculated, value: day(selected.risk_calculated_at) },
-              ]}
-              description={copy.context.risk.desc}
+              noScoreLabel={copy.context.outlook.noScore}
+              modelVersion={selected.risk_version ?? copy.portfolio.missing}
               drivers={toDriverLines(selected.risk_drivers, copy.portfolio.missing)}
-              driversUnavailable={copy.context.risk.driversUnavailable}
+              latestChange={latestChange}
+              actionHref={selected.dossier_href}
+              strings={copy.context.outlook}
+            />
+          }
+          trust={
+            <FactoryTrust
+              lastSynchronised={selected.source_synced_at ? day(selected.source_synced_at) : provenanceStrings.freshnessUnavailable}
+              sources={sources}
+              strings={copy.context.trust}
             />
           }
           advisory={
@@ -226,8 +227,6 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
                 generate: copy.context.advisory.generate,
                 generating: copy.context.advisory.generating,
                 confidenceUnavailable: copy.context.advisory.confidenceUnavailable,
-                predictedRisk: copy.context.advisory.predictedRisk,
-                predictedUnavailable: copy.context.advisory.predictedUnavailable,
               }}
             />
           }

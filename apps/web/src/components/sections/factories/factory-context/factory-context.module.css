@@ -9,31 +9,5 @@
   color: var(--sqx-text-muted);
 }
 
-.sourcesLabel {
-  margin: 0;
-  padding-block-start: var(--sqx-space-4);
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
-  color: var(--sqx-text-muted);
-  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
-}
 
-.sources {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sqx-space-3);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
 
-.source {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sqx-space-3);
-  font: var(--sqx-text-label);
-  color: var(--sqx-text-secondary);
-}

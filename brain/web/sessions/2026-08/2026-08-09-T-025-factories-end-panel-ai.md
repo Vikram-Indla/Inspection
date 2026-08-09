@@ -73,6 +73,45 @@ The `factories.ai.*` strings ("Contextual AI · Provider output withheld") becam
 unreachable when the placeholder card was replaced, and are deleted rather than
 left to rot.
 
+## Corrected after owner review — the two blocks are their own cards
+
+The first pass scattered the mock's last two blocks into other cards: predicted
+risk became a footer line on the AI card, and the data-source list a tail on the
+provenance card. The owner wanted them as **cards in their own right, above the
+AI one** — which is how the reference groups them, and it reads better.
+
+Two new components, and the duplication that would have caused was removed
+rather than tolerated:
+
+| New card | Contents | Replaced |
+| --- | --- | --- |
+| `factory-risk-outlook` | `PREDICTED RISK` · `WHY THIS RISK` (score, band pill, recorded driver lines, model version, latest change) · `NEXT BEST ACTION` | the separate `FactoryRisk` card **and** the separate latest-change card |
+| `factory-trust` | `LAST SYNCHRONISATION` · `DATA SOURCES` | the data-source tail on the provenance card |
+
+**End panel order is now:** AI advisory → selected context → risk outlook →
+source trust → provenance. Five cards, no section stated twice.
+
+The AI card **leads** the panel (owner ruling): it is what a reader opens this
+column for, and the governed cards beneath it are what they check the advisory
+against. That ordering also keeps the `accent="ai"` stroke from sitting in the
+middle of a stack of neutral cards, where it read as an interruption.
+
+**`FactoryRisk` is no longer used here.** Folding its score/band/drivers into the
+outlook card was the only way to have the mock's three labelled sections
+together without printing the driver breakdown twice. It keeps its single
+consumer on `/factories/[id]`, so the Rule-of-Two promotion note is withdrawn.
+
+**`NEXT BEST ACTION` is navigation, not advice.** The mock writes a specific
+instruction ("review the fire alarm violation and its action form"). We have no
+such finding, and inventing one would be exactly the fabrication this panel
+avoids elsewhere. Ours points at the factory profile — "review the recorded
+violations, actions and evidence before deciding" — which is true regardless of
+what the record holds.
+
+Four string groups went stale in the move (`context.risk.*`, the two
+`predicted*` advisory keys, `context.sources.title`, `context.change.title`) and
+are deleted; the orphaned `.predicted*` and `.sources*` CSS classes with them.
+
 ## Inventory taken before writing code
 
 - **Client islands:** +1 (`factory-ai-advisory`). `factory-context` stays
@@ -120,9 +159,10 @@ new queries     1 (factory_risk_snapshots over the portfolio ids, skipped when
 - **The risk snapshot query loads every portfolio factory** to serve one selected
   card. Portfolios are a single CR so the set is small, but a per-selection fetch
   would be leaner if a CR ever holds many factories.
-- **`FactoryRisk` is now used by two screens** (`/factories/[id]` and the end
-  panel). By the Rule of Two it has earned promotion out of
-  `sections/factories/`, but its copy is still Factory-360-specific.
+- **`FactoryRisk` and `factory-risk-outlook` now overlap.** Both render a score,
+  a band pill and driver lines; the outlook adds predicted risk, latest change
+  and the action. If `/factories/[id]` ever wants the same three sections, the
+  detail page should adopt `factory-risk-outlook` and `FactoryRisk` retires.
 - **The mock's "Top Risks" list has no source.** Overdue checklist items, repeat
   violations within 12 months and inspection-cycle breaches would each need a
   governed definition and a query. The driver breakdown is the honest stand-in.
