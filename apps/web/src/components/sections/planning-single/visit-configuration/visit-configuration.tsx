@@ -120,51 +120,56 @@ export default function VisitConfiguration({
         </Field>
       </div>
 
-      <fieldset className={styles.group}>
-        <legend className={styles.legend}>{strings.mode}</legend>
-        <Choice
-          kind="radio"
-          name="execution_mode_choice"
-          value="physical"
-          label={strings.modePhysical}
-          description={eligibility.physical ? undefined : strings.modeIneligible}
-          checked={value.mode === "physical"}
-          disabled={!eligibility.physical}
-          onChange={() => set("mode", "physical")}
-        />
-        <Choice
-          kind="radio"
-          name="execution_mode_choice"
-          value="virtual"
-          label={strings.modeVirtual}
-          description={eligibility.virtual ? undefined : strings.modeIneligible}
-          checked={value.mode === "virtual"}
-          disabled={!eligibility.virtual}
-          onChange={() => set("mode", "virtual")}
-        />
-      </fieldset>
+      <div className={styles.fields}>
+        <fieldset className={styles.group}>
+          <legend className={styles.legend}>{strings.mode}</legend>
+          <Choice
+            kind="radio"
+            name="execution_mode_choice"
+            value="physical"
+            label={strings.modePhysical}
+            description={eligibility.physical ? undefined : strings.modeIneligible}
+            checked={value.mode === "physical"}
+            disabled={!eligibility.physical}
+            onChange={() => set("mode", "physical")}
+          />
+          <Choice
+            kind="radio"
+            name="execution_mode_choice"
+            value="virtual"
+            label={strings.modeVirtual}
+            description={eligibility.virtual ? undefined : strings.modeIneligible}
+            checked={value.mode === "virtual"}
+            disabled={!eligibility.virtual}
+            onChange={() => set("mode", "virtual")}
+          />
+        </fieldset>
 
-      <DateRangePicker
-        from={value.windowStart}
-        to={value.windowEnd}
-        onChange={range => onChange({ ...value, windowStart: range.from, windowEnd: range.to })}
-        label={strings.window}
-        displayValue={windowDisplay}
-        presets={upcomingDateRangePresets(strings.presetLabels)}
-        locale={locale}
-        monthLabels={{ previous: strings.previousMonth, next: strings.nextMonth }}
-        strings={{
-          from: strings.windowStart,
-          to: strings.windowEnd,
-          pickStart: strings.windowStart,
-          pickEnd: strings.windowEnd,
-          reset: strings.windowClear,
-          apply: strings.windowApply,
-          empty: strings.windowEmpty,
-        }}
-        timeLabels={{ from: strings.windowStartTime, to: strings.windowEndTime }}
-        withTime
-      />
+        <Field label={strings.window}>
+          <DateRangePicker
+            from={value.windowStart}
+            to={value.windowEnd}
+            onChange={range => onChange({ ...value, windowStart: range.from, windowEnd: range.to })}
+            label={strings.window}
+            displayValue={windowDisplay}
+            block
+            presets={upcomingDateRangePresets(strings.presetLabels)}
+            locale={locale}
+            monthLabels={{ previous: strings.previousMonth, next: strings.nextMonth }}
+            strings={{
+              from: strings.windowStart,
+              to: strings.windowEnd,
+              pickStart: strings.windowStart,
+              pickEnd: strings.windowEnd,
+              reset: strings.windowClear,
+              apply: strings.windowApply,
+              empty: strings.windowEmpty,
+            }}
+            timeLabels={{ from: strings.windowStartTime, to: strings.windowEndTime }}
+            withTime
+          />
+        </Field>
+      </div>
       <p className={styles.hint}>{strings.windowHint}</p>
 
       <fieldset className={styles.group}>

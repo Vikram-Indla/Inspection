@@ -40,6 +40,15 @@ export type DateRangePickerProps = {
   disabled?: boolean;
   align?: "start" | "end";
   /**
+   * Fill the container instead of shrink-wrapping.
+   *
+   * The default suits a toolbar chip, where the trigger is as wide as its
+   * label. A form field is the other case: it belongs to a column and should
+   * match the controls above and below it rather than sit as a small pill in a
+   * wide empty row.
+   */
+  block?: boolean;
+  /**
    * Show a time control beside each end of the range.
    *
    * Off, `from`/`to` stay plain `YYYY-MM-DD` and nothing about the picker
@@ -105,6 +114,7 @@ export default function DateRangePicker({
   strings = DEFAULT_STRINGS,
   disabled,
   align = "start",
+  block = false,
   withTime = false,
   timeStep = DEFAULT_TIME_STEP,
   timeLabels,
@@ -196,7 +206,7 @@ export default function DateRangePicker({
   });
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} data-block={block ? "" : undefined}>
       <button
         className={styles.trigger}
         ref={triggerRef}
