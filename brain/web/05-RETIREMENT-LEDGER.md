@@ -94,6 +94,9 @@ task that supersedes them lands.
 | `features/regulations/dossier-source.ts` (100 lines) | 2026-08-10 | `features/regulations/record-source.ts` | ~3.4 KB |
 | `components/sections/regulations/regulation-workspace` (116 lines) | 2026-08-10 | `regulations/workspace/**` | ~5.2 KB |
 | `components/sections/regulations/regulation-dossier` (193 lines) | 2026-08-10 | `regulations/record/regulation-record` | ~9.1 KB |
+| `app/(app)/admin/violations/Controls.tsx` (190 lines) | 2026-08-10 | nothing — every form sat behind `canConfigure = false` | ~7.8 KB |
+| `app/(app)/admin/violations/Controls.module.css` (40 lines) | 2026-08-10 | colocated modules under `sections/enforcement/**` | ~0.9 KB |
+| `app/(app)/admin/violations/actions.ts` (45 lines) | 2026-08-10 | nothing — only `Controls` called it | ~1.8 KB |
 
 ---
 
@@ -102,9 +105,9 @@ task that supersedes them lands.
 | | |
 | --- | --- |
 | Files marked | 8 (4 shell/visits pre-dating this work, 4 in the unreachable `/admin/compliance-approvals` segment) |
-| Files deleted | 7 |
-| Source bytes removed | ~26 KB deleted outright; ~1,670 source lines rewritten out of the compliance library (T-036…T-038) |
-| CSS bytes removed from legacy sheets | ~1.7 KB (`m6-library.module.css`, T-036) |
+| Files deleted | 10 |
+| Source bytes removed | ~36 KB deleted outright; ~2,870 source lines rewritten out of the compliance and enforcement screens (T-036…T-041) |
+| CSS bytes removed from legacy sheets | ~2.6 KB (`m6-library.module.css` T-036, `violations/Controls.module.css` T-041) |
 
 Update this table in every session that deletes anything. It is the clearest
 single measure of whether the redesign is actually reducing the surface area or

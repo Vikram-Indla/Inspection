@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { riyadhToday } from "@/lib/dates";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { supabaseServer } from "@/lib/supabase-server";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
@@ -68,7 +69,7 @@ export async function GET(request: Request) {
   return new NextResponse(lines.join("\n"), {
     headers: {
       "content-type": "text/csv; charset=utf-8",
-      "content-disposition": `attachment; filename="saqeel-enforcement-${new Date().toISOString().slice(0, 10)}.csv"`,
+      "content-disposition": `attachment; filename="saqeel-enforcement-${riyadhToday()}.csv"`,
       "cache-control": "no-store",
     },
   });

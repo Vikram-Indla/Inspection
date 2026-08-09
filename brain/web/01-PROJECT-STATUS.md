@@ -1,6 +1,26 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-10` · `Updated by: T-040 — compliance approval queue`
+`Last updated: 2026-08-10` · `Updated by: T-041 — enforcement library + violation catalogue`
+
+## Where enforcement stands (2026-08-10)
+
+Both screens behind `/admin/violations` are migrated: the enforcement library
+(410 → 24) and the catalogue admin (511 → 26). **All three rewritten routes are
+now done** — compliance library, approval queue, enforcement.
+
+The recurring lesson across T-036…T-041 is that **the schema holds more than the
+screens admit**. Every one of these migrations found recorded columns the UI was
+ignoring while showing a placeholder or a UUID: `inspections.inspection_no`,
+`inspection_penalties.status`, penalty `amount`, `violation_codes.corrective_action`,
+`compliance_configuration_requests.description`. Read the migrations before
+concluding a value is unavailable — `0001_foundation.sql` alone understates the
+schema badly.
+
+**Dates:** `new Date().toISOString().slice(0, 10)` appears in unmigrated code as
+a "today" for date-bounded comparisons. It is the UTC day and rolls over three
+hours early in Riyadh. `riyadhToday()` in `lib/dates.ts` is the correct one.
+
+---
 
 ## Where the approval queue stands (2026-08-10)
 

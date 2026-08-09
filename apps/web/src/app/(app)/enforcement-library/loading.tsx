@@ -1,5 +1,8 @@
-import { StateSurface } from "@/components/saqeel/feedback/StateSurface";
+import EnforcementSkeleton from "@/components/sections/enforcement/library/enforcement-skeleton/enforcement-skeleton";
+import { getMessages } from "@/i18n/messages";
+import { getLocale } from "@/lib/i18n";
 
-export default function EnforcementLibraryLoading() {
-  return <StateSurface kind="loading" title="Loading Violations & Penalties" body="Loading the violations, penalties, and action forms you can access." />;
+export default async function EnforcementLoading() {
+  const { enforcement } = getMessages(await getLocale());
+  return <EnforcementSkeleton label={enforcement.loading} />;
 }

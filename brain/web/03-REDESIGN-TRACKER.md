@@ -28,6 +28,21 @@ measurement.
 
 ---
 
+### T-041 · Enforcement library + violation catalogue
+`status: done (NEVER LOADED IN A BROWSER)` · `rules: WEB-000…006, WEB-008, WEB-009, WEB-011` · `est: 3.5h`
+`record:` [2026-08-10-T-041-enforcement-library-and-catalogue](sessions/2026-08/2026-08-10-T-041-enforcement-library-and-catalogue.md)
+
+Both screens behind `/admin/violations`: the enforcement library (410 → 24) and
+the catalogue admin (511 → 26). Record/Action split, the official inspection
+number, penalty amount and issued-vs-informational state, a Riyadh-correct
+lifecycle clock, and 166 i18n keys. 275 lines of unreachable write layer deleted.
+
+**Owed:** load both, confirm the inspection number renders, decide whether the
+catalogue admin needs a navigation entry — it is currently reachable only by
+typing `?mode=`.
+
+---
+
 ### T-040 · Compliance approval queue
 `status: done (NEVER LOADED IN A BROWSER)` · `rules: WEB-000…006, WEB-008, WEB-009, WEB-011` · `est: 3h`
 `record:` [2026-08-10-T-040-approval-queue](sessions/2026-08/2026-08-10-T-040-approval-queue.md)

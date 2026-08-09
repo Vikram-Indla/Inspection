@@ -1,21 +1,29 @@
-import Shell from "@/components/Shell";
-import { SkeletonBlock } from "@/components/Skeleton";
-import { useT } from "@/lib/i18n";
+import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
+import { Skeleton, SkeletonRegion } from "@/components/saqeel/skeleton/skeleton";
+import { getMessages } from "@/i18n/messages";
+import { getLocale } from "@/lib/i18n";
 
-export default async function ViolationsLoading() {
-  const { t } = await useT();
+const CARDS = 5;
+const ROWS = 4;
+
+export default async function Loading() {
+  const { enforcement } = getMessages(await getLocale());
   return (
-    <Shell current="/admin" title={t("admin.viol.r2.title", "Violation Catalogue")} context={<span className="badge badge-info">{t("admin.viol.context", "Violations and penalties")}</span>}>
-      <section className="stack" aria-busy="true" aria-live="polite" aria-label={t("admin.viol.loading.aria", "Loading violation configuration")}>
-        <span className="t-caption">{t("admin.viol.loading", "Loading violation catalogue and penalty mappings…")}</span>
-        {[0, 1, 2].map(index => (
-          <div key={index} className="panel stack" style={{ padding: "var(--space-6)", gap: "var(--space-3)" }}>
-            <SkeletonBlock inlineSize="35%" blockSize={24} />
-            <SkeletonBlock inlineSize="70%" blockSize={16} />
-            <SkeletonBlock inlineSize="55%" blockSize={16} />
-          </div>
-        ))}
-      </section>
-    </Shell>
+    <SkeletonRegion label={enforcement.loading}>
+      {Array.from({ length: CARDS }, (_unused, card) => (
+        <Card as="div" key={card}>
+          <CardHeader
+            eyebrow={<Skeleton shape="line" width="narrow" size="sm" />}
+            title={<Skeleton shape="line" width="wide" size="lg" />}
+            trailing={<Skeleton shape="pill" width="narrow" />}
+          />
+          <CardBody gap="tight">
+            {Array.from({ length: ROWS }, (_ignored, row) => (
+              <Skeleton key={row} shape="line" width={row % 2 === 0 ? "full" : "wide"} size="sm" />
+            ))}
+          </CardBody>
+        </Card>
+      ))}
+    </SkeletonRegion>
   );
 }
