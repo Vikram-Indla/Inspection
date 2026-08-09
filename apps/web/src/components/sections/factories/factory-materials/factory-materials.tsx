@@ -27,7 +27,7 @@ export default function FactoryMaterials({ rows, error, strings }: {
   strings: MaterialsStrings;
 }) {
   const columns: DataColumn<MaterialRow>[] = [
-    { key: "name", header: strings.name, isRowHeader: true, width: "grow", cell: row => row.name },
+    { key: "name", header: strings.name, isRowHeader: true, cell: row => row.name },
     { key: "source", header: strings.source, cell: row => <StatusPill tone={row.sourceTone}>{row.sourceLabel}</StatusPill> },
     { key: "hsCode", header: strings.hsCode, numeric: true, align: "end", cell: row => <CellMuted>{row.hsCode}</CellMuted> },
   ];

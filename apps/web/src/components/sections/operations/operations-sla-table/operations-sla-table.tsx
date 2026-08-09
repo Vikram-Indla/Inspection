@@ -35,7 +35,7 @@ export default function OperationsSlaTable({ rows, strings }: {
       key: "visit", header: strings.visit, isRowHeader: true,
       cell: row => <CellLink href={row.visitHref}><bdi>{row.visitLabel}</bdi></CellLink>,
     },
-    { key: "factory", header: strings.factory, width: "grow", cell: row => row.factoryName },
+    { key: "factory", header: strings.factory, cell: row => row.factoryName },
     {
       key: "deadline", header: strings.deadline, numeric: true,
       cell: row => <CellMuted>{row.deadline}</CellMuted>,

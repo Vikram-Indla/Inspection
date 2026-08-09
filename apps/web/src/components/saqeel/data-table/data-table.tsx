@@ -10,7 +10,7 @@ export type DataColumn<T> = {
   readonly headerControl?: ReactNode;
   readonly cell: (row: T) => ReactNode;
   readonly align?: "start" | "end";
-  readonly width?: "min" | "auto" | "grow";
+  readonly width?: "min" | "auto";
   readonly isRowHeader?: boolean;
   readonly numeric?: boolean;
 };

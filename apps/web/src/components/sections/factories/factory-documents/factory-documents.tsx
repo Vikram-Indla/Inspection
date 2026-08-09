@@ -37,7 +37,7 @@ export default function FactoryDocuments({ rows, error, strings }: {
 }) {
   const columns: DataColumn<DocumentRow>[] = [
     { key: "type", header: strings.type, cell: row => <StatusPill tone="info">{row.typeLabel}</StatusPill> },
-    { key: "title", header: strings.docTitle, isRowHeader: true, width: "grow", cell: row => row.title },
+    { key: "title", header: strings.docTitle, isRowHeader: true, cell: row => row.title },
     { key: "reference", header: strings.reference, numeric: true, cell: row => <CellMuted>{row.reference}</CellMuted> },
     { key: "validFrom", header: strings.validFrom, numeric: true, align: "end", cell: row => <CellMuted>{row.validFrom}</CellMuted> },
     { key: "validTo", header: strings.validTo, numeric: true, align: "end", cell: row => <CellMuted>{row.validTo}</CellMuted> },

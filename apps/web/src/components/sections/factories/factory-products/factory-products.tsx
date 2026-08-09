@@ -31,7 +31,7 @@ export default function FactoryProducts({ rows, error, strings }: {
   strings: ProductsStrings;
 }) {
   const columns: DataColumn<ProductRow>[] = [
-    { key: "name", header: strings.name, isRowHeader: true, width: "grow", cell: row => row.name },
+    { key: "name", header: strings.name, isRowHeader: true, cell: row => row.name },
     { key: "hsCode", header: strings.hsCode, numeric: true, align: "end", cell: row => <CellMuted>{row.hsCode}</CellMuted> },
     { key: "unit", header: strings.unit, cell: row => row.unit },
     { key: "capacity", header: strings.capacity, numeric: true, align: "end", cell: row => <CellMuted>{row.capacity}</CellMuted> },

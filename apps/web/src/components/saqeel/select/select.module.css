@@ -39,6 +39,16 @@
   white-space: nowrap;
 }
 
+/* Matches the menu row: the count rides the selected label as a superscript,
+   so the trigger reads as one value rather than a value plus a badge. */
+.count {
+  margin-inline-start: var(--sqx-space-1);
+  font-variant-numeric: var(--sqx-numeric-tabular);
+  font-weight: var(--sqx-weight-semibold);
+  line-height: 0;
+  color: var(--sqx-text-muted);
+}
+
 .value[data-placeholder] {
   font: var(--sqx-text-body);
   color: var(--sqx-text-muted);

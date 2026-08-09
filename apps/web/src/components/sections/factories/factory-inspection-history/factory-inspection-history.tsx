@@ -60,8 +60,7 @@ export default function FactoryInspectionHistory({ rows, sensitive, strings }: {
       cell: row => sensitive ? row.violations.map(v => <StatusPill key={v.key} tone="danger">{v.code}</StatusPill>) : <CellMuted>{strings.restricted}</CellMuted>,
     },
     {
-      key: "actions", header: strings.actions, width: "grow",
-      cell: row => sensitive ? <CellMuted>{row.actions ?? MISSING}</CellMuted> : <CellMuted>{strings.restricted}</CellMuted>,
+      key: "actions", header: strings.actions,      cell: row => sensitive ? <CellMuted>{row.actions ?? MISSING}</CellMuted> : <CellMuted>{strings.restricted}</CellMuted>,
     },
     {
       key: "review", header: strings.review,

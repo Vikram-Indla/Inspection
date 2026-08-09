@@ -44,7 +44,7 @@ export default function FactoryRiskHistory({ rows, violations, relatedEmptyNote,
     { key: "score", header: strings.score, numeric: true, align: "end", cell: row => row.score },
     { key: "band", header: strings.band, cell: row => row.band },
     { key: "model", header: strings.model, cell: row => <CellMuted>{row.model}</CellMuted> },
-    { key: "drivers", header: strings.drivers, width: "grow", cell: row => <CellMuted>{row.drivers}</CellMuted> },
+    { key: "drivers", header: strings.drivers, cell: row => <CellMuted>{row.drivers}</CellMuted> },
   ];
   return (
     <Card as="section" labelledBy="risk">

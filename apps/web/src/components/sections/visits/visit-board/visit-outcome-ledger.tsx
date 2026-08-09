@@ -43,7 +43,7 @@ export default function VisitOutcomeLedger({ result, verb, strings, routeBase, s
       header: strings.ledgerColOutcome,
       cell: item => <StatusPill tone={OUTCOME_TONE[item.outcome]}>{strings.outcomeShort[item.outcome]}</StatusPill>,
     },
-    { key: "reason", header: strings.ledgerColReason, width: "grow", cell: item => strings.outcome[item.outcome] },
+    { key: "reason", header: strings.ledgerColReason, cell: item => strings.outcome[item.outcome] },
   ];
 
   return (

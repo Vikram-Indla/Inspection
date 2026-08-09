@@ -33,7 +33,7 @@ export default function FactoryRepresentatives({ rows, error, strings }: {
   strings: RepresentativesStrings;
 }) {
   const columns: DataColumn<RepresentativeRow>[] = [
-    { key: "name", header: strings.name, isRowHeader: true, width: "grow", cell: row => row.name },
+    { key: "name", header: strings.name, isRowHeader: true, cell: row => row.name },
     { key: "role", header: strings.role, cell: row => row.role },
     { key: "phone", header: strings.phone, numeric: true, cell: row => <CellMuted>{row.phone}</CellMuted> },
     { key: "email", header: strings.email, cell: row => <CellMuted>{row.email}</CellMuted> },

@@ -108,6 +108,8 @@
       "map": "Map"
     },
     "state": {
+      "loading": "Loading visits",
+      "loadingBody": "Fetching visits in your organizational scope.",
       "unavailableTitle": "Visits not available",
       "unavailableBody": "Visits are not available right now. Nothing was changed. Try again.",
       "unauthorizedTitle": "You don't have permission",

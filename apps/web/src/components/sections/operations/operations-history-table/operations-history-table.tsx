@@ -36,7 +36,7 @@ export default function OperationsHistoryTable({ rows, strings }: {
       key: "visit", header: strings.visit, width: "min",
       cell: row => <CellLink href={row.visitHref}><bdi>{row.visitLabel}</bdi></CellLink>,
     },
-    { key: "event", header: strings.event, width: "grow", cell: row => row.event },
+    { key: "event", header: strings.event, cell: row => row.event },
     { key: "geofence", header: strings.geofence, cell: row => row.geofence },
     {
       key: "position", header: strings.position, align: "end", numeric: true,

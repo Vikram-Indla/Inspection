@@ -33,7 +33,7 @@ export default function FactoryLocationLog({ rows, strings }: {
     { key: "when", header: strings.when, isRowHeader: true, numeric: true, cell: row => <CellTime dateTime={row.whenIso}>{row.when}</CellTime> },
     { key: "kind", header: strings.kind, cell: row => <StatusPill tone={row.kindTone}>{row.kindLabel}</StatusPill> },
     { key: "coordinates", header: strings.coordinates, numeric: true, cell: row => <CellMuted><bdi>{row.coords}</bdi></CellMuted> },
-    { key: "mismatch", header: strings.mismatch, width: "grow", cell: row => row.reason },
+    { key: "mismatch", header: strings.mismatch, cell: row => row.reason },
     { key: "visit", header: strings.visit, width: "min", cell: row => <CellLink href={row.visitHref}><bdi>{row.visitShort}</bdi></CellLink> },
   ];
   return (

@@ -53,7 +53,7 @@ export default function OperationsEntryTable({ rows, strings }: {
       key: "visit", header: strings.visit, numeric: true,
       cell: row => <bdi className={styles.code}>{row.visitId?.slice(0, ID_PREVIEW) ?? MISSING}</bdi>,
     },
-    { key: "factory", header: strings.factory, width: "grow", cell: row => row.factoryName },
+    { key: "factory", header: strings.factory, cell: row => row.factoryName },
     {
       key: "location", header: strings.location,
       cell: row => [row.region, row.city].filter(Boolean).join(" · ") || MISSING,

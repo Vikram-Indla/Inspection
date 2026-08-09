@@ -37,8 +37,7 @@ export default function OperationsRiskTable({ rows, strings }: {
 }) {
   const columns: DataColumn<RiskRow>[] = [
     {
-      key: "factory", header: strings.factory, isRowHeader: true, width: "grow",
-      cell: row => <CellLink href={row.href}><bdi dir="auto">{row.name}</bdi></CellLink>,
+      key: "factory", header: strings.factory, isRowHeader: true,      cell: row => <CellLink href={row.href}><bdi dir="auto">{row.name}</bdi></CellLink>,
     },
     {
       key: "location", header: strings.location,

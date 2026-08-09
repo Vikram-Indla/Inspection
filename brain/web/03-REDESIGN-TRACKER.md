@@ -31,6 +31,24 @@ review by a native speaker, and the bundle measurement request.
 
 ---
 
+### T-021c · Primitive refinements + Visit Management skeleton
+`status: done (static verification only)` · `rules: WEB-000, WEB-002, WEB-003, WEB-009, WEB-011` · `est: 1.5h`
+`record:` [2026-08-09-T-021c-primitive-refinements-and-visits-skeleton](sessions/2026-08/2026-08-09-T-021c-primitive-refinements-and-visits-skeleton.md)
+
+Three base-primitive defects fixed at source, one skeleton built:
+
+- **`DataTable`** — `grow` gave one column 100 % of the slack (dead gap + a
+  wrapped neighbour). Rule deleted, **rung deleted**, 20 call sites updated.
+- **`Select` / `MenuRow`** — count is a `<sup>` inside the label, not a badge
+  beside it; the selected-check moved to the row's end.
+- **`StatusPill`** — symmetric `padding-inline`; `[data-ping]` no longer
+  overrides only the start edge.
+- **`visits-skeleton`** — mirrors the real layout; both loading routes rebuilt.
+
+All four are visual and need a browser pass in light/dark and RTL.
+
+---
+
 ### T-021b · Visit Management — remaining surfaces
 `status: todo` · `rules: WEB-002 §2, WEB-003` · `est: 4h` · `blocked-by: T-021a e2e`
 
@@ -359,6 +377,19 @@ filters and tabs moved to `searchParams`.
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
 
+- **WEB-000 §2 bans `/* */` but does not scope the ban to a language**, and the
+  design-system CSS (`saqeel.css`, `data-table.module.css`,
+  `menu-surface.module.css`) is full of rationale comments written under these
+  rules. T-021c followed that convention when commenting three primitive fixes.
+  **Needs an owner ruling:** exempt design-system CSS rationale explicitly, or
+  strip the comments repo-wide. A rule that the codebase visibly disobeys is
+  worse than either answer.
+- **`DataTable` column widths are now entirely content-driven** after T-021c
+  deleted `grow`. If a screen genuinely needs a fixed proportion, that is a new
+  explicit rung (a numeric weight) — not a revival of `grow`.
+- **`CountBadge` has exactly one consumer left** (`factories-scope-bar`) now
+  that `Select`/`MenuRow` render counts as superscripts. If that one adopts the
+  same treatment, the primitive retires.
 - **The reassignment roster is fetched for every visible row at page load**, not
   for the selection the user actually makes. Up to ten RPC round-trips per load,
   and because `list_available_reassignment_inspectors` is all-or-nothing per

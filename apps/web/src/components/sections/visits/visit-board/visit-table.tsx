@@ -55,7 +55,6 @@ export default function VisitTable({ rows, selected, activeId, strings, onToggle
     {
       key: "factory",
       header: strings.colFactory,
-      width: "grow",
       cell: row => (
         <span className={styles.stackCell}>
           <span dir="auto">{row.factoryName}</span>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useId, useRef, useState, type KeyboardEvent } from "react";
-import CountBadge from "../count-badge/count-badge";
 import Icon from "../icon/icon";
 import MenuSurface from "../menu-surface/menu-surface";
 import MenuRow from "../menu-surface/menu-row";
@@ -114,8 +113,8 @@ export default function SaqeelSelect({
       >
         <span className={styles.value} data-placeholder={selected ? undefined : ""}>
           {selected?.label ?? placeholder ?? label}
+          {selected && typeof selected.count === "number" ? <sup className={styles.count}>{selected.count}</sup> : null}
         </span>
-        {selected && typeof selected.count === "number" ? <CountBadge value={selected.count} /> : null}
         <span className={styles.chevron}>
           <Icon name="disclosure" size="md" />
         </span>
