@@ -442,6 +442,15 @@ Pull one in only if it is genuinely part of doing the active task well.
   that bug invisibly until a page placed it outside a toolbar (T-021e). Any
   other primitive relying on an inline display type for its width has the same
   trap armed; worth a sweep at the next design-system audit.
+- **`CreateVisitSection` still uses emoji glyphs** (`▦ ▣ ⚡`) — a standing
+  `emoji-as-icon` finding. The new planning create menu uses registry icons for
+  the same three methods, so the two now disagree visually. Migrating that
+  component belongs with T-023's route slim, which also folds the duplicated
+  method list into `features/planning/`.
+- **A nullable count must not mean two things.** `PlanningQuickAction.count` used
+  `null` for both "this action has no count" and "the count failed to read", so
+  two available actions rendered "Unavailable" (T-022). Any future optional
+  figure needs the two states separated at the type.
 - **"Needs Planning" and "Expiring Windows" need governed definitions.** A
   factory with no visit in the inspection year, and a day threshold before window
   end. Both render *Not configured* on `/planning` until a value is ruled.

@@ -31,6 +31,7 @@ import PlanningInsights from "@/components/sections/planning/planning-insights/p
 import PlanningAiAdvisory from "@/components/sections/planning/planning-ai-advisory/planning-ai-advisory";
 import PlanningRecommendations from "@/components/sections/planning/planning-recommendations/planning-recommendations";
 import PlanningQuickActions from "@/components/sections/planning/planning-quick-actions/planning-quick-actions";
+import PlanningCreateMenu, { type PlanningCreateOption } from "@/components/sections/planning/planning-quick-actions/planning-create-menu";
 import PlanningStatCards from "@/components/sections/planning/planning-stat-cards/planning-stat-cards";
 import { buildPlanningAssistantView } from "@/features/planning/assistant-view";
 
@@ -245,6 +246,12 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
     { glyph: "⚡", title: planning.methods.immediateTitle, desc: planning.methods.immediateDesc, href: "/planning/immediate" },
   ];
 
+  const createOptions: PlanningCreateOption[] = [
+    { key: "bulk", title: planning.methods.bulkTitle, description: planning.methods.bulkDesc, href: "/planning/bulk" },
+    { key: "single", title: planning.methods.singleTitle, description: planning.methods.singleDesc, href: "/planning/single" },
+    { key: "immediate", title: planning.methods.immediateTitle, description: planning.methods.immediateDesc, href: "/planning/immediate" },
+  ];
+
   const enumLabel = (value: string) => sentenceCase(t(`enum.${value}`, humaniseEnum(value)));
   const tabLabels: Record<PlanningTab, string> = {
     all: planning.tabs.all,
@@ -386,6 +393,12 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
           <PlanningQuickActions
             actions={assistantView.quickActions}
             strings={{ title: planning.assistant.quickActionsTitle, unavailable: planning.assistant.unavailable }}
+            createMenu={
+              <PlanningCreateMenu
+                label={planning.assistant.quickCreateVisit}
+                options={createOptions}
+              />
+            }
           />
         }
       />

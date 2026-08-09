@@ -1,7 +1,7 @@
 import { fill } from "@/i18n/messages";
 import type { PlanningListCounts, PlanningTab } from "@/lib/planning/visit-list";
 import type { PlanningInsightFact } from "@/components/sections/planning/planning-insights/planning-insights";
-import type { PlanningQuickAction } from "@/components/sections/planning/planning-quick-actions/planning-quick-actions";
+import type { PlanningQuickAction, PlanningQuickActionCount } from "@/components/sections/planning/planning-quick-actions/planning-quick-actions";
 import type { PlanningStat } from "@/components/sections/planning/planning-stat-cards/planning-stat-cards";
 import type { PlanningAssistantData, PlanningRecommendation } from "./assistant";
 
@@ -32,6 +32,8 @@ export function buildPlanningAssistantView({
   enumLabel: (value: string) => string;
 }): PlanningAssistantView {
   const visitCount = (tab: PlanningTab) => (countsAvailable ? counts[tab] : null);
+  const actionCount = (value: number | null): PlanningQuickActionCount =>
+    (value === null ? "unavailable" : value);
   const attention = countsAvailable ? counts.draft + counts.returned + counts.expired : null;
 
   const headline = attention === null
@@ -48,12 +50,11 @@ export function buildPlanningAssistantView({
   ];
 
   const quickActions: PlanningQuickAction[] = [
-    { key: "planRecommended", label: assistantStrings.quickPlanRecommended, href: "/planning/bulk", count: assistant.aiSuggested },
-    { key: "returned", label: assistantStrings.quickReviewReturned, href: tabHref("returned"), count: visitCount("returned") },
-    { key: "draft", label: assistantStrings.quickReviewDraft, href: tabHref("draft"), count: visitCount("draft") },
-    { key: "supervision", label: assistantStrings.quickAwaitingSupervisor, href: tabHref("pending_supervision"), count: visitCount("pending_supervision") },
-    { key: "weeklyPlan", label: assistantStrings.quickWeeklyPlan, href: "/planning/bulk", count: null },
-    { key: "createVisit", label: assistantStrings.quickCreateVisit, href: "/planning/single", count: null },
+    { key: "planRecommended", label: assistantStrings.quickPlanRecommended, icon: "ai", href: "/planning/bulk", count: actionCount(assistant.aiSuggested) },
+    { key: "returned", label: assistantStrings.quickReviewReturned, icon: "review", href: tabHref("returned"), count: actionCount(visitCount("returned")) },
+    { key: "draft", label: assistantStrings.quickReviewDraft, icon: "forms", href: tabHref("draft"), count: actionCount(visitCount("draft")) },
+    { key: "supervision", label: assistantStrings.quickAwaitingSupervisor, icon: "inspect", href: tabHref("pending_supervision"), count: actionCount(visitCount("pending_supervision")) },
+    { key: "weeklyPlan", label: assistantStrings.quickWeeklyPlan, icon: "workflow", href: "/planning/bulk" },
   ];
 
   const tabStat = (key: string, label: string, tab: PlanningTab): PlanningStat => ({

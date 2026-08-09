@@ -111,6 +111,39 @@ Five presentation defects, four fixed at the source rather than in the panels:
    neutral deliberately: tinting the surface would make advisory content read as
    a status.
 
+### Quick Actions — second pass
+
+6. **"Build a bulk plan" and "Create a visit" read "Unavailable" — a real defect
+   I introduced.** `PlanningQuickAction.count` was `number | null`, and the
+   component rendered the "Unavailable" string for `null`. But `null` was doing
+   two jobs: *this action has no count* (weekly plan, create visit) and *the
+   count failed to read*. Conflating them made two perfectly available actions
+   claim to be unavailable.
+
+   The type now separates them: `count?: number | "unavailable"`. Absent means
+   the action simply has no count; `"unavailable"` is reserved for a genuinely
+   failed read, which is the only case that should ever say so. **A state that
+   means two things will eventually render the wrong one.**
+
+7. **"Create a visit" is now a menu, not a link.** It opens the same three
+   governed methods the page's `CreateVisitSection` already offers — bulk /
+   single / immediate, same titles, same descriptions, same routes — so the
+   quick action and the page's own Create button cannot drift.
+
+   `planning-create-menu.tsx` sits **inside** `planning-quick-actions/` so it
+   shares that module (a module is never imported across directories,
+   WEB-002 §6 — the same reason `menu-row.tsx` sits beside `menu-surface.tsx`).
+   It is built on `MenuSurface` with `role="menu"`, so it inherits the three
+   dismissal behaviours no caller may reimplement: outside-pointer close, Escape
+   with focus returned to the trigger, and viewport-aware placement. Options
+   carry registry icons rather than the emoji glyphs `CreateVisitSection` uses
+   (`▦ ▣ ⚡`), which are a standing `emoji-as-icon` finding on that legacy
+   component. A blocked method renders as a disabled `menuitem` with its reason,
+   never as a dead link.
+
+8. **Rows were beautified**: a leading registry icon per action, a taller
+   `--sqx-control-h-lg` target, and a border that responds on hover.
+
 **One deliberate deviation from the mock:** Quick Actions does **not** get the AI
 accent or the sparkle icon, and now uses `workflow`. It is deterministic
 navigation with counted links — nothing about it is generated. Marking it as AI
@@ -181,6 +214,15 @@ retirable — the factories and visits screens still use it.
   call per page render would be slow and costly. If the product wants it
   pre-generated, that is a cached/scheduled job writing `ai_suggestions`, and the
   panel would read the latest row instead of calling the provider.
+- **`CreateVisitSection` still uses emoji glyphs** (`▦ ▣ ⚡`) for its three
+  method cards — a standing `emoji-as-icon` finding in
+  `check:design-system-v5`. The new create menu uses registry icons for the same
+  three methods, so the two now disagree visually. Migrating that component is
+  the fix; it belongs with T-023's route slim.
+- **The create menu duplicates the method list** that the page builds for
+  `CreateVisitSection`. Both read the same `planning.methods` strings and the
+  same three routes, so they cannot say different things — but one source would
+  be better. Fold it into `features/planning/` when the route is slimmed.
 - **Recommendations rank by `factories.risk_score` only.** A factory already
   covered by a published upcoming visit can still appear. Excluding those needs
   a "has an open visit in window" predicate that is worth doing properly.
