@@ -1,0 +1,35 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sqx-space-3);
+  padding-block: var(--sqx-space-12);
+  padding-inline: var(--sqx-space-6);
+  text-align: center;
+  background: var(--sqx-surface-default);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-card);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--sqx-touch-target);
+  block-size: var(--sqx-touch-target);
+  border-radius: var(--sqx-radius-full);
+  background: var(--sqx-surface-subtle);
+  color: var(--sqx-text-muted);
+}
+
+.title {
+  font: var(--sqx-text-heading);
+  letter-spacing: var(--sqx-text-heading-tracking);
+  color: var(--sqx-text-primary);
+}
+
+.body {
+  max-inline-size: var(--sqx-prose-max);
+  font: var(--sqx-text-body);
+  color: var(--sqx-text-secondary);
+}

@@ -1,5 +1,5 @@
 "use client";
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { publishSingleVisit, saveSingleDraft, type PublishResult } from "./actions";
 import IdentityDossier from "./IdentityDossier";
@@ -116,7 +116,9 @@ export default function Wizard({
 }) {
   const [state, formAction, pending] = useActionState<PublishResult, FormData>(publishSingleVisit, {});
   const router = useRouter();
+  const [searchPending, startSearchTransition] = useTransition();
   const [queryInput, setQueryInput] = useState(query);
+  const [targetReselected, setTargetReselected] = useState(draft == null);
   // Nothing is pre-selected by a search alone; picking a radio is the
   // explicit act that selects a target. Handoff/draft prefill arrives through
   // initialSelection (server-resolved, never guessed client-side).
@@ -178,7 +180,9 @@ export default function Wizard({
     const h = setTimeout(() => {
       const params = new URLSearchParams();
       if (queryInput.trim().length >= 3) params.set("q", queryInput.trim());
-      router.replace(params.toString() ? `/planning/single?${params.toString()}` : "/planning/single");
+      startSearchTransition(() => {
+        router.replace(params.toString() ? `/planning/single?${params.toString()}` : "/planning/single");
+      });
     }, 300);
     return () => clearTimeout(h);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -189,6 +193,7 @@ export default function Wizard({
     .flatMap(p => p.licences.map(l => ({ portfolio: p, licence: l })))
     .find(x => x.licence.id === licenceId) ?? null;
   const searching = queryInput.trim().length >= 3;
+  const searchSettled = queryInput.trim() === query && !searchPending;
   const joinAddress = (parts: Array<string | null | undefined>) =>
     [...new Set(parts.filter((part): part is string => Boolean(part)))].join(", ") || "—";
 
@@ -317,6 +322,7 @@ export default function Wizard({
       <input type="hidden" name="target_source" value={target?.kind ?? ""} />
       <input type="hidden" name="source_channel" value={sourceChannel} />
       <input type="hidden" name="resume_visit_plan_id" value={state.resumeId ?? draftState?.id ?? ""} />
+      <input type="hidden" name="target_reselected" value={targetReselected ? "1" : "0"} />
 
       {draft && (
         <div className="alert alert-info" role="status">
@@ -334,7 +340,7 @@ export default function Wizard({
         </div>
       )}
 
-      <div className={`panel panel-body ${styles.stepPanel}`}>
+      <div className={`panel panel-body ${styles.stepPanel}`} aria-busy={!searchSettled}>
         <h4 className="panel-title">{strings.findFactory}</h4>
         <span className={`input-affix ${styles.searchField}`}><input className="input" placeholder={strings.searchPlaceholder} value={queryInput} onChange={e => setQueryInput(e.target.value)} /></span>
         {searching && registryUnavailable && (
@@ -343,13 +349,13 @@ export default function Wizard({
             <button type="button" className="btn btn-secondary btn-touch" onClick={() => router.refresh()}>{strings.retry}</button>
           </div>
         )}
-        {searching && !registryUnavailable && portfolios.length === 0 && results.length === 0 && (
+        {searching && searchSettled && !registryUnavailable && portfolios.length === 0 && results.length === 0 && (
           <div className="alert alert-warning"><div>{strings.noMatch}</div></div>
         )}
 
         {/* Legacy fallback comparison rail — graded result cards (source:'legacy'),
             nothing pre-selected; opening a dossier is an explicit click. */}
-        {results.length > 0 && (
+        {searchSettled && results.length > 0 && (
           <ul className={styles.resultList} role="listbox" aria-label={strings.findFactory}>
             {results.map(f => (
               <li className={styles.resultItem} key={f.id}>
@@ -357,7 +363,8 @@ export default function Wizard({
                     a single radio per result, nothing pre-checked by default (M01-035). */}
                 <label className={`radio ${styles.choiceRow}`}>
                   <input type="radio" name="factory_id" value={f.id} checked={factoryId === f.id}
-                    onChange={() => { setFactoryId(f.id); setLicenceId(null); setLicenseNumber(""); setLocationConfirmed(false); }} />
+                    onClick={() => setTargetReselected(true)}
+                    onChange={() => { setFactoryId(f.id); setLicenceId(null); setTargetReselected(true); setLicenseNumber(""); setLocationConfirmed(false); }} />
                   <span className={`badge ${f.grade === "exact" ? "badge-compliant" : "badge-warning"}`}>
                     {f.grade === "exact" ? strings.exactBadge : strings.similarBadge}
                   </span>
@@ -379,7 +386,7 @@ export default function Wizard({
           A licence/plant selection is mandatory before continuing; a CR with
           licences can never be targeted as a whole (explicit eligibility
           state), and a CR with none is not plannable at all (M01-036). */}
-      {portfolios.length > 0 && (
+      {searchSettled && portfolios.length > 0 && (
         <div className={`panel panel-body ${styles.stepPanel}`}>
           <h4 className="panel-title">{strings.portfolioStep}</h4>
           {handoff && (
@@ -409,7 +416,8 @@ export default function Wizard({
                         <label className={`radio ${styles.choiceRow}`}>
                           <input type="radio" name="licence_id" value={l.id} disabled={!l.factory}
                             checked={licenceId === l.id}
-                            onChange={() => { setLicenceId(l.id); setFactoryId(null); setLicenseNumber(""); setLocationConfirmed(false); }} />
+                            onClick={() => setTargetReselected(true)}
+                            onChange={() => { setLicenceId(l.id); setFactoryId(null); setTargetReselected(true); setLicenseNumber(""); setLocationConfirmed(false); }} />
                           <span>
                             <strong className="numeric"><bdi>{l.licenseNumber}</bdi></strong>
                             {" · "}{strings.plantLabel} <bdi>{l.plantNumber ?? "—"}</bdi>

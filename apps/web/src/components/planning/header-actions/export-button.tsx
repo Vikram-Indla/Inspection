@@ -1,20 +1,23 @@
 "use client";
-// Export page action (PLN-REQ-017). Calls the planning.export-capability-gated
-// server action with the CURRENT URL filter state and downloads the returned
-// CSV client-side. Failures surface as neutral inline copy — never provider text.
+
 import { useState, useTransition } from "react";
-import { exportPlanningVisitsCsv } from "./export-actions";
+import IconButton from "@/components/saqeel/icon-button/icon-button";
+import { exportPlanningVisitsCsv } from "@/app/(app)/planning/export-actions";
 import type { PlanningListParams } from "@/lib/planning/visit-list";
+import styles from "./header-actions.module.css";
 
 export type ExportButtonStrings = {
   label: string;
   busyLabel: string;
   unauthorized: string;
   unavailable: string;
-  cappedNote: string; // e.g. "Exported the first {n} rows — refine filters for the rest."
+  cappedNote: string;
 };
 
-export default function ExportButton({ params, strings }: { params: PlanningListParams; strings: ExportButtonStrings }) {
+export default function ExportButton({ params, strings }: {
+  params: PlanningListParams;
+  strings: ExportButtonStrings;
+}) {
   const [pending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
   const run = () => {
@@ -27,20 +30,18 @@ export default function ExportButton({ params, strings }: { params: PlanningList
       }
       const blob = new Blob([result.csv], { type: "text/csv;charset=utf-8" });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = result.filename;
-      a.click();
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = result.filename;
+      anchor.click();
       URL.revokeObjectURL(url);
       if (result.capped) setMessage(strings.cappedNote.replace("{n}", String(result.rowCount)));
     });
   };
   return (
-    <span>
-      <button type="button" className="btn btn-secondary" disabled={pending} onClick={run}>
-        {pending ? strings.busyLabel : strings.label}
-      </button>
-      {message && <span className="alert alert-info" role="status">{message}</span>}
+    <span className={styles.exportWrap}>
+      <IconButton icon="export" label={pending ? strings.busyLabel : strings.label} disabled={pending} onClick={run} />
+      {message ? <span className={styles.exportNote} role="status">{message}</span> : null}
     </span>
   );
 }

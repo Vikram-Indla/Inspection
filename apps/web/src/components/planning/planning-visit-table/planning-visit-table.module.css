@@ -1,0 +1,93 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+}
+
+.scroll {
+  overflow-x: auto;
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-card);
+  background: var(--sqx-surface-default);
+}
+
+.table {
+  inline-size: 100%;
+  border-collapse: collapse;
+}
+
+.caption {
+  position: absolute;
+  inline-size: var(--sqx-border-width-hair);
+  block-size: var(--sqx-border-width-hair);
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.head {
+  position: sticky;
+  inset-block-start: 0;
+  padding: var(--sqx-inset-cell);
+  background: var(--sqx-surface-header);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-strong);
+  font: var(--sqx-text-overline);
+  letter-spacing: var(--sqx-text-overline-tracking);
+  text-transform: uppercase;
+  color: var(--sqx-text-muted);
+  text-align: start;
+  white-space: nowrap;
+}
+
+.head[data-width="min"] {
+  inline-size: var(--sqx-space-8);
+}
+
+.row {
+  cursor: pointer;
+}
+
+.row:hover {
+  background: var(--sqx-surface-subtle);
+}
+
+.row[data-selected] {
+  background: var(--sqx-surface-accent);
+}
+
+.cell {
+  padding: var(--sqx-inset-cell);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  font: var(--sqx-text-body);
+  color: var(--sqx-text-secondary);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.cell[data-numeric] {
+  font-variant-numeric: var(--sqx-numeric-tabular);
+}
+
+.check {
+  inline-size: var(--sqx-space-4);
+  block-size: var(--sqx-space-4);
+  accent-color: var(--sqx-action-primary-bg);
+}
+
+.reference {
+  border: none;
+  background: none;
+  padding: 0;
+  font: var(--sqx-text-body-strong);
+  color: var(--sqx-text-link);
+  cursor: pointer;
+}
+
+.reference:hover {
+  color: var(--sqx-text-link-hover);
+}
+
+.reference:focus-visible {
+  outline: var(--sqx-focus-ring-width) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}
