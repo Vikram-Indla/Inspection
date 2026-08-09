@@ -19,9 +19,13 @@ function LicenceCardSkeleton() {
     <Card as="div">
       <CardBody gap="tight">
         <Skeleton shape="line" width="wide" size="lg" />
-        <Skeleton shape="line" width="narrow" size="sm" />
-        <Skeleton shape="line" width="half" size="sm" />
-        <Skeleton shape="pill" width="narrow" />
+        {Array.from({ length: 6 }, (_unused, index) => (
+          <Skeleton key={index} shape="line" width={index % 2 === 0 ? "full" : "wide"} size="sm" />
+        ))}
+        <span className={styles.pills}>
+          <Skeleton shape="pill" width="narrow" />
+          <Skeleton shape="pill" width="narrow" />
+        </span>
       </CardBody>
     </Card>
   );
@@ -60,6 +64,8 @@ export default function FactoriesSkeleton({ label }: { label: string }) {
                 <CardHeader title={<Skeleton shape="line" width="half" size="lg" />} />
                 <CardBody>
                   <div className={styles.stats}>
+                    <StatTileSkeleton />
+                    <StatTileSkeleton />
                     <StatTileSkeleton />
                     <StatTileSkeleton />
                   </div>

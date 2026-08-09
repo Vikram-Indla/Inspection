@@ -22,8 +22,28 @@ export type FactoryRow = {
     license_type: string | null;
     status: string | null;
     stage: string | null;
+    expiry_date: string | null;
   } | null;
 };
+
+/**
+ * Working threshold for the "expiring soon" licence pill, agreed with the owner
+ * on 2026-08-09. It is a display rule only — no planning, enforcement or
+ * licensing decision reads it. Replace with the governed value when product
+ * rules one.
+ */
+export const LICENCE_EXPIRY_SOON_DAYS = 30;
+
+export type LicenceExpiryState = "expired" | "expiringSoon" | "valid";
+
+export function licenceExpiryState(expiry: string | null, now: number): LicenceExpiryState | null {
+  if (!expiry) return null;
+  const due = new Date(expiry).getTime();
+  if (Number.isNaN(due)) return null;
+  const days = Math.floor((due - now) / 86_400_000);
+  if (days < 0) return "expired";
+  return days <= LICENCE_EXPIRY_SOON_DAYS ? "expiringSoon" : "valid";
+}
 
 export type ProvenanceStrings = {
   registered: string;
@@ -107,8 +127,12 @@ export function conditionOf(band: string | null, strings: ConditionStrings): {
   return { label: strings.unavailable, tone: "neutral" };
 }
 
-export function toLicence(factory: FactoryRow, strings: ProvenanceStrings): PortfolioLicence {
+export function toLicence(factory: FactoryRow, strings: ProvenanceStrings, counts: {
+  openViolations: number | null;
+  now: number;
+}): PortfolioLicence {
   const provenance = provenanceOf(factory, strings);
+  const expiry = factory.license?.expiry_date ?? null;
   return {
     id: factory.id,
     name: factory.name,
@@ -118,6 +142,9 @@ export function toLicence(factory: FactoryRow, strings: ProvenanceStrings): Port
     stage: humanised(factory.license?.stage ?? factory.license?.status),
     licenceStatus: humanised(factory.license?.status),
     riskBand: factory.risk_band,
+    expiryDate: expiry,
+    expiryState: licenceExpiryState(expiry, counts.now),
+    openViolations: counts.openViolations,
     provenanceLabel: provenance.label,
     provenanceTone: provenance.tone,
   };

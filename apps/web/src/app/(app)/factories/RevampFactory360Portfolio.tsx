@@ -8,10 +8,13 @@ import FactoryWorkspace from "@/components/sections/factories/factory-workspace/
 import {
   conditionOf,
   provenanceDetail,
+  provenanceOf,
   toLicence,
   type FactoryRow,
   type ProvenanceStrings,
 } from "@/features/factories/portfolio";
+import type { PortfolioCounts } from "@/features/factories/portfolio-counts";
+import { formatDate } from "@/lib/dates";
 import { fill, getMessages } from "@/i18n/messages";
 
 export type RevampFactoryRow = FactoryRow;
@@ -24,18 +27,30 @@ function planningHandoffHref(factory: FactoryRow): string {
   return `/planning/single?${query.toString()}`;
 }
 
-export default function RevampFactory360Portfolio({ factories, portfolioLabel, canCreateInspection, locale, provenanceStrings }: {
+export default function RevampFactory360Portfolio({ factories, portfolioLabel, canCreateInspection, locale, provenanceStrings, counts, now }: {
   factories: FactoryRow[];
   portfolioLabel: string;
   canCreateInspection: boolean;
   locale: "en" | "ar";
   provenanceStrings: ProvenanceStrings;
+  counts: PortfolioCounts;
+  now: number;
 }) {
   const { factories: copy } = getMessages(locale);
   const [selectedId, setSelectedId] = useState(factories[0]?.id ?? "");
   const selected = factories.find(factory => factory.id === selectedId) ?? factories[0];
   const highRisk = factories.filter(factory => factory.risk_band === "high").length;
-  const licences = factories.map(factory => toLicence(factory, provenanceStrings));
+  const licences = factories.map(factory => toLicence(factory, provenanceStrings, {
+    openViolations: counts.openViolationsAvailable ? counts.openViolations.get(factory.id) ?? 0 : null,
+    now,
+  }));
+  const sum = (values: ReadonlyMap<string, number>) =>
+    factories.reduce((total, factory) => total + (values.get(factory.id) ?? 0), 0);
+  const totalOpenViolations = sum(counts.openViolations);
+  const totalActivePenalties = sum(counts.activePenalties);
+  const provenanceNotice = factories
+    .map(factory => provenanceOf(factory, provenanceStrings))
+    .find(entry => entry.tone !== "success") ?? null;
   if (!selected) return null;
 
   const condition = conditionOf(selected.risk_band, {
@@ -107,24 +122,32 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
           licences={licences}
           selectedId={selected.id}
           onSelect={setSelectedId}
-          highRiskCount={highRisk}
+          summary={{
+            factories: factories.length,
+            highRisk,
+            openViolations: counts.openViolationsAvailable ? totalOpenViolations : null,
+            activePenalties: counts.activePenaltiesAvailable ? totalActivePenalties : null,
+          }}
+          provenanceNotice={provenanceNotice}
+          formatDate={iso => formatDate(iso, locale)}
           strings={{
-            allLicences: copy.portfolio.allLicences,
+            portfolio: copy.portfolio.portfolio,
             factories: copy.portfolio.factories,
             highRisk: copy.portfolio.highRisk,
+            openViolations: copy.portfolio.openViolations,
+            activePenalties: copy.portfolio.activePenalties,
             licenceNumber: copy.portfolio.licenceNumber,
             plantNumber: copy.portfolio.plantNumber,
             type: copy.portfolio.type,
             stage: copy.portfolio.stage,
-            licenceStatus: copy.portfolio.licenceStatus,
-            risk: copy.portfolio.risk,
-            compliance: copy.portfolio.compliance,
-            openViolations: copy.portfolio.openViolations,
+            expiry: copy.portfolio.expiry,
             notAvailable: copy.portfolio.notAvailable,
             missing: copy.portfolio.missing,
             riskHigh: copy.risk.high,
             riskMedium: copy.risk.medium,
             riskLow: copy.risk.low,
+            expired: copy.portfolio.expired,
+            expiringSoon: copy.portfolio.expiringSoon,
           }}
         />
       }

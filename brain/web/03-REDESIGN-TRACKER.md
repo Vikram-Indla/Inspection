@@ -31,6 +31,23 @@ review by a native speaker, and the bundle measurement request.
 
 ---
 
+### T-024 · `/factories` — replace mock content, slice by slice
+`status: in-progress (start panel done)` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-011` · `est: 1.5h per slice`
+`record (start panel):` [2026-08-09-T-024-factories-portfolio-panel](sessions/2026-08/2026-08-09-T-024-factories-portfolio-panel.md)
+
+Owner is replacing the vendor mock's content one panel at a time. **Start panel
+done:** real open-violation and active-penalty counts (owner-agreed
+definitions), licence expiry with an `Expired`/`Expiring soon` pill at 30 days,
+Compliance % removed (no column exists), and the repeated provenance pill
+reduced to one conditional warning on the portfolio header.
+
+**Remaining slices:** the **end panel** (the mock's AI side block — factory
+summary, top risks, latest changes, recommended actions, predicted risk, "why
+high risk"), the **middle column**, and `/factories/cr/[id]`, which is untouched
+legacy.
+
+---
+
 ### T-023 · Slim `app/(app)/planning/page.tsx`
 `status: todo` · `rules: WEB-001 §2, WEB-000 §2` · `est: 3h`
 
@@ -442,6 +459,16 @@ Pull one in only if it is genuinely part of doing the active task well.
   that bug invisibly until a page placed it outside a toolbar (T-021e). Any
   other primitive relying on an inline display type for its width has the same
   trap armed; worth a sweep at the next design-system audit.
+- **`invalidated_at is null` is a proxy for "open violation", not a definition.**
+  `violations` has no resolution or closure state, so T-024's count means *not
+  retracted*. If the table gains one, the count must move to it.
+- **"Active penalty" is inferred, not a status.** `penalty_notices` has
+  `issued/served/settled/withdrawn`; T-024 treats the first two as active. If the
+  lifecycle grows a state, revisit.
+- **`LICENCE_EXPIRY_SOON_DAYS = 30` is a display rule only.** It must not leak
+  into planning or enforcement logic without being ruled a governed SLA.
+- **Per-factory Compliance % has no source at all** — not a UI gap. A score would
+  have to be defined and computed before the slot can return.
 - **43 `emoji-as-icon` findings remain**, all on un-migrated planning sub-routes
   (`bulk`, `immediate`, `plans`, `supervision`, `single`) and other legacy
   screens. `CreateVisitSection` was cleared in T-022.

@@ -10,19 +10,20 @@
     "context": "Selected context"
   },
   "portfolio": {
-    "allLicences": "All licences",
+    "portfolio": "Portfolio",
     "factories": "Factories",
     "highRisk": "High risk",
     "licenceNumber": "Licence number",
     "plantNumber": "Plant number",
     "type": "Type",
     "stage": "Stage",
-    "licenceStatus": "Licence status",
-    "risk": "Risk",
-    "compliance": "Compliance",
     "openViolations": "Open violations",
     "notAvailable": "Not available",
-    "missing": "—"
+    "missing": "—",
+    "activePenalties": "Active penalties",
+    "expiry": "Licence expiry",
+    "expired": "Expired",
+    "expiringSoon": "Expiring soon"
   },
   "risk": {
     "high": "High",

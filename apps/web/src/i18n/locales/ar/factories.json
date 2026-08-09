@@ -10,19 +10,20 @@
     "context": "السياق المحدد"
   },
   "portfolio": {
-    "allLicences": "جميع التراخيص",
+    "portfolio": "المحفظة",
     "factories": "المصانع",
     "highRisk": "خطورة عالية",
     "licenceNumber": "رقم الترخيص",
     "plantNumber": "رقم المصنع",
     "type": "النوع",
     "stage": "المرحلة",
-    "licenceStatus": "حالة الترخيص",
-    "risk": "الخطورة",
-    "compliance": "الالتزام",
     "openViolations": "المخالفات المفتوحة",
     "notAvailable": "غير متاح",
-    "missing": "—"
+    "missing": "—",
+    "activePenalties": "عقوبات سارية",
+    "expiry": "انتهاء الرخصة",
+    "expired": "منتهية",
+    "expiringSoon": "توشك على الانتهاء"
   },
   "risk": {
     "high": "عالية",

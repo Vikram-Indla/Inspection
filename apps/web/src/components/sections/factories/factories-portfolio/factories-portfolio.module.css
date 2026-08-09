@@ -75,6 +75,14 @@
   min-inline-size: 0;
 }
 
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-2);
+  margin-block-start: var(--sqx-space-2);
+}
+
 .term {
   flex: none;
   font: var(--sqx-text-caption);

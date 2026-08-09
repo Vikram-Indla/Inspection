@@ -4,6 +4,7 @@ import { useT } from "@/lib/i18n";
 import EmptyState from "@/components/EmptyState";
 import FactoriesScopeBar from "@/components/sections/factories/factories-scope-bar/factories-scope-bar";
 import RevampFactory360Portfolio, { type RevampFactoryRow } from "./RevampFactory360Portfolio";
+import { queryPortfolioCounts } from "@/features/factories/portfolio-counts";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { resolveFactory360Permissions } from "@/lib/factory360/dossier";
 
@@ -56,7 +57,7 @@ export default async function Factories({ searchParams }: {
     ? visibleScopeRows.filter(row => row.is_temporary && row.source === "immediate_manual").length
     : visibleScopeRows.filter(row => row.cr_number === selectedCr).length;
   let portfolioQuery = sb.from("factories")
-    .select("id, factory_code, name, cr_number, region, city, activity_class, risk_band, risk_score, source, source_synced_at, is_temporary, industrial_licenses(id, commercial_registration_id, license_number, plant_number, license_type, status, stage)")
+    .select("id, factory_code, name, cr_number, region, city, activity_class, risk_band, risk_score, source, source_synced_at, is_temporary, industrial_licenses(id, commercial_registration_id, license_number, plant_number, license_type, status, stage, expiry_date)")
     .order("risk_score", { ascending: false });
   portfolioQuery = requestedScopeValue === manualScope
     ? portfolioQuery.eq("is_temporary", true).eq("source", "immediate_manual")
@@ -74,6 +75,7 @@ export default async function Factories({ searchParams }: {
       license: industrial_licenses?.[0] ?? null,
     };
   });
+  const portfolioCounts = await queryPortfolioCounts(sb, portfolioRows.map(row => row.id));
   const error = scopeError ?? portfolioError;
   const isEmpty = visibleScopeRows.length === 0;
   const portfolioLabel = requestedScopeValue === manualScope
@@ -101,6 +103,8 @@ export default async function Factories({ searchParams }: {
             portfolioLabel={portfolioLabel}
             canCreateInspection={permissions["create_inspection"]}
             locale={locale}
+            counts={portfolioCounts}
+            now={Date.now()}
             provenanceStrings={{
               registered: t("f360.provenance.registered", "Registered · Senaei source"),
               registeredBody: t("f360.provenance.registeredBody", "Registered factory identity from the governed Senaei source."),
