@@ -5,6 +5,10 @@ import { publishSingleVisit, saveSingleDraft, type PublishResult } from "./actio
 import IdentityDossier from "./IdentityDossier";
 import type { ResolvedLicence, ResolvedPortfolio } from "@/lib/planning/factory-resolver";
 import type { Locale } from "@/lib/i18n";
+import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
+import Choice from "@/components/saqeel/choice/choice";
+import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import VisitConfiguration from "@/components/sections/planning-single/visit-configuration/visit-configuration";
 import styles from "./single-planning.module.css";
 
 // CD-022 / PLN-REQ-020..024 — a search result graded by RULE, never scored.
@@ -84,6 +88,7 @@ export type WizardStrings = {
   packageLabel: string; packageOptionalHint: string; mode: string; modePhysical: string; modeVirtual: string; modeIneligible: string;
   windowStart: string; windowEnd: string; inspector: string; selectOption: string; autoAssign: string;
   notes: string; notesPlaceholder: string;
+  windowDate: string; windowTime: string; windowHint: string; noPackages: string;
   readinessTitle: string; readyIdentity: string; readyLicense: string; readyLocation: string; readyInspector: string;
   blockedTitle: string; publish: string; publishing: string; retry: string;
   stepPlan: string; stepVisit: string; stepAssignment: string; stepStatus: string; stepNotification: string;
@@ -146,21 +151,6 @@ export default function Wizard({
   const [savingDraft, setSavingDraft] = useState(false);
   const [draftSaveFailed, setDraftSaveFailed] = useState(false);
   const [draftJustSaved, setDraftJustSaved] = useState(false);
-  // React 19 auto-resets a <form action={...}>'s native controls after every
-  // action completion (success AND blocked/validation failure) — a documented
-  // behavior that writes directly to the DOM and bypasses controlled-input
-  // reconciliation, silently wiping the planner's already-entered values on a
-  // blocked-publish retry (M01-041). React's own state above is untouched by
-  // that reset; remounting the affected controls once `state` settles makes
-  // them re-initialize from that still-correct state instead of the DOM value
-  // the native reset left behind.
-  const isFirstRender = useRef(true);
-  const [resetKey, setResetKey] = useState(0);
-  useEffect(() => {
-    if (isFirstRender.current) { isFirstRender.current = false; return; }
-    setResetKey(k => k + 1);
-  }, [state]);
-
   // Focus transfer to the first blocking error (DSG-A11Y-001) — the alert is
   // a real DOM focus target (tabIndex=-1), not just an aria-live announcement,
   // so keyboard-only planners land there directly on a blocked publish.
@@ -188,6 +178,25 @@ export default function Wizard({
   const selectedLicenceEntry = portfolios
     .flatMap(p => p.licences.map(l => ({ portfolio: p, licence: l })))
     .find(x => x.licence.id === licenceId) ?? null;
+  const configStrings = {
+    visitType: strings.visitType,
+    packageLabel: strings.packageLabel,
+    packageOptionalHint: strings.packageOptionalHint,
+    mode: strings.mode,
+    modePhysical: strings.modePhysical,
+    modeVirtual: strings.modeVirtual,
+    modeIneligible: strings.modeIneligible,
+    windowStart: strings.windowStart,
+    windowEnd: strings.windowEnd,
+    windowDate: strings.windowDate,
+    windowTime: strings.windowTime,
+    windowHint: strings.windowHint,
+    inspector: strings.inspector,
+    autoAssign: strings.autoAssign,
+    notes: strings.notes,
+    notesPlaceholder: strings.notesPlaceholder,
+    noPackages: strings.noPackages,
+  };
   const searching = queryInput.trim().length >= 3;
   const joinAddress = (parts: Array<string | null | undefined>) =>
     [...new Set(parts.filter((part): part is string => Boolean(part)))].join(", ") || "—";
@@ -355,15 +364,23 @@ export default function Wizard({
               <li className={styles.resultItem} key={f.id}>
                 {/* Selecting a candidate IS the explicit act that opens its dossier —
                     a single radio per result, nothing pre-checked by default (M01-035). */}
-                <label className={`radio ${styles.choiceRow}`}>
-                  <input type="radio" name="factory_id" value={f.id} checked={factoryId === f.id}
-                    onChange={() => { setFactoryId(f.id); setLicenceId(null); setLicenseNumber(""); setLocationConfirmed(false); }} />
-                  <span className={`badge ${f.grade === "exact" ? "badge-compliant" : "badge-warning"}`}>
-                    {f.grade === "exact" ? strings.exactBadge : strings.similarBadge}
-                  </span>
-                  {f.degraded && <span className="badge badge-critical">{strings.degradedBadge}</span>}
-                  <span><strong>{f.name}</strong> · <bdi>{f.cr_number ?? "—"}</bdi>{f.license_number ? <> · <bdi>{f.license_number}</bdi></> : null}</span>
-                </label>
+                <Choice
+                  kind="radio"
+                  name="factory_id"
+                  value={f.id}
+                  checked={factoryId === f.id}
+                  onChange={() => { setFactoryId(f.id); setLicenceId(null); setLicenseNumber(""); setLocationConfirmed(false); }}
+                  label={
+                    <span className={styles.choiceLabel}>
+                      <strong>{f.name}</strong>
+                      <StatusPill tone={f.grade === "exact" ? "success" : "warning"}>
+                        {f.grade === "exact" ? strings.exactBadge : strings.similarBadge}
+                      </StatusPill>
+                      {f.degraded ? <StatusPill tone="danger">{strings.degradedBadge}</StatusPill> : null}
+                    </span>
+                  }
+                  description={<><bdi>{f.cr_number ?? "—"}</bdi>{f.license_number ? <> · <bdi>{f.license_number}</bdi></> : null}</>}
+                />
                 {factoryId === f.id && (
                   <div className={styles.dossier}>
                     <IdentityDossier factory={f} strings={strings} locale={locale} />
@@ -406,17 +423,26 @@ export default function Wizard({
                   <ul className={styles.resultList} role="listbox" aria-label={strings.portfolioStep}>
                     {p.licences.map(l => (
                       <li className={styles.resultItem} key={l.id}>
-                        <label className={`radio ${styles.choiceRow}`}>
-                          <input type="radio" name="licence_id" value={l.id} disabled={!l.factory}
-                            checked={licenceId === l.id}
-                            onChange={() => { setLicenceId(l.id); setFactoryId(null); setLicenseNumber(""); setLocationConfirmed(false); }} />
-                          <span>
-                            <strong className="numeric"><bdi>{l.licenseNumber}</bdi></strong>
-                            {" · "}{strings.plantLabel} <bdi>{l.plantNumber ?? "—"}</bdi>
-                            {" · "}{l.factory ? l.factory.name : strings.noFactoryLink}
-                            {l.status ? <> · <span className="badge badge-info">{l.status}</span></> : null}
-                          </span>
-                        </label>
+                        <Choice
+                          kind="radio"
+                          name="licence_id"
+                          value={l.id}
+                          disabled={!l.factory}
+                          checked={licenceId === l.id}
+                          onChange={() => { setLicenceId(l.id); setFactoryId(null); setLicenseNumber(""); setLocationConfirmed(false); }}
+                          label={
+                            <span className={styles.choiceLabel}>
+                              <bdi>{l.licenseNumber}</bdi>
+                              {l.status ? <StatusPill tone="info">{l.status}</StatusPill> : null}
+                            </span>
+                          }
+                          description={
+                            <>
+                              {strings.plantLabel} <bdi>{l.plantNumber ?? "—"}</bdi>
+                              {" · "}{l.factory ? l.factory.name : strings.noFactoryLink}
+                            </>
+                          }
+                        />
                       </li>
                     ))}
                   </ul>
@@ -462,11 +488,16 @@ export default function Wizard({
           {legacyFactory.license_number ? (
             <>
               <p className="tl-meta">{strings.licenseSelect}</p>
-              <label className={`radio ${styles.choiceRow}`}>
-                <input key={resetKey} type="radio" name="license_number" value={legacyFactory.license_number} required
-                  checked={licenseNumber === legacyFactory.license_number} onChange={() => setLicenseNumber(legacyFactory.license_number as string)} />
-                <span><strong className="numeric">{legacyFactory.license_number}</strong> · {strings.licenseLabel} · {legacyFactory.name}</span>
-              </label>
+              <Choice
+                kind="radio"
+                name="license_number"
+                value={legacyFactory.license_number}
+                required
+                checked={licenseNumber === legacyFactory.license_number}
+                onChange={() => setLicenseNumber(legacyFactory.license_number as string)}
+                label={<bdi>{legacyFactory.license_number}</bdi>}
+                description={`${strings.licenseLabel} · ${legacyFactory.name}`}
+              />
             </>
           ) : (
             <div className="alert alert-info"><div>{strings.licenseNone}</div></div>
@@ -486,58 +517,50 @@ export default function Wizard({
           <p className="tl-meta">
             {strings.locationAuthority}: <bdi>{target.masterSource ?? "—"}</bdi> · {strings.locationReadOnly}
           </p>
-          <label className={`check ${styles.confirmRow}`}>
-            <input key={resetKey} type="checkbox" name="location_confirmed" value="1" required
-              disabled={!hasOfficial}
-              checked={locationConfirmed} onChange={e => setLocationConfirmed(e.target.checked)} />
-            <span>{strings.locationConfirmed}</span>
-          </label>
+          <Choice
+            kind="checkbox"
+            name="location_confirmed"
+            value="1"
+            required
+            disabled={!hasOfficial}
+            checked={locationConfirmed}
+            onChange={setLocationConfirmed}
+            label={strings.locationConfirmed}
+          />
         </div>
       )}
       {target && configUnlocked && (
-        <div className={`panel panel-body ${styles.stepPanel}`}>
-          <h4 className="panel-title">{strings.configStep}</h4>
-          <div className={styles.configGrid}>
-            <div className={`field ${styles.visitTypeField}`}><label htmlFor="wizard-visit-type">{strings.visitType}</label>
-              <select key={resetKey} className="select" name="visit_type" id="wizard-visit-type" value={visitType} onChange={e => setVisitType(e.target.value)}>
-                <option value="periodic">{strings.typePeriodic}</option><option value="follow_up">{strings.typeFollowUp}</option><option value="complaint">{strings.typeComplaint}</option>
-              </select></div>
-            <div className={`field ${styles.packageField}`} role="group" aria-labelledby="wizard-package-label">
-              <span id="wizard-package-label">{strings.packageLabel}</span>
-              <div className={styles.packageGrid}>
-                {packages.map(p => (
-                  <label key={`${resetKey}-${p.id}`} className={`check ${styles.packageChoice}`}>
-                    <input type="checkbox" name="package_version_id" value={p.id}
-                      checked={packageIds.includes(p.id)}
-                      onChange={e => setPackageIds(ids => e.target.checked ? [...ids, p.id] : ids.filter(x => x !== p.id))} />
-                    <span>{p.packages.code} · {p.version_label}</span>
-                  </label>
-                ))}
-              </div>
-              {packageIds.length === 0 && (
-                <p className="alert alert-info" role="status">
-                  {strings.packageOptionalHint}
-                </p>
-              )}
-            </div>
-            <div className={`field ${styles.modeField}`}><label htmlFor="wizard-mode">{strings.mode}</label>
-              <select key={resetKey} className="select" name="execution_mode" id="wizard-mode" value={executionMode} onChange={e => setExecutionMode(e.target.value as "physical" | "virtual")}>
-                <option value="physical" disabled={!physicalEligible}>{strings.modePhysical}{!physicalEligible ? ` — ${strings.modeIneligible}` : ""}</option>
-                <option value="virtual" disabled={!virtualEligible}>{strings.modeVirtual}{!virtualEligible ? ` — ${strings.modeIneligible}` : ""}</option>
-              </select></div>
-            <div className={`field ${styles.startField}`}><label htmlFor="wizard-window-start">{strings.windowStart}</label>
-              <input key={resetKey} className="input" name="window_start" id="wizard-window-start" type="datetime-local" required value={windowStart} onChange={e => setWindowStart(e.target.value)} /></div>
-            <div className={`field ${styles.endField}`}><label htmlFor="wizard-window-end">{strings.windowEnd}</label>
-              <input key={resetKey} className="input" name="window_end" id="wizard-window-end" type="datetime-local" required min={windowStart || undefined} value={windowEnd} onChange={e => setWindowEnd(e.target.value)} /></div>
-            {/* The Planner may suggest an Inspector. “No preference” leaves the
-                governed final assignment to the approving Supervisor. */}
-            <div className={`field ${styles.inspectorField}`}><label htmlFor="wizard-inspector">{strings.inspector}</label>
-              <select key={resetKey} className="select" name="inspector_id" id="wizard-inspector" value={inspectorId} onChange={e => setInspectorId(e.target.value)}><option value="">{strings.autoAssign}</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
-          </div>
-          <div className={`field ${styles.notesField}`}><label htmlFor="wizard-notes">{strings.notes}</label>
-            <textarea key={resetKey} className="input" name="notes" id="wizard-notes" rows={2} placeholder={strings.notesPlaceholder}
-              value={notes} onChange={e => setNotes(e.target.value)} /></div>
-        </div>
+        <Card as="section" labelledBy="single-visit-config">
+          <CardHeader level="h2" titleId="single-visit-config" title={strings.configStep} />
+          <CardBody>
+            <VisitConfiguration
+              value={{ visitType, packageIds, mode: executionMode, windowStart, windowEnd, inspectorId, notes }}
+              onChange={next => {
+                setVisitType(next.visitType);
+                setPackageIds([...next.packageIds]);
+                setExecutionMode(next.mode);
+                setWindowStart(next.windowStart);
+                setWindowEnd(next.windowEnd);
+                setInspectorId(next.inspectorId);
+                setNotes(next.notes);
+              }}
+              visitTypeOptions={[
+                { value: "periodic", label: strings.typePeriodic },
+                { value: "follow_up", label: strings.typeFollowUp },
+                { value: "complaint", label: strings.typeComplaint },
+              ]}
+              inspectorOptions={inspectors.map(entry => ({ value: entry.user_id, label: entry.full_name }))}
+              packages={packages.map(entry => ({
+                id: entry.id,
+                versionLabel: entry.version_label,
+                code: entry.packages.code,
+                title: entry.packages.title,
+              }))}
+              eligibility={{ physical: physicalEligible, virtual: virtualEligible }}
+              strings={configStrings}
+            />
+          </CardBody>
+        </Card>
       )}
 
       {target && (

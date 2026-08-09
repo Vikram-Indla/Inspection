@@ -1,0 +1,63 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-4);
+}
+
+.notice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sqx-space-3);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  padding-inline: var(--sqx-space-3);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-control);
+}
+
+.item[data-selected] {
+  background: var(--sqx-surface-accent);
+  border-color: var(--sqx-border-strong);
+}
+
+.identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
+.name {
+  font: var(--sqx-text-body-strong);
+  color: var(--sqx-text-primary);
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-2);
+}
+
+.codes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-3);
+  font: var(--sqx-text-code);
+  font-variant-numeric: var(--sqx-numeric-tabular);
+}
+
+.dossier {
+  padding-block: var(--sqx-space-3);
+  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}

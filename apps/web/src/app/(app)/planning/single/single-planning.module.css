@@ -1,6 +1,6 @@
 .form {
-  inline-size: min(100%, 1120px);
-  margin-inline: auto;
+  inline-size: 100%;
+  min-inline-size: 0;
   padding-block-end: var(--space-8);
 }
 
@@ -259,4 +259,11 @@
   .actionBar > button {
     flex: 1;
   }
+}
+
+.choiceLabel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
 }
