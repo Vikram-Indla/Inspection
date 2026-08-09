@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import DateRangePicker, { type DateRangePreset } from "@/components/saqeel/date-range-picker/date-range-picker";
 import SaqeelSelect, { type SelectOption } from "@/components/saqeel/select/select";
 import { formatDateRange } from "@/lib/dates";
+import { resolveRegionId, KSA_REGION_LABELS } from "@/lib/ksa-regions";
 import type { ShellScope } from "@/features/shell/types";
 import styles from "./shell-topbar.module.css";
 
@@ -45,9 +46,14 @@ export default function ShellScopeControls({ scope, regions, initialFrom, initia
     router.replace(`${url.pathname}${url.search}${url.hash}`, { scroll: false });
   }
 
+  const regionLabel = (name: string) => {
+    const id = resolveRegionId(name);
+    if (!id) return name;
+    return locale === "ar" ? KSA_REGION_LABELS[id].ar : KSA_REGION_LABELS[id].en;
+  };
   const regionOptions: readonly SelectOption[] = [
     { value: "", label: strings.allRegions },
-    ...regions.map(name => ({ value: name, label: name })),
+    ...regions.map(name => ({ value: name, label: regionLabel(name) })),
   ];
 
   const presets: readonly DateRangePreset[] = [
