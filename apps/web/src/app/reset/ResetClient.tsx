@@ -4,8 +4,9 @@ import { supabaseBrowser } from "@/lib/supabase";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { logAuthEvent } from "@/lib/audit";
 import { IconEye, IconEyeOff } from "../icons";
+import RecoveryRequest, { type RecoveryRequestStrings } from "./RecoveryRequest";
 
-export type ResetStrings = {
+export type ResetStrings = RecoveryRequestStrings & {
   dir: "rtl" | "ltr";
   lang: "ar" | "en";
   brandTitle: string;
@@ -37,7 +38,7 @@ export type ResetStrings = {
   themeToDark: string;
 };
 
-type Stage = "checking" | "form" | "invalid" | "done";
+type Stage = "checking" | "request" | "form" | "invalid" | "done";
 type FieldError = { id: "pw" | "pw2"; message: string } | null;
 const RECOVERY_OTP_USER_KEY = "saqeel-recovery-otp-user";
 
@@ -91,11 +92,11 @@ export default function ResetClient({ strings: s }: { strings: ResetStrings }) {
         return;
       }
       sessionStorage.removeItem(RECOVERY_OTP_USER_KEY);
-      setStage("invalid");
+      setStage("request");
     }).catch(() => {
       if (cancelled) return;
       sessionStorage.removeItem(RECOVERY_OTP_USER_KEY);
-      setStage("invalid");
+      setStage("request");
     });
     return () => { cancelled = true; };
   }, []);
@@ -157,6 +158,16 @@ export default function ResetClient({ strings: s }: { strings: ResetStrings }) {
               <div className="lg-waiting__spinner" aria-hidden="true" />
               <p className="lg-card__sub">{s.checking}</p>
             </div>
+          )}
+
+          {stage === "request" && (
+            <RecoveryRequest
+              strings={s}
+              onVerified={userId => {
+                sessionStorage.setItem(RECOVERY_OTP_USER_KEY, userId);
+                setStage("form");
+              }}
+            />
           )}
 
           {stage === "invalid" && (
