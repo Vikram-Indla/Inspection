@@ -1,6 +1,8 @@
 {
   "action": {
     "apply": "تطبيق",
+    "previousMonth": "الشهر السابق",
+    "nextMonth": "الشهر التالي",
     "reset": "إعادة تعيين",
     "cancel": "إلغاء",
     "close": "إغلاق",
@@ -31,15 +33,19 @@
   },
   "scope": {
     "allRegions": "جميع المناطق",
-    "last30Days": "آخر 30 يوماً",
+    "today": "اليوم",
+    "yesterday": "أمس",
     "last7Days": "آخر 7 أيام",
-    "nextMonth": "الشهر التالي",
+    "last30Days": "آخر 30 يوماً",
+    "last90Days": "آخر 90 يوماً",
+    "lastYear": "آخر سنة",
+    "next7Days": "خلال 7 أيام",
+    "next30Days": "خلال 30 يوماً",
     "previousMonth": "الشهر السابق",
+    "nextMonth": "الشهر التالي",
     "thisMonth": "هذا الشهر",
     "thisQuarter": "هذا الربع",
-    "thisYear": "هذه السنة",
-    "today": "اليوم",
-    "yesterday": "أمس"
+    "thisYear": "هذه السنة"
   },
   "state": {
     "empty": "لا يوجد شيء بعد",

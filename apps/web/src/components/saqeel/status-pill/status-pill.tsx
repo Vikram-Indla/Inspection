@@ -21,15 +21,14 @@ const PING_TONE: Readonly<Record<StatusTone, PingDotTone>> = {
   info: "info",
 };
 
-export default function StatusPill({ children, tone = "neutral", size = "md", ping = true, title }: {
+export default function StatusPill({ children, tone = "neutral", ping = true, title }: {
   children: ReactNode;
   tone?: StatusTone;
-  size?: "sm" | "md";
   ping?: boolean;
   title?: string;
 }) {
   return (
-    <span className={styles.pill} data-tone={tone} data-size={size} data-ping={ping ? "" : undefined} title={title}>
+    <span className={styles.pill} data-tone={tone} data-ping={ping ? "" : undefined} title={title}>
       {ping ? <PingDot tone={PING_TONE[tone]} size="sm" /> : null}
       <span className={styles.label}>{children}</span>
     </span>

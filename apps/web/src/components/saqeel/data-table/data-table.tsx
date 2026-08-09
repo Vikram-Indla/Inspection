@@ -7,9 +7,10 @@ import styles from "./data-table.module.css";
 export type DataColumn<T> = {
   readonly key: string;
   readonly header: string;
+  readonly headerControl?: ReactNode;
   readonly cell: (row: T) => ReactNode;
   readonly align?: "start" | "end";
-  readonly width?: "min" | "auto" | "grow";
+  readonly width?: "min" | "auto";
   readonly isRowHeader?: boolean;
   readonly numeric?: boolean;
 };
@@ -20,15 +21,11 @@ export type DataTableEmpty = {
   readonly icon?: IconName;
 };
 
-// `bleed` defaults on because every table in this app sits inside a card
-// body: pulling the table out to the card edge is what lines its first
-// column up with the card heading, and lets the row hover fill reach the
-// card edge instead of floating inside a 24px gutter. Pass bleed={false}
-// for a table that does not own the full width of its card body.
-export default function DataTable<T>({ rows, columns, getRowId, caption, empty, density = "default", bleed = true }: {
+export default function DataTable<T>({ rows, columns, getRowId, getRowSelected, caption, empty, density = "default", bleed = true }: {
   rows: readonly T[];
   columns: readonly DataColumn<T>[];
   getRowId: (row: T) => string;
+  getRowSelected?: (row: T) => boolean;
   caption?: string;
   empty: DataTableEmpty;
   density?: "compact" | "default";
@@ -52,14 +49,14 @@ export default function DataTable<T>({ rows, columns, getRowId, caption, empty, 
                 data-align={column.align ?? "start"}
                 data-width={column.width ?? "auto"}
               >
-                {column.header}
+                {column.headerControl ?? column.header}
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
           {rows.map(row => (
-            <tr className={styles.row} key={getRowId(row)}>
+            <tr className={styles.row} key={getRowId(row)} data-selected={getRowSelected?.(row) ? "" : undefined}>
               {columns.map(column => column.isRowHeader ? (
                 <th
                   className={styles.rowHead}
@@ -89,10 +86,6 @@ export default function DataTable<T>({ rows, columns, getRowId, caption, empty, 
   );
 }
 
-// Cell presentation lives with the table. These three were being redeclared,
-// byte for byte, in every table module that needed a linked identifier or a
-// muted timestamp — sla, risk and cancellations all carried the same .link
-// and .muted rules.
 export function CellLink({ href, children }: { href: string; children: ReactNode }) {
   return (
     <Link className={styles.cellLink} href={href} prefetch={false}>

@@ -37,6 +37,7 @@ between them. What is not written here did not happen.
 | [`rules/WEB-009-component-design-language.md`](rules/WEB-009-component-design-language.md) | the visual grammar: control heights, borders, rim light, focus, radii, icon sizing, spacing, motion, the gradient budget |
 | [`rules/WEB-010-performance-and-lifecycle.md`](rules/WEB-010-performance-and-lifecycle.md) | cleanup of every subscription, compositor-only animation, no layout thrash, no waterfalls |
 | [`rules/WEB-011-arabic-first.md`](rules/WEB-011-arabic-first.md) | **Arabic is the primary language.** Both locales in every commit, Arabic punctuation, no letter-spacing on Arabic, logical properties, Arabic-first review |
+| [`rules/WEB-012-no-direct-dom-mutation.md`](rules/WEB-012-no-direct-dom-mutation.md) | **Never mutate the DOM directly.** The DOM is render output; changes flow through state and render, never through `innerHTML`/`appendChild`/`setAttribute`/`classList`/`style` writes |
 
 **Task prompts are deliberately short.** Everything a prompt does not say is in
 `WEB-008` and `WEB-009`. If a prompt seems to be missing the rules, it is not —
@@ -44,7 +45,7 @@ it is refusing to repeat them.
 
 ---
 
-## The sixteen non-negotiables
+## The seventeen non-negotiables
 
 If you read nothing else, these are the ones that get a diff rejected on sight.
 
@@ -96,6 +97,16 @@ If you read nothing else, these are the ones that get a diff rejected on sight.
     `ar` in the same commit, Arabic questions end in `؟`, Arabic never receives
     `letter-spacing`, and a screen is reviewed in Arabic before it is called
     done. English gets the compromise, never Arabic (WEB-011).
+17. **Never modify the DOM directly.** The rendered DOM is a pure function of
+    state — the only way it changes is by changing what render returns. No
+    `innerHTML`/`textContent` writes, no `createElement`/`appendChild`/`remove`,
+    no `setAttribute`/`classList`/`dataset`/`style` writes on rendered nodes, no
+    node reordering, in any case. A value that would drive one is state: put it
+    on the ladder (WEB-004 §1) and let render express it. Reads (refs,
+    `getBoundingClientRect`, `FormData`), `focus()`, and imperative library
+    handoff are not mutation and stay allowed; the `<html>` root's
+    theme/direction/chrome flags are the one systemic exception, set only through
+    their owning module (WEB-012).
 
 ---
 

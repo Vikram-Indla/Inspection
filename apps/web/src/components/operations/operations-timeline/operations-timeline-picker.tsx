@@ -13,10 +13,6 @@ export type TimelinePickerStrings = {
   readonly load: string;
 };
 
-// This was a native <select> inside a GET <form> posting back to /operations,
-// which is why it rendered as an OS control while every other filter on the
-// page used ours. Navigation is preserved exactly: the scope params ride along
-// so loading a timeline never silently drops the active view, region or city.
 export default function OperationsTimelinePicker({ options, value, scope, strings }: {
   options: readonly SelectOption[];
   value: string;
@@ -36,8 +32,7 @@ export default function OperationsTimelinePicker({ options, value, scope, string
 
   return (
     <div className={styles.picker}>
-      {/* SaqeelSelect's `label` is an accessible name only, so the visible
-          label the native control had comes from Field. */}
+
       <Field label={strings.label}>
         <SaqeelSelect
           options={options}

@@ -1,52 +1,36 @@
 import Shell from "@/components/Shell";
-import EmptyState from "@/components/EmptyState";
+import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { getPlanningAccess } from "@/lib/planning/access";
 import { useT } from "@/lib/i18n";
+import { getMessages } from "@/i18n/messages";
+import type { VisitSearchParams } from "@/features/visits/params";
 import Visits from "../../visits/page";
 
 export const dynamic = "force-dynamic";
 
-export default async function PlanningVisits({ searchParams }: {
-  searchParams: Promise<{ limit?: string }>;
-}) {
+export default async function PlanningVisits({ searchParams }: { searchParams: Promise<VisitSearchParams> }) {
   const sp = await searchParams;
-  const { t, locale } = await useT();
-  const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
-  const title = t("visit.list.title", "Visit management");
+  const { locale } = await useT();
+  const { visit } = getMessages(locale).planning;
   const sb = await supabaseServer();
   await getVerifiedUser(sb);
   const access = await getPlanningAccess(sb, ["planning.view"]);
+  const denied = !["business_staff", "admin"].includes(access.accessClass) || !access.can("planning.view");
 
-  if (access.error) {
+  if (access.error || denied) {
     return (
-      <Shell current="/planning" title={title}>
+      <Shell current="/planning" title={visit.title}>
         <EmptyState
-          glyph="⚠"
-          title={tr("visit.list.unavailable.title", "Visits not available", "الزيارات غير متاحة")}
-          body={tr("visit.list.loadErrorNeutral", "Visits are not available right now. Please try again.", "الزيارات غير متاحة حاليًا. حاول مرة أخرى.")}
-        />
-      </Shell>
-    );
-  }
-  if (!["business_staff", "admin"].includes(access.accessClass) || !access.can("planning.view")) {
-    return (
-      <Shell current="/planning" title={title}>
-        <EmptyState
-          glyph="⛔"
-          title={tr("plan.home.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
-          body={tr(
-            "visit.list.unauthorized.body",
-            "You need planning access to manage visits.",
-            "يلزم صلاحية تخطيط لإدارة الزيارات.",
-          )}
+          icon={access.error ? "risk" : "restricted"}
+          tone={access.error ? "danger" : "warning"}
+          title={access.error ? visit.state.unavailableTitle : visit.state.unauthorizedTitle}
+          description={access.error ? visit.state.unavailableBody : visit.state.unauthorizedBody}
         />
       </Shell>
     );
   }
 
-  return Visits({
-    searchParams: Promise.resolve({ ...sp, wa_route_base: "planning" }),
-  });
+  return Visits({ searchParams: Promise.resolve({ ...sp, wa_route_base: "planning" }) });
 }

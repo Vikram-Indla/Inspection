@@ -25,8 +25,6 @@ export type RiskStrings = {
   readonly missing: string;
 };
 
-// Low risk is the compliant outcome, so it takes the success tone — the same
-// semantic a success pill carries anywhere else, not a decorative green.
 const BAND_TONE: Readonly<Record<RiskBand, StatusTone>> = {
   high: "danger",
   medium: "warning",
@@ -39,8 +37,7 @@ export default function OperationsRiskTable({ rows, strings }: {
 }) {
   const columns: DataColumn<RiskRow>[] = [
     {
-      key: "factory", header: strings.factory, isRowHeader: true, width: "grow",
-      cell: row => <CellLink href={row.href}><bdi dir="auto">{row.name}</bdi></CellLink>,
+      key: "factory", header: strings.factory, isRowHeader: true,      cell: row => <CellLink href={row.href}><bdi dir="auto">{row.name}</bdi></CellLink>,
     },
     {
       key: "location", header: strings.location,
@@ -50,7 +47,7 @@ export default function OperationsRiskTable({ rows, strings }: {
     {
       key: "band", header: strings.band, align: "end", width: "min",
       cell: row => row.band
-        ? <StatusPill tone={BAND_TONE[row.band]} size="sm">{row.bandLabel}</StatusPill>
+        ? <StatusPill tone={BAND_TONE[row.band]}>{row.bandLabel}</StatusPill>
         : strings.missing,
     },
   ];

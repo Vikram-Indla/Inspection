@@ -1,9 +1,14 @@
+/* `inline-grid` alone does not hold: a flex or grid parent blockifies its
+   children and stretches them, which is how the same control sat inline inside
+   a toolbar but spanned the full content width when placed on a page directly.
+   `fit-content` makes the intent hold in every parent. */
 .root {
   position: relative;
   display: inline-grid;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
   align-items: stretch;
+  inline-size: fit-content;
   block-size: var(--sqx-control-h-md);
   padding: var(--sqx-segment-pad);
   background: var(--sqx-surface-sunken);

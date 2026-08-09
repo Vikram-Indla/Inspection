@@ -30,12 +30,12 @@ export default function EnforcementTable({ rows, detailHref, strings }: {
     },
     { key: "license", header: strings.license, cell: row => <CellMuted>{row.license}</CellMuted> },
     { key: "inspection", header: strings.inspection, cell: row => <CellMuted>{row.inspectionRef}</CellMuted> },
-    { key: "violation", header: strings.violation, width: "grow", cell: row => row.violation },
+    { key: "violation", header: strings.violation, cell: row => row.violation },
     { key: "penalty", header: strings.penalty, cell: row => row.penalty },
     { key: "inspector", header: strings.inspector, cell: row => row.inspector },
     {
       key: "status", header: strings.status,
-      cell: row => <StatusPill tone={row.statusTone} size="sm">{row.statusLabel}</StatusPill>,
+      cell: row => <StatusPill tone={row.statusTone}>{row.statusLabel}</StatusPill>,
     },
     {
       key: "date", header: strings.date, numeric: true,

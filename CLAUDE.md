@@ -23,7 +23,7 @@ release gates). `brain/web/` is authoritative for everything inside `apps/web`.
 
 ## Binding rules — non-negotiable
 
-Full text in `brain/web/rules/`. The twelve that reject a diff on sight:
+Full text in `brain/web/rules/`. The ones that reject a diff on sight:
 
 1. **Zero comments.** No `//`, no `/* */`, no `{/* */}`. Code that needs a
    sentence to be understood is not finished — the fix is better names, smaller
@@ -58,6 +58,14 @@ Full text in `brain/web/rules/`. The twelve that reject a diff on sight:
     record at `brain/web/sessions/<YYYY-MM>/<YYYY-MM-DD>-<TASK-ID>-<slug>.md`.
     Never run a git write command — finish with the changed-file list and
     **one** Conventional Commit line for the human to run.
+14. **Never modify the DOM directly.** The rendered DOM is a pure function of
+    state — the only way it changes is by changing what render returns. No
+    `innerHTML`/`textContent` writes, no `createElement`/`appendChild`/`remove`,
+    no `setAttribute`/`classList`/`dataset`/`style` writes on rendered nodes, no
+    node reordering, in any case. A value that would drive one is state; put it on
+    the ladder and let render express it. Reads, `focus()`, and imperative library
+    handoff are not mutation; the `<html>` theme/direction flags are the one
+    exception, through their owning module (WEB-012).
 
 ---
 

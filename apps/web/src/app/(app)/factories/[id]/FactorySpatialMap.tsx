@@ -1,8 +1,11 @@
 "use client";
 import dynamic from "next/dynamic";
+import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import type { GeoMarkerData } from "@/components/GeoMap";
+import { titleCase } from "@/features/factories/portfolio";
 import { formatDateTime } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
+import styles from "./FactorySpatialMap.module.css";
 
 const GeoMap = dynamic(() => import("@/components/GeoMap"), { ssr: false });
 
@@ -20,24 +23,24 @@ export default function FactorySpatialMap({ officialLat, officialLng, geofenceRa
   strings: FactorySpatialMapStrings; locale: Locale;
 }) {
   const markers: GeoMarkerData[] = [
-    { id: "official", lat: officialLat, lng: officialLng, label: "Industrial-license official location", tone: "neutral", radiusM: geofenceRadius ?? undefined },
+    { id: "official", lat: officialLat, lng: officialLng, label: s.officialPin, tone: "neutral", radiusM: geofenceRadius ?? undefined },
     ...events.slice(0, 50).map(e => ({
       id: e.id, lat: e.lat, lng: e.lng,
-      label: `${e.kind.replace(/_/g, " ")} · ${formatDateTime(e.occurredAt, locale === "ar" ? "ar" : "en")}${e.overrideReason ? ` · ${e.overrideReason}` : ""}`,
+      label: `${titleCase(e.kind)} · ${formatDateTime(e.occurredAt, locale === "ar" ? "ar" : "en")}${e.overrideReason ? ` · ${e.overrideReason}` : ""}`,
       tone: (e.kind === "override" ? "high" : e.kind === "checkin" || e.kind === "arrival" ? "low" : "medium") as GeoMarkerData["tone"],
     })),
   ];
   return (
-    <div className="stack" style={{ gap: 8 }}>
-      <div style={{ blockSize: 280, borderRadius: "var(--radius-sm)", overflow: "hidden", border: "1px solid var(--border-subtle)" }} dir="ltr">
+    <div className={styles.root}>
+      <div className={styles.frame} dir="ltr">
         <GeoMap center={[officialLat, officialLng]} zoom={14} markers={markers} height="100%" />
       </div>
-      <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
-        <span className="badge badge-info">{s.officialPin}</span>
-        <span className="badge badge-compliant">{s.observedArrival}</span>
-        <span className="badge badge-critical">{s.gpsOverride}</span>
+      <div className={styles.legend}>
+        <StatusPill tone="info">{s.officialPin}</StatusPill>
+        <StatusPill tone="success">{s.observedArrival}</StatusPill>
+        <StatusPill tone="danger">{s.gpsOverride}</StatusPill>
       </div>
-      {events.length === 0 && <p className="t-caption">{s.noLocations}</p>}
+      {events.length === 0 ? <p className={styles.empty}>{s.noLocations}</p> : null}
     </div>
   );
 }

@@ -81,21 +81,15 @@ export default async function ShellTopbar({ view, mobileNav }: {
             locale={locale}
             strings={{
               dateScope: common.field.dateScope,
-              last30Days: common.scope.last30Days,
-              last7Days: common.scope.last7Days,
-              previousMonth: common.scope.previousMonth,
-              nextMonth: common.scope.nextMonth,
-              thisMonth: common.scope.thisMonth,
-              thisQuarter: common.scope.thisQuarter,
-              thisYear: common.scope.thisYear,
-              today: common.scope.today,
-              yesterday: common.scope.yesterday,
               from: common.field.from,
               to: common.field.to,
               apply: common.action.apply,
+              previousMonth: common.action.previousMonth,
+              nextMonth: common.action.nextMonth,
               regionScope: common.field.regionScope,
               allRegions: common.scope.allRegions,
               notApplicable: common.state.notApplicable,
+              presets: common.scope,
             }}
           />
         </div>

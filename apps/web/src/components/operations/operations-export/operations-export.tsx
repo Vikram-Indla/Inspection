@@ -8,8 +8,6 @@ export type ExportSectionStrings = {
   readonly unauthorizedTitle: string;
 };
 
-// The card and the authorization gate are server-rendered; the export controls
-// themselves stay a client island because they build the CSV in the browser.
 export default function OperationsExport({ authorized, children, strings }: {
   authorized: boolean;
   children: ReactNode;

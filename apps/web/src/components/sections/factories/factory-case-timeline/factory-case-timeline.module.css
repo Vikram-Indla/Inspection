@@ -1,0 +1,24 @@
+.line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-2);
+  margin: 0;
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-secondary);
+}
+
+.link {
+  color: var(--sqx-text-link);
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--sqx-text-link-hover);
+  text-decoration: underline;
+}
+
+.version {
+  font-variant-numeric: var(--sqx-numeric-tabular);
+  color: var(--sqx-text-muted);
+}

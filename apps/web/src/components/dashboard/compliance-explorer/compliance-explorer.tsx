@@ -40,17 +40,14 @@ export default function ComplianceExplorer({ rows, lenses, currentLens, hrefFor,
   hrefFor: (label: string) => string;
   strings: ExplorerStrings;
 }) {
-  // Was a hand-rolled grid with its own header row, hover and separators.
-  // DataTable is the one table grammar, so this list now shares column
-  // padding, stacking behaviour and hover with every other table.
+
   const columns: DataColumn<ExplorerRow>[] = [
     {
       key: "label", header: strings.lensLabel, isRowHeader: true,
       cell: row => <span className={styles.label} title={row.label}>{row.label}</span>,
     },
     {
-      key: "rate", header: strings.rateHeading, width: "grow",
-      cell: row => (
+      key: "rate", header: strings.rateHeading,      cell: row => (
         <span className={styles.meter}>
           <span className={styles.track} aria-hidden="true">
             {row.rate === null ? null : <span className={styles.fill} style={rateStyle(row.rate)} />}

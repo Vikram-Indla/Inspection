@@ -35,7 +35,7 @@ function FieldCompare({ component, messages }: { component: ComponentRow; messag
           cell: row => (
             <span className={styles.fieldName}>
               {row.field}
-              {row.changed ? <StatusPill tone="warning" size="sm" ping={false}>{objects.changed}</StatusPill> : null}
+              {row.changed ? <StatusPill tone="warning" ping={false}>{objects.changed}</StatusPill> : null}
             </span>
           ),
         },
@@ -68,10 +68,10 @@ export default function ApprovalsObjectCard({ component, parents, publication, c
         eyebrow={kindLabel}
         trailing={
           <span className={styles.badges}>
-            <StatusPill tone="info" size="sm" ping={false}>
+            <StatusPill tone="info" ping={false}>
               {changeKind(component) === "created" ? objects.created : objects.modified}
             </StatusPill>
-            <StatusPill tone={statusTone(component.component_status)} size="sm">
+            <StatusPill tone={statusTone(component.component_status)}>
               {componentStatusLabel(component.component_status, messages, locale)}
             </StatusPill>
           </span>

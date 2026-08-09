@@ -42,7 +42,7 @@ export default function VisitDrawer({ visit, strings, onClose }: {
             <h2 className={styles.title}>{visit.factory}</h2>
             <p className={styles.subtitle}>
               <span>{visit.reference}</span>
-              <StatusPill tone={visit.statusTone} size="sm">{visit.statusLabel}</StatusPill>
+              <StatusPill tone={visit.statusTone}>{visit.statusLabel}</StatusPill>
             </p>
           </div>
           <IconButton icon="dismiss" label={strings.close} onClick={onClose} autoFocus />

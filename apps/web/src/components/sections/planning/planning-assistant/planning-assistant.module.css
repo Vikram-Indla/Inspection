@@ -1,0 +1,37 @@
+.root {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 0.9fr);
+  gap: var(--sqx-gutter);
+  align-items: stretch;
+}
+
+/* A grid column stretches its single child in both axes, so all three panels
+   end at the row's baseline instead of leaving dead space under the shorter
+   ones. `display: grid` does this without the section reaching into `Card` —
+   a primitive takes no class from outside (WEB-002 §4.5). */
+.column {
+  display: grid;
+  gap: var(--sqx-stack-tight);
+  align-content: stretch;
+  min-inline-size: 0;
+}
+
+@media (max-width: 90rem) {
+  .root {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .column:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 60rem) {
+  .root {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .column:last-child {
+    grid-column: auto;
+  }
+}

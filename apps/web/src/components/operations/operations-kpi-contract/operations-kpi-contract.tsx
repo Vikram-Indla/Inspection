@@ -40,11 +40,10 @@ export default function OperationsKpiContract({
     { key: "metric", header: strings.metric, isRowHeader: true, cell: row => row.metric },
     {
       key: "status", header: strings.status, width: "min",
-      cell: row => <StatusPill tone="neutral" size="sm" ping={false}>{row.sourceStatus}</StatusPill>,
+      cell: row => <StatusPill tone="neutral" ping={false}>{row.sourceStatus}</StatusPill>,
     },
     {
-      key: "formula", header: strings.formula, width: "grow",
-      cell: row => row.formula ?? strings.missing,
+      key: "formula", header: strings.formula,      cell: row => row.formula ?? strings.missing,
     },
   ];
 

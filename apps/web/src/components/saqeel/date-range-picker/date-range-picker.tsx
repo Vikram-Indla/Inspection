@@ -12,6 +12,8 @@ export type DateRangePreset = {
   readonly id: string;
   readonly label: string;
   readonly days: number;
+  /** "past" (default) spans the days ending today; "future" starts today. */
+  readonly direction?: "past" | "future";
 };
 
 export type DateRangeStrings = {
@@ -112,8 +114,9 @@ export default function DateRangePicker({
   }
 
   function applyPreset(preset: DateRangePreset): void {
-    const nextFrom = shift(todayIso, -(preset.days - 1));
-    onChange({ from: nextFrom, to: todayIso });
+    const span = preset.days - 1;
+    const future = preset.direction === "future";
+    onChange({ from: future ? todayIso : shift(todayIso, -span), to: future ? shift(todayIso, span) : todayIso });
     close(true);
   }
 
@@ -147,9 +150,11 @@ export default function DateRangePicker({
     }
   }
 
-  const activePreset = presets.find(
-    preset => draftFrom === shift(todayIso, -(preset.days - 1)) && draftTo === todayIso,
-  );
+  const activePreset = presets.find(preset => {
+    const span = preset.days - 1;
+    const future = preset.direction === "future";
+    return draftFrom === (future ? todayIso : shift(todayIso, -span)) && draftTo === (future ? shift(todayIso, span) : todayIso);
+  });
 
   return (
     <div className={styles.root}>

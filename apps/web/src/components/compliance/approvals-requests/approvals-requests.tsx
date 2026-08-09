@@ -47,7 +47,7 @@ function RequestCard({ view, row, messages, locale }: {
             ? fill(requests.submitted, { date: formatDate(row.submitted_at, locale) })
             : requests.submittedUnavailable}
         </span>
-        <StatusPill tone={statusTone(row.status)} size="sm">
+        <StatusPill tone={statusTone(row.status)}>
           {statusLabel(row.status, messages, locale)}
         </StatusPill>
       </div>

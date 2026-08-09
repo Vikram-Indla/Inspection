@@ -8,6 +8,7 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
+import { createPortal } from "react-dom";
 import styles from "./menu-surface.module.css";
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -64,38 +65,64 @@ export default function MenuSurface({
     if (!open || !panel || !trigger) return;
 
     const place = () => {
-      // Reset to the requested edge first so a resize can undo an earlier flip.
-      panel.dataset.align = align === "end" ? "end" : "start";
-      panel.style.setProperty("--sqx-menu-shift", "0px");
+      panel.dataset.side = "below";
 
       const vw = document.documentElement.clientWidth;
       const vh = document.documentElement.clientHeight;
       const anchor = trigger.getBoundingClientRect();
+      const rtl = getComputedStyle(panel).direction === "rtl";
 
-      panel.style.setProperty(
-        "--sqx-menu-avail-h",
-        `${Math.max(MIN_BLOCK_SIZE, Math.round(vh - anchor.bottom - MARGIN * 2))}px`,
-      );
+      panel.style.setProperty("--sqx-menu-anchor-w", `${Math.round(anchor.width)}px`);
       panel.style.setProperty("--sqx-menu-avail-w", `${vw - MARGIN * 2}px`);
 
-      // Reading the rect flushes the style change above, so each measurement
-      // reflects the edge just applied.
-      let rect = panel.getBoundingClientRect();
-      if (rect.right > vw - MARGIN || rect.left < MARGIN) {
-        panel.dataset.align = panel.dataset.align === "end" ? "start" : "end";
-        rect = panel.getBoundingClientRect();
-      }
+      // Uncap first so scrollHeight reports what the content actually wants,
+      // not what a previous placement already limited it to.
+      const spaceBelow = Math.round(vh - anchor.bottom - MARGIN * 2);
+      const spaceAbove = Math.round(anchor.top - MARGIN * 2);
+      panel.style.setProperty("--sqx-menu-avail-h", `${vh}px`);
+      const wanted = panel.scrollHeight;
+      const openAbove = wanted > spaceBelow && spaceAbove > spaceBelow;
 
-      const overflowEnd = rect.right - (vw - MARGIN);
-      const overflowStart = MARGIN - rect.left;
-      const shift = overflowEnd > 0 ? -overflowEnd : overflowStart > 0 ? overflowStart : 0;
-      if (shift !== 0) panel.style.setProperty("--sqx-menu-shift", `${Math.round(shift)}px`);
+      panel.dataset.side = openAbove ? "above" : "below";
+      const room = openAbove ? spaceAbove : spaceBelow;
+      panel.style.setProperty("--sqx-menu-avail-h", `${Math.max(MIN_BLOCK_SIZE, room)}px`);
+
+      // Block edge, measured from the viewport because the panel is fixed.
+      const height = Math.min(panel.scrollHeight, Math.max(MIN_BLOCK_SIZE, room));
+      const rawTop = openAbove ? anchor.top - MARGIN - height : anchor.bottom + MARGIN;
+      const top = Math.max(MARGIN, Math.min(rawTop, vh - height - MARGIN));
+      panel.style.setProperty("--sqx-menu-top", `${Math.round(top)}px`);
+
+      // Inline edge. `inset-inline-start` resolves to the right edge in RTL, so
+      // the offset is measured from whichever side that is — the value stays
+      // logical and the same declaration serves both directions.
+      // `end` is the inline end, which is the left edge in RTL — so the edge the
+      // panel hangs from is the requested alignment XOR the direction.
+      const width = Math.min(panel.scrollWidth, vw - MARGIN * 2);
+      const hangFromRight = (align === "end") !== rtl;
+      const physicalLeft = hangFromRight ? anchor.right - width : anchor.left;
+      const clampedLeft = Math.max(MARGIN, Math.min(physicalLeft, vw - width - MARGIN));
+      const start = rtl ? vw - clampedLeft - width : clampedLeft;
+      panel.style.setProperty("--sqx-menu-start", `${Math.round(start)}px`);
     };
 
     place();
+    const onScroll = () => place();
     window.addEventListener("resize", place);
-    return () => window.removeEventListener("resize", place);
+    window.addEventListener("scroll", onScroll, true);
+    return () => {
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", onScroll, true);
+    };
   }, [align, open, triggerRef]);
+
+  // A portalled panel sits at the end of the body, so Tab from the trigger would
+  // walk into the rest of the page instead of into the menu. A panel that traps
+  // focus must therefore be given it — otherwise the trap has nothing to hold.
+  useEffect(() => {
+    if (!open || !trapFocus) return;
+    panelRef.current?.querySelector<HTMLElement>(FOCUSABLE)?.focus();
+  }, [open, trapFocus]);
 
   useEffect(() => {
     if (!open) return;
@@ -143,7 +170,11 @@ export default function MenuSurface({
     ? { "--sqx-menu-anchor-w": `${anchorWidth}px`, minInlineSize: `${anchorWidth}px` }
     : undefined;
 
-  return (
+  // The panel is portalled to the body because the app shell's scrolling main
+  // (`overflow-y: auto`) clips any absolutely-positioned descendant, and a card
+  // that lifts on hover would otherwise become the containing block for a fixed
+  // one. Neither z-index nor a placement flip can escape a clipping ancestor.
+  return createPortal(
     <div
       className={styles.root}
       id={id}
@@ -154,6 +185,7 @@ export default function MenuSurface({
       style={style}
     >
       {children}
-    </div>
+    </div>,
+    document.body,
   );
 }

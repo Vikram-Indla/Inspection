@@ -34,7 +34,7 @@ export default async function AlertsSection({ data }: { data: OperationsData }) 
             : lab.local("No due date set", "لا يوجد تاريخ استحقاق محدد"),
           action: mayManageOperations
             ? <ActionFormControls actionFormId={action.id} status={action.status} strings={actionControlStrings} />
-            : <StatusPill tone="neutral" size="sm" ping={false}>{t("ops.readOnly", "Read only")}</StatusPill>,
+            : <StatusPill tone="neutral" ping={false}>{t("ops.readOnly", "Read only")}</StatusPill>,
         }))}
         notifications={data.notifs.map<AlertRow>(notification => ({
           id: notification.id,

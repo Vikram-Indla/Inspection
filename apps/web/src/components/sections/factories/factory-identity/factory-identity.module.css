@@ -1,0 +1,10 @@
+.context {
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}
+
+.synced {
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+}

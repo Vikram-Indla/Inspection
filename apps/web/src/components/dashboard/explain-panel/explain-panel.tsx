@@ -81,7 +81,7 @@ export default function ExplainProvider({ strings, children }: {
             <div className={styles.body}>
               {entry.blockedNote ? (
                 <div className={styles.note}>
-                  <StatusPill tone="warning" size="sm" ping>{strings.blockedTitle}</StatusPill>
+                  <StatusPill tone="warning" ping>{strings.blockedTitle}</StatusPill>
                   <p className={styles.noteText}>{entry.blockedNote}</p>
                 </div>
               ) : null}

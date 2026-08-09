@@ -23,9 +23,6 @@ export type AlertsStrings = {
   readonly emptyTitle: string;
 };
 
-// Delivery state to pill tone. This lived in the page as a map of legacy
-// lozenge class names; the mapping is a property of the alert, so it belongs
-// with the component that renders it.
 export const DELIVERY_TONE: Readonly<Record<string, StatusTone>> = {
   queued: "warning",
   sent: "info",
@@ -41,8 +38,7 @@ function AlertColumn({ id, heading, rows, empty }: {
   empty: string;
 }) {
   return (
-    // A card inside a card takes the raised surface automatically, so the two
-    // columns read as panels without either one declaring a background.
+
     <Card as="div" labelledBy={id}>
       <CardHeader level="h3" titleId={id} title={heading} />
       <CardBody>
@@ -58,7 +54,7 @@ function AlertColumn({ id, heading, rows, empty }: {
                   row.status || row.action ? (
                     <>
                       {row.status
-                        ? <StatusPill tone={row.status.tone} size="sm">{row.status.label}</StatusPill>
+                        ? <StatusPill tone={row.status.tone}>{row.status.label}</StatusPill>
                         : null}
                       {row.action}
                     </>

@@ -94,8 +94,7 @@ export default function SearchResults({ locale, query, factories, visits, inspec
             {groups.filter(group => group.rows.length).map(group => (
               <div className={styles.group} key={group.key}>
                 <p className={styles.heading} id={`dashboard-search-${group.key}`}>{group.heading}</p>
-                {/* bleed={false}: these lists sit in grid columns, so they
-                    must not pull out to the card edge. */}
+
                 <ListRows bleed={false} labelledBy={`dashboard-search-${group.key}`}>
                   {group.rows.map(row => (
                     <ListRow

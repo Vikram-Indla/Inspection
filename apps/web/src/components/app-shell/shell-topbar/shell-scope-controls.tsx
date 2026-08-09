@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import DateRangePicker, { type DateRangePreset } from "@/components/saqeel/date-range-picker/date-range-picker";
+import DateRangePicker from "@/components/saqeel/date-range-picker/date-range-picker";
+import { pastDateRangePresets, type DateRangePresetLabels } from "@/components/saqeel/date-range-picker/date-range-presets";
 import SaqeelSelect, { type SelectOption } from "@/components/saqeel/select/select";
 import { formatDateRange } from "@/lib/dates";
 import { resolveRegionId, KSA_REGION_LABELS } from "@/lib/ksa-regions";
@@ -10,11 +11,10 @@ import type { ShellScope } from "@/features/shell/types";
 import styles from "./shell-topbar.module.css";
 
 type ScopeStrings = Readonly<Record<
-  "dateScope" | "last30Days" | "from" | "to" | "apply" | "regionScope" | "allRegions"
-  | "notApplicable" | "previousMonth" | "nextMonth"
-  | "today" | "yesterday" | "last7Days" | "thisMonth" | "thisQuarter" | "thisYear",
+  "dateScope" | "from" | "to" | "apply" | "regionScope" | "allRegions"
+  | "notApplicable" | "previousMonth" | "nextMonth",
   string
->>;
+>> & { readonly presets: DateRangePresetLabels };
 
 export default function ShellScopeControls({ scope, regions, initialFrom, initialTo, initialRegion, locale, strings }: {
   scope: ShellScope;
@@ -56,16 +56,6 @@ export default function ShellScopeControls({ scope, regions, initialFrom, initia
     ...regions.map(name => ({ value: name, label: regionLabel(name) })),
   ];
 
-  const presets: readonly DateRangePreset[] = [
-    { id: "today", label: strings.today, days: 1 },
-    { id: "yesterday", label: strings.yesterday, days: 2 },
-    { id: "last7", label: strings.last7Days, days: 7 },
-    { id: "last30", label: strings.last30Days, days: 30 },
-    { id: "month", label: strings.thisMonth, days: 30 },
-    { id: "quarter", label: strings.thisQuarter, days: 90 },
-    { id: "year", label: strings.thisYear, days: 365 },
-  ];
-
   return (
     <div className={styles.scope}>
       <DateRangePicker
@@ -78,7 +68,7 @@ export default function ShellScopeControls({ scope, regions, initialFrom, initia
         }}
         label={strings.dateScope}
         displayValue={formatDateRange(from, to, locale)}
-        presets={presets}
+        presets={pastDateRangePresets(strings.presets)}
         locale={locale}
         monthLabels={{ previous: strings.previousMonth, next: strings.nextMonth }}
         disabled={!scope.date}

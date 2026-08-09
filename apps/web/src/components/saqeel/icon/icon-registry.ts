@@ -1,4 +1,5 @@
 import {
+  ArrowUpRight,
   Bell,
   Bookmark,
   Building2,
@@ -80,6 +81,7 @@ export const ICONS = {
   refresh: RotateCw,
   export: Download,
   savedViews: Bookmark,
+  externalLink: ArrowUpRight,
 } as const;
 
 export type IconName = keyof typeof ICONS;

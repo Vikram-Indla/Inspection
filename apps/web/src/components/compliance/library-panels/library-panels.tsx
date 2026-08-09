@@ -103,7 +103,7 @@ function Violations({ view, messages, locale }: PanelProps) {
           header: panels.severityColumn,
           width: "min",
           cell: violation => (
-            <StatusPill tone={violationLevelTone(violation.level)} size="sm">
+            <StatusPill tone={violationLevelTone(violation.level)}>
               {humaniseEnum(violation.level, locale)}
             </StatusPill>
           ),
@@ -148,7 +148,7 @@ function Versions({ view, selected, messages, locale }: PanelProps) {
           title={fill(panels.versionRow, { number: version.version_number })}
           description={version.published_at ? formatDate(version.published_at, locale) : panels.notRecorded}
           trailing={
-            <StatusPill tone={version.id === currentId ? "success" : "neutral"} size="sm">
+            <StatusPill tone={version.id === currentId ? "success" : "neutral"}>
               {version.id === currentId ? panels.versionCurrent : panels.versionSuperseded}
             </StatusPill>
           }

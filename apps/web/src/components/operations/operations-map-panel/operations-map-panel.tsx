@@ -18,7 +18,7 @@ export default function OperationsMapPanel({ title, description, count, countLab
         title={title}
         description={description}
         trailing={count === undefined ? undefined : (
-          <StatusPill tone="accent" size="sm" ping>{`${count} ${countLabel ?? ""}`.trim()}</StatusPill>
+          <StatusPill tone="accent" ping>{`${count} ${countLabel ?? ""}`.trim()}</StatusPill>
         )}
       />
       <CardMedia height="lg" label={title}>

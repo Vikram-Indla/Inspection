@@ -6,9 +6,6 @@ export type Definition = {
   readonly value: ReactNode;
 };
 
-// Label-over-value fact grid. Every detail surface in this app has been
-// hand-rolling a <dl> with its own column rule and gap; this is the one
-// grammar so they line up with each other and with the cards around them.
 export default function DefinitionList({ items, columns = "auto" }: {
   items: readonly Definition[];
   columns?: "auto" | "two";

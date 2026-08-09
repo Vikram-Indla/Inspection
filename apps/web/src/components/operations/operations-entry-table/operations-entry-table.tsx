@@ -47,13 +47,13 @@ export default function OperationsEntryTable({ rows, strings }: {
     },
     {
       key: "state", header: strings.state,
-      cell: row => <StatusPill tone="info" size="sm">{row.state}</StatusPill>,
+      cell: row => <StatusPill tone="info">{row.state}</StatusPill>,
     },
     {
       key: "visit", header: strings.visit, numeric: true,
       cell: row => <bdi className={styles.code}>{row.visitId?.slice(0, ID_PREVIEW) ?? MISSING}</bdi>,
     },
-    { key: "factory", header: strings.factory, width: "grow", cell: row => row.factoryName },
+    { key: "factory", header: strings.factory, cell: row => row.factoryName },
     {
       key: "location", header: strings.location,
       cell: row => [row.region, row.city].filter(Boolean).join(" · ") || MISSING,
@@ -61,7 +61,7 @@ export default function OperationsEntryTable({ rows, strings }: {
     {
       key: "risk", header: strings.risk, align: "end", numeric: true,
       cell: row => row.riskScore === null
-        ? <StatusPill tone="warning" size="sm" ping>{strings.notConfigured}</StatusPill>
+        ? <StatusPill tone="warning" ping>{strings.notConfigured}</StatusPill>
         : row.riskScore,
     },
     {

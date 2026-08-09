@@ -1,9 +1,16 @@
+/* `aspect-ratio` is the guarantee, not the sizes: a flex or grid parent that
+   stretches its children would otherwise leave the box taller than it is wide
+   and the "circle" would render as an ellipse. `vertical-align: middle` stops
+   the inline box sitting on the text baseline, which read as the dot being off
+   centre inside the pill. */
 .root {
   position: relative;
   display: inline-flex;
   flex: none;
+  aspect-ratio: 1;
   inline-size: var(--sqx-ping-md);
   block-size: var(--sqx-ping-md);
+  vertical-align: middle;
 }
 
 .root[data-size="sm"] {
@@ -43,7 +50,12 @@
   background: var(--sqx-ping-color);
 }
 
+/* The wave and the core share one box, so the expansion is concentric only if
+   it scales about that box's centre. The default origin already is centre —
+   stating it means a future transform on an ancestor cannot quietly move it. */
 .wave {
+  transform-origin: center;
+  will-change: transform, opacity;
   animation: sqx-ping var(--sqx-duration-ping) var(--sqx-ease-decelerate) infinite;
 }
 

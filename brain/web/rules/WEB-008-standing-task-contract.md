@@ -53,6 +53,12 @@ circumstances; absent data renders as a state.
   query declares a cache posture; every mutation revalidates its tags.
 - Walk the state ladder before any `useState`. `useEffect` only for external
   synchronisation, always with cleanup.
+- **Never mutate the DOM directly** — no `innerHTML`, `createElement`/`appendChild`,
+  `setAttribute`, `classList`, `dataset` or `style` writes on rendered nodes, no
+  node reordering, in any case. The DOM is render output; a value that changes it
+  is state. Reads, `focus()`, and imperative library handoff are not mutation;
+  the `<html>` root's theme/direction flags are the one exception, through their
+  owning module (WEB-012).
 
 **Visual**
 

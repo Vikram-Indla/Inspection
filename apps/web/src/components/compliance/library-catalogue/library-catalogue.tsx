@@ -48,7 +48,7 @@ function columns(view: LibraryView, messages: LibraryMessages, locale: Locale): 
       key: "status",
       header: catalogue.columnStatus,
       cell: row => (
-        <StatusPill tone={statusTone(row.operational_status)} size="sm">
+        <StatusPill tone={statusTone(row.operational_status)}>
           {humaniseEnum(row.operational_status, locale)}
         </StatusPill>
       ),

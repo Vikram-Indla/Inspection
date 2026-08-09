@@ -2,6 +2,7 @@ import Shell, { preloadShell } from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import EmptyState from "@/components/EmptyState";
+import FactoriesScopeBar from "@/components/sections/factories/factories-scope-bar/factories-scope-bar";
 import RevampFactory360Portfolio, { type RevampFactoryRow } from "./RevampFactory360Portfolio";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { resolveFactory360Permissions } from "@/lib/factory360/dossier";
@@ -86,37 +87,36 @@ export default async function Factories({ searchParams }: {
           body={t("f360.empty.desc", "Factory identity records sync from the national source.")} />
       )}
       {!error && !isEmpty && <>
-        <form method="get" className="sq-surface sq-row" aria-label={t("f360.list.portfolio", "Choose a factory")}>
-          <div className="sq-field">
-            <label className="sq-field__label" htmlFor="factory-cr-filter">{t("f360.list.portfolio", "Choose a factory")}</label>
-            <select id="factory-cr-filter" className="sq-select" name="scope" defaultValue={requestedScopeValue}>
-              {scopeOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
-            </select>
-          </div>
-          <button className="sq-btn sq-btn--secondary" type="submit">{t("f360.list.dossier", "View factory")}</button>
-          <span className="sq-caption"><span className="sq-numeric">{portfolioRows.length}</span> {t("f360.list.of", "of")} <span className="sq-numeric">{selectedScopeCount}</span> {t("f360.list.factoriesWord", "factories")}</span>
-        </form>
-        <RevampFactory360Portfolio
-          key={selectedCr}
-          factories={portfolioRows}
-          portfolioLabel={portfolioLabel}
-          canCreateInspection={permissions["create_inspection"]}
+        <FactoriesScopeBar
           locale={locale}
-          provenanceStrings={{
-            registered: t("f360.provenance.registered", "Registered · Senaei source"),
-            registeredBody: t("f360.provenance.registeredBody", "Registered factory identity from the governed Senaei source."),
-            manual: t("f360.provenance.manual", "Unregistered · manually created"),
-            manualBody: t("f360.provenance.manualBody", "Manual R05 establishment. Identity is unverified and must not be treated as Senaei data."),
-            test: t("f360.provenance.test", "Test data · not production"),
-            testBody: t("f360.provenance.testBody", "Controlled Saqeel test data for product verification. It is not a Senaei source record and must not be used as production evidence."),
-            unavailable: t("f360.provenance.unavailable", "Source provenance unavailable"),
-            unavailableBody: t("f360.provenance.unavailableBody", "Registration and source ownership are not asserted until governed provenance is available."),
-            sourceStatus: t("f360.provenance.status", "Source status & freshness"),
-            recorded: t("f360.meta.recorded", "Recorded"),
-            freshnessUnavailable: t("f360.provenance.freshnessUnavailable", "Freshness unavailable"),
-            noSenaeiSync: t("f360.provenance.noSenaeiSync", "No Senaei synchronization timestamp applies to this manual record."),
-          }}
+          options={scopeOptions}
+          value={requestedScopeValue}
+          shown={portfolioRows.length}
+          total={selectedScopeCount}
         />
+        <div data-sqx-cards="flush">
+          <RevampFactory360Portfolio
+            key={selectedCr}
+            factories={portfolioRows}
+            portfolioLabel={portfolioLabel}
+            canCreateInspection={permissions["create_inspection"]}
+            locale={locale}
+            provenanceStrings={{
+              registered: t("f360.provenance.registered", "Registered · Senaei source"),
+              registeredBody: t("f360.provenance.registeredBody", "Registered factory identity from the governed Senaei source."),
+              manual: t("f360.provenance.manual", "Unregistered · manually created"),
+              manualBody: t("f360.provenance.manualBody", "Manual R05 establishment. Identity is unverified and must not be treated as Senaei data."),
+              test: t("f360.provenance.test", "Test data · not production"),
+              testBody: t("f360.provenance.testBody", "Controlled Saqeel test data for product verification. It is not a Senaei source record and must not be used as production evidence."),
+              unavailable: t("f360.provenance.unavailable", "Source provenance unavailable"),
+              unavailableBody: t("f360.provenance.unavailableBody", "Registration and source ownership are not asserted until governed provenance is available."),
+              sourceStatus: t("f360.provenance.status", "Source status & freshness"),
+              recorded: t("f360.meta.recorded", "Recorded"),
+              freshnessUnavailable: t("f360.provenance.freshnessUnavailable", "Freshness unavailable"),
+              noSenaeiSync: t("f360.provenance.noSenaeiSync", "No Senaei synchronization timestamp applies to this manual record."),
+            }}
+          />
+        </div>
       </>}
     </Shell>
   );

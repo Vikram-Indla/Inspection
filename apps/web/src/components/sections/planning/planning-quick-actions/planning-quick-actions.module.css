@@ -1,0 +1,109 @@
+.heading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menuRoot {
+  position: relative;
+  display: block;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  gap: var(--sqx-space-4);
+  inline-size: 100%;
+  min-block-size: var(--sqx-control-h-lg);
+  padding-inline: var(--sqx-inset-control);
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
+  font-weight: var(--sqx-weight-semibold);
+  color: var(--sqx-text-primary);
+  text-align: start;
+  text-decoration: none;
+  background: var(--sqx-surface-sunken);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-control);
+  cursor: pointer;
+  transition:
+    background-color var(--sqx-duration-fast) var(--sqx-ease-standard),
+    border-color var(--sqx-duration-fast) var(--sqx-ease-standard);
+}
+
+.action:hover {
+  background: var(--sqx-surface-subtle);
+  border-color: var(--sqx-border-strong);
+}
+
+.action:focus-visible {
+  outline: var(--sqx-focus-ring-width) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}
+
+.label {
+  flex: 1;
+  min-inline-size: 0;
+  text-wrap: pretty;
+}
+
+.unavailable {
+  flex: none;
+  font: var(--sqx-text-caption);
+  font-weight: var(--sqx-weight-regular);
+  color: var(--sqx-text-muted);
+}
+
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sqx-space-3);
+  padding-inline: var(--sqx-space-3);
+  padding-block: var(--sqx-space-3);
+  color: var(--sqx-text-primary);
+  text-align: start;
+  text-decoration: none;
+  border-radius: var(--sqx-radius-sm);
+}
+
+.option:hover {
+  background: var(--sqx-surface-subtle);
+}
+
+.option:focus-visible {
+  outline: var(--sqx-focus-ring-width) solid var(--sqx-border-focus);
+  outline-offset: calc(var(--sqx-focus-ring-offset) * -1);
+}
+
+.option[aria-disabled="true"] {
+  color: var(--sqx-text-disabled);
+  cursor: not-allowed;
+}
+
+.optionText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  min-inline-size: 0;
+}
+
+.optionTitle {
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
+  font-weight: var(--sqx-weight-semibold);
+}
+
+.optionNote {
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}

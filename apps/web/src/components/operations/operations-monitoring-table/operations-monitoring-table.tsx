@@ -55,15 +55,14 @@ export default function OperationsMonitoringTable({ rows, refreshedAt, enumLabel
       ),
     },
     {
-      key: "factory", header: strings.factory, width: "grow",
-      cell: row => row.factory_id
+      key: "factory", header: strings.factory,      cell: row => row.factory_id
         ? <Link className={styles.link} href={`/factories/${row.factory_id}`} prefetch={false}>{row.factory_name ?? MISSING}</Link>
         : (row.factory_name ?? MISSING),
     },
     {
       key: "state", header: strings.state,
       cell: row => (
-        <StatusPill tone={STATE_TONE[row.operational_state] ?? "neutral"} size="sm" ping>
+        <StatusPill tone={STATE_TONE[row.operational_state] ?? "neutral"} ping>
           {label(row.operational_state)}
         </StatusPill>
       ),
@@ -71,7 +70,7 @@ export default function OperationsMonitoringTable({ rows, refreshedAt, enumLabel
     {
       key: "geofence", header: strings.geofence,
       cell: row => row.geofence
-        ? <StatusPill tone={GEOFENCE_TONE[row.geofence] ?? "danger"} size="sm">{label(row.geofence)}</StatusPill>
+        ? <StatusPill tone={GEOFENCE_TONE[row.geofence] ?? "danger"}>{label(row.geofence)}</StatusPill>
         : <span className={styles.muted}>{MISSING}</span>,
     },
     {

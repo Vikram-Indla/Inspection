@@ -32,7 +32,7 @@ export default function OperationsExceptions({ rows, strings }: {
         level="h2"
         titleId="operations-exceptions"
         title={strings.title}
-        trailing={<StatusPill tone="neutral" size="sm" ping={false}>{strings.scope}</StatusPill>}
+        trailing={<StatusPill tone="neutral" ping={false}>{strings.scope}</StatusPill>}
       />
       <CardBody>
         {rows.length ? (
@@ -40,7 +40,7 @@ export default function OperationsExceptions({ rows, strings }: {
             {rows.slice(0, MAX_ROWS).map(row => (
               <ListRow
                 key={row.id}
-                leading={<StatusPill tone="warning" size="sm">{strings.open}</StatusPill>}
+                leading={<StatusPill tone="warning">{strings.open}</StatusPill>}
                 title={row.label}
                 description={row.description}
                 trailing={
