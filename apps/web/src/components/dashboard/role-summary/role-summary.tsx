@@ -1,5 +1,4 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
-import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import MetricStrip from "@/components/dashboard/metric-strip/metric-strip";
 import { buildMetricStrip, metricStripStrings } from "@/features/dashboard/strip";
 import { getMessages } from "@/i18n/messages";
@@ -23,7 +22,6 @@ export default function RoleSummary({ locale, persona, projection, partialSource
         titleId="dashboard-role-summary"
         eyebrow={dashboard.yourWork.eyebrow}
         title={dashboard.persona[persona]}
-        trailing={<StatusPill tone="info" ping>{dashboard.yourWork.scoped}</StatusPill>}
       />
       <CardBody>
         <MetricStrip
