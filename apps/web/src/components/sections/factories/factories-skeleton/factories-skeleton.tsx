@@ -79,8 +79,10 @@ export default function FactoriesSkeleton({ label }: { label: string }) {
           end={
             <>
               <PanelCardSkeleton rows={3} />
-              <PanelCardSkeleton rows={2} />
-              <PanelCardSkeleton rows={2} />
+              <PanelCardSkeleton rows={5} />
+              <PanelCardSkeleton rows={1} />
+              <PanelCardSkeleton rows={4} />
+              <PanelCardSkeleton rows={4} />
             </>
           }
         >

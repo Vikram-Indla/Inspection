@@ -84,10 +84,41 @@
       }
     }
   },
-  "ai": {
-    "title": "Contextual AI",
-    "withheld": "Provider output withheld",
-    "body": "No generated factory claim is shown without an evidence-linked provider response.",
-    "action": "Review authoritative evidence"
+  "context": {
+    "risk": {
+      "heading": "Why this risk",
+      "score": "Risk score",
+      "noScore": "No risk score recorded",
+      "version": "Model version",
+      "recalculated": "Last recalculated",
+      "desc": "Recomputed from the stored inputs for this model version. Every calculation is retained.",
+      "driversUnavailable": "No driver breakdown was recorded for this score. The absence is preserved, not reconstructed."
+    },
+    "change": {
+      "title": "Latest change",
+      "moved": "Risk moved from {from} to {to} on {date}.",
+      "first": "Only one risk calculation is recorded, so there is no movement to show.",
+      "none": "No risk calculation has been recorded for this factory."
+    },
+    "sources": {
+      "title": "Data sources",
+      "senaei": "Senaei registry",
+      "riskEngine": "Risk engine",
+      "synced": "Synced",
+      "notSynced": "Not synced",
+      "calculated": "Calculated",
+      "notCalculated": "Not calculated"
+    },
+    "advisory": {
+      "title": "AI assistant",
+      "advisory": "Advisory only · human decides",
+      "evidence": "Generated from this factory’s recorded risk score, band, model version and stored drivers.",
+      "idle": "No advisory has been generated for this factory yet.",
+      "generate": "Explain this risk",
+      "generating": "Generating…",
+      "confidenceUnavailable": "The provider returns no calibrated confidence score, so none is shown.",
+      "predictedRisk": "Predicted risk",
+      "predictedUnavailable": "Not available — no forecasting model is configured. Only recorded calculations are shown."
+    }
   }
 }

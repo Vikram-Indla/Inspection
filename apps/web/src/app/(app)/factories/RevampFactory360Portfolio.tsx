@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import FactoriesPortfolio from "@/components/sections/factories/factories-portfolio/factories-portfolio";
+import FactoryAiAdvisory from "@/components/sections/factories/factory-ai-advisory/factory-ai-advisory";
 import FactoryContext from "@/components/sections/factories/factory-context/factory-context";
+import FactoryRisk from "@/components/sections/factories/factory-risk/factory-risk";
 import FactoryOverview from "@/components/sections/factories/factory-overview/factory-overview";
 import FactoryWorkspace from "@/components/sections/factories/factory-workspace/factory-workspace";
 import {
@@ -14,6 +16,7 @@ import {
   type ProvenanceStrings,
 } from "@/features/factories/portfolio";
 import type { PortfolioCounts } from "@/features/factories/portfolio-counts";
+import { toDriverLines, type FactoryRiskMovement } from "@/features/factories/risk-context";
 import type { StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import { formatDate } from "@/lib/dates";
 import { fill, getMessages } from "@/i18n/messages";
@@ -31,13 +34,14 @@ function planningHandoffHref(factory: FactoryRow): string {
   return `/planning/single?${query.toString()}`;
 }
 
-export default function RevampFactory360Portfolio({ factories, portfolioLabel, canCreateInspection, locale, provenanceStrings, counts, now }: {
+export default function RevampFactory360Portfolio({ factories, portfolioLabel, canCreateInspection, locale, provenanceStrings, counts, riskMovement, now }: {
   factories: FactoryRow[];
   portfolioLabel: string;
   canCreateInspection: boolean;
   locale: "en" | "ar";
   provenanceStrings: ProvenanceStrings;
   counts: PortfolioCounts;
+  riskMovement: ReadonlyMap<string, FactoryRiskMovement>;
   now: number;
 }) {
   const { factories: copy } = getMessages(locale);
@@ -71,12 +75,35 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
     licence: copy.hero.industrialLicence,
     plant: copy.portfolio.plantNumber,
     sourceStatus: provenanceStrings.sourceStatus,
-    aiTitle: copy.ai.title,
-    aiWithheld: copy.ai.withheld,
-    aiBody: copy.ai.body,
-    aiAction: copy.ai.action,
+    dataSources: copy.context.sources.title,
+    latestChange: copy.context.change.title,
     missing: copy.portfolio.missing,
   };
+  const movement = riskMovement.get(selected.id) ?? null;
+  const day = (iso: string | null) => (iso ? formatDate(iso, locale) : copy.portfolio.missing);
+  const latestChange = movement === null
+    ? copy.context.change.none
+    : movement.previous === null
+      ? copy.context.change.first
+      : fill(copy.context.change.moved, {
+        from: movement.previous.score,
+        to: movement.latest.score,
+        date: day(movement.latest.calculatedAt),
+      });
+  const sources = [
+    {
+      key: "senaei",
+      label: copy.context.sources.senaei,
+      state: selected.source_synced_at ? copy.context.sources.synced : copy.context.sources.notSynced,
+      tone: selected.source_synced_at ? ("success" as StatusTone) : ("neutral" as StatusTone),
+    },
+    {
+      key: "riskEngine",
+      label: copy.context.sources.riskEngine,
+      state: movement ? copy.context.sources.calculated : copy.context.sources.notCalculated,
+      tone: movement ? ("success" as StatusTone) : ("neutral" as StatusTone),
+    },
+  ];
   const sections = [
     { key: "inspectionHistory", ...copy.sections.items.inspectionHistory },
     { key: "violations", ...copy.sections.items.violations },
@@ -165,7 +192,47 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
           }}
         />
       }
-      end={<FactoryContext factory={selected} provenance={provenance} strings={contextStrings} />}
+      end={
+        <FactoryContext
+          factory={selected}
+          provenance={provenance}
+          sources={sources}
+          latestChange={latestChange}
+          strings={contextStrings}
+          risk={
+            <FactoryRisk
+              heading={copy.context.risk.heading}
+              score={selected.risk_score === null ? copy.portfolio.missing : String(selected.risk_score)}
+              band={selected.risk_band ? { label: condition.label, tone: condition.tone } : null}
+              noScoreLabel={copy.context.risk.noScore}
+              facts={[
+                { label: copy.context.risk.version, value: selected.risk_version ?? copy.portfolio.missing },
+                { label: copy.context.risk.recalculated, value: day(selected.risk_calculated_at) },
+              ]}
+              description={copy.context.risk.desc}
+              drivers={toDriverLines(selected.risk_drivers, copy.portfolio.missing)}
+              driversUnavailable={copy.context.risk.driversUnavailable}
+            />
+          }
+          advisory={
+            <FactoryAiAdvisory
+              factoryId={selected.id}
+              locale={locale}
+              strings={{
+                title: copy.context.advisory.title,
+                advisory: copy.context.advisory.advisory,
+                evidence: copy.context.advisory.evidence,
+                idle: copy.context.advisory.idle,
+                generate: copy.context.advisory.generate,
+                generating: copy.context.advisory.generating,
+                confidenceUnavailable: copy.context.advisory.confidenceUnavailable,
+                predictedRisk: copy.context.advisory.predictedRisk,
+                predictedUnavailable: copy.context.advisory.predictedUnavailable,
+              }}
+            />
+          }
+        />
+      }
     >
       <FactoryOverview
         factory={selected}

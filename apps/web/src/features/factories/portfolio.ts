@@ -11,6 +11,9 @@ export type FactoryRow = {
   activity_class: string | null;
   risk_band: string | null;
   risk_score: number | null;
+  risk_version: string | null;
+  risk_drivers: unknown;
+  risk_calculated_at: string | null;
   source: string | null;
   source_synced_at: string | null;
   is_temporary: boolean;

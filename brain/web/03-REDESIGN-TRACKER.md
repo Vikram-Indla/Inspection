@@ -41,10 +41,16 @@ definitions), licence expiry with an `Expired`/`Expiring soon` pill at 30 days,
 Compliance % removed (no column exists), and the repeated provenance pill
 reduced to one conditional warning on the portfolio header.
 
-**Remaining slices:** the **end panel** (the mock's AI side block — factory
-summary, top risks, latest changes, recommended actions, predicted risk, "why
-high risk"), the **middle column**, and `/factories/cr/[id]`, which is untouched
-legacy.
+**End panel done (T-025):** "why this risk" reuses `FactoryRisk` over the
+recorded driver breakdown, "latest change" comes from the two most recent risk
+snapshots, the AI advisory reuses the existing `factory_risk_explanation`
+surface, data sources show two honest states rather than three unconditional
+ticks, and **predicted risk renders "Not available"** because no forecasting
+model exists.
+`record:` [2026-08-09-T-025-factories-end-panel-ai](sessions/2026-08/2026-08-09-T-025-factories-end-panel-ai.md)
+
+**Remaining slices:** the **middle column**, and `/factories/cr/[id]`, which is
+untouched legacy.
 
 ---
 
@@ -459,6 +465,19 @@ Pull one in only if it is genuinely part of doing the active task well.
   that bug invisibly until a page placed it outside a toolbar (T-021e). Any
   other primitive relying on an inline display type for its width has the same
   trap armed; worth a sweep at the next design-system audit.
+- **`FactoryRisk` now has two consumers** (`/factories/[id]` and the end panel),
+  so by the Rule of Two it has earned promotion out of `sections/factories/` —
+  but its copy is still Factory-360-specific and would need generalising first.
+- **The mock's "Top Risks" list has no source.** Overdue checklist items, repeat
+  violations within 12 months and inspection-cycle breaches each need a governed
+  definition and a query. The recorded driver breakdown is the honest stand-in
+  shipped by T-025.
+- **There is no risk forecasting model.** `/factories`' end panel states
+  "Predicted risk — not available" rather than projecting one. Any future
+  forecast is a modelling decision, not a UI one.
+- **`e2e/factory360-provenance-contract.spec.ts` asserts against raw source
+  text** and was already flagged fragile. T-024 and T-025 changed both side
+  panels substantially; it very likely needs updating.
 - **Seeded test data is excluded on `/factories` only.** T-024 added
   `isTestSourceFactory` (source-marked test rows) beside the existing
   `isTestFixtureEstablishment` (name/code fixtures) — **two independent signals,
