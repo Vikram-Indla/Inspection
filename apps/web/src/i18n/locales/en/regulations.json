@@ -1,0 +1,72 @@
+{
+  "title": "Compliance library",
+  "detailTitle": "Regulation record",
+  "loading": "Loading the regulation library…",
+  "governance": {
+    "title": "Request-controlled content",
+    "body": "This library is for viewing and searching. To create or change a regulation, start a compliance configuration request. Approved versions stay unchanged until that request is approved and published.",
+    "create": "Create configuration request",
+    "requests": "Configuration requests"
+  },
+  "access": {
+    "reviewerTitle": "Reviewer — read only",
+    "title": "Read only for your role",
+    "body": "You can view the library here. Creating, amending and publishing need a compliance or form admin role, enforced by row-level security.",
+    "unverifiedTitle": "Permissions unavailable",
+    "unverifiedBody": "Your configuration permissions could not be verified. Writes are disabled — reload the page to retry."
+  },
+  "degraded": {
+    "title": "The regulation library could not be read",
+    "body": "Nothing is shown as zero. The library is unavailable, which is not the same as empty. Your session and navigation still work.",
+    "retry": "Retry read"
+  },
+  "authorities": {
+    "heading": "Issuing authority",
+    "all": "All regulations",
+    "notRecorded": "No authority recorded",
+    "caption": "Grouped on the authority recorded against each regulation. There is no authority registry to reconcile these against."
+  },
+  "catalogue": {
+    "heading": "All regulations",
+    "count": "{shown} of {total} regulations",
+    "searchLabel": "Search the library",
+    "searchPlaceholder": "Code, title or authority",
+    "apply": "Search",
+    "clear": "Clear filters",
+    "statusLegend": "Status"
+  },
+  "table": {
+    "caption": "Governed regulations, with the clause, inspection-item and violation footprint recorded against each.",
+    "regulation": "Regulation",
+    "authority": "Authority",
+    "clauses": "Clauses",
+    "items": "Inspection items",
+    "violations": "Violations",
+    "status": "Status",
+    "version": "Version",
+    "published": "Published",
+    "open": "Open record",
+    "openLabel": "Open the record for {code}",
+    "selected": "Selected"
+  },
+  "footprint": {
+    "unknown": "Unknown",
+    "unknownHint": "read failed — unknown, not zero",
+    "none": "None",
+    "incomplete": "No clauses recorded — this regulation cannot be published as it stands"
+  },
+  "empty": {
+    "title": "No regulations recorded yet",
+    "body": "The library read succeeded and returned nothing. Regulations are the parents of every inspection item — the first one is created through a configuration request.",
+    "filteredTitle": "No regulations match",
+    "filteredBody": "The library itself is not empty. Clear the search, authority or lifecycle filter."
+  },
+  "status": {
+    "all": "All",
+    "active": "Active",
+    "scheduled": "Scheduled",
+    "draft": "Draft",
+    "locked": "Locked",
+    "deactivated": "Deactivated"
+  }
+}

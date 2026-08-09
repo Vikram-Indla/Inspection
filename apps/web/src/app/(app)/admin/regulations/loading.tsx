@@ -1,23 +1,25 @@
-import { SkeletonBlock } from "@/components/Skeleton";
-import { useT } from "@/lib/i18n";
+import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
+import { Skeleton, SkeletonRegion } from "@/components/saqeel/skeleton/skeleton";
+import { getMessages } from "@/i18n/messages";
+import { getLocale } from "@/lib/i18n";
 
-// SCR-ADM-010/011 · S02_LOADING — structure-first skeleton shown while the register
-// read is in flight. It shows no counts and no health verdict (counts are unknown until
-// the read returns), only shape.
+const SECTIONS = 4;
+const ROWS_PER_SECTION = 4;
+
 export default async function Loading() {
-  const { t } = await useT();
+  const { regulations } = getMessages(await getLocale());
   return (
-    <div className="sq-content stack" style={{ gap: "var(--space-4)" }} role="status" aria-busy="true" aria-live="polite">
-      <span className="sr-only">{t("admin.reg.r1.loading", "Loading regulation list…")}</span>
-      <div className="panel" style={{ padding: "var(--space-6)" }}>
-        <SkeletonBlock inlineSize="40%" blockSize={20} ariaHidden />
-      </div>
-      {[0, 1, 2].map(i => (
-        <div key={i} className="panel stack" style={{ padding: "var(--space-6)", gap: "var(--space-3)" }}>
-          <SkeletonBlock inlineSize="55%" blockSize={18} ariaHidden />
-          <SkeletonBlock inlineSize="80%" blockSize={40} ariaHidden />
-        </div>
+    <SkeletonRegion label={regulations.loading}>
+      {Array.from({ length: SECTIONS }, (_unused, section) => (
+        <Card as="div" key={section}>
+          <CardHeader title={<Skeleton shape="line" width="half" size="lg" />} />
+          <CardBody gap="tight">
+            {Array.from({ length: ROWS_PER_SECTION }, (_ignored, row) => (
+              <Skeleton key={row} shape="line" width={row % 2 === 0 ? "full" : "wide"} size="sm" />
+            ))}
+          </CardBody>
+        </Card>
       ))}
-    </div>
+    </SkeletonRegion>
   );
 }

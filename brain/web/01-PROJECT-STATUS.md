@@ -1,6 +1,33 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-09` · `Updated by: T-035 — dashboard trend + executive brief`
+`Last updated: 2026-08-09` · `Updated by: T-036 — compliance library catalogue`
+
+## Where the compliance library stands (2026-08-09)
+
+The catalogue is migrated: `app/(app)/compliance/page.tsx` **303 → 27**, with
+`/admin/regulations` reduced to the `?id=` record (546 → 21). Authority
+navigator, status chips and search are all `searchParams`; each row carries a
+clause / inspection-item / **violation** footprint. The six-tab workspace and the
+`?id=` record are quarantined as `@retiring` for T-038 and T-037.
+
+**Three admin routes do not render their own page.** `middleware.ts` rewrites
+`/admin/regulations` → `/compliance`, `/admin/compliance-approvals` →
+`/compliance/approvals`, and `/admin/violations` → `/enforcement-library`,
+passing the typed path in `__shellRoute`. T-036 was first built against
+`/admin/regulations` and the entire rebuild was unreachable. **Read
+`middleware.ts` during inventory, before deciding which file a screen lives in.**
+
+**The schema is richer than any admin screen currently admits.** `violation_codes`
+already carries `level`, `corrective_action`, `grace_period_days`, `category` and
+`applicability`; `penalty_mappings` carries `penalty_type`, `amount`,
+`grace_period_days`, `due_period_days`, `legal_basis` and a `template_version_id`
+naming the action form; and `inspection_items.response_model.mapping` holds a
+**direct item→violation link**. All of it is governed with maker-checker and
+immutability triggers. Before concluding a field is missing, read
+`supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql` —
+the foundation migration alone understates what exists.
+
+---
 
 ## Where the dashboard stands (2026-08-09)
 

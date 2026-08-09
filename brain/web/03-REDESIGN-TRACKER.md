@@ -10,6 +10,76 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-036 · Compliance library — catalogue
+`status: done (catalogue; NEVER LOADED IN A BROWSER)` · `rules: WEB-000…006, WEB-008, WEB-011` · `est: 3h`
+`record:` [2026-08-09-T-036-regulations-catalogue](sessions/2026-08/2026-08-09-T-036-regulations-catalogue.md)
+
+`/compliance` 303 → 27 lines; `/admin/regulations` reduced to the `?id=` record,
+546 → 21. Authority navigator, status chips and search all in `searchParams`,
+a clause/item/violation footprint per row, a mirroring skeleton, and 52 i18n keys
+on a screen that had **no Arabic at all**.
+
+**This task was first built against `/admin/regulations`, which `middleware.ts`
+rewrites to `/compliance`.** The rebuild was unreachable and the owner caught it.
+Two other routes rewrite the same way. **Read `middleware.ts` during inventory.**
+
+**Owed:** load `/compliance` in the dev server, axe, Arabic review, bundle
+measurement.
+
+---
+
+### T-038 · Compliance library — six-tab workspace
+`status: todo` · `rules: WEB-000…004, WEB-008, WEB-011` · `est: 3h`
+
+Rebuild `components/sections/regulations/regulation-workspace` (`@retiring`, 116
+lines of legacy `.panel-row`/`.badge`, hardcoded English) on SAQEEL primitives.
+The reads already exist in `features/regulations/workspace-source.ts`; what is
+missing is the columns they do not select:
+
+- **Violations** — `violation_codes` also has `corrective_action`,
+  `grace_period_days`, `category`, `applicability`. Only `level` is shown today.
+- **Penalties** — `penalty_mappings` also has `penalty_type`, `amount`,
+  `grace_period_days`, `due_period_days`, `legal_basis`, and a
+  `template_version_id` naming the action form. Only `penalty_ref` and
+  `mapping_version` are shown today.
+- **Inspection items** — `response_model.responses` is the response type,
+  `evidence_rule` the evidence requirement, and
+  `response_model.mapping.non_compliant.violation` a **direct item→violation
+  link** with `.action_form` beside it.
+
+**Render as absence, never invent:** regulation description, regulation-level
+legal reference (only `regulation_clauses.legal_source` exists, per clause),
+inspection type, item section, report type, self-assessment, a real
+`updated_at`, per-user favourites / recently-opened. The mock fabricates its
+superseded version row by subtracting 0.1 — do not copy that.
+
+---
+
+### T-037 · `/admin/regulations?id=` — regulation record
+`status: todo` · `rules: WEB-000…004, WEB-008, WEB-011` · `est: 2h`
+
+Rebuild `components/sections/regulations/regulation-dossier` (`@retiring`, 193
+lines) — attachments, clause table, configuration actions, change history and
+version lineage. Deletes `Controls.tsx` when it lands.
+
+---
+
+### T-039 · Shell rail hydration mismatch on rewritten routes
+`status: todo` · `rules: WEB-003, WEB-004` · `est: 1h`
+
+`components/app-shell/shell-rail/shell-nav-group.tsx` takes its pathname from the
+`x-pathname` header on the server and recomputes it with `usePathname()` on the
+client. On a **rewritten** route the two disagree and React reports a hydration
+mismatch on `aria-current` / `data-current`. Affects `/admin/regulations`,
+`/admin/compliance-approvals` and `/admin/violations`.
+
+**Diagnose against a running page before changing anything** — this touches
+navigation on every authenticated route, and the mechanism above is inferred
+from the code, not observed. Verify the rail on a rewritten route *and* a normal
+one, on first load *and* after a client-side navigation.
+
+---
+
 ### T-035 · `/dashboard` — enforcement trend + executive AI brief
 `status: done (static verification only)` · `rules: WEB-000…004, WEB-008, WEB-009, WEB-011` · `est: 1.5h`
 `record:` [2026-08-09-T-035-dashboard-enforcement-trend-and-brief](sessions/2026-08/2026-08-09-T-035-dashboard-enforcement-trend-and-brief.md)

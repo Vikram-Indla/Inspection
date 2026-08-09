@@ -24,6 +24,10 @@ The banner on line 1 of a marked file, exact form:
 | `components/Shell.tsx` (16 KB, 251 lines) | `components/app-shell/shell-page-frame/shell-page-frame` | 2026-08-07 | `/admin/execution`, `/admin/dashboard-config`, plus 55 route files still importing the default `Shell` page-frame export | 0-imports |
 | `components/ShellNavIcon.tsx` (3 KB, 36 lines) | `components/saqeel/icon/icon` | 2026-08-07 | `/field` (`components/field/FieldShellDrawer.tsx`) | 0-imports |
 | `app/(app)/visits/VisitsBoard.tsx` (707 lines) | `components/sections/visits/visit-board/visit-board` | 2026-08-09 | **none — zero importers** | 0-imports |
+| `app/(app)/admin/regulations/Controls.tsx` (71 lines, was 314) | `components/sections/regulations/**` | 2026-08-09 | `/admin/regulations` detail mode (lifecycle form) | 0-imports |
+| `components/sections/regulations/regulation-dossier` (193 lines) | itself, rebuilt by T-037 | 2026-08-09 | `/admin/regulations?id=` | 0-imports |
+| `components/sections/regulations/regulation-workspace` (116 lines) | itself, rebuilt by T-038 | 2026-08-09 | `/compliance?libraryId=` | 0-imports |
+| `app/(app)/compliance/LibraryTabs.tsx` | SAQEEL tab primitive (T-038) | 2026-08-09 | `regulation-workspace` | 0-imports |
 
 `VisitsBoard.tsx` is the **only** row whose `pending` list is empty. It is still
 not deletable: WEB-006 §4's gate also requires a green e2e suite on the
@@ -86,7 +90,8 @@ task that supersedes them lands.
 
 | File | Deleted | Replaced by | Bytes removed |
 | --- | --- | --- | --- |
-| _(none yet)_ | | | |
+| `app/(app)/admin/regulations/RouteContract.tsx` (121 lines) | 2026-08-09 | nothing — never imported by any route | ~4.6 KB |
+| `app/(app)/admin/regulations/m6-library.module.css` (67 lines) | 2026-08-09 | colocated SAQEEL modules under `sections/regulations/**` | ~1.7 KB |
 
 ---
 
@@ -94,10 +99,10 @@ task that supersedes them lands.
 
 | | |
 | --- | --- |
-| Files marked | 0 |
-| Files deleted | 0 |
-| Source bytes removed | 0 |
-| CSS bytes removed from legacy sheets | 0 |
+| Files marked | 8 |
+| Files deleted | 2 |
+| Source bytes removed | ~4.6 KB deleted outright, plus ~851 source lines rewritten out of `/admin/regulations` (T-036) |
+| CSS bytes removed from legacy sheets | ~1.7 KB (`m6-library.module.css`, T-036) |
 
 Update this table in every session that deletes anything. It is the clearest
 single measure of whether the redesign is actually reducing the surface area or
