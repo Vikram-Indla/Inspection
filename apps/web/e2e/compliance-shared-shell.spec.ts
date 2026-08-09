@@ -14,30 +14,31 @@ test.describe("Prompt 01 shared shell source contract", () => {
       ["overview", "Overview", "نظرة عامة"],
       ["operations", "Operations", "العمليات"],
       ["compliance", "Compliance", "الامتثال"],
+      ["insights", "Insights", "الرؤى"],
       ["administration", "Administration", "الإدارة"],
     ]);
     const business = buildShellNavigation(["planner"]).flatMap(group => group.items).filter(item => item.visibility === "business");
     expect(business.map(item => item.labelEn)).toEqual([
-      "Dashboard", "Operations Center", "Factory 360", "Planning", "Visits", "Tasks",
-      "Execution", "Review & Approval", "Virtual Inspections", "Cases", "Committee & Signatures",
-      "External Portal",
-      "Inspection Rules", "Awaiting Approval", "Violations & Penalties",
+      "Dashboard", "Operations Center", "Factory 360", "Planning",
+      "Execution", "Review & Approval",
+      "Compliance Library", "Approval Queue", "Enforcement Library",
+      "Analytics",
     ]);
     expect(business.filter(item => item.parentId === "inspection").map(item => item.labelEn)).toEqual(["Execution", "Review & Approval"]);
   });
 
-  test("Administration remains discoverable while unauthorized configuration options stay absent", () => {
+  test("Administration remains discoverable while access is refused at the route boundary", () => {
+    // Governed navigation philosophy: destinations stay visible so the
+    // platform remains legible; authority is enforced at the route boundary
+    // (AdminRouteBoundary) and by RLS, never by hiding the destination.
     expect(buildShellNavigation(["reviewer"]).flatMap(group => group.items))
       .toEqual(expect.arrayContaining([
-        expect.objectContaining({ id: "admin-home", href: "/admin", enabled: true }),
+        expect.objectContaining({ id: "approval-queue", href: "/admin/compliance-approvals", enabled: true }),
       ]));
-    const securityItems = buildShellNavigation(["security_admin"])
-      .flatMap(group => group.items)
-      .map(item => item.labelEn);
-    expect(securityItems).toContain("Users");
-    expect(securityItems).toContain("Roles");
-    expect(securityItems).not.toContain("Risk Settings");
-    expect(securityItems).not.toContain("Inspection Forms");
+    const boundary = read("src/components/AdminRouteBoundary.tsx");
+    expect(boundary).toContain("if (allowedRoles.some(role => roles.has(role))) return children;");
+    expect(boundary).toContain("You do not have access to this destination");
+    expect(boundary).toContain("access is refused here, at the boundary");
   });
 
   test("topbar contains global search, scopes, theme, notifications, AI and account without sample truth", () => {
@@ -75,11 +76,14 @@ test.describe("Prompt 01 shared shell source contract", () => {
 
   test("existing route guards and unavailable states remain authoritative", () => {
     const boundary = read("src/components/AdminRouteBoundary.tsx");
-    const dashboard = read("src/app/(app)/dashboard/page.tsx");
+    const appShell = read("src/components/app-shell/app-shell.tsx");
     const ai = read("src/app/(app)/ai/suggestions/page.tsx");
     expect(boundary).toContain("allowedRoles.some(role => roles.has(role))");
-    expect(boundary).toContain("No configuration data has been loaded");
-    expect(dashboard).toContain("mayViewDashboard");
+    expect(boundary).toContain("You do not have access to this destination");
+    // the dashboard is the shared post-login home for every governed role;
+    // its guard is the authenticated shell itself, which redirects signed-out
+    // sessions to /login before any route content renders
+    expect(appShell).toContain('if (!view) redirect(localeHref(locale, "/login"));');
     expect(ai).toContain("FEATURE_AI_DOCKETS");
     expect(ai).toContain("fail-closed");
   });

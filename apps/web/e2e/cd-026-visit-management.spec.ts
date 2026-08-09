@@ -44,8 +44,9 @@ test.describe("CD-026 workspace shell + continuity spine (DSG-021)", () => {
     await expect(page.getByRole("link", { name: /^Calendar$/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /^Workload$/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /^Map$/i })).toHaveAttribute("href", "/visits/map");
-    // Scope truth: RLS-scoped loaded-vs-total.
-    await expect(page.getByText(/RLS-scoped — showing \d+ of \d+/i)).toBeVisible();
+    // Scope truth: access-scoped loaded-vs-total (UI copy pass renamed the
+    // raw RLS jargon to operator language; the loaded/total honesty is intact).
+    await expect(page.getByText(/Showing \d+ of \d+/i).first()).toBeVisible();
     await page.screenshot({ path: join(EVIDENCE_DIR, "primary.png"), fullPage: true });
   });
 
@@ -114,14 +115,18 @@ test.describe("CD-026 wiring proof (DSG-CODE-001)", () => {
     expect(actions).toContain("export type ItemResult = { id: string; outcome: OutcomeCode };");
     expect(actions).toContain("items: ItemResult[]");
     // Raw errors are logged server-side and mapped to a neutral code — never returned.
-    expect(actions).toContain("function logProvider");
-    expect(actions).toContain('items.push({ id, outcome: "error" })');
+    expect(actions).toContain("console.error(`[visits.bulk.");
+    expect(actions).toContain('outcome: "error"');
     expect(actions).not.toContain("lines.push(`${short(id)} — ${error.message}`)");
     // The distinct mutation-applied / notification-not-queued outcome (FND-004).
-    expect(actions).toContain('outcome: "applied_no_notification"');
-    // Per-item guards preserved verbatim (published+new; pre-start lock).
-    expect(actions).toContain('.eq("planning_status", "published").eq("operational_state", "new")');
-    expect(actions).toContain('ins.status !== "not_started"');
+    expect(actions).toContain('"applied_no_notification"');
+    // Per-item guards moved into the atomic command RPCs (planning closure
+    // P0): published/returned + new + pre-start lock enforced in one place.
+    const migration = SRC("../../supabase/migrations/20260728010000_planning_closure_p0.sql");
+    expect(migration).toContain("if v_visit.planning_status not in ('published','returned')");
+    expect(migration).toContain("or v_visit.operational_state <> 'new'");
+    expect(migration).toContain("i.status <> 'not_started'");
+    expect(actions).toContain('sb.rpc("process_planning_bulk_target"');
   });
 
   test("the board renders a per-item ledger, never a green banner for a mixed result", () => {
@@ -134,7 +139,7 @@ test.describe("CD-026 wiring proof (DSG-CODE-001)", () => {
     // Focus moves to the outcome summary after a completed submit (S38).
     expect(board).toContain("summaryRef.current?.focus()");
     // Cross-Plan bulk edit is disabled (HANDOFF_BLOCKED_GUARD), not faked as safe.
-    expect(board).toContain("disabled={busy || !elig.samePlan}");
+    expect(board).toContain("disabled={busy || !elig.samePlan || !requestIdentity}");
     // The Selected Visit Continuity Spine signature pattern exists.
     expect(board).toContain("Selected Visit Continuity Spine");
   });
@@ -143,7 +148,7 @@ test.describe("CD-026 wiring proof (DSG-CODE-001)", () => {
     // DEC-012 CODEX_AUDIT_CD-026 F1/F2 regression guard: page/calendar/workload
     // load-error branches must NOT interpolate error.message into the DOM; the raw
     // provider text is logged server-side only.
-    for (const p of ["src/app/(app)/visits/page.tsx", "src/app/(app)/visits/calendar/page.tsx", "src/app/(app)/visits/workload/page.tsx"]) {
+    for (const p of ["src/app/(app)/visits/page.tsx", "src/app/(app)/visits/calendar/CalendarView.tsx", "src/app/(app)/visits/workload/WorkloadView.tsx"]) {
       const src = SRC(p);
       // JSX `{error.message}` leaks to the DOM; template `${error.message}` (server-side
       // console.error) does not. Match the former only: `{error.message}` NOT preceded by `$`.
@@ -160,7 +165,7 @@ test.describe("CD-026 wiring proof (DSG-CODE-001)", () => {
     // (supabase/migrations/0025_scheduled_visit_expiry.sql, 15-min cadence), so the
     // per-request RPC was removed. This contract now proves the new ownership shape:
     // pages document the cron owner and must not re-introduce the inline RPC.
-    for (const p of ["src/app/(app)/visits/page.tsx", "src/app/(app)/visits/calendar/page.tsx", "src/app/(app)/visits/workload/page.tsx"]) {
+    for (const p of ["src/app/(app)/visits/page.tsx", "src/app/(app)/visits/calendar/CalendarView.tsx", "src/app/(app)/visits/workload/WorkloadView.tsx"]) {
       const src = SRC(p);
       expect(src, `${p} must document the cron-owned expiry sweep`).toContain("expire_lapsed_visits_scheduled");
       expect(src, `${p} must not call the expiry RPC per request`).not.toContain('rpc("expire_lapsed_visits")');
@@ -174,7 +179,7 @@ test.describe("CD-026 wiring proof (DSG-CODE-001)", () => {
   test("the Map lens uses the delivered governed route", () => {
     const page = SRC("src/app/(app)/visits/page.tsx");
     expect(page).toContain('href="/visits/map"');
-    const mapRoute = readFileSync(join(process.cwd(), "src/app/(app)/visits/map/page.tsx"), "utf8");
+    const mapRoute = readFileSync(join(process.cwd(), "src/app/(app)/visits/map/MapView.tsx"), "utf8");
     expect(mapRoute).toContain('from("geo_events")');
     expect(mapRoute).toContain("official_lat");
   });
@@ -241,23 +246,23 @@ test.describe("M8 — governed bulk cancel, discard draft, cross-links", () => {
     await expect(cbA).toBeVisible();
     await cbA.check();
     await cbB.check();
-    await page.locator("#bulk-cancel-reason").selectOption("safety_risk");
+    // PLN-R02/R03 — planning cancellation takes one optional note; the
+    // governed reason lookup retired with the atomic closure RPC.
     await page.locator("#bulk-cancel-comments").fill("M8 bulk cancel");
-    await page.locator("form", { has: page.locator("#bulk-cancel-reason") }).locator("button").click();
+    await page.locator("form", { has: page.locator("#bulk-cancel-comments") }).locator("button").click();
     // Per-item ledger: both rows applied — never a single mixed banner.
     await expect(page.getByText("2 applied")).toBeVisible({ timeout: 20000 });
     await page.screenshot({ path: join(EVIDENCE_DIR, "m8-bulk-cancel-ledger.png"), fullPage: true });
 
     for (const v of [a.visit, b.visit]) {
-      const row = must(await rest("GET", `visits?id=eq.${v.id}&select=planning_status,cancellation_reason`, plannerJwt), "cancelled row")[0];
+      const row = must(await rest("GET", `visits?id=eq.${v.id}&select=planning_status`, plannerJwt), "cancelled row")[0];
       expect(row.planning_status).toBe("cancelled");
-      expect(row.cancellation_reason).toBe("safety_risk");
       const ev = must(await rest("GET",
-        `visit_lifecycle_events?visit_id=eq.${v.id}&event_type=eq.cancel&select=reason_key,comments`,
+        `visit_lifecycle_events?visit_id=eq.${v.id}&event_type=eq.cancel&select=comments,previous`,
         plannerJwt), "cancel event");
       expect(ev).toHaveLength(1);
-      expect(ev[0].reason_key).toBe("safety_risk");
       expect(ev[0].comments).toBe("M8 bulk cancel");
+      expect(ev[0].previous.planning_status).toBe("published");
     }
   });
 
@@ -265,21 +270,30 @@ test.describe("M8 — governed bulk cancel, discard draft, cross-links", () => {
     const plan = must(await rest("POST", "visit_plans", plannerJwt, {
       method: "single", status: "draft", created_by: plannerUserId,
     }), "draft plan")[0];
+    must(await rest("PATCH", `visit_plans?id=eq.${plan.id}`, plannerJwt, { draft_version: 1 }), "governed draft version");
     const ref = plan.plan_reference ?? plan.id.slice(0, 8);
 
     await page.goto("/planning");
     await page.getByRole("button", { name: `Discard draft ${ref}` }).click();
-    // Success returns to /planning and the archived draft leaves the list.
+    // The archive commits server-side; the client router cache may keep the
+    // stale list and remount the button, so server truth is polled directly
+    // and the list is proven on a fresh load.
+    await expect.poll(async () => {
+      const row = must(await rest("GET", `visit_plans?id=eq.${plan.id}&select=archived_at`, plannerJwt), "archived poll")[0];
+      return row.archived_at !== null;
+    }, { timeout: 15000 }).toBe(true);
+    await page.goto("/planning");
     await expect(page.getByRole("button", { name: `Discard draft ${ref}` })).toHaveCount(0, { timeout: 15000 });
     const row = must(await rest("GET", `visit_plans?id=eq.${plan.id}&select=archived_at,status`, plannerJwt), "archived plan")[0];
     expect(row.status).toBe("draft"); // retired via archived_at — never a status rewrite
     expect(row.archived_at).not.toBeNull();
   });
 
-  test("discard cancels the linked draft child visit with a discard_draft event (PLN-CON-018)", async ({ page }) => {
+  test("discard archives the linked draft child with preserved state and a discard_draft event (PLN-CON-018)", async ({ page }) => {
     const plan = must(await rest("POST", "visit_plans", plannerJwt, {
       method: "single", status: "draft", created_by: plannerUserId,
     }), "draft plan")[0];
+    must(await rest("PATCH", `visit_plans?id=eq.${plan.id}`, plannerJwt, { draft_version: 1 }), "governed draft version");
     const suffix = `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
     const factory = must(await rest("POST", "factories", plannerJwt, {
       factory_code: `CD026-M8-DSC-${suffix}`, name: `CD026 M8 DSC ${suffix}`,
@@ -298,12 +312,24 @@ test.describe("M8 — governed bulk cancel, discard draft, cross-links", () => {
 
     await page.goto("/planning");
     await page.getByRole("button", { name: `Discard draft ${ref}` }).click();
+    await expect.poll(async () => {
+      const row = must(await rest("GET", `visit_plans?id=eq.${plan.id}&select=archived_at`, plannerJwt), "archived poll")[0];
+      return row.archived_at !== null;
+    }, { timeout: 15000 }).toBe(true);
+    await page.goto("/planning");
     await expect(page.getByRole("button", { name: `Discard draft ${ref}` })).toHaveCount(0, { timeout: 15000 });
 
-    // Canonical §15: Draft cancellation is allowed — the child is cancelled
-    // (visits RLS grants no delete) and the provenance event names the plan.
+    // Planning closure P0 (CORR-PLANNING-R01-R03-002): the archive PRESERVES
+    // each child's Planning state — it is recorded in planning_visit_archives
+    // with a discard_draft provenance event, never rewritten to cancelled.
     const row = must(await rest("GET", `visits?id=eq.${child.id}&select=planning_status`, plannerJwt), "child after discard")[0];
-    expect(row.planning_status).toBe("cancelled");
+    expect(row.planning_status).toBe("draft");
+    const archives = must(await rest("GET",
+      `planning_visit_archives?visit_id=eq.${child.id}&select=parent_plan_id,prior_planning_status`,
+      plannerJwt), "child archive row");
+    expect(archives).toHaveLength(1);
+    expect(archives[0].parent_plan_id).toBe(plan.id);
+    expect(archives[0].prior_planning_status).toBe("draft");
     const ev = must(await rest("GET",
       `visit_lifecycle_events?visit_id=eq.${child.id}&event_type=eq.discard_draft&select=comments,previous`,
       plannerJwt), "discard_draft event");

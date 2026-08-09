@@ -5,26 +5,33 @@ import { resolve } from "node:path";
 const source = (path: string) =>
   readFileSync(resolve(__dirname, `../${path}`), "utf8");
 
+// AdminShellClient.tsx was retired when the admin shell merged into the
+// shared shell: admin nav items render through the same renderNavItem /
+// renderNavGroup pair in ShellClient.tsx, and the click-acknowledgement /
+// stuck-transition recovery lives on the shared shell root.
 test.describe("Shared navigation latency contract", () => {
   test("primary business and Admin navigation permit Next route prefetch", () => {
-    const businessShell = source("src/components/ShellClient.tsx");
-    const businessNavItem = businessShell.slice(
-      businessShell.indexOf("function renderNavItem"),
-      businessShell.indexOf("function renderNavGroup"),
+    const shell = source("src/components/ShellClient.tsx");
+    const navItem = shell.slice(
+      shell.indexOf("function renderNavItem"),
+      shell.indexOf("function renderNavGroup"),
     );
-    const adminShell = source("src/components/admin/AdminShellClient.tsx");
+    const navGroup = shell.slice(
+      shell.indexOf("function renderNavGroup"),
+      shell.indexOf("sq-route-progress"),
+    );
 
-    expect(businessNavItem).not.toContain("prefetch={false}");
-    expect(adminShell).not.toContain("prefetch={false}");
+    expect(navItem).not.toContain("prefetch={false}");
+    expect(navGroup).not.toContain("prefetch={false}");
   });
 
-  test("Admin navigation acknowledges clicks and recovers failed transitions", () => {
-    const adminShell = source("src/components/admin/AdminShellClient.tsx");
+  test("shared shell (Admin included) acknowledges clicks and recovers failed transitions", () => {
+    const shell = source("src/components/ShellClient.tsx");
 
-    expect(adminShell).toContain("onClickCapture={handleNavigationCapture}");
-    expect(adminShell).toContain("aria-busy={pendingHref");
-    expect(adminShell).toContain("setPendingHref(null), 10_000");
-    expect(adminShell).toContain("styles.routeProgress");
+    expect(shell).toContain("onClickCapture={handleShellNavigation}");
+    expect(shell).toContain("aria-busy={pendingHref");
+    expect(shell).toContain("setPendingHref(null), 10_000");
+    expect(shell).toContain("sq-route-progress");
   });
 
   test("shell region reads are cached across route requests and invalidatable", () => {

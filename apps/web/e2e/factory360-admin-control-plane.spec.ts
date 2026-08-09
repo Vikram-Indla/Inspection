@@ -9,10 +9,9 @@ test.describe("Factory 360 governed admin control plane", () => {
   test("keeps route and actions behind the exact admin role boundary", () => {
     const layout = read("src/app/(app)/admin/integrations/factory-data/layout.tsx");
     const actions = read("src/app/(app)/admin/integrations/factory-data/actions.ts");
-    for (const role of ["security_admin", "workflow_admin", "compliance_admin"]) {
-      expect(layout).toContain(`"${role}"`);
-      expect(actions).toContain(`"${role}"`);
-    }
+    expect(layout).toContain('<AdminRouteBoundary allowedRoles={["admin"]}>');
+    expect(actions).toContain('const ADMIN_ROLES = ["admin"];');
+    expect(actions).toContain("ADMIN_ROLES.includes(row.role_key)");
     expect(actions).toContain("requireFactoryDataAdmin");
     expect(actions).toContain('return { error: "admin_role_required"');
   });

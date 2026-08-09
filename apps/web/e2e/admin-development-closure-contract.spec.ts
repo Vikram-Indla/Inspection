@@ -29,8 +29,12 @@ test.describe("TASK-ADMIN-DEVELOPMENT-CLOSURE-20260802", () => {
   });
 
   test("shared Admin account disclosure has a discernible accessible name", () => {
-    const shell = readWeb("src/components/admin/AdminShellClient.tsx");
-    expect(shell).toContain('<summary aria-label={`${email.split("@")[0]} — ${roleSummary}`}>');
+    // AdminShellClient.tsx retired — the account disclosure now lives on the
+    // shared shell's account trigger (ShellClient.tsx), same accessible-name
+    // shape: local-part-or-display-name plus the role summary.
+    const shell = readWeb("src/components/ShellClient.tsx");
+    expect(shell).toContain('aria-label={`${accountName} — ${accountRoleSummary}`}');
+    expect(shell).toContain('displayName || email.split("@")[0]');
   });
   test("delegation resolves email inside the guarded RPC", () => {
     const actions = readWeb("src/app/(app)/admin/delegation/actions.ts");

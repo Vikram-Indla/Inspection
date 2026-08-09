@@ -6,11 +6,11 @@ const read = (path: string) => readFileSync(resolve(process.cwd(), path), "utf8"
 
 test("ACT-010 canonical Supervisor home and RLS repair stay aligned", () => {
   const roleHome = read("src/lib/role-home.ts");
-  const dashboard = read("src/app/(app)/dashboard/page.tsx");
+  const dashboardRole = read("src/lib/dashboard-role.ts");
   const migration = read("../../supabase/migrations/20260729160000_canonical_supervisor_runtime_access.sql");
 
   expect(roleHome).toContain('["supervisor", "/dashboard"]');
-  expect(dashboard).toContain('const dashboardRoleKeys = ["supervisor", "ops", "leadership"] as const');
+  expect(dashboardRole).toContain('if (["supervisor", "ops", "leadership", "reviewer"].some(role => roles.has(role))) return "supervisor";');
   expect(migration).toContain("grant select on public.visit_packages, public.inspections to authenticated");
   expect(migration).toContain("alter policy inspections_read on public.inspections");
   expect(migration).toContain("has_internal_role('supervisor')");

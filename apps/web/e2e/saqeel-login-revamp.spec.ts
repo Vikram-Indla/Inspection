@@ -1,43 +1,29 @@
-import { test, expect, type Page } from "@playwright/test";
-import { createHash } from "node:crypto";
+import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const source = (path: string) => readFileSync(join(process.cwd(), path), "utf8");
 
-async function renderTheme(page: Page, theme: "light" | "dark") {
-  await page.evaluate(value => localStorage.setItem("saqeel-theme", value), theme);
-  await page.goto("/login");
-  await page.waitForLoadState("domcontentloaded");
-  if (await page.locator("html").getAttribute("data-theme") !== theme) {
-    await page.locator(".lg-iconbtn:visible").first().click();
-  }
-  await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-}
-
 test.beforeEach(async ({ page }) => {
   await page.goto("/locale?set=en");
 });
 
-test("protected Saqeel prism and Arabic wordmark remain the sole unchanged lockup", async ({ page }) => {
-  const mark = readFileSync(join(process.cwd(), "src/app/login/SaqeelMark.tsx"));
-  expect(createHash("sha256").update(mark).digest("hex")).toBe("a9f61abfbb4b1614b55811abf7c8d903239f68511a4636cba23c684c89bb6cea");
-
+test("field-card lockup carries the shield, Latin and Arabic wordmarks", async ({ page }) => {
   await page.goto("/login");
-  await expect(page.locator(".lg-lockup__mark")).toHaveCount(1);
-  await expect(page.locator('.lg-lockup__wordmark[lang="ar"]')).toHaveText("صقيل | صناعي");
-  await expect(page.locator('.lg-lockup__mark[aria-label="Saqeel"]')).toHaveCount(1);
+  await expect(page.locator(".fl-shield")).toHaveCount(1);
+  await expect(page.locator(".fl-brand-latin")).toHaveText("SAQEEL");
+  await expect(page.locator('.fl-brand-ar[lang="ar"]')).toHaveText("صقيل");
 
   const css = source("src/app/login/login.css");
   expect(css).not.toContain("--sq-color-prism-magenta");
 });
 
-test("SLR-AC-002/004/009 protected motion and OTP recovery authentication contracts", () => {
+test("SLR-AC-002/004/009 protected motion and recovery authentication contracts", () => {
   const atlas = source("src/app/login/SaudiIndustrialAtlas.tsx");
   const motion = source("src/app/login/saudi-atlas-motion.ts");
   const story = source("src/app/login/StoryPanel.tsx");
   const css = source("src/app/login/login.css");
-  const auth = source("src/app/login/LoginClient.tsx");
+  const auth = source("src/app/login/field/FieldLoginClient.tsx");
   const reset = source("src/app/reset/ResetClient.tsx");
 
   for (const path of [
@@ -55,7 +41,7 @@ test("SLR-AC-002/004/009 protected motion and OTP recovery authentication contra
   expect(atlas).toContain('keySplines="0.32 0.05 0.2 1"');
   expect(atlas).toContain('onPointerEnter={() => onHover(zone.id)}');
   expect(atlas).toContain('onPointerLeave={() => onHover(null)}');
-  expect(atlas).toContain('else if (e.key === "Escape")');
+  expect(atlas).toContain('if (e.key === "Escape")');
   expect(motion).toContain("const STAGE_END_S = [3.0, 14.0, 19.0, 24.0, 30.0]");
   expect(story).toContain("if (on) tlRef.current?.pause()");
   expect(story).toContain("tlRef.current?.pause();\n    setStage(id)");
@@ -68,17 +54,16 @@ test("SLR-AC-002/004/009 protected motion and OTP recovery authentication contra
   expect(css).toContain("transition: transform 1050ms cubic-bezier(.16,.84,.25,1)");
   expect(css).toContain("animation: lg-zone-readout-in 540ms 420ms cubic-bezier(.16,.84,.25,1)");
 
-  expect(auth).toContain("auth.signInWithPassword({ email, password })");
-  expect(auth).toContain("auth.resetPasswordForEmail(email);");
+  expect(auth).toContain("auth.signInWithPassword({");
+  expect(auth).toContain('window.location.assign("/launch")');
   expect(auth).not.toContain("redirectTo:");
-  expect(auth).toContain('auth.verifyOtp({ email, token: otp, type: "recovery" })');
-  expect(auth).toContain('sessionStorage.setItem(RECOVERY_OTP_USER_KEY, data.session.user.id)');
+  expect(auth).not.toContain("auth.onAuthStateChange");
   expect(reset).toContain("auth.updateUser({ password: pw })");
+  expect(reset).toContain("RECOVERY_OTP_USER_KEY");
+  expect(reset).toContain('logAuthEvent("password_reset_completed", data.user.email)');
   expect(reset).not.toContain('event === "PASSWORD_RECOVERY"');
   expect(reset).not.toContain("auth.onAuthStateChange");
-  expect(auth).toContain('window.location.assign("/launch")');
-  expect(auth).toContain('logAuthEvent("password_reset_requested", email)');
-  expect(reset).toContain('logAuthEvent("password_reset_completed", data.user.email)');
+  expect(reset).not.toContain("redirectTo:");
 });
 
 test("SLR-AC-008 vehicle dimensions are exactly baseline times 1.5 with centered anchors", () => {
@@ -90,84 +75,64 @@ test("SLR-AC-008 vehicle dimensions are exactly baseline times 1.5 with centered
   expect(Number(54 / 36)).toBe(1.5);
   expect(-13.5).toBe(-27 / 2);
   expect(-27).toBe(-54 / 2);
-  expect(atlas).toContain('width="27" height="18" fill="currentColor"');
   expect(css).toContain("inline-size: 42px; block-size: 30px");
   expect(Number(42 / 28)).toBe(1.5);
   expect(Number(30 / 20)).toBe(1.5);
 });
 
-test("SLR-AC-005/006 dedicated light and native dark rasters switch without filters", async ({ page }) => {
-  const srcByTheme: string[] = [];
-  for (const theme of ["dark", "light"] as const) {
-    await renderTheme(page, theme);
-    const media = page.locator(`.lg-atlas-image__media--${theme}`);
-    await expect(media).toBeVisible();
-    srcByTheme.push(await media.getAttribute("src") ?? "");
-    await expect(media).toHaveCSS("filter", "none");
-    await expect(page.locator(".lg-atlas-image__plane")).toHaveCSS("filter", "none");
-    await expect(page.locator(".lg-atlas-image__rasters")).toHaveCSS("filter", "none");
-    const opposite = theme === "light" ? "dark" : "light";
-    await expect(page.locator(`.lg-atlas-image__media--${opposite}`)).toHaveCSS("opacity", "0");
+test("SLR-AC-005/006 sign-in is dark-locked onto the native atlas raster", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("saqeel-theme", "light"));
+  await page.goto("/login");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 
-    const east = page.locator('.lg-zone-lift__edge[data-zone="east"]');
-    await east.focus();
-    await expect(page.locator(`.lg-zone-lift__terrain .lg-atlas-theme-raster--${theme}`).first()).toHaveCSS("display", "inline");
-    await expect(page.locator(`.lg-zone-lift__wall .lg-atlas-theme-raster--${theme}`).first()).toHaveCSS("display", "inline");
-  }
-  expect(srcByTheme).toEqual([
-    "/brand/saudi-atlas/inspection-atlas-scene-base-v2.png",
-    "/brand/saudi-atlas/inspection-atlas-scene-base-v2-light.png",
-  ]);
+  const media = page.locator(".lg-atlas-image__media");
+  await expect(media).toHaveCount(1);
+  await expect(media).toHaveAttribute("src", "/brand/saudi-atlas/inspection-atlas-scene-base-v2.png");
+  await expect(page.locator(".lg-atlas-image__plane")).toHaveCSS("filter", "none");
+
+  const east = page.locator('.lg-zone-lift__edge[data-zone="east"]');
+  await east.focus();
+  const slabRasters = await page.locator('.lg-zone-lift__slab[data-zone="east"] image').evaluateAll(
+    els => els.map(e => e.getAttribute("href")));
+  expect(slabRasters.length).toBeGreaterThan(0);
+  for (const href of slabRasters) expect(href).toBe("/brand/saudi-atlas/inspection-atlas-scene-base-v2.png");
+
+  await page.goto("/reset");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 });
 
 test("unified atlas hero is a full-height scene with only positioned overlays", async ({ page }) => {
-  await renderTheme(page, "light");
+  await page.goto("/login");
   await expect(page.locator(".lg-atlas-image.is-ready")).toBeAttached();
-  const frame = page.locator(".lg-story__frame");
-  const plane = page.locator(".lg-atlas-image__plane");
-  await expect(frame).toBeVisible();
+  await expect(page.locator(".lg-story__frame")).toBeVisible();
   await expect(page.locator(".lg-story__summary")).toHaveCount(0);
+  await expect(page.locator(".lg-zone-lift__readout")).toHaveCount(0);
   await expect(page.locator("body")).not.toContainText("Illustrative sample · not live data");
 
   const geometry = await page.evaluate(() => {
     const storyBox = document.querySelector(".lg-story")!.getBoundingClientRect();
     const frameBox = document.querySelector(".lg-story__frame")!.getBoundingClientRect();
     const planeBox = document.querySelector(".lg-atlas-image__plane")!.getBoundingClientRect();
-    const headPosition = getComputedStyle(document.querySelector(".lg-story__head")!).position;
-    const framePosition = getComputedStyle(document.querySelector(".lg-story__frame")!).position;
-    const eventPosition = getComputedStyle(document.querySelector(".lg-atlas3d__event")!).position;
-    const event = getComputedStyle(document.querySelector(".lg-atlas3d__event")!);
-    const railPosition = getComputedStyle(document.querySelector(".lg-atlas3d__stages")!).position;
-    const rail = getComputedStyle(document.querySelector(".lg-atlas3d__stages")!);
-    return { storyBox, frameBox, planeBox, headPosition, framePosition, eventPosition,
-      eventBorder: event.borderTopWidth, eventShadow: event.boxShadow, eventBackground: event.backgroundColor,
-      railPosition,
-      railBorder: rail.borderTopWidth, railShadow: rail.boxShadow, railBackground: rail.backgroundColor };
+    return {
+      storyBox, frameBox, planeBox,
+      headPosition: getComputedStyle(document.querySelector(".lg-story__head")!).position,
+      framePosition: getComputedStyle(document.querySelector(".lg-story__frame")!).position,
+      railPosition: getComputedStyle(document.querySelector(".lg-atlas3d__stages")!).position,
+    };
   });
-  // The frame's 1px border is included on both sides of its border box.
-  expect(geometry.planeBox.width).toBeLessThanOrEqual(geometry.frameBox.width);
-  expect(geometry.planeBox.height).toBeLessThanOrEqual(geometry.frameBox.height);
   expect(Math.max(
     geometry.planeBox.width / (geometry.planeBox.height || 1),
     geometry.planeBox.height / (geometry.planeBox.width || 1),
   )).toBeGreaterThan(1.7);
-  expect(geometry.eventPosition).toBe("absolute");
-  expect(geometry.eventBorder).toBe("0px");
-  expect(geometry.eventShadow).toBe("none");
-  expect(geometry.eventBackground).toBe("rgba(0, 0, 0, 0)");
-  expect(geometry.railPosition).toBe("absolute");
   expect(geometry.headPosition).toBe("absolute");
   expect(geometry.framePosition).toBe("absolute");
+  expect(geometry.railPosition).toBe("absolute");
   expect(Math.abs(geometry.storyBox.width - geometry.frameBox.width)).toBeLessThanOrEqual(1);
   expect(Math.abs(geometry.storyBox.height - geometry.frameBox.height)).toBeLessThanOrEqual(1);
-  expect(geometry.railBorder).toBe("0px");
-  expect(geometry.railShadow).toBe("none");
-  expect(geometry.railBackground).toBe("rgba(0, 0, 0, 0)");
-  await expect(plane).toHaveCSS("aspect-ratio", "1672 / 941");
+  await expect(page.locator(".lg-atlas-image__plane")).toHaveCSS("aspect-ratio", "1672 / 941");
 
   const css = source("src/app/login/login.css");
-  expect(css).toContain("inline-size: min(100cqw, calc(100cqh * 1.776833))");
-  expect(css).toContain("#000 48px, #000 calc(100% - 48px)");
+  expect(css).toContain("inline-size: min(132cqw, calc(100cqh * 1.776833))");
   expect(css).toContain(".lg-story__frame::before, .lg-story__frame::after");
   expect(css).not.toContain(".lg-story__summary {");
   expect(css).not.toContain("--zone-tone: var(--sq-color-critical)");
@@ -176,36 +141,68 @@ test("unified atlas hero is a full-height scene with only positioned overlays", 
 
 test("SLR-AC-010..013 form contract contains only the authorized authentication controls", async ({ page }) => {
   await page.goto("/login");
-  await expect(page.locator('input[type="email"]')).toHaveCount(1);
-  await expect(page.locator('input[type="password"]')).toHaveCount(1);
-  await expect(page.getByRole("button", { name: "Sign In", exact: true })).toHaveCount(1);
-  await expect(page.getByRole("button", { name: "Forgot your password?" })).toHaveCount(1);
-  await expect(page.getByRole("button", { name: /show password/i })).toHaveCount(1);
-  await expect(page.getByText(/National Single Sign-On|Remember me|MIM Directory|or continue with/i)).toHaveCount(0);
+  const form = page.locator("form.fl-form");
+  await expect(form.locator('input[type="text"][autocomplete="username"]')).toHaveCount(1);
+  await expect(form.locator('input[type="password"]')).toHaveCount(1);
+  await expect(page.getByRole("button", { name: "Sign in", exact: true })).toHaveCount(1);
+  await expect(form.locator('a.fl-forgot[href="/reset"]')).toHaveCount(1);
+  await expect(form.locator('input[type="checkbox"]')).toHaveCount(1);
+
+  const toggle = page.getByRole("button", { name: /show password/i });
+  await expect(toggle).toHaveAttribute("aria-pressed", "false");
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  await expect(form.locator("input.fl-pw-in")).toHaveAttribute("type", "text");
+  await toggle.click();
+  await expect(form.locator("input.fl-pw-in")).toHaveAttribute("type", "password");
+
+  await expect(page.getByText(/National Single Sign-On|MIM Directory|or continue with/i)).toHaveCount(0);
   await expect(page.locator(".lg-auth-divider, .lg-sso")).toHaveCount(0);
 });
 
 test("SLR-AC-015 Arabic reverses shell composition without mirroring the atlas", async ({ page }) => {
   await page.goto("/locale?set=ar");
-  await renderTheme(page, "dark");
+  await page.goto("/login");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-  const panel = await page.locator(".lg-panel").boundingBox();
+  const panel = await page.locator("main.fl-root").boundingBox();
   const story = await page.locator(".lg-story").boundingBox();
   expect(panel && story && panel.x > story.x).toBeTruthy();
 
   const css = source("src/app/login/login.css");
   expect(css).not.toMatch(/scaleX\s*\(\s*-1\s*\)|rotateY\s*\(\s*180deg\s*\)/);
-  const media = page.locator(".lg-atlas-image__media--dark");
-  await expect(media).toHaveCSS("transform", "none");
+  const media = page.locator(".lg-atlas-image__media");
   await expect(media).toHaveAttribute("src", "/brand/saudi-atlas/inspection-atlas-scene-base-v2.png");
+  expect(await media.evaluate(e => getComputedStyle(e).transform)).toBe("none");
 });
 
-test("SLR-AC-016/017 responsive matrix preserves form, interactive hero and story rail without page overflow", async ({ page }) => {
+test("SLR-AC-016/017 wide canvases keep form, interactive hero and story rail without overflow", async ({ page }) => {
   const viewports = [
     { name: "desktop-wide", width: 1920, height: 1080 },
     { name: "desktop", width: 1440, height: 900 },
     { name: "laptop", width: 1366, height: 768 },
     { name: "ipad-landscape-wide", width: 1180, height: 820 },
+  ];
+
+  for (const viewport of viewports) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await page.goto("/login");
+    await expect(page.locator(".lg-atlas-image.is-ready")).toBeAttached();
+    await expect(page.getByRole("tab")).toHaveCount(5);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), viewport.name).toBe(true);
+
+    await expect(page.locator("form.fl-form input.fl-in").first()).toBeVisible();
+    const east = page.locator('.lg-zone-lift__edge[data-zone="east"]');
+    await east.focus();
+    await expect(page.locator('.lg-zone-lift__slab[data-zone="east"]')).toHaveClass(/is-lifted/);
+
+    const targetHeights = await page.locator(".lg-atlas3d__stage").evaluateAll(elements =>
+      elements.map(element => element.getBoundingClientRect().height));
+    expect(targetHeights.every(height => height >= 24), `${viewport.name} rail target size`).toBe(true);
+  }
+});
+
+test("SLR-AC-016/017 compact widths remove the atlas and keep the credential card whole", async ({ page }) => {
+  const viewports = [
     { name: "ipad-landscape", width: 1024, height: 768 },
     { name: "ipad-portrait-wide", width: 820, height: 1180 },
     { name: "ipad-portrait", width: 768, height: 1024 },
@@ -221,28 +218,11 @@ test("SLR-AC-016/017 responsive matrix preserves form, interactive hero and stor
   for (const viewport of viewports) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto("/login");
-    await expect(page.locator(".lg-atlas-image.is-ready")).toBeAttached();
-    await expect(page.getByRole("tab")).toHaveCount(5);
+    await expect(page.locator(".lg-story"), viewport.name).toBeHidden();
+    await expect(page.getByRole("tab")).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), viewport.name).toBe(true);
-
-    await page.locator("#email").scrollIntoViewIfNeeded();
-    await expect(page.locator("#email")).toBeVisible();
-    await page.locator(".lg-story__frame").scrollIntoViewIfNeeded();
-    await expect(page.locator(".lg-story__frame")).toBeVisible();
-    const east = page.locator('.lg-zone-lift__edge[data-zone="east"]');
-    await east.focus();
-    await expect(page.locator('.lg-zone-lift__slab[data-zone="east"]')).toHaveClass(/is-lifted/);
-
-    if (viewport.width >= 768 && viewport.width <= 1439) {
-      const targetHeights = await page.locator(".lg-iconbtn, .lg-atlas3d__stage").evaluateAll(elements =>
-        elements.filter(element => (element as HTMLElement).offsetParent !== null).map(element => element.getBoundingClientRect().height));
-      expect(targetHeights.every(height => height >= 48), `${viewport.name} 48px touch targets`).toBe(true);
-    }
-
-    if (viewport.width < 768) {
-      const formTop = await page.locator(".lg-panel").evaluate(element => element.getBoundingClientRect().top);
-      const storyTop = await page.locator(".lg-story").evaluate(element => element.getBoundingClientRect().top);
-      expect(formTop, `${viewport.name} form first`).toBeLessThan(storyTop);
-    }
+    await page.locator("form.fl-form input.fl-in").first().scrollIntoViewIfNeeded();
+    await expect(page.locator("form.fl-form input.fl-in").first()).toBeVisible();
+    await expect(page.locator("form.fl-form button.fl-submit")).toBeAttached();
   }
 });

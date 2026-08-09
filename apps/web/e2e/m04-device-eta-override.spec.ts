@@ -7,7 +7,6 @@ import { assertOk, login, must, rest } from "./live-rest";
 // AC-0125/0130/0137/0152..0156: production device and Mapbox ETA wiring,
 // explicit offline-stale behavior, governed Inspector -> Operations approval,
 // and fail-closed GPS negative paths. No simulated self-approval remains.
-test.describe.configure({ mode: "serial" });
 test.use({
   storageState: storageStatePath("inspector"),
   permissions: ["geolocation"],
@@ -16,10 +15,20 @@ test.use({
 
 let inspectorJwt: string;
 let inspectorUserId: string;
+let plannerJwt: string;
+let plannerUserId: string;
+let factoryId: string;
+let packageVersionId: string;
 let governedVisitId: string;
 let noGpsVisitId: string;
 let weakGpsVisitId: string;
 let factoryName: string;
+
+async function releaseInspectorWindow(visitId: string) {
+  assertOk(await rest("PATCH", `visits?id=eq.${visitId}`, plannerJwt, {
+    planning_status: "cancelled",
+  }, "return=minimal"), `release window for visit ${visitId}`);
+}
 
 async function poll<T>(read: () => Promise<T | null>, label: string, attempts = 20): Promise<T> {
   for (let i = 0; i < attempts; i++) {
@@ -35,12 +44,12 @@ async function createVisit(
   factoryId: string,
   packageVersionId: string,
   suffix: string,
-  dayOffset: number,
+  hoursBeforeNow: number,
 ) {
   const plan = must(await rest("POST", "visit_plans", planner.jwt, {
     method: "single", status: "draft", created_by: planner.userId,
   }), `create ${suffix} plan`)[0];
-  const windowStart = Date.now() + dayOffset * 86_400_000;
+  const windowStart = Date.now() - hoursBeforeNow * 3_600_000;
   const visit = must(await rest("POST", "visits", planner.jwt, {
     visit_plan_id: plan.id,
     factory_id: factoryId,
@@ -48,7 +57,7 @@ async function createVisit(
     execution_mode: "physical",
     planning_status: "published",
     window_start: new Date(windowStart).toISOString(),
-    window_end: new Date(windowStart + 60 * 60_000).toISOString(),
+    window_end: new Date(windowStart + 12 * 3_600_000).toISOString(),
     package_version_id: packageVersionId,
   }), `create ${suffix} visit`)[0];
   assertOk(await rest("POST", "assignments", planner.jwt, {
@@ -79,21 +88,45 @@ test.beforeAll(async () => {
     "package_versions?select=id&status=eq.published&order=published_at.desc&limit=1",
     planner.jwt), "published package")[0];
 
-  // Three non-overlapping fixtures inside the live 2020..2100 sanity bound.
-  const dayMs = 86_400_000;
-  const maxOffsetDays = Math.floor((Date.UTC(2099, 11, 1) - Date.now()) / dayMs);
-  const baseDay = 30 + Math.random() * (maxOffsetDays - 38);
-  governedVisitId = await createVisit(planner, factory.id, pkg.id, "governed", baseDay);
-  noGpsVisitId = await createVisit(planner, factory.id, pkg.id, "no-GPS", baseDay + 2);
-  weakGpsVisitId = await createVisit(planner, factory.id, pkg.id, "weak-GPS", baseDay + 4);
+  plannerJwt = planner.jwt;
+  plannerUserId = planner.userId;
+  factoryId = factory.id;
+  packageVersionId = pkg.id;
+
+  // Stale fixtures from an interrupted run keep holding the inspector window
+  // (CD-023 overlap guard); release every still-live window before staging.
+  const lingering = must(await rest("GET",
+    `visits?select=id,assignments!inner(inspector_id)&assignments.inspector_id=eq.${inspectorUserId}&planning_status=in.(draft,published,returned)&window_end=gt.${new Date(Date.now() - 86_400_000).toISOString()}`,
+    plannerJwt), "list lingering inspector windows") as { id: string }[];
+  for (const visit of lingering) await releaseInspectorWindow(visit.id);
+
+  // The atomic start path (D-015, 20260721093000) only admits a journey while
+  // now() sits inside [window_start, window_end], and the CD-023 overlap guard
+  // refuses a second live assignment over the same inspector window — so each
+  // test creates its own in-window fixture after the previous one releases the
+  // window through a governed planning cancellation.
+  governedVisitId = await createVisit(planner, factoryId, packageVersionId, "governed", 1);
 });
 
 const step = (page: Page, n: number) => page.getByRole("button", { name: new RegExp(`^${n} ·`) });
 
+async function completeReadinessLeg(page: Page) {
+  const prepPanel = page.getByTestId("pre-execution-panel");
+  if ((await prepPanel.count()) && !(await page.getByTestId("pre-execution-ready").count())) {
+    await prepPanel.getByTestId("prep-day-available").first().click();
+    await prepPanel.getByTestId("prep-save").click();
+    await expect(prepPanel.getByTestId("prep-status")).toContainText("Preparation saved", { timeout: 15_000 });
+    await prepPanel.getByTestId("prep-confirm").click();
+    await expect(page.getByTestId("pre-execution-ready")).toBeVisible({ timeout: 15_000 });
+  }
+}
+
 test("production device/Mapbox ETA survives offline as stale and outside arrival requires independent Operations approval", async ({ page, context, browser }) => {
+  test.setTimeout(240_000);
   const pageErrors: Error[] = [];
   page.on("pageerror", error => pageErrors.push(error));
   await page.goto(`/field/${governedVisitId}`);
+  await completeReadinessLeg(page);
   await step(page, 1).click();
   await step(page, 2).click();
 
@@ -188,8 +221,12 @@ test("production device/Mapbox ETA survives offline as stale and outside arrival
 });
 
 test("unavailable GPS remains blocked and records no synthetic check-in", async ({ page, context }) => {
+  test.setTimeout(120_000);
+  await releaseInspectorWindow(governedVisitId);
+  noGpsVisitId = await createVisit({ jwt: plannerJwt, userId: plannerUserId }, factoryId, packageVersionId, "no-GPS", 2);
   await context.clearPermissions();
   await page.goto(`/field/${noGpsVisitId}`);
+  await completeReadinessLeg(page);
   await step(page, 1).click();
   await step(page, 2).click();
   await step(page, 3).click();
@@ -202,8 +239,12 @@ test("unavailable GPS remains blocked and records no synthetic check-in", async 
 });
 
 test("weak GPS accuracy blocks check-in before any location event is written", async ({ page, context }) => {
+  test.setTimeout(120_000);
+  await releaseInspectorWindow(noGpsVisitId);
+  weakGpsVisitId = await createVisit({ jwt: plannerJwt, userId: plannerUserId }, factoryId, packageVersionId, "weak-GPS", 3);
   await context.setGeolocation({ latitude: 24.735, longitude: 46.705, accuracy: 100 });
   await page.goto(`/field/${weakGpsVisitId}`);
+  await completeReadinessLeg(page);
   await step(page, 1).click();
   await step(page, 2).click();
   await step(page, 3).click();

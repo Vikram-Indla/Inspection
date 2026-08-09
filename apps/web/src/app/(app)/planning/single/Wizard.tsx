@@ -1,5 +1,5 @@
 "use client";
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { publishSingleVisit, saveSingleDraft, type PublishResult } from "./actions";
 import IdentityDossier from "./IdentityDossier";
@@ -134,7 +134,9 @@ export default function Wizard({
 }) {
   const [state, formAction, pending] = useActionState<PublishResult, FormData>(publishSingleVisit, {});
   const router = useRouter();
+  const [searchPending, startSearchTransition] = useTransition();
   const [queryInput, setQueryInput] = useState(query);
+  const [targetReselected, setTargetReselected] = useState(draft == null);
   // Nothing is pre-selected by a search alone; picking a radio is the
   // explicit act that selects a target. Handoff/draft prefill arrives through
   // initialSelection (server-resolved, never guessed client-side).
@@ -181,7 +183,9 @@ export default function Wizard({
     const h = setTimeout(() => {
       const params = new URLSearchParams();
       if (queryInput.trim().length >= 3) params.set("q", queryInput.trim());
-      router.replace(params.toString() ? `/planning/single?${params.toString()}` : "/planning/single");
+      startSearchTransition(() => {
+        router.replace(params.toString() ? `/planning/single?${params.toString()}` : "/planning/single");
+      });
     }, 300);
     return () => clearTimeout(h);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -218,6 +222,7 @@ export default function Wizard({
     presetLabels: strings.presetLabels,
   };
   const searching = queryInput.trim().length >= 3;
+  const searchSettled = queryInput.trim() === query && !searchPending;
   const joinAddress = (parts: Array<string | null | undefined>) =>
     [...new Set(parts.filter((part): part is string => Boolean(part)))].join(", ") || "—";
 
@@ -345,6 +350,7 @@ export default function Wizard({
       <input type="hidden" name="target_source" value={target?.kind ?? ""} />
       <input type="hidden" name="source_channel" value={sourceChannel} />
       <input type="hidden" name="resume_visit_plan_id" value={state.resumeId ?? draftState?.id ?? ""} />
+      <input type="hidden" name="target_reselected" value={targetReselected ? "1" : "0"} />
 
       {draft ? (
         <PlanningNotice tone="info">{strings.draftRestored} <bdi>{draft.planReference}</bdi></PlanningNotice>
@@ -369,9 +375,10 @@ export default function Wizard({
               duplicate: f.duplicate,
             }))}
             registryUnavailable={registryUnavailable}
+            settled={searchSettled}
             selectedId={factoryId}
             onQueryChange={setQueryInput}
-            onSelect={id => { setFactoryId(id); setLicenceId(null); setLicenseNumber(""); setLocationConfirmed(false); }}
+            onSelect={id => { setFactoryId(id); setLicenceId(null); setTargetReselected(true); setLicenseNumber(""); setLocationConfirmed(false); }}
             onRetry={() => router.refresh()}
             dossierFor={id => {
               const found = results.find(entry => entry.id === id);
@@ -399,7 +406,7 @@ export default function Wizard({
           A licence/plant selection is mandatory before continuing; a CR with
           licences can never be targeted as a whole (explicit eligibility
           state), and a CR with none is not plannable at all (M01-036). */}
-      {portfolios.length > 0 && (
+      {searchSettled && portfolios.length > 0 && (
         <Card as="section" labelledBy="single-visit-portfolio">
           <CardHeader level="h2" titleId="single-visit-portfolio" title={strings.portfolioStep} />
           <CardBody>
@@ -430,7 +437,7 @@ export default function Wizard({
                           value={l.id}
                           disabled={!l.factory}
                           checked={licenceId === l.id}
-                          onChange={() => { setLicenceId(l.id); setFactoryId(null); setLicenseNumber(""); setLocationConfirmed(false); }}
+                          onChange={() => { setLicenceId(l.id); setFactoryId(null); setTargetReselected(true); setLicenseNumber(""); setLocationConfirmed(false); }}
                           label={
                             <span className={styles.choiceLabel}>
                               <bdi>{l.licenseNumber}</bdi>

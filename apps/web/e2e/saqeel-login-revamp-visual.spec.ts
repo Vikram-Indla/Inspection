@@ -6,14 +6,10 @@ import { evidenceDirectory, inspectionDocsRoot } from "./evidence-path";
 
 const evidenceRoot = evidenceDirectory("saqeel-login-one-unison-004");
 
-async function renderTheme(page: Page, theme: "light" | "dark") {
-  await page.evaluate(value => localStorage.setItem("saqeel-theme", value), theme);
+async function renderReady(page: Page) {
   await page.goto("/login");
   await page.waitForLoadState("domcontentloaded");
-  if (await page.locator("html").getAttribute("data-theme") !== theme) {
-    await page.locator(".lg-iconbtn:visible").first().click();
-  }
-  await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.locator(".lg-atlas-image.is-ready")).toBeAttached();
 }
 
@@ -24,23 +20,21 @@ async function capture(page: Page, name: string) {
 test("unified-surface bilingual, responsive and interaction evidence", async ({ page }) => {
   test.setTimeout(180_000);
 
+  // DEC-011 / PO direction 2026-07-25: /login is dark-locked (ThemeScript
+  // forces the launch-film dark palette; the page carries no theme control),
+  // so every composition case is captured in the one governed theme.
   const compositionCases = [
-    { name: "corrected-light-desktop", width: 1440, height: 900, locale: "en", theme: "light" },
-    { name: "corrected-dark-desktop", width: 1440, height: 900, locale: "en", theme: "dark" },
-    { name: "ipad-landscape-light-en", width: 1180, height: 820, locale: "en", theme: "light" },
-    { name: "ipad-landscape-dark-en", width: 1180, height: 820, locale: "en", theme: "dark" },
-    { name: "ipad-portrait-light-en", width: 820, height: 1180, locale: "en", theme: "light" },
-    { name: "ipad-portrait-dark-en", width: 820, height: 1180, locale: "en", theme: "dark" },
-    { name: "mobile-light-en", width: 390, height: 844, locale: "en", theme: "light" },
-    { name: "mobile-dark-en", width: 390, height: 844, locale: "en", theme: "dark" },
-    { name: "arabic-light-desktop", width: 1440, height: 900, locale: "ar", theme: "light" },
-    { name: "arabic-dark-desktop", width: 1440, height: 900, locale: "ar", theme: "dark" },
+    { name: "corrected-dark-desktop", width: 1440, height: 900, locale: "en" },
+    { name: "ipad-landscape-dark-en", width: 1180, height: 820, locale: "en" },
+    { name: "ipad-portrait-dark-en", width: 820, height: 1180, locale: "en" },
+    { name: "mobile-dark-en", width: 390, height: 844, locale: "en" },
+    { name: "arabic-dark-desktop", width: 1440, height: 900, locale: "ar" },
   ] as const;
 
   for (const item of compositionCases) {
     await page.setViewportSize({ width: item.width, height: item.height });
     await page.goto(`/locale?set=${item.locale}`);
-    await renderTheme(page, item.theme);
+    await renderReady(page);
     await capture(page, item.name);
   }
 
@@ -48,16 +42,14 @@ test("unified-surface bilingual, responsive and interaction evidence", async ({ 
   // atmospheric atlas canvas with no structural header/footer bands.
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/locale?set=en");
-  for (const theme of ["light", "dark"] as const) {
-    await renderTheme(page, theme);
-    await page.addStyleTag({ content: ".lg-story__head,.lg-atlas3d__event,.lg-atlas3d__stages{visibility:hidden!important}" });
-    await capture(page, `canvas-only-${theme}-desktop`);
-    await page.locator("style").last().evaluate(element => element.remove());
-  }
+  await renderReady(page);
+  await page.addStyleTag({ content: ".lg-story__head,.lg-atlas3d__event,.lg-atlas3d__stages{visibility:hidden!important}" });
+  await capture(page, "canvas-only-dark-desktop");
+  await page.locator("style").last().evaluate(element => element.remove());
 
   await page.setViewportSize({ width: 1600, height: 900 });
   await page.goto("/locale?set=en");
-  await renderTheme(page, "light");
+  await renderReady(page);
   await page.getByRole("tab", { name: "Dispatch" }).click();
   await page.waitForTimeout(3_200);
   await capture(page, "dispatch-with-vehicles-light-en");
@@ -67,11 +59,9 @@ test("unified-surface bilingual, responsive and interaction evidence", async ({ 
   const east = page.locator('.lg-zone-lift__edge[data-zone="east"]');
   await east.hover({ force: true });
   await expect(page.locator('.lg-zone-lift__slab[data-zone="east"]')).toHaveClass(/is-lifted/);
-  await capture(page, "zone-east-hovered-light-en");
-  await east.click({ force: true });
-  await expect(east).toHaveAttribute("aria-pressed", "true");
-  await capture(page, "zone-east-locked-light-en");
-  await east.press("Escape");
+  await capture(page, "zone-east-hovered-dark-en");
+  await page.mouse.move(4, 4);
+  await expect(page.locator('.lg-zone-lift__slab[data-zone="east"]')).not.toHaveClass(/is-lifted/);
 });
 
 test("protected atlas interaction recording", async ({ browser }, testInfo) => {
@@ -84,18 +74,15 @@ test("protected atlas interaction recording", async ({ browser }, testInfo) => {
   });
   const page = await context.newPage();
   await page.goto("/locale?set=en");
-  await renderTheme(page, "light");
+  await renderReady(page);
   await page.getByRole("tab", { name: "Dispatch" }).click();
   await page.waitForTimeout(3_200);
   await page.getByRole("tab", { name: "Zones" }).click();
   const east = page.locator('.lg-zone-lift__edge[data-zone="east"]');
   await east.hover({ force: true });
   await expect(page.locator('.lg-zone-lift__slab[data-zone="east"]')).toHaveClass(/is-lifted/);
-  await east.click({ force: true });
   await page.mouse.move(4, 4);
-  await expect(east).toHaveAttribute("aria-pressed", "true");
-  await east.press("Escape");
-  await page.getByRole("button", { name: "Dark mode", exact: true }).click();
+  await expect(page.locator('.lg-zone-lift__slab[data-zone="east"]')).not.toHaveClass(/is-lifted/);
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   const video = page.video();
   await context.close();

@@ -145,7 +145,9 @@ test.describe("iPad standalone presentation", () => {
     expect(layout).toContain('"mobile-web-app-capable": "yes"');
     // Regression: existing manifest + theme colour metadata preserved.
     expect(layout).toContain('manifest: "/manifest.json"');
-    expect(layout).toContain('color: "#101317"');
+    expect(layout).toContain("themeColor: [");
+    expect(layout).toContain('{ media: "(prefers-color-scheme: light)", color: "#FFFFFF" }');
+    expect(layout).toContain('{ media: "(prefers-color-scheme: dark)", color: "#080B10" }');
   });
 
   test("manifest gains installability fields without changing brand identity", () => {

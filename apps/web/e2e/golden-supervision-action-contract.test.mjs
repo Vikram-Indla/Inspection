@@ -30,7 +30,7 @@ test("golden P1.5 releases only the exact submitted visit to a reserved availabl
   assert.match(journey, /identifierField\(page\)\.fill\(PERSONAS\.supervisor\.email\)/);
   assert.match(journey, /passwordField\(page\)\.fill\(PERSONAS\.supervisor\.password\)/);
   assert.match(journey, /url\.pathname === "\/dashboard"/);
-  assert.match(journey, /#role-dashboard-summary/);
+  assert.match(journey, /#dashboard-role-summary/);
   assert.match(p1, /journeySupervisorPage\(browser\)/);
   assert.match(p1, /goto\(`\/planning\/supervision\?submitted=\$\{visitId\}`\)/);
   assert.match(p1, /input\[name="visit_id"\]\[value="\$\{visitId\}"\]/);

@@ -8,12 +8,12 @@ const source = (file: string) => readFileSync(join(process.cwd(), file), "utf8")
 
 test.describe("WA-P1-M2-BATCH-002 source, cutover and security", () => {
   test("Planning-owned replacements are canonical, capability-gated and preserve current Visit routes", () => {
-    for (const file of [
-      "src/app/(app)/planning/visits/page.tsx",
-      "src/app/(app)/planning/visits/[id]/page.tsx",
-    ]) {
+    for (const [file, gate] of [
+      ["src/app/(app)/planning/visits/page.tsx", "getPlanningAccess"],
+      ["src/app/(app)/planning/visits/[id]/page.tsx", "getPlanningReadContract"],
+    ] as const) {
       const text = source(file);
-      expect(text).toContain("getPlanningAccess");
+      expect(text).toContain(gate);
       expect(text).not.toContain("SAQEEL_M2_PREVIEW");
       expect(text).not.toContain("wa_preview");
       expect(text).not.toContain("notFound()");
@@ -40,30 +40,29 @@ test.describe("WA-P1-M2-BATCH-002 source, cutover and security", () => {
     expect(migration).not.toMatch(/\/field\/|field pwa|ipad/i);
   });
 
-  test("runtime navigation colors match the supplied SAQEEL semantic tokens", () => {
+  test("runtime navigation colors resolve through SAQEEL semantic tokens only", () => {
     const tokens = source("src/app/tokens.css");
     const shell = source("src/app/saqeel-runtime.css");
+    const saqeel = source("src/app/saqeel.css");
 
     for (const token of [
-      "--nav-bg:          #1f2328",
-      "--nav-bg-hover:    #2a2f35",
-      "--nav-bg-selected: #17352b",
-      "--nav-border:      #32373d",
-      "--nav-text:        #b9bec4",
-      "--nav-indicator:   #35b285",
-      "--nav-bg:          #131519",
-      "--nav-bg-hover:    #1d2025",
-      "--nav-bg-selected: #16342a",
-      "--nav-border:      #262a30",
-      "--nav-text:        #a8adb4",
-      "--nav-indicator:   #3fbd8d",
+      "--nav-bg:          var(--sqx-surface-chrome)",
+      "--nav-bg-hover:    var(--sqx-nav-hover-bg)",
+      "--nav-bg-selected: var(--sqx-nav-active-bg)",
+      "--nav-border:      var(--sqx-border-subtle)",
+      "--nav-text:        var(--sqx-nav-text)",
+      "--nav-indicator:   var(--sqx-action-primary-bg)",
     ]) expect(tokens).toContain(token);
+    for (const sqxToken of [
+      "--sqx-surface-chrome", "--sqx-nav-hover-bg", "--sqx-nav-active-bg",
+      "--sqx-border-subtle", "--sqx-nav-text", "--sqx-action-primary-bg",
+    ]) expect(saqeel).toContain(`${sqxToken}:`);
 
     expect(tokens).not.toMatch(/#101828|#0b1120|#26314a|#8a93ab/);
     expect(shell).not.toMatch(/#4b5670|#6b7794/);
-    expect(shell).toContain(".sq-shell-search input:focus-visible { outline: 2px solid var(--focus-ring)");
+    expect(shell).toContain(".sq-shell-search input:focus-visible");
+    expect(shell).toContain("border-color: var(--focus-ring)");
     expect(shell).toContain(".sq-shell-search:focus-within input");
-    expect(shell).toContain("border-color: var(--sq-color-border)");
   });
 });
 
@@ -75,14 +74,16 @@ test.describe("WA-P1-M2-BATCH-002 planner journey", () => {
   test("Planning landing exposes the canonical creation methods", async ({ page }) => {
     await page.goto("/planning");
     await expect(page.getByRole("heading", { name: "Planning", exact: true })).toBeVisible();
+    await page.getByText("Create Visit", { exact: true }).first().click();
+    const methods = page.getByRole("navigation", { name: "Create visit methods" });
     for (const href of ["/planning/bulk", "/planning/single", "/planning/immediate"]) {
-      await expect(page.locator(`a[href="${href}"]`)).toBeVisible();
+      await expect(methods.locator(`a[href="${href}"]`)).toBeVisible();
     }
   });
 
   test("Visits list keeps real RLS scope, filters, dual states and Planning-owned detail links", async ({ page }) => {
     await page.goto("/planning/visits");
-    await expect(page.getByText(/RLS-scoped — showing \d+ of \d+/i)).toBeVisible();
+    await expect(page.getByText(/Showing \d+ of \d+ — based on your access/i)).toBeVisible();
     await expect(page.getByRole("group", { name: /Status counts/i })).toBeVisible();
     await expect(page.getByText(/Planning status and operational state remain independent/i)).toBeVisible();
     const legacyDetailHrefs = await page.locator('a[href^="/visits/"]').evaluateAll((nodes) =>
@@ -108,7 +109,7 @@ test.describe("WA-P1-M2-BATCH-002 planner journey", () => {
     await expect(page.getByRole("tablist", { name: /state domains/i })).toBeVisible();
     await expect(page.getByRole("tab")).toHaveCount(5);
     await expect(page.locator("#ribbon-panel a")).not.toContainText("→");
-    await expect(page.locator(".wa-visit-detail-actions")).toBeVisible();
+    await expect(page.locator('section[aria-labelledby="visit-management-actions"]')).toBeVisible();
     await expect(page.getByRole("link", { name: "Open plan", exact: true })).not.toContainText("→");
     await expect(page.getByText(/Planning history — cannot be edited/i)).toBeVisible();
   });

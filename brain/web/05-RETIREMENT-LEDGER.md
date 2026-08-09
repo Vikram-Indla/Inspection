@@ -23,6 +23,7 @@ The banner on line 1 of a marked file, exact form:
 | `components/ShellClient.tsx` (46 KB, 840 lines) | `components/app-shell/app-shell` | 2026-08-07 | `/admin/execution`, `/admin/dashboard-config` | 0-imports |
 | `components/Shell.tsx` (16 KB, 251 lines) | `components/app-shell/shell-page-frame/shell-page-frame` | 2026-08-07 | `/admin/execution`, `/admin/dashboard-config`, plus 55 route files still importing the default `Shell` page-frame export | 0-imports |
 | `components/ShellNavIcon.tsx` (3 KB, 36 lines) | `components/saqeel/icon/icon` | 2026-08-07 | `/field` (`components/field/FieldShellDrawer.tsx`) | 0-imports |
+| `app/(app)/operations/sections/operations-details.tsx` (29 lines) | `design/final-cut/saqeel-revamp.html` | 2026-08-08 | `e2e/web-admin-m3-operations.spec.ts` (readFileSync composition assertion) | 0-imports |
 | `app/(app)/visits/VisitsBoard.tsx` (707 lines) | `components/sections/visits/visit-board/visit-board` | 2026-08-09 | **none — zero importers** | 0-imports |
 | `app/(app)/admin/compliance-approvals/**` (page, layout, loading, error) | `app/(app)/compliance/approvals` | 2026-08-10 | **none — `middleware.ts` rewrites this path unconditionally, so the segment never runs** | 0-imports |
 

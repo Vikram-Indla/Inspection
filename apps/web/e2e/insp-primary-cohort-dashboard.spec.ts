@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { waitForCredentialsForm, submitCredentials, identifierField, passwordField } from "./login-helper";
+import { optionalSetting } from "./personas";
 
 // Application QA — Jira Positive Playwright: Journey group 1 (Shared —
 // Login/Dashboard). Covers the four PRIMARY business cohorts (admin1,
@@ -12,7 +13,7 @@ import { waitForCredentialsForm, submitCredentials, identifierField, passwordFie
 // /login UI and lands on /dashboard with role-scoped data.
 
 function requireUatSecret(): string {
-  const value = process.env.SAQEEL_UAT_PASSWORD?.trim() || process.env.SAQEEL_CROSS_ROLE_PASSWORD?.trim();
+  const value = optionalSetting("SAQEEL_UAT_PASSWORD") ?? optionalSetting("SAQEEL_CROSS_ROLE_PASSWORD");
   if (!value) {
     throw new Error(
       "SAQEEL_UAT_PASSWORD or SAQEEL_CROSS_ROLE_PASSWORD is required to authenticate the primary business cohorts " +
@@ -37,7 +38,20 @@ for (const account of PRIMARY_COHORT) {
     await passwordField(page).fill(password);
     await submitCredentials(page);
 
-    await page.waitForURL((url) => url.pathname.startsWith("/dashboard"), { timeout: 40_000 });
+    const outcome = await Promise.race([
+      page.waitForURL(
+        (url) => url.pathname.replace(/^\/(en|ar)(?=\/|$)/, "").startsWith("/dashboard"),
+        { timeout: 40_000 },
+      ).then(() => "dashboard" as const),
+      page.getByRole("alert").filter({ hasText: /could not sign you in/i }).first()
+        .waitFor({ timeout: 40_000 }).then(() => "rejected" as const),
+    ]);
+    expect(
+      outcome,
+      `${account} was rejected by the identity provider. The live primary-cohort secret does not match ` +
+      "SAQEEL_UAT_PASSWORD / SAQEEL_CROSS_ROLE_PASSWORD in apps/web/.env.local — provision the current " +
+      "cohort secret (docs/TEST_ACCOUNTS.md) before running this journey.",
+    ).toBe("dashboard");
     await expect(page.locator("body")).not.toContainText("ERR-AUTH");
     await page.screenshot({ path: `test-results/insp-journey1-${account}-dashboard.png`, fullPage: true });
   });

@@ -25,7 +25,7 @@ test.describe("MVP2-CD-031-M2-05 audit replay UI", () => {
     await expect(page.getByRole("heading", { name: /Completeness/ })).toBeVisible();
     // Completeness is DERIVED from a selected case's ontology, never a universal fraction:
     // with no case selected the ledger honestly guards instead of inventing REQ rows.
-    await expect(page.getByText(/Select one non-truncated case with a published ontology/i)).toBeVisible();
+    await expect(page.getByText(/Select one case that isn't truncated, with a published ontology/i)).toBeVisible();
   });
 
   test("reflows at 412 and mirrors Arabic without horizontal page overflow", async ({ page }) => {
@@ -43,7 +43,7 @@ test.describe("MVP2-CD-031-M2-05 zero disclosure", () => {
   test("inspector receives an unauthorized state with no event disclosure", async ({ page }) => {
     await page.goto("/locale?set=en"); await page.goto("/admin/audit");
     // Scope to the denial surface (Next's route-announcer is also role=alert).
-    await expect(page.locator("section[role=alert].ar-denied")).toContainText("not authorized");
+    await expect(page.getByRole("alert").filter({ hasText: "You do not have access to this destination" })).toBeVisible();
     await expect(page.locator(".ar-event")).toHaveCount(0);
   });
 });

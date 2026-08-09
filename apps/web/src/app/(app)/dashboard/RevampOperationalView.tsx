@@ -152,7 +152,7 @@ export default function RevampOperationalView({ locale, metrics, requirementStri
               </tbody>
             </table>
           </div>
-          <a className="btn btn-secondary" href="/execution">{copy(locale, "Open Execution, grouped by inspector", "فتح التنفيذ مجمعاً حسب المفتش")}</a>
+          <a className="btn btn-secondary" href="/execution">{copy(locale, "Open Execution", "فتح التنفيذ")}</a>
         </div>
       </section>
     </div>

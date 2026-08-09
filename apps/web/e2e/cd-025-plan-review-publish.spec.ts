@@ -3,7 +3,7 @@ import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath, PERSONAS } from "./personas";
-import { waitForCredentialsForm, submitCredentials } from "./login-helper";
+import { waitForCredentialsForm, submitCredentials, identifierField, passwordField } from "./login-helper";
 import { login, rest, must } from "./live-rest";
 
 // CD-025 / SCR-WEB-150 / P03 — Plan Review & Publish workspace.
@@ -37,17 +37,52 @@ async function stageSelection(page: Page, n = 3): Promise<string[]> {
 test.beforeAll(() => { mkdirSync(EVIDENCE_DIR, { recursive: true }); });
 test.beforeEach(async ({ page }) => { await page.goto("/locale?set=en"); });
 
+// Canonical-target discovery. The supervision boundary requires exactly one
+// industrial licence per target (TARGET-AMBIGUOUS otherwise) and CR/licence
+// writes are governed to compliance/security/workflow admins, so tests draw
+// targets from the live canonical registry set instead of fabricating rows:
+//   busy — single-licence, located, WITH an active periodic visit (duplicate)
+//   free — single-licence, located, WITHOUT an active periodic visit
+const ACTIVE_PERIODIC = "visit_type=eq.periodic&planning_status=in.(draft,validated,pending_supervision,published,returned)";
+async function canonicalTargetPools(jwt: string, userId: string): Promise<{ busy: string[]; free: string[] }> {
+  const licences = must(await rest(
+    "GET",
+    "industrial_licenses?select=factory_id&commercial_registration_id=not.is.null&limit=5000",
+    jwt,
+  ), "licence registry") as { factory_id: string }[];
+  const licenceCount = new Map<string, number>();
+  for (const row of licences) licenceCount.set(row.factory_id, (licenceCount.get(row.factory_id) ?? 0) + 1);
+  const singles = [...licenceCount.keys()].filter(id => licenceCount.get(id) === 1);
+  if (singles.length === 0) return { busy: [], free: [] };
+  // Planning writes are region-scoped (planning_closure_factory_in_scope), so
+  // only targets inside the acting planner's scope are usable.
+  const [profile] = must(await rest("GET", `profiles?select=region&user_id=eq.${userId}`, jwt), "planner profile") as { region: string | null }[];
+  const region = profile?.region?.trim() ?? "";
+  const regionFilter = region && region !== "National" ? `&region=eq.${encodeURIComponent(region)}` : "";
+  const located = must(await rest(
+    "GET",
+    `factories?select=id&id=in.(${singles.join(",")})&official_lat=not.is.null&official_lng=not.is.null&is_temporary=eq.false${regionFilter}`,
+    jwt,
+  ), "located canonical factories") as { id: string }[];
+  const active = must(await rest("GET", `visits?select=factory_id&${ACTIVE_PERIODIC}&limit=5000`, jwt), "active periodic visits") as { factory_id: string }[];
+  const busySet = new Set(active.map(v => v.factory_id));
+  const busy: string[] = [];
+  const free: string[] = [];
+  for (const f of located) (busySet.has(f.id) ? busy : free).push(f.id);
+  return { busy, free };
+}
+
 test.describe("CD-025 review workspace (DSG-020)", () => {
   test("renders the blocker-first IA: context → readiness → targets → evidence → ledger → action", async ({ page }) => {
     await stageSelection(page);
     await page.goto("/planning/bulk/review");
     // staged, nothing-persisted honesty (no plan record yet)
-    await expect(page.getByText(/nothing is saved until you publish/i)).toBeVisible();
+    await expect(page.getByText(/nothing is saved until you submit it for supervision/i)).toBeVisible();
     await expect(page.getByRole("heading", { name: /^Readiness$/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Targets & proposed visits/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Assignment evidence", exact: true })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Publish consequence ledger/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Corrections & publish/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Supervision submission ledger/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Corrections & supervision submission/i })).toBeVisible();
     // Complete the mandatory window so the readiness preview resolves (proves the
     // validateBulkPlan wiring runs); publish is NOT clicked (read-only).
     const dt = page.locator('input[type="datetime-local"]');
@@ -63,7 +98,7 @@ test.describe("CD-025 review workspace (DSG-020)", () => {
     await expect(readiness.locator(".sq-lozenge--success, .badge-compliant, .sq-lozenge--critical, .badge-critical")).toBeVisible({ timeout: 15000 });
     // Publish reflects that state: enabled iff readiness is clear.
     const ready = await readiness.locator(".sq-lozenge--success, .badge-compliant").count();
-    const publish = page.getByRole("button", { name: /Publish plan and create|Publish blocked/i });
+    const publish = page.getByRole("button", { name: /Submit plan and create|Submission blocked/i });
     if (ready) await expect(publish).toBeEnabled();
     else await expect(publish).toBeDisabled();
     await page.screenshot({ path: join(EVIDENCE_DIR, "review-primary.png"), fullPage: true });
@@ -84,17 +119,19 @@ test.describe("CD-025 review workspace (DSG-020)", () => {
   test("automatic-assignment copy is truthful; no round-robin claim, no invented support destination", async ({ page }) => {
     await stageSelection(page);
     await page.goto("/planning/bulk/review");
-    // the visible assignment-evidence heading (not the collapsed <option>)
-    await expect(page.locator(".sq-overline", { hasText: /chosen at publish/i })).toBeVisible();
-    await expect(page.getByText(/first eligible Inspector available in the window/i)).toBeVisible();
+    // Supervision reconciliation: no assignment happens at submission at all —
+    // the truthful copy names the Supervisor as the assigning authority.
+    await expect(page.locator(".sq-overline", { hasText: /No preference — Supervisor assigns/i }).first()).toBeVisible();
+    await expect(page.getByText(/No automatic assignment is made/i).first()).toBeVisible();
     await expect(page.getByText(/round-robin/i)).toHaveCount(0);
     await expect(page.getByText(/contact support/i)).toHaveCount(0);
   });
 
   test("publish is a single native button; when blocked it exposes a described-by disabled reason (DSG-A11Y-001)", async ({ page }) => {
+    test.setTimeout(120_000);
     await stageSelection(page);
     await page.goto("/planning/bulk/review");
-    const publish = page.getByRole("button", { name: /Publish plan and create|Publish blocked/i });
+    const publish = page.getByRole("button", { name: /Submit plan and create|Submission blocked/i });
     await expect(publish).toBeVisible();
     if (!(await publish.isEnabled())) {
       const describedBy = await publish.getAttribute("aria-describedby");
@@ -145,16 +182,16 @@ test.describe("CD-025 a11y / RTL / responsive (DSG-A11Y-001)", () => {
 // that do not require mutating live data.
 test("CD-025 wiring: truthful publisher result, live readiness preview, no invented support path", () => {
   const actions = SRC("src/app/(app)/planning/bulk/actions.ts");
-  // publish returns the authoritative plan ID (drives the read-only plan link), never a hard redirect
-  expect(actions).toContain('sb.rpc("publish_bulk_plan"');
+  // submission returns the authoritative plan ID (drives the read-only plan link), never a hard redirect
+  expect(actions).toContain('sb.rpc("submit_bulk_plan_for_supervision"');
   expect(actions).toContain("return { ok: true, planId:");
   expect(actions).not.toContain('redirect("/visits")');
   // readiness preview exists and is a preview only (RPC remains authoritative)
   expect(actions).toContain("export async function validateBulkPlan");
   // no invented support/escalation destination in operator-facing copy
   expect(actions).not.toContain("contact support");
-  // the guarded RPC returns the plan id and runs STM-PLAN-001/002 (validated → published)
-  const migration = SRC("../../supabase/migrations/20260714091727_planning_publish_guards.sql");
+  // the guarded RPC returns the plan id and holds the supervision boundary
+  const migration = SRC("../../supabase/migrations/20260729024000_bulk_supervision_lifecycle.sql");
   expect(migration).toContain("returns uuid");
   expect(migration).toContain("return v_plan_id;");
 });
@@ -187,23 +224,14 @@ test.describe("M6 — eligibility partition and eligible-subset acknowledgement"
     // rows — excluded from retained; their blocker is bypassed by the ack) plus
     // 1 located factory with NO active periodic visit (stays eligible), inside a
     // probe-verified free window (2026-09-10 → 2026-09-20).
+    // Canonical-target reconciliation: the review workspace hydrates only
+    // factories with a canonical industrial licence, so every staged id must
+    // come from the licenced registry set.
     const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
-    const ACTIVE = "visit_type=eq.periodic&planning_status=in.(draft,validated,published,returned)";
-    const dupVisits = must(await rest("GET", `visits?select=factory_id&${ACTIVE}&limit=50`, planner.jwt), "active periodic visits") as { factory_id: string }[];
-    const dupIds = [...new Set(dupVisits.map(v => v.factory_id))];
-    const dupFacs = dupIds.length
-      ? must(await rest("GET", `factories?select=id&id=in.(${dupIds.slice(0, 20).join(",")})&official_lat=not.is.null&official_lng=not.is.null&limit=2`, planner.jwt), "located duplicate factories") as { id: string }[]
-      : [];
-    test.skip(dupFacs.length < 2, "staging lacks located factories with active periodic visits");
-    const candidates = must(await rest("GET", "factories?select=id&official_lat=not.is.null&official_lng=not.is.null&limit=100", planner.jwt), "located factories") as { id: string }[];
-    let clean: string | undefined;
-    for (const c of candidates) {
-      if (dupFacs.some(d => d.id === c.id)) continue;
-      const v = must(await rest("GET", `visits?select=id&factory_id=eq.${c.id}&${ACTIVE}&limit=1`, planner.jwt), "clean-factory probe") as { id: string }[];
-      if (v.length === 0) { clean = c.id; break; }
-    }
-    test.skip(!clean, "staging lacks a located factory without an active periodic visit");
-    const ids = [dupFacs[0].id, dupFacs[1].id, clean!];
+    const pools = await canonicalTargetPools(planner.jwt, planner.userId);
+    test.skip(pools.busy.length < 2, "staging lacks licenced located factories with active periodic visits");
+    test.skip(pools.free.length < 1, "staging lacks a licenced located factory without an active periodic visit");
+    const ids = [pools.busy[0], pools.busy[1], pools.free[0]];
     await page.addInitScript(sel => { sessionStorage.setItem("cd021-bulk-selection", JSON.stringify(sel)); }, ids);
     await page.goto("/planning/bulk/review");
     const dt = page.locator('input[type="datetime-local"]');
@@ -219,7 +247,7 @@ test.describe("M6 — eligibility partition and eligible-subset acknowledgement"
     // Per-row reasons name the duplicate rows.
     await expect(page.getByText(/duplicate — active visit/i).first()).toBeVisible();
     // Publish is gated behind the explicit acknowledgement…
-    const publish = page.getByRole("button", { name: /Publish plan and create|Publish blocked/i });
+    const publish = page.getByRole("button", { name: /Submit plan and create|Submission blocked/i });
     await expect(page.getByText(/are ineligible/i).first()).toBeVisible({ timeout: 15000 });
     await expect(publish).toBeDisabled();
     // …and acknowledging proceeds with the eligible subset only (1 row here).
@@ -232,7 +260,7 @@ test.describe("M6 — eligibility partition and eligible-subset acknowledgement"
   test("an unknown ?plan= id falls back honestly to the browser-held path", async ({ page }) => {
     await page.addInitScript(() => { sessionStorage.removeItem("cd021-bulk-selection"); });
     await page.goto("/planning/bulk/review?plan=00000000-0000-4000-8000-000000000000");
-    await expect(page.getByText(/could not be loaded/i)).toBeVisible();
+    await expect(page.getByText(/couldn.t load this draft/i)).toBeVisible();
     await expect(page.getByText(/No factories selected/i)).toBeVisible();
     await expect(page.getByRole("button", { name: /Publish/i })).toHaveCount(0);
   });
@@ -254,23 +282,32 @@ test.describe("M7 — optional packages, accepted-subset publish, capability gat
     const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
     plannerJwt = planner.jwt;
     plannerUserId = planner.userId;
-    const suffix = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-    // One factory per publishing/asserting test (a publish marks it forever):
-    //   warn → zero-package warning · multi → multi-package publish
-    //   raceA → authoritative re-check drop · rev → reviewer publish
-    //   zero → zero-package publish
-    // NOTE: staging has exactly ONE Inspector, so a two-row plan in one shared
-    // window can never arm (autoNeeded > freePool). The accepted-subset path is
-    // therefore exercised as a single-row race (below); a mixed kept+dropped
-    // subset needs ≥2 Inspectors and is a documented staging-data gap.
-    for (const [i, key] of ["warn", "multi", "raceA", "rev", "zero"].entries()) {
-      fac[key] = must(await rest("POST", "factories", plannerJwt, {
-        factory_code: `R3-QA-CERT-BULK-${key.toUpperCase()}-${suffix}`, name: `R3 QA bulk ${key} ${suffix}`,
-        cr_number: `CR-M7-${key}-${suffix}`, region: "Riyadh", city: "Riyadh",
-        official_lat: 24.76 + i / 100, official_lng: 46.73 + i / 100,
-      }), `M7 factory ${key}`)[0];
-    }
+    // The supervision RPC requires one canonical target identity per factory
+    // (exactly one industrial licence joined to a CR — TARGET-AMBIGUOUS
+    // otherwise), planning writes are region-scoped, and the canonical tables
+    // are governed writes no e2e persona holds. Staging currently offers ONE
+    // free in-scope canonical target, so every M7 test shares it in rotation:
+    // each mutating test cancels the rows it created before handing over,
+    // returning the target to the free pool for the next test and run.
+    const pools = await canonicalTargetPools(plannerJwt, plannerUserId);
+    if (pools.free.length < 1) return;
+    const [row] = must(await rest("GET", `factories?select=id,name&id=eq.${pools.free[0]}`, plannerJwt), "M7 canonical target") as { id: string; name: string }[];
+    if (!row) return;
+    for (const key of ["warn", "multi", "raceA", "rev", "zero"]) fac[key] = row;
   });
+
+  test.beforeEach(() => {
+    test.skip(Object.keys(fac).length === 0, "staging lacks a free in-scope canonical target for the M7 suite");
+  });
+
+  async function releaseTarget() {
+    if (!plannerJwt || Object.keys(fac).length === 0) return;
+    await rest("PATCH",
+      `visits?factory_id=eq.${fac.warn.id}&planning_status=in.(draft,pending_supervision)&visit_type=eq.periodic&created_by=not.is.null`,
+      plannerJwt, { planning_status: "cancelled" }, "return=minimal");
+  }
+  test.afterEach(async () => { await releaseTarget(); });
+  test.afterAll(async () => { await releaseTarget(); });
 
   async function stageReview(page: import("@playwright/test").Page, ids: string[]) {
     await page.addInitScript(sel => { sessionStorage.setItem("cd021-bulk-selection", JSON.stringify(sel)); }, ids);
@@ -299,7 +336,7 @@ test.describe("M7 — optional packages, accepted-subset publish, capability gat
     await expect(page.getByText(/chooses an eligible checklist during preparation/i).first()).toBeVisible();
     // The readiness rail names it as a WARNING; publish is NOT gated by it.
     await expect(page.getByText(/No inspection checklist selected/i)).toBeVisible({ timeout: 15000 });
-    const publish = page.getByRole("button", { name: /Publish plan and create|Publish blocked/i });
+    const publish = page.getByRole("button", { name: /Submit plan and create|Submission blocked/i });
     await expect(publish).toBeEnabled({ timeout: 15000 });
     await expect(publish).toContainText(/create 1 /);
   });
@@ -319,13 +356,13 @@ test.describe("M7 — optional packages, accepted-subset publish, capability gat
     expect(expectedIds.length).toBeGreaterThan(0);
     // Governed priority flows through the lookups-driven selector.
     await page.getByLabel(/^Priority$/i).selectOption("high");
-    const publish = page.getByRole("button", { name: /Publish plan and create/i });
+    const publish = page.getByRole("button", { name: /Submit plan and create/i });
     await expect(publish).toBeEnabled({ timeout: 15000 });
     await publish.click();
-    await expect(page.getByText("Plan published", { exact: true })).toBeVisible({ timeout: 30000 });
+    await expect(page.getByText("Plan submitted for supervision", { exact: true })).toBeVisible({ timeout: 30000 });
 
     const plan = await latestBulkPlan();
-    expect(plan.status).toBe("published");
+    expect(plan.status).toBe("pending_supervision");
     const visits = must(await rest("GET", `visits?visit_plan_id=eq.${plan.id}&select=id,package_version_id,priority,factory_id`, plannerJwt), "plan visits");
     expect(visits).toHaveLength(1);
     expect(visits[0].factory_id).toBe(fac.multi.id);
@@ -349,7 +386,7 @@ test.describe("M7 — optional packages, accepted-subset publish, capability gat
     // eligibility, drops the row the client believed eligible, and names it.
     await stageReview(page, [fac.raceA.id]);
     // Wait until the preview finds the row eligible and publish is armed.
-    const publish = page.getByRole("button", { name: /Publish plan and create 1 /i });
+    const publish = page.getByRole("button", { name: /Submit plan and create 1 /i });
     await expect(publish).toBeEnabled({ timeout: 15000 });
     // NOW raceA gains an active periodic visit — between the preview and the
     // commit. The client cannot know; the server partition must drop it.
@@ -366,11 +403,14 @@ test.describe("M7 — optional packages, accepted-subset publish, capability gat
     await expect(page.getByText(/Every selected row is ineligible at the authoritative re-check/i)).toBeVisible({ timeout: 30000 });
     await expect(page.getByText(new RegExp(fac.raceA.name.slice(0, 20)))).toBeVisible();
     await expect(page.getByText(/duplicate_active_visit/i)).toBeVisible();
-    const visits = must(await rest("GET", `visits?factory_id=eq.${fac.raceA.id}&select=id,planning_status`, plannerJwt), "raceA visits");
+    const visits = must(await rest("GET",
+      `visits?factory_id=eq.${fac.raceA.id}&planning_status=in.(draft,validated,pending_supervision,published,returned)&select=id,planning_status`,
+      plannerJwt), "raceA visits");
     expect(visits).toHaveLength(1); // only the sacrificial REST-created draft
   });
 
   test("reviewer persona (publish capability, no planner role) publishes (migration 20260721180000)", async ({ browser }) => {
+    test.setTimeout(180_000);
     // Sign the reviewer in through the real /login UI instead of replaying
     // playwright/.auth/reviewer.json: refresh-token rotation makes a replayed
     // state intermittently land on /login, while the UI journey is exactly
@@ -379,8 +419,8 @@ test.describe("M7 — optional packages, accepted-subset publish, capability gat
     const page = await context.newPage();
     await page.goto("/login");
     await waitForCredentialsForm(page);
-    await page.locator("#email").fill(PERSONAS.reviewer.email);
-    await page.locator("#pw").fill(PERSONAS.reviewer.password);
+    await identifierField(page).fill(PERSONAS.reviewer.email);
+    await passwordField(page).fill(PERSONAS.reviewer.password);
     await submitCredentials(page);
     await page.waitForURL(url => url.pathname.startsWith(PERSONAS.reviewer.home), { timeout: 40_000 });
     // Fresh sessions default to Arabic; pin English like auth.setup does so
@@ -391,20 +431,20 @@ test.describe("M7 — optional packages, accepted-subset publish, capability gat
       { name: "login_locale", value: "en", url: origin },
     ]);
     await stageReview(page, [fac.rev.id]);
-    const publish = page.getByRole("button", { name: /Publish plan and create/i });
+    const publish = page.getByRole("button", { name: /Submit plan and create/i });
     await expect(publish).toBeEnabled({ timeout: 15000 });
     await publish.click();
-    await expect(page.getByText("Plan published", { exact: true })).toBeVisible({ timeout: 30000 });
+    await expect(page.getByText("Plan submitted for supervision", { exact: true })).toBeVisible({ timeout: 30000 });
     await context.close();
   });
 
   test("zero-package publish proceeds (RPC NULL package, migration 20260721180000)", async ({ page }) => {
     await stageReview(page, [fac.zero.id]);
     await uncheckAllPackages(page);
-    const publish = page.getByRole("button", { name: /Publish plan and create/i });
+    const publish = page.getByRole("button", { name: /Submit plan and create/i });
     await expect(publish).toBeEnabled({ timeout: 15000 });
     await publish.click();
-    await expect(page.getByText("Plan published", { exact: true })).toBeVisible({ timeout: 30000 });
+    await expect(page.getByText("Plan submitted for supervision", { exact: true })).toBeVisible({ timeout: 30000 });
     const plan = await latestBulkPlan();
     const visits = must(await rest("GET", `visits?visit_plan_id=eq.${plan.id}&select=id,package_version_id`, plannerJwt), "zero-package visits");
     expect(visits).toHaveLength(1);

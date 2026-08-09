@@ -24,13 +24,17 @@ test.describe("TASK-DASHBOARD-SHARED-FOUR-ROLE-20260802", () => {
     expect(ROLE_DASHBOARD_METRICS.planner).toEqual(["OPS-KPI-001", "OPS-KPI-002", "OPS-KPI-006", "STR-KPI-006"]);
     expect(ROLE_DASHBOARD_METRICS.supervisor).toEqual(["OPS-KPI-003", "OPS-KPI-007", "OPS-KPI-004", "OPS-KPI-008"]);
     expect(ROLE_DASHBOARD_METRICS.inspector).toEqual(["IPAD-KPI-001", "IPAD-KPI-002", "IPAD-KPI-003", "IPAD-KPI-004"]);
-    const page = source("src/app/(app)/dashboard/page.tsx");
-    expect(page).toContain("buildInspectorKpiProjection");
-    expect(page).toContain('if (params.view == null && persona !== "admin")');
-    expect(page).toContain('const auditResult = !strategic || persona === "admin"');
-    expect(page).toContain("syncQueueCount: 0");
-    expect(page).toContain("const sb = await supabaseServer()");
-    expect(page).not.toMatch(/service[_-]?role|bypassRls/i);
+    const sections = source("src/components/dashboard/dashboard-sections/dashboard-sections.tsx");
+    const scopeSource = source("src/features/dashboard/scope.ts");
+    const snapshotRoute = source("src/app/api/dashboard/snapshot/route.ts");
+    const snapshotSource = source("src/features/dashboard/snapshot.ts");
+    expect(sections).toContain("buildInspectorKpiProjection");
+    expect(scopeSource).toContain('return scope.viewExplicit || isAdmin ? scope.view : "operational";');
+    expect(snapshotRoute).toContain('effectiveView(requestedScope, persona === "admin")');
+    expect(snapshotSource).toContain('const audit = !strategic || persona === "admin"');
+    expect(sections).toContain("syncQueueCount: 0");
+    expect(snapshotRoute).toContain("const sb = await supabaseServer()");
+    expect(sections + scopeSource + snapshotRoute + snapshotSource).not.toMatch(/service[_-]?role|bypassRls/i);
   });
 
   test("canonical Dashboard RLS seams are read-only and keep Inspector assignment-scoped", () => {

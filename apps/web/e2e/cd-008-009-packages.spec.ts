@@ -21,26 +21,24 @@ test.beforeEach(async ({ page }, testInfo) => {
 });
 
 test.describe("CD-008 package library — version-led runtime", () => {
-  test("S01 renders package groups, version rows and source-read disclosure", async ({ page }) => {
+  test("S01 renders package groups, version rows and boundary disclosure", async ({ page }) => {
     await page.goto("/admin/packages");
-    await expect(page.getByRole("heading", { name: /Package (?:library & designer|& Form Designer)/i })).toBeVisible();
-    await expect(page.getByText(/PKG-FS/).first()).toBeVisible();
-    await expect(page.locator(".sq-version", { hasText: "v2026.07.02" }).first()).toBeVisible();
-    await expect(page.getByText(/source read/i).last()).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Inspection Forms" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Inspection packages, tracked by version/i })).toBeVisible();
+    const group = page.locator("details > summary").filter({ hasText: /PKG-|TST-PKG/ }).first();
+    await expect(group).toBeVisible();
+    await group.click();
+    await expect(page.getByText(/Published v|Draft · editable/i).first()).toBeVisible();
+    await expect(page.getByText(/Published packages can’t be changed/).first()).toBeVisible();
     await page.screenshot({ path: join(EVIDENCE_DIR, "library-en-light-1440.png"), fullPage: true });
   });
 
   test("S05/S06 published versions remain immutable while the authorized writer sees draft controls", async ({ page }) => {
     await page.goto("/admin/packages");
-    const immutable = page.locator(".sq-banner--immutable:visible").first();
-    if (await immutable.count()) await expect(immutable).toContainText(/Published version — immutable/i);
-    else {
-      const publishedSummary = page.locator("details.sq-panel > summary, details.panel > summary").filter({ hasText: /published/i }).first();
-      const publishedVersion = publishedSummary.locator("..");
-      if (await publishedVersion.getAttribute("open") === null) await publishedSummary.click();
-      await expect(publishedVersion.locator(".sq-banner--immutable")).toContainText(/Published version — immutable/i);
-    }
-    await expect(page.getByRole("button", { name: /Create draft/i })).toBeVisible();
+    const group = page.locator("details > summary").filter({ hasText: /PKG-UAT-GOLDEN/ }).first();
+    await group.click();
+    await expect(page.getByText("Published version — locked", { exact: false }).locator("visible=true").first()).toBeVisible();
+    await expect(page.getByRole("button", { name: /Create draft/i }).locator("visible=true").first()).toBeVisible();
   });
 
   test("published history exposes governed effective and supersede lineage read-only", async ({ page }) => {
@@ -54,12 +52,13 @@ test.describe("CD-008 package library — version-led runtime", () => {
 test.describe("CD-009 read-only field projection", () => {
   test("preview exposes item semantics while every inspector input remains inert", async ({ page }) => {
     await page.goto("/admin/packages");
-    const toggle = page.getByRole("button", { name: /Open field preview|Preview as inspector/i }).first();
+    await page.locator("details > summary").filter({ hasText: /PKG-UAT-GOLDEN/ }).first().click();
+    const toggle = page.getByRole("button", { name: /Open field preview|Preview as inspector/i }).locator("visible=true").first();
     await expect(toggle).toBeVisible();
     await toggle.click();
     const preview = page.locator(".ipad-preview").first();
     await expect(preview).toBeVisible();
-    await expect(preview.getByText(/read-only/i)).toBeVisible();
+    await expect(preview.getByText(/read-only/i).first()).toBeVisible();
     for (const chip of await preview.locator(".sq-btn--field, .btn-field").all()) await expect(chip).toHaveAttribute("aria-disabled", /.*/);
     for (const input of await preview.locator("input, textarea").all()) await expect(input).toBeDisabled();
     await expect(preview.getByRole("button", { name: /simulate|run|calculate|score/i })).toHaveCount(0);
@@ -70,9 +69,10 @@ test.describe("CD-009 read-only field projection", () => {
 test.describe("CD-008 publish impact truth", () => {
   test("S08 impact failure is unavailable, never fabricated as numeric zero", async ({ page }) => {
     await page.goto("/admin/packages");
-    const impact = page.locator(".sq-impact").first();
+    await page.locator("details > summary").filter({ hasText: /PKG-UAT-GOLDEN/ }).first().click();
+    const impact = page.locator(".sq-impact:visible").first();
     await expect(impact).toBeVisible();
-    const unavailable = impact.getByText(/unavailable|outside your read scope/i);
+    const unavailable = impact.getByText(/aren’t available|unavailable|outside what you can see/i);
     if (await unavailable.count()) {
       await expect(impact.getByText(/0 active visit/i)).toHaveCount(0);
       await expect(impact.getByText(/0 active inspection/i)).toHaveCount(0);
@@ -98,7 +98,7 @@ test.describe("CD-008/009 a11y, RTL, theme and responsive semantics", () => {
     await page.goto("/locale?set=ar");
     await page.goto("/admin/packages");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-    await expect(page.getByText(/PKG-FS/).first()).toBeVisible();
+    await expect(page.getByText(/PKG-|TST-PKG/).first()).toBeVisible();
     await page.screenshot({ path: join(EVIDENCE_DIR, "library-ar-rtl-1440.png"), fullPage: true });
   });
 
@@ -108,7 +108,7 @@ test.describe("CD-008/009 a11y, RTL, theme and responsive semantics", () => {
       await page.setViewportSize({ width, height });
       for (const theme of ["light", "dark"] as const) {
         await page.emulateMedia({ colorScheme: theme, reducedMotion: "reduce" });
-        await expect(page.getByText(/PKG-FS/).first()).toBeVisible();
+        await expect(page.getByText(/PKG-|TST-PKG/).first()).toBeVisible();
         expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
         await page.screenshot({ path: join(EVIDENCE_DIR, `library-en-${theme}-${width}.png`), fullPage: true });
       }
@@ -123,8 +123,8 @@ test.describe("CD-008/009 source wiring — writer, no-op, validation and hard s
   const actions = PKG("actions.ts");
 
   test("writer controls are role-mirrored while RLS/server guard remain authoritative", () => {
-    expect(page).toContain('const WRITER_ROLES = new Set(["compliance_admin", "form_admin"])');
-    expect(page).toContain("version.status === \"draft\" && canWrite");
+    expect(page).toContain('const WRITER_ROLES = new Set(["admin", "compliance_admin", "form_admin"])');
+    expect(page).toContain('version.status === "draft" && canWrite');
     expect(page).toContain("canWrite && <section");
     expect(actions).toContain("requireConfigurationWriter");
   });
@@ -145,7 +145,7 @@ test.describe("CD-008/009 source wiring — writer, no-op, validation and hard s
     expect(editor).toContain("!dirty");
     expect(editor).toContain("disabled={pending || !dirty || validationIssues.length > 0}");
     expect(actions).toContain('.eq("id", version_id).eq("status", "draft")');
-    expect(actions).toContain("Only draft versions are editable");
+    expect(actions).toContain("Only draft versions can be edited");
   });
 
   test("publish gate validates item, condition, evidence, action-form, violation and penalty dependencies", () => {
@@ -154,7 +154,7 @@ test.describe("CD-008/009 source wiring — writer, no-op, validation and hard s
     expect(actions).toContain("evidenceRuleBlockers");
     expect(actions).toContain("has no penalty mapping");
     expect(actions).toContain('sb.rpc("publish_package_version"');
-    expect(page).toContain("The approver must differ from the creator (RBAC-002)");
+    expect(actions).toContain("approver must differ from creator");
   });
 
   test("field projection includes the backend-supported item requirement and scoring semantics", () => {
@@ -168,7 +168,7 @@ test.describe("CD-008/009 source wiring — writer, no-op, validation and hard s
     const loading = PKG("loading.tsx");
     const error = PKG("error.tsx");
     expect(loading).toContain('aria-busy="true"');
-    expect(error).toContain("No empty or zero state has been inferred");
+    expect(error).toContain("لا يمكننا معرفة ما إذا كانت القائمة فارغة أو حدث خطأ");
     expect(page).toContain("packageUnavailable");
     expect(page).toContain("itemBankUnavailable");
     expect(page).toContain("pkgs.length === 0");

@@ -97,18 +97,25 @@ test.describe("CD-027 wiring proofs (code layer)", () => {
     expect(a).toContain("notification queued");           // queued-not-delivered (FND-004)
   });
 
-  test("republish queues the assigned-inspector notification and surfaces queue failure", () => {
+  test("republish records a durable notification intent inside the atomic transition", () => {
+    // Planning closure P0: transitions run through transition_planning_visit_atomic,
+    // which writes the workflow_outbox intent in the same transaction — a
+    // durable queue record, never a delivery claim.
     const a = SRC(`${ID}/actions.ts`);
-    expect(a).toMatch(/republishVisit[\s\S]*notifyAssignedInspector\(sb, id, "visit_republished"/);
-    expect(a).toMatch(/republishVisit[\s\S]*notification could not be queued/);
+    expect(a).toMatch(/republishVisit[\s\S]*callPlanningTransition\(sb, fd, "republish"/);
+    const migration = SRC("../../supabase/migrations/20260728010000_planning_closure_p0.sql");
+    expect(migration).toContain("insert into public.workflow_outbox(");
+    expect(migration).toContain("set planning_status='published'");
   });
 
   test("guards preserved — published/new + pre-start locks intact", () => {
     const a = SRC(`${ID}/actions.ts`);
     expect(a).toContain("guardPublishedNew");
     expect(a).toContain("guardPreStart");
-    expect(a).toContain('planning_status: "cancelled"'); // STM-VIS-002
-    expect(a).toContain('planning_status: "returned"');  // STM-VIS-001
+    // STM-VIS-001/002 state writes now live inside the atomic transition RPC.
+    const migration = SRC("../../supabase/migrations/20260728010000_planning_closure_p0.sql");
+    expect(migration).toContain("set planning_status='cancelled'");
+    expect(migration).toContain("set planning_status='returned'");
   });
 
   test("append-only audit read is capped at 30 (leg 3)", () => {
@@ -210,16 +217,19 @@ test.describe("M8 — lifecycle: governed return/cancel, duplicate, expired prov
   }
 
   test("return uses a governed reason, never touches notes, and appends a lifecycle event (PLN-CON-011)", async ({ page }) => {
+    const reasons = must(await rest("GET",
+      "planning_lookups?kind=eq.return_reason&is_active=eq.true&select=key,label_en&order=sort_order",
+      plannerJwt), "active return reasons") as { key: string; label_en: string }[];
+    test.skip(reasons.length === 0, "staging holds no active governed return reason (PLN-CON-011 lookup seed absent)");
+    const reasonKey = reasons[0].key;
+    const label = reasons[0].label_en;
     const { visit } = await stageVisit("RET", "published");
-    const label = must(await rest("GET",
-      "planning_lookups?kind=eq.return_reason&key=eq.factory_not_ready&select=label_en",
-      plannerJwt), "return reason label")[0].label_en as string;
 
     await page.goto(`/visits/${visit.id}`);
-    await page.locator("#visit-return-reason").selectOption("factory_not_ready");
+    await page.locator("#visit-return-reason").selectOption(reasonKey);
     await page.locator("#visit-return-comments").fill("M8 governed return");
     await page.locator("form", { has: page.locator("#visit-return-reason") }).locator("button").click();
-    await expect(page.getByText(/Returned with governed reason/)).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText(/Returned\. The history, audit record, and notification were saved/)).toBeVisible({ timeout: 15000 });
 
     // Server truth: the status flipped, planner notes were NOT overwritten
     // (the legacy `RETURNED: ` prefix is gone), and the event carries the
@@ -231,7 +241,7 @@ test.describe("M8 — lifecycle: governed return/cancel, duplicate, expired prov
       `visit_lifecycle_events?visit_id=eq.${visit.id}&event_type=eq.return&select=reason_key,comments,previous`,
       plannerJwt), "return events");
     expect(events).toHaveLength(1);
-    expect(events[0].reason_key).toBe("factory_not_ready");
+    expect(events[0].reason_key).toBe(reasonKey);
     expect(events[0].comments).toBe("M8 governed return");
     expect(events[0].previous.planning_status).toBe("published");
 
@@ -249,30 +259,26 @@ test.describe("M8 — lifecycle: governed return/cancel, duplicate, expired prov
     await expect(page.locator("#lifecycle").getByText(/No lifecycle events recorded yet/)).toBeVisible();
   });
 
-  test("cancel stores the governed key, records the event and exposes Duplicate in the final zone (M02-006)", async ({ page }) => {
+  test("cancel records the note on the lifecycle stream and exposes Duplicate in the final zone (M02-006)", async ({ page }) => {
+    // PLN-R02/R03 — planning cancellation takes one optional note through the
+    // atomic closure RPC; the governed cancellation-reason lookup retired.
     const { visit } = await stageVisit("CAN", "published");
-    const label = must(await rest("GET",
-      "planning_lookups?kind=eq.cancellation_reason&key=eq.safety_risk&select=label_en",
-      plannerJwt), "cancel reason label")[0].label_en as string;
 
     await page.goto(`/visits/${visit.id}`);
-    await page.locator("#visit-cancel-reason").selectOption("safety_risk");
     await page.locator("#visit-cancel-comments").fill("M8 governed cancel");
-    await page.locator("form", { has: page.locator("#visit-cancel-reason") }).locator("button").click();
-    await expect(page.getByText(/Cancelled — final state/)).toBeVisible({ timeout: 15000 });
+    await page.locator("form", { has: page.locator("#visit-cancel-comments") }).locator("button").click();
+    await expect(page.getByText(/Visit cancelled\. Audit and notification were saved/)).toBeVisible({ timeout: 15000 });
 
     const row = must(await rest("GET", `visits?id=eq.${visit.id}&select=planning_status,cancellation_reason`, plannerJwt), "visit after cancel")[0];
     expect(row.planning_status).toBe("cancelled");
-    expect(row.cancellation_reason).toBe("safety_risk");
     const events = must(await rest("GET",
-      `visit_lifecycle_events?visit_id=eq.${visit.id}&event_type=eq.cancel&select=reason_key,comments,previous`,
+      `visit_lifecycle_events?visit_id=eq.${visit.id}&event_type=eq.cancel&select=comments,previous`,
       plannerJwt), "cancel events");
     expect(events).toHaveLength(1);
-    expect(events[0].reason_key).toBe("safety_risk");
+    expect(events[0].comments).toBe("M8 governed cancel");
     expect(events[0].previous.planning_status).toBe("published");
 
     await page.reload();
-    await expect(page.getByText(`Cancelled — reason: ${label}`)).toBeVisible();
     await expect(page.getByRole("button", { name: /Duplicate visit/i })).toBeVisible();
     await expect(page.getByText(/final state — view only/)).toBeVisible();
     await page.screenshot({ path: join(EVIDENCE_DIR, "m8-cancel-final.png"), fullPage: true });

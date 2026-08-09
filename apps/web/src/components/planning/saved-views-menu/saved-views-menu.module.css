@@ -1,0 +1,92 @@
+.root {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  inset-inline-end: 0;
+  inset-block-start: calc(100% + var(--sqx-space-2));
+  z-index: var(--sqx-z-popover);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  min-inline-size: var(--sqx-menu-max-w);
+  padding: var(--sqx-menu-pad);
+  background: var(--sqx-surface-menu);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-lg);
+  box-shadow: var(--sqx-shadow-menu);
+}
+
+.menuHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-3);
+  padding-block-end: var(--sqx-space-2);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.menuTitle {
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
+  color: var(--sqx-text-primary);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-2);
+  padding-block: var(--sqx-space-1);
+}
+
+.rowLink {
+  font: var(--sqx-text-body);
+  color: var(--sqx-text-link);
+  text-decoration: none;
+}
+
+.rowLink:hover {
+  color: var(--sqx-text-link-hover);
+}
+
+.empty {
+  padding-block: var(--sqx-space-2);
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+}
+
+.fieldLabel {
+  display: block;
+  margin-block-end: var(--sqx-space-1);
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
+  color: var(--sqx-text-secondary);
+}
+
+.input {
+  inline-size: 100%;
+  block-size: var(--sqx-control-h-md);
+  padding-inline: var(--sqx-space-3);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-input);
+  border-radius: var(--sqx-radius-control);
+  background: var(--sqx-surface-default);
+  color: var(--sqx-text-primary);
+  font: var(--sqx-text-body);
+}
+
+.input:focus-visible {
+  outline: var(--sqx-focus-ring-width) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}
+
+@media (max-width: 48rem) {
+  .menu {
+    inset-inline-end: auto;
+    inset-inline-start: 0;
+    min-inline-size: 0;
+    inline-size: var(--sqx-menu-max-w);
+    max-inline-size: calc(100vw - var(--sqx-space-8));
+  }
+}

@@ -22,7 +22,8 @@ test.describe("CD-006 regulation publish — provenance + honest no-op", () => {
     // silently no-opping). Assertions updated to the current layer instead
     // of the superseded client-side pattern.
     const actions = SRC("src/app/(app)/admin/regulations/actions.ts");
-    const rpc = SRC("../../supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql");
+    const ccrActions = SRC("src/app/(app)/admin/compliance-requests/actions.ts");
+    const rpc = SRC("../../supabase/migrations/20260729003741_four_role_package_configuration_authority.sql");
     // WA-01 — provenance columns are written on publish, now inside the RPC.
     expect(rpc).toMatch(/approved_by\s*=\s*auth\.uid\(\)/);
     expect(rpc).toMatch(/published_at\s*=\s*now\(\)/);
@@ -30,8 +31,10 @@ test.describe("CD-006 regulation publish — provenance + honest no-op", () => {
     expect(rpc).toMatch(/created_by\s*=\s*auth\.uid\(\)\s*then\s*raise exception/);
     // WA-02 — a non-draft/missing regulation raises, it does not silently no-op.
     expect(rpc).toMatch(/not found or v_new\.status\s*<>\s*'draft'\s*then\s*raise exception/);
-    // The server action calls the RPC and surfaces its error, never a false ok.
-    expect(actions).toMatch(/sb\.rpc\("publish_regulation"/);
+    // No client-side publish remains; the app-side publish leg goes through the
+    // governed CCR lifecycle RPC, which surfaces provider errors, never a false ok.
+    expect(actions).not.toMatch(/status:\s*"published"/);
+    expect(ccrActions).toMatch(/rpc\("publish_compliance_request"/);
     expect(actions).toMatch(/if\s*\(error\)\s*\{/);
   });
 

@@ -5,7 +5,8 @@ import { storageStatePath } from "./personas";
 
 const read = (path: string) => readFileSync(join(process.cwd(), path), "utf8");
 
-const operationsPage = read("src/app/(app)/operations/page.tsx");
+const operationsPage = read("src/features/operations/queries.ts");
+const operationsOverrideSource = read("src/features/operations/sources/alerts.ts");
 const operationsLivePage = read("src/app/(app)/operations/live/page.tsx");
 const fieldVisitPage = read("src/app/(app)/field/[visitId]/page.tsx");
 const operationsActions = read("src/app/(app)/operations/actions.ts");
@@ -16,11 +17,11 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 route safety", () => {
     expect(operationsPage).not.toContain('sb.rpc("expire_stale_geo_override_requests")');
     expect(operationsPage.match(/const now = Date\.now\(\);/g)).toHaveLength(1);
     expect(operationsPage.match(/const nowIso = new Date\(now\)\.toISOString\(\);/g)).toHaveLength(1);
-    expect(operationsPage).toContain('.eq("status", "pending")\n      .gt("expires_at", nowIso)');
+    expect(operationsOverrideSource).toContain('.eq("status", "pending")\n    .gt("expires_at", nowIso)');
 
     const cutoff = operationsPage.indexOf("const nowIso = new Date(now).toISOString();");
     const reads = operationsPage.indexOf("await Promise.all([");
-    const queueFilter = operationsPage.indexOf('.gt("expires_at", nowIso)');
+    const queueFilter = operationsPage.indexOf("loadPendingOverrides(sb, nowIso)");
     expect(cutoff).toBeGreaterThan(-1);
     expect(reads).toBeGreaterThan(cutoff);
     expect(queueFilter).toBeGreaterThan(reads);
@@ -61,7 +62,6 @@ test.describe("DSG-CMD-020 Operations direct-route authorization", () => {
   ] as const) {
     test(`${name} verifies an operational role independently of nav visibility`, () => {
       expect(source).toContain("BUSINESS_ROLE_KEYS");
-      expect(source).toContain("FIELD_CHANNEL_ROLE_KEYS");
       expect(source).toContain("const hasOperationalRole = routeRoleKeys.some");
       expect(source).toContain(
         "const mayViewOperations = operationsDestination?.enabled === true && hasOperationalRole;"
@@ -133,7 +133,7 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 repeated GET", () => {
     for (let attempt = 0; attempt < 2; attempt += 1) {
       const response = await page.goto("/operations");
       expect(response?.status()).toBe(200);
-      await expect(page.getByRole("heading", { name: "Operations Center", exact: true })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Operational summary" })).toBeVisible();
     }
 
     expect(applicationRequests.filter(request =>

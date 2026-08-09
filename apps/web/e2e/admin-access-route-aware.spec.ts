@@ -4,17 +4,18 @@ import { expect, test } from "@playwright/test";
 
 const repoRoot = path.resolve(__dirname, "..");
 const page = fs.readFileSync(path.join(repoRoot, "src/app/(app)/admin/access/page.tsx"), "utf8");
+const frame = fs.readFileSync(path.join(repoRoot, "src/app/(app)/admin/_components/AdminDestinationFrame.tsx"), "utf8");
 
 test.describe("M8 admin access route-aware contract", () => {
-  test("users and roles retain stable query deep links and view-specific titles", () => {
+  test("users and roles retain stable query deep links and view-specific tabs", () => {
     expect(page).toContain('type AccessView = "users" | "roles"');
     expect(page).toContain('requestedView === "roles" ? "roles" : "users"');
-    expect(page).toContain('href="/admin/access?view=users"');
-    expect(page).toContain('href="/admin/access?view=roles"');
-    expect(page).toContain('aria-current={view === "users" ? "page" : undefined}');
-    expect(page).toContain('aria-current={view === "roles" ? "page" : undefined}');
-    expect(page).toContain('"Users & access"');
-    expect(page).toContain('"Roles & capabilities"');
+    expect(page).toContain('href: "/admin/access?view=users"');
+    expect(page).toContain('href: "/admin/access?view=roles"');
+    expect(page).toContain('current: view === "users"');
+    expect(page).toContain('current: view === "roles"');
+    expect(frame).toContain('aria-current={tab.current ? "page" : undefined}');
+    expect(page).toContain('"Users & roles"');
   });
 
   test("management controls fail closed when gates or required sources fail", () => {

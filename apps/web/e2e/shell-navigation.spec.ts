@@ -13,15 +13,18 @@ import { storageStatePath } from "./personas";
 
 const itemsFor = (roles: string[]) => buildShellNavigation(roles).flatMap(group => group.items);
 const enabledHrefsFor = (roles: string[]) => itemsFor(roles).filter(item => item.enabled).map(item => item.href);
-// The shared business catalogue = the "business"-visibility destinations, which
-// every web persona receives identically. (Enabled-href equality is not a valid
-// cross-persona check: advanced admin items such as ops enforcement tools are
-// role-specific additions on top of this shared set.)
 const businessHrefsFor = (roles: string[]) =>
   itemsFor(roles).filter(item => item.visibility === "business" && item.enabled).map(item => item.href);
 const businessHrefs = [
   "/dashboard", "/operations", "/factories", "/planning", "/execution", "/reviews",
   "/admin/regulations", "/admin/compliance-approvals", "/admin/violations", "/analytics",
+];
+const canonicalAdminIds = [
+  "adm-users", "adm-lookup", "adm-survey", "adm-planning-expiry", "adm-planning-lookups",
+  "adm-planning-status", "adm-compliance-requests", "adm-risk", "adm-integration",
+  "adm-gis", "adm-gis-spatial", "adm-notif", "adm-delegation", "adm-execution", "adm-operations",
+  "adm-enforcement-recommendations", "adm-workflows", "adm-audit", "adm-access-review",
+  "adm-devices",
 ];
 
 test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
@@ -41,27 +44,38 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
   test("all three canonical presentation roles receive the same full catalogue", () => {
     const security = itemsFor(["security_admin"]);
     expect(security.filter(item => item.visibility === "business").map(item => item.href)).toEqual(businessHrefs);
-    expect(security.filter(item => item.visibility === "canonical-admin").map(item => item.id)).toEqual([
-      "adm-users", "adm-lookup", "adm-risk", "adm-survey", "adm-notif", "adm-delegation", "adm-integration",
-    ]);
+    expect(security.filter(item => item.visibility === "canonical-admin").map(item => item.id)).toEqual(canonicalAdminIds);
     expect(itemsFor(["planner"]).map(item => item.id)).toEqual(security.map(item => item.id));
     expect(itemsFor(["inspector"]).map(item => item.id)).toEqual(security.map(item => item.id));
   });
 
-  test("administration is pinned as one collapsed group with seven canonical destinations", () => {
+  test("administration is pinned as one collapsed group with every governed destination", () => {
     const groups = buildShellNavigation(["planner"]);
     expect(groups.map(group => group.id)).toEqual([
       "overview", "operations", "compliance", "insights", "administration",
     ]);
     const administration = groups.find(group => group.id === "administration");
     expect(administration?.items.map(item => [item.labelEn, item.href])).toEqual([
-      ["Users & Roles", "/admin/access"],
+      ["Users & roles", "/admin/access"],
       ["Lookup Management", "/admin/localization"],
-      ["Risk Configuration", "/admin/risk"],
       ["Survey Configuration", "/admin/packages"],
+      ["Planning Expiry Rules", "/admin/planning/expiry"],
+      ["Planning Lookups", "/admin/planning/lookups"],
+      ["Planning Status Rules", "/admin/planning/status"],
+      ["Configuration Requests", "/admin/compliance-requests"],
+      ["Risk Configuration", "/admin/risk"],
+      ["Integration Management", "/admin/integrations"],
+      ["GIS Studio", "/admin/gis"],
+      ["Spatial Canvas", "/admin/gis/spatial"],
       ["Notification Configuration", "/admin/notifications"],
       ["Delegation", "/admin/delegation"],
-      ["Integration Management", "/admin/integrations"],
+      ["Execution Settings", "/admin/execution"],
+      ["System Operations", "/admin/operations"],
+      ["Enforcement Recommendations", "/admin/enforcement-recommendations"],
+      ["Workflow Builder", "/admin/workflows"],
+      ["Audit Trail", "/admin/audit"],
+      ["Access Review", "/admin/security-access"],
+      ["Trusted Devices", "/admin/devices"],
     ]);
     expect(administration?.items.every(item => item.enabled)).toBe(true);
   });
@@ -80,17 +94,21 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
   });
 
   test("admin routes consume the same shared shell", () => {
-    const shell = readFileSync(resolve(__dirname, "../src/components/Shell.tsx"), "utf8");
-    expect(shell).toContain("<ShellClient");
-    expect(shell).not.toContain("AdminShellClient");
+    const layout = readFileSync(resolve(__dirname, "../src/app/(app)/layout.tsx"), "utf8");
+    expect(layout).toContain('import AppShell from "@/components/app-shell/app-shell"');
+    expect(layout).toContain("<AppShell>{children}</AppShell>");
+    expect(layout).not.toContain("AdminShellClient");
   });
 
   test("pinned Administration chrome keeps keyboard and mobile accessibility contracts", () => {
-    const source = readFileSync(resolve(__dirname, "../src/components/ShellClient.tsx"), "utf8");
-    expect(source).toContain('event.key !== "Escape"');
-    expect(source).toContain('className="sq-shell__nav-footer"');
-    expect(source).toContain('group.id === "administration"');
-    expect(source).toContain("sq-nav-group__trigger");
+    const mobileNav = readFileSync(resolve(__dirname, "../src/components/app-shell/shell-mobile-nav/shell-mobile-nav.tsx"), "utf8");
+    expect(mobileNav).toContain('if (event.key === "Escape")');
+    expect(mobileNav).toContain('role="dialog" aria-modal="true"');
+    const rail = readFileSync(resolve(__dirname, "../src/components/app-shell/shell-rail/shell-rail.tsx"), "utf8");
+    expect(rail).toContain("groups.filter(group => group.isAdministration)");
+    const navGroup = readFileSync(resolve(__dirname, "../src/components/app-shell/shell-rail/shell-nav-group.tsx"), "utf8");
+    expect(navGroup).toContain('data-pinned={group.isAdministration ? "" : undefined}');
+    expect(navGroup).toContain("open={holdsCurrentRoute || !group.isAdministration}");
   });
 
   test("dashboard and live operations have distinct active states", () => {
@@ -125,22 +143,22 @@ test.describe("ADMIN-SHELL-PERSONA-001 admin-only channel", () => {
   });
 
   test("admin routes retain the common global-search and scope cluster", () => {
-    const shell = readFileSync(join(process.cwd(), "src/components/ShellClient.tsx"), "utf8");
-    expect(shell).toContain('<div className="sq-shell-controls">');
-    expect(shell).toContain("routeScope.date ? (");
-    expect(shell).toContain("sq-shell-scope--region");
-    expect(shell).toContain(") : null}");
-    expect(shell).toContain("(max-width: 1024px), (pointer: coarse)");
+    const topbar = readFileSync(join(process.cwd(), "src/components/app-shell/shell-topbar/shell-topbar.tsx"), "utf8");
+    expect(topbar).toContain("<ShellSearch");
+    expect(topbar).toContain("<ShellScopeControls");
+    expect(topbar).toContain("view.isAdminWorkspace ? (");
+    expect(topbar).toContain("<ShellAdminPalette");
+    const scopeControls = readFileSync(join(process.cwd(), "src/components/app-shell/shell-topbar/shell-scope-controls.tsx"), "utf8");
+    expect(scopeControls).toContain("disabled={!scope.date}");
+    expect(scopeControls).toContain("disabled={!scope.region || !regions.length}");
   });
 
-  test("account trigger presents only the signed-in work email", () => {
-    const shell = readFileSync(join(process.cwd(), "src/components/ShellClient.tsx"), "utf8");
-    expect(shell).toContain('aria-label={email}');
-    expect(shell).toContain('title={email}');
-    expect(shell).toContain('{initials(email)}');
-    expect(shell).toContain('<strong>{email}</strong><small aria-hidden="true" />');
-    expect(shell).not.toContain('const accountHoverLabel');
-    expect(shell).not.toContain('<small>{roleLabel}</small>');
+  test("account trigger carries the verified identity and keeps the email in the menu", () => {
+    const menu = readFileSync(join(process.cwd(), "src/components/app-shell/shell-topbar/shell-user-menu.tsx"), "utf8");
+    expect(menu).toContain("aria-label={`${identity.name} — ${identity.roleSummary}`}");
+    expect(menu).toContain("title={identity.email}");
+    expect(menu).toContain('aria-hidden="true">{identity.initials}');
+    expect(menu).toContain("{identity.email}");
   });
 });
 
@@ -162,7 +180,7 @@ test.describe("TASK-WEB-CHANNEL-ACCESS-GATE-001 field channel (rbac_matrix.csv R
     expect(isFieldOnlyPersona(["inspector"])).toBe(true);
     expect(isFieldOnlyPersona(["planner"])).toBe(false);
     expect(isFieldOnlyPersona(["security_admin"])).toBe(false);
-    expect(isFieldOnlyPersona([])).toBe(false); // no roles → not field-only → gate must not redirect
+    expect(isFieldOnlyPersona([])).toBe(false);
   });
 
   test("every canonical role lands on the shared Dashboard", () => {
@@ -179,37 +197,36 @@ test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
     await page.goto("/locale?set=en");
     await page.goto("/planning");
     const nav = page.getByRole("navigation", { name: "Primary navigation" });
-    // exact: the M9 "Planning *" admin entries would otherwise substring-match.
     await expect(nav.getByRole("link", { name: "Planning", exact: true })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Factory 360" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Review & Approval" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Compliance Library" })).toBeVisible();
-    await expect(nav.getByRole("button", { name: "Administration" })).toBeVisible();
-    await expect(nav.locator('[data-nav-state="disabled"]')).toHaveCount(0);
+    await expect(nav.locator("summary").filter({ hasText: "Administration" })).toBeVisible();
+    await expect(nav.locator('[aria-disabled="true"]')).toHaveCount(0);
 
     await page.getByRole("button", { name: "Collapse navigation" }).click();
-    await expect(page.locator(".sq-shell")).toHaveClass(/is-collapsed/);
-    await expect(nav.getByRole("link", { name: "Planning", exact: true })).toBeVisible();
+    await expect(page.locator("html")).toHaveAttribute("data-shell-rail", "collapsed");
     await page.getByRole("button", { name: "Expand navigation" }).click();
-    await expect(page.locator(".sq-shell")).not.toHaveClass(/is-collapsed/);
+    await expect(page.locator("html")).toHaveAttribute("data-shell-rail", "expanded");
+    await expect(nav.getByRole("link", { name: "Planning", exact: true })).toBeVisible();
   });
 
   test("government shell keeps notification and account controls responsive", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/locale?set=en");
     await page.goto("/planning");
-    const account = page.locator(".sq-shell-account__trigger");
-    const identity = page.locator(".sq-shell-account__identity");
+    const account = page.locator('header button[aria-haspopup="dialog"][title*="@"]');
+    const identity = account.getByText("E2E Planner");
     await expect(account).toBeVisible();
     await expect(identity).toBeVisible();
-    await expect(page.locator(".sq-notification__trigger")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Notifications" })).toBeVisible();
 
-    await page.setViewportSize({ width: 930, height: 900 });
+    await page.setViewportSize({ width: 600, height: 900 });
     await expect(account).toBeVisible();
     await expect(identity).toBeHidden();
     const box = await account.boundingBox();
     expect(box).not.toBeNull();
-    expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(930);
+    expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(600);
   });
 
   test("mobile drawer opens, traps the shell interaction and closes on Escape", async ({ page }) => {
@@ -218,24 +235,27 @@ test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
     await page.goto("/planning");
     const menu = page.getByRole("button", { name: "Open navigation" });
     await menu.click();
-    await expect(page.locator(".sq-shell")).toHaveClass(/is-drawer-open/);
-    await expect(page.locator(".sq-shell__close")).toBeFocused();
+    const drawer = page.getByRole("dialog", { name: "Navigation menu" });
+    await expect(drawer).toBeVisible();
+    await expect(drawer.getByRole("button", { name: "Close navigation" })).toBeFocused();
     await page.keyboard.press("Escape");
-    await expect(page.locator(".sq-shell")).not.toHaveClass(/is-drawer-open/);
+    await expect(drawer).toBeHidden();
     await expect(menu).toBeFocused();
   });
 
   test("Arabic applies document RTL and both visual themes remain operable", async ({ page }) => {
+    await page.emulateMedia({ colorScheme: "light" });
+    await page.addInitScript(() => localStorage.setItem("saqeel-theme-mode", "light"));
     await page.goto("/locale?set=ar");
     await page.goto("/planning");
     await expect(page.locator("html")).toHaveAttribute("lang", "ar");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-    await expect(page.locator("nav.sq-shell__nav")).toHaveAttribute("aria-label", /[\u0600-\u06FF]/);
-    const theme = page.locator(".sq-pagehead__actions > button.sq-topbar-icon");
-    const firstOfferedMode = await theme.getAttribute("aria-label");
-    await theme.click();
-    await expect(page.locator("html")).toHaveAttribute("data-theme", firstOfferedMode?.includes("الفاتح") ? "light" : "dark");
-    await theme.click();
-    await expect(page.locator("html")).toHaveAttribute("data-theme", firstOfferedMode?.includes("الفاتح") ? "dark" : "light");
+    await expect(page.locator('nav[data-variant="rail"]')).toHaveAttribute("aria-label", /[؀-ۿ]/);
+
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+    await page.getByRole("button", { name: "الوضع الداكن" }).click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await page.getByRole("button", { name: "تتبع النظام" }).click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   });
 });

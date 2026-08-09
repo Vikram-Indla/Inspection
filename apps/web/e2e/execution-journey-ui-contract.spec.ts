@@ -126,7 +126,11 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 4B journey/cancellation/location 
 
   test("Operations Center decides cancellations through the RPC-backed queue", () => {
     expect(exists(opsQueuePath)).toBeTruthy();
-    const page = read(opsPagePath);
+    const page = [
+      "apps/web/src/features/operations/queries.ts",
+      "apps/web/src/features/operations/sources/execution.ts",
+      "apps/web/src/app/(app)/operations/sections/queues-section.tsx",
+    ].map(read).join("\n");
     expect(page).toContain("CancellationQueue");
     expect(page).toContain("cancellationQueueRows");
     expect(page).toContain('from("cancellation_requests")');

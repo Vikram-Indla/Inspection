@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { revalidateTag, unstable_cache } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 
 // K-004 — per-render persona dedupe.
 // Within one server render the page's own role guard, the shared Shell, and
@@ -75,9 +76,9 @@ export const getShellRegions = cache(async () => {
       const pageSize = 1000;
       const seen = new Set<string>();
       for (let from = 0; ; from += pageSize) {
-        const { data, error } = await sb.from("factories").select("region").not("region", "is", null).range(from, from + pageSize - 1);
+        const { data, error } = await sb.from("factories").select("region, name, factory_code").not("region", "is", null).range(from, from + pageSize - 1);
         if (error) return { data: null, error };
-        for (const row of data ?? []) if (row.region) seen.add(row.region);
+        for (const row of data ?? []) if (row.region && !isTestFixtureEstablishment(row)) seen.add(row.region);
         if (!data || data.length < pageSize) break;
       }
       return { data: [...seen].map(region => ({ region })), error: null };

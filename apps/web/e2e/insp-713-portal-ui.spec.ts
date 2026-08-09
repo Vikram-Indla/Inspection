@@ -15,13 +15,31 @@ const journeys = [
   ["INSP-255", "/portal?tab=requests&type=objection&view=review", "Objection request review"],
 ] as const;
 
+const escapeForRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 for (const [story, url, heading] of journeys) {
-  test(`${story} renders its bounded portal journey`, async ({ page }, testInfo) => {
+  test(`${story} renders its bounded portal journey or the governed off state`, async ({ page }, testInfo) => {
     await page.goto(url);
-    await expect(page).toHaveURL(url);
+    await expect(page).toHaveURL(new RegExp(`(/en|/ar)?${escapeForRegex(url)}$`));
+
+    const offState = page.getByText("The external factory portal is not switched on here.", { exact: true });
+    const portalEnabled = await page.getByText("Internal compliance view", { exact: true })
+      .waitFor({ timeout: 10_000 }).then(() => true, () => false);
+
+    if (!portalEnabled) {
+      await expect(offState).toBeVisible();
+      await expect(page.getByText("Not available yet", { exact: true })).toBeVisible();
+      await expect(page.getByText(/Waiting on: the portal being switched on/)).toBeAttached();
+      await expect(page.locator("h2.panel-title")).toHaveCount(0);
+      await page.screenshot({ path: testInfo.outputPath(`${story}-off.png`), fullPage: true });
+      return;
+    }
+
     await expect(page.getByText("Internal compliance view", { exact: true })).toBeVisible();
     await expect(page.locator("h2.panel-title").filter({ hasText: heading })).toBeVisible();
     await expect(page.getByText("Not available yet", { exact: true })).toHaveCount(0);
+    await expect(offState).toHaveCount(0);
+    await expect(page.locator("h2.panel-title").filter({ hasText: new RegExp(escapeForRegex(heading)) })).toBeVisible();
     await page.screenshot({ path: testInfo.outputPath(`${story}.png`), fullPage: true });
   });
 }

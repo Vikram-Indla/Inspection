@@ -34,14 +34,14 @@ test.describe("CD-007 semantic catalogue (AC-0454/0455)", () => {
     // Governance truth is stated, not implied: writes are role-gated; row changes are audited.
     const gov = page.getByRole("region", { name: /How this catalogue is governed/i });
     await expect(gov).toBeVisible();
-    await expect(gov).toContainText(/writes require compliance_admin or form_admin/i);
+    await expect(gov).toContainText(/writes require the admin role/i);
     await expect(gov).toContainText(/every row change is audited/i);
     await page.screenshot({ path: join(EVIDENCE_DIR, "catalogue-en-light-1440.png"), fullPage: true });
   });
 
   test("populated catalogue is a true semantic table with eight columns", async ({ page }) => {
     await page.goto("/admin/items");
-    const table = page.locator("table.sq-table");
+    const table = page.locator("table.table");
     // Live seed contains inspection_items (CD-004 reads their count) → populated.
     await expect(table).toHaveCount(1);
     await expect(table.locator("thead th[scope=col]")).toHaveCount(8);
@@ -62,7 +62,7 @@ test.describe("CD-007 semantic catalogue (AC-0454/0455)", () => {
     await expect(group).toBeVisible();
     const firstResp = group.getByRole("button").first();
     await expect(firstResp).toBeDisabled();
-    await expect(page.getByText(/Read-only projection of stored configuration/i)).toBeVisible();
+    await expect(page.getByText(/This shows the saved configuration only — nothing here can be edited\./i)).toBeVisible();
   });
 });
 
@@ -76,7 +76,7 @@ test.describe("CD-007 supported authoring and version lifecycle", () => {
 
   test("item edit exposes a governed new-version form", async ({ page }) => {
     await page.goto("/admin/items");
-    await expect(page.locator("table.sq-table tbody summary", { hasText: /Edit · v/i }).first()).toBeVisible();
+    await expect(page.locator("table.table tbody summary", { hasText: /Edit · v/i }).first()).toBeVisible();
   });
 });
 
@@ -89,7 +89,7 @@ test.describe("CD-007 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", () =
 
   test("edit controls are at least 44px (spec §10)", async ({ page }) => {
     await page.goto("/admin/items");
-    const target = page.locator("table.sq-table tbody summary", { hasText: /Edit · v/i }).first();
+    const target = page.locator("table.table tbody summary", { hasText: /Edit · v/i }).first();
     const box = await target.boundingBox();
     expect(box).not.toBeNull();
     expect(box!.height).toBeGreaterThanOrEqual(44 - 0.5);
@@ -99,12 +99,12 @@ test.describe("CD-007 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", () =
     await page.goto("/locale?set=ar");
     await page.goto("/admin/items");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-    await expect(page.locator("table.sq-table")).toBeVisible();
+    await expect(page.locator("table.table")).toBeVisible();
     // Item codes / clause refs stay LTR-isolated inside RTL flow (spec §12). The
     // catalogue renders under RTL regardless of translation state; the CD-007 Arabic
     // copy becomes visible once 20260715101000_cd007_ar_strings.sql is applied (this
     // slice does not apply migrations), so we assert RTL structure, not seeded text.
-    await expect(page.locator("table.sq-table bdi[dir=ltr]").first()).toBeVisible();
+    await expect(page.locator("table.table bdi[dir=ltr]").first()).toBeVisible();
     await expect(page.getByRole("region", { name: /How this catalogue is governed|كيف يُحكم/ })).toBeVisible();
     await page.screenshot({ path: join(EVIDENCE_DIR, "catalogue-ar-rtl-1440.png"), fullPage: true });
     await page.goto("/locale?set=en");
@@ -117,7 +117,7 @@ test.describe("CD-007 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", () =
       for (const theme of ["light", "dark"] as const) {
         await page.emulateMedia({ colorScheme: theme });
         await expect(page.getByRole("heading", { name: /Inspection Item Catalogue/i })).toBeVisible();
-        await expect(page.locator("table.sq-table")).toBeVisible();
+        await expect(page.locator("table.table")).toBeVisible();
         await page.screenshot({ path: join(EVIDENCE_DIR, `catalogue-en-${theme}-${w}.png`), fullPage: true });
       }
     }

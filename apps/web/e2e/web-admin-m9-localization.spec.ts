@@ -200,9 +200,9 @@ test.describe("WA-M9-AC-001/002/003/006 admin runtime", () => {
 
   test("the shared Admin account disclosure has an accessible name", async ({ page }) => {
     await setPresentation(page, "en", "light");
-    const accountDisclosure = page.locator("summary").filter({ has: page.locator("strong") });
-    await expect(accountDisclosure).toHaveAccessibleName(/admin1.*Admin/i);
-    const a11y = await new AxeBuilder({ page }).include("summary").analyze();
+    const accountDisclosure = page.locator('button[aria-haspopup="dialog"]').filter({ hasText: "E2E Admin" });
+    await expect(accountDisclosure).toHaveAccessibleName(/E2E Admin.*Admin/i);
+    const a11y = await new AxeBuilder({ page }).include('button[aria-haspopup="dialog"]').analyze();
     expect(a11y.violations).toEqual([]);
   });
 
@@ -248,7 +248,7 @@ test.describe("WA-M9-AC-001/002/003/006 admin runtime", () => {
     expectHealthyBrowser();
     await page.screenshot({ path: join(EVIDENCE_DIR, "after-admin-localization-en-light-1440x900.png"), fullPage: true });
 
-    await page.getByRole("button", { name: "التبديل إلى العربية", exact: true }).click();
+    await page.getByRole("radio", { name: "ع", exact: true }).click();
     await expect(page.locator("html")).toHaveAttribute("lang", "ar");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     await expect(page.getByRole("heading", { name: "سجل الترجمات", exact: true })).toBeVisible();
@@ -316,9 +316,9 @@ test.describe("WA-M9-AC-005 denied-user runtime", () => {
     const expectHealthyBrowser = watchBrowserHealth(page);
     await page.goto("/locale?set=en");
     await page.goto("/admin/localization");
-    await expect(page.locator(".sq-state[role='alert']")).toContainText("No localization data has been loaded");
+    await expect(page.getByRole("alert").filter({ hasText: "You do not have access to this destination" })).toBeVisible();
     await expect(page.locator('[data-saqeel-design="WA-DES-010"]')).toHaveCount(0);
-    await expect(page.getByRole("link", { name: "Return to my workspace" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Back to default state" })).toBeVisible();
     expectHealthyBrowser();
   });
 });

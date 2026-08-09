@@ -137,7 +137,6 @@ export function RoleDashboardSummary({ locale, persona, projection, partialSourc
         <p className="eyebrow">{copy(locale, "Your work", "عملك")}</p>
         <h2 className="panel-title" id="role-dashboard-summary">{roleName}</h2>
       </div>
-      <span className="badge badge-info">{copy(locale, "Scoped to your access", "ضمن نطاق صلاحيتك")}</span>
     </div>
     <div className="panel-body">
       <MetricStrip metrics={strip.metrics} methodology={strip.methodology} strings={stripStrings(locale)} />

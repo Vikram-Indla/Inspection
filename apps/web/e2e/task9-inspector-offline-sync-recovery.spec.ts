@@ -44,7 +44,7 @@ async function loginViaUi(page: Page, email: string, password: string) {
   await identifierField(page).fill(email);
   await passwordField(page).fill(password);
   await submitCredentials(page);
-  await page.waitForURL((url) => url.pathname.startsWith("/dashboard"), { timeout: 40_000 });
+  await page.waitForURL((url) => url.pathname.replace(/^\/(en|ar)(?=\/|$)/, "").startsWith("/dashboard"), { timeout: 40_000 });
 }
 
 // The workspace sync badge's label copy is not the bare state name — e.g.
@@ -157,6 +157,15 @@ test(`${UAT_DATASET} offline entry persists locally across reload, then replays 
     await field.fill(deterministicCorrection);
     await field.blur();
   }
+
+  // FLD-FND-003 — the implied FS-101 violation needs a PERSISTED finding
+  // narrative before submission; save it while still connected, exactly like
+  // golden-journey.spec.ts's non-compliant leg.
+  const findingNarrative = page.getByRole("textbox", { name: "Finding narrative*", exact: true });
+  await expect(findingNarrative).toHaveCount(1);
+  await findingNarrative.fill(`${UAT_DATASET} finding — corrective action.`);
+  await findingNarrative.blur();
+  await expect(page.getByTestId("finding-status-FS-101")).toHaveText("Finding saved", { timeout: 30_000 });
 
   await context.setOffline(true);
   await page.evaluate(() => window.dispatchEvent(new Event("offline")));
@@ -287,10 +296,10 @@ test(`${UAT_DATASET} concurrent server edit is never silently overwritten and is
 
   await page.evaluate(() => window.dispatchEvent(new Event("online")));
   await page.reload();
-  // Banner copy is static (page.tsx:516) — it names the mechanism (STM-SYNC-002),
-  // not the specific concurrent edit; the supervisor4 marker is verified against
-  // the server value separately below.
-  await expect(page.getByText(/Conflict on FS-101.*STM-SYNC-002.*no silent overwrite/)).toBeVisible({ timeout: 30_000 });
+  // Banner copy is static (page.tsx conflictHead) — the engineering-prose
+  // cleanup replaced the STM-SYNC-002 token with plain language; the mechanism
+  // guarantee ("nothing is overwritten silently") remains asserted verbatim.
+  await expect(page.getByText(/Conflict on FS-101.*nothing is overwritten silently/)).toBeVisible({ timeout: 30_000 });
 
   const preResolution = must(await rest("GET",
     `checklist_responses?select=response&inspection_id=eq.${inspectionId}&item_id=eq.${itemId}`,
@@ -303,7 +312,7 @@ test(`${UAT_DATASET} concurrent server edit is never silently overwritten and is
   await expect(page.getByText("1 pending", { exact: true })).toBeVisible();
   const card = page.locator("[data-testid='conflict-item-heading']").filter({ hasText: "FS-101" }).locator("../..");
   await expect(card).toBeVisible();
-  await card.getByRole("button", { name: /keep mine/i }).click();
+  await card.getByRole("button", { name: /Resubmit My Local Response/i }).click();
   await expect(page.getByText("0 pending", { exact: true })).toBeVisible({ timeout: 15_000 });
 
   const server = must(await rest("GET",
@@ -393,9 +402,16 @@ test(`${UAT_DATASET} duplicated offline evidence and submit replay upload exactl
   await expect(syncBadge(page, "Synced")).toBeVisible({ timeout: 30_000 });
 
   const inspector = await login(INSPECTOR_EMAIL, governedSecret("inspector8"));
-  const versions = must(await rest("GET",
-    `submission_versions?select=id,version_number,idempotency_key&inspection_id=eq.${inspectionId}&idempotency_key=eq.${idempotencyKey}`,
-    inspector.jwt), `${UAT_DATASET} idempotent submission versions`);
+  // The sync badge can render "Synced" a beat before the final submit op's
+  // round-trip lands under suite load — poll the authoritative table the same
+  // way the STM-SYNC-001 test does instead of racing one read against it.
+  let versions: { id: string }[] = [];
+  for (let attempt = 0; attempt < 15 && versions.length === 0; attempt++) {
+    versions = must(await rest("GET",
+      `submission_versions?select=id,version_number,idempotency_key&inspection_id=eq.${inspectionId}&idempotency_key=eq.${idempotencyKey}`,
+      inspector.jwt), `${UAT_DATASET} idempotent submission versions`);
+    if (versions.length === 0) await new Promise(resolve => setTimeout(resolve, 2000));
+  }
   expect(versions, `${UAT_DATASET} two queued submit copies must create exactly one immutable version`).toHaveLength(1);
 
   const evidenceRows = must(await rest("GET",

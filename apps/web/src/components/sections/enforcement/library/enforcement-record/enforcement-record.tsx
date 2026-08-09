@@ -27,6 +27,9 @@ export type EnforcementRecordStrings = {
   readonly hashesRecorded: string;
   readonly hashesIncomplete: string;
   readonly audit: string;
+  readonly recordedBy: string;
+  readonly timeline: string;
+  readonly started: string;
   readonly mappingVersion: string;
   readonly sourceViolation: string;
   readonly openFactory: string;
@@ -80,6 +83,11 @@ export default function EnforcementRecord({
               value: inspection?.submitted_at
                 ? <bdi>{formatDay(inspection.submitted_at)}</bdi>
                 : <span className={styles.absent}>{strings.notSubmitted}</span>,
+            },
+            { label: strings.recordedBy, value: row.inspector ?? missing },
+            {
+              label: strings.started,
+              value: inspection?.started_at ? <bdi>{formatDay(inspection.started_at)}</bdi> : missing,
             },
             { label: strings.penalty, value: penaltyLine },
             { label: strings.mappingVersion, value: <bdi className={styles.code}>{source.mapping_version}</bdi> },

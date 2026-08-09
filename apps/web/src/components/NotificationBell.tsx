@@ -35,7 +35,7 @@ export type BellStrings = {
   events: Record<string, string>;          // event_key → label
   channels: Record<string, string>;        // channel → label
   notConfigured: string;    // delivery adapter pending (honest state)
-  contextLabels: { factory: string; reason: string; decision: string };
+  contextLabels: { factory: string; visit: string; reason: string; decision: string };
 };
 
 type Row = {
@@ -72,7 +72,8 @@ function dayHeading(createdAt: string, strings: BellStrings, locale: Locale, now
 // each mount. A fresh-enough cached snapshot serves remounts; the 30 s poll
 // and opening the dropdown still hit the database. Marking rows read updates
 // the cache in place so the badge never goes stale between polls.
-let snapshot: { at: number; rows: Row[]; unreadTotal: number; userId: string; visitNames: Record<string, string> } | null = null;
+type VisitContext = { factory: string; reference: string | null; region: string | null };
+let snapshot: { at: number; rows: Row[]; unreadTotal: number; userId: string; visitNames: Record<string, VisitContext> } | null = null;
 const SNAPSHOT_TTL_MS = POLL_MS;
 
 function BellIcon() {
@@ -88,7 +89,7 @@ function BellIcon() {
 export default function NotificationBell({ strings, locale, fieldOnly = false }: { strings: BellStrings; locale: Locale; fieldOnly?: boolean }) {
   const [rows, setRows] = useState<Row[]>([]);
   const [unreadTotal, setUnreadTotal] = useState(0);
-  const [visitNames, setVisitNames] = useState<Record<string, string>>({});
+  const [visitNames, setVisitNames] = useState<Record<string, VisitContext>>({});
   const [popoverPos, setPopoverPos] = useState<{ top: number; left?: number; right?: number } | null>(null);
   const [open, setOpen] = useState(false);
   const [err, setErr] = useState("");
@@ -129,11 +130,11 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
     // name in one batched follow-up query rather than showing the ID itself
     // (same fix as the dedicated /field/notifications list page).
     const visitIds = Array.from(new Set(rows.map(r => typeof r.payload?.visit_id === "string" ? r.payload.visit_id as string : null).filter((v): v is string => !!v)));
-    const visitNames: Record<string, string> = {};
+    const visitNames: Record<string, VisitContext> = {};
     if (visitIds.length) {
-      const { data: visitRows } = await sb.from("visits").select("id, factories(name)").in("id", visitIds);
-      for (const v of (visitRows ?? []) as unknown as { id: string; factories: { name: string | null } | null }[]) {
-        if (v.factories?.name) visitNames[v.id] = v.factories.name;
+      const { data: contextRows } = await sb.rpc("notification_visit_context", { p_visit_ids: visitIds });
+      for (const v of (contextRows ?? []) as { visit_id: string; visit_reference: string | null; factory_name: string | null; region: string | null }[]) {
+        if (v.factory_name) visitNames[v.visit_id] = { factory: v.factory_name, reference: v.visit_reference, region: v.region };
       }
     }
     snapshot = { at: Date.now(), rows, unreadTotal, userId: user.id, visitNames };
@@ -214,13 +215,19 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
   // a raw fixture ID (inspection_id/session_id are UUIDs, not context). Every
   // value is paired with which field it is (factory/reason/decision) so it
   // reads as labelled business data, not an orphaned string.
-  const detail = (p: Record<string, unknown> | null): { label: string; value: string } | null => {
+  const detail = (p: Record<string, unknown> | null): { label: string; value: string }[] => {
+    const items: { label: string; value: string }[] = [];
     const visitId = typeof p?.visit_id === "string" ? p.visit_id : null;
-    if (visitId && visitNames[visitId]) return { label: strings.contextLabels.factory, value: visitNames[visitId] };
-    if (typeof p?.factory === "string" && p.factory) return { label: strings.contextLabels.factory, value: p.factory };
-    if (typeof p?.reason === "string" && p.reason) return { label: strings.contextLabels.reason, value: p.reason };
-    if (typeof p?.decision === "string" && p.decision) return { label: strings.contextLabels.decision, value: p.decision };
-    return null;
+    const ctx = visitId ? visitNames[visitId] : undefined;
+    if (ctx) {
+      items.push({ label: strings.contextLabels.factory, value: ctx.region ? `${ctx.factory} · ${ctx.region}` : ctx.factory });
+      if (ctx.reference) items.push({ label: strings.contextLabels.visit, value: ctx.reference });
+    } else if (typeof p?.factory === "string" && p.factory) {
+      items.push({ label: strings.contextLabels.factory, value: p.factory });
+    }
+    if (typeof p?.reason === "string" && p.reason) items.push({ label: strings.contextLabels.reason, value: p.reason });
+    if (typeof p?.decision === "string" && p.decision) items.push({ label: strings.contextLabels.decision, value: p.decision });
+    return items;
   };
   return (
     <div ref={wrapRef} className="sq-notification">
@@ -264,9 +271,11 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
                       {strings.events[r.event_key] ?? humaniseEnum(r.event_key)}
                       {unreadRow && <span className="sq-sr-only"> — {strings.unreadBadge}</span>}
                     </strong>
-                    {context && (
-                      <div className="t-caption">
-                        {context.label}{" "}{context.value.slice(0, 80)}
+                    {context.length > 0 && (
+                      <div className="t-caption" style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                        {context.map((c, idx) => (
+                          <span key={idx}>{c.label}{" "}{c.value.slice(0, 80)}</span>
+                        ))}
                       </div>
                     )}
                     <div className="t-caption">

@@ -1,7 +1,7 @@
 import type { DashboardClient } from "./sources/client-type";
 import type { StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import type { TrendPoint } from "@/components/saqeel/trend-bars/trend-bars";
-import type { EnforcementTrendStrings } from "@/components/sections/dashboard/enforcement-trend/enforcement-trend";
+import type { EnforcementTrendStrings } from "@/components/dashboard/enforcement-trend/enforcement-trend";
 import { fill } from "@/i18n/messages";
 
 export type EnforcementPeriod = {

@@ -11,10 +11,13 @@ const tokens = fs.readFileSync(path.join(root, "src/app/tokens.css"), "utf8");
 // saqeel-runtime.css was a single monolithic sheet; its rules now live split across
 // the two SAQEEL DS component layers (PR12 zero-trace: --sq-* removed).
 const css = [
+  fs.readFileSync(path.join(root, "src/app/saqeel.css"), "utf8"),
   fs.readFileSync(path.join(root, "src/app/saqeel-components.css"), "utf8"),
   fs.readFileSync(path.join(root, "src/app/saqeel-runtime.css"), "utf8"),
 ].join("\n");
-const prismData = `data:image/svg+xml;base64,${fs.readFileSync(path.join(root, "public/saqeel-prism.svg")).toString("base64")}`;
+// saqeel-prism.svg was retired by WA-BRAND-r1 (O-26); the shield favicon is
+// the current governed brand mark and stands in for the rail's brand image.
+const brandMarkData = `data:image/svg+xml;base64,${fs.readFileSync(path.join(root, "public/saqeel-favicon.svg")).toString("base64")}`;
 const evidenceRoot = "/Users/vikramindla/.codex/visualizations/2026/07/18/019f7494-823c-7091-bf3a-101272b4848c/inspector-shell-uplift";
 
 const navIcons: Record<string, string> = {
@@ -63,7 +66,7 @@ function shellMarkup(locale: "en" | "ar") {
   return `
     <div class="sq-shell">
       <nav class="sq-shell__nav" aria-label="${locale === "ar" ? "التنقل الرئيسي" : "Primary navigation"}">
-        <div class="sq-shell__brand"><img class="sq-shell__brand-mark" src="${prismData}" alt=""><span class="sq-shell__brand-lockup"><strong class="sq-shell__brand-wordmark">${c.brand}</strong><span class="sq-shell__brand-sub">${c.sub}</span></span></div>
+        <div class="sq-shell__brand"><img class="sq-shell__brand-mark" src="${brandMarkData}" alt=""><span class="sq-shell__brand-lockup"><strong class="sq-shell__brand-wordmark">${c.brand}</strong><span class="sq-shell__brand-sub">${c.sub}</span></span></div>
         <div class="sq-shell__groups">${navMarkup}</div>
         <button class="sq-shell__collapse"><span class="sq-nav-label">${locale === "ar" ? "طي القائمة" : "Collapse navigation"}</span></button>
       </nav>

@@ -575,7 +575,7 @@ filters and tabs moved to `searchParams`.
 | T-023 | `/field` home, `/field/my-tasks`, `/field/[visitId]` | `Startup.tsx` 85 KB; strictest perf budget |
 | T-024 | `/field/inspection/[id]` | `Workspace.tsx` **136 KB** — the largest single file; split last, after every primitive exists |
 | T-025 | `/admin/*` | packages 46 KB, regulations 36 KB, violations 34 KB, access 27 KB |
-| T-026 | `/compliance`, `/execution`, `/analytics`, `/enforcement-library` | |
+| T-026 | `/compliance`, `/execution`, `/analytics` — `/enforcement-library` done 2026-08-08 (page 410 → 25 lines, `features/enforcement/` + `components/enforcement/`) | |
 | T-030 | Dynamic-import `mapbox-gl`, `leaflet`, `three`, `twilio-video` | remove from shared chunk |
 | T-031 | Font weight audit — drop unused Arabic weights | ~45 KB each |
 | T-032 | Legacy CSS sweep — delete orphaned rules from `saqeel-runtime.css` (170 KB) and `saqeel-components.css` (50 KB) | runs continuously, closed out here |

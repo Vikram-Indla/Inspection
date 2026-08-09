@@ -72,13 +72,15 @@ test.describe("contextual AI delta contract", () => {
 
   test("inspector daily briefing starts in My assignments and has a human review path", () => {
     const field = SRC("src/app/(app)/field/page.tsx");
-    expect(field).toContain('surface="inspector_daily_briefing"');
-    expect(field).toContain("MVP1-M03-001");
-    expect(field).toContain("MVP1-M03-003");
-    const action = SRC("src/lib/ai/contextual-actions.ts");
-    expect(action).toContain('from("assignments")');
-    expect(action).toContain('eq("inspector_id", user.id)');
-    expect(action).toContain("Do not invent a route or travel order");
+    expect(field).toContain("getOrGenerateBriefing");
+    expect(field).toContain("DailyBriefingCard");
+    const briefing = SRC("src/lib/ai/briefing.ts");
+    expect(briefing).toContain('"inspector_daily_briefing"');
+    expect(briefing).toContain("MVP1-M03-001");
+    expect(briefing).toContain("MVP1-M03-003");
+    expect(briefing).toContain('from("assignments")');
+    expect(briefing).toContain('.eq("inspector_id", userId)');
+    expect(briefing).toContain("Do not invent a route or travel order");
     const panel = SRC("src/components/ContextualAiPanel.tsx");
     expect(panel).toContain("/ai/suggestions#ai-suggestion-");
     const docket = SRC("src/app/(app)/ai/suggestions/AiDockets.tsx");

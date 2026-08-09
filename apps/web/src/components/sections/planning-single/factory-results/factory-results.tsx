@@ -41,9 +41,11 @@ export type FactoryResultsStrings = {
  * never a score, so it renders as a labelled pill rather than a number.
  */
 export default function FactoryResults({
-  query, results, registryUnavailable, selectedId, dossierFor, onQueryChange, onSelect, onRetry, strings,
+  query, results, registryUnavailable, settled, selectedId, dossierFor, onQueryChange, onSelect, onRetry, strings,
 }: {
   query: string;
+  /** False while a debounced search navigation is still in flight. */
+  settled: boolean;
   results: readonly GradedResult[];
   registryUnavailable: boolean;
   selectedId: string | null;
@@ -53,10 +55,13 @@ export default function FactoryResults({
   onRetry: () => void;
   strings: FactoryResultsStrings;
 }) {
+  // A stale result set must not flash while the search is still resolving, and
+  // "no match" must not be shown before the answer is actually in.
   const searching = query.trim().length >= 3;
+  const visible = settled ? results : [];
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} aria-busy={!settled}>
       <TextInput
         type="search"
         value={query}
@@ -72,13 +77,13 @@ export default function FactoryResults({
         </div>
       ) : null}
 
-      {searching && !registryUnavailable && results.length === 0 ? (
+      {searching && settled && !registryUnavailable && results.length === 0 ? (
         <EmptyState size="sm" title={strings.noMatch} description={strings.noMatchBody} />
       ) : null}
 
-      {results.length > 0 ? (
+      {visible.length > 0 ? (
         <ul className={styles.list}>
-          {results.map(result => (
+          {visible.map(result => (
             <li className={styles.item} key={result.id} data-selected={result.id === selectedId ? "" : undefined}>
               <Choice
                 kind="radio"

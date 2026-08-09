@@ -8,7 +8,7 @@ const read = (file: string) => fs.readFileSync(path.join(root, file), "utf8");
 test.describe("PKT-RESPONSIVE-DASHBOARD-OPERATIONS-002", () => {
   test("Operations preserves Inspector access without widening capability-only Administrator profiles", () => {
     for (const file of [
-      "src/app/(app)/operations/page.tsx",
+      "src/features/operations/queries.ts",
       "src/app/(app)/operations/live/page.tsx",
     ]) {
       const source = read(file);
@@ -37,7 +37,7 @@ test.describe("PKT-RESPONSIVE-DASHBOARD-OPERATIONS-002", () => {
 
   test("Arabic, RTL, reduced motion and provider-degraded contracts remain explicit", () => {
     const dashboard = read("src/app/(app)/dashboard/DashboardView.tsx");
-    const operations = read("src/app/(app)/operations/page.tsx");
+    const operations = read("src/features/operations/queries.ts");
     const live = read("src/app/(app)/operations/live/LiveOps.tsx");
     const styles = [
       read("src/app/(app)/dashboard/dashboard.module.css"),

@@ -9,7 +9,8 @@ const pkg = fs.readFileSync(path.join(webRoot, "package.json"), "utf8");
 
 test.describe("DEMO-ADMIN-ALIAS-001", () => {
   test("maps only the explicit demo alias to its Supabase email identity", () => {
-    expect(login).toContain('id.toLocaleLowerCase() === "admin1" ? "admin1@mim.gov.sa" : id');
+    expect(login).toContain('/^(admin[1-5]|planner[1-5]|supervisor[1-5]|inspector([1-9]|[12]\\d|30))$/i.exec(id)');
+    expect(login).toContain("testPersonaMatch ? `${testPersonaMatch[0].toLowerCase()}@mim.gov.sa` : id");
     expect(login).toContain("auth.signInWithPassword({");
     expect(login).toContain("email,");
     expect(login).not.toContain("SUPABASE_SERVICE_ROLE_KEY");

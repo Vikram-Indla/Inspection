@@ -109,7 +109,12 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 7 cross-module handoffs", () => {
   });
 
   test("operations KPI buckets span prepared and under_review; queue failures stay isolated", () => {
-    const ts = read(opsPagePath);
+    const ts = [
+      opsPagePath,
+      "apps/web/src/features/operations/queries.ts",
+      "apps/web/src/app/(app)/operations/sections/model.ts",
+      "apps/web/src/app/(app)/operations/sections/operations-overview.tsx",
+    ].map(read).join("\n");
     expect(ts).toContain('"new", "prepared", "on_the_way", "arrived", "executing", "submitted", "under_review"');
     expect(ts).toContain("const counts = Object.fromEntries(states.map");
     // One-source-failure isolation (BR-012 pattern): the Phase 6 returned

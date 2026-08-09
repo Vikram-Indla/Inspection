@@ -104,7 +104,7 @@ test.describe("Landmarks & heading order — inspector, EN Light 1280 only (repr
       await applyState(page, 1280, "en", "light", route);
 
       await expect(page.locator("main, [role=main]")).toHaveCount(1);
-      await expect(page.locator("nav#saqeel-primary-nav, nav[role=navigation]").first()).toBeVisible();
+      await expect(page.getByRole("navigation", { name: "Primary navigation" })).toBeVisible();
 
       const levels = await page.evaluate(() =>
         Array.from(document.querySelectorAll("h1,h2,h3,h4,h5,h6")).map(h => Number(h.tagName[1])),
@@ -119,29 +119,27 @@ test.describe("Landmarks & heading order — inspector, EN Light 1280 only (repr
   }
 });
 
-test.describe("Table horizontal scroll — /dashboard, 720px (representative narrow width)", () => {
-  test("table-wrap contains its table; page root does not gain horizontal scroll", async ({ browser }) => {
+test.describe("Reflow containment — /dashboard, 720px (representative narrow width)", () => {
+  test("every table sits inside its own scroll container; page root does not gain horizontal scroll", async ({ browser }) => {
     const context = await browser.newContext({ storageState: storageStatePath("inspector") });
     const page = await context.newPage();
     await applyState(page, 720, "en", "light", "/dashboard");
-
-    // .table-wrap (saqeel-components.css:221) is the governed scroll-containment
-    // pattern: overflow:auto on the wrapper, so a wide table scrolls inside its
-    // own box rather than blowing out the page (WCAG 1.4.10 Reflow).
-    const wraps = page.locator(".table-wrap");
-    const wrapCount = await wraps.count();
-    expect(wrapCount, "at least one .table-wrap table container on /dashboard").toBeGreaterThan(0);
 
     const root = await page.evaluate(() => ({
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
     }));
     expect(root.overflow, "document root should not scroll horizontally at 720px").toBeLessThanOrEqual(1);
 
-    for (let i = 0; i < wrapCount; i++) {
-      const wrap = wraps.nth(i);
-      const overflowX = await wrap.evaluate(el => getComputedStyle(el).overflowX);
-      expect(["auto", "scroll"], `.table-wrap[${i}] must contain its own overflow`).toContain(overflowX);
-    }
+    const uncontained = await page.evaluate(() =>
+      Array.from(document.querySelectorAll("table")).filter(table => {
+        for (let node = table.parentElement; node; node = node.parentElement) {
+          const overflowX = getComputedStyle(node).overflowX;
+          if (overflowX === "auto" || overflowX === "scroll") return false;
+        }
+        return true;
+      }).map(table => table.className || table.tagName),
+    );
+    expect(uncontained, "tables must scroll inside their own container (WCAG 1.4.10 Reflow)").toEqual([]);
     await context.close();
   });
 });

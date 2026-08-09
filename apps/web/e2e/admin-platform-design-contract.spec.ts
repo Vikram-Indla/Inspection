@@ -15,7 +15,7 @@ test.describe("admin platform design truth contract", () => {
     expect(source).toContain("flagsError");
     expect(source).toContain("endpointsError");
     expect(source).toContain("never shown as zero or empty");
-    expect(source).toContain("We don't claim it's empty.");
+    expect(source).toContain("This source is not available. Records may exist that cannot be shown.");
   });
 
   test("notification creation fails closed when the governed role catalogue is unavailable", () => {

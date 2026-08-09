@@ -18,6 +18,7 @@ import {
   type ShellIcon,
 } from "@/lib/shell-navigation";
 import { initials } from "@/lib/shell-identity";
+import { resolveRegionId, KSA_REGION_LABELS } from "@/lib/ksa-regions";
 
 export type ShellClientNavGroup = {
   id: string;
@@ -75,6 +76,12 @@ export type ShellClientStrings = {
     allTools: string;
     close: string;
     paletteTitle: string;
+    paletteOpen: string;
+    paletteGoTo: string;
+    paletteSearch: string;
+    paletteResultsOne: string;
+    paletteResultsOther: string;
+    paletteEmpty: string;
     noMatch: string;
     hubs: Record<"control" | "people" | "rules" | "planning" | "risk" | "connections" | "governance" | "security", string>;
   };
@@ -100,7 +107,7 @@ const ADMIN_HUB_ITEMS: Record<AdminHubId, string[]> = {
   rules: ["adm-lookup", "adm-survey", "adm-planning-expiry", "adm-planning-lookups", "adm-planning-status", "adm-compliance-requests"],
   risk: ["adm-risk"],
   connections: ["adm-integration", "adm-gis", "adm-gis-spatial"],
-  governance: ["adm-notif", "adm-delegation", "adm-operations", "adm-enforcement-recommendations", "adm-workflows"],
+  governance: ["adm-notif", "adm-delegation", "adm-execution", "adm-operations", "adm-enforcement-recommendations", "adm-workflows"],
   security: ["adm-audit", "adm-access-review", "adm-devices"],
 };
 const ADMIN_HUB_ICON: Record<AdminHubId, ShellIcon> = {
@@ -182,6 +189,11 @@ export default function ShellClient({
   const adminPaletteInputRef = useRef<HTMLInputElement>(null);
   const adminPaletteRestoreRef = useRef<HTMLElement | null>(null);
   const [searchRect, setSearchRect] = useState<{ top: number; left: number; width: number } | null>(null);
+  const regionLabel = (region: string) => {
+    const id = resolveRegionId(region);
+    if (!id) return region;
+    return locale === "ar" ? KSA_REGION_LABELS[id].ar : KSA_REGION_LABELS[id].en;
+  };
   const groupLabel = (group: ShellClientNavGroup) => locale === "ar" ? group.labelAr : group.labelEn;
   const itemLabel = (item: ShellClientNavGroup["items"][number]) => locale === "ar" ? item.labelAr : item.labelEn;
   const itemParentLabel = (item: ShellClientNavGroup["items"][number]) =>
@@ -401,23 +413,15 @@ export default function ShellClient({
     return groups.flatMap(group => group.items).filter(item => item.enabled && itemLabel(item).toLocaleLowerCase(locale).includes(normalized));
   }, [groups, locale, query]);
 
-  const adminPaletteCopy = locale === "ar"
-    ? {
-        open: "فتح أدوات الإدارة",
-        title: "الانتقال إلى أداة إدارية",
-        search: "ابحث في أدوات الإدارة المسموح بها",
-        results: (count: number) => `${count} نتيجة مسموح بها`,
-        empty: "لا توجد أدوات مطابقة",
-        close: "إغلاق",
-      }
-    : {
-        open: "Open admin tools",
-        title: "Go to an admin tool",
-        search: "Search allowed admin tools",
-        results: (count: number) => `${count} allowed ${count === 1 ? "result" : "results"}`,
-        empty: "No matching tools",
-        close: "Close",
-      };
+  const adminPaletteCopy = {
+    open: strings.admin.paletteOpen,
+    title: strings.admin.paletteGoTo,
+    search: strings.admin.paletteSearch,
+    results: (count: number) =>
+      (count === 1 ? strings.admin.paletteResultsOne : strings.admin.paletteResultsOther).replace("{count}", String(count)),
+    empty: strings.admin.paletteEmpty,
+    close: strings.admin.close,
+  };
   const adminPaletteResults = useMemo(() => {
     const normalized = adminPaletteQuery.trim().toLocaleLowerCase(locale);
     return groups
@@ -598,7 +602,7 @@ export default function ShellClient({
               (SAQEEL Brand Identity Proof.dc.html) ships both marks in the
               markup and lets the shared rules decide which one shows:
               wordmark expanded, favicon collapsed, wordmark restored in the
-              mobile drawer. Do not re-add the retired صقيل صناعي lockup. */}
+              mobile drawer. Do not re-add the retired split-subtitle lockup. */}
           {/* The lockup is DOM text, not an <img> wordmark. saqeel web.html
               specifies a 34px mark beside a two-line name — Arabic leading,
               Latin as a spaced eyebrow — and that hierarchy only exists if the
@@ -705,7 +709,7 @@ export default function ShellClient({
                   <select aria-label={strings.regionScope} value={regionScope} disabled={!routeScope.region || !regions.length}
                     onChange={event => { setRegionScope(event.target.value); replaceScope({ region: event.target.value }); }}>
                     <option value="">{strings.allRegions}</option>
-                    {regions.map(region => <option value={region} key={region}>{region}</option>)}
+                    {regions.map(region => <option value={region} key={region}>{regionLabel(region)}</option>)}
                   </select>
                 </label>
             </div> : (

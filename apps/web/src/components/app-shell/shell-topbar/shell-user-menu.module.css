@@ -158,3 +158,9 @@
   outline: none;
   border-color: var(--sqx-border-focus);
 }
+
+@media (max-width: 640px) {
+  .identity {
+    display: none;
+  }
+}

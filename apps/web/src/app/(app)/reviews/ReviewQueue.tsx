@@ -1,92 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-
-export type QueueBadges = {
-  slaLabel: string;
-  slaTone: string;
-  slaState: "on_time" | "overdue" | "none";
-  riskLabel: string;
-  riskTone: string;
-  riskBand: string | null;
-  criticalCount: number;
-  criticalLabel: string;
-  priorityLabel: string | null;
-};
-
-export type ReadinessFact = "present" | "missing" | "verified" | "updated" | "unavailable";
-export type Readiness = {
-  checklist: ReadinessFact;
-  evidence: ReadinessFact;
-  ack: ReadinessFact;
-  factory: ReadinessFact;
-};
-
-export type QueueRow = QueueBadges & {
-  id: string;
-  href: string;
-  factoryName: string;
-  factoryCode: string;
-  inspectorName: string;
-  versionNumber: number | null;
-  submittedDisplay: string;
-  status: string;
-  statusLabel: string;
-  statusTone: string;
-  modeLabel: string;
-  typeLabel: string;
-  readiness: Readiness;
-  readable: boolean;
-  unassigned: boolean;
-};
-
-type FingerprintStrings = {
-  sla: string;
-  slaOverdue: string;
-  slaOnTime: string;
-  slaUnavailable: string;
-  risk: string;
-  critical: string;
-  priority: string;
-  checklist: string;
-  evidence: string;
-  ack: string;
-  factory: string;
-  present: string;
-  missing: string;
-  verified: string;
-  updated: string;
-  unavailable: string;
-  readyBlockTag: string;
-  noEvidenceTitle: string;
-  noEvidenceBody: string;
-  unassignedTitle: string;
-  unassignedBlocked: string;
-};
-
-export type ReviewQueueStrings = {
-  searchPlaceholder: string;
-  searchAria: string;
-  allStatuses: string;
-  allRisks: string;
-  overdueOnly: string;
-  clearFilters: string;
-  showing: string;
-  noMatch: string;
-  noMatchBody: string;
-  colFactory: string;
-  colInspector: string;
-  colTypeMode: string;
-  colVersion: string;
-  colFingerprint: string;
-  colStatus: string;
-  colOpen: string;
-  open: string;
-  openHint: string;
-  fpTitle: string;
-  fpHint: string;
-  fp: FingerprintStrings;
-};
+import type { FingerprintStrings, QueueRow, ReadinessFact, ReviewQueueStrings } from "@/features/reviews/types";
 
 const FACT_GLYPH: Record<ReadinessFact, string> = {
   present: "●",
@@ -203,8 +118,6 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
           <input className="sq-input" value={query} onChange={event => setQuery(event.target.value)}
             placeholder={strings.searchPlaceholder} aria-label={strings.searchAria} />
         </label>
-        {/* CLASS-CONTRACT.md § Review & Approval — fixed 5-option seg
-            (Submitted/In review/Returned/Approved/Rejected), not a dropdown. */}
         <div className="seg" role="group" aria-label={strings.allStatuses}>
           {statusOptions.map(option => (
             <button key={option.value} type="button" className="seg-opt" aria-pressed={status === option.value}

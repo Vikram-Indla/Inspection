@@ -34,12 +34,18 @@
   "scope": {
     "allRegions": "جميع المناطق",
     "today": "اليوم",
+    "yesterday": "أمس",
     "last7Days": "آخر 7 أيام",
     "last30Days": "آخر 30 يوماً",
     "last90Days": "آخر 90 يوماً",
     "lastYear": "آخر سنة",
     "next7Days": "خلال 7 أيام",
-    "next30Days": "خلال 30 يوماً"
+    "next30Days": "خلال 30 يوماً",
+    "previousMonth": "الشهر السابق",
+    "nextMonth": "الشهر التالي",
+    "thisMonth": "هذا الشهر",
+    "thisQuarter": "هذا الربع",
+    "thisYear": "هذه السنة"
   },
   "state": {
     "empty": "لا يوجد شيء بعد",

@@ -110,7 +110,11 @@ async function installSupabaseAuthStubs(page: Page) {
 }
 
 async function requestCode(page: Page, email: string) {
-  await page.getByRole("button", { name: /Forgot your password\?/i }).click();
+  if (!new URL(page.url()).pathname.startsWith("/reset")) {
+    await page.goto("/login");
+    await page.getByRole("link", { name: /Forgot password\?/i }).click();
+    await page.waitForURL(/\/reset/);
+  }
   await page.locator("#email").fill(email);
   await page.getByRole("button", { name: /Send reset code/i }).click();
   await expect(page.locator("#reset-otp")).toBeVisible();

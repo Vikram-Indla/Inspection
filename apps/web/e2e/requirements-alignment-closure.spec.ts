@@ -50,7 +50,19 @@ test.describe("REQ-ALIGNMENT-CLOSURE-IMPLEMENTATION-001 source contract", () => 
     expect(migration).toContain("inspector_window_capacity");
     expect(migration).toContain("trg_apply_planning_assignment_recommendation");
     expect(migration).toContain("'ranked_candidates'");
-    expect(singleAction).toContain('sb.rpc("recommend_planning_inspectors"');
+    expect(singleAction).toContain("p_proposed_inspector_id: proposedInspectorId");
+    expect(singleAction).toContain("not choose an inspector automatically");
+    const supervisionPage = readFileSync(resolve(
+      process.cwd(),
+      "src/app/(app)/planning/supervision/page.tsx",
+    ), "utf8");
+    const availabilityMigration = readFileSync(resolve(
+      process.cwd(),
+      "../../supabase/migrations/20260803220806_insp_715_716_supervision_availability_audit_read.sql",
+    ), "utf8");
+    expect(supervisionPage).toContain('sb.rpc("list_available_supervision_inspectors"');
+    expect(availabilityMigration).toContain("function private.supervision_inspector_is_available(");
+    expect(availabilityMigration).toContain("function public.list_available_supervision_inspectors(");
     expect(migration).toContain("override_planning_assignment_atomic");
     expect(migration).toContain("planning.override_assignment");
     expect(migration).toContain("assignment_override_reason");
@@ -79,10 +91,16 @@ test.describe("REQ-ALIGNMENT-CLOSURE-IMPLEMENTATION-001 source contract", () => 
   });
 
   test("REQ-005/014 retains Immediate as a truthful permissioned exception", () => {
-    expect(planningPage).toContain('title: t("plan.method.single.title", "Plan single visit")');
-    expect(planningPage).not.toContain('"Plan one visit"');
-    expect(planningPage).toContain("separately permissioned urgent visit");
-    expect(planningPage).toContain("remain unverified");
+    const planningStrings = JSON.parse(readFileSync(resolve(
+      process.cwd(),
+      "src/i18n/locales/en/planning.json",
+    ), "utf8")) as { create: { single: { title: string }; immediate: { title: string; desc: string } } };
+    expect(planningStrings.create.single.title).toBe("Single Visit");
+    expect(planningStrings.create.immediate.title).toBe("Immediate Visit");
+    expect(planningStrings.create.immediate.desc).toContain("urgent request");
+    expect(planningStrings.create.immediate.desc).toContain("Supervisor");
+    expect(planningStrings.create.immediate.desc).toContain("the set response time");
+    expect(planningStrings.create.immediate.desc).not.toMatch(/\d+\s*(?:minutes|hours)/);
     expect(planningPage).not.toContain("plan.method.decisionPending");
   });
 

@@ -76,12 +76,15 @@ test.describe("PKT-RESPONSIVE-EXECUTION-FIELD-004 runtime", () => {
       await page.setViewportSize({ width: state.width, height: state.height });
       await page.goto(`/locale?set=${state.locale}`);
       await page.goto("/field");
-      await page.evaluate(theme => localStorage.setItem("saqeel-theme", theme), state.theme);
+      await page.evaluate(theme => {
+        localStorage.setItem("saqeel-theme", theme);
+        localStorage.setItem("saqeel-theme-mode", theme);
+      }, state.theme);
       await page.reload();
       await expect(page.locator('[data-saqeel-migration="unified-execution"]')).toBeVisible();
       await expect(page.locator("html")).toHaveAttribute("dir", state.locale === "ar" ? "rtl" : "ltr");
       await expect(page.locator("html")).toHaveAttribute("data-theme", state.theme);
-      await expect(page.locator("nav#saqeel-primary-nav")).toHaveCount(1);
+      await expect(page.locator("nav#sqx-shell-rail")).toHaveCount(1);
       await expect(page.locator(".field-nav, .pwa-shell-drawer, .pwa-shell-menu")).toHaveCount(0);
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -113,9 +116,12 @@ test.describe("PKT-RESPONSIVE-EXECUTION-FIELD-004 runtime", () => {
       await page.setViewportSize({ width: state.width, height: state.height });
       await page.goto(`/locale?set=${state.locale}`);
       await page.goto("/virtual");
-      await page.evaluate(theme => localStorage.setItem("saqeel-theme", theme), state.theme);
+      await page.evaluate(theme => {
+        localStorage.setItem("saqeel-theme", theme);
+        localStorage.setItem("saqeel-theme-mode", theme);
+      }, state.theme);
       await page.reload();
-      await expect(page.locator("nav#saqeel-primary-nav")).toHaveCount(1);
+      await expect(page.locator("nav#sqx-shell-rail")).toHaveCount(1);
       await expect(page.locator("html")).toHaveAttribute("dir", state.locale === "ar" ? "rtl" : "ltr");
       await expect(page.locator("html")).toHaveAttribute("data-theme", state.theme);
       const overflow = await page.evaluate(

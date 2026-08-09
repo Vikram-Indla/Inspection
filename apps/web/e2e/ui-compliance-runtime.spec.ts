@@ -20,8 +20,11 @@ async function setPresentation(page: Page, locale: "en" | "ar", theme: "light" |
   // ceiling. Pace read-only certification renders so the audit itself does
   // not create an artificial 429; product assertions remain unchanged.
   await page.waitForTimeout(5_000);
-  await page.addInitScript(value => localStorage.setItem("saqeel-theme", value), theme);
-  const port = Number(process.env.UI_COMPLIANCE_PORT ?? 3137);
+  await page.addInitScript(value => {
+    localStorage.setItem("saqeel-theme-mode", value);
+    localStorage.setItem("saqeel-theme", value);
+  }, theme);
+  const port = Number(process.env.PLAYWRIGHT_PORT ?? process.env.UI_COMPLIANCE_PORT ?? 3137);
   await page.context().addCookies([
     { name: "locale", value: locale, url: `http://127.0.0.1:${port}` },
     { name: "login_locale", value: locale, url: `http://127.0.0.1:${port}` },
@@ -57,7 +60,8 @@ for (const journey of journeys) {
       }));
       expect(overflow.html).toBeLessThanOrEqual(1);
       expect(overflow.body).toBeLessThanOrEqual(1);
-      await expect(page.locator('nav[aria-label], main#main-content')).toHaveCount(2);
+      await expect(page.locator("main#main-content")).toHaveCount(1);
+      await expect(page.locator("nav#sqx-shell-rail")).toHaveCount(1);
 
       // Axe's wcag22aa target-size rule evaluates compact checkbox/radio
       // targets together with their spacing exception. This supplemental
@@ -85,16 +89,37 @@ test.describe("shared shell keyboard, RTL and reduced motion", () => {
     const observed: string[] = [];
     for (let index = 0; index < 24; index += 1) {
       await page.keyboard.press("Tab");
+      // chrome controls transition border-color over --sqx-duration-fast;
+      // sample the settled style, not a mid-transition interpolation
+      await page.waitForTimeout(250);
       const state = await page.evaluate(() => {
         const element = document.activeElement as HTMLElement | null;
         if (!element || element === document.body) return null;
         const rect = element.getBoundingClientRect();
         const style = getComputedStyle(element);
+        // The design system marks keyboard focus either with the global token
+        // outline (tokens.css :focus-visible) or, on chrome controls, by
+        // painting the control's own border — or a wrapping field's border —
+        // in --sqx-border-focus. All three are visible affordances; resolve
+        // the token to its computed color so the check stays token-driven.
+        const swatch = document.createElement("div");
+        swatch.style.color = "var(--sqx-border-focus, var(--focus-ring))";
+        document.body.appendChild(swatch);
+        const focusColor = getComputedStyle(swatch).color;
+        swatch.remove();
+        const focusBorder = (candidate: Element | null): boolean => {
+          for (let depth = 0; candidate && depth < 3; candidate = candidate.parentElement, depth += 1) {
+            const candidateStyle = getComputedStyle(candidate);
+            if (candidateStyle.borderTopStyle !== "none" && parseFloat(candidateStyle.borderTopWidth) > 0
+                && candidateStyle.borderTopColor === focusColor) return true;
+          }
+          return false;
+        };
         return {
           tag: element.tagName,
           label: element.getAttribute("aria-label") ?? element.textContent?.trim().slice(0, 60),
           visible: rect.width > 0 && rect.height > 0 && rect.bottom >= 0 && rect.top <= innerHeight && rect.right >= 0 && rect.left <= innerWidth,
-          focusStyle: style.outlineStyle !== "none" || style.boxShadow !== "none",
+          focusStyle: style.outlineStyle !== "none" || style.boxShadow !== "none" || focusBorder(element),
         };
       });
       // Reaching body means the document's finite tab sequence completed.
@@ -111,12 +136,13 @@ test.describe("shared shell keyboard, RTL and reduced motion", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await setPresentation(page, "ar", "dark");
     await page.goto("/planning");
-    const nav = await page.locator("nav.sq-shell__nav").boundingBox();
+    const nav = await page.locator("nav#sqx-shell-rail").boundingBox();
     const main = await page.locator("main#main-content").boundingBox();
     expect(nav).not.toBeNull();
     expect(main).not.toBeNull();
     expect(nav?.x ?? 0).toBeGreaterThan(main?.x ?? 0);
     const animated = await page.locator("*").evaluateAll(elements => elements.filter(element => {
+      if (element.getClientRects().length === 0) return false;
       const style = getComputedStyle(element);
       return style.animationName !== "none" && style.animationDuration !== "0s";
     }).slice(0, 20).map(element => ({ tag: element.tagName, className: element.className, animation: getComputedStyle(element).animationName })));

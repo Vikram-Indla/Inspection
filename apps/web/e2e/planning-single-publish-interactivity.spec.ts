@@ -18,7 +18,7 @@ test("Planning Single keeps Publish interactive while Mapbox remains opt-in", as
   await identifierField(page).fill(PERSONAS.planner.email);
   await passwordField(page).fill(PERSONAS.planner.password);
   await submitCredentials(page);
-  await page.waitForURL(url => url.pathname === "/dashboard");
+  await page.waitForURL(url => url.pathname.replace(/^\/(en|ar)(?=\/|$)/, "") === "/dashboard");
   await page.goto("/planning/single");
 
   await page.getByPlaceholder(/CR number|Industrial License/i).fill(factory.factory_code);

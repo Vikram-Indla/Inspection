@@ -55,7 +55,7 @@ export default async function Localization() {
             ),
           )}
         >
-          <a className="btn btn-secondary sq-link btn-touch" href="/launch" aria-label={copy("Return to my workspace", "العودة إلى مساحة عملي")}>
+          <a className="btn btn-secondary sq-link btn-touch" href="/launch" aria-label={copy("Return to my area", "العودة إلى القسم المخصص لي")}>
             {t("admin.unauthorized.return", copy("Return to my area", "العودة إلى القسم المخصص لي"))}
           </a>
         </EmptyState>

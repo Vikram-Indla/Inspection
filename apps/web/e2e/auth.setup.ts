@@ -1,6 +1,19 @@
 import { test as setup, expect } from "@playwright/test";
+import { existsSync, statSync } from "node:fs";
 import { PERSONAS, storageStatePath, type PersonaKey } from "./personas";
 import { waitForCredentialsForm, submitCredentials, identifierField, passwordField } from "./login-helper";
+
+const withoutLocale = (pathname: string) => pathname.replace(/^\/(en|ar)(?=\/|$)/, "") || "/";
+
+// Supabase throttles repeated password grants from one IP. Re-authenticating
+// all six personas on every spec invocation trips that limit and fails setup
+// spuriously, so a storage state captured within the last 30 minutes is
+// reused instead of re-earned. Delete playwright/.auth to force fresh logins.
+const REUSE_WINDOW_MS = 30 * 60 * 1000;
+const hasFreshState = (key: PersonaKey) => {
+  const path = storageStatePath(key);
+  return existsSync(path) && Date.now() - statSync(path).mtimeMs < REUSE_WINDOW_MS;
+};
 
 // Signs each persona in through the real /login UI (SCR-PUB-010) and captures
 // storage state so specs start authenticated. Every governed role now lands on
@@ -9,6 +22,8 @@ import { waitForCredentialsForm, submitCredentials, identifierField, passwordFie
 for (const key of Object.keys(PERSONAS) as PersonaKey[]) {
   const p = PERSONAS[key];
   setup(`authenticate ${key}`, async ({ page }) => {
+    setup.setTimeout(180_000);
+    setup.skip(hasFreshState(key), "reusing storage state captured within the last 30 minutes");
     page.on("pageerror", error => console.error(`[browser:${key}] ${error.message}`));
     page.on("console", message => { if (message.type() === "error") console.error(`[browser:${key}] ${message.text()}`); });
     await page.goto("/login");
@@ -17,18 +32,23 @@ for (const key of Object.keys(PERSONAS) as PersonaKey[]) {
     await passwordField(page).fill(p.password);
     await submitCredentials(page);
     // /launch verifies identity and reads the user's live role grants before it
-    // redirects. Keep one deterministic attempt, but allow the remote identity
-    // and role lookups enough time under release-suite load.
-    await page.waitForURL((url) => (
-      url.pathname.startsWith(p.home) ||
-      url.pathname.startsWith("/dashboard")
-    ), { timeout: 40_000 });
+    // redirects. Allow the remote identity and role lookups enough time under
+    // release-suite load and dev-server on-demand compilation, and retry the
+    // redirect wait once from /launch before failing.
+    const arrived = (url: URL) => (
+      withoutLocale(url.pathname).startsWith(p.home) ||
+      withoutLocale(url.pathname).startsWith("/dashboard")
+    );
+    await page.waitForURL(arrived, { timeout: 60_000 }).catch(async () => {
+      await page.goto("/launch");
+      await page.waitForURL(arrived, { timeout: 60_000 });
+    });
     // Dashboard arrival proves the shared post-login route, not the role's
     // operational content. Prove that content remains authorized before
     // persisting the same authenticated session.
-    if (!new URL(page.url()).pathname.startsWith(p.home)) {
+    if (!withoutLocale(new URL(page.url()).pathname).startsWith(p.home)) {
       await page.goto(p.home);
-      await page.waitForURL((url) => url.pathname.startsWith(p.home));
+      await page.waitForURL((url) => withoutLocale(url.pathname).startsWith(p.home));
     }
     await expect(page.locator("body")).not.toContainText("ERR-AUTH");
     // The product correctly defaults a fresh session to Arabic (covered by the

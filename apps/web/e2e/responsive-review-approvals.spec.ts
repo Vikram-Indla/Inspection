@@ -25,11 +25,14 @@ async function applyState(
   await page.setViewportSize({ width: state.width, height: state.height });
   await page.goto(`/locale?set=${state.locale}`);
   await page.goto(route);
-  await page.evaluate(theme => localStorage.setItem("saqeel-theme", theme), state.theme);
+  await page.evaluate(theme => {
+    localStorage.setItem("saqeel-theme-mode", theme);
+    localStorage.setItem("saqeel-theme", theme);
+  }, state.theme);
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("dir", state.locale === "ar" ? "rtl" : "ltr");
   await expect(page.locator("html")).toHaveAttribute("data-theme", state.theme);
-  await expect(page.locator("nav#saqeel-primary-nav")).toHaveCount(1);
+  await expect(page.locator("nav#sqx-shell-rail")).toHaveCount(1);
 }
 
 async function expectNoRootOverflow(page: Page, label: string) {
@@ -46,36 +49,47 @@ async function expectNoRootOverflow(page: Page, label: string) {
 test.describe("PKT-RESPONSIVE-REVIEW-APPROVALS-005 source contracts", () => {
   test("queue and decision authority stay fail-closed and capability-specific", () => {
     const queue = source("src/app/(app)/reviews/page.tsx");
+    const access = source("src/features/reviews/access.ts");
     const workspace = source("src/app/(app)/reviews/[id]/page.tsx");
     const actions = source("src/app/(app)/reviews/[id]/actions.ts");
 
-    expect(queue).toContain('roles.has("reviewer") || roles.has("ops")');
-    expect(queue).not.toMatch(/roles\.has\("(?:admin|compliance_admin)"\)/);
-    expect(workspace).toContain('r.role_key === "reviewer" || r.role_key === "ops"');
-    expect(workspace).not.toMatch(/canDecide[\s\S]{0,180}(?:admin|compliance_admin)/);
+    // The queue gate is the governed allow-list (RBAC-011): supervisor/admin/
+    // planner coordinate; inspectors pass RLS-limited to their own work.
+    expect(queue).toContain("if (!hasQueueAccess(roleRows))");
+    expect(access).toContain('const QUEUE_ROLES = ["supervisor", "admin", "planner", "inspector"]');
+    // Decision capability stays with supervisor (Level 2 Reviewer) and admin
+    // only — read-admitted planner/inspector never gain it.
+    expect(workspace).toContain('const canDecide = !!user && (roleRows ?? []).some(r => r.role_key === "supervisor" || r.role_key === "admin")');
+    expect(workspace).not.toMatch(/canDecide[^\n]*(?:planner|inspector)/);
     expect(actions).toContain('const validDecisions = ["approve", "return", "reject"]');
     expect(actions).toContain("validSectionKeys");
     expect(actions).toContain("invalidSections.length > 0");
-    expect(actions).toMatch(/\.eq\("status", "under_review"\)\.is\("decided_at", null\)/);
-    expect(`${queue}\n${workspace}\n${actions}`).not.toMatch(/service_role|SUPABASE_SERVICE|bypassRls/i);
+    expect(actions).toContain('if (current.decided_at || current.status !== "under_review")');
+    expect(`${queue}\n${access}\n${workspace}\n${actions}`).not.toMatch(/service_role|SUPABASE_SERVICE|bypassRls/i);
   });
 
   test("opening remains read-only and exact-scope decisions remain explicit and immutable", () => {
     const workspace = source("src/app/(app)/reviews/[id]/page.tsx");
     const actions = source("src/app/(app)/reviews/[id]/actions.ts");
     const compare = source("src/app/(app)/reviews/[id]/VersionCompare.tsx");
+    const rpcs = readFileSync(join(process.cwd(), "../..", "supabase/migrations/20260729004841_execution_supervisor_review_authority.sql"), "utf8");
 
     expect(workspace).toContain("opening is read-only");
     expect(workspace).not.toMatch(/from\("reviews"\)\s*\.insert/);
     expect(workspace).toContain("<StartReview");
     expect(actions).toContain("export async function startReview");
-    expect(actions).toMatch(/from\("reviews"\)\.insert/);
+    // the review-create + under_review transition lives in the canonical
+    // start_review transaction, never as a direct insert from the action
+    expect(actions).not.toMatch(/from\("reviews"\)\s*\.insert/);
+    expect(actions).toContain('sb.rpc("start_review"');
+    expect(rpcs).toContain("insert into public.reviews(");
+    expect(rpcs).toMatch(/set status = 'under_review'/);
     expect(compare).toMatch(/returnedScope\.includes\(sect\.key\)\s*\?\s*"expected"\s*:\s*"unexpected"/);
     expect(compare).toContain("Comparison is navigation-only");
   });
 
   test("review surfaces declare bounded responsive containment and reduced motion", () => {
-    const queue = source("src/app/(app)/reviews/page.tsx");
+    const queue = source("src/app/(app)/reviews/QueueScreen.tsx");
     const workspace = source("src/app/(app)/reviews/[id]/page.tsx");
     const css = source("src/app/(app)/reviews/responsive.module.css");
 
@@ -116,16 +130,21 @@ test.describe("PKT-RESPONSIVE-REVIEW-APPROVALS-005 runtime", () => {
 
     for (const state of matrix) {
       await applyState(page, state, workspacePath!);
-      await expect(page.locator('[data-saqeel-screen="SCR-WEB-310"]')).toBeVisible();
-      await expect(page.getByText(/Read-only submitted version|نسخة مُقدَّمة للاطّلاع فقط/i)).toBeVisible();
+      await expect(page.locator('[data-saqeel-screen="SCR-WEB-310"]')).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByText(/Read-only submitted version|الإصدار النهائي المُقدَّم/i)).toBeVisible({ timeout: 30_000 });
       await expect(page.getByRole("heading", { name: /Finding trace chain|سلسلة تتبع/i })).toBeVisible();
+      await page.getByRole("tab", { name: /Version comparison|مقارنة/i }).click();
       await expect(page.getByRole("heading", { name: /Tamper-evident Scope Rail|شريط النطاق الكاشف للتلاعب/i })).toBeVisible();
       await expectNoRootOverflow(page, `${state.width}px workspace ${state.locale}/${state.theme}`);
     }
     await context.close();
   });
 
-  test("Inspector and generic Administrator cannot obtain queue or workspace authority", async ({ browser }) => {
+  test("Read-admitted personas without decision capability never obtain decision authority", async ({ browser }) => {
+    // Governed model (RBAC-011): inspector and planner pass the queue gate
+    // RLS-limited, but decision capability belongs to supervisor/admin only.
+    // Their workspace view must stay read-only — no Start review, no decision
+    // radiogroup, no reason box — with the explicit read-only note rendered.
     const reviewerContext = await browser.newContext({ storageState: storageStatePath("reviewer") });
     const reviewerPage = await reviewerContext.newPage();
     await reviewerPage.goto("/reviews");
@@ -133,7 +152,7 @@ test.describe("PKT-RESPONSIVE-REVIEW-APPROVALS-005 runtime", () => {
     await reviewerContext.close();
     test.skip(!workspacePath, "no reviewer workspace row in this environment");
 
-    for (const persona of ["inspector", "admin"] as const) {
+    for (const persona of ["inspector", "planner"] as const) {
       const context = await browser.newContext({ storageState: storageStatePath(persona) });
       const page = await context.newPage();
       await page.goto("/locale?set=en");
@@ -144,11 +163,17 @@ test.describe("PKT-RESPONSIVE-REVIEW-APPROVALS-005 runtime", () => {
         await context.close();
         continue;
       }
-      await expect(page.getByRole("heading", { name: /don’t have access to the review queue/i })).toBeVisible();
-      await expect(page.locator('[data-saqeel-migration="review-approvals"]')).toHaveCount(0);
+      await expect(page.locator('input[name="decision"], textarea[name="reason"]')).toHaveCount(0);
       await page.goto(workspacePath!);
-      await expect(page.getByRole("heading", { level: 3, name: /don’t have access to this review/i })).toBeVisible();
-      await expect(page.locator('[data-saqeel-migration="review-approvals"]')).toHaveCount(0);
+      // RLS keeps this reviewer-owned record out of the persona's scope, so
+      // the honest outcomes are the unauthorized block, the not-found/outside-
+      // scope state, or the read-only workspace — never a decision surface.
+      const unauthorized = await page.getByRole("heading", { name: /don’t have access to this review/i }).count();
+      const outsideScope = await page.getByText(/not found|outside your (review|permitted) scope|could not load/i).count();
+      const readOnly = await page.getByText(/Read-only for this role/i).count();
+      expect(unauthorized + outsideScope + readOnly).toBeGreaterThan(0);
+      await expect(page.getByRole("button", { name: /^start review$/i })).toHaveCount(0);
+      await expect(page.locator('input[name="decision"], textarea[name="reason"]')).toHaveCount(0);
       await context.close();
     }
   });

@@ -79,6 +79,25 @@ const ALIASES: Record<KsaRegionId, string[]> = {
   northern: ["northern", "northern borders", "northern border", "northern region", "al hudud ash shamaliyah", "hudud ash shamaliyah", "الحدود الشمالية"],
 };
 
+// Static bilingual labels for the same 13 canonical ids, for surfaces that
+// need a localized region name synchronously (server-rendered filter
+// dropdowns) rather than the async GeoJSON feature properties.
+export const KSA_REGION_LABELS: Record<KsaRegionId, { en: string; ar: string }> = {
+  riyadh: { en: "Riyadh", ar: "الرياض" },
+  makkah: { en: "Makkah", ar: "مكة المكرمة" },
+  madinah: { en: "Madinah", ar: "المدينة المنورة" },
+  eastern: { en: "Eastern Province", ar: "المنطقة الشرقية" },
+  asir: { en: "Asir", ar: "عسير" },
+  tabuk: { en: "Tabuk", ar: "تبوك" },
+  hail: { en: "Hail", ar: "حائل" },
+  qassim: { en: "Qassim", ar: "القصيم" },
+  jazan: { en: "Jazan", ar: "جازان" },
+  najran: { en: "Najran", ar: "نجران" },
+  bahah: { en: "Al Bahah", ar: "الباحة" },
+  jawf: { en: "Al Jawf", ar: "الجوف" },
+  northern: { en: "Northern Borders", ar: "الحدود الشمالية" },
+};
+
 const ALIAS_INDEX: Map<string, KsaRegionId> = new Map();
 for (const [id, names] of Object.entries(ALIASES) as [KsaRegionId, string[]][]) {
   ALIAS_INDEX.set(id, id); // the canonical id itself resolves

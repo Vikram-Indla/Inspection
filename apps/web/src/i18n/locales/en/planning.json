@@ -26,11 +26,20 @@
     "singleTitle": "Plan a single visit",
     "singleDesc": "Choose one registered factory by CR or Industrial License and create one visit.",
     "immediateTitle": "Create an urgent visit",
-    "immediateDesc": "Submit an urgent request for one registered factory. A Supervisor assigns and releases it within the set response time."
+    "immediateDesc": "Submit an urgent request for one registered factory. A Supervisor assigns and releases it within the set response time.",
+    "bulk": "Bulk",
+    "single": "Single",
+    "immediate": "Immediate"
   },
   "tabs": {
     "all": "All",
-    "pendingSupervision": "Awaiting Supervisor"
+    "pendingSupervision": "Awaiting Supervisor",
+    "draft": "Draft",
+    "pending_supervision": "Awaiting Supervisor",
+    "published": "Published",
+    "returned": "Returned",
+    "cancelled": "Cancelled",
+    "expired": "Expired"
   },
   "actions": {
     "export": "Export (CSV)",
@@ -67,7 +76,26 @@
     "colSourceChannel": "Source Channel",
     "colReturnStatus": "Return Status",
     "colBulkPlanRef": "Bulk Plan Reference",
-    "colLastUpdate": "Last Update"
+    "colLastUpdate": "Last Update",
+    "columns": {
+      "select": "Select",
+      "visitId": "Visit ID",
+      "factory": "Factory",
+      "cr": "CR",
+      "license": "License",
+      "authority": "Authority",
+      "visitType": "Visit Type",
+      "window": "Planning Window",
+      "inspector": "Inspector",
+      "risk": "Risk",
+      "priority": "Priority",
+      "aiScore": "AI Score",
+      "status": "Status",
+      "lastUpdated": "Last Updated"
+    },
+    "selectAll": "Select all visits on this page",
+    "selectRow": "Select {ref}",
+    "openRow": "Open details for {ref}"
   },
   "list": {
     "emptyTitle": "No visits match",
@@ -132,7 +160,19 @@
     "quickReviewDraft": "Review draft visits",
     "quickAwaitingSupervisor": "Review visits awaiting supervisor",
     "quickWeeklyPlan": "Build a bulk plan",
-    "quickCreateVisit": "Create a visit"
+    "quickCreateVisit": "Create a visit",
+    "aria": "Planning assistant",
+    "insightsEmptyTitle": "Not configured",
+    "insightsEmptyBody": "AI insights are not configured for this workspace.",
+    "quickTitle": "Quick Actions",
+    "quick": {
+      "planBulk": "Plan multiple visits",
+      "planSingle": "Plan one visit",
+      "planImmediate": "Create an urgent visit",
+      "reviewReturned": "Review returned visits",
+      "reviewDrafts": "Review draft visits",
+      "visitManagement": "Visit management"
+    }
   },
   "stats": {
     "groupLabel": "Planning counts — select one to filter the list",
@@ -360,6 +400,157 @@
       "reference_asc": "Visit reference",
       "status_asc": "Planning status"
     }
+  },
+  "title": "Planning",
+  "denied": {
+    "unauthorizedTitle": "Authorized role required",
+    "unauthorizedBody": "Only planning staff can use Visit Planning.",
+    "unavailableTitle": "Planning data not available",
+    "unavailableBody": "We couldn't check your access to Planning. Nothing was created or changed. Try again once access is fixed."
+  },
+  "header": {
+    "actionsAria": "Planning page actions",
+    "refresh": "Refresh",
+    "refreshing": "Refreshing…",
+    "export": "Export (CSV)",
+    "exporting": "Exporting…",
+    "exportUnauthorized": "Your account can't export this.",
+    "exportUnavailable": "Export failed — nothing was downloaded. Try again.",
+    "exportCapped": "Exported the first {n} matching rows — refine the filters for the rest."
+  },
+  "savedViews": {
+    "label": "Saved Views",
+    "saveCurrent": "Save current view",
+    "nameTitle": "Name this view",
+    "nameLabel": "View name",
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close",
+    "empty": "No saved views yet.",
+    "deleteLabel": "Delete saved view {name}"
+  },
+  "create": {
+    "button": "Create Visit",
+    "menuLabel": "Create visit methods",
+    "single": {
+      "title": "Single Visit",
+      "desc": "Choose one registered factory by CR or Industrial License and create one visit."
+    },
+    "bulk": {
+      "title": "Bulk Planning",
+      "desc": "Use AND/OR criteria over the factory list to create many visits under one plan."
+    },
+    "immediate": {
+      "title": "Immediate Visit",
+      "desc": "Submit an urgent request for one registered factory. A Supervisor assigns and releases it within the set response time."
+    }
+  },
+  "buckets": {
+    "aria": "Planning buckets",
+    "needsPlanning": "Needs Planning",
+    "highRisk": "High Risk",
+    "draft": "Draft",
+    "returned": "Returned",
+    "published": "Published",
+    "expiring": "Expiring",
+    "expired": "Expired",
+    "aiSuggested": "AI Suggested",
+    "notConfigured": "Not configured"
+  },
+  "toolbar": {
+    "label": "Planning filters",
+    "searchLabel": "Search",
+    "searchPlaceholder": "Search factory or visit ID…",
+    "status": "Status",
+    "visitType": "Visit Type",
+    "priority": "Priority",
+    "inspector": "Inspector",
+    "allInspectors": "All inspectors",
+    "allOption": "All",
+    "moreFilters": "More Filters",
+    "method": "Planning type",
+    "region": "Region",
+    "city": "City",
+    "windowFrom": "Window from",
+    "windowTo": "Window to",
+    "sortLabel": "Sort",
+    "sort": {
+      "created_desc": "Created — newest first",
+      "created_asc": "Created — oldest first",
+      "window_asc": "Window — earliest first",
+      "window_desc": "Window — latest first",
+      "reference_asc": "Visit reference",
+      "status_asc": "Planning status"
+    },
+    "apply": "Apply",
+    "clearAll": "Clear all"
+  },
+  "emptyStates": {
+    "filteredTitle": "No visits match",
+    "filteredBody": "No visits match the scoped search and filters. Clear them to see everything in your scope.",
+    "noneTitle": "No visits are currently displayable",
+    "noneWithTotal": "{total} records exist in your scope, but none matched this page. Some may be excluded by governed data rules, or the list may need a moment under load — refresh to check again.",
+    "noneBody": "No visits are in your scope yet."
+  },
+  "bulkBar": {
+    "selected": "{n} selected",
+    "clear": "Clear selection",
+    "notConfigured": "Bulk publish, assign and cancel are not configured."
+  },
+  "drawer": {
+    "close": "Close",
+    "openVisit": "Open visit",
+    "groups": {
+      "factory": "Factory Summary",
+      "planning": "Planning Information",
+      "inspector": "Assigned Inspector",
+      "timeline": "Planning Timeline",
+      "ai": "AI Explanation"
+    },
+    "fields": {
+      "cr": "CR",
+      "license": "License",
+      "authority": "Authority",
+      "risk": "Risk",
+      "visitType": "Visit Type",
+      "window": "Planning Window",
+      "status": "Status",
+      "lastUpdated": "Last Updated",
+      "inspector": "Inspector",
+      "created": "Created",
+      "statusChanged": "Status Changed",
+      "aiScore": "AI Score"
+    },
+    "notConfigured": "Not configured"
+  },
+  "pagination": {
+    "summary": "Showing {shown} of {total} scoped visits · page {page} of {pages}",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "drafts": {
+    "heading": "Draft plans — continue where you left off",
+    "columns": {
+      "ref": "Plan Reference",
+      "type": "Planning Type",
+      "status": "Planning Status",
+      "createdBy": "Created By",
+      "created": "Created Date",
+      "continue": "Continue",
+      "discard": "Discard"
+    },
+    "statusDraft": "Draft",
+    "continue": "Continue",
+    "discard": "Discard",
+    "discardAria": "Discard draft {ref}",
+    "emptyTitle": "No draft plans"
+  },
+  "related": {
+    "aria": "Related planning workspaces",
+    "plans": "Visit plans — status, child visits and progress",
+    "tasks": "Tasks — assigned, in progress and completed",
+    "supervision": "Supervisor queue — confirm Inspector and release submitted visits",
+    "visits": "Visit management — bulk actions and lenses over the same visits"
   },
   "single": {
     "loading": "Loading the single-visit planner…"

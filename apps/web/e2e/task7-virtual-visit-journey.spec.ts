@@ -9,7 +9,10 @@ import { signAndConfirm } from "./sign-helper";
 // TASK 7 — Virtual Visit End-to-End Journey (dataset "UAT-S07").
 //
 // Governed non-production identities only (scripts/test-data/provision_governed_uat_identities.mjs,
-// SAQEEL_CROSS_ROLE_PASSWORD): planner4@mim.gov.sa / supervisor2@mim.gov.sa / inspector6@mim.gov.sa.
+// SAQEEL_CROSS_ROLE_PASSWORD): planner4@mim.gov.sa / supervisor4@mim.gov.sa / inspector4@mim.gov.sa
+// — one Madinah cohort throughout, because every visit read is region-scoped
+// fail-closed (planning_closure_factory_in_scope), so a cross-region actor
+// sees "Visit not found", not the fixture.
 //
 // Exercises the full virtual-visit lifecycle end to end:
 //   P1  Planner  — virtual scheduling (M05-002) on a published virtual visit.
@@ -73,8 +76,8 @@ function governedSecret(): string {
 }
 
 const PLANNER = { email: "planner4@mim.gov.sa", get password() { return governedSecret(); } };
-const SUPERVISOR = { email: "supervisor2@mim.gov.sa", get password() { return governedSecret(); } };
-const INSPECTOR = { email: "inspector6@mim.gov.sa", get password() { return governedSecret(); } };
+const SUPERVISOR = { email: "supervisor4@mim.gov.sa", get password() { return governedSecret(); } };
+const INSPECTOR = { email: "inspector4@mim.gov.sa", get password() { return governedSecret(); } };
 
 const evidenceDir = evidenceDirectory("task7-virtual-visit-e2e-journey");
 
@@ -90,8 +93,8 @@ async function uiLogin(
   await identifierField(page).fill(persona.email);
   await passwordField(page).fill(persona.password);
   await submitCredentials(page);
-  await page.waitForURL(url => url.pathname === "/dashboard", { timeout: LOGIN_TIMEOUT });
-  await expect(page.locator("#role-dashboard-summary")).toBeVisible({ timeout: LOGIN_TIMEOUT });
+  await page.waitForURL(url => url.pathname.replace(/^\/(en|ar)(?=\/|$)/, "") === "/dashboard", { timeout: LOGIN_TIMEOUT });
+  await expect(page.locator("#dashboard-role-summary")).toBeVisible({ timeout: LOGIN_TIMEOUT });
   await expect(page.locator("main")).not.toContainText("ERR-AUTH", { timeout: LOGIN_TIMEOUT });
   return { ctx, page };
 }
@@ -266,7 +269,7 @@ test(`${DATASET_ID} P3 · Inspector runs the room — join, OTP verify (no bypas
   const { ctx, page } = await uiLogin(browser, INSPECTOR, IPAD_VIEWPORT);
   try {
     await page.goto(`/virtual/${sessionId}`);
-    const repRow = page.locator(".cd-plist .cd-prow", { hasText: `${DATASET_ID} Factory Rep` });
+    const repRow = page.locator(".cd-idrow", { hasText: `${DATASET_ID} Factory Rep` });
     await expect(repRow).toBeVisible({ timeout: 15_000 });
     await page.screenshot({ path: `${evidenceDir}/p3-waiting-room.png`, fullPage: true });
 
@@ -418,11 +421,11 @@ test(`${DATASET_ID} P6 · Notifications and dashboard reflect the closed loop`, 
   const { ctx: supervisorCtx, page: supervisorPage } = await uiLogin(browser, SUPERVISOR, { width: 1280, height: 900 });
   try {
     await plannerPage.goto("/dashboard");
-    await expect(plannerPage.locator("#role-dashboard-summary")).toBeVisible({ timeout: 15_000 });
+    await expect(plannerPage.locator("#dashboard-role-summary")).toBeVisible({ timeout: 15_000 });
     await plannerPage.screenshot({ path: `${evidenceDir}/p6-planner-dashboard.png`, fullPage: true });
 
     await supervisorPage.goto("/dashboard");
-    await expect(supervisorPage.locator("#role-dashboard-summary")).toBeVisible({ timeout: 15_000 });
+    await expect(supervisorPage.locator("#dashboard-role-summary")).toBeVisible({ timeout: 15_000 });
     await supervisorPage.screenshot({ path: `${evidenceDir}/p6-supervisor-dashboard.png`, fullPage: true });
   } finally {
     await plannerCtx.close();

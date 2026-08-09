@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { expect, test, type Page } from "@playwright/test";
 import { login, rest, must } from "./live-rest";
+import { optionalSetting } from "./personas";
 import { identifierField, passwordField, submitCredentials, waitForCredentialsForm } from "./login-helper";
 import { signAndConfirm } from "./sign-helper";
 
@@ -39,7 +40,7 @@ const RUN_SALT = randomUUID();
 const FACTORY_PREFIX = `T10-${RUN_SALT.slice(0, 8).toUpperCase()}`;
 
 function primaryCohortPassword(persona: string): string {
-  const value = process.env.SAQEEL_UAT_PASSWORD?.trim() || process.env.SAQEEL_CROSS_ROLE_PASSWORD?.trim();
+  const value = optionalSetting("SAQEEL_UAT_PASSWORD") ?? optionalSetting("SAQEEL_CROSS_ROLE_PASSWORD");
   if (!value) {
     throw new Error(
       `TASK 10 requires the governed primary-cohort secret (SAQEEL_UAT_PASSWORD or ` +
@@ -48,13 +49,7 @@ function primaryCohortPassword(persona: string): string {
   }
   return value;
 }
-function inspectorPassword(persona: string): string {
-  const value = process.env.SAQEEL_TEST_PASSWORD?.trim();
-  if (value === undefined) {
-    throw new Error(`TASK 10 requires SAQEEL_TEST_PASSWORD in the local test environment to authenticate "${persona}".`);
-  }
-  return value;
-}
+const inspectorPassword = primaryCohortPassword;
 
 type RpcPayload = {
   p_request_id: string; p_actor_mode: "planner"; p_existing_factory_id: string;
@@ -133,7 +128,7 @@ async function uiLogin(page: Page, email: string, password: string, expectedHome
   await identifierField(page).fill(email);
   await passwordField(page).fill(password);
   await submitCredentials(page);
-  await page.waitForURL(url => expectedHome.test(url.pathname), { timeout: 20_000 });
+  await page.waitForURL(url => expectedHome.test(url.pathname.replace(/^\/(en|ar)(?=\/|$)/, "")), { timeout: 20_000 });
 }
 
 let planner: { jwt: string; userId: string };

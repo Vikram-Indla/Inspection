@@ -90,7 +90,10 @@
     "sourceViolation": "المخالفة المصدر",
     "openFactory": "فتح ملف المنشأة 360",
     "absent": "غير مسجَّل",
-    "due": "الاستحقاق {date}"
+    "due": "الاستحقاق {date}",
+    "recordedBy": "سجّلها",
+    "timeline": "الخط الزمني",
+    "started": "تاريخ البدء"
   },
   "catalogue": {
     "modeLabel": "عرض الكتالوج",

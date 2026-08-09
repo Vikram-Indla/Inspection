@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { evidenceDirectory } from "../evidence-path";
+import { optionalSetting } from "../personas";
 import { waitForCredentialsForm, identifierField, passwordField, submitCredentials } from "../login-helper";
 
 // TASK-INSPECTOR-RESPONSIVE-ACCEPTANCE-001 — baseline sweep of every other
@@ -12,7 +13,7 @@ import { waitForCredentialsForm, identifierField, passwordField, submitCredentia
 // Credentials/data match scripts/test-data/local_test_data_seed.sql.
 const INSPECTOR_EMAIL = "inspector3@mim.gov.sa";
 const requireUatSecret = (): string => {
-  const value = process.env.SAQEEL_UAT_PASSWORD?.trim() || process.env.SAQEEL_CROSS_ROLE_PASSWORD?.trim();
+  const value = optionalSetting("SAQEEL_UAT_PASSWORD") ?? optionalSetting("SAQEEL_CROSS_ROLE_PASSWORD");
   if (!value) throw new Error("The governed primary-cohort secret reference is required for the UAT Inspector");
   return value;
 };
@@ -81,7 +82,7 @@ async function loginInspector3(page: import("@playwright/test").Page, width: num
   await identifierField(page).fill(INSPECTOR_EMAIL);
   await passwordField(page).fill(requireUatSecret());
   await submitCredentials(page);
-  await page.waitForURL((url) => url.pathname === "/dashboard", { timeout: 45_000 });
+  await page.waitForURL((url) => url.pathname.replace(/^\/(en|ar)(?=\/|$)/, "") === "/dashboard", { timeout: 45_000 });
 }
 
 async function sweepRoutes(
@@ -99,7 +100,14 @@ async function sweepRoutes(
 
   const failures: string[] = [];
   for (const route of ROUTES_INSPECTOR3) {
-    const response = await page.goto(route.path, { waitUntil: "domcontentloaded" }).catch(() => null);
+    // Dev-mode first-hit compiles intermittently answer 500 once and recover on
+    // the next navigation (same flake offline-drill.spec.ts retries around), so
+    // a failed load gets one bounded retry before it is recorded as a crash.
+    const navigate = () => page.goto(route.path, { waitUntil: "domcontentloaded" }).catch(() => null);
+    const firstResponse = await navigate();
+    const response = (firstResponse?.status() ?? 0) >= 500
+      ? await page.waitForTimeout(1_500).then(navigate)
+      : firstResponse;
     await page.waitForTimeout(600); // let client components settle
     if (variant.theme === "dark") {
       // Client-side navigations can drop the manually-set attribute; reassert per route.

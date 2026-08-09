@@ -14,15 +14,17 @@ test.describe("WA-P1-M2-BATCH-001 source and security", () => {
       "src/app/(app)/planning/visits/[id]/page.tsx",
     ]) {
       const text = source(file);
-      expect(text).toContain("getPlanningAccess");
+      expect(text).toMatch(/getPlanningAccess|getPlanningReadContract/);
       expect(text).not.toContain("SAQEEL_M2_PREVIEW");
       expect(text).not.toContain("wa_preview");
       expect(text).not.toMatch(/service_role|SUPABASE_SERVICE|bypassRls|mockVisit/i);
     }
     const listRoute = source("src/app/(app)/planning/visits/page.tsx");
-    expect(listRoute.indexOf('access.accessClass !== "business_staff"')).toBeLessThan(listRoute.indexOf("return Visits("));
+    expect(listRoute.indexOf('!["business_staff", "admin"].includes(access.accessClass)')).toBeGreaterThan(0);
+    expect(listRoute.indexOf('access.can("planning.view")')).toBeLessThan(listRoute.indexOf("return Visits("));
     const detailRoute = source("src/app/(app)/planning/visits/[id]/page.tsx");
-    expect(detailRoute.indexOf('access.accessClass !== "business_staff"')).toBeLessThan(detailRoute.indexOf("return VisitDetail("));
+    expect(detailRoute.indexOf("getPlanningReadContract")).toBeGreaterThan(0);
+    expect(detailRoute.indexOf("!contract.ok")).toBeLessThan(detailRoute.indexOf("return VisitDetail("));
     expect(source("src/app/(app)/visits/[id]/page.tsx")).toContain('.from("audit_events")');
     expect(source("src/app/(app)/visits/[id]/page.tsx")).toContain("DualStateRibbon");
   });
@@ -36,17 +38,19 @@ test.describe("WA-P1-M2-BATCH-001 planner runtime", () => {
   test("Planning target uses real package/draft reads and preserves the three governed creation paths", async ({ page }) => {
     await page.goto("/planning");
     await expect(page.getByRole("heading", { name: "Planning", exact: true })).toBeVisible();
+    const createMenu = page.getByRole("navigation", { name: "Create visit methods" });
+    await page.locator("summary").filter({ hasText: "Create Visit" }).first().click();
     for (const href of ["/planning/bulk", "/planning/single", "/planning/immediate"]) {
-      await expect(page.locator(`a[href="${href}"]`)).toBeVisible();
+      await expect(createMenu.locator(`a[href$="${href}"]`)).toBeVisible();
     }
-    await expect(page.getByRole("heading", { name: "Visit plans" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Visit plans/ })).toBeVisible();
   });
 
   test("Visits target preserves RLS scope, dual statuses, filters, sorting and detail navigation", async ({ page }) => {
     await page.goto("/planning/visits");
     await expect(page.locator('[data-saqeel-design="WA-DES-045"]')).toBeVisible();
     await expect(page.getByRole("group", { name: /Status counts/i })).toBeVisible();
-    await expect(page.getByText(/RLS-scoped — showing \d+ of \d+/i)).toBeVisible();
+    await expect(page.getByText(/Showing \d+ of \d+ — based on your access/i)).toBeVisible();
     await expect(page.getByText(/Planning status and operational state remain independent/i)).toBeVisible();
     await expect(page.getByText(/Visit management summary/i)).toHaveCount(0);
     await expect(page.getByText(/Select a visit to see its identity/i)).toHaveCount(0);

@@ -20,8 +20,11 @@ test.describe("Prompt 03 Compliance Library and Inspector Runtime Preview contra
       expect(page).toContain('/admin/regulations');
       expect(page).toContain('/admin/items');
       expect(page).toContain('/admin/compliance-requests/new');
-      expect(page).toContain("Legacy compatibility authoring");
     }
+    // Regulations authoring is request-only (maker-checker CCR); the legacy
+    // compatibility path survives only on the items screen.
+    expect(items).toContain("Legacy compatibility authoring");
+    expect(regulations).toContain("This library is for viewing and searching. To create or change something, start a Compliance Configuration Request.");
     expect(items).not.toContain('sq-btn sq-btn--prominent sq-link');
     expect(regulations).not.toContain('sq-btn sq-btn--prominent sq-link');
     expect(items).toContain("request_type=modify");

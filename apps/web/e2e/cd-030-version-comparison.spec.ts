@@ -81,7 +81,7 @@ test.describe("CD-030 source truth — scope authority, unavailable ≠ unchange
     expect(page).toMatch(/unavailEvidence/);
     expect(page).toMatch(/unavailPackage/);
     expect(page).toMatch(/unavailMetadata/);
-    expect(page).toMatch(/HANDOFF_BLOCKED_MEDIADIFF/);
+    expect(SRC(CMP)).toMatch(/HANDOFF_BLOCKED_MEDIADIFF/);
   });
 
   test("leg 15 (S07) — a degraded version source is stated, never silently omitted", () => {
@@ -133,20 +133,29 @@ test.describe("CD-030 source truth — scope authority, unavailable ≠ unchange
     expect(page).toMatch(/insErr\s*\?\s*t\("review\.ws\.loadError"/);
     expect(page).toMatch(/t\("review\.ws\.notFound"/);
     expect(page).toMatch(/t\("review\.ws\.notFoundDesc"/);
-    // Read-admitted non-deciding roles receive a visible badge and no mutation
-    // controls; reviewer/ops remain the only decision-capable roles.
-    expect(page).toMatch(/readOnlyRole/);
+    // Read-admitted non-deciding roles receive a visible read-only note and no
+    // mutation controls; under the consolidated role model the decision
+    // capability is held by supervisor (Level 2 Reviewer) and admin only.
+    expect(page).toMatch(/readOnlyNote/);
     expect(page).toMatch(/!canDecide/);
-    expect(page).toMatch(/canDecide[\s\S]*reviewer[\s\S]*ops/);
+    expect(page).toContain('const canDecide = !!user && (roleRows ?? []).some(r => r.role_key === "supervisor" || r.role_key === "admin")');
   });
 });
 
 test.describe("CD-030 reviewer — live compare surface (legs 1,3,10,11,17)", () => {
   test.use({ storageState: storageStatePath("reviewer") });
 
+  // The record regions sit behind the CLASS-CONTRACT tab switcher; compare
+  // mode is the "Version comparison" tab of the same route — still no
+  // dedicated /compare route, which is exactly leg 1/11's contract.
+  async function openCompare(page: Page): Promise<void> {
+    await page.getByRole("tab", { name: /Version comparison|مقارنة/i }).click();
+  }
+
   test("leg 1/11 — compare mode lives inside /reviews/:id (no dedicated /compare route)", async ({ page }) => {
     const opened = await openFirstWorkspace(page);
     test.skip(!opened, "no reviews in this environment to open");
+    await openCompare(page);
     await expect(page).not.toHaveURL(/\/compare/);
     await expect(page.getByRole("heading", { name: /Tamper-evident Scope Rail/i })).toBeVisible();
   });
@@ -154,6 +163,7 @@ test.describe("CD-030 reviewer — live compare surface (legs 1,3,10,11,17)", ()
   test("leg 4 — the returned-scope authority is always stated (stored, not inferred)", async ({ page }) => {
     const opened = await openFirstWorkspace(page);
     test.skip(!opened, "no reviews in this environment to open");
+    await openCompare(page);
     await expect(page.getByRole("heading", { name: /Tamper-evident Scope Rail/i })).toBeVisible();
     // Either a scope is on record, or the honest no-scope statement — never silent.
     const authority = await page.getByText(/Returned-scope authority \(stored\)/i).count();
@@ -164,6 +174,7 @@ test.describe("CD-030 reviewer — live compare surface (legs 1,3,10,11,17)", ()
   test("leg 10/12 — comparison is navigation-only (no accept/merge control)", async ({ page }) => {
     const opened = await openFirstWorkspace(page);
     test.skip(!opened, "no reviews in this environment to open");
+    await openCompare(page);
     await expect(page.getByText(/navigation-only/i)).toBeVisible();
     await expect(page.getByRole("button", { name: /accept changes|merge/i })).toHaveCount(0);
   });
@@ -171,6 +182,7 @@ test.describe("CD-030 reviewer — live compare surface (legs 1,3,10,11,17)", ()
   test("leg 3/17 — version selectors render; scope rail is keyboard disclosure", async ({ page }) => {
     const opened = await openFirstWorkspace(page);
     test.skip(!opened, "no reviews in this environment to open");
+    await openCompare(page);
     const single = await page.getByText(/No prior version to compare/i).count();
     test.skip(single > 0, "single-version inspection — no-prior state (leg 13) covered elsewhere");
     // explicit from/to selectors
@@ -188,6 +200,7 @@ test.describe("CD-030 reviewer — live compare surface (legs 1,3,10,11,17)", ()
   test("leg 12/13 — rail navigation focuses the changed answer, and no-prior is a live status", async ({ page }) => {
     const opened = await openFirstWorkspace(page);
     test.skip(!opened, "no reviews in this environment to open");
+    await openCompare(page);
     await expect(page.getByRole("heading", { name: /Tamper-evident Scope Rail/i })).toBeVisible();
     // Unchanged rows intentionally remain in the comparison table and their
     // rail category is collapsed by default. Target a changed row whose rail
@@ -209,6 +222,7 @@ test.describe("CD-030 reviewer — live compare surface (legs 1,3,10,11,17)", ()
   test("legs 7/8/9 — 'not derived in the runtime' unavailable block is present", async ({ page }) => {
     const opened = await openFirstWorkspace(page);
     test.skip(!opened, "no reviews in this environment to open");
+    await openCompare(page);
     await expect(page.getByText(/Comparisons not derived in the runtime/i)).toBeVisible();
     await expect(page.getByText(/never 'unchanged'|not equal/i).first()).toBeVisible();
   });

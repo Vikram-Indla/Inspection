@@ -69,6 +69,7 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   const notes = notesRaw === "" ? null : notesRaw;
   const resumeRaw = String(formData.get("resume_visit_plan_id") ?? "").trim();
   const resumeId = UUID.test(resumeRaw) ? resumeRaw : "";
+  const targetReselected = formData.get("target_reselected") === "1";
 
   // A Planner submits a complete plan to supervision. A Supervisor alone
   // confirms the inspector and releases it. This action deliberately does
@@ -161,6 +162,29 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     source: target_source,
   };
   const proposedInspectorId = UUID.test(inspector_id) ? inspector_id : null;
+  // REQ-011/016 — a resumed draft restores its historical target for review,
+  // never as a publication confirmation. The planner must re-select the
+  // target, and the database re-proves the saved identity is still current;
+  // a stale identity fails closed and the historical draft stays untouched.
+  if (resumeId) {
+    if (!targetReselected) {
+      return { error: "The saved establishment identity must be selected again before publishing. The historical draft remains unchanged." };
+    }
+    const { error: targetError } = await sb.rpc("assert_resumed_planning_target_current", {
+      p_plan_id: resumeId,
+      p_factory_id: factory_id,
+      p_cr_number: cr_number || null,
+      p_license_number: targetingLicense,
+      p_plant_number: plant_number || null,
+    });
+    if (targetError) {
+      console.error("[ publishSingleVisit] resumed target validation failed:", targetError.code, targetError.message);
+      if (targetError.code === "40001") {
+        return { error: "The saved establishment identity changed. Select the current CR, licence and plant again; the historical draft remains unchanged." };
+      }
+      return { error: NEUTRAL_READ_ERROR };
+    }
+  }
   const { data: visitId, error: publishError } = await sb.rpc("submit_single_visit_for_supervision", {
     p_factory_id: factory_id,
     p_package_version_ids: package_version_ids,

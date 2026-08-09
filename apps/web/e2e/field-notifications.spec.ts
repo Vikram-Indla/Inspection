@@ -67,8 +67,8 @@ test("field inbox mark-read action writes read_at and keeps queued-to-read compa
   const marker = `action_${Date.now()}`;
   const row = await stageNotification({ reason: marker }, marker);
 
-  await page.goto("/field");
-  const listItem = page.getByRole("listitem").filter({ hasText: marker });
+  await page.goto("/field/notifications");
+  const listItem = page.getByRole("article").filter({ hasText: marker });
   await expect(listItem).toBeVisible();
   await listItem.getByRole("button", { name: "Mark read" }).click();
   await expect(listItem.getByRole("button", { name: "Mark read" })).toHaveCount(0);

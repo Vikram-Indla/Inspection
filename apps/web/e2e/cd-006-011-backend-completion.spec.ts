@@ -10,15 +10,21 @@ const baseItem = (response_model: Item["response_model"]): Item => ({
 });
 
 test.describe("CD-006..011 backend completion", () => {
-  test("M09-001 supports effective date, draft edit, governed deactivation, and attachment metadata", () => {
+  test("M09-001 supports effective date, governed lifecycle with reason, and attachment metadata", () => {
+    // Direct draft/attachment writes moved into the governed Compliance
+    // Configuration Request engine; the regulations surface keeps only the
+    // reasoned lifecycle RPCs behind requireConfigurationWriter.
     const actions = source("src/app/(app)/admin/regulations/actions.ts");
+    const ccrActions = source("src/app/(app)/admin/compliance-requests/actions.ts");
+    const regulationsPage = source("src/app/(app)/admin/regulations/page.tsx");
     const migration = source("../../supabase/migrations/20260715200000_cd006_011_backend_completion.sql");
-    expect(actions).toContain("updateRegulationDraft");
+    expect(actions).toContain("requireConfigurationWriter");
     expect(actions).toContain("deactivateRegulation");
-    expect(actions).toContain("addRegulationAttachment");
-    expect(actions).toContain('storage.from("regulation-documents").upload');
-    expect(actions).toContain('createHash("sha256")');
-    expect(actions).toContain("effective_from");
+    expect(actions).toContain('if (!reason) return { errorCode: "reason_required" }');
+    expect(ccrActions).toContain('sb.rpc("create_compliance_request"');
+    expect(ccrActions).toContain('rpc("update_compliance_request_draft"');
+    expect(regulationsPage).toContain("effective_from");
+    expect(regulationsPage).toContain("regulation_attachments");
     expect(migration).toContain("create table if not exists regulation_attachments");
     expect(migration).toContain("trg_audit_regulation_attachments");
     expect(migration).toContain("trg_guard_regulation_clauses");
@@ -28,10 +34,13 @@ test.describe("CD-006..011 backend completion", () => {
   });
 
   test("regulation publish validates mapped clauses, maker-checker provenance, and no-op failure", () => {
-    const actions = source("src/app/(app)/admin/regulations/actions.ts");
+    // Publish left the direct surface for the CCR flow; the database contract
+    // stays authoritative and the approval queue excludes the request owner.
+    const approvalsQueries = source("src/features/compliance/queries.ts");
+    const ccrActions = source("src/app/(app)/admin/compliance-requests/actions.ts");
     const authoritative = source("../../supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql");
-    expect(actions).toContain('sb.rpc("publish_regulation"');
-    expect(actions).toContain("every clause must map to an inspection item");
+    expect(ccrActions).toContain('rpc("submit_compliance_request"');
+    expect(approvalsQueries).toContain("row.owner_id !== user.id");
     expect(authoritative).toContain("maker-checker requires a distinct approver");
     expect(authoritative).toContain("successor effective date must follow active version");
     expect(authoritative).toContain("every regulation clause must map to an inspection item");
@@ -57,7 +66,7 @@ test.describe("CD-006..011 backend completion", () => {
     expect(items).toContain('"needs_review"');
     expect(items).toContain("reviewer_flag: true");
     expect(violations).toContain("publishViolationCode");
-    expect(violations).toContain("corrective_action");
+    expect(source("src/app/(app)/admin/violations/page.tsx")).toContain("corrective_action");
     expect(templates).toContain("publishTemplateVersion");
     expect(field).toContain("companionViolations");
     expect(report).toContain("snap.violations");
@@ -126,7 +135,8 @@ test.describe("CD-006..011 backend completion", () => {
     expect(migration).toContain("set search_path = ''");
     expect(migration).toContain("from anon");
     expect(itemActions).toContain("getItemUsage");
-    expect(regulationActions).toContain("getRegulationAudit");
+    expect(source("src/app/(app)/admin/regulations/page.tsx")).toContain('sb.rpc("compliance_regulation_audit"');
+    expect(regulationActions).toContain("requireConfigurationWriter");
     expect(violationActions).toContain("getViolationUsage");
     expect(violationActions).toContain("deactivateViolationCode");
   });
@@ -144,7 +154,7 @@ test.describe("CD-006..011 backend completion", () => {
   });
 
   test("admin renders verify asymmetric JWT claims without per-component Auth API calls", () => {
-    const middleware = source("middleware.ts");
+    const middleware = source("src/middleware.ts");
     const serverAuth = source("src/lib/supabase-server.ts");
     expect(middleware).toContain("supabase.auth.getClaims()");
     expect(middleware).not.toContain("supabase.auth.getUser()");

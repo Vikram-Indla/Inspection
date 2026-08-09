@@ -99,9 +99,10 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 2B governed access grants", () =>
     expect(actions).toContain("NEUTRAL_WRITE_ERROR");
   });
 
-  test("page gates the panel on security_admin and replaces both seams", () => {
+  test("page gates the panel on the canonical admin authority and replaces both seams", () => {
     const page = read(pagePath);
-    expect(page).toContain('sb.rpc("has_role", { r: "security_admin" })');
+    expect(page).toContain('sb.rpc("has_internal_role", { p_role: "admin" })');
+    expect(page).toContain('sb.rpc("has_planning_capability", { p_capability: "admin.access.manage" })');
     expect(page).toContain("AccessManager");
     // Effective-access explainer: computed from role defaults + direct grants.
     expect(page).toContain('sb.from("role_capabilities")');

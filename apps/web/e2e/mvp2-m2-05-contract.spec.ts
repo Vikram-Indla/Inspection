@@ -114,7 +114,8 @@ test.describe("MVP2-CD-031-M2-05 semantic audit contract", () => {
     expect(page).toContain("GENERIC:${row.object_type}.${row.action}");
     expect(page).toContain('provenance: "generic"');
     expect(page).toContain('ingestionStatus: "generic_only"');
-    expect(workspace).toContain("GENERIC ONLY");
+    expect(workspace).toContain('generic: "Generic only"');
+    expect(workspace).toContain('generic: "عام فقط"');
   });
 
   test("wires only proven source emitters and keeps acknowledgement distinct from PKI", () => {
@@ -128,7 +129,8 @@ test.describe("MVP2-CD-031-M2-05 semantic audit contract", () => {
   });
 
   test("renders policy/provider truth and accessible focus recovery", () => {
-    expect(workspace).toContain("DEC-006 / DEC2-009");
+    expect(workspace).toContain('policyHeldTag:"POLICY_HELD"');
+    expect(workspace).toContain("held by policy");
     expect(workspace).toContain("closeRef.current?.focus()");
     expect(workspace).toContain("triggerRefs.current.get(id)?.focus()");
     expect(workspace).toContain('role="dialog"');

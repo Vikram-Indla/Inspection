@@ -90,7 +90,10 @@
     "sourceViolation": "Source violation",
     "openFactory": "Open Factory 360",
     "absent": "Not recorded",
-    "due": "Due {date}"
+    "due": "Due {date}",
+    "recordedBy": "Recorded by",
+    "timeline": "Timeline",
+    "started": "Started"
   },
   "catalogue": {
     "modeLabel": "Catalogue view",

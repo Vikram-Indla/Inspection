@@ -1,0 +1,79 @@
+.root {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sqx-space-4);
+  padding: var(--sqx-inset-card);
+  background: var(--sqx-surface-default);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-card);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+  min-inline-size: 0;
+}
+
+.column + .column {
+  padding-inline-start: var(--sqx-space-4);
+  border-inline-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.heading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sqx-space-2);
+  font: var(--sqx-text-overline);
+  letter-spacing: var(--sqx-text-overline-tracking);
+  text-transform: uppercase;
+  color: var(--sqx-text-accent);
+}
+
+.quickGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sqx-space-2);
+}
+
+.quickAction {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-2);
+  min-block-size: var(--sqx-control-h-md);
+  padding-block: var(--sqx-space-2);
+  padding-inline: var(--sqx-space-3);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-control);
+  background: var(--sqx-surface-subtle);
+  color: var(--sqx-text-primary);
+  text-decoration: none;
+}
+
+.quickAction:hover {
+  background: var(--sqx-surface-accent-hover);
+}
+
+.quickAction:focus-visible {
+  outline: var(--sqx-focus-ring-width) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}
+
+.quickLabel {
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
+}
+
+@media (max-width: 64rem) {
+  .root {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .column + .column {
+    padding-inline-start: 0;
+    border-inline-start: none;
+    padding-block-start: var(--sqx-space-4);
+    border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  }
+}

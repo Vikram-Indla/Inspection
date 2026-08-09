@@ -142,9 +142,12 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 6 submission + review hardening",
     expect(sla).toContain("computeResubmissionFlags");
     expect(sla).toContain("resubmission_business_days");
     expect(sla).toContain("addBusinessDays(base, days, wd)");
-    const page = read(opsPagePath);
+    const page = [
+      "apps/web/src/app/(app)/operations/sections/model.ts",
+      "apps/web/src/app/(app)/operations/sections/sla-kpi-section.tsx",
+    ].map(read).join("\n");
     expect(page).toContain("resubSlaAvailable");
-    expect(page).toContain("SLA unavailable");
+    expect(page).toContain('typeof slaConf.resubmission_business_days === "number"');
     expect(page).toContain("resubFlags.map");
     // Display-only: no writes, no escalation rows.
     expect(page).not.toMatch(/resub[\s\S]{0,400}\.insert\(/);

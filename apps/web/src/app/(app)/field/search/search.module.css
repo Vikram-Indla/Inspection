@@ -1,7 +1,7 @@
 /* SAQEEL Field Global Search — layout ported verbatim from
    SAQEEL Field Global Search.dc.html (gs-searchbar / gs-seg / gs-wrap / gs-row /
    gs-icn). Consumes the SAQEEL DS tokens linked by (app)/field/layout.tsx. The
-   design's one bare color (#fff on the active filter chip) is replaced by the
+   design's one bare color (plain white on the active filter chip) is replaced by the
    DS token var(--text-on-action). */
 
 .header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; padding-block-start: max(14px, env(safe-area-inset-top)); background: var(--surface-primary); border-block-end: 1px solid var(--border-subtle); }

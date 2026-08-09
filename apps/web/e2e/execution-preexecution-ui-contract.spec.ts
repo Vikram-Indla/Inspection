@@ -88,19 +88,19 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 3B pre-execution UI", () => {
     expect(spec).toContain("pre-execution-ready");
   });
 
-  test("planning publish maps EXE-CAPACITY-WINDOW-FULL to the neutral blocker pattern", () => {
+  test("planning publish keeps the capacity blocker governed and the raw provider errors neutral", () => {
     const single = read("apps/web/src/app/(app)/planning/single/actions.ts");
-    expect(single).toContain("EXE-CAPACITY-WINDOW-FULL");
+    expect(single).toContain("submit_single_visit_for_supervision");
+    expect(single).toContain("NEUTRAL_WRITE_ERROR");
     const bulk = read("apps/web/src/app/(app)/planning/bulk/actions.ts");
-    expect(bulk).toContain("EXE-CAPACITY-WINDOW-FULL");
     expect(bulk).toContain('"capacity"');
-    expect(bulk).toContain("getWindowCapacity");
+    expect(bulk).toContain("Do not make a Planner resolve capacity");
     const reviewMeta = read("apps/web/src/app/(app)/planning/bulk/review/ReviewClient.tsx");
     expect(reviewMeta).toContain("capacity:");
   });
 
   test("workload page surfaces the configured daily cap from engine_settings.execution", () => {
-    const workload = read("apps/web/src/app/(app)/visits/workload/page.tsx");
+    const workload = read("apps/web/src/app/(app)/visits/workload/WorkloadView.tsx");
     expect(workload).toContain('engine_settings');
     expect(workload).toContain('"execution"');
     expect(workload).toContain("daily_visit_cap");

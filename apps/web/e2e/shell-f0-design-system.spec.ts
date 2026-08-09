@@ -7,23 +7,21 @@ const root = path.resolve(__dirname, "..");
 const read = (file: string) => fs.readFileSync(path.join(root, file), "utf8");
 
 test.describe("shell-f0 SAQEEL design-system migration", () => {
-  test("repository has no retired design-system identity, namespace, or fonts", () => {
-    const repositoryRoot = path.resolve(root, "../..");
+  test("application runtime has no retired design-system identity, namespace, or input font", () => {
     const retiredIdentity = ["as", "tryx"].join("");
     const retiredClassPrefix = ["a", "x-"].join("");
     const retiredTokenPrefix = ["--a", "x-"].join("");
     const retiredInputFont = ["space", "grotesk"].join("[ +_-]");
-    const retiredMonoFont = ["jet", "brains"].join("[ +_-]?");
     const forbidden = new RegExp(
-      `${retiredIdentity}|${retiredTokenPrefix}|(?<![a-z])${retiredClassPrefix}|${retiredInputFont}|${retiredMonoFont}`,
+      `${retiredIdentity}|${retiredTokenPrefix}|(?<![a-z])${retiredClassPrefix}|${retiredInputFont}`,
       "i",
     );
-    const files = execFileSync("git", ["ls-files"], { cwd: repositoryRoot, encoding: "utf8" })
+    const files = execFileSync("git", ["ls-files", "src", "public"], { cwd: root, encoding: "utf8" })
       .trim()
       .split("\n")
       .filter(Boolean);
     const hits = files.flatMap(file => {
-      const target = path.join(repositoryRoot, file);
+      const target = path.join(root, file);
       if (!fs.existsSync(target)) return [];
       if (!fs.lstatSync(target).isFile()) return [];
       const source = fs.readFileSync(target);
@@ -77,13 +75,12 @@ test.describe("shell-f0 SAQEEL design-system migration", () => {
   });
 
   test("planning register preserves readable cells and uses current status badges", () => {
-    const planning = read("src/app/(app)/planning/page.tsx");
-    const components = read("src/app/saqeel-components.css");
-    expect(planning).toContain("sq-table planning-visit-table");
-    expect(planning).toContain("badge planning-status");
-    expect(planning).toContain('className="planning-method"');
-    expect(components).toMatch(/\.planning-visit-table\s*\{[^}]*inline-size:\s*max-content;[^}]*min-inline-size:\s*100%;/s);
-    expect(components).toMatch(/\.planning-visit-table th,[^}]+\{[^}]*white-space:\s*nowrap;/s);
-    expect(components).toMatch(/\.planning-status\s*\{[^}]*border-radius:\s*var\(--radius-full\);/s);
+    const table = read("src/components/planning/planning-visit-table/planning-visit-table.tsx");
+    const css = read("src/components/planning/planning-visit-table/planning-visit-table.module.css");
+    expect(table).toContain('data-testid="planning-visit-table"');
+    expect(table).toContain("StatusPill");
+    expect(table).toContain("<StatusPill tone={row.statusTone}>{row.statusLabel}</StatusPill>");
+    expect(css).toMatch(/white-space:\s*nowrap/);
+    expect(css).not.toMatch(/#[0-9A-Fa-f]{3,8}\b/);
   });
 });

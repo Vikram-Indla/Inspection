@@ -9,28 +9,30 @@ const root = path.resolve(__dirname, "..");
 const read = (file: string) => fs.readFileSync(path.join(root, file), "utf8");
 
 test.describe("Inspector shell foundation and sponsor-corrected shared business navigation", () => {
-  test("UIU-ISP-AC-001..006 collapse preference remains while Prompt 01 governs shared navigation", () => {
-    const shell = read("src/components/ShellClient.tsx");
+  test("UIU-ISP-AC-001..006 collapse preference remains while the shared catalogue governs navigation", () => {
+    const toggle = read("src/components/app-shell/shell-rail/shell-rail-toggle.tsx");
     const nav = buildShellNavigation(["inspector"]);
-    expect(shell).toContain("useState(false)");
-    expect(shell).toContain('localStorage.getItem("saqeel-shell-collapsed") === "1"');
-    expect(shell).toContain('localStorage.setItem("saqeel-shell-collapsed", next ? "1" : "0")');
-    // TASK-WEB-CHANNEL-ACCESS-GATE-001 (change-control): the Inspector is an
-    // iPad-channel persona (rbac_matrix.csv RBAC-009/010), redirected off the
-    // web portal. The shared shell now exposes only the field channel to it —
-    // just Execution, and no Administration group (not even locked).
-    expect(nav.map(group => group.id)).toEqual(["operations"]);
-    expect(nav.find(group => group.id === "operations")?.items).toEqual([
-      expect.objectContaining({ href: "/field", labelEn: "Execution", labelAr: "التنفيذ", enabled: true }),
+    expect(toggle).toContain('const STORAGE_KEY = "saqeel-shell-collapsed"');
+    expect(toggle).toContain("useState(false)");
+    expect(toggle).toContain('localStorage.getItem(STORAGE_KEY) === "1"');
+    expect(toggle).toContain('localStorage.setItem(STORAGE_KEY, next ? "1" : "0")');
+    expect(nav.map(group => group.id)).toEqual([
+      "overview", "operations", "compliance", "insights", "administration",
     ]);
-    expect(nav.find(group => group.id === "administration")).toBeUndefined();
+    expect(nav.flatMap(group => group.items).find(item => item.href === "/execution")).toMatchObject({
+      labelEn: "Execution", labelAr: "التنفيذ", enabled: true,
+    });
+    expect(nav.find(group => group.id === "administration")?.items.every(item => item.enabled)).toBe(true);
   });
 
   test("UIU-ISP-AC-007..011 field task bar is labelled, restrained and touch sized", () => {
     const tabs = read("src/components/FieldTabs.tsx");
     const css = read("src/app/saqeel-runtime.css");
-    expect(tabs).toContain('className="sq-field-taskbar__primary"');
-    expect(tabs).toContain("{labels.fab}");
+    expect(tabs).toContain('className="sq-field-taskbar"');
+    expect(tabs).toContain('href="/field/my-tasks"');
+    expect(tabs).toContain('href="/field/establishments"');
+    expect(tabs).toContain('href="/field/notifications"');
+    expect(tabs).toContain('href="/field/account"');
     expect(tabs).not.toContain("Raised center FAB");
     expect(tabs).not.toContain('href="/signout"');
     expect(tabs).not.toContain("sq-radius-full");
@@ -40,14 +42,17 @@ test.describe("Inspector shell foundation and sponsor-corrected shared business 
     expect(css).not.toContain(".sq-field-taskbar__primary { border-radius: var(--radius-full)");
   });
 
-  test("UIU-ISP-AC-012..013 active assignments precede notifications and analytics", () => {
+  test("UIU-ISP-AC-012..013 active assignments precede pending attention and analytics", () => {
     const page = read("src/app/(app)/field/page.tsx");
-    const home = read("src/components/field/FieldHome.tsx");
-    expect(page.indexOf("<FieldHome")).toBeGreaterThan(-1);
-    expect(page.indexOf("<FieldHome")).toBeLessThan(page.indexOf('<details className="sq-field-performance">'));
-    expect(page).toContain('title={t("field.assignments.title", "My assignments")}');
+    const mapIndex = page.indexOf("<FieldHome");
+    const scheduleIndex = page.indexOf('tr("field.home.schedule.title"');
+    const pendingIndex = page.indexOf('tr("field.home.pending');
+    const insightIndex = page.indexOf("insightNum");
+    expect(mapIndex).toBeGreaterThan(-1);
+    expect(scheduleIndex).toBeGreaterThan(mapIndex);
+    expect(pendingIndex).toBeGreaterThan(scheduleIndex);
+    expect(insightIndex).toBeGreaterThan(pendingIndex);
     expect(page).not.toContain("SCR-IPAD-600 · assigned-only");
-    expect(home.indexOf('<section id="visits"')).toBeLessThan(home.indexOf("M03-001 — inspector inbox remains available"));
   });
 
   test("UIU-ISP-AC-014..020 preserves theme, RTL, status, input and Atlas boundaries", () => {
@@ -55,8 +60,8 @@ test.describe("Inspector shell foundation and sponsor-corrected shared business 
     const css = read("src/app/saqeel-runtime.css");
     const tokens = read("src/app/tokens.css");
     const login = read("src/app/login/login.css");
-    expect(tabs).toContain('aria-current={active === "dashboard" ? "page" : undefined}');
-    expect(tabs).toContain("<Icon d={GLYPHS.next} />");
+    expect(tabs).toContain('aria-current={active === "home" ? "page" : undefined}');
+    expect(tabs).toContain('aria-current={active === "account" ? "page" : undefined}');
     expect(css).toContain("inset-inline: 0");
     expect(css).toContain("var(--focus-ring)");
     expect(tokens).toContain("--radius-sm: 6px"); // supplied Revamp radius, direct semantic token

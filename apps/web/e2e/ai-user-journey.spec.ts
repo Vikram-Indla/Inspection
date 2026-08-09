@@ -19,9 +19,9 @@ test.describe("contextual AI user journeys", () => {
     test.use({ storageState: storageStatePath("inspector") });
     test("opens the daily briefing inside My assignments", async ({ page }) => {
       await page.goto("/field");
-      await expect(page.getByTestId("inspector_daily_briefing-panel")).toBeVisible();
-      await expect(page.getByRole("button", { name: /generate my briefing/i })).toBeVisible();
-      await expect(page.getByText(/does not create a route, alter a visit/i)).toBeVisible();
+      await expect(page.getByTestId("inspector-daily-briefing-panel")).toBeVisible();
+      await expect(page.getByText("AI Daily Brief")).toBeVisible();
+      await expect(page.getByText("Advisory only", { exact: true })).toBeVisible();
       await expect(page.getByText("My visits")).toBeVisible();
     });
   });
@@ -44,8 +44,8 @@ test.describe("contextual AI user journeys", () => {
     test("opens the summary inside Visit Management", async ({ page }) => {
       await page.goto("/visits");
       await expect(page.getByTestId("visit_management_summary-panel")).toBeVisible();
-      await expect(page.getByRole("button", { name: /generate operational summary/i })).toBeVisible();
-      await expect(page.getByText(/cannot change a visit, assignment, state or campaign/i)).toBeVisible();
+      await expect(page.getByRole("button", { name: /generate summary/i })).toBeVisible();
+      await expect(page.getByText(/can't change a visit, assignment, state, or campaign/i)).toBeVisible();
       await expect(page.getByRole("group", { name: /visit management views/i })).toBeVisible();
     });
   });

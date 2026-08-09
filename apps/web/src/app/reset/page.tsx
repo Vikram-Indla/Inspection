@@ -35,6 +35,26 @@ export default async function Reset() {
     invalidHint: ar
       ? "اختر \"هل نسيت كلمة المرور؟\" في صفحة تسجيل الدخول لطلب رمز جديد."
       : "Select \"Forgot your password?\" on the sign-in page to request a new code.",
+    requestTitle: ar ? "استعادة كلمة المرور" : "Reset your password",
+    requestSub: ar
+      ? "أدخل بريدك الإلكتروني لنرسل إليك رمز تحقق."
+      : "Enter your email and we'll send you a verification code.",
+    emailLabel: ar ? "البريد الإلكتروني" : "Email",
+    emailPlaceholder: ar ? "أدخل بريدك الإلكتروني" : "Enter your email",
+    send: ar ? "إرسال رمز إعادة التعيين" : "Send reset code",
+    sending: ar ? "جارٍ الإرسال…" : "Sending…",
+    sentAria: ar ? "تحقق من بريدك الإلكتروني" : "Check your email",
+    sentBody: ar
+      ? "إذا كان هناك حساب مسجّل بهذا العنوان، فقد أرسلنا إليه رمزًا مكوّنًا من 6 أرقام. أدخل الرمز أدناه."
+      : "If an account exists for that address, we've sent a 6-digit code to it. Enter the code below.",
+    otpLabel: ar ? "رمز التحقق" : "Verification code",
+    otpPlaceholder: ar ? "أدخل الرمز المكوّن من 6 أرقام" : "Enter the 6-digit code",
+    verify: ar ? "التحقق من الرمز" : "Verify code",
+    verifying: ar ? "جارٍ التحقق…" : "Verifying…",
+    otpError: ar
+      ? "الرمز غير صحيح أو منتهي الصلاحية. حاول مرة أخرى."
+      : "That code is incorrect or has expired. Try again.",
+    back: ar ? "رجوع" : "Back",
     title: ar ? "تعيين كلمة مرور جديدة" : "Set a new password",
     sub: ar ? "اختر كلمة مرور جديدة لحسابك." : "Choose a new password for your account.",
     pwLabel: ar ? "كلمة المرور الجديدة" : "New password",

@@ -54,7 +54,7 @@ test("golden P2 Inspector login uses the governed structural form helpers", () =
 
 test("golden P2 requires the shared Dashboard landing and useful content before field navigation", () => {
   assert.match(inspectorLogin, /url\.pathname === "\/dashboard"/);
-  assert.match(inspectorLogin, /#role-dashboard-summary/);
+  assert.match(inspectorLogin, /#dashboard-role-summary/);
   assert.match(inspectorLogin, /not\.toContainText\("ERR-AUTH"/);
   assert.match(inspectorLogin, /P2_LOGIN_STEP_TIMEOUT/);
   assert.doesNotMatch(inspectorLogin, /pathname\.startsWith\("\/field"\)/);

@@ -378,14 +378,37 @@ async function readVisibleRows(
   const required = params.page * params.pageSize;
   const visible: Joined[] = [];
   const sourcePageSize = Math.max(100, params.pageSize);
-  for (let from = 0; ; from += sourcePageSize) {
-    const read = await fetchRows(null, from, from + sourcePageSize - 1);
+  // A short batch normally means the table is exhausted, but under heavy
+  // connection-pool contention PostgREST can return fewer rows than requested
+  // without setting an error. Treating that as "end of table" on the very
+  // first page produced a real, observed defect: an honest non-empty total
+  // alongside zero displayed rows, plus copy that wrongly claimed no filter
+  // was responsible. Retry once, only for a short-and-empty first batch,
+  // before accepting it as the true end.
+  const MAX_BATCHES = 30;
+  for (let from = 0, batch = 0; batch < MAX_BATCHES; from += sourcePageSize, batch += 1) {
+    let read = await fetchRows(null, from, from + sourcePageSize - 1);
     if (read.error) {
       console.error("[planning.visit-list] row query failed:", read.error.message);
       return { ok: false };
     }
-    const sourceRows = (read.data ?? []) as unknown as Joined[];
-    visible.push(...real(sourceRows));
+    let sourceRows = (read.data ?? []) as unknown as Joined[];
+    let realRows = real(sourceRows);
+    // A short batch with zero real rows on the very first page is the same
+    // dishonest-empty shape whether PostgREST returned nothing at all or
+    // returned a handful of rows that all happened to be fixtures — either
+    // way a real, non-empty total would render with no visible rows. Retry
+    // once before accepting either shape as the true end of the table.
+    if (from === 0 && realRows.length === 0 && sourceRows.length < sourcePageSize) {
+      read = await fetchRows(null, from, from + sourcePageSize - 1);
+      if (read.error) {
+        console.error("[planning.visit-list] row query retry failed:", read.error.message);
+        return { ok: false };
+      }
+      sourceRows = (read.data ?? []) as unknown as Joined[];
+      realRows = real(sourceRows);
+    }
+    visible.push(...realRows);
     if (sourceRows.length < sourcePageSize || visible.length >= required) break;
   }
   return { ok: true, rows: visible.slice((params.page - 1) * params.pageSize, params.page * params.pageSize).map(toRow) };

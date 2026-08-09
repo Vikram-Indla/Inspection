@@ -13,7 +13,7 @@ test.describe("Admin integration truthful partial-data presentation", () => {
       expect(page).toContain(`${source}.error`);
       expect(page).toContain(`!${source}.error`);
     }
-    expect(page).toContain("unavailable data, not an empty");
+    expect(page).toContain("not available, not an empty");
     expect(page).not.toContain("14 controlled rows");
     expect(page).toContain('<bdi dir="ltr">{row.status}</bdi>');
     expect(page).toContain("<time dateTime={row.updated_at}>");
@@ -52,7 +52,7 @@ test.describe("Admin integration truthful partial-data presentation", () => {
     expect(page).not.toContain("schemaUnavailable");
     expect(page).toContain('runsRead.error ? t("admin.senai.unavailable"');
     expect(page).toContain('t("admin.senai.endpoints.verificationUnavailableShort"');
-    expect(page).toContain("This is unavailable data, not a verified empty divergence set.");
+    expect(page).toContain("This is data that's not available, not a checked, empty divergence set.");
     expect(page).toContain('<bdi dir="ltr">{row.outcome}</bdi>');
   });
 
