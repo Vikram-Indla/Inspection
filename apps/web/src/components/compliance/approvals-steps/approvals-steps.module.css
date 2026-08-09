@@ -1,0 +1,30 @@
+.summaryGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+}
+
+.groupHeading {
+  font: var(--sqx-text-overline);
+  letter-spacing: var(--sqx-text-overline-tracking);
+  text-transform: uppercase;
+  color: var(--sqx-text-muted);
+}
+
+.chipRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sqx-space-2);
+  flex-wrap: wrap;
+}
+
+.chip {
+  padding-block: var(--sqx-space-1);
+  padding-inline: var(--sqx-space-3);
+  background: var(--sqx-surface-sunken);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-pill);
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-secondary);
+  font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,48 @@
+.track {
+  display: flex;
+  gap: var(--sqx-space-1);
+  background: var(--sqx-surface-default);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-card);
+  padding: var(--sqx-space-2);
+  box-shadow: var(--sqx-shadow-card);
+  overflow-x: auto;
+}
+
+.step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-0);
+  min-inline-size: var(--sqx-grid-min-sm);
+  padding: var(--sqx-space-2) var(--sqx-space-3);
+  border-radius: var(--sqx-radius-control);
+  text-decoration: none;
+  border-block-end: var(--sqx-border-width-thick) solid transparent;
+}
+
+.step:hover {
+  background: var(--sqx-action-tertiary-hover);
+}
+
+.step[aria-current="page"] {
+  background: var(--sqx-nav-active-bg);
+  border-block-end-color: var(--sqx-border-accent);
+}
+
+.label {
+  font: var(--sqx-text-label);
+  color: var(--sqx-text-primary);
+  white-space: nowrap;
+}
+
+.state {
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.state[data-done] {
+  color: var(--sqx-text-success);
+}
