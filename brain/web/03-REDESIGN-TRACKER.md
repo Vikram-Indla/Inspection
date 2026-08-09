@@ -359,6 +359,17 @@ filters and tabs moved to `searchParams`.
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
 
+- **The reassignment roster is fetched for every visible row at page load**, not
+  for the selection the user actually makes. Up to ten RPC round-trips per load,
+  and because `list_available_reassignment_inspectors` is all-or-nothing per
+  100-visit chunk, one out-of-scope visit anywhere on the page denies the whole
+  roster. Fetching per selection (a server action on selection change) would be
+  both cheaper and more precise. T-021a made the denial honest; it did not make
+  it unnecessary.
+- **RLS read scope is wider than `planning_closure_factory_in_scope`.** A visit
+  can be readable on the board but outside reassign scope. Any future bulk verb
+  gated by a closure-scope RPC will hit the same asymmetry — surface it as a
+  state, never as an empty control.
 - **There is no datetime primitive.** `DatePicker` is date-only, and T-005a's
   "no native date input" rule has no answer for a date **and time** window. Visit
   Management's bulk-reschedule form is the only place left holding a native

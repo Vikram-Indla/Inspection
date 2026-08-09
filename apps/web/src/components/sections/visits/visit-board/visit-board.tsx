@@ -10,9 +10,10 @@ import VisitTable from "./visit-table";
 import VisitBulkActions from "./visit-bulk-actions";
 import styles from "./visit-board.module.css";
 
-export default function VisitBoard({ rows, inspectors, visitTypeOptions, total, shown, nextHref, strings, routeBase }: {
+export default function VisitBoard({ rows, inspectors, reassignmentAvailable, visitTypeOptions, total, shown, nextHref, strings, routeBase }: {
   rows: readonly VisitBoardRow[];
   inspectors: readonly VisitReassignmentInspector[];
+  reassignmentAvailable: boolean;
   visitTypeOptions: readonly { readonly value: string; readonly label: string }[];
   total: number;
   shown: number;
@@ -48,6 +49,7 @@ export default function VisitBoard({ rows, inspectors, visitTypeOptions, total, 
         <VisitBulkActions
           selectedRows={selectedRows}
           inspectors={inspectors}
+          reassignmentAvailable={reassignmentAvailable}
           visitTypeOptions={visitTypeOptions}
           strings={strings}
           routeBase={routeBase}

@@ -168,6 +168,38 @@ source lines removed: 272 → 36 (route) and a 706-line island superseded
   and friends are still used by `/visits/[id]`, `/visits/calendar`,
   `/visits/map`, `/visits/workload` and the un-migrated planning sub-routes.
 
+## Follow-up fix — reassignment roster (same session)
+
+Owner reported `PLANNING-REASSIGN-ROSTER-DENIED` logged on every page load.
+`list_available_reassignment_inspectors` raises that one code for **two**
+different reasons (migration `20260804030000`):
+
+1. the caller lacks the `planning.reassign` capability (line 18);
+2. **any** visit in the batch falls outside `planning_closure_factory_in_scope`
+   — the RPC is all-or-nothing per chunk (lines 24–27).
+
+Cause 2 is the dangerous one. `queryPlanningVisits`' RLS **read** scope is wider
+than the reassign scope, so a board can legitimately show visits that deny the
+whole roster chunk. The old code logged each failure and **continued**, which
+left `eligibleInspectors` silently empty — the reassign dropdown rendered with
+no options and no explanation. A silent wrong answer.
+
+Now, per the "absent data renders as a state" rule:
+
+- `getPlanningAccess(sb, ["planning.reassign"])` is read in `queries.ts`; without
+  the capability the RPC is **not called at all** (it also skips when there are
+  no rows, which avoids the `ROSTER-SCOPE` guard on an empty array).
+- A denial returns `{ available: false }` for the whole roster rather than a
+  partial list, and is **not** logged — it is a governed authorization state,
+  not a failure. Genuine errors still log.
+- `VisitManagementData` gained `reassignmentAvailable`. When false, the reassign
+  form is replaced by a `restricted` `EmptyState` naming both preconditions.
+  When true but no inspector is free across the whole selection, the submit is
+  disabled with its own explicit note instead of an empty `<select>`.
+
+Two new keys (`bulk.reassignUnavailable`, `bulk.reassignNoInspectors`) in `en`
+and `ar` — 261 keys, parity holds.
+
 ## Parked
 
 - **`--sqx-control-accent` does not exist.** Native checkboxes cannot be tinted

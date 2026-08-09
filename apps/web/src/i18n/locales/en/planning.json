@@ -184,6 +184,8 @@
       "rescheduleBtn": "Reschedule selected",
       "reassignTo": "Reassign to",
       "reassignBtn": "Reassign selected",
+      "reassignUnavailable": "Reassignment is not available for this selection. It needs reassignment permission and every selected visit inside your assignment scope. Nothing was changed.",
+      "reassignNoInspectors": "No inspector is available for every selected visit in its window.",
       "selectOption": "Select",
       "cancelNote": "Cancellation note",
       "cancelPlaceholder": "Optional planning note",

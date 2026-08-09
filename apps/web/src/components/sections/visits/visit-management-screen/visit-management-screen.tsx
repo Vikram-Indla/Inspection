@@ -136,6 +136,7 @@ export default async function VisitManagementScreen({ data, params, sp, routeBas
         <VisitBoard
           rows={rows}
           inspectors={data.inspectors}
+          reassignmentAvailable={data.reassignmentAvailable}
           visitTypeOptions={options.visitTypeOptions.filter(option => option.value.length > 0)}
           total={data.total}
           shown={rows.length}

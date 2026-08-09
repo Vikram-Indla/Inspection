@@ -34,6 +34,8 @@ export type VisitsBoardStrings = {
   readonly bulkRescheduleBtn: string;
   readonly bulkReassignTo: string;
   readonly bulkReassignBtn: string;
+  readonly reassignUnavailable: string;
+  readonly reassignNoInspectors: string;
   readonly bulkSelectOption: string;
   readonly bulkCancelNote: string;
   readonly bulkCancelPlaceholder: string;
@@ -111,6 +113,8 @@ export function buildVisitsBoardStrings(locale: Locale): VisitsBoardStrings {
     bulkRescheduleBtn: visit.bulk.rescheduleBtn,
     bulkReassignTo: visit.bulk.reassignTo,
     bulkReassignBtn: visit.bulk.reassignBtn,
+    reassignUnavailable: visit.bulk.reassignUnavailable,
+    reassignNoInspectors: visit.bulk.reassignNoInspectors,
     bulkSelectOption: visit.bulk.selectOption,
     bulkCancelNote: visit.bulk.cancelNote,
     bulkCancelPlaceholder: visit.bulk.cancelPlaceholder,

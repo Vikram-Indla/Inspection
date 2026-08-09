@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   queryPlanningVisits, type PlanningListParams, type PlanningListCounts, type PlanningVisitRow,
 } from "@/lib/planning/visit-list";
+import { getPlanningAccess } from "@/lib/planning/access";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 
 export type VisitLookupOption = { readonly key: string; readonly labelEn: string; readonly labelAr: string | null };
@@ -23,9 +24,11 @@ export type VisitManagementData = {
   readonly regions: readonly string[];
   readonly cities: readonly string[];
   readonly inspectors: readonly VisitReassignmentInspector[];
+  readonly reassignmentAvailable: boolean;
 };
 
 const ROSTER_CHUNK = 100;
+const ROSTER_DENIED = "PLANNING-REASSIGN-ROSTER-DENIED";
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
@@ -48,7 +51,10 @@ function toLookups(data: unknown, kind: string): VisitLookupOption[] {
     .filter(option => option.key.length > 0);
 }
 
-async function readReassignmentRoster(sb: SupabaseClient, visitIds: string[]): Promise<VisitReassignmentInspector[]> {
+async function readReassignmentRoster(sb: SupabaseClient, visitIds: string[]): Promise<{
+  available: boolean;
+  inspectors: VisitReassignmentInspector[];
+}> {
   const chunks = Array.from(
     { length: Math.ceil(visitIds.length / ROSTER_CHUNK) },
     (_unused, index) => visitIds.slice(index * ROSTER_CHUNK, index * ROSTER_CHUNK + ROSTER_CHUNK),
@@ -59,8 +65,10 @@ async function readReassignmentRoster(sb: SupabaseClient, visitIds: string[]): P
   const byInspector = new Map<string, { userId: string; fullName: string; eligibleVisitIds: string[] }>();
   for (const result of results) {
     if (result.error) {
-      console.error(`[visits.reassignment-roster] load failed: ${result.error.message}`);
-      continue;
+      if (!result.error.message.includes(ROSTER_DENIED)) {
+        console.error(`[visits.reassignment-roster] load failed: ${result.error.message}`);
+      }
+      return { available: false, inspectors: [] };
     }
     for (const row of rows(result.data)) {
       const userId = text(row, "inspector_id");
@@ -72,7 +80,10 @@ async function readReassignmentRoster(sb: SupabaseClient, visitIds: string[]): P
       byInspector.set(userId, entry);
     }
   }
-  return [...byInspector.values()].sort((a, b) => a.fullName.localeCompare(b.fullName));
+  return {
+    available: true,
+    inspectors: [...byInspector.values()].sort((a, b) => a.fullName.localeCompare(b.fullName)),
+  };
 }
 
 export async function queryVisitManagement(
@@ -80,7 +91,8 @@ export async function queryVisitManagement(
   params: PlanningListParams,
 ): Promise<VisitManagementData | null> {
   const region = params.filters.region;
-  const [list, lookupsRead, regionsRead, citiesRead] = await Promise.all([
+  const [access, list, lookupsRead, regionsRead, citiesRead] = await Promise.all([
+    getPlanningAccess(sb, ["planning.reassign"]),
     queryPlanningVisits(sb, params),
     sb.from("planning_lookups").select("kind, key, label_en, label_ar")
       .in("kind", ["visit_type", "visit_mode"]).eq("is_active", true).order("sort_order"),
@@ -95,7 +107,10 @@ export async function queryVisitManagement(
   if (!list.ok || optionError) return null;
 
   const visible = list.rows.filter(row => !isTestFixtureEstablishment({ name: row.factoryName }));
-  const inspectors = await readReassignmentRoster(sb, visible.map(row => row.id));
+  const canReassign = !access.error && access.can("planning.reassign");
+  const roster = canReassign && visible.length > 0
+    ? await readReassignmentRoster(sb, visible.map(row => row.id))
+    : { available: false, inspectors: [] };
 
   return {
     rows: visible,
@@ -107,6 +122,7 @@ export async function queryVisitManagement(
     visitModes: toLookups(lookupsRead.data, "visit_mode"),
     regions: distinct(rows(regionsRead.data).map(row => text(row, "region"))),
     cities: distinct(rows(citiesRead.data).map(row => text(row, "city"))),
-    inspectors,
+    inspectors: roster.inspectors,
+    reassignmentAvailable: roster.available,
   };
 }

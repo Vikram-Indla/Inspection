@@ -17,9 +17,10 @@ import styles from "./visit-board.module.css";
 
 const EMPTY: ActionResult = {};
 
-export default function VisitBulkActions({ selectedRows, inspectors, visitTypeOptions, strings, routeBase, onClearSelection }: {
+export default function VisitBulkActions({ selectedRows, inspectors, reassignmentAvailable, visitTypeOptions, strings, routeBase, onClearSelection }: {
   selectedRows: readonly VisitBoardRow[];
   inspectors: readonly VisitReassignmentInspector[];
+  reassignmentAvailable: boolean;
   visitTypeOptions: readonly { readonly value: string; readonly label: string }[];
   strings: VisitsBoardStrings;
   routeBase: string;
@@ -111,21 +112,32 @@ export default function VisitBulkActions({ selectedRows, inspectors, visitTypeOp
               <Button type="submit" variant="secondary" disabled={disabled}>{strings.bulkRescheduleBtn}</Button>
             </form>
 
-            <form className={styles.form} action={reassignAction} onSubmit={() => setLastVerb("reassign")}>
-              {hidden}{identityFields("reassign")}
-              <Field label={strings.bulkReassignTo} htmlFor="bulk-inspector">
-                <select id="bulk-inspector" className={styles.control} name="inspector_id">
-                  <option value="">{strings.bulkSelectOption}</option>
-                  {eligibleInspectors.map(inspector => (
-                    <option key={inspector.userId} value={inspector.userId}>{inspector.fullName}</option>
-                  ))}
-                </select>
-              </Field>
-              <Field label={strings.bulkReason} htmlFor="bulk-reassign-reason">
-                <input id="bulk-reassign-reason" className={styles.control} name="mutation_reason" required />
-              </Field>
-              <Button type="submit" variant="secondary" disabled={disabled}>{strings.bulkReassignBtn}</Button>
-            </form>
+            {reassignmentAvailable ? (
+              <form className={styles.form} action={reassignAction} onSubmit={() => setLastVerb("reassign")}>
+                {hidden}{identityFields("reassign")}
+                <Field label={strings.bulkReassignTo} htmlFor="bulk-inspector">
+                  <select id="bulk-inspector" className={styles.control} name="inspector_id">
+                    <option value="">{strings.bulkSelectOption}</option>
+                    {eligibleInspectors.map(inspector => (
+                      <option key={inspector.userId} value={inspector.userId}>{inspector.fullName}</option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label={strings.bulkReason} htmlFor="bulk-reassign-reason">
+                  <input id="bulk-reassign-reason" className={styles.control} name="mutation_reason" required />
+                </Field>
+                <Button type="submit" variant="secondary"
+                  disabled={disabled || eligibleInspectors.length === 0}>{strings.bulkReassignBtn}</Button>
+                {eligibleInspectors.length === 0 ? (
+                  <EmptyState variant="inline" size="sm" title={strings.reassignNoInspectors} />
+                ) : null}
+              </form>
+            ) : (
+              <div className={styles.form}>
+                <EmptyState variant="inline" size="sm" icon="restricted"
+                  title={strings.bulkReassignTo} description={strings.reassignUnavailable} />
+              </div>
+            )}
 
             <form className={styles.form} action={cancelAction} onSubmit={() => setLastVerb("cancel")}>
               {hidden}{identityFields("cancel")}
