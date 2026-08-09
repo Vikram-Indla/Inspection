@@ -156,6 +156,20 @@
     "penaltiesEmpty": "No penalty notice has been issued to this factory",
     "penaltiesRestricted": "Penalty notices are not visible to your role",
     "openStateUnavailable": "Violations carry no open or closed state in the record. Only retracted violations are excluded.",
-    "noDecision": "Not reviewed"
+    "noDecision": "Not reviewed",
+    "trends": "Trends"
+  },
+  "trends": {
+    "title": "Trends",
+    "riskTitle": "Risk trend",
+    "current": "Current",
+    "rising": "+{n} pts vs last calculation",
+    "falling": "−{n} pts vs last calculation",
+    "steady": "No change vs last calculation",
+    "firstCalculation": "First recorded calculation",
+    "noHistory": "No risk calculation has been recorded for this factory.",
+    "complianceTitle": "Compliance trend",
+    "complianceUnavailable": "Not available — no compliance score is recorded for a factory, so there is no series to trend.",
+    "seriesLabel": "Recorded risk scores, oldest first"
   }
 }

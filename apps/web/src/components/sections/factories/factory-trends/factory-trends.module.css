@@ -1,0 +1,85 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-5);
+}
+
+.trend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-4);
+  padding: var(--sqx-inset-control);
+  background: var(--sqx-surface-sunken);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-control);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sqx-space-3);
+}
+
+.title {
+  margin: 0;
+  font: var(--sqx-text-body-strong);
+  color: var(--sqx-text-primary);
+}
+
+.summary {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+  margin: 0;
+}
+
+.current {
+  font: var(--sqx-text-caption);
+  font-variant-numeric: var(--sqx-numeric-tabular);
+  color: var(--sqx-text-muted);
+}
+
+/* The bars are a real ordered list: each carries a visually-hidden label with
+   its recorded value and date, so the series is readable without the chart. */
+.chart {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sqx-space-2);
+  block-size: var(--sqx-space-11);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.column {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  min-inline-size: 0;
+  block-size: 100%;
+}
+
+/* `--sqx-trend-value` carries the recorded score (0–100) as a bare number, the
+   same shape `SegmentedControl` uses for its index — the component supplies
+   data, never a length. A floor keeps a very low score visible as a bar. */
+.bar {
+  inline-size: 100%;
+  block-size: max(var(--sqx-space-2), calc(var(--sqx-trend-value, 0) * 1%));
+  background: var(--sqx-status-pending);
+  border-radius: var(--sqx-radius-xs);
+}
+
+.bar[data-tone="danger"] { background: var(--sqx-status-critical); }
+.bar[data-tone="warning"] { background: var(--sqx-status-warning); }
+.bar[data-tone="success"] { background: var(--sqx-status-compliant); }
+.bar[data-tone="info"] { background: var(--sqx-status-info); }
+
+.note {
+  margin: 0;
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}

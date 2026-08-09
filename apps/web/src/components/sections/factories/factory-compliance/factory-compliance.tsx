@@ -1,3 +1,4 @@
+import { type ReactNode } from "react";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import DataTable, { CellMuted, CellTime, type DataColumn } from "@/components/saqeel/data-table/data-table";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
@@ -55,13 +56,15 @@ export type FactoryComplianceStrings = {
   readonly penaltiesEmpty: string;
   readonly penaltiesRestricted: string;
   readonly openStateUnavailable: string;
+  readonly trends: string;
 };
 
-export default function FactoryCompliance({ reports, violations, penalties, penaltiesReadable, strings }: {
+export default function FactoryCompliance({ reports, violations, penalties, penaltiesReadable, trends, strings }: {
   reports: readonly ComplianceReportRow[];
   violations: readonly ComplianceViolationRow[];
   penalties: readonly CompliancePenaltyRow[];
   penaltiesReadable: boolean;
+  trends: ReactNode;
   strings: FactoryComplianceStrings;
 }) {
   const reportColumns: DataColumn<ComplianceReportRow>[] = [
@@ -131,6 +134,9 @@ export default function FactoryCompliance({ reports, violations, penalties, pena
         ) : (
           <EmptyState icon="restricted" size="sm" title={strings.penaltiesRestricted} />
         )}
+
+        <p className={styles.label}>{strings.trends}</p>
+        {trends}
       </CardBody>
     </Card>
   );

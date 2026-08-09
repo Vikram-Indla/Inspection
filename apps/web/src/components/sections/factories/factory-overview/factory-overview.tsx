@@ -5,14 +5,6 @@ import DefinitionList from "@/components/saqeel/definition-list/definition-list"
 import { titleCase, type FactoryRow } from "@/features/factories/portfolio";
 import styles from "./factory-overview.module.css";
 
-export type FactoryOverviewSection = {
-  readonly key: string;
-  readonly title: string;
-  readonly body: string;
-  readonly openLabel: string;
-  readonly href: string;
-};
-
 export type FactoryOverviewStrings = {
   readonly opened: string;
   readonly plannerNote: string;
@@ -24,12 +16,10 @@ export type FactoryOverviewStrings = {
   readonly viewOnMap: string;
   readonly openProfile: string;
   readonly missing: string;
-  readonly sectionAvailable: string;
 };
 
 export default function FactoryOverview({
   factory,
-  sections,
   snapshot,
   createHref,
   mapHref,
@@ -37,7 +27,6 @@ export default function FactoryOverview({
   strings,
 }: {
   factory: FactoryRow;
-  sections: readonly FactoryOverviewSection[];
   snapshot: ReactNode;
   createHref: string | null;
   mapHref: string;
@@ -81,24 +70,6 @@ export default function FactoryOverview({
       </Card>
 
       {snapshot}
-
-      <div className={styles.sections}>
-        {sections.map(section => (
-          <details className={styles.section} key={section.key}>
-            <summary className={styles.summary}>
-              <span className={styles.summaryText}>
-                <strong className={styles.sectionTitle}>{section.title}</strong>
-                <small className={styles.sectionBody}>{section.body}</small>
-              </span>
-              <span className={styles.marker} aria-hidden="true" />
-            </summary>
-            <div className={styles.sectionContent}>
-              <p className={styles.note}>{strings.sectionAvailable}</p>
-              <Button variant="secondary" size="sm" href={section.href} label={section.openLabel}>{section.openLabel}</Button>
-            </div>
-          </details>
-        ))}
-      </div>
     </>
   );
 }

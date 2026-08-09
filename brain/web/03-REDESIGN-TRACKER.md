@@ -63,13 +63,18 @@ the reference's un-sourced columns (violation open/closed, penalty amount)
 dropped rather than faked, and a **restricted** state for RLS-hidden penalties.
 `record:` [2026-08-09-T-027-factories-compliance-section](sessions/2026-08/2026-08-09-T-027-factories-compliance-section.md)
 
-**Next, before any further `/factories` work:** extract the view models out of
-`RevampFactory360Portfolio.tsx` — **336 lines against a 200-line limit**, ceiling
-400, and mostly view-model construction now.
+**Trends + ordering done (T-028):** a real risk-score trend from the recorded
+snapshot history (compliance trend states its absence — no such score exists),
+and the four disclosures moved to the very end via a new `factory-sections`.
+`record:` [2026-08-09-T-028-factories-trends-and-order](sessions/2026-08/2026-08-09-T-028-factories-trends-and-order.md)
 
-**Remaining slices:** the four disclosure sections in the middle column (they
-only link into the dossier today), trends, and `/factories/cr/[id]`, untouched
-legacy.
+**BLOCKING before any further `/factories` work:** extract the view models out
+of `RevampFactory360Portfolio.tsx` — **361 lines against a 200-line limit**,
+ceiling **400**, and now almost entirely view-model construction. It was 170
+three slices ago. One more slice breaches it.
+
+**Remaining slices:** filling the four disclosure sections (they only link into
+the dossier today), and `/factories/cr/[id]`, untouched legacy.
 
 ---
 

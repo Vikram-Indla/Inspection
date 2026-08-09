@@ -11,9 +11,11 @@ export type RiskSnapshot = {
 export type FactoryRiskMovement = {
   readonly latest: RiskSnapshot;
   readonly previous: RiskSnapshot | null;
+  /** Oldest first, so a chart reads left to right. Only recorded calculations. */
+  readonly series: readonly RiskSnapshot[];
 };
 
-const SNAPSHOTS_PER_FACTORY = 2;
+const SNAPSHOTS_PER_FACTORY = 6;
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
@@ -30,9 +32,9 @@ const numeric = (value: unknown): number | null =>
   (typeof value === "number" && Number.isFinite(value) ? value : null);
 
 /**
- * The two most recent recorded snapshots per factory. Two is all the panel can
- * honestly show: a movement needs a before and an after, and anything beyond
- * that would be a trend line the risk engine has not published.
+ * The most recent recorded snapshots per factory, newest first from the query
+ * and reversed into `series` for display. Nothing is interpolated: a factory
+ * with two calculations gets two bars, not a smoothed line.
  */
 export async function queryFactoryRiskMovement(
   sb: SupabaseClient,
@@ -70,7 +72,11 @@ export async function queryFactoryRiskMovement(
   for (const [factoryId, snapshots] of byFactory) {
     const latest = snapshots[0];
     if (!latest) continue;
-    movement.set(factoryId, { latest, previous: snapshots[1] ?? null });
+    movement.set(factoryId, {
+      latest,
+      previous: snapshots[1] ?? null,
+      series: [...snapshots].reverse(),
+    });
   }
   return movement;
 }

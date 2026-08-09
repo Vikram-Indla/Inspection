@@ -8,6 +8,8 @@ import FactoryContext from "@/components/sections/factories/factory-context/fact
 import FactoryRiskOutlook from "@/components/sections/factories/factory-risk-outlook/factory-risk-outlook";
 import FactoryTrust from "@/components/sections/factories/factory-trust/factory-trust";
 import FactoryOverview from "@/components/sections/factories/factory-overview/factory-overview";
+import FactorySections from "@/components/sections/factories/factory-sections/factory-sections";
+import FactoryTrends from "@/components/sections/factories/factory-trends/factory-trends";
 import FactorySnapshot from "@/components/sections/factories/factory-snapshot/factory-snapshot";
 import FactoryWorkspace from "@/components/sections/factories/factory-workspace/factory-workspace";
 import {
@@ -134,7 +136,6 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
     viewOnMap: copy.action.viewOnMap,
     openProfile: copy.action.openProfile,
     missing: copy.portfolio.missing,
-    sectionAvailable: copy.sections.availableInProfile,
   };
   const openViolations = counts.openViolationsAvailable ? counts.openViolations.get(selected.id) ?? 0 : null;
   const activePenalties = counts.activePenaltiesAvailable ? counts.activePenalties.get(selected.id) ?? 0 : null;
@@ -161,6 +162,19 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
     tone: value === null ? ("neutral" as StatusTone) : tone,
     kind: (value === null ? "text" : "number") as "number" | "text",
   });
+  const trendSeries = (movement?.series ?? []).map((snapshot, index) => ({
+    key: `${snapshot.calculatedAt ?? index}`,
+    value: snapshot.score,
+    label: `${snapshot.score} · ${day(snapshot.calculatedAt)}`,
+  }));
+  const riskChange = movement?.previous ? movement.latest.score - movement.previous.score : null;
+  const riskDelta = riskChange === null
+    ? (movement ? copy.trends.firstCalculation : null)
+    : fill(riskChange > 0 ? copy.trends.rising : riskChange < 0 ? copy.trends.falling : copy.trends.steady,
+      { n: Math.abs(riskChange) });
+  const riskTone: StatusTone = riskChange === null || riskChange === 0
+    ? "neutral"
+    : riskChange > 0 ? "danger" : "success";
   const compliance = complianceByFactory.get(selected.id) ?? { reports: [], violations: [], penalties: [] };
   const DECISION_TONE: Record<string, StatusTone> = { approve: "success", return: "warning", reject: "danger" };
   const LEVEL_TONE: Record<string, StatusTone> = { critical: "danger", major: "warning", minor: "info" };
@@ -305,7 +319,6 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
     >
       <FactoryOverview
         factory={selected}
-        sections={sections}
         snapshot={
           <FactorySnapshot
             condition={condition}
@@ -329,8 +342,19 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
         violations={complianceRows.violations}
         penalties={complianceRows.penalties}
         penaltiesReadable={penaltiesReadable}
+        trends={
+          <FactoryTrends
+            series={trendSeries}
+            current={movement ? String(movement.latest.score) : copy.snapshot.notAvailable}
+            delta={riskDelta}
+            tone={riskTone}
+            strings={copy.trends}
+          />
+        }
         strings={copy.compliance}
       />
+
+      <FactorySections sections={sections} availableLabel={copy.sections.availableInProfile} />
     </FactoryWorkspace>
   );
 }
