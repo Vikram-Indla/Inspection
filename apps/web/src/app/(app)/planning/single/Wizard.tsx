@@ -5,9 +5,12 @@ import { publishSingleVisit, saveSingleDraft, type PublishResult } from "./actio
 import IdentityDossier from "./IdentityDossier";
 import type { ResolvedLicence, ResolvedPortfolio } from "@/lib/planning/factory-resolver";
 import type { Locale } from "@/lib/i18n";
+import Button from "@/components/saqeel/button/button";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import Choice from "@/components/saqeel/choice/choice";
+import DefinitionList from "@/components/saqeel/definition-list/definition-list";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
 import FactoryResults from "@/components/sections/planning-single/factory-results/factory-results";
 import PublishReadiness from "@/components/sections/planning-single/publish-readiness/publish-readiness";
 import VisitConfiguration from "@/components/sections/planning-single/visit-configuration/visit-configuration";
@@ -330,21 +333,13 @@ export default function Wizard({
       <input type="hidden" name="source_channel" value={sourceChannel} />
       <input type="hidden" name="resume_visit_plan_id" value={state.resumeId ?? draftState?.id ?? ""} />
 
-      {draft && (
-        <div className="alert alert-info" role="status">
-          <div>{strings.draftRestored} <bdi>{draft.planReference}</bdi></div>
-        </div>
-      )}
-      {prefillMiss && (
-        <div className="alert alert-warning" role="status">
-          <div>{strings.prefillMiss}</div>
-        </div>
-      )}
-      {adminPackageHandoff && (
-        <div className="alert alert-info" role="status">
-          <div>{strings.adminPackageHandoff} <bdi>{adminPackageHandoff}</bdi></div>
-        </div>
-      )}
+      {draft ? (
+        <PlanningNotice tone="info">{strings.draftRestored} <bdi>{draft.planReference}</bdi></PlanningNotice>
+      ) : null}
+      {prefillMiss ? <PlanningNotice tone="warning">{strings.prefillMiss}</PlanningNotice> : null}
+      {adminPackageHandoff ? (
+        <PlanningNotice tone="info">{strings.adminPackageHandoff} <bdi>{adminPackageHandoff}</bdi></PlanningNotice>
+      ) : null}
 
       <Card as="section" labelledBy="single-visit-search">
         <CardHeader level="h2" titleId="single-visit-search" title={strings.findFactory} />
@@ -395,9 +390,7 @@ export default function Wizard({
         <div className={`panel panel-body ${styles.stepPanel}`}>
           <h4 className="panel-title">{strings.portfolioStep}</h4>
           {handoff && (
-            <div className="alert alert-info" role="status">
-              <div>{strings.prefilledHandoff}</div>
-            </div>
+            <PlanningNotice tone="info">{strings.prefilledHandoff}</PlanningNotice>
           )}
           {portfolios.map(p => (
             <section key={p.id} className={`panel panel-body ${styles.nestedPanel}`}>
@@ -411,7 +404,7 @@ export default function Wizard({
                 </p>
               </header>
               {p.licences.length === 0 ? (
-                <div className="alert alert-warning" role="status"><div>{strings.noLicences}</div></div>
+                <PlanningNotice tone="warning">{strings.noLicences}</PlanningNotice>
               ) : (
                 <>
                   <p className="tl-meta">{strings.selectLicenceHint}</p>
@@ -442,9 +435,7 @@ export default function Wizard({
                     ))}
                   </ul>
                   {licenceId == null && (
-                    <div className="alert alert-info" role="status">
-                      <div>{strings.licenceRequired}</div>
-                    </div>
+                    <PlanningNotice tone="info">{strings.licenceRequired}</PlanningNotice>
                   )}
                 </>
               )}
@@ -478,11 +469,15 @@ export default function Wizard({
       {/* Legacy license step — unchanged: explicit radio when the legacy
           factory carries a license_number, otherwise the CR-only note. */}
       {target?.kind === "legacy" && legacyFactory && (
-        <div className={`panel panel-body ${styles.stepPanel}`}>
-          <h4 className="panel-title">{strings.licenseStep}</h4>
-          {legacyFactory.license_number ? (
-            <>
-              <p className="tl-meta">{strings.licenseSelect}</p>
+        <Card as="section" labelledBy="single-visit-licence">
+          <CardHeader
+            level="h2"
+            titleId="single-visit-licence"
+            title={strings.licenseStep}
+            description={legacyFactory.license_number ? strings.licenseSelect : undefined}
+          />
+          <CardBody>
+            {legacyFactory.license_number ? (
               <Choice
                 kind="radio"
                 name="license_number"
@@ -493,36 +488,46 @@ export default function Wizard({
                 label={<bdi>{legacyFactory.license_number}</bdi>}
                 description={`${strings.licenseLabel} · ${legacyFactory.name}`}
               />
-            </>
-          ) : (
-            <div className="alert alert-info"><div>{strings.licenseNone}</div></div>
-          )}
-        </div>
+            ) : (
+              <PlanningNotice tone="info">{strings.licenseNone}</PlanningNotice>
+            )}
+          </CardBody>
+        </Card>
       )}
       {target && (
-        <div className={`panel panel-body ${styles.stepPanel}`}>
-          <h4 className="panel-title">{strings.locationStep}</h4>
-          {!hasOfficial && (
-            <div className="alert alert-warning"><div>{strings.noOfficialPin}</div></div>
-          )}
-          <dl>
-            <div><dt className="t-caption">{strings.officialAddress}</dt><dd>{target.officialAddress}</dd></div>
-            <div><dt className="t-caption">{strings.officialPin}</dt><dd>{hasOfficial ? <bdi>{target.officialLat}, {target.officialLng}</bdi> : strings.noOfficialPin}</dd></div>
-          </dl>
-          <p className="tl-meta">
-            {strings.locationAuthority}: <bdi>{target.masterSource ?? "—"}</bdi> · {strings.locationReadOnly}
-          </p>
-          <Choice
-            kind="checkbox"
-            name="location_confirmed"
-            value="1"
-            required
-            disabled={!hasOfficial}
-            checked={locationConfirmed}
-            onChange={setLocationConfirmed}
-            label={strings.locationConfirmed}
+        <Card as="section" labelledBy="single-visit-location">
+          <CardHeader
+            level="h2"
+            titleId="single-visit-location"
+            title={strings.locationStep}
+            description={`${strings.locationAuthority}: ${target.masterSource ?? "—"} · ${strings.locationReadOnly}`}
           />
-        </div>
+          <CardBody gap="tight">
+            {!hasOfficial ? <PlanningNotice tone="warning">{strings.noOfficialPin}</PlanningNotice> : null}
+            <DefinitionList
+              columns="two"
+              items={[
+                { label: strings.officialAddress, value: target.officialAddress },
+                {
+                  label: strings.officialPin,
+                  value: hasOfficial
+                    ? <bdi>{target.officialLat}, {target.officialLng}</bdi>
+                    : strings.noOfficialPin,
+                },
+              ]}
+            />
+            <Choice
+              kind="checkbox"
+              name="location_confirmed"
+              value="1"
+              required
+              disabled={!hasOfficial}
+              checked={locationConfirmed}
+              onChange={setLocationConfirmed}
+              label={strings.locationConfirmed}
+            />
+          </CardBody>
+        </Card>
       )}
       {target && configUnlocked && (
         <Card as="section" labelledBy="single-visit-config">
@@ -591,26 +596,34 @@ export default function Wizard({
       )}
 
       {draftSaveFailed && (
-        <div className="alert alert-critical" role="alert"><div>{strings.draftError}</div></div>
+        <PlanningNotice tone="danger">{strings.draftError}</PlanningNotice>
       )}
       {draftJustSaved && draftState && (
         <p className="tl-meta" role="status">{strings.draftSavedPrefix} — <bdi>{draftState.planReference}</bdi> · v{draftState.version}</p>
       )}
 
       {!transitionsExecutable && (
-        <div className="alert alert-warning" role="status">
-          <div><strong>{strings.blockedTitle}</strong></div>
-        </div>
+        <PlanningNotice tone="warning">{strings.blockedTitle}</PlanningNotice>
       )}
       <div className={styles.actionBar}>
-        <button type="button" className="btn btn-secondary btn-touch"
-          disabled={!transitionsExecutable || savingDraft || !target} onClick={onSaveDraft}>
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={!transitionsExecutable || savingDraft || !target}
+          onClick={onSaveDraft}
+          label={strings.saveDraft}
+        >
           {savingDraft ? strings.savingDraft : strings.saveDraft}
-        </button>
-        <button className="btn btn-primary btn-lg btn-touch"
-          disabled={!transitionsExecutable || pending || !publishReady}>
+        </Button>
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          disabled={!transitionsExecutable || pending || !publishReady}
+          label={strings.publish}
+        >
           {pending ? strings.publishing : state.resumeId ? strings.retry : strings.publish}
-        </button>
+        </Button>
       </div>
     </form>
   );
