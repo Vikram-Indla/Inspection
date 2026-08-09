@@ -35,3 +35,9 @@
   color: var(--sqx-text-muted);
   text-wrap: pretty;
 }
+
+.choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--sqx-grid-min-sm), 1fr));
+  gap: var(--sqx-space-1) var(--sqx-space-5);
+}

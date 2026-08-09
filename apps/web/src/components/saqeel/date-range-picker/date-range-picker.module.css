@@ -366,3 +366,11 @@
   outline: none;
   border-color: var(--sqx-border-focus);
 }
+
+.times {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sqx-space-3);
+  padding-inline: var(--sqx-space-4);
+  padding-block-end: var(--sqx-space-3);
+}

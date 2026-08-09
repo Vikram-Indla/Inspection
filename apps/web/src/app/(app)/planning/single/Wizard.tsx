@@ -6,7 +6,9 @@ import IdentityDossier from "./IdentityDossier";
 import type { ResolvedLicence, ResolvedPortfolio } from "@/lib/planning/factory-resolver";
 import type { Locale } from "@/lib/i18n";
 import { formatDate } from "@/lib/dates";
+import { titleCase } from "@/features/factories/portfolio";
 import Button from "@/components/saqeel/button/button";
+import type { DateRangePresetLabels } from "@/components/saqeel/date-range-picker/date-range-presets";
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/saqeel/card/card";
 import Choice from "@/components/saqeel/choice/choice";
 import DefinitionList from "@/components/saqeel/definition-list/definition-list";
@@ -94,7 +96,11 @@ export type WizardStrings = {
   packageLabel: string; packageOptionalHint: string; mode: string; modePhysical: string; modeVirtual: string; modeIneligible: string;
   windowStart: string; windowEnd: string; inspector: string; selectOption: string; autoAssign: string;
   notes: string; notesPlaceholder: string;
-  windowDate: string; windowTime: string; windowHint: string; noPackages: string;
+  windowHint: string; noPackages: string;
+  window: string; windowStartTime: string; windowEndTime: string;
+  windowClear: string; windowApply: string; windowEmpty: string;
+  previousMonth: string; nextMonth: string;
+  presetLabels: DateRangePresetLabels;
   readinessTitle: string; readyIdentity: string; readyLicense: string; readyLocation: string; readyInspector: string;
   gateMet: string; gateUnmet: string; gateOptional: string;
   blockedTitle: string; publish: string; publishing: string; retry: string;
@@ -195,14 +201,21 @@ export default function Wizard({
     modeIneligible: strings.modeIneligible,
     windowStart: strings.windowStart,
     windowEnd: strings.windowEnd,
-    windowDate: strings.windowDate,
-    windowTime: strings.windowTime,
     windowHint: strings.windowHint,
     inspector: strings.inspector,
     autoAssign: strings.autoAssign,
     notes: strings.notes,
     notesPlaceholder: strings.notesPlaceholder,
     noPackages: strings.noPackages,
+    window: strings.window,
+    windowStartTime: strings.windowStartTime,
+    windowEndTime: strings.windowEndTime,
+    windowApply: strings.windowApply,
+    windowClear: strings.windowClear,
+    windowEmpty: strings.windowEmpty,
+    previousMonth: strings.previousMonth,
+    nextMonth: strings.nextMonth,
+    presetLabels: strings.presetLabels,
   };
   const searching = queryInput.trim().length >= 3;
   const joinAddress = (parts: Array<string | null | undefined>) =>
@@ -400,7 +413,7 @@ export default function Wizard({
                 eyebrow={<>{strings.crIdentity} <bdi>{p.crNumber}</bdi></>}
                 title={p.legalNameEn ?? p.legalName ?? p.crNumber}
                 description={`${strings.sourceLabel}: ${p.sourceSystem ?? "—"} · ${strings.freshnessLabel}: ${p.sourceSyncedAt ? formatDate(p.sourceSyncedAt, locale) : strings.freshnessNever}`}
-                trailing={p.status ? <StatusPill tone="neutral">{p.status}</StatusPill> : undefined}
+                trailing={p.status ? <StatusPill tone="neutral">{titleCase(p.status)}</StatusPill> : undefined}
               />
               <CardBody gap="tight">
               {p.licences.length === 0 ? (
@@ -421,7 +434,7 @@ export default function Wizard({
                           label={
                             <span className={styles.choiceLabel}>
                               <bdi>{l.licenseNumber}</bdi>
-                              {l.status ? <StatusPill tone="info">{l.status}</StatusPill> : null}
+                              {l.status ? <StatusPill tone="info">{titleCase(l.status)}</StatusPill> : null}
                             </span>
                           }
                           description={
@@ -584,6 +597,7 @@ export default function Wizard({
                 title: entry.packages.title,
               }))}
               eligibility={{ physical: physicalEligible, virtual: virtualEligible }}
+              locale={locale === "ar" ? "ar" : "en"}
               strings={configStrings}
             />
           </CardBody>

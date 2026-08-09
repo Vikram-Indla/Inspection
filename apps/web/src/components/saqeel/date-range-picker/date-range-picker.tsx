@@ -3,6 +3,7 @@
 import { useId, useRef, useState, type KeyboardEvent } from "react";
 import Icon from "../icon/icon";
 import IconButton from "../icon-button/icon-button";
+import SaqeelSelect from "../select/select";
 import MenuSurface from "../menu-surface/menu-surface";
 import PingDot from "../ping-dot/ping-dot";
 import CalendarMonth, { isoOf } from "./calendar-month";
@@ -38,6 +39,18 @@ export type DateRangePickerProps = {
   strings?: DateRangeStrings;
   disabled?: boolean;
   align?: "start" | "end";
+  /**
+   * Show a time control beside each end of the range.
+   *
+   * Off, `from`/`to` stay plain `YYYY-MM-DD` and nothing about the picker
+   * changes. On, they carry `YYYY-MM-DDTHH:mm` — the `datetime-local` shape —
+   * so a caller that needs an instant rather than a day uses the same picker
+   * instead of a parallel one.
+   */
+  withTime?: boolean;
+  /** Minutes between selectable times. Ignored unless `withTime`. */
+  timeStep?: number;
+  timeLabels?: { from: string; to: string };
 };
 
 const DEFAULT_STRINGS: DateRangeStrings = {
@@ -53,6 +66,27 @@ const DEFAULT_STRINGS: DateRangeStrings = {
 function shift(iso: string, days: number): string {
   const base = new Date(`${iso}T00:00:00`);
   return isoOf(new Date(base.getFullYear(), base.getMonth(), base.getDate() + days));
+}
+
+const MINUTES_IN_DAY = 24 * 60;
+const DEFAULT_TIME_STEP = 30;
+
+const dayPart = (value: string) => value.split("T")[0] ?? "";
+const timePart = (value: string) => (value.split("T")[1] ?? "").slice(0, 5);
+const withDay = (value: string, day: string, withTime: boolean) =>
+  !day ? "" : withTime ? `${day}T${timePart(value) || "00:00"}` : day;
+
+function timeChoices(step: number, locale: "ar" | "en") {
+  const format = new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit", hour12: false });
+  return Array.from({ length: Math.floor(MINUTES_IN_DAY / step) }, (_unused, index) => {
+    const minutes = index * step;
+    const hour = String(Math.floor(minutes / 60)).padStart(2, "0");
+    const minute = String(minutes % 60).padStart(2, "0");
+    return {
+      value: `${hour}:${minute}`,
+      label: format.format(new Date(2000, 0, 1, Number(hour), Number(minute))),
+    };
+  });
 }
 
 function addMonths(value: Date, count: number): Date {
@@ -71,6 +105,9 @@ export default function DateRangePicker({
   strings = DEFAULT_STRINGS,
   disabled,
   align = "start",
+  withTime = false,
+  timeStep = DEFAULT_TIME_STEP,
+  timeLabels,
 }: DateRangePickerProps) {
   const panelId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -79,17 +116,19 @@ export default function DateRangePicker({
   const [draftTo, setDraftTo] = useState(to);
   const [editing, setEditing] = useState<"from" | "to">("from");
   const todayIso = isoOf(new Date());
-  const [cursor, setCursor] = useState(() => new Date(`${from || todayIso}T00:00:00`));
+  const [cursor, setCursor] = useState(() => new Date(`${dayPart(from) || todayIso}T00:00:00`));
+  const draftFromDay = dayPart(draftFrom);
+  const draftToDay = dayPart(draftTo);
 
   const formatDay = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" });
-  const readable = (iso: string): string =>
-    iso ? formatDay.format(new Date(`${iso}T00:00:00`)) : strings.empty;
+  const readable = (value: string): string =>
+    dayPart(value) ? formatDay.format(new Date(`${dayPart(value)}T00:00:00`)) : strings.empty;
 
   function open(): void {
     setDraftFrom(from);
     setDraftTo(to);
     setEditing("from");
-    setCursor(new Date(`${from || todayIso}T00:00:00`));
+    setCursor(new Date(`${dayPart(from) || todayIso}T00:00:00`));
     setIsOpen(true);
   }
 
@@ -100,17 +139,17 @@ export default function DateRangePicker({
 
   function pick(iso: string): void {
     if (editing === "from") {
-      setDraftFrom(iso);
-      if (draftTo && iso > draftTo) setDraftTo("");
+      setDraftFrom(current => withDay(current, iso, withTime));
+      if (draftToDay && iso > draftToDay) setDraftTo("");
       setEditing("to");
       return;
     }
-    if (draftFrom && iso < draftFrom) {
-      setDraftFrom(iso);
+    if (draftFromDay && iso < draftFromDay) {
+      setDraftFrom(current => withDay(current, iso, withTime));
       setEditing("to");
       return;
     }
-    setDraftTo(iso);
+    setDraftTo(current => withDay(current, iso, withTime));
   }
 
   function applyPreset(preset: DateRangePreset): void {
@@ -214,7 +253,27 @@ export default function DateRangePicker({
             </button>
           </div>
 
+          {withTime ? (
+            <div className={styles.times}>
+              <SaqeelSelect
+                options={timeChoices(timeStep, locale)}
+                value={timePart(draftFrom)}
+                onChange={next => setDraftFrom(current => dayPart(current) ? `${dayPart(current)}T${next}` : current)}
+                label={timeLabels?.from ?? strings.from}
+                disabled={!draftFromDay}
+              />
+              <SaqeelSelect
+                options={timeChoices(timeStep, locale)}
+                value={timePart(draftTo)}
+                onChange={next => setDraftTo(current => dayPart(current) ? `${dayPart(current)}T${next}` : current)}
+                label={timeLabels?.to ?? strings.to}
+                disabled={!draftToDay}
+              />
+            </div>
+          ) : null}
+
           <div className={styles.body}>
+            {presets.length > 0 ? (
             <div className={styles.presets}>
               {presets.map(preset => (
                 <button
@@ -228,6 +287,7 @@ export default function DateRangePicker({
                 </button>
               ))}
             </div>
+            ) : null}
 
             <div className={styles.months}>
               <span className={styles.monthNav}>
@@ -242,20 +302,20 @@ export default function DateRangePicker({
               <CalendarMonth
                 month={cursor}
                 locale={locale}
-                from={draftFrom}
-                to={draftTo}
+                from={draftFromDay}
+                to={draftToDay}
                 todayIso={todayIso}
-                pendingIso={editing === "to" && !draftTo ? draftFrom : null}
+                pendingIso={editing === "to" && !draftToDay ? draftFromDay : null}
                 onPick={pick}
                 onKeyDown={onGridKeyDown}
               />
               <CalendarMonth
                 month={addMonths(cursor, 1)}
                 locale={locale}
-                from={draftFrom}
-                to={draftTo}
+                from={draftFromDay}
+                to={draftToDay}
                 todayIso={todayIso}
-                pendingIso={editing === "to" && !draftTo ? draftFrom : null}
+                pendingIso={editing === "to" && !draftToDay ? draftFromDay : null}
                 onPick={pick}
                 onKeyDown={onGridKeyDown}
               />

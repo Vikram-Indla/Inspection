@@ -248,7 +248,8 @@
       "editNotes": "ملاحظات جديدة",
       "editNotesPlaceholder": "اتركه فارغًا للمسح",
       "editSetNotes": "تحديث الملاحظات",
-      "editBtn": "تطبيق على المحدَّد"
+      "editBtn": "تطبيق على المحدَّد",
+      "windowEmpty": "لم يُحدَّد أي نطاق"
     },
     "elig": {
       "heading": "معاينة الأهلية",

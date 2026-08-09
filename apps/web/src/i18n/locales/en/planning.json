@@ -248,7 +248,8 @@
       "editNotes": "New notes",
       "editNotesPlaceholder": "Leave blank to clear",
       "editSetNotes": "Update notes",
-      "editBtn": "Apply to selected"
+      "editBtn": "Apply to selected",
+      "windowEmpty": "No window chosen"
     },
     "elig": {
       "heading": "Eligibility preview",

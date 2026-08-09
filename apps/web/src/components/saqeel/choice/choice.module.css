@@ -20,7 +20,10 @@
 }
 
 .box {
+  display: flex;
   flex: none;
+  align-items: center;
+  justify-content: center;
   position: relative;
   inline-size: var(--sqx-choice-size);
   block-size: var(--sqx-choice-size);
@@ -50,11 +53,9 @@
 
 .input:checked ~ .box[data-kind="checkbox"]::after {
   content: "";
-  position: absolute;
-  inset-block-start: 12%;
-  inset-inline-start: 32%;
-  inline-size: 28%;
+  inline-size: 30%;
   block-size: 55%;
+  margin-block-start: -15%;
   border-inline-end: var(--sqx-border-width-thick) solid var(--sqx-action-primary-text);
   border-block-end: var(--sqx-border-width-thick) solid var(--sqx-action-primary-text);
   transform: rotate(45deg);
@@ -62,8 +63,8 @@
 
 .input:checked ~ .box[data-kind="radio"]::after {
   content: "";
-  position: absolute;
-  inset: 25%;
+  inline-size: 45%;
+  block-size: 45%;
   background: var(--sqx-action-primary-text);
   border-radius: var(--sqx-radius-full);
 }

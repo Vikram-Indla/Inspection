@@ -1,6 +1,7 @@
 "use client";
 import Choice from "@/components/saqeel/choice/choice";
-import DateTimeField from "@/components/saqeel/date-time-field/date-time-field";
+import DateRangePicker from "@/components/saqeel/date-range-picker/date-range-picker";
+import { upcomingDateRangePresets, type DateRangePresetLabels } from "@/components/saqeel/date-range-picker/date-range-presets";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import Field from "@/components/saqeel/field/field";
 import SaqeelSelect, { type SelectOption } from "@/components/saqeel/select/select";
@@ -25,8 +26,15 @@ export type VisitConfigurationStrings = {
   readonly modeIneligible: string;
   readonly windowStart: string;
   readonly windowEnd: string;
-  readonly windowDate: string;
-  readonly windowTime: string;
+  readonly window: string;
+  readonly windowStartTime: string;
+  readonly windowEndTime: string;
+  readonly windowClear: string;
+  readonly windowApply: string;
+  readonly windowEmpty: string;
+  readonly previousMonth: string;
+  readonly nextMonth: string;
+  readonly presetLabels: DateRangePresetLabels;
   readonly windowHint: string;
   readonly inspector: string;
   readonly autoAssign: string;
@@ -56,9 +64,10 @@ export type VisitConfigurationValue = {
  * such counter.
  */
 export default function VisitConfiguration({
-  value, onChange, visitTypeOptions, inspectorOptions, packages, eligibility, strings,
+  value, onChange, visitTypeOptions, inspectorOptions, packages, eligibility, locale, strings,
 }: {
   value: VisitConfigurationValue;
+  locale: "ar" | "en";
   onChange: (next: VisitConfigurationValue) => void;
   visitTypeOptions: readonly SelectOption[];
   inspectorOptions: readonly SelectOption[];
@@ -68,6 +77,16 @@ export default function VisitConfiguration({
 }) {
   const set = <K extends keyof VisitConfigurationValue>(key: K, next: VisitConfigurationValue[K]) =>
     onChange({ ...value, [key]: next });
+
+  const readableWindow = (value: string) => {
+    const [day, time] = value.split("T");
+    if (!day) return strings.windowEmpty;
+    const date = new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(`${day}T00:00:00`));
+    return time ? `${date} ${time}` : date;
+  };
+  const windowDisplay = value.windowStart || value.windowEnd
+    ? `${readableWindow(value.windowStart)} — ${readableWindow(value.windowEnd)}`
+    : strings.windowEmpty;
 
   const togglePackage = (id: string, checked: boolean) =>
     set("packageIds", checked
@@ -125,46 +144,50 @@ export default function VisitConfiguration({
         />
       </fieldset>
 
-      <div className={styles.fields}>
-        <DateTimeField
-          name="window_start"
-          value={value.windowStart}
-          onChange={next => set("windowStart", next)}
-          label={strings.windowStart}
-          dateLabel={strings.windowDate}
-          timeLabel={strings.windowTime}
-          required
-        />
-        <DateTimeField
-          name="window_end"
-          value={value.windowEnd}
-          onChange={next => set("windowEnd", next)}
-          label={strings.windowEnd}
-          dateLabel={strings.windowDate}
-          timeLabel={strings.windowTime}
-          min={value.windowStart || undefined}
-          hint={strings.windowHint}
-          required
-        />
-      </div>
+      <DateRangePicker
+        from={value.windowStart}
+        to={value.windowEnd}
+        onChange={range => onChange({ ...value, windowStart: range.from, windowEnd: range.to })}
+        label={strings.window}
+        displayValue={windowDisplay}
+        presets={upcomingDateRangePresets(strings.presetLabels)}
+        locale={locale}
+        monthLabels={{ previous: strings.previousMonth, next: strings.nextMonth }}
+        strings={{
+          from: strings.windowStart,
+          to: strings.windowEnd,
+          pickStart: strings.windowStart,
+          pickEnd: strings.windowEnd,
+          reset: strings.windowClear,
+          apply: strings.windowApply,
+          empty: strings.windowEmpty,
+        }}
+        timeLabels={{ from: strings.windowStartTime, to: strings.windowEndTime }}
+        withTime
+      />
+      <p className={styles.hint}>{strings.windowHint}</p>
 
       <fieldset className={styles.group}>
         <legend className={styles.legend}>{strings.packageLabel}</legend>
         <p className={styles.hint}>{strings.packageOptionalHint}</p>
         {packages.length === 0 ? (
           <EmptyState variant="inline" size="sm" title={strings.noPackages} />
-        ) : packages.map(entry => (
-          <Choice
-            key={entry.id}
-            kind="checkbox"
-            name="package_version_choice"
-            value={entry.id}
-            label={entry.title}
-            description={`${entry.code} · ${entry.versionLabel}`}
-            checked={value.packageIds.includes(entry.id)}
-            onChange={checked => togglePackage(entry.id, checked)}
-          />
-        ))}
+        ) : (
+          <div className={styles.choices}>
+            {packages.map(entry => (
+              <Choice
+                key={entry.id}
+                kind="checkbox"
+                name="package_version_choice"
+                value={entry.id}
+                label={entry.title}
+                description={`${entry.code} · ${entry.versionLabel}`}
+                checked={value.packageIds.includes(entry.id)}
+                onChange={checked => togglePackage(entry.id, checked)}
+              />
+            ))}
+          </div>
+        )}
       </fieldset>
 
       <Field label={strings.notes} htmlFor="single-visit-notes">

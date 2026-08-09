@@ -1,100 +1,143 @@
 "use client";
-// CD-022 — Identity dossier: identifier grid + provenance + official
-// location (map with mandatory text equivalent) + risk context (advisory
-// only) + duplicate/overlap guard + Factory 360 deep link. Composed inside
-// the comparison rail in Wizard.tsx; nothing here mutates the registry —
-// coordinates remain external-master data (M01-038).
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import type { GeoMarkerData } from "@/components/GeoMap";
-import type { GradedFactory, WizardStrings } from "./Wizard";
+import Button from "@/components/saqeel/button/button";
+import { Card, CardBody, CardFooter, CardHeader } from "@/components/saqeel/card/card";
+import DefinitionList from "@/components/saqeel/definition-list/definition-list";
+import SegmentedControl, { type SegmentedItem } from "@/components/saqeel/segmented-control/segmented-control";
+import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
+import { titleCase } from "@/features/factories/portfolio";
 import { formatDate } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
+import type { GradedFactory, WizardStrings } from "./Wizard";
+import styles from "./single-planning.module.css";
 
 const GeoMap = dynamic(() => import("@/components/GeoMap"), { ssr: false });
 
+const RIYADH_CENTRE: readonly [number, number] = [24.7136, 46.6753];
+const OFFICIAL_ZOOM = 14;
+const REGION_ZOOM = 6;
+
+type DossierView = "text" | "map";
+
+/**
+ * The identity dossier shown under a selected candidate.
+ *
+ * Nothing here mutates the registry — coordinates stay external-master data
+ * (M01-038) — and the risk band is advisory context, never a scheduling gate.
+ *
+ * The text equivalent is the default view, not a fallback. The map runtime is
+ * large, and mounting it during a scheduling transaction competes with the
+ * publish action for the main thread; the planner opts into it.
+ */
 export default function IdentityDossier({
   factory, strings, locale,
 }: {
-  factory: GradedFactory; strings: WizardStrings; locale: Locale;
+  factory: GradedFactory;
+  strings: WizardStrings;
+  locale: Locale;
 }) {
-  // Keep the evidence-equivalent text view immediately available during the
-  // scheduling transaction. Mapbox GL is a large client runtime; mounting it
-  // only after the Planner explicitly selects Map prevents its initialization
-  // from monopolising the main thread while the Publish action is being used.
-  const [view, setView] = useState<"map" | "text">("text");
+  const [view, setView] = useState<DossierView>("text");
   const hasOfficial = factory.official_lat != null && factory.official_lng != null;
-  const markers: GeoMarkerData[] = [
-    ...(hasOfficial ? [{
-      id: "official", lat: factory.official_lat as number, lng: factory.official_lng as number,
-      label: `${strings.officialPin} — ${factory.name}`,
-      tone: (factory.risk_band === "high" ? "high" : factory.risk_band === "medium" ? "medium" : "low") as GeoMarkerData["tone"],
-      radiusM: factory.geofence_radius_m ?? undefined,
-    }] : []),
-  ];
-  const center: [number, number] = hasOfficial
+
+  const markers: GeoMarkerData[] = hasOfficial
+    ? [{
+        id: "official",
+        lat: factory.official_lat as number,
+        lng: factory.official_lng as number,
+        label: `${strings.officialPin} — ${factory.name}`,
+        tone: (factory.risk_band === "high" ? "high" : factory.risk_band === "medium" ? "medium" : "low") as GeoMarkerData["tone"],
+        radiusM: factory.geofence_radius_m ?? undefined,
+      }]
+    : [];
+
+  const centre: [number, number] = hasOfficial
     ? [factory.official_lat as number, factory.official_lng as number]
-    : [24.7136, 46.6753];
+    : [...RIYADH_CENTRE] as [number, number];
+
+  const [mapLabel, textLabel] = strings.mapToggle.split(" / ");
+  const views: SegmentedItem<DossierView>[] = [
+    { value: "text", label: textLabel ?? strings.textEquivalent },
+    { value: "map", label: mapLabel ?? strings.mapToggle },
+  ];
 
   return (
-    <div className="panel panel-body" role="region" aria-label={factory.name}>
-      <div>
-        <strong className="panel-title">{factory.name}</strong>
-        {factory.grade === "exact"
-          ? <span className="badge badge-compliant">{strings.exactBadge}</span>
-          : <span className="badge badge-warning">{strings.similarBadge}</span>}
-        {factory.degraded && <span className="badge badge-critical">{strings.degradedBadge}</span>}
-        <p className="tl-meta">{factory.grade === "exact" ? strings.exactRule : strings.similarRule}</p>
-      </div>
+    <Card as="section" labelledBy={`dossier-${factory.id}`}>
+      <CardHeader
+        level="h3"
+        titleId={`dossier-${factory.id}`}
+        title={factory.name}
+        description={factory.grade === "exact" ? strings.exactRule : strings.similarRule}
+        trailing={
+          <span className={styles.choiceLabel}>
+            <StatusPill tone={factory.grade === "exact" ? "success" : "warning"}>
+              {factory.grade === "exact" ? strings.exactBadge : strings.similarBadge}
+            </StatusPill>
+            {factory.degraded ? <StatusPill tone="danger">{strings.degradedBadge}</StatusPill> : null}
+          </span>
+        }
+      />
+      <CardBody gap="tight">
+        <DefinitionList
+          columns="two"
+          items={[
+            { label: strings.crPrefix, value: <bdi>{factory.cr_number ?? "—"}</bdi> },
+            { label: strings.licenseLabel, value: <bdi>{factory.license_number ?? strings.licenseNone}</bdi> },
+            { label: strings.factory360, value: <bdi>{factory.factory_code ?? "—"}</bdi> },
+            {
+              label: strings.locationAuthority,
+              value: <bdi>{factory.master_source ?? "—"}</bdi>,
+            },
+            {
+              label: strings.freshnessLabel,
+              value: factory.source_synced_at
+                ? <bdi>{formatDate(factory.source_synced_at, locale)}</bdi>
+                : strings.freshnessNever,
+            },
+            {
+              label: strings.riskContext,
+              value: `${factory.risk_band ? titleCase(factory.risk_band) : strings.riskUnknown}${factory.risk_score != null ? ` (${factory.risk_score})` : ""}`,
+            },
+          ]}
+        />
 
-      {/* Identifier grid — bdi-isolated so LTR codes read correctly inside Arabic labels */}
-      <dl>
-        <div><dt className="tl-meta">{strings.crPrefix}</dt><dd><bdi>{factory.cr_number ?? "—"}</bdi></dd></div>
-        <div><dt className="tl-meta">{strings.licenseLabel}</dt><dd><bdi>{factory.license_number ?? strings.licenseNone}</bdi></dd></div>
-        <div><dt className="tl-meta">{strings.factory360}</dt><dd><bdi>{factory.factory_code ?? "—"}</bdi></dd></div>
-        <div><dt className="tl-meta">{factory.region ?? "—"}{factory.city ? `, ${factory.city}` : ""}</dt></div>
-      </dl>
-
-      {/* Provenance — real FND-013 freshness; no invented staleness threshold */}
-      <p className="tl-meta">
-        {strings.locationAuthority}: <bdi>{factory.master_source ?? "—"}</bdi>
-        {" · "}{strings.freshnessLabel}: <bdi>{factory.source_synced_at ? formatDate(factory.source_synced_at, locale) : strings.freshnessNever}</bdi>
-        {" · "}{strings.locationReadOnly}
-      </p>
-
-      {factory.duplicate && (
-        <div className="alert alert-warning" role="status">
-          <div>
+        {factory.duplicate ? (
+          <PlanningNotice tone="warning">
             {strings.duplicateWarning}
-            {factory.duplicateVisitId && (
-              <>
-                {factory.duplicateVisitStatus && <> · {strings.duplicateStatusLabel}: <bdi>{factory.duplicateVisitStatus}</bdi></>}{" "}
-                <a href={`/visits/${factory.duplicateVisitId}`} target="_blank" rel="noopener noreferrer">{strings.duplicateOpenVisit}</a>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+            {factory.duplicateVisitStatus ? <> · {strings.duplicateStatusLabel}: <bdi>{titleCase(factory.duplicateVisitStatus)}</bdi></> : null}
+          </PlanningNotice>
+        ) : null}
 
-      <div>
-        <div className="seg" role="group" aria-label={strings.mapToggle}>
-          <button className="seg-opt" type="button" aria-pressed={view === "map"} onClick={() => setView("map")}>{strings.mapToggle.split(" / ")[0]}</button>
-          <button className="seg-opt" type="button" aria-pressed={view === "text"} onClick={() => setView("text")}>{strings.mapToggle.split(" / ")[1]}</button>
-        </div>
+        <SegmentedControl items={views} value={view} label={strings.mapToggle} onChange={setView} />
+
         {view === "map" ? (
-          <div className="map-panel">
-            <GeoMap center={center} zoom={hasOfficial ? 14 : 6} markers={markers} height="100%" />
+          <div className={styles.mapFrame}>
+            <GeoMap center={centre} zoom={hasOfficial ? OFFICIAL_ZOOM : REGION_ZOOM} markers={markers} height="100%" />
           </div>
         ) : (
-          <ul className="timeline" aria-label={strings.textEquivalent}>
-            <li>{strings.officialPin}: {hasOfficial ? <bdi>{factory.official_lat}, {factory.official_lng}</bdi> : strings.noOfficialPin}</li>
-          </ul>
+          <p className={styles.hint}>
+            {strings.officialPin}:{" "}
+            {hasOfficial ? <bdi>{factory.official_lat}, {factory.official_lng}</bdi> : strings.noOfficialPin}
+          </p>
         )}
-      </div>
-
-      <p className="tl-meta">{strings.riskContext}: {factory.risk_band ?? strings.riskUnknown}{factory.risk_score != null ? ` (${factory.risk_score})` : ""}</p>
-
-      <a href={`/factories/${factory.id}`} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">{strings.factory360}</a>
-    </div>
+      </CardBody>
+      <CardFooter>
+        <Button variant="secondary" size="sm" href={`/factories/${factory.id}`} label={strings.factory360}>
+          {strings.factory360}
+        </Button>
+        {factory.duplicate && factory.duplicateVisitId ? (
+          <Button
+            variant="link"
+            size="sm"
+            href={`/visits/${factory.duplicateVisitId}`}
+            label={strings.duplicateOpenVisit}
+          >
+            {strings.duplicateOpenVisit}
+          </Button>
+        ) : null}
+      </CardFooter>
+    </Card>
   );
 }

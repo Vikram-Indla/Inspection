@@ -8,15 +8,19 @@ import type { VisitReassignmentInspector } from "@/features/visits/queries";
 import VisitSpine from "./visit-spine";
 import VisitTable from "./visit-table";
 import VisitBulkActions from "./visit-bulk-actions";
+import type { DateRangePreset } from "@/components/saqeel/date-range-picker/date-range-picker";
 import styles from "./visit-board.module.css";
 
-export default function VisitBoard({ rows, inspectors, reassignmentAvailable, visitTypeOptions, total, shown, nextHref, strings, routeBase }: {
+export default function VisitBoard({ rows, inspectors, reassignmentAvailable, visitTypeOptions, total, shown, nextHref, strings, routeBase, locale, datePresets, monthLabels }: {
   rows: readonly VisitBoardRow[];
   inspectors: readonly VisitReassignmentInspector[];
   reassignmentAvailable: boolean;
   visitTypeOptions: readonly { readonly value: string; readonly label: string }[];
   total: number;
   shown: number;
+  locale: "ar" | "en";
+  datePresets: readonly DateRangePreset[];
+  monthLabels: { previous: string; next: string };
   nextHref: string | null;
   strings: VisitsBoardStrings;
   routeBase: string;
@@ -53,6 +57,9 @@ export default function VisitBoard({ rows, inspectors, reassignmentAvailable, vi
           visitTypeOptions={visitTypeOptions}
           strings={strings}
           routeBase={routeBase}
+          locale={locale}
+          datePresets={datePresets}
+          monthLabels={monthLabels}
           onClearSelection={() => setSelected(new Set())}
         />
       ) : null}

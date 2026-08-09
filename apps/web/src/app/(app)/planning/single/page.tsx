@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
@@ -446,8 +447,23 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     gateMet: t("plan.single.gateMet", "Met"),
     gateUnmet: t("plan.single.gateUnmet", "Not met"),
     gateOptional: t("plan.single.gateOptional", "Optional"),
-    windowDate: t("plan.single.windowDate", "Date"),
-    windowTime: t("plan.single.windowTime", "Time"),
+    presetLabels: {
+      today: t("common.scope.today", "Today"),
+      last7Days: t("common.scope.last7Days", "Last 7 days"),
+      last30Days: t("common.scope.last30Days", "Last 30 days"),
+      last90Days: t("common.scope.last90Days", "Last 90 days"),
+      lastYear: t("common.scope.lastYear", "Last year"),
+      next7Days: t("common.scope.next7Days", "Next 7 days"),
+      next30Days: t("common.scope.next30Days", "Next 30 days"),
+    },
+    window: t("plan.single.window", "Visit window"),
+    windowStartTime: t("plan.single.windowStartTime", "Start time"),
+    windowEndTime: t("plan.single.windowEndTime", "End time"),
+    windowApply: t("plan.single.windowApply", "Apply window"),
+    windowClear: t("plan.single.windowClear", "Clear"),
+    windowEmpty: t("plan.single.windowEmpty", "No date chosen"),
+    previousMonth: t("plan.single.previousMonth", "Previous month"),
+    nextMonth: t("plan.single.nextMonth", "Next month"),
     windowHint: t("plan.single.windowHint", "The window must end after it starts."),
     noPackages: t("plan.single.noPackages", "No inspection package is published for this scope."),
     readinessTitle: t("plan.single.readinessTitle", "Readiness"),
@@ -475,7 +491,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   };
   return (
     <Shell current="/planning" title={t("plan.single.title", "Plan a single visit")}
-      context={<span className="sq-lozenge sq-lozenge--info">{t("plan.single.context", "Single visit planning")}</span>}>
+      context={<StatusPill tone="info">{t("plan.single.context", "Single visit planning")}</StatusPill>}>
       <Wizard
         query={q}
         portfolios={portfolios}

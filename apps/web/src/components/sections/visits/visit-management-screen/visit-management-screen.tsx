@@ -144,6 +144,9 @@ export default async function VisitManagementScreen({ data, params, sp, routeBas
           nextHref={nextLimit === null ? null : visitHref(routeBase, sp, { limit: String(nextLimit) })}
           strings={buildVisitsBoardStrings(locale)}
           routeBase={routeBase}
+          locale={locale === "ar" ? "ar" : "en"}
+          datePresets={windowDateRangePresets(getMessages(locale).common.scope)}
+          monthLabels={{ previous: getMessages(locale).common.action.previousMonth, next: getMessages(locale).common.action.nextMonth }}
         />
       )}
     </Stack>

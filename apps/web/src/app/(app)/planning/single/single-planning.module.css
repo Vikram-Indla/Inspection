@@ -298,3 +298,10 @@
   justify-content: space-between;
   gap: var(--space-3);
 }
+
+.mapFrame {
+  block-size: 260px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}

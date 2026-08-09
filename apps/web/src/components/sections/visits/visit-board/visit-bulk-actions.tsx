@@ -4,6 +4,9 @@ import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import Button from "@/components/saqeel/button/button";
 import Field from "@/components/saqeel/field/field";
 import SaqeelSelect from "@/components/saqeel/select/select";
+import DateRangePicker from "@/components/saqeel/date-range-picker/date-range-picker";
+import type { DateRangePreset } from "@/components/saqeel/date-range-picker/date-range-picker";
+import { formatDate } from "@/lib/dates";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import {
@@ -18,18 +21,22 @@ import styles from "./visit-board.module.css";
 
 const EMPTY: ActionResult = {};
 
-export default function VisitBulkActions({ selectedRows, inspectors, reassignmentAvailable, visitTypeOptions, strings, routeBase, onClearSelection }: {
+export default function VisitBulkActions({ selectedRows, inspectors, reassignmentAvailable, visitTypeOptions, strings, routeBase, locale, datePresets, monthLabels, onClearSelection }: {
   selectedRows: readonly VisitBoardRow[];
   inspectors: readonly VisitReassignmentInspector[];
   reassignmentAvailable: boolean;
   visitTypeOptions: readonly { readonly value: string; readonly label: string }[];
   strings: VisitsBoardStrings;
   routeBase: string;
+  locale: "ar" | "en";
+  datePresets: readonly DateRangePreset[];
+  monthLabels: { previous: string; next: string };
   onClearSelection: () => void;
 }) {
   const [lastVerb, setLastVerb] = useState<BulkVerb | null>(null);
   const [inspectorId, setInspectorId] = useState("");
   const [visitType, setVisitType] = useState("");
+  const [window, setWindow] = useState({ from: "", to: "" });
   const [identity, setIdentity] = useState<Record<BulkVerb, { key: string; correlation: string }> | null>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
 
@@ -74,6 +81,15 @@ export default function VisitBulkActions({ selectedRows, inspectors, reassignmen
       <input type="hidden" name="correlation_id" value={identity[verb].correlation} />
     </>
   );
+  const readableWindow = (value: string) => {
+    const [day, time] = value.split("T");
+    if (!day) return strings.bulkWindowEmpty;
+    const date = formatDate(`${day}T00:00:00`, locale);
+    return time ? `${date} ${time}` : date;
+  };
+  const windowDisplay = window.from || window.to
+    ? `${readableWindow(window.from)} — ${readableWindow(window.to)}`
+    : strings.bulkWindowEmpty;
   const disabled = busy || !identity;
 
   return (
@@ -103,12 +119,29 @@ export default function VisitBulkActions({ selectedRows, inspectors, reassignmen
           <div className={styles.forms}>
             <form className={styles.form} action={rescheduleAction} onSubmit={() => setLastVerb("reschedule")}>
               {hidden}{identityFields("reschedule")}
-              <Field label={strings.bulkWindowStart} htmlFor="bulk-window-start">
-                <input id="bulk-window-start" className={styles.control} type="datetime-local" name="window_start" />
-              </Field>
-              <Field label={strings.bulkWindowEnd} htmlFor="bulk-window-end">
-                <input id="bulk-window-end" className={styles.control} type="datetime-local" name="window_end" />
-              </Field>
+              <input type="hidden" name="window_start" value={window.from} />
+              <input type="hidden" name="window_end" value={window.to} />
+              <DateRangePicker
+                from={window.from}
+                to={window.to}
+                onChange={setWindow}
+                label={strings.bulkWindowStart}
+                displayValue={windowDisplay}
+                presets={datePresets}
+                locale={locale}
+                monthLabels={monthLabels}
+                strings={{
+                  from: strings.bulkWindowStart,
+                  to: strings.bulkWindowEnd,
+                  pickStart: strings.bulkWindowStart,
+                  pickEnd: strings.bulkWindowEnd,
+                  reset: strings.clearSelection,
+                  apply: strings.bulkRescheduleBtn,
+                  empty: strings.bulkWindowEmpty,
+                }}
+                timeLabels={{ from: strings.bulkWindowStart, to: strings.bulkWindowEnd }}
+                withTime
+              />
               <Field label={strings.bulkReason} htmlFor="bulk-reschedule-reason">
                 <input id="bulk-reschedule-reason" className={styles.control} name="mutation_reason" required />
               </Field>
