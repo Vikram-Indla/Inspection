@@ -1,3 +1,4 @@
+import AdminShell from "@/app/(app)/admin/_components/AdminShell";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import { Skeleton, SkeletonRegion } from "@/components/saqeel/skeleton/skeleton";
 import { getMessages } from "@/i18n/messages";
@@ -9,21 +10,23 @@ const ROWS = 4;
 export default async function Loading() {
   const { enforcement } = getMessages(await getLocale());
   return (
-    <SkeletonRegion label={enforcement.loading}>
-      {Array.from({ length: CARDS }, (_unused, card) => (
-        <Card as="div" key={card}>
-          <CardHeader
-            eyebrow={<Skeleton shape="line" width="narrow" size="sm" />}
-            title={<Skeleton shape="line" width="wide" size="lg" />}
-            trailing={<Skeleton shape="pill" width="narrow" />}
-          />
-          <CardBody gap="tight">
-            {Array.from({ length: ROWS }, (_ignored, row) => (
-              <Skeleton key={row} shape="line" width={row % 2 === 0 ? "full" : "wide"} size="sm" />
-            ))}
-          </CardBody>
-        </Card>
-      ))}
-    </SkeletonRegion>
+    <AdminShell current="/admin/violations" title={enforcement.catalogue.catalogueTab}>
+      <SkeletonRegion label={enforcement.loading}>
+        {Array.from({ length: CARDS }, (_unused, card) => (
+          <Card as="div" key={card}>
+            <CardHeader
+              eyebrow={<Skeleton shape="line" width="narrow" size="sm" />}
+              title={<Skeleton shape="line" width="wide" size="lg" />}
+              trailing={<Skeleton shape="pill" width="narrow" />}
+            />
+            <CardBody gap="tight">
+              {Array.from({ length: ROWS }, (_ignored, row) => (
+                <Skeleton key={row} shape="line" width={row % 2 === 0 ? "full" : "wide"} size="sm" />
+              ))}
+            </CardBody>
+          </Card>
+        ))}
+      </SkeletonRegion>
+    </AdminShell>
   );
 }
