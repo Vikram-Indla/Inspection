@@ -2,7 +2,7 @@
    Geometry is taken verbatim from designs/pwa/pwa/SAQEEL PWA-Field Visit
    Results.dc.html — .vr-wrap / .vr-card / .vr-h / .fld / .vr-grid2 / .vr-opt /
    .vr-ind / .vr-radios and the two inline row styles. Colours are SAQEEL DS
-   tokens only; the design's one bare #fff (the gate checkmark stroke) resolves
+   tokens only; the design's one bare plain white (the gate checkmark stroke) resolves
    to --text-on-action here. */
 
 /* .vr-wrap */

@@ -168,6 +168,12 @@ export default function FieldSettingsClient({
       {/* Data & Storage — no device-storage API here; no fake size or clear action */}
       <SectionLabel>{copy(locale, "Data & Storage", "البيانات والتخزين")}</SectionLabel>
       <div className={styles.card}>
+        <Link href="/field/settings/readiness" prefetch={false} className={styles.link}>
+          <span className={styles.rowLabel}>{copy(locale, "Device readiness", "جاهزية الجهاز")}</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15, color: "var(--text-muted)", flex: "none" }} aria-hidden="true">
+            <path d={chevron} />
+          </svg>
+        </Link>
         <GovernedRow label={copy(locale, "Storage used", "المساحة المستخدمة")} note={notConfigured} />
         <GovernedRow label={copy(locale, "Clear cache", "مسح الذاكرة المؤقتة")} note={notConfigured} />
       </div>
