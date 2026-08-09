@@ -204,7 +204,7 @@
       "unresolved": "Unresolved identity",
       "emptyTitle": "No inspectors in scope",
       "empty": "No inspector assignments are visible in this scope.",
-      "action": "Open Execution, grouped by inspector"
+      "action": "Open Execution"
     }
   }
 }

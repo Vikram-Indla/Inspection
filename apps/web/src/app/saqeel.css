@@ -281,7 +281,7 @@
     --sqx-text-primary: var(--sqx-grey-800);
     --sqx-text-secondary: var(--sqx-grey-700);
     --sqx-text-muted: var(--sqx-grey-600);
-    --sqx-text-disabled: var(--sqx-grey-500);
+    --sqx-text-disabled: var(--sqx-grey-600);
     --sqx-text-inverse: #FFFFFF;
     --sqx-text-on-action: #FFFFFF;
     --sqx-text-link: var(--sqx-brand-600);
@@ -423,7 +423,7 @@
     --sqx-text-primary: #FFFFFF;
     --sqx-text-secondary: var(--sqx-grey-400);
     --sqx-text-muted: var(--sqx-grey-500);
-    --sqx-text-disabled: var(--sqx-grey-600);
+    --sqx-text-disabled: var(--sqx-grey-500);
     --sqx-text-inverse: var(--sqx-grey-900);
     --sqx-text-on-action: var(--sqx-brand-950);
     --sqx-text-link: var(--sqx-brand-200);

@@ -24,7 +24,7 @@ export default function EmptyState({ icon, glyph, title, body, inline, bare, chi
   const inner = (
     <div className={inline ? "sq-state sq-state--inline" : "sq-state"} role={role} aria-busy={ariaBusy}>
       <span className="sq-state__glyph" aria-hidden="true">{icon ?? glyph}</span>
-      <h4>{title}</h4>
+      <h2>{title}</h2>
       {body ? <p className="t-caption">{body}</p> : null}
       {children}
     </div>

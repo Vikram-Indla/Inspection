@@ -1,5 +1,6 @@
 import {
   Bell,
+  Bookmark,
   Building2,
   CalendarDays,
   Check,
@@ -10,6 +11,7 @@ import {
   ClipboardCheck,
   ClipboardList,
   Command,
+  Download,
   Factory,
   FileText,
   Gavel,
@@ -23,6 +25,7 @@ import {
   Monitor,
   Moon,
   Radar,
+  RotateCw,
   Search,
   Shield,
   ShieldCheck,
@@ -74,6 +77,9 @@ export const ICONS = {
   regionScope: MapPin,
   dateScope: CalendarDays,
   commandPalette: Command,
+  refresh: RotateCw,
+  export: Download,
+  savedViews: Bookmark,
 } as const;
 
 export type IconName = keyof typeof ICONS;

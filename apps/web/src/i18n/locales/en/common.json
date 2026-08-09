@@ -31,7 +31,15 @@
   },
   "scope": {
     "allRegions": "All Regions",
-    "last30Days": "Last 30 days"
+    "last30Days": "Last 30 days",
+    "last7Days": "Last 7 days",
+    "nextMonth": "Next month",
+    "previousMonth": "Previous month",
+    "thisMonth": "This month",
+    "thisQuarter": "This quarter",
+    "thisYear": "This year",
+    "today": "Today",
+    "yesterday": "Yesterday"
   },
   "state": {
     "empty": "Nothing yet",

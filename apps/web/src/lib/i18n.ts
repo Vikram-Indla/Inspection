@@ -83,6 +83,18 @@ export type Dict = Record<string, string>;
 // catalogue values still override these reviewed fallbacks.
 const MVP3_AR_FALLBACK: Dict = {
   "mvp3.schema.pending": "لم يُطبّق عقد قاعدة بيانات MVP3 في هذه البيئة. لا يتم استنتاج أي بيانات.",
+  "mvp3.integrations.senaiData": "إدارة بيانات «صناعي»",
+  "mvp3.integrations.factoryData": "تكامل بيانات المصانع واستيرادها",
+  "mvp3.integrations.registryError": "تعذّرت قراءة سجل نقاط التكامل. قد تظل بيانات الأحداث والتصدير أدناه متاحة.",
+  "mvp3.integrations.updated": "سُجّل",
+  "mvp3.integrations.eventsError": "تعذّرت قراءة أحداث واجهة البرمجة. هذه بيانات غير متاحة، وليست سجل أحداث فارغًا.",
+  "mvp3.integrations.exportsError": "تعذّرت قراءة مهام التصدير. هذه بيانات غير متاحة، وليست سجل تصدير فارغًا.",
+  "mvp3.operations.sourcesUnavailable": "بعض مصادر البيانات غير متاحة.",
+  "mvp3.operations.sourcesUnavailableBody": "المصادر غير المتاحة مدرجة أدناه، ولا تُعرض أبدًا كصفر أو كنتيجة فارغة.",
+  "mvp3.operations.sourceUnavailable": "هذا المصدر غير متاح. قد توجد سجلات لا يمكن عرضها.",
+  "mvp3.devices.registerUnavailable": "السجل غير متاح",
+  "mvp3.devices.controlledRows": "صفوف خاضعة للضبط",
+  "mvp3.devices.commandsUnavailable": "أدلة الأوامر غير متاحة. لا تُستنتج أي حالة أوامر.",
   "mvp3.integrations.title": "وحدة تحكم موثوقية التكامل",
   "mvp3.integrations.truth": "التهيئة لا تعني الاتصال.",
   "mvp3.integrations.truthBody": "لا تصبح نقطة التكامل مهيأة إلا بعقد معتمد وعنوان تشغيل. لا تُعرض الأسرار هنا مطلقاً.",

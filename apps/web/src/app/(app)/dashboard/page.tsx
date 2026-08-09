@@ -6,8 +6,6 @@ import { readDashboardScope, type DashboardScopeInput } from "@/features/dashboa
 import { getMessages } from "@/i18n/messages";
 import { getLocale } from "@/lib/i18n";
 
-export const dynamic = "force-dynamic";
-
 export default async function DashboardPage({ searchParams }: {
   searchParams: Promise<DashboardScopeInput>;
 }) {
