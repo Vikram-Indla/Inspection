@@ -1,5 +1,5 @@
-import { type CSSProperties } from "react";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
+import TrendBars from "@/components/saqeel/trend-bars/trend-bars";
 import styles from "./factory-trends.module.css";
 
 export type TrendPoint = {
@@ -7,8 +7,6 @@ export type TrendPoint = {
   readonly value: number;
   readonly label: string;
 };
-
-type BarStyle = CSSProperties & Record<"--sqx-trend-value", string>;
 
 export type FactoryTrendsStrings = {
   readonly title: string;
@@ -45,18 +43,11 @@ export default function FactoryTrends({ series, current, delta, tone, strings }:
         {series.length === 0 ? (
           <p className={styles.note}>{strings.noHistory}</p>
         ) : (
-          <ol className={styles.chart} aria-label={strings.seriesLabel}>
-            {series.map(point => (
-              <li className={styles.column} key={point.key}>
-                <span
-                  className={styles.bar}
-                  data-tone={tone}
-                  style={{ "--sqx-trend-value": String(point.value) } as BarStyle}
-                />
-                <span className="sqx-visually-hidden">{point.label}</span>
-              </li>
-            ))}
-          </ol>
+          <TrendBars
+            points={series.map(point => ({ key: point.key, percent: point.value, label: point.label }))}
+            tone={tone}
+            label={strings.seriesLabel}
+          />
         )}
       </section>
 

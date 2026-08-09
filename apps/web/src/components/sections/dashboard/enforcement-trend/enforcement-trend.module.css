@@ -1,0 +1,19 @@
+.summary {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
+.current {
+  font: var(--sqx-text-caption);
+  font-variant-numeric: var(--sqx-numeric-tabular);
+  color: var(--sqx-text-muted);
+}
+
+.footnote {
+  margin: 0;
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}

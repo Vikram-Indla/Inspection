@@ -5,14 +5,43 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getGeminiProvider } from "@/lib/providers/ai-gemini";
 import { logProviderError, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
 
-export type ContextualSurface = "planning_summary" | "preparation_assistant" | "inspection_item_explanation" | "factory_risk_explanation" | "inspector_daily_briefing" | "visit_management_summary";
+export type ContextualSurface = "planning_summary" | "preparation_assistant" | "inspection_item_explanation" | "factory_risk_explanation" | "inspector_daily_briefing" | "visit_management_summary" | "executive_brief";
 export type ContextualResult = { ok?: boolean; error?: string; text?: string; insightId?: string; providerStatus?: string };
 
 const parseRefs = (value: FormDataEntryValue | null) => String(value ?? "").split(",").map(x => x.trim()).filter(Boolean).slice(0, 30);
 
+const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
+
+type ReportingPeriod = { readonly from: string; readonly to: string };
+
+function readPeriod(formData: FormData): ReportingPeriod | null {
+  const from = String(formData.get("period_from") ?? "");
+  const to = String(formData.get("period_to") ?? "");
+  if (!ISO_DAY.test(from) || !ISO_DAY.test(to) || from > to) return null;
+  return { from, to };
+}
+
+/**
+ * `penalty_notices` is invisible to most roles, and RLS returns an empty set
+ * rather than an error. Saying so keeps the model from reading a denied read as
+ * an absence of enforcement.
+ */
+async function countIssued(
+  sb: Awaited<ReturnType<typeof supabaseServer>>,
+  period: ReportingPeriod,
+  region: string,
+): Promise<number | "not readable by this role"> {
+  const query = sb.from("penalty_notices")
+    .select(region ? "id, factories!inner(region)" : "id", { count: "exact", head: true })
+    .gte("issued_at", `${period.from}T00:00:00.000Z`)
+    .lte("issued_at", `${period.to}T23:59:59.999Z`);
+  const { count, error } = await (region ? query.eq("factories.region", region) : query);
+  return error ? "not readable by this role" : count ?? 0;
+}
+
 export async function generateContextualInsight(_: ContextualResult, formData: FormData): Promise<ContextualResult> {
   const surface = String(formData.get("surface") ?? "") as ContextualSurface;
-  if (!["planning_summary", "preparation_assistant", "inspection_item_explanation", "factory_risk_explanation", "inspector_daily_briefing", "visit_management_summary"].includes(surface)) return { error: "Unsupported advisory surface." };
+  if (!["planning_summary", "preparation_assistant", "inspection_item_explanation", "factory_risk_explanation", "inspector_daily_briefing", "visit_management_summary", "executive_brief"].includes(surface)) return { error: "Unsupported advisory surface." };
   const clientContext = String(formData.get("context") ?? "").trim();
   const evidenceRefs = parseRefs(formData.get("evidence_refs"));
   const targetRef = String(formData.get("target_ref") ?? "").trim() || null;
@@ -105,6 +134,25 @@ export async function generateContextualInsight(_: ContextualResult, formData: F
       route: "No routing geometry was supplied. Do not invent a route or travel order.",
       rule: "Summarize only. Do not alter assignment, priority, timing, visit state, geofence, inspection or risk truth.",
     });
+  } else if (surface === "executive_brief") {
+    const period = readPeriod(formData);
+    if (!period) return { error: "A valid reporting period is required." };
+    const region = String(formData.get("region") ?? "").trim();
+    const [notices, inspections, factories] = await Promise.all([
+      countIssued(sb, period, region),
+      sb.from("inspections").select("id", { count: "exact", head: true })
+        .gte("submitted_at", `${period.from}T00:00:00.000Z`).lte("submitted_at", `${period.to}T23:59:59.999Z`),
+      sb.from("factories").select("id", { count: "exact", head: true }),
+    ]);
+    if (inspections.error || factories.error) return { error: "Dashboard source unavailable — no advisory was generated or stored." };
+    serverContext = JSON.stringify({
+      period,
+      region: region || null,
+      penalty_notices_issued: notices,
+      inspections_submitted: inspections.count ?? 0,
+      factories_in_scope: factories.count ?? 0,
+      rule: "Summarize the movement in these recorded counts only. Do not attribute a cause, name a responsible party, cite a regulation, forecast, or recommend enforcement.",
+    });
   } else {
     const { data: visits, error } = await sb.from("visits").select("id, planning_status, operational_state, window_start, window_end, visit_plan_id, factories(name, region, city)").order("window_start", { ascending: true }).limit(1000);
     if (error) return { error: "Visit-management source unavailable — no advisory was generated or stored." };
@@ -116,7 +164,7 @@ export async function generateContextualInsight(_: ContextualResult, formData: F
   if (!generated.ok || !generated.text) return { error: `AI provider did not return a usable advisory (${generated.reason ?? "unknown"}).` };
   const { data, error } = await sb.from("ai_suggestions").insert({
     surface,
-    target_type: surface === "planning_summary" ? "bulk_plan_review" : surface === "preparation_assistant" ? "visit_prestart" : surface === "inspection_item_explanation" ? "inspection_item" : surface === "factory_risk_explanation" ? "factory_risk_profile" : surface === "inspector_daily_briefing" ? "inspector_daily_briefing" : "visit_management_summary",
+    target_type: surface === "planning_summary" ? "bulk_plan_review" : surface === "preparation_assistant" ? "visit_prestart" : surface === "inspection_item_explanation" ? "inspection_item" : surface === "factory_risk_explanation" ? "factory_risk_profile" : surface === "inspector_daily_briefing" ? "inspector_daily_briefing" : surface === "executive_brief" ? "executive_brief" : "visit_management_summary",
     target_ref: surface === "inspector_daily_briefing" ? user.id : targetRef,
     suggestion: {
       text: generated.text,

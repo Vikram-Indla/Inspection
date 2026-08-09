@@ -10,6 +10,25 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-035 · `/dashboard` — enforcement trend + executive AI brief
+`status: done (static verification only)` · `rules: WEB-000…004, WEB-008, WEB-009, WEB-011` · `est: 1.5h`
+`record:` [2026-08-09-T-035-dashboard-enforcement-trend-and-brief](sessions/2026-08/2026-08-09-T-035-dashboard-enforcement-trend-and-brief.md)
+
+The two placeholder cards at the end of the strategic view are gone. The
+**enforcement trend** counts `penalty_notices.issued_at` over the scoped period
+against the immediately preceding period of equal length, and renders a
+**restricted** state — never a zero — for roles RLS hides the table from. The
+**executive brief** is a real governed advisory on a new `executive_brief`
+surface, generated on demand, with every fact re-read server-side under the
+caller's RLS and a prompt that forbids attributing a cause. New `trend-bars`
+primitive (Rule of Two: `factory-trends` + dashboard).
+
+**Owed before this can be called fully done:** the screen exercised in the dev
+server as both a penalty-readable and a penalty-blind role, axe, Arabic review,
+and the bundle measurement request.
+
+---
+
 ### T-021a · Visit Management — server-driven list, filters and board
 `status: done (static verification only)` · `rules: WEB-000…004, WEB-008, WEB-009, WEB-011, WEB-012` · `est: 5h`
 `record:` [2026-08-09-T-021a-visit-management-server-filters](sessions/2026-08/2026-08-09-T-021a-visit-management-server-filters.md)

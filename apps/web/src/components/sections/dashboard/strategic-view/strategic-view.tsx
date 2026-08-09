@@ -1,9 +1,10 @@
-import { Card, CardBody, CardFooter, CardGrid, CardHeader } from "@/components/saqeel/card/card";
-import Button from "@/components/saqeel/button/button";
+import { Card, CardBody, CardGrid, CardHeader } from "@/components/saqeel/card/card";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import type { SegmentedItem } from "@/components/saqeel/segmented-control/segmented-control";
 import { complianceBreakdown, type FactoryRef, type ResponseRow } from "@/app/(app)/dashboard/metrics";
 import { buildMetricStrip, metricStripStrings, STRATEGIC_REQUIREMENT_IDS } from "@/features/dashboard/strip";
+import { enforcementTrendView, type EnforcementTrend } from "@/features/dashboard/enforcement-trend";
+import { buildBriefContext } from "@/features/dashboard/executive-brief";
 import type { DashboardLens, DashboardScope } from "@/features/dashboard/scope";
 import { scopeToSearchParams, DASHBOARD_LENSES } from "@/features/dashboard/scope";
 import { fill, getMessages } from "@/i18n/messages";
@@ -14,6 +15,8 @@ import styles from "./strategic-view.module.css";
 import MetricStrip from "../metric-strip/metric-strip";
 import MetricCard, { MetricCardModel, MetricCardStrings } from "../metric-card/metric-card";
 import ComplianceExplorer from "../compliance-explorer/compliance-explorer";
+import EnforcementTrendCard from "../enforcement-trend/enforcement-trend";
+import ExecutiveBrief from "../executive-brief/executive-brief";
 
 type DashboardMetrics = ReturnType<typeof import("@/app/(app)/dashboard/metrics").buildDashboardMetrics>;
 
@@ -21,13 +24,14 @@ function percentOrNull(value: number | null): string | null {
   return value === null ? null : `${value}%`;
 }
 
-export default function StrategicView({ locale, scope, metrics, projection, factories, partialSources }: {
+export default function StrategicView({ locale, scope, metrics, projection, factories, partialSources, enforcementTrend }: {
   locale: Locale;
   scope: DashboardScope;
   metrics: DashboardMetrics;
   projection: DashboardKpiProjection;
   factories: readonly FactoryRef[];
   partialSources: readonly string[];
+  enforcementTrend: EnforcementTrend;
 }) {
   const { common, dashboard } = getMessages(locale);
   const strategic = metrics.strategic;
@@ -37,6 +41,13 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
     scope.lens,
     dashboard.explorer.notRecorded,
   );
+
+  const enforcement = enforcementTrendView(enforcementTrend, dashboard.trend);
+  const briefContext = buildBriefContext(scope, enforcementTrend, {
+    completedInspections: strategic.completedInspections,
+    criticalFactories: strategic.criticalFactories.length,
+    factories: factories.length,
+  });
 
   const lensHref = (lens: DashboardLens) => {
     const query = scopeToSearchParams(scope);
@@ -123,6 +134,16 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
         </CardBody>
       </Card>
 
+      <EnforcementTrendCard
+        points={enforcement.points}
+        currentLabel={enforcement.currentLabel}
+        comparison={enforcement.comparison}
+        tone={enforcement.tone}
+        readable={enforcementTrend.readable}
+        libraryHref={localeHref(locale, "/enforcement-library")}
+        strings={dashboard.trend}
+      />
+
       <ComplianceExplorer
         rows={rows}
         lenses={lenses}
@@ -152,28 +173,13 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
         </CardBody>
       </Card>
 
-      <CardGrid min="lg">
-        <Card as="section">
-          <CardHeader level="h2" title={dashboard.enforcement.title} />
-          <CardBody gap="tight">
-            <StatusPill tone="warning" ping>{dashboard.enforcement.blockedTitle}</StatusPill>
-            <p className={styles.text}>{dashboard.enforcement.blockedDetail}</p>
-          </CardBody>
-          <CardFooter>
-            <Button variant="secondary" size="sm" href={localeHref(locale, "/enforcement-library")} label={dashboard.enforcement.action}>
-              {dashboard.enforcement.action}
-            </Button>
-          </CardFooter>
-        </Card>
-        <Card as="section">
-          <CardHeader level="h2" eyebrow={dashboard.aiBrief.eyebrow} title={dashboard.aiBrief.title} />
-          <CardBody gap="tight">
-            <StatusPill tone="accent" ping>{common.state.notConfigured}</StatusPill>
-            <p className={styles.text}>{dashboard.aiBrief.detail}</p>
-            <p className={styles.footnote}>{dashboard.aiBrief.footnote}</p>
-          </CardBody>
-        </Card>
-      </CardGrid>
+      <ExecutiveBrief
+        locale={locale}
+        context={briefContext}
+        period={{ from: scope.scope.fromDate, to: scope.scope.toDate }}
+        region={scope.region}
+        strings={dashboard.executive}
+      />
 
       <Card as="section" labelledBy="dashboard-requirement-coverage">
         <CardHeader

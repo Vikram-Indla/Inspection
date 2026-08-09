@@ -1,6 +1,34 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-09` · `Updated by: T-021a — Visit Management`
+`Last updated: 2026-08-09` · `Updated by: T-035 — dashboard trend + executive brief`
+
+## Where the dashboard stands (2026-08-09)
+
+`/dashboard?view=strategic` no longer ends in two placeholders. The
+**enforcement action trend** is computed from `penalty_notices.issued_at` over
+the scoped period against the immediately preceding period of equal length, and
+the **executive AI brief** is a real governed advisory on the `executive_brief`
+surface, generated on demand.
+
+Two rulings from that work generalise:
+
+- **An empty result under RLS is not an absence of facts.** `penalty_notices` is
+  invisible to most roles and returns an empty set rather than an error. Any
+  query over a role-gated table must carry a `readable` flag, and the screen
+  must render a restricted state — not a zero. The same flag goes into any AI
+  context built from that table.
+- **A client field may be a filter; it is never a fact.** The executive brief's
+  hidden `context` is convenience only: `generateContextualInsight` re-reads
+  every figure under the caller's RLS and accepts from the client only the
+  reporting period, validated as an ISO day with `from <= to`.
+
+`RevampStrategicView.tsx` and `DashboardView.tsx` still hold the old
+placeholders in legacy markup, but both are unreachable — `DashboardView`
+returns before its remaining hundred-plus lines, and `page.tsx` imports neither.
+They belong to the retirement sweep.
+
+---
+
 
 > **The tracker's NOW section below is older than the work.** Since the last
 > status refresh, `/dashboard`, `/operations`, `/factories` (list **and**

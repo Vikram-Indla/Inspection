@@ -132,6 +132,7 @@ directory is closed.
 | `kbd` | hardened | 9 | `text.code` on `--sqx-font-mono`, sunken, `--sqx-radius-inline`. `min-inline-size` pending `--sqx-kbd-min-w`. |
 | `menu-surface` | hardened | 102 + 32 | **The single raised panel behind every menu** (WEB-009 §13). Owns the three dismissal behaviours no caller may reimplement: outside `pointerdown` close, `Escape` close with focus return to the trigger, optional focus trap. **Portalled and fixed (T-022):** the panel renders into `document.body` via `createPortal` and is positioned `fixed` from the trigger's viewport rect. This is structural, not cosmetic — `.sq-shell__main` is `overflow-y: auto`, and **an absolutely-positioned element cannot escape a clipping ancestor**, so no `z-index` or placement flip could have fixed the menu being cut off; `Card`'s hover `transform` was a second trap, since it would have become the containing block for a non-portalled fixed panel. `place()` writes `--sqx-menu-top`/`--sqx-menu-start`, flips above/below on the real gap each side, clamps to the viewport, and re-runs on capture-phase `scroll` so the panel tracks its trigger. `--sqx-menu-start` is measured from whichever edge `inset-inline-start` resolves to, so one declaration serves both directions, and `align="end"` hangs from the **left** in RTL (the edge is the alignment XOR the direction). **`trapFocus` now also moves focus into the panel** — a portalled panel sits at the end of the body, so Tab from the trigger would otherwise skip it entirely. Rows reserve the check gutter on unselected items so labels share one axis (§12) — **the gutter is at the row's end (T-021c)**, not its start, which was leaving dead space at the leading edge of every unselected row. A row's optional `count` renders as a **superscript `CountBadge` inside** the label rather than a full-size one beside it. `menu-row.tsx` sits beside it. |
 | `count-badge` | hardened | 24 + 45 | Number chip on `--sqx-grey-a16` / `--sqx-radius-sm`, tones `neutral` / `accent` / `danger`. **`superscript` (T-021c)** renders `<sup>` and swaps to a smaller box (`--sqx-space-5`, `--sqx-radius-xs`, `--sqx-text-overline`) while reusing the *same* surface and tone declarations — so the two shapes cannot drift in light or dark. The variant owns its `margin-inline-start`: that is typographic spacing binding the badge to the preceding word, and a primitive accepts no `className` (WEB-002 §4.5) so a call site could not supply it. Consumers: `select`, `menu-row`, `factories-scope-bar`. |
+| `trend-bars` | hardened | 45 + 33 | **The two-caller bar chart (T-035).** Existed once inside `factory-trends`; `/dashboard`'s enforcement trend is the second caller, so it was promoted under the Rule of Two rather than copied. **Callers pass a pre-scaled `percent`, never raw values** — what a bar is measured against is a truth question (a governed 0–100 risk scale for factories; the taller of two periods for enforcement, because no enforcement target is published) and it belongs to the caller. A primitive that picked its own scale would silently decide what a chart claims. The chart is an `<ol>` with an `aria-label`, every bar carrying a visually-hidden label, so the series reads without the graphic. Height is `calc(var(--sqx-trend-value) * 1%)` off a **bare-number** custom property, the same shape `SegmentedControl` uses for its index, with a `--sqx-space-2` floor so a very small value stays a bar rather than a hairline. Tone maps to the seven status roles. |
 | `select` | hardened | 145 | No native `select`. `button role="combobox"` driving a `role="listbox"` surface with `aria-activedescendant`. Full APG: Space/Enter/↓ opens · arrows move · Home/End jump · letter type-ahead · Enter selects · Escape returns focus · Tab closes. **The selected option's count is a superscript `CountBadge` inside the trigger's value (T-021c)**, so the trigger reads as one value rather than a value plus a separate object. |
 | `date-range-presets` | hardened | 28 | **The one preset vocabulary** (T-021d), beside the picker that consumes it. `pastDateRangePresets` (Today · Last 7 · Last 30 · Last 90 days · Last year), `upcomingDateRangePresets` (Next 7/30 days), `windowDateRangePresets` (both — for filters over a span that crosses today, like the visit window). Labels are passed in and live once in `common.scope`. Before this, the shell, `/planning` and Visit Management each defined their own set inline — seven, three and zero respectively. **Calendar periods are deliberately absent:** `DateRangePreset` only expresses "N days from today", so a "this month" label would promise behaviour the primitive cannot deliver. |
 | `date-range-picker` | hardened | 157 + 75 | No `input type="date"`. Presets column plus a 42-cell `button` grid (`calendar-month.tsx`). `Intl.NumberFormat` renders Arabic-Indic digits; in-range week caps use logical corner radii so the range mirrors in RTL. |
@@ -194,6 +195,205 @@ record** — see `02-SESSION-LOG.md`.
 | Component | Kind | Lines | Notes |
 | --- | --- | --- | --- |
 | `saqeel/status-pill` | server | 34 + 57 | **One size, no `size` prop.** Geometry is what `size="sm"` used to be: `--sqx-space-6` min height, `--sqx-space-2` inline padding, `--sqx-text-caption`. The `md` rung existed, six call sites defaulted into it, and the dashboard shipped two pill sizes side by side. A prop whose only correct value is one value is not a variant — it is a defect waiting to happen, so it is gone rather than defaulted. `ping` (default `true`) renders `PingDot`, which animates transform/opacity only and hides under `prefers-reduced-motion`. Tone stays the closed seven-role union. **Alignment (2026-08-08):** no `align-self` — the pill defers to its parent's `align-items`, so it centres in header/legend/inline rows; `vertical-align: middle` for inline runs; `inline-size: fit-content` alone prevents column-stretch. **Padding (2026-08-09, T-021c):** one symmetric `padding-inline: --sqx-space-3` for every pill. `[data-ping]` previously overrode **only** `padding-inline-start`, so every pinging pill carried twice the air at its leading edge and sat its last letter on the border; the ping variant now adjusts `gap` alone. One padding, no variant. |
+| `dashboard/enforcement-trend` | server | 58 + 19 | **Replaced the "Trend unavailable" placeholder (T-035).** Counts `penalty_notices` issued in the scoped period against the **immediately preceding period of equal length** — not a fixed quarter, so the comparison follows whatever range the officer chose. The old card was right that no *violation* carries a governed official issue date; a penalty notice does. **An empty read is never a zero:** `penalty_notices` is invisible to most roles and RLS returns an empty set rather than an error, so `queryEnforcementTrend` returns `readable` and the card falls to a `restricted` `EmptyState` instead of charting zeros. A rise is `warning` and a fall `success` — not a verdict on enforcement, but on which movement wants reading; no baseline reads "No baseline in the previous period" rather than `+0%`. Keeps the "Open Enforcement Library" action the placeholder carried. |
+| `dashboard/executive-brief` | **client** | 65 + 27 | **Replaced the "Provider output withheld" placeholder (T-035).** One `useActionState` over the existing `generateContextualInsight` server action on a new `executive_brief` surface — **generated on demand**, so no dashboard render spends a provider call. The hidden `context` field is convenience only: the action **re-reads every fact under the caller's RLS** (penalty notices, submitted inspections, factories) and takes from the client only the reporting period, validated as `^d{4}-d{2}-d{2}# 04 — Component Ledger
+
+The catalogue of the SAQEEL design system. **Check this before building
+anything.** A component that exists is never rebuilt; a component that is
+missing is built once, here, and used everywhere.
+
+Root: `apps/web/src/components/saqeel/` · Barrel: `components/saqeel/index.ts`
+Contract every entry must satisfy: `rules/WEB-002-design-system.md` §4.
+
+Status values:
+
+- `hardened` — meets the WEB-002 §4 primitive contract, CSS Module, axe-clean,
+  dark + RTL verified, ledger row complete
+- `inherited` — exists and is in use, not yet audited against the contract
+- `to-build` — needed by the tracker, does not exist yet
+- `domain` — knows about the business; belongs in `components/<domain>/`, not here
+
+---
+
+## actions/
+
+| Component | Status | Notes |
+| --- | --- | --- |
+| `Button` | inherited | accepts `className` — must lose the escape hatch (WEB-002 §4.5). **`variant="link"` (T-025)**: a text action for prose — no fill, no inline padding, so the label sits on the same start edge as the paragraphs around it, and hover underlines rather than painting a background. Added instead of changing `tertiary`, which carries a hover fill that is correct in the control rows where it is used everywhere else. Consumers: the planning and factories AI advisories. |
+| `IconButton` | to-build | currently a `Button` variant; needs its own labelling contract |
+| `ButtonGroup` | inherited | |
+| `SplitButton` | inherited | |
+
+## inputs/
+
+| Component | Status | Notes |
+| --- | --- | --- |
+| `Field` | inherited | owns label/description/error wiring — audit against WEB-003 §5 |
+| `Input`, `TextArea` | inherited | |
+| `Select` | inherited | |
+| `Combobox` | inherited | audit APG keyboard contract |
+| `Choice` (Checkbox, Radio) | inherited | |
+| `Switch` | to-build | extract from `Choice`; full toggle contract |
+| `SegmentedControl` | inherited | audit arrow-key navigation |
+| `FileUpload` | inherited | |
+| `DateRangePicker` | inherited | |
+| `StatusSelector` | inherited | |
+
+## surface/ — the layout and container vocabulary
+
+| Component | Status | Notes |
+| --- | --- | --- |
+| `Card` | to-build | the most-requested missing primitive |
+| `Panel` | to-build | |
+| `Section` | to-build | |
+| `SectionHeader` | to-build | title + description + actions slot |
+| `Divider` | to-build | |
+| `Stack` | to-build | vertical rhythm — the only source of vertical spacing |
+| `Cluster` | to-build | horizontal grouping with wrap |
+| `Grid` | to-build | token-driven columns |
+
+Once these exist, **no component sets its own outer margin** (WEB-002 §4.6).
+
+## data/
+
+| Component | Status | Notes |
+| --- | --- | --- |
+| `StatusBadge` → rename `StatusPill` | inherited | ten canonical roles; keep text-plus-shape |
+| `Tag` | inherited | |
+| `Avatar`, `UserChip` | inherited | |
+| `KPICard` → `KpiTile` | inherited | rebuild on `Card` |
+| `MetricStrip` | inherited | |
+| `DescriptionList`, `DetailRow`, `DetailList` | inherited | |
+| `Timeline` | inherited | |
+| `Accordion` | inherited | two implementations exist — see retirement ledger |
+| `DataGrid` | inherited | 10 KB; audit table semantics and keyboard grid contract |
+
+## feedback/
+
+| Component | Status | Notes |
+| --- | --- | --- |
+| `Alert`, `Toast`, `Modal`, `Drawer`, `Tooltip`, `Menu` | inherited | audit focus trap and Escape on all overlays |
+| `EmptyState` | inherited | |
+| `Skeleton`, `Progress` | inherited | skeletons must match final geometry |
+| `StateSurface` | inherited | 8 KB; the canonical "Not configured / Unavailable / Insufficient evidence" surface |
+| `MapTruthState`, `SyncIndicator`, `DiffView` | inherited | |
+
+## navigation/
+
+| Component | Status | Notes |
+| --- | --- | --- |
+| `Sidebar`, `TopBar`, `PageHeader` | inherited | rebuilt server-first in T-010 |
+| `Breadcrumb`, `Tabs`, `Steps`, `Pagination` | inherited | tabs must be `searchParams`-driven |
+| `UserMenu`, `CommandPalette` | inherited | client islands |
+| `FilterBar`, `FilterRule`, `ColumnManager` | inherited | |
+
+## media/ — new
+
+| Component | Status | Notes |
+| --- | --- | --- |
+| `Icon` | hardened | `saqeel/icon/icon.tsx` (17 lines). Built by T-004, not T-001. Server component, sizes from `--sqx-icon-*`, colour always `currentColor`, `aria-hidden` by default, `label` promotes it to `role="img"`. `mirrored` applies `scale(var(--sqx-mirror))` for directional glyphs. No `className` escape hatch. |
+| `icon-registry.ts` | hardened | `saqeel/icon/icon-registry.ts` (72 lines). 34 semantic names → `lucide-react`. **The only file in the repository permitted to import `lucide-react`.** 18 names carry the `ShellIcon` union from `lib/shell-navigation.ts` so the rail maps straight through; 16 more cover topbar and control chrome. |
+| `Thumbnail` | to-build | `next/image` wrapper enforcing the alt-text law |
+| `Figure` | to-build | image + caption + accessible description |
+
+## map/ · inspection/ · signature/
+
+`MapMarker`, `MapCluster`, `MapPanel`, `MapLegend`, `MapLayerControl`,
+`MapToolbar`, `MapZoom`, `GeoWorkspace`, `ChecklistQuestion`, `CheckInOverride`,
+`ComplianceScore`, `DueDate`, `EvidenceCard`, `FindingCard`, `InspectionCard`,
+`ReviewPanel`, `SeverityIndicator`, `AuditTrail`, `EvidenceStack`,
+`ExceptionRail`, `StatusSpine` — all `inherited`.
+
+**These are domain components living in the design system.** `InspectionCard`
+knows what an inspection is; by WEB-002 §4.1 it is not a primitive. They move to
+`components/inspection/`, `components/map/`, and `components/evidence/` as their
+screens are migrated, composed from `surface/` and `data/` primitives.
+
+---
+
+## Outside the system — to be absorbed or retired
+
+`components/` root currently holds 30 loose files (`Accordion`, `Modal`,
+`Skeleton`, `Spinner`, `Tabs`, `Toast`, `EmptyState`, `Pagination`, …) that
+duplicate Saqeel primitives, plus `components/field/` (22 files) and
+`components/charts/` (3). Each is either absorbed into the system or marked in
+`05-RETIREMENT-LEDGER.md`. Nothing new is added to `components/` root — that
+directory is closed.
+
+---
+
+## `components/saqeel/<name>/` — folder-per-component primitives (T-005)
+
+| Component | Status | Lines | Notes |
+| --- | --- | --- | --- |
+| `icon-button` | hardened | 41 | Square, transparent by default — no border, no fill. `label` is **required in the type** and the component writes `aria-label` itself, so an unlabelled icon button cannot be built. Icon stays `--sqx-icon-md` at every size (WEB-009 §7). `forwardRef`. Badge pending `--sqx-badge-size`. |
+| `kbd` | hardened | 9 | `text.code` on `--sqx-font-mono`, sunken, `--sqx-radius-inline`. `min-inline-size` pending `--sqx-kbd-min-w`. |
+| `menu-surface` | hardened | 102 + 32 | **The single raised panel behind every menu** (WEB-009 §13). Owns the three dismissal behaviours no caller may reimplement: outside `pointerdown` close, `Escape` close with focus return to the trigger, optional focus trap. **Portalled and fixed (T-022):** the panel renders into `document.body` via `createPortal` and is positioned `fixed` from the trigger's viewport rect. This is structural, not cosmetic — `.sq-shell__main` is `overflow-y: auto`, and **an absolutely-positioned element cannot escape a clipping ancestor**, so no `z-index` or placement flip could have fixed the menu being cut off; `Card`'s hover `transform` was a second trap, since it would have become the containing block for a non-portalled fixed panel. `place()` writes `--sqx-menu-top`/`--sqx-menu-start`, flips above/below on the real gap each side, clamps to the viewport, and re-runs on capture-phase `scroll` so the panel tracks its trigger. `--sqx-menu-start` is measured from whichever edge `inset-inline-start` resolves to, so one declaration serves both directions, and `align="end"` hangs from the **left** in RTL (the edge is the alignment XOR the direction). **`trapFocus` now also moves focus into the panel** — a portalled panel sits at the end of the body, so Tab from the trigger would otherwise skip it entirely. Rows reserve the check gutter on unselected items so labels share one axis (§12) — **the gutter is at the row's end (T-021c)**, not its start, which was leaving dead space at the leading edge of every unselected row. A row's optional `count` renders as a **superscript `CountBadge` inside** the label rather than a full-size one beside it. `menu-row.tsx` sits beside it. |
+| `count-badge` | hardened | 24 + 45 | Number chip on `--sqx-grey-a16` / `--sqx-radius-sm`, tones `neutral` / `accent` / `danger`. **`superscript` (T-021c)** renders `<sup>` and swaps to a smaller box (`--sqx-space-5`, `--sqx-radius-xs`, `--sqx-text-overline`) while reusing the *same* surface and tone declarations — so the two shapes cannot drift in light or dark. The variant owns its `margin-inline-start`: that is typographic spacing binding the badge to the preceding word, and a primitive accepts no `className` (WEB-002 §4.5) so a call site could not supply it. Consumers: `select`, `menu-row`, `factories-scope-bar`. |
+| `trend-bars` | hardened | 45 + 33 | **The two-caller bar chart (T-035).** Existed once inside `factory-trends`; `/dashboard`'s enforcement trend is the second caller, so it was promoted under the Rule of Two rather than copied. **Callers pass a pre-scaled `percent`, never raw values** — what a bar is measured against is a truth question (a governed 0–100 risk scale for factories; the taller of two periods for enforcement, because no enforcement target is published) and it belongs to the caller. A primitive that picked its own scale would silently decide what a chart claims. The chart is an `<ol>` with an `aria-label`, every bar carrying a visually-hidden label, so the series reads without the graphic. Height is `calc(var(--sqx-trend-value) * 1%)` off a **bare-number** custom property, the same shape `SegmentedControl` uses for its index, with a `--sqx-space-2` floor so a very small value stays a bar rather than a hairline. Tone maps to the seven status roles. |
+| `select` | hardened | 145 | No native `select`. `button role="combobox"` driving a `role="listbox"` surface with `aria-activedescendant`. Full APG: Space/Enter/↓ opens · arrows move · Home/End jump · letter type-ahead · Enter selects · Escape returns focus · Tab closes. **The selected option's count is a superscript `CountBadge` inside the trigger's value (T-021c)**, so the trigger reads as one value rather than a value plus a separate object. |
+| `date-range-presets` | hardened | 28 | **The one preset vocabulary** (T-021d), beside the picker that consumes it. `pastDateRangePresets` (Today · Last 7 · Last 30 · Last 90 days · Last year), `upcomingDateRangePresets` (Next 7/30 days), `windowDateRangePresets` (both — for filters over a span that crosses today, like the visit window). Labels are passed in and live once in `common.scope`. Before this, the shell, `/planning` and Visit Management each defined their own set inline — seven, three and zero respectively. **Calendar periods are deliberately absent:** `DateRangePreset` only expresses "N days from today", so a "this month" label would promise behaviour the primitive cannot deliver. |
+| `date-range-picker` | hardened | 157 + 75 | No `input type="date"`. Presets column plus a 42-cell `button` grid (`calendar-month.tsx`). `Intl.NumberFormat` renders Arabic-Indic digits; in-range week caps use logical corner radii so the range mirrors in RTL. |
+| `text-input` | blocked | — | Needs nothing now — `--sqx-control-pad-icon` was added by T-005a. Ready to build. |
+| `search-field` | blocked | — | Needs `--sqx-search-w`, `--sqx-kbd-min-w`. `menu-surface` now exists. |
+| `switch` | blocked | — | Needs `--sqx-switch-track-w`, `-track-h`, `-thumb`. |
+| `segmented-control` | blocked | — | Needs `--sqx-segmented-pad`. The `--sqx-rim-light` shape is resolved — it is now a per-theme shadow. |
+| `avatar` | blocked | — | Needs `--sqx-avatar-sm/md/lg`, `--sqx-avatar-status`. |
+
+**Barrel name collisions.** `components/saqeel/index.ts` still exports `Select`,
+`Switch`, `SegmentedControl`, `Avatar` and `DateRangePicker` from the legacy
+`inputs/` and `data/` trees. T-005a exported the new ones as `SaqeelSelect` and
+`SaqeelDateRangePicker` rather than touching files outside its scope. Retire the
+legacy exports and the prefixes come off.
+
+---
+
+## `components/app-shell/` — the application shell (T-004)
+
+Not design-system primitives: these know what a nav group, a persona and a
+region scope are, so they live outside `components/saqeel/` by the WEB-000 §6
+layer map. They ship **no CSS** — every visual is a `.sqx-shell*` class in
+`app/saqeel.css`.
+
+| Component | Kind | Lines | Notes |
+| --- | --- | --- | --- |
+| `app-shell.tsx` | server | 39 | Composes rail + topbar + `<main id="main-content">`. Redirects to `/login` when there is no session. |
+| `shell-brand/shell-brand.tsx` | server | 14 | Mark + bilingual wordmark. Reuses `SaqeelBrandMark`. |
+| `shell-rail/shell-rail.tsx` | server | 44 | The whole sidebar. `variant="rail" \| "drawer"` — one component, two aria-labelled landmarks. |
+| `shell-rail/shell-nav-group.tsx` | server | 58 | Native `<details>`/`<summary>` disclosure. Zero JS. |
+| `shell-rail/shell-nav-item.tsx` | server | 47 | `<Link>` + server-computed `aria-current`, or a disabled `role="link"` with its reason. |
+| `shell-rail/shell-rail-toggle.tsx` | **client** | 49 | Collapse/expand; writes `data-shell-rail` on `<html>` so CSS does the rest. |
+| `shell-topbar/shell-topbar.tsx` | server | 113 | Composes every control and owns all topbar i18n. |
+| `shell-topbar/shell-search.tsx` | **client** | 122 | Global search combobox; nav matches + `/api/shell/search`. |
+| `shell-topbar/shell-user-menu.tsx` | **client** | 88 | Account dropdown; Escape + outside-pointer close, focus returns to trigger. |
+| `shell-topbar/shell-theme-toggle.tsx` | **client** | 75 | Three-way cycle system → light → dark. |
+| `shell-topbar/shell-locale-toggle.tsx` | **client** | 48 | EN/ع. Preserved from `ShellClient`, not in the T-004 brief. |
+| `shell-topbar/shell-scope-controls.tsx` | **client** | 85 | Date + region scope → `searchParams`. Preserved, not in the brief. **Fixed 2026-08-09 (T-021d):** it declared 16 required string keys and `shell-topbar` passed 8, and `locale` was never passed at all — five of seven presets rendered `undefined` labels and the range/calendar formatted with an undefined locale, so the topbar never showed Arabic-Indic digits. This was the long-standing `shell-topbar.tsx:81` typecheck error. Presets now come from `date-range-presets`, and the strings contract is the keys actually used plus a `presets` group. |
+| `shell-topbar/shell-admin-palette.tsx` | **client** | 93 | ⌘K admin tool palette. Preserved, not in the brief. |
+| `shell-mobile-nav/shell-mobile-nav.tsx` | **client** | 83 | Drawer; focus trap, Escape, scroll lock, focus return. Takes the rail as `children` through the boundary. |
+| `shell-page-frame/shell-page-frame.tsx` | server | 44 | Title + description + breadcrumb + actions + content slot. **Supersedes the default `Shell` export**; adopting it in the 55 route files is future work. |
+
+`features/shell/` holds the data layer: `queries.ts` (63), `mappers.ts` (132),
+`types.ts` (54), `notification-strings.ts` (58). `features/factories/` holds
+`portfolio.ts` (82) — the row type, the provenance rule and the row → panel
+mapping.
+
+---
+
+## `components/sections/<screen>/` — screen sections
+
+Domain components composed from Saqeel primitives. They know what a factory, a
+visit or a KPI is, so by WEB-002 §4.1 they are not primitives. One folder per
+component, module beside it, no `className` reaching in from outside.
+
+`sections/dashboard/**` (13 components) and `sections/operations/**` (17) were
+built by the dashboard and operations migrations; **neither has a session
+record** — see `02-SESSION-LOG.md`.
+
+| Component | Kind | Lines | Notes |
+| --- | --- | --- | --- |
+| `saqeel/status-pill` | server | 34 + 57 | **One size, no `size` prop.** Geometry is what `size="sm"` used to be: `--sqx-space-6` min height, `--sqx-space-2` inline padding, `--sqx-text-caption`. The `md` rung existed, six call sites defaulted into it, and the dashboard shipped two pill sizes side by side. A prop whose only correct value is one value is not a variant — it is a defect waiting to happen, so it is gone rather than defaulted. `ping` (default `true`) renders `PingDot`, which animates transform/opacity only and hides under `prefers-reduced-motion`. Tone stays the closed seven-role union. **Alignment (2026-08-08):** no `align-self` — the pill defers to its parent's `align-items`, so it centres in header/legend/inline rows; `vertical-align: middle` for inline runs; `inline-size: fit-content` alone prevents column-stretch. **Padding (2026-08-09, T-021c):** one symmetric `padding-inline: --sqx-space-3` for every pill. `[data-ping]` previously overrode **only** `padding-inline-start`, so every pinging pill carried twice the air at its leading edge and sat its last letter on the border; the ping variant now adjusts `gap` alone. One padding, no variant. |
+ with `from <= to` — a filter is not a fact. `accent="ai"`, advisory pill, `variant="link"` generate button. **The prompt forbids causation:** these counts show that enforcement moved, never why, so `ai-gemini.ts` bars asserting a cause, a responsible party, a regulation or a policy, and the card says so to the reader. |
 | `factories/factory-workspace` | server | 18 + 36 | The `/factories` three-column grid: `start` / children / `end`, each an aria-labelled region. Fractional columns (`1fr 2.6fr 1fr`) rather than the legacy `236px 1fr 286px`, so no panel width is a literal and Arabic cannot be clipped by a width measured in English. Collapses 3 → 2 → 1; below `100rem` the end panel drops under the middle column and the start panel spans both rows. **Candidate primitive** — promote only when a second screen wants the same shape (Rule of Two). |
 | `factories/factories-portfolio` | **client** | 175 + 101 | **Rebuilt by T-024.** Summary card is now `PORTFOLIO` + the CR with four `StatCard`s — Factories, High Risk, **Open Violations** and **Active Penalties**, the last two computed on owner-agreed definitions (`violations` via `inspections → visits` with `invalidated_at is null`; `penalty_notices` status `issued`/`served`) and rendering "Not available" when their read fails, never `0`. Licence cards dropped **Compliance %** (no such column exists anywhere — the row could only ever say "Not available") and gained **licence expiry**, formatted through `formatDate(locale)`. Licence status, expiry state and risk band moved from fact rows into a **footer pill row** — text plus shape. The summary is **one card, not four** — an overline `PORTFOLIO — <CR>` over a 2 × 2 `<dl>`, with each pair `column-reverse` so the count reads above its label while the DOM keeps the only order a `<dl>` allows (`<dt>` before `<dd>`). Counts take a tone **only when non-zero** (`danger` for high risk and open violations, `warning` for penalties, `neutral` otherwise) — a zero high-risk count is good news and must not read as an alarm, and the label always carries the meaning so tone is redundancy, never the signal. **Seeded test rows never reach this panel:** `page.tsx` filters on both `isTestFixtureEstablishment` (name/code) and `isTestSourceFactory` (source-marked), and an emptied portfolio falls to the "no factories" state. The provenance pill survives on the header for manual/unverified establishments — real records worth warning about — but can no longer say "test". |
 | `factories/factory-trends` | server (used in client tree) | 71 + 79 | The `/factories` trends block (T-028), rendered inside the compliance card below penalties. **Risk trend is real** — up to six recorded `factory_risk_snapshots`, oldest first, with the delta against the previous calculation; one snapshot reads "First recorded calculation" rather than a fabricated delta. **Compliance trend states its absence** — no compliance score exists for a factory, and here the absence *is* the answer, so it keeps a titled block. **The chart is data, not decoration:** an `<ol>` whose every bar carries a visually-hidden label with its score and date, so the series reads without the graphic. Height is `calc(var(--sqx-trend-value) * 1%)` where the custom property is a **bare number** — the same shape `SegmentedControl` uses for its index, so a component supplies data and never a length (WEB-000 §7). Charted on the governed 0–100 scale, **not** normalised to the series max, which would make a flat low-risk history look dramatic. |
