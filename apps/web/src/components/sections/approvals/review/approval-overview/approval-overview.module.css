@@ -1,0 +1,15 @@
+.root { display: flex; flex-direction: column; gap: var(--sqx-space-5); }
+.heading { margin: 0 0 var(--sqx-space-3); font: var(--sqx-text-subheading); color: var(--sqx-text-primary); }
+.chips { display: flex; flex-wrap: wrap; gap: var(--sqx-space-2); margin: 0; padding: 0; list-style: none; }
+
+.chip {
+  padding: var(--sqx-space-1) var(--sqx-space-3);
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-secondary);
+  background: var(--sqx-surface-sunken);
+  border-radius: var(--sqx-radius-pill);
+}
+
+.code { font: var(--sqx-text-code); font-variant-numeric: var(--sqx-numeric-tabular); }
+.absent { color: var(--sqx-text-muted); font-style: italic; }
+.note { margin: var(--sqx-space-3) 0 0; font: var(--sqx-text-caption); color: var(--sqx-text-muted); text-wrap: pretty; }

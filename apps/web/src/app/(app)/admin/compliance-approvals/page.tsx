@@ -1,3 +1,4 @@
+/* @retiring 2026-08-10 · replaced-by app/(app)/compliance/approvals · pending none — middleware.ts rewrites /admin/compliance-approvals to /compliance/approvals unconditionally, so no request reaches this segment · delete-when 0-imports */
 import Link from "next/link";
 import Shell from "@/app/(app)/admin/_components/AdminShell";
 import { getLocale } from "@/lib/i18n";

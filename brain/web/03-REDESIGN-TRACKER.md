@@ -28,6 +28,27 @@ measurement.
 
 ---
 
+### T-040 · Compliance approval queue
+`status: done (NEVER LOADED IN A BROWSER)` · `rules: WEB-000…006, WEB-008, WEB-009, WEB-011` · `est: 3h`
+`record:` [2026-08-10-T-040-approval-queue](sessions/2026-08/2026-08-10-T-040-approval-queue.md)
+
+`/compliance/approvals` 499 → 25. Request rail, step navigation, field diffs,
+per-object and package decisions, review progress and a timeline that finally
+includes submission and return — all on SAQEEL, all URL-driven. 136 i18n keys on
+a screen that had no Arabic.
+
+Fixed in passing: `?view=pending` never read, a per-render correlation id that
+matched nothing in the logs, and browser-locale timestamps. The auto-reject
+cascade is warned about before the reviewer commits.
+
+`app/(app)/admin/compliance-approvals/**` marked `@retiring` — rewritten
+unconditionally, so nothing in that segment ever runs.
+
+**Owed:** load it as reviewer and as observer, axe, Arabic review, bundle
+measurement.
+
+---
+
 ### T-037 + T-038 · Compliance library — workspace and record
 `status: done (NEVER LOADED IN A BROWSER)` · `rules: WEB-000…006, WEB-008, WEB-009, WEB-011` · `est: 2.5h`
 `record:` [2026-08-10-T-037-T-038-regulation-workspace-and-record](sessions/2026-08/2026-08-10-T-037-T-038-regulation-workspace-and-record.md)

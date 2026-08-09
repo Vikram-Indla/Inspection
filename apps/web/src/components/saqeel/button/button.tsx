@@ -19,6 +19,14 @@ export type ButtonProps = {
   href?: string;
   prefetch?: boolean;
   type?: "button" | "submit" | "reset";
+  /**
+   * Submit name/value pair. A form with more than one outcome carries the
+   * chosen one on the button that was pressed; without this a caller has to
+   * split one decision into several forms, or bolt a hidden input onto each.
+   * Ignored when the button renders as a link, which submits nothing.
+   */
+  name?: string;
+  value?: string;
   title?: string;
   label?: string;
   expanded?: boolean;
@@ -39,6 +47,8 @@ export default function Button({
   href,
   prefetch = false,
   type = "button",
+  name,
+  value,
   title,
   label,
   expanded,
@@ -75,7 +85,7 @@ export default function Button({
   }
 
   return (
-    <button {...shared} type={type} disabled={disabled} onClick={onClick}>
+    <button {...shared} type={type} name={name} value={value} disabled={disabled} onClick={onClick}>
       {content}
     </button>
   );

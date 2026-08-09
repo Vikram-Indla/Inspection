@@ -1,6 +1,22 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-10` · `Updated by: T-037 + T-038 — regulation workspace and record`
+`Last updated: 2026-08-10` · `Updated by: T-040 — compliance approval queue`
+
+## Where the approval queue stands (2026-08-10)
+
+`/compliance/approvals` is migrated — 499 → 25 lines — with the request rail,
+review sequence, field diffs, per-object and package decisions, progress and a
+timeline that now includes submission and return. Reached from
+`/admin/compliance-approvals`, which the middleware rewrites **unconditionally**;
+those four files are marked `@retiring` because that segment never runs at all.
+
+Three live defects were fixed on the way, all of the same shape — **a value that
+looked wired but was never read**: `?view=pending` from the admin home, a
+correlation id minted fresh on every failed render (so the reference shown to the
+user matched nothing in the logs), and `toLocaleString(locale)` instead of
+Asia/Riyadh. Worth a look on any screen not yet migrated.
+
+---
 
 ## Where the compliance library stands (2026-08-09)
 
