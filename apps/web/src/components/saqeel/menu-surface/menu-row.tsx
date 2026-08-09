@@ -1,5 +1,6 @@
 "use client";
 
+import CountBadge from "../count-badge/count-badge";
 import Icon from "../icon/icon";
 import styles from "./menu-surface.module.css";
 
@@ -26,7 +27,7 @@ export default function MenuRow({ id, label, selected, active, count, onSelect }
     >
       <span className={styles.label}>
         {label}
-        {typeof count === "number" ? <sup className={styles.count}>{count}</sup> : null}
+        {typeof count === "number" ? <CountBadge value={count} superscript /> : null}
       </span>
       <span className={styles.check}>
         <Icon name="selected" size="md" />

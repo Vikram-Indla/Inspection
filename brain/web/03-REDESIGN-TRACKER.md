@@ -39,8 +39,10 @@ Three base-primitive defects fixed at source, one skeleton built:
 
 - **`DataTable`** — `grow` gave one column 100 % of the slack (dead gap + a
   wrapped neighbour). Rule deleted, **rung deleted**, 20 call sites updated.
-- **`Select` / `MenuRow`** — count is a `<sup>` inside the label, not a badge
-  beside it; the selected-check moved to the row's end.
+- **`Select` / `MenuRow`** — the count rides inside the label as a **superscript
+  `CountBadge`** (a variant of the primitive, keeping its surface and corner in
+  both themes), not a full-size badge beside it; the selected-check moved to the
+  row's end.
 - **`StatusPill`** — symmetric `padding-inline`; `[data-ping]` no longer
   overrides only the start edge.
 - **`visits-skeleton`** — mirrors the real layout; both loading routes rebuilt.
@@ -387,9 +389,12 @@ Pull one in only if it is genuinely part of doing the active task well.
 - **`DataTable` column widths are now entirely content-driven** after T-021c
   deleted `grow`. If a screen genuinely needs a fixed proportion, that is a new
   explicit rung (a numeric weight) — not a revival of `grow`.
-- **`CountBadge` has exactly one consumer left** (`factories-scope-bar`) now
-  that `Select`/`MenuRow` render counts as superscripts. If that one adopts the
-  same treatment, the primitive retires.
+- **`CountBadge` now has two shapes** (inline and `superscript`). A third wants a
+  named `size`/`placement` scale, not another boolean.
+- **The superscript badge sits inside `MenuRow`'s `.label`**, which ellipsises.
+  A label long enough to truncate will clip its own count. Only short status
+  labels carry counts today; a long-label select with counts would have to move
+  the badge back out to a `flex: none` sibling.
 - **The reassignment roster is fetched for every visible row at page load**, not
   for the selection the user actually makes. Up to ten RPC round-trips per load,
   and because `list_available_reassignment_inspectors` is all-or-nothing per

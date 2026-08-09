@@ -18,10 +18,12 @@ Visit Management loading state for a skeleton that mirrors the real layout.
 | `components/saqeel/data-table/data-table.tsx` | modified — `grow` rung deleted | 105 → 105 |
 | `components/saqeel/data-table/data-table.module.css` | modified | 167 → 171 |
 | 20 × `components/sections/**/*.tsx` | modified — `width: "grow"` removed | −1 line each |
-| `components/saqeel/menu-surface/menu-row.tsx` | modified — check moved to end, count → `sup` | 35 → 37 |
-| `components/saqeel/menu-surface/menu-surface.module.css` | modified — `.count` added | 157 → 175 |
-| `components/saqeel/select/select.tsx` | modified — count → `sup` inside the value | 147 → 145 |
-| `components/saqeel/select/select.module.css` | modified — `.count` added | 63 → 73 |
+| `components/saqeel/count-badge/count-badge.tsx` | modified — `superscript` variant | 16 → 24 |
+| `components/saqeel/count-badge/count-badge.module.css` | modified — `[data-superscript]` | 26 → 45 |
+| `components/saqeel/menu-surface/menu-row.tsx` | modified — check moved to end | 35 → 38 |
+| `components/saqeel/menu-surface/menu-surface.module.css` | unchanged (net) | 157 → 157 |
+| `components/saqeel/select/select.tsx` | modified — count inside the value | 147 → 148 |
+| `components/saqeel/select/select.module.css` | unchanged (net) | 63 → 63 |
 | `components/saqeel/status-pill/status-pill.module.css` | modified — symmetric padding | 61 → 63 |
 | `components/sections/visits/visits-skeleton/visits-skeleton.tsx` (+ module) | created | 86 + 69 |
 | `app/(app)/visits/loading.tsx` | rebuilt | 12 → 13 |
@@ -50,15 +52,33 @@ repo-wide grep for `grow` under `components/sections` returns zero.
 ### 2 · `Select` / `MenuRow` — the count read as a second object, and the check squatted the leading edge
 
 - The count was a `CountBadge` **sibling** of the label, separated by the flex
-  gap. It is now a `<sup>` **inside** the label, so it belongs to the value it
-  counts. `sup` already carries the smaller size and the raise, so **no
-  `font-size` is spent** — nothing to token, nothing to invent. `line-height: 0`
-  stops the raised glyph growing the row.
+  gap. It now rides **inside** the label, so it belongs to the value it counts.
 - `MenuRow`'s order was check → label → count. It is now label + count → check.
   The reserved check gutter still keeps labels on one axis, but it now sits at
   the **end**, so the dead space at the start of every unselected row is gone.
-- `CountBadge` itself is untouched and still used by `factories-scope-bar`, so
-  nothing is orphaned.
+
+**Corrected after owner review.** The first cut replaced `CountBadge` with a
+bare `<sup>`, which dropped the rounded-square surface behind the number. The
+chrome was never the problem — only the scale and the placement were. So the
+superscript treatment is now a **variant of `CountBadge` itself**
+(`superscript`), not a reimplementation beside it:
+
+- the element becomes `<sup>` and gains `[data-superscript]`;
+- surface, corner and tone rules are the **same declarations** as the inline
+  badge, so light and dark are identical to before by construction — there is no
+  second copy of the chrome to drift;
+- only the scale changes: `--sqx-space-5` box, `--sqx-space-2` inline padding,
+  `--sqx-radius-xs`, `--sqx-text-overline` (0.6875 rem — the smallest role in the
+  scale). No new token, no literal.
+
+Duplicating the chrome into `select.module.css` and `menu-surface.module.css`
+was the wrong shape and both copies are deleted. `CountBadge` now has three
+consumers (`select`, `menu-row`, `factories-scope-bar`) instead of one.
+
+The variant owns its `margin-inline-start`. That is a deliberate reading of
+WEB-002 §4.6: it is typographic spacing binding the badge to the preceding word,
+not outer layout margin — and the alternative would need a `className` on a
+primitive, which §4.5 forbids outright.
 
 ### 3 · `StatusPill` — the trailing letter was touching the border
 
@@ -147,8 +167,13 @@ single owner and no other importer.
 - **`DataTable` column widths are now entirely content-driven.** If a screen
   ever needs a genuinely fixed proportion, that is a new, explicit rung
   (a numeric weight), not a revival of `grow`.
-- **`CountBadge` now has exactly one consumer** (`factories-scope-bar`). If that
-  one moves to the `sup` treatment for consistency, the primitive can retire.
+- **`CountBadge` now has two shapes.** If a third arrives, it wants a named
+  `size`/`placement` scale rather than another boolean.
+- **The superscript badge sits inside `MenuRow`'s `.label`**, which carries
+  `overflow: hidden; text-overflow: ellipsis`. A label long enough to ellipsis
+  will clip its own count. Counts only appear on short status labels today; if a
+  long-label select ever gains counts, the badge moves back out to a flex
+  sibling with `flex: none` and loses the "attached to the word" reading.
 
 ## Blocked / open questions
 

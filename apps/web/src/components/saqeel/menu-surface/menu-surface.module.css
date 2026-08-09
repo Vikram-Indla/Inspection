@@ -126,21 +126,6 @@
   white-space: nowrap;
 }
 
-/* The count belongs to the label it counts, not beside it as a second object.
-   `sup` already carries the smaller size and the raise, so no font-size is
-   spent here; `line-height: 0` keeps the raised glyph from growing the row. */
-.count {
-  margin-inline-start: var(--sqx-space-1);
-  font-variant-numeric: var(--sqx-numeric-tabular);
-  font-weight: var(--sqx-weight-semibold);
-  line-height: 0;
-  color: var(--sqx-text-muted);
-}
-
-.row[aria-selected="true"] .count {
-  color: inherit;
-}
-
 .heading {
   padding-inline: var(--sqx-space-3);
   padding-block: var(--sqx-space-2);
