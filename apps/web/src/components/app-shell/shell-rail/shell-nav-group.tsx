@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { type CSSProperties } from "react";
 import Icon from "@/components/saqeel/icon/icon";
 import { stripLocale, type Locale } from "@/lib/locale-path";
+import { shellRouteOf } from "@/lib/route-rewrites";
 import { isShellRouteCurrent } from "@/lib/shell-navigation";
 import type { ShellNavGroup, ShellNavItem, ShellNavSubgroup } from "@/features/shell/types";
 import ShellNavItemLink from "./shell-nav-item";
@@ -60,7 +61,7 @@ function Subgroup({ entry, groupId, locale, pathname }: {
 }
 
 export default function ShellNavGroupSection({ group, locale, pathname }: ShellNavGroupProps) {
-  const livePathname = stripLocale(usePathname() || pathname);
+  const livePathname = shellRouteOf(stripLocale(usePathname() || pathname));
   const holdsCurrentRoute = group.items.some(item => isShellRouteCurrent(livePathname, item.href));
 
   return (

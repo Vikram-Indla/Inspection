@@ -63,19 +63,18 @@ reader, axe, Arabic review, bundle measurement.
 
 ---
 
-### T-039 · Shell rail hydration mismatch on rewritten routes
-`status: todo` · `rules: WEB-003, WEB-004` · `est: 1h`
+### T-039 · Shell rail hydration on rewritten routes
+`status: done (fix by construction; not observed in a browser)` · `rules: WEB-000, WEB-004, WEB-011` · `est: 0.5h`
+`record:` [2026-08-10-T-039-shell-rail-hydration](sessions/2026-08/2026-08-10-T-039-shell-rail-hydration.md)
 
-`components/app-shell/shell-rail/shell-nav-group.tsx` takes its pathname from the
-`x-pathname` header on the server and recomputes it with `usePathname()` on the
-client. On a **rewritten** route the two disagree and React reports a hydration
-mismatch on `aria-current` / `data-current`. Affects `/admin/regulations`,
-`/admin/compliance-approvals` and `/admin/violations`.
+The rewrite table moved out of `middleware.ts` into `lib/route-rewrites.ts` and
+is now read in both directions. The rail normalises the server pathname and
+`usePathname()` into the same space, so `aria-current` cannot differ between the
+two passes.
 
-**Diagnose against a running page before changing anything** — this touches
-navigation on every authenticated route, and the mechanism above is inferred
-from the code, not observed. Verify the rail on a rewritten route *and* a normal
-one, on first load *and* after a client-side navigation.
+**Owed:** reload `/admin/compliance-approvals` and `/admin/regulations` and
+confirm the warning is gone. If it persists, capture what `usePathname()`
+actually returns on a rewritten route before changing anything else.
 
 ---
 
