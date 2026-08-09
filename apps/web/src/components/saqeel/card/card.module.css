@@ -28,6 +28,15 @@
   color: var(--sqx-accent-ai);
 }
 
+/* `.root:hover` repaints the border at equal specificity and later in source,
+   so without this the accent vanished on hover — the one moment the card is
+   most clearly being pointed at. The stroke is held and the surface takes the
+   brand tint instead, which is the same feedback a selected row gets. */
+.root[data-accent="ai"]:hover {
+  border-color: var(--sqx-accent-ai);
+  background: var(--sqx-surface-accent);
+}
+
 [data-theme="dark"] [data-sqx-cards="flush"] .root {
   background: var(--sqx-surface-canvas);
 }

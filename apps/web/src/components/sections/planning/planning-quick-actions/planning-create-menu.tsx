@@ -2,24 +2,12 @@
 import Link from "next/link";
 import { useId, useRef, useState } from "react";
 import Icon from "@/components/saqeel/icon/icon";
-import type { IconName } from "@/components/saqeel/icon/icon-registry";
 import MenuSurface from "@/components/saqeel/menu-surface/menu-surface";
+import type { PlanningCreateMethod } from "@/features/planning/create-methods";
 import styles from "./planning-quick-actions.module.css";
 
-export type PlanningCreateMethod = "bulk" | "single" | "immediate";
-
-export type PlanningCreateOption = {
-  readonly key: PlanningCreateMethod;
-  readonly title: string;
-  readonly description: string;
-  readonly href: string;
+export type PlanningCreateOption = PlanningCreateMethod & {
   readonly blockedReason?: string;
-};
-
-const METHOD_ICON: Record<PlanningCreateMethod, IconName> = {
-  bulk: "workflow",
-  single: "visits",
-  immediate: "risk",
 };
 
 export default function PlanningCreateMenu({ label, options }: {
@@ -59,6 +47,7 @@ export default function PlanningCreateMenu({ label, options }: {
         align="start"
         label={label}
         role="menu"
+        trapFocus
       >
         {options.map(option => option.blockedReason ? (
           <span key={option.key} className={styles.option} role="menuitem" aria-disabled="true">
@@ -77,7 +66,7 @@ export default function PlanningCreateMenu({ label, options }: {
             prefetch={false}
             onClick={() => close(false)}
           >
-            <Icon name={METHOD_ICON[option.key]} size="sm" />
+            <Icon name={option.icon} size="sm" />
             <span className={styles.optionText}>
               <span className={styles.optionTitle}>{option.title}</span>
               <span className={styles.optionNote}>{option.description}</span>

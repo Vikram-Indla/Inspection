@@ -144,6 +144,57 @@ Five presentation defects, four fixed at the source rather than in the panels:
 8. **Rows were beautified**: a leading registry icon per action, a taller
    `--sqx-control-h-lg` target, and a border that responds on hover.
 
+### Third pass — two primitive bugs and the emoji glyphs
+
+9. **`MenuSurface` was clipped by the shell's scroll container.** My first fix
+   for this was wrong: I added a block-axis flip, assuming the panel was merely
+   capped by its own height logic. The owner reported it still clipping, and the
+   real cause was structural —
+
+   ```
+   .sq-shell__main { block-size: 100dvh; overflow-y: auto; overflow-x: hidden; }
+   ```
+
+   An absolutely-positioned element **cannot escape a clipping ancestor**. No
+   `z-index`, no placement flip, and no `overflow` change on the card would have
+   helped, because the card was never the clipper. `Card`'s hover `transform`
+   was a second latent trap: it makes the card the containing block for any
+   `position: fixed` descendant, so simply switching to fixed would have
+   re-anchored the open menu on hover.
+
+   The panel is now **portalled to `document.body` and positioned `fixed`** from
+   the trigger's viewport rect, which escapes both. `place()` writes
+   `--sqx-menu-top` and `--sqx-menu-start`, keeps the above/below flip, clamps to
+   the viewport on both axes, and re-runs on capture-phase `scroll` so the panel
+   tracks its trigger. `--sqx-menu-start` is measured from whichever edge
+   `inset-inline-start` resolves to, so **one declaration serves both
+   directions** — and `align="end"` correctly hangs from the *left* in RTL,
+   since the edge is the requested alignment XOR the direction.
+
+   **Keyboard consequence, handled:** a portalled panel sits at the end of the
+   body, so Tab from the trigger would have walked into the rest of the page
+   instead of into the menu. `MenuSurface` now focuses its first focusable when
+   `trapFocus` is set — a panel that traps focus must be given it, or the trap
+   has nothing to hold — and the create menu sets `trapFocus`.
+
+10. **The AI accent vanished on hover.** `.root:hover` repaints `border-color`
+    at **equal specificity** (both `(0,2,0)`) and later in source, so it won
+    against `.root[data-accent="ai"]`. The accent disappeared at exactly the
+    moment the card was being pointed at. `.root[data-accent="ai"]:hover`
+    `(0,3,0)` now holds the stroke and darkens the surface with
+    `--sqx-surface-accent` — the same feedback a selected table row gets, and no
+    new token.
+
+11. **`CreateVisitSection`'s emoji glyphs are gone.** `▦ ▣ ⚡` → registry icons
+    via a typed `icon: IconName` on `CreateVisitMethod`. The legacy
+    `.planning-create-method__glyph` tile is kept — it is a 2.25rem centred
+    swatch that an `Icon` sits in correctly, inheriting `currentColor`. The
+    component no longer appears in `check:design-system-v5`.
+
+    This also **closed the duplication I parked last pass**: both the Create
+    panel and the new menu now derive from one `features/planning/create-methods.ts`,
+    so their icons, titles, descriptions and routes cannot drift.
+
 **One deliberate deviation from the mock:** Quick Actions does **not** get the AI
 accent or the sparkle icon, and now uses `workflow`. It is deterministic
 navigation with counted links — nothing about it is generated. Marking it as AI
@@ -214,15 +265,28 @@ retirable — the factories and visits screens still use it.
   call per page render would be slow and costly. If the product wants it
   pre-generated, that is a cached/scheduled job writing `ai_suggestions`, and the
   panel would read the latest row instead of calling the provider.
-- **`CreateVisitSection` still uses emoji glyphs** (`▦ ▣ ⚡`) for its three
-  method cards — a standing `emoji-as-icon` finding in
-  `check:design-system-v5`. The new create menu uses registry icons for the same
-  three methods, so the two now disagree visually. Migrating that component is
-  the fix; it belongs with T-023's route slim.
-- **The create menu duplicates the method list** that the page builds for
-  `CreateVisitSection`. Both read the same `planning.methods` strings and the
-  same three routes, so they cannot say different things — but one source would
-  be better. Fold it into `features/planning/` when the route is slimmed.
+- **`MenuSurface`'s portal change touches every menu in the app** — `select`,
+  `date-picker`, `date-range-picker`, `shell-user-menu` and the new create menu.
+  Only the create menu was looked at. **The other four need a browser pass in
+  both directions before this is trusted**, especially `date-range-picker`
+  (`role="dialog"`, two-month panel, `align` end) and `shell-user-menu`
+  (`align="end"` in the topbar, near the viewport edge).
+- **`trapFocus` now moves focus into the panel.** `date-picker` and
+  `date-range-picker` already passed it, so they gain initial focus on their
+  first control where previously focus stayed on the trigger. Correct for a
+  trapped `role="dialog"`, but it is a behaviour change to two shipped controls.
+- **`MenuSurface`'s positioning is now more imperative, not less** — WEB-012
+  already records it as the one known DOM-write conflict in the design system,
+  and this adds `--sqx-menu-top`/`--sqx-menu-start` writes plus a scroll
+  listener. The honest long-term fix is CSS anchor positioning, which would
+  delete `place()` entirely; it is not yet safe to rely on across the browsers
+  this platform targets.
+- **A `role="menu"` needs arrow-key navigation to meet APG.** The create menu
+  traps focus and closes on Escape, but items are reached with Tab, not arrows.
+  The same gap is recorded for the factories licence list.
+- **The `emoji-as-icon` sweep is not finished.** 43 findings remain, all on
+  un-migrated planning sub-routes (`bulk`, `immediate`, `plans`, `supervision`,
+  `single`) and other legacy screens. `CreateVisitSection` is now clean.
 - **Recommendations rank by `factories.risk_score` only.** A factory already
   covered by a published upcoming visit can still appear. Excluding those needs
   a "has an open visit in window" predicate that is worth doing properly.

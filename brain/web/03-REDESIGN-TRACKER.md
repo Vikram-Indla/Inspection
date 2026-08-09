@@ -442,11 +442,31 @@ Pull one in only if it is genuinely part of doing the active task well.
   that bug invisibly until a page placed it outside a toolbar (T-021e). Any
   other primitive relying on an inline display type for its width has the same
   trap armed; worth a sweep at the next design-system audit.
-- **`CreateVisitSection` still uses emoji glyphs** (`▦ ▣ ⚡`) — a standing
-  `emoji-as-icon` finding. The new planning create menu uses registry icons for
-  the same three methods, so the two now disagree visually. Migrating that
-  component belongs with T-023's route slim, which also folds the duplicated
-  method list into `features/planning/`.
+- **43 `emoji-as-icon` findings remain**, all on un-migrated planning sub-routes
+  (`bulk`, `immediate`, `plans`, `supervision`, `single`) and other legacy
+  screens. `CreateVisitSection` was cleared in T-022.
+- **`MenuSurface` is now portalled and fixed — every menu in the app changed.**
+  `select`, `date-picker`, `date-range-picker`, `shell-user-menu` and the
+  planning create menu all inherit it. **Only the create menu was looked at; the
+  other four need a browser pass in both directions**, especially
+  `date-range-picker` (two-month `role="dialog"`) and `shell-user-menu`
+  (`align="end"` near the viewport edge).
+- **An absolutely-positioned overlay cannot escape a clipping ancestor.**
+  `.sq-shell__main` is `overflow-y: auto`, so every popover inside the shell must
+  portal out. Worth remembering before reaching for `z-index` on the next one.
+- **`trapFocus` now moves focus into the panel**, so `date-picker` and
+  `date-range-picker` gain initial focus on their first control. Correct for a
+  trapped dialog, but a behaviour change to two shipped controls.
+- **CSS anchor positioning would delete `MenuSurface.place()` entirely** and with
+  it the WEB-012 DOM-write conflict. Not yet safe across the browsers this
+  platform targets; revisit.
+- **A `role="menu"` needs arrow-key navigation to meet APG.** The planning create
+  menu traps focus and closes on Escape, but its items are reached with Tab.
+- **A hover rule at equal specificity silently beats a variant.** `.root:hover`
+  repainted `border-color` and killed `Card`'s AI accent because both selectors
+  score `(0,2,0)` and `:hover` came later. Any future `Card` variant that sets a
+  border must restate it under `:hover`, or the variant disappears exactly when
+  the user points at it.
 - **A nullable count must not mean two things.** `PlanningQuickAction.count` used
   `null` for both "this action has no count" and "the count failed to read", so
   two available actions rendered "Unavailable" (T-022). Any future optional

@@ -31,7 +31,8 @@ import PlanningInsights from "@/components/sections/planning/planning-insights/p
 import PlanningAiAdvisory from "@/components/sections/planning/planning-ai-advisory/planning-ai-advisory";
 import PlanningRecommendations from "@/components/sections/planning/planning-recommendations/planning-recommendations";
 import PlanningQuickActions from "@/components/sections/planning/planning-quick-actions/planning-quick-actions";
-import PlanningCreateMenu, { type PlanningCreateOption } from "@/components/sections/planning/planning-quick-actions/planning-create-menu";
+import PlanningCreateMenu from "@/components/sections/planning/planning-quick-actions/planning-create-menu";
+import { planningCreateMethods } from "@/features/planning/create-methods";
 import PlanningStatCards from "@/components/sections/planning/planning-stat-cards/planning-stat-cards";
 import { buildPlanningAssistantView } from "@/features/planning/assistant-view";
 
@@ -240,17 +241,10 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
     .map(p => ({ id: p.id, label: `${p.packages?.title ?? "—"} · ${p.version_label}` }));
   const drafts = (draftsRead.data ?? []) as unknown as DraftRow[];
 
-  const methods: CreateVisitMethod[] = [
-    { glyph: "▦", title: planning.methods.bulkTitle, desc: planning.methods.bulkDesc, href: "/planning/bulk" },
-    { glyph: "▣", title: planning.methods.singleTitle, desc: planning.methods.singleDesc, href: "/planning/single" },
-    { glyph: "⚡", title: planning.methods.immediateTitle, desc: planning.methods.immediateDesc, href: "/planning/immediate" },
-  ];
-
-  const createOptions: PlanningCreateOption[] = [
-    { key: "bulk", title: planning.methods.bulkTitle, description: planning.methods.bulkDesc, href: "/planning/bulk" },
-    { key: "single", title: planning.methods.singleTitle, description: planning.methods.singleDesc, href: "/planning/single" },
-    { key: "immediate", title: planning.methods.immediateTitle, description: planning.methods.immediateDesc, href: "/planning/immediate" },
-  ];
+  const createOptions = planningCreateMethods(planning.methods);
+  const methods: CreateVisitMethod[] = createOptions.map(option => ({
+    icon: option.icon, title: option.title, desc: option.description, href: option.href,
+  }));
 
   const enumLabel = (value: string) => sentenceCase(t(`enum.${value}`, humaniseEnum(value)));
   const tabLabels: Record<PlanningTab, string> = {
