@@ -28,7 +28,7 @@ penalty catalogue admin. Both were migrated (owner ruling).
 | `features/enforcement/rows.ts` | created | 0 → 174 |
 | `features/enforcement/catalogue.ts` | created | 0 → 146 |
 | `components/sections/enforcement/library/enforcement-screen/` | created | 0 → 138 + 4 |
-| `components/sections/enforcement/library/enforcement-filter-bar/` | created | 0 → 85 + 38 |
+| `components/sections/enforcement/library/enforcement-filter-bar/` | created (client) | 0 → 78 + 30 |
 | `components/sections/enforcement/library/enforcement-table/` | created | 0 → 152 + 12 |
 | `components/sections/enforcement/library/enforcement-record/` | created | 0 → 125 + 9 |
 | `components/sections/enforcement/library/enforcement-skeleton/` | created | 0 → 43 + 6 |
@@ -36,11 +36,14 @@ penalty catalogue admin. Both were migrated (owner ruling).
 | `components/sections/enforcement/catalogue/violation-code-card/` | created | 0 → 127 + 10 |
 | `components/sections/enforcement/catalogue/penalty-mapping-card/` | created | 0 → 97 + 6 |
 | `lib/dates.ts` | `riyadhToday` added | +12 |
-| `i18n/locales/{en,ar}/enforcement.json` | created | 0 → 166 keys each |
+| `components/saqeel/date-range-picker/date-range-presets.ts` | `PAST_DATE_RANGE_PRESETS` exposed | 28 → 40 |
+| `components/sections/visits/visit-board/visit-bulk-actions.tsx` | two native selects → `SaqeelSelect` | +6 |
+| `i18n/locales/{en,ar}/enforcement.json` | created | 0 → 163 keys each |
 | `i18n/messages.ts` | namespace registered | +5 |
 
-**Zero client islands.** Both screens are Server Components end to end; the
-catalogue's entire write layer was already unreachable and is now deleted.
+**One client island** — the library filter bar, which needs `SaqeelSelect`. The
+catalogue is a Server Component end to end; its entire write layer was already
+unreachable and is now deleted.
 
 ## The mock added almost nothing — the schema did
 
@@ -124,7 +127,7 @@ from "none was recorded".
   timestamps as display dates; and the two mislabelled columns above. The record
   is now an ordinary card in the page flow with an explicit Close action —
   nothing claims to be a modal that is not one.
-- **i18n:** every string was an inline `copy(en, ar)` pair. 166 keys now live in
+- **i18n:** every string was an inline `copy(en, ar)` pair. 163 keys now live in
   `en` and `ar` at exact parity.
 
 ## Numbers
@@ -136,7 +139,7 @@ route CSS       not measured
 LCP (4G, mid)   not measured
 INP             not measured
 CLS             not measured
-client islands  0 → 0 (the catalogue's 190-line island was dead and is deleted)
+client islands  1 → 1 (catalogue island deleted as dead; library filter bar added)
 legacy CSS deleted: 40 lines (Controls.module.css)
 source lines removed: 1,196 across both routes
 ```
@@ -157,7 +160,8 @@ source lines removed: 1,196 across both routes
 - [ ] `npm run lint` — **no `lint` script exists in `apps/web`**
 - [x] `npm run check:design-system-v5` — zero findings in every file touched
       here, and one pre-existing finding in the export route fixed
-- [x] i18n parity — 166 keys, `en` and `ar` identical key sets
+- [x] i18n parity — 163 keys, `en` and `ar` identical key sets
+- [x] Zero native `<select>` in `components/sections/**` (swept, not assumed)
 - [x] Zero line comments; TSDoc only
 - [x] WEB-011 — 5 / 3 component directories, 4 files in `features/enforcement`
 - [x] Every component ≤ 200 lines; both route files ≤ 26
@@ -169,6 +173,33 @@ source lines removed: 1,196 across both routes
 
 Three files deleted outright, all with zero importers: `Controls.tsx`,
 `Controls.module.css`, `actions.ts`. Nothing new marked.
+
+## Correction — native selects, caught by the owner
+
+The first pass of `enforcement-filter-bar` shipped **three native `<select>`
+elements**. `SaqeelSelect` has been hardened since T-005a precisely so no screen
+renders one, and the rule is explicit. Worse, the date filter invented its own
+30 / 90 / 365 vocabulary when `date-range-presets` is **the** past-window
+vocabulary — Today · Last 7 · Last 30 · Last 90 days · Last year, with labels
+living once in `common.scope`. That module was written in T-021d to stop exactly
+this drift, and its ledger row says so.
+
+Fixed:
+
+- The filter bar is now a client island on `SaqeelSelect`, following the
+  `visit-filter-bar` pattern: selection in `useState`, hidden inputs mirroring
+  it, one Apply submit.
+- `date-range-presets` gained `PAST_DATE_RANGE_PRESETS` — the vocabulary as
+  data — so a screen filtering by "last N days" without a calendar can reuse the
+  same N and the same labels. `pastDateRangePresets()` now maps over it, so
+  there is still one definition.
+- `ENFORCEMENT_RANGES` is derived from that list rather than declared, and the
+  bespoke `lastDays` / `lastYear` / `anyRegion` strings are deleted in favour of
+  `common.scope`.
+
+**A sweep found two more of mine**, shipped in T-021a: the inspector and
+visit-type selects in `visit-bulk-actions`. Both replaced the same way. There
+are now **zero native `<select>` elements in `components/sections/`**.
 
 ## Parked
 
@@ -182,6 +213,11 @@ Three files deleted outright, all with zero importers: `Controls.tsx`,
   the rail's link and is intended, but it means the catalogue admin has no
   entry point in the navigation at all — it is reachable only by typing
   `?mode=`.
+- **`Field` renders a `<label>` with no `htmlFor` when wrapping `SaqeelSelect`.**
+  The select names itself through its own `label` prop, so it is not unnamed,
+  but the visible `<label>` element points at nothing. This is the established
+  `visit-filter-bar` pattern and was followed for consistency; resolving it is a
+  primitive-level decision about how `Field` and `SaqeelSelect` compose.
 - **Action-form closed statuses are inferred from a set** (`closed`,
   `completed`, `verified`, `resolved`). `action_forms.status` has no check
   constraint, so the vocabulary is not enforced by the database; a status

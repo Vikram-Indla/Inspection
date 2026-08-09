@@ -21,15 +21,4 @@
 .input::placeholder { color: var(--sqx-text-muted); }
 .input:focus-visible { outline: var(--sqx-border-width-hair) solid var(--sqx-border-focus); outline-offset: var(--sqx-focus-ring-offset); }
 
-.select {
-  min-block-size: var(--sqx-control-h-md);
-  padding-inline: var(--sqx-space-3);
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-primary);
-  background: var(--sqx-surface-default);
-  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
-  border-radius: var(--sqx-radius-control);
-}
-
-.select:focus-visible { outline: var(--sqx-border-width-hair) solid var(--sqx-border-focus); outline-offset: var(--sqx-focus-ring-offset); }
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sqx-space-3); }

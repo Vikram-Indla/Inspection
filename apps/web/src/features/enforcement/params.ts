@@ -1,8 +1,16 @@
+import { PAST_DATE_RANGE_PRESETS } from "@/components/saqeel/date-range-picker/date-range-presets";
+
 export const ENFORCEMENT_ALIAS_ROUTE = "/admin/violations";
 export const ENFORCEMENT_ROUTE = "/enforcement-library";
 
-export const ENFORCEMENT_RANGES = [30, 90, 365] as const;
-export type EnforcementRange = (typeof ENFORCEMENT_RANGES)[number];
+/**
+ * The date filter offers the shared past-window vocabulary rather than a set of
+ * its own. `date-range-presets` exists so "last 30 days" means the same thing
+ * and reads the same way on every screen; defining a local 30/90/365 here was
+ * the exact drift it was written to prevent.
+ */
+export const ENFORCEMENT_RANGES: readonly number[] = PAST_DATE_RANGE_PRESETS.map(preset => preset.days);
+export type EnforcementRange = number;
 
 export type EnforcementScopeInput = Record<string, string | string[] | undefined>;
 
@@ -17,8 +25,7 @@ export type EnforcementScope = {
 
 const first = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value) ?? "";
 
-const isRange = (value: number): value is EnforcementRange =>
-  (ENFORCEMENT_RANGES as readonly number[]).includes(value);
+const isRange = (value: number) => ENFORCEMENT_RANGES.includes(value);
 
 export function readEnforcementScope(input: EnforcementScopeInput): EnforcementScope {
   const range = Number.parseInt(first(input.range), 10);

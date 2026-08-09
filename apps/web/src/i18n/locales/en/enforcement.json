@@ -35,10 +35,7 @@
     "anyStatus": "Any status",
     "range": "Date range",
     "anyDate": "Any date",
-    "lastDays": "Last {days} days",
-    "lastYear": "Last year",
     "region": "Region",
-    "anyRegion": "All regions",
     "apply": "Apply",
     "clear": "Clear filters",
     "export": "Export"

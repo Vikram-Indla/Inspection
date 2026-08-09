@@ -3,6 +3,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import Button from "@/components/saqeel/button/button";
 import Field from "@/components/saqeel/field/field";
+import SaqeelSelect from "@/components/saqeel/select/select";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import {
@@ -27,6 +28,8 @@ export default function VisitBulkActions({ selectedRows, inspectors, reassignmen
   onClearSelection: () => void;
 }) {
   const [lastVerb, setLastVerb] = useState<BulkVerb | null>(null);
+  const [inspectorId, setInspectorId] = useState("");
+  const [visitType, setVisitType] = useState("");
   const [identity, setIdentity] = useState<Record<BulkVerb, { key: string; correlation: string }> | null>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
 
@@ -115,13 +118,17 @@ export default function VisitBulkActions({ selectedRows, inspectors, reassignmen
             {reassignmentAvailable ? (
               <form className={styles.form} action={reassignAction} onSubmit={() => setLastVerb("reassign")}>
                 {hidden}{identityFields("reassign")}
-                <Field label={strings.bulkReassignTo} htmlFor="bulk-inspector">
-                  <select id="bulk-inspector" className={styles.control} name="inspector_id">
-                    <option value="">{strings.bulkSelectOption}</option>
-                    {eligibleInspectors.map(inspector => (
-                      <option key={inspector.userId} value={inspector.userId}>{inspector.fullName}</option>
-                    ))}
-                  </select>
+                <input type="hidden" name="inspector_id" value={inspectorId} />
+                <Field label={strings.bulkReassignTo}>
+                  <SaqeelSelect
+                    label={strings.bulkReassignTo}
+                    value={inspectorId}
+                    onChange={setInspectorId}
+                    options={[
+                      { value: "", label: strings.bulkSelectOption },
+                      ...eligibleInspectors.map(inspector => ({ value: inspector.userId, label: inspector.fullName })),
+                    ]}
+                  />
                 </Field>
                 <Field label={strings.bulkReason} htmlFor="bulk-reassign-reason">
                   <input id="bulk-reassign-reason" className={styles.control} name="mutation_reason" required />
@@ -149,13 +156,17 @@ export default function VisitBulkActions({ selectedRows, inspectors, reassignmen
 
             <form className={styles.form} action={editAction} onSubmit={() => setLastVerb("edit")}>
               {hidden}{identityFields("edit")}
-              <Field label={strings.bulkEditType} htmlFor="bulk-visit-type">
-                <select id="bulk-visit-type" className={styles.control} name="visit_type">
-                  <option value="">{strings.bulkSelectOption}</option>
-                  {visitTypeOptions.map(option => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
-                  ))}
-                </select>
+              <input type="hidden" name="visit_type" value={visitType} />
+              <Field label={strings.bulkEditType}>
+                <SaqeelSelect
+                  label={strings.bulkEditType}
+                  value={visitType}
+                  onChange={setVisitType}
+                  options={[
+                    { value: "", label: strings.bulkSelectOption },
+                    ...visitTypeOptions,
+                  ]}
+                />
               </Field>
               <Field label={strings.bulkEditNotes} htmlFor="bulk-edit-notes">
                 <input id="bulk-edit-notes" className={styles.control} name="notes"

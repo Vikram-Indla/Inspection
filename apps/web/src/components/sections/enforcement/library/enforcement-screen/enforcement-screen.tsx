@@ -2,6 +2,7 @@ import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { titleCase } from "@/features/factories/portfolio";
+import { PAST_DATE_RANGE_PRESETS } from "@/components/saqeel/date-range-picker/date-range-presets";
 import { enforcementExportHref, enforcementHref, type EnforcementScope } from "@/features/enforcement/params";
 import { queryEnforcementLibrary } from "@/features/enforcement/queries";
 import {
@@ -21,7 +22,7 @@ export default async function EnforcementScreen({ locale, scope, nowMs }: {
   scope: EnforcementScope;
   nowMs: number;
 }) {
-  const { enforcement } = getMessages(locale);
+  const { common, enforcement } = getMessages(locale);
   const library = await queryEnforcementLibrary();
   const label = (value: string) => enforcement.enum[value as keyof typeof enforcement.enum] ?? titleCase(value);
 
@@ -82,12 +83,24 @@ export default async function EnforcementScreen({ locale, scope, nowMs }: {
             status={scope.status}
             range={scope.range}
             region={scope.region}
-            statuses={statusesOf(all)}
-            regions={regionsOf(all)}
+            statusOptions={[
+              { value: "", label: enforcement.filters.anyStatus },
+              ...statusesOf(all).map(value => ({ value, label: label(value) })),
+            ]}
+            rangeOptions={[
+              { value: "", label: enforcement.filters.anyDate },
+              ...PAST_DATE_RANGE_PRESETS.map(preset => ({
+                value: String(preset.days),
+                label: common.scope[preset.labelKey],
+              })),
+            ]}
+            regionOptions={[
+              { value: "", label: common.scope.allRegions },
+              ...regionsOf(all).map(value => ({ value, label: value })),
+            ]}
             filtered={filtered}
             clearHref={localeHref(locale, scope.routeBase)}
             exportHref={localeHref(locale, enforcementExportHref(scope))}
-            labelFor={label}
             strings={enforcement.filters}
           />
           <EnforcementTable
