@@ -23,6 +23,49 @@
   border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
 }
 
+/* Mirrors `planning-assistant`: the same three fractional columns and the same
+   two collapse points, so the panels do not jump width on hydration. */
+.assistant {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 0.9fr);
+  gap: var(--sqx-gutter);
+  align-items: start;
+}
+
+.reco {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+  padding: var(--sqx-inset-control);
+  background: var(--sqx-surface-sunken);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-control);
+}
+
+.reco + .reco {
+  margin-block-start: var(--sqx-space-4);
+}
+
+@media (max-width: 90rem) {
+  .assistant {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .assistant > :last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 60rem) {
+  .assistant {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .assistant > :last-child {
+    grid-column: auto;
+  }
+}
+
 .filters {
   display: flex;
   flex-wrap: wrap;

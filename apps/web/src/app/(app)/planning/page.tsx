@@ -25,6 +25,14 @@ import PlanningVisitTable, { type PlanningVisitDisplayRow } from "@/components/s
 import PlanningFilterBar from "@/components/sections/planning/planning-filter-bar/planning-filter-bar";
 import { type SelectOption } from "@/components/saqeel/select/select";
 import { windowDateRangePresets } from "@/components/saqeel/date-range-picker/date-range-presets";
+import { queryPlanningAssistant } from "@/features/planning/assistant";
+import PlanningAssistant from "@/components/sections/planning/planning-assistant/planning-assistant";
+import PlanningInsights from "@/components/sections/planning/planning-insights/planning-insights";
+import PlanningAiAdvisory from "@/components/sections/planning/planning-ai-advisory/planning-ai-advisory";
+import PlanningRecommendations from "@/components/sections/planning/planning-recommendations/planning-recommendations";
+import PlanningQuickActions from "@/components/sections/planning/planning-quick-actions/planning-quick-actions";
+import PlanningStatCards from "@/components/sections/planning/planning-stat-cards/planning-stat-cards";
+import { buildPlanningAssistantView } from "@/features/planning/assistant-view";
 
 export const dynamic = "force-dynamic";
 
@@ -139,8 +147,9 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
   // The list renders the persisted planning status from the scheduled sweep.
 
   const regionFilter = params.filters.region;
-  const [list, lookupsRead, regionsRead, citiesRead, inspectorsRead, packagesRead, draftsRead] = await Promise.all([
+  const [list, assistant, lookupsRead, regionsRead, citiesRead, inspectorsRead, packagesRead, draftsRead] = await Promise.all([
     queryPlanningVisits(sb, params),
+    queryPlanningAssistant(sb),
     sb.from("planning_lookups").select("kind, key, label_en, label_ar").in("kind", ["visit_type", "priority"]).eq("is_active", true).order("sort_order"),
     sb.from("factories").select("region").not("region", "is", null).limit(1000),
     regionFilter
@@ -268,6 +277,15 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
   const advancedFilterCount = (["method", "visitType", "priority", "region", "city", "packageVersionId", "createdFrom", "createdTo", "bulkPlanRef"] as const)
     .filter(key => Boolean(params.filters[key])).length;
   const visitDatePresets = windowDateRangePresets(getMessages(locale).common.scope);
+  const assistantView = buildPlanningAssistantView({
+    assistant,
+    counts: list.counts,
+    countsAvailable: list.countsAvailable,
+    activeTab: params.tab,
+    assistantStrings: planning.assistant,
+    statStrings: planning.stats,
+    tabHref: tab => hrefWith(sp, { tab, page: "" }),
+  });
   const allOption: SelectOption = { value: "", label: planning.filter.all };
   const statusOptions: SelectOption[] = PLANNING_TABS.map(tab => ({
     value: tab === "all" ? "" : tab,
@@ -315,6 +333,70 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
           {planning.home.visitManagement}
         </Button>
       </CreateVisitSection>
+
+      <PlanningAssistant
+        label={planning.assistant.label}
+        insights={
+          <PlanningInsights
+            headline={assistantView.headline}
+            facts={assistantView.facts}
+            strings={{
+              title: planning.assistant.insightsTitle,
+              factsLabel: planning.assistant.factsLabel,
+              unavailable: planning.assistant.unavailable,
+            }}
+            advisory={
+              <PlanningAiAdvisory
+                locale={locale === "ar" ? "ar" : "en"}
+                strings={{
+                  generate: planning.assistant.generate,
+                  generating: planning.assistant.generating,
+                  advisory: planning.assistant.advisory,
+                  evidence: planning.assistant.evidence,
+                  idle: planning.assistant.advisoryIdle,
+                  confidenceUnavailable: planning.assistant.confidenceUnavailable,
+                }}
+              />
+            }
+          />
+        }
+        recommendations={
+          <PlanningRecommendations
+            recommendations={assistant.recommendations}
+            strings={{
+              title: planning.assistant.recommendationsTitle,
+              emptyTitle: planning.assistant.recommendationsEmptyTitle,
+              emptyBody: planning.assistant.recommendationsEmptyBody,
+              plan: planning.assistant.plan,
+              review: planning.assistant.review,
+              riskScore: planning.assistant.riskScore,
+              scoreUnavailable: planning.assistant.scoreUnavailable,
+              bandUnavailable: planning.assistant.bandUnavailable,
+              reason: {
+                noVisit: planning.assistant.reasonNoVisit,
+                draft: planning.assistant.reasonDraft,
+                returned: planning.assistant.reasonReturned,
+                highRisk: planning.assistant.reasonHighRisk,
+              },
+            }}
+          />
+        }
+        quickActions={
+          <PlanningQuickActions
+            actions={assistantView.quickActions}
+            strings={{ title: planning.assistant.quickActionsTitle, unavailable: planning.assistant.unavailable }}
+          />
+        }
+      />
+
+      <PlanningStatCards
+        stats={assistantView.stats}
+        strings={{
+          groupLabel: planning.stats.groupLabel,
+          notConfigured: planning.stats.notConfigured,
+          activeNote: planning.stats.activeNote,
+        }}
+      />
 
       {/* The toolbar is one line on desktop. Its two disclosures expand inline
           below the controls so a planner can adjust filters and read results in

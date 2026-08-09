@@ -31,6 +31,33 @@ review by a native speaker, and the bundle measurement request.
 
 ---
 
+### T-023 · Slim `app/(app)/planning/page.tsx`
+`status: todo` · `rules: WEB-001 §2, WEB-000 §2` · `est: 3h`
+
+**555 lines against a 40-line cap** — the largest route-file violation on the
+migrated surface, and T-022 made it worse by ~75. Same remedy that worked for
+Visit Management: a `planning-workspace` screen component owning composition and
+string mapping, route reduced to access + query + render. Also clears the
+route's remaining `//` and `{/* */}` comments.
+
+---
+
+### T-022 · Planning assistant — insights, recommendations, quick actions, stats
+`status: done (static verification only)` · `rules: WEB-000…004, WEB-008, WEB-009, WEB-011` · `est: 2.5h`
+`record:` [2026-08-09-T-022-planning-assistant-panels](sessions/2026-08/2026-08-09-T-022-planning-assistant-panels.md)
+
+The vendor mock's AI band and stat row, on SAQEEL components over the platform's
+**existing** governed AI foundation — `ai_suggestions`/`ai_events`, the
+fail-closed Gemini adapter, and the RLS-re-reading server action.
+**No edge functions were needed or written.**
+
+Four mock values were not governed data and were not copied: the two confidence
+percentages (the provider supplies none), the per-visit AI score, "Needs
+Planning" and "Expiring Windows". Recommendations rank by recorded
+`factories.risk_score`; the two undefined buckets render *Not configured*.
+
+---
+
 ### T-021e · Planning skeleton + segmented-control width
 `status: done (static verification only)` · `rules: WEB-000, WEB-002, WEB-003, WEB-009, WEB-011` · `est: 40m`
 `record:` [2026-08-09-T-021e-planning-skeleton-and-segment-width](sessions/2026-08/2026-08-09-T-021e-planning-skeleton-and-segment-width.md)
@@ -415,6 +442,20 @@ Pull one in only if it is genuinely part of doing the active task well.
   that bug invisibly until a page placed it outside a toolbar (T-021e). Any
   other primitive relying on an inline display type for its width has the same
   trap armed; worth a sweep at the next design-system audit.
+- **"Needs Planning" and "Expiring Windows" need governed definitions.** A
+  factory with no visit in the inspection year, and a day threshold before window
+  end. Both render *Not configured* on `/planning` until a value is ruled.
+- **"Assign unassigned visits" needs an `unassigned` planning filter.**
+  `PlanningListFilters` has `inspectorId`, not "has no assignment"; a PostgREST
+  "not exists" over an embedded resource could not be verified without a
+  database. The quick action stays out until the filter exists.
+- **The planning AI advisory is generated on demand, not on load.** A Gemini call
+  per page render would be slow and costly. If the product wants it
+  pre-generated, that is a scheduled job writing `ai_suggestions` and the panel
+  reading the latest row — not a provider call in the render path.
+- **Recommendations rank by `factories.risk_score` alone**, so a factory already
+  covered by a published upcoming visit can still appear. Excluding those needs a
+  "has an open visit in window" predicate worth building properly.
 - **A skeleton for a part-migrated screen must be read from the CSS, not the
   JSX.** `/planning` still gets `.sq-planning-heading` (one row, `space-between`)
   and `.grid-toolbar` (a bordered bar, actions from the start edge) from the
