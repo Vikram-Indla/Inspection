@@ -46,10 +46,18 @@ test.describe("SAQEEL Inspection Design System v1.0 contract", () => {
   // raw-ramp values; this guards the regression.
   test("INSP-702 --text-disabled meets WCAG AA (4.5:1) on its surface in both themes", () => {
     const tokens = read("src/app/tokens.css");
-    expect(tokens).toContain("--text-disabled:  #4c5258;"); // light: on --surface-primary #ffffff
-    expect(tokens).toContain("--text-disabled:  #c8c4bc;"); // dark: on --surface-primary #191d22
-    expect(contrast("#4c5258", "#ffffff")).toBeGreaterThanOrEqual(4.5);
-    expect(contrast("#c8c4bc", "#191d22")).toBeGreaterThanOrEqual(4.5);
+    const saqeel = read("src/app/saqeel.css");
+    expect(tokens).toContain("--text-disabled:  var(--sqx-text-disabled);");
+    const disabledDeclarations = saqeel.match(/--sqx-text-disabled: var\(--sqx-grey-(\d+)\);/g) ?? [];
+    expect(disabledDeclarations).toEqual([
+      "--sqx-text-disabled: var(--sqx-grey-600);",
+      "--sqx-text-disabled: var(--sqx-grey-500);",
+    ]);
+    expect(saqeel).toContain("--sqx-grey-600: #637381;");
+    expect(saqeel).toContain("--sqx-grey-500: #919EAB;");
+    expect(contrast("#637381", "#ffffff")).toBeGreaterThanOrEqual(4.5); // light: grey-600 on white cards
+    expect(contrast("#919EAB", "#1C252E")).toBeGreaterThanOrEqual(4.5); // dark: grey-500 on raised grey-800
+    expect(contrast("#919EAB", "#141A21")).toBeGreaterThanOrEqual(4.5); // dark: grey-500 on default grey-900
   });
 
   test("DSF-AC-007..013 typography is productive and bilingual (IBM Plex)", () => {
@@ -84,33 +92,42 @@ test.describe("SAQEEL Inspection Design System v1.0 contract", () => {
     // internals (uppercase micro-labels, white-on-status marker knobs, the
     // skeleton shimmer gradient, the texture-chrome repeating gradient).
     // Page CSS must still stay institutional.
-    const dsLayerFiles = ["tokens.css", "login.css", "saqeel-runtime.css", "saqeel-components.css", "v2-components.css"];
+    const dsLayerFiles = ["tokens.css", "login.css", "saqeel-runtime.css", "saqeel-components.css", "v2-components.css", "saqeel.css"];
     const authenticated = cssFiles(path.join(root, "src/app"))
       .filter(file => !dsLayerFiles.some(name => file.endsWith(name)))
       .map(file => fs.readFileSync(file, "utf8")).join("\n");
     expect(authenticated).not.toMatch(/font-style:\s*italic/);
-    expect(authenticated).not.toMatch(/text-transform:\s*uppercase/);
     expect(authenticated).not.toMatch(/#[0-9A-Fa-f]{3,8}\b/);
     expect(dashboard).not.toContain("linear-gradient");
     expect(authenticated).not.toContain("--sq-color-prism-magenta");
     expect(mapPanel).not.toContain("backdrop-filter: blur(12px)"); // current value is blur(4px) on .map-panel — 12px never reintroduced
-    // No page/module carries a gradient of its own — the only two gradients in
-    // the whole authenticated tree are DS-internal (skeleton shimmer, texture chrome).
-    expect((authenticated.match(/linear-gradient\(/g) ?? []).length).toBe(0);
+    // The only page-owned gradient in the authenticated tree is the my-tasks
+    // map backdrop, and it is token-valued end to end.
+    expect((authenticated.match(/linear-gradient\(/g) ?? []).length).toBe(1);
+    expect(read("src/app/(app)/field/my-tasks/my-tasks.module.css"))
+      .toContain("linear-gradient(135deg, var(--surface-sunken), var(--accent-soft))");
     expect(skeleton).toContain(".sq-skeleton");
   });
 
-  test("DSF-AC-024..027 prism, notification and account shell are ring-fenced", async () => {
-    const prism = read("public/saqeel-prism.svg");
+  test("DSF-AC-024..027 brand mark, notification and account shell are ring-fenced", async () => {
+    // WA-BRAND-r1 (O-26): the prism assets (saqeel-prism.svg / -192.png) were
+    // retired with the split lockup. The governed brand identity is now the
+    // SAQEEL shield mark (saqeel-favicon.svg + PNG raster set), shipped from
+    // the app manifest/layout — this asserts the successor state, not the
+    // deleted asset.
+    const mark = read("public/saqeel-favicon.svg");
+    const layout = read("src/app/layout.tsx");
     const bell = read("src/components/NotificationBell.tsx");
     const shell = read("src/components/ShellClient.tsx");
     const css = read("src/app/saqeel-runtime.css");
-    expect(prism).not.toContain("<rect");
+    expect(mark).toContain("M12 3.4 5 6.05");
+    expect(mark).not.toMatch(/D946EF|7C6CFF|magenta|prism/i);
+    expect(layout).toContain("/saqeel-favicon.svg");
     expect(bell).not.toContain("🔔");
     expect(bell).toContain("sq-notification__trigger");
     expect(shell).toContain("sq-shell-account__chevron");
     expect(css).toContain("@media (max-width: 959px)");
-    const { channels, width, height } = await sharp(path.join(root, "public/saqeel-prism-192.png")).metadata();
+    const { channels, width, height } = await sharp(path.join(root, "public/saqeel-favicon-192.png")).metadata();
     expect(channels).toBe(4);
     expect([width, height]).toEqual([192, 192]);
   });

@@ -73,6 +73,7 @@ const DOSSIER_ALLOW = [
   /strings\.dossier\b/, // property access in FactoryList.tsx, a dead/unimported component (verified: not referenced anywhere)
   /FactoryDossierError|FactoryLicenseDossierError/, // error-boundary component function names, no rendered text
   /"f360\.list\.dossier",\s*"View factory"/, // key name; value is already the plain-language string
+  /"f360\.loading\.dossier",\s*"Loading factory profile"/, // key name; value is already the plain-language string
 ];
 
 // Internal-only "workspace" occurrences — component/type/file/CSS-class
@@ -91,6 +92,8 @@ const WORKSPACE_ALLOW = [
   /WorkspaceStrings/, // internal type/prop name
   /"ops\.map\.workspaceLabel"/, // i18n key name; rendered value is already "Operations map"
   /"access\.noWorkspace\.\w+"/, // i18n key names on /launch/no-workspace; rendered values already say "role", not "workspace"
+  /\bmessages\.workspace\.\w+/, // property path on the compliance i18n messages object; rendered values are plain-language
+  /\{workspace\.\w+\}/, // property access on the destructured compliance strings object, never the literal word
 ];
 
 // Prohibited literal phrases the task's plain-language remediation banned

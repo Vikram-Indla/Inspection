@@ -80,6 +80,12 @@ function requireSetting(envVar: string, persona: string, allowEmpty = false): st
   return value;
 }
 
+export function optionalSetting(envVar: string): string | null {
+  const files = envValues();
+  const value = process.env[envVar] ?? files[envVar];
+  return value?.trim() ? value : null;
+}
+
 const sharedPassword = (persona: string) => requireSetting("SAQEEL_TEST_PASSWORD", persona, true);
 const primaryCohortPassword = (persona: string) => requireSetting("SAQEEL_CROSS_ROLE_PASSWORD", persona);
 const personaEmail = (envVar: string, persona: string) => requireSetting(envVar, persona);

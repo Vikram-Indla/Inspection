@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { homeForRoles } from "../src/lib/role-home";
+import { storageStatePath } from "./personas";
 
 // CD-003 / AUTH-03 / CD003-SEC-001 — role resolution + no-workspace
 // fallback. Behavioral proof that the ROLE_HOME edit (six explicit
@@ -41,20 +42,20 @@ test("PLN-AUTH-ENTRY-001: a normal Planner sign-in is role-routed to Dashboard",
 
   // The landing itself uses the Planning capability boundary, rather than a
   // browser-only menu check, so a matched Planner proceeds to the workspace.
-  expect(planning).toContain('getPlanningAccess(sb, ["planning.view", "planning.create", "planning.export"])');
+  expect(planning).toContain('getPlanningAccess(sb, ["planning.view", "planning.create", "planning.export", "planning.approve"])');
   expect(planning).toContain('access.accessClass !== "business_staff"');
 });
 
-test("CD003-SEC-001 regression: admin-family persona lands on the shared Dashboard", async ({ page }) => {
-  // Real user_roles verified live: admin@mim.gov.sa carries compliance_admin,
-  // form_admin, workflow_admin, security_admin, gis_admin, risk_owner — never
-  // a literal "admin" key. Before this fix these six were unmatched and this
-  // account only reached /admin via the blind fallback this change removes.
+test("CD003-SEC-001 regression: admin-family persona lands on the shared Dashboard", async ({ browser }) => {
+  // Real user_roles verified live: the admin persona carries admin-family
+  // role_keys, never a literal "admin" key. Before this fix these were
+  // unmatched and the account only reached /admin via the blind fallback this
+  // change removes. /launch re-runs the same role resolution on every entry.
+  const context = await browser.newContext({ storageState: storageStatePath("admin") });
+  const page = await context.newPage();
   await page.goto("/locale?set=en");
-  await page.goto("/login");
-  await page.locator("#email").fill("admin@mim.gov.sa");
-  await page.locator("#pw").fill("MimAdmin!2026");
-  await page.getByRole("button", { name: /Sign In/i }).click();
-  await page.waitForURL((url) => url.pathname === "/dashboard", { timeout: 20000 });
+  await page.goto("/launch");
+  await page.waitForURL((url) => url.pathname.replace(/^\/(en|ar)(?=\/|$)/, "") === "/dashboard", { timeout: 20000 });
   await expect(page.locator("body")).not.toContainText("ERR-AUTH");
+  await context.close();
 });

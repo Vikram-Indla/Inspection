@@ -25,12 +25,14 @@ test.describe("PKT-RESPONSIVE-PLANNING-003 source contracts", () => {
   test("Inspector is denied Planning before governed reads", () => {
     const home = source("src/app/(app)/planning/page.tsx");
     expect(home).toContain('access.accessClass !== "business_staff"');
-    expect(home.indexOf('access.accessClass !== "business_staff"')).toBeLessThan(home.indexOf('sb.from("package_versions")'));
+    expect(home.indexOf('access.accessClass !== "business_staff"')).toBeLessThan(home.indexOf("loadPlanningWorkspace("));
 
     const list = source("src/app/(app)/planning/visits/page.tsx");
-    expect(list.indexOf('access.accessClass !== "business_staff"')).toBeLessThan(list.indexOf("return Visits("));
+    expect(list).toContain('!["business_staff", "admin"].includes(access.accessClass)');
+    expect(list.indexOf('!["business_staff", "admin"].includes(access.accessClass)')).toBeLessThan(list.indexOf("return Visits("));
     const detail = source("src/app/(app)/planning/visits/[id]/page.tsx");
-    expect(detail.indexOf('access.accessClass !== "business_staff"')).toBeLessThan(detail.indexOf("return VisitDetail("));
+    expect(detail.indexOf("getPlanningReadContract")).toBeLessThan(detail.indexOf("return VisitDetail("));
+    expect(detail.indexOf("if (!contract.ok)")).toBeLessThan(detail.indexOf("return VisitDetail("));
   });
 
   test("Planning and Visit-detail layouts declare bounded responsive and reduced-motion rules", () => {
@@ -65,7 +67,7 @@ test.describe("PKT-RESPONSIVE-PLANNING-003 runtime", () => {
       await page.goto(`/locale?set=${state.locale}`);
       await page.evaluate(theme => localStorage.setItem("saqeel-theme", theme), state.theme);
       await page.goto("/planning");
-      await expect(page.getByRole("heading", { name: "Planning", exact: true })).toBeVisible();
+      await expect(page.getByRole("heading", { name: state.locale === "ar" ? "التخطيط" : "Planning", exact: true })).toBeVisible();
       await expect(page.locator("html")).toHaveAttribute("dir", state.locale === "ar" ? "rtl" : "ltr");
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -86,19 +88,24 @@ test.describe("PKT-RESPONSIVE-PLANNING-003 runtime", () => {
     await expect(page.locator('a[href="/planning/single"]')).toHaveCount(0);
     await expect(page.locator('a[href="/planning/visits"]')).toHaveCount(0);
     await page.goto("/planning/visits");
-    await expect(page.getByRole("heading", { name: "Authorized role required", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /You don.t have permission/i })).toBeVisible();
     await expect(page.locator('[data-saqeel-design="WA-DES-045"]')).toHaveCount(0);
     await context.close();
   });
 
-  test("Administrator is denied Planning landing and Planning-owned Visits", async ({ browser }) => {
+  test("Administrator is denied Planning landing and reaches Visits view-only", async ({ browser }) => {
+    // f556ad81 (PROGRAMME-BASELINE-20260805 canonical_rule_visibility): the
+    // explicit ruling grants admin planning.view only — the visits list
+    // renders read-only while the Planning workspace and every creation
+    // surface stay denied.
     const context = await browser.newContext({ storageState: storageStatePath("admin") });
     const page = await context.newPage();
-    for (const route of ["/planning", "/planning/visits"]) {
-      await page.goto(route);
-      await expect(page.getByRole("heading", { name: /Authorized role required/i })).toBeVisible();
-      await expect(page.locator('a[href="/planning/bulk"], a[href="/planning/single"], a[href="/planning/immediate"]')).toHaveCount(0);
-    }
+    await page.goto("/planning");
+    await expect(page.getByRole("heading", { name: /Authorized role required/i })).toBeVisible();
+    await expect(page.locator('a[href="/planning/bulk"], a[href="/planning/single"], a[href="/planning/immediate"]')).toHaveCount(0);
+    await page.goto("/planning/visits");
+    await expect(page.locator('[data-saqeel-design="WA-DES-045"]')).toBeVisible();
+    await expect(page.locator('a[href="/planning/bulk"], a[href="/planning/single"], a[href="/planning/immediate"]')).toHaveCount(0);
     await context.close();
   });
 });

@@ -177,8 +177,8 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
     const src = page + read(LOADER);
     expect(src).toContain('["pending", "returned", "rejected", "draft"].includes(row.status)');
     expect(page).toContain('href={`/factories/${factoryId}?compat=legacy#location`}');
-    expect(page).toContain("&cr=${cr.id}&license=${selected?.id");
-    expect(page).toContain("&returnTo=${encodeURIComponent(");
+    expect(page).toContain('cr=${encodeURIComponent(cr.cr_number)}&license=${encodeURIComponent(selected?.license_number ?? "")}');
+    expect(page).toContain("&source=factory360");
     expect(page).toContain('t("f360.compliance.notAvailable", "Not Available")');
   });
 

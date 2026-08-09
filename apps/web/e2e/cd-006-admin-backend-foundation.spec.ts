@@ -10,7 +10,6 @@ test.describe("CD-006..011 admin backend foundation", () => {
       "src/app/(app)/admin/regulations/actions.ts",
       "src/app/(app)/admin/items/actions.ts",
       "src/app/(app)/admin/packages/actions.ts",
-      "src/app/(app)/admin/violations/actions.ts",
     ]) {
       const content = src(path);
       expect(content).toContain('from "@/lib/admin-configuration"');
@@ -19,6 +18,18 @@ test.describe("CD-006..011 admin backend foundation", () => {
       expect(content).toContain("logProviderError(");
       expect(content).not.toMatch(/return \{ error: error\.message \}/);
     }
+    const violations = src("src/app/(app)/admin/violations/actions.ts");
+    for (const mutation of [
+      "createViolationCode",
+      "deactivateViolationCode",
+      "publishViolationCode",
+      "createPenaltyMapping",
+      "publishPenaltyMapping",
+    ]) {
+      expect(violations).toContain(`export async function ${mutation}`);
+    }
+    expect(violations.match(/return \{ error: CCR_REQUIRED \};/g)?.length).toBe(5);
+    expect(violations).not.toMatch(/\.insert\(|\.update\(|\.upsert\(|\.delete\(/);
   });
 
   test("the guard only admits the configuration roles and returns neutral failures", () => {
@@ -37,13 +48,12 @@ test.describe("CD-006..011 admin backend foundation", () => {
   });
 
   test("regulation publishing validates clause consumers and the database protects published records", () => {
-    const actions = src("src/app/(app)/admin/regulations/actions.ts");
     const auditMigration = src("../../supabase/migrations/20260715173000_admin_configuration_audit.sql");
-    const authorityMigration = src("../../supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql");
-    expect(actions).toContain('sb.rpc("publish_regulation"');
-    expect(actions).toContain("Publish blocked: every clause must map to an inspection item.");
-    expect(authorityMigration).toContain("not exists(select 1 from public.inspection_items i where i.clause_id=c.id)");
-    expect(authorityMigration).toContain("approved_by=auth.uid()");
+    const fourRoleMigration = src("../../supabase/migrations/20260729003741_four_role_package_configuration_authority.sql");
+    expect(fourRoleMigration).toContain("create or replace function public.publish_regulation(p_regulation_id uuid)");
+    expect(fourRoleMigration).toContain("every regulation clause must map to an inspection item");
+    expect(fourRoleMigration).toContain("maker-checker requires a distinct approver");
+    expect(fourRoleMigration).toContain("set status = 'published', approved_by = auth.uid()");
     expect(auditMigration).toContain("regulations_maker_checker");
     expect(auditMigration).toContain("trg_guard_published_regulation");
   });

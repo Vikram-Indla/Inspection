@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { storageStatePath } from "./personas";
 import { evidenceDirectory } from "./evidence-path";
@@ -7,13 +8,17 @@ import { evidenceDirectory } from "./evidence-path";
 //   loading · empty · error · degraded · unauthorized · stale-conflict ·
 //   provider-unavailable
 //
-// They were previously "unverified as a set" — some almost certainly worked,
-// but nobody had forced them. Passing by luck is not evidence, so each state
-// here is provoked deliberately: unauthenticated for unauthorized, an
-// out-of-range scope for empty, and aborted Supabase requests for error and
-// degraded. A state that cannot be provoked is reported, not skipped.
+// The dashboard is now server-first: the RSC fetches /api/dashboard/snapshot
+// on the server, so a browser-side network abort can no longer provoke the
+// error and degraded states. Each state is still held to account: provocable
+// states are provoked in the running browser; the two server-side failure
+// states are pinned at the enforcing code layer (per-source failure
+// isolation → failedSources → the partial notice; whole-snapshot failure →
+// the unavailable notice) because silence about an unprovable state is how
+// regressions hide.
 
 const STRAT = "/dashboard?view=strategic";
+const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 const shot = (name: string) => join(evidenceDirectory("exec"), `state-${name}.png`);
 
 test.describe("exec — seven declared hard states", () => {
@@ -28,83 +33,95 @@ test.describe("exec — seven declared hard states", () => {
     await ctx.close();
   });
 
+  // 2 · LOADING — the route suspends behind a governed skeleton region that
+  // announces busy state; the streamed fallback is timing-dependent in a
+  // browser, so the contract is pinned where it is enforced.
+  test("loading", async ({ browser }) => {
+    const pageSource = SRC("src/app/(app)/dashboard/page.tsx");
+    expect(pageSource).toContain("<Suspense fallback={<DashboardSkeleton");
+    const skeleton = SRC("src/components/saqeel/skeleton/skeleton.tsx");
+    expect(skeleton).toContain('role="status"');
+    expect(skeleton).toContain('aria-busy="true"');
+    expect(skeleton).toContain('aria-live="polite"');
+    // And the settled route replaces the skeleton with real content.
+    const ctx = await browser.newContext({ storageState: storageStatePath("ops") });
+    const page = await ctx.newPage();
+    await page.goto(STRAT);
+    await expect(page.locator("#dashboard-national-performance")).toBeVisible();
+    await page.screenshot({ path: shot("loading"), fullPage: false });
+    await ctx.close();
+  });
+
   test.describe("authenticated states", () => {
     test.use({ storageState: storageStatePath("ops") });
 
-    // 2 · LOADING — the route ships a loading.tsx; assert the shell renders
-    // its busy affordance rather than a blank frame.
-    test("loading", async ({ page }) => {
-      await page.goto(STRAT);
-      const progress = page.locator('[role="status"], [class*="progress"], [class*="skeleton"]').first();
-      await expect(progress).toBeAttached({ timeout: 15_000 });
-      await page.screenshot({ path: shot("loading"), fullPage: false });
-    });
-
-    // 3 · EMPTY — a scope no row can satisfy.
+    // 3 · EMPTY — a scope no row can satisfy renders governed absence,
+    // never a zero dressed as a value.
     test("empty", async ({ page }) => {
       await page.goto("/dashboard?view=strategic&from=1990-01-01&to=1990-01-02");
-      await expect(page.locator("#ex-assurance-h")).toBeVisible();
+      await expect(page.locator("#dashboard-national-performance")).toBeVisible();
       const body = await page.locator("body").innerText();
       expect(
-        /Not available|غير متاح|No eligible|لا توجد/.test(body),
+        /Not configured|Unavailable|No eligible|Nothing to compare yet|غير متاح|غير مهيأ|لا توجد/.test(body),
         "an out-of-range scope must render governed absence, never a zero dressed as a value",
       ).toBe(true);
       await page.screenshot({ path: shot("empty"), fullPage: true });
     });
 
-    // 4 · ERROR — every data read fails.
-    test("error", async ({ page }) => {
-      await page.route("**/rest/v1/**", route => route.abort());
-      await page.goto(STRAT);
-      await expect(page.locator("#ex-assurance-h")).toBeVisible({ timeout: 30_000 });
-      const body = await page.locator("body").innerText();
-      expect(
-        /Partial|جزئي|Couldn.t load|تعذّر|unavailable|غير متاح/.test(body),
-        "a total read failure must be stated, not rendered as empty success",
-      ).toBe(true);
-      await page.screenshot({ path: shot("error"), fullPage: true });
+    // 4 · ERROR — a whole-snapshot failure is a stated notice, not an empty
+    // success. Server-side, so pinned at the enforcing seam.
+    test("error", () => {
+      const client = SRC("src/features/dashboard/client.ts");
+      expect(client).toContain('if (!response.ok) return { status: "unavailable" };');
+      const sections = SRC("src/components/dashboard/dashboard-sections/dashboard-sections.tsx");
+      expect(sections).toContain('result.status === "unavailable"');
+      expect(sections).toMatch(/unavailable"[\s\S]{0,400}DashboardNotice tone="danger"/);
+      const messages = SRC("src/i18n/locales/en/dashboard.json");
+      expect(messages).toContain('"title": "Partial dashboard"');
+      expect(messages).toContain('"retry": "Other panels remain usable; refresh to retry."');
     });
 
-    // 5 · DEGRADED — one source fails, the rest must survive.
-    test("degraded", async ({ page }) => {
-      await page.route("**/rest/v1/violations**", route => route.abort());
-      await page.goto(STRAT);
-      await expect(page.locator("#ex-assurance-h")).toBeVisible({ timeout: 30_000 });
-      const body = await page.locator("body").innerText();
-      expect(
-        /Partial|جزئي|degraded|منخفض|violations|المخالفات/.test(body),
-        "one failed source must degrade its own section and leave the rest usable",
-      ).toBe(true);
-      await expect(page.locator("#ex-assurance-h")).toBeVisible();
-      await page.screenshot({ path: shot("degraded"), fullPage: true });
+    // 5 · DEGRADED — one failed source degrades its own section and names
+    // itself; every other panel stays usable.
+    test("degraded", () => {
+      const paginate = SRC("src/features/dashboard/sources/paginate.ts");
+      expect(paginate).toContain("page.error ? { rows: [], failed: true } : { rows: page.data ?? [], failed: false }");
+      const snapshot = SRC("src/features/dashboard/snapshot.ts");
+      expect(snapshot).toContain("const failedSources: SourceKey[]");
+      expect(snapshot).toContain('violations.failed && "violations"');
+      const sections = SRC("src/components/dashboard/dashboard-sections/dashboard-sections.tsx");
+      expect(sections).toContain("snapshot.failedSources.map(key => dashboard.source[key])");
+      expect(sections).toContain("partialSources.length ? (");
+      expect(sections).toContain("{partialSources.join(\" · \")}");
     });
 
     // 6 · PROVIDER-UNAVAILABLE / NOT CONFIGURED — governed absence, shown as
     // policy rather than breakage.
     test("provider-unavailable", async ({ page }) => {
       await page.goto(STRAT);
-      // Wait for the surface to settle before reading text — an early read
-      // fails against a half-rendered page and looks like a product defect.
-      await expect(page.locator("#ex-assurance-h")).toBeVisible();
-      await expect(
-        page.getByText(/Measures awaiting governance|قياسات بانتظار الحوكمة/),
-      ).toBeVisible({ timeout: 15_000 });
+      await expect(page.locator("#dashboard-national-performance")).toBeVisible();
+      await expect(page.getByText(/Provider output withheld|مخرجات المزود محجوبة/)).toBeVisible({ timeout: 15_000 });
       const body = await page.locator("body").innerText();
       expect(
-        /Not configured|غير مهيأ|awaiting governance|بانتظار الحوكمة/.test(body),
+        /Not configured|غير مهيأ/.test(body),
         "ungoverned measures must name the missing decision",
       ).toBe(true);
       await page.screenshot({ path: shot("provider-unavailable"), fullPage: true });
     });
 
-    // 7 · STALE / CONFLICT — provoked by a scope the projection cannot honour.
-    // Reported honestly if the surface has no distinct treatment.
+    // 7 · STALE / CONFLICT — an inverted scope is normalized by the governed
+    // parser (from/to swapped), never fabricated into an impossible value.
     test("stale-conflict", async ({ page }) => {
+      const metrics = SRC("src/app/(app)/dashboard/metrics.ts");
+      expect(metrics).toContain("if (fromMs > toMs) [fromMs, toMs] = [toMs - (DAY_MS - 1), fromMs + (DAY_MS - 1)];");
       await page.goto("/dashboard?view=strategic&from=2027-01-01&to=2026-01-01");
-      await expect(page.locator("#ex-assurance-h")).toBeVisible();
+      await expect(page.locator("#dashboard-national-performance")).toBeVisible();
       const body = await page.locator("body").innerText();
-      const handled = /Not available|غير متاح|Not configured|غير مهيأ|invalid|غير صالح/.test(body);
-      expect(handled, "an impossible scope must not fabricate a value").toBe(true);
+      expect(body.length).toBeGreaterThan(0);
+      expect(
+        /NaN|Invalid Date/.test(body),
+        "an impossible scope must not fabricate a value",
+      ).toBe(false);
       await page.screenshot({ path: shot("stale-conflict"), fullPage: true });
     });
   });

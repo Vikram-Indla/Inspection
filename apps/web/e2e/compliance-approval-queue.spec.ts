@@ -19,19 +19,25 @@ test.describe("Prompt 04 Compliance Approval Queue contract", () => {
 
   test("shared navigation resolves to a distinct Compliance queue route", () => {
     expect(navigation).toContain('href: "/admin/compliance-approvals"');
-    expect(queue).toContain("Distinct from Inspection Review &amp; Approval");
+    expect(queue).toContain("Distinct from Inspection Review & Approval");
     expect(queue).toContain("does not contain inspection reports or Level 2 inspection reviews");
   });
 
   test("queue route is limited to existing reviewer authority", () => {
-    expect(layout).toContain('allowedRoles={["compliance_admin", "reviewer"]}');
-    expect(migration).toContain("array['compliance_admin','reviewer']");
+    // PO ruling 2026-08-05 (CC-CCR-REVIEWER-SUPERVISOR-20260805 / INSP-751):
+    // supervisors approve compliance changes; the original compliance_admin/
+    // reviewer names were never registered roles. The route boundary admits
+    // admin (author visibility) and supervisor; the DB approval gate is
+    // supervisor/compliance_admin/reviewer and stays maker-checked.
+    expect(layout).toContain('allowedRoles={["admin", "supervisor"]}');
+    const reviewerWidening = readRepo("supabase/migrations/20260805110000_ccr_reviewer_admit_supervisor.sql");
+    expect(reviewerWidening).toContain("array['supervisor','compliance_admin','reviewer']");
     expect(migration).toContain("create policy ccr_requests_read");
     expect(migration).toContain("owner_id = auth.uid() or public.ccr_is_reviewer()");
   });
 
   test("maker-owned requests are excluded while the database remains authority", () => {
-    expect(queue).toContain("row.owner_id !== user?.id");
+    expect(queue).toContain("row.owner_id !== user.id");
     expect(queue).toContain("Makers cannot decide or publish their own requests");
     expect(migration).toContain("if r.owner_id=auth.uid() then raise exception 'CCR_MAKER_CHECKER'");
   });
@@ -58,7 +64,7 @@ test.describe("Prompt 04 Compliance Approval Queue contract", () => {
   test("queue performs no direct decision writes and exposes honest states", () => {
     expect(queue).not.toMatch(/\.insert\(|\.update\(|\.delete\(|\.rpc\(/);
     expect(queue).toContain("Awaiting Approval can't load");
-    expect(queue).toContain("found no eligible maker-checker assignments");
+    expect(queue).toContain("No eligible maker-checker assignments for this view.");
     expect(readWeb("src/app/(app)/admin/compliance-approvals/loading.tsx")).toContain("Loading Awaiting Approval");
     expect(readWeb("src/app/(app)/admin/compliance-approvals/error.tsx")).toContain("no decision was recorded");
   });

@@ -9,10 +9,11 @@ const hrefs = (role: string) => buildShellNavigation([role]).flatMap(group => gr
 
 test.describe("PKT-RESPONSIVE-FOUNDATION-SHELL-001", () => {
   test("Planner, Inspector and Administrator capability profiles receive the canonical business navigation", () => {
-    const canonical = ["/dashboard", "/operations", "/factories", "/planning", "/field", "/reviews"];
+    const canonical = ["/dashboard", "/operations", "/factories", "/planning", "/execution", "/reviews", "/analytics"];
     for (const role of ["planner", "inspector", "security_admin"]) {
       expect(hrefs(role)).toEqual(expect.arrayContaining(canonical));
-      expect(hrefs(role)).toContain("/admin");
+      expect(hrefs(role).some(href => href.startsWith("/admin/"))).toBe(true);
+      expect(hrefs(role)).toEqual(hrefs("admin"));
     }
   });
 
@@ -33,7 +34,8 @@ test.describe("PKT-RESPONSIVE-FOUNDATION-SHELL-001", () => {
     expect(layout).not.toMatch(/"planner"|"inspector"/);
     expect(layout).toContain("<AdminRouteBoundary");
     expect(boundary).toContain("allowedRoles.some(role => roles.has(role))");
-    expect(boundary).toContain("No configuration data has been loaded");
+    expect(boundary).toContain("You do not have access to this destination");
+    expect(boundary).toContain("access is refused here, at the boundary");
     expect(boundary.indexOf("allowedRoles.some")).toBeLessThan(boundary.indexOf("<Shell"));
   });
 

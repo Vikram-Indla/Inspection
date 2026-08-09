@@ -52,6 +52,8 @@ test.describe("Web/Admin F0 source and security contract", () => {
   test("sponsor shell correction renders the WA-BRAND-r1 wordmark and favicon lockup", () => {
     const layout = read("src/app/layout.tsx");
     const shell = read("src/components/ShellClient.tsx");
+    const shellBrand = read("src/components/app-shell/shell-brand/shell-brand.tsx");
+    const brandMark = read("src/components/SaqeelBrandMark.tsx");
     const css = read("src/app/saqeel-runtime.css");
     const favicon = read("public/saqeel-favicon.svg");
     const darkWordmark = read("public/saqeel-wordmark-dark-mode.svg");
@@ -62,16 +64,24 @@ test.describe("Web/Admin F0 source and security contract", () => {
     expect(layout).toContain('import "./saqeel-runtime.css"');
     expect(shell).toContain("sq-shell");
     expect(css).toContain(".sq-shell {");
-    // WA-BRAND-r1 (O-26): the split صقيل / صناعي text lockup is retired. The rail
-    // renders the wordmark asset expanded and the favicon mark collapsed.
-    expect(shell).toContain('src="/saqeel-favicon.svg"');
+    // WA-BRAND-r1 (O-26): the split two-line subtitle lockup is retired. The
+    // rail renders the canonical shield mark (same geometry as the sponsor-
+    // approved favicon, inlined so it inherits currentColor) beside the
+    // wordmark, in the retiring ShellClient and in the app-shell ShellBrand
+    // that supersedes it.
+    expect(shell).toContain('<SaqeelBrandMark />');
+    expect(shellBrand).toContain('<SaqeelBrandMark />');
+    expect(shellBrand).toContain('lang="ar">صقيل</span>');
+    expect(shellBrand).toContain('lang="en">SAQEEL</span>');
+    expect(shellBrand).not.toContain('صناعي');
+    expect(brandMark).toContain('M12 3.4 5 6.05');
     expect(shell).toContain('<span className="sq-shell__brand-ar" lang="ar">\u0635\u0642\u064a\u0644</span>');
     expect(shell).toContain('<span className="sq-shell__brand-en" lang="en">SAQEEL</span>');
     expect(shell).not.toContain('sq-shell__brand-sub');
     expect(shell).not.toContain('\u0635\u0646\u0627\u0639\u064a');
-    // Sizes are the design authority's, not invented: saqeel/components.css
-    // ships a 22px-cap wordmark and a 26px favicon.
-    expect(css).toContain('.sq-shell__brand-mark img { display: block; inline-size: 22px; block-size: 22px; }');
+    // Sizes are the design authority's, not invented: the rail mark is the
+    // 30px inline shield; collapse hides the wordmark and child nav items.
+    expect(css).toContain('.sq-shell__brand-mark svg { display: block; inline-size: 30px; block-size: 30px; }');
     expect(css).toContain('.sq-shell.is-collapsed .sq-shell__brand-name { display: none; }');
     expect(css).toContain('.sq-shell.is-collapsed .sq-nav-item--child { display: none; }');
     expect(favicon).toContain('M12 3.4 5 6.05');

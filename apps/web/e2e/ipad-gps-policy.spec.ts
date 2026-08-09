@@ -47,7 +47,7 @@ test.describe("TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003", () => {
     const startup = readFileSync(app("src/app/(app)/field/[visitId]/Startup.tsx"), "utf8");
     const offline = readFileSync(app("src/lib/offline.ts"), "utf8");
     const operations = readFileSync(app("src/app/(app)/operations/actions.ts"), "utf8");
-    const operationsPage = readFileSync(app("src/app/(app)/operations/page.tsx"), "utf8");
+    const operationsPage = readFileSync(app("src/features/operations/queries.ts"), "utf8");
 
     expect(enumMigration).toContain("alter type evidence_link add value if not exists 'geo_override'");
     expect(migration).toContain("create table if not exists geo_override_requests");
@@ -72,6 +72,6 @@ test.describe("TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003", () => {
     expect(offline).toContain('op.kind === "geo_checkin"');
     expect(offline).toContain('sb.rpc("request_geo_override"');
     expect(operations).toContain('sb.rpc("decide_geo_override"');
-    expect(operationsPage).toContain('createSignedUrl(evidence.storage_path!, 600)');
+    expect(operationsPage).toContain('createSignedUrl(entry.path, 600)');
   });
 });

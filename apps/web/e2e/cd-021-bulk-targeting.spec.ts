@@ -125,9 +125,9 @@ test.describe("CD-021 selection (frame 1a)", () => {
     await page.goto("/planning/bulk/review");
     await expect(page.getByRole("heading", { name: /Readiness/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Targets & proposed visits/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Publish consequence ledger/i })).toBeVisible();
-    // Single publish control — enabled (ready) or disabled (blocked), never absent.
-    await expect(page.getByRole("button", { name: /Publish plan and create|Publish blocked/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Supervision submission ledger/i })).toBeVisible();
+    // Single submit control — enabled (ready) or disabled (blocked), never absent.
+    await expect(page.getByRole("button", { name: /Submit plan and create|Submission blocked/i })).toBeVisible();
     // Truthful automatic-assignment copy — the stale "round-robin" claim is gone.
     await expect(page.getByText(/round-robin/i)).toHaveCount(0);
   });
@@ -148,7 +148,7 @@ test.describe("CD-021 selection (frame 1a)", () => {
     await page.goto("/planning/bulk/review");
     await expect(page.getByRole("heading", { name: /no longer fully in scope/i })).toBeVisible();
     await expect(page.getByText(/could not be read in your current scope/i)).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Publish consequence ledger/i })).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: /Supervision submission ledger/i })).toHaveCount(0);
     await expect(page.getByText(/temporarily unavailable/i)).toHaveCount(0);
   });
 
@@ -178,17 +178,22 @@ test.describe("CD-021 selection (frame 1a)", () => {
 });
 
 test("CD-021 publish boundary revalidates inside one transaction and follows STM-PLAN-001/002", () => {
+  // Bulk publish became submit-for-supervision (PLN-BULK-001/PLN-SUP-001):
+  // the atomic boundary is submit_bulk_plan_for_supervision, capability-gated
+  // and revalidating duplicates and target identity inside one transaction.
   const page = readFileSync(join(process.cwd(), "src/app/(app)/planning/bulk/page.tsx"), "utf8");
   const action = readFileSync(join(process.cwd(), "src/app/(app)/planning/bulk/actions.ts"), "utf8");
-  const migration = readFileSync(join(process.cwd(), "../..", "supabase/migrations/20260714091727_planning_publish_guards.sql"), "utf8");
+  const migration = readFileSync(join(process.cwd(), "../..", "supabase/migrations/20260729024000_bulk_supervision_lifecycle.sql"), "utf8");
   expect(page).toContain("collectPostgrestPages<FactoryForCriteria & Record<string, unknown>>");
   expect(page).toContain(".range(from, to)");
-  expect(action).toContain('sb.rpc("publish_bulk_plan"');
-  expect(migration).toContain("not has_role('planner')");
-  expect(migration).toContain("bulk publish duplicate active visit");
-  expect(migration).toContain("set status = 'validated'");
-  expect(migration).toContain("where id = v_plan_id and status = 'validated'");
-  expect(migration).not.toContain("p_auto_pool[");
+  expect(action).toContain('sb.rpc("submit_bulk_plan_for_supervision"');
+  expect(migration).toContain("has_planning_capability('planning.create.bulk')");
+  expect(migration).toContain("has_planning_capability('planning.submit_for_supervision')");
+  expect(migration).toContain("BULK-SUPERVISION-SUBMIT-DENIED");
+  expect(migration).toContain("BULK-SUPERVISION-DUPLICATE");
+  expect(migration).toContain("BULK-SUPERVISION-TARGET-AMBIGUOUS");
+  expect(migration).toContain("returns uuid");
+  expect(migration).toContain("return v_plan_id;");
 });
 
 test.describe("CD-021 a11y / RTL (DSG-A11Y-001)", () => {
@@ -291,18 +296,17 @@ test.describe("CD-021 remediation — select-all typed-count confirmation (findi
 
 test.describe("CD-021 remediation — Planner-only role guard (finding 8)", () => {
   test.use({ storageState: storageStatePath("inspector") });
-  test("field-channel inspector is redirected off both bulk routes to the field home", async ({ page }) => {
-    // M6/CD-023 reconciliation: the channel gate (RBAC-009/010, Inspector =
-    // iPad channel) redirects field-only personas off web-portal routes BEFORE
-    // the page gate renders — the governed denial for an inspector is the
-    // redirect to their field home, not the in-page unauthorized state (the
-    // capability-denial copy is covered by the admin test below).
+  test("inspector is denied on both bulk routes before any targeting data renders", async ({ page }) => {
+    // Planning convergence: the access-class gate now denies the inspector in
+    // place (planning_access_class() = inspector → fail closed) instead of the
+    // earlier channel redirect. The boundary is the same: no criteria tree, no
+    // review workspace, no targeting data.
     await page.goto("/planning/bulk");
-    await expect(page).toHaveURL(/\/field/);
+    await expect(page.getByText(/You don.t have permission/i).first()).toBeVisible();
     await expect(page.getByRole("tree")).toHaveCount(0);
     await page.goto("/planning/bulk/review");
-    await expect(page).toHaveURL(/\/field/);
-    await expect(page.getByRole("heading", { name: /Publish consequence ledger/i })).toHaveCount(0);
+    await expect(page.getByText(/access to review this plan/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Supervision submission ledger/i })).toHaveCount(0);
   });
 });
 
@@ -333,26 +337,36 @@ test.describe("M6 — criteria dictionary fields and typed operators", () => {
     await expect(page.locator("#crit-field-0 option[value='previous_violation_count']")).toHaveText(/Previous violation count/);
     await expect(page.locator("#crit-field-0 option[value='previous_outcome']")).toHaveText(/Previous inspection outcome/);
     await expect(page.locator("#crit-field-0 option[value='last_inspection_date']")).toHaveText(/Last inspection date/);
-    // previous_violation_count > 0 → numeric evaluation over the violations join.
+    // Numeric evaluation over the violations join, proven from both sides so
+    // the assertion never depends on how many violations the live RLS scope
+    // currently exposes: `< 1000000` keeps every factory (count >= 0 always),
+    // `> 1000000` keeps none.
     await page.locator("#crit-field-0").selectOption("previous_violation_count");
-    await page.locator("#crit-op-0").selectOption("gt");
-    await page.locator("#crit-value-0").fill("0");
+    await page.locator("#crit-op-0").selectOption("lt");
+    await page.locator("#crit-value-0").fill("1000000");
     await page.getByRole("button", { name: /^Apply criteria$/i }).click();
     await page.waitForURL(/ct=/);
-    const narrowed = Number((await page.getByText(/\d+ results/).first().innerText()).replace(/\D/g, ""));
-    expect(narrowed).toBeGreaterThan(0); // staging holds recorded violations
-    expect(narrowed).toBeLessThan(total);
+    const all = Number((await page.getByText(/\d+ results/).first().innerText()).replace(/\D/g, ""));
+    expect(all).toBe(total);
+    const applied = new URL(page.url());
+    const tree = JSON.parse(applied.searchParams.get("ct") ?? "{}") as { n: { o: string }[] };
+    tree.n[0].o = "gt";
+    await page.goto(`/planning/bulk?ct=${encodeURIComponent(JSON.stringify(tree))}`);
+    const none = Number((await page.getByText(/\d+ results/).first().innerText()).replace(/\D/g, ""));
+    expect(none).toBe(0);
   });
 
   test("CONTRACT_NOT_SUPPLIED fields are listed disabled with their honest explanation (PLN-CON-019)", async ({ page }) => {
     await page.goto("/planning/bulk");
     const employee = page.locator("#crit-field-0 option[value='employee_count']");
     await expect(employee).toBeDisabled();
-    await expect(employee).toContainText(/CONTRACT_NOT_SUPPLIED/);
+    // UI copy pass: the raw CONTRACT_NOT_SUPPLIED tag became the operator-facing
+    // "Not available" while the contract meaning (disabled, explained) held.
+    await expect(employee).toContainText(/Not available/i);
     // The reason is visible copy — never a silent absence, never a zero.
     // (The disabled <option> text is hidden; the legend lozenge is the visible tag.)
-    await expect(page.getByText(/Employee count is recorded for 4 of 1,339 factories/)).toBeVisible();
-    await expect(page.locator(".sq-lozenge", { hasText: /CONTRACT_NOT_SUPPLIED/ }).first()).toBeVisible();
+    await expect(page.getByText(/Employee count is recorded for only 4 of 1,339 factories/)).toBeVisible();
+    await expect(page.locator(".sq-lozenge", { hasText: /Not available/i }).first()).toBeVisible();
   });
 });
 
@@ -375,7 +389,7 @@ test.describe("M6 — capability-based access (planning.create.bulk)", () => {
     const page = await context.newPage();
     await page.goto("/locale?set=en");
     await page.goto("/planning/bulk");
-    await expect(page.getByText(/Authorized role required/i)).toBeVisible();
+    await expect(page.getByText(/You don.t have permission/i).first()).toBeVisible();
     await expect(page.getByRole("tree")).toHaveCount(0);
     await page.goto("/planning/bulk/review");
     await expect(page.getByText(/access to review this plan/i)).toBeVisible();
@@ -384,18 +398,19 @@ test.describe("M6 — capability-based access (planning.create.bulk)", () => {
 });
 
 test.describe("M6 — persisted bulk drafts", () => {
-  test("Review & continue saves a draft and review?plan=<id> resumes it without browser state", async ({ page }) => {
+  test("draft persistence is honestly unavailable and Review & continue still hands off the browser-held selection", async ({ page }) => {
+    // PLN-S05/PLN-S08 — durable draft persistence is deliberately switched off
+    // (BulkForm.draftPersistenceExecutable = false) until the corrected
+    // compiler authorizes it. The governed behavior today: the save-draft
+    // control is disabled, the unavailability is stated (never silent), and
+    // the review hand-off proceeds on the browser-held selection.
     await page.goto(ALL_RESULTS);
     await page.getByRole("button", { name: /Select this page/i }).click();
     await expect(page.getByText(/\d+ selected/)).toBeVisible();
+    await expect(page.getByRole("button", { name: /Save draft/i })).toBeDisabled();
     await page.getByRole("button", { name: /Review & continue/i }).click();
-    // The hand-off persists first, then lands on the resume route.
-    await page.waitForURL(/\/planning\/bulk\/review\?plan=[0-9a-f-]+/, { timeout: 20_000 });
-    // Prove the SERVER draft is the source: wipe the browser-held selection and
-    // reload — hydration, targets and the resumed-draft banner must persist.
-    await page.evaluate(() => sessionStorage.clear());
-    await page.reload();
-    await expect(page.getByText(/Resumed from draft/i)).toBeVisible();
+    await page.waitForURL(/\/planning\/bulk\/review$/, { timeout: 20_000 });
+    await expect(page.getByRole("heading", { name: /Targets & proposed visits/i })).toBeVisible();
     await expect(page.locator("tbody tr").first()).toBeVisible();
     await page.screenshot({ path: join(EVIDENCE_DIR, "draft-resume.png"), fullPage: true });
   });

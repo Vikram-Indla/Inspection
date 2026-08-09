@@ -15,10 +15,13 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 visual evidence", () => {
       localStorage.setItem("saqeel-theme", "light");
       document.documentElement.setAttribute("data-theme", "light");
     });
-    await expect(page.getByRole("navigation", { name: "Primary navigation" })).toBeVisible();
-    // 7 original admin-only entries + 3 added by the planning admin control
-    // plane (76a860cb: Planning Lookups / Expiry Rules / Status Rules).
-    await expect(page.locator('[data-nav-state="disabled"]')).toHaveCount(10);
+    const rail = page.getByRole("navigation", { name: "Primary navigation" });
+    await expect(rail).toBeVisible();
+    // Administration destinations stay visible for every governed persona;
+    // enforcement happens at the route boundary, never by hiding or disabling
+    // navigation entries (AdminRouteBoundary, CC-SAQEEL-RESPONSIVE-REVAMP-001).
+    expect(await rail.locator('a[href*="/admin/"]').count()).toBeGreaterThanOrEqual(10);
+    await expect(page.locator('[data-nav-state="disabled"]')).toHaveCount(0);
     await page.screenshot({ path: `${evidenceDir}/planner-desktop-en-light.png`, fullPage: false });
 
     await page.evaluate(() => {
@@ -28,7 +31,7 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 visual evidence", () => {
     await page.screenshot({ path: `${evidenceDir}/planner-desktop-en-dark.png`, fullPage: false });
 
     await page.getByRole("button", { name: "Collapse navigation" }).click();
-    await expect(page.locator(".sq-shell")).toHaveClass(/is-collapsed/);
+    await expect(page.locator("html")).toHaveAttribute("data-shell-rail", "collapsed");
     await page.waitForTimeout(300); // evidence frame after the 200ms grid transition settles
     await page.screenshot({ path: `${evidenceDir}/planner-desktop-en-collapsed.png`, fullPage: false });
   });
@@ -43,9 +46,11 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 visual evidence", () => {
     });
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
     await page.getByRole("button", { name: "فتح قائمة التنقل" }).click();
-    await expect(page.locator(".sq-shell")).toHaveClass(/is-drawer-open/);
-    // Same 10-entry admin gate set as the desktop leg (see above).
-    await expect(page.locator('[data-nav-state="disabled"]')).toHaveCount(10);
+    const drawer = page.getByRole("navigation", { name: "قائمة التنقل" });
+    await expect(drawer).toBeVisible();
+    // Same visible-destination posture as the desktop leg (see above).
+    expect(await drawer.locator('a[href*="/admin/"]').count()).toBeGreaterThanOrEqual(10);
+    await expect(page.locator('[data-nav-state="disabled"]')).toHaveCount(0);
     const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(horizontalOverflow).toBeLessThanOrEqual(1);
     await page.waitForTimeout(300); // evidence frame after the 200ms drawer transition settles

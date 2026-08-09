@@ -8,7 +8,10 @@ async function openDashboard(page: Page, locale: Locale, theme: Theme, route: st
   await page.setViewportSize({ width, height: width < 600 ? 844 : 900 });
   await page.goto(`/locale?set=${locale}`);
   await page.goto(route);
-  await page.evaluate(value => localStorage.setItem("saqeel-theme", value), theme);
+  await page.evaluate(value => {
+    localStorage.setItem("saqeel-theme", value);
+    localStorage.setItem("saqeel-theme-mode", value);
+  }, theme);
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("lang", locale);
   await expect(page.locator("html")).toHaveAttribute("dir", locale === "ar" ? "rtl" : "ltr");
@@ -35,10 +38,10 @@ test.describe("INSP-723/724/725 dashboard walkthrough repair", () => {
     for (const state of states) {
       for (const lens of lenses) {
         await openDashboard(page, state.locale, state.theme, `/dashboard?view=strategic&group=${lens}`, state.width);
-        await expect(page.locator(`a.seg-opt[href*="group=${lens}"]`)).toHaveAttribute("aria-current", "true");
+        await expect(page.locator(`a[aria-current="page"][href*="group=${lens}"]`).first()).toBeVisible();
         await expect(page.getByRole("columnheader", { name: state.locale === "ar" ? "السجلات" : "Records" })).toBeVisible();
-        await expect(page.getByRole("columnheader", { name: state.locale === "ar" ? "الإجراء" : "Action" })).toBeVisible();
-        await expect(page.getByText(state.locale === "ar" ? "طريقة الاحتساب" : "How this is calculated", { exact: true }).first()).toBeVisible();
+        await expect(page.getByRole("columnheader", { name: state.locale === "ar" ? "نسبة الامتثال" : "Compliance rate" })).toBeVisible();
+        await expect(page.getByText(state.locale === "ar" ? "كيف يُحتسب هذا؟" : "How is this calculated?", { exact: true }).first()).toBeVisible();
         await expectTerminologyClean(page);
 
         const firstAction = page.getByRole("link", { name: state.locale === "ar" ? "فتح المصانع" : "Open factories" }).first();
@@ -60,7 +63,7 @@ test.describe("INSP-723/724/725 dashboard walkthrough repair", () => {
       await expect(page.getByRole("heading", { name: state.locale === "ar" ? "عمليات اليوم" : "Today's operations" })).toBeVisible();
       await expect(page.getByText(state.locale === "ar" ? "فتح التنفيذ" : "Open Execution", { exact: true }).first()).toBeVisible();
       await expect(page.locator("body")).not.toContainText(/grouped by inspector|مجمّع حسب المفتش/i);
-      await expect(page.getByText(state.locale === "ar" ? "طريقة الاحتساب" : "How this is calculated", { exact: true }).first()).toBeVisible();
+      await expect(page.getByText(state.locale === "ar" ? "كيف يُحتسب هذا؟" : "How is this calculated?", { exact: true }).first()).toBeVisible();
       await expectTerminologyClean(page);
     }
   });

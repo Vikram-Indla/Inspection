@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import path from "node:path";
 import { evidenceDirectory } from "./evidence-path";
+import { identifierField, waitForCredentialsForm } from "./login-helper";
 
 const evidenceRoot = evidenceDirectory("login-v7-atlas");
 
@@ -23,8 +24,11 @@ test("capture accepted CD-001 V7 runtime evidence", async ({ page }) => {
     // on a reused page and can make later evidence cases non-deterministic.
     await page.evaluate(theme => localStorage.setItem("saqeel-theme", theme), c.theme);
     await page.goto("/login");
-    await expect(page.locator('.lg-atlas-image.is-ready[data-atlas-mode="public-safe-image"]')).toBeVisible();
-    await expect(page.locator("#email")).toBeVisible();
+    const atlas = page.locator('.lg-atlas-image.is-ready[data-atlas-mode="public-safe-image"]');
+    if (c.width >= 1024) await expect(atlas).toBeVisible();
+    else await expect(atlas).toBeAttached();
+    await waitForCredentialsForm(page);
+    await expect(identifierField(page)).toBeVisible();
     await page.screenshot({ path: path.join(evidenceRoot, `${c.name}.png`), fullPage: true });
   }
 });

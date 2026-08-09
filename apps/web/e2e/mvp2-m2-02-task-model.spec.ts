@@ -31,14 +31,15 @@ test("mvp2-m2-02 0032 manager scope matches by branch OR sector, not otherwise",
   expect(taskScopeMatch({ region: null, orgScope: null }, { branch: "riyadh", sector: "metals" })).toBe(false);
 });
 
-test("mvp2-m2-02 0032 canManageTask: workflow_admin any; manager only in scope; others never", () => {
+test("mvp2-m2-02 0032 canManageTask: admin any; manager only in scope; others never", () => {
   const scope = { region: "riyadh", orgScope: "metals" };
   const inScope = { branch: "riyadh", sector: "x" };
   const outScope = { branch: "jeddah", sector: "food" };
-  expect(canManageTask({ id: "a", roles: ["workflow_admin"] }, scope, outScope)).toBe(true);
-  expect(canManageTask({ id: "m", roles: ["ops"] }, scope, inScope)).toBe(true);
-  expect(canManageTask({ id: "m", roles: ["ops"] }, scope, outScope)).toBe(false);
+  expect(canManageTask({ id: "a", roles: ["admin"] }, scope, outScope)).toBe(true);
+  expect(canManageTask({ id: "m", roles: ["supervisor"] }, scope, inScope)).toBe(true);
+  expect(canManageTask({ id: "m", roles: ["supervisor"] }, scope, outScope)).toBe(false);
   expect(canManageTask({ id: "u", roles: ["assigned_inspector"] }, scope, inScope)).toBe(false);
+  expect(canManageTask({ id: "w", roles: ["workflow_admin"] }, scope, inScope)).toBe(false);
 });
 
 test("mvp2-m2-02 0032 reassignment requires reason, assignee, non-terminal", () => {

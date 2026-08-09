@@ -49,7 +49,8 @@ test.describe("CD-004 work-first admin landing", () => {
     expect(page).toContain("requestRead.error");
     expect(page).toContain("componentRead.error");
     expect(page).toContain("auditRead.error");
-    expect(page).toContain("so we can't say if it's empty");
+    expect(page).toContain("The request list could not be loaded. Requests may exist that are not shown.");
+    expect(page).toContain("The Activity Log could not be loaded. Changes may exist that are not shown.");
     expect(page).toContain("Recent changes are not available.");
   });
 

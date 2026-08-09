@@ -1,5 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { evidenceDirectory } from "../evidence-path";
+import { optionalSetting } from "../personas";
+import { login, must, rest } from "../live-rest";
 import { waitForCredentialsForm, identifierField, passwordField, submitCredentials } from "../login-helper";
 
 // TASK-INSPECTOR-RESPONSIVE-ACCEPTANCE-001 — Visit Statement, positive path.
@@ -12,11 +14,23 @@ import { waitForCredentialsForm, identifierField, passwordField, submitCredentia
 // the exact state /field/inspection/[id]/statement requires (page.tsx:25).
 const INSPECTOR_EMAIL = "inspector3@mim.gov.sa";
 const requireUatSecret = (): string => {
-  const value = process.env.SAQEEL_UAT_PASSWORD?.trim() || process.env.SAQEEL_CROSS_ROLE_PASSWORD?.trim();
+  const value = optionalSetting("SAQEEL_UAT_PASSWORD") ?? optionalSetting("SAQEEL_CROSS_ROLE_PASSWORD");
   if (!value) throw new Error("The governed primary-cohort secret reference is required for the UAT Inspector");
   return value;
 };
 const SUBMITTED_INSPECTION_ID = "77000000-0000-4000-8000-000000000003";
+
+// The visitor row renders the signed-in inspector's live profile name, so the
+// assertion reads that same governed source instead of hardcoding a dataset
+// spelling that provisioning is free to change.
+let visitorName = "";
+test.beforeAll(async () => {
+  const inspector = await login(INSPECTOR_EMAIL, requireUatSecret());
+  const [profile] = must(await rest("GET",
+    `profiles?select=full_name&user_id=eq.${inspector.userId}`, inspector.jwt), "inspector3 profile") as { full_name: string | null }[];
+  visitorName = profile?.full_name?.trim() ?? "";
+  expect(visitorName.length).toBeGreaterThan(0);
+});
 
 const WIDTHS = [
   { label: "1280", width: 1280, height: 900 },
@@ -34,7 +48,7 @@ async function loginAsInspector3(page: import("@playwright/test").Page, width: n
   await identifierField(page).fill(INSPECTOR_EMAIL);
   await passwordField(page).fill(requireUatSecret());
   await submitCredentials(page);
-  await page.waitForURL((url) => url.pathname === "/dashboard", { timeout: 20_000 });
+  await page.waitForURL((url) => url.pathname.replace(/^\/(en|ar)(?=\/|$)/, "") === "/dashboard", { timeout: 20_000 });
 }
 
 test.describe("INSP visit statement — responsive positive path — EN · Light", () => {
@@ -51,7 +65,7 @@ test.describe("INSP visit statement — responsive positive path — EN · Light
       // be present, and the layout must not overflow the viewport at this width.
       await expect(page.locator("text=Final version — not editable.")).toBeVisible();
       await expect(page.locator("dt", { hasText: "Visitor name" })).toBeVisible();
-      await expect(page.locator("dd", { hasText: "زياد الحارثي" })).toBeVisible();
+      await expect(page.locator("dd", { hasText: visitorName })).toBeVisible();
       await expect(page.locator("text=Submitted (locked)")).toBeVisible();
 
       const horizontalOverflow = await page.evaluate(
@@ -80,7 +94,7 @@ test.describe("INSP visit statement — responsive positive path — EN · Dark"
 
       await expect(page.locator("text=Final version — not editable.")).toBeVisible();
       await expect(page.locator("dt", { hasText: "Visitor name" })).toBeVisible();
-      await expect(page.locator("dd", { hasText: "زياد الحارثي" })).toBeVisible();
+      await expect(page.locator("dd", { hasText: visitorName })).toBeVisible();
       await expect(page.locator("text=Submitted (locked)")).toBeVisible();
 
       const horizontalOverflow = await page.evaluate(
@@ -107,7 +121,7 @@ test.describe("INSP visit statement — responsive positive path — AR · RTL",
       // Arabic strings from page.tsx tr() calls — real translated text, not transliteration.
       await expect(page.locator("text=النسخة النهائية غير قابلة للتعديل.")).toBeVisible();
       await expect(page.locator("dt", { hasText: "اسم الزائر" })).toBeVisible();
-      await expect(page.locator("dd", { hasText: "زياد الحارثي" })).toBeVisible();
+      await expect(page.locator("dd", { hasText: visitorName })).toBeVisible();
       await expect(page.locator("text=مُرسَل (مقفل)")).toBeVisible();
 
       const horizontalOverflow = await page.evaluate(

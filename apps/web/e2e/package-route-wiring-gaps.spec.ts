@@ -14,12 +14,13 @@ test.describe("Package-focused route wiring gaps", () => {
     const login = source("src/app/login/field/FieldLoginClient.tsx");
     const launch = source("src/app/launch/page.tsx");
 
-    expect(root).toContain('redirect("/login")');
-    expect(login).toContain('window.location.assign("/launch")');
+    expect(root).toContain('if (error || !user) redirect(localeHref(locale, "/login"));');
+    expect(root).toContain('redirect(localeHref(locale, "/launch"));');
+    expect(login).toContain('return "/launch";');
     expect(launch).toContain("getVerifiedUser(sb)");
     expect(launch).toContain("getUserRoles(user.id)");
     expect(launch).toContain("homeForRoles(");
-    expect(launch).toContain('redirect("/launch/no-workspace")');
+    expect(launch).toContain('redirect(localeHref(locale, "/launch/no-workspace"));');
     expect(root).not.toMatch(/redirect\(["']\/(dashboard|admin|field)["']\)/);
   });
 
@@ -33,7 +34,8 @@ test.describe("Package-focused route wiring gaps", () => {
     expect(page).toContain('sb.from("package_versions")');
     expect(page).toContain('.eq("status", "locked")');
     expect(page).toContain("packagesError &&");
-    expect(action).toContain('return { error: "dec032_blocked" }');
+    expect(action).toContain('process.env.ENFORCEMENT_P0_RPCS_DEPLOYED !== "true"');
+    expect(action).toContain('return { error: "issuing_unavailable" }');
     expect(action).toContain('sb.rpc("issue_bulk_violation"');
     expect(action).toContain('return { error: "write_failed" }');
     expect(action).toContain("return {");
@@ -81,7 +83,7 @@ test.describe("Package-focused route wiring gaps", () => {
     expectAdminBoundary();
     expect(page).toContain("getVerifiedUser(sb)");
     expect(page).toContain("getUserRoles(user.id)");
-    expect(page).toContain('const canManageLocalization = roles.has("admin")');
+    expect(page).toContain('const canManageLocalization = ["admin", "compliance_admin", "security_admin", "workflow_admin"]');
     expect(page.indexOf("if (!canManageLocalization)")).toBeLessThan(page.indexOf('sb.from("ui_strings")'));
     expect(page).toContain('throw new Error("localization_auth_unavailable")');
     expect(page).toContain('throw new Error("localization_roles_unavailable")');

@@ -37,12 +37,12 @@ test.describe("TASK-G11-REMEDIATION-PERFORMANCE-001 Pass 4 contracts", () => {
 
   test("K-003 dashboard streams view-specific, date-bounded sources", () => {
     const dashboard = read("src/app/(app)/dashboard/page.tsx");
+    const snapshot = read("src/features/dashboard/snapshot.ts");
     expect(dashboard).toContain("<Suspense");
-    expect(dashboard).toContain("async function DashboardDataSections");
-    expect(dashboard).toContain('strategic ? collect<ResponseRow>');
-    expect(dashboard).toContain('!strategic ? collect<GeoRow>');
-    expect(dashboard).toContain("dashboard_grouped_metrics");
-    expect(dashboard).toContain("boundIso");
+    expect(snapshot).toContain("strategic ? loadResponses(sb, bounds)");
+    expect(snapshot).toContain('!strategic || persona === "supervisor" ? loadGeoEvents(sb, bounds)');
+    expect(snapshot).toContain("boundIso");
+    expect(snapshot).toContain("bounded: strategic");
   });
 
   test("K-015/K-016 scope workspace catalogues and batch signed URLs", () => {
@@ -56,8 +56,10 @@ test.describe("TASK-G11-REMEDIATION-PERFORMANCE-001 Pass 4 contracts", () => {
 
   test("K-011 search consolidates through an RLS-invoker RPC with trigrams", () => {
     const route = read("src/app/api/shell/search/route.ts");
+    const search = read("src/lib/shell-search.ts");
     const migration = read("../../supabase/migrations/20260721120000_perf_tier_c_global_search.sql");
-    expect(route).toContain('sb.rpc("shell_global_search"');
+    expect(route).toContain("performShellSearch(sb, q)");
+    expect(search).toContain('sb.rpc("shell_global_search"');
     expect(migration).toContain("security invoker");
     expect(migration).toContain("create index concurrently");
     expect(migration).toContain("gin_trgm_ops");

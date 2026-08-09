@@ -68,9 +68,10 @@ test.describe("CD-031 source truth — governed risk/spatial wiring, masking, is
   test("leg 12/18 — representative contact fields are masked for leadership only, never a page-level gate", () => {
     const src = SRC(PAGE);
     expect(src).toMatch(/HANDOFF_BLOCKED_ROLE/);
-    expect(src).toMatch(/maskContacts\s*=\s*roles\.length > 0 && roles\.every\(r => r === "leadership"\)/);
-    // Every other role still renders phone/email — masking is per-field, not per-page.
-    expect(src).toMatch(/!maskContacts && <><td className="sq-numeric">\{r\.phone/);
+    expect(src).toMatch(/const canSeeContacts = roles\.some\(r => \["planner", "inspector", "supervisor", "admin"\]\.includes\(r\)\)/);
+    // Contact visibility gates only the representatives section — never the page.
+    expect(src).toMatch(/\{canSeeContacts && <section id="representatives"/);
+    expect(src).not.toMatch(/if \(!canSeeContacts\) return/);
   });
 
   test("leg 17 — one section's query error stays an isolated banner, never a whole-record failure", () => {
@@ -128,7 +129,9 @@ test.describe("CD-031 planner — live dossier (legs 1,2,3,5-10,13,14,18)", () =
     test.skip(!opened, "no factories in this environment to open");
     await expect(page.getByRole("heading", { name: /Factory health score and risk history/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Official, planned and observed locations/i })).toBeVisible();
-    await expect(page.locator('[data-map-provider="mapbox"]').first()).toBeVisible();
+    const map = page.locator("[data-map-provider]").first();
+    await expect(map).toBeVisible();
+    expect(["mapbox", "mapbox-unavailable"]).toContain(await map.getAttribute("data-map-provider"));
   });
 
   test("leg 5-9 — the timeline renders as an ordered list (list-equivalent, not a decorative graph)", async ({ page }) => {

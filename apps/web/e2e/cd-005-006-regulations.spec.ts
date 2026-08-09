@@ -19,48 +19,50 @@ test.use({ storageState: storageStatePath("reviewer") });
 test.beforeAll(() => { mkdirSync(EVIDENCE_DIR, { recursive: true }); });
 test.beforeEach(async ({ page }) => { await page.goto("/locale?set=en"); });
 
-test.describe("CD-005 register — discovery, impact rail, read-only truth", () => {
-  test("renders the register (search + lifecycle filter + impact rail) OR a verified-zero empty state — never a fabricated zero", async ({ page }) => {
+test.describe("CD-005 register — discovery and read-only truth in the Compliance Library", () => {
+  test("renders the register (search + status filters + list) OR a truthful empty/unavailable state — never a fabricated zero", async ({ page }) => {
     await page.goto("/admin/regulations");
     const search = page.getByRole("search");
-    const emptyZero = page.getByText(/No regulations configured/i);
-    // Exactly one of the two truthful states shows; both are legitimate.
-    await expect(search.or(emptyZero)).toBeVisible({ timeout: 30_000 });
-    if (await search.isVisible()) {
-      await expect(search).toBeVisible();
-      // Lifecycle chips are pressable filter controls (client-side over the loaded set).
-      await expect(page.getByRole("button", { name: /^All/ })).toBeVisible();
-      await expect(page.getByRole("button", { name: /^Published/ })).toBeVisible();
-      await expect(page.getByRole("button", { name: /^Draft/ })).toBeVisible();
-      // Impact Footprint Rail is the CD-005 signature.
-      await expect(page.getByText(/Impact footprint/i).first()).toBeVisible();
+    const catalogue = page.getByText("Regulations list");
+    const emptyZero = page.getByText("No regulations in scope");
+    const unavailable = page.getByText("Regulations unavailable");
+    await expect(search.or(emptyZero).or(unavailable).first()).toBeVisible({ timeout: 30_000 });
+    if (await catalogue.count()) {
+      await expect(page.getByText(/\d+ of \d+ regulations/)).toBeVisible();
+      await expect(page.getByRole("columnheader", { name: "Status" })).toBeVisible();
     } else if (await emptyZero.count()) {
-      await expect(emptyZero).toBeVisible();
-      await expect(page.getByText(/genuinely empty/i)).toBeVisible();
+      await expect(page.getByText(/No regulations were found for your access/i)).toBeVisible();
+    } else if (await unavailable.count()) {
+      await expect(page.getByText(/No empty result is claimed/i)).toBeVisible();
     } else throw new Error("CD-006 register unavailable: completion migration/runtime is not certifiable");
     await page.screenshot({ path: join(EVIDENCE_DIR, "register-en-light-1440.png"), fullPage: true });
   });
 
-  test("Reviewer sees a read-only disclosure and NO create/publish affordance", async ({ page }) => {
+  test("Reviewer sees only the maker-checker handoff and is refused at the request boundary", async ({ page }) => {
     await page.goto("/admin/regulations");
-    // Read-only banner mirrors the RLS write grant; route guard is disclosed as blocked.
-    await expect(page.getByText(/require a Compliance or Form Admin role/i)).toBeVisible();
-    await expect(page.getByText(/route guard and database permissions are independent/i)).toBeVisible();
-    // No write control is rendered for a non-writer.
+    // Authoring is request-only: every create affordance hands off to the
+    // Compliance Configuration Request flow; no direct write control renders.
+    await page.getByText("Create", { exact: true }).first().click();
+    const createLinks = page.locator('a[href*="/admin/compliance-requests/new"]');
+    await expect(createLinks.first()).toBeVisible();
     await expect(page.getByRole("button", { name: /Create draft regulation/i })).toHaveCount(0);
     await expect(page.getByRole("button", { name: /Publish now/i })).toHaveCount(0);
     await expect(page.getByRole("button", { name: /Add clause/i })).toHaveCount(0);
+    await page.goto("/admin/compliance-requests/new?request_type=create");
+    await expect(page.getByRole("heading", { name: "You do not have access to this destination" })).toBeVisible();
   });
 });
 
-test.describe("CD-006 detail — logical mode and governed lineage", () => {
+test.describe("CD-006 detail — dossier mode and governed lineage", () => {
+  test.use({ storageState: storageStatePath("admin") });
+
   test("dedicated detail route renders the dossier mode and shows the back link", async ({ page }) => {
     await page.goto("/admin/regulations/__no_such_regulation__");
-    expect(new URL(page.url()).pathname).toBe("/admin/regulations/__no_such_regulation__");
-    await expect(page.getByRole("link", { name: /Back to register/i })).toBeVisible();
+    expect(new URL(page.url()).pathname.replace(/^\/(en|ar)(?=\/)/, "")).toBe("/admin/regulations/__no_such_regulation__");
+    await expect(page.getByRole("link", { name: /Back to list/i })).toBeVisible();
     // Unknown id is not-found only after a successful read. A schema/source
     // failure remains unavailable and never fabricates either a dossier or zero.
-    if (await page.getByText(/register unavailable/i).count()) {
+    if (await page.getByText(/list not available/i).count()) {
       await expect(page.getByText(/unknown, not empty/i)).toBeVisible();
       await expect(page.getByText(/Regulation not found/i)).toHaveCount(0);
     } else {
@@ -68,17 +70,18 @@ test.describe("CD-006 detail — logical mode and governed lineage", () => {
     }
   });
 
-  test("lineage and publish dependency readiness are enabled", async ({ page }) => {
-    await page.goto("/admin/regulations");
-    const dossier = page.getByRole("link", { name: /Open record/i }).first();
+  test("lineage and change history are enabled on a real dossier", async ({ page }) => {
+    await page.goto("/admin/regulations?id=");
+    const dossier = page.getByRole("link", { name: /View record/i }).first();
     if (await dossier.count()) {
       await dossier.click();
-      await expect(page.getByRole("heading", { name: /Version history/i })).toBeVisible();
-      await expect(page.getByText(/Publish dependency gate/i)).toBeVisible();
+      await expect(page.getByRole("heading", { name: /Regulation record/i })).toBeVisible();
+      await expect(page.getByText(/Version history/i).first()).toBeVisible();
+      await expect(page.getByText(/Change history/i).first()).toBeVisible();
       await expect(page.locator("[data-blocked-leg]")).toHaveCount(0);
       await page.screenshot({ path: join(EVIDENCE_DIR, "detail-lineage-en-light-1440.png"), fullPage: true });
     } else {
-      await expect(page.getByText(/register unavailable/i)).toBeVisible();
+      await expect(page.getByText(/list not available/i)).toBeVisible();
       await expect(page.getByRole("button", { name: /Compare versions|Run dependency validation/i })).toHaveCount(0);
     }
   });
@@ -122,34 +125,42 @@ test.describe("CD-005/006 wiring (DEC-012): governed lifecycle, distinct states 
     expect(page).toContain("unknown ? null : items");
   });
 
-  test("publish validates mappings and uses the governed maker-checker transition", () => {
-    expect(actions).toContain('sb.rpc("publish_regulation"');
-    expect(actions).toContain("every clause must map to an inspection item");
-    expect(actions).toContain("maker-checker");
-    expect(page).toContain('t("admin.reg.r1.detail.validation.title"');
+  test("authoring is request-only through the governed maker-checker transition", () => {
+    // Direct publish left this surface: creation and change go through the
+    // Compliance Configuration Request flow, while the database constraint
+    // regulations_maker_checker still rejects self-approval.
+    expect(page).toContain("maker-checker");
+    expect(page).toContain("regulations_maker_checker");
+    expect(page).toContain("This library is for viewing and searching. To create or change something, start a Compliance Configuration Request.");
+    expect(actions).toContain("requireConfigurationWriter");
+    expect(actions).not.toMatch(/service_role|SUPABASE_SERVICE_ROLE/i);
   });
 
-  test("draft edit, effective date, attachments, deactivation and scoped audit are wired", () => {
-    for (const action of ["updateRegulationDraft", "addRegulationAttachment", "deactivateRegulation", "admin_configuration_audit"]) {
-      expect(`${page}\n${controls}\n${actions}`).toContain(action);
-    }
-    expect(controls).toContain('name="effective_from"');
+  test("lifecycle, effective date, attachment custody and reasoned deactivation are wired", () => {
+    expect(actions).toContain('sb.rpc(operation');
+    expect(actions).toContain('"activate_regulation" | "deactivate_regulation"');
+    expect(actions).toContain("REGULATION-LIFECYCLE-REASON");
+    expect(actions).toContain('if (!reason) return { errorCode: "reason_required" }');
+    expect(page).toContain("effective_from");
     expect(page).toContain("regulation_attachments");
-    expect(page).toContain("Configuration audit timeline");
+    expect(page).toContain("attachments_status");
+    expect(page).toContain("Change history");
   });
 
-  test("lineage and dependency readiness are wired; clause changes are audited", () => {
+  test("lineage is wired and clause changes are audited", () => {
     expect(page).toContain("Version lineage");
     expect(page).toContain("supersedes_id");
-    expect(page).toContain("Publish dependency gate");
-    expect(page).toContain('t("admin.reg.r1.detail.auditNote"');
+    expect(page).toContain("Version history");
     expect(controls).toContain("clauseNotAudited");
     expect(page).not.toContain("admin.reg.r1.detail.blocked.compare");
   });
 
-  test("writes are gated to writers in the UI and the dedicated detail route exists", () => {
+  test("writes are gated to writers and the dedicated detail route exists", () => {
+    const layout = SRC("src/app/(app)/admin/regulations/layout.tsx");
+    expect(layout).toContain("AdminRouteBoundary");
+    expect(layout).toContain('"compliance_admin"');
+    expect(layout).toContain('"form_admin"');
     expect(page).toContain('roles.has("compliance_admin") || roles.has("form_admin")');
-    expect(page).toContain("{isWriter ? <NewRegulationForm");
     expect(existsSync(join(process.cwd(), "src/app/(app)/admin/regulations/[id]/page.tsx"))).toBe(true);
   });
 

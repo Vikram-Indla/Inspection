@@ -1,26 +1,35 @@
 import { test, expect } from "@playwright/test";
 
-// CD-002 Reset (AUTH-02) — runtime proof for the corrections baked into the
-// handoff: explicit checking state, combined invalid-link copy (no
-// already-used claim), truthful "Go to sign in" recovery action, mismatch as
-// a field error (not a duplicate alert), and the subordinated atlas on
-// recovery views. Public pages — no auth needed.
+// CD-002 Reset (AUTH-02) — runtime proof for the recovery surface: truthful
+// invalid-link copy (no already-used claim), truthful "Go to sign in" recovery
+// action with focus, and the subordinated recovery view. Public pages — no
+// auth needed.
+//
+// KNOWN APP-GAP (2026-08-08): the reset-REQUEST capability was removed with
+// the old console login form (commit 07e8aa21 deleted LoginClient.tsx and its
+// resetPasswordForEmail flow). /login "Forgot password?" links to /reset,
+// whose invalid state links back to /login — a circular dead-end with no way
+// to request a recovery code. The third test below asserts the AUTH-02
+// requirement and fails until the request path is restored.
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/locale?set=en");
 });
 
-test("/reset: checking is an explicit status region, then times out to the combined invalid state", async ({ page }) => {
-  await page.goto("/reset"); // no recovery token -> checking, then invalid after 4s
+test("/reset without a token lands on the truthful invalid state with a focused recovery action", async ({ page }) => {
+  await page.goto("/reset");
 
+  // The checking phase is now instantaneous without a recovery token; if a
+  // checking region does render, it must be an explicit busy status.
   const checking = page.locator('[role="status"][aria-busy="true"]');
-  await expect(checking).toBeVisible();
-  await expect(checking).toContainText(/Verifying your reset link/i);
+  if (await checking.count()) {
+    await expect(checking).toContainText(/Verifying your reset link/i);
+  }
 
   // Next.js's own hidden route announcer (#__next-route-announcer__) also
   // carries role=alert — scope to the actual banner, not any alert on the page.
   const alert = page.locator(".sq-banner--critical[role='alert']");
-  await expect(alert).toBeVisible({ timeout: 6000 });
+  await expect(alert).toBeVisible({ timeout: 10_000 });
   await expect(alert).toContainText(/invalid or has expired/i);
   await expect(alert).not.toContainText(/only be used once|already used/i);
 
@@ -29,31 +38,29 @@ test("/reset: checking is an explicit status region, then times out to the combi
   await expect(cta).toBeVisible();
   await expect(cta).toBeFocused();
   await expect(cta).toHaveAttribute("href", "/login");
-  await expect(page.locator(".lg-card")).toContainText(/Forgot your password/i);
+  await expect(page.getByText(/Forgot your password/i)).toBeVisible();
 });
 
-test("/login forgot: invalid email format is a field error, not a banner; valid format always reaches neutral confirmation", async ({ page }) => {
+test("recovery surface stays subdued and never confirms whether an account exists", async ({ page }) => {
   await page.goto("/login");
-  await page.getByRole("button", { name: /Forgot your password\?/i }).click();
-  await expect(page.getByRole("heading", { name: /Reset your password/i })).toBeFocused();
+  await expect(page.getByRole("tablist")).toBeVisible();
 
-  await page.locator("#email").fill("not-an-email");
-  await page.getByRole("button", { name: /Send reset link/i }).click();
-  await expect(page.locator("#email")).toHaveAttribute("aria-invalid", "true");
-  await expect(page.locator(".sq-banner--critical")).toHaveCount(0); // format error is not role=alert
-
-  await page.locator("#email").fill("nobody-at-all@example.com");
-  await page.getByRole("button", { name: /Send reset link/i }).click();
-  await expect(page.getByText(/Check your email/i)).toBeVisible({ timeout: 10000 });
-  await expect(page.getByRole("button", { name: /Back to sign in|^Back$/i })).toBeFocused();
+  await page.goto("/reset");
+  await expect(page.getByRole("tablist")).toHaveCount(0);
+  await expect(page.getByText(/account exists|no account|unknown account|not registered/i)).toHaveCount(0);
 });
 
-test("/login: security note is present and the atlas is subordinated on the forgot view", async ({ page }) => {
+test("AUTH-02 APP-GAP: the sign-in surface must offer a working reset-request path", async ({ page }) => {
   await page.goto("/login");
-  await expect(page.getByText(/never confirm whether an account exists/i)).toBeVisible();
-  await expect(page.getByRole("tablist")).toBeVisible(); // sign-in: full atlas
-
-  await page.getByRole("button", { name: /Forgot your password\?/i }).click();
-  await expect(page.getByRole("tablist")).toHaveCount(0); // forgot: subdued
-  await expect(page.locator(".lg-hero")).toBeVisible();
+  const forgot = page.getByText(/Forgot password\?|Forgot your password\?/i).first();
+  await expect(forgot).toBeVisible();
+  await forgot.click();
+  // The destination must let the user request a recovery code/link. Today
+  // /reset renders only the invalid-session state pointing back to /login,
+  // so no request control exists anywhere — the assertion below fails until
+  // the reset-request flow is restored.
+  const requestControl = page
+    .locator('input[type="email"], #email, input[name="identifier"], input[autocomplete="username"]')
+    .or(page.getByRole("button", { name: /Send reset link|Request.*code/i }));
+  await expect(requestControl.first()).toBeVisible({ timeout: 10_000 });
 });

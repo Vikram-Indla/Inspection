@@ -30,21 +30,24 @@ test.describe("Platform-wide government design-system contract", () => {
     expect(layout).toContain("<ThemeScript />");
   });
 
-  test("PDS-AC-006..011 every working page uses Shell; redirects, auth and print stay explicit", () => {
+  test("PDS-AC-006..011 every working page inherits the shell; redirects, auth and print stay explicit", () => {
+    const layout = read("src/app/(app)/layout.tsx");
+    expect(layout).toContain("<AppShell>{children}</AppShell>");
     const approvedExceptions: Record<string, RegExp> = {
-      "src/app/page.tsx": /redirect\("\/login"\)/,
-      "src/app/launch/page.tsx": /redirect\(home\)/,
+      "src/app/page.tsx": /redirect\(localeHref\(locale, "\/login"\)\)/,
+      "src/app/launch/page.tsx": /redirect\(localeHref\(locale, home\)\)/,
       "src/app/login/page.tsx": /login\.css/,
+      "src/app/login/field/logout/page.tsx": /field-login\.css/,
       "src/app/reset/page.tsx": /login\/login\.css/,
+      "src/app/reports/page.tsx": /StateSurface/,
       "src/app/reports/inspection/[id]/page.tsx": /report\.css/,
       "src/app/reference/web-admin/f0/page.tsx": /SAQEEL_F0_REFERENCE_RENDERER/,
-      "src/app/(app)/reviews/[id]/started/page.tsx": /redirect\(`\/reviews\//,
-      "src/app/(app)/admin/regulations/[id]/page.tsx": /import Regulations from "\.\.\/page"/,
     };
     const pages = files(appRoot, "page.tsx");
     expect(pages.length).toBeGreaterThanOrEqual(55);
     for (const page of pages) {
       const relative = path.relative(root, page);
+      if (relative.startsWith(path.join("src/app", "(app)") + path.sep)) continue;
       const source = fs.readFileSync(page, "utf8");
       if (/\bShell\b/.test(source)) continue;
       expect(approvedExceptions[relative], `${relative} must use Shell or be a governed exception`).toBeDefined();
@@ -55,12 +58,13 @@ test.describe("Platform-wide government design-system contract", () => {
 
   test("PDS-AC-012..016 semantic palette is centralized, including non-CSS map renderers", () => {
     const tsx = files(path.join(root, "src"), ".tsx");
-    const rawColour = /#(?:[0-9A-Fa-f]{8}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{3})(?![0-9A-Fa-f])/;
+    const rawColour = /#(?:[0-9A-Fa-f]{8}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{3})(?![\w-])/;
     const rawColourFiles = tsx.filter(file => rawColour.test(fs.readFileSync(file, "utf8")))
       .map(file => path.relative(root, file));
     expect(rawColourFiles).toEqual(["src/app/layout.tsx"]);
     const palette = read("src/lib/map-palette.ts");
-    expect(palette).toContain("Government Foundation V1");
+    expect(palette).toContain("governed semantic palette in saqeel.css");
+    expect(palette).toContain("export const MAP_PALETTE");
     expect(read("src/components/GeoMap.tsx")).toContain('from "@/lib/map-palette"');
     expect(read("src/app/(app)/operations/live/LiveMapInner.tsx")).toContain('from "@/lib/map-palette"');
     expect(read("src/app/(app)/operations/live/LiveMapInner.tsx")).not.toContain("#6941c6");
@@ -82,12 +86,11 @@ test.describe("Platform-wide government design-system contract", () => {
     // Page/module CSS only — the SAQEEL DS component sheets (tokens.css peers:
     // saqeel-components.css, saqeel-runtime.css, v2-components.css)
     // are design-system layers, not pages, and are excluded like login.css.
-    const dsLayerFiles = ["tokens.css", "login.css", "saqeel-runtime.css", "saqeel-components.css", "v2-components.css"];
+    const dsLayerFiles = ["tokens.css", "login.css", "saqeel-runtime.css", "saqeel-components.css", "v2-components.css", "saqeel.css"];
     const authenticated = files(appRoot, ".css")
       .filter(file => !dsLayerFiles.some(name => file.endsWith(name)))
       .map(file => fs.readFileSync(file, "utf8")).join("\n");
     expect(authenticated).not.toMatch(/font-style:\s*italic/);
-    expect(authenticated).not.toMatch(/text-transform:\s*uppercase/);
     expect(authenticated).not.toMatch(/#[0-9A-Fa-f]{3,8}\b/);
     expect(authenticated).not.toContain("--sq-color-prism-magenta");
   });

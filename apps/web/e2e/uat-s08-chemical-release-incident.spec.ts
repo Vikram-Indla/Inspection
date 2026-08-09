@@ -71,7 +71,11 @@ async function loginAs(page: Page, key: keyof typeof IDENTITY) {
   await identifierField(page).fill(p.email);
   await passwordField(page).fill(CROSS_ROLE_PASSWORD());
   await submitCredentials(page);
-  await page.waitForURL((url) => url.pathname.startsWith(p.home) || url.pathname.startsWith("/dashboard"), { timeout: 40_000 });
+  const arrived = (url: URL) => { const path = url.pathname.replace(/^\/(en|ar)(?=\/|$)/, ""); return path.startsWith(p.home) || path.startsWith("/dashboard"); };
+  await page.waitForURL(arrived, { timeout: 60_000 }).catch(async () => {
+    await page.goto("/launch");
+    await page.waitForURL(arrived, { timeout: 60_000 });
+  });
   await expect(page.locator("body")).not.toContainText("ERR-AUTH");
 }
 

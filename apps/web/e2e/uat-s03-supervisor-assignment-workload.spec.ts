@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { mkdirSync } from "node:fs";
 import { evidenceDirectory } from "./evidence-path";
-import { PERSONAS, storageStatePath } from "./personas";
+import { optionalSetting } from "./personas";
 import { login, rest, must } from "./live-rest";
 import {
   identifierField,
@@ -26,6 +26,20 @@ import {
 test.describe.configure({ mode: "serial" });
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+// UAT-S03 runs entirely on the Makkah primary cohort (planner3 / supervisor3 /
+// inspector3 — docs/TEST_ACCOUNTS.md); the shared e2e-* personas are Riyadh-
+// scoped and cannot own this dataset's region-gated planning writes.
+const COHORT = {
+  planner: "planner3@mim.gov.sa",
+  supervisor: "supervisor3@mim.gov.sa",
+  inspector: "inspector3@mim.gov.sa",
+} as const;
+function cohortSecret(): string {
+  const value = optionalSetting("SAQEEL_UAT_PASSWORD") ?? optionalSetting("SAQEEL_CROSS_ROLE_PASSWORD");
+  if (!value) throw new Error("UAT-S03: the governed primary-cohort secret reference is required");
+  return value;
+}
 const STEP_TIMEOUT = 20_000;
 const EVIDENCE_DIR = evidenceDirectory("uat-s03-supervisor-assignment-workload");
 const GOVERNED_VIEWPORT = { width: 1440, height: 900 };
@@ -62,8 +76,9 @@ async function governedFixtureGeofenceRadius(jwt: string): Promise<number> {
   return acceptedSeedGeofenceRadius();
 }
 
+let windowDayOffset = 0;
 function freshWindow(now = new Date()): { start: string; end: string; startInput: string; endInput: string } {
-  const startDate = new Date(now);
+  const startDate = new Date(now.getTime() + windowDayOffset * 86_400_000);
   startDate.setUTCSeconds(0, 0);
   startDate.setUTCMinutes(startDate.getUTCMinutes() - 1);
   const endDate = new Date(startDate.getTime() + 90 * 60_000);
@@ -72,21 +87,51 @@ function freshWindow(now = new Date()): { start: string; end: string; startInput
   return { start, end, startInput: start.slice(0, 16), endInput: end.slice(0, 16) };
 }
 
+// inspector3 must be OFFERABLE by the availability filter
+// (list_available_supervision_inspectors excludes anyone whose existing
+// published/returned assignment overlaps the proposed window). Real cohort
+// bookings — e.g. the governed Rabigh Polymers trail — legitimately occupy
+// near-term days, so the journey books the EARLIEST day (0..30 ahead) where
+// both inspector3 and the reassignment target are free, instead of assuming
+// "now" is available.
+async function resolveFreeWindowDayOffset(inspectorIds: string[]): Promise<number> {
+  const horizon = new Date(Date.now() + 31 * 86_400_000).toISOString();
+  const busy = must(await rest("GET",
+    `assignments?select=inspector_id,visits!inner(window_start,window_end,planning_status)&inspector_id=in.(${inspectorIds.join(",")})&visits.planning_status=in.(published,returned)&visits.window_end=gt.${new Date().toISOString()}&visits.window_start=lt.${horizon}`,
+    plannerJwt), "read cohort inspector bookings") as Array<{ visits: { window_start: string; window_end: string } }>;
+  for (let day = 0; day <= 30; day++) {
+    const probe = new Date(Date.now() + day * 86_400_000);
+    const startMs = probe.getTime() - 60_000;
+    const endMs = startMs + 90 * 60_000;
+    const clash = busy.some(b =>
+      new Date(b.visits.window_start).getTime() < endMs && new Date(b.visits.window_end).getTime() > startMs);
+    if (!clash) return day;
+  }
+  throw new Error("no free 90-minute slot for the UAT-S03 cohort inside 31 days");
+}
+
 let lastContext: BrowserContext | null = null;
-async function personaPage(browser: { newContext: (o: object) => Promise<BrowserContext> }, key: keyof typeof PERSONAS): Promise<Page> {
+async function personaPage(browser: { newContext: (o: object) => Promise<BrowserContext> }, key: keyof typeof COHORT): Promise<Page> {
   if (lastContext) await lastContext.close();
-  const ctx = await browser.newContext({ viewport: GOVERNED_VIEWPORT, storageState: storageStatePath(key) });
+  const ctx = await browser.newContext({ viewport: GOVERNED_VIEWPORT });
   lastContext = ctx;
-  return ctx.newPage();
+  const page = await ctx.newPage();
+  await page.goto("/login");
+  await waitForCredentialsForm(page);
+  await identifierField(page).fill(COHORT[key]);
+  await passwordField(page).fill(cohortSecret());
+  await submitCredentials(page);
+  await page.waitForURL(url => url.pathname.replace(/^\/(en|ar)(?=\/|$)/, "").startsWith("/dashboard"), { timeout: 40_000 });
+  return page;
 }
 
 test.beforeAll(async () => {
   mkdirSync(EVIDENCE_DIR, { recursive: true });
-  const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
+  const planner = await login(COHORT.planner, cohortSecret());
   plannerJwt = planner.jwt;
   const geofenceRadius = await governedFixtureGeofenceRadius(plannerJwt);
 
-  const inspectorSession = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
+  const inspectorSession = await login(COHORT.inspector, cohortSecret());
   inspectorUserId = inspectorSession.userId;
   inspectorJwt = inspectorSession.jwt;
 
@@ -94,7 +139,7 @@ test.beforeAll(async () => {
   // inspector, distinct from inspector3, so the reassignment step exercises a
   // real ownership change instead of a no-op self-reassignment.
   const alternates = must(await rest("GET",
-    `profiles?region=eq.Makkah&email=neq.${PERSONAS.inspector.email}&email=like.inspector*&select=user_id,email&order=email&limit=1`,
+    `profiles?region=eq.Makkah&email=neq.${COHORT.inspector}&email=like.inspector*&select=user_id,email&order=email&limit=1`,
     plannerJwt), "resolve alternate Makkah inspector") as Array<{ user_id: string; email: string }>;
   expect(alternates.length, "governed Makkah roster must expose a second inspector for reassignment").toBeGreaterThan(0);
   alternateInspectorUserId = alternates[0].user_id;
@@ -161,6 +206,8 @@ test.beforeAll(async () => {
       p_correlation_id: crypto.randomUUID(),
     }), `retire prior UAT-S03 assignment ${row.visit_id}`);
   }
+
+  windowDayOffset = await resolveFreeWindowDayOffset([inspectorUserId, alternateInspectorUserId]);
 });
 
 test.afterAll(async () => {
@@ -168,6 +215,7 @@ test.afterAll(async () => {
 });
 
 test("S03-1 Planner submits a single visit proposing inspector3 for Supervisor review", async ({ browser }) => {
+  test.setTimeout(180_000);
   const page = await personaPage(browser, "planner");
   await page.goto("/locale?set=en");
   await page.goto("/planning/single");
@@ -207,7 +255,8 @@ test("S03-1 Planner submits a single visit proposing inspector3 for Supervisor r
 });
 
 test("S03-2 Supervisor queue shows the pending request and approves it (assignment created)", async ({ browser }) => {
-  const supervisorSession = await login(PERSONAS.supervisor.email, PERSONAS.supervisor.password);
+  test.setTimeout(180_000);
+  const supervisorSession = await login(COHORT.supervisor, cohortSecret());
   const page = await personaPage(browser, "supervisor");
   await page.goto("/locale?set=en");
   await page.goto(`/planning/supervision?submitted=${visitId}`);
@@ -251,11 +300,12 @@ test("S03-2 Supervisor queue shows the pending request and approves it (assignme
 });
 
 test("S03-3 Supervisor workload/capacity view reflects inspector3's new load", async ({ browser }) => {
+  test.setTimeout(180_000);
   const page = await personaPage(browser, "supervisor");
   await page.goto("/locale?set=en");
   await page.goto("/visits/workload");
   await expect(page.getByRole("heading", { name: /Active visits per inspector per week/i })).toBeVisible({ timeout: STEP_TIMEOUT });
-  const inspectorRow = page.locator("tbody tr").filter({ has: page.locator(`strong:has-text("${PERSONAS.inspector.email.split("@")[0]}")`) });
+  const inspectorRow = page.locator("tbody tr").filter({ has: page.locator(`strong:has-text("${COHORT.inspector.split("@")[0]}")`) });
   // The workload grid renders the inspector's full_name, not the email — fall
   // back to asserting the total-active column is non-zero for SOME row after
   // the approval above increased exactly one inspector's count by one.
@@ -266,7 +316,7 @@ test("S03-3 Supervisor workload/capacity view reflects inspector3's new load", a
 
 test("S03-4 Supervisor reassigns the visit away from inspector3, then back (assignment + reassignment + notifications)", async ({ browser }) => {
   test.setTimeout(150_000); // two governed reassignment RPCs in one test, each observed 20-45s
-  const supervisorSession = await login(PERSONAS.supervisor.email, PERSONAS.supervisor.password);
+  const supervisorSession = await login(COHORT.supervisor, cohortSecret());
   const page = await personaPage(browser, "supervisor");
   await page.goto("/locale?set=en");
   await page.goto(`/visits/${visitId}`);
@@ -309,6 +359,7 @@ test("S03-4 Supervisor reassigns the visit away from inspector3, then back (assi
 });
 
 test("S03-5 Calendar shows the visit on its scheduled date", async ({ browser }) => {
+  test.setTimeout(180_000);
   const page = await personaPage(browser, "supervisor");
   await page.goto("/locale?set=en");
   await page.goto("/visits/calendar");
@@ -318,12 +369,16 @@ test("S03-5 Calendar shows the visit on its scheduled date", async ({ browser })
   // Day view anchors on "today" — the visit's freshWindow() start — with no
   // grid-width ambiguity.
   await page.getByRole("button", { name: /^Day$/i }).click();
+  for (let step = 0; step < windowDayOffset; step++) {
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+  }
   const entry = page.locator(`[href*="${visitId}"], [data-visit-id="${visitId}"]`);
   await expect(entry.first()).toBeVisible({ timeout: STEP_TIMEOUT });
   await page.screenshot({ path: join(EVIDENCE_DIR, "08-supervisor-calendar.png"), fullPage: true });
 });
 
 test("S03-6 Inspector3 sees the task and the delivered notification in My Tasks", async ({ browser }) => {
+  test.setTimeout(180_000);
   const page = await personaPage(browser, "inspector");
   await page.goto("/locale?set=en");
   await page.goto("/field/my-tasks");

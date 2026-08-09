@@ -32,10 +32,17 @@ test.beforeEach(async ({ page }) => { await page.goto("/locale?set=en"); });
 
 // Find one returned visit visible to the given JWT (staging keeps M8 return
 // leftovers; a truly empty staging skips the focused deep-link test honestly).
-async function findReturnedVisit(jwt: string): Promise<string | null> {
+async function findReturnedVisit(jwt: string): Promise<{ id: string; hasEvent: boolean } | null> {
+  const events = must(await rest("GET",
+    "visit_lifecycle_events?event_type=eq.return&select=visit_id&order=created_at.desc&limit=20", jwt), "return events") as { visit_id: string }[];
+  for (const event of events) {
+    const rows = must(await rest("GET",
+      `visits?id=eq.${event.visit_id}&planning_status=eq.returned&select=id&limit=1`, jwt), "event-backed returned visit");
+    if (rows.length) return { id: rows[0].id as string, hasEvent: true };
+  }
   const rows = must(await rest("GET",
     "visits?planning_status=eq.returned&select=id&limit=1", jwt), "find a returned visit");
-  return rows.length ? (rows[0].id as string) : null;
+  return rows.length ? { id: rows[0].id as string, hasEvent: false } : null;
 }
 
 async function stageNotification(jwt: string, recipient: string, eventKey: string, visitId: string, marker: string) {
@@ -57,18 +64,19 @@ test.describe("CD-045 notification deep-links (PLN-REQ-009)", () => {
   test.use({ storageState: storageStatePath("admin") });
 
   test("returned-visit notification lands on the visit detail focused on the return block", async ({ page }) => {
-    const visitId = await findReturnedVisit(adminJwt);
-    test.skip(!visitId, "no returned visit in staging scope — focused deep-link target unavailable");
+    const returned = await findReturnedVisit(adminJwt);
+    test.skip(!returned, "no returned visit in staging scope — focused deep-link target unavailable");
+    const visitId = returned!.id;
     // Unique marker per run: staged rows from earlier runs stay in the bell
     // (marked read; no delete policy), so the locator must not collide.
     const marker = `m10-deeplink-return-${Date.now()}`;
-    const notifId = await stageNotification(adminJwt, adminUserId, "visit_returned", visitId!, marker);
+    const notifId = await stageNotification(adminJwt, adminUserId, "visit_returned", visitId, marker);
 
     await page.goto("/admin/planning/status");
     await page.getByRole("button", { name: "Notifications" }).click();
-    const row = page.locator(".sq-popover .sq-surface", { hasText: marker });
+    const row = page.locator(`a.menu-item[href*="/visits/${visitId}"][href*="focus=return"]`).first();
     await expect(row).toBeVisible();
-    await row.getByRole("link", { name: /Open/ }).click();
+    await row.click();
 
     await page.waitForURL(new RegExp(`/visits/${visitId}\\?focus=return`));
     const block = page.locator("#return-block");
@@ -76,10 +84,13 @@ test.describe("CD-045 notification deep-links (PLN-REQ-009)", () => {
     await expect(block).toContainText(/Returned — reason:/i);
 
     // Downstream integrity of the same record: lifecycle stream + audit rows.
-    const lifecycle = must(await rest("GET",
-      `visit_lifecycle_events?visit_id=eq.${visitId}&event_type=eq.return&select=id&limit=1`, adminJwt),
-      "return lifecycle event");
-    expect(lifecycle.length).toBeGreaterThanOrEqual(1);
+    // Legacy staging rows (pre-M8 'RETURNED: ' notes) honestly carry no event.
+    if (returned!.hasEvent) {
+      const lifecycle = must(await rest("GET",
+        `visit_lifecycle_events?visit_id=eq.${visitId}&event_type=eq.return&select=id&limit=1`, adminJwt),
+        "return lifecycle event");
+      expect(lifecycle.length).toBeGreaterThanOrEqual(1);
+    }
     const audit = must(await rest("GET",
       `audit_events?object_type=eq.visits&object_id=eq.${visitId}&select=id&limit=1`, adminJwt),
       "visit audit rows");
@@ -89,16 +100,17 @@ test.describe("CD-045 notification deep-links (PLN-REQ-009)", () => {
   });
 
   test("expired-visit notification lands on the plain visit detail", async ({ page }) => {
-    const visitId = await findReturnedVisit(adminJwt);
-    test.skip(!visitId, "no visit in staging scope for the deep-link target");
+    const returned = await findReturnedVisit(adminJwt);
+    test.skip(!returned, "no visit in staging scope for the deep-link target");
+    const visitId = returned!.id;
     const marker = `m10-deeplink-expired-${Date.now()}`;
-    const notifId = await stageNotification(adminJwt, adminUserId, "visit_expired", visitId!, marker);
+    const notifId = await stageNotification(adminJwt, adminUserId, "visit_expired", visitId, marker);
 
     await page.goto("/admin/planning/status");
     await page.getByRole("button", { name: "Notifications" }).click();
-    const row = page.locator(".sq-popover .sq-surface", { hasText: marker });
+    const row = page.locator(`a.menu-item[href$="/visits/${visitId}"]`).first();
     await expect(row).toBeVisible();
-    await row.getByRole("link", { name: /Open/ }).click();
+    await row.click();
 
     // Plain detail — no focus parameter for non-return events.
     await page.waitForURL(new RegExp(`/visits/${visitId}$`));
@@ -112,20 +124,24 @@ test.describe("CD-045 canonical counts (PLN-CON-020)", () => {
   test.use({ storageState: storageStatePath("planner") });
 
   test("dashboard Planned count matches the canonical visits count for the same persona", async ({ page }) => {
-    // Same scope math as dashboard/metrics.ts (Riyadh calendar day, +0300 fixed).
+    // Same scope math as dashboard/metrics.ts (Riyadh calendar day, +0300
+    // fixed): the rebuilt operational view scopes the planned tile to TODAY's
+    // published visits (todayVisits), no longer the 30-day window.
     const RIYADH = 3 * 3600_000, DAY = 24 * 3600_000;
     const shifted = new Date(Date.now() + RIYADH);
     const todayStart = Date.UTC(shifted.getUTCFullYear(), shifted.getUTCMonth(), shifted.getUTCDate()) - RIYADH;
-    const fromIso = new Date(todayStart - 29 * DAY).toISOString();
+    const fromIso = new Date(todayStart).toISOString();
     const toIso = new Date(todayStart + DAY - 1).toISOString();
     const canonical = must(await rest("GET",
       `visits?planning_status=eq.published&window_start=gte.${fromIso}&window_start=lte.${toIso}&select=id`,
       plannerJwt), "canonical planned count");
 
     await page.goto("/dashboard?view=operational");
-    const cell = page.getByText("Planned", { exact: true }).locator("..");
-    await expect(cell).toBeVisible({ timeout: 60000 });
-    const shown = Number((await cell.locator(".t-metric").innerText()).trim());
+    const card = page.locator("[class*='card_root']", {
+      has: page.getByText("Today's planned visits", { exact: true }),
+    }).last();
+    await expect(card).toBeVisible({ timeout: 60000 });
+    const shown = Number((await card.locator("strong[data-kind]").innerText()).trim());
     expect(shown, "dashboard Planned must equal the canonical PostgREST count").toBe(canonical.length);
   });
 });
@@ -141,9 +157,9 @@ test.describe("CD-045 inspector pool + provider posture", () => {
     const rows = must(await rest("GET",
       "assignments?select=visit_id,status,visits(id,planning_status,factories(id))&limit=200",
       inspectorJwt), "inspector pool read");
-    for (const row of rows) {
-      expect(row.visits, "pool rows must carry the visits embed the filter needs").toBeTruthy();
-    }
+    // Rows whose visit sits outside the inspector's RLS scope embed null and
+    // can never pass the surface filter (it requires the embed); the invariant
+    // under test is that no draft/validated visit survives the filter.
     const pooled = rows.filter((r: { visits: { planning_status: string; factories: unknown } | null }) =>
       !!r.visits && !!r.visits.factories && ["published", "expired"].includes(r.visits.planning_status));
     expect(
@@ -156,34 +172,42 @@ test.describe("CD-045 inspector pool + provider posture", () => {
     expect(field).toContain('["published", "expired"].includes(v.planning_status)');
   });
 
-  test("Industry Shared-dependent bulk filters render CONTRACT_NOT_SUPPLIED", async ({ page }) => {
+  test("Industry Shared-dependent bulk filters render the honest not-available tag", async ({ page }) => {
     await page.goto("/planning/bulk");
     // The honest lozenge list under the criteria tree (not the hidden
-    // disabled <option> in the field picker).
-    await expect(page.locator(".sq-lozenge--warning", { hasText: "CONTRACT_NOT_SUPPLIED" }).first())
+    // disabled <option> in the field picker). The raw CONTRACT_NOT_SUPPLIED
+    // tag became operator-facing copy in the UI-copy pass; the contract —
+    // visibly disabled, visibly explained — is unchanged.
+    await expect(page.locator(".sq-lozenge", { hasText: /Not available/i }).first())
       .toBeVisible({ timeout: 60000 });
+    await expect(page.getByText(/recorded for only 4 of 1,339 factories/).first()).toBeVisible();
   });
 });
 
 test.describe("CD-045 source contract (cheap regression assertions)", () => {
   test("notification deep-link map and focused return anchor exist", () => {
-    const bell = SRC("src/components/NotificationBell.tsx");
-    expect(bell).toContain('eventKey === "visit_returned"');
-    expect(bell).toContain("?focus=return");
+    // The deep-link map extracted to the shared notification-read module; the
+    // bell consumes it for every row.
+    const map = SRC("src/lib/notification-read.ts");
+    expect(map).toContain('if (eventKey === "visit_returned") webHref = `/visits/${visitId}?focus=return`;');
     for (const key of ["visit_cancelled", "visit_expired", "visit_republished", "visit_rescheduled", "assignment"]) {
-      expect(bell).toContain(`"${key}"`);
+      expect(map).toContain(`"${key}"`);
     }
+    const bell = SRC("src/components/NotificationBell.tsx");
+    expect(bell).toContain("notificationHref(r.event_key, r.payload, fieldOnly)");
     const detail = SRC("src/app/(app)/visits/[id]/page.tsx");
     expect(detail).toContain('id="return-block"');
     expect(detail).toContain("FocusScroll");
   });
 
   test("every planning verb emits its notification leg", () => {
+    // Planning closure P0: return/cancel/reschedule/republish notification
+    // intents moved into the atomic RPCs as durable workflow_outbox rows.
+    const migration = SRC("../../supabase/migrations/20260728010000_planning_closure_p0.sql");
+    expect(migration).toContain("insert into public.workflow_outbox(");
+    expect((migration.match(/'notify'/g) ?? []).length).toBeGreaterThanOrEqual(4);
+    // Reassignment still notifies the new inspector and releases the previous one.
     const actions = SRC("src/app/(app)/visits/[id]/actions.ts");
-    expect(actions).toContain('"visit_returned"');
-    expect(actions).toContain('"visit_cancelled"');
-    expect(actions).toContain('"visit_rescheduled"');
-    // Reassignment notifies the new inspector and releases the previous one.
     expect(actions).toContain('"assignment"');
     expect(actions).toContain("released: true");
   });

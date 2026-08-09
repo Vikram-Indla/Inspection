@@ -1,18 +1,22 @@
 import { test, expect } from "@playwright/test";
-import { PERSONAS, storageStatePath } from "./personas";
+import { storageStatePath } from "./personas";
 import { join } from "node:path";
 import { evidenceDirectory } from "./evidence-path";
 
-// Browser gate for the Executive Overview (card `exec`).
+// Browser gate for the Executive/Strategic dashboard (card `exec`).
 //
-// The redesign made three structural claims. None of them is provable by a
-// typecheck, so each is asserted here against the running route:
+// The server-first rebuild replaced the Executive Overview canvas (assurance
+// block, regional queue, Mapbox evidence) with the governed strategic surface:
+// National performance → Compliance performance explorer → Strategic
+// intervention → governed-absence cards → requirement coverage. The three
+// structural claims this gate carries forward, restated on that surface:
 //
-//   1. the assurance figure leads, with its eligible-answer denominator beside
-//      it — never presented as a share of compliant factories;
-//   2. the regional queue renders ABOVE the map, and selecting a region still
-//      cross-filters it (the state lifted into RegionalScope);
-//   3. "Basis and source" opens the metric lineage and reaches source records.
+//   1. the national compliance figure leads, and its basis is the
+//      eligible-answer denominator — never presented as a share of factories;
+//   2. the explorer cross-filters through the four governed lenses
+//      (region/city/sector/authority) without losing the strategic view;
+//   3. every metric discloses its methodology (definition + worked example)
+//      and offers a drill to the source route — no unexplained number.
 //
 // Captured at the declared widths in EN and AR, because AR/RTL is the primary
 // direction on this product and a mirrored layout is not parity.
@@ -26,45 +30,48 @@ const WIDTHS = [
 test.use({ storageState: storageStatePath("ops") });
 
 test.describe("exec — Executive Overview browser gate", () => {
-  test("assurance leads, queue precedes the map, basis drawer reaches source", async ({ page }) => {
+  test("national compliance leads with the eligible-answer basis, lenses cross-filter, methodology discloses the source", async ({ page }) => {
     await page.goto("/dashboard?view=strategic");
 
-    // 1 — the dominant figure and its denominator.
-    const assurance = page.locator("#ex-assurance-h");
-    await expect(assurance).toBeVisible();
-    const lead = page.locator("section", { has: assurance });
-    await expect(lead).toContainText(/eligible answers|إجابة مؤهلة/);
-    // The denominator must never be described as factories.
-    await expect(lead).not.toContainText(/of \d+ factories|من \d+ مصنع/);
-
-    // 2 — queue above the map, in document order.
-    const queue = page.getByRole("region", { name: /Regions requiring examination|مناطق تستدعي الفحص/ });
-    await expect(queue).toBeVisible();
+    // 1 — National performance leads the strategic stack.
+    const lead = page.locator("#dashboard-national-performance");
+    await expect(lead).toBeVisible();
     const order = await page.evaluate(() => {
-      const q = document.querySelector('[aria-label*="Regions requiring"], [aria-label*="مناطق تستدعي"]');
-      const map = document.querySelector('[class*="mapPanel"], [class*="canvasGrid"]');
-      if (!q || !map) return "missing";
-      return q.compareDocumentPosition(map) & Node.DOCUMENT_POSITION_FOLLOWING ? "queue-first" : "map-first";
+      const national = document.getElementById("dashboard-national-performance");
+      const intervention = document.getElementById("dashboard-strategic-intervention");
+      if (!national || !intervention) return "missing";
+      return national.compareDocumentPosition(intervention) & Node.DOCUMENT_POSITION_FOLLOWING
+        ? "national-first" : "intervention-first";
     });
-    expect(order, "the regional queue must precede the geographic evidence").toBe("queue-first");
+    expect(order, "National performance must precede Strategic intervention").toBe("national-first");
 
-    // 2b — cross-filter survives the lift out of DecisionCanvas.
-    const firstRegion = queue.getByRole("button").nth(1);
-    if (await firstRegion.count()) {
-      await firstRegion.click();
-      await expect(firstRegion).toHaveAttribute("aria-pressed", "true");
+    // 1b — the compliance basis is the eligible-answer denominator.
+    const complianceBasis = page.locator("details", { hasText: /Percentage of eligible inspection answers/i }).first();
+    await expect(complianceBasis).toBeAttached();
+    await complianceBasis.locator("summary").click();
+    await expect(complianceBasis.getByText(/Percentage of eligible inspection answers/i)).toBeVisible();
+    // The denominator must never be described as factories.
+    await expect(complianceBasis).not.toContainText(/of \d+ factories|من \d+ مصنع/);
+
+    // 2 — the explorer offers the four governed lenses; City cross-filters
+    // through the URL while the strategic view survives.
+    const explorer = page.locator("section", { has: page.locator("#dashboard-compliance-explorer") }).first();
+    await expect(explorer).toBeVisible();
+    for (const lens of ["Region", "City", "Sector", "Authority"]) {
+      await expect(explorer.getByRole("link", { name: lens, exact: true })).toBeVisible();
     }
+    await explorer.getByRole("link", { name: "City", exact: true }).click();
+    await page.waitForURL(/group=city/);
+    await expect(page.locator("#dashboard-national-performance")).toBeVisible();
+    await expect(
+      page.locator("section", { has: page.locator("#dashboard-compliance-explorer") }).first()
+        .getByRole("link", { name: "City", exact: true }),
+    ).toHaveAttribute("aria-current", "page");
 
-    // 3 — basis drawer opens and offers the source drill.
-    const basis = page.getByRole("button", { name: /Basis and source|الأساس والمصدر/ });
-    await expect(basis).toBeVisible();
-    await basis.click();
-    const drawer = page.getByRole("dialog");
-    await expect(drawer).toBeVisible();
-    await expect(drawer).toContainText(/Numerator|البسط/);
-    await expect(drawer).toContainText(/Denominator|المقام/);
-    await page.keyboard.press("Escape");
-    await expect(drawer).toBeHidden();
+    // 3 — the metric card drills to its source route, never a dead end.
+    await expect(
+      page.locator("a[href*='/analytics'], a[href*='/factories'], a[href*='/reviews']").first(),
+    ).toBeVisible();
 
     // No fabricated liveness claim anywhere on the surface.
     await expect(page.locator("body")).not.toContainText(/Live · refreshed|مباشر · تم التحديث/);
@@ -80,24 +87,16 @@ test.describe("exec — Executive Overview browser gate", () => {
         ]);
         await page.setViewportSize({ width: w.width, height: w.height });
         await page.goto("/dashboard?view=strategic");
-        await expect(page.locator("#ex-assurance-h")).toBeVisible();
+        await expect(page.locator("#dashboard-national-performance")).toBeVisible();
+        await expect(page.locator("html")).toHaveAttribute("dir", dir === "ar" ? "rtl" : "ltr");
 
-        // Mapbox GL reports readiness before its tiles paint. Without this the
-        // capture shows an empty grey box and reads as a broken map — which is
-        // exactly how a false "map does not mount" finding got raised once.
-        await expect(page.locator('[data-map-ready="true"]').first())
-          .toBeAttached({ timeout: 30_000 });
-        await expect(page.locator("canvas").first()).toBeAttached({ timeout: 30_000 });
-        await page.waitForTimeout(6_000);
-
-        // At 1440x900 the map must not intrude on the first viewport.
-        if (w.name === "1440") {
-          const mapTop = await page.evaluate(() => {
-            const map = document.querySelector('[class*="mapPanel"], [class*="canvasGrid"]');
-            return map ? map.getBoundingClientRect().top : Number.POSITIVE_INFINITY;
-          });
-          expect(mapTop, "map must start below the fold at 1440x900").toBeGreaterThan(900);
-        }
+        // The strategic surface must never scroll horizontally at any
+        // declared width, in either direction.
+        const widths = await page.evaluate(() => ({
+          scroll: document.documentElement.scrollWidth,
+          client: document.documentElement.clientWidth,
+        }));
+        expect(widths.scroll, `no horizontal overflow at ${w.name}/${dir}`).toBeLessThanOrEqual(widths.client + 1);
 
         await page.screenshot({
           path: join(evidenceDirectory("exec"), `exec-overview-${dir}-${w.name}.png`),

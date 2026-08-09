@@ -29,10 +29,12 @@ test.describe.configure({ mode: "serial" });
 
 const IPAD = { width: 768, height: 1024 };
 const UAT_TAG = "UAT-S04";
-const inspector4Email = process.env.UAT_S04_INSPECTOR_EMAIL?.trim();
-if (!inspector4Email) {
-  throw new Error("UAT_S04_INSPECTOR_EMAIL must be set (e.g. inspector4@mim.gov.sa) — never hardcode identities");
-}
+const inspector4Email = process.env.UAT_S04_INSPECTOR_EMAIL?.trim() ?? "";
+// Fail-closed but collection-safe: a module-scope throw here crashed every
+// `--list` / unrelated run. The identity still only ever comes from the
+// environment — never hardcoded — and every test in this file is skipped
+// when it is absent.
+test.skip(!inspector4Email, "UAT_S04_INSPECTOR_EMAIL must be set (e.g. inspector4@mim.gov.sa) — never hardcode identities");
 // inspector4 shares the same governed cohort secret as the "inspector" persona
 // (both resolved through personas.ts's fail-closed env+file reader) — reuse
 // that resolution instead of re-reading process.env directly, which misses

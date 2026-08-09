@@ -19,9 +19,11 @@ test.describe("Figma to application terminology parity", () => {
   test("keeps retired terms out of the affected visible values", () => {
     const catalogue = read("src/lib/i18n-keys.generated.ts");
     const planning = read("src/app/(app)/planning/page.tsx");
+    const planningMessages = read("src/i18n/locales/en/planning.json");
     expect(catalogue).not.toMatch(/en: "[^"]*(?:workspace|iPad)[^"]*"/i);
     expect(planning).not.toContain("Task workspace");
-    expect(planning).toContain("Tasks — assigned, in progress and completed");
+    expect(planningMessages).not.toContain("Task workspace");
+    expect(planningMessages).toContain("Tasks — assigned, in progress and completed");
   });
 
   test("keeps the approved Arabic terminology in the seed source", () => {

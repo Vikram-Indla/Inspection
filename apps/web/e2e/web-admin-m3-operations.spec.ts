@@ -4,7 +4,22 @@ import { join } from "node:path";
 import { storageStatePath } from "./personas";
 
 const read = (path: string) => readFileSync(join(process.cwd(), path), "utf8");
-const pageSource = read("src/app/(app)/operations/page.tsx");
+const pageSource = [
+  "src/app/(app)/operations/page.tsx",
+  "src/features/operations/queries.ts",
+  "src/features/operations/sources/profile.ts",
+  "src/features/operations/sources/alerts.ts",
+  "src/features/operations/sources/execution.ts",
+  "src/app/(app)/operations/sections/model.ts",
+  "src/app/(app)/operations/sections/labels.ts",
+  "src/app/(app)/operations/sections/operations-overview.tsx",
+  "src/app/(app)/operations/sections/access-notice.tsx",
+  "src/app/(app)/operations/sections/queues-section.tsx",
+  "src/app/(app)/operations/sections/export-section.tsx",
+].map(read).join("\n");
+const centerSource = read("src/app/(app)/operations/RevampOperationsCenter.tsx");
+const enOpsCopy = read("src/i18n/locales/en/operations.json");
+const arOpsCopy = read("src/i18n/locales/ar/operations.json");
 const mapSource = read("src/app/(app)/operations/OperationsMapWorkspace.tsx");
 const previewSource = read("src/app/(app)/operations/OperationsPreview.tsx");
 const filterSource = read("src/app/(app)/operations/OperationsScopeFilter.tsx");
@@ -20,27 +35,47 @@ const runtimeCssSource = read("src/app/saqeel-runtime.css");
 
 test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 composition contract", () => {
   test("renders exactly five governed KPI cards with two explicit decision blocks", () => {
-    expect(pageSource.match(/<article className=\{styles\.kpiCard\}>/g)).toHaveLength(5);
-    for (const label of ["Active Visits", "On the Way", "Executing", "Submitted Today", "Active Alerts"]) {
-      expect(pageSource).toContain(`"${label}"`);
+    for (const key of ["activeVisits", "onTheWay", "executing", "submittedToday", "alerts"]) {
+      expect(centerSource).toContain(`stat.${key}`);
     }
-    expect(pageSource.match(/"Unavailable — decision required"/g)).toHaveLength(2);
-    expect(pageSource.match(/<div className=\{styles\.kpiValue\}>/g)).toHaveLength(2);
-    expect(cssSource).not.toContain(".kpiUnavailable");
-    expect(pageSource).toContain("Grain, source and Riyadh day boundary require sponsor decision");
-    expect(pageSource).toContain("Taxonomy and deduplication require sponsor decision");
+    for (const label of [
+      "Active visits", "Inspectors on the way", "Executing inspections",
+      "Submitted today", "Active operational alerts",
+    ]) {
+      expect(enOpsCopy).toContain(`"${label}"`);
+    }
+    expect(centerSource.match(/value: "—"/g)).toHaveLength(2);
+    expect(centerSource).not.toMatch(/submittedToday, value: (?!"—")/);
+    expect(centerSource).not.toMatch(/alerts, value: (?!"—")/);
   });
 
   test("keeps Operations Map and National Performance as two primary views", () => {
-    expect(pageSource).toContain('"Operations Map"');
-    expect(pageSource).toContain('"National Performance"');
-    expect(pageSource).toContain('view === "map"');
-    expect(pageSource).toContain('view === "performance"');
-    expect(filterSource).toContain('params.set("view", "performance")');
-    expect(pageSource).toContain("<OverrideQueue");
-    expect(pageSource).toContain("<CancellationQueue");
-    expect(pageSource).toContain("<OpsExport");
-    expect(pageSource).toContain("<MonitoringTable");
+    expect(enOpsCopy).toContain('"Operations map"');
+    expect(enOpsCopy).toContain('"National performance"');
+    expect(centerSource).toContain('useState<"map" | "performance">(view)');
+    expect(centerSource).toContain('view === "performance"');
+    expect(centerSource).toContain("<OperationsRegions");
+    const queuesSection = read("src/app/(app)/operations/sections/queues-section.tsx");
+    const exportSection = read("src/app/(app)/operations/sections/export-section.tsx");
+    const monitoringSection = read("src/app/(app)/operations/sections/monitoring-section.tsx");
+    expect(queuesSection).toContain("OverrideQueue");
+    expect(queuesSection).toContain("CancellationQueue");
+    expect(exportSection).toContain("<OpsExport");
+    expect(monitoringSection).toContain("<OperationsMonitoringTable");
+  });
+
+  // Design authority (design/final-cut/saqeel-revamp.html, buildOpsCenter) ships
+  // exactly four blocks: segmented control, map, five-KPI operational summary,
+  // and the highlights list. operations-details.tsx's monitoring/SLA/workload/
+  // alerts/queues/timeline/export tail was never in that design and inflated
+  // the page to ~5x the design's content height (2026-08-08 design-parity
+  // audit). It is retired (see brain/web/05-RETIREMENT-LEDGER.md) but kept on
+  // disk — this asserts it stays off the route rather than silently creeping
+  // back in.
+  test("does not compose the retired operations-details tail on the route", () => {
+    const routeSource = read("src/app/(app)/operations/page.tsx");
+    expect(routeSource).not.toContain("OperationsDetails");
+    expect(routeSource).not.toContain("operations-details");
   });
 
   test("synchronizes map and accessible list without governed-looking risk shading", () => {
@@ -54,11 +89,11 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 composition contract", ()
     expect(previewSource).toContain('event.key === "Escape"');
     expect(previewSource).toContain("restoreRef.current?.focus()");
     expect(pageSource).toContain("Raw risk score");
-    expect(pageSource).toContain("RLS-visible rank");
+    expect(pageSource).toContain('"Visible rank"');
+    expect(pageSource).not.toContain("RLS-visible rank");
     expect(mapSource).not.toContain("regionPostures");
     expect(pageSource).not.toContain("regionPostures");
     expect(pageSource).not.toContain("BAND_TONE");
-    expect(pageSource).toContain('"RLS-visible rank"');
   });
 
   test("does not introduce a refresh cadence and supplies bounded loading and responsive states", () => {
@@ -68,38 +103,37 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 composition contract", ()
     expect(filterSource).not.toContain("setInterval");
     expect(monitoringSource).not.toContain("setInterval");
     expect(monitoringSource).not.toContain("fetchMonitoringRows(");
-    expect(loadingSource.match(/length: 5/)).not.toBeNull();
-    const tabletRule = cssSource.match(/@media \(max-width: 1100px\) \{([\s\S]*?)\n\}/)?.[1] ?? "";
-    expect(tabletRule).not.toContain(".kpiGrid");
+    expect(loadingSource).toContain("<OperationsSkeleton");
+    expect(cssSource).toContain("@media (max-width: 1100px)");
     expect(cssSource).toContain("@media (max-width: 430px)");
     expect(cssSource).toContain("@media (max-width: 340px)");
-    expect(cssSource).toContain("grid-template-columns: repeat(6, minmax(0, 1fr))");
-    expect(cssSource).toContain("grid-column: span 3");
   });
 
   test("adds neutral regional map drill and a fail-closed direct-route boundary", () => {
-    expect(pageSource.match(/<OperationsMapWorkspace/g)).toHaveLength(2);
-    expect(pageSource).toContain('"Regional performance map"');
+    expect(pageSource).toContain("buildRegionalMapEntries");
     expect(pageSource).toContain("regionalMapEntries");
     expect(pageSource).toContain('tone: "neutral"');
+    expect(centerSource).toContain('activeView === "performance" ? regionalMapEntries : mapEntries');
     expect(pageSource).toContain("buildShellNavigation(routeRoleKeys)");
     expect(pageSource).toContain('.find(item => item.href === "/operations")');
     expect(pageSource).toContain("operationsDestination?.enabled === true");
-    expect(pageSource).toContain("BUSINESS_ROLE_KEYS.includes(role)");
+    // Canonical rule visibility (commit f556ad81): the admin persona is
+    // admitted to the Operations read surface alongside the business roles.
+    expect(pageSource).toContain('BUSINESS_ROLE_KEYS.includes(role) || role === "admin"');
     expect(pageSource).not.toContain("FIELD_CHANNEL_ROLE_KEYS");
     expect(pageSource).not.toContain("operationsRoleKeys");
     expect(pageSource).toContain('"Operations access required"');
-    expect(pageSource.indexOf("if (!mayViewOperations)")).toBeLessThan(pageSource.indexOf("await Promise.all(["));
+    expect(pageSource.indexOf('if (!mayViewOperations) return { kind: "denied" }')).toBeGreaterThan(0);
+    expect(pageSource.indexOf('if (!mayViewOperations) return { kind: "denied" }'))
+      .toBeLessThan(pageSource.indexOf("loadAuthorizedScope(sb, user.id)"));
   });
 
-  test("keeps sponsor-facing Center copy, equal KPI typography and non-underlined local actions", () => {
-    expect(pageSource).toContain('"National inspection activity and decisions"');
-    expect(pageSource).not.toContain('"SCR-WEB-500 · SB12 · operational state ≠ workflow status (FND-002)"');
-    expect(cssSource).toContain("font-size: clamp(1.125rem, 1.45vw, 1.5rem)");
-    expect(cssSource).toContain("overflow-wrap: anywhere");
-    expect(cssSource).toContain(".page :global(a.sq-link)");
-    expect(cssSource).toContain("text-decoration: none");
-    expect(cssSource).toContain(".page :global(a.sq-link:focus-visible)");
+  test("keeps sponsor-facing Center copy without engineering jargon", () => {
+    expect(enOpsCopy).toContain('"Live inspector and factory positions across the Kingdom."');
+    for (const copy of [enOpsCopy, arOpsCopy]) {
+      expect(copy).not.toMatch(/RLS|FND-002|SCR-WEB-500|SB12|fixture/);
+    }
+    expect(cssSource).not.toContain(".kpiUnavailable");
   });
 
   test("scopes every widget — visits, factories, override and cancellation queues — to the caller's authorized geography [positive: unassigned region keeps existing RLS grant]", () => {
@@ -149,7 +183,7 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 composition contract", ()
     // monitored even if its planning window/status has lapsed — operational
     // state is not gated behind workflow status.
     expect(pageSource).toContain('(v.planning_status === "published" || ["on_the_way", "arrived", "executing"].includes(v.operational_state))');
-    expect(pageSource).toContain("planning_status and operational_state are separate state");
+    expect(pageSource).toContain("const monitored = visits.filter(v =>");
   });
 });
 
@@ -166,7 +200,8 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
 
   test("renders bounded markers and states without route, ETA, GPS or refresh invention", () => {
     expect(livePageSource).toContain('"Recorded positions — not live GPS"');
-    expect(livePageSource).toContain('"Staleness cadence not yet configured — showing last-observed time only."');
+    expect(livePageSource).toContain('"Last recorded position — not guaranteed live"');
+    expect(livePageSource).toContain('"Times shown are when each position was recorded."');
     expect(livePageSource).toContain('"Live map could not load"');
     expect(livePageSource).toContain('"No active visits in your scope right now"');
     expect(livePageSource).toContain('"No inspectors currently active"');
@@ -204,8 +239,8 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
     expect(liveShellSource).toContain("onProviderFailure={markProviderFailed}");
     expect(liveShellSource).toContain("noScopeRows || hasNoPositions");
     expect(liveShellSource).toContain("noScopeRows ? s.noScope : s.noPositions");
-    expect(liveShellSource).not.toContain('noScopeRows ? (\\n            <EmptyState');
-    expect(liveShellSource).toContain("wallboard ? styles.wallboard");
+    expect(liveShellSource).toContain('data-wallboard={wallboard ? "true" : "false"}');
+    expect(liveShellSource).toContain("s.wallboardExit");
     expect(liveLoadingSource).toContain("Recorded positions — not live GPS");
     expect(liveCssSource).toContain("@media (max-width: 1024px)");
     expect(liveCssSource).toContain("@media (max-width: 430px)");
@@ -246,27 +281,25 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
 
   test("authorized Operations user can switch both real-system views", async ({ page }) => {
     await page.goto("/operations");
-    await expect(page.getByRole("heading", { name: "Operations Center", exact: true })).toBeVisible();
-    await expect(page.getByRole("navigation", { name: "Operations Center views" })).toBeVisible();
-    await expect(page.locator('[data-testid="operations-kpi-grid"] article')).toHaveCount(5);
-    await expect(page.getByText("Unavailable — decision required", { exact: true })).toHaveCount(2);
+    await expect(page.getByRole("radiogroup", { name: "Operations perspective" })).toBeVisible();
+    await expect(page.getByRole("radio", { name: "Operations map" })).toHaveAttribute("aria-checked", "true");
+    await expect(page.getByRole("heading", { name: "Saudi Arabia", exact: true })).toBeVisible();
+    await expect(page.locator('[aria-labelledby="operations-summary"] article')).toHaveCount(5);
+    const dashValues = page.locator('[aria-labelledby="operations-summary"] article', { hasText: "—" });
+    await expect(dashValues).toHaveCount(2);
 
-    await page.getByRole("link", { name: "National Performance", exact: true }).click();
-    await expect(page).toHaveURL(/\/operations\?view=performance/, { timeout: 20_000 });
-    await expect(page.getByRole("heading", { name: "National → region drill", exact: true })).toBeVisible();
-
-    const mapViewLink = page.getByRole("link", { name: "Operations Map", exact: true });
-    await expect(mapViewLink).toHaveAttribute("href", "/operations");
-    await page.goto("/operations");
-    await expect(page.getByRole("heading", { name: "Operations Map", exact: true })).toBeVisible({ timeout: 20_000 });
+    await page.goto("/operations?view=performance");
+    await expect(page.getByRole("radio", { name: "National performance" })).toHaveAttribute("aria-checked", "true");
+    await expect(page.getByRole("heading", { name: "National performance by region", exact: true })).toBeVisible();
+    await expect(page.locator("#operations-regions")).toBeVisible();
   });
 
   test("planner direct-route access matches the accepted shared navigation contract", async ({ browser }) => {
     const context = await browser.newContext({ storageState: storageStatePath("planner") });
     const page = await context.newPage();
     await page.goto("/operations");
-    await expect(page.getByRole("heading", { name: "Operations Center", exact: true })).toBeVisible();
-    await expect(page.getByTestId("operations-kpi-grid")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Operational summary", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Operations access required", exact: true })).toHaveCount(0);
     await context.close();
   });
 
@@ -276,51 +309,44 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     for (const route of ["/operations", "/operations/live"]) {
       await page.goto(route);
       await expect(page.getByRole("heading", { name: "Operations access required", exact: true })).toHaveCount(0);
-      await expect(page.getByRole("heading", { name: /Operations Center|Live Operations/ }).first()).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: /Operational summary|Live Operations/ }).first(),
+      ).toBeVisible();
     }
     await context.close();
   });
 
-  test("an authenticated admin-only persona is denied both Operations routes before data content", async ({ browser }) => {
+  test("admin persona holds the governed read boundary on both Operations routes", async ({ browser }) => {
     const context = await browser.newContext({ storageState: storageStatePath("admin") });
     const page = await context.newPage();
-    for (const route of ["/operations", "/operations/live"]) {
-      await page.goto(route);
-      await expect(page.getByRole("heading", { name: "Operations access required", exact: true })).toBeVisible();
-      await expect(page.getByTestId("operations-kpi-grid")).toHaveCount(0);
-      await expect(page.getByTestId("operations-live")).toHaveCount(0);
-    }
+    await page.goto("/operations");
+    await expect(page.getByRole("heading", { name: "Operational summary", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Operations access required", exact: true })).toHaveCount(0);
+    await page.goto("/operations/live");
+    await expect(page.getByText("Operations access required")).toBeVisible();
+    await expect(page.getByTestId("operations-live")).toHaveCount(0);
     await context.close();
   });
 
-  test("map and list selections open dismissible inspector and factory previews", async ({ page }) => {
+  test("list toggle exposes the accessible equivalent of the live map", async ({ page }) => {
     await page.goto("/operations");
-    const inspectorTrigger = page.locator('button[data-entry-kind="visit"][data-has-inspector="true"]').first();
-    await expect(inspectorTrigger).toBeVisible();
-    await inspectorTrigger.click();
-    await expect(page.getByTestId("operations-inspector-drawer")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Open full visit", exact: true })).toBeVisible();
-    await page.keyboard.press("Escape");
-    await expect(page.getByTestId("operations-inspector-drawer")).toHaveCount(0);
-    await expect(inspectorTrigger).toBeFocused();
-
-    await page.goto("/operations?view=performance");
-    const factoryTrigger = page.locator('button[data-entry-kind="factory"]').first();
-    await expect(factoryTrigger).toBeVisible();
-    await factoryTrigger.click();
-    const factoryCard = page.getByTestId("operations-factory-quick-card");
-    await expect(factoryCard).toBeVisible();
-    await expect(factoryCard.getByText("Raw risk score", { exact: true })).toBeVisible();
-    await expect(factoryCard.getByText("RLS-visible rank", { exact: true })).toBeVisible();
-    await expect(factoryCard.getByRole("link", { name: "Open Factory 360", exact: true })).toBeVisible();
-    await page.getByRole("button", { name: "Close preview", exact: true }).click();
-    await expect(page.getByTestId("operations-factory-quick-card")).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Saudi Arabia", exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Show list", exact: true }).click();
+    await expect(page.getByText("Live positions list")).toBeVisible();
+    const table = page.locator("table").first();
+    const emptyState = page.getByText("No live positions in this scope");
+    await expect(table.or(emptyState).first()).toBeVisible();
+    if (await table.count()) {
+      await expect(page.getByRole("link", { name: /Open record/ }).first()).toBeVisible();
+    }
+    await page.getByRole("button", { name: "Show map", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Saudi Arabia", exact: true })).toBeVisible();
   });
 
   test("five Center KPI values do not overflow at the 1024 acceptance width", async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 900 });
     await page.goto("/operations");
-    const cards = page.locator('[data-testid="operations-kpi-grid"] article');
+    const cards = page.locator('[aria-labelledby="operations-summary"] article');
     await expect(cards).toHaveCount(5);
     for (let index = 0; index < 5; index += 1) {
       const overflow = await cards.nth(index).evaluate(element => ({
@@ -333,12 +359,11 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
 
   test("Operations Live exposes the bounded disclaimer, freshness and accessible list", async ({ page }) => {
     await page.goto("/operations/live");
-    await expect(page.getByText(/(?:Recorded positions — not live GPS|Last recorded position — not guaranteed live)/)).toHaveCount(2);
-    await expect(page.getByText("Staleness cadence not yet configured — showing last-observed time only.", { exact: true })).toBeVisible();
+    await expect(page.getByText("Last recorded position — not guaranteed live", { exact: true })).toBeVisible();
+    await expect(page.getByText("Times shown are when each position was recorded.", { exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Active inspectors", exact: true })).toBeVisible();
     await expect(page.getByText("Snapshot generated:", { exact: false })).toBeVisible();
-    await expect(page.getByText(/Verification fixtures and future-dated visit windows are excluded/)).toBeVisible();
-    await expect(page.getByText(/G10 Golden Journey|M04 Governed Integration|KPI Verify|F360 Runtime/)).toHaveCount(0);
+    await expect(page.getByText(/G10 Golden Journey|M04 Governed Integration|KPI Verify|F360 Runtime|Verification fixture/)).toHaveCount(0);
     const firstInspector = page.locator('aside[aria-labelledby="live-inspector-list-title"] button[aria-pressed]').first();
     if (await firstInspector.count()) {
       await expect(firstInspector.locator('bdi[dir="auto"]')).toBeVisible();
@@ -394,7 +419,7 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
       await page.goto(`/locale?set=${state.locale}`);
       await page.evaluate(theme => localStorage.setItem("saqeel-theme", theme), state.theme);
       await page.goto("/operations");
-      await expect(page.getByTestId("operations-kpi-grid")).toBeVisible();
+      await expect(page.getByRole("heading", { name: /Operational summary|الملخص التشغيلي/ })).toBeVisible();
       await expect(page.locator("html")).toHaveAttribute("dir", state.locale === "ar" ? "rtl" : "ltr");
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -407,7 +432,7 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
   test("wallboard is a real route state and keeps the non-GPS disclosure", async ({ page }) => {
     await page.goto("/operations/live?wallboard=1");
     await expect(page.getByRole("link", { name: "Exit wallboard", exact: true })).toBeVisible();
-    await expect(page.getByText(/(?:Recorded positions — not live GPS|Last recorded position — not guaranteed live)/).first()).toBeVisible();
+    await expect(page.getByText("Last recorded position — not guaranteed live", { exact: true })).toBeVisible();
   });
 
   test("Arabic Live Operations is complete, RTL and uses localized operational labels", async ({ page }) => {
@@ -416,10 +441,9 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await expect(page.locator("html")).toHaveAttribute("lang", "ar");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     await expect(page.getByRole("heading", { name: "العمليات المباشرة — المملكة العربية السعودية", exact: true })).toBeVisible();
-    await expect(page.getByText("مواقع مسجّلة — ليست تتبعاً مباشراً عبر GPS", { exact: true })).toHaveCount(2);
+    await expect(page.getByText("آخر موقع مسجّل — ليس مضموناً أنه مباشر", { exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "المفتشون النشطون", exact: true })).toBeVisible();
     await expect(page.getByText("مفتشون في الطريق", { exact: true })).toBeVisible();
-    await expect(page.getByText("مصانع قيد المتابعة", { exact: true })).toBeVisible();
     await expect(page.getByLabel("إجماليات العمليات المباشرة")).toBeVisible();
     await expect(page.getByText("وقت إنشاء اللقطة:", { exact: false })).toBeVisible();
   });
@@ -429,11 +453,12 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await page.goto("/operations");
     await expect(page.locator("html")).toHaveAttribute("lang", "ar");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-    await expect(page.getByRole("link", { name: "خريطة العمليات", exact: true })).toBeVisible();
-    await expect(page.getByRole("link", { name: "الأداء الوطني", exact: true })).toBeVisible();
+    await expect(page.getByRole("radio", { name: "خريطة العمليات", exact: true })).toBeVisible();
+    await expect(page.getByRole("radio", { name: "الأداء الوطني", exact: true })).toBeVisible();
     await expect(page.getByText("الزيارات النشطة", { exact: true })).toBeVisible();
-    await expect(page.getByText("التنبيهات النشطة", { exact: true })).toBeVisible();
-    await expect(page.getByText("غير متاح — يتطلب قراراً", { exact: true })).toHaveCount(2);
+    await expect(page.getByText("التنبيهات التشغيلية النشطة", { exact: true })).toBeVisible();
+    const dashValues = page.locator('[aria-labelledby="operations-summary"] article', { hasText: "—" });
+    await expect(dashValues).toHaveCount(2);
   });
 
   test("basemap provider failure withdraws only the map and keeps operational context", async ({ page }) => {

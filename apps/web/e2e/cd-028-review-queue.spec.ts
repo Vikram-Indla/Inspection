@@ -34,9 +34,10 @@ test.describe("CD-028 queue — reviewer (leg 1, 3, 4, 10, 14)", () => {
     await expect(page).toHaveURL(/\/reviews$/);
     // scan-first contract + immutability contract are always stated
     // (terminology consolidation: the governed lead is now "Read-only queue";
-    // "scan-first queue" is a banned legacy phrase — terminology-regression).
+    // the immutability banner reads "Decisions cannot be changed" — same
+    // contract, plain-language copy per the UI-copy engineering-prose pass).
     await expect(page.getByText(/Read-only queue/i)).toBeVisible();
-    await expect(page.getByText(/Decisions are immutable/i)).toBeVisible();
+    await expect(page.getByText(/Decisions cannot be changed/i)).toBeVisible();
     // NOT the unauthorized block (reviewer is authorized) — distinct from leg-11
     await expect(page.getByText(/don’t have access to the review queue/i)).toHaveCount(0);
   });
@@ -82,12 +83,14 @@ test.describe("CD-028 queue — reviewer (leg 1, 3, 4, 10, 14)", () => {
     await expect(page.getByText(/Read-only submitted version/i)).toBeVisible({ timeout: 30_000 });
     // Opening changed nothing: an unclaimed row shows the explicit Start
     // button, a decided row shows "no open decision", and a row already
-    // claimed by another run legitimately shows its existing decision panel.
+    // claimed by another run legitimately shows its existing decision panel
+    // (the radiogroup renders immediately; the confirm button only appears
+    // after a decision is chosen, so the panel is detected by its inputs).
     // The queue test must not mistake that shared-live precondition for a
     // navigation side-effect.
     const started = await page.getByRole("button", { name: /^start review$/i }).count();
     const done = await page.getByText(/No open decision/i).count();
-    const existingClaim = await page.getByRole("button", { name: /confirm (approve|return|reject)/i }).count();
+    const existingClaim = await page.locator('input[name="decision"]').count();
     expect(started + done + existingClaim).toBeGreaterThan(0);
     if (existingClaim > 0) await expect(page.getByText(/under review/i).first()).toBeVisible();
   });
@@ -101,17 +104,43 @@ test.describe("CD-028 queue — reviewer (leg 1, 3, 4, 10, 14)", () => {
   });
 });
 
-test.describe("CD-028 queue — unauthorized (leg 11)", () => {
+test.describe("CD-028 queue — access boundary (leg 11)", () => {
   test.use({ storageState: storageStatePath("inspector") });
 
-  test("leg 11 — a non-reviewer sees a distinct unauthorized block, not 'queue clear'", async ({ page }) => {
+  // Governed gate (RBAC-011, unchanged from the pre-rebuild baseline):
+  // supervisor/admin/planner see the coordinated queue and inspectors pass the
+  // gate but remain limited by RLS to their own assignments. Every seeded
+  // persona holds an allowed role, so the unauthorized branch is proven by
+  // deterministic source truth while the inspector run proves the gate's
+  // runtime shape for the most-restricted allowed role.
+  test("leg 11 — inspector passes the governed gate RLS-limited; no decision controls leak", async ({ page }) => {
     await page.goto("/locale?set=en");
     await page.goto("/reviews");
-    await expect(page.getByRole("heading", { name: /don’t have access to the review queue/i })).toBeVisible();
-    // unauthorized ≠ empty: the 'queue clear' success heading must not appear
-    await expect(page.getByRole("heading", { name: /^queue clear$/i })).toHaveCount(0);
-    // and no queue rows leak to an unauthorized role
-    await expect(page.locator(".cd-fpchip")).toHaveCount(0);
+    await expect(page.getByText(/Read-only queue/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /don’t have access to the review queue/i })).toHaveCount(0);
+    await expect(page.locator('input[name="decision"]')).toHaveCount(0);
+    await expect(page.locator('textarea[name="reason"]')).toHaveCount(0);
+  });
+
+  test("leg 11b — a role outside the gate gets the distinct unauthorized block, never 'queue clear' (source truth)", () => {
+    const access = SRC("src/features/reviews/access.ts");
+    // the allow-list is exactly the governed set — no extra role can slip in
+    expect(access).toContain('const QUEUE_ROLES = ["supervisor", "admin", "planner", "inspector"]');
+    expect(access).toContain("export function hasQueueAccess");
+    const route = SRC("src/app/(app)/reviews/page.tsx");
+    // fail-closed ordering: the unauthorized branch returns before any queue
+    // data is loaded, so nothing can leak to a denied role
+    expect(route).toContain("if (!hasQueueAccess(roleRows))");
+    expect(route.indexOf("QueueUnauthorized")).toBeGreaterThan(-1);
+    expect(route.indexOf("<QueueUnauthorized />")).toBeLessThan(route.indexOf("loadReviewQueue(sb)"));
+    const unauth = SRC("src/app/(app)/reviews/QueueUnauthorized.tsx");
+    // unauthorized ≠ empty: the block is a distinct alert, not 'queue clear',
+    // and renders no queue rows or fingerprint chips
+    expect(unauth).toContain("don’t have access to the review queue");
+    expect(unauth).toContain('role="alert"');
+    expect(unauth).not.toMatch(/queue clear/i);
+    expect(unauth).not.toContain("ReviewQueue");
+    expect(unauth).not.toContain("cd-fpchip");
   });
 });
 
@@ -127,21 +156,30 @@ test.describe("CD-028 resolved backend legs — source truth", () => {
     expect(ws).toContain("StartReview");
     const actions = SRC("src/app/(app)/reviews/[id]/actions.ts");
     expect(actions).toContain("export async function startReview");
-    expect(actions).toMatch(/from\("reviews"\)\.insert/);
-    expect(actions).toMatch(/status: "under_review"/);
+    // the review-create + under_review transition now lives in one canonical
+    // maker-checked transaction: the start_review RPC. The server action never
+    // inserts directly — it calls the RPC that owns the locks and rollback.
+    expect(actions).not.toMatch(/from\("reviews"\)\s*\.insert/);
+    expect(actions).toContain('sb.rpc("start_review"');
+    const rpc = REPO_FILE("supabase/migrations/20260729004841_execution_supervisor_review_authority.sql");
+    expect(rpc).toContain("create or replace function public.start_review(");
+    expect(rpc).toContain("insert into public.reviews(");
+    expect(rpc).toMatch(/set status = 'under_review'/);
     const start = SRC("src/app/(app)/reviews/[id]/StartReview.tsx");
     expect(start).not.toMatch(/window\.location\.reload|setTimeout|router\.refresh/);
-    expect(actions).toContain("redirect(`/reviews/${inspection_id}/started?review=${created.id}`)");
+    expect(actions).toContain("redirect(`/reviews/${inspection_id}/started?review=${created}`)");
     const bridge = SRC("src/app/(app)/reviews/[id]/started/page.tsx");
     expect(bridge).toContain("redirect(`/reviews/${id}${query}`)");
-    // the queue module carries no decision form (scan-first)
-    const queue = SRC("src/app/(app)/reviews/DecisionPanel.tsx");
-    expect(queue).not.toContain('name="decision"');
-    expect(queue).not.toContain('name="reason"');
+    // the queue modules carry no decision form (scan-first)
+    for (const file of ["src/app/(app)/reviews/QueueScreen.tsx", "src/app/(app)/reviews/ReviewQueue.tsx"]) {
+      const queue = SRC(file);
+      expect(queue).not.toContain('name="decision"');
+      expect(queue).not.toContain('name="reason"');
+    }
   });
 
   test("leg 3b — the queue derives the four readiness facts from RLS-scoped reads", () => {
-    const list = SRC("src/app/(app)/reviews/page.tsx");
+    const list = SRC("src/features/reviews/queries.ts");
     // readiness sources are actually joined / queried
     expect(list).toContain("acknowledgement");
     expect(list).toContain("evidence(id)");
@@ -153,7 +191,7 @@ test.describe("CD-028 resolved backend legs — source truth", () => {
   });
 
   test("discoverability fix — the queue surfaces submitted inspections with no reviews row yet", () => {
-    const list = SRC("src/app/(app)/reviews/page.tsx");
+    const list = SRC("src/features/reviews/queries.ts");
     // a second, inspections-first query covers the set no reviews-based query can see
     expect(list).toMatch(/from\("inspections"\)/);
     expect(list).toContain('.eq("status", "submitted")');

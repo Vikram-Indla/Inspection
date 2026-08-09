@@ -13,30 +13,32 @@ import {
   type ReviewRow,
   type VisitRow,
 } from "../src/app/(app)/dashboard/metrics";
-import { waitForCredentialsForm, submitCredentials } from "./login-helper";
-import { storageStatePath } from "./personas";
+import { waitForCredentialsForm, submitCredentials, identifierField, passwordField } from "./login-helper";
+import { PERSONAS, storageStatePath } from "./personas";
 
-const OPS = { email: "ops@mim.gov.sa", password: "MimOps!2026" };
 const EVIDENCE_DIR = evidenceDirectory("dashboard-business-v1");
 
 async function loginOps(page: import("@playwright/test").Page) {
   await page.goto("/locale?set=en");
   await page.goto("/login");
   await waitForCredentialsForm(page);
-  await page.locator("#email").fill(OPS.email);
-  await page.locator("#pw").fill(OPS.password);
+  await identifierField(page).fill(PERSONAS.ops.email);
+  await passwordField(page).fill(PERSONAS.ops.password);
   await submitCredentials(page);
-  await page.waitForURL(/\/dashboard/, { timeout: 20_000 });
+  await page.waitForURL(/\/dashboard/, { timeout: 40_000 });
 }
 
 test.describe("TASK-WEB-DASHBOARD-002 metric truth", () => {
   test("audit timeline query is bounded to scoped dashboard objects", () => {
-    const source = readFileSync(join(process.cwd(), "src/app/(app)/dashboard/page.tsx"), "utf8");
-    expect(source).toContain("collectLatestAudit");
-    expect(source).toContain('.in("object_id", ids)');
-    expect(source).toContain('.gte("occurred_at"');
-    expect(source).toContain(".limit(12)");
-    expect(source).not.toMatch(/collect<AuditRow>/);
+    const source = readFileSync(join(process.cwd(), "src/features/dashboard/sources/audit.ts"), "utf8");
+    expect(source).toContain("loadLatestAudit");
+    expect(source).toContain('.in("object_id", group)');
+    expect(source).toContain('.gte("occurred_at", fromIso)');
+    expect(source).toContain('.lte("occurred_at", toIso)');
+    expect(source).toContain("const TIMELINE_LIMIT = 12");
+    expect(source).toContain(".limit(TIMELINE_LIMIT)");
+    const sections = readFileSync(join(process.cwd(), "src/components/dashboard/dashboard-sections/dashboard-sections.tsx"), "utf8");
+    expect(sections).toContain("fetchDashboardSnapshot");
   });
 
   test("30-day default uses Riyadh boundaries and truthful denominators", () => {
@@ -68,97 +70,147 @@ test.describe("TASK-WEB-DASHBOARD-002 metric truth", () => {
 });
 
 test.describe("TASK-WEB-DASHBOARD-002 runtime", () => {
-  // The first evidence case intentionally performs login plus three full
-  // server-rendered dashboard reloads and writes three full-page screenshots.
-  // Keep assertion timeouts tight, but give the complete evidence sequence a
-  // realistic outer budget on a live shared project.
-  test.describe.configure({ timeout: 120_000 });
+  test.describe.configure({ timeout: 150_000 });
   test("operations persona lands on the two-view source-backed dashboard", async ({ page }) => {
     await loginOps(page);
     mkdirSync(EVIDENCE_DIR, { recursive: true });
-    await page.evaluate(() => localStorage.setItem("saqeel-theme", "dark"));
+    await page.evaluate(() => {
+      localStorage.setItem("saqeel-theme", "dark");
+      localStorage.setItem("saqeel-theme-mode", "dark");
+    });
     await page.reload();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-    await expect(page.getByRole("heading", { name: "Dashboard", exact: true })).toBeVisible();
-    await expect(page.getByRole("tab", { name: "Strategic View" })).toHaveAttribute("aria-selected", "true");
+
+    const perspective = page.getByRole("navigation", { name: "Dashboard perspective" });
+    await expect(perspective.getByRole("link", { name: "Strategic View" })).toHaveAttribute("aria-current", "page");
+    await expect(page.getByText("Updated", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "National performance" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Compliance performance explorer" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Strategic intervention" })).toBeVisible();
     await expect(page.getByText("Not configured").first()).toBeVisible();
-    await expect(page.getByText("Compliance rate trend", { exact: true })).toBeVisible();
-    await expect(page.getByText(/Asia\/Riyadh/)).toBeVisible();
-    await expect(page.getByText(/no generated narrative or forecast/i)).toBeVisible();
-    await expect(page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Operations Center" })).toHaveAttribute("href", "/operations");
+    await expect(page.getByRole("button", { name: "Why unavailable?" }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Provider output withheld" })).toBeVisible();
+    await expect(page.getByText(/No generated claim is shown/)).toBeVisible();
+
+    await page.getByRole("button", { name: "How is this calculated?" }).first().click();
+    const explain = page.getByRole("complementary");
+    await expect(explain).toBeVisible();
+    await expect(explain.getByText("Formula", { exact: true })).toBeVisible();
+    await expect(explain.getByText("Formula version", { exact: true })).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(explain).toBeHidden();
+
+    const opsLink = page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Operations Center" });
+    await expect(opsLink).toHaveAttribute("href", /\/operations$/);
     await page.screenshot({ path: join(EVIDENCE_DIR, "strategic-en-dark-desktop.png"), fullPage: true });
-    await page.evaluate(() => localStorage.setItem("saqeel-theme", "light"));
+
+    await page.evaluate(() => {
+      localStorage.setItem("saqeel-theme", "light");
+      localStorage.setItem("saqeel-theme-mode", "light");
+    });
     await page.reload();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
     await page.screenshot({ path: join(EVIDENCE_DIR, "strategic-en-light-desktop.png"), fullPage: true });
-    await page.evaluate(() => localStorage.setItem("saqeel-theme", "dark"));
+    await page.evaluate(() => {
+      localStorage.setItem("saqeel-theme", "dark");
+      localStorage.setItem("saqeel-theme-mode", "dark");
+    });
     await page.reload();
 
-    await page.getByRole("tab", { name: "Operational View" }).click();
+    await perspective.getByRole("link", { name: "Operational View" }).click();
     await expect(page).toHaveURL(/view=operational/);
-    await expect(page.getByRole("tab", { name: "Operational View" })).toHaveAttribute("aria-selected", "true");
-    await expect(page.getByText("Today planned", { exact: true })).toBeVisible();
-    await expect(page.getByText("SLA breach", { exact: true })).toBeVisible();
-    await expect(page.getByText(/No capacity threshold/i)).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Alert source coverage" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Live activity" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /GPS overrides/ })).toBeVisible();
+    await expect(perspective.getByRole("link", { name: "Operational View" })).toHaveAttribute("aria-current", "page");
+    await expect(page.getByRole("heading", { name: "Today's operations" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Operational priorities" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Inspector capacity" })).toBeVisible();
+    await expect(page.getByText("Today's planned visits")).toBeVisible();
     await page.screenshot({ path: join(EVIDENCE_DIR, "operational-en-dark-desktop.png"), fullPage: true });
   });
 
-  test("entity search and region scope use real dashboard controls", async ({ page }) => {
-    await loginOps(page);
-    const search = page.getByRole("searchbox", { name: "Search factories, visits and inspections" });
-    await search.fill("KPI Verify");
-    await page.getByRole("button", { name: "Apply", exact: true }).click();
-    await expect(page).toHaveURL(/q=KPI\+Verify/);
-    await expect(page.getByRole("heading", { name: /Search results for/ })).toBeVisible();
-    await expect(page.getByText(/KPI Verify/).first()).toBeVisible();
+  test.describe("scoped controls", () => {
+  test.use({ storageState: storageStatePath("ops") });
 
-    await page.getByRole("combobox", { name: "Region" }).selectOption("Verification Fixtures");
-    await page.getByRole("button", { name: "Apply", exact: true }).click();
-    await expect(page).toHaveURL(/region=Verification\+Fixtures/);
-    await expect(page.getByText(/Scope: .*Verification Fixtures/)).toBeVisible();
+  test("entity search and region scope use real dashboard controls", async ({ page }) => {
+    await page.goto("/locale?set=en");
+    await page.goto("/dashboard?q=KPI+Verify");
+    await expect(page.getByRole("heading", { name: /Search results for/ })).toBeVisible();
+
+    const shellSearch = page.getByRole("combobox", { name: "Search factory, CR, license, inspection…" });
+    await shellSearch.fill("KPI Verify");
+    const listbox = page.getByRole("listbox", { name: "Global search results" });
+    await expect(listbox).toBeVisible();
+    await expect(listbox.getByRole("option").first().or(listbox.getByText("No results available to you"))).toBeVisible();
+    await page.keyboard.press("Escape");
+
+    const dateScope = page.getByRole("button", { name: "Date scope" });
+    await expect(dateScope).toBeEnabled();
+
+    const regionScope = page.getByRole("combobox", { name: "Region scope" });
+    await expect(regionScope).toBeVisible();
+    if (await regionScope.isEnabled()) {
+      await regionScope.click();
+      const regionOption = page.getByRole("option").nth(1);
+      if (await regionOption.count()) {
+        const label = (await regionOption.textContent())?.trim() ?? "";
+        await regionOption.click();
+        await expect(page).toHaveURL(/region=/);
+        expect(label.length).toBeGreaterThan(0);
+      } else {
+        await page.keyboard.press("Escape");
+      }
+    }
   });
 
   test("Arabic RTL, mobile reflow, keyboard focus and theme remain operational", async ({ page }) => {
-    await loginOps(page);
+    await page.emulateMedia({ colorScheme: "light" });
+    await page.addInitScript(() => {
+      localStorage.setItem("saqeel-theme", "light");
+      localStorage.setItem("saqeel-theme-mode", "light");
+    });
     await page.goto("/locale?set=ar");
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/dashboard");
     await expect(page.locator("html")).toHaveAttribute("lang", "ar");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-    await expect(page.getByRole("tab", { name: "المنظور الاستراتيجي" })).toBeVisible();
-    await page.getByRole("tab", { name: "المنظور الاستراتيجي" }).focus();
-    await expect(page.getByRole("tab", { name: "المنظور الاستراتيجي" })).toBeFocused();
-    const themeButton = page.getByRole("button", { name: /الوضع (الفاتح|الداكن)/ });
-    const offeredTheme = await themeButton.getAttribute("aria-label");
-    await themeButton.click();
-    await expect(page.locator("html")).toHaveAttribute("data-theme", offeredTheme?.includes("الفاتح") ? "light" : "dark");
+    await expect(page.getByRole("heading", { name: "الأداء الوطني" })).toBeVisible();
+
+    const strategic = page.getByRole("link", { name: "المنظور الاستراتيجي" });
+    await strategic.focus();
+    await expect(strategic).toBeFocused();
+
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+    await page.getByRole("button", { name: "الوضع الداكن" }).click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
     mkdirSync(EVIDENCE_DIR, { recursive: true });
     await page.screenshot({ path: join(EVIDENCE_DIR, "strategic-ar-mobile.png"), fullPage: true });
   });
+  });
 });
 
-test.describe("TASK-WEB-DASHBOARD-002 route authorization", () => {
+test.describe("TASK-WEB-DASHBOARD-002 shared dashboard access", () => {
   test.describe("planner persona", () => {
     test.use({ storageState: storageStatePath("planner") });
-    test("planner is denied before Dashboard reads and returns to Planning", async ({ page }) => {
+    test("planner opens the shared dashboard scoped to the planner persona", async ({ page }) => {
+      await page.goto("/locale?set=en");
       await page.goto("/dashboard");
-      await page.waitForURL(u => u.pathname !== "/dashboard", { timeout: 20_000 });
-      await expect(page).toHaveURL(/\/planning/);
-      await expect(page.getByRole("heading", { name: "Dashboard", exact: true })).toHaveCount(0);
+      await expect(page).toHaveURL(/\/dashboard/);
+      await expect(page.getByRole("heading", { name: "Planner", exact: true })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "National performance" })).toBeVisible();
+      await expect(page.getByText("Partial dashboard")).toHaveCount(0);
     });
   });
 
   test.describe("admin-only persona", () => {
     test.use({ storageState: storageStatePath("admin") });
-    test("an admin-only persona cannot open the dashboard by URL", async ({ page }) => {
+    test("an admin-only persona receives the admin-scoped shared dashboard", async ({ page }) => {
+      await page.goto("/locale?set=en");
       await page.goto("/dashboard");
-      await page.waitForURL(u => u.pathname !== "/dashboard", { timeout: 20_000 });
-      await expect(page.getByRole("heading", { name: "Dashboard", exact: true })).toHaveCount(0);
+      await expect(page).toHaveURL(/\/dashboard/);
+      await expect(page.getByRole("heading", { name: "Admin", exact: true })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "National performance" })).toBeVisible();
     });
   });
 });

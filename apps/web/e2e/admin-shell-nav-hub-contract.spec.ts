@@ -9,13 +9,15 @@ import { join } from "node:path";
 // sub-groups. That fan-out was removed and the catalogue's admin item ids
 // were renamed/consolidated, but two consumers still assumed the old shape:
 // ShellClient.tsx filtered groups by `id.startsWith("admin-")` (never
-// matches the literal id "administration"), and AdminShellClient.tsx's
-// HUB_ITEMS referenced item ids ("users", "surveys", "planning-lookups", ...)
-// that no longer exist in the catalogue. Together this meant `hubs` computed
-// to an empty array on every admin route — the rail showed only the brand
-// mark and the "Find a tool" button, and the subnav "back to hub" link
-// (misread as a missing breadcrumb) never rendered because `activeHub` was
-// always undefined.
+// matches the literal id "administration"), and the admin hub map's entries
+// referenced item ids ("users", "surveys", "planning-lookups", ...)
+// that no longer exist in the catalogue. Together this meant the hub rail
+// computed to empty on every admin route — only the brand mark and the
+// "Find a tool" button rendered.
+//
+// The standalone AdminShellClient.tsx has since been retired: the hub map
+// lives in ShellClient.tsx as ADMIN_HUB_ITEMS and the rail renders it inside
+// renderNavGroup's "administration" branch. The contract follows the code.
 //
 // This is a static source contract (no browser, no auth) so it stays fast
 // and catches the next id-rename before it ships silently.
@@ -23,7 +25,6 @@ import { join } from "node:path";
 const root = join(__dirname, "..");
 const shellNavigation = readFileSync(join(root, "src/lib/shell-navigation.ts"), "utf8");
 const shellClient = readFileSync(join(root, "src/components/ShellClient.tsx"), "utf8");
-const adminShellClient = readFileSync(join(root, "src/components/admin/AdminShellClient.tsx"), "utf8");
 
 function catalogueAdminItemIds(): string[] {
   const groupStart = shellNavigation.indexOf('id: "administration"');
@@ -33,9 +34,9 @@ function catalogueAdminItemIds(): string[] {
 }
 
 function hubItemIds(): string[] {
-  const start = adminShellClient.indexOf("const HUB_ITEMS");
-  const end = adminShellClient.indexOf("};", start);
-  const block = adminShellClient.slice(start, end);
+  const start = shellClient.indexOf("const ADMIN_HUB_ITEMS");
+  const end = shellClient.indexOf("};", start);
+  const block = shellClient.slice(start, end);
   return [...block.matchAll(/"([a-z0-9-]+)"/g)].map(m => m[1]);
 }
 
@@ -45,14 +46,16 @@ test.describe("Admin shell hub-nav source contract (INSP-728)", () => {
     // match nothing forever, since no group in SHELL_NAVIGATION has ever
     // had that literal prefix since the fan-out was removed.
     expect(shellClient).not.toMatch(/group\.id\.startsWith\("admin-"\)/);
-    const adminGroupFilters = [...shellClient.matchAll(/\.filter\(group => group\.id === "administration"\)/g)];
-    expect(adminGroupFilters.length).toBeGreaterThanOrEqual(3);
+    const adminGroupComparisons = [...shellClient.matchAll(/group\.id [!=]== "administration"/g)];
+    expect(adminGroupComparisons.length).toBeGreaterThanOrEqual(3);
   });
 
-  test("every AdminShellClient HUB_ITEMS entry points at a real catalogue item id", () => {
+  test("every ADMIN_HUB_ITEMS entry points at a real catalogue item id", () => {
     const catalogueIds = catalogueAdminItemIds();
     expect(catalogueIds.length).toBeGreaterThan(0);
-    for (const id of hubItemIds()) {
+    const hubIds = hubItemIds();
+    expect(hubIds.length).toBeGreaterThan(0);
+    for (const id of hubIds) {
       expect(catalogueIds).toContain(id);
     }
   });
@@ -72,20 +75,26 @@ test.describe("Admin shell hub-nav source contract (INSP-728)", () => {
     // hub.items[0].href — the rest of a hub's items were only reachable by
     // clicking through to a subnav in the main content, or via the ⌘K
     // palette. PO ruled every manageable area must be listed and visible
-    // in the sidebar itself. `hub.items.map` inside the `.hubs` nav proves
-    // every item gets its own row there, not just the first.
-    const hubsNavStart = adminShellClient.indexOf("className={styles.hubs}");
-    const hubsNavEnd = adminShellClient.indexOf("</nav>", hubsNavStart);
-    const hubsNavBlock = adminShellClient.slice(hubsNavStart, hubsNavEnd);
-    expect(hubsNavBlock).toContain("hub.items.map");
-    expect(hubsNavBlock).not.toContain("hub.items[0].href");
+    // in the sidebar itself. `hubItems.map(item => renderNavItem(...))`
+    // inside renderNavGroup's administration branch proves every item gets
+    // its own row there, not just the first.
+    const hubsRailStart = shellClient.indexOf("ADMIN_HUB_ORDER.map(hubId");
+    const hubsRailEnd = shellClient.indexOf(": group.items.map(", hubsRailStart);
+    expect(hubsRailStart).toBeGreaterThan(-1);
+    expect(hubsRailEnd).toBeGreaterThan(hubsRailStart);
+    const hubsRailBlock = shellClient.slice(hubsRailStart, hubsRailEnd);
+    expect(hubsRailBlock).toContain("hubItems.map(item => renderNavItem(item, true))");
+    expect(hubsRailBlock).not.toContain("hubItems[0]");
+    expect(hubsRailBlock).not.toContain("items[0].href");
   });
 
   test("⌘K stays available as a secondary shortcut, not the only nav mechanism", () => {
-    // findTool must still exist (secondary shortcut) — it must not be the
+    // The palette must still exist (secondary shortcut) — it must not be the
     // only way to discover admin areas, which the previous test already
-    // guards from the other direction.
-    expect(adminShellClient).toContain("styles.findTool");
-    expect(adminShellClient).toContain("aria-keyshortcuts=\"Meta+K Control+K\"");
+    // guards from the other direction. Both entry points survive: the
+    // keyboard listener and the visible topbar trigger.
+    expect(shellClient).toContain('(event.metaKey || event.ctrlKey) && event.key.toLocaleLowerCase() === "k"');
+    expect(shellClient).toContain("ref={adminPaletteTriggerRef}");
+    expect(shellClient).toContain("aria-label={`${adminPaletteCopy.open} (Ctrl/⌘ K)`}");
   });
 });

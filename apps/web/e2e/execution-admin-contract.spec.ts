@@ -116,11 +116,11 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 2A execution admin control plane"
     expect(rbac).toContain("trg_audit_%s");
   });
 
-  test("navigation registers the route for the six admin role keys", () => {
+  test("navigation registers the route under the canonical admin visibility", () => {
     const nav = read("apps/web/src/lib/shell-navigation.ts");
     expect(nav).toContain('href: "/admin/execution"');
     expect(nav).toContain("shell.nav.executionSettings");
-    expect(nav).toMatch(/id: "execution"[\s\S]*?roles: adminRoles/);
+    expect(nav).toMatch(/id: "adm-execution"[^\n]*visibility: "canonical-admin"/);
   });
 
   test("decision log records D-004 and D-005", () => {

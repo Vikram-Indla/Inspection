@@ -199,7 +199,7 @@ async function journeyInspectorPage(browser: { newContext: (o: object) => Promis
   }, { timeout: P2_LOGIN_STEP_TIMEOUT });
   await test.step("P2 Inspector reaches the approved Dashboard landing", async () => {
     await page.waitForURL(url => url.pathname === "/dashboard", { timeout: P2_LOGIN_STEP_TIMEOUT });
-    await expect(page.locator("#role-dashboard-summary")).toBeVisible({ timeout: P2_LOGIN_STEP_TIMEOUT });
+    await expect(page.locator("#dashboard-role-summary")).toBeVisible({ timeout: P2_LOGIN_STEP_TIMEOUT });
     await expect(page.locator("main")).not.toContainText("ERR-AUTH", { timeout: P2_LOGIN_STEP_TIMEOUT });
   }, { timeout: P2_LOGIN_STEP_TIMEOUT });
   const origin = new URL(page.url()).origin;
@@ -223,7 +223,7 @@ async function journeySupervisorPage(browser: { newContext: (o: object) => Promi
     await passwordField(page).fill(PERSONAS.supervisor.password);
     await submitCredentials(page);
     await page.waitForURL(url => url.pathname === "/dashboard", { timeout: P2_LOGIN_STEP_TIMEOUT });
-    await expect(page.locator("#role-dashboard-summary")).toBeVisible({ timeout: P2_LOGIN_STEP_TIMEOUT });
+    await expect(page.locator("#dashboard-role-summary")).toBeVisible({ timeout: P2_LOGIN_STEP_TIMEOUT });
     await expect(page.locator("main")).not.toContainText("ERR-AUTH", { timeout: P2_LOGIN_STEP_TIMEOUT });
   }, { timeout: P2_LOGIN_STEP_TIMEOUT });
   return page;

@@ -2,7 +2,7 @@ import { test, expect, type Browser, type BrowserContext, type Page } from "@pla
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { PERSONAS, type PersonaKey } from "./personas";
-import { submitCredentials, waitForCredentialsForm } from "./login-helper";
+import { identifierField, passwordField, submitCredentials, waitForCredentialsForm } from "./login-helper";
 
 type ResourceSample = {
   name: string;
@@ -28,17 +28,20 @@ type Sample = {
 type RouteTarget = {
   route: string;
   title: string;
+  ready: string;
   persona: PersonaKey;
   navHref?: string;
 };
 
+// `ready` is the route-content signal the timing stops on: the persistent
+// shell paints first, so each target waits for a heading its own screen owns.
 const targets: RouteTarget[] = [
-  { route: "/dashboard", title: "Dashboard", persona: "ops", navHref: "/dashboard" },
-  { route: "/operations", title: "Operations Center", persona: "ops", navHref: "/operations" },
-  { route: "/factories", title: "Factory 360", persona: "ops", navHref: "/factories" },
-  { route: "/planning", title: "Visit planning", persona: "ops", navHref: "/planning" },
-  { route: "/reviews", title: "Level 2 review queue", persona: "ops", navHref: "/reviews" },
-  { route: "/ai/suggestions", title: "Assistive AI dockets", persona: "ops", navHref: "/ai/suggestions" },
+  { route: "/dashboard", title: "Dashboard", ready: "h2#dashboard-role-summary", persona: "ops", navHref: "/dashboard" },
+  { route: "/operations", title: "Operations Center", ready: "h2#operations-summary", persona: "ops", navHref: "/operations" },
+  { route: "/factories", title: "Factory 360", ready: 'h2:has-text("Factory snapshot")', persona: "ops", navHref: "/factories" },
+  { route: "/planning", title: "Planning", ready: 'h1:has-text("Planning")', persona: "ops", navHref: "/planning" },
+  { route: "/reviews", title: "Inspection review queue", ready: 'h1:has-text("Inspection review queue")', persona: "ops", navHref: "/reviews" },
+  { route: "/ai/suggestions", title: "Assistive AI dockets", ready: 'h2:has-text("Assistive AI dockets")', persona: "ops", navHref: "/ai/suggestions" },
 ];
 
 const coldRuns = Number(process.env.PERF_COLD_RUNS ?? 5);
@@ -55,10 +58,13 @@ async function login(browser: Browser, persona: PersonaKey): Promise<Record<stri
   const account = PERSONAS[persona];
   await page.goto("/login");
   await waitForCredentialsForm(page);
-  await page.locator("#email").fill(account.email);
-  await page.locator("#pw").fill(account.password);
+  await identifierField(page).fill(account.email);
+  await passwordField(page).fill(account.password);
   await submitCredentials(page);
-  await page.waitForURL(url => url.pathname.startsWith(account.home), { timeout: 40_000 });
+  await page.waitForURL(
+    url => url.pathname.replace(/^\/(en|ar)(?=\/|$)/, "").startsWith(account.home),
+    { timeout: 40_000 },
+  );
   await page.context().addCookies([
     { name: "locale", value: "en", url: new URL(page.url()).origin },
     { name: "login_locale", value: "en", url: new URL(page.url()).origin },
@@ -158,7 +164,7 @@ test("PERF-G11-001 captures repeatable authenticated route timings", async ({ br
       const page = await context.newPage();
       const started = Date.now();
       await page.goto(target.route, { waitUntil: "domcontentloaded" });
-      await expect(page.locator(".sq-pagehead__context h2")).toHaveText(target.title, { timeout: 40_000 });
+      await expect(page.locator(target.ready).first()).toBeVisible({ timeout: 40_000 });
       samples.push(await collect(page, target.route, "cold", Date.now() - started));
       await context.close();
     }
@@ -170,14 +176,15 @@ test("PERF-G11-001 captures repeatable authenticated route timings", async ({ br
     for (let run = 0; run < warmRuns; run += 1) {
       const origin = run % 2 === 0 && target.route !== home ? home : "/profile";
       await page.goto(origin, { waitUntil: "domcontentloaded" });
-      await expect(page.locator(".sq-pagehead__context h2")).toBeVisible({ timeout: 40_000 });
+      await expect(page.locator("#main-content")).toBeVisible({ timeout: 40_000 });
       await installObservers(page);
-      const link = page.getByRole("navigation", { name: "Primary navigation" }).locator(`a[href="${target.navHref}"]`);
-      await expect(link).toHaveCount(1);
+      const link = page
+        .locator(`nav[aria-label="Primary navigation"] a[href="/en${target.navHref}"], header a[href="/en${target.navHref}"]`)
+        .first();
+      await expect(link).toBeVisible();
       const started = Date.now();
       await link.click();
-      await expect(page.locator(".sq-pagehead__context h2")).toHaveText(target.title, { timeout: 40_000 });
-      await expect(page.locator(".sq-route-progress")).toHaveCount(0);
+      await expect(page.locator(target.ready).first()).toBeVisible({ timeout: 40_000 });
       samples.push(await collect(page, target.route, "warm", Date.now() - started));
     }
     await context.close();

@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { login, rest, must } from "./live-rest";
+import { assertOk, login, rest, must } from "./live-rest";
 import { PERSONAS, storageStatePath } from "./personas";
 
 // CD-041 / SCR-VIR-700 · M05-009/010/015..020 · STM-VIR-002 · RBAC-014 · FND-003
@@ -27,6 +27,7 @@ let stageCount = 0;
 
 async function stageVirtualSession(
   plannerJwt: string,
+  inspectorJwt: string,
   inspectorId: string,
   opts: { appointmentOffsetMin: number },
 ): Promise<Ids> {
@@ -91,6 +92,23 @@ async function stageVirtualSession(
     "insert assignment",
   );
 
+  // Phase 7 readiness gate (EXE-PREP / D-008): begin now requires a confirmed
+  // Ready preparation, staged through the same governed RPCs the product uses.
+  assertOk(
+    await rest("POST", "rpc/save_visit_preparation", inspectorJwt, {
+      p_visit: visit.id,
+      p_execution_date: windowStart.slice(0, 10),
+      p_confirmed_mode: "virtual",
+      p_package_version_id: pkg.id,
+      p_form_config: {},
+    }),
+    "save visit preparation",
+  );
+  must(
+    await rest("POST", "rpc/confirm_visit_ready", inspectorJwt, { p_visit: visit.id }),
+    "confirm visit ready",
+  );
+
   const session = must(
     await rest("POST", "virtual_sessions", plannerJwt, {
       visit_id: visit.id,
@@ -124,12 +142,14 @@ async function bestEffortDelete(jwt: string, table: string, filter: string): Pro
 
 test.describe.serial("CD-041 verified-gate — driven", () => {
   let plannerJwt = "";
+  let inspectorJwt = "";
   let inspectorId = "";
 
   test.beforeAll(async () => {
     const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
     const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
     plannerJwt = planner.jwt;
+    inspectorJwt = inspector.jwt;
     inspectorId = inspector.userId;
   });
 
@@ -157,10 +177,10 @@ test.describe.serial("CD-041 verified-gate — driven", () => {
     test.use({ storageState: storageStatePath("inspector") });
 
     test("Begin is blocked until OTP verification, then rides the same submission flow (M05-015..020, no bypass)", async ({ page }) => {
-      const { sessionId } = await stageVirtualSession(plannerJwt, inspectorId, { appointmentOffsetMin: 30 });
+      const { sessionId } = await stageVirtualSession(plannerJwt, inspectorJwt, inspectorId, { appointmentOffsetMin: 30 });
 
       await page.goto(`/virtual/${sessionId}`);
-      const repRow = page.locator(".cd-plist .cd-prow", { hasText: "Gate Test Rep" });
+      const repRow = page.locator(".cd-idrow", { hasText: "Gate Test Rep" });
       await expect(repRow).toBeVisible();
 
       // Advance scheduled -> joined so the gated Begin transition is the surfaced
@@ -199,7 +219,7 @@ test.describe.serial("CD-041 verified-gate — driven", () => {
   });
 
   test("an out-of-write-scope persona cannot force the verified transition (RBAC-014)", async () => {
-    const { sessionId, repId } = await stageVirtualSession(plannerJwt, inspectorId, { appointmentOffsetMin: 45 });
+    const { sessionId, repId } = await stageVirtualSession(plannerJwt, inspectorJwt, inspectorId, { appointmentOffsetMin: 45 });
     const reviewer = await login(PERSONAS.reviewer.email, PERSONAS.reviewer.password);
     // vs_mark_session_verified is security-invoker + RLS vs_write; the reviewer is
     // not planner/ops/assigned-inspector, so the FOR UPDATE read finds nothing and
@@ -219,7 +239,7 @@ test.describe.serial("CD-041 verified-gate — driven", () => {
   });
 
   test("a closed session is immutable and cannot move backward (STM-VIR forward-only)", async () => {
-    const { sessionId } = await stageVirtualSession(plannerJwt, inspectorId, { appointmentOffsetMin: 60 });
+    const { sessionId } = await stageVirtualSession(plannerJwt, inspectorJwt, inspectorId, { appointmentOffsetMin: 60 });
 
     // Forward to closed is legal.
     const close = await rest(

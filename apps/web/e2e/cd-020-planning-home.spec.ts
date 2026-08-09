@@ -15,10 +15,12 @@ test.describe("CD-020 planning home", () => {
     await page.goto("/locale?set=en");
     await page.goto("/planning");
     await expect(page.getByRole("heading", { name: "Planning", exact: true })).toBeVisible();
+    await page.locator("summary").filter({ hasText: "Create Visit" }).first().click();
+    const createMenu = page.getByRole("navigation", { name: "Create visit methods" });
     for (const href of ["/planning/bulk", "/planning/single", "/planning/immediate"]) {
-      await expect(page.locator(`a[href="${href}"]`)).toBeVisible();
+      await expect(createMenu.locator(`a[href="${href}"]`)).toBeVisible();
     }
-    await expect(page.locator('a[href="/planning/visits"]')).toBeVisible();
+    await expect(page.locator('a[href="/planning/visits"]').first()).toBeVisible();
     await context.close();
   });
 
@@ -59,8 +61,8 @@ test.describe("CD-020 planning home", () => {
     expect(access).toContain("planning_access_class");
     expect(access).toContain("has_planning_capability");
     const planningVisits = readFileSync(join(process.cwd(), "src/app/(app)/planning/visits/page.tsx"), "utf8");
-    expect(planningVisits).toContain('access.accessClass !== "business_staff"');
-    expect(planningVisits.indexOf('access.accessClass !== "business_staff"')).toBeLessThan(planningVisits.indexOf("return Visits("));
+    expect(planningVisits).toContain('!["business_staff", "admin"].includes(access.accessClass)');
+    expect(planningVisits.indexOf('access.can("planning.view")')).toBeLessThan(planningVisits.indexOf("return Visits("));
     const register = readFileSync(join(process.cwd(), "src/app/(app)/planning/plans/page.tsx"), "utf8");
     const drill = readFileSync(join(process.cwd(), "src/app/(app)/planning/plans/[id]/page.tsx"), "utf8");
     expect(register).not.toContain("{error.message}");

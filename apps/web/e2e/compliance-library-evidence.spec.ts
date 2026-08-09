@@ -18,8 +18,8 @@ test.describe("TASK-WEB-COMPLIANCE-LIBRARY-003 read-only runtime evidence", () =
     const previewLink = page.getByRole("link", { name: "Inspector Runtime Preview" }).first();
     await expect(previewLink).toBeVisible();
     await previewLink.click();
-    await expect(page.getByRole("heading", { name: "Published execution configuration" })).toBeVisible();
-    await expect(page.getByText("Control-plane preview only.")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Published configuration" })).toBeVisible();
+    await expect(page.getByText("Preview only — no changes made here.")).toBeVisible();
     await page.screenshot({ path: `${evidenceDir}/inspector-runtime-preview-en-light.png`, fullPage: true });
   });
 });

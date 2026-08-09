@@ -39,7 +39,7 @@ test.describe("PLN-AUTH-RECOVERY-P1-007 — stale session recovery contract", ()
     expect(source).toContain("isInvalidRefreshToken(claimsError)");
     expect(source).toContain('name.startsWith("sb-") && name.includes("-auth-token")');
     expect(source).toContain('response.cookies.set(name, "", { path: "/", maxAge: 0 })');
-    expect(source).toContain('loginUrl.pathname = "/login"');
+    expect(source).toContain("loginUrl.pathname = `/${locale}/login`");
     expect(source).toContain('loginUrl.searchParams.set("reason", "expired")');
     expect(source).toContain('loginUrl.searchParams.set("next"');
   });
