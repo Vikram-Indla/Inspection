@@ -5,6 +5,8 @@ import { useT } from "@/lib/i18n";
 import { getPlanningAccess } from "@/lib/planning/access";
 import ImmediateForm, { type ImmediateStrings, type ManualReasonOption, type VisitTypeOption } from "./ImmediateForm";
 import EmptyState from "@/components/EmptyState";
+import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { buildAuthorityStrings, buildHandoffLabel, buildImmediateScreenStrings } from "@/features/planning-immediate/strings";
 import Link from "next/link";
 
 // Distinct, sorted, non-empty string values for a field across the registered
@@ -20,6 +22,8 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
   const safeReturnTo = returnTo?.startsWith("/factories/cr/") ? returnTo : null;
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
+  const screen = buildImmediateScreenStrings(locale);
+  const authority = buildAuthorityStrings(locale);
   const sb = await supabaseServer();
   const { data: { user } } = await getVerifiedUser(sb);
 
@@ -30,7 +34,7 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
   const access = await getPlanningAccess(sb, ["planning.create.immediate"]);
   if (!user || access.error !== null || !access.can("planning.create.immediate") || access.accessClass !== "business_staff") {
     return (
-      <Shell current="/planning" title={t("plan.imm.title", "Create an urgent visit")}>
+      <Shell current="/planning" title={screen.title}>
         <EmptyState glyph="⛔" title={tr("plan.imm.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
           body={tr("plan.imm.unauthorized.body", "Only Planner and Supervisor roles can use Create an urgent visit. Inspectors raise urgent issues from their own assigned work.", "إنشاء زيارة عاجلة متاح للمخطط والمشرف فقط. يرفع المفتشون البلاغات العاجلة من عملهم المكلّفين به.")} />
       </Shell>
@@ -107,8 +111,8 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
 
   const strings: ImmediateStrings = {
     identity: t("plan.imm.identity", "Identity — registered or minimum manual"),
-    r05BlockedTitle: tr("plan.imm.r05BlockedTitle", "Urgent requests still require a registered factory", "تتطلب الطلبات العاجلة مصنعاً مسجلاً"),
-    r05BlockedBody: tr("plan.imm.r05BlockedBody", "Urgency only changes the response time — not who is checked or who supervises. Choose a registered factory; you can't enter one that isn't registered.", "لا تغيّر العجلة سوى وقت الاستجابة — لا هوية الهدف ولا الإشراف. اختر مصنعاً مسجلاً؛ لا يمكن إدخال مصنع غير مسجل."),
+    r05BlockedTitle: screen.identityNoticeTitle,
+    r05BlockedBody: screen.identityNoticeBody,
     identityToggleRegistered: t("plan.imm.identityToggleRegistered", "Registered factory"),
     identityToggleUnregistered: t("plan.imm.identityToggleUnregistered", "Unregistered / temporary"),
     manualLockedPermission: tr("plan.imm.manualLockedPermission", "Manual entry requires the manual-factory permission.", "الإدخال اليدوي يتطلب صلاحية المصنع اليدوي."),
@@ -176,46 +180,12 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
     consequenceNotify: t("plan.imm.consequenceNotify", "Notify Supervisors to decide within four business hours"),
     consequenceAudit: t("plan.imm.consequenceAudit", "Record every step in the append-only audit log"),
     reviewConfirm: tr("plan.imm.reviewConfirm", "I reviewed the mandatory information and duplicate-active-visit rule", "راجعت المعلومات الإلزامية وقاعدة عدم تكرار الزيارة النشطة"),
-    inspectorStartNow: tr("plan.imm.inspectorStartNow", "Inspector-created: assigned to you, no planning window, then start through the standard inspection lifecycle", "إنشاء المفتش: تُسند إليك بلا نافذة تخطيط، ثم تبدأ عبر دورة التفتيش القياسية"),
+    inspectorStartNow: authority.detail.notifyInspectorStart,
     blockedTitle: t("plan.imm.blocked", "Cannot create — minimum controls (P01)"),
     create: t("plan.imm.create", "Submit urgent request for supervision"),
     createAndStart: tr("plan.imm.createAndStart", "Submit urgent request for supervision", "إرسال طلب عاجل للإشراف"),
     creating: t("plan.imm.creating", "Submitting…"),
-    chipGroupLabel: tr("plan.imm.chipGroupLabel", "Immediate dispatch protections", "ضوابط الإرسال الفوري"),
-    chipSatisfied: tr("plan.imm.chipSatisfied", "satisfied", "مستوفى"),
-    chipBlocking: tr("plan.imm.chipBlocking", "blocking", "يحظر الإنشاء"),
-    chipTruth: tr("plan.imm.chipTruth", "informational", "معلوماتي"),
-    chipAllSatisfied: tr("plan.imm.chipAllSatisfied", "All protections satisfied", "تم استيفاء جميع ضوابط الحماية"),
-    chipBlockedAnnouncement: tr("plan.imm.chipBlockedAnnouncement", "{label} blocking — {detail}", "{label} يحظر الإنشاء — {detail}"),
-    chipAuthorizedLabel: tr("plan.imm.chip.authorized", "AUTHORIZED", "التصريح"),
-    chipReasonLabel: tr("plan.imm.chip.reason", "REASON", "السبب"),
-    chipIdentityLabel: tr("plan.imm.chip.identity", "IDENTITY", "الهوية"),
-    chipLocationLabel: tr("plan.imm.chip.location", "LOCATION", "الموقع"),
-    chipPackageLabel: tr("plan.imm.chip.package", "CHECKLIST", "قائمة التفتيش"),
-    chipInspectorLabel: tr("plan.imm.chip.inspector", "INSPECTOR", "المفتش"),
-    chipWindowLabel: tr("plan.imm.chip.window", "WINDOW", "النافذة"),
-    chipAuditLabel: tr("plan.imm.chip.audit", "AUDIT", "التدقيق"),
-    chipNotifyLabel: tr("plan.imm.chip.notify", "NOTIFY", "الإشعار"),
-    chipAuthorizedDetail: actorMode === "planner"
-      ? tr("plan.imm.chipAuthorizedPlanner", "Planner or Supervisor", "المخطط أو المشرف")
-      : tr("plan.imm.chipAuthorizedInspector", "Inspector escalation only", "تصعيد المفتش فقط"),
-    chipReasonBlocked: tr("plan.imm.chipReasonBlocked", "select an urgency reason", "اختر سببًا للاستعجال"),
-    chipReasonOtherBlocked: tr("plan.imm.chipReasonOtherBlocked", "justify Other in Notes", "برّر سبب «أخرى» في الملاحظات"),
-    chipIdentityBlocked: tr("plan.imm.chipIdentityBlocked", "enter factory identity", "أدخل هوية المصنع"),
-    chipIdentityRegistered: tr("plan.imm.chipIdentityRegistered", "registered factory selected", "تم اختيار مصنع مسجل"),
-    chipIdentityTemporary: tr("plan.imm.chipIdentityTemporary", "temporary entity — flagged", "كيان مؤقت — معلّم"),
-    chipLocationBlocked: tr("plan.imm.chipLocationBlocked", "enter valid coordinates", "أدخل إحداثيات صالحة"),
-    chipLocationOfficial: tr("plan.imm.chipLocationOfficial", "official Factory list pin", "نقطة قائمة المصانع الرسمية"),
-    chipLocationManual: tr("plan.imm.chipLocationManual", "manually confirmed pin", "نقطة مؤكدة يدويًا"),
-    chipPackageBlocked: tr("plan.imm.chipPackageBlocked", "select an active inspection checklist", "اختر قائمة تفتيش نشطة"),
-    chipInspectorAuto: tr("plan.imm.chipInspectorAuto", "auto-assign", "إسناد تلقائي"),
-    chipInspectorManual: tr("plan.imm.chipInspectorManual", "manual pick", "اختيار يدوي"),
-    chipInspectorBlocked: tr("plan.imm.chipInspectorBlocked", "no inspector available", "لا يوجد مفتش متاح"),
-    chipWindowImmediate: tr("plan.imm.chipWindowImmediate", "starts immediately — no planner window", "تبدأ فورًا — بلا نافذة للمخطط"),
-    chipWindowSet: tr("plan.imm.chipWindowSet", "custom window set", "تم تحديد نافذة مخصصة"),
-    chipWindowBlocked: tr("plan.imm.chipWindowBlocked", "both-or-neither, end after start", "الحقلان معًا أو كلاهما فارغ، والنهاية بعد البداية"),
-    chipAuditDetail: tr("plan.imm.chipAuditDetail", "every step recorded, append-only", "تُسجّل كل خطوة في سجل إلحاق فقط"),
-    chipNotifyDetail: tr("plan.imm.chipNotifyDetail", "queued — awaiting delivery confirmation", "في قائمة الانتظار مع حالة المزود — دون ادعاء التسليم"),
+    authority,
     enforcementLabel: tr("plan.imm.enforcementLabel", "Recommended enforcement action (optional)", "الإجراء الموصى به (اختياري)"),
     enforcementHint: tr("plan.imm.enforcementHint", "This is a recommendation only — it does not replace Supervisor approval, assignment, or release.", "هذه توصية فقط — لا تحل محل موافقة المشرف أو الإسناد أو الإصدار."),
     enforcementNone: tr("plan.imm.enforcementNone", "No recommendation", "بدون توصية"),
@@ -227,8 +197,8 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
     enforcementNotesPlaceholder: tr("plan.imm.enforcementNotesPlaceholder", "What you observed — helps the Supervisor decide", "ما لاحظته — يساعد المشرف على اتخاذ القرار"),
   };
   return (
-    <Shell current="/planning" title={t("plan.imm.title", "Create an urgent visit")}
-      context={<><span className="sq-lozenge sq-lozenge--warning">{t("plan.imm.context", "urgent request · Supervisor release required")}</span>{sourceCrId && sourceLicenseId ? <span className="sq-lozenge sq-lozenge--info">Factory 360 · CR <bdi>{sourceCrId}</bdi> · License <bdi>{sourceLicenseId}</bdi></span> : null}</>}>
+    <Shell current="/planning" title={screen.title}
+      context={<><StatusPill tone="warning">{screen.context}</StatusPill>{sourceCrId && sourceLicenseId ? <StatusPill tone="info">{buildHandoffLabel(locale, sourceCrId, sourceLicenseId)}</StatusPill> : null}</>}>
       {safeReturnTo ? <p><Link className="sq-link" href={safeReturnTo}>← {t("f360.actions.return", "Return to selected Factory 360 license")}</Link></p> : null}
       <ImmediateForm
         factories={factoryList as never}

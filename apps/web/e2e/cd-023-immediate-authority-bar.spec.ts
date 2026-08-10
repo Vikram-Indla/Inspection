@@ -575,14 +575,15 @@ test.describe("CD-023 accessibility, localization and visual matrix", () => {
     await page.goto("/planning/immediate");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     const group = page.getByRole("group", { name: /ضوابط|الحماية|Immediate dispatch protections/i });
-    await expect(group.locator(".filter-chip")).toHaveCount(9);
+    await expect(group.locator("[data-protection]")).toHaveCount(9);
     await expect(group.getByText("السبب", { exact: true })).toBeVisible();
     await expect(group.getByText("الهوية", { exact: true })).toBeVisible();
     await expect(group).toContainText("اختر سببًا للاستعجال");
     await expect(group).toContainText("أدخل هوية المصنع");
     await expect(group).not.toContainText("select an urgency reason");
-    // Stale-locator fix (M5): fe4cf0e2 renamed the live region to `sr-only`.
-    await expect(page.locator(".sr-only[role=alert]")).toContainText(/يحظر الإنشاء/);
+    // Locator moved off legacy CSS (SAQEEL migration): the protections carry a
+    // `data-protection` id and the blocking summary is the group's own alert.
+    await expect(group.getByRole("alert")).toContainText(/يحظر الإنشاء/);
   });
 
   test("dark/light × EN/AR × desktop/narrow evidence has no horizontal overflow", async ({ page }) => {

@@ -1,6 +1,35 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-10` · `Updated by: T-046 slice 4 — review screen fully migrated`
+`Last updated: 2026-08-10` · `Updated by: T-051 — /planning/immediate authority header`
+
+## Where `/planning/immediate` stands (2026-08-10)
+
+**Slice 1 of the urgent-visit wizard is done.** The route had **zero SAQEEL
+imports** across 5 files and 913 lines; it now has the page-head context pills,
+the nine dispatch protections and the R05 identity notice on the system.
+`page.tsx` 252 → 222 and `ImmediateForm.tsx` 395 → 359; the protections became
+`components/sections/planning-immediate/authority-bar` (95 + 96) over a pure
+view model in `features/planning-immediate/authority.ts`.
+
+Three rulings from this slice generalise:
+
+- **The governed acceptance spec is part of the inventory.** The first design
+  for this block — anchor links, no client island — was discarded because
+  `cd-023-immediate-authority-bar.spec.ts` pins nine `<button>`s in a
+  `role="group"` with `LABEL — state — detail` accessible names. Read the spec
+  beside the component, not after the rebuild.
+- **A derived string needs no effect.** The legacy used a `useEffect` and a
+  `useRef` to announce *only* when the blocking set changed. React's text-node
+  diff already does exactly that. Deleting the effect changed no behaviour, and
+  the same argument took the block from 6 hooks to **0**.
+- **Legacy classes carry test contracts, not just styles.** Two spec locators
+  were selecting `.filter-chip` and `.sr-only[role=alert]` from the frozen
+  sheets. Grep the e2e suite for a class before deleting it.
+
+**Owed:** browser pass (light/dark, EN/AR, 420 px), axe, and a run of
+`cd-023-immediate-authority-bar.spec.ts` — two locators were rewritten and could
+not be executed here.
+
 
 > **The workstation blocker is stale.** `next dev` ran on 2026-08-10 and
 > compiled `/planning/bulk` clean; the SWC Application Control error did not

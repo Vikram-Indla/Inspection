@@ -12,7 +12,7 @@ component by component.
    unblocked item in NOW unless told otherwise.
 4. **`brain/web/rules/WEB-008-standing-task-contract.md`** — what every task
    prompt implies but does not repeat. Then the rule documents your task names,
-   `WEB-000` … `WEB-009`. Read them before writing code, not after review
+   `WEB-000` … `WEB-013`. Read them before writing code, not after review
    rejects the diff.
 5. **`brain/web/04-COMPONENT-LEDGER.md`** — never build what already exists.
 
@@ -66,6 +66,28 @@ Full text in `brain/web/rules/`. The ones that reject a diff on sight:
     the ladder and let render express it. Reads, `focus()`, and imperative library
     handoff are not mutation; the `<html>` theme/direction flags are the one
     exception, through their owning module (WEB-012).
+15. **No hardcoded copy — ever.** Every user-visible word lives in
+    `apps/web/src/i18n/locales/{en,ar}/<namespace>.json` and is read by key
+    through `getMessages(locale)`. No English or Arabic literal in a `.ts`,
+    `.tsx` or `.css` file — headings, labels, placeholders, `alt`, `aria-label`,
+    empty/error/blocker copy and enum labels all count, and a "default" is still
+    a literal. `t("key", "English")`, `locale === "ar" ? … : …` and in-code
+    `*_AR_FALLBACK` maps are retiring legacy: never add one. **No namespace file
+    for the page? Create it in both `en` and `ar`, register it in
+    `i18n/messages.ts`, and load by key** — never inline the text because the
+    file does not exist yet.
+
+    **Before writing or editing a single user-visible string, read both of
+    these in full — they are the binding law for translations, not background
+    reading:**
+    - **`brain/web/rules/WEB-013-translation-resources.md`** — the rule itself:
+      what counts as copy and what does not, the banned patterns, how to create
+      and register a new `en`/`ar` namespace, interpolation and plurals, the
+      legacy debt you inherit and exactly how much of it your task owes, the
+      detection greps, and the review gate you must answer.
+    - **`brain/web/README.md`** — the rulebook index and standing rules; rule 18
+      is the short form of the above and links every other rule your task is
+      also bound by.
 
 ---
 
@@ -96,8 +118,10 @@ of it.
 6. **RTL via logical properties only** — `padding-inline`,
    `margin-inline-start`, `inset-inline-start`, `border-inline-end`. Never
    `left`/`right`. Never a `[dir="rtl"]` override that flips a value.
-7. **Arabic lives in i18n resources**, never inside a component. No user-visible
-   string literal in any component.
+7. **Arabic and English both live in i18n resources**, never inside a component.
+   No user-visible string literal in any component, in either language, in any
+   form — including a `t()` default or a `locale === "ar"` ternary. Missing
+   namespace file? Create it in both locales (WEB-013).
 8. **Routes are fixed.** `/dashboard` `/operations` `/factories` `/planning`
    `/execution` `/reviews` `/compliance` `/compliance/approvals`
    `/enforcement-library` `/analytics` `/admin/*` `/field/*`. Do not rename,
