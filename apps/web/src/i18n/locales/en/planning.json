@@ -1033,5 +1033,53 @@
     "presetNext30": "Next 30 days",
     "presetNext90": "Next 90 days",
     "queued": "Queued"
+  },
+  "immediate": {
+    "title": "Create an urgent visit",
+    "context": "urgent request · Supervisor release required",
+    "handoff": "Factory 360 · CR {cr} · License {license}",
+    "identityNoticeTitle": "Urgent requests still require a registered factory",
+    "identityNoticeBody": "Urgency only changes the response time — not who is checked or who supervises. Choose a registered factory; you can't enter one that isn't registered.",
+    "authority": {
+      "heading": "Immediate dispatch protections",
+      "satisfied": "satisfied",
+      "blocking": "blocking",
+      "informational": "informational",
+      "allSatisfied": "All protections satisfied",
+      "blockedEntry": "{label} blocking — {detail}",
+      "accessibleName": "{label} — {state} — {detail}",
+      "name": {
+        "authorized": "AUTHORIZED",
+        "reason": "REASON",
+        "identity": "IDENTITY",
+        "location": "LOCATION",
+        "checklist": "CHECKLIST",
+        "inspector": "INSPECTOR",
+        "window": "WINDOW",
+        "audit": "AUDIT",
+        "notify": "NOTIFY"
+      },
+      "detail": {
+        "authorizedPlanner": "Planner or Supervisor",
+        "authorizedInspector": "Inspector escalation only",
+        "reasonBlocked": "select an urgency reason",
+        "reasonOtherBlocked": "justify Other in Notes",
+        "identityBlocked": "enter factory identity",
+        "identityRegistered": "registered factory selected",
+        "identityTemporary": "temporary entity — flagged",
+        "locationBlocked": "enter valid coordinates",
+        "locationOfficial": "official Factory list pin",
+        "locationManual": "manually confirmed pin",
+        "checklistOptional": "Optional — selected during preparation if needed",
+        "inspectorAuto": "No preference — Supervisor confirms assignment",
+        "inspectorManual": "manual pick",
+        "windowImmediate": "starts immediately — no planner window",
+        "windowSet": "custom window set",
+        "windowBlocked": "both-or-neither, end after start",
+        "auditRecorded": "every step recorded, append-only",
+        "notifyQueued": "queued — awaiting delivery confirmation",
+        "notifyInspectorStart": "Inspector-created: assigned to you, no planning window, then start through the standard inspection lifecycle"
+      }
+    }
   }
 }

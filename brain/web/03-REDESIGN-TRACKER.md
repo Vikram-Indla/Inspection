@@ -10,6 +10,32 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-051 · `/planning/immediate` — authority header (slice 1)
+`status: done (not verified in a browser)` · `rules: WEB-000…004, WEB-008, WEB-009, WEB-011, WEB-012` · `est: 1.5h`
+`record:` [2026-08-10-T-051-immediate-authority-header](sessions/2026-08/2026-08-10-T-051-immediate-authority-header.md)
+
+First slice of the urgent-visit wizard. **The route had zero SAQEEL imports** —
+5 files, 913 lines. This slice takes the page-head context pills, the nine
+dispatch protections and the R05 identity notice.
+
+`AuthorityBar` 95 → 95 + 96 CSS at **zero hooks** (2 `useState`, 2 `useRef`,
+2 `useEffect`, roving tabindex and a `scrollIntoView` all gone), 10 legacy
+classes → 0, 3 emoji glyphs → `StatusPill`, and the policy moved to
+`features/planning-immediate/authority.ts`. `page.tsx` 252 → 222; 40 chip
+strings left the route for `planning.immediate` in **both** locale JSON files at
+asserted key parity, which is what took the block off the `ui_strings` table.
+
+**Three defects fixed in passing:** two hardcoded English literals were shipping
+untranslated in the CHECKLIST and INSPECTOR chips; three protections with no
+owning control were focusable buttons that did nothing on Enter; and the
+blocking echo showed **one** blocker while four were blocking.
+
+**Owed:** browser pass (light/dark, EN/AR, 420 px), axe, and
+`cd-023-immediate-authority-bar.spec.ts` — two locators were moved off the
+deleted legacy classes and **could not be run here** (no seeded account).
+
+---
+
 ### T-050 · `/planning/bulk` — criteria builder on SAQEEL
 `status: done (not verified in a browser)` · `rules: WEB-000…004, WEB-009, WEB-011` · `est: 1.5h`
 `record:` [2026-08-10-T-050-criteria-builder](sessions/2026-08/2026-08-10-T-050-criteria-builder.md)
@@ -766,6 +792,32 @@ filters and tabs moved to `searchParams`.
 
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
+
+- **A legacy class can be a test contract.** `cd-023-immediate-authority-bar.spec.ts`
+  selected `.filter-chip` and `.sr-only[role=alert]` — both frozen-sheet
+  classes — so migrating the component off them broke the spec before a single
+  style changed. **Grep `e2e/` for a class before deleting its rule.** The two
+  locators now use `[data-protection]` and `group.getByRole("alert")`; they
+  assert the same behaviour and are unverified (no seeded account).
+- **`getByRole("listitem")` is the wrong count when a card holds two lists.**
+  The authority card renders nine protections *and* a blocker list inside the
+  same `role="group"`, so the obvious semantic locator counted both. An explicit
+  `data-protection` id is nine by construction.
+- **`PlanningNotice` has outgrown `planning-single/`.** 18 import sites across
+  three planning screens (single, bulk, immediate). It is a planning-domain
+  notice and belongs in `components/sections/planning/`. Mechanical, but it
+  touches 18 files.
+- **`actorMode` on `/planning/immediate` is a constant.** `page.tsx` declares
+  `const actorMode: "planner" | "inspector" = "planner"`, so every inspector
+  branch on that screen is dead code TypeScript cannot see is dead. Collapsing
+  it is an owner decision, not a refactor.
+- **`let mapLoadingLabel` at module scope in `ImmediateForm.tsx`** is written
+  during render to smuggle a string into `next/dynamic`'s `loading` callback —
+  a `let` in a `.tsx` (WEB-000 §6) and a render side effect; under concurrent
+  rendering two locales could cross.
+- **`/planning/immediate`'s R05 body renders twice** (notice + a `role="note"`
+  paragraph in the identity panel), and `<label htmlFor="imm-reason">` points at
+  a `<div>`, not a control.
 
 - **`SegmentedControl`'s `subtle` default is wrong for a toggle.** Five shipped
   toggles pass `tone="accent"`; the only `subtle` consumers left are three tab

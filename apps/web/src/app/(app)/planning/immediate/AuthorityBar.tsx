@@ -1,3 +1,4 @@
+/* @retiring 2026-08-10 · replaced-by components/sections/planning-immediate/authority-bar · pending cd-023-immediate-authority-bar.spec.ts · delete-when 0-imports */
 "use client";
 // CD-023 (SCR-WEB-130, frames 3a/3g/3h/3i) — Minimum Viable Authority Bar.
 // Nine protection chips derived ENTIRELY from ImmediateForm's existing

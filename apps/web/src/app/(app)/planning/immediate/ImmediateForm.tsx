@@ -18,7 +18,9 @@ import type { GeoMarkerData } from "@/components/GeoMap";
 import { formatDate } from "@/lib/dates";
 import PackageTypeSelector from "@/components/PackageTypeSelector";
 import { createImmediateVisit, type ImmResult } from "./actions";
-import AuthorityBar, { type Chip } from "./AuthorityBar";
+import AuthorityBar from "@/components/sections/planning-immediate/authority-bar/authority-bar";
+import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
+import { resolveProtections, type AuthorityStrings } from "@/features/planning-immediate/authority";
 import EmptyState from "@/components/EmptyState";
 
 type F = {
@@ -56,16 +58,7 @@ export type ImmediateStrings = {
   consequenceTitle: string; consequenceVisit: string; consequenceAssign: string; consequenceNotify: string; consequenceAudit: string;
   reviewConfirm: string; inspectorStartNow: string;
   blockedTitle: string; create: string; createAndStart: string; creating: string;
-  chipGroupLabel: string; chipSatisfied: string; chipBlocking: string; chipTruth: string;
-  chipAllSatisfied: string; chipBlockedAnnouncement: string;
-  chipAuthorizedLabel: string; chipReasonLabel: string; chipIdentityLabel: string; chipLocationLabel: string;
-  chipPackageLabel: string; chipInspectorLabel: string; chipWindowLabel: string; chipAuditLabel: string; chipNotifyLabel: string;
-  chipAuthorizedDetail: string; chipReasonBlocked: string; chipReasonOtherBlocked: string;
-  chipIdentityBlocked: string; chipIdentityRegistered: string; chipIdentityTemporary: string;
-  chipLocationBlocked: string; chipLocationOfficial: string; chipLocationManual: string;
-  chipPackageBlocked: string; chipInspectorAuto: string; chipInspectorManual: string; chipInspectorBlocked: string;
-  chipWindowImmediate: string; chipWindowSet: string; chipWindowBlocked: string;
-  chipAuditDetail: string; chipNotifyDetail: string;
+  authority: AuthorityStrings;
   enforcementLabel: string; enforcementHint: string;
   enforcementFine: string; enforcementCommittee: string; enforcementWarning: string; enforcementClosure: string;
   enforcementNone: string; enforcementNotes: string; enforcementNotesPlaceholder: string;
@@ -185,47 +178,20 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
       : r === "Referral from authority" ? strings.reasonReferral
         : r === "Other" ? strings.reasonOther : r;
 
-  // --- 9 protection chips — derived entirely from the state above, no new
-  // policy objects. Server-side blockingField wins if the server found
-  // something the client couldn't (e.g. exact-CR match, availability race). ---
-  const bf = state.blockingField;
-  const chips: Chip[] = [
-    { id: "authorized", label: strings.chipAuthorizedLabel, state: "satisfied", detail: strings.chipAuthorizedDetail },
-    {
-      id: "reason", label: strings.chipReasonLabel, controlId: "imm-reason",
-      state: (bf === "reason" || !reasonOk) ? "blocking" : "satisfied",
-      detail: (bf === "reason" || !reasonOk)
-        ? (reason === "Other" && notes.trim() === "" ? strings.chipReasonOtherBlocked : strings.chipReasonBlocked)
-        : reasonLabel(reason),
-    },
-    {
-      id: "identity", label: strings.chipIdentityLabel, controlId: mode === "registered" ? "imm-search" : "imm-not-found",
-      state: (bf === "identity" || !identityOk) ? "blocking" : "satisfied",
-      detail: (bf === "identity" || !identityOk) ? strings.chipIdentityBlocked : (mode === "registered" ? strings.chipIdentityRegistered : strings.chipIdentityTemporary),
-    },
-    {
-      id: "location", label: strings.chipLocationLabel, controlId: "imm-lat",
-      state: (bf === "location" || !locationOk) ? "blocking" : "satisfied",
-      detail: (bf === "location" || !locationOk) ? strings.chipLocationBlocked : (locationSource === "official" ? strings.chipLocationOfficial : strings.chipLocationManual),
-    },
-    {
-      id: "package", label: strings.chipPackageLabel, controlId: "imm-package",
-      state: "truth",
-      detail: packageId ? (packages.find(p => p.id === packageId)?.version_label ?? "") : "Optional — selected during preparation if needed",
-    },
-    {
-      id: "inspector", label: strings.chipInspectorLabel, controlId: actorMode === "planner" ? "imm-inspector" : undefined,
-      state: "truth",
-      detail: inspectorId ? strings.chipInspectorManual : "No preference — Supervisor confirms assignment",
-    },
-    {
-      id: "window", label: strings.chipWindowLabel, controlId: actorMode === "planner" ? "imm-window-start" : undefined,
-      state: (bf === "window" || !windowOk) ? "blocking" : "satisfied",
-      detail: (bf === "window" || !windowOk) ? strings.chipWindowBlocked : (actorMode === "inspector" ? strings.chipWindowImmediate : strings.chipWindowSet),
-    },
-    { id: "audit", label: strings.chipAuditLabel, state: "truth", detail: strings.chipAuditDetail },
-    { id: "notify", label: strings.chipNotifyLabel, state: "truth", detail: actorMode === "planner" ? strings.chipNotifyDetail : strings.inspectorStartNow },
-  ];
+  const protections = resolveProtections({
+    actorMode,
+    serverBlockingField: state.blockingField ?? null,
+    reasonOk,
+    reasonLabel: reasonLabel(reason),
+    reasonOtherWithoutNotes: reason === "Other" && notes.trim() === "",
+    identityOk,
+    identityRegistered: mode === "registered",
+    locationOk,
+    locationOfficial: locationSource === "official",
+    checklistLabel: packages.find(p => p.id === packageId)?.version_label ?? null,
+    inspectorChosen: inspectorId !== "",
+    windowOk,
+  }, strings.authority);
 
   const mapMarkers: GeoMarkerData[] = [
     ...(factory?.official_lat != null && factory?.official_lng != null ? [{ id: "official", lat: factory.official_lat, lng: factory.official_lng, label: strings.locationSourceOfficial, tone: "neutral" as const }] : []),
@@ -239,11 +205,9 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
       <input type="hidden" name="actor_mode" value={actorMode} />
       <input type="hidden" name="locale" value={locale} />
       <input type="hidden" name="location_source" value={locationSource ?? ""} />
-      <AuthorityBar chips={chips} strings={{ groupLabel: strings.chipGroupLabel, satisfied: strings.chipSatisfied, blocking: strings.chipBlocking, truth: strings.chipTruth, allSatisfied: strings.chipAllSatisfied, blockedAnnouncement: strings.chipBlockedAnnouncement }} />
+      <AuthorityBar protections={protections} strings={strings.authority} />
 
-      <div className="alert alert-warning" role="status">
-        <div><div className="alert-title">{strings.r05BlockedTitle}</div><p>{strings.r05BlockedBody}</p></div>
-      </div>
+      <PlanningNotice tone="warning" label={strings.r05BlockedTitle}>{strings.r05BlockedBody}</PlanningNotice>
 
       <div className="saqeel-reference__fields">
         <section className="panel" aria-labelledby="immediate-identity-heading">
