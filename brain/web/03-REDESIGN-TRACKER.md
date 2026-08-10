@@ -10,6 +10,77 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-046 · `/planning/bulk` — criteria & targeting migration
+`status: in-progress (slice 1a done)` · `rules: WEB-000…004, WEB-008, WEB-009, WEB-011` · `est: 12h total`
+`record (slice 1a):` [2026-08-10-T-046-bulk-targeting-feature-layer](sessions/2026-08/2026-08-10-T-046-bulk-targeting-feature-layer.md)
+
+**The route had zero SAQEEL imports before this task** — 14 files, 3,512 lines,
+505 comments, ~180 legacy class uses, 26 colour-only `sq-lozenge`, 15 native
+controls. Full inventory in the record.
+
+**Slice 1a done:** three Supabase reads moved to `features/planning-bulk/**`
+behind the T-042 narrowing boundary (`page.tsx` 424 → 337, 3 casts gone, 5
+`sb.from` gone), banners → `PlanningNotice`, context pill → `StatusPill`. These
+reads feed `evalNode`, so a wrong value changes **which factories get
+inspected** — fail-closed matters here more than on a read-only screen.
+
+**Remaining slices:** 1b `page.tsx` 337 → ≤ 40 · 1c `CriteriaBuilder` 4 selects
+→ `SaqeelSelect` · 2 `BulkForm` (10 classes, 7 `useState`, `sq-table` →
+`DataTable`) · 3 `review/page.tsx` 288 → ≤ 40 and delete `review.css` · 4
+`ReviewClient` 853 lines · 5 `actions.ts` 846 → domain modules.
+
+---
+
+### T-045 · `/planning/single` — search states + registry pill tone
+`status: done (not verified in a browser)` · `rules: WEB-000…004, WEB-009, WEB-011` · `est: 1h`
+`record:` [2026-08-10-T-045-single-visit-search-states](sessions/2026-08/2026-08-10-T-045-single-visit-search-states.md)
+
+Three owner-reported defects. The loading state **existed for screen readers
+only** — `aria-busy` was set and nothing rendered. "No factory matches" was a
+real bug: the screen runs **two independent lookups** (graded legacy search and
+canonical CR resolver) and the empty state tested only one, so it contradicted
+the factory shown right below it. Active pills now map through
+`registryStatusTone`; only `active` is asserted because the status columns are
+free `text` with no check constraint.
+
+**Owed:** `plan.single.searching` has no Arabic — this screen's Arabic lives in
+the **`ui_strings` table**, not the JSON namespaces, so the key needs a DB row.
+
+---
+
+### T-044 · Nested menu panels keep their ancestor's dismissal scope
+`status: done (fix by construction; not observed in a browser)` · `rules: WEB-000, WEB-002…004, WEB-012` · `est: 45m`
+`record:` [2026-08-10-T-044-nested-menu-dismissal-scope](sessions/2026-08/2026-08-10-T-044-nested-menu-dismissal-scope.md)
+
+`Cannot read properties of null (reading 'removeChild')` when a `Select` opens
+inside a portalled `MenuSurface`. Both portal to `document.body`, so the nested
+panel is a DOM **sibling** — `contains()` returned false, the ancestor dismissed
+itself at `pointerdown`, and React was mid-removal on the inner portal.
+Ownership now travels down the **React tree** via `MenuScopeContext`, which
+portals preserve. Backward compatible: non-nested consumers reduce to the old
+check exactly.
+
+---
+
+### T-043 · `/planning` filter bar on SAQEEL controls + AI accent
+`status: done (not verified in a browser)` · `rules: WEB-000…003, WEB-009, WEB-011` · `est: 1.5h`
+`record:` [2026-08-10-T-043-planning-filter-bar-and-ai-accent](sessions/2026-08/2026-08-10-T-043-planning-filter-bar-and-ai-accent.md)
+
+10 native controls → `SaqeelSelect` / `DatePicker`; More Filters `<details>` →
+portalled `MenuSurface`. **A portalled control cannot participate in a GET
+form**, so state lives in one island and every hidden input renders inside the
+`<form>`; the panel is presentation only.
+
+**The first cut was rejected by the owner** for inventing a chip that wrapped a
+bordered `SaqeelSelect` in a bordered pill. `enforcement-filter-bar` had already
+solved this — `Field` + `SaqeelSelect`, `Button` for actions. **Read the nearest
+existing solution before designing a new one.**
+
+AI accent applied to Insights and Recommendations only; Quick Actions is
+navigation and lost its Sparkles icon.
+
+---
+
 ### T-042 · Narrow the PostgREST boundary — delete every `as unknown as`
 `status: done (static verification only)` · `rules: WEB-000 §5, WEB-001 §4, WEB-008 §2` · `est: 3h`
 `record:` [2026-08-10-T-042-postgrest-narrowing-boundary](sessions/2026-08/2026-08-10-T-042-postgrest-narrowing-boundary.md)
@@ -791,10 +862,13 @@ Pull one in only if it is genuinely part of doing the active task well.
   can be readable on the board but outside reassign scope. Any future bulk verb
   gated by a closure-scope RPC will hit the same asymmetry — surface it as a
   state, never as an empty control.
-- **There is no datetime primitive.** `DatePicker` is date-only, and T-005a's
-  "no native date input" rule has no answer for a date **and time** window. Visit
-  Management's bulk-reschedule form is the only place left holding a native
-  `datetime-local`. Needed before that screen can be called control-clean.
+- ~~**There is no datetime primitive.**~~ **WRONG — corrected 2026-08-10 (T-046).**
+  `DateRangePicker` accepts `withTime`, `timeStep` and `timeLabels` and emits
+  `YYYY-MM-DDTHH:mm` — the `datetime-local` shape. It is already in production in
+  `visit-configuration` and `visit-bulk-actions`. Any remaining native
+  `datetime-local` that expresses a **window** maps straight onto it. A
+  single date **and** time (not a range) still has no primitive; nothing on the
+  board needs one today.
 - **`--sqx-control-accent` does not exist**, so native checkboxes cannot be
   tinted to brand without inventing a token. Left on the UA default. A real
   `checkbox`/`switch` primitive removes the need.

@@ -1,6 +1,30 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-10` · `Updated by: T-042 — PostgREST narrowing boundary`
+`Last updated: 2026-08-10` · `Updated by: T-046 — /planning/bulk slice 1a`
+
+## Where planning stands (2026-08-10)
+
+`/planning` itself is migrated: 10 native controls gone, More Filters portalled,
+AI columns accented (T-043). `/planning/single` has honest search states and
+correct pill tones (T-045). **`/planning/bulk` is where the legacy mass is** —
+before T-046 it had **zero SAQEEL imports** across 14 files and 3,512 lines.
+Slice 1a moved its reads behind the narrowing boundary; the other five slices
+are on the board.
+
+Three rulings from this run generalise:
+
+- **A portalled control cannot participate in a GET form.** Its DOM sits outside
+  the `<form>`, so native submit skips it. Keep the state in one island and
+  render every hidden input inside the form; the panel is presentation only.
+- **Two portals into `document.body` are DOM siblings** however deeply nested
+  they are in React. `contains()` cannot express menu ownership — React context
+  can, because it follows the React tree. This caused a hard crash before it was
+  found (T-044).
+- **Read the nearest existing solution before designing a new one.** The
+  `/planning` filter bar was built twice because `enforcement-filter-bar` had
+  already solved the same problem, and the first attempt invented a chip that
+  double-bordered every control.
+
 
 ## Where the data layer stands (2026-08-10)
 
