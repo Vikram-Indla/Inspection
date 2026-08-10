@@ -775,6 +775,11 @@ Pull one in only if it is genuinely part of doing the active task well.
 - **`IdentityDossier`'s map toggle on `/planning/single` is still `subtle`** and
   is a toggle, not a tab strip. It has the same defect the owner reported on
   `/planning/bulk`, and was left alone because it is a different screen.
+- **A `loading.tsx` that skips `<Shell>` renders full-bleed.** The page frame
+  padding lives in `.sq-content`, which `Shell` owns, so a bare skeleton sits
+  against the rail and the viewport edge and the page head pops in afterwards.
+  Caught on `/planning/bulk`; check any future skeleton against its sibling
+  routes, which already wrap correctly.
 - **There is no busy/loading opacity token**, so a control or region that wants
   to read as "working" can only say so with text plus `aria-busy`. Wanted twice
   now (T-048's `--sqx-opacity-muted`, and the bulk filter's table dim) and

@@ -339,6 +339,16 @@ itself rather than taking a seventeenth prop.
 **A screen that has to be explained in chat has an empty state that is lying.**
 The filter was never broken — the copy was.
 
+**The skeleton was rendering outside the page frame.** `loading.tsx` returned
+`BulkTargetingSkeleton` bare, so it never entered `.sq-content` — it sat flush
+against the rail and the viewport edge, and the page head was absent during the
+load and then appeared, shifting everything down. Both sibling routes
+(`planning/single`, `planning/visits`) already wrap their skeleton in `<Shell>`
+with the same `current` and `title` the page uses. Doing the same fixes the
+inset **and** removes the jump, because the header is now identical in both
+frames. **A skeleton is only honest inside the frame the real screen renders
+in** — mirroring the component tree is not enough if the wrapper is missing.
+
 ## Next
 
 Slice 2 is done. Next is slice 3 — `review/page.tsx` (274 lines, 10 legacy classes, 7 `useState`, `sq-table` →
