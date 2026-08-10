@@ -217,7 +217,43 @@ that differ only by a label are all the same failure.
 
 ---
 
-## 9. Errors
+## 9. Labels — a raw value is never rendered
+
+**A value that came out of the database is never shown to a user.** Not a status
+key, not an enum, not a risk band, not an activity class. `active`, `high`,
+`under_construction`, `non_compliant` are **identifiers**, and an identifier on
+screen is a defect regardless of how readable it happens to look in English.
+
+Every option, pill, bucket, cell and chip carries **two** fields:
+
+```ts
+type Labelled = { value: string; label: string };
+```
+
+- `value` is the recorded string. It is what comparisons, filters, criteria and
+  URLs use. It never changes.
+- `label` is what a person reads. It is resolved **once, server-side, at the data
+  boundary**, through the locale resource; anything the resource does not carry
+  falls back to separator-stripped sentence case.
+
+Consequences:
+
+- `{ value: v, label: v }` is the defect. If a label equals its value, no
+  resolution happened.
+- **Resolution never happens inside a design-system primitive.**
+  `components/saqeel/**` paints what it is given (§6) and cannot know the
+  locale. A primitive that humanises would corrupt the labels that are already
+  correct prose, and would silently do nothing in Arabic, which has no case.
+- A governed band — risk, status, outcome — renders as a `StatusPill` with its
+  tone, never as bare text (WEB-002 §5).
+- Lower-case English copied from a legacy `t(key, "default")` fallback is a raw
+  label too. `eligible`, `complete`, `unknown risk` were all shipped that way.
+
+**Never render a raw label. Ever.**
+
+---
+
+## 10. Errors
 
 - No swallowed errors. No empty `catch {}`.
 - No `throw new Error("something went wrong")`. The message names the operation
@@ -231,7 +267,7 @@ that differ only by a label are all the same failure.
 
 ---
 
-## 10. Dependencies
+## 11. Dependencies
 
 New runtime dependencies require an entry in the tracker task and a stated
 reason. Sanctioned for this programme:
@@ -249,11 +285,12 @@ local), moment.js, lodash, any AGPL dependency, any `ax-` / Astryx import
 
 ---
 
-## 11. The self-check before proposing a diff
+## 12. The self-check before proposing a diff
 
 - [ ] Zero comments; zero suppressions; zero `any`; zero `let` in `.tsx`
 - [ ] Every file within budget; every directory within 12
 - [ ] Every name would survive being read aloud to the manager
 - [ ] Imports flow downward only; no cycles
 - [ ] No second copy of anything introduced in this change
+- [ ] **No raw database value is rendered as a label** (§9)
 - [ ] Nothing in this diff needs a comment to be understood

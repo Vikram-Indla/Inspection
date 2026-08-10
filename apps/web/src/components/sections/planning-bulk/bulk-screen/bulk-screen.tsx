@@ -57,7 +57,7 @@ export default async function BulkScreen({ params, factories }: {
           oldestSyncedAt={view.oldestSyncedAt}
           missingSync={view.missingSync}
           ledgerStrings={buildLedgerStrings(locale)}
-          distributions={distributionsOf(view, buildDistributionHeadings(locale))}
+          distributions={distributionsOf(view, buildDistributionHeadings(locale), buildValueLabel(locale))}
           distStrings={buildDistributionStrings(locale)}
           factories={view.matched}
           bulkFormStrings={buildBulkFormStrings(locale)}

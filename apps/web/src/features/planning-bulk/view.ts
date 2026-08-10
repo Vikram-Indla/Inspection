@@ -56,7 +56,7 @@ export function toCriteriaFactories(
   });
 }
 
-export type ValueBucket = { label: string; count: number; unknown?: boolean };
+export type ValueBucket = { value: string; label: string; count: number; unknown?: boolean };
 
 export type Freshness = { oldestSyncedAt: string | null; missingSync: number };
 
@@ -112,6 +112,7 @@ export function bucketsFor(
   factories: readonly CriteriaFactory[],
   key: string,
   unknownLabel: string,
+  labelOf: (value: string) => string,
 ): ValueBucket[] {
   const recorded = factories.reduce<Map<string, number>>((counts, factory) => {
     const value = recordedText(factory, key);
@@ -119,8 +120,11 @@ export function bucketsFor(
     return counts;
   }, new Map());
   const unknownCount = factories.length - [...recorded.values()].reduce((total, count) => total + count, 0);
-  const buckets = [...recorded].sort((a, b) => b[1] - a[1]).map(([label, count]) => ({ label, count }));
-  return unknownCount > 0 ? [...buckets, { label: unknownLabel, count: unknownCount, unknown: true }] : buckets;
+  const buckets = [...recorded].sort((a, b) => b[1] - a[1])
+    .map(([value, count]) => ({ value, label: labelOf(value), count }));
+  return unknownCount > 0
+    ? [...buckets, { value: unknownLabel, label: unknownLabel, count: unknownCount, unknown: true }]
+    : buckets;
 }
 
 export function freshnessOf(factories: readonly CriteriaFactory[]): Freshness {

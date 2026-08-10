@@ -824,6 +824,11 @@ Pull one in only if it is genuinely part of doing the active task well.
 - **`global-error.tsx` did not exist.** Without it, an error escaping the `(app)`
   layout renders a literally blank document — no overlay, no state. Added, along
   with `error.tsx` for both bulk routes.
+- **NEVER RENDER A RAW LABEL — now WEB-000 §9, binding.** Owner ruling after
+  `medium`/`high`/`food`/`petrochemical` shipped raw in the distribution panels
+  and `active` in the criteria dropdown. Everything carries `{ value, label }`;
+  the label resolves once server-side through the locale resource; governed bands
+  render as `StatusPill`. Resolution never goes inside a primitive.
 - **A raw database value is not a label.** The criteria value dropdown rendered
   `{ value: v, label: v }`, and the English pill copy was inherited verbatim from
   the legacy `t("plan.bulk.eligible", "eligible")` defaults — so the screen

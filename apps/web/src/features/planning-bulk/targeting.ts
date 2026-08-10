@@ -94,12 +94,13 @@ export function resolveBulkTargeting(
 export function distributionsOf(
   view: BulkTargetingView,
   headings: readonly DistributionHeading[],
+  labelOf: (value: string) => string,
 ): FieldDistribution[] {
   return headings.map(({ key, heading }) => ({
     key,
     heading,
     total: view.eligible,
-    buckets: bucketsFor(view.matched, key, UNKNOWN_BUCKET),
+    buckets: bucketsFor(view.matched, key, UNKNOWN_BUCKET, labelOf),
   }));
 }
 
