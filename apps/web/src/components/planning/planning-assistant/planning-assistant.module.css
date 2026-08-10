@@ -20,14 +20,31 @@
   border-inline-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
 }
 
+.column[data-ai] {
+  padding-inline-start: var(--sqx-space-4);
+  border-inline-start: var(--sqx-border-width-thick) solid var(--sqx-accent-ai);
+}
+
 .heading {
   display: inline-flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--sqx-space-2);
   font: var(--sqx-text-overline);
   letter-spacing: var(--sqx-text-overline-tracking);
   text-transform: uppercase;
   color: var(--sqx-text-accent);
+}
+
+.column[data-ai] .heading {
+  color: var(--sqx-accent-ai);
+}
+
+.advisory {
+  font: var(--sqx-text-caption);
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--sqx-text-muted);
 }
 
 .quickGrid {

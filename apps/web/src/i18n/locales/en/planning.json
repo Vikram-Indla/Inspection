@@ -483,7 +483,12 @@
       "status_asc": "Planning status"
     },
     "apply": "Apply",
-    "clearAll": "Clear all"
+    "clearAll": "Clear all",
+    "datePlaceholder": "Any date",
+    "dateClear": "Clear",
+    "dateToday": "Today",
+    "monthPrevious": "Previous month",
+    "monthNext": "Next month"
   },
   "emptyStates": {
     "filteredTitle": "No visits match",

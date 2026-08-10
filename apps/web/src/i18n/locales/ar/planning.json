@@ -483,7 +483,12 @@
       "status_asc": "حالة التخطيط"
     },
     "apply": "تطبيق",
-    "clearAll": "مسح الكل"
+    "clearAll": "مسح الكل",
+    "datePlaceholder": "أي تاريخ",
+    "dateClear": "مسح",
+    "dateToday": "اليوم",
+    "monthPrevious": "الشهر السابق",
+    "monthNext": "الشهر التالي"
   },
   "emptyStates": {
     "filteredTitle": "لا توجد زيارات مطابقة",
