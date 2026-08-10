@@ -1,6 +1,37 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-10` · `Updated by: T-046 — /planning/bulk slice 1a`
+`Last updated: 2026-08-10` · `Updated by: T-050 — /planning/bulk criteria builder`
+
+## Where `/planning/bulk` stands (2026-08-10)
+
+Slices **1a** (data layer behind the T-042 narrowing boundary) and **1c**
+(criteria builder — 13 native controls and 24 legacy classes to zero) are done,
+plus the shared AI advisory. **Four slices remain and they hold most of the
+mass:** `page.tsx` 337 → ≤ 40 · `BulkForm` 274 · `review/page.tsx` 288 → ≤ 40
+and delete `review.css` · `ReviewClient` **853 lines, 19 legacy classes, 7
+effects, zero `t()` calls** · `actions.ts` **846 lines**.
+
+Two primitives were extended to unblock this work, both raised as gaps first and
+built only after a ruling (WEB-002 §2): `Button.busy` and
+`SelectOption.disabled`. **Neither gap was filled inline** — that is the pattern
+to repeat.
+
+Rulings worth carrying forward:
+
+- **"Recorded but unavailable" and "never offered" are different facts.** A
+  disabled option stays visible, readable and announced, with its reason. Only
+  the first of those two states is something a user can act on.
+- **A disabled flag must guard every path in** — click, Enter/Space, arrow keys,
+  Home/End, type-ahead, and the initial open. Guarding `onClick` alone leaves a
+  row reachable that then refuses to activate.
+- **Check specificity before writing a CSS override.** Three separate defects in
+  this codebase now trace to an equal-or-higher-specificity rule silently
+  beating a variant (`Card`'s AI accent on hover, the frozen sheet's
+  `a { color }`, and `Button`'s busy state stripping the AI accent).
+
+**Still unrecorded:** the eight pre-session wizard commits
+(`754c5f1c` … `462e3675`, `cf36da85`). Also note `21d92022`'s message describes
+only a visit-list fix while actually containing the whole T-042 boundary.
 
 ## Where planning stands (2026-08-10)
 

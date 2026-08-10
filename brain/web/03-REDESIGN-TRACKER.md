@@ -10,8 +10,67 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-050 · `/planning/bulk` — criteria builder on SAQEEL
+`status: done (not verified in a browser)` · `rules: WEB-000…004, WEB-009, WEB-011` · `est: 1.5h`
+`record:` [2026-08-10-T-050-criteria-builder](sessions/2026-08/2026-08-10-T-050-criteria-builder.md)
+
+Slice 1c of T-046. 13 native controls → 0, 24 legacy classes → 0, 11 inline
+styles → 0, 21 comments → 0, 9 **legacy** tokens (`--space-*`) → 0. ALL/ANY
+became a `SegmentedControl` — two mutually exclusive options that change the
+meaning of the group should both be visible. Unsupplied criteria fields use
+T-049's `disabled` + `note`, which is what made this slice possible at all.
+
+**Owed:** browser pass on the recursive group layout, the `between` two-date row
+and RTL. The 5 new date strings are English-only — this screen reads Arabic from
+`ui_strings`, not the JSON namespaces.
+
+---
+
+### T-049 · `Select` — disabled options
+`status: done (not verified in a browser)` · `rules: WEB-000, WEB-002 §2, WEB-003, WEB-004` · `est: 40m`
+`record:` [2026-08-10-T-049-select-disabled-options](sessions/2026-08/2026-08-10-T-049-select-disabled-options.md)
+
+Raised as a gap, built only after an owner ruling (WEB-002 §2). `SelectOption`
+gains `disabled?` and `note?`. **Disabled means disabled on every path in** —
+`commit`, arrow keys, Home/End, type-ahead and the initial open all skip it; a
+flag guarding only `onClick` would leave a row reachable that then refuses to
+activate. Dims to `--sqx-text-muted`, not the disabled palette, because
+"recorded but unavailable" must stay readable.
+
+**Still open:** there is no SAQEEL combobox (free text + suggestions).
+
+---
+
+### T-048 · `Button` — busy state
+`status: done (not verified in a browser)` · `rules: WEB-000, WEB-002 §2, WEB-003, WEB-009, WEB-010` · `est: 40m`
+`record:` [2026-08-10-T-048-button-busy-state](sessions/2026-08/2026-08-10-T-048-button-busy-state.md)
+
+`busy?` replaces the `{pending ? label + "…" : label}` pattern at 8 call sites
+(1 converted). The visible label no longer changes — the spinner takes the icon
+slot, so the button does not resize under the cursor.
+
+**Third recorded instance of a specificity override silently killing a
+variant:** `.root[data-busy]:disabled` scores (0,3,0) and outranked
+`[data-variant="ai"]` at (0,2,0), stripping the AI accent exactly while the
+button worked. Fixed by scoping the disabled palette away from `[data-busy]`
+rather than undoing it. **Check specificity before writing an override.**
+
+---
+
+### T-047 · Shared AI advisory panel
+`status: done (not verified in a browser)` · `rules: WEB-000, WEB-002, WEB-003, WEB-006 §4, WEB-009` · `est: 1h`
+`record:` [2026-08-10-T-047-shared-ai-advisory](sessions/2026-08/2026-08-10-T-047-shared-ai-advisory.md)
+
+`components/sections/ai/ai-advisory` generalises `factory-ai-advisory` and
+supersedes `ContextualAiPanel` (7 consumers, 1 migrated). Four visible defects
+were all legacy CSS, not JSX — including a 🔒 emoji injected by
+`sq-banner--immutable::before` and "Source evidence" rendered twice.
+`ContextualAiPanel` marked `@retiring` with its ledger row.
+
+---
+
 ### T-046 · `/planning/bulk` — criteria & targeting migration
-`status: in-progress (slice 1a done)` · `rules: WEB-000…004, WEB-008, WEB-009, WEB-011` · `est: 12h total`
+`status: in-progress (slices 1a + 1c done; 1b, 2–5 open)` · `rules: WEB-000…004, WEB-008, WEB-009, WEB-011` · `est: 12h total`
 `record (slice 1a):` [2026-08-10-T-046-bulk-targeting-feature-layer](sessions/2026-08/2026-08-10-T-046-bulk-targeting-feature-layer.md)
 
 **The route had zero SAQEEL imports before this task** — 14 files, 3,512 lines,
