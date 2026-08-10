@@ -98,6 +98,8 @@ export default function VisitConfiguration({
       <input type="hidden" name="visit_type" value={value.visitType} />
       <input type="hidden" name="execution_mode" value={value.mode} />
       <input type="hidden" name="inspector_id" value={value.inspectorId} />
+      <input type="hidden" name="window_start" value={value.windowStart} />
+      <input type="hidden" name="window_end" value={value.windowEnd} />
       {value.packageIds.map(id => <input key={id} type="hidden" name="package_version_id" value={id} />)}
 
       <div className={styles.fields}>
