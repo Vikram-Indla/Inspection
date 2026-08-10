@@ -1,0 +1,77 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-5);
+}
+
+.conditions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+}
+
+.condition {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--sqx-grid-min-sm), 1fr));
+  gap: var(--sqx-space-3);
+  align-items: end;
+}
+
+.actions {
+  display: flex;
+  gap: var(--sqx-space-3);
+  flex-wrap: wrap;
+}
+
+.ledger {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--sqx-grid-min-sm), 1fr));
+  gap: var(--sqx-space-4);
+}
+
+.ledgerCell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+  min-inline-size: 0;
+}
+
+.panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--sqx-grid-min-md), 1fr));
+  gap: var(--sqx-space-4);
+}
+
+.panelRows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+}
+
+.panelRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
+.panelLabel {
+  flex: 0 0 var(--sqx-grid-min-sm);
+  min-inline-size: 0;
+}
+
+.panelBar {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.tableRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sqx-space-3);
+  padding-block: var(--sqx-space-2);
+}
+
+.tableCell {
+  flex: 1;
+  min-inline-size: 0;
+}

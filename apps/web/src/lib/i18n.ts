@@ -77,6 +77,7 @@ const REPORTS_AR_FALLBACK: Record<string, string> = {
 
 export type Locale = "en" | "ar";
 export type Dict = Record<string, string>;
+export type Translator = (key: string, en: string) => string;
 
 // MVP3 additive control-plane copy remains available in Arabic even before the
 // governed ui_strings catalogue is promoted in a target environment. Live

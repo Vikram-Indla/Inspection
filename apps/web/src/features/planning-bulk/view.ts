@@ -56,13 +56,27 @@ export function toCriteriaFactories(
   });
 }
 
-export function distinctValues(
-  factories: readonly CriteriaFactory[],
-  key: keyof CriteriaFactory,
-): string[] {
+export type ValueBucket = { label: string; count: number; unknown?: boolean };
+
+export type Freshness = { oldestSyncedAt: string | null; missingSync: number };
+
+function recordedText(factory: CriteriaFactory, key: string): string | null {
+  const record: Record<string, unknown> = factory;
+  const value = record[key];
+  return typeof value === "string" && value.trim() !== "" ? value : null;
+}
+
+export function distinctValues(factories: readonly CriteriaFactory[], key: string): string[] {
   return [...new Set(factories
-    .map(factory => factory[key])
-    .filter((value): value is string => typeof value === "string" && value.length > 0))].sort();
+    .map(factory => recordedText(factory, key))
+    .filter((value): value is string => value !== null))].sort();
+}
+
+export function suggestionOptions(
+  factories: readonly CriteriaFactory[],
+  keys: readonly string[],
+): Record<string, string[]> {
+  return Object.fromEntries(keys.map(key => [key, distinctValues(factories, key)]));
 }
 
 export function citiesByRegion(factories: readonly CriteriaFactory[]): Record<string, string[]> {
@@ -80,13 +94,37 @@ export function citiesByRegion(factories: readonly CriteriaFactory[]): Record<st
 
 export function countBy(
   factories: readonly CriteriaFactory[],
-  key: keyof CriteriaFactory,
+  key: string,
   unknownLabel: string,
 ): Record<string, number> {
   return factories.reduce<Record<string, number>>((counts, factory) => {
-    const value = factory[key];
-    const label = typeof value === "string" && value.trim() ? value : unknownLabel;
+    const label = recordedText(factory, key) ?? unknownLabel;
     counts[label] = (counts[label] ?? 0) + 1;
     return counts;
   }, {});
+}
+
+export function bucketsFor(
+  factories: readonly CriteriaFactory[],
+  key: string,
+  unknownLabel: string,
+): ValueBucket[] {
+  const recorded = factories.reduce<Map<string, number>>((counts, factory) => {
+    const value = recordedText(factory, key);
+    if (value !== null) counts.set(value, (counts.get(value) ?? 0) + 1);
+    return counts;
+  }, new Map());
+  const unknownCount = factories.length - [...recorded.values()].reduce((total, count) => total + count, 0);
+  const buckets = [...recorded].sort((a, b) => b[1] - a[1]).map(([label, count]) => ({ label, count }));
+  return unknownCount > 0 ? [...buckets, { label: unknownLabel, count: unknownCount, unknown: true }] : buckets;
+}
+
+export function freshnessOf(factories: readonly CriteriaFactory[]): Freshness {
+  const syncTimes = factories
+    .map(factory => factory.source_synced_at)
+    .filter((value): value is string => typeof value === "string");
+  return {
+    oldestSyncedAt: syncTimes.length ? syncTimes.reduce((earliest, value) => (value < earliest ? value : earliest)) : null,
+    missingSync: factories.length - syncTimes.length,
+  };
 }

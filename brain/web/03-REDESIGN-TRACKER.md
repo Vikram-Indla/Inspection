@@ -70,8 +70,9 @@ were all legacy CSS, not JSX — including a 🔒 emoji injected by
 ---
 
 ### T-046 · `/planning/bulk` — criteria & targeting migration
-`status: in-progress (slices 1a + 1c done; 1b, 2–5 open)` · `rules: WEB-000…004, WEB-008, WEB-009, WEB-011` · `est: 12h total`
+`status: in-progress (slices 1a + 1b + 1c done; 2–5 open)` · `rules: WEB-000…004, WEB-008, WEB-009, WEB-011` · `est: 12h total`
 `record (slice 1a):` [2026-08-10-T-046-bulk-targeting-feature-layer](sessions/2026-08/2026-08-10-T-046-bulk-targeting-feature-layer.md)
+`record (slice 1b):` [2026-08-10-T-046-bulk-screen-composition](sessions/2026-08/2026-08-10-T-046-bulk-screen-composition.md)
 
 **The route had zero SAQEEL imports before this task** — 14 files, 3,512 lines,
 505 comments, ~180 legacy class uses, 26 colour-only `sq-lozenge`, 15 native
@@ -83,10 +84,30 @@ behind the T-042 narrowing boundary (`page.tsx` 424 → 337, 3 casts gone, 5
 reads feed `evalNode`, so a wrong value changes **which factories get
 inspected** — fail-closed matters here more than on a read-only screen.
 
-**Remaining slices:** 1b `page.tsx` 337 → ≤ 40 · 1c `CriteriaBuilder` 4 selects
-→ `SaqeelSelect` · 2 `BulkForm` (10 classes, 7 `useState`, `sq-table` →
-`DataTable`) · 3 `review/page.tsx` 288 → ≤ 40 and delete `review.css` · 4
-`ReviewClient` 853 lines · 5 `actions.ts` 846 → domain modules.
+**Slice 1b done:** `page.tsx` **348 → 27**. The three `t()` blocks became
+`features/planning-bulk/{strings,criteria-strings,form-strings}.ts`; every
+derivation became one `resolveBulkTargeting()` view model in `targeting.ts`;
+composition became `components/sections/planning-bulk/{bulk-screen,
+bulk-access-state}`. 34 comments → 0, 148 `t()` in the route → 0, 1 `let` → 0,
+2 emoji-as-icon → 0, and the `as never` at the `TargetingLensClient` seam → 0
+(`BulkForm`'s row type now admits the nulls the query has always been able to
+return). Suggestion fields are derived from `FIELD_REGISTRY`, not restated.
+
+**Slice 1b′ (same pass):** every string on the entry screen moved into
+`planning.bulk` in **both** `en/planning.json` and `ar/planning.json` — ~130
+strings, +170 lines each, exact key parity asserted before write. **This screen
+no longer depends on the `ui_strings` table for Arabic.** The three string
+modules fell 272 → 77 lines because the JSON shape was authored to match the
+four string contracts, so a drifted key is a type error rather than a silent
+English fallback. `RouteLoading` is off the route: `loading.tsx` renders
+`bulk-targeting-skeleton`, mirroring the real first-paint order (criteria card,
+ledger, three distribution panels, evidence table).
+
+**Remaining slices:** 2 `BulkForm` (10 classes, 7 `useState`, `sq-table` →
+`DataTable`, and 16 pass-through props on `TargetingLensClient`) · 3
+`review/page.tsx` 288 → ≤ 40 and delete `review.css` · 4 `ReviewClient` 853
+lines · 5 `actions.ts` 846 → domain modules, and move `criteria.ts` out of the
+route directory.
 
 ---
 
@@ -744,6 +765,18 @@ filters and tabs moved to `searchParams`.
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
 
+- **`TargetingLensClient` takes 16 props** against a review limit of 8, all
+  pass-through to its four children. Slice 2 should hand it the view model and
+  the string bundles, not 16 scalars.
+- **`criteria.ts` still lives in `app/(app)/planning/bulk/`** and is now
+  imported by `features/**` and `components/**`. It holds no React and no
+  Supabase — it belongs in `features/planning-bulk/` or `lib/planning/`. The
+  move is mechanical but touches `actions.ts`, `BulkForm`, `CriteriaBuilder`
+  and the review route, so it rides with slice 5.
+- **`distinctValues` now trims before de-duplicating** (T-046 slice 1b), so a
+  whitespace-only `region` no longer appears as a suggestion. `evalNode` still
+  compares raw values, so such a row stays matchable by a typed criterion — the
+  suggestion list and the evaluator disagree by exactly that edge case.
 - **`inline-grid` / `inline-flex` is not "shrink to fit" for a flex or grid
   child** — the parent blockifies and stretches it. `SegmentedControl` carried
   that bug invisibly until a page placed it outside a toolbar (T-021e). Any
@@ -1064,8 +1097,19 @@ Pull one in only if it is genuinely part of doing the active task well.
   that); it covers the migrated surface and the legacy files in its route
   folders. See the 2026-08-08 comments/`let` sweep record.
 
-- **The app will not run on this workstation.** Windows Application Control
-  blocks Next.js's native compiler:
+- **What actually blocks verification is a seeded account, not the compiler
+  (observed 2026-08-10, T-046 slice 1b).** `next dev` started in 19.8 s,
+  compiled `/planning/bulk` in 4.2 s across 1424 modules with no warnings, and
+  served `/login` with a 200. `GET /planning/bulk` returns 307 to `/en/login`
+  because `planning_access_class` answers `permission denied` for an anonymous
+  caller — so the screen still cannot be rendered, axe still cannot run, and the
+  WEB-003 §10 checklist still cannot be ticked. **Every "static verification
+  only" status since T-000 rests on the entry below; re-test it before repeating
+  it.** Production numbers remain a measurement request either way (WEB-005 §8).
+
+- ~~**The app will not run on this workstation.**~~ **DID NOT REPRODUCE
+  2026-08-10 — see above.** Windows Application Control was blocking Next.js's
+  native compiler:
 
   ```
   ⚠ Attempted to load @next/swc-win32-x64-msvc, but an error occurred:

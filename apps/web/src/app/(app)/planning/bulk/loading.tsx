@@ -1,8 +1,8 @@
-import RouteLoading from "@/components/RouteLoading";
+import BulkTargetingSkeleton from "@/components/sections/planning-bulk/bulk-targeting-skeleton/bulk-targeting-skeleton";
+import { bulkMessages } from "@/features/planning-bulk/strings";
+import { getLocale } from "@/lib/i18n";
 
-// K-017 — instant visual acknowledgement while the force-dynamic segment
-// renders server-side; shares the RouteLoading skeleton (design-system
-// consistent, bilingual, aria-busy).
-export default function Loading() {
-  return <RouteLoading en="Loading bulk planning…" ar="جارٍ تحميل التخطيط الجماعي…" />;
+export default async function Loading() {
+  const locale = await getLocale();
+  return <BulkTargetingSkeleton label={bulkMessages(locale).loading} />;
 }

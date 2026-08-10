@@ -1,15 +1,43 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-10` · `Updated by: T-050 — /planning/bulk criteria builder`
+`Last updated: 2026-08-10` · `Updated by: T-046 slice 1b — /planning/bulk screen composition`
+
+> **The workstation blocker is stale.** `next dev` ran on 2026-08-10 and
+> compiled `/planning/bulk` clean; the SWC Application Control error did not
+> reproduce. What still prevents a rendered pass is **a seeded account** —
+> `planning_access_class` denies the anonymous caller, so every authenticated
+> route 307s to `/login`. Do not repeat "static verification only" without
+> re-testing it. See BLOCKED in `03-REDESIGN-TRACKER.md`.
 
 ## Where `/planning/bulk` stands (2026-08-10)
 
-Slices **1a** (data layer behind the T-042 narrowing boundary) and **1c**
-(criteria builder — 13 native controls and 24 legacy classes to zero) are done,
-plus the shared AI advisory. **Four slices remain and they hold most of the
-mass:** `page.tsx` 337 → ≤ 40 · `BulkForm` 274 · `review/page.tsx` 288 → ≤ 40
-and delete `review.css` · `ReviewClient` **853 lines, 19 legacy classes, 7
-effects, zero `t()` calls** · `actions.ts` **846 lines**.
+Slices **1a** (data layer behind the T-042 narrowing boundary), **1b** (route
+file 348 → **27**) and **1c** (criteria builder — 13 native controls and 24
+legacy classes to zero) are done, plus the shared AI advisory. **Four slices
+remain and they hold most of the mass:** `BulkForm` 274 · `review/page.tsx`
+288 → ≤ 40 and delete `review.css` · `ReviewClient` **853 lines, 19 legacy
+classes, 7 effects, zero `t()` calls** · `actions.ts` **846 lines**.
+
+The entry screen is now server composition: `features/planning-bulk/` holds the
+reads, the view models and three string modules; `resolveBulkTargeting()`
+returns the criteria tree, match set, suggestion lists, focus contributions,
+freshness and counts as one value, which is what keeps the screen component's
+body at 44 lines. Two rulings from this slice generalise:
+
+- **A type lie relocated is a type lie.** `factories as never` existed because
+  `BulkForm` demanded non-null `factory_code`, `cr_number` and `visits` that the
+  query has always been able to return null for. Widening the row type at four
+  use sites removed the cast; passing it down one level would not have.
+- **Arabic is a resource, not a fallback.** ~130 strings moved into
+  `planning.bulk` in **both** locale files at asserted key parity, and the JSON
+  shape was authored to match the four string contracts — so the three string
+  modules fell 272 → 77 lines and a drifted key is now a **type error** instead
+  of a silent English fallback. This screen no longer needs a `ui_strings` row.
+  `/planning/single` and the review step still do.
+- **Derive the list the registry already implies.** The nine value-suggestion
+  fields were hardcoded beside a `FIELD_REGISTRY` that documents itself as the
+  single place a field is added. They are now
+  `filter(supplied && (text | enum))`.
 
 Two primitives were extended to unblock this work, both raised as gaps first and
 built only after a ruling (WEB-002 §2): `Button.busy` and
@@ -260,8 +288,9 @@ The rulebook is still not machine-enforced. No lint config, no gate scripts —
 every rule T-002 obeyed was checked by hand. That is **T-000**, and it remains
 the highest-priority unblocked item.
 
-> **The app does not run on this workstation.** Windows Application Control
-> blocks `@next/swc-win32-x64-msvc`, so `next dev` serves nothing and
+> ~~**The app does not run on this workstation.**~~ **DID NOT REPRODUCE
+> 2026-08-10 — see the note at the top of this file.** Windows Application
+> Control was blocking `@next/swc-win32-x64-msvc`, so `next dev` served nothing and
 > `next build` hangs. No browser verification, no e2e, no axe, no bundle
 > numbers — every task is currently limited to static verification, and the
 > Definition of Done cannot be fully ticked by anyone working here. See
