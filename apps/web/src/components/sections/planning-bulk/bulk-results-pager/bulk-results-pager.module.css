@@ -1,0 +1,13 @@
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-3);
+  flex-wrap: wrap;
+}
+
+.status {
+  color: var(--sqx-text-muted);
+  font-size: var(--sqx-text-caption-size);
+  font-variant-numeric: tabular-nums;
+}

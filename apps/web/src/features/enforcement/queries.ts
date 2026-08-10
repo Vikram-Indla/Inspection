@@ -1,6 +1,8 @@
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
+import { readRows } from "@/lib/postgrest/read";
+import { enforcementPenaltyRow, enforcementViolationRow } from "./shapes";
 
 export type EnforcementFactory = {
   id: string;
@@ -97,12 +99,10 @@ export async function queryEnforcementLibrary(): Promise<EnforcementLibrary> {
     .order("id", { ascending: false })
     .limit(VIOLATION_LIMIT);
 
-  if (violationRead.error) {
-    console.error(`[enforcement.library] violation read failed: ${violationRead.error.message}`);
-    return { kind: "unavailable" };
-  }
+  const violationResult = readRows(violationRead, enforcementViolationRow, "enforcement.violations");
+  if (violationResult.failed) return { kind: "unavailable" };
 
-  const violations = ((violationRead.data ?? []) as unknown as EnforcementViolationRow[])
+  const violations = violationResult.rows
     .filter(row => !isTestFixtureEstablishment(row.inspections?.visits?.factories));
 
   const ids = violations.map(row => row.id);
@@ -113,12 +113,12 @@ export async function queryEnforcementLibrary(): Promise<EnforcementLibrary> {
         .limit(PENALTY_LIMIT)
     : { data: [], error: null };
 
-  if (penaltyRead.error) console.error(`[enforcement.library] penalty read failed: ${penaltyRead.error.message}`);
+  const penalties = readRows(penaltyRead, enforcementPenaltyRow, "enforcement.inspection_penalties");
 
   return {
     kind: "ok",
     violations,
-    penalties: (penaltyRead.data ?? []) as unknown as EnforcementPenaltyRow[],
-    penaltiesReadable: !penaltyRead.error,
+    penalties: penalties.rows,
+    penaltiesReadable: !penalties.failed,
   };
 }

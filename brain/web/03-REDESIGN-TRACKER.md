@@ -10,6 +10,182 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-050 · `/planning/bulk` — criteria builder on SAQEEL
+`status: done (not verified in a browser)` · `rules: WEB-000…004, WEB-009, WEB-011` · `est: 1.5h`
+`record:` [2026-08-10-T-050-criteria-builder](sessions/2026-08/2026-08-10-T-050-criteria-builder.md)
+
+Slice 1c of T-046. 13 native controls → 0, 24 legacy classes → 0, 11 inline
+styles → 0, 21 comments → 0, 9 **legacy** tokens (`--space-*`) → 0. ALL/ANY
+became a `SegmentedControl` — two mutually exclusive options that change the
+meaning of the group should both be visible. Unsupplied criteria fields use
+T-049's `disabled` + `note`, which is what made this slice possible at all.
+
+**Owed:** browser pass on the recursive group layout, the `between` two-date row
+and RTL. The 5 new date strings are English-only — this screen reads Arabic from
+`ui_strings`, not the JSON namespaces.
+
+---
+
+### T-049 · `Select` — disabled options
+`status: done (not verified in a browser)` · `rules: WEB-000, WEB-002 §2, WEB-003, WEB-004` · `est: 40m`
+`record:` [2026-08-10-T-049-select-disabled-options](sessions/2026-08/2026-08-10-T-049-select-disabled-options.md)
+
+Raised as a gap, built only after an owner ruling (WEB-002 §2). `SelectOption`
+gains `disabled?` and `note?`. **Disabled means disabled on every path in** —
+`commit`, arrow keys, Home/End, type-ahead and the initial open all skip it; a
+flag guarding only `onClick` would leave a row reachable that then refuses to
+activate. Dims to `--sqx-text-muted`, not the disabled palette, because
+"recorded but unavailable" must stay readable.
+
+**Still open:** there is no SAQEEL combobox (free text + suggestions).
+
+---
+
+### T-048 · `Button` — busy state
+`status: done (not verified in a browser)` · `rules: WEB-000, WEB-002 §2, WEB-003, WEB-009, WEB-010` · `est: 40m`
+`record:` [2026-08-10-T-048-button-busy-state](sessions/2026-08/2026-08-10-T-048-button-busy-state.md)
+
+`busy?` replaces the `{pending ? label + "…" : label}` pattern at 8 call sites
+(1 converted). The visible label no longer changes — the spinner takes the icon
+slot, so the button does not resize under the cursor.
+
+**Third recorded instance of a specificity override silently killing a
+variant:** `.root[data-busy]:disabled` scores (0,3,0) and outranked
+`[data-variant="ai"]` at (0,2,0), stripping the AI accent exactly while the
+button worked. Fixed by scoping the disabled palette away from `[data-busy]`
+rather than undoing it. **Check specificity before writing an override.**
+
+---
+
+### T-047 · Shared AI advisory panel
+`status: done (not verified in a browser)` · `rules: WEB-000, WEB-002, WEB-003, WEB-006 §4, WEB-009` · `est: 1h`
+`record:` [2026-08-10-T-047-shared-ai-advisory](sessions/2026-08/2026-08-10-T-047-shared-ai-advisory.md)
+
+`components/sections/ai/ai-advisory` generalises `factory-ai-advisory` and
+supersedes `ContextualAiPanel` (7 consumers, 1 migrated). Four visible defects
+were all legacy CSS, not JSX — including a 🔒 emoji injected by
+`sq-banner--immutable::before` and "Source evidence" rendered twice.
+`ContextualAiPanel` marked `@retiring` with its ledger row.
+
+---
+
+### T-046 · `/planning/bulk` — criteria & targeting migration
+`status: in-progress (slices 1a + 1b + 1c done; 2–5 open)` · `rules: WEB-000…004, WEB-008, WEB-009, WEB-011` · `est: 12h total`
+`record (slice 1a):` [2026-08-10-T-046-bulk-targeting-feature-layer](sessions/2026-08/2026-08-10-T-046-bulk-targeting-feature-layer.md)
+`record (slice 1b):` [2026-08-10-T-046-bulk-screen-composition](sessions/2026-08/2026-08-10-T-046-bulk-screen-composition.md)
+
+**The route had zero SAQEEL imports before this task** — 14 files, 3,512 lines,
+505 comments, ~180 legacy class uses, 26 colour-only `sq-lozenge`, 15 native
+controls. Full inventory in the record.
+
+**Slice 1a done:** three Supabase reads moved to `features/planning-bulk/**`
+behind the T-042 narrowing boundary (`page.tsx` 424 → 337, 3 casts gone, 5
+`sb.from` gone), banners → `PlanningNotice`, context pill → `StatusPill`. These
+reads feed `evalNode`, so a wrong value changes **which factories get
+inspected** — fail-closed matters here more than on a read-only screen.
+
+**Slice 1b done:** `page.tsx` **348 → 27**. The three `t()` blocks became
+`features/planning-bulk/{strings,criteria-strings,form-strings}.ts`; every
+derivation became one `resolveBulkTargeting()` view model in `targeting.ts`;
+composition became `components/sections/planning-bulk/{bulk-screen,
+bulk-access-state}`. 34 comments → 0, 148 `t()` in the route → 0, 1 `let` → 0,
+2 emoji-as-icon → 0, and the `as never` at the `TargetingLensClient` seam → 0
+(`BulkForm`'s row type now admits the nulls the query has always been able to
+return). Suggestion fields are derived from `FIELD_REGISTRY`, not restated.
+
+**Slice 1b′ (same pass):** every string on the entry screen moved into
+`planning.bulk` in **both** `en/planning.json` and `ar/planning.json` — ~130
+strings, +170 lines each, exact key parity asserted before write. **This screen
+no longer depends on the `ui_strings` table for Arabic.** The three string
+modules fell 272 → 77 lines because the JSON shape was authored to match the
+four string contracts, so a drifted key is a type error rather than a silent
+English fallback. `RouteLoading` is off the route: `loading.tsx` renders
+`bulk-targeting-skeleton`, mirroring the real first-paint order (criteria card,
+ledger, three distribution panels, evidence table).
+
+**Remaining slices:** 2 `BulkForm` (10 classes, 7 `useState`, `sq-table` →
+`DataTable`, and 16 pass-through props on `TargetingLensClient`) · 3
+`review/page.tsx` 288 → ≤ 40 and delete `review.css` · 4 `ReviewClient` 853
+lines · 5 `actions.ts` 846 → domain modules, and move `criteria.ts` out of the
+route directory.
+
+---
+
+### T-045 · `/planning/single` — search states + registry pill tone
+`status: done (not verified in a browser)` · `rules: WEB-000…004, WEB-009, WEB-011` · `est: 1h`
+`record:` [2026-08-10-T-045-single-visit-search-states](sessions/2026-08/2026-08-10-T-045-single-visit-search-states.md)
+
+Three owner-reported defects. The loading state **existed for screen readers
+only** — `aria-busy` was set and nothing rendered. "No factory matches" was a
+real bug: the screen runs **two independent lookups** (graded legacy search and
+canonical CR resolver) and the empty state tested only one, so it contradicted
+the factory shown right below it. Active pills now map through
+`registryStatusTone`; only `active` is asserted because the status columns are
+free `text` with no check constraint.
+
+**Owed:** `plan.single.searching` has no Arabic — this screen's Arabic lives in
+the **`ui_strings` table**, not the JSON namespaces, so the key needs a DB row.
+
+---
+
+### T-044 · Nested menu panels keep their ancestor's dismissal scope
+`status: done (fix by construction; not observed in a browser)` · `rules: WEB-000, WEB-002…004, WEB-012` · `est: 45m`
+`record:` [2026-08-10-T-044-nested-menu-dismissal-scope](sessions/2026-08/2026-08-10-T-044-nested-menu-dismissal-scope.md)
+
+`Cannot read properties of null (reading 'removeChild')` when a `Select` opens
+inside a portalled `MenuSurface`. Both portal to `document.body`, so the nested
+panel is a DOM **sibling** — `contains()` returned false, the ancestor dismissed
+itself at `pointerdown`, and React was mid-removal on the inner portal.
+Ownership now travels down the **React tree** via `MenuScopeContext`, which
+portals preserve. Backward compatible: non-nested consumers reduce to the old
+check exactly.
+
+---
+
+### T-043 · `/planning` filter bar on SAQEEL controls + AI accent
+`status: done (not verified in a browser)` · `rules: WEB-000…003, WEB-009, WEB-011` · `est: 1.5h`
+`record:` [2026-08-10-T-043-planning-filter-bar-and-ai-accent](sessions/2026-08/2026-08-10-T-043-planning-filter-bar-and-ai-accent.md)
+
+10 native controls → `SaqeelSelect` / `DatePicker`; More Filters `<details>` →
+portalled `MenuSurface`. **A portalled control cannot participate in a GET
+form**, so state lives in one island and every hidden input renders inside the
+`<form>`; the panel is presentation only.
+
+**The first cut was rejected by the owner** for inventing a chip that wrapped a
+bordered `SaqeelSelect` in a bordered pill. `enforcement-filter-bar` had already
+solved this — `Field` + `SaqeelSelect`, `Button` for actions. **Read the nearest
+existing solution before designing a new one.**
+
+AI accent applied to Insights and Recommendations only; Quick Actions is
+navigation and lost its Sparkles icon.
+
+---
+
+### T-042 · Narrow the PostgREST boundary — delete every `as unknown as`
+`status: done (static verification only)` · `rules: WEB-000 §5, WEB-001 §4, WEB-008 §2` · `est: 3h`
+`record:` [2026-08-10-T-042-postgrest-narrowing-boundary](sessions/2026-08/2026-08-10-T-042-postgrest-narrowing-boundary.md)
+
+All **48** `as unknown as` casts are gone from the migrated data layer
+(`features/**`, plus `lib/planning/visit-list.ts` and `lib/shell-search.ts`
+which feed migrated screens). They are replaced by one narrowing boundary —
+`lib/postgrest/{shape,read}.ts` — and a `Shape<T>` per row type.
+
+**The casts were not cosmetic.** `supabaseServer()` has no `Database` generic,
+so `.select()` infers every column as `any` **and every embedded relation as an
+array**, including to-one embeds that PostgREST returns as objects. A renamed
+column produced no type error and a runtime failure inside a component. Reads
+now fail closed with a logged reason and route into each screen's existing
+*unavailable* state — never into a silently smaller number.
+
+`console.*` in `features/**` went 42 → 22: the boundary logs once, so twelve
+duplicate error lines in `features/operations/queries.ts` were deleted.
+
+**Owed:** the measurement request in the record — generate Supabase database
+types and type the client, which would make most of `features/*/shapes.ts`
+redundant. Needs database access this workstation lacks.
+
+---
+
 ### T-036 · Compliance library — catalogue
 `status: done (catalogue; NEVER LOADED IN A BROWSER)` · `rules: WEB-000…006, WEB-008, WEB-011` · `est: 3h`
 `record:` [2026-08-09-T-036-regulations-catalogue](sessions/2026-08/2026-08-09-T-036-regulations-catalogue.md)
@@ -589,6 +765,20 @@ filters and tabs moved to `searchParams`.
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
 
+- **`bulk-targeting-form.tsx` is 219 lines**, over the 200 target. The
+  select-all confirmation is the natural fifth extraction.
+- **`TargetingLensClient` takes 16 props** against a review limit of 8, all
+  pass-through to its four children. Slice 2 should hand it the view model and
+  the string bundles, not 16 scalars.
+- **`criteria.ts` still lives in `app/(app)/planning/bulk/`** and is now
+  imported by `features/**` and `components/**`. It holds no React and no
+  Supabase — it belongs in `features/planning-bulk/` or `lib/planning/`. The
+  move is mechanical but touches `actions.ts`, `BulkForm`, `CriteriaBuilder`
+  and the review route, so it rides with slice 5.
+- **`distinctValues` now trims before de-duplicating** (T-046 slice 1b), so a
+  whitespace-only `region` no longer appears as a suggestion. `evalNode` still
+  compares raw values, so such a row stays matchable by a typed criterion — the
+  suggestion list and the evaluator disagree by exactly that edge case.
 - **`inline-grid` / `inline-flex` is not "shrink to fit" for a flex or grid
   child** — the parent blockifies and stretches it. `SegmentedControl` carried
   that bug invisibly until a page placed it outside a toolbar (T-021e). Any
@@ -766,18 +956,36 @@ Pull one in only if it is genuinely part of doing the active task well.
   can be readable on the board but outside reassign scope. Any future bulk verb
   gated by a closure-scope RPC will hit the same asymmetry — surface it as a
   state, never as an empty control.
-- **There is no datetime primitive.** `DatePicker` is date-only, and T-005a's
-  "no native date input" rule has no answer for a date **and time** window. Visit
-  Management's bulk-reschedule form is the only place left holding a native
-  `datetime-local`. Needed before that screen can be called control-clean.
+- ~~**There is no datetime primitive.**~~ **WRONG — corrected 2026-08-10 (T-046).**
+  `DateRangePicker` accepts `withTime`, `timeStep` and `timeLabels` and emits
+  `YYYY-MM-DDTHH:mm` — the `datetime-local` shape. It is already in production in
+  `visit-configuration` and `visit-bulk-actions`. Any remaining native
+  `datetime-local` that expresses a **window** maps straight onto it. A
+  single date **and** time (not a range) still has no primitive; nothing on the
+  board needs one today.
 - **`--sqx-control-accent` does not exist**, so native checkboxes cannot be
   tinted to brand without inventing a token. Left on the UA default. A real
   `checkbox`/`switch` primitive removes the need.
-- **`rowSelect()` in `lib/planning/visit-list.ts` never selects `factory_id`**,
-  yet `readVisibleRows` filters fixtures on `row.factory_id` — that filter has
-  always been a no-op. Both `/planning` and Visit Management compensate with a
-  name-based post-filter. Fixing it silently removes rows from `/planning`, so it
-  needs its own task and a visual regression pass.
+- **`rowSelect()` in `lib/planning/visit-list.ts` never selects `factory_id`
+  — now PROVEN, not suspected (T-042, observed at runtime).** The narrowing
+  boundary threw `planning.visit_list[0].factory_id expected a string, received
+  nothing` on first page load. `factory_id` is `uuid not null` in the schema and
+  the `Joined` type declared it as `string`, but the projection at
+  `visit-list.ts:230` omits it, so `fixtureFactoryIds.has(undefined)` has always
+  returned false and `readVisibleRows`' fixture filter has **never removed a
+  single row**.
+
+  **The counts path does not have this bug** — `readFixtureCount` selects
+  `factory_id` explicitly and subtracts fixtures correctly. So tab badges and
+  totals exclude fixture factories while the rows beside them do not. That
+  asymmetry is very likely behind the "honest non-empty total alongside zero
+  displayed rows" defect the retry logic in that file was written to paper over.
+
+  T-042 made the type honest (`factory_id: string | null`, filter skips rows
+  whose id is unknown) — **behaviour is byte-identical to before**. The real fix
+  is adding `factory_id` to `rowSelect()`, which makes rows and counts agree and
+  **will remove fixture rows from `/planning` for the first time**. Still needs
+  its own task and a visual regression pass, now with the evidence attached.
 - **The factory-name sort was dropped from Visit Management.** The shared sort
   whitelist has no embedded-column sort, and PostgREST parent-ordering on a
   to-one embed could not be verified without a database. Either add it to
@@ -891,8 +1099,19 @@ Pull one in only if it is genuinely part of doing the active task well.
   that); it covers the migrated surface and the legacy files in its route
   folders. See the 2026-08-08 comments/`let` sweep record.
 
-- **The app will not run on this workstation.** Windows Application Control
-  blocks Next.js's native compiler:
+- **What actually blocks verification is a seeded account, not the compiler
+  (observed 2026-08-10, T-046 slice 1b).** `next dev` started in 19.8 s,
+  compiled `/planning/bulk` in 4.2 s across 1424 modules with no warnings, and
+  served `/login` with a 200. `GET /planning/bulk` returns 307 to `/en/login`
+  because `planning_access_class` answers `permission denied` for an anonymous
+  caller — so the screen still cannot be rendered, axe still cannot run, and the
+  WEB-003 §10 checklist still cannot be ticked. **Every "static verification
+  only" status since T-000 rests on the entry below; re-test it before repeating
+  it.** Production numbers remain a measurement request either way (WEB-005 §8).
+
+- ~~**The app will not run on this workstation.**~~ **DID NOT REPRODUCE
+  2026-08-10 — see above.** Windows Application Control was blocking Next.js's
+  native compiler:
 
   ```
   ⚠ Attempted to load @next/swc-win32-x64-msvc, but an error occurred:

@@ -1,3 +1,4 @@
+/* @retiring 2026-08-10 · replaced-by components/sections/planning-bulk/bulk-targeting-form · pending none — zero importers · delete-when 0-imports */
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -15,11 +16,11 @@ import { saveBulkDraft } from "./actions";
 // reconciled on mount so a criteria change dropping selected rows prompts an
 // explicit confirmation (never a silent drop) and carries forward to review.
 type F = {
-  id: string; factory_code: string; name: string; cr_number: string;
+  id: string; factory_code: string | null; name: string; cr_number: string | null;
   city: string | null; region: string | null; risk_band: string | null; risk_score: number | null;
   activity_class: string | null;
   official_lat: number | null; official_lng: number | null; source_synced_at: string | null;
-  visits: { planning_status: string; visit_type: string }[];
+  visits: { planning_status: string; visit_type: string }[] | null;
 };
 
 export type BulkFormStrings = {
@@ -44,7 +45,7 @@ const PAGE_SIZE = 25;
 const SEL_KEY = "cd021-bulk-selection";
 // M6 — 'validated' is an internal ACTIVE plan state: it blocks duplicates
 // exactly like draft/published/returned.
-const dupOf = (f: F) => f.visits.some(v => ["draft", "validated", "published", "returned"].includes(v.planning_status) && v.visit_type === "periodic");
+const dupOf = (f: F) => (f.visits ?? []).some(v =>["draft", "validated", "published", "returned"].includes(v.planning_status) && v.visit_type === "periodic");
 
 export default function BulkForm({ factories, strings, focusedField, focusedValue, locale, criteriaTree }: {
   factories: F[]; strings: BulkFormStrings; focusedField?: string | null; focusedValue?: string | null; locale: Locale;
@@ -83,7 +84,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
     if (!needle) return factories;
-    return factories.filter(f => [f.name, f.factory_code, f.cr_number, f.city ?? "", f.region ?? ""].some(s => s.toLowerCase().includes(needle)));
+    return factories.filter(f => [f.name, f.factory_code ?? "", f.cr_number ?? "", f.city ?? "", f.region ?? ""].some(s => s.toLowerCase().includes(needle)));
   }, [factories, q]);
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const clampedPage = Math.min(page, pageCount - 1);

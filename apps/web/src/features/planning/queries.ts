@@ -5,6 +5,8 @@ import {
   type PlanningTab, type PlanningListParams, type PlanningListCounts, type PlanningVisitRow,
 } from "@/lib/planning/visit-list";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
+import { readRows } from "@/lib/postgrest/read";
+import type { Shape } from "@/lib/postgrest/shape";
 
 export const PLANNING_PAGE_SIZE = 25;
 
@@ -80,6 +82,16 @@ type DraftRead = {
   created_at: string; created_by: string; profiles: { full_name: string } | null;
 };
 
+const draftRow: Shape<DraftRead> = f => ({
+  id: f.text("id"),
+  method: f.text("method"),
+  plan_reference: f.optionalText("plan_reference"),
+  draft_version: f.number("draft_version"),
+  created_at: f.text("created_at"),
+  created_by: f.text("created_by"),
+  profiles: f.toOne("profiles", profile => ({ full_name: profile.text("full_name") })),
+});
+
 const distinct = (rows: Record<string, unknown>[], key: string) =>
   [...new Set(rows.map(row => row[key]).filter((value): value is string => typeof value === "string" && value.length > 0))].sort();
 
@@ -141,7 +153,7 @@ export async function loadPlanningWorkspace(
     regions: distinct((regionsRead.data ?? []) as Record<string, unknown>[], "region"),
     cities: distinct((citiesRead.data ?? []) as Record<string, unknown>[], "city"),
     inspectors: dedupeInspectors((inspectorsRead.data ?? []) as { user_id: string; full_name: string }[]),
-    drafts: ((draftsRead.data ?? []) as unknown as DraftRead[]).map(draft => ({
+    drafts: readRows(draftsRead, draftRow, "planning.drafts").rows.map(draft => ({
       id: draft.id,
       method: draft.method,
       planReference: draft.plan_reference,

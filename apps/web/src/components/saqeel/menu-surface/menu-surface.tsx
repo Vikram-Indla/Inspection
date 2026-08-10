@@ -1,8 +1,12 @@
 "use client";
 
 import {
+  createContext,
+  useCallback,
+  useContext,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   type CSSProperties,
   type ReactNode,
@@ -10,6 +14,17 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import styles from "./menu-surface.module.css";
+
+// Two portals into `document.body` are DOM siblings however deeply nested they
+// are in the React tree, so `panel.contains(target)` cannot see that a select
+// opened *inside* this panel belongs to it. Ownership therefore travels down the
+// React tree: a nested surface registers its panel with every ancestor, and an
+// ancestor treats those panels as its own for dismissal. Without it, clicking an
+// option inside a nested menu dismissed the ancestor at `pointerdown` and tore
+// the option out from under React's own removal — `removeChild` of null.
+type MenuScope = { readonly register: (panel: HTMLElement) => () => void };
+
+const MenuScopeContext = createContext<MenuScope | null>(null);
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -51,6 +66,31 @@ export default function MenuSurface({
   children,
 }: MenuSurfaceProps) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const nestedPanels = useRef(new Set<HTMLElement>());
+  const parentScope = useContext(MenuScopeContext);
+
+  const register = useCallback((panel: HTMLElement) => {
+    nestedPanels.current.add(panel);
+    const releaseAncestors = parentScope?.register(panel);
+    return () => {
+      nestedPanels.current.delete(panel);
+      releaseAncestors?.();
+    };
+  }, [parentScope]);
+
+  const scope = useMemo<MenuScope>(() => ({ register }), [register]);
+
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!open || !panel || !parentScope) return;
+    return parentScope.register(panel);
+  }, [open, parentScope]);
+
+  const holds = useCallback((target: Node) => {
+    if (panelRef.current?.contains(target)) return true;
+    for (const panel of nestedPanels.current) if (panel.contains(target)) return true;
+    return false;
+  }, []);
 
   // Placement is measured, not assumed. Callers state a preference; if that
   // edge would push the panel off-screen it flips to the other edge, and if
@@ -136,14 +176,16 @@ export default function MenuSurface({
     const trigger = triggerRef.current;
 
     const onPointerDown = (event: PointerEvent) => {
-      const target = event.target as Node;
-      if (panelRef.current?.contains(target)) return;
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (holds(target)) return;
       if (trigger?.contains(target)) return;
       onClose();
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        if (nestedPanels.current.size > 0) return;
         event.preventDefault();
         onClose();
         trigger?.focus();
@@ -169,7 +211,7 @@ export default function MenuSurface({
       document.removeEventListener("pointerdown", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [onClose, open, trapFocus, triggerRef]);
+  }, [holds, onClose, open, trapFocus, triggerRef]);
 
   if (!open) return null;
 
@@ -191,7 +233,7 @@ export default function MenuSurface({
       aria-label={label}
       style={style}
     >
-      {children}
+      <MenuScopeContext.Provider value={scope}>{children}</MenuScopeContext.Provider>
     </div>,
     document.body,
   );

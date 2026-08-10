@@ -1,3 +1,4 @@
+/* @retiring 2026-08-10 · replaced-by components/sections/ai/ai-advisory/ai-advisory · pending /factories/[id],/factories/cr/[id],/field/factory-360/[id],/field/inspection/[id],/field/[visitId],visit-ai-summary · delete-when 0-imports */
 "use client";
 
 import { useActionState, useEffect, useState } from "react";

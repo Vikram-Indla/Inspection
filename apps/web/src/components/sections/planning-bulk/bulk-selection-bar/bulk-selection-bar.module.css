@@ -1,0 +1,38 @@
+.root {
+  position: sticky;
+  inset-block-end: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-4);
+  padding: var(--sqx-space-4);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-strong);
+  border-radius: var(--sqx-radius-lg);
+  background: var(--sqx-surface-raised);
+  box-shadow: var(--sqx-elevation-2);
+}
+
+.status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+  min-inline-size: 0;
+}
+
+.count {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--sqx-weight-semibold);
+}
+
+.note {
+  color: var(--sqx-text-muted);
+  font-size: var(--sqx-text-caption-size);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-3);
+}

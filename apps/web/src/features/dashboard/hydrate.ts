@@ -1,11 +1,10 @@
 import type {
-  FactoryRef, GeoRow, InspectionRow, ResponseRow, ReviewRow, ViolationRow, VisitRow,
+  FactoryRef, GeoRow, InspectionRow, ResponseRow, ReviewRow, ViolationRow, VisitRow, VisitScopeRef,
 } from "@/app/(app)/dashboard/metrics";
 import type { Collected } from "./sources/paginate";
 
-type WithFactoryId = { factory_id?: string | null; factories?: FactoryRef | null };
-type WithVisit = { visits?: WithFactoryId | null };
-type WithInspection = { inspections?: WithVisit | null };
+type WithVisit = { visits: VisitScopeRef | null };
+type WithInspection = { inspections: { visits: VisitScopeRef | null } | null };
 
 type HydrationTargets = {
   visits: Collected<VisitRow>;
@@ -18,10 +17,9 @@ type HydrationTargets = {
 
 export function hydrateFactories(factories: readonly FactoryRef[], targets: HydrationTargets): void {
   const byId = new Map(factories.map(factory => [factory.id, factory] as const));
-  const resolve = (factoryId: string | null | undefined) =>
-    (factoryId && byId.get(factoryId)) || null;
+  const resolve = (factoryId: string | null) => (factoryId && byId.get(factoryId)) || null;
 
-  const attachDirect = (rows: readonly WithFactoryId[]) => {
+  const attachDirect = (rows: readonly VisitScopeRef[]) => {
     rows.forEach(row => { row.factories = resolve(row.factory_id); });
   };
   const attachViaVisit = (rows: readonly WithVisit[]) => {
@@ -35,10 +33,10 @@ export function hydrateFactories(factories: readonly FactoryRef[], targets: Hydr
     });
   };
 
-  attachDirect(targets.visits.rows as unknown as WithFactoryId[]);
-  attachViaVisit(targets.inspections.rows as unknown as WithVisit[]);
-  attachViaVisit(targets.geo.rows as unknown as WithVisit[]);
-  attachViaInspection(targets.reviews.rows as unknown as WithInspection[]);
-  attachViaInspection(targets.responses.rows as unknown as WithInspection[]);
-  attachViaInspection(targets.violations.rows as unknown as WithInspection[]);
+  attachDirect(targets.visits.rows);
+  attachViaVisit(targets.inspections.rows);
+  attachViaVisit(targets.geo.rows);
+  attachViaInspection(targets.reviews.rows);
+  attachViaInspection(targets.responses.rows);
+  attachViaInspection(targets.violations.rows);
 }

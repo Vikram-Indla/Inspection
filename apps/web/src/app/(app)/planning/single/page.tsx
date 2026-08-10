@@ -378,6 +378,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     findFactory: t("plan.single.findFactory", "1 · Find factory — CR, Industrial License, plant or name"),
     searchPlaceholder: t("plan.single.searchPlaceholder", "CR number, Industrial License, plant number, factory code or name"),
     noMatch: t("plan.single.noMatch", "No factory matches — check the number and try again."),
+    searching: t("plan.single.searching", "Searching the Factory list…"),
     registryUnavailable: t("plan.single.registryUnavailable", "The Factory list is not available right now — try your search again."),
     crPrefix: t("plan.single.crPrefix", "CR"),
     exactBadge: t("plan.single.exactBadge", "EXACT"),

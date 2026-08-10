@@ -16,7 +16,7 @@ export function Drawer({ open, title, children, footer, onClose, width = 420 }: 
     <>
       <div
         className="dialog-backdrop"
-        style={{ placeItems: "stretch end", padding: 0, zIndex: "var(--z-drawer)" as unknown as number }}
+        style={{ placeItems: "stretch end", padding: 0, zIndex: "var(--z-drawer)" }}
         onClick={(e) => e.target === e.currentTarget && onClose && onClose()}
       />
       <aside className="drawer" role="dialog" aria-modal="true" style={{ width: "min(" + width + "px, 92vw)" }}>

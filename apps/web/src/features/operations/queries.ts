@@ -120,15 +120,12 @@ async function readCancellations(
   outOfScopeCancellationCount: number;
   failed: boolean;
 }> {
-  const { data: cancelRows, error: cancelError } = await loadCancellationRequests(sb);
-  if (cancelError) {
-    if (!cancelError.message.includes("cancellation_requests")) {
-      console.error(`[operations] cancellation queue read failed: ${cancelError.message}`);
-      return { queueRows: [], historyRows: [], outOfScopeCancellationCount: 0, failed: true };
-    }
-    return { queueRows: [], historyRows: [], outOfScopeCancellationCount: 0, failed: false };
+  const cancelRead = await loadCancellationRequests(sb);
+  if (cancelRead.failed) {
+    const tableAbsent = cancelRead.reason?.includes("cancellation_requests") ?? false;
+    return { queueRows: [], historyRows: [], outOfScopeCancellationCount: 0, failed: !tableAbsent };
   }
-  const integrityFilteredRows: CancellationRequestRow[] = cancelRows ?? [];
+  const integrityFilteredRows: CancellationRequestRow[] = cancelRead.rows;
   const rows = integrityFilteredRows
     .filter(row => isCleanFactory(row.visits?.factories)
       && inAuthorizedGeography(
@@ -140,7 +137,7 @@ async function readCancellations(
   const evidenceIds = pendingRows.map(r => r.evidence_id).filter((v): v is string => !!v);
   const evidenceUrls = evidenceIds.length > 0
     ? await loadCancellationEvidence(sb, evidenceIds).then(result =>
-      signEvidenceUrls(sb, (result.data ?? [])
+      signEvidenceUrls(sb, result.rows
         .flatMap(evidence => evidence.storage_path ? [{ key: evidence.id, path: evidence.storage_path }] : [])))
     : new Map<string, string>();
   const queueRows = pendingRows.map(row => ({
@@ -232,7 +229,7 @@ export async function loadOperationsPage(scope: OperationsScope): Promise<Operat
     sb.rpc("operations_kpi_contract"),
   ]);
 
-  const integrityFilteredVisits = (visitsRes.data ?? [])
+  const integrityFilteredVisits = visitsRes.rows
     .filter(visit => isCleanFactory(visit.factories) && !isVerificationFactory(visit.factories));
   const visits = integrityFilteredVisits
     .filter(visit => inAuthorizedGeography(visit.factories?.region ?? null, visit.factories?.city ?? null));
@@ -246,47 +243,37 @@ export async function loadOperationsPage(scope: OperationsScope): Promise<Operat
       && (!scope.city || visit.factories?.city === scope.city))
     .map(visit => visit.id);
   const geoRes = await loadGeoEvents(sb, geoVisitIds, nowIso);
-  const geoError = geoRes.error;
-  const geo = (geoRes.data ?? [])
+  const geo = geoRes.rows
     .slice()
     .sort((a, b) => Date.parse(b.occurred_at) - Date.parse(a.occurred_at)
       || a.id.localeCompare(b.id));
 
   const loadErrors = [
-    visitsRes.error && "visit monitoring",
-    geoError && "geofence events",
-    actionsRes.error && "corrective actions",
-    notifsRes.error && "notifications",
-    factoriesRes.error && "factory list",
-    engineRes.error && "engine settings",
-    riskRes.error && "risk board",
-    overrideRes.error && "location exception requests",
-    overrideEvidenceRes.error && "override evidence",
+    visitsRes.failed && "visit monitoring",
+    geoRes.failed && "geofence events",
+    actionsRes.failed && "corrective actions",
+    notifsRes.failed && "notifications",
+    factoriesRes.failed && "factory list",
+    engineRes.failed && "engine settings",
+    riskRes.failed && "risk board",
+    overrideRes.failed && "location exception requests",
+    overrideEvidenceRes.failed && "override evidence",
   ].filter((label): label is string => Boolean(label));
-  if (visitsRes.error) console.error(`[operations] visits read failed: ${visitsRes.error.message}`);
-  if (geoError) console.error(`[operations] geo_events read failed: ${geoError.message}`);
-  if (actionsRes.error) console.error(`[operations] action_forms read failed: ${actionsRes.error.message}`);
-  if (notifsRes.error) console.error(`[operations] notifications read failed: ${notifsRes.error.message}`);
-  if (factoriesRes.error) console.error(`[operations] factories read failed: ${factoriesRes.error.message}`);
-  if (engineRes.error) console.error(`[operations] engine_settings read failed: ${engineRes.error.message}`);
-  if (riskRes.error) console.error(`[operations] risk read failed: ${riskRes.error.message}`);
-  if (overrideRes.error) console.error(`[operations] override queue read failed: ${overrideRes.error.message}`);
-  if (overrideEvidenceRes.error) console.error(`[operations] override evidence read failed: ${overrideEvidenceRes.error.message}`);
   if (kpiContractRpc.error) console.error(`[operations] KPI contract read failed: ${kpiContractRpc.error.message}`);
 
-  const actions = (actionsRes.data ?? []).filter(action => {
+  const actions = actionsRes.rows.filter(action => {
     const factory = action.inspections?.visits?.factories;
     return isCleanFactory(factory) && inAuthorizedGeography(factory?.region ?? null, factory?.city ?? null);
   });
-  const notifs: NotifRow[] = notifsRes.data ?? [];
-  const factories = (factoriesRes.data ?? [])
+  const notifs: NotifRow[] = notifsRes.rows;
+  const factories = factoriesRes.rows
     .filter(factory => isCleanFactory(factory) && !isVerificationFactory(factory)
       && inAuthorizedGeography(factory.region, factory.city));
-  const engines: EngineRow[] = engineRes.data ?? [];
-  const highRisk = (riskRes.data ?? [])
+  const engines: EngineRow[] = engineRes.rows;
+  const highRisk = riskRes.rows
     .filter(factory => isCleanFactory(factory) && !isVerificationFactory(factory)
       && inAuthorizedGeography(factory.region, factory.city));
-  const integrityFilteredOverrides: OverrideRow[] = overrideRes.data ?? [];
+  const integrityFilteredOverrides: OverrideRow[] = overrideRes.rows;
   const overrides = integrityFilteredOverrides
     .filter(row => isCleanFactory(row.visits?.factories)
       && inAuthorizedGeography(
@@ -295,7 +282,7 @@ export async function loadOperationsPage(scope: OperationsScope): Promise<Operat
       ));
   const outOfScopeOverrideCount = integrityFilteredOverrides.length - overrides.length;
 
-  const overrideEvidence: EvidenceRow[] = overrideEvidenceRes.data ?? [];
+  const overrideEvidence: EvidenceRow[] = overrideEvidenceRes.rows;
   const evidenceByRequest = new Map<string, number>();
   for (const evidence of overrideEvidence) {
     evidenceByRequest.set(evidence.linked_id, (evidenceByRequest.get(evidence.linked_id) ?? 0) + 1);
@@ -322,13 +309,10 @@ export async function loadOperationsPage(scope: OperationsScope): Promise<Operat
   if (cancellations.failed) loadErrors.push("cancellation requests");
   const outOfScopeCancellationCount = cancellations.outOfScopeCancellationCount;
 
-  if (returnedRes.error) {
-    console.error(`[operations] returned-inspection SLA read failed: ${returnedRes.error.message}`);
-    loadErrors.push("resubmission deadlines");
-  }
-  const resubmissionSources = returnedRes.error
+  if (returnedRes.failed) loadErrors.push("resubmission deadlines");
+  const resubmissionSources = returnedRes.failed
     ? []
-    : toResubmissionSources(returnedRes.data ?? [], scope, inAuthorizedGeography);
+    : toResubmissionSources(returnedRes.rows, scope, inAuthorizedGeography);
 
   const outOfScopeRecordCount = outOfScopeVisitCount + outOfScopeOverrideCount + outOfScopeCancellationCount;
   const kpiContract: OperationsKpiContractData | null = kpiContractRpc.error

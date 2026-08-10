@@ -1,4 +1,6 @@
 import { supabaseServer } from "@/lib/supabase-server";
+import { readRows } from "@/lib/postgrest/read";
+import { regulationLibraryRow } from "./shapes";
 
 export type RegulationClause = {
   readonly id: string;
@@ -63,13 +65,13 @@ export async function queryRegulationCatalogue(): Promise<RegulationCatalogue> {
     sb.from("violation_codes").select("id, clause_id").not("clause_id", "is", null),
   ]);
 
-  if (library.error) console.error(`[regulations.catalogue] library read failed: ${library.error.message}`);
+  const libraryRead = readRows(library, regulationLibraryRow, "regulations.library");
   if (violations.error) console.error(`[regulations.catalogue] violation read failed: ${violations.error.message}`);
 
   return {
-    rows: (library.data ?? []) as unknown as RegulationLibraryRow[],
+    rows: libraryRead.rows,
     violationsByClause: countByClause(violations.data),
-    libraryReadable: !library.error,
+    libraryReadable: !libraryRead.failed,
     violationsReadable: !violations.error,
   };
 }

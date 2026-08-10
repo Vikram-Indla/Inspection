@@ -133,4 +133,4 @@ export type LoadedQueue = {
   degraded: boolean;
 };
 
-export type Translator = (key: string, en: string) => string;
+export type { Translator } from "@/lib/i18n";

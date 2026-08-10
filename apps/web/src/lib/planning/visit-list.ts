@@ -30,6 +30,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { collectPostgrestPages } from "@/lib/supabase-pagination";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
+import { readRows } from "@/lib/postgrest/read";
+import type { Shape } from "@/lib/postgrest/shape";
 
 export const PLANNING_TABS = ["all", "draft", "pending_supervision", "published", "returned", "cancelled", "expired"] as const;
 export type PlanningTab = (typeof PLANNING_TABS)[number];
@@ -268,7 +270,7 @@ function applyFilters(query: any, tab: PlanningTab, filters: PlanningListFilters
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 type Joined = {
-  id: string; factory_id: string; visit_reference: string | null; visit_plan_id: string | null;
+  id: string; factory_id: string | null; visit_reference: string | null; visit_plan_id: string | null;
   visit_type: string; execution_mode: string;
   planning_status: string; operational_state: string; priority: string | null;
   window_start: string; window_end: string; created_at: string;
@@ -280,6 +282,54 @@ type Joined = {
   profiles: { full_name: string } | null;      // created_by → profiles
   inspections: { started_at: string | null; status: string | null } | null;
 };
+
+const joinedVisitRow: Shape<Joined> = f => ({
+  id: f.text("id"),
+  factory_id: f.optionalText("factory_id"),
+  visit_reference: f.optionalText("visit_reference"),
+  visit_plan_id: f.optionalText("visit_plan_id"),
+  visit_type: f.text("visit_type"),
+  execution_mode: f.text("execution_mode"),
+  planning_status: f.text("planning_status"),
+  operational_state: f.text("operational_state"),
+  priority: f.optionalText("priority"),
+  window_start: f.text("window_start"),
+  window_end: f.text("window_end"),
+  created_at: f.text("created_at"),
+  source_channel: f.optionalText("source_channel"),
+  internal_reference: f.optionalText("internal_reference"),
+  cancellation_reason: f.optionalText("cancellation_reason"),
+  visit_plans: f.toOne("visit_plans", plan => ({
+    method: plan.text("method"),
+    plan_reference: plan.optionalText("plan_reference"),
+  })),
+  factories: f.toOne("factories", factory => ({
+    name: factory.text("name"),
+    factory_code: factory.optionalText("factory_code"),
+    cr_number: factory.optionalText("cr_number"),
+    license_number: factory.optionalText("license_number"),
+    region: factory.optionalText("region"),
+    city: factory.optionalText("city"),
+  })),
+  assignments: f.optionalToMany("assignments", assignment => ({
+    inspector_id: assignment.text("inspector_id"),
+    status: assignment.text("status"),
+    return_reason: assignment.optionalText("return_reason"),
+    profiles: assignment.toOne("profiles", profile => ({ full_name: profile.text("full_name") })),
+  })),
+  visit_packages: f.optionalToMany("visit_packages", visitPackage => ({
+    package_version_id: visitPackage.text("package_version_id"),
+    package_versions: visitPackage.toOne("package_versions", version => ({
+      id: version.text("id"),
+      packages: version.toOne("packages", pkg => ({ title: pkg.text("title") })),
+    })),
+  })),
+  profiles: f.toOne("profiles", profile => ({ full_name: profile.text("full_name") })),
+  inspections: f.toOne("inspections", inspection => ({
+    started_at: inspection.optionalText("started_at"),
+    status: inspection.optionalText("status"),
+  })),
+});
 
 function toRow(v: Joined): PlanningVisitRow {
   const asg = v.assignments?.[0];
@@ -361,16 +411,14 @@ async function readVisibleRows(
     if (ids) query = query.in("id", ids);
     return query.order(sort.column, { ascending: sort.ascending }).order("id", { ascending: true }).range(from, to);
   };
-  const real = (data: unknown[]) => (data as Joined[]).filter(row => !fixtureFactoryIds.has(row.factory_id));
+  const real = (rows: readonly Joined[]) =>
+    rows.filter(row => row.factory_id === null || !fixtureFactoryIds.has(row.factory_id));
 
   if (matchedIds) {
-    const reads = await Promise.all(chunk(matchedIds, ID_CHUNK).map(ids => fetchRows(ids, 0, ID_CHUNK - 1)));
-    const failure = reads.find(read => read.error);
-    if (failure?.error) {
-      console.error("[planning.visit-list] row query failed:", failure.error.message);
-      return { ok: false };
-    }
-    const rows = reads.flatMap(read => real((read.data ?? []) as unknown[])).map(toRow);
+    const reads = await Promise.all(chunk(matchedIds, ID_CHUNK).map(async ids =>
+      readRows(await fetchRows(ids, 0, ID_CHUNK - 1), joinedVisitRow, "planning.visit_list")));
+    if (reads.some(read => read.failed)) return { ok: false };
+    const rows = reads.flatMap(read => real(read.rows)).map(toRow);
     rows.sort(compareRows(sort));
     return { ok: true, rows: rows.slice((params.page - 1) * params.pageSize, params.page * params.pageSize) };
   }
@@ -387,12 +435,9 @@ async function readVisibleRows(
   // before accepting it as the true end.
   const MAX_BATCHES = 30;
   for (let from = 0, batch = 0; batch < MAX_BATCHES; from += sourcePageSize, batch += 1) {
-    let read = await fetchRows(null, from, from + sourcePageSize - 1);
-    if (read.error) {
-      console.error("[planning.visit-list] row query failed:", read.error.message);
-      return { ok: false };
-    }
-    let sourceRows = (read.data ?? []) as unknown as Joined[];
+    let read = readRows(await fetchRows(null, from, from + sourcePageSize - 1), joinedVisitRow, "planning.visit_list");
+    if (read.failed) return { ok: false };
+    let sourceRows = read.rows;
     let realRows = real(sourceRows);
     // A short batch with zero real rows on the very first page is the same
     // dishonest-empty shape whether PostgREST returned nothing at all or
@@ -400,12 +445,9 @@ async function readVisibleRows(
     // way a real, non-empty total would render with no visible rows. Retry
     // once before accepting either shape as the true end of the table.
     if (from === 0 && realRows.length === 0 && sourceRows.length < sourcePageSize) {
-      read = await fetchRows(null, from, from + sourcePageSize - 1);
-      if (read.error) {
-        console.error("[planning.visit-list] row query retry failed:", read.error.message);
-        return { ok: false };
-      }
-      sourceRows = (read.data ?? []) as unknown as Joined[];
+      read = readRows(await fetchRows(null, from, from + sourcePageSize - 1), joinedVisitRow, "planning.visit_list");
+      if (read.failed) return { ok: false };
+      sourceRows = read.rows;
       realRows = real(sourceRows);
     }
     visible.push(...realRows);

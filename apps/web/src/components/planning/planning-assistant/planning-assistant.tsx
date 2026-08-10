@@ -5,6 +5,7 @@ import styles from "./planning-assistant.module.css";
 
 export type PlanningAssistantStrings = {
   aria: string;
+  advisory: string;
   insightsTitle: string;
   insightsEmptyTitle: string;
   insightsEmptyBody: string;
@@ -44,23 +45,25 @@ export default function PlanningAssistant({ strings, counts, canCreate }: {
   ];
   return (
     <section className={styles.root} aria-label={strings.aria}>
-      <div className={styles.column}>
+      <div className={styles.column} data-ai="">
         <h2 className={styles.heading}>
           <Icon name="ai" size="sm" />
           {strings.insightsTitle}
+          <span className={styles.advisory}>{strings.advisory}</span>
         </h2>
         <EmptyState size="sm" variant="inline" title={strings.insightsEmptyTitle} description={strings.insightsEmptyBody} />
       </div>
-      <div className={styles.column}>
+      <div className={styles.column} data-ai="">
         <h2 className={styles.heading}>
           <Icon name="ai" size="sm" />
           {strings.recommendationsTitle}
+          <span className={styles.advisory}>{strings.advisory}</span>
         </h2>
         <EmptyState size="sm" variant="inline" title={strings.recommendationsEmptyTitle} description={strings.recommendationsEmptyBody} />
       </div>
       <div className={styles.column}>
         <h2 className={styles.heading}>
-          <Icon name="ai" size="sm" />
+          <Icon name="workflow" size="sm" />
           {strings.quickTitle}
         </h2>
         <div className={styles.quickGrid}>

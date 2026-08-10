@@ -11,6 +11,14 @@ export type SelectOption = {
   readonly value: string;
   readonly label: string;
   readonly count?: number;
+  /**
+   * Offered but not choosable. The row stays in the list and stays announced,
+   * because "recorded but unavailable" and "never offered" are different facts
+   * and a user can only act on the first if they can see it.
+   */
+  readonly disabled?: boolean;
+  /** Short reason shown beside a disabled label. */
+  readonly note?: string;
 };
 
 export type SelectProps = {
@@ -41,8 +49,8 @@ export default function SaqeelSelect({
   const selected = selectedIndex < 0 ? undefined : options[selectedIndex];
   const optionId = (index: number) => `${listId}-${index}`;
 
-  function open(startAt = selectedIndex < 0 ? 0 : selectedIndex): void {
-    setActiveIndex(startAt);
+  function open(): void {
+    setActiveIndex(selectedIndex < 0 ? edge(1) : selectedIndex);
     setIsOpen(true);
   }
 
@@ -53,16 +61,28 @@ export default function SaqeelSelect({
 
   function commit(index: number): void {
     const option = options[index];
-    if (option) onChange(option.value);
+    if (!option || option.disabled) return;
+    onChange(option.value);
     close(true);
   }
 
+  function step(from: number, direction: 1 | -1): number {
+    for (let index = from + direction; index >= 0 && index < options.length; index += direction) {
+      if (!options[index].disabled) return index;
+    }
+    return from;
+  }
+
+  function edge(direction: 1 | -1): number {
+    const start = direction === 1 ? -1 : options.length;
+    return step(start, direction);
+  }
+
   function typeAhead(key: string): void {
-    const from = options.findIndex((option, index) =>
-      index > activeIndex && option.label.toLowerCase().startsWith(key));
-    const wrapped = from >= 0
-      ? from
-      : options.findIndex(option => option.label.toLowerCase().startsWith(key));
+    const matches = (option: SelectOption) =>
+      !option.disabled && option.label.toLowerCase().startsWith(key);
+    const from = options.findIndex((option, index) => index > activeIndex && matches(option));
+    const wrapped = from >= 0 ? from : options.findIndex(matches);
     if (wrapped >= 0) setActiveIndex(wrapped);
   }
 
@@ -76,16 +96,16 @@ export default function SaqeelSelect({
     }
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      setActiveIndex(index => Math.min(index + 1, options.length - 1));
+      setActiveIndex(index => step(index, 1));
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
-      setActiveIndex(index => Math.max(index - 1, 0));
+      setActiveIndex(index => step(index, -1));
     } else if (event.key === "Home") {
       event.preventDefault();
-      setActiveIndex(0);
+      setActiveIndex(edge(1));
     } else if (event.key === "End") {
       event.preventDefault();
-      setActiveIndex(options.length - 1);
+      setActiveIndex(edge(-1));
     } else if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       commit(activeIndex);
@@ -138,6 +158,8 @@ export default function SaqeelSelect({
             selected={option.value === value}
             active={index === activeIndex}
             count={option.count}
+            disabled={option.disabled}
+            note={option.note}
             onSelect={() => commit(index)}
           />
         ))}

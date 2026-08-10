@@ -36,11 +36,34 @@
   inline-size: 100%;
 }
 
-.root:disabled {
+/* Scoped away from `[data-busy]` rather than undone by a later rule: an
+   override would outrank every `[data-variant]` block below and strip the
+   variant's own colours — the AI gradient vanished exactly while it worked. */
+.root:disabled:not([data-busy]) {
   color: var(--sqx-action-disabled-text);
   background: var(--sqx-action-disabled-bg);
   border-color: transparent;
   cursor: not-allowed;
+}
+
+.root[data-busy] {
+  cursor: progress;
+}
+
+.spinner {
+  flex: none;
+  inline-size: var(--sqx-icon-md);
+  block-size: var(--sqx-icon-md);
+  border: var(--sqx-border-width-thick) solid currentColor;
+  border-radius: var(--sqx-radius-pill);
+  border-block-start-color: transparent;
+  animation: sqx-button-spin var(--sqx-duration-sweep) var(--sqx-ease-linear) infinite;
+}
+
+@keyframes sqx-button-spin {
+  to {
+    transform: rotate(1turn);
+  }
 }
 
 /* gap, not a text space: these are inline-flex, so a label followed by a

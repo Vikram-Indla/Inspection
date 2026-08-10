@@ -1,6 +1,116 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-10` · `Updated by: T-041 — enforcement library + violation catalogue`
+`Last updated: 2026-08-10` · `Updated by: T-046 slice 1b — /planning/bulk screen composition`
+
+> **The workstation blocker is stale.** `next dev` ran on 2026-08-10 and
+> compiled `/planning/bulk` clean; the SWC Application Control error did not
+> reproduce. What still prevents a rendered pass is **a seeded account** —
+> `planning_access_class` denies the anonymous caller, so every authenticated
+> route 307s to `/login`. Do not repeat "static verification only" without
+> re-testing it. See BLOCKED in `03-REDESIGN-TRACKER.md`.
+
+## Where `/planning/bulk` stands (2026-08-10)
+
+Slices **1a** (data layer behind the T-042 narrowing boundary), **1b** (route
+file 348 → **27**) and **1c** (criteria builder — 13 native controls and 24
+legacy classes to zero) are done, plus the shared AI advisory. **Four slices
+remain and they hold most of the mass:** `BulkForm` 274 · `review/page.tsx`
+288 → ≤ 40 and delete `review.css` · `ReviewClient` **853 lines, 19 legacy
+classes, 7 effects, zero `t()` calls** · `actions.ts` **846 lines**.
+
+The entry screen is now server composition: `features/planning-bulk/` holds the
+reads, the view models and three string modules; `resolveBulkTargeting()`
+returns the criteria tree, match set, suggestion lists, focus contributions,
+freshness and counts as one value, which is what keeps the screen component's
+body at 44 lines. Two rulings from this slice generalise:
+
+- **A type lie relocated is a type lie.** `factories as never` existed because
+  `BulkForm` demanded non-null `factory_code`, `cr_number` and `visits` that the
+  query has always been able to return null for. Widening the row type at four
+  use sites removed the cast; passing it down one level would not have.
+- **Arabic is a resource, not a fallback.** ~130 strings moved into
+  `planning.bulk` in **both** locale files at asserted key parity, and the JSON
+  shape was authored to match the four string contracts — so the three string
+  modules fell 272 → 77 lines and a drifted key is now a **type error** instead
+  of a silent English fallback. This screen no longer needs a `ui_strings` row.
+  `/planning/single` and the review step still do.
+- **Derive the list the registry already implies.** The nine value-suggestion
+  fields were hardcoded beside a `FIELD_REGISTRY` that documents itself as the
+  single place a field is added. They are now
+  `filter(supplied && (text | enum))`.
+
+Two primitives were extended to unblock this work, both raised as gaps first and
+built only after a ruling (WEB-002 §2): `Button.busy` and
+`SelectOption.disabled`. **Neither gap was filled inline** — that is the pattern
+to repeat.
+
+Rulings worth carrying forward:
+
+- **"Recorded but unavailable" and "never offered" are different facts.** A
+  disabled option stays visible, readable and announced, with its reason. Only
+  the first of those two states is something a user can act on.
+- **A disabled flag must guard every path in** — click, Enter/Space, arrow keys,
+  Home/End, type-ahead, and the initial open. Guarding `onClick` alone leaves a
+  row reachable that then refuses to activate.
+- **Check specificity before writing a CSS override.** Three separate defects in
+  this codebase now trace to an equal-or-higher-specificity rule silently
+  beating a variant (`Card`'s AI accent on hover, the frozen sheet's
+  `a { color }`, and `Button`'s busy state stripping the AI accent).
+
+**Still unrecorded:** the eight pre-session wizard commits
+(`754c5f1c` … `462e3675`, `cf36da85`). Also note `21d92022`'s message describes
+only a visit-list fix while actually containing the whole T-042 boundary.
+
+## Where planning stands (2026-08-10)
+
+`/planning` itself is migrated: 10 native controls gone, More Filters portalled,
+AI columns accented (T-043). `/planning/single` has honest search states and
+correct pill tones (T-045). **`/planning/bulk` is where the legacy mass is** —
+before T-046 it had **zero SAQEEL imports** across 14 files and 3,512 lines.
+Slice 1a moved its reads behind the narrowing boundary; the other five slices
+are on the board.
+
+Three rulings from this run generalise:
+
+- **A portalled control cannot participate in a GET form.** Its DOM sits outside
+  the `<form>`, so native submit skips it. Keep the state in one island and
+  render every hidden input inside the form; the panel is presentation only.
+- **Two portals into `document.body` are DOM siblings** however deeply nested
+  they are in React. `contains()` cannot express menu ownership — React context
+  can, because it follows the React tree. This caused a hard crash before it was
+  found (T-044).
+- **Read the nearest existing solution before designing a new one.** The
+  `/planning` filter bar was built twice because `enforcement-filter-bar` had
+  already solved the same problem, and the first attempt invented a chip that
+  double-bordered every control.
+
+
+## Where the data layer stands (2026-08-10)
+
+**Every `as unknown as` is gone from the migrated data layer** — 48 casts across
+21 files, replaced by `lib/postgrest/{shape,read}.ts` and a `Shape<T>` per row
+type. Reads narrow once at the boundary and **fail closed**: a malformed row
+fails the whole read into the screen's existing *unavailable* state, never into
+a silently smaller number.
+
+Two things generalise from that work:
+
+- **`supabaseServer()` has no `Database` generic**, so `.select()` infers every
+  column as `any` **and every embedded relation as an array** — including
+  to-one embeds PostgREST returns as objects. That is why the casts existed, and
+  why `typecheck` passing did not mean the reads were type-safe. Generating
+  database types (`supabase gen types typescript`) is the real fix and needs a
+  live database.
+- **A row type must declare what the query selects, not what the screen wants.**
+  The dashboard's types described the *post-hydration* shape, so every read had
+  to be asserted into it. Splitting `VisitScopeRef` out — `factory_id` from the
+  query, `factories` filled by `hydrate.ts` — removed six casts without changing
+  a line of behaviour.
+
+**150 casts remain in unmigrated legacy** (`field/**`, `admin/**`,
+`reviews/[id]`, `visits/[id]`, `reports/**`, `lib/factory360/dossier.ts`). Each
+screen migration should convert its own reads onto the boundary.
+
 
 ## Where enforcement stands (2026-08-10)
 
@@ -178,8 +288,9 @@ The rulebook is still not machine-enforced. No lint config, no gate scripts —
 every rule T-002 obeyed was checked by hand. That is **T-000**, and it remains
 the highest-priority unblocked item.
 
-> **The app does not run on this workstation.** Windows Application Control
-> blocks `@next/swc-win32-x64-msvc`, so `next dev` serves nothing and
+> ~~**The app does not run on this workstation.**~~ **DID NOT REPRODUCE
+> 2026-08-10 — see the note at the top of this file.** Windows Application
+> Control was blocking `@next/swc-win32-x64-msvc`, so `next dev` served nothing and
 > `next build` hangs. No browser verification, no e2e, no axe, no bundle
 > numbers — every task is currently limited to static verification, and the
 > Definition of Done cannot be fully ticked by anyone working here. See

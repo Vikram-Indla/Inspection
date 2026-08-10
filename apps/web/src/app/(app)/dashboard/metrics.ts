@@ -15,7 +15,12 @@ export type FactoryRef = {
   geofence_radius_m?: number | null;
 };
 
-export type VisitRow = {
+export type VisitScopeRef = {
+  factory_id: string | null;
+  factories: FactoryRef | null;
+};
+
+export type VisitRow = VisitScopeRef & {
   id: string;
   planning_status: string;
   operational_state: string;
@@ -24,7 +29,6 @@ export type VisitRow = {
   priority: string | null;
   cancellation_reason: string | null;
   created_at: string;
-  factories: FactoryRef | null;
   assignments: { inspector_id: string; profiles: { full_name: string } | null }[] | null;
 };
 
@@ -34,7 +38,7 @@ export type InspectionRow = {
   status: string;
   started_at: string | null;
   submitted_at: string | null;
-  visits: { window_start: string; factories: FactoryRef | null } | null;
+  visits: (VisitScopeRef & { window_start: string }) | null;
 };
 
 export type ReviewRow = {
@@ -43,14 +47,14 @@ export type ReviewRow = {
   status: string;
   decision: string | null;
   decided_at: string | null;
-  inspections: { submitted_at: string | null; visits: { window_start: string; factories: FactoryRef | null } | null } | null;
+  inspections: { submitted_at: string | null; visits: (VisitScopeRef & { window_start: string }) | null } | null;
 };
 
 export type ResponseRow = {
   inspection_id: string;
   is_complete: boolean;
   response: { value?: string } | null;
-  inspections: { submitted_at: string | null; visits: { factories: FactoryRef | null } | null } | null;
+  inspections: { submitted_at: string | null; visits: VisitScopeRef | null } | null;
   inspection_items: {
     regulation_clauses: { regulations: { title: string; issuing_authority: string | null } | null } | null;
   } | null;
@@ -67,7 +71,7 @@ export type ChecklistItemRow = {
 export type ViolationRow = {
   id: string;
   inspection_id: string;
-  inspections: { submitted_at: string | null; visits: { factories: FactoryRef | null } | null } | null;
+  inspections: { submitted_at: string | null; visits: VisitScopeRef | null } | null;
   violation_codes: {
     title: string;
     level: string;
@@ -84,7 +88,7 @@ export type GeoRow = {
   occurred_at: string;
   observed_lat: number;
   observed_lng: number;
-  visits: { planner_lat: number | null; planner_lng: number | null; factories: FactoryRef | null } | null;
+  visits: (VisitScopeRef & { planner_lat: number | null; planner_lng: number | null }) | null;
 };
 
 export type AuditRow = {

@@ -16,6 +16,12 @@ export type ButtonProps = {
   block?: boolean;
   compactLabel?: boolean;
   disabled?: boolean;
+  /**
+   * An action is in flight. Replaces the leading icon with a progress
+   * indicator, disables the control and sets `aria-busy` — the label itself
+   * stays put, so the button does not resize or change wording mid-action.
+   */
+  busy?: boolean;
   href?: string;
   prefetch?: boolean;
   type?: "button" | "submit" | "reset";
@@ -44,6 +50,7 @@ export default function Button({
   block,
   compactLabel,
   disabled,
+  busy,
   href,
   prefetch = false,
   type = "button",
@@ -58,7 +65,8 @@ export default function Button({
 }: ButtonProps) {
   const content = (
     <>
-      {icon ? <Icon name={icon} size="md" /> : null}
+      {busy ? <span className={styles.spinner} aria-hidden="true" /> : null}
+      {icon && !busy ? <Icon name={icon} size="md" /> : null}
       <span className={compactLabel ? styles.compact : styles.label}>{children}</span>
       {iconEnd ? <Icon name={iconEnd} size="md" /> : null}
     </>
@@ -69,6 +77,7 @@ export default function Button({
     "data-variant": variant,
     "data-size": size,
     "data-block": block ? "" : undefined,
+    "data-busy": busy ? "" : undefined,
     "aria-label": label,
     "aria-expanded": expanded,
     "aria-controls": controls,
@@ -76,7 +85,7 @@ export default function Button({
     title: title ?? label,
   } as const;
 
-  if (href && !disabled) {
+  if (href && !disabled && !busy) {
     return (
       <Link {...shared} href={href} prefetch={prefetch} onClick={onClick}>
         {content}
@@ -85,7 +94,15 @@ export default function Button({
   }
 
   return (
-    <button {...shared} type={type} name={name} value={value} disabled={disabled} onClick={onClick}>
+    <button
+      {...shared}
+      type={type}
+      name={name}
+      value={value}
+      disabled={disabled || busy}
+      aria-busy={busy}
+      onClick={onClick}
+    >
       {content}
     </button>
   );
