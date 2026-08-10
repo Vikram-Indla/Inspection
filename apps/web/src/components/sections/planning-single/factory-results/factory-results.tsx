@@ -5,6 +5,7 @@ import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import TextInput from "@/components/saqeel/text-input/text-input";
 import Button from "@/components/saqeel/button/button";
+import { Skeleton, SkeletonRegion } from "@/components/saqeel/skeleton/skeleton";
 import styles from "./factory-results.module.css";
 
 export type GradedResult = {
@@ -30,6 +31,7 @@ export type FactoryResultsStrings = {
   readonly registryUnavailable: string;
   readonly retry: string;
   readonly absent: string;
+  readonly searching: string;
 };
 
 /**
@@ -41,11 +43,18 @@ export type FactoryResultsStrings = {
  * never a score, so it renders as a labelled pill rather than a number.
  */
 export default function FactoryResults({
-  query, results, registryUnavailable, settled, selectedId, dossierFor, onQueryChange, onSelect, onRetry, strings,
+  query, results, registryUnavailable, settled, matchedElsewhere, selectedId,
+  dossierFor, onQueryChange, onSelect, onRetry, strings,
 }: {
   query: string;
   /** False while a debounced search navigation is still in flight. */
   settled: boolean;
+  /**
+   * True when the canonical CR resolver found a portfolio for this query. The
+   * graded legacy search and the resolver answer independently, so an empty
+   * `results` alone does not mean nothing matched.
+   */
+  matchedElsewhere: boolean;
   results: readonly GradedResult[];
   registryUnavailable: boolean;
   selectedId: string | null;
@@ -55,13 +64,13 @@ export default function FactoryResults({
   onRetry: () => void;
   strings: FactoryResultsStrings;
 }) {
-  // A stale result set must not flash while the search is still resolving, and
-  // "no match" must not be shown before the answer is actually in.
   const searching = query.trim().length >= 3;
+  const pending = searching && !settled;
   const visible = settled ? results : [];
+  const nothingFound = settled && !registryUnavailable && results.length === 0 && !matchedElsewhere;
 
   return (
-    <div className={styles.root} aria-busy={!settled}>
+    <div className={styles.root} aria-busy={pending}>
       <TextInput
         type="search"
         value={query}
@@ -70,6 +79,14 @@ export default function FactoryResults({
         label={strings.searchLabel}
       />
 
+      {pending ? (
+        <SkeletonRegion label={strings.searching}>
+          <Skeleton shape="block" size="lg" />
+          <Skeleton shape="block" size="lg" />
+          <Skeleton shape="block" size="lg" />
+        </SkeletonRegion>
+      ) : null}
+
       {searching && registryUnavailable ? (
         <div className={styles.notice}>
           <EmptyState tone="danger" size="sm" variant="inline" title={strings.registryUnavailable} />
@@ -77,7 +94,7 @@ export default function FactoryResults({
         </div>
       ) : null}
 
-      {searching && settled && !registryUnavailable && results.length === 0 ? (
+      {searching && nothingFound ? (
         <EmptyState size="sm" title={strings.noMatch} description={strings.noMatchBody} />
       ) : null}
 

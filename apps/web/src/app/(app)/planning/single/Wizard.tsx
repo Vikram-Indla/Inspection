@@ -13,6 +13,7 @@ import { Card, CardBody, CardFooter, CardHeader } from "@/components/saqeel/card
 import Choice from "@/components/saqeel/choice/choice";
 import DefinitionList from "@/components/saqeel/definition-list/definition-list";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { registryStatusTone } from "@/features/planning-single/registry-status";
 import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
 import FactoryResults from "@/components/sections/planning-single/factory-results/factory-results";
 import PublishReadiness from "@/components/sections/planning-single/publish-readiness/publish-readiness";
@@ -79,7 +80,7 @@ type Target = {
 
 // SB19 — server page builds every user-facing string with t() and passes them here.
 export type WizardStrings = {
-  findFactory: string; searchPlaceholder: string; noMatch: string; registryUnavailable: string; crPrefix: string;
+  findFactory: string; searchPlaceholder: string; noMatch: string; searching: string; registryUnavailable: string; crPrefix: string;
   exactBadge: string; exactRule: string; similarBadge: string; similarRule: string;
   degradedBadge: string; degradedRule: string; duplicateWarning: string; duplicateOpenVisit: string; duplicateStatusLabel: string;
   portfolioStep: string; crIdentity: string; selectLicenceHint: string; licenceRequired: string;
@@ -376,6 +377,7 @@ export default function Wizard({
             }))}
             registryUnavailable={registryUnavailable}
             settled={searchSettled}
+            matchedElsewhere={portfolios.length > 0}
             selectedId={factoryId}
             onQueryChange={setQueryInput}
             onSelect={id => { setFactoryId(id); setLicenceId(null); setTargetReselected(true); setLicenseNumber(""); setLocationConfirmed(false); }}
@@ -397,6 +399,7 @@ export default function Wizard({
               registryUnavailable: strings.registryUnavailable,
               retry: strings.retry,
               absent: "—",
+              searching: strings.searching,
             }}
           />
         </CardBody>
@@ -420,7 +423,7 @@ export default function Wizard({
                 eyebrow={<>{strings.crIdentity} <bdi>{p.crNumber}</bdi></>}
                 title={p.legalNameEn ?? p.legalName ?? p.crNumber}
                 description={`${strings.sourceLabel}: ${p.sourceSystem ?? "—"} · ${strings.freshnessLabel}: ${p.sourceSyncedAt ? formatDate(p.sourceSyncedAt, locale) : strings.freshnessNever}`}
-                trailing={p.status ? <StatusPill tone="neutral">{titleCase(p.status)}</StatusPill> : undefined}
+                trailing={p.status ? <StatusPill tone={registryStatusTone(p.status)}>{titleCase(p.status)}</StatusPill> : undefined}
               />
               <CardBody gap="tight">
               {p.licences.length === 0 ? (
@@ -441,7 +444,7 @@ export default function Wizard({
                           label={
                             <span className={styles.choiceLabel}>
                               <bdi>{l.licenseNumber}</bdi>
-                              {l.status ? <StatusPill tone="info">{titleCase(l.status)}</StatusPill> : null}
+                              {l.status ? <StatusPill tone={registryStatusTone(l.status)}>{titleCase(l.status)}</StatusPill> : null}
                             </span>
                           }
                           description={
