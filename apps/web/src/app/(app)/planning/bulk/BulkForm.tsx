@@ -1,3 +1,4 @@
+/* @retiring 2026-08-10 · replaced-by components/sections/planning-bulk/bulk-targeting-form · pending none — zero importers · delete-when 0-imports */
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";

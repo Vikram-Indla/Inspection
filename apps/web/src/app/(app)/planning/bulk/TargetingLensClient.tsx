@@ -4,7 +4,7 @@ import { useState } from "react";
 import CriteriaBuilder, { type CriteriaBuilderStrings, type BuilderField } from "./CriteriaBuilder";
 import EligibilityLedger, { type LedgerStrings } from "./EligibilityLedger";
 import DistributionPanels, { type Distribution, type DistributionStrings } from "./DistributionPanels";
-import BulkForm, { type BulkFormStrings } from "./BulkForm";
+import BulkTargetingForm, { type BulkFormStrings } from "@/components/sections/planning-bulk/bulk-targeting-form/bulk-targeting-form";
 import type { GroupNode } from "./criteria";
 import { serializeCriteria } from "./criteria";
 import type { Locale } from "@/lib/i18n";
@@ -49,7 +49,7 @@ export default function TargetingLensClient({
         strings={ledgerStrings} focusedCount={focusedCount} focusedLabel={focusedLeaf ? `${focusedLeaf.field}: ${focusedLeaf.value}` : null} locale={locale} />
       <DistributionPanels distributions={distributions} strings={distStrings}
         focusedField={focusedLeaf?.field} focusedValue={focusedLeaf?.value} />
-      <BulkForm factories={factories} strings={bulkFormStrings}
+      <BulkTargetingForm factories={factories} strings={bulkFormStrings}
         focusedField={focusedLeaf?.field} focusedValue={focusedLeaf?.value} locale={locale}
         criteriaTree={serializeCriteria(initialTree)} />
     </>

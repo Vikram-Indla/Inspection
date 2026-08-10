@@ -765,6 +765,8 @@ filters and tabs moved to `searchParams`.
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
 
+- **`bulk-targeting-form.tsx` is 219 lines**, over the 200 target. The
+  select-all confirmation is the natural fifth extraction.
 - **`TargetingLensClient` takes 16 props** against a review limit of 8, all
   pass-through to its four children. Slice 2 should hand it the view model and
   the string bundles, not 16 scalars.

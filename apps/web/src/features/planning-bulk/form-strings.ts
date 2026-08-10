@@ -1,5 +1,5 @@
 import type { Locale } from "@/lib/i18n";
-import type { BulkFormStrings } from "@/app/(app)/planning/bulk/BulkForm";
+import type { BulkFormStrings } from "@/components/sections/planning-bulk/bulk-targeting-form/bulk-targeting-form";
 import { bulkMessages } from "./strings";
 
 export function buildBulkFormStrings(locale: Locale): BulkFormStrings {

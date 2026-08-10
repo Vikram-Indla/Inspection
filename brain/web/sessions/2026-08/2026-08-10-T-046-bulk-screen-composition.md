@@ -241,7 +241,51 @@ tree.
 minutes, and half a rewritten 853-line client component is worse than the
 legacy one. The entry screen is complete; the review step is untouched.
 
+---
+
+## Addendum — slice 2: the evidence form on SAQEEL
+
+| File | Action | Lines before → after |
+| --- | --- | --- |
+| `components/sections/planning-bulk/bulk-targeting-form/**` | created | — → 219 + 8 |
+| `components/sections/planning-bulk/bulk-evidence-table/**` | created | — → 117 + 26 |
+| `components/sections/planning-bulk/bulk-selection-bar/**` | created | — → 60 + 38 |
+| `components/sections/planning-bulk/bulk-campaign-summary/**` | created | — → 59 + 33 |
+| `components/sections/planning-bulk/bulk-results-pager/**` | created | — → 34 + 13 |
+| `features/planning-bulk/selection.ts` | created | — → 54 |
+| `app/(app)/planning/bulk/BulkForm.tsx` | **marked `@retiring`** | 400, zero importers |
+
+The 400-line `BulkForm` island is superseded by one state owner plus four
+presentational components, none over 117 lines. **Every legacy class is gone
+from this surface** — `sq-table` → `DataTable`, `sq-lozenge` → `StatusPill`,
+`sq-banner` → `PlanningNotice`, `grid-toolbar` → `Toolbar` + `Field` +
+`TextInput`, `grid-footer` → `bulk-results-pager`, `sq-kpi-row` →
+`bulk-campaign-summary`, `sq-choice` → `Choice`, `btn btn-*` → `Button`.
+
+**Colour-only status is gone.** Nine `sq-lozenge` uses carried risk band,
+eligibility and data quality by hue alone; all nine are now `StatusPill`s with a
+text label and a ping. The two emoji-as-icon (⚠, ✓) and the `IconBlocked` import
+went with them.
+
+**The table gained an empty state it never had.** `sq-table` rendered an empty
+`<tbody>` when the filter matched nothing — the screenshot that prompted this
+slice shows exactly that: a header row, a caption, and no answer. `DataTable`
+takes a required `empty`, so "No factories match" is now a rendered state in
+both locales.
+
+**Session-storage handling moved out of the component.** `readStoredSelection`,
+`writeStoredSelection`, `matchesQuery`, `hasActiveVisit` and `countSelectionBy`
+live in `features/planning-bulk/selection.ts`, so the two remaining effects are
+pure external synchronisation (WEB-004) and the `exhaustive-deps` suppression is
+gone — the restore effect depends on `availableIds`, which is memoised.
+
+**`Button.busy` replaced the last hand-rolled pending label.** The savingDraft
+copy is no longer swapped into the label; the T-048 spinner takes the icon slot.
+
+**Known gap:** `bulk-targeting-form.tsx` is **219 lines**, over the 200 target
+(ceiling 400). The select-all confirmation is the natural fifth extraction.
+
 ## Next
 
-Slice 2 — `BulkForm` (274 lines, 10 legacy classes, 7 `useState`, `sq-table` →
+Slice 2 is done. Next is slice 3 — `review/page.tsx` (274 lines, 10 legacy classes, 7 `useState`, `sq-table` →
 `DataTable`), tracker item T-046. Then slices 3 and 4, the review step.
