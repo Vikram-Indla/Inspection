@@ -2,6 +2,7 @@ import { readPages } from "@/lib/postgrest/read";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { getPlanningAccess } from "@/lib/planning/access";
+import { loadBulkDraft } from "@/app/(app)/planning/bulk/actions";
 import { factoryRow, inspectionRow, violationRow, type FactoryRow } from "./shapes";
 import { toCriteriaFactories, type CriteriaFactory } from "./view";
 
@@ -51,6 +52,36 @@ export async function loadBulkTargeting(): Promise<BulkTargeting> {
   return {
     kind: "ready",
     factories: toCriteriaFactories(catalogue.rows, violations.rows, inspections.rows),
+  };
+}
+
+export type BulkDraft = NonNullable<Awaited<ReturnType<typeof loadBulkDraft>>["draft"]>;
+
+export type BulkReview =
+  | { readonly kind: "denied" }
+  | { readonly kind: "unauthorized" }
+  | {
+    readonly kind: "ready";
+    readonly draft: BulkDraft | null;
+    readonly draftUnavailable: boolean;
+    readonly transitionsExecutable: boolean;
+  };
+
+export async function loadBulkReview(planId: string | undefined): Promise<BulkReview> {
+  const sb = await supabaseServer();
+  const [{ data: { user }, error: authError }, access] = await Promise.all([
+    getVerifiedUser(sb),
+    getPlanningAccess(sb, ["planning.create.bulk", "planning.submit_for_supervision"]),
+  ]);
+  if (authError || access.error !== null) return { kind: "denied" };
+  if (!user || !access.can("planning.create.bulk")) return { kind: "unauthorized" };
+
+  const resumed = planId === undefined ? null : await loadBulkDraft(planId);
+  return {
+    kind: "ready",
+    draft: resumed?.draft ?? null,
+    draftUnavailable: resumed !== null && !resumed.draft,
+    transitionsExecutable: access.can("planning.submit_for_supervision"),
   };
 }
 

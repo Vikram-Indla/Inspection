@@ -1,6 +1,6 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-10` · `Updated by: T-046 slice 1b — /planning/bulk screen composition`
+`Last updated: 2026-08-10` · `Updated by: T-046 slice 3 — /planning/bulk review route composition`
 
 > **The workstation blocker is stale.** `next dev` ran on 2026-08-10 and
 > compiled `/planning/bulk` clean; the SWC Application Control error did not
@@ -13,10 +13,10 @@
 
 Slices **1a** (data layer behind the T-042 narrowing boundary), **1b** (route
 file 348 → **27**) and **1c** (criteria builder — 13 native controls and 24
-legacy classes to zero) are done, plus the shared AI advisory. **Four slices
-remain and they hold most of the mass:** `BulkForm` 274 · `review/page.tsx`
-288 → ≤ 40 and delete `review.css` · `ReviewClient` **853 lines, 19 legacy
-classes, 7 effects, zero `t()` calls** · `actions.ts` **846 lines**.
+legacy classes to zero) are done, plus the shared AI advisory. Slices **2** (the evidence form) and **3** (the review route, 288 → 30) are done
+too. **Two slices remain and they hold the rest of the mass:** `ReviewClient`
+**853 lines, 19 legacy classes, 7 effects, zero `t()` calls of its own** — which
+also owns the deletion of `review.css` — and `actions.ts` **846 lines**.
 
 The entry screen is now server composition: `features/planning-bulk/` holds the
 reads, the view models and three string modules; `resolveBulkTargeting()`

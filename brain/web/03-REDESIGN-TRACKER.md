@@ -73,6 +73,7 @@ were all legacy CSS, not JSX — including a 🔒 emoji injected by
 `status: in-progress (slices 1a + 1b + 1c done; 2–5 open)` · `rules: WEB-000…004, WEB-008, WEB-009, WEB-011` · `est: 12h total`
 `record (slice 1a):` [2026-08-10-T-046-bulk-targeting-feature-layer](sessions/2026-08/2026-08-10-T-046-bulk-targeting-feature-layer.md)
 `record (slice 1b):` [2026-08-10-T-046-bulk-screen-composition](sessions/2026-08/2026-08-10-T-046-bulk-screen-composition.md)
+`record (slice 3):` [2026-08-10-T-046-review-route-composition](sessions/2026-08/2026-08-10-T-046-review-route-composition.md)
 
 **The route had zero SAQEEL imports before this task** — 14 files, 3,512 lines,
 505 comments, ~180 legacy class uses, 26 colour-only `sq-lozenge`, 15 native
@@ -775,6 +776,28 @@ Pull one in only if it is genuinely part of doing the active task well.
 - **`IdentityDossier`'s map toggle on `/planning/single` is still `subtle`** and
   is a toggle, not a tab strip. It has the same defect the owner reported on
   `/planning/bulk`, and was left alone because it is a different screen.
+- **NEVER run a second dev server against a `.next` another one is using, and
+  never `taskkill /F` one.** T-046 ran seven dev servers on ports 3111–3118 to
+  verify compiles while the owner's server held port 3000, and force-killed each.
+  They all share `apps/web/.next`. The result was 4 half-written `*.pack.gz_`
+  files and a webpack cache that **silently stopped emitting
+  `static/css/app/(app)/planning/bulk/page.css`** — the route rendered with the
+  global sheets only, so every CSS Module on it (criteria-builder,
+  planning-notice, field) vanished and the owner saw an unstyled screen. The
+  `Caching failed for pack ... rename '65.pack.gz_' -> '65.pack.gz'` warnings
+  were visible for three turns and were dismissed as harmless. **A cache warning
+  on a shared `.next` is a defect report.** Cure: stop every dev server, delete
+  `apps/web/.next`, restart one. CLAUDE.md already said this; it was not heeded.
+- **Verify what a stylesheet is holding up before believing its importer owns
+  it.** `review.css` was imported by `review/page.tsx`, which used exactly one of
+  its 58 classes; `ReviewClient` uses 44 and `EvidenceLedger` 12. Deleting it
+  with the route file would have stripped the whole review screen.
+- **`review/loading.tsx` is still `RouteLoading`** — a centred glyph with no
+  mirror of the screen, and it needs the `<Shell>` wrapper the bulk skeleton
+  initially missed.
+- **`loadBulkDraft` is a read living in `actions.ts`**, a `"use server"` write
+  module, now called from `queries.ts`. It belongs on the read side; moving it
+  rides with slice 5.
 - **A `loading.tsx` that skips `<Shell>` renders full-bleed.** The page frame
   padding lives in `.sq-content`, which `Shell` owns, so a bare skeleton sits
   against the rail and the viewport edge and the page head pops in afterwards.

@@ -1,4 +1,6 @@
 "use client";
+
+import "./review.css";
 // CD-025 / SCR-WEB-150 / P03 — Plan Review & Publish workspace.
 //
 // Route-neutral staged review, mounted on the governed /planning/bulk/review
