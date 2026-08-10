@@ -9,7 +9,7 @@ import Field from "@/components/saqeel/field/field";
 import TextInput from "@/components/saqeel/text-input/text-input";
 import CountBadge from "@/components/saqeel/count-badge/count-badge";
 import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
-import BulkEvidenceTable, { type EvidenceTableStrings } from "@/components/sections/planning-bulk/bulk-evidence-table/bulk-evidence-table";
+import BulkEvidenceTable, { type EvidenceTableStrings, type TableEmptyReason } from "@/components/sections/planning-bulk/bulk-evidence-table/bulk-evidence-table";
 import BulkCampaignSummary, { type CampaignSummaryStrings } from "@/components/sections/planning-bulk/bulk-campaign-summary/bulk-campaign-summary";
 import BulkSelectionBar, { type SelectionBarStrings } from "@/components/sections/planning-bulk/bulk-selection-bar/bulk-selection-bar";
 import BulkResultsPager, { type ResultsPagerStrings } from "@/components/sections/planning-bulk/bulk-results-pager/bulk-results-pager";
@@ -40,11 +40,17 @@ function isFocusedRow(factory: CriteriaFactory, field?: string | null, value?: s
 const PAGE_SIZE = 25;
 const DRAFT_PERSISTENCE_EXECUTABLE = false;
 
+function emptyReasonFor(criteriaApplied: boolean, inScope: number): TableEmptyReason {
+  if (!criteriaApplied) return "noCriteria";
+  return inScope === 0 ? "noMatch" : "noFilterMatch";
+}
+
 export default function BulkTargetingForm({
-  factories, strings, focusedField, focusedValue, locale, criteriaTree,
+  factories, strings, criteriaApplied, focusedField, focusedValue, locale, criteriaTree,
 }: {
   factories: readonly CriteriaFactory[];
   strings: BulkFormStrings;
+  criteriaApplied: boolean;
   focusedField?: string | null;
   focusedValue?: string | null;
   locale: Locale;
@@ -187,6 +193,7 @@ export default function BulkTargetingForm({
 
       <BulkEvidenceTable
         busy={isFiltering}
+        emptyReason={emptyReasonFor(criteriaApplied, factories.length)}
         rows={pageRows}
         strings={strings}
         isSelected={factory => selected.has(factory.id)}

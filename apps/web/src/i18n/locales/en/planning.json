@@ -723,14 +723,26 @@
       "draftSaved": "Draft saved · {ref}",
       "draftSaveFailed": "Selection ready in this browser — continue to Review.",
       "reviewFallback": "Continue to review without saving",
-      "emptyTitle": "No factories match",
-      "emptyBody": "No factory in scope matches the current criteria and filter. Adjust the criteria above, or clear the filter within results.",
       "filtering": "Filtering results…"
     },
     "riskBand": {
       "high": "high",
       "medium": "medium",
       "low": "low"
+    },
+    "empty": {
+      "noCriteria": {
+        "title": "No criteria applied yet",
+        "body": "Build at least one condition above and press Apply criteria to see matching factories. Bulk targeting never matches the whole Factory list by default."
+      },
+      "noMatch": {
+        "title": "No factory matches these criteria",
+        "body": "Every factory in scope was excluded by the current criteria. Widen a condition, or switch the group from ALL to ANY."
+      },
+      "noFilterMatch": {
+        "title": "No results for this filter",
+        "body": "The criteria matched factories, but none of them match the text you typed. Clear the filter to see them all."
+      }
     }
   }
 }

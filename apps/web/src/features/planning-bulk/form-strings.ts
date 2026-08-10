@@ -4,5 +4,5 @@ import { bulkMessages } from "./strings";
 
 export function buildBulkFormStrings(locale: Locale): BulkFormStrings {
   const bulk = bulkMessages(locale);
-  return { ...bulk.form, riskBands: bulk.riskBand };
+  return { ...bulk.form, riskBands: bulk.riskBand, empty: bulk.empty };
 }

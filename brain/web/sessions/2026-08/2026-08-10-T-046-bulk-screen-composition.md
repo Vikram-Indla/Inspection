@@ -318,6 +318,27 @@ a style. **A default that no shipped consumer wants is the wrong default**;
 whether `subtle` should survive at all is a design-system question, because the
 three remaining `subtle` call sites are all tab strips, not toggles.
 
+**The evidence table now distinguishes three empty states, not one.** The owner
+asked why "Filter within results" returned nothing; the answer was that the
+table had no rows to filter, because no criteria had been applied — and the
+single empty state said "adjust the criteria above", which describes a
+different failure. `TableEmptyReason` is a union, resolved once:
+
+- `noCriteria` — nothing applied yet. Says to build a condition and press Apply,
+  and states the governed rule (bulk never matches the whole list by default).
+- `noMatch` — criteria applied, every factory in scope excluded. Suggests
+  widening a condition or switching ALL to ANY.
+- `noFilterMatch` — criteria matched, the typed filter excluded them. Says so,
+  and says clearing the filter brings them back.
+
+Each carries its own registry icon (`radar` / `factory` / `search`). The reason
+is derived from `criteriaApplied` and the pre-filter row count, so the three
+cannot be confused; `TargetingLensClient` computes `hasCriteria(initialTree)`
+itself rather than taking a seventeenth prop.
+
+**A screen that has to be explained in chat has an empty state that is lying.**
+The filter was never broken — the copy was.
+
 ## Next
 
 Slice 2 is done. Next is slice 3 — `review/page.tsx` (274 lines, 10 legacy classes, 7 `useState`, `sq-table` →
