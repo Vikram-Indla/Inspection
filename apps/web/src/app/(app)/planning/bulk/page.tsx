@@ -1,10 +1,7 @@
 import Shell from "@/components/Shell";
-import { supabaseServer } from "@/lib/supabase-server";
-import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import EmptyState from "@/components/EmptyState";
-import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
-import { getPlanningAccess } from "@/lib/planning/access";
+import { loadBulkTargeting } from "@/features/planning-bulk/queries";
 import type { BulkFormStrings } from "./BulkForm";
 import type { CriteriaBuilderStrings, BuilderField } from "./CriteriaBuilder";
 import type { LedgerStrings } from "./EligibilityLedger";
@@ -14,42 +11,39 @@ import ContextualAiPanel from "@/components/ContextualAiPanel";
 import WidgetBoundary from "@/components/WidgetBoundary";
 import { parseCt, fromFlat, evalNode, hasCriteria, emptyTree, leaves, pathKey, FIELD_REGISTRY, type Op } from "./criteria";
 
-type FactoryForCriteria = {
-  region: string | null; risk_band: string | null; activity_class: string | null; city: string | null;
-  industrial_licenses?: Array<{
-    license_type: string | null; status: string | null; stage: string | null;
-    investment_type: string | null; investment_size: number | null;
-  }> | null;
-};
-
 const toArr = (v: string | string[] | undefined): string[] => (v == null ? [] : Array.isArray(v) ? v : [v]);
 
 export default async function BulkPlanning({ searchParams }: { searchParams: Promise<{ ct?: string; cf?: string | string[]; co?: string | string[]; cv?: string | string[]; combine?: string }> }) {
   const sp = await searchParams;
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
-  const sb = await supabaseServer();
 
   // RBAC-007 / M6 — capability-gated entry (planning.create.bulk), resolved via
   // the canonical planning access model (same pattern as /planning/immediate).
   // Planner and Supervisor hold the capability; Inspector/Admin do not. Fail
   // closed: a resolution error is a denial, never a permissive default. RLS
   // remains the data boundary and the governed submission RPC re-checks role.
-  const { data: { user }, error: authError } = await getVerifiedUser(sb);
-  const access = await getPlanningAccess(sb, ["planning.create.bulk"]);
-  if (authError || access.error !== null) {
-    console.error("[ bulk planning authorization]", authError?.message ?? access.error);
+  const targeting = await loadBulkTargeting();
+  if (targeting.kind === "denied") {
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan bulk visits — criteria & targeting")}>
         <div className="sq-banner sq-banner--critical" role="alert">{t("plan.bulk.unavailable", "Planning data is not available right now. Nothing was changed. Try again once access is fixed.")}</div>
       </Shell>
     );
   }
-  if (!user || !access.can("planning.create.bulk")) {
+  if (targeting.kind === "unauthorized") {
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan bulk visits — criteria & targeting")}>
         <EmptyState glyph="⛔" title={tr("plan.bulk.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
           body={tr("plan.bulk.unauthorized.body", "Plan bulk visits needs Planner or Supervisor access.", "يتطلب تخطيط الزيارات المجمَّعة صلاحية المخطط أو المشرف.")} />
+      </Shell>
+    );
+  }
+  if (targeting.kind === "unavailable") {
+    return (
+      <Shell current="/planning" title={t("plan.bulk.title", "Plan bulk visits — criteria & targeting")}>
+        <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list not available")}
+          body={t("plan.bulk.serviceUnavailable.body", "We couldn't load the Factory list. Nothing was filtered or published. Try again once access is fixed.")} />
       </Shell>
     );
   }
@@ -69,89 +63,8 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   // M01-004 — all factories fetched, then the tree evaluated server-side
   // (ALL = every child / ANY = some, nested). No DB-level .eq filters: is-not
   // and ANY combinations aren't simple equality, so evaluation is uniform here.
-  const { data: allFactories, error: factoriesError } = await collectPostgrestPages<FactoryForCriteria & Record<string, unknown>>((from, to) => sb
-    .from("factories")
-    .select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, activity_class, official_lat, official_lng, source_synced_at, industrial_licenses!inner(commercial_registration_id,license_type,status,stage,investment_type,investment_size), visits(planning_status, visit_type)")
-    .not("industrial_licenses.commercial_registration_id", "is", null)
-    .eq("is_temporary", false)
-    // Include the one explicitly labelled Saqeel test target in the exact
-    // same criteria journey as sourced factory records.
-    .or("factory_code.like.F-%,source.eq.saqeel_test_data")
-    .not("name", "ilike", "CD%")
-    .order("risk_score", { ascending: false })
-    .order("id", { ascending: true })
-    .range(from, to) as unknown as PromiseLike<PostgrestPage<FactoryForCriteria & Record<string, unknown>>>);
-  // A failed authorized read must never masquerade as a legitimate empty
-  // catalog (0 in scope, 0 eligible). One shared query backs every panel on
-  // this screen, so isolation here is page-level, not per-widget; the wiring
-  // map previously claimed per-source isolation this architecture can't do.
-  if (factoriesError) {
-    console.error("[] factories read failed:", factoriesError.message, factoriesError.code);
-    return (
-      <Shell current="/planning" title={t("plan.bulk.title", "Plan bulk visits — criteria & targeting")}>
-        <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list not available")}
-          body={t("plan.bulk.serviceUnavailable.body", "We couldn't load the Factory list. Nothing was filtered or published. Try again once access is fixed.")} />
-      </Shell>
-    );
-  }
+  const everyFactory = targeting.factories;
 
-  // M6 — computed criteria sources: violation counts (violations → inspections
-  // → visits → factory) and the latest inspection date / review outcome per
-  // factory. These are COMPLETE reads aggregated in memory: a factory absent
-  // from violations genuinely has 0 recorded violations (a real zero, not a
-  // fabricated default); a factory with no review has NO outcome (absence,
-  // matches nothing). A failed read fails the page like the factory catalog —
-  // partial history would silently mis-evaluate numeric/date criteria.
-  const [violationsRead, inspectionsRead] = await Promise.all([
-    collectPostgrestPages<Record<string, unknown>>((from, to) => sb
-      .from("violations")
-      .select("id, inspections!inner(visits!inner(factory_id))")
-      .range(from, to) as unknown as PromiseLike<PostgrestPage<Record<string, unknown>>>),
-    collectPostgrestPages<Record<string, unknown>>((from, to) => sb
-      .from("inspections")
-      .select("id, submitted_at, visits!inner(factory_id), reviews(decision)")
-      .order("submitted_at", { ascending: false, nullsFirst: false })
-      .range(from, to) as unknown as PromiseLike<PostgrestPage<Record<string, unknown>>>),
-  ]);
-  if (violationsRead.error || inspectionsRead.error) {
-    console.error("[] criteria history read failed:", violationsRead.error?.message ?? inspectionsRead.error?.message);
-    return (
-      <Shell current="/planning" title={t("plan.bulk.title", "Plan bulk visits — criteria & targeting")}>
-        <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list not available")}
-          body={t("plan.bulk.serviceUnavailable.body", "We couldn't load the Factory list. Nothing was filtered or published. Try again once access is fixed.")} />
-      </Shell>
-    );
-  }
-  const violationCountByFactory = new Map<string, number>();
-  for (const row of violationsRead.data ?? []) {
-    const fid = (row as { inspections?: { visits?: { factory_id?: string } } }).inspections?.visits?.factory_id;
-    if (fid) violationCountByFactory.set(fid, (violationCountByFactory.get(fid) ?? 0) + 1);
-  }
-  // inspections arrive newest-first → the first row seen per factory carries
-  // its latest submitted date and (when present) its latest review decision.
-  const lastInspectionByFactory = new Map<string, { date: string | null; outcome: string | null }>();
-  for (const row of inspectionsRead.data ?? []) {
-    const r = row as { submitted_at: string | null; visits?: { factory_id?: string }; reviews?: { decision: string | null }[] };
-    const fid = r.visits?.factory_id;
-    if (!fid || lastInspectionByFactory.has(fid)) continue;
-    const decision = (r.reviews ?? []).map(x => x.decision).find((d): d is string => typeof d === "string" && d.trim() !== "") ?? null;
-    lastInspectionByFactory.set(fid, { date: r.submitted_at, outcome: decision });
-  }
-
-  const everyFactory = ((allFactories ?? []) as unknown as (FactoryForCriteria & Record<string, unknown>)[]).map(f => {
-    const licence = f.industrial_licenses?.[0] ?? null;
-    return {
-      ...f,
-      license_type: licence?.license_type ?? null,
-      license_status: licence?.status ?? null,
-      plant_state: licence?.stage ?? null,
-      investment_type: licence?.investment_type ?? null,
-      investment_size: licence?.investment_size ?? null,
-      previous_violation_count: violationCountByFactory.get(String(f.id)) ?? 0,
-      previous_outcome: lastInspectionByFactory.get(String(f.id))?.outcome ?? null,
-      last_inspection_date: lastInspectionByFactory.get(String(f.id))?.date ?? null,
-    };
-  });
   // M6 — at least one criterion is required (no match-all). An empty/absent
   // criteria tree yields NO results with an honest banner; the builder still
   // renders so the planner can compose criteria. The unrestricted-match
