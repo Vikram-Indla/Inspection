@@ -89,7 +89,25 @@
   cursor: pointer;
 }
 
-.row:hover {
+/* Legible, not hidden: an unavailable option still has to be readable, so this
+   dims to the muted role rather than the disabled one and keeps the note that
+   says why. Scoped away from hover/active below so it cannot be out-ordered. */
+.row[data-disabled] {
+  color: var(--sqx-text-muted);
+  cursor: not-allowed;
+}
+
+.row[data-disabled] .check {
+  visibility: hidden;
+}
+
+.note {
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  white-space: nowrap;
+}
+
+.row:not([data-disabled]):hover {
   background: var(--sqx-surface-subtle);
 }
 
