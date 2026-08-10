@@ -765,6 +765,18 @@ filters and tabs moved to `searchParams`.
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
 
+- **There is no busy/loading opacity token**, so a control or region that wants
+  to read as "working" can only say so with text plus `aria-busy`. Wanted twice
+  now (T-048's `--sqx-opacity-muted`, and the bulk filter's table dim) and
+  dropped both times rather than invented. Third request should be a change
+  request.
+- **There is no shared spinner.** `Button` owns one inside its own module, so a
+  non-button surface that wants the same mark has to duplicate the CSS. The
+  bulk filter used text instead. Rule of Two says the next one extracts it.
+- **A `Field` inside `Toolbar` collapses to its content width.** `Field` has no
+  width and `TextInput` is `inline-size: 100%`, so a toolbar search box needs a
+  `min-inline-size` wrapper from the calling screen. It caught `/planning/bulk`;
+  any other toolbar search field has the same trap armed.
 - **`bulk-targeting-form.tsx` is 219 lines**, over the 200 target. The
   select-all confirmation is the natural fifth extraction.
 - **`TargetingLensClient` takes 16 props** against a review limit of 8, all

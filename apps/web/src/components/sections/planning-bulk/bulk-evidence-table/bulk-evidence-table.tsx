@@ -23,9 +23,10 @@ const RISK_TONE: Readonly<Record<string, StatusTone>> = {
 const MISSING = "—";
 
 export default function BulkEvidenceTable({
-  rows, strings, isSelected, isDuplicate, isFocused, provenanceOf, onToggle,
+  rows, strings, busy, isSelected, isDuplicate, isFocused, provenanceOf, onToggle,
 }: {
   rows: readonly CriteriaFactory[];
+  busy?: boolean;
   strings: EvidenceTableStrings;
   isSelected: (factory: CriteriaFactory) => boolean;
   isDuplicate: (factory: CriteriaFactory) => boolean;
@@ -103,7 +104,7 @@ export default function BulkEvidenceTable({
   ];
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} aria-busy={busy}>
       <DataTable
         rows={rows}
         columns={columns}

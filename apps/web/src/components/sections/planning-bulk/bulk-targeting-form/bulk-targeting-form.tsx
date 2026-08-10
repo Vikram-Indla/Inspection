@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Stack from "@/components/saqeel/stack/stack";
 import Toolbar from "@/components/saqeel/toolbar/toolbar";
@@ -27,7 +27,7 @@ export type BulkFormStrings = EvidenceTableStrings & CampaignSummaryStrings & Se
   invalidTitle: string; invalidBody: string; invalidKeep: string; invalidClear: string;
   selectAllConfirmTitle: string; selectAllConfirmBody: string; selectAllConfirmInputLabel: string;
   selectAllConfirmButton: string; selectAllConfirmCancel: string;
-  savingDraft: string;
+  savingDraft: string; filtering: string;
 };
 
 function isFocusedRow(factory: CriteriaFactory, field?: string | null, value?: string | null): boolean {
@@ -73,7 +73,9 @@ export default function BulkTargetingForm({
 
   useEffect(() => { writeStoredSelection(selected); }, [selected]);
 
-  const matched = useMemo(() => matchesQuery(factories, query), [factories, query]);
+  const settledQuery = useDeferredValue(query);
+  const isFiltering = settledQuery !== query;
+  const matched = useMemo(() => matchesQuery(factories, settledQuery), [factories, settledQuery]);
   const pageCount = Math.max(1, Math.ceil(matched.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount - 1);
   const pageRows = matched.slice(currentPage * PAGE_SIZE, currentPage * PAGE_SIZE + PAGE_SIZE);
@@ -141,19 +143,25 @@ export default function BulkTargetingForm({
           <>
             <Button variant="secondary" onClick={() => addAll(pageRows)}>{strings.selectVisible}</Button>
             <Button variant="secondary" onClick={() => setConfirmingSelectAll(true)}>{strings.selectAllResults}</Button>
-            <CountBadge value={matched.length} label={strings.resultsCount.replace("{n}", String(matched.length))} />
+            <span className={styles.filterStatus} role="status" aria-live="polite">
+              {isFiltering
+                ? strings.filtering
+                : <CountBadge value={matched.length} label={strings.resultsCount.replace("{n}", String(matched.length))} />}
+            </span>
           </>
         }
       >
-        <Field label={strings.filterLabel} htmlFor="bulk-filter">
-          <TextInput
-            id="bulk-filter"
-            type="search"
-            value={query}
-            placeholder={strings.filterPlaceholder}
-            onChange={value => { setQuery(value); setPage(0); }}
-          />
-        </Field>
+        <div className={styles.filter}>
+          <Field label={strings.filterLabel} htmlFor="bulk-filter">
+            <TextInput
+              id="bulk-filter"
+              type="search"
+              value={query}
+              placeholder={strings.filterPlaceholder}
+              onChange={value => { setQuery(value); setPage(0); }}
+            />
+          </Field>
+        </div>
       </Toolbar>
 
       {confirmingSelectAll && (
@@ -178,6 +186,7 @@ export default function BulkTargetingForm({
       )}
 
       <BulkEvidenceTable
+        busy={isFiltering}
         rows={pageRows}
         strings={strings}
         isSelected={factory => selected.has(factory.id)}

@@ -285,6 +285,29 @@ copy is no longer swapped into the label; the T-048 spinner takes the icon slot.
 **Known gap:** `bulk-targeting-form.tsx` is **219 lines**, over the 200 target
 (ceiling 400). The select-all confirmation is the natural fifth extraction.
 
+**Two owner-reported defects fixed on the same surface.**
+
+- **The filter field collapsed to its content width**, truncating the
+  placeholder mid-word. `Toolbar`'s `.lead` is a flex row with
+  `min-inline-size: 0` and `Field` carries no width of its own, so
+  `TextInput`'s `inline-size: 100%` resolved against nothing. Fixed with a
+  `min-inline-size: var(--sqx-grid-min-lg)` wrapper in the screen's own module
+  rather than by touching the primitive — a toolbar field that should grow is a
+  screen decision, not a `Field` default.
+- **Filtering gave no feedback.** The filter runs client-side over the whole
+  criteria-narrowed set, so on a large scope the keystroke and the re-rendered
+  table were visibly out of step with nothing to explain the gap. The query now
+  goes through `useDeferredValue`: the input stays responsive, the expensive
+  filter runs against the settled value, and the difference between the two
+  **is** the busy signal — no timer, no fake spinner, no state that can lie.
+  While they differ, the results count is replaced by "Filtering results…" in a
+  `role="status"` region and the table wrapper carries `aria-busy`.
+
+**No busy opacity was added.** Dimming the table wanted an opacity token that
+does not exist, and WEB-002 §2 stops the work rather than inventing one — the
+same call T-048 made on `--sqx-opacity-muted`. The state is carried by the
+status text and `aria-busy` alone, which is announced and visible.
+
 ## Next
 
 Slice 2 is done. Next is slice 3 — `review/page.tsx` (274 lines, 10 legacy classes, 7 `useState`, `sq-table` →

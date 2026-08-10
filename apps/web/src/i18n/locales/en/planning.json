@@ -724,7 +724,8 @@
       "draftSaveFailed": "Selection ready in this browser — continue to Review.",
       "reviewFallback": "Continue to review without saving",
       "emptyTitle": "No factories match",
-      "emptyBody": "No factory in scope matches the current criteria and filter. Adjust the criteria above, or clear the filter within results."
+      "emptyBody": "No factory in scope matches the current criteria and filter. Adjust the criteria above, or clear the filter within results.",
+      "filtering": "Filtering results…"
     },
     "riskBand": {
       "high": "high",
