@@ -12,7 +12,7 @@ between them. What is not written here did not happen.
 1. **`01-PROJECT-STATUS.md`** — where the redesign stands right now.
 2. **`03-REDESIGN-TRACKER.md`** — the work board. Take the top unblocked item in
    NOW unless told otherwise.
-3. **The rule documents your task names** — `rules/WEB-000` … `WEB-011`.
+3. **The rule documents your task names** — `rules/WEB-000` … `WEB-013`.
    Read them before writing a line of code, not after review rejects the diff.
 4. **`04-COMPONENT-LEDGER.md`** — what the design system already provides. Never
    build something that exists.
@@ -38,6 +38,7 @@ between them. What is not written here did not happen.
 | [`rules/WEB-010-performance-and-lifecycle.md`](rules/WEB-010-performance-and-lifecycle.md) | cleanup of every subscription, compositor-only animation, no layout thrash, no waterfalls |
 | [`rules/WEB-011-arabic-first.md`](rules/WEB-011-arabic-first.md) | **Arabic is the primary language.** Both locales in every commit, Arabic punctuation, no letter-spacing on Arabic, logical properties, Arabic-first review |
 | [`rules/WEB-012-no-direct-dom-mutation.md`](rules/WEB-012-no-direct-dom-mutation.md) | **Never mutate the DOM directly.** The DOM is render output; changes flow through state and render, never through `innerHTML`/`appendChild`/`setAttribute`/`classList`/`style` writes |
+| [`rules/WEB-013-translation-resources.md`](rules/WEB-013-translation-resources.md) | **No hardcoded copy, ever.** Every user-visible word lives in `i18n/locales/{en,ar}/<namespace>.json` and is loaded by key; no namespace for the page means you create one in both locales, not that you inline the text |
 
 **Task prompts are deliberately short.** Everything a prompt does not say is in
 `WEB-008` and `WEB-009`. If a prompt seems to be missing the rules, it is not —
@@ -107,6 +108,16 @@ If you read nothing else, these are the ones that get a diff rejected on sight.
     handoff are not mutation and stay allowed; the `<html>` root's
     theme/direction/chrome flags are the one systemic exception, set only through
     their owning module (WEB-012).
+18. **No hardcoded copy — ever.** Every user-visible word (headings, labels,
+    placeholders, `alt`, `aria-label`, empty/error/blocker text, enum labels)
+    lives in `apps/web/src/i18n/locales/{en,ar}/<namespace>.json` and is read by
+    key through `getMessages(locale)`. No English or Arabic literal in a `.ts`,
+    `.tsx` or `.css` file — not as a default, not as a fallback. That includes
+    `t("key", "English")`, `locale === "ar" ? … : …`, and in-code `*_AR_FALLBACK`
+    maps: all three are retiring legacy, never added to. If the page has no
+    namespace file, **create it in both locales** and register it in
+    `i18n/messages.ts` — never inline the text because the file is missing
+    (WEB-013).
 
 ---
 
