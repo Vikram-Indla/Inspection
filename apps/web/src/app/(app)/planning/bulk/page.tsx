@@ -9,7 +9,7 @@ import type { CriteriaBuilderStrings, BuilderField } from "./CriteriaBuilder";
 import type { LedgerStrings } from "./EligibilityLedger";
 import type { Bucket, Distribution, DistributionStrings } from "./DistributionPanels";
 import TargetingLensClient from "./TargetingLensClient";
-import ContextualAiPanel from "@/components/ContextualAiPanel";
+import AiAdvisory from "@/components/sections/ai/ai-advisory/ai-advisory";
 import WidgetBoundary from "@/components/WidgetBoundary";
 import { parseCt, fromFlat, evalNode, hasCriteria, emptyTree, leaves, pathKey, FIELD_REGISTRY, type Op } from "./criteria";
 
@@ -314,16 +314,20 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
       {/* MVP1-M01-016 / MVP1-M01-026 · AC-0016 / AC-0026 — contextual planning summary.
           M10 / canonical §19 — fails isolated, never blanks the targeting UI. */}
       <WidgetBoundary label={t("plan.bulk.ai.unavailable", "AI is not available right now — nothing was generated or changed.")}>
-        <ContextualAiPanel
+        <AiAdvisory
           surface="planning_summary"
-          title={t("plan.bulk.ai.title", "AI planning summary")}
-          description={t("plan.bulk.ai.description", "Evidence-linked advisory summary of the current factory scope. It never selects, ranks or publishes anything.")}
           context={aiPlanningContext}
           evidenceRefs={["AC-0016", "AC-0026", "M01-016", "M01-026", "SCR-WEB-110"]}
-          generateLabel={t("plan.bulk.ai.generate", "Generate planning summary")}
-          unavailableLabel={t("plan.bulk.ai.unavailable", "AI is not available right now — nothing was generated or changed.")}
-          evidenceLabel={t("plan.bulk.ai.evidence", "Source evidence")}
-          advisoryLabel={t("plan.bulk.ai.advisory", "Advisory only · human decides")}
+          locale={locale === "ar" ? "ar" : "en"}
+          strings={{
+            title: t("plan.bulk.ai.title", "AI planning summary"),
+            description: t("plan.bulk.ai.description", "Evidence-linked advisory summary of the current factory scope. It never selects, ranks or publishes anything."),
+            advisory: t("plan.bulk.ai.advisory", "Advisory only · human decides"),
+            evidence: t("plan.bulk.ai.evidence", "Source evidence"),
+            generate: t("plan.bulk.ai.generate", "Generate planning summary"),
+            generating: t("plan.bulk.ai.generating", "Generating planning summary…"),
+            unavailable: t("plan.bulk.ai.unavailable", "AI is not available right now — nothing was generated or changed."),
+          }}
         />
       </WidgetBoundary>
       <TargetingLensClient

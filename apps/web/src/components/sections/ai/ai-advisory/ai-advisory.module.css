@@ -1,0 +1,27 @@
+.heading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
+.text {
+  margin: 0;
+  font: var(--sqx-text-body);
+  color: var(--sqx-text-secondary);
+  white-space: pre-wrap;
+  text-wrap: pretty;
+}
+
+.muted {
+  margin: 0;
+  font: var(--sqx-text-caption);
+  color: var(--sqx-text-muted);
+  text-wrap: pretty;
+}
+
+.error {
+  margin: 0;
+  font: var(--sqx-text-caption);
+  color: var(--sqx-status-critical-on-soft);
+  text-wrap: pretty;
+}
