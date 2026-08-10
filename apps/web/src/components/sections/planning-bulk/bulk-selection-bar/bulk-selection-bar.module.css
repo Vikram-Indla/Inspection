@@ -13,11 +13,16 @@
   box-shadow: var(--sqx-elevation-2);
 }
 
+/* A stable row height: this slot swaps a short pill for a full-height button
+   the moment a selection exists. Without a floor, ticking a checkbox resized
+   the bar and reflowed the page beneath it. Selecting must change values, never
+   layout. */
 .status {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--sqx-space-3);
+  min-block-size: var(--sqx-control-h-md);
   min-inline-size: 0;
 }
 

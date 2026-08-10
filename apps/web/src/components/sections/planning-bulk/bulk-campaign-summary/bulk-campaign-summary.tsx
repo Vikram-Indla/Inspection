@@ -27,8 +27,7 @@ export default function BulkCampaignSummary({ selectedCount, byBand, byRegion, s
     <Card as="section">
       <CardHeader title={strings.summaryTitle} />
       <CardBody gap="tight">
-        {selectedCount === 0 ? <p className={styles.empty}>{strings.summaryEmpty}</p> : (
-          <div className={styles.groups}>
+        <div className={styles.groups}>
             <div className={styles.group}>
               <p className={styles.label}>{strings.summarySelected}</p>
               <p className={styles.value}>{selectedCount}</p>
@@ -52,7 +51,7 @@ export default function BulkCampaignSummary({ selectedCount, byBand, byRegion, s
               </div>
             </div>
           </div>
-        )}
+        <p className={styles.empty}>{selectedCount === 0 ? strings.summaryEmpty : ""}&nbsp;</p>
       </CardBody>
     </Card>
   );

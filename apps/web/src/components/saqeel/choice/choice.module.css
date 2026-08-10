@@ -1,4 +1,10 @@
+/* The hidden input is `position: absolute`. Without a positioned ancestor its
+   containing block is whatever is positioned further up the tree — so the real
+   control sits nowhere near the box the user clicks, and focusing it makes the
+   browser scroll to that phantom position. Anchoring it to its own label keeps
+   the input exactly under the box it represents. */
 .root {
+  position: relative;
   display: flex;
   align-items: flex-start;
   gap: var(--sqx-choice-gap);
