@@ -1,6 +1,8 @@
 import Shell from "@/components/Shell";
 import { useT } from "@/lib/i18n";
 import EmptyState from "@/components/EmptyState";
+import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
 import { loadBulkTargeting } from "@/features/planning-bulk/queries";
 import type { BulkFormStrings } from "./BulkForm";
 import type { CriteriaBuilderStrings, BuilderField } from "./CriteriaBuilder";
@@ -27,7 +29,9 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   if (targeting.kind === "denied") {
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan bulk visits — criteria & targeting")}>
-        <div className="sq-banner sq-banner--critical" role="alert">{t("plan.bulk.unavailable", "Planning data is not available right now. Nothing was changed. Try again once access is fixed.")}</div>
+        <PlanningNotice tone="danger" label={t("plan.bulk.unavailableTag", "Unavailable")}>
+          {t("plan.bulk.unavailable", "Planning data is not available right now. Nothing was changed. Try again once access is fixed.")}
+        </PlanningNotice>
       </Shell>
     );
   }
@@ -296,18 +300,16 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   };
   return (
     <Shell current="/planning" title={t("plan.bulk.title", "Plan bulk visits — criteria & targeting")}
-      context={<span className="sq-lozenge sq-lozenge--info">{t("plan.bulk.context", "AND/OR criteria builder")}</span>}>
+      context={<StatusPill tone="info">{t("plan.bulk.context", "AND/OR criteria builder")}</StatusPill>}>
       {ctWasInvalid && (
-        <div className="sq-banner sq-banner--warning" role="alert" aria-label={t("plan.bulk.invalidCt.title", "Criteria could not be read")}>
-          <strong>{t("plan.bulk.invalidCt.title", "Criteria could not be read")}</strong>
-          <p>{t("plan.bulk.invalidCt.body", "The criteria link was invalid or corrupted (ERR-) and could not be applied. No results are shown until valid criteria are applied — please rebuild your criteria below.")}</p>
-        </div>
+        <PlanningNotice tone="warning" label={t("plan.bulk.invalidCt.title", "Criteria could not be read")}>
+          {t("plan.bulk.invalidCt.body", "The criteria link was invalid or corrupted (ERR-) and could not be applied. No results are shown until valid criteria are applied — please rebuild your criteria below.")}
+        </PlanningNotice>
       )}
       {!criteriaApplied && !ctWasInvalid && (
-        <div className="sq-banner sq-banner--warning" role="alert" aria-label={tr("plan.bulk.noCriteria.title", "At least one criterion is required", "يلزم معيار واحد على الأقل")}>
-          <strong>{tr("plan.bulk.noCriteria.title", "At least one criterion is required", "يلزم معيار واحد على الأقل")}</strong>
-          <p>{tr("plan.bulk.noCriteria.body", "Bulk targeting never matches the whole Factory list by default. Add at least one criterion below to see matching factories. Nothing is selected or sent without a clear scope.", "لا يطابق الاستهداف الجماعي كل قائمة المصانع تلقائيًا. أضف معيارًا واحدًا على الأقل أدناه لعرض المصانع المطابقة. لا يتم اختيار أو إرسال أي شيء دون نطاق واضح.")}</p>
-        </div>
+        <PlanningNotice tone="warning" label={tr("plan.bulk.noCriteria.title", "At least one criterion is required", "يلزم معيار واحد على الأقل")}>
+          {tr("plan.bulk.noCriteria.body", "Bulk targeting never matches the whole Factory list by default. Add at least one criterion below to see matching factories. Nothing is selected or sent without a clear scope.", "لا يطابق الاستهداف الجماعي كل قائمة المصانع تلقائيًا. أضف معيارًا واحدًا على الأقل أدناه لعرض المصانع المطابقة. لا يتم اختيار أو إرسال أي شيء دون نطاق واضح.")}
+        </PlanningNotice>
       )}
       {/* MVP1-M01-016 / MVP1-M01-026 · AC-0016 / AC-0026 — contextual planning summary.
           M10 / canonical §19 — fails isolated, never blanks the targeting UI. */}
