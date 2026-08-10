@@ -986,6 +986,7 @@
       "unauthorizedBody": "This view requires the bulk-planning capability and matching scope. Navigation visibility is not authorization; your permissions remain the boundary.",
       "unauthorizedBack": "Back to planning",
       "unavailableTag": "Unavailable"
-    }
+    },
+    "unavailableTag": "Unavailable"
   }
 }

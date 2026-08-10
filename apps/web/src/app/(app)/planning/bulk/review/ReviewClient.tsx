@@ -21,16 +21,19 @@ import {
   type BulkResult, type ReviewData, type ValidateResult, type Blocker, type BlockerKind,
   type OverlapEvidence, type SourceState, type BulkDraft, type EligibilityReason, type LookupOption,
 } from "../actions";
+import Button from "@/components/saqeel/button/button";
 import EvidenceLedger, { type LedgerFocus, type EvidenceLedgerStrings } from "./EvidenceLedger";
+import { ReviewLoading, ReviewUnavailable, ReviewOutOfScope, ReviewEmpty } from "@/components/sections/planning-bulk/review-standby/review-standby";
+import { ReviewPublishing, ReviewFailure, ReviewSuccess } from "@/components/sections/planning-bulk/review-outcome/review-outcome";
+import ReviewReadiness, { type ReadinessItem, type ReadinessTone } from "@/components/sections/planning-bulk/review-readiness/review-readiness";
 import DiscardDraftButton from "../../DiscardDraftButton";
-import { IconLock } from "@/app/icons";
 
 const SEL_KEY = "cd021-bulk-selection";
 
 export type ReviewStrings = {
   // phases
   loading: string; loadingNote: string; stagedBanner: string; stagedSub: string;
-  unavailable: string; emptyTitle: string; emptyBody: string; backToTargeting: string;
+  unavailable: string; unavailableTag: string; emptyTitle: string; emptyBody: string; backToTargeting: string;
   scopeTitle: string; scopeBody: string; scopeReduced: string;
   // context
   method: string; freshnessPrefix: string; selected: string; retained: string; visits: string;
@@ -91,20 +94,20 @@ type Phase = "loading" | "unavailable" | "scope" | "empty" | "review" | "publish
 
 const RISK_TONE: Record<string, string> = { high: "sq-lozenge--critical", medium: "sq-lozenge--warning", low: "sq-lozenge--success" };
 // per-kind presentation + which correction the Fix control performs
-const BLK_META: Record<BlockerKind, { cls: string; glyph: string; fix: "remove" | "focusRow" | "focusWindow" | "review" | "none" }> = {
-  duplicate:     { cls: "critical",    glyph: "▣", fix: "remove" },
-  overlap:       { cls: "critical",    glyph: "◆", fix: "focusRow" },
-  coverage:      { cls: "warning",     glyph: "▲", fix: "focusWindow" },
-  capacity:      { cls: "critical",    glyph: "▲", fix: "focusWindow" },
-  nopackage:     { cls: "warning",     glyph: "⟳", fix: "none" },
-  packageInvalid:{ cls: "critical",    glyph: "⟳", fix: "review" },
-  nopool:        { cls: "critical",    glyph: "●", fix: "none" },
-  configMissing: { cls: "warning",     glyph: "▲", fix: "focusWindow" },
-  windowImplausible: { cls: "critical", glyph: "▲", fix: "focusWindow" },
-  srcFactory:    { cls: "unavailable", glyph: "▣", fix: "review" },
-  srcPackage:    { cls: "unavailable", glyph: "⟳", fix: "review" },
-  srcInspector:  { cls: "unavailable", glyph: "●", fix: "review" },
-  srcDuplicate:  { cls: "unavailable", glyph: "◆", fix: "review" },
+const BLK_META: Record<BlockerKind, { tone: ReadinessTone; fix: "remove" | "focusRow" | "focusWindow" | "review" | "none" }> = {
+  duplicate: { tone: "danger", fix: "remove" },
+  overlap: { tone: "danger", fix: "focusRow" },
+  coverage: { tone: "warning", fix: "focusWindow" },
+  capacity: { tone: "danger", fix: "focusWindow" },
+  nopackage: { tone: "warning", fix: "none" },
+  packageInvalid: { tone: "danger", fix: "review" },
+  nopool: { tone: "danger", fix: "none" },
+  configMissing: { tone: "warning", fix: "focusWindow" },
+  windowImplausible: { tone: "danger", fix: "focusWindow" },
+  srcFactory: { tone: "neutral", fix: "review" },
+  srcPackage: { tone: "neutral", fix: "review" },
+  srcInspector: { tone: "neutral", fix: "review" },
+  srcDuplicate: { tone: "neutral", fix: "review" },
 };
 
 export default function ReviewClient({ strings: s, initialDraft, draftUnavailable, transitionsExecutable, locale }: {
@@ -280,128 +283,40 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
   useEffect(() => { if (phase === "success") successHeadingRef.current?.focus(); }, [phase]);
   useEffect(() => { if (phase === "failure") failHeadingRef.current?.focus(); }, [phase]);
 
-  if (phase === "loading") {
-    return (
-      <div className="panel sq-panel cd-panelpad" id="cd-main">
-        <div className="sq-banner sq-banner--immutable" style={{ marginBlockEnd: "var(--space-4)" }}>
-          <div><strong>{s.stagedBanner}</strong><div className="t-caption">{s.stagedSub}</div></div>
-        </div>
-        <div className="stack">{[0, 1, 2, 3].map(i => <div key={i} className="sq-skeleton" style={{ blockSize: 44 }} />)}</div>
-        <p className="t-caption" role="status" style={{ marginBlockStart: "var(--space-4)" }}>{s.loadingNote}</p>
-      </div>
-    );
-  }
-  if (phase === "unavailable") {
-    return <div className="sq-banner sq-banner--critical" role="alert" id="cd-main">{s.unavailable}</div>;
-  }
-  if (phase === "scope") {
-    const missing = data?.missingFactoryIds?.length ?? 0;
-    return (
-      <div className="panel" style={{ padding: "var(--space-8)", textAlign: "center" }} id="cd-main">
-        <div className="sq-state">
-          <span className="sq-state__glyph" aria-hidden="true">◌</span>
-          <h3>{s.scopeTitle}</h3>
-          <p className="t-caption">{s.scopeBody.replace("{n}", String(missing))}</p>
-          <a className="sq-btn sq-btn--prominent" href="/planning/bulk">{s.backToTargeting}</a>
-        </div>
-      </div>
-    );
-  }
-  if (phase === "empty") {
-    return (
-      <div className="panel" style={{ padding: "var(--space-8)", textAlign: "center" }} id="cd-main">
-        {draftUnavailable && (
-          <div className="sq-banner sq-banner--warning" role="alert" style={{ marginBlockEnd: "var(--space-6)" }}>
-            {s.draftUnavailable}
-          </div>
-        )}
-        <h3>{s.emptyTitle}</h3>
-        <p className="t-caption">{s.emptyBody}</p>
-        <a className="sq-btn sq-btn--prominent" href="/planning/bulk">{s.backToTargeting}</a>
-      </div>
-    );
-  }
-  if (phase === "publishing") {
-    return (
-      <section className="panel sq-panel cd-panelpad cd-result" id="cd-main">
-        <div className="row" style={{ gap: "var(--space-4)", alignItems: "flex-start" }}>
-          <div className="cd-result__icon lock" aria-hidden="true"><IconLock size={24} /></div>
-          <div className="stack" style={{ gap: "var(--space-2)", flex: 1 }}>
-            <h3>{s.publishingTitle}</h3>
-            <p role="status">{s.publishingBody}</p>
-            <p className="t-caption">{s.publishingSub}</p>
-            <div className="sq-skeleton" style={{ blockSize: 6, inlineSize: "60%" }} />
-          </div>
-        </div>
-      </section>
-    );
-  }
+  if (phase === "loading") return <ReviewLoading strings={s} />;
+  if (phase === "unavailable") return <ReviewUnavailable strings={s} />;
+  if (phase === "scope") return <ReviewOutOfScope missingCount={data?.missingFactoryIds?.length ?? 0} strings={s} />;
+  if (phase === "empty") return <ReviewEmpty draftUnavailable={draftUnavailable === true} strings={s} />;
+  if (phase === "publishing") return <ReviewPublishing strings={s} />;
   if (phase === "failure") {
     return (
-      <section className="panel sq-panel cd-panelpad cd-result" id="cd-main">
-        <div className="row" style={{ gap: "var(--space-4)", alignItems: "flex-start" }}>
-          <div className="cd-result__icon fail" aria-hidden="true">✕</div>
-          <div className="stack" style={{ gap: "var(--space-2)", flex: 1 }}>
-            <h3 tabIndex={-1} ref={failHeadingRef} role="alert">{s.failTitle}</h3>
-            <p>{state.error}</p>
-            <p className="t-caption">{s.failSub}</p>
-          </div>
-        </div>
-        <div className="row" style={{ marginBlockStart: "var(--space-5)", gap: "var(--space-3)" }}>
-          <form action={formAction}>{hiddenPublishFields(workingIds, pkgIds, windowStart, windowEnd, notes, picks, priority)}
-            <button className="sq-btn sq-btn--prominent">{s.tryAgain}</button></form>
-          <a className="sq-btn sq-btn--secondary" href="/planning/bulk">{s.backConfig}</a>
-        </div>
-      </section>
+      <ReviewFailure
+        reason={state.error ?? ""}
+        headingRef={failHeadingRef}
+        strings={s}
+        retryForm={
+          <form action={formAction}>
+            {hiddenPublishFields(workingIds, pkgIds, windowStart, windowEnd, notes, picks, priority)}
+            <Button variant="primary" type="submit">{s.tryAgain}</Button>
+          </form>
+        }
+      />
     );
   }
   if (phase === "success") {
-    // M7 — the published count is the committed eligible subset from the
-    // authoritative result; the preview ledger is only the fallback.
-    const created = state.created ?? val?.ledger?.toCreate ?? val?.retained ?? 0;
-    const proposedCount = Object.values(picks).filter(Boolean).length;
-    const cells: [string, string][] = [
-      [s.sPlan, "1"],
-      [s.sVisits, String(created)],
-      [s.sAssign, String(proposedCount)],
-      [s.sNotif, "Queued"],
-    ];
     return (
-      <section className="panel sq-panel cd-panelpad cd-result" id="cd-main">
-        <div className="row" style={{ gap: "var(--space-4)", alignItems: "flex-start" }}>
-          <div className="cd-result__icon ok" aria-hidden="true">✓</div>
-          <div className="stack" style={{ gap: "var(--space-2)", flex: 1 }}>
-            <h3 tabIndex={-1} ref={successHeadingRef} role="status">{s.successTitle}</h3>
-            <p>{s.successBody}</p>
-            <div className="cd-resultgrid" style={{ marginBlock: "var(--space-3)" }}>
-              {cells.map(([k, v]) => (
-                <div key={k} className="panel" style={{ padding: "var(--space-3) var(--space-4)" }}>
-                  <div className="sq-overline">{k}</div><div className="cd-count">{v}</div>
-                </div>
-              ))}
-            </div>
-            {/* M7 — accepted-subset honesty: rows dropped at the authoritative
-                publish-time re-check are NAMED, never silently absent. */}
-            {(state.dropped?.length ?? 0) > 0 && (
-              <div className="sq-banner sq-banner--warning" role="status">
-                <strong>{interp(s.droppedH, { n: state.dropped!.length })}</strong>
-                <p className="t-caption" style={{ marginBlock: "var(--space-1) 0" }}>{s.droppedD}</p>
-                <ul style={{ marginBlockStart: "var(--space-2)" }}>
-                  {state.dropped!.map(d => (
-                    <li key={d.id}><bdi>{d.name}</bdi> — {d.reasons.map(reasonText).join(" · ")}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            <p className="t-caption">{s.successSub}</p>
-          </div>
-        </div>
-        <div className="row" style={{ marginBlockStart: "var(--space-5)", gap: "var(--space-3)" }}>
-          <a className="sq-btn sq-btn--prominent" href="/visits">{s.goVisits}</a>
-          {/* optional read-only plan link — only when the publisher returned a plan ID */}
-          {state.planId && <a className="sq-btn sq-btn--secondary" href={`/planning/plans/${state.planId}`}>{s.openPlan}</a>}
-        </div>
-      </section>
+      <ReviewSuccess
+        created={state.created ?? val?.ledger?.toCreate ?? val?.retained ?? 0}
+        proposed={Object.values(picks).filter(Boolean).length}
+        planId={state.planId ?? null}
+        headingRef={successHeadingRef}
+        strings={s}
+        dropped={(state.dropped ?? []).map(row => ({
+          id: row.id,
+          name: row.name,
+          reasons: row.reasons.map(reasonText).join(" · "),
+        }))}
+      />
     );
   }
 
@@ -499,6 +414,19 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
       return <span className="t-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✕ {interp(s.ecBlockedN, { n: ov.count })}{sm ? <> · {fmtWin(sm.window_start)}→{fmtWin(sm.window_end)}</> : null}</span>;
     }
     return <span className="t-caption" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✓ {s.ecInPool} · ✓ {interp(s.ecOverlaps, { n: 0 })} · {s.ecSkills}</span>;
+  };
+
+  const toReadinessItem = (b: Blocker, index: number): ReadinessItem => {
+    const { title, detail } = blockerCopy(b);
+    const meta = BLK_META[b.kind];
+    return {
+      key: b.kind + index,
+      tone: meta.tone,
+      label: meta.tone === "warning" ? s.readyTag : s.blockedTag,
+      title,
+      detail,
+      fixLabel: meta.fix === "none" ? null : fixLabel(b),
+    };
   };
 
   const blockerCopy = (b: Blocker) => {
@@ -602,54 +530,14 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
         </dl>
       </section>
 
-      {/* ---- readiness rail (error summary) ---- */}
-      <section className={`sq-surface sq-panel cd-panelpad cd-ready ${validating ? "" : blockers.length ? "is-blocked" : "is-clear"}`}
-        role={blockers.length ? "alert" : "status"} aria-label={s.readiness}>
-        <div className="cd-sectionhead"><h3 tabIndex={-1} ref={readinessHeadingRef}>{s.readiness}</h3></div>
-        {validating ? (
-          <p className="t-caption" role="status">{s.loadingNote}</p>
-        ) : blockers.length ? (
-          <>
-            <div className="row" style={{ gap: "var(--space-2)" }}>
-              <span className="sq-lozenge sq-lozenge--critical">{s.blockedTag}</span>
-              <strong>{interp(s.blockersN, { n: blockers.length })}</strong>
-            </div>
-            <ul className="cd-blockerlist" style={{ marginBlockStart: "var(--space-3)" }}>
-              {blockers.map((b, i) => {
-                const { title, detail } = blockerCopy(b);
-                const meta = BLK_META[b.kind];
-                return (
-                  <li key={b.kind + i} className={`cd-blocker cd-blocker--${meta.cls}`}>
-                    <span className="cd-blocker__glyph" aria-hidden="true">{meta.glyph}</span>
-                    <div className="cd-blocker__body">
-                      <span className="cd-blocker__title">{title}</span>
-                      {detail && <div className="cd-blocker__detail">{detail}</div>}
-                      {meta.fix !== "none" && (
-                        <div className="cd-fix"><button type="button" className="sq-btn sq-btn--secondary" onClick={() => runFix(b)}>{fixLabel(b)}</button></div>
-                      )}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </>
-        ) : (
-          <div className="row" style={{ gap: "var(--space-2)" }}>
-            <span className="sq-lozenge sq-lozenge--success">{s.readyTag}</span>
-            <strong>{s.clearAll}</strong>
-          </div>
-        )}
-        {/* M7 — non-blocking warnings (e.g. zero packages: preparation chooses
-            later). Honest, visible, never gating publish. */}
-        {!validating && (v?.warnings?.length ?? 0) > 0 && (
-          <div className="sq-banner sq-banner--warning" role="status" style={{ marginBlockStart: "var(--space-3)" }}>
-            {v!.warnings.map((w, i) => {
-              const { title, detail } = blockerCopy(w);
-              return <p key={w.kind + i} style={{ margin: 0 }}><strong>{title}</strong>{detail ? <> — {detail}</> : null}</p>;
-            })}
-          </div>
-        )}
-      </section>
+      <ReviewReadiness
+        validating={validating}
+        items={blockers.map(toReadinessItem)}
+        warnings={(v?.warnings ?? []).map(toReadinessItem)}
+        headingRef={readinessHeadingRef}
+        strings={s}
+        onFix={key => { const target = blockers.find((b, i) => b.kind + i === key); if (target) runFix(target); }}
+      />
 
       {/* ---- M6 eligibility partition (7 counts from the live preview) ---- */}
       <section className="panel sq-panel cd-panelpad" aria-label={s.eligH}>

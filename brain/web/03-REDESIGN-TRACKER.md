@@ -74,6 +74,7 @@ were all legacy CSS, not JSX — including a 🔒 emoji injected by
 `record (slice 1a):` [2026-08-10-T-046-bulk-targeting-feature-layer](sessions/2026-08/2026-08-10-T-046-bulk-targeting-feature-layer.md)
 `record (slice 1b):` [2026-08-10-T-046-bulk-screen-composition](sessions/2026-08/2026-08-10-T-046-bulk-screen-composition.md)
 `record (slice 3):` [2026-08-10-T-046-review-route-composition](sessions/2026-08/2026-08-10-T-046-review-route-composition.md)
+`record (slice 4 pt 1):` [2026-08-10-T-046-review-client-phases-and-readiness](sessions/2026-08/2026-08-10-T-046-review-client-phases-and-readiness.md)
 
 **The route had zero SAQEEL imports before this task** — 14 files, 3,512 lines,
 505 comments, ~180 legacy class uses, 26 colour-only `sq-lozenge`, 15 native
@@ -788,6 +789,19 @@ Pull one in only if it is genuinely part of doing the active task well.
   were visible for three turns and were dismissed as harmless. **A cache warning
   on a shared `.next` is a defect report.** Cure: stop every dev server, delete
   `apps/web/.next`, restart one. CLAUDE.md already said this; it was not heeded.
+- **`--sqx-grid-min-xs` DOES NOT EXIST but `criteria-builder.module.css:68`
+  uses it** — `flex: 0 1 var(--sqx-grid-min-xs)` is therefore an invalid
+  declaration and is dropped, so `.fieldNarrow` has no basis. Part of the broken
+  criteria-builder layout is this, not the cache. Shipped in T-050 (`5e71b4f3`),
+  never rendered. Needs a ruling: reuse `-sm`, or add the token.
+- **`--sqx-surface-danger` and `--sqx-surface-success` do not exist**, so a tinted
+  status badge cannot be built. Raised, not invented (WEB-002 §2) — the third
+  token gap on this screen.
+- **A regex is not a CSS parser.** `split(/}s*
++/)` corrupted `review.css`
+  (119 → 157 lines, two orphans surviving) because it cannot see nested or
+  compound rules; recovered with read-only `git show` and rewritten as a
+  brace-depth scanner. Second time a regex has damaged a file on this route.
 - **Verify what a stylesheet is holding up before believing its importer owns
   it.** `review.css` was imported by `review/page.tsx`, which used exactly one of
   its 58 classes; `ReviewClient` uses 44 and `EvidenceLedger` 12. Deleting it
