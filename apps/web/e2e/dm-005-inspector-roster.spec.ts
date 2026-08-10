@@ -5,8 +5,8 @@ import { join } from "node:path";
 const source = (file: string) => readFileSync(join(process.cwd(), file), "utf8");
 
 test("DM-005 exposes existing inspectors to Planner without changing the selector markup", () => {
-  const page = source("src/app/(app)/planning/single/page.tsx");
-  const wizard = source("src/app/(app)/planning/single/Wizard.tsx");
+  const page = source("src/features/planning-single/queries.ts");
+  const wizard = source("src/components/sections/planning-single/visit-configuration/visit-configuration.tsx");
   const migration = source(
     "../../supabase/migrations/20260729170000_planner_inspector_roster_read.sql",
   );

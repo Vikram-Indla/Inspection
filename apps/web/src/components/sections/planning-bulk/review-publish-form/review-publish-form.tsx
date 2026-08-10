@@ -17,6 +17,8 @@ export type PublishFormStrings = {
   transitionsBlocked: string | null;
 };
 
+const REASON_ID = "review-publish-reason";
+
 export default function ReviewPublishForm({
   action, hiddenFields, notes, onNotesChange,
   acknowledgement, savedMessage, saveFailed, saving, canSaveDraft, canPublish,
@@ -79,7 +81,7 @@ export default function ReviewPublishForm({
             <span className={styles.status}>
               {strings.blockedReason === null
                 ? <span className={styles.note}>{strings.allClear}</span>
-                : <span className={styles.blocked}>{`${strings.disabledPrefix}${strings.blockedReason}`}</span>}
+                : <span className={styles.blocked} id={REASON_ID}>{`${strings.disabledPrefix}${strings.blockedReason}`}</span>}
               {savedMessage === null ? null : <span className={styles.note} role="status">{savedMessage}</span>}
               {saveFailed ? <span className={styles.blocked} role="alert">{strings.draftSaveFailed}</span> : null}
             </span>
@@ -91,7 +93,7 @@ export default function ReviewPublishForm({
               variant="primary"
               type="submit"
               disabled={!canPublish}
-              label={strings.blockedReason === null ? undefined : `${strings.publishLabel} — ${strings.disabledPrefix}${strings.blockedReason}`}
+              describedBy={strings.blockedReason === null ? undefined : REASON_ID}
             >
               {strings.publishLabel}
             </Button>

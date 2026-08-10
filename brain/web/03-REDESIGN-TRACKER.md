@@ -789,21 +789,6 @@ Pull one in only if it is genuinely part of doing the active task well.
   were visible for three turns and were dismissed as harmless. **A cache warning
   on a shared `.next` is a defect report.** Cure: stop every dev server, delete
   `apps/web/.next`, restart one. CLAUDE.md already said this; it was not heeded.
-- **`Button` has no `describedBy`.** A disabled control whose reason lives in a
-  sibling element cannot be associated with it; `controls` is the wrong ARIA
-  relationship. The bulk publish button puts the reason in its accessible name
-  instead.
-- **The review window is still two native `datetime-local` inputs** — the only
-  native controls left on the route. `DateRangePicker withTime` is the right
-  primitive and needs its strings in both locales.
-- **`--sqx-grid-min-xs` DOES NOT EXIST but `criteria-builder.module.css:68`
-  uses it** — `flex: 0 1 var(--sqx-grid-min-xs)` is therefore an invalid
-  declaration and is dropped, so `.fieldNarrow` has no basis. Part of the broken
-  criteria-builder layout is this, not the cache. Shipped in T-050 (`5e71b4f3`),
-  never rendered. Needs a ruling: reuse `-sm`, or add the token.
-- **`--sqx-surface-danger` and `--sqx-surface-success` do not exist**, so a tinted
-  status badge cannot be built. Raised, not invented (WEB-002 §2) — the third
-  token gap on this screen.
 - **A regex is not a CSS parser.** `split(/}s*
 +/)` corrupted `review.css`
   (119 → 157 lines, two orphans surviving) because it cannot see nested or
@@ -824,6 +809,45 @@ Pull one in only if it is genuinely part of doing the active task well.
   against the rail and the viewport edge and the page head pops in afterwards.
   Caught on `/planning/bulk`; check any future skeleton against its sibling
   routes, which already wrap correctly.
+- **THE APP SHELL MUST BE THE ONLY SCROLLER — now enforced.** `.shell` was
+  `block-size: 100dvh; overflow: hidden` but still **in flow**, so a descendant
+  escaping the clip grew `<body>` and the page had two scrollers. A focus change
+  then scrolled both and parked the viewport below the 645px shell: the screen
+  read as blank while rendering perfectly. Reported five times on
+  `/planning/bulk` and misdiagnosed as a crash four times. Fixed with
+  `position: fixed; inset: 0`; guarded by
+  `e2e/shell-single-scroller-contract.spec.ts`. **Touches every authenticated
+  route** and wants a visual pass.
+- **"Blank screen" does not mean "something threw".** Four error boundaries were
+  added before anyone measured `document.documentElement.scrollHeight`. Establish
+  that a failure is what it looks like before instrumenting for it.
+- **`global-error.tsx` did not exist.** Without it, an error escaping the `(app)`
+  layout renders a literally blank document — no overlay, no state. Added, along
+  with `error.tsx` for both bulk routes.
+- **A raw database value is not a label.** The criteria value dropdown rendered
+  `{ value: v, label: v }`, and the English pill copy was inherited verbatim from
+  the legacy `t("plan.bulk.eligible", "eligible")` defaults — so the screen
+  showed `active`, `eligible`, `high`, `complete` in lower case, raw. Options now
+  carry `{ value, label }`: the **value stays the raw DB string** so `evalNode`
+  is untouched, and the label resolves through `planning.bulk.enumLabel` (23
+  governed values, both locales) falling back to separator-stripped sentence
+  case. Any screen mapping a DB enum straight into a label has the same bug.
+- **RESOLVED 2026-08-10 — the owner ruled to fill, not carry.** `--sqx-surface-success`
+  (6.89 light / 12.22 dark), `--sqx-surface-danger` (9.51 / 6.11) and
+  `--sqx-grid-min-xs` (11rem) are in `saqeel.css` with measured ratios;
+  `Button` gained `describedBy`; the review window is a `DateRangePicker withTime`.
+  The `grid-min-xs` addition also fixes T-050s invalid `flex` in
+  `criteria-builder.module.css:68`.
+- **A criteria URL must never carry raw JSON.** `?ct=` percent-encoded a whole
+  wire object into an unreadable address bar. Now base64url, UTF-8 safe via
+  `TextEncoder` (`btoa` alone throws on Arabic criteria values), with `parseCt`
+  falling back to the raw form so shared links keep working.
+- **Dropping `target="_blank"` in a rewrite is a behaviour change.** The bulk
+  targets table lost it silently and clicking a factory replaced the screen,
+  which reads as a crash. Diff behaviour attributes, not just markup.
+- **`/planning/bulk` and `/planning/bulk/review` now have `error.tsx`.** Neither
+  did, so any client error blanked the subtree with no state. Check every
+  migrated route for a boundary.
 - **There is no busy/loading opacity token**, so a control or region that wants
   to read as "working" can only say so with text plus `aria-busy`. Wanted twice
   now (T-048's `--sqx-opacity-muted`, and the bulk filter's table dim) and

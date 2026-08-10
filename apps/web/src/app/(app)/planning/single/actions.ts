@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { getPlanningAccess } from "@/lib/planning/access";
-import { findDuplicateActiveVisits } from "./duplicate";
+import { findDuplicateActiveVisits } from "@/features/planning-single/duplicates";
 import { containsPlannerLocationOverride, PLANNER_LOCATION_OVERRIDE_ERROR } from "./location-authority";
 import { isPlausibleDate, PLAUSIBLE_DATE_ERROR } from "@/lib/plausible-date";
 import { createHash, randomUUID } from "node:crypto";

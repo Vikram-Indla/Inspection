@@ -743,7 +743,36 @@
         "title": "لا توجد نتائج لهذه التصفية",
         "body": "طابقت المعايير مصانع، لكن لا يطابق أيٌّ منها النص الذي كتبته. امسح التصفية لعرضها جميعًا."
       }
-    }
+    },
+    "enumLabel": {
+      "active": "نشطة",
+      "inactive": "غير نشطة",
+      "suspended": "موقوفة",
+      "expired": "منتهية",
+      "cancelled": "ملغاة",
+      "pending": "قيد الانتظار",
+      "draft": "مسودة",
+      "published": "منشورة",
+      "high": "مرتفعة",
+      "medium": "متوسطة",
+      "low": "منخفضة",
+      "periodic": "التزام دوري",
+      "physical": "ميداني",
+      "virtual": "افتراضي",
+      "operating": "قائمة",
+      "under_construction": "تحت الإنشاء",
+      "stopped": "متوقفة",
+      "local": "محلي",
+      "foreign": "أجنبي",
+      "joint": "مشترك",
+      "compliant": "ملتزمة",
+      "non_compliant": "غير ملتزمة",
+      "partial": "ملتزمة جزئيًا"
+    },
+    "boundaryTitle": "توقّف هذا الجزء من الشاشة عن الاستجابة",
+    "boundaryBody": "لم يُحدَّد أو يُحفظ أو يُنشر أي شيء. التفاصيل التقنية معروضة أدناه — أعد المحاولة لإعادة بناء هذا القسم.",
+    "boundaryRetry": "أعد المحاولة",
+    "boundaryReference": "التفصيل"
   },
   "bulkReview": {
     "title": "مراجعة الخطة والإشراف",
@@ -991,6 +1020,18 @@
     "markOk": "سيحدث",
     "markPending": "لم يُؤكَّد بعد",
     "markWont": "لن يحدث",
-    "markBlocked": "يمنع الإسناد"
+    "markBlocked": "يمنع الإسناد",
+    "windowPick": "نافذة التفتيش",
+    "windowClear": "مسح",
+    "windowApply": "تطبيق",
+    "windowEmpty": "لم تُحدَّد نافذة",
+    "windowStartTime": "وقت البداية",
+    "windowEndTime": "وقت النهاية",
+    "previousMonth": "الشهر السابق",
+    "nextMonth": "الشهر التالي",
+    "presetNext7": "الأيام السبعة القادمة",
+    "presetNext30": "الثلاثون يومًا القادمة",
+    "presetNext90": "التسعون يومًا القادمة",
+    "queued": "في قائمة الانتظار"
   }
 }

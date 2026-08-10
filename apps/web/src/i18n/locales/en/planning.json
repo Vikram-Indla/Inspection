@@ -684,8 +684,8 @@
       "colProvenance": "Source / synced",
       "colDataQuality": "Data quality",
       "selectFactory": "select {name}",
-      "eligible": "eligible",
-      "duplicate": "duplicate — active visit",
+      "eligible": "Eligible",
+      "duplicate": "Duplicate — active visit",
       "riskAdvisory": "Risk band is recorded and advisory — nothing is auto-selected.",
       "filterLabel": "Filter within results",
       "filterPlaceholder": "Name, code, CR, city or region…",
@@ -696,11 +696,11 @@
       "pagePrev": "Previous",
       "pageNext": "Next",
       "pageStatus": "{a}–{b} of {n}",
-      "provSynced": "synced {d}",
-      "provNoSync": "no sync record",
-      "dqComplete": "complete",
-      "dqNoLocation": "no location — dispatch blocked",
-      "dqUnknownRisk": "unknown risk",
+      "provSynced": "Synced {d}",
+      "provNoSync": "No sync record",
+      "dqComplete": "Complete",
+      "dqNoLocation": "No location — dispatch blocked",
+      "dqUnknownRisk": "Unknown risk",
       "selectionBar": "{n} selected",
       "readyNothing": "select at least one factory",
       "reviewContinue": "Review & continue",
@@ -726,9 +726,9 @@
       "filtering": "Filtering results…"
     },
     "riskBand": {
-      "high": "high",
-      "medium": "medium",
-      "low": "low"
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
     },
     "empty": {
       "noCriteria": {
@@ -743,11 +743,40 @@
         "title": "No results for this filter",
         "body": "The criteria matched factories, but none of them match the text you typed. Clear the filter to see them all."
       }
-    }
+    },
+    "enumLabel": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "suspended": "Suspended",
+      "expired": "Expired",
+      "cancelled": "Cancelled",
+      "pending": "Pending",
+      "draft": "Draft",
+      "published": "Published",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "periodic": "Periodic compliance",
+      "physical": "Physical",
+      "virtual": "Virtual",
+      "operating": "Operating",
+      "under_construction": "Under construction",
+      "stopped": "Stopped",
+      "local": "Local",
+      "foreign": "Foreign",
+      "joint": "Joint venture",
+      "compliant": "Compliant",
+      "non_compliant": "Non-compliant",
+      "partial": "Partially compliant"
+    },
+    "boundaryTitle": "This part of the screen stopped responding",
+    "boundaryBody": "Nothing was selected, saved or published. The technical detail is shown below — retry to rebuild this section.",
+    "boundaryRetry": "Retry",
+    "boundaryReference": "Detail"
   },
   "bulkReview": {
     "title": "Plan review & supervision",
-    "context": "review · supervision",
+    "context": "Review · supervision",
     "loading": "Loading your selection…",
     "loadingNote": "Validating factories, inspection checklist, Inspectors and duplicates…",
     "stagedBanner": "Staged review. No plan record exists yet — nothing is saved until you submit it for supervision.",
@@ -991,6 +1020,18 @@
     "markOk": "will happen",
     "markPending": "not confirmed yet",
     "markWont": "will not happen",
-    "markBlocked": "blocks assignment"
+    "markBlocked": "blocks assignment",
+    "windowPick": "Inspection window",
+    "windowClear": "Clear",
+    "windowApply": "Apply",
+    "windowEmpty": "No window set",
+    "windowStartTime": "Start time",
+    "windowEndTime": "End time",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "presetNext7": "Next 7 days",
+    "presetNext30": "Next 30 days",
+    "presetNext90": "Next 90 days",
+    "queued": "Queued"
   }
 }

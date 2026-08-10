@@ -190,12 +190,142 @@ name says why — but it is a primitive gap, recorded below.
   should be edited by locating a unique anchor and verifying the result, never by
   computing an offset and trusting it.
 
-## Gaps raised, not filled
+## Part 3 — owner ruled: close every gap
 
-- `--sqx-surface-danger` / `--sqx-surface-success`
-- `--sqx-grid-min-xs`, used by `criteria-builder.module.css:68` and undefined
-- `Button` has no `describedBy`
-- No `DateRangePicker` strings for the review window
+The owner ruled that the raised gaps should be filled rather than carried. All
+four are closed, plus two defects the first render exposed.
+
+**Three tokens added to `saqeel.css`, with measured contrast:**
+
+| Token | Light | Dark | Ratio against its text token |
+| --- | --- | --- | --- |
+| `--sqx-surface-success` | `--sqx-success-lighter` | `--sqx-green-950` | **6.89** light · **12.22** dark |
+| `--sqx-surface-danger` | `--sqx-error-lighter` | `--sqx-error-darker` | **9.51** light · **6.11** dark |
+| `--sqx-grid-min-xs` | `11rem` | — | n/a |
+
+Every pairing clears AA at normal text size. `--sqx-grid-min-xs` closes the
+T-050 defect: `criteria-builder.module.css:68` referenced it, so `flex` was
+invalid and dropped, and `.fieldNarrow` had no basis — part of why the criteria
+builder did not lay out.
+
+**`Button` gained `describedBy`.** `controls` was the wrong ARIA relationship
+for "why is this disabled". The bulk publish button now points at its own reason
+element again, restoring what the legacy markup had.
+
+**The review window is a `DateRangePicker withTime`.** The last two native
+controls on the route are gone; 11 picker strings were added in both locales.
+
+### Two defects the first authenticated render exposed
+
+- **The criteria URL was raw JSON.** `serializeCriteria` put
+  `{"k":"g","c":"all","n":[…]}` straight into `?ct=`, which percent-encodes into
+  an unreadable wall in the address bar. It is now **base64url**: 108 characters
+  became 92, and it is opaque rather than ugly. `parseCt` tries the encoded form
+  first and **falls back to raw JSON**, so every link shared before today still
+  parses. The encoder is UTF-8 safe via `TextEncoder`/`TextDecoder` — criteria
+  values can be Arabic, and `btoa` alone would have thrown on them.
+- **Clicking a factory name navigated away.** The legacy table opened
+  `/factories/<id>` with `target="_blank"`; my rewrite dropped it silently, so
+  the targeting screen was replaced and read as "the screen goes blank". A
+  behaviour I removed without noticing, restored.
+
+**Both routes gained `error.tsx`.** Neither had one, so any client error blanked
+the subtree with no state at all — which is exactly how the above was
+experienced. `RouteError` now renders a titled state that says nothing was
+selected, saved or published.
+
+## Part 4 — raw labels
+
+The first authenticated render showed `active` in the criteria value dropdown
+and `eligible` / `high` / `complete` in the table pills — raw database values and
+lower-case legacy `t()` defaults.
+
+- `fieldOptions` changed from `Record<string, string[]>` to
+  `Record<string, SuggestionOption[]>`. **The value stays the raw DB string**, so
+  `evalNode` and every existing `ct` link are untouched; only the label changes.
+- `planning.bulk.enumLabel` holds 23 governed values in both locales
+  (`active`, `high`, `under_construction`, `non_compliant`, …). Anything not in
+  it falls back to separator-stripped sentence case, which is honest for
+  DB-driven values like region and city rather than inventing a translation.
+- English pill copy sentence-cased: `Eligible`, `Duplicate — active visit`,
+  `Complete`, `Unknown risk`, `No location — dispatch blocked`, `Synced {d}`,
+  and risk bands `High`/`Medium`/`Low`.
+
+## The "no results" report — not reproduced
+
+The criteria pipeline was tested end to end by executing the real module with
+`node --experimental-strip-types`:
+
+```
+serialize → parseCt round-trip   : equal
+legacy raw-JSON ct               : still parses
+hasCriteria(parsed)              : true
+evalNode against a matching row  : true
+emptyTree hasCriteria            : false
+```
+
+**The base64 change did not break matching.** A correction to the slice 1b
+record: it claimed `distinctValues` "now trims before de-duplicating" — it does
+not. `recordedText` trims only to test emptiness and returns the **untrimmed**
+value, so suggestions and the evaluator agree. That parked note was wrong.
+
+What could still produce zero rows, in order of likelihood: an unfilled value in
+a condition (a blank leaf invalidates the whole `ct`, which renders as *Criteria
+could not be read*), or a scope query returning nothing. **This needs one
+observation to settle: the address bar plus what "In scope" reads.**
+
+## Part 5 — the blank screen was never a crash
+
+Reported five times as "the UI goes blank when I select a factory". Four
+diagnostics were added on the assumption it was a React error — a route
+`error.tsx`, a client `ErrorBoundary` around both islands, `global-error.tsx`,
+and window-level `error`/`unhandledrejection` listeners. **All four correctly
+reported nothing, because nothing threw.**
+
+Instrumenting the geometry found it in one pass:
+
+```
+focusin  MAIN                docH 2846  winH 645  scrollY 0      ← before the click
+focusin  INPUT.choice_input  docH 2846  winH 645  scrollY 1758   ← after
+DOCUMENT SCROLLED           docH 2846  mainScroll 1736  mainScrollH 3146
+```
+
+**The document was already scrollable at rest.** The shell is 645px with
+`overflow: hidden`, so everything past 645 is empty canvas. Clicking focused the
+checkbox; the browser scrolled every scrollable ancestor to reveal it — `main`
+(correct) and the document (should have been impossible) — parking the viewport
+at 1758, below the shell. The page rendered perfectly the entire time.
+
+**Fix:** `.shell` was `block-size: 100dvh; overflow: hidden` — right height,
+still **in flow**, so any descendant escaping the clip grew `<body>` and gave the
+page a second scroller. It is now `position: fixed; inset: 0`, which is what the
+2026-08-07 shell decision has always claimed ("`.sqx-shell` is
+`100dvh`/`overflow:hidden`, `.sqx-shell__main` owns `overflow-y`"). The document
+cannot scroll; `main` is the only scroller.
+
+**Blast radius: every authenticated route.** One rule in the app-shell module.
+Nothing inside the shell should rely on document scroll, but this was not
+verified beyond `/planning/bulk`.
+
+**Regression guard:** `e2e/shell-single-scroller-contract.spec.ts` asserts on
+four routes that the document is unscrollable at rest **and** that focusing the
+last control in `main` leaves `window.scrollY` at 0. This class of defect is
+invisible to typecheck, lint and axe — only geometry catches it.
+
+### What this cost, and the rule that comes out of it
+
+Five rounds, four wrong fixes, one corrupted `.next` cache. Every attempt
+assumed "blank screen" meant "something threw". **Before instrumenting a
+failure, establish that the failure is what it looks like** — one geometry probe
+would have found this immediately, and it was available from the first report.
+
+The boundaries added along the way stay: `global-error.tsx` and both route
+`error.tsx` files did not exist, which is a real gap under WEB-000 §9 and
+`web.md`. They were not the cause and they are not wasted.
+
+## Gaps remaining
+
+None raised by this task.
 
 ## Next
 

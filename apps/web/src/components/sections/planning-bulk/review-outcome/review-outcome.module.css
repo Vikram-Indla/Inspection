@@ -17,10 +17,12 @@
 }
 
 .head[data-tone="danger"] .badge {
+  background: var(--sqx-surface-danger);
   color: var(--sqx-text-danger);
 }
 
 .head[data-tone="success"] .badge {
+  background: var(--sqx-surface-success);
   color: var(--sqx-text-success);
 }
 

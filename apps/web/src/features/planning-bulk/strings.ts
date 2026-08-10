@@ -10,6 +10,24 @@ export function bulkMessages(locale: Locale) {
   return getMessages(locale).planning.bulk;
 }
 
+const SEPARATORS = /[_-]+/g;
+
+export function buildValueLabel(locale: Locale): (value: string) => string {
+  const governed: Record<string, string> = bulkMessages(locale).enumLabel;
+  return value => governed[value]
+    ?? value.replace(SEPARATORS, " ").replace(/^./, first => first.toLocaleUpperCase(locale));
+}
+
+export function buildBoundaryStrings(locale: Locale) {
+  const bulk = bulkMessages(locale);
+  return {
+    title: bulk.boundaryTitle,
+    body: bulk.boundaryBody,
+    retryLabel: bulk.boundaryRetry,
+    referenceLabel: bulk.boundaryReference,
+  };
+}
+
 export function buildScreenStrings(locale: Locale): { title: string; context: string } {
   const bulk = bulkMessages(locale);
   return { title: bulk.title, context: bulk.context };

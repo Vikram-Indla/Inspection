@@ -66,6 +66,7 @@
 
 .fieldNarrow {
   flex: 0 1 var(--sqx-grid-min-xs);
+  min-inline-size: 0;
 }
 
 .notices {

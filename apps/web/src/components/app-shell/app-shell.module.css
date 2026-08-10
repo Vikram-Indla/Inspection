@@ -1,4 +1,12 @@
+/* Fixed, not merely 100dvh: a height alone leaves the shell in flow, so any
+   descendant that escapes the clip still grows the document. The page then has
+   two scrollers — `main` and the document — and a focus change scrolls both,
+   stranding the viewport in the empty region below the shell. Out of flow, the
+   document cannot scroll and `main` is the only scroller, which is what the
+   shell contract has always claimed. */
 .shell {
+  position: fixed;
+  inset: 0;
   display: flex;
   block-size: 100dvh;
   overflow: hidden;

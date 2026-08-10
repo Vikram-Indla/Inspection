@@ -37,6 +37,12 @@ export type ButtonProps = {
   label?: string;
   expanded?: boolean;
   controls?: string;
+  /**
+   * Id of the element that explains this control — typically why a disabled
+   * action cannot be taken. Distinct from `controls`, which names what the
+   * control operates, not what describes it.
+   */
+  describedBy?: string;
   hasPopup?: "menu" | "dialog" | "listbox";
   onClick?: () => void;
 };
@@ -60,6 +66,7 @@ export default function Button({
   label,
   expanded,
   controls,
+  describedBy,
   hasPopup,
   onClick,
 }: ButtonProps) {
@@ -81,6 +88,7 @@ export default function Button({
     "aria-label": label,
     "aria-expanded": expanded,
     "aria-controls": controls,
+    "aria-describedby": describedBy,
     "aria-haspopup": hasPopup,
     title: title ?? label,
   } as const;

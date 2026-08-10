@@ -68,7 +68,7 @@ export default function BulkEvidenceTable({
       isRowHeader: true,
       cell: factory => (
         <span className={styles.identity}>
-          <a className={styles.name} href={`/factories/${factory.id}`}>{factory.name}</a>
+          <a className={styles.name} href={`/factories/${factory.id}`} target="_blank" rel="noreferrer">{factory.name}</a>
           <bdi className={styles.code}>{factory.factory_code ?? MISSING}</bdi>
         </span>
       ),

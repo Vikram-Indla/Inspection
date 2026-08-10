@@ -1,6 +1,5 @@
 "use client";
 
-import "./review.css";
 // CD-025 / SCR-WEB-150 / P03 — Plan Review & Publish workspace.
 //
 // Route-neutral staged review, mounted on the governed /planning/bulk/review
@@ -55,6 +54,9 @@ export type ReviewStrings = {
   typePeriodic: string; mode: string; physical: string; window: string; scope: string;
   // config
   configTitle: string; windowStart: string; windowEnd: string; notes: string; notesPlaceholder: string;
+  windowPick: string; windowClear: string; windowApply: string; windowEmpty: string;
+  windowStartTime: string; windowEndTime: string; previousMonth: string; nextMonth: string;
+  presetNext7: string; presetNext30: string; presetNext90: string;
   // readiness
   readiness: string; blockedTag: string; readyTag: string; blockersN: string; clearAll: string;
   // targets table
@@ -80,7 +82,7 @@ export type ReviewStrings = {
   publishingTitle: string; publishingBody: string; publishingSub: string;
   failTitle: string; failBody: string; failSub: string; tryAgain: string;
   successTitle: string; successBody: string; successSub: string;
-  sPlan: string; sVisits: string; sAssign: string; sNotif: string;
+  sPlan: string; sVisits: string; sAssign: string; sNotif: string; queued: string;
   goVisits: string; openPlan: string;
   // M6 — eligibility partition + acknowledgement + persisted drafts
   eligH: string; eligTotal: string; eligEligible: string; eligIneligible: string;
@@ -555,11 +557,11 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
         windowEnd={windowEnd}
         draftUnavailable={draftUnavailable === true}
         strings={s}
+        locale={locale}
         onGovernedValueChange={keepGovernedValue}
         onPriorityChange={setPriority}
         onPackageToggle={(id, checked) => setPkgIds(ids => checked ? [...ids, id] : ids.filter(x => x !== id))}
-        onWindowStartChange={setWindowStart}
-        onWindowEndChange={setWindowEnd}
+        onWindowChange={range => { setWindowStart(range.from); setWindowEnd(range.to); }}
         draftBanner={initialDraft ? (
           <PlanningNotice tone="info" label={interp(s.draftBanner, { ref: initialDraft.planReference })}>
             <DiscardDraftButton planId={initialDraft.planId} expectedVersion={initialDraft.version} label={s.discardDraft}

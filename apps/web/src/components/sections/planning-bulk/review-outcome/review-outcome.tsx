@@ -12,7 +12,7 @@ export type ReviewOutcomeStrings = {
   publishingTitle: string; publishingBody: string; publishingSub: string;
   failTitle: string; failBody: string; failSub: string; tryAgain: string;
   successTitle: string; successBody: string; successSub: string;
-  sPlan: string; sVisits: string; sAssign: string; sNotif: string;
+  sPlan: string; sVisits: string; sAssign: string; sNotif: string; queued: string;
   goVisits: string; openPlan: string; backConfig: string;
   droppedH: string; droppedD: string;
 };
@@ -93,7 +93,7 @@ export function ReviewSuccess({ created, proposed, dropped, planId, headingRef, 
     [strings.sPlan, "1"],
     [strings.sVisits, String(created)],
     [strings.sAssign, String(proposed)],
-    [strings.sNotif, strings.sNotif],
+    [strings.sNotif, strings.queued],
   ];
 
   return (

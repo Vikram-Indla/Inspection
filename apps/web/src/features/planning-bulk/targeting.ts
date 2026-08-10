@@ -4,7 +4,7 @@ import {
 } from "@/app/(app)/planning/bulk/criteria";
 import {
   bucketsFor, citiesByRegion, countBy, freshnessOf, suggestionOptions,
-  type CriteriaFactory, type ValueBucket,
+  type CriteriaFactory, type SuggestionOption, type ValueBucket,
 } from "./view";
 
 export type BulkCriteriaParams = {
@@ -28,7 +28,7 @@ export type BulkTargetingView = {
   matched: CriteriaFactory[];
   denominator: number;
   eligible: number;
-  fieldOptions: Record<string, string[]>;
+  fieldOptions: Record<string, SuggestionOption[]>;
   cityByRegion: Record<string, string[]>;
   contributions: Record<string, number>;
   leafInfo: CriteriaLeaf[];
@@ -68,6 +68,7 @@ function focusOf(tree: GroupNode, everyFactory: readonly CriteriaFactory[]): {
 export function resolveBulkTargeting(
   params: BulkCriteriaParams,
   everyFactory: readonly CriteriaFactory[],
+  labelOf: (value: string) => string,
 ): BulkTargetingView {
   const { tree, unreadable } = criteriaTreeOf(params);
   const criteriaApplied = hasCriteria(tree);
@@ -80,7 +81,7 @@ export function resolveBulkTargeting(
     matched,
     denominator: everyFactory.length,
     eligible: matched.length,
-    fieldOptions: suggestionOptions(everyFactory, SUGGESTION_FIELDS),
+    fieldOptions: suggestionOptions(everyFactory, SUGGESTION_FIELDS, labelOf),
     cityByRegion: citiesByRegion(everyFactory),
     ...focusOf(tree, everyFactory),
     oldestSyncedAt: freshness.oldestSyncedAt,

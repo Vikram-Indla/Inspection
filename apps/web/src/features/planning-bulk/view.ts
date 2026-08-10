@@ -72,11 +72,15 @@ export function distinctValues(factories: readonly CriteriaFactory[], key: strin
     .filter((value): value is string => value !== null))].sort();
 }
 
+export type SuggestionOption = { value: string; label: string };
+
 export function suggestionOptions(
   factories: readonly CriteriaFactory[],
   keys: readonly string[],
-): Record<string, string[]> {
-  return Object.fromEntries(keys.map(key => [key, distinctValues(factories, key)]));
+  labelOf: (value: string) => string,
+): Record<string, SuggestionOption[]> {
+  return Object.fromEntries(keys.map(key =>
+    [key, distinctValues(factories, key).map(value => ({ value, label: labelOf(value) }))]));
 }
 
 export function citiesByRegion(factories: readonly CriteriaFactory[]): Record<string, string[]> {

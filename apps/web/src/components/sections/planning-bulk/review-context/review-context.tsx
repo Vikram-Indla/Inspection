@@ -1,5 +1,6 @@
 import { type ReactNode } from "react";
 import Choice from "@/components/saqeel/choice/choice";
+import DateRangePicker, { type DateRangePreset } from "@/components/saqeel/date-range-picker/date-range-picker";
 import Field from "@/components/saqeel/field/field";
 import SaqeelSelect, { type SelectOption } from "@/components/saqeel/select/select";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
@@ -17,13 +18,22 @@ export type ReviewContextStrings = {
   visitType: string; mode: string; priorityLabel: string; priorityNone: string;
   packageLabel: string; packageHint: string;
   window: string; windowStart: string; windowEnd: string;
+  windowPick: string; windowClear: string; windowApply: string; windowEmpty: string;
+  windowStartTime: string; windowEndTime: string; previousMonth: string; nextMonth: string;
+  presetNext7: string; presetNext30: string; presetNext90: string;
 };
+
+const windowPresets = (strings: ReviewContextStrings): readonly DateRangePreset[] => [
+  { id: "next-7", label: strings.presetNext7, days: 7, direction: "future" },
+  { id: "next-30", label: strings.presetNext30, days: 30, direction: "future" },
+  { id: "next-90", label: strings.presetNext90, days: 90, direction: "future" },
+];
 
 export default function ReviewContext({
   freshness, selectedCount, retainedCount, manual, auto,
   visitType, visitTypeOptions, mode, modeOptions, priority, priorityOptions,
   packages, windowStart, windowEnd, draftBanner, draftUnavailable,
-  strings, onGovernedValueChange, onPriorityChange, onPackageToggle, onWindowStartChange, onWindowEndChange,
+  strings, locale, onGovernedValueChange, onPriorityChange, onPackageToggle, onWindowChange,
 }: {
   freshness: string;
   selectedCount: number;
@@ -45,8 +55,8 @@ export default function ReviewContext({
   onGovernedValueChange: () => void;
   onPriorityChange: (value: string) => void;
   onPackageToggle: (id: string, checked: boolean) => void;
-  onWindowStartChange: (value: string) => void;
-  onWindowEndChange: (value: string) => void;
+  locale: "ar" | "en";
+  onWindowChange: (range: { from: string; to: string }) => void;
 }) {
   return (
     <Card as="section">
@@ -113,28 +123,30 @@ export default function ReviewContext({
           )}
         </fieldset>
 
-        <div className={styles.controls}>
-          <Field label={strings.windowStart} htmlFor="review-window-start">
-            <input
-              className={styles.moment}
-              id="review-window-start"
-              name="window_start"
-              type="datetime-local"
-              value={windowStart}
-              onChange={event => onWindowStartChange(event.target.value)}
-            />
-          </Field>
-          <Field label={strings.windowEnd} htmlFor="review-window-end">
-            <input
-              className={styles.moment}
-              id="review-window-end"
-              name="window_end"
-              type="datetime-local"
-              value={windowEnd}
-              onChange={event => onWindowEndChange(event.target.value)}
-            />
-          </Field>
-        </div>
+        <Field label={strings.window}>
+          <DateRangePicker
+            from={windowStart}
+            to={windowEnd}
+            onChange={onWindowChange}
+            label={strings.windowPick}
+            displayValue={windowStart && windowEnd ? `${windowStart} → ${windowEnd}` : strings.windowEmpty}
+            presets={windowPresets(strings)}
+            locale={locale}
+            monthLabels={{ previous: strings.previousMonth, next: strings.nextMonth }}
+            strings={{
+              from: strings.windowStart,
+              to: strings.windowEnd,
+              pickStart: strings.windowStart,
+              pickEnd: strings.windowEnd,
+              reset: strings.windowClear,
+              apply: strings.windowApply,
+              empty: strings.windowEmpty,
+            }}
+            timeLabels={{ from: strings.windowStartTime, to: strings.windowEndTime }}
+            withTime
+            block
+          />
+        </Field>
       </CardBody>
     </Card>
   );

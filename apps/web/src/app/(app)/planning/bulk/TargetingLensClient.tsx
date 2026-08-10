@@ -8,7 +8,7 @@ import BulkTargetingForm, { type BulkFormStrings } from "@/components/sections/p
 import type { GroupNode } from "./criteria";
 import { hasCriteria, serializeCriteria } from "./criteria";
 import type { Locale } from "@/lib/i18n";
-import type { CriteriaFactory } from "@/features/planning-bulk/view";
+import type { CriteriaFactory, SuggestionOption } from "@/features/planning-bulk/view";
 import type { CriteriaLeaf } from "@/features/planning-bulk/targeting";
 
 export default function TargetingLensClient({
@@ -18,7 +18,7 @@ export default function TargetingLensClient({
   factories, bulkFormStrings, locale, builderFields, cityByRegion,
 }: {
   initialTree: GroupNode;
-  fieldOptions: Record<string, string[]>;
+  fieldOptions: Record<string, SuggestionOption[]>;
   matchCount: number;
   criteriaStrings: CriteriaBuilderStrings;
   contributions: Record<string, number>;
