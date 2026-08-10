@@ -1,6 +1,6 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-10` · `Updated by: T-046 slice 4 pt 1 — review phases and readiness`
+`Last updated: 2026-08-10` · `Updated by: T-046 slice 4 — review screen fully migrated`
 
 > **The workstation blocker is stale.** `next dev` ran on 2026-08-10 and
 > compiled `/planning/bulk` clean; the SWC Application Control error did not
@@ -14,12 +14,10 @@
 Slices **1a** (data layer behind the T-042 narrowing boundary), **1b** (route
 file 348 → **27**) and **1c** (criteria builder — 13 native controls and 24
 legacy classes to zero) are done, plus the shared AI advisory. Slices **2** (the evidence form) and **3** (the review route, 288 → 30) are done
-too. Slice 4 is **part done**: the seven phase screens and the readiness rail are on
-SAQEEL (`ReviewClient` 855 → 743, 13 emoji glyphs → 0, `review.css` 119 → 82).
-**Six sections of the review screen are still legacy** — context card,
-eligibility partition, targets table, evidence ledger, consequence ledger and
-the publish action — plus `EvidenceLedger.tsx` (128 lines, 0 SAQEEL) and
-`actions.ts` **846 lines**.
+too. **Slice 4 is done — the review screen is fully migrated.** `ReviewClient`
+855 → 647, `EvidenceLedger` 128 → 112, and **`review.css` is deleted**: legacy
+classes 243 → 0, inline styles 52 → 0, native controls 5 → 0, emoji-as-icon
+25 → 0. **Only `actions.ts` (846 lines) remains** on this route.
 
 The entry screen is now server composition: `features/planning-bulk/` holds the
 reads, the view models and three string modules; `resolveBulkTargeting()`

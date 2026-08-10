@@ -1,0 +1,37 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-4);
+}
+
+.note {
+  color: var(--sqx-text-muted);
+  font-size: var(--sqx-text-caption-size);
+  text-wrap: pretty;
+}
+
+.blocked {
+  color: var(--sqx-text-danger);
+  font-size: var(--sqx-text-caption-size);
+  text-wrap: pretty;
+}
+
+.ack {
+  display: block;
+  margin-block-start: var(--sqx-space-3);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
+.status {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  min-inline-size: 0;
+}

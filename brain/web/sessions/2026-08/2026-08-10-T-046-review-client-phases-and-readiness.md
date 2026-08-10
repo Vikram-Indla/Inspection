@@ -1,6 +1,6 @@
 # 2026-08-10 · T-046 — `/planning/bulk` slice 4 (part 1): review phases + readiness
 
-`task: T-046` · `status: partial — 3 of 9 sections migrated; ReviewClient still legacy below the fold`
+`task: T-046` · `status: done — every section migrated; review.css deleted`
 `duration: 1h` · `rules applied: WEB-000, WEB-002 §2, WEB-003, WEB-008, WEB-009, WEB-011`
 
 ---
@@ -127,7 +127,77 @@ consumed by the six unmigrated sections and by `EvidenceLedger.tsx`.
 refactor(planning): move review phases and readiness onto saqeel
 ```
 
+---
+
+## Part 2 — the remaining six sections
+
+| File | Action | Lines |
+| --- | --- | --- |
+| `review/ReviewClient.tsx` | reduced | 743 → **647** |
+| `review/EvidenceLedger.tsx` | rebuilt on the shared ledger | 128 → **112** |
+| `review/review.css` | **DELETED** | 119 → 0 |
+| `review-context/**` | created | 140 + 60 |
+| `review-targets/**` | created | 128 + 33 |
+| `review-eligibility/**` | created | 53 + 28 |
+| `review-assignment-split/**` | created | 44 + 33 |
+| `review-consequence-ledger/**` | created | 91 + 82 |
+| `review-publish-form/**` | created | 104 + 39 |
+
+```
+ReviewClient.tsx        855 → 647 lines
+legacy sq-/cd- classes  243 → 0        (incl. EvidenceLedger)
+inline style={{}}        52 → 0
+native select/table/textarea 5 → 0
+app/icons imports         1 → 0
+emoji-as-icon            25 → 0
+review.css              119 → DELETED
+```
+
+**`EvidenceLedger` reuses the consequence ledger rather than being a third
+copy.** Both render the same four-group / marked-row shape; the Rule of Two says
+the second occurrence extracts. `ConsequenceGroups` is now the shared
+presentation and `ReviewConsequenceLedger` is its card wrapper. The mark set
+gained `blocked`, which the evidence ledger needs and the consequence ledger
+does not.
+
+**Governed single-value selects use T-049 disabled options.** Visit type and
+mode list every governed option with the unavailable ones `disabled` and carrying
+`notBulkYet` as their note — "recorded but unavailable" stays visible and
+announced instead of being silently absent. Their handler is named
+`keepGovernedValue` rather than an anonymous no-op, because the name is the
+explanation.
+
+**The window controls stayed `datetime-local`.** Swapping them for a
+`TextInput` would have been a regression — a text box where a date-time picker
+was. `DateRangePicker withTime` is the right primitive and needs its own strings
+in both locales; that is a follow-up, not something to fake here. They are the
+only native controls left on the route and they are styled from the screen module.
+
+**The disabled publish button lost `aria-describedby`.** `Button` exposes
+`controls` but no `describedBy`, so the blocking reason now rides in the
+buttons accessible name instead. Arguably better for a disabled control — the
+name says why — but it is a primitive gap, recorded below.
+
+### Two more mistakes in part 2
+
+- **A brace-matched deletion of `rowEvidence` cut the wrong span** and left the
+  evidence derivations duplicated, which only surfaced as
+  `Cannot redeclare block-scoped variable`. Typecheck caught it; the second
+  attempt walked the braces line by line and verified the call-site count was
+  zero first.
+- Same class of error as the CSS splitter earlier in this session. **Three
+  regex/offset edits, three failures.** Anything structural in this codebase
+  should be edited by locating a unique anchor and verifying the result, never by
+  computing an offset and trusting it.
+
+## Gaps raised, not filled
+
+- `--sqx-surface-danger` / `--sqx-surface-success`
+- `--sqx-grid-min-xs`, used by `criteria-builder.module.css:68` and undefined
+- `Button` has no `describedBy`
+- No `DateRangePicker` strings for the review window
+
 ## Next
 
-Slice 4 part 2 — the context card and the targets table, the two largest
-remaining sections of `ReviewClient`.
+Slice 5 — `actions.ts` (846 lines) and moving `criteria.ts` out of the route
+directory. The review screen itself is done.

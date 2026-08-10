@@ -987,6 +987,10 @@
       "unauthorizedBack": "Back to planning",
       "unavailableTag": "Unavailable"
     },
-    "unavailableTag": "Unavailable"
+    "unavailableTag": "Unavailable",
+    "markOk": "will happen",
+    "markPending": "not confirmed yet",
+    "markWont": "will not happen",
+    "markBlocked": "blocks assignment"
   }
 }

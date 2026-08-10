@@ -26,7 +26,15 @@ import EvidenceLedger, { type LedgerFocus, type EvidenceLedgerStrings } from "./
 import { ReviewLoading, ReviewUnavailable, ReviewOutOfScope, ReviewEmpty } from "@/components/sections/planning-bulk/review-standby/review-standby";
 import { ReviewPublishing, ReviewFailure, ReviewSuccess } from "@/components/sections/planning-bulk/review-outcome/review-outcome";
 import ReviewReadiness, { type ReadinessItem, type ReadinessTone } from "@/components/sections/planning-bulk/review-readiness/review-readiness";
+import ReviewContext from "@/components/sections/planning-bulk/review-context/review-context";
+import ReviewEligibility from "@/components/sections/planning-bulk/review-eligibility/review-eligibility";
+import ReviewTargets, { type TargetRow } from "@/components/sections/planning-bulk/review-targets/review-targets";
+import ReviewAssignmentSplit from "@/components/sections/planning-bulk/review-assignment-split/review-assignment-split";
+import ReviewConsequenceLedger, { type ConsequenceGroup, type ConsequenceMark } from "@/components/sections/planning-bulk/review-consequence-ledger/review-consequence-ledger";
+import ReviewPublishForm from "@/components/sections/planning-bulk/review-publish-form/review-publish-form";
+import Stack from "@/components/saqeel/stack/stack";
 import DiscardDraftButton from "../../DiscardDraftButton";
+import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
 
 const SEL_KEY = "cd021-bulk-selection";
 
@@ -56,7 +64,7 @@ export type ReviewStrings = {
   autoLabel: string; autoNote: string; excludedLozenge: string; chooseInspector: string;
   assignH: string; manualNamed: string; autoChosen: string; manualEvidenceNote: string; splitLine: string;
   // ledger
-  ledgerH: string; ledgerLead: string;
+  ledgerH: string; ledgerLead: string; markOk: string; markPending: string; markWont: string; markBlocked: string;
   gCreate: string; gRef: string; gRecord: string; gNot: string;
   cPlan: string; cPlanD: string; cVisits: string; cVisitsD: string; cAssign: string; cAssignD: string;
   rType: string; rTypeD: string; rWin: string; rWinD: string; rMethod: string; rMethodD: string;
@@ -92,7 +100,6 @@ export type ReviewStrings = {
 
 type Phase = "loading" | "unavailable" | "scope" | "empty" | "review" | "publishing" | "success" | "failure";
 
-const RISK_TONE: Record<string, string> = { high: "sq-lozenge--critical", medium: "sq-lozenge--warning", low: "sq-lozenge--success" };
 // per-kind presentation + which correction the Fix control performs
 const BLK_META: Record<BlockerKind, { tone: ReadinessTone; fix: "remove" | "focusRow" | "focusWindow" | "review" | "none" }> = {
   duplicate: { tone: "danger", fix: "remove" },
@@ -320,6 +327,8 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
     );
   }
 
+  if (data === null) return null;
+
   // ---------------- review phase ----------------
   const v = val;
   const validating = v === null;            // preview not yet resolved — never show a false "ready"
@@ -327,7 +336,6 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
   const retained = v?.retained ?? nonDupIds.length;
   const manual = v?.manual ?? 0;
   const auto = v?.auto ?? Math.max(0, retained - manual);
-  const reasonId = "cd-disabled-reason";
 
   // ---- M6 eligibility partition + acknowledgement ----
   // Every selected row is classified server-side (validateBulkPlan rows). Rows
@@ -400,21 +408,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
     };
   })();
 
-  // Per-row evidence cell (glyph + text; never colour alone).
-  const rowEvidence = (fid: string) => {
-    const pick = picks[fid] ?? "";
-    if (!pick) return <span className="t-caption" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>◐ {s.ecAuto}</span>;
-    const inPool = (data?.inspectors ?? []).some(i => i.user_id === pick);
-    if (!inPool) return <span className="t-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✕ {s.ev.bNotPool}</span>;
-    if (overlapSource === "failed") return <span className="t-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✕ {s.ecFail}</span>;
-    if (!windowSet || overlapSource === "not-evaluated") return <span className="t-caption" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>○ {s.ecSetWindow}</span>;
-    const ov = overlapFor(pick);
-    if (ov && ov.count > 0) {
-      const sm = ov.samples[0];
-      return <span className="t-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✕ {interp(s.ecBlockedN, { n: ov.count })}{sm ? <> · {fmtWin(sm.window_start)}→{fmtWin(sm.window_end)}</> : null}</span>;
-    }
-    return <span className="t-caption" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✓ {s.ecInPool} · ✓ {interp(s.ecOverlaps, { n: 0 })} · {s.ecSkills}</span>;
-  };
+
 
   const toReadinessItem = (b: Blocker, index: number): ReadinessItem => {
     const { title, detail } = blockerCopy(b);
@@ -446,89 +440,133 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
     return meta.fix === "remove" ? s.removeExcluded : meta.fix === "review" ? s.review : meta.fix === "focusWindow" ? s.change : s.fix;
   };
 
-  const mark = (kind: "ok" | "blocked" | "wont" | "pending") => (
-    <span className={`cd-lrow__mark ${kind}`} aria-hidden="true">{kind === "ok" ? "✓" : kind === "blocked" ? "✕" : kind === "wont" ? "—" : "○"}</span>
-  );
   const createMark: "ok" | "pending" = committable ? "ok" : "pending";
 
-  return (
-    <div className="stack" style={{ gap: "var(--space-8)" }} id="cd-main">
-      <a href="#cd-publish" className="sq-link cd-skip">{s.skipToPublish}</a>
-      {/* S10 — polite scope-reduction announcement (visually hidden, does not shift layout) */}
-      <p className="sq-sr-only" role="status" aria-live="polite">{announce}</p>
+  const keepGovernedValue = () => undefined;
 
-      {/* ---- context card ---- */}
-      <section className="panel sq-panel">
-        <div className="cd-methodline cd-panelpad" style={{ paddingBlockEnd: 0 }}>
-          <span className="sq-lozenge sq-lozenge--plan">{s.method}</span>
-          {freshness && <span className="sq-freshness">{s.freshnessPrefix} {freshness}</span>}
-        </div>
-        <p className="t-caption cd-panelpad" style={{ paddingBlock: "var(--space-2) 0" }}>{s.stagedBanner}</p>
-        {/* M6 — resumed-draft provenance / failed-draft honesty */}
-        {initialDraft && (
-          <p className="t-caption cd-panelpad" style={{ paddingBlock: "var(--space-2) 0" }} role="status">
-            <span className="sq-lozenge sq-lozenge--info">{interp(s.draftBanner, { ref: initialDraft.planReference })}</span>
-            {/* M8 / PLN-CON-018 — discard the resumed draft (never-published);
-                distinct from cancelling a published visit. */}
-            {" "}
+  const optionsFrom = (rows: LookupOption[] | undefined, fallbackKey: string, fallbackLabel: string, allowed: string) =>
+    (rows?.length ? rows : [{ key: fallbackKey, label_en: fallbackLabel, label_ar: null }]).map(o => ({
+      value: o.key,
+      label: lk(o),
+      disabled: o.key !== allowed,
+      note: o.key === allowed ? undefined : s.notBulkYet,
+    }));
+
+  const evidenceOf = (fid: string): TargetRow["evidence"] => {
+    const pick = picks[fid] ?? "";
+    if (!pick) return { tone: "pending", text: s.ecAuto };
+    if (!(data?.inspectors ?? []).some(i => i.user_id === pick)) return { tone: "blocked", text: s.ev.bNotPool };
+    if (overlapSource === "failed") return { tone: "blocked", text: s.ecFail };
+    if (!windowSet || overlapSource === "not-evaluated") return { tone: "pending", text: s.ecSetWindow };
+    const ov = overlapFor(pick);
+    if (ov && ov.count > 0) {
+      const sample = ov.samples[0];
+      const window = sample ? ` · ${fmtWin(sample.window_start)}→${fmtWin(sample.window_end)}` : "";
+      return { tone: "blocked", text: interp(s.ecBlockedN, { n: ov.count }) + window };
+    }
+    return { tone: "ok", text: `${s.ecInPool} · ${interp(s.ecOverlaps, { n: 0 })} · ${s.ecSkills}` };
+  };
+
+  const riskLabelOf = (band: string | null) =>
+    band === "high" ? s.riskHigh : band === "medium" ? s.riskMedium : band === "low" ? s.riskLow : "—";
+
+  const targetRows: TargetRow[] = data.factories
+    .filter(f => (workingIds.includes(f.id) || dupIds.has(f.id)) && !(dupIds.has(f.id) && removedDups))
+    .map(f => ({
+      id: f.id,
+      name: f.name,
+      factoryCode: f.factory_code,
+      crNumber: f.cr_number,
+      city: f.city,
+      riskBand: f.risk_band,
+      riskLabel: riskLabelOf(f.risk_band),
+      excluded: dupIds.has(f.id),
+      reasons: (eligById.get(f.id)?.reasons ?? []).map(reasonText),
+      pick: picks[f.id] ?? "",
+      evidence: evidenceOf(f.id),
+    }));
+
+  const packageLabelOf = (id: string) => data.packages.find(p => p.id === id)?.code ?? id.slice(0, 8);
+  const createMarkOf = (ready: boolean): ConsequenceMark => (ready ? "ok" : "pending");
+
+  const ledgerGroups: ConsequenceGroup[] = [
+    {
+      key: "create", heading: s.gCreate,
+      footnote: committable ? undefined : s.notFinal,
+      rows: [
+        { key: "plan", mark: createMark, value: s.cPlan, detail: s.cPlanD },
+        { key: "visits", mark: createMarkOf(committable), value: interp(s.cVisits, { n: retained }), detail: s.cVisitsD },
+        { key: "assign", mark: createMarkOf(committable), value: interp(s.cAssign, { n: retained }), detail: s.cAssignD },
+      ],
+    },
+    {
+      key: "reference", heading: s.gRef,
+      rows: [
+        {
+          key: "package", mark: createMarkOf(pkgIds.length > 0),
+          value: pkgIds.length ? `${interp(s.packageCount, { n: pkgIds.length })} · ${pkgIds.map(packageLabelOf).join(" · ")}` : s.packageNone,
+          detail: pkgIds.length ? s.rTypeD : s.packageHint,
+        },
+        { key: "type", mark: "ok", value: s.rType, detail: s.rTypeD },
+        { key: "window", mark: createMarkOf(Boolean(windowStart && windowEnd)), value: s.rWin, detail: s.rWinD },
+        { key: "method", mark: "ok", value: interp(s.rMethod, { manual, auto }), detail: s.rMethodD },
+      ],
+    },
+    {
+      key: "record", heading: s.gRecord,
+      rows: [
+        { key: "audit", mark: createMarkOf(committable), value: s.recAudit, detail: s.recAuditD },
+        { key: "notif", mark: createMarkOf(committable), value: interp(s.recNotif, { n: retained }), detail: s.recNotifD },
+      ],
+    },
+    {
+      key: "not", heading: s.gNot, negative: true,
+      rows: [
+        { key: "start", mark: "wont", value: s.notStart, detail: s.notStartD },
+        { key: "deliver", mark: "wont", value: s.notDeliver, detail: s.notDeliverD },
+        { key: "drop", mark: "wont", value: s.notDrop, detail: s.notDropD },
+        { key: "partial", mark: "wont", value: s.notPartial, detail: s.notPartialD },
+      ],
+    },
+  ];
+
+  const blockedReason = committable ? null
+    : validating ? s.checking
+      : needsAck && !acknowledged ? interp(s.ackRequired, { n: ineligibleIds.length })
+        : interp(s.blockersN, { n: blockers.length });
+  return (
+    <Stack gap="section">
+      <p className="sqx-visually-hidden" role="status" aria-live="polite">{announce}</p>
+
+      <ReviewContext
+        freshness={freshness}
+        selectedCount={workingIds.length}
+        retainedCount={retained}
+        manual={manual}
+        auto={auto}
+        visitType="periodic"
+        visitTypeOptions={optionsFrom(data.lookups?.visitTypes, "periodic", s.typePeriodic, "periodic")}
+        mode="physical"
+        modeOptions={optionsFrom(data.lookups?.visitModes, "physical", s.physical, "physical")}
+        priority={priority}
+        priorityOptions={(data.lookups?.priorities ?? []).map(o => ({ value: o.key, label: lk(o) }))}
+        packages={data.packages.map(p => ({ id: p.id, label: `${p.code} · ${p.version_label}`, checked: pkgIds.includes(p.id) }))}
+        windowStart={windowStart}
+        windowEnd={windowEnd}
+        draftUnavailable={draftUnavailable === true}
+        strings={s}
+        onGovernedValueChange={keepGovernedValue}
+        onPriorityChange={setPriority}
+        onPackageToggle={(id, checked) => setPkgIds(ids => checked ? [...ids, id] : ids.filter(x => x !== id))}
+        onWindowStartChange={setWindowStart}
+        onWindowEndChange={setWindowEnd}
+        draftBanner={initialDraft ? (
+          <PlanningNotice tone="info" label={interp(s.draftBanner, { ref: initialDraft.planReference })}>
             <DiscardDraftButton planId={initialDraft.planId} expectedVersion={initialDraft.version} label={s.discardDraft}
               discardAria={`${s.discardDraft} — ${initialDraft.planReference}`} />
-          </p>
-        )}
-        {draftUnavailable && (
-          <div className="sq-banner sq-banner--warning" role="alert" style={{ margin: "0 var(--space-6)" }}>
-            {s.draftUnavailable}
-          </div>
-        )}
-        <dl className="cd-context cd-ctx">
-          <div><dt>{s.selected} / {s.retained}</dt><dd className="cd-count">{workingIds.length}{workingIds.length !== retained ? <> <small>→</small> {retained}</> : null}</dd></div>
-          <div><dt>{s.visits}</dt><dd className="cd-count">{retained}</dd></div>
-          <div><dt>{s.assignments}</dt><dd>{manual} {s.manual} · {auto} {s.auto}</dd></div>
-          <div><dt>{s.visitType}</dt><dd>
-            {/* M7 — options flow from planning_lookups; the submission RPC still
-                commits periodic-only, so other governed types are listed
-                honestly as not-yet-available instead of failing at publish. */}
-            <select className="select" aria-label={s.visitType} value="periodic" onChange={() => {}}>
-              {(data!.lookups?.visitTypes?.length ? data!.lookups.visitTypes : [{ key: "periodic", label_en: s.typePeriodic, label_ar: null }]).map(o => (
-                <option key={o.key} value={o.key} disabled={o.key !== "periodic"}>
-                  {lk(o)}{o.key !== "periodic" ? ` — ${s.notBulkYet}` : ""}
-                </option>
-              ))}
-            </select></dd></div>
-          <div><dt>{s.mode}</dt><dd>
-            <select className="select" aria-label={s.mode} value="physical" onChange={() => {}}>
-              {(data!.lookups?.visitModes?.length ? data!.lookups.visitModes : [{ key: "physical", label_en: s.physical, label_ar: null }]).map(o => (
-                <option key={o.key} value={o.key} disabled={o.key !== "physical"}>
-                  {lk(o)}{o.key !== "physical" ? ` — ${s.notBulkYet}` : ""}
-                </option>
-              ))}
-            </select></dd></div>
-          <div><dt>{s.priorityLabel}</dt><dd>
-            <select className="select" aria-label={s.priorityLabel} value={priority} onChange={e => setPriority(e.target.value)}>
-              <option value="">{s.priorityNone}</option>
-              {(data!.lookups?.priorities ?? []).map(o => <option key={o.key} value={o.key}>{lk(o)}</option>)}
-            </select></dd></div>
-          <div><dt>{s.packageLabel}</dt><dd>
-            <div className="stack" style={{ gap: "var(--space-1)" }} role="group" aria-label={s.packageLabel}>
-              {data!.packages.map(p => (
-                <label key={p.id} className="sq-choice" style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
-                  <input type="checkbox" value={p.id} checked={pkgIds.includes(p.id)}
-                    onChange={e => setPkgIds(ids => e.target.checked ? [...ids, p.id] : ids.filter(x => x !== p.id))} />
-                  <span>{p.code} · {p.version_label}</span>
-                </label>
-              ))}
-            </div>
-            {pkgIds.length === 0 && (
-              <p className="sq-banner sq-banner--info" role="status" style={{ marginBlockStart: "var(--space-2)" }}>{s.packageHint}</p>
-            )}
-          </dd></div>
-          <div><dt>{s.window}</dt><dd className="row" style={{ gap: "var(--space-2)" }}>
-            <input ref={windowRef} className="input cd-mono" name="window_start" type="datetime-local" aria-label={s.windowStart} value={windowStart} onChange={e => setWindowStart(e.target.value)} />
-            <span aria-hidden="true">→</span>
-            <input className="input cd-mono" name="window_end" type="datetime-local" aria-label={s.windowEnd} value={windowEnd} onChange={e => setWindowEnd(e.target.value)} />
-          </dd></div>
-        </dl>
-      </section>
+          </PlanningNotice>
+        ) : null}
+      />
 
       <ReviewReadiness
         validating={validating}
@@ -539,187 +577,53 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
         onFix={key => { const target = blockers.find((b, i) => b.kind + i === key); if (target) runFix(target); }}
       />
 
-      {/* ---- M6 eligibility partition (7 counts from the live preview) ---- */}
-      <section className="panel sq-panel cd-panelpad" aria-label={s.eligH}>
-        <div className="cd-sectionhead"><h3>{s.eligH}</h3></div>
-        {validating || !v?.ledger ? (
-          <p className="t-caption" role="status">{s.loadingNote}</p>
-        ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(130px,1fr))", gap: "var(--space-4)" }}>
-            <div><span className="t-caption">{s.eligTotal}</span><div className="cd-count">{v.ledger.total}</div></div>
-            <div><span className="t-caption">{s.eligEligible}</span><div className="cd-count sq-lozenge--success">{v.ledger.eligible}</div></div>
-            <div><span className="t-caption">{s.eligIneligible}</span><div className="cd-count">{v.ledger.ineligible}</div></div>
-            <div><span className="t-caption">{s.eligToCreate}</span><div className="cd-count">{v.ledger.toCreate}</div></div>
-            <div><span className="t-caption">{s.eligMissingLoc}</span><div className="cd-count">{v.ledger.missingLocation}</div></div>
-            <div><span className="t-caption">{s.eligConflicts}</span><div className="cd-count">{v.ledger.activeConflicts}</div></div>
-            <div><span className="t-caption">{s.eligManualOverride}</span><div className="cd-count">{v.ledger.manualOverrideRequired}</div></div>
-          </div>
-        )}
+      <ReviewEligibility counts={validating ? null : v?.ledger ?? null} strings={s} />
+
+      <ReviewTargets
+        rows={targetRows}
+        inspectors={data.inspectors.map(i => ({ value: i.user_id, label: i.full_name }))}
+        selectedCount={workingIds.length}
+        retainedCount={retained}
+        strings={s}
+        onPick={(factoryId, inspectorId) => setPicks(p => ({ ...p, [factoryId]: inspectorId }))}
+        onFocusRow={setFocusedId}
+      />
+
+      <section aria-label={s.evTitle}>
+        <EvidenceLedger focus={ledgerFocus} strings={s.ev} ledgerStrings={s} />
       </section>
 
-      {/* ---- targets & proposed visits ---- */}
-      <section>
-        <div className="cd-sectionhead">
-          <h3>{s.targetsH}</h3>
-          <span className="t-caption cd-mono">{workingIds.length} {s.selectedLabel} · {retained} {s.retainedLabel}</span>
-        </div>
-        <div className="sq-tablewrap"><table className="sq-table">
-          <thead><tr>
-            <th scope="col">{s.colFactory}</th><th scope="col">{s.colCity}</th>
-            <th scope="col">{s.colRisk}</th><th scope="col">{s.colVisit}</th><th scope="col">{s.colAssign}</th>
-          </tr></thead>
-          <tbody>
-            {data!.factories.filter(f => workingIds.includes(f.id) || dupIds.has(f.id)).map(f => {
-              const excluded = dupIds.has(f.id);
-              const removed = excluded && removedDups;
-              if (removed) return null;
-              const pick = picks[f.id] ?? "";
-              return (
-                <tr key={f.id} className={`cd-obj ${excluded ? "is-removed" : ""}`} data-code={f.factory_code}
-                  ref={el => { rowRefs.current[f.id] = el; }} aria-selected={excluded ? true : undefined}
-                  onFocus={() => setFocusedId(f.id)}>
-                  <td><div className="cd-fname">{f.name}</div><div className="cd-fmeta cd-mono"><bdi>{f.factory_code}</bdi> · CR <bdi>{f.cr_number}</bdi></div>
-                    {/* M6 — per-row ineligibility reasons from the partition */}
-                    {(eligById.get(f.id)?.reasons.length ?? 0) > 0 && (
-                      <div className="row" style={{ gap: "var(--space-1)", flexWrap: "wrap", marginBlockStart: "var(--space-1)" }}>
-                        {eligById.get(f.id)!.reasons.map(r => (
-                          <span key={r} className="sq-lozenge sq-lozenge--warning">{reasonText(r)}</span>
-                        ))}
-                      </div>
-                    )}
-                  </td>
-                  <td>{f.city ?? "—"}</td>
-                  <td><span className={`sq-lozenge ${RISK_TONE[f.risk_band ?? ""] ?? ""}`}>{f.risk_band === "high" ? s.riskHigh : f.risk_band === "medium" ? s.riskMedium : f.risk_band === "low" ? s.riskLow : "—"}</span></td>
-                  <td>{excluded ? <span className="t-caption">—</span> : <span className="sq-lozenge sq-lozenge--plan">{s.typePeriodic}</span>}</td>
-                  <td>
-                    {excluded ? (
-                      <span className="sq-lozenge sq-lozenge--critical sq-lozenge--plan">{s.excludedLozenge}</span>
-                    ) : (
-                      <div className="cd-assignee">
-                        <select className="select" name={`inspector_${f.id}`} value={pick} aria-label={s.chooseInspector}
-                          onChange={e => setPicks(p => ({ ...p, [f.id]: e.target.value }))} style={{ minInlineSize: 200 }}>
-                          <option value="">{s.autoLabel}</option>
-                          {data!.inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}
-                        </select>
-                        {rowEvidence(f.id)}
-                        <button type="button" className="sq-link" style={{ marginBlockStart: "var(--space-1)", background: "none", border: "none", padding: 0, cursor: "pointer" }}
-                          aria-controls="cd-evidence-ledger" onClick={() => setFocusedId(f.id)}>{s.evReview}</button>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table></div>
-      </section>
+      <ReviewAssignmentSplit manual={manual} auto={auto} strings={s} />
 
-      {/* ---- CD-024 assignment evidence ledger (signature pattern) ---- */}
-      <section id="cd-evidence-ledger">
-        <div className="cd-sectionhead"><h3>{s.evTitle}</h3></div>
-        <p className="t-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{s.evLead}</p>
-        <EvidenceLedger focus={ledgerFocus} strings={s.ev} />
-      </section>
+      <ReviewConsequenceLedger groups={ledgerGroups} strings={s} />
 
-      {/* ---- assignment evidence ---- */}
-      <section>
-        <div className="cd-sectionhead"><h3>{s.assignH}</h3><span className="t-caption cd-mono">{interp(s.splitLine, { manual, auto })}</span></div>
-        <div className="sq-grid-2">
-          <div className="panel sq-panel cd-panelpad"><div className="sq-overline">{s.manualNamed}</div>
-            <div className="cd-count" style={{ marginBlock: "var(--space-1)" }}>{manual}</div>
-            <p className="t-caption">{s.manualEvidenceNote}</p></div>
-          <div className="panel sq-panel cd-panelpad"><div className="sq-overline">{s.autoChosen}</div>
-            <div className="cd-count" style={{ marginBlock: "var(--space-1)" }}>{auto}</div>
-            <p className="t-caption">{s.autoNote}</p></div>
-        </div>
-      </section>
-
-      {/* ---- publish consequence ledger (signature pattern) ---- */}
-      <section>
-        <div className="cd-sectionhead"><h3>{s.ledgerH}</h3></div>
-        <p className="t-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{s.ledgerLead}</p>
-        <div className="cd-ledger">
-          <div className="cd-lgroup">
-            <div className="cd-lgroup__head">1 · {s.gCreate}</div>
-            <div className="cd-lrow">{mark(createMark)}<div className="cd-lrow__body"><div className="cd-lrow__v">{s.cPlan}</div><div className="cd-lrow__d">{s.cPlanD}</div></div></div>
-            <div className="cd-lrow">{mark(committable ? "ok" : "pending")}<div className="cd-lrow__body"><div className="cd-lrow__v">{interp(s.cVisits, { n: retained })}</div><div className="cd-lrow__d">{s.cVisitsD}</div></div></div>
-            <div className="cd-lrow">{mark(committable ? "ok" : "pending")}<div className="cd-lrow__body"><div className="cd-lrow__v">{interp(s.cAssign, { n: retained })}</div><div className="cd-lrow__d">{s.cAssignD}</div></div></div>
-            {!committable && <div className="cd-notfinal">{s.notFinal}</div>}
-          </div>
-          <div className="cd-lgroup">
-            <div className="cd-lgroup__head">2 · {s.gRef}</div>
-            <div className="cd-lrow">{mark(pkgIds.length ? "ok" : "pending")}<div className="cd-lrow__body"><div className="cd-lrow__v">{pkgIds.length ? interp(s.packageCount, { n: pkgIds.length }) + " · " + pkgIds.map(id => data!.packages.find(p => p.id === id)?.code ?? id.slice(0, 8)).join(" · ") : s.packageNone}</div><div className="cd-lrow__d">{pkgIds.length ? s.rTypeD : s.packageHint}</div></div></div>
-            <div className="cd-lrow">{mark("ok")}<div className="cd-lrow__body"><div className="cd-lrow__v">{s.rType}</div><div className="cd-lrow__d">{s.rTypeD}</div></div></div>
-            <div className="cd-lrow">{mark(windowStart && windowEnd ? "ok" : "pending")}<div className="cd-lrow__body"><div className="cd-lrow__v">{s.rWin}</div><div className="cd-lrow__d">{s.rWinD}</div></div></div>
-            <div className="cd-lrow">{mark("ok")}<div className="cd-lrow__body"><div className="cd-lrow__v">{interp(s.rMethod, { manual, auto })}</div><div className="cd-lrow__d">{s.rMethodD}</div></div></div>
-          </div>
-          <div className="cd-lgroup">
-            <div className="cd-lgroup__head">3 · {s.gRecord}</div>
-            <div className="cd-lrow">{mark(committable ? "ok" : "pending")}<div className="cd-lrow__body"><div className="cd-lrow__v">{s.recAudit}</div><div className="cd-lrow__d">{s.recAuditD}</div></div></div>
-            <div className="cd-lrow">{mark(committable ? "ok" : "pending")}<div className="cd-lrow__body"><div className="cd-lrow__v">{interp(s.recNotif, { n: retained })}</div><div className="cd-lrow__d">{s.recNotifD}</div></div></div>
-          </div>
-          <div className="cd-lgroup cd-lgroup--not">
-            <div className="cd-lgroup__head">4 · {s.gNot}</div>
-            <div className="cd-lrow">{mark("wont")}<div className="cd-lrow__body"><div className="cd-lrow__v">{s.notStart}</div><div className="cd-lrow__d">{s.notStartD}</div></div></div>
-            <div className="cd-lrow">{mark("wont")}<div className="cd-lrow__body"><div className="cd-lrow__v">{s.notDeliver}</div><div className="cd-lrow__d">{s.notDeliverD}</div></div></div>
-            <div className="cd-lrow">{mark("wont")}<div className="cd-lrow__body"><div className="cd-lrow__v">{s.notDrop}</div><div className="cd-lrow__d">{s.notDropD}</div></div></div>
-            <div className="cd-lrow">{mark("wont")}<div className="cd-lrow__body"><div className="cd-lrow__v">{s.notPartial}</div><div className="cd-lrow__d">{s.notPartialD}</div></div></div>
-          </div>
-        </div>
-      </section>
-
-      {/* ---- corrections & publish action ---- */}
-      <form action={formAction} className="cd-actionbar" id="cd-publish" aria-label={s.correctH}>
-        {hiddenPublishFields(publishIds, pkgIds, windowStart, windowEnd, notes, picks, priority)}
-        <div className="cd-sectionhead" style={{ margin: 0 }}><h3>{s.correctH}</h3></div>
-        <div className="row" style={{ gap: "var(--space-3)" }}>
-          <a className="sq-link" href="/planning/bulk">{s.backConfig}</a>
-          <span className="t-caption">{s.backConfigD}</span>
-        </div>
-        <div className="field" style={{ maxInlineSize: "100%" }}>
-          <label className="sq-field__label" htmlFor="cd-notes">{s.notes}</label>
-          {/* value submitted via the mirrored hidden field so notes survive the source failure form too */}
-          <textarea id="cd-notes" className="sq-textarea" rows={2} placeholder={s.notesPlaceholder} value={notes} onChange={e => setNotes(e.target.value)} />
-        </div>
-        {/* M6 — eligibility acknowledgement: with ineligible rows present the
-            publication stays disabled until the Supervisor explicitly proceeds with
-            the eligible subset only; the choice persists into the draft. */}
-        {needsAck && !validating && (
-          <div className="sq-banner sq-banner--warning" role="alert">
-            <p style={{ marginBlockStart: 0 }}>{interp(s.ackRequired, { n: ineligibleIds.length })}</p>
-            <label className="row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
-              <input type="checkbox" checked={acknowledged} onChange={e => setAcknowledged(e.target.checked)} />
-              <span>{interp(s.ackLabel, { n: eligibleIds.length })}</span>
-            </label>
-          </div>
-        )}
-        <p className="t-caption">{s.willRecheck}</p>
-        {!transitionsExecutable && (
-          <div className="sq-banner sq-banner--warning" role="status">
-            <div>{s.draftUnavailable}</div>
-          </div>
-        )}
-        <div className="cd-actionbar__row">
-          <div className="cd-grow">
-            {committable
-              ? <div className="t-caption">{s.allClear}</div>
-              : <div className="cd-disabledreason" id={reasonId}>{s.disabledPrefix}{validating ? s.checking : needsAck && !acknowledged ? interp(s.ackRequired, { n: ineligibleIds.length }) : interp(s.blockersN, { n: blockers.length })}</div>}
-            {draftSavedMsg && <div className="t-caption" role="status">{draftSavedMsg}</div>}
-            {draftSaveError && <div className="cd-disabledreason" role="alert">{s.draftSaveFailed}</div>}
-          </div>
-          <button type="button" className="sq-btn sq-btn--secondary"
-            disabled={!transitionsExecutable || savingDraft || workingIds.length === 0}
-            onClick={() => { void onSaveDraft(); }}>
-            {savingDraft ? s.savingDraft : s.saveDraft}
-          </button>
-          <button className="sq-btn sq-btn--prominent cd-publishbtn"
-            disabled={!transitionsExecutable || !committable}
-            aria-describedby={committable ? undefined : reasonId}>
-            {committable ? interp(s.publishReady, { n: baseReady ? retained : eligibleIds.length }) : validating ? s.checking : interp(s.publishBlocked, { n: needsAck && !acknowledged ? ineligibleIds.length : blockers.length })}
-          </button>
-        </div>
-      </form>
-    </div>
+      <ReviewPublishForm
+        action={formAction}
+        hiddenFields={hiddenPublishFields(publishIds, pkgIds, windowStart, windowEnd, notes, picks, priority)}
+        notes={notes}
+        onNotesChange={setNotes}
+        acknowledgement={needsAck && !validating
+          ? { required: true, checked: acknowledged, onChange: setAcknowledged }
+          : null}
+        savedMessage={draftSavedMsg}
+        saveFailed={draftSaveError}
+        saving={savingDraft}
+        canSaveDraft={transitionsExecutable && workingIds.length > 0}
+        canPublish={transitionsExecutable && committable}
+        onSaveDraft={() => { void onSaveDraft(); }}
+        strings={{
+          ...s,
+          ackRequired: interp(s.ackRequired, { n: ineligibleIds.length }),
+          ackLabel: interp(s.ackLabel, { n: eligibleIds.length }),
+          blockedReason,
+          transitionsBlocked: transitionsExecutable ? null : s.draftUnavailable,
+          publishLabel: committable
+            ? interp(s.publishReady, { n: baseReady ? retained : eligibleIds.length })
+            : validating ? s.checking
+              : interp(s.publishBlocked, { n: needsAck && !acknowledged ? ineligibleIds.length : blockers.length }),
+        }}
+      />
+    </Stack>
   );
 }
 

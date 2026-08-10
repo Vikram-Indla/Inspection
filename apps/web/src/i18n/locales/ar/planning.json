@@ -987,6 +987,10 @@
       "unauthorizedBack": "العودة إلى التخطيط",
       "unavailableTag": "غير متاح"
     },
-    "unavailableTag": "غير متاح"
+    "unavailableTag": "غير متاح",
+    "markOk": "سيحدث",
+    "markPending": "لم يُؤكَّد بعد",
+    "markWont": "لن يحدث",
+    "markBlocked": "يمنع الإسناد"
   }
 }

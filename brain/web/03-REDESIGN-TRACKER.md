@@ -789,6 +789,13 @@ Pull one in only if it is genuinely part of doing the active task well.
   were visible for three turns and were dismissed as harmless. **A cache warning
   on a shared `.next` is a defect report.** Cure: stop every dev server, delete
   `apps/web/.next`, restart one. CLAUDE.md already said this; it was not heeded.
+- **`Button` has no `describedBy`.** A disabled control whose reason lives in a
+  sibling element cannot be associated with it; `controls` is the wrong ARIA
+  relationship. The bulk publish button puts the reason in its accessible name
+  instead.
+- **The review window is still two native `datetime-local` inputs** — the only
+  native controls left on the route. `DateRangePicker withTime` is the right
+  primitive and needs its strings in both locales.
 - **`--sqx-grid-min-xs` DOES NOT EXIST but `criteria-builder.module.css:68`
   uses it** — `flex: 0 1 var(--sqx-grid-min-xs)` is therefore an invalid
   declaration and is dropped, so `.fieldNarrow` has no basis. Part of the broken
