@@ -89,11 +89,12 @@ export default function AiAdvisory({
             variant="ai"
             size="sm"
             icon="ai"
-            disabled={pending || blocked}
+            busy={pending}
+            disabled={blocked}
             controls={statusId}
-            label={strings.generate}
+            label={pending ? strings.generating : strings.generate}
           >
-            {pending ? strings.generating : strings.generate}
+            {strings.generate}
           </Button>
         </form>
 

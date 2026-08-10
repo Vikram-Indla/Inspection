@@ -43,6 +43,30 @@
   cursor: not-allowed;
 }
 
+/* A busy button keeps its own colours: dimming it to the disabled palette on
+   every async submit reads as "this control broke", not "this is working". */
+.root[data-busy]:disabled {
+  color: inherit;
+  background: inherit;
+  cursor: progress;
+}
+
+.spinner {
+  flex: none;
+  inline-size: var(--sqx-icon-md);
+  block-size: var(--sqx-icon-md);
+  border: var(--sqx-border-width-thick) solid currentColor;
+  border-radius: var(--sqx-radius-pill);
+  border-block-start-color: transparent;
+  animation: sqx-button-spin var(--sqx-duration-sweep) var(--sqx-ease-linear) infinite;
+}
+
+@keyframes sqx-button-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
 /* gap, not a text space: these are inline-flex, so a label followed by a
    count element becomes two flex items and any whitespace between them is
    discarded — which is why counts rendered flush against their label. */
