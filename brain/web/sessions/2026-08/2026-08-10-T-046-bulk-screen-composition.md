@@ -308,6 +308,16 @@ does not exist, and WEB-002 §2 stops the work rather than inventing one — the
 same call T-048 made on `--sqx-opacity-muted`. The state is carried by the
 status text and `aria-busy` alone, which is announced and visible.
 
+**The ALL/ANY toggle was the right component with the wrong tone.** It was
+already `SegmentedControl` (T-050), but the call site omitted `tone`, so it fell
+to the `subtle` default: the moving pill paints `--sqx-surface-raised`, which in
+dark reads as a near-black slab rather than the brand fill. Every other toggle in
+the app passes `tone="accent"` — shell locale, dashboard perspective, operations
+toolbar, visit view navigation, compliance explorer — so the fix is one prop, not
+a style. **A default that no shipped consumer wants is the wrong default**;
+whether `subtle` should survive at all is a design-system question, because the
+three remaining `subtle` call sites are all tab strips, not toggles.
+
 ## Next
 
 Slice 2 is done. Next is slice 3 — `review/page.tsx` (274 lines, 10 legacy classes, 7 `useState`, `sq-table` →

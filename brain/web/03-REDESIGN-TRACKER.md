@@ -765,6 +765,16 @@ filters and tabs moved to `searchParams`.
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
 
+- **`SegmentedControl`'s `subtle` default is wrong for a toggle.** Five shipped
+  toggles pass `tone="accent"`; the only `subtle` consumers left are three tab
+  strips (`catalogue-screen`, `regulation-workspace`, `IdentityDossier`'s map
+  switch). The bulk ALL/ANY control shipped near-black because it took the
+  default. Either `accent` becomes the default and tabs opt out, or the two
+  roles get distinct names — a design-system decision, in the shape of T-030's
+  "a prop with one correct value is a future inconsistency".
+- **`IdentityDossier`'s map toggle on `/planning/single` is still `subtle`** and
+  is a toggle, not a tab strip. It has the same defect the owner reported on
+  `/planning/bulk`, and was left alone because it is a different screen.
 - **There is no busy/loading opacity token**, so a control or region that wants
   to read as "working" can only say so with text plus `aria-busy`. Wanted twice
   now (T-048's `--sqx-opacity-muted`, and the bulk filter's table dim) and

@@ -278,6 +278,7 @@ export default function CriteriaBuilder({
         <Field label={strings.combineLabel}>
           <SegmentedControl
             label={strings.combineLabel}
+            tone="accent"
             value={group.combine}
             onChange={next => setCombine(path, next === "any" ? "any" : "all")}
             items={[
