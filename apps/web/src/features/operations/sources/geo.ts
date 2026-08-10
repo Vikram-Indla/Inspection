@@ -1,6 +1,7 @@
-import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
+import { readPages, type ReadResult } from "@/lib/postgrest/read";
 import type { OperationsClient } from "./client-type";
 import type { GeoRow } from "../types";
+import { geoRow } from "./shapes";
 
 const CHUNK_SIZE = 100;
 
@@ -18,18 +19,17 @@ export async function loadGeoEvents(
   sb: OperationsClient,
   visitIds: readonly string[],
   nowIso: string,
-): Promise<PostgrestPage<GeoRow>> {
-  if (!visitIds.length) return { data: [], error: null };
+): Promise<ReadResult<GeoRow>> {
+  if (!visitIds.length) return { rows: [], failed: false, reason: null };
   const pages = await Promise.all(chunk(visitIds).map(group =>
-    collectPostgrestPages<GeoRow>((from, to) => sb.from("geo_events")
+    readPages((from, to) => sb.from("geo_events")
       .select(GEO_COLUMNS)
       .in("visit_id", group)
       .or("integration_mode.is.null,integration_mode.eq.production")
       .lte("occurred_at", nowIso)
       .order("occurred_at", { ascending: false })
       .order("id", { ascending: true })
-      .range(from, to) as unknown as PromiseLike<PostgrestPage<GeoRow>>)));
-  const failed = pages.find(page => page.error);
-  if (failed) return { data: null, error: failed.error };
-  return { data: pages.flatMap(page => page.data ?? []), error: null };
+      .range(from, to), geoRow, "operations.geo_events")));
+  if (pages.some(page => page.failed)) return { rows: [], failed: true, reason: null };
+  return { rows: pages.flatMap(page => page.rows), failed: false, reason: null };
 }

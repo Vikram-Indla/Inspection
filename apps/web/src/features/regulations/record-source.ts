@@ -1,4 +1,6 @@
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
+import { readSingle } from "@/lib/postgrest/read";
+import { recordRegulationRow } from "./shapes";
 
 export type RecordItem = { id: string; code: string };
 
@@ -71,8 +73,8 @@ export async function readRegulationRecord(entityId: string): Promise<Regulation
   const roles = new Set((roleRows ?? []).map(row => row.role_key));
   const isWriter = WRITER_ROLES.some(role => roles.has(role));
 
-  const { data } = await sb.from("compliance_regulation_library").select(COLUMNS).eq("entity_id", entityId).maybeSingle();
-  const raw = data as unknown as RawRecord | null;
+  const response = await sb.from("compliance_regulation_library").select(COLUMNS).eq("entity_id", entityId).maybeSingle();
+  const raw: RawRecord | null = readSingle(response, recordRegulationRow, "regulations.record").row;
   if (!raw) return { regulation: null, clauses: [], clausesUnknown: false, attachments: [], attachmentsUnknown: false, isWriter };
 
   const attachments = Array.isArray(raw.attachments) ? raw.attachments : [];

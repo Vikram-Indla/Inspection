@@ -1,4 +1,9 @@
 import { supabaseServer } from "@/lib/supabase-server";
+import { readRows, readSingle } from "@/lib/postgrest/read";
+import {
+  workspaceItemRow, workspacePenaltyRow, workspaceRegulationRow,
+  workspaceVersionRow, workspaceViolationRow,
+} from "./shapes";
 
 export type WorkspaceResponseModel = {
   responses?: string[];
@@ -108,9 +113,9 @@ const table = <T>(rows: readonly T[]): WorkspaceTable<T> => ({ kind: "rows", row
  */
 export async function readRegulationWorkspace(selectedId: string): Promise<RegulationWorkspace | null> {
   const sb = await supabaseServer();
-  const { data } = await sb.from("compliance_regulation_library")
+  const response = await sb.from("compliance_regulation_library")
     .select(REGULATION_COLUMNS).eq("entity_id", selectedId).maybeSingle();
-  const regulation = data as unknown as WorkspaceRegulation | null;
+  const regulation = readSingle(response, workspaceRegulationRow, "regulations.workspace").row;
   if (!regulation) return null;
 
   const clausesVerified = regulation.clauses_status === "verified" && Array.isArray(regulation.clauses);
@@ -139,22 +144,25 @@ export async function readRegulationWorkspace(selectedId: string): Promise<Regul
     readAudit(sb, regulation.entity_id),
   ]);
 
-  const violations = (violationRead.data ?? []) as unknown as WorkspaceViolation[];
-  const penaltyRead = violationRead.error || !violations.length
-    ? { data: [], error: violationRead.error }
+  const violationResult = readRows(violationRead, workspaceViolationRow, "regulations.workspace_violations");
+  const violations = violationResult.rows;
+  const penaltyRead = violationResult.failed || !violations.length
+    ? { data: [], error: null }
     : await sb.from("penalty_mappings").select(PENALTY_COLUMNS)
         .in("violation_code_id", violations.map(violation => violation.id));
+  const penaltyResult = readRows(penaltyRead, workspacePenaltyRow, "regulations.workspace_penalties");
 
-  const items = ((itemRead.data ?? []) as unknown as Array<WorkspaceItem & { clause_id: string }>)
+  const itemResult = readRows(itemRead, workspaceItemRow, "regulations.workspace_items");
+  const items: WorkspaceItem[] = itemResult.rows
     .map(item => ({ ...item, clauseRef: clauseRefById.get(item.clause_id) ?? null }));
 
   return {
     regulation,
     clauseCount: clauses.length,
     legalSources: [...new Set(clauses.map(clause => clause.legal_source).filter((source): source is string => Boolean(source)))],
-    items: itemRead.error ? unavailable : table(items),
-    violations: violationRead.error ? unavailable : table(violations),
-    penalties: penaltyRead.error ? unavailable : table((penaltyRead.data ?? []) as unknown as WorkspacePenalty[]),
+    items: itemResult.failed ? unavailable : table(items),
+    violations: violationResult.failed ? unavailable : table(violations),
+    penalties: violationResult.failed || penaltyResult.failed ? unavailable : table(penaltyResult.rows),
     versions,
     auditEvents,
   };
@@ -163,13 +171,12 @@ export async function readRegulationWorkspace(selectedId: string): Promise<Regul
 type Client = Awaited<ReturnType<typeof supabaseServer>>;
 
 async function readVersions(sb: Client, regulation: WorkspaceRegulation): Promise<WorkspaceTable<WorkspaceVersion>> {
-  const { data, error } = await sb.from("compliance_entity_versions")
+  const response = await sb.from("compliance_entity_versions")
     .select("id,version_number,published_at,request_id")
     .eq("entity_kind", "regulation").eq("entity_id", regulation.entity_id)
     .order("version_number", { ascending: false });
-  if (error) return unavailable;
-
-  const recorded = (data ?? []) as unknown as WorkspaceVersion[];
+  const { rows: recorded, failed } = readRows(response, workspaceVersionRow, "regulations.workspace_versions");
+  if (failed) return unavailable;
   if (recorded.length || !regulation.version_number) return table(recorded);
   return table([{
     id: regulation.current_version_id ?? regulation.entity_id,

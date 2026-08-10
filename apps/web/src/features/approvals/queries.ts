@@ -1,5 +1,16 @@
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
+import { readRows } from "@/lib/postgrest/read";
+import type { Shape } from "@/lib/postgrest/shape";
 import { VIEW_STATUSES, type ApprovalScope } from "./params";
+import {
+  approvalComponentRow, approvalDecisionRow, approvalDependencyRow,
+  approvalPublicationRow, approvalRequestRow, approvalRevisionRow,
+} from "./shapes";
+
+const profileRow: Shape<{ user_id: string; full_name: string | null }> = f => ({
+  user_id: f.text("user_id"),
+  full_name: f.optionalText("full_name"),
+});
 
 export type ApprovalRequestRow = {
   id: string;
@@ -97,15 +108,13 @@ export async function queryApprovalQueue(scope: ApprovalScope): Promise<Approval
     sb.from("user_roles").select("role_key").eq("user_id", user.id),
   ]);
 
-  if (requestRead.error) console.error(`[approvals.queue] request read failed: ${requestRead.error.message}`);
-
   const roles = new Set((roleRead.data ?? []).map(row => row.role_key));
   const access: ApprovalAccess = REVIEWER_ROLES.some(role => roles.has(role))
     ? { kind: "reviewer" }
     : { kind: "observer" };
 
-  const requests = ((requestRead.data ?? []) as unknown as ApprovalRequestRow[])
-    .filter(row => row.owner_id !== user.id);
+  const requestResult = readRows(requestRead, approvalRequestRow, "approvals.requests");
+  const requests = requestResult.rows.filter(row => row.owner_id !== user.id);
   const requestIds = requests.map(row => row.id);
 
   const [componentRead, profileRead] = await Promise.all([
@@ -117,16 +126,15 @@ export async function queryApprovalQueue(scope: ApprovalScope): Promise<Approval
       : Promise.resolve({ data: [], error: null }),
   ]);
 
-  if (componentRead.error) console.error(`[approvals.queue] component read failed: ${componentRead.error.message}`);
-
-  const profiles = (profileRead.data ?? []) as { user_id: string; full_name: string | null }[];
+  const componentResult = readRows(componentRead, approvalComponentRow, "approvals.components");
+  const profileResult = readRows(profileRead, profileRow, "approvals.profiles");
   return {
     access,
     requests,
-    components: (componentRead.data ?? []) as unknown as ApprovalComponentRow[],
-    names: new Map(profiles.filter(row => row.full_name).map(row => [row.user_id, row.full_name ?? ""])),
-    namesReadable: !profileRead.error && profiles.length > 0,
-    queueReadable: !requestRead.error && !componentRead.error,
+    components: componentResult.rows,
+    names: new Map(profileResult.rows.flatMap(row => row.full_name ? [[row.user_id, row.full_name] as const] : [])),
+    namesReadable: !profileResult.failed && profileResult.rows.length > 0,
+    queueReadable: !requestResult.failed && !componentResult.failed,
   };
 }
 
@@ -148,14 +156,16 @@ export async function queryApprovalDetail(requestId: string, revision: number): 
       .eq("request_id", requestId).order("revision_number", { ascending: false }),
   ]);
 
-  const failed = dependencyRead.error ?? decisionRead.error ?? publicationRead.error ?? revisionRead.error;
-  if (failed) console.error(`[approvals.detail] read failed: ${failed.message}`);
+  const dependencies = readRows(dependencyRead, approvalDependencyRow, "approvals.dependencies");
+  const decisions = readRows(decisionRead, approvalDecisionRow, "approvals.decisions");
+  const publications = readRows(publicationRead, approvalPublicationRow, "approvals.publications");
+  const revisions = readRows(revisionRead, approvalRevisionRow, "approvals.revisions");
 
   return {
-    dependencies: (dependencyRead.data ?? []) as unknown as ApprovalDependencyRow[],
-    decisions: (decisionRead.data ?? []) as unknown as ApprovalDecisionRow[],
-    publications: (publicationRead.data ?? []) as unknown as ApprovalPublicationRow[],
-    revisions: (revisionRead.data ?? []) as unknown as ApprovalRevisionRow[],
-    detailReadable: !failed,
+    dependencies: dependencies.rows,
+    decisions: decisions.rows,
+    publications: publications.rows,
+    revisions: revisions.rows,
+    detailReadable: ![dependencies, decisions, publications, revisions].some(read => read.failed),
   };
 }

@@ -188,7 +188,7 @@ test.describe("policy-gated metrics go live when the governing policy is publish
     inspections: [{
       id: "i1", visit_id: "v1", status: "submitted", started_at: null,
       submitted_at: "2026-07-15T09:00:00Z",
-      visits: { window_start: "2026-07-15T06:00:00Z", factories: factory("f1") },
+      visits: { window_start: "2026-07-15T06:00:00Z", factories: factory("f1"), factory_id: "f1" },
     }],
     factories: [factory("f1"), factory("f2")],
     sla: {}, scope: cycleScope, today: cycleScope, region: "", nowMs: Date.parse("2026-07-20T00:00:00Z"),
@@ -230,7 +230,7 @@ test.describe("policy-gated metrics go live when the governing policy is publish
     const visit = (id: string, ws: string, we: string): VisitRow => ({
       id, planning_status: "published", operational_state: "executing",
       window_start: ws, window_end: we, priority: null, cancellation_reason: null,
-      created_at: ws, factories: null, assignments: null,
+      created_at: ws, factories: null, factory_id: null, assignments: null,
     });
     const metrics = buildDashboardMetrics({
       visits: [

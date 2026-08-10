@@ -1,8 +1,36 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { readRows } from "@/lib/postgrest/read";
+import type { Shape } from "@/lib/postgrest/shape";
 
 export type GlobalSearchType = "commercial_registration" | "industrial_license" | "plant" | "factory" | "visit" | "inspection";
 export type GlobalSearchResult = { id: string; type: GlobalSearchType; label: string | null; detail: string; href: string };
 export type ShellSearchOutcome = { results: GlobalSearchResult[]; degraded: boolean };
+
+type FactoryHit = { name: string | null; factory_code: string | null };
+
+const factoryHit: Shape<FactoryHit> = f => ({
+  name: f.optionalText("name"),
+  factory_code: f.optionalText("factory_code"),
+});
+
+const visitHitRow: Shape<{
+  id: string; visit_type: string | null; planning_status: string | null; factories: FactoryHit | null;
+}> = f => ({
+  id: f.text("id"),
+  visit_type: f.optionalText("visit_type"),
+  planning_status: f.optionalText("planning_status"),
+  factories: f.toOne("factories", factoryHit),
+});
+
+const inspectionHitRow: Shape<{
+  id: string; inspection_no: string | null; status: string | null;
+  visits: { factories: FactoryHit | null } | null;
+}> = f => ({
+  id: f.text("id"),
+  inspection_no: f.optionalText("inspection_no"),
+  status: f.optionalText("status"),
+  visits: f.toOne("visits", visit => ({ factories: visit.toOne("factories", factoryHit) })),
+});
 
 // TASK-WEB-COMPLIANCE-SHARED-SHELL-001 · CMP-REQ-SHELL-002
 // Shared by the header dropdown (api/shell/search/route.ts) and the dedicated
@@ -83,27 +111,21 @@ export async function performShellSearch(sb: SupabaseClient, rawQuery: string): 
     }];
   }).slice(0, 5);
 
-  const visits = (visitRead.data ?? []).map(row => {
-    const factory = row.factories as unknown as { name: string | null; factory_code: string | null } | null;
-    return {
-      id: row.id,
-      type: "visit" as const,
-      label: factory?.name ?? row.id.slice(0, 8),
-      detail: [factory?.factory_code, row.visit_type, row.planning_status].filter(Boolean).join(" · "),
-      href: `/visits/${row.id}`,
-    };
-  });
+  const visits = readRows(visitRead, visitHitRow, "shell.visit_search").rows.map(row => ({
+    id: row.id,
+    type: "visit" as const,
+    label: row.factories?.name ?? row.id.slice(0, 8),
+    detail: [row.factories?.factory_code, row.visit_type, row.planning_status].filter(Boolean).join(" · "),
+    href: `/visits/${row.id}`,
+  }));
 
-  const inspections = (inspectionRead.data ?? []).map(row => {
-    const visit = row.visits as unknown as { factories: { name: string | null; factory_code: string | null } | null } | null;
-    return {
-      id: row.id,
-      type: "inspection" as const,
-      label: row.inspection_no ?? row.id.slice(0, 8),
-      detail: [visit?.factories?.name, visit?.factories?.factory_code, row.status].filter(Boolean).join(" · "),
-      href: `/field/inspection/${row.id}`,
-    };
-  });
+  const inspections = readRows(inspectionRead, inspectionHitRow, "shell.inspection_search").rows.map(row => ({
+    id: row.id,
+    type: "inspection" as const,
+    label: row.inspection_no ?? row.id.slice(0, 8),
+    detail: [row.visits?.factories?.name, row.visits?.factories?.factory_code, row.status].filter(Boolean).join(" · "),
+    href: `/field/inspection/${row.id}`,
+  }));
 
   const failed = [consolidatedError, crNumber.error, crUnified.error, crNameEn.error, crNameAr.error, licenseNumber.error, plantNumber.error, factoryName.error, factoryCode.error, factoryCr.error, factoryLicense.error, visitRead.error, inspectionRead.error].filter(Boolean).length;
   return { results: [...commercialRegistrations, ...licenses, ...factories, ...visits, ...inspections].slice(0, 12), degraded: failed > 0 };

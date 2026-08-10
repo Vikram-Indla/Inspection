@@ -10,6 +10,31 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-042 · Narrow the PostgREST boundary — delete every `as unknown as`
+`status: done (static verification only)` · `rules: WEB-000 §5, WEB-001 §4, WEB-008 §2` · `est: 3h`
+`record:` [2026-08-10-T-042-postgrest-narrowing-boundary](sessions/2026-08/2026-08-10-T-042-postgrest-narrowing-boundary.md)
+
+All **48** `as unknown as` casts are gone from the migrated data layer
+(`features/**`, plus `lib/planning/visit-list.ts` and `lib/shell-search.ts`
+which feed migrated screens). They are replaced by one narrowing boundary —
+`lib/postgrest/{shape,read}.ts` — and a `Shape<T>` per row type.
+
+**The casts were not cosmetic.** `supabaseServer()` has no `Database` generic,
+so `.select()` infers every column as `any` **and every embedded relation as an
+array**, including to-one embeds that PostgREST returns as objects. A renamed
+column produced no type error and a runtime failure inside a component. Reads
+now fail closed with a logged reason and route into each screen's existing
+*unavailable* state — never into a silently smaller number.
+
+`console.*` in `features/**` went 42 → 22: the boundary logs once, so twelve
+duplicate error lines in `features/operations/queries.ts` were deleted.
+
+**Owed:** the measurement request in the record — generate Supabase database
+types and type the client, which would make most of `features/*/shapes.ts`
+redundant. Needs database access this workstation lacks.
+
+---
+
 ### T-036 · Compliance library — catalogue
 `status: done (catalogue; NEVER LOADED IN A BROWSER)` · `rules: WEB-000…006, WEB-008, WEB-011` · `est: 3h`
 `record:` [2026-08-09-T-036-regulations-catalogue](sessions/2026-08/2026-08-09-T-036-regulations-catalogue.md)
@@ -773,11 +798,26 @@ Pull one in only if it is genuinely part of doing the active task well.
 - **`--sqx-control-accent` does not exist**, so native checkboxes cannot be
   tinted to brand without inventing a token. Left on the UA default. A real
   `checkbox`/`switch` primitive removes the need.
-- **`rowSelect()` in `lib/planning/visit-list.ts` never selects `factory_id`**,
-  yet `readVisibleRows` filters fixtures on `row.factory_id` — that filter has
-  always been a no-op. Both `/planning` and Visit Management compensate with a
-  name-based post-filter. Fixing it silently removes rows from `/planning`, so it
-  needs its own task and a visual regression pass.
+- **`rowSelect()` in `lib/planning/visit-list.ts` never selects `factory_id`
+  — now PROVEN, not suspected (T-042, observed at runtime).** The narrowing
+  boundary threw `planning.visit_list[0].factory_id expected a string, received
+  nothing` on first page load. `factory_id` is `uuid not null` in the schema and
+  the `Joined` type declared it as `string`, but the projection at
+  `visit-list.ts:230` omits it, so `fixtureFactoryIds.has(undefined)` has always
+  returned false and `readVisibleRows`' fixture filter has **never removed a
+  single row**.
+
+  **The counts path does not have this bug** — `readFixtureCount` selects
+  `factory_id` explicitly and subtracts fixtures correctly. So tab badges and
+  totals exclude fixture factories while the rows beside them do not. That
+  asymmetry is very likely behind the "honest non-empty total alongside zero
+  displayed rows" defect the retry logic in that file was written to paper over.
+
+  T-042 made the type honest (`factory_id: string | null`, filter skips rows
+  whose id is unknown) — **behaviour is byte-identical to before**. The real fix
+  is adding `factory_id` to `rowSelect()`, which makes rows and counts agree and
+  **will remove fixture rows from `/planning` for the first time**. Still needs
+  its own task and a visual regression pass, now with the evidence attached.
 - **The factory-name sort was dropped from Visit Management.** The shared sort
   whitelist has no embedded-column sort, and PostgREST parent-ordering on a
   to-one embed could not be verified without a database. Either add it to

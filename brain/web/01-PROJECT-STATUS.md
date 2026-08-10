@@ -1,6 +1,33 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-10` · `Updated by: T-041 — enforcement library + violation catalogue`
+`Last updated: 2026-08-10` · `Updated by: T-042 — PostgREST narrowing boundary`
+
+## Where the data layer stands (2026-08-10)
+
+**Every `as unknown as` is gone from the migrated data layer** — 48 casts across
+21 files, replaced by `lib/postgrest/{shape,read}.ts` and a `Shape<T>` per row
+type. Reads narrow once at the boundary and **fail closed**: a malformed row
+fails the whole read into the screen's existing *unavailable* state, never into
+a silently smaller number.
+
+Two things generalise from that work:
+
+- **`supabaseServer()` has no `Database` generic**, so `.select()` infers every
+  column as `any` **and every embedded relation as an array** — including
+  to-one embeds PostgREST returns as objects. That is why the casts existed, and
+  why `typecheck` passing did not mean the reads were type-safe. Generating
+  database types (`supabase gen types typescript`) is the real fix and needs a
+  live database.
+- **A row type must declare what the query selects, not what the screen wants.**
+  The dashboard's types described the *post-hydration* shape, so every read had
+  to be asserted into it. Splitting `VisitScopeRef` out — `factory_id` from the
+  query, `factories` filled by `hydrate.ts` — removed six casts without changing
+  a line of behaviour.
+
+**150 casts remain in unmigrated legacy** (`field/**`, `admin/**`,
+`reviews/[id]`, `visits/[id]`, `reports/**`, `lib/factory360/dossier.ts`). Each
+screen migration should convert its own reads onto the boundary.
+
 
 ## Where enforcement stands (2026-08-10)
 

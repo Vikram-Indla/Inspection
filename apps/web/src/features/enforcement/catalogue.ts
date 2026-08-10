@@ -1,5 +1,7 @@
 import type { StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
+import { readRows } from "@/lib/postgrest/read";
+import type { Shape } from "@/lib/postgrest/shape";
 
 export const CATALOGUE_MODES = ["catalogue", "penalty"] as const;
 export type CatalogueMode = (typeof CATALOGUE_MODES)[number];
@@ -53,6 +55,47 @@ const CODE_SELECT =
 
 type ItemTrace = { code: string; title: string; response_model: unknown };
 
+const penaltyMappingRow: Shape<PenaltyMapping> = f => ({
+  id: f.text("id"),
+  penalty_ref: f.text("penalty_ref"),
+  mapping_version: f.text("mapping_version"),
+  legal_basis: f.optionalText("legal_basis"),
+  status: f.text("status"),
+  effective_from: f.optionalText("effective_from"),
+  effective_to: f.optionalText("effective_to"),
+  penalty_type: f.optionalText("penalty_type"),
+  amount: f.optionalNumber("amount"),
+  grace_period_days: f.optionalNumber("grace_period_days"),
+  due_period_days: f.optionalNumber("due_period_days"),
+});
+
+const catalogueCodeRow: Shape<CatalogueCode> = f => ({
+  id: f.text("id"),
+  code: f.text("code"),
+  title: f.text("title"),
+  level: f.text("level"),
+  status: f.text("status"),
+  corrective_action: f.optionalText("corrective_action"),
+  grace_period_days: f.optionalNumber("grace_period_days"),
+  category: f.optionalText("category"),
+  applicability: f.optionalText("applicability"),
+  configuration_version: f.number("configuration_version"),
+  deactivation_reason: f.optionalText("deactivation_reason"),
+  active_from: f.optionalText("active_from"),
+  active_to: f.optionalText("active_to"),
+  regulation_clauses: f.toOne("regulation_clauses", clause => ({
+    clause_ref: clause.text("clause_ref"),
+    regulations: clause.toOne("regulations", regulation => ({ code: regulation.text("code") })),
+  })),
+  penalty_mappings: f.optionalToMany("penalty_mappings", penaltyMappingRow),
+});
+
+const itemTraceRow: Shape<ItemTrace> = f => ({
+  code: f.text("code"),
+  title: f.text("title"),
+  response_model: f.raw("response_model"),
+});
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
 
@@ -91,16 +134,15 @@ export async function queryViolationCatalogue(): Promise<ViolationCatalogue> {
       : Promise.resolve({ data: [], error: null }),
   ]);
 
-  if (codeRead.error) console.error(`[enforcement.catalogue] code read failed: ${codeRead.error.message}`);
-  if (itemRead.error) console.error(`[enforcement.catalogue] item read failed: ${itemRead.error.message}`);
-
-  const roles = new Set(((roleRead.data ?? []) as { role_key: string }[]).map(row => row.role_key));
+  const codes = readRows(codeRead, catalogueCodeRow, "enforcement.violation_codes");
+  const items = readRows(itemRead, itemTraceRow, "enforcement.inspection_items");
+  const roles = new Set((roleRead.data ?? []).map(row => row.role_key));
 
   return {
-    codes: (codeRead.data ?? []) as unknown as CatalogueCode[],
-    triggersByCode: invertTriggers((itemRead.data ?? []) as unknown as ItemTrace[]),
-    catalogueReadable: !codeRead.error,
-    triggersReadable: !itemRead.error,
+    codes: codes.rows,
+    triggersByCode: invertTriggers(items.rows),
+    catalogueReadable: !codes.failed,
+    triggersReadable: !items.failed,
     isWriter: WRITER_ROLES.some(role => roles.has(role)),
   };
 }

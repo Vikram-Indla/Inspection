@@ -1,20 +1,25 @@
 import type { supabaseServer } from "@/lib/supabase-server";
+import { readRows, readSingle } from "@/lib/postgrest/read";
+import type { Shape } from "@/lib/postgrest/shape";
 import { workingDays } from "./sla";
-import type { JoinedReview, LoadedQueue, QueueEntry, ReadinessFact, SubmissionVersion } from "./types";
+import { joinedReviewRow, submittedInspectionRow } from "./shapes";
+import type { JoinedReview, LoadedQueue, QueueEntry, ReadinessFact } from "./types";
 
 export type ReviewsClient = Awaited<ReturnType<typeof supabaseServer>>;
 
 type SlaSettings = { review_business_days?: number; calendar?: { days?: string } };
 
-type SubmittedInspection = {
-  id: string;
-  status: string;
-  submitted_at: string | null;
-  visits: NonNullable<JoinedReview["inspections"]>["visits"];
-  submission_versions: SubmissionVersion[];
-  violations: NonNullable<JoinedReview["inspections"]>["violations"];
-  evidence: NonNullable<JoinedReview["inspections"]>["evidence"];
-};
+const slaSettings: Shape<SlaSettings> = f => ({
+  review_business_days: f.optionalNumber("review_business_days") ?? undefined,
+  calendar: f.toOne("calendar", calendar => ({
+    days: calendar.optionalText("days") ?? undefined,
+  })) ?? undefined,
+});
+
+const factoryCheckRow: Shape<{ inspection_id: string; status: string }> = f => ({
+  inspection_id: f.text("inspection_id"),
+  status: f.text("status"),
+});
 
 function factoryFact(check: { updated: boolean } | undefined): ReadinessFact {
   if (!check) return "missing";
@@ -45,10 +50,11 @@ export async function loadReviewQueue(sb: ReviewsClient): Promise<LoadedQueue> {
       .eq("status", "submitted"),
   ]);
 
-  const sla = slaRow?.settings as SlaSettings | undefined;
-  const rows: JoinedReview[] = (allReviews ?? []) as unknown as JoinedReview[];
+  const sla = readSingle({ data: slaRow?.settings ?? null, error: null }, slaSettings, "reviews.sla").row;
+  const rows: JoinedReview[] = readRows({ data: allReviews, error: reviewsErr }, joinedReviewRow, "reviews.reviews").rows;
 
-  for (const inspection of (undiscovered ?? []) as unknown as SubmittedInspection[]) {
+  const submitted = readRows({ data: undiscovered, error: undiscoveredErr }, submittedInspectionRow, "reviews.submitted_inspections");
+  for (const inspection of submitted.rows) {
     const latest = inspection.submission_versions.slice().sort((a, b) => b.version_number - a.version_number)[0];
     if (!latest) continue;
     rows.push({
@@ -72,12 +78,13 @@ export async function loadReviewQueue(sb: ReviewsClient): Promise<LoadedQueue> {
   const { data: factoryChecks, error: factoryChecksErr } = inspectionIds.length
     ? await sb.from("inspection_factory_checks").select("inspection_id, status").in("inspection_id", inspectionIds)
     : { data: [], error: null };
+  const checks = readRows({ data: factoryChecks, error: factoryChecksErr }, factoryCheckRow, "reviews.factory_checks");
   const factoryCheckMap = new Map<string, { updated: boolean }>();
-  for (const check of (factoryChecks ?? []) as { inspection_id: string; status: string }[]) {
+  for (const check of checks.rows) {
     const current = factoryCheckMap.get(check.inspection_id);
     factoryCheckMap.set(check.inspection_id, { updated: current?.updated === true || check.status === "updated" });
   }
-  const factoryChecksReadable = !factoryChecksErr;
+  const factoryChecksReadable = !checks.failed;
 
   const readinessFor = (review: JoinedReview): QueueEntry => {
     const inspection = review.inspections;

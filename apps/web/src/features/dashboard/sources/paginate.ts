@@ -1,14 +1,12 @@
-import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
+import { readPages, type PageRequest, type ReadResult } from "@/lib/postgrest/read";
+import type { Shape } from "@/lib/postgrest/shape";
 
-export type SourcePage<T> = PostgrestPage<T>;
-export type Collected<T> = { rows: T[]; failed: boolean };
-export type PageLoader<T> = (from: number, to: number) => PromiseLike<SourcePage<T>>;
+export type Collected<T> = ReadResult<T>;
 
-export async function collect<T>(load: PageLoader<T>): Promise<Collected<T>> {
-  const page = await collectPostgrestPages(load);
-  return page.error ? { rows: [], failed: true } : { rows: page.data ?? [], failed: false };
+export function collect<T>(shape: Shape<T>, source: string, request: PageRequest): Promise<Collected<T>> {
+  return readPages(request, shape, source);
 }
 
 export function emptyCollection<T>(): Promise<Collected<T>> {
-  return Promise.resolve({ rows: [] as T[], failed: false });
+  return Promise.resolve({ rows: [] as T[], failed: false, reason: null });
 }

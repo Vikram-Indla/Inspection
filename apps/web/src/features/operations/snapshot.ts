@@ -1,4 +1,3 @@
-import type { PostgrestPage } from "@/lib/supabase-pagination";
 import { loadEngineSettings, loadNotifications, loadOverrideEvidence, loadPendingOverrides } from "./sources/alerts";
 import { loadFactories, loadRiskBoard } from "./sources/factories";
 import { loadGeoEvents } from "./sources/geo";
@@ -9,10 +8,6 @@ import type { OperationsScope } from "./scope";
 import type { OperationsSnapshot, OperationsSourceKey, VisitRow } from "./types";
 
 const GEO_ELIGIBLE_STATES = ["on_the_way", "arrived", "executing"];
-
-function rows<T>(page: PostgrestPage<T>): T[] {
-  return page.data ?? [];
-}
 
 function geoVisitIds(visits: readonly VisitRow[], scope: OperationsScope): string[] {
   return visits
@@ -43,31 +38,31 @@ export async function readOperationsSnapshot(
       loadOverrideEvidence(sb),
     ]);
 
-  const geo = await loadGeoEvents(sb, geoVisitIds(rows(visits), scope), nowIso);
+  const geo = await loadGeoEvents(sb, geoVisitIds(visits.rows, scope), nowIso);
 
   const failedSources = ([
-    visits.error && "visits",
-    actions.error && "actions",
-    notifications.error && "notifications",
-    factories.error && "factories",
-    settings.error && "settings",
-    risk.error && "risk",
-    overrides.error && "overrides",
-    evidence.error && "evidence",
-    geo.error && "geo",
-  ] as (OperationsSourceKey | null | false | "")[])
+    visits.failed && "visits",
+    actions.failed && "actions",
+    notifications.failed && "notifications",
+    factories.failed && "factories",
+    settings.failed && "settings",
+    risk.failed && "risk",
+    overrides.failed && "overrides",
+    evidence.failed && "evidence",
+    geo.failed && "geo",
+  ] as (OperationsSourceKey | false)[])
     .filter((key): key is OperationsSourceKey => Boolean(key));
 
   return {
-    visits: rows(visits),
-    actions: rows(actions),
-    notifications: rows(notifications),
-    factories: rows(factories),
-    settings: rows(settings),
-    risk: rows(risk),
-    overrides: rows(overrides),
-    evidence: rows(evidence),
-    geo: rows(geo),
+    visits: visits.rows,
+    actions: actions.rows,
+    notifications: notifications.rows,
+    factories: factories.rows,
+    settings: settings.rows,
+    risk: risk.rows,
+    overrides: overrides.rows,
+    evidence: evidence.rows,
+    geo: geo.rows,
     authorizedScope,
     capturedAt: nowIso,
     failedSources,
