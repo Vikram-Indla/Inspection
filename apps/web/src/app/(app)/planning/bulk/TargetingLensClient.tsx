@@ -6,9 +6,9 @@ import EligibilityLedger, { type LedgerStrings } from "./EligibilityLedger";
 import DistributionPanels, { type Distribution, type DistributionStrings } from "./DistributionPanels";
 import BulkTargetingForm, { type BulkFormStrings } from "@/components/sections/planning-bulk/bulk-targeting-form/bulk-targeting-form";
 import type { GroupNode } from "./criteria";
-import { serializeCriteria } from "./criteria";
+import { hasCriteria, serializeCriteria } from "./criteria";
 import type { Locale } from "@/lib/i18n";
-import type { CriteriaFactory } from "@/features/planning-bulk/view";
+import type { CriteriaFactory, SuggestionOption } from "@/features/planning-bulk/view";
 import type { CriteriaLeaf } from "@/features/planning-bulk/targeting";
 
 export default function TargetingLensClient({
@@ -18,7 +18,7 @@ export default function TargetingLensClient({
   factories, bulkFormStrings, locale, builderFields, cityByRegion,
 }: {
   initialTree: GroupNode;
-  fieldOptions: Record<string, string[]>;
+  fieldOptions: Record<string, SuggestionOption[]>;
   matchCount: number;
   criteriaStrings: CriteriaBuilderStrings;
   contributions: Record<string, number>;
@@ -49,7 +49,7 @@ export default function TargetingLensClient({
         strings={ledgerStrings} focusedCount={focusedCount} focusedLabel={focusedLeaf ? `${focusedLeaf.field}: ${focusedLeaf.value}` : null} locale={locale} />
       <DistributionPanels distributions={distributions} strings={distStrings}
         focusedField={focusedLeaf?.field} focusedValue={focusedLeaf?.value} />
-      <BulkTargetingForm factories={factories} strings={bulkFormStrings}
+      <BulkTargetingForm factories={factories} strings={bulkFormStrings} criteriaApplied={hasCriteria(initialTree)}
         focusedField={focusedLeaf?.field} focusedValue={focusedLeaf?.value} locale={locale}
         criteriaTree={serializeCriteria(initialTree)} />
     </>

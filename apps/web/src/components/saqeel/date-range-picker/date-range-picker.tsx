@@ -162,10 +162,18 @@ export default function DateRangePicker({
     setDraftTo(current => withDay(current, iso, withTime));
   }
 
-  function applyPreset(preset: DateRangePreset): void {
+  function presetDays(preset: DateRangePreset): { from: string; to: string } {
     const span = preset.days - 1;
     const future = preset.direction === "future";
-    onChange({ from: future ? todayIso : shift(todayIso, -span), to: future ? shift(todayIso, span) : todayIso });
+    return {
+      from: future ? todayIso : shift(todayIso, -span),
+      to: future ? shift(todayIso, span) : todayIso,
+    };
+  }
+
+  function applyPreset(preset: DateRangePreset): void {
+    const days = presetDays(preset);
+    onChange({ from: withDay(from, days.from, withTime), to: withDay(to, days.to, withTime) });
     close(true);
   }
 
@@ -200,9 +208,8 @@ export default function DateRangePicker({
   }
 
   const activePreset = presets.find(preset => {
-    const span = preset.days - 1;
-    const future = preset.direction === "future";
-    return draftFrom === (future ? todayIso : shift(todayIso, -span)) && draftTo === (future ? shift(todayIso, span) : todayIso);
+    const days = presetDays(preset);
+    return draftFromDay === days.from && draftToDay === days.to;
   });
 
   return (

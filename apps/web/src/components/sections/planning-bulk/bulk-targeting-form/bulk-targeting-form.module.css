@@ -5,3 +5,16 @@
   gap: var(--sqx-space-3);
   margin-block-start: var(--sqx-space-3);
 }
+
+.filter {
+  flex: 1;
+  min-inline-size: var(--sqx-grid-min-lg);
+}
+
+.filterStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sqx-space-2);
+  color: var(--sqx-text-muted);
+  font-size: var(--sqx-text-caption-size);
+}

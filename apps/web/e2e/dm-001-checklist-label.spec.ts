@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const wizard = readFileSync(
-  join(process.cwd(), "src/app/(app)/planning/single/Wizard.tsx"),
+  join(process.cwd(), "src/components/sections/planning-single/visit-configuration/visit-configuration.tsx"),
   "utf8",
 );
 

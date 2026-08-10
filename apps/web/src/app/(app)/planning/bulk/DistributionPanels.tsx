@@ -6,7 +6,15 @@
 // A map view is a later optional channel (COMPONENT_MAP GeoMap PRESERVE); the
 // list is the equivalent primary channel and is always present.
 
-export type Bucket = { label: string; count: number; unknown?: boolean };
+import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
+
+const RISK_TONE: Readonly<Record<string, StatusTone>> = {
+  high: "danger",
+  medium: "warning",
+  low: "success",
+};
+
+export type Bucket = { value: string; label: string; count: number; unknown?: boolean };
 export type Distribution = { key: string; heading: string; total: number; buckets: Bucket[] };
 
 export type DistributionStrings = {

@@ -73,6 +73,8 @@ were all legacy CSS, not JSX — including a 🔒 emoji injected by
 `status: in-progress (slices 1a + 1b + 1c done; 2–5 open)` · `rules: WEB-000…004, WEB-008, WEB-009, WEB-011` · `est: 12h total`
 `record (slice 1a):` [2026-08-10-T-046-bulk-targeting-feature-layer](sessions/2026-08/2026-08-10-T-046-bulk-targeting-feature-layer.md)
 `record (slice 1b):` [2026-08-10-T-046-bulk-screen-composition](sessions/2026-08/2026-08-10-T-046-bulk-screen-composition.md)
+`record (slice 3):` [2026-08-10-T-046-review-route-composition](sessions/2026-08/2026-08-10-T-046-review-route-composition.md)
+`record (slice 4 pt 1):` [2026-08-10-T-046-review-client-phases-and-readiness](sessions/2026-08/2026-08-10-T-046-review-client-phases-and-readiness.md)
 
 **The route had zero SAQEEL imports before this task** — 14 files, 3,512 lines,
 505 comments, ~180 legacy class uses, 26 colour-only `sq-lozenge`, 15 native
@@ -765,6 +767,104 @@ filters and tabs moved to `searchParams`.
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
 
+- **`SegmentedControl`'s `subtle` default is wrong for a toggle.** Five shipped
+  toggles pass `tone="accent"`; the only `subtle` consumers left are three tab
+  strips (`catalogue-screen`, `regulation-workspace`, `IdentityDossier`'s map
+  switch). The bulk ALL/ANY control shipped near-black because it took the
+  default. Either `accent` becomes the default and tabs opt out, or the two
+  roles get distinct names — a design-system decision, in the shape of T-030's
+  "a prop with one correct value is a future inconsistency".
+- **`IdentityDossier`'s map toggle on `/planning/single` is still `subtle`** and
+  is a toggle, not a tab strip. It has the same defect the owner reported on
+  `/planning/bulk`, and was left alone because it is a different screen.
+- **NEVER run a second dev server against a `.next` another one is using, and
+  never `taskkill /F` one.** T-046 ran seven dev servers on ports 3111–3118 to
+  verify compiles while the owner's server held port 3000, and force-killed each.
+  They all share `apps/web/.next`. The result was 4 half-written `*.pack.gz_`
+  files and a webpack cache that **silently stopped emitting
+  `static/css/app/(app)/planning/bulk/page.css`** — the route rendered with the
+  global sheets only, so every CSS Module on it (criteria-builder,
+  planning-notice, field) vanished and the owner saw an unstyled screen. The
+  `Caching failed for pack ... rename '65.pack.gz_' -> '65.pack.gz'` warnings
+  were visible for three turns and were dismissed as harmless. **A cache warning
+  on a shared `.next` is a defect report.** Cure: stop every dev server, delete
+  `apps/web/.next`, restart one. CLAUDE.md already said this; it was not heeded.
+- **A regex is not a CSS parser.** `split(/}s*
++/)` corrupted `review.css`
+  (119 → 157 lines, two orphans surviving) because it cannot see nested or
+  compound rules; recovered with read-only `git show` and rewritten as a
+  brace-depth scanner. Second time a regex has damaged a file on this route.
+- **Verify what a stylesheet is holding up before believing its importer owns
+  it.** `review.css` was imported by `review/page.tsx`, which used exactly one of
+  its 58 classes; `ReviewClient` uses 44 and `EvidenceLedger` 12. Deleting it
+  with the route file would have stripped the whole review screen.
+- **`review/loading.tsx` is still `RouteLoading`** — a centred glyph with no
+  mirror of the screen, and it needs the `<Shell>` wrapper the bulk skeleton
+  initially missed.
+- **`loadBulkDraft` is a read living in `actions.ts`**, a `"use server"` write
+  module, now called from `queries.ts`. It belongs on the read side; moving it
+  rides with slice 5.
+- **A `loading.tsx` that skips `<Shell>` renders full-bleed.** The page frame
+  padding lives in `.sq-content`, which `Shell` owns, so a bare skeleton sits
+  against the rail and the viewport edge and the page head pops in afterwards.
+  Caught on `/planning/bulk`; check any future skeleton against its sibling
+  routes, which already wrap correctly.
+- **THE APP SHELL MUST BE THE ONLY SCROLLER — now enforced.** `.shell` was
+  `block-size: 100dvh; overflow: hidden` but still **in flow**, so a descendant
+  escaping the clip grew `<body>` and the page had two scrollers. A focus change
+  then scrolled both and parked the viewport below the 645px shell: the screen
+  read as blank while rendering perfectly. Reported five times on
+  `/planning/bulk` and misdiagnosed as a crash four times. Fixed with
+  `position: fixed; inset: 0`; guarded by
+  `e2e/shell-single-scroller-contract.spec.ts`. **Touches every authenticated
+  route** and wants a visual pass.
+- **"Blank screen" does not mean "something threw".** Four error boundaries were
+  added before anyone measured `document.documentElement.scrollHeight`. Establish
+  that a failure is what it looks like before instrumenting for it.
+- **`global-error.tsx` did not exist.** Without it, an error escaping the `(app)`
+  layout renders a literally blank document — no overlay, no state. Added, along
+  with `error.tsx` for both bulk routes.
+- **NEVER RENDER A RAW LABEL — now WEB-000 §9, binding.** Owner ruling after
+  `medium`/`high`/`food`/`petrochemical` shipped raw in the distribution panels
+  and `active` in the criteria dropdown. Everything carries `{ value, label }`;
+  the label resolves once server-side through the locale resource; governed bands
+  render as `StatusPill`. Resolution never goes inside a primitive.
+- **A raw database value is not a label.** The criteria value dropdown rendered
+  `{ value: v, label: v }`, and the English pill copy was inherited verbatim from
+  the legacy `t("plan.bulk.eligible", "eligible")` defaults — so the screen
+  showed `active`, `eligible`, `high`, `complete` in lower case, raw. Options now
+  carry `{ value, label }`: the **value stays the raw DB string** so `evalNode`
+  is untouched, and the label resolves through `planning.bulk.enumLabel` (23
+  governed values, both locales) falling back to separator-stripped sentence
+  case. Any screen mapping a DB enum straight into a label has the same bug.
+- **RESOLVED 2026-08-10 — the owner ruled to fill, not carry.** `--sqx-surface-success`
+  (6.89 light / 12.22 dark), `--sqx-surface-danger` (9.51 / 6.11) and
+  `--sqx-grid-min-xs` (11rem) are in `saqeel.css` with measured ratios;
+  `Button` gained `describedBy`; the review window is a `DateRangePicker withTime`.
+  The `grid-min-xs` addition also fixes T-050s invalid `flex` in
+  `criteria-builder.module.css:68`.
+- **A criteria URL must never carry raw JSON.** `?ct=` percent-encoded a whole
+  wire object into an unreadable address bar. Now base64url, UTF-8 safe via
+  `TextEncoder` (`btoa` alone throws on Arabic criteria values), with `parseCt`
+  falling back to the raw form so shared links keep working.
+- **Dropping `target="_blank"` in a rewrite is a behaviour change.** The bulk
+  targets table lost it silently and clicking a factory replaced the screen,
+  which reads as a crash. Diff behaviour attributes, not just markup.
+- **`/planning/bulk` and `/planning/bulk/review` now have `error.tsx`.** Neither
+  did, so any client error blanked the subtree with no state. Check every
+  migrated route for a boundary.
+- **There is no busy/loading opacity token**, so a control or region that wants
+  to read as "working" can only say so with text plus `aria-busy`. Wanted twice
+  now (T-048's `--sqx-opacity-muted`, and the bulk filter's table dim) and
+  dropped both times rather than invented. Third request should be a change
+  request.
+- **There is no shared spinner.** `Button` owns one inside its own module, so a
+  non-button surface that wants the same mark has to duplicate the CSS. The
+  bulk filter used text instead. Rule of Two says the next one extracts it.
+- **A `Field` inside `Toolbar` collapses to its content width.** `Field` has no
+  width and `TextInput` is `inline-size: 100%`, so a toolbar search box needs a
+  `min-inline-size` wrapper from the calling screen. It caught `/planning/bulk`;
+  any other toolbar search field has the same trap armed.
 - **`bulk-targeting-form.tsx` is 219 lines**, over the 200 target. The
   select-all confirmation is the natural fifth extraction.
 - **`TargetingLensClient` takes 16 props** against a review limit of 8, all

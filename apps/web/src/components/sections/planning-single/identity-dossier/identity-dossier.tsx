@@ -9,10 +9,11 @@ import SegmentedControl, { type SegmentedItem } from "@/components/saqeel/segmen
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
 import { titleCase } from "@/features/factories/portfolio";
+import type { GradedFactory } from "@/features/planning-single/shapes";
+import type { SingleVisitStrings } from "@/features/planning-single/strings";
 import { formatDate } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
-import type { GradedFactory, WizardStrings } from "./Wizard";
-import styles from "./single-planning.module.css";
+import styles from "./identity-dossier.module.css";
 
 const GeoMap = dynamic(() => import("@/components/GeoMap"), { ssr: false });
 
@@ -22,40 +23,26 @@ const REGION_ZOOM = 6;
 
 type DossierView = "text" | "map";
 
-/**
- * The identity dossier shown under a selected candidate.
- *
- * Nothing here mutates the registry — coordinates stay external-master data
- * (M01-038) — and the risk band is advisory context, never a scheduling gate.
- *
- * The text equivalent is the default view, not a fallback. The map runtime is
- * large, and mounting it during a scheduling transaction competes with the
- * publish action for the main thread; the planner opts into it.
- */
-export default function IdentityDossier({
-  factory, strings, locale,
-}: {
+export default function IdentityDossier({ factory, strings, locale }: {
   factory: GradedFactory;
-  strings: WizardStrings;
+  strings: SingleVisitStrings;
   locale: Locale;
 }) {
   const [view, setView] = useState<DossierView>("text");
   const hasOfficial = factory.official_lat != null && factory.official_lng != null;
+  const officialLat = factory.official_lat ?? RIYADH_CENTRE[0];
+  const officialLng = factory.official_lng ?? RIYADH_CENTRE[1];
 
   const markers: GeoMarkerData[] = hasOfficial
     ? [{
         id: "official",
-        lat: factory.official_lat as number,
-        lng: factory.official_lng as number,
+        lat: officialLat,
+        lng: officialLng,
         label: `${strings.officialPin} — ${factory.name}`,
-        tone: (factory.risk_band === "high" ? "high" : factory.risk_band === "medium" ? "medium" : "low") as GeoMarkerData["tone"],
+        tone: factory.risk_band === "high" ? "high" : factory.risk_band === "medium" ? "medium" : "low",
         radiusM: factory.geofence_radius_m ?? undefined,
       }]
     : [];
-
-  const centre: [number, number] = hasOfficial
-    ? [factory.official_lat as number, factory.official_lng as number]
-    : [...RIYADH_CENTRE] as [number, number];
 
   const [mapLabel, textLabel] = strings.mapToggle.split(" / ");
   const views: SegmentedItem<DossierView>[] = [
@@ -71,7 +58,7 @@ export default function IdentityDossier({
         title={factory.name}
         description={factory.grade === "exact" ? strings.exactRule : strings.similarRule}
         trailing={
-          <span className={styles.choiceLabel}>
+          <span className={styles.badges}>
             <StatusPill tone={factory.grade === "exact" ? "success" : "warning"}>
               {factory.grade === "exact" ? strings.exactBadge : strings.similarBadge}
             </StatusPill>
@@ -83,13 +70,10 @@ export default function IdentityDossier({
         <DefinitionList
           columns="two"
           items={[
-            { label: strings.crPrefix, value: <bdi>{factory.cr_number ?? "—"}</bdi> },
+            { label: strings.crPrefix, value: <bdi>{factory.cr_number ?? strings.absent}</bdi> },
             { label: strings.licenseLabel, value: <bdi>{factory.license_number ?? strings.licenseNone}</bdi> },
-            { label: strings.factory360, value: <bdi>{factory.factory_code ?? "—"}</bdi> },
-            {
-              label: strings.locationAuthority,
-              value: <bdi>{factory.master_source ?? "—"}</bdi>,
-            },
+            { label: strings.factory360, value: <bdi>{factory.factory_code ?? strings.absent}</bdi> },
+            { label: strings.locationAuthority, value: <bdi>{factory.master_source ?? strings.absent}</bdi> },
             {
               label: strings.freshnessLabel,
               value: factory.source_synced_at
@@ -106,7 +90,9 @@ export default function IdentityDossier({
         {factory.duplicate ? (
           <PlanningNotice tone="warning">
             {strings.duplicateWarning}
-            {factory.duplicateVisitStatus ? <> · {strings.duplicateStatusLabel}: <bdi>{titleCase(factory.duplicateVisitStatus)}</bdi></> : null}
+            {factory.duplicateVisitStatus
+              ? <> · {strings.duplicateStatusLabel}: <bdi>{titleCase(factory.duplicateVisitStatus)}</bdi></>
+              : null}
           </PlanningNotice>
         ) : null}
 
@@ -114,12 +100,17 @@ export default function IdentityDossier({
 
         {view === "map" ? (
           <div className={styles.mapFrame}>
-            <GeoMap center={centre} zoom={hasOfficial ? OFFICIAL_ZOOM : REGION_ZOOM} markers={markers} height="100%" />
+            <GeoMap
+              center={[officialLat, officialLng]}
+              zoom={hasOfficial ? OFFICIAL_ZOOM : REGION_ZOOM}
+              markers={markers}
+              height="100%"
+            />
           </div>
         ) : (
           <p className={styles.hint}>
             {strings.officialPin}:{" "}
-            {hasOfficial ? <bdi>{factory.official_lat}, {factory.official_lng}</bdi> : strings.noOfficialPin}
+            {hasOfficial ? <bdi>{officialLat}, {officialLng}</bdi> : strings.noOfficialPin}
           </p>
         )}
       </CardBody>

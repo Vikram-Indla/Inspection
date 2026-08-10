@@ -102,8 +102,24 @@ const toWire = (n: CriteriaNode): Wire =>
     ? { k: "c", f: n.field, o: n.op, v: n.value }
     : { k: "g", c: n.combine, n: n.children.map(toWire) };
 
+const toUrlSafe = (value: string): string => {
+  const bytes = new TextEncoder().encode(value);
+  const binary = Array.from(bytes, byte => String.fromCharCode(byte)).join("");
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+};
+
+const fromUrlSafe = (value: string): string | null => {
+  try {
+    const padded = value.replace(/-/g, "+").replace(/_/g, "/");
+    const binary = atob(padded + "=".repeat((4 - padded.length % 4) % 4));
+    return new TextDecoder().decode(Uint8Array.from(binary, character => character.charCodeAt(0)));
+  } catch {
+    return null;
+  }
+};
+
 export function serializeCriteria(tree: GroupNode): string {
-  return JSON.stringify(toWire(tree));
+  return toUrlSafe(JSON.stringify(toWire(tree)));
 }
 
 // Parse + sanitize. Unknown fields/bad operators remain forward-compatible and
@@ -139,7 +155,8 @@ export function parseCt(ct: string | undefined): GroupNode | null {
   if (!ct) return null;
   try {
     const counter = { n: 0, invalidBlank: false };
-    const node = fromWire(JSON.parse(ct), 0, counter);
+    const decoded = fromUrlSafe(ct) ?? ct;
+    const node = fromWire(JSON.parse(decoded), 0, counter);
     if (counter.invalidBlank) return null;
     if (node && node.kind === "group") return node;
     if (node && node.kind === "cond") return { kind: "group", combine: "all", children: [node] };

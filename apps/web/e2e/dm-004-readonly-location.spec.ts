@@ -10,8 +10,8 @@ const source = (file: string) => readFileSync(join(process.cwd(), file), "utf8")
 
 test.describe("DM-004 Planner location authority", () => {
   test("Single Visit renders official location as read-only external master data", () => {
-    const wizard = source("src/app/(app)/planning/single/Wizard.tsx");
-    const dossier = source("src/app/(app)/planning/single/IdentityDossier.tsx");
+    const wizard = source("src/components/sections/planning-single/target-confirmation/target-confirmation.tsx");
+    const dossier = source("src/components/sections/planning-single/identity-dossier/identity-dossier.tsx");
 
     expect(wizard).not.toContain('name="planner_lat"');
     expect(wizard).not.toContain('name="planner_lng"');

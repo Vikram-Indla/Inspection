@@ -1,8 +1,11 @@
 import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-table";
+import type { IconName } from "@/components/saqeel/icon/icon-registry";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import Choice from "@/components/saqeel/choice/choice";
 import type { CriteriaFactory } from "@/features/planning-bulk/view";
 import styles from "./bulk-evidence-table.module.css";
+
+export type TableEmptyReason = "noCriteria" | "noMatch" | "noFilterMatch";
 
 export type EvidenceTableStrings = {
   colFactory: string; colCr: string; colCity: string; colRisk: string;
@@ -10,8 +13,14 @@ export type EvidenceTableStrings = {
   selectFactory: string; eligible: string; duplicate: string;
   dqComplete: string; dqNoLocation: string; dqUnknownRisk: string;
   riskAdvisory: string;
-  emptyTitle: string; emptyBody: string;
+  empty: Record<TableEmptyReason, { title: string; body: string }>;
   riskBands: Record<string, string>;
+};
+
+const EMPTY_ICON: Readonly<Record<TableEmptyReason, IconName>> = {
+  noCriteria: "radar",
+  noMatch: "factory",
+  noFilterMatch: "search",
 };
 
 const RISK_TONE: Readonly<Record<string, StatusTone>> = {
@@ -23,9 +32,11 @@ const RISK_TONE: Readonly<Record<string, StatusTone>> = {
 const MISSING = "—";
 
 export default function BulkEvidenceTable({
-  rows, strings, isSelected, isDuplicate, isFocused, provenanceOf, onToggle,
+  rows, strings, busy, emptyReason, isSelected, isDuplicate, isFocused, provenanceOf, onToggle,
 }: {
   rows: readonly CriteriaFactory[];
+  busy?: boolean;
+  emptyReason: TableEmptyReason;
   strings: EvidenceTableStrings;
   isSelected: (factory: CriteriaFactory) => boolean;
   isDuplicate: (factory: CriteriaFactory) => boolean;
@@ -57,7 +68,7 @@ export default function BulkEvidenceTable({
       isRowHeader: true,
       cell: factory => (
         <span className={styles.identity}>
-          <a className={styles.name} href={`/factories/${factory.id}`}>{factory.name}</a>
+          <a className={styles.name} href={`/factories/${factory.id}`} target="_blank" rel="noreferrer">{factory.name}</a>
           <bdi className={styles.code}>{factory.factory_code ?? MISSING}</bdi>
         </span>
       ),
@@ -103,14 +114,18 @@ export default function BulkEvidenceTable({
   ];
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} aria-busy={busy}>
       <DataTable
         rows={rows}
         columns={columns}
         getRowId={factory => factory.id}
         getRowSelected={factory => isSelected(factory) || isFocused(factory)}
         caption={strings.riskAdvisory}
-        empty={{ icon: "factory", title: strings.emptyTitle, description: strings.emptyBody }}
+        empty={{
+          icon: EMPTY_ICON[emptyReason],
+          title: strings.empty[emptyReason].title,
+          description: strings.empty[emptyReason].body,
+        }}
       />
     </div>
   );

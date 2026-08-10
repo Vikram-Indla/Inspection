@@ -10,10 +10,12 @@ const singleAction = readFileSync(resolve(
   process.cwd(),
   "src/app/(app)/planning/single/actions.ts",
 ), "utf8");
-const singleWizard = readFileSync(resolve(
-  process.cwd(),
-  "src/app/(app)/planning/single/Wizard.tsx",
-), "utf8");
+const singleWizard = [
+  "src/components/sections/planning-single/single-visit-screen/single-visit-screen.tsx",
+  "src/components/sections/planning-single/single-visit-screen/target-fields.tsx",
+  "src/components/sections/planning-single/single-visit-screen/factory-search.tsx",
+  "src/components/sections/planning-single/factory-results/factory-results.tsx",
+].map(file => readFileSync(resolve(process.cwd(), file), "utf8")).join("\n");
 const planningPage = readFileSync(resolve(
   process.cwd(),
   "src/app/(app)/planning/page.tsx",

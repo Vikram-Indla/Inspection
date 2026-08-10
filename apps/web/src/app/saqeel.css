@@ -275,6 +275,8 @@
     --sqx-surface-sunken: var(--sqx-grey-200);
     --sqx-surface-header: var(--sqx-grey-200);
     --sqx-surface-accent: var(--sqx-tint-brand-light);
+    --sqx-surface-success: var(--sqx-success-lighter);
+    --sqx-surface-danger: var(--sqx-error-lighter);
     --sqx-surface-inverse: var(--sqx-grey-800);
     --sqx-surface-overlay: rgba(28, 37, 46, 0.48);
 
@@ -418,6 +420,8 @@
     --sqx-surface-sunken: var(--sqx-grey-950);
     --sqx-surface-header: var(--sqx-grey-neutral-dark);
     --sqx-surface-accent: var(--sqx-tint-brand-dark);
+    --sqx-surface-success: var(--sqx-green-950);
+    --sqx-surface-danger: var(--sqx-error-darker);
     --sqx-surface-inverse: var(--sqx-grey-100);
     --sqx-surface-overlay: rgba(0, 0, 0, 0.72);
 
@@ -677,6 +681,7 @@
     --sqx-media-h-md: 24rem;
     --sqx-media-h-lg: 34rem;
 
+    --sqx-grid-min-xs: 11rem;
     --sqx-grid-min-sm: 14rem;
     --sqx-grid-min-md: 18rem;
     --sqx-grid-min-lg: 24rem;

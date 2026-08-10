@@ -77,6 +77,9 @@ circumstances; absent data renders as a state.
 - Every control labelled, every overlay focus-trapped and Escape-closable,
   focus always visible and never obscured.
 - Nothing communicated by colour alone.
+- **Never render a raw database value as a label** (WEB-000 §9). Options, pills
+  and buckets carry `{ value, label }`; the label resolves once at the data
+  boundary, never inside a saqeel primitive. `{ value: v, label: v }` is a defect.
 
 ---
 

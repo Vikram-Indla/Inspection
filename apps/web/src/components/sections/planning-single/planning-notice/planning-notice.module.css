@@ -1,12 +1,20 @@
+/* Stacked, not side by side: the tone pill is a heading for the notice, so it
+   belongs above the sentence it qualifies. Beside it, a one-line pill sat
+   vertically centred against a multi-line body and the text started at a
+   different inline offset from every other block on the screen. */
 .root {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--sqx-space-3);
+  flex-direction: column;
+  gap: var(--sqx-space-2);
   padding: var(--sqx-inset-control);
   border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
   border-radius: var(--sqx-radius-control);
   background: var(--sqx-surface-sunken);
+}
+
+/* The pill is blockified by the column flex parent; keep it its own width. */
+.label {
+  align-self: flex-start;
 }
 
 .root[data-tone="warning"] {

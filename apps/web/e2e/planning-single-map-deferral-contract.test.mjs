@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
-const dossier = readFileSync(new URL("../src/app/(app)/planning/single/IdentityDossier.tsx", import.meta.url), "utf8");
+const dossier = readFileSync(new URL("../src/components/sections/planning-single/identity-dossier/identity-dossier.tsx", import.meta.url), "utf8");
 const journey = readFileSync(new URL("./golden-journey.spec.ts", import.meta.url), "utf8");
 
 test("Planning Single defers Mapbox until the Planner explicitly selects Map", () => {

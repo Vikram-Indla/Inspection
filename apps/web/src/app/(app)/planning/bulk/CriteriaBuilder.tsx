@@ -4,6 +4,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import Button from "@/components/saqeel/button/button";
 import Field from "@/components/saqeel/field/field";
 import SaqeelSelect, { type SelectOption } from "@/components/saqeel/select/select";
+import type { SuggestionOption } from "@/features/planning-bulk/view";
 import SegmentedControl from "@/components/saqeel/segmented-control/segmented-control";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import TextInput from "@/components/saqeel/text-input/text-input";
@@ -67,7 +68,7 @@ export default function CriteriaBuilder({
   builderFields, cityByRegion, locale,
 }: {
   initialTree: GroupNode;
-  fieldOptions: Record<string, string[]>;
+  fieldOptions: Record<string, SuggestionOption[]>;
   matchCount: number;
   strings: CriteriaBuilderStrings;
   contributions?: Record<string, number>;
@@ -103,11 +104,11 @@ export default function CriteriaBuilder({
     return chosen.filter(Boolean);
   }, [tree]);
 
-  const optionsFor = (fieldKey: string): string[] => {
+  const optionsFor = (fieldKey: string): SuggestionOption[] => {
     if (fieldKey === "city" && cityByRegion && regionSelections.length > 0) {
       const union = new Set<string>();
       for (const region of regionSelections) for (const city of cityByRegion[region] ?? []) union.add(city);
-      if (union.size > 0) return [...union].sort();
+      if (union.size > 0) return [...union].sort().map(city => ({ value: city, label: city }));
     }
     return fieldOptions[fieldKey] ?? [];
   };
@@ -193,7 +194,7 @@ export default function CriteriaBuilder({
         <div className={styles.field}>
           <Field label={strings.valueLabel}>
             <SaqeelSelect
-              options={[{ value: "", label: strings.valuePlaceholder }, ...optionsFor(c.field).map(v => ({ value: v, label: v }))]}
+              options={[{ value: "", label: strings.valuePlaceholder }, ...optionsFor(c.field)]}
               value={c.value}
               onChange={patchValue}
               label={strings.valueLabel}
@@ -278,6 +279,7 @@ export default function CriteriaBuilder({
         <Field label={strings.combineLabel}>
           <SegmentedControl
             label={strings.combineLabel}
+            tone="accent"
             value={group.combine}
             onChange={next => setCombine(path, next === "any" ? "any" : "all")}
             items={[
