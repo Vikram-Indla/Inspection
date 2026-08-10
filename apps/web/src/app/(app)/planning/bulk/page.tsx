@@ -297,6 +297,11 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     invalidBody: t("plan.bulk.criteria.invalidBody", "{n} condition(s) are missing a value. An incomplete condition is dropped rather than applied — fill it in or remove it before applying."),
     contributionLabel: t("plan.bulk.criteria.contributionLabel", "{n} match this condition alone — focus"),
     unfocusLabel: t("plan.bulk.criteria.unfocusLabel", "Clear focus"),
+    datePlaceholder: t("plan.bulk.criteria.datePlaceholder", "Any date"),
+    dateClear: t("plan.bulk.criteria.dateClear", "Clear"),
+    dateToday: t("plan.bulk.criteria.dateToday", "Today"),
+    monthPrevious: t("plan.bulk.criteria.monthPrevious", "Previous month"),
+    monthNext: t("plan.bulk.criteria.monthNext", "Next month"),
   };
   return (
     <Shell current="/planning" title={t("plan.bulk.title", "Plan bulk visits — criteria & targeting")}

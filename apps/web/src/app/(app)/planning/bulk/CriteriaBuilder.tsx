@@ -1,20 +1,19 @@
 "use client";
-// CD-021 (SCR-WEB-110) — criteria tree instrument (design frames 1a/1d).
-// M01-003/012/022 extended to nested ALL/ANY groups. M6: the field list comes
-// from the governed criteria dictionary (FIELD_REGISTRY) — supplied fields with
-// per-type operators (text: is/is-not/contains/one-of · number: is/is-not/
-// greater/less/between · date: is/after/before/between), CONTRACT_NOT_SUPPLIED
-// fields disabled with their honest explanation (PLN-CON-019). The builder only
-// COLLECTS criteria — evaluation stays server-side. On Apply it serializes the
-// tree into a single `ct` URL param and GET-submits, so criteria remain
-// URL-reproducible (legacy cf/co/cv links still parse server-side). ARIA tree
-// pattern; reorder via keyboard-operable move buttons; the match count is
-// announced via aria-live.
-import { useMemo, useState } from "react";
+
+import { useMemo, useState, type ReactNode } from "react";
+import Button from "@/components/saqeel/button/button";
+import Field from "@/components/saqeel/field/field";
+import SaqeelSelect, { type SelectOption } from "@/components/saqeel/select/select";
+import SegmentedControl from "@/components/saqeel/segmented-control/segmented-control";
+import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import TextInput from "@/components/saqeel/text-input/text-input";
+import DatePicker from "@/components/saqeel/date-picker/date-picker";
+import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
 import {
-  type GroupNode, type CriteriaNode, type CondNode, type Field, type FieldType, type Op,
+  type GroupNode, type CriteriaNode, type CondNode, type Field as FieldKey, type FieldType, type Op,
   newCond, emptyTree, serializeCriteria, leaves, pathKey,
 } from "./criteria";
+import styles from "./criteria-builder.module.css";
 
 export type BuilderField = {
   key: string;
@@ -22,7 +21,7 @@ export type BuilderField = {
   type: FieldType;
   operators: { op: Op; label: string }[];
   supplied: boolean;
-  reason?: string; // CONTRACT_NOT_SUPPLIED explanation (disabled fields)
+  reason?: string;
 };
 
 export type CriteriaBuilderStrings = {
@@ -36,40 +35,36 @@ export type CriteriaBuilderStrings = {
   groupItem: string; conditionItem: string;
   invalidTitle: string; invalidBody: string;
   contributionLabel: string; unfocusLabel: string;
+  datePlaceholder: string; dateClear: string; dateToday: string;
+  monthPrevious: string; monthNext: string;
 };
 
-// Immutably transform the group living at `path` (indices into nested children).
 function modifyGroupAt(root: GroupNode, path: number[], fn: (g: GroupNode) => GroupNode): GroupNode {
   if (path.length === 0) return fn(root);
-  const [i, ...rest] = path;
-  const child = root.children[i];
+  const [index, ...rest] = path;
+  const child = root.children[index];
   if (!child || child.kind !== "group") return root;
   const children = root.children.slice();
-  children[i] = modifyGroupAt(child, rest, fn);
+  children[index] = modifyGroupAt(child, rest, fn);
   return { ...root, children };
 }
-// Transform the children array of the group at `parentPath`.
+
 function editChildren(root: GroupNode, parentPath: number[], fn: (ch: CriteriaNode[]) => CriteriaNode[]): GroupNode {
-  return modifyGroupAt(root, parentPath, g => ({ ...g, children: fn(g.children) }));
+  return modifyGroupAt(root, parentPath, group => ({ ...group, children: fn(group.children) }));
 }
 
-// A between leaf is only complete when BOTH bounds are filled — a one-sided
-// range would silently match nothing server-side (same honesty bar as a blank
-// value, ERR-PLN-001).
 const leafIncomplete = (c: CondNode): boolean => {
-  const v = c.value.trim();
-  if (v === "") return true;
-  if (c.op === "between") {
-    const i = v.indexOf("..");
-    if (i < 0) return true;
-    return v.slice(0, i).trim() === "" || v.slice(i + 2).trim() === "";
-  }
-  return false;
+  const value = c.value.trim();
+  if (value === "") return true;
+  if (c.op !== "between") return false;
+  const at = value.indexOf("..");
+  if (at < 0) return true;
+  return value.slice(0, at).trim() === "" || value.slice(at + 2).trim() === "";
 };
 
 export default function CriteriaBuilder({
   initialTree, fieldOptions, matchCount, strings, contributions, focusedPath, onFocus,
-  builderFields, cityByRegion,
+  builderFields, cityByRegion, locale,
 }: {
   initialTree: GroupNode;
   fieldOptions: Record<string, string[]>;
@@ -80,223 +75,286 @@ export default function CriteriaBuilder({
   onFocus?: (path: string | null) => void;
   builderFields: BuilderField[];
   cityByRegion?: Record<string, string[]>;
+  locale: "ar" | "en";
 }) {
   const [tree, setTree] = useState<GroupNode>(
     initialTree.children.length ? initialTree : { ...emptyTree(), children: [newCond()] }
   );
-  const ct = useMemo(() => serializeCriteria(tree), [tree]);
-  const invalid = useMemo(() => leaves(tree).filter(l => leafIncomplete(l.node)), [tree]);
   const [showInvalid, setShowInvalid] = useState(false);
+  const ct = useMemo(() => serializeCriteria(tree), [tree]);
+  const invalid = useMemo(() => leaves(tree).filter(leaf => leafIncomplete(leaf.node)), [tree]);
 
-  const fieldOf = (key: string): BuilderField =>
-    builderFields.find(f => f.key === key) ?? builderFields[0];
-  const suppliedFields = builderFields.filter(f => f.supplied);
+  const fieldOf = (key: string): BuilderField => builderFields.find(f => f.key === key) ?? builderFields[0];
   const notSuppliedFields = builderFields.filter(f => !f.supplied);
+  const fieldChoices: SelectOption[] = builderFields.map(f => ({
+    value: f.key,
+    label: f.label,
+    disabled: !f.supplied,
+    note: f.supplied ? undefined : strings.notSuppliedTag,
+  }));
 
-  // Region-dependent city suggestions: union the cities of every region named
-  // in an eq/one-of region condition; fall back to the full city list when no
-  // region criterion exists (never invent pairings).
   const regionSelections = useMemo(() => {
-    const out: string[] = [];
+    const chosen: string[] = [];
     for (const leaf of leaves(tree)) {
       if (leaf.node.field !== "region") continue;
-      if (leaf.node.op === "eq") out.push(leaf.node.value.trim());
-      if (leaf.node.op === "in") out.push(...leaf.node.value.split(",").map(s => s.trim()));
+      if (leaf.node.op === "eq") chosen.push(leaf.node.value.trim());
+      if (leaf.node.op === "in") chosen.push(...leaf.node.value.split(",").map(part => part.trim()));
     }
-    return out.filter(Boolean);
+    return chosen.filter(Boolean);
   }, [tree]);
+
   const optionsFor = (fieldKey: string): string[] => {
     if (fieldKey === "city" && cityByRegion && regionSelections.length > 0) {
       const union = new Set<string>();
-      for (const r of regionSelections) for (const c of cityByRegion[r] ?? []) union.add(c);
+      for (const region of regionSelections) for (const city of cityByRegion[region] ?? []) union.add(city);
       if (union.size > 0) return [...union].sort();
     }
     return fieldOptions[fieldKey] ?? [];
   };
 
   const addCond = (path: number[]) => setTree(t => editChildren(t, path, ch => [...ch, newCond()]));
-  const addGroup = (path: number[]) => setTree(t => editChildren(t, path, ch => [...ch, { kind: "group", combine: "any", children: [newCond()] }]));
-  const setCombine = (path: number[], combine: "all" | "any") => setTree(t => modifyGroupAt(t, path, g => ({ ...g, combine })));
-  const removeAt = (parentPath: number[], idx: number) => setTree(t => editChildren(t, parentPath, ch => ch.filter((_, i) => i !== idx)));
-  const patchCond = (parentPath: number[], idx: number, patch: Partial<CondNode>) =>
-    setTree(t => editChildren(t, parentPath, ch => ch.map((c, i) => (i === idx && c.kind === "cond" ? { ...c, ...patch } : c))));
-  const move = (parentPath: number[], idx: number, dir: -1 | 1) => setTree(t => editChildren(t, parentPath, ch => {
-    const j = idx + dir;
-    if (j < 0 || j >= ch.length) return ch;
-    const next = ch.slice(); [next[idx], next[j]] = [next[j], next[idx]]; return next;
-  }));
+  const addGroup = (path: number[]) =>
+    setTree(t => editChildren(t, path, ch => [...ch, { kind: "group", combine: "any", children: [newCond()] }]));
+  const setCombine = (path: number[], combine: "all" | "any") =>
+    setTree(t => modifyGroupAt(t, path, group => ({ ...group, combine })));
+  const removeAt = (parentPath: number[], index: number) =>
+    setTree(t => editChildren(t, parentPath, ch => ch.filter((_, i) => i !== index)));
+  const patchCond = (parentPath: number[], index: number, patch: Partial<CondNode>) =>
+    setTree(t => editChildren(t, parentPath, ch =>
+      ch.map((child, i) => (i === index && child.kind === "cond" ? { ...child, ...patch } : child))));
+  const move = (parentPath: number[], index: number, direction: -1 | 1) =>
+    setTree(t => editChildren(t, parentPath, ch => {
+      const target = index + direction;
+      if (target < 0 || target >= ch.length) return ch;
+      const next = ch.slice();
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    }));
 
-  const valueInput = (c: CondNode, parentPath: number[], idx: number, key: string) => {
+  const valueInput = (c: CondNode, parentPath: number[], index: number, key: string): ReactNode => {
     const def = fieldOf(c.field);
-    const isEmpty = leafIncomplete(c);
-    const patchValue = (value: string) => patchCond(parentPath, idx, { value });
+    const patchValue = (value: string) => patchCond(parentPath, index, { value });
+    const dateStrings = { clear: strings.dateClear, today: strings.dateToday };
+    const monthLabels = { previous: strings.monthPrevious, next: strings.monthNext };
+
     if (c.op === "between") {
-      const i = c.value.indexOf("..");
-      const a = i < 0 ? c.value : c.value.slice(0, i);
-      const b = i < 0 ? "" : c.value.slice(i + 2);
-      const join = (x: string, y: string) => `${x}..${y}`;
-      const inputType = def.type === "date" ? "date" : "number";
+      const at = c.value.indexOf("..");
+      const from = at < 0 ? c.value : c.value.slice(0, at);
+      const to = at < 0 ? "" : c.value.slice(at + 2);
+      const join = (a: string, b: string) => `${a}..${b}`;
       return (
         <>
-          <div className="field" style={{ maxInlineSize: 150 }}>
-            <label className="sq-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
-            <input className="input" id={`crit-value-${key}`} type={inputType} value={a} aria-invalid={isEmpty || undefined}
-              onChange={e => patchValue(join(e.target.value, b))} />
+          <div className={styles.fieldNarrow}>
+            <Field label={strings.valueLabel} htmlFor={`crit-value-${key}`}>
+              {def.type === "date"
+                ? <DatePicker value={from} onChange={next => patchValue(join(next, to))} label={strings.valueLabel}
+                    placeholder={strings.datePlaceholder} locale={locale} monthLabels={monthLabels} strings={dateStrings} />
+                : <TextInput id={`crit-value-${key}`} type="number" value={from} label={strings.valueLabel}
+                    onChange={next => patchValue(join(next, to))} />}
+            </Field>
           </div>
-          <div className="field" style={{ maxInlineSize: 150 }}>
-            <label className="sq-field__label" htmlFor={`crit-value2-${key}`}>{strings.valueToLabel}</label>
-            <input className="input" id={`crit-value2-${key}`} type={inputType} value={b} aria-invalid={isEmpty || undefined}
-              onChange={e => patchValue(join(a, e.target.value))} />
+          <div className={styles.fieldNarrow}>
+            <Field label={strings.valueToLabel} htmlFor={`crit-value2-${key}`}>
+              {def.type === "date"
+                ? <DatePicker value={to} onChange={next => patchValue(join(from, next))} label={strings.valueToLabel}
+                    placeholder={strings.datePlaceholder} locale={locale} monthLabels={monthLabels} strings={dateStrings} />
+                : <TextInput id={`crit-value2-${key}`} type="number" value={to} label={strings.valueToLabel}
+                    onChange={next => patchValue(join(from, next))} />}
+            </Field>
           </div>
         </>
       );
     }
-    if (def.type === "number") {
-      return (
-        <div className="field" style={{ maxInlineSize: 150 }}>
-          <label className="sq-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
-          <input className="input" id={`crit-value-${key}`} type="number" value={c.value} aria-invalid={isEmpty || undefined}
-            onChange={e => patchValue(e.target.value)} placeholder={strings.valuePlaceholder} />
-        </div>
-      );
-    }
+
     if (def.type === "date") {
       return (
-        <div className="field" style={{ maxInlineSize: 170 }}>
-          <label className="sq-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
-          <input className="input" id={`crit-value-${key}`} type="date" value={c.value} aria-invalid={isEmpty || undefined}
-            onChange={e => patchValue(e.target.value)} />
+        <div className={styles.fieldNarrow}>
+          <Field label={strings.valueLabel}>
+            <DatePicker value={c.value} onChange={patchValue} label={strings.valueLabel}
+              placeholder={strings.datePlaceholder} locale={locale} monthLabels={monthLabels} strings={dateStrings} />
+          </Field>
         </div>
       );
     }
+
+    if (def.type === "number") {
+      return (
+        <div className={styles.fieldNarrow}>
+          <Field label={strings.valueLabel} htmlFor={`crit-value-${key}`}>
+            <TextInput id={`crit-value-${key}`} type="number" value={c.value} label={strings.valueLabel}
+              placeholder={strings.valuePlaceholder} onChange={patchValue} />
+          </Field>
+        </div>
+      );
+    }
+
     if (def.type === "enum" && c.op !== "in") {
       return (
-        <div className="field" style={{ maxInlineSize: 280 }}>
-          <label className="sq-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
-          <select className="select" id={`crit-value-${key}`} value={c.value} aria-invalid={isEmpty || undefined}
-            onChange={e => patchValue(e.target.value)}>
-            <option value="">{strings.valuePlaceholder}</option>
-            {optionsFor(c.field).map(v => <option key={v} value={v}>{v}</option>)}
-          </select>
+        <div className={styles.field}>
+          <Field label={strings.valueLabel}>
+            <SaqeelSelect
+              options={[{ value: "", label: strings.valuePlaceholder }, ...optionsFor(c.field).map(v => ({ value: v, label: v }))]}
+              value={c.value}
+              onChange={patchValue}
+              label={strings.valueLabel}
+            />
+          </Field>
         </div>
       );
     }
-    // text / enum — free input with governed suggestions; "one of" is a comma list.
+
     return (
-      <div className="field" style={{ maxInlineSize: 210 }}>
-        <label className="sq-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
-        <input className="input" id={`crit-value-${key}`} list={`vals-${key}`} value={c.value} aria-invalid={isEmpty || undefined}
-          onChange={e => patchValue(e.target.value)} placeholder={strings.valuePlaceholder} />
-        <datalist id={`vals-${key}`}>
-          {optionsFor(c.field).map(v => <option key={v} value={v} />)}
-        </datalist>
-        {c.op === "in" && <span className="t-caption">{strings.inHint}</span>}
+      <div className={styles.field}>
+        <Field label={strings.valueLabel} htmlFor={`crit-value-${key}`} hint={c.op === "in" ? strings.inHint : undefined}>
+          <TextInput id={`crit-value-${key}`} value={c.value} label={strings.valueLabel}
+            placeholder={strings.valuePlaceholder} onChange={patchValue} />
+        </Field>
       </div>
     );
   };
 
-  const renderCond = (c: CondNode, parentPath: number[], idx: number, count: number) => {
-    const key = pathKey([...parentPath, idx]);
+  const renderCond = (c: CondNode, parentPath: number[], index: number, count: number): ReactNode => {
+    const key = pathKey([...parentPath, index]);
     const contribution = contributions?.[key];
     const isFocused = focusedPath === key;
     const def = fieldOf(c.field);
     return (
-    <li role="treeitem" aria-label={strings.conditionItem} className="sq-rule">
-      <div className="field" style={{ maxInlineSize: 200 }}>
-        <label className="sq-field__label" htmlFor={`crit-field-${key}`}>{strings.fieldLabel}</label>
-        <select className="select" id={`crit-field-${key}`} value={c.field}
-          onChange={e => {
-            const next = fieldOf(e.target.value);
-            patchCond(parentPath, idx, { field: e.target.value as Field, op: next.operators[0]?.op ?? "eq", value: "" });
-          }}>
-          {suppliedFields.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}
-          {notSuppliedFields.map(f => (
-            <option key={f.key} value={f.key} disabled>{f.label} · {strings.notSuppliedTag}</option>
-          ))}
-        </select>
-      </div>
-      <div className="field" style={{ maxInlineSize: 150 }}>
-        <label className="sq-field__label" htmlFor={`crit-op-${key}`}>{strings.opLabel}</label>
-        <select className="select" id={`crit-op-${key}`} value={c.op}
-          onChange={e => patchCond(parentPath, idx, { op: e.target.value as Op, value: "" })}>
-          {def.operators.map(o => <option key={o.op} value={o.op}>{o.label}</option>)}
-        </select>
-      </div>
-      {valueInput(c, parentPath, idx, key)}
-      {contribution != null && (
-        <button type="button" className="btn btn-ghost numeric btn-touch" aria-pressed={isFocused}
-          onClick={() => onFocus?.(isFocused ? null : key)}
-          aria-label={(isFocused ? strings.unfocusLabel : strings.contributionLabel.replace("{n}", String(contribution)))}
-          style={isFocused ? { borderColor: "var(--action-primary)", fontWeight: 600 } : undefined}>
-          {contribution}
-        </button>
-      )}
-      <button type="button" className="btn btn-ghost btn-touch" onClick={() => move(parentPath, idx, -1)} disabled={idx === 0} aria-label={strings.moveUp}>↑</button>
-      <button type="button" className="btn btn-ghost btn-touch" onClick={() => move(parentPath, idx, 1)} disabled={idx === count - 1} aria-label={strings.moveDown}>↓</button>
-      <button type="button" className="btn btn-ghost btn-touch" onClick={() => removeAt(parentPath, idx)}>{strings.remove}</button>
-    </li>
+      <li role="treeitem" aria-label={strings.conditionItem} className={styles.condition}>
+        <div className={styles.field}>
+          <Field label={strings.fieldLabel}>
+            <SaqeelSelect
+              options={fieldChoices}
+              value={c.field}
+              onChange={next => patchCond(parentPath, index, {
+                field: next as FieldKey,
+                op: fieldOf(next).operators[0]?.op ?? "eq",
+                value: "",
+              })}
+              label={strings.fieldLabel}
+            />
+          </Field>
+        </div>
+        <div className={styles.fieldNarrow}>
+          <Field label={strings.opLabel}>
+            <SaqeelSelect
+              options={def.operators.map(o => ({ value: o.op, label: o.label }))}
+              value={c.op}
+              onChange={next => patchCond(parentPath, index, { op: next as Op, value: "" })}
+              label={strings.opLabel}
+            />
+          </Field>
+        </div>
+        {valueInput(c, parentPath, index, key)}
+        {contribution != null ? (
+          <Button
+            variant={isFocused ? "secondary" : "tertiary"}
+            size="sm"
+            expanded={isFocused}
+            onClick={() => onFocus?.(isFocused ? null : key)}
+            label={isFocused ? strings.unfocusLabel : strings.contributionLabel.replace("{n}", String(contribution))}
+          >
+            {contribution}
+          </Button>
+        ) : null}
+        <Button variant="tertiary" size="sm" icon="previousPage" compactLabel
+          disabled={index === 0} onClick={() => move(parentPath, index, -1)} label={strings.moveUp}>
+          {strings.moveUp}
+        </Button>
+        <Button variant="tertiary" size="sm" icon="nextPage" compactLabel
+          disabled={index === count - 1} onClick={() => move(parentPath, index, 1)} label={strings.moveDown}>
+          {strings.moveDown}
+        </Button>
+        <Button variant="tertiary" size="sm" icon="dismiss" compactLabel
+          onClick={() => removeAt(parentPath, index)} label={strings.remove}>
+          {strings.remove}
+        </Button>
+      </li>
     );
   };
 
-  const renderGroup = (g: GroupNode, path: number[]): React.ReactNode => (
-    <li role="treeitem" aria-label={strings.groupItem}
-      style={{ listStyle: "none", borderInlineStart: "2px solid var(--border-subtle)", paddingInlineStart: "var(--space-4)" }}>
-      <div className="row" style={{ alignItems: "flex-end", gap: "var(--space-3)", flexWrap: "wrap" }}>
-        <div className="field" style={{ maxInlineSize: 220 }}>
-          <label className="sq-field__label" htmlFor={`crit-combine-${path.length ? pathKey(path) : "root"}`}>{strings.combineLabel}</label>
-          <select className="select" id={`crit-combine-${path.length ? pathKey(path) : "root"}`} value={g.combine} onChange={e => setCombine(path, e.target.value as "all" | "any")}>
-            <option value="all">{strings.combineAll}</option>
-            <option value="any">{strings.combineAny}</option>
-          </select>
-        </div>
-        {path.length > 0 && (
-          <button type="button" className="btn btn-ghost btn-touch" onClick={() => removeAt(path.slice(0, -1), path[path.length - 1])}>{strings.removeGroup}</button>
-        )}
+  const renderGroup = (group: GroupNode, path: number[]): ReactNode => (
+    <li role="treeitem" aria-label={strings.groupItem} className={styles.group}>
+      <div className={styles.groupHead}>
+        <Field label={strings.combineLabel}>
+          <SegmentedControl
+            label={strings.combineLabel}
+            value={group.combine}
+            onChange={next => setCombine(path, next === "any" ? "any" : "all")}
+            items={[
+              { value: "all", label: strings.combineAll },
+              { value: "any", label: strings.combineAny },
+            ]}
+          />
+        </Field>
+        {path.length > 0 ? (
+          <Button variant="tertiary" size="sm"
+            onClick={() => removeAt(path.slice(0, -1), path[path.length - 1])} label={strings.removeGroup}>
+            {strings.removeGroup}
+          </Button>
+        ) : null}
       </div>
-      <ul role="group" style={{ listStyle: "none", margin: "var(--space-3) 0 0", padding: 0, display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-        {g.children.map((child, i) =>
-          child.kind === "cond"
-            ? <span key={i}>{renderCond(child, path, i, g.children.length)}</span>
-            : <span key={i}>{renderGroup(child, [...path, i])}</span>
-        )}
+
+      <ul role="group" className={styles.branch}>
+        {group.children.map((child, i) => (
+          <span key={i}>
+            {child.kind === "cond"
+              ? renderCond(child, path, i, group.children.length)
+              : renderGroup(child, [...path, i])}
+          </span>
+        ))}
       </ul>
-      <div className="row" style={{ gap: "var(--space-3)", marginBlockStart: "var(--space-3)" }}>
-        <button type="button" className="btn btn-secondary btn-touch" onClick={() => addCond(path)}>{strings.addCondition}</button>
-        <button type="button" className="btn btn-ghost btn-touch" onClick={() => addGroup(path)}>{strings.addGroup}</button>
+
+      <div className={styles.actions}>
+        <Button variant="secondary" size="sm" onClick={() => addCond(path)} label={strings.addCondition}>
+          {strings.addCondition}
+        </Button>
+        <Button variant="tertiary" size="sm" onClick={() => addGroup(path)} label={strings.addGroup}>
+          {strings.addGroup}
+        </Button>
       </div>
     </li>
   );
 
   return (
-    <form method="get" action="/planning/bulk" className="panel"
-      onSubmit={e => { if (invalid.length > 0) { e.preventDefault(); setShowInvalid(true); } }}
-      style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-      <h4 style={{ margin: 0 }}>{strings.heading}</h4>
+    <form
+      method="get"
+      action="/planning/bulk"
+      className={styles.root}
+      onSubmit={event => { if (invalid.length > 0) { event.preventDefault(); setShowInvalid(true); } }}
+    >
+      <h3 className={styles.heading}>{strings.heading}</h3>
       <input type="hidden" name="ct" value={ct} />
-      <ul role="tree" aria-label={strings.heading} style={{ listStyle: "none", margin: 0, padding: 0 }}>
+
+      <ul role="tree" aria-label={strings.heading} className={styles.tree}>
         {renderGroup(tree, [])}
       </ul>
-      {notSuppliedFields.length > 0 && (
-        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
+
+      {notSuppliedFields.length > 0 ? (
+        <ul className={styles.notices}>
           {notSuppliedFields.map(f => (
-            <li key={f.key} className="t-caption">
-              <span className="sq-lozenge sq-lozenge--warning">{f.label} · {strings.notSuppliedTag}</span> — {f.reason}
+            <li key={f.key} className={styles.notice}>
+              <StatusPill tone="warning">{`${f.label} · ${strings.notSuppliedTag}`}</StatusPill>
+              {f.reason}
             </li>
           ))}
         </ul>
-      )}
-      {showInvalid && invalid.length > 0 && (
-        <div className="sq-banner sq-banner--warning" role="alert">
-          <strong>{strings.invalidTitle}</strong>
-          <p>{strings.invalidBody.replace("{n}", String(invalid.length))}</p>
-        </div>
-      )}
-      <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap", alignItems: "center" }}>
-        <button className="btn btn-primary btn-lg btn-touch">{strings.apply}</button>
-        <a className="btn btn-ghost btn-touch" href="/planning/bulk">{strings.clear}</a>
-        <span className="t-caption numeric" role="status" aria-live="polite">{strings.matching.replace("{n}", String(matchCount))}</span>
+      ) : null}
+
+      {showInvalid && invalid.length > 0 ? (
+        <PlanningNotice tone="warning" label={strings.invalidTitle}>
+          {strings.invalidBody.replace("{n}", String(invalid.length))}
+        </PlanningNotice>
+      ) : null}
+
+      <div className={styles.footer}>
+        <Button type="submit" variant="primary" label={strings.apply}>{strings.apply}</Button>
+        <Button variant="tertiary" href="/planning/bulk" label={strings.clear}>{strings.clear}</Button>
+        <span className={styles.count} role="status" aria-live="polite">
+          {strings.matching.replace("{n}", String(matchCount))}
+        </span>
       </div>
-      <p className="t-caption">{strings.hint}</p>
+
+      <p className={styles.hint}>{strings.hint}</p>
     </form>
   );
 }

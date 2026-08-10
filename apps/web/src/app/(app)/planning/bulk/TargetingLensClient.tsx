@@ -48,7 +48,7 @@ export default function TargetingLensClient({
     <>
       <CriteriaBuilder initialTree={initialTree} fieldOptions={fieldOptions} matchCount={matchCount} strings={criteriaStrings}
         contributions={contributions} focusedPath={focusedPath} onFocus={setFocusedPath}
-        builderFields={builderFields} cityByRegion={cityByRegion} />
+        builderFields={builderFields} cityByRegion={cityByRegion} locale={locale} />
       <EligibilityLedger denominator={denominator} eligible={eligible} oldestSyncedAt={oldestSyncedAt} missingSync={missingSync}
         strings={ledgerStrings} focusedCount={focusedCount} focusedLabel={focusedLeaf ? `${focusedLeaf.field}: ${focusedLeaf.value}` : null} locale={locale} />
       <DistributionPanels distributions={distributions} strings={distStrings}
