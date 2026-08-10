@@ -36,18 +36,17 @@
   inline-size: 100%;
 }
 
-.root:disabled {
+/* Scoped away from `[data-busy]` rather than undone by a later rule: an
+   override would outrank every `[data-variant]` block below and strip the
+   variant's own colours — the AI gradient vanished exactly while it worked. */
+.root:disabled:not([data-busy]) {
   color: var(--sqx-action-disabled-text);
   background: var(--sqx-action-disabled-bg);
   border-color: transparent;
   cursor: not-allowed;
 }
 
-/* A busy button keeps its own colours: dimming it to the disabled palette on
-   every async submit reads as "this control broke", not "this is working". */
-.root[data-busy]:disabled {
-  color: inherit;
-  background: inherit;
+.root[data-busy] {
   cursor: progress;
 }
 
