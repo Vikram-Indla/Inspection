@@ -10,6 +10,36 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-057 · Typography contract — nine roles, type primitives, ratcheted gate
+`status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-009, WEB-011, WEB-014` · `est: 2h`
+`record:` [2026-08-11-T-057-typography-contract](sessions/2026-08/2026-08-11-T-057-typography-contract.md)
+
+Owner-reported from a `/factories` screenshot: prose rendering at two sizes
+inside one card, card titles varying, eyebrow/title order inconsistent. Audit
+found the cause was **not** rule-breaking — both named components used only
+`var(--sqx-text-*)` and passed every gate. The scale offered **12 roles with
+four inside a 2px band** and no selection rule, so agents defaulted to the
+smallest: `caption` (11.5px) used 164×, `body` 59×. **72% of all type usage sat
+at ≤12px; 3.5% above 16px.** The app had no typographic top end.
+
+Scale cut **12 roles → 9**. `caption`, `body-lg`, `title`, `code` retired but
+**kept as resolving aliases** (`caption`/`body-lg` → `body`, `title` →
+`display`, `code` → `mono`) so no unmigrated screen breaks — the alias *is* the
+migration, and it fixed all 164 caption sites in one edit. New
+`components/saqeel/type/` (`Text`, `Heading`, `Overline`, `Mono`, `Metric`) is
+now the **only** place in the repo permitted to declare a typography property.
+Card titles unified 16px → 20px via `CardHeader`, whose existing
+eyebrow→title→description slot order is now binding law rather than convention
+— **no `SectionCard` was built; `Card` already had it.**
+
+`WEB-014` written; `CLAUDE.md` rule 7b and the README rule index point at it.
+`npm run gates:typography` baselines the **1,130 existing violations across 380
+entries** and fails on any new one — a ratchet that may only go down.
+
+**Owed:** the 1,130-violation burndown is screen-by-screen (WEB-014 §8), and
+`e2e/typography-scale-contract.spec.ts` has not been executed — it needs a
+production build, which is the human's to run (WEB-005 §8).
+
 ### T-056 · `/planning/single` — first-run state, dead publish bar, step numbering
 `status: partial (not verified in a browser)` · `rules: WEB-000, WEB-002, WEB-003, WEB-004, WEB-009, WEB-011, WEB-013` · `est: 1.5h`
 `record:` [2026-08-11-T-056-single-visit-first-run](sessions/2026-08/2026-08-11-T-056-single-visit-first-run.md)
@@ -895,10 +925,33 @@ Pull one in only if it is genuinely part of doing the active task well.
 - **`authority` and `risk` have no data source on `/planning`** (found in T-053).
   Both were hardcoded placeholders in `view.ts`; they now read "Not configured"
   in the visit drawer. Wiring them is a product-contract question.
-- **`npm run lint` and `npm run gates` do not exist** (found in T-053).
-  `CLAUDE.md`, `WEB-006` and `sessions/_TEMPLATE-session.md` all require them;
-  `apps/web/package.json` has neither. Either add the scripts or correct the
-  rulebook — right now every record ticks boxes that cannot be run.
+- **`npm run lint` does not exist** (found in T-053; `gates` added in T-057).
+  `CLAUDE.md`, `WEB-006` and `sessions/_TEMPLATE-session.md` all require it;
+  `apps/web/package.json` still has no `lint`. Either add the script or correct
+  the rulebook — records currently tick a box that cannot be run.
+- **`check:design-system-v5` has been failing since before T-057** (found in
+  T-057). It reports `utc-slice-date-format` hits in `lib/ai/briefing.ts` and
+  `lib/analytics/query-state.ts`, plus a glyph rule. Verified pre-existing by
+  stashing T-057's diff and re-running. `npm run gates` therefore exits non-zero
+  on a clean tree — fix or allowlist these before the gate can be trusted as a
+  merge condition.
+- **`/ar/login` serves `<html lang="en" dir="ltr">`** (found in T-057). The
+  `:lang(ar)` block in `saqeel.css` carries every Arabic line-height override,
+  so if `lang` is never `ar` on a rendered route, **none of the Arabic
+  typography tuning applies**. Confirm which routes actually set it before
+  T-031's font audit, or the measurements will be taken against the wrong
+  cascade.
+- **`04-COMPONENT-LEDGER.md` is duplicated end to end** (found in T-057). Every
+  section from `## actions/` appears twice — lines ~20–193 and again ~195–486 —
+  and the two copies have **diverged**: the first carries the current detailed
+  rows, the second is a stale earlier draft. An agent reading the file top to
+  bottom can act on either. T-057's new row was inserted into the first copy
+  only. Delete the stale half before the next ledger edit.
+- **1,130 typography violations across 380 entries** (baselined in T-057).
+  `scripts/typography-baseline.json` is a ratchet; each screen task burns its
+  own entries down per WEB-014 §8. The remaining bulk sits in `/field/*`,
+  `/admin/*` and `dashboard.module.css`, which carry raw `52px` / `34px` /
+  `12.5px` values predating the token sheet.
 - **`SegmentedControl`'s `subtle` default is wrong for a toggle.** Five shipped
   toggles pass `tone="accent"`; the only `subtle` consumers left are three tab
   strips (`catalogue-screen`, `regulation-workspace`, `IdentityDossier`'s map

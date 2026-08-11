@@ -102,15 +102,15 @@
 }
 
 .title {
-  font: var(--sqx-text-subheading);
-  letter-spacing: var(--sqx-text-subheading-tracking);
+  font: var(--sqx-text-heading);
+  letter-spacing: var(--sqx-text-heading-tracking);
   color: var(--sqx-text-primary);
   text-wrap: balance;
 }
 
 .description {
-  font: var(--sqx-text-caption);
-  color: var(--sqx-text-muted);
+  font: var(--sqx-text-body);
+  color: var(--sqx-text-secondary);
   text-wrap: pretty;
 }
 

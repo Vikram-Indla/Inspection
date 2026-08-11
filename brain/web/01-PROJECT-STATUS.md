@@ -1,6 +1,44 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-11` · `Updated by: T-056 — /planning/single first run`
+`Last updated: 2026-08-11` · `Updated by: T-057 — typography contract`
+
+## Where typography stands (2026-08-11)
+
+T-057 rebuilt the type system after the owner reported, from a `/factories`
+screenshot, that the app did not look like an enterprise product. The finding
+that matters to every future task: **the rules were being followed and the
+output was still inconsistent.** Both components named in the report used only
+`var(--sqx-text-*)`, held zero hardcoded values, and passed every gate — one
+rendered its prose at 14px and the next line at 11.5px, and the design system
+allowed it.
+
+The scale had twelve roles with four inside a 2px band and no rule for choosing
+between them, so agents defaulted to the smallest that fit: `caption` was used
+164 times against `body`'s 59. **72% of all type usage sat at ≤12px and 3.5%
+above 16px** — the app had no typographic top end. Alongside it, **203 raw
+`font-size` declarations** were already shipped against CLAUDE.md rule 7, which
+is the real mechanism of drift: an agent reads the rulebook, then reads the
+neighbouring file, and **precedent beats prose**.
+
+What is now true:
+
+- **Nine roles, one prose size.** `caption`, `body-lg`, `title` and `code` are
+  retired, but resolve as aliases so no unmigrated screen breaks. The aliasing
+  *performed* the migration — all 164 caption sites became 14px in one edit.
+- **Feature code cannot express typography.** Only
+  `src/components/saqeel/` may declare a font property; screens compose `Text`,
+  `Heading`, `Overline`, `Mono`, `Metric`.
+- **`npm run gates:typography` is a ratchet.** 1,130 known violations across 380
+  entries are baselined; new ones fail the build and the count may only fall.
+- **`WEB-014` is binding law** and is linked from CLAUDE.md rule 7b. Its §9 is a
+  review gate every text-touching task answers in its record.
+
+Body stayed at 14px for demo-night safety; **15px remains the recommendation**
+for a system read on office monitors, and is a one-token change.
+
+Still owed on this task: axe, 320px, and a browser pass on the authenticated
+screens — specifically checking dense tables for reflow now that 11.5px text
+renders at 14px.
 
 ## Where `/planning/single` stands (2026-08-11)
 

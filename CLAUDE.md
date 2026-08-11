@@ -40,8 +40,21 @@ Full text in `brain/web/rules/`. The ones that reject a diff on sight:
    `unknown`, narrowed once at the boundary. Illegal states unrepresentable.
 6. **No `let` in `.tsx`.** Ever.
 7. **No literal visual values.** No hex, rgb, px, rem, font-family, font-size,
-   shadow, radius, or z-index outside `apps/web/src/app/tokens.css`. Only
+   shadow, radius, or z-index outside `apps/web/src/app/saqeel.css`. Only
    `var(--token)`.
+7b. **No typography in feature code — ever.** `font-size`, `font-weight`,
+   `font-family`, `font-style`, `line-height` and `letter-spacing` may not appear
+   in any `.css` outside `src/components/saqeel/`, and `font: var(--sqx-text-*)`
+   may not be consumed outside it either. Text is rendered through `Text`,
+   `Heading`, `Overline`, `Mono` and `Metric` from `components/saqeel`. Nine
+   roles exist and no more; `caption`, `body-lg`, `title` and `code` are retired
+   aliases you must never write. **If it is a sentence, it is `body` — there is
+   no smaller prose size.** Cards are `Card`/`CardHeader`, whose slot order
+   (eyebrow → title → description) is structural. Enforced by
+   `npm run gates:typography`, which is a ratchet: the violation count may only
+   go down. **Read `brain/web/rules/WEB-014-typography-contract.md` in full
+   before writing or editing any user-visible text** — it is binding law, and §9
+   is a review gate you must answer in the session record.
 8. **No `<svg>` in application code.** Icons come from `lucide-react` through
    `components/saqeel/media/icon-registry.ts`, by semantic name.
 9. **No `alt=""`.** Every image carries alt text conveying purpose. A decorative
