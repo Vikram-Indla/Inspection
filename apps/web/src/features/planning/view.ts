@@ -16,7 +16,6 @@ export type PlanningVisitView = {
   inspector: string;
   risk: string;
   priority: string;
-  aiScore: string;
   statusLabel: string;
   statusTone: StatusTone;
   lastUpdated: string;
@@ -26,7 +25,8 @@ export type PlanningVisitView = {
 
 export type PlanningViewLabels = {
   tabs: Record<string, string>;
-  empty: string;
+  noValue: string;
+  notConfigured: string;
   referenceUnavailable: string;
 };
 
@@ -54,8 +54,8 @@ export function buildPlanningVisitViews(
   visitTypes: PlanningLookupOption[],
   priorities: PlanningLookupOption[],
 ): PlanningVisitView[] {
-  const dash = labels.empty;
-  const text = (value: string | null) => (value && value.length > 0 ? value : dash);
+  const unset = labels.noValue;
+  const text = (value: string | null) => (value && value.length > 0 ? value : unset);
   return rows.map(row => {
     const statusKey = row.planningStatus === "validated" ? "draft" : row.planningStatus;
     return {
@@ -64,16 +64,15 @@ export function buildPlanningVisitViews(
       factory: text(row.factoryName),
       cr: text(row.crNumber),
       license: text(row.licenseNumber),
-      authority: dash,
+      authority: labels.notConfigured,
       visitType: lookupLabel(visitTypes, row.visitType, locale) ?? row.visitType,
       window: `${formatDate(row.windowStart, locale)} – ${formatDate(row.windowEnd, locale)}`,
       inspector: text(row.inspectorName),
-      risk: dash,
-      priority: row.priority ? (lookupLabel(priorities, row.priority, locale) ?? row.priority) : dash,
-      aiScore: dash,
+      risk: labels.notConfigured,
+      priority: row.priority ? (lookupLabel(priorities, row.priority, locale) ?? row.priority) : unset,
       statusLabel: labels.tabs[statusKey] ?? statusKey,
       statusTone: STATUS_TONES[row.planningStatus] ?? "pending",
-      lastUpdated: lastUpdates[row.id] ? formatDateTime(lastUpdates[row.id], locale) : dash,
+      lastUpdated: lastUpdates[row.id] ? formatDateTime(lastUpdates[row.id], locale) : unset,
       created: formatDateTime(row.createdAt, locale),
       visitHref: `/visits/${row.id}`,
     };

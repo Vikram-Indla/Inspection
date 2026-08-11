@@ -3,38 +3,10 @@ import Stack from "@/components/saqeel/stack/stack";
 import { Skeleton, SkeletonRegion } from "@/components/saqeel/skeleton/skeleton";
 import styles from "./planning-skeleton.module.css";
 
-const TABLE_COLUMNS = 7;
+const TABLE_COLUMNS = 11;
 const TABLE_ROWS = 8;
 const TOOLBAR_ACTIONS = 4;
-const STAT_CARDS = 8;
-const RECOMMENDATIONS = 3;
-const QUICK_ACTIONS = 6;
-
-function PanelSkeleton({ rows }: { rows: number }) {
-  return (
-    <Card as="div">
-      <CardHeader
-        eyebrow={<Skeleton shape="line" width="tiny" size="sm" />}
-        title={<Skeleton shape="line" width="half" size="lg" />}
-      />
-      <CardBody gap="tight">
-        {Array.from({ length: rows }, (_unused, index) => (
-          <Skeleton key={index} shape="line" width={index % 2 === 0 ? "full" : "wide"} size="sm" />
-        ))}
-      </CardBody>
-    </Card>
-  );
-}
-
-function RecommendationSkeleton() {
-  return (
-    <div className={styles.reco}>
-      <Skeleton shape="line" width="wide" size="md" />
-      <Skeleton shape="pill" width="narrow" />
-      <Skeleton shape="line" width="half" size="sm" />
-    </div>
-  );
-}
+const STAT_CARDS = 4;
 
 function StatCardSkeleton() {
   return (
@@ -75,17 +47,7 @@ export default function PlanningSkeleton({ label }: { label: string }) {
         </div>
 
         <div className={styles.assistant}>
-          <PanelSkeleton rows={5} />
-          <Card as="div">
-            <CardHeader
-              eyebrow={<Skeleton shape="line" width="tiny" size="sm" />}
-              title={<Skeleton shape="line" width="half" size="lg" />}
-            />
-            <CardBody>
-              {Array.from({ length: RECOMMENDATIONS }, (_unused, index) => <RecommendationSkeleton key={index} />)}
-            </CardBody>
-          </Card>
-          <PanelSkeleton rows={QUICK_ACTIONS} />
+          <Skeleton shape="line" width="full" size="lg" />
         </div>
 
         <CardGrid min="sm">

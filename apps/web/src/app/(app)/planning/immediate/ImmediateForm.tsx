@@ -18,51 +18,16 @@ import type { GeoMarkerData } from "@/components/GeoMap";
 import { formatDate } from "@/lib/dates";
 import PackageTypeSelector from "@/components/PackageTypeSelector";
 import { createImmediateVisit, type ImmResult } from "./actions";
-import AuthorityBar from "@/components/sections/planning-immediate/authority-bar/authority-bar";
-import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
-import { resolveProtections, type AuthorityStrings } from "@/features/planning-immediate/authority";
 import EmptyState from "@/components/EmptyState";
+import DispatchProtections from "@/components/sections/planning-immediate/dispatch-protections/dispatch-protections";
+import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
+import { dispatchProtections } from "@/features/planning-immediate/protections";
+import type { ImmediateFormStrings, ImmediateMessages } from "@/features/planning-immediate/strings";
+import type { ImmediateFactory, ImmediatePlanningData } from "@/features/planning-immediate/types";
+import type { Locale } from "@/lib/i18n";
 
-type F = {
-  id: string; name: string; factory_code: string; cr_number: string; license_number: string | null;
-  region: string | null; city: string | null; risk_band: string | null; risk_score: number | null;
-  official_lat: number | null; official_lng: number | null; source_synced_at: string | null;
-};
-type P = { id: string; version_label: string; packages: { code: string; title: string } };
-type I = { user_id: string; full_name: string };
+type F = ImmediateFactory;
 
-export type VisitTypeOption = { key: string; label: string; manualEntryAllowed: boolean; attachmentRequired: boolean };
-export type ManualReasonOption = { key: string; label: string };
-
-export type ImmediateStrings = {
-  identity: string; identityToggleRegistered: string; identityToggleUnregistered: string;
-  r05BlockedTitle: string; r05BlockedBody: string;
-  manualLockedPermission: string; manualLockedType: string; manualLockedLookups: string; notFoundConfirm: string;
-  searchLabel: string; searchPlaceholder: string; searchNoMatch: string; existingFactory: string; selectOption: string;
-  previewCr: string; previewLicense: string; previewRegion: string; previewFreshness: string; previewFreshnessNever: string;
-  previewRisk: string; previewRiskUnknown: string;
-  manualName: string; manualPlaceholder: string; manualCr: string; manualLicense: string;
-  manualActivity: string; manualActivityPlaceholder: string; manualRegion: string; manualCity: string; manualCityPlaceholder: string;
-  manualReasonLabel: string; manualReasonComment: string; manualReasonCommentPlaceholder: string;
-  notifyFactory: string; factoryMobile: string; factoryMobilePlaceholder: string;
-  unverifiedBadge: string; attachmentRequiredNote: string;
-  temporaryNote: string;
-  urgencyReason: string; reasonComplaint: string; reasonIncident: string; reasonReferral: string;
-  reasonOther: string; reasonOtherHint: string;
-  locationDispatch: string; useOfficialLocation: string; latitude: string; longitude: string;
-  locationSourceOfficial: string; locationSourceManual: string; locationSourceNone: string; mapLoading: string;
-  packageLabel: string; inspector: string; autoAssign: string;
-  visitType: string;
-  windowStart: string; windowEnd: string; windowHint: string;
-  priority: string; priorityPlaceholder: string; notes: string; notesPlaceholder: string;
-  consequenceTitle: string; consequenceVisit: string; consequenceAssign: string; consequenceNotify: string; consequenceAudit: string;
-  reviewConfirm: string; inspectorStartNow: string;
-  blockedTitle: string; create: string; createAndStart: string; creating: string;
-  authority: AuthorityStrings;
-  enforcementLabel: string; enforcementHint: string;
-  enforcementFine: string; enforcementCommittee: string; enforcementWarning: string; enforcementClosure: string;
-  enforcementNone: string; enforcementNotes: string; enforcementNotesPlaceholder: string;
-};
 
 // Saudi mobile, configurable-format stand-in: optional +966/0 prefix then 5XXXXXXXX.
 const MOBILE_RE = /^(?:\+?966|0)?5\d{8}$/;
@@ -74,12 +39,14 @@ const GeoMap = dynamic(() => import("@/components/GeoMap"), {
   loading: () => <EmptyState glyph="…" title={mapLoadingLabel} inline bare role="status" ariaBusy />,
 });
 
-export default function ImmediateForm({ factories, packages, inspectors, regionOptions, cityOptions, cityByRegion, hasInspectorPool, actorName, actorMode, locale, manualAllowed, visitTypes, manualReasons, strings, initialFactoryId }: {
-  factories: F[]; packages: P[]; inspectors: I[]; regionOptions: string[]; cityOptions: string[]; cityByRegion: Record<string, string[]>; hasInspectorPool: boolean;
-  actorName: string; actorMode: "planner" | "inspector"; locale: "en" | "ar";
-  manualAllowed: boolean; visitTypes: VisitTypeOption[]; manualReasons: ManualReasonOption[];
-  strings: ImmediateStrings; initialFactoryId?: string;
+export default function ImmediateForm({ data, locale, strings, messages }: {
+  data: ImmediatePlanningData;
+  locale: Locale;
+  strings: ImmediateFormStrings;
+  messages: ImmediateMessages;
 }) {
+  const { factories, packages, inspectors, cityOptions, cityByRegion, actorName, visitTypes, manualReasons, initialFactoryId } = data;
+  const { actorMode, manualEntryAllowed: manualAllowed } = data;
   const [state, formAction, pending] = useActionState<ImmResult, FormData>(createImmediateVisit, {});
 
   const [mode, setMode] = useState<"registered" | "unregistered">("registered");
@@ -178,20 +145,20 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
       : r === "Referral from authority" ? strings.reasonReferral
         : r === "Other" ? strings.reasonOther : r;
 
-  const protections = resolveProtections({
+  const protections = dispatchProtections({
+    blockingField: state.blockingField ?? null,
     actorMode,
-    serverBlockingField: state.blockingField ?? null,
-    reasonOk,
+    identityMode: mode,
+    reasonSatisfied: reasonOk,
     reasonLabel: reasonLabel(reason),
-    reasonOtherWithoutNotes: reason === "Other" && notes.trim() === "",
-    identityOk,
-    identityRegistered: mode === "registered",
-    locationOk,
-    locationOfficial: locationSource === "official",
-    checklistLabel: packages.find(p => p.id === packageId)?.version_label ?? null,
+    reasonNeedsNotes: reason === "Other" && notes.trim() === "",
+    identitySatisfied: identityOk,
+    locationSatisfied: locationOk,
+    locationSource,
+    checklistLabel: packageId ? (packages.find(p => p.id === packageId)?.version_label ?? null) : null,
     inspectorChosen: inspectorId !== "",
-    windowOk,
-  }, strings.authority);
+    windowSatisfied: windowOk,
+  }, messages);
 
   const mapMarkers: GeoMarkerData[] = [
     ...(factory?.official_lat != null && factory?.official_lng != null ? [{ id: "official", lat: factory.official_lat, lng: factory.official_lng, label: strings.locationSourceOfficial, tone: "neutral" as const }] : []),
@@ -205,9 +172,11 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
       <input type="hidden" name="actor_mode" value={actorMode} />
       <input type="hidden" name="locale" value={locale} />
       <input type="hidden" name="location_source" value={locationSource ?? ""} />
-      <AuthorityBar protections={protections} strings={strings.authority} />
+      <DispatchProtections protections={protections} messages={messages.protections} />
 
-      <PlanningNotice tone="warning" label={strings.r05BlockedTitle}>{strings.r05BlockedBody}</PlanningNotice>
+      <PlanningNotice tone="warning">
+        <strong>{strings.r05BlockedTitle}</strong> {strings.r05BlockedBody}
+      </PlanningNotice>
 
       <div className="saqeel-reference__fields">
         <section className="panel" aria-labelledby="immediate-identity-heading">
@@ -306,7 +275,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
 
           <div className="field">
             <label id="imm-package-label">{strings.packageLabel}</label>
-            <p className="t-caption">Optional during planning. The Supervisor and Inspector can confirm the package before execution.</p>
+            <p className="t-caption">{strings.packageOptionalHint}</p>
             <PackageTypeSelector
               key={`pk-${resetKey}`}
               id="imm-package"
@@ -316,7 +285,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
               onChange={setPackageId}
               options={packages.map(p => ({ id: p.id, code: `${p.packages.code} · ${p.version_label}`, title: p.packages.title }))}
             />
-            {packageId && <button type="button" className="btn btn-ghost btn-sm" onClick={() => setPackageId("")}>No package selected</button>}
+            {packageId && <button type="button" className="btn btn-ghost btn-sm" onClick={() => setPackageId("")}>{strings.packageClear}</button>}
           </div>
 
           {actorMode === "planner" && <div className="field"><label htmlFor="imm-inspector">{strings.inspector}</label>

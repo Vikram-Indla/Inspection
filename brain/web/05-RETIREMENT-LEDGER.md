@@ -20,6 +20,7 @@ The banner on line 1 of a marked file, exact form:
 
 | File | Replaced by | Marked | Pending routes | Gate |
 | --- | --- | --- | --- | --- |
+| `app/(app)/planning/immediate/AuthorityBar.tsx` (95 lines) — **DELETED 2026-08-11 (T-054)** | `components/sections/planning-immediate/dispatch-protections` | 2026-08-11 | none | 0-imports **cleared** — its only importer was rewired in the same change, so it was deleted rather than banner-marked |
 | `components/ShellClient.tsx` (46 KB, 840 lines) | `components/app-shell/app-shell` | 2026-08-07 | `/admin/execution`, `/admin/dashboard-config` | 0-imports |
 | `components/Shell.tsx` (16 KB, 251 lines) | `components/app-shell/shell-page-frame/shell-page-frame` | 2026-08-07 | `/admin/execution`, `/admin/dashboard-config`, plus 55 route files still importing the default `Shell` page-frame export | 0-imports |
 | `components/ShellNavIcon.tsx` (3 KB, 36 lines) | `components/saqeel/icon/icon` | 2026-08-07 | `/field` (`components/field/FieldShellDrawer.tsx`) | 0-imports |
@@ -27,7 +28,6 @@ The banner on line 1 of a marked file, exact form:
 | `app/(app)/visits/VisitsBoard.tsx` (707 lines) | `components/sections/visits/visit-board/visit-board` | 2026-08-09 | **none — zero importers** | 0-imports |
 | `app/(app)/admin/compliance-approvals/**` (page, layout, loading, error) | `app/(app)/compliance/approvals` | 2026-08-10 | **none — `middleware.ts` rewrites this path unconditionally, so the segment never runs** | 0-imports |
 | `components/ContextualAiPanel.tsx` (76 lines) | `components/sections/ai/ai-advisory/ai-advisory` | 2026-08-10 | `/factories/[id]`, `/factories/cr/[id]`, `/field/factory-360/[id]`, `/field/inspection/[id]`, `/field/[visitId]`, `sections/visits/visit-ai-summary` — **6 of 7 consumers remain**; `/planning/bulk` migrated | 0-imports |
-| `app/(app)/planning/immediate/AuthorityBar.tsx` (95 lines) | `components/sections/planning-immediate/authority-bar/authority-bar` | 2026-08-10 | **none — zero importers**; `cd-023-immediate-authority-bar.spec.ts` must run green on the replacement first | 0-imports |
 
 `VisitsBoard.tsx` is the **only** row whose `pending` list is empty. It is still
 not deletable: WEB-006 §4's gate also requires a green e2e suite on the
@@ -100,6 +100,7 @@ task that supersedes them lands.
 | `app/(app)/admin/violations/Controls.tsx` (190 lines) | 2026-08-10 | nothing — every form sat behind `canConfigure = false` | ~7.8 KB |
 | `app/(app)/admin/violations/Controls.module.css` (40 lines) | 2026-08-10 | colocated modules under `sections/enforcement/**` | ~0.9 KB |
 | `app/(app)/admin/violations/actions.ts` (45 lines) | 2026-08-10 | nothing — only `Controls` called it | ~1.8 KB |
+| `components/planning/planning-buckets/planning-buckets.module.css` (72 lines) | 2026-08-11 | `saqeel/stat-card` + `saqeel/card`'s `CardGrid` | ~1.4 KB |
 
 ---
 
@@ -108,9 +109,9 @@ task that supersedes them lands.
 | | |
 | --- | --- |
 | Files marked | 8 (4 shell/visits pre-dating this work, 4 in the unreachable `/admin/compliance-approvals` segment) |
-| Files deleted | 10 |
-| Source bytes removed | ~36 KB deleted outright; ~2,870 source lines rewritten out of the compliance and enforcement screens (T-036…T-041) |
-| CSS bytes removed from legacy sheets | ~2.6 KB (`m6-library.module.css` T-036, `violations/Controls.module.css` T-041) |
+| Files deleted | 11 |
+| Source bytes removed | ~37 KB deleted outright; ~2,870 source lines rewritten out of the compliance and enforcement screens (T-036…T-041); 243 net lines off `/planning` (T-053) |
+| CSS bytes removed from legacy sheets | ~4.0 KB (`m6-library.module.css` T-036, `violations/Controls.module.css` T-041, `planning-buckets.module.css` T-053) |
 
 Update this table in every session that deletes anything. It is the clearest
 single measure of whether the redesign is actually reducing the surface area or

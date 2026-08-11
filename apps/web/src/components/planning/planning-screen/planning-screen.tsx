@@ -17,14 +17,13 @@ import styles from "./planning-screen.module.css";
 
 type PlanningMessages = Messages["planning"];
 
-export default function PlanningScreen({ workspace, params, sp, locale, messages, canExport, canCreate, canApprove, formId, createVisit }: {
+export default function PlanningScreen({ workspace, params, sp, locale, messages, canExport, canApprove, formId, createVisit }: {
   workspace: Extract<PlanningWorkspace, { ok: true }>;
   params: PlanningListParams;
   sp: PlanningSearchParams;
   locale: Locale;
   messages: PlanningMessages;
   canExport: boolean;
-  canCreate: boolean;
   canApprove: boolean;
   formId: string;
   createVisit: ReactNode;
@@ -37,18 +36,24 @@ export default function PlanningScreen({ workspace, params, sp, locale, messages
     workspace.rows,
     workspace.lastUpdates,
     locale,
-    { tabs: tabLabels, empty: messages.table.empty, referenceUnavailable: messages.table.referenceUnavailable },
+    {
+      tabs: tabLabels,
+      noValue: messages.table.noValue,
+      notConfigured: messages.table.notConfigured,
+      referenceUnavailable: messages.table.referenceUnavailable,
+    },
     workspace.visitTypes,
     workspace.priorities,
   );
   const hasFilters = Boolean(params.search) || params.tab !== "all"
     || Object.values(params.filters).some(Boolean);
-  const tabs = ["all", "draft", "pending_supervision", "published", "returned", "cancelled", "expired"].map(tab => ({
-    value: tab === "all" ? "" : tab,
-    label: workspace.countsAvailable
-      ? `${tabLabels[tab]} · ${count(tab) ?? messages.table.empty}`
-      : tabLabels[tab],
-  }));
+  const tabs = ["all", "draft", "pending_supervision", "published", "returned", "cancelled", "expired"].map(tab => {
+    const tabCount = workspace.countsAvailable ? count(tab) : null;
+    return {
+      value: tab === "all" ? "" : tab,
+      label: tabCount === null ? tabLabels[tab] : `${tabLabels[tab]} · ${tabCount}`,
+    };
+  });
   const related = [
     { href: "/planning/plans", label: messages.related.plans },
     { href: "/tasks", label: messages.related.tasks },
@@ -75,11 +80,7 @@ export default function PlanningScreen({ workspace, params, sp, locale, messages
         canExport={canExport}
         createVisit={createVisit}
       />
-      <PlanningAssistant
-        strings={messages.assistant}
-        counts={{ returned: count("returned"), draft: count("draft") }}
-        canCreate={canCreate}
-      />
+      <PlanningAssistant strings={messages.assistant} />
       <PlanningBuckets
         strings={messages.buckets}
         counts={{
@@ -90,7 +91,6 @@ export default function PlanningScreen({ workspace, params, sp, locale, messages
         }}
         activeTab={params.tab}
         hrefFor={tab => planningHref(sp, { tab, page: "" })}
-        empty={messages.table.empty}
       />
       <PlanningToolbar
         strings={messages.toolbar}
@@ -150,7 +150,7 @@ export default function PlanningScreen({ workspace, params, sp, locale, messages
         strings={messages.drafts}
         methods={{ ...messages.methods }}
         referenceUnavailable={messages.table.referenceUnavailable}
-        empty={messages.table.empty}
+        noValue={messages.table.noValue}
         locale={locale}
         viewerId={workspace.viewerId}
       />

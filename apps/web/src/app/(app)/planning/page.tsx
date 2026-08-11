@@ -31,7 +31,7 @@ export default async function PlanningPage({ searchParams }: { searchParams: Pro
   return (
     <Shell current="/planning" title="">
       <PlanningScreen workspace={workspace} params={params} sp={sp} locale={locale} messages={planning}
-        canExport={access.can("planning.export")} canCreate={access.can("planning.create")}
+        canExport={access.can("planning.export")}
         canApprove={access.can("planning.approve")} formId="planning-filter-toolbar"
         createVisit={<CreateVisitSection strings={planning.create} canCreate={access.can("planning.create")} />} />
     </Shell>
