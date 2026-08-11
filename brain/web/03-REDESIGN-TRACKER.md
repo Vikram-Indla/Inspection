@@ -10,6 +10,36 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-075 · `/operations/exceptions` — typography
+`status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014` · `est: 30m`
+`record:` [2026-08-12-T-075-exception-board-typography](sessions/2026-08/2026-08-12-T-075-exception-board-typography.md)
+
+**T-073's rebuild is the cleanest thing in this programme** — 36-line
+`page.tsx`, and `operations-board` has **no CSS module at all**, just
+composition of design-system primitives. Nothing in the route or its components
+was touched.
+
+**The one defect was an inverted hierarchy in `EmptyState`** — a shared
+primitive with **44 consumers**:
+
+```
+title        12px / 600   ← smaller than
+description  14px / 400   ← the text it introduces
+```
+
+Now `subheading` (16px) over `body` (14px). `subheading` was chosen on WEB-014
+§2's own wording — "a named group inside a card" is exactly what an empty state
+is — and `.description` was also still on the **retired `caption`** role.
+
+**A size-only audit would have missed this.** Both 12px and 14px are on-scale;
+the defect is only visible when you compare a title against its *own*
+description. **Dump weight and colour alongside size.**
+
+**Owed, and it is most of the screen:** this Planner sees no open exceptions, so
+**the populated board — groups, rows, counts — never rendered.** Only the empty
+state was observable.
+
+
 ### T-074 · `/operations/live` — typography
 `status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014` · `est: 30m`
 `record:` [2026-08-12-T-074-operations-live-typography](sessions/2026-08/2026-08-12-T-074-operations-live-typography.md)

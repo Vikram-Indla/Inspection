@@ -135,7 +135,6 @@
   "src/components/saqeel/data/Accordion.tsx::inline-font-style": 1,
   "src/components/saqeel/data/Avatar.tsx::inline-font-style": 1,
   "src/components/saqeel/data-table/data-table.module.css::retired-typography-role": 1,
-  "src/components/saqeel/empty-state/empty-state.module.css::retired-typography-role": 1,
   "src/components/saqeel/feedback/Skeleton.tsx::inline-font-style": 1,
   "src/components/saqeel/feedback/Toast.tsx::inline-font-style": 1,
   "src/components/saqeel/field/field.module.css::retired-typography-role": 1,

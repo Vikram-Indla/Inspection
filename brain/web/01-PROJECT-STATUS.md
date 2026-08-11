@@ -1,6 +1,22 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-074 — /operations/live typography`
+`Last updated: 2026-08-12` · `Updated by: T-075 — exception board typography`
+
+## A size-only audit misses an inverted hierarchy (2026-08-12)
+
+T-075 found `EmptyState` — a shared primitive with **44 consumers** — rendering
+its title at **12px/600 above a description at 14px/400**. The heading was
+smaller than the text it introduces.
+
+**Both values are on-scale, so nothing flagged.** No gate, no token audit and no
+list of distinct sizes shows this; it is only visible when a title is compared
+against its *own* description. With the explain-panel key/value inversion
+(T-059) and the factory-portfolio heading (T-064), that is three of these found
+so far.
+
+**Dump weight and colour alongside size when auditing a route**, and compare each
+heading against the thing it introduces — not against the scale.
+
 
 ## A dependency can put a second typeface on your screen (2026-08-12)
 
