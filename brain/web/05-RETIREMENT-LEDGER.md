@@ -27,7 +27,6 @@ The banner on line 1 of a marked file, exact form:
 | `app/(app)/visits/VisitsBoard.tsx` (707 lines) | `components/sections/visits/visit-board/visit-board` | 2026-08-09 | **none — zero importers** | 0-imports |
 | `app/(app)/admin/compliance-approvals/**` (page, layout, loading, error) | `app/(app)/compliance/approvals` | 2026-08-10 | **none — `middleware.ts` rewrites this path unconditionally, so the segment never runs** | 0-imports |
 | `components/ContextualAiPanel.tsx` (76 lines) | `components/sections/ai/ai-advisory/ai-advisory` | 2026-08-10 | `/factories/[id]`, `/factories/cr/[id]`, `/field/factory-360/[id]`, `/field/inspection/[id]`, `/field/[visitId]`, `sections/visits/visit-ai-summary` — **6 of 7 consumers remain**; `/planning/bulk` migrated | 0-imports |
-| `app/(app)/planning/immediate/AuthorityBar.tsx` (95 lines) | `components/sections/planning-immediate/authority-bar/authority-bar` | 2026-08-10 | **none — zero importers**; `cd-023-immediate-authority-bar.spec.ts` must run green on the replacement first | 0-imports |
 
 `VisitsBoard.tsx` is the **only** row whose `pending` list is empty. It is still
 not deletable: WEB-006 §4's gate also requires a green e2e suite on the

@@ -1,35 +1,31 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-10` · `Updated by: T-051 — /planning/immediate authority header`
+`Last updated: 2026-08-11` · `Updated by: T-052 slice 1 — /planning/immediate foundation`
 
-## Where `/planning/immediate` stands (2026-08-10)
+## Where `/planning/immediate` stands (2026-08-11)
 
-**Slice 1 of the urgent-visit wizard is done.** The route had **zero SAQEEL
-imports** across 5 files and 913 lines; it now has the page-head context pills,
-the nine dispatch protections and the R05 identity notice on the system.
-`page.tsx` 252 → 222 and `ImmediateForm.tsx` 395 → 359; the protections became
-`components/sections/planning-immediate/authority-bar` (95 + 96) over a pure
-view model in `features/planning-immediate/authority.ts`.
+**T-051 was rejected by the owner and reverted in full.** The route is back to
+its legacy state — 5 files, 913 lines, zero SAQEEL imports — and is being
+rebuilt in five slices. Slice 1 (T-052) took the foundation: `page.tsx`
+**252 → 26**, every read behind an `unauthorized | ready` union, and all
+**128 strings into `planning.immediate` in both locales**, which took the screen
+off `ui_strings` entirely.
 
 Three rulings from this slice generalise:
 
-- **The governed acceptance spec is part of the inventory.** The first design
-  for this block — anchor links, no client island — was discarded because
-  `cd-023-immediate-authority-bar.spec.ts` pins nine `<button>`s in a
-  `role="group"` with `LABEL — state — detail` accessible names. Read the spec
-  beside the component, not after the rebuild.
-- **A derived string needs no effect.** The legacy used a `useEffect` and a
-  `useRef` to announce *only* when the blocking set changed. React's text-node
-  diff already does exactly that. Deleting the effect changed no behaviour, and
-  the same argument took the block from 6 hooks to **0**.
-- **Legacy classes carry test contracts, not just styles.** Two spec locators
-  were selecting `.filter-chip` and `.sr-only[role=alert]` from the frozen
-  sheets. Grep the e2e suite for a class before deleting it.
-
-**Owed:** browser pass (light/dark, EN/AR, 420 px), axe, and a run of
-`cd-023-immediate-authority-bar.spec.ts` — two locators were rewritten and could
-not be executed here.
-
+- **A constant that policy owns does not belong in the component.** `actorMode`
+  as a local `const` is narrowed by TypeScript to its literal, so every
+  `=== "inspector"` branch becomes a compile error. Moving it to the query layer
+  fixed the type error *and* put the policy where policy lives — the type system
+  was pointing at a layering mistake, not asking for an annotation.
+- **`as never` and `as unknown as` were hiding a real shape.** PostgREST types
+  an embedded to-one relation as an **array**; both casts existed to silence
+  that. Every `as` in a data layer is worth re-deriving rather than carrying.
+- **A screen can be fully "translated" and still ship English.** 58 of the 128
+  keys had no Arabic anywhere — in code, in the locale files, or in the seeded
+  `ui_strings` migrations — so `t()` fell back to English on an Arabic screen and
+  nothing ever failed. Only moving the copy into the resource made the gap
+  countable (WEB-013 §8).
 
 > **The workstation blocker is stale.** `next dev` ran on 2026-08-10 and
 > compiled `/planning/bulk` clean; the SWC Application Control error did not
