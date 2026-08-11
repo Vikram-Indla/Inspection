@@ -10,6 +10,65 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-059 · `/dashboard` — typography closeout, both views verified in a browser
+`status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-009, WEB-011, WEB-014` · `est: 2h`
+`record:` [2026-08-11-T-059-dashboard-typography-closeout](sessions/2026-08/2026-08-11-T-059-dashboard-typography-closeout.md)
+
+First task in this sequence to actually **render** the screens signed-in, and it
+immediately found three defects source-reading had missed across two prior
+tasks:
+
+1. **KPI numbers rendered at two sizes (30px and 28px) on one screen** —
+   `CardValue size="md"` still resolved through the retired `title` alias.
+   **This is the owner's original "81.5 is so big compared to the rest"
+   complaint, still live**, because both call sites were token-clean and *a gate
+   cannot see that two valid tokens disagree*. Every number is now `metric`.
+2. **Table headers were 11px** against every other label's 12px —
+   `DataTable.head` used `overline`. Fixed in the shared primitive.
+3. **The page title had no font rule at all** — `.sq-pagehead__context > h2` in
+   the frozen sheet sets layout only, so every route's `<h2>` fell back to the
+   **browser default 22px**. This was the missing typographic top end: `display`
+   had one use in the whole app. Now `Heading visual="display"`.
+
+11 dashboard components migrated off feature-CSS typography onto the type
+primitives. `tone="inherit"` added — without it, text inside a colour-owning
+`<summary>` or button could not migrate at all. Loading skeleton corrected to
+match the card (it still drew an eyebrow, so layout shifted on data arrival).
+
+**Both views now render the identical size set — 28 · 20 · 14 · 12, zero
+off-scale, one typeface.** Route debt 44 → 21, of which 13 are the dead
+`dashboard.module.css` and 8 are `explain-panel` (blocked on `Heading` needing
+`ref`/`tabIndex`).
+
+**Owed:** axe, 320px, Arabic/RTL.
+
+### T-058 · `/dashboard` — one typeface, title above subtitle
+`status: partial (authenticated screen not viewed)` · `rules: WEB-000, WEB-002, WEB-003, WEB-009, WEB-011, WEB-014` · `est: 1.5h`
+`record:` [2026-08-11-T-058-dashboard-typography-and-one-typeface](sessions/2026-08/2026-08-11-T-058-dashboard-typography-and-one-typeface.md)
+
+First screen of the screen-by-screen migration. **The font stack was broken and
+that mattered more than any size:** the app was rendering **four typefaces at
+once** — Segoe UI (224 elements), IBM Plex Sans Arabic (209), Times New Roman
+(4), Consolas (every mono site). `--sqx-font-sans` named `"Readex Pro",
+"IBM Plex Sans Arabic"` and **neither was ever loaded**, because `next/font`
+registers a *scoped* family the token never referenced. CSS raises no error for
+a missing family — it just renders something else. Now one face app-wide,
+verified by canvas measurement, and `--sqx-font-mono` is an alias (owner ruling:
+no second typeface; `mono` keeps only tabular numerals).
+
+**Owner ruling inverts WEB-014 §5:** title first and always larger/whiter,
+description second. `CardHeader.eyebrow` renders the rejected pattern and is now
+retiring behind a gate rule — **24 call sites remain**. KPI tiles are exempt
+(§5.2): a tile's number is the hero, so label → value stands.
+
+**`dashboard.module.css` was not migrated — it is dead.** 318 lines with the
+worst literals on the route (`52px`, `34px`), imported only by the orphaned
+`DashboardView` tree. Routed to retirement, saving the largest chunk of work on
+this task for zero rendered change.
+
+**Owed:** axe, 320px, and an owner pass on the authenticated screen — sign-in
+needs credentials the agent does not enter.
+
 ### T-057 · Typography contract — nine roles, type primitives, ratcheted gate
 `status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-009, WEB-011, WEB-014` · `est: 2h`
 `record:` [2026-08-11-T-057-typography-contract](sessions/2026-08/2026-08-11-T-057-typography-contract.md)
@@ -941,6 +1000,31 @@ Pull one in only if it is genuinely part of doing the active task well.
   typography tuning applies**. Confirm which routes actually set it before
   T-031's font audit, or the measurements will be taken against the wrong
   cascade.
+- **The `DashboardView` tree under `src/app/(app)/dashboard/` is orphaned**
+  (found in T-058). `DashboardView.tsx`, `DecisionCanvas.tsx`,
+  `RegionalScope.tsx`, `BasisDrawer.tsx` and the 318-line
+  `dashboard.module.css` have **zero inbound imports** — `page.tsx` renders
+  `DashboardSections`. The stylesheet still holds the worst literals in the
+  repository (`52px`, `42px`, `34px`, `22px`, `18px`) on the pre-Saqeel
+  `--type-*` token set, so it will keep showing up in audits until deleted.
+  Same shape as the parked `components/sections/planning/*` orphan. Needs a
+  retire ruling, then deletion under WEB-006 §4.
+- **`Heading` needs `ref` and `tabIndex` support** (found in T-059). Blocks
+  `explain-panel` migrating its `<h2>`, which carries `tabIndex={-1}` and a
+  `ref` for dialog focus return. React 19 accepts `ref` as a plain prop so the
+  change is small, but it is a design-system change and needs its own task.
+  8 violations wait on it.
+- **`.sq-pagehead` is still legacy `.sq-` markup** (found in T-059).
+  `Shell.tsx` renders it against rules in the frozen `saqeel-runtime.css`.
+  T-059 fixed only the title's font; the header migrates with the shell.
+- **`CardHeader.eyebrow` has 21 remaining call sites** (found in T-058, 3 closed
+  in T-059).
+  Enforced down by the `card-eyebrow-above-title` gate rule; the prop is deleted
+  when the count reaches 0. Concentrated in `planning-single` (7), `factories`
+  (5), `enforcement` (3) and skeletons (6).
+- **`dashboard.yourWork.eyebrow` is a misnamed i18n key** (found in T-058). It
+  now renders as a card description, not an eyebrow. Renaming touches both
+  locales and one call site.
 - **`04-COMPONENT-LEDGER.md` is duplicated end to end** (found in T-057). Every
   section from `## actions/` appears twice — lines ~20–193 and again ~195–486 —
   and the two copies have **diverged**: the first carries the current detailed

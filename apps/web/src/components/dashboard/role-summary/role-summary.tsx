@@ -20,8 +20,8 @@ export default function RoleSummary({ locale, persona, projection, partialSource
       <CardHeader
         level="h2"
         titleId="dashboard-role-summary"
-        eyebrow={dashboard.yourWork.eyebrow}
         title={dashboard.persona[persona]}
+        description={dashboard.yourWork.eyebrow}
       />
       <CardBody>
         <MetricStrip

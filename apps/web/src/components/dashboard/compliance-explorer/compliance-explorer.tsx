@@ -4,6 +4,7 @@ import { Card, CardBody, CardFooter, CardHeader } from "@/components/saqeel/card
 import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-table";
 import SegmentedControl, { type SegmentedItem } from "@/components/saqeel/segmented-control/segmented-control";
 import styles from "./compliance-explorer.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type ExplorerRow = {
   readonly label: string;
@@ -52,7 +53,7 @@ export default function ComplianceExplorer({ rows, lenses, currentLens, hrefFor,
           <span className={styles.track} aria-hidden="true">
             {row.rate === null ? null : <span className={styles.fill} style={rateStyle(row.rate)} />}
           </span>
-          <span className={styles.rate}>{row.rate === null ? strings.missing : `${row.rate}%`}</span>
+          <span className={styles.rate}><Text as="span" role="bodyStrong">{row.rate === null ? strings.missing : `${row.rate}%`}</Text></span>
         </span>
       ),
     },
@@ -91,7 +92,7 @@ export default function ComplianceExplorer({ rows, lenses, currentLens, hrefFor,
         />
       </CardBody>
       <CardFooter>
-        <span className={styles.footnote}>{strings.footnote}</span>
+        <Text as="span" tone="muted">{strings.footnote}</Text>
       </CardFooter>
     </Card>
   );

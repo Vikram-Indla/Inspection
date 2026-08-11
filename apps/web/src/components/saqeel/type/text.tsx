@@ -10,7 +10,8 @@ export type TextTone =
   | "warning"
   | "danger"
   | "info"
-  | "inverse";
+  | "inverse"
+  | "inherit";
 
 export type TextRole = "body" | "bodyStrong" | "label" | "overline" | "mono";
 

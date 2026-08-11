@@ -1,6 +1,61 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-11` · `Updated by: T-057 — typography contract`
+`Last updated: 2026-08-11` · `Updated by: T-059 — /dashboard closeout`
+
+## `/dashboard` typography is closed (2026-08-11)
+
+Both views render the **identical** size set — 28 · 20 · 14 · 12 — with zero
+off-scale values and one typeface. Verified signed-in in a browser, not read
+from source.
+
+**A static gate cannot catch a disagreement between two valid tokens.** T-059
+found KPI numbers rendering at 30px and 28px on the same screen — the owner's
+original "81.5 is so big compared to the rest" complaint, still live after two
+tasks aimed squarely at it, because both call sites were token-clean and the
+gate had nothing to flag. Two more defects surfaced the same way: table headers
+at 11px against every other label's 12px, and a page title with **no font rule
+at all**, falling back to the browser default on every route.
+
+The lesson is now WEB-008 practice: **a screen is not done until it has been
+rendered and measured.** Source reading and a green gate are necessary and not
+sufficient.
+
+Remaining on the route: 21 violations — 13 in the dead `dashboard.module.css`
+(deletion, not migration) and 8 in `explain-panel`, blocked on `Heading` needing
+`ref`/`tabIndex`.
+
+
+## The app had four typefaces (2026-08-11)
+
+T-058 found `--sqx-font-sans` pointing at two fonts that were **never loaded**.
+`next/font/local` registers a scoped family (`plexArabic`); the token named
+`"Readex Pro", "IBM Plex Sans Arabic"` as string literals, so every
+token-styled element fell through to `system-ui` while elements referencing
+`--font-plex-arabic` directly rendered the real face. Result: **Segoe UI on 224
+elements, IBM Plex on 209, Times New Roman on 4, Consolas on every mono site.**
+
+Two lessons that outlive this fix:
+
+1. **CSS never errors on a missing font family.** It renders something else, and
+   the token still reads correctly to anyone reviewing it. Verify a typeface by
+   measuring rendered glyph widths, not by reading `fontFamily` (WEB-014 §2.0).
+2. **A gate that matches nothing looks identical to a gate that passes.** The new
+   `card-eyebrow-above-title` rule found 0 of 24 real call sites on its first run
+   because it was line-scoped against multi-line JSX. Prove a new rule fires
+   before trusting its green.
+
+Now one typeface app-wide, `--sqx-font-mono` aliased to it, verified in a
+browser.
+
+## Card slot order — owner ruling (2026-08-11)
+
+**Title first, always larger and `--sqx-text-primary`. Description second,
+`body` and `--sqx-text-secondary`.** This inverts WEB-014 §5 as first written;
+the rule document is updated and is the authority. `CardHeader.eyebrow` renders
+the rejected pattern and is retiring behind a gate rule — 24 call sites left.
+
+**KPI tiles are exempt** (WEB-014 §5.2): a tile whose subject is a number is
+label → value. Do not promote the label above the number.
 
 ## Where typography stands (2026-08-11)
 

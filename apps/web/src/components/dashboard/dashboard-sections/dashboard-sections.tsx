@@ -15,6 +15,7 @@ import { buildDashboardKpiProjection } from "@/lib/dashboard-kpi/projection";
 import type { MetricScope } from "@/lib/dashboard-kpi/contract";
 import type { DashboardPersona } from "@/lib/dashboard-role";
 import styles from "./dashboard-sections.module.css";
+import { Text } from "@/components/saqeel/type";
 import ExplainProvider from "../explain-panel/explain-panel";
 import DashboardNotice from "../dashboard-notice/dashboard-notice";
 import StrategicView from "../strategic-view/strategic-view";
@@ -106,7 +107,7 @@ export default async function DashboardSections({ locale, scope }: {
   if (result.status === "unavailable") {
     return (
       <DashboardNotice tone="danger" pill={common.state.unavailable} title={dashboard.partial.title}>
-        <p className={styles.text}>{dashboard.partial.retry}</p>
+        <Text tone="secondary">{dashboard.partial.retry}</Text>
       </DashboardNotice>
     );
   }
@@ -131,7 +132,7 @@ export default async function DashboardSections({ locale, scope }: {
           </div>
         }
       >
-        <p className={styles.text}>{fill(dashboard.unsupported.detail, { view: scope.requestedView })}</p>
+        <Text tone="secondary">{fill(dashboard.unsupported.detail, { view: scope.requestedView })}</Text>
       </DashboardNotice>
     );
   }
@@ -156,8 +157,8 @@ export default async function DashboardSections({ locale, scope }: {
       <div className={styles.stack} data-sqx-cards="flush">
         {partialSources.length ? (
         <DashboardNotice tone="danger" pill={dashboard.partial.title} title={dashboard.partial.sources}>
-          <p className={styles.text}>{partialSources.join(" · ")}</p>
-          <p className={styles.text}>{dashboard.partial.retry}</p>
+          <Text tone="secondary">{partialSources.join(" · ")}</Text>
+          <Text tone="secondary">{dashboard.partial.retry}</Text>
         </DashboardNotice>
       ) : null}
 

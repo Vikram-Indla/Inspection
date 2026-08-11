@@ -4,6 +4,7 @@ import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import TrendBars, { type TrendPoint } from "@/components/saqeel/trend-bars/trend-bars";
 import styles from "./enforcement-trend.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type EnforcementTrendStrings = {
   readonly title: string;
@@ -33,7 +34,7 @@ export default function EnforcementTrend({ points, currentLabel, comparison, ton
         title={strings.title}
         trailing={readable ? (
           <span className={styles.summary}>
-            <span className={styles.current}>{currentLabel}</span>
+            <Text as="span" tone="muted" numeric>{currentLabel}</Text>
             <StatusPill tone={tone}>{comparison}</StatusPill>
           </span>
         ) : undefined}
@@ -42,7 +43,7 @@ export default function EnforcementTrend({ points, currentLabel, comparison, ton
         {readable ? (
           <>
             <TrendBars points={points} tone={tone} label={strings.seriesLabel} />
-            <p className={styles.footnote}>{strings.footnote}</p>
+            <Text tone="muted">{strings.footnote}</Text>
           </>
         ) : (
           <EmptyState icon="restricted" size="sm" title={strings.restricted} />

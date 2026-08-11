@@ -18,8 +18,8 @@ function MetricCardSkeleton() {
   return (
     <Card as="div">
       <CardHeader
-        eyebrow={<Skeleton shape="line" width="wide" size="sm" />}
         title={<Skeleton shape="line" width="full" size="lg" />}
+        description={<Skeleton shape="line" width="wide" size="sm" />}
       />
       <CardBody gap="tight">
         <CardValueSlot><Skeleton shape="pill" width="narrow" /></CardValueSlot>
@@ -53,8 +53,8 @@ export default function DashboardSkeleton({ label }: { label: string }) {
 
         <Card as="div">
           <CardHeader
-            eyebrow={<Skeleton shape="line" width="tiny" size="sm" />}
             title={<Skeleton shape="line" width="narrow" size="lg" />}
+            description={<Skeleton shape="line" width="tiny" size="sm" />}
             trailing={<Skeleton shape="pill" width="full" />}
           />
           <CardBody>

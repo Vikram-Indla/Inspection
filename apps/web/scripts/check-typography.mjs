@@ -47,6 +47,23 @@ const RULES = [
       "Retired role. caption and body-lg are now body; title is display; code is mono. Move the call site to a canonical role.",
   },
   {
+    id: "literal-font-family",
+    appliesTo: (path) => path.endsWith(".css"),
+    exempt: (path) => path === "src/app/saqeel.css" || inZone(path, FROZEN_SHEETS),
+    pattern: /font-family\s*:\s*[^;]*["'][A-Za-z]/,
+    message:
+      "A font family named as a string literal is a claim the font is loaded, and CSS fails silently when it is not. Only var(--sqx-font-sans) / var(--sqx-font-mono).",
+  },
+  {
+    id: "card-eyebrow-above-title",
+    appliesTo: (path) => path.endsWith(".tsx"),
+    exempt: (path) => path.startsWith("src/components/saqeel/card/"),
+    fileMust: /\bCardHeader\b/,
+    pattern: /^\s*eyebrow=/,
+    message:
+      "CardHeader eyebrow renders an overline above the title, which the owner rejected (WEB-014 §5.1). Move the string to `description` so it renders below the title.",
+  },
+  {
     id: "inline-font-style",
     appliesTo: (path) => path.endsWith(".tsx"),
     exempt: () => false,
@@ -77,9 +94,11 @@ function scan() {
   for (const file of walk(SRC_ROOT)) {
     const path = relative(WEB_ROOT, file).split(sep).join("/");
     if (path.startsWith(TYPE_PRIMITIVE)) continue;
-    const lines = readFileSync(file, "utf8").split("\n");
+    const source = readFileSync(file, "utf8");
+    const lines = source.split("\n");
     for (const rule of RULES) {
       if (!rule.appliesTo(path) || rule.exempt(path)) continue;
+      if (rule.fileMust !== undefined && !rule.fileMust.test(source)) continue;
       lines.forEach((line, index) => {
         if (rule.pattern.test(line)) {
           violations.push({ path, line: index + 1, rule: rule.id, message: rule.message, text: line.trim() });

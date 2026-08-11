@@ -7,6 +7,7 @@ import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { generateContextualInsight, type ContextualResult } from "@/lib/ai/contextual-actions";
 import type { Locale } from "@/lib/i18n";
 import styles from "./executive-brief.module.css";
+import { Text } from "@/components/saqeel/type";
 
 const EMPTY: ContextualResult = {};
 const EVIDENCE_REFS = "MVP2-REQ-0056,MVP2-REQ-0057,SCR-WEB-010";
@@ -40,12 +41,12 @@ export default function ExecutiveBrief({ locale, context, period, region, string
       <CardBody gap="tight">
         <StatusPill tone="info">{strings.advisory}</StatusPill>
 
-        {result.text ? <p className={styles.text} dir="auto">{result.text}</p> : null}
-        {result.error ? <p className={styles.error} role="alert">{result.error}</p> : null}
-        {!result.text && !result.error ? <p className={styles.muted}>{strings.idle}</p> : null}
+        {result.text ? <Text tone="secondary" as="p">{result.text}</Text> : null}
+        {result.error ? <Text tone="danger" as="p">{result.error}</Text> : null}
+        {!result.text && !result.error ? <Text tone="muted">{strings.idle}</Text> : null}
 
-        <p className={styles.muted}>{strings.evidence}</p>
-        <p className={styles.muted}>{strings.noCause}</p>
+        <Text tone="muted">{strings.evidence}</Text>
+        <Text tone="muted">{strings.noCause}</Text>
 
         <form action={action}>
           <input type="hidden" name="surface" value="executive_brief" />

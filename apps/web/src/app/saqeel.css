@@ -552,8 +552,8 @@
     --sqx-status-danger-soft: var(--sqx-status-critical-soft);
     --sqx-status-danger-on-soft: var(--sqx-status-critical-on-soft);
 
-    --sqx-font-sans: "Readex Pro", "IBM Plex Sans Arabic", system-ui, sans-serif;
-    --sqx-font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sqx-font-sans: var(--font-plex-arabic, "IBM Plex Sans Arabic"), system-ui, sans-serif;
+    --sqx-font-mono: var(--sqx-font-sans);
 
     --sqx-weight-regular: 400;
     --sqx-weight-medium: 500;
@@ -857,6 +857,10 @@
   ol,
   ul {
     margin: 0;
+  }
+
+  :root {
+    font-family: var(--sqx-font-sans);
   }
 
   body {

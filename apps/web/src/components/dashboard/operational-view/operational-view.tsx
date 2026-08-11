@@ -1,5 +1,6 @@
 import Button from "@/components/saqeel/button/button";
 import { Card, CardBody, CardFooter, CardGrid, CardHeader } from "@/components/saqeel/card/card";
+import { Text } from "@/components/saqeel/type";
 import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-table";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { buildMetricStrip, metricStripStrings, OPERATIONAL_REQUIREMENT_IDS } from "@/features/dashboard/strip";
@@ -77,7 +78,7 @@ export default function OperationalView({ locale, metrics, projection, partialSo
           })}
         />
         <CardBody gap="tight">
-          <p className={styles.footnote}>{copy.priorities.footnote}</p>
+          <Text tone="muted">{copy.priorities.footnote}</Text>
         </CardBody>
       </Card>
 

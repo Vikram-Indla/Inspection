@@ -48,6 +48,37 @@ the application has.
 | `metric` | 28px | 1.10 | 700 | -0.02em | KPI numerals. Every number in the app is this one size. |
 | `mono` | 13px | 1.50 | 500 | 0 | CRs, plant numbers, notice numbers, model versions, IDs. |
 
+### 2.0 One typeface — IBM Plex Sans Arabic, and nothing else
+
+`--sqx-font-sans` resolves to `var(--font-plex-arabic)`, the **next/font scoped
+family**, which is the only webfont this application loads. `--sqx-font-mono` is
+an alias of it: the `mono` role differs from `body` by tabular numerals and
+weight, **not by typeface**.
+
+This is stated as law because it was silently broken for a long time and nobody
+could see it. The token used to read
+`"Readex Pro", "IBM Plex Sans Arabic", system-ui, sans-serif` — **neither named
+family was ever loaded**, because next/font registers its own scoped name. Every
+token-styled element therefore fell through to `system-ui` while elements using
+`--font-plex-arabic` directly got the real face, and the app rendered in **four
+typefaces at once**: Segoe UI (224 elements), IBM Plex Sans Arabic (209), Times
+New Roman (4 unstyled), and Consolas (every `mono` site, because JetBrains Mono
+was never loaded either).
+
+**Never name a font family as a string literal.** A literal family name is a
+claim that the font is loaded, and CSS gives you no error when it is not — it
+just quietly renders something else. Only `var(--sqx-font-sans)` /
+`var(--sqx-font-mono)` are permitted, and adding a second family is a change
+request that must also add the `next/font` loader in `app/layout.tsx`.
+
+To verify the face actually in use, measure it rather than reading the stack:
+
+```js
+const ctx = document.createElement('canvas').getContext('2d');
+const w = (f) => (ctx.font = `400 16px ${f}`, ctx.measureText('Probe 0123').width);
+w(getComputedStyle(document.documentElement).getPropertyValue('--sqx-font-sans')) === w('plexArabic')
+```
+
 Arabic line-heights are overridden per role in the `:lang(ar)` block of
 `saqeel.css`. You never set them at a call site.
 
@@ -129,14 +160,41 @@ their own.
 `CardHeader` slot order is structural and not negotiable:
 
 ```
-overline (eyebrow)  →  title  →  description  →  [trailing]
+title  →  description  →  [trailing]
 ```
 
-- The eyebrow is optional; when present it always precedes the title.
-- The title is always `heading` (20px). There is no "small card" variant.
-- The description is always `body`. It never renders above the title.
+- **The title always comes first, and is always the largest text in the card.**
+  It is `heading` (20px), `--sqx-text-primary` (white in dark theme). There is
+  no "small card" variant.
+- **The description always comes second, and is always smaller and quieter.**
+  It is `body` (14px), `--sqx-text-secondary`. It never renders above the title,
+  in any card, on any screen. A reader must never meet the supporting line
+  before the thing it supports.
 - Padding is `--sqx-inset-card`, header-to-body gap is fixed by the component.
   You do not override either.
+
+### 5.1 The eyebrow is retiring
+
+`CardHeader` still accepts `eyebrow`, which renders an `overline` **above** the
+title. **Do not pass it.** It is the exact pattern the owner rejected: a long
+question or category set in 11px uppercase grey, sitting above the title and
+read first.
+
+When you find a card passing `eyebrow`, move that string to `description` — it
+is almost always a subtitle wearing the wrong slot, and the i18n key already
+exists so the move costs nothing.
+
+The prop is kept only so unmigrated screens keep compiling. It is deleted when
+no call site passes it.
+
+### 5.2 KPI tiles are not this pattern
+
+A tile whose subject is a number — `Visit pipeline` / **217** — is
+**label → value**, not title → subtitle. The label is `label` (12px,
+`--sqx-text-muted`); the value is `metric` (28px, primary) and stays the largest
+thing in the tile. Do not "correct" a KPI tile by making its label the title:
+that demotes the number the tile exists to show. `MetricStrip` is the reference
+implementation.
 
 ---
 

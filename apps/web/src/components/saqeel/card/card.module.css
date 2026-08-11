@@ -168,8 +168,8 @@
 }
 
 .value[data-size="md"] {
-  font: var(--sqx-text-title);
-  letter-spacing: var(--sqx-text-title-tracking);
+  font: var(--sqx-text-metric);
+  letter-spacing: var(--sqx-text-metric-tracking);
 }
 
 .value[data-kind="number"] {

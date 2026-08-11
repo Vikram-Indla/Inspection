@@ -122,6 +122,12 @@
   color: var(--sqx-text-inverse);
 }
 
+.text[data-tone="inherit"],
+.heading[data-tone="inherit"],
+.metric[data-tone="inherit"] {
+  color: inherit;
+}
+
 .text[data-align="start"] { text-align: start; }
 .text[data-align="center"] { text-align: center; }
 .text[data-align="end"] { text-align: end; }
