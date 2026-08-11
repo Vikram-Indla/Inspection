@@ -86,6 +86,90 @@
     "resubmissionOverdue": "Resubmission overdue",
     "resubmissionPending": "Resubmission pending"
   },
+  "live": {
+    "title": "Live Operations — Saudi Arabia",
+    "unauthorized": {
+      "title": "Operations access required",
+      "body": "This page is not turned on for your account, so no data has loaded.",
+      "return": "Return to my area"
+    },
+    "loading": {
+      "label": "Loading live operations",
+      "detail": "Recorded positions — not live GPS"
+    },
+    "totalsLabel": "Live operations totals",
+    "stat": {
+      "active": "Active",
+      "enRoute": "Inspectors en route",
+      "arrived": "Arrived"
+    },
+    "map": {
+      "title": "Recorded positions",
+      "countLabel": "on map",
+      "ariaLabel": "Mapbox operations map",
+      "markerLegend": "Recorded inspector position marker",
+      "unavailable": "Live map unavailable — basemap provider failed.",
+      "loadError": "Live map could not load",
+      "retry": "Retry"
+    },
+    "snapshot": {
+      "generated": "Snapshot generated",
+      "lastObserved": "Last recorded position",
+      "none": "No recorded inspector positions in this snapshot",
+      "policy": "Times shown are when each position was recorded."
+    },
+    "provenance": {
+      "recorded": "Last recorded position — not guaranteed live",
+      "unavailable": "Location unavailable",
+      "rejected": "Rejected implausible telemetry"
+    },
+    "notice": {
+      "excluded": "Sample records and visits scheduled for later are excluded from this view. Excluded:",
+      "outOfScope": "Records outside your authorized region are excluded from this live view. Excluded records:",
+      "partialSource": "Position data is unavailable. Active visits still appear, without a location.",
+      "factorySource": "Factory marker data is unavailable. Inspector positions still show on their own."
+    },
+    "list": {
+      "title": "Active inspectors",
+      "noScope": "No active visits in your scope right now",
+      "noPositions": "No inspectors currently active"
+    },
+    "details": {
+      "title": "Inspector details",
+      "close": "Close inspector details",
+      "inspector": "Inspector",
+      "factory": "Factory",
+      "region": "Region",
+      "state": "Visit status",
+      "since": "Since",
+      "visitReference": "Visit reference",
+      "positionSource": "Position source",
+      "positionObserved": "Position observed",
+      "open": "Open visit record"
+    },
+    "fallback": {
+      "inspectorName": "Inspector name unavailable",
+      "region": "Region not recorded",
+      "since": "Not recorded",
+      "position": "No recorded position for this visit",
+      "source": "Not recorded"
+    },
+    "state": {
+      "onTheWay": "On the way",
+      "arrived": "Arrived",
+      "executing": "Executing"
+    },
+    "positionSource": {
+      "telemetry": "Automatic tracking",
+      "arrival": "Arrival record",
+      "checkin": "Check-in",
+      "override": "Manual override",
+      "deviation": "Route deviation"
+    },
+    "wallboard": {
+      "exit": "Exit wallboard"
+    }
+  },
   "monitoring": {
     "title": "Visit and inspector monitoring",
     "description": "Visit status, assignments and the latest recorded geofence results you can see."

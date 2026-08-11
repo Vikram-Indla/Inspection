@@ -26,11 +26,23 @@ const filterSource = read("src/app/(app)/operations/OperationsScopeFilter.tsx");
 const monitoringSource = read("src/app/(app)/operations/Monitoring.tsx");
 const loadingSource = read("src/app/(app)/operations/loading.tsx");
 const cssSource = read("src/app/(app)/operations/operations.module.css");
-const livePageSource = read("src/app/(app)/operations/live/page.tsx");
+// The Live route moved its reads and view models into features/operations/live
+// (T-070), the same shape /operations already uses above. These assertions are
+// about the route's behaviour, not about which file holds it, so the source is
+// the route plus its feature modules — mirroring `pageSource`.
+const livePageSource = [
+  "src/app/(app)/operations/live/page.tsx",
+  "src/features/operations/live/queries.ts",
+  "src/features/operations/live/view.ts",
+  "src/features/operations/live/geography.ts",
+  "src/features/operations/sources/profile.ts",
+].map(read).join("\n");
 const liveShellSource = read("src/app/(app)/operations/live/LiveOps.tsx");
 const liveMapSource = read("src/app/(app)/operations/live/LiveMapInner.tsx");
 const liveLoadingSource = read("src/app/(app)/operations/live/loading.tsx");
-const liveCssSource = read("src/app/(app)/operations/live/live.module.css");
+const liveSkeletonSource = read("src/components/operations/operations-live-skeleton/operations-live-skeleton.tsx");
+const liveSkeletonCssSource = read("src/components/operations/operations-live-skeleton/operations-live-skeleton.module.css");
+const skeletonPrimitiveCssSource = read("src/components/saqeel/skeleton/skeleton.module.css");
 const runtimeCssSource = read("src/app/saqeel-runtime.css");
 
 test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 composition contract", () => {
@@ -211,14 +223,31 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
     expect(livePageSource).not.toMatch(/\.(insert|update|upsert|delete)\(/);
   });
 
+  // The bounded-claim copy moved out of TypeScript into the i18n resources
+  // (T-070) — it had been `t(key, locale === "ar" ? ar : en)`, so Arabic lived
+  // in the route file. Each sentence is still asserted, at its new home, and
+  // now in BOTH locales rather than English only.
   test("renders bounded markers and states without route, ETA, GPS or refresh invention", () => {
-    expect(livePageSource).toContain('"Recorded positions — not live GPS"');
-    expect(livePageSource).toContain('"Last recorded position — not guaranteed live"');
-    expect(livePageSource).toContain('"Times shown are when each position was recorded."');
-    expect(livePageSource).toContain('"Live map could not load"');
-    expect(livePageSource).toContain('"No active visits in your scope right now"');
-    expect(livePageSource).toContain('"No inspectors currently active"');
-    expect(livePageSource).toContain('"Live map unavailable — basemap provider failed."');
+    for (const sentence of [
+      "Recorded positions — not live GPS",
+      "Last recorded position — not guaranteed live",
+      "Times shown are when each position was recorded.",
+      "Live map could not load",
+      "No active visits in your scope right now",
+      "No inspectors currently active",
+      "Live map unavailable — basemap provider failed.",
+      "Recorded inspector position marker",
+    ]) {
+      expect(enOpsCopy).toContain(`"${sentence}"`);
+    }
+    for (const sentence of [
+      "مواقع مسجّلة — ليست تتبعاً مباشراً عبر GPS",
+      "آخر موقع مسجّل — ليس مضموناً أنه مباشر",
+      "الأوقات المعروضة هي وقت تسجيل كل موقع.",
+      "لا توجد زيارات نشطة ضمن نطاقك حالياً",
+    ]) {
+      expect(arOpsCopy).toContain(`"${sentence}"`);
+    }
     expect(liveMapSource).not.toContain("LineString");
     expect(liveMapSource).not.toContain("setInterval");
     expect(liveMapSource).not.toContain("ROUTE_SOURCE");
@@ -228,10 +257,9 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
     expect(livePageSource).toContain("startsAt <= observedAt.getTime()");
     expect(livePageSource).toContain("sourceInspectorName(");
     expect(livePageSource).toContain("activeFactoryIds.has(factory.id)");
-    expect(livePageSource).toContain('"Recorded inspector position marker"');
     expect(livePageSource).not.toContain("function hash01");
     expect(livePageSource).not.toContain("originLat");
-    expect(livePageSource).toContain("latestPositionByVisit.get(v.id)");
+    expect(livePageSource).toContain("latestPositionByVisit.get(visit.id)");
     expect(livePageSource).toContain("integration_mode.eq.production");
     expect(livePageSource).toContain('.lte("occurred_at", observedAt.toISOString())');
     expect(liveShellSource).toContain('<bdi dir="auto">{inspector.inspector}</bdi>');
@@ -248,19 +276,26 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
     expect(runtimeCssSource).toContain("color: var(--text-primary)");
     expect(runtimeCssSource).toContain(".mapboxgl-popup-close-button");
     expect(runtimeCssSource).toContain(".mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip");
-    expect(liveCssSource).not.toContain(":global(.mapboxgl-popup-content)");
+    expect(liveSkeletonCssSource).not.toContain(":global(.mapboxgl-popup-content)");
     expect(liveShellSource).toContain("onProviderFailure={markProviderFailed}");
     expect(liveShellSource).toContain("noScopeRows || hasNoPositions");
     expect(liveShellSource).toContain("noScopeRows ? s.noScope : s.noPositions");
     expect(liveShellSource).toContain('data-wallboard={wallboard ? "true" : "false"}');
     expect(liveShellSource).toContain("s.wallboardExit");
-    expect(liveLoadingSource).toContain("Recorded positions — not live GPS");
-    expect(liveCssSource).toContain("@media (max-width: 1024px)");
-    expect(liveCssSource).toContain("@media (max-width: 430px)");
-    expect(liveCssSource).toContain("@media (max-width: 340px)");
-    expect(liveCssSource).toContain("@media (prefers-reduced-motion: reduce)");
-    expect(liveCssSource).toContain("inset-inline");
-    expect(liveCssSource).toContain('[dir="rtl"]');
+    // The non-GPS disclosure must survive the load, so the skeleton renders it
+    // as real text rather than a bone. It is now a resource key, not a literal.
+    expect(liveLoadingSource).toContain("live.loading.detail");
+    expect(liveSkeletonSource).toContain("{disclosure}");
+    // live.module.css is deleted (T-070) — it had zero importers and styled
+    // nothing on this route. Its responsive and direction claims move onto the
+    // CSS that actually paints the loading state. The old file carried a
+    // `[dir="rtl"]` override; WEB-002 §6 forbids one, so the replacement is
+    // asserted to reflow with logical properties and no direction override.
+    expect(liveSkeletonCssSource).toContain("@media (max-width: 60rem)");
+    expect(liveSkeletonCssSource).toContain("block-size");
+    expect(liveSkeletonCssSource).not.toContain('[dir="rtl"]');
+    expect(liveSkeletonCssSource).not.toMatch(/(?:^|[^-])(?:left|right):/);
+    expect(skeletonPrimitiveCssSource).toContain("@media (prefers-reduced-motion: reduce)");
   });
 
   test("scopes reads to the caller's authorized geography and discloses out-of-scope exclusions separately", () => {

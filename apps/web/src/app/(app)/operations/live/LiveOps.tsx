@@ -9,11 +9,8 @@ import Link from "next/link";
 export type LiveOpsStrings = {
   loading: string;
   enRoute: string;
-  executing: string;
-  completed: string;
   totalsLabel: string;
   inspector: string;
-  projected: string;
   freshnessPolicy: string;
   lastObserved: string;
   snapshotGenerated: string;
@@ -29,10 +26,6 @@ export type LiveOpsStrings = {
   mapboxNotConfigured: string;
   mapAriaLabel: string;
   wallboardExit: string;
-  journeyLabel: string;
-  operationsCenter: string;
-  exceptions: string;
-  execution: string;
   selectedInspector: string;
   inspectorName: string;
   factoryName: string;
@@ -150,12 +143,9 @@ export default function LiveOps({
           {positionReadError ? <p className="alert alert-critical" role="alert">{s.partialSource}</p> : null}
           {factoryReadError ? <p className="alert alert-warning" role="status">{s.factorySourceUnavailable}</p> : null}
         </div>
-        <nav className="row" aria-label={s.journeyLabel}>
-          <Link className="btn btn-secondary" href="/operations">{s.operationsCenter}</Link>
-          <Link className="btn btn-secondary" href="/operations/exceptions">{s.exceptions}</Link>
-          <Link className="btn btn-secondary" href="/execution">{s.execution}</Link>
-          {wallboard ? <Link className="btn btn-secondary" href="/operations/live">{s.wallboardExit}</Link> : null}
-        </nav>
+        {wallboard ? (
+          <Link className="btn btn-secondary" href="/operations/live">{s.wallboardExit}</Link>
+        ) : null}
       </header>
 
       <div className="kpi-grid" aria-label={s.totalsLabel}>

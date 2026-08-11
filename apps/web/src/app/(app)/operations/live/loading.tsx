@@ -1,17 +1,8 @@
-export default function Loading() {
-  return (
-    <div className="stack" role="status" aria-busy="true" aria-label="Loading live operations">
-      <div className="page-header">
-        <strong>Recorded positions — not live GPS</strong>
-        <span className="skeleton" />
-      </div>
-      <div className="kpi-grid">
-        {Array.from({ length: 3 }, (_, index) => <span className="panel kpi skeleton" key={index} />)}
-      </div>
-      <div className="sq-grid-2">
-        <span className="map-panel skeleton" />
-        <span className="panel skeleton" />
-      </div>
-    </div>
-  );
+import OperationsLiveSkeleton from "@/components/operations/operations-live-skeleton/operations-live-skeleton";
+import { getLocale } from "@/lib/i18n";
+import { getMessages } from "@/i18n/messages";
+
+export default async function Loading() {
+  const { live } = getMessages(await getLocale()).operations;
+  return <OperationsLiveSkeleton label={live.loading.label} disclosure={live.loading.detail} />;
 }
