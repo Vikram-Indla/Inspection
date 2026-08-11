@@ -136,13 +136,10 @@ export default function SingleVisitScreen({ data, strings, locale }: {
   }
 
   return (
-    <form action={formAction} className={styles.form}>
-      <TargetFields
-        target={target}
-        sourceChannel={data.sourceChannel}
-        resumeId={state.resumeId ?? draftState?.id ?? ""}
-        reselected={targetReselected}
-      />
+    <div className={styles.screen}>
+      {data.transitionsExecutable ? null : (
+        <PlanningNotice tone="warning">{strings.blockedTitle}</PlanningNotice>
+      )}
 
       {data.draft ? (
         <PlanningNotice tone="info">{strings.draftRestored} <bdi>{data.draft.planReference}</bdi></PlanningNotice>
@@ -177,73 +174,83 @@ export default function SingleVisitScreen({ data, strings, locale }: {
         />
       ) : null}
 
-      {target ? (
-        <TargetConfirmation
+      <form action={formAction} className={styles.form}>
+        <TargetFields
           target={target}
-          licence={selectedEntry?.licence ?? null}
-          legacyFactory={legacyFactory}
-          licenseNumber={licenseNumber}
-          onLicenseConfirm={setLicenseNumber}
-          locationConfirmed={locationConfirmed}
-          onLocationConfirm={setLocationConfirmed}
-          strings={strings}
-          locale={locale}
+          sourceChannel={data.sourceChannel}
+          resumeId={state.resumeId ?? draftState?.id ?? ""}
+          reselected={targetReselected}
         />
-      ) : null}
 
-      {target && readiness.configUnlocked ? (
-        <ConfigurationCard
-          value={{ visitType, packageIds, mode, windowStart, windowEnd, inspectorId, notes }}
-          onChange={next => {
-            setVisitType(next.visitType);
-            setPackageIds([...next.packageIds]);
-            setChosenMode(next.mode);
-            setWindowStart(next.windowStart);
-            setWindowEnd(next.windowEnd);
-            setInspectorId(next.inspectorId);
-            setNotes(next.notes);
-          }}
-          inspectors={data.inspectors}
-          packages={data.packages}
-          eligibility={eligibility}
-          strings={strings}
-          locale={locale}
-        />
-      ) : null}
+        {target ? (
+          <TargetConfirmation
+            target={target}
+            licence={selectedEntry?.licence ?? null}
+            legacyFactory={legacyFactory}
+            licenseNumber={licenseNumber}
+            onLicenseConfirm={setLicenseNumber}
+            locationConfirmed={locationConfirmed}
+            onLocationConfirm={setLocationConfirmed}
+            strings={strings}
+            locale={locale}
+          />
+        ) : null}
 
-      {target ? (
-        <PublishReadiness
-          gates={[
-            { key: "identity", label: strings.readyIdentity, state: "met" },
-            { key: "licence", label: strings.readyLicense, state: readiness.licenceOk ? "met" : "unmet" },
-            { key: "location", label: strings.readyLocation, state: locationConfirmed ? "met" : "unmet" },
-            { key: "inspector", label: strings.readyInspector, state: inspectorId ? "met" : "optional" },
-          ]}
-          strings={{
-            heading: strings.readinessTitle,
-            met: strings.gateMet,
-            unmet: strings.gateUnmet,
-            optional: strings.gateOptional,
-          }}
-        />
-      ) : null}
+        {target && readiness.configUnlocked ? (
+          <ConfigurationCard
+            value={{ visitType, packageIds, mode, windowStart, windowEnd, inspectorId, notes }}
+            onChange={next => {
+              setVisitType(next.visitType);
+              setPackageIds([...next.packageIds]);
+              setChosenMode(next.mode);
+              setWindowStart(next.windowStart);
+              setWindowEnd(next.windowEnd);
+              setInspectorId(next.inspectorId);
+              setNotes(next.notes);
+            }}
+            inspectors={data.inspectors}
+            packages={data.packages}
+            eligibility={eligibility}
+            strings={strings}
+            locale={locale}
+          />
+        ) : null}
 
-      {state.error ? (
-        <PublishBlockers error={state.error} steps={state.steps} focusRef={errorRef} strings={strings} />
-      ) : null}
+        {target ? (
+          <PublishReadiness
+            gates={[
+              { key: "identity", label: strings.readyIdentity, state: "met" },
+              { key: "licence", label: strings.readyLicense, state: readiness.licenceOk ? "met" : "unmet" },
+              { key: "location", label: strings.readyLocation, state: locationConfirmed ? "met" : "unmet" },
+              { key: "inspector", label: strings.readyInspector, state: inspectorId ? "met" : "optional" },
+            ]}
+            strings={{
+              heading: strings.readinessTitle,
+              met: strings.gateMet,
+              unmet: strings.gateUnmet,
+              optional: strings.gateOptional,
+            }}
+          />
+        ) : null}
 
-      <PublishActions
-        transitionsExecutable={data.transitionsExecutable}
-        hasTarget={target !== null}
-        savingDraft={savingDraft}
-        draftSaveFailed={draftSaveFailed}
-        savedDraft={draftJustSaved ? draftState : null}
-        pending={pending}
-        resumeId={state.resumeId ?? null}
-        publishReady={readiness.publishReady}
-        onSaveDraft={onSaveDraft}
-        strings={strings}
-      />
-    </form>
+        {state.error ? (
+          <PublishBlockers error={state.error} steps={state.steps} focusRef={errorRef} strings={strings} />
+        ) : null}
+
+        {target ? (
+          <PublishActions
+            transitionsExecutable={data.transitionsExecutable}
+            savingDraft={savingDraft}
+            draftSaveFailed={draftSaveFailed}
+            savedDraft={draftJustSaved ? draftState : null}
+            pending={pending}
+            resumeId={state.resumeId ?? null}
+            publishReady={readiness.publishReady}
+            onSaveDraft={onSaveDraft}
+            strings={strings}
+          />
+        ) : null}
+      </form>
+    </div>
   );
 }

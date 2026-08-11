@@ -78,6 +78,7 @@ export default function TargetConfirmation({
           <CardHeader
             level="h2"
             titleId="single-visit-licence"
+            eyebrow={strings.stepLabels.licence}
             title={strings.licenseStep}
             description={legacyFactory.license_number ? strings.licenseSelect : undefined}
           />
@@ -104,6 +105,7 @@ export default function TargetConfirmation({
         <CardHeader
           level="h2"
           titleId="single-visit-location"
+          eyebrow={strings.stepLabels.location}
           title={strings.locationStep}
           description={`${strings.locationAuthority}: ${target.masterSource ?? strings.absent} · ${strings.locationReadOnly}`}
         />

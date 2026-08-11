@@ -552,7 +552,17 @@
   },
 
   "single": {
-    "loading": "Loading the single-visit planner…"
+    "loading": "Loading the single-visit planner…",
+    "step": "Step {current} of {total}",
+    "findFactory": "Find the factory",
+    "searchFieldLabel": "CR, Industrial License, plant or name",
+    "searchPlaceholder": "1010123456",
+    "searchPromptTitle": "Search to begin",
+    "searchPromptBody": "Enter at least 3 characters of a CR, Industrial License, plant number or name. Pick a factory, then confirm its license and location.",
+    "portfolioStep": "Select the Industrial License / plant",
+    "licenseStep": "Industrial License",
+    "locationStep": "Confirm location",
+    "configStep": "Configure and propose"
   },
   "bulk": {
     "title": "Plan bulk visits — criteria & targeting",

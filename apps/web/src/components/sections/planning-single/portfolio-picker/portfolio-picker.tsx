@@ -26,7 +26,12 @@ export default function PortfolioPicker({
 
   return (
     <Card as="section" labelledBy="single-visit-portfolio">
-      <CardHeader level="h2" titleId="single-visit-portfolio" title={strings.portfolioStep} />
+      <CardHeader
+        level="h2"
+        titleId="single-visit-portfolio"
+        eyebrow={strings.stepLabels.licence}
+        title={strings.portfolioStep}
+      />
       <CardBody>
         {handoff ? <PlanningNotice tone="info">{strings.prefilledHandoff}</PlanningNotice> : null}
         {portfolios.map(portfolio => (

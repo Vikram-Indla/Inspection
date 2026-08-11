@@ -5,12 +5,19 @@ import type { DraftInfo } from "@/features/planning-single/shapes";
 import type { SingleVisitStrings } from "@/features/planning-single/strings";
 import styles from "./single-visit-screen.module.css";
 
+/**
+ * The publish bar, rendered only once a target exists.
+ *
+ * Before that there is nothing to save and nothing to submit, and a bar of
+ * permanently disabled buttons states the opposite. The permission blocker is
+ * not part of this — it is information a planner needs before any work, so the
+ * screen renders it above the search.
+ */
 export default function PublishActions({
-  transitionsExecutable, hasTarget, savingDraft, draftSaveFailed, savedDraft,
+  transitionsExecutable, savingDraft, draftSaveFailed, savedDraft,
   pending, resumeId, publishReady, onSaveDraft, strings,
 }: {
   transitionsExecutable: boolean;
-  hasTarget: boolean;
   savingDraft: boolean;
   draftSaveFailed: boolean;
   savedDraft: DraftInfo | null;
@@ -28,15 +35,11 @@ export default function PublishActions({
           {strings.draftSavedPrefix} <bdi>{savedDraft.planReference}</bdi> · v{savedDraft.version}
         </PlanningNotice>
       ) : null}
-      {transitionsExecutable ? null : (
-        <PlanningNotice tone="warning">{strings.blockedTitle}</PlanningNotice>
-      )}
-
       <div className={styles.actionBar}>
         <Button
           type="button"
           variant="secondary"
-          disabled={!transitionsExecutable || savingDraft || !hasTarget}
+          disabled={!transitionsExecutable || savingDraft}
           onClick={onSaveDraft}
           label={strings.saveDraft}
         >
