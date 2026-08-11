@@ -1,6 +1,7 @@
 import DefinitionList, { type Definition } from "@/components/saqeel/definition-list/definition-list";
 import Button from "@/components/saqeel/button/button";
 import styles from "./factory-profile.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type FactoryProfileGroup = {
   readonly key: string;
@@ -29,7 +30,7 @@ export default function FactoryProfile({ groups, official, inspection, href, str
     <details className={styles.section}>
       <summary className={styles.summary}>
         <span className={styles.summaryText}>
-          <strong className={styles.title}>{strings.title}</strong>
+          <Text as="strong" role="bodyStrong" tone="inherit">{strings.title}</Text>
         </span>
         <span className={styles.marker} aria-hidden="true" />
       </summary>
@@ -37,13 +38,13 @@ export default function FactoryProfile({ groups, official, inspection, href, str
         <div className={styles.groups}>
           {groups.map(group => (
             <div className={styles.group} key={group.key}>
-              <p className={styles.label}>{group.label}</p>
+              <Text role="label" tone="muted">{group.label}</Text>
               <DefinitionList items={group.facts} />
             </div>
           ))}
 
           <div className={styles.group}>
-            <p className={styles.label}>{strings.media}</p>
+            <Text role="label" tone="muted">{strings.media}</Text>
             <ul className={styles.counts}>
               <li>{count(strings.officialCount, official)}</li>
               <li>{count(strings.inspectionCount, inspection)}</li>
@@ -51,7 +52,7 @@ export default function FactoryProfile({ groups, official, inspection, href, str
           </div>
         </div>
 
-        <p className={styles.note}>{strings.mediaNote}</p>
+        <Text tone="muted">{strings.mediaNote}</Text>
         <Button variant="secondary" size="sm" href={href} block>{strings.openLabel}</Button>
       </div>
     </details>

@@ -4,7 +4,7 @@ import { type TextTone } from "./text";
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
-export type HeadingVisual = "display" | "heading" | "subheading";
+export type HeadingVisual = "display" | "heading" | "subheading" | "bodyStrong" | "label";
 
 export type HeadingProps = {
   children: ReactNode;

@@ -4,11 +4,6 @@
   gap: var(--sqx-space-2);
 }
 
-.subhead {
-  margin: 0;
-  font: var(--sqx-text-subheading);
-  color: var(--sqx-text-primary);
-}
 
 .pills {
   display: flex;
@@ -16,8 +11,3 @@
   gap: var(--sqx-space-2);
 }
 
-.note {
-  margin: 0;
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-muted);
-}

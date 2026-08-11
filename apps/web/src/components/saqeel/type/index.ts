@@ -7,6 +7,8 @@ export {
   type TextTone,
   type TextAlign,
   type TextElement,
+  type TextDirection,
+  type TextLiveRole,
   type OverlineProps,
   type MonoProps,
 } from "./text";

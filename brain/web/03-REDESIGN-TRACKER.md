@@ -44,13 +44,84 @@ zero off-scale, one typeface. Violations 113 → 76.
 **Owed:** axe, 320px, Arabic/RTL.
 
 ### T-065 · `/factories` — primitive migration (part 2 of 2)
-`status: todo` · `rules: WEB-000, WEB-014` · `est: 1.5h`
+`status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014` · `est: 1.5h`
+`record:` [2026-08-11-T-065-factories-primitive-migration](sessions/2026-08/2026-08-11-T-065-factories-primitive-migration.md)
 
-The 76 remaining violations: 55 `font-shorthand-outside-design-system` and 21
-`raw-typography-property` across ~30 section components. Purely architectural —
-feature CSS consuming tokens directly instead of composing `Text`/`Heading`/
-`Overline`/`Metric`. **No visual change expected**; the route already renders
-correctly. Same shape as the dashboard's part 2.
+20 components migrated; **`components/sections/factories/` is now at zero
+violations.** Two stylesheets deleted outright — they held nothing but
+typography. Scope 76 → 11, and none of the 11 are on `/factories`.
+
+**The migration found three primitive gaps that inventory had not:**
+
+1. **`dir="auto"` was unavailable on `Text`** — nine call sites carry it on
+   user data. In an Arabic-first app that is correctness, not decoration:
+   without it a mixed Arabic/Latin string renders in the wrong visual order.
+2. **`role="alert"` collided with `Text`'s own `role` prop.** Added `live`
+   rather than renaming `role` across every existing call site.
+3. **`Heading` could not express a heading that renders small** — only
+   display/heading/subheading. **A heading's semantic level and visual weight
+   are independent; that is the point of `visual`, so it must cover the whole
+   scale.** Extended with `bodyStrong` and `label`.
+
+**Two near-misses, both caught by measuring rather than reading:**
+
+- Converting the trend `<h3>`s to `subheading` moved them 14px → 16px and added
+  a **fifth** size to the route.
+- A regex strip removed `font: var(--sqx-text-metric)` from the portfolio KPI
+  values with no primitive replacing it — every portfolio number would have
+  shrunk 28px → 14px. Fixed with `Metric tone="inherit"` so the status colours
+  stay exact: **do not change colours while migrating typography.**
+
+**And one bad trade caught on review:** the portfolio summary `<h2 id>` (the
+card's `aria-labelledby` target) was converted to `<Text as="span">` — gate
+clean, but it **removes a heading from the document outline**. Reverted, then
+done properly once `Heading visual="label"` existed. **A violation count is
+never worth a real heading.**
+
+Mixed-content containers (flex rows of pills/links/badges) keep no font
+declaration and inherit `body` — same rendered result, no markup churn.
+
+`FactoryList.tsx` + `factory-list.module.css` confirmed **dead** (zero
+importers) and routed to retirement rather than migrated.
+
+### T-066 · `/dashboard` Operational View — the design's four metric groups (declutter part 3)
+`status: partial (axe, 320px, screenshots owed)` · `rules: WEB-000, WEB-002, WEB-003, WEB-006, WEB-008, WEB-011, WEB-013` · `est: 1h`
+`record:` [2026-08-11-T-066-operational-view-four-design-groups](sessions/2026-08/2026-08-11-T-066-operational-view-four-design-groups.md)
+
+**The design had already answered this screen and the shipped code ignored one
+line of it.** `saqeel-revamp.html` defines `OPERATIONAL` as **four labelled
+groups** — Today's operations (2) · Execution status (2) · Approvals (2) ·
+Operational exceptions (1) — and the app put all seven metrics under one
+"Today's operations" heading, which is **factually wrong for four of them**:
+returned reports and reports awaiting approval are Approvals, overdue visits are
+Execution status. A supervisor scanning for approvals had no reason to look under
+"today".
+
+**The `today` array was already in the design's exact group order**, so only the
+boundaries had been lost — pure composition, zero query/metric/value/ordering
+change. That is also what removed the orphan: seven cards in a six-column grid
+stranded the seventh beside ~1100×180px of dead space, the largest element on the
+screen. Sections **1 → 4**, `h2` landmarks **4 → 7**.
+
+**The header sentence T-062 moved here is deleted, and it was mine.** It restated
+the two cards directly beneath it; relocating it had been the wrong call, dropping
+it is the right one. `priorities.summary` deleted from both locales. The
+governance footnote survives on Operational exceptions — it is a claim, not data.
+`priorities.footnote` keeps its key name deliberately (renaming churns both
+locales for no visible gain).
+
+**Both specs T-062 wrote had to be re-pointed one task later** — they asserted the
+sentence this task deletes. They now assert the four **group headings**, with
+`Approvals` as `exact: true` so it cannot match "Inspection reports awaiting
+approval" or "Open Review & Approval". **A spec that asserts a sentence is hostage
+to copy; one that asserts structure is not.**
+
+**Filtered drills raised, not taken** (owner ruling): `/execution` accepts **no
+searchParams at all**, so two of the four duplicate buttons cannot be filtered
+without rebuilding that route; `/planning` can filter but its `tab` values
+describe *visit planning status* while these cards count *inspection reports*, and
+the `priority` keys live in a DB lookup this workstation cannot read. Guessing
+either would send the reader to a plausible **wrong** list.
 
 ### T-063 · Dashboard specs — re-point at the shipped strategic surface
 `status: done (suite not executed)` · `rules: WEB-000, WEB-006, WEB-008, WEB-011` · `est: 40m`
@@ -1182,6 +1253,10 @@ Pull one in only if it is genuinely part of doing the active task well.
   typography tuning applies**. Confirm which routes actually set it before
   T-031's font audit, or the measurements will be taken against the wrong
   cascade.
+- **`FactoryList.tsx` + `factory-list.module.css` are orphaned** (found in
+  T-065). Zero importers — `/factories` renders `RevampFactory360Portfolio`.
+  3 typography violations that will keep surfacing in audits until deleted.
+  Bundle this with the `DashboardView` deletion below into one retirement task.
 - **The `DashboardView` tree under `src/app/(app)/dashboard/` is orphaned**
   (found in T-058). `DashboardView.tsx`, `DecisionCanvas.tsx`,
   `RegionalScope.tsx`, `BasisDrawer.tsx` and the 318-line

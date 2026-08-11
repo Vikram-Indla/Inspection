@@ -1,6 +1,7 @@
 import { Card, CardBody } from "@/components/saqeel/card/card";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import styles from "./factory-snapshot.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type FactoryMetric = {
   readonly key: string;
@@ -21,10 +22,10 @@ export default function FactorySnapshot({ condition, reasons, metrics, strings }
       <CardBody>
         <div className={styles.root}>
           <div className={styles.condition} data-tone={condition.tone}>
-            <p className={styles.conditionLabel} id="factory-snapshot-title">{strings.overallCondition}</p>
+            <Text role="label" tone="muted" id="factory-snapshot-title">{strings.overallCondition}</Text>
             <StatusPill tone={condition.tone}>{condition.label}</StatusPill>
             {reasons.length === 0
-              ? <p className={styles.reason}>{strings.noReasons}</p>
+              ? <Text tone="secondary">{strings.noReasons}</Text>
               : (
                 <ul className={styles.reasons}>
                   {reasons.map(reason => <li key={reason}>{reason}</li>)}
@@ -35,7 +36,7 @@ export default function FactorySnapshot({ condition, reasons, metrics, strings }
           <dl className={styles.metrics} aria-label={strings.title}>
             {metrics.map(metric => (
               <div className={styles.metric} key={metric.key}>
-                <dt className={styles.metricLabel}>{metric.label}</dt>
+                <Text as="dt" role="label" tone="muted">{metric.label}</Text>
                 <dd
                   className={styles.metricValue}
                   data-tone={metric.tone}

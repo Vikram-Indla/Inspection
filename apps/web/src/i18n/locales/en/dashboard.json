@@ -133,8 +133,12 @@
   },
   "operational": {
     "priorities": {
-      "summary": "{high} high-priority visits are pending execution; {overdue} published visits are past their recorded window.",
       "footnote": "Based on current records only. No AI-generated recommendation."
+    },
+    "groups": {
+      "execution": "Execution status",
+      "approvals": "Approvals",
+      "exceptions": "Operational exceptions"
     },
     "today": {
       "title": "Today's operations",

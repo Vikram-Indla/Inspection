@@ -1,7 +1,7 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import DefinitionList, { type Definition } from "@/components/saqeel/definition-list/definition-list";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
-import styles from "./factory-identity.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type FactoryIdentityStrings = {
   readonly heading: string;
@@ -27,14 +27,14 @@ export default function FactoryIdentity({ code, contextLine, facts, provenance, 
         />
         <CardBody gap="tight">
           <DefinitionList items={facts} />
-          {contextLine ? <p className={styles.context} dir="auto">{contextLine}</p> : null}
+          {contextLine ? <Text tone="muted" dir="auto">{contextLine}</Text> : null}
         </CardBody>
       </Card>
 
       <Card as="div">
         <CardBody gap="tight">
           <StatusPill tone={provenance.tone}>{provenance.label}</StatusPill>
-          <p className={styles.synced}>{strings.syncedLabel} <bdi>{synced}</bdi></p>
+          <Text tone="muted">{strings.syncedLabel} <bdi>{synced}</bdi></Text>
         </CardBody>
       </Card>
     </>

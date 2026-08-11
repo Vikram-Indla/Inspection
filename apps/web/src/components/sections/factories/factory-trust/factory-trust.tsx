@@ -1,6 +1,7 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import styles from "./factory-trust.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type FactorySourceState = {
   readonly key: string;
@@ -22,14 +23,14 @@ export default function FactoryTrust({ lastSynchronised, sources, strings }: {
     <Card as="section" labelledBy="factory-trust-title">
       <CardHeader level="h2" titleId="factory-trust-title" title={strings.title} />
       <CardBody gap="tight">
-        <p className={styles.label}>{strings.lastSynchronisation}</p>
-        <p className={styles.body} dir="auto">{lastSynchronised}</p>
+        <Text role="label" tone="muted">{strings.lastSynchronisation}</Text>
+        <Text tone="secondary" dir="auto">{lastSynchronised}</Text>
 
-        <p className={styles.label}>{strings.dataSources}</p>
+        <Text role="label" tone="muted">{strings.dataSources}</Text>
         <ul className={styles.sources}>
           {sources.map(source => (
             <li className={styles.source} key={source.key}>
-              <span>{source.label}</span>
+              <Text role="label" tone="secondary">{source.label}</Text>
               <StatusPill tone={source.tone}>{source.state}</StatusPill>
             </li>
           ))}

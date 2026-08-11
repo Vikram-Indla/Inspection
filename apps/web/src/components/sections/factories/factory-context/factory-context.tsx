@@ -3,7 +3,7 @@ import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import DefinitionList from "@/components/saqeel/definition-list/definition-list";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import { type FactoryRow } from "@/features/factories/portfolio";
-import styles from "./factory-context.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type FactoryContextStrings = {
   readonly selectedContext: string;
@@ -50,8 +50,8 @@ export default function FactoryContext({ factory, provenance, outlook, trust, ad
         <CardHeader level="h2" titleId="factory-source-title" title={strings.sourceStatus} />
         <CardBody gap="tight">
           <StatusPill tone={provenance.tone}>{provenance.label}</StatusPill>
-          <p className={styles.body} dir="auto">{provenance.body}</p>
-          <p className={styles.recorded} dir="auto">{provenance.recorded}</p>
+          <Text tone="secondary" dir="auto">{provenance.body}</Text>
+          <Text tone="muted" dir="auto">{provenance.recorded}</Text>
         </CardBody>
       </Card>
     </>

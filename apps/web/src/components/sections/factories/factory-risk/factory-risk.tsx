@@ -2,6 +2,7 @@ import { Card, CardBody, CardHeader, CardValue, CardValueSlot } from "@/componen
 import DefinitionList, { type Definition } from "@/components/saqeel/definition-list/definition-list";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import styles from "./factory-risk.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type FactoryRiskDriver = {
   readonly key: string;
@@ -31,10 +32,10 @@ export default function FactoryRisk({ heading, score, band, noScoreLabel, facts,
       <CardBody gap="tight">
         <CardValueSlot><CardValue kind="number">{score}</CardValue></CardValueSlot>
         <DefinitionList items={facts} />
-        <p className={styles.description}>{description}</p>
+        <Text tone="muted">{description}</Text>
         {drivers.length
-          ? <ul className={styles.drivers}>{drivers.map(driver => <li key={driver.key}>{driver.text}</li>)}</ul>
-          : <p className={styles.description}>{driversUnavailable}</p>}
+          ? <ul className={styles.drivers}>{drivers.map(driver => <Text as="li" tone="secondary" key={driver.key}>{driver.text}</Text>)}</ul>
+          : <Text tone="muted">{driversUnavailable}</Text>}
       </CardBody>
     </Card>
   );

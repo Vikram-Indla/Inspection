@@ -4,7 +4,4 @@
   border-radius: var(--sqx-radius-card);
   border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
   background: var(--sqx-surface-sunken);
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-muted);
-  text-wrap: pretty;
 }

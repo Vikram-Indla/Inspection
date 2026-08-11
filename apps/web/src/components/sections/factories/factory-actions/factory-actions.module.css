@@ -10,8 +10,3 @@
   gap: var(--sqx-space-3);
 }
 
-.note {
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-muted);
-  text-wrap: pretty;
-}

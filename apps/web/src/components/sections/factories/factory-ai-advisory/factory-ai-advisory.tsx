@@ -6,6 +6,7 @@ import Icon from "@/components/saqeel/icon/icon";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { generateContextualInsight, type ContextualResult } from "@/lib/ai/contextual-actions";
 import styles from "./factory-ai-advisory.module.css";
+import { Text } from "@/components/saqeel/type";
 
 const EMPTY: ContextualResult = {};
 const EVIDENCE_REFS = "M07-014,M07-015,SCR-WEB-300";
@@ -37,12 +38,12 @@ export default function FactoryAiAdvisory({ factoryId, locale, strings }: {
       <CardBody gap="tight">
         <StatusPill tone="info">{strings.advisory}</StatusPill>
 
-        {result.text ? <p className={styles.text} dir="auto">{result.text}</p> : null}
-        {result.error ? <p className={styles.error} role="alert">{result.error}</p> : null}
-        {!result.text && !result.error ? <p className={styles.muted}>{strings.idle}</p> : null}
+        {result.text ? <Text tone="secondary" dir="auto">{result.text}</Text> : null}
+        {result.error ? <Text tone="danger" live="alert">{result.error}</Text> : null}
+        {!result.text && !result.error ? <Text tone="muted">{strings.idle}</Text> : null}
 
-        <p className={styles.muted}>{strings.evidence}</p>
-        <p className={styles.muted}>{strings.confidenceUnavailable}</p>
+        <Text tone="muted">{strings.evidence}</Text>
+        <Text tone="muted">{strings.confidenceUnavailable}</Text>
 
         <form action={action}>
           <input type="hidden" name="surface" value="factory_risk_explanation" />

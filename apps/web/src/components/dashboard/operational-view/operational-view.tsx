@@ -10,7 +10,7 @@ import {
   OPERATIONAL_CARD_IDS,
   OPERATIONAL_REQUIREMENT_IDS,
 } from "@/features/dashboard/strip";
-import { fill, getMessages } from "@/i18n/messages";
+import { getMessages } from "@/i18n/messages";
 import type { DashboardKpiProjection } from "@/lib/dashboard-kpi/contract";
 import type { Locale } from "@/lib/i18n";
 import { localeHref } from "@/lib/locale-path";
@@ -39,19 +39,49 @@ export default function OperationalView({ locale, metrics, projection, partialSo
     definition: dashboard.metric.definition,
   };
 
-  const today: MetricCardModel[] = [
-    { ...copy.today.planned, value: String(operational.todayVisits.length), emptyLabel: common.state.unavailable, href: localeHref(locale, "/execution") },
+  const groups: readonly {
+    readonly id: string;
+    readonly title: string;
+    readonly models: readonly MetricCardModel[];
+    readonly footnote?: string;
+  }[] = [
     {
-      ...copy.today.completion,
-      value: operational.todayCompletionRate === null ? null : `${operational.todayCompletionRate}%`,
-      emptyLabel: common.state.unavailable,
-      href: localeHref(locale, "/execution"),
+      id: "dashboard-todays-operations",
+      title: copy.today.title,
+      models: [
+        { ...copy.today.planned, value: String(operational.todayVisits.length), emptyLabel: common.state.unavailable, href: localeHref(locale, "/execution") },
+        {
+          ...copy.today.completion,
+          value: operational.todayCompletionRate === null ? null : `${operational.todayCompletionRate}%`,
+          emptyLabel: common.state.unavailable,
+          href: localeHref(locale, "/execution"),
+        },
+      ],
     },
-    { ...copy.today.active, value: String(operational.activeField), emptyLabel: common.state.unavailable, href: localeHref(locale, "/operations") },
-    { ...copy.today.overdue, value: String(operational.overdueRows.length), emptyLabel: common.state.unavailable, href: localeHref(locale, "/planning") },
-    { ...copy.today.awaiting, value: String(operational.pendingApprovalsCount), emptyLabel: common.state.unavailable, href: localeHref(locale, "/reviews") },
-    { ...copy.today.returned, value: String(operational.returnedRows.length), emptyLabel: common.state.unavailable, href: localeHref(locale, "/execution") },
-    { ...copy.today.highPriority, value: String(operational.highPriorityRows.length), emptyLabel: common.state.unavailable, href: localeHref(locale, "/planning") },
+    {
+      id: "dashboard-execution-status",
+      title: copy.groups.execution,
+      models: [
+        { ...copy.today.active, value: String(operational.activeField), emptyLabel: common.state.unavailable, href: localeHref(locale, "/operations") },
+        { ...copy.today.overdue, value: String(operational.overdueRows.length), emptyLabel: common.state.unavailable, href: localeHref(locale, "/planning") },
+      ],
+    },
+    {
+      id: "dashboard-approvals",
+      title: copy.groups.approvals,
+      models: [
+        { ...copy.today.awaiting, value: String(operational.pendingApprovalsCount), emptyLabel: common.state.unavailable, href: localeHref(locale, "/reviews") },
+        { ...copy.today.returned, value: String(operational.returnedRows.length), emptyLabel: common.state.unavailable, href: localeHref(locale, "/execution") },
+      ],
+    },
+    {
+      id: "dashboard-operational-exceptions",
+      title: copy.groups.exceptions,
+      models: [
+        { ...copy.today.highPriority, value: String(operational.highPriorityRows.length), emptyLabel: common.state.unavailable, href: localeHref(locale, "/planning") },
+      ],
+      footnote: copy.priorities.footnote,
+    },
   ];
 
   const requirementStrip = buildMetricStrip(
@@ -79,25 +109,21 @@ export default function OperationalView({ locale, metrics, projection, partialSo
 
   return (
     <div className={styles.stack}>
-      <Card as="section" labelledBy="dashboard-todays-operations">
-        <CardHeader
-          level="h2"
-          titleId="dashboard-todays-operations"
-          title={copy.today.title}
-          description={fill(copy.priorities.summary, {
-            high: operational.highPriorityRows.length,
-            overdue: operational.overdueRows.length,
-          })}
-        />
-        <CardBody>
-          <CardGrid min="md">
-            {today.map(model => <MetricCard key={model.title} model={model} strings={strings} />)}
-          </CardGrid>
-        </CardBody>
-        <CardFooter>
-          <Text tone="muted">{copy.priorities.footnote}</Text>
-        </CardFooter>
-      </Card>
+      {groups.map(group => (
+        <Card as="section" key={group.id} labelledBy={group.id}>
+          <CardHeader level="h2" titleId={group.id} title={group.title} />
+          <CardBody>
+            <CardGrid min="md">
+              {group.models.map(model => <MetricCard key={model.title} model={model} strings={strings} />)}
+            </CardGrid>
+          </CardBody>
+          {group.footnote ? (
+            <CardFooter>
+              <Text tone="muted">{group.footnote}</Text>
+            </CardFooter>
+          ) : null}
+        </Card>
+      ))}
 
       <Card as="section" labelledBy="dashboard-operational-requirement">
         <CardHeader

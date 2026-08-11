@@ -2,6 +2,33 @@
 
 `Last updated: 2026-08-11` · `Updated by: T-064 — /factories visible typography`
 
+## A primitive's gaps only show up during migration (2026-08-11)
+
+T-065 moved 20 `/factories` components onto the type primitives and found three
+gaps the inventory had missed, each of which would have caused a silent defect:
+
+1. **`Text` had no `dir`.** Nine call sites carry `dir="auto"` on user data. In
+   an Arabic-first app that is correctness, not decoration — without it a mixed
+   Arabic/Latin string renders in the wrong visual order.
+2. **`role="alert"` collided with `Text`'s own `role` prop**, which names the
+   typography role. Added `live` rather than renaming `role` everywhere.
+3. **`Heading` could not express a heading that renders small.** A heading's
+   semantic level and its visual weight are independent — that is the point of
+   `visual`, so it must cover the whole scale, not just the large end.
+
+**A violation count is never worth a real heading.** The portfolio summary was
+an `<h2 id>` serving as its card's `aria-labelledby` target; converting it to
+`<Text as="span">` satisfied the gate and removed a heading from the document
+outline. Reverted, then done properly once `Heading visual="label"` existed.
+
+**Do not change colours while migrating typography.** A regex strip removed
+`font: var(--sqx-text-metric)` from the portfolio KPI values with nothing
+replacing it — every number would have shrunk 28px → 14px. The fix used
+`Metric tone="inherit"` so the status colours stayed exact rather than being
+swapped for the `Text` tone family.
+
+Both near-misses were caught by **measuring the render, not reading the diff**.
+
 ## A typeface can be decided by something absent (2026-08-11)
 
 T-064 found the factory name on `/factories` rendering in **Arial**.
@@ -122,6 +149,31 @@ rendered nowhere**, while `:166` asserts it is visible.
 exist only in the retired `RevampStrategicView` — already failing before any of
 this work. **T-063 fixed it, and found the same rot in two more specs**
 (`dashboard-business.spec.ts:92-93`, `exec-hard-states.spec.ts:103`).
+
+## Read the design's data model, not only its markup (2026-08-11)
+
+T-066 found the Operational View rendering seven metrics under one heading where
+`saqeel-revamp.html` defines **four labelled groups** — Today's operations,
+Execution status, Approvals, Operational exceptions. Every previous dashboard task
+had read the design's *markup* for card anatomy and section order; the grouping
+lives in its `OPERATIONAL` **data model**, further down the same file, and had
+never been read.
+
+Three things followed from it, and they are the pattern to expect:
+
+1. **The heading was factually wrong for four of its seven cards.** Returned
+   reports are not "today's operations". A heading that misdescribes its contents
+   is worse than no heading.
+2. **The visual defect was a symptom, not the fault.** Seven cards in a
+   six-column grid stranded the seventh beside ~1100×180px of dead space. Fixing
+   the grid would have hidden the mislabelling.
+3. **The fix was free of functional risk because the order already matched.** The
+   metric array was already in the design's group order — only the boundaries had
+   been lost, so the diff is pure composition.
+
+**A spec that asserts a sentence is hostage to copy.** T-062 asserted the summary
+sentence was visible; T-066 deleted that sentence one task later, so both specs
+were re-pointed at the four group headings instead. Assert structure.
 
 ## A spec that greps source can rot without the DOM changing (2026-08-11)
 

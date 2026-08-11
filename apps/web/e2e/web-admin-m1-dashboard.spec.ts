@@ -224,9 +224,15 @@ test.describe("WA-M1-AC-001/003 shared Dashboard runtime", () => {
 
   test("Operational renders canonical panels and blocked policy statuses", async ({ page }) => {
     await page.goto("/dashboard?view=operational");
+    // The four groups saqeel-revamp.html defines for the operational view. The
+    // single "Today's operations" section that used to hold all seven metrics
+    // mislabelled four of them, and the deleted priorities panel's summary
+    // restated two of its own cards; only its governance footnote survives.
     await expect(page.getByRole("heading", { name: "Today's operations" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Execution status" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Approvals", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Operational exceptions" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Operational priorities" })).toHaveCount(0);
-    await expect(page.getByText(/high-priority visits are pending execution/)).toBeVisible();
     await expect(page.getByText(/No AI-generated recommendation/)).toBeVisible();
     await expect(page.getByRole("heading", { name: "Operational requirement coverage" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Inspector capacity" })).toBeVisible();

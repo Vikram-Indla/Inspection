@@ -1,8 +1,3 @@
-.note {
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-muted);
-  text-wrap: pretty;
-}
 
 
 
@@ -43,24 +38,13 @@
   min-inline-size: 0;
 }
 
-.sectionTitle {
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
-  color: var(--sqx-text-primary);
-}
 
-.sectionBody {
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-muted);
-  text-wrap: pretty;
-}
 
 .marker {
   flex: none;
   margin-inline-start: auto;
   inline-size: var(--sqx-icon-md);
   color: var(--sqx-text-muted);
-  font: var(--sqx-text-subheading);
   text-align: center;
 }
 

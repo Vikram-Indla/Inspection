@@ -31,6 +31,10 @@ export type TextElement =
   | "figcaption"
   | "address";
 
+export type TextDirection = "auto" | "ltr" | "rtl";
+
+export type TextLiveRole = "alert" | "status";
+
 export type TextProps = {
   children: ReactNode;
   role?: TextRole;
@@ -39,6 +43,8 @@ export type TextProps = {
   align?: TextAlign;
   numeric?: boolean;
   clamp?: 1 | 2 | 3;
+  dir?: TextDirection;
+  live?: TextLiveRole;
   id?: string;
 };
 
@@ -58,6 +64,8 @@ export function Text({
   align,
   numeric,
   clamp,
+  dir,
+  live,
   id,
 }: TextProps) {
   const Root: ElementType = as ?? DEFAULT_ELEMENT[role];
@@ -69,6 +77,8 @@ export function Text({
       data-align={align}
       data-numeric={numeric ? "" : undefined}
       data-clamp={clamp}
+      dir={dir}
+      role={live}
       id={id}
     >
       {children}

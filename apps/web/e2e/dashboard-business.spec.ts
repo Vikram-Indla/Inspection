@@ -121,7 +121,8 @@ test.describe("TASK-WEB-DASHBOARD-002 runtime", () => {
     await expect(page).toHaveURL(/view=operational/);
     await expect(perspective.getByRole("link", { name: "Operational View" })).toHaveAttribute("aria-current", "page");
     await expect(page.getByRole("heading", { name: "Today's operations" })).toBeVisible();
-    await expect(page.getByText(/high-priority visits are pending execution/)).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Execution status" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Operational exceptions" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Inspector capacity" })).toBeVisible();
     await expect(page.getByText("Today's planned visits")).toBeVisible();
     await page.screenshot({ path: join(EVIDENCE_DIR, "operational-en-dark-desktop.png"), fullPage: true });

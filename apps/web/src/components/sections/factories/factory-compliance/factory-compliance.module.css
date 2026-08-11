@@ -1,18 +1,2 @@
-.label {
-  margin: 0;
-  padding-block-start: var(--sqx-space-4);
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
-  color: var(--sqx-text-muted);
-}
 
-.label:first-child {
-  padding-block-start: 0;
-}
 
-.note {
-  margin: 0;
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-muted);
-  text-wrap: pretty;
-}
