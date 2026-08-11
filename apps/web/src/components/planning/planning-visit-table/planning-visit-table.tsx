@@ -16,8 +16,8 @@ export type PlanningTableStrings = {
 };
 
 const COLUMN_KEYS = [
-  "visitId", "factory", "cr", "license", "authority", "visitType",
-  "window", "inspector", "risk", "priority", "aiScore", "status", "lastUpdated",
+  "visitId", "factory", "cr", "license", "visitType",
+  "window", "inspector", "priority", "status", "lastUpdated",
 ] as const;
 
 export default function PlanningVisitTable({ rows, strings, bulkBar, drawer }: {
@@ -93,13 +93,10 @@ export default function PlanningVisitTable({ rows, strings, bulkBar, drawer }: {
                 <td className={styles.cell}>{row.factory}</td>
                 <td className={styles.cell} data-numeric="">{row.cr}</td>
                 <td className={styles.cell} data-numeric="">{row.license}</td>
-                <td className={styles.cell}>{row.authority}</td>
                 <td className={styles.cell}>{row.visitType}</td>
                 <td className={styles.cell} data-numeric="">{row.window}</td>
                 <td className={styles.cell}>{row.inspector}</td>
-                <td className={styles.cell}>{row.risk}</td>
                 <td className={styles.cell}>{row.priority}</td>
-                <td className={styles.cell}>{row.aiScore}</td>
                 <td className={styles.cell}>
                   <StatusPill tone={row.statusTone}>{row.statusLabel}</StatusPill>
                 </td>

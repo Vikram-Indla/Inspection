@@ -53,6 +53,8 @@
   "table": {
     "caption": "Planning visits",
     "empty": "No visits match",
+    "noValue": "Not assigned",
+    "notConfigured": "Not configured",
     "referenceUnavailable": "Reference not available",
     "colVisitRef": "Visit Reference",
     "colPlanningType": "Planning Type",
@@ -162,6 +164,7 @@
     "quickWeeklyPlan": "Build a bulk plan",
     "quickCreateVisit": "Create a visit",
     "aria": "Planning assistant",
+    "stripTitle": "AI insights and recommendations",
     "insightsEmptyTitle": "Not configured",
     "insightsEmptyBody": "AI insights are not configured for this workspace.",
     "quickTitle": "Quick Actions",
@@ -446,16 +449,13 @@
     }
   },
   "buckets": {
-    "aria": "Planning buckets",
-    "needsPlanning": "Needs Planning",
-    "highRisk": "High Risk",
+    "aria": "Planning counts — select one to filter the list",
     "draft": "Draft",
     "returned": "Returned",
     "published": "Published",
-    "expiring": "Expiring",
     "expired": "Expired",
-    "aiSuggested": "AI Suggested",
-    "notConfigured": "Not configured"
+    "notConfigured": "Not configured",
+    "activeNote": "Filtering the list"
   },
   "toolbar": {
     "label": "Planning filters",

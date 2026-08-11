@@ -18,9 +18,11 @@ import type { GeoMarkerData } from "@/components/GeoMap";
 import { formatDate } from "@/lib/dates";
 import PackageTypeSelector from "@/components/PackageTypeSelector";
 import { createImmediateVisit, type ImmResult } from "./actions";
-import AuthorityBar, { type Chip } from "./AuthorityBar";
 import EmptyState from "@/components/EmptyState";
-import type { ImmediateFormStrings } from "@/features/planning-immediate/strings";
+import DispatchProtections from "@/components/sections/planning-immediate/dispatch-protections/dispatch-protections";
+import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
+import { dispatchProtections } from "@/features/planning-immediate/protections";
+import type { ImmediateFormStrings, ImmediateMessages } from "@/features/planning-immediate/strings";
 import type { ImmediateFactory, ImmediatePlanningData } from "@/features/planning-immediate/types";
 import type { Locale } from "@/lib/i18n";
 
@@ -37,10 +39,11 @@ const GeoMap = dynamic(() => import("@/components/GeoMap"), {
   loading: () => <EmptyState glyph="…" title={mapLoadingLabel} inline bare role="status" ariaBusy />,
 });
 
-export default function ImmediateForm({ data, locale, strings }: {
+export default function ImmediateForm({ data, locale, strings, messages }: {
   data: ImmediatePlanningData;
   locale: Locale;
   strings: ImmediateFormStrings;
+  messages: ImmediateMessages;
 }) {
   const { factories, packages, inspectors, cityOptions, cityByRegion, actorName, visitTypes, manualReasons, initialFactoryId } = data;
   const { actorMode, manualEntryAllowed: manualAllowed } = data;
@@ -142,47 +145,20 @@ export default function ImmediateForm({ data, locale, strings }: {
       : r === "Referral from authority" ? strings.reasonReferral
         : r === "Other" ? strings.reasonOther : r;
 
-  // --- 9 protection chips — derived entirely from the state above, no new
-  // policy objects. Server-side blockingField wins if the server found
-  // something the client couldn't (e.g. exact-CR match, availability race). ---
-  const bf = state.blockingField;
-  const chips: Chip[] = [
-    { id: "authorized", label: strings.chipAuthorizedLabel, state: "satisfied", detail: strings.chipAuthorizedDetail },
-    {
-      id: "reason", label: strings.chipReasonLabel, controlId: "imm-reason",
-      state: (bf === "reason" || !reasonOk) ? "blocking" : "satisfied",
-      detail: (bf === "reason" || !reasonOk)
-        ? (reason === "Other" && notes.trim() === "" ? strings.chipReasonOtherBlocked : strings.chipReasonBlocked)
-        : reasonLabel(reason),
-    },
-    {
-      id: "identity", label: strings.chipIdentityLabel, controlId: mode === "registered" ? "imm-search" : "imm-not-found",
-      state: (bf === "identity" || !identityOk) ? "blocking" : "satisfied",
-      detail: (bf === "identity" || !identityOk) ? strings.chipIdentityBlocked : (mode === "registered" ? strings.chipIdentityRegistered : strings.chipIdentityTemporary),
-    },
-    {
-      id: "location", label: strings.chipLocationLabel, controlId: "imm-lat",
-      state: (bf === "location" || !locationOk) ? "blocking" : "satisfied",
-      detail: (bf === "location" || !locationOk) ? strings.chipLocationBlocked : (locationSource === "official" ? strings.chipLocationOfficial : strings.chipLocationManual),
-    },
-    {
-      id: "package", label: strings.chipPackageLabel, controlId: "imm-package",
-      state: "truth",
-      detail: packageId ? (packages.find(p => p.id === packageId)?.version_label ?? "") : strings.packageOptionalDetail,
-    },
-    {
-      id: "inspector", label: strings.chipInspectorLabel, controlId: actorMode === "planner" ? "imm-inspector" : undefined,
-      state: "truth",
-      detail: inspectorId ? strings.chipInspectorManual : strings.inspectorAutoDetail,
-    },
-    {
-      id: "window", label: strings.chipWindowLabel, controlId: actorMode === "planner" ? "imm-window-start" : undefined,
-      state: (bf === "window" || !windowOk) ? "blocking" : "satisfied",
-      detail: (bf === "window" || !windowOk) ? strings.chipWindowBlocked : (actorMode === "inspector" ? strings.chipWindowImmediate : strings.chipWindowSet),
-    },
-    { id: "audit", label: strings.chipAuditLabel, state: "truth", detail: strings.chipAuditDetail },
-    { id: "notify", label: strings.chipNotifyLabel, state: "truth", detail: actorMode === "planner" ? strings.chipNotifyDetail : strings.inspectorStartNow },
-  ];
+  const protections = dispatchProtections({
+    blockingField: state.blockingField ?? null,
+    actorMode,
+    identityMode: mode,
+    reasonSatisfied: reasonOk,
+    reasonLabel: reasonLabel(reason),
+    reasonNeedsNotes: reason === "Other" && notes.trim() === "",
+    identitySatisfied: identityOk,
+    locationSatisfied: locationOk,
+    locationSource,
+    checklistLabel: packageId ? (packages.find(p => p.id === packageId)?.version_label ?? null) : null,
+    inspectorChosen: inspectorId !== "",
+    windowSatisfied: windowOk,
+  }, messages);
 
   const mapMarkers: GeoMarkerData[] = [
     ...(factory?.official_lat != null && factory?.official_lng != null ? [{ id: "official", lat: factory.official_lat, lng: factory.official_lng, label: strings.locationSourceOfficial, tone: "neutral" as const }] : []),
@@ -196,11 +172,11 @@ export default function ImmediateForm({ data, locale, strings }: {
       <input type="hidden" name="actor_mode" value={actorMode} />
       <input type="hidden" name="locale" value={locale} />
       <input type="hidden" name="location_source" value={locationSource ?? ""} />
-      <AuthorityBar chips={chips} strings={{ groupLabel: strings.chipGroupLabel, satisfied: strings.chipSatisfied, blocking: strings.chipBlocking, truth: strings.chipTruth, allSatisfied: strings.chipAllSatisfied, blockedAnnouncement: strings.chipBlockedAnnouncement }} />
+      <DispatchProtections protections={protections} messages={messages.protections} />
 
-      <div className="alert alert-warning" role="status">
-        <div><div className="alert-title">{strings.r05BlockedTitle}</div><p>{strings.r05BlockedBody}</p></div>
-      </div>
+      <PlanningNotice tone="warning">
+        <strong>{strings.r05BlockedTitle}</strong> {strings.r05BlockedBody}
+      </PlanningNotice>
 
       <div className="saqeel-reference__fields">
         <section className="panel" aria-labelledby="immediate-identity-heading">

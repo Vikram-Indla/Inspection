@@ -1,6 +1,36 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-11` · `Updated by: T-052 slice 1 — /planning/immediate foundation`
+`Last updated: 2026-08-11` · `Updated by: T-053 — /planning null vocabulary`
+
+## Where `/planning` stands (2026-08-11)
+
+T-053 fixed the defect the owner screenshotted: the list route reported
+**"No visits match" inside the cells of rows that had matched**, in the KPI
+tiles, and in every status-filter option. One binding caused all of it —
+`view.ts` had `const dash = labels.empty`, where `labels.empty` is the
+empty-*list* sentence.
+
+Two rulings from this task generalise:
+
+- **An empty-state sentence and a null-value placeholder are different strings.**
+  Sharing one key makes a screen contradict itself the moment data arrives, and
+  the failure is silent: types pass, gates pass, nothing throws. `/planning` now
+  distinguishes `table.noValue` ("Not assigned") for a genuinely absent value
+  from `table.notConfigured` for a field with no data source wired at all — the
+  WEB-009 vocabulary, applied per-field rather than per-screen.
+- **A control that can never hold a value is not an empty state, it is dead
+  UI.** Four of eight KPI tiles and three of thirteen table columns were
+  hardcoded `null` — no source existed for any of them — and they were rendering
+  an apology in half the space above the fold. They were deleted, not restyled.
+  The check is whether a data path exists, not whether today's payload is empty.
+
+Also removed: the AI band's two panels (hardcoded `<EmptyState>`, no data prop,
+could never render content) and the Quick Actions grid, whose entries duplicated
+the header create-menu's hrefs exactly and the KPI tiles' counts — Draft and
+Returned had each been rendering three times on one screen. Net **−243 lines**.
+
+**Owed on this route:** browser pass, axe, e2e. Same blocker as everything
+below — no seeded account.
 
 ## Where `/planning/immediate` stands (2026-08-11)
 
@@ -9,7 +39,21 @@ its legacy state — 5 files, 913 lines, zero SAQEEL imports — and is being
 rebuilt in five slices. Slice 1 (T-052) took the foundation: `page.tsx`
 **252 → 26**, every read behind an `unauthorized | ready` union, and all
 **128 strings into `planning.immediate` in both locales**, which took the screen
-off `ui_strings` entirely.
+off `ui_strings` entirely. **Slice 2 (T-054) is the first visible one** — the
+nine dispatch protections and the R05 notice, with `AuthorityBar.tsx` deleted at
+**6 hooks → 0** and the emoji states replaced by `StatusPill` text-plus-shape.
+
+Two more rulings worth carrying:
+
+- **`saqeel.css` has no global `button` reset, by design.** A `<button>` styled
+  as a surface carries a UA border and inherits neither `font` nor `color`, so
+  every migrated component that does this resets it by hand. Copying a rule set
+  onto a different tag is not copying the solution — ask what the user-agent
+  stylesheet already paints on that element.
+- **An announcement is usually a derived string, not an effect.** React mutates
+  a text node only when the string changes, which is precisely "announce when
+  the set changes, not on every keystroke". Two `useEffect`s and a `useRef`
+  existed to reproduce what render already does.
 
 Three rulings from this slice generalise:
 

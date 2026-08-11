@@ -18,12 +18,12 @@ export type PlanningDraftsStrings = {
   emptyTitle: string;
 };
 
-export default function PlanningDrafts({ drafts, strings, methods, referenceUnavailable, empty, locale, viewerId }: {
+export default function PlanningDrafts({ drafts, strings, methods, referenceUnavailable, noValue, locale, viewerId }: {
   drafts: PlanningDraftPlan[];
   strings: PlanningDraftsStrings;
   methods: Record<string, string>;
   referenceUnavailable: string;
-  empty: string;
+  noValue: string;
   locale: Locale;
   viewerId: string | null;
 }) {
@@ -41,7 +41,7 @@ export default function PlanningDrafts({ drafts, strings, methods, referenceUnav
       header: strings.columns.status,
       cell: () => <StatusPill tone="neutral">{strings.statusDraft}</StatusPill>,
     },
-    { key: "createdBy", header: strings.columns.createdBy, cell: draft => draft.createdByName ?? empty },
+    { key: "createdBy", header: strings.columns.createdBy, cell: draft => draft.createdByName ?? noValue },
     {
       key: "created",
       header: strings.columns.created,
@@ -63,7 +63,7 @@ export default function PlanningDrafts({ drafts, strings, methods, referenceUnav
           label={strings.discard}
           discardAria={fill(strings.discardAria, { ref: draft.planReference ?? referenceUnavailable })}
         />
-      ) : empty,
+      ) : null,
     },
   ];
   return (

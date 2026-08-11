@@ -10,6 +10,50 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-054 · `/planning/immediate` — dispatch protections + R05 notice (slice 2/5)
+`status: done (not verified in a browser)` · `rules: WEB-000…004, WEB-009, WEB-011, WEB-012` · `est: 1.5h`
+`record:` [2026-08-11-T-054-immediate-dispatch-protections](sessions/2026-08/2026-08-11-T-054-immediate-dispatch-protections.md)
+
+The first block a planner reads. `AuthorityBar.tsx` **deleted** — 95 lines,
+**6 hooks → 0**, 3 emoji states → `StatusPill` text-plus-shape, 12 legacy
+classes → 0, and 3 focusable no-op buttons → plain items. Policy moved to
+`features/planning-immediate/protections.ts`.
+
+Built on `review-readiness`'s exact declarations, not chosen values. **The six
+protections with an owning control are `<button>`s, and `saqeel.css` has no
+global button reset by design** — `.chip` resets `border`/`font`/`color`/
+`text-align`/`background` by hand, the way every other migrated component that
+styles a button as a surface does. Hover is `--sqx-surface-subtle`, never
+`--sqx-surface-accent` (WEB-009 §11 reserves that for selection).
+
+The assertive announcement needed no effect — it is a derived string, and React
+mutates that text node only when it changes. The blocking summary now lists
+**every** blocker; the legacy showed one to sighted users and all of them to
+screen readers. `scrollIntoView({behavior:"smooth"})` deleted — it ignored
+`prefers-reduced-motion`, and `focus()` already scrolls.
+
+**Owed:** browser, keyboard, Arabic/RTL, light/dark, axe — no seeded account.
+
+### T-053 · `/planning` — null vocabulary, dead tiles, duplicate entry points
+`status: partial (not verified in a browser)` · `rules: WEB-000, WEB-002…004, WEB-006 §4, WEB-009, WEB-011, WEB-013` · `est: 1h`
+`record:` [2026-08-11-T-053-planning-null-vocabulary](sessions/2026-08/2026-08-11-T-053-planning-null-vocabulary.md)
+
+`view.ts` bound `const dash = labels.empty` — so `table.empty` ("No visits
+match") rendered as the placeholder in **every** empty cell, KPI tile and status
+option, on rows that had matched. Split into `table.noValue` ("Not assigned",
+owner's choice) for nullable fields and `table.notConfigured` for fields with no
+data source. **4 of 8 buckets deleted** (hardcoded `count: null, href: null`),
+the rest rebuilt on `StatCard` + `CardGrid`; `planning-buckets.module.css`
+deleted. AI band **3 columns → 1 strip** — both AI panels hardcoded an
+`EmptyState` and could never render content. Quick Actions removed: creation
+duplicated the header menu's three hrefs exactly, review duplicated the tiles.
+Table **13 → 10 columns**. Skeleton corrected 7 → 11 columns, 8 → 4 tiles.
+Net **−243 lines**.
+
+**Owed:** browser pass (light/dark, EN/AR, 320 px), axe, e2e — dev server
+requires an authenticated `business_staff` session. **4 new Arabic strings need
+native review.** Perf numbers are a measurement request (WEB-005 §8).
+
 ### T-052 · `/planning/immediate` — route, data layer, bilingual resources (slice 1/5)
 `status: done (not verified in a browser)` · `rules: WEB-000…004, WEB-008, WEB-011, WEB-013` · `est: 2h`
 `record:` [2026-08-11-T-052-immediate-foundation](sessions/2026-08/2026-08-11-T-052-immediate-foundation.md)
@@ -790,6 +834,21 @@ filters and tabs moved to `searchParams`.
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
 
+- **`components/sections/planning/*` is a dead parallel tree** (found in T-053).
+  Only `planning-skeleton` is a value import, from `planning/loading.tsx`.
+  `planning-insights`, `planning-recommendations`, `planning-quick-actions`,
+  `planning-stat-cards`, `planning-visit-table`, `planning-filter-bar` and
+  `planning-ai-advisory` render nowhere, and `features/planning/assistant-view.ts`
+  is imported by exactly one of them — fully orphaned. Needs a retire-or-adopt
+  ruling before anyone edits `components/planning/*` again and mistakes which
+  tree is live.
+- **`authority` and `risk` have no data source on `/planning`** (found in T-053).
+  Both were hardcoded placeholders in `view.ts`; they now read "Not configured"
+  in the visit drawer. Wiring them is a product-contract question.
+- **`npm run lint` and `npm run gates` do not exist** (found in T-053).
+  `CLAUDE.md`, `WEB-006` and `sessions/_TEMPLATE-session.md` all require them;
+  `apps/web/package.json` has neither. Either add the scripts or correct the
+  rulebook — right now every record ticks boxes that cannot be run.
 - **`SegmentedControl`'s `subtle` default is wrong for a toggle.** Five shipped
   toggles pass `tone="accent"`; the only `subtle` consumers left are three tab
   strips (`catalogue-screen`, `regulation-workspace`, `IdentityDossier`'s map

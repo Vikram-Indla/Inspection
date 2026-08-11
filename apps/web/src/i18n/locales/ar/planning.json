@@ -53,6 +53,8 @@
   "table": {
     "caption": "زيارات التخطيط",
     "empty": "لا توجد زيارات مطابقة",
+    "noValue": "غير مُسند",
+    "notConfigured": "غير مُهيَّأ",
     "referenceUnavailable": "المرجع غير متاح",
     "colVisitRef": "مرجع الزيارة",
     "colPlanningType": "نوع التخطيط",
@@ -162,6 +164,7 @@
     "quickWeeklyPlan": "إنشاء خطة جماعية",
     "quickCreateVisit": "إنشاء زيارة",
     "aria": "مساعد التخطيط",
+    "stripTitle": "رؤى وتوصيات الذكاء الاصطناعي",
     "insightsEmptyTitle": "غير مهيأ",
     "insightsEmptyBody": "رؤى الذكاء الاصطناعي غير مهيأة لمساحة العمل هذه.",
     "quickTitle": "إجراءات سريعة",
@@ -446,16 +449,13 @@
     }
   },
   "buckets": {
-    "aria": "فئات التخطيط",
-    "needsPlanning": "بحاجة إلى تخطيط",
-    "highRisk": "خطورة عالية",
+    "aria": "أعداد التخطيط — اختر واحدًا لتصفية القائمة",
     "draft": "مسودة",
     "returned": "مرجعة",
     "published": "منشورة",
-    "expiring": "على وشك الانتهاء",
     "expired": "منتهية",
-    "aiSuggested": "مقترح ذكي",
-    "notConfigured": "غير مهيأ"
+    "notConfigured": "غير مهيأ",
+    "activeNote": "يُصفّي القائمة"
   },
   "toolbar": {
     "label": "عوامل تصفية التخطيط",
