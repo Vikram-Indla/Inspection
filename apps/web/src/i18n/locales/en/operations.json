@@ -170,6 +170,35 @@
       "exit": "Exit wallboard"
     }
   },
+  "board": {
+    "title": "Exception board",
+    "heading": "Open exceptions",
+    "description": "Every count traces to a real record. Decisions stay on the record that owns them — this board only groups and links.",
+    "mostRecent": "Most recent",
+    "loading": {
+      "label": "Loading the exception board"
+    },
+    "off": {
+      "title": "Not available yet",
+      "body": "This board is not turned on here."
+    },
+    "degraded": "Some exception sources are unavailable. The groups below are the ones that could be read; an unavailable source is not shown as zero.",
+    "empty": {
+      "title": "No open exceptions you can see",
+      "body": "Open cases and risk exceptions show up here. Empty may also mean there are none you are allowed to see.",
+      "degraded": "No source could be verified. Retry after the affected service recovers."
+    },
+    "category": {
+      "review_overdue": "Review overdue",
+      "sync_conflict": "Sync conflict",
+      "override_pending": "Location exception pending",
+      "correction_overdue": "Corrective action overdue"
+    },
+    "action": {
+      "review_overdue": "Open review queue",
+      "correction_overdue": "Open Execution"
+    }
+  },
   "monitoring": {
     "title": "Visit and inspector monitoring",
     "description": "Visit status, assignments and the latest recorded geofence results you can see."
