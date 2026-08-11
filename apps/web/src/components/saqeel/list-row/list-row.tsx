@@ -21,7 +21,8 @@ export function ListRows({ children, label, labelledBy, bleed = true }: {
   );
 }
 
-export function ListRow({ leading, title, description, meta, trailing, href }: {
+export function ListRow({ badge, leading, title, description, meta, trailing, href }: {
+  badge?: ReactNode;
   leading?: ReactNode;
   title: ReactNode;
   description?: ReactNode;
@@ -33,7 +34,7 @@ export function ListRow({ leading, title, description, meta, trailing, href }: {
     <div className={styles.row} role="listitem">
       {leading ? <span className={styles.leading}>{leading}</span> : null}
       <span className={styles.body}>
-
+        {badge ? <span className={styles.badge}>{badge}</span> : null}
         <span className={styles.title} dir="auto">
           {href
             ? <Link className={styles.link} href={href} prefetch={false}>{title}</Link>

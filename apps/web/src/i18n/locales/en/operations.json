@@ -33,8 +33,8 @@
     "sla": "Deadline breach",
     "action": "Corrective action overdue",
     "notification": "Notification failed",
-    "override": "Location exception decision required",
-    "cancellation": "Cancellation decision required",
+    "override": "Location exception",
+    "cancellation": "Cancellation request",
     "overdueStart": "Overdue to start",
     "overdueSubmit": "Overdue to submit",
     "reminder": "Reminder {pct}%"

@@ -35,13 +35,11 @@ export default function OperationsExceptions({ rows, boardHref, strings }: {
         level="h2"
         titleId="operations-exceptions"
         title={strings.title}
+        description={strings.scope}
         trailing={
-          <>
-            <StatusPill tone="neutral" ping={false}>{strings.scope}</StatusPill>
-            <Button variant="secondary" size="sm" href={boardHref} label={strings.openBoard}>
-              {strings.openBoard}
-            </Button>
-          </>
+          <Button variant="secondary" size="sm" href={boardHref} label={strings.openBoard}>
+            {strings.openBoard}
+          </Button>
         }
       />
       <CardBody>
@@ -50,10 +48,9 @@ export default function OperationsExceptions({ rows, boardHref, strings }: {
             {rows.slice(0, MAX_ROWS).map(row => (
               <ListRow
                 key={row.id}
-                leading={<StatusPill tone="warning" ping={false}>{row.kind}</StatusPill>}
+                badge={<StatusPill tone="warning" ping={false}>{row.kind}</StatusPill>}
                 title={row.title}
-                description={row.detail}
-                meta={row.atLabel}
+                description={row.atLabel ? `${row.detail} · ${row.atLabel}` : row.detail}
                 trailing={
                   <Button
                     variant="secondary" size="sm" href={row.href}

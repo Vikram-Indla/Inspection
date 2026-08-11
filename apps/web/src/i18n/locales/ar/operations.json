@@ -33,8 +33,8 @@
     "sla": "تجاوز الموعد النهائي",
     "action": "إجراء تصحيحي متأخر",
     "notification": "فشل الإشعار",
-    "override": "قرار مطلوب على استثناء الموقع",
-    "cancellation": "قرار مطلوب على الإلغاء",
+    "override": "استثناء موقع",
+    "cancellation": "طلب إلغاء",
     "overdueStart": "متأخرة عن البدء",
     "overdueSubmit": "متأخرة عن التقديم",
     "reminder": "تذكير {pct}٪"

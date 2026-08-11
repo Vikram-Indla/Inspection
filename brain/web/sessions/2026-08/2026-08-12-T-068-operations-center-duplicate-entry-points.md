@@ -22,7 +22,9 @@ without losing any function, hold the design system, and rank the findings P0/P1
 | `components/operations/operations-toolbar/operations-toolbar.tsx` | two route buttons deleted | 69 → 55 |
 | `components/operations/operations-map-panel/operations-map-panel.tsx` | `action` slot, neutral count | 29 → 35 |
 | `components/operations/operations-summary/operations-summary.tsx` | optional action, region cards | 75 → 81 |
-| `components/operations/operations-exceptions/operations-exceptions.tsx` | kind / record / detail / time | 63 → 74 |
+| `components/operations/operations-exceptions/operations-exceptions.tsx` | kind / record / detail / time | 63 → 73 |
+| `components/saqeel/list-row/list-row.tsx` | `badge` slot (owner ruling) | 51 → 54 |
+| `components/saqeel/list-row/list-row.module.css` | `.badge` | 107 → 116 |
 | `i18n/locales/{en,ar}/operations.json` | +`highlights` block, −4 dead keys | — |
 | `e2e/web-admin-m3-operations.spec.ts` | three assertions re-pointed, one added | — |
 
@@ -69,11 +71,51 @@ its **active-visit count** — a real figure where a fake alarm had been.
 
 **A list sorted by a key it never shows is unreadable.** `buildHighlights` computed
 `at` for every row, sorted descending by it, and `ExceptionRow` had no field for
-it — the approved design's highlight row carries `h.time` as a third line. Added
-via `ListRow`'s existing `meta` slot. **Every leading pill also read the same word,
-"Open"** — a status that never varies carries no information. The pill now carries
-the row's *kind*, which was previously the title, and the title is the record. No
-new copy: it is a slot re-assignment.
+it — the approved design's highlight row carries `h.time` under the description.
+**Every leading pill also read the same word, "Open"** — a status that never varies
+carries no information. The pill now carries the row's *kind*, which was previously
+the title, and the title is the record. No new copy: it is a slot re-assignment.
+
+**`ListRow.meta` is a right-hand column, not a third body line — and the row is
+`flex`, so anything after `body { flex: 1 }` is pinned to the far edge.** The
+timestamp first went into `meta`; on a full-width card that put ~1000 px of dead
+space between the detail and the date, and parked the date against `Open record`
+so it read as a caption for the button. Owner-reported on the render. **The design
+puts the time inside the body**, so `detail · time` is now one metadata line and
+the right edge carries only the action. *A slot named for the right value can
+still be the wrong position.*
+
+**A scope disclosure is not an action, so it must not be pill-shaped in the action
+corner.** "Records filtered to your access" sat as a `StatusPill` immediately left
+of the `Exception board` button — same size, same rounding, one inert. It is a
+sentence about the data, so it is now the card's `description`. The header holds
+exactly one control.
+
+**`ListRow` gained a `badge` slot — owner ruling, mid-session.** With the status
+in `leading`, the pill sat in its own column and every row title was indented by
+whatever that row's pill happened to measure, so no two titles shared a left edge.
+The owner asked for the pill stacked above the text. `badge` renders as the first
+child of `.body` at `align-self: flex-start`, so it hugs its content instead of
+stretching the column, and every title now starts at the card inset. `leading`
+stays for the two consumers that use it. **Additive: `search-results` and
+`operations-alerts` are unchanged.**
+
+This is the pattern WEB-002 §2 prescribes — a primitive gap is raised and built
+only on a ruling — and the fifth instance of it in this programme after
+`Button.busy`, `SelectOption.disabled`, `Select.id` and `Text.dir`.
+
+**It also inverts WEB-014 §5 for list rows, deliberately.** The owner's card
+ruling is title-first with `CardHeader.eyebrow` retiring; a status pill above a
+row title is that shape. The ruling governs **card headers**, where the eyebrow
+was a *subtitle in the wrong slot*. Here the pill is not a subtitle — it is the
+row's classification, and the alternative is an indent that varies per row.
+
+**Two kind labels were shortened, and the reason outlived the layout.** With the
+pill in a leading column, "Location exception decision required" ran 2.5× the
+width of "Deadline breach" and dragged its title with it. The `badge` slot makes
+width harmless — but the phrase that made them overlong, *decision required*,
+restates the `Open record` button on the same row, so the short forms stayed:
+`Location exception` and `Cancellation request`.
 
 **Promoting a string makes its translation gap conspicuous, and that makes it
 yours.** The five highlight kinds and three deadline kinds were `t(key, "English")`
@@ -114,6 +156,8 @@ entry points to /operations/exceptions   3 → 1
 navigation destinations lost   0
 KPI CTAs   5 → 1  (one per distinct destination)
 pinging pills on National performance   8 → 1
+pill-shaped elements in the exceptions header   2 → 1 (the one that is a control)
+exception kind pill width spread   90–230 px → 90–155 px
 i18n keys deleted (both locales)   4
 i18n keys added (both locales)   8
 client islands   unchanged (RevampOperationsCenter, OperationsMapWorkspace)
