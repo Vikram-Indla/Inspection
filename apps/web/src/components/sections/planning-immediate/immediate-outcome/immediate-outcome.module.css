@@ -1,0 +1,32 @@
+.outcomes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+  margin: 0;
+  padding-inline-start: var(--sqx-space-5);
+}
+
+.actionBar {
+  position: sticky;
+  z-index: var(--sqx-z-sticky);
+  inset-block-end: var(--sqx-space-3);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--sqx-space-3);
+  padding: var(--sqx-inset-control);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-card);
+  background: var(--sqx-surface-raised);
+  box-shadow: var(--sqx-shadow-card);
+}
+
+@media (max-width: 40rem) {
+  .actionBar {
+    inset-block-end: 0;
+  }
+
+  .actionBar > * {
+    flex: 1;
+  }
+}

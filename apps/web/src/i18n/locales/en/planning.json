@@ -550,7 +550,6 @@
     "discardAria": "Discard draft {ref}",
     "emptyTitle": "No draft plans"
   },
-
   "single": {
     "loading": "Loading the single-visit planner…",
     "step": "Step {current} of {total}",
@@ -1128,7 +1127,19 @@
       "inspectorAutoDetail": "No preference — Supervisor confirms assignment",
       "inspectorStartNow": "Inspector-created: assigned to you, no planning window, then start through the standard inspection lifecycle",
       "notes": "Notes",
-      "notesPlaceholder": "Context for the inspector — appended to the urgency reason"
+      "notesPlaceholder": "Context for the inspector — appended to the urgency reason",
+      "window": {
+        "label": "Visit window",
+        "pickStart": "Choose a start date",
+        "pickEnd": "Choose an end date",
+        "reset": "Clear",
+        "apply": "Apply window",
+        "empty": "No window chosen",
+        "startTime": "Start time",
+        "endTime": "End time",
+        "previousMonth": "Previous month",
+        "nextMonth": "Next month"
+      }
     },
     "protections": {
       "groupLabel": "Immediate dispatch protections",

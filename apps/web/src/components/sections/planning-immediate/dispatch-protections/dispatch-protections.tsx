@@ -1,6 +1,7 @@
 "use client";
 import { Card, CardBody } from "@/components/saqeel/card/card";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
+import { Heading, Text } from "@/components/saqeel/type";
 import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
 import type { Protection, ProtectionState } from "@/features/planning-immediate/protections";
 import { blockingProtections } from "@/features/planning-immediate/protections";
@@ -40,7 +41,7 @@ export default function DispatchProtections({ protections, messages }: {
   return (
     <Card as="section" labelledBy={HEADING_ID}>
       <CardBody>
-        <h2 className={styles.heading} id={HEADING_ID}>{messages.groupLabel}</h2>
+        <Heading level={2} visual="subheading" id={HEADING_ID}>{messages.groupLabel}</Heading>
 
         <div className={styles.grid} role="group" aria-label={messages.groupLabel}>
           {protections.map(protection => {
@@ -48,8 +49,8 @@ export default function DispatchProtections({ protections, messages }: {
             const pill = <StatusPill tone={TONES[protection.state]}>{state}</StatusPill>;
             const body = (
               <span className={styles.body}>
-                <span className={styles.name}>{protection.name}</span>
-                <span className={styles.detail}>{protection.detail}</span>
+                <Text role="label" as="span">{protection.name}</Text>
+                <Text role="body" tone="muted" as="span">{protection.detail}</Text>
               </span>
             );
 
@@ -80,7 +81,7 @@ export default function DispatchProtections({ protections, messages }: {
               <span className={styles.blockers}>
                 {blockers.map(blocker => (
                   <span className={styles.blocker} key={blocker.id}>
-                    <span className={styles.name}>{blocker.name}</span>
+                    <Text role="label" as="span">{blocker.name}</Text>
                     {" — "}{blocker.detail}
                   </span>
                 ))}
