@@ -6,15 +6,17 @@ import StatusPill from "@/components/saqeel/status-pill/status-pill";
 
 export type ExceptionRow = {
   readonly id: string;
-  readonly label: string;
-  readonly description: string;
+  readonly kind: string;
+  readonly title: string;
+  readonly detail: string;
+  readonly atLabel: string | null;
   readonly href: string;
 };
 
 export type ExceptionStrings = {
   readonly title: string;
   readonly scope: string;
-  readonly open: string;
+  readonly openBoard: string;
   readonly openRecord: string;
   readonly emptyTitle: string;
   readonly emptyBody: string;
@@ -22,8 +24,9 @@ export type ExceptionStrings = {
 
 const MAX_ROWS = 8;
 
-export default function OperationsExceptions({ rows, strings }: {
+export default function OperationsExceptions({ rows, boardHref, strings }: {
   rows: readonly ExceptionRow[];
+  boardHref: string;
   strings: ExceptionStrings;
 }) {
   return (
@@ -32,7 +35,14 @@ export default function OperationsExceptions({ rows, strings }: {
         level="h2"
         titleId="operations-exceptions"
         title={strings.title}
-        trailing={<StatusPill tone="neutral" ping={false}>{strings.scope}</StatusPill>}
+        trailing={
+          <>
+            <StatusPill tone="neutral" ping={false}>{strings.scope}</StatusPill>
+            <Button variant="secondary" size="sm" href={boardHref} label={strings.openBoard}>
+              {strings.openBoard}
+            </Button>
+          </>
+        }
       />
       <CardBody>
         {rows.length ? (
@@ -40,13 +50,14 @@ export default function OperationsExceptions({ rows, strings }: {
             {rows.slice(0, MAX_ROWS).map(row => (
               <ListRow
                 key={row.id}
-                leading={<StatusPill tone="warning">{strings.open}</StatusPill>}
-                title={row.label}
-                description={row.description}
+                leading={<StatusPill tone="warning" ping={false}>{row.kind}</StatusPill>}
+                title={row.title}
+                description={row.detail}
+                meta={row.atLabel}
                 trailing={
                   <Button
                     variant="secondary" size="sm" href={row.href}
-                    label={`${strings.openRecord} — ${row.label}`}
+                    label={`${strings.openRecord} — ${row.kind} — ${row.title}`}
                   >
                     {strings.openRecord}
                   </Button>

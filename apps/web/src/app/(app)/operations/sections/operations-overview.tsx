@@ -1,4 +1,5 @@
 import { useT } from "@/lib/i18n";
+import { getMessages } from "@/i18n/messages";
 import type { OperationsData } from "@/features/operations/queries";
 import type { OperationsScope } from "@/features/operations/scope";
 import RevampOperationsCenter from "../RevampOperationsCenter";
@@ -16,7 +17,8 @@ export default async function OperationsOverview({ data, scope }: {
   const { t, locale } = await useT();
   const lab = makeLabelers(locale, t);
   const model = buildOperationsModel(data, scope);
-  const { mapViewHref, performanceAnchor } = buildViewHrefs(scope);
+  const { performanceAnchor } = buildViewHrefs(scope);
+  const { common } = getMessages(locale);
   const mapStrings: OperationsMapWorkspaceStrings = {
     mapLabel: t("ops.map.workspaceLabel", "Operations map"),
     loadingTitle: t("ops.map.loading.title", "Loading KSA map"),
@@ -71,13 +73,12 @@ export default async function OperationsOverview({ data, scope }: {
       <RevampOperationsCenter
         locale={locale}
         view={scope.view}
-        mapViewHref={mapViewHref}
         mapEntries={buildMapEntries(data, model, lab)}
         regionalMapEntries={buildRegionalMapEntries(data, model, lab)}
         mapStrings={mapStrings}
         counts={model.counts}
         monitoredCount={model.monitored.length}
-        highlights={buildHighlights(data, model, lab, performanceAnchor)}
+        highlights={buildHighlights(data, model, lab, performanceAnchor, common.state.unavailable)}
         regions={buildRegionSummaries(data, model)}
       />
     </>

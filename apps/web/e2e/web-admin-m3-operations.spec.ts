@@ -34,6 +34,12 @@ const liveCssSource = read("src/app/(app)/operations/live/live.module.css");
 const runtimeCssSource = read("src/app/saqeel-runtime.css");
 
 test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 composition contract", () => {
+  // The two unsourced cards were an em-dash carrying a live drill-through. An
+  // em-dash is not the WEB-009 absence vocabulary and a card that can never
+  // hold a value must not offer an action — "Active operational alerts" drilled
+  // to the exception board while the exception rows render on this same screen.
+  // Both still render, still count five, and are still explicitly undecided:
+  // the assertion now pins `common.state.notConfigured` and the absent action.
   test("renders exactly five governed KPI cards with two explicit decision blocks", () => {
     for (const key of ["activeVisits", "onTheWay", "executing", "submittedToday", "alerts"]) {
       expect(centerSource).toContain(`stat.${key}`);
@@ -44,16 +50,23 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 composition contract", ()
     ]) {
       expect(enOpsCopy).toContain(`"${label}"`);
     }
-    expect(centerSource.match(/value: "—"/g)).toHaveLength(2);
-    expect(centerSource).not.toMatch(/submittedToday, value: (?!"—")/);
-    expect(centerSource).not.toMatch(/alerts, value: (?!"—")/);
+    expect(centerSource).not.toContain('value: "—"');
+    expect(centerSource.match(/value: notConfigured, configured: false/g)).toHaveLength(2);
+    expect(centerSource).toContain("stat.submittedToday, value: notConfigured, configured: false }");
+    expect(centerSource).toContain("stat.alerts, value: notConfigured, configured: false }");
+    expect(centerSource).not.toMatch(/configured: false, href:/);
   });
 
   test("keeps Operations Map and National Performance as two primary views", () => {
     expect(enOpsCopy).toContain('"Operations map"');
     expect(enOpsCopy).toContain('"National performance"');
     expect(centerSource).toContain('useState<"map" | "performance">(view)');
-    expect(centerSource).toContain('view === "performance"');
+    // One switch drives the whole screen. The regions section used to be gated
+    // on the `view` prop — the URL value, which the toggle never updates — so
+    // selecting National performance swapped the map pins and rendered no
+    // national content at all. Both branches now read the same `activeView`.
+    expect(centerSource.match(/activeView === "performance"/g)).toHaveLength(2);
+    expect(centerSource).not.toMatch(/[^e]view === "performance"/);
     expect(centerSource).toContain("<OperationsRegions");
     const queuesSection = read("src/app/(app)/operations/sections/queues-section.tsx");
     const exportSection = read("src/app/(app)/operations/sections/export-section.tsx");
@@ -285,13 +298,26 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await expect(page.getByRole("radio", { name: "Operations map" })).toHaveAttribute("aria-checked", "true");
     await expect(page.getByRole("heading", { name: "Saudi Arabia", exact: true })).toBeVisible();
     await expect(page.locator('[aria-labelledby="operations-summary"] article')).toHaveCount(5);
-    const dashValues = page.locator('[aria-labelledby="operations-summary"] article', { hasText: "—" });
-    await expect(dashValues).toHaveCount(2);
+    const undecided = page.locator('[aria-labelledby="operations-summary"] article', { hasText: "Not configured" });
+    await expect(undecided).toHaveCount(2);
+    await expect(page.locator("#operations-regions")).toHaveCount(0);
 
     await page.goto("/operations?view=performance");
     await expect(page.getByRole("radio", { name: "National performance" })).toHaveAttribute("aria-checked", "true");
     await expect(page.getByRole("heading", { name: "National performance by region", exact: true })).toBeVisible();
     await expect(page.locator("#operations-regions")).toBeVisible();
+  });
+
+  // Regression guard for the split-brain toggle: the segmented control must
+  // reveal and withdraw the national section without a navigation, because
+  // both datasets are already on the client.
+  test("the perspective toggle drives the national section, not only the map", async ({ page }) => {
+    await page.goto("/operations");
+    await expect(page.locator("#operations-regions")).toHaveCount(0);
+    await page.getByRole("radio", { name: "National performance" }).click();
+    await expect(page.locator("#operations-regions")).toBeVisible();
+    await page.getByRole("radio", { name: "Operations map" }).click();
+    await expect(page.locator("#operations-regions")).toHaveCount(0);
   });
 
   test("planner direct-route access matches the accepted shared navigation contract", async ({ browser }) => {
@@ -457,8 +483,8 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await expect(page.getByRole("radio", { name: "الأداء الوطني", exact: true })).toBeVisible();
     await expect(page.getByText("الزيارات النشطة", { exact: true })).toBeVisible();
     await expect(page.getByText("التنبيهات التشغيلية النشطة", { exact: true })).toBeVisible();
-    const dashValues = page.locator('[aria-labelledby="operations-summary"] article', { hasText: "—" });
-    await expect(dashValues).toHaveCount(2);
+    const undecided = page.locator('[aria-labelledby="operations-summary"] article', { hasText: "غير مُهيأ" });
+    await expect(undecided).toHaveCount(2);
   });
 
   test("basemap provider failure withdraws only the map and keeps operational context", async ({ page }) => {

@@ -29,10 +29,19 @@
     "unavailable": "Compliance unavailable",
     "detail": "{factories} factories · {active} active visits"
   },
+  "highlights": {
+    "sla": "Deadline breach",
+    "action": "Corrective action overdue",
+    "notification": "Notification failed",
+    "override": "Location exception decision required",
+    "cancellation": "Cancellation decision required",
+    "overdueStart": "Overdue to start",
+    "overdueSubmit": "Overdue to submit",
+    "reminder": "Reminder {pct}%"
+  },
   "exceptions": {
     "title": "Live operational exceptions",
     "scope": "Records filtered to your access",
-    "open": "Open",
     "openRecord": "Open record",
     "emptyTitle": "No open operational exceptions",
     "emptyBody": "No open operational exceptions in this scope."
@@ -43,10 +52,7 @@
     "executing": "Executing inspections",
     "submittedToday": "Submitted today",
     "alerts": "Active operational alerts",
-    "openExecution": "Open Execution",
-    "showOnMap": "Show on map",
-    "openReviews": "Open Review & Approval",
-    "reviewExceptions": "Review exceptions"
+    "openExecution": "Open Execution"
   },
   "table": {
     "title": "Live positions list",
