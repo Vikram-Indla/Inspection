@@ -1,6 +1,73 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-072 — /operations typography`
+`Last updated: 2026-08-12` · `Updated by: T-074 — /operations/live typography`
+
+## A dependency can put a second typeface on your screen (2026-08-12)
+
+T-074 found `/operations/live` rendering its Mapbox attribution in
+`"Helvetica Neue", Arial`. The route's own CSS module was **completely clean** —
+13 lines, no typography, zero static violations. The declaration came from
+`mapbox-gl`'s stylesheet, so it exists in no source file, no token and no gate
+rule this repository can write.
+
+**Third-party chrome is still your typography.** Any dependency that injects DOM
+— maps, editors, charts, date pickers — ships its own font stack. Measure the
+rendered families; the source will never tell you.
+
+**And normalise it in one place.** The fix went into a new
+`components/saqeel/map/map-chrome.module.css` that both map canvases compose,
+which *removed* the duplicated per-route `:global()` block instead of adding a
+second one.
+
+## When a route hangs on its fallback, check the session first (2026-08-12)
+
+T-072's record blamed the Browser pane for `/dashboard` and `/factories` sitting
+on `loading.tsx` forever. The real cause, found in T-074, was **the browser
+session expiring mid-task**: the routes returned the login page and the fallback
+never swapped. That record has been amended.
+
+```js
+const r = await fetch(location.pathname, { credentials: 'include' });
+(await r.text()).includes('Keep me signed in')   // → session is gone
+```
+
+
+## A raw enum is why a heading cannot be translated (2026-08-12)
+
+T-073 found `/operations/exceptions` rendering
+`<h2>{category.replace(/_/g, " ")}</h2>` — `correction overdue`, lowercase,
+straight from the column. WEB-000 §9 already bans `{value: v, label: v}`, but the
+reason worth remembering is the **second-order** one: a screen that prints a
+column has *nothing to translate*. There is no label, so there is no Arabic, and
+no amount of i18n work on that file would have produced any. **Check enum
+rendering when a screen resists translation.**
+
+## Check that an error state is reachable before designing it (2026-08-12)
+
+The same board displayed `{invariantOk ? "✓" : "⚠"}` — a check that grouped
+counts equal the source count. The first proposal replaced the tick with a proper
+fail-closed state that withdraws the counts. Re-reading `groupExceptions` showed
+it **partitions every source into exactly one bucket**, so the sum always equals
+the length and the `⚠` branch is unreachable by construction. The redesign would
+have been untestable code guarding an impossibility.
+
+1. **A status that can only ever have one value is not a status.** It was removed,
+   not restyled.
+2. **Deleting it from the UI did not weaken the guarantee** — the invariant stays
+   proven in `mvp2-m2-09-exceptions.spec.ts`, which is where a partition bug would
+   actually be caught. A unit test is a better home for a correctness invariant
+   than a glyph a supervisor cannot act on.
+
+## Widen a shared assertion per-route, never in one string (2026-08-12)
+
+`mvp2-modules-live.spec.ts` asserts a visible `.sq-banner, .sq-state, .alert,
+.panel` across **seven** routes — the claim being *a hard state is always present,
+never a blank page*. A migrated route carries none of those classes. Appending
+SAQEEL selectors to the shared string would have let any of the six unmigrated
+routes lose its panel and still pass on a SAQEEL match. The table now takes an
+optional per-route selector; each route brings its own as it migrates, and the
+default stays byte-for-byte what it was.
+
 
 ## The same primitive mistake, three times (2026-08-12)
 

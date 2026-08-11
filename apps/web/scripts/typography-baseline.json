@@ -99,7 +99,6 @@
   "src/components/NotificationBell.tsx::inline-font-style": 1,
   "src/components/operations/operations-exceptions/operations-exceptions.module.css::raw-typography-property": 1,
   "src/components/operations/operations-exceptions/operations-exceptions.module.css::font-shorthand-outside-design-system": 2,
-  "src/components/operations/operations-map-panel/operations-map-panel.module.css::font-shorthand-outside-design-system": 1,
   "src/components/operations/operations-monitoring-table/operations-monitoring-table.module.css::font-shorthand-outside-design-system": 1,
   "src/components/planning/create-visit-section/create-visit-section.module.css::raw-typography-property": 2,
   "src/components/planning/create-visit-section/create-visit-section.module.css::font-shorthand-outside-design-system": 3,

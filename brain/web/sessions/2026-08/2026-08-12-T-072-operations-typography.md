@@ -113,10 +113,13 @@ removed 14.** Recorded explicitly per the rule added during T-061/T-062.
       `12px`, `text-transform: none` on Draft/Returned/Published/Expired
 - [x] `CardValue kind="text"` verified on `/operations` (the 16px nodes are gone)
 - [x] Baseline diff audited entry-by-entry; the one non-mine entry attributed
-- [ ] **`/dashboard` and `/factories` could not be re-rendered** — both stalled
-      on their `loading.tsx` fallback in the pane while `/operations` and
-      `/planning` loaded normally, and SSR for `/dashboard` returns 630 KB with
-      the cards present. Blast radius was bounded from source instead:
+- [ ] **`/dashboard` and `/factories` could not be re-rendered.** Diagnosed
+      afterwards during T-073: **the browser session expired mid-task**, so the
+      routes returned the login page and their tabs sat on `loading.tsx` forever.
+      It was NOT the pane stalling, which is what this record originally claimed.
+      **When a route hangs on its fallback, fetch it and check for
+      `Keep me signed in` before blaming the renderer.** Blast radius was
+      bounded from source instead:
       `StatCard` reaches 5 further screens (planning-buckets,
       planning-stat-cards, factory-workforce, regulation-overview,
       visit-status-tiles) and `CardValue kind="text"` reaches only the

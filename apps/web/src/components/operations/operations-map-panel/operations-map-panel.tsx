@@ -2,6 +2,7 @@ import { type ReactNode } from "react";
 import { Card, CardHeader, CardMedia } from "@/components/saqeel/card/card";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import styles from "./operations-map-panel.module.css";
+import mapChrome from "@/components/saqeel/map/map-chrome.module.css";
 
 export default function OperationsMapPanel({ title, description, count, countLabel, action, children }: {
   title: string;
@@ -28,7 +29,7 @@ export default function OperationsMapPanel({ title, description, count, countLab
         )}
       />
       <CardMedia height="lg" label={title}>
-        <div className={styles.canvas}>{children}</div>
+        <div className={`${styles.canvas} ${mapChrome.chrome}`}>{children}</div>
       </CardMedia>
     </Card>
   );

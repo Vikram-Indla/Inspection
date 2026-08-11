@@ -10,6 +10,77 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-074 · `/operations/live` — typography
+`status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014` · `est: 30m`
+`record:` [2026-08-12-T-074-operations-live-typography](sessions/2026-08/2026-08-12-T-074-operations-live-typography.md)
+
+**T-070/T-071's rebuild arrived essentially correct** — zero static violations,
+a 32-line `page.tsx`, a 13-line CSS module with **no typography at all**, and a
+render of **5 sizes (30 · 28 · 20 · 14 · 12), all on-scale, zero unstyled
+headings**. First route in the programme that needed nothing structural.
+
+**One defect, and only measurement could see it: `allPlex: false`.** The Mapbox
+attribution rendered in `"Helvetica Neue", Arial` — **a second typeface**,
+injected by `mapbox-gl`'s own stylesheet, so it appears in no source file, no
+token and no gate rule. The canvas CSS was genuinely clean; the defect lived in
+a dependency.
+
+**Fixed centrally.** Mapbox normalisation already existed in exactly one place —
+a per-route `:global()` block in `operations-map-panel.module.css` carrying a
+baselined violation. Copying it would have duplicated a hack and *added* a
+violation. It moved to a new `components/saqeel/map/map-chrome.module.css` that
+both canvases compose, so the change **removes** a violation and any future map
+inherits the same chrome.
+
+**Attribution is `label` (12px), not `body`.** The first pass mirrored the old
+rule's `body` and measured 14px — visibly enlarging legally-required fine print
+Mapbox had been rendering at 12px. **Caught by re-measuring, not by reading.**
+
+**Session expiry was diagnosed here and back-corrected into T-072**, which had
+wrongly blamed the Browser pane for `/dashboard` and `/factories` hanging on
+`loading.tsx`.
+
+
+### T-073 · `/operations/exceptions` — the exception board on SAQEEL
+`status: partial (axe, 320px, keyboard, light theme, e2e owed)` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-006, WEB-008, WEB-011, WEB-013` · `est: 1.5h`
+`record:` [2026-08-12-T-073-exception-board](sessions/2026-08/2026-08-12-T-073-exception-board.md)
+
+`page.tsx` **80 → 36**, 11 legacy class uses → **0** (verified in the rendered
+DOM), two untyped inline reads behind `readRows` + a `Shape<T>` each, and 17
+`t(key, "English")` strings → 21 keys per locale at asserted parity.
+
+**The group heading was a raw database enum** — `{category.replace(/_/g," ")}`
+rendered `correction overdue`, which is exactly why it could never be Arabic:
+there was no label to translate, only a column. WEB-000 §9's `{value: v, label: v}`
+defect, on a heading.
+
+**A developer invariant was on the supervisor's screen, and it could not fail.**
+The banner ended in `{invariantOk ? "✓" : "⚠"}`; `groupExceptions` partitions
+every source into exactly one bucket, so the sum always equals the length and the
+`⚠` branch is **unreachable by construction**. Removed from the UI — the guarantee
+stays proven in `mvp2-m2-09-exceptions.spec.ts`, where a partition bug would
+actually be caught (owner ruling). **The first proposal drew a fail-closed state
+for it; re-reading the function showed that would be untestable code guarding an
+impossibility. Check that an error state is reachable before designing it.**
+
+**Third and last journey nav on the operations family** — four buttons
+duplicating the left rail, after T-068 and T-071. The banner's *claim* survived as
+the card description; the banner did not. Two of four drill destinations were a
+guess (`? "/reviews" : "/execution"`), so `DRILL_HREF` now maps only the two real
+ones and a category without one renders *Not configured*.
+
+**The sort key was invisible again** — `ExceptionGroup.items` is sorted
+newest-first and was never rendered, the same defect as T-068's exceptions list.
+Each group now prints its most recent occurrence.
+
+**A shared spec selector gains a per-route override rather than being loosened.**
+`mvp2-modules-live.spec.ts` asserts a legacy-chrome selector across **seven**
+routes; widening it would have weakened the six that have not migrated.
+
+**21 new Arabic strings need native review** — twelve of the keys they replace
+had no Arabic anywhere. **Owed:** axe, 320px, keyboard, light theme, e2e, **and
+the board with data** — only the empty state could be exercised.
+
 ### T-072 · `/operations` — typography (live/ excluded)
 `status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014` · `est: 1h`
 `record:` [2026-08-12-T-072-operations-typography](sessions/2026-08/2026-08-12-T-072-operations-typography.md)

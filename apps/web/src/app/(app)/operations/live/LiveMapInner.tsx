@@ -5,6 +5,7 @@ import mapboxgl from "mapbox-gl";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import "mapbox-gl/dist/mapbox-gl.css";
 import styles from "./live-map-inner.module.css";
+import mapChrome from "@/components/saqeel/map/map-chrome.module.css";
 import type { LiveFactory, LiveRegion, LiveInspector } from "./types";
 import { MAP_PALETTE } from "@/lib/map-palette";
 import {
@@ -396,7 +397,7 @@ export default function LiveMapInner({
       role="application"
       aria-label={s.ariaLabel}
       data-map-provider="mapbox"
-      className={styles.canvas}
+      className={`${styles.canvas} ${mapChrome.chrome}`}
     />
   );
 }

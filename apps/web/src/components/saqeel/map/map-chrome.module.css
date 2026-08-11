@@ -1,0 +1,20 @@
+.chrome :global(.mapboxgl-ctrl-attrib) {
+  padding-inline: var(--sqx-space-3);
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
+  color: var(--sqx-text-muted);
+  background: var(--sqx-surface-raised);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-pill);
+}
+
+.chrome :global(.mapboxgl-ctrl-attrib a),
+.chrome :global(.mapboxgl-ctrl-attrib-button) {
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
+  color: var(--sqx-text-muted);
+}
+
+.chrome :global(.mapboxgl-ctrl-logo) {
+  opacity: 0.55;
+}
