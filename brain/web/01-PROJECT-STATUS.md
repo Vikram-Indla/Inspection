@@ -1,6 +1,90 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-11` · `Updated by: T-060 — /dashboard declutter part 1`
+`Last updated: 2026-08-11` · `Updated by: T-064 — /factories visible typography`
+
+## A typeface can be decided by something absent (2026-08-11)
+
+T-064 found the factory name on `/factories` rendering in **Arial**.
+`button.factories-portfolio_select` never declared `font: inherit`, so it took
+Chrome's UA button default of 13.33px Arial, and the `.name` span inside set
+only `font-weight` and inherited it. The most important string on the route, in
+a different typeface from the rest of the application.
+
+**Nothing in the source looks wrong.** There is no bad value to grep for, no
+token misused, nothing for the gate to flag — the defect is a *missing*
+declaration. With T-058's `--sqx-font-sans` bug this is now a pattern, and the
+rule that follows is: **`button`, `input`, `select` and `textarea` do not
+inherit `font`. Any of them carrying text needs `font: inherit` or an explicit
+role.**
+
+**Measure the alternative before committing to it.** `subheading` (16px) was
+tried for the picker row and reads as obviously correct in source; measured, it
+added a fifth size to the route and rendered the same factory name at 20px, 16px
+and 14px on one screen. `body-strong` keeps `/factories` at the same four sizes
+as `/dashboard`.
+
+**A gate rule can flag but must not auto-fix.** The five `eyebrow` call sites
+needed three different answers — a subtitle in the wrong slot, a **title** in
+the wrong slot, and a provenance line whose card already had a description.
+
+## Deleting a panel is a contract change (2026-08-11)
+
+T-062 removed the Operational priorities panel on an owner ruling, after T-060
+had refused to remove it unilaterally because two e2e specs asserted it as a
+**canonical panel**. Two rules came out of doing it properly:
+
+1. **Move the information before deleting the container.** The panel's summary and
+   governance footnote now live on Today's operations. A card can be redundant
+   while the sentences inside it are not.
+2. **A spec update records the deletion; it does not drop the assertion.** The
+   heading is asserted at **count 0** *and* both moved strings are asserted
+   visible, so the contract states what went and what survived. Deleting the
+   line instead would have left the contract silent.
+
+**Do not re-baseline the typography ratchet as a side effect, and do not claim
+another agent's improvement.** During T-061/T-062 the gate reported "7
+violation(s) removed since the baseline" and invited `gates:typography:update`.
+Neither task touched a single typography declaration — the removals came from a
+**concurrent typography pass sharing the same uncommitted working tree** (27 files
+under `components/sections/factories/**`, `saqeel/definition-list/` and
+`app/(app)/factories/**`). Two rules: read a gate's delta against `git status`
+before attributing it, and never re-baseline a ratchet mid-pass on someone
+else's work. A green gate needs no re-baseline, because the ratchet only fails on
+additions.
+
+## Colour is a claim (2026-08-11)
+
+T-061 found the enforcement trend colouring a fall in penalty notices `success`
+and a rise `warning`, one line below a comment insisting the movement "is a
+signal to read, not a score". Fewer penalty notices can mean improved compliance
+or reduced enforcement coverage; the screen cannot know which, and the executive
+brief on the same screen promises it "does not attribute a cause".
+
+**A tone is a governed judgement, and CLAUDE.md §9 bans inventing one.** Three
+rules follow, all of them now in code with the reasoning attached:
+
+1. **Neutral until the ministry publishes a direction.** Movement gets a
+   magnitude and a period, never a verdict. The reasoning lives in the function's
+   doc comment, because a future agent will otherwise restore the colour as a
+   nice touch.
+2. **A tone applied to a series paints every point.** The decline was drawn by
+   colouring the *previous* period — the one with more enforcement — green.
+   Check what a tone lands on, not just what it means.
+3. **Zero is not a small quantity.** `TrendBars` floored every bar at 4px in the
+   value colour, so a period with no enforcement looked like a period with a
+   little. A zero point is now a dashed baseline with a printed `0`.
+
+**A chart also needs its labels visible, not only announced.** The period dates
+existed solely in `sqx-visually-hidden`, so a screen-reader user could tell which
+bar was the current period and a sighted user could not — the approved design had
+specified a visible label and value under every bar all along.
+
+## A verification limit to know about (2026-08-11)
+
+With the Browser pane undisplayed the page stops compositing, so screenshots time
+out and **every `getBoundingClientRect()` returns 0**. Computed styles and DOM
+structure are unaffected. If layout numbers come back as zeroes, the pane is
+hidden — do not conclude the element is missing.
 
 ## A rebuild can drop a lesson its predecessor wrote down (2026-08-11)
 
@@ -34,9 +118,30 @@ actual defect was that **`yourWork.scoped` was defined in both locales and
 rendered nowhere**, while `:166` asserts it is visible.
 
 **A spec is part of the inventory.** It also revealed that
-`web-admin-m1-dashboard.spec.ts:200-215` asserts a heading and body copy that
-exist only in the retired `RevampStrategicView` — already failing, and its own
-task.
+`web-admin-m1-dashboard.spec.ts:200-215` asserted a heading and body copy that
+exist only in the retired `RevampStrategicView` — already failing before any of
+this work. **T-063 fixed it, and found the same rot in two more specs**
+(`dashboard-business.spec.ts:92-93`, `exec-hard-states.spec.ts:103`).
+
+## A spec that greps source can rot without the DOM changing (2026-08-11)
+
+Two of the six dead assertions T-063 repaired were **static**: that spec reads
+source files as text, and asserted `en/dashboard.json` contained two governance
+sentences that live only in the retired component. `grep -c` over the locale file
+returns **0** for both. A DOM-only fix would have sailed straight past them, and
+the failure reads like a copy regression rather than a stale test.
+
+1. **Re-point the assertion; do not delete it.** Each dead line was moved to
+   where its claim actually lives — "no quarterly series is inferred" onto
+   `STR-KPI-003`'s registry note, "no generated claim until a configured
+   provider" onto `STR-KPI-012`'s.
+2. **A claim about what the platform refuses to compute belongs on the registry,
+   not in a locale file.** A redesign can move a string; it cannot move an
+   immutable formula note — and these two assertions had already been broken once
+   by exactly that. Copy assertions are for reader-facing honesty.
+3. **`innerText` lies when the page is not compositing.** With the Browser pane
+   hidden it returns empty for genuinely rendered nodes while `textContent` is
+   unaffected. Three assertions looked absent until re-checked.
 
 ## `/dashboard` typography is closed (2026-08-11)
 

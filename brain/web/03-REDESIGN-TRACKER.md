@@ -10,6 +10,150 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-064 · `/factories` — visible typography (part 1 of 2)
+`status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014` · `est: 1h`
+`record:` [2026-08-11-T-064-factories-visible-typography](sessions/2026-08/2026-08-11-T-064-factories-visible-typography.md)
+
+Owner split the route: everything visible first, primitive migration second.
+
+**The factory name was rendering in Arial.** `button.factories-portfolio_select`
+never declared `font: inherit`, so it took Chrome's UA button default (Arial
+13.33px) and the name inside inherited it — the most important string on the
+route, in a different typeface from the whole application. Nothing in the source
+looks wrong; **the typeface was decided by something absent**, the same failure
+class as the `--sqx-font-sans` bug in T-058. Only measurement finds these.
+Its `<h3>` was also `label` (12px) — a heading smaller than its own content.
+
+**31 × 11px `overline` → 12px `label`.** None were eyebrows above a card title
+(WEB-014 §2's definition) — they are key-value keys and in-card section labels.
+`DefinitionList` fixed in the shared primitive, so every screen benefits.
+
+**Three eyebrow call sites needed three different answers**, which is why the
+gate rule flags but cannot auto-fix: one was a subtitle in the wrong slot; one
+had the **title** in the wrong slot ("Identity" was the eyebrow, a bare CR code
+was the title); one already had a description, so its provenance line became a
+trailing `StatusPill`.
+
+**`body-strong` beat `subheading` for the picker row** — 16px was tried and
+measured, and it produced a fifth size plus the same factory name at three sizes
+on one screen.
+
+Route now renders **the same four sizes as `/dashboard`** — 28 · 20 · 14 · 12,
+zero off-scale, one typeface. Violations 113 → 76.
+
+**Owed:** axe, 320px, Arabic/RTL.
+
+### T-065 · `/factories` — primitive migration (part 2 of 2)
+`status: todo` · `rules: WEB-000, WEB-014` · `est: 1.5h`
+
+The 76 remaining violations: 55 `font-shorthand-outside-design-system` and 21
+`raw-typography-property` across ~30 section components. Purely architectural —
+feature CSS consuming tokens directly instead of composing `Text`/`Heading`/
+`Overline`/`Metric`. **No visual change expected**; the route already renders
+correctly. Same shape as the dashboard's part 2.
+
+### T-063 · Dashboard specs — re-point at the shipped strategic surface
+`status: done (suite not executed)` · `rules: WEB-000, WEB-006, WEB-008, WEB-011` · `est: 40m`
+`record:` [2026-08-11-T-063-repoint-dashboard-specs-at-the-shipped-surface](sessions/2026-08/2026-08-11-T-063-repoint-dashboard-specs-at-the-shipped-surface.md)
+
+**The rot was in three files, not the one the owner pointed at.** Grepping the
+retired `RevampStrategicView` strings found the same dead assertions in
+`dashboard-business.spec.ts:92-93` and `exec-hard-states.spec.ts:103` as well as
+`web-admin-m1-dashboard.spec.ts`. **Two of them were static, not runtime** — that
+spec reads source files as text and asserted `en/dashboard.json` contains two
+sentences that live only in the retired component (`grep -c` returns 0 for both).
+**A spec that greps source can rot without the DOM changing.**
+
+Nothing was deleted; each assertion was re-pointed to where its claim now lives.
+"No quarterly series is inferred" → **`STR-KPI-003`'s registry note** ("violations
+has NO issue-time column … cannot be produced without silently substituting
+submission time"). "No generated claim is shown until a configured provider" →
+**`STR-KPI-012`'s note** (`evidence_refs`, "Disabled until configured") plus the
+brief's idle line. `heading "Provider output withheld"` → `heading "Executive AI
+brief"` with its advisory pill. **The registry is the better home for a claim
+about what the platform refuses to compute** — a redesign can move a locale
+string; it cannot move an immutable formula note.
+
+Verified without running the suite: **13 automated checks** that every asserted
+string exists in its real source (including the advisory pill's middot
+**byte-identical** to the locale file, and the Arabic needle checked against
+`ar/dashboard.json`), then confirmed against the dev server that each runtime
+target resolves to exactly **one leaf element** so `getByText` cannot raise a
+strict-mode violation. **Owed:** the suite itself — it needs the seeded personas.
+
+### T-062 · `/dashboard` — delete the Operational priorities panel (owner ruling)
+`status: done (axe and 320px carried from T-061)` · `rules: WEB-000, WEB-003, WEB-006, WEB-008, WEB-011, WEB-013` · `est: 30m`
+`record:` [2026-08-11-T-062-delete-operational-priorities-panel](sessions/2026-08/2026-08-11-T-062-delete-operational-priorities-panel.md)
+
+Closes T-060's blocker. The owner ruled: delete it and update the two specs. The
+panel was a heading, a summary sentence carrying two live numbers, and a
+governance footnote — no control, and both numbers already rendered as two of the
+seven cards directly below. **The panel went, the information did not:** the
+summary is now the Today's operations header description and the footnote is its
+`CardFooter`. Operational sections **5 → 4**, `operational.priorities.title`
+deleted from both locales as dead copy.
+
+**The specs record the deletion rather than losing the coverage.**
+`web-admin-m1-dashboard.spec.ts` now asserts the heading has **count 0** *and*
+that both moved strings are visible — so the contract states what was removed and
+that the governance statement survived the move, which is the part that mattered.
+`dashboard-business.spec.ts` swapped its heading assertion for the summary text.
+Regex, not exact text, because the summary interpolates two seeded counts.
+
+**The gate's "7 violations removed" belongs to another agent, not to this task.**
+`git status` shows 27 uncommitted files under `components/sections/factories/**`,
+`saqeel/definition-list/` and `app/(app)/factories/**` — a concurrent typography
+pass in the same working tree. Neither T-061 nor T-062 adds or removes a single
+typography declaration. **`gates:typography:update` deliberately NOT run:** it
+would rewrite `scripts/typography-baseline.json` underneath that agent and lock a
+count taken mid-pass. The ratchet only fails on additions, so the gate is green
+either way; whoever finishes that work owns the re-baseline.
+
+**Parked, with the trap recorded:** the skeleton does not draw the executive brief
+strip, so everything below shifts 44px when data lands — **but do not key the
+skeleton on `scope.view`**, because `effectiveView(scope, isAdmin)` renders
+*operational* for a non-admin with no `view` param and the admin flag is only
+known after the fetch the Suspense boundary is waiting on.
+
+### T-061 · `/dashboard` — enforcement trend honesty, requirement register (declutter part 2)
+`status: partial (axe, 320px, screenshots owed)` · `rules: WEB-000, WEB-002, WEB-003, WEB-006, WEB-008, WEB-009, WEB-011, WEB-013` · `est: 2h`
+`record:` [2026-08-11-T-061-enforcement-trend-and-requirement-register](sessions/2026-08/2026-08-11-T-061-enforcement-trend-and-requirement-register.md)
+
+Owner screenshotted the lower strategic view. **The enforcement trend was
+scoring its own data:** `enforcementTrendView` mapped a fall in penalty notices
+to `success` and a rise to `warning`, with a comment claiming the movement "is a
+signal to read, not a score" one line above the code that scored it. Fewer
+penalty notices can mean better compliance **or** less enforcement coverage —
+the screen cannot know which, and the executive brief two sections up promises it
+"does not attribute a cause". Worse, `tone` paints **every** bar, so a decline
+rendered the *previous* period in success green: the loudest element on the route
+was a green block meaning "six notices happened, before now". **Tone is now
+neutral permanently, with the reason in the doc comment so it is not restored as
+a nice touch.**
+
+**The chart was also missing what the approved design requires** — each bar
+column is bar → visible period label → visible value in `saqeel-revamp.html`,
+and shipped the dates existed only in `sqx-visually-hidden`, so the sighted and
+announced readings disagreed about which bar is *now*. Restored. **Zero stopped
+being drawn as a quantity:** `.bar` floored every bar at 4px in the value colour,
+so the current period's 0 rendered as a small green line; it is now a 2px dashed
+baseline with a printed `0`. That fix went into the primitive, so
+`factory-trends` gains it too (owner ruling). `TrendBars` took two **optional**
+props, chart height 4rem → 6rem and columns capped at 6rem so a two-point series
+stops rendering as two half-width slabs. **No token added.**
+
+Requirement coverage **6 card surfaces → 6 rows** on `DataTable`, every lineage
+drawer intact and now naming its metric. **No "Live" pill was invented** — a live
+row shows its value in the State column. **Blocked cards lost their dead CTA:**
+"Top violated regulation → Unavailable" was still offering *Open the regulation*.
+`trend.current` deleted from both locales — with the count printed under its own
+bar, "0 this period" restated a number 40px below it.
+
+**Owed:** axe, 320px (the register's stacked `DataTable` mode has not been seen),
+keyboard, screenshots — the Browser pane was undisplayed so the page stopped
+compositing and every layout rect read 0; DOM and computed styles carried the
+verification instead. **3 new Arabic strings need native review.**
+
 ### T-060 · `/dashboard` — duplicate KPI layer, AI brief strip (declutter part 1)
 `status: partial (axe, 320px, e2e owed)` · `rules: WEB-000, WEB-002, WEB-003, WEB-006, WEB-008, WEB-009, WEB-011, WEB-013, WEB-014` · `est: 2h`
 `record:` [2026-08-11-T-060-dashboard-duplicate-kpi-layer](sessions/2026-08/2026-08-11-T-060-dashboard-duplicate-kpi-layer.md)
