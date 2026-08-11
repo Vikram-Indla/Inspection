@@ -1,5 +1,6 @@
 import { useId, useRef, useState } from "react";
 import Icon from "@/components/saqeel/icon/icon";
+import CountBadge from "@/components/saqeel/count-badge/count-badge";
 import Field from "@/components/saqeel/field/field";
 import MenuSurface from "@/components/saqeel/menu-surface/menu-surface";
 import SaqeelSelect, { type SelectOption } from "@/components/saqeel/select/select";
@@ -9,13 +10,15 @@ import styles from "./planning-toolbar.module.css";
 
 export type MoreFiltersStrings = {
   moreFilters: string;
+  visitType: string;
+  priority: string;
+  inspector: string;
   method: string;
   region: string;
   city: string;
   windowFrom: string;
   windowTo: string;
   sortLabel: string;
-  datePlaceholder: string;
   dateClear: string;
   dateToday: string;
   monthPrevious: string;
@@ -23,6 +26,9 @@ export type MoreFiltersStrings = {
 };
 
 export type MoreFiltersValues = {
+  visitType: string;
+  priority: string;
+  inspectorId: string;
   method: string;
   region: string;
   city: string;
@@ -31,9 +37,12 @@ export type MoreFiltersValues = {
   sort: string;
 };
 
-export default function MoreFilters({ strings, options, values, onChange, locale }: {
+export default function MoreFilters({ strings, options, values, onChange, locale, activeCount }: {
   strings: MoreFiltersStrings;
   options: {
+    visitTypes: readonly SelectOption[];
+    priorities: readonly SelectOption[];
+    inspectors: readonly SelectOption[];
     methods: readonly SelectOption[];
     regions: readonly SelectOption[];
     cities: readonly SelectOption[];
@@ -42,8 +51,10 @@ export default function MoreFilters({ strings, options, values, onChange, locale
   values: MoreFiltersValues;
   onChange: (patch: Partial<MoreFiltersValues>) => void;
   locale: Locale;
+  activeCount: number;
 }) {
   const panelId = useId();
+  const sortId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const monthLabels = { previous: strings.monthPrevious, next: strings.monthNext };
@@ -60,9 +71,11 @@ export default function MoreFilters({ strings, options, values, onChange, locale
         aria-controls={panelId}
         aria-haspopup="dialog"
         data-open={isOpen ? "" : undefined}
+        data-active={activeCount > 0 ? "" : undefined}
         onClick={() => setIsOpen(open => !open)}
       >
         {strings.moreFilters}
+        {activeCount > 0 ? <CountBadge value={activeCount} /> : null}
         <Icon name="disclosure" size="sm" />
       </button>
 
@@ -77,58 +90,67 @@ export default function MoreFilters({ strings, options, values, onChange, locale
         trapFocus
       >
         <div className={styles.moreGrid}>
-          <Field label={strings.method}>
+          <SaqeelSelect
+            options={options.visitTypes}
+            value={values.visitType}
+            onChange={visitType => onChange({ visitType })}
+            label={strings.visitType}
+          />
+          <SaqeelSelect
+            options={options.priorities}
+            value={values.priority}
+            onChange={priority => onChange({ priority })}
+            label={strings.priority}
+          />
+          <SaqeelSelect
+            options={options.inspectors}
+            value={values.inspectorId}
+            onChange={inspectorId => onChange({ inspectorId })}
+            label={strings.inspector}
+          />
+          <SaqeelSelect
+            options={options.methods}
+            value={values.method}
+            onChange={method => onChange({ method })}
+            label={strings.method}
+          />
+          <SaqeelSelect
+            options={options.regions}
+            value={values.region}
+            onChange={region => onChange({ region, city: "" })}
+            label={strings.region}
+          />
+          <SaqeelSelect
+            options={options.cities}
+            value={values.city}
+            onChange={city => onChange({ city })}
+            label={strings.city}
+          />
+          <DatePicker
+            value={values.windowFrom}
+            onChange={windowFrom => onChange({ windowFrom })}
+            label={strings.windowFrom}
+            placeholder={strings.windowFrom}
+            locale={dateLocale}
+            monthLabels={monthLabels}
+            strings={dateStrings}
+          />
+          <DatePicker
+            value={values.windowTo}
+            onChange={windowTo => onChange({ windowTo })}
+            label={strings.windowTo}
+            placeholder={strings.windowTo}
+            locale={dateLocale}
+            monthLabels={monthLabels}
+            strings={dateStrings}
+          />
+          <Field label={strings.sortLabel} htmlFor={sortId}>
             <SaqeelSelect
-              options={options.methods}
-              value={values.method}
-              onChange={method => onChange({ method })}
-              label={strings.method}
-            />
-          </Field>
-          <Field label={strings.region}>
-            <SaqeelSelect
-              options={options.regions}
-              value={values.region}
-              onChange={region => onChange({ region, city: "" })}
-              label={strings.region}
-            />
-          </Field>
-          <Field label={strings.city}>
-            <SaqeelSelect
-              options={options.cities}
-              value={values.city}
-              onChange={city => onChange({ city })}
-              label={strings.city}
-            />
-          </Field>
-          <Field label={strings.sortLabel}>
-            <SaqeelSelect
+              id={sortId}
               options={options.sortKeys}
               value={values.sort}
               onChange={sort => onChange({ sort })}
               label={strings.sortLabel}
-            />
-          </Field>
-          <Field label={strings.windowFrom}>
-            <DatePicker
-              value={values.windowFrom}
-              onChange={windowFrom => onChange({ windowFrom })}
-              label={strings.windowFrom}
-              placeholder={strings.datePlaceholder}
-              locale={dateLocale}
-              monthLabels={monthLabels}
-              strings={dateStrings}
-            />
-          </Field>
-          <Field label={strings.windowTo}>
-            <DatePicker
-              value={values.windowTo}
-              onChange={windowTo => onChange({ windowTo })}
-              label={strings.windowTo}
-              placeholder={strings.datePlaceholder}
-              locale={dateLocale}
-              monthLabels={monthLabels}
-              strings={dateStrings}
             />
           </Field>
         </div>

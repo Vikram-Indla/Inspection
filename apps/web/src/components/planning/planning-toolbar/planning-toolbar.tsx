@@ -64,12 +64,11 @@ export default function PlanningToolbar({ strings, options, params, formId, loca
 
       <FilterControls strings={strings} options={options} params={params} locale={locale} />
 
-      <div className={styles.actions}>
-        <Button type="submit" variant="primary" size="sm" label={strings.apply}>{strings.apply}</Button>
-        {hasFilters ? (
-          <Button variant="link" size="sm" href="/planning" label={strings.clearAll}>{strings.clearAll}</Button>
-        ) : null}
-      </div>
+      {hasFilters ? (
+        <div className={styles.actions}>
+          <Button variant="link" href="/planning" label={strings.clearAll}>{strings.clearAll}</Button>
+        </div>
+      ) : null}
     </form>
   );
 }

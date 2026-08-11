@@ -10,6 +10,28 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-055 · `/planning` toolbar — filters into the panel, applied on change
+`status: partial (not verified in a browser)` · `rules: WEB-000, WEB-002 §2, WEB-003, WEB-004 §1, WEB-009, WEB-011, WEB-013` · `est: 1h`
+`record:` [2026-08-11-T-055-planning-toolbar-instant-filters](sessions/2026-08/2026-08-11-T-055-planning-toolbar-instant-filters.md)
+
+Toolbar **7 controls → 3** (search · Status · More filters, plus Clear all when
+active). The other nine filters moved into the panel; every control names itself
+when empty (`Status`, `Priority`, `Inspector`) instead of carrying a caption
+above a box reading "All" — **which needed no new i18n keys**, the captions
+became the empty-option labels. **Apply deleted:** filter state left `useState`
+for the URL (a rung up the WEB-004 ladder — it had only ever mirrored the URL),
+each change a `router.replace` with `page` cleared. Filtering was and remains
+server-side in `visit-list.ts`. Owner-reported 6px misalignment resolved by
+deleting the button: the bar is one control height at `--sqx-control-h-md`.
+
+**`Select` gained `id?` after an owner ruling** (WEB-002 §2) — `Field`'s
+`htmlFor` had been unsatisfiable, so **all 12 `Field` + `Select` pairs in the repo
+render a `<label>` bound to nothing.** Additive; the other 11 are unchanged until
+each wires `id`.
+
+**Owed:** browser pass. **Check first:** the panel must stay open across the
+navigation — if it does not, this is worse than Apply was.
+
 ### T-054 · `/planning/immediate` — dispatch protections + R05 notice (slice 2/5)
 `status: done (not verified in a browser)` · `rules: WEB-000…004, WEB-009, WEB-011, WEB-012` · `est: 1.5h`
 `record:` [2026-08-11-T-054-immediate-dispatch-protections](sessions/2026-08/2026-08-11-T-054-immediate-dispatch-protections.md)

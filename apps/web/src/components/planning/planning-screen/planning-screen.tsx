@@ -49,8 +49,9 @@ export default function PlanningScreen({ workspace, params, sp, locale, messages
     || Object.values(params.filters).some(Boolean);
   const tabs = ["all", "draft", "pending_supervision", "published", "returned", "cancelled", "expired"].map(tab => {
     const tabCount = workspace.countsAvailable ? count(tab) : null;
+    if (tab === "all") return { value: "", label: messages.toolbar.status };
     return {
-      value: tab === "all" ? "" : tab,
+      value: tab,
       label: tabCount === null ? tabLabels[tab] : `${tabLabels[tab]} · ${tabCount}`,
     };
   });

@@ -1,8 +1,38 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-11` · `Updated by: T-053 — /planning null vocabulary`
+`Last updated: 2026-08-11` · `Updated by: T-055 — /planning toolbar`
 
 ## Where `/planning` stands (2026-08-11)
+
+T-055 took the filter bar after the owner reported it still read as cluttered.
+The cause was structural, not cosmetic: **`Field` renders `<label htmlFor>` and
+`Select` exposed no id to point at**, so every filter printed its name twice —
+an unassociated caption plus an `aria-label`. That is a design-system defect with
+**12 call sites**, not a planning one; `Select` gained `id?` after an owner
+ruling and drops its `aria-label` when passed. The other 11 sites are untouched
+until each wires it.
+
+The bar went to search · Status · More filters · Clear all, the remaining nine
+filters moved into the panel, and every control now names itself when empty
+instead of captioning a box that says "All". **Apply was deleted and filter
+state moved from `useState` to the URL** — a rung *up* the WEB-004 ladder, since
+that state had only ever mirrored the URL. Filtering was already server-side in
+`visit-list.ts` and stays there; instant-apply changes when the server is asked,
+not who filters.
+
+One ruling generalises beyond this screen:
+
+- **A caption that is not programmatically bound is not a label, it is
+  decoration — and a second copy of the name.** The tell is a component pairing
+  a label wrapper with a control that owns its own `aria-label`: the announced
+  name is right, so nothing fails a smoke test, while the visible text is inert
+  and the screen carries every caption twice. Check that the wrapper can
+  actually reach the control's id before assuming a `Field` is doing anything.
+
+**Unverified and highest risk:** the More filters panel must stay open across the
+navigation each filter change triggers. If it does not, the screen is worse than
+it was with Apply. The owner's Chrome extension is not connected, so this could
+not be checked.
 
 T-053 fixed the defect the owner screenshotted: the list route reported
 **"No visits match" inside the cells of rows that had matched**, in the KPI

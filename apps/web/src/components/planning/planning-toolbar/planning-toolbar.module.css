@@ -1,8 +1,8 @@
 .bar {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
-  gap: var(--sqx-space-4) var(--sqx-space-3);
+  align-items: center;
+  gap: var(--sqx-space-3);
 }
 
 .input {
@@ -51,8 +51,13 @@
   outline-offset: var(--sqx-focus-ring-offset);
 }
 
-.moreTrigger[data-open] {
+.moreTrigger[data-open],
+.moreTrigger[data-active] {
   border-color: var(--sqx-border-accent);
+}
+
+.moreTrigger[data-active] {
+  color: var(--sqx-text-accent);
 }
 
 .moreGrid {

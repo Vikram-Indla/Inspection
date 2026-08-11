@@ -26,6 +26,12 @@ export type SelectProps = {
   value: string;
   onChange: (value: string) => void;
   label: string;
+  /**
+   * Id for the trigger button. Pass it when an external `<label for>` names this
+   * control — `aria-label` is then dropped so the visible label is the accessible
+   * name rather than a second, unassociated copy of it.
+   */
+  id?: string;
   placeholder?: string;
   disabled?: boolean;
   align?: "start" | "end";
@@ -36,6 +42,7 @@ export default function SaqeelSelect({
   value,
   onChange,
   label,
+  id,
   placeholder,
   disabled,
   align = "start",
@@ -121,9 +128,10 @@ export default function SaqeelSelect({
       <button
         className={styles.trigger}
         ref={triggerRef}
+        id={id}
         type="button"
         role="combobox"
-        aria-label={label}
+        aria-label={id ? undefined : label}
         aria-expanded={isOpen}
         aria-controls={listId}
         aria-haspopup="listbox"

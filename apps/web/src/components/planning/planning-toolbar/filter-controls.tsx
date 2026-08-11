@@ -1,21 +1,30 @@
 "use client";
 
-import { useState } from "react";
-import Field from "@/components/saqeel/field/field";
+import { useRouter, useSearchParams } from "next/navigation";
 import SaqeelSelect, { type SelectOption } from "@/components/saqeel/select/select";
 import type { PlanningListParams } from "@/lib/planning/visit-list";
 import type { PlanningInspectorOption, PlanningLookupOption } from "@/features/planning/queries";
 import type { Locale } from "@/lib/i18n";
 import { resolveRegionId, KSA_REGION_LABELS } from "@/lib/ksa-regions";
-import MoreFilters, { type MoreFiltersValues } from "./more-filters";
+import MoreFilters from "./more-filters";
 import type { PlanningToolbarOptions, PlanningToolbarStrings } from "./planning-toolbar";
 
-type FilterState = MoreFiltersValues & {
+type FilterValues = {
   tab: string;
   visitType: string;
   priority: string;
   inspectorId: string;
+  method: string;
+  region: string;
+  city: string;
+  windowFrom: string;
+  windowTo: string;
+  sort: string;
 };
+
+const PANEL_KEYS = [
+  "visitType", "priority", "inspectorId", "method", "region", "city", "windowFrom", "windowTo",
+] as const;
 
 const lookupLabel = (option: PlanningLookupOption, locale: Locale) =>
   locale === "ar" ? (option.labelAr ?? option.labelEn) : option.labelEn;
@@ -32,7 +41,10 @@ export default function FilterControls({ strings, options, params, locale }: {
   params: PlanningListParams;
   locale: Locale;
 }) {
-  const [filters, setFilters] = useState<FilterState>({
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const values: FilterValues = {
     tab: params.tab === "all" ? "" : params.tab,
     visitType: params.filters.visitType ?? "",
     priority: params.filters.priority ?? "",
@@ -43,61 +55,54 @@ export default function FilterControls({ strings, options, params, locale }: {
     windowFrom: params.filters.windowFrom ?? "",
     windowTo: params.filters.windowTo ?? "",
     sort: params.sort,
-  });
+  };
 
-  const patch = (next: Partial<FilterState>) => setFilters(current => ({ ...current, ...next }));
-  const bind = (key: keyof FilterState) => (value: string) => patch({ [key]: value });
+  const apply = (patch: Partial<FilterValues>) => {
+    const next = new URLSearchParams(searchParams.toString());
+    for (const [key, value] of Object.entries(patch)) {
+      if (value) next.set(key, value);
+      else next.delete(key);
+    }
+    next.delete("page");
+    const query = next.toString();
+    router.replace(query ? `/planning?${query}` : "/planning", { scroll: false });
+  };
 
-  const all = (label: string, values: readonly SelectOption[]): SelectOption[] =>
-    [{ value: "", label }, ...values];
+  const resettable = (label: string, entries: readonly SelectOption[]): SelectOption[] =>
+    [{ value: "", label }, ...entries];
   const fromLookups = (lookups: readonly PlanningLookupOption[]): SelectOption[] =>
     lookups.map(option => ({ value: option.key, label: lookupLabel(option, locale) }));
   const fromInspectors = (inspectors: readonly PlanningInspectorOption[]): SelectOption[] =>
     inspectors.map(option => ({ value: option.userId, label: option.label }));
 
+  const activeCount = PANEL_KEYS.filter(key => values[key]).length;
+
   return (
     <>
-      {Object.entries(filters).map(([name, value]) => (
+      {Object.entries(values).map(([name, value]) => (
         <input type="hidden" name={name} value={value} key={name} />
       ))}
 
-      <Field label={strings.status}>
-        <SaqeelSelect options={options.tabs} value={filters.tab} onChange={bind("tab")} label={strings.status} />
-      </Field>
-      <Field label={strings.visitType}>
-        <SaqeelSelect
-          options={all(strings.allOption, fromLookups(options.visitTypes))}
-          value={filters.visitType}
-          onChange={bind("visitType")}
-          label={strings.visitType}
-        />
-      </Field>
-      <Field label={strings.priority}>
-        <SaqeelSelect
-          options={all(strings.allOption, fromLookups(options.priorities))}
-          value={filters.priority}
-          onChange={bind("priority")}
-          label={strings.priority}
-        />
-      </Field>
-      <Field label={strings.inspector}>
-        <SaqeelSelect
-          options={all(strings.allInspectors, fromInspectors(options.inspectors))}
-          value={filters.inspectorId}
-          onChange={bind("inspectorId")}
-          label={strings.inspector}
-        />
-      </Field>
+      <SaqeelSelect
+        options={options.tabs}
+        value={values.tab}
+        onChange={tab => apply({ tab })}
+        label={strings.status}
+      />
 
       <MoreFilters
         strings={strings}
         locale={locale}
-        values={filters}
-        onChange={patch}
+        values={values}
+        onChange={apply}
+        activeCount={activeCount}
         options={{
-          methods: all(strings.allOption, options.methods),
-          regions: all(strings.allOption, options.regions.map(region => ({ value: region, label: regionLabel(region, locale) }))),
-          cities: all(strings.allOption, options.cities.map(city => ({ value: city, label: city }))),
+          visitTypes: resettable(strings.visitType, fromLookups(options.visitTypes)),
+          priorities: resettable(strings.priority, fromLookups(options.priorities)),
+          inspectors: resettable(strings.inspector, fromInspectors(options.inspectors)),
+          methods: resettable(strings.method, options.methods),
+          regions: resettable(strings.region, options.regions.map(region => ({ value: region, label: regionLabel(region, locale) }))),
+          cities: resettable(strings.city, options.cities.map(city => ({ value: city, label: city }))),
           sortKeys: options.sortKeys.map(key => ({ value: key, label: strings.sort[key] ?? key })),
         }}
       />
