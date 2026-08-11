@@ -1,11 +1,11 @@
 .heading {
   min-inline-size: 0;
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
+  font: var(--sqx-text-body-strong);
 }
 
 .select {
   display: flex;
+  font: inherit;
   align-items: center;
   gap: var(--sqx-space-3);
   inline-size: 100%;
@@ -77,9 +77,8 @@
 
 .summaryLabel {
   margin: 0;
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
   color: var(--sqx-text-muted);
   text-wrap: pretty;
 }
@@ -116,7 +115,8 @@
 .statValue[data-tone="info"] { color: var(--sqx-status-info); }
 
 .statLabel {
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
   color: var(--sqx-text-muted);
   text-wrap: pretty;
 }
@@ -131,16 +131,15 @@
 
 .term {
   flex: none;
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
   color: var(--sqx-text-muted);
 }
 
 .value {
   min-inline-size: 0;
   margin: 0;
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
-  font-weight: var(--sqx-weight-semibold);
+  font: var(--sqx-text-body-strong);
   font-variant-numeric: var(--sqx-numeric-tabular);
   color: var(--sqx-text-primary);
   text-align: end;

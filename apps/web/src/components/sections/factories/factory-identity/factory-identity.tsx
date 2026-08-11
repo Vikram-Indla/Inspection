@@ -22,8 +22,8 @@ export default function FactoryIdentity({ code, contextLine, facts, provenance, 
         <CardHeader
           level="h2"
           titleId="factory-identity-title"
-          eyebrow={strings.heading}
-          title={<bdi>{code}</bdi>}
+          title={strings.heading}
+          description={<bdi>{code}</bdi>}
         />
         <CardBody gap="tight">
           <DefinitionList items={facts} />

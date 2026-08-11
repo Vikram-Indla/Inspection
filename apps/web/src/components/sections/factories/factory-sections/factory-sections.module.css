@@ -1,5 +1,5 @@
 .note {
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
   text-wrap: pretty;
 }
@@ -50,7 +50,7 @@
 }
 
 .sectionBody {
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
   text-wrap: pretty;
 }

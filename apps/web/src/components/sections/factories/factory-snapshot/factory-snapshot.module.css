@@ -24,9 +24,8 @@
 
 .conditionLabel {
   margin: 0;
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
   color: var(--sqx-text-muted);
 }
 
@@ -36,13 +35,13 @@
   gap: var(--sqx-space-2);
   margin: 0;
   padding-inline-start: var(--sqx-space-5);
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-secondary);
 }
 
 .reason {
   margin: 0;
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
   text-wrap: pretty;
 }
@@ -67,7 +66,7 @@
 }
 
 .metricLabel {
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
   text-wrap: pretty;
 }

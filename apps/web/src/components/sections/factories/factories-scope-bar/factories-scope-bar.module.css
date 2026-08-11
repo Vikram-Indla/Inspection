@@ -20,6 +20,6 @@
   align-items: center;
   gap: var(--sqx-space-3);
   min-block-size: var(--sqx-control-h-md);
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
 }

@@ -35,8 +35,8 @@ export default function FactoryContext({ factory, provenance, outlook, trust, ad
         <CardHeader
           level="h2"
           titleId="factory-context-title"
-          eyebrow={strings.selectedContext}
           title={<span dir="auto">{factory.name}</span>}
+          description={strings.selectedContext}
         />
         <CardBody>
           <DefinitionList items={facts} />

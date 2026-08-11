@@ -89,8 +89,8 @@ test.describe("TASK-WEB-DASHBOARD-002 runtime", () => {
     await expect(page.getByRole("heading", { name: "Strategic intervention" })).toBeVisible();
     await expect(page.getByText("Not configured").first()).toBeVisible();
     await expect(page.getByRole("button", { name: "Why unavailable?" }).first()).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Provider output withheld" })).toBeVisible();
-    await expect(page.getByText(/No generated claim is shown/)).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Executive AI brief" })).toBeVisible();
+    await expect(page.getByText("No brief has been generated for this scope yet.")).toBeVisible();
 
     await page.getByRole("button", { name: "How is this calculated?" }).first().click();
     const explain = page.getByRole("complementary");
@@ -121,7 +121,7 @@ test.describe("TASK-WEB-DASHBOARD-002 runtime", () => {
     await expect(page).toHaveURL(/view=operational/);
     await expect(perspective.getByRole("link", { name: "Operational View" })).toHaveAttribute("aria-current", "page");
     await expect(page.getByRole("heading", { name: "Today's operations" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Operational priorities" })).toBeVisible();
+    await expect(page.getByText(/high-priority visits are pending execution/)).toBeVisible();
     await expect(page.getByRole("heading", { name: "Inspector capacity" })).toBeVisible();
     await expect(page.getByText("Today's planned visits")).toBeVisible();
     await page.screenshot({ path: join(EVIDENCE_DIR, "operational-en-dark-desktop.png"), fullPage: true });

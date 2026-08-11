@@ -6,7 +6,7 @@
 
 .note {
   margin: 0;
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
   text-wrap: pretty;
 }

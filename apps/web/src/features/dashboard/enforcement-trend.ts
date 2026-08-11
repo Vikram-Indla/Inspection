@@ -92,7 +92,6 @@ export async function queryEnforcementTrend(
 
 export type EnforcementTrendView = {
   readonly points: readonly TrendPoint[];
-  readonly currentLabel: string;
   readonly comparison: string;
   readonly tone: StatusTone;
 };
@@ -100,14 +99,17 @@ export type EnforcementTrendView = {
 /**
  * Bars are scaled against the taller of the two periods rather than a fixed
  * ceiling, so the pair reads as a comparison of each other and never implies a
- * target the ministry has not set.
+ * target the ministry has not set. Each bar prints its own period and count, so
+ * the reader is never left to guess which end of the pair is the current one.
  *
- * More enforcement is not "good news": a rise carries `warning`, a fall
- * `success`, because the movement is a signal to read, not a score.
+ * The tone is always neutral. Fewer penalty notices can mean improved
+ * compliance or reduced enforcement coverage, and this screen cannot know which
+ * — colouring a fall as success would attribute a cause the records do not
+ * establish, which is exactly what the executive brief on the same screen
+ * promises not to do.
  */
 export function enforcementTrendView(trend: EnforcementTrend, strings: EnforcementTrendStrings): EnforcementTrendView {
   const peak = Math.max(...trend.periods.map(period => period.count), 1);
-  const latest = trend.periods[trend.periods.length - 1];
   const { change } = trend;
 
   return {
@@ -115,11 +117,12 @@ export function enforcementTrendView(trend: EnforcementTrend, strings: Enforceme
       key: period.key,
       percent: Math.round((period.count / peak) * 100),
       label: `${period.count} · ${period.from} — ${period.to}`,
+      caption: `${period.from} — ${period.to}`,
+      value: String(period.count),
     })),
-    currentLabel: fill(strings.current, { n: latest?.count ?? 0 }),
     comparison: change === null
       ? strings.noBaseline
       : fill(strings.comparison, { sign: change > 0 ? "+" : "", n: change }),
-    tone: change === null || change === 0 ? "neutral" : change > 0 ? "warning" : "success",
+    tone: "neutral",
   };
 }

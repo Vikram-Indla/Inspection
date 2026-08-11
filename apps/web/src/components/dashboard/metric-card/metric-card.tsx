@@ -57,11 +57,13 @@ export default function MetricCard({ model, strings }: {
           </div>
         </details>
       </CardBody>
-      <CardFooter>
-        <Button variant="secondary" size="sm" href={model.href} label={model.action}>
-          {model.action}
-        </Button>
-      </CardFooter>
+      {blocked ? null : (
+        <CardFooter>
+          <Button variant="secondary" size="sm" href={model.href} label={model.action}>
+            {model.action}
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 }

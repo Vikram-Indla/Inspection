@@ -47,8 +47,8 @@ export default function FactoryDossierSkeleton({ label }: { label: string }) {
           <>
             <Card as="div">
               <CardHeader
-                eyebrow={<Skeleton shape="line" width="narrow" size="sm" />}
                 title={<Skeleton shape="line" width="wide" size="lg" />}
+                description={<Skeleton shape="line" width="narrow" size="sm" />}
                 trailing={<Skeleton shape="pill" width="full" />}
               />
               <CardBody gap="tight">

@@ -45,7 +45,10 @@
     "definition": "Definition",
     "advisory": "Advisory only · traceable",
     "blockedTitle": "Why is this unavailable?",
-    "drill": "Open records"
+    "drill": "Open records",
+    "measure": "Measure",
+    "state": "State",
+    "emptyTitle": "No further governed measures"
   },
   "national": {
     "title": "National performance",
@@ -130,7 +133,6 @@
   },
   "operational": {
     "priorities": {
-      "title": "Operational priorities",
       "summary": "{high} high-priority visits are pending execution; {overdue} published visits are past their recorded window.",
       "footnote": "Based on current records only. No AI-generated recommendation."
     },
@@ -197,7 +199,6 @@
   },
   "trend": {
     "title": "Enforcement action trend",
-    "current": "{n} this period",
     "comparison": "{sign}{n}% vs previous period",
     "noBaseline": "No baseline in the previous period",
     "restricted": "Penalty notices are not visible to your role",

@@ -5,7 +5,7 @@ import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import {
   buildMetricStrip,
-  metricStripStrings,
+  requirementRegisterStrings,
   unrepresented,
   OPERATIONAL_CARD_IDS,
   OPERATIONAL_REQUIREMENT_IDS,
@@ -15,7 +15,7 @@ import type { DashboardKpiProjection } from "@/lib/dashboard-kpi/contract";
 import type { Locale } from "@/lib/i18n";
 import { localeHref } from "@/lib/locale-path";
 import styles from "./operational-view.module.css";
-import MetricStrip from "../metric-strip/metric-strip";
+import RequirementRegister from "../requirement-register/requirement-register";
 import MetricCard, { MetricCardModel, MetricCardStrings } from "../metric-card/metric-card";
 
 type DashboardMetrics = ReturnType<typeof import("@/app/(app)/dashboard/metrics").buildDashboardMetrics>;
@@ -79,28 +79,24 @@ export default function OperationalView({ locale, metrics, projection, partialSo
 
   return (
     <div className={styles.stack}>
-      <Card as="section" labelledBy="dashboard-operational-priorities">
+      <Card as="section" labelledBy="dashboard-todays-operations">
         <CardHeader
           level="h2"
-          titleId="dashboard-operational-priorities"
-          title={copy.priorities.title}
+          titleId="dashboard-todays-operations"
+          title={copy.today.title}
           description={fill(copy.priorities.summary, {
             high: operational.highPriorityRows.length,
             overdue: operational.overdueRows.length,
           })}
         />
-        <CardBody gap="tight">
-          <Text tone="muted">{copy.priorities.footnote}</Text>
-        </CardBody>
-      </Card>
-
-      <Card as="section" labelledBy="dashboard-todays-operations">
-        <CardHeader level="h2" titleId="dashboard-todays-operations" title={copy.today.title} />
         <CardBody>
           <CardGrid min="md">
             {today.map(model => <MetricCard key={model.title} model={model} strings={strings} />)}
           </CardGrid>
         </CardBody>
+        <CardFooter>
+          <Text tone="muted">{copy.priorities.footnote}</Text>
+        </CardFooter>
       </Card>
 
       <Card as="section" labelledBy="dashboard-operational-requirement">
@@ -110,11 +106,11 @@ export default function OperationalView({ locale, metrics, projection, partialSo
           title={copy.requirement.title}
           description={copy.requirement.description}
         />
-        <CardBody>
-          <MetricStrip
+        <CardBody gap="tight">
+          <RequirementRegister
             metrics={requirementStrip.metrics}
             methodology={requirementStrip.methodology}
-            strings={metricStripStrings(locale)}
+            strings={requirementRegisterStrings(locale)}
           />
         </CardBody>
       </Card>

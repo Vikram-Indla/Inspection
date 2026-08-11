@@ -3,7 +3,7 @@ import type { SegmentedItem } from "@/components/saqeel/segmented-control/segmen
 import { complianceBreakdown, type FactoryRef, type ResponseRow } from "@/app/(app)/dashboard/metrics";
 import {
   buildMetricStrip,
-  metricStripStrings,
+  requirementRegisterStrings,
   unrepresented,
   STRATEGIC_CARD_IDS,
   STRATEGIC_REQUIREMENT_IDS,
@@ -16,7 +16,7 @@ import type { DashboardKpiProjection } from "@/lib/dashboard-kpi/contract";
 import type { Locale } from "@/lib/i18n";
 import { localeHref } from "@/lib/locale-path";
 import styles from "./strategic-view.module.css";
-import MetricStrip from "../metric-strip/metric-strip";
+import RequirementRegister from "../requirement-register/requirement-register";
 import MetricCard, { MetricCardModel, MetricCardStrings } from "../metric-card/metric-card";
 import ComplianceExplorer from "../compliance-explorer/compliance-explorer";
 import EnforcementTrendCard from "../enforcement-trend/enforcement-trend";
@@ -169,7 +169,6 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
 
       <EnforcementTrendCard
         points={enforcement.points}
-        currentLabel={enforcement.currentLabel}
         comparison={enforcement.comparison}
         tone={enforcement.tone}
         readable={enforcementTrend.readable}
@@ -184,11 +183,11 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
           title={dashboard.requirement.title}
           description={dashboard.requirement.description}
         />
-        <CardBody>
-          <MetricStrip
+        <CardBody gap="tight">
+          <RequirementRegister
             metrics={requirementStrip.metrics}
             methodology={requirementStrip.methodology}
-            strings={metricStripStrings(locale)}
+            strings={requirementRegisterStrings(locale)}
           />
         </CardBody>
       </Card>

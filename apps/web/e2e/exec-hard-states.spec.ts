@@ -100,7 +100,7 @@ test.describe("exec — seven declared hard states", () => {
     test("provider-unavailable", async ({ page }) => {
       await page.goto(STRAT);
       await expect(page.locator("#dashboard-national-performance")).toBeVisible();
-      await expect(page.getByText(/Provider output withheld|مخرجات المزود محجوبة/)).toBeVisible({ timeout: 15_000 });
+      await expect(page.getByText(/No brief has been generated|لم يُولَّد أي موجز/)).toBeVisible({ timeout: 15_000 });
       const body = await page.locator("body").innerText();
       expect(
         /Not configured|غير مهيأ/.test(body),

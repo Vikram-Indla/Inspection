@@ -84,6 +84,16 @@ export function buildMetricStrip(
   };
 }
 
+export function requirementRegisterStrings(locale: Locale) {
+  const { dashboard } = getMessages(locale);
+  return {
+    ...metricStripStrings(locale),
+    measure: dashboard.metric.measure,
+    state: dashboard.metric.state,
+    emptyTitle: dashboard.metric.emptyTitle,
+  };
+}
+
 export function metricStripStrings(locale: Locale): MetricStripStrings {
   const { common, dashboard } = getMessages(locale);
   return {

@@ -1,5 +1,5 @@
 .coords {
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-secondary);
   font-variant-numeric: var(--sqx-numeric-tabular);
 }
@@ -9,7 +9,7 @@
 }
 
 .geofence {
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
   text-wrap: pretty;
 }
@@ -22,7 +22,7 @@
   border-radius: var(--sqx-radius-card);
   border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
   background: var(--sqx-surface-sunken);
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
   text-align: center;
 }
