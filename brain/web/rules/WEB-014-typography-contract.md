@@ -281,3 +281,86 @@ task**, record the case in the tracker's PARKED section with a screenshot, and
 raise it. Do not add a token. Do not add a one-off. Do not ship a literal value
 "just for now" — that is how the previous 1,130 violations were created, one
 reasonable exception at a time.
+
+---
+
+## 11. Migrating legacy UI — do not redesign the typography
+
+> **This section is addressed to whoever migrates a legacy screen** off the
+> pre-Saqeel `--type-*` tokens, off the frozen `.sq-*` globals, or out of an
+> oversized route file. Read it before you start. It is the difference between
+> a migration that lands and one that gets reverted.
+
+Several screens are scheduled for structural rebuild — `/factories/cr/[id]`
+(T-020), `/factories/[id]`, the `field/factory-360/*` surfaces, the orphaned
+`DashboardView` and `FactoryList` trees. **Their typography has already been
+brought onto the scale by a separate pass.** Your job is the structure. The
+typography is done, and it is not yours to revisit.
+
+### 11.1 The rule
+
+**Carry the typography across unchanged. Do not re-decide a single size.**
+
+When you move a section out of a 409-line route file into
+`components/sections/<screen>/`, the markup you move already renders correctly:
+the headings are `Heading`, the numbers are `Metric`, the prose is `Text`. Move
+them as they are.
+
+- Do **not** "tidy" a `Heading level={2}` into an `<h2>` with a class.
+- Do **not** replace a `Metric` with a styled `<strong>` because the new
+  component "only needs one number".
+- Do **not** introduce a `font:`, `font-size`, `font-weight`, `line-height` or
+  `letter-spacing` declaration in the new component's CSS module. §4.1 applies to
+  new files exactly as it applies to old ones — a rebuild is not a fresh start.
+- Do **not** reach for `subheading` because the new card "feels like it wants a
+  bigger title". If the size changes, the migration has changed the design, and
+  that is a separate decision needing an owner ruling.
+
+### 11.2 Why this is stated so bluntly
+
+Every route in this programme reached the scale by being **rendered and
+measured**, not by being read. The sizes you inherit are the result of specific
+measurements — several of them counter-intuitive, and all of them recorded:
+
+- `body-strong` (14px), not `subheading` (16px), for a picker row — 16px was
+  tried and it put the same factory name at three sizes on one screen (T-064).
+- `label` (12px), not `overline` (11px), for table headers and key-value keys —
+  `overline` is *only* the eyebrow above a card title (T-059, T-064).
+- `metric` (28px) for **every** number, including ones that look like they want
+  to be bigger. Two hero figures at two sizes was the owner's original complaint
+  and it survived four tasks (T-067).
+- `font: inherit` on `<button>`, `<input>`, `<select>`, `<textarea>` — these do
+  **not** inherit `font`, and without it they silently render in the UA's Arial
+  (T-064). **If your rebuild introduces a new button wrapping text, it needs
+  this.**
+
+A rebuild that re-decides any of these reintroduces a defect that took a
+measured render to find, and the static gate will not catch it — a legal token
+in the wrong place is still legal.
+
+### 11.3 What "done" looks like for your migration
+
+Before and after your change, on the route you touched:
+
+1. `npm run gates:typography` reports **violations removed, never added**. If
+   your new component's CSS module has a font declaration, you have gone wrong.
+2. The rendered route has the **same set of distinct font sizes** as before, or
+   fewer. Measure it — do not read the diff:
+   ```js
+   new Set([...document.querySelectorAll('main *')]
+     .filter(el => el.children.length === 0 && el.textContent.trim())
+     .map(el => getComputedStyle(el).fontSize))
+   ```
+3. Every `<h1>`–`<h4>` still carries a role, and every `id` referenced by an
+   `aria-labelledby` still exists on the same element.
+4. Answer §9's review gate in your session record, plus one extra line: **"font
+   sizes before → after"**. Equal or fewer. Never more.
+
+### 11.4 If the typography genuinely blocks your migration
+
+It sometimes will — a primitive may not yet express what the restructured markup
+needs. That happened three times during the `/factories` migration and each was a
+real gap (`Text` had no `dir`, `role="alert"` collided with the `role` prop,
+`Heading` could not render small). **Extend the primitive; do not work around it
+in feature CSS.** Then record the gap in your session record so the next
+migration inherits the fix.

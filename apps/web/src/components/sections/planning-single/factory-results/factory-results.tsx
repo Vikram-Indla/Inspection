@@ -8,6 +8,7 @@ import TextInput from "@/components/saqeel/text-input/text-input";
 import Button from "@/components/saqeel/button/button";
 import { Skeleton, SkeletonRegion } from "@/components/saqeel/skeleton/skeleton";
 import styles from "./factory-results.module.css";
+import { Mono, Text } from "@/components/saqeel/type";
 
 export type GradedResult = {
   readonly id: string;
@@ -123,7 +124,7 @@ export default function FactoryResults({
                 onChange={() => onSelect(result.id)}
                 label={
                   <span className={styles.identity}>
-                    <span className={styles.name}>{result.name}</span>
+                    <Text as="span" role="bodyStrong" dir="auto">{result.name}</Text>
                     <span className={styles.pills}>
                       <StatusPill tone={result.grade === "exact" ? "success" : "warning"}>
                         {result.grade === "exact" ? strings.exactBadge : strings.similarBadge}
@@ -135,8 +136,8 @@ export default function FactoryResults({
                 }
                 description={
                   <span className={styles.codes}>
-                    <bdi>{result.crNumber ?? strings.absent}</bdi>
-                    {result.licenseNumber ? <bdi>{result.licenseNumber}</bdi> : null}
+                    <Mono as="span"><bdi>{result.crNumber ?? strings.absent}</bdi></Mono>
+                    {result.licenseNumber ? <Mono as="span"><bdi>{result.licenseNumber}</bdi></Mono> : null}
                   </span>
                 }
               />

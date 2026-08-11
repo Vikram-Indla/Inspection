@@ -1,6 +1,98 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-11` · `Updated by: T-064 — /factories visible typography`
+`Last updated: 2026-08-12` · `Updated by: T-069 — factory-family typography sweep`
+
+## Deleting a font-size from a button does not make it inherit (2026-08-12)
+
+It makes it **Arial**. T-069 hit the T-064 bug again in a new place —
+`factory-verification.module.css`, where most sized classes sit on `<button>`
+and `<label>`. Stripping their `font-size` to satisfy the gate would have
+dropped every chip, checkbox and attach control on the iPad inspection form to
+the UA default face.
+
+**`font: inherit` is the fix, and it is gate-legal.** Use it on any control
+carrying text. Delete the declaration only for pure text, which inherits `body`.
+
+**A green gate is not a green build.** Two bulk-regex mistakes in this task —
+three unbalanced JSX tags and duplicate `font: inherit` declarations — were
+caught by `typecheck`, not by `gates:typography`, which reads CSS and matches
+single lines. After a bulk edit: compile, then read the diff.
+
+**`/field/*` is a role boundary, not a lost session.** It returns
+`login?reason=unauthorized` for a Planner. Verifying any field surface needs an
+**inspector** persona — re-authenticating as the same user will not help, and a
+redirect to `/login` there must not be read as a broken session.
+
+
+## Two branches can read two variables and nothing will tell you (2026-08-12)
+
+T-068 found the Operations Center's perspective toggle changing **half** the
+screen. `activeView` (client state) drove which pins the map received; the
+"National performance by region" section was gated on `view` — the URL prop the
+toggle never updates. Selecting *National performance* swapped the dataset and
+rendered no national content at all, and arriving at `?view=performance` then
+clicking back stranded the section on screen.
+
+**Both branches existed, both compiled, both passed every gate.** The approved
+design has a single flag (`opsIsNational`) gating both. Three rules follow:
+
+1. **A control that owns half a screen owns all of it.** When one piece of state
+   has two representations, the bug is not which branch is wrong — it is that
+   there are two.
+2. **The state ladder ranks sources of truth, not storage mechanisms.** WEB-004 §1
+   puts URL state above `useState`, and `/planning` (T-055) moved up that rung
+   correctly. Here it is the wrong trade: **both datasets are already props**, so
+   navigating on a tab click would re-run ten server reads and a signed-URL round
+   trip to render what the browser already holds. Client state was kept
+   deliberately, and there is now exactly one source of truth. **Record the reason
+   when you decline a rung, or the next agent will "fix" it.**
+3. **Duplication is counted in destinations, not in buttons.** The exception board
+   had three entry points on one screen — a toolbar button, a KPI card CTA, and
+   the section listing its rows — while `saqeel-revamp.html`'s ops toolbar carries
+   **one** button and no route buttons at all. The fix was not deletion: each
+   addition moved onto the surface it describes. Controls 4 → 2, **destinations
+   lost 0**.
+
+**A list sorted by a key it never shows is unreadable, and a status that never
+varies is not a status.** `buildHighlights` computed a timestamp for every
+exception, sorted by it, and the row type had no field for it — the design's
+highlight row carries that line. Every leading pill read the same word, "Open".
+The pill now carries the row's kind and the title carries the record, which is a
+slot re-assignment, not new copy.
+
+**Promoting a string makes its translation gap yours.** The eight highlight kinds
+were `t(key, "English")` against `ui_strings` rows that do not exist, so they
+rendered English on the Arabic screen — pre-existing, and invisible inside a
+run-on description. Moving them into a prominent pill is what exposed it, so they
+moved into `operations.highlights` in both locales rather than being parked.
+
+**`DashboardView.tsx:426`'s lesson needed restoring a second time.** Every region
+card wore a **pinging** "Compliance unavailable" pill — eight of them, the loudest
+thing on the view, saying nothing. State an absence once, at the level that owns
+it, and give the card back its real number.
+
+## A fix verified on one screen says nothing about the others (2026-08-12)
+
+T-067 found the owner’s **original** complaint — "the font 81.5 is so big
+compared to the rest" — still live on `/factories/cr/[id]`, four tasks after it
+was reported. `81.5` rendered at 26px and `Not Available` at 32px from an
+inline `style={{ fontSize: "2rem" }}`, two panels apart.
+
+The scale, the primitives and the gate were all in place. This route simply had
+never been opened. **Route coverage is not a property of the design system; it
+is a per-route fact that has to be measured.**
+
+**24 of its 26 headings carried no class at all** — 18 `<h2>` at the browser
+default 22px, 5 `<h3>` at 17px. With T-059’s page title and T-064’s Arial
+button that is now three instances of the same defect class: **the value was
+decided by an absent declaration.** No grep, no token audit and no gate rule
+sees a missing property. Only measuring the render does.
+
+**A gate that blocks the easy fix is working.** The two-line repair was
+`.panel h2 { font: var(--sqx-text-heading) }` in the route’s CSS module — which
+would have *raised* the ratchet. Converting the markup to `Heading` cost no
+more and paid down debt instead of adding it.
+
 
 ## A primitive's gaps only show up during migration (2026-08-11)
 

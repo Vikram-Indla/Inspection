@@ -54,7 +54,11 @@ Full text in `brain/web/rules/`. The ones that reject a diff on sight:
    `npm run gates:typography`, which is a ratchet: the violation count may only
    go down. **Read `brain/web/rules/WEB-014-typography-contract.md` in full
    before writing or editing any user-visible text** — it is binding law, and §9
-   is a review gate you must answer in the session record.
+   is a review gate you must answer in the session record. **Migrating a legacy
+   screen? Its typography is already done — carry it across unchanged and read
+   §11 first.** A rebuild is not a fresh start: no font declaration may appear
+   in the new component either, and the rendered size count must come out equal
+   or lower, measured not read.
 8. **No `<svg>` in application code.** Icons come from `lucide-react` through
    `components/saqeel/media/icon-registry.ts`, by semantic name.
 9. **No `alt=""`.** Every image carries alt text conveying purpose. A decorative

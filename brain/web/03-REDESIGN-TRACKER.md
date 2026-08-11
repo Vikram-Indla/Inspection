@@ -10,6 +10,116 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-069 · factory-family typography sweep (7 files, one pass)
+`status: partial — field surfaces not rendered` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014` · `est: 1.5h`
+`record:` [2026-08-12-T-069-factory-family-typography-sweep](sessions/2026-08/2026-08-12-T-069-factory-family-typography-sweep.md)
+
+Owner asked for every remaining factory-named file in one pass. **Factory-family
+violations 49 → 8**; repo 1,000 → 959.
+
+**Controls got `font: inherit`, not a primitive.** Most sized classes in
+`factory-verification.module.css` sit on `<button>`/`<label>` — `.chip`,
+`.check`, `.statusChip`, `.evidenceAttach`. **Deleting a `font-size` from a
+button does not make it inherit, it makes it Arial** (the T-064 bug). Five got
+`font: inherit`; pure-text classes had the declaration deleted and inherit `body`.
+
+**Decorative glyphs became icons.** `<div style={{fontSize:32}}>⛔</div>` is a
+graphic typed as text; now `<Icon name="restricted" size="xl" />`. Clears the
+inline-font violation and CLAUDE.md rule 9 together.
+
+**Two regex mistakes, both caught by typecheck, neither by the gate** — a
+`<summary><span>` conversion left three unbalanced JSX tags, and a second pass
+produced duplicate `font: inherit` declarations. **The gate was green while the
+JSX was broken**, because it reads CSS and single lines. Bulk edits across 20
+files need a compile and a diff read.
+
+**`factory-verification` is not a factories route** — it is `/field/inspection/[id]`,
+i.e. T-024 ("split last"). Included because the owner asked for every
+factory-named file; flagged before starting.
+
+**Owed — and this is most of the task:** `/field/factory-360`,
+`/field/factory-360/[id]` and `/field/inspection/[id]` were **never rendered**.
+`/field/*` returns `login?reason=unauthorized` for a Planner — it is a **role
+boundary, not a lost session**, so it needs an *inspector* persona. **34 of the
+41 changes are on that unverified surface.** Two to watch on device:
+`.statVal` 20px → `Metric` 28px and `.rosterFoot strong` 18px → 28px, both in
+dense iPad rows that could overflow.
+
+Remaining 8: 5 in `factory360.module.css` (`font-weight`/`line-height`, no size
+effect, die with T-020) and 3 in the **dead** `factory-list.module.css`.
+
+
+### T-068 · `/operations` — duplicate entry points, split-brain view toggle, dead KPI vocabulary
+`status: partial (axe, 320px, 1024px, keyboard, light theme owed)` · `rules: WEB-000, WEB-002, WEB-003, WEB-004, WEB-006, WEB-008, WEB-009, WEB-011, WEB-013` · `est: 2h`
+`record:` [2026-08-12-T-068-operations-center-duplicate-entry-points](sessions/2026-08/2026-08-12-T-068-operations-center-duplicate-entry-points.md)
+
+Owner screenshotted the Operations Center. **The perspective toggle changed half
+the screen.** `activeView` drove the map dataset while the regions section was
+gated on `view` — the URL prop the toggle never updates — so selecting *National
+performance* swapped the pins and rendered no national content at all. Both
+branches existed and read different variables; nothing typechecks or gates that.
+
+**Client state was kept deliberately against the ladder's usual answer**: both
+datasets are already props, so navigating would re-run ten server reads to render
+what the browser holds. The ladder ranks sources of truth, and there is now one.
+
+**Three entry points to the exception board on one screen** — toolbar button, KPI
+CTA, and the section listing the rows. `saqeel-revamp.html`'s toolbar carries
+**one** button; *Live positions* and *Exception board* were both additions.
+**Neither was deleted** — each moved onto the surface it describes. Top-level
+controls 4 → 2, destinations lost **0**.
+
+**Owner ruling, taken before the edit:** the two `value: "—"` KPI cards render
+`Not configured` and lose their actions — the alerts card had been drilling to the
+exception board while the rows render below it. Asserted three times, so the spec
+was **re-pointed, not dropped** (T-062 protocol), plus a new regression test that
+the toggle drives the national section without a navigation.
+
+**Eight pinging warning pills → one.** Every region card wore "Compliance
+unavailable" with a ping — verbatim `DashboardView.tsx:426`'s recorded lesson that
+*repeated warning pills made disciplined absence read as a broken product*. The
+absence is stated once in the section header; each card recovered its value slot
+for its real active-visit count.
+
+**The exceptions list was sorted by a timestamp it never showed** and every pill
+read the same word. Pill → kind, title → record, `ListRow.meta` → the time the
+design specified all along. No new copy. **8 highlight strings moved into
+`operations.highlights` in both locales** — promoting them into a pill is what
+made the English-on-Arabic conspicuous.
+
+4 dead i18n keys deleted from both locales. **8 new Arabic strings need native
+review.** **Owed:** axe, 320px, 1024px overflow, keyboard, light theme, e2e.
+
+### T-067 · `/factories/cr/[id]` — typography pass (rebuild stays T-020)
+`status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014` · `est: 1h`
+`record:` [2026-08-12-T-067-factory360-cr-typography](sessions/2026-08/2026-08-12-T-067-factory360-cr-typography.md)
+
+**The owner’s original complaint was still live on this screen.** "See the font
+81.5 it’s so big compared to the rest" — `81.5` rendered at **26px** and, two
+panels away, `Not Available` at **32px** from an inline
+`style={{ fontSize: "2rem" }}`. Two headline figures, two sizes, neither on the
+scale. Four tasks aimed at that complaint and none had touched this route. Both
+are now `Metric` (28px).
+
+**24 of 26 headings had no class at all** — 18 × `<h2>` at the browser default
+22px, 5 × `<h3>` at 17px. That is why the screen read as unstructured: it had
+no hierarchy but the UA’s. Same defect class as T-059’s page title and T-064’s
+Arial button — **the value was decided by an absent declaration**, invisible to
+grep and to any token audit.
+
+**The gate forced the fix into the right layer.** The obvious repair was two
+lines of `.panel h2 { font: … }` in the route CSS — but that file is not exempt,
+so it would have *raised* the ratchet. Converting to `Heading` cost no more and
+moves the route toward its rebuild instead of away from it.
+
+**0 off-scale (was 4); 9 → 7 sizes; every `aria-labelledby` id preserved.**
+
+**Scope held deliberately.** `page.tsx` is **409 lines** against WEB-001’s
+40-line ceiling, and `factory360.module.css` (269 lines) is on the pre-Saqeel
+`--type-*` token set. **This task made the route render correctly; it did not
+make it correct.** The rebuild is T-020.
+
+
 ### T-064 · `/factories` — visible typography (part 1 of 2)
 `status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014` · `est: 1h`
 `record:` [2026-08-11-T-064-factories-visible-typography](sessions/2026-08/2026-08-11-T-064-factories-visible-typography.md)
@@ -1206,7 +1316,7 @@ filters and tabs moved to `searchParams`.
 
 | Task | Target | Why |
 | --- | --- | --- |
-| T-020 | `/factories` list + `/factories/[id]` + `/factories/cr/[id]` | 45–49 KB each |
+| T-020 | `/factories` list + `/factories/[id]` + `/factories/cr/[id]` | 45–49 KB each. **Typography is already done on all three (T-064/065/067) — carry it across unchanged and read [WEB-014 §11](rules/WEB-014-typography-contract.md) before you start.** Your scope is structure: route files, `--type-*` → `--sqx-*`, frozen `.sq-*` globals. Not one font size is yours to re-decide, and a rebuild is not a fresh start for §4.1. |
 | T-021 | `/planning` + `/planning/bulk` + `/planning/single` | 41 KB + 53 KB `ReviewClient` + 34 KB `Wizard` |
 | T-022 | `/reviews/[id]`, `/visits`, `/visits/[id]` | 40–46 KB each |
 | T-023 | `/field` home, `/field/my-tasks`, `/field/[visitId]` | `Startup.tsx` 85 KB; strictest perf budget |

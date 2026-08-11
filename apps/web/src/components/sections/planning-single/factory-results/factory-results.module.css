@@ -38,10 +38,6 @@
   gap: var(--sqx-space-3);
 }
 
-.name {
-  font: var(--sqx-text-body-strong);
-  color: var(--sqx-text-primary);
-}
 
 .pills {
   display: flex;
@@ -53,8 +49,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--sqx-space-3);
-  font: var(--sqx-text-code);
-  font-variant-numeric: var(--sqx-numeric-tabular);
 }
 
 .dossier {

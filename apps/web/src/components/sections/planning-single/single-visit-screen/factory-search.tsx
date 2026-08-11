@@ -27,8 +27,8 @@ export default function FactorySearch({
       <CardHeader
         level="h2"
         titleId="single-visit-search"
-        eyebrow={strings.stepLabels.find}
         title={strings.findFactory}
+        description={strings.stepLabels.find}
       />
       <CardBody>
         <FactoryResults

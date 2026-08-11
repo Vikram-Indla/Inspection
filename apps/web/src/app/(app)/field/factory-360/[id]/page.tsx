@@ -7,6 +7,8 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { loadFactory360Dossier, resolveFactory360Permissions, latestSubmission } from "@/lib/factory360/dossier";
 import styles from "./field-factory360.module.css";
+import Icon from "@/components/saqeel/icon/icon";
+import { Heading, Metric, Text } from "@/components/saqeel/type";
 
 const text = (value: string | number | null | undefined) => value == null || value === "" ? "—" : String(value);
 const CLEAN_FACTORY_CODES = new Set([
@@ -61,7 +63,7 @@ export default async function FieldFactory360({ params, searchParams }: {
       {header(t("f360.title", "Factory 360"))}
       <div className={styles.page}>
         <div className="empty">
-          <div style={{ fontSize: 32 }} aria-hidden="true">⛔</div>
+          <Icon name="restricted" size="xl" />
           <div className="empty-title">{t("f360.permission.title", "Factory 360 access required")}</div>
           <p className="t-caption">{t("f360.permission.body", "You do not have access to this factory profile.")}</p>
         </div>
@@ -76,7 +78,7 @@ export default async function FieldFactory360({ params, searchParams }: {
       {header(t("f360.notFound.title", "Factory 360 profile unavailable"))}
       <div className={styles.page}>
         <div className="empty">
-          <div style={{ fontSize: 32 }} aria-hidden="true">∅</div>
+          <Icon name="factory" size="xl" />
           <div className="empty-title">{t("f360.notFound.desc", "Factory registration not found or not available to you.")}</div>
           {dossier.crError ? <p className="t-caption">{t("f360.err.neutral", "The Factory list is temporarily unavailable. Nothing was changed.")}</p> : null}
         </div>
@@ -139,7 +141,7 @@ export default async function FieldFactory360({ params, searchParams }: {
         {/* Header: identity + source freshness */}
         <section className={styles.header} aria-label={t("f360.context.heading", "Selected context")}>
           <div className={styles.headerTop}>
-            <h2 className={styles.headerName}><bdi>{crTitle}</bdi></h2>
+            <Heading level={2} visual="heading"><bdi>{crTitle}</bdi></Heading>
             {badge(dossier.crError, cr)}
           </div>
           <div className={styles.ids}>
@@ -202,17 +204,17 @@ export default async function FieldFactory360({ params, searchParams }: {
           <div className={styles.readiness}>
             <div className={styles.tile}>
               <span className="t-caption">{t("f360.risk.heading", "Saved risk")}</span>
-              <span className={styles.tileValue}>{permissions["view_risk_details"] ? text(factory?.risk_score) : t("f360.restricted", "restricted")}</span>
+              <Metric>{permissions["view_risk_details"] ? text(factory?.risk_score) : t("f360.restricted", "restricted")}</Metric>
               <span className="t-caption">{permissions["view_risk_details"] ? label(factory?.risk_band) : ""}</span>
             </div>
             <div className={styles.tile}>
               <span className="t-caption">{t("f360.compliance.heading", "Approved compliance")}</span>
-              <span className={styles.tileValue}>{currentCompliance.rate == null ? t("f360.compliance.notAvailable", "Not Available") : `${currentCompliance.rate}%`}</span>
+              <Metric>{currentCompliance.rate == null ? t("f360.compliance.notAvailable", "Not Available") : `${currentCompliance.rate}%`}</Metric>
               <span className="t-caption">{currentCompliance.status === "available" ? `${currentCompliance.passed}/${currentCompliance.answered}` : ""}</span>
             </div>
             <div className={styles.tile}>
               <span className="t-caption">{t("f360.cr.approvedInspections", "Approved inspections")}</span>
-              <span className={styles.tileValue}>{portfolioReportsResult.error ? t("f360.source.degraded", "degraded") : portfolioCounts.approvedInspections}</span>
+              <Metric>{portfolioReportsResult.error ? t("f360.source.degraded", "degraded") : portfolioCounts.approvedInspections}</Metric>
             </div>
             <div className={styles.tile}>
               <span className="t-caption">{t("f360.location", "Location")}</span>
@@ -224,7 +226,7 @@ export default async function FieldFactory360({ params, searchParams }: {
 
         {/* Factory profile */}
         <details className={styles.section} open>
-          <summary><span>{t("f360.license.heading", "Selected license, plant & address")}</span>{badge(addressResult.error, address, !!selected)}</summary>
+          <summary><Text as="span" role="bodyStrong" tone="inherit">{t("f360.license.heading", "Selected license, plant & address")}</Text>{badge(addressResult.error, address, !!selected)}</summary>
           <div className={styles.sectionBody}>
             {selected && factory ? <dl className={styles.facts}>
               <div><dt>{t("f360.id.factory", "Factory")}</dt><dd>{factory.name} · <bdi className="id-code">{factory.factory_code}</bdi></dd></div>
@@ -240,16 +242,16 @@ export default async function FieldFactory360({ params, searchParams }: {
 
         {/* Chemical permits & customs exemptions (Senaei v3 public endpoints, chemicalcustoms.json) */}
         <details className={styles.section}>
-          <summary><span>{t("f360.chemicalCustoms.heading", "Chemical permits & customs exemptions")}</span>{badge(!!chemicalPermitsError || !!customsExemptionsError, [...chemicalPermits, ...customsExemptions], !!selected?.plant_number)}</summary>
+          <summary><Text as="span" role="bodyStrong" tone="inherit">{t("f360.chemicalCustoms.heading", "Chemical permits & customs exemptions")}</Text>{badge(!!chemicalPermitsError || !!customsExemptionsError, [...chemicalPermits, ...customsExemptions], !!selected?.plant_number)}</summary>
           <div className={styles.sectionBody}>
             {!selected?.plant_number ? <p className="t-caption">{t("f360.chemicalCustoms.noPlant", "No plant number on the selected license — chemical permits and customs exemptions are looked up by plant number.")}</p> : <>
-              <h3>{t("f360.chemicalPermits.heading", "Chemical permits")}</h3>
+              <Heading level={3} visual="bodyStrong">{t("f360.chemicalPermits.heading", "Chemical permits")}</Heading>
               {chemicalPermitsError ? <p className="t-caption">{t("f360.section.degraded", "This source section is degraded; other sections remain available.")}</p>
                 : chemicalPermits.length ? <ul>{chemicalPermits.map(permit => <li key={permit.externalId}>
                   <bdi className="id-code">{text(permit.approvalNumber)}</bdi> · {label(permit.type?.label)} · <span className="badge badge-info">{label(permit.status?.label)}</span>
                   <div className="t-caption id-code">{dt(permit.startsAt)} → {dt(permit.endsAt)}</div>
                 </li>)}</ul> : <p className="t-caption">{t("f360.chemicalPermits.empty", "No chemical permits found for this plant.")}</p>}
-              <h3>{t("f360.customsExemptions.heading", "Customs exemptions")}</h3>
+              <Heading level={3} visual="bodyStrong">{t("f360.customsExemptions.heading", "Customs exemptions")}</Heading>
               {customsExemptionsError ? <p className="t-caption">{t("f360.section.degraded", "This source section is degraded; other sections remain available.")}</p>
                 : customsExemptions.length ? <ul>{customsExemptions.map(exemption => <li key={exemption.externalId}>
                   <bdi className="id-code">{text(exemption.decreeNumber)}</bdi> · {label(exemption.type?.label)} · <span className="badge badge-info">{label(exemption.status?.label)}</span>
@@ -261,10 +263,10 @@ export default async function FieldFactory360({ params, searchParams }: {
 
         {/* Compliance + reports */}
         <details className={styles.section} open>
-          <summary><span>{t("f360.compliance.heading", "Approved inspection compliance")}</span>{badge(reportsResult.error, reports, !!factoryId)}</summary>
+          <summary><Text as="span" role="bodyStrong" tone="inherit">{t("f360.compliance.heading", "Approved inspection compliance")}</Text>{badge(reportsResult.error, reports, !!factoryId)}</summary>
           <div className={styles.sectionBody}>
             <p className="t-caption">{t("f360.compliance.rule", "Calculated only from the latest final submitted version of approved inspections and the checklist version used for the inspection. Returned or rejected inspections stay visible below, but they never affect this rate.")}</p>
-            <p><strong className={styles.statBig}>{currentCompliance.rate == null ? t("f360.compliance.notAvailable", "Not Available") : `${currentCompliance.rate}%`}</strong> <span className="t-caption">{currentCompliance.status === "available" ? `${currentCompliance.passed}/${currentCompliance.answered}` : t("f360.compliance.na", "No eligible approved scored answers")}{approvedTrend.length > 1 ? ` · ${t("f360.compliance.trend", "trend")} ${approvedTrend.map(row => `${row.compliance.rate}%`).join(" ← ")}` : ""}</span></p>
+            <p><Metric>{currentCompliance.rate == null ? t("f360.compliance.notAvailable", "Not Available") : `${currentCompliance.rate}%`}</Metric> <span className="t-caption">{currentCompliance.status === "available" ? `${currentCompliance.passed}/${currentCompliance.answered}` : t("f360.compliance.na", "No eligible approved scored answers")}{approvedTrend.length > 1 ? ` · ${t("f360.compliance.trend", "trend")} ${approvedTrend.map(row => `${row.compliance.rate}%`).join(" ← ")}` : ""}</span></p>
             {reports.length ? <div className="table-wrap"><table className="table"><thead><tr><th scope="col">{t("f360.report.number", "Inspection")}</th><th scope="col">{t("common.status", "Status")}</th><th scope="col">{t("f360.report.version", "Version")}</th><th scope="col">{t("f360.report.compliance", "Compliance")}</th><th scope="col" /></tr></thead><tbody>{reports.map(report => {
               const latest = latestSubmission(report); const compliance = reportCompliance[report.id];
               return <tr key={report.id}><td><bdi className="id-code">{text(report.inspection_no ?? report.id.slice(0, 8))}</bdi><br /><span className="t-caption id-code">{dt(report.submitted_at ?? report.started_at)}</span></td><td><span className="badge badge-info">{label(report.status)}</span></td><td>{latest ? `v${latest.version_number}` : t("f360.report.notSubmitted", "not submitted")}</td><td className="id-code">{compliance?.rate == null ? "—" : `${compliance.rate}%`}</td><td><a className={styles.link} href={`/reports/inspection/${report.id}`}>{t("f360.report.open", "Open")}</a></td></tr>;
@@ -274,23 +276,23 @@ export default async function FieldFactory360({ params, searchParams }: {
 
         {/* Violations & penalties */}
         <details className={styles.section}>
-          <summary><span>{t("f360.violations.heading", "Violations & penalties")}</span>{badge(reportsResult.error, approvedEnforcement, !!factoryId)}</summary>
+          <summary><Text as="span" role="bodyStrong" tone="inherit">{t("f360.violations.heading", "Violations & penalties")}</Text>{badge(reportsResult.error, approvedEnforcement, !!factoryId)}</summary>
           <div className={styles.sectionBody}>
             {approvedEnforcement.length ? <ul>{approvedEnforcement.map(({ report, violation }) => <li key={violation.id}>
               <bdi className="id-code">{text(violation.violation_codes?.code)}</bdi> · {text(violation.violation_codes?.title)} · {label(violation.violation_codes?.level)}
               <div className="t-caption">{t("f360.violation.corrective", "Corrective")}: {text(violation.violation_codes?.corrective_action)}{violation.violation_codes?.grace_period_days != null ? ` · ${violation.violation_codes.grace_period_days} ${t("common.days", "days")}` : ""} · <a className={styles.link} href={`/reports/inspection/${report.id}`}>{text(report.inspection_no ?? report.id.slice(0, 8))}</a></div>
             </li>)}</ul> : <p className="t-caption">{reportsResult.error ? t("f360.section.degraded", "This source section is degraded; other sections remain available.") : t("f360.violations.empty", "No violations from approved inspection reports are visible in your scope.")}</p>}
-            <h3>{t("f360.enforcement.heading", "Penalty history")}</h3>
+            <Heading level={3} visual="bodyStrong">{t("f360.enforcement.heading", "Penalty history")}</Heading>
             {penaltiesResult.error ? <p className="t-caption">{t("f360.section.degraded", "This source section is degraded; other sections remain available.")}</p> : penalties.length ? <ul>{penalties.map(row => <li key={row.id}><bdi className="id-code">{row.notice_number}</bdi> · {label(row.status)} · {dt(row.issued_at)}</li>)}</ul> : <p className="t-caption">{t("f360.enforcement.empty", "No penalty notices are visible in your scope.")}</p>}
           </div>
         </details>
 
         {/* Risk + AI explanation */}
         <details className={styles.section}>
-          <summary><span>{t("f360.risk.heading", "Saved risk")}</span>{permissions["view_risk_details"] ? badge(riskResult.error, riskHistory, !!factoryId) : <span className="badge badge-outline">{t("f360.restricted", "restricted")}</span>}</summary>
+          <summary><Text as="span" role="bodyStrong" tone="inherit">{t("f360.risk.heading", "Saved risk")}</Text>{permissions["view_risk_details"] ? badge(riskResult.error, riskHistory, !!factoryId) : <span className="badge badge-outline">{t("f360.restricted", "restricted")}</span>}</summary>
           <div className={styles.sectionBody}>
             {!permissions["view_risk_details"] ? <p className="t-caption">{t("f360.risk.restricted", "Risk detail requires Factory Risk permission.")}</p> : <>
-              <p><strong className={styles.statBig}>{text(factory?.risk_score)}</strong> · {label(factory?.risk_band)}</p>
+              <p><Metric>{text(factory?.risk_score)}</Metric> · {label(factory?.risk_band)}</p>
               <p className="t-caption">{t("f360.risk.version", "Model")} {text(factory?.risk_version)} · {dt(factory?.risk_calculated_at)} · {riskHistory.length} {t("f360.risk.snapshots", "saved snapshots")}</p>
               {factoryId ? <ContextualAiPanel
                 surface="factory_risk_explanation"
@@ -311,10 +313,10 @@ export default async function FieldFactory360({ params, searchParams }: {
 
         {/* Industrial information + official vs observed */}
         <details className={styles.section}>
-          <summary><span>{t("f360.industrial.heading", "Industrial information")}</span>{badge(linesResult.error, lines, !!licenseId)}</summary>
+          <summary><Text as="span" role="bodyStrong" tone="inherit">{t("f360.industrial.heading", "Industrial information")}</Text>{badge(linesResult.error, lines, !!licenseId)}</summary>
           <div className={styles.sectionBody}>
             {lines.length ? <div className="table-wrap"><table className="table"><thead><tr><th scope="col">{t("common.type", "Type")}</th><th scope="col">{t("common.name", "Name")}</th><th scope="col">{t("f360.hsCode", "HS / activity")}</th><th scope="col">{t("f360.quantity", "Qty / cap")}</th><th scope="col">{t("f360.production", "Real / max")}</th></tr></thead><tbody>{lines.map(row => <tr key={row.id}><td>{label(row.item_type)}</td><td>{showLineName(row)}</td><td className="id-code"><bdi>{text(row.hs_code ?? row.activity_code)}</bdi></td><td className="id-code">{text(row.quantity)} / {text(row.capacity)}</td><td className="id-code">{text(row.real_production)} / {text(row.maximum_production)}</td></tr>)}</tbody></table></div> : <p className="t-caption">{linesResult.error ? t("f360.section.degraded", "This source section is degraded; other sections remain available.") : t("f360.industrial.empty", "No source-backed products, spare parts, machines, production lines or raw materials are available.")}</p>}
-            <h3>{t("f360.observed.heading", "Official vs latest approved observed snapshot")}</h3>
+            <Heading level={3} visual="bodyStrong">{t("f360.observed.heading", "Official vs latest approved observed snapshot")}</Heading>
             {latestApprovedFactorySnapshot ? <>
               <div className="table-wrap"><table className="table"><thead><tr><th scope="col">{t("common.field", "Field")}</th><th scope="col">{t("f360.observed.official", "Official")}</th><th scope="col">{t("f360.observed.captured", "Observed")}</th></tr></thead><tbody>{observedComparison.map(row => {
                 const officialText = text(row.official); const observed = snapshotValue(row.observedKey); const matches = officialText === observed;
@@ -327,7 +329,7 @@ export default async function FieldFactory360({ params, searchParams }: {
 
         {/* Government */}
         <details className={styles.section}>
-          <summary><span>{t("f360.government.heading", "Government records")}</span>{badge(governmentResult.error, government, !!licenseId)}</summary>
+          <summary><Text as="span" role="bodyStrong" tone="inherit">{t("f360.government.heading", "Government records")}</Text>{badge(governmentResult.error, government, !!licenseId)}</summary>
           <div className={styles.sectionBody}>
             {government.length ? <div className="table-wrap"><table className="table"><thead><tr><th scope="col">{t("common.type", "Type")}</th><th scope="col">{t("common.reference", "Reference")}</th><th scope="col">{t("common.status", "Status")}</th><th scope="col">{t("f360.validity", "Validity")}</th></tr></thead><tbody>{government.map(row => <tr key={row.id}><td>{text(row.title ?? row.record_type)}</td><td className="id-code"><bdi>{row.external_record_id}</bdi></td><td>{label(row.status)}</td><td className="id-code">{dt(row.valid_from)} → {dt(row.valid_to)}</td></tr>)}</tbody></table></div> : <p className="t-caption">{governmentResult.error ? t("f360.section.degraded", "This source section is degraded; other sections remain available.") : t("f360.government.empty", "Government-domain records are unavailable until a governed source contract supplies them.")}</p>}
           </div>
@@ -335,13 +337,13 @@ export default async function FieldFactory360({ params, searchParams }: {
 
         {/* Documents & media */}
         <details className={styles.section}>
-          <summary><span>{t("f360.documents.heading", "Documents & factory media")}</span>{permissions["view_factory_documents"] ? badge(docsResult.error || mediaResult.error, [...docs, ...officialMedia, ...linkedEvidence], !!factoryId) : <span className="badge badge-outline">{t("f360.restricted", "restricted")}</span>}</summary>
+          <summary><Text as="span" role="bodyStrong" tone="inherit">{t("f360.documents.heading", "Documents & factory media")}</Text>{permissions["view_factory_documents"] ? badge(docsResult.error || mediaResult.error, [...docs, ...officialMedia, ...linkedEvidence], !!factoryId) : <span className="badge badge-outline">{t("f360.restricted", "restricted")}</span>}</summary>
           <div className={styles.sectionBody}>
             {!permissions["view_factory_documents"] ? <p className="t-caption">{t("f360.documents.restricted", "Document metadata requires Factory Documents permission.")}</p> : <>
               {docs.length ? <ul>{docs.map(doc => <li key={doc.id}>{label(doc.business_category ?? doc.doc_type)} · {doc.title} · <bdi className="id-code">{text(doc.reference_no)}</bdi> {permissions["download_factory_documents"] && downloadUrls[doc.id] ? <a className={styles.link} href={downloadUrls[doc.id]} download>{t("common.download", "Download")}</a> : <span className="t-caption">{permissions["download_factory_documents"] ? t("f360.download.unavailable", "file unavailable") : t("f360.download.restricted", "download restricted")}</span>}</li>)}</ul> : <p className="t-caption">{t("f360.documents.empty", "No source-backed document metadata is available.")}</p>}
-              {officialMedia.some(asset => mediaUrls[asset.id]) && <><h3>{t("f360.media.official", "Official factory gallery")}</h3><div className={styles.mediaGrid}>{officialMedia.filter(asset => mediaUrls[asset.id]).map(asset => <figure key={asset.id} style={{ margin: 0 }}><img src={mediaUrls[asset.id]} alt={asset.title ?? t("f360.media.alt", "Official factory image")} /><figcaption className="t-caption">{asset.title ?? label(asset.category)}</figcaption></figure>)}</div></>}
+              {officialMedia.some(asset => mediaUrls[asset.id]) && <><Heading level={3} visual="bodyStrong">{t("f360.media.official", "Official factory gallery")}</Heading><div className={styles.mediaGrid}>{officialMedia.filter(asset => mediaUrls[asset.id]).map(asset => <figure key={asset.id} style={{ margin: 0 }}><img src={mediaUrls[asset.id]} alt={asset.title ?? t("f360.media.alt", "Official factory image")} /><figcaption className="t-caption">{asset.title ?? label(asset.category)}</figcaption></figure>)}</div></>}
               <p className="t-caption">{t("f360.media.boundary", "Only official factory/profile media appears here. Inspection evidence remains linked to its inspection report and is never merged into this gallery.")}</p>
-              <h3>{t("f360.media.evidence", "Linked inspection evidence")}</h3>
+              <Heading level={3} visual="bodyStrong">{t("f360.media.evidence", "Linked inspection evidence")}</Heading>
               {linkedEvidence.length ? <ul>{linkedEvidence.map(asset => <li key={asset.id}><span className="badge badge-info">{label(asset.category)}</span> {asset.title ?? text(asset.evidence_id)} · {dt(asset.captured_at)} {asset.inspection_id ? <a className={styles.link} href={`/reports/inspection/${asset.inspection_id}`}>{t("f360.media.origin", "origin report")}</a> : null} {asset.evidence_id ? <a className={styles.link} href={`/evidence-ocr?evidence=${asset.evidence_id}`}>{t("f360.media.ocr", "Contextual OCR")}</a> : null}</li>)}</ul> : <p className="t-caption">{t("f360.media.evidenceEmpty", "No linked inspection, arrival or violation evidence is visible in your scope.")}</p>}
             </>}
           </div>
@@ -349,7 +351,7 @@ export default async function FieldFactory360({ params, searchParams }: {
 
         {/* Cross-provider canonical source & discrepancies (F360IPAD-API-015) */}
         <details className={styles.section}>
-          <summary><span>{t("f360.xpc.heading", "Source & cross-provider reconciliation")}</span><span className={`badge ${discrepancyCounts["conflicting"] ? "badge-critical" : discrepancyCounts["contract_unverified"] ? "badge-warning" : "badge-compliant"}`}>{discrepancyCounts["conflicting"] ? t("f360.xpc.conflicts", "conflicts") : discrepancyCounts["contract_unverified"] ? t("f360.xpc.unverified", "unverified master") : t("f360.xpc.reconciled", "reconciled")}</span></summary>
+          <summary><Text as="span" role="bodyStrong" tone="inherit">{t("f360.xpc.heading", "Source & cross-provider reconciliation")}</Text><span className={`badge ${discrepancyCounts["conflicting"] ? "badge-critical" : discrepancyCounts["contract_unverified"] ? "badge-warning" : "badge-compliant"}`}>{discrepancyCounts["conflicting"] ? t("f360.xpc.conflicts", "conflicts") : discrepancyCounts["contract_unverified"] ? t("f360.xpc.unverified", "unverified master") : t("f360.xpc.reconciled", "reconciled")}</span></summary>
           <div className={styles.sectionBody}>
             <p className="t-caption">{t("f360.xpc.rule", "Facts are resolved once, server-side. Industry Shared master data is not shown until it can be confirmed; Inspection API values are contextual; approved report facts are authoritative. Conflicts are surfaced, never overwritten.")}</p>
             <div className={styles.facts}>
