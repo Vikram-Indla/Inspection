@@ -1,6 +1,107 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-069 — factory-family typography sweep`
+`Last updated: 2026-08-12` · `Updated by: T-072 — /operations typography`
+
+## The same primitive mistake, three times (2026-08-12)
+
+`MetricStrip` (T-058), `DataTable.head` (T-059) and now `StatCard.label`
+(T-072) all used `overline` (11px) for something WEB-014 §5.2 defines as
+`label` (12px). Three shared primitives, one misreading of the role.
+
+**`overline` is *only* the uppercase eyebrow above a card title.** A KPI tile
+label, a table column header and a key in a key–value row are all `label`. When
+a defect appears in a shared primitive, fix it there — the same bug in three
+primitives cost three separate route audits to find.
+
+## Provoke the empty and error states (2026-08-12)
+
+T-072's fourth unstyled-heading find — `GeoMap`'s `<h4>Map unavailable</h4>`
+falling to the browser default — appeared **only because the map happened to
+fail on one render**. It had been invisible in every earlier pass of every
+route that embeds a map.
+
+**A route audit that only sees the happy path is incomplete.** Error, empty,
+loading and permission-denied states carry their own headings and their own
+absent declarations.
+
+
+## A second implementation inherits only the bug (2026-08-12)
+
+T-071 found the Live Operations map hardcoding `lightPreset: "day"`, so on this
+dark application the **largest element on the screen was a white slab**. The fix
+had existed for months: `GeoMap`, the map `/operations` uses, tracks `data-theme`
+on `<html>` with a `MutationObserver` and re-applies `setConfigProperty` when the
+user toggles. `/operations/live` re-implemented the map and carried none of it.
+
+**Every fix made to the original since the fork was a fix this screen did not
+get.** When two files render the same thing, the second one is not "similar" —
+it is frozen at the moment it was copied. Look for the sibling implementation
+before debugging a rendering defect.
+
+**A disclosure that is always true is not a legend entry.** The screen rendered
+all three position-provenance states as a permanent rail, including
+"Rejected implausible telemetry" in critical red, **with zero inspectors on
+screen** — a colour-coded alarm for a condition that was not occurring. The split
+that resolved it: *"Last recorded position — not guaranteed live"* is a claim
+about the whole screen and is always shown; `unavailable` and `rejected` describe
+individual rows and appear only when a row is in that state.
+
+**Two empty states are one defect until you separate the two facts.** "Nothing in
+scope" and "in scope but unmapped" had been conflated in a single
+`noScopeRows || hasNoPositions` condition and printed the same sentence in two
+places. They are different states — the second can be true while the list is
+full — so the list states the empty case once and the map discloses the unmapped
+case **only when the list is not empty**. Neither can now speak over the other.
+
+**Fold a notice into the surface it describes rather than stacking it.** Four
+amber bars above the content were all disclosures *about the map's data*; they now
+render in the map card, keeping their `role="status"`/`role="alert"`. That also
+**avoided adding a fourth copy of the Notice component this repo already has three
+of** (`dashboard-notice`, `planning-notice`, `regulation-governance-notice`) — the
+primitive gap stays raised rather than quietly filled a fourth time.
+
+**A spec that asserts nesting outlives its usefulness the moment the nesting is
+right.** `aside[…] button[aria-pressed] > bdi` pinned three structural accidents
+at once and blocked making the row itself the control. Re-pointed to the row: the
+guarantees are that the inspector name is direction-isolated and that the row
+selects — not which element contains which.
+
+
+## A spec that names a file rots when the behaviour moves (2026-08-12)
+
+T-070 moved `/operations/live`'s reads out of a 412-line route file. Every
+assertion in the "Live composition contract" — access ordering, integrity
+filters, geography scoping, position provenance — was written against
+`live/page.tsx` **as a single file**, so twenty claims that were all still true
+would have gone red. `livePageSource` is now the route **plus its feature
+modules**, which is exactly how `pageSource` had already been built for
+`/operations` three hundred lines up in the same spec file.
+
+1. **Read the spec's own precedents before re-pointing it.** The right pattern
+   was already in the file; inventing a new one would have made the two routes
+   inconsistent.
+2. **Verify a re-pointed assertion against the real file, not by eye.** All 52
+   were checked by script — every substring, both ordering checks, and the
+   `/operations` assertions that had to survive the shared `AccessNotice` change.
+   Three would have failed silently (`latestPositionByVisit.get(v.id)` became
+   `.get(visit.id)`; two English literals had moved into the locale files).
+3. **Re-point a claim, and check whether it is still the right claim.**
+   `live.module.css` asserted `[dir="rtl"]` — a rule WEB-002 §6 **forbids**. The
+   replacement asserts the opposite: logical properties, no direction override,
+   no physical `left`/`right`.
+
+**The Arabic language was living in a route file.** ~90 strings as
+`t(key, locale === "ar" ? ar : en)`, and three with no Arabic in code, in the
+locale files, or in `ui_strings` — so an Arabic reader got English and nothing
+ever failed. Only moving copy into a resource makes the gap countable
+(WEB-013 §8), which is now the third route where that has been true.
+
+**A streaming fallback that never swaps is the hidden pane, not a bug.** With the
+Browser pane undisplayed, the rendered DOM keeps each route's `loading.tsx` in
+`<main>` with the resolved subtree in a body-level div. It reproduces on routes
+the task never touched. Same limitation as the zeroed layout rects already
+recorded below — **check an untouched route before diagnosing your own change.**
+
 
 ## Deleting a font-size from a button does not make it inherit (2026-08-12)
 

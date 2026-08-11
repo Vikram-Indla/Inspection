@@ -63,7 +63,7 @@
 
 .canvas :global(.mapboxgl-ctrl-attrib) {
   padding-inline: var(--sqx-space-3);
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
   background: var(--sqx-surface-raised);
   border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);

@@ -177,8 +177,7 @@
 }
 
 .value[data-kind="text"] {
-  font: var(--sqx-text-subheading);
-  letter-spacing: var(--sqx-text-subheading-tracking);
+  font: var(--sqx-text-body-strong);
   text-wrap: balance;
 }
 

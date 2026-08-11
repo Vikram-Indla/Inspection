@@ -1,8 +1,7 @@
 .label {
-  min-block-size: calc(var(--sqx-text-overline-size) * var(--sqx-text-overline-line) * 2);
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
+  min-block-size: calc(var(--sqx-text-label-size) * var(--sqx-text-label-line) * 2);
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
   color: var(--sqx-text-muted);
   text-wrap: pretty;
 }
@@ -37,7 +36,7 @@
 }
 
 .sub {
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
 }
 

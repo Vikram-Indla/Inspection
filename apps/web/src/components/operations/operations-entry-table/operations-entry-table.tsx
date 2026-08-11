@@ -3,6 +3,7 @@ import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-table";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import styles from "./operations-entry-table.module.css";
+import { Mono, Text } from "@/components/saqeel/type";
 
 export type EntryRow = {
   readonly id: string;
@@ -51,7 +52,7 @@ export default function OperationsEntryTable({ rows, strings }: {
     },
     {
       key: "visit", header: strings.visit, numeric: true,
-      cell: row => <bdi className={styles.code}>{row.visitId?.slice(0, ID_PREVIEW) ?? MISSING}</bdi>,
+      cell: row => <Mono><bdi>{row.visitId?.slice(0, ID_PREVIEW) ?? MISSING}</bdi></Mono>,
     },
     { key: "factory", header: strings.factory, cell: row => row.factoryName },
     {
@@ -66,7 +67,7 @@ export default function OperationsEntryTable({ rows, strings }: {
     },
     {
       key: "lastUpdate", header: strings.lastUpdate, numeric: true,
-      cell: row => <span className={styles.muted}>{row.lastGeoAt ?? MISSING}</span>,
+      cell: row => <Text as="span" tone="muted">{row.lastGeoAt ?? MISSING}</Text>,
     },
     {
       key: "actions", header: strings.actions, align: "end", width: "min",

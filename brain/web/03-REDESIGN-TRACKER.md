@@ -10,6 +10,122 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-072 · `/operations` — typography (live/ excluded)
+`status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014` · `est: 1h`
+`record:` [2026-08-12-T-072-operations-typography](sessions/2026-08/2026-08-12-T-072-operations-typography.md)
+
+**The healthiest route yet** — 6 sizes, **0 off-scale**, one typeface, **0
+unstyled headings**, and a 19-line `page.tsx` already inside WEB-001's limit.
+Only two visible defects, and **both were in shared primitives, not in
+operations code at all**:
+
+1. **`StatCard.label` was `overline` (11px)** where WEB-014 §5.2 says a KPI tile
+   label is `label` (12px). Third instance of this same mistake in a shared
+   primitive after `MetricStrip` (T-058) and `DataTable.head` (T-059) — which is
+   the argument for fixing them centrally, not per screen.
+2. **`CardValue[data-kind="text"]` was `subheading` (16px)** → owner-ruled to
+   `body-strong`. A text value in a KPI slot reads as a value, not a heading.
+
+Both views now render **28 · 20 · 14 · 12 — the same four sizes as `/dashboard`
+and `/factories`.**
+
+**A fourth unstyled-heading find, and it only appeared because the map failed to
+load on one render.** `GeoMap`'s `<h4>Map unavailable</h4>` has no class and the
+frozen `.sq-state h4` rule sets colour only, so it fell to the UA default 15px.
+**Error and empty states are part of the route and must be provoked, not
+assumed.**
+
+**26 of the 50 violations are dead.** `operations.module.css` is reached by
+`OperationsPreview` (live) and `operations-details.tsx` (**zero importers**);
+checked per declaration, **all 49 typography declarations sit on classes the live
+preview never uses**. Third dead stylesheet after `dashboard.module.css` and
+`factory-list.module.css` — **needs deleting, not migrating**.
+
+**Attribution:** the gate said 20 removed; **6 of those are another agent's
+deletion of `live/live.module.css`. This task removed 14.**
+
+**Owed:** axe, 320px, Arabic/RTL, and a look at the 5 unrendered screens
+`StatCard` reaches.
+
+
+### T-071 · `/operations/live` — the visible screen on SAQEEL (slice 2 of 2)
+`status: partial (axe, 320px, keyboard, light theme, e2e owed)` · `rules: WEB-000, WEB-002, WEB-003, WEB-004, WEB-006, WEB-008, WEB-009, WEB-011, WEB-012` · `est: 2h`
+`record:` [2026-08-12-T-071-operations-live-visible-screen](sessions/2026-08/2026-08-12-T-071-operations-live-visible-screen.md)
+
+**48 legacy class uses → 0, verified in the rendered DOM**, and `LiveOps.tsx`
+deleted (287 lines). With slice 1's stylesheet that is **754 legacy lines gone**
+from this route.
+
+**The largest element on a dark screen was a white slab, and the fix already
+existed.** `LiveMapInner` hardcoded `lightPreset: "day"`; `GeoMap` — the map
+`/operations` uses — has tracked `data-theme` with a `MutationObserver` and
+re-applied `setConfigProperty` since it was written. **A second implementation of
+a solved problem inherits only the bug it started with.**
+
+**A disclosure that is always true is not a legend entry.** All three provenance
+states rendered unconditionally, including a critical-red one, with zero
+inspectors on screen. *"Last recorded position — not guaranteed live"* is a claim
+about the whole screen, so it is now a **standing disclosure**; `unavailable` and
+`rejected` describe rows and render only when a row is in that state.
+
+**Two empty states became one by separating two facts.** "Nothing in scope" and
+"in scope but unmapped" are different — the second can be true while the list is
+full. The list states the empty case once; the map discloses the unmapped case
+**only when the list is not empty**, so they can never both speak. Four notice
+bars dissolved into the surface they describe, which also **avoided adding a
+fourth copy of the Notice component this repo already has three of**.
+
+**`ListRow` gained a selectable mode (`onSelect` + `pressed`) — the row is the
+control**, the same stretched-hit-area contract `href` already had. `.link` now
+hand-resets `font`/`color`/`background`/`border`, the fourth recorded instance of
+*`saqeel.css` has no global button reset by design*.
+
+4 glyph-as-icon → 0. Two `div[aria-label]` with no role — invisible to assistive
+tech — are now a real `<section aria-label>` and `role="application"`.
+
+**Owed:** axe, 320px, keyboard, light theme, e2e — **and a screenshot of the dark
+basemap**, the one claim source alone cannot settle. The Browser pane is
+undisplayed, so the map cannot be seen.
+
+### T-070 · `/operations/live` — foundation: route, data layer, resources, skeleton (slice 1 of 2)
+`status: partial (visible screen is slice 2; axe, 320px, keyboard owed)` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-006, WEB-008, WEB-011, WEB-013` · `est: 2h`
+`record:` [2026-08-12-T-070-operations-live-foundation](sessions/2026-08/2026-08-12-T-070-operations-live-foundation.md)
+
+Owner-reported: the screen is legacy, the loading state is legacy, and it
+duplicates UI. **`page.tsx` 412 → 32** with every read behind
+`features/operations/live/**` and **~90 strings → 62 keys in both locales at
+asserted parity** — the Arabic had been living in the route file as
+`t(key, locale === "ar" ? ar : en)`, and three strings had **no Arabic anywhere**.
+
+**`live.module.css` deleted — 467 lines, zero importers**, kept alive only by a
+spec that read it from disk (owner ruling). Its responsive and direction claims
+moved onto the skeleton's CSS and were **inverted**: the old file carried a
+`[dir="rtl"]` override, which WEB-002 §6 forbids, so the replacement is asserted
+to have none. 6 baselined typography violations went with it.
+
+**A spec that asserts which file holds a behaviour rots when the behaviour
+moves.** The whole Live composition contract asserted against `page.tsx` as one
+file; `livePageSource` is now route + feature modules, exactly how `pageSource`
+was already built for `/operations` three hundred lines up in the same spec.
+**52 re-pointed assertions verified by script** before calling it done.
+
+**5 `as unknown as` casts** went with the move onto `readPages` + `Shape<T>` —
+the T-042 debt this route still carried. Two constants that were maintained in
+two places (`CLEAN_FACTORY_CODES`, the geography filter) now come from one.
+The journey nav — 3 buttons duplicating the shell rail — is deleted, the same
+defect T-068 removed from `/operations`; the wallboard exit stays. 3 string
+fields were declared, built and read by nothing.
+
+**3 new Arabic strings need native review.** **Owed:** axe, 320px, keyboard,
+light/dark, e2e.
+
+**Slice 2:** the map ignores the app theme (`lightPreset: "day"` hardcoded while
+`GeoMap` already tracks `data-theme`), 48 legacy classes → 0, the duplicated
+empty state, the permanent three-state alarm rail plus its duplicate footer
+legend, 4 glyph-as-icon, `ListRow` for the rows and `DefinitionList` for details.
+**Blocked on a ruling:** `Card` has no `aside` element and the runtime spec pins
+`aside[aria-labelledby="live-inspector-list-title"]`.
+
 ### T-069 · factory-family typography sweep (7 files, one pass)
 `status: partial — field surfaces not rendered` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014` · `est: 1.5h`
 `record:` [2026-08-12-T-069-factory-family-typography-sweep](sessions/2026-08/2026-08-12-T-069-factory-family-typography-sweep.md)
