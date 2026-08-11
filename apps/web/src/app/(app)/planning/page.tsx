@@ -15,7 +15,7 @@ export default async function PlanningPage({ searchParams }: { searchParams: Pro
   const [sp, locale] = await Promise.all([searchParams, getLocale()]);
   const { planning } = getMessages(locale);
   const sb = await supabaseServer();
-  const access = await getPlanningAccess(sb, ["planning.view", "planning.create", "planning.export", "planning.approve"]);
+  const access = await getPlanningAccess(sb, ["planning.view", "planning.create", "planning.export"]);
   if (access.error) {
     return <Shell current="/planning" title=""><PlanningDenied title={planning.denied.unavailableTitle} body={planning.denied.unavailableBody} /></Shell>;
   }
@@ -31,8 +31,7 @@ export default async function PlanningPage({ searchParams }: { searchParams: Pro
   return (
     <Shell current="/planning" title="">
       <PlanningScreen workspace={workspace} params={params} sp={sp} locale={locale} messages={planning}
-        canExport={access.can("planning.export")}
-        canApprove={access.can("planning.approve")} formId="planning-filter-toolbar"
+        canExport={access.can("planning.export")} formId="planning-filter-toolbar"
         createVisit={<CreateVisitSection strings={planning.create} canCreate={access.can("planning.create")} />} />
     </Shell>
   );

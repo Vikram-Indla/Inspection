@@ -17,14 +17,13 @@ import styles from "./planning-screen.module.css";
 
 type PlanningMessages = Messages["planning"];
 
-export default function PlanningScreen({ workspace, params, sp, locale, messages, canExport, canApprove, formId, createVisit }: {
+export default function PlanningScreen({ workspace, params, sp, locale, messages, canExport, formId, createVisit }: {
   workspace: Extract<PlanningWorkspace, { ok: true }>;
   params: PlanningListParams;
   sp: PlanningSearchParams;
   locale: Locale;
   messages: PlanningMessages;
   canExport: boolean;
-  canApprove: boolean;
   formId: string;
   createVisit: ReactNode;
 }) {
@@ -55,13 +54,6 @@ export default function PlanningScreen({ workspace, params, sp, locale, messages
       label: tabCount === null ? tabLabels[tab] : `${tabLabels[tab]} · ${tabCount}`,
     };
   });
-  const related = [
-    { href: "/planning/plans", label: messages.related.plans },
-    { href: "/tasks", label: messages.related.tasks },
-    ...(canApprove ? [{ href: "/planning/supervision", label: messages.related.supervision }] : []),
-    { href: "/visits", label: messages.related.visits },
-  ];
-
   return (
     <div className={styles.root}>
       <VisitViewNavigation active="list" basePath="/planning" ariaLabel={messages.views.aria} labels={messages.views} />
@@ -155,11 +147,6 @@ export default function PlanningScreen({ workspace, params, sp, locale, messages
         locale={locale}
         viewerId={workspace.viewerId}
       />
-      <nav className={styles.related} aria-label={messages.related.aria}>
-        {related.map(link => (
-          <a className={styles.relatedLink} href={link.href} key={link.href}>{link.label}</a>
-        ))}
-      </nav>
     </div>
   );
 }

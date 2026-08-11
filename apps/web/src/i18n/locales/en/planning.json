@@ -550,13 +550,7 @@
     "discardAria": "Discard draft {ref}",
     "emptyTitle": "No draft plans"
   },
-  "related": {
-    "aria": "Related planning workspaces",
-    "plans": "Visit plans — status, child visits and progress",
-    "tasks": "Tasks — assigned, in progress and completed",
-    "supervision": "Supervisor queue — confirm Inspector and release submitted visits",
-    "visits": "Visit management — bulk actions and lenses over the same visits"
-  },
+
   "single": {
     "loading": "Loading the single-visit planner…"
   },

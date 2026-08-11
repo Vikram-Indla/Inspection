@@ -47,18 +47,3 @@
   outline-offset: var(--sqx-focus-ring-offset);
 }
 
-.related {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sqx-space-2);
-}
-
-.relatedLink {
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-link);
-  text-decoration: none;
-}
-
-.relatedLink:hover {
-  color: var(--sqx-text-link-hover);
-}
