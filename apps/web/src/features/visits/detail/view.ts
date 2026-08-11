@@ -161,3 +161,13 @@ export function buildAuditEntries(
     accent: false,
   }));
 }
+
+/**
+ * `visit_packages.snapshot` is an immutable JSON copy taken at link time, so its
+ * shape is whatever was written then. Read one field, narrowed here, rather than
+ * asserting a shape the column does not guarantee.
+ */
+export function snapshotText(snapshot: Record<string, unknown> | null, key: string): string | null {
+  const value = snapshot?.[key];
+  return typeof value === "string" && value.trim() ? value : null;
+}

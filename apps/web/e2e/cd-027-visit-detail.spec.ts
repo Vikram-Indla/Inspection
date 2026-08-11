@@ -19,6 +19,15 @@ import { login, rest, must } from "./live-rest";
 const EVIDENCE_DIR = evidenceDirectory("cd-027-visit-detail-v1");
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 const ID = "src/app/(app)/visits/[id]";
+// T-076 moved the reads and derivations into features/visits/detail. These
+// assertions are about the route's behaviour, not which file holds it, so the
+// source is the route plus its feature modules — the same shape /operations and
+// /operations/live already use.
+const DETAIL_SOURCE = [
+  `${ID}/page.tsx`,
+  "src/features/visits/detail/queries.ts",
+  "src/features/visits/detail/view.ts",
+].map(SRC).join("\n");
 
 test.use({ storageState: storageStatePath("planner") });
 
@@ -119,29 +128,31 @@ test.describe("CD-027 wiring proofs (code layer)", () => {
   });
 
   test("append-only audit read is capped at 30 (leg 3)", () => {
-    expect(SRC(`${ID}/page.tsx`)).toContain(".limit(30)");
+    expect(DETAIL_SOURCE).toContain(".limit(30)");
   });
 
   test("attachments use soft delete + signed URL; registered rows never physically deleted (leg 13)", () => {
     const a = SRC(`${ID}/actions.ts`);
     expect(a).toContain("removed_at");                          // soft delete
     expect(a).not.toMatch(/from\("visit_attachments"\)\s*\.delete\(/); // no hard row delete
-    expect(SRC(`${ID}/page.tsx`)).toContain("createSignedUrl");
+    expect(DETAIL_SOURCE).toContain("createSignedUrl");
   });
 
   test("blocked legs are NOT faked — no invented map/provider/geofence (leg S34 / MAP)", () => {
-    const p = SRC(`${ID}/page.tsx`);
-    expect(p).not.toMatch(/mapbox|leaflet|google\.maps|geofence_query/i);
+    expect(DETAIL_SOURCE).not.toMatch(/mapbox|leaflet|google\.maps|geofence_query/i);
   });
 
   // ── Track 2 closures ────────────────────────────────────────────────────
   test("ERRORMAP — raw provider text never surfaced (legs 1/12/13)", () => {
     const a = SRC(`${ID}/actions.ts`);
-    const p = SRC(`${ID}/page.tsx`);
     expect(a).toContain('from "./neutral"');
     expect(a).not.toMatch(/error:\s*error\.message/);   // no raw PostgREST message
     expect(a).not.toMatch(/up\.error\.message/);         // no raw storage message
-    expect(p).not.toMatch(/vErr\.message|attErr\.message/);
+    // Scoped to what the reader sees. `queries.ts` logs provider messages to the
+    // server console deliberately (the boundary reports why a read failed); the
+    // rule is that none of it reaches the rendered page.
+    expect(DETAIL_SOURCE).not.toMatch(/vErr\.message|attErr\.message/);
+    expect(SRC(`${ID}/page.tsx`)).not.toMatch(/\.error\.message/);
     expect(SRC(`${ID}/neutral.ts`)).toContain("row-level security");
   });
 

@@ -1,17 +1,17 @@
 import Shell from "@/components/Shell";
-import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import ActionBar, { type ActionBarStrings, type PackageOption } from "./ActionBar";
 import Attachments, { type AttachmentRow, type AttachmentsStrings } from "./Attachments";
 import NotesEditor, { type NotesStrings } from "./NotesEditor";
 import DualStateRibbon, { type RibbonTrack, type RibbonStrings } from "./DualStateRibbon";
-import { getReasonOptions, type ReasonOption } from "@/lib/planning/lifecycle";
+import { type ReasonOption } from "@/lib/planning/lifecycle";
 import { mapError } from "./neutral";
 import CreatedToast from "@/components/CreatedToast";
 import EmptyState from "@/components/EmptyState";
 import FocusScroll from "./FocusScroll";
-import { getPlanningAccess } from "@/lib/planning/access";
-import { formatDateTime, riyadhToday } from "@/lib/dates";
+import { formatDateTime } from "@/lib/dates";
+import { loadVisitDetail } from "@/features/visits/detail/queries";
+import { buildVisitDerivations, reasonLabel as resolveReasonLabel, snapshotText } from "@/features/visits/detail/view";
 
 const PLAN_TONE: Record<string, string> = { published: "badge-info", returned: "badge-warning", cancelled: "badge-critical", expired: "badge-critical" };
 const PLAN_BADGE: Record<string, string> = { published: "badge-info", returned: "badge-warning", cancelled: "badge-critical", expired: "badge-critical", draft: "badge-draft" };
@@ -25,150 +25,49 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   const { id } = await params;
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
-  const sb = await supabaseServer();
-  const planningAccess = await getPlanningAccess(sb, ["planning.reassign"]);
-  const { data: rosterRows, error: rosterError } = await sb.rpc(
-    "list_available_reassignment_inspectors", { p_visit_ids: [id] },
-  );
-  if (rosterError) console.error(`[visit.reassignment-roster] load failed: ${rosterError.message}`);
-  const inspectors = (rosterRows ?? []).map((r: { inspector_id: string; full_name: string }) => ({
-    user_id: r.inspector_id as string,
-    full_name: r.full_name as string,
-  }));
-  const { data: v, error: vErr } = await sb.from("visits")
-    .select(`id, visit_type, execution_mode, planning_status, planning_version, operational_state, window_start, window_end, cancellation_reason, notes,
-      immediate_creator_role, source_channel, internal_reference, priority, visit_reference, expired_by_rule_id, package_version_id,
-      planner_lat, planner_lng, original_lat, original_lng, visit_location_source, created_at,
-      visit_plans(id, method, status, published_at, created_at, plan_reference, profiles!visit_plans_created_by_fkey(full_name)),
-      factories(id, factory_code, name, cr_number, official_lat, official_lng, risk_band, is_temporary, source),
-      package_versions(version_label, packages(code)),
-      assignments(method, status, profiles(full_name)),
-      journey_sessions(id, started_at, geo_events(kind, accuracy_m, geofence_result, gis_version, occurred_at)),
-      inspections(id, status, submission_versions(version_number, submitted_at), reviews(decision, status, returned_sections))`)
-    .eq("id", id).maybeSingle();
-  // ENG-12 — the append-only audit trigger already records every status
-  // transition on this row (publish/return/republish/cancel/reassign/
-  // reschedule/expire); it just wasn't surfaced per-visit before, only via
-  // the separate global /admin/audit browser. RLS-gated same as that browser.
-  const { data: auditRows } = await sb.from("audit_events")
-    .select("id, actor, action, before_state, after_state, occurred_at")
-    .eq("object_type", "visits").eq("object_id", id)
-    .order("occurred_at", { ascending: false }).limit(30);
-  // M8 / PLN-CON-011 — governed lifecycle stream + location provenance +
-  // package links. All three are additive reads; a failed read degrades to an
-  // empty section (logged), never a crashed page.
-  const [lifecycleRead, locationRead, pkgLinksRead, returnReasonsRes, cancelReasonsRes] = await Promise.all([
-    sb.from("visit_lifecycle_events")
-      .select("id, event_type, reason_key, comments, actor, previous, created_at")
-      .eq("visit_id", id).order("created_at", { ascending: false }).limit(50),
-    sb.from("visit_location_events")
-      .select("id, lat, lng, source, actor, note, created_at")
-      .eq("visit_id", id).order("created_at", { ascending: false }).limit(50),
-    sb.from("visit_packages")
-      .select("id, package_version_id, snapshot, added_at")
-      .eq("visit_id", id).order("added_at", { ascending: true }),
-    getReasonOptions(sb, "return_reason"),
-    getReasonOptions(sb, "cancellation_reason"),
-  ]);
-  if (lifecycleRead.error) console.error("[visit.detail] lifecycle read:", lifecycleRead.error.message);
-  if (locationRead.error) console.error("[visit.detail] location events read:", locationRead.error.message);
-  if (pkgLinksRead.error) console.error("[visit.detail] visit_packages read:", pkgLinksRead.error.message);
-  const lifecycleEvents = (lifecycleRead.data ?? []) as {
-    id: string; event_type: string; reason_key: string | null; comments: string | null;
-    actor: string | null; previous: Record<string, unknown>; created_at: string;
-  }[];
-  const locationEvents = (locationRead.data ?? []) as {
-    id: string; lat: number; lng: number; source: string; actor: string | null; note: string | null; created_at: string;
-  }[];
-  const pkgLinks = (pkgLinksRead.data ?? []) as {
-    id: string; package_version_id: string; added_at: string;
-    snapshot: { code?: string | null; title?: string | null; version_label?: string | null; status?: string | null } | null;
-  }[];
-  if (vErr) {
-    return <Shell current={shellCurrent} title={t("visit.detail.errorTitle", "Visit — error")}><div className="alert alert-critical" role="alert">{mapError(vErr, "load")}</div></Shell>;
+  const page = await loadVisitDetail(id);
+  if (page.kind === "error") {
+    return <Shell current={shellCurrent} title={t("visit.detail.errorTitle", "Visit — error")}><div className="alert alert-critical" role="alert">{mapError(null, "load")}</div></Shell>;
   }
-  if (!v) {
+  if (page.kind === "not-found") {
     return <Shell current={shellCurrent} title={t("visit.detail.notFoundTitle", "Visit not found")}>
       <EmptyState glyph="∅" title={t("visit.detail.notFound", "Not in your scope or does not exist")}
         body={t("visit.detail.notFoundDesc", "IDs never change or get reused (FLD-VIS-001).")} />
     </Shell>;
   }
-  const f = v.factories as unknown as { id: string; factory_code: string; name: string; cr_number: string; risk_band: string; is_temporary: boolean; source: string | null };
-  // PLN-REQ-028 — a manual immediate factory is never presented as master data:
-  // the unverified marker rides next to the lifecycle lozenges, and creator
-  // provenance (Planner/Inspector, reason, channel) is surfaced below.
-  const isUnverifiedManual = f.is_temporary && f.source === "immediate_manual";
-  // visits->visit_plans is TO-ONE (FK on visits): object or null (null = immediate, M01-050)
-  const plan = v.visit_plans as unknown as { id: string; method: string; status: string; published_at: string | null; created_at: string; plan_reference: string | null; profiles: { full_name: string } | null } | null;
-  // M8 — governed reason label resolution (locale-aware; AR falls back to EN).
-  const reasonLabel = (options: ReasonOption[], key: string | null | undefined) => {
-    if (!key) return null;
-    const opt = options.find(o => o.key === key);
-    return opt ? (locale === "ar" ? (opt.label_ar ?? opt.label_en) : opt.label_en) : key;
-  };
-  const returnReasons = returnReasonsRes.options;
-  const cancelReasons = cancelReasonsRes.options;
-  // M8 / PLN-CON-011 — return info comes from the LATEST lifecycle 'return'
-  // event. LEGACY FALLBACK: historical rows encoded the reason in a
-  // 'RETURNED: ' notes prefix; when no event exists the prefix still renders
-  // (never break historical rows).
-  const latestReturnEvent = lifecycleEvents.find(e => e.event_type === "return") ?? null;
-  const legacyReturnReason = v.planning_status === "returned" && typeof v.notes === "string" && v.notes.startsWith("RETURNED: ")
-    ? v.notes.slice("RETURNED: ".length) : null;
-  const returnReason = latestReturnEvent ? reasonLabel(returnReasons, latestReturnEvent.reason_key) : legacyReturnReason;
-  const latestCancelEvent = lifecycleEvents.find(e => e.event_type === "cancel") ?? null;
-  const cancelReasonDisplay = reasonLabel(cancelReasons, v.cancellation_reason) ?? v.cancellation_reason;
-  // M8 — expiry provenance: the rule that expired this visit + its reason.
-  const latestExpireEvent = lifecycleEvents.find(e => e.event_type === "expire") ?? null;
-  let expiryRuleReason: string | null = null;
-  if (v.expired_by_rule_id) {
-    const { data: rule } = await sb.from("planning_expiry_rules").select("rule_type, reason").eq("id", v.expired_by_rule_id).maybeSingle();
-    expiryRuleReason = rule?.reason ?? rule?.rule_type ?? null;
-  }
-  if (!expiryRuleReason && latestExpireEvent) expiryRuleReason = latestExpireEvent.comments ?? latestExpireEvent.reason_key;
-  // M8 — bulk context: sibling visits under the same plan.
-  let siblingCount = 0;
-  if (plan) {
-    const { count } = await sb.from("visits").select("id", { count: "exact", head: true }).eq("visit_plan_id", plan.id);
-    siblingCount = count ?? 0;
-  }
-  // M8 — repackage options for returned visits (active packages only).
-  let packageOptions: PackageOption[] = [];
-  if (v.planning_status === "returned") {
-    const today = riyadhToday();
-    const { data: pvs } = await sb.from("package_versions")
-      .select("id, version_label, packages(code)").in("status", ["published", "locked"])
-      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`);
-    packageOptions = (pvs ?? []).map(p => ({
-      id: p.id as string,
-      label: `${(p.packages as unknown as { code: string } | null)?.code ?? p.id.slice(0, 8)} · ${p.version_label}`,
-    }));
-  }
-  const pkg = v.package_versions as unknown as { version_label: string; packages: { code: string } } | null;
-  const asg = (v.assignments as unknown as { method: string; status: string; profiles: { full_name: string } }[])[0];
-  const journeys = v.journey_sessions as unknown as { id: string; started_at: string; geo_events: { kind: string; accuracy_m: number; geofence_result: string | null; gis_version: string; occurred_at: string }[] }[];
-  // visits->inspections is to-one (unique visit_id): object or null, NOT an array
-  const insp = v.inspections as unknown as { id: string; status: string; submission_versions: { version_number: number; submitted_at: string }[]; reviews: { decision: string | null; status: string; returned_sections: string[] | null }[] } | null;
-  // FIX WAVE F4 · M02-042 — attachments (soft-deleted rows excluded); the query
-  // failing (e.g. migration 0020 not applied yet) degrades to a verbatim error,
-  // never a crash. Signed URLs minted under the caller's session (private bucket).
-  const { data: attData, error: attErr } = await sb.from("visit_attachments")
-    .select("id, name, mime, storage_path, uploaded_at, uploader:profiles!visit_attachments_uploaded_by_fkey(full_name)")
-    .eq("visit_id", id).is("removed_at", null)
-    .order("uploaded_at", { ascending: false });
-  const attRows: AttachmentRow[] = await Promise.all(((attData ?? []) as unknown as {
-    id: string; name: string; mime: string; storage_path: string; uploaded_at: string;
-    uploader: { full_name: string } | null;
-  }[]).map(async a => {
-    const { data: signed, error: sErr } = await sb.storage.from("attachments").createSignedUrl(a.storage_path, 3600);
-    return {
-      id: a.id, name: a.name, mime: a.mime, uploadedAt: a.uploaded_at,
-      uploadedBy: a.uploader?.full_name ?? "—",
-      // HANDOFF_BLOCKED_ERRORMAP closure — never leak the raw signed-URL error;
-      // the null url already drives the neutral "download link unavailable" state.
-      url: signed?.signedUrl ?? null, urlError: sErr ? mapError(sErr, "link") : null,
-    };
+  const detail = page.data;
+  const v = detail.visit;
+  const f = detail.visit.factories;
+  const plan = detail.visit.visit_plans;
+  const pkg = detail.visit.package_versions;
+  const inspectors = detail.inspectors;
+  const lifecycleEvents = detail.lifecycle;
+  const locationEvents = detail.location;
+  const pkgLinks = detail.packageLinks;
+  const auditRows = detail.audit;
+  const returnReasons = detail.returnReasons;
+  const cancelReasons = detail.cancelReasons;
+  const packageOptions: PackageOption[] = detail.packageOptions;
+  const expiryRuleReason = detail.expiryRuleReason;
+  const siblingCount = detail.siblingCount;
+  const derived = buildVisitDerivations(detail, locale);
+  const asg = derived.assignment;
+  const insp = derived.inspection;
+  const journeys = detail.visit.journey_sessions ?? [];
+  const isUnverifiedManual = derived.isUnverifiedManual;
+  const latestReturnEvent = derived.latestReturn;
+  const latestCancelEvent = derived.latestCancel;
+  const returnReason = derived.returnReason;
+  const cancelReasonDisplay = derived.cancelReasonDisplay;
+  const reasonLabel = (options: ReasonOption[], key: string | null | undefined) =>
+    resolveReasonLabel(options, key, locale);
+  const attRows: AttachmentRow[] = detail.attachments.map(a => ({
+    id: a.id, name: a.name, mime: a.mime, uploadedAt: a.uploaded_at,
+    uploadedBy: a.uploader?.full_name ?? "—",
+    url: detail.signedUrls.get(a.id) ?? null,
+    urlError: detail.signedUrls.has(a.id) ? null : mapError(null, "link"),
   }));
+  const attErr = detail.attachmentsFailed;
   const attachmentsStrings: AttachmentsStrings = {
     heading: t("visit.att.heading", "Attachments"),
     empty: t("visit.att.empty", "No attachments yet — planners and operations can attach supporting files."),
@@ -240,10 +139,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   const canManage = v.planning_status === "published" && v.operational_state === "new";
   // Supervisor-only and pre-start. The server repeats this via the atomic
   // capability, state and overlap checks before it writes anything.
-  const canReassign = preStart
-    && ["published", "returned"].includes(v.planning_status)
-    && !planningAccess.error
-    && planningAccess.can("planning.reassign");
+  const canReassign = derived.canReassign;
   const isFinal = ["cancelled", "expired"].includes(v.planning_status);
   const latestAudit = (auditRows ?? [])[0];
   const geoEvents = journeys.flatMap(j => j.geo_events).sort((a, b) => b.occurred_at.localeCompare(a.occurred_at));
@@ -302,16 +198,16 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     timeZone: "Asia/Riyadh",
   }).format(cutoffInstant);
   return (
-    <Shell current={shellCurrent} title={t("visit.detail.title", "Visit {id} — {factory}").replace("{id}", v.id.slice(0, 8)).replace("{factory}", f.name)}
+    <Shell current={shellCurrent} title={t("visit.detail.title", "Visit {id} — {factory}").replace("{id}", v.id.slice(0, 8)).replace("{factory}", f?.name ?? "—")}
       context={<>
         {/* M02-002 — full lifecycle: planning status + operational state */}
         <span className={`badge ${PLAN_BADGE[v.planning_status] ?? "badge-pending"}`}>{t(`enum.${v.planning_status}`, v.planning_status)}</span>
         <span className="badge badge-info">{t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}</span>
-        {pkg && <span className="badge badge-outline">{pkg.packages.code} · {pkg.version_label}</span>}
+        {pkg && <span className="badge badge-outline">{pkg.packages?.code ?? "—"} · {pkg.version_label}</span>}
         {isUnverifiedManual && <span className="badge badge-warning">{tr("visit.detail.unverifiedManual", "Unverified manual entry — pending reconciliation", "إدخال يدوي غير موثّق — بانتظار المطابقة")}</span>}
       </>}>
       {targetPreview && <div className="page-header" data-saqeel-design="WA-DES-045">
-        <div className="stack"><h1>{t("visit.detail.title", "Visit {id} — {factory}").replace("{id}", v.id.slice(0, 8)).replace("{factory}", f.name)}</h1>
+        <div className="stack"><h1>{t("visit.detail.title", "Visit {id} — {factory}").replace("{id}", v.id.slice(0, 8)).replace("{factory}", f?.name ?? "—")}</h1>
           <span className="id-code">{v.visit_reference ?? v.id}</span></div>
         <a className="btn btn-ghost" href={routeBase}>{t("visit.detail.backToVisits", "Visits")}</a>
       </div>}
@@ -324,7 +220,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         <section id="config">
           <h2 className="panel-title">{t("visit.detail.configuration", "Configuration")}</h2>
           <p>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)} · {t("visit.detail.window", "window")} <span className="id-code">{formatDateTime(v.window_start, locale)} → {formatDateTime(v.window_end, locale)}</span></p>
-          <p>{t("visit.detail.assignment", "Assignment:")} <strong>{asg?.profiles?.full_name ?? "—"}</strong> ({asg ? t(`enum.${asg.method}`, asg.method) : "—"}) · <a className="btn btn-ghost btn-sm" href={`/factories/${f.id}`}>{t("visit.detail.factory360", "Factory 360")}</a></p>
+          <p>{t("visit.detail.assignment", "Assignment:")} <strong>{asg?.profiles?.full_name ?? "—"}</strong> ({asg ? t(`enum.${asg.method}`, asg.method) : "—"}) {f ? <> · <a className="btn btn-ghost btn-sm" href={`/factories/${f.id}`}>{t("visit.detail.factory360", "Factory 360")}</a></> : null}</p>
 
           {(v.immediate_creator_role || v.source_channel) && (
             <p className="t-caption">
@@ -404,7 +300,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       <NotesEditor visitId={v.id} planningVersion={v.planning_version} initialNotes={typeof v.notes === "string" ? v.notes : ""} strings={notesStrings} />
       {/* FIX WAVE F4 — M02-042 attachments */}
       {attErr ? (
-        <div className="alert alert-critical" role="alert">{mapError(attErr, "load")}</div>
+        <div className="alert alert-critical" role="alert">{mapError(null, "load")}</div>
       ) : (
         <Attachments visitId={v.id} rows={attRows} strings={attachmentsStrings} />
       )}
@@ -422,14 +318,14 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
               <li key={l.id}>
                 <span className={l.package_version_id === v.package_version_id ? "tl-dot is-accent" : "tl-dot"} />
                 <div>
-                  <strong>{l.snapshot?.code ?? l.package_version_id.slice(0, 8)}</strong>
-                  {l.snapshot?.title ? <> · {l.snapshot.title}</> : null}
-                  {l.snapshot?.version_label ? <> · <span className="badge badge-outline">{l.snapshot.version_label}</span></> : null}
+                  <strong>{snapshotText(l.snapshot, "code") ?? l.package_version_id.slice(0, 8)}</strong>
+                  {snapshotText(l.snapshot, "title") ? <> · {snapshotText(l.snapshot, "title")}</> : null}
+                  {snapshotText(l.snapshot, "version_label") ? <> · <span className="badge badge-outline">{snapshotText(l.snapshot, "version_label")}</span></> : null}
                   {l.package_version_id === v.package_version_id && <span className="badge badge-info">{t("visit.detail.primaryPackage", "primary")}</span>}
                   <br />
                   <span className="tl-meta id-code">
                     {t("visit.detail.packageLinkedAt", "linked")} {formatDateTime(l.added_at, locale)}
-                    {l.snapshot?.status ? <> · {t("visit.detail.packageSnapshot", "snapshot at link time:")} {l.snapshot.status}</> : null}
+                    {snapshotText(l.snapshot, "status") ? <> · {t("visit.detail.packageSnapshot", "snapshot at link time:")} {snapshotText(l.snapshot, "status")}</> : null}
                   </span>
                 </div>
               </li>
