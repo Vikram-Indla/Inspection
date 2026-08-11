@@ -1,6 +1,42 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-11` · `Updated by: T-055 — /planning toolbar`
+`Last updated: 2026-08-11` · `Updated by: T-056 — /planning/single first run`
+
+## Where `/planning/single` stands (2026-08-11)
+
+T-056 took the first-run state after the owner reported it: one search card, a
+gap, then a raised sticky bar carrying **Save draft** and **Submit for
+supervision**, both permanently disabled, and nothing else on the page. The bar
+now renders only when a target exists.
+
+Three rulings from this task generalise:
+
+- **A permanently disabled control is not a preview of an action, it is dead
+  UI** — and worse than a hidden one, because a disabled control leaves the tab
+  order, so the keyboard user cannot reach the thing that would explain why it
+  is disabled. `PublishReadiness` and `PublishBlockers` on this same screen were
+  already gated on a target; the bar was the outlier, not the pattern.
+- **Deleting a submit button changes how Enter behaves.** A form with no submit
+  button submits on Enter when exactly one field blocks implicit submission —
+  and on this screen that field was the search box, so the disabled button had
+  been suppressing Enter by accident. The fix was structural: search and
+  portfolio selection moved **outside** the `<form>`, which is what they are.
+  Safe only because the published target has always been built from hidden
+  fields rather than read back out of the radios. **Check the implicit-submission
+  consequence before removing a submit button from any form.**
+- **A step number inside a translated string is data in the wrong file.** Two
+  cards both read "2 ·" — `portfolioStep` and `licenseStep`, in `en` and `ar`,
+  because they are the same step on two paths and nobody could see both at once.
+  Numbers moved to a `CardHeader` eyebrow; the copy holds only the name.
+
+Also fixed: the search input was named three times (heading, `aria-label`,
+placeholder) with no visible `<label>`, against `TextInput`'s own TSDoc; the
+first run now states what to type and what follows; the skeleton drew three
+cards where the screen renders one.
+
+**Owed:** browser, keyboard, Arabic/RTL and axe passes — no dev server was
+started. **10 new Arabic strings need a native review.** The screen's other ~110
+strings are still `t(key, "English")` on the `ui_strings` table.
 
 ## Where `/planning` stands (2026-08-11)
 

@@ -10,6 +10,34 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-056 · `/planning/single` — first-run state, dead publish bar, step numbering
+`status: partial (not verified in a browser)` · `rules: WEB-000, WEB-002, WEB-003, WEB-004, WEB-009, WEB-011, WEB-013` · `est: 1.5h`
+`record:` [2026-08-11-T-056-single-visit-first-run](sessions/2026-08/2026-08-11-T-056-single-visit-first-run.md)
+
+Owner-reported: the empty screen was one search card plus a raised bar holding
+**two permanently disabled buttons**. The bar now renders only when a target
+exists — matching `PublishReadiness` and `PublishBlockers`, which were already
+gated that way.
+
+**Removing the submit button re-arms implicit submission:** a form with no submit
+button submits on Enter when exactly one field blocks it, and on the empty screen
+that field is the search box. `FactorySearch` and `PortfolioPicker` therefore
+moved **outside** the `<form>`, which is also what they are. The published target
+was already built from hidden fields, never read from the radios — the cost is
+`actions.ts`'s documented `factory_id` fallback becoming unreachable (owner
+ruling). The permission blocker moved above the search so a planner without
+`planning.submit_for_supervision` learns it before doing the work.
+
+**Two steps were both numbered "2 ·"** — `portfolioStep` and `licenseStep`, in
+both locales. Numbers left the copy for a `CardHeader` eyebrow (`Step 2 of 4` on
+both, since they are one step on two paths). The search input got a real visible
+`<label>` — it had been named by the heading *and* `aria-label` *and* the
+placeholder — plus a first-run guidance state. Skeleton trimmed 3 cards → 1 to
+match the real first paint. **10 new keys in `planning.single`, both locales.**
+
+**Owed:** browser, keyboard (confirm Enter is inert), Arabic/RTL, axe. **10 new
+Arabic strings need native review.**
+
 ### T-055 · `/planning` toolbar — filters into the panel, applied on change
 `status: partial (not verified in a browser)` · `rules: WEB-000, WEB-002 §2, WEB-003, WEB-004 §1, WEB-009, WEB-011, WEB-013` · `est: 1h`
 `record:` [2026-08-11-T-055-planning-toolbar-instant-filters](sessions/2026-08/2026-08-11-T-055-planning-toolbar-instant-filters.md)
@@ -878,6 +906,19 @@ Pull one in only if it is genuinely part of doing the active task well.
   default. Either `accent` becomes the default and tabs opt out, or the two
   roles get distinct names — a design-system decision, in the shape of T-030's
   "a prop with one correct value is a future inconsistency".
+- **`single-visit-screen.tsx` is 256 lines against a 200-line cap** (found in
+  T-056; it was 249 before). Extracting the notice stack moves ~10 lines and does
+  not clear it — the real fix is splitting the screen.
+- **`portfolio-picker.tsx:53` puts `role="listbox"` on a `<ul>` whose children
+  are `<li>` radios** (found in T-056). Invalid ARIA child structure: a listbox
+  takes `option`s, and these are labelled radio controls.
+- **`/planning/single` still holds ~110 `t(key, "English")` call sites** reading
+  Arabic from the `ui_strings` table, and `plan.single.searching` still has no
+  Arabic row (owed since T-045). T-056 moved 10 keys into `planning.single`;
+  the rest is a screen-sized WEB-013 migration.
+- **`actions.ts`'s `factory_id` / `license_number` radio fallbacks** are now
+  partly unreachable after T-056 moved the search out of the publish form.
+  Delete outright, or keep as dead defence — needs a ruling.
 - **`IdentityDossier`'s map toggle on `/planning/single` is still `subtle`** and
   is a toggle, not a tab strip. It has the same defect the owner reported on
   `/planning/bulk`, and was left alone because it is a different screen.
