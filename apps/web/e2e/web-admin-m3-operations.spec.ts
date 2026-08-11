@@ -37,12 +37,19 @@ const livePageSource = [
   "src/features/operations/live/geography.ts",
   "src/features/operations/sources/profile.ts",
 ].map(read).join("\n");
-const liveShellSource = read("src/app/(app)/operations/live/LiveOps.tsx");
+// LiveOps.tsx is rebuilt as three composed SAQEEL components (T-071); the
+// screen's guarantees are the same and are asserted across all three.
+const liveShellSource = [
+  "src/components/operations/operations-live/operations-live.tsx",
+  "src/components/operations/operations-live/live-map-card.tsx",
+  "src/components/operations/operations-live/live-inspector-panel.tsx",
+].map(read).join("\n");
 const liveMapSource = read("src/app/(app)/operations/live/LiveMapInner.tsx");
 const liveLoadingSource = read("src/app/(app)/operations/live/loading.tsx");
 const liveSkeletonSource = read("src/components/operations/operations-live-skeleton/operations-live-skeleton.tsx");
 const liveSkeletonCssSource = read("src/components/operations/operations-live-skeleton/operations-live-skeleton.module.css");
 const skeletonPrimitiveCssSource = read("src/components/saqeel/skeleton/skeleton.module.css");
+const listRowSource = read("src/components/saqeel/list-row/list-row.tsx");
 const runtimeCssSource = read("src/app/saqeel-runtime.css");
 
 test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 composition contract", () => {
@@ -267,9 +274,12 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
   });
 
   test("provides synchronized list, wallboard, loading disclosure and bounded responsive rules", () => {
-    expect(liveShellSource).toContain('aria-pressed={selectedId === inspector.id}');
+    // The row is the toggle. `pressed` is the ListRow contract; the primitive
+    // is what renders aria-pressed, and both halves are asserted.
+    expect(liveShellSource).toContain("pressed={selectedId === inspector.id}");
+    expect(listRowSource).toContain("aria-pressed={pressed}");
     expect(liveShellSource).toContain('data-testid="live-inspector-details"');
-    expect(liveShellSource).toContain("selectedInspector.visitId");
+    expect(liveShellSource).toContain("inspector.visitId");
     expect(liveMapSource).toContain("feature.properties?.inspector");
     expect(runtimeCssSource).toContain(".mapboxgl-popup-content");
     expect(runtimeCssSource).toContain("background: var(--surface-primary)");
@@ -278,8 +288,12 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
     expect(runtimeCssSource).toContain(".mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip");
     expect(liveSkeletonCssSource).not.toContain(":global(.mapboxgl-popup-content)");
     expect(liveShellSource).toContain("onProviderFailure={markProviderFailed}");
-    expect(liveShellSource).toContain("noScopeRows || hasNoPositions");
+    // "nothing in scope" and "in scope but unmapped" stay two distinct
+    // sentences. They used to render as one alert on the map AND again in the
+    // list; the empty list now states it once, and the map discloses the
+    // unmapped case only when the list is NOT empty (T-071).
     expect(liveShellSource).toContain("noScopeRows ? s.noScope : s.noPositions");
+    expect(liveShellSource).toContain("hasNoPositions && inspectors.length > 0");
     expect(liveShellSource).toContain('data-wallboard={wallboard ? "true" : "false"}');
     expect(liveShellSource).toContain("s.wallboardExit");
     // The non-GPS disclosure must survive the load, so the skeleton renders it
@@ -316,9 +330,9 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
     expect(livePageSource).toContain("positionObservedAt: position?.occurred_at ?? null");
     expect(liveShellSource).toContain("s.positionSourceField");
     expect(liveShellSource).toContain("s.positionObservedField");
-    expect(liveShellSource).toContain("selectedInspector.positionObservedAt");
+    expect(liveShellSource).toContain("inspector.positionObservedAt");
     expect(liveShellSource).toContain(
-      'href={`/visits/${selectedInspector.visitId}`}',
+      'href={`/visits/${inspector.visitId}`}',
     );
     expect(liveShellSource).not.toMatch(/\.(insert|update|upsert|delete)\(/);
   });
@@ -425,9 +439,13 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await expect(page.getByRole("heading", { name: "Active inspectors", exact: true })).toBeVisible();
     await expect(page.getByText("Snapshot generated:", { exact: false })).toBeVisible();
     await expect(page.getByText(/G10 Golden Journey|M04 Governed Integration|KPI Verify|F360 Runtime|Verification fixture/)).toHaveCount(0);
-    const firstInspector = page.locator('aside[aria-labelledby="live-inspector-list-title"] button[aria-pressed]').first();
+    // Scoped to the row rather than to the toggle inside it: the guarantees are
+    // that the inspector name is direction-isolated and that the row selects,
+    // not which element nests which (T-071 made the whole row the toggle).
+    const firstRow = page.locator('[aria-labelledby="live-inspector-list-title"] [role="listitem"]').first();
+    const firstInspector = firstRow.locator("button[aria-pressed]").first();
     if (await firstInspector.count()) {
-      await expect(firstInspector.locator('bdi[dir="auto"]')).toBeVisible();
+      await expect(firstRow.locator('bdi[dir="auto"]').first()).toBeVisible();
       const observedAt = Date.parse(await page.getByTestId("live-snapshot-at").getAttribute("datetime") ?? "");
       const visibleSinceValues = await page.locator("time[data-live-since]").evaluateAll(nodes =>
         nodes.map(node => Date.parse(node.getAttribute("datetime") ?? "")),

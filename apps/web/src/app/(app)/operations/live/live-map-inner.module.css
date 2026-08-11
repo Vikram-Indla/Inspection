@@ -1,0 +1,13 @@
+.canvas {
+  block-size: 100%;
+  inline-size: 100%;
+  background: var(--sqx-surface-canvas);
+}
+
+.state {
+  display: grid;
+  place-items: center;
+  block-size: 100%;
+  inline-size: 100%;
+  padding: var(--sqx-space-5);
+}

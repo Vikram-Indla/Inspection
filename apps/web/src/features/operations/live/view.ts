@@ -177,10 +177,13 @@ export function buildLiveOpsProps(data: LiveOperationsData, wallboard: boolean) 
 export function buildLiveOpsStrings(locale: Locale) {
   const { live } = getMessages(locale).operations;
   return {
+    title: live.map.title,
+    countLabel: live.map.countLabel,
+    ariaLabel: live.map.ariaLabel,
+    markerLegend: live.map.markerLegend,
     loading: live.loading.detail,
     enRoute: live.stat.enRoute,
     totalsLabel: live.totalsLabel,
-    inspector: live.map.markerLegend,
     freshnessPolicy: live.snapshot.policy,
     lastObserved: live.snapshot.lastObserved,
     snapshotGenerated: live.snapshot.generated,

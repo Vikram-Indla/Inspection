@@ -1,10 +1,10 @@
 "use client";
 
-// WA-DES-034-C3: fixed, read-only operational markers. This renderer contains
-// no route line, ETA, path animation, polling or GPS claim.
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
+import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import "mapbox-gl/dist/mapbox-gl.css";
+import styles from "./live-map-inner.module.css";
 import type { LiveFactory, LiveRegion, LiveInspector } from "./types";
 import { MAP_PALETTE } from "@/lib/map-palette";
 import {
@@ -15,6 +15,10 @@ import {
 
 const KSA_CENTER: [number, number] = [24.2, 45.1];
 const KSA_ZOOM = 6;
+
+function readTheme(): "light" | "dark" {
+  return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+}
 const FACTORY_SOURCE = "ops-live-factories";
 const REGION_SOURCE = "ops-live-regions";
 const REGION_LABEL_SOURCE = "ops-live-region-labels";
@@ -201,6 +205,8 @@ export default function LiveMapInner({
   strings: LiveMapStrings;
 }) {
   const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+  const [mapTheme, setMapTheme] = useState<"light" | "dark">("light");
+  const lightPreset = mapTheme === "dark" ? "night" : "day";
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const canonicalRef = useRef<KsaRegionCollection | null>(null);
@@ -222,6 +228,27 @@ export default function LiveMapInner({
   };
 
   useEffect(() => {
+    setMapTheme(readTheme());
+    const observer = new MutationObserver(() => setMapTheme(readTheme()));
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const apply = () => {
+      try {
+        map.setConfigProperty("basemap", "lightPreset", lightPreset);
+      } catch {
+        return;
+      }
+    };
+    if (map.isStyleLoaded()) apply();
+    else map.once("style.load", apply);
+  }, [lightPreset]);
+
+  useEffect(() => {
     if (!token) {
       onProviderFailure();
       return;
@@ -236,7 +263,7 @@ export default function LiveMapInner({
       minZoom: 5,
       maxZoom: 11,
       language: document.documentElement.lang === "ar" ? "ar" : "en",
-      config: { basemap: { lightPreset: "day", show3dObjects: false } },
+      config: { basemap: { lightPreset: readTheme() === "dark" ? "night" : "day", show3dObjects: false } },
     });
     mapRef.current = map;
     map.addControl(
@@ -358,27 +385,18 @@ export default function LiveMapInner({
 
   if (!token) {
     return (
-      <div
-        className="sq-state"
-        role="status"
-        data-map-provider="mapbox-unavailable"
-      >
-        <span className="sq-state__glyph">⌖</span>
-        <h4>{s.unavailable}</h4>
-        <p className="t-caption">{s.notConfigured}</p>
+      <div data-map-provider="mapbox-unavailable" className={styles.state}>
+        <EmptyState icon="map" tone="warning" title={s.unavailable} description={s.notConfigured} size="sm" />
       </div>
     );
   }
   return (
     <div
       ref={containerRef}
+      role="application"
       aria-label={s.ariaLabel}
       data-map-provider="mapbox"
-      style={{
-        blockSize: "100%",
-        inlineSize: "100%",
-        background: "var(--surface-canvas)",
-      }}
+      className={styles.canvas}
     />
   );
 }

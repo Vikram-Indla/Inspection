@@ -4,7 +4,7 @@ import { getMessages } from "@/i18n/messages";
 import { loadLiveOperations } from "@/features/operations/live/queries";
 import { buildLiveOpsProps } from "@/features/operations/live/view";
 import AccessNotice from "../sections/access-notice";
-import LiveOps from "./LiveOps";
+import OperationsLive from "@/components/operations/operations-live/operations-live";
 
 export default async function LiveOperations({ searchParams }: {
   searchParams: Promise<{ wallboard?: string }>;
@@ -26,7 +26,7 @@ export default async function LiveOperations({ searchParams }: {
   const wallboard = (await searchParams).wallboard === "1";
   return (
     <Shell current="/operations/live" title={live.title}>
-      <LiveOps {...buildLiveOpsProps(page.data, wallboard)} />
+      <OperationsLive {...buildLiveOpsProps(page.data, wallboard)} />
     </Shell>
   );
 }

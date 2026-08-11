@@ -69,10 +69,22 @@
   overflow-wrap: anywhere;
 }
 
+/* `button` inherits neither font nor colour and carries a UA border, so a row
+   that selects is reset by hand to match the row that navigates. */
 .link {
   color: inherit;
+  font: inherit;
+  text-align: start;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
   text-decoration: none;
   border-radius: var(--sqx-radius-xs);
+}
+
+.row[data-selected] {
+  background: var(--sqx-surface-accent);
 }
 
 .link::after {
