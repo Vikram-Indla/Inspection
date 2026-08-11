@@ -3,6 +3,7 @@ import { buildDashboardMetrics } from "@/app/(app)/dashboard/metrics";
 import Button from "@/components/saqeel/button/button";
 import { fetchDashboardSnapshot } from "@/features/dashboard/client";
 import { queryEnforcementTrend } from "@/features/dashboard/enforcement-trend";
+import { buildBriefContext } from "@/features/dashboard/executive-brief";
 import { withView, type DashboardScope } from "@/features/dashboard/scope";
 import type { DashboardSnapshot } from "@/features/dashboard/types";
 import { fill, getMessages } from "@/i18n/messages";
@@ -21,6 +22,7 @@ import OperationalView from "../operational-view/operational-view";
 import SearchResults from "../search-results/search-results";
 import RoleSummary from "../role-summary/role-summary";
 import DashboardToolbar from "../dashboard-toolbar/dashboard-toolbar";
+import ExecutiveBrief from "../executive-brief/executive-brief";
 
 function refreshedLabel(nowMs: number): string {
   return new Intl.DateTimeFormat("en-GB", {
@@ -163,6 +165,19 @@ export default async function DashboardSections({ locale, scope }: {
         locale={locale} scope={resolved} view={resolved.view}
         refreshedAt={refreshedLabel(scope.nowMs)}
       />
+      {resolved.view === "strategic" ? (
+        <ExecutiveBrief
+          locale={locale}
+          context={buildBriefContext(resolved, enforcementTrend, {
+            completedInspections: metrics.strategic.completedInspections,
+            criticalFactories: metrics.strategic.criticalFactories.length,
+            factories: snapshot.factories.length,
+          })}
+          period={{ from: resolved.scope.fromDate, to: resolved.scope.toDate }}
+          region={resolved.region}
+          strings={dashboard.executive}
+        />
+      ) : null}
       <RoleSummary
         locale={locale} persona={persona} projection={roleProjection} partialSources={partialSources}
       />

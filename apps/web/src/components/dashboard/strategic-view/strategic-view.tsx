@@ -4,7 +4,6 @@ import type { SegmentedItem } from "@/components/saqeel/segmented-control/segmen
 import { complianceBreakdown, type FactoryRef, type ResponseRow } from "@/app/(app)/dashboard/metrics";
 import { buildMetricStrip, metricStripStrings, STRATEGIC_REQUIREMENT_IDS } from "@/features/dashboard/strip";
 import { enforcementTrendView, type EnforcementTrend } from "@/features/dashboard/enforcement-trend";
-import { buildBriefContext } from "@/features/dashboard/executive-brief";
 import type { DashboardLens, DashboardScope } from "@/features/dashboard/scope";
 import { scopeToSearchParams, DASHBOARD_LENSES } from "@/features/dashboard/scope";
 import { fill, getMessages } from "@/i18n/messages";
@@ -16,7 +15,6 @@ import MetricStrip from "../metric-strip/metric-strip";
 import MetricCard, { MetricCardModel, MetricCardStrings } from "../metric-card/metric-card";
 import ComplianceExplorer from "../compliance-explorer/compliance-explorer";
 import EnforcementTrendCard from "../enforcement-trend/enforcement-trend";
-import ExecutiveBrief from "../executive-brief/executive-brief";
 
 type DashboardMetrics = ReturnType<typeof import("@/app/(app)/dashboard/metrics").buildDashboardMetrics>;
 
@@ -43,11 +41,6 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
   );
 
   const enforcement = enforcementTrendView(enforcementTrend, dashboard.trend);
-  const briefContext = buildBriefContext(scope, enforcementTrend, {
-    completedInspections: strategic.completedInspections,
-    criticalFactories: strategic.criticalFactories.length,
-    factories: factories.length,
-  });
 
   const lensHref = (lens: DashboardLens) => {
     const query = scopeToSearchParams(scope);
@@ -172,14 +165,6 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
           </CardGrid>
         </CardBody>
       </Card>
-
-      <ExecutiveBrief
-        locale={locale}
-        context={briefContext}
-        period={{ from: scope.scope.fromDate, to: scope.scope.toDate }}
-        region={scope.region}
-        strings={dashboard.executive}
-      />
 
       <Card as="section" labelledBy="dashboard-requirement-coverage">
         <CardHeader
