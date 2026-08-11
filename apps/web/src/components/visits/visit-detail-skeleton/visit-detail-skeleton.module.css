@@ -1,0 +1,24 @@
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--sqx-space-5);
+  align-items: start;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+  min-block-size: var(--sqx-control-h-md);
+  padding-block: var(--sqx-space-3);
+}
+
+.row + .row {
+  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+@media (max-width: 60rem) {
+  .split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

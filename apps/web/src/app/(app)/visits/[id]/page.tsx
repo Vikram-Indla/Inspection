@@ -11,6 +11,7 @@ import CreatedToast from "@/components/CreatedToast";
 import EmptyState from "@/components/EmptyState";
 import FocusScroll from "./FocusScroll";
 import { getPlanningAccess } from "@/lib/planning/access";
+import { formatDateTime, riyadhToday } from "@/lib/dates";
 
 const PLAN_TONE: Record<string, string> = { published: "badge-info", returned: "badge-warning", cancelled: "badge-critical", expired: "badge-critical" };
 const PLAN_BADGE: Record<string, string> = { published: "badge-info", returned: "badge-warning", cancelled: "badge-critical", expired: "badge-critical", draft: "badge-draft" };
@@ -134,7 +135,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   // M8 — repackage options for returned visits (active packages only).
   let packageOptions: PackageOption[] = [];
   if (v.planning_status === "returned") {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = riyadhToday();
     const { data: pvs } = await sb.from("package_versions")
       .select("id, version_label, packages(code)").in("status", ["published", "locked"])
       .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`);
@@ -234,7 +235,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   // CD-027 — Dual-State Ribbon: five never-collapsed domains, each with the
   // latest VERIFIED event + its source + the allowed-action boundary + a history
   // anchor. Boundaries are derived from the same guards the server actions enforce.
-  const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
+  const fmt = (iso: string) => formatDateTime(iso, locale);
   const preStart = !insp || insp.status === "not_started";
   const canManage = v.planning_status === "published" && v.operational_state === "new";
   // Supervisor-only and pre-start. The server repeats this via the atomic
@@ -322,7 +323,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       <div className="metric-strip">
         <section id="config">
           <h2 className="panel-title">{t("visit.detail.configuration", "Configuration")}</h2>
-          <p>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)} · {t("visit.detail.window", "window")} <span className="id-code">{new Date(v.window_start).toISOString().slice(0, 16).replace("T", " ")} → {new Date(v.window_end).toISOString().slice(5, 16).replace("T", " ")}</span></p>
+          <p>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)} · {t("visit.detail.window", "window")} <span className="id-code">{formatDateTime(v.window_start, locale)} → {formatDateTime(v.window_end, locale)}</span></p>
           <p>{t("visit.detail.assignment", "Assignment:")} <strong>{asg?.profiles?.full_name ?? "—"}</strong> ({asg ? t(`enum.${asg.method}`, asg.method) : "—"}) · <a className="btn btn-ghost btn-sm" href={`/factories/${f.id}`}>{t("visit.detail.factory360", "Factory 360")}</a></p>
 
           {(v.immediate_creator_role || v.source_channel) && (
@@ -342,7 +343,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
             <div className="stack">
               <span className="badge badge-info">{t(`enum.${insp.status}`, insp.status.replace(/_/g, " "))}</span>
               {insp.submission_versions.sort((a, b) => a.version_number - b.version_number).map(s => (
-                <p key={s.version_number} className="id-code"><span className="badge badge-outline">v{s.version_number}</span> {new Date(s.submitted_at).toISOString().slice(0, 16).replace("T", " ")} · {t("visit.detail.immutable", "final")}</p>
+                <p key={s.version_number} className="id-code"><span className="badge badge-outline">v{s.version_number}</span> {formatDateTime(s.submitted_at, locale)} · {t("visit.detail.immutable", "final")}</p>
               ))}
               {insp.reviews.map((r, i) => (
                 <p key={i} className="t-caption">{t("visit.detail.reviewPrefix", "review:")} {r.decision ? t(`enum.${r.decision}`, r.decision) : t(`enum.${r.status}`, r.status.replace(/_/g, " "))}{r.returned_sections ? ` · ${t("visit.detail.returnedSections", "returned")} ${r.returned_sections.join(",")}` : ""}</p>
@@ -362,8 +363,8 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
           <p>
             <span className="badge badge-info">{t(`enum.${plan.method}`, plan.method)}</span>{" "}
             <span className="id-code"><strong>{plan.plan_reference ?? plan.id.slice(0, 8)}</strong></span> · {t("visit.detail.planCreatedBy", "created by")} <strong>{plan.profiles?.full_name ?? "—"}</strong>{" "}
-            <span className="id-code">{new Date(plan.created_at).toISOString().slice(0, 16).replace("T", " ")}</span>
-            {plan.published_at && <> · {t("visit.detail.planPublishedAt", "published")} <span className="id-code">{new Date(plan.published_at).toISOString().slice(0, 16).replace("T", " ")}</span></>}
+            <span className="id-code">{formatDateTime(plan.created_at, locale)}</span>
+            {plan.published_at && <> · {t("visit.detail.planPublishedAt", "published")} <span className="id-code">{formatDateTime(plan.published_at, locale)}</span></>}
             {" "}· <span className={`badge ${PLAN_BADGE[plan.status] ?? "badge-pending"}`}>{t(`enum.${plan.status}`, plan.status)}</span>
             {/* M8 — bulk context: this visit is one of N under the plan */}
             {" "}· {t("visit.detail.siblings", "{n} visits under this plan").replace("{n}", String(siblingCount))}
@@ -382,7 +383,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         <div id="return-block" className="alert alert-warning" tabIndex={focus === "return" ? -1 : undefined}>
           {t("visit.detail.returnReason", "Returned — reason: {reason}").replace("{reason}", returnReason)}
           {latestReturnEvent?.comments ? <> · <bdi>{latestReturnEvent.comments}</bdi></> : null}
-          {latestReturnEvent ? <span className="t-caption"> · {new Date(latestReturnEvent.created_at).toISOString().slice(0, 16).replace("T", " ")}</span> : null}
+          {latestReturnEvent ? <span className="t-caption"> · {formatDateTime(latestReturnEvent.created_at, locale)}</span> : null}
         </div>
       )}
       {focus === "return" && returnReason ? <FocusScroll targetId="return-block" /> : null}
@@ -427,7 +428,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
                   {l.package_version_id === v.package_version_id && <span className="badge badge-info">{t("visit.detail.primaryPackage", "primary")}</span>}
                   <br />
                   <span className="tl-meta id-code">
-                    {t("visit.detail.packageLinkedAt", "linked")} {new Date(l.added_at).toISOString().slice(0, 16).replace("T", " ")}
+                    {t("visit.detail.packageLinkedAt", "linked")} {formatDateTime(l.added_at, locale)}
                     {l.snapshot?.status ? <> · {t("visit.detail.packageSnapshot", "snapshot at link time:")} {l.snapshot.status}</> : null}
                   </span>
                 </div>
@@ -460,7 +461,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
                     {e.comments ? <> · <bdi>{e.comments}</bdi></> : null}
                     <br />
                     <span className="tl-meta id-code">
-                      {new Date(e.created_at).toISOString().slice(0, 19).replace("T", " ")} · {e.actor ? t("visit.detail.auditActor", "by {who}").replace("{who}", e.actor.slice(0, 8)) : t("visit.detail.auditSystem", "system")}
+                      {formatDateTime(e.created_at, locale)} · {e.actor ? t("visit.detail.auditActor", "by {who}").replace("{who}", e.actor.slice(0, 8)) : t("visit.detail.auditSystem", "system")}
                     </span>
                   </div>
                 </li>
@@ -493,7 +494,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
                   {e.note ? <> · <bdi>{e.note}</bdi></> : null}
                   <br />
                   <span className="tl-meta id-code">
-                    {new Date(e.created_at).toISOString().slice(0, 19).replace("T", " ")} · {e.actor ? t("visit.detail.auditActor", "by {who}").replace("{who}", e.actor.slice(0, 8)) : t("visit.detail.auditSystem", "system")}
+                    {formatDateTime(e.created_at, locale)} · {e.actor ? t("visit.detail.auditActor", "by {who}").replace("{who}", e.actor.slice(0, 8)) : t("visit.detail.auditSystem", "system")}
                   </span>
                 </div>
               </li>
@@ -510,7 +511,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
             <li key={g.occurred_at}>
               <span className={g.kind === "checkin" ? "tl-dot is-accent" : "tl-dot"} />
               <div><strong>{t(`enum.${g.kind}`, g.kind)}</strong> · ±{g.accuracy_m} m {g.geofence_result && <span className="badge badge-compliant">{t(`enum.${g.geofence_result}`, g.geofence_result)}</span>}<br />
-                <span className="tl-meta id-code">{new Date(g.occurred_at).toISOString().slice(0, 19).replace("T", " ")} · gis {g.gis_version}</span></div>
+                <span className="tl-meta id-code">{formatDateTime(g.occurred_at, locale)} · gis {g.gis_version}</span></div>
             </li>
           )))}
           {journeys.length === 0 && <p className="t-caption">{t("visit.detail.noJourney", "No journey yet.")}</p>}
@@ -525,7 +526,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
             <li key={a.id}>
               <span className="tl-dot" />
               <div><strong>{t(`enum.audit.${a.action}`, a.action)}</strong> · {a.actor ? t("visit.detail.auditActor", "by {who}").replace("{who}", a.actor.slice(0, 8)) : t("visit.detail.auditSystem", "system")}<br />
-                <span className="tl-meta id-code">{new Date(a.occurred_at).toISOString().slice(0, 19).replace("T", " ")}</span></div>
+                <span className="tl-meta id-code">{formatDateTime(a.occurred_at, locale)}</span></div>
             </li>
           ))}
           {(auditRows ?? []).length === 0 && <p className="t-caption">{t("visit.detail.noAudit", "No audited changes yet, or you don't have audit-read access.")}</p>}
