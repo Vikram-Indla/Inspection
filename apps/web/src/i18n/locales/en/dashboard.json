@@ -116,7 +116,7 @@
   },
   "requirement": {
     "title": "Strategic requirement coverage",
-    "description": "Decision required: approved description pending."
+    "description": "Governed measures not shown above, with their current live or blocked state."
   },
   "search": {
     "heading": "Search results for “{query}”",
@@ -181,7 +181,7 @@
     },
     "requirement": {
       "title": "Operational requirement coverage",
-      "description": "Every governed operational measure, shown with its current live or blocked state."
+      "description": "Governed operational measures not shown above, with their current live or blocked state."
     },
     "capacity": {
       "title": "Inspector capacity",

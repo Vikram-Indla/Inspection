@@ -24,10 +24,13 @@ export default function MetricStrip({ metrics, methodology, strings, min = "sm" 
   min?: "sm" | "md";
 }) {
   const { openEntry, activeId } = useExplain();
+  const ordered = [...metrics].sort(
+    (first, second) => Number(first.kind === "status") - Number(second.kind === "status"),
+  );
 
   return (
     <CardGrid min={min}>
-      {metrics.map(metric => {
+      {ordered.map(metric => {
         const entry = methodology[metric.metricId];
         const label = metric.kind === "status" ? strings.why : strings.methodology;
         return (
@@ -48,7 +51,7 @@ export default function MetricStrip({ metrics, methodology, strings, min = "sm" 
                     <Button
                       variant="tertiary" size="sm" hasPopup="dialog"
                       expanded={activeId === metric.metricId}
-                      label={label}
+                      label={`${label} — ${metric.title}`}
                       onClick={() => openEntry(entry)}
                     >
                       {label}

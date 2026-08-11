@@ -24,6 +24,28 @@ function requirementIds(prefix: string, count: number): readonly string[] {
 export const STRATEGIC_REQUIREMENT_IDS = requirementIds("STR-KPI", 12);
 export const OPERATIONAL_REQUIREMENT_IDS = requirementIds("OPS-KPI", 9);
 
+export const STRATEGIC_CARD_IDS: readonly string[] = [
+  "STR-KPI-001",
+  "STR-KPI-004",
+  "STR-KPI-007",
+  "STR-KPI-008",
+  "STR-KPI-012",
+];
+
+export const OPERATIONAL_CARD_IDS: readonly string[] = [
+  "OPS-KPI-003",
+  "OPS-KPI-004",
+  "OPS-KPI-006",
+];
+
+export function unrepresented(
+  all: readonly string[],
+  ...shownElsewhere: ReadonlyArray<readonly string[]>
+): readonly string[] {
+  const shown = new Set(shownElsewhere.flat());
+  return all.filter(id => !shown.has(id));
+}
+
 function withSourceState(
   metric: SharedMetric,
   partialSources: readonly string[],

@@ -10,6 +10,44 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-060 · `/dashboard` — duplicate KPI layer, AI brief strip (declutter part 1)
+`status: partial (axe, 320px, e2e owed)` · `rules: WEB-000, WEB-002, WEB-003, WEB-006, WEB-008, WEB-009, WEB-011, WEB-013, WEB-014` · `est: 2h`
+`record:` [2026-08-11-T-060-dashboard-duplicate-kpi-layer](sessions/2026-08/2026-08-11-T-060-dashboard-duplicate-kpi-layer.md)
+
+Owner-reported: "the screen looks so cluttered and there are too many widgets".
+**The cause was a regression this programme introduced.** The retired
+`DashboardView.tsx:513` passed `excluded={representedIds}` into its coverage
+grid; the rebuilt `strategic-view` passed all 12 ids. So the 12-tile
+"Strategic requirement coverage" block was re-rendering six measures already on
+the screen — `STR-KPI-001` as both "Compliance rate trend" and "National
+compliance rate", identical numerator and denominator, **two names for one
+governed figure**. `DashboardView.tsx:426` had also recorded why blocked states
+were consolidated: *"repeated warning pills made disciplined absence read as a
+broken product."* Both lessons restored.
+
+Strategic **22 → 16** tiles, requirement strip **12 → 6**, absence badges
+**14 → 11**; operational **20 → 15**, strip **9 → 4**. Trend card moved below
+intervention, restoring the order the approved design and
+`exec-overview-gate.spec.ts:10` both state. Executive brief **~182px → 44px** as
+the one-row strip `/planning` uses — its provenance and no-cause lines now render
+with a generated brief instead of above an empty one. Blocked tiles sort last in
+every strip. **`requirement.description` was shipping
+"Decision required: approved description pending." as a pinging warning pill in
+both locales.**
+
+**Two planned changes were backed out by reading the specs first:**
+"Operational priorities" is an asserted **canonical panel**
+(`web-admin-m1-dashboard.spec.ts:217`, `dashboard-business.spec.ts:124`), and the
+"Your work" title swap would have broken three exact-heading assertions. The real
+header defect was the opposite — `yourWork.scoped` was defined in both locales
+and **rendered nowhere**, while `:166` asserts it is visible. Fixing it repairs
+an already-red assertion.
+
+**Owed:** axe, 320px, keyboard, e2e. **2 new Arabic strings need native review.**
+**Blocked:** may "Operational priorities" be deleted (needs the two specs
+updated)? And `web-admin-m1-dashboard.spec.ts:200-215` asserts strings that exist
+only in the retired `RevampStrategicView` — already red, needs its own task.
+
 ### T-059 · `/dashboard` — typography closeout, both views verified in a browser
 `status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-009, WEB-011, WEB-014` · `est: 2h`
 `record:` [2026-08-11-T-059-dashboard-typography-closeout](sessions/2026-08/2026-08-11-T-059-dashboard-typography-closeout.md)

@@ -13,7 +13,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { buildInspectorKpiProjection } from "@/lib/dashboard-kpi/inspector-projection";
 import { buildDashboardKpiProjection } from "@/lib/dashboard-kpi/projection";
 import type { MetricScope } from "@/lib/dashboard-kpi/contract";
-import type { DashboardPersona } from "@/lib/dashboard-role";
+import { ROLE_DASHBOARD_METRICS, type DashboardPersona } from "@/lib/dashboard-role";
 import styles from "./dashboard-sections.module.css";
 import { Text } from "@/components/saqeel/type";
 import ExplainProvider from "../explain-panel/explain-panel";
@@ -190,11 +190,11 @@ export default async function DashboardSections({ locale, scope }: {
         ? <StrategicView
             locale={locale} scope={resolved} metrics={metrics} projection={projection}
             factories={snapshot.factories} partialSources={partialSources}
-            enforcementTrend={enforcementTrend}
+            enforcementTrend={enforcementTrend} roleMetricIds={ROLE_DASHBOARD_METRICS[persona]}
           />
         : <OperationalView
             locale={locale} metrics={metrics} projection={projection}
-            partialSources={partialSources}
+            partialSources={partialSources} roleMetricIds={ROLE_DASHBOARD_METRICS[persona]}
           />}
       </div>
     </ExplainProvider>

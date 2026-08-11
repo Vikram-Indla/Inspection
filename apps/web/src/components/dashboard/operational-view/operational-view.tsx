@@ -3,7 +3,13 @@ import { Card, CardBody, CardFooter, CardGrid, CardHeader } from "@/components/s
 import { Text } from "@/components/saqeel/type";
 import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-table";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
-import { buildMetricStrip, metricStripStrings, OPERATIONAL_REQUIREMENT_IDS } from "@/features/dashboard/strip";
+import {
+  buildMetricStrip,
+  metricStripStrings,
+  unrepresented,
+  OPERATIONAL_CARD_IDS,
+  OPERATIONAL_REQUIREMENT_IDS,
+} from "@/features/dashboard/strip";
 import { fill, getMessages } from "@/i18n/messages";
 import type { DashboardKpiProjection } from "@/lib/dashboard-kpi/contract";
 import type { Locale } from "@/lib/i18n";
@@ -17,11 +23,12 @@ type WorkloadRow = DashboardMetrics["operational"]["workload"][number];
 
 const MAX_ROWS = 8;
 
-export default function OperationalView({ locale, metrics, projection, partialSources }: {
+export default function OperationalView({ locale, metrics, projection, partialSources, roleMetricIds }: {
   locale: Locale;
   metrics: DashboardMetrics;
   projection: DashboardKpiProjection;
   partialSources: readonly string[];
+  roleMetricIds: readonly string[];
 }) {
   const { common, dashboard } = getMessages(locale);
   const copy = dashboard.operational;
@@ -47,7 +54,12 @@ export default function OperationalView({ locale, metrics, projection, partialSo
     { ...copy.today.highPriority, value: String(operational.highPriorityRows.length), emptyLabel: common.state.unavailable, href: localeHref(locale, "/planning") },
   ];
 
-  const requirementStrip = buildMetricStrip(projection, OPERATIONAL_REQUIREMENT_IDS, locale, partialSources);
+  const requirementStrip = buildMetricStrip(
+    projection,
+    unrepresented(OPERATIONAL_REQUIREMENT_IDS, OPERATIONAL_CARD_IDS, roleMetricIds),
+    locale,
+    partialSources,
+  );
 
   const capacityColumns: DataColumn<WorkloadRow>[] = [
     {

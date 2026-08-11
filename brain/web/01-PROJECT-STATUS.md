@@ -1,6 +1,42 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-11` · `Updated by: T-059 — /dashboard closeout`
+`Last updated: 2026-08-11` · `Updated by: T-060 — /dashboard declutter part 1`
+
+## A rebuild can drop a lesson its predecessor wrote down (2026-08-11)
+
+T-060 found the dashboard's reported clutter was **not** accumulated debt. The
+retired `DashboardView.tsx:513` passed `excluded={representedIds}` into its
+coverage grid so no measure rendered twice, and `:426` recorded why the blocked
+states had been consolidated: *"repeated warning pills made disciplined absence
+read as a broken product."* The rebuilt `strategic-view` passed all twelve ids and
+gridded every blocked one. Both lessons were in the file being replaced.
+
+Two rules follow:
+
+1. **One governed measure renders once per view.** `STR-KPI-001` was showing as
+   "Compliance rate trend" and "National compliance rate" with the identical
+   numerator and denominator. Two names for one figure is a governance defect,
+   not a layout one — the reader cannot tell whether they are two measures that
+   agree. `features/dashboard/strip.ts` now owns the exclusion sets.
+2. **Read the retiring file for its recorded reasoning before replacing it.** A
+   comment explaining a deletion is the most expensive kind of knowledge to
+   rediscover, and it is deleted along with the code that carries it.
+
+## Read the e2e specs during inventory, not after review (2026-08-11)
+
+Two of T-060's planned changes were wrong and the specs said so before any code
+was written. "Operational priorities" holds no control and duplicates two tiles
+below it, but `web-admin-m1-dashboard.spec.ts:217` and
+`dashboard-business.spec.ts:124` assert it as a **canonical panel** — deleting it
+is a contract change needing a ruling. And promoting "Your work" to the card
+title would have broken three exact-heading assertions on the persona name; the
+actual defect was that **`yourWork.scoped` was defined in both locales and
+rendered nowhere**, while `:166` asserts it is visible.
+
+**A spec is part of the inventory.** It also revealed that
+`web-admin-m1-dashboard.spec.ts:200-215` asserts a heading and body copy that
+exist only in the retired `RevampStrategicView` — already failing, and its own
+task.
 
 ## `/dashboard` typography is closed (2026-08-11)
 

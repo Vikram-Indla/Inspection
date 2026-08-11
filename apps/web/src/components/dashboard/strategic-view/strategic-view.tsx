@@ -1,8 +1,13 @@
 import { Card, CardBody, CardGrid, CardHeader } from "@/components/saqeel/card/card";
-import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import type { SegmentedItem } from "@/components/saqeel/segmented-control/segmented-control";
 import { complianceBreakdown, type FactoryRef, type ResponseRow } from "@/app/(app)/dashboard/metrics";
-import { buildMetricStrip, metricStripStrings, STRATEGIC_REQUIREMENT_IDS } from "@/features/dashboard/strip";
+import {
+  buildMetricStrip,
+  metricStripStrings,
+  unrepresented,
+  STRATEGIC_CARD_IDS,
+  STRATEGIC_REQUIREMENT_IDS,
+} from "@/features/dashboard/strip";
 import { enforcementTrendView, type EnforcementTrend } from "@/features/dashboard/enforcement-trend";
 import type { DashboardLens, DashboardScope } from "@/features/dashboard/scope";
 import { scopeToSearchParams, DASHBOARD_LENSES } from "@/features/dashboard/scope";
@@ -22,7 +27,7 @@ function percentOrNull(value: number | null): string | null {
   return value === null ? null : `${value}%`;
 }
 
-export default function StrategicView({ locale, scope, metrics, projection, factories, partialSources, enforcementTrend }: {
+export default function StrategicView({ locale, scope, metrics, projection, factories, partialSources, enforcementTrend, roleMetricIds }: {
   locale: Locale;
   scope: DashboardScope;
   metrics: DashboardMetrics;
@@ -30,6 +35,7 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
   factories: readonly FactoryRef[];
   partialSources: readonly string[];
   enforcementTrend: EnforcementTrend;
+  roleMetricIds: readonly string[];
 }) {
   const { common, dashboard } = getMessages(locale);
   const strategic = metrics.strategic;
@@ -114,7 +120,12 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
     },
   ];
 
-  const requirementStrip = buildMetricStrip(projection, STRATEGIC_REQUIREMENT_IDS, locale, partialSources);
+  const requirementStrip = buildMetricStrip(
+    projection,
+    unrepresented(STRATEGIC_REQUIREMENT_IDS, STRATEGIC_CARD_IDS, roleMetricIds),
+    locale,
+    partialSources,
+  );
 
   return (
     <div className={styles.stack}>
@@ -126,16 +137,6 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
           </CardGrid>
         </CardBody>
       </Card>
-
-      <EnforcementTrendCard
-        points={enforcement.points}
-        currentLabel={enforcement.currentLabel}
-        comparison={enforcement.comparison}
-        tone={enforcement.tone}
-        readable={enforcementTrend.readable}
-        libraryHref={localeHref(locale, "/enforcement-library")}
-        strings={dashboard.trend}
-      />
 
       <ComplianceExplorer
         rows={rows}
@@ -166,12 +167,22 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
         </CardBody>
       </Card>
 
+      <EnforcementTrendCard
+        points={enforcement.points}
+        currentLabel={enforcement.currentLabel}
+        comparison={enforcement.comparison}
+        tone={enforcement.tone}
+        readable={enforcementTrend.readable}
+        libraryHref={localeHref(locale, "/enforcement-library")}
+        strings={dashboard.trend}
+      />
+
       <Card as="section" labelledBy="dashboard-requirement-coverage">
         <CardHeader
           level="h2"
           titleId="dashboard-requirement-coverage"
           title={dashboard.requirement.title}
-          trailing={<StatusPill tone="info" ping>{dashboard.requirement.description}</StatusPill>}
+          description={dashboard.requirement.description}
         />
         <CardBody>
           <MetricStrip
