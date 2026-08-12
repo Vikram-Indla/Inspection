@@ -1,137 +1,146 @@
 "use client";
-// INSP-697 — Coverage Filters / Unassigned Visits / Regional Visit Coverage.
-// Planning-only (basePath === "/planning"), matches Figma SCR-PLN-200 (node
-// 433:49148). Renders alongside the existing interactive map rather than
-// replacing it — the map's live inspector positions stay intact.
-//
-// Markup/class contract: copied verbatim from two real, already-approved
-// sources — the sibling VisitMap.tsx in this folder (stack/row/field/select/
-// panel/badge/sq-link) and planning/bulk/DistributionPanels.tsx (panel/
-// panel-header/panel-title/panel-body/row/grow/numeric/t-caption/sq-grid-2
-// for the two-panel layout). No inline style props, no new CSS.
-import { useMemo, useState } from "react";
 
-// Counts arrive as templates carrying {n}, not as formatter functions.
-// Functions cannot cross the server/client boundary: passing them threw
-// "Functions cannot be passed directly to Client Components" and took the
-// whole /planning/map route down with a server-side exception.
-const fill = (template: string, n: number) => template.replace("{n}", String(n));
+import { useMemo, useState } from "react";
+import Button from "@/components/saqeel/button/button";
+import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
+import EmptyState from "@/components/saqeel/empty-state/empty-state";
+import Field from "@/components/saqeel/field/field";
+import { ListRow, ListRows } from "@/components/saqeel/list-row/list-row";
+import SaqeelSelect from "@/components/saqeel/select/select";
+import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Mono, Text } from "@/components/saqeel/type";
+import { fill } from "@/i18n/messages";
 import type { MappedVisit } from "./VisitMap";
 import { filterVisits, regionalCoverage } from "./coverage-filters";
+import styles from "./coverage-panel.module.css";
 
 export type CoveragePanelStrings = {
   title: string;
   filtersTitle: string;
   regionLabel: string; allRegions: string;
-  riskLabel: string; allRisk: string; riskHigh: string; riskMedium: string; riskLow: string;
+  riskLabel: string; allRisk: string;
   windowLabel: string; window7: string; window30: string; window90: string; windowAll: string;
   inspectorLabel: string; inspectorAll: string; inspectorAssigned: string; inspectorUnassigned: string;
-  resetLabel: string;
+  reset: string;
   unassignedCount: string; unassignedEmpty: string;
   regionalTitle: string; regionalHelp: string; visitsCount: string;
+  riskUnavailable: string;
 };
 
-const riskLabelKey = (band: string) =>
-  (`risk${band.charAt(0).toUpperCase()}${band.slice(1)}` as "riskHigh" | "riskMedium" | "riskLow");
+const DEFAULT_WINDOW_DAYS = 30;
 
-export default function CoveragePanel({ visits, strings: s }: { visits: MappedVisit[]; strings: CoveragePanelStrings }) {
+export default function CoveragePanel({ visits, riskOptions, strings: s }: {
+  visits: MappedVisit[];
+  riskOptions: readonly { readonly value: string; readonly label: string }[];
+  strings: CoveragePanelStrings;
+}) {
   const regions = useMemo(() => [...new Set(visits.map(v => v.region).filter(Boolean))].sort(), [visits]);
   const [region, setRegion] = useState("");
   const [risk, setRisk] = useState("");
-  const [windowDays, setWindowDays] = useState<number | null>(30);
+  const [windowDays, setWindowDays] = useState<number | null>(DEFAULT_WINDOW_DAYS);
   const [inspectorFilter, setInspectorFilter] = useState<"" | "assigned" | "unassigned">("");
 
   const filtered = useMemo(
     () => filterVisits(visits, { region, risk, windowDays, inspectorFilter }, Date.now()),
     [visits, region, risk, windowDays, inspectorFilter],
   );
-
   const unassigned = useMemo(() => filtered.filter(v => !v.inspectorName), [filtered]);
   const regionalCounts = useMemo(() => regionalCoverage(filtered), [filtered]);
-  const maxRegional = Math.max(1, ...regionalCounts.map(([, count]) => count));
 
-  const reset = () => { setRegion(""); setRisk(""); setWindowDays(30); setInspectorFilter(""); };
+  const reset = () => {
+    setRegion("");
+    setRisk("");
+    setWindowDays(DEFAULT_WINDOW_DAYS);
+    setInspectorFilter("");
+  };
 
   return (
-    <section className="sq-grid-2" aria-label={s.title}>
-      <div className="stack">
-        <section className="panel" aria-label={s.filtersTitle}>
-          <header className="panel-header">
-            <h3 className="panel-title">{s.filtersTitle}</h3>
-          </header>
-          <div className="panel-body stack">
-            <label className="field"><span className="sq-field__label">{s.regionLabel}</span>
-              <select className="select" value={region} onChange={e => setRegion(e.target.value)}>
-                <option value="">{s.allRegions}</option>
-                {regions.map(r => <option key={r} value={r}>{r}</option>)}
-              </select>
-            </label>
-            <label className="field"><span className="sq-field__label">{s.riskLabel}</span>
-              <select className="select" value={risk} onChange={e => setRisk(e.target.value)}>
-                <option value="">{s.allRisk}</option>
-                <option value="high">{s.riskHigh}</option>
-                <option value="medium">{s.riskMedium}</option>
-                <option value="low">{s.riskLow}</option>
-              </select>
-            </label>
-            <label className="field"><span className="sq-field__label">{s.windowLabel}</span>
-              <select className="select" value={windowDays ?? ""} onChange={e => setWindowDays(e.target.value === "" ? null : Number(e.target.value))}>
-                <option value="7">{s.window7}</option>
-                <option value="30">{s.window30}</option>
-                <option value="90">{s.window90}</option>
-                <option value="">{s.windowAll}</option>
-              </select>
-            </label>
-            <label className="field"><span className="sq-field__label">{s.inspectorLabel}</span>
-              <select className="select" value={inspectorFilter} onChange={e => setInspectorFilter(e.target.value as "" | "assigned" | "unassigned")}>
-                <option value="">{s.inspectorAll}</option>
-                <option value="assigned">{s.inspectorAssigned}</option>
-                <option value="unassigned">{s.inspectorUnassigned}</option>
-              </select>
-            </label>
-            <button type="button" className="sq-btn sq-btn--secondary" onClick={reset}>{s.resetLabel}</button>
-          </div>
-        </section>
+    <section className={styles.root} aria-label={s.title}>
+      <div className={styles.column}>
+        <Card as="section">
+          <CardHeader title={s.filtersTitle} />
+          <CardBody gap="tight">
+            <Field label={s.regionLabel}>
+              <SaqeelSelect
+                label={s.regionLabel} value={region} onChange={setRegion}
+                options={[{ value: "", label: s.allRegions }, ...regions.map(name => ({ value: name, label: name }))]}
+              />
+            </Field>
+            <Field label={s.riskLabel}>
+              <SaqeelSelect
+                label={s.riskLabel} value={risk} onChange={setRisk}
+                options={[{ value: "", label: s.allRisk }, ...riskOptions]}
+              />
+            </Field>
+            <Field label={s.windowLabel}>
+              <SaqeelSelect
+                label={s.windowLabel}
+                value={windowDays === null ? "" : String(windowDays)}
+                onChange={next => setWindowDays(next === "" ? null : Number(next))}
+                options={[
+                  { value: "7", label: s.window7 },
+                  { value: "30", label: s.window30 },
+                  { value: "90", label: s.window90 },
+                  { value: "", label: s.windowAll },
+                ]}
+              />
+            </Field>
+            <Field label={s.inspectorLabel}>
+              <SaqeelSelect
+                label={s.inspectorLabel}
+                value={inspectorFilter}
+                onChange={next => setInspectorFilter(next === "assigned" || next === "unassigned" ? next : "")}
+                options={[
+                  { value: "", label: s.inspectorAll },
+                  { value: "assigned", label: s.inspectorAssigned },
+                  { value: "unassigned", label: s.inspectorUnassigned },
+                ]}
+              />
+            </Field>
+            <Button variant="secondary" size="sm" onClick={reset}>{s.reset}</Button>
+          </CardBody>
+        </Card>
 
-        <section className="panel" aria-label={fill(s.unassignedCount, unassigned.length)}>
-          <header className="panel-header">
-            <h3 className="panel-title">{fill(s.unassignedCount, unassigned.length)}</h3>
-          </header>
-          {unassigned.length === 0
-            ? <p className="panel-body field-help">{s.unassignedEmpty}</p>
-            : <ul className="panel-body stack">
-                {unassigned.slice(0, 20).map(v => (
-                  <li key={v.id} className="row">
-                    <span className="grow">
-                      <a className="sq-link" href={`/factories/${v.factoryId}`}>{v.factoryName}</a>
-                      <span className="field-help">
-                        {v.riskBand ? (s[riskLabelKey(v.riskBand)] ?? v.riskBand) : "—"}
-                        {v.region ? ` · ${v.region}` : ""}
-                      </span>
-                    </span>
-                  </li>
-                ))}
-              </ul>}
-        </section>
+        <Card as="section">
+          <CardHeader title={fill(s.unassignedCount, { n: unassigned.length })} />
+          <CardBody gap="tight">
+            {unassigned.length === 0
+              ? <EmptyState icon="factory" title={s.unassignedEmpty} size="sm" />
+              : (
+                <ListRows label={fill(s.unassignedCount, { n: unassigned.length })}>
+                  {unassigned.map(visit => (
+                    <ListRow
+                      key={visit.id}
+                      href={`/factories/${visit.factoryId}`}
+                      title={<Text as="span" dir="auto">{visit.factoryName}</Text>}
+                      meta={<Text as="span" tone="muted" dir="auto">{visit.region}</Text>}
+                      trailing={<StatusPill tone="neutral" ping={false}>{visit.riskBand ?? s.riskUnavailable}</StatusPill>}
+                    />
+                  ))}
+                </ListRows>
+              )}
+          </CardBody>
+        </Card>
       </div>
 
-      <section className="panel" aria-label={s.regionalTitle}>
-        <header className="panel-header">
-          <h3 className="panel-title">{s.regionalTitle}</h3>
-          <span className="t-caption">{s.regionalHelp}</span>
-        </header>
-        {regionalCounts.length === 0
-          ? <p className="panel-body field-help">{s.unassignedEmpty}</p>
-          : <ul className="panel-body stack">
-              {regionalCounts.map(([r, count]) => (
-                <li key={r} className="row">
-                  <span className="grow"><bdi>{r}</bdi></span>
-                  <progress max={maxRegional} value={count} aria-label={`${r}: ${fill(s.visitsCount, count)}`} />
-                  <span className="numeric t-caption">{fill(s.visitsCount, count)}</span>
-                </li>
-              ))}
-            </ul>}
-      </section>
+      <Card as="section">
+        <CardHeader title={s.regionalTitle} description={s.regionalHelp} />
+        <CardBody gap="tight">
+          {regionalCounts.length === 0
+            ? <EmptyState icon="map" title={s.unassignedEmpty} size="sm" />
+            : (
+              <ListRows label={s.regionalTitle}>
+                {regionalCounts.map(([name, count]) => (
+                  <ListRow
+                    key={name}
+                    title={<Text as="span" dir="auto">{name}</Text>}
+                    trailing={<Mono>{fill(s.visitsCount, { n: count })}</Mono>}
+                  />
+                ))}
+              </ListRows>
+            )}
+        </CardBody>
+      </Card>
     </section>
   );
 }

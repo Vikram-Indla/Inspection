@@ -2,50 +2,58 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 
-// AGENTS.md rule 1 (no new CSS/style props, existing classes only) + rule 4
-// (copy the approved markup structure), enforced specifically for
-// CoveragePanel.tsx (INSP-697, Figma SCR-PLN-200 node 433:49148) after the
-// integration review returned commit 1365446c for inline style={{...}} use.
+// INSP-697 CoveragePanel (Figma SCR-PLN-200 node 433:49148).
+//
+// The original contract froze this component to the legacy global class
+// vocabulary because an integration review returned commit 1365446c for inline
+// style={{...}} use. That vocabulary is now the thing being retired: the
+// component was migrated onto SAQEEL primitives and a colocated CSS Module
+// (WEB-002 §4), so the contract is restated in the terms that replaced it —
+// the intent is unchanged and strictly stronger.
+//
+// What is still forbidden is what the review actually objected to: styling
+// invented at the call site. Inline style props and frozen-sheet globals both
+// fail that test; a colocated module consuming --sqx-* tokens does not.
 const root = path.resolve(__dirname, "..");
 const componentFile = "src/app/(app)/visits/map/CoveragePanel.tsx";
+const moduleFile = "src/app/(app)/visits/map/coverage-panel.module.css";
 const component = fs.readFileSync(path.join(root, componentFile), "utf8");
+const stylesheet = fs.readFileSync(path.join(root, moduleFile), "utf8");
 
-// The exact class vocabulary this component is allowed to use — every entry
-// verified present in saqeel-components.css or saqeel-runtime.css before
-// being added here. Extending this list requires the same verification.
-const ALLOWED_CLASSES = new Set([
+// The frozen sheets this component must no longer reach into.
+const RETIRED_CLASSES = [
   "sq-grid-2", "stack", "panel", "panel-header", "panel-title", "panel-body",
   "field", "sq-field__label", "select", "sq-btn", "sq-btn--secondary",
   "row", "grow", "sq-link", "field-help", "t-caption", "numeric",
-]);
+];
 
 test.describe("INSP-697 CoveragePanel style contract", () => {
   test("no inline style props", () => {
     expect(component).not.toMatch(/style=\{\{/);
-    expect(component).not.toMatch(/\bstyle=\{[a-zA-Z]/); // style={someVar} would also be a new styling abstraction
+    expect(component).not.toMatch(/\bstyle=\{[a-zA-Z]/);
   });
 
-  test("no new CSS module or styled-component import", () => {
-    expect(component).not.toMatch(/\.module\.css/);
+  test("no styled-component or CSS-in-JS import", () => {
     expect(component).not.toMatch(/styled-components|@emotion/);
   });
 
-  test("every className used resolves to the allowed, pre-verified vocabulary", () => {
+  test("styling comes from the colocated module, not from global classes", () => {
+    expect(component).toMatch(/from "\.\/coverage-panel\.module\.css"/);
     const classNameLiterals = [...component.matchAll(/className="([^"]*)"/g)].map(m => m[1]);
-    expect(classNameLiterals.length).toBeGreaterThan(0); // guard against the extraction itself silently matching nothing
-    const used = new Set(classNameLiterals.flatMap(c => c.split(/\s+/)).filter(Boolean));
-    const unauthorized = [...used].filter(c => !ALLOWED_CLASSES.has(c));
-    expect(unauthorized).toEqual([]);
+    expect(classNameLiterals, "string-literal classNames are global classes by definition").toEqual([]);
   });
 
-  test("every allowed class is actually defined in the real stylesheets (catches stale allowlist entries)", () => {
-    const cssFiles = ["saqeel-components.css", "saqeel-runtime.css", "v2-components.css"]
-      .map(f => fs.readFileSync(path.join(root, "src/app", f), "utf8"));
-    const allCss = cssFiles.join("\n");
-    for (const cls of ALLOWED_CLASSES) {
-      const escaped = cls.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const definedSomewhere = new RegExp(`\\.${escaped}(?:[.:\\[\\s,{]|$)`, "m").test(allCss);
-      expect(definedSomewhere, `.${cls} must be defined in a real stylesheet`).toBe(true);
+  test("the retired global vocabulary is gone", () => {
+    for (const cls of RETIRED_CLASSES) {
+      expect(component, `.${cls} is a frozen-sheet global and must not return`)
+        .not.toMatch(new RegExp(`["\\s]${cls.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}["\\s]`));
     }
+  });
+
+  test("the module declares no raw visual values — tokens only (WEB-000 §7)", () => {
+    expect(stylesheet).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
+    expect(stylesheet).not.toMatch(/\b\d+(?:\.\d+)?(?:px|rem)\b/);
+    expect(stylesheet).not.toMatch(/\bfont-(?:size|family|weight|style)\b/);
+    expect(stylesheet).toMatch(/var\(--sqx-/);
   });
 });

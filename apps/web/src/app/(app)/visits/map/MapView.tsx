@@ -1,32 +1,75 @@
 import Shell from "@/components/Shell";
+import EmptyState from "@/components/saqeel/empty-state/empty-state";
+import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import VisitMapTable from "@/components/sections/visits/visit-map-table/visit-map-table";
+import { makeEnumLabel } from "@/i18n/enum-label";
+import { getMessages } from "@/i18n/messages";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/dates";
+import {
+  MAP_PAGE_SIZE, mapHref, operationalTone, pageCountOf, resolvePage, resolveRegion,
+  type VisitMapParams, type VisitMapRow,
+} from "@/features/visits/map";
 import VisitMap, { type MappedVisit } from "./VisitMap";
 import CoveragePanel from "./CoveragePanel";
 import VisitViewNavigation, { type VisitBasePath } from "../VisitViewNavigation";
 
-export async function VisitsMapView({ basePath = "/visits" }: { basePath?: VisitBasePath }) {
-  const { t, locale } = await useT();
+const RISK_BANDS = ["high", "medium", "low"] as const;
+
+type VisitRow = {
+  id: string; factory_id: string; visit_reference: string | null; operational_state: string;
+  window_start: string | null; window_end: string | null;
+  factories: { name: string; region: string | null; city: string | null; official_lat: number | null; official_lng: number | null; risk_band: string | null } | null;
+  assignments: { inspector_id: string; profiles: { full_name: string } | null }[];
+};
+
+export async function VisitsMapView({ basePath = "/visits", params = {} }: {
+  basePath?: VisitBasePath;
+  params?: VisitMapParams;
+}) {
+  const { locale } = await useT();
+  const messages = getMessages(locale);
+  const strings = messages.visits.map;
+  const enumLabel = makeEnumLabel(locale);
+  const uiLocale = locale === "ar" ? "ar" : "en";
+  const region = resolveRegion(params.region);
+  const page = resolvePage(params.page);
   const sb = await supabaseServer();
-  const [{ data: visits, error }, { data: geo }] = await Promise.all([
-    sb.from("visits").select(`id, factory_id, operational_state, window_start, window_end,
-      factories(name, region, city, official_lat, official_lng, risk_band),
-      assignments(inspector_id, profiles(full_name))`).order("window_start", { ascending: false }).limit(1000),
+
+  const select = `id, factory_id, visit_reference, operational_state, window_start, window_end,
+      factories!inner(name, region, city, official_lat, official_lng, risk_band),
+      assignments(inspector_id, profiles(full_name))`;
+  const scoped = sb.from("visits").select(select, { count: "exact" })
+    .not("factories.official_lat", "is", null)
+    .order("window_start", { ascending: false });
+  const paged = region === "" ? scoped : scoped.eq("factories.region", region);
+
+  const [{ data: visits, error, count }, { data: geo }, { data: regionRows }] = await Promise.all([
+    paged.range(page * MAP_PAGE_SIZE, page * MAP_PAGE_SIZE + MAP_PAGE_SIZE - 1),
     sb.from("geo_events").select("visit_id, observed_lat, observed_lng, occurred_at")
       .in("kind", ["telemetry", "arrival", "checkin", "override"]).order("occurred_at", { ascending: false }).limit(5000),
+    sb.from("factories").select("region").not("region", "is", null).limit(1000),
   ]);
-  if (error) console.error(`[visits map] visit read failed: ${error.message}`);
+
+  if (error) {
+    console.error(`[visits map] visit read failed: ${error.message}`);
+    return (
+      <Shell current={basePath} title={strings.title}>
+        <EmptyState icon="map" tone="danger" title={strings.loadErrorTitle} description={strings.loadErrorNeutral} />
+      </Shell>
+    );
+  }
+
   const latest = new Map<string, { observed_lat: number; observed_lng: number; occurred_at: string }>();
   for (const row of geo ?? []) if (!latest.has(row.visit_id)) latest.set(row.visit_id, row as never);
-  const rows: MappedVisit[] = ((visits ?? []) as unknown as {
-    id: string; factory_id: string; operational_state: string; window_start: string | null; window_end: string | null;
-    factories: { name: string; region: string | null; city: string | null; official_lat: number | null; official_lng: number | null; risk_band: string | null } | null;
-    assignments: { inspector_id: string; profiles: { full_name: string } | null }[];
-  }[]).flatMap(v => {
+
+  const located = ((visits ?? []) as unknown as VisitRow[]).flatMap(v => {
     if (!v.factories || v.factories.official_lat == null || v.factories.official_lng == null) return [];
     const position = latest.get(v.id);
     return [{
       id: v.id, factoryId: v.factory_id, factoryName: v.factories.name,
+      reference: v.visit_reference ?? strings.referenceUnavailable,
       region: v.factories.region ?? "", city: v.factories.city ?? "",
       factoryLat: Number(v.factories.official_lat), factoryLng: Number(v.factories.official_lng),
       inspectorName: v.assignments?.[0]?.profiles?.full_name ?? "",
@@ -36,43 +79,69 @@ export async function VisitsMapView({ basePath = "/visits" }: { basePath?: Visit
       riskBand: v.factories.risk_band, windowStart: v.window_start, windowEnd: v.window_end,
     }];
   });
+
+  const mapped: MappedVisit[] = located.map(({ reference: _reference, ...visit }) => visit);
+  const rows: readonly VisitMapRow[] = located.map(visit => ({
+    id: visit.id,
+    reference: visit.reference,
+    factoryId: visit.factoryId,
+    factoryName: visit.factoryName,
+    region: visit.region,
+    city: visit.city,
+    inspectorLocation: visit.inspectorLat === null
+      ? null
+      : `${visit.inspectorName || strings.inspectorFallback} · ${visit.inspectorAt ? formatDateTime(visit.inspectorAt, uiLocale) : strings.latestLocation}`,
+    stateLabel: enumLabel(visit.operationalState),
+    stateTone: operationalTone(visit.operationalState),
+  }));
+
+  const total = count ?? rows.length;
+  const regions = [...new Set((regionRows ?? []).map(row => String(row.region)).filter(Boolean))].sort();
+
   return (
-    <Shell current={basePath} title={t("visit.map.title", "Visit management — map")} context={<span className="sq-lozenge sq-lozenge--info">{t("visit.map.context", "Filtered to your access")}</span>}>
-      <VisitViewNavigation basePath={basePath} active="map" ariaLabel={t("visit.views.aria", "Visit management views")}
-        labels={{ list: basePath === "/planning" ? t("plan.home.title", "Planning") : t("visit.views.list", "List"), calendar: t("visit.views.calendar", "Calendar"), map: t("visit.views.map", "Map"), workload: t("visit.views.workload", "Workload") }} />
-      {error ? <div className="sq-banner sq-banner--critical" role="alert"><div>{t("visit.map.error", "Map data is temporarily unavailable. Please try again.")}</div></div>
-        : <>
-            <VisitMap visits={rows} strings={{
-                region: t("visit.map.region", "Region"), allRegions: t("visit.map.allRegions", "All regions"),
-                factoryVisitLegend: t("visit.map.legendFactory", "factory / visit"), inspectorLegend: t("visit.map.legendInspector", "latest inspector position"),
-                noneInRegion: t("visit.map.empty", "No located visits in this region"), visit: t("visit.map.visit", "Visit"),
-                factory: t("visit.map.factory", "Factory"), regionCity: t("visit.map.regionCity", "Region / city"),
-                inspectorLocation: t("visit.map.inspectorLocation", "Inspector location"), state: t("visit.map.state", "State"),
-                assignedInspector: t("visit.map.assignedInspector", "Assigned inspector"), inspectorFallback: t("visit.map.inspectorFallback", "Inspector"),
-                unavailableScope: t("visit.map.unavailableScope", "Unavailable under current scope"), latestLocation: t("visit.map.latestLocation", "latest location"),
-              }} locale={locale} />
-            {/* INSP-697 — Figma SCR-PLN-200 (433:49148) Coverage Filters / Unassigned
-                Visits / Regional Summary. Planning-only; /visits and /virtual keep
-                the map exactly as it was. */}
-            {basePath === "/planning" && <CoveragePanel visits={rows} strings={{
-                title: t("plan.map.coverage.title", "Coverage filters"),
-                filtersTitle: t("plan.map.coverage.filtersTitle", "Coverage filters"),
-                regionLabel: t("visit.map.region", "Region"), allRegions: t("visit.map.allRegions", "All regions"),
-                riskLabel: t("plan.map.coverage.riskLabel", "Risk band"), allRisk: t("plan.map.coverage.allRisk", "Any risk band"),
-                riskHigh: t("enum.high", "high"), riskMedium: t("enum.medium", "medium"), riskLow: t("enum.low", "low"),
-                windowLabel: t("plan.map.coverage.windowLabel", "Window"),
-                window7: t("plan.map.coverage.window7", "Next 7 days"), window30: t("plan.map.coverage.window30", "Next 30 days"),
-                window90: t("plan.map.coverage.window90", "Next 90 days"), windowAll: t("plan.map.coverage.windowAll", "Any window"),
-                inspectorLabel: t("plan.map.coverage.inspectorLabel", "Inspector status"), inspectorAll: t("plan.map.coverage.inspectorAll", "Any status"),
-                inspectorAssigned: t("plan.map.coverage.inspectorAssigned", "Assigned"), inspectorUnassigned: t("plan.map.coverage.inspectorUnassigned", "Unassigned"),
-                resetLabel: t("plan.map.coverage.reset", "Reset"),
-                unassignedCount: t("plan.map.coverage.unassignedCount", "{n} unassigned visits"),
-                unassignedEmpty: t("plan.map.coverage.unassignedEmpty", "No visits in this scope"),
-                regionalTitle: t("plan.map.coverage.regionalTitle", "Regional visit coverage"),
-                regionalHelp: t("plan.map.coverage.regionalHelp", "Located visits in the current filter, grouped by region"),
-                visitsCount: t("plan.map.coverage.visitsCount", "{n} visits"),
-              }} />}
-          </>}
+    <Shell current={basePath} title={strings.title} context={<StatusPill tone="info">{strings.context}</StatusPill>}>
+      <VisitViewNavigation
+        basePath={basePath}
+        active="map"
+        ariaLabel={messages.planning.visit.views.aria}
+        labels={{
+          list: basePath === "/planning" ? messages.planning.home.title : messages.planning.visit.views.list,
+          calendar: messages.planning.visit.views.calendar,
+          map: messages.planning.visit.views.map,
+          workload: messages.planning.visit.views.workload,
+        }}
+      />
+      <VisitMap
+        visits={mapped}
+        regions={regions}
+        region={region}
+        basePath={basePath}
+        locale={locale}
+        strings={{
+          region: strings.region, allRegions: strings.allRegions,
+          factoryVisitLegend: strings.legendFactory, inspectorLegend: strings.legendInspector,
+          legendLabel: strings.legendLabel,
+          noneInRegion: strings.noneInRegion, noneInRegionBody: strings.noneInRegionBody,
+          assignedInspector: strings.inspectorFallback, inspectorFallback: strings.inspectorFallback,
+          latestLocation: strings.latestLocation, openVisit: strings.openVisit,
+        }}
+      />
+      <VisitMapTable
+        rows={rows}
+        page={page}
+        pageCount={pageCountOf(total)}
+        total={total}
+        region={region}
+        basePath={basePath}
+        strings={strings}
+      />
+      {basePath === "/planning" ? (
+        <CoveragePanel
+          visits={mapped}
+          riskOptions={RISK_BANDS.map(band => ({ value: band, label: enumLabel(band) }))}
+          strings={messages.visits.coverage}
+        />
+      ) : null}
     </Shell>
   );
 }
