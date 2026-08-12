@@ -10,6 +10,57 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-089 · `/factories` — declutter: one AI strip, one identity, one provenance card
+`status: done (axe, Arabic, light theme, e2e owed)` · `rules: WEB-000, WEB-002, WEB-003, WEB-006, WEB-008, WEB-009, WEB-011, WEB-013` · `est: 1.5h`
+`record:` [2026-08-12-T-089-factories-declutter](sessions/2026-08/2026-08-12-T-089-factories-declutter.md)
+
+Owner-reported: *"a lot of clutterness"*, with the instruction that **the AI part can be
+done just like the dashboard version**.
+
+**The clutter was measurable, so it was measured before anything moved.** The
+workspace rendered **11 cards, 8 `h2`, 21 status pills, 131 leaf text nodes and
+3,039px** for **one** factory, with **14 distinct strings appearing more than once** —
+the factory name 3×, `Plant number` 3×, `Petrochemical` 3×, `Open violations` 3×,
+and *"This section is available in the full factory profile."* **4×**.
+
+**The dashboard had already fixed the AI defect and the fix was never carried
+across.** `FactoryAiAdvisory` was a 226px `Card` rendering the idle line, the
+provenance line **and** the no-confidence line unconditionally, above an empty
+result — precisely what T-060 removed from the dashboard when `ExecutiveBrief`
+became a strip whose notes render *with* a brief. **Rather than copy the strip and
+create the second implementation this programme keeps warning about**
+(T-071, T-076), the strip was extracted to `components/ai/advisory-strip/` and both
+surfaces now compose it. Two orphaned stylesheets went with it.
+
+**Two owner rulings on the layout.** The action sits **below** the paragraph, not
+floated to the row end — the dashboard's `.action { margin-inline-start: auto }` is
+what left the gap before the button. **Applying it to the shared strip grows the
+dashboard's brief 44 → 74px** — stated, not hidden. And the strip moved **out of the
+right rail to the top of the workspace**, full width, which is where `/dashboard`
+puts its brief: `FactoryWorkspace` gained a `top` slot at `grid-column: 1 / -1`, so
+it spans every column at all three breakpoints by construction rather than by a
+per-breakpoint rule. Verified first in the grid at 1137px wide above both rails.
+
+**One governed figure was rendering twice**, exactly the defect T-060 recorded on
+`/dashboard`: `81.5` and its `Critical attention required` pill appeared in both the
+snapshot and Risk outlook. The snapshot keeps the number and the band; the outlook
+keeps only the *explanation* — drivers, model version, next action. Its
+`Open factory profile` button went too: it was the **third** route to the same page.
+
+**`latestChange` became nullable rather than a sentence.** Its "no calculation
+recorded" fallback repeated the Risk trend card's empty state verbatim; the view
+model now returns `null` and the line simply does not render.
+
+```
+cards 11 → 9 · pills 21 → 19 · leaf nodes 131 → 116 · workspace 3,039 → 2,512px
+AI card 226 → 74px · risk outlook 390 → 268 · two provenance cards 382 → 278
+duplicated strings 14 → 9 · availability sentence 4× → 1× · 4 dead locale keys
+```
+
+**Owed:** axe, Arabic (still blocked on the locale toggle), light theme, e2e. The 9
+remaining repeats are the left-rail-versus-hero overlap, which is scanning versus
+detail and was deliberately kept.
+
 ### T-088 · `/planning/single` — typography, route-owned code to zero
 `status: done (3 of 5 components never rendered)` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014 §4.1, §8` · `est: 45m`
 `record:` [2026-08-12-T-088-planning-single-typography](sessions/2026-08/2026-08-12-T-088-planning-single-typography.md)
@@ -169,22 +220,47 @@ match.** The embed turns `!inner` when a method filter is set, while the label
 `"immediate"` is *derived from `visit_plans` being NULL* — so a visit shown as
 Immediate is exactly one the join excludes. It is now **more** visible, not less.
 
-### T-087 · `/planning/bulk/review` — typography, and it has never been swept
-`status: todo` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014` · `est: 1.5h`
+### T-087 · `/planning/bulk/review` — typography, 30 → 0
+`status: done (nothing render-verified — the session expired)` · `rules: WEB-000, WEB-002, WEB-003, WEB-006 §4, WEB-008, WEB-009, WEB-011, WEB-014 §4.1, §8, §11.4` · `est: 1.5h`
+`record:` [2026-08-12-T-087-bulk-review-typography](sessions/2026-08/2026-08-12-T-087-bulk-review-typography.md)
 
-**32 violations, 31 of them its own**, across ten `review-*` modules —
-`review-outcome` (6), `review-assignment-split` (5), `review-consequence-ledger`
-(4), `review-eligibility` (4), `review-context` (3), `review-readiness` (3),
-`review-publish-form` (2), `review-targets` (2), `review-standby` (1). **It
-appears in no session record.** T-076 swept the planning family and this route
-was not in it.
+**30 declarations across 9 modules → 0.** The route had never been swept; its only
+remaining violation is `NotificationBell.tsx:270`, the shell.
 
-**The sizes are already right; the layer is wrong.** Measured across the whole
-planning tree: zero literal `font-size`, zero retired roles, zero literal font
-families. Every violation is `font: var(--sqx-text-*)` + its `letter-spacing`
-partner sitting in feature CSS — WEB-014 §4.1's ban. The fix is composition onto
-`Text`/`Heading`, **not a value change**, and §11.1 applies: carry the sizes
-across unchanged.
+**The whole app renders body text at two line-heights, and this route had both.**
+`<body>` is matched by **two** `font:` shorthands — `saqeel.css:869`
+(`--sqx-text-body`, 1.6 → 22.4px) and `saqeel-runtime.css:19`
+(`--type-body-font`, 1.5 → 21px) — and **the frozen legacy sheet wins on load
+order.** So the twelve `font-size`-only classes here were rendering the body
+*size* with legacy *leading*. Measured before: `review-standby`'s `.note` at
+**14px/21px**, against the already-migrated `PlanningNotice` at **14px/22.4px**.
+
+**KPI values change weight 600 → 700, deliberately.** `.value`/`.cellValue` set
+metric *size* with `--sqx-weight-semibold` — assembled from parts instead of
+using the role. `--sqx-text-metric-weight` is bold, so `<Metric>` renders 700, and
+WEB-014 §2/§5.2 make every number `metric`. The most visible change in the diff.
+
+**Two focusable headings were a real §11.4 primitive gap, closed without touching
+the design system.** Both need `subheading` *plus* `ref` *plus* `tabIndex`;
+`Heading` accepts neither and `Text` has no `subheading` role. Owner was asked
+and did not answer, so the **reversible** wrapper shipped — a pattern already in
+4 places in this repo. **It also fixes an a11y defect:** `review-outcome`'s
+`<h3 role={live}>` was **not a heading in the accessibility tree**, because
+`role="status"` replaces the heading role.
+
+`review-standby.module.css` **deleted** (its only class was `.note`);
+`review-context`'s `.moment` was **dead** — 17 lines including a
+`:focus-visible` block, orphaned when the control became `DateRangePicker`.
+
+```
+/planning/bulk/review  31 → 1   (route-owned 30 → 0)
+baseline              843 → 813
+```
+
+**Owed, and it is the real gap: nothing was render-verified.** The route shows
+standby without a staged bulk plan, and the session **expired mid-check**
+(`?reason=expired`). Every claim about rendered output is derived from
+`type.module.css`/`saqeel.css`, not observed.
 
 ### T-083 · design-system retired-role floor
 `status: done` · `rules: WEB-000, WEB-002 §2, WEB-006, WEB-008, WEB-011, WEB-014 §2.1, §4.1` · `est: 45m`
@@ -2229,6 +2305,14 @@ Pull one in only if it is genuinely part of doing the active task well.
   reading the board, so a concurrent session picks the same number. Needs a rule
   or a counter.
 
+- **`Skeleton shape="pill"` is 8px taller than the `StatusPill` it stands in for**
+  (found in T-089). The bone is `block-size: var(--sqx-control-h-sm)` = **32px**;
+  `StatusPill` is `min-block-size: var(--sqx-space-6)` and renders **24px**.
+  Measured on the factories advisory strip — skeleton 82px, live 74px. **This is
+  app-wide:** every skeleton drawing a pill overshoots by 8px per pill row, so
+  every route with a skeleton has a small layout shift on data arrival. The fix is
+  one line in `skeleton.module.css`, but it moves every skeleton in the app and so
+  needs its own task with a per-route re-measure.
 - **`components/saqeel/inputs/` is a dead parallel input layer inside the design
   system** (found in T-084, while checking which "our own Select" to use).
   Nine files — `Select`, `Input`, `Field`, `FileUpload`, `Combobox`,

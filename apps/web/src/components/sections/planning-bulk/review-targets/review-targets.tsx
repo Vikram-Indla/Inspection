@@ -2,6 +2,7 @@ import Button from "@/components/saqeel/button/button";
 import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-table";
 import SaqeelSelect, { type SelectOption } from "@/components/saqeel/select/select";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
+import { Text } from "@/components/saqeel/type";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import styles from "./review-targets.module.css";
 
@@ -61,10 +62,10 @@ export default function ReviewTargets({
       isRowHeader: true,
       cell: row => (
         <span className={styles.identity}>
-          <span className={styles.name}>{row.name}</span>
-          <span className={styles.meta}>
+          <Text as="span" role="bodyStrong">{row.name}</Text>
+          <Text as="span" tone="muted" numeric>
             <bdi>{row.factoryCode}</bdi>{` · CR `}<bdi>{row.crNumber}</bdi>
-          </span>
+          </Text>
           {row.reasons.length === 0 ? null : (
             <span className={styles.reasons}>
               {row.reasons.map(reason => <StatusPill key={reason} tone="warning">{reason}</StatusPill>)}
@@ -85,7 +86,7 @@ export default function ReviewTargets({
       key: "visit",
       header: strings.colVisit,
       cell: row => row.excluded
-        ? <span className={styles.meta}>{MISSING}</span>
+        ? <Text as="span" tone="muted" numeric>{MISSING}</Text>
         : <StatusPill tone="info">{strings.typePeriodic}</StatusPill>,
     },
     {

@@ -38,7 +38,6 @@
   "hero": {
     "opened": "Opened from Factory 360",
     "plannerNote": "A Planner submits the selected target for Supervisor assignment and release.",
-    "industrialLicence": "Industrial licence",
     "licenceType": "Licence type",
     "stage": "Stage"
   },
@@ -90,8 +89,7 @@
   "context": {
     "change": {
       "moved": "Risk moved from {from} to {to} on {date}.",
-      "first": "Only one risk calculation is recorded, so there is no movement to show.",
-      "none": "No risk calculation has been recorded for this factory."
+      "first": "Only one risk calculation is recorded, so there is no movement to show."
     },
     "sources": {
       "senaei": "Senaei registry",
@@ -119,9 +117,7 @@
       "modelVersion": "Model version",
       "latestChange": "Latest change",
       "nextBestAction": "Next best action",
-      "nextBestActionBody": "Review the recorded violations, actions and evidence on the factory profile before deciding.",
-      "nextBestActionLink": "Open factory profile",
-      "noScore": "No risk score recorded"
+      "nextBestActionBody": "Review the recorded violations, actions and evidence on the factory profile before deciding."
     },
     "trust": {
       "title": "Source trust",

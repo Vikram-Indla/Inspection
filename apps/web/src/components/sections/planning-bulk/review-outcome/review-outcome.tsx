@@ -4,6 +4,7 @@ import Icon from "@/components/saqeel/icon/icon";
 import Stack from "@/components/saqeel/stack/stack";
 import { Card, CardBody } from "@/components/saqeel/card/card";
 import { Skeleton } from "@/components/saqeel/skeleton/skeleton";
+import { Heading, Metric, Text } from "@/components/saqeel/type";
 import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
 import type { IconName } from "@/components/saqeel/icon/icon-registry";
 import styles from "./review-outcome.module.css";
@@ -30,7 +31,7 @@ const OUTCOME_ICON: Readonly<Record<OutcomeTone, IconName>> = {
 function OutcomeShell({ tone, title, headingRef, live, children, actions }: {
   tone: OutcomeTone;
   title: string;
-  headingRef?: React.Ref<HTMLHeadingElement>;
+  headingRef?: React.Ref<HTMLDivElement>;
   live: "status" | "alert";
   children: ReactNode;
   actions?: ReactNode;
@@ -41,7 +42,9 @@ function OutcomeShell({ tone, title, headingRef, live, children, actions }: {
         <div className={styles.head} data-tone={tone}>
           <span className={styles.badge} aria-hidden="true"><Icon name={OUTCOME_ICON[tone]} size="md" /></span>
           <Stack gap="tight">
-            <h3 className={styles.title} tabIndex={-1} ref={headingRef} role={live}>{title}</h3>
+            <div tabIndex={-1} ref={headingRef} role={live}>
+              <Heading level={3} visual="subheading">{title}</Heading>
+            </div>
             {children}
           </Stack>
         </div>
@@ -55,7 +58,7 @@ export function ReviewPublishing({ strings }: { strings: ReviewOutcomeStrings })
   return (
     <OutcomeShell tone="pending" title={strings.publishingTitle} live="status">
       <p role="status">{strings.publishingBody}</p>
-      <p className={styles.note}>{strings.publishingSub}</p>
+      <Text tone="muted">{strings.publishingSub}</Text>
       <Skeleton shape="line" width="wide" size="sm" />
     </OutcomeShell>
   );
@@ -76,7 +79,7 @@ export function ReviewFailure({ reason, headingRef, retryForm, strings }: {
       actions={<>{retryForm}<Button variant="secondary" href="/planning/bulk">{strings.backConfig}</Button></>}
     >
       <p>{reason || strings.failBody}</p>
-      <p className={styles.note}>{strings.failSub}</p>
+      <Text tone="muted">{strings.failSub}</Text>
     </OutcomeShell>
   );
 }
@@ -111,8 +114,8 @@ export function ReviewSuccess({ created, proposed, dropped, planId, headingRef, 
       <div className={styles.counts}>
         {cells.map(([label, value]) => (
           <span className={styles.cell} key={label}>
-            <span className={styles.cellLabel}>{label}</span>
-            <span className={styles.cellValue}>{value}</span>
+            <Text as="span" role="label" tone="muted">{label}</Text>
+            <Metric>{value}</Metric>
           </span>
         ))}
       </div>
@@ -124,7 +127,7 @@ export function ReviewSuccess({ created, proposed, dropped, planId, headingRef, 
           </span>
         </PlanningNotice>
       )}
-      <p className={styles.note}>{strings.successSub}</p>
+      <Text tone="muted">{strings.successSub}</Text>
     </OutcomeShell>
   );
 }

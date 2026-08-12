@@ -18,11 +18,16 @@
   color: var(--sqx-accent-ai);
 }
 
-.action {
-  margin-inline-start: auto;
+.body {
+  flex: 1 1 auto;
+  min-inline-size: 0;
 }
 
-.brief {
+.action {
+  flex-basis: 100%;
+}
+
+.notes {
   flex-basis: 100%;
   display: flex;
   flex-direction: column;

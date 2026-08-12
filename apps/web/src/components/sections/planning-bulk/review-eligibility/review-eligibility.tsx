@@ -1,5 +1,6 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Metric, Text } from "@/components/saqeel/type";
 import styles from "./review-eligibility.module.css";
 
 export type EligibilityCounts = {
@@ -36,14 +37,14 @@ export default function ReviewEligibility({ counts, strings }: {
     <Card as="section">
       <CardHeader title={strings.eligH} />
       <CardBody gap="tight">
-        {counts === null ? <p className={styles.note} role="status">{strings.loadingNote}</p> : (
+        {counts === null ? <Text tone="muted" live="status">{strings.loadingNote}</Text> : (
           <div className={styles.grid}>
             {cells.map(([label, value, isEligible]) => (
               <span className={styles.cell} key={label}>
-                <span className={styles.label}>{label}</span>
+                <Text as="span" tone="muted">{label}</Text>
                 {isEligible
                   ? <StatusPill tone="success">{String(value)}</StatusPill>
-                  : <span className={styles.value}>{value}</span>}
+                  : <Metric>{value}</Metric>}
               </span>
             ))}
           </div>

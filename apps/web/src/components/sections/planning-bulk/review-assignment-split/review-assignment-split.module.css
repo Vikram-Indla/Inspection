@@ -14,20 +14,3 @@
   min-inline-size: 0;
 }
 
-.label {
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
-  color: var(--sqx-text-muted);
-}
-
-.value {
-  font-size: var(--sqx-text-metric-size);
-  font-weight: var(--sqx-weight-semibold);
-  font-variant-numeric: tabular-nums;
-}
-
-.note {
-  color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-body-size);
-  text-wrap: pretty;
-}

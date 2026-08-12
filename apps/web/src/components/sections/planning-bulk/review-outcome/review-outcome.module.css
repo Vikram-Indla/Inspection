@@ -26,16 +26,6 @@
   color: var(--sqx-text-success);
 }
 
-.title {
-  margin: 0;
-  font: var(--sqx-text-subheading);
-}
-
-.note {
-  color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-body-size);
-}
-
 .counts {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(var(--sqx-grid-min-sm), 1fr));
@@ -52,17 +42,6 @@
   min-inline-size: 0;
 }
 
-.cellLabel {
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
-  color: var(--sqx-text-muted);
-}
-
-.cellValue {
-  font-size: var(--sqx-text-metric-size);
-  font-weight: var(--sqx-weight-semibold);
-  font-variant-numeric: tabular-nums;
-}
 
 .dropped {
   display: flex;

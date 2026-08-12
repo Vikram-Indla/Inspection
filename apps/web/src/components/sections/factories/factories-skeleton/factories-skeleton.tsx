@@ -3,6 +3,17 @@ import { Skeleton, SkeletonRegion } from "@/components/saqeel/skeleton/skeleton"
 import FactoryWorkspace from "@/components/sections/factories/factory-workspace/factory-workspace";
 import styles from "./factories-skeleton.module.css";
 
+function AdvisoryStripSkeleton() {
+  return (
+    <div className={styles.advisory}>
+      <Skeleton shape="line" width="narrow" size="lg" />
+      <Skeleton shape="pill" width="narrow" />
+      <Skeleton shape="line" width="half" size="sm" />
+      <span className={styles.advisoryAction}><Skeleton shape="line" width="tiny" size="sm" /></span>
+    </div>
+  );
+}
+
 function StatTileSkeleton() {
   return (
     <Card as="div">
@@ -31,13 +42,17 @@ function LicenceCardSkeleton() {
   );
 }
 
-function PanelCardSkeleton({ rows }: { rows: number }) {
+function PanelCardSkeleton({ rows, pill = true, description = true }: {
+  rows: number;
+  pill?: boolean;
+  description?: boolean;
+}) {
   return (
     <Card as="div">
       <CardHeader
         title={<Skeleton shape="line" width="wide" size="lg" />}
-        description={<Skeleton shape="line" width="narrow" size="sm" />}
-        trailing={<Skeleton shape="pill" width="full" />}
+        description={description ? <Skeleton shape="line" width="narrow" size="sm" /> : undefined}
+        trailing={pill ? <Skeleton shape="pill" width="full" /> : undefined}
       />
       <CardBody gap="tight">
         {Array.from({ length: rows }, (_, index) => <Skeleton key={index} shape="line" width={index % 2 === 0 ? "full" : "wide"} size="sm" />)}
@@ -58,6 +73,7 @@ export default function FactoriesSkeleton({ label }: { label: string }) {
         <FactoryWorkspace
           startLabel={label}
           endLabel={label}
+          top={<AdvisoryStripSkeleton />}
           start={
             <>
               <Card as="div">
@@ -78,11 +94,8 @@ export default function FactoriesSkeleton({ label }: { label: string }) {
           }
           end={
             <>
-              <PanelCardSkeleton rows={3} />
-              <PanelCardSkeleton rows={5} />
-              <PanelCardSkeleton rows={1} />
-              <PanelCardSkeleton rows={4} />
-              <PanelCardSkeleton rows={4} />
+              <PanelCardSkeleton rows={6} pill={false} description={false} />
+              <PanelCardSkeleton rows={6} description={false} />
             </>
           }
         >

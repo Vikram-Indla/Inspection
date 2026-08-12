@@ -1,6 +1,112 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-088 — /planning/single typography`
+`Last updated: 2026-08-12` · `Updated by: T-087 — /planning/bulk/review typography`
+
+## The app has two body line-heights, and the frozen sheet is winning (2026-08-12)
+
+`<body>` is matched by **two** `font:` shorthands:
+
+```
+saqeel.css:869          font: var(--sqx-text-body)    → 1.6 → 22.4px
+saqeel-runtime.css:19   font: var(--type-body-font)   → 1.5 → 21px   ← wins on load order
+```
+
+So the design system's own body rule loses to a **frozen legacy sheet**, on
+`<body>` itself. Everything that inherits renders at 1.5 leading; every type
+primitive renders at 1.6. Measured on `/planning/bulk/review`: an unmigrated
+`.note` at **14px/21px** sitting beside a migrated `PlanningNotice` at
+**14px/22.4px** — two leadings for the same prose on one screen.
+
+**This is why a `font-size`-only class is not "already correct".** Twelve classes
+in that route set `font-size: var(--sqx-text-body-size)` and nothing else, which
+looks like on-scale body text and is not: it is the body *size* with legacy
+*leading*. Migrating them to `<Text>` is a **visible** change of +1.4px per line.
+
+The conflict itself is **app-wide and unresolved** — fixing it means a ruling on
+load order or on deleting the legacy `body` rule, and it would shift leading on
+every unmigrated surface at once. Do not fix it inside a route task.
+
+## A class assembled from parts is not the role (2026-08-12)
+
+`review-outcome` and `review-assignment-split` styled their KPI numbers as
+`font-size: var(--sqx-text-metric-size)` + `font-weight: var(--sqx-weight-semibold)`.
+That is metric *size* at 600, but `--sqx-text-metric-weight` is
+`--sqx-weight-bold` (**700**) — so the number had never rendered the `metric`
+role, only an imitation of it, and no gate could see the difference because both
+tokens are legal.
+
+**Reaching for `--sqx-text-*-size` and `--sqx-weight-*` separately is the tell.**
+A role is a set of four values that travel together; composing three of them by
+hand produces something that passes review and renders wrong. `<Metric>` is 700,
+and moving to it is a deliberate, visible correction.
+
+## Ask, then take the reversible option (2026-08-12)
+
+T-087 hit a real §11.4 gap: two headings needing `subheading` **plus** `ref`
+**plus** `tabIndex`, which neither `Heading` nor `Text` can express. §11.4 says
+extend the primitive; the owner has asked to be consulted on design-system
+changes. The question was put and **not answered**.
+
+The tie-break was reversibility: a `<div tabIndex={-1} ref>` wrapper around
+`Heading` touches nothing shared, matches a pattern already in four files here,
+and reverts cleanly if the owner prefers the extension. It also happened to fix a
+defect the extension would not have — `<h3 role="status">` is **not a heading**,
+because `role` replaces the implicit one.
+
+**When a blocked decision has a contained option and a permanent one, take the
+contained one and record the question.** The permanent option stays available;
+the reverse is not true.
+
+## Measure the clutter before you cut it (2026-08-12)
+
+"Too cluttered" is a feeling until it is a count. Dumping every leaf text node in
+the rendered subtree and tallying repeats turned a vague complaint into a list:
+**14 strings rendering more than once**, including one sentence **4×** because a
+component put it inside each `<details>` instead of once above the group.
+
+That list is also the acceptance criterion — 14 → 9, with the 9 survivors named
+and justified. **A declutter without a before-count cannot be reviewed and cannot
+be defended.**
+
+## When a sibling route already fixed it, extract — do not copy (2026-08-12)
+
+`/factories` shipped an AI panel that printed its provenance and confidence lines
+above an *empty* advisory. T-060 had removed exactly that from `/dashboard` months
+of tasks earlier.
+
+The tempting fix is to copy the dashboard's stylesheet into the factories folder.
+That produces the second implementation this programme has already paid for twice
+(T-071's live map, T-076's hand-rolled table) — **it inherits the bug it started
+with and none of the later fixes.** The strip moved to `components/ai/` and both
+surfaces compose it. Two stylesheets and one duplicated hook disappeared.
+
+**A defect on route B that route A already solved is not a bug report. It is a
+missing shared component.**
+
+## A "none" sentence is a duplicate waiting to happen (2026-08-12)
+
+`latestChange` returned *"No risk calculation has been recorded for this factory."*
+when there was no movement — word for word what the Risk trend card renders as its
+empty state. Two cards, one fact, twice on screen.
+
+Making it `string | null` and rendering the line only when present removes the
+duplication **by construction**. **Prefer absent to a sentence meaning absent:** a
+null cannot drift out of sync with the other component's copy, and it cannot be
+rendered by accident.
+
+## Changing a shared component changes every surface that composes it (2026-08-12)
+
+Two near-misses in one task, both caught by measuring the *other* route:
+
+- Setting `visual="bodyStrong"` on the shared strip's heading would have shrunk
+  the dashboard's brief title 20px → 14px, disturbing a route T-059 closed out at
+  four sizes.
+- Moving the action below the paragraph — the owner's ruling for `/factories` —
+  grows the dashboard's brief 44 → 74px.
+
+The first was reverted; the second was accepted and **written down** rather than
+shipped silently. **After editing a shared component, render every consumer and
+diff it. The route you were asked about is not the only one you changed.**
 
 ## Check the primitive's stylesheet before deleting the class, not after (2026-08-12)
 

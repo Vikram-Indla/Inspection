@@ -1,4 +1,5 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
+import { Metric, Text } from "@/components/saqeel/type";
 import styles from "./review-assignment-split.module.css";
 
 export type AssignmentSplitStrings = {
@@ -30,9 +31,9 @@ export default function ReviewAssignmentSplit({ manual, auto, strings }: {
         <div className={styles.panels}>
           {panels.map(([label, value, note]) => (
             <span className={styles.panel} key={label}>
-              <span className={styles.label}>{label}</span>
-              <span className={styles.value}>{value}</span>
-              <span className={styles.note}>{note}</span>
+              <Text as="span" role="label" tone="muted">{label}</Text>
+              <Metric>{value}</Metric>
+              <Text as="span" tone="muted">{note}</Text>
             </span>
           ))}
         </div>

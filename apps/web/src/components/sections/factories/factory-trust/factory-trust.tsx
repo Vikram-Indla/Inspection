@@ -10,9 +10,17 @@ export type FactorySourceState = {
   readonly tone: StatusTone;
 };
 
-export default function FactoryTrust({ lastSynchronised, sources, strings }: {
+export type FactoryProvenance = {
+  readonly label: string;
+  readonly tone: StatusTone;
+  readonly body: string;
+  readonly recorded: string;
+};
+
+export default function FactoryTrust({ lastSynchronised, sources, provenance, strings }: {
   lastSynchronised: string;
   sources: readonly FactorySourceState[];
+  provenance: FactoryProvenance;
   strings: {
     readonly title: string;
     readonly lastSynchronisation: string;
@@ -21,8 +29,15 @@ export default function FactoryTrust({ lastSynchronised, sources, strings }: {
 }) {
   return (
     <Card as="section" labelledBy="factory-trust-title">
-      <CardHeader level="h2" titleId="factory-trust-title" title={strings.title} />
+      <CardHeader
+        level="h2"
+        titleId="factory-trust-title"
+        title={strings.title}
+        trailing={<StatusPill tone={provenance.tone}>{provenance.label}</StatusPill>}
+      />
       <CardBody gap="tight">
+        <Text tone="secondary" dir="auto">{provenance.body}</Text>
+
         <Text role="label" tone="muted">{strings.lastSynchronisation}</Text>
         <Text tone="secondary" dir="auto">{lastSynchronised}</Text>
 
@@ -35,6 +50,8 @@ export default function FactoryTrust({ lastSynchronised, sources, strings }: {
             </li>
           ))}
         </ul>
+
+        <Text tone="muted" dir="auto">{provenance.recorded}</Text>
       </CardBody>
     </Card>
   );

@@ -5,16 +5,6 @@
   min-inline-size: 0;
 }
 
-.name {
-  font-weight: var(--sqx-weight-semibold);
-}
-
-.meta {
-  color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-body-size);
-  font-variant-numeric: tabular-nums;
-}
-
 .reasons {
   display: flex;
   flex-wrap: wrap;

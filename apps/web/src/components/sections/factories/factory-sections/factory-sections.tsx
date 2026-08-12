@@ -16,6 +16,7 @@ export default function FactorySections({ sections, availableLabel }: {
 }) {
   return (
     <div className={styles.sections}>
+      <Text tone="muted">{availableLabel}</Text>
       {sections.map(section => (
         <details className={styles.section} key={section.key}>
           <summary className={styles.summary}>
@@ -26,7 +27,6 @@ export default function FactorySections({ sections, availableLabel }: {
             <span className={styles.marker} aria-hidden="true" />
           </summary>
           <div className={styles.sectionContent}>
-            <Text tone="muted">{availableLabel}</Text>
             <Button variant="secondary" size="sm" href={section.href} label={section.openLabel}>
               {section.openLabel}
             </Button>

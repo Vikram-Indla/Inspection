@@ -6,6 +6,23 @@
   inline-size: 100%;
 }
 
+.advisory {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-3);
+  padding-block: var(--sqx-space-3);
+  padding-inline: var(--sqx-space-4);
+  background: var(--sqx-surface-default);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-inline-start: var(--sqx-border-width-thick) solid var(--sqx-accent-ai);
+  border-radius: var(--sqx-radius-card);
+}
+
+.advisoryAction {
+  flex-basis: 100%;
+}
+
 .stats {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);

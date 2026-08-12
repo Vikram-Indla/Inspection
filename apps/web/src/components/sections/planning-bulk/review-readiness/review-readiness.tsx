@@ -2,6 +2,7 @@ import { type Ref } from "react";
 import Button from "@/components/saqeel/button/button";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { Card, CardBody } from "@/components/saqeel/card/card";
+import { Heading, Text } from "@/components/saqeel/type";
 import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
 import styles from "./review-readiness.module.css";
 
@@ -31,16 +32,18 @@ export default function ReviewReadiness({
   validating: boolean;
   items: readonly ReadinessItem[];
   warnings: readonly ReadinessItem[];
-  headingRef: Ref<HTMLHeadingElement>;
+  headingRef: Ref<HTMLDivElement>;
   strings: ReadinessStrings;
   onFix: (key: string) => void;
 }) {
   return (
     <Card as="section">
       <CardBody gap="default">
-        <h3 className={styles.heading} tabIndex={-1} ref={headingRef}>{strings.readiness}</h3>
+        <div tabIndex={-1} ref={headingRef}>
+          <Heading level={3} visual="subheading">{strings.readiness}</Heading>
+        </div>
 
-        {validating ? <p className={styles.note} role="status">{strings.loadingNote}</p> : (
+        {validating ? <Text tone="muted" live="status">{strings.loadingNote}</Text> : (
           <div role={items.length ? "alert" : "status"} aria-label={strings.readiness}>
             <p className={styles.summary}>
               <StatusPill tone={items.length ? "danger" : "success"}>
@@ -58,7 +61,7 @@ export default function ReviewReadiness({
                     <StatusPill tone={item.tone}>{item.label}</StatusPill>
                     <span className={styles.body}>
                       <strong className={styles.title}>{item.title}</strong>
-                      {item.detail ? <span className={styles.detail}>{item.detail}</span> : null}
+                      {item.detail ? <Text as="span" tone="muted">{item.detail}</Text> : null}
                     </span>
                     {item.fixLabel === null ? null : (
                       <Button variant="secondary" onClick={() => onFix(item.key)}>{item.fixLabel}</Button>
