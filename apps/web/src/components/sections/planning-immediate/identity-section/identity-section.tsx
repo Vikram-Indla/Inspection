@@ -1,18 +1,15 @@
 "use client";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
-import Choice from "@/components/saqeel/choice/choice";
 import DefinitionList from "@/components/saqeel/definition-list/definition-list";
 import Field from "@/components/saqeel/field/field";
 import SaqeelSelect from "@/components/saqeel/select/select";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import TextInput from "@/components/saqeel/text-input/text-input";
-import { Text } from "@/components/saqeel/type";
 import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
 import type { ImmediateMessages } from "@/features/planning-immediate/strings";
 import type { ImmediateFactory, VisitTypeOption } from "@/features/planning-immediate/types";
 import { formatDate } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
-import styles from "./identity-section.module.css";
 
 const HEADING_ID = "immediate-identity";
 const SEARCH_ID = "imm-search";
@@ -26,12 +23,11 @@ export type IdentitySelection = {
 };
 
 export default function IdentitySection({
-  selection, matches, visitTypes, lockReason, messages, locale, onQueryChange, onFactoryChange, onVisitTypeChange,
+  selection, matches, visitTypes, messages, locale, onQueryChange, onFactoryChange, onVisitTypeChange,
 }: {
   selection: IdentitySelection;
   matches: readonly ImmediateFactory[];
   visitTypes: readonly VisitTypeOption[];
-  lockReason: string | null;
   messages: ImmediateMessages;
   locale: Locale;
   onQueryChange: (query: string) => void;
@@ -48,29 +44,11 @@ export default function IdentitySection({
 
   return (
     <Card as="section" labelledBy={HEADING_ID}>
-      <CardHeader level="h2" titleId={HEADING_ID} title={identity.heading} description={identity.r05Body} />
+      <CardHeader level="h2" titleId={HEADING_ID} title={identity.heading} />
       <CardBody>
-        <fieldset className={styles.modes}>
-          <legend className={styles.legend}><Text role="label" as="span">{identity.heading}</Text></legend>
-          <Choice
-            kind="radio"
-            name="identity_mode"
-            value="registered"
-            checked
-            label={identity.toggleRegistered}
-            onChange={() => undefined}
-          />
-          <Choice
-            kind="radio"
-            name="identity_mode"
-            value="unregistered"
-            disabled
-            checked={false}
-            label={identity.toggleUnregistered}
-            description={lockReason ?? undefined}
-            onChange={() => undefined}
-          />
-        </fieldset>
+        <PlanningNotice tone="warning">
+          <strong>{identity.r05Title}</strong> {identity.r05Body}
+        </PlanningNotice>
 
         <Field label={identity.searchLabel} htmlFor={SEARCH_ID}>
           <TextInput

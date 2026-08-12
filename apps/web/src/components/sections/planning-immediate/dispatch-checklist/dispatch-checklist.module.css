@@ -1,0 +1,6 @@
+.options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--sqx-grid-min-md), 1fr));
+  gap: var(--sqx-space-2);
+  min-inline-size: 0;
+}

@@ -1,8 +1,14 @@
-import RouteLoading from "@/components/RouteLoading";
+import Shell from "@/components/Shell";
+import ImmediateFormSkeleton from "@/components/sections/planning-immediate/immediate-form-skeleton/immediate-form-skeleton";
+import { immediateMessages, immediateScreenStrings } from "@/features/planning-immediate/strings";
+import { getLocale } from "@/lib/i18n";
 
-// K-017 — instant visual acknowledgement while the force-dynamic segment
-// renders server-side; shares the RouteLoading skeleton (design-system
-// consistent, bilingual, aria-busy).
-export default function Loading() {
-  return <RouteLoading en="Loading immediate visit…" ar="جارٍ تحميل الزيارة الفورية…" />;
+export default async function Loading() {
+  const locale = await getLocale();
+
+  return (
+    <Shell current="/planning" title={immediateScreenStrings(locale).title}>
+      <ImmediateFormSkeleton label={immediateMessages(locale).loading} />
+    </Shell>
+  );
 }

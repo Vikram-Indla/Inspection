@@ -123,8 +123,12 @@ async function fillRegisteredCore(page: Page, factory: CanonicalFactory, opts: {
 }
 
 const submitButton = (page: Page) => page.getByRole("button", { name: /Submit urgent request for supervision/i });
-const authorityChip = (page: Page, re: RegExp) =>
-  page.getByRole("group", { name: /Immediate dispatch protections/i }).getByRole("button", { name: re });
+// The protections card is a readiness strip: it lists BLOCKERS only, so a
+// satisfied control is asserted by the absence of its row, not by a "satisfied"
+// chip. Re-pointed from role=group (the deleted 9-chip grid) to the card's own
+// labelled section.
+const blockerRow = (page: Page, re: RegExp) =>
+  page.getByRole("region", { name: /Immediate dispatch protections/i }).getByRole("button", { name: re });
 
 test.describe("CD-023 Planner UI and atomic persistence", () => {
   test.use({ storageState: storageStatePath("planner") });
@@ -155,10 +159,10 @@ test.describe("CD-023 Planner UI and atomic persistence", () => {
     }
     await fillRegisteredCore(page, factory, { reason: "Other" });
     await expect(page.getByText(/Justify “Other” in Notes/i)).toBeVisible();
-    await expect(authorityChip(page, /REASON — blocking — justify Other in Notes/i)).toBeVisible();
+    await expect(blockerRow(page, /REASON — blocking — justify Other in Notes/i)).toBeVisible();
     await expect(submitButton(page)).toBeDisabled();
     await page.locator("#imm-notes").fill("Anonymous report of unsafe storage");
-    await expect(authorityChip(page, /REASON — satisfied/i)).toBeVisible();
+    await expect(blockerRow(page, /REASON —/i)).toHaveCount(0);
     await expect(submitButton(page)).toBeEnabled();
   });
 
@@ -167,22 +171,24 @@ test.describe("CD-023 Planner UI and atomic persistence", () => {
     const factory = await canonicalFactory(planner.jwt);
     await openEnglish(page);
     await fillRegisteredCore(page, factory, { notes: "Preserved metal activity", skipLocation: true });
-    await expect(authorityChip(page, /LOCATION — blocking — enter valid coordinates/i)).toBeVisible();
+    await expect(blockerRow(page, /LOCATION — blocking — enter valid coordinates/i)).toBeVisible();
     await expect(submitButton(page)).toBeDisabled();
     await page.locator("#imm-lat").fill("124.7136");
     await page.locator("#imm-lng").fill("46.6753");
-    await expect(authorityChip(page, /LOCATION — blocking/i)).toBeVisible();
+    await expect(blockerRow(page, /LOCATION — blocking/i)).toBeVisible();
     await expect(submitButton(page)).toBeDisabled();
     await page.locator("#imm-lat").fill("24.7136");
-    await expect(authorityChip(page, /LOCATION — satisfied/i)).toBeVisible();
+    await expect(blockerRow(page, /LOCATION —/i)).toHaveCount(0);
     await expect(page.locator("#imm-notes")).toHaveValue("Preserved metal activity");
   });
 
   test("manual (unregistered) entry is locked for the planner with the honest R05 reason (PLN-REQ-025)", async ({ page }) => {
     await openEnglish(page);
-    const manualToggle = page.getByRole("button", { name: /Unregistered \/ temporary/i });
-    await expect(manualToggle).toBeDisabled();
-    await expect(manualToggle).toHaveAttribute("aria-disabled", "true");
+    // The permanently-disabled mode toggle is gone: an unregistered target is
+    // unreachable because no control offers it, and R05 is stated once, on the
+    // identity card it governs.
+    await expect(page.getByRole("radio", { name: /Unregistered \/ temporary/i })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Unregistered \/ temporary/i })).toHaveCount(0);
     await expect(page.getByText(/Urgent requests still require a registered factory/i)).toBeVisible();
     await expect(page.getByText(/Urgency only changes the response time/i).first()).toBeVisible();
     await expect(page.locator("#imm-not-found")).toHaveCount(0);
@@ -191,17 +197,16 @@ test.describe("CD-023 Planner UI and atomic persistence", () => {
     await expect(page.locator("#imm-manual-city")).toHaveCount(0);
   });
 
-  test("no visit type unlocks the unregistered path — the lock reason stays visible for every type (PLN-REQ-025)", async ({ page }) => {
+  test("no visit type unlocks the unregistered path — manual entry is absent for every type (PLN-REQ-025)", async ({ page }) => {
     await openEnglish(page);
-    const manualToggle = page.getByRole("button", { name: /Unregistered \/ temporary/i });
     const typeValues = await page.locator("#imm-visit-type option").evaluateAll(
       options => options.map(option => (option as HTMLOptionElement).value),
     );
     expect(typeValues.length).toBeGreaterThan(0);
     for (const value of typeValues) {
       await page.locator("#imm-visit-type").selectOption(value);
-      await expect(manualToggle).toBeDisabled();
-      await expect(page.getByText(/Manual entry requires the manual-factory permission/i)).toBeVisible();
+      await expect(page.getByRole("radio", { name: /Unregistered \/ temporary/i })).toHaveCount(0);
+      await expect(page.locator("#imm-manual-name")).toHaveCount(0);
     }
   });
 
@@ -456,8 +461,8 @@ test.describe("CD-023 Operations access boundary (PLN-REQ-025)", () => {
     // ops persona also holds the supervisor internal role, so the governed
     // outcome is either a submission for supervision or the duplicate-active
     // blocker — never a raw database error.
-    await expect(page.getByRole("button", { name: /Unregistered \/ temporary/i })).toBeDisabled();
-    await expect(page.getByText(/requires the manual-factory permission/i)).toBeVisible();
+    await expect(page.getByRole("radio", { name: /Unregistered \/ temporary/i })).toHaveCount(0);
+    await expect(page.getByText(/Urgent requests still require a registered factory/i)).toBeVisible();
     await fillRegisteredCore(page, factory);
     await submitButton(page).click();
     const submitted = await page

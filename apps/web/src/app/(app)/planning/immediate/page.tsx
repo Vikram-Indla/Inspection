@@ -3,7 +3,7 @@ import ImmediateAccessState from "@/components/sections/planning-immediate/immed
 import ImmediatePageContext from "@/components/sections/planning-immediate/immediate-page-context/immediate-page-context";
 import ImmediateReturnLink from "@/components/sections/planning-immediate/immediate-return-link/immediate-return-link";
 import { loadImmediatePlanning, type ImmediatePlanningParams } from "@/features/planning-immediate/queries";
-import { immediateFormStrings, immediateMessages, immediateScreenStrings } from "@/features/planning-immediate/strings";
+import { immediateMessages, immediateScreenStrings } from "@/features/planning-immediate/strings";
 import { getLocale } from "@/lib/i18n";
 import ImmediateForm from "./ImmediateForm";
 
@@ -24,12 +24,7 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
       context={<ImmediatePageContext handoff={planning.data.handoff} strings={strings} />}
     >
       <ImmediateReturnLink handoff={planning.data.handoff} strings={strings} />
-      <ImmediateForm
-        data={planning.data}
-        locale={locale}
-        strings={immediateFormStrings(locale)}
-        messages={immediateMessages(locale)}
-      />
+      <ImmediateForm data={planning.data} locale={locale} messages={immediateMessages(locale)} />
     </Shell>
   );
 }

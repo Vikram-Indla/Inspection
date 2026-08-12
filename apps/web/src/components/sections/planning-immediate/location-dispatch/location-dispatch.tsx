@@ -2,16 +2,13 @@
 import dynamic from "next/dynamic";
 import Button from "@/components/saqeel/button/button";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
-import Choice from "@/components/saqeel/choice/choice";
 import DateRangePicker from "@/components/saqeel/date-range-picker/date-range-picker";
 import Field from "@/components/saqeel/field/field";
 import SaqeelSelect from "@/components/saqeel/select/select";
 import TextInput from "@/components/saqeel/text-input/text-input";
 import Textarea from "@/components/saqeel/textarea/textarea";
-import { Text } from "@/components/saqeel/type";
-import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
 import type { ImmediateMessages } from "@/features/planning-immediate/strings";
-import type { ImmediateInspector, ImmediatePackage } from "@/features/planning-immediate/types";
+import type { ImmediateInspector } from "@/features/planning-immediate/types";
 import type { Locale } from "@/lib/i18n";
 import styles from "./location-dispatch.module.css";
 
@@ -28,22 +25,18 @@ export type DispatchValue = {
   readonly windowStart: string;
   readonly windowEnd: string;
   readonly priority: string;
-  readonly packageId: string;
   readonly inspectorId: string;
   readonly notes: string;
 };
 
 export default function LocationDispatch({
-  value, onChange, official, sourceLabel, catalogue, messages, locale,
+  value, onChange, official, sourceLabel, inspectors, messages, locale,
 }: {
   value: DispatchValue;
   onChange: (next: DispatchValue) => void;
   official: { readonly lat: number; readonly lng: number } | null;
   sourceLabel: string;
-  catalogue: {
-    readonly packages: readonly ImmediatePackage[];
-    readonly inspectors: readonly ImmediateInspector[];
-  };
+  inspectors: readonly ImmediateInspector[];
   messages: ImmediateMessages;
   locale: Locale;
 }) {
@@ -132,37 +125,13 @@ export default function LocationDispatch({
           />
         </Field>
 
-        <fieldset className={styles.group}>
-          <legend className={styles.legend}><Text role="label" as="span">{dispatch.packageLabel}</Text></legend>
-          <Text role="body" tone="muted">{dispatch.packageOptionalHint}</Text>
-          <div className={styles.checklist}>
-            {catalogue.packages.map(entry => (
-              <Choice
-                key={entry.id}
-                kind="radio"
-                name="package_version_id"
-                value={entry.id}
-                checked={value.packageId === entry.id}
-                label={entry.packages.title}
-                description={`${entry.packages.code} · ${entry.version_label}`}
-                onChange={() => set("packageId", entry.id)}
-              />
-            ))}
-          </div>
-          {value.packageId === "" ? null : (
-            <Button type="button" variant="link" size="sm" label={dispatch.packageClear} onClick={() => set("packageId", "")}>
-              {dispatch.packageClear}
-            </Button>
-          )}
-        </fieldset>
-
         <Field label={dispatch.inspector} htmlFor="imm-inspector">
           <SaqeelSelect
             id="imm-inspector"
             label={dispatch.inspector}
             options={[
               { value: "", label: dispatch.autoAssign },
-              ...catalogue.inspectors.map(entry => ({ value: entry.user_id, label: entry.full_name })),
+              ...inspectors.map(entry => ({ value: entry.user_id, label: entry.full_name })),
             ]}
             value={value.inspectorId}
             onChange={next => set("inspectorId", next)}
@@ -179,8 +148,6 @@ export default function LocationDispatch({
             onChange={next => set("notes", next)}
           />
         </Field>
-
-        {pinned ? null : <PlanningNotice tone="info">{location.sourceNone}</PlanningNotice>}
       </CardBody>
     </Card>
   );
