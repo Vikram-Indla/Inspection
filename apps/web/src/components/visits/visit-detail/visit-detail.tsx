@@ -1,5 +1,6 @@
 import { type ReactNode } from "react";
 import type { Definition } from "@/components/saqeel/definition-list/definition-list";
+import { Text } from "@/components/saqeel/type";
 import { getMessages } from "@/i18n/messages";
 import { formatDateTime } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
@@ -61,7 +62,8 @@ export default function VisitDetail({ data, locale, enumLabel, actions, notes, a
       { label: V.detail.planHeading, value: `${enumLabel(plan.method)} · ${plan.plan_reference ?? plan.id.slice(0, 8)}` },
       { label: V.detail.planCreatedBy, value: plan.profiles?.full_name ?? "—" },
       { label: V.detail.planPublishedAt, value: plan.published_at ? formatDateTime(plan.published_at, locale) : "—" },
-      { label: V.detail.siblings.replace("{n}", String(data.siblingCount)), value: enumLabel(plan.status) },
+      { label: V.detail.planStatus, value: enumLabel(plan.status) },
+      { label: V.detail.siblingsLabel, value: String(data.siblingCount) },
     ]
     : [];
 
@@ -116,9 +118,9 @@ export default function VisitDetail({ data, locale, enumLabel, actions, notes, a
       entries: buildLifecycleEntries(data.lifecycle, data.returnReasons, data.cancelReasons, locale, enumLabel, actor),
     },
     {
-      id: "location", heading: V.detail.locationHeading, empty: V.detail.noJourney,
+      id: "location", heading: V.detail.locationHeading, empty: V.detail.noLocation,
       entries: buildLocationEntries(data, locale, enumLabel, actor),
-      lead: <p>{`${V.detail.locationPlanned} ${plannedPin}`}</p>,
+      lead: <Text as="p" role="label" tone="secondary">{`${V.detail.locationPlanned} ${plannedPin}`}</Text>,
     },
     {
       id: "journey", heading: V.detail.journeyHeading, empty: V.detail.noJourney,
@@ -174,7 +176,7 @@ export default function VisitDetail({ data, locale, enumLabel, actions, notes, a
       />
       {notes}
       {attachments}
-      <VisitHistory title={V.detail.auditHeading} description={V.ribbon.src.audit} sections={sections} />
+      <VisitHistory title={V.detail.historyTitle} description={V.detail.historyDescription} sections={sections} />
     </div>
   );
 }

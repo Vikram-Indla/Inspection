@@ -7,6 +7,7 @@ import { buildVisitDetailStrings } from "@/features/visits/detail/strings";
 import { buildActionBarProps, visitAttachmentRows } from "@/features/visits/detail/view";
 import { getMessages } from "@/i18n/messages";
 import { useT } from "@/lib/i18n";
+import { humaniseEnum, sentenceCase } from "@/lib/text";
 import ActionBar from "./ActionBar";
 import Attachments from "./Attachments";
 import NotesEditor from "./NotesEditor";
@@ -22,7 +23,7 @@ export default async function VisitDetailRoute({ params, searchParams }: {
   const page = await loadVisitDetail((await params).id);
   if (page.kind !== "ready") return <VisitDetailUnavailable current={current} kind={page.kind} strings={V.detail} />;
   const data = page.data;
-  const enumLabel = (value: string) => t(`enum.${value}`, value.replace(/_/g, " "));
+  const enumLabel = (value: string) => sentenceCase(t(`enum.${value}`, humaniseEnum(value, locale)), locale);
   const strings = buildVisitDetailStrings(locale, enumLabel);
   const title = V.detail.title
     .replace("{id}", data.visit.id.slice(0, 8))

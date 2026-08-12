@@ -49,9 +49,9 @@
     "urlFailed": "رابط التنزيل غير متاح"
   },
   "detail": {
-    "assignment": "الإسناد:",
+    "assignment": "الإسناد",
     "auditActor": "بواسطة {who}",
-    "auditHeading": "سجل التخطيط — لا يمكن تعديله، تُضاف إليه أحداث جديدة فقط (ENG-12، آخر 30 حدثًا)",
+    "auditHeading": "تغييرات التخطيط (آخر ٣٠)",
     "auditSystem": "النظام",
     "backToVisits": "الزيارات",
     "cancelledReason": "ملغاة — السبب: {reason} (نهائي)",
@@ -67,8 +67,8 @@
     "immediateProvenance": "إنشاء زيارة عاجلة:",
     "immutable": "نهائية",
     "inspectionVersions": "التفتيش والإصدارات",
-    "journeyHeading": "أحداث الرحلة والموقع — لا يمكن تعديلها (EV-005)",
-    "lifecycleHeading": "سجل دورة الحياة — إضافة فقط",
+    "journeyHeading": "الرحلة",
+    "lifecycleHeading": "دورة الحياة",
     "loading": "جارٍ تحميل الزيارة",
     "loadingTitle": "زيارة",
     "locationFactory": "موقع المصنع",
@@ -96,11 +96,15 @@
     "reportLink": "تقرير التفتيش الرسمي",
     "returnReason": "مُعادة — السبب: {reason}",
     "returnedSections": "مُعادة",
-    "reviewPrefix": "المراجعة:",
-    "siblings": "{n} زيارة ضمن هذه الخطة",
+    "reviewPrefix": "المراجعة",
     "title": "زيارة {id} — {factory}",
     "unverifiedManual": "إدخال يدوي غير موثّق — بانتظار المطابقة",
-    "window": "النافذة الزمنية"
+    "window": "النافذة الزمنية",
+    "historyTitle": "السجل",
+    "historyDescription": "كل إدخال أدناه يُضاف فقط. لا يُعدَّل أي شيء هنا ولا يُحذف.",
+    "noLocation": "لم تُسجَّل أي أحداث موقع بعد.",
+    "planStatus": "الحالة",
+    "siblingsLabel": "الزيارات ضمن هذه الخطة"
   },
   "notes": {
     "heading": "الملاحظات",
