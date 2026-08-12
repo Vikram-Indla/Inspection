@@ -1,6 +1,32 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-084 — visit actions on SAQEEL controls`
+`Last updated: 2026-08-12` · `Updated by: T-086 — single/bulk vocabulary`
+
+## A `t()` default is not a fallback — it is the English build (2026-08-12)
+
+`f360.actions.planSingle` rendered **"Plan single visit"** on one screen and
+**"Plan one visit"** on two others. The key looks translated — it is called
+through `t("f360.actions.planSingle", "…")` — but it has **no entry in either
+locale file**, and `getDict("en")` returns `{}`. In the legacy `t(key, en)`
+system there is no English dictionary at all: `tr()` resolves every key to its
+second argument. **The literal in the call site *is* the shipped English**, so
+three call sites meant three independently editable copies of one label.
+
+This is why WEB-013 bans `t("key", "English")` rather than merely discouraging
+it. The pattern does not degrade gracefully to a shared string — it silently
+forks one label per call site, and nothing reports the divergence.
+
+**When a control's label is asserted or referenced by other copy, the reference
+decides the wording.** Here `planning-single/strings.ts:264` renders *"Only
+planning staff can use **Plan a single visit**"* — a denial that names the
+control. A button and the sentence naming it are one contract; the sentence had
+been right all along and two buttons had drifted off it.
+
+**Corollary found the same hour:** `cd-022-identity-lens.spec.ts:422` still
+asserted the *old* wording while the source string had already moved. A rename
+had landed in code with its spec left behind, and only grepping the obsolete
+phrase surfaced it. **Grep the string you are replacing across `e2e/` as well as
+`src/` — the spec is where the previous rename went to hide.**
 
 ## A control that cannot POST is why the banned one is still there (2026-08-12)
 

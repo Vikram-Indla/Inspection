@@ -161,15 +161,7 @@
     "stripTitle": "رؤى وتوصيات الذكاء الاصطناعي",
     "insightsEmptyTitle": "غير مهيأ",
     "insightsEmptyBody": "رؤى الذكاء الاصطناعي غير مهيأة لمساحة العمل هذه.",
-    "quickTitle": "إجراءات سريعة",
-    "quick": {
-      "planBulk": "تخطيط زيارات متعددة",
-      "planSingle": "تخطيط زيارة واحدة",
-      "planImmediate": "إنشاء زيارة عاجلة",
-      "reviewReturned": "مراجعة الزيارات المرجعة",
-      "reviewDrafts": "مراجعة الزيارات المسودة",
-      "visitManagement": "إدارة الزيارات"
-    }
+    "quickTitle": "إجراءات سريعة"
   },
   "stats": {
     "groupLabel": "أعداد التخطيط — اختر واحدًا لتصفية القائمة",

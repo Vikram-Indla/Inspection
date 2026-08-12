@@ -370,7 +370,7 @@ export default async function FieldFactory360({ params, searchParams }: {
         <div className={styles.actionBar} role="group" aria-label={t("common.actions", "Actions")}>
           {factoryId && (factory?.official_lat != null) && <a className="btn btn-secondary" href={`geo:${factory.official_lat},${factory.official_lng}?q=${factory.official_lat},${factory.official_lng}(${encodeURIComponent(factory.name)})`}>{t("f360.actions.openMap", "Open map")}</a>}
           {permissions["create_inspection"] && factoryId && <a className="btn btn-primary" href={`/planning/immediate?factory=${factoryId}&cr=${cr.id}&license=${selected?.id ?? ""}&returnTo=${encodeURIComponent(withLicense(selected?.id))}`}>{t("f360.actions.createInspection", "Create inspection")}</a>}
-          {factoryId && <a className="btn btn-secondary" href={`/planning/single?cr=${encodeURIComponent(cr.cr_number)}&license=${encodeURIComponent(selected?.license_number ?? "")}&plant=${encodeURIComponent(selected?.plant_number ?? "")}&factory=${factoryId}&source=factory360`}>{t("f360.actions.planSingle", "Plan one visit")}</a>}
+          {factoryId && <a className="btn btn-secondary" href={`/planning/single?cr=${encodeURIComponent(cr.cr_number)}&license=${encodeURIComponent(selected?.license_number ?? "")}&plant=${encodeURIComponent(selected?.plant_number ?? "")}&factory=${factoryId}&source=factory360`}>{t("f360.actions.planSingle", "Plan a single visit")}</a>}
           {permissions["export_factory"] && <Factory360ExportButton label={t("f360.actions.exportPdf", "Export / share PDF")} />}
           {safeReturn && <a className="btn btn-ghost" href={safeReturn}>{t("f360.actions.return", "Return to visit")}</a>}
         </div>

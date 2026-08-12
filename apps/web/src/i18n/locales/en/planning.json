@@ -161,15 +161,7 @@
     "stripTitle": "AI insights and recommendations",
     "insightsEmptyTitle": "Not configured",
     "insightsEmptyBody": "AI insights are not configured for this workspace.",
-    "quickTitle": "Quick Actions",
-    "quick": {
-      "planBulk": "Plan multiple visits",
-      "planSingle": "Plan one visit",
-      "planImmediate": "Create an urgent visit",
-      "reviewReturned": "Review returned visits",
-      "reviewDrafts": "Review draft visits",
-      "visitManagement": "Visit management"
-    }
+    "quickTitle": "Quick Actions"
   },
   "stats": {
     "groupLabel": "Planning counts — select one to filter the list",
