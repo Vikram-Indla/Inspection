@@ -23,9 +23,27 @@ export type SelectOption = {
 
 export type SelectProps = {
   options: readonly SelectOption[];
-  value: string;
-  onChange: (value: string) => void;
   label: string;
+  /** Controlled value. Omit it and pass `defaultValue` to let the control own its state. */
+  value?: string;
+  /**
+   * Initial value for an uncontrolled control. A form that is only read on
+   * submit needs no state of its own — pair this with `name` and let `FormData`
+   * carry the answer.
+   */
+  defaultValue?: string;
+  onChange?: (value: string) => void;
+  /**
+   * Submit name. A listbox is a `<button>`, which posts nothing, so the chosen
+   * value rides along in a hidden input under this name — without it a server
+   * action reading `FormData` receives an empty field.
+   */
+  name?: string;
+  /**
+   * Marks the control as required for assistive tech. A hidden input is exempt
+   * from constraint validation, so the enforcing check belongs on the server.
+   */
+  required?: boolean;
   /**
    * Id for the trigger button. Pass it when an external `<label for>` names this
    * control — `aria-label` is then dropped so the visible label is the accessible
@@ -33,6 +51,12 @@ export type SelectProps = {
    */
   id?: string;
   placeholder?: string;
+  /**
+   * Shown as a single unchoosable row when `options` is empty. Absent data is a
+   * state, not a blank panel — without it an unconfigured lookup opens onto
+   * nothing and the reader cannot tell it from a failure to load.
+   */
+  emptyLabel?: string;
   disabled?: boolean;
   align?: "start" | "end";
 };
@@ -40,10 +64,14 @@ export type SelectProps = {
 export default function SaqeelSelect({
   options,
   value,
+  defaultValue,
   onChange,
+  name,
+  required,
   label,
   id,
   placeholder,
+  emptyLabel,
   disabled,
   align = "start",
 }: SelectProps) {
@@ -51,8 +79,10 @@ export default function SaqeelSelect({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [ownValue, setOwnValue] = useState(defaultValue ?? "");
 
-  const selectedIndex = options.findIndex(option => option.value === value);
+  const current = value ?? ownValue;
+  const selectedIndex = options.findIndex(option => option.value === current);
   const selected = selectedIndex < 0 ? undefined : options[selectedIndex];
   const optionId = (index: number) => `${listId}-${index}`;
 
@@ -69,7 +99,8 @@ export default function SaqeelSelect({
   function commit(index: number): void {
     const option = options[index];
     if (!option || option.disabled) return;
-    onChange(option.value);
+    setOwnValue(option.value);
+    onChange?.(option.value);
     close(true);
   }
 
@@ -125,6 +156,7 @@ export default function SaqeelSelect({
 
   return (
     <div className={styles.root}>
+      {name ? <input type="hidden" name={name} value={current} /> : null}
       <button
         className={styles.trigger}
         ref={triggerRef}
@@ -132,6 +164,7 @@ export default function SaqeelSelect({
         type="button"
         role="combobox"
         aria-label={id ? undefined : label}
+        aria-required={required}
         aria-expanded={isOpen}
         aria-controls={listId}
         aria-haspopup="listbox"
@@ -158,12 +191,15 @@ export default function SaqeelSelect({
         label={label}
         role="listbox"
       >
+        {options.length === 0 && emptyLabel
+          ? <MenuRow id={optionId(0)} label={emptyLabel} selected={false} disabled onSelect={() => undefined} />
+          : null}
         {options.map((option, index) => (
           <MenuRow
             key={option.value}
             id={optionId(index)}
             label={option.label}
-            selected={option.value === value}
+            selected={option.value === current}
             active={index === activeIndex}
             count={option.count}
             disabled={option.disabled}

@@ -10,6 +10,92 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-086 · "one/multiple" → Single/Bulk — and it was not on `/planning`
+`status: done` · `rules: WEB-000 §9, WEB-006 §4, WEB-008, WEB-011, WEB-013` · `est: 1h`
+`record:` [2026-08-12-T-086-single-bulk-vocabulary](sessions/2026-08/2026-08-12-T-086-single-bulk-vocabulary.md)
+
+Owner reported "one" used for Single and "multiple" for Bulk. **Rendering all
+three planning routes showed none of it there** — every "one" on `/planning`,
+`/planning/bulk` and `/planning/single` is an ordinary numeral ("at least one
+criterion"), and the picker already reads Single Visit / Bulk Planning /
+Immediate Visit.
+
+**The live defect was on Factory 360: one key, two English labels.**
+`f360.actions.planSingle` has **no entry in either locale file**, and
+`getDict("en")` returns `{}` — so for legacy `t(key, en)` call sites *the literal
+in the code is the rendered string*. Three call sites hardcoded two defaults, so
+the same button read **"Plan single visit"** on `/factories/cr/[id]` and
+**"Plan one visit"** on `/factories/[id]` and `/field/factory-360/[id]`.
+
+**The governance message chose the wording, not taste.** `planning-single/strings.ts:264`
+renders *"Only planning staff can use **Plan a single visit**"* — a denial that
+**names the control**, so the control must carry that exact name.
+
+**A spec was already stale and would have failed.** `cd-022-identity-lens.spec.ts:422`
+asserted "Plan one visit" while the source had long said "Plan a single visit" —
+**the rename had already happened in code and the spec was never updated.**
+
+**Dead copy deleted, not renamed.** The two strings the owner quoted verbatim —
+`assistant.quick.planSingle`/`planBulk` — render nowhere: `PlanningAssistant`
+takes `messages.assistant` but declares and renders **4** props. `assistant.*` is
+47 keys of which 4 render; the rest is parked as a dead-copy sweep.
+
+**Raised, not filled:** the three Factory 360 screens are wholly on the legacy
+`t()` system (167/152/115 call sites) and **cannot read the typed JSON at all**,
+so the owner's "load it from the respective JSON files" needs a T-020-scale
+migration. Made consistent, **not** made compliant.
+
+### T-084 · `/visits/[id]` — actions card on SAQEEL controls, split into `visit-actions/*`
+`status: done (the 3 rewritten e2e interactions are unverified — Playwright browsers are not installed here)` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-004, WEB-006, WEB-009, WEB-011, WEB-013` · `est: 2h`
+`record:` [2026-08-12-T-084-visit-actions-on-saqeel-controls](sessions/2026-08/2026-08-12-T-084-visit-actions-on-saqeel-controls.md)
+
+Owner-reported on the Management actions card, with a standing instruction to use
+the design system's own select and input.
+
+**The Arabic planner was reading English, and the helper was one file away.**
+`ActionBar` rendered `{o.label_en}` for every governed return and cancel reason
+while `features/visits/detail/view.ts:24` already exported `reasonLabel()`, which
+picks `label_ar` by locale — and `field/inspection/[id]/results/page.tsx:70` had
+been doing it correctly all along. **Third instance of T-079's lesson: search for
+the helper before writing the fallback.** Options are now built in the view model,
+so `label_en` appears in no component.
+
+**`Select` could not POST, which is why the banned native `<select>` was still
+there.** T-080 raised the gap and nothing filled it. `Select` now takes `name`
+(hidden input carrying the value), `defaultValue` (uncontrolled) and `required`
+(`aria-required`); `DateRangePicker` takes `nameFrom`/`nameTo`. **The uncontrolled
+mode is the point: the forms gained zero `useState`** — WEB-004 §1 rung 4, read on
+submit through `FormData`.
+
+**The reschedule window needed no new component.** `DateRangePicker` already had
+`withTime`, `timeStep` and `timeLabels` and already emitted `YYYY-MM-DDTHH:mm` —
+the owner was right that it existed. Both `datetime-local` inputs are gone with no
+primitive built, and `riyadhLocalInput()` joined `lib/dates.ts` so the window
+round-trips in Riyadh time rather than three hours early.
+
+**Migrating to a listbox breaks `selectOption()`, and that is unavoidable.** Three
+spec call sites drove the native control; they now click the trigger and pick the
+row by the label the screen shows, sourced from the same roster RPC the page reads
+so spec and UI cannot disagree. `cd-027:97` also read `ActionBar.tsx` as **source
+text** — re-pointed to the new shell before the file was deleted (the T-077/T-078
+`readFileSync` trap). **None of the three could be executed here.**
+
+**A blank listbox was a regression I introduced and had to fix.** This environment
+seeds zero return reasons; the native control at least rendered `—`, the new one
+opened onto an empty panel. `Select` gained `emptyLabel`, so absent data renders as
+a state (rule 9) — verified rendering *No options are configured* as a disabled row.
+
+```
+ActionBar.tsx 257 lines → deleted; visit-actions/ 12 files, largest 153
+native <select> 2 → 0 · input[type=datetime-local] 2 → 0 · useState in forms 0
+control rows   90|265|65 and 65|265|77  →  507|507|65 and 501|501|77
+i18n actions   33 → 44 keys per locale at asserted parity (2 dead keys deleted)
+```
+
+**Owed:** the e2e suite, axe, the Arabic render (still blocked on the locale
+toggle), light theme. **`visit-actions/` is at the 12-file cap** — the next form
+needs a regroup, not another file.
+
 ### T-085 · `/planning` — the Method filter offered six values that never match
 `status: done` · `rules: WEB-000 §9, WEB-004, WEB-006 §4, WEB-008, WEB-011, WEB-013` · `est: 1h`
 `record:` [2026-08-12-T-085-planning-method-filter](sessions/2026-08/2026-08-12-T-085-planning-method-filter.md)
@@ -44,7 +130,7 @@ match.** The embed turns `!inner` when a method filter is set, while the label
 `"immediate"` is *derived from `visit_plans` being NULL* — so a visit shown as
 Immediate is exactly one the join excludes. It is now **more** visible, not less.
 
-### T-084 · `/planning/bulk/review` — typography, and it has never been swept
+### T-087 · `/planning/bulk/review` — typography, and it has never been swept
 `status: todo` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014` · `est: 1.5h`
 
 **32 violations, 31 of them its own**, across ten `review-*` modules —
@@ -2104,6 +2190,24 @@ Pull one in only if it is genuinely part of doing the active task well.
   reading the board, so a concurrent session picks the same number. Needs a rule
   or a counter.
 
+- **`components/saqeel/inputs/` is a dead parallel input layer inside the design
+  system** (found in T-084, while checking which "our own Select" to use).
+  Nine files — `Select`, `Input`, `Field`, `FileUpload`, `Combobox`,
+  `DateRangePicker`, `SegmentedControl`, `StatusSelector`, `Choice` — of which
+  **eight have zero importers**; only `Switch` from `Choice` survives, in
+  `profile/NotificationPrefsForm.tsx`. **The names collide with the live
+  components**, so an agent told "use our own Select" can import
+  `saqeel/inputs/Select` — the dead one, built on the banned native `<select>`
+  with `className="input"`, inline `style={{}}`, a `/* */` comment and hardcoded
+  English `aria-label`s. This is exactly T-077's name-collision trap, sitting in
+  the design-system folder. Retirement needs the WEB-006 §4 protocol and a
+  re-baseline: `Combobox.tsx` and `StatusSelector.tsx` each hold a typography
+  violation in `scripts/typography-baseline.json`.
+- **`DateRangePicker.DEFAULT_STRINGS` is English copy inside a primitive**
+  (found in T-084). "From", "To", "Reset", "Apply", "Not set" are hardcoded and
+  are what `shell-scope-controls` renders today, since it passes no `strings`.
+  WEB-013 applies to the design system too; the default should be removed and the
+  prop made required, which is a change across its 6 consumers.
 - **~50 hand-rolled `<textarea>` bypass the `Textarea` primitive** (found in
   T-082, owner asked whether the app has a reusable one). It does —
   `components/saqeel/textarea` — with **4 consumers**: this route's `NotesEditor`

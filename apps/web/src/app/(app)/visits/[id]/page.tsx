@@ -8,7 +8,7 @@ import { buildActionBarProps, visitAttachmentRows } from "@/features/visits/deta
 import { getMessages } from "@/i18n/messages";
 import { useT } from "@/lib/i18n";
 import { humaniseEnum, sentenceCase } from "@/lib/text";
-import ActionBar from "./ActionBar";
+import VisitActions from "@/components/visits/visit-actions/visit-actions";
 import Attachments from "./Attachments";
 import NotesEditor from "./NotesEditor";
 
@@ -35,7 +35,7 @@ export default async function VisitDetailRoute({ params, searchParams }: {
         data={data}
         locale={locale}
         enumLabel={enumLabel}
-        actions={<ActionBar {...buildActionBarProps(data, locale, enumLabel)} strings={strings.actionStrings} />}
+        actions={<VisitActions {...buildActionBarProps(data, locale, enumLabel)} locale={locale} visitTypes={strings.visitTypes} strings={strings.actionStrings} />}
         notes={<NotesEditor visitId={data.visit.id} planningVersion={data.visit.planning_version} initialNotes={data.visit.notes ?? ""} strings={strings.notesStrings} />}
         attachments={<Attachments visitId={data.visit.id} rows={visitAttachmentRows(data, locale)} strings={strings.attachmentsStrings} />}
       />

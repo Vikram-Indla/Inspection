@@ -18,6 +18,22 @@ import { login, rest, must } from "./live-rest";
 // code layer — matching the CD-025/026 read-only + wiring-proof convention.
 const EVIDENCE_DIR = evidenceDirectory("cd-027-visit-detail-v1");
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
+
+// T-084 replaced the native <select> with the SAQEEL listbox (WEB-009 §14), so
+// `selectOption` no longer applies. The row carries the governed label for the
+// rendered locale, which is why both are offered here.
+async function chooseOption(page: Page, trigger: string, labels: readonly (string | null)[]) {
+  await page.locator(trigger).click();
+  for (const label of labels) {
+    if (!label) continue;
+    const option = page.getByRole("option", { name: label, exact: true });
+    if (await option.count()) {
+      await option.first().click();
+      return;
+    }
+  }
+  throw new Error(`no listbox option matched ${labels.filter(Boolean).join(" / ")}`);
+}
 const ID = "src/app/(app)/visits/[id]";
 // T-076 moved the reads and derivations into features/visits/detail. These
 // assertions are about the route's behaviour, not which file holds it, so the
@@ -91,9 +107,17 @@ test.describe("CD-027 action zones + a11y (DSG-A11Y-001)", () => {
     if (!(await openFirstVisit(page))) test.skip(true, "no visit in planner scope");
     await expect(page.getByText(/Available now/i)).toBeVisible();
     // completion uses role=status, failure a single role=alert (asserted in DOM/code)
-    const src = SRC(`${ID}/ActionBar.tsx`);
-    expect(src).toContain('role="status"');
-    expect(src).toContain('role="alert"');
+    // T-080 rebuilt the zones on SAQEEL. The completion/failure regions are the
+    // same two live regions, now declared through `Text`'s `live` prop — the
+    // primitive is what renders `role`, so both halves are asserted.
+    // T-084 split the card into components/visits/visit-actions/*; the shell
+    // still owns the two live regions, so the contract follows the behaviour
+    // rather than the old filename.
+    const src = SRC("src/components/visits/visit-actions/visit-actions.tsx");
+    expect(src).toContain('live="status"');
+    expect(src).toContain('live="alert"');
+    expect(src).toContain('aria-live="polite"');
+    expect(SRC("src/components/saqeel/type/text.tsx")).toContain("role={live}");
   });
 });
 
@@ -237,17 +261,17 @@ test.describe("M8 — lifecycle: governed return/cancel, duplicate, expired prov
 
   test("return uses a governed reason, never touches notes, and appends a lifecycle event (PLN-CON-011)", async ({ page }) => {
     const reasons = must(await rest("GET",
-      "planning_lookups?kind=eq.return_reason&is_active=eq.true&select=key,label_en&order=sort_order",
-      plannerJwt), "active return reasons") as { key: string; label_en: string }[];
+      "planning_lookups?kind=eq.return_reason&is_active=eq.true&select=key,label_en,label_ar&order=sort_order",
+      plannerJwt), "active return reasons") as { key: string; label_en: string; label_ar: string | null }[];
     test.skip(reasons.length === 0, "staging holds no active governed return reason (PLN-CON-011 lookup seed absent)");
     const reasonKey = reasons[0].key;
     const label = reasons[0].label_en;
     const { visit } = await stageVisit("RET", "published");
 
     await page.goto(`/visits/${visit.id}`);
-    await page.locator("#visit-return-reason").selectOption(reasonKey);
+    await chooseOption(page, "#visit-return-reason", [reasons[0].label_ar, reasons[0].label_en]);
     await page.locator("#visit-return-comments").fill("M8 governed return");
-    await page.locator("form", { has: page.locator("#visit-return-reason") }).locator("button").click();
+    await page.locator("form", { has: page.locator("#visit-return-reason") }).locator("button[type=submit]").click();
     await expect(page.getByText(/Returned\. The history, audit record, and notification were saved/)).toBeVisible({ timeout: 15000 });
 
     // Server truth: the status flipped, planner notes were NOT overwritten
@@ -285,7 +309,7 @@ test.describe("M8 — lifecycle: governed return/cancel, duplicate, expired prov
 
     await page.goto(`/visits/${visit.id}`);
     await page.locator("#visit-cancel-comments").fill("M8 governed cancel");
-    await page.locator("form", { has: page.locator("#visit-cancel-comments") }).locator("button").click();
+    await page.locator("form", { has: page.locator("#visit-cancel-comments") }).locator("button[type=submit]").click();
     await expect(page.getByText(/Visit cancelled\. Audit and notification were saved/)).toBeVisible({ timeout: 15000 });
 
     const row = must(await rest("GET", `visits?id=eq.${visit.id}&select=planning_status,cancellation_reason`, plannerJwt), "visit after cancel")[0];

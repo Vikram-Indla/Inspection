@@ -1,6 +1,54 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-085 — planning method filter`
+`Last updated: 2026-08-12` · `Updated by: T-084 — visit actions on SAQEEL controls`
+
+## A control that cannot POST is why the banned one is still there (2026-08-12)
+
+`Select` is a `<button>` plus a listbox, so it submits nothing. T-080 found that,
+raised it, and kept the native `<select>` WEB-009 §14 bans. Nothing filled the gap,
+so the defect sat on a **write path** for four tasks.
+
+Filling it took two props. `name` renders a hidden input carrying the value —
+**without it the swap compiles, renders correctly and silently submits an empty
+field on every governed transition.** `defaultValue` is the half that matters
+more: an uncontrolled control means the forms hold **no state at all** and the
+answer is read once from `FormData` (WEB-004 §1 rung 4).
+
+**When a primitive gap blocks a rule, fill the primitive. Working around it puts
+the violation somewhere a future task has to find again.**
+
+## Check the primitive's props before building a parallel one (2026-08-12)
+
+The reschedule window looked like it needed a datetime picker that did not exist.
+`DateRangePicker` already had `withTime`, `timeStep` and `timeLabels`, and already
+emitted `YYYY-MM-DDTHH:mm`. It needed **two submit-name props**, not a new
+component.
+
+Read the whole prop list — including the TSDoc — before concluding something is
+missing. This repo's recurring failure is the opposite one: a second
+implementation that inherits the original's bugs and none of its fixes.
+
+## Migrating off a native control breaks `selectOption()` (2026-08-12)
+
+`page.selectOption()` only drives a native `<select>`. Every spec that uses it
+against a control you are about to migrate **breaks at runtime**, and the type
+checker cannot see it.
+
+Budget for the rewrite before promising the migration: the row must be clicked by
+the label the screen shows, which means the spec needs that label — take it from
+**the same source the page reads** so the two cannot disagree. Also re-check every
+`form >> button` locator, because the listbox trigger is now a button inside the
+form and the old locator raises a strict-mode violation.
+
+## An empty listbox is worse than the native control it replaced (2026-08-12)
+
+A native `<select>` with no options still renders its placeholder. A custom
+listbox opens onto an empty floating panel, which reads as a failure to load
+rather than as unconfigured data.
+
+`Select` now takes `emptyLabel` and renders a disabled row. **A migration is not
+finished until its empty, error and unconfigured states are at least as good as
+the control's.**
 
 ## An i18n object is a contract, and `Object.entries` assumes one you never wrote (2026-08-12)
 

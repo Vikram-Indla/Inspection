@@ -1,4 +1,4 @@
-import { formatDateTime } from "@/lib/dates";
+import { formatDateTime, riyadhLocalInput } from "@/lib/dates";
 import { getMessages } from "@/i18n/messages";
 import type { Locale } from "@/lib/i18n";
 import type { ReasonOption } from "@/lib/planning/lifecycle";
@@ -179,10 +179,22 @@ export function visitAttachmentRows(data: VisitDetailData, locale: Locale) {
     id: row.id,
     name: row.name,
     mime: row.mime,
-    uploadedAt: row.uploaded_at,
+    uploadedAt: formatDateTime(row.uploaded_at, locale),
     uploadedBy: row.uploader?.full_name ?? "—",
     url: data.signedUrls.get(row.id) ?? null,
     urlError: data.signedUrls.has(row.id) ? null : V.att.urlFailed,
+  }));
+}
+
+export type ChoiceOption = { readonly value: string; readonly label: string };
+
+export function reasonChoices(
+  options: readonly ReasonOption[],
+  locale: Locale,
+): ChoiceOption[] {
+  return options.map(option => ({
+    value: option.key,
+    label: reasonLabel(options, option.key, locale) ?? option.key,
   }));
 }
 
@@ -199,15 +211,15 @@ export function buildActionBarProps(
     opState: data.visit.operational_state,
     opStateLabel: enumLabel(data.visit.operational_state),
     visitType: data.visit.visit_type,
-    windowStart: data.visit.window_start,
-    windowEnd: data.visit.window_end,
+    windowStart: riyadhLocalInput(data.visit.window_start),
+    windowEnd: riyadhLocalInput(data.visit.window_end),
     inspectors: data.inspectors,
     canManage: d.canManage,
     canReassign: d.canReassign,
     isFinal: d.isFinal,
-    returnReasons: data.returnReasons,
-    cancelReasons: data.cancelReasons,
-    packageOptions: data.packageOptions,
+    returnReasons: reasonChoices(data.returnReasons, locale),
+    cancelReasons: reasonChoices(data.cancelReasons, locale),
+    packageOptions: data.packageOptions.map(option => ({ value: option.id, label: option.label })),
     cutoffDisplay: d.cutoffDisplay,
   };
 }

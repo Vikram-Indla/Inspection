@@ -95,6 +95,25 @@ export function riyadhToday(value: string | number | Date = new Date()): string 
   return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
+/**
+ * The Riyadh-local instant as `YYYY-MM-DDTHH:mm` — the shape a date/time
+ * control round-trips.
+ *
+ * `toISOString().slice(0, 16)` is the UTC instant, so a window edited through
+ * it would be written back three hours early.
+ */
+export function riyadhLocalInput(value: string | number | Date): string {
+  if (!value) return "";
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: TIME_ZONE,
+    calendar: CALENDAR,
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", hour12: false,
+  }).formatToParts(toDate(value));
+  const get = (type: string) => parts.find(p => p.type === type)?.value ?? "";
+  return `${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}`;
+}
+
 function partsToUtcDays({ year, month, day }: { year: number; month: number; day: number }): number {
   return Date.UTC(year, month - 1, day) / 86_400_000;
 }
