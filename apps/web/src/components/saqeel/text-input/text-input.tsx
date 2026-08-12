@@ -1,7 +1,7 @@
-import { type InputHTMLAttributes } from "react";
+import { type InputHTMLAttributes, type ReactNode } from "react";
 import styles from "./text-input.module.css";
 
-export type TextInputType = "text" | "search" | "email" | "tel" | "url" | "number";
+export type TextInputType = "text" | "search" | "email" | "tel" | "url" | "number" | "password";
 
 export type TextInputProps = {
   name?: string;
@@ -19,6 +19,13 @@ export type TextInputProps = {
   autoComplete?: string;
   maxLength?: number;
   describedBy?: string;
+  /**
+   * A control rendered inside the field's trailing edge — a reveal toggle, a
+   * clear button. The input reserves room for it, so it never sits on top of
+   * the value. Decorative content does not belong here: anything in this slot
+   * is inside the field's hit area and must carry its own accessible name.
+   */
+  trailing?: ReactNode;
   onChange?: (value: string) => void;
 };
 
@@ -33,11 +40,12 @@ export type TextInputProps = {
 export default function TextInput({
   name, id, type = "text", value, defaultValue, placeholder, label,
   disabled, required, readOnly, invalid, inputMode, autoComplete, maxLength,
-  describedBy, onChange,
+  describedBy, trailing, onChange,
 }: TextInputProps) {
-  return (
+  const control = (
     <input
       className={styles.root}
+      data-trailing={trailing ? "" : undefined}
       id={id}
       name={name}
       type={type}
@@ -55,5 +63,14 @@ export default function TextInput({
       maxLength={maxLength}
       onChange={onChange ? event => onChange(event.target.value) : undefined}
     />
+  );
+
+  if (!trailing) return control;
+
+  return (
+    <span className={styles.shell}>
+      {control}
+      <span className={styles.trailing}>{trailing}</span>
+    </span>
   );
 }

@@ -14,6 +14,27 @@
   color: var(--sqx-text-muted);
 }
 
+.root[data-trailing] {
+  padding-inline-end: var(--sqx-control-pad-icon);
+}
+
+.shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.trailing {
+  position: absolute;
+  inset-inline-end: var(--sqx-space-2);
+  display: flex;
+  flex: none;
+  align-items: center;
+  color: var(--sqx-text-muted);
+}
+
 .root:hover:not(:disabled):not([readonly]):not(:focus-visible):not([aria-invalid]) {
   border-color: var(--sqx-border-strong);
 }
