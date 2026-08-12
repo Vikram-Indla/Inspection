@@ -8,8 +8,8 @@ export default function SingleVisitSkeleton({ label }: { label: string }) {
       <div className={styles.stack}>
         <Card as="div">
           <CardHeader
-            eyebrow={<Skeleton shape="line" width="tiny" size="sm" />}
             title={<Skeleton shape="line" width="narrow" size="lg" />}
+            description={<Skeleton shape="line" width="tiny" size="sm" />}
           />
           <CardBody gap="tight">
             <Skeleton shape="line" width="half" size="sm" />

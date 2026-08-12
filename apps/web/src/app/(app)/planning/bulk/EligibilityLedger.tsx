@@ -7,6 +7,7 @@
 // NOT classify "stale" — no governed staleness threshold exists in
 // engine_settings, and inventing one is prohibited.
 import { formatDateTime } from "@/lib/dates";
+import { Metric, Text } from "@/components/saqeel/type";
 import type { Locale } from "@/lib/i18n";
 
 export type LedgerStrings = {
@@ -41,29 +42,29 @@ export default function EligibilityLedger({
   return (
     <section className="metric-strip" aria-label={strings.heading}>
       <div className="sq-kpi">
-        <span className="kpi-label">{strings.denominator}</span>
-        <strong className="kpi-value numeric" aria-live="polite">{denominator}</strong>
+        <Text as="span" role="label" tone="muted">{strings.denominator}</Text>
+        <span aria-live="polite"><Metric>{denominator}</Metric></span>
       </div>
       <div className="sq-kpi">
-        <span className="kpi-label">{strings.eligible}</span>
+        <Text as="span" role="label" tone="muted">{strings.eligible}</Text>
         <div className="numeric" aria-live="polite">
           <span className="badge badge-compliant">✓ {eligible}</span>
         </div>
       </div>
       <div className="sq-kpi">
-        <span className="kpi-label">{strings.excluded}</span>
+        <Text as="span" role="label" tone="muted">{strings.excluded}</Text>
         <div className="numeric" aria-live="polite">
           <span className="badge badge-info">− {excluded}</span>
         </div>
       </div>
       {focusedCount != null && (
         <div className="sq-kpi" role="status" aria-live="polite">
-          <span className="kpi-label">{focusedLabel}</span>
+          <Text as="span" role="label" tone="muted">{focusedLabel}</Text>
           <div className="numeric"><span className="badge badge-info">{strings.focusContribution.replace("{n}", String(focusedCount))}</span></div>
         </div>
       )}
       <div className="sq-kpi">
-        <span className="kpi-label">{strings.freshness}</span>
+        <Text as="span" role="label" tone="muted">{strings.freshness}</Text>
         <div className="sq-freshness numeric">
           <bdi>{freshnessLabel}</bdi>
           {missingSync > 0 && (

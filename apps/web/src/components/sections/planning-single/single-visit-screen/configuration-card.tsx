@@ -24,8 +24,8 @@ export default function ConfigurationCard({
       <CardHeader
         level="h2"
         titleId="single-visit-config"
-        eyebrow={strings.stepLabels.configure}
         title={strings.configStep}
+        description={strings.stepLabels.configure}
       />
       <CardBody>
         <VisitConfiguration

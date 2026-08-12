@@ -15,7 +15,7 @@
 
 .code {
   color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-caption-size);
+  font-size: var(--sqx-text-body-size);
   font-variant-numeric: tabular-nums;
 }
 

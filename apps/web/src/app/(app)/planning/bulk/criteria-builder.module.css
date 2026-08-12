@@ -80,19 +80,19 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--sqx-space-2);
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
 }
 
 .count {
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
   font-variant-numeric: tabular-nums;
 }
 
 .hint {
   margin: 0;
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
   text-wrap: pretty;
 }

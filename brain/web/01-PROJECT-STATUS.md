@@ -1,6 +1,183 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-075 — exception board typography`
+`Last updated: 2026-08-12` · `Updated by: T-076 — planning family typography`
+
+## A hand-rolled copy inherits the bugs, never the fixes (2026-08-12)
+
+`DataTable.head` used `overline` where WEB-014 assigns `label`; T-059 fixed it
+in the primitive. T-076 then found `planning-visit-table` **hand-rolling its own
+`<table>`** with the same defect, and three `planning-bulk` components repeating
+it for KPI labels — the **fifth and sixth** instances.
+
+The primitive was fixed once. Every copy of it still carries the original bug,
+and will keep carrying it, because a copy is frozen at the moment it was made.
+**Before fixing a rendering defect, look for the primitive it should have been.**
+
+## Four dead trees are now known (2026-08-12)
+
+`DashboardView` (13), `FactoryList` (3), `operations.module.css` +
+`operations-details.tsx` (26), and `components/sections/planning/*` (30) — **72
+violations in code with zero importers.** They surface in every audit and cost
+real time to re-diagnose each pass. One deletion task clears all four.
+
+
+## A string is written for a slot; moving it breaks it (2026-08-12)
+
+T-079 fixed four defects T-078 introduced, and they were **one defect wearing four
+hats**: a string reused somewhere it was not written for.
+
+- `auditHeading` passed as *both* the history card's title and its fourth
+  section's heading — so the card printed its own name twice.
+- `noJourney` used as the empty state for **Location & provenance**.
+- Four sections each carrying their own immutability caveat, so one card said
+  "append-only / cannot be edited / only added to" four ways.
+- `"Assignment:"`, `"created by"`, `"review:"` — written for sentences
+  (`Assignment: Maha`) and dropped into `<dt>`, colons and all.
+
+**A migration moves strings into new slots, and a slot has a shape**: a label is
+capitalised, carries no colon and carries no data; a value carries the data; a
+caveat is stated once at the level that owns it. **Re-read the copy in its new
+position, not in the diff.**
+
+**`{n} visits under this plan` was a label containing a count** and it
+mispluralised to *"1 visits"*. Splitting it into `Status` and
+`Visits under this plan = 1` fixed the plural **by construction** — no plural
+rule needed, because the number moved to where numbers go.
+
+## Search for the helper before writing the fallback (2026-08-12)
+
+The same task rendered `published` and `periodic · physical` because the route
+used `t(\`enum.${v}\`, v.replace(/_/g, " "))`. `lib/text.ts` has exported
+`humaniseEnum(value, locale)` and `sentenceCase(value, locale)` all along, and
+`features/operations` has used
+`sentenceCase(t(\`enum.${v}\`, humaniseEnum(v)))` since T-042 — the local version
+was the same idea with the sentence-case missing.
+
+**And humanisation is not translation.** It makes an untranslated column
+*readable*, not localised: those 26 `enum.*` values now read *Follow up* and
+*Pending supervision* on the Arabic screen too. The app-wide `enum.*` gap is what
+would fix that, and it is still open.
+
+## Split a component by what it is, not by where the line count lands (2026-08-12)
+
+T-078's first cut of `visit-detail.tsx` was 239 lines, over the 200-line soft cap.
+The tempting fix is to slice off whatever gets it under. The excess turned out to
+be **ribbon track construction** — reading the data layer and the messages to
+build five view models, which is not composition at all. Moved to
+`features/visits/detail/ribbon.ts`, the component fell to 180 and nothing was
+deleted or duplicated.
+
+**A component over the cap is usually holding something that belongs in another
+layer.** The line count is the symptom; the misplaced responsibility is the
+defect. Ask what each block *is* before asking which block to cut.
+
+## Deferring a rule violation is legitimate when the fix would be done twice (2026-08-12)
+
+T-076 left `/visits/[id]`'s route file at 443 lines against a 40-line cap, and
+said so plainly rather than letting it pass. Reaching the cap then would have
+meant extracting ~240 lines of legacy JSX into components that T-078 rewrites on
+SAQEEL — the same work twice, with a real chance of a silent transcription error
+in between. T-078 did it once: **546 → 43**.
+
+**State a deferred violation, name what unblocks it, and land it in the slice
+that was always going to touch that code.** A quiet miss and a recorded deferral
+look identical in the diff and are opposite in kind.
+
+## Ordering can be the defect (2026-08-12)
+
+The visit detail screen put its management actions — return, republish, reassign,
+reschedule, cancel — in an `<aside>` **after five history timelines**, roughly
+2,500px below the fold, while the lifecycle ribbon's *"Allowed from here"* line
+sat at the top telling the reader what they were permitted to do. Nothing was
+missing and nothing was mislabelled; the sequence was wrong.
+
+**Audit the order of a screen against the reader's task, not just its contents.**
+The fix moved one node and needed no new data, no new copy and no new component.
+
+
+## Counting a prefix is not counting coverage (2026-08-12)
+
+T-076 sized `/visits/[id]`'s i18n work by running `grep -c "'visit\."` over the
+migrations, got 93, and wrote into the record and the tracker that slice 2 would
+be *"a port of existing reviewed Arabic, not re-authoring"*. That was approved on
+those terms. Checking `used ∩ seeded` **per key** before starting T-077:
+
+```
+139 keys used by the route · 21 seeded with Arabic · 3 inline · 115 with none
+```
+
+The 92 seeded `visit.*` keys belong to *other* visit surfaces — the board, the
+spine, the ledger. Not one of `visit.ribbon.heading`,
+`visit.detail.configuration`, `visit.att.heading` or `visit.actions.returnBtn` was
+among them. The slice was not a port; it was the largest Arabic authoring job in
+this programme.
+
+**A prefix count answers "how many rows mention this", never "is my screen
+covered".** Intersect the keys the code actually calls with the keys that exist.
+And when an estimate that was approved turns out wrong, say so and re-agree the
+scope before spending the effort — the number changed what the work *was*.
+
+## Reviewed copy is not automatically clean copy (2026-08-12)
+
+Nine engineering identifiers were shipping to users on that route in both
+locales — `FLD-VIS-001`, `set_operational_state` and `(M8)` in English;
+`PLN-REQ-011`, `M02-006`, `M02-006/008`, `M01-050` in the **seeded, reviewed**
+Arabic. That is exactly the defect
+`20260731120000_simple_english_terminology_redo_ar_strings.sql` exists to fix —
+its own notes read *"raw '(RLS)' was directly user-visible"* — on rows that pass
+never reached. **A `status: draft` review stamp is not a guarantee about content.**
+
+## A typed namespace converts a silent-fallback class into a build failure (2026-08-12)
+
+All 144 `V.*` references type-checked on the first run after the rewrite. That is
+the property `t(key, "English")` can never have, and it is *why* 115 strings on
+this route had no Arabic while nothing ever failed: the fallback is the feature.
+Once the namespace is typed, a renamed or dropped key is a compile error.
+
+This is the third route where moving copy into a resource is what made the gap
+countable (WEB-013 §8) — after `/planning/immediate` and `/operations/live`.
+
+
+## A screen that disagrees with itself is telling you where the bug is (2026-08-12)
+
+T-076 found `/visits/[id]` rendering **every** timestamp in UTC — three hours
+early on a Saudi ministry record. Twelve `toISOString().slice()` sites: the visit
+window, submission versions, plan dates, and four event streams.
+
+**The proof was already in the file.** `cutoffDisplay` used `Intl.DateTimeFormat`
+with `timeZone: "Asia/Riyadh"` — one correct timestamp among twelve wrong ones, in
+the same component, while `formatDateTime()` had been sitting in `lib/dates.ts`
+the whole time. **When one instance of something is right and the rest are wrong,
+the right one is the specification.** A thirteenth site was the `riyadhToday()`
+defect this document already records, bounding the repackage options by the UTC
+day so a package version could be judged out of its window three hours early.
+
+**Verify a date fix in the rendered DOM, not the diff.** The check that settled it
+was "zero `YYYY-MM-DD HH:MM` matches in the whole document" — a formatter that
+missed a call site would still have compiled and still have passed the gate.
+
+## `as unknown as` hides nullability, and nullability is a crash (2026-08-12)
+
+The same route carried eight casts. Moving its reads onto `readRows`/`readSingle`
+with a `Shape<T>` made the compiler report what they had suppressed: `factories`
+and `package_versions.packages` are **nullable**, and both were dereferenced
+unconditionally. A visit whose factory RLS hides would have thrown a runtime
+`TypeError` inside a Server Component — a blank error page, not a degraded read.
+
+T-042's rule was "every `as` in a data layer is worth re-deriving". The sharper
+version: **a cast does not silence a type error, it defers it to a user.**
+
+## Check what an assertion protects before generalising it (2026-08-12)
+
+Re-pointing `cd-027`'s "no raw provider text" check, the obvious move was to widen
+it from `page.tsx` to the whole feature source and match `/\.error\.message/`. It
+failed immediately — `queries.ts` logs provider messages to the **server console**
+on purpose, which is the narrowing boundary reporting *why* a read failed. The
+rule was never "the string must not appear"; it is "none of it reaches the reader".
+The broad check stayed on the rendered surface and only `vErr`/`attErr` widened.
+
+**A generalised assertion that fails on correct code was the wrong generalisation.**
+
 
 ## A size-only audit misses an inverted hierarchy (2026-08-12)
 

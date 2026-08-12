@@ -14,7 +14,7 @@
 
 .label {
   color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-caption-size);
+  font-size: var(--sqx-text-body-size);
 }
 
 .value {
@@ -25,5 +25,5 @@
 
 .note {
   color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-caption-size);
+  font-size: var(--sqx-text-body-size);
 }

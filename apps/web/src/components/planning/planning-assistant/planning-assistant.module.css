@@ -16,9 +16,8 @@
   align-items: center;
   gap: var(--sqx-space-2);
   margin: 0;
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
+  font: var(--sqx-text-heading);
+  letter-spacing: var(--sqx-text-heading-tracking);
   color: var(--sqx-accent-ai);
 }
 
@@ -27,12 +26,12 @@
   padding-inline: var(--sqx-space-2);
   border-radius: var(--sqx-radius-control);
   background: var(--sqx-surface-sunken);
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-secondary);
 }
 
 .advisory {
   margin-inline-start: auto;
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
 }

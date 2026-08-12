@@ -43,9 +43,8 @@ export default function TargetConfirmation({
           <CardHeader
             level="h2"
             titleId="single-visit-profile"
-            eyebrow={strings.selectedProfile}
             title={target.name}
-            description={`${strings.sourceLabel}: ${licence.sourceSystem ?? strings.absent} · ${strings.freshnessLabel}: ${licenceFreshness}`}
+            description={`${strings.selectedProfile} · ${strings.sourceLabel}: ${licence.sourceSystem ?? strings.absent} · ${strings.freshnessLabel}: ${licenceFreshness}`}
             trailing={
               <StatusPill tone="neutral">
                 {strings.riskContext}: {target.riskBand ?? strings.riskUnknown}
@@ -78,9 +77,10 @@ export default function TargetConfirmation({
           <CardHeader
             level="h2"
             titleId="single-visit-licence"
-            eyebrow={strings.stepLabels.licence}
             title={strings.licenseStep}
-            description={legacyFactory.license_number ? strings.licenseSelect : undefined}
+            description={legacyFactory.license_number
+              ? `${strings.stepLabels.licence} · ${strings.licenseSelect}`
+              : strings.stepLabels.licence}
           />
           <CardBody>
             {legacyFactory.license_number ? (
@@ -105,9 +105,8 @@ export default function TargetConfirmation({
         <CardHeader
           level="h2"
           titleId="single-visit-location"
-          eyebrow={strings.stepLabels.location}
           title={strings.locationStep}
-          description={`${strings.locationAuthority}: ${target.masterSource ?? strings.absent} · ${strings.locationReadOnly}`}
+          description={`${strings.stepLabels.location} · ${strings.locationAuthority}: ${target.masterSource ?? strings.absent} · ${strings.locationReadOnly}`}
         />
         <CardBody gap="tight">
           {hasOfficial ? null : <PlanningNotice tone="warning">{strings.noOfficialPin}</PlanningNotice>}

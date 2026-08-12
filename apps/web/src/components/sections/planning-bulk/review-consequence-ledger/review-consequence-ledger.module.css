@@ -21,9 +21,8 @@
 
 .groupHead {
   margin: 0;
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
   color: var(--sqx-text-muted);
 }
 
@@ -70,6 +69,6 @@
 
 .detail {
   color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-caption-size);
+  font-size: var(--sqx-text-body-size);
   text-wrap: pretty;
 }

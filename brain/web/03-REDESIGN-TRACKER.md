@@ -10,6 +10,179 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-076 · planning family — typography, visible pass
+`status: partial — visible defects fixed on all three routes; primitive migration outstanding` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014` · `est: 1.5h`
+`record:` [2026-08-12-T-076-planning-family-typography](sessions/2026-08/2026-08-12-T-076-planning-family-typography.md)
+
+Owner asked for all three planning routes. **Every rendered defect is fixed;
+~98 architectural violations remain.**
+
+**The most-repeated defect in this programme appeared twice more.**
+`planning-visit-table` hand-rolls its own `<table>` with `<th>` on `overline`
+(11px) — it does **not** use the shared `DataTable`, whose identical defect was
+fixed in T-059. Three `planning-bulk` components did the same for KPI labels.
+That is the **fifth and sixth** instance. **A hand-rolled copy inherits the
+original's bugs and none of its fixes** — same conclusion T-071 drew about the
+live map.
+
+**The `81.5` defect class returned on `/planning/bulk`** — two KPI numbers on
+one screen at **32px and 28px**. The 32px came from `.kpi-value`, a legacy
+global in the **frozen** `saqeel-components.css`, still shared with admin
+screens. The frozen sheet stays; `EligibilityLedger` stopped using it and now
+composes `Text`/`Metric`.
+
+**Four of the seven eyebrow swaps collided with an existing `description`** —
+step label vs source/freshness provenance, both supporting context, so they were
+**merged with the ` · ` separator already in use**. No new i18n keys. The naive
+swap produced duplicate JSX attributes and typecheck caught it.
+
+**A structural regex matched zero across all 7 sites**; a line-based swap worked
+first time. **A silent zero-match is the same failure mode as T-058's gate rule
+that matched 0 of 24 — stop tuning, change approach.**
+
+```
+/planning        6 → 5 sizes, 11px gone
+/planning/bulk   8 → 6 sizes, 32px gone, both KPIs at 28px
+violations     172 → 128  (30 of which are dead code)
+```
+
+**Fourth dead tree confirmed:** `components/sections/planning/*` — 7 components,
+**30 violations**, zero importers.
+
+**Owed:** `/planning/single`'s after-state was never re-rendered (pane would not
+complete it; SSR healthy, session alive), plus axe, 320px, Arabic/RTL.
+
+
+### T-079 · `/visits/[id]` — label shape: humanised enums, history card repaired
+`status: done` · `rules: WEB-000 §9, WEB-008 §2, WEB-011, WEB-013` · `est: 40m`
+`record:` [2026-08-12-T-079-visit-detail-label-shape](sessions/2026-08/2026-08-12-T-079-visit-detail-label-shape.md)
+
+Owner-reported on T-078's output. **The helper already existed and I had written a
+worse copy of it** — `lib/text.ts` exports `humaniseEnum`/`sentenceCase` and
+`operations` has used `sentenceCase(t(…, humaniseEnum(v)))` since T-042, while
+this route used a bare `replace(/_/g, " ")`, which is exactly why `published` and
+`periodic · physical` rendered lowercase. **Search for the helper before writing
+the fallback.**
+
+**Four defects T-078 introduced, all one shape — a string used in a slot it was
+not written for:** the History card printed its own title twice (`auditHeading`
+as both card title and section heading); `noJourney` was the empty state for
+**Location**; four sections each carried their own immutability caveat so the card
+said it four ways; and prose fragments (`"Assignment:"`, `"created by"`,
+`"review:"`) were reused as `<dt>` labels, colons and all.
+
+**`{n} visits under this plan` was a label containing a count and it
+mispluralised** — "1 visits". Split into `Status` and `Visits under this plan = 1`,
+which fixes the plural by construction and puts the number where values go.
+12 lowercase standalone values re-cased; **Arabic unaffected (no case)**.
+
+**Scope stated honestly:** one site, not a sweep — `replace(/_/g, " ")` remains in
+`visits/calendar`, `visits/map`, `operations/Monitoring` and a dozen `admin/*`
+screens, **all unmigrated**. **5 new Arabic strings need review.**
+
+### T-078 · `/visits/[id]` — read surface on SAQEEL (slice 3a of 3)
+`status: partial (the three write components are slice 3b)` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-006, WEB-008, WEB-009, WEB-011` · `est: 2h`
+`record:` [2026-08-12-T-078-visit-detail-screen](sessions/2026-08/2026-08-12-T-078-visit-detail-screen.md)
+
+**Route file 439 → 43 — the cap is met.** T-076 deliberately deferred it rather
+than extract legacy JSX twice; this is what that deferral was for. Read surface:
+**187 `className` uses → 6**, all CSS-module refs, zero legacy classes.
+
+**Five history panels → one card with four anchored sections** (owner ruling).
+The route's own comment recorded that the audit trigger *"already records every
+status transition"*, so a return appeared in **both** the lifecycle stream and the
+audit log, worded differently. Each stream keeps its heading, empty sentence and
+anchor (`#lifecycle` `#location` `#journey` `#audit`) so the ribbon links and the
+spec still resolve. Checklists is not an event stream and stayed its own card.
+
+**The actions moved above the history — the ordering *was* the defect.**
+`ActionBar` sat after five timelines, ~2,500px down, while the ribbon's "Allowed
+from here" told the reader what they could do. Verified in the DOM: ribbon →
+actions → configuration → plan → checklists → notes → attachments → history.
+
+**Five glyphs gone, CD-027 intact.** `▣ ● ⬡ ◇ ◆` were `aria-hidden` decoration
+carrying nothing the label did not. The rebuilt ribbon keeps the tablist named
+*state domains*, five tabs, a visible tabpanel, roving tabindex with
+Arrow/Home/End and the 412px reflow; state is now a `StatusPill` — text plus
+shape rather than a glyph.
+
+**A 239-line component was a layering smell, not a length problem.** The excess
+was ribbon **track construction** — view-model work, not composition — so it moved
+to `features/visits/detail/ribbon.ts` and the component fell to 180 with nothing
+deleted. **Split by what the code is, not by where the line count lands.**
+
+`DualStateRibbon` and `FocusScroll` are `@retiring` at **zero importers** with
+ledger rows. **Slice 3b:** `ActionBar` (247), `Attachments` (100), `NotesEditor`
+(53) are still legacy — the write surface was kept out of this diff so no form
+contract moves alongside a layout change.
+
+### T-077 · `/visits/[id]` — bilingual resources, 139 keys (slice 2 of 3)
+`status: partial (the visible screen is slice 3)` · `rules: WEB-000, WEB-006, WEB-008, WEB-011, WEB-013` · `est: 1.5h`
+`record:` [2026-08-12-T-077-visit-detail-resources](sessions/2026-08/2026-08-12-T-077-visit-detail-resources.md)
+
+**The slice was scoped wrong and it was corrected before any work.** T-076's
+record and this board both promised "port the ~98 seeded `visit.*` Arabic rows —
+moved, not re-authored". Cross-referencing key by key: **139 keys used, 21 seeded
+with Arabic, 3 inline, 115 with no Arabic anywhere.** The 92 seeded keys belong to
+*other* visit surfaces — `spine`, `ledger`, `elig`, `outcome`, `list`, `map` — the
+board and its siblings, not the detail route.
+
+**Counting a prefix is not counting coverage.** `grep -c "'visit\."` returns a
+number that looks like an answer and is not one; the check that mattered was
+`used ∩ seeded`, per key. Owner ruled: author the 115, flagged for review.
+
+**Nine engineering identifiers were shipping to users in both locales** —
+`FLD-VIS-001`, `set_operational_state`, `(M8)` in English; `PLN-REQ-011`,
+`M02-006`, `M01-050` and more in the **seeded, reviewed** Arabic. Exactly what the
+`simple_english_terminology_redo` migration existed to fix, on rows it never
+reached. **Reviewed copy is not automatically clean copy.**
+
+**Typed resources turned the whole bug class into a compile error:** 144 `V.*`
+references type-checked on the first run, so a renamed key is now a build failure
+rather than a silent English fallback — which is precisely why 115 strings had
+gone missing with nothing ever failing. 142 `t()` + 3 `tr()` → **0**; the last
+`locale === "ar"` was not copy but a formatter duplicating `derived.cutoffDisplay`.
+
+**115 new Arabic strings need native review** — the largest such debt raised by
+one task here. **Parked:** 26 `enum.*` values still render English on the Arabic
+screen (app-wide `ui_strings` vocabulary, not fixable inside one route).
+
+### T-076 · `/visits/[id]` — foundation: Riyadh timestamps, narrowed reads, skeleton (slice 1 of 3)
+`status: partial (i18n is slice 2, the visible screen is slice 3)` · `rules: WEB-000, WEB-001, WEB-002, WEB-005, WEB-006, WEB-008, WEB-011` · `est: 2h`
+`record:` [2026-08-12-T-076-visit-detail-foundation](sessions/2026-08/2026-08-12-T-076-visit-detail-foundation.md)
+
+**Every timestamp on a ministry record was rendering in UTC — three hours early.**
+Twelve `toISOString().slice()` sites printed the visit window, submissions, plan
+dates, lifecycle, location, journey and audit times. **The screen already
+disagreed with itself:** `cutoffDisplay` used `Intl.DateTimeFormat` with
+`timeZone: "Asia/Riyadh"` — one correct stamp among twelve wrong ones in the same
+component, while `formatDateTime()` had existed in `lib/dates.ts` throughout. A
+thirteenth site was the `riyadhToday()` defect this board already records, bounding
+the repackage options by the UTC day. The rendered DOM now holds **zero**
+`YYYY-MM-DD HH:MM` stamps and every one carries `(Riyadh)`.
+
+**The 8 `as unknown as` casts were not cosmetic — three were lies.** Moving the
+reads onto `readRows`/`readSingle` + `Shape<T>` made the compiler report what the
+casts suppressed: `factories` and `package_versions.packages` are **nullable** and
+both were dereferenced unconditionally, so a visit whose factory RLS hides would
+have thrown inside a Server Component. 9 inline reads + 2 RPCs → **0** in the route.
+
+**A negative assertion had to get narrower, not wider.** Generalising "no raw
+provider text" to `/\.error\.message/` across the feature modules failed at once —
+`queries.ts` logs provider messages to the **server console** deliberately, which
+is the narrowing boundary reporting why a read failed. **Check what an assertion
+protects before generalising it.**
+
+**The route file is 443 lines, not ≤40, deliberately** — the cap needs ~240 lines
+of legacy JSX extracted into components that slice 3 rewrites, so it moves there
+rather than being transcribed twice. Stated, not quietly missed.
+
+**Slice 2:** port the ~98 seeded `visit.*` Arabic rows out of four `ui_strings`
+migrations into locale files — existing reviewed Arabic, moved, not re-authored.
+**Slice 3:** ≤40-line route, SAQEEL throughout, the ribbon's five glyphs, actions
+promoted above the history, five history panels → one card with four anchored
+sections (owner ruling).
+
 ### T-075 · `/operations/exceptions` — typography
 `status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014` · `est: 30m`
 `record:` [2026-08-12-T-075-exception-board-typography](sessions/2026-08/2026-08-12-T-075-exception-board-typography.md)

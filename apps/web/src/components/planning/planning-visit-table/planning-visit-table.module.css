@@ -31,9 +31,8 @@
   padding: var(--sqx-inset-cell);
   background: var(--sqx-surface-header);
   border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-strong);
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
   color: var(--sqx-text-muted);
   text-align: start;
   white-space: nowrap;

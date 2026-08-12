@@ -1,7 +1,7 @@
 .hint {
   margin: 0;
   color: var(--sqx-text-muted);
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
 }
 
 .list {

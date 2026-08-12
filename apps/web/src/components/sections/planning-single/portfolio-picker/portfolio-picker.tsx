@@ -29,8 +29,8 @@ export default function PortfolioPicker({
       <CardHeader
         level="h2"
         titleId="single-visit-portfolio"
-        eyebrow={strings.stepLabels.licence}
         title={strings.portfolioStep}
+        description={strings.stepLabels.licence}
       />
       <CardBody>
         {handoff ? <PlanningNotice tone="info">{strings.prefilledHandoff}</PlanningNotice> : null}
@@ -38,9 +38,13 @@ export default function PortfolioPicker({
           <Card as="article" key={portfolio.id}>
             <CardHeader
               level="h3"
-              eyebrow={<>{strings.crIdentity} <bdi>{portfolio.crNumber}</bdi></>}
               title={portfolio.legalNameEn ?? portfolio.legalName ?? portfolio.crNumber}
-              description={`${strings.sourceLabel}: ${portfolio.sourceSystem ?? strings.absent} · ${strings.freshnessLabel}: ${freshness(portfolio.sourceSyncedAt)}`}
+              description={
+                <>
+                  {strings.crIdentity} <bdi>{portfolio.crNumber}</bdi>
+                  {` · ${strings.sourceLabel}: ${portfolio.sourceSystem ?? strings.absent} · ${strings.freshnessLabel}: ${freshness(portfolio.sourceSyncedAt)}`}
+                </>
+              }
               trailing={portfolio.status
                 ? <StatusPill tone={registryStatusTone(portfolio.status)}>{titleCase(portfolio.status)}</StatusPill>
                 : undefined}

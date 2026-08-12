@@ -6,13 +6,13 @@
 
 .note {
   color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-caption-size);
+  font-size: var(--sqx-text-body-size);
   text-wrap: pretty;
 }
 
 .blocked {
   color: var(--sqx-text-danger);
-  font-size: var(--sqx-text-caption-size);
+  font-size: var(--sqx-text-body-size);
   text-wrap: pretty;
 }
 
