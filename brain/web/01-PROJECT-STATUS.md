@@ -1,6 +1,59 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-077 — delete the dead planning tree`
+`Last updated: 2026-08-12` · `Updated by: T-078 — repair the broken responsive spec`
+
+## Check that a spec's files exist before re-pointing anything (2026-08-12)
+
+T-078 set out to re-point assertions and found **two tests already throwing**.
+`responsive-dashboard-operations.spec.ts` reads two files the live-ops rebuild
+deleted; `read()` is a bare `readFileSync`, so the tests die before asserting.
+The rebuild that wrote the lesson *"a spec that names a file rots when the
+behaviour moves"* missed one of its own call sites.
+
+**First step of any spec work: existence-check every `read()` path.** It is one
+script and it tells you what is already broken versus what you are about to
+break.
+
+## Cross-reference a re-pointed claim; do not duplicate it (2026-08-12)
+
+The live route's responsive and direction claims had already been re-pointed
+into `web-admin-m3-operations.spec.ts`. Copying them into a second spec would
+make **both** weaker — either can drift while the other still passes.
+
+The rule sits beside T-063's *re-point the assertion, do not delete it*:
+**re-point it once, and cross-reference from anywhere else that used to assert
+it.** De-duplicating a claim that is asserted elsewhere is not dropping it.
+
+
+## Dress the native control; do not replace it (2026-08-12)
+
+T-081 built the `FileUpload` primitive one task after T-080 found that `Select`
+cannot participate in a form. The same trap was waiting: a JavaScript picker with
+a styled button would look right and **submit nothing**.
+
+The shape that works is **the native input, visually hidden but never replaced,
+inside a `<label htmlFor>`**. That one decision buys click-to-browse, keyboard
+operation and form participation for free — no `ref.click()`, no key handler, no
+hidden mirror field. The zone is clothing; the input is the control.
+
+**And the ring follows the control.** A 1px clipped input still takes focus, so
+`:focus-within` draws the ring on the zone — otherwise a keyboard user is focused
+on something invisible.
+
+**WEB-012 and a file drop.** `inputRef.current.files = dataTransfer.files` is a
+property write on a rendered node. It is the *library-handoff* exception, not a
+breach: there is no React API for populating a file input, everything the reader
+sees stays state, and without it a dropped file displays and then submits nothing.
+**The rule bans DOM writes that stand in for render.**
+
+## A form is a column of fields, not a block (2026-08-12)
+
+*Save notes* sat flush against its textarea with **zero** gap. The reflex is a
+margin on the button; the cause is that `<form>` is a block element and nothing
+had given it a layout. One `flex-direction: column` and one gap token fixed it for
+every field in that form, and the same class fixed the upload form beside it.
+
+**When two adjacent controls touch, look at their container before their margins.**
 
 ## Dead code is rarely as dead as the note says (2026-08-12)
 

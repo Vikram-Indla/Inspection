@@ -10,6 +10,70 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-078 · repair the already-broken responsive spec
+`status: partial — one spec repaired; the deletion-enabling re-pointing is not started` · `rules: WEB-000, WEB-006 §4, WEB-008` · `est: 45m`
+`record:` [2026-08-12-T-078-repair-the-broken-responsive-spec](sessions/2026-08/2026-08-12-T-078-repair-the-broken-responsive-spec.md)
+
+**The suite is already broken, and not by this programme's deletions.**
+`responsive-dashboard-operations.spec.ts` reads `live/live.module.css` and
+`live/LiveOps.tsx`, both deleted by T-070/T-071. Its `read()` is a bare
+`readFileSync`, so **two tests throw before a single assertion runs**, and
+`git log` shows the spec was never touched by that rebuild — **the same work
+that produced the "a spec that names a file rots" lesson missed one of its own
+call sites.**
+
+**The live claims were already re-pointed, in a different spec.**
+`web-admin-m3-operations.spec.ts:302-312` owns them, including the ruling that
+the old `[dir="rtl"]` override is **not** carried across because WEB-002 §6
+forbids one. So the repair here was to **cross-reference, not duplicate** —
+a claim asserted in two specs makes both weaker, because either can drift while
+the other still passes. `providerFailed` and the locale contract *did* need
+re-pointing (claims about the component, not the stylesheet) and now read
+`operations-live.tsx`.
+
+**All 13 assertions verified by script against the real files** — T-070's rule
+that a re-pointed assertion is checked, never eyeballed.
+
+**The dead dashboard tree is bigger than recorded:** `RevampStrategicView.tsx`
+is imported **only** by `DashboardView.tsx`, which has zero importers — a second
+closed dead pair after T-077's `assistant-view.ts` cycle.
+
+**Not started:** the deletion-enabling re-pointing. **7 spec files** hold
+governance claims against the doomed files — `"Compliance in approved
+inspections"`, `href="/reports"`, `"Open records"` — each needing its equivalent
+located on the shipped surface first, and **some may no longer be the right
+claim**. It wants a suite run to confirm, which needs a production build.
+
+
+### T-081 · `FileUpload` — a drag-and-drop upload primitive that still submits
+`status: done (a real drop was not exercised)` · `rules: WEB-000, WEB-002 §2, WEB-003, WEB-009, WEB-011, WEB-012, WEB-013` · `est: 45m`
+`record:` [2026-08-12-T-081-file-upload-primitive](sessions/2026-08/2026-08-12-T-081-file-upload-primitive.md)
+
+Owner-reported: the file field was still a raw `Choose File / No file chosen`, and
+*Save notes* sat flush against its textarea.
+
+**The native input is the control; the zone is only its clothing.** T-080 recorded
+that `Select` cannot participate in a form because it has no `name` — building an
+upload the same way would repeat that defect on a **write path**. So
+`<input type="file">` is kept, visually hidden but never replaced, and the drop
+zone is a `<label htmlFor>`: click-to-browse works **natively**, with no key
+handler and no `ref.click()`, and the keyboard works because focus lands on the
+real input.
+
+**A drop must hand its `FileList` to that input — the one imperative write.**
+`inputRef.current.files = dataTransfer.files` is WEB-012's sanctioned *library
+handoff*: there is no React way to populate a file input, and without it a dropped
+file would display and then submit nothing. **The rule bans DOM writes that
+substitute for render, not the handoff a browser API requires.**
+
+**The gap defect was structural, not a token.** `<form>` is a block, so the button
+sat flush with zero gap. A form is a **column of fields** — `.stackedForm` gives it
+`flex-direction: column` and one gap token, now 12 px, verified in the DOM.
+
+2 registry icons added (`upload`, `attachment`); 4 keys both locales, parity 147.
+**Owed:** a real drag-and-drop was never exercised — click-to-browse is proven
+structurally, not by opening a picker. **4 new Arabic strings need review.**
+
 ### T-077 · delete the dead planning tree (1 of 4 orphan trees)
 `status: done — the other 3 trees are blocked on spec work` · `rules: WEB-000, WEB-006 §4, WEB-008, WEB-011` · `est: 45m`
 `record:` [2026-08-12-T-077-delete-the-dead-planning-tree](sessions/2026-08/2026-08-12-T-077-delete-the-dead-planning-tree.md)
