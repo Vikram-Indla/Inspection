@@ -1,6 +1,97 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-078 — repair the broken responsive spec`
+`Last updated: 2026-08-12` · `Updated by: T-083 — design-system retired-role floor`
+
+## A shared primitive's debt is every route's debt (2026-08-12)
+
+Until T-083, **no route in this application could reach zero typography
+violations**, because each inherited a 6–9 violation floor from eight shared
+`components/saqeel/*` stylesheets it does not control. `/factories` had migrated
+its own code to **zero** — `components/sections/factories/` scans clean across 35
+component directories — and still measured 7, none of them its own.
+
+That makes "is this route done?" unanswerable, and it is the same argument
+T-058/T-059/T-072 reached three times from the other direction: **fix a shared
+primitive centrally, because a per-screen fix multiplies the same edit by the
+number of consumers and still leaves the primitive wrong.** 12 declarations
+cleared the floor from every route at once.
+
+**Corollary for scoping a route audit:** always split the count into *own* /
+*design-system* / *other-shared* before deciding a route is unmigrated. `/factories`
+and `/planning` looked 7 and 52; the honest reading was 0 and 45.
+
+## A retired-role rename is only a no-op if `lang` sits on `:root` (2026-08-12)
+
+`--sqx-text-caption-*` are declared as `var(--sqx-text-body-*)`, so swapping
+`caption → body` looks unconditionally safe. It is not. `:lang(ar)` overrides
+`--sqx-text-body-line` to `1.8`, and **custom properties substitute at
+computed-value time on the element the declaration applies to**. Had `lang="ar"`
+sat on `<body>` while the aliases were declared on `:root`, `--sqx-text-caption-line`
+would have resolved `1.6` against body's `1.8`, and the rename would have
+**silently lengthened every affected line in Arabic** — no gate, no typecheck, no
+English render would have shown it.
+
+`layout.tsx:72` puts `lang` on `<html>`, which *is* `:root`, so both declarations
+land on the same element and resolve together. Verified by measurement, not by
+reading: with `locale=ar`, `--sqx-text-caption-line` reads `1.8` and
+`caption === body` compares `true`.
+
+**The general rule: an alias is only transparent while nothing re-declares what
+it points at.** Before treating any `--sqx-text-*` alias swap as cosmetic, check
+every block that redefines the target token — today that is `:lang(ar)`, and it
+covers seven of the nine roles.
+
+## `align-items` on a column is a cross-axis rule, and it sizes every child (2026-08-12)
+
+T-081 added `align-items: flex-start` to two `flex-direction: column` forms so the
+submit button would stop stretching. It did that — and it also collapsed **every
+field above the button** to intrinsic width. T-082 measured the result on the live
+route: a textarea at **178px** (the `cols=20` UA default) inside a 444px form, and
+a drop zone at **229px**, its longest text line.
+
+The field's own `inline-size: 100%` cannot win this: it resolves against a
+shrink-to-fit parent.
+
+**Give the one child that needs an exception its own row; do not align the
+container.** The forms are `stretch` again and the button sits in a `.formActions`
+row, keeping its natural width because it is `inline-flex`.
+
+## `minmax(18rem, 1fr)` is a 320px reflow failure waiting to happen (2026-08-12)
+
+`repeat(auto-fit, minmax(18rem, 1fr))` reads as responsive and is not: the 288px
+track floor is a hard minimum, so in any container narrower than that the item
+overflows its own grid. T-082 hit it at 183px and only a measured `offsetWidth`
+comparison showed it — it is invisible in source, to the type checker and to every
+gate.
+
+**Write `minmax(min(18rem, 100%), 1fr)`.** Same collapse behaviour, never
+overflows.
+
+And note what `auto-fit` buys: with one child the surplus track collapses to 0 and
+that child spans the row. **An empty second cell is what makes a full-width empty
+state and a two-column filled state the same declaration** — no media query, no
+conditional class.
+
+## An object URL can be disposed by the element that consumed it (2026-08-12)
+
+The reflex for `URL.createObjectURL` is an effect with a cleanup. It is not
+needed. Create the URL in the change handler, revoke it in the image's own
+`onLoad` once the bitmap has decoded, and key the `<img>` by the URL so a new file
+mounts a new element. Verified live: `src` scheme `blob`, image still painted, and
+a `fetch` of that URL fails.
+
+WEB-004 §3's disposal case never had to be opened. **A disposal a DOM event can
+express is not a reason to add an effect.**
+
+## Check what a primitive already promises before translating a string for it (2026-08-12)
+
+`notes.saving` and `att.uploading` existed in both locales, were mapped in
+`strings.ts` and declared on two prop types — and rendered nowhere. `Button`'s own
+TSDoc says `busy` keeps the label *"so the button does not resize or change
+wording mid-action"*. Three layers of plumbing for copy the design system had
+already decided not to show.
+
+Both keys deleted. The primitive was right.
 
 ## Check that a spec's files exist before re-pointing anything (2026-08-12)
 

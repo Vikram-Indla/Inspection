@@ -10,6 +10,181 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-084 · `/planning/bulk/review` — typography, and it has never been swept
+`status: todo` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014` · `est: 1.5h`
+
+**32 violations, 31 of them its own**, across ten `review-*` modules —
+`review-outcome` (6), `review-assignment-split` (5), `review-consequence-ledger`
+(4), `review-eligibility` (4), `review-context` (3), `review-readiness` (3),
+`review-publish-form` (2), `review-targets` (2), `review-standby` (1). **It
+appears in no session record.** T-076 swept the planning family and this route
+was not in it.
+
+**The sizes are already right; the layer is wrong.** Measured across the whole
+planning tree: zero literal `font-size`, zero retired roles, zero literal font
+families. Every violation is `font: var(--sqx-text-*)` + its `letter-spacing`
+partner sitting in feature CSS — WEB-014 §4.1's ban. The fix is composition onto
+`Text`/`Heading`, **not a value change**, and §11.1 applies: carry the sizes
+across unchanged.
+
+### T-083 · design-system retired-role floor
+`status: done` · `rules: WEB-000, WEB-002 §2, WEB-006, WEB-008, WEB-011, WEB-014 §2.1, §4.1` · `est: 45m`
+`record:` [2026-08-12-T-083-design-system-retired-role-floor](sessions/2026-08/2026-08-12-T-083-design-system-retired-role-floor.md)
+
+**Every route in the application inherited a 6–9 violation floor from shared
+code it does not control**, which made "is this route clean?" unanswerable. 12
+declarations across 8 `components/saqeel/*` stylesheets, every one a single token
+rename — `caption → body`, `code → mono`.
+
+**The fix had to live inside the design system, and that is not a contradiction.**
+WEB-014 §4.1 makes `components/saqeel/` the only legal authoring zone for
+typography, so a retired role referenced there cannot be repaired from anywhere
+else. Owner approved on an explicit split: **`app/saqeel.css` and
+`components/saqeel/type/` untouched** — no token added, removed, renamed or
+revalued — component stylesheets changed. **Do not read "design system
+untouched" as covering `saqeel/*/*.module.css`.**
+
+**The Arabic case could have broken it and was checked rather than assumed.**
+`:lang(ar)` overrides `--sqx-text-body-line` to `1.8` while
+`--sqx-text-caption-line` is `var(--sqx-text-body-line)`; custom properties
+substitute at computed-value time, so had `lang="ar"` sat on `<body>` while the
+aliases were declared on `:root`, caption would have computed `1.6` against
+body's `1.8` and this rename would have **silently lengthened every affected line
+in Arabic**. `layout.tsx:72` puts `lang` on `<html>`, which *is* `:root`.
+Verified live in both locales.
+
+```
+gate            863 → 851 (delta exactly 12 — no concurrent work absorbed)
+/factories        7 → 1     /planning/visits/[id]   8 → 1
+/factories/[id]   7 → 1     /planning/immediate     8 → 2
+/planning        52 → 46    /planning/bulk/review  41 → 32
+```
+
+The residual 1 on every otherwise-clean route is `NotificationBell.tsx:270`.
+
+**Owed:** e2e (needs a production build).
+
+### T-082 · `/visits/[id]` — the write surface stops collapsing to intrinsic width
+`status: done (Arabic/RTL render owed — the locale toggle would not switch)` · `rules: WEB-000, WEB-002, WEB-003, WEB-004, WEB-009, WEB-011, WEB-012, WEB-013, WEB-014` · `est: 1h`
+`record:` [2026-08-12-T-082-visit-detail-write-surface-layout](sessions/2026-08/2026-08-12-T-082-visit-detail-write-surface-layout.md)
+
+Owner-reported on T-081's output: the notes textarea is a sliver, the uploader is
+an orphan on its own line with a screen's width of dead space beside it, and a
+chosen file shows no preview.
+
+**One declaration caused both symptoms, and it was T-081's own fix.**
+`align-items: flex-start` on `.stackedForm`/`.uploadForm` sets the **cross** axis
+of a **column** flex container, so every field shrank to intrinsic width. Measured
+live: textarea **178px** (the `cols=20` UA default) inside a 444px form; drop zone
+**229px** (its longest text line). T-081 added it to stop the submit stretching —
+it fixed the button and broke every field above it. **A container-level alignment
+is not a way to size one child; give the child its own row.**
+
+**`repeat(auto-fit, minmax(min(18rem, 100%), 1fr))` needs the `min()`, and only
+measurement said so.** Without it the 288px track floor exceeded the container at
+280px and the zone overflowed its own grid — a 320px reflow failure invisible in
+source. The `min()` idiom keeps the collapse behaviour and never overflows.
+**auto-fit is what makes the empty state right:** with no file chosen the empty
+track collapses and the zone spans the full row; a chosen file takes column two.
+Zero media queries.
+
+**The blob preview needed no `useEffect` and leaks nothing.** The object URL is
+created in the change handler and revoked in the image's own `onLoad` once the
+bitmap is decoded, with the `<img>` keyed by the URL. WEB-004 §3's disposal case
+never had to be opened. Verified on the live route: `src` scheme `blob`, image
+still painted, and a `fetch` of that URL now fails.
+
+**Write-path integrity proven, not assumed:** after a scripted selection the native
+input still reported `files.length === 1`, so the server action's `FormData` read
+is untouched. No action signature, `name`, hidden identity field or guard moved.
+
+**Three statements of one permission fact became one.** The Notes hint, the
+`fileLabel` parenthetical and the empty state each said *planner or operations
+only*; `Attachments` now carries it once as the `CardHeader description` it had
+been missing while Notes had one. `noFileChosen` deleted — the zone already says
+what it said. `notes.saving`/`att.uploading` deleted: **`Button.busy` keeps its
+label by documented design, so both keys had been threaded through three layers to
+render nowhere.**
+
+```
+textarea   178px fixed → fills its form (288 at 320px, 513 capped by --sqx-prose-max)
+drop zone  229px orphan → full row when empty · 2 equal columns when chosen
+320px reflow  overflow → 0    att+notes keys 23 → 23 per locale at asserted parity
+```
+
+**Owner review round 2 — five follow-ups, and two of them found my own defects.**
+
+**The prose cap was mine and it was wrong for this field.** I had capped the notes
+form at `--sqx-prose-max` (68ch) for readability; the owner wants full width.
+Removed — the textarea now measures **1095px = its form = the card's content box**
+on the live route.
+
+**The `18rem` grid-track floor was off-pattern and I introduced it.** WEB-000 §7
+bans length literals outside `saqeel.css`, and a sweep of every migrated saqeel
+module shows rem literals appear in **media-query breakpoints only** — never as a
+size or a track. `repeat(auto-fit, minmax(min(18rem, 100%), 1fr))` became
+`grid-template-columns: minmax(0, 1fr)` plus a `@media (min-width: 48rem)` rule on
+`.fields[data-filled]`, matching `timeline` and `date-range-picker`. Identical
+geometry at all five widths, one literal, in the one place the codebase puts them.
+
+**`object-fit: cover` does not bound an image whose parent has no definite
+height.** The redesigned preview grew to **780×487** and dragged the drop zone to
+match, because `.well` was a flex item with `flex-basis: 0` inside a grid row sized
+by its own content — circular, so it resolved to the image's intrinsic height.
+`block-size` lost to `flex-basis`; `min-block-size: 0` did not help. **The fix is
+to take the image out of flow** (`position: absolute; inset: 0`), so it can never
+contribute to layout. Row is now a stable **145px** and the image fills its cell
+edge to edge at every width.
+
+**Focus is now a border colour, not a ring** — `outline: none` +
+`border-color: var(--sqx-border-focus)` on `TextInput`, `Textarea`, the
+`FileUpload` zone and this route's two native controls. **`Select` already did
+exactly this**, so the design system disagreed with itself; the code is now
+consistent and **WEB-009 §5 is the thing that needs amending — flagged, not
+silently broken.** `[aria-invalid]` was moved *above* `:focus-visible` so a focused
+invalid field still shows focus; previously outline and border were different
+properties and could not conflict. Measured: `rgba(255,255,255,.16)` →
+`rgb(180,154,216)`, border width unchanged, **size shift 0×0**, contrast **7.13:1**
+dark / **11.5:1** light, both far above 1.4.11's 3:1.
+
+**A chosen file can be discarded.** `IconButton dismiss` in the preview bar rebuilds
+the `FileList` through a `DataTransfer` — the same sanctioned handoff T-081
+established — so partial removal keeps the right file and a full clear leaves
+`files.length === 0` **and** `value === ""`. Focus returns to the input. Proven on
+the live route: preview unmounted, grid back to one column, state line and
+`aria-describedby` both cleared.
+
+**Two verification traps worth keeping.** `getComputedStyle` returns a **live**
+object — snapshotting `focused` then blurring and reading `resting` compares the
+value to itself and always reports "no change"; copy the strings out first. And a
+border-colour read taken immediately after focus catches a **mid-transition**
+value, so kill transitions before measuring.
+
+**Owed and unchanged:** the Arabic/RTL render — `/ar/…` and the shell's `ع` toggle
+both kept `lang="en"`, a locale-switching defect outside this diff. Also owed: axe,
+200% zoom, light theme, e2e. **The Browser pane cannot validate focus at all:**
+`document.hasFocus()` is `false` there, so `:focus` never applies no matter what
+`document.activeElement` says.
+
+**Round 3 — hover beat focus, and it was specificity, not order.** Owner-reported:
+a focused input lost its focus colour under the pointer. **A regression I
+introduced.** `.root:hover:not(:disabled):not([readonly])` is **(0,4,0)** against
+`:focus-visible` and `[aria-invalid]` at **(0,2,0)** — reordering cannot fix that,
+because specificity is resolved before source order. It was latent before this
+task: focus set `outline` while hover set `border-color`, two properties that could
+not collide, so only the invalid-and-hovered case was wrong and nobody saw it.
+**Narrow the hover rule, do not inflate the others** —
+`:not(:focus-visible):not([aria-invalid])`. Second instance in the same diff:
+`.zone:hover` sat *before* `.zone[data-filled]` at equal specificity, so a filled
+zone stopped responding to hover entirely. Reordered. **Verified by state matrix,
+not inspection:** 16 combinations on `TextInput`/`Textarea` and 8 on the zone, all
+correct — 2 of the 8 would have failed before the reorder. **`FileUpload` has no
+invalid state**, which the matrix surfaced; not added, it needs an API ruling.
+
+**Reported, not done:** the reusable `Textarea` primitive already exists and is
+sound; **~50 hand-rolled `<textarea>` remain across unmigrated screens** on
+`sq-textarea` / `input` / `sq-input`. That sweep is its own task — see PARKED.
+
 ### T-078 · repair the already-broken responsive spec
 `status: partial — one spec repaired; the deletion-enabling re-pointing is not started` · `rules: WEB-000, WEB-006 §4, WEB-008` · `est: 45m`
 `record:` [2026-08-12-T-078-repair-the-broken-responsive-spec](sessions/2026-08/2026-08-12-T-078-repair-the-broken-responsive-spec.md)
@@ -1860,6 +2035,75 @@ filters and tabs moved to `searchParams`.
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
 
+- **`sq-notification__badge` renders at 10px — below WEB-014 §7's 11px floor**
+  (found in T-083, measured on `/planning` in both locales). It is a frozen-sheet
+  `.sq-*` global in the shell, so the breach is on **every route in the
+  application**. The frozen sheets are exempt from the gate, so nothing will ever
+  flag it; only a render finds it.
+
+- **`NotificationBell.tsx:270` is the last violation on every otherwise-clean
+  route** (found in T-083). `style={{ fontWeight: unreadRow ? 600 : 500 }}` —
+  banned outright by WEB-014 §4.1 with no exemption. **It is a ruling, not a
+  rename:** 500 is not a weight the nine-role scale has, so the fix is `body` vs
+  `body-strong`, and that visibly changes how a read row differs from an unread
+  one. `/factories`, `/factories/[id]` and `/planning/visits/[id]` each sit at
+  exactly 1 violation and this is it.
+
+- **16 retired-role references remain inside `components/saqeel/`** (found in
+  T-083, deliberately out of that task's agreed scope): `primitives.module.css`
+  ×14 (`title` ×2, `body-lg` ×2, `caption` ×8, `code` ×2), `kbd.module.css` ×1,
+  `list-row.module.css` ×1. `title → display` and `body-lg → body` are the same
+  alias-rename shape, **but `primitives.module.css` is 1,200+ lines and was not
+  read**, so whether each site wants the canonical role is not established. The
+  `caption`/`body-lg`/`title`/`code` aliases cannot be deleted from `saqeel.css`
+  until these and the feature-code references are all gone.
+
+- **`npm run lint` and `npm run verify` do not exist** (found in T-083) — not in
+  `apps/web/package.json` and not at the repo root, though CLAUDE.md's working
+  protocol names both and the session template has a checkbox for `lint`. Either
+  the doc is stale or the scripts were lost. Every session record that ticked
+  `npm run lint` ticked something that could not have run.
+
+- **Task-ID collisions in the tracker and session log** (found in T-083): two
+  distinct records share **T-078** (`repair-the-broken-responsive-spec` and
+  `visit-detail-screen`), and T-082 was nearly reused. IDs are allocated by
+  reading the board, so a concurrent session picks the same number. Needs a rule
+  or a counter.
+
+- **~50 hand-rolled `<textarea>` bypass the `Textarea` primitive** (found in
+  T-082, owner asked whether the app has a reusable one). It does —
+  `components/saqeel/textarea` — with **4 consumers**: this route's `NotesEditor`
+  plus three `planning-*` sections. Every other multi-line field is a raw
+  `<textarea>` on a legacy class: `className="input"` (~25, all under `field/*`),
+  `sq-textarea` (~8), `sq-input` (~3), and a handful on local module classes in
+  `sections/approvals/*` and `sections/regulations/*`. They therefore **miss the
+  new border-colour focus treatment**, keep the browser's `resize: both`, and
+  carry their own font declarations. Not a defect in the primitive — a migration
+  the unmigrated screens have not had. Should be sequenced per screen alongside
+  those routes' own rebuilds rather than as one 50-file sweep, because each call
+  site also needs `Field`, i18n and state review.
+- **WEB-009 §5 now contradicts the code** (found in T-082). The rule says focus is
+  an `outline` ring that moves nothing; the owner has ruled that inputs express
+  focus as a **border colour** with no ring, which is what `Select` already did
+  before this task. `TextInput`, `Textarea` and `FileUpload` now match. §5 needs
+  rewording to say: controls with a border express focus by recolouring it to
+  `--sqx-border-focus` at unchanged width; controls without one (buttons, rows,
+  tabs, the checkbox box) keep the ring. **Until it is amended the rulebook and
+  the design system disagree, and a future task will "fix" one of them at random.**
+- **`visits/[id]/actions.ts` renders hardcoded English to users in both locales**
+  (found in T-082; owner ruled it a task of its own, not a fold-in). Every one of
+  the eight server actions builds its `ActionResult` copy inline —
+  `"Session expired — sign in again."`, `"Choose a file first"`,
+  `"Missing visit id"`, `"This attachment is already removed…"`,
+  `"Attachment removed. The file and its audit record are kept."` — and
+  `NotesEditor`/`Attachments`/`ActionBar` print them straight into their
+  `live="alert"` and `live="status"` regions. Two compounding defects: **the
+  Arabic screen shows English on every write outcome** (WEB-013 / rule 18), and
+  the success line ships an engineering identifier —
+  `Attachment "{name}" uploaded (M02-042, audited)` — which is exactly the class
+  T-077 raised against the seeded `ui_strings` rows. Needs ~10 keys per locale,
+  a decision on whether `(M02-042, audited)` is user copy at all, and a look at
+  `mapError()`, which may be a second source of raw provider text.
 - **`components/sections/planning/*` is a dead parallel tree** (found in T-053).
   Only `planning-skeleton` is a value import, from `planning/loading.tsx`.
   `planning-insights`, `planning-recommendations`, `planning-quick-actions`,

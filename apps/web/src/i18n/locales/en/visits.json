@@ -39,14 +39,19 @@
     "colType": "Type",
     "colUploaded": "Uploaded",
     "download": "Download",
-    "empty": "No attachments yet — planners and operations can attach supporting files.",
-    "fileLabel": "Attach a file (planner or operations only)",
+    "empty": "No attachments yet.",
+    "fileLabel": "Attach a file",
     "heading": "Attachments",
+    "hint": "Planner or operations only.",
     "remove": "Remove",
     "removeAria": "Remove attachment {name}",
     "uploadBtn": "Upload",
-    "uploading": "Uploading…",
-    "urlFailed": "download link not available"
+    "urlFailed": "download link not available",
+    "dropPrompt": "Drag a file here",
+    "browse": "or browse your device",
+    "fileSelected": "Selected: {name}",
+    "previewAlt": "Preview of {name}",
+    "removeFile": "Remove {name} from this upload"
   },
   "detail": {
     "assignment": "Assignment",
@@ -111,8 +116,7 @@
     "hint": "Planner or operations only. Return reasons show in the visit history, not here.",
     "label": "Visit notes",
     "placeholder": "Context for the inspector or operations — saved to the visit, audited",
-    "saveBtn": "Save notes",
-    "saving": "Saving…"
+    "saveBtn": "Save notes"
   },
   "ribbon": {
     "a": {

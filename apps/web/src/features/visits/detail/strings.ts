@@ -8,6 +8,7 @@ export function buildVisitDetailStrings(locale: Locale, enumLabel: (value: strin
   const V = getMessages(locale).visits;
   const attachmentsStrings: AttachmentsStrings = {
     heading: V.att.heading,
+    hint: V.att.hint,
     empty: V.att.empty,
     colFile: V.att.colFile,
     colType: V.att.colType,
@@ -18,8 +19,12 @@ export function buildVisitDetailStrings(locale: Locale, enumLabel: (value: strin
     remove: V.att.remove,
     removeAria: V.att.removeAria,
     fileLabel: V.att.fileLabel,
+    dropPrompt: V.att.dropPrompt,
+    browse: V.att.browse,
+    fileSelected: V.att.fileSelected,
+    previewAlt: V.att.previewAlt,
+    removeFile: V.att.removeFile,
     uploadBtn: V.att.uploadBtn,
-    uploading: V.att.uploading,
     urlFailed: V.att.urlFailed,
   };
   const notesStrings: NotesStrings = {
@@ -27,7 +32,6 @@ export function buildVisitDetailStrings(locale: Locale, enumLabel: (value: strin
     label: V.notes.label,
     placeholder: V.notes.placeholder,
     saveBtn: V.notes.saveBtn,
-    saving: V.notes.saving,
     hint: V.notes.hint,
   };
   const actionStrings: ActionBarStrings = {
