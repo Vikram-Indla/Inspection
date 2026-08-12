@@ -94,6 +94,22 @@ state left, so `"use client"` and four `useState` calls went with it.
 **series**, not one bar per row, so the panel is now a single chart across regions,
 which is the primitive doing what it was built for rather than being stretched.
 
+**The window filter was a bespoke select where the picker already existed — my
+mistake, caught by the owner.** I built a 7/30/90 `Select` when
+`saqeel/date-range-picker` ships with `withTime = false` **by default** and
+`date-range-presets.ts` exports `windowDateRangePresets`, whose own ledger note says
+it is "for filters over a span that crosses today, **like the visit window**". The
+preset labels already live once in `common.scope`, and `visit-filter-bar` had the
+call-site pattern including `formatDateRange` for the display value. **Three fixed
+choices became any range**, and the URL carries `from`/`to` as plain `YYYY-MM-DD`
+instead of a `window` day-count. This is the "never build what already exists" rule
+failing in the direction that is hardest to notice: the bespoke thing worked.
+
+**The filter bar left a gap because `Toolbar` splits lead from trailing.** Three
+fields sat shrink-wrapped on the left with Reset pushed to the far edge. It is now
+its own wrapping flex row — fields `flex: 1 1 var(--sqx-grid-min-xs)` so they share
+the width, Reset on `margin-inline-start: auto`.
+
 **A missing token stopped an invention.** The map canvas needed a height and **no
 `--sqx-map-*` size token exists**; WEB-002 says a genuine gap is raised, never
 filled inline. Rather than invent one, the canvas uses `aspect-ratio: 16 / 9` — a

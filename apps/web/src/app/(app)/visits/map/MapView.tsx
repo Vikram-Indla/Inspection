@@ -8,8 +8,8 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
 import {
-  MAP_PAGE_SIZE, operationalTone, pageCountOf, resolvePage, resolveRegion, resolveRisk,
-  resolveWindowDays, windowEndIso, RISK_BANDS,
+  MAP_PAGE_SIZE, dayEndIso, dayStartIso, operationalTone, pageCountOf,
+  resolveDate, resolvePage, resolveRegion, resolveRisk, RISK_BANDS,
   type VisitMapParams, type VisitMapRow,
 } from "@/features/visits/map";
 import VisitMapFilters from "@/components/sections/visits/visit-map-filters/visit-map-filters";
@@ -36,7 +36,8 @@ export async function VisitsMapView({ basePath = "/visits", params = {} }: {
   const filter = {
     region: resolveRegion(params.region),
     risk: resolveRisk(params.risk),
-    windowDays: resolveWindowDays(params.window),
+    from: resolveDate(params.from),
+    to: resolveDate(params.to),
   };
   const page = resolvePage(params.page);
   const sb = await supabaseServer();
@@ -49,10 +50,8 @@ export async function VisitsMapView({ basePath = "/visits", params = {} }: {
     .order("window_start", { ascending: false });
   const byRegion = filter.region === "" ? scoped : scoped.eq("factories.region", filter.region);
   const byRisk = filter.risk === "" ? byRegion : byRegion.eq("factories.risk_band", filter.risk);
-  const now = new Date();
-  const paged = filter.windowDays === null
-    ? byRisk
-    : byRisk.gte("window_start", now.toISOString()).lte("window_start", windowEndIso(filter.windowDays, now));
+  const byFrom = filter.from === "" ? byRisk : byRisk.gte("window_start", dayStartIso(filter.from));
+  const paged = filter.to === "" ? byFrom : byFrom.lte("window_start", dayEndIso(filter.to));
 
   const [{ data: visits, error, count }, { data: geo }, { data: regionRows }] = await Promise.all([
     paged.range(page * MAP_PAGE_SIZE, page * MAP_PAGE_SIZE + MAP_PAGE_SIZE - 1),
@@ -126,6 +125,9 @@ export async function VisitsMapView({ basePath = "/visits", params = {} }: {
           regions={regions}
           riskOptions={RISK_BANDS.map(band => ({ value: band, label: enumLabel(band) }))}
           basePath={basePath}
+          locale={uiLocale}
+          presetLabels={messages.common.scope}
+          monthLabels={{ previous: messages.common.scope.previousMonth, next: messages.common.scope.nextMonth }}
           strings={messages.visits.coverage}
         />
       ) : null}

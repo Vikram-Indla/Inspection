@@ -5,34 +5,38 @@ export const MAP_PAGE_SIZE = 25;
 export type VisitMapParams = {
   readonly region?: string;
   readonly risk?: string;
-  readonly window?: string;
+  readonly from?: string;
+  readonly to?: string;
   readonly page?: string;
 };
 
 export type VisitMapFilter = {
   readonly region: string;
   readonly risk: string;
-  readonly windowDays: number | null;
+  readonly from: string;
+  readonly to: string;
 };
 
 const RISK_BANDS: readonly string[] = ["high", "medium", "low"];
-const WINDOW_CHOICES: readonly number[] = [7, 30, 90];
-const DEFAULT_WINDOW_DAYS = 30;
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 export function resolveRisk(raw: string | undefined): string {
   return typeof raw === "string" && RISK_BANDS.includes(raw) ? raw : "";
 }
 
-export function resolveWindowDays(raw: string | undefined): number | null {
-  const parsed = Number(raw);
-  return WINDOW_CHOICES.includes(parsed) ? parsed : null;
+export function resolveDate(raw: string | undefined): string {
+  return typeof raw === "string" && ISO_DATE.test(raw) ? raw : "";
 }
 
-export function windowEndIso(days: number, from: Date): string {
-  return new Date(from.getTime() + days * 86_400_000).toISOString();
+export function dayStartIso(day: string): string {
+  return `${day}T00:00:00.000Z`;
 }
 
-export { RISK_BANDS, WINDOW_CHOICES, DEFAULT_WINDOW_DAYS };
+export function dayEndIso(day: string): string {
+  return `${day}T23:59:59.999Z`;
+}
+
+export { RISK_BANDS };
 
 export type VisitMapRow = {
   readonly id: string;
@@ -95,7 +99,8 @@ export function mapHref(basePath: string, filter: VisitMapFilter, page: number):
   const query = new URLSearchParams();
   if (filter.region !== "") query.set("region", filter.region);
   if (filter.risk !== "") query.set("risk", filter.risk);
-  if (filter.windowDays !== null) query.set("window", String(filter.windowDays));
+  if (filter.from !== "") query.set("from", filter.from);
+  if (filter.to !== "") query.set("to", filter.to);
   if (page > 0) query.set("page", String(page + 1));
   const search = query.toString();
   return search === "" ? `${basePath}/map` : `${basePath}/map?${search}`;

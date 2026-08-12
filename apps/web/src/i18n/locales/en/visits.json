@@ -38,11 +38,8 @@
     "allRegions": "All regions",
     "riskLabel": "Risk band",
     "allRisk": "Any risk band",
-    "windowLabel": "Window",
-    "window7": "Next 7 days",
-    "window30": "Next 30 days",
-    "window90": "Next 90 days",
-    "windowAll": "Any window",
+    "windowLabel": "Visit window",
+    "windowAny": "Any window",
     "inspectorLabel": "Inspector status",
     "inspectorAll": "Any status",
     "inspectorAssigned": "Assigned",
@@ -274,5 +271,36 @@
     "follow_up": "Follow-up",
     "complaint": "Complaint",
     "administrative_enforcement": "Administrative enforcement action"
+  },
+  "workload": {
+    "title": "Inspector workload",
+    "context": "assignments × published windows",
+    "heading": "Active load by inspector",
+    "loading": "Loading inspector workload…",
+    "empty": {
+      "title": "No active assigned load",
+      "body": "Published visits that have not been submitted yet appear here, grouped by inspector."
+    },
+    "loadErrorTitle": "Inspector workload",
+    "loadErrorNeutral": "Assignments are temporarily unavailable. Please try again.",
+    "kpi": {
+      "inspectors": "Inspectors with load",
+      "active": "Active visits",
+      "later": "Beyond the window",
+      "dailyCap": "Daily visit limit"
+    },
+    "columns": {
+      "inspector": "Inspector",
+      "distribution": "Next 6 weeks",
+      "window": "In window",
+      "later": "Later",
+      "total": "Active total",
+      "capacity": "Busiest day vs limit"
+    },
+    "weekOf": "Week of {date}: {n}",
+    "ofCap": "{n} of {cap}",
+    "overCap": "{n} of {cap} — over the limit",
+    "noLoad": "—",
+    "note": "The limit is the configured daily maximum per inspector. Weekly bars show how a single inspector’s load is spread across the window; they are not a capacity measure. Weeks start Sunday."
   }
 }
