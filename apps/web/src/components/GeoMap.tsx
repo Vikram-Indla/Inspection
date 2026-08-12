@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MAP_PALETTE } from "@/lib/map-palette";
+import mapChrome from "@/components/saqeel/map/map-chrome.module.css";
 import { Heading } from "@/components/saqeel/type";
 import { loadKsaRegions } from "@/lib/ksa-regions";
 
@@ -339,7 +340,7 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
   // entire page. Keeping the class in every value React writes makes the
   // positioning context survive re-renders; Mapbox re-adding it is idempotent.
   return <div ref={containerRef} aria-label={ariaLabel} data-map-provider="mapbox"
-    className={ready ? "mapboxgl-map" : "mapboxgl-map sq-map-loading"}
+    className={ready ? `${mapChrome.chrome} mapboxgl-map` : `${mapChrome.chrome} mapboxgl-map sq-map-loading`}
     data-map-ready={ready ? "true" : "false"} aria-busy={ready ? undefined : "true"}
     style={{
       blockSize: height, inlineSize: "100%",

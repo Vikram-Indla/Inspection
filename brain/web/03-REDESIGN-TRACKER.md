@@ -10,6 +10,44 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-092 · `/planning/immediate` — clean by the gate, two typefaces on screen
+`status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014 §2.0, §4.1` · `est: 30m`
+`record:` [2026-08-12-T-092-planning-immediate-typography](sessions/2026-08/2026-08-12-T-092-planning-immediate-typography.md)
+
+**The route tree was genuinely clean and the screen was still wrong.** Three
+greps came back empty — no `.t-*` legacy classes (T-091's hole), **no
+string-literal `className` at all**, no typography declaration in any CSS in the
+tree. The measured render showed **two typefaces**: `© Mapbox`,
+`© OpenStreetMap` and `Improve this map` in **Helvetica Neue**, injected by
+`mapbox-gl`'s own stylesheet.
+
+**T-074's fix was real but reached two files, not the app.** Its record claims
+the chrome module means *"any future map inherits the same chrome"* — true of
+`operations-map-panel` and `LiveMapInner`, and **only** those two. **`GeoMap`,
+which has 18 consumers, was never wired up**, so every map outside operations
+has rendered Helvetica Neue attribution since T-074.
+
+**Fixed at the component, not the route** — one import plus the class on both
+className branches of `GeoMap`. Per-screen would have fixed one of eighteen and
+duplicated a hack, which is the argument T-074 itself used.
+
+**The change had to preserve a load-bearing invariant.** `GeoMap` carries an
+eleven-line comment: `mapboxgl-map` must appear in *every* value React writes, or
+the `position: relative` is lost and "the map paints over the entire page". Both
+branches keep it, and it was **checked in the DOM** — `position: relative`, canvas
+rect **exactly equal** to the container rect (385 × 254).
+
+```
+baseline 749 → 749   ← unchanged, and that is the point: the defect was never counted
+typefaces  2 → 1     attribution now plexArabic 12px/600 = label (T-074's ruling, reused)
+```
+
+**Owed:** 16 of the 18 GeoMap surfaces are unverified. **Parked:** `GeoMap`'s own
+unavailable state renders `t-caption` (11.5px) and a `⌖` glyph-as-icon — not
+provoked here because the map loaded (T-072's rule). **And the general lesson: a
+shared-component fix must be verified at the component, not at one call site** —
+there is no gate for "component X composes module Y".
+
 ### T-091 · `/planning/bulk` — typography, and a hole in the gate
 `status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014 §2.1, §4.1, §8` · `est: 1.5h`
 `record:` [2026-08-12-T-091-planning-bulk-typography](sessions/2026-08/2026-08-12-T-091-planning-bulk-typography.md)

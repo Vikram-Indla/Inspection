@@ -1,6 +1,44 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-091 — /planning/bulk typography`
+`Last updated: 2026-08-12` · `Updated by: T-092 — /planning/immediate typography`
+
+## "Fixed centrally" is a claim about a component, and it needs checking there (2026-08-12)
+
+T-074 found Mapbox injecting `"Helvetica Neue"` into its attribution, moved the
+normalisation into `components/saqeel/map/map-chrome.module.css`, and recorded
+that **"any future map inherits the same chrome."**
+
+It did not. Two files composed that module — both operations canvases. **`GeoMap`,
+which has 18 consumers, was never wired up**, so every other map in the
+application kept rendering a second typeface for as long as the fix was believed
+to be in place. T-092 found it by measuring `/planning/immediate`, a route whose
+own tree is provably clean.
+
+**A central fix is only central once every consumer composes it, and nothing
+checks that.** There is no gate for "component X imports module Y". When a task
+moves a fix into a shared module, the closing step is enumerating the consumers
+and confirming each one reaches it — not verifying the route you happened to be
+working on.
+
+## A clean tree is not a clean screen (2026-08-12)
+
+`/planning/immediate` passed every static check available: the gate counted only
+the shell, and greps for `.t-*` legacy classes, string-literal `className`
+attributes and CSS typography declarations all came back **empty**. The rendered
+page still had two typefaces.
+
+The defect lived in a dependency's stylesheet, reachable from no source file in
+the route. **The three questions that actually settle a route are all measured:**
+
+```js
+new Set([...document.querySelectorAll('main *')]
+  .filter(el => !el.children.length && el.textContent.trim())
+  .map(el => getComputedStyle(el).fontFamily.split(',')[0]))   // typefaces
+```
+
+plus the distinct size set and the off-scale list. Two tasks running (T-091's
+11.5px `t-caption`, T-092's Helvetica Neue) were invisible to every grep and
+every gate, and obvious in one line of measurement.
 
 ## The gate counts CSS. It cannot see a legacy class used from JSX (2026-08-12)
 
