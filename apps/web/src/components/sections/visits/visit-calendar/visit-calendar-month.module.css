@@ -1,0 +1,51 @@
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--sqx-space-1);
+}
+
+.weekday {
+  display: block;
+  padding-block: var(--sqx-space-2);
+  text-align: center;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  min-inline-size: 0;
+  min-block-size: var(--sqx-grid-min-xs);
+  padding: var(--sqx-space-2);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-control);
+  background: var(--sqx-surface-default);
+}
+
+.cell[data-outside] {
+  background: var(--sqx-surface-sunken);
+}
+
+.cell[data-today] {
+  border-color: var(--sqx-border-focus);
+}
+
+.number {
+  align-self: flex-end;
+}
+
+.more {
+  border-radius: var(--sqx-radius-control);
+  text-decoration: none;
+}
+
+.more:focus-visible {
+  outline: var(--sqx-focus-ring-width) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}

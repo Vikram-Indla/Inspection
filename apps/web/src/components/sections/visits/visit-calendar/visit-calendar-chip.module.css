@@ -1,0 +1,32 @@
+.chip {
+  display: flex;
+  align-items: center;
+  gap: var(--sqx-space-2);
+  min-inline-size: 0;
+  padding-block: var(--sqx-space-1);
+  padding-inline: var(--sqx-space-2);
+  border-radius: var(--sqx-radius-control);
+  background: var(--sqx-surface-subtle);
+  text-decoration: none;
+}
+
+.chip:hover {
+  background: var(--sqx-surface-sunken);
+}
+
+.chip:focus-visible {
+  outline: var(--sqx-focus-ring-width) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}
+
+.name {
+  min-inline-size: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.status {
+  flex: none;
+}

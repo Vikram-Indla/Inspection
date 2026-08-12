@@ -10,6 +10,132 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-097 · the visit calendar — a clean route that rendered English at 11.5px
+`status: done — e2e not run` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-004, WEB-008, WEB-009, WEB-011, WEB-013, WEB-014` · `est: 2h`
+`record:` [2026-08-12-T-097-visit-calendar-migration](sessions/2026-08/2026-08-12-T-097-visit-calendar-migration.md)
+
+**The route was certified clean and rendered English at 11.5px.** `/planning/calendar`
+reported 1 violation — the shell — while rendering `t-caption` (**11.5px**) five times
+and an inline `font: var(--type-caption-font)` (**12px**) in every chip.
+**`CalendarBoard.tsx` was not in the typography baseline at all**, because the gate
+scans **CSS declarations** and the file had no CSS module — only inline styles and
+frozen-sheet classes. **This is T-091's hole, and it means "all thirteen planning
+routes at 1" is a statement about CSS, not about screens.**
+
+**Every string was an English literal.** `visit.cal.*` existed in **neither** locale —
+both checked — and `tr()` falls back to the English default, so Arabic users got an
+entirely English calendar. Now a real `visits.calendar` namespace, 18 keys per locale,
+**verified rendering RTL in the browser**: يوم / أسبوع / شهر and `الخميس، 6 أغسطس 2026`.
+
+**Friday collapsed because `1fr` means `minmax(auto, 1fr)`.** Chips are `nowrap` and
+the cells had no `min-inline-size: 0`, so one long factory name set its column's
+min-content and every empty column shrank. `repeat(7, minmax(0, 1fr))` fixes it.
+
+**URL state removed the client island.** `view`/`anchor` moved from `useState` to
+`?view=&on=`, so `SegmentedControl` runs in **href mode** — which passes no handlers
+and is server-safe — and **the whole calendar is now a Server Component (`"use client"`
+1 → 0)**. Deep links, back button and refresh all work.
+
+**The e2e suite pins `CalendarView.tsx` by path** — `cd-026` reads it with
+`readFileSync` and requires `console.error`, `loadErrorNeutral`,
+`expire_lapsed_visits_scheduled` and no `{error.message}` in JSX. **That shaped the
+layout**: the board moved to `components/sections/`, the file did not, and the i18n key
+was named `loadErrorNeutral` deliberately. **One comment survives knowingly** — the
+governance marker a contract test requires; deleting it for the zero-comment rule would
+weaken an accepted behaviour.
+
+```
+"use client"           1 → 0        legacy global classes  19 → 0
+inline style objects   9 → 0        off-scale sizes         2 → 0
+translated strings     0 → 18       features removed        0
+```
+
+**Owed: `npm run test:e2e`.** The path-pinned contract is satisfied by construction but
+was reasoned, not executed. axe and the rest of the manual checklist are also owed.
+
+### T-096 · `/planning/immediate` — one rule said three times, and a loading state that mirrored nothing
+`status: partial — content verified in the DOM, geometry and axe unmeasured (the pane was never displayed)` · `rules: WEB-000, WEB-002, WEB-003, WEB-004, WEB-006 §4, WEB-008, WEB-009, WEB-011, WEB-013, WEB-014` · `est: 2h`
+`record:` [2026-08-12-T-096-planning-immediate-declutter](sessions/2026-08/2026-08-12-T-096-planning-immediate-declutter.md)
+
+Owner-reported: the top is cluttered and confusing, there is too much empty
+space, and the legacy loading state must go for a skeleton that mirrors the
+layout with proper inline padding.
+
+**The registered-factory rule was rendering three times before the first usable
+control** — `identity.r05Body` **verbatim twice** (the top warning notice and the
+identity `CardHeader description`), plus the disabled radio's `lockedType`. It now
+has one home and it **moved into the identity card, above the search field it
+governs**. `identity.heading` was rendering twice inside that same card, as the
+title and again as the `<legend>` eight pixels below it. **Measured after: zero
+duplicated leaf text strings anywhere in the form.**
+
+**The identity mode toggle could not be operated, and the server action is what
+made deleting it safe.** `manualAvailable = false` was a literal; one radio was
+`checked` with a no-op `onChange` and the other permanently `disabled`.
+`actions.ts` **never reads `identity_mode`** — checked before the edit — so
+nothing submitted changes.
+
+**`DispatchProtections` said everything twice by construction.** Nine chips, then
+a notice **re-listing every blocking chip verbatim** in the same card. It is now
+the `planning-bulk/review-readiness` shape — one summary pill, **blockers only**,
+each row focusing its own control — so bulk's pattern gets a second consumer
+rather than a second implementation. **Four of the nine chips were hardcoded
+`informational`** and could never change; `AUDIT` and `NOTIFY` had `controlId:
+null`, making them policy statements wearing status pills.
+
+**Nothing was removed that is not still on screen.** audit/notify → the "This
+will:" card; checklist/inspector → their own fields — and the `CHECKLIST` chip
+**contradicted** its field, saying *"Select an active inspection checklist"*
+where the field says optional; authorized → the access gate, which is what
+renders `ImmediateAccessState`.
+
+**`WINDOW` now carries no focus target, and that is the honest fix.**
+Its `controlId` was `imm-window-start`, **an id that has never existed in the
+DOM** — `DateRangePicker` takes no `id` prop. As a chip that was an invisible
+no-op; as a readiness row it would be a visibly dead button. **Raised, not
+filled:** the primitive needs an `id`, which is a design-system change — the
+second component to hit this shape after T-080's `Select`.
+
+**Zero new i18n keys**, so no new Arabic needed review: the row's accessible name
+is still assembled from translated parts, which is what the chip did. **57 dead
+keys deleted per locale** at asserted parity **940 = 940**, including the whole
+`enforcement` block — 9 keys that render nowhere and are never read by the action.
+
+**The empty space was the grid, not the spacing.** `repeat(auto-fit, minmax(24rem,
+1fr))` over three cards of very unequal height gave `[Identity | Urgency]` then
+`[Location | ∅]` — a void under the 4-radio card and a whole empty column beside
+the tallest one. Identity and Urgency now share a column. **No new token, no
+media query.**
+
+**The legacy loading state is off this route.** `RouteLoading` broke five rules
+at once: hardcoded `en`/`ar` literals plus the `locale === "ar"` ternary (rule 18,
+while `planning.immediate.loading` sat unused in both locales), a `<main>` nested
+inside `ShellClient`'s `<main>`, `glyph="◫"`, `t-caption` at 11.5px, and no
+`Shell` — so no page head during load. The new skeleton renders inside `Shell`,
+which is what gives it the inline padding: **1017px box, 20px either side,
+measured**, the same `.sq-content` the page uses.
+
+```
+duplicated leaf strings   n → 0     rule stated 3 → 1      identity.heading 2 → 1
+protection chips          9 → 4 blocker rows, none repeated
+inoperable controls       2 → 0     blocks before first field 13 → 8
+<main> on loading         2 → 1     useState 27 → 14       useEffect 2 → 1
+comments 9 → 0            locale keys 997 → 940/locale     typography 734 → 734
+```
+
+**Owed, and the cause is one thing: the Browser pane was never displayed**, so
+`document.visibilityState` stayed `hidden` and the route never revealed out of
+its Suspense boundary — the fully rendered form sat in React's hidden staging
+`<div>` with every `getBoundingClientRect` at 0. Content was verified from that
+staged tree; **geometry was not**. axe, the manual checklist and the Arabic
+render are unrun.
+
+**New question, possibly bigger than this task: a cold navigation to
+`/planning/immediate` shows `PlanningSkeleton` from the *parent* `/planning`
+boundary** ("Loading visit planning", 122 bones — a 11-column data table), not
+this route's skeleton. If `planning/loading.tsx` masks every nested route's
+skeleton, every per-route skeleton under `/planning` is invisible.
+
 ### T-095 ·  runs a second design system; its fonts came off Google
 `status: done (fonts only — the scale is untouched and out of scope)` · `rules: WEB-000, WEB-002 §1, WEB-011, WEB-014 §2.0` · `est: 45m`
 `record:` [2026-08-12-T-095-field-fonts](sessions/2026-08/2026-08-12-T-095-field-fonts.md)
@@ -2613,6 +2739,30 @@ filters and tabs moved to `searchParams`.
 
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
+
+- **Does `planning/loading.tsx` mask every nested route's skeleton?** (T-096.)
+  A cold navigation to `/planning/immediate` shows `PlanningSkeleton` — an
+  11-column data-table skeleton for a screen that is a form — from the **parent**
+  `/planning` boundary, not the route's own. If that holds for the other twelve
+  planning routes, every per-route skeleton built so far is unreachable and the
+  work is invisible. **Answer this before building another planning skeleton.**
+- **Retire `RouteLoading` app-wide** (T-096; it is now off `/planning/immediate`
+  but **~25 segments still import it**). Every one carries the same five
+  violations: hardcoded `en`/`ar` literals, the `locale === "ar"` ternary,
+  `glyph="◫"`, `t-caption` at 11.5px, and a `<main>` nested inside
+  `ShellClient`'s own `<main>` — an ARIA landmark defect on 25 routes.
+- **`DateRangePicker` has no `id` prop** (T-096), so no protection, hint or spec
+  can address the window control — `imm-window-start` has never resolved. Second
+  primitive to hit this shape after T-080's `Select`. Needs an API ruling.
+- **`cd-023-immediate-authority-bar.spec.ts` is broken independently of T-096.**
+  `#imm-window-start`/`#imm-window-end` are `.fill()`ed but do not exist;
+  `#imm-existing` and `#imm-visit-type` are driven with `selectOption` and
+  `option` enumeration against `SaqeelSelect` listboxes; `"Complaint received"`
+  is matched as a `button` when it is a `Choice` radio. T-096 re-pointed only the
+  five assertions its own diff invalidated. Repairing the rest needs a suite run,
+  which needs a production build — same shape as T-078.
+- **`ImmediateForm.tsx` is client code living in a route directory** (T-096),
+  which WEB-000 §3 wants under `components/sections/`. A move, not a fix.
 
 - **`EligibilityLedger.tsx` and `DistributionPanels.tsx` need a rebuild, not a
   patch** (re-confirmed in T-094; first parked by T-091). Both are unmigrated

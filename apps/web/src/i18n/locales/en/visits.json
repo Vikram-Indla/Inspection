@@ -1,4 +1,24 @@
 {
+  "calendar": {
+    "title": "Visit calendar",
+    "context": "Filtered to your access",
+    "viewLabel": "Calendar view",
+    "day": "Day",
+    "week": "Week",
+    "month": "Month",
+    "previous": "Previous",
+    "next": "Next",
+    "today": "Today",
+    "emptyTitle": "No visits on this day",
+    "emptyBody": "Nothing is scheduled in your access scope for this date. Move to another day, or switch to the month view.",
+    "more": "+{n} more",
+    "dayCount": "{n} visits, ordered by window start",
+    "loadErrorTitle": "Visits are temporarily unavailable",
+    "loadErrorNeutral": "The visit list could not be read. Nothing was changed. Please try again.",
+    "openVisit": "Open the visit at {factory}",
+    "windowRange": "{from} – {to}",
+    "factoryUnavailable": "Factory not recorded"
+  },
   "actions": {
     "cancelBtn": "Cancel visit",
     "cancelComments": "Cancellation comments",
