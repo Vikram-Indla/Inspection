@@ -1,4 +1,5 @@
 import { formatDateTime } from "@/lib/dates";
+import { getMessages } from "@/i18n/messages";
 import type { Locale } from "@/lib/i18n";
 import type { ReasonOption } from "@/lib/planning/lifecycle";
 import type { VisitDetailData } from "./queries";
@@ -170,4 +171,43 @@ export function buildAuditEntries(
 export function snapshotText(snapshot: Record<string, unknown> | null, key: string): string | null {
   const value = snapshot?.[key];
   return typeof value === "string" && value.trim() ? value : null;
+}
+
+export function visitAttachmentRows(data: VisitDetailData, locale: Locale) {
+  const V = getMessages(locale).visits;
+  return data.attachments.map(row => ({
+    id: row.id,
+    name: row.name,
+    mime: row.mime,
+    uploadedAt: row.uploaded_at,
+    uploadedBy: row.uploader?.full_name ?? "—",
+    url: data.signedUrls.get(row.id) ?? null,
+    urlError: data.signedUrls.has(row.id) ? null : V.att.urlFailed,
+  }));
+}
+
+export function buildActionBarProps(
+  data: VisitDetailData,
+  locale: Locale,
+  enumLabel: (value: string) => string,
+) {
+  const d = buildVisitDerivations(data, locale);
+  return {
+    visitId: data.visit.id,
+    planningVersion: data.visit.planning_version,
+    status: data.visit.planning_status,
+    opState: data.visit.operational_state,
+    opStateLabel: enumLabel(data.visit.operational_state),
+    visitType: data.visit.visit_type,
+    windowStart: data.visit.window_start,
+    windowEnd: data.visit.window_end,
+    inspectors: data.inspectors,
+    canManage: d.canManage,
+    canReassign: d.canReassign,
+    isFinal: d.isFinal,
+    returnReasons: data.returnReasons,
+    cancelReasons: data.cancelReasons,
+    packageOptions: data.packageOptions,
+    cutoffDisplay: d.cutoffDisplay,
+  };
 }

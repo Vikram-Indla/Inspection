@@ -20,6 +20,8 @@ The banner on line 1 of a marked file, exact form:
 
 | File | Replaced by | Marked | Pending routes | Gate |
 | --- | --- | --- | --- | --- |
+| `app/(app)/visits/[id]/DualStateRibbon.tsx` (97 lines) | `components/visits/visit-detail/visit-lifecycle-ribbon` | 2026-08-12 | none | 0-imports **reached** — awaiting one e2e run |
+| `app/(app)/visits/[id]/FocusScroll.tsx` (12 lines) | `components/visits/visit-detail/visit-detail` — the return reason is now a governed notice above the fold, so nothing needs scrolling to | 2026-08-12 | none | 0-imports **reached** — awaiting one e2e run |
 | `app/(app)/planning/immediate/AuthorityBar.tsx` (95 lines) — **DELETED 2026-08-11 (T-054)** | `components/sections/planning-immediate/dispatch-protections` | 2026-08-11 | none | 0-imports **cleared** — its only importer was rewired in the same change, so it was deleted rather than banner-marked |
 | `components/ShellClient.tsx` (46 KB, 840 lines) | `components/app-shell/app-shell` | 2026-08-07 | `/admin/execution`, `/admin/dashboard-config` | 0-imports |
 | `components/Shell.tsx` (16 KB, 251 lines) | `components/app-shell/shell-page-frame/shell-page-frame` | 2026-08-07 | `/admin/execution`, `/admin/dashboard-config`, plus 55 route files still importing the default `Shell` page-frame export | 0-imports |

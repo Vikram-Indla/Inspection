@@ -169,11 +169,19 @@ test.describe("CD-027 wiring proofs (code layer)", () => {
     expect(a).not.toContain("both parties notified");    // still no overclaim
   });
 
+  // T-078 rebuilt the ribbon on SAQEEL as visit-lifecycle-ribbon; the five
+  // domains and their track data now live in the composition that feeds it.
+  // DualStateRibbon.tsx is @retiring with zero importers.
   test("five state domains never collapsed into one status (FND-002)", () => {
-    const r = SRC(`${ID}/DualStateRibbon.tsx`);
+    const r = SRC("src/components/visits/visit-detail/visit-lifecycle-ribbon.tsx");
+    const tracks = SRC("src/features/visits/detail/ribbon.ts");
     for (const d of ["planning", "operational", "assignment", "inspection", "review"]) {
-      expect(r).toContain(d);
+      expect(r + tracks).toContain(d);
     }
+    expect(r).toContain('role="tablist"');
+    expect(r).toContain('role="tabpanel"');
+    expect(r).toContain("tabIndex={index === active ? 0 : -1}");
+    expect(tracks.match(/id: "(?:planning|operational|assignment|inspection|review)"/g)).toHaveLength(5);
   });
 });
 
