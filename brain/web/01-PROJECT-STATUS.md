@@ -1,6 +1,61 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-087 — /planning/bulk/review typography`
+`Last updated: 2026-08-12` · `Updated by: T-090 — /planning typography`
+
+## Exactly four elements need `font: inherit`. Check, don't guess (2026-08-12)
+
+Only `<input>`, `<button>`, `<select>` and `<textarea>` fail to inherit `font` —
+they carry a UA font, so deleting a declaration from one renders **Arial**, not
+the inherited face. That is the T-064 defect, and it has now been hit or avoided
+in four separate tasks.
+
+The mirror-image error is just as real: `<a>`, `<label>`, `<summary>`, `<th>` and
+`<td>` **do** inherit, and giving them `font: inherit` adds a line that does
+nothing while implying the element is a control.
+
+T-090 resolved it by **mapping selector → rendered element with a script before
+touching anything** — parse the CSS for blocks containing typography, then find
+each class in the JSX and record the tag it lands on. Eleven modules, 45
+declarations, four genuine controls, and two classes that lived in a sibling file
+rather than the directory's namesake component. **The map is cheap and it is the
+whole task's risk in one table.**
+
+## The primitives take no `className`, and that decides your markup (2026-08-12)
+
+`Text` and `Heading` expose no class hook. So a CSS class that mixes layout with
+typography — `.pagerLink` (border, padding, flex **and** `font: label`),
+`.fieldValue` (`text-align: end` **and** `font: body`) — cannot simply become a
+primitive.
+
+The rule that fell out of T-088 and hardened in T-090:
+
+> **The element keeps its layout class; the primitive goes inside it as a span.**
+
+Purely typographic classes get deleted outright; mixed ones shed only their
+type. Applied consistently this produces no orphaned classes in either
+direction, and it is why `<legend>`, `<th>`, `<summary>`, `<button>` and `<a>`
+all kept their elements through the migration.
+
+**A tempting shortcut to avoid:** moving the layout onto the parent instead. It
+works until a second child needs different layout, and it makes the CSS lie
+about which element it describes.
+
+## A zero-match bulk edit is a signal, not a retry (2026-08-12)
+
+A scripted seven-pattern replace on `visit-drawer.module.css` matched **none** of
+them — the file is CRLF and the patterns were `\n`-joined — and the script
+**reported success on a completely unchanged file**. Had the verification been
+"did the script run?" rather than "did the count go down?", the task would have
+shipped believing the file was migrated.
+
+This is the third instance of the same shape: T-058's gate rule that matched 0 of
+24, T-076's structural regex that matched 0 across 7 sites. **Stop tuning the
+pattern and change approach.** T-090 switched to per-block edits and finished
+immediately.
+
+Related, from the same task: **the typography gate reads CSS and single lines, so
+it stays green on broken JSX.** An unbalanced `</span>` left by a conversion was
+caught by re-reading the file, not by any gate — the same failure T-069 recorded.
 
 ## The app has two body line-heights, and the frozen sheet is winning (2026-08-12)
 

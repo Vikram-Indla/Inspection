@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/components/saqeel/button/button";
+import { Text } from "@/components/saqeel/type";
 import styles from "./bulk-bar.module.css";
 
 export type BulkBarStrings = {
@@ -16,8 +17,8 @@ export default function BulkBar({ count, strings, onClear }: {
 }) {
   return (
     <div className={styles.root} role="status">
-      <strong className={styles.count}>{strings.selected.replace("{n}", String(count))}</strong>
-      <span className={styles.note}>{strings.notConfigured}</span>
+      <Text as="strong" role="label" numeric>{strings.selected.replace("{n}", String(count))}</Text>
+      <Text as="span" tone="secondary">{strings.notConfigured}</Text>
       <span className={styles.spacer} />
       <Button size="sm" onClick={onClear}>{strings.clear}</Button>
     </div>

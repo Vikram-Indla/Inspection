@@ -22,14 +22,6 @@
   color: var(--sqx-text-muted);
 }
 
-.title {
-  font: var(--sqx-text-heading);
-  letter-spacing: var(--sqx-text-heading-tracking);
-  color: var(--sqx-text-primary);
-}
-
 .body {
   max-inline-size: var(--sqx-prose-max);
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-secondary);
 }

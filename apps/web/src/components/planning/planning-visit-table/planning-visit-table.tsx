@@ -2,6 +2,7 @@
 
 import { useState, type MouseEvent } from "react";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Text } from "@/components/saqeel/type";
 import type { PlanningVisitView } from "@/features/planning/view";
 import BulkBar, { type BulkBarStrings } from "./bulk-bar";
 import VisitDrawer, { type VisitDrawerStrings } from "./visit-drawer";
@@ -59,7 +60,9 @@ export default function PlanningVisitTable({ rows, strings, bulkBar, drawer }: {
                 />
               </th>
               {COLUMN_KEYS.map(key => (
-                <th className={styles.head} scope="col" key={key}>{strings.columns[key]}</th>
+                <th className={styles.head} scope="col" key={key}>
+                  <Text as="span" role="label" tone="inherit">{strings.columns[key]}</Text>
+                </th>
               ))}
             </tr>
           </thead>
@@ -87,7 +90,7 @@ export default function PlanningVisitTable({ rows, strings, bulkBar, drawer }: {
                     onClick={() => setOpenId(row.id)}
                     aria-label={strings.openRow.replace("{ref}", row.reference)}
                   >
-                    {row.reference}
+                    <Text as="span" role="bodyStrong" tone="inherit">{row.reference}</Text>
                   </button>
                 </td>
                 <td className={styles.cell}>{row.factory}</td>

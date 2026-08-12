@@ -4,7 +4,3 @@
   gap: var(--sqx-space-2);
 }
 
-.exportNote {
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-secondary);
-}

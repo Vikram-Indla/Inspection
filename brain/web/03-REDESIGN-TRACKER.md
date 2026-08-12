@@ -10,6 +10,50 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-090 · `/planning` — typography, 45 → 0
+`status: done (the visit drawer — 10 of the 45 — never rendered)` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014 §4.1, §8` · `est: 1.5h`
+`record:` [2026-08-12-T-090-planning-typography](sessions/2026-08/2026-08-12-T-090-planning-typography.md)
+
+**45 declarations across 11 modules → 0.** The largest pocket in the family; the
+route's only remaining violation is `NotificationBell.tsx:270`, the shell.
+
+**Four native controls got `font: inherit`, and only four.** `<input>`,
+`<button>`, `<select>`, `<textarea>` do not inherit `font` — deleting a
+declaration from one renders Arial (the T-064 defect). **`<a>`, `<label>`,
+`<summary>`, `<th>` and `<td>` are not in that set** and were checked rather than
+assumed. Every selector was mapped **selector → rendered element by script**
+before any edit; that map is what found the four.
+
+**The primitives take no `className`, and that shaped every edit.** The rule
+applied throughout: *the element keeps its layout class, the primitive goes
+inside it as a span.* 13 purely-typographic classes were deleted outright.
+
+**`--sqx-accent-ai` is not one of the nine tones, so the colour moved rather than
+changed.** `planning-assistant`'s heading is `#A78BFA`; mapping it to
+`tone="accent"` would have changed a colour during a typography migration, which
+T-065 forbids. It is now `Heading tone="inherit"` wrapping a `.headingInk` span.
+Verified live: `rgb(167, 139, 250)`, byte-identical to the token.
+
+```
+/planning       46 → 1   (route-owned 45 → 0)
+baseline       813 → 768
+
+rendered: 30 · 28 · 20 · 14 · 12 — five sizes, 0 off-scale, one typeface
+h1 30/34.5/700 display · h2 20/26/600 heading · th 12/16.8/600 label
+summary 12/16.8/600 label · button 14/22.4/600 bodyStrong (font: inherit worked)
+```
+
+**Three mistakes worth the next session's attention:** an unbalanced `</span>`
+(T-069's exact mistake, caught by re-reading — **the gate reads CSS and stays
+green on broken JSX**); a `className={undefined}` on `Text`, which has no such
+prop; and a scripted bulk replace that matched **0 of 7** patterns because the
+file is CRLF and reported success on an unchanged file — **a zero-match bulk edit
+is the T-058/T-076 signal to change approach.**
+
+**Owed:** the visit drawer opens on a row click and `drawerCount` was 0 in the
+measured DOM — its `h2`, `subtitle`, five `groupTitle`s, `dt`/`dd` and `openLink`
+are **unverified**.
+
 ### T-089 · `/factories` — declutter: one AI strip, one identity, one provenance card
 `status: done (axe, Arabic, light theme, e2e owed)` · `rules: WEB-000, WEB-002, WEB-003, WEB-006, WEB-008, WEB-009, WEB-011, WEB-013` · `est: 1.5h`
 `record:` [2026-08-12-T-089-factories-declutter](sessions/2026-08/2026-08-12-T-089-factories-declutter.md)

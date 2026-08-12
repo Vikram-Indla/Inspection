@@ -27,11 +27,6 @@
   border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
 }
 
-.menuTitle {
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
-  color: var(--sqx-text-primary);
-}
 
 .row {
   display: flex;
@@ -42,7 +37,6 @@
 }
 
 .rowLink {
-  font: var(--sqx-text-body);
   color: var(--sqx-text-link);
   text-decoration: none;
 }
@@ -53,16 +47,11 @@
 
 .empty {
   padding-block: var(--sqx-space-2);
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-muted);
 }
 
 .fieldLabel {
   display: block;
   margin-block-end: var(--sqx-space-1);
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
-  color: var(--sqx-text-secondary);
 }
 
 .input {
@@ -73,7 +62,7 @@
   border-radius: var(--sqx-radius-control);
   background: var(--sqx-surface-default);
   color: var(--sqx-text-primary);
-  font: var(--sqx-text-body);
+  font: inherit;
 }
 
 .input:focus-visible {

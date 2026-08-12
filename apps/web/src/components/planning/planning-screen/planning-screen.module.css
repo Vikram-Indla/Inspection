@@ -13,11 +13,6 @@
   flex-wrap: wrap;
 }
 
-.pagerSummary {
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-muted);
-  font-variant-numeric: var(--sqx-numeric-tabular);
-}
 
 .pagerLinks {
   display: inline-flex;
@@ -32,8 +27,6 @@
   padding-inline: var(--sqx-space-3);
   border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
   border-radius: var(--sqx-radius-control);
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
   color: var(--sqx-text-primary);
   text-decoration: none;
 }

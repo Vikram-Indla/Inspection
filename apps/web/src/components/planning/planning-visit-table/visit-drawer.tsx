@@ -2,6 +2,7 @@
 
 import IconButton from "@/components/saqeel/icon-button/icon-button";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Heading, Text } from "@/components/saqeel/type";
 import type { PlanningVisitView } from "@/features/planning/view";
 import styles from "./visit-drawer.module.css";
 
@@ -16,8 +17,8 @@ export type VisitDrawerStrings = {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className={styles.fieldRow}>
-      <dt className={styles.fieldLabel}>{label}</dt>
-      <dd className={styles.fieldValue}>{value}</dd>
+      <Text as="dt" tone="muted">{label}</Text>
+      <dd className={styles.fieldValue}><Text as="span">{value}</Text></dd>
     </div>
   );
 }
@@ -39,9 +40,9 @@ export default function VisitDrawer({ visit, strings, onClose }: {
       >
         <header className={styles.head}>
           <div className={styles.headText}>
-            <h2 className={styles.title}>{visit.factory}</h2>
+            <Heading level={2}>{visit.factory}</Heading>
             <p className={styles.subtitle}>
-              <span>{visit.reference}</span>
+              <Text as="span" tone="muted" numeric>{visit.reference}</Text>
               <StatusPill tone={visit.statusTone}>{visit.statusLabel}</StatusPill>
             </p>
           </div>
@@ -49,7 +50,7 @@ export default function VisitDrawer({ visit, strings, onClose }: {
         </header>
         <div className={styles.body}>
           <section className={styles.group}>
-            <h3 className={styles.groupTitle}>{strings.groups.factory}</h3>
+            <Heading level={3} visual="subheading" tone="muted">{strings.groups.factory}</Heading>
             <dl className={styles.fields}>
               <Row label={strings.fields.cr} value={visit.cr} />
               <Row label={strings.fields.license} value={visit.license} />
@@ -58,7 +59,7 @@ export default function VisitDrawer({ visit, strings, onClose }: {
             </dl>
           </section>
           <section className={styles.group}>
-            <h3 className={styles.groupTitle}>{strings.groups.planning}</h3>
+            <Heading level={3} visual="subheading" tone="muted">{strings.groups.planning}</Heading>
             <dl className={styles.fields}>
               <Row label={strings.fields.visitType} value={visit.visitType} />
               <Row label={strings.fields.window} value={visit.window} />
@@ -67,25 +68,25 @@ export default function VisitDrawer({ visit, strings, onClose }: {
             </dl>
           </section>
           <section className={styles.group}>
-            <h3 className={styles.groupTitle}>{strings.groups.inspector}</h3>
+            <Heading level={3} visual="subheading" tone="muted">{strings.groups.inspector}</Heading>
             <dl className={styles.fields}>
               <Row label={strings.fields.inspector} value={visit.inspector} />
             </dl>
           </section>
           <section className={styles.group}>
-            <h3 className={styles.groupTitle}>{strings.groups.timeline}</h3>
+            <Heading level={3} visual="subheading" tone="muted">{strings.groups.timeline}</Heading>
             <dl className={styles.fields}>
               <Row label={strings.fields.created} value={visit.created} />
               <Row label={strings.fields.statusChanged} value={visit.lastUpdated} />
             </dl>
           </section>
           <section className={styles.group}>
-            <h3 className={styles.groupTitle}>{strings.groups.ai}</h3>
-            <p className={styles.note}>{strings.notConfigured}</p>
+            <Heading level={3} visual="subheading" tone="muted">{strings.groups.ai}</Heading>
+            <Text tone="muted">{strings.notConfigured}</Text>
           </section>
         </div>
         <footer className={styles.foot}>
-          <a className={styles.openLink} href={visit.visitHref}>{strings.openVisit}</a>
+          <a className={styles.openLink} href={visit.visitHref}><Text as="span" role="label" tone="inherit">{strings.openVisit}</Text></a>
         </footer>
       </aside>
     </>

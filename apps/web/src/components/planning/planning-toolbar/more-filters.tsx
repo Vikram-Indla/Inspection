@@ -5,6 +5,7 @@ import Field from "@/components/saqeel/field/field";
 import MenuSurface from "@/components/saqeel/menu-surface/menu-surface";
 import SaqeelSelect, { type SelectOption } from "@/components/saqeel/select/select";
 import DatePicker from "@/components/saqeel/date-picker/date-picker";
+import { Text } from "@/components/saqeel/type";
 import type { Locale } from "@/lib/i18n";
 import styles from "./planning-toolbar.module.css";
 
@@ -74,7 +75,7 @@ export default function MoreFilters({ strings, options, values, onChange, locale
         data-active={activeCount > 0 ? "" : undefined}
         onClick={() => setIsOpen(open => !open)}
       >
-        {strings.moreFilters}
+        <Text as="span" role="label" tone="inherit">{strings.moreFilters}</Text>
         {activeCount > 0 ? <CountBadge value={activeCount} /> : null}
         <Icon name="disclosure" size="sm" />
       </button>
