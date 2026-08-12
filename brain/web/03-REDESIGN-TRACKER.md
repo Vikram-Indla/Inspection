@@ -10,6 +10,61 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-091 · `/planning/bulk` — typography, and a hole in the gate
+`status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014 §2.1, §4.1, §8` · `est: 1.5h`
+`record:` [2026-08-12-T-091-planning-bulk-typography](sessions/2026-08/2026-08-12-T-091-planning-bulk-typography.md)
+
+**19 route-owned declarations across 7 modules → 0**, plus **4 rendered elements
+the gate could not see.**
+
+**The gate cannot see a legacy global type class applied from JSX.**
+`/planning/bulk` reported **1 violation** — the shell — while still rendering
+**four elements at 11.5px**, off every scale. The source is
+`DistributionPanels.tsx` using `className="t-caption"`, defined in the **frozen**
+`tokens.css` (`--type-caption-size: 11.5px`). Every gate rule scans **CSS files
+for declarations**; the frozen sheets are exempt by design and a `className` in a
+`.tsx` matches no rule. **Only measuring found it.** `t-caption` appears in
+**162 `.tsx` files** repo-wide — **a route can be at "1 violation" and still be
+off-scale.**
+
+**`--sqx-status-critical-on-soft` and `--sqx-text-danger` are the same value —
+checked, not assumed.** Both resolve to `--sqx-error-darker` / `--sqx-error-light`,
+so `tone="danger"` is exact and `ai-advisory`'s `.error` could be deleted rather
+than given the T-090 wrapper treatment. **A colour token outside the tone list is
+not automatically a different colour.**
+
+**`.tree, .notice` is a grouped selector and the map only reported the first
+class** — the font applied to both. Both are mixed-content flex rows, so they
+inherit (T-065). **Read the selector, not just the map's first match.**
+
+**`<bdi>` has no primitive**, and it cannot be dropped (bidi isolation for factory
+codes in Arabic), so its declaration was deleted rather than composed — the
+inherited render is identical. Same reasoning as `<td>`.
+
+```
+/planning/bulk  20 → 1   (route-owned 19 → 0)
+baseline       768 → 749
+
+rendered before: 30 · 28 · 20 · 16 · 14 · 12 · 11.5   (4 off-scale)
+rendered after:  30 · 28 · 20 · 16 · 14 · 12          (0 off-scale), one typeface
+```
+
+**Twelve of thirteen planning routes now sit at 1 — the shell.** Only
+`/planning/visits` remains at 16, and it owns none of them.
+
+**Three mistakes, each caught by a check rather than by reading:** a missing
+`Text` import that compiled into the **DOM `Text` interface** (`tsc` caught it,
+the gate could not); two more unbalanced `</span>`; and `.filterStatus` nearly
+losing its `inline-flex` layout — caught because the **unused-class check**
+flagged it, which prompted re-reading the block. **A class that becomes unused
+after a migration is a signal to re-read it, not to delete it reflexively.**
+
+**Parked:** `BulkForm.tsx` is **dead** (zero importers, ~240 lines of legacy
+globals, a complete parallel implementation of this screen); a gate rule matching
+`className=".*\bt-(caption|body|label|meta|micro)\b"` in `.tsx` would close the
+hole above; `DistributionPanels.tsx` still renders legacy structural globals
+(`panel-header`, `sq-grid-2`, `stack`) — a rebuild, not a typography task.
+
 ### T-090 · `/planning` — typography, 45 → 0
 `status: done (the visit drawer — 10 of the 45 — never rendered)` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014 §4.1, §8` · `est: 1.5h`
 `record:` [2026-08-12-T-090-planning-typography](sessions/2026-08/2026-08-12-T-090-planning-typography.md)

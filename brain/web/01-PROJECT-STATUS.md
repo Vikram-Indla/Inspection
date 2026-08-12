@@ -1,6 +1,53 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-090 — /planning typography`
+`Last updated: 2026-08-12` · `Updated by: T-091 — /planning/bulk typography`
+
+## The gate counts CSS. It cannot see a legacy class used from JSX (2026-08-12)
+
+`/planning/bulk` reported **1 violation** — the shell — and still rendered four
+elements at **11.5px**, off every scale. The source was
+`DistributionPanels.tsx`:
+
+```tsx
+<p className="t-caption">{strings.riskAdvisory}</p>
+```
+
+`.t-caption` lives in `tokens.css` (`--type-caption-size: 11.5px`), which is
+**frozen and therefore exempt**. Every rule in `check-typography.mjs` scans CSS
+files for *declarations*; a `className` string in a `.tsx` matches none of them.
+So the count was truthful about the CSS and wrong about the screen.
+
+**`t-caption` appears in 162 `.tsx` files.** Until a rule matches
+`className=".*\bt-(caption|body|label|meta|micro)\b"`, **a route at "1 violation"
+is not evidence that it renders on-scale** — only a measured render is. Two
+tasks in a row (T-090, T-091) found their real defects by measuring, not by
+counting.
+
+## A token outside the tone list is not automatically a different colour (2026-08-12)
+
+T-090 established the wrapper pattern for a colour the nine tones cannot express
+(`--sqx-accent-ai`). T-091 nearly applied it again to
+`--sqx-status-critical-on-soft` — and did not, because checking the definitions
+showed **both it and `--sqx-text-danger` resolve to `--sqx-error-darker` in light
+and `--sqx-error-light` in dark.** Identical in both themes, so `tone="danger"`
+is exact and the class could be deleted outright.
+
+**Resolve the token before designing around it.** The wrapper costs a DOM node
+and a surviving class; it is only warranted when the values genuinely differ.
+
+## A class that goes unused after a migration is a signal to re-read it (2026-08-12)
+
+`.filterStatus` carried `display: inline-flex; align-items: center; gap` **and**
+a font. The migration replaced the whole span with `<Text>`, which would have
+collapsed a CountBadge row — a layout regression with no typography symptom.
+
+Nothing caught it except the **unused-class check**: the class showed as defined
+but unreferenced, which prompted re-reading the block and finding the layout.
+The reflex at that moment is to delete the class; the correct move is to read it
+first and ask what else it was doing.
+
+Run both directions after every migration — orphaned `styles.x` **and** unused
+classes — and treat each hit as a question, not a chore.
 
 ## Exactly four elements need `font: inherit`. Check, don't guess (2026-08-12)
 

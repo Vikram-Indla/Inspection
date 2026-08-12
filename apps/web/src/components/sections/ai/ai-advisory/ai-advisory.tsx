@@ -5,6 +5,7 @@ import Button from "@/components/saqeel/button/button";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import Icon from "@/components/saqeel/icon/icon";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Text } from "@/components/saqeel/type";
 import {
   generateContextualInsight,
   type ContextualResult,
@@ -64,18 +65,22 @@ export default function AiAdvisory({
         trailing={<StatusPill tone="info">{strings.advisory}</StatusPill>}
       />
       <CardBody gap="tight">
-        {result.text ? <p className={styles.text} dir="auto">{result.text}</p> : null}
+        {result.text ? (
+          <div className={styles.text}>
+            <Text dir="auto" tone="secondary">{result.text}</Text>
+          </div>
+        ) : null}
 
         <div id={statusId} aria-live="polite">
-          {blocked ? <p className={styles.error} role="status">{strings.unavailable}</p> : null}
+          {blocked ? <Text tone="danger" live="status">{strings.unavailable}</Text> : null}
           {result.error ? (
-            <p className={styles.error} role="alert">
+            <Text tone="danger" live="alert">
               {result.error.includes("unavailable") ? strings.unavailable : result.error}
-            </p>
+            </Text>
           ) : null}
         </div>
 
-        <p className={styles.muted}>{strings.evidence}</p>
+        <Text tone="muted">{strings.evidence}</Text>
 
         <form action={blocked ? undefined : action}>
           <input type="hidden" name="surface" value={surface} />

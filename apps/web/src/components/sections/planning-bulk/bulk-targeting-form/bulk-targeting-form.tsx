@@ -1,6 +1,7 @@
 "use client";
 
 import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { Text } from "@/components/saqeel/type";
 import { useRouter } from "next/navigation";
 import Stack from "@/components/saqeel/stack/stack";
 import Toolbar from "@/components/saqeel/toolbar/toolbar";
@@ -151,7 +152,7 @@ export default function BulkTargetingForm({
             <Button variant="secondary" onClick={() => setConfirmingSelectAll(true)}>{strings.selectAllResults}</Button>
             <span className={styles.filterStatus} role="status" aria-live="polite">
               {isFiltering
-                ? strings.filtering
+                ? <Text as="span" tone="muted">{strings.filtering}</Text>
                 : <CountBadge value={matched.length} label={strings.resultsCount.replace("{n}", String(matched.length))} />}
             </span>
           </>

@@ -7,6 +7,7 @@
 // list is the equivalent primary channel and is always present.
 
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
+import { Text } from "@/components/saqeel/type";
 
 const RISK_TONE: Readonly<Record<string, StatusTone>> = {
   high: "danger",
@@ -30,7 +31,7 @@ function Panel({ dist, strings, focusedValue }: { dist: Distribution; strings: D
     <section className="panel" aria-label={dist.heading}>
       <header className="panel-header">
         <h3 className="panel-title">{dist.heading}</h3>
-        <span className="t-caption numeric">{strings.ofDenominator.replace("{n}", String(dist.total))}</span>
+        <Text as="span" role="label" tone="muted" numeric>{strings.ofDenominator.replace("{n}", String(dist.total))}</Text>
       </header>
       <ul className="panel-body stack">
         {dist.buckets.map(b => {
@@ -41,7 +42,7 @@ function Panel({ dist, strings, focusedValue }: { dist: Distribution; strings: D
                 {b.unknown ? <span className="badge badge-warning">? {strings.unknown}</span> : <bdi>{b.label}</bdi>}
               </span>
               <progress max={max} value={b.count} aria-label={`${b.label}: ${b.count}`} />
-              <span className="numeric t-caption">{b.count}</span>
+              <Text as="span" role="label" tone="muted" numeric>{b.count}</Text>
             </li>
           );
         })}
@@ -61,7 +62,7 @@ export default function DistributionPanels({ distributions, strings, focusedFiel
       {distributions.map(d => (
         <div key={d.key} className="stack">
           <Panel dist={d} strings={strings} focusedValue={d.key === focusedField ? (focusedValue ?? undefined) : undefined} />
-          {d.key === "risk_band" && <p className="t-caption">{strings.riskAdvisory}</p>}
+          {d.key === "risk_band" && <Text tone="muted">{strings.riskAdvisory}</Text>}
         </div>
       ))}
     </section>

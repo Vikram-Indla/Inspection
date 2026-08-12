@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
+import { Heading, Text } from "@/components/saqeel/type";
 import Button from "@/components/saqeel/button/button";
 import Field from "@/components/saqeel/field/field";
 import SaqeelSelect, { type SelectOption } from "@/components/saqeel/select/select";
@@ -324,7 +325,7 @@ export default function CriteriaBuilder({
       className={styles.root}
       onSubmit={event => { if (invalid.length > 0) { event.preventDefault(); setShowInvalid(true); } }}
     >
-      <h3 className={styles.heading}>{strings.heading}</h3>
+      <Heading level={3}>{strings.heading}</Heading>
       <input type="hidden" name="ct" value={ct} />
 
       <ul role="tree" aria-label={strings.heading} className={styles.tree}>
@@ -351,12 +352,12 @@ export default function CriteriaBuilder({
       <div className={styles.footer}>
         <Button type="submit" variant="primary" label={strings.apply}>{strings.apply}</Button>
         <Button variant="tertiary" href="/planning/bulk" label={strings.clear}>{strings.clear}</Button>
-        <span className={styles.count} role="status" aria-live="polite">
+        <Text as="span" tone="muted" numeric live="status">
           {strings.matching.replace("{n}", String(matchCount))}
-        </span>
+        </Text>
       </div>
 
-      <p className={styles.hint}>{strings.hint}</p>
+      <Text tone="muted">{strings.hint}</Text>
     </form>
   );
 }

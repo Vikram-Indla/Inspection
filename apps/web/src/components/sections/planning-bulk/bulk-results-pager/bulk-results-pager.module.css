@@ -5,9 +5,3 @@
   gap: var(--sqx-space-3);
   flex-wrap: wrap;
 }
-
-.status {
-  color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-body-size);
-  font-variant-numeric: tabular-nums;
-}

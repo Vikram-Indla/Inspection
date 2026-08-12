@@ -2,6 +2,7 @@ import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-
 import type { IconName } from "@/components/saqeel/icon/icon-registry";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import Choice from "@/components/saqeel/choice/choice";
+import { Text } from "@/components/saqeel/type";
 import type { CriteriaFactory } from "@/features/planning-bulk/view";
 import styles from "./bulk-evidence-table.module.css";
 
@@ -68,7 +69,9 @@ export default function BulkEvidenceTable({
       isRowHeader: true,
       cell: factory => (
         <span className={styles.identity}>
-          <a className={styles.name} href={`/factories/${factory.id}`} target="_blank" rel="noreferrer">{factory.name}</a>
+          <a href={`/factories/${factory.id}`} target="_blank" rel="noreferrer">
+            <Text as="span" role="bodyStrong" tone="inherit">{factory.name}</Text>
+          </a>
           <bdi className={styles.code}>{factory.factory_code ?? MISSING}</bdi>
         </span>
       ),

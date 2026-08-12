@@ -1,5 +1,6 @@
 import Button from "@/components/saqeel/button/button";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Text } from "@/components/saqeel/type";
 import styles from "./bulk-selection-bar.module.css";
 
 export type SelectionBarStrings = {
@@ -32,14 +33,16 @@ export default function BulkSelectionBar({
   return (
     <div className={styles.root}>
       <div className={styles.status}>
-        <strong className={styles.count} aria-live="polite">
-          {strings.selectionBar.replace("{n}", String(selectedCount))}
+        <strong aria-live="polite">
+          <Text as="span" role="bodyStrong" numeric>
+            {strings.selectionBar.replace("{n}", String(selectedCount))}
+          </Text>
         </strong>
         {hasSelection
           ? <Button variant="tertiary" onClick={onClear}>{strings.clearSelection}</Button>
           : <StatusPill tone="warning">{strings.readyNothing}</StatusPill>}
         {draftReference !== null && !saveFailed
-          ? <span className={styles.note} role="status">{strings.draftSaved.replace("{ref}", draftReference)}</span>
+          ? <Text as="span" tone="muted" live="status">{strings.draftSaved.replace("{ref}", draftReference)}</Text>
           : null}
         {draftPersistable ? null : <StatusPill tone="info" ping={false}>{strings.draftSaveFailed}</StatusPill>}
         {saveFailed ? <StatusPill tone="danger">{strings.draftSaveFailed}</StatusPill> : null}
