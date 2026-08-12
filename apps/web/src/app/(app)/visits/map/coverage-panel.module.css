@@ -1,13 +1,5 @@
 .root {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--sqx-grid-min-lg), 1fr));
-  gap: var(--sqx-space-4);
-  align-items: start;
-}
-
-.column {
   display: flex;
   flex-direction: column;
   gap: var(--sqx-space-4);
-  min-inline-size: 0;
 }

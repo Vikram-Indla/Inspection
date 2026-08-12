@@ -8,14 +8,14 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
 import {
-  MAP_PAGE_SIZE, mapHref, operationalTone, pageCountOf, resolvePage, resolveRegion,
+  MAP_PAGE_SIZE, operationalTone, pageCountOf, resolvePage, resolveRegion, resolveRisk,
+  resolveWindowDays, windowEndIso, RISK_BANDS,
   type VisitMapParams, type VisitMapRow,
 } from "@/features/visits/map";
+import VisitMapFilters from "@/components/sections/visits/visit-map-filters/visit-map-filters";
 import VisitMap, { type MappedVisit } from "./VisitMap";
 import CoveragePanel from "./CoveragePanel";
 import VisitViewNavigation, { type VisitBasePath } from "../VisitViewNavigation";
-
-const RISK_BANDS = ["high", "medium", "low"] as const;
 
 type VisitRow = {
   id: string; factory_id: string; visit_reference: string | null; operational_state: string;
@@ -33,7 +33,11 @@ export async function VisitsMapView({ basePath = "/visits", params = {} }: {
   const strings = messages.visits.map;
   const enumLabel = makeEnumLabel(locale);
   const uiLocale = locale === "ar" ? "ar" : "en";
-  const region = resolveRegion(params.region);
+  const filter = {
+    region: resolveRegion(params.region),
+    risk: resolveRisk(params.risk),
+    windowDays: resolveWindowDays(params.window),
+  };
   const page = resolvePage(params.page);
   const sb = await supabaseServer();
 
@@ -43,7 +47,12 @@ export async function VisitsMapView({ basePath = "/visits", params = {} }: {
   const scoped = sb.from("visits").select(select, { count: "exact" })
     .not("factories.official_lat", "is", null)
     .order("window_start", { ascending: false });
-  const paged = region === "" ? scoped : scoped.eq("factories.region", region);
+  const byRegion = filter.region === "" ? scoped : scoped.eq("factories.region", filter.region);
+  const byRisk = filter.risk === "" ? byRegion : byRegion.eq("factories.risk_band", filter.risk);
+  const now = new Date();
+  const paged = filter.windowDays === null
+    ? byRisk
+    : byRisk.gte("window_start", now.toISOString()).lte("window_start", windowEndIso(filter.windowDays, now));
 
   const [{ data: visits, error, count }, { data: geo }, { data: regionRows }] = await Promise.all([
     paged.range(page * MAP_PAGE_SIZE, page * MAP_PAGE_SIZE + MAP_PAGE_SIZE - 1),
@@ -111,11 +120,17 @@ export async function VisitsMapView({ basePath = "/visits", params = {} }: {
           workload: messages.planning.visit.views.workload,
         }}
       />
+      {basePath === "/planning" ? (
+        <VisitMapFilters
+          filter={filter}
+          regions={regions}
+          riskOptions={RISK_BANDS.map(band => ({ value: band, label: enumLabel(band) }))}
+          basePath={basePath}
+          strings={messages.visits.coverage}
+        />
+      ) : null}
       <VisitMap
         visits={mapped}
-        regions={regions}
-        region={region}
-        basePath={basePath}
         locale={locale}
         strings={{
           region: strings.region, allRegions: strings.allRegions,
@@ -131,17 +146,11 @@ export async function VisitsMapView({ basePath = "/visits", params = {} }: {
         page={page}
         pageCount={pageCountOf(total)}
         total={total}
-        region={region}
+        filter={filter}
         basePath={basePath}
         strings={strings}
       />
-      {basePath === "/planning" ? (
-        <CoveragePanel
-          visits={mapped}
-          riskOptions={RISK_BANDS.map(band => ({ value: band, label: enumLabel(band) }))}
-          strings={messages.visits.coverage}
-        />
-      ) : null}
+      {basePath === "/planning" ? <CoveragePanel visits={mapped} strings={messages.visits.coverage} /> : null}
     </Shell>
   );
 }

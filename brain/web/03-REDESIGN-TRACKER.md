@@ -10,6 +10,56 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-099 · the visit map — paging that lied, and a contract that froze the legacy
+`status: done — e2e not run` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-004, WEB-008, WEB-009, WEB-011, WEB-013, WEB-014` · `est: 2h`
+`record:` [2026-08-13-T-099-visit-map-migration](sessions/2026-08/2026-08-13-T-099-visit-map-migration.md)
+
+**The pagination was wrong before it was verified, and only rendering found it.**
+The first build fetched `.range(0, 24)` and rendered **22 rows**. PostgREST applies a
+filter on an embedded resource to the **embedding**, not the parent row, unless the
+join is `!inner` — so `.not("factories.official_lat","is",null)` filtered nothing and
+`count` counted unlocated visits. **`factories!inner` unconditionally** fixed page size
+and total together: verified **25 rows, `26–50 of 298`**.
+
+**`GeoMap` has carried `fitMarkers` all along** — its own doc comment describes the
+exact "centred on whichever sorted first" bug the screen had. One prop.
+
+**An entire column said one sentence on every row.** "Unavailable under current scope"
+is now a single note, and the column **returns the moment any visit has a position**.
+
+**`CoveragePanel`'s style contract was restated, not deleted — on the owner's
+authorisation.** It pinned the component to frozen-sheet globals and **forbade
+importing any `.module.css`**, so migration was impossible without changing the spec.
+The rewritten contract is **strictly stronger**: no inline `style`, no CSS-in-JS, **no
+string-literal `className` at all**, the retired vocabulary named and banned, and the
+module asserted to carry no hex, px/rem or font declaration.
+
+**Three e2e literals pinned the file layout and were preserved on purpose** —
+`from("geo_events")`/`official_lat` in `MapView.tsx`, `"latest inspector position"` and
+`` `/visits/${v.id}` `` in `VisitMap.tsx`, plus the `MappedVisit` export another spec
+imports. **So the query could not move to `queries.ts`**, and the visit link lives on a
+real `openHref(v)` helper feeding the selected-visit button.
+
+**Filters moved above the map, which changed what they had to mean.** A filter bar over
+the map has to filter the map, so region/risk/window became **URL state applied in the
+query**, driving map, table and coverage together — and that surfaced **two Region
+selects** on one screen, now one. Window defaults to *any* rather than 30 days, because
+applying the old panel default page-wide would have hidden every past visit.
+`CoveragePanel` lost its state and is now a **Server Component**.
+
+**A missing token stopped an invention.** No `--sqx-map-*` size token exists; the canvas
+uses `aspect-ratio` rather than inventing one. A map-height token is a change request.
+
+```
+rows in the DOM   up to 1000 → 25     paged in the database
+table renders on      client → server
+repeated cells          1000 → 1
+region filters             2 → 1
+```
+
+**Owed: `npm run test:e2e`** — four specs read these files, and the rewritten coverage
+contract has never been executed. axe and the manual checklist are also owed.
+
 ### T-098 · `/planning/calendar` — the grid collapses, the enum stops reaching the screen
 `status: partial — verified in Arabic; English render, axe and 9 Arabic strings owed` · `rules: WEB-000, WEB-002 §5 §6, WEB-003, WEB-008, WEB-009, WEB-011, WEB-013` · `est: 1h`
 `record:` [2026-08-12-T-098-visit-calendar-grid-and-enum-labels](sessions/2026-08/2026-08-12-T-098-visit-calendar-grid-and-enum-labels.md)

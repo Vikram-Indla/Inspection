@@ -1,0 +1,4 @@
+.field {
+  flex: 1 1 var(--sqx-grid-min-xs);
+  min-inline-size: 0;
+}

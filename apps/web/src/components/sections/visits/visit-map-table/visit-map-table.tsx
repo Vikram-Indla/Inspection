@@ -4,15 +4,15 @@ import Pagination from "@/components/saqeel/pagination/pagination";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { Mono, Text } from "@/components/saqeel/type";
 import { fill } from "@/i18n/messages";
-import { mapHref, placeLabel, MAP_PAGE_SIZE, type VisitMapRow, type VisitMapStrings } from "@/features/visits/map";
+import { mapHref, placeLabel, MAP_PAGE_SIZE, type VisitMapFilter, type VisitMapRow, type VisitMapStrings } from "@/features/visits/map";
 import styles from "./visit-map-table.module.css";
 
-export default function VisitMapTable({ rows, page, pageCount, total, region, basePath, strings }: {
+export default function VisitMapTable({ rows, page, pageCount, total, filter, basePath, strings }: {
   rows: readonly VisitMapRow[];
   page: number;
   pageCount: number;
   total: number;
-  region: string;
+  filter: VisitMapFilter;
   basePath: string;
   strings: VisitMapStrings;
 }) {
@@ -80,7 +80,7 @@ export default function VisitMapTable({ rows, page, pageCount, total, region, ba
             status: strings.pageStatus,
             label: strings.pageLabel,
           }}
-          hrefFor={next => mapHref(basePath, region, next)}
+          hrefFor={next => mapHref(basePath, filter, next)}
         />
       ) : null}
     </div>

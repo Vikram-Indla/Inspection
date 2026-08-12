@@ -1,16 +1,11 @@
 "use client";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import Button from "@/components/saqeel/button/button";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
-import Field from "@/components/saqeel/field/field";
-import SaqeelSelect from "@/components/saqeel/select/select";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
-import Toolbar from "@/components/saqeel/toolbar/toolbar";
 import { Text } from "@/components/saqeel/type";
 import type { GeoMarkerData } from "@/components/GeoMap";
-import { mapHref } from "@/features/visits/map";
 import { formatDateTime } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import styles from "./visit-map.module.css";
@@ -41,15 +36,11 @@ const DEFAULT_STRINGS: VisitMapStrings = {
 
 const openHref = (v: MappedVisit) => `/visits/${v.id}`;
 
-export default function VisitMap({ visits, regions, region, basePath, strings: s = DEFAULT_STRINGS, locale = "en" }: {
+export default function VisitMap({ visits, strings: s = DEFAULT_STRINGS, locale = "en" }: {
   visits: MappedVisit[];
-  regions: readonly string[];
-  region: string;
-  basePath: string;
   strings?: VisitMapStrings;
   locale?: Locale;
 }) {
-  const router = useRouter();
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const markers: GeoMarkerData[] = useMemo(() => visits.flatMap(visit => [
@@ -69,26 +60,10 @@ export default function VisitMap({ visits, regions, region, basePath, strings: s
 
   return (
     <div className={styles.root}>
-      <Toolbar
-        label={s.legendLabel}
-        trailing={
-          <>
-            <StatusPill tone="info" ping={false}>{s.factoryVisitLegend}</StatusPill>
-            <StatusPill tone="warning" ping={false}>{s.inspectorLegend}</StatusPill>
-          </>
-        }
-      >
-        <div className={styles.filter}>
-          <Field label={s.region}>
-            <SaqeelSelect
-              label={s.region}
-              value={region}
-              options={[{ value: "", label: s.allRegions }, ...regions.map(name => ({ value: name, label: name }))]}
-              onChange={next => { setSelectedId(null); router.push(mapHref(basePath, next, 0)); }}
-            />
-          </Field>
-        </div>
-      </Toolbar>
+      <div className={styles.legend}>
+        <StatusPill tone="info" ping={false}>{s.factoryVisitLegend}</StatusPill>
+        <StatusPill tone="warning" ping={false}>{s.inspectorLegend}</StatusPill>
+      </div>
 
       <div className={styles.canvas} dir="ltr">
         {markers.length ? (

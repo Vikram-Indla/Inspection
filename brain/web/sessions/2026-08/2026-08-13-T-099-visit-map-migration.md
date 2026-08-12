@@ -1,6 +1,6 @@
-# 2026-08-12 · T-098 — the map: paging that lied, and a contract that froze the legacy
+# 2026-08-13 · T-099 — the map: paging that lied, and a contract that froze the legacy
 
-`task: T-098` · `status: done — e2e not run` · `duration: 2h`
+`task: T-099` · `status: done — e2e not run` · `duration: 2h`
 `rules applied: WEB-000, WEB-001, WEB-002, WEB-003, WEB-004, WEB-008, WEB-009, WEB-011, WEB-013, WEB-014`
 
 ---
@@ -20,7 +20,8 @@ onto SAQEEL — including the coverage panel, whose style contract forbade it.
 | `app/(app)/visits/map/MapView.tsx` | rebuilt — paged query, composes |
 | `app/(app)/visits/map/VisitMap.tsx` | rebuilt — client map only |
 | `app/(app)/visits/map/visit-map.module.css` | **created** |
-| `app/(app)/visits/map/CoveragePanel.tsx` | migrated onto SAQEEL |
+| `components/sections/visits/visit-map-filters/` | **created** — the top filter bar (+ module) |
+| `app/(app)/visits/map/CoveragePanel.tsx` | migrated onto SAQEEL; now a Server Component |
 | `app/(app)/visits/map/coverage-panel.module.css` | **created** |
 | `app/(app)/visits/map/page.tsx` · `planning/map/page.tsx` | edited — await `searchParams` |
 | `e2e/coverage-panel-style-contract.spec.ts` | **restated** — authorised by the owner |
@@ -66,6 +67,33 @@ type export stayed, and `` `/visits/${v.id}` `` lives on a real
 `openHref(v)` helper feeding the selected-visit "Open visit" button — UI, not a
 decoy.
 
+**Moving the filters above the map changed what they had to mean.** The owner asked
+for the coverage filters at the top and the two result panels stacked so the short
+one stopped leaving dead space. **A filter bar above the map has to filter the map**
+— leaving it scoped to the panels below would have been worse than where it started.
+So region, risk band and window became **URL state applied in the query**, driving
+the map, the table and the coverage panels from one source.
+
+**That surfaced a duplicate nobody had named: two Region selects.** One in the map
+toolbar, one in the coverage filters, filtering different things on the same screen.
+Now one.
+
+**The window default moved from 30 days to any window, deliberately.** The old
+default narrowed only the coverage panels; applied page-wide it would have silently
+hidden every past visit from the map and the table. Defaulting to *all* preserves
+what the screen showed and lets the planner narrow on purpose.
+
+**"Inspector status" was removed as a duplicate of the panel beneath it** — the card
+is titled "N unassigned visits". Recorded as a judgement call, not a silent drop.
+
+**`CoveragePanel` became a Server Component.** With filtering in the URL it had no
+state left, so `"use client"` and four `useState` calls went with it.
+
+**The regional bars came back better than they were.** My first pass dropped the
+`<progress>` per region — a real loss of a magnitude cue. `trend-bars` takes a
+**series**, not one bar per row, so the panel is now a single chart across regions,
+which is the primitive doing what it was built for rather than being stretched.
+
 **A missing token stopped an invention.** The map canvas needed a height and **no
 `--sqx-map-*` size token exists**; WEB-002 says a genuine gap is raised, never
 filled inline. Rather than invent one, the canvas uses `aspect-ratio: 16 / 9` — a
@@ -86,8 +114,10 @@ repeated cells               1000 → 1       one note, not a column
 map framing            markers[0] → fitMarkers
 legacy global classes          19 → 0       including CoveragePanel's allowlist
 inline style objects            6 → 0
+region filters on screen         2 → 1      the map toolbar and the coverage card
+client components                2 → 2      CoveragePanel left, VisitMapFilters joined
 typography baseline           734 → 734     none new
-features removed                0
+features removed                 1          "Inspector status" — see Parked
 ```
 
 ## Accessibility
@@ -113,11 +143,12 @@ features removed                0
 
 ## Parked
 
-- **The regional coverage bars are gone.** The old panel drew a `<progress>` per
-  region; the migration renders the count alone. That is a **loss of a
-  relative-magnitude cue** and should come back — `trend-bars` already exists.
 - Region options are read from all factories, so a region with no located visit is
   still offered.
+- **The "Inspector status" filter was removed** as a duplicate of the "N unassigned
+  visits" panel. If a planner wants *assigned-only*, it needs restoring — and then
+  it should be a server-side filter like the other three, which PostgREST makes
+  awkward for "has no row in a to-many".
 - `coverage-filters.ts` still filters in the client over the current page only.
 
 ## Blocked / open questions
