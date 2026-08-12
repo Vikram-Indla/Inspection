@@ -1,6 +1,102 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-093 — /planning/visits typography`
+`Last updated: 2026-08-12` · `Updated by: T-095 — /field fonts`
+
+## `/field` is a second design system, and the baseline does not know it (2026-08-12)
+
+`app/(app)/field/layout.tsx:30` links `/saqeel-ds/saqeel/styles.css` from
+`public/`. That one tag brings a complete parallel design system — its own
+`tokens/{fonts,colors,typography,layout}.css` and a `components.css` — with a
+**thirteen-step** type scale:
+
+```
+28 · 22 · 17 · 15 · 14 · 13 · 13 · 12.5 · 12 · 11.5 · 30
+```
+
+None of those are SAQEEL's nine. Every off-scale size measured on `/field` comes
+from there, not from unmigrated feature code.
+
+**So `/field`'s 226 counted violations are not a migration backlog in the sense
+the rest of the baseline is.** Migrating those 38 files onto type primitives
+while that stylesheet redefines `--font-*` and `--type-*` for the whole subtree
+is work against a live override: the primitives would render inside a scope that
+has already replaced the tokens they consume.
+
+Add the **502 gate-invisible** occurrences there (`t-caption` 329, `id-code` 164,
+`t-label` 9) and roughly a third of the remaining 734 belongs to a system this
+sweep is not migrating. **The number overstates what the programme owns until
+someone rules: does `/field` join SAQEEL, or is it declared separate and its
+count removed?**
+
+## `document.fonts.check()` does not tell you whether text renders (2026-08-12)
+
+It reports the document's `FontFaceSet`. It returned `false` for
+`"IBM Plex Mono"` on `/field` and T-095 reported, wrongly, that sixteen elements
+were rendering in a font that did not exist. They were rendering in it perfectly.
+
+Two probes are unreliable and both were used to reach that wrong answer:
+
+- `document.fonts.check("16px X")` — false for anything not in the FontFaceSet.
+- `ctx.font = '400 16px "IBM Plex Mono"'` on a canvas — **silently mis-parses a
+  quoted family** and falls back, so the width matches a bogus baseline and
+  appears to confirm the font is missing.
+
+The check that holds: lay out a hidden `<span>` carrying the element's own
+computed `font-size`, `font-weight`, `letter-spacing` and `font-variant-numeric`,
+then compare `getBoundingClientRect().width` across candidate families against
+the element's declared stack.
+
+```
+as declared      247.50
+"IBM Plex Mono"  247.50   ← identical: it is what renders
+ui-monospace     209.84
+Consolas         226.80
+```
+
+**A font claim is a width measurement or it is a guess.**
+
+## Self-hosting is a decision the whole app has to make, not one layout (2026-08-12)
+
+`app/layout.tsx` self-hosts IBM Plex Sans Arabic through `next/font/local` and
+says why in the file: the build must not depend on a Google fetch that fails in
+restricted environments. `public/saqeel-ds/saqeel/tokens/fonts.css` then
+`@import`s all three families straight from `fonts.googleapis.com`.
+
+So the channel most likely to be **offline** — the field app, which registers a
+PWA — carried the exact runtime network dependency the rest of the application
+had deliberately removed. Nothing failed loudly; the fonts simply came from
+somewhere else.
+
+**When a policy is set in `layout.tsx`, check the stylesheets a route links
+directly.** A `<link>` in a nested layout bypasses every convention the root
+layout establishes.
+
+## The clutter was duplication, and duplication is a code smell you can count (2026-08-12)
+
+T-094 took `/planning/bulk` from **ten stacked blocks and zero rows of data** on
+first load to five, and **removed no fact whatsoever** — every deletion was a
+second copy of something still on screen. The counts are the point:
+
+```
+renderings of view.eligible   4 → 1     criteria footer · ledger · toolbar badge · pager
+copies of the "no criteria" copy 3 → 1  two shared a sentence verbatim
+copies of the risk advisory   2 → 1     differing by the word "only"
+```
+
+**Two facts a future declutter must not get wrong.** The ledger's
+denominator/eligible/excluded triple looks like a fourth duplicate — `excluded`
+is arithmetic — but CD-021 states plainly that showing the three together is the
+signature of the screen, so it stays. And the five "Not available" rows were not
+extra information: `fieldChoices` already sets `disabled` + `note` on every
+unsupplied option, so the block below was the **second** telling and collapsed
+into one disclosure.
+
+**Blocks that carry nothing at zero are gated, not deleted.** The pager, campaign
+summary and toolbar badge were correct components rendering an empty truth.
+
+**The screen body was never rendered** — the dev session is an Inspector and
+`/planning/bulk` needs `planning.create.bulk`. Axe, the manual checklist and the
+Arabic pass are owed under a Planner or Supervisor session before T-094 is `done`.
 
 ## The planning family is closed (2026-08-12)
 

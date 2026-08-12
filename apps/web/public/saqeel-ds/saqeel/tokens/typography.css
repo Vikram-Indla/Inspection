@@ -3,12 +3,26 @@
    IBM Plex Mono ONLY for machine identifiers (inspection IDs, permit
    numbers, coordinates, asset numbers, reference codes).
    Weights: 400 content · 500 labels/controls · 600 headings/key values
-   · 700 hero metrics only. */
+   · 700 hero metrics only.
+
+   FONTS ARE MIGRATED — DO NOT CHANGE THESE THREE DECLARATIONS.
+   tokens/fonts.css pulls all three families from fonts.googleapis.com at
+   runtime. app/layout.tsx deliberately does not: it self-hosts IBM Plex Sans
+   Arabic through next/font/local, with a written reason — the build must not
+   depend on a Google fetch that fails in restricted environments. So the field
+   channel carried a network dependency the rest of the application had already
+   removed, on the one surface most likely to be offline.
+   --font-plex-arabic is that self-hosted face. It now leads every stack here,
+   so /field renders the real product voice from the app's own bundle and only
+   falls back to the Google-loaded literals if it is somehow absent.
+   Anyone reworking this design system: leave these three declarations alone.
+   Sizes, weights and the role scale are a separate question — the fonts are
+   already correct. (brain/web/sessions/2026-08/2026-08-12-T-095-field-fonts.md) */
 
 :root {
-  --font-body:    "IBM Plex Sans", "IBM Plex Sans Arabic", -apple-system, "Segoe UI", sans-serif;
+  --font-body:    var(--font-plex-arabic), "IBM Plex Sans", "IBM Plex Sans Arabic", -apple-system, "Segoe UI", sans-serif;
   --font-heading: var(--font-body);
-  --font-mono:    "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+  --font-mono:    "IBM Plex Mono", ui-monospace, "SF Mono", var(--font-plex-arabic), monospace;
 
   /* Role scale — size / line-height / weight */
   --type-display-size: 28px;      --type-display-lh: 1.25; --type-display-w: 600;
@@ -30,7 +44,7 @@
 /* Arabic-first metrics: same stack, Arabic leads; Plex Arabic needs
    slightly taller leading and never letter-spacing. */
 [dir="rtl"], [lang="ar"] {
-  --font-body: "IBM Plex Sans Arabic", "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+  --font-body: var(--font-plex-arabic), "IBM Plex Sans Arabic", "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
   --type-body-lh: 1.65; --type-body-lg-lh: 1.7; --type-compact-lh: 1.6;
   --type-table-lh: 1.55; --type-display-lh: 1.4; --type-page-title-lh: 1.45;
   --type-section-lh: 1.5;

@@ -10,6 +10,123 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-095 ·  runs a second design system; its fonts came off Google
+`status: done (fonts only — the scale is untouched and out of scope)` · `rules: WEB-000, WEB-002 §1, WEB-011, WEB-014 §2.0` · `est: 45m`
+`record:` [2026-08-12-T-095-field-fonts](sessions/2026-08/2026-08-12-T-095-field-fonts.md)
+
+**`/field` is not an unmigrated SAQEEL surface — it is a different design
+system.** `app/(app)/field/layout.tsx:30` links `/saqeel-ds/saqeel/styles.css`
+from `public/`, which imports its own tokens and components. Its scale has
+**thirteen** steps — 28 · 22 · 17 · 15 · 14 · 13 · 12.5 · 12 · 11.5 · 30 — none
+of them SAQEEL's nine, and that is the source of every off-scale size there.
+**The sweep was therefore not started**: migrating 38 files while that sheet
+redefines `--font-*`/`--type-*` for the subtree is work against a live override.
+Raised for a ruling; **owner ruled fonts only.**
+
+**The real defect was a runtime dependency on Google Fonts.** `tokens/fonts.css`
+is an `@import` of `fonts.googleapis.com`, while `app/layout.tsx` deliberately
+self-hosts via `next/font/local` with the reason written in the file — the build
+must not depend on a Google fetch that fails in restricted environments. **The
+field channel carried a network dependency the rest of the app had removed, on
+the surface most likely to be offline, and one that registers a PWA.**
+`var(--font-plex-arabic)` now leads every stack; the literals stay as fallbacks.
+`--font-mono` deliberately keeps `"IBM Plex Mono"` first — a genuine monospace
+for machine identifiers is a *design* decision, not a font defect — with the
+self-hosted face appended before the generic so Arabic glyphs inside identifiers
+stop falling to an arbitrary OS face.
+
+**Two measurement corrections, both mine.** `document.fonts.check()` reports the
+`FontFaceSet`, **not whether text renders** — it returned `false` for
+`"IBM Plex Mono"` and I wrongly reported 16 elements rendering in a missing font;
+a real span layout showed `as declared 247.50 == "IBM Plex Mono" 247.50`, against
+`ui-monospace` 209.84. And a canvas `measureText` probe **silently mis-parses a
+quoted family**, which is what made the wrong claim look confirmed. **Measure by
+laying out a span with the element's own computed properties.**
+
+```
+first declared family   before: IBM Plex Sans 129 · Mono 16 · plex 97
+                        after:  plexArabic 221 · Mono 16
+counted violations      226 → 226   (none removed, none added — the fix is in public/)
+type scale              13 steps, unchanged
+```
+
+**This is a visible change and not neutral:** the faces differ — `IBM Plex Sans`
+157.30 vs self-hosted `IBM Plex Sans Arabic` **175.23** on identical text,
+~**11% wider**, across 129 elements. Defensible on WEB-014 §2.0 ("one typeface")
+and it removes the offline risk, but recorded as a design change, not a repair.
+**Checked at tablet 768px** for the consequence T-069 warned about: no horizontal
+page scroll, **0 clipped elements**, one overflow in the **shell** (out of scope).
+
+**A DO-NOT-CHANGE note is left at the top of `tokens/typography.css`** for
+whoever reworks that design system: the fonts are already migrated; sizes,
+weights and the role scale are a separate question.
+
+**Parked — the real question is unanswered.** `/field` is **226 counted + 502
+gate-invisible** (t-caption 329 · id-code 164 · t-label 9) across **36 routes**.
+Either the `<link>` goes and `/field` inherits SAQEEL, or `/field` is declared a
+separate system and its 226 leave the baseline. **Until then the baseline
+overstates what this programme owns by roughly a third.**
+
+### T-094 · `/planning/bulk` — the same four facts, said four times
+`status: partial — screen body not rendered (session role is Inspector)` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-013, WEB-014` · `est: 1.5h`
+`record:` [2026-08-12-T-094-planning-bulk-declutter](sessions/2026-08/2026-08-12-T-094-planning-bulk-declutter.md)
+
+**Ten stacked blocks and zero rows of data on first load** — and the clutter was
+not decoration. `view.eligible` rendered **four times** (criteria footer, ledger,
+toolbar badge, pager); the "no criteria" explanation was written **three times**,
+two of them sharing the sentence *"Bulk targeting never matches the whole Factory
+list by default"* verbatim between `notice.noCriteriaBody` and
+`empty.noCriteria.body`; the risk advisory appeared twice with a one-word
+difference. **Nothing was invented and no fact was removed** — every deletion was
+a second copy of something still on screen.
+
+**The five "Not available" rows were already in the dropdown.** `fieldChoices`
+gives every unsupplied option `disabled` + a `note`, and the block below re-listed
+all five with a full sentence each on every load. Collapsed to one native
+`<details>` reusing `factory-sections`' marker pattern.
+
+**Gating, not deleting, for the four blocks that carry nothing at zero:** toolbar
+badge only when the filter narrows (`matched.length !== factories.length`), pager
+only at `pageCount > 1`, campaign summary only with a selection. They mount the
+moment they have something to say.
+
+**The advisory opens the screen and is now a strip, not a card.** It uses
+`AdvisoryStrip` — the component `dashboard/executive-brief` and
+`factories/factory-ai-advisory` already use — through a 39-line wrapper in the
+same shape, so bulk is its **third consumer rather than a second implementation**.
+`AdvisoryStrip` gained one **optional** `unavailable` string, and only because it
+renders `result.error` raw and `generateContextualInsight` returns untranslated
+English; dashboard and factory pass nothing and are unchanged.
+
+**`AiAdvisory` was not retired — the ledger is why.** It looks orphaned, but
+`ContextualAiPanel` (itself `@retiring`, 6 consumers) imports it and the ledger
+names it that migration's `replaced-by`. **This leaves two AI advisory components
+with no ruling on which is canonical — raised in the record, not decided here.**
+
+**A permanent pill announced a failure that never happened.**
+`DRAFT_PERSISTENCE_EXECUTABLE = false` made `draftPersistable` always false, so the
+selection bar rendered the `draftSaveFailed` string as an info pill on every load,
+forever, at zero selection.
+
+**`role="tree"` was malformed and is gone.** A bare `<span key={i}>` sat between
+`role="group"` and `role="treeitem"`, breaking the owns-relationship, and the tree
+had no roving `tabindex`. Plain nested lists; the controls were always individually
+focusable. The `<form>` now carries `aria-labelledby` to its own heading.
+
+```
+blocks at first load   10 → 5
+renderings of eligible  4 → 1
+copies of "no criteria" 3 → 1
+typography baseline   734 → 734   ← none new, none removed; this task owed none
+```
+
+**Owed:** the screen body was never rendered. The dev session is signed in as
+**Inspector**, and `/planning/bulk` needs `planning.create.bulk`, so only the
+unauthorized state could be exercised — which did confirm the header change (title
+alone, no context pill). **The axe pass, the manual checklist and the Arabic render
+are unverified and must be done under a Planner or Supervisor session before this
+moves to `done`.**
+
 ### T-093 · `/planning/visits` — and the planning family closes
 `status: done (the populated board was not rendered)` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014 §2.1, §4.1, §8` · `est: 1h`
 `record:` [2026-08-12-T-093-planning-visits-typography](sessions/2026-08/2026-08-12-T-093-planning-visits-typography.md)
@@ -2469,6 +2586,23 @@ filters and tabs moved to `searchParams`.
 
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
+
+- **`EligibilityLedger.tsx` and `DistributionPanels.tsx` need a rebuild, not a
+  patch** (re-confirmed in T-094; first parked by T-091). Both are unmigrated
+  route-folder components carrying the **explicitly banned `.sq-` prefix**
+  (`sq-kpi`, `sq-grid-2`, `sq-freshness` — WEB-008 §2 names it), frozen-sheet
+  globals (`metric-strip`, `badge badge-compliant`, `panel-header`,
+  `panel-title`, `row`, `grow`, `stack`), a raw `<h3 className="panel-title">`,
+  glyphs used as icons in JSX (`✓ − ⚠ ?`), and comment blocks. **`StatCard` is
+  exactly what the ledger is.** T-094 deliberately did not fold this in: it is a
+  rebuild, and mixing it into a deletion task would have made the commit line
+  undescribable.
+
+- **`BulkForm.tsx` is still dead** (zero importers, `@retiring` since
+  2026-08-10). T-094 confirmed it holds a complete parallel implementation of
+  the screen with its own `BulkFormStrings` — which is why removing
+  `invalidClear` and `summaryEmpty` from the live type did not break it. It
+  should be deleted, not migrated.
 
 - **`sq-notification__badge` renders at 10px — below WEB-014 §7's 11px floor**
   (found in T-083, measured on `/planning` in both locales). It is a frozen-sheet
