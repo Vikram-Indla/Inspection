@@ -1,4 +1,5 @@
 import Icon from "@/components/saqeel/icon/icon";
+import { Heading, Text } from "@/components/saqeel/type";
 import styles from "./planning-assistant.module.css";
 
 export type PlanningAssistantStrings = {
@@ -13,12 +14,14 @@ export default function PlanningAssistant({ strings }: {
 }) {
   return (
     <section className={styles.root} aria-label={strings.aria}>
-      <h2 className={styles.heading}>
-        <Icon name="ai" size="sm" />
-        {strings.stripTitle}
-      </h2>
-      <span className={styles.status}>{strings.insightsEmptyTitle}</span>
-      <span className={styles.advisory}>{strings.advisory}</span>
+      <Heading level={2} tone="inherit">
+        <span className={styles.headingInk}>
+          <Icon name="ai" size="sm" />
+          {strings.stripTitle}
+        </span>
+      </Heading>
+      <span className={styles.status}><Text as="span" tone="secondary">{strings.insightsEmptyTitle}</Text></span>
+      <span className={styles.advisory}><Text as="span" tone="muted">{strings.advisory}</Text></span>
     </section>
   );
 }

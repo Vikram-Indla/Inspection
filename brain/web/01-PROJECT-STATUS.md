@@ -1,6 +1,324 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-087 — /planning/bulk/review typography`
+`Last updated: 2026-08-12` · `Updated by: T-096 — /planning/immediate declutter`
+
+## A parent `loading.tsx` may be hiding every nested skeleton (2026-08-12)
+
+T-096 built a skeleton for `/planning/immediate` that mirrors the form, then
+found that a cold navigation to that route shows **`PlanningSkeleton`** — the
+11-column data-table skeleton belonging to `/planning` — from the **parent**
+segment's boundary. Identified by its label ("Loading visit planning" =
+`planning.home.loading`) and its 122 bones.
+
+If that holds generally, then **every per-route skeleton built under `/planning`
+is unreachable**, and the several tasks that sized bones against their screens
+were measuring something the user never sees. It also means a form route
+currently announces itself with a table.
+
+**Caveat, stated because it changes the answer:** the observation was made in a
+tab whose `visibilityState` was `hidden`, where the route transition stalled and
+never revealed. A stalled transition can hold the *outer* fallback open, so this
+may be an artefact of the harness rather than the router.
+
+**Answer this before building another skeleton.** It is a routing question, not a
+design one, and it is cheap to settle: with the pane displayed, navigate to two
+nested planning routes and read the label out of the `SkeletonRegion`.
+
+## `RouteLoading` is an ARIA landmark defect on ~25 routes (2026-08-12)
+
+`components/RouteLoading.tsx` renders `<main className="sq-content">`. It is
+mounted **inside** `ShellClient`'s `<main id="main-content">`, so every segment
+using it puts **two `main` landmarks** in the document. It also carries hardcoded
+`en`/`ar` literals and a `locale === "ar"` ternary (rule 18), `glyph="◫"`,
+`t-caption` at 11.5px, and no `Shell` — so the page title appears only after the
+load finishes.
+
+T-096 took it off `/planning/immediate`. **~25 segments still import it**, and
+each is one small file. This is the cheapest large a11y win left on the board.
+
+## `/field` is a second design system, and the baseline does not know it (2026-08-12)
+
+`app/(app)/field/layout.tsx:30` links `/saqeel-ds/saqeel/styles.css` from
+`public/`. That one tag brings a complete parallel design system — its own
+`tokens/{fonts,colors,typography,layout}.css` and a `components.css` — with a
+**thirteen-step** type scale:
+
+```
+28 · 22 · 17 · 15 · 14 · 13 · 13 · 12.5 · 12 · 11.5 · 30
+```
+
+None of those are SAQEEL's nine. Every off-scale size measured on `/field` comes
+from there, not from unmigrated feature code.
+
+**So `/field`'s 226 counted violations are not a migration backlog in the sense
+the rest of the baseline is.** Migrating those 38 files onto type primitives
+while that stylesheet redefines `--font-*` and `--type-*` for the whole subtree
+is work against a live override: the primitives would render inside a scope that
+has already replaced the tokens they consume.
+
+Add the **502 gate-invisible** occurrences there (`t-caption` 329, `id-code` 164,
+`t-label` 9) and roughly a third of the remaining 734 belongs to a system this
+sweep is not migrating. **The number overstates what the programme owns until
+someone rules: does `/field` join SAQEEL, or is it declared separate and its
+count removed?**
+
+## `document.fonts.check()` does not tell you whether text renders (2026-08-12)
+
+It reports the document's `FontFaceSet`. It returned `false` for
+`"IBM Plex Mono"` on `/field` and T-095 reported, wrongly, that sixteen elements
+were rendering in a font that did not exist. They were rendering in it perfectly.
+
+Two probes are unreliable and both were used to reach that wrong answer:
+
+- `document.fonts.check("16px X")` — false for anything not in the FontFaceSet.
+- `ctx.font = '400 16px "IBM Plex Mono"'` on a canvas — **silently mis-parses a
+  quoted family** and falls back, so the width matches a bogus baseline and
+  appears to confirm the font is missing.
+
+The check that holds: lay out a hidden `<span>` carrying the element's own
+computed `font-size`, `font-weight`, `letter-spacing` and `font-variant-numeric`,
+then compare `getBoundingClientRect().width` across candidate families against
+the element's declared stack.
+
+```
+as declared      247.50
+"IBM Plex Mono"  247.50   ← identical: it is what renders
+ui-monospace     209.84
+Consolas         226.80
+```
+
+**A font claim is a width measurement or it is a guess.**
+
+## Self-hosting is a decision the whole app has to make, not one layout (2026-08-12)
+
+`app/layout.tsx` self-hosts IBM Plex Sans Arabic through `next/font/local` and
+says why in the file: the build must not depend on a Google fetch that fails in
+restricted environments. `public/saqeel-ds/saqeel/tokens/fonts.css` then
+`@import`s all three families straight from `fonts.googleapis.com`.
+
+So the channel most likely to be **offline** — the field app, which registers a
+PWA — carried the exact runtime network dependency the rest of the application
+had deliberately removed. Nothing failed loudly; the fonts simply came from
+somewhere else.
+
+**When a policy is set in `layout.tsx`, check the stylesheets a route links
+directly.** A `<link>` in a nested layout bypasses every convention the root
+layout establishes.
+
+## The clutter was duplication, and duplication is a code smell you can count (2026-08-12)
+
+T-094 took `/planning/bulk` from **ten stacked blocks and zero rows of data** on
+first load to five, and **removed no fact whatsoever** — every deletion was a
+second copy of something still on screen. The counts are the point:
+
+```
+renderings of view.eligible   4 → 1     criteria footer · ledger · toolbar badge · pager
+copies of the "no criteria" copy 3 → 1  two shared a sentence verbatim
+copies of the risk advisory   2 → 1     differing by the word "only"
+```
+
+**Two facts a future declutter must not get wrong.** The ledger's
+denominator/eligible/excluded triple looks like a fourth duplicate — `excluded`
+is arithmetic — but CD-021 states plainly that showing the three together is the
+signature of the screen, so it stays. And the five "Not available" rows were not
+extra information: `fieldChoices` already sets `disabled` + `note` on every
+unsupplied option, so the block below was the **second** telling and collapsed
+into one disclosure.
+
+**Blocks that carry nothing at zero are gated, not deleted.** The pager, campaign
+summary and toolbar badge were correct components rendering an empty truth.
+
+**The screen body was never rendered** — the dev session is an Inspector and
+`/planning/bulk` needs `planning.create.bulk`. Axe, the manual checklist and the
+Arabic pass are owed under a Planner or Supervisor session before T-094 is `done`.
+
+## The planning family is closed (2026-08-12)
+
+All **thirteen** planning routes now report **1 violation each** —
+`NotificationBell.tsx:270`, the shell — and nothing else:
+
+```
+/planning · /single · /bulk · /bulk/review · /immediate · /plans · /plans/[id]
+/visits · /visits/[id] · /calendar · /map · /workload · /supervision
+```
+
+Seven tasks, T-085 through T-093, moved the repo baseline **863 → 734** and took
+the family's route-owned count to zero. What actually closed it was not the gate
+— three of those tasks found defects the gate could not see (11.5px `t-caption`
+from JSX, a second typeface injected by Mapbox, a legacy weight assembled by
+hand) and one found a defect that was never counted at all.
+
+**The remaining pockets are `/field/*` (226, needs an inspector persona per
+T-069), `sections/approvals` (68), `sections/regulations` (63) and
+`sections/enforcement` (52).**
+
+## A hand-assembled weight is not a role, in either direction (2026-08-12)
+
+Three tasks hit the same shape and corrected it two different ways:
+
+- T-087, T-091 — KPI values at `font-size: metric-size` + `weight: semibold`
+  → **600 → 700**, because `metric` *is* bold.
+- T-093 — a selected row at `font-weight: bold` on body text
+  → **700 → 600**, because the scale has no 700 at body size and `bodyStrong`
+  is the only emphasis role for body.
+
+The tell is identical each time: **`--sqx-text-*-size` and `--sqx-weight-*`
+reached for separately.** A role is four values that travel together; composing
+three of them by hand yields something that passes every gate and renders wrong.
+The direction of the fix follows the scale, never a preference about how bold it
+should look.
+
+## "Not found" from your own tooling is a question, not an answer (2026-08-12)
+
+T-093's selector→element map reported **every** class in
+`components/sections/visits/` as `(not found)`. The obvious readings were "these
+modules are dead" — which had just been true of `BulkForm.tsx` in T-091 — or
+"the CSS is orphaned". Both were wrong: the classes live in **sibling** files
+rather than the directory's namesake component, and the map only searched the
+namesake.
+
+One grep settled it. Acting on the tool's answer would have deleted three live
+stylesheets.
+
+## "Fixed centrally" is a claim about a component, and it needs checking there (2026-08-12)
+
+T-074 found Mapbox injecting `"Helvetica Neue"` into its attribution, moved the
+normalisation into `components/saqeel/map/map-chrome.module.css`, and recorded
+that **"any future map inherits the same chrome."**
+
+It did not. Two files composed that module — both operations canvases. **`GeoMap`,
+which has 18 consumers, was never wired up**, so every other map in the
+application kept rendering a second typeface for as long as the fix was believed
+to be in place. T-092 found it by measuring `/planning/immediate`, a route whose
+own tree is provably clean.
+
+**A central fix is only central once every consumer composes it, and nothing
+checks that.** There is no gate for "component X imports module Y". When a task
+moves a fix into a shared module, the closing step is enumerating the consumers
+and confirming each one reaches it — not verifying the route you happened to be
+working on.
+
+## A clean tree is not a clean screen (2026-08-12)
+
+`/planning/immediate` passed every static check available: the gate counted only
+the shell, and greps for `.t-*` legacy classes, string-literal `className`
+attributes and CSS typography declarations all came back **empty**. The rendered
+page still had two typefaces.
+
+The defect lived in a dependency's stylesheet, reachable from no source file in
+the route. **The three questions that actually settle a route are all measured:**
+
+```js
+new Set([...document.querySelectorAll('main *')]
+  .filter(el => !el.children.length && el.textContent.trim())
+  .map(el => getComputedStyle(el).fontFamily.split(',')[0]))   // typefaces
+```
+
+plus the distinct size set and the off-scale list. Two tasks running (T-091's
+11.5px `t-caption`, T-092's Helvetica Neue) were invisible to every grep and
+every gate, and obvious in one line of measurement.
+
+## The gate counts CSS. It cannot see a legacy class used from JSX (2026-08-12)
+
+`/planning/bulk` reported **1 violation** — the shell — and still rendered four
+elements at **11.5px**, off every scale. The source was
+`DistributionPanels.tsx`:
+
+```tsx
+<p className="t-caption">{strings.riskAdvisory}</p>
+```
+
+`.t-caption` lives in `tokens.css` (`--type-caption-size: 11.5px`), which is
+**frozen and therefore exempt**. Every rule in `check-typography.mjs` scans CSS
+files for *declarations*; a `className` string in a `.tsx` matches none of them.
+So the count was truthful about the CSS and wrong about the screen.
+
+**`t-caption` appears in 162 `.tsx` files.** Until a rule matches
+`className=".*\bt-(caption|body|label|meta|micro)\b"`, **a route at "1 violation"
+is not evidence that it renders on-scale** — only a measured render is. Two
+tasks in a row (T-090, T-091) found their real defects by measuring, not by
+counting.
+
+## A token outside the tone list is not automatically a different colour (2026-08-12)
+
+T-090 established the wrapper pattern for a colour the nine tones cannot express
+(`--sqx-accent-ai`). T-091 nearly applied it again to
+`--sqx-status-critical-on-soft` — and did not, because checking the definitions
+showed **both it and `--sqx-text-danger` resolve to `--sqx-error-darker` in light
+and `--sqx-error-light` in dark.** Identical in both themes, so `tone="danger"`
+is exact and the class could be deleted outright.
+
+**Resolve the token before designing around it.** The wrapper costs a DOM node
+and a surviving class; it is only warranted when the values genuinely differ.
+
+## A class that goes unused after a migration is a signal to re-read it (2026-08-12)
+
+`.filterStatus` carried `display: inline-flex; align-items: center; gap` **and**
+a font. The migration replaced the whole span with `<Text>`, which would have
+collapsed a CountBadge row — a layout regression with no typography symptom.
+
+Nothing caught it except the **unused-class check**: the class showed as defined
+but unreferenced, which prompted re-reading the block and finding the layout.
+The reflex at that moment is to delete the class; the correct move is to read it
+first and ask what else it was doing.
+
+Run both directions after every migration — orphaned `styles.x` **and** unused
+classes — and treat each hit as a question, not a chore.
+
+## Exactly four elements need `font: inherit`. Check, don't guess (2026-08-12)
+
+Only `<input>`, `<button>`, `<select>` and `<textarea>` fail to inherit `font` —
+they carry a UA font, so deleting a declaration from one renders **Arial**, not
+the inherited face. That is the T-064 defect, and it has now been hit or avoided
+in four separate tasks.
+
+The mirror-image error is just as real: `<a>`, `<label>`, `<summary>`, `<th>` and
+`<td>` **do** inherit, and giving them `font: inherit` adds a line that does
+nothing while implying the element is a control.
+
+T-090 resolved it by **mapping selector → rendered element with a script before
+touching anything** — parse the CSS for blocks containing typography, then find
+each class in the JSX and record the tag it lands on. Eleven modules, 45
+declarations, four genuine controls, and two classes that lived in a sibling file
+rather than the directory's namesake component. **The map is cheap and it is the
+whole task's risk in one table.**
+
+## The primitives take no `className`, and that decides your markup (2026-08-12)
+
+`Text` and `Heading` expose no class hook. So a CSS class that mixes layout with
+typography — `.pagerLink` (border, padding, flex **and** `font: label`),
+`.fieldValue` (`text-align: end` **and** `font: body`) — cannot simply become a
+primitive.
+
+The rule that fell out of T-088 and hardened in T-090:
+
+> **The element keeps its layout class; the primitive goes inside it as a span.**
+
+Purely typographic classes get deleted outright; mixed ones shed only their
+type. Applied consistently this produces no orphaned classes in either
+direction, and it is why `<legend>`, `<th>`, `<summary>`, `<button>` and `<a>`
+all kept their elements through the migration.
+
+**A tempting shortcut to avoid:** moving the layout onto the parent instead. It
+works until a second child needs different layout, and it makes the CSS lie
+about which element it describes.
+
+## A zero-match bulk edit is a signal, not a retry (2026-08-12)
+
+A scripted seven-pattern replace on `visit-drawer.module.css` matched **none** of
+them — the file is CRLF and the patterns were `\n`-joined — and the script
+**reported success on a completely unchanged file**. Had the verification been
+"did the script run?" rather than "did the count go down?", the task would have
+shipped believing the file was migrated.
+
+This is the third instance of the same shape: T-058's gate rule that matched 0 of
+24, T-076's structural regex that matched 0 across 7 sites. **Stop tuning the
+pattern and change approach.** T-090 switched to per-block edits and finished
+immediately.
+
+Related, from the same task: **the typography gate reads CSS and single lines, so
+it stays green on broken JSX.** An unbalanced `</span>` left by a conversion was
+caught by re-reading the file, not by any gate — the same failure T-069 recorded.
 
 ## The app has two body line-heights, and the frozen sheet is winning (2026-08-12)
 

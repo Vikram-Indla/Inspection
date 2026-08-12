@@ -217,41 +217,6 @@
 }
 .fl-label > .t-label { color: var(--nav-text); }
 
-.fl-in {
-  width: 100%;
-  min-height: 48px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-input);
-  background: var(--surface-primary);
-  color: var(--text-primary);
-  font: inherit;
-  font-size: 15px;
-  padding: 0 14px;
-  box-sizing: border-box;
-}
-.fl-in:focus-visible {
-  outline: 2px solid var(--action-primary);
-  outline-offset: 1px;
-}
-
-.fl-pw-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-.fl-pw-in { padding-inline-end: 44px; }
-.fl-pw-toggle {
-  position: absolute;
-  inset-inline-end: 8px;
-  border: 0;
-  background: none;
-  padding: 6px;
-  cursor: pointer;
-  color: var(--text-muted);
-  display: grid;
-  place-items: center;
-}
-
 .fl-row {
   display: flex;
   align-items: center;

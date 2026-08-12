@@ -5,7 +5,8 @@ import SaqeelSelect, { type SelectOption } from "@/components/saqeel/select/sele
 import type { PlanningListParams } from "@/lib/planning/visit-list";
 import type { PlanningInspectorOption, PlanningLookupOption } from "@/features/planning/queries";
 import type { Locale } from "@/lib/i18n";
-import { resolveRegionId, KSA_REGION_LABELS } from "@/lib/ksa-regions";
+import { makeLookupLabel } from "@/i18n/enum-label";
+import { regionLabel } from "@/lib/ksa-regions";
 import MoreFilters from "./more-filters";
 import type { PlanningToolbarOptions, PlanningToolbarStrings } from "./planning-toolbar";
 
@@ -27,13 +28,7 @@ const PANEL_KEYS = [
 ] as const;
 
 const lookupLabel = (option: PlanningLookupOption, locale: Locale) =>
-  locale === "ar" ? (option.labelAr ?? option.labelEn) : option.labelEn;
-
-const regionLabel = (region: string, locale: Locale) => {
-  const id = resolveRegionId(region);
-  if (!id) return region;
-  return locale === "ar" ? KSA_REGION_LABELS[id].ar : KSA_REGION_LABELS[id].en;
-};
+  makeLookupLabel(locale)(option.key, locale === "ar" ? option.labelAr : option.labelEn);
 
 export default function FilterControls({ strings, options, params, locale }: {
   strings: PlanningToolbarStrings;

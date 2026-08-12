@@ -12,14 +12,13 @@ import type { CriteriaFactory, SuggestionOption } from "@/features/planning-bulk
 import type { CriteriaLeaf } from "@/features/planning-bulk/targeting";
 
 export default function TargetingLensClient({
-  initialTree, fieldOptions, matchCount, criteriaStrings, contributions, leafInfo,
+  initialTree, fieldOptions, criteriaStrings, contributions, leafInfo,
   denominator, eligible, oldestSyncedAt, missingSync, ledgerStrings,
   distributions, distStrings,
   factories, bulkFormStrings, locale, builderFields, cityByRegion,
 }: {
   initialTree: GroupNode;
   fieldOptions: Record<string, SuggestionOption[]>;
-  matchCount: number;
   criteriaStrings: CriteriaBuilderStrings;
   contributions: Record<string, number>;
   leafInfo: CriteriaLeaf[];
@@ -42,7 +41,7 @@ export default function TargetingLensClient({
 
   return (
     <>
-      <CriteriaBuilder initialTree={initialTree} fieldOptions={fieldOptions} matchCount={matchCount} strings={criteriaStrings}
+      <CriteriaBuilder initialTree={initialTree} fieldOptions={fieldOptions} strings={criteriaStrings}
         contributions={contributions} focusedPath={focusedPath} onFocus={setFocusedPath}
         builderFields={builderFields} cityByRegion={cityByRegion} locale={locale} />
       <EligibilityLedger denominator={denominator} eligible={eligible} oldestSyncedAt={oldestSyncedAt} missingSync={missingSync}

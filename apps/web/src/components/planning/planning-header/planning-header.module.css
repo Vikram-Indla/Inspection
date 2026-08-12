@@ -6,12 +6,6 @@
   flex-wrap: wrap;
 }
 
-.title {
-  font: var(--sqx-text-display);
-  letter-spacing: var(--sqx-text-display-tracking);
-  color: var(--sqx-text-primary);
-}
-
 .actions {
   display: flex;
   align-items: center;

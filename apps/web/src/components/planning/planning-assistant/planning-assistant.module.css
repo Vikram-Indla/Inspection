@@ -11,13 +11,10 @@
   border-radius: var(--sqx-radius-card);
 }
 
-.heading {
+.headingInk {
   display: inline-flex;
   align-items: center;
   gap: var(--sqx-space-2);
-  margin: 0;
-  font: var(--sqx-text-heading);
-  letter-spacing: var(--sqx-text-heading-tracking);
   color: var(--sqx-accent-ai);
 }
 
@@ -26,12 +23,8 @@
   padding-inline: var(--sqx-space-2);
   border-radius: var(--sqx-radius-control);
   background: var(--sqx-surface-sunken);
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-secondary);
 }
 
 .advisory {
   margin-inline-start: auto;
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-muted);
 }

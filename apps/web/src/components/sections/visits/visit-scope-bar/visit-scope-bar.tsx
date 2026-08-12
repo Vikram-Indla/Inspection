@@ -1,5 +1,6 @@
 import Button from "@/components/saqeel/button/button";
 import Toolbar from "@/components/saqeel/toolbar/toolbar";
+import { Text } from "@/components/saqeel/type";
 import VisitViewNavigation, { type VisitBasePath } from "@/app/(app)/visits/VisitViewNavigation";
 import styles from "./visit-scope-bar.module.css";
 
@@ -18,7 +19,7 @@ export default function VisitScopeBar({ basePath, planningHref, scope, strings }
   };
 }) {
   return (
-    <Toolbar as="header" label={strings.aria} trailing={<span className={styles.scope}>{scope}</span>}>
+    <Toolbar as="header" label={strings.aria} trailing={<Text as="span" tone="muted" numeric>{scope}</Text>}>
       <VisitViewNavigation
         basePath={basePath}
         active="list"

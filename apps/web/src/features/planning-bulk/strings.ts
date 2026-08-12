@@ -28,9 +28,8 @@ export function buildBoundaryStrings(locale: Locale) {
   };
 }
 
-export function buildScreenStrings(locale: Locale): { title: string; context: string } {
-  const bulk = bulkMessages(locale);
-  return { title: bulk.title, context: bulk.context };
+export function buildScreenStrings(locale: Locale): { title: string } {
+  return { title: bulkMessages(locale).title };
 }
 
 export function buildAccessStrings(locale: Locale): BulkMessages["access"] {
@@ -50,8 +49,8 @@ export function buildLedgerStrings(locale: Locale): LedgerStrings {
 }
 
 export function buildDistributionStrings(locale: Locale): DistributionStrings {
-  const { heading, ofDenominator, unknown, riskAdvisory } = bulkMessages(locale).dist;
-  return { heading, ofDenominator, unknown, riskAdvisory };
+  const { heading, ofDenominator, unknown } = bulkMessages(locale).dist;
+  return { heading, ofDenominator, unknown };
 }
 
 export function buildDistributionHeadings(locale: Locale): DistributionHeading[] {

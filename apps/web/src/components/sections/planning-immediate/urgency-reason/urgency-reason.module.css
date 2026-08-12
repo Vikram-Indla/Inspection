@@ -1,5 +1,7 @@
 .options {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--sqx-grid-min-sm), 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--sqx-space-2);
+  flex-grow: 1;
+  align-content: center;
 }

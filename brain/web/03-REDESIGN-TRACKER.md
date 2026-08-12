@@ -10,6 +10,678 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-100 · `/planning/workload` — capacity that measures the right thing, and the planning family finishes its Arabic
+`status: partial — verified in Arabic; English render, axe and 11 Arabic strings owed` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-004, WEB-006 §4, WEB-008, WEB-009, WEB-011, WEB-013, WEB-014` · `est: 2h`
+`record:` [2026-08-13-T-100-workload-capacity-and-arabic-sweep](sessions/2026-08/2026-08-13-T-100-workload-capacity-and-arabic-sweep.md)
+
+Owner-reported: workload is boxes of zeros and must be rebuilt on the design
+system without violating the typography contract; and the planning family still
+renders English inside the Arabic view.
+
+**The screen spent six of ten columns on 5% of its data.** Measured before
+touching anything: **2 of 42 active visits fell inside the six-week grid, 40
+were in "Later", and 64 of 66 week cells were zero.** The column carrying 95%
+of the load was an unlabelled catch-all.
+
+**"Relative utilization" was not a utilization, and the design system already
+said so.** `TrendBars`' TSDoc warns that a series charted against its own
+maximum *"exaggerates a flat run"*. The screen charted against
+`maxCell`/`maxTotal`, so **100% meant "has the most", not "at capacity"** — and
+it moved when somebody else's load changed.
+
+**Comparing an all-time total to a per-day cap would have been the same category
+error in a new coat.** `daily_visit_cap` governs visits per inspector **per
+day**. The column is now **peak day vs the governed cap**, so the two quantities
+are the same kind of thing: the top inspector reads **3 of 10**, not 100%.
+Weekly bars stay a *distribution* on a shared scale, labelled as one — **no
+weekly cap was invented**, because `dailyCap × 5` is a governed value from thin
+air (rule 9).
+
+**`TrendBars` fixed the zeros for free**: a point at zero renders as a dashed
+baseline *"because an absence must never read as a small quantity"* — **64 of 77
+bars**, replacing 64 grey tracks. The capacity bar is `aria-hidden` because it
+duplicates adjacent text; the distribution bars stay exposed because there they
+are the only encoding.
+
+**The banned cast is gone, not relocated.** `as unknown as Row[]` became a
+narrowing boundary — `isRecord`/`embedded`/`text` predicates resolving the
+Supabase to-one embed (typed as an array, returned as an object) once.
+
+**`cd-026` pins `WorkloadView.tsx` by path.** All five assertions were
+**re-verified by script** against the rebuilt file; its one governance comment
+survives knowingly, the same call T-097 made.
+
+**The Arabic sweep was measured, not read** — a DOM walk for Latin text while
+`lang="ar"`.
+
+| Route | Before → after | Cause |
+| --- | --- | --- |
+| `/planning` | 3 → 0 | `planning_lookups.label_ar` seeded **NULL**, so `labelAr ?? labelEn` rendered English |
+| `/planning/calendar` | 0 → 0 | closed by T-098 |
+| `/planning/map` | 3 → 1 | region names raw; `KSA_REGION_LABELS` existed and was unused |
+| `/planning/workload` | 10 → 0 | `t("key", "English")` throughout, and `getDict()` returns `{}` |
+
+**The lookup fallback now goes through the translation, not through English**,
+and the database is untouched — seeding `label_ar` later still wins.
+**`regionLabel` was duplicated in two files and used in neither place that
+needed it**; it now lives in `lib/ksa-regions.ts`.
+
+**Localising the region broke `placeLabel`'s dedupe, and that was mine.** The
+guard compared raw values, so `الرياض` stopped matching `Riyadh` and the label
+rendered **"الرياض · Riyadh"**. Fixed by deduplicating on the source values —
+**caught by re-measuring after the change, not by review.**
+
+```
+off-scale elements   45 → 0     (14/700 ×22 · 11.5/400 ×12 · 11.5/500 ×10 · 15/600 ×1)
+rendered sizes        6 → 6, all six on the nine-role scale, exactly one display
+inline-styled       169 → 78, and all 78 are token-valued custom properties
+legacy classes    sq-table · sq-td-num · numeric · row · t-caption · panel → 0
+banned casts          1 → 0      <main> on loading  2 → 1
+columns              10 → 6      week cells at zero 64/66 → distribution bars
+typography baseline 734 → 733    (one removed and locked in)
+visits.json         253 → 276 keys/locale (parity)
+```
+
+**Owed:** axe, the English render, and **11 Arabic strings need a native
+review** — the `workload` namespace plus the four priority values.
+
+
+### T-099 · the visit map — paging that lied, and a contract that froze the legacy
+`status: done — e2e not run` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-004, WEB-008, WEB-009, WEB-011, WEB-013, WEB-014` · `est: 2h`
+`record:` [2026-08-13-T-099-visit-map-migration](sessions/2026-08/2026-08-13-T-099-visit-map-migration.md)
+
+**The pagination was wrong before it was verified, and only rendering found it.**
+The first build fetched `.range(0, 24)` and rendered **22 rows**. PostgREST applies a
+filter on an embedded resource to the **embedding**, not the parent row, unless the
+join is `!inner` — so `.not("factories.official_lat","is",null)` filtered nothing and
+`count` counted unlocated visits. **`factories!inner` unconditionally** fixed page size
+and total together: verified **25 rows, `26–50 of 298`**.
+
+**`GeoMap` has carried `fitMarkers` all along** — its own doc comment describes the
+exact "centred on whichever sorted first" bug the screen had. One prop.
+
+**An entire column said one sentence on every row.** "Unavailable under current scope"
+is now a single note, and the column **returns the moment any visit has a position**.
+
+**`CoveragePanel`'s style contract was restated, not deleted — on the owner's
+authorisation.** It pinned the component to frozen-sheet globals and **forbade
+importing any `.module.css`**, so migration was impossible without changing the spec.
+The rewritten contract is **strictly stronger**: no inline `style`, no CSS-in-JS, **no
+string-literal `className` at all**, the retired vocabulary named and banned, and the
+module asserted to carry no hex, px/rem or font declaration.
+
+**Three e2e literals pinned the file layout and were preserved on purpose** —
+`from("geo_events")`/`official_lat` in `MapView.tsx`, `"latest inspector position"` and
+`` `/visits/${v.id}` `` in `VisitMap.tsx`, plus the `MappedVisit` export another spec
+imports. **So the query could not move to `queries.ts`**, and the visit link lives on a
+real `openHref(v)` helper feeding the selected-visit button.
+
+**Filters moved above the map, which changed what they had to mean.** A filter bar over
+the map has to filter the map, so region/risk/window became **URL state applied in the
+query**, driving map, table and coverage together — and that surfaced **two Region
+selects** on one screen, now one. Window defaults to *any* rather than 30 days, because
+applying the old panel default page-wide would have hidden every past visit.
+`CoveragePanel` lost its state and is now a **Server Component**.
+
+**A missing token stopped an invention.** No `--sqx-map-*` size token exists; the canvas
+uses `aspect-ratio` rather than inventing one. A map-height token is a change request.
+
+```
+rows in the DOM   up to 1000 → 25     paged in the database
+table renders on      client → server
+repeated cells          1000 → 1
+region filters             2 → 1
+```
+
+**Owed: `npm run test:e2e`** — four specs read these files, and the rewritten coverage
+contract has never been executed. axe and the manual checklist are also owed.
+
+### T-098 · `/planning/calendar` — the grid collapses, the enum stops reaching the screen
+`status: partial — verified in Arabic; English render, axe and 9 Arabic strings owed` · `rules: WEB-000, WEB-002 §5 §6, WEB-003, WEB-008, WEB-009, WEB-011, WEB-013` · `est: 1h`
+`record:` [2026-08-12-T-098-visit-calendar-grid-and-enum-labels](sessions/2026-08/2026-08-12-T-098-visit-calendar-grid-and-enum-labels.md)
+
+Owner-reported on T-097's output: month and week read as detached boxes, and raw
+values like `pending_supervision` render as labels.
+
+**The rules are the container showing through 1px gaps, not borders on 42 cells.**
+The container paints `--sqx-border-subtle`, the cells paint
+`--sqx-surface-default`, and `gap: var(--sqx-border-width-hair)` between them *is*
+the rule. Every row is the same `repeat(7, minmax(0, 1fr))` — the track T-097
+introduced — so the vertical gaps align into continuous columns and the flex gap
+into continuous rows. **No `:first-child` exceptions, no double borders, and no
+physical direction anywhere**, which makes it correct in RTL by construction
+rather than by an override.
+
+**This is the calendar catching up with `DataTable`, not a new visual idea.** That
+component already collapses its borders and bands its header on
+`--sqx-surface-header`, and its own source argues the case: square corners on
+purpose, because *"rounding it would read as a floating chip rather than a header
+rule."*
+
+**Today had to change signal — a consequence, not a preference.** It was marked
+*only* by `border-color`, and cells now own no border. It takes the
+`--sqx-surface-accent` fill `DataTable` gives a selected row.
+
+**`role="grid"` was a promise the markup did not keep.** The ARIA grid pattern
+implies arrow-key cell navigation; no cell was focusable and there was no roving
+`tabindex` — the same class as T-094's malformed `role="tree"`. Now
+`table`/`row`/`columnheader`/`cell`; **0 grid roles remain**, checked in the DOM.
+
+**The raw label was three different fallbacks in three adjacent lines** — the raw
+value for `planning_status` and `visit_type`, `.replaceAll("_", " ")` for
+`operational_state`. Since `getDict()` returns `{}` (T-086), **the fallback is the
+rendered string**, which is why *every* pill was lowercase, not only the
+underscored one. **T-097 translated this route's chrome and left its data labels
+on the legacy dictionary** — that is the gap this task closes.
+
+**Labels now come from the locale JSON, per owner instruction.** `visits.json`
+gained an `enum` block in **both locales, 22 keys each, parity 200 = 200**, taken
+from the database definitions: `planning_status` (7), `operational_state` (8),
+`execution_mode` (3), and the `visit_type` reference values. **The Arabic was
+harvested, not invented** — `operations.json`, `enforcement.json`,
+`approvals.json` and a DEC-L seed already shipped twelve verbatim. Planning and
+operational states take **feminine agreement** (الزيارة); `execution_mode` stays
+masculine. **`humaniseEnum` is the fallback formatter and the TSDoc calls it a
+defect marker, not copy.**
+
+**Three surfaces were wired, not one** — calendar, board and `visits/[id]` each
+carried their own `t("enum.…")` closure, so fixing only the calendar would have
+created the very inconsistency it was reported for.
+
+**T-097's path-pinned contract was re-verified, not assumed.** `cd-026` reads
+`CalendarView.tsx` as source text; all five assertions — no JSX `{error.message}`,
+`console.error`, `loadErrorNeutral`, `expire_lapsed_visits_scheduled`, no inline
+expiry RPC — were **checked by script against the edited file** and pass.
+
+```
+measured live, seeded Planner, Arabic, ?view=month
+per-cell border 1px → 0     per-cell radius --sqx-radius-control → 0
+grid frame none → 1px + --sqx-radius-card    rules --sqx-space-1 gap → 1px hairline
+today border-colour → --sqx-surface-accent fill     role=grid/gridcell 2 → 0
+snake_case labels 4 → 0   (pending_supervision → بانتظار الإشراف)
+visits.json 178 → 200 keys/locale (parity)   enum surfaces on one source 0 → 3
+typography 734 → 734
+```
+
+**Owed:** axe; the English render (the session locale is `ar` and `/en/…` does not
+flip the cookie-driven locale — the Arabic result is the stronger proof, since
+`بانتظار الإشراف` cannot come from `humaniseEnum`); and **9 Arabic strings with no
+prior art need a native review** — مُدقَّقة, بانتظار الإشراف, جديدة, مُجهَّزة,
+مُرسلة, دورية, متابعة, شكوى, منتهية.
+
+### T-097 · the visit calendar — a clean route that rendered English at 11.5px
+`status: done — e2e not run` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-004, WEB-008, WEB-009, WEB-011, WEB-013, WEB-014` · `est: 2h`
+`record:` [2026-08-12-T-097-visit-calendar-migration](sessions/2026-08/2026-08-12-T-097-visit-calendar-migration.md)
+
+**The route was certified clean and rendered English at 11.5px.** `/planning/calendar`
+reported 1 violation — the shell — while rendering `t-caption` (**11.5px**) five times
+and an inline `font: var(--type-caption-font)` (**12px**) in every chip.
+**`CalendarBoard.tsx` was not in the typography baseline at all**, because the gate
+scans **CSS declarations** and the file had no CSS module — only inline styles and
+frozen-sheet classes. **This is T-091's hole, and it means "all thirteen planning
+routes at 1" is a statement about CSS, not about screens.**
+
+**Every string was an English literal.** `visit.cal.*` existed in **neither** locale —
+both checked — and `tr()` falls back to the English default, so Arabic users got an
+entirely English calendar. Now a real `visits.calendar` namespace, 18 keys per locale,
+**verified rendering RTL in the browser**: يوم / أسبوع / شهر and `الخميس، 6 أغسطس 2026`.
+
+**Friday collapsed because `1fr` means `minmax(auto, 1fr)`.** Chips are `nowrap` and
+the cells had no `min-inline-size: 0`, so one long factory name set its column's
+min-content and every empty column shrank. `repeat(7, minmax(0, 1fr))` fixes it.
+
+**URL state removed the client island.** `view`/`anchor` moved from `useState` to
+`?view=&on=`, so `SegmentedControl` runs in **href mode** — which passes no handlers
+and is server-safe — and **the whole calendar is now a Server Component (`"use client"`
+1 → 0)**. Deep links, back button and refresh all work.
+
+**The e2e suite pins `CalendarView.tsx` by path** — `cd-026` reads it with
+`readFileSync` and requires `console.error`, `loadErrorNeutral`,
+`expire_lapsed_visits_scheduled` and no `{error.message}` in JSX. **That shaped the
+layout**: the board moved to `components/sections/`, the file did not, and the i18n key
+was named `loadErrorNeutral` deliberately. **One comment survives knowingly** — the
+governance marker a contract test requires; deleting it for the zero-comment rule would
+weaken an accepted behaviour.
+
+```
+"use client"           1 → 0        legacy global classes  19 → 0
+inline style objects   9 → 0        off-scale sizes         2 → 0
+translated strings     0 → 18       features removed        0
+```
+
+**Owed: `npm run test:e2e`.** The path-pinned contract is satisfied by construction but
+was reasoned, not executed. axe and the rest of the manual checklist are also owed.
+
+### T-096 · `/planning/immediate` — one rule said three times, and a loading state that mirrored nothing
+`status: partial — content verified in the DOM, geometry and axe unmeasured (the pane was never displayed)` · `rules: WEB-000, WEB-002, WEB-003, WEB-004, WEB-006 §4, WEB-008, WEB-009, WEB-011, WEB-013, WEB-014` · `est: 2h`
+`record:` [2026-08-12-T-096-planning-immediate-declutter](sessions/2026-08/2026-08-12-T-096-planning-immediate-declutter.md)
+
+Owner-reported: the top is cluttered and confusing, there is too much empty
+space, and the legacy loading state must go for a skeleton that mirrors the
+layout with proper inline padding.
+
+**The registered-factory rule was rendering three times before the first usable
+control** — `identity.r05Body` **verbatim twice** (the top warning notice and the
+identity `CardHeader description`), plus the disabled radio's `lockedType`. It now
+has one home and it **moved into the identity card, above the search field it
+governs**. `identity.heading` was rendering twice inside that same card, as the
+title and again as the `<legend>` eight pixels below it. **Measured after: zero
+duplicated leaf text strings anywhere in the form.**
+
+**The identity mode toggle could not be operated, and the server action is what
+made deleting it safe.** `manualAvailable = false` was a literal; one radio was
+`checked` with a no-op `onChange` and the other permanently `disabled`.
+`actions.ts` **never reads `identity_mode`** — checked before the edit — so
+nothing submitted changes.
+
+**`DispatchProtections` said everything twice by construction.** Nine chips, then
+a notice **re-listing every blocking chip verbatim** in the same card. It is now
+the `planning-bulk/review-readiness` shape — one summary pill, **blockers only**,
+each row focusing its own control — so bulk's pattern gets a second consumer
+rather than a second implementation. **Four of the nine chips were hardcoded
+`informational`** and could never change; `AUDIT` and `NOTIFY` had `controlId:
+null`, making them policy statements wearing status pills.
+
+**Nothing was removed that is not still on screen.** audit/notify → the "This
+will:" card; checklist/inspector → their own fields — and the `CHECKLIST` chip
+**contradicted** its field, saying *"Select an active inspection checklist"*
+where the field says optional; authorized → the access gate, which is what
+renders `ImmediateAccessState`.
+
+**`WINDOW` now carries no focus target, and that is the honest fix.**
+Its `controlId` was `imm-window-start`, **an id that has never existed in the
+DOM** — `DateRangePicker` takes no `id` prop. As a chip that was an invisible
+no-op; as a readiness row it would be a visibly dead button. **Raised, not
+filled:** the primitive needs an `id`, which is a design-system change — the
+second component to hit this shape after T-080's `Select`.
+
+**Zero new i18n keys**, so no new Arabic needed review: the row's accessible name
+is still assembled from translated parts, which is what the chip did. **57 dead
+keys deleted per locale** at asserted parity **940 = 940**, including the whole
+`enforcement` block — 9 keys that render nowhere and are never read by the action.
+
+**The empty space took three rounds and only the third one measured first.**
+Rounds 1 and 2 reasoned about the grid; round 3 measured it and found **780px of
+void under the left column**, of which the inspection checklist was **595px** —
+10 packages at `minmax(18rem, 1fr)` inside a 465px column resolves to **one**
+track, so ten options stacked. It moved out to a full-width card
+(`dispatch-checklist/`), reusing `packageLabel` and `packageOptionalHint` as its
+title and description — **zero new copy** — with `role="radiogroup"
+aria-labelledby` instead of a legend that would have restated the title.
+
+**The last ~140px could not be closed by content and is closed by the grid.**
+Identity + Urgency is simply less than Location + six dispatch fields; every
+redistribution just moves the void to the other column. `.columns` went
+`align-items: start` → `stretch` with `.column > :last-child { flex-grow: 1 }`.
+**`flex-grow`, not `flex: 1`** — `flex: 1` sets `flex-basis: 0`, making the card's
+height depend on free space the grid row is itself sizing from that card, which
+collapses it whenever the left column is the taller one. The urgency options also
+became a **vertical list**: four options spread across an 865px row is a sparse
+row for a *required* single-select, and stacked it is both the conventional
+control and 130px instead of 55px.
+
+```
+measured, seeded Planner, Arabic, 1280px viewport / 977px content
+left column   712 → 909     right column 1,492 → 909     VOID 780 → 0
+protections   346 → 197     checklist 595 @465 → 352 @977 (out of the column)
+form total  2,311 → 1,993   (before is English, after Arabic — indicative)
+```
+
+**The legacy loading state is off this route.** `RouteLoading` broke five rules
+at once: hardcoded `en`/`ar` literals plus the `locale === "ar"` ternary (rule 18,
+while `planning.immediate.loading` sat unused in both locales), a `<main>` nested
+inside `ShellClient`'s `<main>`, `glyph="◫"`, `t-caption` at 11.5px, and no
+`Shell` — so no page head during load. The new skeleton renders inside `Shell`,
+which is what gives it the inline padding: **1017px box, 20px either side,
+measured**, the same `.sq-content` the page uses.
+
+```
+duplicated leaf strings   n → 0     rule stated 3 → 1      identity.heading 2 → 1
+protection chips          9 → 4 blocker rows, none repeated
+inoperable controls       2 → 0     blocks before first field 13 → 8
+<main> on loading         2 → 1     useState 27 → 14       useEffect 2 → 1
+comments 9 → 0            locale keys 997 → 940/locale     typography 734 → 734
+```
+
+**Arabic/RTL passed** — `lang="ar"`, `dir="rtl"`, **no horizontal page overflow**,
+and the only four elements whose `scrollWidth` exceeds their `clientWidth` are a
+decorative `ping-dot`, the visually-hidden live region (clipped by design) and two
+Mapbox attribution controls. No content clipping.
+
+**Owed: axe and the rest of the manual checklist** (keyboard, screen reader, 200%
+zoom, 320px, dark, reduced motion, greyscale). The Browser pane is displayed only
+intermittently, and every time it goes hidden `document.visibilityState` flips and
+the route stalls in its Suspense boundary with the rendered form parked in React's
+hidden staging `<div>` — so the measurement window is short and axe never got one.
+
+**New question, possibly bigger than this task: a cold navigation to
+`/planning/immediate` shows `PlanningSkeleton` from the *parent* `/planning`
+boundary** ("Loading visit planning", 122 bones — a 11-column data table), not
+this route's skeleton. If `planning/loading.tsx` masks every nested route's
+skeleton, every per-route skeleton under `/planning` is invisible.
+
+### T-095 ·  runs a second design system; its fonts came off Google
+`status: done (fonts only — the scale is untouched and out of scope)` · `rules: WEB-000, WEB-002 §1, WEB-011, WEB-014 §2.0` · `est: 45m`
+`record:` [2026-08-12-T-095-field-fonts](sessions/2026-08/2026-08-12-T-095-field-fonts.md)
+
+**`/field` is not an unmigrated SAQEEL surface — it is a different design
+system.** `app/(app)/field/layout.tsx:30` links `/saqeel-ds/saqeel/styles.css`
+from `public/`, which imports its own tokens and components. Its scale has
+**thirteen** steps — 28 · 22 · 17 · 15 · 14 · 13 · 12.5 · 12 · 11.5 · 30 — none
+of them SAQEEL's nine, and that is the source of every off-scale size there.
+**The sweep was therefore not started**: migrating 38 files while that sheet
+redefines `--font-*`/`--type-*` for the subtree is work against a live override.
+Raised for a ruling; **owner ruled fonts only.**
+
+**The real defect was a runtime dependency on Google Fonts.** `tokens/fonts.css`
+is an `@import` of `fonts.googleapis.com`, while `app/layout.tsx` deliberately
+self-hosts via `next/font/local` with the reason written in the file — the build
+must not depend on a Google fetch that fails in restricted environments. **The
+field channel carried a network dependency the rest of the app had removed, on
+the surface most likely to be offline, and one that registers a PWA.**
+`var(--font-plex-arabic)` now leads every stack; the literals stay as fallbacks.
+`--font-mono` deliberately keeps `"IBM Plex Mono"` first — a genuine monospace
+for machine identifiers is a *design* decision, not a font defect — with the
+self-hosted face appended before the generic so Arabic glyphs inside identifiers
+stop falling to an arbitrary OS face.
+
+**Two measurement corrections, both mine.** `document.fonts.check()` reports the
+`FontFaceSet`, **not whether text renders** — it returned `false` for
+`"IBM Plex Mono"` and I wrongly reported 16 elements rendering in a missing font;
+a real span layout showed `as declared 247.50 == "IBM Plex Mono" 247.50`, against
+`ui-monospace` 209.84. And a canvas `measureText` probe **silently mis-parses a
+quoted family**, which is what made the wrong claim look confirmed. **Measure by
+laying out a span with the element's own computed properties.**
+
+```
+first declared family   before: IBM Plex Sans 129 · Mono 16 · plex 97
+                        after:  plexArabic 221 · Mono 16
+counted violations      226 → 226   (none removed, none added — the fix is in public/)
+type scale              13 steps, unchanged
+```
+
+**This is a visible change and not neutral:** the faces differ — `IBM Plex Sans`
+157.30 vs self-hosted `IBM Plex Sans Arabic` **175.23** on identical text,
+~**11% wider**, across 129 elements. Defensible on WEB-014 §2.0 ("one typeface")
+and it removes the offline risk, but recorded as a design change, not a repair.
+**Checked at tablet 768px** for the consequence T-069 warned about: no horizontal
+page scroll, **0 clipped elements**, one overflow in the **shell** (out of scope).
+
+**A DO-NOT-CHANGE note is left at the top of `tokens/typography.css`** for
+whoever reworks that design system: the fonts are already migrated; sizes,
+weights and the role scale are a separate question.
+
+**Parked — the real question is unanswered.** `/field` is **226 counted + 502
+gate-invisible** (t-caption 329 · id-code 164 · t-label 9) across **36 routes**.
+Either the `<link>` goes and `/field` inherits SAQEEL, or `/field` is declared a
+separate system and its 226 leave the baseline. **Until then the baseline
+overstates what this programme owns by roughly a third.**
+
+### T-094 · `/planning/bulk` — the same four facts, said four times
+`status: partial — screen body not rendered (session role is Inspector)` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-013, WEB-014` · `est: 1.5h`
+`record:` [2026-08-12-T-094-planning-bulk-declutter](sessions/2026-08/2026-08-12-T-094-planning-bulk-declutter.md)
+
+**Ten stacked blocks and zero rows of data on first load** — and the clutter was
+not decoration. `view.eligible` rendered **four times** (criteria footer, ledger,
+toolbar badge, pager); the "no criteria" explanation was written **three times**,
+two of them sharing the sentence *"Bulk targeting never matches the whole Factory
+list by default"* verbatim between `notice.noCriteriaBody` and
+`empty.noCriteria.body`; the risk advisory appeared twice with a one-word
+difference. **Nothing was invented and no fact was removed** — every deletion was
+a second copy of something still on screen.
+
+**The five "Not available" rows were already in the dropdown.** `fieldChoices`
+gives every unsupplied option `disabled` + a `note`, and the block below re-listed
+all five with a full sentence each on every load. Collapsed to one native
+`<details>` reusing `factory-sections`' marker pattern.
+
+**Gating, not deleting, for the four blocks that carry nothing at zero:** toolbar
+badge only when the filter narrows (`matched.length !== factories.length`), pager
+only at `pageCount > 1`, campaign summary only with a selection. They mount the
+moment they have something to say.
+
+**The advisory opens the screen and is now a strip, not a card.** It uses
+`AdvisoryStrip` — the component `dashboard/executive-brief` and
+`factories/factory-ai-advisory` already use — through a 39-line wrapper in the
+same shape, so bulk is its **third consumer rather than a second implementation**.
+`AdvisoryStrip` gained one **optional** `unavailable` string, and only because it
+renders `result.error` raw and `generateContextualInsight` returns untranslated
+English; dashboard and factory pass nothing and are unchanged.
+
+**`AiAdvisory` was not retired — the ledger is why.** It looks orphaned, but
+`ContextualAiPanel` (itself `@retiring`, 6 consumers) imports it and the ledger
+names it that migration's `replaced-by`. **This leaves two AI advisory components
+with no ruling on which is canonical — raised in the record, not decided here.**
+
+**A permanent pill announced a failure that never happened.**
+`DRAFT_PERSISTENCE_EXECUTABLE = false` made `draftPersistable` always false, so the
+selection bar rendered the `draftSaveFailed` string as an info pill on every load,
+forever, at zero selection.
+
+**The Match labels were sentences pretending to be options.**
+`"ALL of — every child must match"` named the option *and* defined it, in caps, at
+**every nesting level**. Now `All conditions` / `Any condition`; the Arabic already
+opened with `كل الشروط` / `أي شرط`, so it truncated rather than needing
+retranslation. A script confirmed zero Latin glyphs in `ar` and zero Arabic in
+`en` (ignoring `{n}`).
+
+**Match became radios, and the radio was already built.** `components/saqeel/choice`
+takes `kind="radio"`, is token-driven and has 9 call sites — **nothing new was
+built for the control**. What was missing was the *group*: four modules had each
+hand-rolled the same `<fieldset>` + `<legend>` + `<Text role="label">`, so
+`components/saqeel/choice-group` is a promotion past the Rule of Two, not an
+invention. **It also fixes an accessibility defect that was invisible while the
+control was a segmented button** — the old markup wrapped it in `Field`, and a
+`<label>` names one control, never a set. `name` carries `pathKey(path)` because
+nested criteria groups would otherwise fuse into one radio group.
+**A third `RadioGroup` exists in the legacy `saqeel/inputs/` family with zero
+usages, an inline `style` and a retired `t-caption` — parked, not used.**
+
+**`PlanningNotice` was putting a `<div>` inside a `<p>` — a hydration error, not
+a styling nit.** It rendered `children` inside `<Text>`, which is a `<p>`, and the
+select-all confirm notice passed a `Field`. **Fixed at the component:** an
+`actions` slot renders as the paragraph's sibling and the TSDoc now states that
+`children` takes phrasing content only — patching the one call site would have
+left the trap armed for the other 23 consumers. Audited all of them: `Choice`
+(`<label>`) and `<strong>` elsewhere are legal; this was the only invalid one.
+
+**`role="tree"` was malformed and is gone.** A bare `<span key={i}>` sat between
+`role="group"` and `role="treeitem"`, breaking the owns-relationship, and the tree
+had no roving `tabindex`. Plain nested lists; the controls were always individually
+focusable. The `<form>` now carries `aria-labelledby` to its own heading.
+
+```
+blocks at first load   10 → 5
+renderings of eligible  4 → 1
+copies of "no criteria" 3 → 1
+typography baseline   734 → 734   ← none new, none removed; this task owed none
+```
+
+**Owed:** the screen body was never rendered. The dev session is signed in as
+**Inspector**, and `/planning/bulk` needs `planning.create.bulk`, so only the
+unauthorized state could be exercised — which did confirm the header change (title
+alone, no context pill). **The axe pass, the manual checklist and the Arabic render
+are unverified and must be done under a Planner or Supervisor session before this
+moves to `done`.**
+
+### T-093 · `/planning/visits` — and the planning family closes
+`status: done (the populated board was not rendered)` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014 §2.1, §4.1, §8` · `est: 1h`
+`record:` [2026-08-12-T-093-planning-visits-typography](sessions/2026-08/2026-08-12-T-093-planning-visits-typography.md)
+
+**15 declarations across 3 modules → 0**, including **5 retired `caption` refs**.
+
+```
+ALL THIRTEEN PLANNING ROUTES NOW SIT AT 1 VIOLATION — the shell, and nothing else.
+baseline 749 → 734
+```
+
+**The pressed row's reference goes 700 → 600, deliberately.**
+`.preview[aria-pressed="true"]` set `font-weight: bold` (700); the scale has **no
+700 at body size** and `bodyStrong` (600) is the only emphasis role for body. So
+the selected row renders `Text role={active ? "bodyStrong" : "body"}`. This is the
+**mirror image of T-087/T-091**, where KPI values moved 600 → 700 because `metric`
+*is* bold — same correction, direction set by the scale rather than a preference.
+
+**`.preview` already had `font: inherit`, and that was checked, not assumed.** It
+is a `<button>`, so an absent declaration would have meant Arial (T-064); the gate
+flagged only the `aria-pressed` state, which could equally have meant the base was
+silently broken. It was not.
+
+**Two `<input>` got `font: inherit`; nothing else needed it** — `<label>`, `<a>`,
+`<ul>` and `<p>` inherit normally and simply lost their declarations.
+`--sqx-status-critical-on-soft` was reused as `tone="danger"` on the strength of
+**T-091's token check**, so `.formError`'s colour could go rather than move to a
+wrapper.
+
+**T-091's invisible-violation sweep ran first and came back clean** — no `.t-*`,
+no string-literal `className`. That check is now part of the route inventory.
+
+**The map's first pass reported every class "(not found)"** because the classes
+live in **sibling** files, not the namesake component — **a "not found" from
+tooling is a question, not an answer.**
+
+**Owed:** the **populated board was never rendered** — `main` held the loading
+skeleton, so the spine, bulk-action forms, eligibility list and table body, where
+**10 of the 15** declarations were, are unverified. **The pressed state was never
+seen**, so `bodyStrong` on a selected row is asserted from the scale, not observed.
+
+### T-092 · `/planning/immediate` — clean by the gate, two typefaces on screen
+`status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014 §2.0, §4.1` · `est: 30m`
+`record:` [2026-08-12-T-092-planning-immediate-typography](sessions/2026-08/2026-08-12-T-092-planning-immediate-typography.md)
+
+**The route tree was genuinely clean and the screen was still wrong.** Three
+greps came back empty — no `.t-*` legacy classes (T-091's hole), **no
+string-literal `className` at all**, no typography declaration in any CSS in the
+tree. The measured render showed **two typefaces**: `© Mapbox`,
+`© OpenStreetMap` and `Improve this map` in **Helvetica Neue**, injected by
+`mapbox-gl`'s own stylesheet.
+
+**T-074's fix was real but reached two files, not the app.** Its record claims
+the chrome module means *"any future map inherits the same chrome"* — true of
+`operations-map-panel` and `LiveMapInner`, and **only** those two. **`GeoMap`,
+which has 18 consumers, was never wired up**, so every map outside operations
+has rendered Helvetica Neue attribution since T-074.
+
+**Fixed at the component, not the route** — one import plus the class on both
+className branches of `GeoMap`. Per-screen would have fixed one of eighteen and
+duplicated a hack, which is the argument T-074 itself used.
+
+**The change had to preserve a load-bearing invariant.** `GeoMap` carries an
+eleven-line comment: `mapboxgl-map` must appear in *every* value React writes, or
+the `position: relative` is lost and "the map paints over the entire page". Both
+branches keep it, and it was **checked in the DOM** — `position: relative`, canvas
+rect **exactly equal** to the container rect (385 × 254).
+
+```
+baseline 749 → 749   ← unchanged, and that is the point: the defect was never counted
+typefaces  2 → 1     attribution now plexArabic 12px/600 = label (T-074's ruling, reused)
+```
+
+**Owed:** 16 of the 18 GeoMap surfaces are unverified. **Parked:** `GeoMap`'s own
+unavailable state renders `t-caption` (11.5px) and a `⌖` glyph-as-icon — not
+provoked here because the map loaded (T-072's rule). **And the general lesson: a
+shared-component fix must be verified at the component, not at one call site** —
+there is no gate for "component X composes module Y".
+
+### T-091 · `/planning/bulk` — typography, and a hole in the gate
+`status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014 §2.1, §4.1, §8` · `est: 1.5h`
+`record:` [2026-08-12-T-091-planning-bulk-typography](sessions/2026-08/2026-08-12-T-091-planning-bulk-typography.md)
+
+**19 route-owned declarations across 7 modules → 0**, plus **4 rendered elements
+the gate could not see.**
+
+**The gate cannot see a legacy global type class applied from JSX.**
+`/planning/bulk` reported **1 violation** — the shell — while still rendering
+**four elements at 11.5px**, off every scale. The source is
+`DistributionPanels.tsx` using `className="t-caption"`, defined in the **frozen**
+`tokens.css` (`--type-caption-size: 11.5px`). Every gate rule scans **CSS files
+for declarations**; the frozen sheets are exempt by design and a `className` in a
+`.tsx` matches no rule. **Only measuring found it.** `t-caption` appears in
+**162 `.tsx` files** repo-wide — **a route can be at "1 violation" and still be
+off-scale.**
+
+**`--sqx-status-critical-on-soft` and `--sqx-text-danger` are the same value —
+checked, not assumed.** Both resolve to `--sqx-error-darker` / `--sqx-error-light`,
+so `tone="danger"` is exact and `ai-advisory`'s `.error` could be deleted rather
+than given the T-090 wrapper treatment. **A colour token outside the tone list is
+not automatically a different colour.**
+
+**`.tree, .notice` is a grouped selector and the map only reported the first
+class** — the font applied to both. Both are mixed-content flex rows, so they
+inherit (T-065). **Read the selector, not just the map's first match.**
+
+**`<bdi>` has no primitive**, and it cannot be dropped (bidi isolation for factory
+codes in Arabic), so its declaration was deleted rather than composed — the
+inherited render is identical. Same reasoning as `<td>`.
+
+```
+/planning/bulk  20 → 1   (route-owned 19 → 0)
+baseline       768 → 749
+
+rendered before: 30 · 28 · 20 · 16 · 14 · 12 · 11.5   (4 off-scale)
+rendered after:  30 · 28 · 20 · 16 · 14 · 12          (0 off-scale), one typeface
+```
+
+**Twelve of thirteen planning routes now sit at 1 — the shell.** Only
+`/planning/visits` remains at 16, and it owns none of them.
+
+**Three mistakes, each caught by a check rather than by reading:** a missing
+`Text` import that compiled into the **DOM `Text` interface** (`tsc` caught it,
+the gate could not); two more unbalanced `</span>`; and `.filterStatus` nearly
+losing its `inline-flex` layout — caught because the **unused-class check**
+flagged it, which prompted re-reading the block. **A class that becomes unused
+after a migration is a signal to re-read it, not to delete it reflexively.**
+
+**Parked:** `BulkForm.tsx` is **dead** (zero importers, ~240 lines of legacy
+globals, a complete parallel implementation of this screen); a gate rule matching
+`className=".*\bt-(caption|body|label|meta|micro)\b"` in `.tsx` would close the
+hole above; `DistributionPanels.tsx` still renders legacy structural globals
+(`panel-header`, `sq-grid-2`, `stack`) — a rebuild, not a typography task.
+
+### T-090 · `/planning` — typography, 45 → 0
+`status: done (the visit drawer — 10 of the 45 — never rendered)` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014 §4.1, §8` · `est: 1.5h`
+`record:` [2026-08-12-T-090-planning-typography](sessions/2026-08/2026-08-12-T-090-planning-typography.md)
+
+**45 declarations across 11 modules → 0.** The largest pocket in the family; the
+route's only remaining violation is `NotificationBell.tsx:270`, the shell.
+
+**Four native controls got `font: inherit`, and only four.** `<input>`,
+`<button>`, `<select>`, `<textarea>` do not inherit `font` — deleting a
+declaration from one renders Arial (the T-064 defect). **`<a>`, `<label>`,
+`<summary>`, `<th>` and `<td>` are not in that set** and were checked rather than
+assumed. Every selector was mapped **selector → rendered element by script**
+before any edit; that map is what found the four.
+
+**The primitives take no `className`, and that shaped every edit.** The rule
+applied throughout: *the element keeps its layout class, the primitive goes
+inside it as a span.* 13 purely-typographic classes were deleted outright.
+
+**`--sqx-accent-ai` is not one of the nine tones, so the colour moved rather than
+changed.** `planning-assistant`'s heading is `#A78BFA`; mapping it to
+`tone="accent"` would have changed a colour during a typography migration, which
+T-065 forbids. It is now `Heading tone="inherit"` wrapping a `.headingInk` span.
+Verified live: `rgb(167, 139, 250)`, byte-identical to the token.
+
+```
+/planning       46 → 1   (route-owned 45 → 0)
+baseline       813 → 768
+
+rendered: 30 · 28 · 20 · 14 · 12 — five sizes, 0 off-scale, one typeface
+h1 30/34.5/700 display · h2 20/26/600 heading · th 12/16.8/600 label
+summary 12/16.8/600 label · button 14/22.4/600 bodyStrong (font: inherit worked)
+```
+
+**Three mistakes worth the next session's attention:** an unbalanced `</span>`
+(T-069's exact mistake, caught by re-reading — **the gate reads CSS and stays
+green on broken JSX**); a `className={undefined}` on `Text`, which has no such
+prop; and a scripted bulk replace that matched **0 of 7** patterns because the
+file is CRLF and reported success on an unchanged file — **a zero-match bulk edit
+is the T-058/T-076 signal to change approach.**
+
+**Owed:** the visit drawer opens on a row click and `drawerCount` was 0 in the
+measured DOM — its `h2`, `subtitle`, five `groupTitle`s, `dt`/`dd` and `openLink`
+are **unverified**.
+
 ### T-089 · `/factories` — declutter: one AI strip, one identity, one provenance card
 `status: done (axe, Arabic, light theme, e2e owed)` · `rules: WEB-000, WEB-002, WEB-003, WEB-006, WEB-008, WEB-009, WEB-011, WEB-013` · `est: 1.5h`
 `record:` [2026-08-12-T-089-factories-declutter](sessions/2026-08/2026-08-12-T-089-factories-declutter.md)
@@ -57,9 +729,31 @@ AI card 226 → 74px · risk outlook 390 → 268 · two provenance cards 382 →
 duplicated strings 14 → 9 · availability sentence 4× → 1× · 4 dead locale keys
 ```
 
-**Owed:** axe, Arabic (still blocked on the locale toggle), light theme, e2e. The 9
-remaining repeats are the left-rail-versus-hero overlap, which is scanning versus
-detail and was deliberately kept.
+**The skeleton had to follow, and measuring it found a primitive mismatch.** It
+still drew five right-rail panels and no top strip. Fixed, then measured — and the
+first measurement was wrong: a harness missing `--sqx-space-6/9` and
+`--sqx-control-h-sm` reported a 24px shift that did not exist, because the bones
+had collapsed in the *harness*, not the app. **An under-specified harness reports a
+defect in the thing it is measuring.** With the full token set the residual is
+**8px, and it is a shared primitive**: `Skeleton shape="pill"` is
+`--sqx-control-h-sm` (32px) while `StatusPill` renders 24px. Left alone and parked —
+correcting it moves every skeleton on every route.
+
+**Two further skeleton defects, owner-reported, and the bigger one predates this
+task.** `factories/loading.tsx` never wrapped its skeleton in `Shell` — unlike
+`/dashboard`, `/planning` and `/visits/[id]` — so it rendered outside the page
+frame, flush to the viewport, while the loaded page sits at a 268px inset. **A
+skeleton outside its page's frame cannot match it however well its bones are
+sized.** Fixed, and the legacy `t("f360.loading", "…")` retired for a real
+`factories.loading` key in both locales. The strip skeleton also carried the live
+strip's **AI accent border**; a saturated accent on a loading placeholder reads as
+loaded content, so it is gone.
+
+**Owed:** axe, Arabic (still blocked on the locale toggle), light theme, e2e, **and
+a re-render of the skeleton** — the pane's session expired to `/en/login`, so the
+framing fix is verified from source and the accent removal by grep, not by a
+screenshot. The 9 remaining repeats are the left-rail-versus-hero overlap, which is
+scanning versus detail and was deliberately kept.
 
 ### T-088 · `/planning/single` — typography, route-owned code to zero
 `status: done (3 of 5 components never rendered)` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014 §4.1, §8` · `est: 45m`
@@ -2269,6 +2963,47 @@ filters and tabs moved to `searchParams`.
 
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
+
+- **Does `planning/loading.tsx` mask every nested route's skeleton?** (T-096.)
+  A cold navigation to `/planning/immediate` shows `PlanningSkeleton` — an
+  11-column data-table skeleton for a screen that is a form — from the **parent**
+  `/planning` boundary, not the route's own. If that holds for the other twelve
+  planning routes, every per-route skeleton built so far is unreachable and the
+  work is invisible. **Answer this before building another planning skeleton.**
+- **Retire `RouteLoading` app-wide** (T-096; it is now off `/planning/immediate`
+  but **~25 segments still import it**). Every one carries the same five
+  violations: hardcoded `en`/`ar` literals, the `locale === "ar"` ternary,
+  `glyph="◫"`, `t-caption` at 11.5px, and a `<main>` nested inside
+  `ShellClient`'s own `<main>` — an ARIA landmark defect on 25 routes.
+- **`DateRangePicker` has no `id` prop** (T-096), so no protection, hint or spec
+  can address the window control — `imm-window-start` has never resolved. Second
+  primitive to hit this shape after T-080's `Select`. Needs an API ruling.
+- **`cd-023-immediate-authority-bar.spec.ts` is broken independently of T-096.**
+  `#imm-window-start`/`#imm-window-end` are `.fill()`ed but do not exist;
+  `#imm-existing` and `#imm-visit-type` are driven with `selectOption` and
+  `option` enumeration against `SaqeelSelect` listboxes; `"Complaint received"`
+  is matched as a `button` when it is a `Choice` radio. T-096 re-pointed only the
+  five assertions its own diff invalidated. Repairing the rest needs a suite run,
+  which needs a production build — same shape as T-078.
+- **`ImmediateForm.tsx` is client code living in a route directory** (T-096),
+  which WEB-000 §3 wants under `components/sections/`. A move, not a fix.
+
+- **`EligibilityLedger.tsx` and `DistributionPanels.tsx` need a rebuild, not a
+  patch** (re-confirmed in T-094; first parked by T-091). Both are unmigrated
+  route-folder components carrying the **explicitly banned `.sq-` prefix**
+  (`sq-kpi`, `sq-grid-2`, `sq-freshness` — WEB-008 §2 names it), frozen-sheet
+  globals (`metric-strip`, `badge badge-compliant`, `panel-header`,
+  `panel-title`, `row`, `grow`, `stack`), a raw `<h3 className="panel-title">`,
+  glyphs used as icons in JSX (`✓ − ⚠ ?`), and comment blocks. **`StatCard` is
+  exactly what the ledger is.** T-094 deliberately did not fold this in: it is a
+  rebuild, and mixing it into a deletion task would have made the commit line
+  undescribable.
+
+- **`BulkForm.tsx` is still dead** (zero importers, `@retiring` since
+  2026-08-10). T-094 confirmed it holds a complete parallel implementation of
+  the screen with its own `BulkFormStrings` — which is why removing
+  `invalidClear` and `summaryEmpty` from the live type did not break it. It
+  should be deleted, not migrated.
 
 - **`sq-notification__badge` renders at 10px — below WEB-014 §7's 11px floor**
   (found in T-083, measured on `/planning` in both locales). It is a frozen-sheet

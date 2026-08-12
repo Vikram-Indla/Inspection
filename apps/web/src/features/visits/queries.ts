@@ -126,3 +126,26 @@ export async function queryVisitManagement(
     reassignmentAvailable: roster.available,
   };
 }
+
+type CalendarRow = {
+  id: string;
+  visit_type: string;
+  planning_status: string;
+  operational_state: string;
+  window_start: string;
+  window_end: string;
+  factories: { name: string } | null;
+};
+
+export type VisitCalendarRead =
+  | { readonly ok: true; readonly rows: readonly CalendarRow[] }
+  | { readonly ok: false; readonly reason: string };
+
+export async function queryVisitCalendar(sb: SupabaseClient): Promise<VisitCalendarRead> {
+  const { data, error } = await sb.from("visits")
+    .select("id, visit_type, planning_status, operational_state, window_start, window_end, factories(name)")
+    .order("window_start", { ascending: true })
+    .limit(1000);
+  if (error) return { ok: false, reason: error.message };
+  return { ok: true, rows: (data ?? []) as unknown as CalendarRow[] };
+}

@@ -1,3 +1,4 @@
+/* @retiring 2026-08-12 · replaced-by components/sections/visits/visit-calendar/visit-calendar · pending none · delete-when 0-imports */
 "use client";
 // FIX WAVE F4 — M02-038: web Day/Week/Month calendar for Visit Management.
 // Segmented view switch; month grid (Sun-first — KSA week), week columns, day

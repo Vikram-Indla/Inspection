@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import IconButton from "@/components/saqeel/icon-button/icon-button";
+import TextInput from "@/components/saqeel/text-input/text-input";
 import { supabaseBrowser } from "@/lib/supabase";
 import { getFieldDeviceIdentifier } from "@/lib/field-device";
 import { readFieldDeviceEnrollment } from "@/app/(app)/field/settings/actions";
@@ -466,37 +468,30 @@ export default function FieldLoginClient({
           <form className="fl-form" onSubmit={submitCredentials}>
               <label className="fl-label">
                 <span className="t-label">{s.idLabel}</span>
-                <input
-                  className="fl-in"
+                <TextInput
                   type="text"
                   autoComplete="username"
                   value={identifier}
-                  onChange={e => setIdentifier(e.target.value)}
+                  onChange={setIdentifier}
                 />
               </label>
               <label className="fl-label">
                 <span className="t-label">{s.password}</span>
-                <div className="fl-pw-wrap">
-                  <input
-                    className="fl-in fl-pw-in"
-                    type={showPw ? "text" : "password"}
-                    autoComplete="current-password"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    className="fl-pw-toggle"
-                    onClick={() => setShowPw(v => !v)}
-                    aria-label={s.showPw}
-                    aria-pressed={showPw}
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ width: 20, height: 20 }} aria-hidden="true">
-                      <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  </button>
-                </div>
+                <TextInput
+                  type={showPw ? "text" : "password"}
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={setPassword}
+                  trailing={
+                    <IconButton
+                      icon={showPw ? "conceal" : "reveal"}
+                      size="sm"
+                      label={s.showPw}
+                      pressed={showPw}
+                      onClick={() => setShowPw(v => !v)}
+                    />
+                  }
+                />
               </label>
               <div className="fl-row">
                 <label className="check fl-keep">

@@ -1,0 +1,6 @@
+.capacity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+  min-inline-size: var(--sqx-grid-min-xs);
+}

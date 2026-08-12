@@ -186,5 +186,6 @@
     "mediaNote": "Counts only — images are previewed and downloaded from the factory profile, where access is checked per asset.",
     "openLabel": "Open factory profile",
     "noContact": "No active representative is recorded"
-  }
+  },
+  "loading": "Loading factories"
 }

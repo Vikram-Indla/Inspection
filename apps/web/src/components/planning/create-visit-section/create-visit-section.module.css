@@ -12,8 +12,6 @@
   border: var(--sqx-border-width-hair) solid var(--sqx-action-primary-border);
   background: var(--sqx-action-primary-bg);
   color: var(--sqx-action-primary-text);
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
   cursor: pointer;
   list-style: none;
   user-select: none;
@@ -84,16 +82,6 @@
   gap: var(--sqx-space-1);
 }
 
-.itemTitle {
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
-  color: var(--sqx-text-primary);
-}
-
-.itemDesc {
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-muted);
-}
 
 @media (max-width: 48rem) {
   .menu {

@@ -1,0 +1,16 @@
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sqx-space-3);
+}
+
+.field {
+  flex: 1 1 var(--sqx-grid-min-xs);
+  min-inline-size: 0;
+}
+
+.action {
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+}

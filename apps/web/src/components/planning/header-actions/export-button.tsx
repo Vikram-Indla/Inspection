@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import IconButton from "@/components/saqeel/icon-button/icon-button";
+import { Text } from "@/components/saqeel/type";
 import { exportPlanningVisitsCsv } from "@/app/(app)/planning/export-actions";
 import type { PlanningListParams } from "@/lib/planning/visit-list";
 import styles from "./header-actions.module.css";
@@ -41,7 +42,7 @@ export default function ExportButton({ params, strings }: {
   return (
     <span className={styles.exportWrap}>
       <IconButton icon="export" label={pending ? strings.busyLabel : strings.label} disabled={pending} onClick={run} />
-      {message ? <span className={styles.exportNote} role="status">{message}</span> : null}
+      {message ? <Text as="span" tone="secondary" live="status">{message}</Text> : null}
     </span>
   );
 }

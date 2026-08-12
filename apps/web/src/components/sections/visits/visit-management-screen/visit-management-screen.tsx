@@ -5,10 +5,10 @@ import VisitScopeBar from "@/components/sections/visits/visit-scope-bar/visit-sc
 import VisitStatusTiles from "@/components/sections/visits/visit-status-tiles/visit-status-tiles";
 import VisitFilterBar from "@/components/sections/visits/visit-filter-bar/visit-filter-bar";
 import VisitBoard from "@/components/sections/visits/visit-board/visit-board";
+import { makeEnumLabel } from "@/i18n/enum-label";
 import { getMessages, fill } from "@/i18n/messages";
 import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
-import { humaniseEnum, sentenceCase } from "@/lib/text";
 import type { PlanningListParams, PlanningTab } from "@/lib/planning/visit-list";
 import { visitHref, hasActiveVisitFilters, VISIT_PAGE_MAX, type VisitRouteBase, type VisitSearchParams } from "@/features/visits/params";
 import { windowDateRangePresets } from "@/components/saqeel/date-range-picker/date-range-presets";
@@ -27,9 +27,9 @@ export default async function VisitManagementScreen({ data, params, sp, routeBas
   planningHref: string | null;
   aiPanel?: React.ReactNode;
 }) {
-  const { t, locale } = await useT();
+  const locale = (await useT()).locale;
   const { visit } = getMessages(locale).planning;
-  const enumLabel = (value: string) => sentenceCase(t(`enum.${value}`, humaniseEnum(value)));
+  const enumLabel = makeEnumLabel(locale);
   const statusLabel = (tab: PlanningTab) => (tab === "all" ? visit.filter.allStatuses : enumLabel(tab));
   const now = Date.now();
 

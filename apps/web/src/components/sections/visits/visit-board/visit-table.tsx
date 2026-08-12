@@ -3,6 +3,7 @@ import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import DataTable, { CellLink, CellMuted, CellTime, type DataColumn } from "@/components/saqeel/data-table/data-table";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import Icon from "@/components/saqeel/icon/icon";
+import { Text } from "@/components/saqeel/type";
 import type { VisitBoardRow } from "@/features/visits/rows";
 import type { VisitsBoardStrings } from "@/features/visits/board-strings";
 import styles from "./visit-board.module.css";
@@ -42,7 +43,9 @@ export default function VisitTable({ rows, selected, activeId, strings, onToggle
           <span className={styles.visitLead}>
             <button type="button" className={styles.preview} onClick={() => onPreview(row.id)}
               aria-pressed={row.id === activeId} aria-label={fill(strings.preview, row.selectionLabel)}>
-              <bdi>{row.reference}</bdi>
+              <Text as="span" role={row.id === activeId ? "bodyStrong" : "body"} tone="inherit">
+                <bdi>{row.reference}</bdi>
+              </Text>
             </button>
             <CellLink href={row.href}>
               <Icon name="externalLink" size="sm" label={fill(strings.openDetail, row.selectionLabel)} />

@@ -1,5 +1,6 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
+import { Metric, Text } from "@/components/saqeel/type";
 import styles from "./bulk-campaign-summary.module.css";
 
 export type CampaignSummaryStrings = {
@@ -7,7 +8,6 @@ export type CampaignSummaryStrings = {
   summarySelected: string;
   summaryByBand: string;
   summaryByRegion: string;
-  summaryEmpty: string;
   riskBands: Record<string, string>;
 };
 
@@ -29,11 +29,11 @@ export default function BulkCampaignSummary({ selectedCount, byBand, byRegion, s
       <CardBody gap="tight">
         <div className={styles.groups}>
             <div className={styles.group}>
-              <p className={styles.label}>{strings.summarySelected}</p>
-              <p className={styles.value}>{selectedCount}</p>
+              <Text tone="muted">{strings.summarySelected}</Text>
+              <Metric>{selectedCount}</Metric>
             </div>
             <div className={styles.group}>
-              <p className={styles.label}>{strings.summaryByBand}</p>
+              <Text tone="muted">{strings.summaryByBand}</Text>
               <div className={styles.pills}>
                 {Object.entries(byBand).map(([band, count]) => (
                   <StatusPill key={band} tone={RISK_TONE[band] ?? "neutral"}>
@@ -43,7 +43,7 @@ export default function BulkCampaignSummary({ selectedCount, byBand, byRegion, s
               </div>
             </div>
             <div className={styles.group}>
-              <p className={styles.label}>{strings.summaryByRegion}</p>
+              <Text tone="muted">{strings.summaryByRegion}</Text>
               <div className={styles.pills}>
                 {Object.entries(byRegion).map(([region, count]) => (
                   <StatusPill key={region} tone="info">{`${region} · ${count}`}</StatusPill>
@@ -51,7 +51,6 @@ export default function BulkCampaignSummary({ selectedCount, byBand, byRegion, s
               </div>
             </div>
           </div>
-        <p className={styles.empty}>{selectedCount === 0 ? strings.summaryEmpty : ""}&nbsp;</p>
       </CardBody>
     </Card>
   );

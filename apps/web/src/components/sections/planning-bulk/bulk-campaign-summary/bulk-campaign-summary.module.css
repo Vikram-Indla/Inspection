@@ -11,24 +11,8 @@
   min-inline-size: 0;
 }
 
-.label {
-  color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-body-size);
-}
-
-.value {
-  font-size: var(--sqx-text-metric-size);
-  font-weight: var(--sqx-weight-semibold);
-  font-variant-numeric: tabular-nums;
-}
-
 .pills {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sqx-space-2);
-}
-
-.empty {
-  color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-body-size);
 }

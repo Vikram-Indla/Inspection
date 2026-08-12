@@ -26,16 +26,6 @@
   min-inline-size: 0;
 }
 
-.count {
-  font-variant-numeric: tabular-nums;
-  font-weight: var(--sqx-weight-semibold);
-}
-
-.note {
-  color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-body-size);
-}
-
 .actions {
   display: flex;
   flex-wrap: wrap;

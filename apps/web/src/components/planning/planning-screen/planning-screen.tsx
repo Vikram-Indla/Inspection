@@ -11,6 +11,7 @@ import { planningHref } from "@/features/planning/links";
 import { buildPlanningVisitViews } from "@/features/planning/view";
 import type { PlanningSearchParams, PlanningWorkspace } from "@/features/planning/queries";
 import { PLANNING_METHODS, type PlanningListParams } from "@/lib/planning/visit-list";
+import { Text } from "@/components/saqeel/type";
 import { fill, type Messages } from "@/i18n/messages";
 import type { Locale } from "@/lib/i18n";
 import styles from "./planning-screen.module.css";
@@ -118,20 +119,20 @@ export default function PlanningScreen({ workspace, params, sp, locale, messages
         <>
           <PlanningVisitTable rows={rows} strings={messages.table} bulkBar={messages.bulkBar} drawer={messages.drawer} />
           <div className={styles.pager}>
-            <span className={styles.pagerSummary}>
+            <Text as="span" tone="muted" numeric>
               {fill(messages.pagination.summary, {
                 shown: rows.length, total: workspace.total, page: workspace.page, pages: workspace.totalPages,
               })}
-            </span>
+            </Text>
             <span className={styles.pagerLinks}>
               {workspace.page > 1 ? (
                 <a className={styles.pagerLink} href={planningHref(sp, { page: String(workspace.page - 1) })}>
-                  {messages.pagination.previous}
+                  <Text as="span" role="label">{messages.pagination.previous}</Text>
                 </a>
               ) : null}
               {workspace.page < workspace.totalPages ? (
                 <a className={styles.pagerLink} href={planningHref(sp, { page: String(workspace.page + 1) })}>
-                  {messages.pagination.next}
+                  <Text as="span" role="label">{messages.pagination.next}</Text>
                 </a>
               ) : null}
             </span>

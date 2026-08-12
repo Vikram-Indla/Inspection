@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Button from "@/components/saqeel/button/button";
 import IconButton from "@/components/saqeel/icon-button/icon-button";
+import { Text } from "@/components/saqeel/type";
 import Modal from "@/components/Modal";
 import styles from "./saved-views-menu.module.css";
 
@@ -57,12 +58,12 @@ export default function SavedViewsMenu({ strings }: { strings: SavedViewsStrings
       {open ? (
         <section className={styles.menu} aria-label={strings.label}>
           <header className={styles.menuHead}>
-            <strong className={styles.menuTitle}>{strings.label}</strong>
+            <Text as="strong" role="label">{strings.label}</Text>
             <Button size="sm" variant="tertiary" onClick={() => setNaming(true)}>{strings.saveCurrent}</Button>
           </header>
           {views.length ? views.map(view => (
             <div className={styles.row} key={view.id}>
-              <a className={styles.rowLink} href={view.href}>{view.name}</a>
+              <a className={styles.rowLink} href={view.href}><Text as="span" tone="inherit">{view.name}</Text></a>
               <IconButton
                 icon="dismiss"
                 size="sm"
@@ -70,7 +71,7 @@ export default function SavedViewsMenu({ strings }: { strings: SavedViewsStrings
                 onClick={() => persist(views.filter(entry => entry.id !== view.id))}
               />
             </div>
-          )) : <p className={styles.empty}>{strings.empty}</p>}
+          )) : <div className={styles.empty}><Text tone="muted">{strings.empty}</Text></div>}
         </section>
       ) : null}
       <Modal
@@ -85,7 +86,9 @@ export default function SavedViewsMenu({ strings }: { strings: SavedViewsStrings
         </>}
       >
         <form id="planning-saved-view-form" onSubmit={event => { event.preventDefault(); save(); }}>
-          <label className={styles.fieldLabel} htmlFor="planning-saved-view-name">{strings.nameLabel}</label>
+          <label className={styles.fieldLabel} htmlFor="planning-saved-view-name">
+            <Text as="span" role="label" tone="secondary">{strings.nameLabel}</Text>
+          </label>
           <input
             className={styles.input}
             id="planning-saved-view-name"

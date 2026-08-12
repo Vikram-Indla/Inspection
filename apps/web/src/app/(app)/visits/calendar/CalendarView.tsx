@@ -1,66 +1,74 @@
 import Shell from "@/components/Shell";
+import EmptyState from "@/components/saqeel/empty-state/empty-state";
+import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import VisitCalendar from "@/components/sections/visits/visit-calendar/visit-calendar";
+import { makeEnumLabel } from "@/i18n/enum-label";
+import { getMessages } from "@/i18n/messages";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
-import CalendarBoard, { type CalVisit, type CalendarStrings } from "./CalendarBoard";
+import { queryVisitCalendar } from "@/features/visits/queries";
+import {
+  resolveAnchor, resolveView, utcMidnight,
+  type CalendarParams, type CalendarVisit,
+} from "@/features/visits/calendar";
 import VisitViewNavigation, { type VisitBasePath } from "../VisitViewNavigation";
 
-// FIX WAVE F4 — M02-038: Day/Week/Month calendar in web Visit Management
-// (previously only the iPad field home had a calendar). RLS-scoped read;
-// expired states persisted before render (M02-016 parity with /visits).
+// M02-016 expiry is owned by the pg_cron sweep expire_lapsed_visits_scheduled
+// (0025, every 15 min, unscoped); boards render display-level 'expired' for
+// lapsed windows in between ticks. No per-page-load mutating RPC (K-009).
 
-type Joined = {
-  id: string; visit_type: string; planning_status: string; operational_state: string;
-  window_start: string; window_end: string;
-  factories: { name: string } | null;
-};
+export async function VisitsCalendarView({ basePath = "/visits", params = {} }: {
+  basePath?: VisitBasePath;
+  params?: CalendarParams;
+}) {
+  const locale = (await useT()).locale;
+  const messages = getMessages(locale);
+  const strings = messages.visits.calendar;
+  const enumLabel = makeEnumLabel(locale);
+  const uiLocale = locale === "ar" ? "ar" : "en";
+  const read = await queryVisitCalendar(await supabaseServer());
 
-export async function VisitsCalendarView({ basePath = "/visits" }: { basePath?: VisitBasePath }) {
-  const { t, locale } = await useT();
-  const sb = await supabaseServer();
-  // M02-016 expiry is owned by pg_cron sweep expire_lapsed_visits_scheduled
-  // (0025, every 15 min, unscoped); boards render display-level 'expired' for
-  // lapsed windows in between ticks. No per-page-load mutating RPC (K-009).
-  const { data, error } = await sb.from("visits")
-    .select("id, visit_type, planning_status, operational_state, window_start, window_end, factories(name)")
-    .order("window_start", { ascending: true })
-    .limit(1000);
-  if (error) {
-    // CD-026 query-degraded — neutralise provider error (log server-side only).
-    console.error(`[visits.calendar] load failed: ${error.message}`);
+  if (!read.ok) {
+    console.error(`[visits.calendar] load failed: ${read.reason}`);
     return (
-      <Shell current={basePath} title={t("visit.cal.title", "Visit calendar")}>
-        <div className="sq-banner sq-banner--critical" role="alert"><div>{t("visit.list.loadErrorNeutral", "Visits are temporarily unavailable. Please try again.")}</div></div>
+      <Shell current={basePath} title={strings.title}>
+        <EmptyState icon="calendar" tone="danger" title={strings.loadErrorTitle} description={strings.loadErrorNeutral} />
       </Shell>
     );
   }
-  const visits: CalVisit[] = ((data ?? []) as unknown as Joined[]).map(v => ({
-    id: v.id,
-    windowStart: v.window_start,
-    windowEnd: v.window_end,
-    factoryName: v.factories?.name ?? "—",
-    planningStatus: v.planning_status,
-    planningLabel: t(`enum.${v.planning_status}`, v.planning_status),
-    opsLabel: t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " ")),
-    typeLabel: t(`enum.${v.visit_type}`, v.visit_type),
+
+  const visits: readonly CalendarVisit[] = read.rows.map(row => ({
+    id: row.id,
+    windowStart: row.window_start,
+    windowEnd: row.window_end,
+    factoryName: row.factories?.name ?? strings.factoryUnavailable,
+    planningStatus: row.planning_status,
+    planningLabel: enumLabel(row.planning_status),
+    opsLabel: enumLabel(row.operational_state),
+    typeLabel: enumLabel(row.visit_type),
   }));
-  const strings: CalendarStrings = {
-    viewDay: t("visit.cal.viewDay", "Day"),
-    viewWeek: t("visit.cal.viewWeek", "Week"),
-    viewMonth: t("visit.cal.viewMonth", "Month"),
-    viewSwitchAria: t("visit.cal.viewSwitchAria", "Calendar view"),
-    prev: t("visit.cal.prev", "Previous"),
-    next: t("visit.cal.next", "Next"),
-    today: t("visit.cal.today", "Today"),
-    emptyRange: t("visit.cal.emptyRange", "No visits in this range."),
-    moreCount: t("visit.cal.moreCount", "+{n} more"),
-    visitsOn: t("visit.cal.visitsOn", "{n} visits — placed by window start; click to open the visit"),
-  };
+
   return (
-    <Shell current={basePath} title={t("visit.cal.title", "Visit calendar")}
-      context={<span className="sq-lozenge sq-lozenge--info">{t("visit.cal.context", "Filtered to your access")}</span>}>
-      <VisitViewNavigation basePath={basePath} active="calendar" ariaLabel={t("visit.views.aria", "Visit management views")}
-        labels={{ list: basePath === "/planning" ? t("plan.home.title", "Planning") : t("visit.views.list", "List"), calendar: t("visit.views.calendar", "Calendar"), map: t("visit.views.map", "Map"), workload: t("visit.views.workload", "Workload") }} />
-      <CalendarBoard visits={visits} locale={locale} strings={strings} />
+    <Shell current={basePath} title={strings.title} context={<StatusPill tone="info">{strings.context}</StatusPill>}>
+      <VisitViewNavigation
+        basePath={basePath}
+        active="calendar"
+        ariaLabel={messages.planning.visit.views.aria}
+        labels={{
+          list: basePath === "/planning" ? messages.planning.home.title : messages.planning.visit.views.list,
+          calendar: messages.planning.visit.views.calendar,
+          map: messages.planning.visit.views.map,
+          workload: messages.planning.visit.views.workload,
+        }}
+      />
+      <VisitCalendar
+        visits={visits}
+        view={resolveView(params.view)}
+        anchorMs={resolveAnchor(params.on, utcMidnight(new Date()))}
+        strings={strings}
+        basePath={basePath}
+        locale={uiLocale}
+      />
     </Shell>
   );
 }

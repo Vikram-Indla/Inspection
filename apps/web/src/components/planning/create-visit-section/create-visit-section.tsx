@@ -1,4 +1,5 @@
 import Icon from "@/components/saqeel/icon/icon";
+import { Text } from "@/components/saqeel/type";
 import type { IconName } from "@/components/saqeel/icon/icon-registry";
 import styles from "./create-visit-section.module.css";
 
@@ -25,7 +26,7 @@ export default function CreateVisitSection({ strings, canCreate }: {
   return (
     <details className={styles.root}>
       <summary className={styles.trigger}>
-        {strings.button}
+        <Text as="span" role="label" tone="inherit">{strings.button}</Text>
         <Icon name="disclosure" size="sm" />
       </summary>
       <nav className={styles.menu} aria-label={strings.menuLabel}>
@@ -35,8 +36,8 @@ export default function CreateVisitSection({ strings, canCreate }: {
               <Icon name={method.icon} size="md" />
             </span>
             <span className={styles.itemText}>
-              <span className={styles.itemTitle}>{method.title}</span>
-              <span className={styles.itemDesc}>{method.desc}</span>
+              <Text as="span" role="label">{method.title}</Text>
+              <Text as="span" tone="muted">{method.desc}</Text>
             </span>
           </a>
         ))}

@@ -117,6 +117,34 @@ worse: a `line`/`lg` bone drops the row to 20px and makes the shift 20px, and no
 size in the scale renders the 26px the heading's line box occupies. **The
 semantically correct bone stays; the 8px is recorded and parked.**
 
+## Two skeleton defects the owner caught, and one was not mine
+
+**The factories skeleton had no page frame at all, and it never had.**
+`/dashboard`, `/planning` and `/visits/[id]` all wrap their skeleton in `Shell`;
+`factories/loading.tsx` returned `<FactoriesSkeleton />` bare, so it rendered
+outside the frame and ran flush to the viewport edges while the loaded page sits
+at a 268px inset (measured at 1440px earlier this session). **A skeleton that is
+not inside the same frame as its page cannot match it, no matter how well its
+bones are sized** — this predates T-089 and is the more important of the two
+fixes. Now composed exactly as the other three routes do.
+
+The same edit retired a legacy `t("f360.loading", "Loading factories")` — a `t()`
+with an English default, which WEB-013 bans — for a real `factories.loading` key
+in both locales (141 each, parity asserted).
+
+**The AI accent border was wrong on a skeleton.** The strip skeleton copied the
+live strip's `border-inline-start: var(--sqx-border-width-thick) solid
+var(--sqx-accent-ai)`. A skeleton is an absence of content, not a preview of
+branding — a saturated accent on a loading placeholder reads as a real, loaded
+element. Removed; the plain hairline border stays so the block still occupies the
+right shape.
+
+**Not re-rendered.** The Browser pane's session expired to `/en/login` before the
+skeleton could be measured again, so the framing fix is verified from source
+(identical `Shell` composition to three other routes) and the accent removal by
+grep, **not** by a screenshot. The 268px inset figure is from the loaded page
+earlier in this session, not from the skeleton.
+
 ## Inventory taken before writing code
 
 Measured in the rendered workspace at 1440px, shell excluded:
