@@ -1,6 +1,48 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-083 — design-system retired-role floor`
+`Last updated: 2026-08-12` · `Updated by: T-085 — planning method filter`
+
+## An i18n object is a contract, and `Object.entries` assumes one you never wrote (2026-08-12)
+
+`/planning`'s Method filter offered ten options and six of them could never match
+anything. The cause was one line — `Object.entries(messages.methods)` — reading a
+JSON object as a value→label map when it actually held **nine** keys: three real
+method values *and* six title/description strings for a different surface's card
+picker. Selecting *"Plan bulk visits"* filtered visits by `method = 'bulkTitle'`
+and returned an empty list **with no error**, which reads as *no visits match*
+rather than *that is not a filter*.
+
+Nothing catches this. It typechecks (`Object.entries` over a JSON object is
+well-typed), it passes every gate, and it renders without a warning. The same
+object was **simultaneously correct** at `planning-drafts.tsx:38`, which does
+`methods[draft.method]` — one object, two contracts, only one of them true.
+
+**Never iterate an i18n namespace to build a control's options.** A locale file
+groups strings by *screen area*, not by *domain enum*. Derive options from a
+canonical constant and index the namespace by key; then a new string can never
+become a selectable value.
+
+**And validate the parameter as well as the control.** Cleaning the JSON alone
+would have made the filter correct *by coincidence*. `parsePlanningParams` was
+already whitelisting `tab` against `PLANNING_TABS` three lines above the
+unvalidated `method` — the fix was the existing pattern applied to the field
+that was missed.
+
+## When a number contradicts an invariant, re-measure before explaining it (2026-08-12)
+
+T-085's first measurement said the unfiltered planning list held **2** visits.
+The real figure is **101**. A loose regex had matched a bucket counter instead of
+the list total, and the mistake nearly reached the session record.
+
+What exposed it was not care — it was an impossibility: a *filtered* query
+returned **8** against a supposed unfiltered total of **2**. A filter cannot add
+rows. The instinct at that moment is to explain the anomaly; the correct move is
+to distrust the instrument. The rendered `Showing N of M scoped visits` counter
+was the only trustworthy signal, and the `V-\d+` reference regex was as unreliable
+as the first one.
+
+**A measurement that violates an invariant is evidence about the measurement,
+not about the system.**
 
 ## A shared primitive's debt is every route's debt (2026-08-12)
 

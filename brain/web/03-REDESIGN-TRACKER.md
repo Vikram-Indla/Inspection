@@ -10,6 +10,40 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-085 · `/planning` — the Method filter offered six values that never match
+`status: done` · `rules: WEB-000 §9, WEB-004, WEB-006 §4, WEB-008, WEB-011, WEB-013` · `est: 1h`
+`record:` [2026-08-12-T-085-planning-method-filter](sessions/2026-08/2026-08-12-T-085-planning-method-filter.md)
+
+**Ten options, six of them broken.** `planning-screen.tsx:97` read
+`Object.entries(messages.methods)` as a value→label map. It is not — `methods`
+held **nine** keys: three real method values *and* six title/description strings
+for a card picker. Selecting *"Plan bulk visits"* set `?method=bulkTitle`, which
+reached the database unvalidated and returned **an empty list with no error** —
+it read as "no visits match" rather than "that is not a filter".
+
+**One object was serving two incompatible contracts** and only one was true:
+`planning-drafts.tsx:38` uses the same object correctly as `methods[draft.method]`.
+
+**Fixed at two layers, because either alone leaves the hole open.** Cleaning the
+JSON would have made `Object.entries` correct *by coincidence* — the next key
+added re-breaks it. Options now derive from a canonical `PLANNING_METHODS`, and
+the URL parameter is whitelisted against the same constant. **The whitelist
+pattern already existed three lines up** — `tab` was validated against
+`PLANNING_TABS` in the same function while `method` was passed straight through.
+
+```
+filter options   10 → 4      broken options   6 → 0
+dead strings     12 → 0      dead source      −33 lines (create-methods.ts deleted)
+
+measured, seeded Planner, "Showing N of M":
+no filter 101 · ?method=bulkTitle 0 → 101 · ?method=bulk 8 (unchanged) · single 1 (unchanged)
+```
+
+**New defect found and parked, needing a ruling: `?method=immediate` can never
+match.** The embed turns `!inner` when a method filter is set, while the label
+`"immediate"` is *derived from `visit_plans` being NULL* — so a visit shown as
+Immediate is exactly one the join excludes. It is now **more** visible, not less.
+
 ### T-084 · `/planning/bulk/review` — typography, and it has never been swept
 `status: todo` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014` · `est: 1.5h`
 

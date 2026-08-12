@@ -1,8 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   queryPlanningVisits, fetchLastUpdates,
-  PLANNING_TABS, DEFAULT_PLANNING_SORT, PLANNING_SORT_KEYS,
-  type PlanningTab, type PlanningListParams, type PlanningListCounts, type PlanningVisitRow,
+  PLANNING_TABS, PLANNING_METHODS, DEFAULT_PLANNING_SORT, PLANNING_SORT_KEYS,
+  type PlanningTab, type PlanningMethod, type PlanningListParams, type PlanningListCounts, type PlanningVisitRow,
 } from "@/lib/planning/visit-list";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { readRows } from "@/lib/postgrest/read";
@@ -52,11 +52,15 @@ export function parsePlanningParams(sp: PlanningSearchParams): PlanningListParam
   const tabRaw = first(sp.tab);
   const tab: PlanningTab = (PLANNING_TABS as readonly string[]).includes(tabRaw) ? (tabRaw as PlanningTab) : "all";
   const sortRaw = first(sp.sort);
+  const methodRaw = first(sp.method);
+  const method: PlanningMethod | undefined = (PLANNING_METHODS as readonly string[]).includes(methodRaw)
+    ? (methodRaw as PlanningMethod)
+    : undefined;
   return {
     tab,
     search: first(sp.q).trim(),
     filters: {
-      method: first(sp.method) || undefined,
+      method,
       visitType: first(sp.visitType) || undefined,
       region: first(sp.region) || undefined,
       city: first(sp.city) || undefined,

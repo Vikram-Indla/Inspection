@@ -36,8 +36,11 @@ import type { Shape } from "@/lib/postgrest/shape";
 export const PLANNING_TABS = ["all", "draft", "pending_supervision", "published", "returned", "cancelled", "expired"] as const;
 export type PlanningTab = (typeof PLANNING_TABS)[number];
 
+export const PLANNING_METHODS = ["single", "bulk", "immediate"] as const;
+export type PlanningMethod = (typeof PLANNING_METHODS)[number];
+
 export type PlanningListFilters = {
-  method?: string;            // visit_plans.method (planning type)
+  method?: PlanningMethod;    // visit_plans.method (planning type)
   visitType?: string;
   executionMode?: string;     // visits.execution_mode (visit mode)
   region?: string;

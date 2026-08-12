@@ -10,7 +10,7 @@ import PlanningDrafts from "@/components/planning/planning-drafts/planning-draft
 import { planningHref } from "@/features/planning/links";
 import { buildPlanningVisitViews } from "@/features/planning/view";
 import type { PlanningSearchParams, PlanningWorkspace } from "@/features/planning/queries";
-import type { PlanningListParams } from "@/lib/planning/visit-list";
+import { PLANNING_METHODS, type PlanningListParams } from "@/lib/planning/visit-list";
 import { fill, type Messages } from "@/i18n/messages";
 import type { Locale } from "@/lib/i18n";
 import styles from "./planning-screen.module.css";
@@ -94,7 +94,7 @@ export default function PlanningScreen({ workspace, params, sp, locale, messages
           inspectors: workspace.inspectors,
           regions: workspace.regions,
           cities: workspace.cities,
-          methods: Object.entries(messages.methods).map(([value, label]) => ({ value, label })),
+          methods: PLANNING_METHODS.map(value => ({ value, label: messages.methods[value] })),
           sortKeys: Object.keys(messages.toolbar.sort),
         }}
         params={params}

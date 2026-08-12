@@ -21,12 +21,6 @@
     "unauthorizedBody": "Only planning staff can use Visit Planning."
   },
   "methods": {
-    "bulkTitle": "Plan bulk visits",
-    "bulkDesc": "Use AND/OR criteria over the factory list to create many visits under one plan.",
-    "singleTitle": "Plan a single visit",
-    "singleDesc": "Choose one registered factory by CR or Industrial License and create one visit.",
-    "immediateTitle": "Create an urgent visit",
-    "immediateDesc": "Submit an urgent request for one registered factory. A Supervisor assigns and releases it within the set response time.",
     "bulk": "Bulk",
     "single": "Single",
     "immediate": "Immediate"
