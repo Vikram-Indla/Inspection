@@ -11,9 +11,3 @@
   border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
   border-radius: var(--sqx-radius-md);
 }
-
-.hint {
-  margin: 0;
-  color: var(--sqx-text-muted);
-  font: var(--sqx-text-body);
-}

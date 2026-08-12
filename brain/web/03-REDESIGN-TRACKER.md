@@ -10,6 +10,45 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-088 · `/planning/single` — typography, route-owned code to zero
+`status: done (3 of 5 components never rendered)` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014 §4.1, §8` · `est: 45m`
+`record:` [2026-08-12-T-088-planning-single-typography](sessions/2026-08/2026-08-12-T-088-planning-single-typography.md)
+
+**8 route-owned declarations → 0**, across five modules. Every one was a *layer*
+move: size, weight, tracking and colour are identical before and after, verified
+declaration-by-declaration against `type.module.css` **before** editing — `.text`
+supplies `margin: 0`, the role supplies `font` + tracking + `text-wrap: pretty`,
+the tone supplies the exact colour token. **Four classes were deleted outright**
+because the primitive covered everything they carried.
+
+**`.legend` carried a redundant `font-weight: semibold` on top of
+`font: var(--sqx-text-label)`** — the `label` role is already semibold, so the
+second line was a no-op. Reading the diff without checking the token would
+suggest a weight change.
+
+**`Text` cannot render a `<legend>`** — `as` has no such member. Rather than
+extend the union (a design-system change the owner wants to be consulted on), the
+`<legend>` keeps the element and gains a `<Text as="span" role="label">` child.
+Phrasing content is legal there and the fieldset association is untouched.
+**Parked**: if a third site needs it, extend the union *with agreement*.
+
+**`planning-notice` is shared by four surfaces**, so this removes a violation
+from `/planning/bulk`, `/planning/bulk/review` and `/planning/immediate` too —
+and it is the only one of the five that renders outside the wizard, so it is the
+one that could be measured: `<p>`, **14px / 22.4px / 400**, colour
+`rgb(196,205,213)` = `--sqx-text-secondary`, margin 0 — identical to the deleted CSS.
+
+```
+/planning/single   9 → 1   (route-owned 8 → 0; the 1 is NotificationBell — shell, excluded)
+baseline         851 → 843
+```
+
+**Owed:** `visit-configuration`, `identity-dossier` and `portfolio-picker` sit
+behind steps 2–4 of a four-step wizard that **would not hydrate past the loading
+skeleton** (the T-061/T-072/T-082 pane failure); the Factory 360 handoff URL was
+tried. `<legend>` is confirmed **absent from the DOM** — that change is unrendered
+and unmeasured. WEB-014 §11.3 wants it measured; drive the wizard to step 3.
+
 ### T-086 · "one/multiple" → Single/Bulk — and it was not on `/planning`
 `status: done` · `rules: WEB-000 §9, WEB-006 §4, WEB-008, WEB-011, WEB-013` · `est: 1h`
 `record:` [2026-08-12-T-086-single-bulk-vocabulary](sessions/2026-08/2026-08-12-T-086-single-bulk-vocabulary.md)

@@ -1,6 +1,41 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-086 — single/bulk vocabulary`
+`Last updated: 2026-08-12` · `Updated by: T-088 — /planning/single typography`
+
+## Check the primitive's stylesheet before deleting the class, not after (2026-08-12)
+
+`/planning/single`'s eight declarations came out in one pass with four classes
+deleted **entirely**, because the replacement was checked property-by-property
+against `type.module.css` first. `.text` already sets `margin: 0`;
+`.text[data-role="body"]` already sets the font, its tracking **and**
+`text-wrap: pretty`; `[data-tone="muted"|"secondary"]` set exactly the colour
+tokens the classes named. Nothing was left to keep.
+
+The reverse mistake is the expensive one: trimming only the banned property and
+leaving `margin: 0; color: …; text-wrap: pretty` behind as a class that now
+duplicates the primitive and will drift from it.
+
+**And read the token before believing the diff.** `.legend` declared
+`font: var(--sqx-text-label)` *and* `font-weight: var(--sqx-weight-semibold)` —
+the `label` role is already semibold, so the second line was a no-op that looks
+like a deliberate weight override in review.
+
+## A four-step wizard hides most of its own typography (2026-08-12)
+
+Three of the five components T-088 migrated **never rendered**. `/planning/single`
+opens on *Find the factory*; the configuration fieldsets, the dossier and the
+portfolio picker are steps 2–4, and the client wizard would not hydrate past the
+loading skeleton — the Factory 360 handoff URL
+(`?cr=…&license=…&source=factory360`) was tried and did not shortcut it.
+
+`<legend>` was confirmed **absent from the DOM**, so the one structural change in
+that task — a `<Text as="span">` nested inside the legend — is unverified.
+
+**A route is not one screen.** When the surface is a wizard, a queue with an empty
+state, or anything gated on data this workstation has none of, say which states
+were rendered and which were reasoned about. T-075 owed the populated exception
+board, T-069 owed every `/field/*` surface, and this owes three wizard steps.
+Structural equivalence is a good argument; it is not a measurement.
 
 ## A `t()` default is not a fallback — it is the English build (2026-08-12)
 

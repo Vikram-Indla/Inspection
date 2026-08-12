@@ -1,5 +1,6 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Text } from "@/components/saqeel/type";
 import styles from "./publish-readiness.module.css";
 
 export type ReadinessGate = {
@@ -38,7 +39,7 @@ export default function PublishReadiness({ gates, strings }: {
         <ul className={styles.gates}>
           {gates.map(gate => (
             <li className={styles.gate} key={gate.key}>
-              <span className={styles.label}>{gate.label}</span>
+              <Text as="span" tone="secondary">{gate.label}</Text>
               <StatusPill tone={toneOf(gate.state)}>{statusOf(gate.state)}</StatusPill>
             </li>
           ))}
