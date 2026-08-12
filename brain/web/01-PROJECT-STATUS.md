@@ -1,6 +1,54 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-092 — /planning/immediate typography`
+`Last updated: 2026-08-12` · `Updated by: T-093 — /planning/visits typography`
+
+## The planning family is closed (2026-08-12)
+
+All **thirteen** planning routes now report **1 violation each** —
+`NotificationBell.tsx:270`, the shell — and nothing else:
+
+```
+/planning · /single · /bulk · /bulk/review · /immediate · /plans · /plans/[id]
+/visits · /visits/[id] · /calendar · /map · /workload · /supervision
+```
+
+Seven tasks, T-085 through T-093, moved the repo baseline **863 → 734** and took
+the family's route-owned count to zero. What actually closed it was not the gate
+— three of those tasks found defects the gate could not see (11.5px `t-caption`
+from JSX, a second typeface injected by Mapbox, a legacy weight assembled by
+hand) and one found a defect that was never counted at all.
+
+**The remaining pockets are `/field/*` (226, needs an inspector persona per
+T-069), `sections/approvals` (68), `sections/regulations` (63) and
+`sections/enforcement` (52).**
+
+## A hand-assembled weight is not a role, in either direction (2026-08-12)
+
+Three tasks hit the same shape and corrected it two different ways:
+
+- T-087, T-091 — KPI values at `font-size: metric-size` + `weight: semibold`
+  → **600 → 700**, because `metric` *is* bold.
+- T-093 — a selected row at `font-weight: bold` on body text
+  → **700 → 600**, because the scale has no 700 at body size and `bodyStrong`
+  is the only emphasis role for body.
+
+The tell is identical each time: **`--sqx-text-*-size` and `--sqx-weight-*`
+reached for separately.** A role is four values that travel together; composing
+three of them by hand yields something that passes every gate and renders wrong.
+The direction of the fix follows the scale, never a preference about how bold it
+should look.
+
+## "Not found" from your own tooling is a question, not an answer (2026-08-12)
+
+T-093's selector→element map reported **every** class in
+`components/sections/visits/` as `(not found)`. The obvious readings were "these
+modules are dead" — which had just been true of `BulkForm.tsx` in T-091 — or
+"the CSS is orphaned". Both were wrong: the classes live in **sibling** files
+rather than the directory's namesake component, and the map only searched the
+namesake.
+
+One grep settled it. Acting on the tool's answer would have deleted three live
+stylesheets.
 
 ## "Fixed centrally" is a claim about a component, and it needs checking there (2026-08-12)
 

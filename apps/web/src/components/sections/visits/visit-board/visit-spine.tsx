@@ -2,6 +2,7 @@ import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import Button from "@/components/saqeel/button/button";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import DefinitionList from "@/components/saqeel/definition-list/definition-list";
+import { Text } from "@/components/saqeel/type";
 import { VISIT_ALLOWED_TONE, type VisitBoardRow } from "@/features/visits/rows";
 import type { VisitsBoardStrings } from "@/features/visits/board-strings";
 import styles from "./visit-board.module.css";
@@ -38,7 +39,7 @@ export default function VisitSpine({ visit, strings }: {
             <Button variant="secondary" href={visit.href}>{strings.spineOpenDetail}</Button>
           </div>
         ) : (
-          <p className={styles.spineEmpty}>{strings.spineEmpty}</p>
+          <Text tone="muted">{strings.spineEmpty}</Text>
         )}
       </CardBody>
     </Card>

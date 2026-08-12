@@ -10,6 +10,47 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-093 · `/planning/visits` — and the planning family closes
+`status: done (the populated board was not rendered)` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014 §2.1, §4.1, §8` · `est: 1h`
+`record:` [2026-08-12-T-093-planning-visits-typography](sessions/2026-08/2026-08-12-T-093-planning-visits-typography.md)
+
+**15 declarations across 3 modules → 0**, including **5 retired `caption` refs**.
+
+```
+ALL THIRTEEN PLANNING ROUTES NOW SIT AT 1 VIOLATION — the shell, and nothing else.
+baseline 749 → 734
+```
+
+**The pressed row's reference goes 700 → 600, deliberately.**
+`.preview[aria-pressed="true"]` set `font-weight: bold` (700); the scale has **no
+700 at body size** and `bodyStrong` (600) is the only emphasis role for body. So
+the selected row renders `Text role={active ? "bodyStrong" : "body"}`. This is the
+**mirror image of T-087/T-091**, where KPI values moved 600 → 700 because `metric`
+*is* bold — same correction, direction set by the scale rather than a preference.
+
+**`.preview` already had `font: inherit`, and that was checked, not assumed.** It
+is a `<button>`, so an absent declaration would have meant Arial (T-064); the gate
+flagged only the `aria-pressed` state, which could equally have meant the base was
+silently broken. It was not.
+
+**Two `<input>` got `font: inherit`; nothing else needed it** — `<label>`, `<a>`,
+`<ul>` and `<p>` inherit normally and simply lost their declarations.
+`--sqx-status-critical-on-soft` was reused as `tone="danger"` on the strength of
+**T-091's token check**, so `.formError`'s colour could go rather than move to a
+wrapper.
+
+**T-091's invisible-violation sweep ran first and came back clean** — no `.t-*`,
+no string-literal `className`. That check is now part of the route inventory.
+
+**The map's first pass reported every class "(not found)"** because the classes
+live in **sibling** files, not the namesake component — **a "not found" from
+tooling is a question, not an answer.**
+
+**Owed:** the **populated board was never rendered** — `main` held the loading
+skeleton, so the spine, bulk-action forms, eligibility list and table body, where
+**10 of the 15** declarations were, are unverified. **The pressed state was never
+seen**, so `bodyStrong` on a selected row is asserted from the scale, not observed.
+
 ### T-092 · `/planning/immediate` — clean by the gate, two typefaces on screen
 `status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014 §2.0, §4.1` · `est: 30m`
 `record:` [2026-08-12-T-092-planning-immediate-typography](sessions/2026-08/2026-08-12-T-092-planning-immediate-typography.md)

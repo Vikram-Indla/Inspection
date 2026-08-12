@@ -9,6 +9,7 @@ import type { DateRangePreset } from "@/components/saqeel/date-range-picker/date
 import { formatDate } from "@/lib/dates";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
+import { Text } from "@/components/saqeel/type";
 import {
   bulkCancelVisits, bulkRescheduleVisits, bulkReassignVisits, bulkEditVisits,
   type ActionResult, type BulkVerb,
@@ -207,7 +208,7 @@ export default function VisitBulkActions({ selectedRows, inspectors, reassignmen
               </Field>
               <label className={styles.choice} htmlFor="bulk-set-notes">
                 <input id="bulk-set-notes" type="checkbox" name="set_notes" value="1" />
-                <span>{strings.bulkEditSetNotes}</span>
+                <Text as="span" role="label" tone="inherit">{strings.bulkEditSetNotes}</Text>
               </label>
               <Field label={strings.bulkReason} htmlFor="bulk-edit-reason">
                 <input id="bulk-edit-reason" className={styles.control} name="mutation_reason" required />
@@ -224,7 +225,9 @@ export default function VisitBulkActions({ selectedRows, inspectors, reassignmen
       ) : null}
 
       {!busy && formError ? (
-        <p className={styles.formError} ref={summaryRef} tabIndex={-1} role="alert">{formError}</p>
+        <div className={styles.formError} ref={summaryRef} tabIndex={-1} role="alert">
+          <Text tone="danger">{formError}</Text>
+        </div>
       ) : null}
 
       {!busy && hasLedger && lastVerb && result ? (

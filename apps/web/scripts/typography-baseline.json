@@ -184,12 +184,5 @@
   "src/components/sections/regulations/workspace/regulation-versions/regulation-versions.module.css::retired-typography-role": 3,
   "src/components/sections/regulations/workspace/regulation-violations/regulation-violations.module.css::font-shorthand-outside-design-system": 4,
   "src/components/sections/regulations/workspace/regulation-violations/regulation-violations.module.css::retired-typography-role": 3,
-  "src/components/sections/regulations/workspace/regulation-workspace/regulation-workspace.tsx::card-eyebrow-above-title": 1,
-  "src/components/sections/visits/visit-board/visit-board.module.css::raw-typography-property": 1,
-  "src/components/sections/visits/visit-board/visit-board.module.css::font-shorthand-outside-design-system": 6,
-  "src/components/sections/visits/visit-board/visit-board.module.css::retired-typography-role": 3,
-  "src/components/sections/visits/visit-filter-bar/visit-filter-bar.module.css::font-shorthand-outside-design-system": 2,
-  "src/components/sections/visits/visit-filter-bar/visit-filter-bar.module.css::retired-typography-role": 1,
-  "src/components/sections/visits/visit-scope-bar/visit-scope-bar.module.css::font-shorthand-outside-design-system": 1,
-  "src/components/sections/visits/visit-scope-bar/visit-scope-bar.module.css::retired-typography-role": 1
+  "src/components/sections/regulations/workspace/regulation-workspace/regulation-workspace.tsx::card-eyebrow-above-title": 1
 }

@@ -4,6 +4,7 @@ import Button from "@/components/saqeel/button/button";
 import DateRangePicker, { type DateRangePreset } from "@/components/saqeel/date-range-picker/date-range-picker";
 import Field from "@/components/saqeel/field/field";
 import SaqeelSelect, { type SelectOption } from "@/components/saqeel/select/select";
+import { Text } from "@/components/saqeel/type";
 import { formatDateRange } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import styles from "./visit-filter-bar.module.css";
@@ -130,7 +131,7 @@ export default function VisitFilterBar(props: VisitFilterBarProps) {
         <div className={styles.chips} aria-label={strings.activeFilters}>
           {chips.map(chip => (
             <a key={chip.key} className={styles.chip} href={chip.href} aria-label={`${strings.removeFilter} ${chip.label}`}>
-              <span>{chip.label}</span>
+              <Text as="span" tone="inherit">{chip.label}</Text>
               <span aria-hidden="true">×</span>
             </a>
           ))}

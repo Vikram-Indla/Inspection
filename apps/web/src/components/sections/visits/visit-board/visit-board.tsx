@@ -9,6 +9,7 @@ import VisitSpine from "./visit-spine";
 import VisitTable from "./visit-table";
 import VisitBulkActions from "./visit-bulk-actions";
 import type { DateRangePreset } from "@/components/saqeel/date-range-picker/date-range-picker";
+import { Text } from "@/components/saqeel/type";
 import styles from "./visit-board.module.css";
 
 export default function VisitBoard({ rows, inspectors, reassignmentAvailable, visitTypeOptions, total, shown, nextHref, strings, routeBase, locale, datePresets, monthLabels }: {
@@ -75,9 +76,9 @@ export default function VisitBoard({ rows, inspectors, reassignmentAvailable, vi
       />
 
       <div className={styles.footer}>
-        <span className={styles.count}>
+        <Text as="span" tone="muted" numeric>
           {strings.showing.replace("{shown}", String(shown)).replace("{total}", String(total))}
-        </span>
+        </Text>
         {nextHref ? <Button variant="tertiary" href={nextHref}>{strings.loadMore}</Button> : null}
       </div>
     </Stack>
