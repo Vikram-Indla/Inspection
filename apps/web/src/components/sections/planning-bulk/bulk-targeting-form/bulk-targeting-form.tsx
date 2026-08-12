@@ -25,7 +25,7 @@ export type BulkFormStrings = EvidenceTableStrings & CampaignSummaryStrings & Se
   filterLabel: string; filterPlaceholder: string; resultsCount: string;
   selectVisible: string; selectAllResults: string;
   provSynced: string; provNoSync: string;
-  invalidTitle: string; invalidBody: string; invalidKeep: string; invalidClear: string;
+  invalidTitle: string; invalidBody: string; invalidKeep: string;
   selectAllConfirmTitle: string; selectAllConfirmBody: string; selectAllConfirmInputLabel: string;
   selectAllConfirmButton: string; selectAllConfirmCancel: string;
   savingDraft: string; filtering: string;
@@ -87,6 +87,7 @@ export default function BulkTargetingForm({
   const currentPage = Math.min(page, pageCount - 1);
   const pageRows = matched.slice(currentPage * PAGE_SIZE, currentPage * PAGE_SIZE + PAGE_SIZE);
   const selectedFactories = factories.filter(factory => selected.has(factory.id));
+  const isNarrowedByFilter = matched.length !== factories.length;
 
   const addAll = (rows: readonly CriteriaFactory[]) => setSelected(current => {
     const next = new Set(current);
@@ -135,12 +136,17 @@ export default function BulkTargetingForm({
   return (
     <Stack gap="default">
       {droppedCount > 0 && (
-        <PlanningNotice tone="warning" label={strings.invalidTitle}>
+        <PlanningNotice
+          tone="warning"
+          label={strings.invalidTitle}
+          actions={
+            <>
+              <Button variant="secondary" onClick={() => setDroppedCount(0)}>{strings.invalidKeep}</Button>
+              <Button variant="tertiary" onClick={() => { clearSelection(); setDroppedCount(0); }}>{strings.clearSelection}</Button>
+            </>
+          }
+        >
           {strings.invalidBody.replace("{n}", String(droppedCount))}
-          <span className={styles.noticeActions}>
-            <Button variant="secondary" onClick={() => setDroppedCount(0)}>{strings.invalidKeep}</Button>
-            <Button variant="tertiary" onClick={() => { clearSelection(); setDroppedCount(0); }}>{strings.invalidClear}</Button>
-          </span>
         </PlanningNotice>
       )}
 
@@ -151,9 +157,10 @@ export default function BulkTargetingForm({
             <Button variant="secondary" onClick={() => addAll(pageRows)}>{strings.selectVisible}</Button>
             <Button variant="secondary" onClick={() => setConfirmingSelectAll(true)}>{strings.selectAllResults}</Button>
             <span className={styles.filterStatus} role="status" aria-live="polite">
-              {isFiltering
-                ? <Text as="span" tone="muted">{strings.filtering}</Text>
-                : <CountBadge value={matched.length} label={strings.resultsCount.replace("{n}", String(matched.length))} />}
+              {isFiltering ? <Text as="span" tone="muted">{strings.filtering}</Text> : null}
+              {!isFiltering && isNarrowedByFilter
+                ? <CountBadge value={matched.length} label={strings.resultsCount.replace("{n}", String(matched.length))} />
+                : null}
             </span>
           </>
         }
@@ -172,23 +179,28 @@ export default function BulkTargetingForm({
       </Toolbar>
 
       {confirmingSelectAll && (
-        <PlanningNotice tone="warning" label={strings.selectAllConfirmTitle}>
+        <PlanningNotice
+          tone="warning"
+          label={strings.selectAllConfirmTitle}
+          actions={
+            <>
+              <Field label={strings.selectAllConfirmInputLabel} htmlFor="bulk-select-all-confirm">
+                <TextInput id="bulk-select-all-confirm" value={confirmInput} inputMode="numeric" onChange={setConfirmInput} />
+              </Field>
+              <Button
+                variant="primary"
+                disabled={confirmInput.trim() !== String(matched.length)}
+                onClick={confirmSelectAll}
+              >
+                {strings.selectAllConfirmButton.replace("{n}", String(matched.length))}
+              </Button>
+              <Button variant="tertiary" onClick={() => { setConfirmingSelectAll(false); setConfirmInput(""); }}>
+                {strings.selectAllConfirmCancel}
+              </Button>
+            </>
+          }
+        >
           {strings.selectAllConfirmBody.replaceAll("{n}", String(matched.length))}
-          <span className={styles.noticeActions}>
-            <Field label={strings.selectAllConfirmInputLabel} htmlFor="bulk-select-all-confirm">
-              <TextInput id="bulk-select-all-confirm" value={confirmInput} inputMode="numeric" onChange={setConfirmInput} />
-            </Field>
-            <Button
-              variant="primary"
-              disabled={confirmInput.trim() !== String(matched.length)}
-              onClick={confirmSelectAll}
-            >
-              {strings.selectAllConfirmButton.replace("{n}", String(matched.length))}
-            </Button>
-            <Button variant="tertiary" onClick={() => { setConfirmingSelectAll(false); setConfirmInput(""); }}>
-              {strings.selectAllConfirmCancel}
-            </Button>
-          </span>
         </PlanningNotice>
       )}
 
@@ -204,21 +216,25 @@ export default function BulkTargetingForm({
         onToggle={toggle}
       />
 
-      <BulkResultsPager
-        page={currentPage}
-        pageCount={pageCount}
-        pageSize={PAGE_SIZE}
-        total={matched.length}
-        strings={strings}
-        onPageChange={setPage}
-      />
+      {pageCount > 1 ? (
+        <BulkResultsPager
+          page={currentPage}
+          pageCount={pageCount}
+          pageSize={PAGE_SIZE}
+          total={matched.length}
+          strings={strings}
+          onPageChange={setPage}
+        />
+      ) : null}
 
-      <BulkCampaignSummary
-        selectedCount={selectedFactories.length}
-        byBand={countSelectionBy(selectedFactories, "risk_band")}
-        byRegion={countSelectionBy(selectedFactories, "region")}
-        strings={strings}
-      />
+      {selectedFactories.length > 0 ? (
+        <BulkCampaignSummary
+          selectedCount={selectedFactories.length}
+          byBand={countSelectionBy(selectedFactories, "risk_band")}
+          byRegion={countSelectionBy(selectedFactories, "region")}
+          strings={strings}
+        />
+      ) : null}
 
       <BulkSelectionBar
         selectedCount={selected.size}

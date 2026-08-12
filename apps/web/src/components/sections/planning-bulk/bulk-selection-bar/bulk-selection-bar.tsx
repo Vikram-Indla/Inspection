@@ -44,7 +44,6 @@ export default function BulkSelectionBar({
         {draftReference !== null && !saveFailed
           ? <Text as="span" tone="muted" live="status">{strings.draftSaved.replace("{ref}", draftReference)}</Text>
           : null}
-        {draftPersistable ? null : <StatusPill tone="info" ping={false}>{strings.draftSaveFailed}</StatusPill>}
         {saveFailed ? <StatusPill tone="danger">{strings.draftSaveFailed}</StatusPill> : null}
       </div>
       <div className={styles.actions}>

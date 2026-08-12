@@ -108,6 +108,33 @@ with no ruling on which is canonical — raised in the record, not decided here.
 selection bar rendered the `draftSaveFailed` string as an info pill on every load,
 forever, at zero selection.
 
+**The Match labels were sentences pretending to be options.**
+`"ALL of — every child must match"` named the option *and* defined it, in caps, at
+**every nesting level**. Now `All conditions` / `Any condition`; the Arabic already
+opened with `كل الشروط` / `أي شرط`, so it truncated rather than needing
+retranslation. A script confirmed zero Latin glyphs in `ar` and zero Arabic in
+`en` (ignoring `{n}`).
+
+**Match became radios, and the radio was already built.** `components/saqeel/choice`
+takes `kind="radio"`, is token-driven and has 9 call sites — **nothing new was
+built for the control**. What was missing was the *group*: four modules had each
+hand-rolled the same `<fieldset>` + `<legend>` + `<Text role="label">`, so
+`components/saqeel/choice-group` is a promotion past the Rule of Two, not an
+invention. **It also fixes an accessibility defect that was invisible while the
+control was a segmented button** — the old markup wrapped it in `Field`, and a
+`<label>` names one control, never a set. `name` carries `pathKey(path)` because
+nested criteria groups would otherwise fuse into one radio group.
+**A third `RadioGroup` exists in the legacy `saqeel/inputs/` family with zero
+usages, an inline `style` and a retired `t-caption` — parked, not used.**
+
+**`PlanningNotice` was putting a `<div>` inside a `<p>` — a hydration error, not
+a styling nit.** It rendered `children` inside `<Text>`, which is a `<p>`, and the
+select-all confirm notice passed a `Field`. **Fixed at the component:** an
+`actions` slot renders as the paragraph's sibling and the TSDoc now states that
+`children` takes phrasing content only — patching the one call site would have
+left the trap armed for the other 23 consumers. Audited all of them: `Choice`
+(`<label>`) and `<strong>` elsewhere are legal; this was the only invalid one.
+
 **`role="tree"` was malformed and is gone.** A bare `<span key={i}>` sat between
 `role="group"` and `role="treeitem"`, breaking the owns-relationship, and the tree
 had no roving `tabindex`. Plain nested lists; the controls were always individually

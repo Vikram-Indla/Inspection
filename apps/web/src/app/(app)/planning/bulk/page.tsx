@@ -1,5 +1,4 @@
 import Shell from "@/components/Shell";
-import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import BulkAccessState from "@/components/sections/planning-bulk/bulk-access-state/bulk-access-state";
 import BulkScreen from "@/components/sections/planning-bulk/bulk-screen/bulk-screen";
 import { loadBulkTargeting } from "@/features/planning-bulk/queries";
@@ -14,11 +13,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   const targeting = await loadBulkTargeting();
 
   return (
-    <Shell
-      current="/planning"
-      title={strings.title}
-      context={targeting.kind === "ready" ? <StatusPill tone="info">{strings.context}</StatusPill> : undefined}
-    >
+    <Shell current="/planning" title={strings.title}>
       {targeting.kind === "ready"
         ? <BulkScreen params={params} factories={targeting.factories} />
         : <BulkAccessState kind={targeting.kind} />}

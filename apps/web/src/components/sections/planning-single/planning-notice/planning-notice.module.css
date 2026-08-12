@@ -17,6 +17,13 @@
   align-self: flex-start;
 }
 
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sqx-space-3);
+}
+
 .root[data-tone="warning"] {
   border-color: var(--sqx-status-warning);
 }

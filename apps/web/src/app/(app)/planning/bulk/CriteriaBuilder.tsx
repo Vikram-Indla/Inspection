@@ -6,7 +6,7 @@ import Button from "@/components/saqeel/button/button";
 import Field from "@/components/saqeel/field/field";
 import SaqeelSelect, { type SelectOption } from "@/components/saqeel/select/select";
 import type { SuggestionOption } from "@/features/planning-bulk/view";
-import SegmentedControl from "@/components/saqeel/segmented-control/segmented-control";
+import ChoiceGroup from "@/components/saqeel/choice-group/choice-group";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import TextInput from "@/components/saqeel/text-input/text-input";
 import DatePicker from "@/components/saqeel/date-picker/date-picker";
@@ -30,11 +30,10 @@ export type CriteriaBuilderStrings = {
   heading: string;
   combineLabel: string; combineAll: string; combineAny: string;
   fieldLabel: string; opLabel: string; valueLabel: string; valuePlaceholder: string;
-  valueToLabel: string; inHint: string; notSuppliedTag: string;
+  valueToLabel: string; inHint: string; notSuppliedTag: string; notSuppliedSummary: string;
   addCondition: string; addGroup: string; remove: string; removeGroup: string;
   moveUp: string; moveDown: string;
-  apply: string; clear: string; matching: string; hint: string;
-  groupItem: string; conditionItem: string;
+  apply: string; clear: string;
   invalidTitle: string; invalidBody: string;
   contributionLabel: string; unfocusLabel: string;
   datePlaceholder: string; dateClear: string; dateToday: string;
@@ -65,12 +64,11 @@ const leafIncomplete = (c: CondNode): boolean => {
 };
 
 export default function CriteriaBuilder({
-  initialTree, fieldOptions, matchCount, strings, contributions, focusedPath, onFocus,
+  initialTree, fieldOptions, strings, contributions, focusedPath, onFocus,
   builderFields, cityByRegion, locale,
 }: {
   initialTree: GroupNode;
   fieldOptions: Record<string, SuggestionOption[]>;
-  matchCount: number;
   strings: CriteriaBuilderStrings;
   contributions?: Record<string, number>;
   focusedPath?: string | null;
@@ -221,7 +219,7 @@ export default function CriteriaBuilder({
     const isFocused = focusedPath === key;
     const def = fieldOf(c.field);
     return (
-      <li role="treeitem" aria-label={strings.conditionItem} className={styles.condition}>
+      <li key={key} className={styles.condition}>
         <div className={styles.field}>
           <Field label={strings.fieldLabel}>
             <SaqeelSelect
@@ -275,20 +273,19 @@ export default function CriteriaBuilder({
   };
 
   const renderGroup = (group: GroupNode, path: number[]): ReactNode => (
-    <li role="treeitem" aria-label={strings.groupItem} className={styles.group}>
+    <li key={pathKey(path)} className={styles.group}>
       <div className={styles.groupHead}>
-        <Field label={strings.combineLabel}>
-          <SegmentedControl
-            label={strings.combineLabel}
-            tone="accent"
-            value={group.combine}
-            onChange={next => setCombine(path, next === "any" ? "any" : "all")}
-            items={[
-              { value: "all", label: strings.combineAll },
-              { value: "any", label: strings.combineAny },
-            ]}
-          />
-        </Field>
+        <ChoiceGroup
+          legend={strings.combineLabel}
+          name={`criteria-combine-${pathKey(path)}`}
+          layout="inline"
+          value={group.combine}
+          options={[
+            { value: "all", label: strings.combineAll },
+            { value: "any", label: strings.combineAny },
+          ]}
+          onChange={next => setCombine(path, next === "any" ? "any" : "all")}
+        />
         {path.length > 0 ? (
           <Button variant="tertiary" size="sm"
             onClick={() => removeAt(path.slice(0, -1), path[path.length - 1])} label={strings.removeGroup}>
@@ -297,14 +294,10 @@ export default function CriteriaBuilder({
         ) : null}
       </div>
 
-      <ul role="group" className={styles.branch}>
-        {group.children.map((child, i) => (
-          <span key={i}>
-            {child.kind === "cond"
-              ? renderCond(child, path, i, group.children.length)
-              : renderGroup(child, [...path, i])}
-          </span>
-        ))}
+      <ul className={styles.branch}>
+        {group.children.map((child, i) => (child.kind === "cond"
+          ? renderCond(child, path, i, group.children.length)
+          : renderGroup(child, [...path, i])))}
       </ul>
 
       <div className={styles.actions}>
@@ -323,24 +316,33 @@ export default function CriteriaBuilder({
       method="get"
       action="/planning/bulk"
       className={styles.root}
+      aria-labelledby="criteria-heading"
       onSubmit={event => { if (invalid.length > 0) { event.preventDefault(); setShowInvalid(true); } }}
     >
-      <Heading level={3}>{strings.heading}</Heading>
+      <Heading level={3} id="criteria-heading">{strings.heading}</Heading>
       <input type="hidden" name="ct" value={ct} />
 
-      <ul role="tree" aria-label={strings.heading} className={styles.tree}>
+      <ul className={styles.tree}>
         {renderGroup(tree, [])}
       </ul>
 
       {notSuppliedFields.length > 0 ? (
-        <ul className={styles.notices}>
-          {notSuppliedFields.map(f => (
-            <li key={f.key} className={styles.notice}>
-              <StatusPill tone="warning">{`${f.label} · ${strings.notSuppliedTag}`}</StatusPill>
-              {f.reason}
-            </li>
-          ))}
-        </ul>
+        <details className={styles.unavailable}>
+          <summary className={styles.unavailableSummary}>
+            <Text as="span" tone="muted">
+              {strings.notSuppliedSummary.replace("{n}", String(notSuppliedFields.length))}
+            </Text>
+            <span className={styles.marker} aria-hidden="true" />
+          </summary>
+          <ul className={styles.notices}>
+            {notSuppliedFields.map(f => (
+              <li key={f.key} className={styles.notice}>
+                <StatusPill tone="warning">{`${f.label} · ${strings.notSuppliedTag}`}</StatusPill>
+                <Text as="span" tone="muted">{f.reason}</Text>
+              </li>
+            ))}
+          </ul>
+        </details>
       ) : null}
 
       {showInvalid && invalid.length > 0 ? (
@@ -352,12 +354,7 @@ export default function CriteriaBuilder({
       <div className={styles.footer}>
         <Button type="submit" variant="primary" label={strings.apply}>{strings.apply}</Button>
         <Button variant="tertiary" href="/planning/bulk" label={strings.clear}>{strings.clear}</Button>
-        <Text as="span" tone="muted" numeric live="status">
-          {strings.matching.replace("{n}", String(matchCount))}
-        </Text>
       </div>
-
-      <Text tone="muted">{strings.hint}</Text>
     </form>
   );
 }

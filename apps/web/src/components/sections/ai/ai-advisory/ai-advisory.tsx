@@ -5,7 +5,7 @@ import Button from "@/components/saqeel/button/button";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import Icon from "@/components/saqeel/icon/icon";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
-import { Text } from "@/components/saqeel/type";
+import { Mono, Text } from "@/components/saqeel/type";
 import {
   generateContextualInsight,
   type ContextualResult,
@@ -80,7 +80,10 @@ export default function AiAdvisory({
           ) : null}
         </div>
 
-        <Text tone="muted">{strings.evidence}</Text>
+        <div className={styles.evidence}>
+          <Text as="span" tone="muted">{strings.evidence}</Text>
+          {evidenceRefs.map(reference => <Mono key={reference}>{reference}</Mono>)}
+        </div>
 
         <form action={blocked ? undefined : action}>
           <input type="hidden" name="surface" value={surface} />

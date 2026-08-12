@@ -7,3 +7,10 @@
 .text {
   white-space: pre-wrap;
 }
+
+.evidence {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}

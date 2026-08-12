@@ -11,16 +11,23 @@ export type NoticeTone = "info" | "warning" | "danger";
  * Tone is carried by the surface **and** by the pill's own text, so the
  * distinction between advisory and blocking survives greyscale and does not
  * depend on colour alone.
+ *
+ * `children` is the sentence and renders inside a `<p>`, so it takes phrasing
+ * content only. Controls that answer the notice go in `actions`, which renders
+ * as the paragraph's sibling — a `Field` or any other block inside `children`
+ * is invalid HTML and fails hydration.
  */
-export default function PlanningNotice({ tone, label, children }: {
+export default function PlanningNotice({ tone, label, children, actions }: {
   tone: NoticeTone;
   label?: string;
   children: ReactNode;
+  actions?: ReactNode;
 }) {
   return (
     <div className={styles.root} data-tone={tone} role={tone === "danger" ? "alert" : "status"}>
       {label ? <StatusPill tone={tone}>{label}</StatusPill> : null}
       <Text tone="secondary">{children}</Text>
+      {actions ? <div className={styles.actions}>{actions}</div> : null}
     </div>
   );
 }

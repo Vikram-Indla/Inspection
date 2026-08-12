@@ -8,7 +8,6 @@ export type CampaignSummaryStrings = {
   summarySelected: string;
   summaryByBand: string;
   summaryByRegion: string;
-  summaryEmpty: string;
   riskBands: Record<string, string>;
 };
 
@@ -52,7 +51,6 @@ export default function BulkCampaignSummary({ selectedCount, byBand, byRegion, s
               </div>
             </div>
           </div>
-        <Text tone="muted">{selectedCount === 0 ? strings.summaryEmpty : ""}&nbsp;</Text>
       </CardBody>
     </Card>
   );

@@ -1,11 +1,3 @@
-.noticeActions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: var(--sqx-space-3);
-  margin-block-start: var(--sqx-space-3);
-}
-
 .filter {
   flex: 1;
   min-inline-size: var(--sqx-grid-min-lg);

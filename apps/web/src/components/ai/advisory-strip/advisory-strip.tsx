@@ -17,7 +17,12 @@ export type AdvisoryStripStrings = {
   readonly idle: string;
   readonly generate: string;
   readonly generating: string;
+  readonly unavailable?: string;
 };
+
+function errorText(error: string, unavailable?: string): string {
+  return unavailable !== undefined && error.includes("unavailable") ? unavailable : error;
+}
 
 export default function AdvisoryStrip({ headingId, strings, notesShownWithAdvisory, surfaceFields }: {
   headingId: string;
@@ -38,7 +43,7 @@ export default function AdvisoryStrip({ headingId, strings, notesShownWithAdviso
 
       <span className={styles.body}>
         {result.error
-          ? <Text tone="danger" as="p" live="alert" dir="auto">{result.error}</Text>
+          ? <Text tone="danger" as="p" live="alert" dir="auto">{errorText(result.error, strings.unavailable)}</Text>
           : <Text tone={result.text ? "secondary" : "muted"} as="p" dir="auto">{result.text ?? strings.idle}</Text>}
       </span>
 

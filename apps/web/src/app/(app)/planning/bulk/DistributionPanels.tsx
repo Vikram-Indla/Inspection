@@ -22,7 +22,6 @@ export type DistributionStrings = {
   heading: string;
   ofDenominator: string; // "of {n}"
   unknown: string;       // "unknown"
-  riskAdvisory: string;  // ENG-04 advisory label
 };
 
 function Panel({ dist, strings, focusedValue }: { dist: Distribution; strings: DistributionStrings; focusedValue?: string }) {
@@ -62,7 +61,6 @@ export default function DistributionPanels({ distributions, strings, focusedFiel
       {distributions.map(d => (
         <div key={d.key} className="stack">
           <Panel dist={d} strings={strings} focusedValue={d.key === focusedField ? (focusedValue ?? undefined) : undefined} />
-          {d.key === "risk_band" && <Text tone="muted">{strings.riskAdvisory}</Text>}
         </div>
       ))}
     </section>
