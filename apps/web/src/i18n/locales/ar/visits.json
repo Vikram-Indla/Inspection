@@ -270,7 +270,11 @@
     "periodic": "دورية",
     "follow_up": "متابعة",
     "complaint": "شكوى",
-    "administrative_enforcement": "إجراء إنفاذ إداري"
+    "administrative_enforcement": "إجراء إنفاذ إداري",
+    "low": "منخفضة",
+    "medium": "متوسطة",
+    "high": "عالية",
+    "urgent": "عاجلة"
   },
   "workload": {
     "title": "عبء عمل المفتشين",

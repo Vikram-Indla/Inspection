@@ -14,3 +14,14 @@ export function makeEnumLabel(locale: Locale): EnumLabel {
   const labels: Readonly<Record<string, string>> = getMessages(locale).visits.enum;
   return value => labels[value] ?? humaniseEnum(value, locale);
 }
+
+/**
+ * The label for a `planning_lookups` row. The governed label wins when the row
+ * carries one for this locale; otherwise the shared enum translation does,
+ * because `label_ar` is seeded NULL and falling through to `label_en` renders
+ * English inside an Arabic screen.
+ */
+export function makeLookupLabel(locale: Locale): (key: string, governed: string | null) => string {
+  const enumLabel = makeEnumLabel(locale);
+  return (key, governed) => governed ?? enumLabel(key);
+}

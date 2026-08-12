@@ -118,3 +118,14 @@ export function resolveRegionId(name: string | null | undefined): KsaRegionId | 
   if (!name) return null;
   return ALIAS_INDEX.get(normalizeName(name)) ?? ALIAS_INDEX.get(name.toLowerCase()) ?? null;
 }
+
+/**
+ * The display name for a seeded region in the reader's locale. Region names are
+ * stored in English, so an unresolved name is returned unchanged rather than
+ * dropped — a place the reader can still recognise beats a blank.
+ */
+export function regionLabel(name: string | null | undefined, locale: "ar" | "en"): string {
+  const id = resolveRegionId(name);
+  if (id === null) return name ?? "";
+  return KSA_REGION_LABELS[id][locale];
+}

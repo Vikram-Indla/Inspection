@@ -270,7 +270,11 @@
     "periodic": "Periodic",
     "follow_up": "Follow-up",
     "complaint": "Complaint",
-    "administrative_enforcement": "Administrative enforcement action"
+    "administrative_enforcement": "Administrative enforcement action",
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "urgent": "Urgent"
   },
   "workload": {
     "title": "Inspector workload",

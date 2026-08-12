@@ -7,6 +7,7 @@ import { getMessages } from "@/i18n/messages";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
+import { regionLabel } from "@/lib/ksa-regions";
 import {
   MAP_PAGE_SIZE, dayEndIso, dayStartIso, operationalTone, pageCountOf,
   resolveDate, resolvePage, resolveRegion, resolveRisk, RISK_BANDS,
@@ -75,10 +76,13 @@ export async function VisitsMapView({ basePath = "/visits", params = {} }: {
   const located = ((visits ?? []) as unknown as VisitRow[]).flatMap(v => {
     if (!v.factories || v.factories.official_lat == null || v.factories.official_lng == null) return [];
     const position = latest.get(v.id);
+    const sourceRegion = v.factories.region ?? "";
+    const sourceCity = v.factories.city ?? "";
     return [{
       id: v.id, factoryId: v.factory_id, factoryName: v.factories.name,
       reference: v.visit_reference ?? strings.referenceUnavailable,
-      region: v.factories.region ?? "", city: v.factories.city ?? "",
+      region: regionLabel(sourceRegion, uiLocale),
+      city: sourceCity === sourceRegion ? "" : sourceCity,
       factoryLat: Number(v.factories.official_lat), factoryLng: Number(v.factories.official_lng),
       inspectorName: v.assignments?.[0]?.profiles?.full_name ?? "",
       inspectorLat: position ? Number(position.observed_lat) : null,

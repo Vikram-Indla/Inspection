@@ -63,7 +63,7 @@
   "src/app/admin/execution/RawJsonDetails.tsx::inline-font-style": 1,
   "src/app/admin/execution/ReasonsManager.tsx::inline-font-style": 1,
   "src/app/global-error.tsx::inline-font-style": 2,
-  "src/app/login/field/field-login.css::raw-typography-property": 26,
+  "src/app/login/field/field-login.css::raw-typography-property": 25,
   "src/app/login/login.css::raw-typography-property": 27,
   "src/app/login/SaqeelHero.tsx::inline-font-style": 1,
   "src/app/reports/report.css::raw-typography-property": 3,

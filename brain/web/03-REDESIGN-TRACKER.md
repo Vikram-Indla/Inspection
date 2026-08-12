@@ -10,6 +10,82 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-100 · `/planning/workload` — capacity that measures the right thing, and the planning family finishes its Arabic
+`status: partial — verified in Arabic; English render, axe and 11 Arabic strings owed` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-004, WEB-006 §4, WEB-008, WEB-009, WEB-011, WEB-013, WEB-014` · `est: 2h`
+`record:` [2026-08-13-T-100-workload-capacity-and-arabic-sweep](sessions/2026-08/2026-08-13-T-100-workload-capacity-and-arabic-sweep.md)
+
+Owner-reported: workload is boxes of zeros and must be rebuilt on the design
+system without violating the typography contract; and the planning family still
+renders English inside the Arabic view.
+
+**The screen spent six of ten columns on 5% of its data.** Measured before
+touching anything: **2 of 42 active visits fell inside the six-week grid, 40
+were in "Later", and 64 of 66 week cells were zero.** The column carrying 95%
+of the load was an unlabelled catch-all.
+
+**"Relative utilization" was not a utilization, and the design system already
+said so.** `TrendBars`' TSDoc warns that a series charted against its own
+maximum *"exaggerates a flat run"*. The screen charted against
+`maxCell`/`maxTotal`, so **100% meant "has the most", not "at capacity"** — and
+it moved when somebody else's load changed.
+
+**Comparing an all-time total to a per-day cap would have been the same category
+error in a new coat.** `daily_visit_cap` governs visits per inspector **per
+day**. The column is now **peak day vs the governed cap**, so the two quantities
+are the same kind of thing: the top inspector reads **3 of 10**, not 100%.
+Weekly bars stay a *distribution* on a shared scale, labelled as one — **no
+weekly cap was invented**, because `dailyCap × 5` is a governed value from thin
+air (rule 9).
+
+**`TrendBars` fixed the zeros for free**: a point at zero renders as a dashed
+baseline *"because an absence must never read as a small quantity"* — **64 of 77
+bars**, replacing 64 grey tracks. The capacity bar is `aria-hidden` because it
+duplicates adjacent text; the distribution bars stay exposed because there they
+are the only encoding.
+
+**The banned cast is gone, not relocated.** `as unknown as Row[]` became a
+narrowing boundary — `isRecord`/`embedded`/`text` predicates resolving the
+Supabase to-one embed (typed as an array, returned as an object) once.
+
+**`cd-026` pins `WorkloadView.tsx` by path.** All five assertions were
+**re-verified by script** against the rebuilt file; its one governance comment
+survives knowingly, the same call T-097 made.
+
+**The Arabic sweep was measured, not read** — a DOM walk for Latin text while
+`lang="ar"`.
+
+| Route | Before → after | Cause |
+| --- | --- | --- |
+| `/planning` | 3 → 0 | `planning_lookups.label_ar` seeded **NULL**, so `labelAr ?? labelEn` rendered English |
+| `/planning/calendar` | 0 → 0 | closed by T-098 |
+| `/planning/map` | 3 → 1 | region names raw; `KSA_REGION_LABELS` existed and was unused |
+| `/planning/workload` | 10 → 0 | `t("key", "English")` throughout, and `getDict()` returns `{}` |
+
+**The lookup fallback now goes through the translation, not through English**,
+and the database is untouched — seeding `label_ar` later still wins.
+**`regionLabel` was duplicated in two files and used in neither place that
+needed it**; it now lives in `lib/ksa-regions.ts`.
+
+**Localising the region broke `placeLabel`'s dedupe, and that was mine.** The
+guard compared raw values, so `الرياض` stopped matching `Riyadh` and the label
+rendered **"الرياض · Riyadh"**. Fixed by deduplicating on the source values —
+**caught by re-measuring after the change, not by review.**
+
+```
+off-scale elements   45 → 0     (14/700 ×22 · 11.5/400 ×12 · 11.5/500 ×10 · 15/600 ×1)
+rendered sizes        6 → 6, all six on the nine-role scale, exactly one display
+inline-styled       169 → 78, and all 78 are token-valued custom properties
+legacy classes    sq-table · sq-td-num · numeric · row · t-caption · panel → 0
+banned casts          1 → 0      <main> on loading  2 → 1
+columns              10 → 6      week cells at zero 64/66 → distribution bars
+typography baseline 734 → 733    (one removed and locked in)
+visits.json         253 → 276 keys/locale (parity)
+```
+
+**Owed:** axe, the English render, and **11 Arabic strings need a native
+review** — the `workload` namespace plus the four priority values.
+
+
 ### T-099 · the visit map — paging that lied, and a contract that froze the legacy
 `status: done — e2e not run` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-004, WEB-008, WEB-009, WEB-011, WEB-013, WEB-014` · `est: 2h`
 `record:` [2026-08-13-T-099-visit-map-migration](sessions/2026-08/2026-08-13-T-099-visit-map-migration.md)

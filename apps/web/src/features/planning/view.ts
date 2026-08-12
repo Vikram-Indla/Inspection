@@ -1,4 +1,5 @@
 import type { Locale } from "@/lib/i18n";
+import { makeLookupLabel } from "@/i18n/enum-label";
 import { formatDate, formatDateTime } from "@/lib/dates";
 import type { StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import type { PlanningVisitRow } from "@/lib/planning/visit-list";
@@ -43,7 +44,7 @@ const STATUS_TONES: Readonly<Record<string, StatusTone>> = {
 const lookupLabel = (options: PlanningLookupOption[], key: string, locale: Locale): string | null => {
   const match = options.find(option => option.key === key);
   if (!match) return null;
-  return locale === "ar" ? (match.labelAr ?? match.labelEn) : match.labelEn;
+  return makeLookupLabel(locale)(key, locale === "ar" ? match.labelAr : match.labelEn);
 };
 
 export function buildPlanningVisitViews(
