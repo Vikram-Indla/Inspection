@@ -5,9 +5,9 @@ import VisitDetailUnavailable from "@/components/visits/visit-detail/visit-detai
 import { loadVisitDetail } from "@/features/visits/detail/queries";
 import { buildVisitDetailStrings } from "@/features/visits/detail/strings";
 import { buildActionBarProps, visitAttachmentRows } from "@/features/visits/detail/view";
+import { makeEnumLabel } from "@/i18n/enum-label";
 import { getMessages } from "@/i18n/messages";
 import { useT } from "@/lib/i18n";
-import { humaniseEnum, sentenceCase } from "@/lib/text";
 import VisitActions from "@/components/visits/visit-actions/visit-actions";
 import Attachments from "./Attachments";
 import NotesEditor from "./NotesEditor";
@@ -17,13 +17,13 @@ export default async function VisitDetailRoute({ params, searchParams }: {
   searchParams: Promise<{ created?: string; focus?: string; wa_route_base?: string }>;
 }) {
   const { created, wa_route_base } = await searchParams;
-  const { t, locale } = await useT();
+  const locale = (await useT()).locale;
   const V = getMessages(locale).visits;
   const current = wa_route_base === "planning" ? "/planning" : "/visits";
   const page = await loadVisitDetail((await params).id);
   if (page.kind !== "ready") return <VisitDetailUnavailable current={current} kind={page.kind} strings={V.detail} />;
   const data = page.data;
-  const enumLabel = (value: string) => sentenceCase(t(`enum.${value}`, humaniseEnum(value, locale)), locale);
+  const enumLabel = makeEnumLabel(locale);
   const strings = buildVisitDetailStrings(locale, enumLabel);
   const title = V.detail.title
     .replace("{id}", data.visit.id.slice(0, 8))

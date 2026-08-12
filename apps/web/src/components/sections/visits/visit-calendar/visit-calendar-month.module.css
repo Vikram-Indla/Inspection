@@ -1,18 +1,24 @@
 .grid {
   display: flex;
   flex-direction: column;
-  gap: var(--sqx-space-1);
+  gap: var(--sqx-border-width-hair);
+  background: var(--sqx-border-subtle);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-card);
+  overflow: hidden;
 }
 
 .row {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: var(--sqx-space-1);
+  gap: var(--sqx-border-width-hair);
+  background: var(--sqx-border-subtle);
 }
 
 .weekday {
   display: block;
   padding-block: var(--sqx-space-2);
+  background: var(--sqx-surface-header);
   text-align: center;
 }
 
@@ -23,8 +29,6 @@
   min-inline-size: 0;
   min-block-size: var(--sqx-grid-min-xs);
   padding: var(--sqx-space-2);
-  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
-  border-radius: var(--sqx-radius-control);
   background: var(--sqx-surface-default);
 }
 
@@ -33,7 +37,7 @@
 }
 
 .cell[data-today] {
-  border-color: var(--sqx-border-focus);
+  background: var(--sqx-surface-accent);
 }
 
 .number {

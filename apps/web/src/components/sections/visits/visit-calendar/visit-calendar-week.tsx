@@ -14,7 +14,7 @@ export default function VisitCalendarWeek({ anchorMs, todayKey, byDay, strings, 
   const shortDay = new Intl.DateTimeFormat(locale, { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
 
   return (
-    <div className={styles.grid} role="grid" aria-label={strings.title}>
+    <div className={styles.grid} role="table" aria-label={strings.title}>
       <div className={styles.row} role="row">
         {weekCells(anchorMs).map(ms => {
           const key = dayKey(ms);
@@ -23,7 +23,7 @@ export default function VisitCalendarWeek({ anchorMs, todayKey, byDay, strings, 
             <div
               className={styles.column}
               key={key}
-              role="gridcell"
+              role="cell"
               data-today={key === todayKey ? "" : undefined}
             >
               <span className={styles.heading}>

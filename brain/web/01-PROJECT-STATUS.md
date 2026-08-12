@@ -1,6 +1,40 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-095 — /field fonts`
+`Last updated: 2026-08-12` · `Updated by: T-096 — /planning/immediate declutter`
+
+## A parent `loading.tsx` may be hiding every nested skeleton (2026-08-12)
+
+T-096 built a skeleton for `/planning/immediate` that mirrors the form, then
+found that a cold navigation to that route shows **`PlanningSkeleton`** — the
+11-column data-table skeleton belonging to `/planning` — from the **parent**
+segment's boundary. Identified by its label ("Loading visit planning" =
+`planning.home.loading`) and its 122 bones.
+
+If that holds generally, then **every per-route skeleton built under `/planning`
+is unreachable**, and the several tasks that sized bones against their screens
+were measuring something the user never sees. It also means a form route
+currently announces itself with a table.
+
+**Caveat, stated because it changes the answer:** the observation was made in a
+tab whose `visibilityState` was `hidden`, where the route transition stalled and
+never revealed. A stalled transition can hold the *outer* fallback open, so this
+may be an artefact of the harness rather than the router.
+
+**Answer this before building another skeleton.** It is a routing question, not a
+design one, and it is cheap to settle: with the pane displayed, navigate to two
+nested planning routes and read the label out of the `SkeletonRegion`.
+
+## `RouteLoading` is an ARIA landmark defect on ~25 routes (2026-08-12)
+
+`components/RouteLoading.tsx` renders `<main className="sq-content">`. It is
+mounted **inside** `ShellClient`'s `<main id="main-content">`, so every segment
+using it puts **two `main` landmarks** in the document. It also carries hardcoded
+`en`/`ar` literals and a `locale === "ar"` ternary (rule 18), `glyph="◫"`,
+`t-caption` at 11.5px, and no `Shell` — so the page title appears only after the
+load finishes.
+
+T-096 took it off `/planning/immediate`. **~25 segments still import it**, and
+each is one small file. This is the cheapest large a11y win left on the board.
 
 ## `/field` is a second design system, and the baseline does not know it (2026-08-12)
 

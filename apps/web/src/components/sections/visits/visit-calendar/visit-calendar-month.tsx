@@ -22,7 +22,7 @@ export default function VisitCalendarMonth({ anchorMs, todayKey, byDay, strings,
   const dayNumber = new Intl.NumberFormat(locale);
 
   return (
-    <div className={styles.grid} role="grid" aria-label={strings.title}>
+    <div className={styles.grid} role="table" aria-label={strings.title}>
       <div className={styles.row} role="row">
         {weekCells(anchorMs).map(ms => (
           <span key={ms} className={styles.weekday} role="columnheader">
@@ -40,7 +40,7 @@ export default function VisitCalendarMonth({ anchorMs, todayKey, byDay, strings,
               <div
                 className={styles.cell}
                 key={key}
-                role="gridcell"
+                role="cell"
                 data-today={key === todayKey ? "" : undefined}
                 data-outside={isInMonth(ms, anchorMs) ? undefined : ""}
               >

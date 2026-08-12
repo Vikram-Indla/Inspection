@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import VisitCalendar from "@/components/sections/visits/visit-calendar/visit-calendar";
+import { makeEnumLabel } from "@/i18n/enum-label";
 import { getMessages } from "@/i18n/messages";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
@@ -20,9 +21,10 @@ export async function VisitsCalendarView({ basePath = "/visits", params = {} }: 
   basePath?: VisitBasePath;
   params?: CalendarParams;
 }) {
-  const { t, locale } = await useT();
+  const locale = (await useT()).locale;
   const messages = getMessages(locale);
   const strings = messages.visits.calendar;
+  const enumLabel = makeEnumLabel(locale);
   const uiLocale = locale === "ar" ? "ar" : "en";
   const read = await queryVisitCalendar(await supabaseServer());
 
@@ -41,9 +43,9 @@ export async function VisitsCalendarView({ basePath = "/visits", params = {} }: 
     windowEnd: row.window_end,
     factoryName: row.factories?.name ?? strings.factoryUnavailable,
     planningStatus: row.planning_status,
-    planningLabel: t(`enum.${row.planning_status}`, row.planning_status),
-    opsLabel: t(`enum.${row.operational_state}`, row.operational_state.replaceAll("_", " ")),
-    typeLabel: t(`enum.${row.visit_type}`, row.visit_type),
+    planningLabel: enumLabel(row.planning_status),
+    opsLabel: enumLabel(row.operational_state),
+    typeLabel: enumLabel(row.visit_type),
   }));
 
   return (

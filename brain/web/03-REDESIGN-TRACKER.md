@@ -10,6 +10,79 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-098 · `/planning/calendar` — the grid collapses, the enum stops reaching the screen
+`status: partial — verified in Arabic; English render, axe and 9 Arabic strings owed` · `rules: WEB-000, WEB-002 §5 §6, WEB-003, WEB-008, WEB-009, WEB-011, WEB-013` · `est: 1h`
+`record:` [2026-08-12-T-098-visit-calendar-grid-and-enum-labels](sessions/2026-08/2026-08-12-T-098-visit-calendar-grid-and-enum-labels.md)
+
+Owner-reported on T-097's output: month and week read as detached boxes, and raw
+values like `pending_supervision` render as labels.
+
+**The rules are the container showing through 1px gaps, not borders on 42 cells.**
+The container paints `--sqx-border-subtle`, the cells paint
+`--sqx-surface-default`, and `gap: var(--sqx-border-width-hair)` between them *is*
+the rule. Every row is the same `repeat(7, minmax(0, 1fr))` — the track T-097
+introduced — so the vertical gaps align into continuous columns and the flex gap
+into continuous rows. **No `:first-child` exceptions, no double borders, and no
+physical direction anywhere**, which makes it correct in RTL by construction
+rather than by an override.
+
+**This is the calendar catching up with `DataTable`, not a new visual idea.** That
+component already collapses its borders and bands its header on
+`--sqx-surface-header`, and its own source argues the case: square corners on
+purpose, because *"rounding it would read as a floating chip rather than a header
+rule."*
+
+**Today had to change signal — a consequence, not a preference.** It was marked
+*only* by `border-color`, and cells now own no border. It takes the
+`--sqx-surface-accent` fill `DataTable` gives a selected row.
+
+**`role="grid"` was a promise the markup did not keep.** The ARIA grid pattern
+implies arrow-key cell navigation; no cell was focusable and there was no roving
+`tabindex` — the same class as T-094's malformed `role="tree"`. Now
+`table`/`row`/`columnheader`/`cell`; **0 grid roles remain**, checked in the DOM.
+
+**The raw label was three different fallbacks in three adjacent lines** — the raw
+value for `planning_status` and `visit_type`, `.replaceAll("_", " ")` for
+`operational_state`. Since `getDict()` returns `{}` (T-086), **the fallback is the
+rendered string**, which is why *every* pill was lowercase, not only the
+underscored one. **T-097 translated this route's chrome and left its data labels
+on the legacy dictionary** — that is the gap this task closes.
+
+**Labels now come from the locale JSON, per owner instruction.** `visits.json`
+gained an `enum` block in **both locales, 22 keys each, parity 200 = 200**, taken
+from the database definitions: `planning_status` (7), `operational_state` (8),
+`execution_mode` (3), and the `visit_type` reference values. **The Arabic was
+harvested, not invented** — `operations.json`, `enforcement.json`,
+`approvals.json` and a DEC-L seed already shipped twelve verbatim. Planning and
+operational states take **feminine agreement** (الزيارة); `execution_mode` stays
+masculine. **`humaniseEnum` is the fallback formatter and the TSDoc calls it a
+defect marker, not copy.**
+
+**Three surfaces were wired, not one** — calendar, board and `visits/[id]` each
+carried their own `t("enum.…")` closure, so fixing only the calendar would have
+created the very inconsistency it was reported for.
+
+**T-097's path-pinned contract was re-verified, not assumed.** `cd-026` reads
+`CalendarView.tsx` as source text; all five assertions — no JSX `{error.message}`,
+`console.error`, `loadErrorNeutral`, `expire_lapsed_visits_scheduled`, no inline
+expiry RPC — were **checked by script against the edited file** and pass.
+
+```
+measured live, seeded Planner, Arabic, ?view=month
+per-cell border 1px → 0     per-cell radius --sqx-radius-control → 0
+grid frame none → 1px + --sqx-radius-card    rules --sqx-space-1 gap → 1px hairline
+today border-colour → --sqx-surface-accent fill     role=grid/gridcell 2 → 0
+snake_case labels 4 → 0   (pending_supervision → بانتظار الإشراف)
+visits.json 178 → 200 keys/locale (parity)   enum surfaces on one source 0 → 3
+typography 734 → 734
+```
+
+**Owed:** axe; the English render (the session locale is `ar` and `/en/…` does not
+flip the cookie-driven locale — the Arabic result is the stronger proof, since
+`بانتظار الإشراف` cannot come from `humaniseEnum`); and **9 Arabic strings with no
+prior art need a native review** — مُدقَّقة, بانتظار الإشراف, جديدة, مُجهَّزة,
+مُرسلة, دورية, متابعة, شكوى, منتهية.
+
 ### T-097 · the visit calendar — a clean route that rendered English at 11.5px
 `status: done — e2e not run` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-004, WEB-008, WEB-009, WEB-011, WEB-013, WEB-014` · `est: 2h`
 `record:` [2026-08-12-T-097-visit-calendar-migration](sessions/2026-08/2026-08-12-T-097-visit-calendar-migration.md)
@@ -101,11 +174,32 @@ is still assembled from translated parts, which is what the chip did. **57 dead
 keys deleted per locale** at asserted parity **940 = 940**, including the whole
 `enforcement` block — 9 keys that render nowhere and are never read by the action.
 
-**The empty space was the grid, not the spacing.** `repeat(auto-fit, minmax(24rem,
-1fr))` over three cards of very unequal height gave `[Identity | Urgency]` then
-`[Location | ∅]` — a void under the 4-radio card and a whole empty column beside
-the tallest one. Identity and Urgency now share a column. **No new token, no
-media query.**
+**The empty space took three rounds and only the third one measured first.**
+Rounds 1 and 2 reasoned about the grid; round 3 measured it and found **780px of
+void under the left column**, of which the inspection checklist was **595px** —
+10 packages at `minmax(18rem, 1fr)` inside a 465px column resolves to **one**
+track, so ten options stacked. It moved out to a full-width card
+(`dispatch-checklist/`), reusing `packageLabel` and `packageOptionalHint` as its
+title and description — **zero new copy** — with `role="radiogroup"
+aria-labelledby` instead of a legend that would have restated the title.
+
+**The last ~140px could not be closed by content and is closed by the grid.**
+Identity + Urgency is simply less than Location + six dispatch fields; every
+redistribution just moves the void to the other column. `.columns` went
+`align-items: start` → `stretch` with `.column > :last-child { flex-grow: 1 }`.
+**`flex-grow`, not `flex: 1`** — `flex: 1` sets `flex-basis: 0`, making the card's
+height depend on free space the grid row is itself sizing from that card, which
+collapses it whenever the left column is the taller one. The urgency options also
+became a **vertical list**: four options spread across an 865px row is a sparse
+row for a *required* single-select, and stacked it is both the conventional
+control and 130px instead of 55px.
+
+```
+measured, seeded Planner, Arabic, 1280px viewport / 977px content
+left column   712 → 909     right column 1,492 → 909     VOID 780 → 0
+protections   346 → 197     checklist 595 @465 → 352 @977 (out of the column)
+form total  2,311 → 1,993   (before is English, after Arabic — indicative)
+```
 
 **The legacy loading state is off this route.** `RouteLoading` broke five rules
 at once: hardcoded `en`/`ar` literals plus the `locale === "ar"` ternary (rule 18,
@@ -123,12 +217,16 @@ inoperable controls       2 → 0     blocks before first field 13 → 8
 comments 9 → 0            locale keys 997 → 940/locale     typography 734 → 734
 ```
 
-**Owed, and the cause is one thing: the Browser pane was never displayed**, so
-`document.visibilityState` stayed `hidden` and the route never revealed out of
-its Suspense boundary — the fully rendered form sat in React's hidden staging
-`<div>` with every `getBoundingClientRect` at 0. Content was verified from that
-staged tree; **geometry was not**. axe, the manual checklist and the Arabic
-render are unrun.
+**Arabic/RTL passed** — `lang="ar"`, `dir="rtl"`, **no horizontal page overflow**,
+and the only four elements whose `scrollWidth` exceeds their `clientWidth` are a
+decorative `ping-dot`, the visually-hidden live region (clipped by design) and two
+Mapbox attribution controls. No content clipping.
+
+**Owed: axe and the rest of the manual checklist** (keyboard, screen reader, 200%
+zoom, 320px, dark, reduced motion, greyscale). The Browser pane is displayed only
+intermittently, and every time it goes hidden `document.visibilityState` flips and
+the route stalls in its Suspense boundary with the rendered form parked in React's
+hidden staging `<div>` — so the measurement window is short and axe never got one.
 
 **New question, possibly bigger than this task: a cold navigation to
 `/planning/immediate` shows `PlanningSkeleton` from the *parent* `/planning`
