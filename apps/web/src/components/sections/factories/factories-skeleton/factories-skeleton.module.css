@@ -15,7 +15,6 @@
   padding-inline: var(--sqx-space-4);
   background: var(--sqx-surface-default);
   border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
-  border-inline-start: var(--sqx-border-width-thick) solid var(--sqx-accent-ai);
   border-radius: var(--sqx-radius-card);
 }
 

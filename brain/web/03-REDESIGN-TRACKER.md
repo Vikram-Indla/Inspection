@@ -57,9 +57,31 @@ AI card 226 → 74px · risk outlook 390 → 268 · two provenance cards 382 →
 duplicated strings 14 → 9 · availability sentence 4× → 1× · 4 dead locale keys
 ```
 
-**Owed:** axe, Arabic (still blocked on the locale toggle), light theme, e2e. The 9
-remaining repeats are the left-rail-versus-hero overlap, which is scanning versus
-detail and was deliberately kept.
+**The skeleton had to follow, and measuring it found a primitive mismatch.** It
+still drew five right-rail panels and no top strip. Fixed, then measured — and the
+first measurement was wrong: a harness missing `--sqx-space-6/9` and
+`--sqx-control-h-sm` reported a 24px shift that did not exist, because the bones
+had collapsed in the *harness*, not the app. **An under-specified harness reports a
+defect in the thing it is measuring.** With the full token set the residual is
+**8px, and it is a shared primitive**: `Skeleton shape="pill"` is
+`--sqx-control-h-sm` (32px) while `StatusPill` renders 24px. Left alone and parked —
+correcting it moves every skeleton on every route.
+
+**Two further skeleton defects, owner-reported, and the bigger one predates this
+task.** `factories/loading.tsx` never wrapped its skeleton in `Shell` — unlike
+`/dashboard`, `/planning` and `/visits/[id]` — so it rendered outside the page
+frame, flush to the viewport, while the loaded page sits at a 268px inset. **A
+skeleton outside its page's frame cannot match it however well its bones are
+sized.** Fixed, and the legacy `t("f360.loading", "…")` retired for a real
+`factories.loading` key in both locales. The strip skeleton also carried the live
+strip's **AI accent border**; a saturated accent on a loading placeholder reads as
+loaded content, so it is gone.
+
+**Owed:** axe, Arabic (still blocked on the locale toggle), light theme, e2e, **and
+a re-render of the skeleton** — the pane's session expired to `/en/login`, so the
+framing fix is verified from source and the accent removal by grep, not by a
+screenshot. The 9 remaining repeats are the left-rail-versus-hero overlap, which is
+scanning versus detail and was deliberately kept.
 
 ### T-088 · `/planning/single` — typography, route-owned code to zero
 `status: done (3 of 5 components never rendered)` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014 §4.1, §8` · `est: 45m`
