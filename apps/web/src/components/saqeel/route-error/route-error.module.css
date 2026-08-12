@@ -9,11 +9,11 @@
 
 .reference {
   margin: 0;
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
 }
 
 .code {
-  font: var(--sqx-text-code);
+  font: var(--sqx-text-mono);
   font-variant-numeric: var(--sqx-numeric-tabular);
 }

@@ -72,20 +72,20 @@
 
 .time {
   flex: none;
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   font-variant-numeric: var(--sqx-numeric-tabular);
   color: var(--sqx-text-muted);
 }
 
 .meta {
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
 }
 
 .detail {
   min-inline-size: 0;
   padding: var(--sqx-space-4);
-  font: var(--sqx-text-code);
+  font: var(--sqx-text-mono);
   color: var(--sqx-text-secondary);
   background: var(--sqx-surface-sunken);
   border-radius: var(--sqx-radius-sm);

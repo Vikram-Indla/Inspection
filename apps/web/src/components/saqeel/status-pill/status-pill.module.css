@@ -7,8 +7,8 @@
   gap: var(--sqx-space-2);
   min-block-size: var(--sqx-space-6);
   padding-inline: var(--sqx-space-3);
-  font: var(--sqx-text-caption);
-  letter-spacing: var(--sqx-text-caption-tracking);
+  font: var(--sqx-text-body);
+  letter-spacing: var(--sqx-text-body-tracking);
   font-weight: var(--sqx-weight-semibold);
   white-space: nowrap;
   border: var(--sqx-border-width-hair) solid transparent;
