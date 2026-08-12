@@ -32,8 +32,6 @@
   margin: 0;
   padding-block-end: var(--space-2);
   border-block-end: 1px solid var(--border-subtle);
-  font-size: 0.95rem;
-  font-weight: 600;
 }
 .cardHFlush { padding-block-end: 0; border-block-end: 0; }
 .hIcon { width: 16px; height: 16px; flex: none; }
@@ -52,14 +50,10 @@
   padding: var(--space-2) var(--space-3);
   text-align: center;
 }
-.statVal { font-size: 1.25rem; font-weight: 700; }
 .statBadge { margin-block-start: 2px; }
 
 /* Section sub-label (e.g. "Licenses & documents"). */
 .subLabel {
-  font-size: var(--type-label-size);
-  font-weight: var(--type-label-w);
-  line-height: var(--type-label-lh);
   color: var(--text-secondary);
 }
 
@@ -91,7 +85,6 @@
 }
 .licIcon svg { width: 14px; height: 14px; }
 .licBody { display: flex; flex-direction: column; min-width: 0; }
-.licTitle { font-size: 0.8125rem; font-weight: 600; }
 
 /* Inspection-items category chips. */
 .chipRow {
@@ -111,7 +104,6 @@
   background: var(--surface-sunken);
   color: var(--text-secondary);
   font: inherit;
-  font-size: 0.84rem;
   white-space: nowrap;
   cursor: pointer;
 }
@@ -124,7 +116,7 @@
 /* Pending-integration form scaffolding (establishment data, contacts). */
 .formCol { display: flex; flex-direction: column; gap: var(--space-3); }
 .fld { display: flex; flex-direction: column; gap: 5px; }
-.fld > span { font-size: 0.8125rem; color: var(--text-secondary); }
+.fld > span { color: var(--text-secondary); }
 .fldRow { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
 @media (max-width: 560px) { .fldRow { grid-template-columns: 1fr; } }
 
@@ -136,7 +128,7 @@
   background: var(--surface-sunken);
   border-radius: var(--radius-md);
 }
-.exportsLabel { flex: 1; font-size: 0.875rem; }
+.exportsLabel { flex: 1; }
 
 /* Contact scaffolding card (editable, unpersisted, never a Senaei write). */
 .contactCard {
@@ -150,7 +142,7 @@
 
 /* Workforce shift/roster scaffolding. */
 .shiftGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
-.shiftTotal { margin-block-start: var(--space-2); text-align: end; font-size: 0.8125rem; color: var(--text-secondary); }
+.shiftTotal { margin-block-start: var(--space-2); text-align: end; color: var(--text-secondary); }
 /* Worker-type label input grows; delete button sits beside it in the row head. */
 .rosterType { flex: 1; min-width: 0; }
 /* Roster grand-total footer (derived from entered values only). */
@@ -162,8 +154,7 @@
   background: var(--surface-sunken);
   border-radius: var(--radius-md);
 }
-.rosterFoot > span:first-child { flex: 1; font-size: 0.875rem; }
-.rosterFoot strong { font-size: 1.125rem; font-weight: 700; }
+.rosterFoot > span:first-child { flex: 1; }
 
 /* Standalone visit-notes textarea. */
 .notesArea { min-block-size: 84px; resize: vertical; }
@@ -175,7 +166,6 @@
   align-items: center;
   gap: var(--space-2);
   font: inherit;
-  font-size: 0.78rem;
   color: var(--text-primary);
   background: none;
   border: 0;
@@ -210,7 +200,6 @@
   gap: var(--space-2);
 }
 .itemMain { min-width: 0; }
-.itemTitle { font-size: 0.875rem; font-weight: 600; }
 
 .headerRow {
   display: flex;
@@ -219,20 +208,17 @@
   justify-content: space-between;
   gap: var(--space-2);
 }
-.headerRow h4 { margin: 0; font-size: 1rem; font-weight: 700; }
+.headerRow h4 { margin: 0; }
 
 /* Sub-section (review list, license, products, materials). */
 .section { display: flex; flex-direction: column; gap: var(--space-2); }
-.section h4 { margin: 0; font-size: 0.95rem; font-weight: 600; }
+.section h4 { margin: 0; }
 
 /* Label text for a nested-input .field wrapper (implicit label kept — the
    .field element IS the <label>, so its text needs its own class rather than
    the DS `.field > label` child selector). */
 .fieldLabel {
-  font-size: var(--type-label-size);
-  font-weight: var(--type-label-w);
   color: var(--text-secondary);
-  line-height: var(--type-label-lh);
 }
 
 /* Source-versus-observed verification cards. Geometry follows the Inspection
@@ -259,7 +245,6 @@
   gap: 10px;
 }
 .verificationHead { justify-content: space-between; }
-.verificationHead > strong { font-size: 0.875rem; font-weight: 600; }
 .valueGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -284,7 +269,6 @@
 }
 .observedValue:focus-within { border-color: var(--action-primary); }
 .valueLabel {
-  font-size: 0.8125rem;
   color: var(--text-secondary);
 }
 .noteField {
@@ -302,8 +286,7 @@
   gap: 6px;
   padding: 4px 9px;
   border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
+  font: inherit;
 }
 .statusDot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .statusVerified { color: var(--status-compliant-text); background: var(--status-compliant-soft); }
@@ -320,7 +303,7 @@
   border-radius: var(--radius-md);
   background: var(--surface-sunken);
   color: var(--text-secondary);
-  font-size: 0.8125rem;
+  font: inherit;
   cursor: pointer;
 }
 .evidenceAttach svg { width: 15px; height: 15px; flex: none; }

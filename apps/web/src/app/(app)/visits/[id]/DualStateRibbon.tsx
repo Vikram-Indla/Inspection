@@ -1,3 +1,4 @@
+/* @retiring 2026-08-12 · replaced-by components/visits/visit-detail/visit-lifecycle-ribbon · pending none · delete-when 0-imports */
 "use client";
 // CD-027 / SCR-WEB-210 — Dual-State Ribbon (signature interaction, one per screen).
 // Five NEVER-collapsed state domains (planning/operational/assignment/inspection/

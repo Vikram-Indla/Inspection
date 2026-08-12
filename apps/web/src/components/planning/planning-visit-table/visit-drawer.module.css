@@ -45,7 +45,7 @@
   display: flex;
   align-items: center;
   gap: var(--sqx-space-2);
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
   font-variant-numeric: var(--sqx-numeric-tabular);
 }
@@ -66,9 +66,8 @@
 }
 
 .groupTitle {
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
+  font: var(--sqx-text-subheading);
+  letter-spacing: var(--sqx-text-subheading-tracking);
   color: var(--sqx-text-muted);
 }
 
@@ -87,7 +86,7 @@
 }
 
 .fieldLabel {
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
 }
 
@@ -99,7 +98,7 @@
 }
 
 .note {
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
 }
 

@@ -1,8 +1,7 @@
 .chart {
   display: flex;
   align-items: flex-end;
-  gap: var(--sqx-space-2);
-  block-size: var(--sqx-space-11);
+  gap: var(--sqx-space-5);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -11,9 +10,18 @@
 .column {
   display: flex;
   flex: 1;
-  align-items: flex-end;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sqx-space-3);
   min-inline-size: 0;
-  block-size: 100%;
+  max-inline-size: var(--sqx-space-13);
+}
+
+.track {
+  display: flex;
+  align-items: flex-end;
+  inline-size: 100%;
+  block-size: var(--sqx-space-13);
 }
 
 .bar {
@@ -28,3 +36,10 @@
 .bar[data-tone="success"] { background: var(--sqx-status-compliant); }
 .bar[data-tone="info"] { background: var(--sqx-status-info); }
 .bar[data-tone="accent"] { background: var(--sqx-accent-ai); }
+
+.bar[data-zero] {
+  block-size: 0;
+  background: none;
+  border-block-start: var(--sqx-border-width-thick) dashed var(--sqx-border-default);
+  border-radius: 0;
+}

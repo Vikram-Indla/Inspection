@@ -4,6 +4,7 @@ import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import Stack from "@/components/saqeel/stack/stack";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import styles from "./factory-documents.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type DocumentRow = {
   readonly id: string;
@@ -51,7 +52,7 @@ export default function FactoryDocuments({ rows, error, strings }: {
           ? <EmptyState icon="library" tone="danger" title={strings.errorTitle} description={error} />
           : <Stack gap="default">
               <DataTable rows={rows} columns={columns} getRowId={row => row.id} empty={{ icon: "library", title: strings.emptyTitle, description: strings.emptyDescription }} density="compact" />
-              {rows.length ? <p className={styles.notice} role="status">{strings.previewNote}</p> : null}
+              {rows.length ? <div className={styles.notice}><Text tone="muted" live="status">{strings.previewNote}</Text></div> : null}
             </Stack>}
       </CardBody>
     </Card>

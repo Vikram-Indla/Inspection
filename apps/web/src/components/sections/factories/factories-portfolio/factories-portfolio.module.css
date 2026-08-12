@@ -1,11 +1,7 @@
-.heading {
-  min-inline-size: 0;
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
-}
 
 .select {
   display: flex;
+  font: inherit;
   align-items: center;
   gap: var(--sqx-space-3);
   inline-size: 100%;
@@ -51,13 +47,9 @@
 
 .name {
   min-inline-size: 0;
-  font-weight: var(--sqx-weight-semibold);
   overflow-wrap: anywhere;
 }
 
-.select[aria-pressed="true"] .name {
-  font-weight: var(--sqx-weight-bold);
-}
 
 .facts {
   display: flex;
@@ -75,14 +67,6 @@
   min-inline-size: 0;
 }
 
-.summaryLabel {
-  margin: 0;
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
-  color: var(--sqx-text-muted);
-  text-wrap: pretty;
-}
 
 .summaryGrid {
   display: grid;
@@ -105,7 +89,6 @@
    (WEB-003 — nothing communicated by colour alone). */
 .statValue {
   margin: 0;
-  font: var(--sqx-text-metric);
   font-variant-numeric: var(--sqx-numeric-tabular);
   color: var(--sqx-text-primary);
 }
@@ -115,11 +98,6 @@
 .statValue[data-tone="success"] { color: var(--sqx-status-compliant); }
 .statValue[data-tone="info"] { color: var(--sqx-status-info); }
 
-.statLabel {
-  font: var(--sqx-text-caption);
-  color: var(--sqx-text-muted);
-  text-wrap: pretty;
-}
 
 .pills {
   display: flex;
@@ -129,20 +107,4 @@
   margin-block-start: var(--sqx-space-2);
 }
 
-.term {
-  flex: none;
-  font: var(--sqx-text-caption);
-  color: var(--sqx-text-muted);
-}
 
-.value {
-  min-inline-size: 0;
-  margin: 0;
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
-  font-weight: var(--sqx-weight-semibold);
-  font-variant-numeric: var(--sqx-numeric-tabular);
-  color: var(--sqx-text-primary);
-  text-align: end;
-  overflow-wrap: anywhere;
-}

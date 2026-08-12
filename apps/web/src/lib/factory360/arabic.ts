@@ -208,7 +208,7 @@ export const FACTORY360_AR_FALLBACK: Record<string, string> = {
   "common.actions": "الإجراءات",
   "f360.actions.openMap": "فتح الخريطة",
   "f360.actions.createInspection": "إنشاء تفتيش",
-  "f360.actions.planSingle": "تخطيط زيارة واحدة",
+  "f360.actions.planSingle": "تخطيط زيارة فردية",
   "f360.actions.exportPdf": "طباعة / حفظ ملف PDF المصرح به",
   "f360.actions.restricted": "لا يُسمح لدورك بإنشاء تفتيش أو تصدير الملف.",
   "f360.actions.submissionBlocked": "يبقى إرسال التفتيش غير متاح ما دام القرار غير محسوم.",

@@ -6,10 +6,6 @@
 }
 
 .heading {
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
-  color: var(--sqx-text-muted);
   padding-inline: var(--sqx-space-3);
   padding-block-end: var(--sqx-space-2);
 }

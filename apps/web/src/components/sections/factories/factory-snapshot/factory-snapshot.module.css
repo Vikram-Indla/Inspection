@@ -22,13 +22,6 @@
 .condition[data-tone="warning"] { border-inline-start: var(--sqx-border-width-thick) solid var(--sqx-status-warning); }
 .condition[data-tone="success"] { border-inline-start: var(--sqx-border-width-thick) solid var(--sqx-status-compliant); }
 
-.conditionLabel {
-  margin: 0;
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
-  color: var(--sqx-text-muted);
-}
 
 .reasons {
   display: flex;
@@ -36,16 +29,9 @@
   gap: var(--sqx-space-2);
   margin: 0;
   padding-inline-start: var(--sqx-space-5);
-  font: var(--sqx-text-caption);
   color: var(--sqx-text-secondary);
 }
 
-.reason {
-  margin: 0;
-  font: var(--sqx-text-caption);
-  color: var(--sqx-text-muted);
-  text-wrap: pretty;
-}
 
 /* A fixed column count, not `auto-fit`: the tracks were sized from a spacing
    token, which let a six-column row form and then let long values like
@@ -66,16 +52,10 @@
   min-inline-size: 0;
 }
 
-.metricLabel {
-  font: var(--sqx-text-caption);
-  color: var(--sqx-text-muted);
-  text-wrap: pretty;
-}
 
 .metricValue {
   min-inline-size: 0;
   margin: 0;
-  font: var(--sqx-text-metric);
   font-variant-numeric: var(--sqx-numeric-tabular);
   color: var(--sqx-text-primary);
   overflow-wrap: anywhere;
@@ -86,7 +66,6 @@
    available" dwarfs the numbers beside it and reads as the loudest thing in
    the card, which is the opposite of what an absent value should do. */
 .metricValue[data-kind="text"] {
-  font: var(--sqx-text-body-strong);
   color: var(--sqx-text-secondary);
 }
 

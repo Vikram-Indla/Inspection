@@ -42,14 +42,9 @@
 .rate {
   flex: none;
   color: var(--sqx-text-primary);
-  font-weight: var(--sqx-weight-semibold);
 }
 
 .total {
   color: var(--sqx-text-muted);
 }
 
-.footnote {
-  font: var(--sqx-text-caption);
-  color: var(--sqx-text-muted);
-}

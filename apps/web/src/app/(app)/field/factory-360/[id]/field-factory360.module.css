@@ -35,12 +35,10 @@
   gap: var(--space-2);
   justify-content: space-between;
 }
-.headerName { margin: 0; font-size: 1.25rem; font-weight: 700; }
 .ids {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
-  font-size: 0.85rem;
   color: var(--text-secondary);
 }
 .ids > span { white-space: nowrap; }
@@ -90,7 +88,6 @@
   gap: 2px;
   padding: var(--space-3);
 }
-.tileValue { font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 
 .section {
   background: var(--surface-primary);
@@ -109,8 +106,6 @@
   gap: var(--space-2);
   padding: 18px 19px 14px;
   min-block-size: 48px;
-  font-weight: 600;
-  font-size: 15px;
 }
 .section > summary::-webkit-details-marker { display: none; }
 .sectionBody {
@@ -121,7 +116,6 @@
   flex-direction: column;
   gap: var(--space-2);
 }
-.sectionBody h3 { margin: var(--space-2) 0 0; font-size: 14px; font-weight: 600; }
 .sectionBody ul {
   margin: 0;
   padding-inline-start: var(--space-4);
@@ -154,7 +148,6 @@
 .actionBar > * { flex: 0 0 auto; min-block-size: 48px; }
 
 .link { color: var(--text-link); text-decoration: underline; }
-.statBig { font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 
 @media (max-width: 560px) {
   .page { padding: 14px 12px 120px; }

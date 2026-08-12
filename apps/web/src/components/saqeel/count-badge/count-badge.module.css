@@ -6,7 +6,7 @@
   min-inline-size: var(--sqx-count-size);
   block-size: var(--sqx-count-size);
   padding-inline: var(--sqx-space-3);
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   font-weight: var(--sqx-weight-semibold);
   font-variant-numeric: var(--sqx-numeric-tabular);
   color: var(--sqx-text-secondary);

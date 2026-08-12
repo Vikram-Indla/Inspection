@@ -19,13 +19,6 @@
   border: var(--sqx-border-width-hair) dashed var(--sqx-border-subtle);
 }
 
-.groupHead {
-  margin: 0;
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
-  color: var(--sqx-text-muted);
-}
 
 .rows {
   display: flex;
@@ -63,13 +56,3 @@
   min-inline-size: 0;
 }
 
-.value {
-  font-weight: var(--sqx-weight-semibold);
-  text-wrap: pretty;
-}
-
-.detail {
-  color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-caption-size);
-  text-wrap: pretty;
-}

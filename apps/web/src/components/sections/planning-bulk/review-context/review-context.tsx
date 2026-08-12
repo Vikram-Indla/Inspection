@@ -4,6 +4,7 @@ import DateRangePicker, { type DateRangePreset } from "@/components/saqeel/date-
 import Field from "@/components/saqeel/field/field";
 import SaqeelSelect, { type SelectOption } from "@/components/saqeel/select/select";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Text } from "@/components/saqeel/type";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
 import styles from "./review-context.module.css";
@@ -73,18 +74,18 @@ export default function ReviewContext({
 
         <div className={styles.facts}>
           <span className={styles.fact}>
-            <span className={styles.label}>{`${strings.selected} / ${strings.retained}`}</span>
-            <span className={styles.value}>
+            <Text as="span" tone="muted">{`${strings.selected} / ${strings.retained}`}</Text>
+            <Text as="span" role="bodyStrong" numeric>
               {selectedCount === retainedCount ? selectedCount : `${selectedCount} → ${retainedCount}`}
-            </span>
+            </Text>
           </span>
           <span className={styles.fact}>
-            <span className={styles.label}>{strings.visits}</span>
-            <span className={styles.value}>{retainedCount}</span>
+            <Text as="span" tone="muted">{strings.visits}</Text>
+            <Text as="span" role="bodyStrong" numeric>{retainedCount}</Text>
           </span>
           <span className={styles.fact}>
-            <span className={styles.label}>{strings.assignments}</span>
-            <span className={styles.value}>{`${manual} ${strings.manual} · ${auto} ${strings.auto}`}</span>
+            <Text as="span" tone="muted">{strings.assignments}</Text>
+            <Text as="span" role="bodyStrong" numeric>{`${manual} ${strings.manual} · ${auto} ${strings.auto}`}</Text>
           </span>
         </div>
 
@@ -106,7 +107,7 @@ export default function ReviewContext({
         </div>
 
         <fieldset className={styles.packages}>
-          <legend className={styles.label}>{strings.packageLabel}</legend>
+          <legend><Text as="span" tone="muted">{strings.packageLabel}</Text></legend>
           {packages.map(entry => (
             <Choice
               key={entry.id}

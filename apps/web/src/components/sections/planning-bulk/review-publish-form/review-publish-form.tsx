@@ -3,6 +3,7 @@ import Button from "@/components/saqeel/button/button";
 import Choice from "@/components/saqeel/choice/choice";
 import Field from "@/components/saqeel/field/field";
 import Textarea from "@/components/saqeel/textarea/textarea";
+import { Text } from "@/components/saqeel/type";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
 import styles from "./review-publish-form.module.css";
@@ -71,7 +72,7 @@ export default function ReviewPublishForm({
             </PlanningNotice>
           ) : null}
 
-          <p className={styles.note}>{strings.willRecheck}</p>
+          <Text tone="muted">{strings.willRecheck}</Text>
 
           {strings.transitionsBlocked === null ? null : (
             <PlanningNotice tone="warning">{strings.transitionsBlocked}</PlanningNotice>
@@ -80,10 +81,10 @@ export default function ReviewPublishForm({
           <div className={styles.actions}>
             <span className={styles.status}>
               {strings.blockedReason === null
-                ? <span className={styles.note}>{strings.allClear}</span>
-                : <span className={styles.blocked} id={REASON_ID}>{`${strings.disabledPrefix}${strings.blockedReason}`}</span>}
-              {savedMessage === null ? null : <span className={styles.note} role="status">{savedMessage}</span>}
-              {saveFailed ? <span className={styles.blocked} role="alert">{strings.draftSaveFailed}</span> : null}
+                ? <Text as="span" tone="muted">{strings.allClear}</Text>
+                : <Text as="span" tone="danger" id={REASON_ID}>{`${strings.disabledPrefix}${strings.blockedReason}`}</Text>}
+              {savedMessage === null ? null : <Text as="span" tone="muted" live="status">{savedMessage}</Text>}
+              {saveFailed ? <Text as="span" tone="danger" live="alert">{strings.draftSaveFailed}</Text> : null}
             </span>
 
             <Button variant="secondary" busy={saving} disabled={!canSaveDraft} onClick={onSaveDraft}>

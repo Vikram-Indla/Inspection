@@ -1,9 +1,5 @@
 .label {
-  min-block-size: calc(var(--sqx-text-overline-size) * var(--sqx-text-overline-line) * 2);
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
-  color: var(--sqx-text-muted);
+  min-block-size: calc(var(--sqx-text-label-size) * var(--sqx-text-label-line) * 2);
   text-wrap: pretty;
 }
 
@@ -21,7 +17,3 @@
   margin-inline-start: calc(var(--sqx-space-4) * -1);
 }
 
-.sub {
-  font: var(--sqx-text-caption);
-  color: var(--sqx-text-muted);
-}

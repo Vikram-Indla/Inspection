@@ -4,7 +4,6 @@
   align-items: center;
   gap: var(--sqx-space-2);
   margin: 0;
-  font: var(--sqx-text-caption);
   color: var(--sqx-text-secondary);
 }
 

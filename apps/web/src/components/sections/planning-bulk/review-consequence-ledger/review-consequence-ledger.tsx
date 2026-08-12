@@ -1,5 +1,6 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import Icon from "@/components/saqeel/icon/icon";
+import { Heading, Text } from "@/components/saqeel/type";
 import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
 import type { IconName } from "@/components/saqeel/icon/icon-registry";
 import styles from "./review-consequence-ledger.module.css";
@@ -53,7 +54,7 @@ export function ConsequenceGroups({ groups, strings, label }: {
     <div className={styles.groups} role={label ? "region" : undefined} aria-label={label}>
           {groups.map((group, index) => (
             <section className={styles.group} key={group.key} data-negative={group.negative ? "" : undefined}>
-              <h4 className={styles.groupHead}>{`${index + 1} · ${group.heading}`}</h4>
+              <Heading level={4} visual="label" tone="muted">{`${index + 1} · ${group.heading}`}</Heading>
               <ul className={styles.rows}>
                 {group.rows.map(row => (
                   <li className={styles.row} key={row.key}>
@@ -62,8 +63,8 @@ export function ConsequenceGroups({ groups, strings, label }: {
                       <span className="sqx-visually-hidden">{markLabel[row.mark]}</span>
                     </span>
                     <span className={styles.body}>
-                      <span className={styles.value}>{row.value}</span>
-                      <span className={styles.detail}>{row.detail}</span>
+                      <Text as="span" role="bodyStrong">{row.value}</Text>
+                      <Text as="span" tone="muted">{row.detail}</Text>
                     </span>
                   </li>
                 ))}

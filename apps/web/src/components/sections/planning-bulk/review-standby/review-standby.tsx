@@ -3,8 +3,8 @@ import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import Stack from "@/components/saqeel/stack/stack";
 import { Card, CardBody } from "@/components/saqeel/card/card";
 import { Skeleton, SkeletonRegion } from "@/components/saqeel/skeleton/skeleton";
+import { Text } from "@/components/saqeel/type";
 import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
-import styles from "./review-standby.module.css";
 
 export type ReviewStandbyStrings = {
   loading: string;
@@ -35,7 +35,7 @@ export function ReviewLoading({ strings }: { strings: ReviewStandbyStrings }) {
             ))}
           </Stack>
         </SkeletonRegion>
-        <p className={styles.note} role="status">{strings.loadingNote}</p>
+        <Text tone="muted" live="status">{strings.loadingNote}</Text>
       </CardBody>
     </Card>
   );

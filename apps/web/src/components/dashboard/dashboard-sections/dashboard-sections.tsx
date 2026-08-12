@@ -3,6 +3,7 @@ import { buildDashboardMetrics } from "@/app/(app)/dashboard/metrics";
 import Button from "@/components/saqeel/button/button";
 import { fetchDashboardSnapshot } from "@/features/dashboard/client";
 import { queryEnforcementTrend } from "@/features/dashboard/enforcement-trend";
+import { buildBriefContext } from "@/features/dashboard/executive-brief";
 import { withView, type DashboardScope } from "@/features/dashboard/scope";
 import type { DashboardSnapshot } from "@/features/dashboard/types";
 import { fill, getMessages } from "@/i18n/messages";
@@ -12,8 +13,9 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { buildInspectorKpiProjection } from "@/lib/dashboard-kpi/inspector-projection";
 import { buildDashboardKpiProjection } from "@/lib/dashboard-kpi/projection";
 import type { MetricScope } from "@/lib/dashboard-kpi/contract";
-import type { DashboardPersona } from "@/lib/dashboard-role";
+import { ROLE_DASHBOARD_METRICS, type DashboardPersona } from "@/lib/dashboard-role";
 import styles from "./dashboard-sections.module.css";
+import { Text } from "@/components/saqeel/type";
 import ExplainProvider from "../explain-panel/explain-panel";
 import DashboardNotice from "../dashboard-notice/dashboard-notice";
 import StrategicView from "../strategic-view/strategic-view";
@@ -21,6 +23,7 @@ import OperationalView from "../operational-view/operational-view";
 import SearchResults from "../search-results/search-results";
 import RoleSummary from "../role-summary/role-summary";
 import DashboardToolbar from "../dashboard-toolbar/dashboard-toolbar";
+import ExecutiveBrief from "../executive-brief/executive-brief";
 
 function refreshedLabel(nowMs: number): string {
   return new Intl.DateTimeFormat("en-GB", {
@@ -104,7 +107,7 @@ export default async function DashboardSections({ locale, scope }: {
   if (result.status === "unavailable") {
     return (
       <DashboardNotice tone="danger" pill={common.state.unavailable} title={dashboard.partial.title}>
-        <p className={styles.text}>{dashboard.partial.retry}</p>
+        <Text tone="secondary">{dashboard.partial.retry}</Text>
       </DashboardNotice>
     );
   }
@@ -129,7 +132,7 @@ export default async function DashboardSections({ locale, scope }: {
           </div>
         }
       >
-        <p className={styles.text}>{fill(dashboard.unsupported.detail, { view: scope.requestedView })}</p>
+        <Text tone="secondary">{fill(dashboard.unsupported.detail, { view: scope.requestedView })}</Text>
       </DashboardNotice>
     );
   }
@@ -154,8 +157,8 @@ export default async function DashboardSections({ locale, scope }: {
       <div className={styles.stack} data-sqx-cards="flush">
         {partialSources.length ? (
         <DashboardNotice tone="danger" pill={dashboard.partial.title} title={dashboard.partial.sources}>
-          <p className={styles.text}>{partialSources.join(" · ")}</p>
-          <p className={styles.text}>{dashboard.partial.retry}</p>
+          <Text tone="secondary">{partialSources.join(" · ")}</Text>
+          <Text tone="secondary">{dashboard.partial.retry}</Text>
         </DashboardNotice>
       ) : null}
 
@@ -163,6 +166,19 @@ export default async function DashboardSections({ locale, scope }: {
         locale={locale} scope={resolved} view={resolved.view}
         refreshedAt={refreshedLabel(scope.nowMs)}
       />
+      {resolved.view === "strategic" ? (
+        <ExecutiveBrief
+          locale={locale}
+          context={buildBriefContext(resolved, enforcementTrend, {
+            completedInspections: metrics.strategic.completedInspections,
+            criticalFactories: metrics.strategic.criticalFactories.length,
+            factories: snapshot.factories.length,
+          })}
+          period={{ from: resolved.scope.fromDate, to: resolved.scope.toDate }}
+          region={resolved.region}
+          strings={dashboard.executive}
+        />
+      ) : null}
       <RoleSummary
         locale={locale} persona={persona} projection={roleProjection} partialSources={partialSources}
       />
@@ -174,11 +190,11 @@ export default async function DashboardSections({ locale, scope }: {
         ? <StrategicView
             locale={locale} scope={resolved} metrics={metrics} projection={projection}
             factories={snapshot.factories} partialSources={partialSources}
-            enforcementTrend={enforcementTrend}
+            enforcementTrend={enforcementTrend} roleMetricIds={ROLE_DASHBOARD_METRICS[persona]}
           />
         : <OperationalView
             locale={locale} metrics={metrics} projection={projection}
-            partialSources={partialSources}
+            partialSources={partialSources} roleMetricIds={ROLE_DASHBOARD_METRICS[persona]}
           />}
       </div>
     </ExplainProvider>

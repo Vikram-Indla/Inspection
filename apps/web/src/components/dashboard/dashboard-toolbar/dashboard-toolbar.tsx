@@ -5,6 +5,7 @@ import { getMessages } from "@/i18n/messages";
 import type { Locale } from "@/lib/i18n";
 import { localeHref } from "@/lib/locale-path";
 import styles from "./dashboard-toolbar.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export default function DashboardToolbar({ locale, scope, view, refreshedAt }: {
   locale: Locale;
@@ -28,7 +29,7 @@ export default function DashboardToolbar({ locale, scope, view, refreshedAt }: {
       trailing={
         <p className={styles.updated} title={dashboard.updated.timezone}>
           <span>{dashboard.updated.label}</span>
-          <time className={styles.updatedValue}>{refreshedAt}</time>
+          <Text as="time" role="bodyStrong" tone="secondary" numeric>{refreshedAt}</Text>
         </p>
       }
     >

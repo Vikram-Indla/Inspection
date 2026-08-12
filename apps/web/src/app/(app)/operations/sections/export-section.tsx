@@ -1,4 +1,5 @@
 import { useT } from "@/lib/i18n";
+import { getMessages } from "@/i18n/messages";
 import OperationsExport from "@/components/operations/operations-export/operations-export";
 import type { OperationsData } from "@/features/operations/queries";
 import type { OperationsScope } from "@/features/operations/scope";
@@ -14,7 +15,8 @@ export default async function ExportSection({ data, model, scope }: {
   const { t, locale } = await useT();
   const lab = makeLabelers(locale, t);
   const { performanceAnchor } = buildViewHrefs(scope);
-  const highlights = buildHighlights(data, model, lab, performanceAnchor);
+  const unavailable = getMessages(locale).common.state.unavailable;
+  const highlights = buildHighlights(data, model, lab, performanceAnchor, unavailable);
   const monitorRows = buildMonitorRows(data, model);
   const notConfigured = lab.local("Not configured", "غير مهيأ");
   const exportStrings: OpsExportStrings = {
@@ -56,7 +58,9 @@ export default async function ExportSection({ data, model, scope }: {
         t("ops.export.alertTime", "Recorded at"),
         t("ops.export.alertDestination", "Destination"),
       ],
-      rows: highlights.map(item => [item.label, item.description, lab.fmtTs(item.at), item.href]),
+      rows: highlights.map(item => [
+        item.kind, `${item.title} · ${item.detail}`, item.atLabel ?? unavailable, item.href,
+      ]),
     },
     {
       key: "kpis",

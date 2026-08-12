@@ -13,6 +13,8 @@ import {
   ClipboardList,
   Command,
   Download,
+  Upload,
+  Paperclip,
   Factory,
   FileText,
   Gavel,
@@ -80,6 +82,8 @@ export const ICONS = {
   commandPalette: Command,
   refresh: RotateCw,
   export: Download,
+  upload: Upload,
+  attachment: Paperclip,
   savedViews: Bookmark,
   externalLink: ArrowUpRight,
 } as const;

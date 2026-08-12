@@ -24,7 +24,12 @@ export default function FactorySearch({
 }) {
   return (
     <Card as="section" labelledBy="single-visit-search">
-      <CardHeader level="h2" titleId="single-visit-search" title={strings.findFactory} />
+      <CardHeader
+        level="h2"
+        titleId="single-visit-search"
+        title={strings.findFactory}
+        description={strings.stepLabels.find}
+      />
       <CardBody>
         <FactoryResults
           query={query}
@@ -49,9 +54,10 @@ export default function FactorySearch({
             return found ? <IdentityDossier factory={found} strings={strings} locale={locale} /> : null;
           }}
           strings={{
-            heading: strings.findFactory,
-            searchLabel: strings.findFactory,
+            fieldLabel: strings.searchFieldLabel,
             searchPlaceholder: strings.searchPlaceholder,
+            promptTitle: strings.searchPromptTitle,
+            promptBody: strings.searchPromptBody,
             exactBadge: strings.exactBadge,
             similarBadge: strings.similarBadge,
             degradedBadge: strings.degradedBadge,

@@ -1,6 +1,7 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import styles from "./factory-trust.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type FactorySourceState = {
   readonly key: string;
@@ -9,9 +10,17 @@ export type FactorySourceState = {
   readonly tone: StatusTone;
 };
 
-export default function FactoryTrust({ lastSynchronised, sources, strings }: {
+export type FactoryProvenance = {
+  readonly label: string;
+  readonly tone: StatusTone;
+  readonly body: string;
+  readonly recorded: string;
+};
+
+export default function FactoryTrust({ lastSynchronised, sources, provenance, strings }: {
   lastSynchronised: string;
   sources: readonly FactorySourceState[];
+  provenance: FactoryProvenance;
   strings: {
     readonly title: string;
     readonly lastSynchronisation: string;
@@ -20,20 +29,29 @@ export default function FactoryTrust({ lastSynchronised, sources, strings }: {
 }) {
   return (
     <Card as="section" labelledBy="factory-trust-title">
-      <CardHeader level="h2" titleId="factory-trust-title" title={strings.title} />
+      <CardHeader
+        level="h2"
+        titleId="factory-trust-title"
+        title={strings.title}
+        trailing={<StatusPill tone={provenance.tone}>{provenance.label}</StatusPill>}
+      />
       <CardBody gap="tight">
-        <p className={styles.label}>{strings.lastSynchronisation}</p>
-        <p className={styles.body} dir="auto">{lastSynchronised}</p>
+        <Text tone="secondary" dir="auto">{provenance.body}</Text>
 
-        <p className={styles.label}>{strings.dataSources}</p>
+        <Text role="label" tone="muted">{strings.lastSynchronisation}</Text>
+        <Text tone="secondary" dir="auto">{lastSynchronised}</Text>
+
+        <Text role="label" tone="muted">{strings.dataSources}</Text>
         <ul className={styles.sources}>
           {sources.map(source => (
             <li className={styles.source} key={source.key}>
-              <span>{source.label}</span>
+              <Text role="label" tone="secondary">{source.label}</Text>
               <StatusPill tone={source.tone}>{source.state}</StatusPill>
             </li>
           ))}
         </ul>
+
+        <Text tone="muted" dir="auto">{provenance.recorded}</Text>
       </CardBody>
     </Card>
   );

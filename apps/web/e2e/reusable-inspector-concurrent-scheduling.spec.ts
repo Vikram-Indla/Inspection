@@ -135,6 +135,19 @@ let planner: { jwt: string; userId: string };
 let supervisor: { jwt: string; userId: string };
 let inspectorA: { jwt: string; userId: string };
 let inspectorB: { jwt: string; userId: string };
+
+// T-084 replaced the native <select> with the SAQEEL listbox (WEB-009 §14), so
+// `selectOption` no longer applies and the row must be clicked by the name the
+// screen shows. That name comes from the same roster RPC the page reads, so the
+// spec and the UI can never disagree about the label.
+async function chooseInspector(page: Page, jwt: string, visitId: string, userId: string) {
+  const roster = must(await rest("POST", "rpc/list_available_reassignment_inspectors", jwt,
+    { p_visit_ids: [visitId] }), "reassignment roster") as { inspector_id: string; full_name: string }[];
+  const match = roster.find(row => row.inspector_id === userId);
+  if (!match) throw new Error(`inspector ${userId} is not offered on visit ${visitId}`);
+  await page.locator("#visit-reassign-inspector").click();
+  await page.getByRole("option", { name: match.full_name, exact: true }).first().click();
+}
 let pkg: string;
 let baselineActiveA: number;
 let baselineActiveB: number;
@@ -228,9 +241,9 @@ test.describe("T10-04..06 UI-driven workload, reassignment, and overlap block", 
     await page.goto(`/visits/${visitV2}`);
     const select = page.locator("#visit-reassign-inspector");
     await expect(select, "reassignment control must be visible pre-start for a Supervisor").toBeVisible();
-    await select.selectOption(inspectorB.userId);
+    await chooseInspector(page, planner.jwt, visitV2, inspectorB.userId);
     await page.locator("#visit-reassign-reason").fill("TASK 10 reassignment coverage");
-    await page.locator("form:has(#visit-reassign-inspector) button:not([type=hidden])").last().click();
+    await page.locator("form:has(#visit-reassign-inspector) button[type=submit]").click();
     await expect(page.getByText("Inspector reassigned. The visit history and notifications were recorded.", { exact: true })).toBeVisible({ timeout: 15_000 });
     const row = must(await rest("GET", `assignments?visit_id=eq.${visitV2}&select=inspector_id`, planner.jwt), "post-reassign assignment")[0] as { inspector_id: string };
     expect(row.inspector_id, "server truth must reflect Inspector B after reassignment").toBe(inspectorB.userId);
@@ -250,10 +263,9 @@ test.describe("T10-04..06 UI-driven workload, reassignment, and overlap block", 
     const page = await ctx.newPage();
     await uiLogin(page, SUPERVISOR_EMAIL, primaryCohortPassword("supervisor2"), /\/dashboard/);
     await page.goto(`/visits/${visitV1}`);
-    const select = page.locator("#visit-reassign-inspector");
-    await select.selectOption(inspectorB.userId);
+    await chooseInspector(page, planner.jwt, visitV1, inspectorB.userId);
     await page.locator("#visit-reassign-reason").fill("TASK 10 overlap-block coverage");
-    await page.locator("form:has(#visit-reassign-inspector) button:not([type=hidden])").last().click();
+    await page.locator("form:has(#visit-reassign-inspector) button[type=submit]").click();
     await expect(page.getByText("The selected Inspector already has an overlapping visit. Nothing was changed.", { exact: true })).toBeVisible({ timeout: 15_000 });
     const row = must(await rest("GET", `assignments?visit_id=eq.${visitV1}&select=inspector_id`, planner.jwt), "V1 assignment unchanged")[0] as { inspector_id: string };
     expect(row.inspector_id, "V1 must remain assigned to Inspector A — the blocked reassignment changed nothing").toBe(inspectorA.userId);

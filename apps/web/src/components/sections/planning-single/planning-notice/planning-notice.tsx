@@ -1,5 +1,6 @@
 import { type ReactNode } from "react";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Text } from "@/components/saqeel/type";
 import styles from "./planning-notice.module.css";
 
 export type NoticeTone = "info" | "warning" | "danger";
@@ -19,7 +20,7 @@ export default function PlanningNotice({ tone, label, children }: {
   return (
     <div className={styles.root} data-tone={tone} role={tone === "danger" ? "alert" : "status"}>
       {label ? <StatusPill tone={tone}>{label}</StatusPill> : null}
-      <p className={styles.body}>{children}</p>
+      <Text tone="secondary">{children}</Text>
     </div>
   );
 }

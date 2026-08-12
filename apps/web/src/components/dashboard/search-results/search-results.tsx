@@ -6,6 +6,7 @@ import { fill, getMessages } from "@/i18n/messages";
 import type { Locale } from "@/lib/i18n";
 import { localeHref } from "@/lib/locale-path";
 import styles from "./search-results.module.css";
+import { Overline } from "@/components/saqeel/type";
 
 const MAX_PER_GROUP = 6;
 const ID_PREVIEW = 8;
@@ -93,7 +94,9 @@ export default function SearchResults({ locale, query, factories, visits, inspec
           <CardGrid min="sm">
             {groups.filter(group => group.rows.length).map(group => (
               <div className={styles.group} key={group.key}>
-                <p className={styles.heading} id={`dashboard-search-${group.key}`}>{group.heading}</p>
+                <div className={styles.heading}>
+                  <Overline as="p" id={`dashboard-search-${group.key}`}>{group.heading}</Overline>
+                </div>
 
                 <ListRows bleed={false} labelledBy={`dashboard-search-${group.key}`}>
                   {group.rows.map(row => (

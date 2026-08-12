@@ -6,6 +6,7 @@ import { useT } from "@/lib/i18n";
 import { getServerUser } from "@/lib/supabase-server";
 import { buildShellNavigation } from "@/lib/shell-navigation";
 import ShellClient, { type ShellClientStrings } from "@/components/ShellClient";
+import { Heading } from "@/components/saqeel/type";
 import { type BellStrings } from "@/components/NotificationBell";
 
 const loadShellData = async () => {
@@ -248,7 +249,10 @@ export default function Shell({ children, title, context, topbar }: {
       {title ? (
         <header className="sq-pagehead sq-pagehead--route">
           <div className="sq-pagehead__row">
-            <div className="sq-pagehead__context"><h2>{title}</h2>{context}</div>
+            <div className="sq-pagehead__context">
+              <Heading level={2} visual="display">{title}</Heading>
+              {context}
+            </div>
           </div>
         </header>
       ) : null}

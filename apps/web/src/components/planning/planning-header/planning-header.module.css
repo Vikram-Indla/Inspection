@@ -7,8 +7,8 @@
 }
 
 .title {
-  font: var(--sqx-text-title);
-  letter-spacing: var(--sqx-text-title-tracking);
+  font: var(--sqx-text-display);
+  letter-spacing: var(--sqx-text-display-tracking);
   color: var(--sqx-text-primary);
 }
 

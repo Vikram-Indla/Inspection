@@ -9,7 +9,7 @@ export default async function Loading() {
   const { planning } = getMessages(locale);
 
   return (
-    <Shell current="/planning" title={buildSingleVisitStrings(t).title}>
+    <Shell current="/planning" title={buildSingleVisitStrings(t, locale).title}>
       <SingleVisitSkeleton label={planning.single.loading} />
     </Shell>
   );

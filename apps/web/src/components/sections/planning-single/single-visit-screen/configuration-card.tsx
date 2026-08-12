@@ -21,7 +21,12 @@ export default function ConfigurationCard({
 }) {
   return (
     <Card as="section" labelledBy="single-visit-config">
-      <CardHeader level="h2" titleId="single-visit-config" title={strings.configStep} />
+      <CardHeader
+        level="h2"
+        titleId="single-visit-config"
+        title={strings.configStep}
+        description={strings.stepLabels.configure}
+      />
       <CardBody>
         <VisitConfiguration
           value={value}

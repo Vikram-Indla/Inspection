@@ -1,8 +1,3 @@
-.description {
-  font: var(--sqx-text-caption);
-  color: var(--sqx-text-muted);
-  text-wrap: pretty;
-}
 
 .drivers {
   display: flex;
@@ -11,6 +6,4 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  font: var(--sqx-text-caption);
-  color: var(--sqx-text-secondary);
 }

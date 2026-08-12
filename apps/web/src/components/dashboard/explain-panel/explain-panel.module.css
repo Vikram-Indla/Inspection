@@ -58,8 +58,8 @@
 }
 
 .formula {
-  font: var(--sqx-text-code);
-  letter-spacing: var(--sqx-text-code-tracking);
+  font: var(--sqx-text-mono);
+  letter-spacing: var(--sqx-text-mono-tracking);
   color: var(--sqx-text-muted);
 }
 
@@ -82,7 +82,7 @@
 }
 
 .noteText {
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-status-warning-on-soft);
   text-wrap: pretty;
 }
@@ -109,14 +109,14 @@
 
 .rowLabel {
   flex: none;
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
   color: var(--sqx-text-muted);
 }
 
 .rowValue {
   min-inline-size: 0;
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
+  font: var(--sqx-text-body-strong);
   color: var(--sqx-text-primary);
   text-align: end;
   overflow-wrap: anywhere;

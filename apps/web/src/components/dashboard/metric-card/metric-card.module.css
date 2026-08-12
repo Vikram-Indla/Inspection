@@ -14,8 +14,6 @@
   min-block-size: var(--sqx-control-h-sm);
   padding-inline: var(--sqx-space-4);
   margin-inline-start: calc(var(--sqx-space-4) * -1);
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
   color: var(--sqx-action-tertiary-text);
   background: transparent;
   border: var(--sqx-border-width-hair) solid transparent;
@@ -57,23 +55,8 @@
   margin-block-start: var(--sqx-space-3);
 }
 
-.definition,
-.example,
-.interpretation {
-  font: var(--sqx-text-caption);
-  color: var(--sqx-text-secondary);
-  text-wrap: pretty;
-}
 
-.definitionLabel {
-  font-weight: var(--sqx-weight-semibold);
-  color: var(--sqx-text-primary);
-}
 
-.example {
-  color: var(--sqx-text-muted);
-  font-variant-numeric: tabular-nums;
-}
 
 @media (prefers-reduced-motion: reduce) {
   .summary svg {

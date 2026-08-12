@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export default async function SinglePlanning({ searchParams }: { searchParams: Promise<SinglePlanningParams> }) {
   const params = await searchParams;
   const { t, locale } = await useT();
-  const strings = buildSingleVisitStrings(t);
+  const strings = buildSingleVisitStrings(t, locale);
   const planning = await loadSinglePlanning(params);
 
   return (

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import FieldHeader from "@/components/field/FieldHeader";
+import Icon from "@/components/saqeel/icon/icon";
+import { Heading } from "@/components/saqeel/type";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 
@@ -86,10 +88,10 @@ export default async function FieldFactory360Resolver({ searchParams }: {
         langHref={langHref} langLabel={locale === "ar" ? "EN" : "AR"} />
       <div style={{ flex: 1, display: "grid", placeItems: "center", padding: 24 }}>
         <div className="empty" role="status">
-          <div style={{ fontSize: 30, lineHeight: 1, marginBlockEnd: 10 }} aria-hidden="true">∅</div>
-          <h2 style={{ margin: "0 0 6px", fontSize: 16, fontWeight: 600 }}>
+          <Icon name="factory" size="xl" />
+          <Heading level={2} visual="subheading">
             {t("f360.resolve.title", "Factory 360 context not found")}
-          </h2>
+          </Heading>
           <p className="t-caption" style={{ margin: 0, maxWidth: 320 }}>
             {t("f360.resolve.body", "No commercial registration, license or plant in your scope matched this entry point.")}
           </p>

@@ -15,7 +15,6 @@
   border-radius: var(--sqx-radius-pill);
   background: var(--sqx-surface-default);
   color: var(--sqx-text-primary);
-  font: var(--sqx-text-body);
   text-decoration: none;
   white-space: nowrap;
 }

@@ -1,12 +1,3 @@
-.heading {
-  margin: 0;
-  font: var(--sqx-text-subheading);
-}
-
-.note {
-  color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-caption-size);
-}
 
 .summary {
   display: flex;
@@ -46,11 +37,6 @@
   text-wrap: pretty;
 }
 
-.detail {
-  color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-caption-size);
-  text-wrap: pretty;
-}
 
 .warnings {
   display: flex;

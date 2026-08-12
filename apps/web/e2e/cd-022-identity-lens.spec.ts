@@ -419,7 +419,7 @@ test.describe("CD-022 authorization boundary — business staff", () => {
   test("business staff outside the Planner read contract are denied the identity search UI", async ({ page }) => {
     await page.goto("/planning/single");
     await expect(page.getByText(/You don.t have permission/i).first()).toBeVisible();
-    await expect(page.getByText(/Only planning staff can use Plan one visit/i)).toBeVisible();
+    await expect(page.getByText(/Only planning staff can use Plan a single visit/i)).toBeVisible();
     await expect(page.getByPlaceholder(/CR number|Industrial License/i)).toHaveCount(0);
   });
 });

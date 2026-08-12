@@ -1,6 +1,7 @@
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import TrendBars from "@/components/saqeel/trend-bars/trend-bars";
 import styles from "./factory-trends.module.css";
+import { Heading, Text } from "@/components/saqeel/type";
 
 export type TrendPoint = {
   readonly key: string;
@@ -33,15 +34,15 @@ export default function FactoryTrends({ series, current, delta, tone, strings }:
     <div className={styles.root}>
       <section className={styles.trend} aria-labelledby="factory-trend-risk">
         <div className={styles.head}>
-          <h3 className={styles.title} id="factory-trend-risk">{strings.riskTitle}</h3>
+          <Heading level={3} visual="bodyStrong" id="factory-trend-risk">{strings.riskTitle}</Heading>
           <p className={styles.summary}>
-            <span className={styles.current}>{strings.current} {current}</span>
+            <Text as="span" tone="muted" numeric>{strings.current} {current}</Text>
             {delta ? <StatusPill tone={tone}>{delta}</StatusPill> : null}
           </p>
         </div>
 
         {series.length === 0 ? (
-          <p className={styles.note}>{strings.noHistory}</p>
+          <Text tone="muted">{strings.noHistory}</Text>
         ) : (
           <TrendBars
             points={series.map(point => ({ key: point.key, percent: point.value, label: point.label }))}
@@ -53,9 +54,9 @@ export default function FactoryTrends({ series, current, delta, tone, strings }:
 
       <section className={styles.trend} aria-labelledby="factory-trend-compliance">
         <div className={styles.head}>
-          <h3 className={styles.title} id="factory-trend-compliance">{strings.complianceTitle}</h3>
+          <Heading level={3} visual="bodyStrong" id="factory-trend-compliance">{strings.complianceTitle}</Heading>
         </div>
-        <p className={styles.note}>{strings.complianceUnavailable}</p>
+        <Text tone="muted">{strings.complianceUnavailable}</Text>
       </section>
     </div>
   );

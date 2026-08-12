@@ -4,6 +4,7 @@ import DataTable, { CellMuted, CellTime, type DataColumn } from "@/components/sa
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import Stack from "@/components/saqeel/stack/stack";
 import styles from "./factory-risk-history.module.css";
+import { Heading, Text } from "@/components/saqeel/type";
 
 export type RiskSnapshotRow = {
   readonly id: string;
@@ -54,10 +55,10 @@ export default function FactoryRiskHistory({ rows, violations, relatedEmptyNote,
           {ai}
           <DataTable rows={rows} columns={columns} getRowId={row => row.id} empty={{ icon: "risk", title: strings.emptyTitle }} density="compact" />
           <div className={styles.related}>
-            <h3 className={styles.subhead}>{strings.relatedTitle}</h3>
+            <Heading level={3} visual="subheading">{strings.relatedTitle}</Heading>
             {violations.length
               ? <div className={styles.pills}>{violations.map(v => <StatusPill key={v.key} tone="danger">{v.label}</StatusPill>)}</div>
-              : <p className={styles.note}>{relatedEmptyNote}</p>}
+              : <Text tone="muted">{relatedEmptyNote}</Text>}
           </div>
         </Stack>
       </CardBody>

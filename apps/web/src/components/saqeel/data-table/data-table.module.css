@@ -27,7 +27,7 @@
 
 .caption {
   padding-block-end: var(--sqx-space-4);
-  font: var(--sqx-text-caption);
+  font: var(--sqx-text-body);
   color: var(--sqx-text-muted);
   text-align: start;
   text-wrap: pretty;
@@ -36,9 +36,8 @@
 .head {
   padding-inline: var(--sqx-inset-cell);
   padding-block: var(--sqx-inset-cell-compact);
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
+  font: var(--sqx-text-label);
+  letter-spacing: var(--sqx-text-label-tracking);
   color: var(--sqx-text-secondary);
   text-align: start;
   white-space: nowrap;
@@ -139,7 +138,7 @@
   .rowHead::before,
   .cell::before {
     content: attr(data-label);
-    font: var(--sqx-text-caption);
+    font: var(--sqx-text-body);
     color: var(--sqx-text-muted);
   }
 

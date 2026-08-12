@@ -13,7 +13,7 @@
 
 .label {
   color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-caption-size);
+  font-size: var(--sqx-text-body-size);
 }
 
 .value {
@@ -30,5 +30,5 @@
 
 .empty {
   color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-caption-size);
+  font-size: var(--sqx-text-body-size);
 }

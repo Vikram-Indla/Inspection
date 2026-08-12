@@ -60,6 +60,13 @@ export type DateRangePickerProps = {
   /** Minutes between selectable times. Ignored unless `withTime`. */
   timeStep?: number;
   timeLabels?: { from: string; to: string };
+  /**
+   * Submit names for the two ends. The trigger is a `<button>`, which posts
+   * nothing, so each end rides along in a hidden input — without these a server
+   * action reading `FormData` receives an empty window.
+   */
+  nameFrom?: string;
+  nameTo?: string;
 };
 
 const DEFAULT_STRINGS: DateRangeStrings = {
@@ -118,6 +125,8 @@ export default function DateRangePicker({
   withTime = false,
   timeStep = DEFAULT_TIME_STEP,
   timeLabels,
+  nameFrom,
+  nameTo,
 }: DateRangePickerProps) {
   const panelId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -214,6 +223,8 @@ export default function DateRangePicker({
 
   return (
     <div className={styles.root} data-block={block ? "" : undefined}>
+      {nameFrom ? <input type="hidden" name={nameFrom} value={from} /> : null}
+      {nameTo ? <input type="hidden" name={nameTo} value={to} /> : null}
       <button
         className={styles.trigger}
         ref={triggerRef}

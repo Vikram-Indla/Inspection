@@ -4,6 +4,7 @@ import Icon from "@/components/saqeel/icon/icon";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import type { LicenceExpiryState } from "@/features/factories/portfolio";
 import styles from "./factories-portfolio.module.css";
+import { Heading, Metric, Text } from "@/components/saqeel/type";
 
 export type PortfolioLicence = {
   readonly id: string;
@@ -107,15 +108,15 @@ export default function FactoriesPortfolio({
     <>
       <Card as="section" labelledBy="factories-portfolio-summary">
         <CardBody gap="tight">
-          <h2 className={styles.summaryLabel} id="factories-portfolio-summary">
+          <Heading level={2} visual="label" tone="muted" id="factories-portfolio-summary">
             {strings.portfolio} — <span dir="auto">{portfolioLabel}</span>
-          </h2>
+          </Heading>
           <dl className={styles.summaryGrid}>
             {stats.map(stat => (
               <div className={styles.stat} key={stat.key}>
-                <dt className={styles.statLabel}>{stat.label}</dt>
+                <Text as="dt" role="label" tone="muted">{stat.label}</Text>
                 <dd className={styles.statValue} data-tone={stat.tone}>
-                  {stat.value ?? strings.notAvailable}
+                  <Metric tone="inherit">{stat.value ?? strings.notAvailable}</Metric>
                 </dd>
               </div>
             ))}
@@ -129,7 +130,7 @@ export default function FactoriesPortfolio({
       {licences.map(licence => (
         <Card as="article" key={licence.id}>
           <CardBody gap="tight">
-            <h3 className={styles.heading}>
+            <Heading level={3} visual="bodyStrong">
               <button
                 className={styles.select}
                 type="button"
@@ -141,13 +142,13 @@ export default function FactoriesPortfolio({
                 </span>
                 <span className={styles.name} dir="auto">{licence.name}</span>
               </button>
-            </h3>
+            </Heading>
 
             <dl className={styles.facts}>
               {factsOf(licence, strings, formatDate).map(fact => (
                 <div className={styles.fact} key={fact.term}>
-                  <dt className={styles.term}>{fact.term}</dt>
-                  <dd className={styles.value} dir="auto">{fact.value}</dd>
+                  <Text as="dt" role="label" tone="muted">{fact.term}</Text>
+                  <Text as="dd" role="bodyStrong" align="end" numeric dir="auto">{fact.value}</Text>
                 </div>
               ))}
             </dl>

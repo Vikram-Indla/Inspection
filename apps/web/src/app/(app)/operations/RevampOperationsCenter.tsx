@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Button from "@/components/saqeel/button/button";
 import Stack from "@/components/saqeel/stack/stack";
 import OperationsEntryTable from "@/components/operations/operations-entry-table/operations-entry-table";
 import OperationsExceptions from "@/components/operations/operations-exceptions/operations-exceptions";
@@ -17,9 +18,11 @@ import OperationsMapWorkspace, {
 type Locale = "en" | "ar";
 type Highlight = {
   id: string;
-  label: string;
-  description: string;
+  kind: string;
+  title: string;
+  detail: string;
   at: number;
+  atLabel: string | null;
   href: string;
   evidenceUrl: string | null;
 };
@@ -33,7 +36,6 @@ type RegionSummary = {
 export default function RevampOperationsCenter({
   locale,
   view,
-  mapViewHref,
   mapEntries,
   regionalMapEntries,
   mapStrings,
@@ -44,7 +46,6 @@ export default function RevampOperationsCenter({
 }: {
   locale: Locale;
   view: "map" | "performance";
-  mapViewHref: string;
   mapEntries: OperationsMapEntry[];
   regionalMapEntries: OperationsMapEntry[];
   mapStrings: OperationsMapWorkspaceStrings;
@@ -66,12 +67,13 @@ export default function RevampOperationsCenter({
       .filter(Boolean),
   ).size;
   const stat = operations.stat;
+  const notConfigured = common.state.notConfigured;
   const summary = [
-    { label: stat.activeVisits, value: String(monitoredCount), href: localeHref(locale, "/execution"), action: stat.openExecution },
-    { label: stat.onTheWay, value: String(onTheWayInspectors || counts.on_the_way || 0), href: mapViewHref, action: stat.showOnMap },
-    { label: stat.executing, value: String(counts.executing || 0), href: localeHref(locale, "/execution"), action: stat.openExecution },
-    { label: stat.submittedToday, value: "—", href: localeHref(locale, "/reviews"), action: stat.openReviews },
-    { label: stat.alerts, value: "—", href: exceptionsHref, action: stat.reviewExceptions },
+    { label: stat.activeVisits, value: String(monitoredCount), configured: true, href: localeHref(locale, "/execution"), action: stat.openExecution },
+    { label: stat.onTheWay, value: String(onTheWayInspectors || counts.on_the_way || 0), configured: true },
+    { label: stat.executing, value: String(counts.executing || 0), configured: true },
+    { label: stat.submittedToday, value: notConfigured, configured: false },
+    { label: stat.alerts, value: notConfigured, configured: false },
   ];
 
   return (
@@ -81,14 +83,10 @@ export default function RevampOperationsCenter({
         onViewChange={setActiveView}
         showList={showList}
         onToggleList={() => setShowList(value => !value)}
-        livePositionsHref={liveHref}
-        exceptionBoardHref={exceptionsHref}
         strings={{
           label: operations.perspective.label,
           map: operations.perspective.map,
           performance: operations.perspective.performance,
-          livePositions: operations.action.livePositions,
-          exceptionBoard: operations.action.exceptionBoard,
           showList: operations.action.showList,
           showMap: operations.action.showMap,
         }}
@@ -130,12 +128,17 @@ export default function RevampOperationsCenter({
             description={operations.map.description}
             count={activeMapEntries.length}
             countLabel={operations.map.countLabel}
+            action={
+              <Button variant="secondary" size="sm" href={liveHref} label={operations.action.livePositions}>
+                {operations.action.livePositions}
+              </Button>
+            }
           >
             <OperationsMapWorkspace entries={activeMapEntries} strings={mapStrings} mapOnly />
           </OperationsMapPanel>
       )}
 
-      {view === "performance" ? (
+      {activeView === "performance" ? (
         <OperationsRegions
           title={operations.regions.title}
           description={operations.regions.description}
@@ -143,6 +146,7 @@ export default function RevampOperationsCenter({
           regions={regions.map(region => ({
             name: region.name,
             href: region.href,
+            active: String(region.active),
             detail: fill(operations.regions.detail, { factories: region.factories, active: region.active }),
           }))}
         />
@@ -152,10 +156,11 @@ export default function RevampOperationsCenter({
 
       <OperationsExceptions
         rows={highlights}
+        boardHref={exceptionsHref}
         strings={{
           title: operations.exceptions.title,
           scope: operations.exceptions.scope,
-          open: operations.exceptions.open,
+          openBoard: operations.action.exceptionBoard,
           openRecord: operations.exceptions.openRecord,
           emptyTitle: operations.exceptions.emptyTitle,
           emptyBody: operations.exceptions.emptyBody,

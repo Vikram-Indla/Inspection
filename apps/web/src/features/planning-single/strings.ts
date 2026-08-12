@@ -1,12 +1,25 @@
 import type { DateRangePresetLabels } from "@/components/saqeel/date-range-picker/date-range-presets";
+import { fill, getMessages } from "@/i18n/messages";
+import type { Locale } from "@/lib/i18n";
 
 export type Translate = (key: string, en: string) => string;
+
+export type StepLabels = {
+  readonly find: string;
+  readonly licence: string;
+  readonly location: string;
+  readonly configure: string;
+};
 
 export type SingleVisitStrings = {
   readonly title: string;
   readonly context: string;
+  readonly stepLabels: StepLabels;
   readonly findFactory: string;
+  readonly searchFieldLabel: string;
   readonly searchPlaceholder: string;
+  readonly searchPromptTitle: string;
+  readonly searchPromptBody: string;
   readonly noMatch: string;
   readonly noMatchBody: string;
   readonly searching: string;
@@ -107,12 +120,20 @@ export type SingleVisitStrings = {
   readonly absent: string;
 };
 
-export function buildSingleVisitStrings(t: Translate): SingleVisitStrings {
+const TOTAL_STEPS = 4;
+
+export function buildSingleVisitStrings(t: Translate, locale: Locale): SingleVisitStrings {
+  const single = getMessages(locale).planning.single;
+  const step = (current: number) => fill(single.step, { current, total: TOTAL_STEPS });
   return {
     title: t("plan.single.title", "Plan a single visit"),
     context: t("plan.single.context", "Single visit planning"),
-    findFactory: t("plan.single.findFactory", "1 · Find factory — CR, Industrial License, plant or name"),
-    searchPlaceholder: t("plan.single.searchPlaceholder", "CR number, Industrial License, plant number, factory code or name"),
+    stepLabels: { find: step(1), licence: step(2), location: step(3), configure: step(4) },
+    findFactory: single.findFactory,
+    searchFieldLabel: single.searchFieldLabel,
+    searchPlaceholder: single.searchPlaceholder,
+    searchPromptTitle: single.searchPromptTitle,
+    searchPromptBody: single.searchPromptBody,
     noMatch: t("plan.single.noMatch", "No factory matches — check the number and try again."),
     noMatchBody: t("plan.single.noMatchBody", "No registered factory matches that search within your access scope."),
     searching: t("plan.single.searching", "Searching the Factory list…"),
@@ -127,7 +148,7 @@ export function buildSingleVisitStrings(t: Translate): SingleVisitStrings {
     duplicateWarning: t("plan.single.duplicateWarning", "An active visit already exists for this factory — publishing will be blocked"),
     duplicateOpenVisit: t("plan.single.duplicateOpenVisit", "Open existing visit"),
     duplicateStatusLabel: t("plan.single.duplicateStatusLabel", "status"),
-    portfolioStep: t("plan.single.portfolioStep", "2 · Select the Industrial License / plant"),
+    portfolioStep: single.portfolioStep,
     crIdentity: t("plan.single.crIdentity", "Commercial Registration"),
     selectLicenceHint: t("plan.single.selectLicenceHint", "Every Industrial License and plant registered under this CR is listed — pick the one this visit targets."),
     licenceRequired: t("plan.single.licenceRequired", "Select one license / plant to continue — a single visit targets one plant, never the whole CR (CR-level planning is not allowed here)."),
@@ -144,11 +165,11 @@ export function buildSingleVisitStrings(t: Translate): SingleVisitStrings {
     savingDraft: t("plan.single.savingDraft", "Saving…"),
     draftSavedPrefix: t("plan.single.draftSavedPrefix", "Draft saved"),
     draftError: t("plan.single.draftError", "The draft could not be saved — your entries are preserved, try again."),
-    licenseStep: t("plan.single.licenseStep", "2 · Industrial License"),
+    licenseStep: single.licenseStep,
     licenseSelect: t("plan.single.licenseSelect", "Select the Industrial License this visit is planned against"),
     licenseLabel: t("plan.single.licenseLabel", "Industrial license"),
     licenseNone: t("plan.single.licenseNone", "No Industrial License is recorded for this factory — the visit will use the CR."),
-    locationStep: t("plan.single.locationStep", "3 · Confirm location"),
+    locationStep: single.locationStep,
     officialAddress: t("plan.single.officialAddress", "Official address"),
     officialPin: t("plan.single.officialPin", "Official factory pin"),
     noOfficialPin: t("plan.single.noOfficialPin", "No official location is available from the external master source."),
@@ -162,7 +183,7 @@ export function buildSingleVisitStrings(t: Translate): SingleVisitStrings {
     freshnessLabel: t("plan.single.freshnessLabel", "Factory list sync"),
     freshnessNever: t("plan.single.freshnessNever", "no sync record"),
     factory360: t("plan.single.factory360", "Open Factory 360"),
-    configStep: t("plan.single.configStep", "4 · Configure & propose"),
+    configStep: single.configStep,
     visitType: t("plan.single.visitType", "Visit type"),
     typePeriodic: t("enum.periodic", "Periodic compliance"),
     typeFollowUp: t("enum.follow_up", "Follow-up"),

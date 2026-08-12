@@ -2,6 +2,7 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import Choice from "@/components/saqeel/choice/choice";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Text } from "@/components/saqeel/type";
 import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
 import { titleCase } from "@/features/factories/portfolio";
 import { registryStatusTone } from "@/features/planning-single/registry-status";
@@ -26,16 +27,25 @@ export default function PortfolioPicker({
 
   return (
     <Card as="section" labelledBy="single-visit-portfolio">
-      <CardHeader level="h2" titleId="single-visit-portfolio" title={strings.portfolioStep} />
+      <CardHeader
+        level="h2"
+        titleId="single-visit-portfolio"
+        title={strings.portfolioStep}
+        description={strings.stepLabels.licence}
+      />
       <CardBody>
         {handoff ? <PlanningNotice tone="info">{strings.prefilledHandoff}</PlanningNotice> : null}
         {portfolios.map(portfolio => (
           <Card as="article" key={portfolio.id}>
             <CardHeader
               level="h3"
-              eyebrow={<>{strings.crIdentity} <bdi>{portfolio.crNumber}</bdi></>}
               title={portfolio.legalNameEn ?? portfolio.legalName ?? portfolio.crNumber}
-              description={`${strings.sourceLabel}: ${portfolio.sourceSystem ?? strings.absent} · ${strings.freshnessLabel}: ${freshness(portfolio.sourceSyncedAt)}`}
+              description={
+                <>
+                  {strings.crIdentity} <bdi>{portfolio.crNumber}</bdi>
+                  {` · ${strings.sourceLabel}: ${portfolio.sourceSystem ?? strings.absent} · ${strings.freshnessLabel}: ${freshness(portfolio.sourceSyncedAt)}`}
+                </>
+              }
               trailing={portfolio.status
                 ? <StatusPill tone={registryStatusTone(portfolio.status)}>{titleCase(portfolio.status)}</StatusPill>
                 : undefined}
@@ -45,7 +55,7 @@ export default function PortfolioPicker({
                 <PlanningNotice tone="warning">{strings.noLicences}</PlanningNotice>
               ) : (
                 <>
-                  <p className={styles.hint}>{strings.selectLicenceHint}</p>
+                  <Text tone="muted">{strings.selectLicenceHint}</Text>
                   <ul className={styles.list} role="listbox" aria-label={strings.portfolioStep}>
                     {portfolio.licences.map(licence => (
                       <li className={styles.item} key={licence.id}>

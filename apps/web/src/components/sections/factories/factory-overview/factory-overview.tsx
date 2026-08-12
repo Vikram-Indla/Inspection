@@ -2,8 +2,10 @@ import { type ReactNode } from "react";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import Button from "@/components/saqeel/button/button";
 import DefinitionList from "@/components/saqeel/definition-list/definition-list";
+import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { titleCase, type FactoryRow } from "@/features/factories/portfolio";
 import styles from "./factory-overview.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type FactoryOverviewStrings = {
   readonly opened: string;
@@ -46,7 +48,7 @@ export default function FactoryOverview({
         <CardHeader
           level="h2"
           titleId="factory-hero-title"
-          eyebrow={strings.opened}
+          trailing={<StatusPill tone="neutral">{strings.opened}</StatusPill>}
           title={<span dir="auto">{factory.name}</span>}
           description={
             <span dir="auto">
@@ -64,7 +66,7 @@ export default function FactoryOverview({
             <Button variant="secondary" size="sm" href={mapHref} label={strings.viewOnMap}>{strings.viewOnMap}</Button>
             <Button variant="secondary" size="sm" href={profileHref} label={strings.openProfile}>{strings.openProfile}</Button>
           </div>
-          {createHref ? <p className={styles.note}>{strings.plannerNote}</p> : null}
+          {createHref ? <Text tone="muted">{strings.plannerNote}</Text> : null}
           <DefinitionList items={heroFacts} columns="two" />
         </CardBody>
       </Card>

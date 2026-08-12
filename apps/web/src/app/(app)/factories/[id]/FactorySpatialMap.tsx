@@ -6,6 +6,7 @@ import { titleCase } from "@/features/factories/portfolio";
 import { formatDateTime } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import styles from "./FactorySpatialMap.module.css";
+import { Text } from "@/components/saqeel/type";
 
 const GeoMap = dynamic(() => import("@/components/GeoMap"), { ssr: false });
 
@@ -40,7 +41,7 @@ export default function FactorySpatialMap({ officialLat, officialLng, geofenceRa
         <StatusPill tone="success">{s.observedArrival}</StatusPill>
         <StatusPill tone="danger">{s.gpsOverride}</StatusPill>
       </div>
-      {events.length === 0 ? <p className={styles.empty}>{s.noLocations}</p> : null}
+      {events.length === 0 ? <Text tone="muted">{s.noLocations}</Text> : null}
     </div>
   );
 }

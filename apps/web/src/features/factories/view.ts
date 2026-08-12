@@ -5,7 +5,6 @@ import type { FactoryMetric } from "@/components/sections/factories/factory-snap
 import type { TrendPoint } from "@/components/sections/factories/factory-trends/factory-trends";
 import type { FactorySection } from "@/components/sections/factories/factory-sections/factory-sections";
 import type { PortfolioStrings } from "@/components/sections/factories/factories-portfolio/factories-portfolio";
-import type { FactoryContextStrings } from "@/components/sections/factories/factory-context/factory-context";
 import type { FactoryOverviewStrings } from "@/components/sections/factories/factory-overview/factory-overview";
 import type { FactoryAiAdvisoryStrings } from "@/components/sections/factories/factory-ai-advisory/factory-ai-advisory";
 import type {
@@ -36,7 +35,7 @@ export type FactoryView = {
   readonly metrics: readonly FactoryMetric[];
   readonly sections: readonly FactorySection[];
   readonly sources: readonly { key: string; label: string; state: string; tone: StatusTone }[];
-  readonly latestChange: string;
+  readonly latestChange: string | null;
   readonly trendSeries: readonly TrendPoint[];
   readonly riskDelta: string | null;
   readonly riskTone: StatusTone;
@@ -49,7 +48,6 @@ export type FactoryView = {
   readonly lastSynchronised: string;
   readonly profileGroups: readonly FactoryProfileGroup[];
   readonly strings: {
-    readonly context: FactoryContextStrings;
     readonly overview: FactoryOverviewStrings;
     readonly portfolio: PortfolioStrings;
     readonly advisory: FactoryAiAdvisoryStrings;
@@ -149,7 +147,7 @@ export function buildFactoryView({ factory, locale, counts, movement, compliance
     ],
 
     latestChange: movement === null
-      ? copy.context.change.none
+      ? null
       : movement.previous === null
         ? copy.context.change.first
         : fill(copy.context.change.moved, {
@@ -234,14 +232,6 @@ export function buildFactoryView({ factory, locale, counts, movement, compliance
     ],
 
     strings: {
-      context: {
-        selectedContext: copy.workspace.context,
-        cr: copy.snapshot.commercialRegistration,
-        licence: copy.hero.industrialLicence,
-        plant: copy.portfolio.plantNumber,
-        sourceStatus,
-        missing,
-      },
       overview: {
         opened: copy.hero.opened,
         plannerNote: copy.hero.plannerNote,

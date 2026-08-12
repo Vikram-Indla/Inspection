@@ -6,6 +6,7 @@ import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import Field from "@/components/saqeel/field/field";
 import SaqeelSelect, { type SelectOption } from "@/components/saqeel/select/select";
 import Textarea from "@/components/saqeel/textarea/textarea";
+import { Text } from "@/components/saqeel/type";
 import type { ExecutionMode, ModeEligibility } from "@/features/planning-single/target";
 import styles from "./visit-configuration.module.css";
 
@@ -124,7 +125,9 @@ export default function VisitConfiguration({
 
       <div className={styles.fields}>
         <fieldset className={styles.group}>
-          <legend className={styles.legend}>{strings.mode}</legend>
+          <legend className={styles.legend}>
+            <Text as="span" role="label" tone="secondary">{strings.mode}</Text>
+          </legend>
           <Choice
             kind="radio"
             name="execution_mode_choice"
@@ -172,11 +175,13 @@ export default function VisitConfiguration({
           />
         </Field>
       </div>
-      <p className={styles.hint}>{strings.windowHint}</p>
+      <Text tone="muted">{strings.windowHint}</Text>
 
       <fieldset className={styles.group}>
-        <legend className={styles.legend}>{strings.packageLabel}</legend>
-        <p className={styles.hint}>{strings.packageOptionalHint}</p>
+        <legend className={styles.legend}>
+          <Text as="span" role="label" tone="secondary">{strings.packageLabel}</Text>
+        </legend>
+        <Text tone="muted">{strings.packageOptionalHint}</Text>
         {packages.length === 0 ? (
           <EmptyState variant="inline" size="sm" title={strings.noPackages} />
         ) : (

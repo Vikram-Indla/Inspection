@@ -7,11 +7,22 @@ import { storageStatePath } from "./personas";
 test.use({ storageState: storageStatePath("admin") });
 test.describe.configure({ timeout: 120_000 });
 
-const ROUTES: Array<{ path: string; heading: RegExp }> = [
+// A hard state is always present — never a blank page. The default selector is
+// the legacy chrome these routes still render; a migrated route supplies its
+// own, because SAQEEL cards carry none of those four classes. Each route brings
+// its own selector as it migrates rather than the shared one being loosened for
+// the six that have not (T-073).
+const LEGACY_STATE = ".sq-banner, .sq-state, .alert, .panel";
+
+const ROUTES: Array<{ path: string; heading: RegExp; state?: string }> = [
   { path: "/admin/risk/models",     heading: /Risk model workbench/i },
   { path: "/cases",                 heading: /Cases/i },
   { path: "/portal",                heading: /External portal/i },
-  { path: "/operations/exceptions", heading: /Exception board/i },
+  {
+    path: "/operations/exceptions",
+    heading: /Exception board/i,
+    state: '[aria-labelledby="operations-board"]',
+  },
   { path: "/committee",             heading: /Committee & signatures/i },
   { path: "/admin/gis/spatial",     heading: /Spatial canvas/i },
   { path: "/ai/suggestions",        heading: /Assistive AI dockets/i },
@@ -25,8 +36,7 @@ for (const r of ROUTES) {
     // without crashing (RLS-scoped). Not the flag-off NotYetBoundary.
     await expect(page.getByRole("heading", { name: r.heading }).first()).toBeVisible();
     await expect(page.getByText(/Not available yet/i)).toHaveCount(0);
-    // A hard state is always present (banner, panel or empty state) — never a blank page.
-    await expect(page.locator(".sq-banner, .sq-state, .alert, .panel").first()).toBeVisible();
+    await expect(page.locator(r.state ?? LEGACY_STATE).first()).toBeVisible();
     // No horizontal overflow at desktop width.
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
     expect(overflow).toBeFalsy();

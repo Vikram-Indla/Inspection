@@ -1,4 +1,5 @@
 import { formatDateTime } from "@/lib/dates";
+import { fill, getMessages } from "@/i18n/messages";
 import { humaniseEnum, sentenceCase } from "@/lib/text";
 import type { Locale } from "@/lib/i18n";
 import type { GeoTone } from "@/components/GeoMap";
@@ -51,9 +52,10 @@ export function buildViewHrefs(scope: OperationsScope) {
 }
 
 export function slaKindLabel(lab: Labelers, flag: SlaFlag<VisitRow>): string {
-  return flag.kind === "overdue_start" ? lab.t("ops.sla.overdueStart", "Overdue to start")
-    : flag.kind === "overdue_submit" ? lab.t("ops.sla.overdueSubmit", "Overdue to submit")
-      : `${lab.t("ops.sla.reminder", "Reminder")} ${flag.pct}%`;
+  const highlights = getMessages(lab.locale).operations.highlights;
+  return flag.kind === "overdue_start" ? highlights.overdueStart
+    : flag.kind === "overdue_submit" ? highlights.overdueSubmit
+      : fill(highlights.reminder, { pct: flag.pct });
 }
 
 export function kpiMetricLabel(lab: Labelers, metric: string): string {
@@ -155,9 +157,11 @@ export function buildRegionalMapEntries(data: OperationsData, model: OperationsM
 
 export type OperationsHighlight = {
   id: string;
-  label: string;
-  description: string;
+  kind: string;
+  title: string;
+  detail: string;
   at: number;
+  atLabel: string | null;
   href: string;
   evidenceUrl: string | null;
 };
@@ -167,45 +171,58 @@ export function buildHighlights(
   model: OperationsModel,
   lab: Labelers,
   performanceAnchor: (anchor: string) => string,
+  notRecorded: string,
 ): OperationsHighlight[] {
+  const highlights = getMessages(lab.locale).operations.highlights;
+  const stamp = (ms: number) => Number.isFinite(ms) && ms > 0 ? lab.fmtTs(ms) : null;
   return [
     ...model.slaFlags.map(flag => ({
       id: `sla:${flag.visit.id}`,
-      label: lab.t("ops.highlights.sla", "Deadline breach"),
-      description: `${flag.visit.factories?.name ?? flag.visit.id.slice(0, 8)} · ${slaKindLabel(lab, flag)}`,
+      kind: highlights.sla,
+      title: flag.visit.factories?.name ?? flag.visit.id.slice(0, 8),
+      detail: slaKindLabel(lab, flag),
       at: flag.deadlineMs,
+      atLabel: stamp(flag.deadlineMs),
       href: `/visits/${flag.visit.id}`,
       evidenceUrl: null as string | null,
     })),
     ...model.overdueActions.map(action => ({
       id: `action:${action.id}`,
-      label: lab.t("ops.highlights.action", "Corrective action overdue"),
-      description: `${action.inspections?.visits?.factories?.name ?? localePersonName(data.locale, action.owner_name) ?? action.id.slice(0, 8)} · ${action.required_correction ?? lab.enumLabel(action.status)}`,
+      kind: highlights.action,
+      title: action.inspections?.visits?.factories?.name ?? localePersonName(data.locale, action.owner_name) ?? action.id.slice(0, 8),
+      detail: action.required_correction ?? lab.enumLabel(action.status),
       at: action.due_at ? Date.parse(action.due_at) : 0,
+      atLabel: action.due_at ? stamp(Date.parse(action.due_at)) : null,
       href: action.inspections?.visit_id ? `/visits/${action.inspections.visit_id}` : performanceAnchor("corrective-actions"),
       evidenceUrl: null as string | null,
     })),
     ...model.failedNotifications.map(notification => ({
       id: `notification:${notification.id}`,
-      label: lab.t("ops.highlights.notification", "Notification failed"),
-      description: `${notification.event_key} · ${notification.channel}`,
+      kind: highlights.notification,
+      title: notification.event_key,
+      detail: notification.channel,
       at: Date.parse(notification.created_at),
+      atLabel: stamp(Date.parse(notification.created_at)),
       href: performanceAnchor("notifications"),
       evidenceUrl: null as string | null,
     })),
     ...data.overrideQueueRows.map(item => ({
       id: `override:${item.id}`,
-      label: lab.t("ops.highlights.override", "Location exception decision required"),
-      description: `${item.factory_name ?? item.visit_id.slice(0, 8)} · ${item.inspector_name ?? "—"}`,
+      kind: highlights.override,
+      title: item.factory_name ?? item.visit_id.slice(0, 8),
+      detail: item.inspector_name ?? notRecorded,
       at: Date.parse(item.requested_at),
+      atLabel: stamp(Date.parse(item.requested_at)),
       href: `/visits/${item.visit_id}`,
       evidenceUrl: item.evidence_url,
     })),
     ...data.cancellationQueueRows.map(item => ({
       id: `cancellation:${item.id}`,
-      label: lab.t("ops.highlights.cancellation", "Cancellation decision required"),
-      description: `${item.factory_name ?? item.visit_id.slice(0, 8)} · ${item.reason_label}`,
+      kind: highlights.cancellation,
+      title: item.factory_name ?? item.visit_id.slice(0, 8),
+      detail: item.reason_label,
       at: Date.parse(item.requested_at),
+      atLabel: stamp(Date.parse(item.requested_at)),
       href: `/visits/${item.visit_id}`,
       evidenceUrl: item.evidence_url,
     })),

@@ -1,13 +1,13 @@
 import Shell from "@/components/Shell";
-import EmptyState from "@/components/EmptyState";
-import { useT } from "@/lib/i18n";
+import VisitDetailSkeleton from "@/components/visits/visit-detail-skeleton/visit-detail-skeleton";
+import { getMessages } from "@/i18n/messages";
+import { getLocale } from "@/lib/i18n";
 
 export default async function Loading() {
-  const { t } = await useT();
+  const V = getMessages(await getLocale()).visits;
   return (
-    <Shell current="/visits" title={t("visit.detail.loadingTitle", "Visit")}>
-      <EmptyState glyph="…" title={t("visit.detail.loading", "Loading visit")}
-        body={t("visit.detail.loadingDesc", "Fetching lifecycle, assignment and inspection state.")} />
+    <Shell current="/visits" title={V.detail.loadingTitle}>
+      <VisitDetailSkeleton label={V.detail.loading} />
     </Shell>
   );
 }

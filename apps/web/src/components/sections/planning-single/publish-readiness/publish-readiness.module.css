@@ -18,8 +18,3 @@
   background: var(--sqx-surface-sunken);
   border-radius: var(--sqx-radius-control);
 }
-
-.label {
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-secondary);
-}

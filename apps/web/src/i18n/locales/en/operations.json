@@ -29,10 +29,19 @@
     "unavailable": "Compliance unavailable",
     "detail": "{factories} factories · {active} active visits"
   },
+  "highlights": {
+    "sla": "Deadline breach",
+    "action": "Corrective action overdue",
+    "notification": "Notification failed",
+    "override": "Location exception",
+    "cancellation": "Cancellation request",
+    "overdueStart": "Overdue to start",
+    "overdueSubmit": "Overdue to submit",
+    "reminder": "Reminder {pct}%"
+  },
   "exceptions": {
     "title": "Live operational exceptions",
     "scope": "Records filtered to your access",
-    "open": "Open",
     "openRecord": "Open record",
     "emptyTitle": "No open operational exceptions",
     "emptyBody": "No open operational exceptions in this scope."
@@ -43,10 +52,7 @@
     "executing": "Executing inspections",
     "submittedToday": "Submitted today",
     "alerts": "Active operational alerts",
-    "openExecution": "Open Execution",
-    "showOnMap": "Show on map",
-    "openReviews": "Open Review & Approval",
-    "reviewExceptions": "Review exceptions"
+    "openExecution": "Open Execution"
   },
   "table": {
     "title": "Live positions list",
@@ -79,6 +85,119 @@
     "emptyTitle": "No deadline alerts in this scope",
     "resubmissionOverdue": "Resubmission overdue",
     "resubmissionPending": "Resubmission pending"
+  },
+  "live": {
+    "title": "Live Operations — Saudi Arabia",
+    "unauthorized": {
+      "title": "Operations access required",
+      "body": "This page is not turned on for your account, so no data has loaded.",
+      "return": "Return to my area"
+    },
+    "loading": {
+      "label": "Loading live operations",
+      "detail": "Recorded positions — not live GPS"
+    },
+    "totalsLabel": "Live operations totals",
+    "stat": {
+      "active": "Active",
+      "enRoute": "Inspectors en route",
+      "arrived": "Arrived"
+    },
+    "map": {
+      "title": "Recorded positions",
+      "countLabel": "on map",
+      "ariaLabel": "Mapbox operations map",
+      "markerLegend": "Recorded inspector position marker",
+      "unavailable": "Live map unavailable — basemap provider failed.",
+      "loadError": "Live map could not load",
+      "retry": "Retry"
+    },
+    "snapshot": {
+      "generated": "Snapshot generated",
+      "lastObserved": "Last recorded position",
+      "none": "No recorded inspector positions in this snapshot",
+      "policy": "Times shown are when each position was recorded."
+    },
+    "provenance": {
+      "recorded": "Last recorded position — not guaranteed live",
+      "unavailable": "Location unavailable",
+      "rejected": "Rejected implausible telemetry"
+    },
+    "notice": {
+      "excluded": "Sample records and visits scheduled for later are excluded from this view. Excluded:",
+      "outOfScope": "Records outside your authorized region are excluded from this live view. Excluded records:",
+      "partialSource": "Position data is unavailable. Active visits still appear, without a location.",
+      "factorySource": "Factory marker data is unavailable. Inspector positions still show on their own."
+    },
+    "list": {
+      "title": "Active inspectors",
+      "noScope": "No active visits in your scope right now",
+      "noPositions": "No inspectors currently active"
+    },
+    "details": {
+      "title": "Inspector details",
+      "close": "Close inspector details",
+      "inspector": "Inspector",
+      "factory": "Factory",
+      "region": "Region",
+      "state": "Visit status",
+      "since": "Since",
+      "visitReference": "Visit reference",
+      "positionSource": "Position source",
+      "positionObserved": "Position observed",
+      "open": "Open visit record"
+    },
+    "fallback": {
+      "inspectorName": "Inspector name unavailable",
+      "region": "Region not recorded",
+      "since": "Not recorded",
+      "position": "No recorded position for this visit",
+      "source": "Not recorded"
+    },
+    "state": {
+      "onTheWay": "On the way",
+      "arrived": "Arrived",
+      "executing": "Executing"
+    },
+    "positionSource": {
+      "telemetry": "Automatic tracking",
+      "arrival": "Arrival record",
+      "checkin": "Check-in",
+      "override": "Manual override",
+      "deviation": "Route deviation"
+    },
+    "wallboard": {
+      "exit": "Exit wallboard"
+    }
+  },
+  "board": {
+    "title": "Exception board",
+    "heading": "Open exceptions",
+    "description": "Every count traces to a real record. Decisions stay on the record that owns them — this board only groups and links.",
+    "mostRecent": "Most recent",
+    "loading": {
+      "label": "Loading the exception board"
+    },
+    "off": {
+      "title": "Not available yet",
+      "body": "This board is not turned on here."
+    },
+    "degraded": "Some exception sources are unavailable. The groups below are the ones that could be read; an unavailable source is not shown as zero.",
+    "empty": {
+      "title": "No open exceptions you can see",
+      "body": "Open cases and risk exceptions show up here. Empty may also mean there are none you are allowed to see.",
+      "degraded": "No source could be verified. Retry after the affected service recovers."
+    },
+    "category": {
+      "review_overdue": "Review overdue",
+      "sync_conflict": "Sync conflict",
+      "override_pending": "Location exception pending",
+      "correction_overdue": "Corrective action overdue"
+    },
+    "action": {
+      "review_overdue": "Open review queue",
+      "correction_overdue": "Open Execution"
+    }
   },
   "monitoring": {
     "title": "Visit and inspector monitoring",

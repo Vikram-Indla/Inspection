@@ -90,6 +90,13 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
     <FactoryWorkspace
       startLabel={copy.workspace.portfolio}
       endLabel={copy.workspace.context}
+      top={
+        <FactoryAiAdvisory
+          factoryId={selected.id}
+          locale={locale}
+          strings={view.strings.advisory}
+        />
+      }
       start={
         <FactoriesPortfolio
           portfolioLabel={portfolioLabel}
@@ -119,18 +126,11 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
       }
       end={
         <FactoryContext
-          factory={selected}
-          provenance={provenance}
-          strings={view.strings.context}
           outlook={
             <FactoryRiskOutlook
-              score={selected.risk_score === null ? copy.portfolio.missing : String(selected.risk_score)}
-              band={selected.risk_band ? view.condition : null}
-              noScoreLabel={copy.context.outlook.noScore}
               modelVersion={selected.risk_version ?? copy.portfolio.missing}
               drivers={toDriverLines(selected.risk_drivers, copy.portfolio.missing)}
               latestChange={view.latestChange}
-              actionHref={selected.dossier_href}
               strings={copy.context.outlook}
             />
           }
@@ -138,14 +138,8 @@ export default function RevampFactory360Portfolio({ factories, portfolioLabel, c
             <FactoryTrust
               lastSynchronised={view.lastSynchronised}
               sources={view.sources}
+              provenance={provenance}
               strings={copy.context.trust}
-            />
-          }
-          advisory={
-            <FactoryAiAdvisory
-              factoryId={selected.id}
-              locale={locale}
-              strings={view.strings.advisory}
             />
           }
         />

@@ -7,6 +7,7 @@ import { Card, CardBody, CardFooter, CardHeader } from "@/components/saqeel/card
 import DefinitionList from "@/components/saqeel/definition-list/definition-list";
 import SegmentedControl, { type SegmentedItem } from "@/components/saqeel/segmented-control/segmented-control";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Text } from "@/components/saqeel/type";
 import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
 import { titleCase } from "@/features/factories/portfolio";
 import type { GradedFactory } from "@/features/planning-single/shapes";
@@ -108,10 +109,10 @@ export default function IdentityDossier({ factory, strings, locale }: {
             />
           </div>
         ) : (
-          <p className={styles.hint}>
+          <Text tone="muted">
             {strings.officialPin}:{" "}
             {hasOfficial ? <bdi>{officialLat}, {officialLng}</bdi> : strings.noOfficialPin}
-          </p>
+          </Text>
         )}
       </CardBody>
       <CardFooter>

@@ -157,9 +157,9 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const evSeq = useRef(0);
   const windowRef = useRef<HTMLInputElement>(null);
-  const successHeadingRef = useRef<HTMLHeadingElement>(null);
-  const failHeadingRef = useRef<HTMLHeadingElement>(null);
-  const readinessHeadingRef = useRef<HTMLHeadingElement>(null);
+  const successHeadingRef = useRef<HTMLDivElement>(null);
+  const failHeadingRef = useRef<HTMLDivElement>(null);
+  const readinessHeadingRef = useRef<HTMLDivElement>(null);
   const rowRefs = useRef<Record<string, HTMLTableRowElement | null>>({});
   // CD-025 S10 — polite announcement + focus target for the scope-reduction (12→10)
   // correction, whose Fix control unmounts on click (WIRING leg 2/4).

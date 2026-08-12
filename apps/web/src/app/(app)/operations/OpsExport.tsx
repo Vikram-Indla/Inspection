@@ -5,6 +5,7 @@ import CountBadge from "@/components/saqeel/count-badge/count-badge";
 import Toolbar from "@/components/saqeel/toolbar/toolbar";
 import { authorizeOperationsExport } from "./actions";
 import styles from "./OpsExport.module.css";
+import { Text } from "@/components/saqeel/type";
 // M08-017 — Operations Center CSV export. One button per table (live monitoring,
 // SLA watch, high-risk board); each exports the CURRENT region/city-scoped view.
 // Rows + headers are formatted server-side and passed in, so this module owns no
@@ -75,12 +76,12 @@ export default function OpsExport({ datasets, strings }: { datasets: ExportDatas
       label={strings.heading}
       trailing={
         <>
-          <span className={styles.note}>{strings.scopeNote}</span>
-          {message ? <span className={styles.note} role="status">{message}</span> : null}
+          <Text as="span" tone="muted">{strings.scopeNote}</Text>
+          {message ? <Text as="span" tone="muted" live="status">{message}</Text> : null}
         </>
       }
     >
-      <span className={styles.heading}>{strings.heading}</span>
+      <Text as="span" role="label" tone="secondary">{strings.heading}</Text>
       {datasets.map(dataset => (
         <Button
           key={dataset.key}

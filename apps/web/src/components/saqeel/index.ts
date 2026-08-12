@@ -1,4 +1,23 @@
 
+export {
+  Text,
+  Overline,
+  Mono,
+  Heading,
+  Metric,
+  type TextProps,
+  type TextRole,
+  type TextTone,
+  type TextAlign,
+  type TextElement,
+  type OverlineProps,
+  type MonoProps,
+  type HeadingProps,
+  type HeadingLevel,
+  type HeadingVisual,
+  type MetricProps,
+} from "./type";
+
 export { Button, type ButtonProps } from "./actions/Button";
 export { ButtonGroup, SplitButton, type ButtonGroupProps, type SplitButtonProps } from "./actions/ButtonGroup";
 export { Field, type FieldProps } from "./inputs/Field";

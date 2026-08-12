@@ -3,6 +3,7 @@ import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import Stack from "@/components/saqeel/stack/stack";
 import StatCard from "@/components/saqeel/stat-card/stat-card";
 import styles from "./factory-workforce.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type WorkforceKpi = {
   readonly key: string;
@@ -37,10 +38,10 @@ export default function FactoryWorkforce({ kpis, capacityNote, empty, sourceOwne
               <CardGrid min="sm">
                 {kpis.map(kpi => <StatCard key={kpi.key} label={kpi.label} value={kpi.value} sub={kpi.sub ?? undefined} />)}
               </CardGrid>
-              {capacityNote ? <p className={styles.note}><strong>{strings.capacityNoteLabel}</strong> — {capacityNote}</p> : null}
+              {capacityNote ? <Text tone="secondary"><Text as="strong" role="bodyStrong">{strings.capacityNoteLabel}</Text> — {capacityNote}</Text> : null}
             </Stack>
           )}
-          <p className={styles.source}>{sourceOwned}</p>
+          <Text tone="muted">{sourceOwned}</Text>
         </Stack>
       </CardBody>
     </Card>

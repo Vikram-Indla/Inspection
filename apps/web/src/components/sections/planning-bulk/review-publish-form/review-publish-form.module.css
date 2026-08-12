@@ -4,18 +4,6 @@
   gap: var(--sqx-space-4);
 }
 
-.note {
-  color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-caption-size);
-  text-wrap: pretty;
-}
-
-.blocked {
-  color: var(--sqx-text-danger);
-  font-size: var(--sqx-text-caption-size);
-  text-wrap: pretty;
-}
-
 .ack {
   display: block;
   margin-block-start: var(--sqx-space-3);

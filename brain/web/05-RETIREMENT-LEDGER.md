@@ -20,6 +20,8 @@ The banner on line 1 of a marked file, exact form:
 
 | File | Replaced by | Marked | Pending routes | Gate |
 | --- | --- | --- | --- | --- |
+| `app/(app)/visits/[id]/DualStateRibbon.tsx` (97 lines) | `components/visits/visit-detail/visit-lifecycle-ribbon` | 2026-08-12 | none | 0-imports **reached** — awaiting one e2e run |
+| `app/(app)/visits/[id]/FocusScroll.tsx` (12 lines) | `components/visits/visit-detail/visit-detail` — the return reason is now a governed notice above the fold, so nothing needs scrolling to | 2026-08-12 | none | 0-imports **reached** — awaiting one e2e run |
 | `app/(app)/planning/immediate/AuthorityBar.tsx` (95 lines) — **DELETED 2026-08-11 (T-054)** | `components/sections/planning-immediate/dispatch-protections` | 2026-08-11 | none | 0-imports **cleared** — its only importer was rewired in the same change, so it was deleted rather than banner-marked |
 | `components/ShellClient.tsx` (46 KB, 840 lines) | `components/app-shell/app-shell` | 2026-08-07 | `/admin/execution`, `/admin/dashboard-config` | 0-imports |
 | `components/Shell.tsx` (16 KB, 251 lines) | `components/app-shell/shell-page-frame/shell-page-frame` | 2026-08-07 | `/admin/execution`, `/admin/dashboard-config`, plus 55 route files still importing the default `Shell` page-frame export | 0-imports |
@@ -90,6 +92,15 @@ task that supersedes them lands.
 
 | File | Deleted | Replaced by | Bytes removed |
 | --- | --- | --- | --- |
+| `components/sections/planning/planning-filter-bar` (11.4 KB) | 2026-08-12 | nothing — dead parallel tree, zero importers (T-077) | ~11.4 KB |
+| `components/sections/planning/planning-quick-actions` (2 files, 6.8 KB) | 2026-08-12 | nothing — dead parallel tree, zero importers (T-077) | ~6.8 KB |
+| `components/sections/planning/planning-visit-table` (5.2 KB) | 2026-08-12 | nothing — dead parallel tree, zero importers (T-077) | ~5.2 KB |
+| `features/planning/assistant-view.ts` (4.4 KB) | 2026-08-12 | nothing — dead parallel tree, zero importers (T-077) | ~4.4 KB |
+| `components/sections/planning/planning-recommendations` (3.9 KB) | 2026-08-12 | nothing — dead parallel tree, zero importers (T-077) | ~3.9 KB |
+| `components/sections/planning/planning-ai-advisory` (2.7 KB) | 2026-08-12 | nothing — dead parallel tree, zero importers (T-077) | ~2.7 KB |
+| `components/sections/planning/planning-insights` (2.1 KB) | 2026-08-12 | nothing — dead parallel tree, zero importers (T-077) | ~2.1 KB |
+| `components/sections/planning/planning-assistant` (1.4 KB) | 2026-08-12 | nothing — dead parallel tree, zero importers (T-077) | ~1.4 KB |
+| `components/sections/planning/planning-stat-cards` (1.0 KB) | 2026-08-12 | nothing — dead parallel tree, zero importers (T-077) | ~1.0 KB |
 | `app/(app)/admin/regulations/RouteContract.tsx` (121 lines) | 2026-08-09 | nothing — never imported by any route | ~4.6 KB |
 | `app/(app)/admin/regulations/m6-library.module.css` (67 lines) | 2026-08-09 | colocated SAQEEL modules under `sections/regulations/**` | ~1.7 KB |
 | `app/(app)/admin/regulations/Controls.tsx` (71 lines, was 314) | 2026-08-10 | `regulations/record/regulation-lifecycle` | ~2.6 KB |

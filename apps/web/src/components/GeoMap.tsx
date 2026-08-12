@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MAP_PALETTE } from "@/lib/map-palette";
+import { Heading } from "@/components/saqeel/type";
 import { loadKsaRegions } from "@/lib/ksa-regions";
 
 export type GeoTone = "high" | "medium" | "low" | "neutral";
@@ -309,7 +310,7 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
     const ar = mapLocale === "ar";
     return <div className="sq-state sq-state--inline" role="status" style={{ blockSize: height, inlineSize: "100%" }} data-map-provider={failed ? "mapbox-failed" : "mapbox-unavailable"}>
       <span className="sq-state__glyph">⌖</span>
-      <h4>{ar ? "الخريطة غير متاحة" : "Map unavailable"}</h4>
+      <Heading level={4} visual="bodyStrong">{ar ? "الخريطة غير متاحة" : "Map unavailable"}</Heading>
       <p className="t-caption">{failed
         ? (ar ? "تعذّر تحميل الخريطة. تبقى السجلات متاحة في القائمة." : "The map could not load. The records are still available as a list.")
         : (ar ? "الخريطة غير متاحة في هذه البيئة. تبقى السجلات متاحة في القائمة." : "The map is not available here. The records are still available as a list.")}</p>

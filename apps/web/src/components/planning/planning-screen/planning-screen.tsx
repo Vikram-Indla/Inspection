@@ -10,21 +10,20 @@ import PlanningDrafts from "@/components/planning/planning-drafts/planning-draft
 import { planningHref } from "@/features/planning/links";
 import { buildPlanningVisitViews } from "@/features/planning/view";
 import type { PlanningSearchParams, PlanningWorkspace } from "@/features/planning/queries";
-import type { PlanningListParams } from "@/lib/planning/visit-list";
+import { PLANNING_METHODS, type PlanningListParams } from "@/lib/planning/visit-list";
 import { fill, type Messages } from "@/i18n/messages";
 import type { Locale } from "@/lib/i18n";
 import styles from "./planning-screen.module.css";
 
 type PlanningMessages = Messages["planning"];
 
-export default function PlanningScreen({ workspace, params, sp, locale, messages, canExport, canApprove, formId, createVisit }: {
+export default function PlanningScreen({ workspace, params, sp, locale, messages, canExport, formId, createVisit }: {
   workspace: Extract<PlanningWorkspace, { ok: true }>;
   params: PlanningListParams;
   sp: PlanningSearchParams;
   locale: Locale;
   messages: PlanningMessages;
   canExport: boolean;
-  canApprove: boolean;
   formId: string;
   createVisit: ReactNode;
 }) {
@@ -49,18 +48,12 @@ export default function PlanningScreen({ workspace, params, sp, locale, messages
     || Object.values(params.filters).some(Boolean);
   const tabs = ["all", "draft", "pending_supervision", "published", "returned", "cancelled", "expired"].map(tab => {
     const tabCount = workspace.countsAvailable ? count(tab) : null;
+    if (tab === "all") return { value: "", label: messages.toolbar.status };
     return {
-      value: tab === "all" ? "" : tab,
+      value: tab,
       label: tabCount === null ? tabLabels[tab] : `${tabLabels[tab]} · ${tabCount}`,
     };
   });
-  const related = [
-    { href: "/planning/plans", label: messages.related.plans },
-    { href: "/tasks", label: messages.related.tasks },
-    ...(canApprove ? [{ href: "/planning/supervision", label: messages.related.supervision }] : []),
-    { href: "/visits", label: messages.related.visits },
-  ];
-
   return (
     <div className={styles.root}>
       <VisitViewNavigation active="list" basePath="/planning" ariaLabel={messages.views.aria} labels={messages.views} />
@@ -101,7 +94,7 @@ export default function PlanningScreen({ workspace, params, sp, locale, messages
           inspectors: workspace.inspectors,
           regions: workspace.regions,
           cities: workspace.cities,
-          methods: Object.entries(messages.methods).map(([value, label]) => ({ value, label })),
+          methods: PLANNING_METHODS.map(value => ({ value, label: messages.methods[value] })),
           sortKeys: Object.keys(messages.toolbar.sort),
         }}
         params={params}
@@ -154,11 +147,6 @@ export default function PlanningScreen({ workspace, params, sp, locale, messages
         locale={locale}
         viewerId={workspace.viewerId}
       />
-      <nav className={styles.related} aria-label={messages.related.aria}>
-        {related.map(link => (
-          <a className={styles.relatedLink} href={link.href} key={link.href}>{link.label}</a>
-        ))}
-      </nav>
     </div>
   );
 }

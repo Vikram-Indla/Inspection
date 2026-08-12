@@ -14,21 +14,3 @@
   min-inline-size: 0;
 }
 
-.label {
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
-  color: var(--sqx-text-muted);
-}
-
-.value {
-  font-size: var(--sqx-text-metric-size);
-  font-weight: var(--sqx-weight-semibold);
-  font-variant-numeric: tabular-nums;
-}
-
-.note {
-  color: var(--sqx-text-muted);
-  font-size: var(--sqx-text-caption-size);
-  text-wrap: pretty;
-}

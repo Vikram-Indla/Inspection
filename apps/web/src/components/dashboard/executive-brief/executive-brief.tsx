@@ -1,15 +1,10 @@
 "use client";
-import { useActionState } from "react";
-import Button from "@/components/saqeel/button/button";
-import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
-import Icon from "@/components/saqeel/icon/icon";
-import StatusPill from "@/components/saqeel/status-pill/status-pill";
-import { generateContextualInsight, type ContextualResult } from "@/lib/ai/contextual-actions";
-import type { Locale } from "@/lib/i18n";
-import styles from "./executive-brief.module.css";
 
-const EMPTY: ContextualResult = {};
+import AdvisoryStrip from "@/components/ai/advisory-strip/advisory-strip";
+import type { Locale } from "@/lib/i18n";
+
 const EVIDENCE_REFS = "MVP2-REQ-0056,MVP2-REQ-0057,SCR-WEB-010";
+const HEADING_ID = "dashboard-executive-brief";
 
 export type ExecutiveBriefStrings = {
   readonly title: string;
@@ -28,26 +23,13 @@ export default function ExecutiveBrief({ locale, context, period, region, string
   region: string;
   strings: ExecutiveBriefStrings;
 }) {
-  const [result, action, pending] = useActionState<ContextualResult, FormData>(generateContextualInsight, EMPTY);
-
   return (
-    <Card as="section" accent="ai" labelledBy="dashboard-executive-brief">
-      <CardHeader
-        level="h2"
-        titleId="dashboard-executive-brief"
-        title={<span className={styles.heading}><Icon name="ai" size="sm" />{strings.title}</span>}
-      />
-      <CardBody gap="tight">
-        <StatusPill tone="info">{strings.advisory}</StatusPill>
-
-        {result.text ? <p className={styles.text} dir="auto">{result.text}</p> : null}
-        {result.error ? <p className={styles.error} role="alert">{result.error}</p> : null}
-        {!result.text && !result.error ? <p className={styles.muted}>{strings.idle}</p> : null}
-
-        <p className={styles.muted}>{strings.evidence}</p>
-        <p className={styles.muted}>{strings.noCause}</p>
-
-        <form action={action}>
+    <AdvisoryStrip
+      headingId={HEADING_ID}
+      strings={strings}
+      notesShownWithAdvisory={[strings.evidence, strings.noCause]}
+      surfaceFields={
+        <>
           <input type="hidden" name="surface" value="executive_brief" />
           <input type="hidden" name="context" value={context} />
           <input type="hidden" name="period_from" value={period.from} />
@@ -55,11 +37,8 @@ export default function ExecutiveBrief({ locale, context, period, region, string
           <input type="hidden" name="region" value={region} />
           <input type="hidden" name="evidence_refs" value={EVIDENCE_REFS} />
           <input type="hidden" name="locale" value={locale} />
-          <Button type="submit" variant="link" disabled={pending}>
-            {pending ? strings.generating : strings.generate}
-          </Button>
-        </form>
-      </CardBody>
-    </Card>
+        </>
+      }
+    />
   );
 }

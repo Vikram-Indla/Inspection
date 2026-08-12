@@ -26,14 +26,39 @@ const filterSource = read("src/app/(app)/operations/OperationsScopeFilter.tsx");
 const monitoringSource = read("src/app/(app)/operations/Monitoring.tsx");
 const loadingSource = read("src/app/(app)/operations/loading.tsx");
 const cssSource = read("src/app/(app)/operations/operations.module.css");
-const livePageSource = read("src/app/(app)/operations/live/page.tsx");
-const liveShellSource = read("src/app/(app)/operations/live/LiveOps.tsx");
+// The Live route moved its reads and view models into features/operations/live
+// (T-070), the same shape /operations already uses above. These assertions are
+// about the route's behaviour, not about which file holds it, so the source is
+// the route plus its feature modules — mirroring `pageSource`.
+const livePageSource = [
+  "src/app/(app)/operations/live/page.tsx",
+  "src/features/operations/live/queries.ts",
+  "src/features/operations/live/view.ts",
+  "src/features/operations/live/geography.ts",
+  "src/features/operations/sources/profile.ts",
+].map(read).join("\n");
+// LiveOps.tsx is rebuilt as three composed SAQEEL components (T-071); the
+// screen's guarantees are the same and are asserted across all three.
+const liveShellSource = [
+  "src/components/operations/operations-live/operations-live.tsx",
+  "src/components/operations/operations-live/live-map-card.tsx",
+  "src/components/operations/operations-live/live-inspector-panel.tsx",
+].map(read).join("\n");
 const liveMapSource = read("src/app/(app)/operations/live/LiveMapInner.tsx");
 const liveLoadingSource = read("src/app/(app)/operations/live/loading.tsx");
-const liveCssSource = read("src/app/(app)/operations/live/live.module.css");
+const liveSkeletonSource = read("src/components/operations/operations-live-skeleton/operations-live-skeleton.tsx");
+const liveSkeletonCssSource = read("src/components/operations/operations-live-skeleton/operations-live-skeleton.module.css");
+const skeletonPrimitiveCssSource = read("src/components/saqeel/skeleton/skeleton.module.css");
+const listRowSource = read("src/components/saqeel/list-row/list-row.tsx");
 const runtimeCssSource = read("src/app/saqeel-runtime.css");
 
 test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 composition contract", () => {
+  // The two unsourced cards were an em-dash carrying a live drill-through. An
+  // em-dash is not the WEB-009 absence vocabulary and a card that can never
+  // hold a value must not offer an action — "Active operational alerts" drilled
+  // to the exception board while the exception rows render on this same screen.
+  // Both still render, still count five, and are still explicitly undecided:
+  // the assertion now pins `common.state.notConfigured` and the absent action.
   test("renders exactly five governed KPI cards with two explicit decision blocks", () => {
     for (const key of ["activeVisits", "onTheWay", "executing", "submittedToday", "alerts"]) {
       expect(centerSource).toContain(`stat.${key}`);
@@ -44,16 +69,23 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 composition contract", ()
     ]) {
       expect(enOpsCopy).toContain(`"${label}"`);
     }
-    expect(centerSource.match(/value: "—"/g)).toHaveLength(2);
-    expect(centerSource).not.toMatch(/submittedToday, value: (?!"—")/);
-    expect(centerSource).not.toMatch(/alerts, value: (?!"—")/);
+    expect(centerSource).not.toContain('value: "—"');
+    expect(centerSource.match(/value: notConfigured, configured: false/g)).toHaveLength(2);
+    expect(centerSource).toContain("stat.submittedToday, value: notConfigured, configured: false }");
+    expect(centerSource).toContain("stat.alerts, value: notConfigured, configured: false }");
+    expect(centerSource).not.toMatch(/configured: false, href:/);
   });
 
   test("keeps Operations Map and National Performance as two primary views", () => {
     expect(enOpsCopy).toContain('"Operations map"');
     expect(enOpsCopy).toContain('"National performance"');
     expect(centerSource).toContain('useState<"map" | "performance">(view)');
-    expect(centerSource).toContain('view === "performance"');
+    // One switch drives the whole screen. The regions section used to be gated
+    // on the `view` prop — the URL value, which the toggle never updates — so
+    // selecting National performance swapped the map pins and rendered no
+    // national content at all. Both branches now read the same `activeView`.
+    expect(centerSource.match(/activeView === "performance"/g)).toHaveLength(2);
+    expect(centerSource).not.toMatch(/[^e]view === "performance"/);
     expect(centerSource).toContain("<OperationsRegions");
     const queuesSection = read("src/app/(app)/operations/sections/queues-section.tsx");
     const exportSection = read("src/app/(app)/operations/sections/export-section.tsx");
@@ -198,14 +230,31 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
     expect(livePageSource).not.toMatch(/\.(insert|update|upsert|delete)\(/);
   });
 
+  // The bounded-claim copy moved out of TypeScript into the i18n resources
+  // (T-070) — it had been `t(key, locale === "ar" ? ar : en)`, so Arabic lived
+  // in the route file. Each sentence is still asserted, at its new home, and
+  // now in BOTH locales rather than English only.
   test("renders bounded markers and states without route, ETA, GPS or refresh invention", () => {
-    expect(livePageSource).toContain('"Recorded positions — not live GPS"');
-    expect(livePageSource).toContain('"Last recorded position — not guaranteed live"');
-    expect(livePageSource).toContain('"Times shown are when each position was recorded."');
-    expect(livePageSource).toContain('"Live map could not load"');
-    expect(livePageSource).toContain('"No active visits in your scope right now"');
-    expect(livePageSource).toContain('"No inspectors currently active"');
-    expect(livePageSource).toContain('"Live map unavailable — basemap provider failed."');
+    for (const sentence of [
+      "Recorded positions — not live GPS",
+      "Last recorded position — not guaranteed live",
+      "Times shown are when each position was recorded.",
+      "Live map could not load",
+      "No active visits in your scope right now",
+      "No inspectors currently active",
+      "Live map unavailable — basemap provider failed.",
+      "Recorded inspector position marker",
+    ]) {
+      expect(enOpsCopy).toContain(`"${sentence}"`);
+    }
+    for (const sentence of [
+      "مواقع مسجّلة — ليست تتبعاً مباشراً عبر GPS",
+      "آخر موقع مسجّل — ليس مضموناً أنه مباشر",
+      "الأوقات المعروضة هي وقت تسجيل كل موقع.",
+      "لا توجد زيارات نشطة ضمن نطاقك حالياً",
+    ]) {
+      expect(arOpsCopy).toContain(`"${sentence}"`);
+    }
     expect(liveMapSource).not.toContain("LineString");
     expect(liveMapSource).not.toContain("setInterval");
     expect(liveMapSource).not.toContain("ROUTE_SOURCE");
@@ -215,10 +264,9 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
     expect(livePageSource).toContain("startsAt <= observedAt.getTime()");
     expect(livePageSource).toContain("sourceInspectorName(");
     expect(livePageSource).toContain("activeFactoryIds.has(factory.id)");
-    expect(livePageSource).toContain('"Recorded inspector position marker"');
     expect(livePageSource).not.toContain("function hash01");
     expect(livePageSource).not.toContain("originLat");
-    expect(livePageSource).toContain("latestPositionByVisit.get(v.id)");
+    expect(livePageSource).toContain("latestPositionByVisit.get(visit.id)");
     expect(livePageSource).toContain("integration_mode.eq.production");
     expect(livePageSource).toContain('.lte("occurred_at", observedAt.toISOString())');
     expect(liveShellSource).toContain('<bdi dir="auto">{inspector.inspector}</bdi>');
@@ -226,28 +274,42 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
   });
 
   test("provides synchronized list, wallboard, loading disclosure and bounded responsive rules", () => {
-    expect(liveShellSource).toContain('aria-pressed={selectedId === inspector.id}');
+    // The row is the toggle. `pressed` is the ListRow contract; the primitive
+    // is what renders aria-pressed, and both halves are asserted.
+    expect(liveShellSource).toContain("pressed={selectedId === inspector.id}");
+    expect(listRowSource).toContain("aria-pressed={pressed}");
     expect(liveShellSource).toContain('data-testid="live-inspector-details"');
-    expect(liveShellSource).toContain("selectedInspector.visitId");
+    expect(liveShellSource).toContain("inspector.visitId");
     expect(liveMapSource).toContain("feature.properties?.inspector");
     expect(runtimeCssSource).toContain(".mapboxgl-popup-content");
     expect(runtimeCssSource).toContain("background: var(--surface-primary)");
     expect(runtimeCssSource).toContain("color: var(--text-primary)");
     expect(runtimeCssSource).toContain(".mapboxgl-popup-close-button");
     expect(runtimeCssSource).toContain(".mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip");
-    expect(liveCssSource).not.toContain(":global(.mapboxgl-popup-content)");
+    expect(liveSkeletonCssSource).not.toContain(":global(.mapboxgl-popup-content)");
     expect(liveShellSource).toContain("onProviderFailure={markProviderFailed}");
-    expect(liveShellSource).toContain("noScopeRows || hasNoPositions");
+    // "nothing in scope" and "in scope but unmapped" stay two distinct
+    // sentences. They used to render as one alert on the map AND again in the
+    // list; the empty list now states it once, and the map discloses the
+    // unmapped case only when the list is NOT empty (T-071).
     expect(liveShellSource).toContain("noScopeRows ? s.noScope : s.noPositions");
+    expect(liveShellSource).toContain("hasNoPositions && inspectors.length > 0");
     expect(liveShellSource).toContain('data-wallboard={wallboard ? "true" : "false"}');
     expect(liveShellSource).toContain("s.wallboardExit");
-    expect(liveLoadingSource).toContain("Recorded positions — not live GPS");
-    expect(liveCssSource).toContain("@media (max-width: 1024px)");
-    expect(liveCssSource).toContain("@media (max-width: 430px)");
-    expect(liveCssSource).toContain("@media (max-width: 340px)");
-    expect(liveCssSource).toContain("@media (prefers-reduced-motion: reduce)");
-    expect(liveCssSource).toContain("inset-inline");
-    expect(liveCssSource).toContain('[dir="rtl"]');
+    // The non-GPS disclosure must survive the load, so the skeleton renders it
+    // as real text rather than a bone. It is now a resource key, not a literal.
+    expect(liveLoadingSource).toContain("live.loading.detail");
+    expect(liveSkeletonSource).toContain("{disclosure}");
+    // live.module.css is deleted (T-070) — it had zero importers and styled
+    // nothing on this route. Its responsive and direction claims move onto the
+    // CSS that actually paints the loading state. The old file carried a
+    // `[dir="rtl"]` override; WEB-002 §6 forbids one, so the replacement is
+    // asserted to reflow with logical properties and no direction override.
+    expect(liveSkeletonCssSource).toContain("@media (max-width: 60rem)");
+    expect(liveSkeletonCssSource).toContain("block-size");
+    expect(liveSkeletonCssSource).not.toContain('[dir="rtl"]');
+    expect(liveSkeletonCssSource).not.toMatch(/(?:^|[^-])(?:left|right):/);
+    expect(skeletonPrimitiveCssSource).toContain("@media (prefers-reduced-motion: reduce)");
   });
 
   test("scopes reads to the caller's authorized geography and discloses out-of-scope exclusions separately", () => {
@@ -268,9 +330,9 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
     expect(livePageSource).toContain("positionObservedAt: position?.occurred_at ?? null");
     expect(liveShellSource).toContain("s.positionSourceField");
     expect(liveShellSource).toContain("s.positionObservedField");
-    expect(liveShellSource).toContain("selectedInspector.positionObservedAt");
+    expect(liveShellSource).toContain("inspector.positionObservedAt");
     expect(liveShellSource).toContain(
-      'href={`/visits/${selectedInspector.visitId}`}',
+      'href={`/visits/${inspector.visitId}`}',
     );
     expect(liveShellSource).not.toMatch(/\.(insert|update|upsert|delete)\(/);
   });
@@ -285,13 +347,26 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await expect(page.getByRole("radio", { name: "Operations map" })).toHaveAttribute("aria-checked", "true");
     await expect(page.getByRole("heading", { name: "Saudi Arabia", exact: true })).toBeVisible();
     await expect(page.locator('[aria-labelledby="operations-summary"] article')).toHaveCount(5);
-    const dashValues = page.locator('[aria-labelledby="operations-summary"] article', { hasText: "—" });
-    await expect(dashValues).toHaveCount(2);
+    const undecided = page.locator('[aria-labelledby="operations-summary"] article', { hasText: "Not configured" });
+    await expect(undecided).toHaveCount(2);
+    await expect(page.locator("#operations-regions")).toHaveCount(0);
 
     await page.goto("/operations?view=performance");
     await expect(page.getByRole("radio", { name: "National performance" })).toHaveAttribute("aria-checked", "true");
     await expect(page.getByRole("heading", { name: "National performance by region", exact: true })).toBeVisible();
     await expect(page.locator("#operations-regions")).toBeVisible();
+  });
+
+  // Regression guard for the split-brain toggle: the segmented control must
+  // reveal and withdraw the national section without a navigation, because
+  // both datasets are already on the client.
+  test("the perspective toggle drives the national section, not only the map", async ({ page }) => {
+    await page.goto("/operations");
+    await expect(page.locator("#operations-regions")).toHaveCount(0);
+    await page.getByRole("radio", { name: "National performance" }).click();
+    await expect(page.locator("#operations-regions")).toBeVisible();
+    await page.getByRole("radio", { name: "Operations map" }).click();
+    await expect(page.locator("#operations-regions")).toHaveCount(0);
   });
 
   test("planner direct-route access matches the accepted shared navigation contract", async ({ browser }) => {
@@ -364,9 +439,13 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await expect(page.getByRole("heading", { name: "Active inspectors", exact: true })).toBeVisible();
     await expect(page.getByText("Snapshot generated:", { exact: false })).toBeVisible();
     await expect(page.getByText(/G10 Golden Journey|M04 Governed Integration|KPI Verify|F360 Runtime|Verification fixture/)).toHaveCount(0);
-    const firstInspector = page.locator('aside[aria-labelledby="live-inspector-list-title"] button[aria-pressed]').first();
+    // Scoped to the row rather than to the toggle inside it: the guarantees are
+    // that the inspector name is direction-isolated and that the row selects,
+    // not which element nests which (T-071 made the whole row the toggle).
+    const firstRow = page.locator('[aria-labelledby="live-inspector-list-title"] [role="listitem"]').first();
+    const firstInspector = firstRow.locator("button[aria-pressed]").first();
     if (await firstInspector.count()) {
-      await expect(firstInspector.locator('bdi[dir="auto"]')).toBeVisible();
+      await expect(firstRow.locator('bdi[dir="auto"]').first()).toBeVisible();
       const observedAt = Date.parse(await page.getByTestId("live-snapshot-at").getAttribute("datetime") ?? "");
       const visibleSinceValues = await page.locator("time[data-live-since]").evaluateAll(nodes =>
         nodes.map(node => Date.parse(node.getAttribute("datetime") ?? "")),
@@ -457,8 +536,8 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await expect(page.getByRole("radio", { name: "الأداء الوطني", exact: true })).toBeVisible();
     await expect(page.getByText("الزيارات النشطة", { exact: true })).toBeVisible();
     await expect(page.getByText("التنبيهات التشغيلية النشطة", { exact: true })).toBeVisible();
-    const dashValues = page.locator('[aria-labelledby="operations-summary"] article', { hasText: "—" });
-    await expect(dashValues).toHaveCount(2);
+    const undecided = page.locator('[aria-labelledby="operations-summary"] article', { hasText: "غير مُهيأ" });
+    await expect(undecided).toHaveCount(2);
   });
 
   test("basemap provider failure withdraws only the map and keeps operational context", async ({ page }) => {

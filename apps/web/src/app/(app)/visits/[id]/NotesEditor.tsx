@@ -1,16 +1,19 @@
 "use client";
-// FIX WAVE F4 — M02-043: add/edit visit notes from web Visit Management.
-// Guarded server action updates visits.notes; RLS visits_update (planner/ops)
-// is the authority and its verdict is surfaced verbatim.
+
 import { useActionState, useState } from "react";
+import Button from "@/components/saqeel/button/button";
+import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
+import Field from "@/components/saqeel/field/field";
+import Textarea from "@/components/saqeel/textarea/textarea";
+import { Text } from "@/components/saqeel/type";
 import { updateVisitNotes, type ActionResult } from "./actions";
+import styles from "./action-bar.module.css";
 
 export type NotesStrings = {
   heading: string;
   label: string;
   placeholder: string;
   saveBtn: string;
-  saving: string;
   hint: string;
 };
 
@@ -26,28 +29,32 @@ export default function NotesEditor({ visitId, planningVersion, initialNotes, st
     correlationId: crypto.randomUUID(),
   }));
   return (
-    <section className="panel" aria-labelledby="visit-notes-heading">
-      <div className="panel-header">
-        <h2 className="panel-title" id="visit-notes-heading">{strings.heading}</h2>
-      </div>
-      <div className="panel-body stack">
-      <form action={act} className="stack">
-        <input type="hidden" name="visit_id" value={visitId} />
-        <input type="hidden" name="expected_version" value={planningVersion} />
-        <input type="hidden" name="idempotency_key" value={identity.idempotencyKey} />
-        <input type="hidden" name="correlation_id" value={identity.correlationId} />
-        <div className="field">
-          <label htmlFor="visit-notes">{strings.label}</label>
-          <textarea className="input" name="notes" id="visit-notes" rows={3} defaultValue={initialNotes} placeholder={strings.placeholder} />
-        </div>
-        <div className="row">
-          <button className="btn btn-secondary btn-touch" disabled={pending}>{pending ? strings.saving : strings.saveBtn}</button>
-          <span className="t-caption">{strings.hint}</span>
-        </div>
-      </form>
-      {state.error && <div className="alert alert-critical" role="alert"><div>{state.error}</div></div>}
-      {state.ok && <div className="alert alert-success" role="status"><div>{state.ok}</div></div>}
-      </div>
-    </section>
+    <Card as="section" labelledBy="visit-notes-heading">
+      <CardHeader level="h2" titleId="visit-notes-heading" title={strings.heading} description={strings.hint} />
+      <CardBody gap="tight">
+        <form action={act} className={styles.stackedForm}>
+          <input type="hidden" name="visit_id" value={visitId} />
+          <input type="hidden" name="expected_version" value={planningVersion} />
+          <input type="hidden" name="idempotency_key" value={identity.idempotencyKey} />
+          <input type="hidden" name="correlation_id" value={identity.correlationId} />
+          <Field label={strings.label} htmlFor="visit-notes">
+            <Textarea
+              name="notes"
+              id="visit-notes"
+              rows={3}
+              defaultValue={initialNotes}
+              placeholder={strings.placeholder}
+            />
+          </Field>
+          <div className={styles.formActions}>
+            <Button type="submit" variant="secondary" busy={pending} label={strings.saveBtn}>
+              {strings.saveBtn}
+            </Button>
+          </div>
+        </form>
+        {state.error && <Text as="p" role="label" tone="danger" live="alert">{state.error}</Text>}
+        {state.ok && <Text as="p" role="label" tone="success" live="status">{state.ok}</Text>}
+      </CardBody>
+    </Card>
   );
 }

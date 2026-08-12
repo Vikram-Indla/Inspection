@@ -136,12 +136,21 @@ test.describe("WA-M1-AC-001/002/005 source truth and negative contracts", () => 
       expect(definition?.note, `${metricId} must explain why it is computable`).toBeTruthy();
     }
 
-    expect(dashboardCopy).toContain(
-      "The repository does not store a governed official violation issue date. No quarterly series is inferred.",
-    );
-    expect(dashboardCopy).toContain(
-      "No generated claim is shown until a configured provider returns evidence-linked output for this scope.",
-    );
+    // The two governed-absence sentences these lines used to assert belonged to
+    // RevampStrategicView, which no longer renders. Both claims survive in the
+    // shipped surface — the missing violation issue time in the registry note
+    // that blocks STR-KPI-003, and "no generated claim until a provider returns
+    // evidence-linked output" as STR-KPI-012's stop line plus the brief's own
+    // idle and no-cause copy.
+    const violationTrend = KPI_DEFINITIONS.find((candidate) => candidate.metricId === "STR-KPI-003");
+    expect(violationTrend?.note, "the blocked violation series must name the missing issue time")
+      .toMatch(/issue-?time/i);
+    const strategicSummary = KPI_DEFINITIONS.find((candidate) => candidate.metricId === "STR-KPI-012");
+    expect(strategicSummary?.note, "the AI summary must stay disabled until its evidence policy exists")
+      .toMatch(/evidence_refs/);
+
+    expect(dashboardCopy).toContain("No brief has been generated for this scope yet.");
+    expect(dashboardCopy).toContain("It does not attribute a cause");
     expect(dashboardCopy).toContain("no governed annual target is configured");
   });
 });
@@ -203,10 +212,11 @@ test.describe("WA-M1-AC-001/003 shared Dashboard runtime", () => {
     await expect(page.getByRole("heading", { name: "Compliance performance explorer" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Strategic intervention" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Enforcement action trend" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Provider output withheld" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Executive AI brief" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Strategic requirement coverage" })).toBeVisible();
-    await expect(page.getByText(/No quarterly series is inferred/)).toBeVisible();
-    await expect(page.getByText(/No generated claim is shown until a configured provider/)).toBeVisible();
+    await expect(page.getByText("Advisory only · human decides")).toBeVisible();
+    await expect(page.getByText("No brief has been generated for this scope yet.")).toBeVisible();
+    await expect(page.getByText(/Count of penalty notices issued in the scoped period/)).toBeVisible();
     await expect(page.getByText("Unavailable", { exact: true }).first()).toBeVisible();
     await expect(page.getByText("Not configured", { exact: true }).first()).toBeVisible();
     await expect(page.getByText("Decision required", { exact: true }).first()).toBeVisible();
@@ -214,8 +224,16 @@ test.describe("WA-M1-AC-001/003 shared Dashboard runtime", () => {
 
   test("Operational renders canonical panels and blocked policy statuses", async ({ page }) => {
     await page.goto("/dashboard?view=operational");
-    await expect(page.getByRole("heading", { name: "Operational priorities" })).toBeVisible();
+    // The four groups saqeel-revamp.html defines for the operational view. The
+    // single "Today's operations" section that used to hold all seven metrics
+    // mislabelled four of them, and the deleted priorities panel's summary
+    // restated two of its own cards; only its governance footnote survives.
     await expect(page.getByRole("heading", { name: "Today's operations" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Execution status" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Approvals", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Operational exceptions" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Operational priorities" })).toHaveCount(0);
+    await expect(page.getByText(/No AI-generated recommendation/)).toBeVisible();
     await expect(page.getByRole("heading", { name: "Operational requirement coverage" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Inspector capacity" })).toBeVisible();
     await expect(page.getByText("Not configured", { exact: true }).first()).toBeVisible();

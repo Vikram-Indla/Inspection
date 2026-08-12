@@ -295,7 +295,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           planSingleHref={`/planning/single?factory=${f.id}&cr=${encodeURIComponent(f.cr_number ?? "")}&license=${encodeURIComponent(f.license_number ?? "")}&source=factory360`}
           immediateHref={`/planning/immediate?factory=${f.id}`}
           strings={{
-            planSingle: t("f360.actions.planSingle", "Plan one visit"),
+            planSingle: t("f360.actions.planSingle", "Plan a single visit"),
             startPlan: t("f360.actions.startPlan", "Start inspection plan"),
             supervisionNote: t("f360.actions.supervisionRequired", "Every plan is submitted to a Supervisor, who confirms the final Inspector before release."),
           }}

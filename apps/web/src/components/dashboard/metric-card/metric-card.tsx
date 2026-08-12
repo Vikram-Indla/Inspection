@@ -3,6 +3,7 @@ import Icon from "@/components/saqeel/icon/icon";
 import { Card, CardBody, CardFooter, CardHeader, CardValue, CardValueSlot } from "@/components/saqeel/card/card";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import styles from "./metric-card.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type MetricCardModel = {
   readonly question: string;
@@ -31,7 +32,7 @@ export default function MetricCard({ model, strings }: {
   const blocked = model.value === null;
   return (
     <Card>
-      <CardHeader eyebrow={model.question} title={model.title} />
+      <CardHeader title={model.title} description={model.question} />
       <CardBody gap="tight">
         <CardValueSlot>
           {blocked
@@ -41,22 +42,28 @@ export default function MetricCard({ model, strings }: {
         <details className={styles.disclosure}>
           <summary className={styles.summary}>
             <Icon name="disclosure" size="sm" />
-            <span>{blocked ? strings.why : strings.methodology}</span>
+            <Text as="span" role="label" tone="inherit">
+              {blocked ? strings.why : strings.methodology}
+            </Text>
           </summary>
           <div className={styles.detail}>
-            <p className={styles.definition}>
-              <b className={styles.definitionLabel}>{strings.definition}</b> {model.definition}
-            </p>
-            {model.example ? <p className={styles.example}>{model.example}</p> : null}
-            {model.interpretation ? <p className={styles.interpretation}>{model.interpretation}</p> : null}
+            <Text tone="secondary">
+              <Text as="strong" role="bodyStrong" tone="primary">{strings.definition}</Text>
+              {" "}
+              {model.definition}
+            </Text>
+            {model.example ? <Text tone="muted" numeric>{model.example}</Text> : null}
+            {model.interpretation ? <Text tone="secondary">{model.interpretation}</Text> : null}
           </div>
         </details>
       </CardBody>
-      <CardFooter>
-        <Button variant="secondary" size="sm" href={model.href} label={model.action}>
-          {model.action}
-        </Button>
-      </CardFooter>
+      {blocked ? null : (
+        <CardFooter>
+          <Button variant="secondary" size="sm" href={model.href} label={model.action}>
+            {model.action}
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 }

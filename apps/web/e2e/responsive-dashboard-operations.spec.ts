@@ -18,10 +18,14 @@ test.describe("PKT-RESPONSIVE-DASHBOARD-OPERATIONS-002", () => {
     }
   });
 
+  // /operations/live was rebuilt in T-070/T-071 and live.module.css deleted with
+  // it. Its responsive and direction claims were re-pointed onto the CSS that
+  // actually paints that route, and are asserted in
+  // web-admin-m3-operations.spec.ts ("@media (max-width: 60rem)", logical
+  // properties, no [dir="rtl"]). They are not duplicated here.
   test("Dashboard and Operations retain bounded responsive layouts for the mandated width continuum", () => {
     const dashboard = read("src/app/(app)/dashboard/dashboard.module.css");
     const operations = read("src/app/(app)/operations/operations.module.css");
-    const live = read("src/app/(app)/operations/live/live.module.css");
 
     expect(dashboard).toContain("@media (max-width: 1080px)");
     expect(dashboard).toContain("@media (max-width: 640px)");
@@ -29,20 +33,16 @@ test.describe("PKT-RESPONSIVE-DASHBOARD-OPERATIONS-002", () => {
     expect(operations).toContain("@media (max-width: 1100px)");
     expect(operations).toContain("@media (max-width: 430px)");
     expect(operations).toContain("@media (max-width: 340px)");
-    expect(live).toContain("@media (max-width: 1024px)");
-    expect(live).toContain("@media (max-width: 700px)");
-    expect(live).toContain("@media (max-width: 430px)");
-    expect(`${dashboard}\n${operations}\n${live}`).toContain("minmax(0, 1fr)");
+    expect(`${dashboard}\n${operations}`).toContain("minmax(0, 1fr)");
   });
 
   test("Arabic, RTL, reduced motion and provider-degraded contracts remain explicit", () => {
     const dashboard = read("src/app/(app)/dashboard/DashboardView.tsx");
     const operations = read("src/features/operations/queries.ts");
-    const live = read("src/app/(app)/operations/live/LiveOps.tsx");
+    const live = read("src/components/operations/operations-live/operations-live.tsx");
     const styles = [
       read("src/app/(app)/dashboard/dashboard.module.css"),
       read("src/app/(app)/operations/operations.module.css"),
-      read("src/app/(app)/operations/live/live.module.css"),
     ].join("\n");
 
     expect(dashboard).toContain("locale === \"ar\"");

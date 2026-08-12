@@ -11,30 +11,11 @@
   min-inline-size: 0;
 }
 
-.result {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--sqx-choice-gap);
-  padding-block: var(--sqx-space-2);
-}
-
-.resultBody {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: var(--sqx-space-1);
-  min-inline-size: 0;
-}
-
-.fields {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--sqx-grid-min-sm), 1fr));
-  gap: var(--sqx-space-4);
-}
-
-.field {
+.prompt {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--sqx-space-2);
+  padding-block: var(--sqx-space-5);
   min-inline-size: 0;
 }

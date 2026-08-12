@@ -19,13 +19,16 @@ export type SlaVisitBase = {
   window_end: string;
 };
 
-export type SlaFlag<T extends SlaVisitBase = SlaVisitBase> = {
+type SlaFlagBase<T extends SlaVisitBase> = {
   visit: T;
-  kind: "overdue_start" | "overdue_submit" | "reminder";
-  pct?: number;
   deadlineMs: number;
   escalation: "L1" | "L2" | null;
 };
+
+export type SlaFlag<T extends SlaVisitBase = SlaVisitBase> =
+  | (SlaFlagBase<T> & { kind: "overdue_start"; pct?: undefined })
+  | (SlaFlagBase<T> & { kind: "overdue_submit"; pct?: undefined })
+  | (SlaFlagBase<T> & { kind: "reminder"; pct: number });
 
 const DAY_IDX: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
 // Asia/Riyadh is fixed UTC+3 (no DST), so a constant offset is exact for day-of-week math.

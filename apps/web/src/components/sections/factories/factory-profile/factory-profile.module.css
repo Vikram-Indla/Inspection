@@ -30,10 +30,6 @@
   min-inline-size: 0;
 }
 
-.title {
-  font: var(--sqx-text-body-strong);
-  color: var(--sqx-text-primary);
-}
 
 .marker {
   position: relative;
@@ -85,13 +81,6 @@
   min-inline-size: 0;
 }
 
-.label {
-  margin: 0;
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
-  color: var(--sqx-text-muted);
-}
 
 .counts {
   display: flex;
@@ -99,15 +88,8 @@
   gap: var(--sqx-space-2);
   margin: 0;
   padding: 0;
-  font: var(--sqx-text-body-strong);
   font-variant-numeric: var(--sqx-numeric-tabular);
   color: var(--sqx-text-primary);
   list-style: none;
 }
 
-.note {
-  margin: 0;
-  font: var(--sqx-text-caption);
-  color: var(--sqx-text-muted);
-  text-wrap: pretty;
-}

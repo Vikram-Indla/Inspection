@@ -2,12 +2,14 @@ import { type ReactNode } from "react";
 import { Card, CardHeader, CardMedia } from "@/components/saqeel/card/card";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import styles from "./operations-map-panel.module.css";
+import mapChrome from "@/components/saqeel/map/map-chrome.module.css";
 
-export default function OperationsMapPanel({ title, description, count, countLabel, children }: {
+export default function OperationsMapPanel({ title, description, count, countLabel, action, children }: {
   title: string;
   description?: string;
   count?: number;
   countLabel?: string;
+  action?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -17,12 +19,17 @@ export default function OperationsMapPanel({ title, description, count, countLab
         titleId="operations-map-panel"
         title={title}
         description={description}
-        trailing={count === undefined ? undefined : (
-          <StatusPill tone="accent" ping>{`${count} ${countLabel ?? ""}`.trim()}</StatusPill>
+        trailing={count === undefined && !action ? undefined : (
+          <>
+            {count === undefined ? null : (
+              <StatusPill tone="neutral" ping={false}>{`${count} ${countLabel ?? ""}`.trim()}</StatusPill>
+            )}
+            {action}
+          </>
         )}
       />
       <CardMedia height="lg" label={title}>
-        <div className={styles.canvas}>{children}</div>
+        <div className={`${styles.canvas} ${mapChrome.chrome}`}>{children}</div>
       </CardMedia>
     </Card>
   );

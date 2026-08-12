@@ -1,22 +1,27 @@
 "use client";
-// FIX WAVE F4 — M02-042: visit attachments panel. Upload (planner/ops via RLS),
-// list with signed-URL downloads (minted server-side at render), soft remove.
-// All strings pre-translated from the server page (strings-prop canon).
+
 import { useActionState } from "react";
-import { uploadVisitAttachment, removeVisitAttachment, type ActionResult } from "./actions";
+import Button from "@/components/saqeel/button/button";
+import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
+import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-table";
+import FileUpload from "@/components/saqeel/file-upload/file-upload";
+import { Text } from "@/components/saqeel/type";
+import { removeVisitAttachment, uploadVisitAttachment, type ActionResult } from "./actions";
+import styles from "./action-bar.module.css";
 
 export type AttachmentRow = {
   id: string;
   name: string;
   mime: string;
-  uploadedAt: string;   // ISO
-  uploadedBy: string;   // display name or "—"
-  url: string | null;   // signed URL (1 h) or null when minting failed
+  uploadedAt: string;
+  uploadedBy: string;
+  url: string | null;
   urlError: string | null;
 };
 
 export type AttachmentsStrings = {
   heading: string;
+  hint: string;
   empty: string;
   colFile: string;
   colType: string;
@@ -25,21 +30,38 @@ export type AttachmentsStrings = {
   colActions: string;
   download: string;
   remove: string;
-  removeAria: string;    // "{name}" placeholder
+  removeAria: string;
   fileLabel: string;
+  dropPrompt: string;
+  browse: string;
+  fileSelected: string;
+  previewAlt: string;
+  removeFile: string;
   uploadBtn: string;
-  uploading: string;
   urlFailed: string;
 };
 
-function RemoveButton({ attachmentId, visitId, name, strings }: { attachmentId: string; visitId: string; name: string; strings: AttachmentsStrings }) {
+function RemoveButton({ attachmentId, visitId, name, strings }: {
+  attachmentId: string;
+  visitId: string;
+  name: string;
+  strings: AttachmentsStrings;
+}) {
   const [state, act, pending] = useActionState<ActionResult, FormData>(removeVisitAttachment, {});
   return (
-    <form action={act} className="row">
+    <form action={act} className={styles.row}>
       <input type="hidden" name="attachment_id" value={attachmentId} />
       <input type="hidden" name="visit_id" value={visitId} />
-      <button className="btn btn-ghost btn-touch" disabled={pending} aria-label={strings.removeAria.replace("{name}", name)}>{strings.remove}</button>
-      {state.error && <span className="field-error" role="alert">{state.error}</span>}
+      <Button
+        type="submit"
+        variant="tertiary"
+        size="sm"
+        busy={pending}
+        label={strings.removeAria.replace("{name}", name)}
+      >
+        {strings.remove}
+      </Button>
+      {state.error && <Text as="span" role="label" tone="danger" live="alert">{state.error}</Text>}
     </form>
   );
 }
@@ -50,51 +72,60 @@ export default function Attachments({ visitId, rows, strings }: {
   strings: AttachmentsStrings;
 }) {
   const [up, upAct, upPending] = useActionState<ActionResult, FormData>(uploadVisitAttachment, {});
-  return (
-    <section className="panel" aria-labelledby="visit-attachments-heading">
-      <div className="panel-header">
-        <h2 className="panel-title" id="visit-attachments-heading">{strings.heading}</h2>
-      </div>
-      <div className="panel-body stack">
-      {rows.length === 0 ? (
-        <p className="t-caption">{strings.empty}</p>
-      ) : (
-        <div className="table-wrap"><table className="table">
-          <thead><tr>
-            <th scope="col">{strings.colFile}</th><th scope="col">{strings.colType}</th>
-            <th scope="col" className="cell-num">{strings.colUploaded}</th><th scope="col">{strings.colBy}</th><th scope="col">{strings.colActions}</th>
-          </tr></thead>
-          <tbody>
-            {rows.map(a => (
-              <tr key={a.id}>
-                <td><strong>{a.name}</strong></td>
-                <td className="t-caption">{a.mime}</td>
-                <td className="cell-num id-code">{a.uploadedAt.slice(0, 16).replace("T", " ")}</td>
-                <td>{a.uploadedBy}</td>
-                <td>
-                  <div className="row">
-                    {a.url
-                      ? <a className="btn btn-ghost btn-touch" href={a.url} download={a.name}>{strings.download}</a>
-                      : <span className="field-error" role="status">{a.urlError ?? strings.urlFailed}</span>}
-                    <RemoveButton attachmentId={a.id} visitId={visitId} name={a.name} strings={strings} />
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table></div>
-      )}
-      <form action={upAct} className="grid-toolbar">
-        <input type="hidden" name="visit_id" value={visitId} />
-        <div className="field">
-          <label htmlFor="visit-attachment-file">{strings.fileLabel}</label>
-          <input className="input" type="file" name="file" id="visit-attachment-file" required />
+  const columns: DataColumn<AttachmentRow>[] = [
+    { key: "file", header: strings.colFile, isRowHeader: true, cell: row => row.name },
+    { key: "type", header: strings.colType, cell: row => row.mime },
+    { key: "uploaded", header: strings.colUploaded, numeric: true, cell: row => row.uploadedAt },
+    { key: "by", header: strings.colBy, cell: row => row.uploadedBy },
+    {
+      key: "actions",
+      header: strings.colActions,
+      width: "min",
+      cell: row => (
+        <div className={styles.row}>
+          {row.url
+            ? <Button variant="tertiary" size="sm" href={row.url} label={`${strings.download} — ${row.name}`}>{strings.download}</Button>
+            : <Text as="span" role="label" tone="warning" live="status">{row.urlError ?? strings.urlFailed}</Text>}
+          <RemoveButton attachmentId={row.id} visitId={visitId} name={row.name} strings={strings} />
         </div>
-        <button className="btn btn-secondary btn-touch" disabled={upPending}>{upPending ? strings.uploading : strings.uploadBtn}</button>
-      </form>
-      {up.error && <div className="alert alert-critical" role="alert"><div>{up.error}</div></div>}
-      {up.ok && <div className="alert alert-success" role="status"><div>{up.ok}</div></div>}
-      </div>
-    </section>
+      ),
+    },
+  ];
+  return (
+    <Card as="section" labelledBy="visit-attachments-heading">
+      <CardHeader level="h2" titleId="visit-attachments-heading" title={strings.heading} description={strings.hint} />
+      <CardBody gap="tight">
+        <DataTable
+          rows={rows}
+          columns={columns}
+          getRowId={row => row.id}
+          caption={strings.heading}
+          empty={{ icon: "library", title: strings.empty }}
+        />
+        <form action={upAct} className={styles.uploadForm}>
+          <input type="hidden" name="visit_id" value={visitId} />
+          <FileUpload
+            name="file"
+            id="visit-attachment-file"
+            required
+            strings={{
+              label: strings.fileLabel,
+              prompt: strings.dropPrompt,
+              browse: strings.browse,
+              selected: strings.fileSelected,
+              previewAlt: strings.previewAlt,
+              remove: strings.removeFile,
+            }}
+          />
+          <div className={styles.formActions}>
+            <Button type="submit" variant="secondary" busy={upPending} label={strings.uploadBtn}>
+              {strings.uploadBtn}
+            </Button>
+          </div>
+        </form>
+        {up.error && <Text as="p" role="label" tone="danger" live="alert">{up.error}</Text>}
+        {up.ok && <Text as="p" role="label" tone="success" live="status">{up.ok}</Text>}
+      </CardBody>
+    </Card>
   );
 }

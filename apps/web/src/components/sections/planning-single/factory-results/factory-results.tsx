@@ -2,11 +2,13 @@
 import { type ReactNode } from "react";
 import Choice from "@/components/saqeel/choice/choice";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
+import Field from "@/components/saqeel/field/field";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import TextInput from "@/components/saqeel/text-input/text-input";
 import Button from "@/components/saqeel/button/button";
 import { Skeleton, SkeletonRegion } from "@/components/saqeel/skeleton/skeleton";
 import styles from "./factory-results.module.css";
+import { Mono, Text } from "@/components/saqeel/type";
 
 export type GradedResult = {
   readonly id: string;
@@ -19,9 +21,10 @@ export type GradedResult = {
 };
 
 export type FactoryResultsStrings = {
-  readonly heading: string;
-  readonly searchLabel: string;
+  readonly fieldLabel: string;
   readonly searchPlaceholder: string;
+  readonly promptTitle: string;
+  readonly promptBody: string;
   readonly exactBadge: string;
   readonly similarBadge: string;
   readonly degradedBadge: string;
@@ -34,6 +37,8 @@ export type FactoryResultsStrings = {
   readonly searching: string;
 };
 
+const SEARCH_INPUT_ID = "single-visit-search-input";
+
 /**
  * The graded candidate list.
  *
@@ -41,6 +46,9 @@ export type FactoryResultsStrings = {
  * that selects a target and opens its dossier (M01-035). The grade is a **rule**
  * — exact identifier equality, or a name match with differing identifiers — and
  * never a score, so it renders as a labelled pill rather than a number.
+ *
+ * Below the minimum search length the region states what to enter and what
+ * follows, rather than leaving the screen empty until a query is long enough.
  */
 export default function FactoryResults({
   query, results, registryUnavailable, settled, matchedElsewhere, selectedId,
@@ -71,13 +79,19 @@ export default function FactoryResults({
 
   return (
     <div className={styles.root} aria-busy={pending}>
-      <TextInput
-        type="search"
-        value={query}
-        onChange={onQueryChange}
-        placeholder={strings.searchPlaceholder}
-        label={strings.searchLabel}
-      />
+      <Field label={strings.fieldLabel} htmlFor={SEARCH_INPUT_ID}>
+        <TextInput
+          id={SEARCH_INPUT_ID}
+          type="search"
+          value={query}
+          onChange={onQueryChange}
+          placeholder={strings.searchPlaceholder}
+        />
+      </Field>
+
+      {searching ? null : (
+        <EmptyState size="sm" icon="search" title={strings.promptTitle} description={strings.promptBody} />
+      )}
 
       {pending ? (
         <SkeletonRegion label={strings.searching}>
@@ -110,7 +124,7 @@ export default function FactoryResults({
                 onChange={() => onSelect(result.id)}
                 label={
                   <span className={styles.identity}>
-                    <span className={styles.name}>{result.name}</span>
+                    <Text as="span" role="bodyStrong" dir="auto">{result.name}</Text>
                     <span className={styles.pills}>
                       <StatusPill tone={result.grade === "exact" ? "success" : "warning"}>
                         {result.grade === "exact" ? strings.exactBadge : strings.similarBadge}
@@ -122,8 +136,8 @@ export default function FactoryResults({
                 }
                 description={
                   <span className={styles.codes}>
-                    <bdi>{result.crNumber ?? strings.absent}</bdi>
-                    {result.licenseNumber ? <bdi>{result.licenseNumber}</bdi> : null}
+                    <Mono as="span"><bdi>{result.crNumber ?? strings.absent}</bdi></Mono>
+                    {result.licenseNumber ? <Mono as="span"><bdi>{result.licenseNumber}</bdi></Mono> : null}
                   </span>
                 }
               />

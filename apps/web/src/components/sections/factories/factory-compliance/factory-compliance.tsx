@@ -4,6 +4,7 @@ import DataTable, { CellMuted, CellTime, type DataColumn } from "@/components/sa
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import styles from "./factory-compliance.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type ComplianceReportRow = {
   readonly id: string;
@@ -103,7 +104,7 @@ export default function FactoryCompliance({ reports, violations, penalties, pena
         description={strings.description}
       />
       <CardBody>
-        <p className={styles.label}>{strings.reports}</p>
+        <Text role="label" tone="muted">{strings.reports}</Text>
         <DataTable
           rows={reports}
           columns={reportColumns}
@@ -112,7 +113,7 @@ export default function FactoryCompliance({ reports, violations, penalties, pena
           density="compact"
         />
 
-        <p className={styles.label}>{strings.violations}</p>
+        <Text role="label" tone="muted">{strings.violations}</Text>
         <DataTable
           rows={violations}
           columns={violationColumns}
@@ -120,9 +121,9 @@ export default function FactoryCompliance({ reports, violations, penalties, pena
           empty={{ icon: "enforcement", title: strings.violationsEmpty }}
           density="compact"
         />
-        <p className={styles.note}>{strings.openStateUnavailable}</p>
+        <Text tone="muted">{strings.openStateUnavailable}</Text>
 
-        <p className={styles.label}>{strings.penalties}</p>
+        <Text role="label" tone="muted">{strings.penalties}</Text>
         {penaltiesReadable ? (
           <DataTable
             rows={penalties}
@@ -135,7 +136,7 @@ export default function FactoryCompliance({ reports, violations, penalties, pena
           <EmptyState icon="restricted" size="sm" title={strings.penaltiesRestricted} />
         )}
 
-        <p className={styles.label}>{strings.trends}</p>
+        <Text role="label" tone="muted">{strings.trends}</Text>
         {trends}
       </CardBody>
     </Card>

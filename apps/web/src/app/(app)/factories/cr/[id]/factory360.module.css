@@ -139,7 +139,6 @@
   border-block-end: 1px solid var(--border-subtle);
 }
 .riskSummary { display: flex; align-items: baseline; gap: var(--space-2); }
-.riskSummary strong { font-size: 1.625rem; line-height: 1; }
 .riskSummary span { color: var(--text-secondary); font-weight: 600; overflow-wrap: anywhere; }
 .riskProvenance { margin: 0; }
 .riskAdvisory { margin-block-start: var(--space-3); }

@@ -1,5 +1,6 @@
 import Button from "@/components/saqeel/button/button";
 import styles from "./factory-actions.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type FactoryActionsStrings = {
   readonly planSingle: string;
@@ -18,7 +19,7 @@ export default function FactoryActions({ planSingleHref, immediateHref, strings 
         <Button variant="secondary" href={planSingleHref} label={strings.planSingle}>{strings.planSingle}</Button>
         <Button variant="secondary" href={immediateHref} label={strings.startPlan}>{strings.startPlan}</Button>
       </div>
-      <p className={styles.note} role="status">{strings.supervisionNote}</p>
+      <Text tone="muted" live="status">{strings.supervisionNote}</Text>
     </div>
   );
 }

@@ -1,18 +1,20 @@
 import Button from "@/components/saqeel/button/button";
-import { Card, CardBody, CardGrid, CardHeader } from "@/components/saqeel/card/card";
+import { Card, CardBody, CardGrid, CardHeader, CardValue } from "@/components/saqeel/card/card";
 import StatCard from "@/components/saqeel/stat-card/stat-card";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 
 export type SummaryStat = {
   readonly label: string;
   readonly value: string;
-  readonly href: string;
-  readonly action: string;
+  readonly configured: boolean;
+  readonly href?: string;
+  readonly action?: string;
 };
 
 export type RegionStat = {
   readonly name: string;
   readonly href: string;
+  readonly active: string;
   readonly detail: string;
 };
 
@@ -29,12 +31,15 @@ export function OperationsSummary({ title, stats }: {
             <StatCard
               key={stat.label}
               label={stat.label}
+              status={stat.configured ? undefined : <CardValue kind="text" size="md">{stat.value}</CardValue>}
               value={stat.value}
-              action={
-                <Button variant="tertiary" size="sm" href={stat.href} label={stat.action}>
-                  {stat.action}
-                </Button>
-              }
+              action={stat.href && stat.action
+                ? (
+                  <Button variant="tertiary" size="sm" href={stat.href} label={stat.action}>
+                    {stat.action}
+                  </Button>
+                )
+                : undefined}
             />
           ))}
         </CardGrid>
@@ -56,6 +61,7 @@ export function OperationsRegions({ title, description, unavailable, regions }: 
         titleId="operations-regions"
         title={title}
         description={description}
+        trailing={<StatusPill tone="warning" ping={false}>{unavailable}</StatusPill>}
       />
       <CardBody>
         <CardGrid min="sm">
@@ -64,7 +70,7 @@ export function OperationsRegions({ title, description, unavailable, regions }: 
               key={region.name}
               label={region.name}
               href={region.href}
-              status={<StatusPill tone="warning" ping>{unavailable}</StatusPill>}
+              value={region.active}
               sub={region.detail}
             />
           ))}
