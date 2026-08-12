@@ -10,6 +10,76 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-077 · delete the dead planning tree (1 of 4 orphan trees)
+`status: done — the other 3 trees are blocked on spec work` · `rules: WEB-000, WEB-006 §4, WEB-008, WEB-011` · `est: 45m`
+`record:` [2026-08-12-T-077-delete-the-dead-planning-tree](sessions/2026-08/2026-08-12-T-077-delete-the-dead-planning-tree.md)
+
+**The task as scoped was wrong, and reading the gate is what revealed it.** "Four
+dead trees, 72 violations" is really **one deletable tree and three blocked
+ones**. WEB-006 §4's second condition — *no string-referenced path, no test
+fixture references it* — fails for the rest:
+
+| Tree | Blocker |
+| --- | --- |
+| `DashboardView` + 3 siblings | **4 spec files read `DashboardView.tsx` as source text** |
+| `dashboard.module.css` | read by 2 spec files |
+| `FactoryList` + its CSS | read by 2 spec files |
+| `operations.module.css` | **not dead** — live `OperationsPreview` imports it |
+
+**Deleting a file a spec reads as text does not fail `tsc` — it fails the suite
+at runtime** when `readFileSync` throws. Invisible to the type checker, the
+typography gate, and any grep for `import`.
+
+**T-072's record was wrong about `operations.module.css` and has been amended.**
+All 49 of its typography declarations sit on dead classes, but the *file* is
+live for seven `preview*` classes.
+
+**The deletable tree was larger and more tangled than the parked note said** — 10
+directories, not 7. `planning-skeleton` is **live** and kept; three others were
+imported **for types only** by `features/planning/assistant-view.ts`, which is
+itself imported only by `planning-recommendations`, which is dead — **a closed
+dead cycle that reads as "still referenced" to a naive import search.** There is
+also a **name collision**: `planning-assistant` exists in both
+`components/planning/` (live, edited in T-076) and `components/sections/planning/`
+(dead) — deleting by basename would have taken the live one.
+
+```
+9 files deleted · 38,809 bytes (~38 KB) · 30 violations · repo 893 → 863
+```
+
+**Owed:** the full e2e suite (needs a production build) — WEB-006 §4 formally
+requires it even for zero-reference code.
+
+
+### T-080 · `/visits/[id]` — write surface on SAQEEL (slice 3b of 3)
+`status: done (axe, 320px, keyboard, Arabic, e2e owed for the route)` · `rules: WEB-000, WEB-002, WEB-003, WEB-006, WEB-008, WEB-009, WEB-011` · `est: 1h`
+`record:` [2026-08-12-T-080-visit-detail-write-surface](sessions/2026-08/2026-08-12-T-080-visit-detail-write-surface.md)
+
+**The route now renders zero legacy classes**, verified in the DOM rather than the
+source. 91 legacy class uses across the three write components → 0.
+
+**Two primitive gaps stopped the obvious migration, and they are the same gap.**
+`Select` is a controlled listbox — `value` + `onChange`, **no `name`, no hidden
+input** — so it cannot participate in a form POST. Four governed transitions
+submit through server actions reading `FormData` by name; swapping them would have
+compiled, rendered correctly and **silently sent an empty field on every write**.
+`TextInput` has the same shape problem in miniature: no `datetime-local`. Both keep
+native controls inside `Field`, hand-reset in the module — the second victim of
+T-043's portalled-control lesson. **Raised, not filled.**
+
+**A fourteenth UTC timestamp was hiding in a child component.** T-076 fixed
+thirteen in `page.tsx`; `Attachments` had `uploadedAt.slice(0, 16)` two components
+down. **A per-file sweep misses what a per-route sweep catches.**
+
+**Live regions moved from literal roles to `Text live=`**, and the re-pointed
+assertion is *stronger* than the original — it now checks the call site, the
+`aria-live` wrapper **and** that the primitive renders `role`, which the old
+source-text check could not.
+
+**Write-path integrity asserted by script:** 8 server actions bound, 4 identity
+fields per form, both guards untouched, soft delete intact, all 8 spec-pinned
+control ids present. **The e2e suite has not run and is the real proof.**
+
 ### T-076 · planning family — typography, visible pass
 `status: partial — visible defects fixed on all three routes; primitive migration outstanding` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009, WEB-011, WEB-014` · `est: 1.5h`
 `record:` [2026-08-12-T-076-planning-family-typography](sessions/2026-08/2026-08-12-T-076-planning-family-typography.md)

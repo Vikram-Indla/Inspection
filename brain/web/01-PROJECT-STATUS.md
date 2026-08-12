@@ -1,6 +1,79 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-076 — planning family typography`
+`Last updated: 2026-08-12` · `Updated by: T-077 — delete the dead planning tree`
+
+## Dead code is rarely as dead as the note says (2026-08-12)
+
+T-077 set out to delete four orphan trees and could only delete one.
+
+1. **A spec that reads a file as text pins it.** Four spec files `readFileSync`
+   `DashboardView.tsx`; two more read `dashboard.module.css`; two read
+   `FactoryList.tsx`. **Deleting any of them fails the suite at runtime, not at
+   compile time** — invisible to `tsc`, to the typography gate, and to a grep
+   for `import`. Always search `e2e` and `scripts`, not just `src`.
+2. **A type-only cycle reads as "still referenced".** Three planning components
+   were imported for types by `assistant-view.ts`, which was imported only by a
+   fourth dead component. Resolve it by asking what imports the set from
+   *outside* the set.
+3. **Check basenames for collisions before deleting.** `planning-assistant`
+   existed in two directories — one live, one dead.
+4. **`operations.module.css` was not dead**, contrary to T-072's record (now
+   amended). Its typography was all on dead classes; the file itself is live.
+
+**And the enforcement the rule assumes is missing:** none of the deleted files
+carried the `@retiring` banner WEB-006 §4 mandates, and `gate:retirement` does
+not exist in `package.json`.
+
+
+## Task-ID collision: T-076 is used twice (2026-08-12)
+
+Two concurrent sessions both claimed **T-076** — `/visits/[id]` foundation and
+`planning family — typography, visible pass`. Both are recorded, both have
+session files, and the tracker now lists two `### T-076` headings.
+
+**Not renumbered unilaterally.** Renaming either chain breaks the cross-references
+already written into the other's records, the retirement ledger and the session
+log. A human should pick which chain moves. **The tracker has no ID reservation,
+so parallel agents will keep colliding** — claiming the next id at the *start* of
+a task, in the tracker, would prevent it.
+
+## A primitive that cannot carry a `name` cannot be in a form (2026-08-12)
+
+T-080 nearly swapped four native `<select>`s for the SAQEEL `Select`. It is a
+controlled listbox — `value` + `onChange`, **no `name`, no hidden input** — and
+those four controls submit through server actions that read `FormData` by name.
+The swap would have **compiled, rendered correctly, and silently sent an empty
+field on every governed write**: return, reassign, visit type, repackage.
+
+`TextInput` has the same shape problem in miniature — no `datetime-local`.
+
+1. **Before migrating a control, ask what reads it.** A form POST reads the DOM,
+   not the React tree. This is T-043's portalled-control lesson with a second
+   victim, now covering `<select>` and `<input>`.
+2. **Keep the native control inside `Field` and hand-reset it** — the fourth
+   recorded instance of *`saqeel.css` has no global control reset by design*.
+3. **Both gaps are raised, not filled.**
+
+## A per-file sweep misses what a per-route sweep catches (2026-08-12)
+
+T-076 fixed thirteen UTC timestamps in `visits/[id]/page.tsx` and verified zero
+`YYYY-MM-DD HH:MM` in the rendered DOM. T-080 found a **fourteenth** —
+`uploadedAt.slice(0, 16)` in `Attachments.tsx`, two components down. It never
+showed in the DOM check **because that visit had no attachments**.
+
+**A render check only covers the states that rendered.** Pair it with a source
+sweep across every child component, and provoke the states that carry the rest.
+
+## Re-pointing an assertion can strengthen it (2026-08-12)
+
+`cd-027` asserted the literal `role="status"` in `ActionBar.tsx`. After the
+rebuild those roles come from `Text`'s `live` prop. The replacement asserts
+**three** things — the call site's prop, the `aria-live` wrapper, and that `Text`
+renders `role={live}` — which the original could not: a literal `role=` in a file
+proves nothing about whether it reached the DOM.
+
+**When a re-point is forced, ask whether the old assertion tested the claim or
+just a spelling.**
 
 ## A hand-rolled copy inherits the bugs, never the fixes (2026-08-12)
 

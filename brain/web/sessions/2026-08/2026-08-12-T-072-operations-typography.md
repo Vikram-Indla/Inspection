@@ -50,7 +50,12 @@ states are part of the route and must be provoked, not assumed.** With T-059's
 page title, T-064's Arial button and T-067's 24 headings, this is the fourth
 instance of a value decided by an absent declaration.
 
-**26 of the 50 baselined violations are dead.** `operations.module.css` is
+**26 of the 50 baselined violations sit on dead classes.** *(Corrected in
+T-077: this section originally called the whole file dead. It is not — the
+file is live because `OperationsPreview` imports it for seven `preview*`
+classes. What is true is that all 49 typography declarations sit on classes
+only the dead `operations-details.tsx` uses, so the file cannot be deleted;
+only `operations-details.tsx` can.)* `operations.module.css` is
 imported by `OperationsPreview` (live) and `operations-details.tsx` (**zero
 importers**). Checked declaration-by-declaration: **all 49 typography
 declarations sit on classes the live preview never uses** — the live component
@@ -134,9 +139,10 @@ the rendered error overlay, not the whole dev bundle.**
 
 ## Retirement
 
-New candidate: **`operations.module.css` + `operations-details.tsx`** (26
-violations, zero importers). Joins the `DashboardView` and `FactoryList` orphans
-— all three want one deletion task.
+New candidate: **`operations-details.tsx`** (zero importers). `operations.module.css`
+itself is **not** deletable — see the correction above. T-077 found that
+`operations-details.tsx` is also named in `web-admin-m3-operations.spec.ts`, so
+its spec reference must be re-pointed first.
 
 ## Parked
 
