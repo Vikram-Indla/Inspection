@@ -8,6 +8,7 @@ import arOperations from "./locales/ar/operations.json";
 import arPlanning from "./locales/ar/planning.json";
 import arRegulations from "./locales/ar/regulations.json";
 import arShell from "./locales/ar/shell.json";
+import arVisits from "./locales/ar/visits.json";
 import enApprovals from "./locales/en/approvals.json";
 import enCommon from "./locales/en/common.json";
 import enDashboard from "./locales/en/dashboard.json";
@@ -17,6 +18,7 @@ import enOperations from "./locales/en/operations.json";
 import enPlanning from "./locales/en/planning.json";
 import enRegulations from "./locales/en/regulations.json";
 import enShell from "./locales/en/shell.json";
+import enVisits from "./locales/en/visits.json";
 
 export type Messages = {
   readonly approvals: typeof enApprovals;
@@ -28,11 +30,12 @@ export type Messages = {
   readonly planning: typeof enPlanning;
   readonly regulations: typeof enRegulations;
   readonly shell: typeof enShell;
+  readonly visits: typeof enVisits;
 };
 
 const MESSAGES: Readonly<Record<Locale, Messages>> = {
-  en: { approvals: enApprovals, common: enCommon, dashboard: enDashboard, enforcement: enEnforcement, factories: enFactories, operations: enOperations, planning: enPlanning, regulations: enRegulations, shell: enShell },
-  ar: { approvals: arApprovals, common: arCommon, dashboard: arDashboard, enforcement: arEnforcement, factories: arFactories, operations: arOperations, planning: arPlanning, regulations: arRegulations, shell: arShell },
+  en: { approvals: enApprovals, common: enCommon, dashboard: enDashboard, enforcement: enEnforcement, factories: enFactories, operations: enOperations, planning: enPlanning, regulations: enRegulations, shell: enShell, visits: enVisits },
+  ar: { approvals: arApprovals, common: arCommon, dashboard: arDashboard, enforcement: arEnforcement, factories: arFactories, operations: arOperations, planning: arPlanning, regulations: arRegulations, shell: arShell, visits: arVisits },
 };
 
 export function getMessages(locale: Locale): Messages {

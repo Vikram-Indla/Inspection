@@ -10,6 +10,7 @@ import CreatedToast from "@/components/CreatedToast";
 import EmptyState from "@/components/EmptyState";
 import FocusScroll from "./FocusScroll";
 import { formatDateTime } from "@/lib/dates";
+import { getMessages } from "@/i18n/messages";
 import { loadVisitDetail } from "@/features/visits/detail/queries";
 import { buildVisitDerivations, reasonLabel as resolveReasonLabel, snapshotText } from "@/features/visits/detail/view";
 
@@ -24,15 +25,15 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   const shellCurrent = planningOwnedPreview ? "/planning" : "/visits";
   const { id } = await params;
   const { t, locale } = await useT();
-  const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
+  const V = getMessages(locale).visits;
   const page = await loadVisitDetail(id);
   if (page.kind === "error") {
-    return <Shell current={shellCurrent} title={t("visit.detail.errorTitle", "Visit — error")}><div className="alert alert-critical" role="alert">{mapError(null, "load")}</div></Shell>;
+    return <Shell current={shellCurrent} title={V.detail.errorTitle}><div className="alert alert-critical" role="alert">{mapError(null, "load")}</div></Shell>;
   }
   if (page.kind === "not-found") {
-    return <Shell current={shellCurrent} title={t("visit.detail.notFoundTitle", "Visit not found")}>
-      <EmptyState glyph="∅" title={t("visit.detail.notFound", "Not in your scope or does not exist")}
-        body={t("visit.detail.notFoundDesc", "IDs never change or get reused (FLD-VIS-001).")} />
+    return <Shell current={shellCurrent} title={V.detail.notFoundTitle}>
+      <EmptyState glyph="∅" title={V.detail.notFound}
+        body={V.detail.notFoundDesc} />
     </Shell>;
   }
   const detail = page.data;
@@ -69,63 +70,63 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   }));
   const attErr = detail.attachmentsFailed;
   const attachmentsStrings: AttachmentsStrings = {
-    heading: t("visit.att.heading", "Attachments"),
-    empty: t("visit.att.empty", "No attachments yet — planners and operations can attach supporting files."),
-    colFile: t("visit.att.colFile", "File"),
-    colType: t("visit.att.colType", "Type"),
-    colUploaded: t("visit.att.colUploaded", "Uploaded"),
-    colBy: t("visit.att.colBy", "By"),
-    colActions: t("visit.att.colActions", "Actions"),
-    download: t("visit.att.download", "Download"),
-    remove: t("visit.att.remove", "Remove"),
-    removeAria: t("visit.att.removeAria", "Remove attachment {name}"),
-    fileLabel: t("visit.att.fileLabel", "Attach a file (planner or operations only)"),
-    uploadBtn: t("visit.att.uploadBtn", "Upload"),
-    uploading: t("visit.att.uploading", "Uploading…"),
-    urlFailed: t("visit.att.urlFailed", "download link not available"),
+    heading: V.att.heading,
+    empty: V.att.empty,
+    colFile: V.att.colFile,
+    colType: V.att.colType,
+    colUploaded: V.att.colUploaded,
+    colBy: V.att.colBy,
+    colActions: V.att.colActions,
+    download: V.att.download,
+    remove: V.att.remove,
+    removeAria: V.att.removeAria,
+    fileLabel: V.att.fileLabel,
+    uploadBtn: V.att.uploadBtn,
+    uploading: V.att.uploading,
+    urlFailed: V.att.urlFailed,
   };
   const notesStrings: NotesStrings = {
-    heading: t("visit.notes.heading", "Notes"),
-    label: t("visit.notes.label", "Visit notes"),
-    placeholder: t("visit.notes.placeholder", "Context for the inspector or operations — saved to the visit, audited"),
-    saveBtn: t("visit.notes.saveBtn", "Save notes"),
-    saving: t("visit.notes.saving", "Saving…"),
-    hint: t("visit.notes.hint", "Planner or operations only. Return reasons show in the visit history, not here (M8)."),
+    heading: V.notes.heading,
+    label: V.notes.label,
+    placeholder: V.notes.placeholder,
+    saveBtn: V.notes.saveBtn,
+    saving: V.notes.saving,
+    hint: V.notes.hint,
   };
   const actionStrings: ActionBarStrings = {
-    heading: t("visit.actions.heading", "Management actions — only valid changes are allowed"),
-    returnReason: t("visit.actions.returnReason", "Return reason *"),
-    returnComments: t("visit.actions.returnComments", "Return comments"),
-    returnBtn: t("visit.actions.returnBtn", "Return"),
-    republishBtn: t("visit.actions.republishBtn", "Republish (same ID)"),
-    reassignTo: t("visit.actions.reassignTo", "Reassign to"),
-    reassignReason: t("visit.actions.reassignReason", "Reassignment reason *"),
-    reassignBtn: t("visit.actions.reassignBtn", "Reassign"),
-    newWindowStart: t("visit.actions.newWindowStart", "New window start"),
-    newWindowEnd: t("visit.actions.newWindowEnd", "New window end"),
-    rescheduleBtn: t("visit.actions.rescheduleBtn", "Reschedule"),
-    cancelReason: t("visit.actions.cancelReason", "Cancellation reason *"),
-    cancelComments: t("visit.actions.cancelComments", "Cancellation comments"),
-    cancelBtn: t("visit.actions.cancelBtn", "Cancel visit"),
-    visitTypeLabel: t("visit.actions.visitTypeLabel", "Visit type (pre-start)"),
-    visitTypeBtn: t("visit.actions.visitTypeBtn", "Update type"),
+    heading: V.actions.heading,
+    returnReason: V.actions.returnReason,
+    returnComments: V.actions.returnComments,
+    returnBtn: V.actions.returnBtn,
+    republishBtn: V.actions.republishBtn,
+    reassignTo: V.actions.reassignTo,
+    reassignReason: V.actions.reassignReason,
+    reassignBtn: V.actions.reassignBtn,
+    newWindowStart: V.actions.newWindowStart,
+    newWindowEnd: V.actions.newWindowEnd,
+    rescheduleBtn: V.actions.rescheduleBtn,
+    cancelReason: V.actions.cancelReason,
+    cancelComments: V.actions.cancelComments,
+    cancelBtn: V.actions.cancelBtn,
+    visitTypeLabel: V.actions.visitTypeLabel,
+    visitTypeBtn: V.actions.visitTypeBtn,
     typePeriodic: t("enum.periodic", "Periodic compliance"),
     typeFollowUp: t("enum.follow_up", "Follow-up"),
     typeComplaint: t("enum.complaint", "Complaint"),
-    executionStarted: t("visit.actions.executionStarted", "Execution already started ({state}) — cancel and reschedule are locked"),
-    finalState: t("visit.actions.finalState", "final state — view only"),
-    zoneAvailable: t("visit.actions.zoneAvailable", "Available now"),
-    zoneBlocked: t("visit.actions.zoneBlocked", "Not available yet — why"),
-    zoneUnavailable: t("visit.actions.zoneUnavailable", "Not available in this state"),
-    reassignLockedWhy: t("visit.actions.reassignLockedWhy", "reassign locked — inspection already started ({state})"),
-    scheduleLockedWhy: t("visit.actions.scheduleLockedWhy", "locked — execution already started ({state}). Only published, new visits can be rescheduled, changed, or cancelled"),
-    noneAvailable: t("visit.actions.noneAvailable", "No management actions available in this state."),
-    commentsHint: t("visit.actions.commentsHint", "mandatory when the reason is Other"),
-    repackageLabel: t("visit.actions.repackageLabel", "New primary checklist (returned)"),
-    repackageBtn: t("visit.actions.repackageBtn", "Change checklist"),
-    duplicateBtn: t("visit.actions.duplicateBtn", "Duplicate visit"),
-    duplicateWhy: t("visit.actions.duplicateWhy", "Duplicate creates a new Draft with planning fields only."),
-    cutoffTitle: t("visit.actions.cutoffTitle", "Cutoff for cancelling and rescheduling"),
+    executionStarted: V.actions.executionStarted,
+    finalState: V.actions.finalState,
+    zoneAvailable: V.actions.zoneAvailable,
+    zoneBlocked: V.actions.zoneBlocked,
+    zoneUnavailable: V.actions.zoneUnavailable,
+    reassignLockedWhy: V.actions.reassignLockedWhy,
+    scheduleLockedWhy: V.actions.scheduleLockedWhy,
+    noneAvailable: V.actions.noneAvailable,
+    commentsHint: V.actions.commentsHint,
+    repackageLabel: V.actions.repackageLabel,
+    repackageBtn: V.actions.repackageBtn,
+    duplicateBtn: V.actions.duplicateBtn,
+    duplicateWhy: V.actions.duplicateWhy,
+    cutoffTitle: V.actions.cutoffTitle,
     cutoffBody: t(
       "visit.actions.cutoffBody",
       "The system checks the visit window again when you submit. You can cancel or reschedule until {cutoff} (Asia/Riyadh). Reassignment has no time limit.",
@@ -147,127 +148,122 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   const latestSub = insp ? [...insp.submission_versions].sort((a, b) => b.version_number - a.version_number)[0] : undefined;
   const reviews = insp?.reviews ?? [];
   const latestReview = reviews[reviews.length - 1];
-  const noEvt = t("visit.ribbon.noEvent", "no verified event yet");
+  const noEvt = V.ribbon.noEvent;
   const planningBoundary = canManage
-    ? t("visit.ribbon.b.manage", "Return · reschedule · change type · cancel")
-    : v.planning_status === "returned" ? t("visit.ribbon.b.returned", "Republish · correct · cancel")
-    : v.planning_status === "published" ? t("visit.ribbon.b.locked", "Return only — execution has started; you can't reassign this visit")
-    : t("visit.ribbon.b.none", "None — final state, view only");
+    ? V.ribbon.b.manage
+    : v.planning_status === "returned" ? V.ribbon.b.returned
+    : v.planning_status === "published" ? V.ribbon.b.locked
+    : V.ribbon.b.none;
   const ribbonTracks: RibbonTrack[] = [
-    { id: "planning", domainLabel: t("visit.ribbon.planning", "Planning"),
+    { id: "planning", domainLabel: V.ribbon.planning,
       stateLabel: t(`enum.${v.planning_status}`, v.planning_status), tone: PLAN_TONE[v.planning_status] ?? "",
       eventLabel: latestAudit ? `${t(`enum.audit.${latestAudit.action}`, latestAudit.action)} · ${fmt(latestAudit.occurred_at)}` : noEvt,
-      sourceLabel: t("visit.ribbon.src.audit", "append-only audit trail"),
-      boundaryLabel: planningBoundary, anchorHref: "#audit", anchorLabel: t("visit.ribbon.a.audit", "Open planning history") },
-    { id: "operational", domainLabel: t("visit.ribbon.operational", "Visit status"),
+      sourceLabel: V.ribbon.src.audit,
+      boundaryLabel: planningBoundary, anchorHref: "#audit", anchorLabel: V.ribbon.a.audit },
+    { id: "operational", domainLabel: V.ribbon.operational,
       stateLabel: t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " ")), tone: "",
-      eventLabel: latestGeo ? `${t(`enum.${latestGeo.kind}`, latestGeo.kind)} · ${fmt(latestGeo.occurred_at)}` : t("visit.ribbon.noJourney", "no journey yet"),
-      sourceLabel: t("visit.ribbon.src.field", "field app / journey engine"),
-      boundaryLabel: t("visit.ribbon.b.opRead", "Read-only here — owned by the field app (set_operational_state)"),
-      anchorHref: "#journey", anchorLabel: t("visit.ribbon.a.journey", "Open journey & location") },
-    { id: "assignment", domainLabel: t("visit.ribbon.assignment", "Assignment"),
-      stateLabel: asg ? t(`enum.${asg.status}`, asg.status) : t("visit.ribbon.unassigned", "unassigned"), tone: asg ? "badge-info" : "",
-      eventLabel: asg ? `${t(`enum.${asg.method}`, asg.method)} · ${asg.profiles?.full_name ?? "—"}` : t("visit.ribbon.noInspector", "no inspector assigned"),
-      sourceLabel: t("visit.ribbon.src.assign", "assignment record"),
-      boundaryLabel: canReassign ? t("visit.ribbon.b.reassign", "Reassign inspector (pre-start only)") : t("visit.ribbon.b.reassignLocked", "Read-only — reassignment locked"),
-      anchorHref: "#config", anchorLabel: t("visit.ribbon.a.config", "Open assignment") },
-    { id: "inspection", domainLabel: t("visit.ribbon.inspection", "Inspection"),
+      eventLabel: latestGeo ? `${t(`enum.${latestGeo.kind}`, latestGeo.kind)} · ${fmt(latestGeo.occurred_at)}` : V.ribbon.noJourney,
+      sourceLabel: V.ribbon.src.field,
+      boundaryLabel: V.ribbon.b.opRead,
+      anchorHref: "#journey", anchorLabel: V.ribbon.a.journey },
+    { id: "assignment", domainLabel: V.ribbon.assignment,
+      stateLabel: asg ? t(`enum.${asg.status}`, asg.status) : V.ribbon.unassigned, tone: asg ? "badge-info" : "",
+      eventLabel: asg ? `${t(`enum.${asg.method}`, asg.method)} · ${asg.profiles?.full_name ?? "—"}` : V.ribbon.noInspector,
+      sourceLabel: V.ribbon.src.assign,
+      boundaryLabel: canReassign ? V.ribbon.b.reassign : V.ribbon.b.reassignLocked,
+      anchorHref: "#config", anchorLabel: V.ribbon.a.config },
+    { id: "inspection", domainLabel: V.ribbon.inspection,
       stateLabel: insp ? t(`enum.${insp.status}`, insp.status.replace(/_/g, " ")) : t("enum.not_started", "not started"), tone: insp ? "badge-info" : "",
-      eventLabel: latestSub ? `v${latestSub.version_number} · ${fmt(latestSub.submitted_at)} · ${t("visit.detail.immutable", "final")}` : t("visit.ribbon.noSub", "not submitted"),
-      sourceLabel: t("visit.ribbon.src.insp", "inspection engine — submissions are final"),
-      boundaryLabel: t("visit.ribbon.b.read", "Read-only here"), anchorHref: "#inspection", anchorLabel: t("visit.ribbon.a.insp", "Open inspection & versions") },
-    { id: "review", domainLabel: t("visit.ribbon.review", "Review"),
-      stateLabel: latestReview ? t(`enum.${latestReview.decision ?? latestReview.status}`, (latestReview.decision ?? latestReview.status).replace(/_/g, " ")) : t("visit.ribbon.noReview", "no review"),
+      eventLabel: latestSub ? `v${latestSub.version_number} · ${fmt(latestSub.submitted_at)} · ${V.detail.immutable}` : V.ribbon.noSub,
+      sourceLabel: V.ribbon.src.insp,
+      boundaryLabel: V.ribbon.b.read, anchorHref: "#inspection", anchorLabel: V.ribbon.a.insp },
+    { id: "review", domainLabel: V.ribbon.review,
+      stateLabel: latestReview ? t(`enum.${latestReview.decision ?? latestReview.status}`, (latestReview.decision ?? latestReview.status).replace(/_/g, " ")) : V.ribbon.noReview,
       tone: latestReview?.decision === "approved" ? "badge-compliant" : latestReview?.decision === "rejected" ? "badge-critical" : latestReview ? "badge-warning" : "",
-      eventLabel: latestReview?.returned_sections?.length ? `${t("visit.detail.returnedSections", "returned")} ${latestReview.returned_sections.join(", ")}` : (latestReview ? t(`enum.${latestReview.status}`, latestReview.status.replace(/_/g, " ")) : t("visit.ribbon.noReviewEvt", "review not started")),
-      sourceLabel: t("visit.ribbon.src.review", "review engine"),
-      boundaryLabel: t("visit.ribbon.b.read", "Read-only here"), anchorHref: "#inspection", anchorLabel: t("visit.ribbon.a.review", "Open review outcome") },
+      eventLabel: latestReview?.returned_sections?.length ? `${V.detail.returnedSections} ${latestReview.returned_sections.join(", ")}` : (latestReview ? t(`enum.${latestReview.status}`, latestReview.status.replace(/_/g, " ")) : V.ribbon.noReviewEvt),
+      sourceLabel: V.ribbon.src.review,
+      boundaryLabel: V.ribbon.b.read, anchorHref: "#inspection", anchorLabel: V.ribbon.a.review },
   ];
   const ribbonStrings: RibbonStrings = {
-    heading: t("visit.ribbon.heading", "Lifecycle — five state domains"),
-    tablistLabel: t("visit.ribbon.tablist", "Visit state domains"),
-    stateWord: t("visit.ribbon.stateWord", "State"),
-    latestWord: t("visit.ribbon.latestWord", "Latest verified event"),
-    sourceWord: t("visit.ribbon.sourceWord", "Source of truth"),
-    boundaryWord: t("visit.ribbon.boundaryWord", "Allowed from here"),
+    heading: V.ribbon.heading,
+    tablistLabel: V.ribbon.tablist,
+    stateWord: V.ribbon.stateWord,
+    latestWord: V.ribbon.latestWord,
+    sourceWord: V.ribbon.sourceWord,
+    boundaryWord: V.ribbon.boundaryWord,
   };
-  const cutoffInstant = new Date(new Date(v.window_start).getTime() - 720 * 60 * 60 * 1000);
-  const cutoffDisplay = new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-GB", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "Asia/Riyadh",
-  }).format(cutoffInstant);
+  const cutoffDisplay = derived.cutoffDisplay;
   return (
-    <Shell current={shellCurrent} title={t("visit.detail.title", "Visit {id} — {factory}").replace("{id}", v.id.slice(0, 8)).replace("{factory}", f?.name ?? "—")}
+    <Shell current={shellCurrent} title={V.detail.title.replace("{id}", v.id.slice(0, 8)).replace("{factory}", f?.name ?? "—")}
       context={<>
         {/* M02-002 — full lifecycle: planning status + operational state */}
         <span className={`badge ${PLAN_BADGE[v.planning_status] ?? "badge-pending"}`}>{t(`enum.${v.planning_status}`, v.planning_status)}</span>
         <span className="badge badge-info">{t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}</span>
         {pkg && <span className="badge badge-outline">{pkg.packages?.code ?? "—"} · {pkg.version_label}</span>}
-        {isUnverifiedManual && <span className="badge badge-warning">{tr("visit.detail.unverifiedManual", "Unverified manual entry — pending reconciliation", "إدخال يدوي غير موثّق — بانتظار المطابقة")}</span>}
+        {isUnverifiedManual && <span className="badge badge-warning">{V.detail.unverifiedManual}</span>}
       </>}>
       {targetPreview && <div className="page-header" data-saqeel-design="WA-DES-045">
-        <div className="stack"><h1>{t("visit.detail.title", "Visit {id} — {factory}").replace("{id}", v.id.slice(0, 8)).replace("{factory}", f?.name ?? "—")}</h1>
+        <div className="stack"><h1>{V.detail.title.replace("{id}", v.id.slice(0, 8)).replace("{factory}", f?.name ?? "—")}</h1>
           <span className="id-code">{v.visit_reference ?? v.id}</span></div>
-        <a className="btn btn-ghost" href={routeBase}>{t("visit.detail.backToVisits", "Visits")}</a>
+        <a className="btn btn-ghost" href={routeBase}>{V.detail.backToVisits}</a>
       </div>}
       <CreatedToast created={created}
-        registeredMessage={t("visit.detail.createdToast", "Visit created and dispatched.")}
-        unregisteredMessage={t("visit.detail.createdToastUnregistered", "Unregistered establishment recorded and visit dispatched.")} />
+        registeredMessage={V.detail.createdToast}
+        unregisteredMessage={V.detail.createdToastUnregistered} />
       {/* CD-027 — signature interaction: Dual-State Ribbon (one per screen) */}
       <DualStateRibbon tracks={ribbonTracks} strings={ribbonStrings} />
       <div className="metric-strip">
         <section id="config">
-          <h2 className="panel-title">{t("visit.detail.configuration", "Configuration")}</h2>
-          <p>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)} · {t("visit.detail.window", "window")} <span className="id-code">{formatDateTime(v.window_start, locale)} → {formatDateTime(v.window_end, locale)}</span></p>
-          <p>{t("visit.detail.assignment", "Assignment:")} <strong>{asg?.profiles?.full_name ?? "—"}</strong> ({asg ? t(`enum.${asg.method}`, asg.method) : "—"}) {f ? <> · <a className="btn btn-ghost btn-sm" href={`/factories/${f.id}`}>{t("visit.detail.factory360", "Factory 360")}</a></> : null}</p>
+          <h2 className="panel-title">{V.detail.configuration}</h2>
+          <p>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)} · {V.detail.window} <span className="id-code">{formatDateTime(v.window_start, locale)} → {formatDateTime(v.window_end, locale)}</span></p>
+          <p>{V.detail.assignment} <strong>{asg?.profiles?.full_name ?? "—"}</strong> ({asg ? t(`enum.${asg.method}`, asg.method) : "—"}) {f ? <> · <a className="btn btn-ghost btn-sm" href={`/factories/${f.id}`}>{V.detail.factory360}</a></> : null}</p>
 
           {(v.immediate_creator_role || v.source_channel) && (
             <p className="t-caption">
-              {t("visit.detail.immediateProvenance", "Urgent visit creation:")}{" "}
+              {V.detail.immediateProvenance}{" "}
               {v.immediate_creator_role === "inspector"
-                ? tr("visit.detail.creatorInspector", "Inspector — self-created", "المفتش — إنشاء ذاتي")
-                : tr("visit.detail.creatorPlanner", "Planner", "المخطط")}
-              {v.internal_reference ? <> · {t("visit.detail.manualReason", "manual reason")} <bdi>{v.internal_reference}</bdi></> : null}
+                ? V.detail.creatorInspector
+                : V.detail.creatorPlanner}
+              {v.internal_reference ? <> · {V.detail.manualReason} <bdi>{v.internal_reference}</bdi></> : null}
               {v.source_channel ? <> · <bdi>{v.source_channel}</bdi></> : null}
             </p>
           )}
         </section>
         <section id="inspection">
-          <h2 className="panel-title">{t("visit.detail.inspectionVersions", "Inspection & versions")}</h2>
+          <h2 className="panel-title">{V.detail.inspectionVersions}</h2>
           {insp ? (
             <div className="stack">
               <span className="badge badge-info">{t(`enum.${insp.status}`, insp.status.replace(/_/g, " "))}</span>
               {insp.submission_versions.sort((a, b) => a.version_number - b.version_number).map(s => (
-                <p key={s.version_number} className="id-code"><span className="badge badge-outline">v{s.version_number}</span> {formatDateTime(s.submitted_at, locale)} · {t("visit.detail.immutable", "final")}</p>
+                <p key={s.version_number} className="id-code"><span className="badge badge-outline">v{s.version_number}</span> {formatDateTime(s.submitted_at, locale)} · {V.detail.immutable}</p>
               ))}
               {insp.reviews.map((r, i) => (
-                <p key={i} className="t-caption">{t("visit.detail.reviewPrefix", "review:")} {r.decision ? t(`enum.${r.decision}`, r.decision) : t(`enum.${r.status}`, r.status.replace(/_/g, " "))}{r.returned_sections ? ` · ${t("visit.detail.returnedSections", "returned")} ${r.returned_sections.join(",")}` : ""}</p>
+                <p key={i} className="t-caption">{V.detail.reviewPrefix} {r.decision ? t(`enum.${r.decision}`, r.decision) : t(`enum.${r.status}`, r.status.replace(/_/g, " "))}{r.returned_sections ? ` · ${V.detail.returnedSections} ${r.returned_sections.join(",")}` : ""}</p>
               ))}
               {/* M04-215 — official report (browser print-to-PDF is the production PDF path) */}
-              <p><a className="btn btn-ghost" href={`/reports/inspection/${insp.id}`}>{t("visit.detail.reportLink", "Official inspection report")}</a></p>
+              <p><a className="btn btn-ghost" href={`/reports/inspection/${insp.id}`}>{V.detail.reportLink}</a></p>
             </div>
-          ) : <p className="t-caption">{t("visit.detail.notStarted", "Not started.")}</p>}
+          ) : <p className="t-caption">{V.detail.notStarted}</p>}
         </section>
       </div>
       <div className="stack">
       {/* M02-005 — linked plan info: how this visit was planned, by whom, published when */}
       <section className="panel">
-        <div className="panel-header"><h2 className="panel-title">{t("visit.detail.planHeading", "Linked plan")}</h2></div>
+        <div className="panel-header"><h2 className="panel-title">{V.detail.planHeading}</h2></div>
         <div className="panel-body">
         {plan ? (
           <p>
             <span className="badge badge-info">{t(`enum.${plan.method}`, plan.method)}</span>{" "}
-            <span className="id-code"><strong>{plan.plan_reference ?? plan.id.slice(0, 8)}</strong></span> · {t("visit.detail.planCreatedBy", "created by")} <strong>{plan.profiles?.full_name ?? "—"}</strong>{" "}
+            <span className="id-code"><strong>{plan.plan_reference ?? plan.id.slice(0, 8)}</strong></span> · {V.detail.planCreatedBy} <strong>{plan.profiles?.full_name ?? "—"}</strong>{" "}
             <span className="id-code">{formatDateTime(plan.created_at, locale)}</span>
-            {plan.published_at && <> · {t("visit.detail.planPublishedAt", "published")} <span className="id-code">{formatDateTime(plan.published_at, locale)}</span></>}
+            {plan.published_at && <> · {V.detail.planPublishedAt} <span className="id-code">{formatDateTime(plan.published_at, locale)}</span></>}
             {" "}· <span className={`badge ${PLAN_BADGE[plan.status] ?? "badge-pending"}`}>{t(`enum.${plan.status}`, plan.status)}</span>
             {/* M8 — bulk context: this visit is one of N under the plan */}
-            {" "}· {t("visit.detail.siblings", "{n} visits under this plan").replace("{n}", String(siblingCount))}
-            {" "}· <a className="btn btn-ghost btn-sm" href={`/planning/plans/${plan.id}`}>{t("visit.detail.openPlan", "Open plan")}</a>
+            {" "}· {V.detail.siblings.replace("{n}", String(siblingCount))}
+            {" "}· <a className="btn btn-ghost btn-sm" href={`/planning/plans/${plan.id}`}>{V.detail.openPlan}</a>
           </p>
         ) : (
-          <p className="t-caption">{t("visit.detail.noPlan", "Urgent visit — created without a plan.")}</p>
+          <p className="t-caption">{V.detail.noPlan}</p>
         )}
         </div>
       </section>
@@ -277,7 +273,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
           and highlight this block. */}
       {returnReason && (
         <div id="return-block" className="alert alert-warning" tabIndex={focus === "return" ? -1 : undefined}>
-          {t("visit.detail.returnReason", "Returned — reason: {reason}").replace("{reason}", returnReason)}
+          {V.detail.returnReason.replace("{reason}", returnReason)}
           {latestReturnEvent?.comments ? <> · <bdi>{latestReturnEvent.comments}</bdi></> : null}
           {latestReturnEvent ? <span className="t-caption"> · {formatDateTime(latestReturnEvent.created_at, locale)}</span> : null}
         </div>
@@ -285,15 +281,15 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       {focus === "return" && returnReason ? <FocusScroll targetId="return-block" /> : null}
       {v.planning_status === "cancelled" && cancelReasonDisplay && (
         <div className="alert alert-critical">
-          {t("visit.detail.cancelledReason", "Cancelled — reason: {reason} (final)").replace("{reason}", cancelReasonDisplay)}
+          {V.detail.cancelledReason.replace("{reason}", cancelReasonDisplay)}
           {latestCancelEvent?.comments ? <> · <bdi>{latestCancelEvent.comments}</bdi></> : null}
         </div>
       )}
       {/* M8 — expiry provenance: rule reason + event comments, final/read-only */}
       {v.planning_status === "expired" && (
         <div className="alert alert-immutable">
-          {t("visit.detail.expiredReason", "Expired — {reason} (final; duplicate produces a new Draft)")
-            .replace("{reason}", expiryRuleReason ?? t("visit.detail.expiredUnknown", "lapsed by the scheduled expiry sweep"))}
+          {V.detail.expiredReason
+            .replace("{reason}", expiryRuleReason ?? V.detail.expiredUnknown)}
         </div>
       )}
       {/* FIX WAVE F4 — M02-043 notes add/edit */}
@@ -308,10 +304,10 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
           immutable snapshot; the primary (visits.package_version_id) is marked.
           Zero links = preparation chooses the checklist later (honest, allowed). */}
       <section id="packages" className="panel">
-        <div className="panel-header"><h2 className="panel-title">{t("visit.detail.packagesHeading", "Checklists used")}</h2></div>
+        <div className="panel-header"><h2 className="panel-title">{V.detail.packagesHeading}</h2></div>
         <div className="panel-body">
         {pkgLinks.length === 0 ? (
-          <p className="t-caption">{t("visit.detail.noPackages", "No checklist selected — the inspector chooses an eligible checklist during preparation.")}</p>
+          <p className="t-caption">{V.detail.noPackages}</p>
         ) : (
           <ul className="timeline">
             {pkgLinks.map(l => (
@@ -321,11 +317,11 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
                   <strong>{snapshotText(l.snapshot, "code") ?? l.package_version_id.slice(0, 8)}</strong>
                   {snapshotText(l.snapshot, "title") ? <> · {snapshotText(l.snapshot, "title")}</> : null}
                   {snapshotText(l.snapshot, "version_label") ? <> · <span className="badge badge-outline">{snapshotText(l.snapshot, "version_label")}</span></> : null}
-                  {l.package_version_id === v.package_version_id && <span className="badge badge-info">{t("visit.detail.primaryPackage", "primary")}</span>}
+                  {l.package_version_id === v.package_version_id && <span className="badge badge-info">{V.detail.primaryPackage}</span>}
                   <br />
                   <span className="tl-meta id-code">
-                    {t("visit.detail.packageLinkedAt", "linked")} {formatDateTime(l.added_at, locale)}
-                    {snapshotText(l.snapshot, "status") ? <> · {t("visit.detail.packageSnapshot", "snapshot at link time:")} {snapshotText(l.snapshot, "status")}</> : null}
+                    {V.detail.packageLinkedAt} {formatDateTime(l.added_at, locale)}
+                    {snapshotText(l.snapshot, "status") ? <> · {V.detail.packageSnapshot} {snapshotText(l.snapshot, "status")}</> : null}
                   </span>
                 </div>
               </li>
@@ -338,10 +334,10 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
           (return/cancel/republish/expire/duplicate/reschedule/reassign/
           discard_draft), reasons resolved through the governed lookups. */}
       <section id="lifecycle" className="panel">
-        <div className="panel-header"><h2 className="panel-title">{t("visit.detail.lifecycleHeading", "Lifecycle history — append-only")}</h2></div>
+        <div className="panel-header"><h2 className="panel-title">{V.detail.lifecycleHeading}</h2></div>
         <div className="panel-body">
         {lifecycleEvents.length === 0 ? (
-          <p className="t-caption">{t("visit.detail.noLifecycle", "No lifecycle events recorded yet.")}</p>
+          <p className="t-caption">{V.detail.noLifecycle}</p>
         ) : (
           <ul className="timeline">
             {lifecycleEvents.map(e => {
@@ -357,7 +353,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
                     {e.comments ? <> · <bdi>{e.comments}</bdi></> : null}
                     <br />
                     <span className="tl-meta id-code">
-                      {formatDateTime(e.created_at, locale)} · {e.actor ? t("visit.detail.auditActor", "by {who}").replace("{who}", e.actor.slice(0, 8)) : t("visit.detail.auditSystem", "system")}
+                      {formatDateTime(e.created_at, locale)} · {e.actor ? V.detail.auditActor.replace("{who}", e.actor.slice(0, 8)) : V.detail.auditSystem}
                     </span>
                   </div>
                 </li>
@@ -370,14 +366,14 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       {/* M8 — location provenance: current planned pin, first pin, and the
           additive visit_location_events stream (canonical §12). */}
       <section id="location" className="panel">
-        <div className="panel-header"><h2 className="panel-title">{t("visit.detail.locationHeading", "Location & provenance")}</h2></div>
+        <div className="panel-header"><h2 className="panel-title">{V.detail.locationHeading}</h2></div>
         <div className="panel-body">
         <p className="id-code">
-          {t("visit.detail.locationPlanned", "Planned pin:")}{" "}
-          {v.planner_lat != null && v.planner_lng != null ? `${v.planner_lat}, ${v.planner_lng}` : t("visit.detail.locationFactory", "factory location")}
+          {V.detail.locationPlanned}{" "}
+          {v.planner_lat != null && v.planner_lng != null ? `${v.planner_lat}, ${v.planner_lng}` : V.detail.locationFactory}
           {v.visit_location_source ? <> · {t(`enum.locationSource.${v.visit_location_source}`, v.visit_location_source)}</> : null}
           {v.original_lat != null && v.original_lng != null && (v.original_lat !== v.planner_lat || v.original_lng !== v.planner_lng) && (
-            <> · {t("visit.detail.locationOriginal", "first pin:")} {v.original_lat}, {v.original_lng}</>
+            <> · {V.detail.locationOriginal} {v.original_lat}, {v.original_lng}</>
           )}
         </p>
         {locationEvents.length > 0 && (
@@ -390,7 +386,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
                   {e.note ? <> · <bdi>{e.note}</bdi></> : null}
                   <br />
                   <span className="tl-meta id-code">
-                    {formatDateTime(e.created_at, locale)} · {e.actor ? t("visit.detail.auditActor", "by {who}").replace("{who}", e.actor.slice(0, 8)) : t("visit.detail.auditSystem", "system")}
+                    {formatDateTime(e.created_at, locale)} · {e.actor ? V.detail.auditActor.replace("{who}", e.actor.slice(0, 8)) : V.detail.auditSystem}
                   </span>
                 </div>
               </li>
@@ -400,7 +396,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         </div>
       </section>
       <section id="journey" className="panel">
-        <div className="panel-header"><h2 className="panel-title">{t("visit.detail.journeyHeading", "Journey & location events — cannot be edited")}</h2></div>
+        <div className="panel-header"><h2 className="panel-title">{V.detail.journeyHeading}</h2></div>
         <div className="panel-body">
         <ul className="timeline">
           {journeys.flatMap(j => j.geo_events.map(g => (
@@ -410,22 +406,22 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
                 <span className="tl-meta id-code">{formatDateTime(g.occurred_at, locale)} · gis {g.gis_version}</span></div>
             </li>
           )))}
-          {journeys.length === 0 && <p className="t-caption">{t("visit.detail.noJourney", "No journey yet.")}</p>}
+          {journeys.length === 0 && <p className="t-caption">{V.detail.noJourney}</p>}
         </ul>
         </div>
       </section>
       <section id="audit" className="panel">
-        <div className="panel-header"><h2 className="panel-title">{t("visit.detail.auditHeading", "Planning history — cannot be edited, only added to (latest 30)")}</h2></div>
+        <div className="panel-header"><h2 className="panel-title">{V.detail.auditHeading}</h2></div>
         <div className="panel-body">
         <ul className="timeline">
           {(auditRows ?? []).map(a => (
             <li key={a.id}>
               <span className="tl-dot" />
-              <div><strong>{t(`enum.audit.${a.action}`, a.action)}</strong> · {a.actor ? t("visit.detail.auditActor", "by {who}").replace("{who}", a.actor.slice(0, 8)) : t("visit.detail.auditSystem", "system")}<br />
+              <div><strong>{t(`enum.audit.${a.action}`, a.action)}</strong> · {a.actor ? V.detail.auditActor.replace("{who}", a.actor.slice(0, 8)) : V.detail.auditSystem}<br />
                 <span className="tl-meta id-code">{formatDateTime(a.occurred_at, locale)}</span></div>
             </li>
           ))}
-          {(auditRows ?? []).length === 0 && <p className="t-caption">{t("visit.detail.noAudit", "No audited changes yet, or you don't have audit-read access.")}</p>}
+          {(auditRows ?? []).length === 0 && <p className="t-caption">{V.detail.noAudit}</p>}
         </ul>
         </div>
       </section>
