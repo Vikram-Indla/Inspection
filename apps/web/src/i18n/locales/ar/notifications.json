@@ -1,0 +1,55 @@
+{
+  "heading": "الإشعارات",
+  "triggerLabel": "الإشعارات",
+  "triggerLabelWithUnread": "الإشعارات — غير مقروء: {count}",
+  "unreadCount": "غير مقروء: {count}",
+  "unreadTag": "غير مقروء",
+  "markAllRead": "تحديد الكل كمقروء",
+  "viewAll": "عرض كل الإشعارات",
+  "shown": "عرض {shown} من {total}",
+  "justNow": "الآن",
+  "error": "تعذر تحميل الإشعارات",
+  "notConfigured": "المزود قيد الانتظار",
+  "tabs": {
+    "all": "الكل",
+    "unread": "غير المقروءة"
+  },
+  "empty": {
+    "all": "لا توجد إشعارات",
+    "unread": "لا توجد إشعارات غير مقروءة"
+  },
+  "context": {
+    "reason": "السبب: {value}",
+    "decision": "القرار: {value}"
+  },
+  "channels": {
+    "inapp": "داخل التطبيق",
+    "push": "دفع",
+    "sms": "رسالة نصية",
+    "email": "بريد إلكتروني"
+  },
+  "events": {
+    "assignment": "تم إسناد زيارة جديدة",
+    "planning_supervision_requested": "خطة بانتظار الإشراف",
+    "planning_supervision_rejected": "رُفض إشراف الخطة",
+    "planning_visit_reschedule": "أُعيدت جدولة زيارة مخططة",
+    "planning_visit_reassign": "أُعيد إسناد زيارة مخططة",
+    "visit_cancelled": "تم إلغاء الزيارة",
+    "visit_returned": "أُعيدت الزيارة",
+    "visit_expired": "انتهت صلاحية الزيارة",
+    "visit_republished": "أُعيد نشر الزيارة",
+    "visit_rescheduled": "أُعيدت جدولة الزيارة",
+    "submission_received": "تقرير بانتظار المراجعة",
+    "resubmission": "إعادة إرسال بانتظار المراجعة",
+    "review_decision": "صدر قرار المراجعة",
+    "virtual_scheduled": "تمت جدولة جلسة افتراضية",
+    "virtual_rescheduled": "تمت إعادة جدولة الجلسة الافتراضية",
+    "virtual_closed": "أغلقت الجلسة الافتراضية",
+    "compliance_request_submitted": "تم إرسال طلب إعداد امتثال للمراجعة",
+    "compliance_request_returned": "أُعيد طلب إعداد الامتثال للتعديل",
+    "compliance_request_approved": "تمت الموافقة على طلب إعداد الامتثال",
+    "compliance_request_partially_approved": "تمت الموافقة جزئياً على طلب إعداد الامتثال",
+    "compliance_request_rejected": "تم رفض طلب إعداد الامتثال",
+    "compliance_request_published": "تم نشر إعداد الامتثال المعتمد"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "heading": "Notifications",
+  "triggerLabel": "Notifications",
+  "triggerLabelWithUnread": "Notifications — {count} unread",
+  "unreadCount": "{count} unread",
+  "unreadTag": "unread",
+  "markAllRead": "Mark all read",
+  "viewAll": "View all notifications",
+  "shown": "Showing {shown} of {total}",
+  "justNow": "Just now",
+  "error": "Notifications are unavailable",
+  "notConfigured": "Provider pending",
+  "tabs": {
+    "all": "All",
+    "unread": "Unread"
+  },
+  "empty": {
+    "all": "No notifications",
+    "unread": "No unread notifications"
+  },
+  "context": {
+    "reason": "Reason: {value}",
+    "decision": "Decision: {value}"
+  },
+  "channels": {
+    "inapp": "in-app",
+    "push": "push",
+    "sms": "SMS",
+    "email": "email"
+  },
+  "events": {
+    "assignment": "New visit assigned",
+    "planning_supervision_requested": "Plan awaiting supervision",
+    "planning_supervision_rejected": "Plan supervision rejected",
+    "planning_visit_reschedule": "Planned visit rescheduled",
+    "planning_visit_reassign": "Planned visit reassigned",
+    "visit_cancelled": "Visit cancelled",
+    "visit_returned": "Visit returned",
+    "visit_expired": "Visit expired",
+    "visit_republished": "Visit republished",
+    "visit_rescheduled": "Visit rescheduled",
+    "submission_received": "Submission awaiting review",
+    "resubmission": "Resubmission awaiting review",
+    "review_decision": "Review decided",
+    "virtual_scheduled": "Virtual session scheduled",
+    "virtual_rescheduled": "Virtual session rescheduled",
+    "virtual_closed": "Virtual session closed",
+    "compliance_request_submitted": "Compliance request submitted for review",
+    "compliance_request_returned": "Compliance request returned for revision",
+    "compliance_request_approved": "Compliance request approved",
+    "compliance_request_partially_approved": "Compliance request partially approved",
+    "compliance_request_rejected": "Compliance request rejected",
+    "compliance_request_published": "Approved compliance configuration published"
+  }
+}

@@ -1,0 +1,184 @@
+.root {
+  position: relative;
+  display: inline-flex;
+}
+
+.trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--sqx-control-h-md);
+  block-size: var(--sqx-control-h-md);
+  color: var(--sqx-text-muted);
+  background: transparent;
+  border: var(--sqx-border-width-hair) solid transparent;
+  border-radius: var(--sqx-radius-control);
+  cursor: pointer;
+  transition: background-color var(--sqx-duration-fast) var(--sqx-ease-standard);
+}
+
+.trigger:hover {
+  color: var(--sqx-text-primary);
+  background: var(--sqx-surface-subtle);
+}
+
+.trigger[aria-expanded="true"] {
+  color: var(--sqx-text-accent);
+  background: var(--sqx-surface-accent);
+}
+
+.trigger:focus-visible {
+  outline: var(--sqx-focus-ring-width) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}
+
+.badge {
+  position: absolute;
+  inset-block-start: var(--sqx-space-1);
+  inset-inline-end: var(--sqx-space-1);
+  display: inline-flex;
+  pointer-events: none;
+}
+
+.panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-block-size: 0;
+  inline-size: var(--sqx-menu-max-w);
+  max-inline-size: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sqx-space-3);
+  padding-inline: var(--sqx-space-4);
+  padding-block: var(--sqx-space-3);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.headline {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-3);
+  min-inline-size: 0;
+}
+
+.textAction,
+.tab {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.textAction {
+  padding-inline: var(--sqx-space-2);
+  padding-block: var(--sqx-space-1);
+  border-radius: var(--sqx-radius-sm);
+}
+
+.textAction:hover {
+  background: var(--sqx-surface-subtle);
+}
+
+.tabs {
+  display: flex;
+  gap: var(--sqx-space-1);
+  padding-inline: var(--sqx-space-3);
+  padding-block: var(--sqx-space-2);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  background: var(--sqx-surface-subtle);
+}
+
+.tab {
+  padding-inline: var(--sqx-space-3);
+  padding-block: var(--sqx-space-1);
+  border-radius: var(--sqx-radius-pill);
+  color: var(--sqx-text-secondary);
+}
+
+.tab:hover {
+  color: var(--sqx-text-primary);
+}
+
+.tab[aria-pressed="true"] {
+  color: var(--sqx-text-accent);
+  background: var(--sqx-surface-accent);
+}
+
+.textAction:focus-visible,
+.tab:focus-visible,
+.footerAction:focus-visible {
+  outline: var(--sqx-focus-ring-width) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}
+
+/* `contain: paint` is load-bearing, not an optimisation. `menu-surface`'s root
+   is itself `overflow-y: auto`, and without containment this list's 1466px of
+   rows counted toward that root's scroll height even though this box already
+   clips them — measured 1473 against a 435px client, so the panel scrolled its
+   own header and tabs out of view into 1038px of nothing. Neither a definite
+   height here nor `overflow` on the panel changed it; only containment did. */
+.scroller {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  max-block-size: var(--sqx-menu-max-h);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  contain: paint;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sqx-grey-a32) transparent;
+}
+
+.scroller::-webkit-scrollbar {
+  inline-size: var(--sqx-space-3);
+}
+
+.scroller::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroller::-webkit-scrollbar-thumb {
+  background: var(--sqx-grey-a32);
+  border-radius: var(--sqx-radius-pill);
+}
+
+.scroller::-webkit-scrollbar-thumb:hover {
+  background: var(--sqx-grey-a48);
+}
+
+.list {
+  display: block;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-3);
+  padding-inline: var(--sqx-space-4);
+  padding-block: var(--sqx-space-3);
+  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.footerAction {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--sqx-space-2);
+  padding-block: var(--sqx-space-1);
+  border-radius: var(--sqx-radius-sm);
+  text-decoration: none;
+}
+
+.footerAction:hover {
+  background: var(--sqx-surface-subtle);
+}

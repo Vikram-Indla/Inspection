@@ -5,7 +5,8 @@ import Link from "next/link";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
-import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
+import NotificationBell from "@/components/notifications/notification-bell";
+import type { NotificationStrings } from "@/features/shell/notification-strings";
 import SaqeelBrandMark from "@/components/SaqeelBrandMark";
 import ShellNavIcon from "@/components/ShellNavIcon";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -131,7 +132,7 @@ export default function ShellClient({
   children: ReactNode;
   groups: ShellClientNavGroup[];
   strings: ShellClientStrings;
-  bellStrings: BellStrings;
+  bellStrings: NotificationStrings;
   locale: "ar" | "en";
   email: string;
   displayName: string;
