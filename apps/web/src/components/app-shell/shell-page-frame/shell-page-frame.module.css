@@ -22,7 +22,6 @@
   align-items: center;
   gap: var(--sqx-space-3);
   padding: 0;
-  font: var(--sqx-text-caption);
   color: var(--sqx-text-muted);
   list-style: none;
 }
@@ -52,15 +51,7 @@
   min-inline-size: 0;
 }
 
-.title {
-  font: var(--sqx-text-title);
-  letter-spacing: var(--sqx-text-title-tracking);
-  color: var(--sqx-text-primary);
-}
-
 .description {
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-secondary);
   max-inline-size: var(--sqx-prose-max);
 }
 

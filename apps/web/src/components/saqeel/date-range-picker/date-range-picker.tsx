@@ -38,6 +38,19 @@ export type DateRangePickerProps = {
   monthLabels: { previous: string; next: string };
   strings?: DateRangeStrings;
   disabled?: boolean;
+  /**
+   * Let `reset` commit an empty range instead of only clearing the draft.
+   *
+   * Off by default because most callers require a range: there, `reset` returns
+   * the draft to nothing so the reader picks again, and `apply` stays disabled
+   * until both ends are set. A filter is the other case — "no date scope" is a
+   * legitimate value, and without this the reader can clear the draft but never
+   * commit it, because `apply` is disabled on exactly the state `reset` creates.
+   *
+   * When on, the caller must accept `{ from: "", to: "" }` from `onChange` and
+   * render its own unset `displayValue`; the picker never invents one.
+   */
+  clearable?: boolean;
   align?: "start" | "end";
   /**
    * Fill the container instead of shrink-wrapping.
@@ -120,6 +133,7 @@ export default function DateRangePicker({
   monthLabels,
   strings = DEFAULT_STRINGS,
   disabled,
+  clearable = false,
   align = "start",
   block = false,
   withTime = false,
@@ -195,6 +209,10 @@ export default function DateRangePicker({
     setDraftFrom("");
     setDraftTo("");
     setEditing("from");
+    if (clearable) {
+      onChange({ from: "", to: "" });
+      close(true);
+    }
   }
 
   function onGridKeyDown(event: KeyboardEvent<HTMLDivElement>): void {

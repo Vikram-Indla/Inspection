@@ -4,7 +4,7 @@
   justify-content: center;
   flex: none;
   padding-inline: var(--sqx-space-2);
-  font: var(--sqx-text-code);
+  font: var(--sqx-text-mono);
   font-variant-numeric: var(--sqx-numeric-tabular);
   color: var(--sqx-text-muted);
   background: var(--sqx-surface-sunken);

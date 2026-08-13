@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { type ReactNode } from "react";
+import { Text } from "@/components/saqeel/type";
 import { getShellView } from "@/features/shell/queries";
 import { useT } from "@/lib/i18n";
 import { localeHref } from "@/lib/locale-path";
@@ -16,7 +17,9 @@ export default async function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className={styles.shell}>
       <a className={styles.skipLink} href="#main-content">
-        {t("shell.skip", ar ? "الانتقال إلى المحتوى" : "Skip to content")}
+        <Text as="span" role="label" tone="inherit">
+          {t("shell.skip", ar ? "الانتقال إلى المحتوى" : "Skip to content")}
+        </Text>
       </a>
 
       <ShellRail groups={view.groups} pathname={view.pathname} variant="rail" />

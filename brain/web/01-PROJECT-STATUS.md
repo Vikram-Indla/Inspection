@@ -1,6 +1,202 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-12` · `Updated by: T-096 — /planning/immediate declutter`
+`Last updated: 2026-08-14` · `Updated by: T-104 — shell typography`
+
+## The shell was charging every route 61 violations, and the tracker said 1 (2026-08-14)
+
+`app/(app)/layout.tsx:2` imports `components/app-shell/app-shell`. Its **66
+violations were live on every route in the application** — including the thirteen
+planning routes this document recorded as *"1 violation each — `NotificationBell.tsx:270`,
+the shell"*. That count caught the shell's one **inline style** and none of its 59
+**CSS declarations**.
+
+T-104 took it to **2**. Every migrated route's shared floor is now 61 → 2, which
+is more violations closed than the next five route tasks combined.
+
+**This is T-083's lesson arriving a second time.** That task established *"a
+shared primitive's debt is every route's debt"* and cleared the floor from
+`components/saqeel/*`. Nobody applied it to the shell, because the per-route count
+never showed it. **When a route reports a suspiciously round number, ask what the
+counter was scoped to.**
+
+## `font: inherit` inherits the frozen sheet, and that is app-wide (2026-08-14)
+
+An `<input>` has no children, so it cannot host a type primitive; §11.2's
+`font: inherit` is the only available fix, and it is legal in feature CSS —
+it matches neither `raw-typography-property` (which lists the longhands) nor
+`font-shorthand-outside-design-system` (which requires `var(--sqx-text-`).
+
+Measured after applying it: both shell inputs render **14px/21px**. Family and
+size are right; the leading is **1.5**, the legacy value, because
+`saqeel-runtime.css:19` still beats `saqeel.css:869` on `<body>`. On a
+single-line control that is inert — **but every `font: inherit` this programme
+writes from now on resolves against the frozen sheet until the two-body-rule
+conflict is ruled on.** That conflict was already recorded; its blast radius was
+not.
+
+## A partial replace looks like success; a zero-match does not (2026-08-14)
+
+`shell-nav-item.tsx` renders the same two lines twice — a disabled `<span>` branch
+at 8-space indent, an enabled `<Link>` branch at 6. A `replace_all` on the 8-space
+form matched **one** occurrence and reported success. The CSS had already lost its
+`font`, so **every clickable nav item in the application rendered at inherited
+14px/400 instead of 12px/600**, and the typography gate reported *9 violations
+removed* and stayed green — it counts declarations deleted, not text rendered.
+
+This is the fourth instance of a shape recorded three times already (T-058's rule
+matching 0 of 24, T-076's regex 0 of 7, T-090's CRLF replace on an unchanged
+file). The earlier three were **zero**-match, which announces itself. **A partial
+match is strictly worse: the tool reports success and the diff looks right.**
+After a multi-site edit, count the sites you expected against the sites you
+changed — and re-render.
+
+## Zero importers is not evidence of death when the ledger says otherwise (2026-08-14)
+
+`shell-page-frame` was deleted as dead code and restored. It has no importers, no
+spec reads it, no script names it — and `04-COMPONENT-LEDGER.md:180` says
+*"Supersedes the default `Shell` export; adopting it in the 55 route files is
+future work."* **Zero importers is its expected state.**
+
+T-077's checklist for "is this really dead" covers `e2e/` and `scripts/` because
+a spec that reads a file as text pins it. **The ledger belongs on that list, and
+it is the cheapest check of the three** — one row states the component's intended
+future.
+
+## Reuse is conditional on the primitive being clean (2026-08-14)
+
+The ledger rule is *never build what already exists*. T-104 hit two components
+that existed and used neither:
+
+- **`Avatar`** renders `className="avatar"` — a **frozen-sheet global** — plus an
+  inline `style`, and its `UserChip` sibling carries `t-caption` and
+  `fontWeight: 500`. Composing it would have imported three legacy constructs to
+  remove one.
+- **`CountBadge`** renders identical type and the identical danger tokens, but
+  `--sqx-radius-sm` against the rail badge's `--sqx-radius-pill`, plus different
+  min-width and padding — a **shape** change riding inside a typography task.
+
+`Kbd` and `Heading` were adopted on the same test. **Read the primitive's own
+stylesheet before composing it; the ledger tells you a component exists, not that
+it is fit to reuse.**
+
+## Is a logotype typography at all? (2026-08-14)
+
+Two violations survive in `shell-brand.module.css` deliberately. `صقيل` renders at
+`font: var(--sqx-text-subheading)` (16px). `Text` cannot express `subheading` —
+`TextRole` is body · bodyStrong · label · overline · mono — and `Heading` can, but
+only by emitting an `<h1>`–`<h6>`, which would inject a heading into the outline
+of **every page** and break "exactly one `display` per route".
+
+§11.4 says extend the primitive. That was not done, because §2 defines
+`subheading` as *"a named group inside a card"* and a bilingual wordmark is not
+one. **Adding `subheading` to `TextRole` would settle the question by accident**
+and hand every feature a 16px non-heading — precisely the expressiveness §1
+removed on purpose.
+
+The decision needed is not *how do we reach 16px from `Text`*. It is **whether a
+logotype is governed by the type scale, or is a mark that happens to be set in the
+UI face.** WEB-002 §2 and §10 both say a gap stops the work and is raised.
+
+
+## 1,142 shipped defects were invisible, and four tasks paid for it one at a time (2026-08-14)
+
+This document already recorded the hole three times and the tracker a fourth:
+T-090, T-091, T-092 and T-097 each found their real defect by **measuring a
+render**, after the gate had reported the route clean. Reading it as four unlucky
+sessions was the mistake. It was one tooling defect, charged four times.
+
+T-102 closed it. `check-typography.mjs` now detects legacy type classes used from
+JSX, `--type-*` outside the frozen sheets, and inline font styles spanning more
+than one line — the last of which was never a rule failure at all: **the rule was
+correct and the engine tested single lines, so `[^}]*` could never cross a
+newline.**
+
+```
+baseline 733 → 1846      +1142 newly detected      −29 from the concurrent T-101
+legacy-type-class-in-jsx +944   legacy-type-token +179   inline-font-style +18
+```
+
+**The ratchet governs regressions, not detection.** WEB-014 §8 says a task
+raising the baseline is rejected on sight; applied to a *detection* improvement
+that makes every blind spot permanent by construction. The rule text needs the
+distinction written into it.
+
+**Derive the list, do not invent it.** The fourteen banned classes came from
+parsing all four frozen sheets for blocks whose body is *only* typography —
+`tokens.css:219-230`, `saqeel-runtime.css:61`, `saqeel-components.css:163`. The
+same sheets define ~180 further classes carrying a font (`.kpi-label`,
+`.spine-title`); those are **component** classes, and banning them from JSX is a
+migration decision wearing a typography costume. A detection rule is only as
+defensible as its derivation.
+
+## Two sessions ran at once and the working tree is entangled (2026-08-14)
+
+A second session completed a task **also numbered T-101** while this one was
+running. That work is good and clean — `components/notifications/*` scores zero —
+but two consequences need a human:
+
+**`typography-baseline.json` is co-owned by two uncommitted tasks.** The 1846
+figure includes T-101's −29 for the deleted `NotificationBell.*`. Revert one
+without the other and the gate fails with 29 phantom "new" violations. **The two
+changes land in the same commit or not at all.**
+
+**This is the third ID collision** — T-076 twice, now T-101 twice. This document
+already prescribed the fix after the first one — *claim the ID in the tracker at
+the start of a task* — and nothing implements it. A prescription nobody
+implements is not a control; the tracker needs the reservation or the collisions
+continue.
+
+## `npm run lint` has never existed (2026-08-14)
+
+`package.json` has `typecheck`, `gates`, `gates:typography`, `check:design-system-v5`,
+`verify:dates` — and no `lint`. WEB-008 §3 and `CLAUDE.md` both require
+`npm run lint` clean before a task is done, and the session template has a
+checkbox for it. **Every session that ticked it ticked something it could not
+have run.**
+
+Second instance of the same shape after T-077 found `gate:retirement` missing
+while WEB-006 §4 mandated it. **When a rule names a command, run the command
+before trusting the tick** — and `npm run gates` is currently red for everyone on
+a pre-existing `check:design-system-v5` finding in
+`src/lib/analytics/query-state.ts:18`, a file no current session has touched.
+
+## A duplicated string map hid in the shell for the whole programme (2026-08-14)
+
+T-101 found the 56-key notification string map written out **twice, verbatim** —
+`components/Shell.tsx:162-218` and `features/shell/notification-strings.ts` —
+each using both patterns WEB-013 bans outright (`t(key, "English")` *and*
+`locale === "ar" ? … : …`). Neither copy could drift visibly, because the two
+shells are never rendered on the same route, so nothing would ever have surfaced
+it.
+
+**Look for the same shape elsewhere.** `Shell.tsx` (legacy) and
+`components/app-shell/` (T-004 rebuild) are two live shells serving different
+route sets. Anything the topbar renders is a candidate for having been written
+twice — `shellStrings` in `Shell.tsx` still holds **~83** `locale === "ar"`
+branches, and `shell-topbar.tsx` reads the same concepts from `getMessages`.
+
+## A nested scroller leaks into `menu-surface` without `contain` (2026-08-14)
+
+`menu-surface`'s root is `overflow-y: auto`. Any panel that puts its own
+`overflow-y: auto` region inside it **must also carry `contain: paint`**, or the
+inner list's full height counts toward the root's scroll height even though the
+inner box already clips it. Measured on the notification panel: **1473 against a
+435px client**, so the panel scrolled its own header and tabs out of view into
+1038px of nothing.
+
+A definite height on the inner scroller, `overflow: hidden` on the panel, and
+`overflow-y: clip` on the root **all measured no change.** Only containment
+worked. Every future `MenuSurface` consumer with a scrolling region inherits
+this — check `scrollHeight − clientHeight` on the root, not the appearance.
+
+## A gate cannot see a wrong plural (2026-08-14)
+
+The Arabic relative time read `قبل ٥ ساعة` — the singular, for every count above
+two — because `hoursAgo: "قبل {n} ساعة"` interpolated a bare noun. It lived in a
+resource file, in written Arabic, with the key present in both locales: **every
+i18n check this repository has was green on it.** Hand-rolled plurals are banned
+by WEB-013 §4 and this is why. Where a count meets a noun, use
+`Intl.RelativeTimeFormat` / `Intl.PluralRules`, not a template.
 
 ## A parent `loading.tsx` may be hiding every nested skeleton (2026-08-12)
 

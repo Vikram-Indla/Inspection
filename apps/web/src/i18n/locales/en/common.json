@@ -32,6 +32,7 @@
     "to": "To"
   },
   "scope": {
+    "anyDate": "Any date",
     "allRegions": "All Regions",
     "today": "Today",
     "yesterday": "Yesterday",

@@ -12,7 +12,7 @@ import styles from "./shell-topbar.module.css";
 
 type ScopeStrings = Readonly<Record<
   "dateScope" | "from" | "to" | "apply" | "regionScope" | "allRegions"
-  | "notApplicable" | "previousMonth" | "nextMonth",
+  | "notApplicable" | "previousMonth" | "nextMonth" | "anyDate",
   string
 >> & { readonly presets: DateRangePresetLabels };
 
@@ -67,11 +67,12 @@ export default function ShellScopeControls({ scope, regions, initialFrom, initia
           replaceScope({ from: range.from, to: range.to });
         }}
         label={strings.dateScope}
-        displayValue={formatDateRange(from, to, locale)}
+        displayValue={from && to ? formatDateRange(from, to, locale) : strings.anyDate}
         presets={pastDateRangePresets(strings.presets)}
         locale={locale}
         monthLabels={{ previous: strings.previousMonth, next: strings.nextMonth }}
         disabled={!scope.date}
+        clearable
       />
 
       <SaqeelSelect

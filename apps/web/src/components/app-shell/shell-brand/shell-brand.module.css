@@ -31,7 +31,5 @@
 }
 
 .brandEn {
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
   color: var(--sqx-text-muted);
 }

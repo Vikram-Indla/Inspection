@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 import Icon from "@/components/saqeel/icon/icon";
 import type { IconName } from "@/components/saqeel/icon/icon-registry";
+import { Text } from "@/components/saqeel/type";
 import type { ShellNavItem } from "@/features/shell/types";
 import {
   shellGlobalSearchHref,
@@ -113,19 +114,25 @@ export default function ShellSearch({ isFieldOnly, locale, navigationItems, stri
             <Link className={styles.searchResult} role="option" aria-selected="false"
               key={`nav-${item.id}`} href={localeHref(locale, item.href)} prefetch={false} data-next-spa="true" onClick={dismiss}>
               <Icon name={item.icon} size="sm" />
-              <span><strong>{item.label}</strong><small>{strings.navigation}</small></span>
+              <span>
+                <Text as="strong" role="bodyStrong">{item.label}</Text>
+                <Text as="span" role="label" tone="muted">{strings.navigation}</Text>
+              </span>
             </Link>
           ))}
           {results.map(result => (
             <Link className={styles.searchResult} role="option" aria-selected="false"
               key={`${result.type}-${result.id}`} href={localeHref(locale, result.href)} prefetch={false} data-next-spa="true" onClick={dismiss}>
               <Icon name={RESULT_ICON[result.type]} size="sm" />
-              <span><strong>{result.label}</strong><small>{result.detail}</small></span>
+              <span>
+                <Text as="strong" role="bodyStrong">{result.label}</Text>
+                <Text as="span" role="label" tone="muted">{result.detail}</Text>
+              </span>
             </Link>
           ))}
-          {state === "loading" ? <p role="status">{strings.loading}</p> : null}
-          {state === "failed" ? <p role="alert">{strings.failed}</p> : null}
-          {state === "ready" && !results.length && !navigationMatches.length ? <p role="status">{strings.empty}</p> : null}
+          {state === "loading" ? <Text live="status" tone="muted">{strings.loading}</Text> : null}
+          {state === "failed" ? <Text live="alert" tone="muted">{strings.failed}</Text> : null}
+          {state === "ready" && !results.length && !navigationMatches.length ? <Text live="status" tone="muted">{strings.empty}</Text> : null}
         </div>
       ) : null}
     </div>

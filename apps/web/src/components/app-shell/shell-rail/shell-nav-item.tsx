@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Icon from "@/components/saqeel/icon/icon";
+import { Text } from "@/components/saqeel/type";
 import { localeHref, type Locale } from "@/lib/locale-path";
 import type { ShellNavItem } from "@/features/shell/types";
 import styles from "./shell-rail.module.css";
@@ -27,8 +28,14 @@ export default function ShellNavItemLink({ item, locale, isCurrent, isChild }: S
         tabIndex={0}
       >
         <Icon name={item.icon} size="md" />
-        <span className={styles.itemLabel}>{item.label}</span>
-        {item.badge ? <span className={styles.itemBadge}>{item.badge}</span> : null}
+        <span className={styles.itemLabel}>
+          <Text as="span" role="label" tone="inherit">{item.label}</Text>
+        </span>
+        {item.badge ? (
+          <span className={styles.itemBadge}>
+            <Text as="span" role="bodyStrong" tone="inherit" numeric>{item.badge}</Text>
+          </span>
+        ) : null}
         <span className={styles.itemLock}>
           <Icon name="restricted" size="sm" />
         </span>
@@ -48,8 +55,14 @@ export default function ShellNavItemLink({ item, locale, isCurrent, isChild }: S
       data-next-spa="true"
     >
       <Icon name={item.icon} size="md" />
-      <span className={styles.itemLabel}>{item.label}</span>
-      {item.badge ? <span className={styles.itemBadge}>{item.badge}</span> : null}
+      <span className={styles.itemLabel}>
+        <Text as="span" role="label" tone="inherit">{item.label}</Text>
+      </span>
+      {item.badge ? (
+        <span className={styles.itemBadge}>
+          <Text as="span" role="bodyStrong" tone="inherit" numeric>{item.badge}</Text>
+        </span>
+      ) : null}
     </Link>
   );
 }

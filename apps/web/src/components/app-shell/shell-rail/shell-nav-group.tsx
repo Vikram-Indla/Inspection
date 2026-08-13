@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { type CSSProperties } from "react";
 import Icon from "@/components/saqeel/icon/icon";
+import { Overline, Text } from "@/components/saqeel/type";
 import { stripLocale, type Locale } from "@/lib/locale-path";
 import { shellRouteOf } from "@/lib/route-rewrites";
 import { isShellRouteCurrent } from "@/lib/shell-navigation";
@@ -45,7 +46,7 @@ function Subgroup({ entry, groupId, locale, pathname }: {
     >
       <p className={styles.subgroupLabel} id={`sqx-nav-${groupId}-${entry.id}`}>
         <Icon name={entry.icon} size="md" />
-        <span>{entry.label}</span>
+        <Text as="span" role="label" tone="inherit">{entry.label}</Text>
       </p>
       {entry.items.map(item => (
         <ShellNavItemLink
@@ -73,7 +74,9 @@ export default function ShellNavGroupSection({ group, locale, pathname }: ShellN
     >
       <summary className={styles.groupSummary}>
         {group.isAdministration ? <Icon name="admin" size="md" /> : null}
-        <span className={styles.groupLabel}>{group.label}</span>
+        <span className={styles.groupLabel}>
+          <Overline as="span" tone="inherit">{group.label}</Overline>
+        </span>
         <span className={styles.groupChevron}>
           <Icon name="disclosure" size="sm" />
         </span>

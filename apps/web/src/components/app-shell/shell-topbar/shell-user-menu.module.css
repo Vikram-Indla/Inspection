@@ -9,6 +9,7 @@
   gap: var(--sqx-space-3);
   min-block-size: var(--sqx-control-h-md);
   padding-inline: var(--sqx-space-3);
+  font: inherit;
   color: var(--sqx-text-muted);
   background: transparent;
   border: var(--sqx-border-width-hair) solid transparent;
@@ -29,11 +30,6 @@
   flex: none;
   inline-size: var(--sqx-space-8);
   block-size: var(--sqx-space-8);
-  font-family: var(--sqx-font-sans);
-  font-size: var(--sqx-text-caption-size);
-  line-height: 1;
-  font-weight: var(--sqx-weight-semibold);
-  color: var(--sqx-text-accent);
   background: var(--sqx-surface-accent);
   border: var(--sqx-border-width-hair) solid var(--sqx-border-accent);
   border-radius: var(--sqx-radius-pill);
@@ -45,18 +41,6 @@
   align-items: flex-start;
   gap: var(--sqx-space-1);
   min-inline-size: 0;
-}
-
-.name {
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
-  font-weight: var(--sqx-weight-semibold);
-  color: var(--sqx-text-primary);
-}
-
-.role {
-  font: var(--sqx-text-caption);
-  color: var(--sqx-text-muted);
 }
 
 .panel {
@@ -73,15 +57,7 @@
   padding-block: var(--sqx-space-5) var(--sqx-space-4);
 }
 
-.headlineName {
-  font: var(--sqx-text-body-strong);
-  letter-spacing: var(--sqx-text-body-strong-tracking);
-  color: var(--sqx-text-primary);
-}
-
 .headlineEmail {
-  font: var(--sqx-text-caption);
-  color: var(--sqx-text-muted);
   overflow-wrap: anywhere;
 }
 
@@ -98,16 +74,9 @@
   align-items: baseline;
   justify-content: space-between;
   gap: var(--sqx-space-5);
-  font: var(--sqx-text-caption);
-}
-
-.detailLabel {
-  color: var(--sqx-text-muted);
 }
 
 .detailValue {
-  font-weight: var(--sqx-weight-semibold);
-  color: var(--sqx-text-secondary);
   text-align: end;
 }
 
@@ -129,8 +98,6 @@
   gap: var(--sqx-space-3);
   min-block-size: var(--sqx-touch-target);
   padding-inline: var(--sqx-space-4);
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
   color: var(--sqx-text-secondary);
   text-decoration: none;
   background: transparent;

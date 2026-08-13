@@ -72,9 +72,6 @@
   gap: var(--sqx-space-3);
   min-block-size: var(--sqx-touch-target);
   padding-inline: var(--sqx-space-3);
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
   color: var(--sqx-text-muted);
   border-radius: var(--sqx-radius-control);
   cursor: pointer;
@@ -141,8 +138,6 @@
   gap: var(--sqx-space-3);
   min-block-size: var(--sqx-touch-target);
   padding-inline: var(--sqx-space-3);
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
   color: var(--sqx-text-secondary);
 }
 
@@ -153,8 +148,6 @@
   gap: var(--sqx-space-3);
   min-block-size: var(--sqx-touch-target);
   padding-inline: var(--sqx-space-3);
-  font: var(--sqx-text-label);
-  letter-spacing: var(--sqx-text-label-tracking);
   color: var(--sqx-nav-text);
   text-decoration: none;
   border-radius: var(--sqx-radius-control);
@@ -185,8 +178,6 @@
   justify-content: center;
   min-inline-size: var(--sqx-space-7);
   padding-inline: var(--sqx-space-2);
-  font: var(--sqx-text-caption);
-  font-variant-numeric: var(--sqx-numeric-tabular);
   color: var(--sqx-status-critical-on-soft);
   background: var(--sqx-status-critical-soft);
   border-radius: var(--sqx-radius-pill);
@@ -205,7 +196,6 @@
 .item[aria-current="page"] {
   color: var(--sqx-text-accent);
   background: var(--sqx-nav-active-bg);
-  font-weight: var(--sqx-weight-semibold);
 }
 
 .item[aria-current="page"]::before {

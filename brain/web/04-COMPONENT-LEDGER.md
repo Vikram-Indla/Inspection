@@ -180,9 +180,28 @@ layer map. They ship **no CSS** — every visual is a `.sqx-shell*` class in
 | `shell-page-frame/shell-page-frame.tsx` | server | 44 | Title + description + breadcrumb + actions + content slot. **Supersedes the default `Shell` export**; adopting it in the 55 route files is future work. |
 
 `features/shell/` holds the data layer: `queries.ts` (63), `mappers.ts` (132),
-`types.ts` (54), `notification-strings.ts` (58). `features/factories/` holds
-`portfolio.ts` (82) — the row type, the provenance rule and the row → panel
-mapping.
+`types.ts` (54), `notification-strings.ts` (8 — rebuilt by T-101; it is now a
+one-line `getMessages(locale).notifications` read, and its `NotificationStrings`
+type *is* the namespace, so a missing Arabic key is a `tsc` error).
+`features/factories/` holds `portfolio.ts` (82) — the row type, the provenance
+rule and the row → panel mapping.
+
+---
+
+## `components/notifications/` — the notification bell (T-101)
+
+Domain components, not primitives: they know what a notification event, a visit
+context and a read receipt are. Consumed by **both** shells (`shell-topbar.tsx`
+and the legacy `ShellClient.tsx`), which is why the family lives outside either.
+
+| Component | Kind | Lines | Notes |
+| --- | --- | --- | --- |
+| `notification-bell.tsx` | **client** | 195 | Trigger + `MenuSurface role="dialog" trapFocus`. **Replaced 319 lines that hand-rolled the popover** — portal, placement, RTL edge and outside-click were re-implementations, and Escape, focus return, focus trap and the height cap were simply absent. `role="dialog"` is deliberate: it takes `menu-surface`'s viewport-measured cap instead of the 20rem list cap, so the inner scroller absorbs the squeeze and header/tabs/footer never scroll away. Trigger badge is `CountBadge` (the old `.sq-notification__badge` rendered at **10px**, under the §7 floor). Accessible name interpolates the unread count — the old badge was `aria-hidden`, so a screen reader was never told 55 were unread. Poll skips while the tab is hidden. |
+| `notification-row.tsx` | server | 66 | **`StatusPill` carries the event; the factory is the title.** The old row set the event as a 600-weight title, so five rows read "Visit expired" and the distinguishing factory sat smaller and greyer — the hierarchy was inverted, and it was the entire clutter complaint. The event label now appears **exactly once**. Unread is tone + pulse + a visually-hidden tag, never `fontWeight: 500` (not a weight the scale has). |
+| `notification-feed.ts` | — | 133 | The read layer + the K-008 session snapshot cache, moved out of the component. **`markAllNotificationsRead` is two statements, not a loop**: the old one awaited one UPDATE per loaded row, so 55 unread fell to ~40 in 15 round trips. The legacy `queued` → `delivery_state: "read"` split that `notificationReadPatch` encodes is preserved. |
+| `notification-content.ts` | — | 45 | Payload → subject/meta/detail. Free-text `reason`/`decision` keep their labels through interpolated keys so Arabic word order stays the translator's; a factory name and a `V-`-prefixed reference are self-describing and do not. |
+| `notification-time.ts` | — | 21 | **`Intl.RelativeTimeFormat`, not a resource template.** `"قبل {n} ساعة"` interpolated a bare singular, so Arabic read the singular for every count above two — in a resource file, in both locales, with every gate green. Takes the `Locale` union directly, so **no `locale === "ar"` branch exists**. |
+| `notification-tone.ts` | — | 29 | Event → `StatusTone`. Presentational emphasis only — no governed value is asserted. |
 
 ---
 
@@ -380,9 +399,28 @@ layer map. They ship **no CSS** — every visual is a `.sqx-shell*` class in
 | `shell-page-frame/shell-page-frame.tsx` | server | 44 | Title + description + breadcrumb + actions + content slot. **Supersedes the default `Shell` export**; adopting it in the 55 route files is future work. |
 
 `features/shell/` holds the data layer: `queries.ts` (63), `mappers.ts` (132),
-`types.ts` (54), `notification-strings.ts` (58). `features/factories/` holds
-`portfolio.ts` (82) — the row type, the provenance rule and the row → panel
-mapping.
+`types.ts` (54), `notification-strings.ts` (8 — rebuilt by T-101; it is now a
+one-line `getMessages(locale).notifications` read, and its `NotificationStrings`
+type *is* the namespace, so a missing Arabic key is a `tsc` error).
+`features/factories/` holds `portfolio.ts` (82) — the row type, the provenance
+rule and the row → panel mapping.
+
+---
+
+## `components/notifications/` — the notification bell (T-101)
+
+Domain components, not primitives: they know what a notification event, a visit
+context and a read receipt are. Consumed by **both** shells (`shell-topbar.tsx`
+and the legacy `ShellClient.tsx`), which is why the family lives outside either.
+
+| Component | Kind | Lines | Notes |
+| --- | --- | --- | --- |
+| `notification-bell.tsx` | **client** | 195 | Trigger + `MenuSurface role="dialog" trapFocus`. **Replaced 319 lines that hand-rolled the popover** — portal, placement, RTL edge and outside-click were re-implementations, and Escape, focus return, focus trap and the height cap were simply absent. `role="dialog"` is deliberate: it takes `menu-surface`'s viewport-measured cap instead of the 20rem list cap, so the inner scroller absorbs the squeeze and header/tabs/footer never scroll away. Trigger badge is `CountBadge` (the old `.sq-notification__badge` rendered at **10px**, under the §7 floor). Accessible name interpolates the unread count — the old badge was `aria-hidden`, so a screen reader was never told 55 were unread. Poll skips while the tab is hidden. |
+| `notification-row.tsx` | server | 66 | **`StatusPill` carries the event; the factory is the title.** The old row set the event as a 600-weight title, so five rows read "Visit expired" and the distinguishing factory sat smaller and greyer — the hierarchy was inverted, and it was the entire clutter complaint. The event label now appears **exactly once**. Unread is tone + pulse + a visually-hidden tag, never `fontWeight: 500` (not a weight the scale has). |
+| `notification-feed.ts` | — | 133 | The read layer + the K-008 session snapshot cache, moved out of the component. **`markAllNotificationsRead` is two statements, not a loop**: the old one awaited one UPDATE per loaded row, so 55 unread fell to ~40 in 15 round trips. The legacy `queued` → `delivery_state: "read"` split that `notificationReadPatch` encodes is preserved. |
+| `notification-content.ts` | — | 45 | Payload → subject/meta/detail. Free-text `reason`/`decision` keep their labels through interpolated keys so Arabic word order stays the translator's; a factory name and a `V-`-prefixed reference are self-describing and do not. |
+| `notification-time.ts` | — | 21 | **`Intl.RelativeTimeFormat`, not a resource template.** `"قبل {n} ساعة"` interpolated a bare singular, so Arabic read the singular for every count above two — in a resource file, in both locales, with every gate green. Takes the `Locale` union directly, so **no `locale === "ar"` branch exists**. |
+| `notification-tone.ts` | — | 29 | Event → `StatusTone`. Presentational emphasis only — no governed value is asserted. |
 
 ---
 
