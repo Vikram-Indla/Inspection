@@ -54,3 +54,19 @@
   overscroll-behavior: contain;
   background: var(--sqx-surface-canvas);
 }
+
+/* 93 route files still mount the legacy `Shell` inside this layout's `AppShell`,
+   so a second shell root lands here with all three of its parts pinned to
+   `100dvh`, while `main` is only `100dvh` minus the topbar. Measured: `main`
+   scrolled 56px into the region below the inner shell, and once that was
+   contained the inner shell still clipped 56px because its own children stayed
+   viewport-height — `.sq-shell__main` is the one carrying `overflow-y: auto`,
+   so its scroll range ran 56px past the visible box and scrolled into nothing.
+   All three are relative to the nested case only, so a standalone `.sq-shell`
+   keeps its viewport height; the whole block goes with the route migration. */
+.main :global(.sq-shell),
+.main :global(.sq-shell__nav),
+.main :global(.sq-shell__main) {
+  min-block-size: 100%;
+  block-size: 100%;
+}
