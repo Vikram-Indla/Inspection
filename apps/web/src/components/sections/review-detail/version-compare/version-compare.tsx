@@ -1,3 +1,4 @@
+import { Overline, Text } from "@/components/saqeel/type";
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -199,15 +200,15 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
       </div>
 
       {/* Returned-scope authority — always stated; never inferred from the diff. */}
-      <p className="t-caption">
+      <Text tone="muted">
         {scopeKnown
           ? strings.scopeSource.replace("{label}", scopeLabel ?? "—")
           : strings.noScope}
-      </p>
+      </Text>
 
       {/* Navigation-only is a property of the whole surface — stated even in the
           no-prior state where there is no rail to scroll. */}
-      <p className="t-caption">{strings.navHint}</p>
+      <Text tone="muted">{strings.navHint}</Text>
 
       {fromN === undefined ? (
         <div className="sq-banner" role="status"><div>{strings.noPrior}</div></div>
@@ -243,12 +244,12 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
                   {open[cat] && (
                     <ul id={panelId} className="stack">
                       {items.length === 0
-                        ? <li className="t-caption">{cat === "unavailable" && !scopeKnown ? strings.noScope : "—"}</li>
+                        ? <Text as="li" tone="muted">{cat === "unavailable" && !scopeKnown ? strings.noScope : "—"}</Text>
                         : items.map(r => (
                           <li key={r.key}>
                             <button type="button" className="btn btn-ghost btn-touch" onClick={() => goToRow(r.key)}>
                               <span className="numeric">{r.key}</span>
-                              {r.section && <span className="t-caption">{r.section.title}</span>}
+                              {r.section && <Text as="span" tone="muted">{r.section.title}</Text>}
                             </button>
                           </li>
                         ))}
@@ -309,7 +310,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
                     {item.kind === "added" ? strings.added : item.kind === "removed" ? strings.removed : strings.changed}
                   </span>
                   <span>{item.id}</span>
-                  {item.kind === "changed" && <span className="t-caption">current → proposed</span>}
+                  {item.kind === "changed" && <Text as="span" tone="muted">current → proposed</Text>}
                 </li>
               ))}
             </ul>
@@ -317,11 +318,11 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
         </div>
       ))}
       <div className="panel panel-body">
-        <p className="sq-overline">{strings.unavailableHeading}</p>
-        {!evidenceDiff && <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailEvidence}</p>}
-        <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailPackage}</p>
-        {!actionDiff && <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailMetadata}</p>}
-        <p className="t-caption">{strings.unavailNote}</p>
+        <Overline>{strings.unavailableHeading}</Overline>
+        {!evidenceDiff && <Text tone="muted"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailEvidence}</Text>}
+        <Text tone="muted"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailPackage}</Text>
+        {!actionDiff && <Text tone="muted"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailMetadata}</Text>}
+        <Text tone="muted">{strings.unavailNote}</Text>
       </div>
     </div>
   );

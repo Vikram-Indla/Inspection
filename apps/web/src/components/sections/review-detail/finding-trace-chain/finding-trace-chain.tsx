@@ -1,3 +1,4 @@
+import { Overline, Text } from "@/components/saqeel/type";
 import type { ReactNode } from "react";
 
 export type TraceNode = {
@@ -25,12 +26,12 @@ export type FindingTrace = {
 function Node({ node, unavailableLabel }: { node: TraceNode; unavailableLabel: string }) {
   return (
     <div className="sq-trace__node">
-      <dt className="sq-overline">{node.label ?? ""}</dt>
+      <Overline as="dt">{node.label ?? ""}</Overline>
       <dd>
         {node.unavailable
           ? <span className="badge badge-warning">○ {unavailableLabel}</span>
           : node.value}
-        <span className="t-caption sq-trace__source">{node.source}</span>
+        <Text as="span" tone="muted">{node.source}</Text>
       </dd>
     </div>
   );
@@ -52,7 +53,7 @@ export default function FindingTraceChain({ traces, strings }: {
         {/* The hint explains how to read the seven-link chain. With no chain on
             screen it explained nothing and left the empty state as a caption, a
             long spec sentence and a bare banner stacked in a full-height panel. */}
-        {traces.length > 0 && <p className="t-caption">{strings.hint}</p>}
+        {traces.length > 0 && <Text tone="muted">{strings.hint}</Text>}
         {traces.length === 0 ? (
           <div className="sq-banner" role="status"><div>{strings.empty}</div></div>
         ) : (

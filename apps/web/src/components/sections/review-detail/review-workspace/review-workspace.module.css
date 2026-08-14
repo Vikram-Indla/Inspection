@@ -1,0 +1,42 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-section);
+  min-inline-size: 0;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-4);
+}
+
+.chips,
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
+.actions {
+  margin-inline-start: auto;
+}
+
+/* The record and the decision sit side by side only when both fit; below that
+   the decision follows the record rather than being squeezed beside it. */
+.body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--sqx-grid-min-lg), 1fr));
+  gap: var(--sqx-gutter);
+  align-items: start;
+}
+
+.record,
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-default);
+  min-inline-size: 0;
+}

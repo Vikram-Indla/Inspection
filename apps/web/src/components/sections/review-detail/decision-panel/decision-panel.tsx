@@ -1,6 +1,7 @@
+import { Overline, Text } from "@/components/saqeel/type";
 "use client";
 import { useActionState, useEffect, useRef, useState } from "react";
-import { decide, type DecisionResult } from "./actions";
+import { decide, type DecisionResult } from "@/app/(app)/reviews/[id]/actions";
 
 // SB19 — strings built server-side with t() and passed as props.
 export type WorkspaceDecisionStrings = {
@@ -58,13 +59,13 @@ export default function DecisionPanel({ reviewId, sections, summary, strings }: 
       </div>
       {decision === "return" && !confirming && (
         <div className="panel panel-body stack">
-          <p className="sq-overline">{strings.returnScopeTitle}</p>
+          <Overline>{strings.returnScopeTitle}</Overline>
           {sections.map(s => (
             <label key={s.key} className="sq-choice"><input type="checkbox" name="returned_section" value={s.key}
               checked={returnedSections.includes(s.key)}
               onChange={event => setReturnedSections(current => event.target.checked ? [...current, s.key] : current.filter(key => key !== s.key))} /> {s.title}</label>
           ))}
-          <p className="t-caption">{strings.returnScopeHint}</p>
+          <Text tone="muted">{strings.returnScopeHint}</Text>
         </div>
       )}
       {!confirming && <div className="sq-field">
@@ -114,7 +115,7 @@ export default function DecisionPanel({ reviewId, sections, summary, strings }: 
           disabled={!decision || (decision !== "approve" && !reason.trim()) || (decision === "return" && returnedSections.length === 0)}
           onClick={() => setConfirming(true)}>{strings.continueToConfirmation}</button>
       )}
-      <p className="t-caption">{strings.audited}</p>
+      <Text tone="muted">{strings.audited}</Text>
     </form>
   );
 }

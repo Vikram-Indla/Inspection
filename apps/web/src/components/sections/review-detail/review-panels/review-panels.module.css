@@ -1,0 +1,16 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+  min-inline-size: 0;
+}
+
+/* The stored signature is a data URI drawn by the representative on the iPad,
+   so there is no remote asset and no alt-text-free decorative case: it is the
+   evidence of acknowledgement and always carries its purpose in `alt`. */
+.signature {
+  max-inline-size: var(--sqx-grid-min-md);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-card);
+  background: var(--sqx-surface-default);
+}

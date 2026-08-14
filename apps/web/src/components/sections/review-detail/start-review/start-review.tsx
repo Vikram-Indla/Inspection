@@ -1,6 +1,7 @@
+import { Text } from "@/components/saqeel/type";
 "use client";
 import { useActionState } from "react";
-import { startReview, type DecisionResult } from "./actions";
+import { startReview, type DecisionResult } from "@/app/(app)/reviews/[id]/actions";
 
 // CD-028 leg 5 — explicit, reviewer-intentful start. Replaces the old
 // navigation side-effect that created the review + transitioned the inspection
@@ -17,7 +18,7 @@ export default function StartReview({ inspectionId, submissionVersionId, strings
   return (
     <form action={formAction} className="panel cd-panelpad sq-stack">
       <h2>{strings.title}</h2>
-      <p className="t-caption">{strings.body}</p>
+      <Text tone="muted">{strings.body}</Text>
       <input type="hidden" name="inspection_id" value={inspectionId} />
       <input type="hidden" name="submission_version_id" value={submissionVersionId} />
       {state.error && <div className="sq-banner sq-banner--critical" role="alert"><div>{state.error}</div></div>}

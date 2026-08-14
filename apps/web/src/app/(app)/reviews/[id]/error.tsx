@@ -1,20 +1,23 @@
 "use client";
 
-import { StateSurface } from "@/components/saqeel";
+import RouteError from "@/components/saqeel/route-error/route-error";
+import ar from "@/i18n/locales/ar/reviews.json";
+import en from "@/i18n/locales/en/reviews.json";
 
-export default function ReviewRecordError({
-  error,
-  reset,
-}: {
+export default function ReviewDetailError({ error, reset }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const isArabic = typeof document !== "undefined" && document.documentElement.lang === "ar";
+  const strings = (isArabic ? ar : en).error;
   return (
-    <StateSurface
-      kind="error"
-      title="Review record not available"
-      body={`We could not tell the decision or workflow state.${error.digest ? ` Reference ${error.digest}.` : ""}`}
-      action={<button className="btn btn-secondary" type="button" onClick={reset}>Try again</button>}
+    <RouteError
+      title={strings.title}
+      body={strings.body}
+      retryLabel={strings.retry}
+      reference={error.digest}
+      referenceLabel={strings.reference}
+      onRetry={reset}
     />
   );
 }
